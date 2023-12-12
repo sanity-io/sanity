@@ -261,6 +261,14 @@ export interface GraphQLAPIConfig {
    * Optional, defaults to `false`
    */
   nonNullDocumentFields?: boolean
+
+  /**
+   * Suffix to use for generated filter types.
+   *
+   * Optional, Defaults to `Filter`.
+   *
+   */
+  filterSuffix?: string
 }
 
 export interface CliConfig {

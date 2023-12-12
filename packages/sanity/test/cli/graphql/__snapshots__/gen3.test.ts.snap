@@ -4564,3 +4564,4568 @@ Object {
   ],
 }
 `;
+
+exports[`GraphQL - Generation 3 Should be able to generate graphql schema with filterType prefix 1`] = `
+Object {
+  "generation": "gen3",
+  "interfaces": Array [
+    Object {
+      "description": "A Sanity document",
+      "fields": Array [
+        Object {
+          "description": "Date the document was created",
+          "fieldName": "_createdAt",
+          "isNullable": true,
+          "type": "Datetime",
+        },
+        Object {
+          "description": "Document ID",
+          "fieldName": "_id",
+          "isNullable": true,
+          "type": "ID",
+        },
+        Object {
+          "description": "Current document revision",
+          "fieldName": "_rev",
+          "isNullable": true,
+          "type": "String",
+        },
+        Object {
+          "description": "Document type",
+          "fieldName": "_type",
+          "isNullable": true,
+          "type": "String",
+        },
+        Object {
+          "description": "Date the document was last modified",
+          "fieldName": "_updatedAt",
+          "isNullable": true,
+          "type": "Datetime",
+        },
+      ],
+      "kind": "Interface",
+      "name": "Document",
+    },
+  ],
+  "queries": Array [
+    Object {
+      "args": Array [
+        Object {
+          "description": "Author document ID",
+          "isNullable": false,
+          "name": "id",
+          "type": "ID",
+        },
+      ],
+      "constraints": Array [
+        Object {
+          "comparator": "eq",
+          "field": "_id",
+          "value": Object {
+            "argName": "id",
+            "kind": "argumentValue",
+          },
+        },
+      ],
+      "fieldName": "Author",
+      "type": "Author",
+    },
+    Object {
+      "args": Array [
+        Object {
+          "description": "Document document ID",
+          "isNullable": false,
+          "name": "id",
+          "type": "ID",
+        },
+      ],
+      "constraints": Array [
+        Object {
+          "comparator": "eq",
+          "field": "_id",
+          "value": Object {
+            "argName": "id",
+            "kind": "argumentValue",
+          },
+        },
+      ],
+      "fieldName": "Document",
+      "type": "Document",
+    },
+    Object {
+      "args": Array [
+        Object {
+          "description": "DocumentActionsTest document ID",
+          "isNullable": false,
+          "name": "id",
+          "type": "ID",
+        },
+      ],
+      "constraints": Array [
+        Object {
+          "comparator": "eq",
+          "field": "_id",
+          "value": Object {
+            "argName": "id",
+            "kind": "argumentValue",
+          },
+        },
+      ],
+      "fieldName": "DocumentActionsTest",
+      "type": "DocumentActionsTest",
+    },
+    Object {
+      "args": Array [
+        Object {
+          "description": "DocumentWithCdrField document ID",
+          "isNullable": false,
+          "name": "id",
+          "type": "ID",
+        },
+      ],
+      "constraints": Array [
+        Object {
+          "comparator": "eq",
+          "field": "_id",
+          "value": Object {
+            "argName": "id",
+            "kind": "argumentValue",
+          },
+        },
+      ],
+      "fieldName": "DocumentWithCdrField",
+      "type": "DocumentWithCdrField",
+    },
+    Object {
+      "args": Array [
+        Object {
+          "description": "Poppers document ID",
+          "isNullable": false,
+          "name": "id",
+          "type": "ID",
+        },
+      ],
+      "constraints": Array [
+        Object {
+          "comparator": "eq",
+          "field": "_id",
+          "value": Object {
+            "argName": "id",
+            "kind": "argumentValue",
+          },
+        },
+      ],
+      "fieldName": "Poppers",
+      "type": "Poppers",
+    },
+    Object {
+      "args": Array [
+        Object {
+          "description": "SanityFileAsset document ID",
+          "isNullable": false,
+          "name": "id",
+          "type": "ID",
+        },
+      ],
+      "constraints": Array [
+        Object {
+          "comparator": "eq",
+          "field": "_id",
+          "value": Object {
+            "argName": "id",
+            "kind": "argumentValue",
+          },
+        },
+      ],
+      "fieldName": "SanityFileAsset",
+      "type": "SanityFileAsset",
+    },
+    Object {
+      "args": Array [
+        Object {
+          "description": "SanityImageAsset document ID",
+          "isNullable": false,
+          "name": "id",
+          "type": "ID",
+        },
+      ],
+      "constraints": Array [
+        Object {
+          "comparator": "eq",
+          "field": "_id",
+          "value": Object {
+            "argName": "id",
+            "kind": "argumentValue",
+          },
+        },
+      ],
+      "fieldName": "SanityImageAsset",
+      "type": "SanityImageAsset",
+    },
+    Object {
+      "args": Array [
+        Object {
+          "description": "Max documents to return",
+          "isFieldFilter": false,
+          "name": "limit",
+          "type": "Int",
+        },
+        Object {
+          "description": "Offset at which to start returning documents from",
+          "isFieldFilter": false,
+          "name": "offset",
+          "type": "Int",
+        },
+        Object {
+          "name": "sort",
+          "type": Object {
+            "children": Object {
+              "isNullable": false,
+              "type": "AuthorSorting",
+            },
+            "isNullable": true,
+            "kind": "List",
+          },
+        },
+        Object {
+          "isFieldFilter": true,
+          "name": "where",
+          "type": "AuthorCustomFilterSuffix",
+        },
+      ],
+      "fieldName": "allAuthor",
+      "filter": "_type == \\"author\\"",
+      "type": Object {
+        "children": Object {
+          "isNullable": false,
+          "type": "Author",
+        },
+        "isNullable": false,
+        "kind": "List",
+      },
+    },
+    Object {
+      "args": Array [
+        Object {
+          "description": "Max documents to return",
+          "isFieldFilter": false,
+          "name": "limit",
+          "type": "Int",
+        },
+        Object {
+          "description": "Offset at which to start returning documents from",
+          "isFieldFilter": false,
+          "name": "offset",
+          "type": "Int",
+        },
+        Object {
+          "name": "sort",
+          "type": Object {
+            "children": Object {
+              "isNullable": false,
+              "type": "DocumentSorting",
+            },
+            "isNullable": true,
+            "kind": "List",
+          },
+        },
+        Object {
+          "isFieldFilter": true,
+          "name": "where",
+          "type": "DocumentCustomFilterSuffix",
+        },
+      ],
+      "fieldName": "allDocument",
+      "filter": "_type in [\\"sanity.imageAsset\\", \\"sanity.fileAsset\\", \\"documentActionsTest\\", \\"poppers\\", \\"author\\", \\"documentWithCdrField\\"]",
+      "type": Object {
+        "children": Object {
+          "isNullable": false,
+          "type": "Document",
+        },
+        "isNullable": false,
+        "kind": "List",
+      },
+    },
+    Object {
+      "args": Array [
+        Object {
+          "description": "Max documents to return",
+          "isFieldFilter": false,
+          "name": "limit",
+          "type": "Int",
+        },
+        Object {
+          "description": "Offset at which to start returning documents from",
+          "isFieldFilter": false,
+          "name": "offset",
+          "type": "Int",
+        },
+        Object {
+          "name": "sort",
+          "type": Object {
+            "children": Object {
+              "isNullable": false,
+              "type": "DocumentActionsTestSorting",
+            },
+            "isNullable": true,
+            "kind": "List",
+          },
+        },
+        Object {
+          "isFieldFilter": true,
+          "name": "where",
+          "type": "DocumentActionsTestCustomFilterSuffix",
+        },
+      ],
+      "fieldName": "allDocumentActionsTest",
+      "filter": "_type == \\"documentActionsTest\\"",
+      "type": Object {
+        "children": Object {
+          "isNullable": false,
+          "type": "DocumentActionsTest",
+        },
+        "isNullable": false,
+        "kind": "List",
+      },
+    },
+    Object {
+      "args": Array [
+        Object {
+          "description": "Max documents to return",
+          "isFieldFilter": false,
+          "name": "limit",
+          "type": "Int",
+        },
+        Object {
+          "description": "Offset at which to start returning documents from",
+          "isFieldFilter": false,
+          "name": "offset",
+          "type": "Int",
+        },
+        Object {
+          "name": "sort",
+          "type": Object {
+            "children": Object {
+              "isNullable": false,
+              "type": "DocumentWithCdrFieldSorting",
+            },
+            "isNullable": true,
+            "kind": "List",
+          },
+        },
+        Object {
+          "isFieldFilter": true,
+          "name": "where",
+          "type": "DocumentWithCdrFieldCustomFilterSuffix",
+        },
+      ],
+      "fieldName": "allDocumentWithCdrField",
+      "filter": "_type == \\"documentWithCdrField\\"",
+      "type": Object {
+        "children": Object {
+          "isNullable": false,
+          "type": "DocumentWithCdrField",
+        },
+        "isNullable": false,
+        "kind": "List",
+      },
+    },
+    Object {
+      "args": Array [
+        Object {
+          "description": "Max documents to return",
+          "isFieldFilter": false,
+          "name": "limit",
+          "type": "Int",
+        },
+        Object {
+          "description": "Offset at which to start returning documents from",
+          "isFieldFilter": false,
+          "name": "offset",
+          "type": "Int",
+        },
+        Object {
+          "name": "sort",
+          "type": Object {
+            "children": Object {
+              "isNullable": false,
+              "type": "PoppersSorting",
+            },
+            "isNullable": true,
+            "kind": "List",
+          },
+        },
+        Object {
+          "isFieldFilter": true,
+          "name": "where",
+          "type": "PoppersCustomFilterSuffix",
+        },
+      ],
+      "fieldName": "allPoppers",
+      "filter": "_type == \\"poppers\\"",
+      "type": Object {
+        "children": Object {
+          "isNullable": false,
+          "type": "Poppers",
+        },
+        "isNullable": false,
+        "kind": "List",
+      },
+    },
+    Object {
+      "args": Array [
+        Object {
+          "description": "Max documents to return",
+          "isFieldFilter": false,
+          "name": "limit",
+          "type": "Int",
+        },
+        Object {
+          "description": "Offset at which to start returning documents from",
+          "isFieldFilter": false,
+          "name": "offset",
+          "type": "Int",
+        },
+        Object {
+          "name": "sort",
+          "type": Object {
+            "children": Object {
+              "isNullable": false,
+              "type": "SanityFileAssetSorting",
+            },
+            "isNullable": true,
+            "kind": "List",
+          },
+        },
+        Object {
+          "isFieldFilter": true,
+          "name": "where",
+          "type": "SanityFileAssetCustomFilterSuffix",
+        },
+      ],
+      "fieldName": "allSanityFileAsset",
+      "filter": "_type == \\"sanity.fileAsset\\"",
+      "type": Object {
+        "children": Object {
+          "isNullable": false,
+          "type": "SanityFileAsset",
+        },
+        "isNullable": false,
+        "kind": "List",
+      },
+    },
+    Object {
+      "args": Array [
+        Object {
+          "description": "Max documents to return",
+          "isFieldFilter": false,
+          "name": "limit",
+          "type": "Int",
+        },
+        Object {
+          "description": "Offset at which to start returning documents from",
+          "isFieldFilter": false,
+          "name": "offset",
+          "type": "Int",
+        },
+        Object {
+          "name": "sort",
+          "type": Object {
+            "children": Object {
+              "isNullable": false,
+              "type": "SanityImageAssetSorting",
+            },
+            "isNullable": true,
+            "kind": "List",
+          },
+        },
+        Object {
+          "isFieldFilter": true,
+          "name": "where",
+          "type": "SanityImageAssetCustomFilterSuffix",
+        },
+      ],
+      "fieldName": "allSanityImageAsset",
+      "filter": "_type == \\"sanity.imageAsset\\"",
+      "type": Object {
+        "children": Object {
+          "isNullable": false,
+          "type": "SanityImageAsset",
+        },
+        "isNullable": false,
+        "kind": "List",
+      },
+    },
+  ],
+  "types": Array [
+    Object {
+      "description": undefined,
+      "fields": Array [
+        Object {
+          "description": "Date the document was created",
+          "fieldName": "_createdAt",
+          "isNullable": true,
+          "type": "Datetime",
+        },
+        Object {
+          "description": "Document ID",
+          "fieldName": "_id",
+          "isNullable": true,
+          "type": "ID",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        Object {
+          "description": "Current document revision",
+          "fieldName": "_rev",
+          "isNullable": true,
+          "type": "String",
+        },
+        Object {
+          "description": "Document type",
+          "fieldName": "_type",
+          "isNullable": true,
+          "type": "String",
+        },
+        Object {
+          "description": "Date the document was last modified",
+          "fieldName": "_updatedAt",
+          "isNullable": true,
+          "type": "Datetime",
+        },
+        Object {
+          "children": Object {
+            "type": "String",
+          },
+          "description": undefined,
+          "fieldName": "awards",
+          "kind": "List",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "bestFriend",
+          "isReference": true,
+          "type": "Author",
+        },
+        Object {
+          "fieldName": "image",
+          "type": "Image",
+        },
+        Object {
+          "children": Object {
+            "type": "Block",
+          },
+          "description": undefined,
+          "fieldName": "minimalBlockRaw",
+          "isRawAlias": true,
+          "kind": "List",
+          "originalName": "minimalBlock",
+          "type": "JSON",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "name",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "role",
+          "type": "String",
+        },
+      ],
+      "interfaces": Array [
+        "Document",
+      ],
+      "kind": "Type",
+      "name": "Author",
+      "originalName": "author",
+      "type": "Object",
+    },
+    Object {
+      "fields": Array [
+        Object {
+          "description": "Apply filters on document level",
+          "fieldName": "_",
+          "type": "Sanity_DocumentFilter",
+        },
+        Object {
+          "fieldName": "_createdAt",
+          "isReference": undefined,
+          "type": "DatetimeFilter",
+        },
+        Object {
+          "fieldName": "_id",
+          "isReference": undefined,
+          "type": "IDFilter",
+        },
+        Object {
+          "fieldName": "_key",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "_rev",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "_type",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "_updatedAt",
+          "isReference": undefined,
+          "type": "DatetimeFilter",
+        },
+        Object {
+          "fieldName": "bestFriend",
+          "isReference": true,
+          "type": "AuthorCustomFilterSuffix",
+        },
+        Object {
+          "fieldName": "image",
+          "isReference": undefined,
+          "type": "ImageCustomFilterSuffix",
+        },
+        Object {
+          "fieldName": "name",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "role",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "AuthorCustomFilterSuffix",
+    },
+    Object {
+      "fields": Array [
+        Object {
+          "fieldName": "_createdAt",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "_id",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "_key",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "_rev",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "_type",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "_updatedAt",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "image",
+          "type": "ImageSorting",
+        },
+        Object {
+          "fieldName": "name",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "role",
+          "type": "SortOrder",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "AuthorSorting",
+    },
+    Object {
+      "description": undefined,
+      "fields": Array [
+        Object {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        Object {
+          "children": Object {
+            "type": "Span",
+          },
+          "description": undefined,
+          "fieldName": "children",
+          "kind": "List",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "level",
+          "type": "Float",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "listItem",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "style",
+          "type": "String",
+        },
+      ],
+      "kind": "Type",
+      "name": "Block",
+      "originalName": "block",
+      "type": "Object",
+    },
+    Object {
+      "fields": Array [
+        Object {
+          "description": "Checks if the value is equal to the given input.",
+          "fieldName": "eq",
+          "type": "Boolean",
+        },
+        Object {
+          "description": "Checks if the value is defined.",
+          "fieldName": "is_defined",
+          "type": "Boolean",
+        },
+        Object {
+          "description": "Checks if the value is not equal to the given input.",
+          "fieldName": "neq",
+          "type": "Boolean",
+        },
+      ],
+      "isConstraintFilter": true,
+      "kind": "InputObject",
+      "name": "BooleanFilter",
+    },
+    Object {
+      "crossDatasetReferenceMetadata": Object {
+        "dataset": "production",
+        "typeNames": Array [
+          "person",
+        ],
+      },
+      "description": undefined,
+      "fields": Array [
+        Object {
+          "description": undefined,
+          "fieldName": "_dataset",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_projectId",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_ref",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_weak",
+          "type": "Boolean",
+        },
+      ],
+      "kind": "Type",
+      "name": "CdrPersonReference",
+      "originalName": "cdrPersonReference",
+      "type": "Object",
+    },
+    Object {
+      "fields": Array [
+        Object {
+          "fieldName": "_dataset",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "_key",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "_projectId",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "_ref",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "_type",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "_weak",
+          "isReference": undefined,
+          "type": "BooleanFilter",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "CdrPersonReferenceCustomFilterSuffix",
+    },
+    Object {
+      "fields": Array [
+        Object {
+          "fieldName": "_dataset",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "_key",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "_projectId",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "_ref",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "_type",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "_weak",
+          "type": "SortOrder",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "CdrPersonReferenceSorting",
+    },
+    Object {
+      "description": undefined,
+      "fields": Array [
+        Object {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "code",
+          "type": "Text",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "filename",
+          "type": "String",
+        },
+        Object {
+          "children": Object {
+            "type": "Float",
+          },
+          "description": undefined,
+          "fieldName": "highlightedLines",
+          "kind": "List",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "language",
+          "type": "String",
+        },
+      ],
+      "kind": "Type",
+      "name": "Code",
+      "originalName": "code",
+      "type": "Object",
+    },
+    Object {
+      "fields": Array [
+        Object {
+          "fieldName": "_key",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "_type",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "code",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "filename",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "language",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "CodeCustomFilterSuffix",
+    },
+    Object {
+      "fields": Array [
+        Object {
+          "fieldName": "_key",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "_type",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "code",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "filename",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "language",
+          "type": "SortOrder",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "CodeSorting",
+    },
+    Object {
+      "description": undefined,
+      "fields": Array [
+        Object {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "alpha",
+          "type": "Float",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "hex",
+          "type": "String",
+        },
+        Object {
+          "fieldName": "hsl",
+          "type": "HslaColor",
+        },
+        Object {
+          "fieldName": "hsv",
+          "type": "HsvaColor",
+        },
+        Object {
+          "fieldName": "rgb",
+          "type": "RgbaColor",
+        },
+      ],
+      "kind": "Type",
+      "name": "Color",
+      "originalName": "color",
+      "type": "Object",
+    },
+    Object {
+      "fields": Array [
+        Object {
+          "fieldName": "_key",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "_type",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "alpha",
+          "isReference": undefined,
+          "type": "FloatFilter",
+        },
+        Object {
+          "fieldName": "hex",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "hsl",
+          "isReference": undefined,
+          "type": "HslaColorCustomFilterSuffix",
+        },
+        Object {
+          "fieldName": "hsv",
+          "isReference": undefined,
+          "type": "HsvaColorCustomFilterSuffix",
+        },
+        Object {
+          "fieldName": "rgb",
+          "isReference": undefined,
+          "type": "RgbaColorCustomFilterSuffix",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "ColorCustomFilterSuffix",
+    },
+    Object {
+      "fields": Array [
+        Object {
+          "fieldName": "_key",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "_type",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "alpha",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "hex",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "hsl",
+          "type": "HslaColorSorting",
+        },
+        Object {
+          "fieldName": "hsv",
+          "type": "HsvaColorSorting",
+        },
+        Object {
+          "fieldName": "rgb",
+          "type": "RgbaColorSorting",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "ColorSorting",
+    },
+    Object {
+      "description": undefined,
+      "fields": Array [
+        Object {
+          "description": undefined,
+          "fieldName": "_dataset",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_projectId",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_ref",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_weak",
+          "type": "Boolean",
+        },
+      ],
+      "kind": "Type",
+      "name": "CrossDatasetReference",
+      "originalName": "crossDatasetReference",
+      "type": "Object",
+    },
+    Object {
+      "fields": Array [
+        Object {
+          "fieldName": "_dataset",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "_key",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "_projectId",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "_ref",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "_type",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "_weak",
+          "isReference": undefined,
+          "type": "BooleanFilter",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "CrossDatasetReferenceCustomFilterSuffix",
+    },
+    Object {
+      "fields": Array [
+        Object {
+          "fieldName": "_dataset",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "_key",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "_projectId",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "_ref",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "_type",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "_weak",
+          "type": "SortOrder",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "CrossDatasetReferenceSorting",
+    },
+    Object {
+      "fields": Array [
+        Object {
+          "description": "Checks if the value is equal to the given input.",
+          "fieldName": "eq",
+          "type": "Date",
+        },
+        Object {
+          "description": "Checks if the value is greater than the given input.",
+          "fieldName": "gt",
+          "type": "Date",
+        },
+        Object {
+          "description": "Checks if the value is greater than or equal to the given input.",
+          "fieldName": "gte",
+          "type": "Date",
+        },
+        Object {
+          "description": "Checks if the value is defined.",
+          "fieldName": "is_defined",
+          "type": "Boolean",
+        },
+        Object {
+          "description": "Checks if the value is lesser than the given input.",
+          "fieldName": "lt",
+          "type": "Date",
+        },
+        Object {
+          "description": "Checks if the value is lesser than or equal to the given input.",
+          "fieldName": "lte",
+          "type": "Date",
+        },
+        Object {
+          "description": "Checks if the value is not equal to the given input.",
+          "fieldName": "neq",
+          "type": "Date",
+        },
+      ],
+      "isConstraintFilter": true,
+      "kind": "InputObject",
+      "name": "DateFilter",
+    },
+    Object {
+      "fields": Array [
+        Object {
+          "description": "Checks if the value is equal to the given input.",
+          "fieldName": "eq",
+          "type": "Datetime",
+        },
+        Object {
+          "description": "Checks if the value is greater than the given input.",
+          "fieldName": "gt",
+          "type": "Datetime",
+        },
+        Object {
+          "description": "Checks if the value is greater than or equal to the given input.",
+          "fieldName": "gte",
+          "type": "Datetime",
+        },
+        Object {
+          "description": "Checks if the value is defined.",
+          "fieldName": "is_defined",
+          "type": "Boolean",
+        },
+        Object {
+          "description": "Checks if the value is lesser than the given input.",
+          "fieldName": "lt",
+          "type": "Datetime",
+        },
+        Object {
+          "description": "Checks if the value is lesser than or equal to the given input.",
+          "fieldName": "lte",
+          "type": "Datetime",
+        },
+        Object {
+          "description": "Checks if the value is not equal to the given input.",
+          "fieldName": "neq",
+          "type": "Datetime",
+        },
+      ],
+      "isConstraintFilter": true,
+      "kind": "InputObject",
+      "name": "DatetimeFilter",
+    },
+    Object {
+      "description": undefined,
+      "fields": Array [
+        Object {
+          "description": "Date the document was created",
+          "fieldName": "_createdAt",
+          "isNullable": true,
+          "type": "Datetime",
+        },
+        Object {
+          "description": "Document ID",
+          "fieldName": "_id",
+          "isNullable": true,
+          "type": "ID",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        Object {
+          "description": "Current document revision",
+          "fieldName": "_rev",
+          "isNullable": true,
+          "type": "String",
+        },
+        Object {
+          "description": "Document type",
+          "fieldName": "_type",
+          "isNullable": true,
+          "type": "String",
+        },
+        Object {
+          "description": "Date the document was last modified",
+          "fieldName": "_updatedAt",
+          "isNullable": true,
+          "type": "Datetime",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "title",
+          "type": "String",
+        },
+      ],
+      "interfaces": Array [
+        "Document",
+      ],
+      "kind": "Type",
+      "name": "DocumentActionsTest",
+      "originalName": "documentActionsTest",
+      "type": "Object",
+    },
+    Object {
+      "fields": Array [
+        Object {
+          "description": "Apply filters on document level",
+          "fieldName": "_",
+          "type": "Sanity_DocumentFilter",
+        },
+        Object {
+          "fieldName": "_createdAt",
+          "isReference": undefined,
+          "type": "DatetimeFilter",
+        },
+        Object {
+          "fieldName": "_id",
+          "isReference": undefined,
+          "type": "IDFilter",
+        },
+        Object {
+          "fieldName": "_key",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "_rev",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "_type",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "_updatedAt",
+          "isReference": undefined,
+          "type": "DatetimeFilter",
+        },
+        Object {
+          "fieldName": "title",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "DocumentActionsTestCustomFilterSuffix",
+    },
+    Object {
+      "fields": Array [
+        Object {
+          "fieldName": "_createdAt",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "_id",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "_key",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "_rev",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "_type",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "_updatedAt",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "title",
+          "type": "SortOrder",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "DocumentActionsTestSorting",
+    },
+    Object {
+      "fields": Array [
+        Object {
+          "description": "Apply filters on document level",
+          "fieldName": "_",
+          "type": "Sanity_DocumentFilter",
+        },
+        Object {
+          "fieldName": "_createdAt",
+          "isReference": undefined,
+          "type": "DatetimeFilter",
+        },
+        Object {
+          "fieldName": "_id",
+          "isReference": undefined,
+          "type": "IDFilter",
+        },
+        Object {
+          "fieldName": "_rev",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "_type",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "_updatedAt",
+          "isReference": undefined,
+          "type": "DatetimeFilter",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "DocumentCustomFilterSuffix",
+    },
+    Object {
+      "fields": Array [
+        Object {
+          "fieldName": "_createdAt",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "_id",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "_rev",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "_type",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "_updatedAt",
+          "type": "SortOrder",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "DocumentSorting",
+    },
+    Object {
+      "description": undefined,
+      "fields": Array [
+        Object {
+          "description": "Date the document was created",
+          "fieldName": "_createdAt",
+          "isNullable": true,
+          "type": "Datetime",
+        },
+        Object {
+          "description": "Document ID",
+          "fieldName": "_id",
+          "isNullable": true,
+          "type": "ID",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        Object {
+          "description": "Current document revision",
+          "fieldName": "_rev",
+          "isNullable": true,
+          "type": "String",
+        },
+        Object {
+          "description": "Document type",
+          "fieldName": "_type",
+          "isNullable": true,
+          "type": "String",
+        },
+        Object {
+          "description": "Date the document was last modified",
+          "fieldName": "_updatedAt",
+          "isNullable": true,
+          "type": "Datetime",
+        },
+        Object {
+          "crossDatasetReferenceMetadata": Object {
+            "dataset": "production",
+            "typeNames": Array [
+              "person",
+              "place",
+            ],
+          },
+          "fieldName": "cdrFieldInline",
+          "type": "CrossDatasetReference",
+        },
+        Object {
+          "crossDatasetReferenceMetadata": Object {
+            "dataset": "production",
+            "typeNames": Array [
+              "person",
+            ],
+          },
+          "fieldName": "cdrFieldNamed",
+          "type": "CdrPersonReference",
+        },
+      ],
+      "interfaces": Array [
+        "Document",
+      ],
+      "kind": "Type",
+      "name": "DocumentWithCdrField",
+      "originalName": "documentWithCdrField",
+      "type": "Object",
+    },
+    Object {
+      "fields": Array [
+        Object {
+          "description": "Apply filters on document level",
+          "fieldName": "_",
+          "type": "Sanity_DocumentFilter",
+        },
+        Object {
+          "fieldName": "_createdAt",
+          "isReference": undefined,
+          "type": "DatetimeFilter",
+        },
+        Object {
+          "fieldName": "_id",
+          "isReference": undefined,
+          "type": "IDFilter",
+        },
+        Object {
+          "fieldName": "_key",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "_rev",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "_type",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "_updatedAt",
+          "isReference": undefined,
+          "type": "DatetimeFilter",
+        },
+        Object {
+          "fieldName": "cdrFieldInline",
+          "isReference": undefined,
+          "type": "CrossDatasetReferenceCustomFilterSuffix",
+        },
+        Object {
+          "fieldName": "cdrFieldNamed",
+          "isReference": undefined,
+          "type": "CdrPersonReferenceCustomFilterSuffix",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "DocumentWithCdrFieldCustomFilterSuffix",
+    },
+    Object {
+      "fields": Array [
+        Object {
+          "fieldName": "_createdAt",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "_id",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "_key",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "_rev",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "_type",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "_updatedAt",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "cdrFieldInline",
+          "type": "CrossDatasetReferenceSorting",
+        },
+        Object {
+          "fieldName": "cdrFieldNamed",
+          "type": "CdrPersonReferenceSorting",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "DocumentWithCdrFieldSorting",
+    },
+    Object {
+      "description": undefined,
+      "fields": Array [
+        Object {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "asset",
+          "isReference": true,
+          "type": "SanityFileAsset",
+        },
+      ],
+      "kind": "Type",
+      "name": "File",
+      "originalName": "file",
+      "type": "Object",
+    },
+    Object {
+      "fields": Array [
+        Object {
+          "fieldName": "_key",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "_type",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "asset",
+          "isReference": true,
+          "type": "SanityFileAssetCustomFilterSuffix",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "FileCustomFilterSuffix",
+    },
+    Object {
+      "fields": Array [
+        Object {
+          "fieldName": "_key",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "_type",
+          "type": "SortOrder",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "FileSorting",
+    },
+    Object {
+      "fields": Array [
+        Object {
+          "description": "Checks if the value is equal to the given input.",
+          "fieldName": "eq",
+          "type": "Float",
+        },
+        Object {
+          "description": "Checks if the value is greater than the given input.",
+          "fieldName": "gt",
+          "type": "Float",
+        },
+        Object {
+          "description": "Checks if the value is greater than or equal to the given input.",
+          "fieldName": "gte",
+          "type": "Float",
+        },
+        Object {
+          "description": "Checks if the value is defined.",
+          "fieldName": "is_defined",
+          "type": "Boolean",
+        },
+        Object {
+          "description": "Checks if the value is lesser than the given input.",
+          "fieldName": "lt",
+          "type": "Float",
+        },
+        Object {
+          "description": "Checks if the value is lesser than or equal to the given input.",
+          "fieldName": "lte",
+          "type": "Float",
+        },
+        Object {
+          "description": "Checks if the value is not equal to the given input.",
+          "fieldName": "neq",
+          "type": "Float",
+        },
+      ],
+      "isConstraintFilter": true,
+      "kind": "InputObject",
+      "name": "FloatFilter",
+    },
+    Object {
+      "description": undefined,
+      "fields": Array [
+        Object {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "alt",
+          "type": "Float",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "lat",
+          "type": "Float",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "lng",
+          "type": "Float",
+        },
+      ],
+      "kind": "Type",
+      "name": "Geopoint",
+      "originalName": "geopoint",
+      "type": "Object",
+    },
+    Object {
+      "fields": Array [
+        Object {
+          "fieldName": "_key",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "_type",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "alt",
+          "isReference": undefined,
+          "type": "FloatFilter",
+        },
+        Object {
+          "fieldName": "lat",
+          "isReference": undefined,
+          "type": "FloatFilter",
+        },
+        Object {
+          "fieldName": "lng",
+          "isReference": undefined,
+          "type": "FloatFilter",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "GeopointCustomFilterSuffix",
+    },
+    Object {
+      "fields": Array [
+        Object {
+          "fieldName": "_key",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "_type",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "alt",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "lat",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "lng",
+          "type": "SortOrder",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "GeopointSorting",
+    },
+    Object {
+      "description": undefined,
+      "fields": Array [
+        Object {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "a",
+          "type": "Float",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "h",
+          "type": "Float",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "l",
+          "type": "Float",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "s",
+          "type": "Float",
+        },
+      ],
+      "kind": "Type",
+      "name": "HslaColor",
+      "originalName": "hslaColor",
+      "type": "Object",
+    },
+    Object {
+      "fields": Array [
+        Object {
+          "fieldName": "_key",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "_type",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "a",
+          "isReference": undefined,
+          "type": "FloatFilter",
+        },
+        Object {
+          "fieldName": "h",
+          "isReference": undefined,
+          "type": "FloatFilter",
+        },
+        Object {
+          "fieldName": "l",
+          "isReference": undefined,
+          "type": "FloatFilter",
+        },
+        Object {
+          "fieldName": "s",
+          "isReference": undefined,
+          "type": "FloatFilter",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "HslaColorCustomFilterSuffix",
+    },
+    Object {
+      "fields": Array [
+        Object {
+          "fieldName": "_key",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "_type",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "a",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "h",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "l",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "s",
+          "type": "SortOrder",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "HslaColorSorting",
+    },
+    Object {
+      "description": undefined,
+      "fields": Array [
+        Object {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "a",
+          "type": "Float",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "h",
+          "type": "Float",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "s",
+          "type": "Float",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "v",
+          "type": "Float",
+        },
+      ],
+      "kind": "Type",
+      "name": "HsvaColor",
+      "originalName": "hsvaColor",
+      "type": "Object",
+    },
+    Object {
+      "fields": Array [
+        Object {
+          "fieldName": "_key",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "_type",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "a",
+          "isReference": undefined,
+          "type": "FloatFilter",
+        },
+        Object {
+          "fieldName": "h",
+          "isReference": undefined,
+          "type": "FloatFilter",
+        },
+        Object {
+          "fieldName": "s",
+          "isReference": undefined,
+          "type": "FloatFilter",
+        },
+        Object {
+          "fieldName": "v",
+          "isReference": undefined,
+          "type": "FloatFilter",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "HsvaColorCustomFilterSuffix",
+    },
+    Object {
+      "fields": Array [
+        Object {
+          "fieldName": "_key",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "_type",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "a",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "h",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "s",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "v",
+          "type": "SortOrder",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "HsvaColorSorting",
+    },
+    Object {
+      "fields": Array [
+        Object {
+          "description": "Checks if the value is equal to the given input.",
+          "fieldName": "eq",
+          "type": "ID",
+        },
+        Object {
+          "children": Object {
+            "isNullable": false,
+            "type": "ID",
+          },
+          "description": "Checks if the value is equal to one of the given values.",
+          "fieldName": "in",
+          "kind": "List",
+        },
+        Object {
+          "description": "Checks if the value matches the given word/words.",
+          "fieldName": "matches",
+          "type": "ID",
+        },
+        Object {
+          "description": "Checks if the value is not equal to the given input.",
+          "fieldName": "neq",
+          "type": "ID",
+        },
+        Object {
+          "children": Object {
+            "isNullable": false,
+            "type": "ID",
+          },
+          "description": "Checks if the value is not equal to one of the given values.",
+          "fieldName": "nin",
+          "kind": "List",
+        },
+      ],
+      "isConstraintFilter": true,
+      "kind": "InputObject",
+      "name": "IDFilter",
+    },
+    Object {
+      "description": undefined,
+      "fields": Array [
+        Object {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "asset",
+          "isReference": true,
+          "type": "SanityImageAsset",
+        },
+        Object {
+          "fieldName": "crop",
+          "type": "SanityImageCrop",
+        },
+        Object {
+          "fieldName": "hotspot",
+          "type": "SanityImageHotspot",
+        },
+      ],
+      "kind": "Type",
+      "name": "Image",
+      "originalName": "image",
+      "type": "Object",
+    },
+    Object {
+      "fields": Array [
+        Object {
+          "fieldName": "_key",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "_type",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "asset",
+          "isReference": true,
+          "type": "SanityImageAssetCustomFilterSuffix",
+        },
+        Object {
+          "fieldName": "crop",
+          "isReference": undefined,
+          "type": "SanityImageCropCustomFilterSuffix",
+        },
+        Object {
+          "fieldName": "hotspot",
+          "isReference": undefined,
+          "type": "SanityImageHotspotCustomFilterSuffix",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "ImageCustomFilterSuffix",
+    },
+    Object {
+      "fields": Array [
+        Object {
+          "fieldName": "_key",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "_type",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "crop",
+          "type": "SanityImageCropSorting",
+        },
+        Object {
+          "fieldName": "hotspot",
+          "type": "SanityImageHotspotSorting",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "ImageSorting",
+    },
+    Object {
+      "fields": Array [
+        Object {
+          "description": "Checks if the value is equal to the given input.",
+          "fieldName": "eq",
+          "type": "Int",
+        },
+        Object {
+          "description": "Checks if the value is greater than the given input.",
+          "fieldName": "gt",
+          "type": "Int",
+        },
+        Object {
+          "description": "Checks if the value is greater than or equal to the given input.",
+          "fieldName": "gte",
+          "type": "Int",
+        },
+        Object {
+          "description": "Checks if the value is defined.",
+          "fieldName": "is_defined",
+          "type": "Boolean",
+        },
+        Object {
+          "description": "Checks if the value is lesser than the given input.",
+          "fieldName": "lt",
+          "type": "Int",
+        },
+        Object {
+          "description": "Checks if the value is lesser than or equal to the given input.",
+          "fieldName": "lte",
+          "type": "Int",
+        },
+        Object {
+          "description": "Checks if the value is not equal to the given input.",
+          "fieldName": "neq",
+          "type": "Int",
+        },
+      ],
+      "isConstraintFilter": true,
+      "kind": "InputObject",
+      "name": "IntFilter",
+    },
+    Object {
+      "description": undefined,
+      "fields": Array [
+        Object {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "asset",
+          "isReference": true,
+          "type": "MuxVideoAsset",
+        },
+      ],
+      "kind": "Type",
+      "name": "MuxVideo",
+      "originalName": "mux.video",
+      "type": "Object",
+    },
+    Object {
+      "description": undefined,
+      "fields": Array [
+        Object {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "assetId",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "filename",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "playbackId",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "status",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "thumbTime",
+          "type": "Float",
+        },
+      ],
+      "kind": "Type",
+      "name": "MuxVideoAsset",
+      "originalName": "mux.videoAsset",
+      "type": "Object",
+    },
+    Object {
+      "fields": Array [
+        Object {
+          "fieldName": "_key",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "_type",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "assetId",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "filename",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "playbackId",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "status",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "thumbTime",
+          "isReference": undefined,
+          "type": "FloatFilter",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "MuxVideoAssetCustomFilterSuffix",
+    },
+    Object {
+      "fields": Array [
+        Object {
+          "fieldName": "_key",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "_type",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "assetId",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "filename",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "playbackId",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "status",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "thumbTime",
+          "type": "SortOrder",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "MuxVideoAssetSorting",
+    },
+    Object {
+      "fields": Array [
+        Object {
+          "fieldName": "_key",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "_type",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "asset",
+          "isReference": true,
+          "type": "MuxVideoAssetCustomFilterSuffix",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "MuxVideoCustomFilterSuffix",
+    },
+    Object {
+      "fields": Array [
+        Object {
+          "fieldName": "_key",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "_type",
+          "type": "SortOrder",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "MuxVideoSorting",
+    },
+    Object {
+      "description": undefined,
+      "fields": Array [
+        Object {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        Object {
+          "children": Object {
+            "type": "ObjectWithNestedArray",
+          },
+          "description": undefined,
+          "fieldName": "arrayNo1",
+          "kind": "List",
+        },
+        Object {
+          "children": Object {
+            "type": "ObjectWithNestedArray",
+          },
+          "description": undefined,
+          "fieldName": "arrayNo11",
+          "kind": "List",
+        },
+        Object {
+          "children": Object {
+            "type": "ObjectWithNestedArray",
+          },
+          "description": undefined,
+          "fieldName": "arrayNo13",
+          "kind": "List",
+        },
+        Object {
+          "children": Object {
+            "type": "ObjectWithNestedArray",
+          },
+          "description": undefined,
+          "fieldName": "arrayNo15",
+          "kind": "List",
+        },
+        Object {
+          "children": Object {
+            "type": "ObjectWithNestedArray",
+          },
+          "description": undefined,
+          "fieldName": "arrayNo17",
+          "kind": "List",
+        },
+        Object {
+          "children": Object {
+            "type": "ObjectWithNestedArray",
+          },
+          "description": undefined,
+          "fieldName": "arrayNo19",
+          "kind": "List",
+        },
+        Object {
+          "children": Object {
+            "type": "ObjectWithNestedArray",
+          },
+          "description": undefined,
+          "fieldName": "arrayNo3",
+          "kind": "List",
+        },
+        Object {
+          "children": Object {
+            "type": "ObjectWithNestedArray",
+          },
+          "description": undefined,
+          "fieldName": "arrayNo5",
+          "kind": "List",
+        },
+        Object {
+          "children": Object {
+            "type": "ObjectWithNestedArray",
+          },
+          "description": undefined,
+          "fieldName": "arrayNo7",
+          "kind": "List",
+        },
+        Object {
+          "children": Object {
+            "type": "ObjectWithNestedArray",
+          },
+          "description": undefined,
+          "fieldName": "arrayNo9",
+          "kind": "List",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "fieldNo0",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "fieldNo10",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "fieldNo12",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "fieldNo14",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "fieldNo16",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "fieldNo18",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "fieldNo2",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "fieldNo4",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "fieldNo6",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "fieldNo8",
+          "type": "String",
+        },
+      ],
+      "kind": "Type",
+      "name": "ObjectWithNestedArray",
+      "originalName": "objectWithNestedArray",
+      "type": "Object",
+    },
+    Object {
+      "fields": Array [
+        Object {
+          "fieldName": "_key",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "_type",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "fieldNo0",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "fieldNo10",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "fieldNo12",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "fieldNo14",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "fieldNo16",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "fieldNo18",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "fieldNo2",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "fieldNo4",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "fieldNo6",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "fieldNo8",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "ObjectWithNestedArrayCustomFilterSuffix",
+    },
+    Object {
+      "fields": Array [
+        Object {
+          "fieldName": "_key",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "_type",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "fieldNo0",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "fieldNo10",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "fieldNo12",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "fieldNo14",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "fieldNo16",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "fieldNo18",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "fieldNo2",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "fieldNo4",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "fieldNo6",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "fieldNo8",
+          "type": "SortOrder",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "ObjectWithNestedArraySorting",
+    },
+    Object {
+      "description": undefined,
+      "fields": Array [
+        Object {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "calculated",
+          "type": "Float",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "nominal",
+          "type": "Float",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "optimistic",
+          "type": "Float",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "pessimistic",
+          "type": "Float",
+        },
+      ],
+      "kind": "Type",
+      "name": "PertEstimate",
+      "originalName": "pertEstimate",
+      "type": "Object",
+    },
+    Object {
+      "fields": Array [
+        Object {
+          "fieldName": "_key",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "_type",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "calculated",
+          "isReference": undefined,
+          "type": "FloatFilter",
+        },
+        Object {
+          "fieldName": "nominal",
+          "isReference": undefined,
+          "type": "FloatFilter",
+        },
+        Object {
+          "fieldName": "optimistic",
+          "isReference": undefined,
+          "type": "FloatFilter",
+        },
+        Object {
+          "fieldName": "pessimistic",
+          "isReference": undefined,
+          "type": "FloatFilter",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "PertEstimateCustomFilterSuffix",
+    },
+    Object {
+      "fields": Array [
+        Object {
+          "fieldName": "_key",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "_type",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "calculated",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "nominal",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "optimistic",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "pessimistic",
+          "type": "SortOrder",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "PertEstimateSorting",
+    },
+    Object {
+      "description": undefined,
+      "fields": Array [
+        Object {
+          "description": "Date the document was created",
+          "fieldName": "_createdAt",
+          "isNullable": true,
+          "type": "Datetime",
+        },
+        Object {
+          "description": "Document ID",
+          "fieldName": "_id",
+          "isNullable": true,
+          "type": "ID",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        Object {
+          "description": "Current document revision",
+          "fieldName": "_rev",
+          "isNullable": true,
+          "type": "String",
+        },
+        Object {
+          "description": "Document type",
+          "fieldName": "_type",
+          "isNullable": true,
+          "type": "String",
+        },
+        Object {
+          "description": "Date the document was last modified",
+          "fieldName": "_updatedAt",
+          "isNullable": true,
+          "type": "Datetime",
+        },
+        Object {
+          "children": Object {
+            "type": "String",
+          },
+          "description": undefined,
+          "fieldName": "primitives",
+          "kind": "List",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "title",
+          "type": "String",
+        },
+      ],
+      "interfaces": Array [
+        "Document",
+      ],
+      "kind": "Type",
+      "name": "Poppers",
+      "originalName": "poppers",
+      "type": "Object",
+    },
+    Object {
+      "fields": Array [
+        Object {
+          "description": "Apply filters on document level",
+          "fieldName": "_",
+          "type": "Sanity_DocumentFilter",
+        },
+        Object {
+          "fieldName": "_createdAt",
+          "isReference": undefined,
+          "type": "DatetimeFilter",
+        },
+        Object {
+          "fieldName": "_id",
+          "isReference": undefined,
+          "type": "IDFilter",
+        },
+        Object {
+          "fieldName": "_key",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "_rev",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "_type",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "_updatedAt",
+          "isReference": undefined,
+          "type": "DatetimeFilter",
+        },
+        Object {
+          "fieldName": "title",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "PoppersCustomFilterSuffix",
+    },
+    Object {
+      "fields": Array [
+        Object {
+          "fieldName": "_createdAt",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "_id",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "_key",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "_rev",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "_type",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "_updatedAt",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "title",
+          "type": "SortOrder",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "PoppersSorting",
+    },
+    Object {
+      "description": undefined,
+      "fields": Array [
+        Object {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "a",
+          "type": "Float",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "b",
+          "type": "Float",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "g",
+          "type": "Float",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "r",
+          "type": "Float",
+        },
+      ],
+      "kind": "Type",
+      "name": "RgbaColor",
+      "originalName": "rgbaColor",
+      "type": "Object",
+    },
+    Object {
+      "fields": Array [
+        Object {
+          "fieldName": "_key",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "_type",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "a",
+          "isReference": undefined,
+          "type": "FloatFilter",
+        },
+        Object {
+          "fieldName": "b",
+          "isReference": undefined,
+          "type": "FloatFilter",
+        },
+        Object {
+          "fieldName": "g",
+          "isReference": undefined,
+          "type": "FloatFilter",
+        },
+        Object {
+          "fieldName": "r",
+          "isReference": undefined,
+          "type": "FloatFilter",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "RgbaColorCustomFilterSuffix",
+    },
+    Object {
+      "fields": Array [
+        Object {
+          "fieldName": "_key",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "_type",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "a",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "b",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "g",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "r",
+          "type": "SortOrder",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "RgbaColorSorting",
+    },
+    Object {
+      "description": undefined,
+      "fields": Array [
+        Object {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        Object {
+          "description": "The unique ID for the asset within the originating source so you can programatically find back to it",
+          "fieldName": "id",
+          "type": "String",
+        },
+        Object {
+          "description": "A canonical name for the source this asset is originating from",
+          "fieldName": "name",
+          "type": "String",
+        },
+        Object {
+          "description": "A URL to find more information about this asset in the originating source",
+          "fieldName": "url",
+          "type": "String",
+        },
+      ],
+      "kind": "Type",
+      "name": "SanityAssetSourceData",
+      "originalName": "sanity.assetSourceData",
+      "type": "Object",
+    },
+    Object {
+      "fields": Array [
+        Object {
+          "fieldName": "_key",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "_type",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "id",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "name",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "url",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "SanityAssetSourceDataCustomFilterSuffix",
+    },
+    Object {
+      "fields": Array [
+        Object {
+          "fieldName": "_key",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "_type",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "id",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "name",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "url",
+          "type": "SortOrder",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "SanityAssetSourceDataSorting",
+    },
+    Object {
+      "description": undefined,
+      "fields": Array [
+        Object {
+          "description": "Date the document was created",
+          "fieldName": "_createdAt",
+          "isNullable": true,
+          "type": "Datetime",
+        },
+        Object {
+          "description": "Document ID",
+          "fieldName": "_id",
+          "isNullable": true,
+          "type": "ID",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        Object {
+          "description": "Current document revision",
+          "fieldName": "_rev",
+          "isNullable": true,
+          "type": "String",
+        },
+        Object {
+          "description": "Document type",
+          "fieldName": "_type",
+          "isNullable": true,
+          "type": "String",
+        },
+        Object {
+          "description": "Date the document was last modified",
+          "fieldName": "_updatedAt",
+          "isNullable": true,
+          "type": "Datetime",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "altText",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "assetId",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "description",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "extension",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "label",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "mimeType",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "originalFilename",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "path",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "sha1hash",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "size",
+          "type": "Float",
+        },
+        Object {
+          "fieldName": "source",
+          "type": "SanityAssetSourceData",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "title",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "url",
+          "type": "String",
+        },
+      ],
+      "interfaces": Array [
+        "Document",
+      ],
+      "kind": "Type",
+      "name": "SanityFileAsset",
+      "originalName": "sanity.fileAsset",
+      "type": "Object",
+    },
+    Object {
+      "fields": Array [
+        Object {
+          "description": "Apply filters on document level",
+          "fieldName": "_",
+          "type": "Sanity_DocumentFilter",
+        },
+        Object {
+          "fieldName": "_createdAt",
+          "isReference": undefined,
+          "type": "DatetimeFilter",
+        },
+        Object {
+          "fieldName": "_id",
+          "isReference": undefined,
+          "type": "IDFilter",
+        },
+        Object {
+          "fieldName": "_key",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "_rev",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "_type",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "_updatedAt",
+          "isReference": undefined,
+          "type": "DatetimeFilter",
+        },
+        Object {
+          "fieldName": "altText",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "assetId",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "description",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "extension",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "label",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "mimeType",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "originalFilename",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "path",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "sha1hash",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "size",
+          "isReference": undefined,
+          "type": "FloatFilter",
+        },
+        Object {
+          "fieldName": "source",
+          "isReference": undefined,
+          "type": "SanityAssetSourceDataCustomFilterSuffix",
+        },
+        Object {
+          "fieldName": "title",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "url",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "SanityFileAssetCustomFilterSuffix",
+    },
+    Object {
+      "fields": Array [
+        Object {
+          "fieldName": "_createdAt",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "_id",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "_key",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "_rev",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "_type",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "_updatedAt",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "altText",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "assetId",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "description",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "extension",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "label",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "mimeType",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "originalFilename",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "path",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "sha1hash",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "size",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "source",
+          "type": "SanityAssetSourceDataSorting",
+        },
+        Object {
+          "fieldName": "title",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "url",
+          "type": "SortOrder",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "SanityFileAssetSorting",
+    },
+    Object {
+      "description": undefined,
+      "fields": Array [
+        Object {
+          "description": "Date the document was created",
+          "fieldName": "_createdAt",
+          "isNullable": true,
+          "type": "Datetime",
+        },
+        Object {
+          "description": "Document ID",
+          "fieldName": "_id",
+          "isNullable": true,
+          "type": "ID",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        Object {
+          "description": "Current document revision",
+          "fieldName": "_rev",
+          "isNullable": true,
+          "type": "String",
+        },
+        Object {
+          "description": "Document type",
+          "fieldName": "_type",
+          "isNullable": true,
+          "type": "String",
+        },
+        Object {
+          "description": "Date the document was last modified",
+          "fieldName": "_updatedAt",
+          "isNullable": true,
+          "type": "Datetime",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "altText",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "assetId",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "description",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "extension",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "label",
+          "type": "String",
+        },
+        Object {
+          "fieldName": "metadata",
+          "type": "SanityImageMetadata",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "mimeType",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "originalFilename",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "path",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "sha1hash",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "size",
+          "type": "Float",
+        },
+        Object {
+          "fieldName": "source",
+          "type": "SanityAssetSourceData",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "title",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "uploadId",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "url",
+          "type": "String",
+        },
+      ],
+      "interfaces": Array [
+        "Document",
+      ],
+      "kind": "Type",
+      "name": "SanityImageAsset",
+      "originalName": "sanity.imageAsset",
+      "type": "Object",
+    },
+    Object {
+      "fields": Array [
+        Object {
+          "description": "Apply filters on document level",
+          "fieldName": "_",
+          "type": "Sanity_DocumentFilter",
+        },
+        Object {
+          "fieldName": "_createdAt",
+          "isReference": undefined,
+          "type": "DatetimeFilter",
+        },
+        Object {
+          "fieldName": "_id",
+          "isReference": undefined,
+          "type": "IDFilter",
+        },
+        Object {
+          "fieldName": "_key",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "_rev",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "_type",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "_updatedAt",
+          "isReference": undefined,
+          "type": "DatetimeFilter",
+        },
+        Object {
+          "fieldName": "altText",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "assetId",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "description",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "extension",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "label",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "metadata",
+          "isReference": undefined,
+          "type": "SanityImageMetadataCustomFilterSuffix",
+        },
+        Object {
+          "fieldName": "mimeType",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "originalFilename",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "path",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "sha1hash",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "size",
+          "isReference": undefined,
+          "type": "FloatFilter",
+        },
+        Object {
+          "fieldName": "source",
+          "isReference": undefined,
+          "type": "SanityAssetSourceDataCustomFilterSuffix",
+        },
+        Object {
+          "fieldName": "title",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "uploadId",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "url",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "SanityImageAssetCustomFilterSuffix",
+    },
+    Object {
+      "fields": Array [
+        Object {
+          "fieldName": "_createdAt",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "_id",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "_key",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "_rev",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "_type",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "_updatedAt",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "altText",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "assetId",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "description",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "extension",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "label",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "metadata",
+          "type": "SanityImageMetadataSorting",
+        },
+        Object {
+          "fieldName": "mimeType",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "originalFilename",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "path",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "sha1hash",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "size",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "source",
+          "type": "SanityAssetSourceDataSorting",
+        },
+        Object {
+          "fieldName": "title",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "uploadId",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "url",
+          "type": "SortOrder",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "SanityImageAssetSorting",
+    },
+    Object {
+      "description": undefined,
+      "fields": Array [
+        Object {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "bottom",
+          "type": "Float",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "left",
+          "type": "Float",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "right",
+          "type": "Float",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "top",
+          "type": "Float",
+        },
+      ],
+      "kind": "Type",
+      "name": "SanityImageCrop",
+      "originalName": "sanity.imageCrop",
+      "type": "Object",
+    },
+    Object {
+      "fields": Array [
+        Object {
+          "fieldName": "_key",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "_type",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "bottom",
+          "isReference": undefined,
+          "type": "FloatFilter",
+        },
+        Object {
+          "fieldName": "left",
+          "isReference": undefined,
+          "type": "FloatFilter",
+        },
+        Object {
+          "fieldName": "right",
+          "isReference": undefined,
+          "type": "FloatFilter",
+        },
+        Object {
+          "fieldName": "top",
+          "isReference": undefined,
+          "type": "FloatFilter",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "SanityImageCropCustomFilterSuffix",
+    },
+    Object {
+      "fields": Array [
+        Object {
+          "fieldName": "_key",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "_type",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "bottom",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "left",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "right",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "top",
+          "type": "SortOrder",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "SanityImageCropSorting",
+    },
+    Object {
+      "description": undefined,
+      "fields": Array [
+        Object {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "aspectRatio",
+          "type": "Float",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "height",
+          "type": "Float",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "width",
+          "type": "Float",
+        },
+      ],
+      "kind": "Type",
+      "name": "SanityImageDimensions",
+      "originalName": "sanity.imageDimensions",
+      "type": "Object",
+    },
+    Object {
+      "fields": Array [
+        Object {
+          "fieldName": "_key",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "_type",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "aspectRatio",
+          "isReference": undefined,
+          "type": "FloatFilter",
+        },
+        Object {
+          "fieldName": "height",
+          "isReference": undefined,
+          "type": "FloatFilter",
+        },
+        Object {
+          "fieldName": "width",
+          "isReference": undefined,
+          "type": "FloatFilter",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "SanityImageDimensionsCustomFilterSuffix",
+    },
+    Object {
+      "fields": Array [
+        Object {
+          "fieldName": "_key",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "_type",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "aspectRatio",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "height",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "width",
+          "type": "SortOrder",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "SanityImageDimensionsSorting",
+    },
+    Object {
+      "description": undefined,
+      "fields": Array [
+        Object {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "height",
+          "type": "Float",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "width",
+          "type": "Float",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "x",
+          "type": "Float",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "y",
+          "type": "Float",
+        },
+      ],
+      "kind": "Type",
+      "name": "SanityImageHotspot",
+      "originalName": "sanity.imageHotspot",
+      "type": "Object",
+    },
+    Object {
+      "fields": Array [
+        Object {
+          "fieldName": "_key",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "_type",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "height",
+          "isReference": undefined,
+          "type": "FloatFilter",
+        },
+        Object {
+          "fieldName": "width",
+          "isReference": undefined,
+          "type": "FloatFilter",
+        },
+        Object {
+          "fieldName": "x",
+          "isReference": undefined,
+          "type": "FloatFilter",
+        },
+        Object {
+          "fieldName": "y",
+          "isReference": undefined,
+          "type": "FloatFilter",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "SanityImageHotspotCustomFilterSuffix",
+    },
+    Object {
+      "fields": Array [
+        Object {
+          "fieldName": "_key",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "_type",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "height",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "width",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "x",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "y",
+          "type": "SortOrder",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "SanityImageHotspotSorting",
+    },
+    Object {
+      "description": undefined,
+      "fields": Array [
+        Object {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "blurHash",
+          "type": "String",
+        },
+        Object {
+          "fieldName": "dimensions",
+          "type": "SanityImageDimensions",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "hasAlpha",
+          "type": "Boolean",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "isOpaque",
+          "type": "Boolean",
+        },
+        Object {
+          "fieldName": "location",
+          "type": "Geopoint",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "lqip",
+          "type": "String",
+        },
+        Object {
+          "fieldName": "palette",
+          "type": "SanityImagePalette",
+        },
+      ],
+      "kind": "Type",
+      "name": "SanityImageMetadata",
+      "originalName": "sanity.imageMetadata",
+      "type": "Object",
+    },
+    Object {
+      "fields": Array [
+        Object {
+          "fieldName": "_key",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "_type",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "blurHash",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "dimensions",
+          "isReference": undefined,
+          "type": "SanityImageDimensionsCustomFilterSuffix",
+        },
+        Object {
+          "fieldName": "hasAlpha",
+          "isReference": undefined,
+          "type": "BooleanFilter",
+        },
+        Object {
+          "fieldName": "isOpaque",
+          "isReference": undefined,
+          "type": "BooleanFilter",
+        },
+        Object {
+          "fieldName": "location",
+          "isReference": undefined,
+          "type": "GeopointCustomFilterSuffix",
+        },
+        Object {
+          "fieldName": "lqip",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "palette",
+          "isReference": undefined,
+          "type": "SanityImagePaletteCustomFilterSuffix",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "SanityImageMetadataCustomFilterSuffix",
+    },
+    Object {
+      "fields": Array [
+        Object {
+          "fieldName": "_key",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "_type",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "blurHash",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "dimensions",
+          "type": "SanityImageDimensionsSorting",
+        },
+        Object {
+          "fieldName": "hasAlpha",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "isOpaque",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "location",
+          "type": "GeopointSorting",
+        },
+        Object {
+          "fieldName": "lqip",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "palette",
+          "type": "SanityImagePaletteSorting",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "SanityImageMetadataSorting",
+    },
+    Object {
+      "description": undefined,
+      "fields": Array [
+        Object {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        Object {
+          "fieldName": "darkMuted",
+          "type": "SanityImagePaletteSwatch",
+        },
+        Object {
+          "fieldName": "darkVibrant",
+          "type": "SanityImagePaletteSwatch",
+        },
+        Object {
+          "fieldName": "dominant",
+          "type": "SanityImagePaletteSwatch",
+        },
+        Object {
+          "fieldName": "lightMuted",
+          "type": "SanityImagePaletteSwatch",
+        },
+        Object {
+          "fieldName": "lightVibrant",
+          "type": "SanityImagePaletteSwatch",
+        },
+        Object {
+          "fieldName": "muted",
+          "type": "SanityImagePaletteSwatch",
+        },
+        Object {
+          "fieldName": "vibrant",
+          "type": "SanityImagePaletteSwatch",
+        },
+      ],
+      "kind": "Type",
+      "name": "SanityImagePalette",
+      "originalName": "sanity.imagePalette",
+      "type": "Object",
+    },
+    Object {
+      "fields": Array [
+        Object {
+          "fieldName": "_key",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "_type",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "darkMuted",
+          "isReference": undefined,
+          "type": "SanityImagePaletteSwatchCustomFilterSuffix",
+        },
+        Object {
+          "fieldName": "darkVibrant",
+          "isReference": undefined,
+          "type": "SanityImagePaletteSwatchCustomFilterSuffix",
+        },
+        Object {
+          "fieldName": "dominant",
+          "isReference": undefined,
+          "type": "SanityImagePaletteSwatchCustomFilterSuffix",
+        },
+        Object {
+          "fieldName": "lightMuted",
+          "isReference": undefined,
+          "type": "SanityImagePaletteSwatchCustomFilterSuffix",
+        },
+        Object {
+          "fieldName": "lightVibrant",
+          "isReference": undefined,
+          "type": "SanityImagePaletteSwatchCustomFilterSuffix",
+        },
+        Object {
+          "fieldName": "muted",
+          "isReference": undefined,
+          "type": "SanityImagePaletteSwatchCustomFilterSuffix",
+        },
+        Object {
+          "fieldName": "vibrant",
+          "isReference": undefined,
+          "type": "SanityImagePaletteSwatchCustomFilterSuffix",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "SanityImagePaletteCustomFilterSuffix",
+    },
+    Object {
+      "fields": Array [
+        Object {
+          "fieldName": "_key",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "_type",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "darkMuted",
+          "type": "SanityImagePaletteSwatchSorting",
+        },
+        Object {
+          "fieldName": "darkVibrant",
+          "type": "SanityImagePaletteSwatchSorting",
+        },
+        Object {
+          "fieldName": "dominant",
+          "type": "SanityImagePaletteSwatchSorting",
+        },
+        Object {
+          "fieldName": "lightMuted",
+          "type": "SanityImagePaletteSwatchSorting",
+        },
+        Object {
+          "fieldName": "lightVibrant",
+          "type": "SanityImagePaletteSwatchSorting",
+        },
+        Object {
+          "fieldName": "muted",
+          "type": "SanityImagePaletteSwatchSorting",
+        },
+        Object {
+          "fieldName": "vibrant",
+          "type": "SanityImagePaletteSwatchSorting",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "SanityImagePaletteSorting",
+    },
+    Object {
+      "description": undefined,
+      "fields": Array [
+        Object {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "background",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "foreground",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "population",
+          "type": "Float",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "title",
+          "type": "String",
+        },
+      ],
+      "kind": "Type",
+      "name": "SanityImagePaletteSwatch",
+      "originalName": "sanity.imagePaletteSwatch",
+      "type": "Object",
+    },
+    Object {
+      "fields": Array [
+        Object {
+          "fieldName": "_key",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "_type",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "background",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "foreground",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "population",
+          "isReference": undefined,
+          "type": "FloatFilter",
+        },
+        Object {
+          "fieldName": "title",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "SanityImagePaletteSwatchCustomFilterSuffix",
+    },
+    Object {
+      "fields": Array [
+        Object {
+          "fieldName": "_key",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "_type",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "background",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "foreground",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "population",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "title",
+          "type": "SortOrder",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "SanityImagePaletteSwatchSorting",
+    },
+    Object {
+      "fields": Array [
+        Object {
+          "description": "All documents that are drafts.",
+          "fieldName": "is_draft",
+          "type": "Boolean",
+        },
+        Object {
+          "description": "All documents referencing the given document ID.",
+          "fieldName": "references",
+          "type": "ID",
+        },
+      ],
+      "isConstraintFilter": true,
+      "kind": "InputObject",
+      "name": "Sanity_DocumentFilter",
+    },
+    Object {
+      "description": undefined,
+      "fields": Array [
+        Object {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "current",
+          "type": "String",
+        },
+      ],
+      "kind": "Type",
+      "name": "Slug",
+      "originalName": "slug",
+      "type": "Object",
+    },
+    Object {
+      "fields": Array [
+        Object {
+          "fieldName": "_key",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "_type",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "current",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "SlugCustomFilterSuffix",
+    },
+    Object {
+      "fields": Array [
+        Object {
+          "fieldName": "_key",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "_type",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "current",
+          "type": "SortOrder",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "SlugSorting",
+    },
+    Object {
+      "fields": Array [],
+      "kind": "Enum",
+      "name": "SortOrder",
+      "values": Array [
+        Object {
+          "description": "Sorts on the value in ascending order.",
+          "name": "ASC",
+          "value": 1,
+        },
+        Object {
+          "description": "Sorts on the value in descending order.",
+          "name": "DESC",
+          "value": 2,
+        },
+      ],
+    },
+    Object {
+      "description": undefined,
+      "fields": Array [
+        Object {
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        Object {
+          "children": Object {
+            "type": "String",
+          },
+          "description": undefined,
+          "fieldName": "marks",
+          "kind": "List",
+        },
+        Object {
+          "description": undefined,
+          "fieldName": "text",
+          "type": "String",
+        },
+      ],
+      "kind": "Type",
+      "name": "Span",
+      "originalName": "span",
+      "type": "Object",
+    },
+    Object {
+      "fields": Array [
+        Object {
+          "description": "Checks if the value is equal to the given input.",
+          "fieldName": "eq",
+          "type": "String",
+        },
+        Object {
+          "children": Object {
+            "isNullable": false,
+            "type": "String",
+          },
+          "description": "Checks if the value is equal to one of the given values.",
+          "fieldName": "in",
+          "kind": "List",
+        },
+        Object {
+          "description": "Checks if the value is defined.",
+          "fieldName": "is_defined",
+          "type": "Boolean",
+        },
+        Object {
+          "description": "Checks if the value matches the given word/words.",
+          "fieldName": "matches",
+          "type": "String",
+        },
+        Object {
+          "description": "Checks if the value is not equal to the given input.",
+          "fieldName": "neq",
+          "type": "String",
+        },
+        Object {
+          "children": Object {
+            "isNullable": false,
+            "type": "String",
+          },
+          "description": "Checks if the value is not equal to one of the given values.",
+          "fieldName": "nin",
+          "kind": "List",
+        },
+      ],
+      "isConstraintFilter": true,
+      "kind": "InputObject",
+      "name": "StringFilter",
+    },
+  ],
+}
+`;

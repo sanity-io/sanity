@@ -1,11 +1,20 @@
 import {upperFirst} from 'lodash'
 import {isDocumentType, isUnion} from '../helpers'
-import type {ConvertedType, ConvertedUnion, InputObjectType, QueryDefinition} from '../types'
+import type {
+  ApiCustomizationOptions,
+  ConvertedType,
+  ConvertedUnion,
+  InputObjectType,
+  QueryDefinition,
+} from '../types'
+import {getFilterFieldName} from './utils'
 
 export function generateTypeQueries(
   types: (ConvertedType | ConvertedUnion)[],
   sortings: InputObjectType[],
+  options?: ApiCustomizationOptions,
 ): QueryDefinition[] {
+  const {filterSuffix} = options || {}
   const queries: QueryDefinition[] = []
   const documentTypes = types.filter(isDocumentType)
 
@@ -77,7 +86,7 @@ export function generateTypeQueries(
       args: [
         {
           name: 'where',
-          type: `${type.name}Filter`,
+          type: getFilterFieldName(type.name, filterSuffix),
           isFieldFilter: true,
         },
         ...sorting,

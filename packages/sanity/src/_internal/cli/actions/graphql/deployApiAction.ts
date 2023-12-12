@@ -202,7 +202,7 @@ export default async function deployGraphQLApiAction(
             : nonNullDocumentFieldsFlag,
       })
 
-      apiSpec = generateSchema(extracted)
+      apiSpec = generateSchema(extracted, {filterSuffix: apiDef.filterSuffix})
     } catch (err) {
       spinner.fail()
 
