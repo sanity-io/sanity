@@ -88,7 +88,6 @@ No data will be collected from your machine.
 
 Using DO_NOT_TRACK environment variable.
 
-
 Learn more here:
 https://www.sanity.io/telemetry
 "

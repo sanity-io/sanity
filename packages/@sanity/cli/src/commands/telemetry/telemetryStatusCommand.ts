@@ -55,7 +55,7 @@ const telemetryStatusCommand: CliCommandDefinition = {
         output.print(
           `You've opted out of telemetry data collection.\nNo data will be collected from your machine.\n`,
         )
-        output.print(`Using ${chalk.cyan('DO_NOT_TRACK')} environment variable.\n`)
+        output.print(`Using ${chalk.cyan('DO_NOT_TRACK')} environment variable.`)
         break
       case status === 'denied':
         output.print(`${telemetryStatusMessage(status, context)}\n`)
