@@ -3,6 +3,7 @@ import {ConsentStatus, createBatchedStore, createSessionId, TelemetryEvent} from
 import {debug as baseDebug} from '../debug'
 import {getClientWrapper, getCliToken} from './clientWrapper'
 import {isTrueish} from './isTrueish'
+import {isCi} from './isCi'
 
 const debug = baseDebug.extend('telemetry')
 
@@ -43,6 +44,10 @@ export function createTelemetryStore(options: {env: {[key: string]: string | und
 
   function resolveConsent(): Promise<{status: ConsentStatus}> {
     debug('Resolving consent…')
+    if (isCi) {
+      debug('CI environment detected, treating telemetry consent as denied')
+      return Promise.resolve({status: 'denied'})
+    }
     if (isTrueish(env.DO_NOT_TRACK)) {
       debug('DO_NOT_TRACK is set, consent is denied')
       return Promise.resolve({status: 'denied'})
