@@ -133,3 +133,65 @@ https://www.sanity.io/telemetry
 `)
   })
 })
+
+describeCliTest('CLI: `sanity telemetry disable`', () => {
+  testConcurrent('sanity telemetry disable: success', async () => {
+    const result = await runSanityCmdCommand('v3', ['telemetry', 'disable'], {
+      env: {
+        MOCK_TELEMETRY_CONSENT_MODE: 'success',
+      },
+    })
+
+    expect(result.stdout).toMatchInlineSnapshot(`
+"Status: Disabled
+
+You've opted out of telemetry data collection.
+No data will be collected from your Sanity account.
+
+Learn more here:
+https://www.sanity.io/telemetry
+"
+`)
+  })
+
+  testConcurrent('sanity telemetry disable: success (already denied)', async () => {
+    const result = await runSanityCmdCommand('v3', ['telemetry', 'disable'], {
+      env: {
+        MOCK_CONSENT: 'denied',
+      },
+    })
+
+    expect(result.stdout).toMatchInlineSnapshot(`
+"Status: Disabled
+
+You've already opted out of telemetry data collection.
+No data is collected from your Sanity account.
+
+Learn more here:
+https://www.sanity.io/telemetry
+"
+`)
+  })
+
+  testConcurrent(
+    'sanity telemetry disable: success (already denied using DO_NOT_TRACK)',
+    async () => {
+      const result = await runSanityCmdCommand('v3', ['telemetry', 'disable'], {
+        env: {
+          DO_NOT_TRACK: '1',
+        },
+      })
+
+      expect(result.stdout).toMatchInlineSnapshot(`
+"Status: Disabled
+
+You've already opted out of telemetry data collection.
+No data is collected from your Sanity account.
+
+Learn more here:
+https://www.sanity.io/telemetry
+"
+`)
+    },
+  )
+})
