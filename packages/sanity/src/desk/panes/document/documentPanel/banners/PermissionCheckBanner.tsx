@@ -3,7 +3,7 @@ import {Text} from '@sanity/ui'
 import {ReadOnlyIcon} from '@sanity/icons'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {Banner} from './Banner'
-import {Translate, useCurrentUser, useIntlListFormat, useTranslation} from 'sanity'
+import {Translate, useCurrentUser, useListFormat, useTranslation} from 'sanity'
 
 interface PermissionCheckBannerProps {
   granted: boolean
@@ -12,7 +12,7 @@ interface PermissionCheckBannerProps {
 
 export function PermissionCheckBanner({granted, requiredPermission}: PermissionCheckBannerProps) {
   const currentUser = useCurrentUser()
-  const listFormat = useIntlListFormat({style: 'short'})
+  const listFormat = useListFormat({style: 'short'})
   const {t} = useTranslation(structureLocaleNamespace)
 
   if (granted) return null
