@@ -13,6 +13,7 @@ Options
   --dataset-default Set up a project with a public dataset named "production"
   --output-path <path> Path to write studio project to
   --template <template> Project template to use [default: "clean"]
+  --schemaId <schemaId>: Init studio from a Schema Builder schema. Start your schema design at: https://schema.club. (alpha)
   --bare Skip the Studio initialization and only print the selected project ID and dataset name to stdout
   --env <filename> Write environment variables to file [default: ".env"]
   --provider <provider> Login provider to use
