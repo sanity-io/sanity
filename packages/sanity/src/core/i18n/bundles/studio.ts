@@ -1523,6 +1523,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'timeline.since': 'Since: {{timestamp, datetime}}',
   /** Label for missing change version for timeline menu dropdown are showing */
   'timeline.since-version-missing': 'Since: unknown version',
+  /** Label for the button showed after trial ended */
+  'user-menu.action.free-trial-finished': 'Upgrade from free',
   /** Label for button showing the free trial days left */
   'user-menu.action.free-trial_one': '{{count}} day left in trial',
   'user-menu.action.free-trial_other': '{{count}} days left in trial',

@@ -82,7 +82,11 @@ function FreeTrialButtonMobile({toggleShowContent, daysLeft}: FreeTrialButtonPro
         justify="flex-start"
         mode="bleed"
         onClick={toggleShowContent}
-        text={t('user-menu.action.free-trial', {count: daysLeft})}
+        text={
+          daysLeft
+            ? t('user-menu.action.free-trial', {count: daysLeft})
+            : t('user-menu.action.free-trial-finished')
+        }
       />
     </Stack>
   )
