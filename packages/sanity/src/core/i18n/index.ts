@@ -17,6 +17,7 @@ export type {
   LocalesBundlesOption,
   LocalesOption,
   LocaleSource,
+  LocaleWeekInfo,
   StaticLocaleResourceBundle,
   StudioLocaleResourceKeys,
   TFunction,
