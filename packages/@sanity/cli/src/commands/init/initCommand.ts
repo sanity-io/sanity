@@ -52,6 +52,7 @@ export interface InitFlags {
   project?: string
   dataset?: string
   template?: string
+  builderId?: string
   visibility?: string
   typescript?: boolean
   bare?: boolean

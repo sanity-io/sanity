@@ -12,10 +12,16 @@ import {createPackageManifest} from './createPackageManifest'
 import {createStudioConfig, type GenerateConfigOptions} from './createStudioConfig'
 import {type ProjectTemplate} from './initProject'
 import templates from './templates'
+import {
+  assembeIndexContent,
+  builderSchemaToFileContents,
+  fetchBuilderSchema,
+} from '../../util/builderSchema'
 
 export interface BootstrapOptions {
   packageName: string
   templateName: string
+  builderId?: string
   outputPath: string
   useTypeScript: boolean
   variables: GenerateConfigOptions['variables']
@@ -48,6 +54,23 @@ export async function bootstrapTemplate(
 
   if (useTypeScript) {
     await fs.copyFile(path.join(sharedDir, 'tsconfig.json'), path.join(outputPath, 'tsconfig.json'))
+  }
+
+  // If we have a builder ID, the template is assembled from the builder schema
+  if (opts.builderId) {
+    debug('Fetching builder schema "%s"', opts.builderId)
+    const documents = await fetchBuilderSchema(opts.builderId)
+    const ext = useTypeScript ? 'ts' : 'js'
+    for (const document of documents) {
+      debug('Writing schema file for "%s"', document.name)
+      const schemaPath = path.join(outputPath, 'schemas', `${document.name}.${ext}`)
+      const fileContents = builderSchemaToFileContents(document)
+      await fs.mkdir(path.dirname(schemaPath), {recursive: true})
+      await fs.writeFile(schemaPath, fileContents)
+    }
+    debug('Assembling and overwriting the existing index file for schemas')
+    const indexContent = assembeIndexContent(documents)
+    await fs.writeFile(path.join(outputPath, 'schemas', `index.${ext}`), indexContent)
   }
 
   spinner.succeed()
