@@ -52,7 +52,7 @@ export interface InitFlags {
   project?: string
   dataset?: string
   template?: string
-  builderId?: string
+  schemaId?: string
   visibility?: string
   typescript?: boolean
   bare?: boolean

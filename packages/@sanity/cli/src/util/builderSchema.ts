@@ -7,19 +7,19 @@ const BUILDER_URL_BASE = 'https://schema.club/api/get-schema'
 /**
  * Fetch a builder schema from the Sanity schema club API
  *
- * @param builderId - The slug of the builder schema to fetch
+ * @param schemaId - The slug of the builder schema to fetch
  * @returns The builder schema as an array of Sanity document or object definitions
  */
-export async function fetchBuilderSchema(builderId: string): Promise<DocumentOrObject[]> {
-  if (!builderId) {
+export async function fetchBuilderSchema(schemaId: string): Promise<DocumentOrObject[]> {
+  if (!schemaId) {
     throw new Error('Builder ID is required')
   }
   try {
-    const response = await fetch(`${BUILDER_URL_BASE}/${builderId}`)
+    const response = await fetch(`${BUILDER_URL_BASE}/${schemaId}`)
     const text = await response.text()
     return safeishEval(text)
   } catch (err) {
-    throw new Error(`Failed to fetch builder schema ${builderId}`)
+    throw new Error(`Failed to fetch builder schema ${schemaId}`)
   }
 }
 
