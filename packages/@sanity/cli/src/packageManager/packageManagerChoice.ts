@@ -7,6 +7,8 @@ import {CliPrompter} from '../types'
 
 export type PackageManager = 'npm' | 'yarn' | 'pnpm' | 'bun' | 'manual'
 
+const EXPERIMENTAL = ['bun']
+
 /**
  * Attempts to resolve the most optimal package manager to use to install/upgrade
  * packages/dependencies at a given path. It does so by looking for package manager
@@ -58,7 +60,10 @@ export async function getPackageManagerChoice(
   const installed = await getAvailablePackageManagers(rootDir)
   const chosen = await options.prompt.single<PackageManager>({
     type: 'list',
-    choices: installed,
+    choices: installed.map((pm) => ({
+      value: pm,
+      name: EXPERIMENTAL.includes(pm) ? `${pm} (experimental)` : pm,
+    })),
     default: preferred || mostLikelyPM,
     message: `Package manager to use for installing dependencies?${messageSuffix}`,
   })
@@ -94,13 +99,7 @@ async function getAvailablePackageManagers(cwd: string): Promise<PackageManager[
     hasBunInstalled(cwd),
   ])
 
-  const choices = [
-    npm && 'npm',
-    yarn && 'yarn',
-    pnpm && 'pnpm',
-    bun && 'bun (experimental)',
-    'manual',
-  ]
+  const choices = [npm && 'npm', yarn && 'yarn', pnpm && 'pnpm', bun && 'bun', 'manual']
   return choices.filter((pm): pm is PackageManager => pm !== false)
 }
 
@@ -181,6 +180,10 @@ function getRunningPackageManager(): PackageManager | undefined {
 
   if (agent.includes('pnpm')) {
     return 'pnpm'
+  }
+
+  if (agent.includes('bun')) {
+    return 'bun'
   }
 
   // Both yarn and pnpm does a `npm/?` thing, thus the slightly different match here
