@@ -1,8 +1,7 @@
 import {PreviewValue, SanityDocument} from '@sanity/types'
 import {Flex, Text} from '@sanity/ui'
-import React from 'react'
 import styled from 'styled-components'
-import {useIntlDateTimeFormat, useRelativeTime} from '../../core'
+import {useDateTimeFormat, useRelativeTime} from '../../core'
 
 interface DocumentStatusProps {
   absoluteDate?: boolean
@@ -19,7 +18,7 @@ export function DocumentStatus({absoluteDate, draft, published, singleLine}: Doc
   const draftUpdatedAt = draft && '_updatedAt' in draft ? draft._updatedAt : ''
   const publishedUpdatedAt = published && '_updatedAt' in published ? published._updatedAt : ''
 
-  const intlDateFormat = useIntlDateTimeFormat({
+  const intlDateFormat = useDateTimeFormat({
     dateStyle: 'medium',
     timeStyle: 'short',
   })
