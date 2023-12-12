@@ -13,7 +13,7 @@ import {createStudioConfig, type GenerateConfigOptions} from './createStudioConf
 import {type ProjectTemplate} from './initProject'
 import templates from './templates'
 import {
-  assembeIndexContent,
+  assembeBuilderIndexContent,
   builderSchemaToFileContents,
   fetchBuilderSchema,
 } from '../../util/builderSchema'
@@ -69,7 +69,7 @@ export async function bootstrapTemplate(
       await fs.writeFile(schemaPath, fileContents)
     }
     debug('Assembling and overwriting the existing index file for schemas')
-    const indexContent = assembeIndexContent(documents)
+    const indexContent = assembeBuilderIndexContent(documents)
     await fs.writeFile(path.join(outputPath, 'schemas', `index.${ext}`), indexContent)
   }
 

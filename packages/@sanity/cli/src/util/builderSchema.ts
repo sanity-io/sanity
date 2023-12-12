@@ -24,30 +24,6 @@ export async function fetchBuilderSchema(builderId: string): Promise<DocumentOrO
 }
 
 /**
- * Pretty print a builder schema as a string
- *
- * @param schemas - The builder schema to pretty print
- * @returns The pretty printed builder schema
- */
-export function prettyBuilderSchema(schemas: object) {
-  return JSON.stringify(
-    schemas,
-    (_, value: unknown) => {
-      // Replace functions with a string representation since they can't be serialized
-      if (typeof value === 'function') {
-        const fnString = value?.toString().replace(/\s*=>\s*/g, ' => ')
-        return `function:${fnString}`
-      }
-      return value
-    },
-    2,
-  )
-    .replace(/"([^"]+)":/g, '$1:') // Remove quotes around keys
-    .replace(/"function:([^"]+)"/g, '$1') // Remove quotes around functions (and the function: prefix)
-    .replace(/"/g, "'") // Replace double quotes with single quotes
-}
-
-/**
  * Wrap a builder schema in a module export
  *
  * @param schema - The builder schema to wrap in a module export
@@ -64,7 +40,7 @@ export function builderSchemaToFileContents(schema: DocumentOrObject): string {
  * @param schemas - The builder schemas to assemble into an index file
  * @returns The index file as a string
  */
-export function assembeIndexContent(schemas: DocumentOrObject[]): string {
+export function assembeBuilderIndexContent(schemas: DocumentOrObject[]): string {
   schemas.sort((a, b) => (a.name > b.name ? 1 : -1)) // Sort schemas alphabetically by name
   const imports = schemas.map((schema) => `import { ${schema.name} } from './${schema.name}'`)
   const exports = schemas.map((schema) => `\t${schema.name}`).join(',\n')
@@ -80,4 +56,28 @@ export function assembeIndexContent(schemas: DocumentOrObject[]): string {
 function safeishEval(code: string): DocumentOrObject[] {
   // eslint-disable-next-line no-new-func
   return Function(`"use strict";return (${code})`)()
+}
+
+/**
+ * Pretty print a builder schema as a string
+ *
+ * @param schemas - The builder schema to pretty print
+ * @returns The pretty printed builder schema
+ */
+function prettyBuilderSchema(schemas: object) {
+  return JSON.stringify(
+    schemas,
+    (_, value: unknown) => {
+      // Replace functions with a string representation since they can't be serialized
+      if (typeof value === 'function') {
+        const fnString = value?.toString().replace(/\s*=>\s*/g, ' => ')
+        return `function:${fnString}`
+      }
+      return value
+    },
+    2,
+  )
+    .replace(/"([^"]+)":/g, '$1:') // Remove quotes around keys
+    .replace(/"function:([^"]+)"/g, '$1') // Remove quotes around functions (and the function: prefix)
+    .replace(/"/g, "'") // Replace double quotes with single quotes
 }
