@@ -204,9 +204,7 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
                   {setScheme && <AppearanceMenu setScheme={setScheme} />}
                   <Card borderTop flex="none" padding={3}>
                     <Stack as="ul" space={1}>
-                      <Stack as="li">
-                        <FreeTrial type="mobile" />
-                      </Stack>
+                      <FreeTrial type="mobile" />
                       <Stack as="li">
                         <Button
                           aria-label={t('user-menu.action.manage-project-aria-label')}

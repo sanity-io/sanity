@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import {Button, Text, Card} from '@sanity/ui'
+import {Button, Text, Card, Stack} from '@sanity/ui'
 import {BoltIcon} from '@sanity/icons'
 import {purple, yellow} from '@sanity/color'
 import {useTranslation} from 'react-i18next'
@@ -76,13 +76,15 @@ function FreeTrialButtonMobile({toggleShowContent, daysLeft}: FreeTrialButtonPro
   const {t} = useTranslation()
 
   return (
-    <Button
-      icon={BoltIcon}
-      justify="flex-start"
-      mode="bleed"
-      onClick={toggleShowContent}
-      text={t('user-menu.action.free-trial', {count: daysLeft})}
-    />
+    <Stack as="li">
+      <Button
+        icon={BoltIcon}
+        justify="flex-start"
+        mode="bleed"
+        onClick={toggleShowContent}
+        text={t('user-menu.action.free-trial', {count: daysLeft})}
+      />
+    </Stack>
   )
 }
 
