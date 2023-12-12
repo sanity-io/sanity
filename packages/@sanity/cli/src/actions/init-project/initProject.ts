@@ -65,7 +65,7 @@ const isCI = process.env.CI
 
 export interface InitOptions {
   template: string
-  builderId?: string
+  schemaId?: string
   outputDir: string
   name: string
   displayName: string
@@ -452,7 +452,7 @@ export default async function initSanity(
     outputPath,
     packageName: sluggedName,
     templateName,
-    builderId: cliFlags.builderId,
+    schemaId: cliFlags.schemaId,
     useTypeScript,
     variables: {
       dataset: datasetName,
@@ -815,9 +815,9 @@ export default async function initSanity(
   }
 
   function selectProjectTemplate() {
-    // Make sure the builderId and the template flag are not used together
-    // Force template to clean if builderId is used
-    if (flags.builderId) {
+    // Make sure the schemaId and the template flag are not used together
+    // Force template to clean if schemaId is used
+    if (flags.schemaId) {
       return 'clean'
     }
 

@@ -20,7 +20,7 @@ import {
 export interface BootstrapOptions {
   packageName: string
   templateName: string
-  builderId?: string
+  schemaId?: string
   outputPath: string
   useTypeScript: boolean
   variables: GenerateConfigOptions['variables']
@@ -56,9 +56,9 @@ export async function bootstrapTemplate(
   }
 
   // If we have a builder ID, the template is assembled from the builder schema
-  if (opts.builderId) {
-    debug('Fetching builder schema "%s"', opts.builderId)
-    const documents = await fetchBuilderSchema(opts.builderId)
+  if (opts.schemaId) {
+    debug('Fetching builder schema "%s"', opts.schemaId)
+    const documents = await fetchBuilderSchema(opts.schemaId)
     const ext = useTypeScript ? 'ts' : 'js'
     for (const document of documents) {
       debug('Writing schema file for "%s"', document.name)
