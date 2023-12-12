@@ -821,7 +821,7 @@ export default async function initSanity(
       return 'clean'
     }
 
-    const defaultTemplate = !unattended && !flags.template ? flags.template || 'clean' : null
+    const defaultTemplate = unattended || flags.template ? flags.template || 'clean' : null
     if (defaultTemplate) {
       return defaultTemplate
     }
