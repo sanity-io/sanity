@@ -3631,10 +3631,10 @@
     "@sanity/ui" "^1.0.0"
     lodash "^4.17.21"
 
-"@sanity/groq-store@5.3.4":
-  version "5.3.4"
-  resolved "https://registry.yarnpkg.com/@sanity/groq-store/-/groq-store-5.3.4.tgz#5a9218cabef3be0761ca869b61ca767450152afc"
-  integrity sha512-/u5sg44/tBvRce2sEjSUAAYP/2kxdqD0KD/AJgjL0UkC+Eb0GhmxaBbK6/3Ksyd+MoFfoiAUmKIDGRw383TcGA==
+"@sanity/groq-store@5.3.5":
+  version "5.3.5"
+  resolved "https://registry.yarnpkg.com/@sanity/groq-store/-/groq-store-5.3.5.tgz#e322898fd84289859eaee79bcaec6e3f5024daf5"
+  integrity sha512-djrCQvrWwK2By+/zoqPR+oR2vRT94OUptCR8zHTVjpKkSrBd3/fJAyFfB0CBj90tdz4PSGcYFnRFIslsEJLTPA==
   dependencies:
     mnemonist "0.39.6"
 
@@ -3710,26 +3710,27 @@
     uuid "^9.0.1"
     zod "^3.22.4"
 
-"@sanity/presentation@1.1.6":
-  version "1.1.6"
-  resolved "https://registry.yarnpkg.com/@sanity/presentation/-/presentation-1.1.6.tgz#02ff930b39660b1c8e7ef2739543aa4db1a6cd43"
-  integrity sha512-qdm6lJt8prgXHK1HoaeD4UWO4wdBvM1tZd4/a6cOOEmu2Rp1c/YDJj9UGmRkimfW9EpnbPupmVff5enCKka0Zw==
+"@sanity/presentation@1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@sanity/presentation/-/presentation-1.2.0.tgz#ef5a2de866bbe8d36828d2a195ed98aedd35123c"
+  integrity sha512-RAIPe+6zNJAv4nM1HOlDwIF2sNdHhcXKnGeqXncNEl+JsOdtrt8Tdw4dKqd4JFdk8iRuLlCIXkuKksOUURQwZg==
   dependencies:
-    "@sanity/groq-store" "5.3.4"
+    "@sanity/groq-store" "5.3.5"
     "@sanity/icons" "^2.7.0"
-    "@sanity/preview-url-secret" "^1.3.3"
+    "@sanity/preview-url-secret" "^1.3.4"
     "@sanity/ui" "^1.9.3"
     "@types/lodash.isequal" "^4.5.8"
     framer-motion "^10.16.16"
     lodash.isequal "^4.5.0"
     mendoza "3.0.3"
+    react-fast-compare "3.2.2"
     rxjs "^7.8.1"
     suspend-react "0.1.3"
 
-"@sanity/preview-url-secret@^1.3.3":
-  version "1.3.3"
-  resolved "https://registry.yarnpkg.com/@sanity/preview-url-secret/-/preview-url-secret-1.3.3.tgz#dfda764acc2e4e7ed3fdb8377b2adde10df76d9f"
-  integrity sha512-iRNKfAqwU1mQpEGNFjlUOhS2geZROh/LcPNMCnOZTcAQxcaLrJWc5Rg17F6LpiiIMHyfC7SxQtlI8jSOCqXu0A==
+"@sanity/preview-url-secret@^1.3.4":
+  version "1.3.4"
+  resolved "https://registry.yarnpkg.com/@sanity/preview-url-secret/-/preview-url-secret-1.3.4.tgz#cca45fdde9547fc8f53ecc6266be3865fb026ed8"
+  integrity sha512-RCqGJpCGBdxUrZPHextJsDWtLJ2V7mZy96HboUI+E5OJ2tG042Ag32pJOQef70XgLE2ZBxKNNu1E6kBAE6wC1g==
   dependencies:
     "@sanity/uuid" "3.0.2"
 
@@ -13277,7 +13278,7 @@ react-dropzone@^12.0.0:
     file-selector "^0.5.0"
     prop-types "^15.8.1"
 
-react-fast-compare@^3.2.0, react-fast-compare@^3.2.1:
+react-fast-compare@3.2.2, react-fast-compare@^3.2.0, react-fast-compare@^3.2.1:
   version "3.2.2"
   resolved "https://registry.yarnpkg.com/react-fast-compare/-/react-fast-compare-3.2.2.tgz#929a97a532304ce9fee4bcae44234f1ce2c21d49"
   integrity sha512-nsO+KSNgo1SbJqJEYRE9ERzo7YtYbou/OqjSQKxV7jcKox7+usiUVZOAC+XnDOABXggQTno0Y1CpVnuWEc1boQ==
