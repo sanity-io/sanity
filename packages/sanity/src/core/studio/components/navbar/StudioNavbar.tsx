@@ -223,7 +223,7 @@ export function StudioNavbar() {
           )}
 
           <Flex gap={2}>
-            {(shouldRender.configIssues || shouldRender.resources) && (
+            {(shouldRender.configIssues || shouldRender.resources || shouldRender.tools) && (
               <Card borderRight>
                 <Flex gap={1} paddingX={2}>
                   {shouldRender.tools && <FreeTrial type="desktop" />}

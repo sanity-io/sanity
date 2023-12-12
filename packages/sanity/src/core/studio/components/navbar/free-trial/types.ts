@@ -1,16 +1,10 @@
 import {PortableTextBlock} from '@sanity/types'
 
 export interface FreeTrialResponse {
-  _type: 'planButton'
-  _id: string
-  _rev: string
-  _updatedAt: string
-  _createdAt: string
-  icon: string
   id: string
+  icon: string
   style: string
-  text: string
-  showOnLoad: 'popover' | 'modal' | null
+  showOnLoad: 'popover' | 'modal' | 'none' | null
   popover?: FreeTrialDialog
   modal?: FreeTrialDialog
   daysLeft: number

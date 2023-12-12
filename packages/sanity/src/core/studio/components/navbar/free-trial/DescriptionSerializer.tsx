@@ -21,6 +21,12 @@ const ImageAsIcon = styled.img`
   margin-right: 8px;
 `
 
+const InlineIconImage = styled.img`
+  width: 21px;
+  height: 21px;
+  margin: -7px 0;
+`
+
 const SerializerContainer = styled.div`
   --card-fg-color: ${gray[600].hex};
   // Remove margin bottom to last box.
@@ -31,6 +37,11 @@ const SerializerContainer = styled.div`
 
 const IconRowTitle = styled(Text)`
   --card-fg-color: ${gray[800].hex};
+`
+
+const Link = styled.a<{useTextColor: boolean}>`
+  font-weight: 600;
+  color: ${(props) => (props.useTextColor ? 'var(--card-fg-color) !important' : '')};
 `
 
 function NormalBlock(props: {children: React.ReactNode}) {
@@ -57,23 +68,25 @@ const components: PortableTextComponents = {
     number: ({children}) => <NormalBlock>{children}</NormalBlock>,
     checkmarks: ({children}) => <NormalBlock>{children}</NormalBlock>,
   },
+
   marks: {
-    strong: ({children}) => <>{children}</>,
+    strong: ({children}) => <strong>{children}</strong>,
     link: (props) => (
-      <Text
-        size={1}
-        weight="semibold"
-        as="a"
+      <Link
         href={props.value.href}
         rel="noopener noreferrer"
         target="_blank"
+        useTextColor={props.value.useTextColor}
       >
         {props.children}
-        <LinkIcon style={{marginLeft: '2px'}} />
-      </Text>
+        {props.value.showIcon && <LinkIcon style={{marginLeft: '2px'}} />}
+      </Link>
     ),
   },
   types: {
+    inlineIcon: (props) => (
+      <InlineIconImage src={props.value.icon?.url} alt={props.value.icon?.title} />
+    ),
     divider: () => (
       <Box marginY={3}>
         <Box paddingY={3}>

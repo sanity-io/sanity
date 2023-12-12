@@ -4,7 +4,6 @@ import {CloseIcon} from '@sanity/icons'
 import {useColorSchemeValue} from '../../../colorScheme'
 import {FreeTrialDialog} from './types'
 import {DescriptionSerializer} from './DescriptionSerializer'
-import {replaceContent} from './replaceContent'
 
 /**
  * Absolute positioned button to close the dialog.
@@ -38,11 +37,10 @@ const StyledDialog = styled(Dialog)`
 `
 interface ModalContentProps {
   content: FreeTrialDialog
-  daysLeft: number
   handleClose: () => void
 }
 
-export function DialogContent({handleClose, content, daysLeft}: ModalContentProps) {
+export function DialogContent({handleClose, content}: ModalContentProps) {
   const schemeValue = useColorSchemeValue()
 
   return (
@@ -55,14 +53,16 @@ export function DialogContent({handleClose, content, daysLeft}: ModalContentProp
       cardRadius={3}
       footer={
         <Flex width="full" gap={3} justify="flex-end" padding={3}>
-          <Button
-            mode="bleed"
-            padding={2}
-            fontSize={1}
-            text={content.secondaryButton?.text ?? 'Close'}
-            tone="default"
-            onClick={handleClose}
-          />
+          {content.secondaryButton?.text && (
+            <Button
+              mode="bleed"
+              padding={2}
+              fontSize={1}
+              text={content.secondaryButton?.text}
+              tone="default"
+              onClick={handleClose}
+            />
+          )}
           <Button
             mode="default"
             padding={2}
@@ -84,7 +84,6 @@ export function DialogContent({handleClose, content, daysLeft}: ModalContentProp
         padding={2}
         mode="bleed"
         tone="default"
-        aria-label={`close dialog`}
         onClick={handleClose}
         tabIndex={-1}
       />
@@ -93,7 +92,7 @@ export function DialogContent({handleClose, content, daysLeft}: ModalContentProp
       )}
       <Flex padding={3} direction={'column'}>
         <Box paddingX={2} marginTop={3}>
-          <Heading size={2}>{replaceContent(content.headingText, {daysLeft})}</Heading>
+          <Heading size={2}>{content.headingText}</Heading>
         </Box>
         <Box marginTop={4} paddingBottom={3}>
           <DescriptionSerializer blocks={content.descriptionText} />

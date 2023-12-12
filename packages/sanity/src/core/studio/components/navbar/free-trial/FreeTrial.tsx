@@ -1,7 +1,6 @@
-import {Popover, Card} from '@sanity/ui'
+import {Popover} from '@sanity/ui'
 import {useCallback, useEffect, useState} from 'react'
 import {useClient} from '../../../../hooks'
-import {useColorSchemeValue} from '../../../colorScheme'
 import {SANITY_VERSION} from '../../../../version'
 import {PopoverContent} from './PopoverContent'
 import {DialogContent} from './DialogContent'
@@ -16,21 +15,22 @@ interface FreeTrialProps {
 
 export function FreeTrial({type}: FreeTrialProps) {
   const [data, setData] = useState<FreeTrialResponse | null>(null)
-  const [showDialog, setShowDialog] = useState<'popover' | 'modal' | null>(null)
+  const [showDialog, setShowDialog] = useState<FreeTrialResponse['showOnLoad']>(null)
+  const [showingOnLoad, setShowingOnLoad] = useState(false)
   const client = useClient({apiVersion: 'vX'})
+
   const fetchData = async () => {
-    const _response = (await client.request({
+    const response = (await client.request({
       url: `/journey/trial?studioVersion=${SANITY_VERSION}`,
     })) as unknown as FreeTrialResponse | null
+    // const response = responses[1]
+    setData(response)
 
-    // const response = _response?._type ? _response : responses[0]
-    // setData(response)
-
-    setData(_response)
     // Validates if the user has seen the "structure rename modal" before showing this one. To avoid multiple popovers at same time.
     const deskRenameSeen = localStorage.getItem('sanityStudio:desk:renameDismissed') === '1'
-    if (deskRenameSeen && _response?.showOnLoad) {
-      setShowDialog(_response?.showOnLoad)
+    if (deskRenameSeen && response?.showOnLoad) {
+      setShowDialog(response?.showOnLoad)
+      setShowingOnLoad(true)
     }
   }
 
@@ -46,12 +46,15 @@ export function FreeTrial({type}: FreeTrialProps) {
     switch (showDialog) {
       case 'popover':
         setShowDialog(null)
-        if (data?.popover?.id) {
+        if (data?.popover?.id && showingOnLoad) {
           client.request({url: `/journey/trial/${data.popover.id}`, method: 'POST'})
         }
         break
       case 'modal':
         setShowDialog(null)
+        if (data?.modal?.id && showingOnLoad) {
+          client.request({url: `/journey/trial/${data.modal.id}`, method: 'POST'})
+        }
         break
       default:
         if (!showDialog && data?.modal?.id) {
@@ -59,7 +62,7 @@ export function FreeTrial({type}: FreeTrialProps) {
         }
         break
     }
-  }, [showDialog, client, data?.popover?.id, data?.modal?.id])
+  }, [showDialog, client, data?.popover?.id, data?.modal?.id, showingOnLoad])
 
   if (!data) return null
 
@@ -70,20 +73,17 @@ export function FreeTrial({type}: FreeTrialProps) {
           open={showDialog === 'popover'}
           size={0}
           radius={2}
+          portal
           placement={type === 'mobile' ? 'top-start' : 'bottom-end'}
-          content={
-            <PopoverContent
-              daysLeft={data.daysLeft}
-              content={data.popover}
-              handleClose={toggleShowContent}
-            />
-          }
+          content={<PopoverContent content={data.popover} handleClose={toggleShowContent} />}
         >
-          <FreeTrialButton
-            type={type}
-            toggleShowContent={toggleShowContent}
-            daysLeft={data.daysLeft}
-          />
+          <div>
+            <FreeTrialButton
+              type={type}
+              toggleShowContent={toggleShowContent}
+              daysLeft={data.daysLeft}
+            />
+          </div>
         </Popover>
       ) : (
         <FreeTrialButton
@@ -94,11 +94,7 @@ export function FreeTrial({type}: FreeTrialProps) {
       )}
 
       {showDialog === 'modal' && data.modal && (
-        <DialogContent
-          daysLeft={data.daysLeft}
-          content={data.modal}
-          handleClose={toggleShowContent}
-        />
+        <DialogContent content={data.modal} handleClose={toggleShowContent} />
       )}
     </Wrapper>
   )

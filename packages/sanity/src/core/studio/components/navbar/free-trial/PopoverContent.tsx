@@ -3,7 +3,6 @@ import styled from 'styled-components'
 import {useColorSchemeValue} from '../../../colorScheme'
 import {FreeTrialDialog} from './types'
 import {DescriptionSerializer} from './DescriptionSerializer'
-import {replaceContent} from './replaceContent'
 
 const Image = styled.img`
   object-fit: cover;
@@ -13,12 +12,11 @@ const Image = styled.img`
 `
 
 interface PopoverContentProps {
-  daysLeft: number
   content: FreeTrialDialog
   handleClose: () => void
 }
 
-export function PopoverContent({content, handleClose, daysLeft}: PopoverContentProps) {
+export function PopoverContent({content, handleClose}: PopoverContentProps) {
   const schemeValue = useColorSchemeValue()
 
   return (
@@ -29,7 +27,7 @@ export function PopoverContent({content, handleClose, daysLeft}: PopoverContentP
         )}
         <Flex padding={3} direction={'column'}>
           <Box paddingX={2} marginTop={3}>
-            <Heading size={1}>{replaceContent(content.headingText, {daysLeft})}</Heading>
+            <Heading size={1}>{content.headingText}</Heading>
           </Box>
           <Box marginTop={4}>
             <DescriptionSerializer blocks={content.descriptionText} />
@@ -50,7 +48,7 @@ export function PopoverContent({content, handleClose, daysLeft}: PopoverContentP
             mode="default"
             padding={2}
             fontSize={1}
-            text={content.ctaButton?.text ?? 'Close'}
+            text={content.ctaButton?.text}
             href={content.ctaButton?.url}
             as={content.ctaButton?.url ? 'a' : undefined}
             onClick={content.ctaButton?.url ? undefined : handleClose}
