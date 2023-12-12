@@ -7,5 +7,9 @@ export function getPreviewPaths(preview: SchemaType['preview']): PreviewPath[] |
 
   if (!selection) return undefined
 
-  return Object.values(selection).map((value) => String(value).split('.'))
+  return [
+    ...(Object.values(selection).map((value) => String(value).split('.')) || []),
+    ['_createdAt'],
+    ['_updatedAt'],
+  ]
 }

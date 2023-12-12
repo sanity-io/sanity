@@ -100,11 +100,7 @@ export function getReferenceInfo(
             } as const)
           }
 
-          const previewPaths = [
-            ...(getPreviewPaths(refSchemaType?.preview) || []),
-            ['_updatedAt'],
-            ['_createdAt'],
-          ]
+          const previewPaths = [...(getPreviewPaths(refSchemaType?.preview) || [])]
 
           const draftPreview$ = documentPreviewStore.observePaths(draftRef, previewPaths).pipe(
             map((result) =>
