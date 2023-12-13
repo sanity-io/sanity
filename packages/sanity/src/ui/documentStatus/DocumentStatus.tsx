@@ -44,7 +44,7 @@ export function DocumentStatus({absoluteDate, draft, published, singleLine}: Doc
     <Flex
       align={singleLine ? 'center' : 'flex-start'}
       direction={singleLine ? 'row' : 'column'}
-      gap={singleLine ? 2 : 3}
+      gap={2}
       wrap="nowrap"
     >
       {!publishedDate && (
