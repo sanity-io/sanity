@@ -196,6 +196,9 @@ describe('document types', () => {
       const documentDef = defineType({
         type: 'document',
         name: 'custom-document',
+        deprecated: {
+          reason: `This document type has been superseded by a shiny new one.`,
+        },
         fields: [
           {
             type: 'string',
@@ -207,6 +210,9 @@ describe('document types', () => {
             group: 'test',
             validation: (Rule) => Rule.max(45),
             initialValue: 'string',
+            deprecated: {
+              reason: `Strings are overrated.`,
+            },
             options: {
               layout: 'dropdown',
             },
@@ -215,6 +221,8 @@ describe('document types', () => {
             type: 'array',
             name: 'arrayField',
             of: [{type: 'string'}],
+            // @ts-expect-error reason is required
+            deprecated: {},
           },
           {
             type: 'alias-type',
