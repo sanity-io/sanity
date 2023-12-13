@@ -29,13 +29,14 @@ export function CalendarDay(props: CalendarDayProps) {
         role="button"
         tabIndex={-1}
         onClick={handleClick}
-        padding={3}
+        padding={2}
         radius={2}
         selected={selected}
         tone={isToday || selected ? 'primary' : 'default'}
       >
         <Text
           muted={!selected && !isCurrentMonth}
+          size={1}
           style={{textAlign: 'center'}}
           weight={isCurrentMonth ? 'medium' : 'regular'}
         >
