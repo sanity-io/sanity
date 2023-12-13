@@ -1,9 +1,11 @@
 import type {SanityDocument} from '@sanity/client'
 import type {SchemaType} from '@sanity/types'
-import {Badge, Box, Inline} from '@sanity/ui'
+import {Badge, Box, Flex} from '@sanity/ui'
 import React, {useMemo} from 'react'
 import {useMemoObservable} from 'react-rx'
 import styled from 'styled-components'
+import {DocumentStatus} from '../../../../../../../../ui/documentStatus'
+import {DocumentStatusIndicator} from '../../../../../../../../ui/documentStatusIndicator'
 import {DocumentPreviewPresence} from '../../../../../../../presence'
 import {
   getPreviewStateObservable,
@@ -57,12 +59,15 @@ export default function SearchResultItemPreview({
   const status = useMemo(() => {
     if (isLoading) return null
     return (
-      <Inline space={3}>
+      <Flex align="center" gap={3}>
         {presence && presence.length > 0 && <DocumentPreviewPresence presence={presence} />}
-        <Badge mode="outline">{schemaType.title}</Badge>
-      </Inline>
+        <Badge>{schemaType.title}</Badge>
+        <DocumentStatusIndicator draft={draft} hidePublishedStatus published={published} />
+      </Flex>
     )
-  }, [isLoading, presence, schemaType.title])
+  }, [draft, isLoading, presence, published, schemaType.title])
+
+  const tooltip = <DocumentStatus draft={draft} published={published} />
 
   return (
     <SearchResultItemPreviewBox>
@@ -76,6 +81,7 @@ export default function SearchResultItemPreview({
         layout={layout || 'default'}
         icon={schemaType.icon}
         status={status}
+        tooltip={tooltip}
       />
     </SearchResultItemPreviewBox>
   )
