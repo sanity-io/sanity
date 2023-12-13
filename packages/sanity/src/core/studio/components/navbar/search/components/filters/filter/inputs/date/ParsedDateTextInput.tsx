@@ -1,4 +1,3 @@
-import {Theme} from '@sanity/ui'
 import {format, isValid, parse} from 'date-fns'
 import React, {
   ChangeEvent,
@@ -9,9 +8,8 @@ import React, {
   useMemo,
   useState,
 } from 'react'
-import styled, {css} from 'styled-components'
 import {Tooltip} from '../../../../../../../../../../ui'
-import {Translate, useTranslation} from '../../../../../../../../../i18n'
+import {useTranslation} from '../../../../../../../../../i18n'
 import {CustomTextInput} from '../../../../common/CustomTextInput'
 import {getDateISOString} from './utils/getDateISOString'
 
@@ -49,13 +47,6 @@ const FORMAT: Record<
     pattern: 'MMM d, yyyy p',
   },
 }
-
-// @todo: remove usage
-const Emphasis = styled.span(({theme}: {theme: Theme}) => {
-  return css`
-    font-weight: ${theme.sanity.fonts.text.weights.medium};
-  `
-})
 
 export function ParsedDateTextInput({
   isDateTime,
@@ -157,16 +148,9 @@ export function ParsedDateTextInput({
 
   return (
     <Tooltip
-      content={
-        <Translate
-          t={t}
-          i18nKey="calendar.error.must-be-in-format"
-          components={{Emphasis}}
-          values={{
-            exampleDate: isDateTimeFormat ? FORMAT.datetime.exampleDate : FORMAT.date.exampleDate,
-          }}
-        />
-      }
+      content={t('calendar.error.must-be-in-format', {
+        exampleDate: isDateTimeFormat ? FORMAT.datetime.exampleDate : FORMAT.date.exampleDate,
+      })}
       disabled={!customValidity}
       placement="top"
       portal
