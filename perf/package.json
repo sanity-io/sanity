@@ -15,7 +15,7 @@
     "studio:dev": "SANITY_STUDIO_DATASET=dev yarn --cwd studio dev"
   },
   "dependencies": {
-    "@playwright/test": "^1.37.0",
+    "@playwright/test": "^1.39.0",
     "@sanity/client": "^6.10.0",
     "@sanity/uuid": "^3.0.1",
     "@types/lodash": "^4.14.191",
