@@ -1,4 +1,4 @@
-import {ButtonTone, Flex} from '@sanity/ui'
+import {ButtonTone, Flex, Text} from '@sanity/ui'
 import React from 'react'
 import {AnimatedStatusIcon} from './AnimatedStatusIcon'
 import {TextWithTone} from 'sanity'
@@ -10,7 +10,7 @@ interface ReviewChangesButtonProps {
 
 const STATUS_DICTIONARY: Record<StatusType, {text: string; tone: ButtonTone}> = {
   saved: {
-    text: 'Saved!',
+    text: 'Saved',
     tone: 'positive',
   },
   syncing: {
@@ -30,14 +30,13 @@ export const DocumentStatusPulse = (props: ReviewChangesButtonProps) => {
 
   return (
     <Flex align="center" gap={2}>
-      <Flex align="center" justify="center" style={{width: '1em'}}>
-        <TextWithTone size={1} tone={currentStatus.tone}>
-          <AnimatedStatusIcon status={status} />
-        </TextWithTone>
-      </Flex>
       <TextWithTone size={1} tone={currentStatus.tone}>
-        {currentStatus.text}
+        <AnimatedStatusIcon status={status} />
       </TextWithTone>
+
+      <Text muted size={1}>
+        {currentStatus.text}
+      </Text>
     </Flex>
   )
 }

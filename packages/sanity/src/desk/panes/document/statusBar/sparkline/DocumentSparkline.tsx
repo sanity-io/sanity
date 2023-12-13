@@ -51,38 +51,30 @@ export const DocumentSparkline = memo(function DocumentSparkline() {
   }
 
   return (
-    <Flex align="center" data-ui="DocumentSparkline">
-      <Flex align="center" flex={1} gap={3} paddingY={1} wrap="wrap">
-        {!status && (
-          <Tooltip
-            content={
-              <DocumentStatus
-                absoluteDate
-                draft={editState?.draft}
-                published={editState?.published}
-              />
-            }
-            placement="top"
-          >
-            <Flex align="center" gap={2} paddingY={1}>
-              <Flex align="center" justify="center" style={{width: '1em'}}>
-                <DocumentStatusIndicator
-                  draft={editState?.draft}
-                  published={editState?.published}
-                />
-              </Flex>
-              <DocumentStatus
-                draft={editState?.draft}
-                published={editState?.published}
-                singleLine
-              />
+    <Flex align="center" data-ui="DocumentSparkline" flex={1} gap={3} padding={2} wrap="wrap">
+      {!status && (
+        <Tooltip
+          content={
+            <DocumentStatus
+              absoluteDate
+              draft={editState?.draft}
+              published={editState?.published}
+            />
+          }
+          placement="top"
+        >
+          <Flex align="center" gap={2}>
+            <Flex align="center" justify="center">
+              <DocumentStatusIndicator draft={editState?.draft} published={editState?.published} />
             </Flex>
-          </Tooltip>
-        )}
+            <DocumentStatus draft={editState?.draft} published={editState?.published} singleLine />
+          </Flex>
+        </Tooltip>
+      )}
 
-        <DocumentStatusPulse status={status || undefined} />
-        {badges && <DocumentBadges />}
-      </Flex>
+      <DocumentStatusPulse status={status || undefined} />
+
+      {badges && <DocumentBadges />}
     </Flex>
   )
 })
