@@ -1,8 +1,75 @@
+import fs from 'fs/promises'
+import path from 'path'
+import {Worker} from 'worker_threads'
 import {DocumentDefinition, ObjectDefinition} from '@sanity/types'
+import {getCliWorkerPath} from './cliWorker'
+
+type BuilderSchemaWorkerData = {
+  schemasPath: string
+  useTypeScript: boolean
+  schemaId: string
+}
+
+type BuilderSchemaWorkerResult = {type: 'success'} | {type: 'error'; error: Error}
 
 type DocumentOrObject = DocumentDefinition | ObjectDefinition
 
-const BUILDER_URL_BASE = 'https://schema.club/api/get-schema'
+/**
+ * Fetch a builder schema from the Sanity schema club API and write it to disk
+ */
+export async function getAndWriteBuilderSchema(data: BuilderSchemaWorkerData): Promise<void> {
+  const {schemasPath, useTypeScript, schemaId} = data
+  try {
+    const documents = await fetchBuilderSchema(schemaId)
+    const fileExtension = useTypeScript ? 'ts' : 'js'
+    // Write a file for each schema
+    for (const document of documents) {
+      const filePath = path.join(schemasPath, `${document.name}.${fileExtension}`)
+      await fs.writeFile(filePath, builderSchemaToFileContents(document))
+    }
+    // Write an index file that exports all the schemas
+    const indexContent = assembeBuilderIndexContent(documents)
+    await fs.writeFile(path.join(schemasPath, `index.${fileExtension}`), indexContent)
+  } catch (error) {
+    throw new Error(`Failed to fetch builder schema: ${error.message}`)
+  }
+}
+
+/**
+ * Run the getAndWriteBuilderSchema in a worker thread
+ *
+ * @param workerData - The worker data to pass to the worker thread
+ * @returns
+ */
+export async function getAndWriteBuilderSchemaWorker(
+  workerData: BuilderSchemaWorkerData,
+): Promise<void> {
+  const workerPath = await getCliWorkerPath('getAndWriteBuilderSchema')
+  return new Promise((resolve, reject) => {
+    const worker = new Worker(workerPath, {
+      workerData,
+      env: {
+        // eslint-disable-next-line no-process-env
+        ...process.env,
+        // Dynamic HTTPS imports are currently behind a Node flag
+        NODE_OPTIONS: '--experimental-network-imports',
+      },
+    })
+    worker.on('message', (message: BuilderSchemaWorkerResult) => {
+      if (message.type === 'success') {
+        resolve()
+      } else {
+        reject(message.error)
+      }
+    })
+    worker.on('error', reject)
+    worker.on('exit', (code) => {
+      if (code !== 0) {
+        reject(new Error(`Worker stopped with exit code ${code}`))
+      }
+    })
+  })
+}
 
 /**
  * Fetch a builder schema from the Sanity schema club API
@@ -10,15 +77,20 @@ const BUILDER_URL_BASE = 'https://schema.club/api/get-schema'
  * @param schemaId - The slug of the builder schema to fetch
  * @returns The builder schema as an array of Sanity document or object definitions
  */
-export async function fetchBuilderSchema(schemaId: string): Promise<DocumentOrObject[]> {
+async function fetchBuilderSchema(schemaId: string): Promise<DocumentOrObject[]> {
   if (!schemaId) {
     throw new Error('SchemaId is required')
   }
+  if (!/^[a-zA-Z0-9-]+$/.test(schemaId)) {
+    throw new Error('Invalid schemaId')
+  }
+
   try {
-    const response = await fetch(`${BUILDER_URL_BASE}/${schemaId}`)
-    const text = await response.text()
-    return safeishEval(text)
+    const URL = 'https://schema.club/api/get-schema'
+    const response = await import(`${URL}/${schemaId}`)
+    return response.default
   } catch (err) {
+    console.error(err)
     throw new Error(`Failed to fetch builder schema ${schemaId}`)
   }
 }
@@ -29,7 +101,7 @@ export async function fetchBuilderSchema(schemaId: string): Promise<DocumentOrOb
  * @param schema - The builder schema to wrap in a module export
  * @returns The builder schema as a module export
  */
-export function builderSchemaToFileContents(schema: DocumentOrObject): string {
+function builderSchemaToFileContents(schema: DocumentOrObject): string {
   const prettySchema = prettyBuilderSchema(schema)
   return `export const ${schema.name} = ${prettySchema}\n`
 }
@@ -40,22 +112,11 @@ export function builderSchemaToFileContents(schema: DocumentOrObject): string {
  * @param schemas - The builder schemas to assemble into an index file
  * @returns The index file as a string
  */
-export function assembeBuilderIndexContent(schemas: DocumentOrObject[]): string {
+function assembeBuilderIndexContent(schemas: DocumentOrObject[]): string {
   schemas.sort((a, b) => (a.name > b.name ? 1 : -1)) // Sort schemas alphabetically by name
   const imports = schemas.map((schema) => `import { ${schema.name} } from './${schema.name}'`)
-  const exports = schemas.map((schema) => `\t${schema.name}`).join(',\n')
+  const exports = schemas.map((schema) => `  ${schema.name}`).join(',\n')
   return `${imports.join('\n')}\n\nexport const schemaTypes = [\n${exports}\n]`
-}
-
-/**
- * Safely evaluate a string as JavaScript
- *
- * @param code - The code to evaluate
- * @returns The result of the evaluation
- */
-function safeishEval(code: string): DocumentOrObject[] {
-  // eslint-disable-next-line no-new-func
-  return Function(`"use strict";return (${code})`)()
 }
 
 /**
