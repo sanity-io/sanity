@@ -1,15 +1,15 @@
-import React from 'react'
-import {TextInput} from '@sanity/ui'
+import React, {ChangeEvent, HTMLProps} from 'react'
+import {TextInputProps} from '@sanity/ui'
 import {LazyTextInput} from '../LazyTextInput'
 
-type Props = Omit<React.ComponentProps<typeof TextInput>, 'onChange' | 'value'> & {
-  value?: number
-  onChange: (year: number) => void
-}
+export const YearInput = (
+  props: {onChange: (year: number) => void} & TextInputProps &
+    Omit<HTMLProps<HTMLInputElement>, 'onChange' | 'ref'>,
+) => {
+  const {onChange, ...restProps} = props
 
-export const YearInput = ({onChange, ...props}: Props) => {
   const handleChange = React.useCallback(
-    (event: React.FocusEvent<HTMLInputElement> | React.ChangeEvent<HTMLInputElement>) => {
+    (event: ChangeEvent<HTMLInputElement>) => {
       const numericValue = parseInt(event.currentTarget.value, 10)
       if (!isNaN(numericValue)) {
         onChange(numericValue)
@@ -18,5 +18,14 @@ export const YearInput = ({onChange, ...props}: Props) => {
     [onChange],
   )
 
-  return <LazyTextInput {...props} onChange={handleChange} inputMode="numeric" />
+  return (
+    <LazyTextInput
+      {...restProps}
+      fontSize={1}
+      onChange={handleChange}
+      inputMode="numeric"
+      padding={2}
+      radius={2}
+    />
+  )
 }

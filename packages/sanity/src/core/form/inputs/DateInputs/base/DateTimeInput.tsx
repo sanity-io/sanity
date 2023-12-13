@@ -1,11 +1,11 @@
-import React, {forwardRef, useCallback, useRef, useState} from 'react'
+import React, {KeyboardEvent, forwardRef, useCallback, useRef, useState} from 'react'
 import FocusLock from 'react-focus-lock'
 import {Box, Flex, LayerProvider, Popover, useClickOutside, useForwardedRef} from '@sanity/ui'
 import {CalendarIcon} from '@sanity/icons'
 import {Button} from '../../../../../ui'
 import {DatePicker} from './DatePicker'
 import {LazyTextInput} from './LazyTextInput'
-import {CalendarLabels, MonthNames} from './calendar/types'
+import {CalendarLabels} from './calendar/types'
 
 export interface DateTimeInputProps {
   customValidity?: string
@@ -48,7 +48,7 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
     forwardedRef.current?.select()
   }, [forwardedRef])
 
-  const handleKeyUp = useCallback((e: any) => {
+  const handleKeyUp = useCallback((e: KeyboardEvent<HTMLDivElement>) => {
     if (e.key === 'Escape') {
       setPickerOpen(false)
     }
@@ -103,7 +103,6 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
               open
               placement="bottom"
               ref={setPopoverRef}
-              radius={2}
             >
               {suffix}
             </Popover>
