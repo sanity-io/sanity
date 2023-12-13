@@ -2,7 +2,7 @@ import {Box, Flex, Grid, Select, Text, useForwardedRef} from '@sanity/ui'
 import {ChevronLeftIcon, ChevronRightIcon} from '@sanity/icons'
 import {addDays, addMonths, setDate, setHours, setMinutes, setMonth, setYear} from 'date-fns'
 import {range} from 'lodash'
-import React, {forwardRef, useCallback, useEffect} from 'react'
+import React, {KeyboardEvent, forwardRef, useCallback, useEffect} from 'react'
 import {Button} from '../../../../../../ui'
 import {CalendarMonth} from './CalendarMonth'
 import {ARROW_KEYS, DEFAULT_TIME_PRESETS, HOURS_24} from './constants'
@@ -38,9 +38,7 @@ const PRESERVE_FOCUS_ELEMENT = (
 
 // This buttons use a specific styling, given they are intended to be aligned with the select elements.
 const CALENDAR_ICON_BUTTON_PROPS = {
-  fontSize: 2,
-  radius: 0,
-  paddingX: 2,
+  padding: 2,
 }
 
 export const Calendar = forwardRef(function Calendar(
@@ -120,12 +118,13 @@ export const Calendar = forwardRef(function Calendar(
   }, [ref])
 
   const handleKeyDown = useCallback(
-    (event: React.KeyboardEvent<HTMLDivElement>) => {
+    (event: KeyboardEvent<HTMLDivElement>) => {
       if (!ARROW_KEYS.includes(event.key)) {
         return
       }
+      const target = event.currentTarget
       event.preventDefault()
-      if (event.target instanceof HTMLElement && event.target.hasAttribute('data-calendar-grid')) {
+      if (target.hasAttribute('data-calendar-grid')) {
         focusCurrentWeekDay()
         return
       }
@@ -244,6 +243,9 @@ export const Calendar = forwardRef(function Calendar(
               <Box>
                 <Select
                   aria-label={labels.selectHour}
+                  fontSize={1}
+                  padding={2}
+                  radius={2}
                   value={selectedDate?.getHours()}
                   onChange={handleHoursChange}
                 >
@@ -256,12 +258,15 @@ export const Calendar = forwardRef(function Calendar(
               </Box>
 
               <Box paddingX={1}>
-                <Text>:</Text>
+                <Text size={1}>:</Text>
               </Box>
 
               <Box>
                 <Select
                   aria-label={labels.selectMinute}
+                  fontSize={1}
+                  padding={2}
+                  radius={2}
                   value={selectedDate?.getMinutes()}
                   onChange={handleMinutesChange}
                 >
@@ -335,7 +340,7 @@ function CalendarMonthSelect(props: {
   const handleNextMonthClick = useCallback(() => moveFocusedDate(1), [moveFocusedDate])
 
   return (
-    <Flex flex={1}>
+    <Flex flex={1} gap={1}>
       <Button
         aria-label={labels.goToPreviousMonth}
         onClick={handlePrevMonthClick}
@@ -348,7 +353,7 @@ function CalendarMonthSelect(props: {
       />
 
       <Box flex={1}>
-        <Select radius={0} value={value} onChange={onChange}>
+        <Select fontSize={1} radius={2} value={value} onChange={onChange} padding={2}>
           {monthNames.map((monthName, i) => (
             // eslint-disable-next-line react/no-array-index-key
             <option key={i} value={i}>
@@ -384,7 +389,7 @@ function CalendarYearSelect(props: {
   const handleNextYearClick = useCallback(() => moveFocusedDate(12), [moveFocusedDate])
 
   return (
-    <Flex>
+    <Flex gap={1}>
       <Button
         aria-label={labels.goToPreviousYear}
         onClick={handlePrevYearClick}
@@ -395,7 +400,7 @@ function CalendarYearSelect(props: {
         // @ts-ignore - Button with specific styling requirements
         {...CALENDAR_ICON_BUTTON_PROPS}
       />
-      <YearInput value={value} onChange={onChange} radius={0} style={{width: 65}} />
+      <YearInput value={value} onChange={onChange} radius={0} style={{width: 48}} />
       <Button
         aria-label={labels.goToNextYear}
         onClick={handleNextYearClick}

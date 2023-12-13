@@ -1,6 +1,6 @@
 /* eslint-disable no-nested-ternary */
 
-import React, {useEffect} from 'react'
+import React, {FocusEvent, useEffect} from 'react'
 
 import {TextInput, useForwardedRef} from '@sanity/ui'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
@@ -53,7 +53,7 @@ export const CommonDateTimeInput = React.forwardRef(function CommonDateTimeInput
   }, [value])
 
   const handleDatePickerInputChange = React.useCallback(
-    (event: any) => {
+    (event: FocusEvent<HTMLInputElement>) => {
       const nextInputValue = event.currentTarget.value
       const result = nextInputValue === '' ? null : parseInputValue(nextInputValue)
 
