@@ -11,7 +11,7 @@ export function getPreviewPaths(preview: SchemaType['preview']): PreviewPath[] |
 
   // Transform the selection dot-notation paths into array paths.
   // Example: ['object.title', 'name'] => [['object', 'title'], ['name']]
-  const paths = Object.keys(selection).map((value) => String(value).split('.')) || []
+  const paths = Object.values(selection).map((value) => String(value).split('.')) || []
 
   // Return the paths with the default preview paths appended.
   return paths.concat(DEFAULT_PREVIEW_PATHS)
