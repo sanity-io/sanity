@@ -4,7 +4,6 @@ export interface CalendarContextValue {
   date?: Date
   endDate?: Date
   focusedDate: Date
-  fontSize: number
   selectRange?: boolean
   selectTime?: boolean
 
