@@ -270,7 +270,6 @@ const DefaultAssetSource = function DefaultAssetSource(
                 icon={DownloadIcon}
                 loading={isLoading}
                 onClick={handleFetchNextPage}
-                // eslint-disable-next-line no-attribute-string-literals/no-attribute-string-literals
                 size="large"
                 text={t('asset-source.dialog.load-more')}
                 tone="primary"
