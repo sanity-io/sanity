@@ -761,4 +761,157 @@ describe('plugin:withPortableTextMarksModel', () => {
       expect(onChange).toHaveBeenCalledWith({type: 'selection', selection: nextSelectionObject})
     })
   })
+  describe('removing annotations', () => {
+    it('removes the markDefs if the annotation is no longer in use', async () => {
+      const editorRef: React.RefObject<PortableTextEditor> = React.createRef()
+      const initialValue = [
+        {
+          _key: '5fc57af23597',
+          _type: 'myTestBlockType',
+          children: [
+            {
+              _key: 'be1c67c6971a',
+              _type: 'span',
+              marks: ['fde1fd54b544'],
+              text: 'This is a link',
+            },
+          ],
+          markDefs: [
+            {
+              _key: 'fde1fd54b544',
+              _type: 'link',
+              url: '1',
+            },
+          ],
+          style: 'normal',
+        },
+      ]
+      const onChange = jest.fn()
+      await waitFor(() => {
+        render(
+          <PortableTextEditorTester
+            onChange={onChange}
+            ref={editorRef}
+            schemaType={schemaType}
+            value={initialValue}
+          />,
+        )
+      })
+
+      await waitFor(() => {
+        if (editorRef.current) {
+          PortableTextEditor.focus(editorRef.current)
+          PortableTextEditor.select(editorRef.current, {
+            focus: {path: [{_key: '5fc57af23597'}, 'children', {_key: 'be1c67c6971a'}], offset: 14},
+            anchor: {path: [{_key: '5fc57af23597'}, 'children', {_key: 'be1c67c6971a'}], offset: 0},
+          })
+          // // eslint-disable-next-line max-nested-callbacks
+          const linkType = editorRef.current.schemaTypes.annotations.find((a) => a.name === 'link')
+          if (!linkType) {
+            throw new Error('No link type found')
+          }
+          PortableTextEditor.removeAnnotation(editorRef.current, linkType)
+          expect(PortableTextEditor.getValue(editorRef.current)).toEqual([
+            {
+              _key: '5fc57af23597',
+              _type: 'myTestBlockType',
+              children: [
+                {
+                  _key: 'be1c67c6971a',
+                  _type: 'span',
+                  marks: [],
+                  text: 'This is a link',
+                },
+              ],
+              markDefs: [],
+              style: 'normal',
+            },
+          ])
+        }
+      })
+    })
+    it('preserves the markDefs if the annotation will continue in use', async () => {
+      const editorRef: React.RefObject<PortableTextEditor> = React.createRef()
+      const initialValue = [
+        {
+          _key: '5fc57af23597',
+          _type: 'myTestBlockType',
+          children: [
+            {
+              _key: 'be1c67c6971a',
+              _type: 'span',
+              marks: ['fde1fd54b544'],
+              text: 'This is a link',
+            },
+          ],
+          markDefs: [
+            {
+              _key: 'fde1fd54b544',
+              _type: 'link',
+              url: '1',
+            },
+          ],
+          style: 'normal',
+        },
+      ]
+      const onChange = jest.fn()
+      await waitFor(() => {
+        render(
+          <PortableTextEditorTester
+            onChange={onChange}
+            ref={editorRef}
+            schemaType={schemaType}
+            value={initialValue}
+          />,
+        )
+      })
+
+      await waitFor(() => {
+        if (editorRef.current) {
+          PortableTextEditor.focus(editorRef.current)
+          PortableTextEditor.select(editorRef.current, {
+            focus: {path: [{_key: '5fc57af23597'}, 'children', {_key: 'be1c67c6971a'}], offset: 10},
+            anchor: {
+              path: [{_key: '5fc57af23597'}, 'children', {_key: 'be1c67c6971a'}],
+              offset: 0,
+            },
+          })
+          // // eslint-disable-next-line max-nested-callbacks
+          const linkType = editorRef.current.schemaTypes.annotations.find((a) => a.name === 'link')
+          if (!linkType) {
+            throw new Error('No link type found')
+          }
+          PortableTextEditor.removeAnnotation(editorRef.current, linkType)
+          expect(PortableTextEditor.getValue(editorRef.current)).toEqual([
+            {
+              _key: '5fc57af23597',
+              _type: 'myTestBlockType',
+              children: [
+                {
+                  _key: 'be1c67c6971a',
+                  _type: 'span',
+                  marks: [],
+                  text: 'This is a ',
+                },
+                {
+                  _key: '1',
+                  marks: ['fde1fd54b544'],
+                  _type: 'span',
+                  text: 'link',
+                },
+              ],
+              markDefs: [
+                {
+                  _key: 'fde1fd54b544',
+                  _type: 'link',
+                  url: '1',
+                },
+              ],
+              style: 'normal',
+            },
+          ])
+        }
+      })
+    })
+  })
 })

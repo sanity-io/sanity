@@ -2,7 +2,6 @@ import {BellIcon, ImageIcon, InfoOutlineIcon} from '@sanity/icons'
 import {Rule} from '@sanity/types'
 import {defineArrayMember, defineField, defineType} from 'sanity'
 import {InfoBoxPreview} from './InfoBoxPreview'
-import {LinkAnnotationInput} from './LinkAnnotationInput'
 
 export const ptAllTheBellsAndWhistlesType = defineType({
   type: 'document',
@@ -33,7 +32,6 @@ export const ptAllTheBellsAndWhistlesType = defineType({
                 type: 'object',
                 name: 'link',
                 title: 'Link',
-                components: {input: LinkAnnotationInput},
                 // options: {
                 //   modal: {type: 'dialog'},
                 // },
