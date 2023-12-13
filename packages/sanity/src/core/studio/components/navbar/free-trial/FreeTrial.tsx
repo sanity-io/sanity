@@ -16,13 +16,17 @@ export function FreeTrial({type}: FreeTrialProps) {
   const [showPopover, setShowPopover] = useState(type !== 'mobile')
 
   useEffect(() => {
-    setTimeout(() => {
+    const timer = setTimeout(() => {
       setShowPopover(true)
     }, 300)
+
+    return () => {
+      clearTimeout(timer)
+    }
   }, [])
 
   const closeAndReOpen = useCallback(() => toggleShowContent(true), [toggleShowContent])
-  const toggleDialog = useCallback(() => toggleShowContent(), [toggleShowContent])
+  const toggleDialog = useCallback(() => toggleShowContent(false), [toggleShowContent])
 
   if (!data?.id) return null
   const dialogToRender = showOnLoad ? data.showOnLoad : data.showOnClick

@@ -25,9 +25,9 @@ export const FreeTrialProvider = ({children}: FreeTrialProviderProps) => {
   const client = useClient({apiVersion: 'vX'})
 
   const fetchData = async () => {
-    const response = (await client.request({
+    const response = await client.request<FreeTrialResponse | null>({
       url: `/journey/trial?studioVersion=${SANITY_VERSION}`,
-    })) as unknown as FreeTrialResponse | null
+    })
 
     setData(response)
     // Validates if the user has seen the "structure rename modal" before showing this one. To avoid multiple popovers at same time.

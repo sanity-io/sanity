@@ -28,8 +28,6 @@ const Link = styled.a<{useTextColor: boolean}>`
 `
 
 const DynamicIconContainer = styled.span`
-  // padding-left: 6px;
-  // padding-right: 3px;
   > svg {
     display: inline;
     font-size: calc(21 / 16 * 1rem) !important;
