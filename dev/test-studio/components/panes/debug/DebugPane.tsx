@@ -51,16 +51,16 @@ export const DebugPane: UserComponent = function DebugPane(props) {
 
   return (
     <Box height="fill">
-      <Card padding={3} tone="transparent">
-        <Stack space={2}>
-          <Text textOverflow="ellipsis">
+      <Box padding={4} paddingTop={0}>
+        <Stack space={3}>
+          <Text muted size={1} textOverflow="ellipsis">
             Random ID: <code>{randomId}</code>
           </Text>
           <Text textOverflow="ellipsis" size={1} muted>
             Assigned on pane component mount
           </Text>
         </Stack>
-      </Card>
+      </Box>
 
       <Card borderBottom padding={2}>
         <Stack space={1}>
@@ -74,15 +74,17 @@ export const DebugPane: UserComponent = function DebugPane(props) {
           >
             <Flex>
               <Box>
-                <Text>
+                <Text size={1}>
                   <LinkIcon />
                 </Text>
               </Box>
               <Box flex={1} marginLeft={3}>
-                <Text textOverflow="ellipsis">ChildLink</Text>
+                <Text size={1} textOverflow="ellipsis">
+                  ChildLink
+                </Text>
               </Box>
               <Box>
-                <Text>
+                <Text size={1}>
                   <ChevronRightIcon />
                 </Text>
               </Box>
@@ -98,15 +100,17 @@ export const DebugPane: UserComponent = function DebugPane(props) {
           >
             <Flex>
               <Box>
-                <Text>
+                <Text size={1}>
                   <ControlsIcon />
                 </Text>
               </Box>
               <Box flex={1} marginLeft={3}>
-                <Text textOverflow="ellipsis">ParameterizedLink</Text>
+                <Text size={1} textOverflow="ellipsis">
+                  ParameterizedLink
+                </Text>
               </Box>
               <Box>
-                <Text>
+                <Text size={1}>
                   <ChevronDownIcon />
                 </Text>
               </Box>
