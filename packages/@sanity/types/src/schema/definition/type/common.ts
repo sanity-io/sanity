@@ -1,5 +1,5 @@
 import type {ComponentType, ReactElement, ReactNode} from 'react'
-import type {ConditionalProperty} from '../../types'
+import type {ConditionalProperty, DeprecatedProperty} from '../../types'
 import type {ObjectOptions} from './object'
 
 /** @public */
@@ -32,6 +32,7 @@ export interface BaseSchemaDefinition {
   icon?: ComponentType | ReactNode
   validation?: unknown
   initialValue?: unknown
+  deprecated?: DeprecatedProperty
   /*
    * These are not the properties you are looking for.
    * To avoid cyclic dependencies on Prop-types, the components property is
