@@ -32,6 +32,7 @@
     "@sanity/locale-nn-no": "^1.0.0",
     "@sanity/locale-pt-pt": "^1.0.0",
     "@sanity/locale-sv-se": "^1.0.0",
+    "@sanity/logos": "^2.0.2",
     "@sanity/portable-text-editor": "3.22.1",
     "@sanity/tsdoc": "1.0.0-alpha.38",
     "@sanity/types": "3.22.1",

@@ -1,4 +1,5 @@
 import {BookIcon} from '@sanity/icons'
+import {SanityMonogram} from '@sanity/logos'
 import {visionTool} from '@sanity/vision'
 import {defineConfig, definePlugin} from 'sanity'
 import {deskTool} from 'sanity/desk'
@@ -144,6 +145,7 @@ export default defineConfig([
     dataset: 'test',
     plugins: [sharedSettings()],
     basePath: '/test',
+    icon: SanityMonogram,
   },
   {
     name: 'tsdoc',
