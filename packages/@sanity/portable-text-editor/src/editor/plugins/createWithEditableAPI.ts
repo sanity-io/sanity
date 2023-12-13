@@ -24,7 +24,7 @@ import {
   PortableTextMemberSchemaTypes,
   PortableTextSlateEditor,
 } from '../../types/editor'
-import {toSlateValue, fromSlateValue} from '../../utils/values'
+import {toSlateValue, fromSlateValue, isEqualToEmptyEditor} from '../../utils/values'
 import {toSlateRange, toPortableTextRange} from '../../utils/ranges'
 import {PortableTextEditor} from '../PortableTextEditor'
 
@@ -181,6 +181,20 @@ export function createWithEditableAPI(
           ],
           portableTextEditor,
         )[0] as unknown as Node
+        const [focusBlock] = Array.from(
+          Editor.nodes(editor, {
+            at: editor.selection.focus.path.slice(0, 1),
+            match: (n) => n._type === types.block.name,
+          }),
+        )[0] || [undefined]
+
+        const isEmptyTextBlock = focusBlock && isEqualToEmptyEditor([focusBlock], types)
+
+        if (isEmptyTextBlock) {
+          // If the text block is empty, remove it before inserting the new block.
+          Transforms.removeNodes(editor, {at: editor.selection})
+        }
+
         Editor.insertNode(editor, block)
         editor.onChange()
         return (
