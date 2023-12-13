@@ -1,6 +1,7 @@
+import {DotIcon} from '@sanity/icons'
 import {PreviewValue, SanityDocument} from '@sanity/types'
-import {Box, ButtonTone, Flex} from '@sanity/ui'
-import React from 'react'
+import {Text} from '@sanity/ui'
+import {useMemo} from 'react'
 import styled, {css} from 'styled-components'
 
 export interface DocumentStatusProps {
@@ -9,28 +10,27 @@ export interface DocumentStatusProps {
   published?: PreviewValue | Partial<SanityDocument> | null
 }
 
-const SIZE = 5 // px
-
-const Dot = styled(Box)<{$draft?: boolean; $hidePublishedStatus: boolean; $published: boolean}>(({
-  theme,
-  $draft,
-  $hidePublishedStatus,
-  $published,
-}) => {
-  let tone: ButtonTone = 'default'
-  if ($published) {
-    tone = $draft ? 'caution' : 'positive'
-  }
+const Root = styled(Text)<{
+  $draft: boolean
+  $hidePublishedStatus: boolean
+  $published: boolean
+}>((props) => {
+  const {$draft, $hidePublishedStatus, $published} = props
 
   return css`
-    background: ${$published
-      ? theme.sanity.v2?.color.selectable[tone].disabled.badge[tone].icon
-      : theme.sanity.v2?.color.selectable[tone].disabled.badge[tone].dot};
-    border-radius: ${SIZE}px;
     display: ${$hidePublishedStatus && $published && !$draft ? 'none' : 'block'};
-    height: ${SIZE}px;
     opacity: ${$hidePublishedStatus && $published && !$draft ? 0 : 1};
-    width: ${SIZE}px;
+
+    &[data-status='published'] {
+      --card-icon-color: var(--card-badge-positive-dot-color);
+    }
+    &[data-status='edited'] {
+      --card-icon-color: var(--card-badge-caution-dot-color);
+    }
+    &[data-status='unpublished'] {
+      --card-icon-color: var(--card-badge-default-dot-color);
+      opacity: 0.5 !important;
+    }
 
     [data-ui='PreviewCard']:hover & {
       opacity: 1;
@@ -49,13 +49,29 @@ export function DocumentStatusIndicator({
   hidePublishedStatus,
   published,
 }: DocumentStatusProps) {
-  if (!draft && !published) {
+  const $draft = !!draft
+  const $published = !!published
+  const $hidePublishedStatus = !!hidePublishedStatus
+
+  const status = useMemo(() => {
+    if (!$draft && $published) return 'published'
+    if ($draft && !$published) return 'unpublished'
+    return 'edited'
+  }, [$draft, $published])
+
+  if (!$draft && !$published) {
     return null
   }
 
   return (
-    <Flex align="center" height="fill" justify="center" style={{flexShrink: 0}}>
-      <Dot $draft={!!draft} $hidePublishedStatus={!!hidePublishedStatus} $published={!!published} />
-    </Flex>
+    <Root
+      $draft={$draft}
+      $hidePublishedStatus={$hidePublishedStatus}
+      $published={$published}
+      data-status={status}
+      size={1}
+    >
+      <DotIcon />
+    </Root>
   )
 }
