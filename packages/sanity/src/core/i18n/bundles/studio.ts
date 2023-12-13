@@ -294,6 +294,24 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Title for the Review Changes pane */
   'changes.title': 'Review changes',
 
+  /** --- Common components --- */
+  /** Tooltip text for context menu buttons */
+  'common.context-menu-button.tooltip': 'Show more',
+
+  /** Default text for dialog cancel button */
+  'common.dialog.cancel-button.text': 'Cancel',
+
+  /** Default text for dialog confirm button */
+  'common.dialog.confirm-button.text': 'Confirm',
+
+  /** Default text in shared loader text / spinner lockup */
+  'common.loading': 'Loading',
+
+  /** --- Configuration issues --- */
+
+  /** Tooltip displayed on configuration issues button */
+  'configuration-issues.button.tooltip': 'Found configuration issues',
+
   /** The fallback title for an ordering menu item if no localized titles are provided. */
   'default-menu-item.fallback-title': 'Sort by {{title}}',
 
@@ -311,24 +329,6 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'default-orderings.name': 'Sort by Name',
   /** Title for the default ordering/SortOrder if no orderings are provided and the title field is found */
   'default-orderings.title': 'Sort by Title',
-  /** --- Common components --- */
-
-  /** Tooltip text for context menu buttons */
-  'common.context-menu-button.tooltip': 'Show more',
-
-  /** Default text for dialog cancel button */
-  'common.dialog.cancel-button.text': 'Cancel',
-
-  /** Default text for dialog confirm button */
-  'common.dialog.confirm-button.text': 'Confirm',
-
-  /** Default text in shared loader text / spinner lockup */
-  'common.loading': 'Loading',
-
-  /** --- Configuration issues --- */
-
-  /** Tooltip displayed on configuration issues button */
-  'configuration-issues.button.tooltip': 'Found configuration issues',
 
   /** The value of the <code>_key</code> property must be a unique string. */
   'form.error.duplicate-keys-alert.details.additional-description':
