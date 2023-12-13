@@ -20,7 +20,7 @@ const FooterCard = styled(Card)({
 
 export function CommentsInspectorFeedbackFooter() {
   return (
-    <FooterCard padding={3}>
+    <FooterCard padding={4}>
       <Text muted size={1}>
         Help improve comments.{' '}
         <Link href={FEEDBACK_FORM_LINK} target="_blank" rel="noreferrer">
