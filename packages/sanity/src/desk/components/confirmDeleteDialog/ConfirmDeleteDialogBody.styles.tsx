@@ -46,7 +46,7 @@ export const Table = styled.table`
 `
 
 export const DocumentIdFlex = styled(Flex)`
-  min-height: 35px;
+  min-height: 33px;
 `
 
 export const OtherReferenceCount = (props: {totalCount: number; references: unknown[]}) => {
