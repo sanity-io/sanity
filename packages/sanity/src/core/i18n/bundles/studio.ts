@@ -1054,6 +1054,10 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'search.action.toggle-filters-aria-label_hide': 'Hide filters',
   /** Accessibility label for when the search is full screen (on narrow screens) and you want to show filters */
   'search.action.toggle-filters-aria-label_show': 'Show filters',
+  /** Label for when the search is full screen (on narrow screens) and you want to hide filters */
+  'search.action.toggle-filters-label_hide': 'Hide filters',
+  /** Label for when the search is full screen (on narrow screens) and you want to show filters */
+  'search.action.toggle-filters-label_show': 'Show filters',
 
   /** Tooltip text for the global search button */
   'search.button.tooltip': 'Search',
