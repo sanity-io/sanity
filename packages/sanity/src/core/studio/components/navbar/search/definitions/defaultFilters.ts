@@ -28,7 +28,7 @@ export const filterDefinitions: SearchFilterDefinition[] = [
       {name: 'dateTimeEqual', type: 'item'},
       {name: 'dateTimeNotEqual', type: 'item'},
     ],
-    title: 'Updated at',
+    title: 'Edited at',
     name: 'updatedAt',
     type: 'pinned',
   }),
