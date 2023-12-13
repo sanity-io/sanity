@@ -52,13 +52,7 @@ export function CalendarDay({date, onSelect}: CalendarDayProps) {
     onSelect(date)
   }, [date, onSelect])
 
-  const {
-    date: selectedDate,
-    endDate: selectedEndDate,
-    focusedDate,
-    fontSize,
-    selectRange,
-  } = useCalendar()
+  const {date: selectedDate, endDate: selectedEndDate, focusedDate, selectRange} = useCalendar()
 
   const isSelected = selectedDate && isSameDay(date, selectedDate)
   const isStartDate = selectRange && selectedDate && isSameDay(date, selectedDate)
@@ -89,7 +83,8 @@ export function CalendarDay({date, onSelect}: CalendarDayProps) {
       data-within-range={isWithinRange ? true : undefined}
       forwardedAs="button"
       onClick={handleClick}
-      padding={3}
+      paddingX={3}
+      paddingY={2}
       radius={2}
       role="button"
       selected={isSelected || isStartDate || isEndDate}
@@ -110,8 +105,8 @@ export function CalendarDay({date, onSelect}: CalendarDayProps) {
       <Text
         align="center"
         muted={!isSelected && !isCurrentMonth}
-        size={fontSize}
-        weight={isToday ? 'medium' : 'regular'}
+        size={1}
+        weight={isCurrentMonth ? 'medium' : 'regular'}
       >
         {date.getDate()}
       </Text>
