@@ -166,10 +166,10 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
       if (renderPlaceholder && lProps.leaf.placeholder && lProps.text.text === '') {
         return (
           <>
+            {rendered}
             <span style={PLACEHOLDER_STYLE} contentEditable={false}>
               {renderPlaceholder()}
             </span>
-            {rendered}
           </>
         )
       }
