@@ -84,13 +84,8 @@ export function FilterForm({filter}: FilterFormProps) {
           <Card padding={3}>
             <Stack space={3}>
               <Flex align="flex-start" gap={3} justify="space-between">
-                <Box
-                  paddingBottom={1}
-                  paddingLeft={1}
-                  paddingRight={2}
-                  paddingTop={fullscreen ? 2 : 1}
-                >
-                  <FilterDetails filter={filter} small={!fullscreen} />
+                <Box paddingLeft={1} paddingRight={2} paddingY={1}>
+                  <FilterDetails filter={filter} />
                 </Box>
 
                 {fullscreen && (
