@@ -1,8 +1,9 @@
 import {ArrowLeftIcon, ControlsIcon, SearchIcon, SpinnerIcon} from '@sanity/icons'
-import {Box, Card, Flex, Theme} from '@sanity/ui'
+import {Box, Card, Flex} from '@sanity/ui'
 import React, {forwardRef, useCallback, useEffect, useRef} from 'react'
 import styled, {keyframes} from 'styled-components'
 import {Button} from '../../../../../../ui'
+import {StatusButton} from '../../../../../components'
 import {useTranslation} from '../../../../../i18n'
 import {useSearchState} from '../contexts/search/useSearchState'
 import {CustomTextInput} from './common/CustomTextInput'
@@ -23,16 +24,6 @@ const AnimatedSpinnerIcon = styled(SpinnerIcon)`
 const FilterDiv = styled.div`
   line-height: 0;
   position: relative;
-`
-
-const NotificationBadge = styled.div`
-  background: ${({theme}: {theme: Theme}) => theme.sanity.color.selectable?.primary.enabled.fg};
-  border-radius: 100%;
-  height: 6px;
-  position: absolute;
-  right: 2px;
-  top: 2px;
-  width: 6px;
 `
 
 interface SearchHeaderProps {
@@ -126,20 +117,22 @@ export const SearchHeader = forwardRef<HTMLInputElement, SearchHeaderProps>(func
         {/* Filter toggle */}
         {fullscreen && (
           <FilterDiv>
-            <Button
+            <StatusButton
               aria-expanded={filtersVisible}
               aria-label={t('search.action.toggle-filters-aria-label', {
                 context: filtersVisible ? 'hide' : 'show',
               })}
-              height="fill"
               icon={ControlsIcon}
               mode="bleed"
               onClick={handleFiltersToggle}
               selected={filtersVisible}
-              tone="default"
-              tooltipProps={{content: filtersVisible ? 'Hide filters' : 'Show filters'}}
+              tone={notificationBadgeVisible ? 'primary' : undefined}
+              tooltipProps={{
+                content: t('search.action.toggle-filters-label', {
+                  context: filtersVisible ? 'hide' : 'show',
+                }),
+              }}
             />
-            {notificationBadgeVisible && <NotificationBadge />}
           </FilterDiv>
         )}
       </Flex>
