@@ -177,7 +177,12 @@ export type SchemaValidationValue =
   | ((rule: Rule) => SchemaValidationValue)
 
 /** @public */
-export interface BaseSchemaType {
+export interface DeprecatedSchemaType {
+  deprecated: DeprecatedProperty
+}
+
+/** @public */
+export interface BaseSchemaType extends Partial<DeprecatedSchemaType> {
   name: string
   title?: string
   description?: string

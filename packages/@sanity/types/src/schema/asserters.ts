@@ -7,6 +7,7 @@ import type {
   BlockSchemaType,
   BlockStyleObjectField,
   BooleanSchemaType,
+  DeprecatedSchemaType,
   NumberSchemaType,
   ObjectSchemaType,
   ReferenceSchemaType,
@@ -103,6 +104,12 @@ export function isPrimitiveSchemaType(
 /** @internal */
 export function isReferenceSchemaType(type: unknown): type is ReferenceSchemaType {
   return isRecord(type) && (type.name === 'reference' || isReferenceSchemaType(type.type))
+}
+
+/** @internal */
+export function isDeprecatedSchemaType(type: unknown): type is DeprecatedSchemaType {
+  if (!isRecord(type)) return false
+  return typeof type.deprecated !== 'undefined'
 }
 
 /** @internal */
