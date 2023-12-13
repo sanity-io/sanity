@@ -40,7 +40,7 @@ function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsInnerProps
   }, [firstActionState])
 
   return (
-    <Flex align="center" gap={2}>
+    <Flex align="center" gap={1}>
       {firstActionState && (
         <LayerProvider zOffset={200}>
           <Tooltip disabled={!tooltipContent} content={tooltipContent} placement="top">
