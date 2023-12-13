@@ -12,7 +12,7 @@ const BUILDER_URL_BASE = 'https://schema.club/api/get-schema'
  */
 export async function fetchBuilderSchema(schemaId: string): Promise<DocumentOrObject[]> {
   if (!schemaId) {
-    throw new Error('Builder ID is required')
+    throw new Error('SchemaId is required')
   }
   try {
     const response = await fetch(`${BUILDER_URL_BASE}/${schemaId}`)

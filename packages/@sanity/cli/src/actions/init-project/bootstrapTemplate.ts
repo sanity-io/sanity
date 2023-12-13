@@ -20,6 +20,11 @@ import {
 export interface BootstrapOptions {
   packageName: string
   templateName: string
+  /**
+   * Used for initializing a project from a Schema Builder schema.
+   * This will override the `template` option.
+   * @beta
+   */
   schemaId?: string
   outputPath: string
   useTypeScript: boolean
@@ -55,7 +60,7 @@ export async function bootstrapTemplate(
     await fs.copyFile(path.join(sharedDir, 'tsconfig.json'), path.join(outputPath, 'tsconfig.json'))
   }
 
-  // If we have a builder ID, the template is assembled from the builder schema
+  // If we have a schemaId, the template is assembled from the builder schema
   if (opts.schemaId) {
     debug('Fetching builder schema "%s"', opts.schemaId)
     const documents = await fetchBuilderSchema(opts.schemaId)

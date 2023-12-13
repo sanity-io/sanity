@@ -65,6 +65,11 @@ const isCI = process.env.CI
 
 export interface InitOptions {
   template: string
+  /**
+   * Used for initializing a project from a Schema Builder schema.
+   * This will override the `template` option.
+   * @beta
+   */
   schemaId?: string
   outputDir: string
   name: string
