@@ -98,7 +98,6 @@ export const SearchHeader = forwardRef<HTMLInputElement, SearchHeaderProps>(func
             $background={fullscreen}
             $smallClearButton={fullscreen}
             aria-label={ariaInputLabel}
-            autoFocus
             autoComplete="off"
             border={false}
             clearButton={!!query}
