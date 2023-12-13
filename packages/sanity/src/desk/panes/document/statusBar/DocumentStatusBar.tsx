@@ -19,7 +19,7 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
 
   return useMemo(
     () => (
-      <Flex align="center" gap={1} justify="space-between" padding={2} paddingLeft={3}>
+      <Flex align="center" gap={1} justify="space-between" padding={2}>
         <DocumentSparkline />
 
         <Flex justify="flex-end" ref={actionsBoxRef} style={{flexShrink: 0, marginLeft: 'auto'}}>
