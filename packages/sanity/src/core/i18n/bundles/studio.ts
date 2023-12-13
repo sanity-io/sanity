@@ -801,11 +801,11 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Title of the "quote" block style */
   'inputs.portable-text.style.quote': 'Quote',
   /** Label for action to create a new document from the reference input, when there are multiple templates or document types to choose from */
-  'inputs.reference.action-create-new-document-select': 'Create new…',
+  'inputs.reference.action-create-new-document-select': 'Create…',
   /** Label for action to clear the current value of the reference field */
   'inputs.reference.action.clear': 'Clear',
   /** Label for action to create a new document from the reference input */
-  'inputs.reference.action.create-new-document': 'Create new',
+  'inputs.reference.action.create-new-document': 'Create',
   /** Label for action to duplicate the current item to a new item (used within arrays) */
   'inputs.reference.action.duplicate': 'Duplicate',
   /** Label for action that opens the referenced document in a new tab */
