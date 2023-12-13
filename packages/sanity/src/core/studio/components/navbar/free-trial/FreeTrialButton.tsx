@@ -4,8 +4,8 @@ import {BoltIcon} from '@sanity/icons'
 import {purple, yellow} from '@sanity/color'
 import {useTranslation} from 'react-i18next'
 
-const StyledButton = styled(Button)`
-  padding: 1px;
+const StyledButton = styled(Button)<{smallIcon: boolean}>`
+  padding: ${(props) => (props.smallIcon ? '1px' : 0)};
   position: relative;
 `
 
@@ -21,34 +21,37 @@ const SvgFilledCircle = ({daysLeft}: {daysLeft: number}) => {
   const progress = totalDays - daysLeft
 
   const percentage = Math.round((progress / totalDays) * 100)
-  const strokeDasharray = 2 * 3.14 * 12
+  const radius = 12
+  const strokeDasharray = 2 * Math.PI * radius
   const strokeDashOffset = strokeDasharray * ((100 - percentage) / 100)
+  const strokeWidth = 1.2
+  const size = radius * 2 + strokeWidth
 
   return (
     <Card>
       <CenteredStroke>
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          width="25"
-          height="25"
-          viewBox="0 0 25 25"
+          width={size}
+          height={size}
+          viewBox={`0 0 ${size} ${size}`}
           style={{transform: 'rotate(-90deg)'}}
         >
           <circle
-            r="12"
-            cx="12.5"
-            cy="12.5"
+            r={radius}
+            cx={size / 2}
+            cy={size / 2}
             fill="transparent"
+            strokeWidth={strokeWidth}
             stroke={percentage > 75 ? yellow['600'].hex : purple['400'].hex}
-            strokeWidth="1.2px"
           />
           <circle
-            stroke="var(--card-border-color)"
-            r="12"
-            cx="12.5"
-            cy="12.5"
+            r={radius}
+            cx={size / 2}
+            cy={size / 2}
             fill="transparent"
-            strokeWidth="1.2px"
+            strokeWidth={strokeWidth}
+            stroke="var(--card-border-color)"
             strokeDasharray={strokeDasharray}
             strokeDashoffset={strokeDashOffset}
           />
@@ -65,8 +68,16 @@ interface FreeTrialButtonProps {
 
 function FreeTrialButtonDesktop({toggleShowContent, daysLeft}: FreeTrialButtonProps) {
   return (
-    <StyledButton padding={3} fontSize={1} mode="bleed" onClick={toggleShowContent}>
-      <Text size={1}>
+    <StyledButton
+      padding={3}
+      fontSize={1}
+      mode="bleed"
+      onClick={toggleShowContent}
+      // TODO: After facelift the icons will be all size 1,
+      smallIcon={!!daysLeft}
+    >
+      {/* TODO: After facelift the icons will be all size 1 */}
+      <Text size={daysLeft ? 1 : 2}>
         <BoltIcon />
       </Text>
       {daysLeft > 0 && <SvgFilledCircle daysLeft={daysLeft} />}
