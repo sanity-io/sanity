@@ -23,7 +23,6 @@ export function SpacerButton({size}: SpacerButtonProps) {
         visibility: 'hidden',
         width: 0,
       }}
-      // eslint-disable-next-line no-attribute-string-literals/no-attribute-string-literals
       text="-"
     />
   )
