@@ -55,33 +55,35 @@ export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
 
   return (
     <SearchWrapper hasValidTerms={hasValidTerms} onClose={onClose} onOpen={onOpen} open={open}>
-      <Portal>
-        <FocusLock autoFocus={!supportsTouch} returnFocus>
-          <SearchDialogBox>
-            <InnerCard display="flex" height="fill" scheme={scheme} tone="default">
-              <SearchHeader
-                ariaInputLabel={
-                  hasValidTerms
-                    ? t('search.search-results-aria-label')
-                    : t('search.recent-searches-aria-label')
-                }
-                onClose={onClose}
-                ref={setInputElement}
-              />
-              {filtersVisible && (
-                <Card borderTop flex="none">
-                  <Filters />
-                </Card>
-              )}
-              {hasValidTerms ? (
-                <SearchResults inputElement={inputElement} />
-              ) : (
-                <RecentSearches inputElement={inputElement} />
-              )}
-            </InnerCard>
-          </SearchDialogBox>
-        </FocusLock>
-      </Portal>
+      {open && (
+        <Portal>
+          <FocusLock autoFocus={!supportsTouch} returnFocus>
+            <SearchDialogBox>
+              <InnerCard display="flex" height="fill" scheme={scheme} tone="default">
+                <SearchHeader
+                  ariaInputLabel={
+                    hasValidTerms
+                      ? t('search.search-results-aria-label')
+                      : t('search.recent-searches-aria-label')
+                  }
+                  onClose={onClose}
+                  ref={setInputElement}
+                />
+                {filtersVisible && (
+                  <Card borderTop flex="none">
+                    <Filters />
+                  </Card>
+                )}
+                {hasValidTerms ? (
+                  <SearchResults inputElement={inputElement} />
+                ) : (
+                  <RecentSearches inputElement={inputElement} />
+                )}
+              </InnerCard>
+            </SearchDialogBox>
+          </FocusLock>
+        </Portal>
+      )}
     </SearchWrapper>
   )
 }
