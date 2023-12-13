@@ -62,6 +62,13 @@ const options = {
   allowAssetsInDifferentDataset: false,
 
   /**
+   * Whether or not to allow failing assets due to download/upload errors.
+   *
+   * Optional, defaults to `false`.
+   */
+  allowFailingAssets: false,
+
+  /**
    * Whether or not to replace any existing assets with the same hash.
    * Setting this to `true` will regenerate image metadata on the server,
    * but slows down the import.
