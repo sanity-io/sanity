@@ -14,8 +14,15 @@ export interface FreeTrialDialog {
   _createdAt: string
   ctaButton?: {
     text: string
-    url: string
-  }
+  } & (
+    | {
+        action: 'openNext' | 'closeDialog'
+      }
+    | {
+        url: string
+        action: 'openUrl'
+      }
+  )
   secondaryButton?: {
     text: string
   }

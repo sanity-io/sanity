@@ -33,7 +33,7 @@ export const responses: FreeTrialResponse[] = [
       id: 'trial-ending-popover',
       ctaButton: {
         text: 'Learn more',
-        url: 'https://{{baseUrl}}/manage/project/{{projectId}}/plan',
+        action: 'openNext',
       },
       dialogType: 'popover',
       image: null,
@@ -43,7 +43,7 @@ export const responses: FreeTrialResponse[] = [
       id: 'days-left',
       _rev: 'Nka2T75McG1QANe0fuuDU0',
       _updatedAt: '2023-12-12T07:41:52Z',
-      headingText: '{{daysLeft}} days left in trial',
+      headingText: '5 days left in trial',
       secondaryButton: {text: 'Maybe later'},
       _createdAt: '2023-12-04T13:59:05Z',
       image: {
@@ -124,7 +124,7 @@ export const responses: FreeTrialResponse[] = [
           },
         },
         {
-          text: 'Assign access control per user',
+          text: 'Assign access control per user and this has a long text that is wrapped',
           _key: '7a40c79dc6fd',
           title: 'User roles',
           _type: 'iconAndText',
@@ -144,6 +144,7 @@ export const responses: FreeTrialResponse[] = [
       ],
       ctaButton: {
         text: 'Upgrade plan',
+        action: 'openUrl',
         url: 'https://{{baseUrl}}/manage/project/{{projectId}}/plan',
       },
       dialogType: 'modal',
@@ -233,7 +234,7 @@ export const responses: FreeTrialResponse[] = [
             {
               _type: 'span',
               marks: [],
-              text: 'Click the ',
+              text: 'Click the    ',
               _key: 'a2f34a763da9',
             },
             {
@@ -247,23 +248,9 @@ export const responses: FreeTrialResponse[] = [
               _key: '42568b3e6edb',
               _type: 'span',
               marks: [],
-              text: ' to learn more.',
+              text: '  to learn more.',
             },
           ],
-        },
-        {
-          style: 'normal',
-          _key: '4fda9c4f5908',
-          markDefs: [],
-          children: [
-            {
-              _type: 'span',
-              marks: [],
-              text: '',
-              _key: '1016358dd4a3',
-            },
-          ],
-          _type: 'block',
         },
       ],
       dialogType: 'popover',
@@ -278,12 +265,11 @@ export const responses: FreeTrialResponse[] = [
       },
       _updatedAt: '2023-12-12T10:12:02Z',
       ctaButton: {
-        text: 'Upgrade plan',
-        url: 'https://{{baseUrl}}/manage/project/{{projectId}}/plan',
+        action: 'closeDialog',
+        text: 'Got it',
       },
       headingText: 'You got a free upgrade!',
       _createdAt: '2023-12-11T17:45:26Z',
-      secondaryButton: {text: 'Maybe later'},
     },
     showOnClick: {
       image: {
@@ -294,6 +280,7 @@ export const responses: FreeTrialResponse[] = [
       },
       _updatedAt: '2023-12-12T07:41:52Z',
       ctaButton: {
+        action: 'openUrl',
         text: 'Upgrade plan',
         url: 'https://{{baseUrl}}/manage/project/{{projectId}}/plan',
       },
@@ -374,7 +361,7 @@ export const responses: FreeTrialResponse[] = [
           icon: {
             url: 'https://cdn.sanity.io/images/pyrmmpch/staging/1caa6b91775d4ac3ec294dcb8ca4444ccdd07d51-21x21.svg',
           },
-          text: 'Assign access control per user',
+          text: 'Assign access control per user and this has a long text ',
           _key: '7a40c79dc6fd',
           title: 'User roles',
           _type: 'iconAndText',
@@ -389,7 +376,7 @@ export const responses: FreeTrialResponse[] = [
           title: 'Scheduling',
         },
       ],
-      headingText: '{{daysLeft}} days left in trial',
+      headingText: '15 days left in trial',
       secondaryButton: {text: 'Maybe later'},
       _createdAt: '2023-12-04T13:59:05Z',
       _rev: 'Nka2T75McG1QANe0fuuDU0',
@@ -411,6 +398,7 @@ export const responses: FreeTrialResponse[] = [
       _id: '8e5a0f9b-7292-4f41-8272-d3642369cd40',
       _updatedAt: '2023-12-12T07:41:41Z',
       ctaButton: {
+        action: 'openUrl',
         text: 'Upgrade plan',
         url: 'https://{{baseUrl}}/manage/project/{{projectId}}/plan',
       },
@@ -608,6 +596,7 @@ export const responses: FreeTrialResponse[] = [
         },
       ],
       ctaButton: {
+        action: 'openUrl',
         url: 'https://{{baseUrl}}/manage/project/{{projectId}}/plan',
         text: 'Upgrade plan',
       },

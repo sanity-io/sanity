@@ -38,10 +38,11 @@ const StyledDialog = styled(Dialog)`
 interface ModalContentProps {
   content: FreeTrialDialog
   handleClose: () => void
+  handleOpenNext: () => void
   open: boolean
 }
 
-export function DialogContent({handleClose, content, open}: ModalContentProps) {
+export function DialogContent({handleClose, handleOpenNext, content, open}: ModalContentProps) {
   const schemeValue = useColorSchemeValue()
   if (!open) return null
   return (
@@ -69,12 +70,18 @@ export function DialogContent({handleClose, content, open}: ModalContentProps) {
             padding={2}
             fontSize={1}
             text={content.ctaButton?.text}
-            href={content.ctaButton?.url}
             autoFocus
             tone="primary"
-            as="a"
-            target="_blank"
-            rel="noopener noreferrer"
+            {...(content.ctaButton?.action === 'openUrl'
+              ? {
+                  href: content.ctaButton.url,
+                  target: '_blank',
+                  rel: 'noopener noreferrer',
+                  as: 'a',
+                }
+              : {
+                  onClick: content.ctaButton?.action === 'openNext' ? handleOpenNext : handleClose,
+                })}
           />
         </Flex>
       }

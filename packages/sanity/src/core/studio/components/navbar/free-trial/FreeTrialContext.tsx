@@ -7,7 +7,10 @@ interface FreeTrialContextProps {
   data: FreeTrialResponse | null
   showDialog: boolean
   showOnLoad: boolean
-  toggleShowContent: () => void
+  /**
+   * If the user is seeing the `showOnLoad` popover or modal, and clicks on the pricing button the `showOnClick` modal should be triggered.
+   */
+  toggleShowContent: (closeAndReOpen?: boolean) => void
 }
 
 const FreeTrialContext = createContext<FreeTrialContextProps | undefined>(undefined)
@@ -40,17 +43,21 @@ export const FreeTrialProvider = ({children}: FreeTrialProviderProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const toggleShowContent = useCallback(() => {
-    if (showOnLoad) {
-      setShowOnLoad(false)
-      setShowDialog(false)
-      if (data?.showOnLoad?.id) {
-        client.request({url: `/journey/trial/${data?.showOnLoad.id}`, method: 'POST'})
+  const toggleShowContent = useCallback(
+    (closeAndReOpen = false) => {
+      if (showOnLoad) {
+        setShowOnLoad(false)
+        // If the user clicks on the button, while the show on load is open, we want to trigger the modal.
+        setShowDialog(closeAndReOpen)
+        if (data?.showOnLoad?.id) {
+          client.request({url: `/journey/trial/${data?.showOnLoad.id}`, method: 'POST'})
+        }
+      } else {
+        setShowDialog((p) => !p)
       }
-    } else {
-      setShowDialog((p) => !p)
-    }
-  }, [client, showOnLoad, data?.showOnLoad?.id])
+    },
+    [client, showOnLoad, data?.showOnLoad?.id],
+  )
 
   return (
     <FreeTrialContext.Provider value={{data, showDialog, toggleShowContent, showOnLoad}}>

@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react'
+import {useCallback, useEffect, useState} from 'react'
 import {Popover} from '@sanity/ui'
 import {PopoverContent} from './PopoverContent'
 import {DialogContent} from './DialogContent'
@@ -20,8 +20,11 @@ export function FreeTrial({type}: FreeTrialProps) {
       setShowPopover(true)
     }, 300)
   }, [])
-  if (!data?.id) return null
 
+  const closeAndReOpen = useCallback(() => toggleShowContent(true), [toggleShowContent])
+  const toggleDialog = useCallback(() => toggleShowContent(), [toggleShowContent])
+
+  if (!data?.id) return null
   const dialogToRender = showOnLoad ? data.showOnLoad : data.showOnClick
   if (!dialogToRender) return null
 
@@ -34,12 +37,18 @@ export function FreeTrial({type}: FreeTrialProps) {
           radius={2}
           portal
           placement={type === 'mobile' ? 'top' : 'bottom-end'}
-          content={<PopoverContent content={dialogToRender} handleClose={toggleShowContent} />}
+          content={
+            <PopoverContent
+              content={dialogToRender}
+              handleClose={toggleDialog}
+              handleOpenNext={closeAndReOpen}
+            />
+          }
         >
           <div>
             <FreeTrialButton
               type={type}
-              toggleShowContent={toggleShowContent}
+              toggleShowContent={closeAndReOpen}
               daysLeft={data.daysLeft}
             />
           </div>
@@ -50,8 +59,13 @@ export function FreeTrial({type}: FreeTrialProps) {
 
   return (
     <Wrapper type={type}>
-      <FreeTrialButton type={type} toggleShowContent={toggleShowContent} daysLeft={data.daysLeft} />
-      <DialogContent content={dialogToRender} handleClose={toggleShowContent} open={showDialog} />
+      <FreeTrialButton type={type} toggleShowContent={closeAndReOpen} daysLeft={data.daysLeft} />
+      <DialogContent
+        content={dialogToRender}
+        handleClose={toggleDialog}
+        handleOpenNext={closeAndReOpen}
+        open={showDialog}
+      />
     </Wrapper>
   )
 }

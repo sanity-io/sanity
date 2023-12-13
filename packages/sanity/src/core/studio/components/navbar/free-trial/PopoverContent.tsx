@@ -14,9 +14,10 @@ const Image = styled.img`
 interface PopoverContentProps {
   content: FreeTrialDialog
   handleClose: () => void
+  handleOpenNext: () => void
 }
 
-export function PopoverContent({content, handleClose}: PopoverContentProps) {
+export function PopoverContent({content, handleClose, handleOpenNext}: PopoverContentProps) {
   const schemeValue = useColorSchemeValue()
 
   return (
@@ -49,13 +50,18 @@ export function PopoverContent({content, handleClose}: PopoverContentProps) {
             padding={2}
             fontSize={1}
             text={content.ctaButton?.text}
-            href={content.ctaButton?.url}
-            as={content.ctaButton?.url ? 'a' : undefined}
-            onClick={content.ctaButton?.url ? undefined : handleClose}
             autoFocus
             tone="primary"
-            target="_blank"
-            rel="noopener noreferrer"
+            {...(content.ctaButton?.action === 'openUrl'
+              ? {
+                  href: content.ctaButton.url,
+                  target: '_blank',
+                  rel: 'noopener noreferrer',
+                  as: 'a',
+                }
+              : {
+                  onClick: content.ctaButton?.action === 'openNext' ? handleOpenNext : handleClose,
+                })}
           />
         </Flex>
       </Container>

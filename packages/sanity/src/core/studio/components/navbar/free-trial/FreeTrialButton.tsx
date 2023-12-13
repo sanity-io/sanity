@@ -21,38 +21,40 @@ const SvgFilledCircle = ({daysLeft}: {daysLeft: number}) => {
   const progress = totalDays - daysLeft
 
   const percentage = Math.round((progress / totalDays) * 100)
-  const strokeDasharray = 2 * 3.14 * 10
+  const strokeDasharray = 2 * 3.14 * 12
   const strokeDashOffset = strokeDasharray * ((100 - percentage) / 100)
 
   return (
-    <CenteredStroke>
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="23"
-        height="23"
-        viewBox="0 0 23 23"
-        style={{transform: 'rotate(-90deg)'}}
-      >
-        <circle
-          r="10"
-          cx="11.5"
-          cy="11.5"
-          fill="transparent"
-          stroke={percentage > 75 ? yellow['600'].hex : purple['400'].hex}
-          strokeWidth="1.2px"
-        />
-        <circle
-          stroke="#E6E8EC"
-          r="10"
-          cx="11.5"
-          cy="11.5"
-          fill="transparent"
-          strokeWidth="1.2px"
-          strokeDasharray={strokeDasharray}
-          strokeDashoffset={strokeDashOffset}
-        />
-      </svg>
-    </CenteredStroke>
+    <Card>
+      <CenteredStroke>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="25"
+          height="25"
+          viewBox="0 0 25 25"
+          style={{transform: 'rotate(-90deg)'}}
+        >
+          <circle
+            r="12"
+            cx="12.5"
+            cy="12.5"
+            fill="transparent"
+            stroke={percentage > 75 ? yellow['600'].hex : purple['400'].hex}
+            strokeWidth="1.2px"
+          />
+          <circle
+            stroke="var(--card-border-color)"
+            r="12"
+            cx="12.5"
+            cy="12.5"
+            fill="transparent"
+            strokeWidth="1.2px"
+            strokeDasharray={strokeDasharray}
+            strokeDashoffset={strokeDashOffset}
+          />
+        </svg>
+      </CenteredStroke>
+    </Card>
   )
 }
 

@@ -1,9 +1,9 @@
 import {PortableText, PortableTextComponents} from '@portabletext/react'
-import {gray} from '@sanity/color'
 import {LinkIcon} from '@sanity/icons'
 import {PortableTextBlock} from '@sanity/types'
-import {Box, Flex, Text} from '@sanity/ui'
+import {Box, Card, Flex, Text} from '@sanity/ui'
 import styled from 'styled-components'
+import React, {useEffect, useState} from 'react'
 
 interface DescriptionSerializerProps {
   blocks: PortableTextBlock[]
@@ -15,41 +15,51 @@ const Divider = styled(Box)`
   width: 100%;
 `
 
-const ImageAsIcon = styled.img`
-  width: 21px;
-  height: 21px;
-  margin-right: 8px;
-`
-
-const InlineIconImage = styled.img`
-  width: 21px;
-  height: 21px;
-  margin: -7px 0;
-`
-
 const SerializerContainer = styled.div`
-  --card-fg-color: ${gray[600].hex};
   // Remove margin bottom to last box.
   > [data-ui='Box']:last-child {
     margin-bottom: 0;
   }
 `
 
-const IconRowTitle = styled(Text)`
-  --card-fg-color: ${gray[800].hex};
-`
-
 const Link = styled.a<{useTextColor: boolean}>`
   font-weight: 600;
-  color: ${(props) => (props.useTextColor ? 'var(--card-fg-color) !important' : '')};
+  color: ${(props) => (props.useTextColor ? 'var(--card-muted-fg-color) !important' : '')};
 `
+
+const DynamicIconContainer = styled.span`
+  // padding-left: 6px;
+  // padding-right: 3px;
+  > svg {
+    display: inline;
+    font-size: calc(21 / 16 * 1rem) !important;
+    margin: -0.375rem 0 !important;
+  }
+`
+const DynamicIcon = (props: {icon: {url: string}}) => {
+  const [ref, setRef] = useState<HTMLSpanElement | null>(null)
+  useEffect(() => {
+    if (!ref) return
+    fetch(props.icon.url)
+      .then((response) => response.text())
+      .then((data) => {
+        if (!ref) return
+
+        ref.innerHTML = data.replace(/stroke=".*?"/g, 'stroke="currentColor"')
+      })
+  }, [ref, props.icon.url])
+
+  return <DynamicIconContainer ref={setRef} />
+}
 
 function NormalBlock(props: {children: React.ReactNode}) {
   const {children} = props
 
   return (
     <Box paddingX={2} marginBottom={4}>
-      <Text size={1}>{children}</Text>
+      <Text size={1} muted>
+        {children}
+      </Text>
     </Box>
   )
 }
@@ -84,9 +94,7 @@ const components: PortableTextComponents = {
     ),
   },
   types: {
-    inlineIcon: (props) => (
-      <InlineIconImage src={props.value.icon?.url} alt={props.value.icon?.title} />
-    ),
+    inlineIcon: (props) => <DynamicIcon icon={props.value.icon} />,
     divider: () => (
       <Box marginY={3}>
         <Box paddingY={3}>
@@ -95,14 +103,19 @@ const components: PortableTextComponents = {
       </Box>
     ),
     iconAndText: (props) => (
-      <Flex align="center" paddingX={2} marginTop={2}>
-        <ImageAsIcon src={props.value.icon.url} alt={props.value.title} />
-        <IconRowTitle size={1} weight="semibold">
-          {props.value.title}
-        </IconRowTitle>
-        <Box marginLeft={2}>
-          <Text size={1}>{props.value.text}</Text>
-        </Box>
+      <Flex align="flex-start" paddingX={2} paddingTop={1} paddingBottom={2} marginTop={2} gap={2}>
+        <Flex gap={2} style={{flexShrink: 0}}>
+          <Text size={1}>
+            <DynamicIcon icon={props.value.icon} />
+          </Text>
+          <Text size={1} weight="semibold">
+            {props.value.title}
+          </Text>
+        </Flex>
+
+        <Text size={1} muted>
+          {props.value.text}
+        </Text>
       </Flex>
     ),
   },
@@ -110,8 +123,10 @@ const components: PortableTextComponents = {
 
 export function DescriptionSerializer(props: DescriptionSerializerProps) {
   return (
-    <SerializerContainer>
-      <PortableText value={props.blocks} components={components} />
-    </SerializerContainer>
+    <Card tone="default">
+      <SerializerContainer>
+        <PortableText value={props.blocks} components={components} />
+      </SerializerContainer>
+    </Card>
   )
 }
