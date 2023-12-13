@@ -6,6 +6,11 @@ import {muxInput} from 'sanity-plugin-mux-input'
 import {assist} from '@sanity/assist'
 import {googleMapsInput} from '@sanity/google-maps-input'
 import {tsdoc} from '@sanity/tsdoc/studio'
+import {koKRLocale} from '@sanity/locale-ko-kr'
+import {nbNOLocale} from '@sanity/locale-nb-no'
+import {nnNOLocale} from '@sanity/locale-nn-no'
+import {ptPTLocale} from '@sanity/locale-pt-pt'
+import {svSELocale} from '@sanity/locale-sv-se'
 import {theme as tailwindTheme} from './sanity.theme.mjs'
 import {imageAssetSource} from './assetSources'
 import {Branding} from './components/Branding'
@@ -88,6 +93,11 @@ const sharedSettings = definePlugin({
     },
   },
   plugins: [
+    koKRLocale(),
+    nbNOLocale(),
+    nnNOLocale(),
+    ptPTLocale(),
+    svSELocale(),
     deskTool({
       icon: BookIcon,
       structure,
