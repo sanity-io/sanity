@@ -68,10 +68,15 @@ export function InspectDialog(props: InspectDialogProps) {
       onClose={onInspectClose}
       onClickOutside={onInspectClose}
       padding={false}
-      width={3}
+      width={2}
     >
       <Flex direction="column" height="fill">
-        <Card borderBottom padding={3} style={{position: 'sticky', bottom: 0, zIndex: 3}}>
+        <Card
+          padding={3}
+          paddingTop={0}
+          shadow={1}
+          style={{position: 'sticky', bottom: 0, zIndex: 3}}
+        >
           <TabList space={1}>
             <Tab
               aria-controls={`${dialogIdPrefix}tabpanel`}
@@ -116,6 +121,7 @@ export function InspectDialog(props: InspectDialogProps) {
               onKeyDown={maybeSelectAll}
               onDoubleClick={select}
               onFocus={select}
+              size={1}
             >
               {JSON.stringify(value, null, 2)}
             </Code>

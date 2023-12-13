@@ -8,8 +8,8 @@ export const JSONInspectorWrapper = styled.div(({theme}: {theme: Theme}) => {
     & .json-inspector,
     & .json-inspector .json-inspector__selection {
       font-family: ${fonts.code.family};
-      font-size: ${fonts.code.sizes[2].fontSize}px;
-      line-height: ${fonts.code.sizes[2].lineHeight}px;
+      font-size: ${fonts.code.sizes[1].fontSize}px;
+      line-height: ${fonts.code.sizes[1].lineHeight}px;
       color: var(--card-code-fg-color);
     }
 
@@ -54,8 +54,8 @@ export const JSONInspectorWrapper = styled.div(({theme}: {theme: Theme}) => {
     & .json-inspector .json-inspector__leaf_composite > .json-inspector__line::before {
       content: '▸ ';
       margin-left: calc(0 - ${rem(space[4])} + 3px);
-      font-size: ${fonts.code.sizes[2].fontSize}px;
-      line-height: ${fonts.code.sizes[2].lineHeight}px;
+      font-size: ${fonts.code.sizes[1].fontSize}px;
+      line-height: ${fonts.code.sizes[1].lineHeight}px;
     }
 
     &
@@ -63,8 +63,8 @@ export const JSONInspectorWrapper = styled.div(({theme}: {theme: Theme}) => {
       .json-inspector__leaf_expanded.json-inspector__leaf_composite
       > .json-inspector__line::before {
       content: '▾ ';
-      font-size: ${fonts.code.sizes[2].fontSize}px;
-      line-height: ${fonts.code.sizes[2].lineHeight}px;
+      font-size: ${fonts.code.sizes[1].fontSize}px;
+      line-height: ${fonts.code.sizes[1].lineHeight}px;
     }
 
     & .json-inspector .json-inspector__radio,
