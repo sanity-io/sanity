@@ -10,7 +10,6 @@ import {ARROW_KEYS} from './constants'
 type CalendarProps = Omit<React.ComponentProps<'div'>, 'onSelect'> & {
   date?: Date
   endDate?: Date
-  fontSize: number
   onSelect: ({date, endDate}: {date: Date | null; endDate?: Date | null}) => void
   selectRange?: boolean
   selectTime?: boolean
@@ -32,7 +31,7 @@ const PRESERVE_FOCUS_ELEMENT = (
 )
 
 export function Calendar(props: CalendarProps) {
-  const {date, endDate, fontSize, onSelect, selectRange, selectTime} = props
+  const {date, endDate, onSelect, selectRange, selectTime} = props
 
   const [calendarElement, setCalendarElement] = useState<HTMLElement | null>(null)
   const [selectEndValue, setSelectEndValue] = useState(false)
@@ -184,7 +183,6 @@ export function Calendar(props: CalendarProps) {
         date,
         endDate,
         focusedDate,
-        fontSize,
         selectRange,
         selectTime,
         firstWeekDay,
