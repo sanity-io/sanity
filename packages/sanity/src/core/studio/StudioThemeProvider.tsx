@@ -18,7 +18,7 @@ export function StudioThemeProvider({children}: StudioThemeProviderProps) {
     return (
       <ColorSchemeSetValueContext.Provider value={false}>
         <ColorSchemeValueContext.Provider value={scheme}>
-          <ThemeProvider scheme={scheme} theme={theme} tone="transparent">
+          <ThemeProvider scheme={scheme} theme={theme}>
             <LayerProvider>{children}</LayerProvider>
           </ThemeProvider>
         </ColorSchemeValueContext.Provider>
@@ -27,7 +27,7 @@ export function StudioThemeProvider({children}: StudioThemeProviderProps) {
   }
 
   return (
-    <ThemeProvider theme={theme} tone="transparent">
+    <ThemeProvider theme={theme}>
       <LayerProvider>{children}</LayerProvider>
     </ThemeProvider>
   )
