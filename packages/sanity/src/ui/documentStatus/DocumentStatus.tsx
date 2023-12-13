@@ -62,7 +62,7 @@ export function DocumentStatus({absoluteDate, draft, published, singleLine}: Doc
       {updatedDate && (
         // eslint-disable-next-line i18next/no-literal-string
         <StyledText muted size={1} wrap="nowrap">
-          Updated {updatedDate}
+          Edited {updatedDate}
         </StyledText>
       )}
     </Flex>
