@@ -51,6 +51,11 @@ export interface InitFlags {
   project?: string
   dataset?: string
   template?: string
+  /**
+   * Used for initializing a project from a Schema Builder schema.
+   * This will override the `template` option.
+   * @beta
+   */
   schemaId?: string
   visibility?: string
   typescript?: boolean
