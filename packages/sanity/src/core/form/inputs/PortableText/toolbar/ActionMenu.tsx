@@ -1,7 +1,12 @@
 import React, {memo, useCallback, useMemo} from 'react'
 import {Button, ButtonProps, PopoverProps} from '@sanity/ui'
 import {EllipsisVerticalIcon} from '@sanity/icons'
-import {PortableTextEditor, usePortableTextEditor} from '@sanity/portable-text-editor'
+import {
+  PortableTextEditor,
+  usePortableTextEditor,
+  usePortableTextEditorSelection,
+} from '@sanity/portable-text-editor'
+import {isKeySegment} from '@sanity/types'
 import {CollapseMenu, CollapseMenuButton} from '../../../../components/collapseMenu'
 import {PTEToolbarAction, PTEToolbarActionGroup} from './types'
 import {useActiveActionKeys, useFocusBlock} from './hooks'
@@ -22,7 +27,16 @@ interface ActionMenuProps {
 export const ActionMenu = memo(function ActionMenu(props: ActionMenuProps) {
   const {disabled: disabledProp, groups, isFullscreen, collapsed} = props
   const focusBlock = useFocusBlock()
+
   const editor = usePortableTextEditor()
+  const selection = usePortableTextEditorSelection()
+  const isSelectingMultipleBlocks =
+    // Path at 0 is the block level, by comparing those we can detect if the user is selecting multiple blocks
+    selection && isKeySegment(selection.anchor.path[0]) && isKeySegment(selection.focus.path[0])
+      ? // In case of keyed segments
+        selection.anchor.path[0]._key !== selection?.focus.path[0]._key
+      : // In case of non-keyed segments
+        selection?.anchor.path[0] !== selection?.focus.path[0]
 
   const isVoidBlock = focusBlock?._type !== editor.schemaTypes.block.name
   const isEmptyTextBlock =
@@ -58,7 +72,8 @@ export const ActionMenu = memo(function ActionMenu(props: ActionMenuProps) {
   const children = useMemo(
     () =>
       actions.map((action) => {
-        const annotationDisabled = action.type === 'annotation' && isEmptyTextBlock
+        const annotationDisabled =
+          action.type === 'annotation' && (isEmptyTextBlock || isSelectingMultipleBlocks)
         const active = activeKeys.includes(action.key)
         return (
           <CollapseMenuButton
@@ -72,16 +87,22 @@ export const ActionMenu = memo(function ActionMenu(props: ActionMenuProps) {
             onClick={() => action.handle(active)}
             selected={active}
             text={action.title || action.key}
-            tooltipText={action.title || action.key}
+            tooltipText={
+              annotationDisabled
+                ? `Cannot apply ${action.title || action.key} to ${
+                    isEmptyTextBlock ? 'empty block' : 'multiple blocks'
+                  }`
+                : action.title || action.key
+            }
             tooltipProps={{
-              disabled: disabled || annotationDisabled,
+              disabled: disabled,
               placement: isFullscreen ? 'bottom' : 'top',
               portal: 'default',
             }}
           />
         )
       }),
-    [actions, activeKeys, disabled, isEmptyTextBlock, isFullscreen],
+    [actions, activeKeys, disabled, isEmptyTextBlock, isFullscreen, isSelectingMultipleBlocks],
   )
 
   const menuButtonProps = useMemo(
