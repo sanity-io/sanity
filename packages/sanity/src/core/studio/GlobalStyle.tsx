@@ -3,7 +3,7 @@
 import {getTheme_v2} from '@sanity/ui/theme'
 import {createGlobalStyle, css} from 'styled-components'
 
-const SCROLLBAR_SIZE = 8 // px
+const SCROLLBAR_SIZE = 12 // px
 const SCROLLBAR_BORDER_SIZE = 4 // px
 
 export const GlobalStyle = createGlobalStyle((props) => {
@@ -18,7 +18,7 @@ export const GlobalStyle = createGlobalStyle((props) => {
     ::-webkit-scrollbar-thumb {
       background-clip: content-box;
       background-color: var(--card-border-color, ${color.border});
-      border-right: ${SCROLLBAR_BORDER_SIZE}px solid transparent;
+      border: ${SCROLLBAR_BORDER_SIZE}px solid transparent;
     }
 
     ::-webkit-scrollbar-thumb:hover {
