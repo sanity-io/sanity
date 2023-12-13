@@ -56,20 +56,20 @@ export function RowLayout(props: RowLayoutProps) {
       ref={elementRef}
       selected={selected}
       aria-selected={selected}
-      radius={2}
+      radius={1}
       padding={1}
       tone={tone}
     >
       <Stack space={1}>
-        <Flex align="center">
-          {dragHandle && <DragHandle />}
+        <Flex align="center" gap={1}>
+          {dragHandle && <DragHandle paddingY={3} />}
 
           <Box flex={1}>{children}</Box>
 
           {(presence || validation || menu) && (
-            <Flex align="center" gap={2} marginLeft={1} style={{lineHeight: 0}}>
-              {presence && <Box marginLeft={1}>{presence}</Box>}
-              {validation && <Box marginLeft={1}>{validation}</Box>}
+            <Flex align="center" flex="none" gap={2} style={{lineHeight: 0}}>
+              {presence && <Box flex="none">{presence}</Box>}
+              {validation && <Box flex="none">{validation}</Box>}
               {menu}
             </Flex>
           )}

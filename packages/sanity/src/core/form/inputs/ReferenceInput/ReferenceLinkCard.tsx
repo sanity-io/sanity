@@ -5,7 +5,7 @@ import {Card, CardProps} from '@sanity/ui'
 export const StyledCard = styled(Card)`
   /* this is a hack to avoid layout jumps while previews are loading
      there's probably better ways of solving this */
-  min-height: 35px;
+  min-height: 33px;
   position: relative;
 
   /* TextWithTone uses its own logic to set color, and we therefore need */
