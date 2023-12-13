@@ -143,6 +143,7 @@ export const PublishAction: DocumentActionComponent = (props) => {
   if (liveEdit) {
     return {
       tone: 'default',
+      icon: PublishIcon,
       label: t('action.publish.live-edit.label'),
       title: t('action.publish.live-edit.tooltip'),
       disabled: true,
@@ -152,6 +153,7 @@ export const PublishAction: DocumentActionComponent = (props) => {
   if (!isPermissionsLoading && !permissions?.granted) {
     return {
       tone: 'default',
+      icon: PublishIcon,
       label: 'Publish',
       title: (
         <InsufficientPermissionsMessage context="publish-document" currentUser={currentUser} />
@@ -181,7 +183,7 @@ export const PublishAction: DocumentActionComponent = (props) => {
           : t('action.publish.draft.label'),
     // @todo: Implement loading state, to show a `<Button loading />` state
     // loading: publishScheduled || publishState === 'publishing',
-    icon: publishState === 'published' ? CheckmarkIcon : PublishIcon,
+    icon: PublishIcon,
     // eslint-disable-next-line no-nested-ternary
     title: publishScheduled
       ? t('action.publish.waiting')
