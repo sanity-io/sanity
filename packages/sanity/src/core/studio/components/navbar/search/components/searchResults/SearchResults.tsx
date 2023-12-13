@@ -12,7 +12,7 @@ import {useTranslation} from '../../../../../../i18n'
 import {DebugOverlay} from './item/DebugOverlay'
 import {SearchResultItem} from './item/SearchResultItem'
 
-const VIRTUAL_LIST_SEARCH_RESULT_ITEM_HEIGHT = 59 // px
+const VIRTUAL_LIST_SEARCH_RESULT_ITEM_HEIGHT = 57 // px
 const VIRTUAL_LIST_OVERSCAN = 4
 
 const SearchResultsInnerFlex = styled(Flex)<{$loading: boolean}>`
@@ -61,7 +61,7 @@ export function SearchResults({inputElement}: SearchResultsProps) {
             documentId={getPublishedId(item.hit._id) || ''}
             documentType={item.hit._type}
             onClick={handleSearchResultClick}
-            paddingBottom={2}
+            paddingY={1}
           />
           {debug && <DebugOverlay data={item} />}
         </>
@@ -96,8 +96,8 @@ export function SearchResults({inputElement}: SearchResultsProps) {
                     itemHeight={VIRTUAL_LIST_SEARCH_RESULT_ITEM_HEIGHT}
                     items={result.hits}
                     overscan={VIRTUAL_LIST_OVERSCAN}
-                    padding={2}
-                    paddingBottom={0}
+                    paddingX={2}
+                    paddingY={1}
                     ref={setSearchCommandList}
                     renderItem={renderItem}
                   />
