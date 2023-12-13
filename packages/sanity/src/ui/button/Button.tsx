@@ -1,4 +1,5 @@
 /* eslint-disable no-restricted-imports */
+
 import {Button as UIButton, ButtonProps as UIButtonProps} from '@sanity/ui'
 import React, {forwardRef, useCallback} from 'react'
 import styled from 'styled-components'
@@ -13,6 +14,7 @@ type BaseButtonProps = Pick<
   | 'justify'
   | 'loading'
   | 'mode'
+  | 'paddingY'
   | 'selected'
   | 'tone'
   | 'type'
@@ -63,6 +65,7 @@ export const Button = forwardRef(function Button(
   {
     size = 'default',
     mode = 'default',
+    paddingY,
     tone = 'default',
     tooltipProps,
     ...rest
@@ -81,15 +84,11 @@ export const Button = forwardRef(function Button(
     [tooltipProps],
   )
 
+  const sizeProps = size === 'default' ? DEFAULT_BUTTON_PROPS : LARGE_BUTTON_PROPS
+
   return (
     <ConditionalWrapper condition={!!tooltipProps} wrapper={renderWrapper}>
-      <UIButton
-        {...rest}
-        {...(size === 'default' ? DEFAULT_BUTTON_PROPS : LARGE_BUTTON_PROPS)}
-        ref={ref}
-        mode={mode}
-        tone={tone}
-      />
+      <UIButton {...rest} {...sizeProps} paddingY={paddingY} ref={ref} mode={mode} tone={tone} />
     </ConditionalWrapper>
   )
 })
