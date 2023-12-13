@@ -43,7 +43,7 @@ export function UploadProgress({uploadState, onCancel, onStale, height}: Props) 
             </Text>
           </Flex>
 
-          <Card marginTop={3} radius={5} shadow={1}>
+          <Card border marginTop={3} radius={5}>
             <LinearProgress value={uploadState.progress} />
           </Card>
         </LeftSection>
