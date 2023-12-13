@@ -125,7 +125,7 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
   const childValidation = useChildValidation(path, true)
   const validation = useMemo(() => {
     return childValidation.length === 0 ? null : (
-      <Box marginLeft={1} paddingX={1} paddingY={3}>
+      <Box paddingX={1} paddingY={3}>
         <FormFieldValidationStatus validation={childValidation} __unstable_showSummary />
       </Box>
     )
@@ -138,7 +138,7 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
     () =>
       readOnly ? null : (
         <MenuButton
-          button={<ContextMenuButton />}
+          button={<ContextMenuButton paddingY={3} />}
           id={`${props.inputId}-menuButton`}
           menu={
             <Menu>

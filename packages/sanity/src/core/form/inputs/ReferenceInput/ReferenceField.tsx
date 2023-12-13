@@ -192,9 +192,9 @@ export function ReferenceField(props: ReferenceFieldProps) {
   const menu = useMemo(
     () =>
       readOnly ? null : (
-        <Box marginLeft={1}>
+        <Box flex="none">
           <MenuButton
-            button={<ContextMenuButton />}
+            button={<ContextMenuButton paddingY={3} />}
             id={`${inputId}-menuButton`}
             menu={
               <Menu>
@@ -263,7 +263,7 @@ export function ReferenceField(props: ReferenceFieldProps) {
           {isEditing ? (
             <Box>{children}</Box>
           ) : (
-            <Card border radius={1} padding={1} tone={tone}>
+            <Card border radius={2} padding={1} tone={tone}>
               <Stack space={1}>
                 <Flex gap={1} align="center" style={{lineHeight: 0}}>
                   <TooltipDelayGroupProvider delay={TOOLTIP_DELAY_PROPS}>

@@ -69,6 +69,7 @@ export function CreateButton(props: Props) {
           text={t('inputs.reference.action-create-new-document-select')}
           mode="ghost"
           icon={AddIcon}
+          size="large"
         />
       }
       id={id}
@@ -111,6 +112,7 @@ export function CreateButton(props: Props) {
       // eslint-disable-next-line react/jsx-no-bind
       onClick={() => onCreate(createOptions[0])}
       icon={AddIcon}
+      size="large"
     />
   )
 }

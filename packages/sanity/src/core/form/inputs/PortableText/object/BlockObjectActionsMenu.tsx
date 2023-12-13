@@ -96,6 +96,7 @@ export function BlockObjectActionsMenu(props: BlockObjectActionsMenuProps): Reac
               aria-label={t('inputs.portable-text.block.open-menu-aria-label')}
               icon={EllipsisHorizontalIcon}
               mode="bleed"
+              paddingY={3}
               tabIndex={focused ? 0 : 1}
               tooltipProps={{content: 'Open menu'}}
             />
