@@ -1,4 +1,4 @@
-import {BinaryDocumentIcon, EarthAmericasIcon} from '@sanity/icons'
+import {JsonIcon, EarthAmericasIcon} from '@sanity/icons'
 import type {DeskToolFeatures, PaneMenuItem} from '../../types'
 import {INSPECT_ACTION_PREFIX} from './constants'
 import type {DocumentInspector, DocumentInspectorMenuItem, TFunction} from 'sanity'
@@ -45,7 +45,7 @@ function getInspectItem({hasValue, t}: GetMenuItemsParams): PaneMenuItem {
     action: 'inspect',
     group: 'inspectors',
     title: t('document-inspector.menu-item.title'),
-    icon: BinaryDocumentIcon,
+    icon: JsonIcon,
     isDisabled: !hasValue,
     shortcut: 'Ctrl+Alt+I',
   }
