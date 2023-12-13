@@ -1,9 +1,9 @@
 import {Card, Portal, Theme, useClickOutside, useLayer} from '@sanity/ui'
-import React, {useCallback, useState} from 'react'
+import {AnimatePresence, motion, Transition, Variants} from 'framer-motion'
+import React, {useCallback, useRef, useState} from 'react'
 import FocusLock from 'react-focus-lock'
 import styled from 'styled-components'
 import {supportsTouch} from '../../../../../util'
-import {useColorScheme} from '../../../../colorScheme'
 import {
   POPOVER_INPUT_PADDING,
   POPOVER_MAX_HEIGHT,
@@ -26,9 +26,24 @@ export interface SearchPopoverProps {
   open: boolean
 }
 
+const ANIMATION_TRANSITION: Transition = {
+  duration: 0.4,
+  type: 'spring',
+}
+
+const CARD_VARIANTS: Variants = {
+  open: {opacity: 1, scale: 1, x: '-50%'},
+  closed: {opacity: 0, scale: 0.99, x: '-50%'},
+}
+
+const OVERLAY_VARIANTS: Variants = {
+  open: {opacity: 1},
+  closed: {opacity: 0},
+}
+
 const Y_POSITION = 8 // px
 
-const Overlay = styled.div`
+const MotionOverlay = styled(motion.div)`
   background-color: ${({theme}: {theme: Theme}) => theme.sanity.color.base.shadow.umbra};
   bottom: 0;
   left: 0;
@@ -37,7 +52,7 @@ const Overlay = styled.div`
   top: 0;
 `
 
-const SearchPopoverCard = styled(Card)`
+const SearchMotionCard = styled(motion(Card))`
   display: flex !important;
   flex-direction: column;
   left: 50%;
@@ -47,16 +62,15 @@ const SearchPopoverCard = styled(Card)`
   );
   position: absolute;
   top: ${Y_POSITION}px;
-  transform: translateX(-50%);
   width: min(calc(100vw - ${POPOVER_INPUT_PADDING * 2}px), ${POPOVER_MAX_WIDTH}px);
 `
 
 export function SearchPopover({disableFocusLock, onClose, onOpen, open}: SearchPopoverProps) {
-  const [popoverElement, setPopoverElement] = useState<HTMLDivElement | null>(null)
   const [inputElement, setInputElement] = useState<HTMLInputElement | null>(null)
 
+  const popoverElement = useRef<HTMLElement | null>(null)
+
   const {isTopLayer, zIndex} = useLayer()
-  const {scheme} = useColorScheme()
   const {t} = useTranslation()
 
   const {
@@ -75,44 +89,59 @@ export function SearchPopover({disableFocusLock, onClose, onOpen, open}: SearchP
     }
   }, [isTopLayer, onSearchClose, open])
 
-  useClickOutside(handleClickOutside, [popoverElement])
+  useClickOutside(handleClickOutside, [popoverElement.current])
 
   return (
     <SearchWrapper hasValidTerms={hasValidTerms} onClose={onClose} onOpen={onOpen} open={open}>
-      <Portal>
-        <FocusLock autoFocus={!supportsTouch} disabled={disableFocusLock} returnFocus>
-          <Overlay style={{zIndex}} />
+      <AnimatePresence>
+        {open && (
+          <Portal>
+            <FocusLock autoFocus={!supportsTouch} disabled={disableFocusLock} returnFocus>
+              <MotionOverlay
+                animate="open"
+                exit="closed"
+                initial="closed"
+                style={{zIndex}}
+                transition={ANIMATION_TRANSITION}
+                variants={OVERLAY_VARIANTS}
+              />
 
-          <SearchPopoverCard
-            overflow="hidden"
-            radius={POPOVER_RADIUS}
-            ref={setPopoverElement}
-            scheme={scheme}
-            shadow={2}
-            style={{zIndex}}
-          >
-            <SearchHeader
-              ariaInputLabel={
-                hasValidTerms
-                  ? t('search.search-results-aria-label')
-                  : t('search.recent-searches-aria-label')
-              }
-              onClose={onClose}
-              ref={setInputElement}
-            />
-            {filtersVisible && (
-              <Card borderTop flex="none">
-                <Filters />
-              </Card>
-            )}
-            {hasValidTerms ? (
-              <SearchResults inputElement={inputElement} />
-            ) : (
-              <RecentSearches inputElement={inputElement} />
-            )}
-          </SearchPopoverCard>
-        </FocusLock>
-      </Portal>
+              <SearchMotionCard
+                animate="open"
+                exit="closed"
+                initial="closed"
+                overflow="hidden"
+                radius={POPOVER_RADIUS}
+                ref={popoverElement}
+                shadow={2}
+                style={{zIndex}}
+                transition={ANIMATION_TRANSITION}
+                variants={CARD_VARIANTS}
+              >
+                <SearchHeader
+                  ariaInputLabel={
+                    hasValidTerms
+                      ? t('search.search-results-aria-label')
+                      : t('search.recent-searches-aria-label')
+                  }
+                  onClose={onClose}
+                  ref={setInputElement}
+                />
+                {filtersVisible && (
+                  <Card borderTop flex="none">
+                    <Filters />
+                  </Card>
+                )}
+                {hasValidTerms ? (
+                  <SearchResults inputElement={inputElement} />
+                ) : (
+                  <RecentSearches inputElement={inputElement} />
+                )}
+              </SearchMotionCard>
+            </FocusLock>
+          </Portal>
+        )}
+      </AnimatePresence>
     </SearchWrapper>
   )
 }

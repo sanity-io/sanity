@@ -74,9 +74,5 @@ export function SearchWrapper({
     }
   }, [])
 
-  if (!open) {
-    return null
-  }
-
   return children
 }
