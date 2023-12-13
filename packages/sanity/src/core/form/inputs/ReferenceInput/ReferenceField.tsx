@@ -263,7 +263,7 @@ export function ReferenceField(props: ReferenceFieldProps) {
           {isEditing ? (
             <Box>{children}</Box>
           ) : (
-            <Card shadow={1} radius={1} padding={1} tone={tone}>
+            <Card border radius={1} padding={1} tone={tone}>
               <Stack space={1}>
                 <Flex gap={1} align="center" style={{lineHeight: 0}}>
                   <TooltipDelayGroupProvider delay={TOOLTIP_DELAY_PROPS}>
