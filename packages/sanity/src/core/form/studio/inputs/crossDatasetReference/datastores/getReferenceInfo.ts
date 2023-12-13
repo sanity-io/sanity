@@ -74,7 +74,7 @@ export function createGetReferenceInfo(context: {
           (candidate) => candidate.type === resolvedDoc._type,
         )
 
-        const previewPaths = [...(getPreviewPaths(refSchemaType?.preview) || [])]
+        const previewPaths = getPreviewPaths(refSchemaType?.preview) || []
 
         const publishedPreview$ = documentPreviewStore
           .observePaths(doc as Previewable, previewPaths, apiConfig)
