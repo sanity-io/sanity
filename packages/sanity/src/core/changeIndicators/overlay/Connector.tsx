@@ -32,9 +32,10 @@ export const Connector = memo(function Connector({from, to}: Props) {
       <InteractivePath d={linePathDescription} strokeWidth={INTERACTIVE_STROKE_WIDTH} />
 
       <ConnectorPath d={linePathDescription} strokeWidth={STROKE_WIDTH} />
+
       <RightBarWrapper
         top={to.rect.top}
-        left={to.rect.left}
+        left={to.rect.left - 0.5}
         height={to.rect.height}
         width={STROKE_WIDTH}
         bounds={to.bounds}

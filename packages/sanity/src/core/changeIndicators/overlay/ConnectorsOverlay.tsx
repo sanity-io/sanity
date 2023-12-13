@@ -165,10 +165,8 @@ function ConnectorGroup(props: ConnectorGroupProps) {
   const from = useMemo(
     () => ({
       rect: {
-        left: field.rect.left + 2,
-        top: field.rect.top,
-        height: field.rect.height,
-        width: field.rect.width,
+        ...field.rect,
+        left: field.rect.left + 3,
       },
       bounds: field.bounds,
     }),
@@ -176,7 +174,13 @@ function ConnectorGroup(props: ConnectorGroupProps) {
   )
 
   const to = useMemo(
-    () => ({rect: change.rect, bounds: change.bounds}),
+    () => ({
+      rect: {
+        ...change.rect,
+        left: change.rect.left + 1,
+      },
+      bounds: change.bounds,
+    }),
     [change.bounds, change.rect],
   )
 
