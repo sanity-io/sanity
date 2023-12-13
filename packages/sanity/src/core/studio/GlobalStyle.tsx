@@ -1,10 +1,13 @@
+/* eslint-disable camelcase */
+
+import {getTheme_v2} from '@sanity/ui/theme'
 import {createGlobalStyle, css} from 'styled-components'
 
 const SCROLLBAR_SIZE = 14 // px
 const SCROLLBAR_BORDER_SIZE = 4 // px
 
-export const GlobalStyle = createGlobalStyle(({theme}) => {
-  const {color, fonts} = theme.sanity
+export const GlobalStyle = createGlobalStyle((props) => {
+  const {color, font} = getTheme_v2(props.theme)
 
   return css`
     ::-webkit-scrollbar {
@@ -14,13 +17,13 @@ export const GlobalStyle = createGlobalStyle(({theme}) => {
 
     ::-webkit-scrollbar-thumb {
       background-clip: content-box;
-      background-color: ${color.muted.transparent.disabled.fg};
+      background-color: ${color.bg};
       border-radius: ${SCROLLBAR_SIZE}px;
       border: ${SCROLLBAR_BORDER_SIZE}px solid transparent;
     }
 
     ::-webkit-scrollbar-thumb:hover {
-      background-color: ${color.muted.transparent.enabled.fg};
+      background-color: ${color.muted.fg};
     }
 
     ::-webkit-scrollbar-track {
@@ -28,19 +31,19 @@ export const GlobalStyle = createGlobalStyle(({theme}) => {
     }
 
     html {
-      background-color: ${color.base.bg};
+      background-color: ${color.bg};
     }
 
     #sanity {
-      font-family: ${fonts.text.family};
+      font-family: ${font.text.family};
     }
 
     b {
-      font-weight: ${fonts.text.weights.medium};
+      font-weight: ${font.text.weights.medium};
     }
 
     strong {
-      font-weight: ${fonts.text.weights.medium};
+      font-weight: ${font.text.weights.medium};
     }
   `
 })
