@@ -119,6 +119,11 @@ export type ConditionalPropertyCallback = (context: ConditionalPropertyCallbackC
 export type ConditionalProperty = boolean | ConditionalPropertyCallback | undefined
 
 /** @public */
+export interface DeprecatedProperty {
+  reason: string
+}
+
+/** @public */
 export interface InitialValueResolverContext {
   projectId: string
   dataset: string
