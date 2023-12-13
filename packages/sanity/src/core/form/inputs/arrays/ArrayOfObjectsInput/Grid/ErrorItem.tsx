@@ -29,7 +29,7 @@ export function ErrorItem(props: {member: ArrayItemError; sortable?: boolean}) {
       style={{height: '100%'}}
       menu={
         <MenuButton
-          button={<ContextMenuButton />}
+          button={<ContextMenuButton paddingY={3} />}
           id={`${id}-menuButton`}
           menu={
             <Menu>

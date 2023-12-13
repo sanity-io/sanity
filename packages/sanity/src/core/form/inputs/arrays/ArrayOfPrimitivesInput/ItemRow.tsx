@@ -66,7 +66,7 @@ export const ItemRow = React.forwardRef(function ItemRow(
 
   const menu = (
     <MenuButton
-      button={<ContextMenuButton />}
+      button={<ContextMenuButton paddingY={3} />}
       id={`${inputId}-menuButton`}
       popover={MENU_BUTTON_POPOVER_PROPS}
       menu={
@@ -96,7 +96,7 @@ export const ItemRow = React.forwardRef(function ItemRow(
       presence={presence.length === 0 ? null : <FieldPresence presence={presence} maxAvatars={1} />}
       validation={
         validation.length > 0 ? (
-          <Box marginLeft={1} paddingX={1} paddingY={3}>
+          <Box paddingX={1} paddingY={3}>
             <FormFieldValidationStatus validation={validation} />
           </Box>
         ) : null

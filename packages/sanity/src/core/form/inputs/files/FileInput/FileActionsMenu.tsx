@@ -139,6 +139,7 @@ export function FileActionsMenu(props: Props) {
               aria-label={t('inputs.file.actions-menu.file-options.aria-label')}
               data-testid="options-menu-button"
               onClick={handleClick}
+              paddingY={3}
               ref={setOptionsButtonRef}
             />
           </Popover>

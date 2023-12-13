@@ -294,7 +294,7 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
                       hit: hit,
                     }))}
                     onFocus={handleAutocompleteFocus}
-                    radius={1}
+                    radius={2}
                     placeholder={t('inputs.reference.search-placeholder')}
                     onKeyDown={handleAutocompleteKeyDown}
                     readOnly={readOnly}

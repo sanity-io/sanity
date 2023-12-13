@@ -170,7 +170,7 @@ export class ArrayOfPrimitivesInput extends React.PureComponent<
     }))
 
     return (
-      <Stack space={3} data-testid="array-primitives-input">
+      <Stack space={2} data-testid="array-primitives-input">
         <UploadTargetCard
           types={schemaType.of}
           resolveUploader={resolveUploader}
