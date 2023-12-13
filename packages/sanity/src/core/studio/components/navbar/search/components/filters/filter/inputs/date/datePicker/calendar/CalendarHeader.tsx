@@ -1,6 +1,6 @@
 import {upperFirst} from 'lodash'
 import {ChevronLeftIcon, ChevronRightIcon} from '@sanity/icons'
-import {Box, Flex, Inline, Text} from '@sanity/ui'
+import {Flex, Inline, Text} from '@sanity/ui'
 import React, {useCallback} from 'react'
 import {Button} from '../../../../../../../../../../../../ui'
 import {useTranslation} from '../../../../../../../../../../../i18n'
@@ -25,9 +25,11 @@ export function CalendarHeader(props: {
     <Flex align="center" flex={1} justify="space-between">
       <Inline paddingLeft={2} space={1}>
         {/* Technically not correct to simply uppercase first here, but simplifying for now */}
-        <Text weight="medium">{upperFirst(monthFormatter.format(focusedDate))}</Text>
+        <Text size={1} weight="medium">
+          {upperFirst(monthFormatter.format(focusedDate))}
+        </Text>
       </Inline>
-      <Box>
+      <Flex align="center">
         <Button
           aria-label={t('calendar.action.go-to-today-aria-label')}
           mode="bleed"
@@ -46,7 +48,7 @@ export function CalendarHeader(props: {
           onClick={handleNextMonthClick}
           tooltipProps={{content: t('calendar.action.go-to-next-month')}}
         />
-      </Box>
+      </Flex>
     </Flex>
   )
 }
