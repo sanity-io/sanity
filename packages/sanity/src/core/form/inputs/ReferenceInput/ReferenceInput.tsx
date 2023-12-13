@@ -214,14 +214,12 @@ export function ReferenceInput(props: ReferenceInputProps) {
 
       return (
         <StyledPreviewCard forwardedAs="button" type="button" radius={2} tone="inherit">
-          <Box paddingX={3} paddingY={1}>
-            <OptionPreview
-              getReferenceInfo={getReferenceInfo}
-              id={documentId}
-              renderPreview={renderPreview}
-              type={schemaType}
-            />
-          </Box>
+          <OptionPreview
+            getReferenceInfo={getReferenceInfo}
+            id={documentId}
+            renderPreview={renderPreview}
+            type={schemaType}
+          />
         </StyledPreviewCard>
       )
     },
@@ -324,7 +322,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
             loading={searchState.isLoading}
             referenceElement={autocompletePopoverReferenceElementRef.current}
             options={hits}
-            radius={1}
+            radius={2}
             placeholder={t('inputs.reference.search-placeholder')}
             onKeyDown={handleAutocompleteKeyDown}
             readOnly={loadableReferenceInfo.isLoading || readOnly}

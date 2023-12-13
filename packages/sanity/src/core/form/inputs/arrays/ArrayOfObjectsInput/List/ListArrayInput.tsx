@@ -187,7 +187,7 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
   const paddingY = 1
 
   return (
-    <Stack space={3} ref={parentRef}>
+    <Stack space={2} ref={parentRef}>
       <UploadTargetCard
         types={schemaType.of}
         resolveUploader={resolveUploader}
@@ -195,9 +195,9 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
         {...elementProps}
         tabIndex={0}
       >
-        <Stack data-ui="ArrayInput__content" space={3}>
+        <Stack data-ui="ArrayInput__content" space={2}>
           {members.length === 0 ? (
-            <Card padding={3} border style={{borderStyle: 'dashed'}} radius={2}>
+            <Card padding={3} border radius={2}>
               <Text align="center" muted size={1}>
                 {schemaType.placeholder || <>{t('inputs.array.no-items-label')}</>}
               </Text>
@@ -205,7 +205,7 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
           ) : (
             <Card
               border
-              radius={1}
+              radius={2}
               style={{
                 // This is not memoized since it changes on scroll so it will change anyways making memo useless
                 // Account for grid gap
@@ -271,7 +271,6 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
           )}
         </Stack>
       </UploadTargetCard>
-
       <ArrayFunctions
         onChange={onChange}
         onItemAppend={handleAppend}

@@ -27,7 +27,7 @@ export function ErrorItem(props: {
         tone="caution"
         menu={
           <MenuButton
-            button={<ContextMenuButton />}
+            button={<ContextMenuButton paddingY={3} />}
             id={`${id}-menuButton`}
             menu={
               <Menu>

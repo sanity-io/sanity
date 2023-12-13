@@ -181,52 +181,50 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
   const menu = useMemo(
     () =>
       readOnly ? null : (
-        <Box marginLeft={1}>
-          <MenuButton
-            button={<ContextMenuButton />}
-            id={`${inputId}-menuButton`}
-            menu={
-              <Menu ref={menuRef}>
-                {!readOnly && (
-                  <>
-                    <MenuItem
-                      text={t('inputs.reference.action.remove')}
-                      tone="critical"
-                      icon={TrashIcon}
-                      onClick={onRemove}
-                    />
-                    <MenuItem
-                      text={t(
-                        hasRef && isEditing
-                          ? 'inputs.reference.action.replace-cancel'
-                          : 'inputs.reference.action.replace',
-                      )}
-                      icon={hasRef && isEditing ? CloseIcon : ReplaceIcon}
-                      onClick={handleReplace}
-                    />
-                    <MenuItem
-                      text={t('inputs.reference.action.duplicate')}
-                      icon={DuplicateIcon}
-                      onClick={handleDuplicate}
-                    />
-                    <InsertMenu onInsert={handleInsert} types={insertableTypes} />
-                  </>
-                )}
-
-                {!readOnly && !isEditing && hasRef && <MenuDivider />}
-                {!isEditing && hasRef && (
+        <MenuButton
+          button={<ContextMenuButton paddingY={3} />}
+          id={`${inputId}-menuButton`}
+          menu={
+            <Menu ref={menuRef}>
+              {!readOnly && (
+                <>
                   <MenuItem
-                    as={OpenLink}
-                    data-as="a"
-                    text={t('inputs.reference.action.open-in-new-tab')}
-                    icon={OpenInNewTabIcon}
+                    text={t('inputs.reference.action.remove')}
+                    tone="critical"
+                    icon={TrashIcon}
+                    onClick={onRemove}
                   />
-                )}
-              </Menu>
-            }
-            popover={MENU_POPOVER_PROPS}
-          />
-        </Box>
+                  <MenuItem
+                    text={t(
+                      hasRef && isEditing
+                        ? 'inputs.reference.action.replace-cancel'
+                        : 'inputs.reference.action.replace',
+                    )}
+                    icon={hasRef && isEditing ? CloseIcon : ReplaceIcon}
+                    onClick={handleReplace}
+                  />
+                  <MenuItem
+                    text={t('inputs.reference.action.duplicate')}
+                    icon={DuplicateIcon}
+                    onClick={handleDuplicate}
+                  />
+                  <InsertMenu onInsert={handleInsert} types={insertableTypes} />
+                </>
+              )}
+
+              {!readOnly && !isEditing && hasRef && <MenuDivider />}
+              {!isEditing && hasRef && (
+                <MenuItem
+                  as={OpenLink}
+                  data-as="a"
+                  text={t('inputs.reference.action.open-in-new-tab')}
+                  icon={OpenInNewTabIcon}
+                />
+              )}
+            </Menu>
+          }
+          popover={MENU_POPOVER_PROPS}
+        />
       ),
     [
       handleDuplicate,

@@ -108,7 +108,7 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
   const childValidation = useChildValidation(path, true)
   const validation = useMemo(() => {
     return childValidation.length === 0 ? null : (
-      <Box marginLeft={1} paddingX={1} paddingY={3}>
+      <Box paddingX={1} paddingY={3}>
         <FormFieldValidationStatus validation={childValidation} __unstable_showSummary />
       </Box>
     )
@@ -121,7 +121,7 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
     () =>
       readOnly ? null : (
         <MenuButton
-          button={<ContextMenuButton />}
+          button={<ContextMenuButton paddingY={3} />}
           id={`${props.inputId}-menuButton`}
           menu={
             <Menu>
@@ -160,7 +160,7 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
         as="button"
         type="button"
         tone="inherit"
-        radius={2}
+        radius={1}
         disabled={resolvingInitialValue}
         onClick={onOpen}
         ref={previewCardRef}
