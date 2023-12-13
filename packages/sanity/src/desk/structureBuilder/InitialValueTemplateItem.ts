@@ -202,7 +202,7 @@ export function menuItemsFromInitialValueTemplateItems(
   const {schema, templates} = context
   return templateItems.map((item) => {
     const template = templates.find((t) => t.id === item.templateId)
-    const title = item.title || template?.title || 'Create new'
+    const title = item.title || template?.title || 'Create'
 
     const params: BaseIntentParams = {}
     if (template && template.schemaType) {
