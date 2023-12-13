@@ -68,6 +68,7 @@ const ChangeBarWrapper = memo(function ChangeBarWrapper(
   return (
     <div {...restProps} ref={ref} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
       <ElementWithChangeBar
+        hasFocus={hasFocus}
         isChanged={isChanged}
         disabled={disabled}
         withHoverEffect={withHoverEffect}
