@@ -14,10 +14,11 @@ import {
 export function ElementWithChangeBar(props: {
   children: React.ReactNode
   disabled?: boolean
+  hasFocus?: boolean
   isChanged?: boolean
   withHoverEffect?: boolean
 }) {
-  const {children, disabled, isChanged, withHoverEffect = true} = props
+  const {children, disabled, hasFocus, isChanged, withHoverEffect = true} = props
 
   const {onOpenReviewChanges, isReviewChangesOpen} = React.useContext(ConnectorContext)
   const {zIndex} = useLayer()
@@ -48,6 +49,7 @@ export function ElementWithChangeBar(props: {
       data-testid="change-bar-wrapper"
       $changed={isChanged}
       $disabled={disabled}
+      $hasFocus={hasFocus}
       $isReviewChangeOpen={isReviewChangesOpen}
     >
       <FieldWrapper data-testid="change-bar__field-wrapper">{children}</FieldWrapper>
