@@ -1,4 +1,4 @@
-import React, {useState, useRef, useMemo, useEffect, useCallback} from 'react'
+import React, {useState, useRef, useMemo, useEffect, useCallback, startTransition} from 'react'
 import {
   Box,
   Button,
@@ -43,6 +43,7 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
     selected,
     title,
   } = props
+  const [renderPopover, setRenderPopover] = useState<boolean>(false)
   const [popoverOpen, setPopoverOpen] = useState<boolean>(false)
   const [cursorRect, setCursorRect] = useState<DOMRect | null>(null)
   const rangeRef = useRef<Range | null>(null)
@@ -50,6 +51,19 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
   const {t} = useTranslation()
   const popoverRef = useRef<HTMLDivElement | null>(null)
   const popoverScheme = sanity.color.dark ? 'light' : 'dark'
+
+  //Add separate handler for popover state
+  //to prevent the popover from jumping when opening
+  const handleOpenPopover = useCallback((open: boolean) => {
+    setRenderPopover(open)
+    if (open) {
+      startTransition(() => {
+        setPopoverOpen(open)
+      })
+    } else {
+      setPopoverOpen(open)
+    }
+  }, [])
 
   // This is a "virtual element" (supported by Popper.js)
   const cursorElement = useMemo(() => {
@@ -71,17 +85,17 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
           return
         }
         if (event.key === 'Escape') {
-          setPopoverOpen(false)
+          handleOpenPopover(false)
         }
       },
-      [popoverOpen],
+      [handleOpenPopover, popoverOpen],
     ),
   )
 
   // Open popover when selection is within the annotation text
   const handleSelectionChange = useCallback(() => {
     if (annotationOpen) {
-      setPopoverOpen(false)
+      handleOpenPopover(false)
       setCursorRect(null)
       return
     }
@@ -94,16 +108,16 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
     const isWithinRoot = referenceElement?.contains(range.commonAncestorContainer)
 
     if (!isWithinRoot) {
-      setPopoverOpen(false)
+      handleOpenPopover(false)
       setCursorRect(null)
       return
     }
     const rect = range?.getBoundingClientRect()
     if (rect) {
-      setPopoverOpen(true)
       setCursorRect(rect)
+      handleOpenPopover(true)
     }
-  }, [annotationOpen, referenceElement])
+  }, [annotationOpen, referenceElement, handleOpenPopover])
 
   // Detect selection changes
   useEffect(() => {
@@ -114,24 +128,24 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
   }, [handleSelectionChange])
 
   const handleEditButtonClicked = useCallback(() => {
-    setPopoverOpen(false)
+    handleOpenPopover(false)
     onOpen()
-  }, [onOpen])
+  }, [onOpen, handleOpenPopover])
 
   // Open the popover when closing the annotation dialog
   useEffect(() => {
-    if (!annotationOpen && selected) {
-      setPopoverOpen(true)
+    if (!annotationOpen && selected && cursorRect) {
+      handleOpenPopover(true)
     }
     if (annotationOpen) {
-      setPopoverOpen(false)
+      handleOpenPopover(false)
     }
-  }, [annotationOpen, selected])
+  }, [annotationOpen, selected, cursorRect, handleOpenPopover])
 
   const handleRemoveButtonClicked = useCallback(() => {
-    setPopoverOpen(false)
+    handleOpenPopover(false)
     onRemove()
-  }, [onRemove])
+  }, [onRemove, handleOpenPopover])
 
   const handleScroll = useCallback(() => {
     if (rangeRef.current) {
@@ -151,7 +165,7 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
     }
   }, [popoverOpen, referenceBoundary, handleScroll])
 
-  if (!popoverOpen) {
+  if (!renderPopover) {
     return null
   }
 
