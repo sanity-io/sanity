@@ -4,7 +4,7 @@ import {useTranslation} from '../../core'
 import {Button, ButtonProps} from '../button'
 
 interface ContextMenuButtonProps
-  extends Pick<ButtonProps, 'mode' | 'tone' | 'tooltipProps'>,
+  extends Pick<ButtonProps, 'mode' | 'size' | 'tone' | 'tooltipProps'>,
     Pick<HTMLProps<HTMLButtonElement>, 'disabled' | 'hidden' | 'onClick'> {}
 
 export const ContextMenuButton = forwardRef(function ContextMenuButton(
