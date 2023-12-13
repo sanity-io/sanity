@@ -15,6 +15,7 @@ interface DragHandleProps {
   grid?: boolean
   size?: ButtonProps['size']
   mode?: ButtonProps['mode']
+  paddingY?: ButtonProps['paddingY']
 }
 
 export const DragHandle = function DragHandle(props: DragHandleProps) {

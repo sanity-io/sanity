@@ -17,13 +17,13 @@ interface RowLayoutProps {
 }
 
 const FooterFlex = styled(Flex)`
-  min-height: 35px;
+  min-height: 33px;
 `
 const PresenceFlex = styled(Flex)`
   position: absolute;
   top: 0;
   right: 0;
-  height: 35px;
+  height: 33px;
 `
 
 const DragHandleCard = styled(Card)`
@@ -75,7 +75,7 @@ export function CellLayout(props: RowLayoutProps & ComponentProps<typeof Root>) 
       border
       selected={selected}
       aria-selected={selected}
-      radius={2}
+      radius={1}
       tone={tone}
       {...rest}
     >
