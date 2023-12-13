@@ -402,7 +402,7 @@ export function normalizeMarkDefs(
   if (selection) {
     const blocks = Editor.nodes(editor, {
       at: selection,
-      match: (n) => (n as unknown as Descendant)._type === types.block.name,
+      match: (n) => n._type === types.block.name,
     })
     for (const [block, path] of blocks) {
       if (editor.isTextBlock(block)) {
