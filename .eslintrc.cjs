@@ -65,7 +65,7 @@ const config = {
       {
         ignores: {
           componentPatterns: ['motion$'],
-          attributes: ['size', 'fill', 'full'],
+          attributes: ['animate', 'closed', 'exit', 'fill', 'full', 'initial', 'size'],
         },
       },
     ],
