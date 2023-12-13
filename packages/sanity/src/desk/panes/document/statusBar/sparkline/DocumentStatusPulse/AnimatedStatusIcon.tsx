@@ -140,7 +140,7 @@ export function AnimatedStatusIcon(props: AnimatedStatusIconProps) {
       fill="none"
       stroke="currentColor"
       strokeWidth="1.2"
-      data-sanity-icon=""
+      data-sanity-icon="animated-status-icon"
     >
       <motion.g variants={root} initial={status} animate={status}>
         <RotateGroup data-rotate={status === 'changes' ? undefined : ''}>
