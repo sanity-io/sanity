@@ -32,6 +32,9 @@ const DynamicIconContainer = styled.span`
     display: inline;
     font-size: calc(21 / 16 * 1rem) !important;
     margin: -0.375rem 0 !important;
+    *[stroke] {
+      stroke: currentColor;
+    }
   }
 `
 const DynamicIcon = (props: {icon: {url: string}}) => {
@@ -43,7 +46,7 @@ const DynamicIcon = (props: {icon: {url: string}}) => {
       .then((data) => {
         if (!ref) return
 
-        ref.innerHTML = data.replace(/stroke=".*?"/g, 'stroke="currentColor"')
+        ref.innerHTML = data
       })
   }, [ref, props.icon.url])
 
