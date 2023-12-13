@@ -62,7 +62,7 @@ export function ConfigIssuesButton() {
         >
           <Stack space={4}>
             <Stack space={3}>
-              <Text as="h2" size={2} weight="medium">
+              <Text as="h2" size={1} weight="medium">
                 Found {groupsWithWarnings.length} schema warnings
               </Text>{' '}
               <Text muted size={1}>
