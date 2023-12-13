@@ -137,7 +137,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Label for selecting an hour preset. Receives a `time` param as a string on hh:mm format and a `date` param as a Date instance denoting the preset date */
   'calendar.action.set-to-time-preset': '{{time}} on {{date, datetime}}',
   /** Error message displayed in calendar when entered date is not the correct format */
-  'calendar.error.must-be-in-format': 'Must be in the format <Emphasis>{{exampleDate}}</Emphasis>',
+  'calendar.error.must-be-in-format': 'Must be in the format: {{exampleDate}}',
   /** Month name for April */
   'calendar.month-names.april': 'April',
   /** Month name for August */
