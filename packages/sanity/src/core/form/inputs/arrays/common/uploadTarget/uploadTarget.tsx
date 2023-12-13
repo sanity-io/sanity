@@ -79,11 +79,11 @@ export function uploadTarget<Props>(Component: React.ComponentType<Props>) {
               count: rejected.length,
             }),
             description: rejected.map((task, i) => (
-              <Flex key={i} padding={2}>
-                <Box marginLeft={1}>
+              <Flex key={i} gap={2} padding={2}>
+                <Box>
                   <Text weight="medium">{task.file.name}</Text>
                 </Box>
-                <Box paddingLeft={2}>
+                <Box>
                   <Text size={1}>({task.file.type})</Text>
                 </Box>
               </Flex>
