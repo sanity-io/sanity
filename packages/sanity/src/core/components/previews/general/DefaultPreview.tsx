@@ -57,12 +57,7 @@ export function DefaultPreview(props: DefaultPreviewProps) {
   const rootClassName = classNames(styles?.root, Boolean(subtitle) && styles?.hasSubtitle)
 
   const statusNode = status && (
-    <Box
-      className={styles?.status}
-      data-testid="default-preview__status"
-      paddingLeft={4}
-      paddingRight={1}
-    >
+    <Box className={styles?.status} data-testid="default-preview__status">
       {renderPreviewNode(status, 'default')}
     </Box>
   )
@@ -73,19 +68,24 @@ export function DefaultPreview(props: DefaultPreviewProps) {
         align="center"
         className={styles?.placeholder}
         data-testid="default-preview"
+        padding={2}
         paddingLeft={media ? 2 : 3}
-        paddingRight={2}
-        paddingY={1}
       >
-        <Flex align="center" flex={1} gap={3}>
-          {media && <Skeleton animated radius={2} style={PREVIEW_SIZES.default.media} />}
+        <Flex align="center" flex={1} gap={2}>
+          {media && (
+            <Box flex="none">
+              <Skeleton animated radius={1} style={PREVIEW_SIZES.default.media} />
+            </Box>
+          )}
 
           <Stack data-testid="default-preview__heading" flex={1} space={2}>
             <TitleSkeleton />
             <SubtitleSkeleton />
           </Stack>
 
-          {statusNode}
+          <Box flex="none" padding={1}>
+            {statusNode}
+          </Box>
         </Flex>
       </Root>
     )
@@ -96,18 +96,19 @@ export function DefaultPreview(props: DefaultPreviewProps) {
       align="center"
       className={rootClassName}
       data-testid="default-preview"
+      padding={2}
       paddingLeft={media ? 2 : 3}
-      paddingRight={2}
-      paddingY={1}
     >
-      <Flex align="center" flex={1} gap={3}>
+      <Flex align="center" flex={1} gap={2}>
         {media && (
-          <Media
-            dimensions={DEFAULT_MEDIA_DIMENSIONS}
-            layout="default"
-            media={media as any}
-            styles={styles}
-          />
+          <Box flex="none">
+            <Media
+              dimensions={DEFAULT_MEDIA_DIMENSIONS}
+              layout="default"
+              media={media as any}
+              styles={styles}
+            />
+          </Box>
         )}
 
         <Stack className={styles?.heading} data-testid="default-preview__header" flex={1} space={2}>
@@ -133,7 +134,9 @@ export function DefaultPreview(props: DefaultPreviewProps) {
           )}
         </Stack>
 
-        {statusNode}
+        <Box flex="none" padding={1}>
+          {statusNode}
+        </Box>
 
         {children && <div className={styles?.children}>{children}</div>}
       </Flex>

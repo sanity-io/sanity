@@ -21,7 +21,7 @@ export const PREVIEW_SIZES: Record<
   },
   default: {
     icon: 25,
-    media: {width: 39, height: 39},
+    media: {width: 33, height: 33},
   },
   detail: {
     icon: 45,

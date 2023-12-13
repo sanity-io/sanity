@@ -89,7 +89,7 @@ export function PaneItem(props: PaneItemProps) {
       <SanityDefaultPreview
         status={
           <Box style={{opacity: 0.5}}>
-            <Text muted size={0}>
+            <Text muted size={1}>
               <ChevronRightIcon />
             </Text>
           </Box>
