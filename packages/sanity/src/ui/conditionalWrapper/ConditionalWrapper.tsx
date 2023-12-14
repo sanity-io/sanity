@@ -1,5 +1,10 @@
 export type ConditionalWrapperRenderWrapperCallback = (children: React.ReactNode) => React.ReactNode
 
+/**
+ * A helper component that conditionally wraps its children in a wrapper component.
+ *
+ * @internal
+ */
 export function ConditionalWrapper({
   children,
   condition,

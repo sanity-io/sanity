@@ -1,11 +1,11 @@
 import {ChevronDownIcon} from '@sanity/icons'
-import {Placement, Popover, useClickOutside} from '@sanity/ui'
+import {Placement, useClickOutside} from '@sanity/ui'
 import React, {useCallback, useMemo, useState} from 'react'
 import {POPOVER_RADIUS, POPOVER_VERTICAL_MARGIN} from '../../../constants'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import {documentTypesTruncated} from '../../../utils/documentTypesTruncated'
 import {FilterPopoverWrapper} from '../common/FilterPopoverWrapper'
-import {Button} from '../../../../../../../../ui'
+import {Button, Popover} from '../../../../../../../../ui'
 import {useTranslation} from '../../../../../../../i18n'
 import {DocumentTypesPopoverContent} from './DocumentTypesPopoverContent'
 

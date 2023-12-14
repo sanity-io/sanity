@@ -1,6 +1,6 @@
 import React, {useCallback, useContext, useMemo, useState} from 'react'
-import {Box, Grid, Popover, Stack, Text, useClickOutside} from '@sanity/ui'
-import {Button} from '../../../../ui'
+import {Box, Grid, Stack, Text, useClickOutside} from '@sanity/ui'
+import {Button, Popover} from '../../../../ui'
 import {useDocumentOperation} from '../../../hooks'
 import {undoChange} from '../changes/undoChange'
 import {isFieldChange} from '../helpers'

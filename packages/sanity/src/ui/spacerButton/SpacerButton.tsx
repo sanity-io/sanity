@@ -6,9 +6,13 @@ interface SpacerButtonProps {
 }
 
 /**
- * A temporary component used to simplify spacing in components with
- * conditional buttons.
- * TODO: find a more elegant solve to this layout shift problem
+ * This renders a visually hidden <Button> component that is still contributes
+ * to document layout.
+ *
+ * It's used to simplify padding in Sanity UI components that contain buttons which
+ * may not always be rendered.
+ *
+ * TODO: let's find a more elegant solve to this layout shift problem
  *
  * @internal
  */

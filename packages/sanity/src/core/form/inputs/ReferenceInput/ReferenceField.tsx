@@ -14,7 +14,6 @@ import {
   CardTone,
   Flex,
   Menu,
-  MenuButton,
   MenuDivider,
   Stack,
   TooltipDelayGroupProvider,
@@ -29,7 +28,7 @@ import {FieldActionsProvider, FieldActionsResolver} from '../../field'
 import {DocumentFieldActionNode} from '../../../config'
 import {usePublishedId} from '../../contexts/DocumentIdProvider'
 import {useTranslation} from '../../../i18n'
-import {MenuItem} from '../../../../ui'
+import {MenuButton, MenuItem} from '../../../../ui'
 import {ContextMenuButton} from '../../../../ui/contextMenuButton'
 import {TOOLTIP_DELAY_PROPS} from '../../../../ui/tooltip/constants'
 import {useReferenceInput} from './useReferenceInput'

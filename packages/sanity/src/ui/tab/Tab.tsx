@@ -23,10 +23,7 @@ const DEFAULT_TAB_PROPS = {
 }
 
 /**
- * Studio UI <Tab>.
- *
- * Studio UI components are opinionated `@sanity/ui` components meant for internal use only.
- * Props and options are intentionally limited to ensure consistency and ease of use.
+ * Customized Sanity UI <Tab> with limited layout options.
  *
  * @internal
  */

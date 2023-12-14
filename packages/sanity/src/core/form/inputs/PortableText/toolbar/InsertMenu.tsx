@@ -1,7 +1,7 @@
 import React, {memo, useCallback, useMemo} from 'react'
-import {PopoverProps} from '@sanity/ui'
 import {PortableTextEditor, usePortableTextEditor} from '@sanity/portable-text-editor'
 import {upperFirst} from 'lodash'
+import {PopoverProps} from '../../../../../ui'
 import {ContextMenuButton} from '../../../../../ui/contextMenuButton'
 import {useTranslation} from '../../../../i18n'
 import {CollapseMenu, CollapseMenuButton} from '../../../../components/collapseMenu'
