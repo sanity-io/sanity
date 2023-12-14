@@ -1,8 +1,9 @@
-import {Box, Card, Code, Flex, Popover, Stack, Text, Theme, useClickOutside} from '@sanity/ui'
+import {Box, Card, Code, Flex, Stack, Text, Theme, useClickOutside} from '@sanity/ui'
 import React, {useCallback} from 'react'
 import {BulbOutlineIcon, UnknownIcon} from '@sanity/icons'
 import {resolveTypeName} from '@sanity/util/content'
 import styled from 'styled-components'
+import {Popover} from '../../../../../../ui'
 import {Translate, useTranslation} from '../../../../../i18n'
 
 const PopoverCard = styled(Card)`

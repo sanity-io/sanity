@@ -1,9 +1,9 @@
 import {CheckmarkIcon, ChevronDownIcon, DoubleChevronRightIcon} from '@sanity/icons'
-import {Card, Flex, Menu, MenuButton, Text} from '@sanity/ui'
+import {Card, Flex, Menu, Text} from '@sanity/ui'
 import {startCase} from 'lodash'
 import React, {forwardRef, useCallback} from 'react'
 import styled from 'styled-components'
-import {MenuItem, Button} from '../../../../ui'
+import {Button, MenuButton, MenuItem} from '../../../../ui'
 import {CommentStatus} from '../../src'
 import {BetaBadge} from 'sanity'
 

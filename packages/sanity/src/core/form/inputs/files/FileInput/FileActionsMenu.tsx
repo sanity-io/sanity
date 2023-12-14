@@ -1,18 +1,9 @@
 import {BinaryDocumentIcon} from '@sanity/icons'
 import React, {ReactNode, useCallback, useEffect, useState} from 'react'
-import {
-  Box,
-  Card,
-  Flex,
-  Menu,
-  Popover,
-  Stack,
-  Text,
-  useClickOutside,
-  useGlobalKeyDown,
-} from '@sanity/ui'
+import {Box, Card, Flex, Menu, Stack, Text, useClickOutside, useGlobalKeyDown} from '@sanity/ui'
 import {formatBytes} from '../../common/helper'
 import {useTranslation} from '../../../../i18n'
+import {Popover} from '../../../../../ui'
 import {ContextMenuButton} from '../../../../../ui/contextMenuButton'
 
 type Props = {

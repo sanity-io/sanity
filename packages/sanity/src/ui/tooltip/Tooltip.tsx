@@ -27,10 +27,12 @@ const TOOLTIP_SHARED_PROPS: UITooltipProps = {
 }
 
 /**
- * Studio UI <Tooltip>.
+ * Customized Sanity UI <Tooltip> with limited layout options and support for showing hotkeys.
  *
- * Studio UI components are opinionated `@sanity/ui` components meant for internal use only.
- * Props and options are intentionally limited to ensure consistency and ease of use.
+ * In just about all cases, its strongly recommended that you pass a string to the `content` prop.
+ * This helps simplify i18n and encourages short and concise.
+ *
+ * Passing ReactNode values to `content` is supported, but discouraged.
  *
  * @internal
  */

@@ -1,5 +1,5 @@
 import React, {KeyboardEvent, useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {Popover, PopoverProps, useClickOutside} from '@sanity/ui'
+import {useClickOutside} from '@sanity/ui'
 import {
   EditorSelection,
   PortableTextEditable,
@@ -8,6 +8,7 @@ import {
 import styled, {css} from 'styled-components'
 import {isEqual} from 'lodash'
 import {isPortableTextSpan, isPortableTextTextBlock} from '@sanity/types'
+import {Popover, PopoverProps} from '../../../../../../ui'
 import {MentionsMenu, MentionsMenuHandle} from '../../mentions'
 import {renderBlock, renderChild} from '../render'
 import {useCommentInput} from './useCommentInput'

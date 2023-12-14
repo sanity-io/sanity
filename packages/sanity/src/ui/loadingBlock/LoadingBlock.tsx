@@ -117,6 +117,8 @@ const StyledText = styled(Text)`
 /**
  * A generic loading container which displays a spinner and text.
  * The spinner won't initially be visible and fades in after a short delay.
+ *
+ * @internal
  */
 export function LoadingBlock({fill, showText, title}: LoadingTestProps) {
   return (
