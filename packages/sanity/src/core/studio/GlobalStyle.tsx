@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 
-import {getTheme_v2} from '@sanity/ui/theme'
+import {getTheme_v2, rgba} from '@sanity/ui/theme'
 import {createGlobalStyle, css} from 'styled-components'
 
 const SCROLLBAR_SIZE = 12 // px
@@ -27,6 +27,10 @@ export const GlobalStyle = createGlobalStyle((props) => {
 
     ::-webkit-scrollbar-track {
       background: var(--card-bg-color, transparent);
+    }
+
+    *::selection {
+      background-color: ${rgba(color.focusRing, 0.3)};
     }
 
     html {
