@@ -6,6 +6,7 @@ import {useRovingFocus} from '../../../../components'
 import {useColorScheme} from '../../../colorScheme'
 import {Tool} from '../../../../config'
 import {ToolLink, ToolLinkProps} from './ToolLink'
+import {getToolButtonWrapperElement} from './getToolButtonWrapperElement'
 
 interface ToolCollapseMenuProps {
   activeToolName?: string
@@ -42,14 +43,20 @@ export function ToolCollapseMenu(props: ToolCollapseMenuProps) {
           linkProps: ToolLinkProps,
           ref: React.Ref<HTMLAnchorElement>,
         ) {
-          return <ToolLink {...linkProps} ref={ref} name={tool.name} />
+          const Wrapper = getToolButtonWrapperElement(tool)
+
+          return (
+            <ToolLink {...linkProps} ref={ref} name={tool.name}>
+              <Wrapper>{linkProps.children}</Wrapper>
+            </ToolLink>
+          )
         })
 
         return (
           <CollapseMenuButton
             as={Link}
-            data-as="a"
             collapsedProps={{tooltipText: tool.title}}
+            data-as="a"
             icon={tool.icon || UnknownIcon}
             // eslint-disable-next-line react/no-array-index-key
             key={`${tool.name}-${index}`}

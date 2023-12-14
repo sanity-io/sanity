@@ -4,6 +4,7 @@ import {startCase} from 'lodash'
 import React, {forwardRef, useMemo} from 'react'
 import {Tool} from '../../../../config'
 import {ToolLink, ToolLinkProps} from './ToolLink'
+import {getToolButtonWrapperElement} from './getToolButtonWrapperElement'
 
 interface ToolVerticalMenuProps {
   activeToolName?: string
@@ -24,7 +25,13 @@ export function ToolVerticalMenu(props: ToolVerticalMenuProps) {
             linkProps: ToolLinkProps,
             ref: React.Ref<HTMLAnchorElement>,
           ) {
-            return <ToolLink {...linkProps} ref={ref} name={tool.name} />
+            const Wrapper = getToolButtonWrapperElement(tool)
+
+            return (
+              <ToolLink {...linkProps} ref={ref} name={tool.name}>
+                <Wrapper>{linkProps.children}</Wrapper>
+              </ToolLink>
+            )
           })
 
           return (
