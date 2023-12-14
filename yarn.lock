@@ -3591,10 +3591,10 @@
     get-it "^8.4.4"
     rxjs "^7.0.0"
 
-"@sanity/color@3.0.0-beta.8":
-  version "3.0.0-beta.8"
-  resolved "https://registry.yarnpkg.com/@sanity/color/-/color-3.0.0-beta.8.tgz#33ee87b7cb59e308c5b5fe2ff4bb074223529acd"
-  integrity sha512-jsbef6oey7PlCHmU0/0MABtumcF8eqvxCtMxzkqBNobbSTHqGN+DpZjYX5wBCWF8SvAvSzdf/6tQiX3BSd8Q1Q==
+"@sanity/color@3.0.0-beta.9":
+  version "3.0.0-beta.9"
+  resolved "https://registry.yarnpkg.com/@sanity/color/-/color-3.0.0-beta.9.tgz#e33a2138f71ca8cec2c264fb9ac44c680be50a9c"
+  integrity sha512-Mk7FRDtxz/U2SRlRM0BvUI62jU26W62aYsipaKFt/dk0rOyYa9yzfaojSM/QmW0E4W/nOw74RBA/HrapXUw+2Q==
 
 "@sanity/color@^2.2.5":
   version "2.2.5"
@@ -3865,13 +3865,13 @@
     segmented-property "^3.0.3"
     vite "^4.4.9"
 
-"@sanity/ui@2.0.0-beta.7":
-  version "2.0.0-beta.7"
-  resolved "https://registry.yarnpkg.com/@sanity/ui/-/ui-2.0.0-beta.7.tgz#4de128f7a3a9484d875b079d3ca97988c7f4fd56"
-  integrity sha512-Gdi3unougOqzwTXGO46eQ6N//F1z1uAWumtNPxBa4sRE5q5KAYm7umVjxGMRWmTT5pCZ8mHGAMtoZRuyS4MYdA==
+"@sanity/ui@2.0.0-beta.8":
+  version "2.0.0-beta.8"
+  resolved "https://registry.yarnpkg.com/@sanity/ui/-/ui-2.0.0-beta.8.tgz#8ff9c9099d34dc972aa2610fb15050a9d9a7dd96"
+  integrity sha512-igEuPhP0Lq03CEdA1EIg/SZh2BfOuJST7sfwR1t5CYZcszMJnd111prddvT7KW++7CDPT5+mWj/M8AVddqSEwg==
   dependencies:
     "@floating-ui/react-dom" "^2.0.4"
-    "@sanity/color" "3.0.0-beta.8"
+    "@sanity/color" "3.0.0-beta.9"
     "@sanity/icons" "^2.7.0"
     csstype "^3.1.2"
     framer-motion "^10.16.5"
