@@ -1,4 +1,4 @@
-import {Card, Portal, Theme, useClickOutside, useLayer} from '@sanity/ui'
+import {Card, Portal, useClickOutside, useLayer} from '@sanity/ui'
 import {AnimatePresence, motion, Transition, Variants} from 'framer-motion'
 import React, {useCallback, useRef, useState} from 'react'
 import FocusLock from 'react-focus-lock'
@@ -43,8 +43,8 @@ const OVERLAY_VARIANTS: Variants = {
 
 const Y_POSITION = 12 // vh
 
-const MotionOverlay = styled(motion.div)`
-  background-color: ${({theme}: {theme: Theme}) => theme.sanity.color.base.shadow.umbra};
+const MotionOverlay = styled(motion(Card))`
+  background-color: var(--card-backdrop-color);
   bottom: 0;
   left: 0;
   position: absolute;
