@@ -1,6 +1,6 @@
-import {Menu, Text} from '@sanity/ui'
+import {Menu} from '@sanity/ui'
 import React, {useCallback, useState, useMemo, useId} from 'react'
-import {MenuButton, MenuItem, PopoverProps, Tooltip} from '../../../../ui'
+import {MenuButton, MenuItem, PopoverProps} from '../../../../ui'
 import {ContextMenuButton} from '../../../../ui/contextMenuButton'
 import {structureLocaleNamespace} from '../../../i18n'
 import {ActionStateDialog} from './ActionStateDialog'
@@ -89,37 +89,26 @@ function ActionMenuListItem(props: ActionMenuListItemProps) {
     if (onHandle) onHandle()
   }, [index, onAction, onHandle])
 
-  const menuItemContent = useCallback(
-    (item: React.JSX.Element) => {
-      return (
-        <Tooltip
-          content={<Text size={1}>{actionState.title}</Text>}
-          disabled={!actionState.title}
-          placement="top"
-          portal
-        >
-          {item}
-        </Tooltip>
-      )
-    },
-    [actionState.title],
-  )
+  const hotkeys = useMemo(() => {
+    return actionState.shortcut
+      ? String(actionState.shortcut)
+          .split('+')
+          .map((s) => s.slice(0, 1).toUpperCase() + s.slice(1))
+      : undefined
+  }, [actionState.shortcut])
+
   return (
     <MenuItem
       data-testid={`action-${actionState.label.replace(' ', '')}`}
       disabled={disabled || Boolean(actionState.disabled)}
-      onClick={handleClick}
-      tone={actionState.tone}
+      hotkeys={hotkeys}
       icon={actionState.icon}
+      onClick={handleClick}
       text={actionState.label}
-      hotkeys={
-        actionState.shortcut
-          ? String(actionState.shortcut)
-              .split('+')
-              .map((s) => s.slice(0, 1).toUpperCase() + s.slice(1))
-          : undefined
-      }
-      renderMenuItem={menuItemContent}
+      tone={actionState.tone}
+      tooltipProps={{
+        content: actionState.title,
+      }}
     />
   )
 }
