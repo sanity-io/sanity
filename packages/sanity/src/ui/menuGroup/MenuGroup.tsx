@@ -3,17 +3,16 @@ import {MenuGroup as UIMenuGroup, MenuGroupProps as UIMenuGroupProps} from '@san
 import React from 'react'
 
 /** @internal */
-export type MenuGroupProps = Pick<UIMenuGroupProps, 'icon' | 'popover' | 'text' | 'tone'> &
-  Omit<React.HTMLProps<HTMLDivElement>, 'as' | 'height' | 'ref' | 'tabIndex'>
+export type MenuGroupProps = Pick<UIMenuGroupProps, 'icon' | 'popover' | 'text' | 'tone'>
 
 /**
- * Studio UI <MenuGroup>.
- *
- * Studio UI components are opinionated `@sanity/ui` components meant for internal use only.
- * Props and options are intentionally limited to ensure consistency and ease of use.
+ * Customized Sanity UI <MenuGroup> component with pre-defined layout options.
  *
  * @internal
  */
-export const MenuGroup = (props: MenuGroupProps) => {
+export const MenuGroup = (
+  props: MenuGroupProps &
+    Omit<React.HTMLProps<HTMLDivElement>, 'as' | 'height' | 'ref' | 'tabIndex'>,
+) => {
   return <UIMenuGroup {...props} fontSize={1} padding={3} />
 }

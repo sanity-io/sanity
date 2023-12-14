@@ -1,5 +1,4 @@
 import React, {memo, useCallback, useMemo} from 'react'
-import {PopoverProps} from '@sanity/ui'
 import {useTranslation} from 'react-i18next'
 import {
   PortableTextEditor,
@@ -7,8 +6,7 @@ import {
   usePortableTextEditorSelection,
 } from '@sanity/portable-text-editor'
 import {isKeySegment} from '@sanity/types'
-import {useTranslation} from 'react-i18next'
-import {ContextMenuButton} from '../../../../../ui/contextMenuButton'
+import {PopoverProps} from '../../../../../ui'
 import {CollapseMenu, CollapseMenuButton} from '../../../../components/collapseMenu'
 import {ContextMenuButton} from '../../../../../ui/contextMenuButton'
 import {PTEToolbarAction, PTEToolbarActionGroup} from './types'

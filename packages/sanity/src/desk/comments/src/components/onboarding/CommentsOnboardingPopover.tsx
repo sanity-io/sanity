@@ -1,7 +1,7 @@
-import {Box, Flex, Popover, PopoverProps, Stack, Text} from '@sanity/ui'
+import {Box, Flex, Stack, Text} from '@sanity/ui'
 import React from 'react'
 import styled, {keyframes} from 'styled-components'
-import {Button} from '../../../../../ui'
+import {Button, Popover, PopoverProps} from '../../../../../ui'
 
 const Root = styled(Box)`
   max-width: 280px;

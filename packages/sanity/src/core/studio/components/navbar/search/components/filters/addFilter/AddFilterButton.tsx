@@ -1,10 +1,9 @@
 import {AddIcon} from '@sanity/icons'
-import {Popover} from '@sanity/ui'
 import React, {useCallback, useState} from 'react'
 import {POPOVER_RADIUS, POPOVER_VERTICAL_MARGIN} from '../../../constants'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import {FilterPopoverWrapper} from '../common/FilterPopoverWrapper'
-import {Button} from '../../../../../../../../ui'
+import {Button, Popover} from '../../../../../../../../ui'
 import {useTranslation} from '../../../../../../../i18n'
 import {AddFilterPopoverContent} from './AddFilterPopoverContent'
 

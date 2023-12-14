@@ -1,9 +1,9 @@
 /* eslint-disable react/no-unused-prop-types */
 
 import {CloseIcon} from '@sanity/icons'
-import {Box, Flex, PopoverProps, Text, useClickOutside, useGlobalKeyDown} from '@sanity/ui'
+import {Box, Flex, Text, useClickOutside, useGlobalKeyDown} from '@sanity/ui'
 import React, {useCallback, useEffect, useRef, useState} from 'react'
-import {Button} from '../../../../../../ui'
+import {Button, PopoverProps} from '../../../../../../ui'
 import {PresenceOverlay} from '../../../../../presence'
 import {PortableTextEditorElement} from '../../Compositor'
 import {VirtualizerScrollInstanceProvider} from '../../../arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'

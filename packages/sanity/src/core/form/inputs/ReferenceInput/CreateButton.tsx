@@ -1,9 +1,9 @@
 import React from 'react'
 import {AddIcon} from '@sanity/icons'
-import {Menu, MenuButton, type MenuButtonProps} from '@sanity/ui'
+import {Menu} from '@sanity/ui'
 import {useGetI18nText, useTranslation} from '../../../i18n'
 import {InsufficientPermissionsMessage} from '../../../components'
-import {Button, MenuItem, Tooltip} from '../../../../ui'
+import {Button, MenuButton, type MenuButtonProps, MenuItem, Tooltip} from '../../../../ui'
 import {useCurrentUser} from '../../../store'
 import type {CreateReferenceOption} from './types'
 

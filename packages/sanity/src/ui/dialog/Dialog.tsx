@@ -1,6 +1,6 @@
 /* eslint-disable no-restricted-imports */
 import {
-  Button,
+  Button as UIButton,
   Flex,
   Dialog as UIDialog,
   DialogProps as UIDialogProps,
@@ -11,23 +11,21 @@ import React, {ComponentProps, forwardRef} from 'react'
 import {useTranslation} from 'react-i18next'
 
 /** @internal */
-export interface DialogProps
-  extends Pick<
-      UIDialogProps,
-      | '__unstable_autoFocus'
-      | '__unstable_hideCloseButton'
-      | 'contentRef'
-      | 'header'
-      | 'id'
-      | 'onActivate'
-      | 'onClickOutside'
-      | 'onClose'
-      | 'portal'
-      | 'position'
-      | 'scheme'
-      | 'width'
-    >,
-    Pick<React.HTMLProps<HTMLDivElement>, 'onDragEnter'> {
+export type DialogProps = Pick<
+  UIDialogProps,
+  | '__unstable_autoFocus'
+  | '__unstable_hideCloseButton'
+  | 'contentRef'
+  | 'header'
+  | 'id'
+  | 'onActivate'
+  | 'onClickOutside'
+  | 'onClose'
+  | 'portal'
+  | 'position'
+  | 'scheme'
+  | 'width'
+> & {
   /**
    * Dialog body height.
    * Set this to 'fill' (i.e. 100%) if you want overflow body content to be contained
@@ -36,24 +34,28 @@ export interface DialogProps
   bodyHeight?: BoxHeight
   children?: React.ReactNode
   footer?: {
-    // TODO: When `@sanity/ui` has `Button` component, use those props instead.
-    // TODO: Omit style-specific props, e.g. fontSize, padding etc
-    cancelButton?: ComponentProps<typeof Button>
-    confirmButton?: ComponentProps<typeof Button>
+    cancelButton?: Omit<ComponentProps<typeof UIButton>, 'fontSize' | 'padding'>
+    confirmButton?: Omit<ComponentProps<typeof UIButton>, 'fontSize' | 'padding'>
   }
+  /**
+   * If enabled, removes all default padding from dialog content.
+   */
   padding?: boolean
 }
 
 /**
- * Studio UI <Dialog>.
- *
- * Studio UI components are opinionated `@sanity/ui` components meant for internal use only.
- * Props and options are intentionally limited to ensure consistency and ease of use.
+ * Customized Sanity UI <Dialog> that enforces an opinionated footer layout with a max of two buttons (confirm and cancel).
  *
  * @internal
  */
 export const Dialog = forwardRef(function Dialog(
-  {bodyHeight, children, footer, padding = true, ...props}: DialogProps,
+  {
+    bodyHeight,
+    children,
+    footer,
+    padding = true,
+    ...props
+  }: DialogProps & Pick<React.HTMLProps<HTMLDivElement>, 'onDragEnter'>,
   ref: React.Ref<HTMLDivElement>,
 ) {
   const {t} = useTranslation()
@@ -67,7 +69,7 @@ export const Dialog = forwardRef(function Dialog(
         (footer?.confirmButton || footer?.cancelButton) && (
           <Flex width="full" gap={3} justify="flex-end" padding={3}>
             {props.onClose && (
-              <Button
+              <UIButton
                 mode="bleed"
                 padding={2}
                 text={t('common.dialog.cancel-button.text')}
@@ -77,7 +79,7 @@ export const Dialog = forwardRef(function Dialog(
               />
             )}
             {footer.confirmButton && (
-              <Button
+              <UIButton
                 mode="default"
                 padding={2}
                 text={t('common.dialog.confirm-button.text')}

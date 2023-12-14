@@ -6,10 +6,11 @@ import {
   type PortableTextChild,
   type PortableTextObject,
 } from '@sanity/types'
-import {Card, Flex, Popover, Text, useClickOutside} from '@sanity/ui'
+import {Card, Flex, Text, useClickOutside} from '@sanity/ui'
 import {FOCUS_TERMINATOR, toString} from '@sanity/util/paths'
 import React, {useCallback, useContext, useState, useEffect, useMemo} from 'react'
 import styled from 'styled-components'
+import {Popover} from '../../../../../../ui'
 import {useTranslation} from '../../../../../i18n'
 import {ChangeList, DiffContext, DiffTooltip, useDiffAnnotationColor} from '../../../../diff'
 import type {ObjectDiff} from '../../../../types'

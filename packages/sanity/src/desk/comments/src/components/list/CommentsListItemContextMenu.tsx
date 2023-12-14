@@ -1,16 +1,8 @@
 import React from 'react'
 import {CheckmarkCircleIcon, UndoIcon, EditIcon, TrashIcon, LinkIcon} from '@sanity/icons'
-import {
-  MenuButtonProps,
-  TooltipDelayGroupProvider,
-  MenuButton,
-  Menu,
-  MenuDivider,
-  Card,
-  Flex,
-} from '@sanity/ui'
+import {Card, Flex, Menu, MenuDivider, TooltipDelayGroupProvider} from '@sanity/ui'
 import styled from 'styled-components'
-import {Button, MenuItem} from '../../../../../ui'
+import {Button, MenuButton, MenuButtonProps, MenuItem} from '../../../../../ui'
 import {CommentStatus} from '../../types'
 import {TOOLTIP_DELAY_PROPS} from '../../../../../ui/tooltip/constants'
 import {ContextMenuButton} from '../../../../../ui/contextMenuButton'
