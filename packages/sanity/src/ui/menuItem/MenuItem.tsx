@@ -32,9 +32,9 @@ export type MenuItemProps = Pick<
    */
   preview?: React.ReactNode
   /**
-   * Allows to add wrappers to the menu item, e.g. `Tooltip`.
+   * Optional render callback which receives menu item content.
    */
-  renderMenuItem?: (menuItem: React.JSX.Element) => React.ReactNode
+  renderMenuItem?: (menuItemContent: React.JSX.Element) => React.ReactNode
   tooltipProps?: TooltipProps | null
 }
 
