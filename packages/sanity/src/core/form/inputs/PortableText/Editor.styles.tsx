@@ -1,5 +1,8 @@
+/* eslint-disable camelcase */
+
 import {Card, Container, rem} from '@sanity/ui'
 import styled, {css} from 'styled-components'
+import {getTheme_v2} from '@sanity/ui/theme'
 import {ScrollContainer} from '../../../components/scroll'
 import {createListName, TEXT_LEVELS} from './text'
 
@@ -128,7 +131,7 @@ export const EditableWrapper = styled(Card)<{$isFullscreen: boolean; $readOnly?:
       pointer-events: none;
       border: 1px solid var(--card-focus-ring-color) !important;
       height: 0px !important;
-      border-radius: 1px;
+      border-radius: ${(props) => getTheme_v2(props.theme).radius[2]}px;
       margin-top: -3px;
       left: calc(
         ${({$isFullscreen, theme}) =>
