@@ -3,8 +3,13 @@ import {render, waitFor} from '@testing-library/react'
 
 import React from 'react'
 import {PortableTextEditor} from '../../PortableTextEditor'
-import {PortableTextEditorTester, schemaType} from '../../__tests__/PortableTextEditorTester'
+import {
+  PortableTextEditorTester,
+  schemaType,
+  schemaTypeWithColorAndLink,
+} from '../../__tests__/PortableTextEditorTester'
 import {EditorSelection} from '../../../types/editor'
+import {defineType} from '@sanity/types'
 
 describe('plugin:withPortableTextMarksModel', () => {
   describe('normalization', () => {
@@ -898,6 +903,232 @@ describe('plugin:withPortableTextMarksModel', () => {
                   marks: ['fde1fd54b544'],
                   _type: 'span',
                   text: 'link',
+                },
+              ],
+              markDefs: [
+                {
+                  _key: 'fde1fd54b544',
+                  _type: 'link',
+                  url: '1',
+                },
+              ],
+              style: 'normal',
+            },
+          ])
+        }
+      })
+    })
+    it('removes the mark from the correct place', async () => {
+      const editorRef: React.RefObject<PortableTextEditor> = React.createRef()
+      const initialValue = [
+        {
+          _key: '5fc57af23597',
+          _type: 'myTestBlockType',
+          children: [
+            {
+              _key: 'be1c67c6971a',
+              _type: 'span',
+              marks: ['fde1fd54b544'],
+              text: 'This is a link',
+            },
+          ],
+          markDefs: [
+            {
+              _key: 'fde1fd54b544',
+              _type: 'link',
+              url: '1',
+            },
+          ],
+          style: 'normal',
+        },
+      ]
+      const onChange = jest.fn()
+      await waitFor(() => {
+        render(
+          <PortableTextEditorTester
+            onChange={onChange}
+            ref={editorRef}
+            schemaType={schemaType}
+            value={initialValue}
+          />,
+        )
+      })
+
+      await waitFor(() => {
+        if (editorRef.current) {
+          PortableTextEditor.focus(editorRef.current)
+          // Selects `a link` from `This is a link`, so the mark should be kept in the first span.
+          PortableTextEditor.select(editorRef.current, {
+            focus: {path: [{_key: '5fc57af23597'}, 'children', {_key: 'be1c67c6971a'}], offset: 14},
+            anchor: {
+              path: [{_key: '5fc57af23597'}, 'children', {_key: 'be1c67c6971a'}],
+              offset: 8,
+            },
+          })
+
+          // // eslint-disable-next-line max-nested-callbacks
+          const linkType = editorRef.current.schemaTypes.annotations.find((a) => a.name === 'link')
+          if (!linkType) {
+            throw new Error('No link type found')
+          }
+          PortableTextEditor.removeAnnotation(editorRef.current, linkType)
+          expect(PortableTextEditor.getValue(editorRef.current)).toEqual([
+            {
+              _key: '5fc57af23597',
+              _type: 'myTestBlockType',
+              children: [
+                {
+                  _key: 'be1c67c6971a',
+                  _type: 'span',
+                  marks: ['fde1fd54b544'],
+                  text: 'This is ',
+                },
+                {
+                  _key: '1',
+                  _type: 'span',
+                  marks: [],
+                  text: 'a link',
+                },
+              ],
+              markDefs: [
+                {
+                  _key: 'fde1fd54b544',
+                  _type: 'link',
+                  url: '1',
+                },
+              ],
+              style: 'normal',
+            },
+          ])
+        }
+      })
+    })
+    it('preserves other marks that apply to the spans', async () => {
+      const editorRef: React.RefObject<PortableTextEditor> = React.createRef()
+      const initialValue = [
+        {
+          _key: '5fc57af23597',
+          _type: 'myTestBlockType',
+          children: [
+            {
+              _key: 'be1c67c6971a',
+              _type: 'span',
+              marks: ['fde1fd54b544', '7b6d3d5de30c'],
+              text: 'This is a link',
+            },
+          ],
+          markDefs: [
+            {
+              _key: 'fde1fd54b544',
+              _type: 'link',
+              url: '1',
+            },
+            {
+              _key: '7b6d3d5de30c',
+              _type: 'color',
+              color: 'blue',
+            },
+          ],
+          style: 'normal',
+        },
+      ]
+      const onChange = jest.fn()
+      await waitFor(() => {
+        render(
+          <PortableTextEditorTester
+            onChange={onChange}
+            ref={editorRef}
+            schemaType={schemaTypeWithColorAndLink}
+            value={initialValue}
+          />,
+        )
+      })
+
+      await waitFor(() => {
+        if (editorRef.current) {
+          PortableTextEditor.focus(editorRef.current)
+          // Selects `a link` from `This is a link`, so the mark should be kept in the first span, color mark in both.
+          PortableTextEditor.select(editorRef.current, {
+            focus: {path: [{_key: '5fc57af23597'}, 'children', {_key: 'be1c67c6971a'}], offset: 14},
+            anchor: {
+              path: [{_key: '5fc57af23597'}, 'children', {_key: 'be1c67c6971a'}],
+              offset: 8,
+            },
+          })
+
+          // // eslint-disable-next-line max-nested-callbacks
+          const linkType = editorRef.current.schemaTypes.annotations.find((a) => a.name === 'link')
+          if (!linkType) {
+            throw new Error('No link type found')
+          }
+          PortableTextEditor.removeAnnotation(editorRef.current, linkType)
+          expect(PortableTextEditor.getValue(editorRef.current)).toEqual([
+            {
+              _key: '5fc57af23597',
+              _type: 'myTestBlockType',
+              children: [
+                {
+                  _key: 'be1c67c6971a',
+                  _type: 'span',
+                  marks: ['fde1fd54b544', '7b6d3d5de30c'], // It has both marks, the link was only removed from the second span
+                  text: 'This is ',
+                },
+                {
+                  _key: '1',
+                  _type: 'span',
+                  marks: ['7b6d3d5de30c'],
+                  text: 'a link',
+                },
+              ],
+              markDefs: [
+                {
+                  _key: 'fde1fd54b544',
+                  _type: 'link',
+                  url: '1',
+                },
+                {
+                  _key: '7b6d3d5de30c',
+                  _type: 'color',
+                  color: 'blue',
+                },
+              ],
+              style: 'normal',
+            },
+          ])
+
+          // removes the color from both
+          PortableTextEditor.select(editorRef.current, {
+            focus: {path: [{_key: '5fc57af23597'}, 'children', {_key: '1'}], offset: 6},
+            anchor: {
+              path: [{_key: '5fc57af23597'}, 'children', {_key: 'be1c67c6971a'}],
+              offset: 0,
+            },
+          })
+          const colorType = editorRef.current.schemaTypes.annotations.find(
+            (a) => a.name === 'color',
+          )
+          if (!colorType) {
+            throw new Error('No color type found')
+          }
+
+          PortableTextEditor.removeAnnotation(editorRef.current, colorType)
+
+          expect(PortableTextEditor.getValue(editorRef.current)).toEqual([
+            {
+              _key: '5fc57af23597',
+              _type: 'myTestBlockType',
+              children: [
+                {
+                  _key: 'be1c67c6971a',
+                  _type: 'span',
+                  marks: ['fde1fd54b544'], // The color was removed from both
+                  text: 'This is ',
+                },
+                {
+                  _key: '1',
+                  _type: 'span',
+                  marks: [], // The color was removed from both
+                  text: 'a link',
                 },
               ],
               markDefs: [

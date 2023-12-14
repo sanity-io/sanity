@@ -38,9 +38,33 @@ const portableTextType = defineArrayMember({
   of: [blockType, someObject],
 })
 
+const colorAndLink = defineArrayMember({
+  type: 'array',
+  name: 'colorAndLink',
+  of: [
+    {
+      ...blockType,
+      marks: {
+        annotations: [
+          {
+            name: 'link',
+            type: 'object',
+            fields: [{type: 'string', name: 'color'}],
+          },
+          {
+            name: 'color',
+            type: 'object',
+            fields: [{type: 'string', name: 'color'}],
+          },
+        ],
+      },
+    },
+  ],
+})
+
 const schema = Schema.compile({
   name: 'test',
-  types: [portableTextType],
+  types: [portableTextType, colorAndLink],
 })
 
 let key = 0
@@ -80,3 +104,5 @@ export const PortableTextEditorTester = forwardRef(function PortableTextEditorTe
 })
 
 export const schemaType = schema.get('body')
+
+export const schemaTypeWithColorAndLink = schema.get('colorAndLink')
