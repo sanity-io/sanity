@@ -114,16 +114,11 @@ function FreeTrialButtonMobile({
 
 export function FreeTrialButton(
   props: FreeTrialButtonProps & {
-    type: 'desktop' | 'mobile'
+    type: 'topbar' | 'sidebar'
   },
 ) {
   const {type, ...rest} = props
 
-  if (type === 'mobile') return <FreeTrialButtonMobile {...rest} />
-  // Desktop is dark, update it after facelift is merged
-  return (
-    <Card scheme="dark">
-      <FreeTrialButtonDesktop {...rest} />
-    </Card>
-  )
+  if (type === 'sidebar') return <FreeTrialButtonMobile {...rest} />
+  return <FreeTrialButtonDesktop {...rest} />
 }

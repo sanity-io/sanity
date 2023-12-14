@@ -33,8 +33,8 @@ import {SearchDialog, SearchField} from './search'
 import {SearchProvider} from './search/contexts/search/SearchProvider'
 import {ResourcesButton} from './resources/ResourcesButton'
 import {FreeTrial} from './free-trial'
-import {RouterState, useRouterState, useStateLink} from 'sanity/router'
 import {FreeTrialProvider} from './free-trial/FreeTrialContext'
+import {RouterState, useRouterState, useStateLink} from 'sanity/router'
 
 const RootLayer = styled(Layer)`
   min-height: auto;
@@ -228,7 +228,7 @@ export function StudioNavbar() {
               {(shouldRender.configIssues || shouldRender.resources || shouldRender.tools) && (
                 <Card borderRight>
                   <Flex gap={1} paddingX={2}>
-                    {shouldRender.tools && <FreeTrial type="desktop" />}
+                    {shouldRender.tools && <FreeTrial type="topbar" />}
                     {shouldRender.configIssues && <ConfigIssuesButton />}
                     {shouldRender.resources && <ResourcesButton />}
                   </Flex>
