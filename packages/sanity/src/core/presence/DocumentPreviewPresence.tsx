@@ -1,7 +1,10 @@
-import {AvatarStack, Box, Card, Text} from '@sanity/ui'
+/* eslint-disable camelcase */
+
+import {AvatarStack} from '@sanity/ui'
 import React, {useMemo} from 'react'
-import styled, {css, useTheme} from 'styled-components'
-import {usePreviewCard, UserAvatar} from '../components'
+import styled, {css} from 'styled-components'
+import {getTheme_v2} from '@sanity/ui/theme'
+import {UserAvatar} from '../components'
 import {DocumentPresence} from '../store'
 import {isNonNullable} from '../util'
 import {Tooltip, TooltipProps} from '../../ui'
@@ -15,13 +18,11 @@ const PRESENCE_MENU_POPOVER_PROPS: TooltipProps = {
   portal: true,
 }
 
-const AvatarStackCard = styled(Card)<{$selected?: boolean}>(({theme, $selected}) => {
-  const {color} = theme.sanity
+const AvatarStackBox = styled.div((props) => {
+  const {space} = getTheme_v2(props.theme)
 
   return css`
-    --card-bg-color: inherit;
-    --card-fg-color: inherit;
-    --card-hairline-hard-color: ${$selected ? color.selectable?.default.pressed.border : undefined};
+    margin: ${0 - space[1]}px;
   `
 })
 
@@ -40,9 +41,6 @@ const getTooltipText = (presence: Omit<DocumentPresence, 'path'>[]) => {
 /** @internal */
 export function DocumentPreviewPresence(props: DocumentPreviewPresenceProps) {
   const {presence} = props
-  const {color} = useTheme().sanity
-  const invertedScheme = color.dark ? 'light' : 'dark'
-  const {selected} = usePreviewCard()
 
   const uniqueUsers = useMemo(
     () =>
@@ -58,13 +56,13 @@ export function DocumentPreviewPresence(props: DocumentPreviewPresenceProps) {
 
   return (
     <Tooltip content={tooltipContent} {...PRESENCE_MENU_POPOVER_PROPS}>
-      <AvatarStackCard scheme={selected ? invertedScheme : undefined} $selected={selected}>
-        <AvatarStack maxLength={2} aria-label={getTooltipText(uniqueUsers)}>
+      <AvatarStackBox>
+        <AvatarStack maxLength={2} aria-label={getTooltipText(uniqueUsers)} size={0}>
           {uniqueUsers.map((item) => (
-            <UserAvatar key={item.user.id} user={item.user} />
+            <UserAvatar key={item.user.id} size={0} user={item.user} />
           ))}
         </AvatarStack>
-      </AvatarStackCard>
+      </AvatarStackBox>
     </Tooltip>
   )
 }
