@@ -41,13 +41,31 @@ const DynamicIcon = (props: {icon: {url: string}}) => {
   const [ref, setRef] = useState<HTMLSpanElement | null>(null)
   useEffect(() => {
     if (!ref) return
-    fetch(props.icon.url)
-      .then((response) => response.text())
+
+    const controller = new AbortController()
+    const signal = controller.signal
+
+    fetch(props.icon.url, {signal})
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`)
+        }
+        return response.text()
+      })
       .then((data) => {
         if (!ref) return
-
         ref.innerHTML = data
       })
+      .catch((error) => {
+        if (error.name !== 'AbortError') {
+          console.error(error)
+        }
+      })
+
+    // eslint-disable-next-line consistent-return
+    return () => {
+      controller.abort()
+    }
   }, [ref, props.icon.url])
 
   return <DynamicIconContainer ref={setRef} />
