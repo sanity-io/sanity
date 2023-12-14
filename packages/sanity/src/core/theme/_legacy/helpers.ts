@@ -1,4 +1,4 @@
-import {parseColor, rgbToHex, screen, multiply} from '@sanity/ui'
+import {parseColor, rgbToHex, screen, multiply} from '@sanity/ui/theme'
 import {getLuminance, mix, parseToRgb, rgb} from 'polished'
 import {LegacyThemeTints} from './types'
 
