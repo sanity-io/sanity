@@ -4,8 +4,6 @@ import {
   Card,
   Flex,
   Menu,
-  MenuButton,
-  MenuButtonProps,
   MenuDivider,
   Stack,
   Text,
@@ -24,7 +22,7 @@ import {
 } from '../../../colorScheme'
 import {useWorkspace} from '../../../workspace'
 import {userHasRole} from '../../../../util/userHasRole'
-import {MenuItem, Tooltip} from '../../../../../ui'
+import {MenuButton, MenuButtonProps, MenuItem, Tooltip} from '../../../../../ui'
 import {useTranslation} from '../../../../i18n'
 import {LoginProviderLogo} from './LoginProviderLogo'
 import {LocaleMenu} from './LocaleMenu'

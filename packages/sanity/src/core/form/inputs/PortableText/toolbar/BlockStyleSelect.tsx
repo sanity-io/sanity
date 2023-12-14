@@ -2,8 +2,6 @@ import React, {memo, useCallback, useMemo} from 'react'
 import {PortableTextEditor, usePortableTextEditor} from '@sanity/portable-text-editor'
 import {
   Menu,
-  MenuButton,
-  MenuButtonProps,
   // eslint-disable-next-line no-restricted-imports
   MenuItem,
   Text,
@@ -21,7 +19,7 @@ import {
   BlockQuote,
   Normal,
 } from '../text/textStyles'
-import {Button} from '../../../../../ui'
+import {Button, MenuButton, MenuButtonProps} from '../../../../../ui'
 import {useActiveStyleKeys, useFocusBlock} from './hooks'
 import {BlockStyleItem} from './types'
 

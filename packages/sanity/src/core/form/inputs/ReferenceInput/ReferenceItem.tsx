@@ -1,4 +1,4 @@
-import {Box, CardTone, Menu, MenuButton, MenuDivider} from '@sanity/ui'
+import {Box, CardTone, Menu, MenuDivider} from '@sanity/ui'
 import React, {ComponentProps, ForwardedRef, forwardRef, useCallback, useMemo, useRef} from 'react'
 import {
   CloseIcon,
@@ -15,7 +15,7 @@ import {useDidUpdate} from '../../hooks/useDidUpdate'
 import {randomKey} from '../../utils/randomKey'
 import {FormFieldSet, FormFieldValidationStatus} from '../../components/formField'
 import {FieldPresence} from '../../../presence'
-import {MenuItem} from '../../../../ui'
+import {MenuButton, MenuItem} from '../../../../ui'
 import {ContextMenuButton} from '../../../../ui/contextMenuButton'
 import {useTranslation} from '../../../i18n'
 import {ChangeIndicator} from '../../../changeIndicators'

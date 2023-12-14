@@ -1,6 +1,6 @@
 import {ChevronDownIcon} from '@sanity/icons'
 import {isTitledListValue, StringOptions, TitledListValue} from '@sanity/types'
-import {Menu, MenuButton} from '@sanity/ui'
+import {Menu} from '@sanity/ui'
 import {capitalize, uniq} from 'lodash'
 import React, {useCallback, useId, useMemo} from 'react'
 import {useSchema} from '../../../../../../../../../hooks'
@@ -8,7 +8,7 @@ import {isNonNullable} from '../../../../../../../../../util'
 import {useSearchState} from '../../../../../contexts/search/useSearchState'
 import {OperatorInputComponentProps} from '../../../../../definitions/operators/operatorTypes'
 import {getSchemaField} from '../../../../../utils/getSchemaField'
-import {Button, MenuItem} from '../../../../../../../../../../ui'
+import {Button, MenuButton, MenuItem} from '../../../../../../../../../../ui'
 import {useTranslation} from '../../../../../../../../../i18n'
 
 interface TitledListValueGroup extends Omit<TitledListValue<number | string>, 'title'> {

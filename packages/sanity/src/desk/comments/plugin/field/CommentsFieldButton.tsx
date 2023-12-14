@@ -1,7 +1,6 @@
 import React, {useCallback, useMemo, useRef, useState} from 'react'
 import {
   Flex,
-  Popover,
   Stack,
   Text,
   useClickOutside,
@@ -18,7 +17,7 @@ import {
   CommentIcon,
   MentionOptionsHookValue,
 } from '../../src'
-import {Button, Tooltip} from '../../../../ui'
+import {Button, Popover, Tooltip} from '../../../../ui'
 import {CurrentUser, PortableTextBlock} from 'sanity'
 
 const ContentStack = styled(Stack)`
