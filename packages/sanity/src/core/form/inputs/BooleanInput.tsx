@@ -30,7 +30,7 @@ export function BooleanInput(props: BooleanInputProps) {
   const tone: CardTone | undefined = readOnly ? 'transparent' : undefined
 
   return (
-    <Card border data-testid="boolean-input" radius={1} tone={tone}>
+    <Card border data-testid="boolean-input" radius={2} tone={tone}>
       <Flex>
         <ZeroLineHeightBox padding={3}>
           <LayoutSpecificInput
