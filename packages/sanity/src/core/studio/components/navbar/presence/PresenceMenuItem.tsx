@@ -69,7 +69,7 @@ export const PresenceMenuItem = memo(function PresenceMenuItem(props: PresenceLi
       data-as="a"
       disabled={!hasLink}
       onFocus={handleFocus}
-      preview={<UserAvatar key={presence.user.id} size={0} user={presence.user} />}
+      preview={<UserAvatar key={presence.user.id} size={1} user={presence.user} />}
       ref={setMenuItemElement}
       text={presence.user.displayName}
       tooltipProps={
