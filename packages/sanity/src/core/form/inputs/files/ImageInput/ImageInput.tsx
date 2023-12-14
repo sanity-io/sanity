@@ -618,11 +618,8 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
           border
           paddingX={3}
           paddingY={2}
-          style={
-            hoveringFiles.length === 0
-              ? {borderStyle: 'dashed'}
-              : {borderStyle: 'dashed', borderColor: 'transparent'}
-          }
+          radius={2}
+          style={hoveringFiles.length === 0 ? {} : {borderColor: 'transparent'}}
         >
           <UploadPlaceholder
             browse={this.renderBrowser()}
@@ -761,7 +758,6 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
               onFilesOut={this.handleFilesOut}
               tone={this.getFileTone()}
               $border={hasValueOrUpload || hoveringFiles.length > 0}
-              style={{padding: 1}}
               sizing="border"
               radius={2}
             >

@@ -31,7 +31,7 @@ const ToggleButton = styled(Flex).attrs({forwardedAs: 'button'})((props: {theme:
     -webkit-font-smoothing: inherit;
     font: inherit;
     outline: none;
-    border-radius: ${rem(radius[1])};
+    border-radius: ${rem(radius[2])};
     position: relative;
 
     &:not([hidden]) {

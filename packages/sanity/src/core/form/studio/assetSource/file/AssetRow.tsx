@@ -71,7 +71,7 @@ const RowButton = styled(Button)<RowProps>`
   &:before {
     z-index: 0;
     pointer-events: none;
-    border-radius: 0.1875rem;
+    border-radius: inherit;
   }
 
   ${(props) =>
@@ -258,6 +258,7 @@ export const AssetRow = (props: RowProps) => {
             data-id={_id}
             onClick={onClick}
             paddingY={1}
+            radius={2}
           >
             <Flex gap={2} flex={2} align="center">
               <Card as={CardIconWrapper} padding={2} tone="transparent" radius={2}>
@@ -372,6 +373,7 @@ export const AssetRow = (props: RowProps) => {
             filename: originalFilename,
           })}
           isSelected={isSelected}
+          radius={2}
         >
           <CustomFlex
             gap={2}
