@@ -70,7 +70,6 @@ export const ActionMenu = memo(function ActionMenu(props: ActionMenuProps) {
     PortableTextEditor.focus(editor)
   }, [editor])
 
-  const {t} = useTranslation()
   const tooltipPlacement = isFullscreen ? 'bottom' : 'top'
 
   const children = useMemo(
