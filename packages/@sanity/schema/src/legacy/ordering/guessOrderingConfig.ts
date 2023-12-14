@@ -1,4 +1,5 @@
 import {capitalize, startCase} from 'lodash'
+import {SortOrdering} from '@sanity/types'
 
 const CANDIDATES = ['title', 'name', 'label', 'heading', 'header', 'caption', 'description']
 
@@ -6,7 +7,7 @@ const PRIMITIVES = ['string', 'boolean', 'number']
 
 const isPrimitive = (field) => PRIMITIVES.includes(field.type)
 
-export default function guessOrderingConfig(objectTypeDef) {
+export default function guessOrderingConfig(objectTypeDef): SortOrdering[] {
   let candidates = CANDIDATES.filter((candidate) =>
     objectTypeDef.fields.some((field) => isPrimitive(field) && field.name === candidate),
   )
@@ -16,13 +17,14 @@ export default function guessOrderingConfig(objectTypeDef) {
     candidates = objectTypeDef.fields.filter(isPrimitive).map((field) => field.name)
   }
 
-  return candidates.map((name) => ({
-    name: name,
-    i18n: {
-      key: `default-orderings.${name}`,
-      ns: 'studio',
-    },
-    title: capitalize(startCase(name)),
-    by: [{field: name, direction: 'asc'}],
-  }))
+  return candidates.map(
+    (name): SortOrdering => ({
+      name: name,
+      i18n: {
+        title: {key: `default-orderings.${name}`, ns: 'studio'},
+      },
+      title: capitalize(startCase(name)),
+      by: [{field: name, direction: 'asc'}],
+    }),
+  )
 }
