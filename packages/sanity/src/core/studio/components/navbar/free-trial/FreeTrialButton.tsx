@@ -3,6 +3,7 @@ import {Button, Text, Card, Stack} from '@sanity/ui'
 import {BoltIcon} from '@sanity/icons'
 import {purple, yellow} from '@sanity/color'
 import {useTranslation} from 'react-i18next'
+import {forwardRef} from 'react'
 
 const StyledButton = styled(Button)<{smallIcon: boolean}>`
   padding: ${(props) => (props.smallIcon ? '1px' : 0)};
@@ -70,34 +71,37 @@ interface FreeTrialButtonProps extends OutlineProps {
   toggleShowContent: () => void
 }
 
-function FreeTrialButtonDesktop({toggleShowContent, daysLeft, trialDays}: FreeTrialButtonProps) {
+export const FreeTrialButtonTopbar = forwardRef(function FreeTrialButtonTopbar(
+  {toggleShowContent, daysLeft, trialDays}: FreeTrialButtonProps,
+  ref: React.Ref<HTMLButtonElement>,
+) {
   return (
     <StyledButton
+      ref={ref}
       padding={3}
       fontSize={1}
       mode="bleed"
       onClick={toggleShowContent}
-      // TODO: After facelift the icons will be all size 1,
       smallIcon={!!daysLeft}
     >
-      {/* TODO: After facelift the icons will be all size 1 */}
       <Text size={daysLeft ? 1 : 2}>
         <BoltIcon />
       </Text>
       {daysLeft > 0 && <SvgFilledOutline daysLeft={daysLeft} trialDays={trialDays} />}
     </StyledButton>
   )
-}
+})
 
-function FreeTrialButtonMobile({
-  toggleShowContent,
-  daysLeft,
-}: Omit<FreeTrialButtonProps, 'trialDays'>) {
+export const FreeTrialButtonSidebar = forwardRef(function FreeTrialButtonSidebar(
+  {toggleShowContent, daysLeft}: Omit<FreeTrialButtonProps, 'trialDays'>,
+  ref: React.Ref<HTMLButtonElement>,
+) {
   const {t} = useTranslation()
 
   return (
     <Stack as="li">
       <Button
+        ref={ref}
         icon={BoltIcon}
         justify="flex-start"
         mode="bleed"
@@ -110,15 +114,4 @@ function FreeTrialButtonMobile({
       />
     </Stack>
   )
-}
-
-export function FreeTrialButton(
-  props: FreeTrialButtonProps & {
-    type: 'topbar' | 'sidebar'
-  },
-) {
-  const {type, ...rest} = props
-
-  if (type === 'sidebar') return <FreeTrialButtonMobile {...rest} />
-  return <FreeTrialButtonDesktop {...rest} />
-}
+})

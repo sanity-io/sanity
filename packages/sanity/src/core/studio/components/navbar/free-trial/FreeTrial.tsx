@@ -1,9 +1,9 @@
-import {useCallback, useEffect, useState} from 'react'
+import {useCallback, useEffect, useRef, useState} from 'react'
 import {Popover} from '@sanity/ui'
 import {useColorSchemeValue} from '../../../colorScheme'
 import {PopoverContent} from './PopoverContent'
 import {DialogContent} from './DialogContent'
-import {FreeTrialButton} from './FreeTrialButton'
+import {FreeTrialButtonTopbar, FreeTrialButtonSidebar} from './FreeTrialButton'
 import {useFreeTrialContext} from './FreeTrialContext'
 
 interface FreeTrialProps {
@@ -15,6 +15,7 @@ export function FreeTrial({type}: FreeTrialProps) {
   const scheme = useColorSchemeValue()
   //  On mobile, give it some time so the popover doesn't show up until the navbar is open.
   const [showPopover, setShowPopover] = useState(type !== 'sidebar')
+  const ref = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -27,11 +28,30 @@ export function FreeTrial({type}: FreeTrialProps) {
   }, [])
 
   const closeAndReOpen = useCallback(() => toggleShowContent(true), [toggleShowContent])
-  const toggleDialog = useCallback(() => toggleShowContent(false), [toggleShowContent])
+  const toggleDialog = useCallback(() => {
+    ref.current?.focus()
+    toggleShowContent(false)
+  }, [toggleShowContent, ref])
 
   if (!data?.id) return null
   const dialogToRender = showOnLoad ? data.showOnLoad : data.showOnClick
   if (!dialogToRender) return null
+
+  const button =
+    type === 'sidebar' ? (
+      <FreeTrialButtonSidebar
+        toggleShowContent={closeAndReOpen}
+        daysLeft={data.daysLeft}
+        ref={ref}
+      />
+    ) : (
+      <FreeTrialButtonTopbar
+        toggleShowContent={closeAndReOpen}
+        daysLeft={data.daysLeft}
+        trialDays={data.trialDays}
+        ref={ref}
+      />
+    )
 
   if (dialogToRender?.dialogType === 'popover') {
     return (
@@ -50,26 +70,14 @@ export function FreeTrial({type}: FreeTrialProps) {
           />
         }
       >
-        <div>
-          <FreeTrialButton
-            type={type}
-            toggleShowContent={closeAndReOpen}
-            daysLeft={data.daysLeft}
-            trialDays={data.trialDays}
-          />
-        </div>
+        {button}
       </Popover>
     )
   }
 
   return (
     <>
-      <FreeTrialButton
-        type={type}
-        toggleShowContent={closeAndReOpen}
-        daysLeft={data.daysLeft}
-        trialDays={data.trialDays}
-      />
+      {button}
       <DialogContent
         content={dialogToRender}
         handleClose={toggleDialog}

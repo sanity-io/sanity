@@ -1,4 +1,4 @@
-import {Box, Button, Card, Dialog, Flex, Heading} from '@sanity/ui'
+import {Box, Button, Dialog, Flex, Heading} from '@sanity/ui'
 import styled from 'styled-components'
 import {CloseIcon} from '@sanity/icons'
 import {useColorSchemeValue} from '../../../colorScheme'
