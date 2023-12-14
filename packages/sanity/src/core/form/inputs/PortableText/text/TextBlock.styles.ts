@@ -1,6 +1,9 @@
+/* eslint-disable camelcase */
+
 import {hues} from '@sanity/color'
 import {Box, Flex, Theme} from '@sanity/ui'
 import styled, {css} from 'styled-components'
+import {getTheme_v2, rgba} from '@sanity/ui/theme'
 import {TEXT_BULLET_MARKERS, TEXT_NUMBER_FORMATS} from './constants'
 import {createListName} from './helpers'
 
@@ -9,15 +12,16 @@ interface TextBlockStyleProps {
 }
 
 function textBlockStyle(props: TextBlockStyleProps & {theme: Theme}) {
-  const {$level, theme} = props
-  const {color, fonts, radius, space} = theme.sanity
+  const {$level} = props
+  const {color, font, radius, space} = getTheme_v2(props.theme)
+
   const numberMarker = TEXT_NUMBER_FORMATS[($level - 1) % TEXT_NUMBER_FORMATS.length]
   const bulletMarker = TEXT_BULLET_MARKERS[($level - 1) % TEXT_BULLET_MARKERS.length]
 
   return css`
     --marker-bg-color: transparent;
 
-    mix-blend-mode: ${color.dark ? 'screen' : 'multiply'};
+    mix-blend-mode: ${color._dark ? 'screen' : 'multiply'};
     position: relative;
 
     & > [data-ui='TextBlock_inner'] {
@@ -39,17 +43,17 @@ function textBlockStyle(props: TextBlockStyleProps & {theme: Theme}) {
     }
 
     &[data-markers] {
-      --marker-bg-color: ${color.dark ? hues.purple[950].hex : hues.purple[50].hex};
+      --marker-bg-color: ${color._dark ? hues.purple[950].hex : hues.purple[50].hex};
     }
 
     &[data-warning] {
-      --card-border-color: ${color.muted.caution.enabled.border};
-      --marker-bg-color: ${color.muted.caution.hovered.bg};
+      --card-border-color: ${color.button.ghost.caution.enabled.border};
+      --marker-bg-color: ${color.button.ghost.caution.hovered.bg};
     }
 
     &[data-error] {
-      --card-border-color: ${color.muted.critical.enabled.border};
-      --marker-bg-color: ${color.muted.critical.hovered.bg};
+      --card-border-color: ${color.button.ghost.critical.enabled.border};
+      --marker-bg-color: ${color.button.ghost.critical.hovered.bg};
     }
 
     & [data-list-prefix] {
@@ -85,11 +89,11 @@ function textBlockStyle(props: TextBlockStyleProps & {theme: Theme}) {
       overflow-wrap: anywhere;
       text-transform: none;
       white-space: pre-wrap;
-      font-family: ${fonts.text.family};
+      font-family: ${font.text.family};
       flex: 1;
 
       *::selection {
-        background-color: ${color.selectable?.primary.pressed.bg};
+        background-color: ${rgba(color.focusRing, 0.3)};
       }
     }
   `
