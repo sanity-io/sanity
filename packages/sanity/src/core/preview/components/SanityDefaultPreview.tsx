@@ -14,7 +14,6 @@ import React, {
 import {isValidElementType} from 'react-is'
 import {SanityImageSource} from '@sanity/image-url/lib/types/types'
 import {isImageSource} from '@sanity/asset-utils'
-import {Text} from '@sanity/ui'
 import {Tooltip} from '../../../ui'
 import {PreviewProps} from '../../components/previews'
 import {useClient} from '../../hooks'
@@ -107,11 +106,7 @@ export function SanityDefaultPreview(props: SanityDefaultPreviewProps): ReactEle
     }
 
     // Render fallback icon
-    return (
-      <Text as="span" size={1}>
-        {renderIcon()}
-      </Text>
-    )
+    return renderIcon
   }, [icon, imageUrl, mediaProp, renderIcon, renderMedia, title])
 
   const previewProps: Omit<PreviewProps, 'renderDefault'> = useMemo(
