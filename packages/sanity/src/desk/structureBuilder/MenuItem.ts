@@ -289,7 +289,6 @@ export function getOrderingMenuItem(
       context.i18n.t('default-menu-item.fallback-title', {
         // note this lives in the `studio` bundle because that one is loaded by default
         ns: 'studio',
-        defaultValue: `Sort by ${title}`, // fallback value
         replace: {title}, // replaces the `{{title}}` option
       }),
     ) // fallback title
