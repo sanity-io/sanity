@@ -1,13 +1,15 @@
+/* eslint-disable camelcase */
+
 import {Layer} from '@sanity/ui'
 import styled, {css} from 'styled-components'
+import {getTheme_v2} from '@sanity/ui/theme'
 import {focusRingBorderStyle, focusRingStyle} from '../../components/withFocusRing/helpers'
 
-export const Root = styled.div(({theme}) => {
-  const {focusRing, input} = theme.sanity
-  const base = theme.sanity.color.base
-  const color = theme.sanity.color.input
+export const Root = styled.div((props) => {
+  const {color, input, radius} = getTheme_v2(props.theme)
+
   const border = {
-    color: color.default.enabled.border,
+    color: color.input.default.enabled.border,
     width: input.border.width,
   }
 
@@ -32,15 +34,15 @@ export const Root = styled.div(({theme}) => {
       bottom: 0;
       box-shadow: var(--input-box-shadow);
       z-index: 2;
-      border-radius: 1px;
+      border-radius: ${radius[2]}px;
       pointer-events: none;
     }
 
     &:not([data-read-only])[data-focused] [data-border] {
       --input-box-shadow: ${focusRingStyle({
-        base,
+        base: color,
         border,
-        focusRing,
+        focusRing: input.text.focusRing,
       })};
     }
   `
