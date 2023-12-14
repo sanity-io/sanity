@@ -41,7 +41,7 @@ const OVERLAY_VARIANTS: Variants = {
   closed: {opacity: 0},
 }
 
-const Y_POSITION = 8 // px
+const Y_POSITION = 12 // vh
 
 const MotionOverlay = styled(motion.div)`
   background-color: ${({theme}: {theme: Theme}) => theme.sanity.color.base.shadow.umbra};
@@ -57,11 +57,11 @@ const SearchMotionCard = styled(motion(Card))`
   flex-direction: column;
   left: 50%;
   max-height: min(
-    calc(100vh - ${Y_POSITION}px - ${POPOVER_INPUT_PADDING}px),
+    calc(100vh - ${Y_POSITION}vh - ${POPOVER_INPUT_PADDING}px),
     ${POPOVER_MAX_HEIGHT}px
   );
   position: absolute;
-  top: ${Y_POSITION}px;
+  top: ${Y_POSITION}vh;
   width: min(calc(100vw - ${POPOVER_INPUT_PADDING * 2}px), ${POPOVER_MAX_WIDTH}px);
 `
 
