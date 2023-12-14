@@ -13,7 +13,7 @@ import {getIntentState} from './getIntentState'
 import {router} from './router'
 import {DeskToolOptions} from './types'
 import {comments} from './comments'
-import {wrapIconInDeskRenamePrompt} from './deskRename/deskRenamedIcon'
+import {DeskRenameToolMenuButtonPopover} from './deskRename/DeskRenameToolMenuButtonPopover'
 import {changesInspector} from './panes/document/inspectors/changes'
 import {structureUsEnglishLocaleBundle} from './i18n'
 import {validationInspector} from './panes/document/inspectors/validation'
@@ -80,8 +80,8 @@ const inspectors = [validationInspector, changesInspector]
  * */
 export const deskTool = definePlugin<DeskToolOptions | void>((options) => {
   const hasSpecifiedName = options ? typeof options.name === 'string' : false
-  const ToolIcon = options?.icon || MasterDetailIcon
-  const icon = hasSpecifiedName ? ToolIcon : wrapIconInDeskRenamePrompt(ToolIcon)
+  const icon = options?.icon || MasterDetailIcon
+  const ToolMenuButtonPopover = hasSpecifiedName ? undefined : DeskRenameToolMenuButtonPopover
 
   return {
     name: '@sanity/desk-tool',
@@ -119,7 +119,11 @@ export const deskTool = definePlugin<DeskToolOptions | void>((options) => {
         getIntentState,
         // Controlled by sanity/src/desk/components/deskTool/DeskTitle.tsx
         controlsDocumentTitle: true,
-        options,
+        options: {
+          ...options,
+          // eslint-disable-next-line camelcase
+          __internal_toolMenuButtonWrapper: ToolMenuButtonPopover,
+        },
         router,
       },
     ],
