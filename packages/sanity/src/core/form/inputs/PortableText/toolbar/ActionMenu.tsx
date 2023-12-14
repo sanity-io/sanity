@@ -1,6 +1,7 @@
 import React, {memo, useCallback, useMemo} from 'react'
 import {Button, ButtonProps, PopoverProps} from '@sanity/ui'
 import {EllipsisVerticalIcon} from '@sanity/icons'
+import {useTranslation} from 'react-i18next'
 import {
   PortableTextEditor,
   usePortableTextEditor,
@@ -30,6 +31,7 @@ export const ActionMenu = memo(function ActionMenu(props: ActionMenuProps) {
 
   const editor = usePortableTextEditor()
   const selection = usePortableTextEditorSelection()
+  const {t} = useTranslation()
   const isSelectingMultipleBlocks =
     // Path at 0 is the block level, by comparing those we can detect if the user is selecting multiple blocks
     selection && isKeySegment(selection.anchor.path[0]) && isKeySegment(selection.focus.path[0])
@@ -74,6 +76,14 @@ export const ActionMenu = memo(function ActionMenu(props: ActionMenuProps) {
       actions.map((action) => {
         const annotationDisabled =
           action.type === 'annotation' && (isEmptyTextBlock || isSelectingMultipleBlocks)
+        const annotationDisabledText = isEmptyTextBlock
+          ? t('user-menu.action.portable-text.annotation-disabled_empty-block', {
+              name: action.title || action.key,
+            })
+          : t('user-menu.action.portable-text.annotation-disabled_multiple-blocks', {
+              name: action.title || action.key,
+            })
+
         const active = activeKeys.includes(action.key)
         return (
           <CollapseMenuButton
@@ -87,13 +97,7 @@ export const ActionMenu = memo(function ActionMenu(props: ActionMenuProps) {
             onClick={() => action.handle(active)}
             selected={active}
             text={action.title || action.key}
-            tooltipText={
-              annotationDisabled
-                ? `Cannot apply ${action.title || action.key} to ${
-                    isEmptyTextBlock ? 'empty block' : 'multiple blocks'
-                  }`
-                : action.title || action.key
-            }
+            tooltipText={annotationDisabled ? annotationDisabledText : action.title || action.key}
             tooltipProps={{
               disabled: disabled,
               placement: isFullscreen ? 'bottom' : 'top',
@@ -102,7 +106,7 @@ export const ActionMenu = memo(function ActionMenu(props: ActionMenuProps) {
           />
         )
       }),
-    [actions, activeKeys, disabled, isEmptyTextBlock, isFullscreen, isSelectingMultipleBlocks],
+    [actions, activeKeys, disabled, isEmptyTextBlock, isFullscreen, isSelectingMultipleBlocks, t],
   )
 
   const menuButtonProps = useMemo(
