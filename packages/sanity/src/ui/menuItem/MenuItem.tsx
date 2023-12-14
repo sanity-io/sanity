@@ -21,26 +21,22 @@ const FONT_SIZE = 1
 export type MenuItemProps = Pick<
   UIMenuItemProps,
   'as' | 'icon' | 'iconRight' | 'pressed' | 'selected' | 'text' | 'tone' | 'hotkeys'
-> &
-  Omit<
-    React.HTMLProps<HTMLDivElement>,
-    'as' | 'height' | 'ref' | 'selected' | 'tabIndex' | 'size'
-  > & {
-    badgeText?: string
-    /**
-     * Usage of `children` is not supported, import `MenuItem` from `@sanity/ui` instead.
-     */
-    children?: undefined
-    /**
-     * Previews should be 25x25.
-     */
-    preview?: React.ReactNode
-    /**
-     * Allows to add wrappers to the menu item, e.g. `Tooltip`.
-     */
-    renderMenuItem?: (menuItem: React.JSX.Element) => React.ReactNode
-    tooltipProps?: TooltipProps | null
-  }
+> & {
+  badgeText?: string
+  /**
+   * Usage of `children` is not supported, import `MenuItem` from `@sanity/ui` instead.
+   */
+  children?: undefined
+  /**
+   * Previews should be 25x25.
+   */
+  preview?: React.ReactNode
+  /**
+   * Allows to add wrappers to the menu item, e.g. `Tooltip`.
+   */
+  renderMenuItem?: (menuItem: React.JSX.Element) => React.ReactNode
+  tooltipProps?: TooltipProps | null
+}
 
 const PreviewWrapper = styled(Box)`
   height: 25px;
@@ -49,10 +45,10 @@ const PreviewWrapper = styled(Box)`
 `
 
 /**
- * Studio UI <MenuItem>.
+ * Customized Sanity UI <MenuItem> that restricts usage of `children` to encourage simple,
+ * single line menu items.
  *
- * Studio UI components are opinionated `@sanity/ui` components meant for internal use only.
- * Props and options are intentionally limited to ensure consistency and ease of use.
+ * It also accepts a prop to attach tooltips as well as custom badges too.
  *
  * @internal
  */
@@ -69,7 +65,11 @@ export const MenuItem = forwardRef(function MenuItem(
     text,
     tooltipProps,
     ...rest
-  }: MenuItemProps,
+  }: MenuItemProps &
+    Omit<
+      React.HTMLProps<HTMLDivElement>,
+      'as' | 'height' | 'ref' | 'selected' | 'tabIndex' | 'size'
+    >,
   ref: React.Ref<HTMLDivElement>,
 ) {
   const menuItemContent = useMemo(() => {

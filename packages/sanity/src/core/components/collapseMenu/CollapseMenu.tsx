@@ -1,4 +1,4 @@
-import {Flex, MenuButtonProps} from '@sanity/ui'
+import {Flex} from '@sanity/ui'
 import React, {
   Children,
   cloneElement,
@@ -14,7 +14,7 @@ import React, {
 } from 'react'
 import styled, {css} from 'styled-components'
 import {difference} from 'lodash'
-import {Tooltip} from '../../../ui'
+import {MenuButtonProps, Tooltip} from '../../../ui'
 import {ContextMenuButton} from '../../../ui/contextMenuButton'
 import {CollapseOverflowMenu} from './CollapseOverflowMenu'
 import {ObserveElement} from './ObserveElement'

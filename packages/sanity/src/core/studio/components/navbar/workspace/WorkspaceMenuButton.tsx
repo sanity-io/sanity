@@ -3,9 +3,7 @@ import {
   Box,
   // eslint-disable-next-line no-restricted-imports
   Button,
-  MenuButton,
   Menu,
-  MenuButtonProps,
   Flex,
   Card,
   Text,
@@ -15,7 +13,7 @@ import styled from 'styled-components'
 import {useTranslation} from '../../../../i18n'
 import {useActiveWorkspace} from '../../../activeWorkspaceMatcher'
 import {useWorkspaces} from '../../../workspaces'
-import {MenuItem} from '../../../../../ui'
+import {MenuButton, MenuButtonProps, MenuItem} from '../../../../../ui'
 import {SanityLogo} from '../SanityLogo'
 import {useWorkspaceAuthStates} from './hooks'
 import {STATE_TITLES, WorkspacePreviewIcon} from './WorkspacePreview'

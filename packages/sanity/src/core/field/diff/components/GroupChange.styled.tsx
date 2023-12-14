@@ -1,4 +1,4 @@
-import {rem, Popover} from '@sanity/ui'
+import {rem} from '@sanity/ui'
 import styled from 'styled-components'
 
 export const ChangeListWrapper = styled.div`

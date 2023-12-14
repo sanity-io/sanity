@@ -2,9 +2,9 @@
 import {ArraySchemaType, isReferenceSchemaType} from '@sanity/types'
 import {AddIcon} from '@sanity/icons'
 import React, {useMemo, useId} from 'react'
-import {Grid, Menu, MenuButton} from '@sanity/ui'
+import {Grid, Menu} from '@sanity/ui'
 import {ArrayInputFunctionsProps} from '../../../types'
-import {Tooltip, Button, MenuItem} from '../../../../../ui'
+import {Tooltip, Button, MenuButton, MenuItem} from '../../../../../ui'
 import {useTranslation} from '../../../../i18n'
 
 /**

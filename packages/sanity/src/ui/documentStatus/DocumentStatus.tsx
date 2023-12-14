@@ -14,6 +14,16 @@ const StyledText = styled(Text)`
   white-space: nowrap;
 `
 
+/**
+ * Displays document status indicating both last published and edited dates in either relative (the default)
+ * or absolute formats.
+ *
+ * These can be displayed in a single or multi-line (the default) lockups.
+ *
+ * Example: `**Published Oct 16 2023** Edited 8m ago`
+ *
+ * @internal
+ */
 export function DocumentStatus({absoluteDate, draft, published, singleLine}: DocumentStatusProps) {
   const draftUpdatedAt = draft && '_updatedAt' in draft ? draft._updatedAt : ''
   const publishedUpdatedAt = published && '_updatedAt' in published ? published._updatedAt : ''

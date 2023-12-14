@@ -1,6 +1,6 @@
-import {Menu, MenuButton, MenuButtonProps, MenuDivider} from '@sanity/ui'
+import {Menu, MenuDivider} from '@sanity/ui'
 import React, {ForwardedRef, forwardRef} from 'react'
-import {MenuItem} from '../../../ui'
+import {MenuButton, MenuButtonProps, MenuItem} from '../../../ui'
 import {CollapseMenuProps} from './CollapseMenu'
 
 const MENU_BUTTON_POPOVER_PROPS: MenuButtonProps['popover'] = {
