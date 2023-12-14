@@ -1532,6 +1532,12 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'user-menu.action.manage-project': 'Manage project',
   /** Accessibility label for the action to manage the current project */
   'user-menu.action.manage-project-aria-label': 'Manage project',
+  /** Tooltip helper text when portable text annotation is disabled for empty block*/
+  'user-menu.action.portable-text.annotation-disabled_empty-block':
+    'Cannot apply {{name}} to empty block',
+  /** Tooltip helper text when portable text annotation is disabled for multiple blocks */
+  'user-menu.action.portable-text.annotation-disabled_multiple-blocks':
+    'Cannot apply {{name}} to multiple blocks',
   /** Label for action to sign out of the current sanity project */
   'user-menu.action.sign-out': 'Sign out',
   /** Title for appearance section for the current studio (dark / light / system scheme) */
