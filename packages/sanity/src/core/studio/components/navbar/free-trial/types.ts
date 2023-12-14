@@ -7,6 +7,7 @@ export interface FreeTrialResponse {
   showOnLoad?: FreeTrialDialog
   showOnClick?: FreeTrialDialog
   daysLeft: number
+  trialDays: number
 }
 export interface FreeTrialDialog {
   _id: string

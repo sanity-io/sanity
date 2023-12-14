@@ -2,6 +2,7 @@ import {FreeTrialResponse} from './types'
 
 export const responses: FreeTrialResponse[] = [
   {
+    trialDays: 30,
     daysLeft: 5,
     id: 'growth-trial-ending',
     icon: 'zap',
@@ -151,6 +152,7 @@ export const responses: FreeTrialResponse[] = [
     },
   },
   {
+    trialDays: 90,
     daysLeft: 15,
     showOnLoad: {
       _type: 'dialog',
@@ -387,6 +389,7 @@ export const responses: FreeTrialResponse[] = [
     style: 'purple',
   },
   {
+    trialDays: 30,
     daysLeft: 0,
     id: 'post-growth-trial',
     icon: 'zap',

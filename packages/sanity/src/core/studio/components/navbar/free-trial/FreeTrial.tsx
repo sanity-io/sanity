@@ -54,6 +54,7 @@ export function FreeTrial({type}: FreeTrialProps) {
               type={type}
               toggleShowContent={closeAndReOpen}
               daysLeft={data.daysLeft}
+              trialDays={data.trialDays}
             />
           </div>
         </Popover>
@@ -63,7 +64,12 @@ export function FreeTrial({type}: FreeTrialProps) {
 
   return (
     <Wrapper type={type}>
-      <FreeTrialButton type={type} toggleShowContent={closeAndReOpen} daysLeft={data.daysLeft} />
+      <FreeTrialButton
+        type={type}
+        toggleShowContent={closeAndReOpen}
+        daysLeft={data.daysLeft}
+        trialDays={data.trialDays}
+      />
       <DialogContent
         content={dialogToRender}
         handleClose={toggleDialog}

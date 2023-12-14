@@ -16,8 +16,13 @@ const CenteredStroke = styled.div`
   transform: translate(-50%, -50%);
 `
 
-const SvgFilledCircle = ({daysLeft}: {daysLeft: number}) => {
-  const totalDays = 30
+interface OutlineProps {
+  daysLeft: number
+  trialDays: number
+}
+
+const SvgFilledOutline = ({daysLeft, trialDays}: OutlineProps) => {
+  const totalDays = trialDays
   const progress = totalDays - daysLeft
 
   const percentage = Math.round((progress / totalDays) * 100)
@@ -61,12 +66,11 @@ const SvgFilledCircle = ({daysLeft}: {daysLeft: number}) => {
   )
 }
 
-interface FreeTrialButtonProps {
+interface FreeTrialButtonProps extends OutlineProps {
   toggleShowContent: () => void
-  daysLeft: number
 }
 
-function FreeTrialButtonDesktop({toggleShowContent, daysLeft}: FreeTrialButtonProps) {
+function FreeTrialButtonDesktop({toggleShowContent, daysLeft, trialDays}: FreeTrialButtonProps) {
   return (
     <StyledButton
       padding={3}
@@ -80,12 +84,15 @@ function FreeTrialButtonDesktop({toggleShowContent, daysLeft}: FreeTrialButtonPr
       <Text size={daysLeft ? 1 : 2}>
         <BoltIcon />
       </Text>
-      {daysLeft > 0 && <SvgFilledCircle daysLeft={daysLeft} />}
+      {daysLeft > 0 && <SvgFilledOutline daysLeft={daysLeft} trialDays={trialDays} />}
     </StyledButton>
   )
 }
 
-function FreeTrialButtonMobile({toggleShowContent, daysLeft}: FreeTrialButtonProps) {
+function FreeTrialButtonMobile({
+  toggleShowContent,
+  daysLeft,
+}: Omit<FreeTrialButtonProps, 'trialDays'>) {
   const {t} = useTranslation()
 
   return (
