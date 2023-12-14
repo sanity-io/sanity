@@ -13,11 +13,11 @@ import {
   UploadState,
 } from '@sanity/types'
 import {ImageIcon, SearchIcon} from '@sanity/icons'
-import {Box, Card, Menu, MenuButton, ThemeColorToneKey, ToastParams} from '@sanity/ui'
+import {Box, Card, Menu, ThemeColorToneKey, ToastParams} from '@sanity/ui'
 import {SanityClient} from '@sanity/client'
 import {isFileSource} from '@sanity/asset-utils'
 import {WithReferencedAsset} from '../../../utils/WithReferencedAsset'
-import {Button, MenuItem} from '../../../../../ui'
+import {Button, MenuButton, MenuItem} from '../../../../../ui'
 import {Uploader, UploaderResolver, UploadOptions} from '../../../studio/uploads/types'
 import {FileInfo, FileTarget} from '../common/styles'
 import {UploadProgress} from '../common/UploadProgress'

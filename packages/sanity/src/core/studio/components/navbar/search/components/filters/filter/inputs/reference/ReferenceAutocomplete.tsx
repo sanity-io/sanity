@@ -1,7 +1,8 @@
 import type {ReferenceValue} from '@sanity/types'
-import {Autocomplete, Box, Flex, Popover, Text} from '@sanity/ui'
+import {Autocomplete, Box, Flex, Text} from '@sanity/ui'
 import React, {forwardRef, ReactElement, useCallback, useId, useMemo, useRef, useState} from 'react'
 import styled from 'styled-components'
+import {Popover} from '../../../../../../../../../../ui'
 import {useSchema} from '../../../../../../../../../hooks'
 import type {SearchableType, WeightedHit} from '../../../../../../../../../search'
 import {getPublishedId} from '../../../../../../../../../util'
@@ -156,7 +157,6 @@ export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
       const hasResults = hits && hits.length > 0
       return (
         <Popover
-          arrow={false}
           constrainSize
           content={
             <div ref={contentRef}>

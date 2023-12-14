@@ -1,9 +1,9 @@
 /* eslint-disable react/jsx-handler-names */
 
 import {EllipsisHorizontalIcon} from '@sanity/icons'
-import {Card, Menu, MenuButton, MenuButtonProps} from '@sanity/ui'
+import {Card, Menu} from '@sanity/ui'
 import React, {memo, useCallback, useId, useMemo, useState} from 'react'
-import {Button, ButtonProps} from '../../../../ui'
+import {Button, ButtonProps, MenuButton, MenuButtonProps} from '../../../../ui'
 import {DocumentFieldActionGroup, DocumentFieldActionNode} from '../../../config'
 import {useI18nText} from '../../../i18n'
 import {FieldActionMenuNode} from './FieldActionMenuNode'

@@ -3,12 +3,19 @@ import React, {HTMLProps, forwardRef} from 'react'
 import {useTranslation} from '../../core'
 import {Button, ButtonProps} from '../button'
 
-interface ContextMenuButtonProps
-  extends Pick<ButtonProps, 'mode' | 'paddingY' | 'size' | 'tone' | 'tooltipProps'>,
-    Pick<HTMLProps<HTMLButtonElement>, 'disabled' | 'hidden' | 'onClick'> {}
+type ContextMenuButtonProps = Pick<
+  ButtonProps,
+  'mode' | 'paddingY' | 'size' | 'tone' | 'tooltipProps'
+>
 
+/**
+ * Simple context menu button (with horizontal ellipsis icon) with shared localization.
+ *
+ * @internal
+ */
 export const ContextMenuButton = forwardRef(function ContextMenuButton(
-  props: ContextMenuButtonProps,
+  props: ContextMenuButtonProps &
+    Pick<HTMLProps<HTMLButtonElement>, 'disabled' | 'hidden' | 'onClick'>,
   ref: React.ForwardedRef<HTMLButtonElement>,
 ) {
   const {mode = 'bleed', tooltipProps, tone, ...rest} = props

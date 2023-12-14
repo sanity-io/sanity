@@ -44,6 +44,15 @@ const Root = styled(Text)<{
   `
 })
 
+/**
+ * Renders a dot indicating the current document status.
+ *
+ * - Green (primary) for published documents with no edits
+ * - Yellow (caution) for published documents with edits
+ * - Gray (default) for unpublished documents (with or without edits)
+ *
+ * @internal
+ */
 export function DocumentStatusIndicator({
   draft,
   hidePublishedStatus,

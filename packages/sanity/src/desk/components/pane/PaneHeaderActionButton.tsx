@@ -1,11 +1,11 @@
 import React, {MouseEvent, useCallback, useId} from 'react'
-import {Menu, MenuButton} from '@sanity/ui'
+import {Menu} from '@sanity/ui'
 import {UnknownIcon} from '@sanity/icons'
 import {Intent} from '../../structureBuilder'
-import {Button} from '../../../ui'
+import {Button, MenuButton} from '../../../ui'
 import {_PaneMenuGroup, _PaneMenuItem} from './types'
 import {PaneMenuButtonItem} from './PaneMenuButtonItem'
-import {TooltipOfDisabled, StatusButton, useI18nText} from 'sanity'
+import {StatusButton, useI18nText} from 'sanity'
 import {useIntentLink} from 'sanity/router'
 
 function getDisabledReason(node: _PaneMenuItem) {

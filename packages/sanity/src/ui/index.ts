@@ -1,7 +1,9 @@
 export * from './button'
 export * from './dialog'
+export * from './menuButton'
 export * from './menuGroup'
 export * from './menuItem'
+export * from './popover'
 export * from './tab'
 export * from './tooltip'
 
