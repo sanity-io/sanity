@@ -87,6 +87,7 @@ export const SearchHeader = forwardRef<HTMLInputElement, SearchHeaderProps>(func
             icon={ArrowLeftIcon}
             mode="bleed"
             onClick={onClose}
+            size="large"
             tooltipProps={{content: t('search.action.close-search-aria-label')}}
           />
         )}
@@ -125,6 +126,7 @@ export const SearchHeader = forwardRef<HTMLInputElement, SearchHeaderProps>(func
               mode="bleed"
               onClick={handleFiltersToggle}
               selected={filtersVisible}
+              size="large"
               tone={notificationBadgeVisible ? 'primary' : undefined}
               tooltipProps={{
                 content: t('search.action.toggle-filters-label', {
