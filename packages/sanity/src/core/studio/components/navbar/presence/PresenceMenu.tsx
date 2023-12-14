@@ -11,8 +11,7 @@ import {useWorkspace} from '../../../workspace'
 import {PresenceMenuItem} from './PresenceMenuItem'
 
 const StyledMenu = styled(Menu)`
-  max-width: 350px;
-  min-width: 250px;
+  max-width: 260px;
 `
 
 const FooterStack = styled(Stack)`

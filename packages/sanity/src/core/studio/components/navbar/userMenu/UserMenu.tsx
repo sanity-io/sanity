@@ -74,7 +74,7 @@ export function UserMenu() {
 
   const popoverProps: MenuButtonProps['popover'] = useMemo(
     () => ({
-      placement: 'bottom-end',
+      placement: 'bottom',
       portal: true,
       preventOverflow: true,
       scheme: scheme,
