@@ -79,7 +79,7 @@ const Content = styled(Box)<{
   return css`
     outline: none;
     border-left: ${$borderLeft ? '1px solid var(--card-border-color)' : undefined};
-    border-radius: ${rem(radius[1])};
+    border-radius: ${rem(radius[2])};
 
     &:focus {
       box-shadow: ${focusRingStyle({base, focusRing: {...focusRing, offset: 2}})};
