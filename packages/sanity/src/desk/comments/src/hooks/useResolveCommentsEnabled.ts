@@ -18,10 +18,7 @@ export function useResolveCommentsEnabled(documentId: string, documentType: stri
     [documentId, documentType, enabled],
   )
 
-  const isEnabled = useMemo((): boolean => {
-    if (isLoading || !featureEnabled || !enabledFromConfig) return false
-    return true
-  }, [enabledFromConfig, featureEnabled, isLoading])
+  const isEnabled = !isLoading && featureEnabled && enabledFromConfig
 
   return isEnabled
 }
