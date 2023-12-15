@@ -36,15 +36,13 @@ function CommentsDocumentLayoutInner(props: DocumentLayoutProps) {
   }
 
   return (
-    <CommentsEnabledProvider documentId={documentId} documentType={documentType}>
-      <CommentsProvider
-        documentId={documentId}
-        documentType={documentType}
-        isCommentsOpen={inspector?.name === COMMENTS_INSPECTOR_NAME}
-        onCommentsOpen={handleOpenCommentsInspector}
-      >
-        <CommentsSelectedPathProvider>{props.renderDefault(props)}</CommentsSelectedPathProvider>
-      </CommentsProvider>
-    </CommentsEnabledProvider>
+    <CommentsProvider
+      documentId={documentId}
+      documentType={documentType}
+      isCommentsOpen={inspector?.name === COMMENTS_INSPECTOR_NAME}
+      onCommentsOpen={handleOpenCommentsInspector}
+    >
+      <CommentsSelectedPathProvider>{props.renderDefault(props)}</CommentsSelectedPathProvider>
+    </CommentsProvider>
   )
 }
