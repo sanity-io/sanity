@@ -257,6 +257,7 @@ export function ReferenceField(props: ReferenceFieldProps) {
           level={props.level}
           title={props.title}
           validation={props.validation}
+          deprecated={props.schemaType.deprecated}
         >
           {isEditing ? (
             <Box>{children}</Box>

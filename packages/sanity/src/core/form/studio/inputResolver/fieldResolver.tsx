@@ -60,6 +60,7 @@ function PrimitiveField(field: FieldProps) {
           level={field.level}
           title={field.title}
           validation={field.validation}
+          deprecated={field.schemaType.deprecated}
         >
           <ChangeIndicator
             hasFocus={focused}
@@ -108,6 +109,7 @@ function ObjectOrArrayField(field: ObjectFieldProps | ArrayFieldProps) {
           title={field.title}
           validation={field.validation}
           inputId={field.inputId}
+          deprecated={field.schemaType.deprecated}
         >
           {field.children}
         </FormFieldSet>
@@ -157,6 +159,7 @@ function ImageOrFileField(field: ObjectFieldProps) {
           title={field.title}
           validation={field.validation}
           inputId={field.inputId}
+          deprecated={field.schemaType.deprecated}
         >
           {field.children}
         </FormFieldSet>
