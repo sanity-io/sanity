@@ -15,19 +15,29 @@ import {FieldCommentsProps} from '../../types'
 
 const TOOLTIP_GROUP_DELAY: TooltipDelayGroupProviderProps['delay'] = {open: 500}
 
-const Root = styled(Flex)`
-  /* Prevent buttons from taking up extra vertical space */
-  line-height: 1;
-  /* For floating actions menu */
-  position: relative;
-`
-
-const PresenceBox = styled(Box)<{$right: number}>(({theme, $right}) => {
+const Root = styled(Flex)<{
+  $floatingCardWidth: number
+  $slotWidth: number
+  $floatingCardVisible: boolean
+}>(({theme, $floatingCardWidth, $slotWidth, $floatingCardVisible}) => {
   const {space} = theme.sanity
   return css`
-    position: absolute;
-    bottom: 0;
-    right: ${$right + space[1]}px;
+    /* Prevent buttons from taking up extra vertical space */
+    line-height: 1;
+    width: 100%;
+    /* For floating actions menu */
+    position: relative;
+
+    [data-ui='PresenceBox'] {
+      position: absolute;
+      bottom: 0;
+      right: ${$slotWidth + ($floatingCardVisible ? $floatingCardWidth : 0) + space[1]}px;
+    }
+    &:focus-within {
+      [data-ui='PresenceBox'] {
+        right: ${$floatingCardWidth + $slotWidth + space[1]}px;
+      }
+    }
   `
 })
 
@@ -67,11 +77,9 @@ const FieldActionsFloatingCard = styled(Card)`
     // and only show it when it has focus within or when the field is hovered or focused.
     opacity: 0;
     pointer-events: none;
-    width: 0;
 
     [data-ui='FieldActionsFlex'] {
       opacity: 0;
-      width: 0;
     }
 
     &[data-actions-visible='false']:not(:focus-within) {
@@ -223,15 +231,21 @@ export function FormFieldBaseHeader(props: FormFieldBaseHeaderProps) {
   }, [floatingCardWidth, showFieldActions, slot])
 
   return (
-    <Root align="flex-end">
+    <Root
+      align="flex-end"
+      justify="space-between"
+      $floatingCardVisible={showFieldActions || shouldShowFloatingCard}
+      $floatingCardWidth={floatingCardWidth}
+      $slotWidth={slotWidth}
+    >
       <ContentBox flex={1} paddingY={2} $presenceMaxWidth={calcAvatarStackWidth(MAX_AVATARS)}>
         {content}
       </ContentBox>
 
       {presence && presence.length > 0 && (
-        <PresenceBox data-ui="PresenceBox" flex="none" $right={floatingCardWidth + slotWidth}>
+        <Box data-ui="PresenceBox" flex="none">
           <FieldPresence maxAvatars={MAX_AVATARS} presence={presence} />
-        </PresenceBox>
+        </Box>
       )}
 
       {slotEl}
