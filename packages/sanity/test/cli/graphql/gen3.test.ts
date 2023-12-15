@@ -28,6 +28,19 @@ describe('GraphQL - Generation 3', () => {
     expect(schema.generation).toBe('gen3')
     expect(sortGraphQLSchema(schema)).toMatchSnapshot()
   })
+
+  it('Should be able to generate graphql schema with filterType prefix', () => {
+    const extracted = extractFromSanitySchema(testStudioSchema, {
+      nonNullDocumentFields: false,
+    })
+
+    const suffix = 'CustomFilterSuffix'
+
+    const schema = generateSchema(extracted, {filterSuffix: suffix})
+
+    expect(schema.types.filter((type) => type.name.endsWith(suffix))).not.toHaveLength(0)
+    expect(sortGraphQLSchema(schema)).toMatchSnapshot()
+  })
 })
 
 function sortGraphQLSchema(schema: any) {

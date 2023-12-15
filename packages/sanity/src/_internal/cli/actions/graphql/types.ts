@@ -28,6 +28,10 @@ export interface ApiSpecification {
   interfaces: ConvertedInterface[]
 }
 
+export interface ApiCustomizationOptions {
+  filterSuffix?: string
+}
+
 export interface ConvertedNode {
   kind: 'Type' | 'List' | 'Union' | 'Interface'
   name: string
