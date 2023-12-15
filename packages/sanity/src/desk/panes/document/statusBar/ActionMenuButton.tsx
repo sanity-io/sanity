@@ -106,9 +106,7 @@ function ActionMenuListItem(props: ActionMenuListItemProps) {
       onClick={handleClick}
       text={actionState.label}
       tone={actionState.tone}
-      tooltipProps={{
-        content: actionState.title,
-      }}
+      {...(actionState.disabled && {tooltipProps: {content: actionState.title}})}
     />
   )
 }
