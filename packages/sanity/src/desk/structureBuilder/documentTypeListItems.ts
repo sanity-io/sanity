@@ -107,9 +107,21 @@ export function getDocumentTypeList(
     .defaultOrdering(DEFAULT_SELECTED_ORDERING_OPTION.by)
     .menuItemGroups(
       spec.menuItemGroups || [
-        {id: 'sorting', title: 'Sort'},
-        {id: 'layout', title: 'Layout'},
-        {id: 'actions', title: 'Actions'},
+        {
+          id: 'sorting',
+          title: 'Sort',
+          i18n: {title: {key: 'menu-item-groups.actions-group', ns: structureLocaleNamespace}},
+        },
+        {
+          id: 'layout',
+          title: 'Layout',
+          i18n: {title: {key: 'menu-item-groups.layout-group', ns: structureLocaleNamespace}},
+        },
+        {
+          id: 'actions',
+          title: 'Actions',
+          i18n: {title: {key: 'menu-item-groups.sorting-group', ns: structureLocaleNamespace}},
+        },
       ],
     )
     .child(

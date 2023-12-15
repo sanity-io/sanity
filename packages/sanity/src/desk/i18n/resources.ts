@@ -251,6 +251,13 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'insufficient-permissions-message-tooltip.loading-text': 'Loading…',
 
   /** --- Menu items --- */
+  /** The menu item group title to use for the Action menu items */
+  'menu-item-groups.actions-group': 'Actions',
+  /** The menu item group title to use for the Layout menu items */
+  'menu-item-groups.layout-group': 'Layout',
+  /** The menu item group title to use for the Sort menu items */
+  'menu-item-groups.sorting-group': 'Sort',
+
   /** The menu item title to use the compact view */
   'menu-items.layout.compact-view': 'Compact view',
   /** The menu item title to use the detailed view */

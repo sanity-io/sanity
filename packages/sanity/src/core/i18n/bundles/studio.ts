@@ -300,6 +300,9 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Title for the Review Changes pane */
   'changes.title': 'Review changes',
 
+  /** The fallback title for an ordering menu item if no localized titles are provided. */
+  'default-menu-item.fallback-title': 'Sort by {{title}}',
+
   /** Title for the default ordering/SortOrder if no orderings are provided and the caption field is found */
   'default-orderings.caption': 'Sort by Caption',
   /** Title for the default ordering/SortOrder if no orderings are provided and the description field is found */
