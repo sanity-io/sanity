@@ -497,7 +497,7 @@ export type PartialContext<TContext extends ConfigContext> = Pick<
   Exclude<keyof TContext, keyof ConfigContext>
 >
 
-/** @hidden @beta */
+/** @internal*/
 export interface DocumentLayoutProps {
   /**
    * The ID of the document. This is a read-only property and changing it will have no effect.
@@ -511,7 +511,8 @@ export interface DocumentLayoutProps {
 }
 
 interface DocumentComponents {
-  layout: ComponentType<DocumentLayoutProps>
+  /** @internal */
+  unstable_layout?: ComponentType<DocumentLayoutProps>
 }
 
 /** @public */

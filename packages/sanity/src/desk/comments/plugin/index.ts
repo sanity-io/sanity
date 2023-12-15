@@ -10,7 +10,7 @@ export const comments = definePlugin({
   document: {
     inspectors: [commentsInspector],
     components: {
-      layout: CommentsDocumentLayout,
+      unstable_layout: CommentsDocumentLayout,
     },
   },
 
