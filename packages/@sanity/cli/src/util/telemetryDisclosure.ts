@@ -5,7 +5,7 @@ import {telemetryLearnMoreMessage} from '../commands/telemetry/telemetryStatusCo
 import {getUserConfig} from './getUserConfig'
 import {isCi} from './isCi'
 
-const TELEMETRY_DISCLOSED_CONFIG_KEY = 'telemetryConsentDisclosed'
+const TELEMETRY_DISCLOSED_CONFIG_KEY = 'telemetryDisclosed'
 
 export function telemetryDisclosure(): void {
   const userConfig = getUserConfig()
