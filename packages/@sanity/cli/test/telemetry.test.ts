@@ -2,46 +2,9 @@ import {describeCliTest, testConcurrent} from './shared/describe'
 import {runSanityCmdCommand} from './shared/environment'
 
 describeCliTest('CLI: `sanity telemetry status`', () => {
-  testConcurrent('sanity telemetry status: fetch error', async () => {
+  test('sanity telemetry status: granted', async () => {
+    await runSanityCmdCommand('v3', ['telemetry', 'enable'])
     const result = await runSanityCmdCommand('v3', ['telemetry', 'status'])
-
-    // TODO: Test successful request.
-    expect(result.stdout).toMatchInlineSnapshot(`
-"Could not fetch telemetry consent status.
-
-Learn more here:
-https://sanity.io/telemetry
-"
-`)
-  })
-
-  testConcurrent('sanity telemetry status: unset', async () => {
-    const result = await runSanityCmdCommand('v3', ['telemetry', 'status'], {
-      env: {
-        MOCK_CONSENT: 'unset',
-      },
-    })
-
-    expect(result.stdout).toMatchInlineSnapshot(`
-"Status: Not set
-
-You've not set your preference for telemetry collection.
-
-Run npx sanity telemetry enable/disable to opt in or out.
-You can also use the DO_NOT_TRACK environment variable to opt out.
-
-Learn more here:
-https://sanity.io/telemetry
-"
-`)
-  })
-
-  testConcurrent('sanity telemetry status: granted', async () => {
-    const result = await runSanityCmdCommand('v3', ['telemetry', 'status'], {
-      env: {
-        MOCK_CONSENT: 'granted',
-      },
-    })
 
     expect(result.stdout).toMatchInlineSnapshot(`
 "Status: Enabled
@@ -54,12 +17,9 @@ https://www.sanity.io/telemetry
 `)
   })
 
-  testConcurrent('sanity telemetry status: denied', async () => {
-    const result = await runSanityCmdCommand('v3', ['telemetry', 'status'], {
-      env: {
-        MOCK_CONSENT: 'denied',
-      },
-    })
+  test('sanity telemetry status: denied', async () => {
+    await runSanityCmdCommand('v3', ['telemetry', 'disable'])
+    const result = await runSanityCmdCommand('v3', ['telemetry', 'status'])
 
     expect(result.stdout).toMatchInlineSnapshot(`
 "Status: Disabled
@@ -96,12 +56,9 @@ https://www.sanity.io/telemetry
 })
 
 describeCliTest('CLI: `sanity telemetry enable`', () => {
-  testConcurrent('sanity telemetry enable: success', async () => {
-    const result = await runSanityCmdCommand('v3', ['telemetry', 'enable'], {
-      env: {
-        MOCK_TELEMETRY_CONSENT_MODE: 'success',
-      },
-    })
+  test('sanity telemetry enable: success', async () => {
+    await runSanityCmdCommand('v3', ['telemetry', 'disable'])
+    const result = await runSanityCmdCommand('v3', ['telemetry', 'enable'])
 
     expect(result.stdout).toMatchInlineSnapshot(`
 "Status: Enabled
@@ -114,12 +71,8 @@ https://www.sanity.io/telemetry
 `)
   })
 
-  testConcurrent('sanity telemetry enable: success (already enabled)', async () => {
-    const result = await runSanityCmdCommand('v3', ['telemetry', 'enable'], {
-      env: {
-        MOCK_CONSENT: 'granted',
-      },
-    })
+  test('sanity telemetry enable: success (already enabled)', async () => {
+    const result = await runSanityCmdCommand('v3', ['telemetry', 'enable'])
 
     expect(result.stdout).toMatchInlineSnapshot(`
 "Status: Enabled
@@ -134,12 +87,9 @@ https://www.sanity.io/telemetry
 })
 
 describeCliTest('CLI: `sanity telemetry disable`', () => {
-  testConcurrent('sanity telemetry disable: success', async () => {
-    const result = await runSanityCmdCommand('v3', ['telemetry', 'disable'], {
-      env: {
-        MOCK_TELEMETRY_CONSENT_MODE: 'success',
-      },
-    })
+  test('sanity telemetry disable: success', async () => {
+    await runSanityCmdCommand('v3', ['telemetry', 'enable'])
+    const result = await runSanityCmdCommand('v3', ['telemetry', 'disable'])
 
     expect(result.stdout).toMatchInlineSnapshot(`
 "Status: Disabled
@@ -153,12 +103,8 @@ https://www.sanity.io/telemetry
 `)
   })
 
-  testConcurrent('sanity telemetry disable: success (already denied)', async () => {
-    const result = await runSanityCmdCommand('v3', ['telemetry', 'disable'], {
-      env: {
-        MOCK_CONSENT: 'denied',
-      },
-    })
+  test('sanity telemetry disable: success (already denied)', async () => {
+    const result = await runSanityCmdCommand('v3', ['telemetry', 'disable'])
 
     expect(result.stdout).toMatchInlineSnapshot(`
 "Status: Disabled
