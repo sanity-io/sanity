@@ -741,8 +741,10 @@ Object {
                 },
               ],
               "i18n": Object {
-                "key": "default-orderings.language",
-                "ns": "studio",
+                "title": Object {
+                  "key": "default-orderings.language",
+                  "ns": "studio",
+                },
               },
               "name": "language",
               "title": "Language",
@@ -938,8 +940,10 @@ Object {
               },
             ],
             "i18n": Object {
-              "key": "default-orderings.language",
-              "ns": "studio",
+              "title": Object {
+                "key": "default-orderings.language",
+                "ns": "studio",
+              },
             },
             "name": "language",
             "title": "Language",
@@ -1304,8 +1308,10 @@ Object {
                   },
                 ],
                 "i18n": Object {
-                  "key": "default-orderings.name",
-                  "ns": "studio",
+                  "title": Object {
+                    "key": "default-orderings.name",
+                    "ns": "studio",
+                  },
                 },
                 "name": "name",
                 "title": "Name",
@@ -1376,8 +1382,10 @@ Object {
                     },
                   ],
                   "i18n": Object {
-                    "key": "default-orderings.name",
-                    "ns": "studio",
+                    "title": Object {
+                      "key": "default-orderings.name",
+                      "ns": "studio",
+                    },
                   },
                   "name": "name",
                   "title": "Name",
@@ -1667,8 +1675,10 @@ Object {
                                   },
                                 ],
                                 "i18n": Object {
-                                  "key": "default-orderings.name",
-                                  "ns": "studio",
+                                  "title": Object {
+                                    "key": "default-orderings.name",
+                                    "ns": "studio",
+                                  },
                                 },
                                 "name": "name",
                                 "title": "Name",
@@ -1739,8 +1749,10 @@ Object {
                                     },
                                   ],
                                   "i18n": Object {
-                                    "key": "default-orderings.name",
-                                    "ns": "studio",
+                                    "title": Object {
+                                      "key": "default-orderings.name",
+                                      "ns": "studio",
+                                    },
                                   },
                                   "name": "name",
                                   "title": "Name",
@@ -2135,8 +2147,10 @@ Object {
                               },
                             ],
                             "i18n": Object {
-                              "key": "default-orderings.name",
-                              "ns": "studio",
+                              "title": Object {
+                                "key": "default-orderings.name",
+                                "ns": "studio",
+                              },
                             },
                             "name": "name",
                             "title": "Name",
@@ -2207,8 +2221,10 @@ Object {
                                 },
                               ],
                               "i18n": Object {
-                                "key": "default-orderings.name",
-                                "ns": "studio",
+                                "title": Object {
+                                  "key": "default-orderings.name",
+                                  "ns": "studio",
+                                },
                               },
                               "name": "name",
                               "title": "Name",
@@ -2484,8 +2500,10 @@ Object {
                                     },
                                   ],
                                   "i18n": Object {
-                                    "key": "default-orderings.name",
-                                    "ns": "studio",
+                                    "title": Object {
+                                      "key": "default-orderings.name",
+                                      "ns": "studio",
+                                    },
                                   },
                                   "name": "name",
                                   "title": "Name",
@@ -2556,8 +2574,10 @@ Object {
                                       },
                                     ],
                                     "i18n": Object {
-                                      "key": "default-orderings.name",
-                                      "ns": "studio",
+                                      "title": Object {
+                                        "key": "default-orderings.name",
+                                        "ns": "studio",
+                                      },
                                     },
                                     "name": "name",
                                     "title": "Name",
@@ -2952,8 +2972,10 @@ Object {
                                 },
                               ],
                               "i18n": Object {
-                                "key": "default-orderings.name",
-                                "ns": "studio",
+                                "title": Object {
+                                  "key": "default-orderings.name",
+                                  "ns": "studio",
+                                },
                               },
                               "name": "name",
                               "title": "Name",
@@ -3024,8 +3046,10 @@ Object {
                                   },
                                 ],
                                 "i18n": Object {
-                                  "key": "default-orderings.name",
-                                  "ns": "studio",
+                                  "title": Object {
+                                    "key": "default-orderings.name",
+                                    "ns": "studio",
+                                  },
                                 },
                                 "name": "name",
                                 "title": "Name",
@@ -3312,8 +3336,10 @@ Object {
                     },
                   ],
                   "i18n": Object {
-                    "key": "default-orderings.name",
-                    "ns": "studio",
+                    "title": Object {
+                      "key": "default-orderings.name",
+                      "ns": "studio",
+                    },
                   },
                   "name": "name",
                   "title": "Name",
@@ -3384,8 +3410,10 @@ Object {
                       },
                     ],
                     "i18n": Object {
-                      "key": "default-orderings.name",
-                      "ns": "studio",
+                      "title": Object {
+                        "key": "default-orderings.name",
+                        "ns": "studio",
+                      },
                     },
                     "name": "name",
                     "title": "Name",
