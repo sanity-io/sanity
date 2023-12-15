@@ -18,8 +18,9 @@ const Root = styled(Text)<{
   const {$draft, $hidePublishedStatus, $published} = props
 
   return css`
-    display: ${$hidePublishedStatus && $published && !$draft ? 'none' : 'block'};
-    opacity: ${$hidePublishedStatus && $published && !$draft ? 0 : 1};
+    &&:not([hidden]) {
+      display: ${$hidePublishedStatus && $published && !$draft ? 'none' : 'block'};
+    }
 
     &[data-status='published'] {
       --card-icon-color: var(--card-badge-positive-dot-color);
@@ -30,16 +31,6 @@ const Root = styled(Text)<{
     &[data-status='unpublished'] {
       --card-icon-color: var(--card-badge-default-dot-color);
       opacity: 0.5 !important;
-    }
-
-    [data-ui='PreviewCard']:hover & {
-      opacity: 1;
-    }
-    [data-ui='PreviewCard'][data-selected] & {
-      opacity: 1;
-    }
-    [data-ui='ReferenceLinkCard']:hover & {
-      opacity: 1;
     }
   `
 })
