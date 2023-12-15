@@ -37,6 +37,7 @@ export const MediaWrapper = styled.span<{
     }
 
     & svg {
+      color: var(--card-icon-color);
       display: block;
       flex: 1;
       font-size: calc(21 / 16 * 1em);
