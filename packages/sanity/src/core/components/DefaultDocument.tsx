@@ -4,14 +4,13 @@ import {NoJavascript} from './NoJavascript'
 import {GlobalErrorHandler} from './globalErrorHandler'
 import {Favicons} from './Favicons'
 
-// @todo: replace with fonts on our origin
 const globalStyles = `
   @font-face {
     font-family: 'Inter';
     font-style: normal;
     font-weight: 100 900;
     font-display: swap;
-    src: url('https://rsms.me/inter/font-files/InterVariable.woff2?v=4.0') format('woff2');
+    src: url('https://studio-static.sanity.io/InterVariable.ttf');
     font-named-instance: 'Regular';
   }
   @font-face {
@@ -19,7 +18,7 @@ const globalStyles = `
     font-style: italic;
     font-weight: 100 900;
     font-display: swap;
-    src: url('https://rsms.me/inter/font-files/InterVariable-Italic.woff2?v=4.0') format('woff2');
+    src: url('https://studio-static.sanity.io/InterVariable-Italic.ttf');
     font-named-instance: 'Italic';
   }
   html {
