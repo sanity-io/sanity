@@ -14,6 +14,7 @@ import {StudioThemeColorSchemeKey} from '../../../theme'
 import {userHasRole} from '../../../util/userHasRole'
 import {useTranslation} from '../../../i18n'
 import {WorkspaceMenuButton} from './workspace'
+import {FreeTrial} from './free-trial'
 
 const ANIMATION_TRANSITION: Transition = {
   duration: 0.2,
@@ -203,6 +204,7 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
                   {setScheme && <AppearanceMenu setScheme={setScheme} />}
                   <Card borderTop flex="none" padding={3}>
                     <Stack as="ul" space={1}>
+                      <FreeTrial type="sidebar" />
                       <Stack as="li">
                         <Button
                           aria-label={t('user-menu.action.manage-project-aria-label')}

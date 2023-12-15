@@ -32,6 +32,8 @@ import {LogoButton} from './LogoButton'
 import {SearchDialog, SearchField} from './search'
 import {SearchProvider} from './search/contexts/search/SearchProvider'
 import {ResourcesButton} from './resources/ResourcesButton'
+import {FreeTrial} from './free-trial'
+import {FreeTrialProvider} from './free-trial/FreeTrialContext'
 import {RouterState, useRouterState, useStateLink} from 'sanity/router'
 
 const RootLayer = styled(Layer)`
@@ -139,123 +141,126 @@ export function StudioNavbar() {
   }, [])
 
   return (
-    <RootLayer zOffset={100} data-search-open={searchFullscreenOpen}>
-      <RootCard
-        data-testid="navbar"
-        data-ui="Navbar"
-        padding={2}
-        scheme="dark"
-        shadow={theme.__legacy || scheme === 'dark' ? 1 : undefined}
-        sizing="border"
-      >
-        <Flex align="center" justify="space-between">
-          <LeftFlex align="center" flex={shouldRender.brandingCenter ? undefined : 1}>
-            {!shouldRender.tools && (
-              <Box marginRight={1}>
-                <Button
-                  mode="bleed"
-                  icon={MenuIcon}
-                  onClick={handleOpenDrawer}
-                  ref={setDrawerButtonEl}
+    <FreeTrialProvider>
+      <RootLayer zOffset={100} data-search-open={searchFullscreenOpen}>
+        <RootCard
+          data-testid="navbar"
+          data-ui="Navbar"
+          padding={2}
+          scheme="dark"
+          shadow={theme.__legacy || scheme === 'dark' ? 1 : undefined}
+          sizing="border"
+        >
+          <Flex align="center" justify="space-between">
+            <LeftFlex align="center" flex={shouldRender.brandingCenter ? undefined : 1}>
+              {!shouldRender.tools && (
+                <Box marginRight={1}>
+                  <Button
+                    mode="bleed"
+                    icon={MenuIcon}
+                    onClick={handleOpenDrawer}
+                    ref={setDrawerButtonEl}
+                  />
+                </Box>
+              )}
+
+              {!shouldRender.brandingCenter && (
+                <Box marginRight={1}>
+                  <LogoButton href={rootHref} onClick={handleRootClick} title={title}>
+                    <Logo title={title} />
+                  </LogoButton>
+                </Box>
+              )}
+
+              {shouldRender.workspaces && (
+                <Box marginRight={2}>
+                  <WorkspaceMenuButton collapsed />
+                </Box>
+              )}
+
+              <Box marginRight={shouldRender.brandingCenter ? undefined : 2}>
+                <NewDocumentButton
+                  {...newDocumentOptions}
+                  modal={shouldRender.brandingCenter ? 'dialog' : 'popover'}
                 />
               </Box>
-            )}
 
-            {!shouldRender.brandingCenter && (
-              <Box marginRight={1}>
+              {/* Search */}
+              <LayerProvider>
+                <SearchProvider fullscreen={shouldRender.searchFullscreen}>
+                  <BoundaryElementProvider element={document.body}>
+                    <PortalProvider element={searchFullscreenPortalEl}>
+                      {shouldRender.searchFullscreen && (
+                        <SearchDialog
+                          onClose={handleCloseSearchFullscreen}
+                          onOpen={handleOpenSearchFullscreen}
+                          open={searchFullscreenOpen}
+                        />
+                      )}
+                    </PortalProvider>
+                    {!shouldRender.searchFullscreen && <SearchField />}
+                  </BoundaryElementProvider>
+                </SearchProvider>
+              </LayerProvider>
+
+              {shouldRender.tools && (
+                <Card flex={1} marginX={2} overflow="visible" paddingRight={1}>
+                  <ToolMenu
+                    activeToolName={activeToolName}
+                    closeSidebar={handleCloseDrawer}
+                    context="topbar"
+                    isSidebarOpen={false}
+                    tools={tools}
+                  />
+                </Card>
+              )}
+            </LeftFlex>
+
+            {shouldRender.brandingCenter && (
+              <Box marginX={1}>
                 <LogoButton href={rootHref} onClick={handleRootClick} title={title}>
                   <Logo title={title} />
                 </LogoButton>
               </Box>
             )}
 
-            {shouldRender.workspaces && (
-              <Box marginRight={2}>
-                <WorkspaceMenuButton collapsed />
-              </Box>
-            )}
-
-            <Box marginRight={shouldRender.brandingCenter ? undefined : 2}>
-              <NewDocumentButton
-                {...newDocumentOptions}
-                modal={shouldRender.brandingCenter ? 'dialog' : 'popover'}
-              />
-            </Box>
-
-            {/* Search */}
-            <LayerProvider>
-              <SearchProvider fullscreen={shouldRender.searchFullscreen}>
-                <BoundaryElementProvider element={document.body}>
-                  <PortalProvider element={searchFullscreenPortalEl}>
-                    {shouldRender.searchFullscreen && (
-                      <SearchDialog
-                        onClose={handleCloseSearchFullscreen}
-                        onOpen={handleOpenSearchFullscreen}
-                        open={searchFullscreenOpen}
-                      />
-                    )}
-                  </PortalProvider>
-                  {!shouldRender.searchFullscreen && <SearchField />}
-                </BoundaryElementProvider>
-              </SearchProvider>
-            </LayerProvider>
-
-            {shouldRender.tools && (
-              <Card flex={1} marginX={2} overflow="visible" paddingRight={1}>
-                <ToolMenu
-                  activeToolName={activeToolName}
-                  closeSidebar={handleCloseDrawer}
-                  context="topbar"
-                  isSidebarOpen={false}
-                  tools={tools}
-                />
-              </Card>
-            )}
-          </LeftFlex>
-
-          {shouldRender.brandingCenter && (
-            <Box marginX={1}>
-              <LogoButton href={rootHref} onClick={handleRootClick} title={title}>
-                <Logo title={title} />
-              </LogoButton>
-            </Box>
-          )}
-
-          <Flex gap={2}>
-            {(shouldRender.configIssues || shouldRender.resources) && (
-              <Card borderRight>
-                <Flex gap={1} paddingX={2}>
-                  {shouldRender.configIssues && <ConfigIssuesButton />}
-                  {shouldRender.resources && <ResourcesButton />}
-                </Flex>
-              </Card>
-            )}
-
-            <Flex align="center" gap={1}>
-              <PresenceMenu collapse={shouldRender.collapsedPresenceMenu} />
-              {shouldRender.tools && <UserMenu />}
-              {shouldRender.searchFullscreen && (
-                <Button
-                  aria-label={t('search.action-open-aria-label')}
-                  icon={SearchIcon}
-                  mode="bleed"
-                  onClick={handleOpenSearchFullscreen}
-                  ref={setSearchOpenButtonEl}
-                />
+            <Flex gap={2}>
+              {(shouldRender.configIssues || shouldRender.resources || shouldRender.tools) && (
+                <Card borderRight>
+                  <Flex gap={1} paddingX={2}>
+                    {shouldRender.tools && <FreeTrial type="topbar" />}
+                    {shouldRender.configIssues && <ConfigIssuesButton />}
+                    {shouldRender.resources && <ResourcesButton />}
+                  </Flex>
+                </Card>
               )}
+
+              <Flex align="center" gap={1}>
+                <PresenceMenu collapse={shouldRender.collapsedPresenceMenu} />
+                {shouldRender.tools && <UserMenu />}
+                {shouldRender.searchFullscreen && (
+                  <Button
+                    aria-label={t('search.action-open-aria-label')}
+                    icon={SearchIcon}
+                    mode="bleed"
+                    onClick={handleOpenSearchFullscreen}
+                    ref={setSearchOpenButtonEl}
+                  />
+                )}
+              </Flex>
             </Flex>
           </Flex>
-        </Flex>
-      </RootCard>
+        </RootCard>
 
-      {!shouldRender.tools && (
-        <NavDrawer
-          activeToolName={activeToolName}
-          isOpen={drawerOpen}
-          onClose={handleCloseDrawer}
-          tools={tools}
-        />
-      )}
-    </RootLayer>
+        {!shouldRender.tools && (
+          <NavDrawer
+            activeToolName={activeToolName}
+            isOpen={drawerOpen}
+            onClose={handleCloseDrawer}
+            tools={tools}
+          />
+        )}
+      </RootLayer>
+    </FreeTrialProvider>
   )
 }
