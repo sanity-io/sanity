@@ -1,4 +1,4 @@
-import {FormNodeValidation} from '@sanity/types'
+import {DeprecatedProperty, FormNodeValidation} from '@sanity/types'
 import {Stack} from '@sanity/ui'
 import React, {memo} from 'react'
 import {FormNodePresence} from '../../../presence'
@@ -41,6 +41,7 @@ export interface FormFieldProps {
    * @beta
    */
   validation?: FormNodeValidation[]
+  deprecated?: DeprecatedProperty
 }
 
 /** @internal */
@@ -58,9 +59,12 @@ export const FormField = memo(function FormField(
     level,
     title,
     validation,
+    deprecated,
     ...restProps
   } = props
   const {focused, hovered, onMouseEnter, onMouseLeave} = useFieldActions()
+
+  const isDeprecated = Boolean(deprecated?.reason)
 
   return (
     <Stack
@@ -69,7 +73,11 @@ export const FormField = memo(function FormField(
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
       space={2}
+      style={{
+        opacity: isDeprecated ? 0.5 : undefined,
+      }}
     >
+      {isDeprecated && <p style={{margin: 0, color: 'red'}}>{deprecated?.reason}</p>}
       {/*
         NOTE: It’s not ideal to hide validation, presence and description when there's no `title`.
         So we might want to separate the concerns of input vs formfield components later on.
@@ -92,7 +100,6 @@ export const FormField = memo(function FormField(
           }
         />
       )}
-
       <div>{children}</div>
     </Stack>
   )

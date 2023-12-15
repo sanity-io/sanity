@@ -116,6 +116,7 @@ export function ImageToolInput(props: ImageToolInputProps) {
       title={t('inputs.imagetool.title')}
       level={level}
       description={t('inputs.imagetool.description')}
+      deprecated={schemaType.deprecated}
       __unstable_presence={presence}
     >
       <div>
