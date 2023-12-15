@@ -173,6 +173,9 @@ export const deprecatedFields = defineType({
       name: 'url',
       title: 'Deprecated URL',
       type: 'url',
+      deprecated: {
+        reason: 'This url is deprecated',
+      },
     }),
     defineField({
       name: 'slug',

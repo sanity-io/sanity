@@ -308,6 +308,7 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
               __unstable_presence={presence}
               validation={validation}
               inputId={inputId}
+              deprecated={schemaType.deprecated}
             >
               {children}
             </FormFieldSet>
