@@ -24,24 +24,22 @@ export const FreeTrialProvider = ({children}: FreeTrialProviderProps) => {
   const [showOnLoad, setShowOnLoad] = useState(false)
   const client = useClient({apiVersion: 'vX'})
 
-  const fetchData = async () => {
-    const response = await client.request<FreeTrialResponse | null>({
-      url: `/journey/trial?studioVersion=${SANITY_VERSION}`,
-    })
-
-    setData(response)
-    // Validates if the user has seen the "structure rename modal" before showing this one. To avoid multiple popovers at same time.
-    const deskRenameSeen = localStorage.getItem('sanityStudio:desk:renameDismissed') === '1'
-    if (deskRenameSeen && response?.showOnLoad) {
-      setShowOnLoad(true)
-      setShowDialog(true)
-    }
-  }
-
   useEffect(() => {
+    const fetchData = async () => {
+      const response = await client.request<FreeTrialResponse | null>({
+        url: `/journey/trial?studioVersion=${SANITY_VERSION}`,
+      })
+
+      setData(response)
+      // Validates if the user has seen the "structure rename modal" before showing this one. To avoid multiple popovers at same time.
+      const deskRenameSeen = localStorage.getItem('sanityStudio:desk:renameDismissed') === '1'
+      if (deskRenameSeen && response?.showOnLoad) {
+        setShowOnLoad(true)
+        setShowDialog(true)
+      }
+    }
     fetchData()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [client])
 
   const toggleShowContent = useCallback(
     (closeAndReOpen = false) => {

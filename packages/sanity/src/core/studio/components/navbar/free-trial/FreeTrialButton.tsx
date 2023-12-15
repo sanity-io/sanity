@@ -19,15 +19,14 @@ const CenteredStroke = styled.div`
 
 interface OutlineProps {
   daysLeft: number
-  trialDays: number
+  totalDays: number
 }
 
-const SvgFilledOutline = ({daysLeft, trialDays}: OutlineProps) => {
-  const totalDays = trialDays
+const SvgFilledOutline = ({daysLeft, totalDays}: OutlineProps) => {
   const progress = totalDays - daysLeft
 
   const percentage = Math.round((progress / totalDays) * 100)
-  const radius = 12
+  const radius = 12.5
   const strokeDasharray = 2 * Math.PI * radius
   const strokeDashOffset = strokeDasharray * ((100 - percentage) / 100)
   const strokeWidth = 1.2
@@ -72,7 +71,7 @@ interface FreeTrialButtonProps extends OutlineProps {
 }
 
 export const FreeTrialButtonTopbar = forwardRef(function FreeTrialButtonTopbar(
-  {toggleShowContent, daysLeft, trialDays}: FreeTrialButtonProps,
+  {toggleShowContent, daysLeft, totalDays}: FreeTrialButtonProps,
   ref: React.Ref<HTMLButtonElement>,
 ) {
   return (
@@ -87,13 +86,13 @@ export const FreeTrialButtonTopbar = forwardRef(function FreeTrialButtonTopbar(
       <Text size={daysLeft ? 1 : 2}>
         <BoltIcon />
       </Text>
-      {daysLeft > 0 && <SvgFilledOutline daysLeft={daysLeft} trialDays={trialDays} />}
+      {daysLeft > 0 && <SvgFilledOutline daysLeft={daysLeft} totalDays={totalDays} />}
     </StyledButton>
   )
 })
 
 export const FreeTrialButtonSidebar = forwardRef(function FreeTrialButtonSidebar(
-  {toggleShowContent, daysLeft}: Omit<FreeTrialButtonProps, 'trialDays'>,
+  {toggleShowContent, daysLeft}: Omit<FreeTrialButtonProps, 'totalDays'>,
   ref: React.Ref<HTMLButtonElement>,
 ) {
   const {t} = useTranslation()

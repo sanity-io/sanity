@@ -4,10 +4,10 @@ export interface FreeTrialResponse {
   id: string
   icon: string
   style: string
-  showOnLoad?: FreeTrialDialog
-  showOnClick?: FreeTrialDialog
+  showOnLoad: FreeTrialDialog | null
+  showOnClick: FreeTrialDialog | null
   daysLeft: number
-  trialDays: number
+  totalDays: number
 }
 export interface FreeTrialDialog {
   _id: string
@@ -15,15 +15,9 @@ export interface FreeTrialDialog {
   _createdAt: string
   ctaButton?: {
     text: string
-  } & (
-    | {
-        action: 'openNext' | 'closeDialog'
-      }
-    | {
-        url: string
-        action: 'openUrl'
-      }
-  )
+    action: 'openNext' | 'closeDialog' | 'openUrl'
+    url?: string
+  }
   secondaryButton?: {
     text: string
   }

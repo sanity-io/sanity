@@ -48,7 +48,7 @@ export function FreeTrial({type}: FreeTrialProps) {
       <FreeTrialButtonTopbar
         toggleShowContent={closeAndReOpen}
         daysLeft={data.daysLeft}
-        trialDays={data.trialDays}
+        totalDays={data.totalDays}
         ref={ref}
       />
     )
