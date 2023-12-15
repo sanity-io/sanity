@@ -392,7 +392,7 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
 
   handleChangeApiVersion(evt: ChangeEvent<HTMLSelectElement>) {
     const apiVersion = evt.target.value
-    if (apiVersion === 'other') {
+    if (apiVersion?.toLowerCase() === 'other') {
       this.setState({customApiVersion: 'v'}, () => {
         this._customApiVersionElement.current?.focus()
       })
@@ -790,6 +790,7 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
         <SplitpaneContainer flex="auto">
           {/* @ts-expect-error: https://github.com/tomkp/react-split-pane/pull/819 */}
           <SplitPane
+            // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
             split={narrowBreakpoint() ? 'vertical' : 'horizontal'}
             minSize={280}
             defaultSize={400}
