@@ -124,6 +124,7 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
     () => ({
       __unstable_disableFocusRing: true,
       border: false,
+      'data-testid': 'new-document-button-search-input',
       defaultValue: searchQuery,
       disabled: loading,
       icon: SearchIcon,
@@ -196,10 +197,7 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
           >
             <RootFlex direction="column" flex={1} height="fill">
               <DialogHeaderCard padding={2} borderBottom>
-                <TextInput
-                  data-testid="new-document-button-search-input"
-                  {...sharedTextInputProps}
-                />
+                <TextInput data-testid="new-document-button-search-input" />
               </DialogHeaderCard>
 
               <Flex direction="column" overflow="hidden">
