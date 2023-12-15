@@ -63,7 +63,7 @@
     "@sanity/types": "3.21.3",
     "@types/jsdom": "^20.0.0",
     "@types/react": "^18.2.37",
-    "jsdom": "^20.0.0"
+    "jsdom": "^23.0.1"
   },
   "publishConfig": {
     "access": "public"
