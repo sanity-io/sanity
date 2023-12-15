@@ -31,11 +31,14 @@ const Root = styled(Flex)<{
     [data-ui='PresenceBox'] {
       position: absolute;
       bottom: 0;
-      right: ${$slotWidth + ($floatingCardVisible ? $floatingCardWidth : 0) + space[1]}px;
+      right: ${$slotWidth + $floatingCardWidth + space[1]}px;
     }
-    &:focus-within {
+    @media (hover: hover) {
+      // If hover is supported, we hide the floating card by default, so only add space for it when it's visible.
       [data-ui='PresenceBox'] {
-        right: ${$floatingCardWidth + $slotWidth + space[1]}px;
+        position: absolute;
+        bottom: 0;
+        right: ${$slotWidth + ($floatingCardVisible ? $floatingCardWidth : 0) + space[1]}px;
       }
     }
   `
@@ -153,7 +156,7 @@ export function FormFieldBaseHeader(props: FormFieldBaseHeaderProps) {
     fieldHovered,
     presence,
   } = props
-
+  const [focused, setFocused] = useState<boolean>(false)
   // State for if an actions menu is open
   const [menuOpen, setMenuOpen] = useState<boolean>(false)
 
@@ -171,7 +174,6 @@ export function FormFieldBaseHeader(props: FormFieldBaseHeaderProps) {
     button: commentButton = null,
     isAddingComment = false,
   } = comments || {}
-
   // Determine if actions exist and if field actions should be shown
   const hasActions = actions && actions.length > 0
   const showFieldActions = fieldFocused || fieldHovered || menuOpen || isAddingComment
@@ -182,7 +184,7 @@ export function FormFieldBaseHeader(props: FormFieldBaseHeaderProps) {
   const hasCommentsButtonOrActions = comments?.button || hasActions
 
   // Determine if floating card with actions should be shown
-  const shouldShowFloatingCard = showFieldActions || hasComments
+  const shouldShowFloatingCard = focused || showFieldActions || hasComments
 
   const handleSetFloatingCardElementWidth = useCallback(() => {
     if (floatingCardElement) {
@@ -195,12 +197,15 @@ export function FormFieldBaseHeader(props: FormFieldBaseHeaderProps) {
   // This is because presence should be positioned relative to the floating card.
   // We need this because we don't conditionally render the floating card and rely on CSS to
   // show/hide it, and therefore the width calculation won't be triggered when the card is shown or hidden.
-  const handleFocusCapture = useCallback(handleSetFloatingCardElementWidth, [
-    handleSetFloatingCardElementWidth,
-  ])
-  const handleBlurCapture = useCallback(handleSetFloatingCardElementWidth, [
-    handleSetFloatingCardElementWidth,
-  ])
+  const handleFocusCapture = useCallback(() => {
+    handleSetFloatingCardElementWidth()
+    setFocused(true)
+  }, [handleSetFloatingCardElementWidth])
+
+  const handleBlurCapture = useCallback(() => {
+    handleSetFloatingCardElementWidth()
+    setFocused(false)
+  }, [handleSetFloatingCardElementWidth])
 
   // Calculate floating card's width
   useEffect(() => {
@@ -234,7 +239,7 @@ export function FormFieldBaseHeader(props: FormFieldBaseHeaderProps) {
     <Root
       align="flex-end"
       justify="space-between"
-      $floatingCardVisible={showFieldActions || shouldShowFloatingCard}
+      $floatingCardVisible={shouldShowFloatingCard}
       $floatingCardWidth={floatingCardWidth}
       $slotWidth={slotWidth}
     >
