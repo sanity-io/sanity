@@ -50,9 +50,7 @@ export const Tooltip = forwardRef(function Tooltip(
           <Flex align="center">
             {content && (
               <Box flex={1} padding={1}>
-                <Text size={1} weight="medium">
-                  {content}
-                </Text>
+                <Text size={1}>{content}</Text>
               </Box>
             )}
             {hotkeys && (
