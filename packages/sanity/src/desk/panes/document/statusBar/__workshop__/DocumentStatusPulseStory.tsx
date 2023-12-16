@@ -2,7 +2,7 @@ import {Card, Flex} from '@sanity/ui'
 import {useSelect} from '@sanity/ui-workshop'
 import React from 'react'
 
-import {DocumentStatusPulse} from '../sparkline/DocumentStatusPulse'
+import {DocumentStatusPulse} from '../DocumentStatusPulse'
 
 const STATUS_OPTIONS: Record<string, 'saved' | 'syncing'> = {
   saved: 'saved',
