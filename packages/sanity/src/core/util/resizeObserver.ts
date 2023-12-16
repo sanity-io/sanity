@@ -13,6 +13,7 @@ export interface SharedResizeObserver {
     observer: Subscriber<ResizeObserverEntry>,
     options?: ResizeObserverOptions,
   ) => () => void
+  unobserve: (element: Element) => void
 }
 
 /** @internal */
@@ -43,6 +44,7 @@ export const createSharedResizeObserver = (): SharedResizeObserver => {
         resizeObserver.unobserve(element)
       }
     },
+    unobserve: (element: Element) => resizeObserver.unobserve(element),
   }
 }
 
