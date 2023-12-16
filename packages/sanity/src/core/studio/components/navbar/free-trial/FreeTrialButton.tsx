@@ -1,12 +1,20 @@
 import styled from 'styled-components'
-import {Button, Text, Card, Stack} from '@sanity/ui'
+
+import {
+  // eslint-disable-next-line no-restricted-imports
+  Button as UIButton, // Button with necessary custom styles.
+  Text,
+  Card,
+} from '@sanity/ui'
 import {BoltIcon} from '@sanity/icons'
 import {purple, yellow} from '@sanity/color'
 import {useTranslation} from 'react-i18next'
 import {forwardRef} from 'react'
+import {Button} from '../../../../../ui'
 
-const StyledButton = styled(Button)<{smallIcon: boolean}>`
-  padding: ${(props) => (props.smallIcon ? '1px' : 0)};
+const StyledButton = styled(UIButton)`
+  padding: 2px;
+  margin: -2px;
   position: relative;
 `
 
@@ -74,16 +82,21 @@ export const FreeTrialButtonTopbar = forwardRef(function FreeTrialButtonTopbar(
   {toggleShowContent, daysLeft, totalDays}: FreeTrialButtonProps,
   ref: React.Ref<HTMLButtonElement>,
 ) {
+  if (!daysLeft) {
+    return (
+      <Button
+        size="default"
+        ref={ref}
+        icon={BoltIcon}
+        mode="bleed"
+        onClick={toggleShowContent}
+        tooltipProps={{content: 'Upgrade your project'}}
+      />
+    )
+  }
   return (
-    <StyledButton
-      ref={ref}
-      padding={3}
-      fontSize={1}
-      mode="bleed"
-      onClick={toggleShowContent}
-      smallIcon={!!daysLeft}
-    >
-      <Text size={daysLeft ? 1 : 2}>
+    <StyledButton ref={ref} padding={2} mode="bleed" onClick={toggleShowContent}>
+      <Text size={1}>
         <BoltIcon />
       </Text>
       {daysLeft > 0 && <SvgFilledOutline daysLeft={daysLeft} totalDays={totalDays} />}
@@ -98,19 +111,18 @@ export const FreeTrialButtonSidebar = forwardRef(function FreeTrialButtonSidebar
   const {t} = useTranslation()
 
   return (
-    <Stack as="li">
-      <Button
-        ref={ref}
-        icon={BoltIcon}
-        justify="flex-start"
-        mode="bleed"
-        onClick={toggleShowContent}
-        text={
-          daysLeft
-            ? t('user-menu.action.free-trial', {count: daysLeft})
-            : t('user-menu.action.free-trial-finished')
-        }
-      />
-    </Stack>
+    <Button
+      ref={ref}
+      icon={BoltIcon}
+      justify="flex-start"
+      mode="bleed"
+      size="large"
+      onClick={toggleShowContent}
+      text={
+        daysLeft
+          ? t('user-menu.action.free-trial', {count: daysLeft})
+          : t('user-menu.action.free-trial-finished')
+      }
+    />
   )
 })

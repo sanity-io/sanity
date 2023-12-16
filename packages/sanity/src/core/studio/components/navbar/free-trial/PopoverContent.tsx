@@ -1,6 +1,6 @@
-import {Card, Heading, Flex, Button, Box, Container} from '@sanity/ui'
+import {Card, Heading, Flex, Box, Container} from '@sanity/ui'
 import styled from 'styled-components'
-import {useColorSchemeValue} from '../../../colorScheme'
+import {Button} from '../../../../../ui'
 import {FreeTrialDialog} from './types'
 import {DescriptionSerializer} from './DescriptionSerializer'
 
@@ -18,10 +18,8 @@ interface PopoverContentProps {
 }
 
 export function PopoverContent({content, handleClose, handleOpenNext}: PopoverContentProps) {
-  const schemeValue = useColorSchemeValue()
-
   return (
-    <Card scheme={schemeValue} radius={3}>
+    <Card radius={3} overflow={'hidden'} width={0}>
       <Container width={0}>
         {content.image && (
           <Image src={content.image.asset.url} alt={content.image.asset.altText ?? ''} />
@@ -38,8 +36,6 @@ export function PopoverContent({content, handleClose, handleOpenNext}: PopoverCo
           {content.secondaryButton?.text && (
             <Button
               mode="bleed"
-              padding={2}
-              fontSize={1}
               text={content.secondaryButton.text}
               tone="default"
               onClick={handleClose}
@@ -47,8 +43,7 @@ export function PopoverContent({content, handleClose, handleOpenNext}: PopoverCo
           )}
           <Button
             mode="default"
-            padding={2}
-            fontSize={1}
+            tooltipProps={null}
             text={content.ctaButton?.text}
             autoFocus
             tone="primary"
