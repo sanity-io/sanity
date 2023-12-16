@@ -41,6 +41,7 @@ export function ToolVerticalMenu(props: ToolVerticalMenuProps) {
                 justify="flex-start"
                 mode="bleed"
                 selected={activeToolName === tool.name}
+                size="large"
                 tabIndex={isVisible ? 0 : -1}
                 text={title}
               />

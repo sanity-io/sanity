@@ -1,4 +1,4 @@
-import {CheckmarkIcon, CogIcon, LeaveIcon, UsersIcon} from '@sanity/icons'
+import {LeaveIcon} from '@sanity/icons'
 import {
   Box,
   Card,
@@ -14,18 +14,14 @@ import React, {useMemo} from 'react'
 import styled from 'styled-components'
 import {UserAvatar} from '../../../../components'
 import {getProviderTitle} from '../../../../store'
-import {type StudioThemeColorSchemeKey} from '../../../../theme'
-import {
-  useColorSchemeOptions,
-  useColorSchemeSetValue,
-  useColorSchemeValue,
-} from '../../../colorScheme'
+import {useColorSchemeSetValue, useColorSchemeValue} from '../../../colorScheme'
 import {useWorkspace} from '../../../workspace'
-import {userHasRole} from '../../../../util/userHasRole'
 import {MenuButton, MenuButtonProps, MenuItem, Tooltip} from '../../../../../ui'
 import {useTranslation} from '../../../../i18n'
 import {LoginProviderLogo} from './LoginProviderLogo'
 import {LocaleMenu} from './LocaleMenu'
+import {AppearanceMenu} from './ApperanceMenu'
+import {ManageMenu} from './ManageMenu'
 
 const StyledMenu = styled(Menu)`
   min-width: 200px;
@@ -38,36 +34,11 @@ const AvatarBox = styled(Box)`
   min-height: ${({theme}) => theme.sanity.avatar.sizes[2].size}px;
 `
 
-function AppearanceMenu({setScheme}: {setScheme: (nextScheme: StudioThemeColorSchemeKey) => void}) {
-  const {t} = useTranslation()
-  // Subscribe to just what we need, if the menu isn't shown then we're not subscribed to these contexts
-  const options = useColorSchemeOptions(setScheme, t)
-
-  return (
-    <>
-      <MenuDivider />
-
-      {options.map(({icon, label, name, onSelect, selected, title}) => (
-        <MenuItem
-          key={name}
-          aria-label={label}
-          icon={icon}
-          onClick={onSelect}
-          pressed={selected}
-          text={title}
-          iconRight={selected && <CheckmarkIcon />}
-        />
-      ))}
-    </>
-  )
-}
-
 export function UserMenu() {
-  const {currentUser, projectId, auth} = useWorkspace()
+  const {currentUser, auth} = useWorkspace()
   const scheme = useColorSchemeValue()
   const setScheme = useColorSchemeSetValue()
 
-  const isAdmin = Boolean(currentUser && userHasRole(currentUser, 'administrator'))
   const providerTitle = getProviderTitle(currentUser?.provider)
 
   const {t} = useTranslation()
@@ -119,28 +90,8 @@ export function UserMenu() {
           </Card>
 
           {setScheme && <AppearanceMenu setScheme={setScheme} />}
-
           <LocaleMenu />
-          <MenuDivider />
-
-          <MenuItem
-            as="a"
-            aria-label={t('user-menu.action.manage-project-aria-label')}
-            href={`https://sanity.io/manage/project/${projectId}`}
-            target="_blank"
-            text={t('user-menu.action.manage-project')}
-            icon={CogIcon}
-          />
-          {isAdmin && (
-            <MenuItem
-              as="a"
-              aria-label={t('user-menu.action.invite-members-aria-label')}
-              href={`https://sanity.io/manage/project/${projectId}/members`}
-              target="_blank"
-              text={t('user-menu.action.invite-members')}
-              icon={UsersIcon}
-            />
-          )}
+          <ManageMenu />
 
           {auth.logout && (
             <>

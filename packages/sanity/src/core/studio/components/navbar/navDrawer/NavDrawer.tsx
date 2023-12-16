@@ -1,24 +1,28 @@
 import {Layer, Card, Flex, Text, Box, Stack} from '@sanity/ui'
-import {CheckmarkIcon, CloseIcon, CogIcon, LeaveIcon, UsersIcon} from '@sanity/icons'
+import {CloseIcon, LeaveIcon} from '@sanity/icons'
 import React, {memo, useCallback} from 'react'
 import styled from 'styled-components'
 import TrapFocus from 'react-focus-lock'
 import {AnimatePresence, motion, Transition, Variants} from 'framer-motion'
-import {Button} from '../../../../ui'
-import {useWorkspace} from '../../workspace'
-import {Tool} from '../../../config'
-import {useToolMenuComponent} from '../../studio-components-hooks'
-import {UserAvatar} from '../../../components'
-import {useWorkspaces} from '../../workspaces'
-import {useColorSchemeOptions, useColorSchemeSetValue} from '../../colorScheme'
-import {StudioThemeColorSchemeKey} from '../../../theme'
-import {userHasRole} from '../../../util/userHasRole'
-import {useTranslation} from '../../../i18n'
-import {WorkspaceMenuButton} from './workspace'
-import {FreeTrial} from './free-trial'
+import {Button} from '../../../../../ui'
+import {useWorkspace} from '../../../workspace'
+import {Tool} from '../../../../config'
+import {useToolMenuComponent} from '../../../studio-components-hooks'
+import {UserAvatar} from '../../../../components'
+import {useWorkspaces} from '../../../workspaces'
+import {useColorSchemeSetValue} from '../../../colorScheme'
+import {useTranslation} from '../../../../i18n'
+import {WorkspaceMenuButton} from '../workspace'
+import {AppearanceMenu} from './ApperaranceMenu'
+import {LocaleMenu} from './LocaleMenu'
+import {ManageMenu} from './ManageMenu'
 
 const ANIMATION_TRANSITION: Transition = {
-  duration: 0.2,
+  bounce: 0,
+  damping: 20,
+  mass: 0.5,
+  stiffness: 200,
+  type: 'spring',
 }
 
 const BACKDROP_VARIANTS: Variants = {
@@ -66,35 +70,6 @@ const InnerCardMotion = styled(motion(Card))`
   overflow: auto;
 `
 
-function AppearanceMenu({setScheme}: {setScheme: (nextScheme: StudioThemeColorSchemeKey) => void}) {
-  const {t} = useTranslation()
-  // Subscribe to just what we need, if the menu isn't shown then we're not subscribed to these contexts
-  const options = useColorSchemeOptions(setScheme, t)
-
-  return (
-    <>
-      <Card borderTop flex="none" padding={3} overflow="auto">
-        <Stack as="ul" space={1}>
-          {options.map(({icon, label, name, onSelect, selected, title}) => (
-            <Stack as="li" key={name}>
-              <Button
-                aria-label={label}
-                icon={icon}
-                iconRight={selected && <CheckmarkIcon />}
-                justify="flex-start"
-                mode="bleed"
-                onClick={onSelect}
-                selected={selected}
-                text={title}
-              />
-            </Stack>
-          ))}
-        </Stack>
-      </Card>
-    </>
-  )
-}
-
 interface NavDrawerProps {
   activeToolName?: string
   isOpen: boolean
@@ -106,11 +81,10 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
   const {activeToolName, isOpen, onClose, tools} = props
 
   const setScheme = useColorSchemeSetValue()
-  const {auth, currentUser, projectId} = useWorkspace()
+  const {auth, currentUser} = useWorkspace()
   const workspaces = useWorkspaces()
   const ToolMenu = useToolMenuComponent()
 
-  const isAdmin = Boolean(currentUser && userHasRole(currentUser, 'administrator'))
   const {t} = useTranslation()
 
   const handleKeyDown = useCallback(
@@ -125,7 +99,7 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
   return (
     <AnimatePresence>
       {isOpen && (
-        <TrapFocus autoFocus returnFocus>
+        <TrapFocus returnFocus>
           <Root onKeyDown={handleKeyDown}>
             <BackdropMotion
               animate="open"
@@ -152,7 +126,7 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
                   <Flex align="center">
                     <Flex flex={1} align="center" paddingRight={2}>
                       <Flex flex={1} align="center">
-                        <UserAvatar size={0} user="me" />
+                        <UserAvatar size={1} user="me" />
                         <Box
                           flex={1}
                           marginLeft={2}
@@ -183,7 +157,7 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
 
               <Flex direction="column" flex={1} justify="space-between" overflow="auto">
                 {/* Tools */}
-                <Card flex="none" padding={3}>
+                <Card flex="none" padding={2}>
                   <ToolMenu
                     activeToolName={activeToolName}
                     closeSidebar={onClose}
@@ -193,46 +167,15 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
                   />
                 </Card>
 
-                {/* Theme picker and Manage */}
                 <Flex direction="column">
                   {setScheme && <AppearanceMenu setScheme={setScheme} />}
-                  <Card borderTop flex="none" padding={3}>
-                    <Stack as="ul" space={1}>
-                      <FreeTrial type="sidebar" />
-                      <Stack as="li">
-                        <Button
-                          aria-label={t('user-menu.action.manage-project-aria-label')}
-                          as="a"
-                          href={`https://sanity.io/manage/project/${projectId}`}
-                          icon={CogIcon}
-                          justify="flex-start"
-                          mode="bleed"
-                          target="_blank"
-                          text={t('user-menu.action.manage-project')}
-                        />
-                      </Stack>
-
-                      {isAdmin && (
-                        <Stack as="li">
-                          <Button
-                            aria-label={t('user-menu.action.invite-members-aria-label')}
-                            as="a"
-                            href={`https://sanity.io/manage/project/${projectId}/members`}
-                            icon={UsersIcon}
-                            justify="flex-start"
-                            mode="bleed"
-                            target="_blank"
-                            text={t('user-menu.action.invite-members')}
-                          />
-                        </Stack>
-                      )}
-                    </Stack>
-                  </Card>
+                  <LocaleMenu />
+                  <ManageMenu />
                 </Flex>
               </Flex>
 
               {auth.logout && (
-                <Card flex="none" padding={3} borderTop>
+                <Card flex="none" padding={2} borderTop>
                   <Stack>
                     <Button
                       iconRight={LeaveIcon}
@@ -240,6 +183,7 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
                       mode="bleed"
                       // eslint-disable-next-line react/jsx-handler-names
                       onClick={auth.logout}
+                      size="large"
                       text={t('user-menu.action.sign-out')}
                     />
                   </Stack>
