@@ -225,12 +225,12 @@ export function StudioNavbar() {
                     </SearchProvider>
                   </LayerProvider>
 
+                  {shouldRender.tools && <FreeTrial type="topbar" />}
                   {/* Search button (desktop) */}
                   {!shouldRender.searchFullscreen && (
                     <SearchButton onClick={handleOpenSearch} ref={setSearchOpenButtonEl} />
                   )}
 
-                  {shouldRender.tools && <FreeTrial type="topbar" />}
                   {shouldRender.configIssues && <ConfigIssuesButton />}
                   {shouldRender.resources && <ResourcesButton />}
                   <PresenceMenu />
