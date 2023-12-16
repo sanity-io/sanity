@@ -53,6 +53,7 @@ export function NewDocumentListOption(props: NewDocumentListOptionProps) {
       <div>
         <Card
           as={option.hasPermission ? 'a' : 'button'}
+          data-testid={`create-new-${option.templateId}`}
           disabled={!option.hasPermission}
           href={href}
           marginBottom={1}
