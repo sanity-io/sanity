@@ -7,7 +7,7 @@ import {supportsLocalStorage} from '../util/supportsLocalStorage'
 const LOCAL_STORAGE_PREFIX = 'sanity-locale'
 
 /**
- * Get the users' preferred locale, if any
+ * Get the users' stored, preferred locale, if any
  *
  * @param projectId - Project ID to segment on
  * @param sourceId - Source ID to segment on
@@ -15,7 +15,7 @@ const LOCAL_STORAGE_PREFIX = 'sanity-locale'
  * @internal
  * @hidden
  */
-export function getPreferredLocale(projectId: string, sourceId: string): string | undefined {
+export function getStoredLocale(projectId: string, sourceId: string): string | undefined {
   if (!supportsLocalStorage) {
     return undefined
   }

@@ -363,8 +363,6 @@ export interface PluginOptions {
      */
     components?: StudioComponentsPluginOptions
   }
-
-  /** @beta @hidden */
   i18n?: LocalePluginOptions
 }
 

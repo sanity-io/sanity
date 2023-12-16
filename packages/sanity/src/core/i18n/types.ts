@@ -34,6 +34,15 @@ export interface LocaleConfigContext {
 }
 
 /**
+ * Either an array of preferred locale IDs, or a resolver that returns one.
+ *
+ * @public
+ */
+export type PreferredLocalesOption =
+  | ((prev: string[], context: LocaleConfigContext) => string[])
+  | string[]
+
+/**
  * Either an array of locale definitions, or a resolver that returns one.
  *
  * @public
@@ -58,9 +67,19 @@ export type LocalesBundlesOption =
  */
 export interface LocalePluginOptions {
   /**
+   * Array of preferred locales, eg `en-US`, `nb-NO`, `th-TH`…
+   *
+   * If not provided, will try using the browsers reported preferred locales, and fall back to
+   * US English if no matches are found. Can also be specified as a reducer function, in which
+   * the first argument is the currently resolved preferred locales, and the function should
+   * return an array of preferred locales.
+   */
+  preferredLocales?: PreferredLocalesOption
+
+  /**
    * Locales available for user selection.
    *
-   * Titles and icons can be changed by using a function (reducer pattern) and transforming values.
+   * Titles can be changed by using a function (reducer pattern) and transforming values.
    */
   locales?: LocalesOption
 
@@ -144,6 +163,14 @@ export interface Locale {
    * The ID of the locale, eg `en-US`, `nb-NO`, `th-TH`…
    */
   id: string
+
+  /**
+   * Optional macro language code. For `nb-NO`, the macro language is `no`, for instance.
+   * Note that this is _not_ the same as a region code - for `pt-BR`,
+   * `br` is _not_ the macro language, but a _region_.
+   *
+   */
+  macroLanguage?: string
 
   /**
    * The title of locale, eg `English (US)`, `Norsk (bokmål)`, `ไทย`…
