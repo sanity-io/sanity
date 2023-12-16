@@ -21,6 +21,7 @@ export function ResourcesButton() {
     <MenuButton
       button={
         <Button
+          aria-label={t('help-resources.title')}
           icon={InfoOutlineIcon}
           mode="bleed"
           tooltipProps={{content: t('help-resources.title')}}
