@@ -1,8 +1,8 @@
-import {Badge, BadgeTone, Inline, Text} from '@sanity/ui'
+import {Badge, BadgeTone, Inline} from '@sanity/ui'
 import React from 'react'
-import {RenderBadgeCollectionState} from '../../../../components'
-import {useDocumentPane} from '../../useDocumentPane'
-import {Tooltip} from '../../../../../ui'
+import {Tooltip} from '../../../../ui'
+import {RenderBadgeCollectionState} from '../../../components'
+import {useDocumentPane} from '../useDocumentPane'
 import {DocumentBadgeDescription} from 'sanity'
 
 interface DocumentBadgesInnerProps {
@@ -17,6 +17,9 @@ const BADGE_TONES: Record<string, BadgeTone | undefined> = {
 }
 
 function DocumentBadgesInner({states}: DocumentBadgesInnerProps) {
+  if (states.length === 0) {
+    return null
+  }
   return (
     <Inline space={1}>
       {states.map((badge, index) => (
