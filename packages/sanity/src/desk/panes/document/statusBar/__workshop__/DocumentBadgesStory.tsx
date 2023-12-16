@@ -3,7 +3,7 @@ import React, {useMemo} from 'react'
 import {DeskToolProvider} from '../../../../DeskToolProvider'
 import {DocumentPaneNode} from '../../../../types'
 import {DocumentPaneProvider} from '../../DocumentPaneProvider'
-import {DocumentBadges} from '../sparkline/DocumentBadges'
+import {DocumentBadges} from '../DocumentBadges'
 
 export default function DocumentBadgesStory() {
   const pane: DocumentPaneNode = useMemo(
