@@ -1,5 +1,5 @@
 import {useCallback, useEffect, useRef, useState} from 'react'
-import {Popover} from '@sanity/ui'
+import {Popover} from '../../../../../ui'
 import {useColorSchemeValue} from '../../../colorScheme'
 import {PopoverContent} from './PopoverContent'
 import {DialogContent} from './DialogContent'
@@ -59,7 +59,7 @@ export function FreeTrial({type}: FreeTrialProps) {
         open={showDialog && showPopover}
         size={0}
         scheme={scheme}
-        radius={2}
+        radius={3}
         portal
         placement={type === 'sidebar' ? 'top' : 'bottom-end'}
         content={

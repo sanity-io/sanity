@@ -28,9 +28,9 @@ import {SearchButton, SearchDialog} from './search'
 import {SearchProvider} from './search/contexts/search/SearchProvider'
 import {ResourcesButton} from './resources/ResourcesButton'
 import {SearchPopover} from './search/components/SearchPopover'
-import {RouterState, useRouterState} from 'sanity/router'
 import {FreeTrialProvider} from './free-trial/FreeTrialContext'
 import {FreeTrial} from './free-trial'
+import {RouterState, useRouterState} from 'sanity/router'
 
 const RootLayer = styled(Layer)`
   min-height: auto;
@@ -219,12 +219,12 @@ export function StudioNavbar() {
                     </SearchProvider>
                   </LayerProvider>
 
+                  {shouldRender.tools && <FreeTrial type="topbar" />}
                   {/* Search button (desktop) */}
                   {!shouldRender.searchFullscreen && (
                     <SearchButton onClick={handleOpenSearch} ref={setSearchOpenButtonEl} />
                   )}
 
-                  {shouldRender.tools && <FreeTrial type="topbar" />}
                   {shouldRender.configIssues && <ConfigIssuesButton />}
                   {shouldRender.resources && <ResourcesButton />}
                   <PresenceMenu />

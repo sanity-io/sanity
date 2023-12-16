@@ -1,7 +1,8 @@
-import {Box, Button, Dialog, Flex, Heading} from '@sanity/ui'
+import {Box, Flex, Heading} from '@sanity/ui'
 import styled from 'styled-components'
 import {CloseIcon} from '@sanity/icons'
 import {useColorSchemeValue} from '../../../colorScheme'
+import {Button, Dialog} from '../../../../../ui'
 import {FreeTrialDialog} from './types'
 import {DescriptionSerializer} from './DescriptionSerializer'
 
@@ -50,50 +51,42 @@ export function DialogContent({handleClose, handleOpenNext, content, open}: Moda
       id="free-trial-modal"
       onClose={handleClose}
       onClickOutside={handleClose}
+      padding={false}
       __unstable_hideCloseButton
       scheme={schemeValue}
-      cardRadius={3}
-      footer={
-        <Flex width="full" gap={3} justify="flex-end" padding={3}>
-          {content.secondaryButton?.text && (
-            <Button
-              mode="bleed"
-              padding={2}
-              fontSize={1}
-              text={content.secondaryButton?.text}
-              tone="default"
-              onClick={handleClose}
-            />
-          )}
-          <Button
-            mode="default"
-            padding={2}
-            fontSize={1}
-            text={content.ctaButton?.text}
-            autoFocus
-            tone="primary"
-            {...(content.ctaButton?.action === 'openUrl'
-              ? {
-                  href: content.ctaButton.url,
-                  target: '_blank',
-                  rel: 'noopener noreferrer',
-                  as: 'a',
-                }
-              : {
-                  onClick: content.ctaButton?.action === 'openNext' ? handleOpenNext : handleClose,
-                })}
-          />
-        </Flex>
-      }
+      footer={{
+        cancelButton: content.secondaryButton?.text
+          ? {
+              text: content.secondaryButton.text,
+              mode: 'bleed',
+              tone: 'default',
+              onClick: handleClose,
+            }
+          : undefined,
+        confirmButton: {
+          text: content.ctaButton?.text,
+          mode: 'default',
+          tone: 'primary',
+          ...(content.ctaButton?.action === 'openUrl'
+            ? {
+                href: content.ctaButton.url,
+                target: '_blank',
+                rel: 'noopener noreferrer',
+                as: 'a',
+              }
+            : {
+                onClick: content.ctaButton?.action === 'openNext' ? handleOpenNext : handleClose,
+              }),
+        },
+      }}
     >
       <StyledButton
         icon={CloseIcon}
-        fontSize={1}
-        padding={2}
         mode="bleed"
         tone="default"
         onClick={handleClose}
         tabIndex={-1}
+        tooltipProps={null}
       />
       {content.image && (
         <Image src={content.image.asset.url} alt={content.image.asset.altText ?? ''} />
