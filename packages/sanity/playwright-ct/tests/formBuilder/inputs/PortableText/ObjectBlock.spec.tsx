@@ -82,6 +82,7 @@ test.describe('Portable Text Input', () => {
 
       // Tab to the context menu, press enter once to open it, then enter again to press 'edit'
       await page.keyboard.press('Tab')
+      await expect(page.getByRole('button', {name: 'Open menu'})).toBeFocused()
       await page.keyboard.press('Enter')
 
       // Assertion: Context menu should be open
@@ -95,9 +96,13 @@ test.describe('Portable Text Input', () => {
 
       // Close dialog
       await page.keyboard.press('Escape')
+      await page.waitForTimeout(200) // Confirm with @skogsmaskin if there is a better way
+      await expect(page.getByTestId('default-edit-object-dialog')).not.toBeVisible()
 
       // Tab to the context menu, press enter once to open it
       await page.keyboard.press('Tab')
+      await expect(page.getByRole('button', {name: 'Open menu'})).toBeFocused()
+      await page.waitForTimeout(200) // Confirm with @skogsmaskin if there is a better way
       await page.keyboard.press('Enter')
       await expect($locatorContextMenu).toBeVisible()
       await expect($locatorContextMenu.locator('*:focus', {hasText: 'Edit'})).toBeFocused()
