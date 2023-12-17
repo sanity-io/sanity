@@ -1,7 +1,7 @@
 import React, {useMemo} from 'react'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 import {Box, Text} from '@sanity/ui'
-import {Tooltip} from '../../../../ui'
+import {Tooltip} from '../../../ui-components'
 import {CircularProgress} from '../../progress'
 import {Media} from '../_common/Media'
 import {PREVIEW_SIZES} from '../constants'

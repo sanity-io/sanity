@@ -1,7 +1,7 @@
 import {Card, Flex, Stack, Text} from '@sanity/ui'
 import {startCase, uniq} from 'lodash'
 import React, {ReactElement, useMemo} from 'react'
-import {Tooltip} from '../../../../../../../../../ui'
+import {Tooltip} from '../../../../../../../../ui-components'
 import {TextWithTone} from '../../../../../../../../components'
 import {useSchema} from '../../../../../../../../hooks'
 import {isNonNullable, truncateString} from '../../../../../../../../util'

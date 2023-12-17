@@ -8,7 +8,7 @@ import React, {
   useMemo,
   useState,
 } from 'react'
-import {Tooltip} from '../../../../../../../../../../ui'
+import {Tooltip} from '../../../../../../../../../ui-components'
 import {useTranslation} from '../../../../../../../../../i18n'
 import {CustomTextInput} from '../../../../common/CustomTextInput'
 import {getDateISOString} from './utils/getDateISOString'

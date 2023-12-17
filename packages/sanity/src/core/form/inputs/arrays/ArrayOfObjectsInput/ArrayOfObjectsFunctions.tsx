@@ -3,7 +3,7 @@ import {AddIcon} from '@sanity/icons'
 import React, {useId, useCallback} from 'react'
 import {Grid, Menu} from '@sanity/ui'
 import {ArrayInputFunctionsProps, ObjectItem} from '../../../types'
-import {Button, MenuButton, MenuButtonProps, MenuItem, Tooltip} from '../../../../../ui'
+import {Button, MenuButton, MenuButtonProps, MenuItem, Tooltip} from '../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
 
 const POPOVER_PROPS: MenuButtonProps['popover'] = {

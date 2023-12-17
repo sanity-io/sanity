@@ -8,7 +8,7 @@ import {ObjectSchemaType, Path, PortableTextBlock, isImage} from '@sanity/types'
 import {Box, Flex, ResponsivePaddingProps} from '@sanity/ui'
 import React, {PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {isEqual} from '@sanity/util/paths'
-import {Tooltip} from '../../../../../ui'
+import {Tooltip} from '../../../../ui-components'
 import {
   BlockProps,
   RenderAnnotationCallback,

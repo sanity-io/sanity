@@ -1,5 +1,5 @@
 import React, {useCallback, useId} from 'react'
-import {MenuItemProps} from '../../../../../../ui'
+import {MenuItemProps} from '../../../../../ui-components'
 import {FileMenuItem} from './FileInputMenuItem.styled'
 
 export interface FileInputMenuItemProps extends Omit<MenuItemProps, 'onSelect'> {

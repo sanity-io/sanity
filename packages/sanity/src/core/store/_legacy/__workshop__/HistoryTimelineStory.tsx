@@ -4,7 +4,7 @@ import {Box, Card, Code, Flex, Inline, Stack, Text} from '@sanity/ui'
 import {format} from 'date-fns'
 import {omit} from 'lodash'
 import React, {useCallback, useMemo, useState} from 'react'
-import {Button} from '../../../../ui'
+import {Button} from '../../../ui-components'
 import {ChangeFieldWrapper} from '../../../changeIndicators'
 import {
   ChangeList,

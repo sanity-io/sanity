@@ -1,7 +1,7 @@
 import React, {useCallback, useMemo} from 'react'
 import {Card, Code, Grid, Stack, TextArea, Text} from '@sanity/ui'
 import styled from 'styled-components'
-import {Button} from '../../../../ui'
+import {Button} from '../../../ui-components'
 
 const ExampleCode = styled(Code)`
   cursor: pointer;

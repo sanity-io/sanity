@@ -7,7 +7,7 @@ import {getTheme_v2} from '@sanity/ui/theme'
 import {UserAvatar} from '../components'
 import {DocumentPresence} from '../store'
 import {isNonNullable} from '../util'
-import {Tooltip, TooltipProps} from '../../ui'
+import {Tooltip, TooltipProps} from '../ui-components'
 
 /** @internal */
 export interface DocumentPreviewPresenceProps {

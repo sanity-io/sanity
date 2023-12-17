@@ -10,7 +10,7 @@ import type {
 } from '@sanity/types'
 import * as PathUtils from '@sanity/util/paths'
 import {Box, Card, Flex, Stack, TextInput} from '@sanity/ui'
-import {Button} from '../../../../ui'
+import {Button} from '../../../ui-components'
 import {PatchEvent, set, setIfMissing, unset} from '../../patch'
 import type {ObjectInputProps} from '../../types'
 import {useGetFormValue} from '../../contexts/GetFormValue'

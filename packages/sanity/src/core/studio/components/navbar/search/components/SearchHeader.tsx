@@ -2,7 +2,7 @@ import {ArrowLeftIcon, ControlsIcon, SearchIcon, SpinnerIcon} from '@sanity/icon
 import {Box, Card, Flex} from '@sanity/ui'
 import React, {forwardRef, useCallback, useEffect, useRef} from 'react'
 import styled, {keyframes} from 'styled-components'
-import {Button} from '../../../../../../ui'
+import {Button} from '../../../../../ui-components'
 import {StatusButton} from '../../../../../components'
 import {useTranslation} from '../../../../../i18n'
 import {useSearchState} from '../contexts/search/useSearchState'

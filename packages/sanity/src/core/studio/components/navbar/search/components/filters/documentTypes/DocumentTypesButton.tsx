@@ -5,7 +5,7 @@ import {POPOVER_RADIUS, POPOVER_VERTICAL_MARGIN} from '../../../constants'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import {documentTypesTruncated} from '../../../utils/documentTypesTruncated'
 import {FilterPopoverWrapper} from '../common/FilterPopoverWrapper'
-import {Button, Popover} from '../../../../../../../../ui'
+import {Button, Popover} from '../../../../../../../ui-components'
 import {useTranslation} from '../../../../../../../i18n'
 import {DocumentTypesPopoverContent} from './DocumentTypesPopoverContent'
 

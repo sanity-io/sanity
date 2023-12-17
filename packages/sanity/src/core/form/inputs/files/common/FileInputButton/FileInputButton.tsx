@@ -1,5 +1,5 @@
 import React, {useId} from 'react'
-import {ButtonProps} from '../../../../../../ui'
+import {ButtonProps} from '../../../../../ui-components'
 import {FileButton} from './styles'
 
 export type FileInputButtonProps = ButtonProps & {

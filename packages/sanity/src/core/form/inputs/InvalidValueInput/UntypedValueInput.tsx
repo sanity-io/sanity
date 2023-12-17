@@ -1,7 +1,7 @@
 import React, {useCallback, useMemo} from 'react'
 import {Card, Code, Grid, Stack, Text} from '@sanity/ui'
 import {PatchEvent, setIfMissing, unset} from '../../patch'
-import {Button} from '../../../../ui'
+import {Button} from '../../../ui-components'
 import {Alert} from '../../components/Alert'
 import {Details} from '../../components/Details'
 import {useSchema} from '../../../hooks'

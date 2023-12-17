@@ -6,7 +6,7 @@ import {
 import {ObjectSchemaType, Path, PortableTextBlock, PortableTextChild} from '@sanity/types'
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import {isEqual} from '@sanity/util/paths'
-import {Tooltip} from '../../../../../ui'
+import {Tooltip} from '../../../../ui-components'
 import {
   BlockProps,
   RenderAnnotationCallback,

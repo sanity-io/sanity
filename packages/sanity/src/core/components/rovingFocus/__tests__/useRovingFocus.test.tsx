@@ -5,7 +5,7 @@ import userEvent from '@testing-library/user-event'
 import React, {useState} from 'react'
 import {Card, studioTheme, ThemeProvider} from '@sanity/ui'
 import {RovingFocusProps} from '../types'
-import {Button} from '../../../../ui'
+import {Button} from '../../../ui-components'
 import {useRovingFocus} from '../useRovingFocus'
 
 interface TestProps extends Pick<RovingFocusProps, 'direction' | 'initialFocus' | 'loop'> {

@@ -1,7 +1,7 @@
 import {CurrentUser} from '@sanity/types'
 import {Card, Text} from '@sanity/ui'
 import React, {useCallback, useMemo} from 'react'
-import {Tooltip} from '../../../../../ui'
+import {Tooltip} from '../../../../ui-components'
 import {InsufficientPermissionsMessage} from '../../../../components'
 import {useI18nText} from '../../../../i18n'
 import {NewDocumentOption, PreviewLayout} from './types'

@@ -1,6 +1,6 @@
 import React, {type ReactNode, useState, useRef} from 'react'
 import {Box, ResponsiveWidthProps} from '@sanity/ui'
-import {Dialog} from '../../../ui'
+import {Dialog} from '../../ui-components'
 import {PresenceOverlay} from '../../presence'
 import {PopoverDialog} from '../../components'
 import {VirtualizerScrollInstanceProvider} from '../inputs/arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'

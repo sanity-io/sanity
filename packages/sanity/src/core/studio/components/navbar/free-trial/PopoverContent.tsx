@@ -1,6 +1,6 @@
 import {Card, Heading, Flex, Box, Container} from '@sanity/ui'
 import styled from 'styled-components'
-import {Button} from '../../../../../ui'
+import {Button} from '../../../../ui-components'
 import {FreeTrialDialog} from './types'
 import {DescriptionSerializer} from './DescriptionSerializer'
 

@@ -3,7 +3,7 @@ import React, {isValidElement} from 'react'
 import {isNumber, isString} from 'lodash'
 import {Flex, TooltipDelayGroupProvider} from '@sanity/ui'
 import {useMemoObservable} from 'react-rx'
-import {TOOLTIP_DELAY_PROPS} from '../../../ui/tooltip/constants'
+import {TOOLTIP_DELAY_PROPS} from 'sanity/ui-components'
 import type {PaneItemPreviewState} from './types'
 import {
   DocumentPresence,

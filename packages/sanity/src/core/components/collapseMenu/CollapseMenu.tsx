@@ -14,7 +14,7 @@ import React, {
 } from 'react'
 import styled, {css} from 'styled-components'
 import {difference} from 'lodash'
-import {MenuButtonProps, Tooltip} from '../../../ui'
+import {MenuButtonProps, Tooltip} from '../../ui-components'
 import {ContextMenuButton} from '../contextMenuButton'
 import {CollapseOverflowMenu} from './CollapseOverflowMenu'
 import {ObserveElement} from './ObserveElement'

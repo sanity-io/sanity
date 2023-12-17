@@ -8,7 +8,7 @@ import {isNonNullable} from '../../../../../../../../../util'
 import {useSearchState} from '../../../../../contexts/search/useSearchState'
 import {OperatorInputComponentProps} from '../../../../../definitions/operators/operatorTypes'
 import {getSchemaField} from '../../../../../utils/getSchemaField'
-import {Button, MenuButton, MenuItem} from '../../../../../../../../../../ui'
+import {Button, MenuButton, MenuItem} from '../../../../../../../../../ui-components'
 import {useTranslation} from '../../../../../../../../../i18n'
 
 interface TitledListValueGroup extends Omit<TitledListValue<number | string>, 'title'> {

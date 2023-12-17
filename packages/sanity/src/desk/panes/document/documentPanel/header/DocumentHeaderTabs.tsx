@@ -1,8 +1,8 @@
 import React, {useCallback} from 'react'
 import {TabList} from '@sanity/ui'
+import {Tab} from 'sanity/ui-components'
 import {useDocumentPane} from '../../useDocumentPane'
 import {usePaneRouter} from '../../../../components'
-import {Tab} from '../../../../../ui'
 
 export function DocumentHeaderTabs() {
   const {activeViewId, paneKey, views} = useDocumentPane()

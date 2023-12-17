@@ -1,7 +1,7 @@
 import {Stack, Text} from '@sanity/ui'
 import React, {useCallback} from 'react'
 import {randomKey} from '@sanity/util/content'
-import {Button} from '../../../../../ui'
+import {Button} from '../../../../ui-components'
 import {MissingKeysError} from '../../../store/types/memberErrors'
 import {Details} from '../../../components/Details'
 import {Alert} from '../../../components/Alert'

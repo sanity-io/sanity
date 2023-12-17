@@ -1,6 +1,6 @@
 import {Box} from '@sanity/ui'
 import styled from 'styled-components'
-import {Popover} from '../../../../../../ui'
+import {Popover} from '../../../../../ui-components'
 
 export const RootPopover = styled(Popover)`
   & > div {

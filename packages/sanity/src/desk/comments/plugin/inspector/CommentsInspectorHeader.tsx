@@ -3,7 +3,7 @@ import {Card, Flex, Menu, Text} from '@sanity/ui'
 import {startCase} from 'lodash'
 import React, {forwardRef, useCallback} from 'react'
 import styled from 'styled-components'
-import {Button, MenuButton, MenuItem} from '../../../../ui'
+import {Button, MenuButton, MenuItem} from 'sanity/ui-components'
 import {CommentStatus} from '../../src'
 import {BetaBadge} from 'sanity'
 

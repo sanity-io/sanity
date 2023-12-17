@@ -1,6 +1,7 @@
 import {ArrowLeftIcon, CloseIcon, SplitVerticalIcon} from '@sanity/icons'
 import {Flex, TooltipDelayGroupProvider} from '@sanity/ui'
 import React, {createElement, memo, forwardRef, useMemo} from 'react'
+import {Button, TOOLTIP_DELAY_PROPS} from 'sanity/ui-components'
 import {
   PaneContextMenuButton,
   PaneHeader,
@@ -12,8 +13,6 @@ import {TimelineMenu} from '../../timeline'
 import {useDocumentPane} from '../../useDocumentPane'
 import {isMenuNodeButton, isNotMenuNodeButton, resolveMenuNodes} from '../../../../menuNodes'
 import {useDeskTool} from '../../../../useDeskTool'
-import {Button} from '../../../../../ui'
-import {TOOLTIP_DELAY_PROPS} from '../../../../../ui/tooltip/constants'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {DocumentHeaderTabs} from './DocumentHeaderTabs'
 import {DocumentHeaderTitle} from './DocumentHeaderTitle'
