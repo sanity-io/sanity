@@ -27,7 +27,6 @@ function parseApiConsentStatus(value: unknown): ValidApiConsentStatus {
   throw new Error(`Invalid consent status. Must be one of: ${VALID_API_STATUSES.join(', ')}`)
 }
 
-
 function createTelemetryClient(token: string) {
   const getClient = getClientWrapper(null, 'sanity.cli.js')
   return getClient({requireUser: false, requireProject: false}).config({
