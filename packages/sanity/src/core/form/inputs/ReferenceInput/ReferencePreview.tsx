@@ -1,7 +1,7 @@
 import React, {useMemo} from 'react'
 import {ObjectSchemaType} from '@sanity/types'
 import {Badge, Box, Inline} from '@sanity/ui'
-import {DocumentStatus} from '../../../../ui/documentStatus'
+import {DocumentStatus} from '../../../components/documentStatus'
 import {DocumentStatusIndicator} from '../../../components/documentStatusIndicator'
 import {PreviewLayoutKey} from '../../../components'
 import {RenderPreviewCallback} from '../../types'

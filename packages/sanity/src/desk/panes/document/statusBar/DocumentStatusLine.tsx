@@ -1,10 +1,9 @@
 import {Flex} from '@sanity/ui'
 import React, {useEffect, useLayoutEffect, useState} from 'react'
 import {Tooltip} from '../../../../ui'
-import {DocumentStatus} from '../../../../ui/documentStatus'
 import {useDocumentPane} from '../useDocumentPane'
 import {DocumentStatusPulse} from './DocumentStatusPulse'
-import {useSyncState, DocumentStatusIndicator} from 'sanity'
+import {useSyncState, DocumentStatusIndicator, DocumentStatus} from 'sanity'
 
 const SYNCING_TIMEOUT = 1000
 const SAVED_TIMEOUT = 3000

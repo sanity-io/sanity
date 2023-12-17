@@ -47,3 +47,14 @@
     - Timeline
     - DocumentListPaneContent
     - LoadingPane
+
+## DocumentStatus
+
+- Moved to: core/components
+- Used by:
+  - core:
+    - ReferencePreview
+    - SearchResultItemPreview
+  - desk:
+    - PaneItemPreview
+    - DocumentStatusLine
