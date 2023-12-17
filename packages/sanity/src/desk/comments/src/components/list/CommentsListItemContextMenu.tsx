@@ -5,7 +5,7 @@ import styled from 'styled-components'
 import {Button, MenuButton, MenuButtonProps, MenuItem} from '../../../../../ui'
 import {CommentStatus} from '../../types'
 import {TOOLTIP_DELAY_PROPS} from '../../../../../ui/tooltip/constants'
-import {ContextMenuButton} from '../../../../../ui/contextMenuButton'
+import {ContextMenuButton} from 'sanity'
 
 const POPOVER_PROPS: MenuButtonProps['popover'] = {
   placement: 'bottom-end',

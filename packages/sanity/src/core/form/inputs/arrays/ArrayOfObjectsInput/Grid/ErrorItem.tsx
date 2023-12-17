@@ -1,7 +1,7 @@
 import React, {useCallback, useId} from 'react'
 import {TrashIcon} from '@sanity/icons'
 import {Menu} from '@sanity/ui'
-import {ContextMenuButton} from '../../../../../../ui/contextMenuButton'
+import {ContextMenuButton} from '../../../../../components/contextMenuButton'
 import {ArrayItemError} from '../../../../store'
 import {useFormCallbacks} from '../../../../studio/contexts/FormCallbacks'
 import {PatchEvent, unset} from '../../../../patch'

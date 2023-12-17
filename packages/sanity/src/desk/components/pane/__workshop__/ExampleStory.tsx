@@ -3,12 +3,12 @@ import {Container, Stack, TabList, Text} from '@sanity/ui'
 import {useBoolean, useSelect} from '@sanity/ui-workshop'
 import React, {useMemo} from 'react'
 import {Button, Tab} from '../../../../ui'
-import {ContextMenuButton} from '../../../../ui/contextMenuButton'
 import {Pane} from '../Pane'
 import {PaneContent} from '../PaneContent'
 import {PaneFooter} from '../PaneFooter'
 import {PaneHeader} from '../PaneHeader'
 import {PaneLayout} from '../PaneLayout'
+import {ContextMenuButton} from 'sanity'
 
 const PANE_TONE_OPTIONS = {
   Default: 'default',

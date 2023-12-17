@@ -11,7 +11,7 @@ import styled from 'styled-components'
 import {Button, Popover} from '../../../../../ui'
 import {TOOLTIP_DELAY_PROPS} from '../../../../../ui/tooltip/constants'
 import {useTranslation} from '../../../../i18n'
-import {ContextMenuButton} from '../../../../../ui/contextMenuButton'
+import {ContextMenuButton} from '../../../../components/contextMenuButton'
 
 export const MenuActionsWrapper = styled(Inline)`
   position: absolute;

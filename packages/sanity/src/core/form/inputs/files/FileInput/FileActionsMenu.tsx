@@ -4,7 +4,7 @@ import {Box, Card, Flex, Menu, Stack, Text, useClickOutside, useGlobalKeyDown} f
 import {formatBytes} from '../../common/helper'
 import {useTranslation} from '../../../../i18n'
 import {Popover} from '../../../../../ui'
-import {ContextMenuButton} from '../../../../../ui/contextMenuButton'
+import {ContextMenuButton} from '../../../../components/contextMenuButton'
 
 type Props = {
   children: ReactNode

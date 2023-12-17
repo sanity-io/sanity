@@ -9,7 +9,7 @@ import {PrimitiveItemProps} from '../../../types/itemProps'
 import {RowLayout} from '../layouts/RowLayout'
 import {FieldPresence} from '../../../../presence'
 import {MenuButton, MenuItem} from '../../../../../ui'
-import {ContextMenuButton} from '../../../../../ui/contextMenuButton'
+import {ContextMenuButton} from '../../../../components/contextMenuButton'
 import {getEmptyValue} from './getEmptyValue'
 
 export type DefaultItemProps = Omit<PrimitiveItemProps, 'renderDefault'> & {

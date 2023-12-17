@@ -1,6 +1,6 @@
 ## SpacerButton
 
-- Moved to desk/components
+- Moved to `desk/components``
 - Used by
   - desk:
     - Banner
@@ -8,7 +8,7 @@
 
 ## DocumentStatusIndicator
 
-- Moved to: core/components
+- Moved to: `core/components``
 - Used by:
   - core:
     - ReferenceInput
@@ -18,7 +18,7 @@
 
 ## LoadingBlock
 
-- Moved to: core/components
+- Moved to: `core/components``
 - Used by:
   - core:
     - ReferenceItem
@@ -50,7 +50,7 @@
 
 ## DocumentStatus
 
-- Moved to: core/components
+- Moved to: `core/components``
 - Used by:
   - core:
     - ReferencePreview
@@ -58,3 +58,28 @@
   - desk:
     - PaneItemPreview
     - DocumentStatusLine
+
+## ContextMenuButton
+
+- Moved to: `core/components``
+- Used by:
+  - core:
+    - CollapseMenu
+    - CollapseTabList
+    - CrossDatasetReferenceInput
+    - ActionMenu
+    - InsertMenu
+    - ReferenceField
+    - ReferenceItem
+    - ErrorItem
+    - GridItem
+    - PreviewItem
+    - ItemRow
+    - FileActionsMenu
+    - AssetMenu
+  - comments:
+    - CommentsListItemContextMemnu
+  - desk:
+    - DocumentActions
+    - ListPane
+    - ActionMenuButton

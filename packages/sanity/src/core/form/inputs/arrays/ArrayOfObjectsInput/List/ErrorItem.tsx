@@ -4,7 +4,7 @@ import {Box, Menu} from '@sanity/ui'
 import {ArrayItemError} from '../../../../store'
 import {RowLayout} from '../../layouts/RowLayout'
 import {MenuButton, MenuItem} from '../../../../../../ui'
-import {ContextMenuButton} from '../../../../../../ui/contextMenuButton'
+import {ContextMenuButton} from '../../../../../components/contextMenuButton'
 import {useTranslation} from '../../../../../i18n'
 import {IncompatibleItemType} from './IncompatibleItemType'
 

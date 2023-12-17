@@ -2,7 +2,7 @@ import React, {cloneElement, forwardRef, useCallback, useMemo, useState} from 'r
 import {Flex} from '@sanity/ui'
 import styled from 'styled-components'
 import {MenuButtonProps} from '../../../ui'
-import {ContextMenuButton} from '../../../ui/contextMenuButton'
+import {ContextMenuButton} from '../contextMenuButton'
 import {CollapseOverflowMenu} from '../collapseMenu/CollapseOverflowMenu'
 import {ObserveElement} from '../collapseMenu/ObserveElement'
 
