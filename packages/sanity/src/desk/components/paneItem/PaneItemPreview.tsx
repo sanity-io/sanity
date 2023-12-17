@@ -4,7 +4,6 @@ import {isNumber, isString} from 'lodash'
 import {Flex, TooltipDelayGroupProvider} from '@sanity/ui'
 import {useMemoObservable} from 'react-rx'
 import {DocumentStatus} from '../../../ui/documentStatus'
-import {DocumentStatusIndicator} from '../../../ui/documentStatusIndicator'
 import {TOOLTIP_DELAY_PROPS} from '../../../ui/tooltip/constants'
 import type {PaneItemPreviewState} from './types'
 import {
@@ -16,6 +15,7 @@ import {
   getPreviewValueWithFallback,
   SanityDefaultPreview,
   isRecord,
+  DocumentStatusIndicator,
 } from 'sanity'
 
 export interface PaneItemPreviewProps {

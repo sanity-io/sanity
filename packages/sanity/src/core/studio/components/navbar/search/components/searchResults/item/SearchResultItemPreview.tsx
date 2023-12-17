@@ -5,7 +5,7 @@ import React, {useMemo} from 'react'
 import {useMemoObservable} from 'react-rx'
 import styled from 'styled-components'
 import {DocumentStatus} from '../../../../../../../../ui/documentStatus'
-import {DocumentStatusIndicator} from '../../../../../../../../ui/documentStatusIndicator'
+import {DocumentStatusIndicator} from '../../../../../../../components/documentStatusIndicator'
 import {DocumentPreviewPresence} from '../../../../../../../presence'
 import {
   getPreviewStateObservable,
