@@ -8,7 +8,7 @@ import {
   useToast,
 } from '@sanity/ui'
 import {Asset} from '@sanity/types'
-import {LoadingBlock} from '../../../../../ui/loadingBlock'
+import {LoadingBlock} from '../../../../components/loadingBlock'
 import {useClient} from '../../../../hooks'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
 import {AssetMenu} from '../shared/AssetMenu'

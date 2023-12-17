@@ -2,10 +2,9 @@ import {Box, Flex, Stack, Text} from '@sanity/ui'
 import styled from 'styled-components'
 import React, {useCallback, useImperativeHandle, useMemo, useRef, useState} from 'react'
 import {deburr} from 'lodash'
-import {LoadingBlock} from '../../../../../ui/loadingBlock'
 import {MentionOptionUser} from '../../types'
 import {MentionsMenuItem} from './MentionsMenuItem'
-import {CommandList, CommandListHandle} from 'sanity'
+import {CommandList, CommandListHandle, LoadingBlock} from 'sanity'
 
 const EMPTY_ARRAY: MentionOptionUser[] = []
 

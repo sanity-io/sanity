@@ -1,7 +1,7 @@
 import {I18nextProvider} from 'react-i18next'
 import React, {PropsWithChildren, Suspense, useCallback, useMemo, useSyncExternalStore} from 'react'
 import type {i18n} from 'i18next'
-import {LoadingBlock} from '../../../ui/loadingBlock'
+import {LoadingBlock} from '../../components/loadingBlock'
 import {useSource} from '../../studio'
 import {storePreferredLocale} from '../localeStore'
 import {LocaleContext, type LocaleContextValue} from '../LocaleContext'

@@ -2,7 +2,6 @@ import {ObjectDiff} from '@sanity/diff'
 import {AvatarStack, BoundaryElementProvider, Box, Card, Flex} from '@sanity/ui'
 import React, {ReactElement, useRef} from 'react'
 import styled from 'styled-components'
-import {LoadingBlock} from '../../../../../ui/loadingBlock'
 import {TimelineMenu} from '../../timeline'
 import {useDocumentPane} from '../../useDocumentPane'
 import {DocumentInspectorHeader} from '../../documentInspector'
@@ -20,6 +19,7 @@ import {
   UserAvatar,
   useTimelineSelector,
   useTranslation,
+  LoadingBlock,
 } from 'sanity'
 
 const Scroller = styled(ScrollContainer)`

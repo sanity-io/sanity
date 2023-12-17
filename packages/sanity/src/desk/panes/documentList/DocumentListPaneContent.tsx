@@ -1,10 +1,9 @@
 import {SyncIcon} from '@sanity/icons'
-import {Box, Card, Container, Flex, Heading, Stack, Text} from '@sanity/ui'
+import {Box, Container, Flex, Heading, Stack, Text} from '@sanity/ui'
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import {SanityDocument} from '@sanity/types'
 import styled from 'styled-components'
 import {Button} from '../../../ui'
-import {LoadingBlock} from '../../../ui/loadingBlock'
 import {Delay, PaneContent, usePane, usePaneLayout, PaneItem} from '../../components'
 import {DocumentListPaneItem, LoadingVariant} from './types'
 import {FULL_LIST_LIMIT} from './constants'
@@ -18,6 +17,7 @@ import {
   useSchema,
   useTranslation,
   Translate,
+  LoadingBlock,
 } from 'sanity'
 
 const RootBox = styled(Box)`

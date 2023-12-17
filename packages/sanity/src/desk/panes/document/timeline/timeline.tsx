@@ -1,9 +1,15 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import {Box, Text} from '@sanity/ui'
-import {LoadingBlock} from '../../../../ui/loadingBlock'
+
 import {TimelineItem} from './timelineItem'
 import {ListWrapper, Root, StackWrapper} from './timeline.styled'
-import {Chunk, CommandList, CommandListRenderItemCallback, useTranslation} from 'sanity'
+import {
+  Chunk,
+  CommandList,
+  CommandListRenderItemCallback,
+  useTranslation,
+  LoadingBlock,
+} from 'sanity'
 
 interface TimelineProps {
   chunks: Chunk[]

@@ -18,7 +18,7 @@ import {RowLayout} from '../../layouts/RowLayout'
 import {createProtoArrayValue} from '../createProtoArrayValue'
 import {InsertMenu} from '../InsertMenu'
 import {EditPortal} from '../../../../components/EditPortal'
-import {LoadingBlock} from '../../../../../../ui/loadingBlock'
+import {LoadingBlock} from '../../../../../components/loadingBlock'
 import {useTranslation} from '../../../../../i18n'
 
 type PreviewItemProps<Item extends ObjectItem> = Omit<ObjectItemProps<Item>, 'renderDefault'>

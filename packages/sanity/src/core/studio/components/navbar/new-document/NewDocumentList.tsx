@@ -4,17 +4,13 @@ import {CurrentUser} from '@sanity/types'
 import styled from 'styled-components'
 import {CommandList} from '../../../../components'
 import {supportsTouch} from '../../../../util'
-import {LoadingBlock} from '../../../../../ui/loadingBlock'
+import {LoadingBlock} from '../../../../components/loadingBlock'
 import {Translate, useTranslation} from '../../../../i18n'
 import {NewDocumentOption, PreviewLayout} from './types'
 import {INLINE_PREVIEW_HEIGHT, NewDocumentListOption} from './NewDocumentListOption'
 
 const ContentFlex = styled(Flex)`
   min-height: 100px;
-`
-
-const QueryString = styled.strong`
-  word-break: break-all;
 `
 
 export interface NewDocumentListProps {

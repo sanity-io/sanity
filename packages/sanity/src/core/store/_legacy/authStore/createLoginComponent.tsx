@@ -6,7 +6,7 @@ import type {Observable} from 'rxjs'
 import type {AuthConfig} from '../../../config'
 import {createHookFromObservableFactory} from '../../../util'
 import {Button} from '../../../../ui'
-import {LoadingBlock} from '../../../../ui/loadingBlock'
+import {LoadingBlock} from '../../../components/loadingBlock'
 import {CustomLogo, providerLogos} from './providerLogos'
 import type {LoginComponentProps} from './types'
 

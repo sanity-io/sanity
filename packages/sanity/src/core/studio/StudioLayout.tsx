@@ -11,7 +11,7 @@ import React, {
   useState,
 } from 'react'
 import styled from 'styled-components'
-import {LoadingBlock} from '../../ui/loadingBlock'
+import {LoadingBlock} from '../components/loadingBlock'
 import {NoToolsScreen} from './screens/NoToolsScreen'
 import {RedirectingScreen} from './screens/RedirectingScreen'
 import {ToolNotFoundScreen} from './screens/ToolNotFoundScreen'

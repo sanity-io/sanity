@@ -8,7 +8,7 @@ import {
   TrashIcon,
 } from '@sanity/icons'
 import type {Reference, ReferenceSchemaType, SchemaType} from '@sanity/types'
-import {LoadingBlock} from '../../../../ui/loadingBlock'
+import {LoadingBlock} from '../../../components/loadingBlock'
 import type {ObjectItem, ObjectItemProps} from '../../types'
 import {useScrollIntoViewOnFocusWithin} from '../../hooks/useScrollIntoViewOnFocusWithin'
 import {useDidUpdate} from '../../hooks/useDidUpdate'
