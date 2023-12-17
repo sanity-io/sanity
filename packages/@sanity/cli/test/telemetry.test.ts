@@ -33,7 +33,7 @@ https://www.sanity.io/telemetry
 `)
   })
 
-  testConcurrent('sanity telemetry status: denied using DO_NOT_TRACK', async () => {
+  test('sanity telemetry status: denied using DO_NOT_TRACK', async () => {
     const result = await runSanityCmdCommand('v3', ['telemetry', 'status'], {
       env: {
         DO_NOT_TRACK: '1',
@@ -118,16 +118,14 @@ https://www.sanity.io/telemetry
 `)
   })
 
-  testConcurrent(
-    'sanity telemetry disable: success (already denied using DO_NOT_TRACK)',
-    async () => {
-      const result = await runSanityCmdCommand('v3', ['telemetry', 'disable'], {
-        env: {
-          DO_NOT_TRACK: '1',
-        },
-      })
+  test('sanity telemetry disable: success (already denied using DO_NOT_TRACK)', async () => {
+    const result = await runSanityCmdCommand('v3', ['telemetry', 'disable'], {
+      env: {
+        DO_NOT_TRACK: '1',
+      },
+    })
 
-      expect(result.stdout).toMatchInlineSnapshot(`
+    expect(result.stdout).toMatchInlineSnapshot(`
 "Status: Disabled
 
 You've already opted out of telemetry data collection.
@@ -139,6 +137,5 @@ Learn more here:
 https://www.sanity.io/telemetry
 "
 `)
-    },
-  )
+  })
 })
