@@ -18,7 +18,7 @@ import {PreviewCard} from '../../../components'
 import {getPublishedId, isNonNullable} from '../../../util'
 import {useDidUpdate} from '../../hooks/useDidUpdate'
 import {useOnClickOutside} from '../../hooks/useOnClickOutside'
-import {Button} from '../../../../ui'
+import {Button} from '../../../../ui-components'
 import {Translate, useTranslation} from '../../../i18n'
 import {useReferenceInput} from './useReferenceInput'
 import type {

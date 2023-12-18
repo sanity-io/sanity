@@ -2,10 +2,10 @@
 import {Box, Container, Flex, Spinner, Text, focusFirstDescendant} from '@sanity/ui'
 import React, {forwardRef, useEffect, useMemo, useCallback, useState} from 'react'
 import {tap} from 'rxjs/operators'
-import {LoadingBlock} from '../../../../../ui/loadingBlock'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentTitle} from '../../useDocumentTitle'
 import {useDocumentPane} from '../../useDocumentPane'
+import {Delay} from '../../../../components'
 import {useConditionalToast} from './useConditionalToast'
 import {FormHeader} from './FormHeader'
 import {
@@ -20,8 +20,8 @@ import {
   useDocumentPresence,
   useDocumentStore,
   useTranslation,
+  LoadingBlock,
 } from 'sanity'
-import {Delay} from '../../../../components'
 
 interface FormViewProps {
   hidden: boolean

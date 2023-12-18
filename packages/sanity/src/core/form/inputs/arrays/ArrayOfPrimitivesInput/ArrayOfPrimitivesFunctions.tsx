@@ -4,7 +4,7 @@ import {AddIcon} from '@sanity/icons'
 import React, {useMemo, useId} from 'react'
 import {Grid, Menu} from '@sanity/ui'
 import {ArrayInputFunctionsProps} from '../../../types'
-import {Tooltip, Button, MenuButton, MenuItem} from '../../../../../ui'
+import {Tooltip, Button, MenuButton, MenuItem} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
 
 /**

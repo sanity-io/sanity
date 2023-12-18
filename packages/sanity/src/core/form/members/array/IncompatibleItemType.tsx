@@ -3,7 +3,7 @@ import React, {useCallback} from 'react'
 import {BulbOutlineIcon, UnknownIcon} from '@sanity/icons'
 import {resolveTypeName} from '@sanity/util/content'
 import styled from 'styled-components'
-import {Popover} from '../../../../ui'
+import {Popover} from '../../../../ui-components'
 import {Translate, useTranslation} from '../../../i18n'
 
 const PopoverCard = styled(Card)`

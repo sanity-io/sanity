@@ -8,10 +8,9 @@ import {
   useGlobalKeyDown,
 } from '@sanity/ui'
 import styled from 'styled-components'
-import {Button, Popover} from '../../../../../ui'
-import {TOOLTIP_DELAY_PROPS} from '../../../../../ui/tooltip/constants'
+import {Button, Popover, TOOLTIP_DELAY_PROPS} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
-import {ContextMenuButton} from '../../../../../ui/contextMenuButton'
+import {ContextMenuButton} from '../../../../components/contextMenuButton'
 
 export const MenuActionsWrapper = styled(Inline)`
   position: absolute;

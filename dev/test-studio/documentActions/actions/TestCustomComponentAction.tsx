@@ -1,7 +1,6 @@
-import {Text} from '@sanity/ui'
+import {Button, Card, Dialog, Stack, Text} from '@sanity/ui'
 import {DocumentActionComponent} from 'sanity'
-import {useCallback, useState} from 'react'
-import {Dialog} from '../../../../packages/sanity/src/ui'
+import React, {useCallback, useState} from 'react'
 
 export const TestCustomComponentAction: DocumentActionComponent = () => {
   const [open, setOpen] = useState<boolean>(false)
@@ -20,15 +19,15 @@ export const TestCustomComponentAction: DocumentActionComponent = () => {
           onClickOutside={toggleOpen}
           onClose={toggleOpen}
           width={1}
-          footer={{
-            confirmButton: {
-              onClick: toggleOpen,
-              tone: 'default',
-              text: 'Close',
-            },
-          }}
+          footer={
+            <Stack padding={2}>
+              <Button onClick={toggleOpen} text="Close" />
+            </Stack>
+          }
         >
-          <Text size={1}>This dialog is rendered using a custom dialog component.</Text>
+          <Card padding={5}>
+            <Text>This dialog is rendered using a custom dialog component.</Text>
+          </Card>
         </Dialog>
       ),
     },

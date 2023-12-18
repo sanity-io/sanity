@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react'
-import {LoadingBlock} from '../../ui/loadingBlock'
+import {LoadingBlock} from '../components/loadingBlock'
 import {AuthenticateScreen, NotAuthenticatedScreen} from './screens'
 import {useActiveWorkspace} from './activeWorkspaceMatcher'
 

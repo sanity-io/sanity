@@ -8,8 +8,8 @@ import {useTranslation} from '../../../../i18n'
 import {PrimitiveItemProps} from '../../../types/itemProps'
 import {RowLayout} from '../layouts/RowLayout'
 import {FieldPresence} from '../../../../presence'
-import {MenuButton, MenuItem} from '../../../../../ui'
-import {ContextMenuButton} from '../../../../../ui/contextMenuButton'
+import {MenuButton, MenuItem} from '../../../../../ui-components'
+import {ContextMenuButton} from '../../../../components/contextMenuButton'
 import {getEmptyValue} from './getEmptyValue'
 
 export type DefaultItemProps = Omit<PrimitiveItemProps, 'renderDefault'> & {
