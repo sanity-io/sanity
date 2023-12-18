@@ -3,7 +3,7 @@ import React, {useCallback, useState} from 'react'
 import {POPOVER_RADIUS, POPOVER_VERTICAL_MARGIN} from '../../../constants'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import {FilterPopoverWrapper} from '../common/FilterPopoverWrapper'
-import {Button, Popover} from '../../../../../../../../ui'
+import {Button, Popover} from '../../../../../../../../ui-components'
 import {useTranslation} from '../../../../../../../i18n'
 import {AddFilterPopoverContent} from './AddFilterPopoverContent'
 

@@ -1,7 +1,7 @@
 import {Stack} from '@sanity/ui'
 import {startCase} from 'lodash'
 import React, {forwardRef, useMemo} from 'react'
-import {Button} from '../../../../../ui'
+import {Button} from '../../../../../ui-components'
 import {Tool} from '../../../../config'
 import {ToolLink, ToolLinkProps} from './ToolLink'
 import {getToolButtonWrapperElement} from './getToolButtonWrapperElement'

@@ -1,6 +1,6 @@
 import {Flex, Card} from '@sanity/ui'
 import styled, {css} from 'styled-components'
-import {Dialog, Popover} from '../../../../../ui'
+import {Dialog, Popover} from '../../../../../ui-components'
 
 export const StyledPopover = styled(Popover)(() => {
   return css`

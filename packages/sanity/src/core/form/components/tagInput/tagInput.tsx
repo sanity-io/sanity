@@ -3,7 +3,7 @@ import {Box, Card, Flex, isHTMLElement, rem, Text, Theme, useForwardedRef} from 
 import React, {forwardRef, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import styled, {css} from 'styled-components'
 import type {CSSObject} from 'styled-components'
-import {Button} from '../../../../ui'
+import {Button} from '../../../../ui-components'
 import {focusRingBorderStyle, focusRingStyle} from './styles'
 
 const Root = styled(Card)((props: {theme: Theme}): CSSObject => {

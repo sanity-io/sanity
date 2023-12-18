@@ -7,7 +7,7 @@ import {
   usePortableTextEditor,
 } from '@sanity/portable-text-editor'
 import {isEqual} from '@sanity/util/paths'
-import {Tooltip} from '../../../../../ui'
+import {Tooltip} from '../../../../../ui-components'
 import {
   BlockProps,
   RenderAnnotationCallback,

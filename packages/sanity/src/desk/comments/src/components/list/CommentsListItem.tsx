@@ -15,7 +15,7 @@ import {
 import {SpacerAvatar} from '../avatars'
 import {hasCommentMessageValue} from '../../helpers'
 import {CommentsSelectedPath} from '../../context'
-import {Button} from '../../../../../ui'
+import {Button} from '../../../../../ui-components'
 import {CommentsListItemLayout} from './CommentsListItemLayout'
 import {ThreadCard} from './styles'
 

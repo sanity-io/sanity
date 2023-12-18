@@ -3,7 +3,7 @@
 import {CloseIcon} from '@sanity/icons'
 import {Box, Flex, Text, useClickOutside, useGlobalKeyDown} from '@sanity/ui'
 import React, {useCallback, useEffect, useRef, useState} from 'react'
-import {Button, PopoverProps} from '../../../../../../ui'
+import {Button, PopoverProps} from '../../../../../../ui-components'
 import {PresenceOverlay} from '../../../../../presence'
 import {PortableTextEditorElement} from '../../Compositor'
 import {VirtualizerScrollInstanceProvider} from '../../../arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'

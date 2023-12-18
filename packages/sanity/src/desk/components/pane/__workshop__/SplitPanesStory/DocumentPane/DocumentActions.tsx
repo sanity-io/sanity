@@ -1,7 +1,7 @@
 import {PublishIcon} from '@sanity/icons'
 import {Flex, Menu, Stack, useToast} from '@sanity/ui'
 import React, {useCallback} from 'react'
-import {Button, MenuButton, MenuButtonProps, MenuItem} from '../../../../../../ui'
+import {Button, MenuButton, MenuButtonProps, MenuItem} from '../../../../../../ui-components'
 import {ContextMenuButton} from 'sanity'
 
 const MENU_BUTTON_POPOVER_PROPS: MenuButtonProps['popover'] = {

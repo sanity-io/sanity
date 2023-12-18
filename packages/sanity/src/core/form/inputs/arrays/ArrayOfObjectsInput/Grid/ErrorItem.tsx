@@ -6,7 +6,7 @@ import {ArrayItemError} from '../../../../store'
 import {useFormCallbacks} from '../../../../studio/contexts/FormCallbacks'
 import {PatchEvent, unset} from '../../../../patch'
 import {CellLayout} from '../../layouts/CellLayout'
-import {MenuButton, MenuItem} from '../../../../../../ui'
+import {MenuButton, MenuItem} from '../../../../../../ui-components'
 import {useTranslation} from '../../../../../i18n'
 import {IncompatibleItemType} from './IncompatibleItemType'
 

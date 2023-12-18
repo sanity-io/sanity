@@ -1,7 +1,7 @@
 import {ArrowLeftIcon} from '@sanity/icons'
 import React from 'react'
 import {BackLink, PaneHeader, PaneHeaderActions, usePane} from '../../components'
-import {Button} from '../../../ui'
+import {Button} from '../../../ui-components'
 import {PaneMenuItem, PaneMenuItemGroup} from '../../types'
 import {useDeskTool} from '../../useDeskTool'
 

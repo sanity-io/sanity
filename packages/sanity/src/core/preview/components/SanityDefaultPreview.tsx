@@ -14,7 +14,7 @@ import React, {
 import {isValidElementType} from 'react-is'
 import {SanityImageSource} from '@sanity/image-url/lib/types/types'
 import {isImageSource} from '@sanity/asset-utils'
-import {Tooltip} from '../../../ui'
+import {Tooltip} from '../../../ui-components'
 import {PreviewProps} from '../../components/previews'
 import {useClient} from '../../hooks'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'

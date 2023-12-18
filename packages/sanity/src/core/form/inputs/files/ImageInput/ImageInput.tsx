@@ -17,7 +17,7 @@ import {
 import React, {ReactNode} from 'react'
 import {SanityClient} from '@sanity/client'
 import {isImageSource} from '@sanity/asset-utils'
-import {Button, Dialog, MenuButton, MenuButtonProps, MenuItem} from '../../../../../ui'
+import {Button, Dialog, MenuButton, MenuButtonProps, MenuItem} from '../../../../../ui-components'
 import {PatchEvent, setIfMissing, unset} from '../../../patch'
 import {FieldMember} from '../../../store'
 import {InputProps, ObjectInputProps} from '../../../types'

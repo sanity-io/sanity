@@ -3,7 +3,7 @@ import {Placement, useClickOutside, useGlobalKeyDown, useToast} from '@sanity/ui
 import React, {useCallback, useState} from 'react'
 import styled from 'styled-components'
 import {useDocumentPane} from '../useDocumentPane'
-import {Button, Popover} from '../../../../ui'
+import {Button, Popover} from '../../../../ui-components'
 import {TimelineError} from './TimelineError'
 import {Timeline} from './timeline'
 import {TIMELINE_ITEM_I18N_KEY_MAPPING} from './timelineI18n'

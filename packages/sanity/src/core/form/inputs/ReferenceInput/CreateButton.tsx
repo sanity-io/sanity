@@ -3,7 +3,13 @@ import {AddIcon} from '@sanity/icons'
 import {Menu} from '@sanity/ui'
 import {useGetI18nText, useTranslation} from '../../../i18n'
 import {InsufficientPermissionsMessage} from '../../../components'
-import {Button, MenuButton, type MenuButtonProps, MenuItem, Tooltip} from '../../../../ui'
+import {
+  Button,
+  MenuButton,
+  type MenuButtonProps,
+  MenuItem,
+  Tooltip,
+} from '../../../../ui-components'
 import {useCurrentUser} from '../../../store'
 import type {CreateReferenceOption} from './types'
 

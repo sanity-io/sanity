@@ -6,7 +6,7 @@ import {CollapseTabList} from '../../../../components/collapseTabList/CollapseTa
 import {useRovingFocus} from '../../../../components'
 import {useColorScheme} from '../../../colorScheme'
 import {Tool} from '../../../../config'
-import {Button} from '../../../../../ui'
+import {Button} from '../../../../../ui-components'
 import {ToolLink, ToolLinkProps} from './ToolLink'
 import {getToolButtonWrapperElement} from './getToolButtonWrapperElement'
 

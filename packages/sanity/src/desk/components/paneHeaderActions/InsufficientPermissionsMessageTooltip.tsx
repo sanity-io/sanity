@@ -1,5 +1,5 @@
 import React from 'react'
-import {Tooltip} from '../../../ui'
+import {Tooltip} from '../../../ui-components'
 import {structureLocaleNamespace} from '../../i18n'
 import {useCurrentUser, InsufficientPermissionsMessage, useTranslation} from 'sanity'
 

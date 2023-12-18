@@ -10,7 +10,7 @@ import {BoltIcon} from '@sanity/icons'
 import {purple, yellow} from '@sanity/color'
 import {useTranslation} from 'react-i18next'
 import {forwardRef} from 'react'
-import {Button} from '../../../../../ui'
+import {Button} from '../../../../../ui-components'
 
 const StyledButton = styled(UIButton)`
   padding: 2px;

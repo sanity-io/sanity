@@ -2,7 +2,7 @@
 import {SchemaType} from '@sanity/types'
 import React, {ComponentProps, memo} from 'react'
 import {InsertAboveIcon, InsertBelowIcon} from '@sanity/icons'
-import {MenuGroup, MenuItem, PopoverProps} from '../../../../../ui'
+import {MenuGroup, MenuItem, PopoverProps} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
 
 interface Props {

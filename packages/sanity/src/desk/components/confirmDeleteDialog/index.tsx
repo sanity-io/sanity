@@ -1,6 +1,6 @@
 import React, {useCallback, useState, useId} from 'react'
 import {Box, ErrorBoundary, Text} from '@sanity/ui'
-import {Dialog} from '../../../ui'
+import {Dialog} from '../../../ui-components'
 import {structureLocaleNamespace} from '../../i18n'
 import {ConfirmDeleteDialog, ConfirmDeleteDialogProps} from './ConfirmDeleteDialog'
 import {useTranslation} from 'sanity'

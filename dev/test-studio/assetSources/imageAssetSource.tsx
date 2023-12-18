@@ -1,10 +1,10 @@
 import {ImagesIcon} from '@sanity/icons'
 import {AssetSource, AssetSourceComponentProps} from '@sanity/types'
-import {Text} from '@sanity/ui'
-import {Dialog} from '../../../packages/sanity/src/ui'
+import {Box, Dialog, Text} from '@sanity/ui'
+import React from 'react'
 
 function ImageAssetSource(props: AssetSourceComponentProps) {
-  const {dialogHeaderTitle, onClose} = props
+  const {dialogHeaderTitle, onClose, ...restProps} = props
 
   return (
     <Dialog
@@ -13,9 +13,11 @@ function ImageAssetSource(props: AssetSourceComponentProps) {
       onClose={onClose}
       width={1}
     >
-      <Text muted size={1} weight="medium">
-        (custom image asset source)
-      </Text>
+      <Box padding={4}>
+        <Text muted size={1} weight="medium">
+          (custom image asset source)
+        </Text>
+      </Box>
     </Dialog>
   )
 }
