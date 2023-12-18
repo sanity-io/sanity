@@ -1,6 +1,7 @@
 import {uniqueId} from 'lodash'
 import type {SchemaType} from '@sanity/types'
 import {isValidElementType} from 'react-is'
+import {structureLocaleNamespace} from '../i18n'
 import {ListBuilder} from './List'
 import {
   getDocumentTypeListItems,
@@ -48,6 +49,7 @@ function getDefaultStructure(context: StructureContext): ListBuilder {
   return new ListBuilder(context)
     .id('__root__')
     .title('Content')
+    .i18n({title: {key: 'default-definition.content-title', ns: structureLocaleNamespace}})
     .items(items)
     .showIcons(items.some((item) => hasIcon(item.getSchemaType())))
 }
