@@ -217,6 +217,9 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The text for the confirm button in the confirm dialog used in document action shortcuts if none is provided */
   'confirm-dialog.confirm-button.fallback-text': 'Confirm',
 
+  /** For the default structure definition, the title for the "Content" pane */
+  'default-definition.content-title': 'Content',
+
   /** The text shown if there was an error while getting the document's title via a preview value */
   'doc-title.error.text': 'Error: {{errorMessage}}',
   /** The text shown if the preview value for a document is non-existent or empty */

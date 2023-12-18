@@ -16,8 +16,8 @@ const enUS = defineLocaleResourceBundle({
   resources: enUSStrings,
 })
 
-const noNB = defineLocaleResourceBundle({
-  locale: 'no-NB',
+const nbNO = defineLocaleResourceBundle({
+  locale: 'nb-NO',
   namespace: testStudioLocaleNamespace,
   resources: {
     'studio.logo.title': 'Norsk logo',
@@ -28,6 +28,14 @@ const noNB = defineLocaleResourceBundle({
   },
 })
 
+const nbNOBStructureOverrides = defineLocaleResourceBundle({
+  locale: 'nb-NO',
+  namespace: 'structure',
+  resources: {
+    'default-definition.content-title': 'Innhold 🇳🇴',
+  },
+})
+
 export type TestStudioLocaleResourceKeys = keyof typeof enUSStrings
 
-export const testStudioLocaleBundles = [enUS, noNB]
+export const testStudioLocaleBundles = [enUS, nbNO, nbNOBStructureOverrides]
