@@ -1,8 +1,7 @@
 /* eslint-disable @sanity/i18n/no-attribute-string-literals */
 /* eslint-disable i18next/no-literal-string */
 import React, {useCallback, useState} from 'react'
-import {CheckmarkIcon, LaunchIcon} from '@sanity/icons'
-import {Flex, Grid, Stack, Text} from '@sanity/ui'
+import {Flex, Heading, Stack, Text} from '@sanity/ui'
 import {generateHelpUrl} from '@sanity/generate-help-url'
 import {Button, Popover} from '../../ui-components'
 import {useDeskRenameOnboarding} from './onboardingStore'
@@ -61,9 +60,7 @@ function DeskRenamedCard(props: {onDismiss: () => void}) {
     <Stack as="section" padding={3} space={3} onClick={handleClick}>
       <Stack padding={2} space={4}>
         <Flex gap={2} align="center">
-          <Text as="h1" size={1} weight="semibold">
-            <strong>Desk</strong> is now <strong>Structure</strong>
-          </Text>
+          <Heading size={1}>Desk is now structure</Heading>
         </Flex>
 
         <Stack space={3}>
@@ -74,19 +71,18 @@ function DeskRenamedCard(props: {onDismiss: () => void}) {
         </Stack>
       </Stack>
 
-      <Grid columns={2} gap={3}>
+      <Flex width="full" gap={3} justify="flex-end">
         <Button
           as="a"
           data-as="a"
           href={RENAME_ANNOUNCEMENT_URL}
-          icon={LaunchIcon}
           target="_blank"
           rel="noreferrer"
           text="Learn more"
-          mode="ghost"
+          mode="bleed"
         />
-        <Button icon={CheckmarkIcon} onClick={props.onDismiss} text="Got it" tone="primary" />
-      </Grid>
+        <Button onClick={props.onDismiss} text="Got it" tone="primary" />
+      </Flex>
     </Stack>
   )
 }
