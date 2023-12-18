@@ -17,8 +17,9 @@ import {exhaustMapWithTrailing} from 'rxjs-exhaustmap-with-trailing'
 import {SortOrder} from './types'
 import {
   createSearchQuery,
+  getSearchableTypes,
+  getSearchTypesWithMaxDepth,
   Schema,
-  SearchableType,
   SearchOptions,
   SearchTerms,
   WeightedSearchOptions,
@@ -33,10 +34,12 @@ interface ListenQueryOptions {
   searchQuery: string
   sort: SortOrder
   staticTypeNames?: string[]
+  maxFieldDepth?: number
 }
 
 export function listenSearchQuery(options: ListenQueryOptions): Observable<SanityDocument[]> {
-  const {client, schema, sort, limit, params, filter, searchQuery, staticTypeNames} = options
+  const {client, schema, sort, limit, params, filter, searchQuery, staticTypeNames, maxFieldDepth} =
+    options
   const sortBy = sort.by
   const extendedProjection = sort?.extendedProjection
 
@@ -85,7 +88,12 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Sanit
       // Use the type names to create a search query and fetch the documents that match the query.
       return typeNames$.pipe(
         mergeMap((typeNames: string[]) => {
-          const types = typeNames.flatMap((name) => schema.get(name) || []) as SearchableType[]
+          const types = getSearchTypesWithMaxDepth(
+            getSearchableTypes(schema).filter((type) => {
+              return typeNames.includes(type.name)
+            }),
+            maxFieldDepth,
+          )
 
           const searchTerms: SearchTerms = {
             filter,

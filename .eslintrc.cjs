@@ -111,7 +111,7 @@ const config = {
           },
           {
             from: 'sanity/desk__contents',
-            allow: ['sanity', 'sanity/desk__contents', 'sanity/router'],
+            allow: ['sanity', 'sanity/desk__contents', 'sanity/router', 'sanity/_internal'],
           },
           {
             // export
