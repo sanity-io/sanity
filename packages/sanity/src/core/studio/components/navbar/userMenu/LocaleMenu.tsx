@@ -3,9 +3,15 @@ import React, {useCallback} from 'react'
 import {useTranslation} from '../../../../i18n'
 import {useLocale} from '../../../../i18n/hooks/useLocale'
 
+const LOCALE_SELECTION_DISABLED = true
+
 export function LocaleMenu() {
   const {changeLocale, currentLocale, locales} = useLocale()
   const {t} = useTranslation()
+
+  if (LOCALE_SELECTION_DISABLED) {
+    return null
+  }
 
   if (!locales || locales.length < 2) {
     return null

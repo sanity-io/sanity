@@ -49,6 +49,8 @@ import {routerDebugTool} from './plugins/router-debug'
 import {StegaDebugger} from './schema/debug/components/DebugStega'
 import {testStudioLocaleBundles} from './locales'
 
+const localePlugins = [koKRLocale(), nbNOLocale(), nnNOLocale(), ptPTLocale(), svSELocale()]
+
 const sharedSettings = definePlugin({
   name: 'sharedSettings',
   schema: {
@@ -93,11 +95,7 @@ const sharedSettings = definePlugin({
     },
   },
   plugins: [
-    koKRLocale(),
-    nbNOLocale(),
-    nnNOLocale(),
-    ptPTLocale(),
-    svSELocale(),
+    // ...localePlugins,
     deskTool({
       icon: BookIcon,
       structure,

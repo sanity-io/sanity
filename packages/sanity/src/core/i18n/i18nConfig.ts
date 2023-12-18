@@ -167,7 +167,8 @@ function getI18NextOptions(
 ): InitOptions & {lng: string} {
   const preferredLocaleId = getPreferredLocale(projectId, sourceName)
   const preferredLocale = locales.find((l) => l.id === preferredLocaleId)
-  const locale = preferredLocale?.id ?? locales[0]?.id ?? defaultOptions.lng
+  const lastLocale = locales[locales.length - 1]
+  const locale = preferredLocale?.id ?? lastLocale.id ?? defaultOptions.lng
   return {
     ...defaultOptions,
     lng: locale,
