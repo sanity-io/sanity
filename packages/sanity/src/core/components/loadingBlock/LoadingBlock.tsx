@@ -1,8 +1,7 @@
-/* eslint-disable no-restricted-imports */
-import {Card, Layer, Spinner, Text} from '@sanity/ui'
 import React from 'react'
+import {Card, Layer, Spinner, Text} from '@sanity/ui'
 import styled, {css} from 'styled-components'
-import {useTranslation} from '../../core'
+import {useTranslation} from '../..'
 
 // Enable to force debug background
 const DEBUG_MODE = false

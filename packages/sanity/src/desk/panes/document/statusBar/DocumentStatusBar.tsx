@@ -1,6 +1,6 @@
 import React, {useCallback, useState} from 'react'
 import {Flex} from '@sanity/ui'
-import {SpacerButton} from '../../../../ui/spacerButton'
+import {SpacerButton} from '../../../components/spacerButton'
 import {useDocumentPane} from '../useDocumentPane'
 import {DocumentStatusBarActions, HistoryStatusBarActions} from './DocumentStatusBarActions'
 import {useResizeObserver} from './useResizeObserver'

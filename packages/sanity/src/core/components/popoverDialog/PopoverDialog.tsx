@@ -3,7 +3,7 @@ import {Box, Flex, Layer, ResponsiveWidthProps, Stack, Text, Theme} from '@sanit
 import React, {useCallback} from 'react'
 import styled, {css} from 'styled-components'
 import TrapFocus from 'react-focus-lock'
-import {Button, Popover, PopoverProps} from '../../../ui'
+import {Button, Popover, PopoverProps} from '../../../ui-components'
 import {PopoverContainer} from './PopoverContainer'
 
 const StyledPopover = styled(Popover)(() => {

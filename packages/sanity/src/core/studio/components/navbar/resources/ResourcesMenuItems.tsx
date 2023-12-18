@@ -1,8 +1,8 @@
 import {Box, MenuDivider, Text} from '@sanity/ui'
 import React from 'react'
 import {SANITY_VERSION} from '../../../../version'
-import {MenuItem} from '../../../../../ui'
-import {LoadingBlock} from '../../../../../ui/loadingBlock'
+import {MenuItem} from '../../../../../ui-components'
+import {LoadingBlock} from '../../../../components/loadingBlock'
 import {useTranslation} from '../../../../i18n'
 import {ResourcesResponse, Section} from './helper-functions/types'
 

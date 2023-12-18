@@ -3,11 +3,10 @@ import React, {memo, useMemo, useState, useEffect} from 'react'
 import {Observable} from 'rxjs'
 import styled from 'styled-components'
 import {structureLocaleNamespace} from '../../i18n'
-import {LoadingBlock} from '../../../ui/loadingBlock'
 import {Delay} from '../../components/Delay'
 import {Pane, PaneContent} from '../../components/pane'
 import {WaitMessage, getWaitMessages} from './getWaitMessages'
-import {useTranslation} from 'sanity'
+import {LoadingBlock, useTranslation} from 'sanity'
 
 interface LoadingPaneProps {
   delay?: number

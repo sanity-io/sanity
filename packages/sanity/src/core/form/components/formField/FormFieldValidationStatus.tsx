@@ -4,7 +4,7 @@ import {Box, Flex, Placement, Stack, Text} from '@sanity/ui'
 import styled from 'styled-components'
 import {useTranslation} from '../../../i18n'
 import {useListFormat} from '../../../hooks'
-import {Tooltip} from '../../../../ui'
+import {Tooltip} from '../../../../ui-components'
 
 /** @internal */
 export interface FormFieldValidationStatusProps {

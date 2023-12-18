@@ -5,7 +5,7 @@ import styled from 'styled-components'
 import {observeImageAsset} from '../../../../../../../../../../form/studio/inputs/client-adapters/assets'
 import {WithReferencedAsset} from '../../../../../../../../../../form/utils/WithReferencedAsset'
 import {useDocumentPreviewStore} from '../../../../../../../../../../store'
-import {LoadingBlock} from '../../../../../../../../../../../ui/loadingBlock'
+import {LoadingBlock} from '../../../../../../../../../../components/loadingBlock'
 
 interface ImageReferencePreviewProps {
   reference: ReferenceValue

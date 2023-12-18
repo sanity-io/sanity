@@ -10,9 +10,9 @@ import {useDidUpdate} from '../../../hooks/useDidUpdate'
 import {ChangeIndicator} from '../../../../changeIndicators'
 import {EMPTY_ARRAY} from '../../../../util'
 import {useTranslation} from '../../../../i18n'
+import {LoadingBlock} from '../../../../components/loadingBlock'
 import {ImageTool, HotspotImage, DEFAULT_CROP, DEFAULT_HOTSPOT} from './imagetool'
 import {useLoadImage} from './useLoadImage'
-import {LoadingBlock} from '../../../../../ui/loadingBlock'
 
 export interface ImageToolInputProps
   extends Omit<ObjectInputProps<Image, ImageSchemaType>, 'markers' | 'renderDefault'> {

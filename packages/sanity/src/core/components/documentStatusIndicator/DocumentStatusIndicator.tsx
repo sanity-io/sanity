@@ -4,7 +4,7 @@ import {Text} from '@sanity/ui'
 import {useMemo} from 'react'
 import styled, {css} from 'styled-components'
 
-export interface DocumentStatusProps {
+interface DocumentStatusProps {
   draft?: PreviewValue | Partial<SanityDocument> | null
   hidePublishedStatus?: boolean
   published?: PreviewValue | Partial<SanityDocument> | null

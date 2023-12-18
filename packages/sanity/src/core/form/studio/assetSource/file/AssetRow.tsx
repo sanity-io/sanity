@@ -14,7 +14,7 @@ import {
 } from '@sanity/ui'
 import {ChevronDownIcon, ChevronUpIcon, DocumentIcon, LinkIcon, TrashIcon} from '@sanity/icons'
 import {Asset as AssetType} from '@sanity/types'
-import {Tooltip} from '../../../../../ui'
+import {Tooltip} from '../../../../../ui-components'
 import {useClient, useRelativeTime, useUnitFormatter} from '../../../../hooks'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
 import {AssetDeleteDialog} from '../shared/AssetDeleteDialog'

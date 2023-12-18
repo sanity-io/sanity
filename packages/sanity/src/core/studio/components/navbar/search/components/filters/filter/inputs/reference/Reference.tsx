@@ -1,7 +1,7 @@
 import {isArraySchemaType, isReferenceSchemaType, ReferenceValue} from '@sanity/types'
 import {Box, Card, Stack} from '@sanity/ui'
 import React, {useCallback, useMemo} from 'react'
-import {Button} from '../../../../../../../../../../ui'
+import {Button} from '../../../../../../../../../../ui-components'
 import {useSchema} from '../../../../../../../../../hooks'
 import {SearchableType} from '../../../../../../../../../search'
 import {useSearchState} from '../../../../../contexts/search/useSearchState'

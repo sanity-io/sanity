@@ -1,6 +1,6 @@
 import {Stack, Text} from '@sanity/ui'
 import React from 'react'
-import {Button} from '../../../../ui'
+import {Button} from '../../../../ui-components'
 import {Translate, useTranslation} from '../../../i18n'
 import {AlertStrip} from '../../components/AlertStrip'
 

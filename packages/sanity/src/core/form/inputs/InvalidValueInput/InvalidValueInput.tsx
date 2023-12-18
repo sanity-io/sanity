@@ -6,7 +6,7 @@ import {PatchEvent, set, unset} from '../../patch'
 import {Alert} from '../../components/Alert'
 import {Details} from '../../components/Details'
 import {isDev} from '../../../environment'
-import {Button} from '../../../../ui'
+import {Button} from '../../../../ui-components'
 import {converters as CONVERTERS, ValueConverter} from './converters'
 import {UntypedValueInput} from './UntypedValueInput'
 

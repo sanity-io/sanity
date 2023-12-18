@@ -2,10 +2,15 @@ import React from 'react'
 import {CheckmarkCircleIcon, UndoIcon, EditIcon, TrashIcon, LinkIcon} from '@sanity/icons'
 import {Card, Flex, Menu, MenuDivider, TooltipDelayGroupProvider} from '@sanity/ui'
 import styled from 'styled-components'
-import {Button, MenuButton, MenuButtonProps, MenuItem} from '../../../../../ui'
+import {
+  Button,
+  MenuButton,
+  MenuButtonProps,
+  MenuItem,
+  TOOLTIP_DELAY_PROPS,
+} from '../../../../../ui-components'
 import {CommentStatus} from '../../types'
-import {TOOLTIP_DELAY_PROPS} from '../../../../../ui/tooltip/constants'
-import {ContextMenuButton} from '../../../../../ui/contextMenuButton'
+import {ContextMenuButton} from 'sanity'
 
 const POPOVER_PROPS: MenuButtonProps['popover'] = {
   placement: 'bottom-end',

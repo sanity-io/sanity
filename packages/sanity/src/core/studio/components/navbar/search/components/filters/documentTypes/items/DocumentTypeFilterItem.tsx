@@ -3,7 +3,7 @@ import {Box, ResponsiveMarginProps, ResponsivePaddingProps} from '@sanity/ui'
 import React, {useCallback} from 'react'
 import type {SearchableType} from '../../../../../../../../search'
 import {useSearchState} from '../../../../contexts/search/useSearchState'
-import {Button} from '../../../../../../../../../ui'
+import {Button} from '../../../../../../../../../ui-components'
 
 interface DocumentTypeFilterItemProps extends ResponsiveMarginProps, ResponsivePaddingProps {
   selected: boolean
