@@ -148,6 +148,14 @@ export default defineConfig([
     icon: SanityMonogram,
   },
   {
+    name: 'partialIndexing',
+    title: 'Partial Indexing',
+    projectId: 'ppsg7ml5',
+    dataset: 'partial-indexing-2',
+    plugins: [sharedSettings()],
+    basePath: '/partial-indexing',
+  },
+  {
     name: 'tsdoc',
     title: 'tsdoc',
     projectId: 'ppsg7ml5',
