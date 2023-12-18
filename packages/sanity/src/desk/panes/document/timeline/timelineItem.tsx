@@ -1,12 +1,13 @@
 import React, {useCallback, createElement, useMemo} from 'react'
 
 import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
+import {ButtonProps} from 'sanity/ui-components'
+
 import {getTimelineEventIconComponent} from './helpers'
 import {UserAvatarStack} from './userAvatarStack'
 import {IconBox, IconWrapper, Root, TimestampBox} from './timelineItem.styled'
 import {TIMELINE_ITEM_I18N_KEY_MAPPING} from './timelineI18n'
 import {type ChunkType, type Chunk, useTranslation, useDateTimeFormat} from 'sanity'
-import {ButtonProps} from 'sanity/_internal-ui-components'
 
 const TIMELINE_ITEM_EVENT_TONE: Record<ChunkType | 'withinSelection', ButtonProps['tone']> = {
   initial: 'primary',

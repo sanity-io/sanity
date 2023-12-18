@@ -1,7 +1,7 @@
 import React, {useId} from 'react'
+import {Dialog} from 'sanity/ui-components'
 import {DIALOG_WIDTH_TO_UI_WIDTH} from './constants'
 import {DocumentActionModalDialogProps, LegacyLayerProvider} from 'sanity'
-import {Dialog} from 'sanity/_internal-ui-components'
 
 export function ModalDialog(props: {dialog: DocumentActionModalDialogProps}) {
   const {dialog} = props

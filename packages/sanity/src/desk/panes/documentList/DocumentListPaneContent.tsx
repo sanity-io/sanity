@@ -3,6 +3,7 @@ import {Box, Container, Flex, Heading, Stack, Text} from '@sanity/ui'
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import {SanityDocument} from '@sanity/types'
 import styled from 'styled-components'
+import {Button} from 'sanity/ui-components'
 import {Delay, PaneContent, usePane, usePaneLayout, PaneItem} from '../../components'
 import {structureLocaleNamespace} from '../../i18n'
 import {DocumentListPaneItem, LoadingVariant} from './types'
@@ -18,7 +19,6 @@ import {
   Translate,
   LoadingBlock,
 } from 'sanity'
-import {Button} from 'sanity/_internal-ui-components'
 
 const RootBox = styled(Box)`
   position: relative;

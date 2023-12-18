@@ -2,6 +2,7 @@ import {SanityDocument} from '@sanity/types'
 import {Card, Code, Flex, TabList, TabPanel} from '@sanity/ui'
 import React, {useCallback} from 'react'
 import JSONInspector from '@rexxars/react-json-inspector'
+import {Dialog, Tab} from 'sanity/ui-components'
 import {DocTitle} from '../../../components'
 import {useDeskToolSetting} from '../../../useDeskToolSetting'
 import {structureLocaleNamespace} from '../../../i18n'
@@ -11,7 +12,6 @@ import {isDocumentLike, isExpanded, maybeSelectAll, select, toggleExpanded} from
 import {JSONInspectorWrapper} from './InspectDialog.styles'
 import {Search} from './Search'
 import {Translate, useTranslation} from 'sanity'
-import {Dialog, Tab} from 'sanity/_internal-ui-components'
 
 interface InspectDialogProps {
   value: Partial<SanityDocument> | null

@@ -1,9 +1,9 @@
 import {Box, Flex, Grid, Text, useClickOutside, useGlobalKeyDown, useLayer} from '@sanity/ui'
 import React, {useCallback, useState} from 'react'
+import {Button, Popover} from 'sanity/ui-components'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {POPOVER_FALLBACK_PLACEMENTS} from './constants'
 import {DocumentActionConfirmDialogProps, useTranslation} from 'sanity'
-import {Button, Popover} from 'sanity/_internal-ui-components'
 
 export function ConfirmDialog(props: {
   dialog: DocumentActionConfirmDialogProps

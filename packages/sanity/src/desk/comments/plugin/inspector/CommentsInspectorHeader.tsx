@@ -3,8 +3,8 @@ import {Card, Flex, Menu, Text} from '@sanity/ui'
 import {startCase} from 'lodash'
 import React, {forwardRef, useCallback} from 'react'
 import styled from 'styled-components'
+import {Button, MenuButton, MenuItem} from 'sanity/ui-components'
 import {CommentStatus} from '../../src'
-import {Button, MenuButton, MenuItem} from 'sanity/_internal-ui-components'
 import {BetaBadge} from 'sanity'
 
 const Root = styled(Card)({

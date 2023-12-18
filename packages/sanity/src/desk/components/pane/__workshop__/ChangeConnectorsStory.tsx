@@ -16,13 +16,13 @@ import {
 import {useAction} from '@sanity/ui-workshop'
 import React, {useCallback, useState} from 'react'
 import styled from 'styled-components'
+import {Button, Dialog} from 'sanity/ui-components'
 import {Pane} from '../Pane'
 import {PaneContent} from '../PaneContent'
 import {PaneFooter} from '../PaneFooter'
 import {PaneHeader} from '../PaneHeader'
 import {PaneLayout} from '../PaneLayout'
 import {ChangeConnectorRoot, ChangeFieldWrapper, ChangeIndicator, ScrollContainer} from 'sanity'
-import {Button, Dialog} from 'sanity/_internal-ui-components'
 
 const TestContainer = styled(Container).attrs({
   height: 'fill',

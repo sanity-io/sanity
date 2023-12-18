@@ -1,6 +1,6 @@
 import {Stack, Text} from '@sanity/ui'
 import React, {useCallback} from 'react'
-import {Dialog} from 'sanity/_internal-ui-components'
+import {Dialog} from 'sanity/ui-components'
 import {TextWithTone} from 'sanity'
 
 const DIALOG_COPY: Record<

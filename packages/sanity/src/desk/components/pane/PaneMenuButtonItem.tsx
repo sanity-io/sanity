@@ -1,11 +1,11 @@
 import {CheckmarkIcon} from '@sanity/icons'
 import {MenuDivider, Text} from '@sanity/ui'
 import React, {useCallback, MouseEvent} from 'react'
+import {MenuGroup, MenuItem, PopoverProps} from 'sanity/ui-components'
 import {Intent} from '../../structureBuilder'
 import {_PaneMenuItem, _PaneMenuNode} from './types'
 import {TooltipOfDisabled, useGetI18nText, useI18nText} from 'sanity'
 import {useIntentLink} from 'sanity/router'
-import {MenuGroup, MenuItem, PopoverProps} from 'sanity/_internal-ui-components'
 
 const MENU_GROUP_POPOVER_PROPS: PopoverProps = {
   constrainSize: true,

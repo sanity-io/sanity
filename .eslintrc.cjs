@@ -262,7 +262,7 @@ const config = {
                   'TooltipProps',
                 ],
                 message:
-                  'Please use the (more opinionated) exported components in sanity/_internal-ui-components instead.',
+                  'Please use the (more opinionated) exported components in sanity/ui-components instead.',
               },
             ],
           },

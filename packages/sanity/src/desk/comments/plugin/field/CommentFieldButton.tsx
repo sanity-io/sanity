@@ -7,6 +7,7 @@ import {
   // eslint-disable-next-line no-restricted-imports
   Button as SanityUIButton, // Button with specific styling for the children
 } from '@sanity/ui'
+import {Button, Popover, Tooltip} from 'sanity/ui-components'
 import styled from 'styled-components'
 import {
   CommentMessage,
@@ -17,7 +18,6 @@ import {
   CommentIcon,
   MentionOptionsHookValue,
 } from '../../src'
-import {Button, Popover, Tooltip} from 'sanity/_internal-ui-components'
 import {CurrentUser, PortableTextBlock} from 'sanity'
 
 const ContentStack = styled(Stack)`

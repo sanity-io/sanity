@@ -44,16 +44,16 @@
       "import": "./lib/_internal.esm.js",
       "default": "./lib/_internal.esm.js"
     },
-    "./_internal-ui-components": {
-      "types": "./lib/exports/_internal-ui-components.d.ts",
-      "source": "./exports/_internal-ui-components.ts",
-      "require": "./lib/_internal-ui-components.js",
+    "./ui-components": {
+      "types": "./lib/exports/ui-components.d.ts",
+      "source": "./exports/ui-components.ts",
+      "require": "./lib/ui-components.js",
       "node": {
-        "module": "./lib/_internal-ui-components.esm.js",
-        "import": "./lib/_internal-ui-components.cjs.mjs"
+        "module": "./lib/ui-components.esm.js",
+        "import": "./lib/ui-components.cjs.mjs"
       },
-      "import": "./lib/_internal-ui-components.esm.js",
-      "default": "./lib/_internal-ui-components.esm.js"
+      "import": "./lib/ui-components.esm.js",
+      "default": "./lib/ui-components.esm.js"
     },
     "./cli": {
       "types": "./lib/exports/cli.d.ts",
@@ -110,9 +110,6 @@
       "_internal": [
         "./lib/exports/_internal.d.ts"
       ],
-      "_internal-ui-components": [
-        "./lib/exports/_internal-ui-components.d.ts"
-      ],
       "cli": [
         "./lib/exports/cli.d.ts"
       ],
@@ -121,6 +118,9 @@
       ],
       "presentation": [
         "./lib/exports/presentation.d.ts"
+      ],
+      "ui-components": [
+        "./lib/exports/ui-components.d.ts"
       ],
       "router": [
         "./lib/exports/router.d.ts"

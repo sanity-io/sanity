@@ -1,12 +1,12 @@
 import {ArrowLeftIcon, RestoreIcon} from '@sanity/icons'
 import {Box, Flex, Text, Stack, Container} from '@sanity/ui'
 import React from 'react'
+import {Button} from 'sanity/ui-components'
 import {PaneContent} from '../../../PaneContent'
 import {PaneFooter} from '../../../PaneFooter'
 import {PaneHeader} from '../../../PaneHeader'
 import {usePaneLayout} from '../../../usePaneLayout'
 import {DocumentActions} from './DocumentActions'
-import {Button} from 'sanity/_internal-ui-components'
 
 export function DocumentViewPanel(props: {
   onBackClick: () => void

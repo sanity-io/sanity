@@ -1,6 +1,6 @@
 import {DialogProvider, Text, ThemeColorProvider} from '@sanity/ui'
 import React, {useCallback} from 'react'
-import {Dialog} from 'sanity/_internal-ui-components'
+import {Dialog} from 'sanity/ui-components'
 
 const Z_OFFSET = 9999999 // Change to appropriate z-offset
 

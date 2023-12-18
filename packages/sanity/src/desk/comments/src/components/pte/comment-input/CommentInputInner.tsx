@@ -2,12 +2,12 @@ import React, {useCallback} from 'react'
 import {Flex, MenuDivider, Box, Card, Stack, TooltipDelayGroupProvider} from '@sanity/ui'
 import styled, {css} from 'styled-components'
 import {CurrentUser} from '@sanity/types'
+import {Button, TOOLTIP_DELAY_PROPS} from 'sanity/ui-components'
 import {MentionIcon, SendIcon} from '../../icons'
 import {CommentsAvatar} from '../../avatars/CommentsAvatar'
 import {useCommentInput} from './useCommentInput'
 import {Editable} from './Editable'
 import {useUser} from 'sanity'
-import {Button, TOOLTIP_DELAY_PROPS} from 'sanity/_internal-ui-components'
 
 const EditableWrap = styled(Box)`
   max-height: 20vh;
