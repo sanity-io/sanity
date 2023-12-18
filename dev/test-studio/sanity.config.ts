@@ -154,6 +154,11 @@ export default defineConfig([
     dataset: 'partial-indexing-2',
     plugins: [sharedSettings()],
     basePath: '/partial-indexing',
+    search: {
+      unstable_partialIndexing: {
+        enabled: true,
+      },
+    },
   },
   {
     name: 'tsdoc',
