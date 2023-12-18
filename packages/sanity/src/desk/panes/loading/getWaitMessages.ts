@@ -1,14 +1,19 @@
-import {Observable, of, merge} from 'rxjs'
+import {type Observable, of, merge} from 'rxjs'
 import {mapTo, delay} from 'rxjs/operators'
 import {isDev} from 'sanity'
 
 /**
  * @internal
  */
-export function getWaitMessages(path: string[]): Observable<string> {
-  const thresholds = [
-    {ms: 300, message: 'Loading…'},
-    {ms: 5000, message: 'Still loading…'},
+export type WaitMessage = {messageKey: string} | {message: string}
+
+/**
+ * @internal
+ */
+export function getWaitMessages(path: string[]): Observable<WaitMessage> {
+  const thresholds: (WaitMessage & {ms: number})[] = [
+    {ms: 300, messageKey: 'panes.resolving.default-message'},
+    {ms: 5000, messageKey: 'panes.resolving.slow-resolve-message'},
   ]
 
   if (isDev) {
@@ -26,5 +31,16 @@ export function getWaitMessages(path: string[]): Observable<string> {
 
   const src = of(null)
 
-  return merge(...thresholds.map(({ms, message}) => src.pipe(mapTo(message), delay(ms))))
+  return merge(
+    ...thresholds.map((threshold) =>
+      src.pipe(
+        mapTo(
+          'messageKey' in threshold
+            ? {messageKey: threshold.messageKey}
+            : {message: threshold.message},
+        ),
+        delay(threshold.ms),
+      ),
+    ),
+  )
 }

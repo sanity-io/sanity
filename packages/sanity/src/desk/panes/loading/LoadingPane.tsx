@@ -1,15 +1,17 @@
-import {Box, CardTone, Flex, Spinner, Text, _raf2} from '@sanity/ui'
+import {Box, type CardTone, Flex, Spinner, Text, _raf2} from '@sanity/ui'
 import React, {memo, useMemo, useState, useEffect} from 'react'
 import {Observable} from 'rxjs'
 import styled from 'styled-components'
+import {structureLocaleNamespace} from '../../i18n'
 import {Delay} from '../../components/Delay'
 import {Pane, PaneContent} from '../../components/pane'
-import {getWaitMessages} from './getWaitMessages'
+import {WaitMessage, getWaitMessages} from './getWaitMessages'
+import {useTranslation} from 'sanity'
 
 interface LoadingPaneProps {
   delay?: number
   flex?: number
-  message?: string | ((p: string[]) => string | Observable<string>)
+  message?: string | ((p: string[]) => string | Observable<WaitMessage>)
   minWidth?: number
   paneKey: string
   path?: string
@@ -19,7 +21,7 @@ interface LoadingPaneProps {
 }
 
 const DELAY = false
-const DEFAULT_MESSAGE = 'Loading…'
+const DEFAULT_MESSAGE_KEY = 'panes.resolving.default-message'
 
 const Content = styled(Flex)`
   opacity: 0;
@@ -46,6 +48,8 @@ export const LoadingPane = memo((props: LoadingPaneProps) => {
     tone,
   } = props
 
+  const {t} = useTranslation(structureLocaleNamespace)
+
   const resolvedMessage = useMemo(() => {
     if (typeof messageProp === 'function') {
       return messageProp(path ? path.split(';') : [])
@@ -56,17 +60,19 @@ export const LoadingPane = memo((props: LoadingPaneProps) => {
 
   const [currentMessage, setCurrentMessage] = useState<string | null>(() => {
     if (typeof resolvedMessage === 'string') return resolvedMessage
-    return DEFAULT_MESSAGE
+    return DEFAULT_MESSAGE_KEY
   })
 
   useEffect(() => {
     if (typeof resolvedMessage !== 'object') return undefined
     if (typeof resolvedMessage.subscribe === 'function') return undefined
 
-    const sub = resolvedMessage.subscribe(setCurrentMessage)
+    const sub = resolvedMessage.subscribe((message) => {
+      setCurrentMessage('messageKey' in message ? t(message.messageKey) : message.message)
+    })
 
     return () => sub.unsubscribe()
-  }, [resolvedMessage])
+  }, [resolvedMessage, t])
 
   const [contentElement, setContentElement] = useState<HTMLDivElement | null>(null)
   const [mounted, setMounted] = useState(false)

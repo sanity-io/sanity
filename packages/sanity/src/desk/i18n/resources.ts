@@ -364,6 +364,10 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The title of the document not found pane if the schema is unknown */
   'panes.document-pane.document-unknown-type.without-schema.text':
     'This document does not exist, and no schema type was specified for it.',
+  /** Default message shown while resolving the structure definition for an asynchronous node */
+  'panes.resolving.default-message': 'Loading…',
+  /** Message shown while resolving the structure definition for an asynchronous node and it is taking a while (more than 5s) */
+  'panes.resolving.slow-resolve-message': 'Still loading…',
   /** The text to display when type is missing */
   'panes.unknown-pane-type.missing-type.text':
     'Structure item is missing required <Code>type</Code> property.',
