@@ -368,6 +368,11 @@ export interface PluginOptions {
 
   /** @beta @hidden */
   i18n?: LocalePluginOptions
+  search?: {
+    unstable_partialIndexing?: {
+      enabled: boolean
+    }
+  }
 }
 
 /** @internal */
@@ -698,6 +703,9 @@ export interface Source {
   search: {
     filters: SearchFilterDefinition[]
     operators: SearchOperatorDefinition[]
+    unstable_partialIndexing?: {
+      enabled: boolean
+    }
   }
 
   /** @internal */

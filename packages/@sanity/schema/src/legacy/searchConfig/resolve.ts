@@ -136,6 +136,9 @@ export function resolveSearchConfigForBaseFieldPaths(type) {
   return getCachedBaseFieldPaths(type)
 }
 
+/**
+ * @internal
+ */
 export function resolveSearchConfig(type, maxDepth?: number) {
   return getCachedStringFieldPaths(type, isNumber(maxDepth) ? maxDepth : DEFAULT_MAX_FIELD_DEPTH)
 }
