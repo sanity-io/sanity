@@ -40,7 +40,8 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
             align="center"
             flex={1}
             gap={collapsed ? 2 : 3}
-            paddingX={3}
+            paddingLeft={4}
+            paddingRight={3}
             paddingY={2}
             wrap="wrap"
           >
