@@ -33,7 +33,7 @@ import {SearchDialog, SearchField} from './search'
 import {SearchProvider} from './search/contexts/search/SearchProvider'
 import {ResourcesButton} from './resources/ResourcesButton'
 import {FreeTrial} from './free-trial'
-import {FreeTrialProvider} from './free-trial/FreeTrialContext'
+import {FreeTrialProvider} from './free-trial/FreeTrialProvider'
 import {RouterState, useRouterState, useStateLink} from 'sanity/router'
 
 const RootLayer = styled(Layer)`
