@@ -59,7 +59,7 @@ export function DocumentStatusLine({singleLine}: DocumentStatusLineProps) {
       }
       placement="top"
     >
-      <Flex align="center" gap={2}>
+      <Flex align="center" gap={3}>
         <DocumentStatusIndicator draft={editState?.draft} published={editState?.published} />
         <DocumentStatus
           draft={editState?.draft}

@@ -56,11 +56,7 @@ export function ReferencePreview(props: {
               <DocumentPreviewPresence presence={documentPresence} />
             )}
 
-            <DocumentStatusIndicator
-              draft={preview.draft}
-              hidePublishedStatus
-              published={preview.published}
-            />
+            <DocumentStatusIndicator draft={preview.draft} published={preview.published} />
           </Inline>
         </Box>
       ),
