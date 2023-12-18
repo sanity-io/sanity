@@ -1,12 +1,12 @@
 import {ArrowLeftIcon} from '@sanity/icons'
 import React, {memo, useMemo} from 'react'
 import {TooltipDelayGroupProvider} from '@sanity/ui'
-import {Button, TOOLTIP_DELAY_PROPS} from 'sanity/ui-components'
 import {PaneMenuItem, PaneMenuItemGroup, DeskToolPaneActionHandler} from '../../types'
 import {BackLink, PaneHeader, PaneHeaderActions, usePane} from '../../components'
 import {useDeskTool} from '../../useDeskTool'
 import {SortOrder} from './types'
 import {GeneralPreviewLayoutKey, InitialValueTemplateItem} from 'sanity'
+import {Button, TOOLTIP_DELAY_PROPS} from 'sanity/_internal-ui-components'
 
 interface DocumentListPaneHeaderProps {
   contentAfter?: React.ReactNode

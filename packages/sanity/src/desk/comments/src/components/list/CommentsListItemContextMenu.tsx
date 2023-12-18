@@ -9,7 +9,7 @@ import {
   MenuButtonProps,
   MenuItem,
   TOOLTIP_DELAY_PROPS,
-} from 'sanity/ui-components'
+} from 'sanity/_internal-ui-components'
 import {ContextMenuButton} from 'sanity'
 
 const POPOVER_PROPS: MenuButtonProps['popover'] = {

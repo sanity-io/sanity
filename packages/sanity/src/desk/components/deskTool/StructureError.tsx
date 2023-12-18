@@ -3,11 +3,11 @@ import {Box, Card, Code, Container, Heading, Stack, Text} from '@sanity/ui'
 import React, {useCallback} from 'react'
 import styled from 'styled-components'
 import {SyncIcon} from '@sanity/icons'
-import {Button} from 'sanity/ui-components'
 import {SerializeError} from '../../structureBuilder'
 import {PaneResolutionError} from '../../structureResolvers'
 import {structureLocaleNamespace} from '../../i18n'
 import {useTranslation} from 'sanity'
+import {Button} from 'sanity/_internal-ui-components'
 
 const PathSegment = styled.span`
   &:not(:last-child)::after {

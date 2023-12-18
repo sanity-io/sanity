@@ -2,10 +2,10 @@ import {AddIcon} from '@sanity/icons'
 import React, {useMemo, forwardRef} from 'react'
 import {Menu} from '@sanity/ui'
 import {Schema} from '@sanity/types'
-import {Button, MenuButton, PopoverProps, MenuItem} from 'sanity/ui-components'
 import {IntentButton} from '../IntentButton'
 import {structureLocaleNamespace} from '../../i18n'
 import {InsufficientPermissionsMessageTooltip} from './InsufficientPermissionsMessageTooltip'
+import {Button, MenuButton, PopoverProps, MenuItem} from 'sanity/_internal-ui-components'
 import {IntentLink} from 'sanity/router'
 import {
   useTemplatePermissions,

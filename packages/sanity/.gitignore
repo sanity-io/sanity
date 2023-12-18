@@ -13,11 +13,11 @@
 
 # Legacy exports
 /_internal.js
+/_internal-ui-components.js
 /cli.js
 /desk.js
 /presentation.js
 /router.js
-/ui-components.js
 
 # Playwright-ct artifacts
 /playwright-ct/report

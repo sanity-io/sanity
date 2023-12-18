@@ -1,6 +1,5 @@
 import {Menu} from '@sanity/ui'
 import React, {useCallback, useState, useMemo, useId} from 'react'
-import {MenuButton, MenuItem, PopoverProps} from 'sanity/ui-components'
 import {structureLocaleNamespace} from '../../../i18n'
 import {ActionStateDialog} from './ActionStateDialog'
 import {
@@ -9,6 +8,7 @@ import {
   useTranslation,
   ContextMenuButton,
 } from 'sanity'
+import {MenuButton, MenuItem, PopoverProps} from 'sanity/_internal-ui-components'
 
 export interface ActionMenuButtonProps {
   actionStates: DocumentActionDescription[]

@@ -1,5 +1,5 @@
 import {Placement} from '@sanity/ui'
-import {DialogProps} from 'sanity/ui-components'
+import {DialogProps} from 'sanity/_internal-ui-components'
 
 export const POPOVER_FALLBACK_PLACEMENTS: Placement[] = ['left', 'bottom']
 

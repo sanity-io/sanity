@@ -8,7 +8,6 @@ import {
 } from '@sanity/icons'
 import {useToast, Text, Box, Flex, Card, Stack} from '@sanity/ui'
 import CopyToClipboard from 'react-copy-to-clipboard'
-import {Button} from 'sanity/ui-components'
 import {structureLocaleNamespace} from '../../i18n'
 import {ReferencePreviewLink} from './ReferencePreviewLink'
 import {ReferringDocuments} from './useReferringDocuments'
@@ -21,6 +20,7 @@ import {
   DocumentIdFlex,
 } from './ConfirmDeleteDialogBody.styles'
 import {SanityDefaultPreview, Translate, useSchema, useTranslation} from 'sanity'
+import {Button} from 'sanity/_internal-ui-components'
 
 type DeletionConfirmationDialogBodyProps = Required<ReferringDocuments> & {
   documentTitle: React.ReactNode

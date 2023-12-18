@@ -1,7 +1,7 @@
 import React from 'react'
-import {Tooltip} from 'sanity/ui-components'
 import {structureLocaleNamespace} from '../../i18n'
 import {useCurrentUser, InsufficientPermissionsMessage, useTranslation} from 'sanity'
+import {Tooltip} from 'sanity/_internal-ui-components'
 
 interface InsufficientPermissionsMessageTooltipProps {
   reveal: boolean

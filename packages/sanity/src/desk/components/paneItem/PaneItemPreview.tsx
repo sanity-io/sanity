@@ -3,7 +3,6 @@ import React, {isValidElement} from 'react'
 import {isNumber, isString} from 'lodash'
 import {Flex, TooltipDelayGroupProvider} from '@sanity/ui'
 import {useMemoObservable} from 'react-rx'
-import {TOOLTIP_DELAY_PROPS} from 'sanity/ui-components'
 import type {PaneItemPreviewState} from './types'
 import {
   DocumentPresence,
@@ -17,6 +16,7 @@ import {
   DocumentStatusIndicator,
   DocumentStatus,
 } from 'sanity'
+import {TOOLTIP_DELAY_PROPS} from 'sanity/_internal-ui-components'
 
 export interface PaneItemPreviewProps {
   documentPreviewStore: DocumentPreviewStore

@@ -1,9 +1,9 @@
 import React from 'react'
 import {Flex, Text} from '@sanity/ui'
 import styled, {css} from 'styled-components'
-import {Tooltip} from 'sanity/ui-components'
 import {CommentsAvatar} from '../../avatars'
 import {useCurrentUser, useUser} from 'sanity'
+import {Tooltip} from 'sanity/_internal-ui-components'
 
 const Span = styled.span(({theme}) => {
   const {regular} = theme.sanity.fonts?.text.weights

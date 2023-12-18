@@ -1,7 +1,6 @@
 import {ArrowLeftIcon, CloseIcon, SplitVerticalIcon} from '@sanity/icons'
 import {Flex, TooltipDelayGroupProvider} from '@sanity/ui'
 import React, {createElement, memo, forwardRef, useMemo} from 'react'
-import {Button, TOOLTIP_DELAY_PROPS} from 'sanity/ui-components'
 import {
   PaneContextMenuButton,
   PaneHeader,
@@ -17,6 +16,7 @@ import {structureLocaleNamespace} from '../../../../i18n'
 import {DocumentHeaderTabs} from './DocumentHeaderTabs'
 import {DocumentHeaderTitle} from './DocumentHeaderTitle'
 import {useFieldActions, useTimelineSelector, useTranslation} from 'sanity'
+import {Button, TOOLTIP_DELAY_PROPS} from 'sanity/_internal-ui-components'
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface DocumentPanelHeaderProps {}

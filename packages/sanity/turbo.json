@@ -3,7 +3,7 @@
   "extends": ["//"],
   "pipeline": {
     "build": {
-      "outputs": ["lib/**", "index.js", "_internal.js", "cli.js", "desk.js", "presentation.js", "router.js", "ui-components.js"]
+      "outputs": ["lib/**", "index.js", "_internal.js", "cli.js", "desk.js", "presentation.js", "router.js", "_internal-ui-components.js"]
     }
   }
 }

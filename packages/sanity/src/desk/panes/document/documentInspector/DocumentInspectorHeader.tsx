@@ -2,7 +2,7 @@ import {CloseIcon} from '@sanity/icons'
 import {Box, Card, CardProps, Flex, Text} from '@sanity/ui'
 import React, {HTMLProps, ReactNode} from 'react'
 import styled from 'styled-components'
-import {Button} from 'sanity/ui-components'
+import {Button} from 'sanity/_internal-ui-components'
 
 export interface DocumentInspectorHeaderProps {
   as?: CardProps['as']

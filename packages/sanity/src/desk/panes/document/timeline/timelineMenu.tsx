@@ -2,12 +2,12 @@ import {ChevronDownIcon} from '@sanity/icons'
 import {Placement, useClickOutside, useGlobalKeyDown, useToast} from '@sanity/ui'
 import React, {useCallback, useState} from 'react'
 import styled from 'styled-components'
-import {Button, Popover} from 'sanity/ui-components'
 import {useDocumentPane} from '../useDocumentPane'
 import {TimelineError} from './TimelineError'
 import {Timeline} from './timeline'
 import {TIMELINE_ITEM_I18N_KEY_MAPPING} from './timelineI18n'
 import {Chunk, useTimelineSelector, useTranslation} from 'sanity'
+import {Button, Popover} from 'sanity/_internal-ui-components'
 
 interface TimelineMenuProps {
   chunk: Chunk | null

@@ -1,9 +1,9 @@
 import React from 'react'
 import {ArrowLeftIcon} from '@sanity/icons'
-import {Button} from 'sanity/ui-components'
 import {PaneMenuItem, PaneMenuItemGroup, DeskToolPaneActionHandler} from '../../types'
 import {BackLink, PaneHeader, PaneHeaderActions} from '../../components'
 import {useDeskTool} from '../../useDeskTool'
+import {Button} from 'sanity/_internal-ui-components'
 
 interface UserComponentPaneHeaderProps {
   actionHandlers?: Record<string, DeskToolPaneActionHandler>

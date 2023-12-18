@@ -8,11 +8,11 @@ import {
 import styled, {css} from 'styled-components'
 import {isEqual} from 'lodash'
 import {isPortableTextSpan, isPortableTextTextBlock} from '@sanity/types'
-import {Popover, PopoverProps} from 'sanity/ui-components'
 import {MentionsMenu, MentionsMenuHandle} from '../../mentions'
 import {renderBlock, renderChild} from '../render'
 import {useCommentInput} from './useCommentInput'
 import {useCursorElement} from './useCursorElement'
+import {Popover, PopoverProps} from 'sanity/_internal-ui-components'
 
 const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['bottom', 'top']
 const INLINE_STYLE: React.CSSProperties = {outline: 'none'}

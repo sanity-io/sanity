@@ -14,13 +14,14 @@ import React, {memo, useCallback, useMemo, useState} from 'react'
 import styled from 'styled-components'
 import {fromString as pathFromString} from '@sanity/util/paths'
 import {Path} from '@sanity/types'
-import {TOOLTIP_DELAY_PROPS} from 'sanity/ui-components'
 import {DocumentPaneNode} from '../../types'
 import {Pane, PaneFooter, usePaneRouter} from '../../components'
 import {usePaneLayout} from '../../components/pane/usePaneLayout'
 import {ErrorPane} from '../error'
 import {LoadingPane} from '../loading'
 import {DOCUMENT_PANEL_PORTAL_ELEMENT} from '../../constants'
+import {CommentsEnabledProvider} from '../../comments'
+import {structureLocaleNamespace} from '../../i18n'
 import {DocumentOperationResults} from './DocumentOperationResults'
 import {DocumentPaneProvider} from './DocumentPaneProvider'
 import {DocumentPanel} from './documentPanel'
@@ -33,7 +34,6 @@ import {
   DOCUMENT_PANEL_INITIAL_MIN_WIDTH,
   DOCUMENT_PANEL_MIN_WIDTH,
 } from './constants'
-import {structureLocaleNamespace} from '../../i18n'
 import {
   ChangeConnectorRoot,
   ReferenceInputOptionsProvider,
@@ -47,7 +47,7 @@ import {
   useTranslation,
   useZIndex,
 } from 'sanity'
-import {CommentsEnabledProvider} from '../../comments'
+import {TOOLTIP_DELAY_PROPS} from 'sanity/_internal-ui-components'
 
 type DocumentPaneOptions = DocumentPaneNode['options']
 

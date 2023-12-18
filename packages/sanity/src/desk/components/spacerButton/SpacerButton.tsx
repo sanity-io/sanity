@@ -1,5 +1,5 @@
 import React from 'react'
-import {Button, ButtonProps} from 'sanity/ui-components'
+import {Button, ButtonProps} from 'sanity/_internal-ui-components'
 
 interface SpacerButtonProps {
   size?: ButtonProps['size']
