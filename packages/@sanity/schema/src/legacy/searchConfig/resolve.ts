@@ -1,4 +1,6 @@
-import {uniqBy} from 'lodash'
+import {isNumber, uniqBy} from 'lodash'
+
+export const DEFAULT_MAX_FIELD_DEPTH = 4
 
 const stringFieldsSymbol = Symbol('__cachedStringFields')
 
@@ -124,6 +126,6 @@ export function resolveSearchConfigForBaseFieldPaths(type) {
   return getCachedBaseFieldPaths(type)
 }
 
-export default function resolveSearchConfig(type) {
-  return getCachedStringFieldPaths(type, 4)
+export function resolveSearchConfig(type, maxDepth?: number) {
+  return getCachedStringFieldPaths(type, isNumber(maxDepth) ? maxDepth : DEFAULT_MAX_FIELD_DEPTH)
 }
