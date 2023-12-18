@@ -1,6 +1,6 @@
 import {CheckmarkIcon} from '@sanity/icons'
 import {MenuDivider} from '@sanity/ui'
-import {MenuItem} from '../../../../ui-components'
+import {MenuItem} from '../../../../../ui'
 import {type StudioThemeColorSchemeKey} from '../../../../theme'
 import {useTranslation} from '../../../../i18n'
 import {useColorSchemeOptions} from '../../../colorScheme'

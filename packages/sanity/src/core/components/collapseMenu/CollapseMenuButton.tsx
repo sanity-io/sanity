@@ -1,5 +1,5 @@
 import React, {forwardRef} from 'react'
-import {Button, ButtonProps, TooltipProps} from '../../ui-components'
+import {Button, ButtonProps, TooltipProps} from '../../../ui'
 
 /** @internal */
 export interface CommonProps extends Omit<ButtonProps, 'text' | 'iconRight'> {

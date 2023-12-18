@@ -3,7 +3,7 @@ import {CopyIcon} from '@sanity/icons'
 import {keyGenerator} from '@sanity/portable-text-editor'
 import {PortableTextBlock, PortableTextTextBlock} from '@sanity/types'
 import {RenderBlockActionsCallback} from '../../../../types/_transitional'
-import {Button} from '../../../../../ui-components'
+import {Button} from '../../../../../../ui'
 
 const BlockActions = memo(function BlockActions(props: {
   block: PortableTextBlock

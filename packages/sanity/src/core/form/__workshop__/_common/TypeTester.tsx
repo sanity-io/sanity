@@ -1,7 +1,7 @@
 import React, {useCallback, useEffect, useRef, useState, useMemo} from 'react'
 import {Card, Stack, Text, TextArea} from '@sanity/ui'
 import styled, {createGlobalStyle} from 'styled-components'
-import {Button} from '../../../ui-components'
+import {Button} from '../../../../ui'
 import {runTest} from './typer'
 
 const HIGHLIGHT_CLASSNAME = 'js-highlight-selected-input'

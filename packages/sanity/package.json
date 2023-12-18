@@ -44,17 +44,6 @@
       "import": "./lib/_internal.esm.js",
       "default": "./lib/_internal.esm.js"
     },
-    "./ui-components": {
-      "types": "./lib/exports/ui-components.d.ts",
-      "source": "./exports/ui-components.ts",
-      "require": "./lib/ui-components.js",
-      "node": {
-        "module": "./lib/ui-components.esm.js",
-        "import": "./lib/ui-components.cjs.mjs"
-      },
-      "import": "./lib/ui-components.esm.js",
-      "default": "./lib/ui-components.esm.js"
-    },
     "./cli": {
       "types": "./lib/exports/cli.d.ts",
       "source": "./exports/cli.ts",
@@ -119,9 +108,6 @@
       "presentation": [
         "./lib/exports/presentation.d.ts"
       ],
-      "ui-components": [
-        "./lib/exports/ui-components.d.ts"
-      ],
       "router": [
         "./lib/exports/router.d.ts"
       ]
@@ -138,7 +124,6 @@
     "lib",
     "router.js",
     "presentation.js",
-    "ui-components.js",
     "src",
     "static",
     "!**/__test__/**",

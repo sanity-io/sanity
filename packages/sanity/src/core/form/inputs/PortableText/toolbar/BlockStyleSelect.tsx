@@ -19,7 +19,7 @@ import {
   BlockQuote,
   Normal,
 } from '../text/textStyles'
-import {Button, MenuButton, MenuButtonProps} from '../../../../ui-components'
+import {Button, MenuButton, MenuButtonProps} from '../../../../../ui'
 import {useActiveStyleKeys, useFocusBlock} from './hooks'
 import {BlockStyleItem} from './types'
 

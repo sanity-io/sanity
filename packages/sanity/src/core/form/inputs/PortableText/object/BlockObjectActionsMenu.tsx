@@ -11,7 +11,7 @@ import React, {
   useRef,
 } from 'react'
 import {type PortableTextBlock, isReference} from '@sanity/types'
-import {Button, MenuButton, MenuButtonProps, MenuItem} from '../../../../ui-components'
+import {Button, MenuButton, MenuButtonProps, MenuItem} from '../../../../../ui'
 import {useTranslation} from '../../../../i18n'
 import {IntentLink} from 'sanity/router'
 

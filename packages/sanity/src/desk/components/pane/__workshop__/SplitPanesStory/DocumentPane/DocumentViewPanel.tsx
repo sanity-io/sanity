@@ -1,7 +1,7 @@
 import {ArrowLeftIcon, RestoreIcon} from '@sanity/icons'
 import {Box, Flex, Text, Stack, Container} from '@sanity/ui'
 import React from 'react'
-import {Button} from 'sanity/ui-components'
+import {Button} from '../../../../../../ui'
 import {PaneContent} from '../../../PaneContent'
 import {PaneFooter} from '../../../PaneFooter'
 import {PaneHeader} from '../../../PaneHeader'

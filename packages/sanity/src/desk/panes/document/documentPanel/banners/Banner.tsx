@@ -1,6 +1,6 @@
 import {ButtonTone, Card, CardTone, Flex, Text} from '@sanity/ui'
 import React from 'react'
-import {Button} from 'sanity/ui-components'
+import {Button} from '../../../../../ui'
 import {SpacerButton} from '../../../../components/spacerButton'
 
 interface BannerProps {

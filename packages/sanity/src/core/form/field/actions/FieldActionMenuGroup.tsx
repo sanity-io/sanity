@@ -1,6 +1,6 @@
 import {Box, Text} from '@sanity/ui'
 import React from 'react'
-import {MenuGroup, MenuGroupProps} from '../../../ui-components'
+import {MenuGroup, MenuGroupProps} from '../../../../ui'
 import {DocumentFieldActionGroup} from '../../../config'
 import {useI18nText} from '../../../i18n'
 import {FieldActionMenuNode} from './FieldActionMenuNode'

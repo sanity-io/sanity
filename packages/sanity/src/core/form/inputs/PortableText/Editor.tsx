@@ -20,7 +20,7 @@ import {
   useLayer,
 } from '@sanity/ui'
 import React, {useCallback, useMemo, useRef} from 'react'
-import {TOOLTIP_DELAY_PROPS} from '../../../ui-components/tooltip/constants'
+import {TOOLTIP_DELAY_PROPS} from '../../../../ui/tooltip/constants'
 import {useTranslation} from '../../../i18n'
 import {Toolbar} from './toolbar'
 import {Decorator} from './text'

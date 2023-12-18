@@ -1,7 +1,7 @@
 import React from 'react'
 import {Flex, Text} from '@sanity/ui'
 import styled, {css} from 'styled-components'
-import {Tooltip} from 'sanity/ui-components'
+import {Tooltip} from '../../../../../../ui'
 import {CommentsAvatar} from '../../avatars'
 import {useCurrentUser, useUser} from 'sanity'
 

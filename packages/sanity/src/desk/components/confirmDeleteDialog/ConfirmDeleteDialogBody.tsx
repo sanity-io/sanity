@@ -8,7 +8,7 @@ import {
 } from '@sanity/icons'
 import {useToast, Text, Box, Flex, Card, Stack} from '@sanity/ui'
 import CopyToClipboard from 'react-copy-to-clipboard'
-import {Button} from 'sanity/ui-components'
+import {Button} from '../../../ui'
 import {structureLocaleNamespace} from '../../i18n'
 import {ReferencePreviewLink} from './ReferencePreviewLink'
 import {ReferringDocuments} from './useReferringDocuments'

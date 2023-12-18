@@ -6,7 +6,7 @@ import {
   CommandListHandle,
   CommandListRenderItemCallback,
 } from '../../../../../../components'
-import {Button} from '../../../../../../ui-components'
+import {Button} from '../../../../../../../ui'
 import {useSearchState} from '../../contexts/search/useSearchState'
 import {RecentSearch} from '../../datastores/recentSearches'
 import {Instructions} from '../Instructions'

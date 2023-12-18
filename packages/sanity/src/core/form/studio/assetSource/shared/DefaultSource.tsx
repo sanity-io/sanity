@@ -10,7 +10,7 @@ import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
 import {Translate, useTranslation} from '../../../../i18n'
 import {FileListView} from '../file/FileListView'
 import {ImageListView} from '../image/ImageListView'
-import {Button, Dialog} from '../../../../ui-components'
+import {Button, Dialog} from '../../../../../ui'
 
 const PER_PAGE = 200
 const ASSET_TYPE_IMAGE = 'sanity.imageAsset'

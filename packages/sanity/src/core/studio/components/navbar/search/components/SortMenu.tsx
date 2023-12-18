@@ -5,7 +5,7 @@ import React, {useCallback, useId, useMemo} from 'react'
 import styled from 'styled-components'
 import {useTranslation} from '../../../../../i18n'
 import {ORDERINGS} from '../definitions/orderings'
-import {Button, MenuButton, MenuItem} from '../../../../../ui-components'
+import {Button, MenuButton, MenuItem} from '../../../../../../ui'
 import {useSearchState} from '../contexts/search/useSearchState'
 import type {SearchOrdering} from '../types'
 

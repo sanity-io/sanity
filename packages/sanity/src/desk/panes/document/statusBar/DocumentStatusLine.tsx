@@ -1,6 +1,6 @@
 import {Flex} from '@sanity/ui'
 import React, {useEffect, useLayoutEffect, useState} from 'react'
-import {Tooltip} from 'sanity/ui-components'
+import {Tooltip} from '../../../../ui'
 import {useDocumentPane} from '../useDocumentPane'
 import {DocumentStatusPulse} from './DocumentStatusPulse'
 import {useSyncState, DocumentStatusIndicator, DocumentStatus} from 'sanity'

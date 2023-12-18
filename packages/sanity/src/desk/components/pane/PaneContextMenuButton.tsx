@@ -1,6 +1,6 @@
 import {Menu} from '@sanity/ui'
 import React, {useId} from 'react'
-import {MenuButton, PopoverProps} from 'sanity/ui-components'
+import {MenuButton, PopoverProps} from '../../../ui'
 import {_PaneMenuItem, _PaneMenuNode} from './types'
 import {PaneMenuButtonItem} from './PaneMenuButtonItem'
 import {ContextMenuButton} from 'sanity'

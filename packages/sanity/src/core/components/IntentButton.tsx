@@ -1,5 +1,5 @@
 import React from 'react'
-import {Button, ButtonProps} from '../ui-components'
+import {Button, ButtonProps} from '../../../src/ui'
 
 import {IntentLink, IntentLinkProps} from 'sanity/router'
 

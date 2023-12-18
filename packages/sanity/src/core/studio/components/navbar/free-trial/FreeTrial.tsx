@@ -1,5 +1,5 @@
 import {useCallback, useEffect, useRef, useState} from 'react'
-import {Popover} from '../../../../ui-components'
+import {Popover} from '../../../../../ui'
 import {useColorSchemeValue} from '../../../colorScheme'
 import {PopoverContent} from './PopoverContent'
 import {DialogContent} from './DialogContent'

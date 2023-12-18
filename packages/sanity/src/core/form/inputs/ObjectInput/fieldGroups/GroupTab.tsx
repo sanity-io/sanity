@@ -1,5 +1,5 @@
 import React, {forwardRef} from 'react'
-import {Tab} from '../../../../ui-components'
+import {Tab} from '../../../../../ui'
 
 interface GroupType {
   'aria-controls': string

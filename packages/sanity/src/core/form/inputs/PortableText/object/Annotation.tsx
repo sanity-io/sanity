@@ -2,7 +2,7 @@ import {PortableTextEditor, usePortableTextEditor} from '@sanity/portable-text-e
 import type {ObjectSchemaType, Path, PortableTextObject} from '@sanity/types'
 import React, {ComponentType, useCallback, useMemo, useState} from 'react'
 import {isEqual} from '@sanity/util/paths'
-import {Tooltip} from '../../../../ui-components'
+import {Tooltip} from '../../../../../ui'
 import {pathToString} from '../../../../field'
 import type {
   BlockAnnotationProps,

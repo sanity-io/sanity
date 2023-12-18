@@ -3,7 +3,6 @@ import {Flex, Stack} from '@sanity/ui'
 import styled, {css} from 'styled-components'
 import {CurrentUser} from '@sanity/types'
 import {ChevronDownIcon} from '@sanity/icons'
-import {Button} from 'sanity/ui-components'
 import {CommentInput, CommentInputHandle} from '../pte'
 import {
   CommentCreatePayload,
@@ -16,6 +15,7 @@ import {
 import {SpacerAvatar} from '../avatars'
 import {hasCommentMessageValue} from '../../helpers'
 import {CommentsSelectedPath} from '../../context'
+import {Button} from '../../../../../ui'
 import {CommentsListItemLayout} from './CommentsListItemLayout'
 import {ThreadCard} from './styles'
 

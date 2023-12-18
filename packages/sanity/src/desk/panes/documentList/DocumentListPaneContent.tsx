@@ -3,11 +3,11 @@ import {Box, Container, Flex, Heading, Stack, Text} from '@sanity/ui'
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import {SanityDocument} from '@sanity/types'
 import styled from 'styled-components'
-import {Button} from 'sanity/ui-components'
+import {Button} from '../../../ui'
 import {Delay, PaneContent, usePane, usePaneLayout, PaneItem} from '../../components'
-import {structureLocaleNamespace} from '../../i18n'
 import {DocumentListPaneItem, LoadingVariant} from './types'
 import {FULL_LIST_LIMIT} from './constants'
+import {structureLocaleNamespace} from '../../i18n'
 import {
   CommandList,
   CommandListRenderItemCallback,

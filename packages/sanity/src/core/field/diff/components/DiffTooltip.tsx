@@ -1,7 +1,7 @@
 import type {Path} from '@sanity/types'
 import {Text, Stack, Flex, Inline} from '@sanity/ui'
 import React from 'react'
-import {Tooltip, TooltipProps} from '../../../ui-components'
+import {Tooltip, TooltipProps} from '../../../../ui'
 import {LegacyLayerProvider, UserAvatar} from '../../../components'
 import {useRelativeTime} from '../../../hooks'
 import {useUser} from '../../../store'

@@ -1,6 +1,6 @@
 import {CogIcon, UsersIcon} from '@sanity/icons'
 import {Card, Stack} from '@sanity/ui'
-import {Button} from '../../../../ui-components'
+import {Button} from '../../../../../ui'
 import {useTranslation} from '../../../../i18n'
 import {userHasRole} from '../../../../util'
 import {useWorkspace} from '../../../workspace'

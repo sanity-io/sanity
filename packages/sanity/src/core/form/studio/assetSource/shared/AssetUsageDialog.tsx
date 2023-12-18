@@ -1,6 +1,6 @@
 import React, {useMemo} from 'react'
 import {Asset as AssetType} from '@sanity/types'
-import {Dialog} from '../../../../ui-components'
+import {Dialog} from '../../../../../ui'
 import {LoadingBlock} from '../../../../components/loadingBlock'
 import {useReferringDocuments} from '../../../../hooks/useReferringDocuments'
 import {useTranslation} from '../../../../i18n'

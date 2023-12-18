@@ -1,5 +1,5 @@
 import React, {useId} from 'react'
-import {Dialog} from 'sanity/ui-components'
+import {Dialog} from '../../../../../ui'
 import {DIALOG_WIDTH_TO_UI_WIDTH} from './constants'
 import {DocumentActionModalDialogProps, LegacyLayerProvider} from 'sanity'
 

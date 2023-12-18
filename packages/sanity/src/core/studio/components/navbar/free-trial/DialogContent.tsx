@@ -2,7 +2,7 @@ import {Box, Flex, Heading} from '@sanity/ui'
 import styled from 'styled-components'
 import {CloseIcon} from '@sanity/icons'
 import {useColorSchemeValue} from '../../../colorScheme'
-import {Button, Dialog} from '../../../../ui-components'
+import {Button, Dialog} from '../../../../../ui'
 import {FreeTrialDialog} from './types'
 import {DescriptionSerializer} from './DescriptionSerializer'
 

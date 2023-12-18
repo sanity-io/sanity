@@ -2,7 +2,7 @@ import React, {useId, useRef, useState} from 'react'
 import {Box} from '@sanity/ui'
 import {PresenceOverlay} from '../../../../../presence'
 import {VirtualizerScrollInstanceProvider} from '../../../arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
-import {Dialog} from '../../../../../ui-components'
+import {Dialog} from '../../../../../../ui'
 import {ModalWidth} from './types'
 
 interface DefaultEditDialogProps {

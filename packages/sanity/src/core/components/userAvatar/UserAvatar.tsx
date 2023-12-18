@@ -4,7 +4,7 @@ import type {User} from '@sanity/types'
 import {useUser} from '../../store'
 import {isRecord} from '../../util'
 import {useUserColor} from '../../user-color'
-import {Tooltip} from '../../ui-components'
+import {Tooltip} from '../../../ui'
 
 /**
  * @hidden

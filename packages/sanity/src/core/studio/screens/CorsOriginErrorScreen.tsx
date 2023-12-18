@@ -3,7 +3,7 @@ import {Card, Stack, Text, TextInput, Flex} from '@sanity/ui'
 import React, {useEffect, useMemo} from 'react'
 import {LaunchIcon} from '@sanity/icons'
 import styled from 'styled-components'
-import {Button, Dialog} from '../../ui-components'
+import {Button, Dialog} from '../../../ui'
 
 interface CorsOriginErrorScreenProps {
   projectId?: string

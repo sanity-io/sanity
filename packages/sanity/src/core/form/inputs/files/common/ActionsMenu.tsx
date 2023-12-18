@@ -2,7 +2,7 @@ import React, {MouseEventHandler, useCallback} from 'react'
 
 import {UploadIcon, CopyIcon, ResetIcon, DownloadIcon} from '@sanity/icons'
 import {MenuDivider, useToast} from '@sanity/ui'
-import {MenuItem} from '../../../../ui-components'
+import {MenuItem} from '../../../../../ui'
 import {useTranslation} from '../../../../i18n'
 import {FileInputMenuItem} from './FileInputMenuItem/FileInputMenuItem'
 

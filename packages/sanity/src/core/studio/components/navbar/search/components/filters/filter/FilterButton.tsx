@@ -7,7 +7,7 @@ import {
 } from '@sanity/ui'
 import React, {KeyboardEvent, useCallback, useState} from 'react'
 import styled from 'styled-components'
-import {Popover} from '../../../../../../../ui-components'
+import {Popover} from '../../../../../../../../ui'
 import {POPOVER_RADIUS, POPOVER_VERTICAL_MARGIN} from '../../../constants'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import type {SearchFilter} from '../../../types'

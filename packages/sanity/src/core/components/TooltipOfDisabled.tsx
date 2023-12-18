@@ -1,5 +1,5 @@
 import React, {forwardRef} from 'react'
-import {Tooltip, TooltipProps} from '../ui-components'
+import {Tooltip, TooltipProps} from '../../ui'
 
 /** @internal */
 export const TooltipOfDisabled = forwardRef<HTMLDivElement, TooltipProps>(function DisabledTooltip(

@@ -1,7 +1,7 @@
 import {type ButtonTone} from '@sanity/ui'
 import type React from 'react'
 import {type EditStateFor} from '../../store/_legacy'
-import {DialogProps} from '../../ui-components'
+import {DialogProps} from '../../../ui'
 
 /**
  * @hidden

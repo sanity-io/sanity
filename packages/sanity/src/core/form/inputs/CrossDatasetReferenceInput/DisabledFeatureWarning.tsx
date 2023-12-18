@@ -2,7 +2,7 @@ import {ResetIcon, WarningOutlineIcon} from '@sanity/icons'
 import {Card, Flex, Box, Text, Stack} from '@sanity/ui'
 import type {CrossDatasetReferenceValue} from '@sanity/types'
 import React, {useMemo} from 'react'
-import {Button} from '../../../ui-components'
+import {Button} from '../../../../ui'
 import {Translate, useTranslation} from '../../../i18n'
 
 type Props = {

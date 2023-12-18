@@ -3,7 +3,7 @@ import {orderBy} from 'lodash'
 import * as PathUtils from '@sanity/util/paths'
 import {GlobalPresence} from '../../../../store'
 import {UserAvatar} from '../../../../components'
-import {MenuItem} from '../../../../ui-components'
+import {MenuItem} from '../../../../../ui'
 import {useTranslation} from '../../../../i18n'
 import {IntentLink} from 'sanity/router'
 

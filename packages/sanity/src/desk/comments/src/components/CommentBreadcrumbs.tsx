@@ -1,7 +1,7 @@
 import {ChevronRightIcon} from '@sanity/icons'
 import {Box, Flex, Stack, Text} from '@sanity/ui'
 import React, {Fragment, useMemo} from 'react'
-import {Tooltip} from 'sanity/ui-components'
+import {Tooltip} from '../../../../ui'
 
 export interface CommentBreadcrumbsProps {
   titlePath: string[]

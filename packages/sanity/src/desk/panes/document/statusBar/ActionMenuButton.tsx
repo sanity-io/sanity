@@ -1,6 +1,6 @@
 import {Menu} from '@sanity/ui'
 import React, {useCallback, useState, useMemo, useId} from 'react'
-import {MenuButton, MenuItem, PopoverProps} from 'sanity/ui-components'
+import {MenuButton, MenuItem, PopoverProps} from '../../../../ui'
 import {structureLocaleNamespace} from '../../../i18n'
 import {ActionStateDialog} from './ActionStateDialog'
 import {
