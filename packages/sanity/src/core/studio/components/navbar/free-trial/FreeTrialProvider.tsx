@@ -26,15 +26,20 @@ export const FreeTrialProvider = ({children}: FreeTrialProviderProps) => {
       .request<FreeTrialResponse | null>({
         url: `/journey/trial?studioVersion=${SANITY_VERSION}`,
       })
-      .subscribe((response) => {
-        setData(response)
-        // Validates if the user has seen the "structure rename modal" before showing this one. To avoid multiple popovers at same time.
-        const deskRenameSeen = isDeskRenameOnboardingDismissed()
-        if (deskRenameSeen && response?.showOnLoad) {
-          setShowOnLoad(true)
-          setShowDialog(true)
-        }
-      })
+      .subscribe(
+        (response) => {
+          setData(response)
+          // Validates if the user has seen the "structure rename modal" before showing this one. To avoid multiple popovers at same time.
+          const deskRenameSeen = isDeskRenameOnboardingDismissed()
+          if (deskRenameSeen && response?.showOnLoad) {
+            setShowOnLoad(true)
+            setShowDialog(true)
+          }
+        },
+        () => {
+          /* silently ignore any error */
+        },
+      )
 
     return () => {
       request.unsubscribe()
