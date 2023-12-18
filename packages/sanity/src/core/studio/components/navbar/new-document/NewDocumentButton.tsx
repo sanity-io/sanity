@@ -151,6 +151,7 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
   const sharedOpenButtonProps: ButtonProps = useMemo(
     () => ({
       'aria-label': openDialogAriaLabel,
+      'data-testid': 'new-document-button',
       disabled: disabled || loading,
       icon: AddIcon,
       mode: 'bleed',

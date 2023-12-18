@@ -14,8 +14,8 @@ import {copyAction} from 'sanity-test-studio/fieldActions/copyAction'
 import {assistFieldActionGroup} from 'sanity-test-studio/fieldActions/assistFieldActionGroup'
 import {customInspector} from 'sanity-test-studio/inspectors/custom'
 import {pasteAction} from 'sanity-test-studio/fieldActions/pasteAction'
-import {Branding} from './components/Branding'
 import {schemaTypes} from './schemas'
+import {customComponents} from './components-api'
 
 const sharedSettings = definePlugin({
   name: 'sharedSettings',
@@ -28,11 +28,7 @@ const sharedSettings = definePlugin({
       assetSources: [imageAssetSource],
     },
   },
-  studio: {
-    components: {
-      logo: Branding,
-    },
-  },
+
   document: {
     actions: documentActions,
     inspectors: (prev, ctx) => {
@@ -52,6 +48,7 @@ const sharedSettings = definePlugin({
     newDocumentOptions,
   },
   plugins: [
+    customComponents(),
     deskTool({
       icon: BookIcon,
       name: 'content',
