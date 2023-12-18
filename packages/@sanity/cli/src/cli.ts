@@ -17,6 +17,7 @@ import {CliConfigResult, getCliConfig} from './util/getCliConfig'
 import {getInstallCommand} from './packageManager'
 import {CommandRunnerOptions} from './types'
 import {debug} from './debug'
+import {createTelemetryStore} from './util/createTelemetryStore'
 
 const sanityEnv = process.env.SANITY_INTERNAL_ENV || 'production' // eslint-disable-line no-process-env
 const knownEnvs = ['development', 'staging', 'production']
@@ -25,6 +26,9 @@ export async function runCli(cliRoot: string, {cliVersion}: {cliVersion: string}
   installUnhandledRejectionsHandler()
 
   const pkg = {name: '@sanity/cli', version: cliVersion}
+
+  const {logger: telemetry, flush: flushTelemetry} = createTelemetryStore({env: process.env})
+
   const args = parseArguments()
   const isInit = args.groupOrCommand === 'init' && args.argsWithoutOptions[0] !== 'plugin'
   const cwd = getCurrentWorkingDirectory()
@@ -54,6 +58,7 @@ export async function runCli(cliRoot: string, {cliVersion}: {cliVersion: string}
     workDir: workDir,
     corePath: await getCoreModulePath(workDir, cliConfig),
     cliConfig,
+    telemetry,
   }
 
   warnOnNonProductionEnvironment()
@@ -74,6 +79,11 @@ export async function runCli(cliRoot: string, {cliVersion}: {cliVersion: string}
     }
 
     args.groupOrCommand = 'help'
+  }
+
+  if (args.groupOrCommand === 'logout') {
+    // flush telemetry events before logging out
+    await flushTelemetry()
   }
 
   const cliRunner = getCliRunner(commands)
