@@ -2,7 +2,7 @@ import React, {createContext, useContext, useState, useCallback, useEffect} from
 import {supportsLocalStorage} from '../../../../util/supportsLocalStorage'
 import {useClient} from '../../../../hooks'
 import {SANITY_VERSION} from '../../../../version'
-import {FreeTrialResponse} from './types'
+import type {FreeTrialResponse} from './types'
 
 interface FreeTrialContextProps {
   data: FreeTrialResponse | null
@@ -26,20 +26,23 @@ export const FreeTrialProvider = ({children}: FreeTrialProviderProps) => {
   const client = useClient({apiVersion: '2023-12-11'})
 
   useEffect(() => {
-    const fetchData = async () => {
-      const response = await client.request<FreeTrialResponse | null>({
+    const request = client.observable
+      .request<FreeTrialResponse | null>({
         url: `/journey/trial?studioVersion=${SANITY_VERSION}`,
       })
+      .subscribe((response) => {
+        setData(response)
+        // Validates if the user has seen the "structure rename modal" before showing this one. To avoid multiple popovers at same time.
+        const deskRenameSeen = isDeskRenameOnboardingDismissed()
+        if (deskRenameSeen && response?.showOnLoad) {
+          setShowOnLoad(true)
+          setShowDialog(true)
+        }
+      })
 
-      setData(response)
-      // Validates if the user has seen the "structure rename modal" before showing this one. To avoid multiple popovers at same time.
-      const deskRenameSeen = isDeskRenameOnboardingDismissed()
-      if (deskRenameSeen && response?.showOnLoad) {
-        setShowOnLoad(true)
-        setShowDialog(true)
-      }
+    return () => {
+      request.unsubscribe()
     }
-    fetchData()
   }, [client])
 
   const toggleShowContent = useCallback(
