@@ -1,7 +1,7 @@
 import {defineTrace} from '@sanity/telemetry'
 
 export const BuildTrace = defineTrace<{outputSize: number}>({
-  name: 'Build Studio',
+  name: 'Studio Build Completed',
   version: 0,
-  description: 'Studio is being built',
+  description: 'A Studio build completed',
 })

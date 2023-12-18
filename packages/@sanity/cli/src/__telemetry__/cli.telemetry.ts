@@ -23,7 +23,7 @@ interface CLITraceData {
 }
 
 export const CliCommand = defineTrace<CLITraceData>({
-  name: 'cliCommand',
+  name: 'CLI Command Executed',
   version: 1,
-  description: 'User runs a cli command',
+  description: 'A CLI command was executed',
 })

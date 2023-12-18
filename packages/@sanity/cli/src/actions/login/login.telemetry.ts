@@ -14,5 +14,5 @@ type LoginTraceData = SelectProviderStep | WaitForTokenStep
 export const LoginTrace = defineTrace<LoginTraceData>({
   name: 'CLI Login Step Completed',
   version: 1,
-  description: 'User completed a CLI login step',
+  description: 'User completed a step in the CLI login flow',
 })

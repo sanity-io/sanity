@@ -74,5 +74,5 @@ type InitStepResult =
 export const CLIInitStepCompleted = defineTrace<InitStepResult>({
   name: 'CLI Init Step Completed',
   version: 1,
-  description: 'User completed a CLI init step',
+  description: 'User completed a step in the CLI init flow',
 })
