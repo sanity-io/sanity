@@ -18,8 +18,7 @@ function parseConsent(value: unknown): ConsentStatus {
 function createTelemetryClient(token: string) {
   const getClient = getClientWrapper(null, 'sanity.cli.js')
   return getClient({requireUser: false, requireProject: false}).config({
-    // todo: change vX to stable
-    apiVersion: 'vX',
+    apiVersion: '2023-12-18',
     token,
     useCdn: false,
     useProjectHostname: false,
