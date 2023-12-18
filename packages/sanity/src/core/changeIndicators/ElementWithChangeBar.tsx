@@ -1,6 +1,6 @@
 import {useLayer} from '@sanity/ui'
 import React, {useMemo} from 'react'
-import {Tooltip} from '../../ui'
+import {Tooltip} from '../../ui-components'
 import {useTranslation} from '../i18n/hooks/useTranslation'
 import {ConnectorContext} from './ConnectorContext'
 import {

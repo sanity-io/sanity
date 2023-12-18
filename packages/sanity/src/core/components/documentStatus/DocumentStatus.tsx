@@ -1,7 +1,7 @@
 import {PreviewValue, SanityDocument} from '@sanity/types'
 import {Flex, Text} from '@sanity/ui'
 import styled from 'styled-components'
-import {useDateTimeFormat, useRelativeTime} from '../../core'
+import {useDateTimeFormat, useRelativeTime} from '../..'
 
 interface DocumentStatusProps {
   absoluteDate?: boolean

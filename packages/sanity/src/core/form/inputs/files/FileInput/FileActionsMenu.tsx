@@ -3,8 +3,8 @@ import React, {ReactNode, useCallback, useEffect, useState} from 'react'
 import {Box, Card, Flex, Menu, Stack, Text, useClickOutside, useGlobalKeyDown} from '@sanity/ui'
 import {formatBytes} from '../../common/helper'
 import {useTranslation} from '../../../../i18n'
-import {Popover} from '../../../../../ui'
-import {ContextMenuButton} from '../../../../../ui/contextMenuButton'
+import {Popover} from '../../../../../ui-components'
+import {ContextMenuButton} from '../../../../components/contextMenuButton'
 
 type Props = {
   children: ReactNode

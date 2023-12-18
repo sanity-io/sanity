@@ -1,10 +1,10 @@
 import {LinkIcon, TrashIcon} from '@sanity/icons'
 import {Menu} from '@sanity/ui'
 import React from 'react'
-import {MenuButton, MenuItem} from '../../../../../ui'
+import {MenuButton, MenuItem} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
 import {AssetMenuAction} from '../types'
-import {ContextMenuButton} from '../../../../../ui/contextMenuButton'
+import {ContextMenuButton} from '../../../../components/contextMenuButton'
 
 const MENU_POPOVER_PROPS = {portal: true, placement: 'right'} as const
 

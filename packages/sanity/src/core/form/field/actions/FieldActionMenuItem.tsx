@@ -4,7 +4,7 @@ import {CheckmarkIcon} from '@sanity/icons'
 import {TooltipOfDisabled} from '../../../components'
 import {DocumentFieldActionItem} from '../../../config'
 import {useI18nText} from '../../../i18n'
-import {MenuItem} from '../../../../ui'
+import {MenuItem} from '../../../../ui-components'
 
 export function FieldActionMenuItem(props: {action: DocumentFieldActionItem}) {
   const {action} = props

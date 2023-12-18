@@ -6,9 +6,9 @@ import {
   usePortableTextEditorSelection,
 } from '@sanity/portable-text-editor'
 import {isKeySegment} from '@sanity/types'
-import {PopoverProps} from '../../../../../ui'
+import {PopoverProps} from '../../../../../ui-components'
 import {CollapseMenu, CollapseMenuButton} from '../../../../components/collapseMenu'
-import {ContextMenuButton} from '../../../../../ui/contextMenuButton'
+import {ContextMenuButton} from '../../../../components/contextMenuButton'
 import {PTEToolbarAction, PTEToolbarActionGroup} from './types'
 import {useActiveActionKeys, useFocusBlock} from './hooks'
 import {getActionIcon} from './helpers'

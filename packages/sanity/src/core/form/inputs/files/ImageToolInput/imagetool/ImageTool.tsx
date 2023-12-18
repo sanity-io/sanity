@@ -1,5 +1,5 @@
 import React from 'react'
-import {LoadingBlock} from '../../../../../../ui/loadingBlock'
+import {LoadingBlock} from '../../../../../components/loadingBlock'
 import {ImageLoader} from './ImageLoader'
 import {ToolCanvas} from './ToolCanvas'
 import {Resize} from './Resize'

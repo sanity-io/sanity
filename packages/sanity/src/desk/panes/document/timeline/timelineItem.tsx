@@ -1,7 +1,7 @@
 import React, {useCallback, createElement, useMemo} from 'react'
 
 import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
-import {ButtonProps} from '../../../../ui'
+import {ButtonProps} from '../../../../ui-components'
 import {getTimelineEventIconComponent} from './helpers'
 import {UserAvatarStack} from './userAvatarStack'
 import {IconBox, IconWrapper, Root, TimestampBox} from './timelineItem.styled'

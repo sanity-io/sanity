@@ -28,7 +28,7 @@ import {useDocumentPane} from '../useDocumentPane'
 import {DocumentPanelHeader} from '../documentPanel/header'
 import {DocumentInspectorMenuItemsResolver} from '../DocumentInspectorMenuItemsResolver'
 import {usePreviewUrl} from '../usePreviewUrl'
-import {TOOLTIP_DELAY_PROPS} from '../../../../ui/tooltip/constants'
+import {TOOLTIP_DELAY_PROPS} from '../../../../ui-components'
 import {getMenuItems} from '../menuItems'
 import {DocumentLayoutError} from './DocumentLayoutError'
 import {
