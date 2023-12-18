@@ -25,12 +25,16 @@ import {CliCommand} from './__telemetry__/cli.telemetry'
 const sanityEnv = process.env.SANITY_INTERNAL_ENV || 'production' // eslint-disable-line no-process-env
 const knownEnvs = ['development', 'staging', 'production']
 
+function wait(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms))
+}
+
 function installProcessExitHack(finalTask: () => Promise<unknown>) {
   const originalProcessExit = process.exit
 
   // @ts-expect-error ignore TS2534
   process.exit = (exitCode?: number | undefined): never => {
-    finalTask().then(() => originalProcessExit(exitCode)) as never
+    finalTask().finally(() => originalProcessExit(exitCode))
   }
 }
 
@@ -69,7 +73,10 @@ export async function runCli(cliRoot: string, {cliVersion}: {cliVersion: string}
   })
 
   // UGLY HACK: process.exit(<code>) causes abrupt exit, we want to flush telemetry before exiting
-  installProcessExitHack(flushTelemetry)
+  installProcessExitHack(() =>
+    // When process.exit() is called, flush telemetry events first, but wait no more than x amount of ms before exiting process
+    Promise.race([wait(2000), flushTelemetry()]),
+  )
 
   telemetry.updateUserProperties({
     deviceId: await machineId(),
