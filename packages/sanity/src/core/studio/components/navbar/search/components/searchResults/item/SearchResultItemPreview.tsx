@@ -62,7 +62,7 @@ export default function SearchResultItemPreview({
       <Flex align="center" gap={3}>
         {presence && presence.length > 0 && <DocumentPreviewPresence presence={presence} />}
         <Badge>{schemaType.title}</Badge>
-        <DocumentStatusIndicator draft={draft} hidePublishedStatus published={published} />
+        <DocumentStatusIndicator draft={draft} published={published} />
       </Flex>
     )
   }, [draft, isLoading, presence, published, schemaType.title])

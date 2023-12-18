@@ -54,7 +54,7 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
     <TooltipDelayGroupProvider delay={TOOLTIP_DELAY_PROPS}>
       <Flex align="center" gap={3}>
         {presence && presence.length > 0 && <DocumentPreviewPresence presence={presence} />}
-        <DocumentStatusIndicator draft={draft} hidePublishedStatus published={published} />
+        <DocumentStatusIndicator draft={draft} published={published} />
       </Flex>
     </TooltipDelayGroupProvider>
   )
