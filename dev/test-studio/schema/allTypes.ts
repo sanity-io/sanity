@@ -48,6 +48,15 @@ export const allTypes = defineType({
       validation: (Rule) => Rule.required().min(2).unique(),
     }),
     defineField({
+      name: 'tagsArray',
+      title: 'Liste med tæggs',
+      type: 'array',
+      of: [{type: 'string'}],
+      options: {
+        layout: 'tags',
+      },
+    }),
+    defineField({
       name: 'object',
       title: 'Objekt',
       type: 'object',

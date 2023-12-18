@@ -921,6 +921,10 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Error message for when the source to generate a slug from is missing */
   'inputs.slug.error.missing-source':
     'Source is missing. Check source on type {{schemaType}} in schema',
+  /** Placeholder for an empty tag input */
+  'inputs.tags.placeholder': 'Enter tag and press ENTER…',
+  /** Placeholder for an empty tag input on touch devices */
+  'inputs.tags.placeholder_touch': 'Enter tag…',
   /** Convert to <code>`{{targetType}}`</code> */
   'inputs.untyped-value.convert-button.text': 'Convert to <code>{{targetType}}</code>',
   /** Encountered an object value without a <code>_type</code> property. */
