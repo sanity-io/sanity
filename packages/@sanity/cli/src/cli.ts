@@ -39,13 +39,6 @@ export async function runCli(cliRoot: string, {cliVersion}: {cliVersion: string}
 
   const pkg = {name: '@sanity/cli', version: cliVersion}
 
-  const {logger: telemetry, flush: flushTelemetry} = createTelemetryStore<TelemetryUserProperties>({
-    env: process.env,
-  })
-
-  // UGLY HACK: process.exit(<code>) causes abrupt exit, we want to flush telemetry before exiting
-  installProcessExitHack(flushTelemetry)
-
   const args = parseArguments()
   const isInit = args.groupOrCommand === 'init' && args.argsWithoutOptions[0] !== 'plugin'
   const cwd = getCurrentWorkingDirectory()
@@ -69,6 +62,14 @@ export async function runCli(cliRoot: string, {cliVersion}: {cliVersion: string}
   if (!cliConfig) {
     debug('No CLI config found')
   }
+
+  const {logger: telemetry, flush: flushTelemetry} = createTelemetryStore<TelemetryUserProperties>({
+    projectId: cliConfig?.config?.api?.projectId,
+    env: process.env,
+  })
+
+  // UGLY HACK: process.exit(<code>) causes abrupt exit, we want to flush telemetry before exiting
+  installProcessExitHack(flushTelemetry)
 
   telemetry.updateUserProperties({
     deviceId: await machineId(),

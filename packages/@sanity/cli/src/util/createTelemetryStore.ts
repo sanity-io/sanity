@@ -34,10 +34,11 @@ function getCachedClient(token: string) {
 }
 
 export function createTelemetryStore<UserProperties>(options: {
+  projectId?: string
   env: {[key: string]: string | undefined}
 }) {
   debug('Initializing telemetry')
-  const {env} = options
+  const {env, projectId} = options
 
   function fetchConsent(client: SanityClient) {
     return client.request({uri: '/intake/telemetry-status'})
@@ -86,7 +87,7 @@ export function createTelemetryStore<UserProperties>(options: {
         uri: '/intake/batch',
         method: 'POST',
         json: true,
-        body: batch,
+        body: {projectId, batch},
       })
     } catch (err) {
       const statusCode = err.response && err.response.statusCode
