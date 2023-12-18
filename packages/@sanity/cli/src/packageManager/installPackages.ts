@@ -33,6 +33,10 @@ export async function installDeclaredPackages(
     const pnpmArgs = ['install']
     output.print(`Running 'pnpm ${pnpmArgs.join(' ')}'`)
     result = await execa('pnpm', pnpmArgs, execOptions)
+  } else if (packageManager === 'bun') {
+    const bunArgs = ['install']
+    output.print(`Running 'bun ${bunArgs.join(' ')}'`)
+    result = await execa('bun', bunArgs, execOptions)
   } else if (packageManager === 'manual') {
     output.print(`Manual installation selected - run 'npm ${npmArgs.join(' ')}' or similar`)
   }
@@ -68,6 +72,10 @@ export async function installNewPackages(
     const pnpmArgs = ['add', '--save-prod', ...packages]
     output.print(`Running 'pnpm ${pnpmArgs.join(' ')}'`)
     result = await execa('pnpm', pnpmArgs, execOptions)
+  } else if (packageManager === 'bun') {
+    const bunArgs = ['add', ...packages]
+    output.print(`Running 'bun ${bunArgs.join(' ')}'`)
+    result = await execa('bun', bunArgs, execOptions)
   } else if (packageManager === 'manual') {
     output.print(`Manual installation selected - run 'npm ${npmArgs.join(' ')}' or equivalent`)
   }

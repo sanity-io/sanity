@@ -5,7 +5,9 @@ import preferredPM from 'preferred-pm'
 import {isInteractive} from '../util/isInteractive'
 import {CliPrompter} from '../types'
 
-export type PackageManager = 'npm' | 'yarn' | 'pnpm' | 'manual'
+export type PackageManager = 'npm' | 'yarn' | 'pnpm' | 'bun' | 'manual'
+
+const EXPERIMENTAL = ['bun']
 
 /**
  * Attempts to resolve the most optimal package manager to use to install/upgrade
@@ -58,7 +60,10 @@ export async function getPackageManagerChoice(
   const installed = await getAvailablePackageManagers(rootDir)
   const chosen = await options.prompt.single<PackageManager>({
     type: 'list',
-    choices: installed,
+    choices: installed.map((pm) => ({
+      value: pm,
+      name: EXPERIMENTAL.includes(pm) ? `${pm} (experimental)` : pm,
+    })),
     default: preferred || mostLikelyPM,
     message: `Package manager to use for installing dependencies?${messageSuffix}`,
   })
@@ -79,17 +84,22 @@ async function getFallback(cwd: string): Promise<PackageManager> {
     return 'pnpm'
   }
 
+  if (await hasBunInstalled(cwd)) {
+    return 'bun'
+  }
+
   return 'manual'
 }
 
 async function getAvailablePackageManagers(cwd: string): Promise<PackageManager[]> {
-  const [npm, yarn, pnpm] = await Promise.all([
+  const [npm, yarn, pnpm, bun] = await Promise.all([
     hasNpmInstalled(cwd),
     hasYarnInstalled(cwd),
     hasPnpmInstalled(cwd),
+    hasBunInstalled(cwd),
   ])
 
-  const choices = [npm && 'npm', yarn && 'yarn', pnpm && 'pnpm', 'manual']
+  const choices = [npm && 'npm', yarn && 'yarn', pnpm && 'pnpm', bun && 'bun', 'manual']
   return choices.filter((pm): pm is PackageManager => pm !== false)
 }
 
@@ -103,6 +113,10 @@ export function hasYarnInstalled(cwd?: string): Promise<boolean> {
 
 export function hasPnpmInstalled(cwd?: string): Promise<boolean> {
   return hasCommand('pnpm', cwd)
+}
+
+export function hasBunInstalled(cwd?: string): Promise<boolean> {
+  return hasCommand('bun', cwd)
 }
 
 export function getNpmRunPath(cwd: string): string {
@@ -166,6 +180,10 @@ function getRunningPackageManager(): PackageManager | undefined {
 
   if (agent.includes('pnpm')) {
     return 'pnpm'
+  }
+
+  if (agent.includes('bun')) {
+    return 'bun'
   }
 
   // Both yarn and pnpm does a `npm/?` thing, thus the slightly different match here

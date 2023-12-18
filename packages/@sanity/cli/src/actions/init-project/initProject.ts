@@ -503,6 +503,7 @@ export default async function initSanity(
     yarn: 'yarn dev',
     npm: 'npm run dev',
     pnpm: 'pnpm dev',
+    bun: 'bun dev',
     manual: 'npm run dev',
   }
   const devCommand = devCommandMap[pkgManager.chosen]
