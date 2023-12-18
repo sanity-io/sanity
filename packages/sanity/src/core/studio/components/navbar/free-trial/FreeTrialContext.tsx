@@ -22,7 +22,7 @@ export const FreeTrialProvider = ({children}: FreeTrialProviderProps) => {
   const [data, setData] = useState<FreeTrialResponse | null>(null)
   const [showDialog, setShowDialog] = useState(false)
   const [showOnLoad, setShowOnLoad] = useState(false)
-  const client = useClient({apiVersion: 'vX'})
+  const client = useClient({apiVersion: '2023-12-11'})
 
   useEffect(() => {
     const fetchData = async () => {
