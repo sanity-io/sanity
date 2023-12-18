@@ -125,8 +125,7 @@ export function createSetTelemetryConsentAction(status: SettableConsentStatus): 
       requireUser: true,
       requireProject: false,
     }).withConfig({
-      // todo: change vX to stable
-      apiVersion: 'vX',
+      apiVersion: '2023-12-18',
       useProjectHostname: false,
     })
 
