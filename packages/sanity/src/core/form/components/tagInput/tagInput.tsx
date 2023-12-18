@@ -3,16 +3,18 @@ import {
   Box,
   Button,
   Card,
-  CSSObject,
   Flex,
   isHTMLElement,
   rem,
   Text,
-  Theme,
+  type CSSObject,
+  type Theme,
   useForwardedRef,
 } from '@sanity/ui'
-import React, {forwardRef, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import React, {forwardRef, useCallback, useEffect, useRef, useState} from 'react'
 import styled, {css} from 'styled-components'
+import {useTranslation} from '../../../i18n'
+import {studioLocaleNamespace} from '../../../i18n/localeNamespaces'
 import {focusRingBorderStyle, focusRingStyle} from './styles'
 
 const Root = styled(Card)((props: {theme: Theme}): CSSObject => {
@@ -153,13 +155,8 @@ export const TagInput = forwardRef(
       value = [],
       ...restProps
     } = props
-    const placeholder = useMemo(() => {
-      if (placeholderProp) return placeholderProp
-      if (typeof window !== 'undefined' && 'ontouchstart' in window) {
-        return 'Enter tag…'
-      }
-      return 'Enter tag and press ENTER…'
-    }, [placeholderProp])
+
+    const {t} = useTranslation(studioLocaleNamespace)
     const [inputValue, setInputValue] = useState('')
     const enabled = !disabled && !readOnly
     const [focused, setFocused] = useState(false)
@@ -250,7 +247,16 @@ export const TagInput = forwardRef(
       >
         {enabled && (
           <Placeholder hidden={Boolean(inputValue || value.length)} padding={3}>
-            <Text textOverflow="ellipsis">{placeholder}</Text>
+            <Text textOverflow="ellipsis">
+              {placeholderProp
+                ? placeholderProp
+                : t('inputs.tags.placeholder', {
+                    context:
+                      typeof window !== 'undefined' && 'ontouchstart' in window
+                        ? 'touch'
+                        : undefined,
+                  })}
+            </Text>
           </Placeholder>
         )}
 
