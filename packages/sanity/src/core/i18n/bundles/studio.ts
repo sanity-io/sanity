@@ -408,6 +408,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Title for help and resources menus */
   'help-resources.title': 'Help and resources',
 
+  /** Text for button to cancel an ongoing upload */
+  'input.files.common.cancel-upload': 'Cancel',
   /** Text for file input button in upload placeholder */
   'input.files.common.upload-placeholder.file-input-button.text': 'Upload',
   /** Uploading <FileName/> */
