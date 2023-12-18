@@ -8,8 +8,7 @@ import {
   useGlobalKeyDown,
 } from '@sanity/ui'
 import styled from 'styled-components'
-import {Button, Popover} from '../../../../../ui-components'
-import {TOOLTIP_DELAY_PROPS} from '../../../../../ui-components/tooltip/constants'
+import {Button, Popover, TOOLTIP_DELAY_PROPS} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
 import {ContextMenuButton} from '../../../../components/contextMenuButton'
 
