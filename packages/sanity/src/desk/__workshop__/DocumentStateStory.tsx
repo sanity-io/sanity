@@ -1,6 +1,6 @@
 import {Box, Code, Stack} from '@sanity/ui'
 import React, {useMemo, useState, useCallback, useEffect} from 'react'
-import {Button, Dialog} from '../../ui'
+import {Button, Dialog} from '../../ui-components'
 import {DeskToolProvider} from '../DeskToolProvider'
 import {DocumentPaneProvider} from '../panes'
 import {DocumentPaneNode} from '../types'

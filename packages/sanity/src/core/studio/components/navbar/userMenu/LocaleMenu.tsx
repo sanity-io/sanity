@@ -2,7 +2,7 @@ import {CheckmarkIcon} from '@sanity/icons'
 import {MenuDivider} from '@sanity/ui'
 import React, {useCallback} from 'react'
 import {useLocale} from '../../../../i18n/hooks/useLocale'
-import {MenuItem} from '../../../../../ui'
+import {MenuItem} from '../../../../../ui-components'
 
 const LOCALE_SELECTION_DISABLED = true
 

@@ -2,7 +2,7 @@ import React, {ComponentProps, useCallback, useEffect, useState} from 'react'
 
 import {AccessDeniedIcon, ImageIcon, ReadOnlyIcon} from '@sanity/icons'
 import {Box, Card, CardTone, Heading, Text, useElementRect} from '@sanity/ui'
-import {LoadingBlock} from '../../../../../ui/loadingBlock'
+import {LoadingBlock} from '../../../../components/loadingBlock'
 import {useTranslation} from '../../../../i18n'
 import {MAX_DEFAULT_HEIGHT, RatioBox, Overlay, FlexOverlay} from './ImagePreview.styled'
 

@@ -3,9 +3,7 @@ import React, {isValidElement} from 'react'
 import {isNumber, isString} from 'lodash'
 import {Flex, TooltipDelayGroupProvider} from '@sanity/ui'
 import {useMemoObservable} from 'react-rx'
-import {DocumentStatus} from '../../../ui/documentStatus'
-import {DocumentStatusIndicator} from '../../../ui/documentStatusIndicator'
-import {TOOLTIP_DELAY_PROPS} from '../../../ui/tooltip/constants'
+import {TOOLTIP_DELAY_PROPS} from '../../../ui-components'
 import type {PaneItemPreviewState} from './types'
 import {
   DocumentPresence,
@@ -16,6 +14,8 @@ import {
   getPreviewValueWithFallback,
   SanityDefaultPreview,
   isRecord,
+  DocumentStatusIndicator,
+  DocumentStatus,
 } from 'sanity'
 
 export interface PaneItemPreviewProps {

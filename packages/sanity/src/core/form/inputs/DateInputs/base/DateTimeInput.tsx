@@ -2,7 +2,7 @@ import React, {KeyboardEvent, forwardRef, useCallback, useRef, useState} from 'r
 import FocusLock from 'react-focus-lock'
 import {Box, Flex, LayerProvider, useClickOutside, useForwardedRef} from '@sanity/ui'
 import {CalendarIcon} from '@sanity/icons'
-import {Button, Popover} from '../../../../../ui'
+import {Button, Popover} from '../../../../../ui-components'
 import {DatePicker} from './DatePicker'
 import {LazyTextInput} from './LazyTextInput'
 import {CalendarLabels} from './calendar/types'

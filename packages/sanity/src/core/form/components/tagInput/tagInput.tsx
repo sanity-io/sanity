@@ -14,7 +14,7 @@ import React, {forwardRef, useCallback, useEffect, useRef, useState} from 'react
 import styled, {css} from 'styled-components'
 import {useTranslation} from '../../../i18n'
 import {studioLocaleNamespace} from '../../../i18n/localeNamespaces'
-import {Button} from '../../../../ui'
+import {Button} from '../../../../ui-components'
 import {focusRingBorderStyle, focusRingStyle} from './styles'
 
 const Root = styled(Card)((props: {theme: Theme}): CSSObject => {

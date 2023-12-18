@@ -1,7 +1,7 @@
 import React, {forwardRef, useCallback} from 'react'
 import {Autocomplete, Box, Flex, Placement, Text} from '@sanity/ui'
 import styled from 'styled-components'
-import {Popover} from '../../../../ui'
+import {Popover} from '../../../../ui-components'
 import {Translate, useTranslation} from '../../../i18n'
 
 const StyledPopover = styled(Popover)`

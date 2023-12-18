@@ -4,7 +4,7 @@ import {useSelect} from '@sanity/ui-workshop'
 import React, {useCallback, useState} from 'react'
 import {CommandList} from '../CommandList'
 import {CommandListRenderItemCallback} from '../types'
-import {Button, Popover} from '../../../../ui'
+import {Button, Popover} from '../../../../ui-components'
 
 const ITEMS = [...Array(50000).keys()]
 

@@ -3,7 +3,7 @@
 import React, {useCallback, useState} from 'react'
 import {Card, Code, Container, ErrorBoundary, Heading, Stack} from '@sanity/ui'
 import {useHotModuleReload} from 'use-hot-module-reload'
-import {Button} from '../../ui'
+import {Button} from '../../ui-components'
 import {SchemaError} from '../config'
 import {isRecord} from '../util'
 import {CorsOriginError} from '../store'

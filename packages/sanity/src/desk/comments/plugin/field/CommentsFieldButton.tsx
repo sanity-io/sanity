@@ -17,7 +17,7 @@ import {
   CommentIcon,
   MentionOptionsHookValue,
 } from '../../src'
-import {Button, Popover, Tooltip} from '../../../../ui'
+import {Button, Popover, Tooltip} from '../../../../ui-components'
 import {CurrentUser, PortableTextBlock} from 'sanity'
 
 const ContentStack = styled(Stack)`
