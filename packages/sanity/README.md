@@ -90,6 +90,22 @@ We aim to be an inclusive, welcoming community for everyone. To make that explic
 
 Found a bug, or want to contribute code? Pull requests and issues are most welcome. Read our [contributing guidelines](https://github.com/sanity-io/sanity/blob/current/CONTRIBUTING.md) to learn how.
 
+### Help Improve Sanity Studio translations
+
+We're always looking to make Sanity Studio more accessible and user-friendly, and your contributions can make a big difference. Whether you're a seasoned developer or just starting out, helping with translations is a fantastic way to get involved.
+
+If you're fluent in a language other than English, we'd love your help in reviewing and improving translations. Your expertise can greatly enhance the experience for users worldwide.
+
+How to Contribute:
+
+1. Visit our [sanity-io/locales](https://github.com/sanity-io/locales) repository and try out a locale you are fluent in.
+2. Have ideas for improvements? Submit a PR following the [contributing guide](https://github.com/sanity-io/locales/blob/main/CONTRIBUTING.md#getting-started).
+3. See if there are open PRs in languages you are fluent in and help review them.
+
+Interested in playing a bigger role? You can ask to be added as a maintainer to oversee translations for specific languages, where you will be automatically added as a reviewer on PRs that involve your language. See the [sanity-io/locales README](https://github.com/sanity-io/locales#readme) for more.
+
+Your contributions not only improve Sanity Studio but also bring together a diverse and global community of users. We appreciate every effort, big or small, and we can't wait to see what you bring to the table!
+
 ## License
 
 Sanity Studio is available under the [_MIT License_](https://github.com/sanity-io/sanity/blob/current/LICENSE)
