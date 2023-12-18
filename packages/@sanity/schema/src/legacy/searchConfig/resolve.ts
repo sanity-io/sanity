@@ -2,7 +2,15 @@ import {isNumber, uniqBy} from 'lodash'
 
 export const DEFAULT_MAX_FIELD_DEPTH = 4
 
-const stringFieldsSymbol = Symbol('__cachedStringFields')
+const stringFieldsSymbols = {}
+
+const getStringFieldSymbol = (maxDepth: number) => {
+  if (!stringFieldsSymbols[maxDepth]) {
+    stringFieldsSymbols[maxDepth] = Symbol(`__cachedStringFields_${maxDepth}`)
+  }
+
+  return stringFieldsSymbols[maxDepth]
+}
 
 const isReference = (type) => type.type && type.type.name === 'reference'
 
@@ -81,8 +89,9 @@ export function deriveFromPreview(type: {
 }
 
 function getCachedStringFieldPaths(type, maxDepth) {
-  if (!type[stringFieldsSymbol]) {
-    type[stringFieldsSymbol] = uniqBy(
+  const symbol = getStringFieldSymbol(maxDepth)
+  if (!type[symbol]) {
+    type[symbol] = uniqBy(
       [
         ...BASE_WEIGHTS,
         ...deriveFromPreview(type),
@@ -96,16 +105,17 @@ function getCachedStringFieldPaths(type, maxDepth) {
       (spec) => spec.path.join('.'),
     )
   }
-  return type[stringFieldsSymbol]
+  return type[symbol]
 }
 
 function getCachedBaseFieldPaths(type) {
-  if (!type[stringFieldsSymbol]) {
-    type[stringFieldsSymbol] = uniqBy([...BASE_WEIGHTS, ...deriveFromPreview(type)], (spec) =>
+  const symbol = getStringFieldSymbol(DEFAULT_MAX_FIELD_DEPTH)
+  if (!type[symbol]) {
+    type[symbol] = uniqBy([...BASE_WEIGHTS, ...deriveFromPreview(type)], (spec) =>
       spec.path.join('.'),
     )
   }
-  return type[stringFieldsSymbol]
+  return type[symbol]
 }
 
 function getStringFieldPaths(type, maxDepth) {
