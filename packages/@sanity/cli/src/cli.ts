@@ -20,6 +20,7 @@ import {CommandRunnerOptions, TelemetryUserProperties} from './types'
 import {debug} from './debug'
 import {createTelemetryStore} from './util/createTelemetryStore'
 import {detectRuntime} from './util/detectRuntime'
+import {telemetryDisclosure} from './util/telemetryDisclosure'
 import {CliCommand} from './__telemetry__/cli.telemetry'
 
 const sanityEnv = process.env.SANITY_INTERNAL_ENV || 'production' // eslint-disable-line no-process-env
@@ -55,6 +56,9 @@ export async function runCli(cliRoot: string, {cliVersion}: {cliVersion: string}
 
   // Check if there are updates available for the CLI, and notify if there is
   await runUpdateCheck({pkg, cwd, workDir}).notify()
+
+  // If the telemetry disclosure message has not yet been shown, show it.
+  telemetryDisclosure()
 
   // Try to figure out if we're in a v2 or v3 context by finding a config
   debug(`Reading CLI config from "${workDir}"`)

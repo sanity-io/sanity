@@ -9,6 +9,7 @@ import {getCliToken} from '../../util/clientWrapper'
 import {getUserConfig} from '../../util/getUserConfig'
 import {canLaunchBrowser} from '../../util/canLaunchBrowser'
 import type {CliApiClient, CliCommandArguments, CliCommandContext, CliPrompter} from '../../types'
+import {TELEMETRY_CONSENT_CONFIG_KEY} from '../../util/createTelemetryStore'
 import type {LoginProvider, ProvidersResponse, SamlLoginProvider} from './types'
 import {LoginTrace} from './login.telemetry'
 
@@ -121,6 +122,9 @@ export async function login(
     authToken: authToken,
     authType: 'normal',
   })
+
+  // Clear cached telemetry consent
+  getUserConfig().delete(TELEMETRY_CONSENT_CONFIG_KEY)
 
   // If we had a session previously, attempt to clear it
   if (hasExistingToken) {

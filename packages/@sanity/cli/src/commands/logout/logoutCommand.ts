@@ -1,6 +1,7 @@
 import chalk from 'chalk'
 import type {CliCommandDefinition} from '../../types'
 import {getUserConfig} from '../../util/getUserConfig'
+import {TELEMETRY_CONSENT_CONFIG_KEY} from '../../util/createTelemetryStore'
 
 const helpText = `
 Examples
@@ -39,6 +40,9 @@ const logoutCommand: CliCommandDefinition = {
 
     cfg.delete('authType')
     cfg.delete('authToken')
+
+    // Clear cached telemetry consent
+    cfg.delete(TELEMETRY_CONSENT_CONFIG_KEY)
 
     output.print(chalk.green('Logged out'))
   },
