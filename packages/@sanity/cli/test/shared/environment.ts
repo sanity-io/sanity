@@ -7,7 +7,8 @@ import {createClient} from '@sanity/client'
 import which from 'which'
 
 export const cliUserToken = (process.env.SANITY_CI_CLI_AUTH_TOKEN || '').trim()
-export const cliProjectId = 'aeysrmym'
+export const cliProjectId = '1d4femd5'
+export const cliApiHost = 'https://api.sanity.work'
 
 export const hasBuiltCli = existsSync(path.join(__dirname, '..', '..', 'lib', 'cli.js'))
 export const fixturesPath = path.join(__dirname, '..', '__fixtures__')
@@ -21,7 +22,7 @@ export const cliInstallPath = path.join(baseTestPath, 'install')
 export const cliBinPath = path.join(cliInstallPath, 'node_modules', '.bin', 'sanity')
 export const {NODE_ENV, ...envLessEnv} = process.env
 export const sanityEnv = {...envLessEnv, XDG_CONFIG_HOME: path.join(baseTestPath, 'config')}
-export const cliConfigPath = path.join(sanityEnv.XDG_CONFIG_HOME, 'sanity', 'config.json')
+export const cliConfigPath = path.join(sanityEnv.XDG_CONFIG_HOME, 'sanity-staging', 'config.json')
 export const nodeMajorVersion = process.version.split('.')[0]
 export const npmPath = which.sync('npm')
 export const nodePath = process.execPath
@@ -56,9 +57,9 @@ const getTestId = () => {
     return cachedTestId
   }
 
-  const localId = readFileSync(testIdPath, 'utf8').trim()
+  const localId = readFileSync(testIdPath, 'utf8').trim().slice(0, 5)
   const ghRunId = `${process.env.GITHUB_RUN_ID || ''}`.slice(-4)
-  const ghId = `${ghRunId}-${process.env.GITHUB_RUN_NUMBER}-${process.env.GITHUB_RUN_ATTEMPT}-${process.env.GITHUB_SHARD_IDENTIFIER}`
+  const ghId = `${ghRunId}-${process.env.GITHUB_RUN_NUMBER}-${process.env.GITHUB_RUN_ATTEMPT}`
   const githubId = process.env.GITHUB_RUN_ID ? `gh-${ghId}` : ''
   const runId = `${githubId || localId}`.replace(/\W/g, '-').replace(/(^-+|-+$)/g, '')
 
@@ -78,6 +79,7 @@ export const testClient = createClient({
   dataset: 'production',
   useCdn: false,
   token: cliUserToken,
+  apiHost: cliApiHost,
 })
 
 export const getCliUserEmail = (): Promise<string> =>

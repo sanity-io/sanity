@@ -3,8 +3,9 @@
   "project": {
     "name": "v2 studio"
   },
+  "apiHost": "https://api.sanity.work",
   "api": {
-    "projectId": "aeysrmym",
+    "projectId": "1d4femd5",
     "dataset": "production"
   },
   "plugins": [

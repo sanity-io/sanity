@@ -24,6 +24,7 @@ import {
   studiosPath,
   studioVersions,
   testIdPath,
+  cliApiHost,
 } from './environment'
 
 const SYMLINK_SCRIPT = path.resolve(__dirname, '../../../../../scripts/symlinkDependencies.js')
@@ -32,6 +33,10 @@ export default async function globalSetup(): Promise<void> {
   // Write a file with the test id, so it can be shared across workers
   const localHost = hostname().toLowerCase().split('.')[0]
   const testId = `${localHost}-${process.ppid || process.pid}`
+
+  // Set Staging Env Var
+  // eslint-disable-next-line no-process-env
+  process.env.SANITY_INTERNAL_ENV = 'staging'
 
   await mkdir(baseTestPath, {recursive: true})
   await writeFile(testIdPath, testId, 'utf8')
@@ -120,6 +125,7 @@ async function prepareCliAuth(configPath: string) {
     apiVersion: '1',
     useCdn: false,
     token: cliUserToken,
+    apiHost: cliApiHost,
   })
   const user = await client.users.getById('me')
   if (!user || !user.id) {
@@ -128,7 +134,8 @@ async function prepareCliAuth(configPath: string) {
 
   // Store the config file in a different directory than the default, in order
   // to be easier to test locally without having the local user conflict
-  const cs = new Configstore('sanity', {}, {globalConfigPath: true, configPath})
+  // NOTE: this is using the staging env
+  const cs = new Configstore('sanity-staging', {}, {globalConfigPath: true, configPath})
   cs.set('authToken', cliUserToken)
 }
 
@@ -138,6 +145,7 @@ async function prepareDatasets() {
     apiVersion: '2022-06-03',
     useCdn: false,
     token: cliUserToken,
+    apiHost: cliApiHost,
   })
 
   for (const version of studioVersions) {
