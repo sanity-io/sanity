@@ -55,7 +55,7 @@ const shopifyTemplate: ProjectTemplate = {
     '@sanity/asset-utils': '^1.3.0',
     '@sanity/color-input': '^3.0.2',
     '@sanity/icons': '^2.6.0',
-    '@sanity/ui': '^1.8.3',
+    '@sanity/ui': '^2.0.0-beta',
     'lodash.get': '^4.4.2',
     'pluralize-esm': '^9.0.2',
     'sanity-plugin-hotspot-array': '^1.0.1',
