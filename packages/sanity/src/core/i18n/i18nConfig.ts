@@ -53,7 +53,8 @@ function createI18nApi({
   projectId: string
   sourceName: string
 }): {source: LocaleSource; i18next: i18n} {
-  const options = getI18NextOptions(projectId, sourceName, locales)
+  const namespaceNames = new Set(bundles.map((bundle) => bundle.namespace))
+  const options = getI18NextOptions(projectId, sourceName, locales, namespaceNames)
   const i18nInstance = createI18nInstance()
     .use(createSanityI18nBackend({bundles}))
     .use(initReactI18next)
@@ -164,6 +165,7 @@ function getI18NextOptions(
   projectId: string,
   sourceName: string,
   locales: LocaleDefinition[],
+  namespaces: Set<string>,
 ): InitOptions & {lng: string} {
   const preferredLocaleId = getPreferredLocale(projectId, sourceName)
   const preferredLocale = locales.find((l) => l.id === preferredLocaleId)
@@ -171,6 +173,7 @@ function getI18NextOptions(
   const locale = preferredLocale?.id ?? lastLocale.id ?? defaultOptions.lng
   return {
     ...defaultOptions,
+    ns: Array.from(namespaces), // For now, let us load all namespaces. We can optimize later.
     lng: locale,
     supportedLngs: locales.map((def) => def.id),
   }
