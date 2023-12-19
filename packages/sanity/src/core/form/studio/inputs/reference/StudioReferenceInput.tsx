@@ -24,6 +24,7 @@ import {FIXME} from '../../../../FIXME'
 import {isNonNullable} from '../../../../util'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
 import {useFormValue} from '../../../contexts/FormValue'
+import {useSearchMaxFieldDepth} from '../../../../studio/components/navbar/search/hooks/useSearchMaxFieldDepth'
 
 async function resolveUserDefinedFilter(
   options: ReferenceOptions | undefined,
@@ -78,6 +79,7 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
   const source = useSource()
   const searchClient = source.getClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const schema = useSchema()
+  const maxFieldDepth = useSearchMaxFieldDepth()
   const documentPreviewStore = useDocumentPreviewStore()
   const {path, schemaType} = props
   const {EditReferenceLinkComponent, onEditReference, activePath, initialValueTemplateItems} =
@@ -102,6 +104,7 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
             filter,
             params,
             tag: 'search.reference',
+            maxFieldDepth,
           }),
         ),
 
@@ -114,7 +117,7 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
         }),
       ),
 
-    [documentRef, path, searchClient, schemaType, getClient],
+    [documentRef, path, searchClient, schemaType, maxFieldDepth, getClient],
   )
 
   const template = props.value?._strengthenOnPublish?.template
