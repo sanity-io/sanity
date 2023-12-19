@@ -1,5 +1,5 @@
 import React, {useCallback, useMemo, useState} from 'react'
-import {Box, Grid, Stack, Text, useClickOutside} from '@sanity/ui'
+import {Box, Flex, Stack, Text, useClickOutside} from '@sanity/ui'
 import {ObjectSchemaType} from '@sanity/types'
 import {useDocumentOperation} from '../../../hooks'
 import {Button, Popover} from '../../../../ui-components'
@@ -109,13 +109,13 @@ export function FieldChange(
               {isComparingCurrent && !isPermissionsLoading && permissions?.granted && (
                 <Popover
                   content={
-                    <Stack space={1}>
-                      <Box padding={1}>
+                    <Stack space={3}>
+                      <Box paddingY={3}>
                         <Text size={1}>
                           {t('changes.action.revert-changes-description', {count: 1})}
                         </Text>
                       </Box>
-                      <Grid columns={2} gap={2} marginTop={2}>
+                      <Flex gap={3} justify="flex-end">
                         <Button
                           mode="ghost"
                           onClick={closeRevertChangesConfirmDialog}
@@ -126,7 +126,7 @@ export function FieldChange(
                           onClick={handleRevertChanges}
                           text={t('changes.action.revert-changes-confirm-change', {count: 1})}
                         />
-                      </Grid>
+                      </Flex>
                     </Stack>
                   }
                   open={confirmRevertOpen}
