@@ -58,7 +58,6 @@ export function FormFieldValidationStatus(props: FormFieldValidationStatusProps)
 
   const hasErrors = validation.some((v) => v.level === 'error')
   const hasWarnings = validation.some((v) => v.level === 'warning')
-  // const hasInfo = validation.some((v) => v.level === 'info')
 
   // eslint-disable-next-line no-nested-ternary
   const status = hasErrors ? 'error' : hasWarnings ? 'warning' : 'info'
