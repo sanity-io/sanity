@@ -21,16 +21,6 @@ test.describe('Studio Components API:', () => {
     ).toBeVisible()
   })
 
-  test('studio.components.logo', async ({page}) => {
-    page.goto('/test/content')
-    await expect(
-      page
-        .getByTestId('child-parent-config-studio-logo')
-        .getByTestId('parent-config-studio-logo')
-        .getByTestId('studio-logo'),
-    ).toBeVisible()
-  })
-
   test('studio.components.toolMenu', async ({page}) => {
     page.goto('/test/content')
     await expect(

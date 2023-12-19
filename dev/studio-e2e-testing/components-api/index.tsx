@@ -28,7 +28,6 @@ const childComponents = definePlugin({
   studio: {
     components: {
       layout: (props) => <StudioLayout {...props} testId="child-parent-config-studio-layout" />,
-      logo: (props) => <StudioLogo {...props} testId="child-parent-config-studio-logo" />,
       navbar: (props) => <StudioNavbar {...props} testId="child-parent-config-studio-navbar" />,
       toolMenu: (props) => (
         <StudioToolMenu {...props} testId="child-parent-config-studio-tool-menu" />
@@ -58,7 +57,6 @@ export const customComponents = definePlugin({
   studio: {
     components: {
       layout: (props) => <StudioLayout {...props} testId="parent-config-studio-layout" />,
-      logo: (props) => <StudioLogo {...props} testId="parent-config-studio-logo" />,
       navbar: (props) => <StudioNavbar {...props} testId="parent-config-studio-navbar" />,
       toolMenu: (props) => <StudioToolMenu {...props} testId="parent-config-studio-tool-menu" />,
     },
