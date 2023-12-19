@@ -1,7 +1,6 @@
 import React from 'react'
-import {studioTheme} from '@sanity/ui'
 
-export const AVATAR_HEIGHT = studioTheme.avatar.sizes[0].size
+export const AVATAR_HEIGHT = 25
 
 const INLINE_STYLE: React.CSSProperties = {
   minWidth: AVATAR_HEIGHT,
