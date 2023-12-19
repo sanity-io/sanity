@@ -6,7 +6,7 @@ import {getTypeNameFromSingleTypeFilter, removePublishedWithDrafts} from './help
 import {DEFAULT_ORDERING, FULL_LIST_LIMIT, PARTIAL_PAGE_LIMIT} from './constants'
 import {listenSearchQuery} from './listenSearchQuery'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS, useClient, useSchema} from 'sanity'
-import {useSearchMaxFieldDepth} from 'sanity/_internal'
+import {useSearchMaxFieldDepth} from 'sanity/_internalBrowser'
 
 const EMPTY_ARRAY: [] = []
 

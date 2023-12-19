@@ -15,15 +15,8 @@ import {
 } from 'rxjs'
 import {exhaustMapWithTrailing} from 'rxjs-exhaustmap-with-trailing'
 import {SortOrder} from './types'
-import {
-  createSearchQuery,
-  getSearchableTypes,
-  getSearchTypesWithMaxDepth,
-  Schema,
-  SearchOptions,
-  SearchTerms,
-  WeightedSearchOptions,
-} from 'sanity'
+import {createSearchQuery, Schema, SearchOptions, SearchTerms, WeightedSearchOptions} from 'sanity'
+import {getSearchableTypes, getSearchTypesWithMaxDepth} from 'sanity/_internalBrowser'
 
 interface ListenQueryOptions {
   client: SanityClient
