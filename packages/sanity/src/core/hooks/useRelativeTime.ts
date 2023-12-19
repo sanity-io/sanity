@@ -39,12 +39,6 @@ const FULL_DATE_FORMAT: Intl.DateTimeFormatOptions = {
 
 /** @internal */
 export interface RelativeTimeOptions {
-  /**
-   * Use `narrow` relative time styles and unit formatting. e.g. `3d ago`
-   *
-   * Note that this doesn't impact _numeric styling_. Returned values will always
-   * return idiomatic phrasing like `yesterday` rather than `1d ago`, where possible.
-   **/
   minimal?: boolean
   useTemporalPhrase?: boolean
   relativeTo?: Date
@@ -101,18 +95,14 @@ function useFormatRelativeTime(date: Date | string, opts: RelativeTimeOptions = 
             // Force 'long' formatting for dates within the next/previous week as `Intl.RelativeTimeFormat`
             // will display these as `next wk.` or `last wk.` – which we don't want!
             // Idiomatic dates should always be displayed in full. There may be a more elegant way to handle this.
-            style: minimal && !isNextOrPrevWeek ? 'narrow' : 'long',
+            style: minimal && !isNextOrPrevWeek ? 'short' : 'long',
             numeric: 'auto',
           })
           .format(count, unit)
       }
 
       return intlCache
-        .numberFormat(currentLocale, {
-          style: 'unit',
-          unit,
-          unitDisplay: minimal ? 'narrow' : 'long',
-        })
+        .numberFormat(currentLocale, {style: 'unit', unit, unitDisplay: minimal ? 'short' : 'long'})
         .format(Math.abs(count))
     },
     [currentLocale, useTemporalPhrase, minimal],
