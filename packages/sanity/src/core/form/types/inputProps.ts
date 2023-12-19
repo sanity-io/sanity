@@ -21,6 +21,7 @@ import {
   OnCopyFn,
   OnPasteFn,
   PortableTextEditor,
+  RangeDecoration,
 } from '@sanity/portable-text-editor'
 import {FormPatch, PatchEvent} from '../patch'
 import {
@@ -522,6 +523,10 @@ export interface PortableTextInputProps
    * Use the `renderBlock` interface instead.
    */
   renderCustomMarkers?: RenderCustomMarkers
+  /**
+   * Array of {@link RangeDecoration} that can be used to decorate the content.
+   */
+  rangeDecorations?: RangeDecoration[]
 }
 
 /**
