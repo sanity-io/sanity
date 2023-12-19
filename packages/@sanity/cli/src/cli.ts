@@ -127,7 +127,11 @@ export async function runCli(cliRoot: string, {cliVersion}: {cliVersion: string}
   }
 
   const cliRunner = getCliRunner(commands)
-  const cliCommandTrace = telemetry.trace(CliCommand)
+  const cliCommandTrace = telemetry.trace(CliCommand, {
+    groupOrCommand: args.groupOrCommand,
+    extraArguments: args.extraArguments,
+    commandArguments: args.argsWithoutOptions,
+  })
 
   cliCommandTrace.start()
   cliCommandTrace.log({
@@ -135,9 +139,9 @@ export async function runCli(cliRoot: string, {cliVersion}: {cliVersion: string}
     extraArguments: args.extraArguments,
     commandArguments: args.argsWithoutOptions,
     coreOptions: {
-      help: args.coreOptions.help,
-      version: args.coreOptions.version,
-      debug: args.coreOptions.debug,
+      help: args.coreOptions.help || undefined,
+      version: args.coreOptions.help || undefined,
+      debug: args.coreOptions.help || undefined,
     },
   })
 
