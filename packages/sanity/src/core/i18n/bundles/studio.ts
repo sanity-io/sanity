@@ -336,6 +336,13 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Title for the default ordering/SortOrder if no orderings are provided and the title field is found */
   'default-orderings.title': 'Sort by Title',
 
+  /** Label to show in the document footer indicating the last edited date of the document */
+  'document-status.edited': 'Edited {{date}}',
+  /** Label to show in the document footer indicating the document is not published*/
+  'document-status.not-published': 'Not published',
+  /** Label to show in the document footer indicating the published date of the document */
+  'document-status.published': 'Published {{date}}',
+
   /** The value of the <code>_key</code> property must be a unique string. */
   'form.error.duplicate-keys-alert.details.additional-description':
     'The value of the <code>_key</code> property must be a unique string.',
