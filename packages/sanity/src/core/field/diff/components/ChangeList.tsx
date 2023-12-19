@@ -1,4 +1,4 @@
-import {Box, Card, Grid, Stack, Text, useClickOutside} from '@sanity/ui'
+import {Box, Card, Flex, Stack, Text, useClickOutside} from '@sanity/ui'
 import {RevertIcon} from '@sanity/icons'
 import React, {useCallback, useContext, useMemo, useState} from 'react'
 import {SanityDocument} from '@sanity/client'
@@ -118,15 +118,15 @@ export function ChangeList({diff, fields, schemaType}: ChangeListProps): React.R
         {showFooter && isComparingCurrent && !isPermissionsLoading && permissions?.granted && (
           <Popover
             content={
-              <Stack space={1}>
-                <Box padding={1}>
+              <Stack space={3}>
+                <Box paddingY={3}>
                   <Text size={1}>
                     {t('changes.action.revert-all-description', {
                       count: changes.length,
                     })}
                   </Text>
                 </Box>
-                <Grid columns={2} gap={2} marginTop={2}>
+                <Flex gap={3} justify="flex-end">
                   <Button
                     mode="ghost"
                     text={t('changes.action.revert-all-cancel')}
@@ -137,7 +137,7 @@ export function ChangeList({diff, fields, schemaType}: ChangeListProps): React.R
                     text={t('changes.action.revert-all-confirm')}
                     onClick={revertAllChanges}
                   />
-                </Grid>
+                </Flex>
               </Stack>
             }
             open={confirmRevertAllOpen}
