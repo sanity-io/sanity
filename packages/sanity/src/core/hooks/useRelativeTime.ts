@@ -101,7 +101,7 @@ function useFormatRelativeTime(date: Date | string, opts: RelativeTimeOptions = 
             // Force 'long' formatting for dates within the next/previous week as `Intl.RelativeTimeFormat`
             // will display these as `next wk.` or `last wk.` – which we don't want!
             // Idiomatic dates should always be displayed in full. There may be a more elegant way to handle this.
-            style: minimal && !isNextOrPrevWeek ? 'narrow' : 'long',
+            style: minimal && !isNextOrPrevWeek ? 'short' : 'long',
             numeric: 'auto',
           })
           .format(count, unit)
@@ -111,7 +111,7 @@ function useFormatRelativeTime(date: Date | string, opts: RelativeTimeOptions = 
         .numberFormat(currentLocale, {
           style: 'unit',
           unit,
-          unitDisplay: minimal ? 'narrow' : 'long',
+          unitDisplay: minimal ? 'short' : 'long',
         })
         .format(Math.abs(count))
     },
