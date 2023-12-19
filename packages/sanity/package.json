@@ -173,7 +173,7 @@
     "@sanity/portable-text-editor": "3.22.0",
     "@sanity/presentation": "1.2.1",
     "@sanity/schema": "3.22.0",
-    "@sanity/telemetry": "^0.7.0",
+    "@sanity/telemetry": "^0.7.3",
     "@sanity/types": "3.22.0",
     "@sanity/ui": "^1.9.3",
     "@sanity/util": "3.22.0",

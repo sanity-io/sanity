@@ -16,9 +16,9 @@ interface CLITraceData {
    */
   extraArguments: string[]
   coreOptions: {
-    help: boolean
-    debug: boolean
-    version: boolean
+    help?: boolean
+    debug?: boolean
+    version?: boolean
   }
 }
 
