@@ -11,7 +11,6 @@ import type {Patch} from '../../types/patch'
 import {PatchObservable, PortableTextSlateEditor} from '../../types/editor'
 import {debugWithName} from '../../utils/debug'
 import {fromSlateValue} from '../../utils/values'
-import {removeAllDocumentSelectionRanges} from '../../utils/ranges'
 
 const debug = debugWithName('plugin:withUndoRedo')
 const debugVerbose = debug.enabled && false
@@ -145,7 +144,6 @@ export function createWithUndoRedo(
               ),
             )
           })
-          removeAllDocumentSelectionRanges(!!editor.selection)
           try {
             Editor.withoutNormalizing(editor, () => {
               withoutSaving(editor, () => {
@@ -192,7 +190,6 @@ export function createWithUndoRedo(
               ),
             )
           })
-          removeAllDocumentSelectionRanges(!!editor.selection)
           try {
             Editor.withoutNormalizing(editor, () => {
               withoutSaving(editor, () => {
