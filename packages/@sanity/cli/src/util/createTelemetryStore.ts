@@ -1,3 +1,4 @@
+import {appendFile} from 'fs/promises'
 import {SanityClient} from '@sanity/client'
 import {ConsentStatus, createBatchedStore, createSessionId, TelemetryEvent} from '@sanity/telemetry'
 import {debug as baseDebug} from '../debug'
@@ -10,6 +11,7 @@ import {createExpiringConfig} from './createExpiringConfig'
 const debug = baseDebug.extend('telemetry')
 
 const FIVE_MINUTES = 1000 * 60 * 5
+const LOG_FILE_NAME = 'telemetry-events.ndjson'
 
 export const TELEMETRY_CONSENT_CONFIG_KEY = 'telemetryConsent'
 
@@ -47,6 +49,7 @@ function getCachedClient(token: string) {
 
 interface Env {
   DO_NOT_TRACK?: string
+  SANITY_TELEMETRY_INSPECT?: string
 }
 
 interface Options {
@@ -149,6 +152,12 @@ export function createTelemetryStore<UserProperties>({
       // check is also done during consent checking, this would normally never happen
       debug('No user token found. Something is not quite right')
       return Promise.reject(new Error('User is not logged in'))
+    }
+    const inspectEvents = isTrueish(env.SANITY_TELEMETRY_INSPECT)
+    if (inspectEvents) {
+      // eslint-disable-next-line no-console
+      console.info(`SANITY_TELEMETRY_INSPECT is set, appending events to "${LOG_FILE_NAME}"`)
+      await appendFile(LOG_FILE_NAME, `${batch.map((entry) => JSON.stringify(entry)).join('\n')}\n`)
     }
     const client = getCachedClient(token)
     debug('Submitting %s telemetry events', batch.length)
