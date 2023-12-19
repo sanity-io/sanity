@@ -372,7 +372,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
     }
     const window = ReactEditor.getWindow(slateEditor)
     const domSelection = window.getSelection()
-    if (!domSelection) {
+    if (!domSelection || domSelection.rangeCount === 0) {
       return
     }
     const existingDOMRange = domSelection.getRangeAt(0)
