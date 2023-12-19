@@ -49,7 +49,7 @@ export function CreateButton(props: Props) {
         {/* this wrapper div is needed because disabled button doesn't trigger mouse events */}
         <div style={INLINE_BLOCK_STYLE}>
           <Button
-            text={t('inputs.reference.create-new-document')}
+            text={t('inputs.reference.action.create-new-document')}
             mode="ghost"
             disabled
             icon={AddIcon}
@@ -66,7 +66,7 @@ export function CreateButton(props: Props) {
         <Button
           {...rest}
           disabled={props.readOnly}
-          text={t('inputs.reference.action-create-new-document-select')}
+          text={t('inputs.reference.action.create-new-document-select')}
           mode="ghost"
           icon={AddIcon}
         />
@@ -107,7 +107,7 @@ export function CreateButton(props: Props) {
   ) : (
     <Button
       {...rest}
-      text={t('inputs.reference.action-create-new-document-select')}
+      text={t('inputs.reference.action.create-new-document-select')}
       mode="ghost"
       disabled={!createOptions[0].permission.granted || props.readOnly}
       // eslint-disable-next-line react/jsx-no-bind
