@@ -1,5 +1,4 @@
 import {
-  Text,
   Box,
   Flex,
   rem,
