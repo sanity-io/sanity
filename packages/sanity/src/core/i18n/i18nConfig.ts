@@ -2,12 +2,16 @@ import {createInstance as createI18nInstance, type InitOptions, type i18n} from 
 import {initReactI18next} from 'react-i18next'
 import type {SourceOptions} from '../config'
 import {resolveConfigProperty} from '../config/resolveConfigProperty'
-import {localeBundlesReducer, localeDefReducer} from '../config/configPropertyReducers'
+import {
+  localeBundlesReducer,
+  localeDefReducer,
+  preferredLocalesReducer,
+} from '../config/configPropertyReducers'
 import {defaultLocale} from './locales'
 import {createSanityI18nBackend} from './backend'
 import type {LocaleSource, LocaleDefinition, LocaleResourceBundle, Locale} from './types'
 import {studioLocaleNamespace} from './localeNamespaces'
-import {getPreferredLocale} from './localeStore'
+import {getStoredLocale} from './localeStore'
 import {DEBUG_I18N, maybeWrapT} from './debug'
 
 /**
@@ -34,12 +38,92 @@ export function prepareI18n(source: SourceOptions): {source: LocaleSource; i18ne
     initialValue: normalizeResourceBundles(locales),
   })
 
+  const preferredLocales = resolveConfigProperty({
+    config: source,
+    context,
+    propertyName: 'i18n.preferredLocales',
+    reducer: preferredLocalesReducer,
+    initialValue: Array.from(
+      new Set<string>(
+        typeof navigator === 'object' && Array.isArray(navigator.languages)
+          ? [...navigator.languages, defaultLocale.id]
+          : [defaultLocale.id],
+      ),
+    ),
+  })
+
+  const preferredLocale = resolvePreferredLocale(preferredLocales, locales)
+
   return createI18nApi({
     locales,
     bundles,
     projectId,
     sourceName,
+    preferredLocale,
   })
+}
+
+/**
+ * Preferred locales can come from both the user and from the browser.
+ *
+ * If the browser is configured to allow "English (US), Norwegian, Portugese, Portugese (Brazil)",
+ * it will report `["en-US", "no", "pt", "pt-BR"]` as the preferred locales. The locale definitions
+ * wants the full locale ID however, eg `nb-NO`, `pt-PT` etc. Thus, we'll need to try to normalize
+ * these values. Complication; some languages are "subtags": `nb` is a subtag, where `no` is the
+ * "macro language" (see https://datatracker.ietf.org/doc/html/rfc5646#section-3.1.10). We'll need
+ * to also resolve based on that.
+ *
+ * @param preferredLocales - The preferred locales to resolve
+ * @param locales - The locales to resolve against
+ * @returns The resolved preferred locale, falling back to the default (`en-US`) if not found
+ */
+function resolvePreferredLocale(preferredLocales: string[], locales: LocaleDefinition[]): string {
+  // Create a map of all the defined locales that have a macro language, eg `no` => `nb-NO`, `nn-NO`
+  const localeIds = new Set<string>()
+  const macroLanguageMap = new Map<string, string[]>()
+  for (const locale of locales) {
+    localeIds.add(locale.id)
+
+    if (!locale.macroLanguage) {
+      continue
+    }
+
+    const map = macroLanguageMap.get(locale.macroLanguage.toLowerCase()) || []
+    macroLanguageMap.set(locale.macroLanguage.toLowerCase(), [...map, locale.id])
+  }
+
+  // All the locale bundles use a full `en-US` style locale ID, so we'll need to normalize the
+  // passed preferred locales to match. We'll also need to handle macro languages, eg `nb` vs `no`.
+  for (const locale of preferredLocales) {
+    const lower = locale.toLowerCase()
+    const [lang, region] = lower.split('-')
+
+    // Direct (normalized) match, eg `en-US` => `en-US` or `nb-no` => `nb-NO
+    if (region) {
+      const normalized = `${lang}-${region.toUpperCase()}`
+      if (localeIds.has(normalized)) {
+        return normalized
+      }
+    }
+
+    // Language => region match, eg `pt` => `pt-PT`
+    const langRegion = `${lang}-${lang.toUpperCase()}`
+    if (localeIds.has(langRegion)) {
+      return langRegion
+    }
+
+    // Macro-language map, eg `no` => `nb-NO`, `nn-NO`
+    for (const macroMapped of macroLanguageMap.get(lang) || []) {
+      if (localeIds.has(macroMapped)) {
+        return macroMapped
+      }
+    }
+
+    // No match, try the next one
+  }
+
+  // Fall back to the first defined locale, or the default locale if none found
+  return locales[0]?.id ?? defaultLocale.id
 }
 
 function createI18nApi({
@@ -47,13 +131,15 @@ function createI18nApi({
   bundles,
   projectId,
   sourceName,
+  preferredLocale,
 }: {
   locales: LocaleDefinition[]
   bundles: LocaleResourceBundle[]
   projectId: string
   sourceName: string
+  preferredLocale: string
 }): {source: LocaleSource; i18next: i18n} {
-  const options = getI18NextOptions(projectId, sourceName, locales)
+  const options = getI18NextOptions(projectId, sourceName, locales, preferredLocale)
   const i18nInstance = createI18nInstance()
     .use(createSanityI18nBackend({bundles}))
     .use(initReactI18next)
@@ -160,15 +246,25 @@ const defaultOptions: InitOptions = {
   },
 }
 
+/**
+ * Get the i18next options to use for initializing the i18next instance
+ *
+ * @param projectId - The project ID to use for retrieving stored, preferred locale
+ * @param sourceName - The source name to use for retrieving stored, preferred locale
+ * @param locales - The available locales for this source
+ * @param preferredLocale - The ID of the preferred locale, if none is stored
+ * @returns The i18next options to use for initializing the i18next instance
+ * @internal
+ */
 function getI18NextOptions(
   projectId: string,
   sourceName: string,
   locales: LocaleDefinition[],
+  preferredLocale: string,
 ): InitOptions & {lng: string} {
-  const preferredLocaleId = getPreferredLocale(projectId, sourceName)
-  const preferredLocale = locales.find((l) => l.id === preferredLocaleId)
-  const lastLocale = locales[locales.length - 1]
-  const locale = preferredLocale?.id ?? lastLocale.id ?? defaultOptions.lng
+  const storedLocaleId = getStoredLocale(projectId, sourceName)
+  const storedLocale = storedLocaleId ? locales.find((l) => l.id === storedLocaleId) : undefined
+  const locale = storedLocale?.id ?? preferredLocale ?? locales[0]?.id ?? defaultOptions.lng
   return {
     ...defaultOptions,
     lng: locale,

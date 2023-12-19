@@ -115,6 +115,22 @@ export const schemaTemplatesReducer: ConfigPropertyReducer<Template[], ConfigCon
   )
 }
 
+export const preferredLocalesReducer: ConfigPropertyReducer<string[], LocaleConfigContext> = (
+  prev,
+  {i18n},
+  context,
+) => {
+  const preferred = i18n?.preferredLocales
+  if (!preferred) return prev
+  if (typeof preferred === 'function') return preferred(prev, context)
+  if (Array.isArray(preferred)) return preferred
+  throw new Error(
+    `Expected \`i18n.preferredLocales\` to be an array or a function, but received ${getPrintableType(
+      preferred,
+    )}`,
+  )
+}
+
 export const localeDefReducer: ConfigPropertyReducer<LocaleDefinition[], LocaleConfigContext> = (
   prev,
   {i18n},

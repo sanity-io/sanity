@@ -95,7 +95,7 @@ const sharedSettings = definePlugin({
     },
   },
   plugins: [
-    // ...localePlugins,
+    ...localePlugins,
     deskTool({
       icon: BookIcon,
       structure,
