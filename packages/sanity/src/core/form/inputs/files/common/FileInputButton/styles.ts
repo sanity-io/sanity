@@ -16,7 +16,7 @@ export const FileButton = styled(Button).attrs({forwardedAs: 'label'})(
         }
       }
 
-      // The underyling file input is rendered as children within a Sanity UI <Button> component.
+      // The underlying file input is rendered as children within a Sanity UI <Button> component.
       // The below visibly hides it by targeting the input's parent <span> element, which is
       // added by the <Button> component.
       // TODO: refactor, avoid nth-child selector usage
