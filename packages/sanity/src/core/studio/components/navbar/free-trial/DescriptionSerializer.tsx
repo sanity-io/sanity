@@ -1,6 +1,6 @@
-import {PortableText, PortableTextComponents} from '@portabletext/react'
+import {PortableText, type PortableTextComponents} from '@portabletext/react'
 import {LinkIcon} from '@sanity/icons'
-import {PortableTextBlock} from '@sanity/types'
+import type {PortableTextBlock} from '@sanity/types'
 import {Box, Card, Flex, Text} from '@sanity/ui'
 import styled from 'styled-components'
 import React, {useEffect, useState} from 'react'
@@ -144,7 +144,12 @@ export function DescriptionSerializer(props: DescriptionSerializerProps) {
   return (
     <Card tone="default">
       <SerializerContainer>
-        <PortableText value={props.blocks} components={components} />
+        <PortableText
+          value={props.blocks}
+          components={components}
+          /* Disable warnings on missing components */
+          onMissingComponent={false}
+        />
       </SerializerContainer>
     </Card>
   )
