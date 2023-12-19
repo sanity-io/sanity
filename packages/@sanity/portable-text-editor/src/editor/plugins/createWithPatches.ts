@@ -28,7 +28,6 @@ import {PATCHING, isPatching, withoutPatching} from '../../utils/withoutPatching
 import {KEY_TO_VALUE_ELEMENT, IS_PROCESSING_REMOTE_CHANGES} from '../../utils/weakMaps'
 import {createApplyPatch} from '../../utils/applyPatch'
 import {withPreserveKeys} from '../../utils/withPreserveKeys'
-import {removeAllDocumentSelectionRanges} from '../../utils/ranges'
 import {withRemoteChanges} from '../../utils/withChanges'
 import {withoutSaving} from './createWithUndoRedo'
 
@@ -121,9 +120,6 @@ export function createWithPatches({
             withoutSaving(editor, () => {
               withPreserveKeys(editor, () => {
                 patches.forEach((patch) => {
-                  if (patch.type === 'insert' || patch.type === 'unset') {
-                    removeAllDocumentSelectionRanges(!!editor.selection)
-                  }
                   if (debug.enabled) debug(`Handling remote patch ${JSON.stringify(patch)}`)
                   changed = applyPatch(editor, patch)
                 })
