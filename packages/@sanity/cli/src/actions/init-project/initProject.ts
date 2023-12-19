@@ -588,6 +588,8 @@ export default async function initSanity(
       .catch(noop)
   }
 
+  trace.complete()
+
   async function getOrCreateUser() {
     print(`We can't find any auth credentials in your Sanity config`)
     print('- log in or create a new account\n')

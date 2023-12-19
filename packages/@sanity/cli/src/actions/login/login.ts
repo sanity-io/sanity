@@ -137,6 +137,7 @@ export async function login(
   }
 
   output.print(chalk.green('Login successful'))
+  trace.complete()
 }
 
 function startServerForTokenCallback(options: {
