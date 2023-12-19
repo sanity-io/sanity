@@ -198,7 +198,10 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
           >
             <RootFlex direction="column" flex={1} height="fill">
               <DialogHeaderCard padding={2} borderBottom>
-                <TextInput data-testid="new-document-button-search-input" />
+                <TextInput
+                  data-testid="new-document-button-search-input"
+                  {...sharedTextInputProps}
+                />
               </DialogHeaderCard>
 
               <Flex direction="column" overflow="hidden">
