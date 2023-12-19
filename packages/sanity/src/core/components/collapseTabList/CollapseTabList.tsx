@@ -51,6 +51,7 @@ export const CollapseTabList = forwardRef(function CollapseTabList(
     disableRestoreFocusOnClose,
     onMenuClose,
     collapsed,
+    ...rest
   } = props
   const [rootEl, setRootEl] = useState<HTMLDivElement | null>(null)
   const [hiddenElements, setHiddenElements] = useState<React.ReactElement[]>([])
@@ -109,7 +110,7 @@ export const CollapseTabList = forwardRef(function CollapseTabList(
   )
 
   return (
-    <Flex direction="column" ref={ref} sizing="border" style={{position: 'relative'}}>
+    <Flex direction="column" ref={ref} sizing="border" style={{position: 'relative'}} {...rest}>
       <Flex justify="center" gap={gap} flex={1}>
         {displayChildren}
         {(hiddenElements.length > 0 || collapsed) && (
