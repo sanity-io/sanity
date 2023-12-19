@@ -70,16 +70,6 @@ export function CorsOriginErrorScreen(props: CorsOriginErrorScreenProps) {
           {/* added for accessibility */}
           <ScreenReaderLabel aria-hidden="true">CORS URL to be added</ScreenReaderLabel>
           <TextInput value={origin} readOnly />
-
-          <Button
-            as="a"
-            href={corsUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            tone="primary"
-            text="Continue"
-            iconRight={LaunchIcon}
-          />
         </Stack>
       </Dialog>
     </Card>
