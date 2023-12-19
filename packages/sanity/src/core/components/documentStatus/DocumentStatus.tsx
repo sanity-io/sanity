@@ -2,6 +2,7 @@ import {PreviewValue, SanityDocument} from '@sanity/types'
 import {Flex, Text} from '@sanity/ui'
 import styled from 'styled-components'
 import {useDateTimeFormat, useRelativeTime} from '../..'
+import {useTranslation} from '../../i18n'
 
 interface DocumentStatusProps {
   absoluteDate?: boolean
@@ -25,6 +26,7 @@ const StyledText = styled(Text)`
  * @internal
  */
 export function DocumentStatus({absoluteDate, draft, published, singleLine}: DocumentStatusProps) {
+  const {t} = useTranslation()
   const draftUpdatedAt = draft && '_updatedAt' in draft ? draft._updatedAt : ''
   const publishedUpdatedAt = published && '_updatedAt' in published ? published._updatedAt : ''
 
@@ -49,7 +51,6 @@ export function DocumentStatus({absoluteDate, draft, published, singleLine}: Doc
   const publishedDate = absoluteDate ? publishedDateAbsolute : publishedUpdatedTimeAgo
   const updatedDate = absoluteDate ? draftDateAbsolute : draftUpdatedTimeAgo
 
-  // @todo: localize
   return (
     <Flex
       align={singleLine ? 'center' : 'flex-start'}
@@ -58,21 +59,18 @@ export function DocumentStatus({absoluteDate, draft, published, singleLine}: Doc
       wrap="nowrap"
     >
       {!publishedDate && (
-        // eslint-disable-next-line i18next/no-literal-string
         <StyledText size={1} weight="medium">
-          Not published
+          {t('document-status.not-published')}
         </StyledText>
       )}
       {publishedDate && (
-        // eslint-disable-next-line i18next/no-literal-string
         <StyledText size={1} weight="medium">
-          Published {publishedDate}
+          {t('document-status.published', {date: publishedDate})}
         </StyledText>
       )}
       {updatedDate && (
-        // eslint-disable-next-line i18next/no-literal-string
         <StyledText muted size={1} wrap="nowrap">
-          Edited {updatedDate}
+          {t('document-status.edited', {date: updatedDate})}
         </StyledText>
       )}
     </Flex>
