@@ -1,17 +1,7 @@
 import {CloseIcon} from '@sanity/icons'
-import {
-  Box,
-  Card,
-  Flex,
-  isHTMLElement,
-  rem,
-  Text,
-  type CSSObject,
-  type Theme,
-  useForwardedRef,
-} from '@sanity/ui'
+import {Box, Card, Flex, isHTMLElement, rem, Text, type Theme, useForwardedRef} from '@sanity/ui'
 import React, {forwardRef, useCallback, useEffect, useRef, useState} from 'react'
-import styled, {css} from 'styled-components'
+import styled, {css, type CSSObject} from 'styled-components'
 import {useTranslation} from '../../../i18n'
 import {studioLocaleNamespace} from '../../../i18n/localeNamespaces'
 import {Button} from '../../../../ui-components'
