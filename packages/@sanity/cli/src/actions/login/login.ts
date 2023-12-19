@@ -10,6 +10,7 @@ import {getUserConfig} from '../../util/getUserConfig'
 import {canLaunchBrowser} from '../../util/canLaunchBrowser'
 import type {CliApiClient, CliCommandArguments, CliCommandContext, CliPrompter} from '../../types'
 import type {LoginProvider, ProvidersResponse, SamlLoginProvider} from './types'
+import {LoginTrace} from './login.telemetry'
 
 const callbackEndpoint = '/callback'
 
@@ -43,10 +44,13 @@ export async function login(
   args: CliCommandArguments<LoginFlags>,
   context: CliCommandContext,
 ): Promise<void> {
-  const {prompt, output, apiClient} = context
+  const {prompt, output, apiClient, telemetry} = context
   const {sso, experimental, open: openFlag, provider: specifiedProvider} = args.extOptions
   const previousToken = getCliToken()
   const hasExistingToken = Boolean(previousToken)
+
+  const trace = telemetry.trace(LoginTrace)
+  trace.start()
 
   // Explicitly tell this client not to use a token
   const client = apiClient({requireUser: false, requireProject: false})
@@ -55,6 +59,9 @@ export async function login(
 
   // Get the desired authentication provider
   const provider = await getProvider({client, sso, experimental, output, prompt, specifiedProvider})
+
+  trace.log({step: 'selectProvider', provider: provider?.name})
+
   if (provider === undefined) {
     throw new Error('No authentication providers found')
   }
@@ -62,6 +69,7 @@ export async function login(
   // Initiate local listen server for OAuth callback
   const apiHost = client.config().apiHost || 'https://api.sanity.io'
   const {server, token: tokenPromise} = await startServerForTokenCallback({apiHost, apiClient})
+  trace.log({step: 'waitForToken'})
 
   const serverUrl = server.address()
   if (!serverUrl || typeof serverUrl === 'string') {
@@ -100,6 +108,7 @@ export async function login(
     spin.stop()
   } catch (err) {
     spin.stop()
+    trace.error(err)
     err.message = `Login failed: ${err.message}`
     throw err
   } finally {
@@ -128,6 +137,7 @@ export async function login(
   }
 
   output.print(chalk.green('Login successful'))
+  trace.complete()
 }
 
 function startServerForTokenCallback(options: {

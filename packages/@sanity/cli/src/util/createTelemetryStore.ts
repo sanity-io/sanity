@@ -33,9 +33,12 @@ function getCachedClient(token: string) {
   return _client
 }
 
-export function createTelemetryStore(options: {env: {[key: string]: string | undefined}}) {
+export function createTelemetryStore<UserProperties>(options: {
+  projectId?: string
+  env: {[key: string]: string | undefined}
+}) {
   debug('Initializing telemetry')
-  const {env} = options
+  const {env, projectId} = options
 
   function fetchConsent(client: SanityClient) {
     return client.request({uri: '/intake/telemetry-status'})
@@ -84,7 +87,7 @@ export function createTelemetryStore(options: {env: {[key: string]: string | und
         uri: '/intake/batch',
         method: 'POST',
         json: true,
-        body: batch,
+        body: {projectId, batch},
       })
     } catch (err) {
       const statusCode = err.response && err.response.statusCode
@@ -101,10 +104,12 @@ export function createTelemetryStore(options: {env: {[key: string]: string | und
   const sessionId = createSessionId()
   debug('session id: %s', sessionId)
 
-  const store = createBatchedStore(sessionId, {
+  const store = createBatchedStore<UserProperties>(sessionId, {
     resolveConsent,
     sendEvents,
   })
   process.once('beforeExit', () => store.flush())
+  process.once('unhandledRejection', () => store.flush())
+  process.once('uncaughtException', () => store.flush())
   return store
 }

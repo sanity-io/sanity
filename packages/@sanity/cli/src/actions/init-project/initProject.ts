@@ -9,10 +9,9 @@ import resolveFrom from 'resolve-from'
 import which from 'which'
 
 import type {DatasetAclMode} from '@sanity/client'
-import {type Framework, frameworks} from '@vercel/frameworks'
+import {type Framework} from '@vercel/frameworks'
 import execa, {CommonOptions} from 'execa'
 import {evaluate, patch} from 'golden-fleece'
-import {LocalFileSystemDetector, detectFrameworkRecord} from '@vercel/fs-detectors'
 import type {InitFlags} from '../../commands/init/initCommand'
 import {debug} from '../../debug'
 import {
@@ -20,7 +19,7 @@ import {
   installDeclaredPackages,
   installNewPackages,
 } from '../../packageManager'
-import {PackageManager, getPartialEnvWithNpmPath} from '../../packageManager/packageManagerChoice'
+import {getPartialEnvWithNpmPath, PackageManager} from '../../packageManager/packageManagerChoice'
 import {
   CliApiClient,
   CliCommandArguments,
@@ -31,12 +30,13 @@ import {
 } from '../../types'
 import {getClientWrapper} from '../../util/clientWrapper'
 import {dynamicRequire} from '../../util/dynamicRequire'
-import {ProjectDefaults, getProjectDefaults} from '../../util/getProjectDefaults'
+import {getProjectDefaults, ProjectDefaults} from '../../util/getProjectDefaults'
 import {getUserConfig} from '../../util/getUserConfig'
 import {isCommandGroup} from '../../util/isCommandGroup'
 import {isInteractive} from '../../util/isInteractive'
-import {LoginFlags, login} from '../login/login'
+import {login, LoginFlags} from '../login/login'
 import {createProject} from '../project/createProject'
+import {CLIInitStepCompleted} from '../../__telemetry__/init.telemetry'
 import {BootstrapOptions, bootstrapTemplate} from './bootstrapTemplate'
 import {GenerateConfigOptions} from './createStudioConfig'
 import {absolutify, validateEmptyPath} from './fsUtils'
@@ -97,9 +97,21 @@ export interface ProjectOrganization {
 // eslint-disable-next-line max-statements, complexity
 export default async function initSanity(
   args: CliCommandArguments<InitFlags>,
-  context: CliCommandContext,
+  context: CliCommandContext & {detectedFramework: Framework | null},
 ): Promise<void> {
-  const {output, prompt, workDir, apiClient, chalk, sanityMajorVersion} = context
+  const {
+    output,
+    prompt,
+    workDir,
+    apiClient,
+    chalk,
+    sanityMajorVersion,
+    telemetry,
+    detectedFramework,
+  } = context
+
+  const trace = telemetry.trace(CLIInitStepCompleted)
+
   const cliFlags = args.extOptions
   const unattended = cliFlags.y || cliFlags.yes
   const print = unattended ? noop : output.print
@@ -113,6 +125,21 @@ export default async function initSanity(
 
   let defaultConfig = cliFlags['dataset-default']
   let showDefaultConfigPrompt = !defaultConfig
+
+  trace.start()
+  trace.log({
+    step: 'start',
+    flags: {
+      defaultConfig,
+      unattended,
+      plan: intendedPlan,
+      coupon: intendedCoupon,
+      reconfigure,
+      git: commitMessage,
+      bare: bareOutput,
+      env,
+    },
+  })
 
   if (sanityMajorVersion === 2) {
     await reconfigureV2Project(args, context)
@@ -149,12 +176,6 @@ export default async function initSanity(
     throw new Error('`--reconfigure` is deprecated - manual configuration is now required')
   }
 
-  // use vercel's framework detector
-  const detectedFramework: Framework | null = await detectFrameworkRecord({
-    fs: new LocalFileSystemDetector(workDir),
-    frameworkList: frameworks as readonly Framework[],
-  })
-
   const envFilename = typeof env === 'string' ? env : '.env'
   if (!envFilename.startsWith('.env')) {
     throw new Error(`Env filename must start with .env`)
@@ -177,10 +198,11 @@ export default async function initSanity(
   const hasToken = userConfig.get('authToken')
 
   debug(hasToken ? 'User already has a token' : 'User has no token')
-
   if (hasToken) {
+    trace.log({step: 'login', alreadyLoggedIn: true})
     print('Looks like you already have a Sanity-account. Sweet!\n')
   } else if (!unattended) {
+    trace.log({step: 'login'})
     await getOrCreateUser()
   }
 
@@ -188,7 +210,13 @@ export default async function initSanity(
 
   // We're authenticated, now lets select or create a project
   debug('Prompting user to select or create a project')
-  const {projectId, displayName, isFirstProject} = await getOrCreateProject()
+  const {
+    projectId,
+    displayName,
+    isFirstProject,
+    userAction: getOrCreateUserAction,
+  } = await getOrCreateProject()
+  trace.log({step: 'createOrSelectProject', projectId, selectedOption: getOrCreateUserAction})
   const sluggedName = deburr(displayName.toLowerCase())
     .replace(/\s+/g, '-')
     .replace(/[^a-z0-9-]/g, '')
@@ -197,14 +225,19 @@ export default async function initSanity(
 
   // Now let's pick or create a dataset
   debug('Prompting user to select or create a dataset')
-  const {datasetName} = await getOrCreateDataset({
+  const {datasetName, userAction: getOrCreateDatasetUserAction} = await getOrCreateDataset({
     projectId,
     displayName,
     dataset: flags.dataset,
     aclMode: flags.visibility,
     defaultConfig: flags['dataset-default'],
   })
-
+  trace.log({
+    step: 'createOrSelectDataset',
+    selectedOption: getOrCreateDatasetUserAction,
+    datasetName,
+    visibility: flags.visibility as 'private' | 'public',
+  })
   debug(`Dataset with name ${datasetName} selected`)
 
   // If user doesn't want to output any template code
@@ -218,15 +251,20 @@ export default async function initSanity(
     return
   }
 
-  const initNext =
-    detectedFramework &&
-    detectedFramework.slug === 'nextjs' &&
-    (await prompt.single({
+  let initNext = false
+  if (detectedFramework?.slug === 'nextjs') {
+    initNext = await prompt.single({
       type: 'confirm',
       message:
         'Would you like to add configuration files for a Sanity project in this Next.js folder?',
       default: true,
-    }))
+    })
+    trace.log({
+      step: 'useDetectedFramework',
+      selectedOption: initNext ? 'yes' : 'no',
+      detectedFramework: detectedFramework?.name,
+    })
+  }
 
   // add more frameworks to this as we add support for them
   // this is used to skip the getProjectInfo prompt
@@ -245,7 +283,7 @@ export default async function initSanity(
 
   if (initNext) {
     const useTypeScript = unattended ? true : await promptForTypeScript(prompt)
-
+    trace.log({step: 'useTypeScript', selectedOption: useTypeScript ? 'yes' : 'no'})
     const fileExtension = useTypeScript ? 'ts' : 'js'
 
     const embeddedStudio = unattended ? true : await promptForEmbeddedStudio(prompt)
@@ -350,9 +388,8 @@ export default async function initSanity(
         log: true,
       })
     }
-
     const {chosen} = await getPackageManagerChoice(workDir, {interactive: false})
-
+    trace.log({step: 'selectPackageManager', selectedOption: chosen})
     await installNewPackages(
       {
         packageManager: chosen,
@@ -431,7 +468,7 @@ export default async function initSanity(
 
   // Prompt for template to use
   const templateName = await selectProjectTemplate()
-
+  trace.log({step: 'selectProjectTemplate', selectedOption: templateName})
   const template = templates[templateName]
   if (!template) {
     throw new Error(`Template "${templateName}" not found`)
@@ -444,6 +481,7 @@ export default async function initSanity(
     useTypeScript = cliFlags.typescript
   } else if (!typescriptOnly && !unattended) {
     useTypeScript = await promptForTypeScript(prompt)
+    trace.log({step: 'useTypeScript', selectedOption: useTypeScript ? 'yes' : 'no'})
   }
 
   // Build a full set of resolved options
@@ -463,6 +501,8 @@ export default async function initSanity(
   const shouldImport =
     !unattended && template.datasetUrl && (await promptForDatasetImport(template.importPrompt))
 
+  trace.log({step: 'importTemplateDataset', selectedOption: shouldImport ? 'yes' : 'no'})
+
   // Bootstrap Sanity, creating required project files, manifests etc
   await bootstrapTemplate(templateOptions, context)
 
@@ -471,6 +511,9 @@ export default async function initSanity(
     prompt,
     interactive: unattended ? false : isInteractive,
   })
+
+  trace.log({step: 'selectPackageManager', selectedOption: pkgManager.chosen})
+
   await installDeclaredPackages(outputPath, pkgManager.chosen, context)
 
   // Try initializing a git repository
@@ -535,6 +578,7 @@ export default async function initSanity(
     }))
 
   if (sendInvite) {
+    trace.log({step: 'sendCommunityInvite', selectedOption: sendInvite ? 'yes' : 'no'})
     // Intentionally leave the promise "dangling" since we don't want to stall while waiting for this
     apiClient({requireProject: false})
       .request({
@@ -544,6 +588,8 @@ export default async function initSanity(
       .catch(noop)
   }
 
+  trace.complete()
+
   async function getOrCreateUser() {
     print(`We can't find any auth credentials in your Sanity config`)
     print('- log in or create a new account\n')
@@ -551,7 +597,7 @@ export default async function initSanity(
     // Provide login options (`sanity login`)
     const {extOptions, ...otherArgs} = args
     const loginArgs: CliCommandArguments<LoginFlags> = {...otherArgs, extOptions: {}}
-    await login(loginArgs, context)
+    await login(loginArgs, {...context, telemetry: trace.newContext('login')})
 
     print("Good stuff, you're now authenticated. You'll need a project to keep your")
     print('datasets and collaborators safe and snug.')
@@ -562,6 +608,7 @@ export default async function initSanity(
     projectId: string
     displayName: string
     isFirstProject: boolean
+    userAction: 'create' | 'select'
   }> {
     const spinner = context.output.spinner('Fetching existing projects').start()
     let projects
@@ -578,9 +625,13 @@ export default async function initSanity(
     } catch (err) {
       if (unattended && flags.project) {
         spinner.succeed()
-        return {projectId: flags.project, displayName: 'Unknown project', isFirstProject: false}
+        return {
+          projectId: flags.project,
+          displayName: 'Unknown project',
+          isFirstProject: false,
+          userAction: 'select',
+        }
       }
-
       spinner.fail()
       throw new Error(`Failed to communicate with the Sanity API:\n${err.message}`)
     }
@@ -601,6 +652,7 @@ export default async function initSanity(
         projectId: flags.project,
         displayName: project ? project.displayName : 'Unknown project',
         isFirstProject: false,
+        userAction: 'select',
       }
     }
 
@@ -631,8 +683,8 @@ export default async function initSanity(
           ? 'No projects found for user, prompting for name'
           : 'Using a coupon - skipping project selection',
       )
-
       const projectName = await prompt.single({type: 'input', message: 'Project name:'})
+
       return createProject(apiClient, {
         displayName: projectName,
         organizationId: await getOrganizationId(organizations),
@@ -641,6 +693,8 @@ export default async function initSanity(
       }).then((response) => ({
         ...response,
         isFirstProject: isUsersFirstProject,
+        userAction: 'create',
+        coupon: intendedCoupon,
       }))
     }
 
@@ -675,6 +729,7 @@ export default async function initSanity(
       }).then((response) => ({
         ...response,
         isFirstProject: isUsersFirstProject,
+        userAction: 'create',
       }))
     }
 
@@ -683,6 +738,7 @@ export default async function initSanity(
       projectId: selected,
       displayName: projects.find((proj) => proj.id === selected)?.displayName || '',
       isFirstProject: isUsersFirstProject,
+      userAction: 'select',
     }
   }
 
@@ -692,9 +748,9 @@ export default async function initSanity(
     dataset?: string
     aclMode?: string
     defaultConfig?: boolean
-  }) {
+  }): Promise<{datasetName: string; userAction: 'create' | 'select' | 'none'}> {
     if (opts.dataset && (isCI || unattended)) {
-      return {datasetName: opts.dataset}
+      return {datasetName: opts.dataset, userAction: 'none'}
     }
 
     const client = apiClient({api: {projectId: opts.projectId}})
@@ -740,7 +796,7 @@ export default async function initSanity(
         spinner.succeed()
       }
 
-      return {datasetName: opts.dataset}
+      return {datasetName: opts.dataset, userAction: 'none'}
     }
 
     const datasetInfo =
@@ -761,7 +817,7 @@ export default async function initSanity(
       const spinner = context.output.spinner('Creating dataset').start()
       await client.datasets.create(name, {aclMode: aclMode as DatasetAclMode})
       spinner.succeed()
-      return {datasetName: name}
+      return {datasetName: name, userAction: 'create'}
     }
 
     debug(`User has ${datasets.length} dataset(s) already, showing list of choices`)
@@ -798,11 +854,11 @@ export default async function initSanity(
       const spinner = context.output.spinner('Creating dataset').start()
       await client.datasets.create(newDatasetName, {aclMode: aclMode as DatasetAclMode})
       spinner.succeed()
-      return {datasetName: newDatasetName}
+      return {datasetName: newDatasetName, userAction: 'create'}
     }
 
     debug(`Returning selected dataset (${selected})`)
-    return {datasetName: selected}
+    return {datasetName: selected, userAction: 'select'}
   }
 
   function promptForDatasetImport(message?: string) {
