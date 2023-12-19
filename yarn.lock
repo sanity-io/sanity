@@ -3651,10 +3651,10 @@
     "@sanity/ui" "^1.0.0"
     lodash "^4.17.21"
 
-"@sanity/groq-store@5.3.6":
-  version "5.3.6"
-  resolved "https://registry.yarnpkg.com/@sanity/groq-store/-/groq-store-5.3.6.tgz#6c22ae0ca93c28690d2ecd45b793bb735cb3128a"
-  integrity sha512-UFg+BjdCexdgwP+yM5qpGfeeR9fHqySPcZhaOwGQczMwE2jIebtuagpgW8eZ6DcdSRDomDTS/vWSoLjuxWWGSg==
+"@sanity/groq-store@5.3.7":
+  version "5.3.7"
+  resolved "https://registry.yarnpkg.com/@sanity/groq-store/-/groq-store-5.3.7.tgz#90f33d8c19a34b06d6e70456fca48afd79467eb9"
+  integrity sha512-wrAr7PKfbdRvfiC5m7unjH4x5XGZV+vMkk/CwrdHRs+39kuWWJvkwhVNRTS6iWTrTMgpMIe/H1kRrkle0PieDQ==
   dependencies:
     mnemonist "0.39.6"
 
@@ -3706,12 +3706,7 @@
   resolved "https://registry.yarnpkg.com/@sanity/locale-sv-se/-/locale-sv-se-1.0.1.tgz#1698a7e6d0e73e6d8eebb862f2530a9a4a598788"
   integrity sha512-Z4HDF1LTz0N16q5Xjr8Yv6/2ln+mbvxJzEcsHys1YdkfzsCpgXj7IQ1fNtQmov28bywCK6Wp8GUrpA0QqBmrZw==
 
-"@sanity/logos@^2.0.2":
-  version "2.1.2"
-  resolved "https://registry.yarnpkg.com/@sanity/logos/-/logos-2.1.2.tgz#0568c315cd1cfa292deebf61db1582a12474648f"
-  integrity sha512-nxJUQQzEEG8EqjiOEswQQpBUuFc3iSxTVF9D9Memg/tlOChX76dStNHoa1RWuvSPu895aqJV+9zxijAa0kF9Vg==
-
-"@sanity/logos@^2.1.2":
+"@sanity/logos@^2.0.2", "@sanity/logos@^2.1.2":
   version "2.1.3"
   resolved "https://registry.yarnpkg.com/@sanity/logos/-/logos-2.1.3.tgz#86fac1a97f513ed1620bcc26cd110a9a64caa70f"
   integrity sha512-Va2rBftAIcGn53PO/aql9+Q8x0F6m3Z5hO0MQ3whru6HY8tNN1Ty/1N0QV6oL6Sfj9gjLKWoNL5BpRxglo24jQ==
@@ -3760,15 +3755,15 @@
     uuid "^9.0.1"
     zod "^3.22.4"
 
-"@sanity/presentation@1.3.0":
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/@sanity/presentation/-/presentation-1.3.0.tgz#38b2c6c3ddcc91bdc55b8c4ed577cc64ab90bab4"
-  integrity sha512-G/fQzr113bbbsAmcsSYP/cQxL0ioJkYuDmAGNNesnD885rT1xhapI2GOhHccioCSojjUpiLGSvZYrxjniXQD4Q==
+"@sanity/presentation@1.4.0":
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/@sanity/presentation/-/presentation-1.4.0.tgz#0e71e6daa2b43ba920496f1a8617f03d32a9add4"
+  integrity sha512-BDT7I7kfWuwqnOl34p0ytyUFrA+0/WT1zm0daSe0g8X8nKi++7HCa2fEbbRy49EG4tkrvWz14/aEtmiOImvMDw==
   dependencies:
-    "@sanity/groq-store" "5.3.6"
+    "@sanity/groq-store" "5.3.7"
     "@sanity/icons" "^2.8.0"
-    "@sanity/preview-url-secret" "^1.3.6"
-    "@sanity/ui" "^1.9.3"
+    "@sanity/preview-url-secret" "^1.4.0"
+    "@sanity/ui" "2.0.0-beta.13"
     "@types/lodash.isequal" "^4.5.8"
     framer-motion "^10.16.16"
     lodash.isequal "^4.5.0"
@@ -3776,10 +3771,10 @@
     rxjs "^7.8.1"
     suspend-react "0.1.3"
 
-"@sanity/preview-url-secret@^1.3.6":
-  version "1.3.6"
-  resolved "https://registry.yarnpkg.com/@sanity/preview-url-secret/-/preview-url-secret-1.3.6.tgz#195122d018cf4f556c69d57e881ae4d8455413be"
-  integrity sha512-+9StAa0cyJFBpb4MiaQrcKrETNOz5NXUl8CoHX2A4cjbEDKaJW005gp8f3cS69RAUkaAyaHmuj82opVKgkA5KA==
+"@sanity/preview-url-secret@^1.4.0":
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/@sanity/preview-url-secret/-/preview-url-secret-1.4.0.tgz#4ed0fd3de4f25c0f7a46d861380be331f8a5b68b"
+  integrity sha512-5eta7+7URe1jspxzoiwrtqr/39pWKzDt+YJEYS2SBaQutT2fERwl60lNGCd4AGqPjVN8H79t+P14q67ADpepDQ==
   dependencies:
     "@sanity/uuid" "3.0.2"
 
@@ -3871,7 +3866,7 @@
     framer-motion "^10.16.5"
     react-refractor "^2.1.7"
 
-"@sanity/ui@^1", "@sanity/ui@^1.0.0", "@sanity/ui@^1.6.0", "@sanity/ui@^1.7.2", "@sanity/ui@^1.9.3":
+"@sanity/ui@^1", "@sanity/ui@^1.0.0", "@sanity/ui@^1.6.0", "@sanity/ui@^1.7.2":
   version "1.9.3"
   resolved "https://registry.yarnpkg.com/@sanity/ui/-/ui-1.9.3.tgz#4af45902ac95801aa5ea57f377beaf3e3cb36339"
   integrity sha512-AdWEVFaK0Snk6xxP0lGPVP3QQYKwzkfGFpFZnL9d6UtWt8yeuS8BMLVAzmXzg14hrqH50ex9nvNl3eq6a0MWiw==
