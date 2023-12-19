@@ -3681,35 +3681,40 @@
     "@sanity/icons" "^1.3"
     react-copy-to-clipboard "^5.1.0"
 
-"@sanity/locale-ko-kr@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@sanity/locale-ko-kr/-/locale-ko-kr-1.0.0.tgz#86d8a73b7c5217b59f24dcacde9b5a732dfa8172"
-  integrity sha512-Bmcct/bRIzS5OLe7FckT4uCScLVJ2s86VUfHKQuT8p3TX7LIVKwUAtewtI1TY2XnpDe9ySM3uNwmC0GtvDSxGA==
+"@sanity/locale-ko-kr@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@sanity/locale-ko-kr/-/locale-ko-kr-1.0.1.tgz#f1d1776399f102698307d772f2a9e7683f0ed03d"
+  integrity sha512-zsddqnRD6PaUfWzhroiuKskgUzLqX/AtzoSL1NuRWaHRNA9VV6B7/1pZiK+yyKesc/+CDT4X0a7PZbTGRSI09A==
 
-"@sanity/locale-nb-no@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@sanity/locale-nb-no/-/locale-nb-no-1.0.0.tgz#4da36e92272ff333289d97dd16d0b4915c4bb374"
-  integrity sha512-Nhx72g85IPTdVWeF3oDshax/OHrlFkayEeg2EEx9vaJtoK9DvULkEmxPe6OLBBRpj3mXSky0mrqOxR1f2+IiZw==
+"@sanity/locale-nb-no@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@sanity/locale-nb-no/-/locale-nb-no-1.0.1.tgz#154327397119f8ba1c10656fadc95db90ecc0897"
+  integrity sha512-iZRBcWkArEXaIJSHsjEMW/GxIZQh5RBMOhYoG6c7+rqC9Pzby6Mrk4XH6rMKzrAyQ3FyucyzF1LKa6KJPSCEqQ==
 
-"@sanity/locale-nn-no@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@sanity/locale-nn-no/-/locale-nn-no-1.0.0.tgz#65a49222139fd2caf6be9d8e4ac82d6a381b59da"
-  integrity sha512-Dhn9JVGa4QALfRc1l++PVyry8w9Qql45r2FDyZx6hqsyzJTwHYaw+vYAq3WjNUNUuDaADX6ppm001rboWeoTSg==
+"@sanity/locale-nn-no@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@sanity/locale-nn-no/-/locale-nn-no-1.0.1.tgz#7ed031a4df463e450bffcd1739f7266a22d0cb81"
+  integrity sha512-isd0VKUAI6oSL4myi1X84iaJ1r8+5roJB2z+J1OCqE9JwLK9Fcv6eW4PtR/+CIlKvvPNKggIgRwbW3e0EMTjSQ==
 
-"@sanity/locale-pt-pt@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@sanity/locale-pt-pt/-/locale-pt-pt-1.0.0.tgz#725d122bf8947b6e58a4afd8a5f232872f0b6b19"
-  integrity sha512-BqP9vWaTjemTHqmWXoOWnHOEaXh7R46TqUrExmpoK0rQ3qiQOAocYcM09UlwG4sC4iDEDrepljwe9biJazNckQ==
+"@sanity/locale-pt-pt@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@sanity/locale-pt-pt/-/locale-pt-pt-1.0.1.tgz#b5360bae4a1dfe4c413a44931ce2d1f92ed8d52d"
+  integrity sha512-ebBqGOIxT4gP91u1P6rVxRqjagFHyyY2/704QIWGQFHrLY3p6P9+7C5Fr/yK18Bjvcubp4b6MHcFGSk1BqAgIQ==
 
-"@sanity/locale-sv-se@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@sanity/locale-sv-se/-/locale-sv-se-1.0.0.tgz#4f456697f7c3dba5a3c040be1ad3198c8298cc43"
-  integrity sha512-aF2DvDDGqk3xAvF8cZ5m7UUUgtR7/NS40UG7iBfsx3tgUWkhn8CX4sxpcjvnAxJ5eLQ2aYB5pxFs2ZfWjGH0Jg==
+"@sanity/locale-sv-se@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@sanity/locale-sv-se/-/locale-sv-se-1.0.1.tgz#1698a7e6d0e73e6d8eebb862f2530a9a4a598788"
+  integrity sha512-Z4HDF1LTz0N16q5Xjr8Yv6/2ln+mbvxJzEcsHys1YdkfzsCpgXj7IQ1fNtQmov28bywCK6Wp8GUrpA0QqBmrZw==
 
 "@sanity/logos@^2.0.2":
   version "2.1.2"
   resolved "https://registry.yarnpkg.com/@sanity/logos/-/logos-2.1.2.tgz#0568c315cd1cfa292deebf61db1582a12474648f"
   integrity sha512-nxJUQQzEEG8EqjiOEswQQpBUuFc3iSxTVF9D9Memg/tlOChX76dStNHoa1RWuvSPu895aqJV+9zxijAa0kF9Vg==
+
+"@sanity/logos@^2.1.2":
+  version "2.1.3"
+  resolved "https://registry.yarnpkg.com/@sanity/logos/-/logos-2.1.3.tgz#86fac1a97f513ed1620bcc26cd110a9a64caa70f"
+  integrity sha512-Va2rBftAIcGn53PO/aql9+Q8x0F6m3Z5hO0MQ3whru6HY8tNN1Ty/1N0QV6oL6Sfj9gjLKWoNL5BpRxglo24jQ==
 
 "@sanity/pkg-utils@^3.3.2":
   version "3.3.2"
