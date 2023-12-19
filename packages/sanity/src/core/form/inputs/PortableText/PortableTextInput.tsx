@@ -66,6 +66,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
     onPathFocus,
     path,
     readOnly,
+    rangeDecorations,
     renderBlockActions,
     renderCustomMarkers,
     schemaType,
@@ -247,6 +248,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
                 onInsert={onInsert}
                 onPaste={onPaste}
                 onToggleFullscreen={handleToggleFullscreen}
+                rangeDecorations={rangeDecorations}
                 renderBlockActions={renderBlockActions}
                 renderCustomMarkers={renderCustomMarkers}
               />

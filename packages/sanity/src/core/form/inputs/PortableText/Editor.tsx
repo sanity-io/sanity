@@ -4,6 +4,7 @@ import {
   type HotkeyOptions,
   type OnCopyFn,
   type OnPasteFn,
+  type RangeDecoration,
   type RenderAnnotationFunction,
   type RenderBlockFunction,
   type RenderChildFunction,
@@ -50,6 +51,7 @@ interface EditorProps {
   onToggleFullscreen: () => void
   path: Path
   readOnly?: boolean
+  rangeDecorations?: RangeDecoration[]
   renderAnnotation: RenderAnnotationFunction
   renderBlock: RenderBlockFunction
   renderChild: RenderChildFunction
@@ -85,6 +87,7 @@ export function Editor(props: EditorProps) {
     onToggleFullscreen,
     path,
     readOnly,
+    rangeDecorations,
     renderAnnotation,
     renderBlock,
     renderChild,
@@ -132,6 +135,7 @@ export function Editor(props: EditorProps) {
         onCopy={onCopy}
         onPaste={onPaste}
         ref={editableRef}
+        rangeDecorations={rangeDecorations}
         renderAnnotation={renderAnnotation}
         renderBlock={renderBlock}
         renderChild={renderChild}
@@ -151,6 +155,7 @@ export function Editor(props: EditorProps) {
       initialSelection,
       onCopy,
       onPaste,
+      rangeDecorations,
       renderAnnotation,
       renderBlock,
       renderChild,
