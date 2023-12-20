@@ -6,10 +6,7 @@ const blockContentType = defaultSchema
   .fields.find((field: any) => field.name === 'body').type
 
 const testFn: BlockTestFn = (html, blockTools, commonOptions) => {
-  return blockTools.htmlToBlocks(html, blockContentType, {
-    ...commonOptions,
-    unstable_whitespaceOnPasteMode: 'normalize',
-  })
+  return blockTools.htmlToBlocks(html, blockContentType, commonOptions)
 }
 
 export default testFn

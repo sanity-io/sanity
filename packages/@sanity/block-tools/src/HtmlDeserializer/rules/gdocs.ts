@@ -24,9 +24,19 @@ function isStrong(el: Node): boolean {
   return /font-weight:700/.test(style || '')
 }
 
+// text-decoration seems like the most important rule for underline in their html
+function isUnderline(el: Node): boolean {
+  const style = isElement(el) && el.getAttribute('style')
+  return /text-decoration:underline/.test(style || '')
+}
+
 // Check for attribute given by the gdocs preprocessor
 function isGoogleDocs(el: Node): boolean {
   return isElement(el) && Boolean(el.getAttribute('data-is-google-docs'))
+}
+
+function isRootNode(el: Node): boolean {
+  return isElement(el) && Boolean(el.getAttribute('data-is-root-node'))
 }
 
 function getListItemStyle(el: Node): 'bullet' | 'number' | undefined {
@@ -87,6 +97,9 @@ export default function createGDocsRules(
           if (isStrong(el)) {
             span.marks.push('strong')
           }
+          if (isUnderline(el)) {
+            span.marks.push('underline')
+          }
           if (isEmphasis(el)) {
             span.marks.push('em')
           }
@@ -104,6 +117,43 @@ export default function createGDocsRules(
             level: getListItemLevel(el),
             style: getBlockStyle(el, options.enabledBlockStyles),
             children: next(el.firstChild?.childNodes || []),
+          }
+        }
+        return undefined
+      },
+    },
+    {
+      deserialize(el) {
+        if (
+          tagName(el) === 'br' &&
+          isGoogleDocs(el) &&
+          isElement(el) &&
+          el.classList.contains('apple-interchange-newline')
+        ) {
+          return {
+            ...DEFAULT_SPAN,
+            text: '',
+          }
+        }
+
+        // BRs inside empty paragraphs
+        if (
+          tagName(el) === 'br' &&
+          isGoogleDocs(el) &&
+          isElement(el) &&
+          el?.parentNode?.textContent === ''
+        ) {
+          return {
+            ...DEFAULT_SPAN,
+            text: '',
+          }
+        }
+
+        // BRs on the root
+        if (tagName(el) === 'br' && isGoogleDocs(el) && isElement(el) && isRootNode(el)) {
+          return {
+            ...DEFAULT_SPAN,
+            text: '',
           }
         }
         return undefined

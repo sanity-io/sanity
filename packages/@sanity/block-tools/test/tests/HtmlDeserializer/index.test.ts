@@ -21,6 +21,7 @@ describe('HtmlDeserializer', () => {
         parseHtml: (html: string) => new JSDOM(html).window.document,
       }
       const output = fn(input, blockTools, commonOptions)
+      // fs.writeFileSync(path.resolve(dir, 'expected.json'), JSON.stringify(output, null, 2))
       // console.log(JSON.stringify(output, null, 2))
       assert.deepStrictEqual(output, expected)
     })

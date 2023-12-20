@@ -48,7 +48,7 @@ export default class HtmlDeserializer {
    * @param options - Options for the deserialization process
    */
   constructor(blockContentType: ArraySchemaType, options: HtmlDeserializerOptions = {}) {
-    const {rules = []} = options
+    const {rules = [], unstable_whitespaceOnPasteMode = 'preserve'} = options
     if (!blockContentType) {
       throw new Error("Parameter 'blockContentType' is required")
     }
@@ -57,7 +57,7 @@ export default class HtmlDeserializer {
     const parseHtml = options.parseHtml || defaultParseHtml()
     this.blockContentType = blockContentType
     this.parseHtml = (html) => {
-      const doc = preprocess(html, parseHtml)
+      const doc = preprocess(html, parseHtml, {unstable_whitespaceOnPasteMode})
       return doc.body
     }
   }
