@@ -4,9 +4,7 @@
     "children": [
       {
         "_type": "span",
-        "marks": [
-          "strong"
-        ],
+        "marks": ["strong"],
         "text": "Lorem:",
         "_key": "randomKey10"
       }
@@ -278,9 +276,7 @@
     "children": [
       {
         "_type": "span",
-        "marks": [
-          "strong"
-        ],
+        "marks": ["strong"],
         "text": "Lorem Lorem Lorem:",
         "_key": "randomKey190"
       },
@@ -300,9 +296,7 @@
     "children": [
       {
         "_type": "span",
-        "marks": [
-          "strong"
-        ],
+        "marks": ["strong"],
         "text": "Lorem Lorem:",
         "_key": "randomKey200"
       }
@@ -316,9 +310,7 @@
     "children": [
       {
         "_type": "span",
-        "marks": [
-          "strong"
-        ],
+        "marks": ["strong"],
         "text": "Lorem Lorem: ",
         "_key": "randomKey210"
       },
@@ -338,9 +330,7 @@
     "children": [
       {
         "_type": "span",
-        "marks": [
-          "strong"
-        ],
+        "marks": ["strong"],
         "text": "Lorem Lorem:",
         "_key": "randomKey220"
       },
@@ -388,9 +378,7 @@
     "children": [
       {
         "_type": "span",
-        "marks": [
-          "strong"
-        ],
+        "marks": ["strong"],
         "text": "Bold",
         "_key": "randomKey250"
       }
@@ -404,9 +392,7 @@
     "children": [
       {
         "_type": "span",
-        "marks": [
-          "em"
-        ],
+        "marks": ["em"],
         "text": "Italic",
         "_key": "randomKey260"
       }
@@ -420,7 +406,7 @@
     "children": [
       {
         "_type": "span",
-        "marks": [],
+        "marks": ["underline"],
         "text": "Underline",
         "_key": "randomKey270"
       }
@@ -448,9 +434,7 @@
     "children": [
       {
         "_type": "span",
-        "marks": [
-          "strong"
-        ],
+        "marks": ["strong"],
         "text": "Lorem Lorem Lorem",
         "_key": "randomKey290"
       }
@@ -492,9 +476,7 @@
     "children": [
       {
         "_type": "span",
-        "marks": [
-          "strong"
-        ],
+        "marks": ["strong"],
         "text": "Lorem",
         "_key": "randomKey320"
       }
@@ -570,9 +552,7 @@
     "children": [
       {
         "_type": "span",
-        "marks": [
-          "strong"
-        ],
+        "marks": ["strong"],
         "text": "Lorem",
         "_key": "randomKey370"
       }
@@ -632,9 +612,7 @@
     "children": [
       {
         "_type": "span",
-        "marks": [
-          "strong"
-        ],
+        "marks": ["strong"],
         "text": "Lorem Lorem",
         "_key": "randomKey410"
       }
@@ -710,9 +688,7 @@
     "children": [
       {
         "_type": "span",
-        "marks": [
-          "strong"
-        ],
+        "marks": ["strong"],
         "text": "Lorem Lorem",
         "_key": "randomKey460"
       }
@@ -726,9 +702,7 @@
     "children": [
       {
         "_type": "span",
-        "marks": [
-          "em"
-        ],
+        "marks": ["em"],
         "text": "Lorem Lorem Lorem Lorem Lorem Lorem Lorem Lorem Lorem Lorem Lorem Lorem Lorem Lorem Lorem Lorem Lorem Lorem Lorem Lorem Lorem Lorem Lorem Lorem Lorem Lorem Lorem Lorem Lorem Lorem Lorem Lorem Lorem Lorem",
         "_key": "randomKey470"
       }
@@ -742,9 +716,7 @@
     "children": [
       {
         "_type": "span",
-        "marks": [
-          "em"
-        ],
+        "marks": ["em"],
         "text": "Lorem Lorem",
         "_key": "randomKey480"
       }
@@ -758,10 +730,7 @@
     "children": [
       {
         "_type": "span",
-        "marks": [
-          "strong",
-          "em"
-        ],
+        "marks": ["strong", "em"],
         "text": "Lorem Lorem Lorem Lorem Lorem Lorem",
         "_key": "randomKey490"
       }
@@ -789,9 +758,7 @@
     "children": [
       {
         "_type": "span",
-        "marks": [
-          "strong"
-        ],
+        "marks": ["strong"],
         "text": "Lorem Lorem Lorem Lorem:",
         "_key": "randomKey510"
       },
@@ -1321,9 +1288,7 @@
       },
       {
         "_type": "span",
-        "marks": [
-          "randomKey0"
-        ],
+        "marks": ["randomKey0", "underline"],
         "text": "Lorem Lorem",
         "_key": "randomKey881"
       },
