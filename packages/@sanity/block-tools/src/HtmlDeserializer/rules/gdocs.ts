@@ -24,6 +24,12 @@ function isStrong(el: Node): boolean {
   return /font-weight:700/.test(style || '')
 }
 
+// text-decoration seems like the most important rule for underline in their html
+function isUnderline(el: Node): boolean {
+  const style = isElement(el) && el.getAttribute('style')
+  return /text-decoration:underline/.test(style || '')
+}
+
 // Check for attribute given by the gdocs preprocessor
 function isGoogleDocs(el: Node): boolean {
   return isElement(el) && Boolean(el.getAttribute('data-is-google-docs'))
@@ -90,6 +96,9 @@ export default function createGDocsRules(
           }
           if (isStrong(el)) {
             span.marks.push('strong')
+          }
+          if (isUnderline(el)) {
+            span.marks.push('underline')
           }
           if (isEmphasis(el)) {
             span.marks.push('em')
