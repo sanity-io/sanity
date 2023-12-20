@@ -4,9 +4,7 @@
     "children": [
       {
         "_type": "span",
-        "marks": [
-          "strong"
-        ],
+        "marks": ["strong"],
         "text": "Heading in bold",
         "_key": "randomKey00"
       }
@@ -274,9 +272,7 @@
     "children": [
       {
         "_type": "span",
-        "marks": [
-          "strong"
-        ],
+        "marks": ["strong"],
         "text": "Simple bullet list",
         "_key": "randomKey170"
       }
