@@ -170,12 +170,21 @@ export default defineConfig([
   },
   {
     name: 'playground',
-    title: 'Test Studio',
+    title: 'Test Studio (playground)',
     subtitle: 'Playground dataset',
     projectId: 'ppsg7ml5',
     dataset: 'playground',
     plugins: [sharedSettings()],
     basePath: '/playground',
+  },
+  {
+    name: 'playground-partial-indexing',
+    title: 'Test Studio (playground-partial-indexing)',
+    subtitle: 'Playground dataset',
+    projectId: 'ppsg7ml5',
+    dataset: 'playground-partial-indexing',
+    plugins: [sharedSettings()],
+    basePath: '/playground-partial-indexing',
   },
   {
     name: 'staging',

@@ -13,4 +13,8 @@ export {groupProblems} from '../sanity/groupProblems'
 export {validateSchema} from '../sanity/validateSchema'
 
 export {isActionEnabled} from '../legacy/actionUtils'
-export {resolveSearchConfig, DEFAULT_MAX_FIELD_DEPTH} from '../legacy/searchConfig/resolve'
+export {
+  resolveSearchConfig,
+  resolveSearchConfigForBaseFieldPaths,
+  DEFAULT_MAX_FIELD_DEPTH,
+} from '../legacy/searchConfig/resolve'

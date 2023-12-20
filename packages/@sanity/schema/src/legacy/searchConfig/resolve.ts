@@ -105,7 +105,7 @@ export function deriveFromPreview(
   return fields
 }
 
-function getCachedStringFieldPaths(type, maxDepth) {
+function getCachedStringFieldPaths(type, maxDepth = DEFAULT_MAX_FIELD_DEPTH) {
   const symbol = getStringFieldSymbol(maxDepth)
   if (!type[symbol]) {
     type[symbol] = uniqBy(
@@ -125,12 +125,11 @@ function getCachedStringFieldPaths(type, maxDepth) {
   return type[symbol]
 }
 
-function getCachedBaseFieldPaths(type) {
-  const symbol = getStringFieldSymbol(DEFAULT_MAX_FIELD_DEPTH)
+function getCachedBaseFieldPaths(type, maxDepth = DEFAULT_MAX_FIELD_DEPTH) {
+  const symbol = getStringFieldSymbol(maxDepth)
   if (!type[symbol]) {
-    type[symbol] = uniqBy(
-      [...BASE_WEIGHTS, ...deriveFromPreview(type, DEFAULT_MAX_FIELD_DEPTH)],
-      (spec) => spec.path.join('.'),
+    type[symbol] = uniqBy([...BASE_WEIGHTS, ...deriveFromPreview(type, maxDepth)], (spec) =>
+      spec.path.join('.'),
     )
   }
   return type[symbol]
@@ -150,13 +149,13 @@ function getPortableTextFieldPaths(type, maxDepth) {
   return reduceType(type, reducer, [], [], maxDepth)
 }
 
-export function resolveSearchConfigForBaseFieldPaths(type) {
-  return getCachedBaseFieldPaths(type)
+export function resolveSearchConfigForBaseFieldPaths(type, maxDepth?: number) {
+  return getCachedBaseFieldPaths(type, maxDepth)
 }
 
 /**
  * @internal
  */
 export function resolveSearchConfig(type, maxDepth?: number) {
-  return getCachedStringFieldPaths(type, maxDepth ?? DEFAULT_MAX_FIELD_DEPTH)
+  return getCachedStringFieldPaths(type, maxDepth)
 }
