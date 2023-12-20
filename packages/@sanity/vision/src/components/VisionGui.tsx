@@ -763,9 +763,7 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
                     <Box flex={1}>
                       <TextInput readOnly type="url" ref={this._operationUrlElement} value={url} />
                     </Box>
-                    <Tooltip
-                      content={t('action.copy-url-to-clipboard')}
-                    >
+                    <Tooltip content={t('action.copy-url-to-clipboard')}>
                       <Button
                         aria-label={t('action.copy-url-to-clipboard')}
                         type="button"
