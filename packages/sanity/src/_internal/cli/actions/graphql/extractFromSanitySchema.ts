@@ -237,7 +237,7 @@ export function extractFromSanitySchema(
     }
 
     if (isReference(type)) {
-      return getReferenceDefinition(type as ReferenceSchemaType, parent)
+      return getReferenceDefinition(type, parent)
     }
 
     if (isArrayType(type)) {
@@ -372,9 +372,12 @@ export function extractFromSanitySchema(
       throw new Error('No candidates for reference')
     }
 
-    return candidates.length === 1
-      ? {type: getTypeName(candidates[0].type.name), ...base}
-      : {...getUnionDefinition(candidates, def, {grandParent: parent}), ...base}
+    if (candidates.length === 1) {
+      return {type: getTypeName(candidates[0].type.name), ...base}
+    }
+
+    const unionDefinition = getUnionDefinition(candidates, def, {grandParent: parent})
+    return {...unionDefinition, ...base}
   }
 
   function getArrayDefinition(
