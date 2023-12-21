@@ -6,7 +6,7 @@ import {platform, tmpdir} from 'os'
 import {createClient} from '@sanity/client'
 import which from 'which'
 
-export const cliUserToken = (process.env.SANITY_CI_CLI_AUTH_TOKEN || '').trim()
+export const cliUserToken = (process.env.SANITY_CI_CLI_AUTH_TOKEN_STAGING || '').trim()
 export const cliProjectId = '1d4femd5'
 export const cliApiHost = 'https://api.sanity.work'
 

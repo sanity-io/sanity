@@ -42,7 +42,7 @@ export default async function globalSetup(): Promise<void> {
   await writeFile(testIdPath, testId, 'utf8')
 
   if (!cliUserToken) {
-    console.warn('\nNo SANITY_CI_CLI_AUTH_TOKEN set, skipping CLI tests')
+    console.warn('\nNo SANITY_CI_CLI_AUTH_TOKEN_STAGING set, skipping CLI tests')
     return
   }
 
@@ -117,7 +117,7 @@ function prepareStudios() {
 
 async function prepareCliAuth(configPath: string) {
   if (!cliUserToken) {
-    throw new Error('SANITY_CI_CLI_AUTH_TOKEN not set')
+    throw new Error('SANITY_CI_CLI_AUTH_TOKEN_STAGING not set')
   }
 
   const client = createClient({
