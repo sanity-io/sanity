@@ -64,4 +64,5 @@ jobs:
           npm -v
           yarn test --silent --selectProjects=@sanity/cli
         env:
-          SANITY_CI_CLI_AUTH_TOKEN: ${{ secrets.SANITY_CI_CLI_AUTH_TOKEN }}
+          # Update token in github and change below to ${{ secrets.SANITY_CI_CLI_AUTH_TOKEN }} after merge to next
+          SANITY_CI_CLI_AUTH_TOKEN_STAGING: ${{ secrets.SANITY_CI_CLI_AUTH_TOKEN_STAGING }}
