@@ -2,7 +2,7 @@ import {describeCliTest} from './shared/describe'
 import {runSanityCmdCommand} from './shared/environment'
 
 describeCliTest('CLI: `sanity telemetry status`', () => {
-  test.todo('sanity telemetry status: granted', async () => {
+  test.skip('sanity telemetry status: granted', async () => {
     await runSanityCmdCommand('v3', ['telemetry', 'enable'], {
       env: {
         DEBUG: 'sanity:*',
@@ -27,7 +27,7 @@ https://www.sanity.io/telemetry
 `)
   })
 
-  test.todo('sanity telemetry status: denied', async () => {
+  test.skip('sanity telemetry status: denied', async () => {
     await runSanityCmdCommand('v3', ['telemetry', 'disable'], {
       env: {
         CI: 'false',
@@ -52,7 +52,7 @@ https://www.sanity.io/telemetry
 `)
   })
 
-  test.todo('sanity telemetry status: denied using DO_NOT_TRACK', async () => {
+  test.skip('sanity telemetry status: denied using DO_NOT_TRACK', async () => {
     const result = await runSanityCmdCommand('v3', ['telemetry', 'status'], {
       env: {
         CI: 'false',
@@ -76,7 +76,7 @@ https://www.sanity.io/telemetry
 })
 
 describeCliTest('CLI: `sanity telemetry enable`', () => {
-  test.todo('sanity telemetry enable: success', async () => {
+  test.skip('sanity telemetry enable: success', async () => {
     await runSanityCmdCommand('v3', ['telemetry', 'disable'], {
       env: {
         CI: 'false',
@@ -100,7 +100,7 @@ https://www.sanity.io/telemetry
 `)
   })
 
-  test.todo('sanity telemetry enable: success (already enabled)', async () => {
+  test.skip('sanity telemetry enable: success (already enabled)', async () => {
     const result = await runSanityCmdCommand('v3', ['telemetry', 'enable'], {
       env: {
         CI: 'false',
@@ -120,7 +120,7 @@ https://www.sanity.io/telemetry
 })
 
 describeCliTest('CLI: `sanity telemetry disable`', () => {
-  test.todo('sanity telemetry disable: success', async () => {
+  test.skip('sanity telemetry disable: success', async () => {
     await runSanityCmdCommand('v3', ['telemetry', 'enable'], {
       env: {
         CI: 'false',
@@ -145,7 +145,7 @@ https://www.sanity.io/telemetry
 `)
   })
 
-  test.todo('sanity telemetry disable: success (already denied)', async () => {
+  test.skip('sanity telemetry disable: success (already denied)', async () => {
     const result = await runSanityCmdCommand('v3', ['telemetry', 'disable'], {
       env: {
         CI: 'false',
@@ -164,7 +164,7 @@ https://www.sanity.io/telemetry
 `)
   })
 
-  test.todo('sanity telemetry disable: success (already denied using DO_NOT_TRACK)', async () => {
+  test.skip('sanity telemetry disable: success (already denied using DO_NOT_TRACK)', async () => {
     const result = await runSanityCmdCommand('v3', ['telemetry', 'disable'], {
       env: {
         CI: 'false',
