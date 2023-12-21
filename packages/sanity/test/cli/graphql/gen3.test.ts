@@ -4,6 +4,7 @@ import {extractFromSanitySchema} from '../../../src/_internal/cli/actions/graphq
 import generateSchema from '../../../src/_internal/cli/actions/graphql/gen3'
 
 import testStudioSchema from './fixtures/test-studio'
+import manySelfRefsSchema from './fixtures/many-self-refs'
 
 describe('GraphQL - Generation 3', () => {
   beforeEach(() => {
@@ -40,6 +41,49 @@ describe('GraphQL - Generation 3', () => {
 
     expect(schema.types.filter((type) => type.name.endsWith(suffix))).not.toHaveLength(0)
     expect(sortGraphQLSchema(schema)).toMatchSnapshot()
+  })
+
+  describe.each([
+    {name: 'testStudioSchema', sanitySchema: testStudioSchema},
+    {name: 'manySelfRefsSchema', sanitySchema: manySelfRefsSchema},
+  ])(`Union cache: sanitySchema: $name`, ({sanitySchema}) => {
+    /**
+     * @jest-environment jsdom
+     */
+    it.each([true, false])(
+      'Should be able to generate graphql schema, withUnionCache: %p',
+      (withUnionCache) => {
+        const extracted = extractFromSanitySchema(sanitySchema, {
+          nonNullDocumentFields: false,
+          withUnionCache,
+        })
+
+        const schema = generateSchema(extracted)
+
+        expect(schema.generation).toBe('gen3')
+        expect(sortGraphQLSchema(schema)).toMatchSnapshot()
+      },
+    )
+
+    it('Should generate the same schema with and without union cache', () => {
+      const extractedWithoutUnionCache = extractFromSanitySchema(sanitySchema, {
+        nonNullDocumentFields: false,
+        withUnionCache: false,
+      })
+
+      const extractedWithUnionCache = extractFromSanitySchema(sanitySchema, {
+        nonNullDocumentFields: false,
+        withUnionCache: true,
+      })
+
+      expect(extractedWithoutUnionCache).toEqual(extractedWithUnionCache)
+
+      const schemaWithoutUnionCache = generateSchema(extractedWithoutUnionCache)
+      const schemaWithUnionCache = generateSchema(extractedWithUnionCache)
+      expect(sortGraphQLSchema(schemaWithoutUnionCache)).toEqual(
+        sortGraphQLSchema(schemaWithUnionCache),
+      )
+    })
   })
 })
 
