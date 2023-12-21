@@ -397,6 +397,12 @@ export type Plugin<TOptions = void> = (options: TOptions) => PluginOptions
 export interface WorkspaceOptions extends SourceOptions {
   basePath: string
   subtitle?: string
+  /**
+   * The workspace logo
+   *
+   * @deprecated Custom logo components are no longer supported.
+   * Users are encouraged to provide custom components for individual workspace icons instead.
+   */
   logo?: ComponentType
   icon?: ComponentType
 
