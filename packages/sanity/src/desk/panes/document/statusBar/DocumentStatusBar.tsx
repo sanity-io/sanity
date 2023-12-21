@@ -35,16 +35,15 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
   return (
     <Flex direction="column" ref={setRootElement} sizing="border">
       {shouldRender && (
-        <Flex align="stretch" gap={1} justify="space-between">
-          <Flex
-            align="center"
-            flex={1}
-            gap={collapsed ? 2 : 3}
-            paddingLeft={4}
-            paddingRight={3}
-            paddingY={2}
-            wrap="wrap"
-          >
+        <Flex
+          align="stretch"
+          gap={1}
+          justify="space-between"
+          paddingY={2}
+          paddingLeft={4}
+          paddingRight={3}
+        >
+          <Flex align="center" flex={1} gap={collapsed ? 2 : 3} wrap="wrap" paddingRight={3}>
             <Flex align="center">
               <DocumentStatusLine singleLine={!collapsed} />
               <SpacerButton size="large" />
@@ -55,7 +54,6 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
           <Flex
             align="flex-start"
             justify="flex-end"
-            paddingY={2}
             ref={actionsBoxRef}
             style={{flexShrink: 0, marginLeft: 'auto'}}
           >
