@@ -13,8 +13,8 @@ interface FreeTrialProps {
 export function FreeTrial({type}: FreeTrialProps) {
   const {data, showDialog, showOnLoad, toggleShowContent} = useFreeTrialContext()
   const scheme = useColorSchemeValue()
-  //  On mobile, give it some time so the popover doesn't show up until the navbar is open.
-  const [showPopover, setShowPopover] = useState(type !== 'sidebar')
+  //  Give it some time so the popover doesn't show until the element is mounted and the position is calculated.
+  const [showPopover, setShowPopover] = useState(false)
   const ref = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
