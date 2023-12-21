@@ -153,7 +153,7 @@ export function extractFromSanitySchema(
   extractOptions: {nonNullDocumentFields?: boolean} = {},
 ): ApiSpecification {
   const {nonNullDocumentFields} = extractOptions
-  const unionRecursionGuards: string[] = []
+  const unionRecursionGuards = new Set<string>()
   const hasErrors =
     sanitySchema._validation &&
     sanitySchema._validation.some((group) =>
@@ -440,12 +440,12 @@ export function extractFromSanitySchema(
     // #1482: When creating union definition do not get caught in recursion loop
     // for types that reference themselves
     const guardPathName = `${typeof parent === 'object' ? parent.name : parent}`
-    if (unionRecursionGuards.includes(guardPathName)) {
+    if (unionRecursionGuards.has(guardPathName)) {
       return {}
     }
 
     try {
-      unionRecursionGuards.push(guardPathName)
+      unionRecursionGuards.add(guardPathName)
 
       candidates.forEach((def, i) => {
         if (typeNeedsHoisting(def)) {
@@ -517,10 +517,7 @@ export function extractFromSanitySchema(
         ? {type: name, references}
         : {type: name, references, inlineObjects}
     } finally {
-      const parentIndex = unionRecursionGuards.indexOf(guardPathName)
-      if (parentIndex !== -1) {
-        unionRecursionGuards.splice(parentIndex, 1)
-      }
+      unionRecursionGuards.delete(guardPathName)
     }
   }
 
