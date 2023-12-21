@@ -35,13 +35,9 @@ const INITIAL_LOADING_STATE: Settings = {
 /**
  * Fetches the index settings for the current dataset, if any
  */
-function fetchMaxDepth({
-  versionedClient,
-}: {
-  versionedClient: SanityClient
-}): Observable<PartialIndexSettings> {
-  const {projectId, dataset} = versionedClient.config()
-  return versionedClient.observable.request<PartialIndexSettings>({
+function fetchMaxDepth({client}: {client: SanityClient}): Observable<PartialIndexSettings> {
+  const {projectId, dataset} = client.config()
+  return client.observable.request<PartialIndexSettings>({
     uri: `/projects/${projectId}/datasets/${dataset}/index-settings`,
     tag: 'search.getPartialIndexSettings',
   })
@@ -50,17 +46,18 @@ function fetchMaxDepth({
 const cachedSettings: Map<string, Observable<PartialIndexSettings>> = new Map()
 
 /** @internal */
-export function useSearchMaxFieldDepth(): number {
+export function useSearchMaxFieldDepth(overrideClient?: SanityClient): number {
   const isEnabled = useWorkspace().search?.unstable_partialIndexing?.enabled
-  const versionedClient = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
-  const dataset = useMemo(() => versionedClient.config().dataset, [versionedClient])!
+  const workspaceClient = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
+  const client = useMemo(() => overrideClient || workspaceClient, [overrideClient, workspaceClient])
+  const dataset = useMemo(() => client.config().dataset, [client])!
 
   if (!isEnabled) {
     cachedSettings.set(dataset, of(INITIAL_LOADING_STATE.settings))
   }
 
   if (!cachedSettings.has(dataset)) {
-    cachedSettings.set(dataset, fetchMaxDepth({versionedClient}).pipe(shareReplay()))
+    cachedSettings.set(dataset, fetchMaxDepth({client}).pipe(shareReplay()))
   }
 
   const indexSettings = useMemoObservable(
