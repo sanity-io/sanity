@@ -135,7 +135,7 @@ async function prepareCliAuth(configPath: string) {
   // Store the config file in a different directory than the default, in order
   // to be easier to test locally without having the local user conflict
   // NOTE: this is using the staging env
-  const cs = new Configstore('sanity-staging', {}, {globalConfigPath: true, configPath})
+  const cs = new Configstore('sanity', {}, {globalConfigPath: true, configPath})
   cs.set('authToken', cliUserToken)
 }
 
