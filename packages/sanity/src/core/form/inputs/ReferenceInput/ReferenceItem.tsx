@@ -328,7 +328,6 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
             {...elementProps}
           >
             <PreviewReferenceValue
-              layout="compact"
               value={value}
               referenceInfo={loadableReferenceInfo}
               renderPreview={renderPreview}

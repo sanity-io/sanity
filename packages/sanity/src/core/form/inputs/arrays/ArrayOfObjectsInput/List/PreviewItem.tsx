@@ -171,7 +171,7 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
         {renderPreview({
           schemaType: props.schemaType,
           value: props.value,
-          layout: 'compact',
+          layout: 'default',
           // Don't do visibility check for virtualized items as the calculation will be incorrect causing it to scroll
           skipVisibilityCheck: true,
         })}
