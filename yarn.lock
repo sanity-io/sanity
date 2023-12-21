@@ -3758,10 +3758,10 @@
   dependencies:
     "@sanity/uuid" "3.0.2"
 
-"@sanity/telemetry@^0.7.3":
-  version "0.7.3"
-  resolved "https://registry.yarnpkg.com/@sanity/telemetry/-/telemetry-0.7.3.tgz#05715dbf3cd7313b6eeeba23faa2bba8b5c8c381"
-  integrity sha512-gzHQJPQ9PjKOS/T/SLqrbSgTGwb2ZTrbBZBH0Yx25P5cP2C9kBGCoHRIJvQU0axBFSBRajVQDKtIUSrZ59XBSw==
+"@sanity/telemetry@^0.7.5":
+  version "0.7.5"
+  resolved "https://registry.yarnpkg.com/@sanity/telemetry/-/telemetry-0.7.5.tgz#e9c39d35a55892ec230654f33d008f75aa2a398a"
+  integrity sha512-lY1Lmt2zl9YIIXO2bAFGXR542ovpn8jmLmIos1mQU4D+ItbZsPBxt9g72bJCsUZ7yodMf2K4t4Tp7BTv0as9sg==
   dependencies:
     lodash "^4.17.21"
     react "^18.2.0"
