@@ -16,6 +16,7 @@ configuration file. Tread with caution!
   --non-null-document-fields Use non-null document fields (_id, _type etc)
   --playground Enable GraphQL playground for easier debugging
   --no-playground Disable GraphQL playground
+  --with-union-cache *Experimental:* Enable union cache that optimizes schema generation for schemas with many self referencing types
 
 Examples
   # Deploy all defined GraphQL APIs

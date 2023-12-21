@@ -150,10 +150,11 @@ function getCrossDatasetReferenceMetadata(
 
 export function extractFromSanitySchema(
   sanitySchema: CompiledSchema,
-  extractOptions: {nonNullDocumentFields?: boolean} = {},
+  extractOptions: {nonNullDocumentFields?: boolean; withUnionCache?: boolean} = {},
 ): ApiSpecification {
-  const {nonNullDocumentFields} = extractOptions
+  const {nonNullDocumentFields, withUnionCache} = extractOptions
   const unionRecursionGuards = new Set<string>()
+  const unionDefinitionCache = new Map<string, any>()
   const hasErrors =
     sanitySchema._validation &&
     sanitySchema._validation.some((group) =>
@@ -456,6 +457,13 @@ export function extractFromSanitySchema(
       return {}
     }
 
+    const unionCacheKey = `${options.grandParent}-${guardPathName}-${candidates
+      .map((c) => c.type?.name)
+      .join('-')}`
+    if (withUnionCache && unionDefinitionCache.has(unionCacheKey)) {
+      return unionDefinitionCache.get(unionCacheKey)
+    }
+
     try {
       unionRecursionGuards.add(guardPathName)
 
@@ -532,9 +540,13 @@ export function extractFromSanitySchema(
 
       const references = refs.length > 0 ? refs : undefined
       const inlineObjects = inlineObjs.length > 0 ? inlineObjs : undefined
-      return isReference(parent)
+
+      const unionDefinition = isReference(parent)
         ? {type: name, references}
         : {type: name, references, inlineObjects}
+
+      unionDefinitionCache.set(unionCacheKey, unionDefinition)
+      return unionDefinition
     } finally {
       unionRecursionGuards.delete(guardPathName)
     }

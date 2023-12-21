@@ -55,6 +55,7 @@ export default async function deployGraphQLApiAction(
     playground: playgroundFlag,
     generation: generationFlag,
     'non-null-document-fields': nonNullDocumentFieldsFlag,
+    withUnionCache,
   } = flags
 
   const {apiClient, output, prompt} = context
@@ -200,6 +201,7 @@ export default async function deployGraphQLApiAction(
           typeof nonNullDocumentFieldsFlag === 'undefined'
             ? nonNullDocumentFields
             : nonNullDocumentFieldsFlag,
+        withUnionCache,
       })
 
       apiSpec = generateSchema(extracted, {filterSuffix: apiDef.filterSuffix})
@@ -404,6 +406,7 @@ function parseCliFlags(args: {argv?: string[]}) {
     .option('generation', {type: 'string'})
     .option('non-null-document-fields', {type: 'boolean'})
     .option('playground', {type: 'boolean'})
+    .option('with-union-cache', {type: 'boolean'})
     .option('force', {type: 'boolean'}).argv
 }
 
