@@ -2,7 +2,7 @@ import {describeCliTest} from './shared/describe'
 import {runSanityCmdCommand} from './shared/environment'
 
 describeCliTest('CLI: `sanity telemetry status`', () => {
-  test.skip('sanity telemetry status: granted', async () => {
+  test('sanity telemetry status: granted', async () => {
     await runSanityCmdCommand('v3', ['telemetry', 'enable'], {
       env: {
         DEBUG: 'sanity:*',
@@ -13,6 +13,8 @@ describeCliTest('CLI: `sanity telemetry status`', () => {
     const result = await runSanityCmdCommand('v3', ['telemetry', 'status'], {
       env: {
         CI: 'false',
+        // Disables color for snapshot report
+        FORCE_COLOR: '0',
       },
     })
 
@@ -27,7 +29,7 @@ https://www.sanity.io/telemetry
 `)
   })
 
-  test.skip('sanity telemetry status: denied', async () => {
+  test('sanity telemetry status: denied', async () => {
     await runSanityCmdCommand('v3', ['telemetry', 'disable'], {
       env: {
         CI: 'false',
@@ -37,6 +39,8 @@ https://www.sanity.io/telemetry
     const result = await runSanityCmdCommand('v3', ['telemetry', 'status'], {
       env: {
         CI: 'false',
+        // Disables color for snapshot report
+        FORCE_COLOR: '0',
       },
     })
 
@@ -52,11 +56,13 @@ https://www.sanity.io/telemetry
 `)
   })
 
-  test.skip('sanity telemetry status: denied using DO_NOT_TRACK', async () => {
+  test('sanity telemetry status: denied using DO_NOT_TRACK', async () => {
     const result = await runSanityCmdCommand('v3', ['telemetry', 'status'], {
       env: {
         CI: 'false',
         DO_NOT_TRACK: '1',
+        // Disables color for snapshot report
+        FORCE_COLOR: '0',
       },
     })
 
@@ -76,7 +82,7 @@ https://www.sanity.io/telemetry
 })
 
 describeCliTest('CLI: `sanity telemetry enable`', () => {
-  test.skip('sanity telemetry enable: success', async () => {
+  test('sanity telemetry enable: success', async () => {
     await runSanityCmdCommand('v3', ['telemetry', 'disable'], {
       env: {
         CI: 'false',
@@ -86,6 +92,8 @@ describeCliTest('CLI: `sanity telemetry enable`', () => {
     const result = await runSanityCmdCommand('v3', ['telemetry', 'enable'], {
       env: {
         CI: 'false',
+        // Disables color for snapshot report
+        FORCE_COLOR: '0',
       },
     })
 
@@ -100,10 +108,12 @@ https://www.sanity.io/telemetry
 `)
   })
 
-  test.skip('sanity telemetry enable: success (already enabled)', async () => {
+  test('sanity telemetry enable: success (already enabled)', async () => {
     const result = await runSanityCmdCommand('v3', ['telemetry', 'enable'], {
       env: {
         CI: 'false',
+        // Disables color for snapshot report
+        FORCE_COLOR: '0',
       },
     })
 
@@ -120,7 +130,7 @@ https://www.sanity.io/telemetry
 })
 
 describeCliTest('CLI: `sanity telemetry disable`', () => {
-  test.skip('sanity telemetry disable: success', async () => {
+  test('sanity telemetry disable: success', async () => {
     await runSanityCmdCommand('v3', ['telemetry', 'enable'], {
       env: {
         CI: 'false',
@@ -130,6 +140,8 @@ describeCliTest('CLI: `sanity telemetry disable`', () => {
     const result = await runSanityCmdCommand('v3', ['telemetry', 'disable'], {
       env: {
         CI: 'false',
+        // Disables color for snapshot report
+        FORCE_COLOR: '0',
       },
     })
 
@@ -145,10 +157,12 @@ https://www.sanity.io/telemetry
 `)
   })
 
-  test.skip('sanity telemetry disable: success (already denied)', async () => {
+  test('sanity telemetry disable: success (already denied)', async () => {
     const result = await runSanityCmdCommand('v3', ['telemetry', 'disable'], {
       env: {
         CI: 'false',
+        // Disables color for snapshot report
+        FORCE_COLOR: '0',
       },
     })
 
@@ -164,11 +178,13 @@ https://www.sanity.io/telemetry
 `)
   })
 
-  test.skip('sanity telemetry disable: success (already denied using DO_NOT_TRACK)', async () => {
+  test('sanity telemetry disable: success (already denied using DO_NOT_TRACK)', async () => {
     const result = await runSanityCmdCommand('v3', ['telemetry', 'disable'], {
       env: {
         CI: 'false',
         DO_NOT_TRACK: '1',
+        // Disables color for snapshot report
+        FORCE_COLOR: '0',
       },
     })
 
