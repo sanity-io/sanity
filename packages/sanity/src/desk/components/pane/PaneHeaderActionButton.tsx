@@ -123,6 +123,7 @@ function PaneHeaderMenuGroupActionButton(props: PaneHeaderMenuGroupActionButtonP
           disabled={!!node.disabled}
           icon={node.icon ?? UnknownIcon}
           label={title}
+          mode="bleed"
           tooltipProps={{content: node.title, portal: true}}
         />
       }
