@@ -4,8 +4,15 @@ import React, {useCallback} from 'react'
 import {useLocale} from '../../../../i18n/hooks/useLocale'
 import {Button} from '../../../../../ui-components'
 
+// TODO: re-enable locale selection once schema localization is available
+const LOCALE_SELECTION_DISABLED = true
+
 export function LocaleMenu() {
   const {changeLocale, currentLocale, locales} = useLocale()
+
+  if (LOCALE_SELECTION_DISABLED) {
+    return null
+  }
 
   if (!locales || locales.length < 2) {
     return null
