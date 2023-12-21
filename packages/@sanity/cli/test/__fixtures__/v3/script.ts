@@ -3,7 +3,7 @@
 import {getCliClient} from 'sanity/cli'
 
 getCliClient()
-  .withConfig({apiVersion: '2022-09-09'})
+  .withConfig({apiVersion: '2022-09-09', apiHost: 'https://api.sanity.work'})
   .users.getById('me')
   .then(
     (user) => console.log(JSON.stringify({user, env: process.env}, null, 2)),

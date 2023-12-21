@@ -5,6 +5,7 @@ describeCliTest('CLI: `sanity telemetry status`', () => {
   test('sanity telemetry status: granted', async () => {
     await runSanityCmdCommand('v3', ['telemetry', 'enable'], {
       env: {
+        DEBUG: 'sanity:*',
         CI: 'false',
       },
     })
@@ -12,6 +13,8 @@ describeCliTest('CLI: `sanity telemetry status`', () => {
     const result = await runSanityCmdCommand('v3', ['telemetry', 'status'], {
       env: {
         CI: 'false',
+        // Disables color for snapshot report
+        FORCE_COLOR: '0',
       },
     })
 
@@ -36,6 +39,8 @@ https://www.sanity.io/telemetry
     const result = await runSanityCmdCommand('v3', ['telemetry', 'status'], {
       env: {
         CI: 'false',
+        // Disables color for snapshot report
+        FORCE_COLOR: '0',
       },
     })
 
@@ -56,6 +61,8 @@ https://www.sanity.io/telemetry
       env: {
         CI: 'false',
         DO_NOT_TRACK: '1',
+        // Disables color for snapshot report
+        FORCE_COLOR: '0',
       },
     })
 
@@ -85,6 +92,8 @@ describeCliTest('CLI: `sanity telemetry enable`', () => {
     const result = await runSanityCmdCommand('v3', ['telemetry', 'enable'], {
       env: {
         CI: 'false',
+        // Disables color for snapshot report
+        FORCE_COLOR: '0',
       },
     })
 
@@ -103,6 +112,8 @@ https://www.sanity.io/telemetry
     const result = await runSanityCmdCommand('v3', ['telemetry', 'enable'], {
       env: {
         CI: 'false',
+        // Disables color for snapshot report
+        FORCE_COLOR: '0',
       },
     })
 
@@ -129,6 +140,8 @@ describeCliTest('CLI: `sanity telemetry disable`', () => {
     const result = await runSanityCmdCommand('v3', ['telemetry', 'disable'], {
       env: {
         CI: 'false',
+        // Disables color for snapshot report
+        FORCE_COLOR: '0',
       },
     })
 
@@ -148,6 +161,8 @@ https://www.sanity.io/telemetry
     const result = await runSanityCmdCommand('v3', ['telemetry', 'disable'], {
       env: {
         CI: 'false',
+        // Disables color for snapshot report
+        FORCE_COLOR: '0',
       },
     })
 
@@ -168,6 +183,8 @@ https://www.sanity.io/telemetry
       env: {
         CI: 'false',
         DO_NOT_TRACK: '1',
+        // Disables color for snapshot report
+        FORCE_COLOR: '0',
       },
     })
 
