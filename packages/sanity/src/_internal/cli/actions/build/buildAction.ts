@@ -1,6 +1,7 @@
 import path from 'path'
 import {promisify} from 'util'
 import chalk from 'chalk'
+import {noopLogger} from '@sanity/telemetry'
 import rimrafCallback from 'rimraf'
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore This may not yet be built.
@@ -27,7 +28,7 @@ export default async function buildSanityStudio(
   overrides?: {basePath?: string},
 ): Promise<{didCompile: boolean}> {
   const timer = getTimer()
-  const {output, prompt, workDir, cliConfig, telemetry} = context
+  const {output, prompt, workDir, cliConfig, telemetry = noopLogger} = context
   const flags: BuildSanityStudioCommandFlags = {
     minify: true,
     stats: false,
