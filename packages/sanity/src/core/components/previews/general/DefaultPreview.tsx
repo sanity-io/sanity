@@ -36,6 +36,7 @@ const DEFAULT_MEDIA_DIMENSIONS: PreviewMediaDimensions = {
 
 const Root = styled(Flex)`
   height: ${rem(PREVIEW_SIZES.default.media.height)};
+  box-sizing: content-box;
 `
 
 const TitleSkeleton = styled(TextSkeleton).attrs({animated: true, radius: 1, size: 1})`
