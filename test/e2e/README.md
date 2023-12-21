@@ -39,11 +39,9 @@ Other useful helper commands
 
 - "e2e:dev": Starts the E2E studio using `sanity dev`
 - "e2e:build": Runs `sanity build` on E2E studio
-- "e2e:cleanup": "node -r dotenv-flow/config -r esbuild-register scripts/e2e/cleanup"
-- "e2e:codegen": "node -r dotenv-flow/config ./node_modules/.bin/sanity-test codegen"
-- "e2e:preview": "yarn e2e:build && yarn --cwd dev/studio-e2e-testing start"
-- "e2e:setup": "node -r dotenv-flow/config -r esbuild-register scripts/e2e/setup"
-- "e2e:start": "yarn --cwd dev/studio-e2e-testing start"
+- "e2e:codegen": Runs [playwright codegen](https://playwright.dev/docs/codegen). **Note: Requires the studio to be running. Run `yarn e2e:dev` in another terminal first**
+- "e2e:start": Runs `sanity build` on E2E studio
+- "e2e:preview": Runs builds and runs`sanity start` on E2E studio
 
 For more useful commands, see the [Playwright Command Line](https://playwright.dev/docs/test-cli) documentation.
 
