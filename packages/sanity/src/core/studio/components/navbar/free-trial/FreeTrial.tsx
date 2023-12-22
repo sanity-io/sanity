@@ -13,23 +13,21 @@ interface FreeTrialProps {
 export function FreeTrial({type}: FreeTrialProps) {
   const {data, showDialog, showOnLoad, toggleShowContent} = useFreeTrialContext()
   const scheme = useColorSchemeValue()
-  //  Give it some time so the popover doesn't show until the element is mounted and the position is calculated.
+
+  // Use callback refs to get the element handle when it's ready/changed
+  const [ref, setRef] = useState<HTMLButtonElement | null>(null)
+
   const [showPopover, setShowPopover] = useState(false)
-  const ref = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
-    const timer = setTimeout(() => {
+    if (ref) {
+      // set popover visible when the ref has been set (i.e. the element is ready)
       setShowPopover(true)
-    }, 300)
-
-    return () => {
-      clearTimeout(timer)
     }
-  }, [])
-
+  }, [ref])
   const closeAndReOpen = useCallback(() => toggleShowContent(true), [toggleShowContent])
   const toggleDialog = useCallback(() => {
-    ref.current?.focus()
+    ref?.focus()
     toggleShowContent(false)
   }, [toggleShowContent, ref])
 
@@ -42,14 +40,14 @@ export function FreeTrial({type}: FreeTrialProps) {
       <FreeTrialButtonSidebar
         toggleShowContent={closeAndReOpen}
         daysLeft={data.daysLeft}
-        ref={ref}
+        ref={setRef}
       />
     ) : (
       <FreeTrialButtonTopbar
         toggleShowContent={closeAndReOpen}
         daysLeft={data.daysLeft}
         totalDays={data.totalDays}
-        ref={ref}
+        ref={setRef}
       />
     )
 
