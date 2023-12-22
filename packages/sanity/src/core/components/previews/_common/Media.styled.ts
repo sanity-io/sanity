@@ -37,15 +37,24 @@ export const MediaWrapper = styled.span<{
     }
 
     & svg {
+      // Shared styles for SVG icons
       color: var(--card-icon-color);
       display: block;
       flex: 1;
-      font-size: calc(21 / 16 * 1em);
-    }
 
-    & [data-sanity-icon] {
-      display: block;
-      font-size: calc(${iconSize} / 16 * 1em);
+      // Specific styles for non Sanity icons
+      &:not([data-sanity-icon]) {
+        height: 1em;
+        width: 1em;
+        max-width: 1em;
+        max-height: 1em;
+      }
+
+      // Specific styles for Sanity icons
+      &[data-sanity-icon] {
+        display: block;
+        font-size: calc(${iconSize} / 16 * 1em);
+      }
     }
 
     & > span[data-border] {
