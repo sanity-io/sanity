@@ -1,7 +1,7 @@
 import {Box, Card, Flex, Text} from '@sanity/ui'
 import React from 'react'
 import {DocumentInspectorProps} from 'sanity'
-import {DocumentInspectorHeader} from 'sanity/desk'
+import {DocumentInspectorHeader} from 'sanity/structure'
 
 export function CustomInspector(props: DocumentInspectorProps) {
   const {onClose} = props

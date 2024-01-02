@@ -1,5 +1,5 @@
 import {defineConfig} from 'sanity'
-import {deskTool} from 'sanity/desk'
+import {structureTool} from 'sanity/structure'
 import {schemaTypes} from '../../packages/@sanity/cli/templates/ecommerce/schemas'
 import {barcodeInput} from './plugins/barcode-input'
 
@@ -14,5 +14,5 @@ export default defineConfig({
     types: schemaTypes,
   },
 
-  plugins: [deskTool(), barcodeInput()],
+  plugins: [structureTool(), barcodeInput()],
 })

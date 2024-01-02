@@ -1,4 +1,4 @@
-import {ListItemBuilder} from 'sanity/desk'
+import {ListItemBuilder} from 'sanity/structure'
 import defineStructure from '../utils/defineStructure'
 
 export default defineStructure<ListItemBuilder>((S) =>

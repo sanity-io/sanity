@@ -1,9 +1,9 @@
 import {defineConfig} from 'sanity'
-import {deskTool} from 'sanity/desk'
+import {structureTool} from 'sanity/structure'
 
 export default defineConfig({
   dataset: 'test',
-  plugins: [deskTool()],
+  plugins: [structureTool()],
   name: 'default',
   projectId: 'ppsg7ml5',
   title: 'Starter Studio',

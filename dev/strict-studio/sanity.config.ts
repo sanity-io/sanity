@@ -1,9 +1,9 @@
 import {defineConfig} from 'sanity'
-import {deskTool} from 'sanity/desk'
+import {structureTool} from 'sanity/structure'
 import {schemaTypes} from './schema'
 
 export default defineConfig({
-  plugins: [deskTool()],
+  plugins: [structureTool()],
   title: 'Strict',
   name: 'default',
   projectId: 'ppsg7ml5',

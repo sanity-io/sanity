@@ -1,6 +1,6 @@
 import {useMemo} from 'react'
 import {defineConfig, Studio} from 'sanity'
-import {deskTool} from 'sanity/desk'
+import {structureTool} from 'sanity/structure'
 
 const wrapperStyles = {height: '100vh', width: '100vw'}
 
@@ -9,7 +9,7 @@ export default function StudioRoot({basePath}: {basePath: string}) {
     () =>
       defineConfig({
         basePath,
-        plugins: [deskTool()],
+        plugins: [structureTool()],
         title: 'Next.js Starter',
         projectId: 'ppsg7ml5',
         dataset: 'test',

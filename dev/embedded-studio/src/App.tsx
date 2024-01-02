@@ -6,7 +6,7 @@ import {
   StudioThemeColorSchemeKey,
   Studio,
 } from 'sanity'
-import {deskTool} from 'sanity/desk'
+import {structureTool} from 'sanity/structure'
 import {Button, Card, Flex, ThemeProvider, studioTheme, usePrefersDark} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
 
@@ -39,7 +39,7 @@ const config = defineConfig({
     types: SCHEMA_TYPES,
   },
 
-  plugins: [deskTool()],
+  plugins: [structureTool()],
 })
 
 export function App() {

@@ -1,5 +1,5 @@
 import {defineConfig} from 'sanity'
-import {deskTool} from 'sanity/desk'
+import {structureTool} from 'sanity/structure'
 import {googleMapsInput} from '@sanity/google-maps-input'
 
 import {schemaTypes} from '../../packages/@sanity/cli/templates/moviedb/schemas'
@@ -19,7 +19,7 @@ export default defineConfig({
   logo: BrandLogo,
 
   plugins: [
-    deskTool(),
+    structureTool(),
     googleMapsInput({
       apiKey: 'AIzaSyDDO2FFi5wXaQdk88S1pQUa70bRtWuMhkI',
       defaultZoom: 11,

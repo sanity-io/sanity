@@ -1,5 +1,5 @@
 import {defineConfig, definePlugin} from 'sanity'
-import {deskTool} from 'sanity/desk'
+import {structureTool} from 'sanity/structure'
 import {visionTool} from '@sanity/vision'
 import {BookIcon} from '@sanity/icons'
 import {muxInput} from 'sanity-plugin-mux-input'
@@ -49,7 +49,7 @@ const sharedSettings = definePlugin({
   },
   plugins: [
     customComponents(),
-    deskTool({
+    structureTool({
       icon: BookIcon,
       name: 'content',
       title: 'Content',

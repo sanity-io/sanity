@@ -1,5 +1,5 @@
 import {useCallback, useMemo} from 'react'
-import {usePaneRouter} from 'sanity/desk'
+import {usePaneRouter} from 'sanity/structure'
 import {LanguageFilterPluginOptions} from './types'
 
 // NOTE: use `+` instead of `,` since the structure tool URL format already uses comma

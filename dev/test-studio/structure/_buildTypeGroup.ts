@@ -1,4 +1,4 @@
-import {StructureBuilder} from 'sanity/desk'
+import {StructureBuilder} from 'sanity/structure'
 import {Schema} from '@sanity/types'
 import {isObject} from 'lodash'
 import {PreviewLayoutKey} from 'sanity'
