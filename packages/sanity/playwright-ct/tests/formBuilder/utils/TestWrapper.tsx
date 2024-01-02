@@ -1,7 +1,7 @@
 import {SanityClient} from '@sanity/client'
 import {Card, LayerProvider, studioTheme, ThemeProvider, ToastProvider} from '@sanity/ui'
 import React, {useEffect, useState} from 'react'
-import {Pane, PaneContent, PaneLayout} from '../../../../src/desk/components'
+import {Pane, PaneContent, PaneLayout} from '../../../../src/structure/components'
 import {createMockSanityClient} from '../../../../test/mocks/mockSanityClient'
 import {getMockWorkspace} from '../../../../test/testUtils/getMockWorkspaceFromConfig'
 import {
