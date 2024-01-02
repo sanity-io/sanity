@@ -1,4 +1,4 @@
 import {createContext} from 'react'
-import {StuctureToolContextValue} from './types'
+import type {StructureToolContextValue} from './types'
 
-export const StructureToolContext = createContext<StuctureToolContextValue | null>(null)
+export const StructureToolContext = createContext<StructureToolContextValue | null>(null)
