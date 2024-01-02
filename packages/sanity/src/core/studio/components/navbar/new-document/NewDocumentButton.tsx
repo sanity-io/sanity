@@ -2,11 +2,13 @@ import React, {useCallback, useMemo, useState} from 'react'
 import {Text, useClickOutside, Stack, TextInput, TextInputProps, Card, Flex} from '@sanity/ui'
 import {AddIcon, SearchIcon} from '@sanity/icons'
 import ReactFocusLock from 'react-focus-lock'
+import {isDeprecatedSchemaType} from '@sanity/types'
 import {useGetI18nText, useTranslation} from '../../../../i18n'
 import {InsufficientPermissionsMessage} from '../../../../components'
 import {useCurrentUser} from '../../../../store'
 import {useColorScheme} from '../../../colorScheme'
 import {Button, ButtonProps, Tooltip, TooltipProps} from '../../../../../ui-components'
+import {useSchema} from '../../../../hooks'
 import {NewDocumentList, NewDocumentListProps} from './NewDocumentList'
 import {ModalType, NewDocumentOption} from './types'
 import {filterOptions} from './filter'
@@ -46,6 +48,7 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
 
   const {scheme} = useColorScheme()
   const currentUser = useCurrentUser()
+  const schema = useSchema()
 
   const hasNewDocumentOptions = options.length > 0
   const disabled = !canCreateDocument || !hasNewDocumentOptions
@@ -53,10 +56,15 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
   const title = t('new-document.title')
   const openDialogAriaLabel = t('new-document.open-dialog-aria-label')
 
-  // Filter options based on search query
+  // Filter options based on search query and document type deprecations
   const filteredOptions = useMemo(
-    () => filterOptions(options, searchQuery, getI18nText),
-    [options, searchQuery, getI18nText],
+    () =>
+      filterOptions(
+        options.filter((option) => !isDeprecatedSchemaType(schema.get(option.schemaType))),
+        searchQuery,
+        getI18nText,
+      ),
+    [options, searchQuery, getI18nText, schema],
   )
 
   const handleSearchChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
