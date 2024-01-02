@@ -1,4 +1,4 @@
-export * from './deskTool'
+export * from './structureTool'
 
 export {DocumentInspectorHeader} from './panes/document/documentInspector'
 
@@ -9,7 +9,7 @@ export * from './panes/document/useDocumentPane'
 
 export * from './types'
 
-export * from './DeskToolProvider'
+export * from './StructureToolProvider'
 
 export {ConfirmDeleteDialog, PaneLayout, PaneRouterContext, usePaneRouter} from './components'
 
@@ -25,7 +25,7 @@ export type {
 
 export * from './structureBuilder'
 
-export * from './useDeskTool'
+export * from './useStructureTool'
 
 export * from './panes/document'
 

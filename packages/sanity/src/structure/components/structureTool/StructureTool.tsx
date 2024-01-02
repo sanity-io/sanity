@@ -3,17 +3,17 @@ import React, {memo, Fragment, useState, useEffect, useCallback} from 'react'
 import styled from 'styled-components'
 import isHotkey from 'is-hotkey'
 import {LOADING_PANE} from '../../constants'
-import {LoadingPane, DeskToolPane} from '../../panes'
+import {LoadingPane, StructureToolPane} from '../../panes'
 import {useResolvedPanes} from '../../structureResolvers'
-import {PaneNode} from '../../types'
+import type {PaneNode} from '../../types'
 import {PaneLayout} from '../pane'
-import {useDeskTool} from '../../useDeskTool'
+import {useStructureTool} from '../../useStructureTool'
 import {NoDocumentTypesScreen} from './NoDocumentTypesScreen'
-import {DeskTitle} from './DeskTitle'
+import {StructureTitle} from './StructureTitle'
 import {useSchema, _isCustomDocumentTypeDefinition} from 'sanity'
 import {useRouterState} from 'sanity/router'
 
-interface DeskToolProps {
+interface StructureToolProps {
   onPaneChange: (panes: Array<PaneNode | typeof LOADING_PANE>) => void
 }
 
@@ -27,10 +27,10 @@ const isSaveHotkey = isHotkey('mod+s')
 /**
  * @internal
  */
-export const DeskTool = memo(function DeskTool({onPaneChange}: DeskToolProps) {
+export const StructureTool = memo(function StructureTool({onPaneChange}: StructureToolProps) {
   const {push: pushToast} = useToast()
   const schema = useSchema()
-  const {layoutCollapsed, setLayoutCollapsed} = useDeskTool()
+  const {layoutCollapsed, setLayoutCollapsed} = useStructureTool()
   const {paneDataItems, resolvedPanes} = useResolvedPanes()
   // Intent resolving is processed by the sibling `<IntentResolver />` but it doesn't have a UI for indicating progress.
   // We handle that here, so if there are only 1 pane (the root structure), and there's an intent state in the router, we need to show a placeholder LoadingPane until
@@ -110,7 +110,7 @@ export const DeskTool = memo(function DeskTool({onPaneChange}: DeskToolProps) {
               {pane === LOADING_PANE ? (
                 <LoadingPane paneKey={paneKey} path={path} selected={selected} />
               ) : (
-                <DeskToolPane
+                <StructureToolPane
                   active={active}
                   groupIndex={groupIndex}
                   index={paneIndex}
@@ -134,7 +134,7 @@ export const DeskTool = memo(function DeskTool({onPaneChange}: DeskToolProps) {
           <LoadingPane paneKey="intent-resolver" />
         )}
       </StyledPaneLayout>
-      <DeskTitle resolvedPanes={resolvedPanes} />
+      <StructureTitle resolvedPanes={resolvedPanes} />
       <div data-portal="" ref={setPortalElement} />
     </PortalProvider>
   )

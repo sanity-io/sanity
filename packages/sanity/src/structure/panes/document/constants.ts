@@ -14,6 +14,6 @@ export const INSPECT_ACTION_PREFIX = 'inspect:'
 export const DEFAULT_MENU_ITEM_GROUPS: PaneMenuItemGroup[] = [{id: 'inspectors'}, {id: 'links'}]
 
 // inspectors
-export const HISTORY_INSPECTOR_NAME = 'sanity/desk/history'
-export const VALIDATION_INSPECTOR_NAME = 'sanity/desk/validation'
-export const COMMENTS_INSPECTOR_NAME = 'sanity/desk/comments'
+export const HISTORY_INSPECTOR_NAME = 'sanity/structure/history'
+export const VALIDATION_INSPECTOR_NAME = 'sanity/structure/validation'
+export const COMMENTS_INSPECTOR_NAME = 'sanity/structure/comments'

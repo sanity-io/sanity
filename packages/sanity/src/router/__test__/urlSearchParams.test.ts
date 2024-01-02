@@ -3,14 +3,14 @@ import {route} from '../route'
 describe('decode w/UrlSearchParams', () => {
   const router = route.create('/tools/:tool', route.create('/edit/:documentId'))
   test('UrlSearchParams params with a simple route', () => {
-    expect(router.decode('/tools/desk?a=b')).toEqual({
-      tool: 'desk',
+    expect(router.decode('/tools/structure?a=b')).toEqual({
+      tool: 'structure',
       _searchParams: [['a', 'b']],
     })
   })
   test('UrlSearchParams params with a nested route', () => {
-    expect(router.decode('/tools/desk?view=zen')).toEqual({
-      tool: 'desk',
+    expect(router.decode('/tools/structure?view=zen')).toEqual({
+      tool: 'structure',
       _searchParams: [['view', 'zen']],
     })
   })
@@ -21,31 +21,31 @@ describe('encode w/UrlSearchParams', () => {
   test('UrlSearchParams params with a simple route', () => {
     expect(
       router.encode({
-        tool: 'desk',
+        tool: 'structure',
         _searchParams: [['a', 'b']],
       }),
-    ).toEqual('/tools/desk?a=b')
+    ).toEqual('/tools/structure?a=b')
   })
   test('UrlSearchParams params with a nested route', () => {
     expect(
       router.encode({
-        tool: 'desk',
+        tool: 'structure',
         _searchParams: [['view', 'zen']],
       }),
-    ).toEqual('/tools/desk?view=zen')
+    ).toEqual('/tools/structure?view=zen')
   })
   test('Slashes in values are not encoded', () => {
     expect(
       router.encode({
-        tool: 'desk',
+        tool: 'structure',
         _searchParams: [['page', '/main']],
       }),
-    ).toEqual('/tools/desk?page=/main')
+    ).toEqual('/tools/structure?page=/main')
   })
   test('Undefined in values are omitted', () => {
     expect(
       router.encode({
-        tool: 'desk',
+        tool: 'structure',
         _searchParams: [
           ['include', 'yes'],
           // @ts-expect-error - typescript should yell
@@ -54,7 +54,7 @@ describe('encode w/UrlSearchParams', () => {
           ['also', undefined],
         ],
       }),
-    ).toEqual('/tools/desk?include=yes')
+    ).toEqual('/tools/structure?include=yes')
   })
 })
 
@@ -151,10 +151,10 @@ describe('encode with dynamically scoped url params', () => {
   test('UrlSearchParams params with a simple route', () => {
     expect(
       router.encode({
-        tool: 'desk',
-        desk: {documentId: '12', _searchParams: [['a', 'b']]},
+        tool: 'structure',
+        structure: {documentId: '12', _searchParams: [['a', 'b']]},
       }),
-    ).toEqual('/tools/desk/edit/12?desk[a]=b')
+    ).toEqual('/tools/structure/edit/12?structure[a]=b')
   })
 })
 
@@ -164,10 +164,10 @@ describe('decode with dynamically scoped url params', () => {
   )
 
   test('UrlSearchParams params with a simple route', () => {
-    expect(router.decode(`/tools/desk/edit/12?desk%5Ba%5D=b&foo=bar`)).toEqual({
-      tool: 'desk',
+    expect(router.decode(`/tools/structure/edit/12?structure%5Ba%5D=b&foo=bar`)).toEqual({
+      tool: 'structure',
       _searchParams: [['foo', 'bar']],
-      desk: {documentId: '12', _searchParams: [['a', 'b']]},
+      structure: {documentId: '12', _searchParams: [['a', 'b']]},
     })
   })
 })

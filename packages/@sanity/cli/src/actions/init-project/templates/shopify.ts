@@ -5,7 +5,7 @@ import {defineConfig, isDev} from 'sanity'
 
 import {deskTool} from 'sanity/desk'
 import {schemaTypes} from './schemas'
-import {structure} from './desk'
+import {structure} from './structure'
 
 import {visionTool} from '@sanity/vision'
 import {colorInput} from '@sanity/color-input'

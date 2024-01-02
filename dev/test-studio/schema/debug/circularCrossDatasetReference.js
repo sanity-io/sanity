@@ -58,7 +58,7 @@ export const circularCrossDatasetReferenceTest = {
       type: 'crossDatasetReference',
       dataset: 'next',
       studioUrl: ({id, type}) => {
-        return type ? `https://admin.sanity.io/desk/docs;${type};${id}` : null
+        return type ? `https://sanity.io/admin/structure/docs;${type};${id}` : null
       },
       to: [
         {

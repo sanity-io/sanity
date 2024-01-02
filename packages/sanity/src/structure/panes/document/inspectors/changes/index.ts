@@ -1,13 +1,13 @@
 import {RestoreIcon} from '@sanity/icons'
 import {HISTORY_INSPECTOR_NAME} from '../../constants'
-import {useDeskTool} from '../../../../useDeskTool'
+import {useStructureTool} from '../../../../useStructureTool'
 import {ChangesInspector} from './ChangesInspector'
 import {DocumentInspector, useTranslation} from 'sanity'
 
 export const changesInspector: DocumentInspector = {
   name: HISTORY_INSPECTOR_NAME,
   useMenuItem: () => {
-    const {features} = useDeskTool()
+    const {features} = useStructureTool()
     const {t} = useTranslation()
 
     return {

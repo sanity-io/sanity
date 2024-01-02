@@ -189,7 +189,7 @@ export interface LocaleDefinition extends Locale {
    * Array of resource bundles for this locale, if any.
    *
    * Generally you'll want to provide some base resources, eg for the studio core namespace,
-   * as well as for common namespaces like `desk` and `vision`. You can also provide resources
+   * as well as for common namespaces like `structure` and `vision`. You can also provide resources
    * for other plugins/namespaces - but preferably the resources should be provided as an async
    * function that imports the resources, in order to lazy load them on use.
    */

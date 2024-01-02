@@ -5,8 +5,8 @@ import {route} from '../route'
 export const router = route.create('/:dataset', [
   route.create('/settings/:setting'),
   route.create('/tools/:tool', (params: any): any => {
-    if (params.tool === 'desk') {
-      return [route.scope('desk', '/collections/:collection')]
+    if (params.tool === 'structure') {
+      return [route.scope('structure', '/collections/:collection')]
     }
     if (params.tool === 'another-tool') {
       return [route.scope('another-tool', '/omg/:nope')]
@@ -17,27 +17,27 @@ export const router = route.create('/:dataset', [
 
 export const examples: Array<[string, Record<string, string | Record<string, string>>]> = [
   ['/some-dataset', {dataset: 'some-dataset'}],
-  ['/some-dataset/tools/desk', {dataset: 'some-dataset', tool: 'desk'}],
+  ['/some-dataset/tools/structure', {dataset: 'some-dataset', tool: 'structure'}],
   [
-    '/some-dataset/settings/desk',
+    '/some-dataset/settings/structure',
     {
       dataset: 'some-dataset',
-      setting: 'desk',
+      setting: 'structure',
     },
   ],
   [
-    '/some-dataset/tools/desk',
+    '/some-dataset/tools/structure',
     {
       dataset: 'some-dataset',
-      tool: 'desk',
+      tool: 'structure',
     },
   ],
   [
-    '/some-dataset/tools/desk/collections/articles',
+    '/some-dataset/tools/structure/collections/articles',
     {
       dataset: 'some-dataset',
-      tool: 'desk',
-      desk: {
+      tool: 'structure',
+      structure: {
         collection: 'articles',
       },
     },

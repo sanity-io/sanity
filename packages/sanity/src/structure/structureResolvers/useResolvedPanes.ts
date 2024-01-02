@@ -3,7 +3,7 @@ import {ReplaySubject} from 'rxjs'
 import {map} from 'rxjs/operators'
 import {LOADING_PANE} from '../constants'
 import {RouterPanes, PaneNode, RouterPaneGroup} from '../types'
-import {useDeskTool} from '../useDeskTool'
+import {useStructureTool} from '../useStructureTool'
 import {createResolvedPaneNodeStream} from './createResolvedPaneNodeStream'
 import {RouterState, useRouter} from 'sanity/router'
 
@@ -52,7 +52,7 @@ export function useResolvedPanes(): Panes {
   const [error, setError] = useState<unknown>()
   if (error) throw error
 
-  const {structureContext, rootPaneNode} = useDeskTool()
+  const {structureContext, rootPaneNode} = useStructureTool()
 
   const [data, setData] = useState<Panes>({
     paneDataItems: [],

@@ -14,7 +14,7 @@ import isHotkey from 'is-hotkey'
 import {usePaneLayout, Pane, PaneFooter} from '../../../components'
 import {DOCUMENT_PANEL_PORTAL_ELEMENT} from '../../../constants'
 import {structureLocaleNamespace} from '../../../i18n'
-import {useDeskTool} from '../../../useDeskTool'
+import {useStructureTool} from '../../../useStructureTool'
 import {DocumentOperationResults} from '../DocumentOperationResults'
 import {
   DOCUMENT_PANEL_INITIAL_MIN_WIDTH,
@@ -76,7 +76,7 @@ export function DocumentLayout() {
     value,
   } = useDocumentPane()
 
-  const {features} = useDeskTool()
+  const {features} = useStructureTool()
   const {t} = useTranslation(structureLocaleNamespace)
   const {collapsed: layoutCollapsed} = usePaneLayout()
   const zOffsets = useZIndex()

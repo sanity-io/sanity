@@ -109,7 +109,7 @@ export interface DefaultDocumentNodeContext extends ConfigContext {
  */
 export type DefaultDocumentNodeResolver = (
   /**
-   * S - an instance of the structure builder, that can be used to build the lists/items/panes for the desk tool
+   * S - an instance of the structure builder, that can be used to build the lists/items/panes for the structure tool
    * context - an object holding various context that may be used to customize the structure, for instance the current user.
    *  Defaults to
    * ```ts

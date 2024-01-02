@@ -5,7 +5,7 @@ import {CommentsStudioLayout} from './studio-layout'
 import {definePlugin} from 'sanity'
 
 export const comments = definePlugin({
-  name: 'sanity/desk/comments',
+  name: 'sanity/structure/comments',
 
   document: {
     inspectors: [commentsInspector],

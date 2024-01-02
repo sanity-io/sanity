@@ -1,11 +1,11 @@
 import {JsonIcon, EarthAmericasIcon} from '@sanity/icons'
-import type {DeskToolFeatures, PaneMenuItem} from '../../types'
+import type {StructureToolFeatures, PaneMenuItem} from '../../types'
 import {INSPECT_ACTION_PREFIX} from './constants'
 import type {DocumentInspector, DocumentInspectorMenuItem, TFunction} from 'sanity'
 
 interface GetMenuItemsParams {
   currentInspector?: DocumentInspector
-  features: DeskToolFeatures
+  features: StructureToolFeatures
   hasValue: boolean
   inspectors: DocumentInspector[]
   previewUrl?: string | null

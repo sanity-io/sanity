@@ -57,7 +57,7 @@ export class DocumentListItemBuilder extends ListItemBuilder {
 
   constructor(
     /**
-     * Desk structure context. See {@link StructureContext}
+     * Structure context. See {@link StructureContext}
      */
     protected _context: StructureContext,
     spec?: DocumentListItemInput,

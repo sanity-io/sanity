@@ -117,7 +117,7 @@ export interface BuildableList extends BuildableGenericList {
 }
 
 /**
- * A `ListBuilder` is used to build a list of items in the desk tool.
+ * A `ListBuilder` is used to build a list of items in the structure tool.
  *
  * @public */
 export class ListBuilder extends GenericListBuilder<BuildableList, ListBuilder> {
@@ -126,7 +126,7 @@ export class ListBuilder extends GenericListBuilder<BuildableList, ListBuilder> 
 
   constructor(
     /**
-     * Desk structure context. See {@link StructureContext}
+     * Structure context. See {@link StructureContext}
      */
     protected _context: StructureContext,
     spec?: ListInput,

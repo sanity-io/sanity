@@ -130,8 +130,8 @@ export type TemplateArrayFieldDefinition = TemplateFieldDefinition & {
 
 /**
  * Representation of an initial value template _item_
- * Used by the {@link desk.StructureBuilder} class to determine which initial value templates
- * should be available for a desk structure node, such as a list pane.
+ * Used by the {@link structure.StructureBuilder} class to determine which initial value templates
+ * should be available for a structure node, such as a list pane.
  *
  * @public
  */

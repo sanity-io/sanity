@@ -7,7 +7,7 @@ import {deskTool} from 'sanity/desk'
 import {visionTool} from '@sanity/vision'
 import {shopifyDocumentActions} from './plugins/shopifyDocumentActions'
 import {schemaTypes} from './schemas'
-import {structure} from './desk'
+import {structure} from './structure'
 import {SHOPIFY_STORE_ID} from './constants'
 
 const devOnlyPlugins = [visionTool()]

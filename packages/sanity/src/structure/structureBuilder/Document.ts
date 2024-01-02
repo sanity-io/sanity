@@ -82,7 +82,7 @@ export class DocumentBuilder implements Serializable<DocumentNode> {
 
   constructor(
     /**
-     * Desk structure context. See {@link StructureContext}
+     * Structure context. See {@link StructureContext}
      */
     protected _context: StructureContext,
     spec?: PartialDocumentNode,

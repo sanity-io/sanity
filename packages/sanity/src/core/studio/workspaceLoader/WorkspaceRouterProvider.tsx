@@ -83,7 +83,7 @@ function useRouterFromWorkspaceHistory(
    */
   const prevEvent = useRef(event)
 
-  // Handles redirects from the root base path to the default tool, e.g. `/` -> `/desk`
+  // Handles redirects from the root base path to the default tool, e.g. `/` -> `/structure`
   useEffect(() => {
     if (event?.type === 'state' && !event.state?.intent) {
       const defaultState = resolveDefaultState(tools, event.state)

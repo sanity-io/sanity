@@ -5,8 +5,8 @@ import {
   Dialog, // eslint-disable-line no-restricted-imports
   Stack,
 } from '@sanity/ui'
-import React, {useMemo, useState, useCallback, useEffect} from 'react'
-import {DeskToolProvider} from '../DeskToolProvider'
+import React, {useCallback, useEffect, useMemo, useState} from 'react'
+import {StructureToolProvider} from '../StructureToolProvider'
 import {DocumentPaneProvider} from '../panes'
 import {DocumentPaneNode} from '../types'
 
@@ -41,11 +41,11 @@ export default function InitialValueStory() {
   )
 
   return (
-    <DeskToolProvider>
+    <StructureToolProvider>
       <DocumentPaneProvider index={0} itemId={documentId} pane={pane} paneKey={documentId}>
         <Debug documentId={documentId} documentType={documentType} />
       </DocumentPaneProvider>
-    </DeskToolProvider>
+    </StructureToolProvider>
   )
 }
 

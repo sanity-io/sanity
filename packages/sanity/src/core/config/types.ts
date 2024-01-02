@@ -93,7 +93,7 @@ export interface FormBuilderComponentResolverContext extends ConfigContext {
  * In essence, a tool is a React component that is rendered when the tool is active,
  * along with a title, name (URL segment) and icon.
  *
- * Tools can handle {@link desk.Intent | intents} such as "edit" or "create" by defining a
+ * Tools can handle {@link structure.Intent | intents} such as "edit" or "create" by defining a
  * function for the `canHandleIntent` property, as well as the `getIntentState` property,
  * which defines what an intent will be mapped to in terms of the tool's URL state.
  *

@@ -1,12 +1,12 @@
 import React from 'react'
 import {ArrowLeftIcon} from '@sanity/icons'
 import {Button} from '../../../ui-components'
-import {PaneMenuItem, PaneMenuItemGroup, DeskToolPaneActionHandler} from '../../types'
+import type {PaneMenuItem, PaneMenuItemGroup, StructureToolPaneActionHandler} from '../../types'
 import {BackLink, PaneHeader, PaneHeaderActions} from '../../components'
-import {useDeskTool} from '../../useDeskTool'
+import {useStructureTool} from '../../useStructureTool'
 
 interface UserComponentPaneHeaderProps {
-  actionHandlers?: Record<string, DeskToolPaneActionHandler>
+  actionHandlers?: Record<string, StructureToolPaneActionHandler>
   index: number
   menuItems?: PaneMenuItem[]
   menuItemGroups?: PaneMenuItemGroup[]
@@ -15,7 +15,7 @@ interface UserComponentPaneHeaderProps {
 
 export function UserComponentPaneHeader(props: UserComponentPaneHeaderProps) {
   const {actionHandlers, index, menuItems, menuItemGroups, title} = props
-  const {features} = useDeskTool()
+  const {features} = useStructureTool()
 
   if (!menuItems?.length && !title) {
     return null

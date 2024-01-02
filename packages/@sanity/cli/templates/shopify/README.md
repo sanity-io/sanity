@@ -6,7 +6,7 @@
 
 This Sanity Studio is configured for headless Shopify projects that use the official [Sanity Connect app][sanity-shopify], allowing you to extend Shopify products and collections with your own rich editorial content.
 
-It contains examples of customizing your [desk structure][docs-desk-structure], [document actions][docs-document-actions] and [input components][docs-input-components].
+It contains examples of customizing your [structure][docs-structure], [document actions][docs-document-actions] and [input components][docs-input-components].
 
 This studio can be used with our [Hydrogen starter][hydrogen-demo], your frontend, or anywhere else you want your e-commerce content to go.
 
@@ -74,7 +74,7 @@ This repository is published under the [MIT](license) license.
 
 [docs-cli]: https://www.sanity.io/docs/cli
 [docs-custom-input-components]: https://www.sanity.io/docs/custom-input-components
-[docs-desk-structure]: https://www.sanity.io/docs/structure-builder
+[docs-structure]: https://www.sanity.io/docs/structure-builder
 [docs-document-actions]: https://www.sanity.io/docs/document-actions
 [docs-input-components]: https://www.sanity.io/docs/custom-input-widgets
 [docs-string-input]: https://www.sanity.io/docs/string-type

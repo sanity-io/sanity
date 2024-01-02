@@ -2,7 +2,7 @@
 import {defineLocalesResources} from 'sanity'
 
 /**
- * Defined locale strings for the desk tool, in US English.
+ * Defined locale strings for the structure tool, in US English.
  *
  * @internal
  */

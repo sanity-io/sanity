@@ -2,7 +2,7 @@ import {defineScope} from '@sanity/ui-workshop'
 import {lazy} from 'react'
 
 export default defineScope({
-  name: 'desk/comments',
+  name: 'structure/comments',
   title: 'comments',
   stories: [
     {

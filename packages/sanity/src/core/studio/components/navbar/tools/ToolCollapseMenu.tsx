@@ -8,7 +8,6 @@ import {useColorScheme} from '../../../colorScheme'
 import {Tool} from '../../../../config'
 import {Button} from '../../../../../ui-components'
 import {ToolLink, ToolLinkProps} from './ToolLink'
-import {getToolButtonWrapperElement} from './getToolButtonWrapperElement'
 
 interface ToolCollapseMenuProps {
   activeToolName?: string
@@ -48,11 +47,9 @@ export function ToolCollapseMenu(props: ToolCollapseMenuProps) {
           linkProps: ToolLinkProps,
           ref: React.Ref<HTMLAnchorElement>,
         ) {
-          const Wrapper = getToolButtonWrapperElement(tool)
-
           return (
             <ToolLink {...linkProps} ref={ref} name={tool.name}>
-              <Wrapper>{linkProps.children}</Wrapper>
+              {linkProps.children}
             </ToolLink>
           )
         })

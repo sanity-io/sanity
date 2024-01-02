@@ -16,7 +16,7 @@ interface PackageInfo {
 }
 
 // NOTE: when doing changes here, also remember to update versions in help docs at
-// https://admin.sanity.io/desk/docs;helpArticle;upgrade-packages
+// https://sanity.io/admin/structure/docs;helpArticle;upgrade-packages
 const PACKAGES = [
   {name: 'react', supported: ['^18'], deprecatedBelow: null},
   {name: 'react-dom', supported: ['^18'], deprecatedBelow: null},

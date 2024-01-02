@@ -12,9 +12,9 @@ Inside `/schemas` you'll find schema definitions for all the content types. The
 - `/schemas/documents/`: Document types determines the shape of the JSON documents that's stored in your content lake. This is where you define the content forms for things like collections, products, product variants, as well as articles.
 - `/schemas/objects/`: General purpose & re-usable content structures, such as links, custom product options and modules.
 
-## Desk structure
+## Structure
 
-Sanity Studio will automatically list all your [document types][docs-document-types] out of the box. Sometimes you want a more streamlined editor experience. That's why you'll find a custom [desk-structure][docs-desk-structure] that's defined in `/desk`. It does the following things:
+Sanity Studio will automatically list all your [document types][docs-document-types] out of the box. Sometimes you want a more streamlined editor experience. That's why you'll find a custom [structure][docs-structure] that's defined in `/structure`. It does the following things:
 
 - Groups product information and variants by individual products for more convenient editing
 - Creates a singleton document for controlling a homepage with custom editorial modules.
@@ -151,7 +151,7 @@ This preview component also has visual states for when a product is _unavailable
 
 Sanity Connect will never delete your collection, product and product variant documents.
 
-[docs-desk-structure]: https://www.sanity.io/docs/structure-builder
+[docs-structure]: https://www.sanity.io/docs/structure-builder
 [docs-document-actions]: https://www.sanity.io/docs/document-actions
 [docs-document-types]: https://www.sanity.io/docs/schema-types
 [docs-http-api]: https://www.sanity.io/docs/http-api

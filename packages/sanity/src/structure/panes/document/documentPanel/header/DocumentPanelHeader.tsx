@@ -11,7 +11,7 @@ import {
 import {TimelineMenu} from '../../timeline'
 import {useDocumentPane} from '../../useDocumentPane'
 import {isMenuNodeButton, isNotMenuNodeButton, resolveMenuNodes} from '../../../../menuNodes'
-import {useDeskTool} from '../../../../useDeskTool'
+import {useStructureTool} from '../../../../useStructureTool'
 import {PaneMenuItem} from '../../../../types'
 import {Button, TOOLTIP_DELAY_PROPS} from '../../../../../ui-components'
 import {structureLocaleNamespace} from '../../../../i18n'
@@ -41,7 +41,7 @@ export const DocumentPanelHeader = memo(
       views,
       unstable_languageFilter,
     } = useDocumentPane()
-    const {features} = useDeskTool()
+    const {features} = useStructureTool()
     const {index, BackLink, hasGroupSiblings} = usePaneRouter()
     const {actions: fieldActions} = useFieldActions()
 

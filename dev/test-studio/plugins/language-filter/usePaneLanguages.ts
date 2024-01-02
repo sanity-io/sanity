@@ -2,7 +2,7 @@ import {useCallback, useMemo} from 'react'
 import {usePaneRouter} from 'sanity/desk'
 import {LanguageFilterPluginOptions} from './types'
 
-// NOTE: use `+` instead of `,` since the desk tool URL format already uses comma
+// NOTE: use `+` instead of `,` since the structure tool URL format already uses comma
 const LANG_ID_SEPARATOR = '+'
 
 export function usePaneLanguages(props: {options: LanguageFilterPluginOptions}): {

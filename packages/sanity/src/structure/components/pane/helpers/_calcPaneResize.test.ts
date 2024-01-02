@@ -1,7 +1,7 @@
 import {PaneConfigOpts, PaneResizeCache} from '../types'
 import {_calcPaneResize} from './_calcPaneResize'
 
-describe('@sanity/desk-tool/components/pane', () => {
+describe('sanity/structure/components/pane', () => {
   describe('_calcPaneResize', () => {
     it('should calculate pane resize', () => {
       const cache: PaneResizeCache = {

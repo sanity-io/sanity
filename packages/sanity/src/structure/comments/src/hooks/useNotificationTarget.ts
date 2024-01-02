@@ -18,8 +18,8 @@ interface NotificationTargetHookValue {
    * These values are currently used in notification emails.
    *
    * **Please note:** this will generate a URL for the comment based on the current _active_ pane.
-   * The current active pane may not necessarily be the right-most desk pane and in these cases,
-   * the selected comment may not be visible on initial load when visiting these URLs.
+   * The current active pane may not necessarily be the right-most structure pane and in these
+   * cases, the selected comment may not be visible on initial load when visiting these URLs.
    */
   getNotificationValue: ({commentId}: {commentId: string}) => CommentContext['notification']
 }

@@ -39,7 +39,7 @@ export class MenuItemGroupBuilder implements Serializable<MenuItemGroup> {
 
   constructor(
     /**
-     * Desk structure context. See {@link StructureContext}
+     * Structure context. See {@link StructureContext}
      */
     protected _context: StructureContext,
     spec?: MenuItemGroup,

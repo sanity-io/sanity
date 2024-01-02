@@ -1,22 +1,22 @@
 import React, {useMemo, useState} from 'react'
-import {DeskToolContext} from './DeskToolContext'
-import {createStructureBuilder, DefaultDocumentNodeResolver} from './structureBuilder'
-import {DeskToolContextValue, StructureResolver, UnresolvedPaneNode} from './types'
+import {StructureToolContext} from './StructureToolContext'
+import {createStructureBuilder, type DefaultDocumentNodeResolver} from './structureBuilder'
+import type {StuctureToolContextValue, StructureResolver, UnresolvedPaneNode} from './types'
 import {useConfigContextFromSource, useDocumentStore, useSource} from 'sanity'
 
 /** @internal */
-export interface DeskToolProviderProps {
+export interface StructureToolProviderProps {
   structure?: StructureResolver
   defaultDocumentNode?: DefaultDocumentNodeResolver
   children: React.ReactNode
 }
 
 /** @internal */
-export function DeskToolProvider({
+export function StructureToolProvider({
   defaultDocumentNode,
   structure: resolveStructure,
   children,
-}: DeskToolProviderProps): React.ReactElement {
+}: StructureToolProviderProps): React.ReactElement {
   const [layoutCollapsed, setLayoutCollapsed] = useState(false)
   const source = useSource()
   const configContext = useConfigContextFromSource(source)
@@ -39,7 +39,7 @@ export function DeskToolProvider({
     return S.defaults() as UnresolvedPaneNode
   }, [S, resolveStructure, configContext, documentStore])
 
-  const features: DeskToolContextValue['features'] = useMemo(
+  const features: StuctureToolContextValue['features'] = useMemo(
     () => ({
       backButton: layoutCollapsed,
       resizablePanes: !layoutCollapsed,
@@ -50,7 +50,7 @@ export function DeskToolProvider({
     [layoutCollapsed],
   )
 
-  const deskTool: DeskToolContextValue = useMemo(() => {
+  const structureTool: StuctureToolContextValue = useMemo(() => {
     return {
       features,
       layoutCollapsed,
@@ -60,5 +60,7 @@ export function DeskToolProvider({
     }
   }, [features, layoutCollapsed, rootPaneNode, S.context])
 
-  return <DeskToolContext.Provider value={deskTool}>{children}</DeskToolContext.Provider>
+  return (
+    <StructureToolContext.Provider value={structureTool}>{children}</StructureToolContext.Provider>
+  )
 }

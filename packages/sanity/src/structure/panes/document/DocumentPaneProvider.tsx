@@ -6,7 +6,7 @@ import {fromString as pathFromString, resolveKeyedPath} from '@sanity/util/paths
 import {isActionEnabled} from '@sanity/schema/_internal'
 import {usePaneRouter} from '../../components'
 import type {PaneMenuItem} from '../../types'
-import {useDeskTool} from '../../useDeskTool'
+import {useStructureTool} from '../../useStructureTool'
 import {structureLocaleNamespace} from '../../i18n'
 import {DocumentPaneContext, type DocumentPaneContextValue} from './DocumentPaneContext'
 import type {DocumentPaneProviderProps} from './types'
@@ -65,7 +65,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const presenceStore = usePresenceStore()
   const paneRouter = usePaneRouter()
   const setPaneParams = paneRouter.setParams
-  const {features} = useDeskTool()
+  const {features} = useStructureTool()
   const {push: pushToast} = useToast()
   const {
     options,
@@ -618,7 +618,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   useEffect(() => {
     if (connectionState === 'reconnecting') {
       pushToast({
-        id: 'sanity/desk/reconnecting',
+        id: 'sanity/structure/reconnecting',
         status: 'warning',
         title: t('panes.document-pane-provider.reconnecting.title'),
       })

@@ -3,7 +3,7 @@ import React from 'react'
 import {BackLink, PaneHeader, PaneHeaderActions, usePane} from '../../components'
 import {Button} from '../../../ui-components'
 import {PaneMenuItem, PaneMenuItemGroup} from '../../types'
-import {useDeskTool} from '../../useDeskTool'
+import {useStructureTool} from '../../useStructureTool'
 
 interface ListPaneHeaderProps {
   index: number
@@ -13,7 +13,7 @@ interface ListPaneHeaderProps {
 }
 
 export const ListPaneHeader = ({index, menuItems, menuItemGroups, title}: ListPaneHeaderProps) => {
-  const {features} = useDeskTool()
+  const {features} = useStructureTool()
   const {collapsed, isLast} = usePane()
   // Prevent focus if this is the last (non-collapsed) pane.
   const tabIndex = isLast && !collapsed ? -1 : 0

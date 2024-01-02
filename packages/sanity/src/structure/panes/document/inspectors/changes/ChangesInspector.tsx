@@ -43,7 +43,7 @@ export function ChangesInspector(props: DocumentInspectorProps): ReactElement {
   const isComparingCurrent = !onOlderRevision
 
   // Note that we are using the studio core namespace here, as changes theoretically should
-  // be part of Sanity core (needs to be moved from desk at some point)
+  // be part of Sanity core (needs to be moved from structure at some point)
   const {t} = useTranslation('studio')
 
   const documentContext: DocumentChangeContextInstance = React.useMemo(
