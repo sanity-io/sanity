@@ -18,6 +18,7 @@
 /desk.js
 /presentation.js
 /router.js
+/structure.js
 
 # Playwright-ct artifacts
 /playwright-ct/report

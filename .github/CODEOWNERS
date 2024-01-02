@@ -2,7 +2,7 @@
 # Later matching rules will take precedence.
 * @sanity-io/studio-dx
 
-# For areas of responsibility, assign the specific team 
+# For areas of responsibility, assign the specific team
 # that is responsible. It is possible to assign to individuals,
 # however it is preferable that a team is responsible for large
 # areas to improve maintainablitly and availability
@@ -22,7 +22,7 @@
 /packages/sanity/src/core/form/inputs/PortableText/ @sanity-io/studio-ex
 
 # -- Comments --
-/packages/sanity/src/desk/comments/ @sanity-io/studio-ex
+/packages/sanity/src/structure/comments/ @sanity-io/studio-ex
 
 # -- Others --
 

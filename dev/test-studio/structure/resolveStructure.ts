@@ -10,10 +10,10 @@ import {
   CodeIcon,
 } from '@sanity/icons'
 import {uuid} from '@sanity/uuid'
-import {DocumentStore, SanityDocument, Schema, Translate} from 'sanity'
+import type {DocumentStore, SanityDocument, Schema} from 'sanity'
 import {ItemChild, StructureBuilder, StructureResolver} from 'sanity/desk'
 import {map} from 'rxjs/operators'
-import {Observable, timer} from 'rxjs'
+import {type Observable, timer} from 'rxjs'
 import React from 'react'
 import {DebugPane} from '../components/panes/debug'
 import {JsonDocumentDump} from '../components/panes/JsonDocumentDump'
@@ -366,21 +366,6 @@ export const structure: StructureResolver = (S, {schema, documentStore, i18n}) =
               S.documentTypeListItem('sanity.imageAsset').title('Images').icon(ImagesIcon),
             ]),
         ),
-
-      S.listItem().icon(PlugIcon).id('plugin').title('Plugin panes').child(
-        S.list().id('plugin').title('Plugin panes').items([
-          // orderableDocumentListDeskItem({
-          //   type: 'orderableCategory',
-          //   icon: TagIcon,
-          //   title: 'Category (orderable)',
-          // }),
-          // orderableDocumentListDeskItem({
-          //   type: 'orderableTag',
-          //   icon: TagIcon,
-          //   title: 'Tag (orderable)',
-          // }),
-        ]),
-      ),
 
       S.divider(),
 

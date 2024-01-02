@@ -99,6 +99,17 @@
       "import": "./lib/router.esm.js",
       "default": "./lib/router.esm.js"
     },
+    "./structure": {
+      "types": "./lib/exports/structure.d.ts",
+      "source": "./exports/structure.ts",
+      "require": "./lib/structure.js",
+      "node": {
+        "module": "./lib/structure.esm.js",
+        "import": "./lib/structure.cjs.mjs"
+      },
+      "import": "./lib/structure.esm.js",
+      "default": "./lib/structure.esm.js"
+    },
     "./package.json": "./package.json"
   },
   "main": "./lib/index.js",
@@ -121,6 +132,9 @@
       ],
       "router": [
         "./lib/exports/router.d.ts"
+      ],
+      "structure": [
+        "./lib/exports/desk.d.ts"
       ]
     }
   },
@@ -137,6 +151,7 @@
     "presentation.js",
     "src",
     "static",
+    "structure.js",
     "!**/__test__/**",
     "!**/__tests__/**",
     "!**/__workshop__/**"

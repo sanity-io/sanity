@@ -2,7 +2,7 @@ import Link from 'next/link'
 
 export default function IndexPage() {
   return (
-    <Link href="/studio/desk">
+    <Link href="/studio/structure">
       <a
         style={{
           display: 'block',

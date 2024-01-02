@@ -1,6 +1,6 @@
 import {Container, Flex} from '@sanity/ui'
 import React, {useMemo} from 'react'
-import {DeskToolProvider} from '../../../../DeskToolProvider'
+import {StructureToolProvider} from '../../../../StructureToolProvider'
 import {DocumentPaneNode} from '../../../../types'
 import {DocumentPaneProvider} from '../../DocumentPaneProvider'
 import {DocumentBadges} from '../DocumentBadges'
@@ -22,11 +22,11 @@ export default function DocumentBadgesStory() {
   return (
     <Flex align="center" height="fill" justify="center" padding={4} sizing="border">
       <Container width={0}>
-        <DeskToolProvider>
+        <StructureToolProvider>
           <DocumentPaneProvider index={1} itemId="test" pane={pane} paneKey="test">
             <DocumentBadges />
           </DocumentPaneProvider>
-        </DeskToolProvider>
+        </StructureToolProvider>
       </Container>
     </Flex>
   )

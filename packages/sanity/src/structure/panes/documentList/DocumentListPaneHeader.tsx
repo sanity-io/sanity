@@ -1,12 +1,12 @@
 import {ArrowLeftIcon} from '@sanity/icons'
 import React, {memo, useMemo} from 'react'
 import {TooltipDelayGroupProvider} from '@sanity/ui'
-import {PaneMenuItem, PaneMenuItemGroup, DeskToolPaneActionHandler} from '../../types'
+import type {PaneMenuItem, PaneMenuItemGroup, StructureToolPaneActionHandler} from '../../types'
 import {BackLink, PaneHeader, PaneHeaderActions, usePane} from '../../components'
 import {Button, TOOLTIP_DELAY_PROPS} from '../../../ui-components'
-import {useDeskTool} from '../../useDeskTool'
-import {SortOrder} from './types'
-import {GeneralPreviewLayoutKey, InitialValueTemplateItem} from 'sanity'
+import {useStructureTool} from '../../useStructureTool'
+import type {SortOrder} from './types'
+import type {GeneralPreviewLayoutKey, InitialValueTemplateItem} from 'sanity'
 
 interface DocumentListPaneHeaderProps {
   contentAfter?: React.ReactNode
@@ -30,12 +30,12 @@ export const DocumentListPaneHeader = memo(
     setSortOrder,
     title,
   }: DocumentListPaneHeaderProps) => {
-    const {features} = useDeskTool()
+    const {features} = useStructureTool()
     const {collapsed, isLast} = usePane()
     // Prevent focus if this is the last (non-collapsed) pane.
     const tabIndex = isLast && !collapsed ? -1 : 0
 
-    const actionHandlers = useMemo((): Record<string, DeskToolPaneActionHandler> => {
+    const actionHandlers = useMemo((): Record<string, StructureToolPaneActionHandler> => {
       return {
         setLayout: ({layout: value}: {layout: GeneralPreviewLayoutKey}) => {
           setLayout(value)

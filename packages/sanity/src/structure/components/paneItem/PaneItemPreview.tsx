@@ -28,7 +28,7 @@ export interface PaneItemPreviewProps {
 }
 
 /**
- * Preview component for _documents_ rendered in desk/structure panes.
+ * Preview component for _documents_ rendered in structure panes.
  *
  * Note that non-document previews are not handled by this component,
  * despite being pane items! Non-document previews bypass this entirely

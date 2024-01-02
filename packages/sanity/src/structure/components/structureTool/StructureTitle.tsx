@@ -1,12 +1,12 @@
 import React, {useEffect} from 'react'
-import {ObjectSchemaType} from '@sanity/types'
-import {Panes} from '../../structureResolvers'
-import {useDeskTool} from '../../useDeskTool'
+import type {ObjectSchemaType} from '@sanity/types'
+import type {Panes} from '../../structureResolvers'
+import type {DocumentPaneNode} from '../../types'
+import {useStructureTool} from '../../useStructureTool'
 import {LOADING_PANE} from '../../constants'
-import {DocumentPaneNode} from '../../types'
 import {useEditState, useSchema, unstable_useValuePreview as useValuePreview} from 'sanity'
 
-interface DeskTitleProps {
+interface StructureTitleProps {
   resolvedPanes: Panes['resolvedPanes']
 }
 
@@ -49,14 +49,14 @@ const PassthroughTitle = (props: {title?: string}) => {
   return null
 }
 
-export const DeskTitle = (props: DeskTitleProps) => {
+export const StructureTitle = (props: StructureTitleProps) => {
   const {resolvedPanes} = props
 
   if (!resolvedPanes?.length) return null
 
   const lastPane = resolvedPanes[resolvedPanes.length - 1]
 
-  // If the last pane is loading, display the desk tool title only
+  // If the last pane is loading, display the structure tool title only
   if (isLoadingPane(lastPane)) {
     return <PassthroughTitle />
   }
@@ -77,7 +77,7 @@ export const DeskTitle = (props: DeskTitleProps) => {
 }
 
 /**
- * Construct a pipe delimited title containing `activeTitle` (if applicable) and the base desk title.
+ * Construct a pipe delimited title containing `activeTitle` (if applicable) and the base structure title.
  *
  * @param activeTitle - Title of the first segment
  *
@@ -85,8 +85,8 @@ export const DeskTitle = (props: DeskTitleProps) => {
  * or simply `%BASE_DESK_TITLE` if `activeTitle` is undefined.
  */
 function useConstructDocumentTitle(activeTitle?: string) {
-  const deskToolBaseTitle = useDeskTool().structureContext.title
-  return [activeTitle, deskToolBaseTitle].filter((title) => title).join(' | ')
+  const structureToolBaseTitle = useStructureTool().structureContext.title
+  return [activeTitle, structureToolBaseTitle].filter((title) => title).join(' | ')
 }
 
 // Type guards

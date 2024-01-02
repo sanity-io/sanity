@@ -4,7 +4,7 @@ import React, {useCallback} from 'react'
 import JSONInspector from '@rexxars/react-json-inspector'
 import {Dialog, Tab} from '../../../../ui-components'
 import {DocTitle} from '../../../components'
-import {useDeskToolSetting} from '../../../useDeskToolSetting'
+import {useStructureToolSetting} from '../../../useStructureToolSetting'
 import {structureLocaleNamespace} from '../../../i18n'
 import {useDocumentPane} from '../useDocumentPane'
 import {VIEW_MODE_PARSED, VIEW_MODE_RAW, VIEW_MODES} from './constants'
@@ -25,8 +25,8 @@ export function InspectDialog(props: InspectDialogProps) {
   /* this creates a view mode (the default that it opens with is the parsed tab) that is saved based on the paneKey
   where the inspect dialog lives.
   This also means that when a page is loaded, the state of the tabs remains and doesn't revert to the pane tab */
-  const [viewModeId, onViewModeChange] = useDeskToolSetting(
-    'desk-tool',
+  const [viewModeId, onViewModeChange] = useStructureToolSetting(
+    'structure-tool',
     `inspect-view-preferred-view-mode-${paneKey}`,
     'parsed',
   )

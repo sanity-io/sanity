@@ -2,11 +2,11 @@ import {Flex} from '@sanity/ui'
 import {uniqBy} from 'lodash'
 import React, {memo, useCallback, useMemo} from 'react'
 import {isMenuNodeButton, isNotMenuNodeButton, resolveMenuNodes} from '../../menuNodes'
-import {DeskToolPaneActionHandler, PaneMenuItem, PaneMenuItemGroup} from '../../types'
+import type {StructureToolPaneActionHandler, PaneMenuItem, PaneMenuItemGroup} from '../../types'
 import {PaneContextMenuButton} from '../pane/PaneContextMenuButton'
 import {PaneHeaderActionButton} from '../pane/PaneHeaderActionButton'
 import {PaneHeaderCreateButton} from './PaneHeaderCreateButton'
-import {useTemplates, InitialValueTemplateItem, EMPTY_ARRAY, EMPTY_OBJECT} from 'sanity'
+import {useTemplates, type InitialValueTemplateItem, EMPTY_ARRAY, EMPTY_OBJECT} from 'sanity'
 
 function isNonNullable<T>(value: T): value is NonNullable<T> {
   return value !== null && value !== undefined
@@ -31,7 +31,7 @@ interface PaneHeaderActionsProps {
   initialValueTemplateItems?: InitialValueTemplateItem[]
   menuItems?: PaneMenuItem[]
   menuItemGroups?: PaneMenuItemGroup[]
-  actionHandlers?: Record<string, DeskToolPaneActionHandler>
+  actionHandlers?: Record<string, StructureToolPaneActionHandler>
 }
 
 export const PaneHeaderActions = memo(function PaneHeaderActions(props: PaneHeaderActionsProps) {
@@ -39,7 +39,7 @@ export const PaneHeaderActions = memo(function PaneHeaderActions(props: PaneHead
     initialValueTemplateItems: initialValueTemplateItemsFromStructure = EMPTY_ARRAY,
     menuItems = EMPTY_ARRAY,
     menuItemGroups = EMPTY_ARRAY,
-    actionHandlers = EMPTY_OBJECT as Record<string, DeskToolPaneActionHandler>,
+    actionHandlers = EMPTY_OBJECT as Record<string, StructureToolPaneActionHandler>,
   } = props
 
   const templates = useTemplates()

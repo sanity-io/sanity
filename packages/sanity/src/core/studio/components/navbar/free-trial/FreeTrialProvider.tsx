@@ -1,7 +1,6 @@
 import React, {useCallback, useEffect, useState} from 'react'
 import {useClient} from '../../../../hooks'
 import {SANITY_VERSION} from '../../../../version'
-import {supportsLocalStorage} from '../../../../util/supportsLocalStorage'
 import {FreeTrialContext} from './FreeTrialContext'
 import type {FreeTrialResponse} from './types'
 
@@ -29,9 +28,7 @@ export const FreeTrialProvider = ({children}: FreeTrialProviderProps) => {
       .subscribe(
         (response) => {
           setData(response)
-          // Validates if the user has seen the "structure rename modal" before showing this one. To avoid multiple popovers at same time.
-          const deskRenameSeen = isDeskRenameOnboardingDismissed()
-          if (deskRenameSeen && response?.showOnLoad) {
+          if (response?.showOnLoad) {
             setShowOnLoad(true)
             setShowDialog(true)
           }
@@ -67,10 +64,4 @@ export const FreeTrialProvider = ({children}: FreeTrialProviderProps) => {
       {children}
     </FreeTrialContext.Provider>
   )
-}
-
-function isDeskRenameOnboardingDismissed() {
-  return supportsLocalStorage
-    ? localStorage.getItem('sanityStudio:desk:renameDismissed') === '1'
-    : true
 }

@@ -45,7 +45,7 @@ export interface ChildObservable {
  * Interface for child resolver
  *
  * @public */
-// TODO: unify with PaneNodeResolver in desk-tool
+// TODO: unify with PaneNodeResolver in structure-tool
 export interface ChildResolver {
   (
     itemId: string,

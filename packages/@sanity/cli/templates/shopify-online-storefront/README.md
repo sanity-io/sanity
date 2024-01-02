@@ -4,7 +4,7 @@
 
 This Sanity Studio is configured for Shopify storefronts that use the official [Sanity Connect app](https://apps.shopify.com/sanity-connect) to sync content from Sanity to Shopify.
 
-It contains examples of customizing your [desk structure](https://www.sanity.io/docs/structure-builder), [document actions](https://www.sanity.io/docs/document-actions) and [input components](https://www.sanity.io/docs/custom-input-widgets).
+It contains examples of customizing your [structure](https://www.sanity.io/docs/structure-builder), [document actions](https://www.sanity.io/docs/document-actions) and [input components](https://www.sanity.io/docs/custom-input-widgets).
 
 If you're building a headless storefront, you may want to check out our [starter Studio for headless storefronts](https://github.com/sanity-io/sanity-shopify-studio), which has a richer content model.
 

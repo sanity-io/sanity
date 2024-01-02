@@ -3,7 +3,7 @@
 import {Box, Card, Code, Flex, Radio, Stack, Text} from '@sanity/ui'
 import React, {useCallback, useState} from 'react'
 import {LOADING_PANE} from '../constants'
-import {DeskToolProvider} from '../DeskToolProvider'
+import {StructureToolProvider} from '../StructureToolProvider'
 import {useResolvedPanes} from '../structureResolvers'
 import {RouterPanes} from '../types'
 
@@ -20,9 +20,9 @@ const testPaths: RouterPanes[] = [
 
 export default function ResolvePanesStoryWrapper() {
   return (
-    <DeskToolProvider structure={useCallback((S: any) => S.list().title('Content'), [])}>
+    <StructureToolProvider structure={useCallback((S: any) => S.list().title('Content'), [])}>
       <ResolvePanesStory />
-    </DeskToolProvider>
+    </StructureToolProvider>
   )
 }
 

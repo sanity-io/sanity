@@ -1,28 +1,27 @@
-import {SchemaType} from '@sanity/types'
-import {Observable} from 'rxjs'
-import {
+import type {SchemaType} from '@sanity/types'
+import type {Observable} from 'rxjs'
+import type {
   DefaultDocumentNodeResolver,
-  MenuItem as DeskToolMenuItem,
   Intent,
+  MenuItem as StructureToolMenuItem,
   StructureBuilder,
   StructureContext,
   UserComponent,
   View,
 } from './structureBuilder'
-import {
-  GeneralPreviewLayoutKey,
+import type {
   ConfigContext,
-  InitialValueTemplateItem,
-  DocumentStore,
   DocumentFieldActionNode,
-  LocaleSource,
+  DocumentStore,
+  GeneralPreviewLayoutKey,
   I18nTextRecord,
+  InitialValueTemplateItem,
+  LocaleSource,
 } from 'sanity'
 
 /** @internal */
-export interface DeskToolFeatures {
+export interface StructureToolFeatures {
   /**
-   *
    * @hidden
    * @beta
    */
@@ -34,8 +33,8 @@ export interface DeskToolFeatures {
 }
 
 /** @internal */
-export interface DeskToolContextValue {
-  features: DeskToolFeatures
+export interface StuctureToolContextValue {
+  features: StructureToolFeatures
   layoutCollapsed: boolean
   setLayoutCollapsed: (layoutCollapsed: boolean) => void
 
@@ -44,7 +43,7 @@ export interface DeskToolContextValue {
 }
 
 /**
- *  Desk tool context. Extends from {@link ConfigContext}.
+ *  Structure tool context. Extends from {@link ConfigContext}.
  *  @hidden
  *  @public
  */
@@ -61,7 +60,7 @@ export interface StructureResolverContext extends ConfigContext {
 }
 
 /**
- * Lets you configure how lists, documents, views, menus, and initial value templates are organized in the Sanity Studio’s desk-tool.
+ * Lets you configure how lists, documents, views, menus, and initial value templates are organized in the Sanity Studio’s structure-tool.
  *
  * @public
  *
@@ -71,7 +70,7 @@ export interface StructureResolverContext extends ConfigContext {
  * // sanity.config.js
  *
  * import {defineConfig} from 'sanity'
- * import {deskTool} from 'sanity/desk'
+ * import {structureTool} from 'sanity/structure'
  * import {schemaTypes} from './schema'
  *
  * export default defineConfig({
@@ -80,7 +79,7 @@ export interface StructureResolverContext extends ConfigContext {
  *  projectId: 'my-project-id',
  *  dataset: 'production',
  *  plugins: [
- *    deskTool({
+ *    structureTool({
  *      structure: (S, context) => {
  *        console.log(context) // returns { currentUser, dataset, projectId, schema, getClient, documentStore }
  *        return S.documentTypeList('post')
@@ -94,7 +93,7 @@ export interface StructureResolverContext extends ConfigContext {
  */
 export type StructureResolver = (
   /**
-   * S - An instance of the structure builder, that can be used to build the lists/items/panes for the desk tool
+   * S - An instance of the structure builder, that can be used to build the lists/items/panes for the structure tool
    * context - an object holding various context that may be used to customize the structure, for instance the current user.
    *  Defaults to
    * ```ts
@@ -104,27 +103,27 @@ export type StructureResolver = (
    */
   S: StructureBuilder,
   /**
-   * An object containing pane and index information for the current desk tool.
+   * An object containing pane and index information for the current structure tool.
    * See {@link StructureResolverContext}
    */
   context: StructureResolverContext,
 ) => unknown
 
 /** @internal */
-export type DeskToolPaneActionHandler = (params: any, scope?: unknown) => void
+export type StructureToolPaneActionHandler = (params: any, scope?: unknown) => void
 
 /**
- * The params for the `deskTool` api. See {@link deskTool}
+ * The params for the `structureTool` api. See {@link structureTool}
  *
  * @public */
-export interface DeskToolOptions {
+export interface StructureToolOptions {
   /*
    * React icon component for the tool, used in navigation bar. Defaults to MasterDetailIcon from @sanity/icons
    */
   icon?: React.ComponentType
   /*
-   * The name you want this desk to have (among other places, this name is used in routing,
-   * if name is set to “desk”, it is shown on /desk). Usually lowercase or camelcase by convention. Defaults to desk.
+   * The name you want this structure to have (among other places, this name is used in routing,
+   * if name is set to “structure”, it is shown on /structure). Usually lowercase or camelcase by convention. Defaults to structure.
    */
   name?: string
   /**
@@ -144,15 +143,15 @@ export interface DeskToolOptions {
    */
   defaultDocumentNode?: DefaultDocumentNodeResolver
   /**
-   * The title that will be displayed for the tool. Defaults to Desk
+   * The title that will be displayed for the tool. Defaults to Structure
    */
   title?: string
 }
 
 /**
- * Represents the state of the `panes` inside the desk-tool router
+ * Represents the state of the `panes` inside the structure-tool router
  *
- * - The desk tool stores the state of the current panes inside of the router.
+ * - The structure tool stores the state of the current panes inside of the router.
  * - The panes are stored in groups delimited in the URL by `;`.
  * - In each group, there can be one or more sibling (aka split) panes delimited
  *   by `|`.
@@ -161,7 +160,7 @@ export interface DeskToolOptions {
  *   and payload will be inherited from the first item pane in the pane group
  *   (unless it's an `exclusiveParam`)
  *
- * E.g. `/desk/books;book-123|,view=preview` will parse to:
+ * E.g. `/structure/books;book-123|,view=preview` will parse to:
  *
  * ```js
  * [
@@ -180,9 +179,9 @@ export interface DeskToolOptions {
  * ]
  * ```
  *
- * see [`packages/@sanity/desk-tool/src/utils/parsePanesSegment.ts`][0]
+ * see [`packages/@sanity/structure-tool/src/utils/parsePanesSegment.ts`][0]
  *
- * [0]: https://github.com/sanity-io/sanity/blob/287d308442938c98cbec4608d159401631792d7a/packages/%40sanity/desk-tool/src/utils/parsePanesSegment.ts#L71-L88
+ * [0]: https://github.com/sanity-io/sanity/blob/287d308442938c98cbec4608d159401631792d7a/packages/%40sanity/structure-tool/src/utils/parsePanesSegment.ts#L71-L88
  *
  *
  * @hidden
@@ -242,16 +241,16 @@ export interface RouterPaneSiblingContext {
 }
 
 /** @internal */
-export {type DeskToolMenuItem}
+export {type StructureToolMenuItem}
 
 /**
- * Represents what can be passed into `menuItems` inside of desk-tool panes
+ * Represents what can be passed into `menuItems` inside of structure-tool panes
  *
  * @see BaseResolvedPaneNode
  *
  * @internal
  */
-export interface PaneMenuItem extends DeskToolMenuItem {
+export interface PaneMenuItem extends StructureToolMenuItem {
   // TODO: these would be great options in the `MenuItemBuilder`
   // currently, they are only used in the `DocumentPaneProvider`
   isDisabled?: boolean

@@ -8,8 +8,8 @@ import {Observable, debounce, map, of, tap, timer} from 'rxjs'
 import {useObservableCallback} from 'react-rx'
 import {Pane} from '../../components/pane'
 import {_DEBUG} from '../../constants'
-import {useDeskToolSetting} from '../../useDeskToolSetting'
-import {BaseDeskToolPaneProps} from '../types'
+import {useStructureToolSetting} from '../../useStructureToolSetting'
+import {BaseStructureToolPaneProps} from '../types'
 import {PaneMenuItem} from '../../types'
 import {structureLocaleNamespace} from '../../i18n'
 import {DEFAULT_ORDERING, EMPTY_RECORD} from './constants'
@@ -35,7 +35,7 @@ import {
 /**
  * @internal
  */
-export type DocumentListPaneProps = BaseDeskToolPaneProps<'documentList'>
+export type DocumentListPaneProps = BaseStructureToolPaneProps<'documentList'>
 
 const EMPTY_ARRAY: never[] = []
 
@@ -107,7 +107,7 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
   const sourceName = pane.source
   const typeName = useMemo(() => getTypeNameFromSingleTypeFilter(filter, params), [filter, params])
   const showIcons = displayOptions?.showIcons !== false
-  const [layout, setLayout] = useDeskToolSetting<GeneralPreviewLayoutKey>(
+  const [layout, setLayout] = useStructureToolSetting<GeneralPreviewLayoutKey>(
     typeName,
     'layout',
     defaultLayout,
@@ -130,7 +130,7 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
     return defaultOrdering?.length > 0 ? {by: defaultOrdering} : DEFAULT_ORDERING
   }, [defaultOrdering])
 
-  const [sortOrderRaw, setSortOrder] = useDeskToolSetting<SortOrder>(
+  const [sortOrderRaw, setSortOrder] = useStructureToolSetting<SortOrder>(
     typeName,
     'sortOrder',
     defaultSortOrder,

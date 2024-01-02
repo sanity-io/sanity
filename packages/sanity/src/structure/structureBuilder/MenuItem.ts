@@ -77,7 +77,7 @@ export class MenuItemBuilder implements Serializable<MenuItem> {
 
   constructor(
     /**
-     * Desk structure context. See {@link StructureContext}
+     * Structure context. See {@link StructureContext}
      */
     protected _context: StructureContext,
     spec?: MenuItem,

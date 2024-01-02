@@ -1,6 +1,6 @@
 import {memo, useCallback, useEffect, useState} from 'react'
 import {resolveIntent} from '../../../structureResolvers'
-import {useDeskTool} from '../../../useDeskTool'
+import {useStructureTool} from '../../../useStructureTool'
 import {ensureDocumentIdAndType} from './utils'
 import {useRouter, useRouterState} from 'sanity/router'
 import {isRecord, useDocumentStore} from 'sanity'
@@ -25,7 +25,7 @@ export const IntentResolver = memo(function IntentResolver() {
         : undefined
     }, []),
   )
-  const {rootPaneNode, structureContext} = useDeskTool()
+  const {rootPaneNode, structureContext} = useStructureTool()
   const documentStore = useDocumentStore()
   const [error, setError] = useState<unknown>(null)
 

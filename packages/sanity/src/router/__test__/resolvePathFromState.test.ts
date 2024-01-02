@@ -27,8 +27,8 @@ test('points to unmapped keys', () => {
   const routesDef = route.create('/:dataset', [
     route.create('/settings/:setting'),
     route.create('/tools/:tool', (params: any): any => {
-      if (params.tool === 'desk') {
-        return [route.scope('desk', '/collections/:collection')]
+      if (params.tool === 'structure') {
+        return [route.scope('structure', '/collections/:collection')]
       }
       if (params.tool === 'another-tool') {
         return [route.scope('foo', '/omg/:nope')]
@@ -52,8 +52,8 @@ test('Resolves this', () => {
   const routesDef = route.create('/:dataset', [
     route.create('/settings/:setting'),
     route.create('/tools/:tool', (params: any): any => {
-      if (params.tool === 'desk') {
-        return [route.scope('desk', '/collections/:collection')]
+      if (params.tool === 'structure') {
+        return [route.scope('structure', '/collections/:collection')]
       }
       if (params.tool === 'another-tool') {
         return [route.scope('foo', '/omg/:nope')]

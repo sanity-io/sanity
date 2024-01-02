@@ -4,7 +4,6 @@ import React, {forwardRef, useMemo} from 'react'
 import {Button} from '../../../../../ui-components'
 import {Tool} from '../../../../config'
 import {ToolLink, ToolLinkProps} from './ToolLink'
-import {getToolButtonWrapperElement} from './getToolButtonWrapperElement'
 
 interface ToolVerticalMenuProps {
   activeToolName?: string
@@ -25,11 +24,9 @@ export function ToolVerticalMenu(props: ToolVerticalMenuProps) {
             linkProps: ToolLinkProps,
             ref: React.Ref<HTMLAnchorElement>,
           ) {
-            const Wrapper = getToolButtonWrapperElement(tool)
-
             return (
               <ToolLink {...linkProps} ref={ref} name={tool.name}>
-                <Wrapper>{linkProps.children}</Wrapper>
+                {linkProps.children}
               </ToolLink>
             )
           })

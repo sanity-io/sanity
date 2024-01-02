@@ -176,7 +176,7 @@ export interface NavigateOptions {
  * Base intent parameters
  *
  * @public
- * @todo dedupe with core/desk
+ * @todo dedupe with core/structure
  */
 export interface BaseIntentParams {
   /**

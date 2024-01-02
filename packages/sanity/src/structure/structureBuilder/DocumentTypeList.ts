@@ -26,7 +26,7 @@ export class DocumentTypeListBuilder extends DocumentListBuilder {
 
   constructor(
     /**
-     * Desk structure context. See {@link StructureContext}
+     * Structure context. See {@link StructureContext}
      */
     protected _context: StructureContext,
     spec?: DocumentListInput,

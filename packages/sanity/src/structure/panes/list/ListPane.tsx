@@ -1,13 +1,13 @@
 import React from 'react'
 import {Card, Code} from '@sanity/ui'
 import {Pane} from '../../components'
-import {BaseDeskToolPaneProps} from '../types'
+import {BaseStructureToolPaneProps} from '../types'
 import {_DEBUG} from '../../constants'
 import {ListPaneHeader} from './ListPaneHeader'
 import {ListPaneContent} from './ListPaneContent'
 import {useI18nText} from 'sanity'
 
-type ListPaneProps = BaseDeskToolPaneProps<'list'>
+type ListPaneProps = BaseStructureToolPaneProps<'list'>
 
 /**
  * @internal
@@ -22,7 +22,7 @@ export function ListPane(props: ListPaneProps) {
   return (
     <Pane
       currentMaxWidth={350}
-      data-testid="desk-tool-list-pane"
+      data-testid="structure-tool-list-pane"
       data-ui="ListPane"
       id={paneKey}
       maxWidth={640}

@@ -4,7 +4,7 @@ import {useSettingsStore} from 'sanity'
 /**
  * @internal
  */
-export function useDeskToolSetting<ValueType>(
+export function useStructureToolSetting<ValueType>(
   namespace: string | null,
   key: string,
   defaultValue?: ValueType,
@@ -12,15 +12,18 @@ export function useDeskToolSetting<ValueType>(
   const settingsStore = useSettingsStore()
   const [value, setValue] = useState<ValueType | undefined>(defaultValue)
 
-  const deskToolSettings = useMemo(() => settingsStore.forNamespace('desk-tool'), [settingsStore])
+  const structureToolSettings = useMemo(
+    () => settingsStore.forNamespace('structure-tool'),
+    [settingsStore],
+  )
 
   const settings = useMemo(() => {
     if (namespace) {
-      return deskToolSettings.forNamespace(namespace).forKey(key)
+      return structureToolSettings.forNamespace(namespace).forKey(key)
     }
 
-    return deskToolSettings.forKey(key)
-  }, [deskToolSettings, namespace, key])
+    return structureToolSettings.forKey(key)
+  }, [structureToolSettings, namespace, key])
 
   useEffect(() => {
     const sub = settings.listen(defaultValue).subscribe({

@@ -1,11 +1,11 @@
 import React, {memo, lazy, Suspense} from 'react'
 import {isEqual} from 'lodash'
-import {PaneNode} from '../types'
+import type {PaneNode} from '../types'
 import {PaneRouterProvider} from '../components/paneRouter'
 import {UnknownPane} from './unknown'
 import {LoadingPane} from './loading'
 
-interface DeskToolPaneProps {
+interface StructureToolPaneProps {
   active: boolean
   childItemId: string | null
   groupIndex: number
@@ -33,8 +33,8 @@ const paneMap = {
  *
  * @internal
  */
-export const DeskToolPane = memo(
-  function DeskToolPane(props: DeskToolPaneProps) {
+export const StructureToolPane = memo(
+  function StructureToolPane(props: StructureToolPaneProps) {
     const {
       active,
       childItemId,

@@ -115,7 +115,7 @@ export class DocumentListBuilder extends GenericListBuilder<
 
   constructor(
     /**
-     * Desk structure context. See {@link StructureContext}
+     * Structure context. See {@link StructureContext}
      */
     protected _context: StructureContext,
     spec?: DocumentListInput,

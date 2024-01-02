@@ -3,7 +3,7 @@ import React, {createElement, useEffect, useMemo, useRef, useState} from 'react'
 import styled, {css} from 'styled-components'
 import {PaneContent, usePane, usePaneLayout} from '../../../components'
 import {useDocumentPane} from '../useDocumentPane'
-import {useDeskTool} from '../../../useDeskTool'
+import {useStructureTool} from '../../../useStructureTool'
 import {DocumentInspectorPanel} from '../documentInspector'
 import {InspectDialog} from '../inspectDialog'
 import {DeletedDocumentBanner, PermissionCheckBanner, ReferenceChangedBanner} from './banners'
@@ -58,7 +58,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
   const {collapsed: layoutCollapsed} = usePaneLayout()
   const {collapsed} = usePane()
   const parentPortal = usePortal()
-  const {features} = useDeskTool()
+  const {features} = useStructureTool()
   const portalRef = useRef<HTMLDivElement | null>(null)
   const [documentScrollElement, setDocumentScrollElement] = useState<HTMLDivElement | null>(null)
   const formContainerElement = useRef<HTMLDivElement | null>(null)

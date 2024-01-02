@@ -15,7 +15,7 @@ test.describe('@sanity/default-layout: Navbar', () => {
     })
   })
 
-  test('render ActionModal on top of pane headers in desk tool', async ({page}) => {
+  test('render ActionModal on top of pane headers in structure tool', async ({page}) => {
     await expect(page.locator('data-testid=studio-navbar')).toBeVisible()
   })
 })

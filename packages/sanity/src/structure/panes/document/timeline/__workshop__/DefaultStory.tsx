@@ -1,6 +1,6 @@
 import {Box, Card, Inline, Stack, Text} from '@sanity/ui'
 import React from 'react'
-import {DeskToolProvider} from '../../../../DeskToolProvider'
+import {StructureToolProvider} from '../../../../StructureToolProvider'
 import type {DocumentPaneNode} from '../../../../types'
 import {DocumentPaneProvider} from '../../DocumentPaneProvider'
 import {TimelineMenu} from '../timelineMenu'
@@ -19,7 +19,7 @@ const PANE: DocumentPaneNode = {
 
 export default function DefaultStory() {
   return (
-    <DeskToolProvider>
+    <StructureToolProvider>
       <DocumentPaneProvider index={0} itemId={DOCUMENT_ID} pane={PANE} paneKey={DOCUMENT_ID}>
         <Box padding={2}>
           <Stack space={2}>
@@ -45,6 +45,6 @@ export default function DefaultStory() {
           </Stack>
         </Box>
       </DocumentPaneProvider>
-    </DeskToolProvider>
+    </StructureToolProvider>
   )
 }

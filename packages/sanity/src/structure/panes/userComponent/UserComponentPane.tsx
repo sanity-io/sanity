@@ -1,13 +1,13 @@
 import React, {createElement, isValidElement, useState} from 'react'
 import {isValidElementType} from 'react-is'
 import {Pane} from '../../components'
-import {DeskToolPaneActionHandler} from '../../types'
-import {BaseDeskToolPaneProps} from '../types'
+import type {StructureToolPaneActionHandler} from '../../types'
+import type {BaseStructureToolPaneProps} from '../types'
 import {UserComponentPaneHeader} from './UserComponentPaneHeader'
 import {UserComponentPaneContent} from './UserComponentPaneContent'
 import {useI18nText} from 'sanity'
 
-type UserComponentPaneProps = BaseDeskToolPaneProps<'component'>
+type UserComponentPaneProps = BaseStructureToolPaneProps<'component'>
 
 /**
  * @internal
@@ -24,7 +24,7 @@ export function UserComponentPane(props: UserComponentPaneProps) {
     ...restPane
   } = pane
   const [ref, setRef] = useState<{
-    actionHandlers?: Record<string, DeskToolPaneActionHandler>
+    actionHandlers?: Record<string, StructureToolPaneActionHandler>
   } | null>(null)
   const {title = ''} = useI18nText(pane)
 

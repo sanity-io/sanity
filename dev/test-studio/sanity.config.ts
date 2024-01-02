@@ -121,8 +121,7 @@ const sharedSettings = definePlugin({
     workshopTool({
       collections: [
         {name: 'sanity', title: 'sanity'},
-        {name: 'default-layout', title: '@sanity/default-layout'},
-        {name: 'desk-tool', title: '@sanity/desk-tool'},
+        {name: 'desk-tool', title: 'sanity/desk-tool'},
         {name: 'form-builder', title: '@sanity/form-builder'},
       ],
     }),

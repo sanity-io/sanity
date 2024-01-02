@@ -26,7 +26,7 @@ export function SplitPanesStory() {
         >
           <Navbar path={path} setPath={setPath} />
 
-          <DeskTool
+          <StructureTool
             collapsed={layoutCollapsed}
             onExpand={handleExpand}
             onCollapse={handleCollapse}
@@ -41,7 +41,7 @@ export function SplitPanesStory() {
   )
 }
 
-function DeskTool(props: {
+function StructureTool(props: {
   collapsed: boolean
   onExpand: () => void
   onCollapse: () => void

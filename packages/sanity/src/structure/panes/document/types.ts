@@ -1,5 +1,5 @@
 import {Path} from '@sanity/types'
-import {BaseDeskToolPaneProps} from '../types'
+import {BaseStructureToolPaneProps} from '../types'
 
 /** @internal */
 export type TimelineMode = 'since' | 'rev' | 'closed'
@@ -8,4 +8,4 @@ export type TimelineMode = 'since' | 'rev' | 'closed'
 export type DocumentPaneProviderProps = {
   children?: React.ReactNode
   onFocusPath?: (path: Path) => void
-} & BaseDeskToolPaneProps<'document'>
+} & BaseStructureToolPaneProps<'document'>

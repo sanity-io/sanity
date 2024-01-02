@@ -122,6 +122,15 @@ const config = {
             from: 'sanity/router__contents',
             allow: ['sanity/router__contents'],
           },
+          {
+            // export
+            from: 'sanity/structure',
+            allow: ['sanity/structure__contents'],
+          },
+          {
+            from: 'sanity/structure__contents',
+            allow: ['sanity', 'sanity/structure__contents', 'sanity/router'],
+          },
         ],
       },
     ],
@@ -197,6 +206,16 @@ const config = {
         type: 'sanity/router__contents',
         pattern: ['packages/sanity/src/router/**/*.*'],
         mode: 'full',
+      },
+      {
+        type: 'sanity/structure',
+        pattern: ['packages/sanity/exports/structure.ts'],
+        mode: 'file',
+      },
+      {
+        type: 'sanity/structure__contents',
+        pattern: ['packages/sanity/src/structure/**/*.*'],
+        mode: 'file',
       },
     ],
     react: {version: '18.0.0'},

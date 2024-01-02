@@ -1,18 +1,18 @@
 import React, {useEffect, useState} from 'react'
 import {ErrorBoundary} from '@sanity/ui'
-import {DeskToolOptions} from '../../types'
-import {DeskToolProvider} from '../../DeskToolProvider'
+import type {StructureToolOptions} from '../../types'
+import {StructureToolProvider} from '../../StructureToolProvider'
 import {setActivePanes} from '../../getIntentState'
 import {IntentResolver} from './intentResolver'
 import {StructureError} from './StructureError'
-import {DeskTool} from './DeskTool'
+import {StructureTool} from './StructureTool'
 import {SourceProvider, useWorkspace, Tool} from 'sanity'
 
-interface DeskToolBoundaryProps {
-  tool: Tool<DeskToolOptions>
+interface StructureToolBoundaryProps {
+  tool: Tool<StructureToolOptions>
 }
 
-export function DeskToolBoundary({tool: {options}}: DeskToolBoundaryProps) {
+export function StructureToolBoundary({tool: {options}}: StructureToolBoundaryProps) {
   const {unstable_sources: sources} = useWorkspace()
   const [firstSource] = sources
   const {source, defaultDocumentNode, structure} = options || {}
@@ -30,10 +30,10 @@ export function DeskToolBoundary({tool: {options}}: DeskToolBoundaryProps) {
   return (
     <ErrorBoundary onCatch={setError}>
       <SourceProvider name={source || firstSource.name}>
-        <DeskToolProvider defaultDocumentNode={defaultDocumentNode} structure={structure}>
-          <DeskTool onPaneChange={setActivePanes} />
+        <StructureToolProvider defaultDocumentNode={defaultDocumentNode} structure={structure}>
+          <StructureTool onPaneChange={setActivePanes} />
           <IntentResolver />
-        </DeskToolProvider>
+        </StructureToolProvider>
       </SourceProvider>
     </ErrorBoundary>
   )

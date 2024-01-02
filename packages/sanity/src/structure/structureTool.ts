@@ -11,9 +11,8 @@ import {
 import {LiveEditBadge} from './documentBadges'
 import {getIntentState} from './getIntentState'
 import {router} from './router'
-import {DeskToolOptions} from './types'
+import type {StructureToolOptions} from './types'
 import {comments} from './comments'
-import {DeskRenameToolMenuButtonPopover} from './deskRename/DeskRenameToolMenuButtonPopover'
 import {changesInspector} from './panes/document/inspectors/changes'
 import {structureUsEnglishLocaleBundle} from './i18n'
 import {validationInspector} from './panes/document/inspectors/validation'
@@ -33,37 +32,37 @@ const documentBadges = [LiveEditBadge]
 const inspectors = [validationInspector, changesInspector]
 
 /**
- * The deskTool is a studio plugin which adds the “desk tool” – a tool within Sanity Studio in which
- * content editors can drill down to specific documents to edit them.
- * You can configure your Studio's desk tool(s).
+ * The structureTool is a studio plugin which adds the “structure tool” – a tool within
+ * Sanity Studio in which content editors can drill down to specific documents to edit them.
+ * You can configure your Studio's structure tool(s).
  *
  * @public
- * @param options - Options for the desk tool. See {@link DeskToolOptions}
+ * @param options - Options for the structure tool. See {@link StructureToolOptions}
  * @example Minimal example
  * ```ts
  * // sanity.config.ts
  * import { defineConfig } from 'sanity'
- * import { deskTool } from 'sanity/desk'
+ * import { structureTool } from 'sanity/structure'
  *
  * export default defineConfig((
  *  // ...
  *  plugins: [
- *    deskTool() // use defaults
+ *    structureTool() // use defaults
  *  ]
  * })
  * ```
  *
- * @example To customise your desk tool
+ * @example To customise your structure tool
  * ```ts
  * // sanity.config.ts
  * import { defineConfig } from 'sanity'
- * import { deskTool } from 'sanity/desk'
+ * import { structureTool } from 'sanity/structure'
  * import { FaCar } from 'react-icons'
 
  * export default defineConfig((
  *	 // ...
  *   plugins: [
- *    deskTool({
+ *    structureTool({
  *      name: 'cars',
  *      title: 'Cars',
  *      icon: FaCar,
@@ -78,26 +77,24 @@ const inspectors = [validationInspector, changesInspector]
  * })
  * ```
  * */
-export const deskTool = definePlugin<DeskToolOptions | void>((options) => {
-  const hasSpecifiedName = options ? typeof options.name === 'string' : false
+export const structureTool = definePlugin<StructureToolOptions | void>((options) => {
   const icon = options?.icon || MasterDetailIcon
-  const ToolMenuButtonPopover = hasSpecifiedName ? undefined : DeskRenameToolMenuButtonPopover
 
   return {
-    name: '@sanity/desk-tool',
+    name: 'sanity/structure',
     document: {
       actions: (prevActions) => {
-        // NOTE: since it's possible to have several desk tools in one Studio,
+        // NOTE: since it's possible to have several structure tools in one Studio,
         // we need to check whether the document actions already exist in the Studio config
         return Array.from(new Set([...prevActions, ...documentActions]))
       },
       badges: (prevBadges) => {
-        // NOTE: since it's possible to have several desk tools in one Studio,
+        // NOTE: since it's possible to have several structure tools in one Studio,
         // we need to check whether the document badges already exist in the Studio config
         return Array.from(new Set([...prevBadges, ...documentBadges]))
       },
       inspectors: (prevInspectors) => {
-        // NOTE: since it's possible to have several desk tools in one Studio,
+        // NOTE: since it's possible to have several structure tools in one Studio,
         // we need to check whether the inspectors already exist in the Studio config
         return Array.from(new Set([...prevInspectors, ...inspectors]))
       },
@@ -110,20 +107,16 @@ export const deskTool = definePlugin<DeskToolOptions | void>((options) => {
         name: options?.name || 'structure',
         title: options?.title || 'Structure',
         icon,
-        component: lazy(() => import('./components/deskTool')),
+        component: lazy(() => import('./components/structureTool')),
         canHandleIntent: (intent, params) => {
           if (intent === 'create') return canHandleCreateIntent(params)
           if (intent === 'edit') return canHandleEditIntent(params)
           return false
         },
         getIntentState,
-        // Controlled by sanity/src/desk/components/deskTool/DeskTitle.tsx
+        // Controlled by sanity/src/structure/components/structureTool/StructureTitle.tsx
         controlsDocumentTitle: true,
-        options: {
-          ...options,
-          // eslint-disable-next-line camelcase
-          __internal_toolMenuButtonWrapper: ToolMenuButtonPopover,
-        },
+        options,
         router,
       },
     ],
@@ -153,6 +146,6 @@ function canHandleEditIntent(params: Record<string, unknown>) {
 
   // We can handle any edit intent with a document ID, but we're best at `structure` mode
   // This ensures that other tools that can handle modes such as `presentation` or `batch`
-  // can take precedence over the desk tool
+  // can take precedence over the structure tool
   return 'mode' in params ? {mode: params.mode === 'structure'} : true
 }
