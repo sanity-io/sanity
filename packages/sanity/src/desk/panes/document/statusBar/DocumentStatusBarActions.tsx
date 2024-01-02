@@ -3,7 +3,7 @@ import React, {memo, useMemo, useState} from 'react'
 import {RenderActionCollectionState} from '../../../components'
 import {HistoryRestoreAction} from '../../../documentActions'
 import {Button, Tooltip} from '../../../../ui-components'
-import {useDocumentPane} from '../useDocumentPane'
+import {useDocumentPane__LEGACY__STOP__USING} from '../useDocumentPane'
 import {ActionMenuButton} from './ActionMenuButton'
 import {ActionStateDialog} from './ActionStateDialog'
 import {DocumentActionDescription, useTimelineSelector} from 'sanity'
@@ -71,7 +71,7 @@ function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsInnerProps
 }
 
 export const DocumentStatusBarActions = memo(function DocumentStatusBarActions() {
-  const {actions, connectionState, documentId, editState} = useDocumentPane()
+  const {actions, connectionState, documentId, editState} = useDocumentPane__LEGACY__STOP__USING()
   // const [isMenuOpen, setMenuOpen] = useState(false)
   // const handleMenuOpen = useCallback(() => setMenuOpen(true), [])
   // const handleMenuClose = useCallback(() => setMenuOpen(false), [])
@@ -106,7 +106,7 @@ export const DocumentStatusBarActions = memo(function DocumentStatusBarActions()
 })
 
 export const HistoryStatusBarActions = memo(function HistoryStatusBarActions() {
-  const {connectionState, editState, timelineStore} = useDocumentPane()
+  const {connectionState, editState, timelineStore} = useDocumentPane__LEGACY__STOP__USING()
 
   // Subscribe to external timeline state changes
   const revTime = useTimelineSelector(timelineStore, (state) => state.revTime)

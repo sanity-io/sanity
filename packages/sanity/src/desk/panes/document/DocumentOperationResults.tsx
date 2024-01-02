@@ -1,6 +1,6 @@
 import {useToast} from '@sanity/ui'
 import React, {memo, useEffect, useRef} from 'react'
-import {useDocumentPane} from './useDocumentPane'
+import {useDocumentPane__LEGACY__STOP__USING} from './useDocumentPane'
 import {useDocumentOperationEvent, useTranslation} from 'sanity'
 import {usePaneRouter} from '../../components'
 import {structureLocaleNamespace} from '../../i18n'
@@ -9,7 +9,7 @@ const IGNORE_OPS = ['patch', 'commit']
 
 export const DocumentOperationResults = memo(function DocumentOperationResults() {
   const {push: pushToast} = useToast()
-  const {documentId, documentType} = useDocumentPane()
+  const {documentId, documentType} = useDocumentPane__LEGACY__STOP__USING()
   const event: any = useDocumentOperationEvent(documentId, documentType)
   const prevEvent = useRef(event)
   const paneRouter = usePaneRouter()

@@ -4,7 +4,7 @@ import React, {forwardRef, useEffect, useMemo, useCallback, useState} from 'reac
 import {tap} from 'rxjs/operators'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentTitle} from '../../useDocumentTitle'
-import {useDocumentPane} from '../../useDocumentPane'
+import {useDocumentPane__LEGACY__STOP__USING} from '../../useDocumentPane'
 import {Delay} from '../../../../components'
 import {useConditionalToast} from './useConditionalToast'
 import {FormHeader} from './FormHeader'
@@ -51,7 +51,7 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
     onPathOpen,
     onSetCollapsedFieldSet,
     onSetActiveFieldGroup,
-  } = useDocumentPane()
+  } = useDocumentPane__LEGACY__STOP__USING()
   const documentStore = useDocumentStore()
   const presence = useDocumentPresence(documentId)
   const {title} = useDocumentTitle()

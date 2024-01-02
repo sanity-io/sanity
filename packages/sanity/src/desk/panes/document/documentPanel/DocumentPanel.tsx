@@ -2,7 +2,7 @@ import {BoundaryElementProvider, Flex, PortalProvider, usePortal, Box} from '@sa
 import React, {createElement, useEffect, useMemo, useRef, useState} from 'react'
 import styled, {css} from 'styled-components'
 import {PaneContent, usePane, usePaneLayout} from '../../../components'
-import {useDocumentPane} from '../useDocumentPane'
+import {useDocumentPane__LEGACY__STOP__USING} from '../useDocumentPane'
 import {useDeskTool} from '../../../useDeskTool'
 import {DocumentInspectorPanel} from '../documentInspector'
 import {InspectDialog} from '../inspectDialog'
@@ -54,7 +54,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
     isDeleting,
     isDeleted,
     timelineStore,
-  } = useDocumentPane()
+  } = useDocumentPane__LEGACY__STOP__USING()
   const {collapsed: layoutCollapsed} = usePaneLayout()
   const {collapsed} = usePane()
   const parentPortal = usePortal()

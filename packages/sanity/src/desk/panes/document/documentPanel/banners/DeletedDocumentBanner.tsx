@@ -2,7 +2,7 @@ import {ReadOnlyIcon} from '@sanity/icons'
 import {Text} from '@sanity/ui'
 import {useCallback} from 'react'
 import {structureLocaleNamespace} from '../../../../i18n'
-import {useDocumentPane} from '../../useDocumentPane'
+import {useDocumentPane__LEGACY__STOP__USING} from '../../useDocumentPane'
 import {Banner} from './Banner'
 import {useDocumentOperation, useTranslation} from 'sanity'
 import {useRouter} from 'sanity/router'
@@ -12,7 +12,7 @@ interface DeletedDocumentBannerProps {
 }
 
 export function DeletedDocumentBanner({revisionId}: DeletedDocumentBannerProps) {
-  const {documentId, documentType} = useDocumentPane()
+  const {documentId, documentType} = useDocumentPane__LEGACY__STOP__USING()
   const {restore} = useDocumentOperation(documentId, documentType)
   const {navigateIntent} = useRouter()
   const handleRestore = useCallback(() => {

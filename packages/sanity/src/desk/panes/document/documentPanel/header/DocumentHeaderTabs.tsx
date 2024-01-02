@@ -1,11 +1,11 @@
 import React, {useCallback} from 'react'
 import {TabList} from '@sanity/ui'
-import {useDocumentPane} from '../../useDocumentPane'
+import {useDocumentPane__LEGACY__STOP__USING} from '../../useDocumentPane'
 import {usePaneRouter} from '../../../../components'
 import {Tab} from '../../../../../ui-components'
 
 export function DocumentHeaderTabs() {
-  const {activeViewId, paneKey, views} = useDocumentPane()
+  const {activeViewId, paneKey, views} = useDocumentPane__LEGACY__STOP__USING()
   const tabPanelId = `${paneKey}tabpanel`
 
   return (
@@ -34,7 +34,7 @@ function DocumentHeaderTab(props: {
   viewId: string | null
 }) {
   const {icon, id, isActive, label, tabPanelId, viewId, ...rest} = props
-  const {ready} = useDocumentPane()
+  const {ready} = useDocumentPane__LEGACY__STOP__USING()
   const {setView} = usePaneRouter()
   const handleClick = useCallback(() => setView(viewId), [setView, viewId])
 

@@ -1,6 +1,6 @@
 import React from 'react'
 import {render, waitFor} from '@testing-library/react'
-import {useDocumentPane} from '../../useDocumentPane'
+import {useDocumentPane__LEGACY__STOP__USING} from '../../useDocumentPane'
 import {DocumentPaneContextValue} from '../../DocumentPaneContext'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {createMockSanityClient} from '../../../../../../test/mocks/mockSanityClient'
@@ -31,7 +31,9 @@ jest.mock('sanity', () => {
 })
 
 describe('DocumentHeaderTitle', () => {
-  const mockUseDocumentPane = useDocumentPane as jest.MockedFunction<typeof useDocumentPane>
+  const mockUseDocumentPane = useDocumentPane__LEGACY__STOP__USING as jest.MockedFunction<
+    typeof useDocumentPane__LEGACY__STOP__USING
+  >
   const mockUseValuePreview = useValuePreview as jest.MockedFunction<typeof useValuePreview>
 
   const defaultProps = {

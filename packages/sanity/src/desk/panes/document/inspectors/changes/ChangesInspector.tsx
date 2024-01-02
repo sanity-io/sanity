@@ -3,7 +3,7 @@ import {AvatarStack, BoundaryElementProvider, Box, Card, Flex} from '@sanity/ui'
 import React, {ReactElement, useRef} from 'react'
 import styled from 'styled-components'
 import {TimelineMenu} from '../../timeline'
-import {useDocumentPane} from '../../useDocumentPane'
+import {useDocumentPane__LEGACY__STOP__USING} from '../../useDocumentPane'
 import {DocumentInspectorHeader} from '../../documentInspector'
 import {collectLatestAuthorAnnotations} from './helpers'
 import {
@@ -31,7 +31,8 @@ const Scroller = styled(ScrollContainer)`
 
 export function ChangesInspector(props: DocumentInspectorProps): ReactElement {
   const {onClose} = props
-  const {documentId, schemaType, timelineError, timelineStore, value} = useDocumentPane()
+  const {documentId, schemaType, timelineError, timelineStore, value} =
+    useDocumentPane__LEGACY__STOP__USING()
   const scrollRef = useRef<HTMLDivElement | null>(null)
 
   // Subscribe to external timeline state changes

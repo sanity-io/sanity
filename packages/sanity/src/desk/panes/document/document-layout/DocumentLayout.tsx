@@ -24,7 +24,7 @@ import {
 import {DocumentPanel} from '../documentPanel'
 import {DocumentActionShortcuts} from '../keyboardShortcuts'
 import {DocumentStatusBar} from '../statusBar'
-import {useDocumentPane} from '../useDocumentPane'
+import {useDocumentPane__LEGACY__STOP__USING} from '../useDocumentPane'
 import {DocumentPanelHeader} from '../documentPanel/header'
 import {DocumentInspectorMenuItemsResolver} from '../DocumentInspectorMenuItemsResolver'
 import {usePreviewUrl} from '../usePreviewUrl'
@@ -74,7 +74,7 @@ export function DocumentLayout() {
     paneKey,
     schemaType,
     value,
-  } = useDocumentPane()
+  } = useDocumentPane__LEGACY__STOP__USING()
 
   const {features} = useDeskTool()
   const {t} = useTranslation(structureLocaleNamespace)

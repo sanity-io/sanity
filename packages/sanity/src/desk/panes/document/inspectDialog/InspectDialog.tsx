@@ -6,7 +6,7 @@ import {Dialog, Tab} from '../../../../ui-components'
 import {DocTitle} from '../../../components'
 import {useDeskToolSetting} from '../../../useDeskToolSetting'
 import {structureLocaleNamespace} from '../../../i18n'
-import {useDocumentPane} from '../useDocumentPane'
+import {useDocumentPane__LEGACY__STOP__USING} from '../useDocumentPane'
 import {VIEW_MODE_PARSED, VIEW_MODE_RAW, VIEW_MODES} from './constants'
 import {isDocumentLike, isExpanded, maybeSelectAll, select, toggleExpanded} from './helpers'
 import {JSONInspectorWrapper} from './InspectDialog.styles'
@@ -19,7 +19,7 @@ interface InspectDialogProps {
 
 export function InspectDialog(props: InspectDialogProps) {
   const {value} = props
-  const {onInspectClose, paneKey} = useDocumentPane()
+  const {onInspectClose, paneKey} = useDocumentPane__LEGACY__STOP__USING()
   const dialogIdPrefix = `${paneKey}_inspect_`
 
   /* this creates a view mode (the default that it opens with is the parsed tab) that is saved based on the paneKey

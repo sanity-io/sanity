@@ -3,7 +3,7 @@
 import {TrashIcon} from '@sanity/icons'
 import React, {useCallback, useState} from 'react'
 import {ConfirmDeleteDialog} from '../components'
-import {useDocumentPane} from '../panes/document/useDocumentPane'
+import {useDocumentPane__LEGACY__STOP__USING} from '../panes/document/useDocumentPane'
 import {structureLocaleNamespace} from '../i18n'
 import {
   DocumentActionComponent,
@@ -21,7 +21,7 @@ const DISABLED_REASON_TITLE_KEY = {
 
 /** @internal */
 export const DeleteAction: DocumentActionComponent = ({id, type, draft, onComplete}) => {
-  const {setIsDeleting: paneSetIsDeleting} = useDocumentPane()
+  const {setIsDeleting: paneSetIsDeleting} = useDocumentPane__LEGACY__STOP__USING()
   const {delete: deleteOp} = useDocumentOperation(id, type)
   const [isDeleting, setIsDeleting] = useState(false)
   const [isConfirmDialogOpen, setConfirmDialogOpen] = useState(false)

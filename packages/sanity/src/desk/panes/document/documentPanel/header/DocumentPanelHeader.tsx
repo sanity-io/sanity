@@ -9,7 +9,7 @@ import {
   usePaneRouter,
 } from '../../../../components'
 import {TimelineMenu} from '../../timeline'
-import {useDocumentPane} from '../../useDocumentPane'
+import {useDocumentPane__LEGACY__STOP__USING} from '../../useDocumentPane'
 import {isMenuNodeButton, isNotMenuNodeButton, resolveMenuNodes} from '../../../../menuNodes'
 import {useDeskTool} from '../../../../useDeskTool'
 import {PaneMenuItem} from '../../../../types'
@@ -40,7 +40,7 @@ export const DocumentPanelHeader = memo(
       ready,
       views,
       unstable_languageFilter,
-    } = useDocumentPane()
+    } = useDocumentPane__LEGACY__STOP__USING()
     const {features} = useDeskTool()
     const {index, BackLink, hasGroupSiblings} = usePaneRouter()
     const {actions: fieldActions} = useFieldActions()
