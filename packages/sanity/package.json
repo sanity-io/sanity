@@ -134,7 +134,7 @@
         "./lib/exports/router.d.ts"
       ],
       "structure": [
-        "./lib/exports/desk.d.ts"
+        "./lib/exports/structure.d.ts"
       ]
     }
   },
