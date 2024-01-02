@@ -1,7 +1,4 @@
-/**
- * Structure overrides
- */
-import {ListItemBuilder, StructureResolver} from 'sanity/desk'
+import {ListItemBuilder, StructureResolver} from 'sanity/structure';
 import collections from './collectionStructure'
 import colorThemes from './colorThemeStructure'
 import home from './homeStructure'

@@ -11,7 +11,7 @@ import {
 } from '@sanity/icons'
 import {uuid} from '@sanity/uuid'
 import type {DocumentStore, SanityDocument, Schema} from 'sanity'
-import {ItemChild, StructureBuilder, StructureResolver} from 'sanity/desk'
+import {ItemChild, StructureBuilder, StructureResolver} from 'sanity/structure'
 import {map} from 'rxjs/operators'
 import {type Observable, timer} from 'rxjs'
 import React from 'react'

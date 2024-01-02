@@ -4,7 +4,7 @@ import {ContentSourceMap, ContentSourceMapDocuments, studioPath} from '@sanity/c
 import {Box, Button, Card, Code, Label, Stack} from '@sanity/ui'
 import {useMemo} from 'react'
 import {InputProps, isDocumentSchemaType} from 'sanity'
-import {useDocumentPane, usePaneRouter} from 'sanity/desk'
+import {useDocumentPane, usePaneRouter} from 'sanity/structure'
 import {vercelStegaDecodeAll} from '@vercel/stega'
 import {stegaEncodeSourceMap} from '@sanity/client/stega'
 import styled from 'styled-components'

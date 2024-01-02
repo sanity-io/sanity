@@ -1,3 +1,9 @@
+/**
+ * This is a _FALLBACK MODULE_ provided for backwards compatibility, and is likely to be removed
+ * in Sanity v4.0.0. Please import from `@sanity/structure` instead.
+ *
+ * @deprecated Use `@sanity/structure` instead.
+ */
 export type {
   /** @deprecated Import from `@sanity/structure` instead! */
   BackLinkProps,

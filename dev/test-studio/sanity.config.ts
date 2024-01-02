@@ -2,7 +2,7 @@ import {BookIcon} from '@sanity/icons'
 import {SanityMonogram} from '@sanity/logos'
 import {visionTool} from '@sanity/vision'
 import {defineConfig, definePlugin} from 'sanity'
-import {deskTool} from 'sanity/desk'
+import {structureTool} from 'sanity/structure'
 import {muxInput} from 'sanity-plugin-mux-input'
 import {assist} from '@sanity/assist'
 import {googleMapsInput} from '@sanity/google-maps-input'
@@ -92,8 +92,7 @@ const sharedSettings = definePlugin({
     badges: (prev, context) => (context.schemaType === 'author' ? [CustomBadge, ...prev] : prev),
   },
   plugins: [
-    // ...localePlugins,
-    deskTool({
+    structureTool({
       icon: BookIcon,
       structure,
       defaultDocumentNode,
@@ -121,7 +120,7 @@ const sharedSettings = definePlugin({
     workshopTool({
       collections: [
         {name: 'sanity', title: 'sanity'},
-        {name: 'desk-tool', title: 'sanity/desk-tool'},
+        {name: 'structure-tool', title: 'sanity/structure'},
         {name: 'form-builder', title: '@sanity/form-builder'},
       ],
     }),

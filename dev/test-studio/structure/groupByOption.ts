@@ -1,4 +1,4 @@
-import type {StructureBuilder} from 'sanity/desk'
+import {StructureBuilder} from 'sanity/structure'
 import {ObjectOptions, Schema} from '@sanity/types'
 
 type StructureGroup = 'v3' | '3d' // extend with union strings

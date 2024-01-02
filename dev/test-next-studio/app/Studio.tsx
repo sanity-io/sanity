@@ -2,7 +2,7 @@
 
 import {useMemo} from 'react'
 import {defineConfig, Studio, StudioProps} from 'sanity'
-import {deskTool} from 'sanity/desk'
+import {structureTool} from 'sanity/structure'
 
 export default function StudioRoot({
   basePath,
@@ -17,7 +17,7 @@ export default function StudioRoot({
     () =>
       defineConfig({
         basePath,
-        plugins: [deskTool()],
+        plugins: [structureTool()],
         projectId: 'ppsg7ml5',
         dataset: 'test',
         schema: {
