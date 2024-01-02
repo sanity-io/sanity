@@ -33,7 +33,7 @@ export interface StructureToolFeatures {
 }
 
 /** @internal */
-export interface StuctureToolContextValue {
+export interface StructureToolContextValue {
   features: StructureToolFeatures
   layoutCollapsed: boolean
   setLayoutCollapsed: (layoutCollapsed: boolean) => void

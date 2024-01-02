@@ -1,9 +1,9 @@
 import {useContext} from 'react'
 import {StructureToolContext} from './StructureToolContext'
-import type {StuctureToolContextValue} from './types'
+import type {StructureToolContextValue} from './types'
 
 /** @internal */
-export function useStructureTool(): StuctureToolContextValue {
+export function useStructureTool(): StructureToolContextValue {
   const structureTool = useContext(StructureToolContext)
 
   if (!structureTool) throw new Error(`StructureTool: missing context value`)

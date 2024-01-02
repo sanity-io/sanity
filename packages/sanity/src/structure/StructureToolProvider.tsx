@@ -1,7 +1,7 @@
 import React, {useMemo, useState} from 'react'
 import {StructureToolContext} from './StructureToolContext'
 import {createStructureBuilder, type DefaultDocumentNodeResolver} from './structureBuilder'
-import type {StuctureToolContextValue, StructureResolver, UnresolvedPaneNode} from './types'
+import type {StructureToolContextValue, StructureResolver, UnresolvedPaneNode} from './types'
 import {useConfigContextFromSource, useDocumentStore, useSource} from 'sanity'
 
 /** @internal */
@@ -39,7 +39,7 @@ export function StructureToolProvider({
     return S.defaults() as UnresolvedPaneNode
   }, [S, resolveStructure, configContext, documentStore])
 
-  const features: StuctureToolContextValue['features'] = useMemo(
+  const features: StructureToolContextValue['features'] = useMemo(
     () => ({
       backButton: layoutCollapsed,
       resizablePanes: !layoutCollapsed,
@@ -50,7 +50,7 @@ export function StructureToolProvider({
     [layoutCollapsed],
   )
 
-  const structureTool: StuctureToolContextValue = useMemo(() => {
+  const structureTool: StructureToolContextValue = useMemo(() => {
     return {
       features,
       layoutCollapsed,
