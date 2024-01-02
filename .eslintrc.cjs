@@ -105,13 +105,20 @@ const config = {
             allow: ['sanity__contents', 'sanity/router'],
           },
           {
-            // export
+            // export (deprecated, aliases structure)
             from: 'sanity/desk',
-            allow: ['sanity/desk__contents'],
+            allow: ['sanity/desk__contents', 'sanity/structure', 'sanity/structure__contents'],
           },
           {
             from: 'sanity/desk__contents',
-            allow: ['sanity', 'sanity/desk__contents', 'sanity/router', 'sanity/_internal'],
+            allow: [
+              'sanity',
+              'sanity/desk__contents',
+              'sanity/router',
+              'sanity/_internal',
+              'sanity/structure',
+              'sanity/structure__contents',
+            ],
           },
           {
             // export
