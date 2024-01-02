@@ -3,7 +3,7 @@ import type {ProjectTemplate} from '../initProject'
 const configTemplate = `
 import {shopifyAssets} from 'sanity-plugin-shopify-assets'
 import {defineConfig, isDev} from 'sanity'
-import {deskTool} from 'sanity/desk'
+import {structureTool} from 'sanity/structure'
 import {visionTool} from '@sanity/vision'
 import {shopifyDocumentActions} from './plugins/shopifyDocumentActions'
 import {schemaTypes} from './schemas'
@@ -20,7 +20,7 @@ export default defineConfig({
   dataset: '%dataset%',
 
   plugins: [
-    deskTool({structure}),
+    structureTool({structure}),
     shopifyDocumentActions(),
     shopifyAssets({
       shopifyDomain: SHOPIFY_STORE_ID,

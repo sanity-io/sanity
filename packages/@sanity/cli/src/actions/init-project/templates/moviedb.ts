@@ -2,7 +2,7 @@ import type {ProjectTemplate} from '../initProject'
 
 const configTemplate = `
 import {defineConfig} from 'sanity'
-import {deskTool} from 'sanity/desk'
+import {structureTool} from 'sanity/structure'
 import {visionTool} from '@sanity/vision'
 //import {googleMapsInput} from '@sanity/google-maps-input'
 import {schemaTypes} from './schemas'
@@ -15,7 +15,7 @@ export default defineConfig({
   dataset: '%dataset%',
 
   plugins: [
-    deskTool(),
+    structureTool(),
     visionTool(),
     //googleMapsInput(),
   ],

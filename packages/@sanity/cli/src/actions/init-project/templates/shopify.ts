@@ -3,7 +3,7 @@ import type {ProjectTemplate} from '../initProject'
 const configTemplate = `
 import {defineConfig, isDev} from 'sanity'
 
-import {deskTool} from 'sanity/desk'
+import {structureTool} from 'sanity/structure'
 import {schemaTypes} from './schemas'
 import {structure} from './structure'
 
@@ -23,7 +23,7 @@ export default defineConfig({
   dataset: '%dataset%',
 
   plugins: [
-    deskTool({structure}),
+    structureTool({structure}),
     colorInput(),
     imageHotspotArrayPlugin(),
     customDocumentActions(),
