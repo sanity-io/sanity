@@ -1,32 +1,15 @@
 import {defineConfig} from '@playwright/test'
 import {createPlaywrightConfig} from '@sanity/test'
 import {loadEnvFiles} from './scripts/utils/loadEnvFiles'
+import {readBoolEnv, readEnv} from './test/e2e/helpers/envVars'
 
 loadEnvFiles()
-
-/**
- * Read an environment variable, parsing the response as a boolean, using loose
- * constraints (`true`, `1`, `yes` are all considered true, everything else is false)
- *
- * @param flag - The environment variable to read, eg `SOME_FLAG`
- * @param defaultValue - The default value to use if it is not set
- * @returns A boolean value
- * @internal
- */
-function readBoolEnv(flag: string, defaultValue: boolean) {
-  const value = process.env[flag]
-  if (value === undefined) {
-    return defaultValue
-  }
-
-  return value === 'true' || value === '1' || value === 'yes'
-}
 
 const CI = readBoolEnv('CI', false)
 
 const playwrightConfig = createPlaywrightConfig({
-  projectId: process.env.SANITY_E2E_PROJECT_ID!,
-  token: process.env.SANITY_E2E_SESSION_TOKEN!,
+  projectId: readEnv('SANITY_E2E_PROJECT_ID'),
+  token: readEnv('SANITY_E2E_SESSION_TOKEN'),
   playwrightOptions(config) {
     return {
       ...config,
