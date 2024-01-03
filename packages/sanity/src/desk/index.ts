@@ -5,7 +5,11 @@ export {DocumentInspectorHeader} from './panes/document/documentInspector'
 // Export `DocumentPaneProvider`
 export {type DocumentPaneProviderProps} from './panes/document/types'
 
-export * from './panes/document/useDocumentPane'
+export {
+  // eslint-disable-next-line camelcase
+  useDocumentPane__LEGACY__STOP__USING,
+  useDocumentPane,
+} from './panes/document/useDocumentPane'
 
 export * from './types'
 
