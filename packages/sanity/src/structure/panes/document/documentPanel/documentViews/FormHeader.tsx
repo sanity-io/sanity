@@ -1,6 +1,8 @@
 import {SchemaType} from '@sanity/types'
 import {Heading, Stack, Text} from '@sanity/ui'
+import {useTranslation} from 'react-i18next'
 import styled, {css} from 'styled-components'
+import {structureLocaleNamespace} from '../../../../i18n'
 
 interface DocumentHeaderProps {
   documentId: string
@@ -57,6 +59,7 @@ export const TitleContainer = styled(Stack)`
  */
 export const FormHeader = ({documentId, schemaType, title}: DocumentHeaderProps) => {
   const isSingleton = documentId === schemaType.name
+  const {t} = useTranslation(structureLocaleNamespace)
 
   return (
     <TitleContainer marginBottom={6} space={4}>
@@ -67,7 +70,7 @@ export const FormHeader = ({documentId, schemaType, title}: DocumentHeaderProps)
       )}
 
       <Heading as="h2" data-heading muted={!title}>
-        {title ?? 'Untitled'}
+        {title ?? t('document-view.form-view.form-title-fallback')}
       </Heading>
     </TitleContainer>
   )
