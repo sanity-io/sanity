@@ -6,6 +6,9 @@ const isDocumentType = (type: SchemaType): type is ObjectSchemaType =>
 
 const isSanityType = (type: SchemaType): boolean => type.name.startsWith('sanity.')
 
+/**
+ * @internal
+ */
 export const getSearchableTypes = (schema: Schema): ObjectSchemaType[] =>
   schema
     .getTypeNames()

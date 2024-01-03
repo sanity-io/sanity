@@ -112,6 +112,53 @@ export default defineType({
       ],
     },
     {
+      title: 'Reference to book or author in the "playground-partial-indexing" dataset',
+      name: 'bookOrAuthorInPlaygroundWithPartialIndexing',
+      type: 'crossDatasetReference',
+      dataset: 'playground-partial-indexing',
+      studioUrl: ({id, type}) => {
+        return type
+          ? `${document.location.protocol}//${document.location.host}/playground-partial-indexing/structure/${type};${id}`
+          : null
+      },
+      to: [
+        {
+          type: 'book',
+          icon: BookIcon,
+          preview: {
+            select: {
+              title: 'title',
+              // subtitle: 'descriptionMd',
+              subtitle: 'translations.no',
+              coverImage: 'coverImage',
+            },
+            prepare(val) {
+              return {
+                title: val.title,
+                subtitle: val.subtitle,
+                media: val.coverImage,
+              }
+            },
+          },
+        },
+        {
+          type: 'author',
+          icon: UserIcon,
+          preview: {
+            select: {
+              title: 'name',
+            },
+            prepare(val) {
+              return {
+                title: val.title,
+                media: val.media,
+              }
+            },
+          },
+        },
+      ],
+    },
+    {
       title: 'Cross Dataset reference in PTE',
       name: 'portableText',
       type: 'array',

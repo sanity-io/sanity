@@ -41,6 +41,7 @@ import {
   initialDocumentBadges,
   initialLanguageFilter,
   newDocumentOptionsResolver,
+  partialIndexingEnabledReducer,
   resolveProductionUrlReducer,
   schemaTemplatesReducer,
   schemaTypesReducer,
@@ -564,6 +565,12 @@ function resolveSource({
     search: {
       filters: filterDefinitions,
       operators: operatorDefinitions,
+      unstable_partialIndexing: {
+        enabled: partialIndexingEnabledReducer({
+          config,
+          initialValue: config.search?.unstable_partialIndexing?.enabled ?? false,
+        }),
+      },
       // we will use this when we add search config to PluginOptions
       /*filters: resolveConfigProperty({
         config,

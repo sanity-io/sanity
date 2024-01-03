@@ -10,7 +10,7 @@ import type {
 import createPreviewGetter from '../preview/createPreviewGetter'
 import guessOrderingConfig from '../ordering/guessOrderingConfig'
 import {normalizeSearchConfigs} from '../searchConfig/normalize'
-import resolveSearchConfig from '../searchConfig/resolve'
+import {resolveSearchConfig} from '../searchConfig/resolve'
 import {lazyGetter} from './utils'
 
 import {DEFAULT_OVERRIDEABLE_FIELDS} from './constants'

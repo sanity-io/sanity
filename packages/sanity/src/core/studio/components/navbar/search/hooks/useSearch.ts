@@ -19,6 +19,8 @@ import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../../studioClient'
 import type {SearchState} from '../types'
 import {hasSearchableTerms} from '../utils/hasSearchableTerms'
 import {getSearchableOmnisearchTypes} from '../utils/selectors'
+import {getSearchTypesWithMaxDepth} from '../../../../../search/weighted/getSearchTypesWithMaxDepth'
+import {useSearchMaxFieldDepth} from './useSearchMaxFieldDepth'
 
 interface SearchRequest {
   debounceTime?: number
@@ -73,14 +75,19 @@ export function useSearch({
 } {
   const [searchState, setSearchState] = useState(initialState)
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
+  const maxFieldDepth = useSearchMaxFieldDepth()
 
   const searchWeighted = useMemo(
     () =>
-      createWeightedSearch(getSearchableOmnisearchTypes(schema), client, {
-        tag: 'search.global',
-        unique: true,
-      }),
-    [client, schema],
+      createWeightedSearch(
+        getSearchTypesWithMaxDepth(getSearchableOmnisearchTypes(schema), maxFieldDepth),
+        client,
+        {
+          tag: 'search.global',
+          unique: true,
+        },
+      ),
+    [client, schema, maxFieldDepth],
   )
 
   const handleQueryChange = useObservableCallback(

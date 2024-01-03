@@ -13,6 +13,7 @@
 
 # Legacy exports
 /_internal.js
+/_internalBrowser.js
 /cli.js
 /desk.js
 /presentation.js

@@ -148,6 +148,19 @@ export default defineConfig([
     icon: SanityMonogram,
   },
   {
+    name: 'partialIndexing',
+    title: 'Partial Indexing',
+    projectId: 'ppsg7ml5',
+    dataset: 'partial-indexing-2',
+    plugins: [sharedSettings()],
+    basePath: '/partial-indexing',
+    search: {
+      unstable_partialIndexing: {
+        enabled: true,
+      },
+    },
+  },
+  {
     name: 'tsdoc',
     title: 'tsdoc',
     projectId: 'ppsg7ml5',
@@ -157,12 +170,21 @@ export default defineConfig([
   },
   {
     name: 'playground',
-    title: 'Test Studio',
+    title: 'Test Studio (playground)',
     subtitle: 'Playground dataset',
     projectId: 'ppsg7ml5',
     dataset: 'playground',
     plugins: [sharedSettings()],
     basePath: '/playground',
+  },
+  {
+    name: 'playground-partial-indexing',
+    title: 'Test Studio (playground-partial-indexing)',
+    subtitle: 'Playground dataset',
+    projectId: 'ppsg7ml5',
+    dataset: 'playground-partial-indexing',
+    plugins: [sharedSettings()],
+    basePath: '/playground-partial-indexing',
   },
   {
     name: 'staging',

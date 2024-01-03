@@ -20,6 +20,7 @@ import {FIXME} from '../../../../FIXME'
 import {useFormValue} from '../../../contexts/FormValue'
 import {search} from './datastores/search'
 import {createGetReferenceInfo} from './datastores/getReferenceInfo'
+import {useSearchMaxFieldDepth} from '../../../../studio/components/navbar/search/hooks/useSearchMaxFieldDepth'
 
 async function resolveUserDefinedFilter(
   options: ReferenceFilterOptions | undefined,
@@ -85,7 +86,7 @@ export function StudioCrossDatasetReferenceInput(props: StudioCrossDatasetRefere
       client
         .withConfig({
           dataset: schemaType.dataset,
-          apiVersion: '2022-03-07',
+          apiVersion: '2023-11-13',
           ignoreBrowserTokenWarning: true,
         })
 
@@ -93,7 +94,7 @@ export function StudioCrossDatasetReferenceInput(props: StudioCrossDatasetRefere
         .clone()
     )
   }, [client, schemaType.dataset])
-
+  const maxFieldDepth = useSearchMaxFieldDepth(crossDatasetClient)
   const documentValue = useFormValue([]) as FIXME
   const documentRef = useValueRef(documentValue)
 
@@ -106,6 +107,7 @@ export function StudioCrossDatasetReferenceInput(props: StudioCrossDatasetRefere
             filter,
             params,
             tag: 'search.cross-dataset-reference',
+            maxFieldDepth,
           }),
         ),
 
@@ -118,7 +120,7 @@ export function StudioCrossDatasetReferenceInput(props: StudioCrossDatasetRefere
         }),
       ),
 
-    [crossDatasetClient, documentRef, path, schemaType, getClient],
+    [crossDatasetClient, documentRef, path, schemaType, maxFieldDepth, getClient],
   )
 
   const getReferenceInfo = useMemo(

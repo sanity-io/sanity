@@ -22,6 +22,7 @@ import * as adapter from '../../studio/inputs/client-adapters/reference'
 import {isNonNullable} from '../../../util'
 import {useFormValue} from '../../contexts/FormValue'
 import {EditReferenceEvent} from './types'
+import {useSearchMaxFieldDepth} from '../../../studio/components/navbar/search/hooks/useSearchMaxFieldDepth'
 
 function useValueRef<T>(value: T): {current: T} {
   const ref = useRef(value)
@@ -72,6 +73,7 @@ export function useReferenceInput(options: Options) {
   const client = source.getClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const schema = useSchema()
   const documentPreviewStore = useDocumentPreviewStore()
+  const maxFieldDepth = useSearchMaxFieldDepth()
   const searchClient = useMemo(() => client.withConfig({apiVersion: '2021-03-25'}), [client])
   const {EditReferenceLinkComponent, onEditReference, activePath, initialValueTemplateItems} =
     useReferenceInputOptions()
@@ -97,6 +99,7 @@ export function useReferenceInput(options: Options) {
             filter,
             params,
             tag: 'search.reference',
+            maxFieldDepth,
           }),
         ),
 
@@ -109,7 +112,7 @@ export function useReferenceInput(options: Options) {
         }),
       ),
 
-    [documentRef, path, searchClient, schemaType, getClient],
+    [documentRef, path, searchClient, schemaType, maxFieldDepth, getClient],
   )
 
   const template = options.value?._strengthenOnPublish?.template

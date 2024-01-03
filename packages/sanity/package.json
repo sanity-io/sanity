@@ -44,6 +44,17 @@
       "import": "./lib/_internal.esm.js",
       "default": "./lib/_internal.esm.js"
     },
+    "./_internalBrowser": {
+      "types": "./lib/exports/_internalBrowser.d.ts",
+      "source": "./exports/_internalBrowser.ts",
+      "require": "./lib/_internalBrowser.js",
+      "node": {
+        "module": "./lib/_internalBrowser.esm.js",
+        "import": "./lib/_internalBrowser.cjs.mjs"
+      },
+      "import": "./lib/_internalBrowser.esm.js",
+      "default": "./lib/_internalBrowser.esm.js"
+    },
     "./cli": {
       "types": "./lib/exports/cli.d.ts",
       "source": "./exports/cli.ts",

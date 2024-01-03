@@ -302,3 +302,26 @@ export const documentCommentsEnabledReducer = (opts: {
 
   return result
 }
+
+export const partialIndexingEnabledReducer = (opts: {
+  config: PluginOptions
+  initialValue: boolean
+}): boolean => {
+  const {config, initialValue} = opts
+  const flattenedConfig = flattenConfig(config, [])
+
+  const result = flattenedConfig.reduce((acc, {config: innerConfig}) => {
+    const resolver = innerConfig.search?.unstable_partialIndexing?.enabled
+
+    if (!resolver && typeof resolver !== 'boolean') return acc
+    if (typeof resolver === 'boolean') return resolver
+
+    throw new Error(
+      `Expected \`search.unstable_partialIndexing.enabled\` to be a boolean, but received ${getPrintableType(
+        resolver,
+      )}`,
+    )
+  }, initialValue)
+
+  return result
+}

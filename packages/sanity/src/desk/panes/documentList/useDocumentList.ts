@@ -6,6 +6,7 @@ import {getTypeNameFromSingleTypeFilter, removePublishedWithDrafts} from './help
 import {DEFAULT_ORDERING, FULL_LIST_LIMIT, PARTIAL_PAGE_LIMIT} from './constants'
 import {listenSearchQuery} from './listenSearchQuery'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS, useClient, useSchema} from 'sanity'
+import {useSearchMaxFieldDepth} from 'sanity/_internalBrowser'
 
 const EMPTY_ARRAY: [] = []
 
@@ -49,6 +50,7 @@ export function useDocumentList(opts: UseDocumentListOpts): DocumentListState {
     apiVersion: apiVersion || DEFAULT_STUDIO_CLIENT_OPTIONS.apiVersion,
   })
   const schema = useSchema()
+  const maxFieldDepth = useSearchMaxFieldDepth()
 
   const [resultState, setResult] = useState<QueryResult>(INITIAL_STATE)
   const {onRetry, error, result} = resultState
@@ -150,6 +152,7 @@ export function useDocumentList(opts: UseDocumentListOpts): DocumentListState {
       searchQuery: searchQuery || '',
       sort,
       staticTypeNames: typeNameFromFilter ? [typeNameFromFilter] : undefined,
+      maxFieldDepth,
     }).pipe(
       map((results) => ({
         result: {documents: results},
@@ -183,6 +186,7 @@ export function useDocumentList(opts: UseDocumentListOpts): DocumentListState {
     shouldFetchFullList,
     sortOrder,
     typeNameFromFilter,
+    maxFieldDepth,
   ])
 
   useEffect(() => {
