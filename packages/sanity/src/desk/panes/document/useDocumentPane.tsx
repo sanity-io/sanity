@@ -2,7 +2,10 @@
 import {useContext, useDebugValue} from 'react'
 import {DocumentPaneContext, DocumentPaneContextValue} from './DocumentPaneContext'
 
-/** @deprecated use one of the new hooks */
+/**
+ * @deprecated use one of the new hooks
+ * @internal
+ */
 export function useDocumentPane__LEGACY__STOP__USING(): DocumentPaneContextValue {
   const documentPane = useContext(DocumentPaneContext)
 
@@ -15,5 +18,8 @@ export function useDocumentPane__LEGACY__STOP__USING(): DocumentPaneContextValue
   return documentPane
 }
 
-/** @deprecated use one of the new hooks */
+/**
+ * @deprecated use one of the new hooks
+ * @internal
+ */
 export const useDocumentPane = useDocumentPane__LEGACY__STOP__USING
