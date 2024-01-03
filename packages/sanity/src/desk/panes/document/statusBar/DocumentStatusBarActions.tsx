@@ -8,6 +8,7 @@ import {
   useDocumentPaneConnectionState,
   useDocumentPaneDocumentId,
   useDocumentPaneEditState,
+  useDocumentPaneTimelineStore,
 } from '../useDocumentPane'
 import {ActionMenuButton} from './ActionMenuButton'
 import {ActionStateDialog} from './ActionStateDialog'
@@ -114,7 +115,9 @@ export const DocumentStatusBarActions = memo(function DocumentStatusBarActions()
 })
 
 export const HistoryStatusBarActions = memo(function HistoryStatusBarActions() {
-  const {connectionState, editState, timelineStore} = useDocumentPane__LEGACY__STOP__USING()
+  const connectionState = useDocumentPaneConnectionState()
+  const editState = useDocumentPaneEditState()
+  const timelineStore = useDocumentPaneTimelineStore()
 
   // Subscribe to external timeline state changes
   const revTime = useTimelineSelector(timelineStore, (state) => state.revTime)

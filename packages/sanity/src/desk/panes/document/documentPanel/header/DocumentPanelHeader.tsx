@@ -9,7 +9,17 @@ import {
   usePaneRouter,
 } from '../../../../components'
 import {TimelineMenu} from '../../timeline'
-import {useDocumentPane__LEGACY__STOP__USING} from '../../useDocumentPane'
+import {
+  useDocumentPaneMenuItemGroups,
+  useDocumentPaneOnMenuAction,
+  useDocumentPaneOnPaneClose,
+  useDocumentPaneOnPaneSplit,
+  useDocumentPaneReady,
+  useDocumentPaneSchemaType,
+  useDocumentPaneTimelineStore,
+  useDocumentPaneUnstableLanguageFilter,
+  useDocumentPaneViews,
+} from '../../useDocumentPane'
 import {isMenuNodeButton, isNotMenuNodeButton, resolveMenuNodes} from '../../../../menuNodes'
 import {useDeskTool} from '../../../../useDeskTool'
 import {PaneMenuItem} from '../../../../types'
@@ -30,17 +40,17 @@ export const DocumentPanelHeader = memo(
     ref: React.ForwardedRef<HTMLDivElement>,
   ) {
     const {menuItems} = _props
-    const {
-      onMenuAction,
-      onPaneClose,
-      onPaneSplit,
-      menuItemGroups,
-      schemaType,
-      timelineStore,
-      ready,
-      views,
-      unstable_languageFilter,
-    } = useDocumentPane__LEGACY__STOP__USING()
+
+    const onMenuAction = useDocumentPaneOnMenuAction()
+    const onPaneClose = useDocumentPaneOnPaneClose()
+    const onPaneSplit = useDocumentPaneOnPaneSplit()
+    const menuItemGroups = useDocumentPaneMenuItemGroups()
+    const schemaType = useDocumentPaneSchemaType()
+    const timelineStore = useDocumentPaneTimelineStore()
+    const ready = useDocumentPaneReady()
+    const views = useDocumentPaneViews()
+    const unstable_languageFilter = useDocumentPaneUnstableLanguageFilter()
+
     const {features} = useDeskTool()
     const {index, BackLink, hasGroupSiblings} = usePaneRouter()
     const {actions: fieldActions} = useFieldActions()

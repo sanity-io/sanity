@@ -3,7 +3,7 @@ import {Box} from '@sanity/ui'
 import {usePane} from '../../../components'
 import {useDeskTool} from '../../../useDeskTool'
 import {DOCUMENT_INSPECTOR_MAX_WIDTH, DOCUMENT_INSPECTOR_MIN_WIDTH} from '../constants'
-import {useDocumentPane__LEGACY__STOP__USING} from '../useDocumentPane'
+import {useDocumentPaneCloseInspector, useDocumentPaneInspector} from '../useDocumentPane'
 import {Resizable} from './Resizable'
 
 interface DocumentInspectorPanelProps {
@@ -15,7 +15,8 @@ interface DocumentInspectorPanelProps {
 export function DocumentInspectorPanel(props: DocumentInspectorPanelProps): ReactElement | null {
   const {documentId, documentType, flex} = props
   const {collapsed} = usePane()
-  const {closeInspector, inspector} = useDocumentPane__LEGACY__STOP__USING()
+  const closeInspector = useDocumentPaneCloseInspector()
+  const inspector = useDocumentPaneInspector()
   const {features} = useDeskTool()
 
   const handleClose = useCallback(() => {

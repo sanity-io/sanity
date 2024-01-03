@@ -1,7 +1,12 @@
 import {CheckmarkIcon, PublishIcon} from '@sanity/icons'
 import {isValidationErrorMarker} from '@sanity/types'
 import React, {useCallback, useEffect, useState} from 'react'
-import {useDocumentPane__LEGACY__STOP__USING} from '../panes/document/useDocumentPane'
+import {
+  useDocumentPaneChangesOpen,
+  useDocumentPaneDocumentId,
+  useDocumentPaneDocumentType,
+  useDocumentPaneOnHistoryOpen,
+} from '../panes/document/useDocumentPane'
 import {structureLocaleNamespace, type StructureLocaleResourceKeys} from '../i18n'
 import {
   DocumentActionComponent,
@@ -49,8 +54,10 @@ export const PublishAction: DocumentActionComponent = (props) => {
   const {publish} = useDocumentOperation(id, type)
   const validationStatus = useValidationStatus(id, type)
   const syncState = useSyncState(id, type)
-  const {changesOpen, onHistoryOpen, documentId, documentType} =
-    useDocumentPane__LEGACY__STOP__USING()
+  const changesOpen = useDocumentPaneChangesOpen()
+  const onHistoryOpen = useDocumentPaneOnHistoryOpen()
+  const documentId = useDocumentPaneDocumentId()
+  const documentType = useDocumentPaneDocumentType()
   const editState = useEditState(documentId, documentType)
   const {t} = useTranslation(structureLocaleNamespace)
 

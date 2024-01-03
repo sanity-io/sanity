@@ -2,7 +2,7 @@ import {Badge, BadgeTone, Inline} from '@sanity/ui'
 import React from 'react'
 import {Tooltip} from '../../../../ui-components'
 import {RenderBadgeCollectionState} from '../../../components'
-import {useDocumentPane__LEGACY__STOP__USING} from '../useDocumentPane'
+import {useDocumentPaneBadges, useDocumentPaneEditState} from '../useDocumentPane'
 import {DocumentBadgeDescription} from 'sanity'
 
 interface DocumentBadgesInnerProps {
@@ -48,7 +48,8 @@ function DocumentBadgesInner({states}: DocumentBadgesInnerProps) {
 }
 
 export function DocumentBadges() {
-  const {badges, editState} = useDocumentPane__LEGACY__STOP__USING()
+  const badges = useDocumentPaneBadges()
+  const editState = useDocumentPaneEditState()
 
   if (!editState || !badges) return null
 
