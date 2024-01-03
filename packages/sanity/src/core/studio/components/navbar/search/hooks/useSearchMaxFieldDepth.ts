@@ -2,7 +2,7 @@ import {catchError, map, shareReplay, startWith} from 'rxjs/operators'
 import {Observable, of} from 'rxjs'
 import {SanityClient} from '@sanity/client'
 import {useMemoObservable} from 'react-rx'
-import {isNumber} from 'lodash'
+import {isFinite} from 'lodash'
 import {DEFAULT_MAX_FIELD_DEPTH} from '@sanity/schema/_internal'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../../studioClient'
 import {useWorkspace} from '../../../../workspace'
@@ -81,18 +81,9 @@ export function useSearchMaxFieldDepth(overrideClient?: SanityClient): number {
     INITIAL_LOADING_STATE,
   )
 
-  /**
-   * Studio currently uses zero indexed depths, while the partial index uses one indexed depths
-   * 0 = all fields
-   * 1 = only top level fields
-   * 5 = all fields
-   */
-  const maxFieldDepth = (indexSettings?.settings?.partialIndexSettings?.maxFieldDepth ?? 1) - 1
+  const maxFieldDepth = indexSettings?.settings?.partialIndexSettings?.maxFieldDepth
 
-  /**
-   * If the maxFieldDepth is not a number or is -1 or 5, return the default value.
-   */
-  if (!isNumber(maxFieldDepth) || maxFieldDepth < 0) {
+  if (!isFinite(maxFieldDepth)) {
     return DEFAULT_MAX_FIELD_DEPTH
   }
 
