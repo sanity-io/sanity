@@ -1,7 +1,9 @@
-import {type ButtonTone} from '@sanity/ui'
+import {
+  type ButtonTone,
+  type DialogProps, // eslint-disable-line no-restricted-imports
+} from '@sanity/ui'
 import type React from 'react'
 import {type EditStateFor} from '../../store/_legacy'
-import {DialogProps} from '../../../ui-components'
 
 /**
  * @hidden

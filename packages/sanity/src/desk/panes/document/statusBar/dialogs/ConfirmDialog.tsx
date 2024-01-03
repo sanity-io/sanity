@@ -1,7 +1,16 @@
-import {Box, Flex, Grid, Text, useClickOutside, useGlobalKeyDown, useLayer} from '@sanity/ui'
+import {
+  Box,
+  Button, // eslint-disable-line no-restricted-imports
+  Flex,
+  Grid,
+  Popover, // eslint-disable-line no-restricted-imports
+  Text,
+  useClickOutside,
+  useGlobalKeyDown,
+  useLayer,
+} from '@sanity/ui'
 import React, {useCallback, useState} from 'react'
 import {structureLocaleNamespace} from '../../../../i18n'
-import {Button, Popover} from '../../../../../ui-components'
 import {POPOVER_FALLBACK_PLACEMENTS} from './constants'
 import {DocumentActionConfirmDialogProps, useTranslation} from 'sanity'
 
@@ -24,6 +33,10 @@ export function ConfirmDialog(props: {
   )
 }
 
+/**
+ * Dialog rendered by custom document actions of dialog type `confirm`.
+ * As these are user configurable with public facing APIs, internal studio ui-components are not used.
+ */
 function ConfirmDialogContent(props: {dialog: DocumentActionConfirmDialogProps}) {
   const {dialog} = props
   const {

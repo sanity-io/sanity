@@ -1,6 +1,11 @@
-import {Box, Code, Stack} from '@sanity/ui'
+import {
+  Box,
+  Button, // eslint-disable-line no-restricted-imports
+  Code,
+  Dialog, // eslint-disable-line no-restricted-imports
+  Stack,
+} from '@sanity/ui'
 import React, {useMemo, useState, useCallback, useEffect} from 'react'
-import {Button, Dialog} from '../../ui-components'
 import {DeskToolProvider} from '../DeskToolProvider'
 import {DocumentPaneProvider} from '../panes'
 import {DocumentPaneNode} from '../types'
