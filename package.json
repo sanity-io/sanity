@@ -151,6 +151,7 @@
     "semver": "^7.3.5",
     "turbo": "^1.11.2",
     "typescript": "^5.2.2",
+    "vite": "^5.0.4",
     "yargs": "^17.3.0"
   },
   "optionalDependencies": {
