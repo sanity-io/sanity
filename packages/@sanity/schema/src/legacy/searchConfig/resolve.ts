@@ -1,6 +1,6 @@
-import {uniqBy} from 'lodash'
+import {uniqBy, isFinite} from 'lodash'
 
-export const DEFAULT_MAX_FIELD_DEPTH = 4
+export const DEFAULT_MAX_FIELD_DEPTH = 5
 
 const stringFieldsSymbols = {}
 
@@ -105,7 +105,7 @@ export function deriveFromPreview(
   return fields
 }
 
-function getCachedStringFieldPaths(type, maxDepth = DEFAULT_MAX_FIELD_DEPTH) {
+function getCachedStringFieldPaths(type, maxDepth: number) {
   const symbol = getStringFieldSymbol(maxDepth)
   if (!type[symbol]) {
     type[symbol] = uniqBy(
@@ -125,7 +125,7 @@ function getCachedStringFieldPaths(type, maxDepth = DEFAULT_MAX_FIELD_DEPTH) {
   return type[symbol]
 }
 
-function getCachedBaseFieldPaths(type, maxDepth = DEFAULT_MAX_FIELD_DEPTH) {
+function getCachedBaseFieldPaths(type, maxDepth: number) {
   const symbol = getStringFieldSymbol(maxDepth)
   if (!type[symbol]) {
     type[symbol] = uniqBy([...BASE_WEIGHTS, ...deriveFromPreview(type, maxDepth)], (spec) =>
@@ -135,7 +135,7 @@ function getCachedBaseFieldPaths(type, maxDepth = DEFAULT_MAX_FIELD_DEPTH) {
   return type[symbol]
 }
 
-function getStringFieldPaths(type, maxDepth) {
+function getStringFieldPaths(type, maxDepth: number) {
   const reducer = (accumulator, childType, path) =>
     childType.jsonType === 'string' ? [...accumulator, path] : accumulator
 
@@ -150,12 +150,26 @@ function getPortableTextFieldPaths(type, maxDepth) {
 }
 
 export function resolveSearchConfigForBaseFieldPaths(type, maxDepth?: number) {
-  return getCachedBaseFieldPaths(type, maxDepth)
+  return getCachedBaseFieldPaths(type, normalizeMaxDepth(maxDepth))
 }
 
 /**
  * @internal
  */
 export function resolveSearchConfig(type, maxDepth?: number) {
-  return getCachedStringFieldPaths(type, maxDepth)
+  return getCachedStringFieldPaths(type, normalizeMaxDepth(maxDepth))
+}
+
+/**
+ * Normalizes a one-indexed maxDepth to a zero-indexed maxDepth
+ * 0 = all fields
+ *
+ * @internal
+ */
+function normalizeMaxDepth(maxDepth?: number) {
+  if (!isFinite(maxDepth) || maxDepth < 1 || maxDepth > DEFAULT_MAX_FIELD_DEPTH) {
+    return DEFAULT_MAX_FIELD_DEPTH - 1
+  }
+
+  return maxDepth - 1
 }
