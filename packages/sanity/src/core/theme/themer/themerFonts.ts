@@ -7,7 +7,7 @@ import {StudioTheme} from '../types'
  * theme provided by the user, if it matches we know that the user has not changed the fonts.
  * If it doesn't match we know that the user has changed the fonts and we need to use the user fonts instead.
  */
-export const THEMER_FONTS = {
+export const THEMER_FONTS: StudioTheme['fonts'] = {
   code: {
     family: 'ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace',
     weights: {

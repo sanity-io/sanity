@@ -1,8 +1,7 @@
-import {buildTheme} from '@sanity/ui/theme'
-import {StudioTheme} from './types'
+import {RootTheme, buildTheme} from '@sanity/ui/theme'
 
 export * from './_legacy'
 export * from './types'
 
 /** @internal */
-export const defaultTheme: StudioTheme = buildTheme()
+export const defaultTheme: RootTheme = buildTheme()

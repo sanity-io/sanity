@@ -40,8 +40,20 @@ export interface LegacyThemeProps {
   '--state-warning-color': string
   '--state-danger-color': string
 
+  /**
+   * @deprecated only colors and fonts are customizable
+   */
   '--screen-medium-break': string
+  /**
+   * @deprecated only colors and fonts are customizable
+   */
   '--screen-default-break': string
+  /**
+   * @deprecated only colors and fonts are customizable
+   */
   '--screen-large-break': string
+  /**
+   * @deprecated only colors and fonts are customizable
+   */
   '--screen-xlarge-break': string
 }
