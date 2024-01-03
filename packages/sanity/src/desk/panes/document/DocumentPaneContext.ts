@@ -67,7 +67,6 @@ export interface DocumentPaneContextValue {
   setTimelineMode: (mode: TimelineMode) => void
   setTimelineRange(since: string | null, rev: string | null): void
   setIsDeleting: (state: boolean) => void
-  source?: string
   timelineError: Error | null
   timelineMode: TimelineMode
   timelineStore: TimelineStore
@@ -83,7 +82,10 @@ export interface DocumentPaneContextValue {
   unstable_languageFilter: DocumentLanguageFilterComponent[]
 }
 
-/** @internal */
+/**
+ * @deprecated use one of the new provider contexts instead
+ * @internal
+ */
 export const DocumentPaneContext = createContext<DocumentPaneContextValue | null>(null)
 DocumentPaneContext.displayName = 'DocumentPaneContext'
 
@@ -328,12 +330,6 @@ export const DocumentPaneContextSetIsDeleting = createContext<
   DocumentPaneContextValue['setIsDeleting'] | null
 >(null)
 DocumentPaneContextSetIsDeleting.displayName = 'DocumentPaneContextSetIsDeleting'
-
-/** @internal */
-export const DocumentPaneContextSource = createContext<DocumentPaneContextValue['source'] | null>(
-  null,
-)
-DocumentPaneContextSource.displayName = 'DocumentPaneContextSource'
 
 /** @internal */
 export const DocumentPaneContextTimelineError =

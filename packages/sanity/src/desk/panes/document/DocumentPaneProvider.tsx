@@ -8,7 +8,65 @@ import {usePaneRouter} from '../../components'
 import type {PaneMenuItem} from '../../types'
 import {useDeskTool} from '../../useDeskTool'
 import {structureLocaleNamespace} from '../../i18n'
-import {DocumentPaneContext, type DocumentPaneContextValue} from './DocumentPaneContext'
+import {
+  DocumentPaneContext,
+  DocumentPaneContextActions,
+  DocumentPaneContextActiveViewId,
+  type DocumentPaneContextValue,
+  DocumentPaneContextBadges,
+  DocumentPaneContextChangesOpen,
+  DocumentPaneContextCloseInspector,
+  DocumentPaneContextCollapsedFieldSets,
+  DocumentPaneContextCollapsedPaths,
+  DocumentPaneContextCompareValue,
+  DocumentPaneContextConnectionState,
+  DocumentPaneContextDisplayed,
+  DocumentPaneContextDocumentId,
+  DocumentPaneContextDocumentIdRaw,
+  DocumentPaneContextDocumentType,
+  DocumentPaneContextEditState,
+  DocumentPaneContextFieldActions,
+  DocumentPaneContextFocusPath,
+  DocumentPaneContextFormState,
+  DocumentPaneContextIndex,
+  DocumentPaneContextInspectOpen,
+  DocumentPaneContextInspector,
+  DocumentPaneContextInspectors,
+  DocumentPaneContextIsDeleted,
+  DocumentPaneContextIsDeleting,
+  DocumentPaneContextIsPermissionsLoading,
+  DocumentPaneContextMenuItemGroups,
+  DocumentPaneContextOnBlur,
+  DocumentPaneContextOnChange,
+  DocumentPaneContextOnFocus,
+  DocumentPaneContextOnHistoryClose,
+  DocumentPaneContextOnHistoryOpen,
+  DocumentPaneContextOnInspectClose,
+  DocumentPaneContextOnMenuAction,
+  DocumentPaneContextOnPaneClose,
+  DocumentPaneContextOnPaneSplit,
+  DocumentPaneContextOnPathOpen,
+  DocumentPaneContextOnSetActiveFieldGroup,
+  DocumentPaneContextOnSetCollapsedFieldSet,
+  DocumentPaneContextOnSetCollapsedPath,
+  DocumentPaneContextOpenInspector,
+  DocumentPaneContextPaneKey,
+  DocumentPaneContextPermissions,
+  DocumentPaneContextPreviewUrl,
+  DocumentPaneContextReady,
+  DocumentPaneContextSchemaType,
+  DocumentPaneContextSetIsDeleting,
+  DocumentPaneContextSetTimelineMode,
+  DocumentPaneContextSetTimelineRange,
+  DocumentPaneContextTimelineError,
+  DocumentPaneContextTimelineMode,
+  DocumentPaneContextTimelineStore,
+  DocumentPaneContextTitle,
+  DocumentPaneContextUnstableLanguageFilter,
+  DocumentPaneContextValidation,
+  DocumentPaneContextValueContext,
+  DocumentPaneContextViews,
+} from './DocumentPaneContext'
 import type {DocumentPaneProviderProps} from './types'
 import {usePreviewUrl} from './usePreviewUrl'
 import {getInitialValueTemplateOpts} from './getInitialValueTemplateOpts'
@@ -69,10 +127,11 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const {push: pushToast} = useToast()
   const {
     options,
-    menuItemGroups = DEFAULT_MENU_ITEM_GROUPS,
+    menuItemGroups: _menuItemGroups = DEFAULT_MENU_ITEM_GROUPS,
     title = null,
     views: viewsProp = [],
   } = pane
+  const menuItemGroups = useMemo(() => _menuItemGroups || [], [_menuItemGroups])
   const paneOptions = useUnique(options)
   const documentIdRaw = paneOptions.id
   const documentId = getPublishedId(documentIdRaw)
@@ -557,63 +616,120 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     [formStateRef],
   )
 
-  const documentPane: DocumentPaneContextValue = {
-    actions,
-    activeViewId,
-    badges,
-    changesOpen,
-    closeInspector,
-    collapsedFieldSets,
-    collapsedPaths,
-    compareValue,
-    connectionState,
-    displayed,
-    documentId,
-    documentIdRaw,
-    documentType,
-    editState,
-    fieldActions,
-    focusPath,
-    inspector: currentInspector || null,
-    inspectors,
-    onBlur: handleBlur,
-    onChange: handleChange,
-    onFocus: handleFocus,
-    onPathOpen: setOpenPath,
-    onHistoryClose: handleHistoryClose,
-    onHistoryOpen: handleHistoryOpen,
-    onInspectClose: handleLegacyInspectClose,
-    onMenuAction: handleMenuAction,
-    onPaneClose: handlePaneClose,
-    onPaneSplit: handlePaneSplit,
-    onSetActiveFieldGroup: handleSetActiveFieldGroup,
-    onSetCollapsedPath: handleOnSetCollapsedPath,
-    onSetCollapsedFieldSet: handleOnSetCollapsedFieldSet,
-    openInspector,
-    index,
-    inspectOpen,
-    validation,
-    menuItemGroups: menuItemGroups || [],
-    paneKey,
-    previewUrl,
-    ready,
-    schemaType: schemaType!,
-    isPermissionsLoading,
-    permissions,
-    setTimelineMode,
-    setTimelineRange,
-    setIsDeleting,
-    isDeleting,
-    isDeleted,
-    timelineError,
-    timelineMode,
-    timelineStore,
-    title,
-    value,
-    views,
-    formState,
-    unstable_languageFilter: languageFilter,
-  }
+  const documentPane: DocumentPaneContextValue = useMemo(
+    () => ({
+      actions,
+      activeViewId,
+      badges,
+      changesOpen,
+      closeInspector,
+      collapsedFieldSets,
+      collapsedPaths,
+      compareValue,
+      connectionState,
+      displayed,
+      documentId,
+      documentIdRaw,
+      documentType,
+      editState,
+      fieldActions,
+      focusPath,
+      inspector: currentInspector || null,
+      inspectors,
+      onBlur: handleBlur,
+      onChange: handleChange,
+      onFocus: handleFocus,
+      onPathOpen: setOpenPath,
+      onHistoryClose: handleHistoryClose,
+      onHistoryOpen: handleHistoryOpen,
+      onInspectClose: handleLegacyInspectClose,
+      onMenuAction: handleMenuAction,
+      onPaneClose: handlePaneClose,
+      onPaneSplit: handlePaneSplit,
+      onSetActiveFieldGroup: handleSetActiveFieldGroup,
+      onSetCollapsedPath: handleOnSetCollapsedPath,
+      onSetCollapsedFieldSet: handleOnSetCollapsedFieldSet,
+      openInspector,
+      index,
+      inspectOpen,
+      validation,
+      menuItemGroups,
+      paneKey,
+      previewUrl,
+      ready,
+      schemaType: schemaType!,
+      isPermissionsLoading,
+      permissions,
+      setTimelineMode,
+      setTimelineRange,
+      setIsDeleting,
+      isDeleting,
+      isDeleted,
+      timelineError,
+      timelineMode,
+      timelineStore,
+      title,
+      value,
+      views,
+      formState,
+      unstable_languageFilter: languageFilter,
+    }),
+    [
+      actions,
+      activeViewId,
+      badges,
+      changesOpen,
+      closeInspector,
+      collapsedFieldSets,
+      collapsedPaths,
+      compareValue,
+      connectionState,
+      currentInspector,
+      displayed,
+      documentId,
+      documentIdRaw,
+      documentType,
+      editState,
+      fieldActions,
+      focusPath,
+      formState,
+      handleBlur,
+      handleChange,
+      handleFocus,
+      handleHistoryClose,
+      handleHistoryOpen,
+      handleLegacyInspectClose,
+      handleMenuAction,
+      handleOnSetCollapsedFieldSet,
+      handleOnSetCollapsedPath,
+      handlePaneClose,
+      handlePaneSplit,
+      handleSetActiveFieldGroup,
+      index,
+      inspectOpen,
+      inspectors,
+      isDeleted,
+      isDeleting,
+      isPermissionsLoading,
+      languageFilter,
+      menuItemGroups,
+      openInspector,
+      paneKey,
+      permissions,
+      previewUrl,
+      ready,
+      schemaType,
+      setOpenPath,
+      setTimelineRange,
+      timelineError,
+      timelineMode,
+      timelineStore,
+      title,
+      validation,
+      value,
+      views,
+    ],
+  )
 
   useEffect(() => {
     if (connectionState === 'reconnecting') {
@@ -658,7 +774,235 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   }, [params, documentId, onFocusPath, setOpenPath, ready, paneRouter])
 
   return (
-    <DocumentPaneContext.Provider value={documentPane}>{children}</DocumentPaneContext.Provider>
+    <DocumentPaneContext.Provider value={documentPane}>
+      <DocumentPaneContextActions.Provider value={actions}>
+        <DocumentPaneContextActiveViewId.Provider value={activeViewId}>
+          <DocumentPaneContextBadges.Provider value={badges}>
+            <DocumentPaneContextChangesOpen.Provider value={changesOpen}>
+              <DocumentPaneContextCloseInspector.Provider value={closeInspector}>
+                <DocumentPaneContextCollapsedFieldSets.Provider value={collapsedFieldSets}>
+                  <DocumentPaneContextCollapsedPaths.Provider value={collapsedPaths}>
+                    <DocumentPaneContextCompareValue.Provider value={compareValue}>
+                      <DocumentPaneContextConnectionState.Provider value={connectionState}>
+                        <DocumentPaneContextDisplayed.Provider value={displayed}>
+                          <DocumentPaneContextDocumentId.Provider value={documentId}>
+                            <DocumentPaneContextDocumentIdRaw.Provider value={documentIdRaw}>
+                              <DocumentPaneContextDocumentType.Provider value={documentType}>
+                                <DocumentPaneContextEditState.Provider value={editState}>
+                                  <DocumentPaneContextFieldActions.Provider value={fieldActions}>
+                                    <DocumentPaneContextFocusPath.Provider value={focusPath}>
+                                      <DocumentPaneContextInspector.Provider
+                                        value={currentInspector || null}
+                                      >
+                                        <DocumentPaneContextInspectors.Provider value={inspectors}>
+                                          <DocumentPaneContextOnBlur.Provider value={handleBlur}>
+                                            <DocumentPaneContextOnChange.Provider
+                                              value={handleChange}
+                                            >
+                                              <DocumentPaneContextOnFocus.Provider
+                                                value={handleFocus}
+                                              >
+                                                <DocumentPaneContextOnPathOpen.Provider
+                                                  value={setOpenPath}
+                                                >
+                                                  <DocumentPaneContextOnHistoryClose.Provider
+                                                    value={handleHistoryClose}
+                                                  >
+                                                    <DocumentPaneContextOnHistoryOpen.Provider
+                                                      value={handleHistoryOpen}
+                                                    >
+                                                      <DocumentPaneContextOnInspectClose.Provider
+                                                        value={handleLegacyInspectClose}
+                                                      >
+                                                        <DocumentPaneContextOnMenuAction.Provider
+                                                          value={handleMenuAction}
+                                                        >
+                                                          <DocumentPaneContextOnPaneClose.Provider
+                                                            value={handlePaneClose}
+                                                          >
+                                                            <DocumentPaneContextOnPaneSplit.Provider
+                                                              value={handlePaneSplit}
+                                                            >
+                                                              <DocumentPaneContextOnSetActiveFieldGroup.Provider
+                                                                value={handleSetActiveFieldGroup}
+                                                              >
+                                                                <DocumentPaneContextOnSetCollapsedPath.Provider
+                                                                  value={handleOnSetCollapsedPath}
+                                                                >
+                                                                  <DocumentPaneContextOnSetCollapsedFieldSet.Provider
+                                                                    value={
+                                                                      handleOnSetCollapsedFieldSet
+                                                                    }
+                                                                  >
+                                                                    <DocumentPaneContextOpenInspector.Provider
+                                                                      value={openInspector}
+                                                                    >
+                                                                      <DocumentPaneContextIndex.Provider
+                                                                        value={index}
+                                                                      >
+                                                                        <DocumentPaneContextInspectOpen.Provider
+                                                                          value={inspectOpen}
+                                                                        >
+                                                                          <DocumentPaneContextValidation.Provider
+                                                                            value={validation}
+                                                                          >
+                                                                            <DocumentPaneContextMenuItemGroups.Provider
+                                                                              value={menuItemGroups}
+                                                                            >
+                                                                              <DocumentPaneContextPaneKey.Provider
+                                                                                value={paneKey}
+                                                                              >
+                                                                                <DocumentPaneContextPreviewUrl.Provider
+                                                                                  value={previewUrl}
+                                                                                >
+                                                                                  <DocumentPaneContextReady.Provider
+                                                                                    value={ready}
+                                                                                  >
+                                                                                    <DocumentPaneContextSchemaType.Provider
+                                                                                      value={
+                                                                                        schemaType!
+                                                                                      }
+                                                                                    >
+                                                                                      <DocumentPaneContextIsPermissionsLoading.Provider
+                                                                                        value={
+                                                                                          isPermissionsLoading
+                                                                                        }
+                                                                                      >
+                                                                                        <DocumentPaneContextPermissions.Provider
+                                                                                          value={
+                                                                                            permissions
+                                                                                          }
+                                                                                        >
+                                                                                          <DocumentPaneContextSetTimelineMode.Provider
+                                                                                            value={
+                                                                                              setTimelineMode
+                                                                                            }
+                                                                                          >
+                                                                                            <DocumentPaneContextSetTimelineRange.Provider
+                                                                                              value={
+                                                                                                setTimelineRange
+                                                                                              }
+                                                                                            >
+                                                                                              <DocumentPaneContextSetIsDeleting.Provider
+                                                                                                value={
+                                                                                                  setIsDeleting
+                                                                                                }
+                                                                                              >
+                                                                                                <DocumentPaneContextIsDeleting.Provider
+                                                                                                  value={
+                                                                                                    isDeleting
+                                                                                                  }
+                                                                                                >
+                                                                                                  <DocumentPaneContextIsDeleted.Provider
+                                                                                                    value={
+                                                                                                      isDeleted
+                                                                                                    }
+                                                                                                  >
+                                                                                                    <DocumentPaneContextTimelineError.Provider
+                                                                                                      value={
+                                                                                                        timelineError
+                                                                                                      }
+                                                                                                    >
+                                                                                                      <DocumentPaneContextTimelineMode.Provider
+                                                                                                        value={
+                                                                                                          timelineMode
+                                                                                                        }
+                                                                                                      >
+                                                                                                        <DocumentPaneContextTimelineStore.Provider
+                                                                                                          value={
+                                                                                                            timelineStore
+                                                                                                          }
+                                                                                                        >
+                                                                                                          <DocumentPaneContextTimelineStore.Provider
+                                                                                                            value={
+                                                                                                              timelineStore
+                                                                                                            }
+                                                                                                          >
+                                                                                                            <DocumentPaneContextTitle.Provider
+                                                                                                              value={
+                                                                                                                title
+                                                                                                              }
+                                                                                                            >
+                                                                                                              <DocumentPaneContextValueContext.Provider
+                                                                                                                value={
+                                                                                                                  value
+                                                                                                                }
+                                                                                                              >
+                                                                                                                <DocumentPaneContextViews.Provider
+                                                                                                                  value={
+                                                                                                                    views
+                                                                                                                  }
+                                                                                                                >
+                                                                                                                  <DocumentPaneContextFormState.Provider
+                                                                                                                    value={
+                                                                                                                      formState
+                                                                                                                    }
+                                                                                                                  >
+                                                                                                                    <DocumentPaneContextUnstableLanguageFilter.Provider
+                                                                                                                      value={
+                                                                                                                        languageFilter
+                                                                                                                      }
+                                                                                                                    >
+                                                                                                                      {
+                                                                                                                        children
+                                                                                                                      }
+                                                                                                                    </DocumentPaneContextUnstableLanguageFilter.Provider>
+                                                                                                                  </DocumentPaneContextFormState.Provider>
+                                                                                                                </DocumentPaneContextViews.Provider>
+                                                                                                              </DocumentPaneContextValueContext.Provider>
+                                                                                                            </DocumentPaneContextTitle.Provider>
+                                                                                                          </DocumentPaneContextTimelineStore.Provider>
+                                                                                                        </DocumentPaneContextTimelineStore.Provider>
+                                                                                                      </DocumentPaneContextTimelineMode.Provider>
+                                                                                                    </DocumentPaneContextTimelineError.Provider>
+                                                                                                  </DocumentPaneContextIsDeleted.Provider>
+                                                                                                </DocumentPaneContextIsDeleting.Provider>
+                                                                                              </DocumentPaneContextSetIsDeleting.Provider>
+                                                                                            </DocumentPaneContextSetTimelineRange.Provider>
+                                                                                          </DocumentPaneContextSetTimelineMode.Provider>
+                                                                                        </DocumentPaneContextPermissions.Provider>
+                                                                                      </DocumentPaneContextIsPermissionsLoading.Provider>
+                                                                                    </DocumentPaneContextSchemaType.Provider>
+                                                                                  </DocumentPaneContextReady.Provider>
+                                                                                </DocumentPaneContextPreviewUrl.Provider>
+                                                                              </DocumentPaneContextPaneKey.Provider>
+                                                                            </DocumentPaneContextMenuItemGroups.Provider>
+                                                                          </DocumentPaneContextValidation.Provider>
+                                                                        </DocumentPaneContextInspectOpen.Provider>
+                                                                      </DocumentPaneContextIndex.Provider>
+                                                                    </DocumentPaneContextOpenInspector.Provider>
+                                                                  </DocumentPaneContextOnSetCollapsedFieldSet.Provider>
+                                                                </DocumentPaneContextOnSetCollapsedPath.Provider>
+                                                              </DocumentPaneContextOnSetActiveFieldGroup.Provider>
+                                                            </DocumentPaneContextOnPaneSplit.Provider>
+                                                          </DocumentPaneContextOnPaneClose.Provider>
+                                                        </DocumentPaneContextOnMenuAction.Provider>
+                                                      </DocumentPaneContextOnInspectClose.Provider>
+                                                    </DocumentPaneContextOnHistoryOpen.Provider>
+                                                  </DocumentPaneContextOnHistoryClose.Provider>
+                                                </DocumentPaneContextOnPathOpen.Provider>
+                                              </DocumentPaneContextOnFocus.Provider>
+                                            </DocumentPaneContextOnChange.Provider>
+                                          </DocumentPaneContextOnBlur.Provider>
+                                        </DocumentPaneContextInspectors.Provider>
+                                      </DocumentPaneContextInspector.Provider>
+                                    </DocumentPaneContextFocusPath.Provider>
+                                  </DocumentPaneContextFieldActions.Provider>
+                                </DocumentPaneContextEditState.Provider>
+                              </DocumentPaneContextDocumentType.Provider>
+                            </DocumentPaneContextDocumentIdRaw.Provider>
+                          </DocumentPaneContextDocumentId.Provider>
+                        </DocumentPaneContextDisplayed.Provider>
+                      </DocumentPaneContextConnectionState.Provider>
+                    </DocumentPaneContextCompareValue.Provider>
+                  </DocumentPaneContextCollapsedPaths.Provider>
+                </DocumentPaneContextCollapsedFieldSets.Provider>
+              </DocumentPaneContextCloseInspector.Provider>
+            </DocumentPaneContextChangesOpen.Provider>
+          </DocumentPaneContextBadges.Provider>
+        </DocumentPaneContextActiveViewId.Provider>
+      </DocumentPaneContextActions.Provider>
+    </DocumentPaneContext.Provider>
   )
 })
 
