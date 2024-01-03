@@ -5,8 +5,11 @@ import {
   CommentsSelectedPathProvider,
   useCommentsEnabled,
 } from '../../src'
-import {useDocumentPane__LEGACY__STOP__USING} from '../../..'
 import {COMMENTS_INSPECTOR_NAME} from '../../../panes/document/constants'
+import {
+  useDocumentPaneInspector,
+  useDocumentPaneOpenInspector,
+} from '../../../panes/document/useDocumentPane'
 import {DocumentLayoutProps} from 'sanity'
 
 export function CommentsDocumentLayout(props: DocumentLayoutProps) {
@@ -22,7 +25,8 @@ export function CommentsDocumentLayout(props: DocumentLayoutProps) {
 function CommentsDocumentLayoutInner(props: DocumentLayoutProps) {
   const {documentId, documentType} = props
   const commentsEnabled = useCommentsEnabled()
-  const {openInspector, inspector} = useDocumentPane__LEGACY__STOP__USING()
+  const openInspector = useDocumentPaneOpenInspector()
+  const inspector = useDocumentPaneInspector()
 
   const handleOpenCommentsInspector = useCallback(() => {
     if (inspector?.name === COMMENTS_INSPECTOR_NAME) return

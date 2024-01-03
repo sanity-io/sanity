@@ -2,7 +2,13 @@ import {ChevronDownIcon} from '@sanity/icons'
 import {Placement, useClickOutside, useGlobalKeyDown, useToast} from '@sanity/ui'
 import React, {useCallback, useState} from 'react'
 import styled from 'styled-components'
-import {useDocumentPane__LEGACY__STOP__USING} from '../useDocumentPane'
+import {
+  useDocumentPaneReady,
+  useDocumentPaneSetTimelineMode,
+  useDocumentPaneSetTimelineRange,
+  useDocumentPaneTimelineError,
+  useDocumentPaneTimelineStore,
+} from '../useDocumentPane'
 import {Button, Popover} from '../../../../ui-components'
 import {TimelineError} from './TimelineError'
 import {Timeline} from './timeline'
@@ -21,8 +27,11 @@ const Root = styled(Popover)`
 `
 
 export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
-  const {setTimelineRange, setTimelineMode, timelineError, ready, timelineStore} =
-    useDocumentPane__LEGACY__STOP__USING()
+  const setTimelineRange = useDocumentPaneSetTimelineRange()
+  const setTimelineMode = useDocumentPaneSetTimelineMode()
+  const timelineError = useDocumentPaneTimelineError()
+  const ready = useDocumentPaneReady()
+  const timelineStore = useDocumentPaneTimelineStore()
   const [open, setOpen] = useState(false)
   const [button, setButton] = useState<HTMLButtonElement | null>(null)
   const [popover, setPopover] = useState<HTMLElement | null>(null)

@@ -2,7 +2,13 @@ import {ErrorOutlineIcon, IconComponent, InfoOutlineIcon, WarningOutlineIcon} fr
 import {Box, Card, CardTone, ErrorBoundary, Flex, Stack, Text} from '@sanity/ui'
 import {ObjectSchemaType, Path, SanityDocument, SchemaType, ValidationMarker} from '@sanity/types'
 import React, {ErrorInfo, Fragment, createElement, useCallback, useMemo, useState} from 'react'
-import {useDocumentPane__LEGACY__STOP__USING} from '../../useDocumentPane'
+import {
+  useDocumentPaneOnFocus,
+  useDocumentPaneOnPathOpen,
+  useDocumentPaneSchemaType,
+  useDocumentPaneValidation,
+  useDocumentPaneValue,
+} from '../../useDocumentPane'
 import {DocumentInspectorHeader} from '../../documentInspector'
 import {getPathTypes} from './getPathTypes'
 import {DocumentInspectorProps, useTranslation} from 'sanity'
@@ -21,8 +27,11 @@ const MARKER_TONE: Record<'error' | 'warning' | 'info', CardTone> = {
 
 export function ValidationInspector(props: DocumentInspectorProps) {
   const {onClose} = props
-  const {onFocus, onPathOpen, schemaType, validation, value} =
-    useDocumentPane__LEGACY__STOP__USING()
+  const onFocus = useDocumentPaneOnFocus()
+  const onPathOpen = useDocumentPaneOnPathOpen()
+  const schemaType = useDocumentPaneSchemaType()
+  const validation = useDocumentPaneValidation()
+  const value = useDocumentPaneValue()
   const {t} = useTranslation('validation')
 
   const handleOpen = useCallback(

@@ -1,4 +1,9 @@
-import {useDocumentPane__LEGACY__STOP__USING} from './useDocumentPane'
+import {
+  useDocumentPaneConnectionState,
+  useDocumentPaneSchemaType,
+  useDocumentPaneTitle,
+  useDocumentPaneValue,
+} from './useDocumentPane'
 import {unstable_useValuePreview as useValuePreview} from 'sanity'
 
 /**
@@ -21,12 +26,10 @@ interface UseDocumentTitle {
  * @returns The document title or error. See {@link UseDocumentTitle}
  */
 export function useDocumentTitle(): UseDocumentTitle {
-  const {
-    connectionState,
-    schemaType,
-    title,
-    value: documentValue,
-  } = useDocumentPane__LEGACY__STOP__USING()
+  const connectionState = useDocumentPaneConnectionState()
+  const schemaType = useDocumentPaneSchemaType()
+  const title = useDocumentPaneTitle()
+  const documentValue = useDocumentPaneValue()
   const subscribed = Boolean(documentValue) && connectionState === 'connected'
 
   const {error, value} = useValuePreview({

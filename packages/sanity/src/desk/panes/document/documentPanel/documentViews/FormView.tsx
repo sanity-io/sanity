@@ -4,7 +4,25 @@ import React, {forwardRef, useEffect, useMemo, useCallback, useState} from 'reac
 import {tap} from 'rxjs/operators'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentTitle} from '../../useDocumentTitle'
-import {useDocumentPane__LEGACY__STOP__USING} from '../../useDocumentPane'
+import {
+  useDocumentPaneCollapsedFieldSets,
+  useDocumentPaneCollapsedPaths,
+  useDocumentPaneDisplayed,
+  useDocumentPaneEditState,
+  useDocumentPaneDocumentId,
+  useDocumentPaneDocumentType,
+  useDocumentPaneFieldActions,
+  useDocumentPaneOnChange,
+  useDocumentPaneValidation,
+  useDocumentPaneReady,
+  useDocumentPaneFormState,
+  useDocumentPaneOnFocus,
+  useDocumentPaneOnBlur,
+  useDocumentPaneOnSetCollapsedPath,
+  useDocumentPaneOnPathOpen,
+  useDocumentPaneOnSetCollapsedFieldSet,
+  useDocumentPaneOnSetActiveFieldGroup,
+} from '../../useDocumentPane'
 import {Delay} from '../../../../components'
 import {useConditionalToast} from './useConditionalToast'
 import {FormHeader} from './FormHeader'
@@ -33,25 +51,24 @@ const preventDefault = (ev: React.FormEvent) => ev.preventDefault()
 export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormView(props, ref) {
   const {hidden, margins} = props
 
-  const {
-    collapsedFieldSets,
-    collapsedPaths,
-    displayed: value,
-    editState,
-    documentId,
-    documentType,
-    fieldActions,
-    onChange,
-    validation,
-    ready,
-    formState,
-    onFocus,
-    onBlur,
-    onSetCollapsedPath,
-    onPathOpen,
-    onSetCollapsedFieldSet,
-    onSetActiveFieldGroup,
-  } = useDocumentPane__LEGACY__STOP__USING()
+  const collapsedFieldSets = useDocumentPaneCollapsedFieldSets()
+  const collapsedPaths = useDocumentPaneCollapsedPaths()
+  const value = useDocumentPaneDisplayed()
+  const editState = useDocumentPaneEditState()
+  const documentId = useDocumentPaneDocumentId()
+  const documentType = useDocumentPaneDocumentType()
+  const fieldActions = useDocumentPaneFieldActions()
+  const onChange = useDocumentPaneOnChange()
+  const validation = useDocumentPaneValidation()
+  const ready = useDocumentPaneReady()
+  const formState = useDocumentPaneFormState()
+  const onFocus = useDocumentPaneOnFocus()
+  const onBlur = useDocumentPaneOnBlur()
+  const onSetCollapsedPath = useDocumentPaneOnSetCollapsedPath()
+  const onPathOpen = useDocumentPaneOnPathOpen()
+  const onSetCollapsedFieldSet = useDocumentPaneOnSetCollapsedFieldSet()
+  const onSetActiveFieldGroup = useDocumentPaneOnSetActiveFieldGroup()
+
   const documentStore = useDocumentStore()
   const presence = useDocumentPresence(documentId)
   const {title} = useDocumentTitle()

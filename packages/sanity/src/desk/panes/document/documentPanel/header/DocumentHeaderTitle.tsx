@@ -1,15 +1,18 @@
 import React, {ReactElement} from 'react'
-import {useDocumentPane__LEGACY__STOP__USING} from '../../useDocumentPane'
+import {
+  useDocumentPaneConnectionState,
+  useDocumentPaneSchemaType,
+  useDocumentPaneTitle,
+  useDocumentPaneValue,
+} from '../../useDocumentPane'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {unstable_useValuePreview as useValuePreview, useTranslation} from 'sanity'
 
 export function DocumentHeaderTitle(): ReactElement {
-  const {
-    connectionState,
-    schemaType,
-    title,
-    value: documentValue,
-  } = useDocumentPane__LEGACY__STOP__USING()
+  const connectionState = useDocumentPaneConnectionState()
+  const schemaType = useDocumentPaneSchemaType()
+  const title = useDocumentPaneTitle()
+  const documentValue = useDocumentPaneValue()
   const subscribed = Boolean(documentValue) && connectionState === 'connected'
 
   const {error, value} = useValuePreview({

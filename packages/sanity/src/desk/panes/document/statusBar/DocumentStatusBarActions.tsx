@@ -3,7 +3,12 @@ import React, {memo, useMemo, useState} from 'react'
 import {RenderActionCollectionState} from '../../../components'
 import {HistoryRestoreAction} from '../../../documentActions'
 import {Button, Tooltip} from '../../../../ui-components'
-import {useDocumentPane__LEGACY__STOP__USING} from '../useDocumentPane'
+import {
+  useDocumentPaneActions,
+  useDocumentPaneConnectionState,
+  useDocumentPaneDocumentId,
+  useDocumentPaneEditState,
+} from '../useDocumentPane'
 import {ActionMenuButton} from './ActionMenuButton'
 import {ActionStateDialog} from './ActionStateDialog'
 import {DocumentActionDescription, useTimelineSelector} from 'sanity'
@@ -71,7 +76,10 @@ function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsInnerProps
 }
 
 export const DocumentStatusBarActions = memo(function DocumentStatusBarActions() {
-  const {actions, connectionState, documentId, editState} = useDocumentPane__LEGACY__STOP__USING()
+  const actions = useDocumentPaneActions()
+  const connectionState = useDocumentPaneConnectionState()
+  const documentId = useDocumentPaneDocumentId()
+  const editState = useDocumentPaneEditState()
   // const [isMenuOpen, setMenuOpen] = useState(false)
   // const handleMenuOpen = useCallback(() => setMenuOpen(true), [])
   // const handleMenuClose = useCallback(() => setMenuOpen(false), [])

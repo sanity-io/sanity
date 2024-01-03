@@ -24,7 +24,22 @@ import {
 import {DocumentPanel} from '../documentPanel'
 import {DocumentActionShortcuts} from '../keyboardShortcuts'
 import {DocumentStatusBar} from '../statusBar'
-import {useDocumentPane__LEGACY__STOP__USING} from '../useDocumentPane'
+import {
+  useDocumentPaneChangesOpen,
+  useDocumentPaneDocumentId,
+  useDocumentPaneDocumentType,
+  useDocumentPaneFieldActions,
+  useDocumentPaneInspectOpen,
+  useDocumentPaneInspector,
+  useDocumentPaneInspectors,
+  useDocumentPaneOnFocus,
+  useDocumentPaneOnHistoryOpen,
+  useDocumentPaneOnMenuAction,
+  useDocumentPaneOnPathOpen,
+  useDocumentPanePaneKey,
+  useDocumentPaneSchemaType,
+  useDocumentPaneValue,
+} from '../useDocumentPane'
 import {DocumentPanelHeader} from '../documentPanel/header'
 import {DocumentInspectorMenuItemsResolver} from '../DocumentInspectorMenuItemsResolver'
 import {usePreviewUrl} from '../usePreviewUrl'
@@ -59,22 +74,20 @@ const StyledChangeConnectorRoot = styled(ChangeConnectorRoot)`
 `
 
 export function DocumentLayout() {
-  const {
-    changesOpen,
-    documentId,
-    documentType,
-    fieldActions,
-    inspectOpen,
-    inspector,
-    inspectors,
-    onFocus,
-    onHistoryOpen,
-    onMenuAction,
-    onPathOpen,
-    paneKey,
-    schemaType,
-    value,
-  } = useDocumentPane__LEGACY__STOP__USING()
+  const changesOpen = useDocumentPaneChangesOpen()
+  const documentId = useDocumentPaneDocumentId()
+  const documentType = useDocumentPaneDocumentType()
+  const fieldActions = useDocumentPaneFieldActions()
+  const inspectOpen = useDocumentPaneInspectOpen()
+  const inspector = useDocumentPaneInspector()
+  const inspectors = useDocumentPaneInspectors()
+  const onFocus = useDocumentPaneOnFocus()
+  const onHistoryOpen = useDocumentPaneOnHistoryOpen()
+  const onMenuAction = useDocumentPaneOnMenuAction()
+  const onPathOpen = useDocumentPaneOnPathOpen()
+  const paneKey = useDocumentPanePaneKey()
+  const schemaType = useDocumentPaneSchemaType()
+  const value = useDocumentPaneValue()
 
   const {features} = useDeskTool()
   const {t} = useTranslation(structureLocaleNamespace)

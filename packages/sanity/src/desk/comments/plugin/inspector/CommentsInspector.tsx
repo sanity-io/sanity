@@ -4,7 +4,10 @@ import * as PathUtils from '@sanity/util/paths'
 import styled from 'styled-components'
 import {usePaneRouter} from '../../../components'
 import {EMPTY_PARAMS} from '../../../constants'
-import {useDocumentPane__LEGACY__STOP__USING} from '../../../panes/document/useDocumentPane'
+import {
+  useDocumentPaneOnPathOpen,
+  useDocumentPaneReady,
+} from '../../../panes/document/useDocumentPane'
 import {
   useComments,
   CommentsListHandle,
@@ -69,7 +72,8 @@ function CommentsInspectorInner(props: DocumentInspectorProps) {
   const didScrollToCommentFromParam = useRef<boolean>(false)
 
   const pushToast = useToast().push
-  const {onPathOpen, ready} = useDocumentPane__LEGACY__STOP__USING()
+  const onPathOpen = useDocumentPaneOnPathOpen()
+  const ready = useDocumentPaneReady()
 
   const {isDismissed, setDismissed} = useCommentsOnboarding()
 

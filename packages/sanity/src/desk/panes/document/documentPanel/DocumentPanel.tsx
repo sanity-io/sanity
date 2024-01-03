@@ -2,7 +2,63 @@ import {BoundaryElementProvider, Flex, PortalProvider, usePortal, Box} from '@sa
 import React, {createElement, useEffect, useMemo, useRef, useState} from 'react'
 import styled, {css} from 'styled-components'
 import {PaneContent, usePane, usePaneLayout} from '../../../components'
-import {useDocumentPane__LEGACY__STOP__USING} from '../useDocumentPane'
+import {
+  useDocumentPaneActiveViewId,
+  useDocumentPaneDisplayed,
+  useDocumentPaneActions,
+  useDocumentPaneBadges,
+  useDocumentPaneChangesOpen,
+  useDocumentPaneCloseInspector,
+  useDocumentPaneCollapsedFieldSets,
+  useDocumentPaneCollapsedPaths,
+  useDocumentPaneCompareValue,
+  useDocumentPaneConnectionState,
+  useDocumentPaneDocumentId,
+  useDocumentPaneDocumentIdRaw,
+  useDocumentPaneDocumentType,
+  useDocumentPaneEditState,
+  useDocumentPaneFieldActions,
+  useDocumentPaneFocusPath,
+  useDocumentPaneFormState,
+  useDocumentPaneIndex,
+  useDocumentPaneInspectOpen,
+  useDocumentPaneInspector,
+  useDocumentPaneInspectors,
+  useDocumentPaneIsDeleted,
+  useDocumentPaneIsDeleting,
+  useDocumentPaneIsPermissionsLoading,
+  useDocumentPaneMenuItemGroups,
+  useDocumentPaneOnBlur,
+  useDocumentPaneOnChange,
+  useDocumentPaneOnFocus,
+  useDocumentPaneOnHistoryClose,
+  useDocumentPaneOnHistoryOpen,
+  useDocumentPaneOnInspectClose,
+  useDocumentPaneOnMenuAction,
+  useDocumentPaneOnPaneClose,
+  useDocumentPaneOnPaneSplit,
+  useDocumentPaneOnPathOpen,
+  useDocumentPaneOnSetActiveFieldGroup,
+  useDocumentPaneOnSetCollapsedFieldSet,
+  useDocumentPaneOnSetCollapsedPath,
+  useDocumentPaneOpenInspector,
+  useDocumentPanePaneKey,
+  useDocumentPanePermissions,
+  useDocumentPanePreviewUrl,
+  useDocumentPaneReady,
+  useDocumentPaneSchemaType,
+  useDocumentPaneSetIsDeleting,
+  useDocumentPaneSetTimelineMode,
+  useDocumentPaneSetTimelineRange,
+  useDocumentPaneTimelineError,
+  useDocumentPaneTimelineMode,
+  useDocumentPaneTimelineStore,
+  useDocumentPaneTitle,
+  useDocumentPaneUnstableLanguageFilter,
+  useDocumentPaneValidation,
+  useDocumentPaneValue,
+  useDocumentPaneViews,
+} from '../useDocumentPane'
 import {useDeskTool} from '../../../useDeskTool'
 import {DocumentInspectorPanel} from '../documentInspector'
 import {InspectDialog} from '../inspectDialog'
@@ -39,22 +95,21 @@ const Scroller = styled(ScrollContainer)<{$disabled: boolean}>(({$disabled}) => 
 export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
   const {footerHeight, headerHeight, isInspectOpen, rootElement, setDocumentPanelPortalElement} =
     props
-  const {
-    activeViewId,
-    displayed,
-    documentId,
-    editState,
-    inspector,
-    value,
-    views,
-    ready,
-    schemaType,
-    permissions,
-    isPermissionsLoading,
-    isDeleting,
-    isDeleted,
-    timelineStore,
-  } = useDocumentPane__LEGACY__STOP__USING()
+  const activeViewId = useDocumentPaneActiveViewId()
+  const displayed = useDocumentPaneDisplayed()
+  const documentId = useDocumentPaneDocumentId()
+  const editState = useDocumentPaneEditState()
+  const inspector = useDocumentPaneInspector()
+  const value = useDocumentPaneValue()
+  const views = useDocumentPaneViews()
+  const ready = useDocumentPaneReady()
+  const schemaType = useDocumentPaneSchemaType()
+  const permissions = useDocumentPanePermissions()
+  const isPermissionsLoading = useDocumentPaneIsPermissionsLoading()
+  const isDeleting = useDocumentPaneIsDeleting()
+  const isDeleted = useDocumentPaneIsDeleted()
+  const timelineStore = useDocumentPaneTimelineStore()
+
   const {collapsed: layoutCollapsed} = usePaneLayout()
   const {collapsed} = usePane()
   const parentPortal = usePortal()
