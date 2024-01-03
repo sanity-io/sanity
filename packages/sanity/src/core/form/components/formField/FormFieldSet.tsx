@@ -153,7 +153,7 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
     )
   }, [children, collapsed, columns])
 
-  const isDeprecated = Boolean(deprecated?.reason)
+  const isDeprecated = typeof deprecated !== 'undefined'
 
   return (
     <Root
