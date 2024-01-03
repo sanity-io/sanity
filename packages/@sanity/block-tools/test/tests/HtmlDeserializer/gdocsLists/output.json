@@ -66,7 +66,7 @@
     "children": [
       {
         "_type": "span",
-        "marks": [],
+        "marks": ["strike-through"],
         "text": "Level 2",
         "_key": "randomKey40"
       }
@@ -130,7 +130,7 @@
     "children": [
       {
         "_type": "span",
-        "marks": [],
+        "marks": ["strike-through"],
         "text": "Level 2",
         "_key": "randomKey80"
       }
