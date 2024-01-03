@@ -46,7 +46,7 @@ const mockSchema = Schema.compile({
 })
 
 describe('getSearchTypesWithMaxDepth', () => {
-  it('should limit searchable field depth to 4 by default if maxFieldDepth is not set', async () => {
+  it('should limit searchable field depth to 5 levels by default if maxFieldDepth is not set', async () => {
     const searchableTypes = getSearchTypesWithMaxDepth(getSearchableTypes(mockSchema))
 
     expect(searchableTypes[0].__experimental_search).toEqual([
@@ -66,24 +66,28 @@ describe('getSearchTypesWithMaxDepth', () => {
     // expect(result[1].score).toEqual(10)
   })
 
-  it('should limit search fields if maxFieldDepth is set', async () => {
-    const searchableTypesL2 = getSearchTypesWithMaxDepth(getSearchableTypes(mockSchema), 2)
+  it('should limit search fields if maxFieldDepth is set to level 3', async () => {
     const searchableTypesL3 = getSearchTypesWithMaxDepth(getSearchableTypes(mockSchema), 3)
 
-    expect(searchableTypesL2[0].__experimental_search).toEqual([
+    expect(searchableTypesL3[0].__experimental_search).toEqual([
       {path: ['_id'], weight: 1},
       {path: ['_type'], weight: 1},
       {path: ['title'], weight: 10},
     ])
-    expect(searchableTypesL2[1].__experimental_search).toEqual([
+
+    expect(searchableTypesL3[1].__experimental_search).toEqual([
       {path: ['_id'], weight: 1},
       {path: ['_type'], weight: 1},
       {path: ['title'], weight: 10},
       {path: ['nestedObject', 'field1'], weight: 1},
       {path: ['nestedObject', 'field2'], weight: 1},
     ])
+  })
 
-    expect(searchableTypesL3[1].__experimental_search).toEqual([
+  it('should limit search fields if maxFieldDepth is set to level 4', async () => {
+    const searchableTypesL4 = getSearchTypesWithMaxDepth(getSearchableTypes(mockSchema), 4)
+
+    expect(searchableTypesL4[1].__experimental_search).toEqual([
       {path: ['_id'], weight: 1},
       {path: ['_type'], weight: 1},
       {path: ['title'], weight: 10},
