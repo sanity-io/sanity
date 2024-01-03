@@ -1,5 +1,5 @@
-import {Tooltip, Text, Box} from '@sanity/ui'
 import React from 'react'
+import {Tooltip} from '../../../ui-components'
 import {structureLocaleNamespace} from '../../i18n'
 import {useCurrentUser, InsufficientPermissionsMessage, useTranslation} from 'sanity'
 
@@ -31,9 +31,7 @@ export function InsufficientPermissionsMessageTooltip({
     <Tooltip
       content={
         loading ? (
-          <Box padding={2}>
-            <Text>{t('insufficient-permissions-message-tooltip.loading-text')}</Text>
-          </Box>
+          t('insufficient-permissions-message-tooltip.loading-text')
         ) : (
           <InsufficientPermissionsMessage context={context} currentUser={currentUser} />
         )

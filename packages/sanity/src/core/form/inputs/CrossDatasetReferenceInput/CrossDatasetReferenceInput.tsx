@@ -1,21 +1,10 @@
 /* eslint-disable complexity, max-nested-callbacks, no-nested-ternary */
 import React, {useCallback, useMemo, useRef, useState, useId} from 'react'
 import type {CrossDatasetReferenceValue, CrossDatasetReferenceSchemaType} from '@sanity/types'
-import {EllipsisVerticalIcon, ResetIcon as ClearIcon, SyncIcon as ReplaceIcon} from '@sanity/icons'
+import {ResetIcon as ClearIcon, SyncIcon as ReplaceIcon} from '@sanity/icons'
 import {concat, of, type Observable} from 'rxjs'
 import {catchError, distinctUntilChanged, filter, map, scan, switchMap, tap} from 'rxjs/operators'
-import {
-  Box,
-  Button,
-  Card,
-  Flex,
-  Inline,
-  Menu,
-  MenuButton,
-  MenuItem,
-  Stack,
-  useToast,
-} from '@sanity/ui'
+import {Box, Card, Flex, Inline, Menu, Stack, useToast} from '@sanity/ui'
 import {useObservableCallback} from 'react-rx'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
 import type {ObjectInputProps} from '../../types'
@@ -23,6 +12,8 @@ import {set, unset} from '../../patch'
 import {useOnClickOutside} from '../../hooks/useOnClickOutside'
 import {getPublishedId, isNonNullable} from '../../../util'
 import {FIXME} from '../../../FIXME'
+import {MenuButton, MenuItem} from '../../../../ui-components'
+import {ContextMenuButton} from '../../../components/contextMenuButton'
 import {ChangeIndicator} from '../../../changeIndicators'
 import {PreviewCard} from '../../../components'
 import {useDidUpdate} from '../../hooks/useDidUpdate'
@@ -303,7 +294,7 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
                       hit: hit,
                     }))}
                     onFocus={handleAutocompleteFocus}
-                    radius={1}
+                    radius={2}
                     placeholder={t('inputs.reference.search-placeholder')}
                     onKeyDown={handleAutocompleteKeyDown}
                     readOnly={readOnly}
@@ -382,14 +373,7 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
 
                   <Inline paddingX={1}>
                     <MenuButton
-                      button={
-                        <Button
-                          padding={2}
-                          mode="bleed"
-                          icon={EllipsisVerticalIcon}
-                          data-testid="menu-button"
-                        />
-                      }
+                      button={<ContextMenuButton data-testid="menu-button" />}
                       id={`${inputId}-menuButton`}
                       menu={
                         <Menu>

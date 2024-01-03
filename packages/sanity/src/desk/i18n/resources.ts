@@ -117,6 +117,8 @@ const structureLocaleStrings = defineLocalesResources('structure', {
 
   /** The action menu button aria-label */
   'buttons.action-menu-button.aria-label': 'Open document actions',
+  /** The action menu button tooltip */
+  'buttons.action-menu-button.tooltip': 'Document actions',
 
   /** The aria-label for the split pane button on the document panel header */
   'buttons.split-pane-button.aria-label': 'Split pane right',
@@ -278,13 +280,16 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The title of the no document type screen */
   'no-document-types-screen.title': 'No document types',
 
+  /** Text shown on back button visible on smaller breakpoints */
+  'pane-header.back-button.text': 'Back',
   /** tooltip text (via `title` attribute) for the menu button */
   'pane-header.context-menu-button.tooltip': 'Show menu',
   /** Appears in a document list pane header if there are more than one option for create. This is the label for that menu */
   'pane-header.create-menu.label': 'Create',
+  /** Tooltip displayed on the create new button in document lists */
+  'pane-header.create-new-button.tooltip': 'Create new document',
   /** The `aria-label` for the disabled button in the pane header if create permissions are granted */
   'pane-header.disabled-created-button.aria-label': 'Insufficient permissions',
-
   /** The text shown in the tooltip of pane item previews of documents if there are unpublished edits */
   'pane-item.draft-status.has-draft.tooltip': 'Edited <RelativeTime/>',
   /** The text shown in the tooltip of pane item previews of documents if there are no unpublished edits */
@@ -297,7 +302,6 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'pane-item.published-status.has-published.tooltip': 'Published <RelativeTime/>',
   /** The text shown in the tooltip of pane item previews of documents if there are no unpublished edits */
   'pane-item.published-status.no-published.tooltip': 'No unpublished edits',
-
   /** The text used in the document header title if there is an error */
   'panes.document-header-title.error.text': 'Error: {{error}}',
   /** The text used in the document header title if creating a new item */

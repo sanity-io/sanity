@@ -18,7 +18,7 @@ export default function DocumentPermissionStory() {
 
   return (
     <Box padding={4}>
-      <Text size={1} weight="semibold">
+      <Text size={1} weight="medium">
         <code>{`grantsStore.checkDocumentPermission(permissionName: DocumentValuePermission, document: SanityDocument)`}</code>
       </Text>
 

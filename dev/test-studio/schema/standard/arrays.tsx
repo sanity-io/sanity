@@ -126,6 +126,12 @@ export default defineType({
           type: 'object',
           name: 'color',
           title: 'Color with a long title',
+          preview: {
+            select: {
+              title: 'title',
+              subtitle: 'name',
+            },
+          },
           fields: [
             {
               name: 'title',

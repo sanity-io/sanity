@@ -1,6 +1,6 @@
 {
   "name": "design-studio",
-  "version": "3.22.1",
+  "version": "3.23.4",
   "private": true,
   "description": "Sanity Design Studio",
   "keywords": [
@@ -31,11 +31,11 @@
     "start": "../.bin/sanity start --port 4000"
   },
   "dependencies": {
-    "@sanity/icons": "^2.6.0",
-    "@sanity/ui": "^1.9.3",
+    "@sanity/icons": "^2.8.0",
+    "@sanity/ui": "2.0.0-beta.13",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "sanity": "3.22.1",
+    "sanity": "3.23.4",
     "styled-components": "^6.1.0"
   }
 }

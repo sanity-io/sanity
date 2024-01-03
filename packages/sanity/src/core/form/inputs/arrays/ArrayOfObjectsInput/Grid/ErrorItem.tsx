@@ -1,10 +1,12 @@
 import React, {useCallback, useId} from 'react'
-import {EllipsisVerticalIcon, TrashIcon} from '@sanity/icons'
-import {Button, Menu, MenuButton, MenuItem} from '@sanity/ui'
+import {TrashIcon} from '@sanity/icons'
+import {Menu} from '@sanity/ui'
+import {ContextMenuButton} from '../../../../../components/contextMenuButton'
 import {ArrayItemError} from '../../../../store'
 import {useFormCallbacks} from '../../../../studio/contexts/FormCallbacks'
 import {PatchEvent, unset} from '../../../../patch'
 import {CellLayout} from '../../layouts/CellLayout'
+import {MenuButton, MenuItem} from '../../../../../../ui-components'
 import {useTranslation} from '../../../../../i18n'
 import {IncompatibleItemType} from './IncompatibleItemType'
 
@@ -27,7 +29,7 @@ export function ErrorItem(props: {member: ArrayItemError; sortable?: boolean}) {
       style={{height: '100%'}}
       menu={
         <MenuButton
-          button={<Button padding={2} mode="bleed" icon={EllipsisVerticalIcon} />}
+          button={<ContextMenuButton paddingY={3} />}
           id={`${id}-menuButton`}
           menu={
             <Menu>

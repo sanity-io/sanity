@@ -56,7 +56,7 @@ const defaultIsUnique: SlugIsUniqueValidator = (slug, context) => {
     `${atPath} == $slug`,
   ].join(' && ')
 
-  return getClient({apiVersion: '2022-09-09'}).fetch<boolean>(
+  return getClient({apiVersion: '2023-11-13'}).fetch<boolean>(
     `!defined(*[${constraints}][0]._id)`,
     {
       docType,

@@ -1,8 +1,8 @@
 import {PortableTextEditor, usePortableTextEditor} from '@sanity/portable-text-editor'
 import type {ObjectSchemaType, Path, PortableTextObject} from '@sanity/types'
-import {Tooltip} from '@sanity/ui'
 import React, {ComponentType, useCallback, useMemo, useState} from 'react'
 import {isEqual} from '@sanity/util/paths'
+import {Tooltip} from '../../../../../ui-components'
 import {pathToString} from '../../../../field'
 import type {
   BlockAnnotationProps,
@@ -123,7 +123,7 @@ export function Annotation(props: AnnotationProps) {
           placement="bottom"
           portal="default"
           content={
-            <TooltipBox padding={2}>
+            <TooltipBox>
               <Markers
                 markers={markers}
                 renderCustomMarkers={renderCustomMarkers}

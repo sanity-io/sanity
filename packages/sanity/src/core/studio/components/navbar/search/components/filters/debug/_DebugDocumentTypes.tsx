@@ -19,7 +19,7 @@ export function DebugDocumentTypes({filter}: DebugDocumentTypesProps) {
   return (
     <Card borderTop padding={3} tone="transparent">
       <Stack space={2}>
-        <Code size={0} weight="semibold">
+        <Code size={0} weight="medium">
           Document types
         </Code>
         <Code muted size={0} style={{whiteSpace: 'normal'}}>

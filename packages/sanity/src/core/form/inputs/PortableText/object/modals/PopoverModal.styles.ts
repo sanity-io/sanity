@@ -1,12 +1,8 @@
-import {Box, Popover} from '@sanity/ui'
+import {Box} from '@sanity/ui'
 import styled from 'styled-components'
+import {Popover} from '../../../../../../ui-components'
 
 export const RootPopover = styled(Popover)`
-  &[data-popper-reference-hidden='true'] {
-    visibility: hidden;
-    pointer-events: none;
-  }
-
   & > div {
     overflow: hidden;
     overflow: clip;

@@ -13,19 +13,11 @@ import {
   UploadState,
 } from '@sanity/types'
 import {ImageIcon, SearchIcon} from '@sanity/icons'
-import {
-  Box,
-  Button,
-  Card,
-  Menu,
-  MenuButton,
-  MenuItem,
-  ThemeColorToneKey,
-  ToastParams,
-} from '@sanity/ui'
+import {Box, Card, Menu, ThemeColorToneKey, ToastParams} from '@sanity/ui'
 import {SanityClient} from '@sanity/client'
 import {isFileSource} from '@sanity/asset-utils'
 import {WithReferencedAsset} from '../../../utils/WithReferencedAsset'
+import {Button, MenuButton, MenuItem} from '../../../../../ui-components'
 import {Uploader, UploaderResolver, UploadOptions} from '../../../studio/uploads/types'
 import {FileInfo, FileTarget} from '../common/styles'
 import {UploadProgress} from '../common/UploadProgress'
@@ -475,7 +467,7 @@ export class BaseFileInput extends React.PureComponent<BaseFileInputProps, BaseF
     const rejectedFilesCount = hoveringFiles.length - acceptedFiles.length
 
     return (
-      <CardOverlay tone={tone}>
+      <CardOverlay radius={2} tone={tone}>
         <FlexContainer align="center" justify="center" gap={2} flex={1}>
           <PlaceholderText
             readOnly={readOnly}
@@ -502,7 +494,7 @@ export class BaseFileInput extends React.PureComponent<BaseFileInputProps, BaseF
           ref={this.setBrowseButtonElement}
           button={
             <Button
-              mode="ghost"
+              mode="bleed"
               text={t('inputs.file.multi-browse-button.text')}
               data-testid="file-input-multi-browse-button"
               icon={SearchIcon}
@@ -534,10 +526,9 @@ export class BaseFileInput extends React.PureComponent<BaseFileInputProps, BaseF
 
     return (
       <Button
-        fontSize={2}
         text={t('inputs.file.browse-button.text')}
         icon={SearchIcon}
-        mode="ghost"
+        mode="bleed"
         onClick={() => {
           this.setState({isMenuOpen: false})
           this.handleSelectFileFromAssetSource(assetSources[0])
@@ -559,11 +550,13 @@ export class BaseFileInput extends React.PureComponent<BaseFileInputProps, BaseF
     const accept = get(schemaType, 'options.accept', '')
 
     return (
-      <div style={{padding: 1}}>
+      <>
         <Card
           tone={readOnly ? 'transparent' : 'inherit'}
           border
-          padding={3}
+          paddingX={3}
+          paddingY={2}
+          radius={2}
           style={
             hoveringFiles.length === 0
               ? {borderStyle: 'dashed'}
@@ -582,7 +575,7 @@ export class BaseFileInput extends React.PureComponent<BaseFileInputProps, BaseF
             directUploads={directUploads}
           />
         </Card>
-      </div>
+      </>
     )
   }
 

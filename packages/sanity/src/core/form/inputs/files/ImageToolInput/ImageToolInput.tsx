@@ -10,6 +10,7 @@ import {useDidUpdate} from '../../../hooks/useDidUpdate'
 import {ChangeIndicator} from '../../../../changeIndicators'
 import {EMPTY_ARRAY} from '../../../../util'
 import {useTranslation} from '../../../../i18n'
+import {LoadingBlock} from '../../../../components/loadingBlock'
 import {ImageTool, HotspotImage, DEFAULT_CROP, DEFAULT_HOTSPOT} from './imagetool'
 import {useLoadImage} from './useLoadImage'
 
@@ -142,11 +143,10 @@ export function ImageToolInput(props: ImageToolInputProps) {
                       </Text>
                     </Card>
                   ) : (
-                    <Text muted>{t('inputs.imagetool.loading')}</Text>
+                    <LoadingBlock showText />
                   )}
                 </LoadStatus>
               )}
-
               {!isImageLoading && image && (
                 <Box margin={1}>
                   <ImageTool

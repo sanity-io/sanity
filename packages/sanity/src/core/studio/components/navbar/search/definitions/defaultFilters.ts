@@ -2,11 +2,11 @@ import {
   BlockContentIcon,
   CalendarIcon,
   CheckmarkCircleIcon,
+  ChevronDownIcon,
   DocumentIcon,
   ImageIcon,
   LinkIcon,
   NumberIcon,
-  SelectIcon,
   StringIcon,
   UlistIcon,
 } from '@sanity/icons'
@@ -28,7 +28,7 @@ export const filterDefinitions: SearchFilterDefinition[] = [
       {name: 'dateTimeEqual', type: 'item'},
       {name: 'dateTimeNotEqual', type: 'item'},
     ],
-    title: 'Updated at',
+    title: 'Edited at',
     name: 'updatedAt',
     type: 'pinned',
   }),
@@ -301,7 +301,7 @@ export const filterDefinitions: SearchFilterDefinition[] = [
   }),
   defineSearchFilter<SearchOperatorType>({
     fieldType: 'string',
-    icon: SelectIcon,
+    icon: ChevronDownIcon,
     name: 'stringList',
     operators: [
       {name: 'stringListEqual', type: 'item'},

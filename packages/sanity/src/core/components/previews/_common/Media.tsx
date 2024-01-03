@@ -30,7 +30,7 @@ export function Media(props: MediaProps) {
       data-testid="Media"
     >
       {renderMedia({dimensions, layout, media})}
-      {border && <span />}
+      {border && <span data-border />}
     </MediaWrapper>
   )
 }
@@ -52,7 +52,7 @@ function renderMedia(props: {
 
   if (typeof media === 'string') {
     return (
-      <Text as="span" className={styles?.mediaString}>
+      <Text as="span" className={styles?.mediaString} size={1}>
         {media}
       </Text>
     )

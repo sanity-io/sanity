@@ -10,22 +10,15 @@ import React, {
 import type {Reference, ReferenceSchemaType} from '@sanity/types'
 import {
   Box,
-  Button,
   Card,
   CardTone,
   Flex,
   Menu,
-  MenuButton,
   MenuDivider,
-  MenuItem,
   Stack,
+  TooltipDelayGroupProvider,
 } from '@sanity/ui'
-import {
-  EllipsisVerticalIcon,
-  LaunchIcon as OpenInNewTabIcon,
-  SyncIcon as ReplaceIcon,
-  TrashIcon,
-} from '@sanity/icons'
+import {LaunchIcon as OpenInNewTabIcon, SyncIcon as ReplaceIcon, TrashIcon} from '@sanity/icons'
 import type {ObjectFieldProps, RenderPreviewCallback} from '../../types'
 import {FormField} from '../../components'
 import {useScrollIntoViewOnFocusWithin} from '../../hooks/useScrollIntoViewOnFocusWithin'
@@ -35,6 +28,8 @@ import {FieldActionsProvider, FieldActionsResolver} from '../../field'
 import {DocumentFieldActionNode} from '../../../config'
 import {usePublishedId} from '../../contexts/DocumentIdProvider'
 import {useTranslation} from '../../../i18n'
+import {MenuButton, MenuItem, TOOLTIP_DELAY_PROPS} from '../../../../ui-components'
+import {ContextMenuButton} from '../../../components/contextMenuButton'
 import {useReferenceInput} from './useReferenceInput'
 import {useReferenceInfo} from './useReferenceInfo'
 import {PreviewReferenceValue} from './PreviewReferenceValue'
@@ -195,9 +190,9 @@ export function ReferenceField(props: ReferenceFieldProps) {
   const menu = useMemo(
     () =>
       readOnly ? null : (
-        <Box marginLeft={1}>
+        <Box flex="none">
           <MenuButton
-            button={<Button paddingY={3} paddingX={2} mode="bleed" icon={EllipsisVerticalIcon} />}
+            button={<ContextMenuButton paddingY={3} />}
             id={`${inputId}-menuButton`}
             menu={
               <Menu>
@@ -266,33 +261,33 @@ export function ReferenceField(props: ReferenceFieldProps) {
           {isEditing ? (
             <Box>{children}</Box>
           ) : (
-            <Card shadow={1} radius={1} padding={1} tone={tone}>
+            <Card border radius={2} padding={1} tone={tone}>
               <Stack space={1}>
-                <Flex gap={1} align="center">
-                  <ReferenceLinkCard
-                    __unstable_focusRing
-                    as={EditReferenceLink}
-                    data-pressed={pressed ? true : undefined}
-                    data-selected={selected ? true : undefined}
-                    documentId={value?._ref}
-                    documentType={refType?.name}
-                    flex={1}
-                    paddingX={2}
-                    paddingY={1}
-                    pressed={pressed}
-                    radius={2}
-                    ref={elementRef}
-                    selected={selected}
-                    tone="inherit"
-                  >
-                    <PreviewReferenceValue
-                      value={value}
-                      referenceInfo={loadableReferenceInfo}
-                      renderPreview={renderPreview}
-                      type={schemaType}
-                    />
-                  </ReferenceLinkCard>
-                  <Box>{menu}</Box>
+                <Flex gap={1} align="center" style={{lineHeight: 0}}>
+                  <TooltipDelayGroupProvider delay={TOOLTIP_DELAY_PROPS}>
+                    <ReferenceLinkCard
+                      __unstable_focusRing
+                      as={EditReferenceLink}
+                      data-pressed={pressed ? true : undefined}
+                      data-selected={selected ? true : undefined}
+                      documentId={value?._ref}
+                      documentType={refType?.name}
+                      flex={1}
+                      pressed={pressed}
+                      radius={2}
+                      ref={elementRef}
+                      selected={selected}
+                      tone="inherit"
+                    >
+                      <PreviewReferenceValue
+                        value={value}
+                        referenceInfo={loadableReferenceInfo}
+                        renderPreview={renderPreview}
+                        type={schemaType}
+                      />
+                    </ReferenceLinkCard>
+                    <Box>{menu}</Box>
+                  </TooltipDelayGroupProvider>
                 </Flex>
                 {footer}
               </Stack>

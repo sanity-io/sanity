@@ -1,19 +1,10 @@
-import {BinaryDocumentIcon, EllipsisVerticalIcon} from '@sanity/icons'
+import {BinaryDocumentIcon} from '@sanity/icons'
 import React, {ReactNode, useCallback, useEffect, useState} from 'react'
-import {
-  Box,
-  Button,
-  Card,
-  Flex,
-  Menu,
-  Popover,
-  Stack,
-  Text,
-  useClickOutside,
-  useGlobalKeyDown,
-} from '@sanity/ui'
+import {Box, Card, Flex, Menu, Stack, Text, useClickOutside, useGlobalKeyDown} from '@sanity/ui'
 import {formatBytes} from '../../common/helper'
 import {useTranslation} from '../../../../i18n'
+import {Popover} from '../../../../../ui-components'
+import {ContextMenuButton} from '../../../../components/contextMenuButton'
 
 type Props = {
   children: ReactNode
@@ -100,6 +91,7 @@ export function FileActionsMenu(props: Props) {
         onClick={onClick}
         flex={1}
       >
+        {/* todo: consider replacing with <SanityDefaultPreview> */}
         <Flex wrap="nowrap" align="center">
           <Card padding={3} tone="transparent" shadow={1} radius={1}>
             <Text muted={muted}>
@@ -107,7 +99,13 @@ export function FileActionsMenu(props: Props) {
             </Text>
           </Card>
           <Stack flex={1} space={2} marginLeft={3}>
-            <Text size={2} textOverflow="ellipsis" muted={muted} data-testid="file-name">
+            <Text
+              size={1}
+              textOverflow="ellipsis"
+              muted={muted}
+              data-testid="file-name"
+              weight="medium"
+            >
               {originalFilename}
             </Text>
             <Text size={1} muted data-testid="file-size">
@@ -128,12 +126,11 @@ export function FileActionsMenu(props: Props) {
             open={isMenuOpen}
             constrainSize
           >
-            <Button
+            <ContextMenuButton
               aria-label={t('inputs.file.actions-menu.file-options.aria-label')}
               data-testid="options-menu-button"
-              icon={EllipsisVerticalIcon}
-              mode="bleed"
               onClick={handleClick}
+              paddingY={3}
               ref={setOptionsButtonRef}
             />
           </Popover>

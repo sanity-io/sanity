@@ -8,6 +8,12 @@ export const ptAllTheBellsAndWhistlesType = defineType({
   icon: BellIcon,
   name: 'pt_allTheBellsAndWhistles',
   title: 'All the bells & whistles',
+  fieldsets: [
+    {
+      name: 'whitespace',
+      title: 'Whitespace',
+    },
+  ],
   fields: [
     defineField({
       type: 'string',
@@ -171,6 +177,53 @@ export const ptAllTheBellsAndWhistlesType = defineType({
             prepare({title, body}) {
               return {title, body}
             },
+          },
+        }),
+      ],
+    }),
+
+    // Whitespace testing
+    defineField({
+      type: 'array',
+      name: 'whitespacePreserve',
+      title: 'Whitespace: Preserve',
+      fieldset: 'whitespace',
+      of: [
+        defineArrayMember({
+          type: 'block',
+          name: 'block',
+          title: 'Block',
+        }),
+      ],
+    }),
+    defineField({
+      type: 'array',
+      name: 'whitespaceRemove',
+      title: 'Whitespace: remove',
+      fieldset: 'whitespace',
+      of: [
+        defineArrayMember({
+          type: 'block',
+          name: 'block',
+          title: 'Block',
+          options: {
+            unstable_whitespaceOnPasteMode: 'remove',
+          },
+        }),
+      ],
+    }),
+    defineField({
+      type: 'array',
+      name: 'whitespaceNormalize',
+      title: 'Whitespace: Normalize',
+      fieldset: 'whitespace',
+      of: [
+        defineArrayMember({
+          type: 'block',
+          name: 'block',
+          title: 'Block',
+          options: {
+            unstable_whitespaceOnPasteMode: 'normalize',
           },
         }),
       ],

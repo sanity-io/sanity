@@ -65,6 +65,7 @@ const config = {
       {
         ignores: {
           componentPatterns: ['motion$'],
+          attributes: ['animate', 'closed', 'exit', 'fill', 'full', 'initial', 'size'],
         },
       },
     ],
@@ -110,7 +111,7 @@ const config = {
           },
           {
             from: 'sanity/desk__contents',
-            allow: ['sanity', 'sanity/desk__contents', 'sanity/router'],
+            allow: ['sanity', 'sanity/desk__contents', 'sanity/router', 'sanity/_internal'],
           },
           {
             // export
@@ -229,6 +230,43 @@ const config = {
         'i18next/no-literal-string': 'off',
         '@sanity/i18n/no-attribute-string-literals': 'off',
         '@sanity/i18n/no-attribute-template-literals': 'off',
+      },
+    },
+
+    // Prefer local components vs certain @sanity/ui imports (in sanity package)
+    {
+      files: ['packages/sanity/**'],
+      rules: {
+        'no-restricted-imports': [
+          'error',
+          {
+            paths: [
+              {
+                name: '@sanity/ui',
+                importNames: [
+                  'Button',
+                  'ButtonProps',
+                  'Dialog',
+                  'DialogProps',
+                  'MenuButton',
+                  'MenuButtonProps',
+                  'MenuGroup',
+                  'MenuGroupProps',
+                  'MenuItem',
+                  'MenuItemProps',
+                  'Popover',
+                  'PopoverProps',
+                  'Tab',
+                  'TabProps',
+                  'Tooltip',
+                  'TooltipProps',
+                ],
+                message:
+                  'Please use the (more opinionated) exported components in sanity/src/ui-components instead.',
+              },
+            ],
+          },
+        ],
       },
     },
   ],

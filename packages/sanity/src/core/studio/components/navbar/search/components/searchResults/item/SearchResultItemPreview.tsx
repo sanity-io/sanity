@@ -1,9 +1,11 @@
 import type {SanityDocument} from '@sanity/client'
 import type {SchemaType} from '@sanity/types'
-import {Box, Inline, Label} from '@sanity/ui'
+import {Badge, Box, Flex} from '@sanity/ui'
 import React, {useMemo} from 'react'
 import {useMemoObservable} from 'react-rx'
 import styled from 'styled-components'
+import {DocumentStatus} from '../../../../../../../components/documentStatus'
+import {DocumentStatusIndicator} from '../../../../../../../components/documentStatusIndicator'
 import {DocumentPreviewPresence} from '../../../../../../../presence'
 import {
   getPreviewStateObservable,
@@ -11,9 +13,11 @@ import {
   SanityDefaultPreview,
 } from '../../../../../../../preview'
 import {DocumentPresence, useDocumentPreviewStore} from '../../../../../../../store'
+import {GeneralPreviewLayoutKey} from '../../../../../../../components'
 
 interface SearchResultItemPreviewProps {
   documentId: string
+  layout?: GeneralPreviewLayoutKey
   presence?: DocumentPresence[]
   schemaType: SchemaType
 }
@@ -30,12 +34,9 @@ const SearchResultItemPreviewBox = styled(Box)`
   }
 `
 
-const TypeLabel = styled(Label)`
-  max-width: 150px;
-`
-
 export default function SearchResultItemPreview({
   documentId,
+  layout,
   presence,
   schemaType,
 }: SearchResultItemPreviewProps) {
@@ -58,14 +59,15 @@ export default function SearchResultItemPreview({
   const status = useMemo(() => {
     if (isLoading) return null
     return (
-      <Inline space={3}>
+      <Flex align="center" gap={3}>
         {presence && presence.length > 0 && <DocumentPreviewPresence presence={presence} />}
-        <TypeLabel size={0} muted textOverflow="ellipsis">
-          {schemaType.title}
-        </TypeLabel>
-      </Inline>
+        <Badge>{schemaType.title}</Badge>
+        <DocumentStatusIndicator draft={draft} published={published} />
+      </Flex>
     )
-  }, [isLoading, presence, schemaType.title])
+  }, [draft, isLoading, presence, published, schemaType.title])
+
+  const tooltip = <DocumentStatus draft={draft} published={published} />
 
   return (
     <SearchResultItemPreviewBox>
@@ -76,9 +78,10 @@ export default function SearchResultItemPreview({
           value: sanityDocument,
         })}
         isPlaceholder={isLoading ?? true}
-        layout="default"
+        layout={layout || 'default'}
         icon={schemaType.icon}
         status={status}
+        tooltip={tooltip}
       />
     </SearchResultItemPreviewBox>
   )

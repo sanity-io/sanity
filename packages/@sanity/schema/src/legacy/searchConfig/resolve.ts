@@ -1,6 +1,16 @@
-import {uniqBy} from 'lodash'
+import {uniqBy, isFinite} from 'lodash'
 
-const stringFieldsSymbol = Symbol('__cachedStringFields')
+export const DEFAULT_MAX_FIELD_DEPTH = 5
+
+const stringFieldsSymbols = {}
+
+const getStringFieldSymbol = (maxDepth: number) => {
+  if (!stringFieldsSymbols[maxDepth]) {
+    stringFieldsSymbols[maxDepth] = Symbol(`__cachedStringFields_${maxDepth}`)
+  }
+
+  return stringFieldsSymbols[maxDepth]
+}
 
 const isReference = (type) => type.type && type.type.name === 'reference'
 
@@ -61,29 +71,47 @@ const PREVIEW_FIELD_WEIGHT_MAP = {
 /**
  * @internal
  */
-export function deriveFromPreview(type: {
-  preview: {select: Record<string, string>}
-}): {weight?: number; path: (string | number)[]}[] {
+export function deriveFromPreview(
+  type: {
+    preview: {select: Record<string, string>}
+  },
+  maxDepth: number,
+): {weight?: number; path: (string | number)[]}[] {
   const select = type?.preview?.select
 
   if (!select) {
     return []
   }
 
-  return Object.keys(select)
-    .filter((fieldName) => fieldName in PREVIEW_FIELD_WEIGHT_MAP)
-    .map((fieldName) => ({
+  const fields: {weight: number; path: (string | number)[]}[] = []
+
+  for (const fieldName of Object.keys(select)) {
+    if (!(fieldName in PREVIEW_FIELD_WEIGHT_MAP)) {
+      continue
+    }
+
+    const path = select[fieldName].split('.')
+
+    if (maxDepth > -1 && path.length - 1 > maxDepth) {
+      continue
+    }
+
+    fields.push({
       weight: PREVIEW_FIELD_WEIGHT_MAP[fieldName],
-      path: select[fieldName].split('.'),
-    }))
+      path,
+    })
+  }
+
+  return fields
 }
 
-function getCachedStringFieldPaths(type, maxDepth) {
-  if (!type[stringFieldsSymbol]) {
-    type[stringFieldsSymbol] = uniqBy(
+function getCachedStringFieldPaths(type, maxDepth: number) {
+  const symbol = getStringFieldSymbol(maxDepth)
+  if (!type[symbol]) {
+    type[symbol] = uniqBy(
       [
         ...BASE_WEIGHTS,
-        ...deriveFromPreview(type),
+        ...deriveFromPreview(type, maxDepth),
         ...getStringFieldPaths(type, maxDepth).map((path) => ({weight: 1, path})),
         ...getPortableTextFieldPaths(type, maxDepth).map((path) => ({
           weight: 1,
@@ -94,19 +122,20 @@ function getCachedStringFieldPaths(type, maxDepth) {
       (spec) => spec.path.join('.'),
     )
   }
-  return type[stringFieldsSymbol]
+  return type[symbol]
 }
 
-function getCachedBaseFieldPaths(type) {
-  if (!type[stringFieldsSymbol]) {
-    type[stringFieldsSymbol] = uniqBy([...BASE_WEIGHTS, ...deriveFromPreview(type)], (spec) =>
+function getCachedBaseFieldPaths(type, maxDepth: number) {
+  const symbol = getStringFieldSymbol(maxDepth)
+  if (!type[symbol]) {
+    type[symbol] = uniqBy([...BASE_WEIGHTS, ...deriveFromPreview(type, maxDepth)], (spec) =>
       spec.path.join('.'),
     )
   }
-  return type[stringFieldsSymbol]
+  return type[symbol]
 }
 
-function getStringFieldPaths(type, maxDepth) {
+function getStringFieldPaths(type, maxDepth: number) {
   const reducer = (accumulator, childType, path) =>
     childType.jsonType === 'string' ? [...accumulator, path] : accumulator
 
@@ -120,10 +149,27 @@ function getPortableTextFieldPaths(type, maxDepth) {
   return reduceType(type, reducer, [], [], maxDepth)
 }
 
-export function resolveSearchConfigForBaseFieldPaths(type) {
-  return getCachedBaseFieldPaths(type)
+export function resolveSearchConfigForBaseFieldPaths(type, maxDepth?: number) {
+  return getCachedBaseFieldPaths(type, normalizeMaxDepth(maxDepth))
 }
 
-export default function resolveSearchConfig(type) {
-  return getCachedStringFieldPaths(type, 4)
+/**
+ * @internal
+ */
+export function resolveSearchConfig(type, maxDepth?: number) {
+  return getCachedStringFieldPaths(type, normalizeMaxDepth(maxDepth))
+}
+
+/**
+ * Normalizes a one-indexed maxDepth to a zero-indexed maxDepth
+ * 0 = all fields
+ *
+ * @internal
+ */
+function normalizeMaxDepth(maxDepth?: number) {
+  if (!isFinite(maxDepth) || maxDepth < 1 || maxDepth > DEFAULT_MAX_FIELD_DEPTH) {
+    return DEFAULT_MAX_FIELD_DEPTH - 1
+  }
+
+  return maxDepth - 1
 }

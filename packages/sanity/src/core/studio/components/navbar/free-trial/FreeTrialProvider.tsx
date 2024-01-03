@@ -1,4 +1,4 @@
-import {useCallback, useEffect, useState} from 'react'
+import React, {useCallback, useEffect, useState} from 'react'
 import {useClient} from '../../../../hooks'
 import {SANITY_VERSION} from '../../../../version'
 import {supportsLocalStorage} from '../../../../util/supportsLocalStorage'

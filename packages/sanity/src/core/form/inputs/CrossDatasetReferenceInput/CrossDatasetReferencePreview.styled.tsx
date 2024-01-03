@@ -7,8 +7,3 @@ export const StyledPreviewFlex = styled(Flex)`
   there's probably better ways of solving this */
   min-height: 36px;
 `
-
-export const TooltipContent = styled(Flex)`
-  /* This limits the width of the tooltip content */
-  max-width: 250px;
-`

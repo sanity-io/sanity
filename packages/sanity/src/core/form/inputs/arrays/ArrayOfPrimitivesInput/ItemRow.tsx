@@ -1,13 +1,15 @@
 import React, {useCallback, useMemo} from 'react'
-import {Box, Button, Flex, Menu, MenuButton, MenuItem} from '@sanity/ui'
+import {Box, Flex, Menu} from '@sanity/ui'
 import {SchemaType} from '@sanity/types'
-import {CopyIcon as DuplicateIcon, EllipsisVerticalIcon, TrashIcon} from '@sanity/icons'
+import {CopyIcon as DuplicateIcon, TrashIcon} from '@sanity/icons'
 import {FormFieldValidationStatus} from '../../../components/formField'
 import {InsertMenu} from '../ArrayOfObjectsInput/InsertMenu'
 import {useTranslation} from '../../../../i18n'
 import {PrimitiveItemProps} from '../../../types/itemProps'
 import {RowLayout} from '../layouts/RowLayout'
 import {FieldPresence} from '../../../../presence'
+import {MenuButton, MenuItem} from '../../../../../ui-components'
+import {ContextMenuButton} from '../../../../components/contextMenuButton'
 import {getEmptyValue} from './getEmptyValue'
 
 export type DefaultItemProps = Omit<PrimitiveItemProps, 'renderDefault'> & {
@@ -64,7 +66,7 @@ export const ItemRow = React.forwardRef(function ItemRow(
 
   const menu = (
     <MenuButton
-      button={<Button padding={2} mode="bleed" icon={EllipsisVerticalIcon} />}
+      button={<ContextMenuButton paddingY={3} />}
       id={`${inputId}-menuButton`}
       popover={MENU_BUTTON_POPOVER_PROPS}
       menu={
@@ -94,7 +96,7 @@ export const ItemRow = React.forwardRef(function ItemRow(
       presence={presence.length === 0 ? null : <FieldPresence presence={presence} maxAvatars={1} />}
       validation={
         validation.length > 0 ? (
-          <Box marginLeft={1} paddingX={1} paddingY={3}>
+          <Box paddingX={1} paddingY={3}>
             <FormFieldValidationStatus validation={validation} />
           </Box>
         ) : null

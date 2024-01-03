@@ -1,7 +1,8 @@
 import React, {useEffect} from 'react'
-import {Flex, Text, Button, Inline, Card} from '@sanity/ui'
+import {Flex, Text, Inline, Card} from '@sanity/ui'
 import {UploadState} from '@sanity/types'
 import {LinearProgress} from '../../../../components'
+import {Button} from '../../../../../ui-components'
 import {Translate, useTranslation} from '../../../../i18n'
 import {STALE_UPLOAD_MS} from '../constants'
 import {CardWrapper, FlexWrapper, LeftSection, CodeWrapper} from './UploadProgress.styled'
@@ -42,18 +43,17 @@ export function UploadProgress({uploadState, onCancel, onStale, height}: Props) 
             </Text>
           </Flex>
 
-          <Card marginTop={3} radius={5} shadow={1}>
+          <Card border marginTop={3} radius={5}>
             <LinearProgress value={uploadState.progress} />
           </Card>
         </LeftSection>
 
         {onCancel ? (
           <Button
-            fontSize={2}
-            text={t('input.files.common.cancel-upload')}
             mode="ghost"
-            tone="critical"
             onClick={onCancel}
+            text={t('input.files.common.cancel-upload')}
+            tone="critical"
           />
         ) : null}
       </FlexWrapper>

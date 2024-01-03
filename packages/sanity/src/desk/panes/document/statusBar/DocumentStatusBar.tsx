@@ -1,39 +1,67 @@
-import React, {useMemo} from 'react'
-import styled from 'styled-components'
-import {Box, Flex} from '@sanity/ui'
+import React, {useCallback, useState} from 'react'
+import {Flex} from '@sanity/ui'
+import {SpacerButton} from '../../../components/spacerButton'
 import {useDocumentPane} from '../useDocumentPane'
 import {DocumentStatusBarActions, HistoryStatusBarActions} from './DocumentStatusBarActions'
-import {DocumentSparkline} from './sparkline/DocumentSparkline'
+import {useResizeObserver} from './useResizeObserver'
+import {DocumentBadges} from './DocumentBadges'
+import {DocumentStatusLine} from './DocumentStatusLine'
 import {useTimelineSelector} from 'sanity'
 
 export interface DocumentStatusBarProps {
   actionsBoxRef?: React.Ref<HTMLDivElement>
 }
 
-const DocumentActionsBox = styled(Box)`
-  min-width: 10em;
-  max-width: 16em;
-`
+const CONTAINER_BREAKPOINT = 480 // px
 
 export function DocumentStatusBar(props: DocumentStatusBarProps) {
   const {actionsBoxRef} = props
-  const {badges, timelineStore} = useDocumentPane()
+  const {editState, timelineStore} = useDocumentPane()
 
   // Subscribe to external timeline state changes
   const showingRevision = useTimelineSelector(timelineStore, (state) => state.onOlderRevision)
 
-  return useMemo(
-    () => (
-      <Box paddingLeft={2} paddingRight={[2, 3]} paddingY={2}>
-        <Flex align="center">
-          <Box flex={[1, 2]}>{badges && <DocumentSparkline />}</Box>
+  const [collapsed, setCollapsed] = useState<boolean | null>(null)
+  const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
 
-          <DocumentActionsBox flex={1} marginLeft={[1, 3]} ref={actionsBoxRef}>
+  const handleResize = useCallback((event: ResizeObserverEntry) => {
+    setCollapsed(event.contentRect.width < CONTAINER_BREAKPOINT)
+  }, [])
+
+  useResizeObserver({element: rootElement, onResize: handleResize})
+
+  const shouldRender = editState?.ready && typeof collapsed === 'boolean'
+
+  return (
+    <Flex direction="column" ref={setRootElement} sizing="border">
+      {shouldRender && (
+        <Flex
+          align="stretch"
+          gap={1}
+          justify="space-between"
+          paddingY={2}
+          paddingLeft={4}
+          paddingRight={3}
+        >
+          <Flex align="center" flex={1} gap={collapsed ? 2 : 3} wrap="wrap" paddingRight={3}>
+            <Flex align="center">
+              <DocumentStatusLine singleLine={!collapsed} />
+              <SpacerButton size="large" />
+            </Flex>
+            <DocumentBadges />
+          </Flex>
+
+          <Flex
+            align="flex-start"
+            justify="flex-end"
+            ref={actionsBoxRef}
+            style={{flexShrink: 0, marginLeft: 'auto'}}
+          >
+            <SpacerButton size="large" />
             {showingRevision ? <HistoryStatusBarActions /> : <DocumentStatusBarActions />}
-          </DocumentActionsBox>
+          </Flex>
         </Flex>
-      </Box>
-    ),
-    [actionsBoxRef, badges, showingRevision],
+      )}
+    </Flex>
   )
 }

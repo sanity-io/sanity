@@ -8,7 +8,7 @@ import React, {
 } from 'react'
 import {concat, Observable, of} from 'rxjs'
 import {catchError, filter, map, scan, switchMap, tap} from 'rxjs/operators'
-import {Box, Button, Stack, Text, useToast} from '@sanity/ui'
+import {Box, Stack, Text, useToast} from '@sanity/ui'
 import {useObservableCallback} from 'react-rx'
 import {uuid} from '@sanity/uuid'
 import styled from 'styled-components'
@@ -18,6 +18,7 @@ import {PreviewCard} from '../../../components'
 import {getPublishedId, isNonNullable} from '../../../util'
 import {useDidUpdate} from '../../hooks/useDidUpdate'
 import {useOnClickOutside} from '../../hooks/useOnClickOutside'
+import {Button} from '../../../../ui-components'
 import {Translate, useTranslation} from '../../../i18n'
 import {useReferenceInput} from './useReferenceInput'
 import type {
@@ -213,14 +214,12 @@ export function ReferenceInput(props: ReferenceInputProps) {
 
       return (
         <StyledPreviewCard forwardedAs="button" type="button" radius={2} tone="inherit">
-          <Box paddingX={3} paddingY={1}>
-            <OptionPreview
-              getReferenceInfo={getReferenceInfo}
-              id={documentId}
-              renderPreview={renderPreview}
-              type={schemaType}
-            />
-          </Box>
+          <OptionPreview
+            getReferenceInfo={getReferenceInfo}
+            id={documentId}
+            renderPreview={renderPreview}
+            type={schemaType}
+          />
         </StyledPreviewCard>
       )
     },
@@ -323,7 +322,7 @@ export function ReferenceInput(props: ReferenceInputProps) {
             loading={searchState.isLoading}
             referenceElement={autocompletePopoverReferenceElementRef.current}
             options={hits}
-            radius={1}
+            radius={2}
             placeholder={t('inputs.reference.search-placeholder')}
             onKeyDown={handleAutocompleteKeyDown}
             readOnly={loadableReferenceInfo.isLoading || readOnly}

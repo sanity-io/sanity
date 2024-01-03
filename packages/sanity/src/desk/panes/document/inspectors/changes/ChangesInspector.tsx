@@ -5,7 +5,6 @@ import styled from 'styled-components'
 import {TimelineMenu} from '../../timeline'
 import {useDocumentPane} from '../../useDocumentPane'
 import {DocumentInspectorHeader} from '../../documentInspector'
-import {LoadingContent} from './LoadingContent'
 import {collectLatestAuthorAnnotations} from './helpers'
 import {
   ChangeFieldWrapper,
@@ -20,6 +19,7 @@ import {
   UserAvatar,
   useTimelineSelector,
   useTranslation,
+  LoadingBlock,
 } from 'sanity'
 
 const Scroller = styled(ScrollContainer)`
@@ -130,7 +130,7 @@ function Content({
   }
 
   if (loading) {
-    return <LoadingContent />
+    return <LoadingBlock showText />
   }
 
   if (!diff) {

@@ -1,20 +1,11 @@
-import {
-  Box,
-  Button,
-  Card,
-  CardTone,
-  Flex,
-  Menu,
-  MenuButton,
-  MenuItem,
-  Spinner,
-  Text,
-} from '@sanity/ui'
+import {Box, Card, CardTone, Menu} from '@sanity/ui'
 import React, {useCallback, useMemo, useRef} from 'react'
 import {SchemaType} from '@sanity/types'
-import {CopyIcon as DuplicateIcon, EllipsisVerticalIcon, TrashIcon} from '@sanity/icons'
+import {CopyIcon as DuplicateIcon, TrashIcon} from '@sanity/icons'
 import styled from 'styled-components'
 import {getSchemaTypeTitle} from '../../../../../schema'
+import {MenuButton, MenuItem} from '../../../../../../ui-components'
+import {ContextMenuButton} from '../../../../../components/contextMenuButton'
 import {ObjectItem, ObjectItemProps} from '../../../../types'
 import {useScrollIntoViewOnFocusWithin} from '../../../../hooks/useScrollIntoViewOnFocusWithin'
 import {useDidUpdate} from '../../../../hooks/useDidUpdate'
@@ -29,6 +20,7 @@ import {createProtoArrayValue} from '../createProtoArrayValue'
 import {InsertMenu} from '../InsertMenu'
 import {FIXME} from '../../../../../FIXME'
 import {EditPortal} from '../../../../components/EditPortal'
+import {LoadingBlock} from '../../../../../components/loadingBlock'
 import {useTranslation} from '../../../../../i18n'
 
 type GridItemProps<Item extends ObjectItem> = Omit<ObjectItemProps<Item>, 'renderDefault'>
@@ -68,13 +60,6 @@ function getTone({
   return hasWarnings ? 'caution' : 'default'
 }
 const MENU_POPOVER_PROPS = {portal: true, tone: 'default'} as const
-const INITIAL_VALUE_CARD_STYLE = {
-  position: 'absolute',
-  top: 0,
-  left: 0,
-  bottom: 0,
-  right: 0,
-} as const
 
 export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemProps<Item>) {
   const {
@@ -140,7 +125,7 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
   const childValidation = useChildValidation(path, true)
   const validation = useMemo(() => {
     return childValidation.length === 0 ? null : (
-      <Box marginLeft={1} paddingX={1} paddingY={3}>
+      <Box paddingX={1} paddingY={3}>
         <FormFieldValidationStatus validation={childValidation} __unstable_showSummary />
       </Box>
     )
@@ -153,7 +138,7 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
     () =>
       readOnly ? null : (
         <MenuButton
-          button={<Button padding={2} mode="bleed" icon={EllipsisVerticalIcon} />}
+          button={<ContextMenuButton paddingY={3} />}
           id={`${props.inputId}-menuButton`}
           menu={
             <Menu>
@@ -213,18 +198,8 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
           withBorder: false,
           withShadow: false,
         })}
-        {resolvingInitialValue && (
-          <Card as={Flex} style={INITIAL_VALUE_CARD_STYLE}>
-            <Flex align="center" justify="center" gap={1} padding={1}>
-              <Box padding={3}>
-                <Spinner muted />
-              </Box>
-              <Text muted size={1}>
-                {t('inputs.array.resolving-initial-value')}
-              </Text>
-            </Flex>
-          </Card>
-        )}
+
+        {resolvingInitialValue && <LoadingBlock fill />}
       </PreviewCard>
     </CellLayout>
   )

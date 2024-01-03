@@ -141,7 +141,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Label for selecting an hour preset. Receives a `time` param as a string on hh:mm format and a `date` param as a Date instance denoting the preset date */
   'calendar.action.set-to-time-preset': '{{time}} on {{date, datetime}}',
   /** Error message displayed in calendar when entered date is not the correct format */
-  'calendar.error.must-be-in-format': 'Must be in the format <Emphasis>{{exampleDate}}</Emphasis>',
+  'calendar.error.must-be-in-format': 'Must be in the format: {{exampleDate}}',
   /** Month name for April */
   'calendar.month-names.april': 'April',
   /** Month name for August */
@@ -300,6 +300,24 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Title for the Review Changes pane */
   'changes.title': 'Review changes',
 
+  /** --- Common components --- */
+  /** Tooltip text for context menu buttons */
+  'common.context-menu-button.tooltip': 'Show more',
+
+  /** Default text for dialog cancel button */
+  'common.dialog.cancel-button.text': 'Cancel',
+
+  /** Default text for dialog confirm button */
+  'common.dialog.confirm-button.text': 'Confirm',
+
+  /** Default text in shared loader text / spinner lockup */
+  'common.loading': 'Loading',
+
+  /** --- Configuration issues --- */
+
+  /** Tooltip displayed on configuration issues button */
+  'configuration-issues.button.tooltip': 'Found configuration issues',
+
   /** The fallback title for an ordering menu item if no localized titles are provided. */
   'default-menu-item.fallback-title': 'Sort by {{title}}',
 
@@ -317,6 +335,13 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'default-orderings.name': 'Sort by Name',
   /** Title for the default ordering/SortOrder if no orderings are provided and the title field is found */
   'default-orderings.title': 'Sort by Title',
+
+  /** Label to show in the document footer indicating the last edited date of the document */
+  'document-status.edited': 'Edited {{date}}',
+  /** Label to show in the document footer indicating the document is not published*/
+  'document-status.not-published': 'Not published',
+  /** Label to show in the document footer indicating the published date of the document */
+  'document-status.published': 'Published {{date}}',
 
   /** The value of the <code>_key</code> property must be a unique string. */
   'form.error.duplicate-keys-alert.details.additional-description':
@@ -428,6 +453,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
    * eg. will prompt the user to select a type once triggered
    */
   'inputs.array.action.add-item-select-type': 'Add item...',
+  /** Array drag handle button tooltip */
+  'inputs.array.action.drag.tooltip': 'Drag to re-order',
   /** Label for duplicating an array item  */
   'inputs.array.action.duplicate': 'Duplicate',
   /** Label for editing the item of a specific type, eg "Edit Person" */
@@ -579,12 +606,10 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
     'Adjust the rectangle to crop image. Adjust the circle to specify the area that should always be visible.',
   /** Error: `{{errorMessage}}` */
   'inputs.imagetool.load-error': 'Error: {{errorMessage}}',
-  /** Loading image… */
-  'inputs.imagetool.loading': 'Loading image…',
   /** Hotspot & Crop */
   'inputs.imagetool.title': 'Hotspot & Crop',
-  /** Convert to <code>`{{targetType}}`</code> */
-  'inputs.invalid-value.convert-button.text': 'Convert to <code>{{targetType}}</code>',
+  /** Convert to `{{targetType}}` */
+  'inputs.invalid-value.convert-button.text': 'Convert to {{targetType}}',
   /** The current value (<code>`{{actualType}}`</code>) */
   'inputs.invalid-value.current-type': 'The current value (<code>{{actualType}}</code>)',
   /** The property value is stored as a value type that does not match the expected type. */
@@ -797,9 +822,9 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Label for action to clear the current value of the reference field */
   'inputs.reference.action.clear': 'Clear',
   /** Label for action to create a new document from the reference input */
-  'inputs.reference.action.create-new-document': 'Create new',
+  'inputs.reference.action.create-new-document': 'Create',
   /** Label for action to create a new document from the reference input, when there are multiple templates or document types to choose from */
-  'inputs.reference.action.create-new-document-select': 'Create new…',
+  'inputs.reference.action.create-new-document-select': 'Create…',
   /** Label for action to duplicate the current item to a new item (used within arrays) */
   'inputs.reference.action.duplicate': 'Duplicate',
   /** Label for action that opens the referenced document in a new tab */
@@ -925,8 +950,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'inputs.tags.placeholder': 'Enter tag and press ENTER…',
   /** Placeholder for an empty tag input on touch devices */
   'inputs.tags.placeholder_touch': 'Enter tag…',
-  /** Convert to <code>`{{targetType}}`</code> */
-  'inputs.untyped-value.convert-button.text': 'Convert to <code>{{targetType}}</code>',
+  /** Convert to `{{targetType}}` */
+  'inputs.untyped-value.convert-button.text': 'Convert to {{targetType}}',
   /** Encountered an object value without a <code>_type</code> property. */
   'inputs.untyped-value.description':
     'Encountered an object value without a <code>_type</code> property.',
@@ -983,6 +1008,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** Unexpected error: `{{error}}` */
   'member-field-error.unexpected-error': 'Unexpected error: {{error}}',
 
+  /** Button label for "Create new document" button */
+  'new-document.button': 'Create',
   /**
    * Tooltip message displayed when hovering/activating the "Create new document" action,
    * when there are templates/types available for creation
@@ -1073,6 +1100,14 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'search.action.toggle-filters-aria-label_hide': 'Hide filters',
   /** Accessibility label for when the search is full screen (on narrow screens) and you want to show filters */
   'search.action.toggle-filters-aria-label_show': 'Show filters',
+  /** Label for when the search is full screen (on narrow screens) and you want to hide filters */
+  'search.action.toggle-filters-label_hide': 'Hide filters',
+  /** Label for when the search is full screen (on narrow screens) and you want to show filters */
+  'search.action.toggle-filters-label_show': 'Show filters',
+
+  /** Tooltip text for the global search button */
+  'search.button.tooltip': 'Search',
+
   /**
    * A list of provided types (use `list` formatter preferably).
    */
@@ -1573,7 +1608,6 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'user-menu.locale-title': 'Language',
   /** Label for tooltip to show which provider the currently logged in user is using */
   'user-menu.login-provider': 'Signed in with {{providerTitle}}',
-
   /**
    * Label for action to add a workspace (currently a developer-oriented action, as this will
    * lead to the documentation on workspace configuration)

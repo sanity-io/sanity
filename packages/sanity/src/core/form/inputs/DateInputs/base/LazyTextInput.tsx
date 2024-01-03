@@ -1,17 +1,5 @@
-import React from 'react'
-import {TextInput} from '@sanity/ui'
-
-type TextInputProps = React.ComponentProps<typeof TextInput>
-
-// todo: delete this when v0.34 of @sanity/ui is out
-type Workaround = any
-
-type Props = Workaround &
-  Omit<TextInputProps, 'onChange'> & {
-    onChange?: (
-      event: React.FocusEvent<HTMLInputElement> | React.ChangeEvent<HTMLInputElement>,
-    ) => void
-  }
+import React, {ChangeEvent, FocusEvent, HTMLProps, SyntheticEvent} from 'react'
+import {TextInput, TextInputProps} from '@sanity/ui'
 
 /**
  * A TextInput that only emit onChange when it has to
@@ -19,17 +7,17 @@ type Props = Workaround &
  * field (e.g. onBlur) and the input value at this time is different from the given `value` prop
  */
 export const LazyTextInput = React.forwardRef(function LazyTextInput(
-  {onChange, onBlur, onKeyPress, value, ...rest}: Props,
+  {onChange, onBlur, onKeyPress, value, ...rest}: TextInputProps & HTMLProps<HTMLInputElement>,
   forwardedRef: React.ForwardedRef<HTMLInputElement>,
 ) {
   const [inputValue, setInputValue] = React.useState<string>()
 
-  const handleChange = React.useCallback((event: any) => {
+  const handleChange = React.useCallback((event: ChangeEvent<HTMLInputElement>) => {
     setInputValue(event.currentTarget.value)
   }, [])
 
   const checkEvent = React.useCallback(
-    (event: any) => {
+    (event: SyntheticEvent<HTMLInputElement>) => {
       const currentValue = event.currentTarget.value
       if (currentValue !== `${value}`) {
         if (onChange) {
@@ -42,7 +30,7 @@ export const LazyTextInput = React.forwardRef(function LazyTextInput(
   )
 
   const handleBlur = React.useCallback(
-    (e: any) => {
+    (e: FocusEvent<HTMLInputElement>) => {
       checkEvent(e)
       if (onBlur) {
         onBlur(e)

@@ -16,22 +16,11 @@ const Link = styled.a`
 const FooterCard = styled(Card)({
   position: 'relative',
   zIndex: 1,
-
-  '&:after': {
-    content: '""',
-    display: 'block',
-    position: 'absolute',
-    left: 0,
-    top: -1,
-    right: 0,
-    borderBottom: '1px solid var(--card-border-color)',
-    opacity: 0.5,
-  },
 })
 
 export function CommentsInspectorFeedbackFooter() {
   return (
-    <FooterCard padding={3}>
+    <FooterCard padding={4}>
       <Text muted size={1}>
         Help improve comments.{' '}
         <Link href={FEEDBACK_FORM_LINK} target="_blank" rel="noreferrer">

@@ -7,12 +7,14 @@ import React, {
   ElementType,
   isValidElement,
   ReactElement,
+  ReactNode,
   useCallback,
   useMemo,
 } from 'react'
 import {isValidElementType} from 'react-is'
 import {SanityImageSource} from '@sanity/image-url/lib/types/types'
 import {isImageSource} from '@sanity/asset-utils'
+import {Tooltip} from '../../../ui-components'
 import {PreviewProps} from '../../components/previews'
 import {useClient} from '../../hooks'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
@@ -27,6 +29,7 @@ function FallbackIcon() {
 export interface SanityDefaultPreviewProps extends Omit<PreviewProps, 'renderDefault'> {
   error?: Error | null
   icon?: ElementType | false
+  tooltip?: ReactNode
 }
 
 /**
@@ -34,7 +37,7 @@ export interface SanityDefaultPreviewProps extends Omit<PreviewProps, 'renderDef
  * @internal
  * */
 export function SanityDefaultPreview(props: SanityDefaultPreviewProps): ReactElement {
-  const {icon, layout, media: mediaProp, imageUrl, title, ...restProps} = props
+  const {icon, layout, media: mediaProp, imageUrl, title, tooltip, ...restProps} = props
 
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const imageBuilder = useMemo(() => imageUrlBuilder(client), [client])
@@ -118,8 +121,24 @@ export function SanityDefaultPreview(props: SanityDefaultPreviewProps): ReactEle
 
   const layoutComponent = _previewComponents[layout || 'default']
 
-  return createElement(
+  const children = createElement(
     layoutComponent as ComponentType<Omit<PreviewProps, 'renderDefault'>>,
     previewProps,
   )
+
+  if (tooltip) {
+    return (
+      <Tooltip
+        content={tooltip}
+        disabled={!tooltip}
+        fallbackPlacements={['top-end']}
+        placement="bottom-end"
+      >
+        {/* Currently tooltips won't trigger without a wrapping element */}
+        <div>{children}</div>
+      </Tooltip>
+    )
+  }
+
+  return children
 }

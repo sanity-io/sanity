@@ -1,21 +1,8 @@
-import {
-  Box,
-  Button,
-  Card,
-  CardTone,
-  Flex,
-  Menu,
-  MenuButton,
-  MenuDivider,
-  MenuItem,
-  Spinner,
-  Text,
-} from '@sanity/ui'
+import {Box, CardTone, Menu, MenuDivider} from '@sanity/ui'
 import React, {ComponentProps, ForwardedRef, forwardRef, useCallback, useMemo, useRef} from 'react'
 import {
   CloseIcon,
   CopyIcon as DuplicateIcon,
-  EllipsisVerticalIcon,
   LaunchIcon as OpenInNewTabIcon,
   SyncIcon as ReplaceIcon,
   TrashIcon,
@@ -27,6 +14,9 @@ import {useDidUpdate} from '../../hooks/useDidUpdate'
 import {randomKey} from '../../utils/randomKey'
 import {FormFieldSet, FormFieldValidationStatus} from '../../components/formField'
 import {FieldPresence} from '../../../presence'
+import {MenuButton, MenuItem} from '../../../../ui-components'
+import {LoadingBlock} from '../../../components/loadingBlock'
+import {ContextMenuButton} from '../../../components/contextMenuButton'
 import {useTranslation} from '../../../i18n'
 import {ChangeIndicator} from '../../../changeIndicators'
 import {RowLayout} from '../arrays/layouts/RowLayout'
@@ -69,14 +59,6 @@ function getTone({
   return hasWarnings ? 'caution' : 'default'
 }
 const MENU_POPOVER_PROPS = {portal: true, tone: 'default'} as const
-const INITIAL_VALUE_CARD_STYLE = {
-  position: 'absolute',
-  top: 0,
-  left: 0,
-  width: '100%',
-  height: '100%',
-  opacity: 0.6,
-} as const
 
 export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemValue>(
   props: ReferenceItemProps<Item>,
@@ -199,52 +181,50 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
   const menu = useMemo(
     () =>
       readOnly ? null : (
-        <Box marginLeft={1}>
-          <MenuButton
-            button={<Button paddingY={3} paddingX={2} mode="bleed" icon={EllipsisVerticalIcon} />}
-            id={`${inputId}-menuButton`}
-            menu={
-              <Menu ref={menuRef}>
-                {!readOnly && (
-                  <>
-                    <MenuItem
-                      text={t('inputs.reference.action.remove')}
-                      tone="critical"
-                      icon={TrashIcon}
-                      onClick={onRemove}
-                    />
-                    <MenuItem
-                      text={t(
-                        hasRef && isEditing
-                          ? 'inputs.reference.action.replace-cancel'
-                          : 'inputs.reference.action.replace',
-                      )}
-                      icon={hasRef && isEditing ? CloseIcon : ReplaceIcon}
-                      onClick={handleReplace}
-                    />
-                    <MenuItem
-                      text={t('inputs.reference.action.duplicate')}
-                      icon={DuplicateIcon}
-                      onClick={handleDuplicate}
-                    />
-                    <InsertMenu onInsert={handleInsert} types={insertableTypes} />
-                  </>
-                )}
-
-                {!readOnly && !isEditing && hasRef && <MenuDivider />}
-                {!isEditing && hasRef && (
+        <MenuButton
+          button={<ContextMenuButton paddingY={3} />}
+          id={`${inputId}-menuButton`}
+          menu={
+            <Menu ref={menuRef}>
+              {!readOnly && (
+                <>
                   <MenuItem
-                    as={OpenLink}
-                    data-as="a"
-                    text={t('inputs.reference.action.open-in-new-tab')}
-                    icon={OpenInNewTabIcon}
+                    text={t('inputs.reference.action.remove')}
+                    tone="critical"
+                    icon={TrashIcon}
+                    onClick={onRemove}
                   />
-                )}
-              </Menu>
-            }
-            popover={MENU_POPOVER_PROPS}
-          />
-        </Box>
+                  <MenuItem
+                    text={t(
+                      hasRef && isEditing
+                        ? 'inputs.reference.action.replace-cancel'
+                        : 'inputs.reference.action.replace',
+                    )}
+                    icon={hasRef && isEditing ? CloseIcon : ReplaceIcon}
+                    onClick={handleReplace}
+                  />
+                  <MenuItem
+                    text={t('inputs.reference.action.duplicate')}
+                    icon={DuplicateIcon}
+                    onClick={handleDuplicate}
+                  />
+                  <InsertMenu onInsert={handleInsert} types={insertableTypes} />
+                </>
+              )}
+
+              {!readOnly && !isEditing && hasRef && <MenuDivider />}
+              {!isEditing && hasRef && (
+                <MenuItem
+                  as={OpenLink}
+                  data-as="a"
+                  text={t('inputs.reference.action.open-in-new-tab')}
+                  icon={OpenInNewTabIcon}
+                />
+              )}
+            </Menu>
+          }
+          popover={MENU_POPOVER_PROPS}
+        />
       ),
     [
       handleDuplicate,
@@ -340,8 +320,6 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
             documentId={value?._ref}
             documentType={refType?.name}
             disabled={resolvingInitialValue}
-            paddingX={2}
-            paddingY={1}
             __unstable_focusRing
             selected={selected}
             pressed={pressed}
@@ -355,23 +333,7 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
               renderPreview={renderPreview}
               type={schemaType}
             />
-            {resolvingInitialValue && (
-              <Card
-                style={INITIAL_VALUE_CARD_STYLE}
-                tone="transparent"
-                radius={2}
-                as={Flex}
-                // @ts-expect-error composed from as={Flex}
-                justify="center"
-              >
-                <Flex align="center" justify="center" padding={3}>
-                  <Box marginX={3}>
-                    <Spinner muted />
-                  </Box>
-                  <Text>{t('inputs.reference.resolving-initial-value')}</Text>
-                </Flex>
-              </Card>
-            )}
+            {resolvingInitialValue && <LoadingBlock fill />}
           </ReferenceLinkCard>
         )}
       </RowLayout>

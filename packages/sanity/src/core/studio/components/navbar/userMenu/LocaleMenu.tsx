@@ -1,13 +1,14 @@
-import {Box, Label, MenuDivider, MenuItem} from '@sanity/ui'
+import {CheckmarkIcon} from '@sanity/icons'
+import {MenuDivider} from '@sanity/ui'
 import React, {useCallback} from 'react'
-import {useTranslation} from '../../../../i18n'
 import {useLocale} from '../../../../i18n/hooks/useLocale'
+import {MenuItem} from '../../../../../ui-components'
 
+// TODO: re-enable locale selection once schema localization is available
 const LOCALE_SELECTION_DISABLED = true
 
 export function LocaleMenu() {
   const {changeLocale, currentLocale, locales} = useLocale()
-  const {t} = useTranslation()
 
   if (LOCALE_SELECTION_DISABLED) {
     return null
@@ -20,12 +21,6 @@ export function LocaleMenu() {
   return (
     <>
       <MenuDivider />
-
-      <Box padding={2}>
-        <Label size={1} muted>
-          {t('user-menu.locale-title')}
-        </Label>
-      </Box>
 
       {locales.map((item) => (
         <LocaleItem
@@ -47,10 +42,13 @@ function LocaleItem(props: {
   const {locale, changeLocale, selectedLocale: selectedLang} = props
   const localeId = locale.id
   const onClick = useCallback(() => changeLocale(localeId), [localeId, changeLocale])
+  const selected = selectedLang == localeId
+
   return (
     <MenuItem
       aria-label={locale.title}
-      pressed={selectedLang == localeId}
+      pressed={selected}
+      iconRight={selected && <CheckmarkIcon />}
       onClick={onClick}
       text={locale.title}
     />

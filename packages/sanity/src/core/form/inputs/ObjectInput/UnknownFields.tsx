@@ -1,7 +1,8 @@
 import React, {useCallback} from 'react'
-import {Box, Button, Card, Code, Stack, Text} from '@sanity/ui'
+import {Box, Card, Code, Stack, Text} from '@sanity/ui'
 import {TrashIcon} from '@sanity/icons'
 import {FormPatch, PatchEvent, unset} from '../../patch'
+import {Button} from '../../../../ui-components'
 import {Details} from '../../components/Details'
 import {Alert} from '../../components/Alert'
 import {isDev} from '../../../environment'
@@ -85,32 +86,37 @@ function UnknownField({
   const {t} = useTranslation()
 
   return (
-    <Card as="li" padding={3} radius={2} shadow={1} tone="caution">
-      <Stack space={2}>
-        <Card border radius={1}>
-          <Card borderBottom padding={3}>
-            <Code weight="medium">{fieldName}</Code>
-          </Card>
-          <Box overflow="auto" padding={3}>
-            <Code language="json">{JSON.stringify(value, null, 2)}</Code>
-          </Box>
-        </Card>
+    <Card as="li" overflow="hidden" radius={2} shadow={1} tone="caution">
+      <Card padding={3} shadow={1} tone="inherit">
+        <Code size={1}>{fieldName}</Code>
+      </Card>
 
-        {readOnly && (
+      <Box overflow="auto" padding={3}>
+        <Code language="json" size={1}>
+          {JSON.stringify(value, null, 2)}
+        </Code>
+      </Box>
+
+      {readOnly && (
+        <Box padding={3}>
           <Text as="p" muted size={1}>
             <Translate t={t} i18nKey="inputs.object.unknown-fields.read-only.description" />
           </Text>
-        )}
+        </Box>
+      )}
 
-        {!readOnly && (
+      {!readOnly && (
+        <Card padding={3} shadow={1} tone="inherit">
           <Button
             icon={TrashIcon}
+            mode="ghost"
             onClick={handleUnsetClick}
+            size="large"
             tone="critical"
             text={t('inputs.object.unknown-fields.remove-field-button.text')}
           />
-        )}
-      </Stack>
+        </Card>
+      )}
     </Card>
   )
 }

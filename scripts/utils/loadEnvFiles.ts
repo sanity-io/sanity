@@ -1,4 +1,4 @@
-/* eslint-disable no-process-env, no-sync */
+/* eslint-disable no-process-env */
 import fs from 'fs'
 import path from 'path'
 import dotenv from 'dotenv'
@@ -8,7 +8,7 @@ import dotenv from 'dotenv'
  *
  * @returns Array of environment file paths loaded.
  */
-export function loadEnvFiles() {
+export function loadEnvFiles(): string[] {
   const mode = process.env.NODE_ENV || 'development'
   const envFiles = ['.env', '.env.local', `.env.${mode}`, `.env.${mode}.local`]
   const loaded = []

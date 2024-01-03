@@ -1,10 +1,12 @@
 import {ArrowLeftIcon, ControlsIcon, SearchIcon, SpinnerIcon} from '@sanity/icons'
-import {Box, Button, Card, Flex, Theme} from '@sanity/ui'
+import {Box, Card, Flex} from '@sanity/ui'
 import React, {forwardRef, useCallback, useEffect, useRef} from 'react'
 import styled, {keyframes} from 'styled-components'
+import {Button} from '../../../../../../ui-components'
+import {StatusButton} from '../../../../../components'
+import {useTranslation} from '../../../../../i18n'
 import {useSearchState} from '../contexts/search/useSearchState'
 import {CustomTextInput} from './common/CustomTextInput'
-import {useTranslation} from '../../../../../i18n'
 
 const rotate = keyframes`
   from {
@@ -19,18 +21,9 @@ const AnimatedSpinnerIcon = styled(SpinnerIcon)`
   animation: ${rotate} 500ms linear infinite;
 `
 
-const FilterBox = styled(Box)`
+const FilterDiv = styled.div`
+  line-height: 0;
   position: relative;
-`
-
-const NotificationBadge = styled.div`
-  background: ${({theme}: {theme: Theme}) => theme.sanity.color.selectable?.primary.enabled.fg};
-  border-radius: 100%;
-  height: 6px;
-  position: absolute;
-  right: 2px;
-  top: 2px;
-  width: 6px;
 `
 
 interface SearchHeaderProps {
@@ -89,32 +82,33 @@ export const SearchHeader = forwardRef<HTMLInputElement, SearchHeaderProps>(func
       <Flex align="center" flex={1} gap={fullscreen ? 2 : 1} padding={fullscreen ? 2 : 1}>
         {/* (Fullscreen) Close button */}
         {fullscreen && (
-          <Card>
-            <Button
-              aria-label={t('search.action.close-search-aria-label')}
-              icon={ArrowLeftIcon}
-              mode="bleed"
-              onClick={onClose}
-            />
-          </Card>
+          <Button
+            aria-label={t('search.action.close-search-aria-label')}
+            icon={ArrowLeftIcon}
+            mode="bleed"
+            onClick={onClose}
+            size="large"
+            tooltipProps={{content: t('search.action.close-search-aria-label')}}
+          />
         )}
 
         {/* Search field */}
         <Box flex={1}>
           <CustomTextInput
+            __unstable_disableFocusRing
+            $background={fullscreen}
+            $smallClearButton={fullscreen}
             aria-label={ariaInputLabel}
             autoComplete="off"
-            background={fullscreen}
             border={false}
             clearButton={!!query}
-            fontSize={2}
+            fontSize={[2, 2, 1]}
             icon={loading ? AnimatedSpinnerIcon : SearchIcon}
             onChange={handleQueryChange}
             onClear={handleQueryClear}
             placeholder={t('search.placeholder')}
-            radius={fullscreen ? 2 : 1}
+            radius={2}
             ref={ref}
-            smallClearButton={fullscreen}
             spellCheck={false}
             value={query}
           />
@@ -122,22 +116,25 @@ export const SearchHeader = forwardRef<HTMLInputElement, SearchHeaderProps>(func
 
         {/* Filter toggle */}
         {fullscreen && (
-          <FilterBox>
-            <Button
+          <FilterDiv>
+            <StatusButton
               aria-expanded={filtersVisible}
               aria-label={t('search.action.toggle-filters-aria-label', {
                 context: filtersVisible ? 'hide' : 'show',
               })}
-              height="fill"
               icon={ControlsIcon}
               mode="bleed"
               onClick={handleFiltersToggle}
-              padding={3}
               selected={filtersVisible}
-              tone="default"
+              size="large"
+              tone={notificationBadgeVisible ? 'primary' : undefined}
+              tooltipProps={{
+                content: t('search.action.toggle-filters-label', {
+                  context: filtersVisible ? 'hide' : 'show',
+                }),
+              }}
             />
-            {notificationBadgeVisible && <NotificationBadge />}
-          </FilterBox>
+          </FilterDiv>
         )}
       </Flex>
     </Card>

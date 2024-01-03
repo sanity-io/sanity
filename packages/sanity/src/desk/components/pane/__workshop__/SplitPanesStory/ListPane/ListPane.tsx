@@ -1,11 +1,13 @@
-import {ArrowLeftIcon, ChevronRightIcon, EllipsisVerticalIcon} from '@sanity/icons'
-import {Box, Button, Card, Flex, Stack, Text} from '@sanity/ui'
+import {ArrowLeftIcon, ChevronRightIcon} from '@sanity/icons'
+import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
 import React, {useCallback} from 'react'
+import {Button} from '../../../../../../ui-components'
 import {usePaneLayout} from '../../../usePaneLayout'
 import {Pane} from '../../../Pane'
 import {PaneContent} from '../../../PaneContent'
 import {PaneHeader} from '../../../PaneHeader'
 import {ListPaneNode} from '../types'
+import {ContextMenuButton} from 'sanity'
 
 export function ListPane(props: {
   active: boolean
@@ -24,10 +26,17 @@ export function ListPane(props: {
   return (
     <Pane currentMaxWidth={350} flex={1} id={String(index)} minWidth={320} maxWidth={640}>
       <PaneHeader
-        actions={<Button icon={EllipsisVerticalIcon} mode="bleed" />}
+        actions={<ContextMenuButton />}
         backButton={
           index > 0 &&
-          layoutCollapsed && <Button icon={ArrowLeftIcon} mode="bleed" onClick={handleBackClick} />
+          layoutCollapsed && (
+            <Button
+              icon={ArrowLeftIcon}
+              mode="bleed"
+              onClick={handleBackClick}
+              tooltipProps={{content: 'Back'}}
+            />
+          )
         }
         title={node.title}
       />

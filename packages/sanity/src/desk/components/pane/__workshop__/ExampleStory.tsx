@@ -1,12 +1,14 @@
-import {EllipsisVerticalIcon, SelectIcon} from '@sanity/icons'
-import {Button, Container, Stack, Tab, TabList, Text} from '@sanity/ui'
+import {ChevronDownIcon} from '@sanity/icons'
+import {Container, Stack, TabList, Text} from '@sanity/ui'
 import {useBoolean, useSelect} from '@sanity/ui-workshop'
 import React, {useMemo} from 'react'
+import {Button, Tab} from '../../../../ui-components'
 import {Pane} from '../Pane'
 import {PaneContent} from '../PaneContent'
 import {PaneFooter} from '../PaneFooter'
 import {PaneHeader} from '../PaneHeader'
 import {PaneLayout} from '../PaneLayout'
+import {ContextMenuButton} from 'sanity'
 
 const PANE_TONE_OPTIONS = {
   Default: 'default',
@@ -21,38 +23,26 @@ export default function ExampleStory() {
   const manyTabs = useBoolean('Many tabs', false, 'Props')
   const tone = useSelect('Tone', PANE_TONE_OPTIONS, 'default', 'Props')
 
-  const actions = useMemo(() => <Button icon={EllipsisVerticalIcon} mode="bleed" />, [])
+  const actions = useMemo(() => <ContextMenuButton />, [])
   const tabs = useMemo(
     () =>
       manyTabs ? (
         <TabList space={1}>
-          <Tab
-            aria-controls="content-panel"
-            fontSize={1}
-            id="content-tab"
-            label="Content"
-            selected
-          />
-          <Tab aria-controls="preview-panel" fontSize={1} id="preview-tab" label="Preview" />
-          <Tab aria-controls="preview-panel" fontSize={1} id="preview-tab" label="Preview" />
-          <Tab aria-controls="preview-panel" fontSize={1} id="preview-tab" label="Preview" />
-          <Tab aria-controls="preview-panel" fontSize={1} id="preview-tab" label="Preview" />
-          <Tab aria-controls="preview-panel" fontSize={1} id="preview-tab" label="Preview" />
-          <Tab aria-controls="preview-panel" fontSize={1} id="preview-tab" label="Preview" />
-          <Tab aria-controls="preview-panel" fontSize={1} id="preview-tab" label="Preview" />
-          <Tab aria-controls="preview-panel" fontSize={1} id="preview-tab" label="Preview" />
-          <Tab aria-controls="preview-panel" fontSize={1} id="preview-tab" label="Preview" />
+          <Tab aria-controls="content-panel" id="content-tab" label="Content" selected />
+          <Tab aria-controls="preview-panel" id="preview-tab" label="Preview" />
+          <Tab aria-controls="preview-panel" id="preview-tab" label="Preview" />
+          <Tab aria-controls="preview-panel" id="preview-tab" label="Preview" />
+          <Tab aria-controls="preview-panel" id="preview-tab" label="Preview" />
+          <Tab aria-controls="preview-panel" id="preview-tab" label="Preview" />
+          <Tab aria-controls="preview-panel" id="preview-tab" label="Preview" />
+          <Tab aria-controls="preview-panel" id="preview-tab" label="Preview" />
+          <Tab aria-controls="preview-panel" id="preview-tab" label="Preview" />
+          <Tab aria-controls="preview-panel" id="preview-tab" label="Preview" />
         </TabList>
       ) : (
         <TabList space={1}>
-          <Tab
-            aria-controls="content-panel"
-            fontSize={1}
-            id="content-tab"
-            label="Content"
-            selected
-          />
-          <Tab aria-controls="preview-panel" fontSize={1} id="preview-tab" label="Preview" />
+          <Tab aria-controls="content-panel" id="content-tab" label="Content" selected />
+          <Tab aria-controls="preview-panel" id="preview-tab" label="Preview" />
         </TabList>
       ),
     [manyTabs],
@@ -63,9 +53,7 @@ export default function ExampleStory() {
       <Pane id="example-pane" minWidth={320} tone={tone}>
         <PaneHeader
           actions={actions}
-          subActions={
-            <Button fontSize={1} iconRight={SelectIcon} mode="bleed" padding={2} text="Latest" />
-          }
+          subActions={<Button iconRight={ChevronDownIcon} mode="bleed" text="Latest" />}
           tabs={tabs}
           title={<>Header</>}
         />

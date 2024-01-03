@@ -5,7 +5,7 @@ import styled from 'styled-components'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 import {PreviewMediaDimensions} from '../types'
 import {Media, MediaProps} from '../_common/Media'
-import {PREVIEW_MEDIA_SIZE} from '../constants'
+import {PREVIEW_SIZES} from '../constants'
 
 /**
  * @hidden
@@ -20,7 +20,7 @@ export interface TemplatePreviewProps {
 }
 
 const DEFAULT_MEDIA_DIMENSION: PreviewMediaDimensions = {
-  ...PREVIEW_MEDIA_SIZE.default,
+  ...PREVIEW_SIZES.default.media,
   aspect: 1,
   fit: 'crop',
   dpr: getDevicePixelRatio(),
@@ -40,7 +40,7 @@ const Root = styled(Box)`
 `
 
 const HeaderFlex = styled(Flex).attrs({align: 'center'})`
-  height: ${rem(PREVIEW_MEDIA_SIZE.default.height)};
+  height: ${rem(PREVIEW_SIZES.default.media.height)};
 `
 
 const TitleSkeleton = styled(TextSkeleton).attrs({animated: true, radius: 1})`

@@ -1,20 +1,10 @@
 import {CloseIcon} from '@sanity/icons'
-import {
-  Box,
-  Button,
-  Card,
-  Flex,
-  isHTMLElement,
-  rem,
-  Text,
-  type CSSObject,
-  type Theme,
-  useForwardedRef,
-} from '@sanity/ui'
+import {Box, Card, Flex, isHTMLElement, rem, Text, type Theme, useForwardedRef} from '@sanity/ui'
 import React, {forwardRef, useCallback, useEffect, useRef, useState} from 'react'
-import styled, {css} from 'styled-components'
+import styled, {css, type CSSObject} from 'styled-components'
 import {useTranslation} from '../../../i18n'
 import {studioLocaleNamespace} from '../../../i18n/localeNamespaces'
+import {Button} from '../../../../ui-components'
 import {focusRingBorderStyle, focusRingStyle} from './styles'
 
 const Root = styled(Card)((props: {theme: Theme}): CSSObject => {
@@ -309,18 +299,20 @@ function Tag(props: {
   }, [index, onRemove])
 
   return (
-    <Card data-ui="Tag" padding={1} radius={2} tone="transparent">
-      <Flex align="center">
-        <Box flex={1} padding={1}>
+    <Card data-ui="Tag" radius={2} tone="transparent">
+      <Flex align="center" gap={1}>
+        <Box flex={1} paddingY={2} paddingLeft={2}>
           <Text muted={muted} textOverflow="ellipsis">
             {tag.value}
           </Text>
         </Box>
-
         {enabled && (
-          <Box marginLeft={1}>
-            <Button icon={CloseIcon} mode="bleed" onClick={handleRemoveClick} padding={1} />
-          </Box>
+          <Button
+            icon={CloseIcon}
+            mode="bleed"
+            onClick={handleRemoveClick}
+            tooltipProps={{content: 'Remove'}}
+          />
         )}
       </Flex>
     </Card>

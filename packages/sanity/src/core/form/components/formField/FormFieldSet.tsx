@@ -54,7 +54,7 @@ function getChildren(children: React.ReactNode | (() => React.ReactNode)): React
   return typeof children === 'function' ? children() : children
 }
 
-const Root = styled(Box).attrs({forwardedAs: 'fieldset'})`
+const Root = styled(Stack).attrs({forwardedAs: 'fieldset'})`
   border: none;
 
   /* See: https://thatemil.com/blog/2015/01/03/reset-your-fieldset/ */
@@ -79,7 +79,7 @@ const Content = styled(Box)<{
   return css`
     outline: none;
     border-left: ${$borderLeft ? '1px solid var(--card-border-color)' : undefined};
-    border-radius: ${rem(radius[1])};
+    border-radius: ${rem(radius[2])};
 
     &:focus {
       box-shadow: ${focusRingStyle({base, focusRing: {...focusRing, offset: 2}})};
@@ -152,7 +152,13 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
   }, [children, collapsed, columns])
 
   return (
-    <Root data-level={level} {...restProps} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
+    <Root
+      data-level={level}
+      {...restProps}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+      space={2}
+    >
       <FormFieldBaseHeader
         __internal_comments={comments}
         __internal_slot={slot}
@@ -161,7 +167,7 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
         fieldHovered={hovered}
         presence={presence}
         content={
-          <Stack space={2}>
+          <Stack space={3}>
             <Flex>
               <FormFieldSetLegend
                 collapsed={Boolean(collapsed)}
@@ -172,7 +178,7 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
 
               {hasValidationMarkers && (
                 <Box marginLeft={2}>
-                  <FormFieldValidationStatus fontSize={1} validation={validation} />
+                  <FormFieldValidationStatus fontSize={1} placement="top" validation={validation} />
                 </Box>
               )}
             </Flex>
@@ -189,7 +195,6 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
       <Content
         $borderLeft={level > 0}
         hidden={collapsed}
-        marginTop={1}
         paddingLeft={level === 0 ? 0 : 3}
         onFocus={typeof tabIndex === 'number' && tabIndex > -1 ? handleFocus : undefined}
         ref={forwardedRef}

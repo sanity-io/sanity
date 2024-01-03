@@ -107,6 +107,8 @@ export interface Tool<Options = any> {
 
   /**
    * React component for the icon representing the tool.
+   *
+   * @deprecated Tool icons are no longer displayed.
    */
   icon?: ComponentType
 
@@ -366,6 +368,11 @@ export interface PluginOptions {
 
   /** @beta @hidden */
   i18n?: LocalePluginOptions
+  search?: {
+    unstable_partialIndexing?: {
+      enabled: boolean
+    }
+  }
 }
 
 /** @internal */
@@ -395,6 +402,12 @@ export type Plugin<TOptions = void> = (options: TOptions) => PluginOptions
 export interface WorkspaceOptions extends SourceOptions {
   basePath: string
   subtitle?: string
+  /**
+   * The workspace logo
+   *
+   * @deprecated Custom logo components are no longer supported.
+   * Users are encouraged to provide custom components for individual workspace icons instead.
+   */
   logo?: ComponentType
   icon?: ComponentType
 
@@ -690,6 +703,9 @@ export interface Source {
   search: {
     filters: SearchFilterDefinition[]
     operators: SearchOperatorDefinition[]
+    unstable_partialIndexing?: {
+      enabled: boolean
+    }
   }
 
   /** @internal */
@@ -716,7 +732,13 @@ export interface WorkspaceSummary {
   type: 'workspace-summary'
   name: string
   title: string
+  /**
+   * User supplied component if provided, otherwise falls back to
+   * an automatically generated default icon.
+   */
   icon: ReactNode
+  /** Returns true if a custom icon has been provided in studio config */
+  customIcon: boolean
   subtitle?: string
   basePath: string
   auth: AuthStore

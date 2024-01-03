@@ -1,9 +1,20 @@
 import type {Subscription} from 'rxjs'
 import React, {useCallback, useMemo, useRef, useState} from 'react'
 import styled, {css} from 'styled-components'
-import {Box, Button, Card, Flex, Grid, Label, Stack, Text, Tooltip, useToast} from '@sanity/ui'
+import {
+  Box,
+  // eslint-disable-next-line no-restricted-imports
+  Button,
+  Card,
+  Flex,
+  Grid,
+  Stack,
+  Text,
+  useToast,
+} from '@sanity/ui'
 import {ChevronDownIcon, ChevronUpIcon, DocumentIcon, LinkIcon, TrashIcon} from '@sanity/icons'
 import {Asset as AssetType} from '@sanity/types'
+import {Tooltip} from '../../../../../ui-components'
 import {useClient, useRelativeTime, useUnitFormatter} from '../../../../hooks'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
 import {AssetDeleteDialog} from '../shared/AssetDeleteDialog'
@@ -60,7 +71,7 @@ const RowButton = styled(Button)<RowProps>`
   &:before {
     z-index: 0;
     pointer-events: none;
-    border-radius: 0.1875rem;
+    border-radius: inherit;
   }
 
   ${(props) =>
@@ -247,6 +258,7 @@ export const AssetRow = (props: RowProps) => {
             data-id={_id}
             onClick={onClick}
             paddingY={1}
+            radius={2}
           >
             <Flex gap={2} flex={2} align="center">
               <Card as={CardIconWrapper} padding={2} tone="transparent" radius={2}>
@@ -273,25 +285,25 @@ export const AssetRow = (props: RowProps) => {
           <>
             <Grid marginTop={3} columns={3} gap={1}>
               <Stack space={2}>
-                <Label size={1} muted>
+                <Text size={1} muted weight="medium">
                   {t('asset-source.file.asset-list.header.size')}
-                </Label>
+                </Text>
                 <Text size={1} muted>
                   {formattedSize}
                 </Text>
               </Stack>
               <Stack space={2}>
-                <Label size={1} muted>
+                <Text size={1} muted weight="medium">
                   {t('asset-source.file.asset-list.header.type')}
-                </Label>
+                </Text>
                 <Text size={1} muted>
                   {formattedMimeType}
                 </Text>
               </Stack>
               <Stack space={2}>
-                <Label size={1} muted>
+                <Text size={1} muted weight="medium">
                   {t('asset-source.file.asset-list.header.date-added')}
-                </Label>
+                </Text>
                 <Text size={1} muted>
                   {formattedTime}
                 </Text>
@@ -361,6 +373,7 @@ export const AssetRow = (props: RowProps) => {
             filename: originalFilename,
           })}
           isSelected={isSelected}
+          radius={2}
         >
           <CustomFlex
             gap={2}
@@ -383,16 +396,7 @@ export const AssetRow = (props: RowProps) => {
               </Text>
             </Card>
             {showTooltip && (
-              <Tooltip
-                content={
-                  <Box padding={2}>
-                    <Text size={1}>{originalFilename}</Text>
-                  </Box>
-                }
-                fallbackPlacements={['right', 'left']}
-                placement="top"
-                portal
-              >
+              <Tooltip content={originalFilename}>
                 <Text size={1} align="left" textOverflow="ellipsis" style={STYLES_BUTTON_TEXT}>
                   {originalFilename}
                 </Text>

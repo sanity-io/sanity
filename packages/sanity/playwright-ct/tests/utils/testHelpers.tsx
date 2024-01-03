@@ -99,12 +99,78 @@ export function testHelpers({page}: {page: PlaywrightTestArgs['page']}) {
       await locator.getByText(text).waitFor()
     },
     /**
+     * Emulate pasting HTML or text into a Portable Text Editor's editable element
+     * @param text - The string to be pasted.
+     * @param locator - editable element of a Portable Text Editor (as returned by getFocusedPortableTextEditorElement)
+     */
+    insertPortableTextCopyPaste: async (htmlOrText: string, locator: Locator) => {
+      await locator.focus()
+      await locator.evaluate((el, value) => {
+        const dataTransfer = new DataTransfer()
+        dataTransfer.setData('text/html', value)
+        el.dispatchEvent(
+          new window.InputEvent('beforeinput', {
+            bubbles: true,
+            cancelable: true,
+            inputType: 'insertFromPaste',
+            dataTransfer,
+          }),
+        )
+      }, htmlOrText)
+
+      // We get the first 10 chars of the pasted text and wait for them to appear in the editor
+      const firstTextContent = await page.evaluate((value) => {
+        const tempDiv = document.createElement('div')
+        tempDiv.innerHTML = value
+        return tempDiv?.textContent?.trim()?.slice(0, 10) || ''
+      }, htmlOrText)
+
+      await locator.getByText(firstTextContent).waitFor()
+    },
+    /**
      * Will create a keyboard event of a given hotkey combination that can be activated with a modifier key
      * @param hotkey - the hotkey
      * @param modifierKey - the modifier key (if any) that can activate the hotkey
      */
     toggleHotkey: async (hotkey: string, modifierKey?: string) => {
       await page.keyboard.press(modifierKey ? `${modifierKey}+${hotkey}` : hotkey)
+    },
+    /**
+     * Will wait for the documentState evaulate callback to be true before the docmueentState is returned
+     * @param evaluteCallback - the callback that will be evaluated
+     */
+    waitForDocumentState: async (evaluateCallback: (documentState: any) => boolean) => {
+      await page.exposeFunction('evaluateCallback', evaluateCallback)
+      const documentState = await page.evaluate<Promise<any>>(async () => {
+        const waitForCondition = () => {
+          return new Promise((resolve, reject) => {
+            const checkCondition = async () => {
+              try {
+                if (await evaluateCallback(window.documentState)) {
+                  resolve(window.documentState)
+                } else {
+                  setTimeout(checkCondition, 100)
+                }
+              } catch (error) {
+                reject(error)
+              }
+            }
+
+            // Timeout after 5 seconds
+            const timeout = setTimeout(() => {
+              reject(new Error('Timeout waiting for condition'))
+            }, 5000)
+
+            checkCondition()
+
+            return () => clearTimeout(timeout)
+          })
+        }
+
+        return waitForCondition()
+      })
+
+      return documentState
     },
   }
 }

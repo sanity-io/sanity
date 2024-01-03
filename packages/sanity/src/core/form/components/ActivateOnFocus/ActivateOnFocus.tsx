@@ -76,7 +76,7 @@ export function ActivateOnFocus(props: ActivateOnFocusProps) {
       t('inputs.portable-text.activate-on-focus-message', {
         context: messageContext,
       })
-    return <Text weight="semibold">{text}</Text>
+    return <Text weight="medium">{text}</Text>
   }, [focused, message, t])
 
   return (
@@ -92,7 +92,7 @@ export function ActivateOnFocus(props: ActivateOnFocusProps) {
             // Almost all input elements have radius=1, and this component is
             // typically used for overlaying input elements.
             // @todo Consider making `radius` a component property of `ActivateOnFocus`.
-            radius={1}
+            radius={2}
           />
           <ContentContainer>{msg}</ContentContainer>
         </FlexContainer>

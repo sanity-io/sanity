@@ -4,6 +4,7 @@ import {Observable} from 'rxjs'
 import {map} from 'rxjs/operators'
 import {createWeightedSearch} from '../../../../../search'
 import {collate} from '../../../../../util'
+import {resolveSearchConfigForBaseFieldPaths} from '@sanity/schema/_internal'
 
 interface SearchHit {
   id: string
@@ -21,7 +22,10 @@ export function search(
     type.to.map((crossDatasetType) => ({
       name: crossDatasetType.type,
       // eslint-disable-next-line camelcase
-      __experimental_search: crossDatasetType.__experimental_search,
+      __experimental_search: resolveSearchConfigForBaseFieldPaths(
+        crossDatasetType,
+        options.maxFieldDepth,
+      ),
     })),
 
     client,

@@ -25,15 +25,15 @@ const CustomGrid = styled(Grid)`
 `
 
 export function CalendarMonth({hidden, onSelect}: CalendarMonthProps) {
-  const {focusedDate, fontSize, firstWeekDay} = useCalendar()
+  const {focusedDate, firstWeekDay} = useCalendar()
   const {t} = useTranslation()
 
   return (
     <Box aria-hidden={hidden || false} data-ui="CalendarMonth">
-      <CustomGrid>
+      <CustomGrid gapY={1}>
         {WEEK_DAY_NAME_KEYS[firstWeekDay].map((weekdayDay) => (
           <Box key={weekdayDay} paddingBottom={3} paddingTop={2}>
-            <Text align="center" size={fontSize} weight="medium">
+            <Text align="center" size={1} weight="medium">
               {t(weekdayDay)}
             </Text>
           </Box>

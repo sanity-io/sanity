@@ -1,8 +1,9 @@
-import {Box, Button, Flex, Grid, Select, Text, useForwardedRef} from '@sanity/ui'
+import {Box, Flex, Grid, Select, Text, useForwardedRef} from '@sanity/ui'
 import {ChevronLeftIcon, ChevronRightIcon} from '@sanity/icons'
 import {addDays, addMonths, setDate, setHours, setMinutes, setMonth, setYear} from 'date-fns'
 import {range} from 'lodash'
-import React, {forwardRef, useCallback, useEffect} from 'react'
+import React, {KeyboardEvent, forwardRef, useCallback, useEffect} from 'react'
+import {Button} from '../../../../../../ui-components'
 import {CalendarMonth} from './CalendarMonth'
 import {ARROW_KEYS, DEFAULT_TIME_PRESETS, HOURS_24} from './constants'
 import {features} from './features'
@@ -34,6 +35,11 @@ const PRESERVE_FOCUS_ELEMENT = (
     tabIndex={-1}
   />
 )
+
+// This buttons use a specific styling, given they are intended to be aligned with the select elements.
+const CALENDAR_ICON_BUTTON_PROPS = {
+  padding: 2,
+}
 
 export const Calendar = forwardRef(function Calendar(
   props: CalendarProps,
@@ -112,12 +118,13 @@ export const Calendar = forwardRef(function Calendar(
   }, [ref])
 
   const handleKeyDown = useCallback(
-    (event: React.KeyboardEvent<HTMLDivElement>) => {
+    (event: KeyboardEvent<HTMLDivElement>) => {
       if (!ARROW_KEYS.includes(event.key)) {
         return
       }
+      const target = event.currentTarget
       event.preventDefault()
-      if (event.target instanceof HTMLElement && event.target.hasAttribute('data-calendar-grid')) {
+      if (target.hasAttribute('data-calendar-grid')) {
         focusCurrentWeekDay()
         return
       }
@@ -176,19 +183,9 @@ export const Calendar = forwardRef(function Calendar(
         {/* Day presets */}
         {features.dayPresets && (
           <Grid columns={3} data-ui="CalendaryDayPresets" gap={1}>
-            <Button
-              text={labels.goToYesterday}
-              mode="bleed"
-              fontSize={1}
-              onClick={handleYesterdayClick}
-            />
-            <Button text={labels.goToToday} mode="bleed" fontSize={1} onClick={handleTodayClick} />
-            <Button
-              text={labels.goToTomorrow}
-              mode="bleed"
-              fontSize={1}
-              onClick={handleTomorrowClick}
-            />
+            <Button text={labels.goToYesterday} mode="bleed" onClick={handleYesterdayClick} />
+            <Button text={labels.goToToday} mode="bleed" onClick={handleTodayClick} />
+            <Button text={labels.goToTomorrow} mode="bleed" onClick={handleTomorrowClick} />
           </Grid>
         )}
 
@@ -246,6 +243,9 @@ export const Calendar = forwardRef(function Calendar(
               <Box>
                 <Select
                   aria-label={labels.selectHour}
+                  fontSize={1}
+                  padding={2}
+                  radius={2}
                   value={selectedDate?.getHours()}
                   onChange={handleHoursChange}
                 >
@@ -258,12 +258,15 @@ export const Calendar = forwardRef(function Calendar(
               </Box>
 
               <Box paddingX={1}>
-                <Text>:</Text>
+                <Text size={1}>:</Text>
               </Box>
 
               <Box>
                 <Select
                   aria-label={labels.selectMinute}
+                  fontSize={1}
+                  padding={2}
+                  radius={2}
                   value={selectedDate?.getMinutes()}
                   onChange={handleMinutesChange}
                 >
@@ -317,15 +320,7 @@ function CalendarTimePresetButton(props: {
     onTimeChange(hours, minutes)
   }, [hours, minutes, onTimeChange])
 
-  return (
-    <Button
-      text={text}
-      aria-label={props['aria-label']}
-      mode="bleed"
-      fontSize={1}
-      onClick={handleClick}
-    />
-  )
+  return <Button text={text} aria-label={props['aria-label']} mode="bleed" onClick={handleClick} />
 }
 
 function CalendarMonthSelect(props: {
@@ -345,17 +340,20 @@ function CalendarMonthSelect(props: {
   const handleNextMonthClick = useCallback(() => moveFocusedDate(1), [moveFocusedDate])
 
   return (
-    <Flex flex={1}>
+    <Flex flex={1} gap={1}>
       <Button
         aria-label={labels.goToPreviousMonth}
         onClick={handlePrevMonthClick}
         mode="bleed"
         icon={ChevronLeftIcon}
-        paddingX={2}
-        radius={0}
+        tooltipProps={{content: 'Previous month'}}
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore - Button with specific styling requirements
+        {...CALENDAR_ICON_BUTTON_PROPS}
       />
+
       <Box flex={1}>
-        <Select radius={0} value={value} onChange={onChange}>
+        <Select fontSize={1} radius={2} value={value} onChange={onChange} padding={2}>
           {monthNames.map((monthName, i) => (
             // eslint-disable-next-line react/no-array-index-key
             <option key={i} value={i}>
@@ -369,8 +367,10 @@ function CalendarMonthSelect(props: {
         mode="bleed"
         icon={ChevronRightIcon}
         onClick={handleNextMonthClick}
-        paddingX={2}
-        radius={0}
+        tooltipProps={{content: 'Next month'}}
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore - Button with specific styling requirements
+        {...CALENDAR_ICON_BUTTON_PROPS}
       />
     </Flex>
   )
@@ -389,23 +389,27 @@ function CalendarYearSelect(props: {
   const handleNextYearClick = useCallback(() => moveFocusedDate(12), [moveFocusedDate])
 
   return (
-    <Flex>
+    <Flex gap={1}>
       <Button
         aria-label={labels.goToPreviousYear}
         onClick={handlePrevYearClick}
         mode="bleed"
         icon={ChevronLeftIcon}
-        paddingX={2}
-        radius={0}
+        tooltipProps={{content: 'Previous year'}}
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore - Button with specific styling requirements
+        {...CALENDAR_ICON_BUTTON_PROPS}
       />
-      <YearInput value={value} onChange={onChange} radius={0} style={{width: 65}} />
+      <YearInput value={value} onChange={onChange} radius={0} style={{width: 48}} />
       <Button
         aria-label={labels.goToNextYear}
         onClick={handleNextYearClick}
         mode="bleed"
         icon={ChevronRightIcon}
-        paddingX={2}
-        radius={0}
+        tooltipProps={{content: 'Next year'}}
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore - Button with specific styling requirements
+        {...CALENDAR_ICON_BUTTON_PROPS}
       />
     </Flex>
   )

@@ -1,8 +1,8 @@
 import React, {memo, useCallback, useMemo} from 'react'
-import {AddIcon} from '@sanity/icons'
-import {Button, PopoverProps} from '@sanity/ui'
 import {PortableTextEditor, usePortableTextEditor} from '@sanity/portable-text-editor'
 import {upperFirst} from 'lodash'
+import {PopoverProps} from '../../../../../ui-components'
+import {ContextMenuButton} from '../../../../components/contextMenuButton'
 import {useTranslation} from '../../../../i18n'
 import {CollapseMenu, CollapseMenuButton} from '../../../../components/collapseMenu'
 import {BlockItem} from './types'
@@ -31,6 +31,8 @@ export const InsertMenu = memo(function InsertMenu(props: InsertMenuProps) {
     PortableTextEditor.focus(editor)
   }, [editor])
 
+  const tooltipPlacement = isFullscreen ? 'bottom' : 'top'
+
   const children = useMemo(() => {
     return items.map((item) => {
       const title = item.type.title || upperFirst(item.type.name)
@@ -43,7 +45,6 @@ export const InsertMenu = memo(function InsertMenu(props: InsertMenuProps) {
               : 'inputs.portable-text.action.insert-block-aria-label',
             {typeName: title},
           )}
-          padding={2}
           mode="bleed"
           disabled={disabled || (isVoidFocus && item.inline === true)}
           icon={item.icon}
@@ -59,21 +60,26 @@ export const InsertMenu = memo(function InsertMenu(props: InsertMenuProps) {
           )}
           tooltipProps={{
             disabled,
-            placement: isFullscreen ? 'bottom' : 'top',
+            placement: tooltipPlacement,
             portal: 'default',
           }}
         />
       )
     })
-  }, [disabled, isFullscreen, isVoidFocus, items, t])
+  }, [disabled, isVoidFocus, items, t, tooltipPlacement])
 
   const menuButtonProps = useMemo(
     () => ({
-      button: <Button icon={AddIcon} mode="bleed" padding={2} disabled={disabled} />,
+      button: (
+        <ContextMenuButton
+          data-testid="insert-menu-button"
+          disabled={disabled}
+          tooltipProps={{placement: tooltipPlacement}}
+        />
+      ),
       popover: MENU_POPOVER_PROPS,
     }),
-
-    [disabled],
+    [disabled, tooltipPlacement],
   )
 
   return (

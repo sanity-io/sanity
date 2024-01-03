@@ -1,8 +1,9 @@
-import {Box, Card, Code, Flex, Popover, Stack, Text, Theme, useClickOutside} from '@sanity/ui'
+import {Box, Card, Code, Flex, Stack, Text, Theme, useClickOutside} from '@sanity/ui'
 import React, {useCallback} from 'react'
 import {BulbOutlineIcon, UnknownIcon} from '@sanity/icons'
 import {resolveTypeName} from '@sanity/util/content'
 import styled from 'styled-components'
+import {Popover} from '../../../../../../ui-components'
 import {Translate, useTranslation} from '../../../../../i18n'
 
 const PopoverCard = styled(Card)`
@@ -47,7 +48,7 @@ export function IncompatibleItemType(props: Props) {
         <PopoverCard margin={1} padding={3} onKeyDown={handleKeyDown} tabIndex={0} overflow="auto">
           <Stack space={4}>
             <Box>
-              <Text weight="semibold">{t('inputs.array.error.type-is-incompatible-title')}</Text>
+              <Text weight="medium">{t('inputs.array.error.type-is-incompatible-title')}</Text>
             </Box>
             <Text size={1}>
               <Translate
@@ -62,7 +63,7 @@ export function IncompatibleItemType(props: Props) {
               </Text>
             </Box>
             <Stack space={2}>
-              <Text size={1} weight="semibold">
+              <Text size={1} weight="medium">
                 {t('inputs.array.error.json-representation-description')}
               </Text>
               <Card padding={2} overflow="auto" border>

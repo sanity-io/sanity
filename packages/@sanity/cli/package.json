@@ -1,6 +1,6 @@
 {
   "name": "@sanity/cli",
-  "version": "3.22.1",
+  "version": "3.23.4",
   "description": "Sanity CLI tool for managing Sanity installations, managing plugins, schemas and datasets",
   "keywords": [
     "sanity",
@@ -63,7 +63,7 @@
   },
   "dependencies": {
     "@babel/traverse": "^7.23.5",
-    "@sanity/telemetry": "^0.7.3",
+    "@sanity/telemetry": "^0.7.5",
     "chalk": "^4.1.2",
     "esbuild": "^0.19.8",
     "esbuild-register": "^3.4.1",
@@ -78,8 +78,8 @@
     "@sanity/client": "^6.10.0",
     "@sanity/eslint-config-studio": "^2.0.4",
     "@sanity/generate-help-url": "^3.0.0",
-    "@sanity/types": "3.22.1",
-    "@sanity/util": "3.22.1",
+    "@sanity/types": "3.23.4",
+    "@sanity/util": "3.23.4",
     "@types/babel__traverse": "^7.18.1",
     "@types/configstore": "^5.0.1",
     "@types/cpx": "^1.5.2",

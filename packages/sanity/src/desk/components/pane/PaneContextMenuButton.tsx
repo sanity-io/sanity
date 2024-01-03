@@ -1,10 +1,9 @@
-import {EllipsisVerticalIcon} from '@sanity/icons'
-import {Menu, MenuButton, PopoverProps} from '@sanity/ui'
+import {Menu} from '@sanity/ui'
 import React, {useId} from 'react'
-import {structureLocaleNamespace} from '../../i18n'
+import {MenuButton, PopoverProps} from '../../../ui-components'
 import {_PaneMenuItem, _PaneMenuNode} from './types'
 import {PaneMenuButtonItem} from './PaneMenuButtonItem'
-import {StatusButton, useTranslation} from 'sanity'
+import {ContextMenuButton} from 'sanity'
 
 interface PaneContextMenuButtonProps {
   nodes: _PaneMenuNode[]
@@ -33,7 +32,6 @@ function nodesHasTone(nodes: _PaneMenuNode[], tone: NonNullable<_PaneMenuItem['t
 export function PaneContextMenuButton(props: PaneContextMenuButtonProps) {
   const {nodes} = props
   const id = useId()
-  const {t} = useTranslation(structureLocaleNamespace)
 
   const hasCritical = nodesHasTone(nodes, 'critical')
   const hasCaution = nodesHasTone(nodes, 'caution')
@@ -41,10 +39,7 @@ export function PaneContextMenuButton(props: PaneContextMenuButtonProps) {
   return (
     <MenuButton
       button={
-        <StatusButton
-          icon={EllipsisVerticalIcon}
-          mode="bleed"
-          title={t('pane-header.context-menu-button.tooltip')}
+        <ContextMenuButton
           // eslint-disable-next-line no-nested-ternary
           tone={hasCritical ? 'critical' : hasCaution ? 'caution' : undefined}
         />

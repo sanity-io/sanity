@@ -1,19 +1,9 @@
 import {CloseIcon} from '@sanity/icons'
-import {
-  Box,
-  Button,
-  Flex,
-  Layer,
-  Popover,
-  PopoverProps,
-  ResponsiveWidthProps,
-  Stack,
-  Text,
-  Theme,
-} from '@sanity/ui'
+import {Box, Flex, Layer, ResponsiveWidthProps, Stack, Text, Theme} from '@sanity/ui'
 import React, {useCallback} from 'react'
 import styled, {css} from 'styled-components'
 import TrapFocus from 'react-focus-lock'
+import {Button, Popover, PopoverProps} from '../../../ui-components'
 import {PopoverContainer} from './PopoverContainer'
 
 const StyledPopover = styled(Popover)(() => {
@@ -60,25 +50,29 @@ export function PopoverDialog(props: PopoverDialogProps) {
     referenceElement?.focus()
   }, [onClose, referenceElement])
 
+  // @todo: these use the same styles as dialogs, can this be shared?
   const content = (
     <PopoverContainer width={width}>
       <TrapFocus autoFocus>
         <Stack ref={containerRef}>
           <StickyLayer>
-            <Box padding={2} paddingLeft={3}>
+            <Box padding={2} paddingLeft={4}>
               <Flex align="center" gap={2}>
                 <Box flex={1}>
-                  <Text textOverflow="ellipsis" weight="semibold">
+                  <Text size={1} textOverflow="ellipsis" weight="medium">
                     {header}
                   </Text>
                 </Box>
-
-                <Button icon={CloseIcon} mode="bleed" onClick={handleClose} />
+                <Button
+                  icon={CloseIcon}
+                  mode="bleed"
+                  onClick={handleClose}
+                  tooltipProps={{content: 'Close'}}
+                />
               </Flex>
             </Box>
           </StickyLayer>
-
-          {children}
+          <Box padding={4}>{children}</Box>
         </Stack>
       </TrapFocus>
     </PopoverContainer>

@@ -1,11 +1,16 @@
 import type {Subscription} from 'rxjs'
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import styled from 'styled-components'
-import {Button, Card, useToast} from '@sanity/ui'
+import {
+  // eslint-disable-next-line no-restricted-imports
+  Button,
+  Card,
+  useToast,
+} from '@sanity/ui'
 import {Asset} from '@sanity/types'
+import {LoadingBlock} from '../../../../components/loadingBlock'
 import {useClient} from '../../../../hooks'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
-import {FullscreenSpinner} from '../../../components/FullscreenSpinner'
 import {AssetMenu} from '../shared/AssetMenu'
 import {AssetUsageDialog} from '../shared/AssetUsageDialog'
 import {AssetDeleteDialog} from '../shared/AssetDeleteDialog'
@@ -202,7 +207,6 @@ export const AssetThumb = React.memo(function AssetThumb(props: AssetProps) {
   return (
     <Root>
       <Button
-        tone="primary"
         selected={isSelected}
         tabIndex={0}
         data-id={_id}
@@ -213,7 +217,7 @@ export const AssetThumb = React.memo(function AssetThumb(props: AssetProps) {
       >
         <Container __unstable_checkered>
           <Image alt={originalFilename} src={imageUrl} onClick={onClick} data-id={_id} />
-          {isDeleting && <FullscreenSpinner />}
+          {isDeleting && <LoadingBlock />}
         </Container>
       </Button>
       <MenuContainer>

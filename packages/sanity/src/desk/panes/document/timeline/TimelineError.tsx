@@ -12,7 +12,7 @@ export function TimelineError() {
         <ErrorOutlineIcon />
       </TextWithTone>
       <Stack space={4}>
-        <TextWithTone size={1} tone="critical" weight="semibold">
+        <TextWithTone size={1} tone="critical" weight="medium">
           {t('timeline.error.load-document-changes-title')}
         </TextWithTone>
         <TextWithTone size={1} tone="critical">

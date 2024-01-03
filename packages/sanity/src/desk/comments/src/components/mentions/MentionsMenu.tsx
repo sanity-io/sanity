@@ -1,10 +1,10 @@
-import {Box, Flex, Spinner, Stack, Text} from '@sanity/ui'
+import {Box, Flex, Stack, Text} from '@sanity/ui'
 import styled from 'styled-components'
 import React, {useCallback, useImperativeHandle, useMemo, useRef, useState} from 'react'
 import {deburr} from 'lodash'
 import {MentionOptionUser} from '../../types'
 import {MentionsMenuItem} from './MentionsMenuItem'
-import {CommandList, CommandListHandle} from 'sanity'
+import {CommandList, CommandListHandle, LoadingBlock} from 'sanity'
 
 const EMPTY_ARRAY: MentionOptionUser[] = []
 
@@ -97,9 +97,7 @@ export const MentionsMenu = React.forwardRef(function MentionsMenu(
   if (loading) {
     return (
       <Root>
-        <Flex align="center" justify="center" padding={4}>
-          <Spinner muted size={1} />
-        </Flex>
+        <LoadingBlock showText />
       </Root>
     )
   }

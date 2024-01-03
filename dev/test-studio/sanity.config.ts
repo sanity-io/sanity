@@ -1,4 +1,5 @@
 import {BookIcon} from '@sanity/icons'
+import {SanityMonogram} from '@sanity/logos'
 import {visionTool} from '@sanity/vision'
 import {defineConfig, definePlugin} from 'sanity'
 import {deskTool} from 'sanity/desk'
@@ -13,7 +14,6 @@ import {ptPTLocale} from '@sanity/locale-pt-pt'
 import {svSELocale} from '@sanity/locale-sv-se'
 import {theme as tailwindTheme} from './sanity.theme.mjs'
 import {imageAssetSource} from './assetSources'
-import {Branding} from './components/Branding'
 import {resolveDocumentActions as documentActions} from './documentActions'
 import {resolveInitialValueTemplates} from './initialValueTemplates'
 import {languageFilter} from './plugins/language-filter'
@@ -31,6 +31,7 @@ import {
 import {
   Annotation,
   Block,
+  CustomBadge,
   Field,
   formComponentsPlugin,
   InlineBlock,
@@ -62,11 +63,6 @@ const sharedSettings = definePlugin({
       assetSources: [imageAssetSource],
     },
   },
-  studio: {
-    components: {
-      logo: Branding,
-    },
-  },
 
   i18n: {
     bundles: testStudioLocaleBundles,
@@ -93,6 +89,7 @@ const sharedSettings = definePlugin({
     unstable_comments: {
       enabled: true,
     },
+    badges: (prev, context) => (context.schemaType === 'author' ? [CustomBadge, ...prev] : prev),
   },
   plugins: [
     // ...localePlugins,
@@ -148,6 +145,20 @@ export default defineConfig([
     dataset: 'test',
     plugins: [sharedSettings()],
     basePath: '/test',
+    icon: SanityMonogram,
+  },
+  {
+    name: 'partialIndexing',
+    title: 'Partial Indexing',
+    projectId: 'ppsg7ml5',
+    dataset: 'partial-indexing-2',
+    plugins: [sharedSettings()],
+    basePath: '/partial-indexing',
+    search: {
+      unstable_partialIndexing: {
+        enabled: true,
+      },
+    },
   },
   {
     name: 'tsdoc',
@@ -159,12 +170,21 @@ export default defineConfig([
   },
   {
     name: 'playground',
-    title: 'Test Studio',
+    title: 'Test Studio (playground)',
     subtitle: 'Playground dataset',
     projectId: 'ppsg7ml5',
     dataset: 'playground',
     plugins: [sharedSettings()],
     basePath: '/playground',
+  },
+  {
+    name: 'playground-partial-indexing',
+    title: 'Test Studio (playground-partial-indexing)',
+    subtitle: 'Playground dataset',
+    projectId: 'ppsg7ml5',
+    dataset: 'playground-partial-indexing',
+    plugins: [sharedSettings()],
+    basePath: '/playground-partial-indexing',
   },
   {
     name: 'staging',

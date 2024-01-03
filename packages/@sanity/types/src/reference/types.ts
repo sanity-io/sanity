@@ -25,6 +25,7 @@ export type ReferenceFilterSearchOptions = {
   filter?: string
   params?: Record<string, unknown>
   tag?: string
+  maxFieldDepth?: number
 }
 
 /** @public */

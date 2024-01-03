@@ -1,6 +1,6 @@
 import {rem} from '@sanity/ui'
 import styled, {css} from 'styled-components'
-import {PREVIEW_ICON_SIZE} from '../constants'
+import {PREVIEW_SIZES} from '../constants'
 import {PreviewLayoutKey, PreviewMediaDimensions} from '../types'
 
 export const MediaWrapper = styled.span<{
@@ -12,7 +12,7 @@ export const MediaWrapper = styled.span<{
   const {$dimensions, $layout, $radius, $responsive} = props
   const width = $dimensions.width || 0
   const height = $dimensions.width || 0
-  const iconSize = PREVIEW_ICON_SIZE[$layout]
+  const iconSize = PREVIEW_SIZES[$layout].icon
 
   return css`
     position: relative;
@@ -37,24 +37,27 @@ export const MediaWrapper = styled.span<{
     }
 
     & svg {
+      // Shared styles for SVG icons
+      color: var(--card-icon-color);
       display: block;
       flex: 1;
-      font-size: calc(21 / 16 * 1em);
+
+      // Specific styles for non Sanity icons
+      &:not([data-sanity-icon]) {
+        height: 1em;
+        width: 1em;
+        max-width: 1em;
+        max-height: 1em;
+      }
+
+      // Specific styles for Sanity icons
+      &[data-sanity-icon] {
+        display: block;
+        font-size: calc(${iconSize} / 16 * 1em);
+      }
     }
 
-    & [data-sanity-icon] {
-      display: block;
-      font-size: calc(${iconSize} / 16 * 1em);
-    }
-
-    /*
-      NOTE on why we can’t use the ":after" pseudo-element:
-      The thing is we only want the shadow when then <MediaWrapper> contains
-      something else than <svg> – icons should not have the shadow.
-      This is why we use the "*:not(svg) + span" selector to target only that
-      situation to render the shadow.
-    */
-    & *:not(svg) + span {
+    & > span[data-border] {
       display: block;
       position: absolute;
       left: 0;
@@ -62,8 +65,9 @@ export const MediaWrapper = styled.span<{
       right: 0;
       bottom: 0;
       box-shadow: inset 0 0 0 1px var(--card-fg-color);
-      opacity: 0.2;
+      opacity: 0.1;
       border-radius: inherit;
+      pointer-events: none;
     }
   `
 })

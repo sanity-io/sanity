@@ -1,28 +1,14 @@
-import {ChevronDownIcon} from '@sanity/icons'
-import {
-  Box,
-  Button,
-  Flex,
-  Menu,
-  MenuButton,
-  MenuItem,
-  PopoverProps,
-  Text,
-  Tooltip,
-} from '@sanity/ui'
-import React, {
-  createElement,
-  isValidElement,
-  useCallback,
-  useId,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
-import {isValidElementType} from 'react-is'
-import {ActionStateDialog} from './ActionStateDialog'
-import {DocumentActionDescription, Hotkeys, LegacyLayerProvider, useTranslation} from 'sanity'
+import {Menu} from '@sanity/ui'
+import React, {useCallback, useState, useMemo, useId} from 'react'
+import {MenuButton, MenuItem, PopoverProps} from '../../../../ui-components'
 import {structureLocaleNamespace} from '../../../i18n'
+import {ActionStateDialog} from './ActionStateDialog'
+import {
+  DocumentActionDescription,
+  LegacyLayerProvider,
+  useTranslation,
+  ContextMenuButton,
+} from 'sanity'
 
 export interface ActionMenuButtonProps {
   actionStates: DocumentActionDescription[]
@@ -32,7 +18,6 @@ export interface ActionMenuButtonProps {
 export function ActionMenuButton(props: ActionMenuButtonProps) {
   const {actionStates, disabled} = props
   const idPrefix = useId()
-  const buttonRef = useRef<HTMLButtonElement | null>(null)
   const [actionIndex, setActionIndex] = useState(-1)
   const [referenceElement, setReferenceElement] = useState<HTMLButtonElement | null>(null)
 
@@ -57,13 +42,12 @@ export function ActionMenuButton(props: ActionMenuButtonProps) {
       <MenuButton
         id={`${idPrefix}-action-menu`}
         button={
-          <Button
-            data-testid="action-menu-button"
+          <ContextMenuButton
             aria-label={t('buttons.action-menu-button.aria-label')}
             disabled={disabled}
-            icon={ChevronDownIcon}
-            mode="ghost"
-            ref={buttonRef}
+            data-testid="action-menu-button"
+            size="large"
+            tooltipProps={{content: t('buttons.action-menu-button.tooltip')}}
           />
         }
         menu={
@@ -109,52 +93,24 @@ function ActionMenuListItem(props: ActionMenuListItemProps) {
     if (onHandle) onHandle()
   }, [index, onAction, onHandle])
 
-  const tooltipContent = actionState.title && (
-    <Box padding={2}>
-      <Text size={1}>{actionState.title}</Text>
-    </Box>
-  )
+  const hotkeys = useMemo(() => {
+    return actionState.shortcut
+      ? String(actionState.shortcut)
+          .split('+')
+          .map((s) => s.slice(0, 1).toUpperCase() + s.slice(1))
+      : undefined
+  }, [actionState.shortcut])
 
   return (
     <MenuItem
       data-testid={`action-${actionState.label.replace(' ', '')}`}
       disabled={disabled || Boolean(actionState.disabled)}
+      hotkeys={hotkeys}
+      icon={actionState.icon}
       onClick={handleClick}
-      padding={0}
+      text={actionState.label}
       tone={actionState.tone}
-    >
-      <Tooltip
-        content={tooltipContent}
-        disabled={!tooltipContent}
-        fallbackPlacements={['left', 'bottom']}
-        placement="top"
-        portal
-      >
-        <Flex align="center" paddingX={3}>
-          <Flex flex={1} paddingY={3}>
-            {actionState.icon && (
-              <Box marginRight={3}>
-                <Text>
-                  {isValidElement(actionState.icon) && actionState.icon}
-                  {isValidElementType(actionState.icon) && createElement(actionState.icon)}
-                </Text>
-              </Box>
-            )}
-
-            <Text>{actionState.label}</Text>
-          </Flex>
-
-          {actionState.shortcut && (
-            <Box marginLeft={3}>
-              <Hotkeys
-                keys={String(actionState.shortcut)
-                  .split('+')
-                  .map((s) => s.slice(0, 1).toUpperCase() + s.slice(1))}
-              />
-            </Box>
-          )}
-        </Flex>
-      </Tooltip>
-    </MenuItem>
+      {...(actionState.disabled && {tooltipProps: {content: actionState.title}})}
+    />
   )
 }

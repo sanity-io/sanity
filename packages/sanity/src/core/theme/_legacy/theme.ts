@@ -1,5 +1,7 @@
 import {black, blue, gray, green, red, white, yellow} from '@sanity/color'
 import {studioTheme as defaults} from '@sanity/ui'
+// eslint-disable-next-line camelcase
+import {v0_v2} from '@sanity/ui/theme'
 import {StudioTheme} from '../types'
 import {buildColor} from './color'
 import {buildFonts} from './fonts'
@@ -28,8 +30,8 @@ import {LegacyThemeProps} from './types'
  * ```
  *
  * @param partialLegacyTheme - Properties to override the theme with. See {@link LegacyThemeProps}
- *
  * @public
+ * @deprecated Legacy theming will be deprecated in a future version of Sanity Studio
  */
 export function buildLegacyTheme(partialLegacyTheme: Partial<LegacyThemeProps>): StudioTheme {
   const legacyTheme = resolveLegacyTheme(partialLegacyTheme)
@@ -38,11 +40,11 @@ export function buildLegacyTheme(partialLegacyTheme: Partial<LegacyThemeProps>):
 
   const color = buildColor(legacyPalette, legacyTones)
   const fonts = buildFonts(legacyTheme)
-
-  return {
+  const theme: StudioTheme = {
     __dark: _isDark(color.light.default.base.bg, color.light.default.base.fg),
     __legacy: true,
     ...defaults,
+    v2: undefined,
     color,
     focusRing: {
       offset: -1,
@@ -56,6 +58,9 @@ export function buildLegacyTheme(partialLegacyTheme: Partial<LegacyThemeProps>):
       parseInt(legacyTheme['--screen-xlarge-break'], 10) || 1600,
     ],
   }
+  // Override v2 default theme with the adapter from v0 theme to v2 theme
+  theme.v2 = v0_v2(theme)
+  return theme
 }
 
 const defaultCustomProperties: LegacyThemeProps = {

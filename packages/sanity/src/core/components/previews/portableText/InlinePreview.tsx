@@ -1,6 +1,6 @@
 import React from 'react'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
-import {PREVIEW_MEDIA_SIZE} from '../constants'
+import {PREVIEW_SIZES} from '../constants'
 import {renderPreviewMedia, renderPreviewNode} from '../helpers'
 import {PreviewMediaDimensions, PreviewProps} from '../types'
 import {RootSpan, MediaSpan, TextSpan} from './InlinePreview.styled'
@@ -11,7 +11,7 @@ import {RootSpan, MediaSpan, TextSpan} from './InlinePreview.styled'
 export type InlinePreviewProps = Omit<PreviewProps<'inline'>, 'renderDefault'>
 
 const DEFAULT_MEDIA_DIMENSIONS: PreviewMediaDimensions = {
-  ...PREVIEW_MEDIA_SIZE.inline,
+  ...PREVIEW_SIZES.inline.media,
   fit: 'crop',
   aspect: 1,
   dpr: getDevicePixelRatio(),

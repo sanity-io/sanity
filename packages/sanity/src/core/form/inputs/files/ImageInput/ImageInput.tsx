@@ -1,18 +1,7 @@
 /* eslint-disable react/jsx-no-bind */
 /* eslint-disable import/no-unresolved,react/jsx-handler-names, react/display-name, react/no-this-in-sfc */
 
-import {
-  Box,
-  Button,
-  Card,
-  Dialog,
-  Menu,
-  MenuButton,
-  MenuButtonProps,
-  MenuItem,
-  Stack,
-  ToastParams,
-} from '@sanity/ui'
+import {Box, Card, Menu, Stack, ToastParams} from '@sanity/ui'
 import {get, startCase} from 'lodash'
 import {Observable, Subscription} from 'rxjs'
 import {ChevronDownIcon, ImageIcon, SearchIcon} from '@sanity/icons'
@@ -28,6 +17,7 @@ import {
 import React, {ReactNode} from 'react'
 import {SanityClient} from '@sanity/client'
 import {isImageSource} from '@sanity/asset-utils'
+import {Button, Dialog, MenuButton, MenuButtonProps, MenuItem} from '../../../../../ui-components'
 import {PatchEvent, setIfMissing, unset} from '../../../patch'
 import {FieldMember} from '../../../store'
 import {InputProps, ObjectInputProps} from '../../../types'
@@ -408,19 +398,17 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
         width={1}
       >
         <PresenceOverlay>
-          <Box padding={4}>
-            <Stack space={5}>
-              {withImageTool && value?.asset && (
-                <ImageToolInput
-                  {...this.props}
-                  imageUrl={imageUrlBuilder.image(value.asset).url()}
-                  value={value as FIXME}
-                  presence={hotspotInputProps.presence}
-                  changed={changed}
-                />
-              )}
-            </Stack>
-          </Box>
+          <Stack space={5}>
+            {withImageTool && value?.asset && (
+              <ImageToolInput
+                {...this.props}
+                imageUrl={imageUrlBuilder.image(value.asset).url()}
+                value={value as FIXME}
+                presence={hotspotInputProps.presence}
+                changed={changed}
+              />
+            )}
+          </Stack>
         </PresenceOverlay>
       </Dialog>
     )
@@ -567,7 +555,7 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
               data-testid="file-input-multi-browse-button"
               icon={SearchIcon}
               iconRight={ChevronDownIcon}
-              mode="ghost"
+              mode="bleed"
               text={t('inputs.image.browse-menu.text')}
             />
           }
@@ -600,10 +588,9 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
 
     return (
       <Button
-        fontSize={2}
         text={t('inputs.image.browse-menu.text')}
         icon={SearchIcon}
-        mode="ghost"
+        mode="bleed"
         onClick={() => {
           this.setState({isMenuOpen: false})
           this.handleSelectImageFromAssetSource(assetSources[0])
@@ -629,12 +616,10 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
         <Card
           tone={readOnly ? 'transparent' : 'inherit'}
           border
-          padding={3}
-          style={
-            hoveringFiles.length === 0
-              ? {borderStyle: 'dashed'}
-              : {borderStyle: 'dashed', borderColor: 'transparent'}
-          }
+          paddingX={3}
+          paddingY={2}
+          radius={2}
+          style={hoveringFiles.length === 0 ? {} : {borderColor: 'transparent'}}
         >
           <UploadPlaceholder
             browse={this.renderBrowser()}
@@ -773,7 +758,6 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
               onFilesOut={this.handleFilesOut}
               tone={this.getFileTone()}
               $border={hasValueOrUpload || hoveringFiles.length > 0}
-              style={{padding: 1}}
               sizing="border"
               radius={2}
             >

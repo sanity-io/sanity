@@ -130,7 +130,7 @@ const RadioSelect = forwardRef(function RadioSelect(
 
   const Layout = direction === 'horizontal' ? Inline : Stack
   return (
-    <Card border padding={3} radius={1}>
+    <Card border padding={3} radius={2}>
       <Layout space={3} role="group">
         {items.map((item, index) => (
           <RadioSelectItem
@@ -182,7 +182,7 @@ const RadioSelectItem = forwardRef(function RadioSelectItem(
       />
 
       <Box marginLeft={2}>
-        <Text size={1} weight="semibold">
+        <Text size={1} weight="medium">
           {item.title}
         </Text>
       </Box>

@@ -1,15 +1,56 @@
-import {createGlobalStyle} from 'styled-components'
+/* eslint-disable camelcase */
 
-export const GlobalStyle = createGlobalStyle(({theme}) => {
-  const {color, fonts} = theme.sanity
+import {getTheme_v2, rgba} from '@sanity/ui/theme'
+import {createGlobalStyle, css} from 'styled-components'
 
-  return {
-    html: {
-      backgroundColor: color.base.bg,
-    },
+const SCROLLBAR_SIZE = 12 // px
+const SCROLLBAR_BORDER_SIZE = 4 // px
 
-    '#sanity': {
-      fontFamily: fonts.text.family,
-    },
-  }
+export const GlobalStyle = createGlobalStyle((props) => {
+  const {color, font} = getTheme_v2(props.theme)
+
+  return css`
+    ::-webkit-scrollbar {
+      width: ${SCROLLBAR_SIZE}px;
+      height: ${SCROLLBAR_SIZE}px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background-clip: content-box;
+      background-color: var(--card-border-color, ${color.border});
+      border: ${SCROLLBAR_BORDER_SIZE}px solid transparent;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background-color: var(--card-muted-fg-color, ${color.muted.fg});
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--card-bg-color, transparent);
+    }
+
+    *::selection {
+      background-color: ${rgba(color.focusRing, 0.3)};
+    }
+
+    html {
+      background-color: ${color.bg};
+    }
+
+    body {
+      scrollbar-gutter: stable;
+    }
+
+    #sanity {
+      font-family: ${font.text.family};
+    }
+
+    b {
+      font-weight: ${font.text.weights.medium};
+    }
+
+    strong {
+      font-weight: ${font.text.weights.medium};
+    }
+  `
 })
