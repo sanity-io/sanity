@@ -30,6 +30,12 @@ function isUnderline(el: Node): boolean {
   return /text-decoration:underline/.test(style || '')
 }
 
+// text-decoration seems like the most important rule for strike-through in their html
+function isStrikethrough(el: Node): boolean {
+  const style = isElement(el) && el.getAttribute('style')
+  return /text-decoration:line-through/.test(style || '')
+}
+
 // Check for attribute given by the gdocs preprocessor
 function isGoogleDocs(el: Node): boolean {
   return isElement(el) && Boolean(el.getAttribute('data-is-google-docs'))
@@ -99,6 +105,9 @@ export default function createGDocsRules(
           }
           if (isUnderline(el)) {
             span.marks.push('underline')
+          }
+          if (isStrikethrough(el)) {
+            span.marks.push('strike-through')
           }
           if (isEmphasis(el)) {
             span.marks.push('em')
