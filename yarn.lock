@@ -3756,14 +3756,14 @@
     uuid "^9.0.1"
     zod "^3.22.4"
 
-"@sanity/presentation@1.4.0":
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/@sanity/presentation/-/presentation-1.4.0.tgz#0e71e6daa2b43ba920496f1a8617f03d32a9add4"
-  integrity sha512-BDT7I7kfWuwqnOl34p0ytyUFrA+0/WT1zm0daSe0g8X8nKi++7HCa2fEbbRy49EG4tkrvWz14/aEtmiOImvMDw==
+"@sanity/presentation@1.4.1":
+  version "1.4.1"
+  resolved "https://registry.yarnpkg.com/@sanity/presentation/-/presentation-1.4.1.tgz#7ef95925170e0e0db5d4d5f81333a716b0c564be"
+  integrity sha512-9ed8d3MToJO4qy4ckmoi1sMO6h3FIBS6ajLBBbbwnXMPE3R0bTi/MtbKq1N9/V5Cc8QmTmqZ7P6a6IOMZ/SUgw==
   dependencies:
     "@sanity/groq-store" "5.3.7"
     "@sanity/icons" "^2.8.0"
-    "@sanity/preview-url-secret" "^1.4.0"
+    "@sanity/preview-url-secret" "^1.4.1"
     "@sanity/ui" "2.0.0-beta.13"
     "@types/lodash.isequal" "^4.5.8"
     framer-motion "^10.16.16"
@@ -3772,10 +3772,10 @@
     rxjs "^7.8.1"
     suspend-react "0.1.3"
 
-"@sanity/preview-url-secret@^1.4.0":
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/@sanity/preview-url-secret/-/preview-url-secret-1.4.0.tgz#4ed0fd3de4f25c0f7a46d861380be331f8a5b68b"
-  integrity sha512-5eta7+7URe1jspxzoiwrtqr/39pWKzDt+YJEYS2SBaQutT2fERwl60lNGCd4AGqPjVN8H79t+P14q67ADpepDQ==
+"@sanity/preview-url-secret@^1.4.1":
+  version "1.4.1"
+  resolved "https://registry.yarnpkg.com/@sanity/preview-url-secret/-/preview-url-secret-1.4.1.tgz#72646c25dc41456cc9a70b7ba7abf00b0695c37f"
+  integrity sha512-EkV90NPBrMFc4YTKQsC3iMM8cw6Rs4ttVyfs2ou5ZKsKnU8bsr1hE/X9UB7nEXKc1h/qCXHVn8oKZ7uFdeI1DA==
   dependencies:
     "@sanity/uuid" "3.0.2"
 
