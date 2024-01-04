@@ -687,14 +687,14 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
                 </Card>
                 <Select
                   value={
-                    customApiVersion === false ? apiVersion : t('settings.other-api-version-label')
+                    customApiVersion === false ? apiVersion : 'other'
                   }
                   onChange={this.handleChangeApiVersion}
                 >
                   {API_VERSIONS.map((version) => (
                     <option key={version}>{version}</option>
                   ))}
-                  <option key="other" value={t('settings.other-api-version-label')}>
+                  <option key="other" value="other">
                     {t('settings.other-api-version-label')}
                   </option>
                 </Select>
