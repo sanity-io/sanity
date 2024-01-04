@@ -3549,13 +3549,13 @@
   integrity sha512-uyIOtGA4Duf+68I3BSbYHY5P+WGftn3QtNJD2Pn7h9WPGYsSrWViIPebE9yRN8N0NHhYj+hDQXaMpVdjG7r+zA==
 
 "@sanity/assist@^1.0.8":
-  version "1.2.15"
-  resolved "https://registry.yarnpkg.com/@sanity/assist/-/assist-1.2.15.tgz#bd505a63cd90ac10118cd0d07ed5f8f0fe603bca"
-  integrity sha512-Mvni3BNbYWSoYLvqtfN4VmyLfBnc8bS3OGPZ6zG53bFV5aMrOWAKx+oKczo2YhKcIZsy+2mOOnK8r3ZMTAYipQ==
+  version "1.2.16"
+  resolved "https://registry.yarnpkg.com/@sanity/assist/-/assist-1.2.16.tgz#5af4136659cb706088b4f0712cb5eb358ef88296"
+  integrity sha512-uGQKwK6B66uMFPP44Tt/TgXaXINZFrd5qmq9iIO7WskcAqrklfZfLXIN8SnYcU05xBUlU6tb+ulbVo3QprGvoQ==
   dependencies:
     "@sanity/icons" "^2.4.0"
     "@sanity/incompatible-plugin" "^1.0.4"
-    "@sanity/ui" "^1.6.0"
+    "@sanity/ui" "^2.0.0-beta.13"
     date-fns "^2.30.0"
     react-fast-compare "^3.2.1"
     react-is "^18.2.0"
@@ -3867,7 +3867,7 @@
     framer-motion "^10.16.5"
     react-refractor "^2.1.7"
 
-"@sanity/ui@2.0.0-beta.14":
+"@sanity/ui@2.0.0-beta.14", "@sanity/ui@^2.0.0-beta.13":
   version "2.0.0-beta.14"
   resolved "https://registry.yarnpkg.com/@sanity/ui/-/ui-2.0.0-beta.14.tgz#0ca83eb963de1ecdb2119fab443352fc2b0ded00"
   integrity sha512-PTn/fp/ToB0SRcSVgI/HITN75VggLt6/6jvGXRJHy0ip/EvgVzAdcJMYcaI2uIs5IyRKZNM59ymurSVVKI+zLg==
@@ -3879,7 +3879,7 @@
     framer-motion "^10.16.5"
     react-refractor "^2.1.7"
 
-"@sanity/ui@^1", "@sanity/ui@^1.0.0", "@sanity/ui@^1.6.0", "@sanity/ui@^1.7.2":
+"@sanity/ui@^1", "@sanity/ui@^1.0.0", "@sanity/ui@^1.7.2":
   version "1.9.3"
   resolved "https://registry.yarnpkg.com/@sanity/ui/-/ui-1.9.3.tgz#4af45902ac95801aa5ea57f377beaf3e3cb36339"
   integrity sha512-AdWEVFaK0Snk6xxP0lGPVP3QQYKwzkfGFpFZnL9d6UtWt8yeuS8BMLVAzmXzg14hrqH50ex9nvNl3eq6a0MWiw==
