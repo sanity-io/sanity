@@ -68,8 +68,7 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'action.publish.waiting': 'Waiting for tasks to finish before publishing',
 
   /** Message prompting the user to confirm that they want to restore to an earlier version*/
-  'action.restore.confirm-dialog.confirm-discard-changes':
-    'Are you sure you want to restore this document?',
+  'action.restore.confirm.message': 'Are you sure you want to restore this document?',
   /** Fallback tooltip for when user is looking at the initial version */
   'action.restore.disabled.cannot-restore-initial': "You can't restore to the initial version",
 
