@@ -1,14 +1,15 @@
 import {uniqBy, startCase} from 'lodash'
-import type {
-  SchemaType,
-  Schema as CompiledSchema,
-  ReferenceSchemaType,
-  ObjectFieldType,
-  ObjectField,
-  ObjectSchemaType,
-  ArraySchemaType,
-  IntrinsicTypeName,
-  CrossDatasetReferenceSchemaType,
+import {
+  type SchemaType,
+  type Schema as CompiledSchema,
+  type ReferenceSchemaType,
+  type ObjectFieldType,
+  type ObjectField,
+  type ObjectSchemaType,
+  type ArraySchemaType,
+  type IntrinsicTypeName,
+  type CrossDatasetReferenceSchemaType,
+  isDeprecatedSchemaType,
 } from '@sanity/types'
 import {generateHelpUrl} from '@sanity/generate-help-url'
 import {Schema} from '@sanity/schema'
@@ -21,6 +22,7 @@ import type {
   ConvertedInterface,
   ConvertedType,
   ConvertedUnion,
+  Deprecation,
 } from './types'
 
 const skipTypes = ['document', 'reference']
@@ -28,6 +30,12 @@ const allowedJsonTypes = ['object', 'array']
 const disallowedCustomizedMembers = ['object', 'array', 'image', 'file', 'block']
 const disabledBlockFields = ['markDefs']
 const scalars = ['string', 'number', 'boolean']
+
+/**
+ * Data required elsewhere in the API specification generation process, but that should not be
+ * included in the generated API specification.
+ */
+export const internal = Symbol('internal')
 
 function getBaseType(baseSchema: CompiledSchema, typeName: IntrinsicTypeName): SchemaType {
   if (typeName === 'crossDatasetReference') {
@@ -278,6 +286,7 @@ export function extractFromSanitySchema(
       ...props,
       ...mapped,
       ...original,
+      ...getDeprecation(type.type),
       ...(crossDatasetReferenceMetadata && {crossDatasetReferenceMetadata}),
     }
   }
@@ -334,6 +343,9 @@ export function extractFromSanitySchema(
           ? buildRawField(field, name)
           : (convertType(field, name, {fieldName: field.name}) as any),
       ),
+      [internal]: {
+        ...getDeprecation(def),
+      },
     }
   }
 
@@ -705,4 +717,14 @@ class HelpfulError extends Error {
     super(message)
     this.helpUrl = helpUrl
   }
+}
+
+function getDeprecation(
+  type?: SchemaType | ConvertedType | ObjectFieldType<SchemaType> | ObjectField<SchemaType>,
+): Partial<Deprecation> {
+  return isDeprecatedSchemaType(type)
+    ? {
+        deprecationReason: type.deprecated.reason,
+      }
+    : {}
 }

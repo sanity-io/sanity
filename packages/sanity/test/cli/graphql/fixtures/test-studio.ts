@@ -12,6 +12,9 @@ export default Schema.compile({
           title: 'Source name',
           description: 'A canonical name for the source this asset is originating from',
           type: 'string',
+          deprecated: {
+            reason: 'This field is no longer used',
+          },
         },
         {
           name: 'id',
@@ -570,6 +573,9 @@ export default Schema.compile({
       name: 'documentActionsTest',
       title: 'Document actions',
       fields: [{type: 'string', name: 'title', title: 'Title'}],
+      deprecated: {
+        reason: 'Entire `Document actions` document type deprecated',
+      },
     },
     {
       type: 'document',
@@ -577,6 +583,8 @@ export default Schema.compile({
       title: 'Poppers',
       fields: [
         {type: 'string', name: 'title', title: 'Title'},
+        {type: 'deprecatedString', name: 'someString', title: 'Some String'},
+        {type: 'deprecatedObject', name: 'someObject', title: 'Some Object'},
         {type: 'array', name: 'primitives', title: 'Primitives', of: [{type: 'string'}]},
       ],
     },
@@ -690,6 +698,42 @@ export default Schema.compile({
         {
           name: 'cdrFieldNamed',
           type: 'cdrPersonReference',
+        },
+      ],
+    },
+    {
+      title: 'Deprecated String',
+      name: 'deprecatedString',
+      type: 'string',
+      deprecated: {
+        reason: 'This string type has been deprecated',
+      },
+    },
+    {
+      title: 'Deprecated Object',
+      name: 'deprecatedObject',
+      type: 'object',
+      deprecated: {
+        reason: 'This object type has been deprecated',
+      },
+      fields: [
+        {
+          title: 'Name',
+          name: 'name',
+          type: 'string',
+        },
+        {
+          title: 'Description',
+          name: 'description',
+          type: 'string',
+          deprecated: {
+            reason: 'This field is no longer used',
+          },
+        },
+        {
+          title: 'Excerpt',
+          name: 'excerpt',
+          type: 'deprecatedString',
         },
       ],
     },

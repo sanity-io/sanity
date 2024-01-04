@@ -1,5 +1,6 @@
 import type {GraphQLAPIConfig} from '@sanity/cli'
 import type {Schema} from '@sanity/types'
+import {internal} from './extractFromSanitySchema'
 
 export interface GeneratedApiSpecification {
   types: (ConvertedType | ConvertedUnion | ConvertedEnum | InputObjectType)[]
@@ -32,6 +33,10 @@ export interface ApiCustomizationOptions {
   filterSuffix?: string
 }
 
+export interface Deprecation {
+  deprecationReason: string
+}
+
 export interface ConvertedNode {
   kind: 'Type' | 'List' | 'Union' | 'Interface'
   name: string
@@ -40,7 +45,7 @@ export interface ConvertedNode {
   fields: ConvertedFieldDefinition[]
 }
 
-export interface ConvertedType {
+export interface ConvertedType extends Partial<Deprecation> {
   kind: 'Type' | 'Interface'
   name: string
   type: string
@@ -53,6 +58,7 @@ export interface ConvertedType {
     dataset: string
     typeNames: string[]
   }
+  [internal]?: Partial<Deprecation>
 }
 
 export interface ConvertedDocumentType extends ConvertedType {
@@ -77,7 +83,7 @@ export type FieldArg =
   | {name: string; type: string; isFieldFilter?: boolean}
   | {name: string; type: ConvertedNode}
 
-export interface ConvertedField {
+export interface ConvertedField extends Partial<Deprecation> {
   fieldName: string
   type: string
   filter?: string
@@ -113,7 +119,7 @@ export interface ListDefinition {
   children: {type: string; isNullable?: boolean}
 }
 
-export interface QueryDefinition {
+export interface QueryDefinition extends Partial<Deprecation> {
   fieldName: string
   type: string | ListDefinition
 
