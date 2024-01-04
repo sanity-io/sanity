@@ -1,17 +1,30 @@
+import {
+  Box,
+  Dialog, // eslint-disable-line no-restricted-imports
+} from '@sanity/ui'
 import React, {useId} from 'react'
-import {Dialog} from '../../../../../ui-components'
 import {DIALOG_WIDTH_TO_UI_WIDTH} from './constants'
 import {DocumentActionModalDialogProps, LegacyLayerProvider} from 'sanity'
 
+/**
+ * Dialog rendered by custom document actions of dialog type `dialog`.
+ * As these are user configurable with public facing APIs, internal studio ui-components are not used.
+ */
 export function ModalDialog(props: {dialog: DocumentActionModalDialogProps}) {
   const {dialog} = props
   const dialogId = useId()
+
+  const footer = dialog.footer && (
+    <Box paddingX={4} paddingY={3}>
+      {dialog.footer}
+    </Box>
+  )
 
   return (
     <LegacyLayerProvider zOffset="fullscreen">
       <Dialog
         __unstable_hideCloseButton={dialog.showCloseButton === false}
-        footer={dialog.footer}
+        footer={footer}
         header={dialog.header}
         id={dialogId}
         // eslint-disable-next-line react/jsx-handler-names
@@ -20,7 +33,7 @@ export function ModalDialog(props: {dialog: DocumentActionModalDialogProps}) {
         onClickOutside={dialog.onClose}
         width={dialog.width === undefined ? 1 : DIALOG_WIDTH_TO_UI_WIDTH[dialog.width]}
       >
-        {dialog.content}
+        <Box padding={4}>{dialog.content}</Box>
       </Dialog>
     </LegacyLayerProvider>
   )

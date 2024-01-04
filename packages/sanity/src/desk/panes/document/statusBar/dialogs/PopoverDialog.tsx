@@ -1,6 +1,10 @@
-import {useClickOutside, useGlobalKeyDown, useLayer} from '@sanity/ui'
+import {
+  Popover, // eslint-disable-line no-restricted-imports
+  useClickOutside,
+  useGlobalKeyDown,
+  useLayer,
+} from '@sanity/ui'
 import React, {useCallback, useState} from 'react'
-import {Popover} from '../../../../../ui-components'
 import {POPOVER_FALLBACK_PLACEMENTS} from './constants'
 import {DocumentActionPopoverDialogProps} from 'sanity'
 
@@ -23,6 +27,10 @@ export function PopoverDialog(props: {
   )
 }
 
+/**
+ * Popover rendered by custom document actions of dialog type `popover`.
+ * As these are user configurable with public facing APIs, internal studio ui-components are not used.
+ */
 function PopoverDialogContent(props: {dialog: DocumentActionPopoverDialogProps}) {
   const {dialog} = props
   const {content, onClose} = dialog
