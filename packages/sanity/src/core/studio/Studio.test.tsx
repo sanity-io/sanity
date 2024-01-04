@@ -44,7 +44,9 @@ describe('Studio', () => {
     try {
       const html = renderToStaticMarkup(sheet.collectStyles(<Studio config={config} />))
 
-      expect(html).toMatchInlineSnapshot(`"<div class=\\"sc-MApLD jGNhIU\\"><div data-ui=\\"Spinner\\" class=\\"sc-ipEzrc eJGegB sc-ksBlXE dyLnEw sc-hQrfjo eAuDzc\\"><span><svg data-sanity-icon=\\"spinner\\" width=\\"1em\\" height=\\"1em\\" viewBox=\\"0 0 25 25\\" fill=\\"none\\" xmlns=\\"http://www.w3.org/2000/svg\\"><path d=\\"M4.5 12.5C4.5 16.9183 8.08172 20.5 12.5 20.5C16.9183 20.5 20.5 16.9183 20.5 12.5C20.5 8.08172 16.9183 4.5 12.5 4.5\\" stroke=\\"currentColor\\" stroke-width=\\"1.2\\" stroke-linejoin=\\"round\\"></path></svg></span></div></div>"`)
+      expect(html).toMatchInlineSnapshot(
+        `"<div class=\\"sc-MApLD jGNhIU\\"><div data-ui=\\"Spinner\\" class=\\"sc-ipEzrc eJGegB sc-ksBlXE dyLnEw sc-hQrfjo eAuDzc\\"><span><svg data-sanity-icon=\\"spinner\\" width=\\"1em\\" height=\\"1em\\" viewBox=\\"0 0 25 25\\" fill=\\"none\\" xmlns=\\"http://www.w3.org/2000/svg\\"><path d=\\"M4.5 12.5C4.5 16.9183 8.08172 20.5 12.5 20.5C16.9183 20.5 20.5 16.9183 20.5 12.5C20.5 8.08172 16.9183 4.5 12.5 4.5\\" stroke=\\"currentColor\\" stroke-width=\\"1.2\\" stroke-linejoin=\\"round\\"></path></svg></span></div></div>"`,
+      )
     } finally {
       sheet.seal()
     }
@@ -59,7 +61,9 @@ describe('Studio', () => {
     const sheet = new ServerStyleSheet()
     try {
       const html = renderToString(sheet.collectStyles(<Studio config={config} />))
-      expect(html).toMatchInlineSnapshot(`"<div class=\\"sc-MApLD jGNhIU\\"><div data-ui=\\"Spinner\\" class=\\"sc-ipEzrc eJGegB sc-ksBlXE dyLnEw sc-hQrfjo eAuDzc\\"><span><svg data-sanity-icon=\\"spinner\\" width=\\"1em\\" height=\\"1em\\" viewBox=\\"0 0 25 25\\" fill=\\"none\\" xmlns=\\"http://www.w3.org/2000/svg\\"><path d=\\"M4.5 12.5C4.5 16.9183 8.08172 20.5 12.5 20.5C16.9183 20.5 20.5 16.9183 20.5 12.5C20.5 8.08172 16.9183 4.5 12.5 4.5\\" stroke=\\"currentColor\\" stroke-width=\\"1.2\\" stroke-linejoin=\\"round\\"></path></svg></span></div></div>"`)
+      expect(html).toMatchInlineSnapshot(
+        `"<div class=\\"sc-MApLD jGNhIU\\"><div data-ui=\\"Spinner\\" class=\\"sc-ipEzrc eJGegB sc-ksBlXE dyLnEw sc-hQrfjo eAuDzc\\"><span><svg data-sanity-icon=\\"spinner\\" width=\\"1em\\" height=\\"1em\\" viewBox=\\"0 0 25 25\\" fill=\\"none\\" xmlns=\\"http://www.w3.org/2000/svg\\"><path d=\\"M4.5 12.5C4.5 16.9183 8.08172 20.5 12.5 20.5C16.9183 20.5 20.5 16.9183 20.5 12.5C20.5 8.08172 16.9183 4.5 12.5 4.5\\" stroke=\\"currentColor\\" stroke-width=\\"1.2\\" stroke-linejoin=\\"round\\"></path></svg></span></div></div>"`,
+      )
     } finally {
       sheet.seal()
     }
@@ -77,7 +81,9 @@ describe('Studio', () => {
     try {
       const html = renderToString(sheet.collectStyles(<Studio config={config} />))
       node.innerHTML = html
-      expect(html).toMatchInlineSnapshot(`"<div class=\\"sc-MApLD jGNhIU\\"><div data-ui=\\"Spinner\\" class=\\"sc-ipEzrc eJGegB sc-ksBlXE dyLnEw sc-hQrfjo eAuDzc\\"><span><svg data-sanity-icon=\\"spinner\\" width=\\"1em\\" height=\\"1em\\" viewBox=\\"0 0 25 25\\" fill=\\"none\\" xmlns=\\"http://www.w3.org/2000/svg\\"><path d=\\"M4.5 12.5C4.5 16.9183 8.08172 20.5 12.5 20.5C16.9183 20.5 20.5 16.9183 20.5 12.5C20.5 8.08172 16.9183 4.5 12.5 4.5\\" stroke=\\"currentColor\\" stroke-width=\\"1.2\\" stroke-linejoin=\\"round\\"></path></svg></span></div></div>"`)
+      expect(html).toMatchInlineSnapshot(
+        `"<div class=\\"sc-MApLD jGNhIU\\"><div data-ui=\\"Spinner\\" class=\\"sc-ipEzrc eJGegB sc-ksBlXE dyLnEw sc-hQrfjo eAuDzc\\"><span><svg data-sanity-icon=\\"spinner\\" width=\\"1em\\" height=\\"1em\\" viewBox=\\"0 0 25 25\\" fill=\\"none\\" xmlns=\\"http://www.w3.org/2000/svg\\"><path d=\\"M4.5 12.5C4.5 16.9183 8.08172 20.5 12.5 20.5C16.9183 20.5 20.5 16.9183 20.5 12.5C20.5 8.08172 16.9183 4.5 12.5 4.5\\" stroke=\\"currentColor\\" stroke-width=\\"1.2\\" stroke-linejoin=\\"round\\"></path></svg></span></div></div>"`,
+      )
       document.head.innerHTML += sheet.getStyleTags()
 
       act(() => hydrateRoot(node, <Studio config={config} />))
