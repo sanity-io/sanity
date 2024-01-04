@@ -4,9 +4,11 @@ import type {
   ApiCustomizationOptions,
   ConvertedType,
   ConvertedUnion,
+  Deprecation,
   InputObjectType,
   QueryDefinition,
 } from '../types'
+import {internal} from '../extractFromSanitySchema'
 import {getFilterFieldName} from './utils'
 
 export function generateTypeQueries(
@@ -52,6 +54,7 @@ export function generateTypeQueries(
           isNullable: false,
         },
       ],
+      ...getDeprecation(type),
     })
   })
 
@@ -103,8 +106,17 @@ export function generateTypeQueries(
           isFieldFilter: false,
         },
       ],
+      ...getDeprecation(type),
     })
   })
 
   return queries
+}
+
+function getDeprecation(type: ConvertedType): Partial<Deprecation> {
+  return type[internal]?.deprecationReason
+    ? {
+        deprecationReason: type[internal].deprecationReason,
+      }
+    : {}
 }
