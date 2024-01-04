@@ -28,4 +28,9 @@ export interface DocumentDefinition extends Omit<ObjectDefinition, 'type'> {
   __experimental_search?: {path: string; weight: number; mapWith?: string}[]
   /** @alpha */
   __experimental_omnisearch_visibility?: boolean
+  /**
+   * Hides the document title introduced at the document pane
+   * @alpha
+   * */
+  __experimental_hide_form_title?: boolean
 }
