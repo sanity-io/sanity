@@ -264,7 +264,7 @@ export function extractFromSanitySchema(
   function convertType(
     type: SchemaType | ObjectField,
     parent?: string,
-    props: {fieldName?: string} = {},
+    props: {fieldName?: string} & Partial<Deprecation> = {},
   ): ConvertedType {
     const mapped = _convertType(type, parent || '', {isField: Boolean(props.fieldName)})
     const gqlName = props.fieldName || mapped.name
@@ -273,10 +273,10 @@ export function extractFromSanitySchema(
     const crossDatasetReferenceMetadata = getCrossDatasetReferenceMetadata(type)
 
     return {
+      ...getDeprecation(type.type),
       ...props,
       ...mapped,
       ...original,
-      ...getDeprecation(type.type),
       ...(crossDatasetReferenceMetadata && {crossDatasetReferenceMetadata}),
     }
   }
@@ -331,7 +331,10 @@ export function extractFromSanitySchema(
       fields: objectFields.map((field) =>
         isArrayOfBlocks(field)
           ? buildRawField(field, name)
-          : (convertType(field, name, {fieldName: field.name}) as any),
+          : (convertType(field, name, {
+              fieldName: field.name,
+              ...getDeprecation(def),
+            }) as any),
       ),
       [internal]: {
         ...getDeprecation(def),
