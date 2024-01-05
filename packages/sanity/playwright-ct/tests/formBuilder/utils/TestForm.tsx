@@ -1,6 +1,5 @@
 import {Path, SanityDocument, ValidationContext, ValidationMarker} from '@sanity/types'
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {validateDocument} from '../../../../src/core/validation'
 import {applyAll} from '../../../../src/core/form/patch/applyPatch'
 import {createMockSanityClient} from '../../mocks/createMockSanityClient'
 import type {FormDocumentValue} from '../../../../src/core/form/types'
@@ -15,6 +14,8 @@ import {
   StateTree,
   useFormState,
   useWorkspace,
+  validateDocument,
+  Workspace,
 } from 'sanity'
 
 const NOOP = () => null
@@ -73,8 +74,8 @@ export function TestForm({
     })
   }, [document, patchChannel])
 
-  const {schema} = useWorkspace()
-  const schemaType = schema.get('test')
+  const workspace = useWorkspace()
+  const schemaType = workspace.schema.get('test')
 
   if (!schemaType) {
     throw new Error('missing schema type')
@@ -85,8 +86,8 @@ export function TestForm({
   }
 
   useEffect(() => {
-    validateStaticDocument(document, schema, (result) => setValidation(result))
-  }, [document, schema])
+    validateStaticDocument(document, workspace, (result) => setValidation(result))
+  }, [document, workspace])
 
   const formState = useFormState(schemaType, {
     focusPath,
@@ -218,13 +219,18 @@ export function TestForm({
 }
 
 async function validateStaticDocument(
-  document: any,
-  schema: any,
+  document: SanityDocument,
+  workspace: Workspace,
   setCallback: (result: ValidationMarker[]) => void,
 ) {
-  const result = await validateDocument(getClient, document, schema)
+  const result = await validateDocument({
+    document,
+    workspace,
+    getClient,
+    getDocumentExists: () => Promise.resolve(true),
+  })
   setCallback(result)
 }
 
 const client = createMockSanityClient() as any as ReturnType<ValidationContext['getClient']>
-const getClient = (options: {apiVersion: string}) => client
+const getClient = () => client

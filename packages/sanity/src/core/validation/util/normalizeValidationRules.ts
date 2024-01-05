@@ -94,7 +94,7 @@ export function normalizeValidationRules(typeDef: SchemaType | undefined): Rule[
     )
   }
 
-  if (validation instanceof RuleClass) {
+  if (validation && typeof validation === 'object') {
     return [validation]
   }
 

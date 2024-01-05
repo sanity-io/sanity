@@ -1,51 +1,25 @@
-import type {CustomValidatorResult, ValidationMarker, Validators} from '@sanity/types'
+import type {ValidationMarker, Validators} from '@sanity/types'
 import type {LocaleSource} from '../../i18n'
 import {typeString} from '../util/typeString'
 import {deepEquals} from '../util/deepEquals'
 import {pathToString} from '../util/pathToString'
 import {isLocalizedMessages, localizeMessage} from '../util/localizeMessage'
-import {ValidationError as ValidationErrorClass} from '../ValidationError'
 
 const SLOW_VALIDATOR_TIMEOUT = 5000
 
 const formatValidationErrors = (options: {
   message: string | undefined
   results: ValidationMarker[]
-  operation: 'AND' | 'OR'
+  operation: 'conjunction' | 'disjunction'
   i18n: LocaleSource
 }) => {
-  let message: string
+  if (options.message) return options.message
+  if (options.results.length === 1) return options.results[0]?.message
 
-  if (options.message) {
-    message = options.message
-  } else if (options.results.length === 1) {
-    message = options.results[0]?.item.message
-  } else {
-    const messages = options.results.map((err) => err.item.message)
-    const type = options.operation === 'AND' ? 'conjunction' : 'disjunction'
-
-    /**
-     * Intentionally not i18n overridable (but still uses locale conjuction/disjunctions):
-     * We have not really documented the use of the `.either()` and `.all()` validators, and while
-     * they technically can be useful, we have not figured out a good way of displaying the errors
-     * in a way that indicates their grouping. Once we've figured out how to do so, this string is
-     * likely to be only for "fallback"/non-UI purposes.
-     */
-    const key = '{{messages, list}}'
-    message = options.i18n.t(key, {
-      messages,
-      formatParams: {
-        messages: {
-          style: 'long',
-          type,
-        },
-      },
-    })
-  }
-
-  return new ValidationErrorClass(message, {
-    children: options.results.length > 1 ? options.results : undefined,
-    operation: options.operation,
+  // Intentionally hard-coded to use locale conjunction/disjunctions
+  return options.i18n.t('{{messages, list}}', {
+    messages: options.results.map((err) => err.message || err.item?.message),
+    formatParams: {messages: {style: 'long', type: options.operation}},
   })
 }
 
@@ -78,7 +52,7 @@ export const genericValidators: Validators = {
     return formatValidationErrors({
       message,
       results,
-      operation: 'AND',
+      operation: 'conjunction',
       i18n: context.i18n,
     })
   },
@@ -87,15 +61,15 @@ export const genericValidators: Validators = {
     const resolved = await Promise.all(children.map((child) => child.validate(value, context)))
     const results = resolved.flat()
 
-    // Read: There is at least one rule that matched
-    if (results.length < children.length) {
+    // if one of the results is an empty array then at least one rule match
+    if (resolved.find((result) => !result.length)) {
       return true
     }
 
     return formatValidationErrors({
       message,
       results,
-      operation: 'OR',
+      operation: 'disjunction',
       i18n: context.i18n,
     })
   },
@@ -128,7 +102,7 @@ export const genericValidators: Validators = {
       )
     }, SLOW_VALIDATOR_TIMEOUT)
 
-    let result: CustomValidatorResult
+    let result
     try {
       result = await fn(value, context)
     } finally {

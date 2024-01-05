@@ -36,7 +36,7 @@ export function useChildValidation(path: Path, inclusive = false): FormNodeValid
       validation
         .filter((item) => startsWith(path, item.path) && (inclusive || !isEqual(path, item.path)))
         .map((marker) => ({
-          message: marker.item.message,
+          message: marker.message,
           level: marker.level,
           path: marker.path,
         })) as FormNodeValidation[],

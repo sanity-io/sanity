@@ -3,13 +3,11 @@
 exports[`generics can customize error messages 1`] = `
 Array [
   Object {
-    "item": ValidationError {
-      "children": undefined,
+    "item": Object {
       "message": "Dude it needs to be a string",
-      "operation": undefined,
-      "paths": Array [],
     },
     "level": "error",
+    "message": "Dude it needs to be a string",
     "path": Array [],
   },
 ]
@@ -18,13 +16,11 @@ Array [
 exports[`generics can customize info messages 1`] = `
 Array [
   Object {
-    "item": ValidationError {
-      "children": undefined,
+    "item": Object {
       "message": "Dude it should probably be a string",
-      "operation": undefined,
-      "paths": Array [],
     },
     "level": "info",
+    "message": "Dude it should probably be a string",
     "path": Array [],
   },
 ]
@@ -33,13 +29,11 @@ Array [
 exports[`generics can customize warning messages 1`] = `
 Array [
   Object {
-    "item": ValidationError {
-      "children": undefined,
+    "item": Object {
       "message": "Dude it should probably be a string",
-      "operation": undefined,
-      "paths": Array [],
     },
     "level": "warning",
+    "message": "Dude it should probably be a string",
     "path": Array [],
   },
 ]
@@ -48,13 +42,11 @@ Array [
 exports[`generics can demote errors to warnings 1`] = `
 Array [
   Object {
-    "item": ValidationError {
-      "children": undefined,
+    "item": Object {
       "message": "Expected type \\"String\\", got \\"Number\\"",
-      "operation": undefined,
-      "paths": Array [],
     },
     "level": "warning",
+    "message": "Expected type \\"String\\", got \\"Number\\"",
     "path": Array [],
   },
 ]
@@ -63,13 +55,11 @@ Array [
 exports[`generics can merge rules 1`] = `
 Array [
   Object {
-    "item": ValidationError {
-      "children": undefined,
+    "item": Object {
       "message": "Must be at least 5 characters long",
-      "operation": undefined,
-      "paths": Array [],
     },
     "level": "error",
+    "message": "Must be at least 5 characters long",
     "path": Array [],
   },
 ]
@@ -78,13 +68,11 @@ Array [
 exports[`generics returns arrays of errors/warnings by default 1`] = `
 Array [
   Object {
-    "item": ValidationError {
-      "children": undefined,
+    "item": Object {
       "message": "Expected type \\"String\\", got \\"Number\\"",
-      "operation": undefined,
-      "paths": Array [],
     },
     "level": "error",
+    "message": "Expected type \\"String\\", got \\"Number\\"",
     "path": Array [],
   },
 ]

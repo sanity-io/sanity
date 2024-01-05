@@ -12,7 +12,6 @@ import type {
   Validator,
 } from '@sanity/types'
 import {cloneDeep, get} from 'lodash'
-import {ValidationError as ValidationErrorClass} from './ValidationError'
 import {escapeRegex} from './util/escapeRegex'
 import {convertToValidationMarker} from './util/convertToValidationMarker'
 import {isLocalizedMessages, localizeMessage} from './util/localizeMessage'
@@ -407,19 +406,16 @@ export const Rule: RuleClass = class Rule implements IRule {
           ? localizeMessage(this._message, context.i18n)
           : this._message
 
-        let result
         try {
-          result = await validator(specConstraint, value, message, context)
+          const result = await validator(specConstraint, value, message, context)
+          return convertToValidationMarker(result, this._level, context)
         } catch (err) {
-          const errorFromException = new ValidationErrorClass(
-            `${pathToString(context.path)}: Exception occurred while validating value: ${
-              err.message
-            }`,
-          )
-          return convertToValidationMarker(errorFromException, 'error', context)
-        }
+          const errorMessage = `${pathToString(
+            context.path,
+          )}: Exception occurred while validating value: ${err.message}`
 
-        return convertToValidationMarker(result, this._level, context)
+          return convertToValidationMarker({message: errorMessage}, 'error', context)
+        }
       }),
     )
 
