@@ -32,5 +32,5 @@ export interface DocumentDefinition extends Omit<ObjectDefinition, 'type'> {
    * Determines whether the large preview title is displayed in the document pane form
    * @alpha
    * */
-  __experimental_form_preview_title?: boolean
+  __experimental_formPreviewTitle?: boolean
 }
