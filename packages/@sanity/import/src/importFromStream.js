@@ -13,7 +13,12 @@ const getJsonStreamer = require('./util/getJsonStreamer')
 
 module.exports = (stream, options, importers) =>
   new Promise((resolve, reject) => {
-    const outputPath = path.join(os.tmpdir(), 'sanity-import')
+    const slugDate = new Date()
+      .toISOString()
+      .replace(/[^a-z0-9]/gi, '-')
+      .toLowerCase()
+
+    const outputPath = path.join(os.tmpdir(), `sanity-import-${slugDate}`)
     debug('Importing from stream')
 
     let isTarStream = false
