@@ -6,13 +6,30 @@ import {createGlobalStyle, css} from 'styled-components'
 const SCROLLBAR_SIZE = 12 // px
 const SCROLLBAR_BORDER_SIZE = 4 // px
 
+// Construct a resize handle icon as a data URI, to be displayed in browsers that support the `::-webkit-resizer` selector.
+function buildResizeHandleDataUri(hexColor: string) {
+  const encodedStrokeColor = encodeURIComponent(hexColor)
+  const encodedSvg = `%3Csvg width='9' height='9' viewBox='0 0 9 9' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 8L8 1' stroke='${encodedStrokeColor}' stroke-linecap='round'/%3E%3Cpath d='M5 8L8 5' stroke='${encodedStrokeColor}' stroke-linecap='round'/%3E%3C/svg%3E%0A`
+  return `url("data:image/svg+xml,${encodedSvg}")`
+}
+
 export const GlobalStyle = createGlobalStyle((props) => {
   const {color, font} = getTheme_v2(props.theme)
 
   return css`
+    ::-webkit-resizer {
+      background-image: ${buildResizeHandleDataUri(color.icon)};
+      background-repeat: no-repeat;
+      background-position: bottom right;
+    }
+
     ::-webkit-scrollbar {
       width: ${SCROLLBAR_SIZE}px;
       height: ${SCROLLBAR_SIZE}px;
+    }
+
+    ::-webkit-scrollbar-corner {
+      background-color: transparent;
     }
 
     ::-webkit-scrollbar-thumb {
@@ -26,7 +43,7 @@ export const GlobalStyle = createGlobalStyle((props) => {
     }
 
     ::-webkit-scrollbar-track {
-      background: var(--card-bg-color, transparent);
+      background: transparent;
     }
 
     *::selection {
