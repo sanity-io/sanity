@@ -569,7 +569,7 @@ export function extractFromSanitySchema(
 
   function getDocumentDefinition(def: ObjectSchemaType) {
     const objectDef = getObjectDefinition(def)
-    const fields = getDocumentInterfaceFields().concat(objectDef.fields)
+    const fields = getDocumentInterfaceFields(def).concat(objectDef.fields)
 
     return {...objectDef, fields, interfaces: ['Document']}
   }
@@ -583,7 +583,7 @@ export function extractFromSanitySchema(
     }
   }
 
-  function getDocumentInterfaceFields(): ConvertedFieldDefinition[] {
+  function getDocumentInterfaceFields(type?: ObjectSchemaType): ConvertedFieldDefinition[] {
     const isNullable = typeof nonNullDocumentFields === 'boolean' ? !nonNullDocumentFields : true
     return [
       {
@@ -591,30 +591,35 @@ export function extractFromSanitySchema(
         type: 'ID',
         isNullable,
         description: 'Document ID',
+        ...getDeprecation(type),
       },
       {
         fieldName: '_type',
         type: 'String',
         isNullable,
         description: 'Document type',
+        ...getDeprecation(type),
       },
       {
         fieldName: '_createdAt',
         type: 'Datetime',
         isNullable,
         description: 'Date the document was created',
+        ...getDeprecation(type),
       },
       {
         fieldName: '_updatedAt',
         type: 'Datetime',
         isNullable,
         description: 'Date the document was last modified',
+        ...getDeprecation(type),
       },
       {
         fieldName: '_rev',
         type: 'String',
         isNullable,
         description: 'Current document revision',
+        ...getDeprecation(type),
       },
     ]
   }
