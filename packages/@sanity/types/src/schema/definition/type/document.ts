@@ -29,8 +29,8 @@ export interface DocumentDefinition extends Omit<ObjectDefinition, 'type'> {
   /** @alpha */
   __experimental_omnisearch_visibility?: boolean
   /**
-   * Hides the document title introduced at the document pane
+   * Determines whether the large preview title is displayed in the document pane form
    * @alpha
    * */
-  __experimental_hide_form_title?: boolean
+  __experimental_form_preview_title?: boolean
 }

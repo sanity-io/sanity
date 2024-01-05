@@ -381,7 +381,7 @@ export interface ObjectSchemaType extends BaseSchemaType {
   /** @alpha */
   __experimental_actions?: string[]
   /** @alpha */
-  __experimental_hide_form_title?: boolean
+  __experimental_form_preview_title?: boolean
   /**
    * @beta
    */

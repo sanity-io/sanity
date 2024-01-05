@@ -61,7 +61,7 @@ export const FormHeader = ({documentId, schemaType, title}: DocumentHeaderProps)
   const isSingleton = documentId === schemaType.name
   const {t} = useTranslation(structureLocaleNamespace)
 
-  if (schemaType.__experimental_hide_form_title) {
+  if (schemaType.__experimental_form_preview_title === false) {
     return null
   }
 
