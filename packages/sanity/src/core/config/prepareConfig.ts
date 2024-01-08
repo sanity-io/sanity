@@ -528,7 +528,7 @@ function resolveSource({
           return documentCommentsEnabledReducer({
             context: partialContext,
             config,
-            initialValue: false,
+            initialValue: true,
           })
         },
       },
