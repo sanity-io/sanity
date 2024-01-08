@@ -76,12 +76,13 @@ interface CommentReactionsBarProps {
   currentUser: CurrentUser
   onSelect: (reaction: CommentReactionOption) => void
   reactions: CommentReactionItem[]
+  readOnly?: boolean
 }
 
 export const CommentReactionsBar = React.memo(function CommentReactionsBar(
   props: CommentReactionsBarProps,
 ) {
-  const {currentUser, onSelect, reactions} = props
+  const {currentUser, onSelect, reactions, readOnly} = props
 
   const handleSelect = useCallback(
     (name: CommentReactionShortNames) => {
@@ -152,6 +153,7 @@ export const CommentReactionsBar = React.memo(function CommentReactionsBar(
               <ReactionButtonCard
                 __unstable_focusRing
                 border
+                disabled={readOnly}
                 forwardedAs="button"
                 // eslint-disable-next-line react/jsx-no-bind
                 onClick={() => handleSelect(name)}
@@ -176,6 +178,7 @@ export const CommentReactionsBar = React.memo(function CommentReactionsBar(
           // eslint-disable-next-line react/jsx-no-bind
           onSelect={(o) => handleSelect(o.shortName)}
           options={COMMENT_REACTION_OPTIONS}
+          readOnly={readOnly}
           renderMenuButton={renderMenuButton}
           selectedOptionNames={currentUserReactionNames}
         />

@@ -370,6 +370,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
                 currentUser={currentUser}
                 onSelect={handleReactionSelect}
                 reactions={reactions}
+                readOnly={readOnly}
               />
             </Box>
           </Flex>
