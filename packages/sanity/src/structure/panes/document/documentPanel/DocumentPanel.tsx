@@ -6,9 +6,13 @@ import {useDocumentPane} from '../useDocumentPane'
 import {useStructureTool} from '../../../useStructureTool'
 import {DocumentInspectorPanel} from '../documentInspector'
 import {InspectDialog} from '../inspectDialog'
-import {DeletedDocumentBanner, PermissionCheckBanner, ReferenceChangedBanner} from './banners'
+import {
+  DeletedDocumentBanner,
+  DeprecatedDocumentTypeBanner,
+  PermissionCheckBanner,
+  ReferenceChangedBanner,
+} from './banners'
 import {FormView} from './documentViews'
-import {DeprecatedDocumentTypeBanner} from './DeprecatedDocumentTypeBanner'
 import {ScrollContainer, useTimelineSelector, VirtualizerScrollInstanceProvider} from 'sanity'
 
 interface DocumentPanelProps {
