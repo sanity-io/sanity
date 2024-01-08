@@ -80,6 +80,7 @@ export function CommentsListItemContextMenu(props: CommentsListItemContextMenuPr
               onMenuOpen={onMenuOpen}
               onSelect={onReactionSelect}
               options={COMMENT_REACTION_OPTIONS}
+              readOnly={readOnly}
               renderMenuButton={renderMenuButton}
               selectedOptionNames={currentUserReactionsNames}
             />

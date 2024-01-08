@@ -11,12 +11,21 @@ export interface CommentReactionsMenuButtonProps {
   onMenuOpen?: () => void
   onSelect: (option: CommentReactionOption) => void
   options: CommentReactionOption[]
+  readOnly?: boolean
   renderMenuButton: (props: {open: boolean}) => React.ReactElement
   selectedOptionNames: CommentReactionShortNames[]
 }
 
 export function CommentReactionsMenuButton(props: CommentReactionsMenuButtonProps) {
-  const {options, onSelect, selectedOptionNames, onMenuClose, onMenuOpen, renderMenuButton} = props
+  const {
+    onMenuClose,
+    onMenuOpen,
+    onSelect,
+    options,
+    readOnly,
+    renderMenuButton,
+    selectedOptionNames,
+  } = props
   const [buttonElement, setButtonElement] = useState<HTMLButtonElement | null>(null)
   const [popoverElement, setPopoverElement] = useState<HTMLDivElement | null>(null)
 
@@ -72,11 +81,12 @@ export function CommentReactionsMenuButton(props: CommentReactionsMenuButtonProp
     return cloneElement(btn, {
       'aria-expanded': open,
       'aria-haspopup': 'true',
+      disabled: readOnly,
       id: 'reactions-menu-button',
       onClick: handleClick,
       ref: setButtonElement,
     })
-  }, [handleClick, open, renderMenuButton])
+  }, [handleClick, open, readOnly, renderMenuButton])
 
   const popoverContent = (
     <Card
