@@ -24,7 +24,7 @@ export default function CommentsProviderStory() {
 }
 
 function Inner() {
-  const {comments, create, edit, mentionOptions, remove} = useComments()
+  const {comments, mentionOptions, operation} = useComments()
   const currentUser = useCurrentUser()
 
   if (!currentUser) return null
@@ -37,10 +37,11 @@ function Inner() {
       loading={comments.loading}
       mentionOptions={mentionOptions}
       onCreateRetry={noop}
-      onDelete={remove.execute}
-      onEdit={edit.execute}
-      onNewThreadCreate={create.execute}
-      onReply={create.execute}
+      onDelete={operation.remove}
+      onEdit={operation.edit}
+      onNewThreadCreate={operation.create}
+      onReactionSelect={operation.react}
+      onReply={operation.create}
       selectedPath={null}
       status="open"
     />
