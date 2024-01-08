@@ -10,32 +10,24 @@ import {
   CommentDocument,
   CommentEditPayload,
   CommentMessage,
+  CommentReactionOption,
   CommentStatus,
   MentionOptionsHookValue,
 } from '../../types'
 import {FLEX_GAP} from '../constants'
 import {hasCommentMessageValue, useCommentHasChanged} from '../../helpers'
 import {AVATAR_HEIGHT, CommentsAvatar, SpacerAvatar} from '../avatars'
+import {CommentReactionsBar} from '../reactions'
 import {CommentsListItemContextMenu} from './CommentsListItemContextMenu'
 import {TimeAgoOpts, useTimeAgo, useUser, useDidUpdate} from 'sanity'
 
+const stopPropagation = (e: React.MouseEvent<HTMLDivElement>) => e.stopPropagation()
+
 const ContextMenuBox = styled(Box)``
 
-function StopPropagationWrap(props: React.PropsWithChildren<{isParent?: boolean}>) {
-  const {children, isParent} = props
-
-  const handleClick = useCallback((event: React.MouseEvent<HTMLDivElement>) => {
-    event.stopPropagation()
-  }, [])
-
-  return (
-    <ContextMenuBox data-root-menu={isParent ? 'true' : 'false'} onClick={handleClick}>
-      {children}
-    </ContextMenuBox>
-  )
-}
-
 const SKELETON_INLINE_STYLE: React.CSSProperties = {width: '50%'}
+
+const EMPTY_ARRAY: [] = []
 
 const TimeText = styled(Text)(({theme}) => {
   const isDark = theme.sanity.color.dark
@@ -120,6 +112,7 @@ interface CommentsListItemLayoutProps {
   onDelete: (id: string) => void
   onEdit: (id: string, message: CommentEditPayload) => void
   onInputKeyDown?: (event: React.KeyboardEvent<Element>) => void
+  onReactionSelect?: (id: string, reaction: CommentReactionOption) => void
   onStatusChange?: (id: string, status: CommentStatus) => void
   readOnly?: boolean
 }
@@ -141,6 +134,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
     onDelete,
     onEdit,
     onInputKeyDown,
+    onReactionSelect,
     onStatusChange,
     readOnly,
   } = props
@@ -155,6 +149,20 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
 
   const hasChanges = useCommentHasChanged(value)
   const hasValue = useMemo(() => hasCommentMessageValue(value), [value])
+
+  // Filter out reactions that's been optimistically removed from the comment.
+  const reactions = useMemo(
+    () =>
+      (comment?.reactions?.filter((r) => r?._optimisticState !== 'removed') || EMPTY_ARRAY).filter(
+        (r) => {
+          // Filter out reactions that might have to incorrect format
+          return 'userId' in r && 'shortName' in r
+        },
+      ),
+    [comment?.reactions],
+  )
+
+  const hasReactions = Boolean(reactions?.length)
 
   const commentInputRef = useRef<CommentInputHandle>(null)
 
@@ -217,6 +225,13 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
     cancelEdit()
   }, [cancelEdit])
 
+  const handleReactionSelect = useCallback(
+    (reaction: CommentReactionOption) => {
+      onReactionSelect?.(_id, reaction)
+    },
+    [_id, onReactionSelect],
+  )
+
   const handleEditSubmit = useCallback(() => {
     onEdit(_id, {message: value})
     setIsEditing(false)
@@ -250,6 +265,10 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
   useDidUpdate(isEditing, handleCloseMenu)
 
   useClickOutside(handleClickOutside, [rootElement])
+
+  const currentUserReactionsNames = useMemo(() => {
+    return reactions.filter((r) => r.userId === currentUser?.id).map((r) => r.shortName)
+  }, [currentUser?.id, reactions])
 
   const name = user?.displayName ? (
     <Text size={1} weight="medium" textOverflow="ellipsis" title={user.displayName}>
@@ -291,21 +310,23 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
           </Flex>
 
           {!isEditing && !displayError && (
-            <StopPropagationWrap isParent={isParent}>
+            <ContextMenuBox data-root-menu={isParent ? 'true' : 'false'} onClick={stopPropagation}>
               <CommentsListItemContextMenu
                 canDelete={canDelete}
                 canEdit={canEdit}
+                currentUserReactionsNames={currentUserReactionsNames}
                 isParent={isParent}
                 onCopyLink={handleCopyLink}
                 onDeleteStart={handleDelete}
                 onEditStart={toggleEdit}
                 onMenuClose={handleMenuClose}
                 onMenuOpen={handleMenuOpen}
+                onReactionSelect={handleReactionSelect}
                 onStatusChange={handleOpenStatusChange}
                 readOnly={readOnly}
                 status={comment.status}
               />
-            </StopPropagationWrap>
+            </ContextMenuBox>
           )}
         </Flex>
 
@@ -337,6 +358,20 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
             <SpacerAvatar />
 
             <CommentMessageSerializer blocks={message} />
+          </Flex>
+        )}
+
+        {hasReactions && (
+          <Flex gap={FLEX_GAP} marginTop={2}>
+            <SpacerAvatar />
+
+            <Box onClick={stopPropagation}>
+              <CommentReactionsBar
+                currentUser={currentUser}
+                onSelect={handleReactionSelect}
+                reactions={reactions}
+              />
+            </Box>
           </Flex>
         )}
       </InnerStack>
