@@ -1,8 +1,8 @@
 import {Box, Card, Container, Flex, Stack, Text} from '@sanity/ui'
 import {ErrorOutlineIcon} from '@sanity/icons'
 import styled from 'styled-components'
-import {useDocumentPane} from '../useDocumentPane'
-import {structureLocaleNamespace} from '../../../i18n'
+import {useDocumentPane} from '../../useDocumentPane'
+import {structureLocaleNamespace} from '../../../../i18n'
 import {isDeprecatedSchemaType, useTranslation} from 'sanity'
 
 const Root = styled(Card)`
@@ -10,7 +10,7 @@ const Root = styled(Card)`
   z-index: 50;
 `
 
-// TODO: Move into `banners` dir and adopt `Banner` component.
+// TODO: Adopt `Banner` component.
 export function DeprecatedDocumentTypeBanner() {
   const {schemaType} = useDocumentPane()
   const {t} = useTranslation(structureLocaleNamespace)
