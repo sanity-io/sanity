@@ -1,5 +1,5 @@
 /* eslint-disable i18next/no-literal-string, @sanity/i18n/no-attribute-template-literals */
-import {Card, Flex} from '@sanity/ui'
+import {Card, Flex, useTheme_v2 as useTheme} from '@sanity/ui'
 import {startCase} from 'lodash'
 import React, {
   createContext,
@@ -8,6 +8,7 @@ import React, {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react'
 import styled from 'styled-components'
@@ -167,6 +168,8 @@ export function StudioLayoutComponent() {
     })
   }, [isLegacyDeskRedirect, router])
 
+  useMetaThemeColor()
+
   return (
     <Flex data-ui="ToolScreen" direction="column" height="fill" data-testid="studio-layout">
       <NavbarContext.Provider value={navbarContextValue}>
@@ -200,4 +203,58 @@ export function StudioLayoutComponent() {
       </StudioErrorBoundary>
     </Flex>
   )
+}
+
+/**
+ * Sets the <meta name="theme-color"> attribute so that browser chrome can be themed to match the studio theme.
+ */
+function useMetaThemeColor() {
+  const theme = useTheme()
+  const themeColor = theme.color.bg
+  const isDark = theme.color._dark
+  const [darkTheme, setDarkTheme] = useState(() => (isDark ? themeColor : undefined))
+  const [lightTheme, setLightTheme] = useState(() => (isDark ? undefined : themeColor))
+
+  useEffect(() => {
+    if (isDark) {
+      setDarkTheme(themeColor)
+    } else {
+      setLightTheme(themeColor)
+    }
+  }, [isDark, themeColor])
+
+  // eslint-disable-next-line consistent-return
+  useEffect(() => {
+    if (darkTheme && lightTheme) {
+      const darkNode = createMetaNode(darkTheme, 'dark')
+      const lightNode = createMetaNode(lightTheme, 'light')
+      document.head.prepend(darkNode)
+      document.head.prepend(lightNode)
+      return () => {
+        document.head.removeChild(darkNode)
+        document.head.removeChild(lightNode)
+      }
+    }
+  }, [darkTheme, lightTheme])
+
+  // eslint-disable-next-line consistent-return
+  useEffect(() => {
+    if (!darkTheme || !lightTheme) {
+      const node = createMetaNode(themeColor)
+      document.head.prepend(node)
+      return () => {
+        document.head.removeChild(node)
+      }
+    }
+  }, [darkTheme, lightTheme, themeColor])
+}
+
+function createMetaNode(color: string, scheme?: string): HTMLMetaElement {
+  const node = document.createElement('meta')
+  node.setAttribute('name', 'theme-color')
+  if (scheme) {
+    node.setAttribute('media', `(prefers-color-scheme: ${scheme})`)
+  }
+  node.setAttribute('content', color)
+  return node
 }
