@@ -243,6 +243,8 @@ const structureLocaleStrings = defineLocalesResources('structure', {
 
   /** The text for when a form is hidden */
   'document-view.form-view.form-hidden': 'This form is hidden',
+  /** Fallback title shown when a form title is not provided */
+  'document-view.form-view.form-title-fallback': 'Untitled',
   /** The text for when the form view is loading a document */
   'document-view.form-view.loading': 'Loading document…',
   /** The description of the sync lock toast on the form view */
