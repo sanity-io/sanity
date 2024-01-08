@@ -2,8 +2,15 @@ import {Box, Card, Container, Flex, Stack, Text} from '@sanity/ui'
 import {ErrorOutlineIcon} from '@sanity/icons'
 import styled from 'styled-components'
 import {useDocumentPane} from '../useDocumentPane'
-import {structureLocaleNamespace} from '../../../i18n'
-import {isDeprecatedSchemaType, useTranslation} from 'sanity'
+import {schemaLocaleNamespace, structureLocaleNamespace} from '../../../i18n'
+import {
+  DeprecatedProperty,
+  DeprecatedSchemaType,
+  ObjectSchemaType,
+  isDeprecatedSchemaType,
+  useTranslation,
+} from 'sanity'
+import sk from 'date-fns/esm/locale/sk/index.js'
 
 const Root = styled(Card)`
   position: relative;
@@ -14,6 +21,7 @@ const Root = styled(Card)`
 export function DeprecatedDocumentTypeBanner() {
   const {schemaType} = useDocumentPane()
   const {t} = useTranslation(structureLocaleNamespace)
+  const deprecationReason = useDeprecationReason(schemaType)
 
   if (!isDeprecatedSchemaType(schemaType)) {
     return null
@@ -31,11 +39,26 @@ export function DeprecatedDocumentTypeBanner() {
               <Text size={1} weight="bold">
                 {t('banners.deprecated-document-type-banner.text')}
               </Text>
-              <Text size={1}>{schemaType.deprecated.reason}</Text>
+              <Text size={1}>{deprecationReason}</Text>
             </Stack>
           </Box>
         </Flex>
       </Container>
     </Root>
   )
+}
+
+function useDeprecationReason(schemaType?: ObjectSchemaType): string | undefined {
+  // function useDeprecationReason<SchemaType extends ObjectSchemaType>(
+  const {t} = useTranslation(schemaLocaleNamespace)
+
+  if (!isDeprecatedSchemaType(schemaType)) {
+    return
+  }
+
+  if (schemaType.deprecated.reason.key) {
+    // return t(schemaType.deprecated.reason.key)
+  }
+
+  // return schemaType.deprecated.reason.default
 }

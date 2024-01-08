@@ -177,7 +177,7 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
               opacity: isDeprecated ? 0.5 : undefined,
             }}
           >
-            {isDeprecated && <p style={{margin: 0, color: 'red'}}>{deprecated.reason}</p>}
+            {isDeprecated && <p style={{margin: 0, color: 'red'}}>{deprecated.reason.default}</p>}
             <Flex>
               <FormFieldSetLegend
                 collapsed={Boolean(collapsed)}

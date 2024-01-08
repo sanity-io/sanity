@@ -197,7 +197,9 @@ describe('document types', () => {
         type: 'document',
         name: 'custom-document',
         deprecated: {
-          reason: `This document type has been superseded by a shiny new one.`,
+          reason: {
+            default: `This document type has been superseded by a shiny new one.`,
+          },
         },
         fields: [
           {
@@ -211,7 +213,9 @@ describe('document types', () => {
             validation: (Rule) => Rule.max(45),
             initialValue: 'string',
             deprecated: {
-              reason: `Strings are overrated.`,
+              reason: {
+                default: `Strings are overrated.`,
+              },
             },
             options: {
               layout: 'dropdown',
@@ -228,6 +232,10 @@ describe('document types', () => {
             type: 'alias-type',
             name: 'aliasType',
             initialValue: {something: 'false'},
+            deprecated: {
+              // @ts-expect-error default is required
+              reason: {},
+            },
             validation: (Rule) =>
               Rule.custom((value?: Record<string, string>) =>
                 value?.something === 'false' ? true : 'Error',

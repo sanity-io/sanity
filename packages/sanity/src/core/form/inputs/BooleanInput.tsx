@@ -33,7 +33,9 @@ export function BooleanInput(props: BooleanInputProps) {
 
   return (
     <>
-      {isDeprecated && <p style={{margin: 0, color: 'red'}}>{schemaType.deprecated?.reason}</p>}
+      {isDeprecated && (
+        <p style={{margin: 0, color: 'red'}}>{schemaType.deprecated?.reason.default}</p>
+      )}
       <Card
         style={{
           opacity: isDeprecated ? 0.5 : undefined,

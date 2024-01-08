@@ -120,7 +120,10 @@ export type ConditionalProperty = boolean | ConditionalPropertyCallback | undefi
 
 /** @public */
 export interface DeprecatedProperty {
-  reason: string
+  reason: {
+    key?: string
+    default: string
+  }
 }
 
 /** @public */

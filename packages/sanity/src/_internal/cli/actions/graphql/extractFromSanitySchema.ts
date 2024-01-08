@@ -704,7 +704,7 @@ function getDeprecation(
 ): Partial<Deprecation> {
   return isDeprecatedSchemaType(type)
     ? {
-        deprecationReason: type.deprecated.reason,
+        deprecationReason: type.deprecated.reason.default,
       }
     : {}
 }

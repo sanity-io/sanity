@@ -8,6 +8,13 @@ import {defineLocaleResourceBundle} from 'sanity'
 export const structureLocaleNamespace = 'structure' as const
 
 /**
+ * The locale namespace for the schemas
+ *
+ * @public
+ */
+export const schemaLocaleNamespace = 'schema' as const
+
+/**
  * The default locale bundle for the structure tool, which is US English.
  *
  * @internal

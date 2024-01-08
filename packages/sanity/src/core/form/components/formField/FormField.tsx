@@ -77,7 +77,7 @@ export const FormField = memo(function FormField(
         opacity: isDeprecated ? 0.5 : undefined,
       }}
     >
-      {isDeprecated && <p style={{margin: 0, color: 'red'}}>{deprecated?.reason}</p>}
+      {isDeprecated && <p style={{margin: 0, color: 'red'}}>{deprecated?.reason.default}</p>}
       {/*
         NOTE: It’s not ideal to hide validation, presence and description when there's no `title`.
         So we might want to separate the concerns of input vs formfield components later on.
