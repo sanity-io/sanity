@@ -10,6 +10,7 @@ const Root = styled(Card)`
   z-index: 50;
 `
 
+// TODO: Move into `banners` dir and adopt `Banner` component.
 export function DeprecatedDocumentTypeBanner() {
   const {schemaType} = useDocumentPane()
   const {t} = useTranslation(structureLocaleNamespace)
