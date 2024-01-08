@@ -9,8 +9,21 @@ import {
   MenuItem,
   TOOLTIP_DELAY_PROPS,
 } from '../../../../../ui-components'
-import {CommentStatus} from '../../types'
+import {CommentReactionOption, CommentReactionShortNames, CommentStatus} from '../../types'
+import {CommentReactionsMenuButton} from '../reactions'
+import {COMMENT_REACTION_OPTIONS} from '../../constants'
+import {ReactionIcon} from '../icons'
 import {ContextMenuButton} from 'sanity'
+
+const renderMenuButton = ({open}: {open: boolean}) => (
+  <Button
+    aria-label="Add reaction"
+    icon={ReactionIcon}
+    mode="bleed"
+    selected={open}
+    tooltipProps={{content: 'Add reaction'}}
+  />
+)
 
 const POPOVER_PROPS: MenuButtonProps['popover'] = {
   placement: 'bottom-end',
@@ -25,12 +38,14 @@ const FloatingCard = styled(Card)`
 interface CommentsListItemContextMenuProps {
   canDelete: boolean | undefined
   canEdit: boolean | undefined
+  currentUserReactionsNames: CommentReactionShortNames[]
   isParent: boolean | undefined
   onCopyLink?: () => void
   onDeleteStart?: () => void
   onEditStart?: () => void
   onMenuClose?: () => void
   onMenuOpen?: () => void
+  onReactionSelect?: (option: CommentReactionOption) => void
   onStatusChange?: () => void
   readOnly?: boolean
   status: CommentStatus
@@ -40,12 +55,14 @@ export function CommentsListItemContextMenu(props: CommentsListItemContextMenuPr
   const {
     canDelete,
     canEdit,
+    currentUserReactionsNames,
     isParent,
     onCopyLink,
     onDeleteStart,
     onEditStart,
     onMenuClose,
     onMenuOpen,
+    onReactionSelect,
     onStatusChange,
     readOnly,
     status,
@@ -57,6 +74,17 @@ export function CommentsListItemContextMenu(props: CommentsListItemContextMenuPr
     <TooltipDelayGroupProvider delay={TOOLTIP_DELAY_PROPS}>
       <Flex>
         <FloatingCard display="flex" shadow={2} padding={1} radius={2} sizing="border">
+          {onReactionSelect && (
+            <CommentReactionsMenuButton
+              onMenuClose={onMenuClose}
+              onMenuOpen={onMenuOpen}
+              onSelect={onReactionSelect}
+              options={COMMENT_REACTION_OPTIONS}
+              renderMenuButton={renderMenuButton}
+              selectedOptionNames={currentUserReactionsNames}
+            />
+          )}
+
           {isParent && (
             <Button
               aria-label={status === 'open' ? 'Mark comment as resolved' : 'Re-open'}
