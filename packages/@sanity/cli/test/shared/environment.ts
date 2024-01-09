@@ -87,6 +87,7 @@ export const getCliUserEmail = (): Promise<string> =>
 
 export const getTestRunArgs = (version: string) => {
   const testId = getTestId()
+  const v3Port = process.versions.node.split('.')[0] === '20' ? 4333 : 3333
   return {
     corsOrigin: `https://${testId}-${version}.sanity.build`,
     sourceDataset: 'production',
@@ -99,7 +100,7 @@ export const getTestRunArgs = (version: string) => {
     graphqlTag: testId,
     exportTarball: 'production.tar.gz',
     importTarballPath: path.join(__dirname, '..', '__fixtures__', 'production.tar.gz'),
-    port: version === 'v2' ? 3334 : 3333,
+    port: version === 'v2' ? 3334 : v3Port,
   }
 }
 

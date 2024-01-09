@@ -26,7 +26,7 @@ export function testServerCommand({
   stderr: string
 }> {
   return new Promise(async (resolve, reject) => {
-    const maxWaitForServer = 120000
+    const maxWaitForServer = 50_000
     const startedAt = Date.now()
     let hasSucceeded = false
     let timer: ReturnType<typeof setTimeout>
