@@ -1,0 +1,70 @@
+{
+  "name": "@sanity/migrate",
+  "version": "3.23.4",
+  "description": "Tooling for running data migrations on Sanity.io projects",
+  "keywords": [
+    "sanity",
+    "cms",
+    "headless",
+    "realtime",
+    "content",
+    "migrate",
+    "migration"
+  ],
+  "homepage": "https://www.sanity.io/",
+  "bugs": {
+    "url": "https://github.com/sanity-io/sanity/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sanity-io/sanity.git",
+    "directory": "packages/@sanity/migrate"
+  },
+  "license": "MIT",
+  "author": "Sanity.io <hello@sanity.io>",
+  "exports": {
+    ".": {
+      "types": "./lib/dts/src/index.d.ts",
+      "source": "./src/index.ts",
+      "require": "./lib/index.js",
+      "node": {
+        "module": "./lib/index.esm.js",
+        "import": "./lib/index.cjs.mjs"
+      },
+      "import": "./lib/index.esm.js",
+      "default": "./lib/index.esm.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "main": "./lib/index.js",
+  "module": "./lib/index.esm.js",
+  "source": "./src/index.ts",
+  "types": "./lib/dts/src/index.d.ts",
+  "files": [
+    "lib",
+    "src",
+    "!**/__tests__/**"
+  ],
+  "scripts": {
+    "prebuild": "run-s clean",
+    "build": "pkg-utils build --tsconfig tsconfig.lib.json",
+    "postbuild": "run-s check:package",
+    "check:package": "pkg-utils --strict --tsconfig tsconfig.lib.json",
+    "clean": "rimraf lib coverage",
+    "lint": "eslint .",
+    "watch": "pkg-utils watch --tsconfig tsconfig.lib.json"
+  },
+  "dependencies": {
+    "@bjoerge/mutiny": "^0.5.1",
+    "@sanity/client": "^6.11.1",
+    "@sanity/types": "^3.23.4",
+    "fast-fifo": "^1.3.2",
+    "uint8array-extras": "^1.0.0"
+  },
+  "devDependencies": {
+    "rimraf": "^3.0.2"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

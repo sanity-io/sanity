@@ -1,0 +1,10 @@
+{
+  "extends": "../../../tsconfig.settings",
+  "include": ["./src/**/*"],
+  "compilerOptions": {
+    "composite": true,
+    "rootDir": ".",
+    "outDir": "./lib/dts",
+    "declarationDir": "./lib/dts"
+  }
+}
