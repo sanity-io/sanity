@@ -3867,6 +3867,18 @@
     framer-motion "^10.16.5"
     react-refractor "^2.1.7"
 
+"@sanity/ui@2.0.0-beta.16":
+  version "2.0.0-beta.16"
+  resolved "https://registry.yarnpkg.com/@sanity/ui/-/ui-2.0.0-beta.16.tgz#2e9c89deb4a1e6c6a7d9b3f76f9b0a3ea0927063"
+  integrity sha512-nu+N1ClKv5e3sraBvJnru3/F3Nzl7uI85En3kPWg611GfHlu6x0WGVE/6kB0FQXkwMsaqehduiz9xgE2lKZopg==
+  dependencies:
+    "@floating-ui/react-dom" "^2.0.4"
+    "@sanity/color" "3.0.0-beta.9"
+    "@sanity/icons" "^2.7.0"
+    csstype "^3.1.2"
+    framer-motion "^10.16.5"
+    react-refractor "^2.1.7"
+
 "@sanity/ui@^1", "@sanity/ui@^1.0.0", "@sanity/ui@^1.6.0", "@sanity/ui@^1.7.2":
   version "1.9.3"
   resolved "https://registry.yarnpkg.com/@sanity/ui/-/ui-1.9.3.tgz#4af45902ac95801aa5ea57f377beaf3e3cb36339"
