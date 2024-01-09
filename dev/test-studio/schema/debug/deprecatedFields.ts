@@ -125,8 +125,11 @@ export const deprecatedFields = defineType({
       fields: [
         defineField({
           name: 'alt',
-          title: 'Alt',
+          title: 'Alt Deprecated',
           type: 'string',
+          deprecated: {
+            reason: 'This alt is deprecated',
+          },
         }),
       ],
     }),
