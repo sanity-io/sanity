@@ -1051,7 +1051,7 @@
     "@babel/parser" "^7.22.15"
     "@babel/types" "^7.22.15"
 
-"@babel/traverse@^7.12.5", "@babel/traverse@^7.23.5":
+"@babel/traverse@^7.12.5", "@babel/traverse@^7.23.5", "@babel/traverse@^7.23.7":
   version "7.23.7"
   resolved "https://registry.yarnpkg.com/@babel/traverse/-/traverse-7.23.7.tgz#9a7bf285c928cb99b5ead19c3b1ce5b310c9c305"
   integrity sha512-tY3mM8rH9jM0YHFGyfC0/xf+SB5eKUu7HPj7/k3fpi9dAlsMc5YbQvDi0Sh2QTPXqMhyaAtzAr807TIyfQrmyg==
@@ -5364,6 +5364,13 @@ ast-types@0.15.2:
   version "0.15.2"
   resolved "https://registry.yarnpkg.com/ast-types/-/ast-types-0.15.2.tgz#39ae4809393c4b16df751ee563411423e85fb49d"
   integrity sha512-c27loCv9QkZinsa5ProX751khO9DJl/AcB5c2KNtA6NRvHKS0PgLfcftz72KVq504vB0Gku5s2kUZzDBvQWvHg==
+  dependencies:
+    tslib "^2.0.1"
+
+ast-types@^0.16.1:
+  version "0.16.1"
+  resolved "https://registry.yarnpkg.com/ast-types/-/ast-types-0.16.1.tgz#7a9da1617c9081bc121faafe91711b4c8bb81da2"
+  integrity sha512-6t10qk83GOG8p0vKmaCr8eiilZwO171AvbROMtvvNiwrTly62t+7XkA8RdIIVbpMhCASAsxgAzdRSwh6nw/5Dg==
   dependencies:
     tslib "^2.0.1"
 
@@ -13683,6 +13690,17 @@ recast@^0.22.0:
     source-map "~0.6.1"
     tslib "^2.0.1"
 
+recast@^0.23.4:
+  version "0.23.4"
+  resolved "https://registry.yarnpkg.com/recast/-/recast-0.23.4.tgz#ca1bac7bfd3011ea5a28dfecb5df678559fb1ddf"
+  integrity sha512-qtEDqIZGVcSZCHniWwZWbRy79Dc6Wp3kT/UmDA2RJKBPg7+7k51aQBZirHmUGn5uvHf2rg8DkjizrN26k61ATw==
+  dependencies:
+    assert "^2.0.0"
+    ast-types "^0.16.1"
+    esprima "~4.0.0"
+    source-map "~0.6.1"
+    tslib "^2.0.1"
+
 redent@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/redent/-/redent-3.0.0.tgz#e557b7998316bb53c9f1f56fa626352c6963059f"
@@ -15604,6 +15622,11 @@ type-fest@^4.2.0:
   version "4.5.0"
   resolved "https://registry.yarnpkg.com/type-fest/-/type-fest-4.5.0.tgz#79208f4dbb8a9946a55889e9f482b95a3292ee41"
   integrity sha512-diLQivFzddJl4ylL3jxSkEc39Tpw7o1QeEHIPxVwryDK2lpB7Nqhzhuo6v5/Ls08Z0yPSAhsyAWlv1/H0ciNmw==
+
+type-fest@^4.9.0:
+  version "4.9.0"
+  resolved "https://registry.yarnpkg.com/type-fest/-/type-fest-4.9.0.tgz#d29c8efe5b1e703feeb29cef23d887b2f479844d"
+  integrity sha512-KS/6lh/ynPGiHD/LnAobrEFq3Ad4pBzOlJ1wAnJx9N4EYoqFhMfLIBjUT2UEx4wg5ZE+cC1ob6DCSpppVo+rtg==
 
 type-is@~1.6.18:
   version "1.6.18"

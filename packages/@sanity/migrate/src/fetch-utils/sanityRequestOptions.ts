@@ -10,6 +10,10 @@ interface SanityRequestOptions {
   body?: string
 }
 
+function normalizeApiHost(apiHost: string) {
+  return apiHost.replace(/^https?:\/\//, '')
+}
+
 export function toFetchOptions(req: SanityRequestOptions): FetchOptions {
   const {endpoint, apiVersion, projectId, apiHost, token, body} = req
   const requestInit: RequestInit = {
@@ -25,7 +29,13 @@ export function toFetchOptions(req: SanityRequestOptions): FetchOptions {
       Authorization: `bearer ${token}`,
     }
   }
+  const normalizedApiHost = normalizeApiHost(apiHost)
   const path = `/${apiVersion}${endpoint.path}`
-  const host = endpoint.global ? apiHost : `${projectId}.${apiHost}`
-  return {url: `https://${host}/${path}`, init: requestInit}
+  const host = endpoint.global ? normalizedApiHost : `${projectId}.${normalizedApiHost}`
+  const searchParams = new URLSearchParams(endpoint.searchParams).toString()
+
+  return {
+    url: `https://${host}/${path}${searchParams ? `?${searchParams}` : ''}`,
+    init: requestInit,
+  }
 }
