@@ -1,13 +1,13 @@
 import {streamAsyncIterator} from '../../utils/streamToAsyncIterator'
 import {toArray} from '../../it-utils/toArray'
 import {untar} from '../untar'
-import {decode} from '../../it-utils/decode'
+import {decodeText} from '../../it-utils/decodeText'
 import {readFileAsWebStream} from '../../fs-webstream/readFileAsWebStream'
 
 async function* extract(file: string) {
   const fileStream = readFileAsWebStream(file)
   for await (const [header, body] of streamAsyncIterator(untar(fileStream))) {
-    const content = await toArray(decode(streamAsyncIterator(body)))
+    const content = await toArray(decodeText(streamAsyncIterator(body)))
     yield [header.name, {type: header.type, content}]
   }
 }
