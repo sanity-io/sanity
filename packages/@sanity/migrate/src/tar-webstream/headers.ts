@@ -1,7 +1,8 @@
 /* eslint-disable no-bitwise */
 // Extracted from https://github.com/mafintosh/tar-stream/blob/master/headers.js
 // Converted to TypeScript and removed reliance on Node Buffers
-import {areUint8ArraysEqual} from 'uint8array-extras'
+
+import {areUint8ArraysEqual} from '../uint8arrays'
 
 const ZERO_OFFSET = '0'.charCodeAt(0)
 const USTAR_MAGIC = new Uint8Array([0x75, 0x73, 0x74, 0x61, 0x72, 0x00]) // ustar\x00
