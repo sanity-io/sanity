@@ -1,9 +1,11 @@
 import {type Mutation, SanityEncoder} from '@bjoerge/mutiny'
+import {MultipleMutationResult} from '@sanity/client'
 import {toFetchOptions} from '../fetch-utils/sanityRequestOptions'
 import {endpoints} from '../fetch-utils/endpoints'
 import {fetchAsyncIterator} from '../fetch-utils/fetchStream'
 import {parseJSON} from '../it-utils/json'
-import {decode} from '../it-utils/decode'
+import {decodeText} from '../it-utils/decodeText'
+import {concatStr} from '../it-utils/concatStr'
 
 interface APIOptions {
   projectId: string
@@ -23,11 +25,17 @@ export async function* toMutationEndpoint(
       apiVersion: options.apiVersion,
       token: options.token,
       apiHost: options.apiHost ?? 'api.sanity.io',
-      endpoint: endpoints.data.mutate(options.dataset),
+      endpoint: endpoints.data.mutate(options.dataset, {returnIds: true}),
       body: JSON.stringify({
         mutations: SanityEncoder.encode(Array.isArray(mutation) ? mutation : [mutation]),
       }),
     })
-    yield parseJSON(decode(await fetchAsyncIterator(fetchOptions)))
+
+    for await (const result of parseJSON(
+      concatStr(decodeText(await fetchAsyncIterator(fetchOptions))),
+    )) {
+      // todo: add return type
+      yield result as MultipleMutationResult
+    }
   }
 }
