@@ -41,6 +41,9 @@ import deleteGraphQLAPICommand from './graphql/deleteGraphQLAPICommand'
 import usersGroup from './users/usersGroup'
 import inviteUserCommand from './users/inviteUserCommand'
 import listUsersCommand from './users/listUsersCommand'
+import migrationGroup from './migration/migrationGroup'
+import createMigrationCommand from './migration/createMigrationCommand'
+import runMigrationCommand from './migration/runMigrationCommand'
 
 const commands: (CliCommandDefinition | CliCommandGroupDefinition)[] = [
   buildCommand,
@@ -67,6 +70,9 @@ const commands: (CliCommandDefinition | CliCommandGroupDefinition)[] = [
   hookGroup,
   listHooksCommand,
   createHookCommand,
+  migrationGroup,
+  createMigrationCommand,
+  runMigrationCommand,
   deleteHookCommand,
   listHookLogsCommand,
   printHookAttemptCommand,
