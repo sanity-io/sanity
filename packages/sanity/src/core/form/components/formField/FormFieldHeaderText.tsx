@@ -3,7 +3,7 @@ import {Badge, Box, Flex, Stack, Text} from '@sanity/ui'
 import React, {memo} from 'react'
 import {useTranslation} from '../../../i18n'
 import {createDescriptionId} from '../../members/common/createDescriptionId'
-import {Tooltip} from '../../../../ui-components'
+import {TextWithTone} from '../../../components'
 import {FormFieldValidationStatus} from './FormFieldValidationStatus'
 
 /** @internal */
@@ -45,13 +45,9 @@ export const FormFieldHeaderText = memo(function FormFieldHeaderText(
         </Text>
 
         {deprecated && (
-          <Tooltip content={deprecated?.reason}>
-            <Box marginLeft={2}>
-              <Badge style={{width: 'fit-content'}} tone="critical">
-                {t('form.field.deprecated-label')}
-              </Badge>
-            </Box>
-          </Tooltip>
+          <Box marginLeft={2}>
+            <Badge tone="caution">{t('form.field.deprecated-label')}</Badge>
+          </Box>
         )}
 
         {hasValidations && (
@@ -60,6 +56,12 @@ export const FormFieldHeaderText = memo(function FormFieldHeaderText(
           </Box>
         )}
       </Flex>
+
+      {deprecated && (
+        <TextWithTone tone="caution" size={1}>
+          {deprecated.reason}
+        </TextWithTone>
+      )}
 
       {description && (
         <Text muted size={1} id={createDescriptionId(inputId, description)}>

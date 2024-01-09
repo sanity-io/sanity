@@ -1,5 +1,5 @@
 /* eslint-disable camelcase */
-import {Badge, Box, Flex, Grid, rem, Stack, Text, Theme, useForwardedRef} from '@sanity/ui'
+import {Badge, Box, Flex, Grid, Stack, Text, Theme, useForwardedRef} from '@sanity/ui'
 import React, {forwardRef, useCallback, useMemo} from 'react'
 import styled, {css} from 'styled-components'
 import {DeprecatedProperty, FormNodeValidation} from '@sanity/types'
@@ -8,7 +8,7 @@ import {DocumentFieldActionNode} from '../../../config'
 import {useFieldActions} from '../../field'
 import {createDescriptionId} from '../../members/common/createDescriptionId'
 import {FieldCommentsProps} from '../../types'
-import {Tooltip} from '../../../../ui-components'
+import {TextWithTone} from '../../../components'
 import {useTranslation} from '../../../i18n'
 import {FormFieldValidationStatus} from './FormFieldValidationStatus'
 import {FormFieldSetLegend} from './FormFieldSetLegend'
@@ -180,13 +180,9 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
                 title={title}
               />
               {deprecated && (
-                <Tooltip content={deprecated?.reason}>
-                  <Box marginLeft={2}>
-                    <Badge style={{width: 'fit-content'}} tone="critical">
-                      {t('form.field.deprecated-label')}
-                    </Badge>
-                  </Box>
-                </Tooltip>
+                <Box marginLeft={2}>
+                  <Badge tone="caution">{t('form.field.deprecated-label')}</Badge>
+                </Box>
               )}
               {hasValidationMarkers && (
                 <Box marginLeft={2}>
@@ -194,6 +190,12 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
                 </Box>
               )}
             </Flex>
+
+            {deprecated && (
+              <TextWithTone tone="caution" size={1}>
+                {deprecated.reason}
+              </TextWithTone>
+            )}
 
             {description && (
               <Text muted size={1} id={createDescriptionId(inputId, description)}>

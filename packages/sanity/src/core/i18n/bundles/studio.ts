@@ -395,7 +395,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'form.error.no-array-item-at-key':
     'No array item with `_key` <code>"{{key}}"</code> found at path <code>{{path}}</code>',
   /** Form field deprecated label */
-  'form.field.deprecated-label': 'Deprecated',
+  'form.field.deprecated-label': 'deprecated',
   /** Fallback title shown above field if it has no defined title */
   'form.field.untitled-field-label': 'Untitled',
   /** Fallback title shown above fieldset if it has no defined title */
