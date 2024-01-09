@@ -1,16 +1,10 @@
-import {Box, Card, Container, Flex, Stack, Text} from '@sanity/ui'
+import {Text} from '@sanity/ui'
 import {ErrorOutlineIcon} from '@sanity/icons'
-import styled from 'styled-components'
 import {useDocumentPane} from '../../useDocumentPane'
 import {structureLocaleNamespace} from '../../../../i18n'
-import {isDeprecatedSchemaType, useTranslation} from 'sanity'
+import {Banner} from './Banner'
+import {Translate, isDeprecatedSchemaType, useTranslation} from 'sanity'
 
-const Root = styled(Card)`
-  position: relative;
-  z-index: 50;
-`
-
-// TODO: Adopt `Banner` component.
 export function DeprecatedDocumentTypeBanner() {
   const {schemaType} = useDocumentPane()
   const {t} = useTranslation(structureLocaleNamespace)
@@ -20,22 +14,15 @@ export function DeprecatedDocumentTypeBanner() {
   }
 
   return (
-    <Root data-testid="deprecated-document-type-banner" shadow={1} tone="transparent">
-      <Container paddingX={4} paddingY={3} sizing="border" width={1}>
-        <Flex align="center">
-          <Text size={1}>
-            <ErrorOutlineIcon />
-          </Text>
-          <Box marginLeft={3}>
-            <Stack space={2}>
-              <Text size={1} weight="bold">
-                {t('banners.deprecated-document-type-banner.text')}
-              </Text>
-              <Text size={1}>{schemaType.deprecated.reason}</Text>
-            </Stack>
-          </Box>
-        </Flex>
-      </Container>
-    </Root>
+    <Banner
+      content={
+        <Text size={1} weight="medium">
+          <Translate t={t} i18nKey="banners.deprecated-document-type-banner.text" />{' '}
+          {schemaType.deprecated.reason}
+        </Text>
+      }
+      data-testid="deprecated-document-type-banner"
+      icon={ErrorOutlineIcon}
+    />
   )
 }
