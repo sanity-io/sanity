@@ -14,3 +14,6 @@
 # Dev-fixtures
 moviedb.ndjson
 dist
+
+# cjs entry point
+mutations.js
