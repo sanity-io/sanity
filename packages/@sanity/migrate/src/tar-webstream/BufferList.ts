@@ -1,5 +1,5 @@
 import FIFO from 'fast-fifo'
-import {concatUint8Arrays} from 'uint8array-extras'
+import {concatUint8Arrays} from '../uint8arrays'
 
 const EMPTY = new Uint8Array()
 

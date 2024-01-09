@@ -1,9 +1,9 @@
-import {concatUint8Arrays} from 'uint8array-extras'
 import {streamAsyncIterator} from '../../utils/streamToAsyncIterator'
 import {toArray} from '../../it-utils/toArray'
 import {untar} from '../untar'
 import {readFileAsWebStream} from '../../fs-webstream/readFileAsWebStream'
 import {drain} from '../drain'
+import {concatUint8Arrays} from '../../uint8arrays'
 
 function getCrypto() {
   if (typeof globalThis.crypto === 'undefined') {
