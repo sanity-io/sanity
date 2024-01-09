@@ -114,6 +114,11 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'banners.reference-changed-banner.reason-removed.text':
     'This reference has been removed since you opened it.',
 
+  /** Browser/tab title when creating a new document of a given type */
+  'browser-document-title.new-document': 'New {{schemaType}}',
+  /** Browser/tab title when editing a document where the title cannot be resolved from preview configuration */
+  'browser-document-title.untitled-document': 'Untitled',
+
   /** The action menu button aria-label */
   'buttons.action-menu-button.aria-label': 'Open document actions',
   /** The action menu button tooltip */
