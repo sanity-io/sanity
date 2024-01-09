@@ -49,6 +49,7 @@ import {pasteAction} from './fieldActions/pasteAction'
 import {routerDebugTool} from './plugins/router-debug'
 import {StegaDebugger} from './schema/debug/components/DebugStega'
 import {testStudioLocaleBundles} from './locales'
+
 const localePlugins = [koKRLocale(), nbNOLocale(), nnNOLocale(), ptPTLocale(), svSELocale()]
 
 const sharedSettings = definePlugin({

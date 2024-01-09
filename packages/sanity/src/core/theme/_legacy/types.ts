@@ -41,19 +41,19 @@ export interface LegacyThemeProps {
   '--state-danger-color': string
 
   /**
-   * @deprecated only colors and fonts are customizable
+   * @deprecated this theme property is not configurable within the studio
    */
   '--screen-medium-break': string
   /**
-   * @deprecated only colors and fonts are customizable
+   * @deprecated this theme property is not configurable within the studio
    */
   '--screen-default-break': string
   /**
-   * @deprecated only colors and fonts are customizable
+   * @deprecated this theme property is not configurable within the studio
    */
   '--screen-large-break': string
   /**
-   * @deprecated only colors and fonts are customizable
+   * @deprecated this theme property is not configurable within the studio
    */
   '--screen-xlarge-break': string
 }

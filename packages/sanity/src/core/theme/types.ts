@@ -23,48 +23,48 @@ export interface StudioTheme
   /** @internal */
   __legacy?: boolean
   /**
-   * @deprecated only colors and fonts are customizable
+   * @deprecated this theme property is not configurable within the studio
    */
   avatar?: RootTheme['avatar']
   /**
-   * @deprecated only colors and fonts are customizable
+   * @deprecated this theme property is not configurable within the studio
    */
   button?: RootTheme['button']
   /**
-   * @deprecated only colors and fonts are customizable
+   * @deprecated this theme property is not configurable within the studio
    */
   container?: RootTheme['container']
   /**
-   * @deprecated only colors and fonts are customizable
+   * @deprecated this theme property is not configurable within the studio
    */
   focusRing?: RootTheme['focusRing']
   /**
-   * @deprecated only colors and fonts are customizable
+   * @deprecated this theme property is not configurable within the studio
    */
   input?: RootTheme['input']
   /**
-   * @deprecated only colors and fonts are customizable
+   * @deprecated this theme property is not configurable within the studio
    */
   layer?: RootTheme['layer']
 
   /**
-   * @deprecated only colors and fonts are customizable
+   * @deprecated this theme property is not configurable within the studio
    */
   media?: RootTheme['media']
   /**
-   * @deprecated only colors and fonts are customizable
+   * @deprecated this theme property is not configurable within the studio
    */
   radius?: RootTheme['radius']
   /**
-   * @deprecated only colors and fonts are customizable
+   * @deprecated this theme property is not configurable within the studio
    */
   shadows?: RootTheme['shadows']
   /**
-   * @deprecated only colors and fonts are customizable
+   * @deprecated this theme property is not configurable within the studio
    */
   space?: RootTheme['space']
   /**
-   * @deprecated only colors and fonts are customizable
+   * @deprecated this theme property is not configurable within the studio
    */
   styles?: RootTheme['styles']
 
