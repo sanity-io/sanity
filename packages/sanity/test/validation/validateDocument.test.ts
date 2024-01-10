@@ -14,6 +14,7 @@ import {
 } from '../../src/core/validation/validateDocument'
 import {getFallbackLocaleSource} from '../../src/core/i18n/fallback'
 import {convertToValidationMarker} from '../../src/core/validation/util/convertToValidationMarker'
+import {Workspace} from '../../src/core'
 import {createSchema} from './helpers/createSchema'
 import {createMockSanityClient} from './mocks/mockSanityClient'
 
@@ -108,22 +109,21 @@ describe('validateDocument', () => {
       title: null,
     }
 
-    const result = await validateDocument(getClient, document, schema)
+    const result = await validateDocument({
+      getClient,
+      document,
+      workspace: {schema} as Workspace,
+    })
+
     expect(result).toMatchObject([
       {
         level: 'error',
-        item: {
-          message: 'Expected type "String", got "null"',
-          paths: [],
-        },
+        message: 'Expected type "String", got "null"',
         path: ['title'],
       },
       {
         level: 'error',
-        item: {
-          message: 'Required',
-          paths: [],
-        },
+        message: 'Required',
         path: ['title'],
       },
     ])
@@ -535,13 +535,10 @@ describe('validateItem', () => {
         getDocumentExists: undefined,
         i18n: getFallbackLocaleSource(),
       }),
-    ).resolves.toEqual([
+    ).resolves.toMatchObject([
       {
         level: 'error',
-        item: {
-          message: 'Expected type "String", got "Number"',
-          paths: [],
-        },
+        message: 'Expected type "String", got "Number"',
         path: [{_key: 'exampleKey'}, 'title'],
       },
     ])

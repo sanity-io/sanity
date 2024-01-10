@@ -1,24 +1,13 @@
-import type {ValidationMarker, ValidationError} from '@sanity/types'
+import type {ValidationMarker, ValidationError, Path} from '@sanity/types'
 import type {ValidationContext} from '../types'
-import {ValidationError as ValidationErrorClass} from '../ValidationError'
 import {pathToString} from '../util/pathToString'
-
-type ValidationErrorLike = Pick<ValidationError, 'message'> & Partial<ValidationError>
 
 export function isNonNullable<T>(t: T): t is NonNullable<T> {
   return t !== null || t !== undefined
 }
 
 export function convertToValidationMarker(
-  validatorResult:
-    | true
-    | true[]
-    | string
-    | string[]
-    | ValidationError
-    | ValidationError[]
-    | ValidationErrorLike
-    | ValidationErrorLike[],
+  validatorResult: true | true[] | string | string[] | ValidationError | ValidationError[],
   level: 'error' | 'warning' | 'info' | undefined,
   context: ValidationContext,
 ): ValidationMarker[] {
@@ -35,38 +24,39 @@ export function convertToValidationMarker(
   }
 
   if (typeof validatorResult === 'string') {
-    return convertToValidationMarker(new ValidationErrorClass(validatorResult), level, context)
+    return convertToValidationMarker({message: validatorResult}, level, context)
   }
 
-  if (!(validatorResult instanceof ValidationErrorClass)) {
-    // in order to accept the `ValidationErrorLike`, it at least needs to have
-    // a `message` in the object
-    if (typeof validatorResult?.message !== 'string') {
-      throw new Error(
-        `${pathToString(
-          context.path,
-        )}: Validator must return 'true' if valid or an error message as a string on errors`,
-      )
-    }
-
-    // this is the occurs when an object is returned that wasn't created with the
-    // `ValidationErrorClass`. in this case, we want to convert it to a class
-    return convertToValidationMarker(
-      new ValidationErrorClass(validatorResult.message, validatorResult),
-      level,
-      context,
+  if (typeof validatorResult.message !== 'string') {
+    // in order to accept the `ValidationError`, it at least needs to have a
+    // `message` in the object
+    throw new Error(
+      `${pathToString(
+        context.path,
+      )}: Validator must return 'true' if valid or an error message as a string on errors`,
     )
   }
 
-  const results: ValidationMarker[] = []
+  const {message} = validatorResult
+
+  const normalizedPaths: Path[] = []
+  if (validatorResult.path) {
+    normalizedPaths.push(validatorResult.path)
+  }
+
+  // legacy support for `paths`
+  for (const path of validatorResult.paths || []) {
+    normalizedPaths.push(path)
+  }
 
   // the validator result does not include any item-level relative paths,
   // then just return the top-level path with the validation result
-  if (!validatorResult.paths?.length) {
+  if (!normalizedPaths.length) {
     return [
       {
         level: level || 'error',
-        item: validatorResult,
+        item: {message},
+        message,
         path: context.path || [],
       },
     ]
@@ -75,11 +65,10 @@ export function convertToValidationMarker(
   // if the validator result did include item-level relative paths, then for
   // each item-level relative path, create a validation marker that concatenates
   // the relative path with the path from the validation context
-  return results.concat(
-    validatorResult.paths.map((path) => ({
-      path: (context.path || []).concat(path),
-      level: level || 'error',
-      item: validatorResult,
-    })),
-  )
+  return normalizedPaths.map((path) => ({
+    path: (context.path || []).concat(path),
+    level: level || 'error',
+    item: {message},
+    message,
+  }))
 }

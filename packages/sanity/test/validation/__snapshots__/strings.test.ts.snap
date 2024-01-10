@@ -3,13 +3,11 @@
 exports[`string custom async rule with string: not a palindrome 1`] = `
 Array [
   Object {
-    "item": ValidationError {
-      "children": undefined,
+    "item": Object {
       "message": "Must be a palindrome!",
-      "operation": undefined,
-      "paths": Array [],
     },
     "level": "error",
+    "message": "Must be a palindrome!",
     "path": Array [],
   },
 ]
@@ -18,13 +16,11 @@ Array [
 exports[`string custom rule with string: not a palindrome 1`] = `
 Array [
   Object {
-    "item": ValidationError {
-      "children": undefined,
+    "item": Object {
       "message": "Must be a palindrome!",
-      "operation": undefined,
-      "paths": Array [],
     },
     "level": "error",
+    "message": "Must be a palindrome!",
     "path": Array [],
   },
 ]
@@ -33,13 +29,11 @@ Array [
 exports[`string exact length constraint: exact length: too long 1`] = `
 Array [
   Object {
-    "item": ValidationError {
-      "children": undefined,
+    "item": Object {
       "message": "Must be exactly 5 characters long",
-      "operation": undefined,
-      "paths": Array [],
     },
     "level": "error",
+    "message": "Must be exactly 5 characters long",
     "path": Array [],
   },
 ]
@@ -48,13 +42,11 @@ Array [
 exports[`string exact length constraint: exact length: too short 1`] = `
 Array [
   Object {
-    "item": ValidationError {
-      "children": undefined,
+    "item": Object {
       "message": "Must be exactly 5 characters long",
-      "operation": undefined,
-      "paths": Array [],
     },
     "level": "error",
+    "message": "Must be exactly 5 characters long",
     "path": Array [],
   },
 ]
@@ -65,13 +57,11 @@ exports[`string exact length constraint: exact length: valid 1`] = `Array []`;
 exports[`string lowercase constraint: lowercase: all uppercase 1`] = `
 Array [
   Object {
-    "item": ValidationError {
-      "children": undefined,
+    "item": Object {
       "message": "Must be all lowercase characters",
-      "operation": undefined,
-      "paths": Array [],
     },
     "level": "error",
+    "message": "Must be all lowercase characters",
     "path": Array [],
   },
 ]
@@ -80,13 +70,11 @@ Array [
 exports[`string lowercase constraint: lowercase: locale characters 1`] = `
 Array [
   Object {
-    "item": ValidationError {
-      "children": undefined,
+    "item": Object {
       "message": "Must be all lowercase characters",
-      "operation": undefined,
-      "paths": Array [],
     },
     "level": "error",
+    "message": "Must be all lowercase characters",
     "path": Array [],
   },
 ]
@@ -95,13 +83,11 @@ Array [
 exports[`string lowercase constraint: lowercase: some uppercase 1`] = `
 Array [
   Object {
-    "item": ValidationError {
-      "children": undefined,
+    "item": Object {
       "message": "Must be all lowercase characters",
-      "operation": undefined,
-      "paths": Array [],
     },
     "level": "error",
+    "message": "Must be all lowercase characters",
     "path": Array [],
   },
 ]
@@ -112,13 +98,11 @@ exports[`string lowercase constraint: lowercase: valid 1`] = `Array []`;
 exports[`string max length constraint: max length: too long 1`] = `
 Array [
   Object {
-    "item": ValidationError {
-      "children": undefined,
+    "item": Object {
       "message": "Must be at most 5 characters long",
-      "operation": undefined,
-      "paths": Array [],
     },
     "level": "error",
+    "message": "Must be at most 5 characters long",
     "path": Array [],
   },
 ]
@@ -129,13 +113,11 @@ exports[`string max length constraint: max length: valid 1`] = `Array []`;
 exports[`string min length constraint: min length: too short 1`] = `
 Array [
   Object {
-    "item": ValidationError {
-      "children": undefined,
+    "item": Object {
       "message": "Must be at least 2 characters long",
-      "operation": undefined,
-      "paths": Array [],
     },
     "level": "error",
+    "message": "Must be at least 2 characters long",
     "path": Array [],
   },
 ]
@@ -148,13 +130,11 @@ exports[`string regex constraint (custom pattern name): regex: match w/ custom p
 exports[`string regex constraint (custom pattern name): regex: non-match w/ custom pattern name 1`] = `
 Array [
   Object {
-    "item": ValidationError {
-      "children": undefined,
+    "item": Object {
       "message": "Does not match \\"PascalCase\\"-pattern",
-      "operation": undefined,
-      "paths": Array [],
     },
     "level": "error",
+    "message": "Does not match \\"PascalCase\\"-pattern",
     "path": Array [],
   },
 ]
@@ -165,13 +145,11 @@ exports[`string regex constraint (custom pattern name, as options): regex: match
 exports[`string regex constraint (custom pattern name, as options): regex: non-match w/ custom pattern name (opt) 1`] = `
 Array [
   Object {
-    "item": ValidationError {
-      "children": undefined,
+    "item": Object {
       "message": "Does not match \\"PascalCase\\"-pattern",
-      "operation": undefined,
-      "paths": Array [],
     },
     "level": "error",
+    "message": "Does not match \\"PascalCase\\"-pattern",
     "path": Array [],
   },
 ]
@@ -180,13 +158,11 @@ Array [
 exports[`string regex constraint (inverted): regex: inverted match 1`] = `
 Array [
   Object {
-    "item": ValidationError {
-      "children": undefined,
+    "item": Object {
       "message": "Should not match \\"/^[A-Z][a-z]+$/\\"-pattern",
-      "operation": undefined,
-      "paths": Array [],
     },
     "level": "error",
+    "message": "Should not match \\"/^[A-Z][a-z]+$/\\"-pattern",
     "path": Array [],
   },
 ]
@@ -199,13 +175,11 @@ exports[`string regex constraint: regex: match 1`] = `Array []`;
 exports[`string regex constraint: regex: non-match 1`] = `
 Array [
   Object {
-    "item": ValidationError {
-      "children": undefined,
+    "item": Object {
       "message": "Does not match \\"/^[A-Z][a-z]+$/\\"-pattern",
-      "operation": undefined,
-      "paths": Array [],
     },
     "level": "error",
+    "message": "Does not match \\"/^[A-Z][a-z]+$/\\"-pattern",
     "path": Array [],
   },
 ]
@@ -214,13 +188,11 @@ Array [
 exports[`string required constraint: required: empty string 1`] = `
 Array [
   Object {
-    "item": ValidationError {
-      "children": undefined,
+    "item": Object {
       "message": "Required",
-      "operation": undefined,
-      "paths": Array [],
     },
     "level": "error",
+    "message": "Required",
     "path": Array [],
   },
 ]
@@ -229,23 +201,19 @@ Array [
 exports[`string required constraint: required: null 1`] = `
 Array [
   Object {
-    "item": ValidationError {
-      "children": undefined,
+    "item": Object {
       "message": "Expected type \\"String\\", got \\"null\\"",
-      "operation": undefined,
-      "paths": Array [],
     },
     "level": "error",
+    "message": "Expected type \\"String\\", got \\"null\\"",
     "path": Array [],
   },
   Object {
-    "item": ValidationError {
-      "children": undefined,
+    "item": Object {
       "message": "Required",
-      "operation": undefined,
-      "paths": Array [],
     },
     "level": "error",
+    "message": "Required",
     "path": Array [],
   },
 ]
@@ -254,13 +222,11 @@ Array [
 exports[`string required constraint: required: undefined 1`] = `
 Array [
   Object {
-    "item": ValidationError {
-      "children": undefined,
+    "item": Object {
       "message": "Required",
-      "operation": undefined,
-      "paths": Array [],
     },
     "level": "error",
+    "message": "Required",
     "path": Array [],
   },
 ]
@@ -271,13 +237,11 @@ exports[`string required constraint: required: valid 1`] = `Array []`;
 exports[`string uppercase constraint: uppercase: all lowercase 1`] = `
 Array [
   Object {
-    "item": ValidationError {
-      "children": undefined,
+    "item": Object {
       "message": "Must be all uppercase characters",
-      "operation": undefined,
-      "paths": Array [],
     },
     "level": "error",
+    "message": "Must be all uppercase characters",
     "path": Array [],
   },
 ]
@@ -286,13 +250,11 @@ Array [
 exports[`string uppercase constraint: uppercase: locale characters 1`] = `
 Array [
   Object {
-    "item": ValidationError {
-      "children": undefined,
+    "item": Object {
       "message": "Must be all uppercase characters",
-      "operation": undefined,
-      "paths": Array [],
     },
     "level": "error",
+    "message": "Must be all uppercase characters",
     "path": Array [],
   },
 ]
@@ -301,13 +263,11 @@ Array [
 exports[`string uppercase constraint: uppercase: some lowercase 1`] = `
 Array [
   Object {
-    "item": ValidationError {
-      "children": undefined,
+    "item": Object {
       "message": "Must be all uppercase characters",
-      "operation": undefined,
-      "paths": Array [],
     },
     "level": "error",
+    "message": "Must be all uppercase characters",
     "path": Array [],
   },
 ]
@@ -316,13 +276,11 @@ Array [
 exports[`string uppercase constraint: uppercase: some lowercase 2`] = `
 Array [
   Object {
-    "item": ValidationError {
-      "children": undefined,
+    "item": Object {
       "message": "Must be all uppercase characters",
-      "operation": undefined,
-      "paths": Array [],
     },
     "level": "error",
+    "message": "Must be all uppercase characters",
     "path": Array [],
   },
 ]
@@ -333,13 +291,11 @@ exports[`string uppercase constraint: uppercase: valid 1`] = `Array []`;
 exports[`string uri constraint (credentials): uri: credentials specified but not allowed 1`] = `
 Array [
   Object {
-    "item": ValidationError {
-      "children": undefined,
+    "item": Object {
       "message": "Username/password not allowed",
-      "operation": undefined,
-      "paths": Array [],
     },
     "level": "error",
+    "message": "Username/password not allowed",
     "path": Array [],
   },
 ]
@@ -348,13 +304,11 @@ Array [
 exports[`string uri constraint (credentials): uri: username specified but not allowed 1`] = `
 Array [
   Object {
-    "item": ValidationError {
-      "children": undefined,
+    "item": Object {
       "message": "Username/password not allowed",
-      "operation": undefined,
-      "paths": Array [],
     },
     "level": "error",
+    "message": "Username/password not allowed",
     "path": Array [],
   },
 ]
@@ -363,13 +317,11 @@ Array [
 exports[`string uri constraint (invalid protocol): uri: protocol non-match 1`] = `
 Array [
   Object {
-    "item": ValidationError {
-      "children": undefined,
+    "item": Object {
       "message": "Does not match allowed protocols/schemes",
-      "operation": undefined,
-      "paths": Array [],
     },
     "level": "error",
+    "message": "Does not match allowed protocols/schemes",
     "path": Array [],
   },
 ]
@@ -378,13 +330,11 @@ Array [
 exports[`string uri constraint (with unicode chars): uri: non-match 1`] = `
 Array [
   Object {
-    "item": ValidationError {
-      "children": undefined,
+    "item": Object {
       "message": "Not a valid URL",
-      "operation": undefined,
-      "paths": Array [],
     },
     "level": "error",
+    "message": "Not a valid URL",
     "path": Array [],
   },
 ]
@@ -393,13 +343,11 @@ Array [
 exports[`string uri constraint: uri: non-match 1`] = `
 Array [
   Object {
-    "item": ValidationError {
-      "children": undefined,
+    "item": Object {
       "message": "Not a valid URL",
-      "operation": undefined,
-      "paths": Array [],
     },
     "level": "error",
+    "message": "Not a valid URL",
     "path": Array [],
   },
 ]

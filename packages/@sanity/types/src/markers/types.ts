@@ -4,7 +4,15 @@ import type {Path} from '../paths'
 /** @public */
 export interface ValidationMarker {
   level: 'error' | 'warning' | 'info'
-  item: ValidationError
+
+  /**
+   * The validation message for this marker. E.g. "Must be greater than 0"
+   */
+  message: string
+  /**
+   * @deprecated use `message` instead
+   */
+  item?: ValidationError
   /**
    * The sanity path _relative to the root of the current document_ to this
    * marker.

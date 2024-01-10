@@ -5,10 +5,13 @@ import React, {useMemo} from 'react'
 import {useSource} from '../../../../../studio'
 import {PortableTextMarker} from '../../../../types'
 
+const message = 'There is an error with this text block'
+
 const errorMarker: ValidationMarker = {
   level: 'error',
   path: [{_key: 'a'}],
-  item: {message: 'There is an error with this text block'},
+  item: {message},
+  message,
 }
 
 const customMarker: PortableTextMarker = {
