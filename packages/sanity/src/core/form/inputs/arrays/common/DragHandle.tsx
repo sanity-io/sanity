@@ -5,14 +5,14 @@ import {useSortable} from '@dnd-kit/sortable'
 import {Button, ButtonProps} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
 
-const DragHandleButton = styled(Button)<{grid?: boolean}>`
-  cursor: ${(props) => (props.grid ? 'move' : 'ns-resize')};
+const DragHandleButton = styled(Button)<{$grid?: boolean}>`
+  cursor: ${(props) => (props.$grid ? 'move' : 'ns-resize')};
 `
 
 export const SortableItemIdContext = React.createContext<string | null>(null)
 
 interface DragHandleProps {
-  grid?: boolean
+  $grid?: boolean
   size?: ButtonProps['size']
   mode?: ButtonProps['mode']
   paddingY?: ButtonProps['paddingY']
