@@ -1,22 +1,11 @@
 import styled from 'styled-components'
 
-import {
-  // eslint-disable-next-line no-restricted-imports
-  Button as UIButton, // Button with necessary custom styles.
-  Text,
-  Card,
-} from '@sanity/ui'
+import {Card, Text} from '@sanity/ui'
 import {BoltIcon} from '@sanity/icons'
 import {purple, yellow} from '@sanity/color'
 import {useTranslation} from 'react-i18next'
 import {forwardRef} from 'react'
 import {Button} from '../../../../../ui-components'
-
-const StyledButton = styled(UIButton)`
-  padding: 2px;
-  margin: -2px;
-  position: relative;
-`
 
 const CenteredStroke = styled.div`
   position: absolute;
@@ -34,7 +23,7 @@ const SvgFilledOutline = ({daysLeft, totalDays}: OutlineProps) => {
   const progress = totalDays - daysLeft
 
   const percentage = Math.round((progress / totalDays) * 100)
-  const radius = 12.5
+  const radius = 10
   const strokeDasharray = 2 * Math.PI * radius
   const strokeDashOffset = strokeDasharray * ((100 - percentage) / 100)
   const strokeWidth = 1.2
@@ -82,25 +71,24 @@ export const FreeTrialButtonTopbar = forwardRef(function FreeTrialButtonTopbar(
   {toggleShowContent, daysLeft, totalDays}: FreeTrialButtonProps,
   ref: React.Ref<HTMLButtonElement>,
 ) {
-  if (!daysLeft) {
-    return (
-      <Button
-        size="default"
-        ref={ref}
-        icon={BoltIcon}
-        mode="bleed"
-        onClick={toggleShowContent}
-        tooltipProps={{content: 'Upgrade your project'}}
-      />
-    )
-  }
+  const {t} = useTranslation()
+
   return (
-    <StyledButton ref={ref} padding={2} mode="bleed" onClick={toggleShowContent}>
-      <Text size={1}>
+    <Button
+      mode="bleed"
+      onClick={toggleShowContent}
+      ref={ref}
+      tooltipProps={{
+        content: daysLeft
+          ? t('free-trial.tooltip.days-count', {count: daysLeft})
+          : t('free-trial.tooltip.trial-finished'),
+      }}
+    >
+      <Text size={0}>
         <BoltIcon />
       </Text>
       {daysLeft > 0 && <SvgFilledOutline daysLeft={daysLeft} totalDays={totalDays} />}
-    </StyledButton>
+    </Button>
   )
 })
 
