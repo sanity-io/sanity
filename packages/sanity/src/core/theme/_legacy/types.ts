@@ -40,8 +40,20 @@ export interface LegacyThemeProps {
   '--state-warning-color': string
   '--state-danger-color': string
 
+  /**
+   * @deprecated this theme property is not configurable within the studio
+   */
   '--screen-medium-break': string
+  /**
+   * @deprecated this theme property is not configurable within the studio
+   */
   '--screen-default-break': string
+  /**
+   * @deprecated this theme property is not configurable within the studio
+   */
   '--screen-large-break': string
+  /**
+   * @deprecated this theme property is not configurable within the studio
+   */
   '--screen-xlarge-break': string
 }
