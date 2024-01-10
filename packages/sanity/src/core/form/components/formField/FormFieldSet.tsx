@@ -1,5 +1,5 @@
 /* eslint-disable camelcase */
-import {Box, Flex, Grid, rem, Stack, Text, Theme, useForwardedRef} from '@sanity/ui'
+import {Badge, Box, Flex, Grid, Stack, Text, Theme, useForwardedRef} from '@sanity/ui'
 import React, {forwardRef, useCallback, useMemo} from 'react'
 import styled, {css} from 'styled-components'
 import {DeprecatedProperty, FormNodeValidation} from '@sanity/types'
@@ -8,6 +8,8 @@ import {DocumentFieldActionNode} from '../../../config'
 import {useFieldActions} from '../../field'
 import {createDescriptionId} from '../../members/common/createDescriptionId'
 import {FieldCommentsProps} from '../../types'
+import {TextWithTone} from '../../../components'
+import {useTranslation} from '../../../i18n'
 import {FormFieldValidationStatus} from './FormFieldValidationStatus'
 import {FormFieldSetLegend} from './FormFieldSetLegend'
 import {focusRingStyle} from './styles'
@@ -124,6 +126,7 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
 
   const hasValidationMarkers = validation.length > 0
   const forwardedRef = useForwardedRef(ref)
+  const {t} = useTranslation()
 
   const handleFocus = useCallback(
     (event: React.FocusEvent<HTMLDivElement>) => {
@@ -152,8 +155,6 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
     )
   }, [children, collapsed, columns])
 
-  const isDeprecated = typeof deprecated !== 'undefined'
-
   return (
     <Root
       data-level={level}
@@ -170,26 +171,31 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
         fieldHovered={hovered}
         presence={presence}
         content={
-          <Stack
-            space={3}
-            style={{
-              opacity: isDeprecated ? 0.5 : undefined,
-            }}
-          >
-            {isDeprecated && <p style={{margin: 0, color: 'red'}}>{deprecated.reason}</p>}
-            <Flex>
+          <Stack space={3}>
+            <Flex align="center">
               <FormFieldSetLegend
                 collapsed={Boolean(collapsed)}
                 collapsible={collapsible}
                 onClick={collapsible ? handleToggle : undefined}
                 title={title}
               />
+              {deprecated && (
+                <Box marginLeft={2}>
+                  <Badge tone="caution">{t('form.field.deprecated-label')}</Badge>
+                </Box>
+              )}
               {hasValidationMarkers && (
                 <Box marginLeft={2}>
                   <FormFieldValidationStatus fontSize={1} placement="top" validation={validation} />
                 </Box>
               )}
             </Flex>
+
+            {deprecated && (
+              <TextWithTone tone="caution" size={1}>
+                {deprecated.reason}
+              </TextWithTone>
+            )}
 
             {description && (
               <Text muted size={1} id={createDescriptionId(inputId, description)}>
