@@ -181,6 +181,10 @@ export function StudioNavbar() {
                   {...newDocumentOptions}
                   modal={shouldRender.newDocumentFullscreen ? 'dialog' : 'popover'}
                 />
+                {/* Search button (desktop) */}
+                {!shouldRender.searchFullscreen && (
+                  <SearchButton onClick={handleOpenSearch} ref={setSearchOpenButtonEl} />
+                )}
               </Flex>
             </TooltipDelayGroupProvider>
 
@@ -225,11 +229,6 @@ export function StudioNavbar() {
                   </LayerProvider>
 
                   {shouldRender.tools && <FreeTrial type="topbar" />}
-                  {/* Search button (desktop) */}
-                  {!shouldRender.searchFullscreen && (
-                    <SearchButton onClick={handleOpenSearch} ref={setSearchOpenButtonEl} />
-                  )}
-
                   {shouldRender.configIssues && <ConfigIssuesButton />}
                   {shouldRender.resources && <ResourcesButton />}
                   <PresenceMenu />

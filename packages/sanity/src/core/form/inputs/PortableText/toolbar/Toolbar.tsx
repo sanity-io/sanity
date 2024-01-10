@@ -130,6 +130,7 @@ const InnerToolbar = memo(function InnerToolbar({
       </Flex>
       <FullscreenButtonBox padding={isFullscreen ? 2 : 1}>
         <Button
+          aria-label={t('inputs.portable-text.action.expand-editor')}
           icon={isFullscreen ? CollapseIcon : ExpandIcon}
           mode="bleed"
           onClick={onToggleFullscreen}
