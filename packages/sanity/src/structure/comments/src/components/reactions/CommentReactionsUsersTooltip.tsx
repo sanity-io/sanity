@@ -40,7 +40,7 @@ function UserDisplayName(props: UserDisplayNameProps) {
   const content = isCurrentUser ? you : user?.displayName ?? 'Unknown user'
   const text = separator ? `${content}, ` : content
 
-  return <InlineText weight="medium">{text}</InlineText>
+  return <InlineText weight="medium"> {text} </InlineText>
 }
 
 interface CommentReactionsUsersTooltipProps {
@@ -72,43 +72,28 @@ export function CommentReactionsUsersTooltipContent(
   const content = useMemo(() => {
     const len = userIds.length
 
-    const [first, second] = userIds
-
     if (len === 0 || !currentUser) return null
 
-    if (len === 1) {
-      return <UserDisplayName currentUserId={currentUser.id} userId={first} isFirst />
-    }
+    return userIds.map((id, index) => {
+      const separator = index < userIds.length - 1 && len > 2 && index !== userIds.length - 2
+      const showAnd = index === len - 1 && len > 1
 
-    if (len === 2) {
       return (
-        <>
-          <UserDisplayName currentUserId={currentUser.id} userId={first} isFirst />{' '}
-          <InlineText>and</InlineText>{' '}
-          <UserDisplayName currentUserId={currentUser.id} userId={second} />
-        </>
+        <Fragment key={id}>
+          {showAnd && (
+            <>
+              <InlineText>and </InlineText>{' '}
+            </>
+          )}
+          <UserDisplayName
+            currentUserId={currentUser.id}
+            isFirst={index === 0}
+            separator={separator}
+            userId={id}
+          />{' '}
+        </Fragment>
       )
-    }
-
-    const last = userIds[len - 1]
-    const othersArr = userIds.slice(0, userIds.length - 1)
-    const others = othersArr.map((id, index) => (
-      <Fragment key={id}>
-        <UserDisplayName
-          currentUserId={currentUser.id}
-          isFirst={index === 0}
-          separator={index < othersArr.length - 1}
-          userId={id}
-        />{' '}
-      </Fragment>
-    ))
-
-    return (
-      <>
-        {others} <InlineText>and</InlineText>{' '}
-        <UserDisplayName currentUserId={currentUser.id} userId={last} />
-      </>
-    )
+    })
   }, [currentUser, userIds])
 
   return (
