@@ -16,6 +16,14 @@ import {typeString} from './util/typeString'
 import {cancelIdleCallback, requestIdleCallback} from './util/requestIdleCallback'
 import {normalizeValidationRules} from './util/normalizeValidationRules'
 import type {ValidationContext} from './types'
+import {createBatchedGetDocumentExists} from './util/createBatchedGetDocumentExists'
+import {createClientConcurrencyLimiter} from './util/createClientConcurrencyLimiter'
+
+// this is the number of requests allowed inflight at once. this is done to prevent
+// the validation library from overwhelming our backend
+const MAX_FETCH_CONCURRENCY = 10
+
+const limitConcurrency = createClientConcurrencyLimiter(MAX_FETCH_CONCURRENCY)
 
 const isRecord = (maybeRecord: unknown): maybeRecord is Record<string, unknown> =>
   typeof maybeRecord === 'object' && maybeRecord !== null && !Array.isArray(maybeRecord)
@@ -58,29 +66,34 @@ export interface ValidateDocumentOptions {
    */
   document: SanityDocument
   /**
-   * The workspace instance this document belongs to. The document will
-   * be validated against the schema in the given workspace.
+   * The workspace instance (and associated schema) used to validate the given
+   * document against.
    */
   workspace: Workspace
+
   /**
-   * The factory function used to get a sanity client used in custom validators.
-   * If not provided, the one from the workspace will be used.
-   */
-  getClient?: (clientOptions: SourceClientOptions) => SanityClient
-  /**
-   * The function used to check to see if a reference is published before. If
-   * you're validating many documents in bulk, you may want to query for all
+   * Function used to check if referenced documents exists (and is published).
+   *
+   * If you're validating many documents in bulk, you may want to query for all
    * document IDs first and provide your own implementation using those.
    *
-   * If no function is provided a default one will be provided that utilizes
-   * the `getClient` function provided.
+   * If no function is provided a default one will be provided that will batch
+   * call the `doc` endpoint to check for document existence.
    */
   getDocumentExists?: (options: {id: string}) => Promise<boolean>
+
+  /**
+   * The factory function used to get a sanity client used in custom validators.
+   * If not provided, the one from the workspace will be used (preferred).
+   *
+   * @deprecated For internal use only
+   */
+  getClient?: (clientOptions: SourceClientOptions) => SanityClient
 }
 
 /**
- * Validates a document against the given workspace. Returns an array of
- * validation markers with a path, message, and validation level.
+ * Validates a document against the schema in the given workspace. Returns an
+ * array of validation markers with a path, message, and validation level.
  *
  * @beta
  */
@@ -89,21 +102,19 @@ export function validateDocument({
   workspace,
   ...options
 }: ValidateDocumentOptions): Promise<ValidationMarker[]> {
-  // TODO: consider decorating this with a `client.fetch` concurrency limiter
   const getClient = options.getClient || workspace.getClient
-
-  const defaultGetDocumentExists: ValidateDocumentOptions['getDocumentExists'] = ({id}) => {
-    const client = getClient({apiVersion: 'v2021-03-25'})
-    return client.fetch(`count(*[_id == $id]) > 0`, {id})
-  }
+  const getConcurrencyLimitedClient = (clientOptions: SourceClientOptions) =>
+    limitConcurrency(getClient(clientOptions))
 
   return lastValueFrom(
     validateDocumentObservable({
       document,
-      getClient: options.getClient || workspace.getClient,
+      getClient: options.getClient || getConcurrencyLimitedClient,
       i18n: workspace.i18n,
       schema: workspace.schema,
-      getDocumentExists: options.getDocumentExists || defaultGetDocumentExists,
+      getDocumentExists:
+        options.getDocumentExists ||
+        createBatchedGetDocumentExists(getClient({apiVersion: 'v2021-03-25'})),
     }),
   )
 }
