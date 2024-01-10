@@ -94,6 +94,10 @@ export const genericValidators: Validators = {
 
   custom: async (fn, value, message, context) => {
     const slowTimer = setTimeout(() => {
+      // prevents this warning from appearing in the CLI validate command
+      const isNodeJs = typeof process !== 'undefined' && process?.release?.name === 'node'
+      if (isNodeJs) return
+
       // eslint-disable-next-line no-console
       console.warn(
         `Custom validator at ${pathToString(

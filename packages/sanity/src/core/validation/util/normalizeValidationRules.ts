@@ -1,6 +1,7 @@
 import type {SchemaType, Rule, RuleTypeConstraint} from '@sanity/types'
 import {Rule as RuleClass} from '../Rule'
 import {slugValidator} from '../validators/slugValidator'
+import {fieldsValidator} from '../validators/fieldsValidator'
 
 const ruleConstraintTypes: {[P in Lowercase<RuleTypeConstraint>]: true} = {
   array: true,
@@ -14,7 +15,10 @@ const ruleConstraintTypes: {[P in Lowercase<RuleTypeConstraint>]: true} = {
 const isRuleConstraint = (typeString: string): typeString is Lowercase<RuleTypeConstraint> =>
   typeString in ruleConstraintTypes
 
-function getTypeChain(type: SchemaType | undefined, visited: Set<SchemaType>): SchemaType[] {
+function getTypeChain(
+  type: SchemaType | undefined,
+  visited: Set<SchemaType> = new Set(),
+): SchemaType[] {
   if (!type) return []
   if (visited.has(type)) return []
 
@@ -98,14 +102,24 @@ export function normalizeValidationRules(typeDef: SchemaType | undefined): Rule[
     return [validation]
   }
 
-  const baseRule =
+  let baseRule =
     // using an object + Object.values to de-dupe the type chain by type name
     Object.values(
-      getTypeChain(typeDef, new Set()).reduce<Record<string, SchemaType>>((acc, type) => {
+      getTypeChain(typeDef).reduce<Record<string, SchemaType>>((acc, type) => {
         acc[type.name] = type
         return acc
       }, {}),
     ).reduce(baseRuleReducer, new RuleClass(typeDef))
+
+  if (
+    // if the schema type is an object type
+    typeDef.jsonType === 'object' &&
+    // and if somewhere in it's type chain, it inherits from object or document
+    getTypeChain(typeDef).find((type) => type.name === 'object' || type.name === 'document')
+  ) {
+    // then add a warning via the fields validator
+    baseRule = baseRule.custom(fieldsValidator(typeDef)).warning()
+  }
 
   if (!validation) {
     return [baseRule]

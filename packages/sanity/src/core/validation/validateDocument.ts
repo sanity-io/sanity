@@ -109,7 +109,7 @@ export function validateDocument({
   return lastValueFrom(
     validateDocumentObservable({
       document,
-      getClient: options.getClient || getConcurrencyLimitedClient,
+      getClient: getConcurrencyLimitedClient,
       i18n: workspace.i18n,
       schema: workspace.schema,
       getDocumentExists:
