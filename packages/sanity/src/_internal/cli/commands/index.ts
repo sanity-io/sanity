@@ -40,6 +40,8 @@ import deleteGraphQLAPICommand from './graphql/deleteGraphQLAPICommand'
 import usersGroup from './users/usersGroup'
 import inviteUserCommand from './users/inviteUserCommand'
 import listUsersCommand from './users/listUsersCommand'
+import enableDatasetBackupCommand from './dataset/backup/enableDatasetBackup'
+import disableDatasetBackupCommand from './dataset/backup/disableDatasetBackup'
 
 const commands: (CliCommandDefinition | CliCommandGroupDefinition)[] = [
   buildCommand,
@@ -56,6 +58,8 @@ const commands: (CliCommandDefinition | CliCommandGroupDefinition)[] = [
   deleteDatasetCommand,
   copyDatasetCommand,
   aliasDatasetCommand,
+  enableDatasetBackupCommand,
+  disableDatasetBackupCommand,
   corsGroup,
   listCorsOriginsCommand,
   addCorsOriginCommand,
