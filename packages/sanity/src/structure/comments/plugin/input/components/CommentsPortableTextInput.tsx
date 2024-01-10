@@ -1,7 +1,7 @@
 import {EditorChange, RangeDecoration} from '@sanity/portable-text-editor'
 import {Stack, Grid} from '@sanity/ui'
 import {useState, useRef, useCallback, useMemo, useEffect, PropsWithChildren} from 'react'
-import {isEqual, set} from 'lodash'
+import {isEqual} from 'lodash'
 import {CommentMessage, useComments} from '../../../src'
 import {Button} from '../../../../../ui-components'
 import {createDomRectFromElements} from '../helpers'
@@ -104,11 +104,11 @@ export function CommentsPortableTextInput(props: PortableTextInputProps) {
       isRangeInvalid,
     }
 
-    const current = currentSelection ? [currentRangeDecoration] : []
+    const current = currentSelection ? [currentRangeDecoration] : EMPTY_ARRAY
 
     return [
       // Existing range decorations
-      ...(props?.rangeDecorations || []),
+      ...(props?.rangeDecorations || EMPTY_ARRAY),
       // The range decoration when adding a comment
       ...current,
       // The range decorations for existing comments
@@ -125,11 +125,11 @@ export function CommentsPortableTextInput(props: PortableTextInputProps) {
   }, [rect])
 
   useEffect(() => {
-    const elements = Array.from(
-      rootElementRef.current?.querySelectorAll('[data-comment-state="authoring"]') || EMPTY_ARRAY,
-    )
+    // Get all the elements that have the `data-comment-state="authoring"` attribute
+    const elements = rootElementRef.current?.querySelectorAll('[data-comment-state="authoring"]')
 
-    const nextRect = createDomRectFromElements(elements)
+    // Create a DOMRect from the elements. This is used to position the popover.
+    const nextRect = createDomRectFromElements(Array.from(elements || EMPTY_ARRAY))
 
     const raf = requestAnimationFrame(() => {
       setRect(nextRect)
@@ -157,11 +157,11 @@ export function CommentsPortableTextInput(props: PortableTextInputProps) {
           mentionOptions={mentionOptions}
           onChange={setNextCommentValue}
           onClickOutside={onClickOutsidePopover}
+          onDiscardConfirm={handleDiscardConfirm}
+          onSubmit={handleSubmit}
           open={!!currentSelection}
           referenceElement={referenceElement}
           value={nextCommentValue}
-          onDiscardConfirm={handleDiscardConfirm}
-          onSubmit={handleSubmit}
         />
       )}
 
