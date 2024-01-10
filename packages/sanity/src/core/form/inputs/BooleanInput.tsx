@@ -1,4 +1,3 @@
-import React from 'react'
 import styled from 'styled-components'
 import {Box, Card, CardTone, Checkbox, Flex, Switch} from '@sanity/ui'
 import {BooleanInputProps} from '../types'
@@ -29,20 +28,9 @@ export function BooleanInput(props: BooleanInputProps) {
 
   const tone: CardTone | undefined = readOnly ? 'transparent' : undefined
 
-  const isDeprecated = Boolean(schemaType.deprecated)
-
   return (
     <>
-      {isDeprecated && <p style={{margin: 0, color: 'red'}}>{schemaType.deprecated?.reason}</p>}
-      <Card
-        style={{
-          opacity: isDeprecated ? 0.5 : undefined,
-        }}
-        border
-        data-testid="boolean-input"
-        radius={2}
-        tone={tone}
-      >
+      <Card border data-testid="boolean-input" radius={2} tone={tone}>
         <Flex>
           <ZeroLineHeightBox padding={3}>
             <LayoutSpecificInput
@@ -60,6 +48,7 @@ export function BooleanInput(props: BooleanInputProps) {
               inputId={id}
               validation={validation}
               title={schemaType.title}
+              deprecated={schemaType.deprecated}
             />
           </Box>
           <CenterAlignedBox paddingX={3} paddingY={1}>
