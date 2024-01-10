@@ -42,6 +42,7 @@ import migrationGroup from './migration/migrationGroup'
 import runMigrationCommand from './migration/runMigrationCommand'
 import previewCommand from './preview/previewCommand'
 import schemaGroup from './schema/schemaGroup'
+import datasetBackupCommands from './dataset/backup/backupCommands'
 import validateSchemaCommand from './schema/validateSchemaCommand'
 import startCommand from './start/startCommand'
 import uninstallCommand from './uninstall/uninstallCommand'
@@ -64,6 +65,7 @@ const commands: (CliCommandDefinition | CliCommandGroupDefinition)[] = [
   deleteDatasetCommand,
   copyDatasetCommand,
   aliasDatasetCommand,
+  datasetBackupCommands,
   corsGroup,
   listCorsOriginsCommand,
   addCorsOriginCommand,
