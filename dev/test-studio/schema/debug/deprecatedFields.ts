@@ -13,7 +13,7 @@ export const deprecatedFields = defineType({
       description: 'This field is used to create the header for the site',
       validation: (Rule) => Rule.required(),
       name: 'string',
-      title: 'String',
+      title: 'string',
       type: 'string',
     }),
     defineField({
@@ -22,7 +22,7 @@ export const deprecatedFields = defineType({
       },
       name: 'type',
       type: 'string',
-      title: 'List',
+      title: 'list',
       initialValue: 'foo',
       options: {list: ['Frukt', 'Dyr', 'Fjell']},
     }),
@@ -31,7 +31,7 @@ export const deprecatedFields = defineType({
         reason: 'This number field is deprecated',
       },
       name: 'number',
-      title: 'Number',
+      title: 'number',
       type: 'number',
     }),
     defineField({
@@ -39,7 +39,7 @@ export const deprecatedFields = defineType({
         reason: 'This boolean field is deprecated',
       },
       name: 'boolean',
-      title: 'Boolean',
+      title: 'boolean',
       type: 'boolean',
     }),
     defineField({
@@ -47,7 +47,7 @@ export const deprecatedFields = defineType({
         reason: 'This email field is deprecated',
       },
       name: 'email',
-      title: 'Email',
+      title: 'email',
       type: 'email',
     }),
     defineField({
@@ -55,7 +55,7 @@ export const deprecatedFields = defineType({
         reason: 'This array is deprecated',
       },
       name: 'array',
-      title: 'Array String',
+      title: 'array',
       type: 'array',
       of: [{type: 'string'}],
     }),
@@ -81,7 +81,7 @@ export const deprecatedFields = defineType({
     }),
     defineField({
       name: 'DeprecatedObject',
-      title: 'Object',
+      title: 'object',
       deprecated: {
         reason: 'This object is deprecated',
       },
@@ -104,7 +104,7 @@ export const deprecatedFields = defineType({
       deprecated: {
         reason: 'This reference is deprecated',
       },
-      title: 'Reference',
+      title: 'reference',
       type: 'reference',
       to: [{type: 'author'}, {type: 'book'}],
     }),
@@ -113,7 +113,7 @@ export const deprecatedFields = defineType({
       deprecated: {
         reason: 'This cross dataset reference is deprecated',
       },
-      title: 'CDR',
+      title: 'crossDatasetReference',
       type: 'crossDatasetReference',
       dataset: 'blog',
       to: [{type: 'author', preview: {select: {title: 'name'}}}],
@@ -123,7 +123,7 @@ export const deprecatedFields = defineType({
       deprecated: {
         reason: 'This image is deprecated',
       },
-      title: 'Image',
+      title: 'image',
       type: 'image',
       fields: [
         defineField({
@@ -141,7 +141,7 @@ export const deprecatedFields = defineType({
       deprecated: {
         reason: 'This file is deprecated',
       },
-      title: 'File',
+      title: 'file',
       type: 'file',
       fields: [
         defineField({
@@ -156,7 +156,7 @@ export const deprecatedFields = defineType({
       deprecated: {
         reason: 'This date is deprecated',
       },
-      title: 'Date',
+      title: 'date',
       type: 'date',
     }),
     defineField({
@@ -164,7 +164,7 @@ export const deprecatedFields = defineType({
       deprecated: {
         reason: 'This datetime is deprecated',
       },
-      title: 'DateTime',
+      title: 'datetime',
       type: 'datetime',
     }),
     defineField({
@@ -172,12 +172,12 @@ export const deprecatedFields = defineType({
       deprecated: {
         reason: 'This geopoint is deprecated',
       },
-      title: 'Geopoint',
+      title: 'geopoint',
       type: 'geopoint',
     }),
     defineField({
       name: 'url',
-      title: 'URL',
+      title: 'url',
       type: 'url',
       deprecated: {
         reason: 'This url is deprecated',
@@ -188,7 +188,7 @@ export const deprecatedFields = defineType({
       deprecated: {
         reason: 'This slug is deprecated',
       },
-      title: 'Slug',
+      title: 'slug',
       type: 'slug',
       options: {source: 'string'},
     }),
@@ -197,7 +197,7 @@ export const deprecatedFields = defineType({
       deprecated: {
         reason: 'This text is deprecated',
       },
-      title: 'Text',
+      title: 'text',
       type: 'text',
     }),
     defineField({

@@ -46,7 +46,9 @@ export const FormFieldHeaderText = memo(function FormFieldHeaderText(
 
         {deprecated && (
           <Box marginLeft={2}>
-            <Badge tone="caution">{t('form.field.deprecated-label')}</Badge>
+            <Badge data-testid={`deprecated-badge-${title}`} tone="caution">
+              {t('form.field.deprecated-label')}
+            </Badge>
           </Box>
         )}
 
@@ -58,7 +60,7 @@ export const FormFieldHeaderText = memo(function FormFieldHeaderText(
       </Flex>
 
       {deprecated && (
-        <TextWithTone tone="caution" size={1}>
+        <TextWithTone data-testid={`deprecated-message-${title}`} tone="caution" size={1}>
           {deprecated.reason}
         </TextWithTone>
       )}
