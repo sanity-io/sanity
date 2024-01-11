@@ -9,7 +9,9 @@ import {
   CommentInputHandle,
   hasCommentMessageValue,
 } from '../../../src'
-import {Popover} from '../../../../../ui-components'
+import {Popover, PopoverProps} from '../../../../../ui-components'
+
+const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['bottom', 'top']
 
 const MotionPopover = motion(Popover)
 
@@ -94,9 +96,8 @@ export function InlineCommentInputPopover(props: InlineCommentInputPopoverProps)
           animate="visible"
           content={content}
           data-ui="InlineCommentInputPopover"
-          fallbackPlacements={['bottom']}
+          fallbackPlacements={POPOVER_FALLBACK_PLACEMENTS}
           initial="hidden"
-          layout
           open
           placement="bottom"
           portal
