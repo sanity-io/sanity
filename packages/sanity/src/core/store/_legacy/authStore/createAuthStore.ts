@@ -239,6 +239,7 @@ export function _createAuthStore({
       dataset,
       useCdn: true,
       withCredentials: true,
+      token: getToken(projectId) ?? undefined,
       apiVersion: '2021-06-07',
       requestTagPrefix: 'sanity.studio',
       ...hostOptions,
