@@ -1,3 +1,4 @@
+import {EditorSelection} from '@sanity/portable-text-editor'
 import {PortableTextBlock, User} from '@sanity/types'
 
 /**
@@ -47,6 +48,7 @@ export interface CommentThreadItem {
   fieldPath: string
   parentComment: CommentDocument
   replies: CommentDocument[]
+  selection: EditorSelection | undefined
   threadId: string
 }
 
@@ -68,6 +70,7 @@ export type CommentStatus = 'open' | 'resolved'
  */
 export interface CommentPath {
   field: string
+  selection?: EditorSelection
 }
 
 /**
@@ -166,6 +169,7 @@ export interface CommentDocument {
 
   target: {
     path: CommentPath
+
     documentType: string
     document: {
       _dataset: string
@@ -192,6 +196,7 @@ export interface CommentCreatePayload {
   id?: string
   message: CommentMessage
   parentCommentId: string | undefined
+  selection?: EditorSelection
   status: CommentStatus
   threadId: string
   reactions: CommentReactionItem[]
