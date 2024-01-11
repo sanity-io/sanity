@@ -118,6 +118,7 @@ export function useCommentOperations(
         target: {
           path: {
             field: comment.fieldPath,
+            selection: comment.selection,
           },
           document: {
             _dataset: dataset,
