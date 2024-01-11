@@ -1,5 +1,5 @@
 import {EditorChange, EditorSelection, RangeDecoration} from '@sanity/portable-text-editor'
-import {Stack, Grid, BoundaryElementProvider} from '@sanity/ui'
+import {Stack, Grid} from '@sanity/ui'
 import React, {
   useState,
   useRef,
@@ -27,12 +27,16 @@ function isRangeInvalid() {
 
 function AddCommentDecorator(props: PropsWithChildren) {
   const {children} = props
-  return <HighlightSpan data-comment-state="authoring">{children}</HighlightSpan>
+  return <HighlightSpan data-inline-comment-state="authoring">{children}</HighlightSpan>
 }
 
-function CommentDecorator(props: PropsWithChildren) {
-  const {children} = props
-  return <HighlightSpan data-comment-state="added">{children}</HighlightSpan>
+function CommentDecorator(props: PropsWithChildren<{commentId: string}>) {
+  const {children, commentId} = props
+  return (
+    <HighlightSpan data-inline-comment-state="added" data-inline-comment-id={commentId}>
+      {children}
+    </HighlightSpan>
+  )
 }
 
 export function CommentsPortableTextInput(props: PortableTextInputProps) {
@@ -52,12 +56,11 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
   const {mentionOptions, comments, create} = useComments()
 
   const [nextCommentValue, setNextCommentValue] = useState<CommentMessage | null>(null)
-
-  const [currentSelection, setCurrentSelection] = useState<EditorSelection | null>(null)
-  const [rect, setRect] = useState<DOMRect | null>(null)
+  const [nextCommentSelection, setNextCommentSelection] = useState<EditorSelection | null>(null)
 
   const currentSelectionRef = useRef<EditorSelection | null>(null)
   const rootElementRef = useRef<HTMLDivElement | null>(null)
+  const [rect, setRect] = useState<DOMRect | null>(null)
 
   const stringFieldPath = useMemo(() => PathUtils.toString(props.path), [props.path])
 
@@ -66,14 +69,14 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
   }, [comments, stringFieldPath])
 
   const handleSubmit = useCallback(() => {
-    if (!currentSelection) return
+    if (!nextCommentSelection) return
 
     create.execute({
       fieldPath: stringFieldPath,
       message: nextCommentValue,
       // This is a new comment, so we don't have a parent comment id
       parentCommentId: undefined,
-      selection: currentSelection,
+      selection: nextCommentSelection,
       status: 'open',
       // This is a new comment, so we need to generate a new thread id
       threadId: uuid(),
@@ -81,31 +84,31 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
 
     // Reset the states when submitting
     setNextCommentValue(null)
-    setCurrentSelection(null)
+    setNextCommentSelection(null) // Rename to setNextCommentSelection
     currentSelectionRef.current = null
-  }, [create, currentSelection, nextCommentValue, stringFieldPath])
+  }, [create, nextCommentSelection, nextCommentValue, stringFieldPath])
 
   // This will set the current selection state to the current selection ref.
   // When this value is set, the popover with the comment input will open and
   // the comment being added will use the current selection in it's data.
   const handleAddSelection = useCallback(() => {
-    setCurrentSelection(currentSelectionRef.current)
+    setNextCommentSelection(currentSelectionRef.current)
   }, [])
 
   const handleDiscardConfirm = useCallback(() => {
     setNextCommentValue(null)
-    setCurrentSelection(null)
+    setNextCommentSelection(null)
   }, [])
 
   const onClickOutsidePopover = useCallback(() => {
     setRect(null)
-    setCurrentSelection(null)
+    setNextCommentSelection(null)
   }, [])
 
   const onEditorChange = useCallback(
     (change: EditorChange) => {
       if (change.type === 'selection') {
-        const hasSelectionRange = !isEqual(change.selection, currentSelection)
+        const hasSelectionRange = !isEqual(change.selection, nextCommentSelection)
 
         if (hasSelectionRange) {
           // Store the current selection in a ref so that, when clicking the "add comment"
@@ -117,7 +120,7 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
         }
       }
     },
-    [currentSelection],
+    [nextCommentSelection],
   )
 
   // The range decorations for existing comments
@@ -127,13 +130,15 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
         .map((comment) => {
           if (!comment.selection) return null
 
-          const addedRangeDecoration: RangeDecoration = {
-            component: CommentDecorator,
+          const decorator: RangeDecoration = {
+            component: ({children}) => (
+              <CommentDecorator commentId={comment.parentComment._id}>{children}</CommentDecorator>
+            ),
             isRangeInvalid,
             selection: comment.selection,
           }
 
-          return addedRangeDecoration
+          return decorator
         })
         .filter(Boolean) as RangeDecoration[],
 
@@ -144,10 +149,10 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
     const currentRangeDecoration: RangeDecoration = {
       component: AddCommentDecorator,
       isRangeInvalid,
-      selection: currentSelection,
+      selection: nextCommentSelection,
     }
 
-    const currentDecorator = currentSelection ? [currentRangeDecoration] : EMPTY_ARRAY
+    const currentDecorator = nextCommentSelection ? [currentRangeDecoration] : EMPTY_ARRAY
 
     return [
       // Existing range decorations
@@ -157,7 +162,7 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
       // The range decorations for existing comments
       ...commentDecorators,
     ]
-  }, [commentDecorators, currentSelection, props?.rangeDecorations])
+  }, [commentDecorators, nextCommentSelection, props?.rangeDecorations])
 
   // Construct a virtual element used to position the popover relative to the selection.
   const popoverReferenceElement = useMemo((): PopoverProps['referenceElement'] => {
@@ -182,8 +187,10 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
   // bounding box for the selection and set it as the rect state. This is used to
   // position the popover.
   useEffect(() => {
-    // Get all the elements that have the `data-comment-state="authoring"` attribute
-    const elements = rootElementRef.current?.querySelectorAll('[data-comment-state="authoring"]')
+    // Get all the elements that have the `data-inline-comment-state="authoring"` attribute
+    const elements = rootElementRef.current?.querySelectorAll(
+      '[data-inline-comment-state="authoring"]',
+    )
 
     // Create a DOMRect from the elements. This is used to position the popover.
     const nextRect = createDomRectFromElements(Array.from(elements || EMPTY_ARRAY))
@@ -195,11 +202,11 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
     return () => {
       cancelAnimationFrame(raf)
     }
-  }, [currentSelection, rect])
+  }, [nextCommentSelection])
 
   return (
     <Fragment key={stringFieldPath}>
-      <BoundaryElementProvider element={rootElementRef.current}>
+      <Stack space={2} ref={rootElementRef}>
         {currentUser && (
           <InlineCommentInputPopover
             currentUser={currentUser}
@@ -208,14 +215,12 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
             onClickOutside={onClickOutsidePopover}
             onDiscardConfirm={handleDiscardConfirm}
             onSubmit={handleSubmit}
-            open={!!currentSelection}
+            open={!!nextCommentSelection}
             referenceElement={popoverReferenceElement}
             value={nextCommentValue}
           />
         )}
-      </BoundaryElementProvider>
 
-      <Stack space={2} ref={rootElementRef}>
         {props.renderDefault(inputProps)}
 
         <Grid columns={2} gap={2}>
