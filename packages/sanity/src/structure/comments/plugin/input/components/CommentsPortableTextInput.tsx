@@ -1,11 +1,19 @@
 import {EditorChange, EditorSelection, RangeDecoration} from '@sanity/portable-text-editor'
-import {Stack, Grid} from '@sanity/ui'
-import {useState, useRef, useCallback, useMemo, useEffect, PropsWithChildren} from 'react'
+import {Stack, Grid, BoundaryElementProvider} from '@sanity/ui'
+import React, {
+  useState,
+  useRef,
+  useCallback,
+  useMemo,
+  useEffect,
+  PropsWithChildren,
+  Fragment,
+} from 'react'
 import {isEqual} from 'lodash'
 import {uuid} from '@sanity/uuid'
 import * as PathUtils from '@sanity/util/paths'
 import {CommentMessage, useComments} from '../../../src'
-import {Button} from '../../../../../ui-components'
+import {Button, PopoverProps} from '../../../../../ui-components'
 import {createDomRectFromElements} from '../helpers'
 import {InlineCommentInputPopover} from './InlineCommentInputPopover'
 import {HighlightSpan} from './HighlightSpan'
@@ -17,20 +25,19 @@ function isRangeInvalid() {
   return false
 }
 
-// Adding a highlight decorator
-function AddHighlightDecorator(props: PropsWithChildren) {
+function AddCommentDecorator(props: PropsWithChildren) {
   const {children} = props
-
   return <HighlightSpan data-comment-state="authoring">{children}</HighlightSpan>
 }
 
-function HighlightDecorator(props: PropsWithChildren) {
+function CommentDecorator(props: PropsWithChildren) {
   const {children} = props
-
   return <HighlightSpan data-comment-state="added">{children}</HighlightSpan>
 }
 
-export function CommentsPortableTextInput(props: PortableTextInputProps) {
+export const CommentsPortableTextInput = React.memo(function CommentsPortableTextInput(
+  props: PortableTextInputProps,
+) {
   const currentUser = useCurrentUser()
   const {mentionOptions, comments, create} = useComments()
 
@@ -54,9 +61,11 @@ export function CommentsPortableTextInput(props: PortableTextInputProps) {
     create.execute({
       fieldPath: stringFieldPath,
       message: nextCommentValue,
+      // This is a new comment, so we don't have a parent comment id
       parentCommentId: undefined,
       selection: currentSelection,
       status: 'open',
+      // This is a new comment, so we need to generate a new thread id
       threadId: uuid(),
     })
 
@@ -86,12 +95,14 @@ export function CommentsPortableTextInput(props: PortableTextInputProps) {
   const onEditorChange = useCallback(
     (change: EditorChange) => {
       if (change.type === 'selection') {
-        // Store the current selection in a ref so that, when clicking the "add comment" button, we can
-        // use the current selection and set it as the current selection state.
-        currentSelectionRef.current = change.selection
+        const hasSelectionRange = !isEqual(change.selection, currentSelection)
 
-        // If the selection is equal, there's no change selected that can be commented on.
-        if (isEqual(change.selection, currentSelection)) {
+        if (hasSelectionRange) {
+          // Store the current selection in a ref so that, when clicking the "add comment"
+          // button, we use the selection and set it as the current selection state so that
+          // the popover opens with the selection.
+          currentSelectionRef.current = change.selection
+        } else {
           currentSelectionRef.current = null
         }
       }
@@ -99,6 +110,7 @@ export function CommentsPortableTextInput(props: PortableTextInputProps) {
     [currentSelection],
   )
 
+  // The range decorations for existing comments
   const commentDecorators = useMemo(
     () =>
       fieldComments
@@ -106,9 +118,9 @@ export function CommentsPortableTextInput(props: PortableTextInputProps) {
           if (!comment.selection) return null
 
           const addedRangeDecoration: RangeDecoration = {
-            selection: comment.selection,
-            component: HighlightDecorator,
+            component: CommentDecorator,
             isRangeInvalid,
+            selection: comment.selection,
           }
 
           return addedRangeDecoration
@@ -120,9 +132,9 @@ export function CommentsPortableTextInput(props: PortableTextInputProps) {
 
   const rangeDecorations = useMemo((): RangeDecoration[] => {
     const currentRangeDecoration: RangeDecoration = {
-      selection: currentSelection,
-      component: AddHighlightDecorator,
+      component: AddCommentDecorator,
       isRangeInvalid,
+      selection: currentSelection,
     }
 
     const currentDecorator = currentSelection ? [currentRangeDecoration] : EMPTY_ARRAY
@@ -137,7 +149,8 @@ export function CommentsPortableTextInput(props: PortableTextInputProps) {
     ]
   }, [commentDecorators, currentSelection, props?.rangeDecorations])
 
-  const referenceElement = useMemo(() => {
+  // Construct a virtual element used to position the popover relative to the selection.
+  const popoverReferenceElement = useMemo((): PopoverProps['referenceElement'] => {
     if (!rect) return null
 
     return {
@@ -145,6 +158,19 @@ export function CommentsPortableTextInput(props: PortableTextInputProps) {
     } as HTMLElement
   }, [rect])
 
+  // The props passed to the portable text input
+  const inputProps = useMemo(
+    (): PortableTextInputProps => ({
+      ...props,
+      onEditorChange,
+      rangeDecorations,
+    }),
+    [props, onEditorChange, rangeDecorations],
+  )
+
+  // This effect will run when the current selection changes and will calculate the
+  // bounding box for the selection and set it as the rect state. This is used to
+  // position the popover.
   useEffect(() => {
     // Get all the elements that have the `data-comment-state="authoring"` attribute
     const elements = rootElementRef.current?.querySelectorAll('[data-comment-state="authoring"]')
@@ -161,30 +187,23 @@ export function CommentsPortableTextInput(props: PortableTextInputProps) {
     }
   }, [currentSelection, rect])
 
-  const inputProps = useMemo(
-    (): PortableTextInputProps => ({
-      ...props,
-      onEditorChange,
-      rangeDecorations,
-    }),
-    [props, onEditorChange, rangeDecorations],
-  )
-
   return (
-    <>
-      {currentUser && (
-        <InlineCommentInputPopover
-          currentUser={currentUser}
-          mentionOptions={mentionOptions}
-          onChange={setNextCommentValue}
-          onClickOutside={onClickOutsidePopover}
-          onDiscardConfirm={handleDiscardConfirm}
-          onSubmit={handleSubmit}
-          open={!!currentSelection}
-          referenceElement={referenceElement}
-          value={nextCommentValue}
-        />
-      )}
+    <Fragment key={stringFieldPath}>
+      <BoundaryElementProvider element={rootElementRef.current}>
+        {currentUser && (
+          <InlineCommentInputPopover
+            currentUser={currentUser}
+            mentionOptions={mentionOptions}
+            onChange={setNextCommentValue}
+            onClickOutside={onClickOutsidePopover}
+            onDiscardConfirm={handleDiscardConfirm}
+            onSubmit={handleSubmit}
+            open={!!currentSelection}
+            referenceElement={popoverReferenceElement}
+            value={nextCommentValue}
+          />
+        )}
+      </BoundaryElementProvider>
 
       <Stack space={2} ref={rootElementRef}>
         {props.renderDefault(inputProps)}
@@ -193,6 +212,6 @@ export function CommentsPortableTextInput(props: PortableTextInputProps) {
           <Button text="Add comment" onClick={handleAddSelection} />
         </Grid>
       </Stack>
-    </>
+    </Fragment>
   )
-}
+})
