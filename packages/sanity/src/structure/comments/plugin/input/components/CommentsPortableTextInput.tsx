@@ -1,15 +1,15 @@
-import {EditorChange, RangeDecoration} from '@sanity/portable-text-editor'
+import {EditorChange, EditorSelection, RangeDecoration} from '@sanity/portable-text-editor'
 import {Stack, Grid} from '@sanity/ui'
 import {useState, useRef, useCallback, useMemo, useEffect, PropsWithChildren} from 'react'
 import {isEqual} from 'lodash'
+import {uuid} from '@sanity/uuid'
+import * as PathUtils from '@sanity/util/paths'
 import {CommentMessage, useComments} from '../../../src'
 import {Button} from '../../../../../ui-components'
 import {createDomRectFromElements} from '../helpers'
 import {InlineCommentInputPopover} from './InlineCommentInputPopover'
 import {HighlightSpan} from './HighlightSpan'
 import {PortableTextInputProps, useCurrentUser} from 'sanity'
-
-type Selection = RangeDecoration['selection']
 
 const EMPTY_ARRAY: [] = []
 
@@ -32,44 +32,46 @@ function HighlightDecorator(props: PropsWithChildren) {
 
 export function CommentsPortableTextInput(props: PortableTextInputProps) {
   const currentUser = useCurrentUser()
-  const {mentionOptions} = useComments()
+  const {mentionOptions, comments, create} = useComments()
 
   const [nextCommentValue, setNextCommentValue] = useState<CommentMessage | null>(null)
 
-  const [currentSelection, setCurrentSelection] = useState<Selection | null>(null)
+  const [currentSelection, setCurrentSelection] = useState<EditorSelection | null>(null)
   const [rect, setRect] = useState<DOMRect | null>(null)
 
-  const currentSelectionRef = useRef<Selection | null>(null)
+  const currentSelectionRef = useRef<EditorSelection | null>(null)
   const rootElementRef = useRef<HTMLDivElement | null>(null)
 
-  const [comments, setComments] = useState<RangeDecoration[]>([])
+  const stringFieldPath = useMemo(() => PathUtils.toString(props.path), [props.path])
+
+  const fieldComments = useMemo(() => {
+    return comments.data.open?.filter((comment) => comment.fieldPath === stringFieldPath)
+  }, [comments, stringFieldPath])
 
   const handleSubmit = useCallback(() => {
-    const nextDecoration: RangeDecoration = {
-      selection: currentSelectionRef.current,
-      component: ({children}) => <HighlightDecorator>{children}</HighlightDecorator>,
-      isRangeInvalid,
-    }
+    if (!currentSelection) return
 
-    setComments((prevComments) => [...prevComments, nextDecoration])
+    create.execute({
+      fieldPath: stringFieldPath,
+      message: nextCommentValue,
+      parentCommentId: undefined,
+      selection: currentSelection,
+      status: 'open',
+      threadId: uuid(),
+    })
 
     // Reset the states when submitting
     setNextCommentValue(null)
     setCurrentSelection(null)
     currentSelectionRef.current = null
-  }, [])
+  }, [create, currentSelection, nextCommentValue, stringFieldPath])
 
-  // ___ DEBUG ___ (remove this)
+  // This will set the current selection state to the current selection ref.
+  // When this value is set, the popover with the comment input will open and
+  // the comment being added will use the current selection in it's data.
   const handleAddSelection = useCallback(() => {
     setCurrentSelection(currentSelectionRef.current)
   }, [])
-
-  const resetRangeDecorations = useCallback(() => {
-    setCurrentSelection(null)
-    setComments([])
-    currentSelectionRef.current = null
-  }, [])
-  // ___ DEBUG ___
 
   const handleDiscardConfirm = useCallback(() => {
     setNextCommentValue(null)
@@ -97,24 +99,43 @@ export function CommentsPortableTextInput(props: PortableTextInputProps) {
     [currentSelection],
   )
 
+  const commentDecorators = useMemo(
+    () =>
+      fieldComments
+        .map((comment) => {
+          if (!comment.selection) return null
+
+          const addedRangeDecoration: RangeDecoration = {
+            selection: comment.selection,
+            component: HighlightDecorator,
+            isRangeInvalid,
+          }
+
+          return addedRangeDecoration
+        })
+        .filter(Boolean) as RangeDecoration[],
+
+    [fieldComments],
+  )
+
   const rangeDecorations = useMemo((): RangeDecoration[] => {
     const currentRangeDecoration: RangeDecoration = {
       selection: currentSelection,
-      component: ({children}) => <AddHighlightDecorator>{children}</AddHighlightDecorator>,
+      component: AddHighlightDecorator,
       isRangeInvalid,
     }
 
-    const current = currentSelection ? [currentRangeDecoration] : EMPTY_ARRAY
+    const currentDecorator = currentSelection ? [currentRangeDecoration] : EMPTY_ARRAY
 
     return [
       // Existing range decorations
       ...(props?.rangeDecorations || EMPTY_ARRAY),
       // The range decoration when adding a comment
-      ...current,
+      ...currentDecorator,
       // The range decorations for existing comments
-      ...comments,
+      ...commentDecorators,
     ]
-  }, [props?.rangeDecorations, currentSelection, comments])
+  }, [commentDecorators, currentSelection, props?.rangeDecorations])
 
   const referenceElement = useMemo(() => {
     if (!rect) return null
@@ -169,7 +190,6 @@ export function CommentsPortableTextInput(props: PortableTextInputProps) {
         {props.renderDefault(inputProps)}
 
         <Grid columns={2} gap={2}>
-          <Button text="Clear clear comments" onClick={resetRangeDecorations} mode="ghost" />
           <Button text="Add comment" onClick={handleAddSelection} />
         </Grid>
       </Stack>
