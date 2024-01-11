@@ -106,7 +106,7 @@ export const deprecatedFields = defineType({
       },
       title: 'reference',
       type: 'reference',
-      to: [{type: 'author'}, {type: 'book'}],
+      to: [{type: 'author'}, {type: 'book'}, {type: 'deprecatedDocument'}],
     }),
     defineField({
       name: 'cdReference',
