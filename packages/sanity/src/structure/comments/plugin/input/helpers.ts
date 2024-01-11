@@ -1,12 +1,15 @@
+/**
+ * A function that creates a DOMRect from an array of elements.
+ */
 export function createDomRectFromElements(elements: Element[]): DOMRect | null {
   if (!elements || !elements.length) return null
 
-  const boundingRects = elements.map((el) => el.getBoundingClientRect())
+  const rects = elements.map((el) => el.getBoundingClientRect())
 
-  const minX = Math.min(...boundingRects.map((r) => r.x))
-  const minY = Math.min(...boundingRects.map((r) => r.y))
-  const maxRight = Math.max(...boundingRects.map((r) => r.right))
-  const maxBottom = Math.max(...boundingRects.map((r) => r.bottom))
+  const minX = Math.min(...rects.map((r) => r.x))
+  const minY = Math.min(...rects.map((r) => r.y))
+  const maxRight = Math.max(...rects.map((r) => r.right))
+  const maxBottom = Math.max(...rects.map((r) => r.bottom))
 
   return {
     x: minX,

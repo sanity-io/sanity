@@ -22,19 +22,19 @@ export const HighlightSpan = styled.span(({theme}: {theme: Theme}) => {
       background-color 100ms ease,
       border-color 100ms ease;
 
-    &[data-comment-state='authoring'] {
+    &[data-inline-comment-state='authoring'] {
       background-color: ${lightBg};
       border-bottom: 2px solid ${lightBorder};
     }
 
-    &[data-comment-state='added'] {
+    &[data-inline-comment-state='added'] {
       background-color: ${bg};
       border-bottom: 2px solid ${border};
     }
 
     @media (hover: hover) {
       &:hover {
-        &[data-comment-state='added'] {
+        &[data-inline-comment-state='added'] {
           background-color: ${hoverBg};
           border-bottom: 2px solid ${hoverBorder};
         }

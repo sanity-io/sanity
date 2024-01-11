@@ -100,7 +100,7 @@ export function InlineCommentInputPopover(props: InlineCommentInputPopoverProps)
           initial="hidden"
           open
           placement="bottom"
-          portal
+          // portal
           ref={popoverElementRef}
           referenceElement={referenceElement}
           variants={VARIANTS}
