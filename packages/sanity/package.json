@@ -197,7 +197,7 @@
     "@sanity/logos": "^2.0.2",
     "@sanity/mutator": "3.24.1",
     "@sanity/portable-text-editor": "3.24.1",
-    "@sanity/presentation": "1.5.0",
+    "@sanity/presentation": "1.5.3",
     "@sanity/schema": "3.24.1",
     "@sanity/telemetry": "^0.7.5",
     "@sanity/types": "3.24.1",
