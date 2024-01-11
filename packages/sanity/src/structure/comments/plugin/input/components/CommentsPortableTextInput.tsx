@@ -1,4 +1,9 @@
-import {EditorChange, EditorSelection, RangeDecoration} from '@sanity/portable-text-editor'
+import {
+  EditorChange,
+  EditorSelection,
+  PortableTextEditor,
+  RangeDecoration,
+} from '@sanity/portable-text-editor'
 import {Stack, Grid} from '@sanity/ui'
 import React, {
   useState,
@@ -12,12 +17,13 @@ import React, {
 import {isEqual} from 'lodash'
 import {uuid} from '@sanity/uuid'
 import * as PathUtils from '@sanity/util/paths'
+import {toPlainText} from '@portabletext/react'
 import {CommentMessage, useComments, useCommentsEnabled} from '../../../src'
 import {Button, PopoverProps} from '../../../../../ui-components'
 import {createDomRectFromElements} from '../helpers'
 import {InlineCommentInputPopover} from './InlineCommentInputPopover'
 import {HighlightSpan} from './HighlightSpan'
-import {PortableTextInputProps, useCurrentUser} from 'sanity'
+import {PortableTextInputProps, isPortableTextTextBlock, useCurrentUser} from 'sanity'
 
 const EMPTY_ARRAY: [] = []
 
@@ -57,6 +63,9 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
 
   const [nextCommentValue, setNextCommentValue] = useState<CommentMessage | null>(null)
   const [nextCommentSelection, setNextCommentSelection] = useState<EditorSelection | null>(null)
+  const [currentSelectionPlainText, setCurrentSelectionPlainText] = useState<string | null>(null)
+
+  const [canSubmit, setCanSubmit] = useState<boolean>(false)
 
   const currentSelectionRef = useRef<EditorSelection | null>(null)
   const rootElementRef = useRef<HTMLDivElement | null>(null)
@@ -80,6 +89,9 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
       status: 'open',
       // This is a new comment, so we need to generate a new thread id
       threadId: uuid(),
+
+      // TODO: add this
+      // documentValueSnapshot: currentSelectionPlainText
     })
 
     // Reset the states when submitting
@@ -106,7 +118,7 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
   }, [])
 
   const onEditorChange = useCallback(
-    (change: EditorChange) => {
+    (change: EditorChange, editor: PortableTextEditor) => {
       if (change.type === 'selection') {
         const hasSelectionRange = !isEqual(change.selection, nextCommentSelection)
 
@@ -115,8 +127,22 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
           // button, we use the selection and set it as the current selection state so that
           // the popover opens with the selection.
           currentSelectionRef.current = change.selection
+
+          const valueAtRange = PortableTextEditor.getFragment(editor)
+          const plainTextValue = valueAtRange ? toPlainText(valueAtRange) : null
+
+          // Check if the selection is valid. A valid selection is a selection that only
+          // contains text blocks. If the selection contains other types of blocks, we
+          // should not allow the user to add a comment and we disable the "add comment"
+          // button.
+          const isValidSelection = valueAtRange?.every(isPortableTextTextBlock)
+
+          setCanSubmit(Boolean(isValidSelection))
+          setCurrentSelectionPlainText(plainTextValue)
         } else {
           currentSelectionRef.current = null
+          setCurrentSelectionPlainText(null)
+          setCanSubmit(false)
         }
       }
     },
@@ -224,7 +250,11 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
         {props.renderDefault(inputProps)}
 
         <Grid columns={2} gap={2}>
-          <Button text="Add comment" onClick={handleAddSelection} />
+          <Button
+            text="Add comment"
+            onClick={handleAddSelection}
+            disabled={!canSubmit || !currentSelectionPlainText}
+          />
         </Grid>
       </Stack>
     </Fragment>
