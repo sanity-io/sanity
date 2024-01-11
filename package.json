@@ -98,7 +98,7 @@
     "@bjoerge/mutiny": "^0.0.2",
     "@optimize-lodash/rollup-plugin": "^4.0.4",
     "@playwright/test": "^1.39.0",
-    "@sanity/client": "^6.10.0",
+    "@sanity/client": "^6.11.1",
     "@sanity/eslint-config-i18n": "^1.0.0",
     "@sanity/pkg-utils": "^3.3.2",
     "@sanity/test": "0.0.1-alpha.1",
