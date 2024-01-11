@@ -21,7 +21,7 @@ const allTypes = [
 ]
 
 for (const type of allTypes) {
-  test(`${type} type shows deprecated message`, async ({page, baseURL, createDraftDocument}) => {
+  test(`${type} type shows deprecated message`, async ({page, createDraftDocument}) => {
     await createDraftDocument('/test/content/input-debug;deprecatedFields')
 
     await page.waitForSelector(`data-testid=deprecated-badge-${type}`)
