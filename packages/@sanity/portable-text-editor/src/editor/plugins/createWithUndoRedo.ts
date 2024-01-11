@@ -12,6 +12,7 @@ import {type PatchObservable, type PortableTextSlateEditor} from '../../types/ed
 import {type Patch} from '../../types/patch'
 import {debugWithName} from '../../utils/debug'
 import {fromSlateValue} from '../../utils/values'
+import {withPreserveKeys} from '../../utils/withPreserveKeys'
 
 const debug = debugWithName('plugin:withUndoRedo')
 const debugVerbose = debug.enabled && false
@@ -147,13 +148,16 @@ export function createWithUndoRedo(
           })
           try {
             Editor.withoutNormalizing(editor, () => {
-              withoutSaving(editor, () => {
-                transformedOperations
-                  .map(Operation.inverse)
-                  .reverse()
-                  .forEach((op) => {
-                    editor.apply(op)
-                  })
+              withPreserveKeys(editor, () => {
+                withoutSaving(editor, () => {
+                  transformedOperations
+                    .map(Operation.inverse)
+                    .reverse()
+                    // eslint-disable-next-line max-nested-callbacks
+                    .forEach((op) => {
+                      editor.apply(op)
+                    })
+                })
               })
             })
             editor.normalize()
@@ -193,9 +197,12 @@ export function createWithUndoRedo(
           })
           try {
             Editor.withoutNormalizing(editor, () => {
-              withoutSaving(editor, () => {
-                transformedOperations.forEach((op) => {
-                  editor.apply(op)
+              withPreserveKeys(editor, () => {
+                withoutSaving(editor, () => {
+                  // eslint-disable-next-line max-nested-callbacks
+                  transformedOperations.forEach((op) => {
+                    editor.apply(op)
+                  })
                 })
               })
             })
