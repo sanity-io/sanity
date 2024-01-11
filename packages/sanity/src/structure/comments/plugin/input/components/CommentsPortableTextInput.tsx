@@ -12,7 +12,7 @@ import React, {
 import {isEqual} from 'lodash'
 import {uuid} from '@sanity/uuid'
 import * as PathUtils from '@sanity/util/paths'
-import {CommentMessage, useComments} from '../../../src'
+import {CommentMessage, useComments, useCommentsEnabled} from '../../../src'
 import {Button, PopoverProps} from '../../../../../ui-components'
 import {createDomRectFromElements} from '../helpers'
 import {InlineCommentInputPopover} from './InlineCommentInputPopover'
@@ -35,7 +35,17 @@ function CommentDecorator(props: PropsWithChildren) {
   return <HighlightSpan data-comment-state="added">{children}</HighlightSpan>
 }
 
-export const CommentsPortableTextInput = React.memo(function CommentsPortableTextInput(
+export function CommentsPortableTextInput(props: PortableTextInputProps) {
+  const isEnabled = useCommentsEnabled()
+
+  if (!isEnabled) {
+    return props.renderDefault(props)
+  }
+
+  return <CommentsPortableTextInputInner {...props} />
+}
+
+export const CommentsPortableTextInputInner = React.memo(function CommentsPortableTextInputInner(
   props: PortableTextInputProps,
 ) {
   const currentUser = useCurrentUser()
