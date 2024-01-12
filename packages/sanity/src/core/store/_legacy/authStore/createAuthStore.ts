@@ -14,6 +14,7 @@ import {getSessionId} from './sessionId'
 import * as storage from './storage'
 import {createLoginComponent} from './createLoginComponent'
 import {isRecord} from '../../../util'
+import {isCookielessCompatibleLoginMethod} from './utils/asserters'
 
 /** @internal */
 export interface AuthStoreOptions extends AuthConfig {
@@ -135,7 +136,9 @@ export function _createAuthStore({
   // // emitting `state$` until the session ID has been converted to a token
   // const firstMessage = messages.pipe(first())
 
-  const token$ = messages.pipe(startWith(loginMethod === 'dual' ? getToken(projectId) : null))
+  const token$ = messages.pipe(
+    startWith(isCookielessCompatibleLoginMethod(loginMethod) ? getToken(projectId) : null),
+  )
 
   // Allow configuration of `apiHost` through source configuration
   const hostOptions: {apiHost?: string} = {}
