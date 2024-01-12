@@ -43,7 +43,7 @@ export function buildCommentThreadItems(props: BuildCommentThreadItemsProps): Co
         fieldPath: parentComment.target.path.field,
         parentComment,
         replies,
-        selection: parentComment.target.path.selection,
+        selection: parentComment.selection,
         threadId: parentComment.threadId,
       }
     })

@@ -18,11 +18,12 @@ import {isEqual} from 'lodash'
 import {uuid} from '@sanity/uuid'
 import * as PathUtils from '@sanity/util/paths'
 import {toPlainText} from '@portabletext/react'
-import {CommentMessage, useComments, useCommentsEnabled} from '../../../src'
+import {CommentMessage, CommentThreadItem, useComments, useCommentsEnabled} from '../../../src'
 import {Button, PopoverProps} from '../../../../../ui-components'
 import {createDomRectFromElements} from '../helpers'
 import {InlineCommentInputPopover} from './InlineCommentInputPopover'
 import {HighlightSpan} from './HighlightSpan'
+
 import {PortableTextInputProps, isPortableTextTextBlock, useCurrentUser} from 'sanity'
 
 const EMPTY_ARRAY: [] = []
@@ -59,7 +60,7 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
   props: PortableTextInputProps,
 ) {
   const currentUser = useCurrentUser()
-  const {mentionOptions, comments, create} = useComments()
+  const {mentionOptions, comments, create, edit} = useComments()
 
   const [nextCommentValue, setNextCommentValue] = useState<CommentMessage | null>(null)
   const [nextCommentSelection, setNextCommentSelection] = useState<EditorSelection | null>(null)
@@ -119,8 +120,27 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
 
   const onEditorChange = useCallback(
     (change: EditorChange, editor: PortableTextEditor) => {
+      if (change.type === 'rangeDecorationMoved') {
+        const comment = change.rangeDecoration.payload?.comment as CommentThreadItem
+        // console.log(
+        //   `Decorator range changed affecting comment ${comment.parentComment._id}`,
+        //   `From offset ${change.rangeDecoration?.selection?.focus?.offset} to ${change.newRangeSelection?.focus?.offset}`,
+        // )
+        edit.execute(comment.parentComment._id, {
+          selection: change.newRangeSelection,
+        })
+        return
+      }
       if (change.type === 'selection') {
+        if (!PortableTextEditor.isExpandedSelection(editor)) {
+          return
+        }
         const hasSelectionRange = !isEqual(change.selection, nextCommentSelection)
+
+        // TODO: the below seems like a bit too much to do right here.
+        // This callback function, especially for the frequently called selection change,
+        // should only do the bare minimum. We should probably move this logic to a separate
+        // function where the comment is created.
 
         if (hasSelectionRange) {
           // Store the current selection in a ref so that, when clicking the "add comment"
@@ -146,7 +166,7 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
         }
       }
     },
-    [nextCommentSelection],
+    [edit, nextCommentSelection],
   )
 
   // The range decorations for existing comments
@@ -155,13 +175,13 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
       fieldComments
         .map((comment) => {
           if (!comment.selection) return null
-
           const decorator: RangeDecoration = {
             component: ({children}) => (
               <CommentDecorator commentId={comment.parentComment._id}>{children}</CommentDecorator>
             ),
             isRangeInvalid,
             selection: comment.selection,
+            payload: {comment},
           }
 
           return decorator
@@ -179,8 +199,7 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
     }
 
     const currentDecorator = nextCommentSelection ? [currentRangeDecoration] : EMPTY_ARRAY
-
-    return [
+    const result = [
       // Existing range decorations
       ...(props?.rangeDecorations || EMPTY_ARRAY),
       // The range decoration when adding a comment
@@ -188,6 +207,10 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
       // The range decorations for existing comments
       ...commentDecorators,
     ]
+    if (result.length > 0) {
+      return result
+    }
+    return EMPTY_ARRAY
   }, [commentDecorators, nextCommentSelection, props?.rangeDecorations])
 
   // Construct a virtual element used to position the popover relative to the selection.

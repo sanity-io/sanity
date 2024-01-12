@@ -105,6 +105,7 @@ export function useCommentOperations(
         lastEditedAt: undefined,
         message: comment.message,
         parentCommentId: comment.parentCommentId,
+        selection: comment.selection,
         status: comment.status,
         threadId: comment.threadId,
 
@@ -188,15 +189,16 @@ export function useCommentOperations(
   const handleEdit = useCallback(
     async (id: string, comment: CommentEditPayload) => {
       if (!client) return
-
       const editedComment = {
         message: comment.message,
+        selection: comment.selection,
         lastEditedAt: new Date().toISOString(),
       } satisfies CommentEditPayload
 
-      onEdit?.(id, editedComment)
-
-      await client.patch(id).set(editedComment).commit()
+      if (comment.message || comment.selection) {
+        onEdit?.(id, editedComment)
+        await client.patch(id).set(editedComment).commit()
+      }
     },
     [client, onEdit],
   )

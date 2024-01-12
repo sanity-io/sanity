@@ -120,6 +120,8 @@ export interface CommentDocument {
 
   message: CommentMessage
 
+  selection?: EditorSelection
+
   threadId: string
 
   parentCommentId?: string
@@ -171,7 +173,8 @@ export interface CommentCreatePayload {
  * @hidden
  */
 export type CommentEditPayload = {
-  message: CommentMessage
+  message?: CommentMessage
+  selection?: EditorSelection
   lastEditedAt?: string
 }
 

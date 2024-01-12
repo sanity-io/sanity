@@ -36,6 +36,7 @@ const QUERY_PROJECTION = `{
   lastEditedAt,
   message,
   parentCommentId,
+  selection,
   status,
   target,
   threadId,
