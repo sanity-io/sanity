@@ -1,3 +1,4 @@
+/* eslint-disable max-nested-callbacks */
 import {
   EditorChange,
   EditorSelection,
@@ -14,19 +15,42 @@ import React, {
   PropsWithChildren,
   Fragment,
 } from 'react'
-import {isEqual} from 'lodash'
+import {flatten, isEqual} from 'lodash'
 import {uuid} from '@sanity/uuid'
 import * as PathUtils from '@sanity/util/paths'
 import {toPlainText} from '@portabletext/react'
+import {block} from '@sanity/schema/src/legacy/types'
+import {
+  DIFF_DELETE,
+  DIFF_EQUAL,
+  DIFF_INSERT,
+  cleanupEfficiency,
+  cleanupSemantic,
+  makeDiff,
+  match,
+} from '@sanity/diff-match-patch'
 import {CommentMessage, CommentThreadItem, useComments, useCommentsEnabled} from '../../../src'
 import {Button, PopoverProps} from '../../../../../ui-components'
 import {createDomRectFromElements} from '../helpers'
+import {select} from '../../../../panes/document/inspectDialog/helpers'
+import {bitap} from '../bitap'
 import {InlineCommentInputPopover} from './InlineCommentInputPopover'
 import {HighlightSpan} from './HighlightSpan'
 
-import {PortableTextInputProps, isPortableTextTextBlock, useCurrentUser} from 'sanity'
+import {
+  PortableTextBlock,
+  PortableTextInputProps,
+  PortableTextTextBlock,
+  isKeySegment,
+  isPortableTextSpan,
+  isPortableTextTextBlock,
+  useCurrentUser,
+} from 'sanity'
 
 const EMPTY_ARRAY: [] = []
+
+// const CHILD_SYMBOL = '\uF0D0'
+const CHILD_SYMBOL = '|'
 
 function isRangeInvalid() {
   return false
@@ -59,6 +83,7 @@ export function CommentsPortableTextInput(props: PortableTextInputProps) {
 export const CommentsPortableTextInputInner = React.memo(function CommentsPortableTextInputInner(
   props: PortableTextInputProps,
 ) {
+  const editorRef = useRef<PortableTextEditor>(null)
   const currentUser = useCurrentUser()
   const {mentionOptions, comments, create, edit} = useComments()
 
@@ -170,26 +195,94 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
   )
 
   // The range decorations for existing comments
-  const commentDecorators = useMemo(
-    () =>
-      fieldComments
-        .map((comment) => {
-          if (!comment.selection) return null
-          const decorator: RangeDecoration = {
-            component: ({children}) => (
-              <CommentDecorator commentId={comment.parentComment._id}>{children}</CommentDecorator>
-            ),
-            isRangeInvalid,
-            selection: comment.selection,
-            payload: {comment},
-          }
+  const commentDecorators = useMemo((): RangeDecoration[] => {
+    const decorators = flatten(
+      fieldComments.map((comment) => {
+        if (!editorRef.current) return []
+        if (!comment.selection) return []
+        const key =
+          isKeySegment(comment.selection.anchor.path[0]) && comment.selection.anchor.path[0]._key
+        if (!key) return []
+        const commentRanges = [
+          {
+            path: [{_key: key}],
+            start: comment.selection.anchor.offset,
+            text: 'one hyperlink to another without explicitly closing',
+          },
+        ]
 
-          return decorator
-        })
-        .filter(Boolean) as RangeDecoration[],
+        const decoratorRanges = flatten(
+          commentRanges.map((range) => {
+            if (!editorRef.current) return []
+            const [matchedBlock, matchedPath] = PortableTextEditor.findByPath(
+              editorRef.current,
+              range.path,
+            )
+            if (!matchedBlock || !isPortableTextTextBlock(matchedBlock)) {
+              return []
+            }
+            const text = toPlainTextWithNodeSeparators(matchedBlock)
+            const matchPosition = bitap(text, range.text, 0, {distance: 4000}) // TODO: this is from diff-match-patch but with more bits!
 
-    [fieldComments],
-  )
+            const regex = new RegExp(CHILD_SYMBOL.replace(/([.?*+^$[\]\\(){}|-])/g, '\\$1'), 'g')
+            const childStartMatch = text.substring(0, matchPosition).match(regex)?.length || 0
+
+            const positions: EditorSelection[] = []
+            if (matchPosition > -1) {
+              const segments = buildSegments(text, range.text)
+              let childIndex = 0
+              segments.forEach((segment) => {
+                if (segment.action === 'removed') {
+                  const matches = segment.text.match(regex)
+                  childIndex += matches ? matches.length : 0
+                }
+                if (segment.action === 'unchanged') {
+                  const matches = segment.text.match(regex)
+                  childIndex += matches ? matches.length : 0
+                }
+              })
+              positions.push({
+                anchor: {
+                  path: [
+                    {_key: matchedBlock._key},
+                    'children',
+                    {_key: matchedBlock.children[childStartMatch]._key},
+                  ],
+                  offset: matchPosition,
+                },
+                focus: {
+                  path: [
+                    {_key: matchedBlock._key},
+                    'children',
+                    {_key: matchedBlock.children[childStartMatch]._key},
+                  ],
+                  offset: matchPosition + range.text.length,
+                },
+              })
+              return positions
+            }
+            return []
+          }),
+        )
+
+        return decoratorRanges.map(
+          (range) =>
+            ({
+              component: ({children}) => (
+                <CommentDecorator commentId={comment.parentComment._id}>
+                  {children}
+                </CommentDecorator>
+              ),
+              isRangeInvalid,
+              selection: range,
+              payload: {comment},
+            }) as RangeDecoration,
+        )
+      }),
+    )
+
+    return decorators
+  }, [fieldComments])
 
   const rangeDecorations = useMemo((): RangeDecoration[] => {
     const currentRangeDecoration: RangeDecoration = {
@@ -226,6 +319,7 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
   const inputProps = useMemo(
     (): PortableTextInputProps => ({
       ...props,
+      editorRef,
       onEditorChange,
       rangeDecorations,
     }),
@@ -283,3 +377,49 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
     </Fragment>
   )
 })
+
+function toPlainTextWithNodeSeparators(inputBlock: PortableTextTextBlock) {
+  return inputBlock.children.map((child) => child.text).join(CHILD_SYMBOL)
+}
+
+function buildSegments(fromInput: string, toInput: string): any[] {
+  const segments: any[] = []
+  const dmpDiffs = cleanupEfficiency(makeDiff(fromInput, toInput))
+
+  let fromIdx = 0
+  let toIdx = 0
+  for (const [op, text] of dmpDiffs) {
+    switch (op) {
+      case DIFF_EQUAL:
+        segments.push({
+          type: 'stringSegment',
+          action: 'unchanged',
+          text,
+        })
+        fromIdx += text.length
+        toIdx += text.length
+        break
+      case DIFF_DELETE:
+        segments.push({
+          type: 'stringSegment',
+          action: 'removed',
+          text: fromInput.substring(fromIdx, fromIdx + text.length),
+          annotation: null,
+        })
+        fromIdx += text.length
+        break
+      case DIFF_INSERT:
+        segments.push({
+          type: 'stringSegment',
+          action: 'added',
+          text: toInput.substring(toIdx, toIdx + text.length),
+          annotation: null,
+        })
+        toIdx += text.length
+        break
+      default:
+      // Do nothing
+    }
+  }
+  return flatten(segments)
+}
