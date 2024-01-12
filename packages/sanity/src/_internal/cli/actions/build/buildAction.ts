@@ -123,13 +123,14 @@ export default async function buildSanityStudio(
 
     spin.text = `Build Sanity Studio (${buildDuration.toFixed()}ms)`
     spin.succeed()
-
+    trace.complete()
     if (flags.stats) {
       output.print('\nLargest module files:')
       output.print(formatModuleSizes(sortModulesBySize(bundle.chunks).slice(0, 15)))
     }
   } catch (err) {
     spin.fail()
+    trace.error(err)
     throw err
   }
 
