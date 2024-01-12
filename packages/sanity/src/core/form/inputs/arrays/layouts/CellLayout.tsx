@@ -7,7 +7,6 @@ import {MOVING_ITEM_CLASS_NAME} from '../common/list'
 interface RowLayoutProps {
   tone?: CardTone
   dragHandle?: boolean
-  focused?: boolean
   presence?: ReactNode
   validation?: ReactNode
   menu?: ReactNode
@@ -89,7 +88,7 @@ export function CellLayout(props: RowLayoutProps & ComponentProps<typeof Root>) 
           tone="inherit"
           data-ui="DragHandleCard"
         >
-          <DragHandle grid mode="ghost" />
+          <DragHandle $grid mode="ghost" />
         </DragHandleCard>
       )}
 

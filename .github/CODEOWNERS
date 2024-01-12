@@ -10,19 +10,29 @@
 # -- CLI --
 /packages/@sanity/cli/ @sanity-io/studio-dx
 
-# -- Preview --
-/packages/sanity/src/core/preview/ @sanity-io/studio-dx
+# -- Comments --
+/packages/sanity/src/structure/comments/ @sanity-io/studio-ex
 
 # -- Form --
 /packages/sanity/src/core/form/ @sanity-io/studio-dx
+
+# -- Preview --
+/packages/sanity/src/core/preview/ @sanity-io/studio-dx
 
 # -- PTE --
 /packages/@sanity/portable-text-editor/ @sanity-io/studio-ex
 /packages/sanity/src/core/field/types/portableText/ @sanity-io/studio-ex
 /packages/sanity/src/core/form/inputs/PortableText/ @sanity-io/studio-ex
 
-# -- Comments --
-/packages/sanity/src/structure/comments/ @sanity-io/studio-ex
+# -- Search --
+/packages/sanity/src/core/search/ @sanity-io/studio-ex
+
+# -- Theming (legacy) --
+/packages/sanity/src/core/theme/ @sanity-io/studio-ex
+
+# -- Visual components --
+/packages/sanity/src/core/studio/components/ @sanity-io/studio-ex
+/packages/sanity/src/ui-components/ @sanity-io/studio-ex
 
 # -- Others --
 

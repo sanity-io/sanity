@@ -110,7 +110,7 @@ function ValidationCard(props: {
               />
 
               <Text muted size={1}>
-                {marker.item.message}
+                {marker.message}
               </Text>
             </Stack>
           </Flex>

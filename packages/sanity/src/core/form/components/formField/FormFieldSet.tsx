@@ -73,13 +73,12 @@ const Content = styled(Box)<{
   theme: Theme
 }>((props) => {
   const {$borderLeft, theme} = props
-  const {focusRing, radius} = theme.sanity
+  const {focusRing} = theme.sanity
   const {base} = theme.sanity.color
 
   return css`
     outline: none;
     border-left: ${$borderLeft ? '1px solid var(--card-border-color)' : undefined};
-    border-radius: ${rem(radius[2])};
 
     &:focus {
       box-shadow: ${focusRingStyle({base, focusRing: {...focusRing, offset: 2}})};

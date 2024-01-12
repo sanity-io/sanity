@@ -4,6 +4,7 @@ import {
   Button, // Button with specific styling and children behavior.
   Card,
   rem,
+  useClickOutside,
 } from '@sanity/ui'
 import React, {KeyboardEvent, useCallback, useState} from 'react'
 import styled from 'styled-components'
@@ -46,6 +47,8 @@ const LabelButton = styled(Button)`
 
 export function FilterButton({filter, initialOpen}: FilterButtonProps) {
   const [open, setOpen] = useState(initialOpen)
+  const [buttonElement, setButtonElement] = useState<HTMLElement | null>(null)
+  const [popoverElement, setPopoverElement] = useState<HTMLElement | null>(null)
 
   const {
     dispatch,
@@ -73,6 +76,8 @@ export function FilterButton({filter, initialOpen}: FilterButtonProps) {
     [handleRemove],
   )
 
+  useClickOutside(handleClose, [buttonElement, popoverElement])
+
   const isValid = validateFilter({
     fieldDefinitions: definitions.fields,
     filter,
@@ -84,7 +89,7 @@ export function FilterButton({filter, initialOpen}: FilterButtonProps) {
     <Popover
       __unstable_margins={[POPOVER_VERTICAL_MARGIN, 0, 0, 0]}
       content={
-        <FilterPopoverWrapper onClose={handleClose}>
+        <FilterPopoverWrapper anchorElement={buttonElement} onClose={handleClose}>
           <FilterPopoverContent filter={filter} />
         </FilterPopoverWrapper>
       }
@@ -94,6 +99,7 @@ export function FilterButton({filter, initialOpen}: FilterButtonProps) {
       placement="bottom-start"
       portal
       radius={POPOVER_RADIUS}
+      ref={setPopoverElement}
     >
       <ContainerDiv>
         <Card
@@ -109,6 +115,7 @@ export function FilterButton({filter, initialOpen}: FilterButtonProps) {
             paddingLeft={fullscreen ? 3 : 2}
             paddingRight={fullscreen ? 3 : 5}
             paddingY={fullscreen ? 3 : 2}
+            ref={setButtonElement}
           >
             <FilterLabel filter={filter} showContent={isValid} />
           </LabelButton>

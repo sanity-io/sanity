@@ -15,25 +15,30 @@ const LIST_CONTAINER_TAGS = Object.keys(HTML_LIST_CONTAINER_TAGS)
 // font-style:italic seems like the most important rule for italic / emphasis in their html
 function isEmphasis(el: Node): boolean {
   const style = isElement(el) && el.getAttribute('style')
-  return /font-style:italic/.test(style || '')
+  return /font-style\s*:\s*italic/.test(style || '')
 }
 
 // font-weight:700 seems like the most important rule for bold in their html
 function isStrong(el: Node): boolean {
   const style = isElement(el) && el.getAttribute('style')
-  return /font-weight:700/.test(style || '')
+  return /font-weight\s*:\s*700/.test(style || '')
 }
 
 // text-decoration seems like the most important rule for underline in their html
 function isUnderline(el: Node): boolean {
+  if (!isElement(el) || tagName(el.parentNode) === 'a') {
+    return false
+  }
+
   const style = isElement(el) && el.getAttribute('style')
-  return /text-decoration:underline/.test(style || '')
+
+  return /text-decoration\s*:\s*underline/.test(style || '')
 }
 
 // text-decoration seems like the most important rule for strike-through in their html
 function isStrikethrough(el: Node): boolean {
   const style = isElement(el) && el.getAttribute('style')
-  return /text-decoration:line-through/.test(style || '')
+  return /text-decoration\s*:\s*line-through/.test(style || '')
 }
 
 // Check for attribute given by the gdocs preprocessor

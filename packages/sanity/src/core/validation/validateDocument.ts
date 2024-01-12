@@ -9,12 +9,21 @@ import {
 import {concat, defer, from, lastValueFrom, merge, Observable, of} from 'rxjs'
 import {catchError, map, mergeAll, mergeMap, switchMap, toArray} from 'rxjs/operators'
 import {flatten, uniqBy} from 'lodash'
+import type {SanityClient} from '@sanity/client'
 import {getFallbackLocaleSource} from '../i18n/fallback'
+import type {SourceClientOptions, Workspace} from '../config'
 import {typeString} from './util/typeString'
 import {cancelIdleCallback, requestIdleCallback} from './util/requestIdleCallback'
-import {ValidationError as ValidationErrorClass} from './ValidationError'
 import {normalizeValidationRules} from './util/normalizeValidationRules'
 import type {ValidationContext} from './types'
+import {createBatchedGetDocumentExists} from './util/createBatchedGetDocumentExists'
+import {createClientConcurrencyLimiter} from './util/createClientConcurrencyLimiter'
+
+// this is the number of requests allowed inflight at once. this is done to prevent
+// the validation library from overwhelming our backend
+const MAX_FETCH_CONCURRENCY = 10
+
+const limitConcurrency = createClientConcurrencyLimiter(MAX_FETCH_CONCURRENCY)
 
 const isRecord = (maybeRecord: unknown): maybeRecord is Record<string, unknown> =>
   typeof maybeRecord === 'object' && maybeRecord !== null && !Array.isArray(maybeRecord)
@@ -49,71 +58,120 @@ export function resolveTypeForArrayItem(
 const EMPTY_MARKERS: ValidationMarker[] = []
 
 /**
- * Validates a document against the given schema
- *
- * @param getClient - Function that returns a Sanity client, based on a passed configuration
- * @param doc - Document to validate
- * @param schema - Schema to validate against
- * @param context - Context to use for validation
- * @returns A promise that resolves to an array of validation markers
  * @beta
  */
-export function validateDocument(
-  getClient: ValidateItemOptions['getClient'],
-  doc: SanityDocument,
-  schema: Schema,
-  context?: Pick<ValidationContext, 'getDocumentExists' | 'i18n'>,
-): Promise<ValidationMarker[]> {
-  return lastValueFrom(validateDocumentObservable(getClient, doc, schema, context))
+export interface ValidateDocumentOptions {
+  /**
+   * The document to be validated
+   */
+  document: SanityDocument
+  /**
+   * The workspace instance (and associated schema) used to validate the given
+   * document against.
+   */
+  workspace: Workspace
+
+  /**
+   * Function used to check if referenced documents exists (and is published).
+   *
+   * If you're validating many documents in bulk, you may want to query for all
+   * document IDs first and provide your own implementation using those.
+   *
+   * If no function is provided a default one will be provided that will batch
+   * call the `doc` endpoint to check for document existence.
+   */
+  getDocumentExists?: (options: {id: string}) => Promise<boolean>
+
+  /**
+   * The factory function used to get a sanity client used in custom validators.
+   * If not provided, the one from the workspace will be used (preferred).
+   *
+   * @deprecated For internal use only
+   */
+  getClient?: (clientOptions: SourceClientOptions) => SanityClient
+}
+
+/**
+ * Validates a document against the schema in the given workspace. Returns an
+ * array of validation markers with a path, message, and validation level.
+ *
+ * @beta
+ */
+export function validateDocument({
+  document,
+  workspace,
+  ...options
+}: ValidateDocumentOptions): Promise<ValidationMarker[]> {
+  const getClient = options.getClient || workspace.getClient
+  const getConcurrencyLimitedClient = (clientOptions: SourceClientOptions) =>
+    limitConcurrency(getClient(clientOptions))
+
+  return lastValueFrom(
+    validateDocumentObservable({
+      document,
+      getClient: options.getClient || getConcurrencyLimitedClient,
+      i18n: workspace.i18n,
+      schema: workspace.schema,
+      getDocumentExists:
+        options.getDocumentExists ||
+        createBatchedGetDocumentExists(getClient({apiVersion: 'v2021-03-25'})),
+    }),
+  )
+}
+
+/**
+ * @internal
+ */
+export interface ValidateDocumentObservableOptions
+  extends Pick<ValidationContext, 'getDocumentExists' | 'i18n'> {
+  getClient: (options: {apiVersion: string}) => SanityClient
+  document: SanityDocument
+  schema: Schema
 }
 
 /**
  * Validates a document against the given schema, returning an Observable
- *
- * @param getClient - Function that returns a Sanity client, based on a passed configuration
- * @param doc - Document to validate
- * @param schema - Schema to validate against
- * @param context - Context to use for validation
- * @returns An Observable that produces an array of validation markers
- * @beta
+ * @internal
  */
-export function validateDocumentObservable(
-  getClient: ValidateItemOptions['getClient'],
-  doc: SanityDocument,
-  schema: Schema,
-  context?: Pick<ValidationContext, 'getDocumentExists' | 'i18n'>,
-): Observable<ValidationMarker[]> {
-  const documentType = schema.get(doc._type)
+export function validateDocumentObservable({
+  document,
+  getClient,
+  i18n = getFallbackLocaleSource(),
+  schema,
+  getDocumentExists,
+}: ValidateDocumentObservableOptions): Observable<ValidationMarker[]> {
+  const documentType = schema.get(document._type)
   if (!documentType) {
-    console.warn('Schema type for object type "%s" not found, skipping validation', doc._type)
+    console.warn('Schema type for object type "%s" not found, skipping validation', document._type)
     return of(EMPTY_MARKERS)
   }
 
-  const i18n = context?.i18n || getFallbackLocaleSource()
   const validationOptions: ValidateItemOptions = {
     getClient,
     schema,
     parent: undefined,
-    value: doc,
+    value: document,
     path: [],
-    document: doc,
+    document: document,
     type: documentType,
     i18n,
-    getDocumentExists: context?.getDocumentExists,
+    getDocumentExists,
   }
 
   return from(i18n.loadNamespaces(['validation'])).pipe(
     switchMap(() => validateItemObservable(validationOptions)),
     catchError((err) => {
       console.error(err)
-      return of([
-        {
-          type: 'validation' as const,
-          level: 'error' as const,
-          path: [],
-          item: new ValidationErrorClass(err?.message),
-        },
-      ])
+
+      const message = err?.message || 'Unknown error'
+      const errorMarker: ValidationMarker = {
+        level: 'error',
+        message,
+        item: {message},
+        path: [],
+      }
+
+      return of([errorMarker])
     }),
   )
 }

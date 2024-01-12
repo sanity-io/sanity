@@ -20,6 +20,7 @@ export * from './user-color'
 export * from './util'
 export * from './version'
 export * from './i18n'
+export {validateDocument, type ValidateDocumentOptions} from './validation'
 export {createSearchQuery} from './search'
 export type {
   SearchableType,

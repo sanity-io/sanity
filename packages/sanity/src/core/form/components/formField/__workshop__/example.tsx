@@ -39,13 +39,7 @@ export default function ExampleStory() {
         ? [
             {
               level: 'error',
-              item: {
-                message: 'Something is not right',
-                // children?: ValidationError[]
-                // operation?: 'AND' | 'OR'
-                paths: [],
-                cloneWithMessage: noop as any,
-              },
+              message: 'Something is not right',
               path: [],
             },
           ]

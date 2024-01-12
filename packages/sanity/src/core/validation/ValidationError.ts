@@ -6,6 +6,10 @@ import type {
   ValidationErrorClass,
 } from '@sanity/types'
 
+/**
+ * @deprecated You can pass a plain object that adheres to the `ValidationError`
+ * interface instead of using this.
+ */
 // Follows the same pattern as Rule and RuleClass. @see Rule
 export const ValidationError: ValidationErrorClass = class ValidationError
   implements IValidationError

@@ -29,7 +29,9 @@ export function mockBrowserEnvironment(basePath: string): () => void {
   )
 
   const {unregister: unregisterESBuild} = registerESBuild({
-    target: 'node14',
+    target: 'node18',
+    format: 'cjs',
+    extensions: ['.js', '.jsx', '.ts', '.tsx', '.mjs'],
   })
 
   return function cleanupBrowserEnvironment() {

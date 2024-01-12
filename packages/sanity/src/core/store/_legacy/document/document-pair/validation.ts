@@ -170,9 +170,12 @@ export const validation = memoize(
           }
           return concat(
             of({isValidating: true, revision: document._rev}),
-            validateDocumentObservable(ctx.getClient, document, ctx.schema, {
+            validateDocumentObservable({
+              document,
+              getClient: ctx.getClient,
               getDocumentExists,
               i18n: ctx.i18n,
+              schema: ctx.schema,
             }).pipe(
               map((validationMarkers) => ({validation: validationMarkers, isValidating: false})),
             ),

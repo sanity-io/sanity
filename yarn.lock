@@ -3570,10 +3570,10 @@
     nanoid "^3.1.12"
     rxjs "^7.0.0"
 
-"@sanity/client@^6.1.2", "@sanity/client@^6.10.0", "@sanity/client@^6.8.6":
-  version "6.10.0"
-  resolved "https://registry.yarnpkg.com/@sanity/client/-/client-6.10.0.tgz#9f4161074afd1af1a01b6295be1032b62aaab0e7"
-  integrity sha512-TavtxGB6NWjro2BTGXSkzXNMKFZbS2il1ItV3IdRvO0luLqS31eIz37+5X4CmCC8hGFe6fDoCjnH/iJ81vKM7g==
+"@sanity/client@^6.1.2", "@sanity/client@^6.11.1", "@sanity/client@^6.8.6":
+  version "6.11.1"
+  resolved "https://registry.yarnpkg.com/@sanity/client/-/client-6.11.1.tgz#3c36109434775d1588b171e4840e6750415da6d1"
+  integrity sha512-em4jWdXl/yZQsXRslTqF+0kj5sFM9l9tVz7pE/vPLN0aYlX+jxovzX4PBXLC1/gdJVtpT4GQRHcTBcnNSOtPNA==
   dependencies:
     "@sanity/eventsource" "^5.0.0"
     "@vercel/stega" "0.1.0"
@@ -3651,13 +3651,6 @@
     "@sanity/incompatible-plugin" "^1.0.4"
     "@sanity/ui" "^1.0.0"
     lodash "^4.17.21"
-
-"@sanity/groq-store@5.3.9":
-  version "5.3.9"
-  resolved "https://registry.yarnpkg.com/@sanity/groq-store/-/groq-store-5.3.9.tgz#c94ecb501c5e0b25c5e5da200f9b4ad0edde17b3"
-  integrity sha512-TWe2O7KhW4RzOi4BoOciV8eHq9ZfCmjvJ9Vh7ghEA2rdrmHMpofALtYh3d7SxNUgkoApEFFXI3rKeh0Gj2OL+Q==
-  dependencies:
-    mnemonist "0.39.7"
 
 "@sanity/icons@^1.3":
   version "1.3.10"
@@ -3756,26 +3749,27 @@
     uuid "^9.0.1"
     zod "^3.22.4"
 
-"@sanity/presentation@1.4.3":
-  version "1.4.3"
-  resolved "https://registry.yarnpkg.com/@sanity/presentation/-/presentation-1.4.3.tgz#499c8659262c4043908efa18eecc4685d7a3c74f"
-  integrity sha512-KbET/vlrZBImFym3DMIhu88QyJyakwqZJBguG1BVv3ZVVHcZ0ZXc4pltGOcvYgsfwez6sMxadUEnsxTIyKKNFQ==
+"@sanity/presentation@1.5.3":
+  version "1.5.3"
+  resolved "https://registry.yarnpkg.com/@sanity/presentation/-/presentation-1.5.3.tgz#a144bec7911e326f61060fa5720e5302d4eff765"
+  integrity sha512-A9OiyyPXOkMk3grTtXN6YpyOJ5Gi5pFh8ZKzJ9FJNsZ/8Nv6TeMo0Uthy3s6+tyVUVaR4fQw+kIcS+MJl0kCWA==
   dependencies:
-    "@sanity/groq-store" "5.3.9"
     "@sanity/icons" "^2.8.0"
-    "@sanity/preview-url-secret" "^1.4.1"
-    "@sanity/ui" "2.0.0-beta.15"
+    "@sanity/preview-url-secret" "^1.5.2"
+    "@sanity/ui" "2.0.0-beta.17"
     "@types/lodash.isequal" "^4.5.8"
-    framer-motion "^10.17.9"
+    fast-deep-equal "3.1.3"
+    framer-motion "^10.18.0"
     lodash.isequal "^4.5.0"
     mendoza "3.0.3"
+    mnemonist "0.39.7"
     rxjs "^7.8.1"
     suspend-react "0.1.3"
 
-"@sanity/preview-url-secret@^1.4.1":
-  version "1.4.1"
-  resolved "https://registry.yarnpkg.com/@sanity/preview-url-secret/-/preview-url-secret-1.4.1.tgz#72646c25dc41456cc9a70b7ba7abf00b0695c37f"
-  integrity sha512-EkV90NPBrMFc4YTKQsC3iMM8cw6Rs4ttVyfs2ou5ZKsKnU8bsr1hE/X9UB7nEXKc1h/qCXHVn8oKZ7uFdeI1DA==
+"@sanity/preview-url-secret@^1.5.2":
+  version "1.5.2"
+  resolved "https://registry.yarnpkg.com/@sanity/preview-url-secret/-/preview-url-secret-1.5.2.tgz#0544f0c8583ccd2633d7d5daaf5bf1cd25df8de8"
+  integrity sha512-Gfk8LOaO80mSPhRJimRi1N3++vTQwi+3arTht1oXD3+Xk6qdEppvEKR/VmYI9TbBXbd0hP/gMW53r9acvusK4Q==
   dependencies:
     "@sanity/uuid" "3.0.2"
 
@@ -3855,10 +3849,10 @@
     segmented-property "^3.0.3"
     vite "^4.4.9"
 
-"@sanity/ui@2.0.0-beta.15":
-  version "2.0.0-beta.15"
-  resolved "https://registry.yarnpkg.com/@sanity/ui/-/ui-2.0.0-beta.15.tgz#c28a10bea057749db6276bc8d85618441200a43c"
-  integrity sha512-w3OwrRaL2z/rqVwZjXE6m0n+w6qXTRTxD45iEuhSfYB8INMQa10TM7WyOXrK8L/i7y8VDsgcVMA7woaQL/YaFA==
+"@sanity/ui@2.0.0-beta.17":
+  version "2.0.0-beta.17"
+  resolved "https://registry.yarnpkg.com/@sanity/ui/-/ui-2.0.0-beta.17.tgz#fb912fe62c2aa4339e1d18c7e9d6a8b536356c34"
+  integrity sha512-AUFlObpuewVOKDGQutijJFn3rKtXS85Nl/MsySHwcH5rzCNojJ2/Z4DKLhl8LSXlj/+pOXVj++AFT/hhNtJ6Wg==
   dependencies:
     "@floating-ui/react-dom" "^2.0.4"
     "@sanity/color" "3.0.0-beta.9"
@@ -8101,7 +8095,7 @@ extsprintf@^1.2.0:
   resolved "https://registry.yarnpkg.com/extsprintf/-/extsprintf-1.4.1.tgz#8d172c064867f235c0c84a596806d279bf4bcc07"
   integrity sha512-Wrk35e8ydCKDj/ArClo1VrPVmN8zph5V4AtHwIuHhvMXsKf73UT3BOD+azBIW+3wOJ4FhEH7zyaJCFvChjYvMA==
 
-fast-deep-equal@^3.1.1, fast-deep-equal@^3.1.3:
+fast-deep-equal@3.1.3, fast-deep-equal@^3.1.1, fast-deep-equal@^3.1.3:
   version "3.1.3"
   resolved "https://registry.yarnpkg.com/fast-deep-equal/-/fast-deep-equal-3.1.3.tgz#3a7d56b559d6cbc3eb512325244e619a65c6c525"
   integrity sha512-f3qQ9oQy9j2AhBe/H9VC91wLmKBCCU/gDOnKNAYG5hswO7BLKj09Hc5HYNz9cGI++xlpDCIgDaitVs03ATR84Q==
@@ -8423,10 +8417,10 @@ fragment-cache@^0.2.1:
   dependencies:
     map-cache "^0.2.2"
 
-framer-motion@^10.0.0, framer-motion@^10.16.2, framer-motion@^10.16.5, framer-motion@^10.17.9:
-  version "10.17.9"
-  resolved "https://registry.yarnpkg.com/framer-motion/-/framer-motion-10.17.9.tgz#d3bb15039e8bd6ba5d044a3fa181332a09cd2692"
-  integrity sha512-z2NpP8r+XuALoPA7ZVZHm/OoTnwkQNJFBu91sC86o/FYvJ4x7ar3eQnixgwYWFK7kEqOtQ6whtNM37tn1KrOOA==
+framer-motion@^10.0.0, framer-motion@^10.16.2, framer-motion@^10.16.5, framer-motion@^10.18.0:
+  version "10.18.0"
+  resolved "https://registry.yarnpkg.com/framer-motion/-/framer-motion-10.18.0.tgz#1f4fc51403996ea7170af885bd44a7079d255950"
+  integrity sha512-oGlDh1Q1XqYPksuTD/usb0I70hq95OUzmL9+6Zd+Hs4XV0oaISBa/UUMSjYiq6m8EUF32132mOJ8xVZS+I0S6w==
   dependencies:
     tslib "^2.4.0"
   optionalDependencies:
