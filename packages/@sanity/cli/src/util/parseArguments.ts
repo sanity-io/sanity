@@ -51,7 +51,8 @@ export function parseArguments(argv = process.argv): ParsedArguments {
     ...extOptions
   } = minimist(argv.slice(2), {
     '--': true,
-    boolean: ['h', 'help', 'd', 'debug', 'v', 'version']
+    boolean: ['h', 'help', 'd', 'debug', 'v', 'version'],
+    string: ['_']
   })
 
   const [groupOrCommand, ...argsWithoutOptions] = _
