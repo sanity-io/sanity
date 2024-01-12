@@ -1,4 +1,18 @@
 /**
+ * Login methods that may be used for Studio authentication.
+ *
+ * @public
+ */
+export type LoginMethod = 'dual' | 'cookie' | 'token'
+
+/**
+ * Login methods that acknowledge cookieless authentication tokens.
+ *
+ * @public
+ */
+export type CookielessCompatibleLoginMethod = Extract<LoginMethod, 'dual' | 'token'>
+
+/**
  * Authentication options
  *
  * @public
@@ -12,7 +26,7 @@ export interface AuthConfig {
    *   to cookies being treated as third-party cookies in some browsers, thus the default is `dual`.
    * - `token` - explicitly disable cookies, relying only on `localStorage` method
    */
-  loginMethod?: 'dual' | 'cookie' | 'token'
+  loginMethod?: LoginMethod
 
   /**
    * Whether to append the providers specified in `providers` with the default providers from the
