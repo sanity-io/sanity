@@ -5,7 +5,7 @@
  */
 export interface AuthConfig {
   /**
-   * Login method to use for the studio the studio. Can be one of:
+   * Login method to use for the studio. Can be one of:
    * - `dual` (default) - attempt to use cookies where possible, falling back to
    *   storing authentication token in `localStorage` otherwise
    * - `cookie` - explicitly disable `localStorage` method, relying only on cookies. May fail due
