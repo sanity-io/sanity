@@ -61,6 +61,34 @@ const globalStyles = `
     font-display: swap;
     src: url("https://studio-static.sanity.io/Inter-BoldItalic.woff2") format("woff2");
   }
+  @font-face {
+    font-family: Inter;
+    font-style: normal;
+    font-weight: 800;
+    font-display: swap;
+    src: url("https://studio-static.sanity.io/Inter-ExtraBold.woff2") format("woff2");
+  }
+  @font-face {
+    font-family: Inter;
+    font-style: italic;
+    font-weight: 800;
+    font-display: swap;
+    src: url("https://studio-static.sanity.io/Inter-ExtraBoldItalic.woff2") format("woff2");
+  }
+  @font-face {
+    font-family: Inter;
+    font-style: normal;
+    font-weight: 900;
+    font-display: swap;
+    src: url("https://studio-static.sanity.io/Inter-Black.woff2") format("woff2");
+  }
+  @font-face {
+    font-family: Inter;
+    font-style: italic;
+    font-weight: 900;
+    font-display: swap;
+    src: url("https://studio-static.sanity.io/Inter-BlackItalic.woff2") format("woff2");
+  }
   html {
     background-color: #f1f3f6;
   }
