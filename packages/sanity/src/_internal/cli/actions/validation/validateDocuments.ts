@@ -10,6 +10,7 @@ import type {
 import {createReceiver, WorkerChannelReceiver} from '../../util/workerChannels'
 
 export interface ValidateDocumentsOptions<TReturn = unknown> {
+  level?: 'error' | 'warning' | 'info'
   workspace?: string
   workDir?: string
   configPath?: string
@@ -63,6 +64,7 @@ export function validateDocuments(options: ValidateDocumentsOptions): unknown {
     projectId,
     workDir = process.cwd(),
     reporter = defaultReporter,
+    level,
   } = options
 
   const rootPkgPath = readPkgUp.sync({cwd: __dirname})?.path
@@ -88,6 +90,7 @@ export function validateDocuments(options: ValidateDocumentsOptions): unknown {
       workspace,
       dataset,
       projectId,
+      level,
     } satisfies ValidateDocumentsWorkerData,
     // eslint-disable-next-line no-process-env
     env: process.env,

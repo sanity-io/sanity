@@ -8,6 +8,7 @@ interface ValidateFlags {
   workspace?: string
   format?: string
   dataset?: string
+  level?: 'error' | 'warning' | 'info'
 }
 
 export type BuiltInValidationReporter = (options: {
@@ -30,6 +31,12 @@ export default async function validateAction(
   // if they have lots of custom validators that fetch data
   // await prompt()
 
+  const level = flags.level || 'warning'
+
+  if (level !== 'error' && level !== 'warning' && level !== 'info') {
+    throw new Error(`Invalid level. Available levels are 'error', 'warning', and 'info'.`)
+  }
+
   const overallLevel = await validateDocuments({
     workspace: flags.workspace,
     dataset: flags.dataset,
@@ -38,6 +45,7 @@ export default async function validateAction(
       requireProject: false, // we'll get this from the workspace
     }).config(),
     workDir,
+    level,
     reporter: (worker) => {
       const reporter =
         flags.format && flags.format in reporters

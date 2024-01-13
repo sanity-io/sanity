@@ -23,6 +23,7 @@ export interface ValidateDocumentsWorkerData {
   clientConfig?: Partial<ClientConfig>
   projectId?: string
   dataset?: string
+  level?: ValidationMarker['level']
 }
 
 export type ValidationWorkerChannel = WorkerChannel<{
@@ -52,11 +53,14 @@ const {
   configPath,
   dataset,
   projectId,
+  level,
 } = _workerData as ValidateDocumentsWorkerData
 
 if (isMainThread || !parentPort) {
   throw new Error('This module must be run as a worker thread')
 }
+
+const levelValues = {error: 0, warning: 1, info: 2} as const
 
 const report = createReporter<ValidationWorkerChannel>(parentPort)
 
@@ -116,9 +120,9 @@ async function validateDocuments() {
 
     const getLevel = (markers: ValidationMarker[]) => {
       let foundWarning = false
-      for (const {level} of markers) {
-        if (level === 'error') return 'error'
-        if (level === 'warning') foundWarning = true
+      for (const marker of markers) {
+        if (marker.level === 'error') return 'error'
+        if (marker.level === 'warning') foundWarning = true
       }
 
       if (foundWarning) return 'warning'
@@ -151,8 +155,16 @@ async function validateDocuments() {
           )
         }
 
-        // remove deprecated `item` from the marker
-        markers = result.map(({item, ...marker}) => marker)
+        markers = result
+          // remove deprecated `item` from the marker
+          .map(({item, ...marker}) => marker)
+          // filter out unwanted levels
+          .filter((marker) => {
+            const markerValue = levelValues[marker.level]
+            const flagLevelValue =
+              levelValues[level as keyof typeof levelValues] ?? levelValues.info
+            return markerValue <= flagLevelValue
+          })
       } catch (err) {
         const errorMessage =
           isRecord(err) && typeof err.message === 'string' ? err.message : 'Unknown error'
