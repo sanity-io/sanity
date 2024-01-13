@@ -1,7 +1,7 @@
 import {isMainThread, parentPort, workerData as _workerData} from 'worker_threads'
 import readline from 'readline'
 import {Readable} from 'stream'
-import {ClientConfig, SanityClient, SanityDocument, createClient} from '@sanity/client'
+import {ClientConfig, SanityDocument, createClient} from '@sanity/client'
 import {ValidationContext, ValidationMarker} from '@sanity/types'
 import {getStudioConfig} from '../util/getStudioConfig'
 import {mockBrowserEnvironment} from '../util/mockBrowserEnvironment'
@@ -11,7 +11,7 @@ import {
   WorkerChannelEvent,
   WorkerChannelStream,
 } from '../util/workerChannels'
-import {Workspace, createSchema, isRecord, validateDocument} from 'sanity'
+import {isRecord, validateDocument} from 'sanity'
 
 const MAX_VALIDATION_CONCURRENCY = 100
 const DOCUMENT_VALIDATION_TIMEOUT = 30000
@@ -64,6 +64,14 @@ const levelValues = {error: 0, warning: 1, info: 2} as const
 
 const report = createReporter<ValidationWorkerChannel>(parentPort)
 
+async function* readerGenerator(reader: ReadableStreamDefaultReader<Uint8Array>) {
+  while (true) {
+    const {value, done} = await reader.read()
+    if (value) yield value
+    if (done) return
+  }
+}
+
 validateDocuments()
 
 async function validateDocuments() {
@@ -71,19 +79,30 @@ async function validateDocuments() {
   // file gets compiled to CJS at this time
   const {default: pMap} = await import('p-map')
 
+  // ===== LOAD WORKSPACE =====
   const workspaces = await getStudioConfig({basePath: workDir, configPath})
   const cleanup = mockBrowserEnvironment(workDir)
 
   try {
-    const workspace =
-      workspaces.find((w) => w.name === workspaceName) || (workspaces.length === 1 && workspaces[0])
+    if (!workspaces.length) {
+      throw new Error(`Configuration did not return any workspaces.`)
+    }
 
-    if (!workspace) {
-      if (workspaceName) {
+    let _workspace
+    if (workspaceName) {
+      _workspace = workspaces.find((w) => w.name === workspaceName)
+      if (!_workspace) {
         throw new Error(`Could not find any workspaces with name \`${workspaceName}\``)
       }
-      throw new Error(`Could not find a workspace to validate documents`)
+    } else {
+      if (workspaces.length !== 1) {
+        throw new Error(
+          "Multiple workspaces found. Please specify which workspace to use with '--workspace'.",
+        )
+      }
+      _workspace = workspaces[0]
     }
+    const workspace = _workspace
 
     const client = createClient({
       ...clientConfig,
@@ -110,8 +129,38 @@ async function validateDocuments() {
       basePath: workspace.basePath,
     })
 
-    const documents = await getDocuments(workspace, client)
+    // ===== DOWNLOAD DOCUMENTS =====
+    const exportUrl = new URL(client.getUrl(`/data/export/${client.config().dataset}`, false))
 
+    const documentCount = await client.fetch('length(*)')
+    report.event.loadedDocumentCount({documentCount})
+
+    const {token} = client.config()
+    const response = await fetch(exportUrl, {
+      headers: new Headers({
+        ...(token && {Authorization: `Bearer ${token}`}),
+      }),
+    })
+
+    const reader = response.body?.getReader()
+    if (!reader) throw new Error('Could not get reader from response body.')
+
+    const lines = readline.createInterface({input: Readable.from(readerGenerator(reader))})
+
+    let downloadedCount = 0
+    const documents = new Map<string, SanityDocument>()
+
+    for await (const line of lines) {
+      const document = JSON.parse(line) as SanityDocument
+      documents.set(document._id, document)
+
+      downloadedCount++
+      report.stream.exportProgress.emit({downloadedCount, documentCount})
+    }
+
+    report.stream.exportProgress.end()
+
+    // ===== VALIDATE DOCUMENTS =====
     const getClient = <TOptions extends Partial<ClientConfig>>(options: TOptions) =>
       client.withConfig(options)
 
@@ -200,55 +249,4 @@ async function validateDocuments() {
   } finally {
     cleanup()
   }
-}
-
-async function getDocuments(workspace: Workspace, client: SanityClient) {
-  const defaultSchema = createSchema({name: 'default', types: []})
-  const defaultTypes = defaultSchema.getTypeNames()
-  const isCustomType = (type: string) => !defaultTypes.includes(type)
-  const typeNames = workspace.schema.getTypeNames().filter(isCustomType)
-
-  const exportUrl = new URL(client.getUrl(`/data/export/${workspace.dataset}`, false))
-  exportUrl.searchParams.set('types', typeNames.join(','))
-
-  const documentCount = await client.fetch('length(*[_type in $typeNames])', {typeNames})
-  report.event.loadedDocumentCount({documentCount})
-
-  const {token} = client.config()
-  const response = await fetch(exportUrl, {
-    headers: new Headers({
-      ...(token && {Authorization: `Bearer ${token}`}),
-    }),
-  })
-
-  const reader = response.body?.getReader()
-
-  async function* readerGenerator() {
-    if (!reader) {
-      throw new Error('Could not get reader from response body.')
-    }
-
-    while (true) {
-      const {value, done} = await reader.read()
-      if (value) yield value
-      if (done) return
-    }
-  }
-
-  const lines = readline.createInterface({input: Readable.from(readerGenerator())})
-
-  let downloadedCount = 0
-  const documents = new Map<string, SanityDocument>()
-
-  for await (const line of lines) {
-    const document = JSON.parse(line) as SanityDocument
-    documents.set(document._id, document)
-
-    downloadedCount++
-    report.stream.exportProgress.emit({downloadedCount, documentCount})
-  }
-
-  report.stream.exportProgress.end()
-
-  return documents
 }
