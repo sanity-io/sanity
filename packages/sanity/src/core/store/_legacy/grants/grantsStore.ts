@@ -1,5 +1,5 @@
 import {SanityClient} from '@sanity/client'
-import {SanityDocument} from '@sanity/types'
+import {CurrentUser, SanityDocument} from '@sanity/types'
 import {evaluate, parse} from 'groq-js'
 import {defer, of} from 'rxjs'
 import {distinctUntilChanged, publishReplay, switchMap} from 'rxjs/operators'
@@ -57,16 +57,27 @@ async function matchesFilter(userId: string | null, filter: string, document: Sa
   const data = await (await evaluate(parsed, {dataset: [document], identity, params})).get()
   return data?.length === 1
 }
+interface GrantsStoreOptionsCurrentUser {
+  client: SanityClient
+  /**
+   * @deprecated The `currentUser` option is deprecated. Use `userId` instead.
+   */
+  currentUser: CurrentUser | null
+}
 
-/** @internal */
-export interface GrantsStoreOptions {
+interface GrantsStoreOptionsUserId {
   client: SanityClient
   userId: string | null
 }
 
 /** @internal */
-export function createGrantsStore({client, userId}: GrantsStoreOptions): GrantsStore {
+export type GrantsStoreOptions = GrantsStoreOptionsCurrentUser | GrantsStoreOptionsUserId
+
+/** @internal */
+export function createGrantsStore(opts: GrantsStoreOptions): GrantsStore {
+  const {client} = opts
   const versionedClient = client.withConfig({apiVersion: '2021-06-07'})
+  const userId = 'userId' in opts ? opts.userId : opts?.currentUser?.id || null
 
   const datasetGrants$ = defer(() => of(versionedClient.config())).pipe(
     switchMap(({projectId, dataset}) => {
