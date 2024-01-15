@@ -4,7 +4,6 @@ import {
   PortableTextEditor,
   RangeDecoration,
 } from '@sanity/portable-text-editor'
-import {Stack, Grid} from '@sanity/ui'
 import React, {
   useState,
   useRef,
@@ -26,7 +25,7 @@ import {
   useCommentsEnabled,
   useCommentsSelectedPath,
 } from '../../../src'
-import {Button, PopoverProps} from '../../../../../ui-components'
+import {PopoverProps} from '../../../../../ui-components'
 import {createDomRectFromElements} from '../helpers'
 import {InlineCommentInputPopover} from './InlineCommentInputPopover'
 import {HighlightSpan} from './HighlightSpan'
@@ -84,8 +83,8 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
 
   const [canSubmit, setCanSubmit] = useState<boolean>(false)
 
+  const rootElementRef = useMemo(() => props.elementProps.ref, [props.elementProps.ref])
   const currentSelectionRef = useRef<EditorSelection | null>(null)
-  const rootElementRef = useRef<HTMLDivElement | null>(null)
   const [rect, setRect] = useState<DOMRect | null>(null)
 
   const stringFieldPath = useMemo(() => PathUtils.toString(props.path), [props.path])
@@ -268,6 +267,8 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
   // bounding box for the selection and set it as the rect state. This is used to
   // position the popover.
   useEffect(() => {
+    if (!rootElementRef.current) return undefined
+
     // Get all the elements that have the `data-inline-comment-state="authoring"` attribute
     const elements = rootElementRef.current?.querySelectorAll(
       '[data-inline-comment-state="authoring"]',
@@ -283,10 +284,10 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
     return () => {
       cancelAnimationFrame(raf)
     }
-  }, [nextCommentSelection])
+  }, [nextCommentSelection, rootElementRef])
 
   return (
-    <Stack ref={rootElementRef}>
+    <>
       {currentUser && (
         <InlineCommentInputPopover
           currentUser={currentUser}
@@ -302,6 +303,6 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
       )}
 
       {props.renderDefault(inputProps)}
-    </Stack>
+    </>
   )
 })
