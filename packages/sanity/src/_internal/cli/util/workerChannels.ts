@@ -17,6 +17,13 @@ type StreamEmissionMessage<TPayload = unknown> = {type: 'emission'; name: string
 type StreamEndMessage = {type: 'end'; name: string}
 type WorkerChannelMessage = EventMessage | StreamEmissionMessage | StreamEndMessage
 
+/**
+ * Represents the definition of a "worker channel" to report progress from the
+ * worker to the parent. Worker channels can define named events or streams and
+ * the worker will report events and streams while the parent will await them.
+ * This allows the control flow of the parent to follow the control flow of the
+ * worker 1-to-1.
+ */
 export type WorkerChannel<
   TWorkerChannel extends Record<
     string,
@@ -55,6 +62,13 @@ export interface WorkerChannelReceiver<TWorkerChannel extends WorkerChannel> {
   dispose: () => Promise<number>
 }
 
+/**
+ * A simple queue that has two primary methods: `push(message)` and
+ * `await next()`. This message queue is used by the "receiver" of the worker
+ * channel and this class handles buffering incoming messages if the worker is
+ * producing faster than the parent as well as returning a promise if there is
+ * no message yet in the queue when the parent awaits `next()`.
+ */
 class MessageQueue<T> {
   resolver: ((result: IteratorResult<T>) => void) | null = null
   queue: T[] = []
@@ -92,6 +106,11 @@ function isWorkerChannelMessage(message: unknown): message is WorkerChannelMessa
   return types.includes(message.type)
 }
 
+/**
+ * Creates a "worker channel receiver" that subscribes to incoming messages
+ * from the given worker and returns promises for worker channel events and
+ * async iterators for worker channel streams.
+ */
 export function createReceiver<TWorkerChannel extends WorkerChannel>(
   worker: Worker,
 ): WorkerChannelReceiver<TWorkerChannel> {
@@ -164,6 +183,10 @@ export function createReceiver<TWorkerChannel extends WorkerChannel>(
   }
 }
 
+/**
+ * Creates a "worker channel reporter" that sends messages to the given
+ * `parentPort` to be received by a worker channel receiver.
+ */
 export function createReporter<TWorkerChannel extends WorkerChannel>(
   parentPort: MessagePort | null,
 ): WorkerChannelReporter<TWorkerChannel> {
