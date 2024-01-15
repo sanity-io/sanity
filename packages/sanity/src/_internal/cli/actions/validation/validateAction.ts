@@ -36,10 +36,6 @@ export default async function validateAction(
     )
   }
 
-  // TODO: add prompt that warns the user that this may make a lot of requests
-  // if they have lots of custom validators that fetch data
-  // await prompt()
-
   const level = flags.level || 'warning'
 
   if (level !== 'error' && level !== 'warning' && level !== 'info') {
