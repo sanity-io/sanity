@@ -12,7 +12,6 @@ import React, {
   useMemo,
   useCallback,
   useRef,
-  useImperativeHandle,
   ReactNode,
   startTransition,
 } from 'react'
@@ -78,19 +77,21 @@ export function PortableTextInput(props: PortableTextInputProps) {
     value,
   } = props
 
-  const {onBlur} = elementProps
+  const {onBlur, onFocus} = elementProps
   const defaultEditorRef = useRef<PortableTextEditor>()
   const editorRef = editorRefProp || defaultEditorRef
 
+  // TODO: Validate if we need this? It breaks the `ref` object in the `elementProps`.
+  //
   // This handle will allow for natively calling .focus
   // on the element and have the PortableTextEditor focused.
-  useImperativeHandle(elementProps.ref, () => ({
-    focus() {
-      if (editorRef.current) {
-        PortableTextEditor.focus(editorRef.current)
-      }
-    },
-  }))
+  // useImperativeHandle(elementProps.ref, () => ({
+  //   focus() {
+  //     if (editorRef.current) {
+  //       PortableTextEditor.focus(editorRef.current)
+  //     }
+  //   },
+  // }))
 
   const {subscribe} = usePatches({path})
   const [ignoreValidationError, setIgnoreValidationError] = useState(false)
@@ -109,8 +110,6 @@ export function PortableTextInput(props: PortableTextInputProps) {
     snapshot: PortableTextBlock[] | undefined
   }> = useMemo(() => new Subject(), [])
   const patches$ = useMemo(() => patchSubject.asObservable(), [patchSubject])
-
-  const innerElementRef = useRef<HTMLDivElement | null>(null)
 
   const handleToggleFullscreen = useCallback(() => {
     if (editorRef.current) {
@@ -175,6 +174,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
         case 'focus':
           setIsActive(true)
           setHasFocusWithin(true)
+          onFocus(change.event)
           break
         case 'blur':
           onBlur(change.event)
@@ -199,7 +199,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
         onEditorChange(change, editorRef.current)
       }
     },
-    [editorRef, onBlur, onChange, onEditorChange, onPathFocus, toast],
+    [editorRef, onBlur, onChange, onEditorChange, onFocus, onPathFocus, toast],
   )
 
   useEffect(() => {
@@ -236,7 +236,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
   }, [editorRef, isActive])
 
   return (
-    <Box ref={innerElementRef}>
+    <Box ref={elementProps.ref}>
       {!ignoreValidationError && respondToInvalidContent}
       {(!invalidValue || ignoreValidationError) && (
         <PortableTextMarkersProvider markers={markers}>
