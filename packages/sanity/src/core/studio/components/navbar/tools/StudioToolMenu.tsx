@@ -7,11 +7,15 @@ import {ToolVerticalMenu} from './ToolVerticalMenu'
  * @hidden
  * @beta */
 export function StudioToolMenu(props: ToolMenuProps) {
-  const {context, isSidebarOpen, ...restProps} = props
+  const {context, isSidebarOpen, tools, ...restProps} = props
 
-  if (context === 'sidebar') {
-    return <ToolVerticalMenu isVisible={isSidebarOpen} {...restProps} />
+  if (tools.length <= 1) {
+    return null
   }
 
-  return <ToolCollapseMenu {...restProps} />
+  if (context === 'sidebar') {
+    return <ToolVerticalMenu isVisible={isSidebarOpen} tools={tools} {...restProps} />
+  }
+
+  return <ToolCollapseMenu tools={tools} {...restProps} />
 }
