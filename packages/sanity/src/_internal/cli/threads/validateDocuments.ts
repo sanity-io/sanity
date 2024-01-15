@@ -10,14 +10,14 @@ import {
   type SanityDocument,
   createClient,
 } from '@sanity/client'
-import {ValidationContext, ValidationMarker, isReference} from '@sanity/types'
+import {type ValidationContext, type ValidationMarker, isReference} from '@sanity/types'
 import {getStudioConfig} from '../util/getStudioConfig'
 import {mockBrowserEnvironment} from '../util/mockBrowserEnvironment'
 import {
   createReporter,
-  WorkerChannel,
-  WorkerChannelEvent,
-  WorkerChannelStream,
+  type WorkerChannel,
+  type WorkerChannelEvent,
+  type WorkerChannelStream,
 } from '../util/workerChannels'
 import {isRecord, validateDocument} from 'sanity'
 

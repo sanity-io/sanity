@@ -1,5 +1,5 @@
-import {CliCommandArguments, CliCommandContext, CliOutputter} from '@sanity/cli'
-import {WorkerChannelReceiver} from '../../util/workerChannels'
+import type {CliCommandArguments, CliCommandContext, CliOutputter} from '@sanity/cli'
+import type {WorkerChannelReceiver} from '../../util/workerChannels'
 import type {ValidationWorkerChannel} from '../../threads/validateDocuments'
 import {validateDocuments} from './validateDocuments'
 import {reporters} from './reporters'
