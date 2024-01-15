@@ -70,6 +70,7 @@ describe('createConcurrencyLimitedClient', () => {
       projectId: 'project-id',
       dataset: 'test',
       apiVersion: '1',
+      useCdn: false,
     })
     const limitConcurrency = createClientConcurrencyLimiter(1)
     const client = limitConcurrency(mockClient)
