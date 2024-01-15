@@ -12,7 +12,7 @@ import {
 } from '@sanity/portable-text-editor'
 import {Path, PortableTextBlock, PortableTextTextBlock} from '@sanity/types'
 import {Box, Portal, PortalProvider, useBoundaryElement, usePortal} from '@sanity/ui'
-import {ArrayOfObjectsInputProps, RenderCustomMarkers} from '../../types'
+import {ArrayOfObjectsInputProps, PortableTextCustomAction, RenderCustomMarkers} from '../../types'
 import {ActivateOnFocus} from '../../components/ActivateOnFocus/ActivateOnFocus'
 import {EMPTY_ARRAY} from '../../../util'
 import {ChangeIndicator} from '../../../changeIndicators'
@@ -27,6 +27,7 @@ import {useHotkeys} from './hooks/useHotKeys'
 import {useTrackFocusPath} from './hooks/useTrackFocusPath'
 
 interface InputProps extends ArrayOfObjectsInputProps<PortableTextBlock> {
+  __internal_customActions?: PortableTextCustomAction[]
   hasFocusWithin: boolean
   hotkeys?: HotkeyOptions
   isActive: boolean
@@ -386,13 +387,14 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
   const editorNode = useMemo(
     () => (
       <Editor
+        __internal_customActions={props.__internal_customActions}
         ariaDescribedBy={ariaDescribedBy}
-        initialSelection={initialSelection}
         hotkeys={editorHotkeys}
+        initialSelection={initialSelection}
         isActive={isActive}
         isFullscreen={isFullscreen}
-        onItemOpen={onItemOpen}
         onCopy={onCopy}
+        onItemOpen={onItemOpen}
         onPaste={onPaste}
         onToggleFullscreen={handleToggleFullscreen}
         path={path}
@@ -401,8 +403,8 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
         renderAnnotation={editorRenderAnnotation}
         renderBlock={editorRenderBlock}
         renderChild={editorRenderChild}
-        setPortalElement={setPortalElement}
         scrollElement={scrollElement}
+        setPortalElement={setPortalElement}
         setScrollElement={setScrollElement}
       />
     ),
@@ -410,6 +412,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
     // Keep only stable ones here!
     [
       ariaDescribedBy,
+      initialSelection,
       editorHotkeys,
       isActive,
       isFullscreen,
@@ -423,8 +426,8 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       editorRenderAnnotation,
       editorRenderBlock,
       editorRenderChild,
-      initialSelection,
       scrollElement,
+      props.__internal_customActions,
     ],
   )
 

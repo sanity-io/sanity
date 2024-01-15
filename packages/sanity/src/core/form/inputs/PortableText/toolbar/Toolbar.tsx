@@ -19,8 +19,10 @@ import {InsertMenu} from './InsertMenu'
 import {getBlockStyles, getInsertMenuItems} from './helpers'
 import {useActionGroups} from './hooks'
 import {BlockItem, BlockStyleItem, PTEToolbarActionGroup} from './types'
+import {PortableTextCustomAction} from '../../../types'
 
 interface ToolbarProps {
+  __internal_customActions?: PortableTextCustomAction[]
   hotkeys: HotkeyOptions
   isFullscreen: boolean
   onMemberOpen: (relativePath: Path) => void
@@ -59,6 +61,7 @@ const IS_MAC =
   typeof window != 'undefined' && /Mac|iPod|iPhone|iPad/.test(window.navigator.platform)
 
 const InnerToolbar = memo(function InnerToolbar({
+  __internal_customActions: internalCustomActions,
   actionGroups,
   blockStyles,
   disabled,
@@ -66,6 +69,7 @@ const InnerToolbar = memo(function InnerToolbar({
   isFullscreen,
   onToggleFullscreen,
 }: {
+  __internal_customActions?: PortableTextCustomAction[]
   actionGroups: PTEToolbarActionGroup[]
   blockStyles: BlockStyleItem[]
   disabled: boolean
@@ -91,6 +95,25 @@ const InnerToolbar = memo(function InnerToolbar({
     e.preventDefault()
   }, [])
 
+  const customActionNodes = useMemo(() => {
+    const nodes = (internalCustomActions || [])?.map((a) => {
+      const {onAction} = a
+
+      return (
+        <Button
+          key={a.name}
+          icon={a.icon}
+          disabled={a.disabled}
+          mode="bleed"
+          tooltipProps={{content: a.title}}
+          onClick={onAction}
+        />
+      )
+    })
+
+    return nodes
+  }, [internalCustomActions])
+
   return (
     <RootFlex align="center" ref={setRootElement} onMouseDown={preventEditorBlurOnToolbarMouseDown}>
       {showBlockStyleSelect && (
@@ -100,7 +123,6 @@ const InnerToolbar = memo(function InnerToolbar({
           </StyleSelectBox>
         </StyleSelectFlex>
       )}
-
       <Flex flex={1}>
         {showActionMenu && (
           <ActionMenuBox
@@ -128,6 +150,11 @@ const InnerToolbar = memo(function InnerToolbar({
           </Box>
         )}
       </Flex>
+
+      {customActionNodes?.length > 0 ? (
+        <Box padding={isFullscreen ? 2 : 1}>{customActionNodes}</Box>
+      ) : null}
+
       <FullscreenButtonBox padding={isFullscreen ? 2 : 1}>
         <Button
           aria-label={t('inputs.portable-text.action.expand-editor')}
@@ -151,7 +178,14 @@ const InnerToolbar = memo(function InnerToolbar({
 })
 
 export function Toolbar(props: ToolbarProps) {
-  const {hotkeys, isFullscreen, readOnly, onMemberOpen, onToggleFullscreen} = props
+  const {
+    __internal_customActions: internalCustomActions,
+    hotkeys,
+    isFullscreen,
+    onMemberOpen,
+    onToggleFullscreen,
+    readOnly,
+  } = props
   const editor = usePortableTextEditor()
   const selection = usePortableTextEditorSelection()
   const resolveInitialValueForType = useResolveInitialValueForType()
@@ -237,6 +271,7 @@ export function Toolbar(props: ToolbarProps) {
 
   return (
     <InnerToolbar
+      __internal_customActions={internalCustomActions}
       actionGroups={actionGroups}
       blockStyles={blockStyles}
       disabled={disabled}

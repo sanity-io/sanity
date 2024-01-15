@@ -18,6 +18,7 @@ import {isEqual} from 'lodash'
 import {uuid} from '@sanity/uuid'
 import * as PathUtils from '@sanity/util/paths'
 import {toPlainText} from '@portabletext/react'
+import {AddCommentIcon} from '@sanity/icons'
 import {
   CommentMessage,
   CommentThreadItem,
@@ -29,7 +30,12 @@ import {Button, PopoverProps} from '../../../../../ui-components'
 import {createDomRectFromElements} from '../helpers'
 import {InlineCommentInputPopover} from './InlineCommentInputPopover'
 import {HighlightSpan} from './HighlightSpan'
-import {PortableTextInputProps, isPortableTextTextBlock, useCurrentUser} from 'sanity'
+import {
+  PortableTextInputProps,
+  PortableTextCustomAction,
+  isPortableTextTextBlock,
+  useCurrentUser,
+} from 'sanity'
 
 const EMPTY_ARRAY: [] = []
 
@@ -233,14 +239,29 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
     } as HTMLElement
   }, [rect])
 
+  const commentAction = useMemo(
+    (): PortableTextCustomAction => ({
+      disabled: !canSubmit || !currentSelectionPlainText,
+      icon: AddCommentIcon,
+      name: 'comment',
+      onAction: handleAddSelection,
+      title: 'Add comment',
+    }),
+    [canSubmit, currentSelectionPlainText, handleAddSelection],
+  )
+
   // The props passed to the portable text input
   const inputProps = useMemo(
     (): PortableTextInputProps => ({
       ...props,
       onEditorChange,
       rangeDecorations,
+      // eslint-disable-next-line camelcase
+      __internal_customActions: (props?.__internal_customActions || EMPTY_ARRAY).concat(
+        commentAction,
+      ),
     }),
-    [props, onEditorChange, rangeDecorations],
+    [props, onEditorChange, rangeDecorations, commentAction],
   )
 
   // This effect will run when the current selection changes and will calculate the
@@ -265,32 +286,22 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
   }, [nextCommentSelection])
 
   return (
-    <Fragment key={stringFieldPath}>
-      <Stack space={2} ref={rootElementRef}>
-        {currentUser && (
-          <InlineCommentInputPopover
-            currentUser={currentUser}
-            mentionOptions={mentionOptions}
-            onChange={setNextCommentValue}
-            onClickOutside={onClickOutsidePopover}
-            onDiscardConfirm={handleDiscardConfirm}
-            onSubmit={handleSubmit}
-            open={!!nextCommentSelection}
-            referenceElement={popoverReferenceElement}
-            value={nextCommentValue}
-          />
-        )}
+    <Stack ref={rootElementRef}>
+      {currentUser && (
+        <InlineCommentInputPopover
+          currentUser={currentUser}
+          mentionOptions={mentionOptions}
+          onChange={setNextCommentValue}
+          onClickOutside={onClickOutsidePopover}
+          onDiscardConfirm={handleDiscardConfirm}
+          onSubmit={handleSubmit}
+          open={!!nextCommentSelection}
+          referenceElement={popoverReferenceElement}
+          value={nextCommentValue}
+        />
+      )}
 
-        {props.renderDefault(inputProps)}
-
-        <Grid columns={2} gap={2}>
-          <Button
-            text="Add comment"
-            onClick={handleAddSelection}
-            disabled={!canSubmit || !currentSelectionPlainText}
-          />
-        </Grid>
-      </Stack>
-    </Fragment>
+      {props.renderDefault(inputProps)}
+    </Stack>
   )
 })

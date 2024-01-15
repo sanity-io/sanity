@@ -252,14 +252,15 @@ export function PortableTextInput(props: PortableTextInputProps) {
             >
               <Compositor
                 {...props}
+                __internal_customActions={props.__internal_customActions}
                 hasFocusWithin={hasFocusWithin}
                 hotkeys={hotkeys}
                 isActive={isActive}
                 isFullscreen={isFullscreen}
                 onActivate={handleActivate}
-                onItemRemove={onItemRemove}
                 onCopy={onCopy}
                 onInsert={onInsert}
+                onItemRemove={onItemRemove}
                 onPaste={onPaste}
                 onToggleFullscreen={handleToggleFullscreen}
                 rangeDecorations={rangeDecorations}

@@ -17,6 +17,7 @@ import {BoundaryElementProvider, useBoundaryElement, useGlobalKeyDown, useLayer}
 import React, {useCallback, useMemo, useRef} from 'react'
 import {TooltipDelayGroupProvider} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'
+import {PortableTextCustomAction} from '../../types'
 import {Toolbar} from './toolbar'
 import {Decorator} from './text'
 import {
@@ -35,6 +36,7 @@ import {ListItem} from './text/ListItem'
 const noOutlineStyle = {outline: 'none'} as const
 
 interface EditorProps {
+  __internal_customActions?: PortableTextCustomAction[]
   hotkeys: HotkeyOptions
   initialSelection?: EditorSelection
   isActive: boolean
@@ -172,6 +174,7 @@ export function Editor(props: EditorProps) {
         <TooltipDelayGroupProvider>
           <ToolbarCard data-testid="pt-editor__toolbar-card" shadow={1}>
             <Toolbar
+              __internal_customActions={props.__internal_customActions}
               hotkeys={hotkeys}
               isFullscreen={isFullscreen}
               onMemberOpen={handleToolBarOnMemberOpen}

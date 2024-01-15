@@ -527,6 +527,26 @@ export interface PortableTextInputProps
    * Array of {@link RangeDecoration} that can be used to decorate the content.
    */
   rangeDecorations?: RangeDecoration[]
+
+  /**
+   * An array of custom actions.
+   * @deprecated This is an internal API that might be removed without notice.
+   * @hidden
+   * @internal
+   */
+  __internal_customActions?: PortableTextCustomAction[]
+}
+
+/**
+ * @hidden
+ * @beta
+ */
+export interface PortableTextCustomAction {
+  disabled: boolean
+  icon: ComponentType
+  name: string
+  onAction: () => void
+  title: string
 }
 
 /**
