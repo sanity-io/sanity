@@ -25,7 +25,15 @@ export default async function validateAction(
   const flags = args.extOptions
 
   if (flags.format && !(flags.format in reporters)) {
-    throw new Error(`Did not recognize format '${flags.format}'`)
+    const formatter = new Intl.ListFormat('en-US', {
+      style: 'long',
+      type: 'conjunction',
+    })
+    throw new Error(
+      `Did not recognize format '${flags.format}'. Available formats are ${formatter.format(
+        Object.keys(reporters).map((key) => `'${key}'`),
+      )}`,
+    )
   }
 
   // TODO: add prompt that warns the user that this may make a lot of requests
