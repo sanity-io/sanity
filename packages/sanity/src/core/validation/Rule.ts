@@ -222,7 +222,13 @@ export const Rule: RuleClass = class Rule implements IRule {
     return rule
   }
 
-  custom<T = unknown>(fn: CustomValidator<T>): Rule {
+  custom<T = unknown>(
+    fn: CustomValidator<T>,
+    options: {bypassConcurrencyLimit?: boolean} = {},
+  ): Rule {
+    if (options.bypassConcurrencyLimit) {
+      Object.assign(fn, {bypassConcurrencyLimit: true})
+    }
     return this.cloneWithRules([{flag: 'custom', constraint: fn as CustomValidator}])
   }
 
@@ -365,10 +371,11 @@ export const Rule: RuleClass = class Rule implements IRule {
     return this.cloneWithRules([{flag: 'assetRequired', constraint: {assetType}}])
   }
 
-  async validate(value: unknown, context: ValidationContext): Promise<ValidationMarker[]> {
-    if (!context) {
-      throw new Error('missing context')
-    }
+  async validate(
+    value: unknown,
+    {__internal = {}, ...context}: Parameters<IRule['validate']>[1],
+  ): Promise<ValidationMarker[]> {
+    const {customValidationConcurrencyLimiter} = __internal
 
     const valueIsEmpty = value === null || value === undefined
 
@@ -400,6 +407,22 @@ export const Rule: RuleClass = class Rule implements IRule {
         let specConstraint = 'constraint' in curr ? curr.constraint : null
         if (isFieldRef(specConstraint)) {
           specConstraint = get(context.parent, specConstraint.path)
+        }
+
+        if (
+          curr.flag === 'custom' &&
+          customValidationConcurrencyLimiter &&
+          !(specConstraint as CustomValidator)?.bypassConcurrencyLimit
+        ) {
+          const customValidator = specConstraint as CustomValidator
+          specConstraint = async (...args: Parameters<CustomValidator>) => {
+            await customValidationConcurrencyLimiter.ready()
+            try {
+              return await customValidator(...args)
+            } finally {
+              customValidationConcurrencyLimiter.release()
+            }
+          }
         }
 
         const message = isLocalizedMessages(this._message)

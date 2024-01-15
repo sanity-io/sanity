@@ -152,7 +152,7 @@ export interface Rule {
   either(children: Rule[]): Rule
   optional(): Rule
   required(): Rule
-  custom<T = unknown>(fn: CustomValidator<T>): Rule
+  custom<T = unknown>(fn: CustomValidator<T>, options?: {bypassConcurrencyLimit?: boolean}): Rule
   min(len: number | FieldReference): Rule
   max(len: number | FieldReference): Rule
   length(len: number | FieldReference): Rule
@@ -175,7 +175,21 @@ export interface Rule {
   reference(): Rule
   fields(rules: FieldRules): Rule
   assetRequired(): Rule
-  validate(value: unknown, options: ValidationContext): Promise<ValidationMarker[]>
+  validate(
+    value: unknown,
+    options: ValidationContext & {
+      /**
+       * @deprecated Internal use only
+       * @internal
+       */
+      __internal?: {
+        customValidationConcurrencyLimiter?: {
+          ready: () => Promise<void>
+          release: () => void
+        }
+      }
+    },
+  ): Promise<ValidationMarker[]>
 }
 
 /** @public */
@@ -382,10 +396,10 @@ export type CustomValidatorResult =
   | LocalizedValidationMessages
 
 /** @public */
-export type CustomValidator<T = unknown> = (
-  value: T,
-  context: ValidationContext,
-) => CustomValidatorResult | Promise<CustomValidatorResult>
+export interface CustomValidator<T = unknown> {
+  (value: T, context: ValidationContext): CustomValidatorResult | Promise<CustomValidatorResult>
+  bypassConcurrencyLimit?: boolean
+}
 
 /** @public */
 export interface SlugValidationContext extends ValidationContext {

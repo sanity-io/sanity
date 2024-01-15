@@ -53,7 +53,7 @@ function baseRuleReducer(inputRule: Rule, type: SchemaType) {
   if (type.name === 'datetime') return baseRule.type('Date')
   if (type.name === 'date') return baseRule.type('Date')
   if (type.name === 'url') return baseRule.uri()
-  if (type.name === 'slug') return baseRule.custom(slugValidator)
+  if (type.name === 'slug') return baseRule.custom(slugValidator, {bypassConcurrencyLimit: true})
   if (type.name === 'reference') return baseRule.reference()
   if (type.name === 'email') return baseRule.email()
   return baseRule

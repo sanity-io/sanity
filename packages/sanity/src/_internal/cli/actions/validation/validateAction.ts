@@ -9,6 +9,7 @@ interface ValidateFlags {
   format?: string
   dataset?: string
   level?: 'error' | 'warning' | 'info'
+  'max-custom-validation-concurrency'?: number
 }
 
 export type BuiltInValidationReporter = (options: {
@@ -37,6 +38,15 @@ export default async function validateAction(
     throw new Error(`Invalid level. Available levels are 'error', 'warning', and 'info'.`)
   }
 
+  const maxCustomValidationConcurrency = flags['max-custom-validation-concurrency']
+  if (
+    maxCustomValidationConcurrency &&
+    typeof maxCustomValidationConcurrency !== 'number' &&
+    !Number.isInteger(maxCustomValidationConcurrency)
+  ) {
+    throw new Error(`'--max-custom-validation-concurrency' must be an integer.`)
+  }
+
   const overallLevel = await validateDocuments({
     workspace: flags.workspace,
     dataset: flags.dataset,
@@ -46,6 +56,7 @@ export default async function validateAction(
     }).config(),
     workDir,
     level,
+    maxCustomValidationConcurrency,
     reporter: (worker) => {
       const reporter =
         flags.format && flags.format in reporters

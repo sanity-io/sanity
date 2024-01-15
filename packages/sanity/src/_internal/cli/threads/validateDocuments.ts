@@ -24,6 +24,7 @@ export interface ValidateDocumentsWorkerData {
   projectId?: string
   dataset?: string
   level?: ValidationMarker['level']
+  maxCustomValidationConcurrency?: number
 }
 
 export type ValidationWorkerChannel = WorkerChannel<{
@@ -193,6 +194,7 @@ async function validateDocuments() {
             getClient,
             getDocumentExists,
             environment: 'cli',
+            maxCustomValidationConcurrency,
           }),
           new Promise<typeof timeout>((resolve) =>
             setTimeout(() => resolve(timeout), DOCUMENT_VALIDATION_TIMEOUT),

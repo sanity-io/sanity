@@ -9,6 +9,8 @@ import type {
 } from '../../threads/validateDocuments'
 import {createReceiver, WorkerChannelReceiver} from '../../util/workerChannels'
 
+const DEFAULT_MAX_CUSTOM_VALIDATION_CONCURRENCY = 5
+
 export interface ValidateDocumentsOptions<TReturn = unknown> {
   level?: 'error' | 'warning' | 'info'
   workspace?: string
@@ -17,6 +19,7 @@ export interface ValidateDocumentsOptions<TReturn = unknown> {
   clientConfig?: Partial<ClientConfig>
   projectId?: string // override
   dataset?: string // override
+  maxCustomValidationConcurrency?: number
   reporter?: (worker: WorkerChannelReceiver<ValidationWorkerChannel>) => TReturn
 }
 
@@ -65,6 +68,7 @@ export function validateDocuments(options: ValidateDocumentsOptions): unknown {
     workDir = process.cwd(),
     reporter = defaultReporter,
     level,
+    maxCustomValidationConcurrency,
   } = options
 
   const rootPkgPath = readPkgUp.sync({cwd: __dirname})?.path
@@ -91,6 +95,8 @@ export function validateDocuments(options: ValidateDocumentsOptions): unknown {
       dataset,
       projectId,
       level,
+      maxCustomValidationConcurrency:
+        maxCustomValidationConcurrency ?? DEFAULT_MAX_CUSTOM_VALIDATION_CONCURRENCY,
     } satisfies ValidateDocumentsWorkerData,
     // eslint-disable-next-line no-process-env
     env: process.env,

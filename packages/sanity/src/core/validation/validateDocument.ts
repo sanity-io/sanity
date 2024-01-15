@@ -19,6 +19,7 @@ import {getTypeChain, normalizeValidationRules} from './util/normalizeValidation
 import type {ValidationContext} from './types'
 import {createBatchedGetDocumentExists} from './util/createBatchedGetDocumentExists'
 import {createClientConcurrencyLimiter} from './util/createClientConcurrencyLimiter'
+import {ConcurrencyLimiter} from './util/ConcurrencyLimiter'
 import {unknownFieldsValidator} from './validators/unknownFieldsValidator'
 
 // this is the number of requests allowed inflight at once. this is done to prevent
@@ -57,7 +58,6 @@ export function resolveTypeForArrayItem(
     candidates.find((candidate) => candidate.name === 'object' && primitive === 'object')
   )
 }
-const EMPTY_MARKERS: ValidationMarker[] = []
 
 /**
  * @beta
@@ -97,6 +97,14 @@ export interface ValidateDocumentOptions {
    * `ValidationContext` and made available to custom validators.
    */
   environment?: 'cli' | 'studio'
+
+  /**
+   * The maximum amount of custom validation functions to be running
+   * concurrently at once. This helps prevent custom validators from
+   * overwhelming backend services (e.g. called via fetch) used in async,
+   * user-defined validation functions. (i.e. `rule.custom(async() => {})`)
+   */
+  maxCustomValidationConcurrency?: number
 }
 
 /**
@@ -138,7 +146,10 @@ export interface ValidateDocumentObservableOptions
   document: SanityDocument
   schema: Schema
   environment: 'cli' | 'studio'
+  maxCustomValidationConcurrency?: number
 }
+
+const customValidationConcurrencyLimiters = new WeakMap<Schema, ConcurrencyLimiter>()
 
 /**
  * Validates a document against the given schema, returning an Observable
@@ -151,6 +162,7 @@ export function validateDocumentObservable({
   schema,
   getDocumentExists,
   environment,
+  maxCustomValidationConcurrency,
 }: ValidateDocumentObservableOptions): Observable<ValidationMarker[]> {
   if (typeof document?._type !== 'string') {
     throw new Error(`Tried to validated a value without a '_type'`)
@@ -193,6 +205,7 @@ export function validateDocumentObservable({
     i18n,
     getDocumentExists,
     environment,
+    customValidationConcurrencyLimiter,
   }
 
   return from(i18n.loadNamespaces(['validation'])).pipe(
@@ -226,6 +239,7 @@ type ExplicitUndefined<T> = {
 
 type ValidateItemOptions = {
   value: unknown
+  customValidationConcurrencyLimiter?: ConcurrencyLimiter
 } & ExplicitUndefined<ValidationContext>
 
 export function validateItem(opts: ValidateItemOptions): Promise<ValidationMarker[]> {
@@ -237,6 +251,7 @@ function validateItemObservable({
   type,
   path = [],
   parent,
+  customValidationConcurrencyLimiter,
   environment,
   ...restOfContext
 }: ValidateItemOptions): Observable<ValidationMarker[]> {
@@ -269,6 +284,7 @@ function validateItemObservable({
         parent,
         path,
         type,
+        __internal: {customValidationConcurrencyLimiter},
       }),
     ),
   )
@@ -310,6 +326,7 @@ function validateItemObservable({
                   path: path.concat(name),
                   type: fieldType,
                   environment,
+                  __internal: {customValidationConcurrencyLimiter},
                 }),
               )
             })
@@ -326,6 +343,7 @@ function validateItemObservable({
           path: path.concat(field.name),
           type: field.type,
           environment,
+          customValidationConcurrencyLimiter,
         }),
       ),
     )
@@ -347,6 +365,7 @@ function validateItemObservable({
           path: path.concat(isKeyedObject(item) ? {_key: item._key} : index),
           type: resolveTypeForArrayItem(item, type.of),
           environment,
+          customValidationConcurrencyLimiter,
         }),
       ),
     )
