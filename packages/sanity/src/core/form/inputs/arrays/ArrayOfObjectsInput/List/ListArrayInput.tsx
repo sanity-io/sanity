@@ -185,10 +185,12 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
 
   const listGridGap = 1
   const paddingY = 1
+  const radius = 2
 
   return (
     <Stack space={2} ref={parentRef}>
       <UploadTargetCard
+        $radius={radius}
         types={schemaType.of}
         resolveUploader={resolveUploader}
         onUpload={onUpload}
@@ -205,10 +207,11 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
           ) : (
             <Card
               border
-              radius={2}
+              radius={radius}
               style={{
                 // This is not memoized since it changes on scroll so it will change anyways making memo useless
                 // Account for grid gap
+                boxSizing: 'border-box',
                 height: `${
                   virtualizer.getTotalSize() + items.length * space[listGridGap] + space[paddingY]
                 }px`,
