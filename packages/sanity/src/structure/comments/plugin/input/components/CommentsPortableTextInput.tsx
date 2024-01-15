@@ -18,7 +18,13 @@ import {isEqual} from 'lodash'
 import {uuid} from '@sanity/uuid'
 import * as PathUtils from '@sanity/util/paths'
 import {toPlainText} from '@portabletext/react'
-import {CommentMessage, useComments, useCommentsEnabled} from '../../../src'
+import {
+  CommentMessage,
+  CommentThreadItem,
+  useComments,
+  useCommentsEnabled,
+  useCommentsSelectedPath,
+} from '../../../src'
 import {Button, PopoverProps} from '../../../../../ui-components'
 import {createDomRectFromElements} from '../helpers'
 import {InlineCommentInputPopover} from './InlineCommentInputPopover'
@@ -36,10 +42,14 @@ function AddCommentDecorator(props: PropsWithChildren) {
   return <HighlightSpan data-inline-comment-state="authoring">{children}</HighlightSpan>
 }
 
-function CommentDecorator(props: PropsWithChildren<{commentId: string}>) {
-  const {children, commentId} = props
+function CommentDecorator(props: PropsWithChildren<{commentId: string; onClick: () => void}>) {
+  const {children, commentId, onClick} = props
   return (
-    <HighlightSpan data-inline-comment-state="added" data-inline-comment-id={commentId}>
+    <HighlightSpan
+      data-inline-comment-id={commentId}
+      data-inline-comment-state="added"
+      onClick={onClick}
+    >
       {children}
     </HighlightSpan>
   )
@@ -59,7 +69,8 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
   props: PortableTextInputProps,
 ) {
   const currentUser = useCurrentUser()
-  const {mentionOptions, comments, create} = useComments()
+  const {mentionOptions, comments, create, onCommentsOpen} = useComments()
+  const {setSelectedPath} = useCommentsSelectedPath()
 
   const [nextCommentValue, setNextCommentValue] = useState<CommentMessage | null>(null)
   const [nextCommentSelection, setNextCommentSelection] = useState<EditorSelection | null>(null)
@@ -149,6 +160,23 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
     [nextCommentSelection],
   )
 
+  const handleInlineCommentClick = useCallback(
+    (comment: CommentThreadItem) => {
+      onCommentsOpen?.()
+      setSelectedPath({fieldPath: comment.fieldPath, threadId: comment.threadId, origin: 'form'})
+
+      // Temporary fix for scrolling to the comment thread when clicking the comment
+      requestAnimationFrame(() => {
+        const node = document.querySelector(`[data-group-id="${comment.threadId}"]`)
+
+        node?.scrollIntoView({
+          behavior: 'smooth',
+        })
+      })
+    },
+    [onCommentsOpen, setSelectedPath],
+  )
+
   // The range decorations for existing comments
   const commentDecorators = useMemo(
     () =>
@@ -158,7 +186,13 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
 
           const decorator: RangeDecoration = {
             component: ({children}) => (
-              <CommentDecorator commentId={comment.parentComment._id}>{children}</CommentDecorator>
+              <CommentDecorator
+                commentId={comment.parentComment._id}
+                // eslint-disable-next-line react/jsx-no-bind
+                onClick={() => handleInlineCommentClick(comment)}
+              >
+                {children}
+              </CommentDecorator>
             ),
             isRangeInvalid,
             selection: comment.selection,
@@ -168,7 +202,7 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
         })
         .filter(Boolean) as RangeDecoration[],
 
-    [fieldComments],
+    [fieldComments, handleInlineCommentClick],
   )
 
   const rangeDecorations = useMemo((): RangeDecoration[] => {
