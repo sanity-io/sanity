@@ -40,6 +40,11 @@ export const pretty: BuiltInValidationReporter = async ({output, worker, flags})
   }
   spinner.succeed(`Downloaded ${count(documentCount, 'documents')} ${seconds(downloadStart)}`)
 
+  const referenceIntegrityStart = Date.now()
+  spinner.start(`Checking reference existence…`)
+  await worker.event.loadedReferenceIntegrity()
+  spinner.succeed(`Checked all references ${seconds(referenceIntegrityStart)}`)
+
   // Report validation progress
   const validationStart = Date.now()
   spinner.start(`Validating ${count(documentCount, 'documents')}…`)
