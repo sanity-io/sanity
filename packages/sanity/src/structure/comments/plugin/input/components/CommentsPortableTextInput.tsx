@@ -270,9 +270,7 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
     if (!rootElementRef.current) return undefined
 
     // Get all the elements that have the `data-inline-comment-state="authoring"` attribute
-    const elements = rootElementRef.current?.querySelectorAll(
-      '[data-inline-comment-state="authoring"]',
-    )
+    const elements = document?.querySelectorAll('[data-inline-comment-state="authoring"]')
 
     // Create a DOMRect from the elements. This is used to position the popover.
     const nextRect = createDomRectFromElements(Array.from(elements || EMPTY_ARRAY))
