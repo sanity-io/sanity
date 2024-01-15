@@ -91,7 +91,7 @@ export const pretty: BuiltInValidationReporter = async ({output, worker, flags})
   }
 
   spinner.succeed(`Validated ${count(documentCount, 'documents')} ${seconds(validationStart)}`)
-  output.print(`\nValidation results:\n${summary(totals)}`)
+  output.print(`\nValidation results:\n${summary(totals, flags.level)}`)
 
   results.sort((a, b) => {
     if (a.level === b.level) return a.documentType.localeCompare(b.documentType)

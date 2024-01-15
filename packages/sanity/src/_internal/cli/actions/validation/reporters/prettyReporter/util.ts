@@ -70,12 +70,12 @@ export const summary = (
       errors.markers,
       'errors',
     )}`,
-    levelValue <= levelValues.warning &&
+    levelValue >= levelValues.warning &&
       `${chalk.yellow('⚠')} Warnings: ${count(warnings.documents, 'documents')}, ${count(
         warnings.markers,
         'warnings',
       )}`,
-    levelValue <= levelValues.info &&
+    levelValue >= levelValues.info &&
       `${chalk.cyan('ℹ')} Info:     ${count(infos.documents, 'documents')}, ${count(
         infos.documents,
         'markers',
