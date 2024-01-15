@@ -10,13 +10,14 @@ import {
   TooltipDelayGroupProvider,
   Box,
 } from '@sanity/ui'
-import React, {useCallback, useState, useMemo, useEffect, useRef, useContext} from 'react'
+import {useCallback, useState, useMemo, useEffect, useRef, useContext} from 'react'
 import styled from 'styled-components'
 import {isDev} from '../../../environment'
 import {useWorkspace} from '../../workspace'
 import {Button, TOOLTIP_DELAY_PROPS} from '../../../../ui-components'
 import {NavbarContext} from '../../StudioLayout'
 import {useToolMenuComponent} from '../../studio-components-hooks'
+import {useTranslation} from '../../../i18n'
 import {UserMenu} from './userMenu'
 import {NewDocumentButton, useNewDocumentOptions} from './new-document'
 import {PresenceMenu} from './presence'
@@ -63,6 +64,7 @@ export function StudioNavbar() {
   const activeToolName = typeof routerState.tool === 'string' ? routerState.tool : undefined
 
   const newDocumentOptions = useNewDocumentOptions()
+  const {t} = useTranslation()
 
   const {
     onSearchFullscreenOpenChange,
@@ -169,7 +171,7 @@ export function StudioNavbar() {
                       icon={MenuIcon}
                       onClick={handleOpenDrawer}
                       ref={setDrawerButtonEl}
-                      tooltipProps={{content: 'Open drawer', placement: 'right'}}
+                      tooltipProps={{content: t('user-menu.open-menu'), placement: 'bottom'}}
                     />
                   )}
 
