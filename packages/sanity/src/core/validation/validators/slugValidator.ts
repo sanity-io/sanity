@@ -46,7 +46,7 @@ const defaultIsUnique: SlugIsUniqueValidator = (slug, context) => {
   const docType = document._type
   const atPath = serializePath(path.concat('current'))
 
-  if (!disableArrayWarning && atPath.includes('[]')) {
+  if (!disableArrayWarning && atPath.includes('[]') && context.environment === 'studio') {
     memoizedWarnOnArraySlug(serializePath(path))
   }
 
@@ -69,10 +69,6 @@ const defaultIsUnique: SlugIsUniqueValidator = (slug, context) => {
 }
 
 function warnOnArraySlug(serializedPath: string) {
-  // prevents this warning from appearing in the CLI validate command
-  const isNodeJs = typeof process !== 'undefined' && process?.release?.name === 'node'
-  if (isNodeJs) return
-
   /* eslint-disable no-console */
   console.warn(
     [

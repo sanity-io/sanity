@@ -254,6 +254,7 @@ export interface ValidationContext {
   document?: SanityDocument
   path?: Path
   getDocumentExists?: (options: {id: string}) => Promise<boolean>
+  environment: 'cli' | 'studio'
 }
 
 /**

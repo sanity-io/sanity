@@ -192,6 +192,7 @@ async function validateDocuments() {
             workspace,
             getClient,
             getDocumentExists,
+            environment: 'cli',
           }),
           new Promise<typeof timeout>((resolve) =>
             setTimeout(() => resolve(timeout), DOCUMENT_VALIDATION_TIMEOUT),

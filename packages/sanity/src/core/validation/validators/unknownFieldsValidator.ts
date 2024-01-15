@@ -4,7 +4,7 @@ import {CustomValidator, ObjectSchemaType} from '@sanity/types'
  * Given a schema type, returns a custom validator used to warn users of unknown
  * fields found in an object.
  */
-export const fieldsValidator =
+export const unknownFieldsValidator =
   (type: ObjectSchemaType): CustomValidator =>
   (value) => {
     if (typeof value !== 'object') return true

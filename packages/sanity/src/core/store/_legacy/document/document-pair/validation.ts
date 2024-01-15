@@ -176,6 +176,7 @@ export const validation = memoize(
               getDocumentExists,
               i18n: ctx.i18n,
               schema: ctx.schema,
+              environment: 'studio',
             }).pipe(
               map((validationMarkers) => ({validation: validationMarkers, isValidating: false})),
             ),
