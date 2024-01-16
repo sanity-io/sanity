@@ -1,5 +1,5 @@
 import {isatty} from 'tty'
-import chalk from 'chalk'
+import logSymbols from 'log-symbols'
 import type {ValidationMarker} from '@sanity/types'
 
 export type Level = ValidationMarker['level']
@@ -65,18 +65,18 @@ export const summary = (
   const levelValue = levelValues[level]
 
   return [
-    `${chalk.green('✔️')} Valid:    ${count(valid.documents, 'documents')}`,
-    `${chalk.red('✖')} Errors:   ${count(errors.documents, 'documents')}, ${count(
+    `${logSymbols.success} Valid:    ${count(valid.documents, 'documents')}`,
+    `${logSymbols.error} Errors:   ${count(errors.documents, 'documents')}, ${count(
       errors.markers,
       'errors',
     )}`,
     levelValue >= levelValues.warning &&
-      `${chalk.yellow('⚠')} Warnings: ${count(warnings.documents, 'documents')}, ${count(
+      `${logSymbols.warning} Warnings: ${count(warnings.documents, 'documents')}, ${count(
         warnings.markers,
         'warnings',
       )}`,
     levelValue >= levelValues.info &&
-      `${chalk.cyan('ℹ')} Info:     ${count(infos.documents, 'documents')}, ${count(
+      `${logSymbols.info} Info:     ${count(infos.documents, 'documents')}, ${count(
         infos.documents,
         'markers',
       )}`,

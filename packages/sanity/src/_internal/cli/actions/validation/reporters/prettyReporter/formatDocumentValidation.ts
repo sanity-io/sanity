@@ -1,5 +1,6 @@
 import chalk from 'chalk'
 import {ValidationMarker} from '@sanity/types'
+import logSymbols from 'log-symbols'
 import {DocumentValidationResult, Level, isTty, levelValues} from './util'
 import {pathToString} from 'sanity'
 
@@ -12,13 +13,6 @@ interface ValidationTree {
   markers?: Pick<ValidationMarker, 'level' | 'message'>[]
   children?: Record<string, ValidationTree>
 }
-
-const bullets = {
-  valid: chalk.green('✔️'),
-  error: chalk.red('✖'),
-  warning: chalk.yellow('⚠'),
-  info: chalk.cyan('ℹ'),
-} as const
 
 const levelHeaders = {
   error: isTty ? chalk.bold(chalk.bgRed(' ERROR ')) : chalk.red('[ERROR]'),
@@ -75,14 +69,14 @@ const formatTree = (
       const [first, ...rest] = child.markers.slice().sort(compareLevels)
       const firstPadding = '.'.repeat(paddingLength - indent.length - key.length)
       const elbow = isLast ? '└' : '├'
-      const firstBullet = bullets[first.level]
+      const firstBullet = logSymbols[first.level]
       const subsequentPadding = ' '.repeat(paddingLength - indent.length + 2)
 
       const firstMessage = `${indent}${elbow}─ ${key} ${firstPadding} ${firstBullet} ${first.message}`
       const subsequentMessages = rest
         .map(
           (marker) =>
-            `${nextIndent}${subsequentPadding} ${bullets[marker.level]} ${marker.message}`,
+            `${nextIndent}${subsequentPadding} ${logSymbols[marker.level]} ${marker.message}`,
         )
         .join('\n')
 
@@ -103,14 +97,16 @@ const formatRootErrors = (root: ValidationTree, hasChildren: boolean, paddingLen
 
   const firstElbow = hasChildren ? '│ ' : '└─'
   const firstPadding = '.'.repeat(paddingLength - 6)
-  const firstLine = `${firstElbow} (root) ${firstPadding} ${bullets[first.level]} ${first.message}`
+  const firstLine = `${firstElbow} (root) ${firstPadding} ${logSymbols[first.level]} ${
+    first.message
+  }`
   const subsequentPadding = ' '.repeat(paddingLength + 2)
   const subsequentElbow = hasChildren ? '│ ' : '  '
 
   const restOfLines = rest
     .map(
       (marker) =>
-        `${subsequentElbow}${subsequentPadding} ${bullets[marker.level]} ${marker.message}`,
+        `${subsequentElbow}${subsequentPadding} ${logSymbols[marker.level]} ${marker.message}`,
     )
     .join('\n')
   return [firstLine, restOfLines].filter(Boolean).join('\n')

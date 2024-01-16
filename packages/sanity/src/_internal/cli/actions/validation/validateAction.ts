@@ -1,4 +1,5 @@
 import type {CliCommandArguments, CliCommandContext, CliOutputter} from '@sanity/cli'
+import logSymbols from 'log-symbols'
 import chalk from 'chalk'
 import type {WorkerChannelReceiver} from '../../util/workerChannels'
 import type {ValidationWorkerChannel} from '../../threads/validateDocuments'
@@ -30,7 +31,9 @@ export default async function validateAction(
 
   if (!unattendedMode) {
     output.print(
-      `${chalk.yellow(`⚠ Warning:`)} This command downloads all documents from a ` +
+      `${chalk.yellow(
+        `${logSymbols.warning} Warning:`,
+      )} This command downloads all documents from a ` +
         `dataset and processes them through your local schema within a ` +
         `simulated browser environment.\n`,
     )
