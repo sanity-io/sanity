@@ -5,7 +5,7 @@ import {UserConfig} from 'vite'
 export default defineCliConfig({
   api: {
     projectId: 'ppsg7ml5',
-    dataset: 'tsdoc-2',
+    dataset: 'test',
   },
 
   // Can be overriden by:
