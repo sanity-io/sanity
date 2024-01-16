@@ -7,9 +7,9 @@ import {getTheme_v2} from '@sanity/ui/theme'
 import {focusRingBorderStyle, focusRingStyle} from './helpers'
 
 export function withFocusRing<Props>(component: ComponentType<Props>) {
-  return styled(component)<Props & {$border?: boolean}>(
-    (props: {theme: Theme; $border?: boolean}) => {
-      const {$border} = props
+  return styled(component)<Props & {$border?: boolean; $radius?: number}>(
+    (props: {theme: Theme; $border?: boolean; $radius?: number}) => {
+      const {$border, $radius} = props
       const {card, color, radius} = getTheme_v2(props.theme)
 
       const border = {width: $border ? 1 : 0, color: 'var(--card-border-color)'}
@@ -17,7 +17,7 @@ export function withFocusRing<Props>(component: ComponentType<Props>) {
       return css`
         --card-focus-box-shadow: ${focusRingBorderStyle(border)};
 
-        border-radius: ${rem(radius[1])};
+        border-radius: ${rem(radius[$radius ?? 1])};
         outline: none;
         box-shadow: var(--card-focus-box-shadow);
 
