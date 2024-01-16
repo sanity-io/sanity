@@ -3,13 +3,13 @@
 import {Path, SanityDocument, SchemaType} from '@sanity/types'
 import {isArray, isRecord} from 'sanity'
 
-export function getPathTypes(options: {
+export function getPathTitles(options: {
   path: Path
   schemaType: SchemaType
   value: Partial<SanityDocument> | null
-}): SchemaType[] {
+}): Array<{name: string; title?: string}> {
   const {path, schemaType, value} = options
-  const result: SchemaType[] = []
+  const result: Array<{name: string; title?: string}> = []
 
   let s = schemaType
   let v: unknown = value
@@ -32,7 +32,8 @@ export function getPathTypes(options: {
       const field = s.fields.find((f) => f.name === segment)
 
       if (!field) {
-        throw new Error(`Field type not found: .${segment}`)
+        result.push({name: segment})
+        return result
       }
 
       s = field.type

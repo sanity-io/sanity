@@ -14,7 +14,10 @@ const ruleConstraintTypes: {[P in Lowercase<RuleTypeConstraint>]: true} = {
 const isRuleConstraint = (typeString: string): typeString is Lowercase<RuleTypeConstraint> =>
   typeString in ruleConstraintTypes
 
-function getTypeChain(type: SchemaType | undefined, visited: Set<SchemaType>): SchemaType[] {
+export function getTypeChain(
+  type: SchemaType | undefined,
+  visited: Set<SchemaType> = new Set(),
+): SchemaType[] {
   if (!type) return []
   if (visited.has(type)) return []
 
@@ -50,7 +53,7 @@ function baseRuleReducer(inputRule: Rule, type: SchemaType) {
   if (type.name === 'datetime') return baseRule.type('Date')
   if (type.name === 'date') return baseRule.type('Date')
   if (type.name === 'url') return baseRule.uri()
-  if (type.name === 'slug') return baseRule.custom(slugValidator)
+  if (type.name === 'slug') return baseRule.custom(slugValidator, {bypassConcurrencyLimit: true})
   if (type.name === 'reference') return baseRule.reference()
   if (type.name === 'email') return baseRule.email()
   return baseRule
@@ -101,7 +104,7 @@ export function normalizeValidationRules(typeDef: SchemaType | undefined): Rule[
   const baseRule =
     // using an object + Object.values to de-dupe the type chain by type name
     Object.values(
-      getTypeChain(typeDef, new Set()).reduce<Record<string, SchemaType>>((acc, type) => {
+      getTypeChain(typeDef).reduce<Record<string, SchemaType>>((acc, type) => {
         acc[type.name] = type
         return acc
       }, {}),

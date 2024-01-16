@@ -1,6 +1,7 @@
 import {
   isKeyedObject,
   isTypedObject,
+  type Rule,
   type SanityDocument,
   type Schema,
   type SchemaType,
@@ -14,10 +15,12 @@ import {getFallbackLocaleSource} from '../i18n/fallback'
 import type {SourceClientOptions, Workspace} from '../config'
 import {typeString} from './util/typeString'
 import {cancelIdleCallback, requestIdleCallback} from './util/requestIdleCallback'
-import {normalizeValidationRules} from './util/normalizeValidationRules'
+import {getTypeChain, normalizeValidationRules} from './util/normalizeValidationRules'
 import type {ValidationContext} from './types'
 import {createBatchedGetDocumentExists} from './util/createBatchedGetDocumentExists'
 import {createClientConcurrencyLimiter} from './util/createClientConcurrencyLimiter'
+import {ConcurrencyLimiter} from './util/ConcurrencyLimiter'
+import {unknownFieldsValidator} from './validators/unknownFieldsValidator'
 
 // this is the number of requests allowed inflight at once. this is done to prevent
 // the validation library from overwhelming our backend
@@ -55,7 +58,6 @@ export function resolveTypeForArrayItem(
     candidates.find((candidate) => candidate.name === 'object' && primitive === 'object')
   )
 }
-const EMPTY_MARKERS: ValidationMarker[] = []
 
 /**
  * @beta
@@ -89,6 +91,20 @@ export interface ValidateDocumentOptions {
    * @deprecated For internal use only
    */
   getClient?: (clientOptions: SourceClientOptions) => SanityClient
+
+  /**
+   * Specify the environment name. This will be passed down to the
+   * `ValidationContext` and made available to custom validators.
+   */
+  environment?: 'cli' | 'studio'
+
+  /**
+   * The maximum amount of custom validation functions to be running
+   * concurrently at once. This helps prevent custom validators from
+   * overwhelming backend services (e.g. called via fetch) used in async,
+   * user-defined validation functions. (i.e. `rule.custom(async() => {})`)
+   */
+  maxCustomValidationConcurrency?: number
 }
 
 /**
@@ -100,6 +116,7 @@ export interface ValidateDocumentOptions {
 export function validateDocument({
   document,
   workspace,
+  environment = 'studio',
   ...options
 }: ValidateDocumentOptions): Promise<ValidationMarker[]> {
   const getClient = options.getClient || workspace.getClient
@@ -109,12 +126,13 @@ export function validateDocument({
   return lastValueFrom(
     validateDocumentObservable({
       document,
-      getClient: options.getClient || getConcurrencyLimitedClient,
+      getClient: getConcurrencyLimitedClient,
       i18n: workspace.i18n,
       schema: workspace.schema,
       getDocumentExists:
         options.getDocumentExists ||
         createBatchedGetDocumentExists(getClient({apiVersion: 'v2021-03-25'})),
+      environment,
     }),
   )
 }
@@ -127,7 +145,11 @@ export interface ValidateDocumentObservableOptions
   getClient: (options: {apiVersion: string}) => SanityClient
   document: SanityDocument
   schema: Schema
+  environment: 'cli' | 'studio'
+  maxCustomValidationConcurrency?: number
 }
+
+const customValidationConcurrencyLimiters = new WeakMap<Schema, ConcurrencyLimiter>()
 
 /**
  * Validates a document against the given schema, returning an Observable
@@ -139,11 +161,37 @@ export function validateDocumentObservable({
   i18n = getFallbackLocaleSource(),
   schema,
   getDocumentExists,
+  environment,
+  maxCustomValidationConcurrency,
 }: ValidateDocumentObservableOptions): Observable<ValidationMarker[]> {
+  if (typeof document?._type !== 'string') {
+    throw new Error(`Tried to validated a value without a '_type'`)
+  }
+
   const documentType = schema.get(document._type)
+
   if (!documentType) {
-    console.warn('Schema type for object type "%s" not found, skipping validation', document._type)
-    return of(EMPTY_MARKERS)
+    if (environment === 'studio') {
+      console.warn(
+        'Schema type for object type "%s" not found, skipping validation',
+        document._type,
+      )
+      return of([])
+    }
+
+    return of([
+      {
+        level: 'warning',
+        message: `Could not find schema type for type '${document._type}', skipping validation`,
+        path: [],
+      },
+    ])
+  }
+
+  let customValidationConcurrencyLimiter = customValidationConcurrencyLimiters.get(schema)
+  if (!customValidationConcurrencyLimiter && maxCustomValidationConcurrency) {
+    customValidationConcurrencyLimiter = new ConcurrencyLimiter(maxCustomValidationConcurrency)
+    customValidationConcurrencyLimiters.set(schema, customValidationConcurrencyLimiter)
   }
 
   const validationOptions: ValidateItemOptions = {
@@ -156,6 +204,8 @@ export function validateDocumentObservable({
     type: documentType,
     i18n,
     getDocumentExists,
+    environment,
+    customValidationConcurrencyLimiter,
   }
 
   return from(i18n.loadNamespaces(['validation'])).pipe(
@@ -189,6 +239,7 @@ type ExplicitUndefined<T> = {
 
 type ValidateItemOptions = {
   value: unknown
+  customValidationConcurrencyLimiter?: ConcurrencyLimiter
 } & ExplicitUndefined<ValidationContext>
 
 export function validateItem(opts: ValidateItemOptions): Promise<ValidationMarker[]> {
@@ -200,17 +251,40 @@ function validateItemObservable({
   type,
   path = [],
   parent,
+  customValidationConcurrencyLimiter,
+  environment,
   ...restOfContext
 }: ValidateItemOptions): Observable<ValidationMarker[]> {
+  // Note: this validator is added here because it's conditional based on the
+  // environment.
+  const addUnknownFieldsValidator = (rule: Rule) => {
+    if (
+      // if the schema type is an object type
+      type?.jsonType === 'object' &&
+      // and if somewhere in it's type chain, it inherits from object or document
+      getTypeChain(type).find((t) => t.name === 'object' || t.name === 'document') &&
+      // and the environment is not the studio
+      environment !== 'studio'
+    ) {
+      // then add the validator for unknown fields
+      return rule.custom(unknownFieldsValidator(type), {bypassConcurrencyLimit: true}).warning()
+    }
+
+    // otherwise, leave it unchanged
+    return rule
+  }
+
   const rules = normalizeValidationRules(type)
   // run validation for the current value
-  const selfChecks = rules.map((rule) =>
+  const selfChecks = rules.map(addUnknownFieldsValidator).map((rule) =>
     defer(() =>
       rule.validate(value, {
         ...restOfContext,
+        environment,
         parent,
         path,
         type,
+        __internal: {customValidationConcurrencyLimiter},
       }),
     ),
   )
@@ -241,17 +315,21 @@ function validateItemObservable({
         .flatMap((fieldResults) => Object.entries(fieldResults))
         .flatMap(([name, validation]) => {
           const fieldType = fieldTypes[name]
-          return normalizeValidationRules({...fieldType, validation}).map((subRule) => {
-            const nestedValue = isRecord(value) ? value[name] : undefined
-            return defer(() =>
-              subRule.validate(nestedValue, {
-                ...restOfContext,
-                parent: value,
-                path: path.concat(name),
-                type: fieldType,
-              }),
-            )
-          })
+          return normalizeValidationRules({...fieldType, validation})
+            .map(addUnknownFieldsValidator)
+            .map((subRule) => {
+              const nestedValue = isRecord(value) ? value[name] : undefined
+              return defer(() =>
+                subRule.validate(nestedValue, {
+                  ...restOfContext,
+                  parent: value,
+                  path: path.concat(name),
+                  type: fieldType,
+                  environment,
+                  __internal: {customValidationConcurrencyLimiter},
+                }),
+              )
+            })
         }),
     )
 
@@ -264,6 +342,8 @@ function validateItemObservable({
           value: isRecord(value) ? value[field.name] : undefined,
           path: path.concat(field.name),
           type: field.type,
+          environment,
+          customValidationConcurrencyLimiter,
         }),
       ),
     )
@@ -284,6 +364,8 @@ function validateItemObservable({
           value: item,
           path: path.concat(isKeyedObject(item) ? {_key: item._key} : index),
           type: resolveTypeForArrayItem(item, type.of),
+          environment,
+          customValidationConcurrencyLimiter,
         }),
       ),
     )

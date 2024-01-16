@@ -249,6 +249,7 @@
     "observable-callback": "^1.0.1",
     "oneline": "^1.0.3",
     "open": "^8.4.0",
+    "p-map": "^7.0.0",
     "pirates": "^4.0.0",
     "pluralize-esm": "^9.0.2",
     "polished": "^4.2.2",

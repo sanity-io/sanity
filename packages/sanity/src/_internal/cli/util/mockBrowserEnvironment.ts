@@ -2,6 +2,7 @@ import {addHook} from 'pirates'
 import jsdomGlobal from 'jsdom-global'
 import resolveFrom from 'resolve-from'
 import {register as registerESBuild} from 'esbuild-register/dist/node'
+import {ResizeObserver} from '@juggle/resize-observer'
 
 const jsdomDefaultHtml = `<!doctype html>
 <html>
@@ -32,6 +33,7 @@ export function mockBrowserEnvironment(basePath: string): () => void {
     target: 'node18',
     format: 'cjs',
     extensions: ['.js', '.jsx', '.ts', '.tsx', '.mjs'],
+    jsx: 'automatic',
   })
 
   return function cleanupBrowserEnvironment() {
@@ -49,8 +51,10 @@ const getFakeGlobals = (basePath: string) => ({
   cancelAnimationFrame: clearImmediate,
   requestIdleCallback: setImmediate,
   cancelIdleCallback: clearImmediate,
-  InputEvent: global.window && global.window.InputEvent,
   ace: tryGetAceGlobal(basePath),
+  InputEvent: global.window?.InputEvent,
+  customElements: global.window?.customElements,
+  ResizeObserver: global.window?.ResizeObserver || ResizeObserver,
 })
 
 function provideFakeGlobals(basePath: string): () => void {

@@ -20,8 +20,6 @@ export async function getStudioConfig(options: {
   configPath?: string
   basePath: string
 }): Promise<Workspace[]> {
-  let workspaces: Workspace[] | undefined
-
   const {basePath, configPath: cfgPath} = options
 
   let cleanup
@@ -47,27 +45,17 @@ export async function getStudioConfig(options: {
       const mod = require(configPath)
       config = mod.__esModule && mod.default ? mod.default : mod
     } catch (err) {
-      throw new Error(`Failed to load configuration file "${configPath}":\n${err.message}`)
+      const message = `Failed to load configuration file "${configPath}":\n${err.message}`
+      // this helps preserve the stack trace
+      throw Object.assign(err, {message})
     }
 
-    if (!config) {
-      throw new Error('Configuration did not export expected config shape')
-    }
+    if (!config) throw new Error('Configuration did not export expected config shape')
 
-    workspaces = await firstValueFrom(resolveConfig(config))
-  } catch (error) {
-    if (cleanup) {
-      cleanup()
-    }
-
-    throw error
+    const workspaces = await firstValueFrom(resolveConfig(config))
+    if (!workspaces) throw new Error('Failed to resolve configuration')
+    return workspaces
+  } finally {
+    cleanup?.()
   }
-
-  cleanup()
-
-  if (!workspaces) {
-    throw new Error('Failed to resolve configuration')
-  }
-
-  return workspaces
 }

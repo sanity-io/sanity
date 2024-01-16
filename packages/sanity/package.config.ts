@@ -28,6 +28,11 @@ export default defineConfig({
       require: './lib/_internal/cli/threads/getGraphQLAPIs.js',
       default: './lib/_internal/cli/threads/getGraphQLAPIs.js',
     },
+    './_internal/cli/threads/validateDocuments': {
+      source: './src/_internal/cli/threads/validateDocuments.ts',
+      require: './lib/_internal/cli/threads/validateDocuments.js',
+      default: './lib/_internal/cli/threads/validateDocuments.js',
+    },
   }),
 
   extract: {

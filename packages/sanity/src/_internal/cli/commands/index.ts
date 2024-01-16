@@ -18,6 +18,7 @@ import getDocumentsCommand from './documents/getDocumentsCommand'
 import queryDocumentsCommand from './documents/queryDocumentsCommand'
 import deleteDocumentsCommand from './documents/deleteDocumentsCommand'
 import createDocumentsCommand from './documents/createDocumentsCommand'
+import validateDocumentsCommand from './documents/validateDocumentsCommand'
 import devCommand from './dev/devCommand'
 import startCommand from './start/startCommand'
 import previewCommand from './preview/previewCommand'
@@ -74,6 +75,7 @@ const commands: (CliCommandDefinition | CliCommandGroupDefinition)[] = [
   queryDocumentsCommand,
   deleteDocumentsCommand,
   createDocumentsCommand,
+  validateDocumentsCommand,
   graphqlGroup,
   listGraphQLAPIsCommand,
   deployGraphQLAPICommand,

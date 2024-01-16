@@ -191,6 +191,7 @@ describe('validateItem', () => {
         type: schema.get('testObj'),
         getDocumentExists: undefined,
         i18n: getFallbackLocaleSource(),
+        environment: 'studio',
       }),
     ).resolves.toMatchObject([
       {
@@ -262,6 +263,7 @@ describe('validateItem', () => {
         value: {foo: 5},
         getDocumentExists: undefined,
         i18n: getFallbackLocaleSource(),
+        environment: 'studio',
       }),
     ).resolves.toMatchObject([
       {
@@ -430,6 +432,7 @@ describe('validateItem', () => {
       value: document,
       getDocumentExists: undefined,
       i18n: getFallbackLocaleSource(),
+      environment: 'studio',
     })
 
     expect(result).toMatchObject([
@@ -534,6 +537,7 @@ describe('validateItem', () => {
         value: values,
         getDocumentExists: undefined,
         i18n: getFallbackLocaleSource(),
+        environment: 'studio',
       }),
     ).resolves.toMatchObject([
       {
@@ -631,6 +635,7 @@ describe('validateItem', () => {
         path: undefined,
         getDocumentExists: undefined,
         i18n: getFallbackLocaleSource(),
+        environment: 'studio',
       }),
     ).resolves.toMatchObject([
       {

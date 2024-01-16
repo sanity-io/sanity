@@ -316,7 +316,12 @@ async function expectNoError(validations: Rule[], value: unknown) {
   const errors = (
     await Promise.all(
       validations.map((rule) =>
-        rule.validate(value, {getClient, schema: {} as any, i18n: getFallbackLocaleSource()}),
+        rule.validate(value, {
+          getClient,
+          schema: {} as any,
+          i18n: getFallbackLocaleSource(),
+          environment: 'studio',
+        }),
       ),
     )
   ).flat()
@@ -339,7 +344,12 @@ async function expectError(
   const errors = (
     await Promise.all(
       validations.map((rule) =>
-        rule.validate(value, {getClient, schema: {} as any, i18n: getFallbackLocaleSource()}),
+        rule.validate(value, {
+          getClient,
+          schema: {} as any,
+          i18n: getFallbackLocaleSource(),
+          environment: 'studio',
+        }),
       ),
     )
   ).flat()
