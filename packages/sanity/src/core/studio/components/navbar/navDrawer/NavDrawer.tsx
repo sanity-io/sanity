@@ -12,6 +12,7 @@ import {UserAvatar} from '../../../../components'
 import {useWorkspaces} from '../../../workspaces'
 import {useColorSchemeSetValue} from '../../../colorScheme'
 import {useTranslation} from '../../../../i18n'
+import {HomeButton} from '../home/HomeButton'
 import {WorkspaceMenuButton} from '../workspace'
 import {AppearanceMenu} from './ApperaranceMenu'
 import {LocaleMenu} from './LocaleMenu'
@@ -124,12 +125,13 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
               <Card borderBottom>
                 <Stack space={3} padding={3}>
                   <Flex align="center">
+                    {/* Current user */}
                     <Flex flex={1} align="center" paddingRight={2}>
                       <Flex flex={1} align="center">
                         <UserAvatar size={1} user="me" />
                         <Box
                           flex={1}
-                          marginLeft={2}
+                          marginLeft={3}
                           title={currentUser?.name || currentUser?.email}
                         >
                           <Text size={1} textOverflow="ellipsis" weight="medium">
@@ -148,7 +150,8 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
                   </Flex>
 
                   {workspaces.length > 1 && (
-                    <Flex>
+                    <Flex flex={1} gap={1}>
+                      <HomeButton />
                       <WorkspaceMenuButton />
                     </Flex>
                   )}

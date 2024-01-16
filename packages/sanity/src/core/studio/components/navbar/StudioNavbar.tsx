@@ -9,6 +9,7 @@ import {
   useMediaIndex,
   TooltipDelayGroupProvider,
   Box,
+  Grid,
 } from '@sanity/ui'
 import {useCallback, useState, useMemo, useEffect, useRef, useContext} from 'react'
 import styled from 'styled-components'
@@ -29,6 +30,7 @@ import {SearchProvider} from './search/contexts/search/SearchProvider'
 import {ResourcesButton} from './resources/ResourcesButton'
 import {FreeTrial} from './free-trial'
 import {FreeTrialProvider} from './free-trial/FreeTrialProvider'
+import {HomeButton} from './home/HomeButton'
 import {SearchPopover} from './search/components/SearchPopover'
 import {RouterState, useRouterState} from 'sanity/router'
 
@@ -46,12 +48,8 @@ const RootCard = styled(Card)`
   line-height: 0;
 `
 
-// Grid container which renders our navbar in a 3-column grid.
-// Where possible, we try and ensure the center column is always centered, regardless of the
-// amount of content in both LHS and RHS columns.
-const NavGrid = styled.div`
-  display: grid;
-  grid-template-columns: minmax(max-content, 1fr) 3fr minmax(max-content, 1fr);
+const NavGrid = styled(Grid)`
+  grid-template-columns: auto auto auto;
 `
 
 /**
@@ -159,7 +157,7 @@ export function StudioNavbar() {
           padding={3}
           sizing="border"
         >
-          <NavGrid>
+          <NavGrid gap={1}>
             {/** Left flex */}
             <TooltipDelayGroupProvider delay={TOOLTIP_DELAY_PROPS}>
               <Flex align="center" gap={2} justify="flex-start">
@@ -175,8 +173,11 @@ export function StudioNavbar() {
                     />
                   )}
 
-                  {/* Workspace menu button */}
-                  <WorkspaceMenuButton />
+                  {/* Home + workspace menu buttons */}
+                  <Flex gap={1}>
+                    <HomeButton />
+                    <WorkspaceMenuButton />
+                  </Flex>
                 </Flex>
                 {/* New document button */}
                 <NewDocumentButton
