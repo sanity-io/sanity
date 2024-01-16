@@ -45,6 +45,7 @@ import listUsersCommand from './users/listUsersCommand'
 import migrationGroup from './migration/migrationGroup'
 import createMigrationCommand from './migration/createMigrationCommand'
 import runMigrationCommand from './migration/runMigrationCommand'
+import listMigrationsCommand from './migration/listMigrationsCommand'
 
 const commands: (CliCommandDefinition | CliCommandGroupDefinition)[] = [
   buildCommand,
@@ -74,6 +75,7 @@ const commands: (CliCommandDefinition | CliCommandGroupDefinition)[] = [
   migrationGroup,
   createMigrationCommand,
   runMigrationCommand,
+  listMigrationsCommand,
   deleteHookCommand,
   listHookLogsCommand,
   printHookAttemptCommand,

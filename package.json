@@ -15,7 +15,7 @@
   "scripts": {
     "bootstrap": "yarn install && yarn build:dts && yarn build:cli",
     "build": "turbo run --filter=@sanity/* --filter=groq --filter=sanity build",
-    "build:cli": "run-s build",
+    "build:cli": "turbo run --filter=@sanity/cli --filter=sanity build",
     "build:dts": "tsc --build tsconfig.lib.json",
     "check:format": "prettier . --check",
     "check:packages": "lerna run check:package",
