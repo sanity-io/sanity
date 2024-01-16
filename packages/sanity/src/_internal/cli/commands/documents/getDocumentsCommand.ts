@@ -41,7 +41,7 @@ const getDocumentsCommand: CliCommandDefinition<GetDocumentFlags> = {
     try {
       const doc = await client.getDocument(docId)
       if (!doc) {
-        throw new Error('Document not found')
+        throw new Error(`Document ${docId} not found`)
       }
 
       output.print(pretty ? colorizeJson(doc, chalk) : JSON.stringify(doc, null, 2))
