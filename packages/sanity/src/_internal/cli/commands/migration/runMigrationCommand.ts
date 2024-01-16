@@ -2,15 +2,16 @@ import path from 'path'
 import type {CliCommandContext, CliCommandDefinition} from '@sanity/cli'
 import {register} from 'esbuild-register/dist/node'
 import {
-  dryRun,
+  APIConfig,
+  collectMigrationMutations,
+  fromExportArchive,
   fromExportEndpoint,
   Migration,
   ndjson,
-  fromExportArchive,
   run,
 } from '@sanity/migrate'
-import {CompactFormatter} from '@sanity/migrate/mutations'
 import {SanityDocument} from '@sanity/types'
+import {format} from './mutationFormatter'
 
 const helpText = `
 Options
@@ -53,7 +54,7 @@ const createMigrationCommand: CliCommandDefinition<CreateFlags> = {
   helpText,
   description: 'Run a migration against a dataset',
   action: async (args, context) => {
-    const {apiClient, output, prompt, workDir} = context
+    const {apiClient, output, prompt, chalk, workDir} = context
     const [migrationName] = args.argsWithoutOptions
     const [fromExport, dry] = [args.extOptions['from-export'], args.extOptions.dry !== 'false']
 
@@ -123,8 +124,9 @@ const createMigrationCommand: CliCommandDefinition<CreateFlags> = {
       apiVersion: 'v2024-01-09',
     } as const
 
-    const doRun = dry ? dryRun : run
-    const progress = doRun({api: apiConfig}, migration)
+    const progress = dry
+      ? dryRun({api: apiConfig}, migration, context)
+      : run({api: apiConfig}, migration)
 
     for await (const result of progress) {
       output.print(result)
@@ -132,21 +134,42 @@ const createMigrationCommand: CliCommandDefinition<CreateFlags> = {
   },
 }
 
-async function runFromArchive(migration: Migration, archive: string, {output}: CliCommandContext) {
-  const ctx = {
-    withDocument: () => {
-      throw new Error('Not implemented yet')
-    },
-  }
-
-  const mutations = migration.run(
+async function runFromArchive(
+  migration: Migration,
+  archive: string,
+  {output, chalk}: CliCommandContext,
+) {
+  const mutations = collectMigrationMutations(
+    migration,
     ndjson(fromExportArchive(archive)) as AsyncIterableIterator<SanityDocument>,
-    ctx,
   )
 
   for await (const mutation of mutations) {
     if (!mutation) continue
-    output.print(CompactFormatter.format(Array.isArray(mutation) ? mutation : [mutation]))
+    output.print()
+    output.print(format(chalk, Array.isArray(mutation) ? mutation : ([mutation] as any)))
+  }
+
+  output.print('Done!')
+}
+
+interface MigrationRunnerOptions {
+  api: APIConfig
+}
+
+async function* dryRun(
+  config: MigrationRunnerOptions,
+  migration: Migration,
+  {output, chalk}: CliCommandContext,
+) {
+  const mutations = collectMigrationMutations(
+    migration,
+    ndjson(await fromExportEndpoint(config.api)) as AsyncIterableIterator<SanityDocument>,
+  )
+
+  for await (const mutation of mutations) {
+    if (!mutation) continue
+    yield format(chalk, Array.isArray(mutation) ? mutation : ([mutation] as any))
   }
 }
 
