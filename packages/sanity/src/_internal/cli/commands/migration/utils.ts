@@ -1,4 +1,5 @@
 import path from 'path'
+
 import {MIGRATION_SCRIPT_EXTENSIONS, MIGRATIONS_DIRECTORY} from './constants'
 
 export function resolveMigrationScript(workDir: string, migrationName: string) {
