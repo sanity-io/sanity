@@ -536,6 +536,7 @@ Object {
       "name": "Author",
       "originalName": "author",
       "type": "Object",
+      Symbol(internal): Object {},
     },
     Object {
       "fields": Array [
@@ -681,6 +682,7 @@ Object {
       "name": "Block",
       "originalName": "block",
       "type": "Object",
+      Symbol(internal): Object {},
     },
     Object {
       "fields": Array [
@@ -748,6 +750,7 @@ Object {
       "name": "CdrPersonReference",
       "originalName": "cdrPersonReference",
       "type": "Object",
+      Symbol(internal): Object {},
     },
     Object {
       "fields": Array [
@@ -856,6 +859,7 @@ Object {
       "name": "Code",
       "originalName": "code",
       "type": "Object",
+      Symbol(internal): Object {},
     },
     Object {
       "fields": Array [
@@ -954,6 +958,7 @@ Object {
       "name": "Color",
       "originalName": "color",
       "type": "Object",
+      Symbol(internal): Object {},
     },
     Object {
       "fields": Array [
@@ -1068,6 +1073,7 @@ Object {
       "name": "CrossDatasetReference",
       "originalName": "crossDatasetReference",
       "type": "Object",
+      Symbol(internal): Object {},
     },
     Object {
       "fields": Array [
@@ -1223,41 +1229,147 @@ Object {
       "description": undefined,
       "fields": Array [
         Object {
+          "deprecationReason": "This object type has been deprecated",
+          "description": undefined,
+          "fieldName": "_key",
+          "type": "String",
+        },
+        Object {
+          "deprecationReason": "This object type has been deprecated",
+          "description": undefined,
+          "fieldName": "_type",
+          "type": "String",
+        },
+        Object {
+          "deprecationReason": "This object type has been deprecated",
+          "description": undefined,
+          "fieldName": "description",
+          "type": "String",
+        },
+        Object {
+          "deprecationReason": "This object type has been deprecated",
+          "description": undefined,
+          "fieldName": "excerpt",
+          "type": "String",
+        },
+        Object {
+          "deprecationReason": "This object type has been deprecated",
+          "description": undefined,
+          "fieldName": "name",
+          "type": "String",
+        },
+      ],
+      "kind": "Type",
+      "name": "DeprecatedObject",
+      "originalName": "deprecatedObject",
+      "type": "Object",
+      Symbol(internal): Object {
+        "deprecationReason": "This object type has been deprecated",
+      },
+    },
+    Object {
+      "fields": Array [
+        Object {
+          "fieldName": "_key",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "_type",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "description",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "excerpt",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
+          "fieldName": "name",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "DeprecatedObjectFilter",
+    },
+    Object {
+      "fields": Array [
+        Object {
+          "fieldName": "_key",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "_type",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "description",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "excerpt",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "name",
+          "type": "SortOrder",
+        },
+      ],
+      "kind": "InputObject",
+      "name": "DeprecatedObjectSorting",
+    },
+    Object {
+      "description": undefined,
+      "fields": Array [
+        Object {
+          "deprecationReason": "Entire \`Document actions\` document type deprecated",
           "description": "Date the document was created",
           "fieldName": "_createdAt",
           "isNullable": true,
           "type": "Datetime",
         },
         Object {
+          "deprecationReason": "Entire \`Document actions\` document type deprecated",
           "description": "Document ID",
           "fieldName": "_id",
           "isNullable": true,
           "type": "ID",
         },
         Object {
+          "deprecationReason": "Entire \`Document actions\` document type deprecated",
           "description": undefined,
           "fieldName": "_key",
           "type": "String",
         },
         Object {
+          "deprecationReason": "Entire \`Document actions\` document type deprecated",
           "description": "Current document revision",
           "fieldName": "_rev",
           "isNullable": true,
           "type": "String",
         },
         Object {
+          "deprecationReason": "Entire \`Document actions\` document type deprecated",
           "description": "Document type",
           "fieldName": "_type",
           "isNullable": true,
           "type": "String",
         },
         Object {
+          "deprecationReason": "Entire \`Document actions\` document type deprecated",
           "description": "Date the document was last modified",
           "fieldName": "_updatedAt",
           "isNullable": true,
           "type": "Datetime",
         },
         Object {
+          "deprecationReason": "Entire \`Document actions\` document type deprecated",
           "description": undefined,
           "fieldName": "title",
           "type": "String",
@@ -1270,6 +1382,9 @@ Object {
       "name": "DocumentActionsTest",
       "originalName": "documentActionsTest",
       "type": "Object",
+      Symbol(internal): Object {
+        "deprecationReason": "Entire \`Document actions\` document type deprecated",
+      },
     },
     Object {
       "fields": Array [
@@ -1435,6 +1550,7 @@ Object {
       "name": "DocumentWithCdrField",
       "originalName": "documentWithCdrField",
       "type": "Object",
+      Symbol(internal): Object {},
     },
     Object {
       "fields": Array [
@@ -1549,6 +1665,7 @@ Object {
       "name": "File",
       "originalName": "file",
       "type": "Object",
+      Symbol(internal): Object {},
     },
     Object {
       "fields": Array [
@@ -1660,6 +1777,7 @@ Object {
       "name": "Geopoint",
       "originalName": "geopoint",
       "type": "Object",
+      Symbol(internal): Object {},
     },
     Object {
       "fields": Array [
@@ -1756,6 +1874,7 @@ Object {
       "name": "HslaColor",
       "originalName": "hslaColor",
       "type": "Object",
+      Symbol(internal): Object {},
     },
     Object {
       "fields": Array [
@@ -1861,6 +1980,7 @@ Object {
       "name": "HsvaColor",
       "originalName": "hsvaColor",
       "type": "Object",
+      Symbol(internal): Object {},
     },
     Object {
       "fields": Array [
@@ -2000,6 +2120,7 @@ Object {
       "name": "Image",
       "originalName": "image",
       "type": "Object",
+      Symbol(internal): Object {},
     },
     Object {
       "fields": Array [
@@ -2120,6 +2241,7 @@ Object {
       "name": "MuxVideo",
       "originalName": "mux.video",
       "type": "Object",
+      Symbol(internal): Object {},
     },
     Object {
       "description": undefined,
@@ -2164,6 +2286,7 @@ Object {
       "name": "MuxVideoAsset",
       "originalName": "mux.videoAsset",
       "type": "Object",
+      Symbol(internal): Object {},
     },
     Object {
       "fields": Array [
@@ -2423,6 +2546,7 @@ Object {
       "name": "ObjectWithNestedArray",
       "originalName": "objectWithNestedArray",
       "type": "Object",
+      Symbol(internal): Object {},
     },
     Object {
       "fields": Array [
@@ -2582,6 +2706,7 @@ Object {
       "name": "PertEstimate",
       "originalName": "pertEstimate",
       "type": "Object",
+      Symbol(internal): Object {},
     },
     Object {
       "fields": Array [
@@ -2696,6 +2821,17 @@ Object {
           "kind": "List",
         },
         Object {
+          "deprecationReason": "This object type has been deprecated",
+          "fieldName": "someObject",
+          "type": "DeprecatedObject",
+        },
+        Object {
+          "deprecationReason": "This string type has been deprecated",
+          "description": undefined,
+          "fieldName": "someString",
+          "type": "String",
+        },
+        Object {
           "description": undefined,
           "fieldName": "title",
           "type": "String",
@@ -2708,6 +2844,7 @@ Object {
       "name": "Poppers",
       "originalName": "poppers",
       "type": "Object",
+      Symbol(internal): Object {},
     },
     Object {
       "fields": Array [
@@ -2747,6 +2884,16 @@ Object {
           "type": "DatetimeFilter",
         },
         Object {
+          "fieldName": "someObject",
+          "isReference": undefined,
+          "type": "DeprecatedObjectFilter",
+        },
+        Object {
+          "fieldName": "someString",
+          "isReference": undefined,
+          "type": "StringFilter",
+        },
+        Object {
           "fieldName": "title",
           "isReference": undefined,
           "type": "StringFilter",
@@ -2779,6 +2926,14 @@ Object {
         },
         Object {
           "fieldName": "_updatedAt",
+          "type": "SortOrder",
+        },
+        Object {
+          "fieldName": "someObject",
+          "type": "DeprecatedObjectSorting",
+        },
+        Object {
+          "fieldName": "someString",
           "type": "SortOrder",
         },
         Object {
@@ -2827,6 +2982,7 @@ Object {
       "name": "RgbaColor",
       "originalName": "rgbaColor",
       "type": "Object",
+      Symbol(internal): Object {},
     },
     Object {
       "fields": Array [
@@ -2913,6 +3069,7 @@ Object {
           "type": "String",
         },
         Object {
+          "deprecationReason": "This field is no longer used",
           "description": "A canonical name for the source this asset is originating from",
           "fieldName": "name",
           "type": "String",
@@ -2927,6 +3084,7 @@ Object {
       "name": "SanityAssetSourceData",
       "originalName": "sanity.assetSourceData",
       "type": "Object",
+      Symbol(internal): Object {},
     },
     Object {
       "fields": Array [
@@ -3095,6 +3253,7 @@ Object {
       "name": "SanityFileAsset",
       "originalName": "sanity.fileAsset",
       "type": "Object",
+      Symbol(internal): Object {},
     },
     Object {
       "fields": Array [
@@ -3403,6 +3562,7 @@ Object {
       "name": "SanityImageAsset",
       "originalName": "sanity.imageAsset",
       "type": "Object",
+      Symbol(internal): Object {},
     },
     Object {
       "fields": Array [
@@ -3648,6 +3808,7 @@ Object {
       "name": "SanityImageCrop",
       "originalName": "sanity.imageCrop",
       "type": "Object",
+      Symbol(internal): Object {},
     },
     Object {
       "fields": Array [
@@ -3748,6 +3909,7 @@ Object {
       "name": "SanityImageDimensions",
       "originalName": "sanity.imageDimensions",
       "type": "Object",
+      Symbol(internal): Object {},
     },
     Object {
       "fields": Array [
@@ -3844,6 +4006,7 @@ Object {
       "name": "SanityImageHotspot",
       "originalName": "sanity.imageHotspot",
       "type": "Object",
+      Symbol(internal): Object {},
     },
     Object {
       "fields": Array [
@@ -3961,6 +4124,7 @@ Object {
       "name": "SanityImageMetadata",
       "originalName": "sanity.imageMetadata",
       "type": "Object",
+      Symbol(internal): Object {},
     },
     Object {
       "fields": Array [
@@ -4101,6 +4265,7 @@ Object {
       "name": "SanityImagePalette",
       "originalName": "sanity.imagePalette",
       "type": "Object",
+      Symbol(internal): Object {},
     },
     Object {
       "fields": Array [
@@ -4233,6 +4398,7 @@ Object {
       "name": "SanityImagePaletteSwatch",
       "originalName": "sanity.imagePaletteSwatch",
       "type": "Object",
+      Symbol(internal): Object {},
     },
     Object {
       "fields": Array [
@@ -4323,6 +4489,7 @@ Object {
       "name": "Slug",
       "originalName": "slug",
       "type": "Object",
+      Symbol(internal): Object {},
     },
     Object {
       "fields": Array [
@@ -4411,6 +4578,7 @@ Object {
       "name": "Span",
       "originalName": "span",
       "type": "Object",
+      Symbol(internal): Object {},
     },
     Object {
       "fields": Array [
