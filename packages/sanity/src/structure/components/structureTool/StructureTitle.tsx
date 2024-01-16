@@ -1,10 +1,16 @@
 import React, {useEffect} from 'react'
 import type {ObjectSchemaType} from '@sanity/types'
 import type {Panes} from '../../structureResolvers'
+import {structureLocaleNamespace} from '../../i18n'
 import type {DocumentPaneNode} from '../../types'
 import {useStructureTool} from '../../useStructureTool'
 import {LOADING_PANE} from '../../constants'
-import {useEditState, useSchema, unstable_useValuePreview as useValuePreview} from 'sanity'
+import {
+  useEditState,
+  useSchema,
+  useTranslation,
+  unstable_useValuePreview as useValuePreview,
+} from 'sanity'
 
 interface StructureTitleProps {
   resolvedPanes: Panes['resolvedPanes']
@@ -14,6 +20,7 @@ const DocumentTitle = (props: {documentId: string; documentType: string}) => {
   const {documentId, documentType} = props
   const editState = useEditState(documentId, documentType)
   const schema = useSchema()
+  const {t} = useTranslation(structureLocaleNamespace)
   const isNewDocument = !editState?.published && !editState?.draft
   const documentValue = editState?.draft || editState?.published
   const schemaType = schema.get(documentType) as ObjectSchemaType | undefined
@@ -25,8 +32,10 @@ const DocumentTitle = (props: {documentId: string; documentType: string}) => {
   })
 
   const documentTitle = isNewDocument
-    ? `New ${schemaType?.title || schemaType?.name}`
-    : value?.title || 'Untitled'
+    ? t('browser-document-title.new-document', {
+        schemaType: schemaType?.title || schemaType?.name,
+      })
+    : value?.title || t('browser-document-title.untitled-document')
 
   const settled = editState.ready && !previewValueIsLoading
   const newTitle = useConstructDocumentTitle(documentTitle)
@@ -81,8 +90,8 @@ export const StructureTitle = (props: StructureTitleProps) => {
  *
  * @param activeTitle - Title of the first segment
  *
- * @returns A pipe delimited title in the format `${activeTitle} | %BASE_DESK_TITLE%`
- * or simply `%BASE_DESK_TITLE` if `activeTitle` is undefined.
+ * @returns A pipe delimited title in the format `${activeTitle} | %BASE_STRUCTURE_TITLE%`
+ * or simply `%BASE_STRUCTURE_TITLE` if `activeTitle` is undefined.
  */
 function useConstructDocumentTitle(activeTitle?: string) {
   const structureToolBaseTitle = useStructureTool().structureContext.title
