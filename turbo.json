@@ -17,6 +17,7 @@
       "outputs": ["lib/**", "index.js"],
       "dependsOn": ["^build"]
     },
-    "lint": {}
+    "lint": {},
+    "//#check:format": {}
   }
 }
