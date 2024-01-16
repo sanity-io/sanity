@@ -1,10 +1,23 @@
 import {defineField, defineType} from 'sanity'
 
+export const someObject = {
+  type: 'object',
+  name: 'someObject',
+  fields: [{type: 'string', name: 'foo'}],
+}
+
 export const deprecatedFields = defineType({
   name: 'deprecatedFields',
   title: 'Deprecated Fields',
   type: 'document',
   fields: [
+    defineField({
+      name: 'someObject',
+      deprecated: {
+        reason: 'This string field is deprecated',
+      },
+      type: 'someObject',
+    }),
     defineField({
       deprecated: {
         reason:
