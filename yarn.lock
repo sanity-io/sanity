@@ -3580,15 +3580,15 @@
     get-it "^8.4.4"
     rxjs "^7.0.0"
 
-"@sanity/color@3.0.0-beta.9":
-  version "3.0.0-beta.9"
-  resolved "https://registry.yarnpkg.com/@sanity/color/-/color-3.0.0-beta.9.tgz#e33a2138f71ca8cec2c264fb9ac44c680be50a9c"
-  integrity sha512-Mk7FRDtxz/U2SRlRM0BvUI62jU26W62aYsipaKFt/dk0rOyYa9yzfaojSM/QmW0E4W/nOw74RBA/HrapXUw+2Q==
-
 "@sanity/color@^2.2.5":
   version "2.2.5"
   resolved "https://registry.yarnpkg.com/@sanity/color/-/color-2.2.5.tgz#6b28578573859495ed1ffd5491322cb8e90b3e07"
   integrity sha512-tTi22KoKuER3sldXYl4c1Dq2zU7tMLDkljFiaUKVkBbu4PBvRGCFw75kXZnD2b4Bsp6vin+7sI+AKdCKRhfRuw==
+
+"@sanity/color@^3.0.0":
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/@sanity/color/-/color-3.0.0.tgz#f64897484e4a6e16a8668c5b2cfa100d68d4b4f5"
+  integrity sha512-JLIsloyyn0lhta/JivmYlxlcN7U3dpBNqtH7uAzM9/kPirFxWJ8LAVuF5vxK5JHwTNbgpVy6AmfIss/av7N96w==
 
 "@sanity/diff-match-patch@^3.0.0", "@sanity/diff-match-patch@^3.1.1":
   version "3.1.1"
@@ -3749,14 +3749,13 @@
     uuid "^9.0.1"
     zod "^3.22.4"
 
-"@sanity/presentation@1.5.3":
-  version "1.5.3"
-  resolved "https://registry.yarnpkg.com/@sanity/presentation/-/presentation-1.5.3.tgz#a144bec7911e326f61060fa5720e5302d4eff765"
-  integrity sha512-A9OiyyPXOkMk3grTtXN6YpyOJ5Gi5pFh8ZKzJ9FJNsZ/8Nv6TeMo0Uthy3s6+tyVUVaR4fQw+kIcS+MJl0kCWA==
+"@sanity/presentation@1.6.0":
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/@sanity/presentation/-/presentation-1.6.0.tgz#c31f0ba96897820d4c660a2f80a159b3cc9b077d"
+  integrity sha512-prFbEzSZ0t6MJKFPi27ZIqrN31z3A/nF2gMqFC7ewiiOf202XT6YnMlt3YkYgeElSD4sSOEh/UhkRvkTdyAO2A==
   dependencies:
     "@sanity/icons" "^2.8.0"
     "@sanity/preview-url-secret" "^1.5.2"
-    "@sanity/ui" "2.0.0-beta.17"
     "@types/lodash.isequal" "^4.5.8"
     fast-deep-equal "3.1.3"
     framer-motion "^10.18.0"
@@ -3849,18 +3848,6 @@
     segmented-property "^3.0.3"
     vite "^4.4.9"
 
-"@sanity/ui@2.0.0-beta.17":
-  version "2.0.0-beta.17"
-  resolved "https://registry.yarnpkg.com/@sanity/ui/-/ui-2.0.0-beta.17.tgz#fb912fe62c2aa4339e1d18c7e9d6a8b536356c34"
-  integrity sha512-AUFlObpuewVOKDGQutijJFn3rKtXS85Nl/MsySHwcH5rzCNojJ2/Z4DKLhl8LSXlj/+pOXVj++AFT/hhNtJ6Wg==
-  dependencies:
-    "@floating-ui/react-dom" "^2.0.4"
-    "@sanity/color" "3.0.0-beta.9"
-    "@sanity/icons" "^2.7.0"
-    csstype "^3.1.2"
-    framer-motion "^10.16.5"
-    react-refractor "^2.1.7"
-
 "@sanity/ui@^1", "@sanity/ui@^1.0.0", "@sanity/ui@^1.6.0", "@sanity/ui@^1.7.2":
   version "1.9.3"
   resolved "https://registry.yarnpkg.com/@sanity/ui/-/ui-1.9.3.tgz#4af45902ac95801aa5ea57f377beaf3e3cb36339"
@@ -3871,6 +3858,18 @@
     "@sanity/icons" "^2.4.1"
     csstype "^3.1.2"
     framer-motion "^10.16.2"
+    react-refractor "^2.1.7"
+
+"@sanity/ui@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@sanity/ui/-/ui-2.0.0.tgz#3ef9fd830b8f73398569d1634b702207d4602c05"
+  integrity sha512-y+vRMc74DnH2FH8BBqkjiDu5eGfy1CYKRzkKRepftKFDsUoJIdQeUPl3ULq+paeN4FqKJRzKT1j4++o8HwhmmQ==
+  dependencies:
+    "@floating-ui/react-dom" "^2.0.4"
+    "@sanity/color" "^3.0.0"
+    "@sanity/icons" "^2.7.0"
+    csstype "^3.1.2"
+    framer-motion "^10.16.5"
     react-refractor "^2.1.7"
 
 "@sanity/uuid@3.0.2", "@sanity/uuid@^3", "@sanity/uuid@^3.0.1", "@sanity/uuid@^3.0.2":

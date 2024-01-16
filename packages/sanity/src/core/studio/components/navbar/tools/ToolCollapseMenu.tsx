@@ -1,7 +1,6 @@
 import React, {forwardRef, useMemo, useState} from 'react'
 import {startCase} from 'lodash'
 import {Flex} from '@sanity/ui'
-import styled from 'styled-components'
 import {CollapseTabList} from '../../../../components/collapseTabList/CollapseTabList'
 import {useRovingFocus} from '../../../../components'
 import {useColorScheme} from '../../../colorScheme'
@@ -13,10 +12,6 @@ interface ToolCollapseMenuProps {
   activeToolName?: string
   tools: Tool[]
 }
-
-const CollapseTabListWrapper = styled(Flex)`
-  margin: 0 80px;
-`
 
 export function ToolCollapseMenu(props: ToolCollapseMenuProps) {
   const {activeToolName, tools} = props
@@ -70,7 +65,7 @@ export function ToolCollapseMenu(props: ToolCollapseMenuProps) {
   )
 
   return (
-    <CollapseTabListWrapper justify="center">
+    <Flex justify="center" marginX={4}>
       <CollapseTabList
         data-testid="tool-collapse-menu"
         gap={1}
@@ -79,6 +74,6 @@ export function ToolCollapseMenu(props: ToolCollapseMenuProps) {
       >
         {children}
       </CollapseTabList>
-    </CollapseTabListWrapper>
+    </Flex>
   )
 }

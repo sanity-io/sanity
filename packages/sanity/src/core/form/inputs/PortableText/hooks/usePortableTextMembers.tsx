@@ -72,11 +72,14 @@ const reconcilePortableTextMembers = ({
       if (isObjectBlock) {
         result.push({kind: 'objectBlock', member, node: member.item})
       } else {
-        // Also include regular text blocks with validation, presence or changes.
+        // Also include regular text blocks with validation, presence, changes or that are focused by the user.
+        // This is a performance optimization to avoid accounting for blocks that
+        // doesn't need to be re-rendered (which usually is most of the blocks).
         if (
           member.item.validation.length > 0 ||
           member.item.changed ||
-          member.item.presence?.length
+          member.item.presence?.length ||
+          member.item.focusPath.length > 0
         ) {
           result.push({kind: 'textBlock', member, node: member.item})
         }

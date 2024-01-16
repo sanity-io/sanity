@@ -9,14 +9,16 @@ import {
   useMediaIndex,
   TooltipDelayGroupProvider,
   Box,
+  Grid,
 } from '@sanity/ui'
-import React, {useCallback, useState, useMemo, useEffect, useRef, useContext} from 'react'
+import {useCallback, useState, useMemo, useEffect, useRef, useContext} from 'react'
 import styled from 'styled-components'
 import {isDev} from '../../../environment'
 import {useWorkspace} from '../../workspace'
 import {Button, TOOLTIP_DELAY_PROPS} from '../../../../ui-components'
 import {NavbarContext} from '../../StudioLayout'
 import {useToolMenuComponent} from '../../studio-components-hooks'
+import {useTranslation} from '../../../i18n'
 import {UserMenu} from './userMenu'
 import {NewDocumentButton, useNewDocumentOptions} from './new-document'
 import {PresenceMenu} from './presence'
@@ -28,6 +30,7 @@ import {SearchProvider} from './search/contexts/search/SearchProvider'
 import {ResourcesButton} from './resources/ResourcesButton'
 import {FreeTrial} from './free-trial'
 import {FreeTrialProvider} from './free-trial/FreeTrialProvider'
+import {HomeButton} from './home/HomeButton'
 import {SearchPopover} from './search/components/SearchPopover'
 import {RouterState, useRouterState} from 'sanity/router'
 
@@ -45,12 +48,8 @@ const RootCard = styled(Card)`
   line-height: 0;
 `
 
-// Grid container which renders our navbar in a 3-column grid.
-// Where possible, we try and ensure the center column is always centered, regardless of the
-// amount of content in both LHS and RHS columns.
-const NavGrid = styled.div`
-  display: grid;
-  grid-template-columns: minmax(max-content, 1fr) 3fr minmax(max-content, 1fr);
+const NavGrid = styled(Grid)`
+  grid-template-columns: auto auto auto;
 `
 
 /**
@@ -63,6 +62,7 @@ export function StudioNavbar() {
   const activeToolName = typeof routerState.tool === 'string' ? routerState.tool : undefined
 
   const newDocumentOptions = useNewDocumentOptions()
+  const {t} = useTranslation()
 
   const {
     onSearchFullscreenOpenChange,
@@ -157,7 +157,7 @@ export function StudioNavbar() {
           padding={3}
           sizing="border"
         >
-          <NavGrid>
+          <NavGrid gap={1}>
             {/** Left flex */}
             <TooltipDelayGroupProvider delay={TOOLTIP_DELAY_PROPS}>
               <Flex align="center" gap={2} justify="flex-start">
@@ -169,12 +169,15 @@ export function StudioNavbar() {
                       icon={MenuIcon}
                       onClick={handleOpenDrawer}
                       ref={setDrawerButtonEl}
-                      tooltipProps={{content: 'Open drawer', placement: 'right'}}
+                      tooltipProps={{content: t('user-menu.open-menu'), placement: 'bottom'}}
                     />
                   )}
 
-                  {/* Workspace menu button */}
-                  <WorkspaceMenuButton />
+                  {/* Home + workspace menu buttons */}
+                  <Flex gap={1}>
+                    <HomeButton />
+                    <WorkspaceMenuButton />
+                  </Flex>
                 </Flex>
                 {/* New document button */}
                 <NewDocumentButton
