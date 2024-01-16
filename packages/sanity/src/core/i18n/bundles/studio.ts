@@ -1614,6 +1614,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'user-menu.locale-title': 'Language',
   /** Label for tooltip to show which provider the currently logged in user is using */
   'user-menu.login-provider': 'Signed in with {{providerTitle}}',
+  /** Label for open menu button for user menu */
+  'user-menu.open-menu': 'Open menu',
   /**
    * Label for action to add a workspace (currently a developer-oriented action, as this will
    * lead to the documentation on workspace configuration)
@@ -1632,6 +1634,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'workspaces.select-workspace-aria-label': 'Select workspace',
   /** Button label for opening the workspace switcher */
   'workspaces.select-workspace-label': 'Select workspace',
+  /** Tooltip for the workspace menu */
+  'workspaces.select-workspace-tooltip': 'Select workspace',
   /** Title for Workplaces dropdown menu */
   'workspaces.title': 'Workspaces',
 })
