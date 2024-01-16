@@ -13,7 +13,7 @@ Examples
 const allowedTypes = ['incremental', 'full']
 
 interface MigrateFlags {
-  type?: 'incremental' | 'full'
+  type?: 'incremental'
 }
 
 const createMigrationCommand: CliCommandDefinition<MigrateFlags> = {
