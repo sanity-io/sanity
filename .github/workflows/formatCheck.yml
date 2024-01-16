@@ -1,6 +1,8 @@
 name: Format check
 on:
   push:
+    branches: [next]
+  pull_request:
 jobs:
   formatCheck:
     timeout-minutes: 30
