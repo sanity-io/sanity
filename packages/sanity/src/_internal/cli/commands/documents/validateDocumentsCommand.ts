@@ -1,14 +1,20 @@
+import chalk from 'chalk'
 import type {CliCommandDefinition} from '@sanity/cli'
 
-const description = `Downloads and validates all document specified in a workspace *beta*.
+const description = `Downloads and validates all document specified in a workspace (beta)${chalk.cyan(
+  '*',
+)}.
 
-Note: As it's currently in beta, some features may not be fully stable.
+${chalk.cyan('*')}Note: As it's currently in beta, some features may not be fully stable.
 We encourage users to report any issues encountered to help us improve.
 Thank you for your understanding and support!
+
+https://github.com/sanity-io/sanity/issues/5510
 `
 
 const helpText = `
 Options
+  -y, --yes Skips the first confirmation prompt
   --workspace <name> The name of the workspace to use when downloading and validating all documents
   --dataset <name> Override the dataset used. By default, this is derived from the given workspace
   --format <pretty|ndjson|json> The output format used to print the found validation markers and report progress

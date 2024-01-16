@@ -1,4 +1,5 @@
 import type {CliCommandArguments, CliCommandContext, CliOutputter} from '@sanity/cli'
+import chalk from 'chalk'
 import type {WorkerChannelReceiver} from '../../util/workerChannels'
 import type {ValidationWorkerChannel} from '../../threads/validateDocuments'
 import {validateDocuments} from './validateDocuments'
@@ -10,6 +11,8 @@ interface ValidateFlags {
   dataset?: string
   level?: 'error' | 'warning' | 'info'
   'max-custom-validation-concurrency'?: number
+  yes?: boolean
+  y?: boolean
 }
 
 export type BuiltInValidationReporter = (options: {
@@ -20,9 +23,49 @@ export type BuiltInValidationReporter = (options: {
 
 export default async function validateAction(
   args: CliCommandArguments<ValidateFlags>,
-  {apiClient, workDir, output}: CliCommandContext,
+  {apiClient, workDir, output, prompt}: CliCommandContext,
 ): Promise<void> {
   const flags = args.extOptions
+  const unattendedMode = Boolean(flags.yes || flags.y)
+
+  if (!unattendedMode) {
+    output.print(
+      `${chalk.yellow(`⚠ Warning:`)} This command downloads all documents from a ` +
+        `dataset and processes them through your local schema within a ` +
+        `simulated browser environment.\n`,
+    )
+    output.print(`Potential pitfalls:\n`)
+    output.print(
+      `- Downloads all documents locally (excluding assets). Large datasets may require more resources.`,
+    )
+    output.print(
+      `- Executes all custom validation functions. Some functions may need to be refactored for compatibility.`,
+    )
+    output.print(
+      `- Not all standard browser features are available and may cause issues while loading your Studio.`,
+    )
+    output.print(
+      `- Adheres to document permissions. Ensure this account can see all desired documents.`,
+    )
+    output.print()
+    output.print(
+      "Note: As it's currently in beta, we encourage users to report any issues encountered here:\n",
+    )
+    output.print('    https://github.com/sanity-io/sanity/issues/5510')
+    output.print()
+
+    const confirmed = await prompt.single<boolean>({
+      type: 'confirm',
+      message: `Are you sure you want to continue?`,
+      default: true,
+    })
+
+    if (!confirmed) {
+      output.print('User aborted')
+      process.exitCode = 1
+      return
+    }
+  }
 
   if (flags.format && !(flags.format in reporters)) {
     const formatter = new Intl.ListFormat('en-US', {
