@@ -1082,13 +1082,13 @@
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
 "@bjoerge/mutiny@^0.5.1":
-  version "0.5.1"
-  resolved "https://registry.yarnpkg.com/@bjoerge/mutiny/-/mutiny-0.5.1.tgz#0bb418a41af89ce768e9d52b1179814db187dee7"
-  integrity sha512-v1LSnuQE9rk/zENf05eTLeFs7n2MC/IjXHPLMdwXNeFLaZWJtyToopkxxXPLlOot0zkbYKHZ5ATO0i7A18Q5ng==
+  version "0.5.3"
+  resolved "https://registry.yarnpkg.com/@bjoerge/mutiny/-/mutiny-0.5.3.tgz#943e4fb2688a9da87690919a7354ca09c5df7a3a"
+  integrity sha512-QBEeUmc5K6kzut0uurwBtJhJW2fc/KEdKhST2/71Ln6V3j4b4qzK1/OeDsUHAt/RM2Dxe5TjWNn82r6WzmrAIQ==
   dependencies:
     diff-match-patch "^1.0.5"
     hotscript "^1.0.13"
-    nanoid "^5.0.2"
+    nanoid "^5.0.4"
 
 "@codemirror/autocomplete@^6.0.0", "@codemirror/autocomplete@^6.1.0":
   version "6.9.1"
@@ -11861,7 +11861,7 @@ nanoid@^3.1.12, nanoid@^3.1.30, nanoid@^3.3.6:
   resolved "https://registry.yarnpkg.com/nanoid/-/nanoid-3.3.6.tgz#443380c856d6e9f9824267d960b4236ad583ea4c"
   integrity sha512-BGcqMMJuToF7i1rt+2PWSNVnWIkGCU78jBG3RxO/bZlnZPK2Cmi2QaffxGO/2RvWi9sL+FAiRiXMgsyxQ1DIDA==
 
-nanoid@^5.0.2:
+nanoid@^5.0.4:
   version "5.0.4"
   resolved "https://registry.yarnpkg.com/nanoid/-/nanoid-5.0.4.tgz#d2b608d8169d7da669279127615535705aa52edf"
   integrity sha512-vAjmBf13gsmhXSgBrtIclinISzFFy22WwCYoyilZlsrRXNIHSwgFQ1bEdjRwMT3aoadeIF6HMuDRlOxzfXV8ig==
@@ -15622,11 +15622,6 @@ type-fest@^4.2.0:
   version "4.5.0"
   resolved "https://registry.yarnpkg.com/type-fest/-/type-fest-4.5.0.tgz#79208f4dbb8a9946a55889e9f482b95a3292ee41"
   integrity sha512-diLQivFzddJl4ylL3jxSkEc39Tpw7o1QeEHIPxVwryDK2lpB7Nqhzhuo6v5/Ls08Z0yPSAhsyAWlv1/H0ciNmw==
-
-type-fest@^4.9.0:
-  version "4.9.0"
-  resolved "https://registry.yarnpkg.com/type-fest/-/type-fest-4.9.0.tgz#d29c8efe5b1e703feeb29cef23d887b2f479844d"
-  integrity sha512-KS/6lh/ynPGiHD/LnAobrEFq3Ad4pBzOlJ1wAnJx9N4EYoqFhMfLIBjUT2UEx4wg5ZE+cC1ob6DCSpppVo+rtg==
 
 type-is@~1.6.18:
   version "1.6.18"
