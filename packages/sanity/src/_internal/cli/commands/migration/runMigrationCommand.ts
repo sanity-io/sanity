@@ -67,7 +67,7 @@ const createMigrationCommand: CliCommandDefinition<CreateFlags> = {
       })
     }
 
-    const candidates = await resolveMigrationScript(workDir, migrationName)
+    const candidates = resolveMigrationScript(workDir, migrationName)
 
     const resolvedScripts = candidates.filter((candidate) => candidate!.mod?.default)
 
