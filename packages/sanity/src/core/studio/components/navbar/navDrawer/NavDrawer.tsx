@@ -14,7 +14,7 @@ import {useColorSchemeSetValue} from '../../../colorScheme'
 import {useTranslation} from '../../../../i18n'
 import {HomeButton} from '../home/HomeButton'
 import {WorkspaceMenuButton} from '../workspace'
-import {AppearanceMenu} from './ApperaranceMenu'
+import {AppearanceMenu} from './ApperanceMenu'
 import {LocaleMenu} from './LocaleMenu'
 import {ManageMenu} from './ManageMenu'
 
