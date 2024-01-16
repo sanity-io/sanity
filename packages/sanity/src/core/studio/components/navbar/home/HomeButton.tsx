@@ -23,6 +23,7 @@ const StyledCard = styled(Card)(({theme}) => {
   const {base} = theme.sanity.color
   return css`
     border-radius: ${rem(theme.sanity.radius[RADIUS])};
+    display: flex;
     outline: none;
     text-decoration: none;
     &:focus-visible {
