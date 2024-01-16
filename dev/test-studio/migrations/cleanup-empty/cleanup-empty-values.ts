@@ -1,22 +1,25 @@
 /* eslint-disable consistent-return */
 import {unset} from '@sanity/migrate/mutations'
-import {defineNodeMigration} from '@sanity/migrate'
+import {defineMigration} from '@sanity/migrate'
 
-export default defineNodeMigration({
+export default defineMigration({
   name: 'Cleanup empty values',
-  object(node) {
-    if (Object.keys(node).filter((k) => !k.startsWith('_')).length) {
-      return unset()
-    }
-  },
-  array(node) {
-    if (node.length === 0) {
-      return unset()
-    }
-  },
-  string(node) {
-    if (node.length === 0) {
-      return unset()
-    }
+  documentType: 'species',
+  migrate: {
+    object(node) {
+      if (Object.keys(node).filter((k) => !k.startsWith('_')).length) {
+        return unset()
+      }
+    },
+    array(node) {
+      if (node.length === 0) {
+        return unset()
+      }
+    },
+    string(node) {
+      if (node.length === 0) {
+        return unset()
+      }
+    },
   },
 })
