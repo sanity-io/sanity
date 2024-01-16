@@ -46,7 +46,7 @@ export function WorkspaceMenuButton() {
     <MenuButton
       button={
         <Flex>
-          <Tooltip content={t('workspaces.select-workspace-aria-label')} disabled={disabled} portal>
+          <Tooltip content={t('workspaces.select-workspace-tooltip')} disabled={disabled} portal>
             <UIButton disabled={disabled} mode="bleed" padding={2} width="fill">
               <Flex align="center" gap={2}>
                 <Box>

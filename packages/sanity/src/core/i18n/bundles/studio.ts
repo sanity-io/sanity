@@ -1634,6 +1634,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'workspaces.select-workspace-aria-label': 'Select workspace',
   /** Button label for opening the workspace switcher */
   'workspaces.select-workspace-label': 'Select workspace',
+  /** Tooltip for the workspace menu */
+  'workspaces.select-workspace-tooltip': 'Select workspace',
   /** Title for Workplaces dropdown menu */
   'workspaces.title': 'Workspaces',
 })
