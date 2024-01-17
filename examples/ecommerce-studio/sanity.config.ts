@@ -1,6 +1,6 @@
 import {defineConfig} from 'sanity'
 import {structureTool} from 'sanity/structure'
-import {schemaTypes} from '../../packages/@sanity/cli/templates/ecommerce/schemas'
+import {schemaTypes} from '../../packages/@sanity/cli/templates/ecommerce/schemaTypes'
 import {barcodeInput} from './plugins/barcode-input'
 
 export default defineConfig({

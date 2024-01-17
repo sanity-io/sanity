@@ -10,7 +10,7 @@ If you're building a headless storefront, you may want to check out our [starter
 
 ## Features
 
-This studio comes preconfigured with Shopify-friendly content schemas and a whole host of customizations to make managing Shopify data in your Sanity studio easier. It also comes bundled with our [Shopify asset plugin](https://github.com/sanity-io/sanity-plugin-shopify-assets), which enables you to choose assets from your Shopify store in your Sanity Studio.
+This studio comes preconfigured with Shopify-friendly content schema types and a whole host of customizations to make managing Shopify data in your Sanity studio easier. It also comes bundled with our [Shopify asset plugin](https://github.com/sanity-io/sanity-plugin-shopify-assets), which enables you to choose assets from your Shopify store in your Sanity Studio.
 
 Once you have sync'd content to your Shopify store, you can follow our documentation on how to [display content in Liquid](https://www.sanity.io/docs/displaying-sanity-content-in-liquid).
 

@@ -4,7 +4,7 @@ const configTemplate = `
 import {defineConfig, isDev} from 'sanity'
 
 import {structureTool} from 'sanity/structure'
-import {schemaTypes} from './schemas'
+import {schemaTypes} from './schemaTypes'
 import {structure} from './structure'
 
 import {visionTool} from '@sanity/vision'
