@@ -58,7 +58,7 @@ export function useGrantsStore(): GrantsStore {
       resourceCache.get<GrantsStore>({
         namespace: 'grantsStore',
         dependencies: [client, currentUser],
-      }) || createGrantsStore({client, currentUser})
+      }) || createGrantsStore({client, userId: currentUser?.id || null})
 
     resourceCache.set({
       namespace: 'grantsStore',

@@ -1,4 +1,4 @@
-export * from './use-mention-options'
+export * from './useMentionOptions'
 export * from './useCommentOperations'
 export * from './useComments'
 export * from './useCommentsSetup'
