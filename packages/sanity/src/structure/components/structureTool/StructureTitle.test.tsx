@@ -121,8 +121,11 @@ describe('StructureTitle', () => {
     it('should not update the when the document is still loading', () => {
       const useEditStateMock = () => ({...editState, ready: false})
       const useValuePreviewMock = () => valuePreview
+      const useTranslationMock = () =>
+        ({t: () => 'My title'}) as SANITY.UseTranslationResponse<string, string>
       jest.spyOn(SANITY, 'useSchema').mockImplementationOnce(useSchemaMock)
       jest.spyOn(SANITY, 'useEditState').mockImplementationOnce(useEditStateMock)
+      jest.spyOn(SANITY, 'useTranslation').mockImplementationOnce(useTranslationMock)
       jest.spyOn(SANITY, 'unstable_useValuePreview').mockImplementationOnce(useValuePreviewMock)
 
       document.title = 'Sanity Studio'
@@ -133,8 +136,11 @@ describe('StructureTitle', () => {
     it('renders the correct title when the document pane has a title', () => {
       const useEditStateMock = () => editState
       const useValuePreviewMock = () => valuePreview
+      const useTranslationMock = () =>
+        ({t: () => 'My title'}) as SANITY.UseTranslationResponse<string, string>
       jest.spyOn(SANITY, 'useSchema').mockImplementationOnce(useSchemaMock)
       jest.spyOn(SANITY, 'useEditState').mockImplementationOnce(useEditStateMock)
+      jest.spyOn(SANITY, 'useTranslation').mockImplementationOnce(useTranslationMock)
       jest.spyOn(SANITY, 'unstable_useValuePreview').mockImplementationOnce(useValuePreviewMock)
 
       document.title = 'Sanity Studio'
@@ -144,8 +150,17 @@ describe('StructureTitle', () => {
     it('renders the correct title when the document is new', () => {
       const useEditStateMock = () => ({...editState, draft: null})
       const useValuePreviewMock = () => valuePreview
+      const useTranslationMock = () =>
+        ({
+          t: (key: string, values: Record<string, string>) => {
+            expect(key).toBe('browser-document-title.new-document')
+            expect(values).toHaveProperty('schemaType', 'Author')
+            return `New ${values.schemaType}`
+          },
+        }) as SANITY.UseTranslationResponse<string, string>
       jest.spyOn(SANITY, 'useSchema').mockImplementationOnce(useSchemaMock)
       jest.spyOn(SANITY, 'useEditState').mockImplementationOnce(useEditStateMock)
+      jest.spyOn(SANITY, 'useTranslation').mockImplementationOnce(useTranslationMock)
       jest.spyOn(SANITY, 'unstable_useValuePreview').mockImplementationOnce(useValuePreviewMock)
 
       document.title = 'Sanity Studio'
@@ -158,13 +173,16 @@ describe('StructureTitle', () => {
         isLoading: false,
         value: {title: ''},
       })
-      jest.spyOn(SANITY, 'useSchema').mockImplementationOnce(useSchemaMock)
-      jest.spyOn(SANITY, 'useEditState').mockImplementationOnce(useEditStateMock)
-      jest.spyOn(SANITY, 'unstable_useValuePreview').mockImplementationOnce(useValuePreviewMock)
+      const tMock = jest.fn().mockReturnValue('Untitled')
+      jest.spyOn(SANITY, 'useSchema').mockImplementation(useSchemaMock)
+      jest.spyOn(SANITY, 'useEditState').mockImplementation(useEditStateMock)
+      jest.spyOn(SANITY, 'useTranslation').mockImplementation(jest.fn().mockReturnValue({t: tMock}))
+      jest.spyOn(SANITY, 'unstable_useValuePreview').mockImplementation(useValuePreviewMock)
 
       document.title = 'Sanity Studio'
       render(<StructureTitle resolvedPanes={mockPanes} />)
       expect(document.title).toBe('Untitled | My Structure Tool')
+      expect(tMock).toHaveBeenCalledWith('browser-document-title.untitled-document')
     })
   })
 })
