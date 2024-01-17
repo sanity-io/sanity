@@ -1,19 +1,12 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import styled, {css} from 'styled-components'
-import {
-  Box,
-  Card,
-  Flex,
-  TooltipDelayGroupProvider,
-  TooltipDelayGroupProviderProps,
-} from '@sanity/ui'
+import {Box, Card, Flex} from '@sanity/ui'
 import {FieldPresence, FormNodePresence} from '../../../presence'
 import {DocumentFieldActionNode} from '../../../config'
 import {calcAvatarStackWidth} from '../../../presence/utils'
 import {FieldActionMenu} from '../../field'
 import {FieldCommentsProps} from '../../types'
-
-const TOOLTIP_GROUP_DELAY: TooltipDelayGroupProviderProps['delay'] = {open: 500}
+import {TooltipDelayGroupProvider} from '../../../../ui-components'
 
 const Root = styled(Flex)<{
   $floatingCardWidth: number
@@ -256,7 +249,7 @@ export function FormFieldBaseHeader(props: FormFieldBaseHeaderProps) {
       {slotEl}
 
       {(hasCommentsButtonOrActions || hasComments) && (
-        <TooltipDelayGroupProvider delay={TOOLTIP_GROUP_DELAY}>
+        <TooltipDelayGroupProvider>
           <FieldActionsFloatingCard
             data-actions-visible={showFieldActions ? 'true' : 'false'}
             data-has-actions={hasActions ? 'true' : 'false'}

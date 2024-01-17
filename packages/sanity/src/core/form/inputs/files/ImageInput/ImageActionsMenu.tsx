@@ -1,14 +1,8 @@
 import React, {MouseEventHandler, ReactNode, useCallback, useEffect, useState} from 'react'
 import {CropIcon} from '@sanity/icons'
-import {
-  Inline,
-  Menu,
-  TooltipDelayGroupProvider,
-  useClickOutside,
-  useGlobalKeyDown,
-} from '@sanity/ui'
+import {Inline, Menu, useClickOutside, useGlobalKeyDown} from '@sanity/ui'
 import styled from 'styled-components'
-import {Button, Popover, TOOLTIP_DELAY_PROPS} from '../../../../../ui-components'
+import {Button, Popover, TooltipDelayGroupProvider} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
 import {ContextMenuButton} from '../../../../components/contextMenuButton'
 
@@ -90,7 +84,7 @@ export function ImageActionsMenu(props: ImageActionsMenuProps) {
 
   const {t} = useTranslation()
   return (
-    <TooltipDelayGroupProvider delay={TOOLTIP_DELAY_PROPS}>
+    <TooltipDelayGroupProvider>
       <MenuActionsWrapper data-buttons space={1} padding={2}>
         {showEdit && (
           <Button

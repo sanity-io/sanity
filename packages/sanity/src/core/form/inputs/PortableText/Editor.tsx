@@ -12,15 +12,9 @@ import {
   type RenderStyleFunction,
 } from '@sanity/portable-text-editor'
 import type {Path} from '@sanity/types'
-import {
-  BoundaryElementProvider,
-  TooltipDelayGroupProvider,
-  useBoundaryElement,
-  useGlobalKeyDown,
-  useLayer,
-} from '@sanity/ui'
+import {BoundaryElementProvider, useBoundaryElement, useGlobalKeyDown, useLayer} from '@sanity/ui'
 import React, {useCallback, useMemo, useRef} from 'react'
-import {TOOLTIP_DELAY_PROPS} from '../../../../ui-components'
+import {TooltipDelayGroupProvider} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'
 import {Toolbar} from './toolbar'
 import {Decorator} from './text'
@@ -170,7 +164,7 @@ export function Editor(props: EditorProps) {
   return (
     <Root $fullscreen={isFullscreen} data-testid="pt-editor">
       {isActive && (
-        <TooltipDelayGroupProvider delay={TOOLTIP_DELAY_PROPS}>
+        <TooltipDelayGroupProvider>
           <ToolbarCard data-testid="pt-editor__toolbar-card" shadow={1}>
             <Toolbar
               hotkeys={hotkeys}

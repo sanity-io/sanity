@@ -286,6 +286,8 @@ const config = {
                   'TabProps',
                   'Tooltip',
                   'TooltipProps',
+                  'TooltipDelayGroupProvider',
+                  'TooltipDelayGroupProviderProps',
                 ],
                 message:
                   'Please use the (more opinionated) exported components in sanity/src/ui-components instead.',

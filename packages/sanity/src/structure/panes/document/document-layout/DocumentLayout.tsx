@@ -1,11 +1,4 @@
-import {
-  useElementRect,
-  DialogProvider,
-  Flex,
-  PortalProvider,
-  DialogProviderProps,
-  TooltipDelayGroupProvider,
-} from '@sanity/ui'
+import {useElementRect, DialogProvider, Flex, PortalProvider, DialogProviderProps} from '@sanity/ui'
 import {useState, useCallback, useMemo} from 'react'
 import {useTranslation} from 'react-i18next'
 import {Path} from 'sanity-diff-patch'
@@ -28,7 +21,7 @@ import {useDocumentPane} from '../useDocumentPane'
 import {DocumentPanelHeader} from '../documentPanel/header'
 import {DocumentInspectorMenuItemsResolver} from '../DocumentInspectorMenuItemsResolver'
 import {usePreviewUrl} from '../usePreviewUrl'
-import {TOOLTIP_DELAY_PROPS} from '../../../../ui-components'
+import {TooltipDelayGroupProvider} from '../../../../ui-components'
 import {getMenuItems} from '../menuItems'
 import {DocumentLayoutError} from './DocumentLayoutError'
 import {
@@ -221,7 +214,7 @@ export function DocumentLayout() {
           >
             <DialogProvider position={DIALOG_PROVIDER_POSITION} zOffset={zOffsets.portal}>
               <PaneFooter ref={setFooterElement}>
-                <TooltipDelayGroupProvider delay={TOOLTIP_DELAY_PROPS}>
+                <TooltipDelayGroupProvider>
                   <DocumentStatusBar actionsBoxRef={setActionsBoxElement} />
                 </TooltipDelayGroupProvider>
               </PaneFooter>

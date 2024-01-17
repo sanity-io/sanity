@@ -1,5 +1,5 @@
 import {ArrowLeftIcon, CloseIcon, SplitVerticalIcon} from '@sanity/icons'
-import {Flex, TooltipDelayGroupProvider} from '@sanity/ui'
+import {Flex} from '@sanity/ui'
 import React, {createElement, memo, forwardRef, useMemo} from 'react'
 import {
   PaneContextMenuButton,
@@ -13,7 +13,7 @@ import {useDocumentPane} from '../../useDocumentPane'
 import {isMenuNodeButton, isNotMenuNodeButton, resolveMenuNodes} from '../../../../menuNodes'
 import {useStructureTool} from '../../../../useStructureTool'
 import {PaneMenuItem} from '../../../../types'
-import {Button, TOOLTIP_DELAY_PROPS} from '../../../../../ui-components'
+import {Button, TooltipDelayGroupProvider} from '../../../../../ui-components'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {DocumentHeaderTabs} from './DocumentHeaderTabs'
 import {DocumentHeaderTitle} from './DocumentHeaderTitle'
@@ -84,7 +84,7 @@ export const DocumentPanelHeader = memo(
     const {t} = useTranslation(structureLocaleNamespace)
 
     return (
-      <TooltipDelayGroupProvider delay={TOOLTIP_DELAY_PROPS}>
+      <TooltipDelayGroupProvider>
         <PaneHeader
           border
           ref={ref}

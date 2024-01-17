@@ -7,7 +7,6 @@ import {
   LayerProvider,
   PortalProvider,
   useMediaIndex,
-  TooltipDelayGroupProvider,
   Box,
   Grid,
 } from '@sanity/ui'
@@ -15,7 +14,7 @@ import {useCallback, useState, useMemo, useEffect, useRef, useContext} from 'rea
 import styled from 'styled-components'
 import {isDev} from '../../../environment'
 import {useWorkspace} from '../../workspace'
-import {Button, TOOLTIP_DELAY_PROPS} from '../../../../ui-components'
+import {Button, TooltipDelayGroupProvider} from '../../../../ui-components'
 import {NavbarContext} from '../../StudioLayout'
 import {useToolMenuComponent} from '../../studio-components-hooks'
 import {useTranslation} from '../../../i18n'
@@ -159,7 +158,7 @@ export function StudioNavbar() {
         >
           <NavGrid gap={1}>
             {/** Left flex */}
-            <TooltipDelayGroupProvider delay={TOOLTIP_DELAY_PROPS}>
+            <TooltipDelayGroupProvider>
               <Flex align="center" gap={2} justify="flex-start">
                 <Flex align="center" gap={2}>
                   {/* Menu button */}
@@ -205,7 +204,7 @@ export function StudioNavbar() {
             </Flex>
 
             {/** Right flex */}
-            <TooltipDelayGroupProvider delay={TOOLTIP_DELAY_PROPS}>
+            <TooltipDelayGroupProvider>
               <Flex align="center" gap={1} justify="flex-end">
                 <Flex gap={1}>
                   {/* Search */}

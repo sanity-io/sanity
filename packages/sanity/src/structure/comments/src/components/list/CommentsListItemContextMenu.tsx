@@ -1,13 +1,13 @@
 import React from 'react'
 import {CheckmarkCircleIcon, UndoIcon, EditIcon, TrashIcon, LinkIcon} from '@sanity/icons'
-import {Card, Flex, Menu, MenuDivider, TooltipDelayGroupProvider} from '@sanity/ui'
+import {Card, Flex, Menu, MenuDivider} from '@sanity/ui'
 import styled from 'styled-components'
 import {
   Button,
   MenuButton,
   MenuButtonProps,
   MenuItem,
-  TOOLTIP_DELAY_PROPS,
+  TooltipDelayGroupProvider,
 } from '../../../../../ui-components'
 import {CommentStatus} from '../../types'
 import {ContextMenuButton} from 'sanity'
@@ -54,7 +54,7 @@ export function CommentsListItemContextMenu(props: CommentsListItemContextMenuPr
   const showMenuButton = Boolean(onCopyLink || onDeleteStart || onEditStart)
 
   return (
-    <TooltipDelayGroupProvider delay={TOOLTIP_DELAY_PROPS}>
+    <TooltipDelayGroupProvider>
       <Flex>
         <FloatingCard display="flex" shadow={2} padding={1} radius={2} sizing="border">
           {isParent && (

@@ -1,10 +1,10 @@
 import React, {useCallback} from 'react'
-import {Flex, MenuDivider, Box, Card, Stack, TooltipDelayGroupProvider} from '@sanity/ui'
+import {Flex, MenuDivider, Box, Card, Stack} from '@sanity/ui'
 import styled, {css} from 'styled-components'
 import {CurrentUser} from '@sanity/types'
 import {MentionIcon, SendIcon} from '../../icons'
 import {CommentsAvatar} from '../../avatars/CommentsAvatar'
-import {Button, TOOLTIP_DELAY_PROPS} from '../../../../../../ui-components'
+import {Button, TooltipDelayGroupProvider} from '../../../../../../ui-components'
 import {useCommentInput} from './useCommentInput'
 import {Editable} from './Editable'
 import {useUser} from 'sanity'
@@ -119,7 +119,7 @@ export function CommentInputInner(props: CommentInputInnerProps) {
           </EditableWrap>
 
           <Flex align="center" data-ui="CommentInputActions" gap={1} justify="flex-end" padding={1}>
-            <TooltipDelayGroupProvider delay={TOOLTIP_DELAY_PROPS}>
+            <TooltipDelayGroupProvider>
               <Button
                 aria-label="Mention user"
                 data-testid="comment-mention-button"
