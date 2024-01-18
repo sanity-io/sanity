@@ -110,6 +110,28 @@
       "import": "./lib/structure.esm.js",
       "default": "./lib/structure.esm.js"
     },
+    "./migrate": {
+      "types": "./lib/exports/migrate.d.ts",
+      "source": "./exports/migrate.ts",
+      "require": "./lib/migrate.js",
+      "node": {
+        "module": "./lib/migrate.esm.js",
+        "import": "./lib/migrate.cjs.mjs"
+      },
+      "import": "./lib/migrate.esm.js",
+      "default": "./lib/migrate.esm.js"
+    },
+    "./migrate/mutations": {
+      "types": "./lib/exports/migrate-mutations.d.ts",
+      "source": "./exports/migrate-mutations.ts",
+      "require": "./lib/migrate-mutations.js",
+      "node": {
+        "module": "./lib/migrate-mutations.esm.js",
+        "import": "./lib/migrate-mutations.cjs.mjs"
+      },
+      "import": "./lib/migrate-mutations.esm.js",
+      "default": "./lib/migrate-mutations.esm.js"
+    },
     "./package.json": "./package.json"
   },
   "main": "./lib/index.js",
@@ -129,6 +151,12 @@
       ],
       "presentation": [
         "./lib/exports/presentation.d.ts"
+      ],
+      "migrate": [
+        "./lib/exports/migrate.d.ts"
+      ],
+      "migrate/mutations": [
+        "./lib/exports/migrate-mutations.d.ts"
       ],
       "router": [
         "./lib/exports/router.d.ts"
