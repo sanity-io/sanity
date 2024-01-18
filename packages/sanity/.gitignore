@@ -19,6 +19,8 @@
 /presentation.js
 /router.js
 /structure.js
+/migrate.js
+/migrate/mutations.js
 
 # Playwright-ct artifacts
 /playwright-ct/report
