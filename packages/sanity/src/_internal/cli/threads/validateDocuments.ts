@@ -265,7 +265,7 @@ async function checkReferenceExistence({
     },
     Array.from<string[]>({
       length: Math.ceil(idsToCheck.length / REFERENCE_INTEGRITY_BATCH_SIZE),
-    }).fill([]),
+    }).map(() => []),
   )
 
   for (const batch of batches) {
