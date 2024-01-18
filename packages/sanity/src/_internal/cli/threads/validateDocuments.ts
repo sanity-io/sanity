@@ -50,6 +50,7 @@ export type ValidationWorkerChannel = WorkerChannel<{
   }>
   loadedDocumentCount: WorkerChannelEvent<{documentCount: number}>
   exportProgress: WorkerChannelStream<{downloadedCount: number; documentCount: number}>
+  exportFinished: WorkerChannelEvent<{totalDocumentsToValidate: number}>
   loadedReferenceIntegrity: WorkerChannelEvent
   validation: WorkerChannelStream<{
     validatedCount: number
@@ -223,6 +224,8 @@ async function downloadDocuments(client: SanityClient) {
   await new Promise<void>((resolve, reject) =>
     outputStream.close((err) => (err ? reject(err) : resolve())),
   )
+
+  report.event.exportFinished({totalDocumentsToValidate: documentIds.size})
 
   async function* getDocuments() {
     const rl = readline.createInterface({input: fs.createReadStream(tempOutputFile)})
