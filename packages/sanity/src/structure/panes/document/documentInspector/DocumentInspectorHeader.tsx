@@ -3,6 +3,8 @@ import {Box, Card, CardProps, Flex, Text} from '@sanity/ui'
 import React, {HTMLProps, ReactNode} from 'react'
 import styled from 'styled-components'
 import {Button} from '../../../../ui-components'
+import {structureLocaleNamespace} from '../../../i18n'
+import {useTranslation} from 'sanity'
 
 export interface DocumentInspectorHeaderProps {
   as?: CardProps['as']
@@ -23,6 +25,7 @@ export function DocumentInspectorHeader(
   props: DocumentInspectorHeaderProps & Omit<HTMLProps<HTMLDivElement>, 'as' | 'height' | 'ref'>,
 ) {
   const {as: forwardedAs, children, closeButtonLabel, onClose, title, ...restProps} = props
+  const {t} = useTranslation(structureLocaleNamespace)
 
   return (
     <Root {...restProps} as={forwardedAs}>
@@ -38,7 +41,7 @@ export function DocumentInspectorHeader(
             icon={CloseIcon}
             mode="bleed"
             onClick={onClose}
-            tooltipProps={{content: 'Close'}}
+            tooltipProps={{content: t('buttons.close.tooltip')}}
           />
         </Box>
       </Flex>
