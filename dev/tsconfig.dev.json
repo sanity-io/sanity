@@ -11,6 +11,8 @@
       "@sanity/mutator": ["./packages/@sanity/mutator/src"],
       "@sanity/util/fs": ["./packages/@sanity/util/exports/fs.ts"],
       "sanity/_internal": ["./packages/sanity/exports/_internal.ts"],
+      "sanity/migrate": ["./packages/sanity/exports/migrate.ts"],
+      "sanity/migrate/mutations": ["./packages/sanity/exports/migrate-mutations.ts"],
       "sanity/cli": ["./packages/sanity/exports/cli.ts"]
     }
   }

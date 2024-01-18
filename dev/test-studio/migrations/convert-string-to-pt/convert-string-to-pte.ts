@@ -1,7 +1,7 @@
 /* eslint-disable consistent-return */
-import {set} from 'sanity'
 import {isEqual} from 'lodash'
-import {defineMigration} from '@sanity/migrate'
+import {defineMigration} from 'sanity/migrate'
+import {set} from 'sanity/migrate/mutations'
 
 export default defineMigration({
   name: 'Convert string to PortableText at `some.path` in documents of type `someType`',
