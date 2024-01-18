@@ -13,7 +13,7 @@ import {createBroadcastChannel} from './createBroadcastChannel'
 import {getSessionId} from './sessionId'
 import * as storage from './storage'
 import {createLoginComponent} from './createLoginComponent'
-import {isRecord} from '../../../util'
+import {isCookielessCompatibleLoginMethod} from './utils/asserters'
 
 /** @internal */
 export interface AuthStoreOptions extends AuthConfig {
@@ -135,7 +135,9 @@ export function _createAuthStore({
   // // emitting `state$` until the session ID has been converted to a token
   // const firstMessage = messages.pipe(first())
 
-  const token$ = messages.pipe(startWith(loginMethod === 'dual' ? getToken(projectId) : null))
+  const token$ = messages.pipe(
+    startWith(isCookielessCompatibleLoginMethod(loginMethod) ? getToken(projectId) : null),
+  )
 
   // Allow configuration of `apiHost` through source configuration
   const hostOptions: {apiHost?: string} = {}
@@ -282,20 +284,3 @@ function hash(value: unknown): string {
  * @internal
  */
 export const createAuthStore = memoize(_createAuthStore, hash)
-
-/**
- * Duck-type check for whether or not this looks like an auth store
- *
- * @param maybeStore - Item to check if matches the AuthStore interface
- * @returns True if auth store, false otherwise
- * @internal
- */
-export function isAuthStore(maybeStore: unknown): maybeStore is AuthStore {
-  return (
-    isRecord(maybeStore) &&
-    'state' in maybeStore &&
-    isRecord(maybeStore.state) &&
-    'subscribe' in maybeStore.state &&
-    typeof maybeStore.state.subscribe === 'function'
-  )
-}
