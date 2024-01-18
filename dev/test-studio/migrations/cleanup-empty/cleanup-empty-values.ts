@@ -1,6 +1,6 @@
 /* eslint-disable consistent-return */
-import {unset} from '@sanity/migrate/mutations'
-import {defineMigration} from '@sanity/migrate'
+import {defineMigration} from 'sanity/migrate'
+import {unset} from 'sanity/migrate/mutations'
 
 export default defineMigration({
   name: 'Cleanup empty values',

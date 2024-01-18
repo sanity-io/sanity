@@ -1,29 +1,31 @@
 export const stringToPTE = `
-import {defineNodeMigration} from '@sanity/migrate'
-import {patch, at, set, unset} from '@sanity/migrate/mutations'
+import {defineMigration} from 'sanity/migrate'
+import {patch, at, set, unset} from 'sanity/mutations'
 
 const targetPath = parsePath('%targetPath%')
 
-export default defineNodeMigration({
+export default defineMigration({
   name: '%migrationName%',
   type: '%type%',
-  string(node, path, ctx) {
-    if (isEqual(path, targetPath)) {
-      return set([
-        {
-          style: 'normal',
-          _type: 'block',
-          children: [
-            {
-              _type: 'span',
-              marks: [],
-              text: node,
-            },
-          ],
-          markDefs: [],
-        },
-      ])
-    }
+  migrate: {
+    string(node, path, ctx) {
+      if (isEqual(path, targetPath)) {
+        return set([
+          {
+            style: 'normal',
+            _type: 'block',
+            children: [
+              {
+                _type: 'span',
+                marks: [],
+                text: node,
+              },
+            ],
+            markDefs: [],
+          },
+        ])
+      }
+    },
   },
 })
 `

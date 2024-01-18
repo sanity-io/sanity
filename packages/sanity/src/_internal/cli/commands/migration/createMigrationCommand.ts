@@ -7,34 +7,38 @@ import {MIGRATIONS_DIRECTORY} from './constants'
 import {renameField} from './templates/renameField'
 import {substituteTemplateVariables} from './utils/substituteVariables'
 import {stringToPTE} from './templates/stringToPTE'
+import {cleanSimple} from './templates/clean-simple'
+import {cleanAdvanced} from './templates/clean-advanced'
 
 const helpText = `
-Options
-  --type <type> Type of migration (incremental/full)
-
 Examples
   sanity migration create
   sanity migration create <name>
-  sanity migration create <name> --type incremental
 `
 
-interface MigrateFlags {
-  type?: 'incremental'
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+interface CreateMigrationFlags {
+  // todo
 }
 
 const TEMPLATES = [
   {name: 'Rename field', template: renameField},
-  {name: 'Convert string field to Portable Text (TODO)', template: stringToPTE},
+  {name: 'Convert string field to Portable Text', template: stringToPTE},
+  {name: 'Clean simple migration to get you started', template: cleanSimple},
+  {
+    name: 'Advanced template using async iterators providing more fine grained control',
+    template: cleanAdvanced,
+  },
 ]
 
-const createMigrationCommand: CliCommandDefinition<MigrateFlags> = {
+const createMigrationCommand: CliCommandDefinition<CreateMigrationFlags> = {
   name: 'create',
   group: 'migration',
   signature: '[NAME]',
   helpText,
   description: 'Create a new content migration within your project',
   action: async (args, context) => {
-    const {output, prompt, workDir} = context
+    const {output, prompt, workDir, chalk} = context
     const flags = args.extOptions
 
     const name = await prompt.single({
@@ -76,10 +80,25 @@ const createMigrationCommand: CliCommandDefinition<MigrateFlags> = {
       type: docType,
     })
 
-    await fs.writeFile(path.join(destDir, 'index.ts'), finalTemplate)
+    const definitionFile = path.join(destDir, 'index.ts')
 
+    await fs.writeFile(definitionFile, finalTemplate)
+    // To dry run it, run \`sanity migration run ${sluggedName}\``)
+    output.print()
+    output.print(`Migration created!`)
+    output.print('Next steps:')
     output.print(
-      `Created migration "${name}" in ${destDir}. To dry run it, run \`sanity migration run ${sluggedName}\``,
+      `- Open ${chalk.bold(definitionFile)} in your code editor and write your migration`,
+    )
+    output.print(
+      `- Dry run the migration with \`${chalk.bold(
+        `sanity migrate ${sluggedName}}`,
+      )}\` --project-id=[PROJECT ID] --dataset <DATASET> `,
+    )
+    output.print(
+      `- Run the migration against a dataset with \`${chalk.bold(
+        `sanity migrate ${sluggedName}}`,
+      )}\` --project-id=[PROJECT ID] --dataset <DATASET> --dry-run false`,
     )
   },
 }
