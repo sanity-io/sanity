@@ -385,7 +385,7 @@ async function validateDocuments() {
       report.stream.validation.emit({
         documentId: document._id,
         documentType: document._type,
-        revision: document.rev,
+        revision: document._rev,
         markers,
         validatedCount,
         level: getLevel(markers),
