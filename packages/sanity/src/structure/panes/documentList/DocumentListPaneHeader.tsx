@@ -1,9 +1,8 @@
 import {ArrowLeftIcon} from '@sanity/icons'
 import React, {memo, useMemo} from 'react'
-import {TooltipDelayGroupProvider} from '@sanity/ui'
 import type {PaneMenuItem, PaneMenuItemGroup, StructureToolPaneActionHandler} from '../../types'
 import {BackLink, PaneHeader, PaneHeaderActions, usePane} from '../../components'
-import {Button, TOOLTIP_DELAY_PROPS} from '../../../ui-components'
+import {Button, TooltipDelayGroupProvider} from '../../../ui-components'
 import {useStructureTool} from '../../useStructureTool'
 import type {SortOrder} from './types'
 import type {GeneralPreviewLayoutKey, InitialValueTemplateItem} from 'sanity'
@@ -47,7 +46,7 @@ export const DocumentListPaneHeader = memo(
     }, [setLayout, setSortOrder])
 
     return (
-      <TooltipDelayGroupProvider delay={TOOLTIP_DELAY_PROPS}>
+      <TooltipDelayGroupProvider>
         <PaneHeader
           actions={
             <PaneHeaderActions

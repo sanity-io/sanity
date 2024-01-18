@@ -8,16 +8,7 @@ import React, {
   useState,
 } from 'react'
 import type {Reference, ReferenceSchemaType} from '@sanity/types'
-import {
-  Box,
-  Card,
-  CardTone,
-  Flex,
-  Menu,
-  MenuDivider,
-  Stack,
-  TooltipDelayGroupProvider,
-} from '@sanity/ui'
+import {Box, Card, CardTone, Flex, Menu, MenuDivider, Stack} from '@sanity/ui'
 import {LaunchIcon as OpenInNewTabIcon, SyncIcon as ReplaceIcon, TrashIcon} from '@sanity/icons'
 import type {ObjectFieldProps, RenderPreviewCallback} from '../../types'
 import {FormField} from '../../components'
@@ -28,7 +19,7 @@ import {FieldActionsProvider, FieldActionsResolver} from '../../field'
 import {DocumentFieldActionNode} from '../../../config'
 import {usePublishedId} from '../../contexts/DocumentIdProvider'
 import {useTranslation} from '../../../i18n'
-import {MenuButton, MenuItem, TOOLTIP_DELAY_PROPS} from '../../../../ui-components'
+import {MenuButton, MenuItem, TooltipDelayGroupProvider} from '../../../../ui-components'
 import {ContextMenuButton} from '../../../components/contextMenuButton'
 import {useReferenceInput} from './useReferenceInput'
 import {useReferenceInfo} from './useReferenceInfo'
@@ -264,7 +255,7 @@ export function ReferenceField(props: ReferenceFieldProps) {
             <Card border radius={2} padding={1} tone={tone}>
               <Stack space={1}>
                 <Flex gap={1} align="center" style={{lineHeight: 0}}>
-                  <TooltipDelayGroupProvider delay={TOOLTIP_DELAY_PROPS}>
+                  <TooltipDelayGroupProvider>
                     <ReferenceLinkCard
                       __unstable_focusRing
                       as={EditReferenceLink}

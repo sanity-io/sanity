@@ -6,5 +6,6 @@ export * from './menuItem'
 export * from './popover'
 export * from './tab'
 export * from './tooltip'
+export * from './tooltipDelayGroupProvider'
 
 // @todo: consider an alternative pattern for non studio ui components, avoiding circular dependencies
