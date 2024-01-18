@@ -24,6 +24,7 @@ import {isRecord, validateDocument} from 'sanity'
 const MAX_VALIDATION_CONCURRENCY = 100
 const DOCUMENT_VALIDATION_TIMEOUT = 30000
 const REFERENCE_INTEGRITY_BATCH_SIZE = 100
+const EXCLUDED_DOCUMENT_TYPE_PREFIXES = ['system.', 'sanity.']
 
 interface AvailabilityResponse {
   omitted: {id: string; reason: 'existence' | 'permission'}[]
@@ -210,12 +211,18 @@ async function downloadDocuments(client: SanityClient) {
 
   for await (const line of lines) {
     const document = JSON.parse(line) as SanityDocument
-    documentIds.add(document._id)
-    for (const referenceId of getReferenceIds(document)) {
-      referencedIds.add(referenceId)
-    }
+    const shouldIncludeDocument = EXCLUDED_DOCUMENT_TYPE_PREFIXES.every(
+      (prefix) => !document._id.startsWith(prefix),
+    )
 
-    outputStream.write(`${line}\n`)
+    if (shouldIncludeDocument) {
+      documentIds.add(document._id)
+      for (const referenceId of getReferenceIds(document)) {
+        referencedIds.add(referenceId)
+      }
+
+      outputStream.write(`${line}\n`)
+    }
 
     downloadedCount++
     report.stream.exportProgress.emit({downloadedCount, documentCount})
@@ -225,6 +232,7 @@ async function downloadDocuments(client: SanityClient) {
     outputStream.close((err) => (err ? reject(err) : resolve())),
   )
 
+  report.stream.exportProgress.end()
   report.event.exportFinished({totalDocumentsToValidate: documentIds.size})
 
   async function* getDocuments() {
@@ -237,8 +245,6 @@ async function downloadDocuments(client: SanityClient) {
 
     rl.close()
   }
-
-  report.stream.exportProgress.end()
 
   return {getDocuments, documentIds, referencedIds, tempOutputFile}
 }
