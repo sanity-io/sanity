@@ -1,6 +1,7 @@
 import type {CliCommandArguments, CliCommandContext, CliOutputter} from '@sanity/cli'
 import logSymbols from 'log-symbols'
 import chalk from 'chalk'
+import {ClientConfig} from '@sanity/client'
 import type {WorkerChannelReceiver} from '../../util/workerChannels'
 import type {ValidationWorkerChannel} from '../../threads/validateDocuments'
 import {validateDocuments} from './validateDocuments'
@@ -97,13 +98,25 @@ export default async function validateAction(
     throw new Error(`'--max-custom-validation-concurrency' must be an integer.`)
   }
 
-  const overallLevel = await validateDocuments({
-    workspace: flags.workspace,
-    dataset: flags.dataset,
-    clientConfig: apiClient({
+  const clientConfig: Partial<ClientConfig> = {
+    ...apiClient({
       requireUser: true,
       requireProject: false, // we'll get this from the workspace
     }).config(),
+    // we set this explictly to true because the default client configuration
+    // from the CLI comes configured with `useProjectHostname: false` when
+    // `requireProject` is set to false
+    useProjectHostname: true,
+    // we set this explictly to true because we pass in a token via the
+    // `clientConfiguration` object and also mock a browser environment in
+    // this worker which triggers the browser warning
+    ignoreBrowserTokenWarning: true,
+  }
+
+  const overallLevel = await validateDocuments({
+    workspace: flags.workspace,
+    dataset: flags.dataset,
+    clientConfig,
     workDir,
     level,
     maxCustomValidationConcurrency,

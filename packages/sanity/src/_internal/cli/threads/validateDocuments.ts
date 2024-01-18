@@ -146,14 +146,6 @@ async function loadWorkspace() {
     ...clientConfig,
     dataset: dataset || workspace.dataset,
     projectId: projectId || workspace.projectId,
-    // we set this explictly to true because the default client configuration
-    // from the CLI comes configured with `useProjectHostname: false` when
-    // `requireProject` is set to false
-    useProjectHostname: true,
-    // we set this explictly to true because we pass in a token via the
-    // `clientConfiguration` object and also mock a browser environment in
-    // this worker which triggers the browser warning
-    ignoreBrowserTokenWarning: true,
     requestTagPrefix: 'sanity.cli.validate',
   }).config({apiVersion: 'v2021-03-25'})
 
