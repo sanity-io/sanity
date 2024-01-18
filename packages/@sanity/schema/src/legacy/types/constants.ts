@@ -12,4 +12,5 @@ export const DEFAULT_OVERRIDEABLE_FIELDS = [
   'components',
   'diffComponent',
   'initialValue',
+  'deprecated',
 ]
