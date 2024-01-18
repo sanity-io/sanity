@@ -1,15 +1,11 @@
 export const renameField = `
-import {defineNodeMigration} from '@sanity/migrate'
-import {patch, at, set, unset} from '@sanity/migrate/mutations'
+import {mutations, defineMigration} from 'sanity/migrate'
+import {patch, at, set, unset} from 'sanity/migrate/mutations'
 
-export default defineNodeMigration({
+export default defineMigration({
   name: '%migrationName%',
-  type: '%type%',
-  document(doc) {
-    return patch(doc._id, [
-      at('address', set(doc.location)),
-      at('location', unset())
-    ])
-  },
+  documentType: '%type%',
+  migrate: {
+  }
 })
 `
