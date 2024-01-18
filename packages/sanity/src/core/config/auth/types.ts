@@ -8,7 +8,8 @@ export type LoginMethod = 'dual' | 'cookie' | 'token'
 /**
  * Login methods that acknowledge cookieless authentication tokens.
  *
- * @public
+ * @internal
+ * @hidden
  */
 export type CookielessCompatibleLoginMethod = Extract<LoginMethod, 'dual' | 'token'>
 
