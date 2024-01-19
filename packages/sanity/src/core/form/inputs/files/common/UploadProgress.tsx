@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react'
+import {useEffect} from 'react'
 import {Flex, Text, Inline, Card} from '@sanity/ui'
 import {UploadState} from '@sanity/types'
 import {LinearProgress} from '../../../../components'

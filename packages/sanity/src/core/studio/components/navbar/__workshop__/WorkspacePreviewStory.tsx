@@ -1,4 +1,4 @@
-import React, {CSSProperties} from 'react'
+import {CSSProperties} from 'react'
 import {IceCreamIcon} from '@sanity/icons'
 import {Card, Flex} from '@sanity/ui'
 import {useBoolean, useSelect, useString} from '@sanity/ui-workshop'

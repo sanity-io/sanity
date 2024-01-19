@@ -1,4 +1,4 @@
-import React from 'react'
+import {DependencyList, useState, useRef, useCallback} from 'react'
 
 export type AsyncCompleteState<T> = {
   status: 'complete'
@@ -23,13 +23,13 @@ export type AsyncState<T> = AsyncPendingState | AsyncCompleteState<T> | AsyncErr
  */
 export function useAsync<T, U>(
   fn: (arg: U) => Promise<T>,
-  dependencies: React.DependencyList,
+  dependencies: DependencyList,
 ): [null | AsyncState<T>, (arg: U) => void] {
-  const [state, setState] = React.useState<AsyncState<T> | null>(null)
+  const [state, setState] = useState<AsyncState<T> | null>(null)
 
-  const lastId = React.useRef(0)
+  const lastId = useRef(0)
 
-  const wrappedCallback = React.useCallback(
+  const wrappedCallback = useCallback(
     (arg: U) => {
       const asyncId = ++lastId.current
       setState({status: 'pending'})

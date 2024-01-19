@@ -1,11 +1,11 @@
-import React from 'react'
+import {ReactNode} from 'react'
 import styled from 'styled-components'
 
 const Quote = styled.blockquote`
   margin: 0;
 `
 
-export function Blockquote({children}: {children: React.ReactNode}): JSX.Element {
+export function Blockquote({children}: {children: ReactNode}): JSX.Element {
   return (
     <div>
       <Quote>{children}</Quote>

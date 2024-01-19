@@ -1,7 +1,8 @@
 /* eslint-disable react/no-array-index-key */
 
 import {Box, Card, Code, Flex, Radio, Stack, Text} from '@sanity/ui'
-import React, {useCallback, useState} from 'react'
+import {useCallback, useState} from 'react'
+import * as React from 'react'
 import {LOADING_PANE} from '../constants'
 import {StructureToolProvider} from '../StructureToolProvider'
 import {useResolvedPanes} from '../structureResolvers'

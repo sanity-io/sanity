@@ -1,4 +1,14 @@
-import React, {cloneElement, forwardRef, useCallback, useMemo, useState} from 'react'
+import {
+  Children,
+  ForwardedRef,
+  ReactElement,
+  ReactNode,
+  cloneElement,
+  forwardRef,
+  useCallback,
+  useMemo,
+  useState,
+} from 'react'
 import {Flex} from '@sanity/ui'
 import styled from 'styled-components'
 import {MenuButtonProps} from '../../../ui-components'
@@ -6,7 +16,7 @@ import {ContextMenuButton} from '../contextMenuButton'
 import {CollapseOverflowMenu} from '../collapseMenu/CollapseOverflowMenu'
 import {ObserveElement} from '../collapseMenu/ObserveElement'
 
-function _isReactElement(node: unknown): node is React.ReactElement {
+function _isReactElement(node: unknown): node is ReactElement {
   return Boolean(node)
 }
 
@@ -25,11 +35,11 @@ const HiddenRow = styled(Flex)`
 `
 
 interface CollapseTabListProps {
-  children: React.ReactNode
+  children: ReactNode
   gap?: number | number[]
   menuButtonProps?: Omit<MenuButtonProps, 'id' | 'menu' | 'button'> & {
     id?: string
-    button?: React.ReactElement
+    button?: ReactElement
   }
   onMenuClose?: () => void
   collapsed?: boolean
@@ -42,7 +52,7 @@ interface CollapseTabListProps {
  * @internal */
 export const CollapseTabList = forwardRef(function CollapseTabList(
   props: CollapseTabListProps,
-  ref: React.ForwardedRef<HTMLDivElement>,
+  ref: ForwardedRef<HTMLDivElement>,
 ) {
   const {
     children: childrenProp,
@@ -54,11 +64,11 @@ export const CollapseTabList = forwardRef(function CollapseTabList(
     ...rest
   } = props
   const [rootEl, setRootEl] = useState<HTMLDivElement | null>(null)
-  const [hiddenElements, setHiddenElements] = useState<React.ReactElement[]>([])
+  const [hiddenElements, setHiddenElements] = useState<ReactElement[]>([])
   const [showChildren, setShowChildren] = useState(false)
 
   const children = useMemo(
-    () => React.Children.toArray(childrenProp).filter(_isReactElement),
+    () => Children.toArray(childrenProp).filter(_isReactElement),
     [childrenProp],
   )
 
@@ -91,12 +101,12 @@ export const CollapseTabList = forwardRef(function CollapseTabList(
       collapsed
         ? children
         : // eslint-disable-next-line max-nested-callbacks
-          children.filter(({key}) => hiddenElements.find((o: React.ReactElement) => o.key === key)),
+          children.filter(({key}) => hiddenElements.find((o: ReactElement) => o.key === key)),
     [children, hiddenElements, collapsed],
   )
 
   const handleIntersection = useCallback(
-    (e: IntersectionObserverEntry, child: React.ReactElement) => {
+    (e: IntersectionObserverEntry, child: ReactElement) => {
       const isHidden = hiddenElements.some((el) => el.key === child.key)
 
       if (!showChildren) setShowChildren(true)

@@ -1,4 +1,3 @@
-import React from 'react'
 import {ChangeList} from '../../../diff'
 import {DiffComponent, ObjectDiff} from '../../../types'
 

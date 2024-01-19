@@ -1,4 +1,3 @@
-import React from 'react'
 import styles from './MyLogo.module.css'
 
 const fromDotEnv = process.env.SANITY_STUDIO_FROM_DOTENV || 'notset'

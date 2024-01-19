@@ -6,7 +6,7 @@ import {
   Path,
   PortableTextBlock,
 } from '@sanity/types'
-import React from 'react'
+import {ReactNode, ComponentType} from 'react'
 import {PatchEvent} from '../patch'
 import {PreviewProps} from '../../components'
 import {InputProps} from './inputProps'
@@ -20,7 +20,7 @@ import {ItemProps} from './itemProps'
  * @hidden
  * @deprecated use `renderBlock`, `renderInlineBlock`, `renderAnnotation` interfaces instead
  */
-export type RenderCustomMarkers = (markers: PortableTextMarker[]) => React.ReactNode
+export type RenderCustomMarkers = (markers: PortableTextMarker[]) => ReactNode
 
 /**
  * Props for rendering block actions
@@ -44,7 +44,7 @@ export interface RenderBlockActionsProps {
  * @hidden
  * @deprecated use `renderBlock`, `renderInlineBlock`, `renderAnnotation` interfaces instead
  */
-export type RenderBlockActionsCallback = (props: RenderBlockActionsProps) => React.ReactNode
+export type RenderBlockActionsCallback = (props: RenderBlockActionsProps) => ReactNode
 
 /**
  * A generic marker for attaching metadata to specific nodes of the Portable Text input.
@@ -69,14 +69,14 @@ export interface PortableTextMarker {
  * @hidden
  * @deprecated use `renderBlock`, `renderInlineBlock`, `renderAnnotation` interfaces instead
  */
-export type FormBuilderCustomMarkersComponent = React.ComponentType<{markers: PortableTextMarker[]}>
+export type FormBuilderCustomMarkersComponent = ComponentType<{markers: PortableTextMarker[]}>
 
 /**
  *
  * @hidden
  * @beta
  */
-export type FormBuilderMarkersComponent = React.ComponentType<{
+export type FormBuilderMarkersComponent = ComponentType<{
   markers: PortableTextMarker[]
   renderCustomMarkers?: RenderCustomMarkers
   validation: FormNodeValidation[]
@@ -90,10 +90,10 @@ export type FormBuilderMarkersComponent = React.ComponentType<{
 export type FormBuilderInputComponentMap = Record<
   string,
   {
-    field?: React.ComponentType<FieldProps>
-    item?: React.ComponentType<ItemProps>
-    input?: React.ComponentType<InputProps>
-    preview?: React.ComponentType<PreviewProps>
+    field?: ComponentType<FieldProps>
+    item?: ComponentType<ItemProps>
+    input?: ComponentType<InputProps>
+    preview?: ComponentType<PreviewProps>
   }
 >
 
@@ -105,7 +105,7 @@ export type FormBuilderInputComponentMap = Record<
  * @beta
  */
 export interface ArrayInputFunctionsProps<Item, SchemaType extends ArraySchemaType> {
-  children?: React.ReactNode
+  children?: ReactNode
   onItemAppend: (itemValue: Item) => void
   onChange: (event: PatchEvent) => void
   onValueCreate: (type: SchemaType) => Item

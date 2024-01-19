@@ -1,6 +1,6 @@
 import {Flex, Stack} from '@sanity/ui'
 import {addDays} from 'date-fns'
-import React, {useCallback, useMemo} from 'react'
+import {useCallback, useMemo} from 'react'
 import {useSearchState} from '../../../../../contexts/search/useSearchState'
 import type {OperatorDateRangeValue} from '../../../../../definitions/operators/dateOperators'
 import type {OperatorInputComponentProps} from '../../../../../definitions/operators/operatorTypes'

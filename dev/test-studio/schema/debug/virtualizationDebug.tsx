@@ -1,4 +1,3 @@
-import React from 'react'
 import {FieldProps, SanityClient, defineField, defineType} from 'sanity'
 
 interface Author {

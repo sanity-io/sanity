@@ -1,4 +1,3 @@
-import React from 'react'
 import styles from './MyLogo.module.css'
 
 // Since bundles are compressed and symbols obfuscated,

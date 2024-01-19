@@ -1,4 +1,4 @@
-import React, {useCallback, useState} from 'react'
+import {useCallback, useState} from 'react'
 import {Popover, Stack, Inline, Text, Card, Badge, Button, useClickOutside} from '@sanity/ui'
 import {HelpCircleIcon} from '@sanity/icons'
 import {useTranslation} from 'sanity'

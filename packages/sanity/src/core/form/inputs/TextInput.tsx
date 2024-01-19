@@ -1,4 +1,3 @@
-import React from 'react'
 import {TextSchemaType} from '@sanity/types'
 import {TextArea} from '@sanity/ui'
 import styled from 'styled-components'

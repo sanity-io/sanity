@@ -1,4 +1,4 @@
-import React, {createContext, ReactNode, useMemo} from 'react'
+import {useContext, createContext, ReactNode, useMemo} from 'react'
 import {DocumentFieldAction} from '../../../config'
 import {EMPTY_ARRAY} from '../../../util'
 
@@ -21,7 +21,7 @@ export function DocumentFieldActionsProvider(props: {
 }
 
 export function useDocumentFieldActions() {
-  const context = React.useContext(DocumentFieldActionsContext)
+  const context = useContext(DocumentFieldActionsContext)
   if (!context) {
     throw new Error('useDocumentFieldActions must be used within a DocumentFieldActionsProvider')
   }

@@ -1,6 +1,6 @@
 import {Card, Inline, Text} from '@sanity/ui'
 import {useBoolean} from '@sanity/ui-workshop'
-import React, {useCallback, useState} from 'react'
+import {useCallback, useState} from 'react'
 import {CommonDateEqualInput} from '../components/filters/filter/inputs/date/CommonDateEqual'
 import {SearchProvider} from '../contexts/search/SearchProvider'
 import {OperatorDateEqualValue} from '../definitions/operators/dateOperators'

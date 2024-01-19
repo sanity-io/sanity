@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState} from 'react'
+import {ReactNode, useCallback, useEffect, useState} from 'react'
 import {useClient} from '../../../../hooks'
 import {SANITY_VERSION} from '../../../../version'
 import {FreeTrialContext} from './FreeTrialContext'
@@ -8,7 +8,7 @@ import type {FreeTrialResponse} from './types'
  * @internal
  */
 export interface FreeTrialProviderProps {
-  children: React.ReactNode
+  children: ReactNode
 }
 
 /**

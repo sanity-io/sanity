@@ -1,6 +1,6 @@
 // Copied from packages/@sanity/cli/templates/ecommerce/plugins/barcode-input/BarcodeInput.js
 
-import React, {useState} from 'react'
+import {useState} from 'react'
 import {Box, Text} from '@sanity/ui'
 import Barcode from 'react-barcode'
 import {FieldMember, MemberField, ObjectInputProps} from 'sanity'

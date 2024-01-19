@@ -1,5 +1,19 @@
-import {BaseRange, Transforms, Text, select, Editor} from 'slate'
-import React, {useCallback, useMemo, useEffect, forwardRef, useState, KeyboardEvent} from 'react'
+import {BaseRange, Transforms, Text, Editor} from 'slate'
+import {
+  useCallback,
+  useMemo,
+  useEffect,
+  forwardRef,
+  useState,
+  KeyboardEvent,
+  CSSProperties,
+  FocusEventHandler,
+  ForwardedRef,
+  HTMLProps,
+  ReactNode,
+  TextareaHTMLAttributes,
+  ClipboardEvent,
+} from 'react'
 import {
   Editable as SlateEditable,
   ReactEditor,
@@ -39,7 +53,7 @@ import {useForwardedRef} from './hooks/useForwardedRef'
 
 const debug = debugWithName('component:Editable')
 
-const PLACEHOLDER_STYLE: React.CSSProperties = {
+const PLACEHOLDER_STYLE: CSSProperties = {
   opacity: 0.5,
   position: 'absolute',
   userSelect: 'none',
@@ -54,7 +68,7 @@ const EMPTY_DECORATORS: BaseRange[] = []
  * @public
  */
 export type PortableTextEditableProps = Omit<
-  React.TextareaHTMLAttributes<HTMLDivElement>,
+  TextareaHTMLAttributes<HTMLDivElement>,
   'onPaste' | 'onCopy' | 'onBeforeInput'
 > & {
   hotkeys?: HotkeyOptions
@@ -66,7 +80,7 @@ export type PortableTextEditableProps = Omit<
   renderChild?: RenderChildFunction
   renderDecorator?: RenderDecoratorFunction
   renderListItem?: RenderListItemFunction
-  renderPlaceholder?: () => React.ReactNode
+  renderPlaceholder?: () => ReactNode
   renderStyle?: RenderStyleFunction
   scrollSelectionIntoView?: ScrollSelectionIntoViewFunction
   selection?: EditorSelection
@@ -78,8 +92,8 @@ export type PortableTextEditableProps = Omit<
  */
 export const PortableTextEditable = forwardRef(function PortableTextEditable(
   props: PortableTextEditableProps &
-    Omit<React.HTMLProps<HTMLDivElement>, 'as' | 'onPaste' | 'onBeforeInput'>,
-  forwardedRef: React.ForwardedRef<HTMLDivElement>,
+    Omit<HTMLProps<HTMLDivElement>, 'as' | 'onPaste' | 'onBeforeInput'>,
+  forwardedRef: ForwardedRef<HTMLDivElement>,
 ) {
   const {
     hotkeys,
@@ -233,7 +247,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
 
   // Handle from props onCopy function
   const handleCopy = useCallback(
-    (event: React.ClipboardEvent<HTMLDivElement>): void | ReactEditor => {
+    (event: ClipboardEvent<HTMLDivElement>): void | ReactEditor => {
       if (onCopy) {
         const result = onCopy(event)
         // CopyFn may return something to avoid doing default stuff
@@ -247,7 +261,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
 
   // Handle incoming pasting events in the editor
   const handlePaste = useCallback(
-    (event: React.ClipboardEvent<HTMLDivElement>): Promise<void> | void => {
+    (event: ClipboardEvent<HTMLDivElement>): Promise<void> | void => {
       event.preventDefault()
       if (!slateEditor.selection) {
         return
@@ -297,7 +311,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
     [change$, onPaste, portableTextEditor, schemaTypes, slateEditor],
   )
 
-  const handleOnFocus: React.FocusEventHandler<HTMLDivElement> = useCallback(
+  const handleOnFocus: FocusEventHandler<HTMLDivElement> = useCallback(
     (event) => {
       if (onFocus) {
         onFocus(event)
@@ -323,7 +337,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
     [onFocus, portableTextEditor, change$, slateEditor],
   )
 
-  const handleOnBlur: React.FocusEventHandler<HTMLDivElement> = useCallback(
+  const handleOnBlur: FocusEventHandler<HTMLDivElement> = useCallback(
     (event) => {
       if (onBlur) {
         onBlur(event)

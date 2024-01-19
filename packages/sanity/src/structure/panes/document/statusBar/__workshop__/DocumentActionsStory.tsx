@@ -1,5 +1,5 @@
 import {Container, Flex} from '@sanity/ui'
-import React, {useMemo} from 'react'
+import {useMemo} from 'react'
 import {StructureToolProvider} from '../../../../StructureToolProvider'
 import {DocumentPaneNode} from '../../../../types'
 import {DocumentPaneProvider} from '../../DocumentPaneProvider'

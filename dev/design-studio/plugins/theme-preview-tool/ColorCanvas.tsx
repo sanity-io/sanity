@@ -22,7 +22,7 @@ import {
   ThemeColorSolidTone,
   useRootTheme,
 } from '@sanity/ui'
-import React, {createContext, useContext, useMemo} from 'react'
+import {createContext, useContext, useMemo} from 'react'
 
 interface Features {
   button: boolean

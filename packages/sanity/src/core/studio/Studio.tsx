@@ -1,4 +1,4 @@
-import React, {ReactElement} from 'react'
+import {ReactElement} from 'react'
 import {Config} from '../config'
 import type {StudioThemeColorSchemeKey} from '../theme/types'
 import {GlobalStyle} from './GlobalStyle'

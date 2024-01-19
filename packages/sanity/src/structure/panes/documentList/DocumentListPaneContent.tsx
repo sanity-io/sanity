@@ -1,6 +1,6 @@
 import {SyncIcon} from '@sanity/icons'
 import {Box, Container, Flex, Heading, Stack, Text} from '@sanity/ui'
-import React, {useCallback, useEffect, useMemo, useState} from 'react'
+import {useCallback, useEffect, useMemo, useState} from 'react'
 import {SanityDocument} from '@sanity/types'
 import styled from 'styled-components'
 import {Button} from '../../../ui-components'

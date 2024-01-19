@@ -1,4 +1,5 @@
-import React, {useMemo, useState} from 'react'
+import {useMemo, useState} from 'react'
+import * as React from 'react'
 import {StructureToolContext} from './StructureToolContext'
 import {createStructureBuilder, type DefaultDocumentNodeResolver} from './structureBuilder'
 import type {StructureToolContextValue, StructureResolver, UnresolvedPaneNode} from './types'

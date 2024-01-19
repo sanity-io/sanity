@@ -1,4 +1,4 @@
-import React, {createElement, isValidElement, useState} from 'react'
+import {createElement, isValidElement, useState} from 'react'
 import {isValidElementType} from 'react-is'
 import {Pane} from '../../components'
 import type {StructureToolPaneActionHandler} from '../../types'

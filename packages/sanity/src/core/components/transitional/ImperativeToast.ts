@@ -1,13 +1,13 @@
 import {useToast} from '@sanity/ui'
-import React, {forwardRef, useImperativeHandle} from 'react'
+import {ReactNode, forwardRef, useImperativeHandle} from 'react'
 
 /** @internal */
 export interface ToastParams {
   closable?: boolean
-  description?: React.ReactNode
+  description?: ReactNode
   duration?: number
   onClose?: () => void
-  title?: React.ReactNode
+  title?: ReactNode
   status?: 'error' | 'warning' | 'success' | 'info'
 }
 

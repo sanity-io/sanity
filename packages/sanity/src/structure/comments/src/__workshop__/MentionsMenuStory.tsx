@@ -1,5 +1,4 @@
 import {Container, Flex} from '@sanity/ui'
-import React from 'react'
 import {MentionsMenu} from '../components/mentions'
 import {useMentionOptions} from '../hooks'
 

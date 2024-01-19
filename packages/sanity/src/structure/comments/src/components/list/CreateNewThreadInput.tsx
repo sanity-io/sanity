@@ -1,5 +1,5 @@
 import type {CurrentUser} from '@sanity/types'
-import React, {useState, useCallback, useRef, useMemo} from 'react'
+import {useState, useCallback, useRef, useMemo} from 'react'
 import type {CommentMessage, CommentsUIMode, MentionOptionsHookValue} from '../../types'
 import {CommentInput, CommentInputHandle, CommentInputProps} from '../pte'
 import {commentsLocaleNamespace} from '../../../i18n'

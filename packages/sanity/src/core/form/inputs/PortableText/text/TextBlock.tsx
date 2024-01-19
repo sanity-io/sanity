@@ -1,5 +1,5 @@
 import {Box, Flex, ResponsivePaddingProps, Text} from '@sanity/ui'
-import React, {RefObject, useCallback, useMemo, useState} from 'react'
+import {ReactNode, RefObject, useCallback, useMemo, useState} from 'react'
 import {ObjectSchemaType, Path, PortableTextTextBlock} from '@sanity/types'
 import {
   EditorSelection,
@@ -45,7 +45,7 @@ import {
 import {TextContainer} from './textStyles'
 
 export interface TextBlockProps {
-  children: React.ReactNode
+  children: ReactNode
   floatingBoundary: HTMLElement | null
   focused: boolean
   isFullscreen?: boolean

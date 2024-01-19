@@ -1,6 +1,6 @@
 import {PublishIcon} from '@sanity/icons'
 import {Flex, Menu, Stack, useToast} from '@sanity/ui'
-import React, {useCallback} from 'react'
+import {useCallback} from 'react'
 import {Button, MenuButton, MenuButtonProps, MenuItem} from '../../../../../../ui-components'
 import {ContextMenuButton} from 'sanity'
 

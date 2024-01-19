@@ -1,4 +1,4 @@
-import React, {ForwardedRef, forwardRef, useCallback, useEffect} from 'react'
+import {ForwardedRef, forwardRef, useCallback, useEffect} from 'react'
 import {Schema} from '@sanity/schema'
 
 import {defineArrayMember, defineField} from '@sanity/types'

@@ -1,3 +1,4 @@
+import {ReactNode, ComponentType} from 'react'
 import {EditStateFor} from '../../store'
 
 /**
@@ -7,7 +8,7 @@ export interface DocumentBadgeDescription {
   title?: string
   label?: string | undefined
   color?: 'primary' | 'success' | 'warning' | 'danger'
-  icon?: React.ReactNode | React.ComponentType
+  icon?: ReactNode | ComponentType
 }
 
 /**

@@ -6,7 +6,7 @@ import {
   Text,
   useClickOutside,
 } from '@sanity/ui'
-import React, {useCallback, useMemo, useRef, useState} from 'react'
+import {useCallback, useMemo, useRef, useState} from 'react'
 import styled from 'styled-components'
 import {Button, Popover, Tooltip} from '../../../../ui-components'
 import {commentsLocaleNamespace} from '../../i18n'

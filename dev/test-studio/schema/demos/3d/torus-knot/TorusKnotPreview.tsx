@@ -1,5 +1,5 @@
 import {Canvas, Vector3} from '@react-three/fiber'
-import React, {memo, startTransition, Suspense, useEffect, useRef, useState} from 'react'
+import {memo, startTransition, Suspense, useEffect, useRef, useState} from 'react'
 import styled from 'styled-components'
 import {Box} from '@sanity/ui'
 

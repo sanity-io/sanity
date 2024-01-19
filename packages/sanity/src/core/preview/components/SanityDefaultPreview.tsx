@@ -1,7 +1,7 @@
 import {DocumentIcon} from '@sanity/icons'
 import imageUrlBuilder from '@sanity/image-url'
 import {ImageUrlFitMode} from '@sanity/types'
-import React, {
+import {
   ComponentType,
   createElement,
   ElementType,

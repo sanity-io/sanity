@@ -1,6 +1,6 @@
 /* eslint-disable no-restricted-imports */
 import {MenuGroup as UIMenuGroup, MenuGroupProps as UIMenuGroupProps} from '@sanity/ui'
-import React from 'react'
+import * as React from 'react'
 
 /** @internal */
 export type MenuGroupProps = Pick<UIMenuGroupProps, 'icon' | 'popover' | 'text' | 'tone'>

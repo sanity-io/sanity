@@ -1,6 +1,6 @@
 import {CheckmarkIcon} from '@sanity/icons'
 import {MenuDivider, Text} from '@sanity/ui'
-import React, {useCallback, MouseEvent} from 'react'
+import {useCallback, MouseEvent} from 'react'
 import {Intent} from '../../structureBuilder'
 import {MenuGroup, MenuItem, PopoverProps} from '../../../ui-components'
 import {_PaneMenuItem, _PaneMenuNode} from './types'

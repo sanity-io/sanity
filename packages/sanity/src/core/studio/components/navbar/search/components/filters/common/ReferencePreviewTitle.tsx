@@ -1,6 +1,6 @@
 import type {SanityDocument, SchemaType} from '@sanity/types'
 import {Skeleton} from '@sanity/ui'
-import React, {useMemo} from 'react'
+import {useMemo} from 'react'
 import {useMemoObservable} from 'react-rx'
 import {getPreviewStateObservable, getPreviewValueWithFallback} from '../../../../../../../preview'
 import {useDocumentPreviewStore} from '../../../../../../../store'

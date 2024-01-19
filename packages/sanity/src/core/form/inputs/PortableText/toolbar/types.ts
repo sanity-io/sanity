@@ -1,11 +1,11 @@
 // import {Type} from '@sanity/portable-text-editor'
 
 import {ObjectSchemaType} from '@sanity/types'
-import {ComponentType, ReactNode} from 'react'
+import {ComponentType, ElementType, ReactNode} from 'react'
 
 export interface BlockItem {
   handle: () => void
-  icon: React.ElementType
+  icon: ElementType
   inline: boolean
   key: string
   type: ObjectSchemaType
@@ -14,7 +14,7 @@ export interface BlockItem {
 export interface BlockStyleItem {
   key: string
   style: string
-  styleComponent?: React.ElementType
+  styleComponent?: ElementType
   title: string
   i18nTitleKey?: string
 }

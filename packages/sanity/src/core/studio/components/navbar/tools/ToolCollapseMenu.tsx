@@ -1,4 +1,4 @@
-import React, {forwardRef, useMemo, useState} from 'react'
+import {Ref, forwardRef, useMemo, useState} from 'react'
 import {startCase} from 'lodash'
 import {Flex} from '@sanity/ui'
 import {CollapseTabList} from '../../../../components/collapseTabList/CollapseTabList'
@@ -40,7 +40,7 @@ export function ToolCollapseMenu(props: ToolCollapseMenuProps) {
 
         const Link = forwardRef(function Link(
           linkProps: ToolLinkProps,
-          ref: React.Ref<HTMLAnchorElement>,
+          ref: Ref<HTMLAnchorElement>,
         ) {
           return (
             <ToolLink {...linkProps} ref={ref} name={tool.name}>

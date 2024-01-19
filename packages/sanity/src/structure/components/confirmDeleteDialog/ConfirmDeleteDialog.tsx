@@ -1,4 +1,4 @@
-import React, {useMemo, useId} from 'react'
+import {useMemo, useId} from 'react'
 import styled from 'styled-components'
 import {Box, Flex} from '@sanity/ui'
 import {Dialog} from '../../../ui-components'

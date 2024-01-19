@@ -1,4 +1,4 @@
-import React, {forwardRef, useCallback, useMemo, useRef, useState} from 'react'
+import {ForwardedRef, ReactNode, forwardRef, useCallback, useMemo, useRef, useState} from 'react'
 import {
   SNAP_TO_DOCK_DISTANCE_BOTTOM,
   SNAP_TO_DOCK_DISTANCE_TOP,
@@ -22,8 +22,8 @@ interface RegionsWithIntersectionsProps {
   render: (
     regionsWithIntersectionDetails: RegionWithIntersectionDetails[],
     containerWidth: number,
-  ) => React.ReactNode | null
-  children: React.ReactNode
+  ) => ReactNode | null
+  children: ReactNode
   margins: [number, number, number, number]
 }
 
@@ -32,7 +32,7 @@ const negate = (num: number) => 0 - num
 
 export const RegionsWithIntersections = forwardRef(function RegionsWithIntersections(
   props: RegionsWithIntersectionsProps,
-  ref: React.ForwardedRef<HTMLDivElement>,
+  ref: ForwardedRef<HTMLDivElement>,
 ) {
   const {regions, render, children, margins: marginsProp} = props
 

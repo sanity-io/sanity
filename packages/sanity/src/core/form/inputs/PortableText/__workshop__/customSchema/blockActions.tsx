@@ -1,4 +1,4 @@
-import React, {memo, useCallback} from 'react'
+import {memo, useCallback} from 'react'
 import {CopyIcon} from '@sanity/icons'
 import {keyGenerator} from '@sanity/portable-text-editor'
 import {PortableTextBlock, PortableTextTextBlock} from '@sanity/types'

@@ -3,7 +3,7 @@ import {Icon, LinkIcon} from '@sanity/icons'
 import {type PortableTextBlock} from '@sanity/types'
 import {Box, Card, Flex, Heading, Text} from '@sanity/ui'
 import styled, {css} from 'styled-components'
-import React, {useEffect, useMemo, useState} from 'react'
+import {ReactNode, useEffect, useMemo, useState} from 'react'
 import {ConditionalWrapper} from '../../../../ui-components/conditionalWrapper'
 import {transformBlocks} from './helpers'
 
@@ -77,7 +77,7 @@ const DynamicIconContainer = styled.span`
   }
 `
 
-const accentSpanWrapper = (children: React.ReactNode) => <AccentSpan>{children}</AccentSpan>
+const accentSpanWrapper = (children: ReactNode) => <AccentSpan>{children}</AccentSpan>
 
 const DynamicIcon = (props: {icon: {url: string}}) => {
   const [ref, setRef] = useState<HTMLSpanElement | null>(null)
@@ -113,7 +113,7 @@ const DynamicIcon = (props: {icon: {url: string}}) => {
   return <DynamicIconContainer ref={setRef} />
 }
 
-function NormalBlock(props: {children: React.ReactNode}) {
+function NormalBlock(props: {children: ReactNode}) {
   const {children} = props
 
   return (
@@ -125,7 +125,7 @@ function NormalBlock(props: {children: React.ReactNode}) {
   )
 }
 
-function HeadingBlock(props: {children: React.ReactNode}) {
+function HeadingBlock(props: {children: ReactNode}) {
   const {children} = props
   return (
     <Box paddingX={2} marginY={4}>

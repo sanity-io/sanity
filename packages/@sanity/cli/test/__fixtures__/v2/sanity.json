@@ -24,7 +24,7 @@
     },
     {
       "implements": "part:@sanity/base/brand-logo",
-      "path": "./components/MyLogo.jsx"
+      "path": "./components/MyLogo.tsx"
     }
   ]
 }

@@ -1,4 +1,3 @@
-import React from 'react'
 import {FormInput, ObjectInputProps} from 'sanity'
 import {Grid} from '@sanity/ui'
 

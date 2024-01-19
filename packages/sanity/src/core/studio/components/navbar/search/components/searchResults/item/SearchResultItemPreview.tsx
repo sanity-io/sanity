@@ -1,7 +1,7 @@
 import type {SanityDocument} from '@sanity/client'
 import type {SchemaType} from '@sanity/types'
 import {Badge, Box, Flex} from '@sanity/ui'
-import React, {useMemo} from 'react'
+import {useMemo} from 'react'
 import {useMemoObservable} from 'react-rx'
 import styled from 'styled-components'
 import {DocumentStatus} from '../../../../../../../components/documentStatus'

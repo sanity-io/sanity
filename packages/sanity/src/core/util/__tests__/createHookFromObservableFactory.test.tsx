@@ -1,4 +1,4 @@
-import React, {Profiler, memo, useDeferredValue} from 'react'
+import {Component, Profiler, PropsWithChildren, memo, useDeferredValue} from 'react'
 import {render, renderHook, waitFor} from '@testing-library/react'
 import * as Rx from 'rxjs'
 import {createHookFromObservableFactory} from '../createHookFromObservableFactory'
@@ -199,7 +199,7 @@ describe('createHookFromObservableFactory', () => {
     let error: Error | undefined
     const useHook = createHookFromObservableFactory(observableFactory, 'factory initial')
     renderHook(useHook, {
-      wrapper: class Wrapper extends React.Component<React.PropsWithChildren<unknown>> {
+      wrapper: class Wrapper extends Component<PropsWithChildren<unknown>> {
         static getDerivedStateFromError(err: Error) {
           error = err
           return {hasError: true}

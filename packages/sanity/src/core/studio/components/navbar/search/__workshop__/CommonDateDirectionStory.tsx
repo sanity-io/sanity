@@ -1,6 +1,6 @@
 import {Card, Inline, Text} from '@sanity/ui'
 import {useBoolean, useSelect} from '@sanity/ui-workshop'
-import React, {useCallback, useState} from 'react'
+import {useCallback, useState} from 'react'
 import {CommonDateDirectionInput} from '../components/filters/filter/inputs/date/CommonDateDirection'
 import {SearchProvider} from '../contexts/search/SearchProvider'
 import {OperatorDateDirectionValue} from '../definitions/operators/dateOperators'

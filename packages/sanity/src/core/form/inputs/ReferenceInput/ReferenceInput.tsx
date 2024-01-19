@@ -1,14 +1,8 @@
-import React, {
-  type KeyboardEvent,
-  type FocusEvent,
-  useCallback,
-  useRef,
-  useState,
-  useMemo,
-} from 'react'
+import type {KeyboardEvent, FocusEvent} from 'react'
+import {useCallback, useRef, useState, useMemo} from 'react'
 import {concat, Observable, of} from 'rxjs'
 import {catchError, filter, map, scan, switchMap, tap} from 'rxjs/operators'
-import {Box, Stack, Text, useToast} from '@sanity/ui'
+import {Stack, Text, useToast} from '@sanity/ui'
 import {useObservableCallback} from 'react-rx'
 import {uuid} from '@sanity/uuid'
 import styled from 'styled-components'

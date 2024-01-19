@@ -1,4 +1,4 @@
-import React, {ComponentProps} from 'react'
+import {ComponentProps} from 'react'
 import {motion} from 'framer-motion'
 import styled, {keyframes} from 'styled-components'
 

@@ -1,5 +1,5 @@
 import {Card, Text} from '@sanity/ui'
-import React, {useCallback} from 'react'
+import {useCallback} from 'react'
 
 interface CalendarDayProps {
   date: Date

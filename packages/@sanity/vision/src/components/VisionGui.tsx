@@ -18,7 +18,7 @@ import {
   Tooltip,
 } from '@sanity/ui'
 import isHotkey from 'is-hotkey'
-import React, {ChangeEvent, type RefObject} from 'react'
+import {ChangeEvent, type RefObject, PureComponent, createRef} from 'react'
 import {TFunction} from 'sanity'
 import {API_VERSIONS, DEFAULT_API_VERSION} from '../apiVersions'
 import {VisionCodeMirror} from '../codemirror/VisionCodeMirror'
@@ -140,7 +140,7 @@ interface VisionGuiState {
   paneSizeOptions: PaneSizeOptions
 }
 
-export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiState> {
+export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
   _visionRoot: RefObject<HTMLDivElement>
   _queryEditorContainer: RefObject<HTMLDivElement>
   _paramsEditorContainer: RefObject<HTMLDivElement>
@@ -189,11 +189,11 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
       lastParams = '{\n  \n}'
     }
 
-    this._visionRoot = React.createRef()
-    this._operationUrlElement = React.createRef()
-    this._queryEditorContainer = React.createRef()
-    this._paramsEditorContainer = React.createRef()
-    this._customApiVersionElement = React.createRef()
+    this._visionRoot = createRef()
+    this._operationUrlElement = createRef()
+    this._queryEditorContainer = createRef()
+    this._paramsEditorContainer = createRef()
+    this._customApiVersionElement = createRef()
 
     this._client = props.client.withConfig({
       apiVersion: customApiVersion || apiVersion,

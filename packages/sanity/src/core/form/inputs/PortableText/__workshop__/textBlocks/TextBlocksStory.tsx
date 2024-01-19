@@ -1,7 +1,7 @@
 import {ValidationMarker} from '@sanity/types'
 import {Box, Card, Container} from '@sanity/ui'
 import {useAction, useBoolean} from '@sanity/ui-workshop'
-import React, {useMemo} from 'react'
+import {useMemo} from 'react'
 import {useSource} from '../../../../../studio'
 import {PortableTextMarker} from '../../../../types'
 

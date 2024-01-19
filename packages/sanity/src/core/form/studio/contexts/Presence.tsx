@@ -1,5 +1,6 @@
 /* eslint-disable react/no-unused-prop-types */
-import React, {createContext, useContext, useRef} from 'react'
+import {ReactNode, createContext, useContext, useRef} from 'react'
+
 import {Path} from '@sanity/types'
 import {isEqual, startsWith} from '@sanity/util/paths'
 import {FormNodePresence} from '../../../presence'
@@ -7,7 +8,7 @@ import {immutableReconcile} from '../../store/utils/immutableReconcile'
 
 const PresenceContext = createContext<FormNodePresence[]>([])
 
-export function PresenceProvider(props: {presence: FormNodePresence[]; children: React.ReactNode}) {
+export function PresenceProvider(props: {presence: FormNodePresence[]; children: ReactNode}) {
   return (
     <PresenceContext.Provider value={props.presence}>{props.children}</PresenceContext.Provider>
   )

@@ -73,7 +73,7 @@ describe('useDidUpdate', () => {
         wrapper: StrictMode,
       })
 
-      // The first time, didUpdate should be called. StrictMode runs hooks twice https://react.dev/reference/react/StrictMode#strictmode
+      // The first time, didUpdate should be called. StrictMode runs hooks twice https://dev/reference/react/StrictMode#strictmode
       expect(didUpdate).toHaveBeenCalledTimes(2)
 
       rerender({value: currentValue})
@@ -92,7 +92,7 @@ describe('useDidUpdate', () => {
         wrapper: StrictMode,
       })
 
-      // The first time, didUpdate should be called. StrictMode runs hooks twice https://react.dev/reference/react/StrictMode#strictmode
+      // The first time, didUpdate should be called. StrictMode runs hooks twice https://dev/reference/react/StrictMode#strictmode
       expect(didUpdate).toHaveBeenCalledTimes(2)
       expect(compare).toHaveBeenCalledTimes(2)
 
@@ -112,7 +112,7 @@ describe('useDidUpdate', () => {
         wrapper: StrictMode,
       })
 
-      // The first time, didUpdate should be called. StrictMode runs hooks twice https://react.dev/reference/react/StrictMode#strictmode
+      // The first time, didUpdate should be called. StrictMode runs hooks twice https://dev/reference/react/StrictMode#strictmode
       expect(didUpdate).toHaveBeenCalledTimes(2)
 
       didUpdate.mockClear()

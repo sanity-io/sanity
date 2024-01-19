@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-handler-names */
 import {Card, Stack, Text} from '@sanity/ui'
-import React, {useCallback, useMemo} from 'react'
+import {useCallback, useMemo} from 'react'
 import {Item, List} from '../../common/list'
 import {ArrayOfObjectsInputProps, ObjectItem, ObjectItemProps} from '../../../../types'
 import {ArrayOfObjectsItem} from '../../../../members'

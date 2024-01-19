@@ -1,7 +1,7 @@
 import type {ObjectField, ObjectSchemaTypeWithOptions} from '@sanity/types'
 import {Card, Grid, Stack, useToast} from '@sanity/ui'
 import {useBoolean, useProps} from '@sanity/ui-workshop'
-import React, {useCallback, useEffect, useMemo, useState} from 'react'
+import {useCallback, useEffect, useMemo, useState} from 'react'
 import {PatchEvent} from '../patch'
 import {applyAll} from '../patch/applyPatch'
 import {PresenceOverlay} from '../../presence'
@@ -10,7 +10,7 @@ import {TypeTester, FilterFieldInput, FormDebugger} from './_common'
 
 export default function ExampleStory() {
   const {setPropValue} = useProps()
-  // const ref = React.useRef<{focus: () => void} | null>(null)
+  // const ref = useRef<{focus: () => void} | null>(null)
   const toast = useToast()
   // const isUseMutator = useBoolean('Use Mutator', false, 'Props')
   const [, setFocused] = useState(false)

@@ -1,5 +1,3 @@
-import React from 'react'
-
 import {ArrayItemError} from '../../store/types/memberErrors'
 import {useTranslation} from '../../../i18n'
 import {IncompatibleItemType} from './IncompatibleItemType'

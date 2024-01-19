@@ -1,4 +1,13 @@
-import React, {useState, useRef, useMemo, useCallback, DragEvent, useEffect} from 'react'
+import {
+  useState,
+  useRef,
+  useMemo,
+  useCallback,
+  DragEvent,
+  useEffect,
+  MutableRefObject,
+  ReactNode,
+} from 'react'
 import {Element as SlateElement, Transforms, Path, Editor} from 'slate'
 import {ReactEditor, useSlateStatic} from 'slate-react'
 import {debugWithName} from '../../utils/debug'
@@ -16,10 +25,10 @@ const debugRenders = false
  * @internal
  */
 export interface DraggableBlockProps {
-  children: React.ReactNode
+  children: ReactNode
   element: SlateElement
   readOnly: boolean
-  blockRef: React.MutableRefObject<HTMLDivElement | null>
+  blockRef: MutableRefObject<HTMLDivElement | null>
 }
 
 /**
@@ -28,7 +37,7 @@ export interface DraggableBlockProps {
  */
 export const DraggableBlock = ({children, element, readOnly, blockRef}: DraggableBlockProps) => {
   const editor = useSlateStatic()
-  const dragGhostRef: React.MutableRefObject<undefined | HTMLElement> = useRef()
+  const dragGhostRef: MutableRefObject<undefined | HTMLElement> = useRef()
   const [isDragOver, setIsDragOver] = useState(false)
   const isVoid = useMemo(() => Editor.isVoid(editor, element), [editor, element])
   const isInline = useMemo(() => Editor.isInline(editor, element), [editor, element])

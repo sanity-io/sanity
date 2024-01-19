@@ -1,5 +1,4 @@
 import {Box, Card, CardTone, Flex, Text} from '@sanity/ui'
-import React from 'react'
 import {PreviewProps} from 'sanity'
 
 function isRecord(value: unknown): value is Record<string, unknown> {

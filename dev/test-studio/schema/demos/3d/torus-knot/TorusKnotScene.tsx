@@ -5,7 +5,7 @@
 import {Environment, OrbitControls} from '@react-three/drei'
 import {useFrame, useThree} from '@react-three/fiber'
 import {Color, Depth, Fresnel, LayerMaterial} from 'lamina'
-import React, {memo, useEffect, useRef} from 'react'
+import {memo, useEffect, useRef} from 'react'
 import * as THREE from 'three'
 
 export default function View({element: {base, colorA, colorB, position}, preview = false}: any) {

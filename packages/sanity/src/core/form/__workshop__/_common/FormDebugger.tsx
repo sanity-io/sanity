@@ -1,4 +1,3 @@
-import React from 'react'
 import {Box, Card, Code, Stack, Text} from '@sanity/ui'
 import type {Path} from '@sanity/types'
 

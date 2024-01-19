@@ -1,7 +1,7 @@
 // eslint-disable-next-line import/no-unassigned-import
 import '@testing-library/jest-dom/extend-expect'
 import {render} from '@testing-library/react'
-import React, {ComponentProps} from 'react'
+import {ComponentProps, ReactNode} from 'react'
 import {studioTheme, ThemeProvider} from '@sanity/ui'
 import {Translate} from '../Translate'
 import {LocaleProviderBase} from '../components/LocaleProvider'
@@ -30,7 +30,7 @@ async function getWrapper(bundles: LocaleResourceBundle[]) {
 
   await i18next.init()
 
-  return function wrapper({children}: {children: React.ReactNode}) {
+  return function wrapper({children}: {children: ReactNode}) {
     return (
       <ThemeProvider theme={studioTheme}>
         <LocaleProviderBase

@@ -1,4 +1,3 @@
-import React from 'react'
 import {Box, Flex, Stack, Text, Skeleton, TextSkeleton, rem} from '@sanity/ui'
 import classNames from 'classnames'
 import styled from 'styled-components'

@@ -1,5 +1,5 @@
 import {TextInput} from '@sanity/ui'
-import React, {ChangeEvent, useCallback, useState} from 'react'
+import {ChangeEvent, useCallback, useState} from 'react'
 import {useSearchState} from '../../../../../contexts/search/useSearchState'
 import {OperatorInputComponentProps} from '../../../../../definitions/operators/operatorTypes'
 import {useTranslation} from '../../../../../../../../../i18n'

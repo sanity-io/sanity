@@ -1,5 +1,14 @@
 import type {Subscription} from 'rxjs'
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {
+  MouseEvent,
+  KeyboardEvent,
+  memo,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import styled from 'styled-components'
 import {
   // eslint-disable-next-line no-restricted-imports
@@ -20,8 +29,8 @@ import {useTranslation} from '../../../../i18n'
 interface AssetProps {
   asset: Asset
   isSelected: boolean
-  onClick?: (event: React.MouseEvent) => void
-  onKeyPress?: (event: React.KeyboardEvent) => void
+  onClick?: (event: MouseEvent) => void
+  onKeyPress?: (event: KeyboardEvent) => void
   onDeleteFinished: (assetId: string) => void
 }
 
@@ -84,7 +93,7 @@ const MenuContainer = styled.div`
   }
 `
 
-export const AssetThumb = React.memo(function AssetThumb(props: AssetProps) {
+export const AssetThumb = memo(function AssetThumb(props: AssetProps) {
   const versionedClient = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const toast = useToast()
   const deleteRef$ = useRef<Subscription>()

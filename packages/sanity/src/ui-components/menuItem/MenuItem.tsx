@@ -9,7 +9,8 @@ import {
   Stack,
   Hotkeys,
 } from '@sanity/ui'
-import React, {createElement, forwardRef, isValidElement, useCallback, useMemo} from 'react'
+import {createElement, forwardRef, isValidElement, useCallback, useMemo} from 'react'
+import * as React from 'react'
 import {isValidElementType} from 'react-is'
 import styled from 'styled-components'
 import {ConditionalWrapper, ConditionalWrapperRenderWrapperCallback} from '../conditionalWrapper'

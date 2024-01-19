@@ -1,7 +1,7 @@
 import {Schema} from '@sanity/types'
 import {Box, Flex, MenuDivider, Stack, Text} from '@sanity/ui'
 import {partition} from 'lodash'
-import React, {useCallback, useMemo, useRef, useState} from 'react'
+import {useCallback, useMemo, useRef, useState, KeyboardEvent} from 'react'
 import styled from 'styled-components'
 import {
   CommandList,
@@ -52,7 +52,7 @@ export function DocumentTypesPopoverContent() {
   )
 
   const handleFilterChange = useCallback(
-    (e: React.KeyboardEvent<HTMLInputElement>) => setTypeFilter(e.currentTarget.value),
+    (e: KeyboardEvent<HTMLInputElement>) => setTypeFilter(e.currentTarget.value),
     [setTypeFilter],
   )
   const handleFilterClear = useCallback(() => setTypeFilter(''), [])

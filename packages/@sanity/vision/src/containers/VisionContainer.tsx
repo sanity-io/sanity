@@ -1,5 +1,4 @@
 import {useToast} from '@sanity/ui'
-import React from 'react'
 import {useTranslation} from 'sanity'
 import {DelayedSpinner} from '../components/DelayedSpinner'
 import {VisionGui} from '../components/VisionGui'

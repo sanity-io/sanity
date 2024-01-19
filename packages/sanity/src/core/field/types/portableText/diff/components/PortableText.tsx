@@ -6,7 +6,7 @@ import {
   type SpanSchemaType,
 } from '@sanity/types'
 import {uniq, xor} from 'lodash'
-import React, {ReactElement, useCallback, useMemo} from 'react'
+import {createElement, ReactElement, ReactNode, useCallback, useMemo} from 'react'
 import {type TFunction, useTranslation} from '../../../../../i18n'
 import {DiffCard} from '../../../../diff'
 import type {ArrayDiff, ObjectDiff, StringDiff, StringDiffSegment} from '../../../../types'
@@ -71,8 +71,8 @@ export function PortableText(props: Props): JSX.Element {
             childrenDiff.items[0].diff.fields.text.type === 'string' &&
             childrenDiff.items[0].diff.fields.text.segments) ||
           []
-        const returnedChildren: React.ReactNode[] = []
-        const annotationSegments: Record<string, React.ReactNode[]> = {}
+        const returnedChildren: ReactNode[] = []
+        const annotationSegments: Record<string, ReactNode[]> = {}
         // Special case for new empty PT-block (single span child with empty text)
         if (
           isEmptyTextChange(block, diff) &&
@@ -225,7 +225,7 @@ export function PortableText(props: Props): JSX.Element {
             }
           } // end if seg.text
         })
-        return React.createElement('div', {key: block._key}, ...returnedChildren)
+        return createElement('div', {key: block._key}, ...returnedChildren)
       }
       throw new Error("'span' schemaType not found")
     },

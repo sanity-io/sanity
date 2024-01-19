@@ -1,4 +1,4 @@
-import React from 'react'
+import {ComponentType} from 'react'
 import {BooleanInput} from '../../inputs/BooleanInput'
 import {EmailInput} from '../../inputs/EmailInput'
 import {NumberInput} from '../../inputs/NumberInput'
@@ -14,7 +14,7 @@ import {StudioCrossDatasetReferenceInput} from '../inputs/crossDatasetReference/
 import {UniversalArrayInput} from '../../inputs/arrays/UniversalArrayInput'
 import {FIXME} from '../../../FIXME'
 
-export const defaultInputs: Record<string, React.ComponentType<FIXME>> = {
+export const defaultInputs: Record<string, ComponentType<FIXME>> = {
   document: ObjectInput,
   object: ObjectInput,
   array: UniversalArrayInput,

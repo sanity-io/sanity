@@ -1,5 +1,4 @@
 import {Card, Container, Flex} from '@sanity/ui'
-import React from 'react'
 import {ChangeBreadcrumb} from '../diff/components/ChangeBreadcrumb'
 
 export default function ChangeBreadCrumbStory() {

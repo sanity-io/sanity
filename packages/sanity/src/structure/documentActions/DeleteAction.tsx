@@ -1,7 +1,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 
 import {TrashIcon} from '@sanity/icons'
-import React, {useCallback, useState} from 'react'
+import {useCallback, useState} from 'react'
 import {ConfirmDeleteDialog} from '../components'
 import {useDocumentPane} from '../panes/document/useDocumentPane'
 import {structureLocaleNamespace} from '../i18n'

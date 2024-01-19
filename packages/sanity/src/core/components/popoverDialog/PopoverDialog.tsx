@@ -1,6 +1,6 @@
 import {CloseIcon} from '@sanity/icons'
 import {Box, Flex, Layer, ResponsiveWidthProps, Stack, Text, Theme} from '@sanity/ui'
-import React, {useCallback} from 'react'
+import {Dispatch, ReactNode, SetStateAction, useCallback} from 'react'
 import styled, {css} from 'styled-components'
 import TrapFocus from 'react-focus-lock'
 import {Button, Popover, PopoverProps} from '../../../ui-components'
@@ -31,12 +31,12 @@ const StickyLayer = styled(Layer)((props: {theme: Theme}) => {
 })
 
 interface PopoverDialogProps {
-  children: React.ReactNode
-  header?: React.ReactNode
+  children: ReactNode
+  header?: ReactNode
   onClose: () => void
   referenceElement: PopoverProps['referenceElement']
   width: ResponsiveWidthProps['width']
-  containerRef?: React.Dispatch<React.SetStateAction<HTMLDivElement | null>>
+  containerRef?: Dispatch<SetStateAction<HTMLDivElement | null>>
 }
 
 /** @internal */

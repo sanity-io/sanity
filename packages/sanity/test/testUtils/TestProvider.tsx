@@ -1,6 +1,6 @@
-import React from 'react'
 import {SanityClient} from '@sanity/client'
 import {LayerProvider, studioTheme, ThemeProvider, ToastProvider} from '@sanity/ui'
+import {ReactNode} from 'react'
 import {
   LocaleProviderBase,
   LocaleResourceBundle,
@@ -37,7 +37,7 @@ export async function createTestProvider({
 
   await i18next.init()
 
-  function TestProvider({children}: {children: React.ReactNode}) {
+  function TestProvider({children}: {children: ReactNode}) {
     return (
       <ThemeProvider theme={studioTheme}>
         <LocaleProviderBase locales={locales} i18next={i18next} projectId="test" sourceId="test">

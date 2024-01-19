@@ -1,5 +1,4 @@
 import {ComposeIcon, DropIcon, ImageIcon} from '@sanity/icons'
-import React from 'react'
 import {
   BlockEditor,
   PortableTextInputProps,

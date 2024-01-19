@@ -1,5 +1,5 @@
 import {Box, BoxProps, Card, Code, Stack, Text} from '@sanity/ui'
-import React, {useCallback, useEffect, useRef, useState} from 'react'
+import {ReactElement, ReactNode, useCallback, useEffect, useRef, useState} from 'react'
 import styled, {type ExecutionProps} from 'styled-components'
 import {useTranslation} from '../../../i18n'
 import {pathToString} from '../../paths'
@@ -8,7 +8,7 @@ import {FromToArrow} from './FromToArrow'
 
 /** @internal */
 export interface DiffInspectWrapperProps {
-  children: React.ReactNode
+  children: ReactNode
   change: FieldChangeNode
   as?: ExecutionProps['as']
 }
@@ -25,7 +25,7 @@ const Meta = styled.div`
 `
 
 /** @internal */
-export function DiffInspectWrapper(props: DiffInspectWrapperProps & BoxProps): React.ReactElement {
+export function DiffInspectWrapper(props: DiffInspectWrapperProps & BoxProps): ReactElement {
   const {children, as, change, ...restProps} = props
   const isHovering = useRef(false)
   const [isInspecting, setIsInspecting] = useState(false)
@@ -61,7 +61,7 @@ const MetaLabel = ({title}: {title: string}) => (
   </Box>
 )
 
-function DiffInspector({change}: {change: FieldChangeNode}): React.ReactElement | null {
+function DiffInspector({change}: {change: FieldChangeNode}): ReactElement | null {
   const {t} = useTranslation()
   return (
     <Stack space={3}>

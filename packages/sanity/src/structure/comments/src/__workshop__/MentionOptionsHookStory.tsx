@@ -1,4 +1,3 @@
-import React from 'react'
 import {Card, Code} from '@sanity/ui'
 import {useMentionOptions} from '../hooks'
 

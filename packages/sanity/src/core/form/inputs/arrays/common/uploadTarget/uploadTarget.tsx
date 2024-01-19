@@ -1,8 +1,8 @@
 import {Box, Flex, Text, useToast} from '@sanity/ui'
-import React from 'react'
 import {SchemaType} from '@sanity/types'
 import {sortBy} from 'lodash'
 import styled from 'styled-components'
+import {ReactNode, ComponentType, forwardRef, ForwardedRef, useCallback, useState} from 'react'
 import {FileLike, ResolvedUploader, UploaderResolver} from '../../../../studio/uploads/types'
 import {FileInfo, fileTarget} from '../../../common/fileTarget'
 import {DropMessage} from '../../../files/common/DropMessage'
@@ -15,7 +15,7 @@ export interface UploadTargetProps {
   types: SchemaType[]
   resolveUploader?: UploaderResolver<FIXME>
   onUpload?: (event: UploadEvent) => void
-  children?: React.ReactNode
+  children?: ReactNode
 }
 
 // todo: define and export this as a core interface in this package
@@ -40,18 +40,18 @@ function getUploadCandidates(
     }))
     .filter((member) => member.uploader) as ResolvedUploader[]
 }
-export function uploadTarget<Props>(Component: React.ComponentType<Props>) {
+export function uploadTarget<Props>(Component: ComponentType<Props>) {
   const FileTarget = fileTarget<FIXME>(Component)
 
-  return React.forwardRef(function UploadTarget(
+  return forwardRef(function UploadTarget(
     props: UploadTargetProps & Props,
-    forwardedRef: React.ForwardedRef<HTMLElement>,
+    forwardedRef: ForwardedRef<HTMLElement>,
   ) {
     const {children, resolveUploader, onUpload, types, ...rest} = props
     const {push: pushToast} = useToast()
     const {t} = useTranslation()
 
-    const uploadFile = React.useCallback(
+    const uploadFile = useCallback(
       (file: File, resolvedUploader: ResolvedUploader) => {
         const {type, uploader} = resolvedUploader
         onUpload?.({file, schemaType: type, uploader})
@@ -59,7 +59,7 @@ export function uploadTarget<Props>(Component: React.ComponentType<Props>) {
       [onUpload],
     )
 
-    const handleFiles = React.useCallback(
+    const handleFiles = useCallback(
       (files: File[]) => {
         if (!resolveUploader) {
           return
@@ -106,8 +106,8 @@ export function uploadTarget<Props>(Component: React.ComponentType<Props>) {
       [pushToast, resolveUploader, types, uploadFile, t],
     )
 
-    const [hoveringFiles, setHoveringFiles] = React.useState<FileInfo[]>([])
-    const handleFilesOut = React.useCallback(() => setHoveringFiles([]), [])
+    const [hoveringFiles, setHoveringFiles] = useState<FileInfo[]>([])
+    const handleFilesOut = useCallback(() => setHoveringFiles([]), [])
 
     return (
       <Root>

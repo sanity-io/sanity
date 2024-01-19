@@ -1,5 +1,5 @@
-import React from 'react'
+import {createContext} from 'react'
 import {FormNodePresence} from './types'
 
 /** @internal */
-export const FormFieldPresenceContext = React.createContext<FormNodePresence[]>([])
+export const FormFieldPresenceContext = createContext<FormNodePresence[]>([])

@@ -6,7 +6,7 @@ import {
 import {isPortableTextSpan, isPortableTextTextBlock} from '@sanity/types'
 import {useClickOutside} from '@sanity/ui'
 import {isEqual} from 'lodash'
-import React, {useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent} from 'react'
+import {useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent} from 'react'
 import styled, {css} from 'styled-components'
 import {Popover, type PopoverProps} from '../../../../../../ui-components'
 import {commentsLocaleNamespace} from '../../../../i18n'

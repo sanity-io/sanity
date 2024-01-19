@@ -1,10 +1,10 @@
-import React from 'react'
 import Debug from 'debug'
+import {PureComponent, type PointerEvent} from 'react'
 import type {Coordinate} from './types'
 
 const debug = Debug('sanity-imagetool')
 
-type PositionableEvent = PointerEvent | React.PointerEvent<HTMLElement>
+type PositionableEvent = globalThis.PointerEvent | PointerEvent<HTMLElement>
 
 // Returns a component that emits `onDragStart, `onDrag` and `onDragEnd` events.
 // Pointer events are used which handles mouse/touch events the same way.
@@ -19,7 +19,7 @@ export interface DragAwareProps {
 }
 
 export function makeDragAware(Component: 'canvas') {
-  return class DragAware extends React.PureComponent<DragAwareProps> {
+  return class DragAware extends PureComponent<DragAwareProps> {
     domNode: HTMLCanvasElement | null = null
     currentPos: Coordinate | null = null
     isDragging = false

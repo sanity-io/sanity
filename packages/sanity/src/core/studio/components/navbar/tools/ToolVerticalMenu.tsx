@@ -1,6 +1,6 @@
 import {Stack} from '@sanity/ui'
 import {startCase} from 'lodash'
-import React, {forwardRef, useMemo} from 'react'
+import {Ref, forwardRef, useMemo} from 'react'
 import {Button} from '../../../../../ui-components'
 import {Tool} from '../../../../config'
 import {ToolLink, ToolLinkProps} from './ToolLink'
@@ -22,7 +22,7 @@ export function ToolVerticalMenu(props: ToolVerticalMenuProps) {
 
           const Link = forwardRef(function Link(
             linkProps: ToolLinkProps,
-            ref: React.Ref<HTMLAnchorElement>,
+            ref: Ref<HTMLAnchorElement>,
           ) {
             return (
               <ToolLink {...linkProps} ref={ref} name={tool.name}>

@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useMemo, useRef} from 'react'
+import {useCallback, useEffect, useMemo, useRef} from 'react'
 import {Path} from '@sanity/types'
 import {isShallowEmptyObject} from '@sanity/util/content'
 import {useDidUpdate} from '../../../hooks/useDidUpdate'

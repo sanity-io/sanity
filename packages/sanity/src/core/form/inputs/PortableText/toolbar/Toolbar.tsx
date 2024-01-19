@@ -4,7 +4,7 @@ import {
   usePortableTextEditorSelection,
   PortableTextEditor,
 } from '@sanity/portable-text-editor'
-import React, {memo, useCallback, useMemo, useState} from 'react'
+import {memo, useCallback, useMemo, useState, MouseEvent} from 'react'
 import {ObjectSchemaType, Path, SchemaType} from '@sanity/types'
 import {Box, Flex, useElementRect, useToast} from '@sanity/ui'
 import {CollapseIcon, ExpandIcon} from '@sanity/icons'
@@ -91,7 +91,7 @@ const InnerToolbar = memo(function InnerToolbar({
     rootElement: rootElement,
   })
 
-  const preventEditorBlurOnToolbarMouseDown = useCallback((e: React.MouseEvent) => {
+  const preventEditorBlurOnToolbarMouseDown = useCallback((e: MouseEvent) => {
     e.preventDefault()
   }, [])
 

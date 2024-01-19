@@ -1,5 +1,5 @@
 import {I18nextProvider} from 'react-i18next'
-import React, {PropsWithChildren, Suspense, useCallback, useMemo, useSyncExternalStore} from 'react'
+import {PropsWithChildren, Suspense, useCallback, useMemo, useSyncExternalStore} from 'react'
 import type {i18n} from 'i18next'
 import {LoadingBlock} from '../../components/loadingBlock'
 import {useSource} from '../../studio'

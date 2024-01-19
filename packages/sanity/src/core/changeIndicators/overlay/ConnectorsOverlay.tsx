@@ -1,4 +1,4 @@
-import React, {useCallback, useMemo, useState} from 'react'
+import {useCallback, useMemo, useState} from 'react'
 import {sortBy} from 'lodash'
 import {Path} from '@sanity/types'
 import {ScrollMonitor} from '../../components/scroll'
@@ -98,7 +98,7 @@ function getState(
 
 export function ConnectorsOverlay(props: ConnectorsOverlayProps) {
   const {rootElement, onSetFocus} = props
-  const [hovered, setHovered] = React.useState<string | null>(null)
+  const [hovered, setHovered] = useState<string | null>(null)
   const allReportedValues = useReportedValues()
   const byId: Map<string, TrackedChange | TrackedArea> = useMemo(
     () => new Map(allReportedValues),

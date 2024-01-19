@@ -1,5 +1,5 @@
 import {SchemaTypeDefinition, FileSchemaType, AssetSource, FieldDefinition} from '@sanity/types'
-import React from 'react'
+import * as React from 'react'
 import {EMPTY} from 'rxjs'
 import {ObjectInputProps} from '../../src/core'
 import {BaseFileInputProps} from '../../src/core/form/inputs/files/FileInput'

@@ -1,4 +1,6 @@
-import React, {
+import {
+  CSSProperties,
+  SyntheticEvent,
   memo,
   startTransition,
   useCallback,
@@ -33,9 +35,9 @@ export interface HotspotImageProps {
   alignX?: 'left' | 'center' | 'right'
   alignY?: 'top' | 'center' | 'bottom'
   className?: string
-  style?: React.CSSProperties
+  style?: CSSProperties
   alt?: string
-  onError?: (event: React.SyntheticEvent<HTMLImageElement, Event>) => void
+  onError?: (event: SyntheticEvent<HTMLImageElement, Event>) => void
   onLoad?: () => void
 }
 

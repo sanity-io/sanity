@@ -1,6 +1,6 @@
 import type {ImageAsset, ReferenceValue} from '@sanity/types'
 import {Card} from '@sanity/ui'
-import React, {useCallback, useState} from 'react'
+import {useCallback, useState} from 'react'
 import styled from 'styled-components'
 import {observeImageAsset} from '../../../../../../../../../../form/studio/inputs/client-adapters/assets'
 import {WithReferencedAsset} from '../../../../../../../../../../form/utils/WithReferencedAsset'

@@ -1,6 +1,5 @@
 import {render, waitFor} from '@testing-library/react'
-
-import React from 'react'
+import {RefObject, createRef} from 'react'
 import {PortableTextEditor} from '../../PortableTextEditor'
 import {PortableTextEditorTester, schemaType} from '../../__tests__/PortableTextEditorTester'
 
@@ -42,7 +41,7 @@ const initialSelection = {
 
 describe('plugin:withEditableAPI: .delete()', () => {
   it('deletes block', async () => {
-    const editorRef: React.RefObject<PortableTextEditor> = React.createRef()
+    const editorRef: RefObject<PortableTextEditor> = createRef()
     const onChange = jest.fn()
     render(
       <PortableTextEditorTester
@@ -84,7 +83,7 @@ describe('plugin:withEditableAPI: .delete()', () => {
   })
 
   it('deletes all the blocks, but leaves a placeholder block', async () => {
-    const editorRef: React.RefObject<PortableTextEditor> = React.createRef()
+    const editorRef: RefObject<PortableTextEditor> = createRef()
     const onChange = jest.fn()
     render(
       <PortableTextEditorTester
@@ -137,7 +136,7 @@ describe('plugin:withEditableAPI: .delete()', () => {
   })
 
   it('deletes children', async () => {
-    const editorRef: React.RefObject<PortableTextEditor> = React.createRef()
+    const editorRef: RefObject<PortableTextEditor> = createRef()
     const onChange = jest.fn()
     render(
       <PortableTextEditorTester
@@ -196,7 +195,7 @@ describe('plugin:withEditableAPI: .delete()', () => {
     })
   })
   it('deletes selected', async () => {
-    const editorRef: React.RefObject<PortableTextEditor> = React.createRef()
+    const editorRef: RefObject<PortableTextEditor> = createRef()
     const onChange = jest.fn()
     render(
       <PortableTextEditorTester

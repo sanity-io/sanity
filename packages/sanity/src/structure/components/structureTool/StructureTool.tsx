@@ -1,5 +1,5 @@
 import {PortalProvider, useTheme, useToast} from '@sanity/ui'
-import React, {memo, Fragment, useState, useEffect, useCallback} from 'react'
+import {memo, Fragment, useState, useEffect, useCallback} from 'react'
 import styled from 'styled-components'
 import isHotkey from 'is-hotkey'
 import {LOADING_PANE} from '../../constants'

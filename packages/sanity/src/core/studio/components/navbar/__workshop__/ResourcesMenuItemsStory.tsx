@@ -1,6 +1,5 @@
 import {Card, Flex, Menu} from '@sanity/ui'
 import {useBoolean} from '@sanity/ui-workshop'
-import React from 'react'
 import {ResourcesMenuItems} from '../resources/ResourcesMenuItems'
 
 export default function ResourcesMenuItemsStory() {

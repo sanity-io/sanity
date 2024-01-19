@@ -1,5 +1,5 @@
 import {RestoreIcon} from '@sanity/icons'
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {structureLocaleNamespace} from '../i18n'
 import {
   DocumentActionComponent,

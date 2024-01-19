@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useMemo, useState} from 'react'
+import {useCallback, useEffect, useMemo, useState} from 'react'
 import {debounce} from 'lodash'
 import {TFunction, useTranslation} from 'sanity'
 import {tryParseParams} from '../util/tryParseParams'

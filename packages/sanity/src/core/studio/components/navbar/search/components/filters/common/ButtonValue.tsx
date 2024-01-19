@@ -1,6 +1,5 @@
 import type {Reference} from '@sanity/types'
 import {isValid} from 'date-fns'
-import React from 'react'
 import {useSchema} from '../../../../../../../hooks'
 import {useUnitFormatter} from '../../../../../../../hooks/useUnitFormatter'
 import {useDateTimeFormat} from '../../../../../../../hooks/useDateTimeFormat'

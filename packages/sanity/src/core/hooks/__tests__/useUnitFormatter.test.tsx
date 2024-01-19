@@ -1,4 +1,4 @@
-import React, {type ReactElement} from 'react'
+import type {ReactElement} from 'react'
 import {ThemeProvider, studioTheme} from '@sanity/ui'
 import {renderHook} from '@testing-library/react'
 import {LocaleProviderBase, usEnglishLocale} from '../../i18n'

@@ -1,11 +1,11 @@
-import React, {createContext, useContext} from 'react'
+import {ReactNode, createContext, useContext} from 'react'
 import {Source} from '../config'
 import {useWorkspace} from './workspace'
 
 /** @internal */
 export type SourceProviderProps =
-  | {source: Source; children?: React.ReactNode}
-  | {name: string; children?: React.ReactNode}
+  | {source: Source; children?: ReactNode}
+  | {name: string; children?: ReactNode}
 
 const SourceContext = createContext<Source | null>(null)
 

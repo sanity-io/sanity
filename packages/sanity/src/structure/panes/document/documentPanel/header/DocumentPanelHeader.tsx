@@ -1,6 +1,7 @@
 import {ArrowLeftIcon, CloseIcon, SplitVerticalIcon} from '@sanity/icons'
 import {Flex} from '@sanity/ui'
-import React, {createElement, memo, forwardRef, useMemo} from 'react'
+import {createElement, memo, forwardRef, useMemo} from 'react'
+import * as React from 'react'
 import {
   PaneContextMenuButton,
   PaneHeader,

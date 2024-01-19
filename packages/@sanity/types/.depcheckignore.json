@@ -8,6 +8,7 @@
     "@sanity/mutator",
     "@sanity/pkg-utils",
     "@sanity/types",
+    "react",
     "@sanity/ui",
     "_self_",
     "boundless-arrow-key-navigation",

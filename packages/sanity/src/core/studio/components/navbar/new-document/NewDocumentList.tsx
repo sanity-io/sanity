@@ -1,5 +1,5 @@
 import {Flex, Text} from '@sanity/ui'
-import React, {useCallback} from 'react'
+import {useCallback} from 'react'
 import {CurrentUser} from '@sanity/types'
 import styled from 'styled-components'
 import {CommandList} from '../../../../components'

@@ -1,6 +1,5 @@
 /* eslint-disable react/jsx-no-bind */
 import {Path, defineArrayMember, defineField, defineType} from '@sanity/types'
-import React from 'react'
 import {SanityDocument} from '@sanity/client'
 import {TestWrapper} from '../../utils/TestWrapper'
 import {TestForm} from '../../utils/TestForm'

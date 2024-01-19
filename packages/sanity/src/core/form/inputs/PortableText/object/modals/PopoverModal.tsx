@@ -2,7 +2,7 @@
 
 import {CloseIcon} from '@sanity/icons'
 import {Box, Flex, Text, useClickOutside, useGlobalKeyDown} from '@sanity/ui'
-import React, {useCallback, useEffect, useRef, useState} from 'react'
+import {ReactNode, useCallback, useEffect, useRef, useState} from 'react'
 import {Button, PopoverProps} from '../../../../../../ui-components'
 import {PresenceOverlay} from '../../../../../presence'
 import {PortableTextEditorElement} from '../../Compositor'
@@ -12,12 +12,12 @@ import {ContentHeaderBox, ContentScrollerBox, RootPopover} from './PopoverModal.
 
 interface PopoverEditDialogProps {
   autoFocus?: boolean
-  children: React.ReactNode
+  children: ReactNode
   floatingBoundary: HTMLElement | null
   onClose: () => void
   referenceBoundary: HTMLElement | null
   referenceElement: PortableTextEditorElement | null
-  title: string | React.ReactNode
+  title: string | ReactNode
   width?: ModalWidth
 }
 

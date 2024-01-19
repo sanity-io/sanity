@@ -14,7 +14,13 @@ import {
   SlugValue,
   StringSchemaType,
 } from '@sanity/types'
-import React, {ComponentType, FocusEventHandler, FormEventHandler} from 'react'
+import {
+  ComponentType,
+  FocusEventHandler,
+  FormEventHandler,
+  MutableRefObject,
+  ReactElement,
+} from 'react'
 import {HotkeyOptions, OnCopyFn, OnPasteFn} from '@sanity/portable-text-editor'
 import {FormPatch, PatchEvent} from '../patch'
 import {
@@ -45,7 +51,7 @@ import {ArrayInputFunctionsProps, PortableTextMarker, RenderCustomMarkers} from 
  * @hidden
  * @public */
 export interface BaseInputProps {
-  renderDefault: (props: InputProps) => React.ReactElement
+  renderDefault: (props: InputProps) => ReactElement
 }
 
 /**
@@ -391,7 +397,7 @@ export interface PrimitiveInputElementProps {
   onChange: FormEventHandler
   onFocus: FocusEventHandler
   onBlur: FocusEventHandler
-  ref: React.MutableRefObject<any>
+  ref: MutableRefObject<any>
   'aria-describedby': string | undefined
 }
 
@@ -402,7 +408,7 @@ export interface ComplexElementProps {
   id: string
   onFocus: FocusEventHandler
   onBlur: FocusEventHandler
-  ref: React.MutableRefObject<any>
+  ref: MutableRefObject<any>
   'aria-describedby': string | undefined
 }
 

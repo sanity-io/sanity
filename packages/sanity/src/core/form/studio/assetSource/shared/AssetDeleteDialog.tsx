@@ -1,4 +1,4 @@
-import React, {useMemo} from 'react'
+import {useMemo} from 'react'
 import {TrashIcon} from '@sanity/icons'
 import {Box, Stack} from '@sanity/ui'
 import {Asset as AssetType} from '@sanity/types'

@@ -1,6 +1,6 @@
 import {CheckmarkIcon} from '@sanity/icons'
 import {Box, ResponsiveMarginProps, ResponsivePaddingProps} from '@sanity/ui'
-import React, {useCallback} from 'react'
+import {memo, useCallback} from 'react'
 import type {SearchableType} from '../../../../../../../../search'
 import {useSearchState} from '../../../../contexts/search/useSearchState'
 import {Button} from '../../../../../../../../../ui-components'
@@ -10,7 +10,7 @@ interface DocumentTypeFilterItemProps extends ResponsiveMarginProps, ResponsiveP
   type: SearchableType
 }
 
-export const DocumentTypeFilterItem = React.memo(function TypeFilterItem({
+export const DocumentTypeFilterItem = memo(function TypeFilterItem({
   selected,
   type,
   ...rest

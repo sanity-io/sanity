@@ -1,24 +1,24 @@
-import React from 'react'
 import {DocumentPresence, FieldPresence, PresenceOverlay, setIfMissing} from 'sanity'
 import {Button, Dialog} from '@sanity/ui'
 import {ObjectSchemaType, Path} from '@sanity/types'
+import {forwardRef, useCallback, FocusEvent, useState, ForwardedRef} from 'react'
 
-export const CustomInputWithDialogOverlay = React.forwardRef(function CustomInputWithDialogOverlay(
+export const CustomInputWithDialogOverlay = forwardRef(function CustomInputWithDialogOverlay(
   props: {
     focusPath?: Path
     level?: number
     onBlur: () => void
     onChange: (patches: any) => void
-    onFocus: (pathOrEvent?: Path | React.FocusEvent) => void
+    onFocus: (pathOrEvent?: Path | FocusEvent) => void
     presence: DocumentPresence[]
     schemaType: ObjectSchemaType
     value?: any
   },
-  ref: React.ForwardedRef<HTMLDivElement>,
+  ref: ForwardedRef<HTMLDivElement>,
 ) {
   const {focusPath, level = 0, onBlur, onChange, onFocus, presence, schemaType, value} = props
 
-  const handleFieldChange = React.useCallback(
+  const handleFieldChange = useCallback(
     (field: any, fieldPatchEvent: any) => {
       // Whenever the field input emits a patch event, we need to make sure to each of the included patches
       // are prefixed with its field name, e.g. going from:
@@ -31,7 +31,7 @@ export const CustomInputWithDialogOverlay = React.forwardRef(function CustomInpu
     [onChange, schemaType.name],
   )
 
-  const [isOpen, setIsOpen] = React.useState(false)
+  const [isOpen, setIsOpen] = useState(false)
   return (
     <>
       {isOpen && (

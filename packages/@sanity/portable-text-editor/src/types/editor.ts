@@ -18,7 +18,7 @@ import {
 import {Subject, Observable} from 'rxjs'
 import {Descendant, Node as SlateNode, Operation as SlateOperation} from 'slate'
 import {ReactEditor} from 'slate-react'
-import {FocusEvent} from 'react'
+import {FocusEvent, ClipboardEvent, KeyboardEvent, ReactElement, RefObject} from 'react'
 import type {Patch} from '../types/patch'
 import {PortableTextEditor} from '../editor/PortableTextEditor'
 
@@ -179,7 +179,7 @@ export interface PortableTextSlateEditor extends ReactEditor {
   /**
    * Use hotkeys
    */
-  pteWithHotKeys: (event: React.KeyboardEvent<HTMLDivElement>) => void
+  pteWithHotKeys: (event: KeyboardEvent<HTMLDivElement>) => void
 
   /**
    * Undo
@@ -365,7 +365,7 @@ export type OnPasteResultOrPromise = OnPasteResult | Promise<OnPasteResult>
 
 /** @beta */
 export interface PasteData {
-  event: React.ClipboardEvent
+  event: ClipboardEvent
   path: Path
   schemaTypes: PortableTextMemberSchemaTypes
   value: PortableTextBlock[] | undefined
@@ -379,7 +379,7 @@ export type OnBeforeInputFn = (event: InputEvent) => void
 
 /** @beta */
 export type OnCopyFn = (
-  event: React.ClipboardEvent<HTMLDivElement | HTMLSpanElement>,
+  event: ClipboardEvent<HTMLDivElement | HTMLSpanElement>,
 ) => undefined | unknown
 
 /** @beta */
@@ -390,8 +390,8 @@ export type PatchObservable = Observable<{
 
 /** @beta */
 export interface BlockRenderProps {
-  children: React.ReactElement
-  editorElementRef: React.RefObject<HTMLElement>
+  children: ReactElement
+  editorElementRef: RefObject<HTMLElement>
   focused: boolean
   level?: number
   listItem?: string
@@ -407,8 +407,8 @@ export interface BlockRenderProps {
 /** @beta */
 export interface BlockChildRenderProps {
   annotations: PortableTextObject[]
-  children: React.ReactElement
-  editorElementRef: React.RefObject<HTMLElement>
+  children: ReactElement
+  editorElementRef: RefObject<HTMLElement>
   focused: boolean
   path: Path
   selected: boolean
@@ -421,8 +421,8 @@ export interface BlockChildRenderProps {
 /** @beta */
 export interface BlockAnnotationRenderProps {
   block: PortableTextBlock
-  children: React.ReactElement
-  editorElementRef: React.RefObject<HTMLElement>
+  children: ReactElement
+  editorElementRef: RefObject<HTMLElement>
   focused: boolean
   path: Path
   schemaType: ObjectSchemaType
@@ -433,8 +433,8 @@ export interface BlockAnnotationRenderProps {
 }
 /** @beta */
 export interface BlockDecoratorRenderProps {
-  children: React.ReactElement
-  editorElementRef: React.RefObject<HTMLElement>
+  children: ReactElement
+  editorElementRef: RefObject<HTMLElement>
   focused: boolean
   path: Path
   schemaType: BlockDecoratorDefinition
@@ -447,8 +447,8 @@ export interface BlockDecoratorRenderProps {
 
 export interface BlockListItemRenderProps {
   block: PortableTextTextBlock
-  children: React.ReactElement
-  editorElementRef: React.RefObject<HTMLElement>
+  children: ReactElement
+  editorElementRef: RefObject<HTMLElement>
   focused: boolean
   level: number
   path: Path
@@ -473,8 +473,8 @@ export type RenderStyleFunction = (props: BlockStyleRenderProps) => JSX.Element
 
 export interface BlockStyleRenderProps {
   block: PortableTextTextBlock
-  children: React.ReactElement
-  editorElementRef: React.RefObject<HTMLElement>
+  children: ReactElement
+  editorElementRef: RefObject<HTMLElement>
   focused: boolean
   path: Path
   selected: boolean

@@ -1,4 +1,4 @@
-import React, {memo, useCallback, useMemo} from 'react'
+import {ReactNode, memo, useCallback, useMemo} from 'react'
 import {isEqual, startsWith, trimLeft} from '@sanity/util/paths'
 import {isIndexSegment, isKeySegment, type Path} from '@sanity/types'
 import {pathToString} from '../../field'
@@ -17,7 +17,7 @@ import type {
   RenderPreviewCallback,
 } from '../types'
 
-const pass = ({children}: {children: React.ReactNode}) => children
+const pass = ({children}: {children: ReactNode}) => children
 
 /** @internal */
 export type FormInputAbsolutePathArg = {absolutePath: Path}

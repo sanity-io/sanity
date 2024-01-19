@@ -1,5 +1,4 @@
 import {Box} from '@sanity/ui'
-import React from 'react'
 import {FromToArrow} from '../diff'
 
 export default function FromToArrowStory() {

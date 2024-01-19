@@ -1,5 +1,5 @@
 import {Box, Text} from '@sanity/ui'
-import React, {useMemo} from 'react'
+import {useMemo} from 'react'
 import {DiffCard} from '../diff'
 import {Diff} from '../types'
 

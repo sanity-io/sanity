@@ -1,5 +1,5 @@
 import {Box, ResponsiveMarginProps, ResponsivePaddingProps} from '@sanity/ui'
-import React, {MouseEvent, useCallback, useMemo} from 'react'
+import {MouseEvent, useCallback, useMemo} from 'react'
 import {GeneralPreviewLayoutKey, PreviewCard} from '../../../../../../../components'
 import {useSchema} from '../../../../../../../hooks'
 import {useDocumentPresence} from '../../../../../../../store'

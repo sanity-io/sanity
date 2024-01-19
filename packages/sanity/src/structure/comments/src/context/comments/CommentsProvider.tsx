@@ -1,4 +1,5 @@
-import React, {memo, useCallback, useMemo, useState} from 'react'
+import {memo, useCallback, useMemo, useState} from 'react'
+import * as React from 'react'
 import {orderBy} from 'lodash'
 import {
   CommentCreatePayload,

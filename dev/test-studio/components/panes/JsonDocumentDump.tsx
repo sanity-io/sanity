@@ -1,7 +1,8 @@
 import {useClient} from 'sanity'
 import {SanityDocument} from '@sanity/types'
 import {Box, Code, Flex, Spinner, Text} from '@sanity/ui'
-import React, {
+import {
+  ForwardedRef,
   forwardRef,
   useCallback,
   useEffect,
@@ -13,7 +14,7 @@ import {Subscription} from 'rxjs'
 
 export const JsonDocumentDump = forwardRef(function JsonDocumentDump(
   props: {itemId: string},
-  ref: React.ForwardedRef<{actionHandlers: Record<string, () => void>}>,
+  ref: ForwardedRef<{actionHandlers: Record<string, () => void>}>,
 ) {
   const {itemId} = props
   const client = useClient({apiVersion: '2022-09-09'})

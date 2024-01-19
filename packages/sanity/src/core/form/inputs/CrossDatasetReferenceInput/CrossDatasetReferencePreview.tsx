@@ -1,4 +1,4 @@
-import React, {createElement, useMemo} from 'react'
+import {createElement, useMemo, isValidElement as ReactIsValidElement} from 'react'
 import type {CrossDatasetType, PreviewValue} from '@sanity/types'
 import {Badge, Box, Flex, Inline, Text} from '@sanity/ui'
 import {AccessDeniedIcon, HelpCircleIcon, LaunchIcon} from '@sanity/icons'
@@ -49,7 +49,7 @@ export function CrossDatasetReferencePreview(props: {
     if (previewMedia) {
       const isValidImageAsset =
         typeof (previewMedia as FIXME)?.asset !== 'undefined' && isImageSource(previewMedia)
-      const isValidElement = React.isValidElement(previewMedia)
+      const isValidElement = ReactIsValidElement(previewMedia)
 
       if (!isValidImageAsset && !isValidElement) {
         return null

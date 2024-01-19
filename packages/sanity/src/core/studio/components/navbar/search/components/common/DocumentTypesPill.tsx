@@ -1,5 +1,5 @@
 import {Card, Text} from '@sanity/ui'
-import React, {useMemo} from 'react'
+import {useMemo} from 'react'
 import type {SearchableType} from '../../../../../../search'
 import {documentTypesTruncated} from '../../utils/documentTypesTruncated'
 import {useTranslation} from '../../../../../../i18n'

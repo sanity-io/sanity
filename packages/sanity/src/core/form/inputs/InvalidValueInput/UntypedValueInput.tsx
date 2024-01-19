@@ -1,4 +1,4 @@
-import React, {useCallback, useMemo} from 'react'
+import {useCallback, useMemo} from 'react'
 import {Card, Code, Grid, Stack, Text} from '@sanity/ui'
 import {PatchEvent, setIfMissing, unset} from '../../patch'
 import {Button} from '../../../../ui-components'

@@ -1,5 +1,4 @@
 import {TextInput} from '@sanity/ui'
-import React from 'react'
 import {getValidationRule} from '../utils/getValidationRule'
 import {StringInputProps} from '../types'
 

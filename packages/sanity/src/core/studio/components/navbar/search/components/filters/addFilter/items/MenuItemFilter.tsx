@@ -5,7 +5,7 @@ import {
   // eslint-disable-next-line no-restricted-imports
   Button, // Button with specific styling and children.
 } from '@sanity/ui'
-import React, {useCallback} from 'react'
+import {memo, useCallback} from 'react'
 import {useSearchState} from '../../../../contexts/search/useSearchState'
 import type {FilterMenuItemFilter} from '../../../../types'
 import {getFilterKey} from '../../../../utils/filterUtils'
@@ -17,7 +17,7 @@ interface FilterMenuItemProps extends ResponsiveMarginProps, ResponsivePaddingPr
   onClose: () => void
 }
 
-export const MenuItemFilter = React.memo(function MenuItemFilter({
+export const MenuItemFilter = memo(function MenuItemFilter({
   item,
   onClose,
   ...rest

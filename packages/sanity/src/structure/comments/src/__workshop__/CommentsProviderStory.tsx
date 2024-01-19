@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-handler-names */
-import React, {useMemo} from 'react'
+import {useMemo} from 'react'
 import {useString, useSelect} from '@sanity/ui-workshop'
 import {CommentsList, CommentsUpsellPanel} from '../components'
 import {

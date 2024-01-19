@@ -1,4 +1,4 @@
-import {ReactNode, createRef, useContext, useRef} from 'react'
+import {MutableRefObject, ReactNode, createRef, useContext, useRef} from 'react'
 import {pathFor} from '@sanity/util/paths'
 import {PortableTextMemberItemsContext} from '../contexts/PortableTextMembers'
 import {PortableTextMemberItem} from '../PortableTextInput'
@@ -36,7 +36,7 @@ export function usePortableTextMemberItems(): PortableTextMemberItem[] {
 export function usePortableTextMemberItemsFromProps(
   props: PortableTextInputProps,
 ): PortableTextMemberItem[] {
-  const portableTextMemberItemsRef: React.MutableRefObject<PortableTextMemberItem[]> = useRef([])
+  const portableTextMemberItemsRef: MutableRefObject<PortableTextMemberItem[]> = useRef([])
   reconcilePortableTextMembers({props, ref: portableTextMemberItemsRef})
   return portableTextMemberItemsRef.current
 }
@@ -46,7 +46,7 @@ const reconcilePortableTextMembers = ({
   ref,
 }: {
   props: PortableTextInputProps
-  ref: React.MutableRefObject<PortableTextMemberItem[]>
+  ref: MutableRefObject<PortableTextMemberItem[]>
 }) => {
   const result: {
     kind: PortableTextMemberItem['kind']

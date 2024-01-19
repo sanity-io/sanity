@@ -1,7 +1,6 @@
 import {Flex, Container, Stack, Text} from '@sanity/ui'
-import React from 'react'
-import {commentsLocaleNamespace} from '../../../i18n'
 import {CommentStatus} from '../../types'
+import {commentsLocaleNamespace} from '../../../i18n'
 import {LoadingBlock, TFunction, useTranslation} from 'sanity'
 
 interface EmptyStateMessage {

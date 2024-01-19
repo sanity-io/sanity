@@ -1,5 +1,4 @@
 import {EarthGlobeIcon} from '@sanity/icons'
-import React from 'react'
 import {defineType} from 'sanity'
 // import config from 'config:@sanity/google-maps-input'
 

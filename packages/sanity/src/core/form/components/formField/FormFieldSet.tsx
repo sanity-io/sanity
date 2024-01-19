@@ -1,6 +1,14 @@
 /* eslint-disable camelcase */
 import {Badge, Box, Flex, Stack, Text, Theme, useForwardedRef} from '@sanity/ui'
-import React, {forwardRef, useCallback, useMemo} from 'react'
+import {
+  ForwardedRef,
+  FocusEvent,
+  HTMLProps,
+  ReactNode,
+  forwardRef,
+  useCallback,
+  useMemo,
+} from 'react'
 import styled, {css} from 'styled-components'
 import {DeprecatedProperty, FormNodeValidation} from '@sanity/types'
 import {FormNodePresence} from '../../../presence'
@@ -30,19 +38,19 @@ export interface FormFieldSetProps {
   /** @internal @deprecated DO NOT USE */
   __internal_comments?: FieldCommentsProps
   /** @internal @deprecated ONLY USED BY AI ASSIST PLUGIN */
-  __internal_slot?: React.ReactNode
-  children: React.ReactNode | (() => React.ReactNode)
+  __internal_slot?: ReactNode
+  children: ReactNode | (() => ReactNode)
   collapsed?: boolean
   collapsible?: boolean
   columns?: number | number[]
-  description?: React.ReactNode
+  description?: ReactNode
   /**
    * The nesting level of the form field set
    */
   level?: number
   onCollapse?: () => void
   onExpand?: () => void
-  title?: React.ReactNode
+  title?: ReactNode
   /**
    *
    * @hidden
@@ -53,7 +61,7 @@ export interface FormFieldSetProps {
   deprecated?: DeprecatedProperty
 }
 
-function getChildren(children: React.ReactNode | (() => React.ReactNode)): React.ReactNode {
+function getChildren(children: ReactNode | (() => ReactNode)): ReactNode {
   return typeof children === 'function' ? children() : children
 }
 
@@ -97,8 +105,8 @@ const EMPTY_ARRAY: never[] = []
 
 /** @internal */
 export const FormFieldSet = forwardRef(function FormFieldSet(
-  props: FormFieldSetProps & Omit<React.HTMLProps<HTMLDivElement>, 'as' | 'height' | 'ref'>,
-  ref: React.ForwardedRef<HTMLDivElement>,
+  props: FormFieldSetProps & Omit<HTMLProps<HTMLDivElement>, 'as' | 'height' | 'ref'>,
+  ref: ForwardedRef<HTMLDivElement>,
 ) {
   const {
     __internal_comments: comments,
@@ -129,7 +137,7 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
   const {t} = useTranslation()
 
   const handleFocus = useCallback(
-    (event: React.FocusEvent<HTMLDivElement>) => {
+    (event: FocusEvent<HTMLDivElement>) => {
       const element = forwardedRef.current
 
       if (element === event.target) {

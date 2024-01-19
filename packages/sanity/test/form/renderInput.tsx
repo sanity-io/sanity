@@ -8,7 +8,8 @@ import {
   SchemaType,
 } from '@sanity/types'
 import {render} from '@testing-library/react'
-import React, {FocusEvent} from 'react'
+import {FocusEvent} from 'react'
+import * as React from 'react'
 import {
   EMPTY_ARRAY,
   FieldMember,

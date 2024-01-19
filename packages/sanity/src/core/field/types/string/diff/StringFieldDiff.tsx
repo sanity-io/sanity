@@ -1,4 +1,3 @@
-import React from 'react'
 import styled from 'styled-components'
 import {DiffFromTo, DiffString} from '../../../diff'
 import {DiffComponent, StringDiff} from '../../../types'

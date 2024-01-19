@@ -1,4 +1,4 @@
-import React, {PropsWithChildren, useEffect, useMemo} from 'react'
+import {PropsWithChildren, useEffect, useMemo} from 'react'
 import {Slate, withReact} from 'slate-react'
 import {createEditor} from 'slate'
 import {KEY_TO_SLATE_ELEMENT, KEY_TO_VALUE_ELEMENT} from '../../utils/weakMaps'

@@ -1,5 +1,5 @@
 import {Box} from '@sanity/ui'
-import React, {memo, Suspense, useRef} from 'react'
+import {memo, Suspense, useRef} from 'react'
 import styled from 'styled-components'
 import {Canvas, Vector3} from '@react-three/fiber'
 import View from './TorusKnotScene'

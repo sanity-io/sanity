@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react'
+import {useEffect, useState} from 'react'
 import {ErrorBoundary} from '@sanity/ui'
 import type {StructureToolOptions} from '../../types'
 import {StructureToolProvider} from '../../StructureToolProvider'

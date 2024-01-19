@@ -14,7 +14,7 @@ import {
   Path,
   UploadState,
 } from '@sanity/types'
-import React, {ReactNode} from 'react'
+import {PureComponent, ReactNode, FocusEvent} from 'react'
 import {SanityClient} from '@sanity/client'
 import {isImageSource} from '@sanity/asset-utils'
 import {Button, Dialog, MenuButton, MenuButtonProps, MenuItem} from '../../../../../ui-components'
@@ -90,7 +90,7 @@ interface BaseImageInputState {
   isMenuOpen: boolean
 }
 
-function passThrough({children}: {children?: React.ReactNode}) {
+function passThrough({children}: {children?: ReactNode}) {
   return children
 }
 
@@ -99,7 +99,7 @@ const ASSET_FIELD_PATH = ['asset']
 const ASSET_IMAGE_MENU_POPOVER: MenuButtonProps['popover'] = {portal: true}
 
 /** @internal */
-export class BaseImageInput extends React.PureComponent<BaseImageInputProps, BaseImageInputState> {
+export class BaseImageInput extends PureComponent<BaseImageInputProps, BaseImageInputState> {
   _previewElement: HTMLDivElement | null = null
   _assetPath: Path
   uploadSubscription: null | Subscription = null
@@ -321,7 +321,7 @@ export class BaseImageInput extends React.PureComponent<BaseImageInputProps, Bas
     this.setState({selectedAssetSource: null})
   }
 
-  handleFileTargetFocus = (event: React.FocusEvent) => {
+  handleFileTargetFocus = (event: FocusEvent) => {
     // We want to handle focus when the file target element *itself* receives
     // focus, not when an interactive child element receives focus. Since React has decided
     // to let focus bubble, so this workaround is needed

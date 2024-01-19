@@ -1,4 +1,4 @@
-import React, {memo, useCallback, useMemo} from 'react'
+import {memo, useCallback, useMemo} from 'react'
 import {PortableTextEditor, usePortableTextEditor} from '@sanity/portable-text-editor'
 import {upperFirst} from 'lodash'
 import {PopoverProps} from '../../../../../ui-components'

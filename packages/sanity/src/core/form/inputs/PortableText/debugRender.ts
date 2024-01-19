@@ -1,3 +1,5 @@
+import {CSSProperties} from 'react'
+
 const DEBUG_RENDERING = false
 
 function getRandomColor(): string {
@@ -9,7 +11,7 @@ function getRandomColor(): string {
   return color
 }
 
-export function debugRender(style?: React.CSSProperties): React.CSSProperties | undefined {
+export function debugRender(style?: CSSProperties): CSSProperties | undefined {
   return DEBUG_RENDERING
     ? {
         ...(style ? style : {}),

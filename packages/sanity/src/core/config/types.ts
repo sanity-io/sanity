@@ -9,7 +9,7 @@ import type {
   SchemaType,
   SchemaTypeDefinition,
 } from '@sanity/types'
-import type {ComponentType, ReactNode} from 'react'
+import type {ComponentType, ReactElement, ReactNode} from 'react'
 import type {Observable} from 'rxjs'
 import type {i18n} from 'i18next'
 import type {FormBuilderCustomMarkersComponent, FormBuilderMarkersComponent} from '../form'
@@ -520,7 +520,7 @@ export interface DocumentLayoutProps {
    * The type of the document. This is a read-only property and changing it will have no effect.
    */
   documentType: string
-  renderDefault: (props: DocumentLayoutProps) => React.ReactElement
+  renderDefault: (props: DocumentLayoutProps) => ReactElement
 }
 
 interface DocumentComponents {

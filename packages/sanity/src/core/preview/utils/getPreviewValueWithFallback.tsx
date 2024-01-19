@@ -1,7 +1,6 @@
 import {WarningOutlineIcon} from '@sanity/icons'
 import type {PreviewValue, SanityDocument} from '@sanity/types'
 import {assignWith} from 'lodash'
-import React from 'react'
 
 const getMissingDocumentFallback = (item: SanityDocument) => ({
   title: <em>{item.title ? String(item.title) : 'Missing document'}</em>,

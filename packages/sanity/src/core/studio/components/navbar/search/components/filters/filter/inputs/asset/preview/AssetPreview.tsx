@@ -1,5 +1,4 @@
 import type {ReferenceValue} from '@sanity/types'
-import React from 'react'
 import {FileReferencePreview} from './FileReferencePreview'
 import {ImageReferencePreview} from './ImageReferencePreview'
 

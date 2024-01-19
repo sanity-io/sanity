@@ -1,4 +1,5 @@
-import React, {
+import {
+  useRef,
   ReactElement,
   startTransition,
   useCallback,
@@ -47,7 +48,7 @@ export interface LeafProps extends RenderLeafProps {
 export const Leaf = (props: LeafProps) => {
   const {attributes, children, leaf, schemaTypes, renderChild, renderDecorator, renderAnnotation} =
     props
-  const spanRef = React.useRef<HTMLElement>(null)
+  const spanRef = useRef<HTMLElement>(null)
   const portableTextEditor = usePortableTextEditor()
   const blockSelected = useSelected()
   const [focused, setFocused] = useState(false)

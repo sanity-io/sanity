@@ -1,5 +1,6 @@
 import {usePortal, PortalProvider, Text} from '@sanity/ui'
-import React, {useId} from 'react'
+import {useId} from 'react'
+import * as React from 'react'
 import {Dialog} from '../../../../ui-components'
 import {DOCUMENT_PANEL_PORTAL_ELEMENT} from '../../../constants'
 import {ConfirmDialog} from './dialogs/ConfirmDialog'

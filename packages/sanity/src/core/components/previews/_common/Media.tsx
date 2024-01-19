@@ -1,5 +1,5 @@
 import {Text} from '@sanity/ui'
-import React, {createElement, isValidElement} from 'react'
+import {ReactNode, createElement, isValidElement} from 'react'
 import {isValidElementType} from 'react-is'
 import {PreviewMediaDimensions, PreviewLayoutKey, PreviewProps} from '../types'
 import {MediaWrapper} from './Media.styled'
@@ -43,7 +43,7 @@ function renderMedia(props: {
     media?: string
     mediaString?: string
   }
-}): React.ReactNode {
+}): ReactNode {
   const {dimensions, layout, media, styles} = props
 
   if (isValidElementType(media)) {

@@ -1,6 +1,6 @@
 /* eslint-disable complexity */
 /* eslint-disable max-statements */
-import React, {ReactElement, FunctionComponent, useRef, useMemo} from 'react'
+import {ReactElement, FunctionComponent, useRef, useMemo} from 'react'
 import {Element as SlateElement, Editor, Range} from 'slate'
 import {Path, PortableTextChild, PortableTextObject, PortableTextTextBlock} from '@sanity/types'
 import {useSelected, useSlateStatic, ReactEditor, RenderElementProps} from 'slate-react'

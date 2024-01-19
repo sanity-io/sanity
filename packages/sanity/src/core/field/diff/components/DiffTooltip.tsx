@@ -1,6 +1,6 @@
 import type {Path} from '@sanity/types'
 import {Text, Stack, Flex, Inline} from '@sanity/ui'
-import React from 'react'
+import {ReactElement, ReactNode} from 'react'
 import {Tooltip, TooltipProps} from '../../../../ui-components'
 import {LegacyLayerProvider, UserAvatar} from '../../../components'
 import {useRelativeTime} from '../../../hooks'
@@ -11,8 +11,8 @@ import {getAnnotationAtPath, useAnnotationColor} from '../annotations'
 
 /** @internal */
 export interface DiffTooltipProps extends TooltipProps {
-  children: React.ReactElement
-  description?: React.ReactNode
+  children: ReactElement
+  description?: ReactNode
   diff: Diff
   path?: Path | string
 }
@@ -20,8 +20,8 @@ export interface DiffTooltipProps extends TooltipProps {
 /** @internal */
 export interface DiffTooltipWithAnnotationsProps extends TooltipProps {
   annotations: AnnotationDetails[]
-  children: React.ReactElement
-  description?: React.ReactNode
+  children: ReactElement
+  description?: ReactNode
 }
 
 /** @internal */

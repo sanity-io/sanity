@@ -8,7 +8,8 @@ import {
   Tooltip as UITooltip,
   TooltipProps as UITooltipProps,
 } from '@sanity/ui'
-import React, {forwardRef} from 'react'
+import {forwardRef} from 'react'
+import * as React from 'react'
 import {TOOLTIP_DELAY_PROPS} from './constants'
 
 /** @internal */

@@ -1,6 +1,6 @@
 import {TrashIcon} from '@sanity/icons'
 import {Box, Card, ErrorBoundary, Flex, Stack, Text} from '@sanity/ui'
-import React, {ErrorInfo, useCallback, useState} from 'react'
+import {ErrorInfo, useCallback, useState} from 'react'
 import FocusLock from 'react-focus-lock'
 import {Button} from '../../../../../../../../ui-components'
 import {supportsTouch} from '../../../../../../../util'

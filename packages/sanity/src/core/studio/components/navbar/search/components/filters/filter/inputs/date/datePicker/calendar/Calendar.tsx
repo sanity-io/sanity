@@ -1,13 +1,13 @@
 import {Box, Flex} from '@sanity/ui'
 import {addDays, addMonths, isAfter, isBefore, set} from 'date-fns'
-import React, {KeyboardEvent, useCallback, useEffect, useRef, useState} from 'react'
+import {ComponentProps, KeyboardEvent, useCallback, useEffect, useRef, useState} from 'react'
 import {useCurrentLocale} from '../../../../../../../../../../../i18n/hooks/useLocale'
 import {CalendarContext} from './contexts/CalendarContext'
 import {CalendarHeader} from './CalendarHeader'
 import {CalendarMonth} from './CalendarMonth'
 import {ARROW_KEYS} from './constants'
 
-type CalendarProps = Omit<React.ComponentProps<'div'>, 'onSelect'> & {
+type CalendarProps = Omit<ComponentProps<'div'>, 'onSelect'> & {
   date?: Date
   endDate?: Date
   onSelect: ({date, endDate}: {date: Date | null; endDate?: Date | null}) => void

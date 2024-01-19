@@ -1,8 +1,8 @@
 import {set, StringInputProps} from 'sanity'
-import React from 'react'
+import {Component} from 'react'
 import styles from './CustomFontStringInput.module.css'
 
-export default class CustomStringInput extends React.Component<StringInputProps> {
+export default class CustomStringInput extends Component<StringInputProps> {
   handleChange = (event) => {
     this.props.onChange(set(event.target.value))
   }

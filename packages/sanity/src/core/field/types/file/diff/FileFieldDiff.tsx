@@ -1,5 +1,5 @@
 import {DocumentIcon} from '@sanity/icons'
-import React, {useMemo} from 'react'
+import {useMemo} from 'react'
 import {Box, Card, Flex, Text} from '@sanity/ui'
 import styled from 'styled-components'
 import {DiffCard, DiffTooltip, FromTo, MetaInfo, ChangeList} from '../../../diff'

@@ -1,4 +1,4 @@
-import React from 'react'
+import {ReactNode} from 'react'
 import {
   type VirtualizerScrollInstance,
   VirtualizerScrollInstanceContext,
@@ -8,7 +8,7 @@ import {
  * @internal
  */
 interface VirtualizerScrollInstanceProviderProps extends VirtualizerScrollInstance {
-  children: React.ReactNode
+  children: ReactNode
 }
 
 /**

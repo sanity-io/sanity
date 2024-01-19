@@ -1,6 +1,6 @@
 import {Box, Card, Container} from '@sanity/ui'
 import {useSelect} from '@sanity/ui-workshop'
-import React, {useMemo} from 'react'
+import {useMemo} from 'react'
 import {Image, ObjectSchemaType} from '@sanity/types'
 import {PreviewLoader} from '../components/PreviewLoader'
 import {Previewable} from '../types'

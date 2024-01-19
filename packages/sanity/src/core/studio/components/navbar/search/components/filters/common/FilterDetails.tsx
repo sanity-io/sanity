@@ -1,6 +1,6 @@
 import {ChevronRightIcon} from '@sanity/icons'
 import {Box, Flex, Stack, Text} from '@sanity/ui'
-import React from 'react'
+import {Fragment} from 'react'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import type {SearchFilter} from '../../../types'
 import {getFieldFromFilter} from '../../../utils/filterUtils'
@@ -25,7 +25,7 @@ export function FilterDetails({filter}: FilterDetailsProps) {
           <Text muted size={0}>
             {fieldDefinition.titlePath.slice(0, -1).map((pathTitle, index) => {
               return (
-                <React.Fragment
+                <Fragment
                   // eslint-disable-next-line react/no-array-index-key
                   key={index}
                 >
@@ -41,7 +41,7 @@ export function FilterDetails({filter}: FilterDetailsProps) {
                       <ChevronRightIcon />
                     </span>
                   )}
-                </React.Fragment>
+                </Fragment>
               )
             })}
           </Text>

@@ -1,4 +1,4 @@
-import React, {forwardRef} from 'react'
+import {forwardRef} from 'react'
 import {Tooltip, TooltipProps} from '../../ui-components'
 
 /** @internal */

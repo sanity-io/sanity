@@ -8,7 +8,7 @@ import {
 } from '@sanity/types'
 import * as PathUtils from '@sanity/util/paths'
 import {get} from '@sanity/util/paths'
-import React, {ComponentProps, ForwardedRef, forwardRef, useCallback, useMemo, useRef} from 'react'
+import {ComponentProps, ForwardedRef, forwardRef, useCallback, useMemo, useRef} from 'react'
 import {from, throwError} from 'rxjs'
 import {catchError, mergeMap} from 'rxjs/operators'
 import * as adapter from '../client-adapters/reference'

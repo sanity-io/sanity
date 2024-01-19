@@ -42,7 +42,7 @@ export function useHotkeys(hotkeys: HotkeyOptions): HotkeyOptions {
 // If we want to have a hotkey to open up a focused object, we can use this:
 //
 // const handleOpenObjectHotkey = (
-//   event: React.BaseSyntheticEvent,
+//   event: BaseSyntheticEvent,
 //   ptEditor: PortableTextEditor
 // ) => {
 //   const selection = PortableTextEditor.getSelection(ptEditor)

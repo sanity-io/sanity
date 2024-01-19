@@ -1,4 +1,4 @@
-import React, {ReactElement} from 'react'
+import {ReactElement} from 'react'
 import {NumberSchemaType, FieldDefinition} from '@sanity/types'
 import {NumberInputProps, PrimitiveInputElementProps} from '../../src/core'
 import {renderInput, TestRenderInputContext, TestRenderInputProps} from './renderInput'

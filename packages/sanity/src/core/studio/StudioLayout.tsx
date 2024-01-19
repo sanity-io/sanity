@@ -1,7 +1,7 @@
 /* eslint-disable i18next/no-literal-string, @sanity/i18n/no-attribute-template-literals */
 import {Card, Flex} from '@sanity/ui'
 import {startCase} from 'lodash'
-import React, {
+import {
   createContext,
   createElement,
   Suspense,

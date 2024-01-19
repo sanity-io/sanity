@@ -1,4 +1,3 @@
-import React from 'react'
 import {Box, rem, Text} from '@sanity/ui'
 import styled from 'styled-components'
 import {useTranslation} from '../../../i18n'

@@ -1,4 +1,4 @@
-import React, {useId} from 'react'
+import {useId} from 'react'
 import {TrashIcon} from '@sanity/icons'
 import {Box, Menu} from '@sanity/ui'
 import {ArrayItemError} from '../../../../store'

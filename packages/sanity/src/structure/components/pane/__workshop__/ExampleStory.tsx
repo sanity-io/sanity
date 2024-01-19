@@ -1,7 +1,7 @@
 import {ChevronDownIcon} from '@sanity/icons'
 import {Container, Stack, TabList, Text} from '@sanity/ui'
 import {useBoolean, useSelect} from '@sanity/ui-workshop'
-import React, {useMemo} from 'react'
+import {useMemo} from 'react'
 import {Button, Tab} from '../../../../ui-components'
 import {Pane} from '../Pane'
 import {PaneContent} from '../PaneContent'

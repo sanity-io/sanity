@@ -1,4 +1,4 @@
-import React, {ComponentType, ReactNode, Fragment} from 'react'
+import {ComponentType, ReactNode, Fragment} from 'react'
 import type {Reference, ReferenceSchemaType} from '@sanity/types'
 import {Badge, Box, Flex, Inline, Stack, Text} from '@sanity/ui'
 import {AccessDeniedIcon, HelpCircleIcon} from '@sanity/icons'

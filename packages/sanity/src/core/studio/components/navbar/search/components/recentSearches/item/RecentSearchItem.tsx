@@ -10,7 +10,7 @@ import {
   // eslint-disable-next-line no-restricted-imports
   Button, // Button with specific styling and children behavior.
 } from '@sanity/ui'
-import React, {MouseEvent, useCallback} from 'react'
+import {MouseEvent, useCallback} from 'react'
 import styled from 'styled-components'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import type {RecentSearch} from '../../../datastores/recentSearches'

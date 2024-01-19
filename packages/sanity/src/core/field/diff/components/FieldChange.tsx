@@ -1,4 +1,4 @@
-import React, {useCallback, useMemo, useState} from 'react'
+import {Fragment, HTMLAttributes, useCallback, useMemo, useState} from 'react'
 import {Box, Flex, Stack, Text, useClickOutside} from '@sanity/ui'
 import {ObjectSchemaType} from '@sanity/types'
 import {useDocumentOperation} from '../../../hooks'
@@ -23,7 +23,7 @@ export function FieldChange(
     change: FieldChangeNode
     readOnly?: boolean
     hidden?: boolean
-  } & React.HTMLAttributes<HTMLDivElement>,
+  } & HTMLAttributes<HTMLDivElement>,
 ) {
   const {change, hidden, readOnly} = props
   const DiffComponent = change.diffComponent || FallbackDiff
@@ -32,7 +32,7 @@ export function FieldChange(
     schemaType,
     rootDiff,
     isComparingCurrent,
-    FieldWrapper = React.Fragment,
+    FieldWrapper = Fragment,
   } = useDocumentChange()
   const ops = useDocumentOperation(documentId, schemaType.name) as FieldOperationsAPI
   const [confirmRevertOpen, setConfirmRevertOpen] = useState(false)
@@ -54,7 +54,7 @@ export function FieldChange(
     setConfirmRevertOpen(true)
   }, [])
 
-  const closeRevertChangesConfirmDialog = React.useCallback(() => {
+  const closeRevertChangesConfirmDialog = useCallback(() => {
     setConfirmRevertOpen(false)
   }, [])
 

@@ -1,5 +1,5 @@
 import {render} from '@testing-library/react'
-import React, {forwardRef, useImperativeHandle} from 'react'
+import {forwardRef, useImperativeHandle} from 'react'
 import {Schema} from '@sanity/schema'
 import {LayerProvider, studioTheme, ThemeProvider, ToastProvider} from '@sanity/ui'
 import {of} from 'rxjs'

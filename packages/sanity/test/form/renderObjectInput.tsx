@@ -1,5 +1,5 @@
 import {FieldDefinition, ObjectSchemaType} from '@sanity/types'
-import React from 'react'
+import * as React from 'react'
 import {
   ComplexElementProps,
   FieldMember,

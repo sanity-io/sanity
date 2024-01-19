@@ -1,15 +1,7 @@
 import {EditIcon, LinkIcon, TrashIcon, EyeOpenIcon, EllipsisHorizontalIcon} from '@sanity/icons'
 import {Box, Flex, Menu, useGlobalKeyDown} from '@sanity/ui'
-import React, {
-  type PropsWithChildren,
-  type ReactElement,
-  forwardRef,
-  useCallback,
-  useEffect,
-  useId,
-  useMemo,
-  useRef,
-} from 'react'
+import type {MouseEvent, PropsWithChildren, ReactElement, Ref} from 'react'
+import {forwardRef, useCallback, useEffect, useId, useMemo, useRef} from 'react'
 import {type PortableTextBlock, isReference} from '@sanity/types'
 import {Button, MenuButton, MenuButtonProps, MenuItem} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
@@ -41,10 +33,7 @@ export function BlockObjectActionsMenu(props: BlockObjectActionsMenuProps): Reac
   const referenceLink = useMemo(
     () =>
       isReference(value)
-        ? forwardRef(function ReferenceLink(
-            linkProps,
-            ref: React.Ref<HTMLAnchorElement> | undefined,
-          ) {
+        ? forwardRef(function ReferenceLink(linkProps, ref: Ref<HTMLAnchorElement> | undefined) {
             return <IntentLink {...linkProps} intent="edit" params={{id: value._ref}} ref={ref} />
           })
         : undefined,
@@ -78,7 +67,7 @@ export function BlockObjectActionsMenu(props: BlockObjectActionsMenuProps): Reac
   )
 
   const handleDelete = useCallback(
-    (event: React.MouseEvent<HTMLDivElement>) => {
+    (event: MouseEvent<HTMLDivElement>) => {
       event.preventDefault()
       event.stopPropagation()
       onRemove()

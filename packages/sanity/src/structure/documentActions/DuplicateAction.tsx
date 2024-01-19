@@ -1,6 +1,6 @@
 import {CopyIcon} from '@sanity/icons'
 import {uuid} from '@sanity/uuid'
-import React, {useCallback, useState} from 'react'
+import {useCallback, useState} from 'react'
 import {filter, firstValueFrom} from 'rxjs'
 import {structureLocaleNamespace} from '../i18n'
 import {useRouter} from 'sanity/router'

@@ -1,7 +1,7 @@
-import React from 'react'
 import {sortBy} from 'lodash'
+import {CSSProperties} from 'react'
 
-const OVERLAY_STYLE: React.CSSProperties = {
+const OVERLAY_STYLE: CSSProperties = {
   position: 'absolute',
   top: 0,
   left: 0,

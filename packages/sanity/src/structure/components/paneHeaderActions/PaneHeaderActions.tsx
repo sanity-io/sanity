@@ -1,6 +1,6 @@
 import {Flex} from '@sanity/ui'
 import {uniqBy} from 'lodash'
-import React, {memo, useCallback, useMemo} from 'react'
+import {memo, useCallback, useMemo} from 'react'
 import {isMenuNodeButton, isNotMenuNodeButton, resolveMenuNodes} from '../../menuNodes'
 import type {StructureToolPaneActionHandler, PaneMenuItem, PaneMenuItemGroup} from '../../types'
 import {PaneContextMenuButton} from '../pane/PaneContextMenuButton'

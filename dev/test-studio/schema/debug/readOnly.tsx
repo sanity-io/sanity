@@ -1,6 +1,4 @@
 // import {MdTextFormat as icon} from 'react-icons/md'
-import React from 'react'
-
 export default {
   name: 'readOnlyTest',
   type: 'document',

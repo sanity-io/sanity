@@ -1,7 +1,7 @@
-import React from 'react'
+import {Component} from 'react'
 import {set, StringInputProps} from 'sanity'
 
-export default class CustomStringInput extends React.Component<StringInputProps> {
+export default class CustomStringInput extends Component<StringInputProps> {
   handleChange = (event) => {
     this.props.onChange(set(event.target.value))
   }

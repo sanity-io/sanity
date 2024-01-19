@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-no-bind */
 import {SchemaType} from '@sanity/types'
-import React, {ComponentProps, memo} from 'react'
+import {ComponentProps, memo} from 'react'
 import {InsertAboveIcon, InsertBelowIcon} from '@sanity/icons'
 import {MenuGroup, MenuItem, PopoverProps} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'

@@ -1,4 +1,4 @@
-import React, {PropsWithChildren, useCallback, useMemo} from 'react'
+import {PropsWithChildren, useCallback, useMemo} from 'react'
 import {Path} from '@sanity/types'
 import {DocumentFieldActionNode} from '../../../config'
 import {pathToString} from '../../../field'

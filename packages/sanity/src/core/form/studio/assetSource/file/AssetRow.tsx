@@ -1,5 +1,5 @@
 import type {Subscription} from 'rxjs'
-import React, {useCallback, useMemo, useRef, useState} from 'react'
+import {useCallback, useMemo, useRef, useState, MouseEvent, KeyboardEvent} from 'react'
 import styled, {css} from 'styled-components'
 import {
   Box,
@@ -29,8 +29,8 @@ interface RowProps {
   isMobile?: boolean
   asset: AssetType
   isSelected?: boolean
-  onClick?: (event: React.MouseEvent) => void
-  onKeyPress?: (event: React.KeyboardEvent) => void
+  onClick?: (event: MouseEvent) => void
+  onKeyPress?: (event: KeyboardEvent) => void
   onDeleteFinished?: (assetId: string) => void
 }
 

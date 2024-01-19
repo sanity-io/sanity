@@ -1,6 +1,5 @@
 import {type ArraySchemaType, type SchemaType, type TypedObject, isKeyedObject} from '@sanity/types'
 import {Box, Flex} from '@sanity/ui'
-import React from 'react'
 import {useUserColorManager} from '../../../../user-color'
 import {DiffTooltip, FromToArrow, getAnnotationColor} from '../../../diff'
 import type {Annotation, ArrayDiff, Diff, DiffComponent, ItemDiff} from '../../../types'

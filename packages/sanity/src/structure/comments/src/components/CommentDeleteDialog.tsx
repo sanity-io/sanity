@@ -1,5 +1,5 @@
 import {Stack, Text} from '@sanity/ui'
-import React, {useCallback} from 'react'
+import {useCallback} from 'react'
 import {Dialog} from '../../../../ui-components'
 import {commentsLocaleNamespace} from '../../i18n'
 import {TFunction, TextWithTone, useTranslation} from 'sanity'

@@ -1,8 +1,8 @@
 import {Flex} from '@sanity/ui'
-import React, {useEffect, useState} from 'react'
+import {ReactElement, useEffect, useState} from 'react'
 
 interface ObserveElementProps {
-  children: React.ReactElement
+  children: ReactElement
   options?: IntersectionObserverInit
   onIntersectionChange: IntersectionObserverCallback
 }

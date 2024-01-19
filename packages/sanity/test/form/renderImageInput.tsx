@@ -1,5 +1,5 @@
 import {ImageSchemaType, AssetSource, FieldDefinition, SchemaTypeDefinition} from '@sanity/types'
-import React from 'react'
+import * as React from 'react'
 import {EMPTY} from 'rxjs'
 import {ObjectInputProps, ImageUrlBuilder} from '../../src/core'
 import {BaseImageInputProps} from '../../src/core/form/inputs/files/ImageInput'

@@ -1,4 +1,3 @@
-import React from 'react'
 import styled from 'styled-components'
 import {COLOR_HUES, hues} from '@sanity/color'
 import {darken, lighten, hasBadContrast, readableColor} from 'color2k'

@@ -1,6 +1,7 @@
 import {ArrowLeftIcon, ChevronRightIcon} from '@sanity/icons'
 import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
-import React, {useCallback} from 'react'
+import {useCallback} from 'react'
+import * as React from 'react'
 import {Button} from '../../../../../../ui-components'
 import {usePaneLayout} from '../../../usePaneLayout'
 import {Pane} from '../../../Pane'
