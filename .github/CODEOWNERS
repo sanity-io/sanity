@@ -39,3 +39,6 @@
 # Shopify templates
 /packages/@sanity/cli/src/actions/init-project/templates/shopify* @thebiggianthead
 /packages/@sanity/cli/templates/shopify* @thebiggianthead
+
+# Telemetry definitions
+*.telemetry.ts @sanity-io/growth
