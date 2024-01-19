@@ -1,6 +1,6 @@
 import React, {cloneElement, useCallback, useMemo, useState} from 'react'
 import {Card, useClickOutside} from '@sanity/ui'
-import {CommentReactionOption, CommentReactionShortNames} from '../../types'
+import {CommentReactionOption} from '../../types'
 import {Popover, PopoverProps} from '../../../../../ui-components'
 import {CommentReactionsMenu} from './CommentReactionsMenu'
 
@@ -13,19 +13,10 @@ export interface CommentReactionsMenuButtonProps {
   options: CommentReactionOption[]
   readOnly?: boolean
   renderMenuButton: (props: {open: boolean}) => React.ReactElement
-  selectedOptionNames: CommentReactionShortNames[]
 }
 
 export function CommentReactionsMenuButton(props: CommentReactionsMenuButtonProps) {
-  const {
-    onMenuClose,
-    onMenuOpen,
-    onSelect,
-    options,
-    readOnly,
-    renderMenuButton,
-    selectedOptionNames,
-  } = props
+  const {onMenuClose, onMenuOpen, onSelect, options, readOnly, renderMenuButton} = props
   const [buttonElement, setButtonElement] = useState<HTMLButtonElement | null>(null)
   const [popoverElement, setPopoverElement] = useState<HTMLDivElement | null>(null)
 
@@ -96,11 +87,7 @@ export function CommentReactionsMenuButton(props: CommentReactionsMenuButtonProp
       radius={3}
       tone="default"
     >
-      <CommentReactionsMenu
-        onSelect={handleSelect}
-        options={options}
-        selectedOptionNames={selectedOptionNames}
-      />
+      <CommentReactionsMenu onSelect={handleSelect} options={options} />
     </Card>
   )
 

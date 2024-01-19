@@ -1,4 +1,3 @@
-import React from 'react'
 import {CheckmarkCircleIcon, UndoIcon, EditIcon, TrashIcon, LinkIcon} from '@sanity/icons'
 import {Card, Flex, Menu, MenuDivider} from '@sanity/ui'
 import styled from 'styled-components'
@@ -9,7 +8,7 @@ import {
   MenuItem,
   TooltipDelayGroupProvider,
 } from '../../../../../ui-components'
-import {CommentReactionOption, CommentReactionShortNames, CommentStatus} from '../../types'
+import {CommentReactionOption, CommentStatus} from '../../types'
 import {CommentReactionsMenuButton} from '../reactions'
 import {COMMENT_REACTION_OPTIONS} from '../../constants'
 import {ReactionIcon} from '../icons'
@@ -38,7 +37,6 @@ const FloatingCard = styled(Card)`
 interface CommentsListItemContextMenuProps {
   canDelete: boolean | undefined
   canEdit: boolean | undefined
-  currentUserReactionsNames: CommentReactionShortNames[]
   isParent: boolean | undefined
   onCopyLink?: () => void
   onDeleteStart?: () => void
@@ -55,7 +53,6 @@ export function CommentsListItemContextMenu(props: CommentsListItemContextMenuPr
   const {
     canDelete,
     canEdit,
-    currentUserReactionsNames,
     isParent,
     onCopyLink,
     onDeleteStart,
@@ -82,7 +79,6 @@ export function CommentsListItemContextMenu(props: CommentsListItemContextMenuPr
               options={COMMENT_REACTION_OPTIONS}
               readOnly={readOnly}
               renderMenuButton={renderMenuButton}
-              selectedOptionNames={currentUserReactionsNames}
             />
           )}
 

@@ -101,12 +101,12 @@ interface CommentCreateFailedState {
  * We follow the convention for short names outlined in https://projects.iamcal.com/emoji-data/table.htm.
  */
 export type CommentReactionShortNames =
-  | ':eyes:'
-  | ':heart_eyes:'
-  | ':heavy_plus_sign:'
-  | ':rocket:'
   | ':-1:'
   | ':+1:'
+  | ':eyes:'
+  | ':heart:'
+  | ':heavy_plus_sign:'
+  | ':rocket:'
 
 /**
  * @beta

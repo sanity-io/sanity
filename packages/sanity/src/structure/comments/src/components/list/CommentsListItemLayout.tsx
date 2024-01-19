@@ -266,10 +266,6 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
 
   useClickOutside(handleClickOutside, [rootElement])
 
-  const currentUserReactionsNames = useMemo(() => {
-    return reactions.filter((r) => r.userId === currentUser?.id).map((r) => r.shortName)
-  }, [currentUser?.id, reactions])
-
   const name = user?.displayName ? (
     <Text size={1} weight="medium" textOverflow="ellipsis" title={user.displayName}>
       {user.displayName}
@@ -314,7 +310,6 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
               <CommentsListItemContextMenu
                 canDelete={canDelete}
                 canEdit={canEdit}
-                currentUserReactionsNames={currentUserReactionsNames}
                 isParent={isParent}
                 onCopyLink={handleCopyLink}
                 onDeleteStart={handleDelete}

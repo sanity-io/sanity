@@ -4,16 +4,13 @@ import styled from 'styled-components'
 import {COMMENT_REACTION_EMOJIS} from '../../constants'
 import {CommentReactionShortNames} from '../../types'
 import {Tooltip} from '../../../../../ui-components'
+import {EmojiText} from './EmojiText.styled'
 import {CurrentUser, useUser} from 'sanity'
 
 const TEXT_SIZE: number | number[] = 1
 
-const EmojiText = styled(Text)`
-  font-size: 2em;
-`
-
 const ContentStack = styled(Stack)`
-  max-width: 200px;
+  max-width: 180px;
 `
 
 const InlineText = styled(Text).attrs({size: TEXT_SIZE})`
@@ -21,6 +18,7 @@ const InlineText = styled(Text).attrs({size: TEXT_SIZE})`
 `
 
 const TextBox = styled(Box)`
+  line-height: 1;
   text-align: center;
 `
 
@@ -97,9 +95,9 @@ export function CommentReactionsUsersTooltipContent(
   }, [currentUser, userIds])
 
   return (
-    <ContentStack padding={1} paddingBottom={2}>
-      <Flex justify="center">
-        <EmojiText> {COMMENT_REACTION_EMOJIS[reactionName]}</EmojiText>
+    <ContentStack padding={1}>
+      <Flex justify="center" paddingBottom={2} paddingTop={1}>
+        <EmojiText size={4}>{COMMENT_REACTION_EMOJIS[reactionName]}</EmojiText>
       </Flex>
 
       <TextBox>

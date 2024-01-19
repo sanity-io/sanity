@@ -1,4 +1,4 @@
-import React, {useCallback, useState} from 'react'
+import {useCallback, useState} from 'react'
 // eslint-disable-next-line no-restricted-imports
 import {Button, Flex} from '@sanity/ui'
 import {CommentReactionsMenuButton} from '../components'
@@ -28,7 +28,6 @@ export default function CommentReactionsMenuButtonStory() {
         renderMenuButton={({open}) => <Button text="Reactions" selected={open} />}
         onSelect={handleOnSelect}
         options={COMMENT_REACTION_OPTIONS}
-        selectedOptionNames={selectedOptions}
       />
     </Flex>
   )

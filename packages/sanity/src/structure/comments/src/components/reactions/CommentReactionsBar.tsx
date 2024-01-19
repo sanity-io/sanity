@@ -1,13 +1,20 @@
 import React, {useCallback, useMemo, useRef} from 'react'
 import {CurrentUser} from '@sanity/types'
-import {Card, Flex, Text, TooltipDelayGroupProvider} from '@sanity/ui'
-import styled from 'styled-components'
+import {
+  // eslint-disable-next-line no-restricted-imports
+  Button as UIButton,
+  Flex,
+  Text,
+  TooltipDelayGroupProvider,
+} from '@sanity/ui'
 import {CommentReactionItem, CommentReactionOption, CommentReactionShortNames} from '../../types'
 import {COMMENT_REACTION_EMOJIS, COMMENT_REACTION_OPTIONS} from '../../constants'
 import {ReactionIcon} from '../icons'
 import {TOOLTIP_DELAY_PROPS, Tooltip} from '../../../../../ui-components'
 import {CommentReactionsMenuButton} from './CommentReactionsMenuButton'
 import {CommentReactionsUsersTooltip} from './CommentReactionsUsersTooltip'
+import {EmojiText} from './EmojiText.styled'
+import {TransparentCard} from './TransparentCard.styled'
 
 /**
  * A function that groups reactions by name. For example:
@@ -48,29 +55,19 @@ function groupReactionsByName(reactions: CommentReactionItem[]) {
   return sorted as [CommentReactionShortNames, CommentReactionItem[]][]
 }
 
-const ReactionButtonCard = styled(Card)`
-  max-width: max-content;
-  border: 1px solid var(--card-border-color) !important;
-`
-
-const renderMenuButton = ({open}: {open: boolean}) => (
-  <ReactionButtonCard
-    __unstable_focusRing
-    forwardedAs="button"
-    pressed={open}
-    radius={6}
-    tone="transparent"
-    type="button"
-  >
-    <Tooltip animate content="Add reaction">
-      <Flex align="center" justify="center" padding={2} paddingX={3}>
-        <Text muted size={1}>
-          <ReactionIcon />
-        </Text>
+const renderMenuButton = ({open}: {open: boolean}) => {
+  return (
+    <UIButton fontSize={1} mode="ghost" padding={0} radius="full" selected={open}>
+      <Flex paddingX={3} paddingY={2}>
+        <Tooltip animate content="Add reaction" disabled={open}>
+          <Text size={1}>
+            <ReactionIcon />
+          </Text>
+        </Tooltip>
       </Flex>
-    </Tooltip>
-  </ReactionButtonCard>
-)
+    </UIButton>
+  )
+}
 
 interface CommentReactionsBarProps {
   currentUser: CurrentUser
@@ -150,38 +147,39 @@ export const CommentReactionsBar = React.memo(function CommentReactionsBar(
               reactionName={name}
               userIds={userIds}
             >
-              <ReactionButtonCard
-                __unstable_focusRing
-                border
-                disabled={readOnly}
-                forwardedAs="button"
-                // eslint-disable-next-line react/jsx-no-bind
-                onClick={() => handleSelect(name)}
-                padding={2}
-                radius={6}
-                tone={hasReacted ? 'primary' : 'transparent'}
-                type="button"
-              >
-                <Flex align="center" gap={2}>
-                  <Text size={1}>{emoji}</Text>
+              <TransparentCard tone="default">
+                <UIButton
+                  disabled={readOnly}
+                  mode="ghost"
+                  // eslint-disable-next-line react/jsx-no-bind
+                  onClick={() => handleSelect(name)}
+                  padding={2}
+                  radius="full"
+                  selected={hasReacted}
+                  tone={hasReacted ? 'primary' : 'default'}
+                >
+                  <Flex align="center" gap={1}>
+                    <EmojiText size={1}>{emoji}</EmojiText>
 
-                  <Text size={1} weight={hasReacted ? 'medium' : undefined}>
-                    {reactionsList?.length}
-                  </Text>
-                </Flex>
-              </ReactionButtonCard>
+                    <Text size={0} weight={hasReacted ? 'semibold' : 'medium'}>
+                      {reactionsList?.length}
+                    </Text>
+                  </Flex>
+                </UIButton>
+              </TransparentCard>
             </CommentReactionsUsersTooltip>
           )
         })}
 
-        <CommentReactionsMenuButton
-          // eslint-disable-next-line react/jsx-no-bind
-          onSelect={(o) => handleSelect(o.shortName)}
-          options={COMMENT_REACTION_OPTIONS}
-          readOnly={readOnly}
-          renderMenuButton={renderMenuButton}
-          selectedOptionNames={currentUserReactionNames}
-        />
+        <TransparentCard tone="default">
+          <CommentReactionsMenuButton
+            // eslint-disable-next-line react/jsx-no-bind
+            onSelect={(o) => handleSelect(o.shortName)}
+            options={COMMENT_REACTION_OPTIONS}
+            readOnly={readOnly}
+            renderMenuButton={renderMenuButton}
+          />
+        </TransparentCard>
       </TooltipDelayGroupProvider>
     </Flex>
   )

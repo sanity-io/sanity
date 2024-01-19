@@ -46,7 +46,7 @@ const REACTIONS_B: CommentReactionItem[] = [
   {
     userId: 'user-3',
     addedAt: '2021-01-01T00:00:00.000Z',
-    shortName: ':heart_eyes:',
+    shortName: ':heart:',
     _key: 'key-5',
   },
 ]
@@ -84,7 +84,7 @@ describe('comments: mergeCommentReactions', () => {
       },
       {
         userId: 'user-3',
-        shortName: ':heart_eyes:',
+        shortName: ':heart:',
         addedAt: '2021-01-01T00:00:00.000Z',
         _key: 'key-5',
       },
