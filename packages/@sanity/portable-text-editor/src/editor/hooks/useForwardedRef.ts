@@ -1,8 +1,8 @@
-import React, {useRef, useLayoutEffect, useEffect} from 'react'
+import {useRef, useLayoutEffect, useEffect, ForwardedRef, MutableRefObject} from 'react'
 
 const useIsomorphicEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect
 
-export function useForwardedRef<T>(ref: React.ForwardedRef<T>): React.MutableRefObject<T | null> {
+export function useForwardedRef<T>(ref: ForwardedRef<T>): MutableRefObject<T | null> {
   const innerRef = useRef<T | null>(null)
 
   useIsomorphicEffect(() => {

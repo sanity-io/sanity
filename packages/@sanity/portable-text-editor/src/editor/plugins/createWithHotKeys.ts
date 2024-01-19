@@ -1,5 +1,6 @@
 /* eslint-disable max-statements */
 /* eslint-disable complexity */
+import {KeyboardEvent} from 'react'
 import {Editor, Transforms, Path, Range, Node} from 'slate'
 import isHotkey from 'is-hotkey'
 import {ReactEditor} from 'slate-react'
@@ -56,7 +57,7 @@ export function createWithHotkeys(
       portableTextEditor,
     )[0]
   return function withHotKeys(editor: PortableTextSlateEditor & ReactEditor) {
-    editor.pteWithHotKeys = (event: React.KeyboardEvent<HTMLDivElement>): void => {
+    editor.pteWithHotKeys = (event: KeyboardEvent<HTMLDivElement>): void => {
       // Wire up custom marks hotkeys
       Object.keys(activeHotkeys).forEach((cat) => {
         if (cat === 'marks') {

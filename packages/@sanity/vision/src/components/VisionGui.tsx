@@ -1,5 +1,5 @@
 /* eslint-disable complexity */
-import React, {ChangeEvent, type RefObject} from 'react'
+import {type RefObject, createRef, PureComponent, ChangeEvent} from 'react'
 import SplitPane from '@rexxars/react-split-pane'
 import type {ListenEvent, MutationEvent, SanityClient, ClientPerspective} from '@sanity/client'
 import {PlayIcon, StopIcon, CopyIcon, ErrorOutlineIcon} from '@sanity/icons'
@@ -140,7 +140,7 @@ interface VisionGuiState {
   paneSizeOptions: PaneSizeOptions
 }
 
-export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiState> {
+export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
   _visionRoot: RefObject<HTMLDivElement>
   _queryEditorContainer: RefObject<HTMLDivElement>
   _paramsEditorContainer: RefObject<HTMLDivElement>
@@ -182,11 +182,11 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
       perspective = DEFAULT_PERSPECTIVE
     }
 
-    this._visionRoot = React.createRef()
-    this._operationUrlElement = React.createRef()
-    this._queryEditorContainer = React.createRef()
-    this._paramsEditorContainer = React.createRef()
-    this._customApiVersionElement = React.createRef()
+    this._visionRoot = createRef()
+    this._operationUrlElement = createRef()
+    this._queryEditorContainer = createRef()
+    this._paramsEditorContainer = createRef()
+    this._customApiVersionElement = createRef()
 
     this._client = props.client.withConfig({
       apiVersion: customApiVersion || apiVersion,

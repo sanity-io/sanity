@@ -3,7 +3,6 @@
  * Some of these tests have no expect statement;
  * use of ts-expect-error serves the same purpose - TypeScript is the testrunner here
  */
-import React from 'react'
 import {defineArrayMember, defineField, defineType} from '../types'
 
 describe('common type test', () => {

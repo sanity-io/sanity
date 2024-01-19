@@ -1,6 +1,6 @@
 /* eslint-disable no-irregular-whitespace */
 
-import React from 'react'
+import {RefObject, createRef} from 'react'
 import {render, waitFor} from '@testing-library/react'
 import {PortableTextBlock} from '@sanity/types'
 import {PortableTextEditor} from '../PortableTextEditor'
@@ -18,7 +18,7 @@ const renderPlaceholder = () => 'Jot something down here'
 
 describe('initialization', () => {
   it('receives initial onChange events and has custom placeholder', async () => {
-    const editorRef: React.RefObject<PortableTextEditor> = React.createRef()
+    const editorRef: RefObject<PortableTextEditor> = createRef()
     const onChange = jest.fn()
     const {container} = render(
       <PortableTextEditorTester
@@ -74,7 +74,7 @@ describe('initialization', () => {
                 data-slate-length="0"
                 data-slate-zero-width="n"
               >
-                ﻿
+
                 <br />
               </span>
             </span>
@@ -90,7 +90,7 @@ describe('initialization', () => {
   it('takes value from props and confirms it by emitting value change event', async () => {
     const initialValue = [helloBlock]
     const onChange = jest.fn()
-    const editorRef = React.createRef<PortableTextEditor>()
+    const editorRef = createRef<PortableTextEditor>()
     render(
       <PortableTextEditorTester
         ref={editorRef}
@@ -109,7 +109,7 @@ describe('initialization', () => {
   })
 
   it('takes initial selection from props', async () => {
-    const editorRef: React.RefObject<PortableTextEditor> = React.createRef()
+    const editorRef: RefObject<PortableTextEditor> = createRef()
     const initialValue = [helloBlock]
     const initialSelection: EditorSelection = {
       anchor: {path: [{_key: '123'}, 'children', {_key: '567'}], offset: 2},
@@ -134,7 +134,7 @@ describe('initialization', () => {
   })
 
   it('updates editor selection from new prop and keeps object equality in editor.getSelection()', async () => {
-    const editorRef: React.RefObject<PortableTextEditor> = React.createRef()
+    const editorRef: RefObject<PortableTextEditor> = createRef()
     const initialValue = [helloBlock]
     const initialSelection: EditorSelection = {
       anchor: {path: [{_key: '123'}, 'children', {_key: '567'}], offset: 0},
@@ -184,7 +184,7 @@ describe('initialization', () => {
   })
 
   it('handles empty array value', async () => {
-    const editorRef: React.RefObject<PortableTextEditor> = React.createRef()
+    const editorRef: RefObject<PortableTextEditor> = createRef()
     const initialValue: PortableTextBlock[] = []
     const initialSelection: EditorSelection = {
       anchor: {path: [{_key: '123'}, 'children', {_key: '567'}], offset: 2},
@@ -223,7 +223,7 @@ describe('initialization', () => {
     })
   })
   it('validates a non-initial value', async () => {
-    const editorRef: React.RefObject<PortableTextEditor> = React.createRef()
+    const editorRef: RefObject<PortableTextEditor> = createRef()
     let value: PortableTextBlock[] = [helloBlock]
     const initialSelection: EditorSelection = {
       anchor: {path: [{_key: '123'}, 'children', {_key: '567'}], offset: 2},
@@ -299,7 +299,7 @@ describe('initialization', () => {
     })
   })
   it("doesn't crash when containing a invalid block somewhere inside the content", async () => {
-    const editorRef: React.RefObject<PortableTextEditor> = React.createRef()
+    const editorRef: RefObject<PortableTextEditor> = createRef()
     const initialValue: PortableTextBlock[] = [
       helloBlock,
       {

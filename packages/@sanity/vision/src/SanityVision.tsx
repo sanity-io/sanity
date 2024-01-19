@@ -1,4 +1,3 @@
-import React from 'react'
 import {type Tool, useClient} from 'sanity'
 import {type VisionConfig} from './types'
 import {DEFAULT_API_VERSION} from './apiVersions'

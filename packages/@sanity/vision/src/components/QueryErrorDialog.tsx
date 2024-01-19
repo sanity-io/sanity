@@ -1,4 +1,3 @@
-import React from 'react'
 import {Stack} from '@sanity/ui'
 import {QueryErrorDetails} from './QueryErrorDetails'
 import {ErrorCode} from './QueryErrorDialog.styled'
