@@ -74,6 +74,13 @@ export default {
       fieldset: 'system',
     },
     {
+      name: 'uploadId',
+      type: 'string',
+      readOnly: true,
+      hidden: true,
+      fieldset: 'system',
+    },
+    {
       name: 'path',
       type: 'string',
       title: 'Path',
