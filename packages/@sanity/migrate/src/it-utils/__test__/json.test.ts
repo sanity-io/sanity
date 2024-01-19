@@ -1,4 +1,5 @@
 import {parseJSON} from '../json'
+import {createSafeJsonParser} from '../createSafeJsonParser'
 
 test('parse JSON', async () => {
   const gen = async function* () {
@@ -19,7 +20,11 @@ test('parse JSON with interrupting error', async () => {
     yield '{"someString": "str{"error":{"description":"Some error"}}'
   }
 
-  const it = parseJSON(gen())
+  const it = parseJSON(gen(), {
+    parse: createSafeJsonParser({
+      errorLabel: 'Error parsing JSON',
+    }),
+  })
 
   expect(await it.next()).toEqual({value: {someString: 'string'}, done: false})
 
