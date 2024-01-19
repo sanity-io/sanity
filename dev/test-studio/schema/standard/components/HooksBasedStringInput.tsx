@@ -1,10 +1,10 @@
 import {Inline, Text} from '@sanity/ui'
-import React from 'react'
+import {forwardRef, useState} from 'react'
 import {StringInputProps, set} from 'sanity'
 
-export const HooksBasedStringInput = React.forwardRef<any, StringInputProps>((props, ref) => {
+export const HooksBasedStringInput = forwardRef<any, StringInputProps>((props, ref) => {
   const {value, schemaType, onChange} = props
-  const [isEditing, setIsEditing] = React.useState(false)
+  const [isEditing, setIsEditing] = useState(false)
 
   return (
     <Inline>

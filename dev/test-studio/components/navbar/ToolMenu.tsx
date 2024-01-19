@@ -1,5 +1,4 @@
 import {Button, Flex} from '@sanity/ui'
-import React from 'react'
 import {ToolLink, ToolMenuProps} from 'sanity'
 
 export function ToolMenu(props: ToolMenuProps) {

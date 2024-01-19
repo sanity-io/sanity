@@ -1,6 +1,6 @@
 import {ObjectInputProps, ObjectSchemaType, set, unset, isValidationError} from 'sanity'
 import {Select} from '@sanity/ui'
-import React, {useCallback, useState} from 'react'
+import {ForwardedRef, forwardRef, useCallback, useState} from 'react'
 
 type Value = {title: string; value: string}
 
@@ -14,9 +14,9 @@ const EMPTY_ARRAY: Value[] = []
 
 let objectSelectInputIdx = 0
 
-export const CustomObjectSelectInput = React.forwardRef(function CustomObjectSelectInput(
+export const CustomObjectSelectInput = forwardRef(function CustomObjectSelectInput(
   props: CustomObjectSelectInputProps,
-  forwardedRef: React.ForwardedRef<HTMLSelectElement>,
+  forwardedRef: ForwardedRef<HTMLSelectElement>,
 ) {
   const {value, schemaType, onChange, readOnly, validation} = props
 

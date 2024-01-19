@@ -1,6 +1,5 @@
 import {SchemaType} from '@sanity/types'
 import {Card, Text} from '@sanity/ui'
-import React from 'react'
 
 export function LanguageFilter(props: {schemaType: SchemaType}) {
   return (

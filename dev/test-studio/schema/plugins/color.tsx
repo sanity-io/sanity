@@ -1,7 +1,6 @@
 /* eslint-disable react/display-name */
 
 import {DropIcon} from '@sanity/icons'
-import React from 'react'
 import {defineType} from 'sanity'
 
 export default defineType({

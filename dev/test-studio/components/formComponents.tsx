@@ -1,4 +1,3 @@
-import React from 'react'
 import {Card} from '@sanity/ui'
 import {
   definePlugin,

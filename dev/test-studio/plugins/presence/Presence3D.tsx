@@ -2,7 +2,7 @@
 /* eslint-disable react/no-unknown-property */
 // Fork of https://codesandbox.io/s/object-clump-ssbdsw
 
-import React, {memo, useState} from 'react'
+import {memo, useState} from 'react'
 
 import {Physics, useCylinder, useSphere} from '@react-three/cannon'
 import {Effects as EffectComposer, Environment, Sky, useTexture} from '@react-three/drei'

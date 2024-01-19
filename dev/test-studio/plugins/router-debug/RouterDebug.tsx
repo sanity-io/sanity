@@ -1,4 +1,3 @@
-import React from 'react'
 import {Button, Card, Code, Flex, Stack, Text} from '@sanity/ui'
 import {IntentLink, RouteScope, StateLink, useRouter, useStateLink} from 'sanity/router'
 

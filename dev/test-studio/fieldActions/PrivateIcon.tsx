@@ -1,6 +1,5 @@
 import {LockIcon} from '@sanity/icons'
 import {Text, Tooltip} from '@sanity/ui'
-import React from 'react'
 
 export function PrivateIcon() {
   return (

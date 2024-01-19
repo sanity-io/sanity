@@ -1,5 +1,5 @@
 import {Button, Grid} from '@sanity/ui'
-import React, {useCallback, useEffect, useRef} from 'react'
+import {useCallback, useEffect, useRef} from 'react'
 import {defineField, ObjectInputProps, Path, set, unset} from 'sanity'
 
 /**

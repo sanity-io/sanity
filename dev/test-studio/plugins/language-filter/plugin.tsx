@@ -1,4 +1,3 @@
-import React from 'react'
 import {definePlugin, ObjectInputProps, _DocumentLanguageFilterComponent} from 'sanity'
 import {LanguageFilterMenuButton} from './LanguageFilterMenuButton'
 import {LanguageFilterObjectInput} from './LanguageFilterObjectInput'

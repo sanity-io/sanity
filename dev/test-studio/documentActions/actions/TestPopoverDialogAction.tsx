@@ -1,7 +1,7 @@
 import {DocumentActionComponent, DocumentActionDescription} from 'sanity'
 import {LaunchIcon} from '@sanity/icons'
 import {Button, Stack, Text, useToast} from '@sanity/ui'
-import React, {useCallback, useMemo, useState} from 'react'
+import {useCallback, useMemo, useState} from 'react'
 
 export const TestPopoverDialogAction: DocumentActionComponent = (props) => {
   const {onComplete} = props

@@ -1,4 +1,3 @@
-import React from 'react'
 import {defineArrayMember, defineType} from 'sanity'
 import {toPlainText} from '@portabletext/react'
 import {CalloutPreview} from './components/CalloutPreview'

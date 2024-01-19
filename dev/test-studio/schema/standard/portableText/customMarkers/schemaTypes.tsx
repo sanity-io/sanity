@@ -1,4 +1,3 @@
-import React from 'react'
 import {defineType} from 'sanity'
 import {LinkIcon, RocketIcon} from '@sanity/icons'
 import {CustomContentInput} from './CustomContentInput'

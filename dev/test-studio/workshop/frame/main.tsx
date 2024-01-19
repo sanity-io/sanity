@@ -1,7 +1,7 @@
 import {StudioProvider} from 'sanity'
 import {ThemeColorSchemeKey, usePrefersDark} from '@sanity/ui'
 import {WorkshopFrame} from '@sanity/ui-workshop'
-import React, {useState} from 'react'
+import {useState} from 'react'
 import {createRoot} from 'react-dom/client'
 import Refractor from 'react-refractor'
 import javascript from 'refractor/lang/javascript'

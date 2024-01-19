@@ -2,7 +2,7 @@
 // import {FaPuzzlePiece as icon} from 'react-icons/fa'
 
 import {defineType, FormPatch, set, TransformPatches} from 'sanity'
-import React, {useCallback} from 'react'
+import {useCallback} from 'react'
 
 export const myObject = defineType({
   type: 'object',
