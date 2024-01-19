@@ -3700,10 +3700,15 @@
   resolved "https://registry.yarnpkg.com/@sanity/locale-sv-se/-/locale-sv-se-1.0.1.tgz#1698a7e6d0e73e6d8eebb862f2530a9a4a598788"
   integrity sha512-Z4HDF1LTz0N16q5Xjr8Yv6/2ln+mbvxJzEcsHys1YdkfzsCpgXj7IQ1fNtQmov28bywCK6Wp8GUrpA0QqBmrZw==
 
-"@sanity/logos@^2.0.2", "@sanity/logos@^2.1.2":
+"@sanity/logos@^2.1.2":
   version "2.1.3"
   resolved "https://registry.yarnpkg.com/@sanity/logos/-/logos-2.1.3.tgz#86fac1a97f513ed1620bcc26cd110a9a64caa70f"
   integrity sha512-Va2rBftAIcGn53PO/aql9+Q8x0F6m3Z5hO0MQ3whru6HY8tNN1Ty/1N0QV6oL6Sfj9gjLKWoNL5BpRxglo24jQ==
+
+"@sanity/logos@^2.1.4":
+  version "2.1.4"
+  resolved "https://registry.yarnpkg.com/@sanity/logos/-/logos-2.1.4.tgz#3548db4dfe204ff5e3d6b29e79c889434c745aff"
+  integrity sha512-d3/i/UQruNl/rlOrHResAFGv/QHsPA8bmL7zD5E0fkexQnGMSQ+g5JonZm59sLZLLi9AwzwH7GSx09HVJ2D4aw==
 
 "@sanity/pkg-utils@^3.3.2":
   version "3.3.2"
@@ -3749,13 +3754,13 @@
     uuid "^9.0.1"
     zod "^3.22.4"
 
-"@sanity/presentation@1.6.0":
-  version "1.6.0"
-  resolved "https://registry.yarnpkg.com/@sanity/presentation/-/presentation-1.6.0.tgz#c31f0ba96897820d4c660a2f80a159b3cc9b077d"
-  integrity sha512-prFbEzSZ0t6MJKFPi27ZIqrN31z3A/nF2gMqFC7ewiiOf202XT6YnMlt3YkYgeElSD4sSOEh/UhkRvkTdyAO2A==
+"@sanity/presentation@1.6.1":
+  version "1.6.1"
+  resolved "https://registry.yarnpkg.com/@sanity/presentation/-/presentation-1.6.1.tgz#7f3c0880c94ca2346ab364316a0406430ad43d43"
+  integrity sha512-MyktJUPEscqVpNmXcbNfmHS+y80pDFMpWyUYwxSSOXFhgdZ/C6OmBu9pCMka3ZES4iMHGvk9Bi37bV9HJiDoog==
   dependencies:
     "@sanity/icons" "^2.8.0"
-    "@sanity/preview-url-secret" "^1.5.2"
+    "@sanity/preview-url-secret" "^1.5.3"
     "@types/lodash.isequal" "^4.5.8"
     fast-deep-equal "3.1.3"
     framer-motion "^10.18.0"
@@ -3765,10 +3770,10 @@
     rxjs "^7.8.1"
     suspend-react "0.1.3"
 
-"@sanity/preview-url-secret@^1.5.2":
-  version "1.5.2"
-  resolved "https://registry.yarnpkg.com/@sanity/preview-url-secret/-/preview-url-secret-1.5.2.tgz#0544f0c8583ccd2633d7d5daaf5bf1cd25df8de8"
-  integrity sha512-Gfk8LOaO80mSPhRJimRi1N3++vTQwi+3arTht1oXD3+Xk6qdEppvEKR/VmYI9TbBXbd0hP/gMW53r9acvusK4Q==
+"@sanity/preview-url-secret@^1.5.3":
+  version "1.5.3"
+  resolved "https://registry.yarnpkg.com/@sanity/preview-url-secret/-/preview-url-secret-1.5.3.tgz#356d4954fcfab558da5be522bdbefde23c3b7038"
+  integrity sha512-aLXzGUJavy82nEYIUj7G9+5VjS5B41JkfJ2A7aT5ZV6i6IGoX2oUvbfUNJehhpsp0/eKwgMJ9Blc5hD2sAEiTg==
   dependencies:
     "@sanity/uuid" "3.0.2"
 
