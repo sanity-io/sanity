@@ -60,7 +60,6 @@
     "@types/react": "^18.0.25"
   },
   "devDependencies": {
-    "react": "^18.2.0",
     "rimraf": "^3.0.2"
   }
 }
