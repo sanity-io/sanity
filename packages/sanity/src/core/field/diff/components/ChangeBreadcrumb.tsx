@@ -1,4 +1,3 @@
-import React from 'react'
 import {Breadcrumbs, Text} from '@sanity/ui'
 import {ChevronRightIcon} from '@sanity/icons'
 import {ChangeTitlePath, FieldChangeNode} from '../../types'

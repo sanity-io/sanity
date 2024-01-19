@@ -1,4 +1,4 @@
-import React, {createContext, useContext} from 'react'
+import {ReactNode, createContext, useContext} from 'react'
 import type {RouterHistory} from './types'
 
 /**
@@ -12,7 +12,7 @@ export function RouterHistoryProvider({
   children,
   history,
 }: {
-  children: React.ReactNode
+  children: ReactNode
   history: RouterHistory
 }) {
   return <RouterHistoryContext.Provider value={history}>{children}</RouterHistoryContext.Provider>

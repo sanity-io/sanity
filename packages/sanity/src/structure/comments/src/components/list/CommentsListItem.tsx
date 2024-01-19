@@ -1,4 +1,5 @@
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import * as React from 'react'
 import {Flex, Stack} from '@sanity/ui'
 import styled, {css} from 'styled-components'
 import {CurrentUser} from '@sanity/types'

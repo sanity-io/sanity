@@ -1,12 +1,6 @@
 import {Box, Card, Grid} from '@sanity/ui'
-import React, {
-  type ComponentProps,
-  type ForwardedRef,
-  forwardRef,
-  memo,
-  useCallback,
-  useMemo,
-} from 'react'
+import type {ReactNode, ComponentProps, ForwardedRef} from 'react'
+import {forwardRef, memo, useCallback, useMemo} from 'react'
 import styled, {css} from 'styled-components'
 import {
   closestCenter,
@@ -160,7 +154,7 @@ interface ListProps extends ComponentProps<typeof Grid> {
   onItemMove?: (event: {fromIndex: number; toIndex: number}) => void
   onItemMoveStart?: (event: DragStartEvent) => void
   onItemMoveEnd?: () => void
-  children?: React.ReactNode
+  children?: ReactNode
 }
 
 export function List(props: ListProps) {
@@ -193,7 +187,7 @@ interface ItemProps {
   // eslint-disable-next-line react/no-unused-prop-types
   sortable?: boolean
   disableTransition?: boolean
-  children?: React.ReactNode
+  children?: ReactNode
   'data-index'?: number
 }
 

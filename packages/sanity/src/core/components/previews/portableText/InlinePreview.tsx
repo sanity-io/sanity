@@ -1,4 +1,3 @@
-import React from 'react'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 import {PREVIEW_SIZES} from '../constants'
 import {renderPreviewMedia, renderPreviewNode} from '../helpers'

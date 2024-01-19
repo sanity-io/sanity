@@ -1,4 +1,3 @@
-import React from 'react'
 import {TextInput} from '@sanity/ui'
 import {StringInputProps} from '../types'
 

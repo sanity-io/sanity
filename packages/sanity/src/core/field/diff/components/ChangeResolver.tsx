@@ -1,5 +1,4 @@
 import {ConditionalProperty, SanityDocument} from '@sanity/types'
-import React from 'react'
 import {Text} from '@sanity/ui'
 import {unstable_useConditionalProperty as useConditionalProperty} from '../../conditional-property'
 import {ChangeNode} from '../../types'

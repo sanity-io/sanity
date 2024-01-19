@@ -1,5 +1,4 @@
 import {Box} from '@sanity/ui'
-import React from 'react'
 import styled from 'styled-components'
 import {Slug} from '@sanity/types'
 import {FieldPreviewComponent} from '../../../preview'

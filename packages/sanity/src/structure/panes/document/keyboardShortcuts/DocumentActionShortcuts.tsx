@@ -1,5 +1,6 @@
 import isHotkey from 'is-hotkey'
-import React, {ElementType, createElement, useCallback, useMemo, useState} from 'react'
+import {ElementType, createElement, useCallback, useMemo, useState} from 'react'
+import * as React from 'react'
 import {ActionStateDialog} from '../statusBar'
 import {RenderActionCollectionState} from '../../../components'
 import {useDocumentPane} from '../useDocumentPane'

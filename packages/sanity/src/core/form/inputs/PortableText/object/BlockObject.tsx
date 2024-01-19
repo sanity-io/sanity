@@ -6,7 +6,16 @@ import {
 } from '@sanity/portable-text-editor'
 import {ObjectSchemaType, Path, PortableTextBlock, isImage} from '@sanity/types'
 import {Box, Flex, ResponsivePaddingProps} from '@sanity/ui'
-import React, {PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {
+  PropsWithChildren,
+  RefObject,
+  MouseEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import {isEqual} from '@sanity/util/paths'
 import {Tooltip} from '../../../../../ui-components'
 import {
@@ -268,7 +277,7 @@ export function BlockObject(props: BlockObjectProps) {
   return useMemo(
     () => (
       <Box
-        ref={memberItem?.elementRef as React.RefObject<HTMLDivElement> | undefined}
+        ref={memberItem?.elementRef as RefObject<HTMLDivElement> | undefined}
         contentEditable={false}
       >
         <Flex paddingBottom={1} marginY={3} style={debugRender()}>
@@ -362,7 +371,7 @@ export const DefaultBlockObjectComponent = (props: BlockProps) => {
   const tone = selected || focused ? 'primary' : 'default'
 
   const handleDoubleClickToOpen = useCallback(
-    (e: React.MouseEvent<Element, MouseEvent>) => {
+    (e: MouseEvent<Element, globalThis.MouseEvent>) => {
       e.preventDefault()
       e.stopPropagation()
       onOpen()

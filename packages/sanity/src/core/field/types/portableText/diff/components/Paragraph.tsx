@@ -1,4 +1,4 @@
-import React from 'react'
+import {ReactNode} from 'react'
 import styled from 'styled-components'
 
 // This can contain nested <div> elements, so it's not rendered as a <p> element
@@ -9,6 +9,6 @@ const StyledParagraph = styled.div`
   margin: 0;
 `
 
-export function Paragraph({children}: {children: React.ReactNode}): JSX.Element {
+export function Paragraph({children}: {children: ReactNode}): JSX.Element {
   return <StyledParagraph>{children}</StyledParagraph>
 }

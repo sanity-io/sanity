@@ -1,5 +1,5 @@
 import {ArraySchemaType, Path, ValidationMarker, PortableTextBlock} from '@sanity/types'
-import React, {useCallback, useEffect, useMemo, useState} from 'react'
+import {useCallback, useEffect, useMemo, useState} from 'react'
 import {PortableTextMarker, RenderCustomMarkers} from '../../../../types'
 import {applyAll} from '../../../../patch/simplePatch'
 import {RenderBlockActionsCallback} from '../../../../types/_transitional'
@@ -47,7 +47,7 @@ export function TestInput(props: TestInputProps) {
   //   [form]
   // )
 
-  const onFocus = useCallback((pathOrEvent?: Path | React.FocusEvent) => {
+  const onFocus = useCallback((pathOrEvent?: Path | FocusEvent) => {
     setFocusPath(Array.isArray(pathOrEvent) ? pathOrEvent : [])
   }, [])
 

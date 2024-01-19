@@ -1,5 +1,5 @@
 import type {ThrottleSettings} from 'lodash'
-import React, {useCallback, useMemo, useRef, useState} from 'react'
+import {ReactNode, useCallback, useMemo, useRef, useState} from 'react'
 import {isNonNullable, useThrottledCallback} from '../../util'
 import {getHookId} from './actionId'
 import {HookStateContainer} from './HookStateContainer'
@@ -9,7 +9,7 @@ import {ActionHook} from './types'
 /** @internal */
 export interface GetHookCollectionStateProps<T, K> {
   args: T
-  children: (props: {states: K[]}) => React.ReactNode
+  children: (props: {states: K[]}) => ReactNode
   hooks: ActionHook<T, K>[]
   onReset?: () => void
 }

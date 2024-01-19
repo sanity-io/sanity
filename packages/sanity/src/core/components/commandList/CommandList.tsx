@@ -1,7 +1,7 @@
 import {Box, rem, Stack} from '@sanity/ui'
 import {ScrollToOptions, useVirtualizer, Virtualizer} from '@tanstack/react-virtual'
 import throttle from 'lodash/throttle'
-import React, {
+import {
   cloneElement,
   forwardRef,
   ReactElement,

@@ -1,6 +1,5 @@
 import type {ArraySchemaType} from '@sanity/types'
 import {Card, Text} from '@sanity/ui'
-import React from 'react'
 import {useTranslation} from '../../../../i18n'
 
 /**

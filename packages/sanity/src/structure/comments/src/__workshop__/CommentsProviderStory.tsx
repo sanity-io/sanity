@@ -1,5 +1,4 @@
 /* eslint-disable react/jsx-handler-names */
-import React from 'react'
 import {useString} from '@sanity/ui-workshop'
 import {CommentsList} from '../components'
 import {CommentsProvider, CommentsSetupProvider} from '../context'

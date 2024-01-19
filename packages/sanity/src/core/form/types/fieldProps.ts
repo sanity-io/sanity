@@ -29,7 +29,7 @@ import {
 /** @internal @deprecated DO NOT USE */
 export interface FieldCommentsProps {
   hasComments: boolean
-  button: React.ReactNode
+  button: ReactNode
   isAddingComment: boolean
 }
 
@@ -42,7 +42,7 @@ export interface BaseFieldProps {
   /** @internal @deprecated DO NOT USE */
   __internal_comments?: FieldCommentsProps
   /** @internal @deprecated ONLY USED BY AI ASSIST PLUGIN */
-  __internal_slot?: React.ReactNode
+  __internal_slot?: ReactNode
   schemaType: SchemaType
   title: string | undefined
   description: string | undefined

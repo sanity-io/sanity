@@ -1,4 +1,3 @@
-import React from 'react'
 import styled from 'styled-components'
 import {Box, Card, CardTone, Checkbox, Flex, Switch} from '@sanity/ui'
 import {BooleanInputProps} from '../types'

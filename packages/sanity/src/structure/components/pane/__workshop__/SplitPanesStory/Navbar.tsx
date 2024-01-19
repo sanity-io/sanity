@@ -1,5 +1,5 @@
 import {Box, Card, Flex, Text, Layer, useTheme} from '@sanity/ui'
-import React, {useCallback} from 'react'
+import {Dispatch, SetStateAction, useCallback} from 'react'
 import styled from 'styled-components'
 import {LegacyLayerProvider} from 'sanity'
 
@@ -12,10 +12,7 @@ const features = {
   inverted: true,
 }
 
-export function Navbar(props: {
-  path: string[]
-  setPath: React.Dispatch<React.SetStateAction<string[]>>
-}) {
+export function Navbar(props: {path: string[]; setPath: Dispatch<SetStateAction<string[]>>}) {
   const {path, setPath} = props
   const theme = useTheme()
   const {dark} = theme.sanity.color

@@ -17,7 +17,6 @@
  * c) https://styled-components.com/docs/advanced#server-side-rendering
  */
 
-import React from 'react'
 import {renderToStaticMarkup, renderToString} from 'react-dom/server'
 import {ServerStyleSheet} from 'styled-components'
 import {act} from 'react-dom/test-utils'

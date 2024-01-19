@@ -1,4 +1,4 @@
-import React, {useCallback, useContext, useMemo, useState} from 'react'
+import {HTMLAttributes, ReactElement, useCallback, useContext, useMemo, useState} from 'react'
 import {Box, Flex, Stack, Text, useClickOutside} from '@sanity/ui'
 import {Button, Popover} from '../../../../ui-components'
 import {useDocumentOperation} from '../../../hooks'
@@ -23,8 +23,8 @@ export function GroupChange(
     change: GroupChangeNode
     readOnly?: boolean
     hidden?: boolean
-  } & React.HTMLAttributes<HTMLDivElement>,
-): React.ReactElement | null {
+  } & HTMLAttributes<HTMLDivElement>,
+): ReactElement | null {
   const {change: group, readOnly, hidden, ...restProps} = props
   const {titlePath, changes, path: groupPath} = group
   const {path: diffPath} = useContext(DiffContext)

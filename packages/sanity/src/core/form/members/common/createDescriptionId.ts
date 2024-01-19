@@ -1,4 +1,4 @@
-import React from 'react'
+import {ReactNode} from 'react'
 
 /**
  * Creates a description id from a field id, for use with aria-describedby in the field,
@@ -7,7 +7,7 @@ import React from 'react'
  */
 export function createDescriptionId(
   id: string | undefined,
-  description: React.ReactNode | undefined,
+  description: ReactNode | undefined,
 ): string | undefined {
   if (!description || !id) return undefined
   return `desc_${id}`

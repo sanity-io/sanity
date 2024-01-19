@@ -33,7 +33,7 @@ export interface BlockDecoratorProps {
   /**
    * The span node as rendered without the decorator.
    */
-  children: React.ReactElement
+  children: ReactElement
   /**
    * If the span node currently is focused by the user.
    */
@@ -42,7 +42,7 @@ export interface BlockDecoratorProps {
    * The default render function for this decorator,
    * some decorators are proved by default and has a default rendering.
    */
-  renderDefault: (props: BlockDecoratorProps) => React.ReactElement
+  renderDefault: (props: BlockDecoratorProps) => ReactElement
   /**
    * The decorator schema type. Icon can be found here.
    */
@@ -75,7 +75,7 @@ export interface BlockStyleProps {
   /**
    * The block as rendered without this style.
    */
-  children: React.ReactElement
+  children: ReactElement
   /**
    * If the block currently has focus in the text editor.
    */
@@ -83,7 +83,7 @@ export interface BlockStyleProps {
   /**
    * The default rendering function for this style.
    */
-  renderDefault: (props: BlockStyleProps) => React.ReactElement
+  renderDefault: (props: BlockStyleProps) => ReactElement
   /**
    * The schema type for this style.
    */
@@ -115,7 +115,7 @@ export interface BlockListItemProps {
   /**
    * The block rendered without the list style.
    */
-  children: React.ReactElement
+  children: ReactElement
   /**
    * If the block currently is focused by the user.
    */
@@ -128,7 +128,7 @@ export interface BlockListItemProps {
    * The default function for rendering this as a list item. Some list types are built in and
    * will have a default rendering.
    */
-  renderDefault: (props: BlockListItemProps) => React.ReactElement
+  renderDefault: (props: BlockListItemProps) => ReactElement
   /**
    * The schema type for this list type. Icon can be found here.
    */

@@ -1,5 +1,5 @@
 import {Path, SanityDocument, ValidationContext, ValidationMarker} from '@sanity/types'
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {applyAll} from '../../../../src/core/form/patch/applyPatch'
 import {createMockSanityClient} from '../../mocks/createMockSanityClient'
 import type {FormDocumentValue} from '../../../../src/core/form/types'

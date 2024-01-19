@@ -1,5 +1,5 @@
 import {Box, Card, CardTone, Flex, Stack} from '@sanity/ui'
-import React, {ReactNode, useRef} from 'react'
+import {ReactNode, useRef} from 'react'
 import styled from 'styled-components'
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
 import {DragHandle} from '../common/DragHandle'

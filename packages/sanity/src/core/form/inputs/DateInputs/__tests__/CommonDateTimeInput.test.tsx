@@ -1,7 +1,6 @@
 import {fireEvent} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {format, parse} from 'date-fns'
-import React from 'react'
 import {defineField} from '@sanity/types'
 import {ParseResult} from '../types'
 import {CommonDateTimeInput} from '../CommonDateTimeInput'

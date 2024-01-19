@@ -1,5 +1,5 @@
 import {ToastProvider} from '@sanity/ui'
-import React from 'react'
+import {ReactNode} from 'react'
 import Refractor from 'react-refractor'
 import bash from 'refractor/lang/bash'
 import javascript from 'refractor/lang/javascript'
@@ -37,7 +37,7 @@ Refractor.registerLanguage(typescript)
  * @hidden
  * @beta */
 export interface StudioProviderProps extends StudioProps {
-  children: React.ReactNode
+  children: ReactNode
 }
 
 /**

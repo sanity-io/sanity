@@ -1,4 +1,4 @@
-import React, {useMemo} from 'react'
+import {ReactElement, ReactNode, useMemo} from 'react'
 import {ReviewChangesContext} from './ReviewChangesContext'
 import {ReviewChangesContextValue} from './types'
 
@@ -6,9 +6,9 @@ import {ReviewChangesContextValue} from './types'
  * @internal
  */
 export function ReviewChangesContextProvider(props: {
-  children?: React.ReactNode
+  children?: ReactNode
   changesOpen: boolean
-}): React.ReactElement {
+}): ReactElement {
   const {children, changesOpen} = props
   const contextValue: ReviewChangesContextValue = useMemo(() => ({changesOpen}), [changesOpen])
 

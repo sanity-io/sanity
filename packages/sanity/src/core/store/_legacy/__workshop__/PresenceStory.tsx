@@ -1,5 +1,5 @@
 import {Box, Code, Text} from '@sanity/ui'
-import React, {useEffect, useState} from 'react'
+import {useEffect, useState} from 'react'
 import {usePresenceStore} from '../datastores'
 import {GlobalPresence} from '../presence'
 

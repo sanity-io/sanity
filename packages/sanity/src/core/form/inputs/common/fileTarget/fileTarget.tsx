@@ -1,4 +1,15 @@
-import React, {useCallback} from 'react'
+import {
+  ComponentType,
+  ForwardedRef,
+  forwardRef,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  KeyboardEvent,
+  DragEvent,
+  ClipboardEvent,
+} from 'react'
 import {useForwardedRef} from '@sanity/ui'
 import {extractDroppedFiles, extractPastedFiles} from './utils/extractFiles'
 import {imageUrlToBlob} from './utils/imageUrlToBlob'
@@ -37,19 +48,19 @@ const PASTE_INPUT_STYLE = {opacity: 0, position: 'absolute'} as const
  * Higher order component that creates a file target from a given component.
  * Returns a component that acts both as a drop target and a paste target, emitting a list of Files upon drop or paste
  */
-export function fileTarget<ComponentProps>(Component: React.ComponentType<ComponentProps>) {
-  return React.forwardRef(function FileTarget(
+export function fileTarget<ComponentProps>(Component: ComponentType<ComponentProps>) {
+  return forwardRef(function FileTarget(
     props: Omit<ComponentProps, ManagedProps> & Props,
-    ref: React.ForwardedRef<HTMLElement>,
+    ref: ForwardedRef<HTMLElement>,
   ) {
     const {onFiles, onFilesOver, onFilesOut, disabled, ...rest} = props
 
-    const [showPasteInput, setShowPasteInput] = React.useState(false)
+    const [showPasteInput, setShowPasteInput] = useState(false)
 
-    const pasteInput = React.useRef<HTMLDivElement | null>(null)
+    const pasteInput = useRef<HTMLDivElement | null>(null)
     const forwardedRef = useForwardedRef(ref)
 
-    const enteredElements = React.useRef<Element[]>([])
+    const enteredElements = useRef<Element[]>([])
 
     const emitFiles = useCallback(
       (files: File[]) => {
@@ -59,7 +70,7 @@ export function fileTarget<ComponentProps>(Component: React.ComponentType<Compon
     )
 
     const handleKeyDown = useCallback(
-      (event: React.KeyboardEvent) => {
+      (event: KeyboardEvent) => {
         if (
           event.target === forwardedRef.current &&
           (event.ctrlKey || event.metaKey) &&
@@ -71,7 +82,7 @@ export function fileTarget<ComponentProps>(Component: React.ComponentType<Compon
       [forwardedRef],
     )
     const handlePaste = useCallback(
-      (event: React.ClipboardEvent) => {
+      (event: ClipboardEvent) => {
         extractPastedFiles(event.clipboardData)
           .then((files) => {
             if (!pasteInput.current) {
@@ -91,7 +102,7 @@ export function fileTarget<ComponentProps>(Component: React.ComponentType<Compon
       [emitFiles, forwardedRef],
     )
     const handleDrop = useCallback(
-      (event: React.DragEvent) => {
+      (event: DragEvent) => {
         enteredElements.current = []
         event.preventDefault()
         event.stopPropagation()
@@ -109,7 +120,7 @@ export function fileTarget<ComponentProps>(Component: React.ComponentType<Compon
     )
 
     const handleDragOver = useCallback(
-      (event: React.DragEvent) => {
+      (event: DragEvent) => {
         if (onFiles) {
           event.preventDefault()
           event.stopPropagation()
@@ -119,7 +130,7 @@ export function fileTarget<ComponentProps>(Component: React.ComponentType<Compon
     )
 
     const handleDragEnter = useCallback(
-      (event: React.DragEvent) => {
+      (event: DragEvent) => {
         event.stopPropagation()
 
         if (onFilesOver && forwardedRef.current === event.currentTarget) {
@@ -140,7 +151,7 @@ export function fileTarget<ComponentProps>(Component: React.ComponentType<Compon
     )
 
     const handleDragLeave = useCallback(
-      (event: React.DragEvent) => {
+      (event: DragEvent) => {
         event.stopPropagation()
         const idx = enteredElements.current.indexOf(event.currentTarget)
         if (idx > -1) {
@@ -153,8 +164,8 @@ export function fileTarget<ComponentProps>(Component: React.ComponentType<Compon
       [onFilesOut],
     )
 
-    const prevShowPasteInput = React.useRef(false)
-    React.useEffect(() => {
+    const prevShowPasteInput = useRef(false)
+    useEffect(() => {
       if (!prevShowPasteInput.current && showPasteInput && pasteInput.current) {
         pasteInput.current.focus()
         select(pasteInput.current) // Needed by Edge

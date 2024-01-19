@@ -1,5 +1,5 @@
 import {Box, Card, Code, Flex} from '@sanity/ui'
-import React, {memo, useCallback, useEffect, useMemo, useState} from 'react'
+import {memo, useCallback, useEffect, useMemo, useState} from 'react'
 import styled from 'styled-components'
 import {usePaneLayout} from '../usePaneLayout'
 import {PaneDivider} from '../PaneDivider'

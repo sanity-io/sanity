@@ -1,4 +1,4 @@
-import React, {useCallback, useId} from 'react'
+import {ChangeEvent, ForwardedRef, HTMLProps, forwardRef, useCallback, useId} from 'react'
 import {MenuItemProps} from '../../../../../../ui-components'
 import {FileMenuItem} from './FileInputMenuItem.styled'
 
@@ -10,16 +10,16 @@ export interface FileInputMenuItemProps extends Omit<MenuItemProps, 'onSelect'> 
   disabled?: boolean
 }
 
-export const FileInputMenuItem = React.forwardRef(function FileInputMenuItem(
+export const FileInputMenuItem = forwardRef(function FileInputMenuItem(
   props: FileInputMenuItemProps &
-    Omit<React.HTMLProps<HTMLButtonElement>, 'as' | 'ref' | 'type' | 'value' | 'onSelect'>,
-  forwardedRef: React.ForwardedRef<HTMLInputElement>,
+    Omit<HTMLProps<HTMLButtonElement>, 'as' | 'ref' | 'type' | 'value' | 'onSelect'>,
+  forwardedRef: ForwardedRef<HTMLInputElement>,
 ) {
   const {icon, id: idProp, accept, capture, multiple, onSelect, text, disabled, ...rest} = props
   const id = `${idProp || ''}-${useId()}`
 
-  const handleChange = React.useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = useCallback(
+    (event: ChangeEvent<HTMLInputElement>) => {
       if (onSelect && event.target.files) {
         onSelect(Array.from(event.target.files))
       }
@@ -28,7 +28,7 @@ export const FileInputMenuItem = React.forwardRef(function FileInputMenuItem(
   )
 
   const renderMenuItem = useCallback(
-    (item: React.JSX.Element) => (
+    (item: JSX.Element) => (
       <div>
         {item}
         {/* Visibly hidden input */}

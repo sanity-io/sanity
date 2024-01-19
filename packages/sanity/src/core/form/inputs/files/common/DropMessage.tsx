@@ -1,4 +1,3 @@
-import React from 'react'
 import {SchemaType} from '@sanity/types'
 import {Box, Text, Inline} from '@sanity/ui'
 import {AccessDeniedIcon, UploadIcon} from '@sanity/icons'

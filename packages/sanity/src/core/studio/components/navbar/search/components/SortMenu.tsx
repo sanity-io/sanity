@@ -1,7 +1,7 @@
 import {SortIcon} from '@sanity/icons'
 import {Card, Flex, Menu, MenuDivider} from '@sanity/ui'
 import isEqual from 'lodash/isEqual'
-import React, {useCallback, useId, useMemo} from 'react'
+import {useCallback, useId, useMemo} from 'react'
 import styled from 'styled-components'
 import {useTranslation} from '../../../../../i18n'
 import {ORDERINGS} from '../definitions/orderings'

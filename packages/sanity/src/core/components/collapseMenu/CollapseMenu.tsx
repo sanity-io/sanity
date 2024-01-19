@@ -1,5 +1,5 @@
 import {Flex} from '@sanity/ui'
-import React, {
+import {
   Children,
   cloneElement,
   ForwardedRef,

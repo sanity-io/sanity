@@ -1,4 +1,4 @@
-import React from 'react'
+import * as React from 'react'
 import {Box, CardTone} from '@sanity/ui'
 import {Pane, PaneContent, PaneHeader} from '../../components/pane'
 

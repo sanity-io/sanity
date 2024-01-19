@@ -1,12 +1,5 @@
-import React, {
-  type ComponentProps,
-  type ForwardedRef,
-  forwardRef,
-  useCallback,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
+import type {ComponentProps, ForwardedRef} from 'react'
+import {forwardRef, useCallback, useMemo, useRef, useState} from 'react'
 import type {Reference, ReferenceSchemaType} from '@sanity/types'
 import {Box, Card, CardTone, Flex, Menu, MenuDivider, Stack} from '@sanity/ui'
 import {LaunchIcon as OpenInNewTabIcon, SyncIcon as ReplaceIcon, TrashIcon} from '@sanity/icons'

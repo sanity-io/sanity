@@ -1,4 +1,4 @@
-import React, {MouseEvent, useCallback, useId} from 'react'
+import {MouseEvent, useCallback, useId} from 'react'
 import {Menu} from '@sanity/ui'
 import {UnknownIcon} from '@sanity/icons'
 import {Intent} from '../../structureBuilder'

@@ -1,6 +1,6 @@
 import {ArraySchemaType, isReferenceSchemaType} from '@sanity/types'
 import {AddIcon} from '@sanity/icons'
-import React, {useId, useCallback} from 'react'
+import {useId, useCallback} from 'react'
 import {Grid, Menu} from '@sanity/ui'
 import {ArrayInputFunctionsProps, ObjectItem} from '../../../types'
 import {Button, MenuButton, MenuButtonProps, MenuItem, Tooltip} from '../../../../../ui-components'
@@ -32,7 +32,7 @@ export function ArrayOfObjectsFunctions<
     [onValueCreate, onItemAppend],
   )
 
-  const handleAddBtnClick = React.useCallback(() => {
+  const handleAddBtnClick = useCallback(() => {
     insertItem(schemaType.of[0])
   }, [schemaType, insertItem])
 

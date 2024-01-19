@@ -1,11 +1,11 @@
-import React from 'react'
 import {Box} from '@sanity/ui'
+import {ReactNode} from 'react'
 import {FieldPreviewComponent} from '../../preview'
 import {Diff, DiffComponent} from '../../types'
 import {Preview} from '../../../preview/components/Preview'
 import {DiffFromTo} from './DiffFromTo'
 
-const FallbackPreview: FieldPreviewComponent<React.ReactNode> = ({value, schemaType}) => {
+const FallbackPreview: FieldPreviewComponent<ReactNode> = ({value, schemaType}) => {
   return (
     <Box padding={2}>
       <Preview schemaType={schemaType} value={value as any} layout="default" />

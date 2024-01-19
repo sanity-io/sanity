@@ -1,4 +1,4 @@
-import React, {useMemo} from 'react'
+import {useMemo} from 'react'
 import {Asset as AssetType} from '@sanity/types'
 import {Dialog} from '../../../../../ui-components'
 import {LoadingBlock} from '../../../../components/loadingBlock'

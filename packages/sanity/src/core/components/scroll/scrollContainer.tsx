@@ -1,12 +1,21 @@
 import {useForwardedRef} from '@sanity/ui'
 import createPubSub from 'nano-pubsub'
-import React, {useContext, useEffect, useMemo} from 'react'
+import {
+  ElementType,
+  ForwardedRef,
+  HTMLProps,
+  createElement,
+  forwardRef,
+  useContext,
+  useEffect,
+  useMemo,
+} from 'react'
 import {ScrollContext} from './scrollContext'
 
 /** @internal */
-export interface ScrollContainerProps<T extends React.ElementType>
-  extends Omit<React.HTMLProps<T>, 'as' | 'onScroll'> {
-  as?: React.ElementType | keyof JSX.IntrinsicElements
+export interface ScrollContainerProps<T extends ElementType>
+  extends Omit<HTMLProps<T>, 'as' | 'onScroll'> {
+  as?: ElementType | keyof JSX.IntrinsicElements
   onScroll?: (event: Event) => () => void
 }
 
@@ -21,9 +30,10 @@ const noop = () => undefined
  *
  * @internal
  */
-export const ScrollContainer = React.forwardRef(function ScrollContainer<
-  T extends React.ElementType = 'div',
->(props: ScrollContainerProps<T>, ref: React.ForwardedRef<HTMLDivElement>) {
+export const ScrollContainer = forwardRef(function ScrollContainer<T extends ElementType = 'div'>(
+  props: ScrollContainerProps<T>,
+  ref: ForwardedRef<HTMLDivElement>,
+) {
   const {as = 'div', onScroll, ...rest} = props
   const forwardedRef = useForwardedRef(ref)
 
@@ -70,7 +80,7 @@ export const ScrollContainer = React.forwardRef(function ScrollContainer<
 
   return (
     <ScrollContext.Provider value={childContext}>
-      {React.createElement(as, {ref: forwardedRef, 'data-testid': 'scroll-container', ...rest})}
+      {createElement(as, {ref: forwardedRef, 'data-testid': 'scroll-container', ...rest})}
     </ScrollContext.Provider>
   )
 })

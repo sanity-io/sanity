@@ -1,9 +1,9 @@
 import {ObjectSchemaType, Path, ValidationMarker} from '@sanity/types'
-import React, {useCallback} from 'react'
+import {ReactNode, useCallback} from 'react'
 import {useSource} from '../../studio'
 import {PatchChannel, PatchEvent} from '../patch'
 import {FormBuilderProvider} from '../FormBuilderProvider'
-import {FormFieldGroup, ObjectMember, StateTree} from '../store'
+import {FormFieldGroup, StateTree} from '../store'
 import {
   BlockAnnotationProps,
   BlockProps,
@@ -36,7 +36,7 @@ export interface FormProviderProps {
 
   autoFocus?: boolean
   changesOpen?: boolean
-  children?: React.ReactNode
+  children?: ReactNode
   collapsedFieldSets: StateTree<boolean> | undefined
   collapsedPaths: StateTree<boolean> | undefined
   focusPath: Path

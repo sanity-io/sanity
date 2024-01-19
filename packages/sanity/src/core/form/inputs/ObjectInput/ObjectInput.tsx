@@ -1,4 +1,4 @@
-import React, {Fragment, memo, useCallback, useMemo} from 'react'
+import {Fragment, memo, useCallback, useMemo} from 'react'
 import {Grid, Stack} from '@sanity/ui'
 import {ObjectInputProps} from '../../types'
 import {ObjectInputMembers} from '../../members'

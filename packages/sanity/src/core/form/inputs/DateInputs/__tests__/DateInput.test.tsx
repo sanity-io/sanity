@@ -1,7 +1,6 @@
 import {defineField} from '@sanity/types'
 import {fireEvent} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import React from 'react'
 import {renderStringInput} from '../../../../../../test/form'
 import {DateInput} from '../DateInput'
 

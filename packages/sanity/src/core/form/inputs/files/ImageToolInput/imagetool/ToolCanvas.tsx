@@ -1,4 +1,4 @@
-import React, {PointerEvent} from 'react'
+import {PureComponent, PointerEvent} from 'react'
 import {memoize} from 'lodash'
 import {getBackingStoreRatio} from './getBackingStoreRatio'
 import * as utils2d from './2d/utils'
@@ -113,7 +113,7 @@ const cropHandleKeys: (keyof CropHandles)[] = [
   'bottomRight',
 ]
 
-export class ToolCanvas extends React.PureComponent<ToolCanvasProps, ToolCanvasState> {
+export class ToolCanvas extends PureComponent<ToolCanvasProps, ToolCanvasState> {
   state: ToolCanvasState = {
     cropping: false,
     cropMoving: false,

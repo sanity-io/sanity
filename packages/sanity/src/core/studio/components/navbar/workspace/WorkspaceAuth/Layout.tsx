@@ -1,6 +1,6 @@
 import {SanityLogo} from '@sanity/logos'
 import {Box, Card, Flex, Heading, Stack, Text} from '@sanity/ui'
-import React from 'react'
+import {ReactNode, Fragment} from 'react'
 import styled from 'styled-components'
 import {useTranslation} from '../../../../../i18n'
 
@@ -34,9 +34,9 @@ const StyledText = styled(Text)`
 `
 
 interface LayoutProps {
-  header?: React.ReactNode
-  children: React.ReactNode
-  footer?: React.ReactNode
+  header?: ReactNode
+  children: ReactNode
+  footer?: ReactNode
 }
 
 export function Layout(props: LayoutProps) {
@@ -73,7 +73,7 @@ export function Layout(props: LayoutProps) {
 
         <Flex align="center" gap={2}>
           {LINKS.map((link, index) => (
-            <React.Fragment key={link.title}>
+            <Fragment key={link.title}>
               <StyledText muted size={1}>
                 <a href={link.url} target="_blank" rel="noopener noreferrer">
                   {link.title}
@@ -85,7 +85,7 @@ export function Layout(props: LayoutProps) {
                   •
                 </Text>
               )}
-            </React.Fragment>
+            </Fragment>
           ))}
         </Flex>
       </Flex>

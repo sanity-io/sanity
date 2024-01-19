@@ -1,6 +1,5 @@
 /* eslint-disable i18next/no-literal-string,@sanity/i18n/no-attribute-string-literals */
 import {Box, Stack, Text} from '@sanity/ui'
-import React from 'react'
 import {Dialog} from '../../../../ui-components'
 
 export function InitialValueTemplateError({errors}: {errors: Error[]}) {

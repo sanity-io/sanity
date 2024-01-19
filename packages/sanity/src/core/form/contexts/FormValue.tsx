@@ -1,4 +1,4 @@
-import React, {createContext, ReactNode, useContext, useMemo} from 'react'
+import {createContext, ReactNode, useContext, useMemo} from 'react'
 import {Path} from '@sanity/types'
 import {pathFor} from '@sanity/util/paths'
 import {getValueAtPath} from '../../field'

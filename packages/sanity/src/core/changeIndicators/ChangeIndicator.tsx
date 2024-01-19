@@ -1,13 +1,5 @@
 import {useLayer} from '@sanity/ui'
-import React, {
-  ComponentProps,
-  HTMLProps,
-  MouseEvent,
-  memo,
-  useCallback,
-  useRef,
-  useState,
-} from 'react'
+import {ComponentProps, HTMLProps, MouseEvent, memo, useCallback, useRef, useState} from 'react'
 import deepCompare from 'react-fast-compare'
 import * as PathUtils from '@sanity/util/paths'
 import {Path} from '@sanity/types'

@@ -1,4 +1,4 @@
-import React, {CSSProperties} from 'react'
+import {CSSProperties} from 'react'
 import {WarningOutlineIcon} from '@sanity/icons'
 import {Card, Flex, Grid, Text} from '@sanity/ui'
 import {Translate, useTranslation} from '../../../../i18n'

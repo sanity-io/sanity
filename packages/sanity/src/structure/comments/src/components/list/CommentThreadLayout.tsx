@@ -5,7 +5,8 @@ import {
   // eslint-disable-next-line no-restricted-imports
   Button, // Button with specific styling and children behavior.
 } from '@sanity/ui'
-import React, {useCallback, useMemo} from 'react'
+import {useCallback, useMemo} from 'react'
+import * as React from 'react'
 import {uuid} from '@sanity/uuid'
 import styled, {css} from 'styled-components'
 import {

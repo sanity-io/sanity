@@ -1,4 +1,4 @@
-import React, {useCallback, useId} from 'react'
+import {useCallback, useId} from 'react'
 import {TrashIcon} from '@sanity/icons'
 import {Menu} from '@sanity/ui'
 import {ContextMenuButton} from '../../../../../components/contextMenuButton'

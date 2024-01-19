@@ -1,6 +1,6 @@
 import {CheckmarkIcon} from '@sanity/icons'
 import {Flex, Stack, Box, Text} from '@sanity/ui'
-import React, {createElement, isValidElement, useMemo} from 'react'
+import {ComponentType, ReactNode, createElement, isValidElement, useMemo} from 'react'
 import {isValidElementType} from 'react-is'
 import styled from 'styled-components'
 
@@ -29,7 +29,7 @@ export const WorkspacePreviewIcon = ({
   icon,
   size = 'small',
 }: {
-  icon: React.ComponentType | React.ReactNode
+  icon: ComponentType | ReactNode
   size: PreviewIconSize
 }) => {
   const iconComponent = useMemo(() => createIcon(icon), [icon])
@@ -37,15 +37,15 @@ export const WorkspacePreviewIcon = ({
   return <Media $size={size}>{iconComponent}</Media>
 }
 
-const createIcon = (icon: React.ComponentType | React.ReactNode) => {
+const createIcon = (icon: ComponentType | ReactNode) => {
   if (isValidElementType(icon)) return createElement(icon)
   if (isValidElement(icon)) return icon
   return undefined
 }
 
 export interface WorkspacePreviewProps {
-  icon?: React.ComponentType | React.ReactNode
-  iconRight?: React.ComponentType | React.ReactNode
+  icon?: ComponentType | ReactNode
+  iconRight?: ComponentType | ReactNode
   selected?: boolean
   state?: 'logged-in' | 'logged-out' | 'no-access'
   subtitle?: string

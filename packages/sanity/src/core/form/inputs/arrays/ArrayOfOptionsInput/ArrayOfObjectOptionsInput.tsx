@@ -1,4 +1,4 @@
-import React, {useCallback, useMemo} from 'react'
+import {useCallback, useMemo} from 'react'
 import {Box, Card, Checkbox, Flex, Grid} from '@sanity/ui'
 import {resolveTypeName} from '@sanity/util/content'
 import {ArraySchemaType, isKeyedObject} from '@sanity/types'

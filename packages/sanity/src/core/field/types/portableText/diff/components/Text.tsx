@@ -1,5 +1,6 @@
 import {isKeySegment, type Path} from '@sanity/types'
-import React, {type SyntheticEvent, useCallback, useMemo, useContext} from 'react'
+import type {HTMLProps, SyntheticEvent} from 'react'
+import {useCallback, useMemo, useContext} from 'react'
 import {useTranslation} from '../../../../../i18n'
 import {DiffCard, DiffContext} from '../../../../diff'
 import type {ObjectDiff, StringDiff, StringDiffSegment} from '../../../../types'
@@ -21,7 +22,7 @@ export function Text({
   path,
   segment,
   ...restProps
-}: TextProps & Omit<React.HTMLProps<HTMLSpanElement>, 'onClick'>) {
+}: TextProps & Omit<HTMLProps<HTMLSpanElement>, 'onClick'>) {
   const diffWithFallback = diff || childDiff
   const hasChanged =
     diffWithFallback && diffWithFallback.action !== 'unchanged' && segment.action !== 'unchanged'

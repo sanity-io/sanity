@@ -1,4 +1,4 @@
-import React, {useCallback} from 'react'
+import {HTMLProps, useCallback} from 'react'
 import {Card, Flex, Text} from '@sanity/ui'
 import {Asset as AssetType, SanityDocument} from '@sanity/types'
 import {useSchema} from '../../../../hooks'
@@ -40,7 +40,7 @@ const DocumentLink = ({document}: {document: SanityDocument}) => {
   const schema = useSchema()
 
   const LinkComponent = useCallback(
-    (linkProps: Omit<React.HTMLProps<HTMLAnchorElement>, 'ref'>) => (
+    (linkProps: Omit<HTMLProps<HTMLAnchorElement>, 'ref'>) => (
       <IntentLink {...linkProps} params={{id: document._id, type: document._type}} intent="edit" />
     ),
 

@@ -1,5 +1,5 @@
 /* eslint-disable i18next/no-literal-string,@sanity/i18n/no-attribute-string-literals */
-import React, {useCallback, useState, useId} from 'react'
+import {useCallback, useState, useId} from 'react'
 import {Stack, Text} from '@sanity/ui'
 import {WarningOutlineIcon} from '@sanity/icons'
 import {Dialog} from '../../../../../ui-components'

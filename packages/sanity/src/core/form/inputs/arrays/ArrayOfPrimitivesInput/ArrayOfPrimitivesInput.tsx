@@ -1,4 +1,4 @@
-import React from 'react'
+import {PureComponent} from 'react'
 import {get} from 'lodash'
 import {Card, Stack} from '@sanity/ui'
 import type {ArrayOfPrimitivesInputProps} from '../../../types'
@@ -25,10 +25,7 @@ interface State {
  * @hidden
  * @beta
  */
-export class ArrayOfPrimitivesInput extends React.PureComponent<
-  ArrayOfPrimitivesInputProps,
-  State
-> {
+export class ArrayOfPrimitivesInput extends PureComponent<ArrayOfPrimitivesInputProps, State> {
   _element: HTMLElement | null = null
 
   constructor(props: ArrayOfPrimitivesInputProps) {

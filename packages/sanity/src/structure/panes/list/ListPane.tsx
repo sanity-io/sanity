@@ -1,4 +1,3 @@
-import React from 'react'
 import {Card, Code} from '@sanity/ui'
 import {Pane} from '../../components'
 import {BaseStructureToolPaneProps} from '../types'

@@ -1,4 +1,4 @@
-import React, {useCallback, useMemo} from 'react'
+import {useCallback, useMemo} from 'react'
 import styled from 'styled-components'
 import {BlockDecoratorRenderProps} from '@sanity/portable-text-editor'
 import {BlockDecoratorProps} from '../../../types'

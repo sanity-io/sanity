@@ -1,6 +1,7 @@
 import {Box, Flex, Stack, Text} from '@sanity/ui'
 import styled from 'styled-components'
-import React, {useCallback, useImperativeHandle, useMemo, useRef, useState} from 'react'
+import {useCallback, useImperativeHandle, useMemo, useRef, useState} from 'react'
+import * as React from 'react'
 import {deburr} from 'lodash'
 import {MentionOptionUser} from '../../types'
 import {MentionsMenuItem} from './MentionsMenuItem'

@@ -13,7 +13,7 @@ import {
 } from '@sanity/portable-text-editor'
 import type {Path} from '@sanity/types'
 import {BoundaryElementProvider, useBoundaryElement, useGlobalKeyDown, useLayer} from '@sanity/ui'
-import React, {useCallback, useMemo, useRef} from 'react'
+import {useCallback, useMemo, useRef} from 'react'
 import {TooltipDelayGroupProvider} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'
 import {Toolbar} from './toolbar'

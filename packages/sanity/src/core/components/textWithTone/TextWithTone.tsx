@@ -1,6 +1,6 @@
 import styled from 'styled-components'
 import {ButtonTone, Text} from '@sanity/ui'
-import React, {ComponentProps} from 'react'
+import {ComponentProps, Ref, forwardRef} from 'react'
 
 /** @internal */
 export interface TextWithToneProps extends ComponentProps<typeof Text> {
@@ -34,9 +34,9 @@ const TextWithToneStyle = styled(Text)`
 `
 
 /** @internal */
-export const TextWithTone = React.forwardRef(function TextWithTone(
+export const TextWithTone = forwardRef(function TextWithTone(
   props: TextWithToneProps,
-  ref: React.Ref<HTMLDivElement>,
+  ref: Ref<HTMLDivElement>,
 ) {
   const {tone, dimmed, muted, ...rest} = props
 

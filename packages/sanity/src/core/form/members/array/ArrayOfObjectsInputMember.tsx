@@ -1,4 +1,3 @@
-import React from 'react'
 import {ArrayOfObjectsMember} from '../../store'
 import {
   RenderAnnotationCallback,

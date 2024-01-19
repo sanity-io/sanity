@@ -1,7 +1,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 
 import {ResetIcon} from '@sanity/icons'
-import React, {useCallback, useMemo, useState} from 'react'
+import {useCallback, useMemo, useState} from 'react'
 import {structureLocaleNamespace} from '../i18n'
 import {
   DocumentActionComponent,

@@ -1,5 +1,5 @@
 import {Box, Card, Flex, Stack} from '@sanity/ui'
-import React, {useCallback, useState} from 'react'
+import {useCallback, useState} from 'react'
 import {omit} from 'lodash'
 import {AddIcon, ArrowLeftIcon, ChevronRightIcon} from '@sanity/icons'
 import {Button} from '../../../../../../ui-components'

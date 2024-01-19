@@ -1,4 +1,4 @@
-import React, {useCallback, useMemo, useState} from 'react'
+import {useCallback, useMemo, useState, KeyboardEvent, ChangeEvent} from 'react'
 import {Text, useClickOutside, Stack, TextInput, TextInputProps, Card, Flex} from '@sanity/ui'
 import {AddIcon, SearchIcon} from '@sanity/icons'
 import ReactFocusLock from 'react-focus-lock'
@@ -59,7 +59,7 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
     [options, searchQuery, getI18nText],
   )
 
-  const handleSearchChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSearchChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(event.currentTarget.value)
   }, [])
 
@@ -73,7 +73,7 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
 
   // Open popover on arrow down
   const handleOpenButtonKeyDown = useCallback(
-    (e: React.KeyboardEvent<HTMLButtonElement>) => {
+    (e: KeyboardEvent<HTMLButtonElement>) => {
       if (e.key === 'ArrowDown' && !open) {
         setOpen(true)
       }
@@ -83,7 +83,7 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
 
   // Close popover on escape or tab
   const handlePopoverKeyDown = useCallback(
-    (e: React.KeyboardEvent<HTMLDivElement>) => {
+    (e: KeyboardEvent<HTMLDivElement>) => {
       if ((e.key === 'Escape' || e.key === 'Tab') && open) {
         handleClose()
       }

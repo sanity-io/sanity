@@ -1,4 +1,3 @@
-import React from 'react'
 import {Rect} from './types'
 
 export function DebugLayers({

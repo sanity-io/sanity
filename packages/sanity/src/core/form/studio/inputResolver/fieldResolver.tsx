@@ -5,7 +5,7 @@ import {
   isReferenceSchemaType,
   SchemaType,
 } from '@sanity/types'
-import React, {useState} from 'react'
+import {ComponentType, useState} from 'react'
 import {ArrayFieldProps, FieldProps, ObjectFieldProps} from '../../types'
 import {ReferenceField} from '../../inputs/ReferenceInput/ReferenceField'
 import {FieldMember} from '../../store'
@@ -167,34 +167,34 @@ function ImageOrFileField(field: ObjectFieldProps) {
 
 export function defaultResolveFieldComponent(
   schemaType: SchemaType,
-): React.ComponentType<Omit<FieldProps, 'renderDefault'>> {
+): ComponentType<Omit<FieldProps, 'renderDefault'>> {
   if (schemaType.components?.field) return schemaType.components.field
 
   if (isBooleanSchemaType(schemaType)) {
-    return BooleanField as React.ComponentType<Omit<FieldProps, 'renderDefault'>>
+    return BooleanField as ComponentType<Omit<FieldProps, 'renderDefault'>>
   }
 
   const typeChain = getTypeChain(schemaType, new Set())
 
   if (typeChain.some((t) => t.name === 'image' || t.name === 'file')) {
-    return ImageOrFileField as React.ComponentType<Omit<FieldProps, 'renderDefault'>>
+    return ImageOrFileField as ComponentType<Omit<FieldProps, 'renderDefault'>>
   }
 
   if (typeChain.some((t) => isCrossDatasetReferenceSchemaType(t))) {
-    return PrimitiveField as React.ComponentType<Omit<FieldProps, 'renderDefault'>>
+    return PrimitiveField as ComponentType<Omit<FieldProps, 'renderDefault'>>
   }
 
   if (typeChain.some((t) => t.name === 'slug')) {
-    return PrimitiveField as React.ComponentType<Omit<FieldProps, 'renderDefault'>>
+    return PrimitiveField as ComponentType<Omit<FieldProps, 'renderDefault'>>
   }
 
   if (typeChain.some((t) => isReferenceSchemaType(t))) {
-    return ReferenceField as React.ComponentType<Omit<FieldProps, 'renderDefault'>>
+    return ReferenceField as ComponentType<Omit<FieldProps, 'renderDefault'>>
   }
 
   if (schemaType.jsonType !== 'object' && schemaType.jsonType !== 'array') {
-    return PrimitiveField as React.ComponentType<Omit<FieldProps, 'renderDefault'>>
+    return PrimitiveField as ComponentType<Omit<FieldProps, 'renderDefault'>>
   }
 
-  return ObjectOrArrayField as React.ComponentType<Omit<FieldProps, 'renderDefault'>>
+  return ObjectOrArrayField as ComponentType<Omit<FieldProps, 'renderDefault'>>
 }

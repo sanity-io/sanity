@@ -1,4 +1,4 @@
-import React, {memo, useContext, useId, useMemo, useRef} from 'react'
+import {memo, useContext, useId, useMemo, useRef} from 'react'
 import {sortBy, uniqBy} from 'lodash'
 import {AvatarCounter, AvatarPosition} from '@sanity/ui'
 import {UserAvatar} from '../components/userAvatar'

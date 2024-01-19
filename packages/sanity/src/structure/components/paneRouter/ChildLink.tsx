@@ -1,4 +1,5 @@
-import React, {forwardRef, useContext} from 'react'
+import {forwardRef, useContext} from 'react'
+import * as React from 'react'
 import {PaneRouterContext} from './PaneRouterContext'
 import {ChildLinkProps} from './types'
 import {StateLink} from 'sanity/router'

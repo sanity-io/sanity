@@ -1,7 +1,7 @@
 import {ErrorOutlineIcon, IconComponent, InfoOutlineIcon, WarningOutlineIcon} from '@sanity/icons'
 import {Box, Card, CardTone, ErrorBoundary, Flex, Stack, Text} from '@sanity/ui'
 import {ObjectSchemaType, Path, SanityDocument, SchemaType, ValidationMarker} from '@sanity/types'
-import React, {ErrorInfo, Fragment, createElement, useCallback, useMemo, useState} from 'react'
+import {ErrorInfo, Fragment, createElement, useCallback, useMemo, useState} from 'react'
 import {useDocumentPane} from '../../useDocumentPane'
 import {DocumentInspectorHeader} from '../../documentInspector'
 import {getPathTitles} from './getPathTitles'

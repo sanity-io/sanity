@@ -1,4 +1,3 @@
-import React from 'react'
 import {ArrowLeftIcon} from '@sanity/icons'
 import {Button} from '../../../ui-components'
 import type {PaneMenuItem, PaneMenuItemGroup, StructureToolPaneActionHandler} from '../../types'

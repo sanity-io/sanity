@@ -1,7 +1,7 @@
 import {WarningOutlineIcon} from '@sanity/icons'
 import {PreviewValue, SanityDocument, SchemaType} from '@sanity/types'
 import {assignWith} from 'lodash'
-import React from 'react'
+import * as React from 'react'
 import {combineLatest, Observable, of} from 'rxjs'
 import {map, startWith} from 'rxjs/operators'
 import {PaneItemPreviewState} from './types'

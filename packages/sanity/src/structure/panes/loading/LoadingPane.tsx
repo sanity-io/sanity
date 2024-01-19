@@ -1,5 +1,5 @@
 import {type CardTone, Flex, _raf2} from '@sanity/ui'
-import React, {memo, useMemo, useState, useEffect} from 'react'
+import {memo, useMemo, useState, useEffect} from 'react'
 import {Observable} from 'rxjs'
 import styled from 'styled-components'
 import {structureLocaleNamespace} from '../../i18n'

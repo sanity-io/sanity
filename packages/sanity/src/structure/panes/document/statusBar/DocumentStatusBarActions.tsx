@@ -1,5 +1,5 @@
 import {Flex, Hotkeys, LayerProvider, Stack, Text} from '@sanity/ui'
-import React, {memo, useMemo, useState} from 'react'
+import {memo, useMemo, useState} from 'react'
 import {RenderActionCollectionState} from '../../../components'
 import {HistoryRestoreAction} from '../../../documentActions'
 import {Button, Tooltip} from '../../../../ui-components'

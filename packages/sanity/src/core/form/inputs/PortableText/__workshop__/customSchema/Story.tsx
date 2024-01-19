@@ -1,5 +1,4 @@
 import {Card, Container, Flex, LayerProvider} from '@sanity/ui'
-import React from 'react'
 import {useBoolean, useSelect} from '@sanity/ui-workshop'
 import {TestInput} from '../_common/TestInput'
 import {FIXME} from '../../../../../FIXME'

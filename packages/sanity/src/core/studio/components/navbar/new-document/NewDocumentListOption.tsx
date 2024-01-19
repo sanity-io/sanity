@@ -1,6 +1,6 @@
 import {CurrentUser} from '@sanity/types'
 import {Card, Text} from '@sanity/ui'
-import React, {useCallback, useMemo} from 'react'
+import {useCallback, useMemo, MouseEvent} from 'react'
 import {Tooltip} from '../../../../../ui-components'
 import {InsufficientPermissionsMessage} from '../../../../components'
 import {useI18nText} from '../../../../i18n'
@@ -32,7 +32,7 @@ export function NewDocumentListOption(props: NewDocumentListOptionProps) {
   })
 
   const handleDocumentClick = useCallback(
-    (event: React.MouseEvent<HTMLElement>) => {
+    (event: MouseEvent<HTMLElement>) => {
       onIntentClick(event)
       onClick(option)
     },

@@ -1,5 +1,4 @@
 import {Box, Card, Inline, Stack, Text} from '@sanity/ui'
-import React from 'react'
 import {StructureToolProvider} from '../../../../StructureToolProvider'
 import type {DocumentPaneNode} from '../../../../types'
 import {DocumentPaneProvider} from '../../DocumentPaneProvider'

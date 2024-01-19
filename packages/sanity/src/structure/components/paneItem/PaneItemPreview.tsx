@@ -1,5 +1,6 @@
 import type {SanityDocument, SchemaType} from '@sanity/types'
-import React, {isValidElement} from 'react'
+import {isValidElement} from 'react'
+import * as React from 'react'
 import {isNumber, isString} from 'lodash'
 import {Flex} from '@sanity/ui'
 import {useMemoObservable} from 'react-rx'

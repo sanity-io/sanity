@@ -1,5 +1,5 @@
 import {Box, Card, Code, Stack, Text, Theme, useClickOutside} from '@sanity/ui'
-import React, {useCallback} from 'react'
+import {useCallback, useState, FocusEvent} from 'react'
 import {BulbOutlineIcon, UnknownIcon} from '@sanity/icons'
 import {resolveTypeName} from '@sanity/util/content'
 import styled from 'styled-components'
@@ -12,20 +12,20 @@ const PopoverCard = styled(Card)`
 
 interface Props {
   value: unknown
-  onFocus?: (event: React.FocusEvent) => void
+  onFocus?: (event: FocusEvent) => void
   vertical?: boolean
 }
 
 export function IncompatibleItemType(props: Props) {
   const {value, onFocus, vertical, ...rest} = props
-  const [showDetails, setShowDetails] = React.useState(false)
-  const [popoverRef, setPopoverRef] = React.useState<HTMLElement | null>(null)
+  const [showDetails, setShowDetails] = useState(false)
+  const [popoverRef, setPopoverRef] = useState<HTMLElement | null>(null)
 
   const {t} = useTranslation()
 
   useClickOutside(() => setShowDetails(false), [popoverRef])
 
-  const handleKeyDown = React.useCallback((e: any) => {
+  const handleKeyDown = useCallback((e: any) => {
     if (e.key === 'Escape' || e.key === 'Tab') {
       setShowDetails(false)
     }

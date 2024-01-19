@@ -1,5 +1,5 @@
 import * as PathUtils from '@sanity/util/paths'
-import React, {SyntheticEvent, useCallback} from 'react'
+import {ReactNode, SyntheticEvent, useCallback, useContext, useRef, useState} from 'react'
 import {Path} from '@sanity/types'
 import deepCompare from 'react-fast-compare'
 import {useReporter} from './tracker'
@@ -10,20 +10,16 @@ import {ConnectorContext} from './ConnectorContext'
  *
  * @internal
  */
-export const ChangeFieldWrapper = (props: {
-  path: Path
-  children: React.ReactNode
-  hasHover: boolean
-}) => {
-  const ref = React.useRef<HTMLDivElement>(null)
-  const {onSetFocus} = React.useContext(ConnectorContext)
-  const [isHover, setHover] = React.useState(false)
+export const ChangeFieldWrapper = (props: {path: Path; children: ReactNode; hasHover: boolean}) => {
+  const ref = useRef<HTMLDivElement>(null)
+  const {onSetFocus} = useContext(ConnectorContext)
+  const [isHover, setHover] = useState(false)
 
-  const onMouseEnter = React.useCallback(() => {
+  const onMouseEnter = useCallback(() => {
     setHover(true)
   }, [])
 
-  const onMouseLeave = React.useCallback(() => {
+  const onMouseLeave = useCallback(() => {
     setHover(false)
   }, [])
 
@@ -57,7 +53,7 @@ export const ChangeFieldWrapper = (props: {
 
 // Stop the propagation here, or it will trigger the parent diff component's onClick.
 function setFocusWithStopPropagation(
-  event: React.SyntheticEvent,
+  event: SyntheticEvent,
   onSetFocus: (toPath: Path) => void,
   path: Path,
 ): void {

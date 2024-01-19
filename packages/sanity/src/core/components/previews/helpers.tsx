@@ -1,12 +1,12 @@
-import React, {createElement} from 'react'
+import {ElementType, ReactNode, createElement} from 'react'
 import {isValidElementType} from 'react-is'
 import {PreviewLayoutKey, PreviewMediaDimensions} from './types'
 
 export function renderPreviewMedia<Layout = PreviewLayoutKey>(
-  value: React.ReactNode | React.ElementType<{layout: Layout; dimensions: PreviewMediaDimensions}>,
+  value: ReactNode | ElementType<{layout: Layout; dimensions: PreviewMediaDimensions}>,
   layout: Layout,
   dimensions: PreviewMediaDimensions,
-): React.ReactNode {
+): ReactNode {
   if (isValidElementType(value)) {
     return createElement(value, {layout, dimensions})
   }
@@ -15,15 +15,15 @@ export function renderPreviewMedia<Layout = PreviewLayoutKey>(
     return <div>{value}</div>
   }
 
-  // @todo: find out why `value` isn't infered as `React.ReactNode` here
+  // @todo: find out why `value` isn't infered as `ReactNode` here
   return value as any
 }
 
 export function renderPreviewNode<Layout = PreviewLayoutKey>(
-  value: React.ReactNode | React.ElementType<{layout: Layout}>,
+  value: ReactNode | ElementType<{layout: Layout}>,
   layout: Layout,
-  fallbackNode?: React.ReactNode,
-): React.ReactNode {
+  fallbackNode?: ReactNode,
+): ReactNode {
   if (typeof value === 'string') {
     return value
   }
@@ -32,6 +32,6 @@ export function renderPreviewNode<Layout = PreviewLayoutKey>(
     return createElement(value, {layout})
   }
 
-  // @todo: find out why `value` isn't infered as `React.ReactNode` here
+  // @todo: find out why `value` isn't infered as `ReactNode` here
   return (value as any) || fallbackNode
 }

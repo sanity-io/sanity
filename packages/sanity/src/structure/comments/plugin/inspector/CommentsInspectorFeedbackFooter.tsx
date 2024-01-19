@@ -1,6 +1,5 @@
 import {LaunchIcon} from '@sanity/icons'
 import {Card, Text} from '@sanity/ui'
-import React from 'react'
 import styled from 'styled-components'
 
 const FEEDBACK_FORM_LINK = 'https://snty.link/comments-beta-feedback'

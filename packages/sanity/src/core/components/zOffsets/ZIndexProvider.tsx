@@ -1,4 +1,4 @@
-import React from 'react'
+import {ReactNode, ReactElement} from 'react'
 import {defaults} from './defaults'
 import {ZIndexContext} from './ZIndexContext'
 
@@ -7,6 +7,6 @@ import {ZIndexContext} from './ZIndexContext'
  *
  * @internal
  */
-export function ZIndexProvider({children}: {children?: React.ReactNode}): React.ReactElement {
+export function ZIndexProvider({children}: {children?: ReactNode}): ReactElement {
   return <ZIndexContext.Provider value={defaults}>{children}</ZIndexContext.Provider>
 }

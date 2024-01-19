@@ -1,4 +1,4 @@
-import React, {useCallback} from 'react'
+import {useMemo, useCallback} from 'react'
 import imageUrlBuilder from '@sanity/image-url'
 import {SchemaType} from '@sanity/types'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
@@ -46,12 +46,12 @@ export function StudioImageInput(props: ImageInputProps) {
 
   // note: type.options.sources may be an empty array and in that case we're
   // disabling selecting images from asset source  (it's a feature, not a bug)
-  const assetSources = React.useMemo(
+  const assetSources = useMemo(
     () => sourcesFromSchema || image.assetSources,
     [image, sourcesFromSchema],
   )
 
-  const builder = React.useMemo(() => imageUrlBuilder(client), [client])
+  const builder = useMemo(() => imageUrlBuilder(client), [client])
 
   const observeAsset = useCallback(
     (id: string) => observeImageAsset(documentPreviewStore, id),

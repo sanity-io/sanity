@@ -1,4 +1,5 @@
-import React, {useCallback, useMemo} from 'react'
+import {useCallback, useMemo} from 'react'
+import * as React from 'react'
 import {RouterContext} from './RouterContext'
 import {IntentParameters, RouterContextValue, NavigateOptions, Router, RouterState} from './types'
 

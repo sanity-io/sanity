@@ -1,6 +1,6 @@
 import type {Theme} from '@sanity/ui'
-import React from 'react'
 import styled, {css} from 'styled-components'
+import {ComponentType} from 'react'
 import type {AuthProvider} from '../../../config'
 
 const GithubRootSvg = styled.svg(({theme}: {theme: Theme}) => {
@@ -64,7 +64,7 @@ export function CustomLogo(props: {provider: AuthProvider}) {
   ) : undefined
 }
 
-export const providerLogos: Record<string, React.ComponentType<{provider: AuthProvider}>> = {
+export const providerLogos: Record<string, ComponentType<{provider: AuthProvider}>> = {
   google: GoogleLogo,
   github: GithubLogo,
   // sanity: () => <SanityMonogram data-sanity-icon="" />,

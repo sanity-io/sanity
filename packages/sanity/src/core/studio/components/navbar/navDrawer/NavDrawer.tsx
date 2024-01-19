@@ -1,6 +1,6 @@
 import {Layer, Card, Flex, Text, Box, Stack} from '@sanity/ui'
 import {CloseIcon, LeaveIcon} from '@sanity/icons'
-import React, {memo, useCallback} from 'react'
+import {memo, useCallback, KeyboardEvent} from 'react'
 import styled from 'styled-components'
 import TrapFocus from 'react-focus-lock'
 import {AnimatePresence, motion, Transition, Variants} from 'framer-motion'
@@ -89,7 +89,7 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
   const {t} = useTranslation()
 
   const handleKeyDown = useCallback(
-    (event: React.KeyboardEvent<HTMLDivElement>) => {
+    (event: KeyboardEvent<HTMLDivElement>) => {
       if (event.key === 'Escape') {
         onClose()
       }

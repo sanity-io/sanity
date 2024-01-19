@@ -1,5 +1,4 @@
 import {defineType} from '@sanity/types'
-import React from 'react'
 import {renderObjectInput} from '../../../../../../test/form'
 import {ObjectInput} from '../ObjectInput'
 

@@ -1,7 +1,7 @@
 /* eslint-disable react/jsx-pascal-case */
 import {SearchIcon} from '@sanity/icons'
 import {Flex, KBD, TextInput} from '@sanity/ui'
-import React, {forwardRef, KeyboardEvent as ReactKeyboardEvent, Ref, useCallback} from 'react'
+import {forwardRef, KeyboardEvent as ReactKeyboardEvent, Ref, useCallback} from 'react'
 import styled from 'styled-components'
 import {useTranslation} from '../../../../../i18n'
 import {GLOBAL_SEARCH_KEY, GLOBAL_SEARCH_KEY_MODIFIER} from '../constants'

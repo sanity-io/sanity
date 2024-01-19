@@ -1,7 +1,7 @@
 import {isTitledListValue, TitledListValue} from '@sanity/types'
 import {Box, Card, Flex, Inline, Radio, Select, Stack, Text} from '@sanity/ui'
 import {capitalize} from 'lodash'
-import React, {useId, forwardRef, useCallback, useMemo} from 'react'
+import {useId, FocusEvent, forwardRef, useCallback, useMemo, ChangeEvent, ForwardedRef} from 'react'
 import {ChangeIndicator} from '../../changeIndicators'
 import {PatchEvent, set, unset} from '../patch'
 import {StringInputProps} from '../types'
@@ -56,7 +56,7 @@ export function SelectInput(props: StringInputProps) {
 
   const inputId = useId()
 
-  const handleChange = React.useCallback(
+  const handleChange = useCallback(
     (nextItem: TitledListValue<string | number> | null) => {
       onChange(
         PatchEvent.from(typeof nextItem?.value === 'undefined' ? unset() : set(nextItem.value)),
@@ -66,7 +66,7 @@ export function SelectInput(props: StringInputProps) {
   )
 
   const handleSelectChange = useCallback(
-    (event: React.ChangeEvent<HTMLSelectElement>) => {
+    (event: ChangeEvent<HTMLSelectElement>) => {
       const nextItem = itemFromOptionValue(event.currentTarget.value)
 
       if (!nextItem) {
@@ -119,12 +119,12 @@ const RadioSelect = forwardRef(function RadioSelect(
     direction: 'horizontal' | 'vertical'
     readOnly?: boolean
     onChange: (value: TitledListValue<string | number> | null) => void
-    onFocus: (event: React.FocusEvent<HTMLElement>) => void
+    onFocus: (event: FocusEvent<HTMLElement>) => void
     customValidity?: string
     inputId?: string
   },
 
-  ref: React.ForwardedRef<HTMLInputElement>,
+  ref: ForwardedRef<HTMLInputElement>,
 ) {
   const {items, value, onChange, onFocus, readOnly, customValidity, direction, inputId} = props
 
@@ -156,12 +156,12 @@ const RadioSelectItem = forwardRef(function RadioSelectItem(
     inputId?: string
     item: TitledListValue<string | number>
     onChange: (value: TitledListValue<string | number> | null) => void
-    onFocus: (event: React.FocusEvent<HTMLElement>) => void
+    onFocus: (event: FocusEvent<HTMLElement>) => void
     readOnly?: boolean
     value?: TitledListValue<string | number>
   },
 
-  ref: React.ForwardedRef<HTMLInputElement>,
+  ref: ForwardedRef<HTMLInputElement>,
 ) {
   const {customValidity, inputId, item, onChange, onFocus, readOnly, value} = props
 

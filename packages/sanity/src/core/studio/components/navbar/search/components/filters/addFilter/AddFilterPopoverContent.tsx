@@ -1,5 +1,5 @@
 import {Box, Flex, Text} from '@sanity/ui'
-import React, {useCallback, useMemo, useState} from 'react'
+import {useCallback, useMemo, useState, KeyboardEvent} from 'react'
 import {
   CommandList,
   CommandListGetItemDisabledCallback,
@@ -27,7 +27,7 @@ export function AddFilterPopoverContent({onClose}: AddFilterPopoverContentProps)
   const {t} = useTranslation()
 
   const handleFilterChange = useCallback(
-    (e: React.KeyboardEvent<HTMLInputElement>) => setTitleFilter(e.currentTarget.value),
+    (e: KeyboardEvent<HTMLInputElement>) => setTitleFilter(e.currentTarget.value),
     [setTitleFilter],
   )
   const handleFilterClear = useCallback(() => setTitleFilter(''), [])

@@ -1,4 +1,4 @@
-import React, {useMemo} from 'react'
+import {useMemo} from 'react'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 import {Box, Text} from '@sanity/ui'
 import {Tooltip} from '../../../../ui-components'

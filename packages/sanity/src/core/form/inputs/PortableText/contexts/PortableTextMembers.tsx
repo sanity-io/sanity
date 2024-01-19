@@ -1,11 +1,11 @@
-import React, {createContext} from 'react'
+import {ReactNode, createContext} from 'react'
 import {PortableTextMemberItem} from '../PortableTextInput'
 
 export const PortableTextMemberItemsContext = createContext<PortableTextMemberItem[]>([])
 
 export function PortableTextMemberItemsProvider(props: {
   memberItems: PortableTextMemberItem[]
-  children: React.ReactNode
+  children: ReactNode
 }) {
   return (
     <PortableTextMemberItemsContext.Provider value={props.memberItems}>

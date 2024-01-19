@@ -4,7 +4,7 @@ import {
   usePortableTextEditor,
 } from '@sanity/portable-text-editor'
 import {ObjectSchemaType, Path, PortableTextBlock, PortableTextChild} from '@sanity/types'
-import React, {useCallback, useEffect, useMemo, useState} from 'react'
+import {useCallback, useEffect, useMemo, useState} from 'react'
 import {isEqual} from '@sanity/util/paths'
 import {Tooltip} from '../../../../../ui-components'
 import {

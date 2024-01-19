@@ -1,5 +1,5 @@
 import {TextInput} from '@sanity/ui'
-import React, {ComponentProps, forwardRef} from 'react'
+import {ComponentProps, forwardRef} from 'react'
 import {CustomTextInputBox} from './CustomTextInputBox'
 
 interface CustomTextInputProps extends ComponentProps<typeof TextInput> {

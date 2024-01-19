@@ -1,4 +1,5 @@
-import React, {KeyboardEvent, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {KeyboardEvent, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import * as React from 'react'
 import {useClickOutside} from '@sanity/ui'
 import {
   EditorSelection,

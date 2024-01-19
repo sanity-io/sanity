@@ -1,5 +1,5 @@
 import {format, isValid, parse} from 'date-fns'
-import React, {
+import {
   ChangeEvent,
   ComponentProps,
   KeyboardEvent,

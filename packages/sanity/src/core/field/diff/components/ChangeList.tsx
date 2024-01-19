@@ -1,6 +1,6 @@
 import {Box, Card, Flex, Stack, Text, useClickOutside} from '@sanity/ui'
 import {RevertIcon} from '@sanity/icons'
-import React, {useCallback, useContext, useMemo, useState} from 'react'
+import {ReactElement, useCallback, useContext, useMemo, useState} from 'react'
 import {SanityDocument} from '@sanity/client'
 import {ObjectSchemaType} from '@sanity/types'
 import {unstable_useConditionalProperty as useConditionalProperty} from '../../conditional-property'
@@ -25,7 +25,7 @@ export interface ChangeListProps {
 }
 
 /** @internal */
-export function ChangeList({diff, fields, schemaType}: ChangeListProps): React.ReactElement | null {
+export function ChangeList({diff, fields, schemaType}: ChangeListProps): ReactElement | null {
   const {documentId, isComparingCurrent, value} = useDocumentChange()
   const docOperations = useDocumentOperation(documentId, schemaType.name) as FieldOperationsAPI
   const {path} = useContext(DiffContext)

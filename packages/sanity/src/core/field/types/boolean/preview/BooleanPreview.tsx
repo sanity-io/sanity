@@ -1,4 +1,3 @@
-import React from 'react'
 import {UserColor} from '../../../../user-color'
 import {FieldPreviewComponent} from '../../../preview'
 

@@ -1,5 +1,5 @@
 import {Card, Flex} from '@sanity/ui'
-import React, {useCallback} from 'react'
+import {useCallback} from 'react'
 import styled from 'styled-components'
 import {CommandList, CommandListRenderItemCallback} from '../../../../../../components'
 import {WeightedHit} from '../../../../../../search'

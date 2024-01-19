@@ -3,7 +3,8 @@ import {
   PortableTextEditor,
   usePortableTextEditor,
 } from '@sanity/portable-text-editor'
-import React, {useCallback, useMemo, useState} from 'react'
+import {useCallback, useMemo, useState} from 'react'
+import * as React from 'react'
 import {Path, isPortableTextSpan} from '@sanity/types'
 import {CommentMessage, MentionOptionsHookValue} from '../../../types'
 import {hasCommentMessageValue, useCommentHasChanged} from '../../../helpers'

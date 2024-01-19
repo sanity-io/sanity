@@ -1,4 +1,3 @@
-import React from 'react'
 import {RenderChildFunction, BlockChildRenderProps} from '@sanity/portable-text-editor'
 import {MentionInlineBlock} from '../blocks'
 

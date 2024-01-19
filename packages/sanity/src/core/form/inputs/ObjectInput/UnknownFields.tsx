@@ -1,4 +1,4 @@
-import React, {useCallback} from 'react'
+import {useCallback} from 'react'
 import {Box, Card, Code, Stack, Text} from '@sanity/ui'
 import {TrashIcon} from '@sanity/icons'
 import {FormPatch, PatchEvent, unset} from '../../patch'

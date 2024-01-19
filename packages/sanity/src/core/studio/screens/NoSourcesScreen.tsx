@@ -1,7 +1,6 @@
 /* eslint-disable i18next/no-literal-string,@sanity/i18n/no-attribute-string-literals */
 import {WarningOutlineIcon} from '@sanity/icons'
 import {Box, Card, Container, Flex, Stack, Text} from '@sanity/ui'
-import React from 'react'
 
 export function NoSourcesScreen() {
   return (

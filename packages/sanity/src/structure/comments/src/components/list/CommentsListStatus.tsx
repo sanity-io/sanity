@@ -1,5 +1,5 @@
 import {Flex, Container, Stack, Text} from '@sanity/ui'
-import React from 'react'
+import * as React from 'react'
 import {CommentStatus} from '../../types'
 import {LoadingBlock} from 'sanity'
 

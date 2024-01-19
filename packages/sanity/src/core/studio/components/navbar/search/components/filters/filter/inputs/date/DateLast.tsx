@@ -1,5 +1,5 @@
 import {Box, Flex, Select, TextInput} from '@sanity/ui'
-import React, {ChangeEvent, useCallback, useRef, useState} from 'react'
+import {ChangeEvent, useCallback, useRef, useState} from 'react'
 import {useSearchState} from '../../../../../contexts/search/useSearchState'
 import type {OperatorDateLastValue} from '../../../../../definitions/operators/dateOperators'
 import type {OperatorInputComponentProps} from '../../../../../definitions/operators/operatorTypes'

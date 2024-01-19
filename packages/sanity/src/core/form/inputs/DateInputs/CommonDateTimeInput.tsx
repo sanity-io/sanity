@@ -1,7 +1,6 @@
 /* eslint-disable no-nested-ternary */
 
-import React, {FocusEvent, useEffect} from 'react'
-
+import {FocusEvent, ForwardedRef, forwardRef, useCallback, useEffect, useState} from 'react'
 import {TextInput, useForwardedRef} from '@sanity/ui'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {DateTimeInput} from './base/DateTimeInput'
@@ -25,9 +24,9 @@ export interface CommonDateTimeInputProps {
 
 const DEFAULT_PLACEHOLDER_TIME = new Date()
 
-export const CommonDateTimeInput = React.forwardRef(function CommonDateTimeInput(
+export const CommonDateTimeInput = forwardRef(function CommonDateTimeInput(
   props: CommonDateTimeInputProps,
-  ref: React.ForwardedRef<HTMLInputElement>,
+  ref: ForwardedRef<HTMLInputElement>,
 ) {
   const {
     id,
@@ -44,7 +43,7 @@ export const CommonDateTimeInput = React.forwardRef(function CommonDateTimeInput
     ...restProps
   } = props
 
-  const [localValue, setLocalValue] = React.useState<string | null>(null)
+  const [localValue, setLocalValue] = useState<string | null>(null)
 
   const {t} = useTranslation()
 
@@ -52,7 +51,7 @@ export const CommonDateTimeInput = React.forwardRef(function CommonDateTimeInput
     setLocalValue(null)
   }, [value])
 
-  const handleDatePickerInputChange = React.useCallback(
+  const handleDatePickerInputChange = useCallback(
     (event: FocusEvent<HTMLInputElement>) => {
       const nextInputValue = event.currentTarget.value
       const result = nextInputValue === '' ? null : parseInputValue(nextInputValue)
@@ -74,7 +73,7 @@ export const CommonDateTimeInput = React.forwardRef(function CommonDateTimeInput
     [parseInputValue, onChange, value, localValue, serialize],
   )
 
-  const handleDatePickerChange = React.useCallback(
+  const handleDatePickerChange = useCallback(
     (nextDate: Date | null) => {
       onChange(nextDate ? serialize(nextDate) : null)
     },

@@ -2,7 +2,8 @@ import {ChevronDownIcon} from '@sanity/icons'
 import {useClickOutside, Flex, Text} from '@sanity/ui'
 import {toString} from '@sanity/util/paths'
 import {isKeySegment, type ObjectSchemaType, type Path, type PortableTextChild} from '@sanity/types'
-import React, {useCallback, useContext, useEffect, useMemo, useState, type ReactNode} from 'react'
+import type {ReactNode, MouseEvent} from 'react'
+import {useCallback, useContext, useEffect, useMemo, useState} from 'react'
 import styled from 'styled-components'
 import {Popover} from '../../../../../../ui-components'
 import {useTranslation} from '../../../../../i18n'
@@ -134,7 +135,7 @@ function AnnnotationWithDiff({
   }, [isEditing, myPath, onSetFocus, open])
 
   const handleOpenPopup = useCallback(
-    (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    (event: MouseEvent<HTMLDivElement, globalThis.MouseEvent>) => {
       event.stopPropagation()
       setOpen(true)
       if (!isRemoved) {

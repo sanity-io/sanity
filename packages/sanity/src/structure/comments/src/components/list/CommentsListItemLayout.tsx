@@ -1,6 +1,7 @@
 import {hues} from '@sanity/color'
 import {TextSkeleton, Flex, Stack, Text, Card, useClickOutside, Box} from '@sanity/ui'
-import React, {useCallback, useMemo, useRef, useState} from 'react'
+import {useCallback, useMemo, useRef, useState} from 'react'
+import * as React from 'react'
 import {CurrentUser} from '@sanity/types'
 import styled, {css} from 'styled-components'
 import {format} from 'date-fns'

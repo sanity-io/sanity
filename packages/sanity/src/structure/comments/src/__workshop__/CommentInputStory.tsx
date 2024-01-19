@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import {useState} from 'react'
 import {Card, Container, Flex} from '@sanity/ui'
 import {PortableTextBlock} from '@sanity/types'
 import {useBoolean} from '@sanity/ui-workshop'

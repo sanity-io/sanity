@@ -1,4 +1,5 @@
-import React, {useCallback, useState, useId} from 'react'
+import {useCallback, useState, useId} from 'react'
+import * as React from 'react'
 import {Box, ErrorBoundary, Text} from '@sanity/ui'
 import {Dialog} from '../../../ui-components'
 import {structureLocaleNamespace} from '../../i18n'

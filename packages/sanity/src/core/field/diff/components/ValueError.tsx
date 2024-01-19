@@ -1,6 +1,5 @@
 import {ErrorOutlineIcon} from '@sanity/icons'
 import {Text, Box, Card, Flex} from '@sanity/ui'
-import React from 'react'
 import type {FieldValueError} from '../../validation'
 import {useTranslation} from '../../../i18n'
 

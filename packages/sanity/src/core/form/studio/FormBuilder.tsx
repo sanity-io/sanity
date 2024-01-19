@@ -2,7 +2,7 @@
 /* eslint-disable react/jsx-handler-names */
 
 import {ObjectSchemaType, Path, ValidationMarker} from '@sanity/types'
-import React, {useCallback, useRef} from 'react'
+import {useCallback, useRef} from 'react'
 import {FormPatch, PatchChannel, PatchEvent} from '../patch'
 import {ObjectFormNode} from '../store/types/nodes'
 import {

@@ -1,4 +1,3 @@
-import React from 'react'
 import {type RelativeTimeOptions, useRelativeTime} from '../hooks/useRelativeTime'
 
 /**

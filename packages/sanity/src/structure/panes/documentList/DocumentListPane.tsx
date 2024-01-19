@@ -1,4 +1,5 @@
-import React, {memo, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {memo, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import * as React from 'react'
 import {Box, Card, Code, TextInput} from '@sanity/ui'
 import shallowEquals from 'shallow-equals'
 import {isEqual} from 'lodash'

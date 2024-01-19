@@ -1,5 +1,5 @@
 import {Path, SchemaType} from '@sanity/types'
-import React, {memo, useCallback, useEffect, useRef, useState} from 'react'
+import {memo, useCallback, useEffect, useRef, useState} from 'react'
 import {DocumentFieldAction, DocumentFieldActionNode} from '../../../config'
 import {useUnique} from '../../../util'
 import {filterActions} from './helpers'

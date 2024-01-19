@@ -1,4 +1,4 @@
-import React from 'react'
+import * as React from 'react'
 import {BooleanSchemaType, FieldDefinition} from '@sanity/types'
 import {BooleanInputProps, PrimitiveInputElementProps} from '../../src/core'
 import {renderInput, TestRenderInputProps} from './renderInput'

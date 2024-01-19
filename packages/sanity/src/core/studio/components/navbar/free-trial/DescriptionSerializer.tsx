@@ -3,7 +3,7 @@ import {LinkIcon} from '@sanity/icons'
 import type {PortableTextBlock} from '@sanity/types'
 import {Box, Card, Flex, Text} from '@sanity/ui'
 import styled from 'styled-components'
-import React, {useEffect, useState} from 'react'
+import {ReactNode, useEffect, useState} from 'react'
 
 interface DescriptionSerializerProps {
   blocks: PortableTextBlock[]
@@ -71,7 +71,7 @@ const DynamicIcon = (props: {icon: {url: string}}) => {
   return <DynamicIconContainer ref={setRef} />
 }
 
-function NormalBlock(props: {children: React.ReactNode}) {
+function NormalBlock(props: {children: ReactNode}) {
   const {children} = props
 
   return (

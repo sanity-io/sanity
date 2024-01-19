@@ -1,4 +1,4 @@
-import React, {createContext, useContext, useMemo} from 'react'
+import {ReactNode, createContext, useContext, useMemo} from 'react'
 import {createMultiKeyWeakMap, MultiKeyWeakMap} from './createMultiKeyWeakMap'
 
 /** @internal */
@@ -11,7 +11,7 @@ const ResourceCacheContext = createContext<ResourceCache | null>(null)
 
 /** @internal */
 export interface ResourceCacheProviderProps {
-  children: React.ReactNode
+  children: ReactNode
 }
 
 /** @internal */

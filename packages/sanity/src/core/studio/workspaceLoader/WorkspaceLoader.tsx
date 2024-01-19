@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react'
+import {ComponentType, ReactNode, useEffect, useState} from 'react'
 import {map, catchError} from 'rxjs/operators'
 import {combineLatest, of} from 'rxjs'
 import {ErrorBoundary} from '@sanity/ui'
@@ -12,9 +12,9 @@ import {WorkspaceRouterProvider} from './WorkspaceRouterProvider'
 // import {flattenErrors} from './flattenErrors'
 
 interface WorkspaceLoaderProps {
-  children: React.ReactNode
-  ConfigErrorsComponent: React.ComponentType
-  LoadingComponent: React.ComponentType
+  children: ReactNode
+  ConfigErrorsComponent: ComponentType
+  LoadingComponent: ComponentType
 }
 
 function WorkspaceLoader({

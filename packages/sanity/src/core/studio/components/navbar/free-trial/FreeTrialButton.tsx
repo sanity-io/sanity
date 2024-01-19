@@ -4,7 +4,7 @@ import {Card, Text} from '@sanity/ui'
 import {BoltIcon} from '@sanity/icons'
 import {purple, yellow} from '@sanity/color'
 import {useTranslation} from 'react-i18next'
-import {forwardRef} from 'react'
+import {Ref, forwardRef} from 'react'
 import {Button} from '../../../../../ui-components'
 
 const CenteredStroke = styled.div`
@@ -69,7 +69,7 @@ interface FreeTrialButtonProps extends OutlineProps {
 
 export const FreeTrialButtonTopbar = forwardRef(function FreeTrialButtonTopbar(
   {toggleShowContent, daysLeft, totalDays}: FreeTrialButtonProps,
-  ref: React.Ref<HTMLButtonElement>,
+  ref: Ref<HTMLButtonElement>,
 ) {
   const {t} = useTranslation()
 
@@ -94,7 +94,7 @@ export const FreeTrialButtonTopbar = forwardRef(function FreeTrialButtonTopbar(
 
 export const FreeTrialButtonSidebar = forwardRef(function FreeTrialButtonSidebar(
   {toggleShowContent, daysLeft}: Omit<FreeTrialButtonProps, 'totalDays'>,
-  ref: React.Ref<HTMLButtonElement>,
+  ref: Ref<HTMLButtonElement>,
 ) {
   const {t} = useTranslation()
 

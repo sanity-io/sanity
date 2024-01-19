@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useMemo, useRef} from 'react'
+import {useCallback, useEffect, useMemo, useRef, FocusEvent} from 'react'
 import {Path, SchemaType} from '@sanity/types'
 import {map, tap} from 'rxjs/operators'
 import {Subscription} from 'rxjs'
@@ -83,7 +83,7 @@ export function ArrayOfObjectsField(props: {
   })
 
   const handleFocus = useCallback(
-    (event: React.FocusEvent) => {
+    (event: FocusEvent) => {
       // We want to handle focus when the array input *itself* element receives
       // focus, not when a child element receives focus, but React has decided
       // to let focus bubble, so this workaround is needed
@@ -96,7 +96,7 @@ export function ArrayOfObjectsField(props: {
   )
 
   const handleBlur = useCallback(
-    (event: React.FocusEvent) => {
+    (event: FocusEvent) => {
       // We want to handle blur when the array input *itself* element receives
       // blur, not when a child element receives blur, but React has decided
       // to let focus events bubble, so this workaround is needed

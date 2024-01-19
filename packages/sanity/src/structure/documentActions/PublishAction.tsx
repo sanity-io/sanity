@@ -1,6 +1,6 @@
 import {CheckmarkIcon, PublishIcon} from '@sanity/icons'
 import {isValidationErrorMarker} from '@sanity/types'
-import React, {useCallback, useEffect, useState} from 'react'
+import {useCallback, useEffect, useState} from 'react'
 import {useDocumentPane} from '../panes/document/useDocumentPane'
 import {structureLocaleNamespace, type StructureLocaleResourceKeys} from '../i18n'
 import {

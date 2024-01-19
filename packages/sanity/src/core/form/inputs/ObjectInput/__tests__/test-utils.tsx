@@ -1,9 +1,10 @@
 /* eslint-disable import/export */
-import React, {FC, ReactElement} from 'react'
+import {FC, ReactElement, ReactNode} from 'react'
+
 import {render, RenderOptions} from '@testing-library/react'
 import {LayerProvider, studioTheme, ThemeProvider} from '@sanity/ui'
 
-const Providers: FC<{children?: React.ReactNode}> = ({children}) => {
+const Providers: FC<{children?: ReactNode}> = ({children}) => {
   return (
     <ThemeProvider theme={studioTheme}>
       <LayerProvider>{children}</LayerProvider>

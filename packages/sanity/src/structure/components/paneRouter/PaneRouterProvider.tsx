@@ -1,5 +1,6 @@
 import {omit} from 'lodash'
-import React, {useCallback, useMemo} from 'react'
+import {useCallback, useMemo} from 'react'
+import * as React from 'react'
 import {toString as pathToString} from '@sanity/util/paths'
 import {RouterPaneGroup, RouterPanes, RouterPaneSibling} from '../../types'
 import {usePaneLayout} from '../pane/usePaneLayout'

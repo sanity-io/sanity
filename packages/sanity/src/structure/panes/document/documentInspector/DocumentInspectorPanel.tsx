@@ -1,4 +1,4 @@
-import React, {ReactElement, createElement, useCallback} from 'react'
+import {ReactElement, createElement, useCallback} from 'react'
 import {Box} from '@sanity/ui'
 import {usePane} from '../../../components'
 import {useStructureTool} from '../../../useStructureTool'

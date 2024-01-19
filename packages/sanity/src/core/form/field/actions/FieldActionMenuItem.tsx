@@ -1,5 +1,5 @@
 import {Text} from '@sanity/ui'
-import React, {useCallback} from 'react'
+import {useCallback} from 'react'
 import {CheckmarkIcon} from '@sanity/icons'
 import {TooltipOfDisabled} from '../../../components'
 import {DocumentFieldActionItem} from '../../../config'

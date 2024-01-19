@@ -1,5 +1,5 @@
 import {Text, Card, rem} from '@sanity/ui'
-import React from 'react'
+import {ReactElement} from 'react'
 import styled from 'styled-components'
 import {useTranslation} from '../../../i18n'
 import type {StringDiffSegment, StringDiff} from '../../types'
@@ -34,7 +34,7 @@ const ChangeSegment = styled(Text)`
 `
 
 /** @internal */
-export function DiffStringSegment(props: {segment: StringDiffSegment}): React.ReactElement {
+export function DiffStringSegment(props: {segment: StringDiffSegment}): ReactElement {
   const {segment} = props
   const {text} = segment
   const {t} = useTranslation()

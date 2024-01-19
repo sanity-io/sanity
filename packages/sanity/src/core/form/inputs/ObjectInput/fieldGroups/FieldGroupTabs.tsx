@@ -1,9 +1,9 @@
-import React, {useCallback} from 'react'
+import {useCallback, ChangeEvent, memo} from 'react'
 import {ElementQuery, Select, TabList} from '@sanity/ui'
 import styled from 'styled-components'
 import {FormFieldGroup} from '../../../store'
-import {GroupOption, GroupTab} from './GroupTab'
 import {useTranslation} from '../../../../i18n'
+import {GroupOption, GroupTab} from './GroupTab'
 
 interface FieldGroupTabsProps {
   disabled?: boolean
@@ -66,7 +66,7 @@ const GroupSelect = ({
   shouldAutoFocus = true,
 }: Omit<FieldGroupTabsProps, 'onClick'> & {onSelect: (name: string) => void}) => {
   const handleSelect = useCallback(
-    (event: React.ChangeEvent<HTMLSelectElement>) => {
+    (event: ChangeEvent<HTMLSelectElement>) => {
       onSelect(event.currentTarget.value)
     },
     [onSelect],
@@ -102,7 +102,7 @@ const GroupSelect = ({
   )
 }
 
-export const FieldGroupTabs = React.memo(function FieldGroupTabs({
+export const FieldGroupTabs = memo(function FieldGroupTabs({
   disabled = false,
   onClick,
   ...props

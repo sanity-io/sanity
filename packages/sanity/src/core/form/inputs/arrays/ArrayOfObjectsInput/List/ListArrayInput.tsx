@@ -1,6 +1,6 @@
 import {Card, Stack, Text, useTheme} from '@sanity/ui'
 import {isKeySegment} from '@sanity/types'
-import React, {useCallback, useMemo, useRef, useState} from 'react'
+import {useCallback, useMemo, useRef, useState} from 'react'
 import shallowEquals from 'shallow-equals'
 import {
   defaultRangeExtractor,

@@ -1,5 +1,4 @@
 import {Box, Flex, Stack, Text} from '@sanity/ui'
-import React from 'react'
 import styled, {keyframes} from 'styled-components'
 import {Button, Popover, PopoverProps} from '../../../../../ui-components'
 

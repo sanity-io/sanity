@@ -1,4 +1,3 @@
-import React from 'react'
 import {CommentsOnboardingProvider, CommentsSetupProvider} from '../../src'
 import {LayoutProps} from 'sanity'
 

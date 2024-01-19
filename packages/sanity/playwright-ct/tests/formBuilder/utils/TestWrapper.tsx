@@ -1,6 +1,6 @@
 import {SanityClient} from '@sanity/client'
 import {Card, LayerProvider, studioTheme, ThemeProvider, ToastProvider} from '@sanity/ui'
-import React, {useEffect, useState} from 'react'
+import {ReactNode, useEffect, useState} from 'react'
 import {Pane, PaneContent, PaneLayout} from '../../../../src/structure/components'
 import {createMockSanityClient} from '../../../../test/mocks/mockSanityClient'
 import {getMockWorkspace} from '../../../../test/testUtils/getMockWorkspaceFromConfig'
@@ -20,7 +20,7 @@ export const TestWrapper = ({
   children,
   schemaTypes,
 }: {
-  children?: React.ReactNode
+  children?: ReactNode
   schemaTypes: SchemaTypeDefinition[]
 }) => {
   const [mockWorkspace, setMockWorkspace] = useState<Workspace | null>(null)

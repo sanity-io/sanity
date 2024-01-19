@@ -1,5 +1,5 @@
 import {Box, CardTone, Menu, MenuDivider} from '@sanity/ui'
-import React, {ComponentProps, ForwardedRef, forwardRef, useCallback, useMemo, useRef} from 'react'
+import {ComponentProps, ForwardedRef, forwardRef, useCallback, useMemo, useRef} from 'react'
 import {
   CloseIcon,
   CopyIcon as DuplicateIcon,

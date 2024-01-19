@@ -1,5 +1,5 @@
-import React from 'react'
 import {Path} from '@sanity/types'
+import {Context, createContext} from 'react'
 
 /** @internal */
 export interface ChangeIndicatorContextValue {
@@ -11,10 +11,9 @@ export interface ChangeIndicatorContextValue {
 }
 
 /** @internal */
-export const ChangeIndicatorContext: React.Context<ChangeIndicatorContextValue> =
-  React.createContext({
-    path: [],
-    fullPath: [],
-    focusPath: [],
-    isChanged: false,
-  } as ChangeIndicatorContextValue)
+export const ChangeIndicatorContext: Context<ChangeIndicatorContextValue> = createContext({
+  path: [],
+  fullPath: [],
+  focusPath: [],
+  isChanged: false,
+} as ChangeIndicatorContextValue)

@@ -1,6 +1,6 @@
 import {CogIcon, UsersIcon} from '@sanity/icons'
 import {Box, Menu, MenuDivider, Stack, Text} from '@sanity/ui'
-import React, {useCallback, useMemo, useState} from 'react'
+import {useCallback, useMemo, useState} from 'react'
 import styled from 'styled-components'
 import {StatusButton} from '../../../../components'
 import {useGlobalPresence} from '../../../../store'

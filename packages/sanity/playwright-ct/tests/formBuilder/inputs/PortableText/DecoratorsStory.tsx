@@ -1,5 +1,4 @@
 import {defineArrayMember, defineField, defineType} from '@sanity/types'
-import React from 'react'
 import {BulbOutlineIcon} from '@sanity/icons'
 import {TestWrapper} from '../../utils/TestWrapper'
 import {TestForm} from '../../utils/TestForm'

@@ -1,6 +1,5 @@
 import {Stack} from '@sanity/ui'
 import styled, {css} from 'styled-components'
-import React from 'react'
 import {PortableText, PortableTextComponents} from '@portabletext/react'
 import {CommentMessage} from '../../types'
 import {MentionInlineBlock, NormalBlock} from './blocks'

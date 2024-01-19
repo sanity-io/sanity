@@ -1,4 +1,5 @@
-import React, {forwardRef, useCallback, useImperativeHandle, useMemo, useRef, useState} from 'react'
+import {forwardRef, useCallback, useImperativeHandle, useMemo, useRef, useState} from 'react'
+import * as React from 'react'
 import {EditorChange, PortableTextEditor, keyGenerator} from '@sanity/portable-text-editor'
 import {CurrentUser, PortableTextBlock} from '@sanity/types'
 import {Stack, focusFirstDescendant, focusLastDescendant} from '@sanity/ui'

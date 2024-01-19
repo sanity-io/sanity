@@ -1,7 +1,7 @@
 import {DocumentIcon} from '@sanity/icons'
 import {Card, Container, Flex, Text} from '@sanity/ui'
 import {useBoolean, useSelect, useString, useText} from '@sanity/ui-workshop'
-import React, {createElement} from 'react'
+import {ComponentType, ReactNode, createElement} from 'react'
 import {TemplatePreview, TemplatePreviewProps} from '../template/TemplatePreview'
 
 type LayoutKey = 'createDocument'
@@ -16,12 +16,12 @@ const LAYOUT_OPTIONS: Record<string, LayoutKey> = {
   'Create document': 'createDocument',
 }
 
-const mediaValues: Record<string, React.ReactNode> = {
+const mediaValues: Record<string, ReactNode> = {
   image: <img src="https://source.unsplash.com/70x70/?abstract" />,
   icon: <DocumentIcon />,
 }
 
-const previewComponents: Record<LayoutKey, React.ComponentType<TemplatePreviewProps>> = {
+const previewComponents: Record<LayoutKey, ComponentType<TemplatePreviewProps>> = {
   createDocument: TemplatePreview,
 }
 

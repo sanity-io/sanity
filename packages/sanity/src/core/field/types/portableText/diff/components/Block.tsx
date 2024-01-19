@@ -1,6 +1,6 @@
 import {Box, Card, Stack, Text} from '@sanity/ui'
 import type {Path, PortableTextTextBlock} from '@sanity/types'
-import React, {useCallback, useContext} from 'react'
+import {useCallback, useContext, MouseEvent} from 'react'
 import {DiffContext, DiffTooltip, useDiffAnnotationColor} from '../../../../diff'
 import {ConnectorContext} from '../../../../../changeIndicators'
 import {useTranslation} from '../../../../../i18n'
@@ -26,7 +26,7 @@ export function Block(props: {
   let returned = children
 
   const handleClick = useCallback(
-    (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    (event: MouseEvent<HTMLDivElement, globalThis.MouseEvent>) => {
       event.stopPropagation()
 
       if (!isRemoved) {

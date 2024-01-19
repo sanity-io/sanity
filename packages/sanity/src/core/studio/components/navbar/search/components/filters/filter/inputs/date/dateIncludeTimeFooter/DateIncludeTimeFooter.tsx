@@ -1,5 +1,4 @@
 import {Flex, Stack, Switch, Text} from '@sanity/ui'
-import React from 'react'
 import styled from 'styled-components'
 import {useTranslation} from '../../../../../../../../../../i18n'
 

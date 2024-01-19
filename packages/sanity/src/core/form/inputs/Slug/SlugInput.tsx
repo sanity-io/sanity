@@ -1,4 +1,4 @@
-import React, {type FormEvent, useCallback, useMemo} from 'react'
+import {type FormEvent, useCallback, useMemo} from 'react'
 import type {
   Path,
   SanityDocument,
@@ -92,7 +92,7 @@ export function SlugInput(props: SlugInputProps) {
 
   const isUpdating = generateState?.status === 'pending'
 
-  const handleChange = React.useCallback(
+  const handleChange = useCallback(
     (event: FormEvent<HTMLInputElement>) => updateSlug(event.currentTarget.value),
     [updateSlug],
   )

@@ -1,6 +1,5 @@
 import {ErrorOutlineIcon} from '@sanity/icons'
 import {Flex, Stack} from '@sanity/ui'
-import React from 'react'
 import {TextWithTone, useTranslation} from 'sanity'
 
 export function TimelineError() {

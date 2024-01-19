@@ -6,7 +6,8 @@ import {
   InvalidValue,
   Patch,
 } from '@sanity/portable-text-editor'
-import React, {
+
+import {
   useEffect,
   useState,
   useMemo,
@@ -15,7 +16,9 @@ import React, {
   useImperativeHandle,
   ReactNode,
   startTransition,
+  MutableRefObject,
 } from 'react'
+
 import {Subject} from 'rxjs'
 import {Box, useToast} from '@sanity/ui'
 import {SANITY_PATCH_TYPE} from '../../patch'
@@ -35,7 +38,7 @@ export interface PortableTextMemberItem {
   key: string
   member: ArrayOfObjectsItemMember
   node: ObjectFormNode
-  elementRef?: React.MutableRefObject<PortableTextEditorElement | null>
+  elementRef?: MutableRefObject<PortableTextEditorElement | null>
   input?: ReactNode
 }
 

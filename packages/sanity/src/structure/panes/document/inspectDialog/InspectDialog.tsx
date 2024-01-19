@@ -1,6 +1,6 @@
 import {SanityDocument} from '@sanity/types'
 import {Card, Code, Flex, TabList, TabPanel} from '@sanity/ui'
-import React, {useCallback} from 'react'
+import {useCallback} from 'react'
 import JSONInspector from '@rexxars/react-json-inspector'
 import {Dialog, Tab} from '../../../../ui-components'
 import {DocTitle} from '../../../components'

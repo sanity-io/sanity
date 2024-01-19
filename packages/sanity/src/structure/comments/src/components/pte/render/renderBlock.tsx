@@ -1,4 +1,3 @@
-import React from 'react'
 import {RenderBlockFunction} from '@sanity/portable-text-editor'
 import {NormalBlock} from '../blocks'
 

@@ -1,5 +1,5 @@
 import {UnpublishIcon} from '@sanity/icons'
-import React, {useCallback, useMemo, useState} from 'react'
+import {useCallback, useMemo, useState} from 'react'
 import {ConfirmDeleteDialog} from '../components'
 import {structureLocaleNamespace} from '../i18n'
 import {

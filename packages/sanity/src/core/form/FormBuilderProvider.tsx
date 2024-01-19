@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 
 import {ObjectSchemaType, Path, ValidationMarker} from '@sanity/types'
-import React, {useMemo} from 'react'
+import {ReactNode, useMemo} from 'react'
 import {DocumentFieldAction, Source} from '../config'
 import {FormNodePresence} from '../presence'
 import {EMPTY_ARRAY} from '../util'
@@ -34,7 +34,7 @@ export interface FormBuilderProviderProps {
 
   autoFocus?: boolean
   changesOpen?: boolean
-  children?: React.ReactNode
+  children?: ReactNode
   collapsedFieldSets: StateTree<boolean> | undefined
   collapsedPaths: StateTree<boolean> | undefined
   file: Source['form']['file']

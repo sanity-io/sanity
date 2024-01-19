@@ -1,6 +1,7 @@
 import {CurrentUser} from '@sanity/types'
 import {EMPTY_ARRAY} from '@sanity/ui-workshop'
-import React, {useState, useCallback, useRef, useMemo} from 'react'
+import {useState, useCallback, useRef, useMemo} from 'react'
+import * as React from 'react'
 import {CommentMessage, MentionOptionsHookValue} from '../../types'
 import {CommentInput, CommentInputHandle, CommentInputProps} from '../pte'
 import {hasCommentMessageValue} from '../../helpers'

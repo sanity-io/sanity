@@ -1,6 +1,4 @@
 /* eslint-disable i18next/no-literal-string,@sanity/i18n/no-attribute-string-literals */
-import React from 'react'
-
 const NoJsStyles = `
 .sanity-app-no-js__root {
   position: absolute;

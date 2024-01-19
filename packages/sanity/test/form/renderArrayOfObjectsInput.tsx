@@ -1,5 +1,5 @@
 import {ArraySchemaType, FieldDefinition} from '@sanity/types'
-import React from 'react'
+import * as React from 'react'
 import {
   ArrayOfObjectsFormNode,
   ArrayOfObjectsInputProps,

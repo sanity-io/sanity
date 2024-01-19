@@ -1,4 +1,3 @@
-import React from 'react'
 import {AvatarStack} from '@sanity/ui'
 import {UserAvatar} from 'sanity'
 

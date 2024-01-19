@@ -1,4 +1,4 @@
-import React, {memo, useCallback} from 'react'
+import {memo, useCallback} from 'react'
 import {capitalize} from 'lodash'
 import {FieldSetMember} from '../../store'
 import {

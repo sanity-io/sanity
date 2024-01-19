@@ -1,6 +1,15 @@
 import type {ReferenceValue} from '@sanity/types'
 import {Autocomplete, Box, Flex, Text} from '@sanity/ui'
-import React, {forwardRef, ReactElement, useCallback, useId, useMemo, useRef, useState} from 'react'
+import {
+  ForwardedRef,
+  forwardRef,
+  ReactElement,
+  useCallback,
+  useId,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import styled from 'styled-components'
 import {Popover} from '../../../../../../../../../../ui-components'
 import {useSchema} from '../../../../../../../../../hooks'
@@ -39,7 +48,7 @@ const StyledText = styled(Text)`
 
 export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
   {onSelect, types = [], value}: ReferenceAutocompleteProps,
-  ref: React.ForwardedRef<HTMLInputElement>,
+  ref: ForwardedRef<HTMLInputElement>,
 ) {
   const autocompletePopoverReferenceElementRef = useRef<HTMLDivElement | null>(null)
 
@@ -152,7 +161,7 @@ export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
   }, [])
 
   const renderPopover = useCallback(
-    (props: PopoverContentProps, contentRef: React.ForwardedRef<HTMLDivElement>) => {
+    (props: PopoverContentProps, contentRef: ForwardedRef<HTMLDivElement>) => {
       const {content, hidden, onMouseEnter, onMouseLeave} = props
       const hasResults = hits && hits.length > 0
       return (

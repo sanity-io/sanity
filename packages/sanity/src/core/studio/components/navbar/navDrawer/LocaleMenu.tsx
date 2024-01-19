@@ -1,6 +1,6 @@
 import {CheckmarkIcon} from '@sanity/icons'
 import {Card, Stack} from '@sanity/ui'
-import React, {useCallback} from 'react'
+import {useCallback} from 'react'
 import {useLocale} from '../../../../i18n/hooks/useLocale'
 import {Button} from '../../../../../ui-components'
 

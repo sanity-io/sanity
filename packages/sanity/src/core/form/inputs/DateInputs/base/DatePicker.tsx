@@ -1,21 +1,21 @@
-import React from 'react'
+import {forwardRef, ComponentProps, ForwardedRef, useState, useCallback} from 'react'
 import {Calendar} from './calendar/Calendar'
 import {CalendarLabels} from './calendar/types'
 
-export const DatePicker = React.forwardRef(function DatePicker(
-  props: Omit<React.ComponentProps<'div'>, 'onChange'> & {
+export const DatePicker = forwardRef(function DatePicker(
+  props: Omit<ComponentProps<'div'>, 'onChange'> & {
     value?: Date
     onChange: (nextDate: Date) => void
     selectTime?: boolean
     timeStep?: number
     calendarLabels: CalendarLabels
   },
-  ref: React.ForwardedRef<HTMLDivElement>,
+  ref: ForwardedRef<HTMLDivElement>,
 ) {
   const {value = new Date(), onChange, calendarLabels, ...rest} = props
-  const [focusedDate, setFocusedDay] = React.useState<Date>()
+  const [focusedDate, setFocusedDay] = useState<Date>()
 
-  const handleSelect = React.useCallback(
+  const handleSelect = useCallback(
     (nextDate: Date) => {
       onChange(nextDate)
       setFocusedDay(undefined)

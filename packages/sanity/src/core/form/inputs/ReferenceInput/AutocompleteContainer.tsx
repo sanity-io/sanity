@@ -1,5 +1,5 @@
 import {Grid, useElementRect} from '@sanity/ui'
-import React, {ReactNode, ForwardedRef, forwardRef, useCallback, useState} from 'react'
+import {ReactNode, ForwardedRef, forwardRef, useCallback, useState} from 'react'
 import styled, {css} from 'styled-components'
 
 const NARROW_LAYOUT = css`

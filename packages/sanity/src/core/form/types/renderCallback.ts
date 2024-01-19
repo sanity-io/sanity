@@ -1,4 +1,4 @@
-import React, {ComponentType, CSSProperties, ReactNode} from 'react'
+import {ComponentType, CSSProperties, ReactNode} from 'react'
 import {SchemaType} from '@sanity/types'
 import {PreviewLayoutKey, PreviewMediaDimensions, PreviewProps} from '../../components'
 import {ObjectItemProps, PrimitiveItemProps} from './itemProps'

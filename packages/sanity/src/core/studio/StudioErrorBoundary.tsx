@@ -1,6 +1,6 @@
 /* eslint-disable i18next/no-literal-string */
 /* eslint-disable @sanity/i18n/no-attribute-string-literals */
-import React, {useCallback, useState} from 'react'
+import {ReactNode, useCallback, useState} from 'react'
 import {Card, Code, Container, ErrorBoundary, Heading, Stack} from '@sanity/ui'
 import {useHotModuleReload} from 'use-hot-module-reload'
 import {Button} from '../../ui-components'
@@ -10,7 +10,7 @@ import {CorsOriginError} from '../store'
 import {CorsOriginErrorScreen, SchemaErrorsScreen} from './screens'
 
 interface StudioErrorBoundaryProps {
-  children: React.ReactNode
+  children: ReactNode
   heading?: string
 }
 

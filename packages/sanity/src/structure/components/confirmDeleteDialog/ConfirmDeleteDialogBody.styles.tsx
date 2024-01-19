@@ -1,4 +1,3 @@
-import React from 'react'
 import styled from 'styled-components'
 import {rem, Flex, Text, Box, Inline} from '@sanity/ui'
 import {InfoOutlineIcon} from '@sanity/icons'

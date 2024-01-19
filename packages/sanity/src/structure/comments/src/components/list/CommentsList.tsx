@@ -1,4 +1,4 @@
-import React, {forwardRef, useCallback, useImperativeHandle, useMemo, useState} from 'react'
+import {memo, forwardRef, useCallback, useImperativeHandle, useMemo, useState} from 'react'
 import {BoundaryElementProvider, Flex, Stack} from '@sanity/ui'
 import {CurrentUser} from '@sanity/types'
 import {
@@ -223,4 +223,4 @@ const CommentsListInner = forwardRef<CommentsListHandle, CommentsListProps>(
  * @beta
  * @hidden
  */
-export const CommentsList = React.memo(CommentsListInner)
+export const CommentsList = memo(CommentsListInner)

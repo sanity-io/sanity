@@ -1,5 +1,5 @@
 import {AddIcon} from '@sanity/icons'
-import React, {useCallback, useState} from 'react'
+import {useCallback, useState} from 'react'
 import {useClickOutside} from '@sanity/ui'
 import {POPOVER_RADIUS, POPOVER_VERTICAL_MARGIN} from '../../../constants'
 import {useSearchState} from '../../../contexts/search/useSearchState'
