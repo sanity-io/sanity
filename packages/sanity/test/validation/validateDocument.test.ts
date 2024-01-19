@@ -6,6 +6,7 @@ import type {
   Schema,
   SchemaType,
   ValidationContext,
+  SchemaTypeDefinition,
 } from '@sanity/types'
 import {
   validateDocument,
@@ -14,8 +15,8 @@ import {
 } from '../../src/core/validation/validateDocument'
 import {getFallbackLocaleSource} from '../../src/core/i18n/fallback'
 import {convertToValidationMarker} from '../../src/core/validation/util/convertToValidationMarker'
-import {Workspace} from '../../src/core'
-import {createSchema} from './helpers/createSchema'
+import {Workspace, createSchema} from '../../src/core'
+// import {createSchema} from './helpers/createSchema'
 import {createMockSanityClient} from './mocks/mockSanityClient'
 
 jest.mock('../../src/core/validation/util/convertToValidationMarker', () => {
@@ -37,6 +38,7 @@ const getClient = (options: {apiVersion: string}) => client
 
 describe('resolveTypeForArrayItem', () => {
   const schema: Schema = createSchema({
+    name: 'default',
     types: [
       {
         name: 'foo',
@@ -84,6 +86,7 @@ describe('resolveTypeForArrayItem', () => {
 describe('validateDocument', () => {
   it('takes in a document + a compiled schema and returns a list of validation markers', async () => {
     const schema = createSchema({
+      name: 'default',
       types: [
         {
           name: 'simpleDoc',
@@ -138,6 +141,7 @@ describe('validateItem', () => {
     ]
 
     const schema = createSchema({
+      name: 'default',
       types: [
         {
           name: 'testObj',
@@ -229,6 +233,7 @@ describe('validateItem', () => {
 
   it('runs nested validation for object-level rules set via Rule.fields()', async () => {
     const schema = createSchema({
+      name: 'default',
       types: [
         {
           name: 'testObj',
@@ -285,6 +290,7 @@ describe('validateItem', () => {
     const internalLinkSpy = jest.fn(() => 'mock invalid response')
 
     const schema = createSchema({
+      name: 'default',
       types: [
         {
           name: 'post',
@@ -497,6 +503,7 @@ describe('validateItem', () => {
 
   it('resolves an array item type if there is just one type', async () => {
     const schema = createSchema({
+      name: 'default',
       types: [
         {
           name: 'values',
@@ -550,6 +557,7 @@ describe('validateItem', () => {
 
   it('properly passes the nested value, type, and path to rule.validate', async () => {
     const schema: Schema = createSchema({
+      name: 'default',
       types: [
         {
           name: 'root',
@@ -710,6 +718,175 @@ describe('validateItem', () => {
         document: document,
         path: ['level1Array', 0, 'level2Number'],
         type: level2NumberType,
+      },
+    ])
+  })
+})
+
+describe('validation behavior', () => {
+  const getValidationMarkers = <TValue extends {_type: string}>(params: {
+    value: TValue
+    types: SchemaTypeDefinition[]
+  }) => {
+    const schema: Schema = createSchema({
+      name: 'default',
+      types: [
+        {
+          name: 'root',
+          type: 'document',
+          title: 'Root',
+          fields: [{name: 'field', type: params.value._type}],
+        },
+        ...params.types,
+      ],
+    })
+
+    // ensures there are no schema formatting issues
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    expect((schema as any)._validation).toHaveLength(0)
+
+    const document: SanityDocument = {
+      _id: 'document-id',
+      _type: 'root',
+      _createdAt: '2024-01-19T17:59:04.949Z',
+      _updatedAt: '2024-01-19T17:59:04.949Z',
+      _rev: 'rev',
+      field: params.value,
+    }
+
+    return validateItem({
+      getClient,
+      schema,
+      value: params.value,
+      type: schema.get(params.value._type),
+      document,
+      parent: document,
+      path: undefined,
+      getDocumentExists: undefined,
+      i18n: getFallbackLocaleSource(),
+      environment: 'cli',
+    })
+  }
+
+  it('warns if there are unknown fields in document, object, image, and file types', async () => {
+    await expect(
+      getValidationMarkers({
+        types: [
+          {
+            type: 'object',
+            name: 'myObject',
+            fields: [{name: 'knownField', type: 'string'}],
+          },
+        ],
+        value: {
+          _type: 'myObject',
+          knownField: 'this is fine!',
+          unknownField: 'this is a warning',
+        },
+      }),
+    ).resolves.toMatchObject([
+      {
+        level: 'warning',
+        message: "Field 'unknownField' does not exist on type 'myObject'",
+        path: ['unknownField'],
+      },
+    ])
+
+    await expect(
+      getValidationMarkers({
+        types: [
+          {
+            type: 'document',
+            name: 'myDocument',
+            fields: [{name: 'knownField', type: 'string'}],
+          },
+        ],
+        value: {
+          _type: 'myDocument',
+          knownField: 'this is fine!',
+          unknownField: 'this is a warning',
+        },
+      }),
+    ).resolves.toMatchObject([
+      {
+        level: 'warning',
+        message: "Field 'unknownField' does not exist on type 'myDocument'",
+        path: ['unknownField'],
+      },
+    ])
+
+    await expect(
+      getValidationMarkers({
+        types: [
+          {
+            type: 'image',
+            name: 'myImage',
+            fields: [{name: 'knownField', type: 'string'}],
+          },
+        ],
+        value: {
+          _type: 'myImage',
+          knownField: 'this is fine!',
+          unknownField: 'this is a warning',
+        },
+      }),
+    ).resolves.toMatchObject([
+      {
+        level: 'warning',
+        message: "Field 'unknownField' does not exist on type 'myImage'",
+        path: ['unknownField'],
+      },
+    ])
+
+    await expect(
+      getValidationMarkers({
+        types: [
+          {
+            type: 'file',
+            name: 'myFile',
+            fields: [{name: 'knownField', type: 'string'}],
+          },
+        ],
+        value: {
+          _type: 'myFile',
+          knownField: 'this is fine!',
+          unknownField: 'this is a warning',
+        },
+      }),
+    ).resolves.toMatchObject([
+      {
+        level: 'warning',
+        message: "Field 'unknownField' does not exist on type 'myFile'",
+        path: ['unknownField'],
+      },
+    ])
+  })
+
+  it('warns if there are unknown fields in types that extend document, object, image, and file types', async () => {
+    await expect(
+      getValidationMarkers({
+        types: [
+          {
+            type: 'object',
+            name: 'myObject',
+            fields: [{name: 'knownField', type: 'string'}],
+          },
+          {
+            type: 'myObject',
+            name: 'objectAlias',
+          },
+        ],
+        value: {
+          _type: 'objectAlias',
+          knownField: 'this is fine!',
+          unknownField: 'this is a warning',
+        },
+      }),
+    ).resolves.toMatchObject([
+      {
+        level: 'warning',
+        message: "Field 'unknownField' does not exist on type 'objectAlias'",
+        path: ['unknownField'],
       },
     ])
   })

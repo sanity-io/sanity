@@ -4,8 +4,7 @@ import {Schema as SchemaBuilder} from '@sanity/schema'
 import {getFallbackLocaleSource} from '../../src/core/i18n/fallback'
 import {inferFromSchema} from '../../src/core/validation/inferFromSchema'
 import {validateDocument} from '../../src/core/validation/validateDocument'
-import {Workspace} from '../../src/core'
-import {createSchema} from './helpers/createSchema'
+import {Workspace, createSchema} from '../../src/core'
 import {createMockSanityClient} from './mocks/mockSanityClient'
 
 const client = createMockSanityClient()
@@ -108,6 +107,7 @@ describe('schema validation inference', () => {
     }
 
     const schema = createSchema({
+      name: 'default',
       types: [slugField],
     })
 
@@ -217,6 +217,7 @@ describe('schema validation inference', () => {
     }
 
     const schema = createSchema({
+      name: 'default',
       types: [documentWithReference],
     })
 
