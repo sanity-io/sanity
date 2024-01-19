@@ -27,20 +27,12 @@ export interface CommentsContextValue {
     loading: boolean
   }
 
-  remove: {
-    execute: CommentOperations['remove']
-  }
-
-  create: {
-    execute: CommentOperations['create']
-  }
-
-  edit: {
-    execute: CommentOperations['edit']
-  }
-
-  update: {
-    execute: CommentOperations['update']
+  operation: {
+    create: CommentOperations['create']
+    edit: CommentOperations['edit']
+    remove: CommentOperations['remove']
+    update: CommentOperations['update']
+    react: CommentOperations['react']
   }
 
   mentionOptions: MentionOptionsHookValue

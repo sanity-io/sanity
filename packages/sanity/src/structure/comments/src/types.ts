@@ -17,6 +17,7 @@ export interface Loadable<T> {
 export interface CommentOperations {
   create: (comment: CommentCreatePayload) => Promise<void>
   edit: (id: string, comment: CommentEditPayload) => Promise<void>
+  react: (id: string, reaction: CommentReactionOption) => Promise<void>
   remove: (id: string) => Promise<void>
   update: (id: string, comment: Partial<CommentCreatePayload>) => Promise<void>
 }
@@ -94,6 +95,46 @@ interface CommentCreateFailedState {
 }
 
 /**
+ * @beta
+ * @hidden
+ * The short names for the comment reactions.
+ * We follow the convention for short names outlined in https://projects.iamcal.com/emoji-data/table.htm.
+ */
+export type CommentReactionShortNames =
+  | ':-1:'
+  | ':+1:'
+  | ':eyes:'
+  | ':heart:'
+  | ':heavy_plus_sign:'
+  | ':rocket:'
+
+/**
+ * @beta
+ * @hidden
+ */
+export interface CommentReactionOption {
+  shortName: CommentReactionShortNames
+  title: string
+}
+
+/**
+ * @beta
+ * @hidden
+ */
+export interface CommentReactionItem {
+  _key: string
+  shortName: CommentReactionShortNames
+  userId: string
+  addedAt: string
+
+  /**
+   * This is a local value and is not stored on the server.
+   * It is used to track the optimistic state of the reaction.
+   */
+  _optimisticState?: 'added' | 'removed'
+}
+
+/**
  * The state is used to track the state of the comment (e.g. if it failed to be created, etc.)
  * It is a local value and is not stored on the server.
  * When there's no state, the comment is considered to be in a "normal" state (e.g. created successfully).
@@ -109,25 +150,19 @@ type CommentState = CommentCreateFailedState | CommentCreateRetryingState | unde
 export interface CommentDocument {
   _type: 'comment'
   _createdAt: string
-  _updatedAt: string
   _id: string
   _rev: string
 
-  authorId: string
-
-  message: CommentMessage
-
-  threadId: string
-
-  parentCommentId?: string
-
-  status: CommentStatus
-
-  lastEditedAt?: string
-
-  context?: CommentContext
-
   _state?: CommentState
+
+  authorId: string
+  message: CommentMessage
+  threadId: string
+  parentCommentId?: string
+  status: CommentStatus
+  lastEditedAt?: string
+  reactions: CommentReactionItem[] | null
+  context?: CommentContext
 
   target: {
     path: CommentPath
@@ -159,6 +194,7 @@ export interface CommentCreatePayload {
   parentCommentId: string | undefined
   status: CommentStatus
   threadId: string
+  reactions: CommentReactionItem[]
 }
 
 /**

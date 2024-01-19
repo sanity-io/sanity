@@ -70,6 +70,8 @@ export function CommentThreadLayout(props: CommentThreadLayoutProps) {
         status: 'open',
         // Since this is a new comment, we generate a new thread ID
         threadId: uuid(),
+        // New comments have no reactions
+        reactions: [],
       }
 
       onNewThreadCreate?.(nextComment)
@@ -129,7 +131,7 @@ export function CommentThreadLayout(props: CommentThreadLayoutProps) {
       </HeaderFlex>
 
       {canCreateNewThread && (
-        <ThreadCard onClick={handleNewThreadClick} tone={isSelected ? 'primary' : undefined}>
+        <ThreadCard onClick={handleNewThreadClick} tone={isSelected ? 'caution' : undefined}>
           <CreateNewThreadInput
             currentUser={currentUser}
             fieldName={lastCrumb}

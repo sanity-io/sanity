@@ -1,4 +1,5 @@
 import {CommentDocument, CommentPostPayload} from '../types'
+import {mergeCommentReactions} from '../utils'
 
 interface CommentAddedAction {
   payload: CommentDocument | CommentPostPayload
@@ -67,7 +68,6 @@ export function commentsReducer(
 
     case 'COMMENT_ADDED': {
       const nextCommentResult = action.payload as CommentDocument
-
       const nextCommentValue = nextCommentResult satisfies CommentDocument
 
       const nextComment = {
@@ -75,37 +75,20 @@ export function commentsReducer(
           ...state.comments[nextCommentResult._id],
           ...nextCommentValue,
           _state: nextCommentResult._state || undefined,
-          // If the comment is created optimistically, it won't have a createdAt date.
-          // In that case, we'll use the current date.
-          // The correct date will be set when the comment is created on the server
-          // and the comment is received in the realtime listener.
+          // If the comment is created optimistically, it won't have a createdAt date as this is set on the server.
+          // However, we need to set a createdAt date to be able to sort the comments correctly.
+          // Therefore, we set the createdAt date to the current date here if it's missing while creating the comment.
+          // Once the comment is created and received from the server, the createdAt date will be updated to the correct value.
           _createdAt: nextCommentResult._createdAt || new Date().toISOString(),
         } satisfies CommentDocument,
       }
 
-      const commentExists = state.comments && state.comments[nextCommentResult._id]
-
-      // The comment might already exist in the store if an optimistic update
-      // has been performed but the post request failed. In that case we want
-      // to merge the new comment with the existing one.
-      if (commentExists) {
-        return {
-          ...state,
-          comments: {
-            ...state.comments,
-            ...nextComment,
-          },
-        }
-      }
-
-      const nextComments = {
-        ...(state.comments || {}),
-        ...nextComment,
-      }
-
       return {
         ...state,
-        comments: nextComments,
+        comments: {
+          ...state.comments,
+          ...nextComment,
+        },
       }
     }
 
@@ -141,15 +124,29 @@ export function commentsReducer(
     case 'COMMENT_UPDATED': {
       const updatedComment = action.payload
       const id = updatedComment._id as string
+      const comment = state.comments[id]
+
+      // Due to optimistic updates, we need to merge the current optimistic reactions with the
+      // incoming reactions to make sure that any optimistic reactions are not lost or
+      // re-added when we receive the updated comment from the server.
+      const optimisticReactions = comment?.reactions?.filter((v) => v?._optimisticState) || []
+      const incomingReactions = updatedComment.reactions || []
+      const nextReactions = mergeCommentReactions(optimisticReactions, incomingReactions)
+
+      const nextComment = {
+        // Add existing comment data
+        ...comment,
+        // Add incoming comment data
+        ...updatedComment,
+        // Add reactions merged with optimistic reactions
+        reactions: nextReactions,
+      } satisfies CommentDocument
 
       return {
         ...state,
         comments: {
           ...state.comments,
-          [id]: {
-            ...state.comments[id],
-            ...updatedComment,
-          },
+          [id]: nextComment,
         },
       }
     }

@@ -1,23 +1,24 @@
 import {Flex, Layer, useClickOutside, useLayer, useToast} from '@sanity/ui'
-import React, {Fragment, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {Fragment, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import * as PathUtils from '@sanity/util/paths'
 import styled from 'styled-components'
 import {usePaneRouter} from '../../../components'
 import {EMPTY_PARAMS} from '../../../constants'
 import {useDocumentPane} from '../../../panes/document/useDocumentPane'
 import {
-  useComments,
-  CommentsListHandle,
   CommentCreatePayload,
-  CommentEditPayload,
-  CommentStatus,
   CommentDeleteDialog,
+  CommentEditPayload,
+  CommentReactionOption,
   CommentsList,
+  CommentsListHandle,
   CommentsOnboardingPopover,
-  useCommentsOnboarding,
   CommentsSelectedPath,
-  useCommentsSelectedPath,
+  CommentStatus,
+  useComments,
   useCommentsEnabled,
+  useCommentsOnboarding,
+  useCommentsSelectedPath,
 } from '../../src'
 import {CommentsInspectorHeader} from './CommentsInspectorHeader'
 import {CommentsInspectorFeedbackFooter} from './CommentsInspectorFeedbackFooter'
@@ -73,18 +74,8 @@ function CommentsInspectorInner(props: DocumentInspectorProps) {
 
   const {isDismissed, setDismissed} = useCommentsOnboarding()
 
-  const {
-    comments,
-    create,
-    edit,
-    getComment,
-    isRunningSetup,
-    mentionOptions,
-    remove,
-    setStatus,
-    status,
-    update,
-  } = useComments()
+  const {comments, getComment, isRunningSetup, mentionOptions, setStatus, status, operation} =
+    useComments()
 
   const {isTopLayer} = useLayer()
 
@@ -147,16 +138,17 @@ function CommentsInspectorInner(props: DocumentInspectorProps) {
       const comment = getComment(id)
       if (!comment) return
 
-      create.execute({
+      operation.create({
         fieldPath: comment.target.path.field,
         id: comment._id,
         message: comment.message,
         parentCommentId: comment.parentCommentId,
+        reactions: comment.reactions || [],
         status: comment.status,
         threadId: comment.threadId,
       })
     },
-    [create, getComment],
+    [getComment, operation],
   )
 
   const closeDeleteDialog = useCallback(() => {
@@ -179,7 +171,7 @@ function CommentsInspectorInner(props: DocumentInspectorProps) {
 
   const handleNewThreadCreate = useCallback(
     (payload: CommentCreatePayload) => {
-      create.execute(payload)
+      operation.create(payload)
 
       setSelectedPath({
         fieldPath: payload.fieldPath,
@@ -187,21 +179,21 @@ function CommentsInspectorInner(props: DocumentInspectorProps) {
         threadId: payload.threadId,
       })
     },
-    [create, setSelectedPath],
+    [operation, setSelectedPath],
   )
 
   const handleReply = useCallback(
     (payload: CommentCreatePayload) => {
-      create.execute(payload)
+      operation.create(payload)
     },
-    [create],
+    [operation],
   )
 
   const handleEdit = useCallback(
     (id: string, payload: CommentEditPayload) => {
-      edit.execute(id, payload)
+      operation.edit(id, payload)
     },
-    [edit],
+    [operation],
   )
 
   const onDeleteStart = useCallback(
@@ -223,7 +215,7 @@ function CommentsInspectorInner(props: DocumentInspectorProps) {
     async (id: string) => {
       try {
         setDeleteLoading(true)
-        await remove.execute(id)
+        await operation.remove(id)
         closeDeleteDialog()
       } catch (err) {
         setDeleteError(err)
@@ -231,7 +223,7 @@ function CommentsInspectorInner(props: DocumentInspectorProps) {
         setDeleteLoading(false)
       }
     },
-    [closeDeleteDialog, remove],
+    [closeDeleteDialog, operation],
   )
 
   const handleScrollToComment = useCallback(
@@ -255,7 +247,7 @@ function CommentsInspectorInner(props: DocumentInspectorProps) {
 
   const handleStatusChange = useCallback(
     (id: string, nextStatus: CommentStatus) => {
-      update.execute(id, {
+      operation.update(id, {
         status: nextStatus,
       })
 
@@ -266,7 +258,14 @@ function CommentsInspectorInner(props: DocumentInspectorProps) {
         handleScrollToComment(id)
       }
     },
-    [handleScrollToComment, setStatus, update],
+    [handleScrollToComment, operation, setStatus],
+  )
+
+  const handleReactionSelect = useCallback(
+    (id: string, reaction: CommentReactionOption) => {
+      operation.react(id, reaction)
+    },
+    [operation],
   )
 
   const handleDeselectPath = useCallback(() => {
@@ -351,6 +350,7 @@ function CommentsInspectorInner(props: DocumentInspectorProps) {
             onEdit={handleEdit}
             onNewThreadCreate={handleNewThreadCreate}
             onPathSelect={handlePathSelect}
+            onReactionSelect={handleReactionSelect}
             onReply={handleReply}
             onStatusChange={handleStatusChange}
             readOnly={isRunningSetup}

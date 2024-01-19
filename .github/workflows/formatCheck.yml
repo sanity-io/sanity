@@ -1,10 +1,15 @@
 name: Format check
 on:
   push:
+    branches: [next]
+  pull_request:
 jobs:
   formatCheck:
     timeout-minutes: 30
     runs-on: ubuntu-latest
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -29,4 +34,4 @@ jobs:
         run: yarn install --frozen-lockfile
 
       - name: Run format check
-        run: yarn check:format
+        run: yarn turbo run check:format

@@ -40,5 +40,25 @@ export default defineScope({
       title: 'CommentBreadcrumbs',
       component: lazy(() => import('./CommentBreadcrumbsStory')),
     },
+    {
+      name: 'comment-reactions-menu',
+      title: 'CommentReactionsMenu',
+      component: lazy(() => import('./CommentReactionsMenuStory')),
+    },
+    {
+      name: 'comment-reactions-menu-button',
+      title: 'CommentReactionsMenuButton',
+      component: lazy(() => import('./CommentReactionsMenuButtonStory')),
+    },
+    {
+      name: 'comment-reactions-bar',
+      title: 'CommentReactionsBar',
+      component: lazy(() => import('./CommentReactionsBarStory')),
+    },
+    {
+      name: 'comment-reactions-users-tooltip-content',
+      title: 'CommentReactionsUsersTooltipContent',
+      component: lazy(() => import('./CommentReactionsUsersTooltipContentStory')),
+    },
   ],
 })

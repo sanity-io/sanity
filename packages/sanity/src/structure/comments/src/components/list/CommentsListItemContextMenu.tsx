@@ -1,4 +1,3 @@
-import React from 'react'
 import {CheckmarkCircleIcon, UndoIcon, EditIcon, TrashIcon, LinkIcon} from '@sanity/icons'
 import {Card, Flex, Menu, MenuDivider} from '@sanity/ui'
 import styled from 'styled-components'
@@ -9,8 +8,21 @@ import {
   MenuItem,
   TooltipDelayGroupProvider,
 } from '../../../../../ui-components'
-import {CommentStatus} from '../../types'
+import {CommentReactionOption, CommentStatus} from '../../types'
+import {CommentReactionsMenuButton} from '../reactions'
+import {COMMENT_REACTION_OPTIONS} from '../../constants'
+import {ReactionIcon} from '../icons'
 import {ContextMenuButton} from 'sanity'
+
+const renderMenuButton = ({open}: {open: boolean}) => (
+  <Button
+    aria-label="Add reaction"
+    icon={ReactionIcon}
+    mode="bleed"
+    selected={open}
+    tooltipProps={{content: 'Add reaction'}}
+  />
+)
 
 const POPOVER_PROPS: MenuButtonProps['popover'] = {
   placement: 'bottom-end',
@@ -31,6 +43,7 @@ interface CommentsListItemContextMenuProps {
   onEditStart?: () => void
   onMenuClose?: () => void
   onMenuOpen?: () => void
+  onReactionSelect?: (option: CommentReactionOption) => void
   onStatusChange?: () => void
   readOnly?: boolean
   status: CommentStatus
@@ -46,6 +59,7 @@ export function CommentsListItemContextMenu(props: CommentsListItemContextMenuPr
     onEditStart,
     onMenuClose,
     onMenuOpen,
+    onReactionSelect,
     onStatusChange,
     readOnly,
     status,
@@ -57,6 +71,17 @@ export function CommentsListItemContextMenu(props: CommentsListItemContextMenuPr
     <TooltipDelayGroupProvider>
       <Flex>
         <FloatingCard display="flex" shadow={2} padding={1} radius={2} sizing="border">
+          {onReactionSelect && (
+            <CommentReactionsMenuButton
+              onMenuClose={onMenuClose}
+              onMenuOpen={onMenuOpen}
+              onSelect={onReactionSelect}
+              options={COMMENT_REACTION_OPTIONS}
+              readOnly={readOnly}
+              renderMenuButton={renderMenuButton}
+            />
+          )}
+
           {isParent && (
             <Button
               aria-label={status === 'open' ? 'Mark comment as resolved' : 'Re-open'}
