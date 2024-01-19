@@ -5,12 +5,11 @@ import {
   Button as UIButton,
   Flex,
   Text,
-  TooltipDelayGroupProvider,
 } from '@sanity/ui'
 import {CommentReactionItem, CommentReactionOption, CommentReactionShortNames} from '../../types'
 import {COMMENT_REACTION_EMOJIS, COMMENT_REACTION_OPTIONS} from '../../constants'
 import {ReactionIcon} from '../icons'
-import {TOOLTIP_DELAY_PROPS, Tooltip} from '../../../../../ui-components'
+import {Tooltip, TooltipDelayGroupProvider} from '../../../../../ui-components'
 import {CommentReactionsMenuButton} from './CommentReactionsMenuButton'
 import {CommentReactionsUsersTooltip} from './CommentReactionsUsersTooltip'
 import {EmojiText} from './EmojiText.styled'
@@ -134,7 +133,7 @@ export const CommentReactionsBar = React.memo(function CommentReactionsBar(
 
   return (
     <Flex align="center" gap={1} wrap="wrap">
-      <TooltipDelayGroupProvider delay={TOOLTIP_DELAY_PROPS}>
+      <TooltipDelayGroupProvider>
         {sortedReactions.map(([name, reactionsList]) => {
           const hasReacted = currentUserReactionNames.includes(name)
           const userIds = reactionsList.map((r) => r.userId)
