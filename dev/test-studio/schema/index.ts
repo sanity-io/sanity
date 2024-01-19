@@ -115,7 +115,11 @@ import fieldGroupsWithFieldsets from './debug/fieldGroupsWithFieldsets'
 import ptReference from './debug/ptReference'
 import {commentsDebug} from './debug/comments'
 import {allTypes} from './allTypes'
-import {deprecatedFields, someObject} from './debug/deprecatedFields'
+import {
+  deprecatedFields,
+  namedDeprecatedArray,
+  namedDeprecatedObject,
+} from './debug/deprecatedFields'
 import {deprecatedDocument} from './debug/deprecatedDocument'
 
 // @todo temporary, until code input is v3 compatible
@@ -173,7 +177,6 @@ export const schemaTypes = [
   date,
   datetime,
   deprecatedFields,
-  someObject,
   deprecatedDocument,
   documentActions,
   emails,
@@ -202,6 +205,8 @@ export const schemaTypes = [
   mux,
   myImage,
   myObject,
+  namedDeprecatedObject,
+  namedDeprecatedArray,
   notitle,
   numbers,
   objectWithNestedArray,

@@ -18,6 +18,8 @@ const allTypes = [
   'slug',
   'text',
   'geopoint',
+  'namedDeprecatedObject',
+  'namedDeprecatedArray',
 ]
 
 for (const type of allTypes) {

@@ -1,9 +1,15 @@
 import {defineField, defineType} from 'sanity'
 
-export const someObject = {
+export const namedDeprecatedObject = {
   type: 'object',
-  name: 'someObject',
+  name: 'namedDeprecatedObject',
   fields: [{type: 'string', name: 'foo'}],
+}
+
+export const namedDeprecatedArray = {
+  type: 'array',
+  name: 'namedDeprecatedArray',
+  of: [{type: 'string'}],
 }
 
 export const deprecatedFields = defineType({
@@ -12,11 +18,20 @@ export const deprecatedFields = defineType({
   type: 'document',
   fields: [
     defineField({
-      name: 'someObject',
+      name: 'namedDeprecatedObject',
+      title: 'namedDeprecatedObject',
       deprecated: {
         reason: 'This string field is deprecated',
       },
-      type: 'someObject',
+      type: 'namedDeprecatedObject',
+    }),
+    defineField({
+      name: 'namedDeprecatedArray',
+      title: 'namedDeprecatedArray',
+      deprecated: {
+        reason: 'This string field is deprecated',
+      },
+      type: 'namedDeprecatedArray',
     }),
     defineField({
       deprecated: {
