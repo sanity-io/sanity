@@ -39,6 +39,7 @@ const QUERY_PROJECTION = `{
   status,
   target,
   threadId,
+  reactions
 }`
 
 // Newest comments first

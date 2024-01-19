@@ -4,6 +4,7 @@ import {CurrentUser} from '@sanity/types'
 import {
   CommentCreatePayload,
   CommentEditPayload,
+  CommentReactionOption,
   CommentStatus,
   CommentThreadItem,
   MentionOptionsHookValue,
@@ -53,6 +54,7 @@ export interface CommentsListProps {
   onEdit: (id: string, payload: CommentEditPayload) => void
   onNewThreadCreate: (payload: CommentCreatePayload) => void
   onPathSelect?: (nextPath: CommentsSelectedPath) => void
+  onReactionSelect?: (id: string, reaction: CommentReactionOption) => void
   onReply: (payload: CommentCreatePayload) => void
   onStatusChange?: (id: string, status: CommentStatus) => void
   readOnly?: boolean
@@ -82,6 +84,7 @@ const CommentsListInner = forwardRef<CommentsListHandle, CommentsListProps>(
       onEdit,
       onNewThreadCreate,
       onPathSelect,
+      onReactionSelect,
       onReply,
       onStatusChange,
       readOnly,
@@ -199,6 +202,7 @@ const CommentsListInner = forwardRef<CommentsListHandle, CommentsListProps>(
                             onDelete={onDelete}
                             onEdit={onEdit}
                             onPathSelect={onPathSelect}
+                            onReactionSelect={onReactionSelect}
                             onReply={onReply}
                             onStatusChange={onStatusChange}
                             parentComment={item.parentComment}

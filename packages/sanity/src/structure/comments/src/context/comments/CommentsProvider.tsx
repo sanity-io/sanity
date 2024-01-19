@@ -55,11 +55,9 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
   const {client, runSetup, isRunningSetup} = useCommentsSetup()
   const publishedId = getPublishedId(documentId)
   const editState = useEditState(publishedId, documentType, 'low')
-
-  const documentValue = useMemo(() => {
-    return editState.draft || editState.published
-  }, [editState.draft, editState.published])
-
+  const schemaType = useSchema().get(documentType)
+  const currentUser = useCurrentUser()
+  const {name: workspaceName, dataset, projectId} = useWorkspace()
   const {
     dispatch,
     data = EMPTY_ARRAY,
@@ -70,13 +68,13 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
     client,
   })
 
+  const documentValue = useMemo(() => {
+    return editState.draft || editState.published
+  }, [editState.draft, editState.published])
+
   const mentionOptions = useMentionOptions(
     useMemo((): MentionHookOptions => ({documentValue}), [documentValue]),
   )
-
-  const schemaType = useSchema().get(documentType)
-  const currentUser = useCurrentUser()
-  const {name: workspaceName, dataset, projectId} = useWorkspace()
 
   const threadItemsByStatus: ThreadItemsByStatus = useMemo(() => {
     if (!schemaType || !currentUser) return EMPTY_COMMENTS_DATA
@@ -110,7 +108,7 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
   const getComment = useCallback((id: string) => data?.find((c) => c._id === id), [data])
 
   const handleOnCreate = useCallback(
-    async (payload: CommentPostPayload) => {
+    (payload: CommentPostPayload) => {
       // If the comment we try to create already exists in the local state and has
       // the 'createError' state, we know that we are retrying a comment creation.
       // In that case, we want to change the state to 'createRetrying'.
@@ -184,11 +182,12 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
         schemaType,
         workspace: workspaceName,
         getThreadLength,
+        getComment,
         // This function runs when the first comment creation is executed.
         // It is used to create the addon dataset and configure a client for
         // the addon dataset.
         runSetup,
-        // The following callbacks runs when the comment operations are executed.
+        // The following callbacks runs when the comment operation are executed.
         // They are used to update the local state of the comments immediately after
         // a comment operation has been executed. This is done to avoid waiting for
         // the real time listener to update the comments and make the UI feel more
@@ -209,6 +208,7 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
         schemaType,
         workspaceName,
         getThreadLength,
+        getComment,
         runSetup,
         handleOnCreate,
         handleOnCreateError,
@@ -235,17 +235,13 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
         error,
         loading: loading || isRunningSetup,
       },
-      create: {
-        execute: operation.create,
-      },
-      remove: {
-        execute: operation.remove,
-      },
-      edit: {
-        execute: operation.edit,
-      },
-      update: {
-        execute: operation.update,
+
+      operation: {
+        create: operation.create,
+        edit: operation.edit,
+        react: operation.react,
+        remove: operation.remove,
+        update: operation.update,
       },
       mentionOptions,
     }),
@@ -259,6 +255,7 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
       onCommentsOpen,
       operation.create,
       operation.edit,
+      operation.react,
       operation.remove,
       operation.update,
       status,
