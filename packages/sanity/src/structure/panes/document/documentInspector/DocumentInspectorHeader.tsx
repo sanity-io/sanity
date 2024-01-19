@@ -41,7 +41,7 @@ export function DocumentInspectorHeader(
             icon={CloseIcon}
             mode="bleed"
             onClick={onClose}
-            tooltipProps={{content: t('buttons.close.tooltip')}}
+            tooltipProps={{content: t('document-inspector.close-button.tooltip')}}
           />
         </Box>
       </Flex>

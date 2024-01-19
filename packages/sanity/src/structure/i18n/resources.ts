@@ -124,9 +124,6 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The action menu button tooltip */
   'buttons.action-menu-button.tooltip': 'Document actions',
 
-  /** The close button tooltip */
-  'buttons.close.tooltip': 'Close',
-
   /** The aria-label for the split pane button on the document panel header */
   'buttons.split-pane-button.aria-label': 'Split pane right',
   /** The tool tip for the split pane button on the document panel header */
@@ -236,6 +233,8 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The text shown if a document's title via a preview value cannot be determined due to an unknown schema type */
   'doc-title.unknown-schema-type.text': 'Unknown schema type: {{schemaType}}',
 
+  /** Tooltip text shown for the close button of the document inspector */
+  'document-inspector.close-button.tooltip': 'Close',
   /** The title shown in the dialog header, when inspecting a valid document */
   'document-inspector.dialog.title': 'Inspecting <DocumentTitle/>',
   /** The title shown in the dialog header, when the document being inspected is not created yet/has no value */
