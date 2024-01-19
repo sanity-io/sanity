@@ -13,6 +13,7 @@ import {
   ItemProps,
   ObjectInputProps,
   RenderPreviewCallbackProps,
+  type FormDocumentValue,
 } from '../types'
 import {StateTree} from '../store'
 import {EMPTY_ARRAY} from '../../util'
@@ -29,7 +30,6 @@ import {
   usePreviewComponent,
 } from '../form-components-hooks'
 import {PreviewLoader} from '../../preview'
-import type {FormDocumentValue} from '../types'
 import {FormValueProvider} from '../contexts/FormValue'
 import {GetFormValueProvider} from '../contexts/GetFormValue'
 import {FormProvider} from './FormProvider'

@@ -823,4 +823,9 @@ export interface PreparedConfig {
   workspaces: WorkspaceSummary[]
 }
 
-export type {AuthConfig, AuthProvider} from './auth/types'
+export type {
+  AuthConfig,
+  AuthProvider,
+  LoginMethod,
+  CookielessCompatibleLoginMethod,
+} from './auth/types'

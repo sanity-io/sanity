@@ -114,6 +114,11 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'banners.reference-changed-banner.reason-removed.text':
     'This reference has been removed since you opened it.',
 
+  /** Browser/tab title when creating a new document of a given type */
+  'browser-document-title.new-document': 'New {{schemaType}}',
+  /** Browser/tab title when editing a document where the title cannot be resolved from preview configuration */
+  'browser-document-title.untitled-document': 'Untitled',
+
   /** The action menu button aria-label */
   'buttons.action-menu-button.aria-label': 'Open document actions',
   /** The action menu button tooltip */
@@ -243,6 +248,8 @@ const structureLocaleStrings = defineLocalesResources('structure', {
 
   /** The text for when a form is hidden */
   'document-view.form-view.form-hidden': 'This form is hidden',
+  /** Fallback title shown when a form title is not provided */
+  'document-view.form-view.form-title-fallback': 'Untitled',
   /** The text for when the form view is loading a document */
   'document-view.form-view.loading': 'Loading document…',
   /** The description of the sync lock toast on the form view */
@@ -383,6 +390,10 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The text for the "Open preview" action for a document */
   'production-preview.menu-item.title': 'Open preview',
 
+  /** Label for button when status is saved */
+  'status-bar.document-status-pulse.status.saved.text': 'Saved',
+  /** Label for button when status is syncing */
+  'status-bar.document-status-pulse.status.syncing.text': 'Saving...',
   /** Accessibility label indicating when the document was last published, in relative time, eg "3 weeks ago" */
   'status-bar.publish-status-button.last-published-time.aria-label':
     'Last published {{relativeTime}}',

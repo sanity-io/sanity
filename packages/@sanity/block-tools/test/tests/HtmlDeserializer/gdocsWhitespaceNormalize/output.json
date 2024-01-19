@@ -1442,7 +1442,7 @@
       },
       {
         "_type": "span",
-        "marks": ["randomKey0", "underline"],
+        "marks": ["randomKey0"],
         "text": "Lorem Lorem",
         "_key": "randomKey991"
       },

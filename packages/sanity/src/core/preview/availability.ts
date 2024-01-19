@@ -6,18 +6,18 @@ import {distinctUntilChanged, map, mergeMap, reduce, switchMap} from 'rxjs/opera
 import shallowEquals from 'shallow-equals'
 import {flatten, keyBy} from 'lodash'
 import {getDraftId, getPublishedId, isRecord} from '../util'
-import type {
-  AvailabilityResponse,
-  DocumentAvailability,
-  DraftsModelDocumentAvailability,
-} from './types'
 import {debounceCollect} from './utils/debounceCollect'
 import {
   AVAILABILITY_NOT_FOUND,
   AVAILABILITY_PERMISSION_DENIED,
   AVAILABILITY_READABLE,
 } from './constants'
-import {ObservePathsFn} from './types'
+import {
+  ObservePathsFn,
+  type AvailabilityResponse,
+  type DocumentAvailability,
+  type DraftsModelDocumentAvailability,
+} from './types'
 
 const MAX_DOCUMENT_ID_CHUNK_SIZE = 11164
 

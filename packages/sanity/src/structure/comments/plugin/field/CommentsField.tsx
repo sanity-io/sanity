@@ -31,9 +31,11 @@ const HIGHLIGHT_BLOCK_VARIANTS: Variants = {
 export function CommentsField(props: FieldProps) {
   const isEnabled = useCommentsEnabled()
 
-  if (isEnabled) return <CommentFieldInner {...props} />
+  if (!isEnabled) {
+    return props.renderDefault(props)
+  }
 
-  return props.renderDefault(props)
+  return <CommentFieldInner {...props} />
 }
 
 const SCROLL_INTO_VIEW_OPTIONS: ScrollIntoViewOptions = {
@@ -43,7 +45,7 @@ const SCROLL_INTO_VIEW_OPTIONS: ScrollIntoViewOptions = {
 
 const HighlightDiv = styled(motion.div)(({theme}) => {
   const {radius, space, color} = theme.sanity
-  const bg = hues.blue[color.dark ? 900 : 50].hex
+  const bg = hues.yellow[color.dark ? 900 : 50].hex
 
   return css`
     mix-blend-mode: ${color.dark ? 'screen' : 'multiply'};
@@ -69,6 +71,7 @@ function CommentFieldInner(props: FieldProps) {
   const [open, setOpen] = useState<boolean>(false)
   const [value, setValue] = useState<PortableTextBlock[] | null>(null)
   const rootElementRef = useRef<HTMLDivElement | null>(null)
+  const [threadIdToScrollTo, setThreadIdToScrollTo] = useState<string | null>(null)
 
   const {element: boundaryElement} = useBoundaryElement()
 
@@ -76,19 +79,17 @@ function CommentFieldInner(props: FieldProps) {
 
   const {
     comments,
-    create,
     isCommentsOpen,
     isRunningSetup,
     mentionOptions,
     onCommentsOpen,
+    operation,
     setStatus,
     status,
   } = useComments()
   const {selectedPath, setSelectedPath} = useCommentsSelectedPath()
 
   const fieldTitle = useMemo(() => getSchemaTypeTitle(props.schemaType), [props.schemaType])
-
-  const [threadIdToScrollTo, setThreadIdToScrollTo] = useState<string | null>(null)
 
   // Determine if the current field is selected
   const isSelected = useMemo(() => {
@@ -175,10 +176,12 @@ function CommentFieldInner(props: FieldProps) {
         parentCommentId: undefined,
         status: 'open',
         threadId: newThreadId,
+        // New comments have no reactions
+        reactions: [],
       }
 
       // Execute the create mutation
-      create.execute(nextComment)
+      operation.create(nextComment)
 
       // If a comment is added to a field when viewing resolved comments, we switch
       // to open comments and scroll to the comment that was just added
@@ -196,7 +199,7 @@ function CommentFieldInner(props: FieldProps) {
       // Set the thread ID to scroll to
       handleSetThreadToScrollTo(newThreadId)
     }
-  }, [create, handleSetThreadToScrollTo, onCommentsOpen, props.path, setStatus, status, value])
+  }, [handleSetThreadToScrollTo, onCommentsOpen, operation, props.path, setStatus, status, value])
 
   const handleDiscard = useCallback(() => setValue(null), [])
 

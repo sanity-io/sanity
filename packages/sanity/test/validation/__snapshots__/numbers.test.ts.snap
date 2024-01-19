@@ -3,13 +3,11 @@
 exports[`number greater than constraint: gt: too low 1`] = `
 Array [
   Object {
-    "item": ValidationError {
-      "children": undefined,
+    "item": Object {
       "message": "Must be greater than 10",
-      "operation": undefined,
-      "paths": Array [],
     },
     "level": "error",
+    "message": "Must be greater than 10",
     "path": Array [],
   },
 ]
@@ -18,13 +16,11 @@ Array [
 exports[`number greater than constraint: gt: too low, at limit 1`] = `
 Array [
   Object {
-    "item": ValidationError {
-      "children": undefined,
+    "item": Object {
       "message": "Must be greater than 10",
-      "operation": undefined,
-      "paths": Array [],
     },
     "level": "error",
+    "message": "Must be greater than 10",
     "path": Array [],
   },
 ]
@@ -35,13 +31,11 @@ exports[`number greater than constraint: gt: valid 1`] = `Array []`;
 exports[`number integer constraint: integer: invalid (float) 1`] = `
 Array [
   Object {
-    "item": ValidationError {
-      "children": undefined,
+    "item": Object {
       "message": "Must be an integer",
-      "operation": undefined,
-      "paths": Array [],
     },
     "level": "error",
+    "message": "Must be an integer",
     "path": Array [],
   },
 ]
@@ -52,13 +46,11 @@ exports[`number integer constraint: integer: valid 1`] = `Array []`;
 exports[`number less than constraint: lt: too high 1`] = `
 Array [
   Object {
-    "item": ValidationError {
-      "children": undefined,
+    "item": Object {
       "message": "Must be less than 10",
-      "operation": undefined,
-      "paths": Array [],
     },
     "level": "error",
+    "message": "Must be less than 10",
     "path": Array [],
   },
 ]
@@ -67,13 +59,11 @@ Array [
 exports[`number less than constraint: lt: too high, at limit 1`] = `
 Array [
   Object {
-    "item": ValidationError {
-      "children": undefined,
+    "item": Object {
       "message": "Must be less than 10",
-      "operation": undefined,
-      "paths": Array [],
     },
     "level": "error",
+    "message": "Must be less than 10",
     "path": Array [],
   },
 ]
@@ -84,13 +74,11 @@ exports[`number less than constraint: lt: valid 1`] = `Array []`;
 exports[`number max constraint: max: too large 1`] = `
 Array [
   Object {
-    "item": ValidationError {
-      "children": undefined,
+    "item": Object {
       "message": "Must be lower than or equal to 10",
-      "operation": undefined,
-      "paths": Array [],
     },
     "level": "error",
+    "message": "Must be lower than or equal to 10",
     "path": Array [],
   },
 ]
@@ -103,13 +91,11 @@ exports[`number max constraint: max: valid, at limit 1`] = `Array []`;
 exports[`number min constraint: min: too low 1`] = `
 Array [
   Object {
-    "item": ValidationError {
-      "children": undefined,
+    "item": Object {
       "message": "Must be greater than or equal to 10",
-      "operation": undefined,
-      "paths": Array [],
     },
     "level": "error",
+    "message": "Must be greater than or equal to 10",
     "path": Array [],
   },
 ]
@@ -122,13 +108,11 @@ exports[`number min constraint: min: valid, at limit 1`] = `Array []`;
 exports[`number negative constraint: negative: invalid (zero) 1`] = `
 Array [
   Object {
-    "item": ValidationError {
-      "children": undefined,
+    "item": Object {
       "message": "Must be less than 0",
-      "operation": undefined,
-      "paths": Array [],
     },
     "level": "error",
+    "message": "Must be less than 0",
     "path": Array [],
   },
 ]
@@ -137,13 +121,11 @@ Array [
 exports[`number negative constraint: negative: invalid 1`] = `
 Array [
   Object {
-    "item": ValidationError {
-      "children": undefined,
+    "item": Object {
       "message": "Must be less than 0",
-      "operation": undefined,
-      "paths": Array [],
     },
     "level": "error",
+    "message": "Must be less than 0",
     "path": Array [],
   },
 ]
@@ -154,13 +136,11 @@ exports[`number negative constraint: negative: valid 1`] = `Array []`;
 exports[`number positive constraint: positive: invalid 1`] = `
 Array [
   Object {
-    "item": ValidationError {
-      "children": undefined,
+    "item": Object {
       "message": "Must be greater than or equal to 0",
-      "operation": undefined,
-      "paths": Array [],
     },
     "level": "error",
+    "message": "Must be greater than or equal to 0",
     "path": Array [],
   },
 ]
@@ -173,13 +153,11 @@ exports[`number positive constraint: positive: valid 1`] = `Array []`;
 exports[`number precision constraint: precision: invalid (pi) 1`] = `
 Array [
   Object {
-    "item": ValidationError {
-      "children": undefined,
+    "item": Object {
       "message": "Max precision is 3",
-      "operation": undefined,
-      "paths": Array [],
     },
     "level": "error",
+    "message": "Max precision is 3",
     "path": Array [],
   },
 ]
@@ -192,13 +170,11 @@ exports[`number precision constraint: precision: valid (below limit) 1`] = `Arra
 exports[`number required constraint: required: undefined 1`] = `
 Array [
   Object {
-    "item": ValidationError {
-      "children": undefined,
+    "item": Object {
       "message": "Required",
-      "operation": undefined,
-      "paths": Array [],
     },
     "level": "error",
+    "message": "Required",
     "path": Array [],
   },
 ]

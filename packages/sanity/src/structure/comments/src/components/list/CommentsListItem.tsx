@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {Flex, Stack} from '@sanity/ui'
+import {Flex, Stack, useLayer} from '@sanity/ui'
 import styled, {css} from 'styled-components'
 import {CurrentUser} from '@sanity/types'
 import {ChevronDownIcon} from '@sanity/icons'
@@ -9,6 +9,7 @@ import {
   CommentDocument,
   CommentEditPayload,
   CommentMessage,
+  CommentReactionOption,
   CommentStatus,
   MentionOptionsHookValue,
 } from '../../types'
@@ -35,7 +36,7 @@ const StyledThreadCard = styled(ThreadCard)(({theme}) => {
       box-shadow:
         inset 0 0 0 1px var(--card-border-color),
         0 0 0 1px var(--card-bg-color),
-        0 0 0 3px var(--card-focus-ring-color);
+        0 0 0 2px var(--card-focus-ring-color);
     }
 
     // When the comment is not selected, we want to apply hover styles.
@@ -85,6 +86,7 @@ interface CommentsListItemProps {
   onEdit: (id: string, payload: CommentEditPayload) => void
   onKeyDown?: (event: React.KeyboardEvent<Element>) => void
   onPathSelect?: (nextPath: CommentsSelectedPath) => void
+  onReactionSelect?: (id: string, reaction: CommentReactionOption) => void
   onReply: (payload: CommentCreatePayload) => void
   onStatusChange?: (id: string, status: CommentStatus) => void
   parentComment: CommentDocument
@@ -104,6 +106,7 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
     onEdit,
     onKeyDown,
     onPathSelect,
+    onReactionSelect,
     onReply,
     onStatusChange,
     parentComment,
@@ -114,6 +117,8 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
   const [collapsed, setCollapsed] = useState<boolean>(true)
   const didExpand = useRef<boolean>(false)
   const replyInputRef = useRef<CommentInputHandle>(null)
+
+  const {isTopLayer} = useLayer()
 
   const hasValue = useMemo(() => hasCommentMessageValue(value), [value])
 
@@ -130,6 +135,8 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
       status: parentComment?.status || 'open',
       // Since this is a reply to an existing comment, we use the same thread ID as the parent
       threadId: parentComment.threadId,
+      // A new comment will not have any reactions
+      reactions: EMPTY_ARRAY,
     }
 
     onReply?.(nextComment)
@@ -182,13 +189,17 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
     (e: React.MouseEvent<HTMLDivElement>) => {
       e.stopPropagation()
 
+      // Don't act if the click was caused by clicking
+      // outside e.g. a popover or a menu
+      if (!isTopLayer) return
+
       onPathSelect?.({
         fieldPath: parentComment.target.path.field,
         origin: 'inspector',
         threadId: parentComment.threadId,
       })
     },
-    [onPathSelect, parentComment.target.path.field, parentComment.threadId],
+    [isTopLayer, onPathSelect, parentComment.target.path.field, parentComment.threadId],
   )
 
   const handleExpand = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
@@ -231,11 +242,12 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
             hasError={reply._state?.type === 'createError'}
             isRetrying={reply._state?.type === 'createRetrying'}
             mentionOptions={mentionOptions}
-            onInputKeyDown={handleInputKeyDown}
             onCopyLink={onCopyLink}
             onCreateRetry={onCreateRetry}
             onDelete={onDelete}
             onEdit={onEdit}
+            onInputKeyDown={handleInputKeyDown}
+            onReactionSelect={onReactionSelect}
             readOnly={readOnly}
           />
         </Stack>
@@ -248,6 +260,7 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
       onCreateRetry,
       onDelete,
       onEdit,
+      onReactionSelect,
       readOnly,
       splicedReplies,
     ],
@@ -261,7 +274,7 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
         onClick={handleThreadRootClick}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
-        tone={isSelected ? 'primary' : undefined}
+        tone={isSelected ? 'caution' : undefined}
       >
         <GhostButton data-ui="GhostButton" aria-label="Go to field" />
 
@@ -287,6 +300,7 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
               onDelete={onDelete}
               onEdit={onEdit}
               onInputKeyDown={onKeyDown}
+              onReactionSelect={onReactionSelect}
               onStatusChange={onStatusChange}
               readOnly={readOnly}
             />

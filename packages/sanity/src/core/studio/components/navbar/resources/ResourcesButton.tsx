@@ -1,4 +1,4 @@
-import {InfoOutlineIcon} from '@sanity/icons'
+import {HelpCircleIcon} from '@sanity/icons'
 import {Menu} from '@sanity/ui'
 import React from 'react'
 import styled from 'styled-components'
@@ -22,7 +22,7 @@ export function ResourcesButton() {
       button={
         <Button
           aria-label={t('help-resources.title')}
-          icon={InfoOutlineIcon}
+          icon={HelpCircleIcon}
           mode="bleed"
           tooltipProps={{content: t('help-resources.title')}}
         />

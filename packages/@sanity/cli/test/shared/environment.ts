@@ -73,6 +73,25 @@ const getTestId = () => {
   return cachedTestId
 }
 
+/**
+ * The dev server runs on a different port for each node version being tested. This is to avoid
+ * port collisions when running tests in multiple versions of node simultaneously.
+ *
+ * The port is selected based on the assumption that the tests will be run once for node LTS and
+ * once for node current.
+ */
+function getPort(version: string): number {
+  if (version === 'v2') {
+    return 3334
+  }
+
+  if (process.release.lts) {
+    return 4333
+  }
+
+  return 3333
+}
+
 export const testClient = createClient({
   apiVersion: '2022-09-09',
   projectId: cliProjectId,
@@ -99,7 +118,7 @@ export const getTestRunArgs = (version: string) => {
     graphqlTag: testId,
     exportTarball: 'production.tar.gz',
     importTarballPath: path.join(__dirname, '..', '__fixtures__', 'production.tar.gz'),
-    port: version === 'v2' ? 3334 : 3333,
+    port: getPort(version),
   }
 }
 

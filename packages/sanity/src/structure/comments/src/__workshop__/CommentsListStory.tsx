@@ -4,7 +4,13 @@ import {Schema} from '@sanity/schema'
 import {uuid} from '@sanity/uuid'
 import {Container, Flex} from '@sanity/ui'
 import {CommentsList} from '../components'
-import {CommentDocument, CommentCreatePayload, CommentEditPayload, CommentStatus} from '../types'
+import {
+  CommentDocument,
+  CommentCreatePayload,
+  CommentEditPayload,
+  CommentStatus,
+  CommentReactionOption,
+} from '../types'
 import {buildCommentThreadItems} from '../utils/buildCommentThreadItems'
 import {useMentionOptions} from '../hooks'
 import {useCurrentUser} from 'sanity'
@@ -34,10 +40,10 @@ const BASE: CommentDocument = {
   _id: '1',
   _type: 'comment',
   _createdAt: new Date().toISOString(),
-  _updatedAt: '2021-05-04T14:54:37Z',
   authorId: 'p8U8TipFc',
   status: 'open',
   _rev: '1',
+  reactions: [],
 
   threadId: '1',
 
@@ -178,6 +184,78 @@ export default function CommentsListStory() {
     [setState],
   )
 
+  const handleReactionSelect = useCallback(
+    (id: string, reaction: CommentReactionOption) => {
+      const comment = state.find((item) => item._id === id)
+      const reactions = comment?.reactions || []
+      const hasReacted = reactions.some((r) => r.shortName === reaction.shortName)
+
+      // 1. If there are no reactions, add the reaction to the comment
+      if (reactions.length === 0) {
+        const next = state.map((item) => {
+          if (item._id === id) {
+            return {
+              ...item,
+              reactions: [
+                {
+                  ...reaction,
+                  userId: currentUser?.id || '',
+                  _key: uuid(),
+                  addedAt: new Date().toISOString(),
+                },
+              ],
+            }
+          }
+
+          return item
+        })
+
+        setState(next)
+      }
+
+      // 2. If the user has reacted, remove the reaction
+      if (hasReacted) {
+        const next = state.map((item) => {
+          if (item._id === id) {
+            return {
+              ...item,
+              reactions: reactions.filter((r) => r.shortName !== reaction.shortName),
+            }
+          }
+
+          return item
+        })
+
+        setState(next)
+      }
+
+      // 3. If the user has not reacted, add the reaction
+      if (!hasReacted) {
+        const next = state.map((item) => {
+          if (item._id === id) {
+            return {
+              ...item,
+              reactions: [
+                ...reactions,
+                {
+                  ...reaction,
+                  userId: currentUser?.id || '',
+                  _key: uuid(),
+                  addedAt: new Date().toISOString(),
+                },
+              ],
+            }
+          }
+
+          return item
+        })
+
+        setState(next)
+      }
+    },
+    [currentUser?.id, state],
+  )
+
   const threadItems = useMemo(() => {
     if (!currentUser || emptyState) return []
 
@@ -206,6 +284,7 @@ export default function CommentsListStory() {
           onDelete={handleDelete}
           onEdit={handleEdit}
           onNewThreadCreate={handleNewThreadCreate}
+          onReactionSelect={handleReactionSelect}
           onReply={handleReplySubmit}
           onStatusChange={handleStatusChange}
           readOnly={readOnly}

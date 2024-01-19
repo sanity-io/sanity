@@ -12,7 +12,6 @@ import type {
   Validator,
 } from '@sanity/types'
 import {cloneDeep, get} from 'lodash'
-import {ValidationError as ValidationErrorClass} from './ValidationError'
 import {escapeRegex} from './util/escapeRegex'
 import {convertToValidationMarker} from './util/convertToValidationMarker'
 import {isLocalizedMessages, localizeMessage} from './util/localizeMessage'
@@ -223,7 +222,13 @@ export const Rule: RuleClass = class Rule implements IRule {
     return rule
   }
 
-  custom<T = unknown>(fn: CustomValidator<T>): Rule {
+  custom<T = unknown>(
+    fn: CustomValidator<T>,
+    options: {bypassConcurrencyLimit?: boolean} = {},
+  ): Rule {
+    if (options.bypassConcurrencyLimit) {
+      Object.assign(fn, {bypassConcurrencyLimit: true})
+    }
     return this.cloneWithRules([{flag: 'custom', constraint: fn as CustomValidator}])
   }
 
@@ -366,10 +371,11 @@ export const Rule: RuleClass = class Rule implements IRule {
     return this.cloneWithRules([{flag: 'assetRequired', constraint: {assetType}}])
   }
 
-  async validate(value: unknown, context: ValidationContext): Promise<ValidationMarker[]> {
-    if (!context) {
-      throw new Error('missing context')
-    }
+  async validate(
+    value: unknown,
+    {__internal = {}, ...context}: Parameters<IRule['validate']>[1],
+  ): Promise<ValidationMarker[]> {
+    const {customValidationConcurrencyLimiter} = __internal
 
     const valueIsEmpty = value === null || value === undefined
 
@@ -403,23 +409,36 @@ export const Rule: RuleClass = class Rule implements IRule {
           specConstraint = get(context.parent, specConstraint.path)
         }
 
+        if (
+          curr.flag === 'custom' &&
+          customValidationConcurrencyLimiter &&
+          !(specConstraint as CustomValidator)?.bypassConcurrencyLimit
+        ) {
+          const customValidator = specConstraint as CustomValidator
+          specConstraint = async (...args: Parameters<CustomValidator>) => {
+            await customValidationConcurrencyLimiter.ready()
+            try {
+              return await customValidator(...args)
+            } finally {
+              customValidationConcurrencyLimiter.release()
+            }
+          }
+        }
+
         const message = isLocalizedMessages(this._message)
           ? localizeMessage(this._message, context.i18n)
           : this._message
 
-        let result
         try {
-          result = await validator(specConstraint, value, message, context)
+          const result = await validator(specConstraint, value, message, context)
+          return convertToValidationMarker(result, this._level, context)
         } catch (err) {
-          const errorFromException = new ValidationErrorClass(
-            `${pathToString(context.path)}: Exception occurred while validating value: ${
-              err.message
-            }`,
-          )
-          return convertToValidationMarker(errorFromException, 'error', context)
-        }
+          const errorMessage = `${pathToString(
+            context.path,
+          )}: Exception occurred while validating value: ${err.message}`
 
-        return convertToValidationMarker(result, this._level, context)
+          return convertToValidationMarker({message: errorMessage}, 'error', context)
+        }
       }),
     )
 

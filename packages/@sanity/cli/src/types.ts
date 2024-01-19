@@ -1,6 +1,5 @@
-import type ora from 'ora'
+import ora, {type Ora} from 'ora'
 import type chalk from 'chalk'
-import type {Ora} from 'ora'
 import type {SanityClient} from '@sanity/client'
 import type {Separator, DistinctQuestion, Answers, ChoiceCollection} from 'inquirer'
 import type {InlineConfig, ConfigEnv} from 'vite'

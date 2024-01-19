@@ -4,11 +4,12 @@ import {Schema as SchemaBuilder} from '@sanity/schema'
 import {getFallbackLocaleSource} from '../../src/core/i18n/fallback'
 import {inferFromSchema} from '../../src/core/validation/inferFromSchema'
 import {validateDocument} from '../../src/core/validation/validateDocument'
+import {Workspace} from '../../src/core'
 import {createSchema} from './helpers/createSchema'
 import {createMockSanityClient} from './mocks/mockSanityClient'
 
 const client = createMockSanityClient()
-const getClient = (options: {apiVersion: string}): SanityClient => client as unknown as SanityClient
+const getClient = (): SanityClient => client as unknown as SanityClient
 
 describe('schema validation inference', () => {
   describe('object with `options.list` and `value` field', () => {
@@ -131,7 +132,14 @@ describe('schema validation inference', () => {
         ),
       )
 
-      await expect(validateDocument(getClient, mockDocument, schema)).resolves.toEqual([])
+      await expect(
+        validateDocument({
+          document: mockDocument,
+          getClient,
+          getDocumentExists: () => Promise.resolve(true),
+          workspace: {schema} as Workspace,
+        }),
+      ).resolves.toEqual([])
 
       expect(client.fetch).toHaveBeenCalledTimes(1)
       expect(client.fetch.mock.calls[0]).toEqual([
@@ -157,11 +165,18 @@ describe('schema validation inference', () => {
         ),
       )
 
-      await expect(validateDocument(getClient, mockDocument, schema)).resolves.toMatchObject([
+      await expect(
+        validateDocument({
+          document: mockDocument,
+          getClient,
+          getDocumentExists: () => Promise.resolve(true),
+          workspace: {schema} as Workspace,
+        }),
+      ).resolves.toMatchObject([
         {
           path: ['slugField'],
           level: 'error',
-          item: {message: 'Slug is already in use', paths: []},
+          message: 'Slug is already in use',
         },
       ])
 
@@ -219,19 +234,19 @@ describe('schema validation inference', () => {
 
     test('reference is invalid if no _ref is present', async () => {
       await expect(
-        validateDocument(
-          getClient,
-          {
+        validateDocument({
+          document: {
             ...mockDocument,
             referenceField: {
               _type: 'not-a-reference',
             },
           },
-          schema,
-        ),
+          getClient,
+          workspace: {schema} as Workspace,
+        }),
       ).resolves.toMatchObject([
         {
-          item: {message: 'Must be a reference to a document'},
+          message: 'Must be a reference to a document',
           level: 'error',
           path: ['referenceField'],
         },
@@ -241,21 +256,20 @@ describe('schema validation inference', () => {
     test('referenced document must exist (unless weak)', async () => {
       const mockGetDocumentExists = jest.fn(() => Promise.resolve(false))
       await expect(
-        validateDocument(
-          getClient,
-          {
+        validateDocument({
+          document: {
             ...mockDocument,
             referenceField: {
               _ref: 'example-id',
             },
           },
-
-          schema,
-          {getDocumentExists: mockGetDocumentExists, i18n: getFallbackLocaleSource()},
-        ),
+          getClient,
+          workspace: {schema} as Workspace,
+          getDocumentExists: mockGetDocumentExists,
+        }),
       ).resolves.toMatchObject([
         {
-          item: {message: /.+/},
+          message: /.+/,
           level: 'error',
           path: ['referenceField'],
         },
@@ -266,54 +280,31 @@ describe('schema validation inference', () => {
 
     test('reference is valid if schema type is marked as weak', async () => {
       await expect(
-        validateDocument(
+        validateDocument({
           getClient,
-          {
+          document: {
             ...mockDocument,
             referenceFieldWeak: {_ref: 'example-id'},
           },
-          schema,
-        ),
+          workspace: {schema} as Workspace,
+        }),
       ).resolves.toEqual([])
-    })
-
-    test('throws if `getDocumentExists` is not present', async () => {
-      const result = await validateDocument(
-        getClient,
-        {
-          ...mockDocument,
-          referenceField: {
-            _ref: 'example-id',
-          },
-        },
-
-        schema,
-        {getDocumentExists: undefined, i18n: getFallbackLocaleSource()},
-      )
-
-      expect(result).toHaveLength(1)
-      expect(
-        result[0].item.message.includes(
-          '`getDocumentExists` was not provided in validation context',
-        ),
-      ).toBe(true)
     })
 
     test('reference is valid if schema type is strong and document does exists', async () => {
       const mockGetDocumentExists = jest.fn(() => Promise.resolve(true))
       await expect(
-        validateDocument(
+        validateDocument({
           getClient,
-          {
+          document: {
             ...mockDocument,
             referenceField: {
               _ref: 'example-id',
             },
           },
-
-          schema,
-          {getDocumentExists: mockGetDocumentExists, i18n: getFallbackLocaleSource()},
-        ),
+          workspace: {schema} as Workspace,
+          getDocumentExists: mockGetDocumentExists,
+        }),
       ).resolves.toEqual([])
 
       expect(mockGetDocumentExists.mock.calls).toMatchObject([[{id: 'example-id'}]])
@@ -325,7 +316,12 @@ async function expectNoError(validations: Rule[], value: unknown) {
   const errors = (
     await Promise.all(
       validations.map((rule) =>
-        rule.validate(value, {getClient, schema: {} as any, i18n: getFallbackLocaleSource()}),
+        rule.validate(value, {
+          getClient,
+          schema: {} as any,
+          i18n: getFallbackLocaleSource(),
+          environment: 'studio',
+        }),
       ),
     )
   ).flat()
@@ -348,7 +344,12 @@ async function expectError(
   const errors = (
     await Promise.all(
       validations.map((rule) =>
-        rule.validate(value, {getClient, schema: {} as any, i18n: getFallbackLocaleSource()}),
+        rule.validate(value, {
+          getClient,
+          schema: {} as any,
+          i18n: getFallbackLocaleSource(),
+          environment: 'studio',
+        }),
       ),
     )
   ).flat()
@@ -368,5 +369,5 @@ async function expectError(
   }
 
   // This shouldn't actually be needed, but counts against an assertion in jest-terms
-  expect(levelMatch.item.message).toMatch(message!)
+  expect(levelMatch.message).toMatch(message!)
 }

@@ -133,6 +133,7 @@ export const BlockStyleSelect = memo(function BlockStyleSelect(
       <Button
         disabled={_disabled}
         iconRight={ChevronDownIcon}
+        justify="space-between"
         mode="bleed"
         onClick={preventDefault}
         text={menuButtonText}

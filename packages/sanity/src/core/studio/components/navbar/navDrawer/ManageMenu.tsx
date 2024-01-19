@@ -17,6 +17,9 @@ export function ManageMenu() {
       <Stack as="ul" space={1}>
         <Stack as="li">
           <FreeTrial type="sidebar" />
+        </Stack>
+
+        <Stack as="li">
           <Button
             aria-label={t('user-menu.action.manage-project-aria-label')}
             as="a"

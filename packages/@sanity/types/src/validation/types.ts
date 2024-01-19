@@ -152,7 +152,7 @@ export interface Rule {
   either(children: Rule[]): Rule
   optional(): Rule
   required(): Rule
-  custom<T = unknown>(fn: CustomValidator<T>): Rule
+  custom<T = unknown>(fn: CustomValidator<T>, options?: {bypassConcurrencyLimit?: boolean}): Rule
   min(len: number | FieldReference): Rule
   max(len: number | FieldReference): Rule
   length(len: number | FieldReference): Rule
@@ -175,7 +175,21 @@ export interface Rule {
   reference(): Rule
   fields(rules: FieldRules): Rule
   assetRequired(): Rule
-  validate(value: unknown, options: ValidationContext): Promise<ValidationMarker[]>
+  validate(
+    value: unknown,
+    options: ValidationContext & {
+      /**
+       * @deprecated Internal use only
+       * @internal
+       */
+      __internal?: {
+        customValidationConcurrencyLimiter?: {
+          ready: () => Promise<void>
+          release: () => void
+        }
+      }
+    },
+  ): Promise<ValidationMarker[]>
 }
 
 /** @public */
@@ -254,6 +268,7 @@ export interface ValidationContext {
   document?: SanityDocument
   path?: Path
   getDocumentExists?: (options: {id: string}) => Promise<boolean>
+  environment: 'cli' | 'studio'
 }
 
 /**
@@ -315,38 +330,76 @@ export interface ValidationErrorOptions {
  * Note: this class does not actually extend `Error` since it's never thrown
  * within the validation library
  *
+ * @deprecated It is preferred to a plain object that adheres to `ValidationError`
  * @internal
  */
 export interface ValidationErrorClass {
   new (message: string, options?: ValidationErrorOptions): ValidationError
 }
 
-/** @public */
+/**
+ * The shape that can be returned from a custom validator to be converted into
+ * a validation marker by the validation logic. Inside of a custom validator,
+ * you can return an array of these in order to specify multiple paths within
+ * an object or array.
+ *
+ * @public
+ */
 export interface ValidationError {
+  /**
+   * The message describing why the value is not valid. This message will be
+   * included in the validation markers after validation has finished running.
+   */
   message: string
-  children?: ValidationMarker[]
-  operation?: 'AND' | 'OR'
+
   /**
    * If writing a custom validator, you can return validation messages to
-   * specific paths inside of the current value (object or array) by populating
-   * this `paths` prop.
+   * specific path inside of the current value (object or array) by populating
+   * this `path` prop.
    *
-   * NOTE: These paths are relative to the current value and _not_ relative to
-   * the document. Use `undefined` or an empty array to target the top-level
-   * value.
+   * NOTE: This path is relative to the current value and _not_ relative to
+   * the document.
+   */
+  path?: Path
+
+  /**
+   * Same as `path` but allows more than one value. If provided, the same
+   * message will create two markers from each path with the same message
+   * provided.
+   *
+   * @deprecated prefer `path`
    */
   paths?: Path[]
+
+  /**
+   * @deprecated Unused. Was used to store the results from `.either()` /`.all()`
+   */
+  children?: ValidationMarker[]
+
+  /**
+   * @deprecated Unused. Was used to signal if this error came from an `.either()`/`.all()`.
+   */
+  operation?: 'AND' | 'OR'
+
+  /**
+   * @deprecated Unused. Was relevant when validation error was used as a class.
+   */
   cloneWithMessage?(message: string): ValidationError
 }
 
 /** @public */
-export type CustomValidatorResult = true | string | ValidationError | LocalizedValidationMessages
+export type CustomValidatorResult =
+  | true
+  | string
+  | ValidationError
+  | ValidationError[]
+  | LocalizedValidationMessages
 
 /** @public */
-export type CustomValidator<T = unknown> = (
-  value: T,
-  context: ValidationContext,
-) => CustomValidatorResult | Promise<CustomValidatorResult>
+export interface CustomValidator<T = unknown> {
+  (value: T, context: ValidationContext): CustomValidatorResult | Promise<CustomValidatorResult>
+  bypassConcurrencyLimit?: boolean
+}
 
 /** @public */
 export interface SlugValidationContext extends ValidationContext {

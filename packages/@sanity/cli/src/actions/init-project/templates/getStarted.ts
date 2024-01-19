@@ -30,7 +30,7 @@ const getStartedTemplate: ProjectTemplate = {
   typescriptOnly: true,
   dependencies: {
     '@sanity/icons': '^2.6.0',
-    '@sanity/ui': '^2.0.0-beta',
+    '@sanity/ui': '^2.0.0',
   },
 }
 

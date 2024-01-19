@@ -150,10 +150,11 @@ function getCrossDatasetReferenceMetadata(
 
 export function extractFromSanitySchema(
   sanitySchema: CompiledSchema,
-  extractOptions: {nonNullDocumentFields?: boolean} = {},
+  extractOptions: {nonNullDocumentFields?: boolean; withUnionCache?: boolean} = {},
 ): ApiSpecification {
-  const {nonNullDocumentFields} = extractOptions
-  const unionRecursionGuards: string[] = []
+  const {nonNullDocumentFields, withUnionCache} = extractOptions
+  const unionRecursionGuards = new Set<string>()
+  const unionDefinitionCache = new Map<string, any>()
   const hasErrors =
     sanitySchema._validation &&
     sanitySchema._validation.some((group) =>
@@ -167,11 +168,20 @@ export function extractFromSanitySchema(
   const sanityTypes = sanitySchema._original?.types || []
   const typeNames = sanitySchema.getTypeNames()
   const unionTypes: ConvertedUnion[] = []
-  const types: ConvertedType[] = typeNames
-    .map((name) => sanitySchema.get(name))
-    .filter((schemaType): schemaType is SchemaType => Boolean(schemaType))
-    .filter(isBaseType)
-    .map((type) => convertType(type))
+  const types: ConvertedType[] = []
+
+  for (const typeName of typeNames) {
+    const schemaType = sanitySchema.get(typeName)
+    if (schemaType === undefined) {
+      continue
+    }
+    if (!isBaseType(schemaType)) {
+      continue
+    }
+
+    const convertedType = convertType(schemaType)
+    types.push(convertedType)
+  }
 
   const withUnions = [...types, ...unionTypes]
   return {types: withUnions, interfaces: [getDocumentInterfaceDefinition()]}
@@ -228,7 +238,7 @@ export function extractFromSanitySchema(
     }
 
     if (isReference(type)) {
-      return getReferenceDefinition(type as ReferenceSchemaType, parent)
+      return getReferenceDefinition(type, parent)
     }
 
     if (isArrayType(type)) {
@@ -363,9 +373,12 @@ export function extractFromSanitySchema(
       throw new Error('No candidates for reference')
     }
 
-    return candidates.length === 1
-      ? {type: getTypeName(candidates[0].type.name), ...base}
-      : {...getUnionDefinition(candidates, def, {grandParent: parent}), ...base}
+    if (candidates.length === 1) {
+      return {type: getTypeName(candidates[0].type.name), ...base}
+    }
+
+    const unionDefinition = getUnionDefinition(candidates, def, {grandParent: parent})
+    return {...unionDefinition, ...base}
   }
 
   function getArrayDefinition(
@@ -440,12 +453,19 @@ export function extractFromSanitySchema(
     // #1482: When creating union definition do not get caught in recursion loop
     // for types that reference themselves
     const guardPathName = `${typeof parent === 'object' ? parent.name : parent}`
-    if (unionRecursionGuards.includes(guardPathName)) {
+    if (unionRecursionGuards.has(guardPathName)) {
       return {}
     }
 
+    const unionCacheKey = `${options.grandParent}-${guardPathName}-${candidates
+      .map((c) => c.type?.name)
+      .join('-')}`
+    if (withUnionCache && unionDefinitionCache.has(unionCacheKey)) {
+      return unionDefinitionCache.get(unionCacheKey)
+    }
+
     try {
-      unionRecursionGuards.push(guardPathName)
+      unionRecursionGuards.add(guardPathName)
 
       candidates.forEach((def, i) => {
         if (typeNeedsHoisting(def)) {
@@ -475,25 +495,32 @@ export function extractFromSanitySchema(
         [] as {name?: string; type: string | {name: string}; isReference?: boolean}[],
       )
 
-      const allCandidatesAreDocuments = flattened.every((def) => {
+      let allCandidatesAreDocuments = true
+      const refs: (string | {name: string})[] = []
+      const inlineObjs: string[] = []
+      const allTypeNames: string[] = []
+      for (const def of flattened) {
+        if (def.isReference) {
+          refs.push(def.type)
+        }
+        if (!isReference) {
+          inlineObjs.push(def.name || '')
+        }
+
+        const typeName = typeof def.type === 'string' ? def.type : def.type.name
+
+        // Here we remove duplicates, as they might appear twice due to in-line usage of types as well as references
+        if (def.name || def.type) {
+          allTypeNames.push(def.isReference ? typeName : def.name || '')
+        }
+
         const typeDef = sanityTypes.find((type) => type.name === getName(def))
-        return typeDef && typeDef.type === 'document'
-      })
+        if (!typeDef || typeDef.type !== 'document') {
+          allCandidatesAreDocuments = false
+        }
+      }
 
       const interfaces = allCandidatesAreDocuments ? ['Document'] : undefined
-
-      const refs = flattened.filter((type) => type.isReference).map((ref) => ref.type)
-      const inlineObjs = flattened
-        .filter((type) => !type.isReference)
-        .map((type) => type.name || '')
-
-      // Here we remove duplicates, as they might appear twice due to in-line usage of types as well as references
-      const allTypeNames: string[] = flattened
-        .filter((type: any) => type.name || type.type)
-        .map((type: any) => {
-          return type.isReference ? type.type : type.name
-        })
-
       const possibleTypes = [...new Set(allTypeNames)].sort()
 
       if (possibleTypes.length < 2) {
@@ -513,14 +540,15 @@ export function extractFromSanitySchema(
 
       const references = refs.length > 0 ? refs : undefined
       const inlineObjects = inlineObjs.length > 0 ? inlineObjs : undefined
-      return isReference(parent)
+
+      const unionDefinition = isReference(parent)
         ? {type: name, references}
         : {type: name, references, inlineObjects}
+
+      unionDefinitionCache.set(unionCacheKey, unionDefinition)
+      return unionDefinition
     } finally {
-      const parentIndex = unionRecursionGuards.indexOf(guardPathName)
-      if (parentIndex !== -1) {
-        unionRecursionGuards.splice(parentIndex, 1)
-      }
+      unionRecursionGuards.delete(guardPathName)
     }
   }
 

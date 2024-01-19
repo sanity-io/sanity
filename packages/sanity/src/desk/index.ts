@@ -1,113 +1,9 @@
 /**
  * This is a _FALLBACK MODULE_ provided for backwards compatibility, and is likely to be removed
- * in Sanity v4.0.0. Please import from `@sanity/structure` instead.
+ * in Sanity v4.0.0. Please import from `sanity/structure` instead.
  *
- * @deprecated Use `@sanity/structure` instead.
+ * @deprecated Use `sanity/structure` instead.
  */
-import type {
-  BackLinkProps as _BackLinkProps,
-  BaseGenericList as _BaseGenericList,
-  BaseIntentParams as _BaseIntentParams,
-  BaseView as _BaseView,
-  BuildableComponent as _BuildableComponent,
-  BuildableGenericList as _BuildableGenericList,
-  BuildableList as _BuildableList,
-  Builder as _Builder,
-  Child as _Child,
-  ChildLinkProps as _ChildLinkProps,
-  ChildObservable as _ChildObservable,
-  ChildResolver as _ChildResolver,
-  ChildResolverOptions as _ChildResolverOptions,
-  Collection as _Collection,
-  CollectionBuilder as _CollectionBuilder,
-  Component as _Component,
-  ComponentInput as _ComponentInput,
-  ComponentView as _ComponentView,
-  ConfirmDeleteDialogProps as _ConfirmDeleteDialogProps,
-  CustomComponentPaneNode as _CustomComponentPaneNode,
-  DefaultDocumentNodeContext as _DefaultDocumentNodeContext,
-  DefaultDocumentNodeResolver as _DefaultDocumentNodeResolver,
-  Divider as _Divider,
-  DocumentFieldMenuActionNode as _DocumentFieldMenuActionNode,
-  DocumentList as _DocumentList,
-  DocumentListInput as _DocumentListInput,
-  DocumentListItem as _DocumentListItem,
-  DocumentListItemInput as _DocumentListItemInput,
-  DocumentListOptions as _DocumentListOptions,
-  DocumentListPaneNode as _DocumentListPaneNode,
-  DocumentListPaneProps as _DocumentListPaneProps,
-  DocumentNode as _DocumentNode,
-  DocumentOptions as _DocumentOptions,
-  DocumentPaneNode as _DocumentPaneNode,
-  DocumentPaneProviderProps as _DocumentPaneProviderProps,
-  DocumentTypeListInput as _DocumentTypeListInput,
-  EditReferenceOptions as _EditReferenceOptions,
-  EditorNode as _EditorNode,
-  FormView as _FormView,
-  GenericList as _GenericList,
-  GenericListInput as _GenericListInput,
-  Intent as _Intent,
-  IntentChecker as _IntentChecker,
-  IntentJsonParams as _IntentJsonParams,
-  IntentParams as _IntentParams,
-  ItemChild as _ItemChild,
-  List as _List,
-  ListDisplayOptions as _ListDisplayOptions,
-  ListInput as _ListInput,
-  ListItem as _ListItem,
-  ListItemChild as _ListItemChild,
-  ListItemDisplayOptions as _ListItemDisplayOptions,
-  ListItemInput as _ListItemInput,
-  ListItemSerializeOptions as _ListItemSerializeOptions,
-  ListPaneNode as _ListPaneNode,
-  MenuItem as _MenuItem,
-  MenuItemActionType as _MenuItemActionType,
-  MenuItemGroup as _MenuItemGroup,
-  MenuItemParamsType as _MenuItemParamsType,
-  PaneListItem as _PaneListItem,
-  PaneListItemDivider as _PaneListItemDivider,
-  PaneMenuItem as _PaneMenuItem,
-  PaneMenuItemGroup as _PaneMenuItemGroup,
-  PaneNode as _PaneNode,
-  PaneNodeResolver as _PaneNodeResolver,
-  PaneRouterContextValue as _PaneRouterContextValue,
-  ParameterizedLinkProps as _ParameterizedLinkProps,
-  PartialDocumentList as _PartialDocumentList,
-  PartialDocumentListItem as _PartialDocumentListItem,
-  PartialDocumentNode as _PartialDocumentNode,
-  PartialListItem as _PartialListItem,
-  PartialMenuItem as _PartialMenuItem,
-  ReferenceChildLinkProps as _ReferenceChildLinkProps,
-  RouterPaneGroup as _RouterPaneGroup,
-  RouterPaneSibling as _RouterPaneSibling,
-  RouterPaneSiblingContext as _RouterPaneSiblingContext,
-  RouterPanes as _RouterPanes,
-  SerializablePaneNode as _SerializablePaneNode,
-  SerializeOptions as _SerializeOptions,
-  SerializePath as _SerializePath,
-  SortMenuItem as _SortMenuItem,
-  StructureBuilder as _StructureBuilder,
-  StructureBuilderOptions as _StructureBuilderOptions,
-  StructureContext as _StructureContext,
-  StructureLocaleResourceKeys as _StructureLocaleResourceKeys,
-  StructureNode as _StructureNode,
-  StructureResolver as _StructureResolver,
-  StructureResolverContext as _StructureResolverContext,
-  StructureToolContextValue as _DeskToolContextValue,
-  StructureToolFeatures as _DeskToolFeatures,
-  StructureToolMenuItem as _DeskToolMenuItem,
-  StructureToolOptions as _DeskToolOptions,
-  StructureToolPaneActionHandler as _DeskToolPaneActionHandler,
-  StructureToolProviderProps as _DeskToolProviderProps,
-  UnresolvedPaneNode as _UnresolvedPaneNode,
-  UnserializedListItem as _UnserializedListItem,
-  UnserializedListItemChild as _UnserializedListItemChild,
-  UserComponent as _UserComponent,
-  UserViewComponent as _UserViewComponent,
-  View as _View,
-  ViewBuilder as _ViewBuilder,
-} from '../structure'
-
 import {
   ComponentBuilder as _ComponentBuilder,
   ComponentViewBuilder as _ComponentViewBuilder,
@@ -153,626 +49,727 @@ import {
   shallowIntentChecker as _shallowIntentChecker,
   structureLocaleNamespace as _structureLocaleNamespace,
   structureTool as _structureTool,
-  useStructureTool as _useStructureTool,
   useDocumentPane as _useDocumentPane,
   useDocumentTitle as _useDocumentTitle,
   usePaneRouter as _usePaneRouter,
+  useStructureTool as _useStructureTool,
+  type BackLinkProps as _BackLinkProps,
+  type BaseGenericList as _BaseGenericList,
+  type BaseIntentParams as _BaseIntentParams,
+  type BaseView as _BaseView,
+  type BuildableComponent as _BuildableComponent,
+  type BuildableGenericList as _BuildableGenericList,
+  type BuildableList as _BuildableList,
+  type Builder as _Builder,
+  type Child as _Child,
+  type ChildLinkProps as _ChildLinkProps,
+  type ChildObservable as _ChildObservable,
+  type ChildResolver as _ChildResolver,
+  type ChildResolverOptions as _ChildResolverOptions,
+  type Collection as _Collection,
+  type CollectionBuilder as _CollectionBuilder,
+  type Component as _Component,
+  type ComponentInput as _ComponentInput,
+  type ComponentView as _ComponentView,
+  type ConfirmDeleteDialogProps as _ConfirmDeleteDialogProps,
+  type CustomComponentPaneNode as _CustomComponentPaneNode,
+  type DefaultDocumentNodeContext as _DefaultDocumentNodeContext,
+  type DefaultDocumentNodeResolver as _DefaultDocumentNodeResolver,
+  type StructureToolContextValue as _DeskToolContextValue,
+  type StructureToolFeatures as _DeskToolFeatures,
+  type StructureToolMenuItem as _DeskToolMenuItem,
+  type StructureToolOptions as _DeskToolOptions,
+  type StructureToolPaneActionHandler as _DeskToolPaneActionHandler,
+  type StructureToolProviderProps as _DeskToolProviderProps,
+  type Divider as _Divider,
+  type DocumentFieldMenuActionNode as _DocumentFieldMenuActionNode,
+  type DocumentList as _DocumentList,
+  type DocumentListInput as _DocumentListInput,
+  type DocumentListItem as _DocumentListItem,
+  type DocumentListItemInput as _DocumentListItemInput,
+  type DocumentListOptions as _DocumentListOptions,
+  type DocumentListPaneNode as _DocumentListPaneNode,
+  type DocumentListPaneProps as _DocumentListPaneProps,
+  type DocumentNode as _DocumentNode,
+  type DocumentOptions as _DocumentOptions,
+  type DocumentPaneNode as _DocumentPaneNode,
+  type DocumentPaneProviderProps as _DocumentPaneProviderProps,
+  type DocumentTypeListInput as _DocumentTypeListInput,
+  type EditReferenceOptions as _EditReferenceOptions,
+  type EditorNode as _EditorNode,
+  type FormView as _FormView,
+  type GenericList as _GenericList,
+  type GenericListInput as _GenericListInput,
+  type Intent as _Intent,
+  type IntentChecker as _IntentChecker,
+  type IntentJsonParams as _IntentJsonParams,
+  type IntentParams as _IntentParams,
+  type ItemChild as _ItemChild,
+  type List as _List,
+  type ListDisplayOptions as _ListDisplayOptions,
+  type ListInput as _ListInput,
+  type ListItem as _ListItem,
+  type ListItemChild as _ListItemChild,
+  type ListItemDisplayOptions as _ListItemDisplayOptions,
+  type ListItemInput as _ListItemInput,
+  type ListItemSerializeOptions as _ListItemSerializeOptions,
+  type ListPaneNode as _ListPaneNode,
+  type MenuItem as _MenuItem,
+  type MenuItemActionType as _MenuItemActionType,
+  type MenuItemGroup as _MenuItemGroup,
+  type MenuItemParamsType as _MenuItemParamsType,
+  type PaneListItem as _PaneListItem,
+  type PaneListItemDivider as _PaneListItemDivider,
+  type PaneMenuItem as _PaneMenuItem,
+  type PaneMenuItemGroup as _PaneMenuItemGroup,
+  type PaneNode as _PaneNode,
+  type PaneNodeResolver as _PaneNodeResolver,
+  type PaneRouterContextValue as _PaneRouterContextValue,
+  type ParameterizedLinkProps as _ParameterizedLinkProps,
+  type PartialDocumentList as _PartialDocumentList,
+  type PartialDocumentListItem as _PartialDocumentListItem,
+  type PartialDocumentNode as _PartialDocumentNode,
+  type PartialListItem as _PartialListItem,
+  type PartialMenuItem as _PartialMenuItem,
+  type ReferenceChildLinkProps as _ReferenceChildLinkProps,
+  type RouterPaneGroup as _RouterPaneGroup,
+  type RouterPaneSibling as _RouterPaneSibling,
+  type RouterPaneSiblingContext as _RouterPaneSiblingContext,
+  type RouterPanes as _RouterPanes,
+  type SerializablePaneNode as _SerializablePaneNode,
+  type SerializeOptions as _SerializeOptions,
+  type SerializePath as _SerializePath,
+  type SortMenuItem as _SortMenuItem,
+  type StructureBuilder as _StructureBuilder,
+  type StructureBuilderOptions as _StructureBuilderOptions,
+  type StructureContext as _StructureContext,
+  type StructureLocaleResourceKeys as _StructureLocaleResourceKeys,
+  type StructureNode as _StructureNode,
+  type StructureResolver as _StructureResolver,
+  type StructureResolverContext as _StructureResolverContext,
+  type UnresolvedPaneNode as _UnresolvedPaneNode,
+  type UnserializedListItem as _UnserializedListItem,
+  type UnserializedListItemChild as _UnserializedListItemChild,
+  type UserComponent as _UserComponent,
+  type UserViewComponent as _UserViewComponent,
+  type View as _View,
+  type ViewBuilder as _ViewBuilder,
 } from '../structure'
 
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type BackLinkProps = _BackLinkProps
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type BaseGenericList = _BaseGenericList
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type BaseIntentParams = _BaseIntentParams
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type {BaseResolvedPaneNode} from '../structure'
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type BaseView = _BaseView
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type BuildableComponent = _BuildableComponent
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type BuildableGenericList = _BuildableGenericList
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type BuildableList = _BuildableList
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type Builder = _Builder
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type Child = _Child
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type ChildLinkProps = _ChildLinkProps
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type ChildObservable = _ChildObservable
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type ChildResolver = _ChildResolver
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type ChildResolverOptions = _ChildResolverOptions
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type Collection = _Collection
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type CollectionBuilder = _CollectionBuilder
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type Component = _Component
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type ComponentInput = _ComponentInput
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type ComponentView = _ComponentView
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type ConfirmDeleteDialogProps = _ConfirmDeleteDialogProps
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type CustomComponentPaneNode = _CustomComponentPaneNode
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type DefaultDocumentNodeContext = _DefaultDocumentNodeContext
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type DefaultDocumentNodeResolver = _DefaultDocumentNodeResolver
 /**
- * @deprecated Import `StructureToolContextValue` from `@sanity/structure` instead
+ * @deprecated Import `StructureToolContextValue` from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type DeskToolContextValue = _DeskToolContextValue
 /**
- * @deprecated Import `StructureToolFeatures` from `@sanity/structure` instead
+ * @deprecated Import `StructureToolFeatures` from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type DeskToolFeatures = _DeskToolFeatures
 /**
- * @deprecated Import `StructureToolMenuItem` from `@sanity/structure` instead
+ * @deprecated Import `StructureToolMenuItem` from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type DeskToolMenuItem = _DeskToolMenuItem
 /**
- * @deprecated Import `StructureToolOptions` from `@sanity/structure` instead
+ * @deprecated Import `StructureToolOptions` from `sanity/structure` instead
  * @hidden
  * @public
  */
 export type DeskToolOptions = _DeskToolOptions
 /**
- * @deprecated Import `StructureToolPaneActionHandler` from `@sanity/structure` instead
+ * @deprecated Import `StructureToolPaneActionHandler` from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type DeskToolPaneActionHandler = _DeskToolPaneActionHandler
 /**
- * @deprecated Import `StructureToolProviderProps` from `@sanity/structure` instead
+ * @deprecated Import `StructureToolProviderProps` from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type DeskToolProviderProps = _DeskToolProviderProps
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type Divider = _Divider
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type DocumentFieldMenuActionNode = _DocumentFieldMenuActionNode
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type DocumentList = _DocumentList
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type DocumentListInput = _DocumentListInput
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type DocumentListItem = _DocumentListItem
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type DocumentListItemInput = _DocumentListItemInput
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type DocumentListOptions = _DocumentListOptions
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type DocumentListPaneNode = _DocumentListPaneNode
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type DocumentListPaneProps = _DocumentListPaneProps
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type DocumentNode = _DocumentNode
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type DocumentOptions = _DocumentOptions
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type DocumentPaneNode = _DocumentPaneNode
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type DocumentPaneProviderProps = _DocumentPaneProviderProps
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type DocumentTypeListInput = _DocumentTypeListInput
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type EditReferenceOptions = _EditReferenceOptions
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type EditorNode = _EditorNode
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type FormView = _FormView
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type GenericList = _GenericList
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type GenericListInput = _GenericListInput
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type Intent = _Intent
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type IntentChecker = _IntentChecker
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type IntentJsonParams = _IntentJsonParams
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type IntentParams = _IntentParams
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type ItemChild = _ItemChild
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type List = _List
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type ListDisplayOptions = _ListDisplayOptions
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type ListInput = _ListInput
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type ListItem = _ListItem
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type ListItemChild = _ListItemChild
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type ListItemDisplayOptions = _ListItemDisplayOptions
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type ListItemInput = _ListItemInput
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type ListItemSerializeOptions = _ListItemSerializeOptions
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type ListPaneNode = _ListPaneNode
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type MenuItem = _MenuItem
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type MenuItemActionType = _MenuItemActionType
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type MenuItemGroup = _MenuItemGroup
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type MenuItemParamsType = _MenuItemParamsType
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type PaneListItem = _PaneListItem
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type PaneListItemDivider = _PaneListItemDivider
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type PaneMenuItem = _PaneMenuItem
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type PaneMenuItemGroup = _PaneMenuItemGroup
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type PaneNode = _PaneNode
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type PaneNodeResolver = _PaneNodeResolver
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type PaneRouterContextValue = _PaneRouterContextValue
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type ParameterizedLinkProps = _ParameterizedLinkProps
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type PartialDocumentList = _PartialDocumentList
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type PartialDocumentListItem = _PartialDocumentListItem
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type PartialDocumentNode = _PartialDocumentNode
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type PartialListItem = _PartialListItem
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type PartialMenuItem = _PartialMenuItem
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type ReferenceChildLinkProps = _ReferenceChildLinkProps
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type RouterPaneGroup = _RouterPaneGroup
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type RouterPaneSibling = _RouterPaneSibling
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type RouterPaneSiblingContext = _RouterPaneSiblingContext
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type RouterPanes = _RouterPanes
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type {Serializable} from '../structure'
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type SerializablePaneNode = _SerializablePaneNode
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type SerializeOptions = _SerializeOptions
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type SerializePath = _SerializePath
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type SortMenuItem = _SortMenuItem
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type StructureBuilder = _StructureBuilder
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type StructureBuilderOptions = _StructureBuilderOptions
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type StructureContext = _StructureContext
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type StructureLocaleResourceKeys = _StructureLocaleResourceKeys
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type StructureNode = _StructureNode
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type StructureResolver = _StructureResolver
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type StructureResolverContext = _StructureResolverContext
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type UnresolvedPaneNode = _UnresolvedPaneNode
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type UnserializedListItem = _UnserializedListItem
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type UnserializedListItemChild = _UnserializedListItemChild
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type UserComponent = _UserComponent
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type UserViewComponent = _UserViewComponent
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */
 export type View = _View
 /**
- * @deprecated Import from `@sanity/structure` instead
+ * @deprecated Import from `sanity/structure` instead
  * @hidden
  * @beta
  */

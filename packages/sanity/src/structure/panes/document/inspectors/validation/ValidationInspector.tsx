@@ -4,7 +4,7 @@ import {ObjectSchemaType, Path, SanityDocument, SchemaType, ValidationMarker} fr
 import React, {ErrorInfo, Fragment, createElement, useCallback, useMemo, useState} from 'react'
 import {useDocumentPane} from '../../useDocumentPane'
 import {DocumentInspectorHeader} from '../../documentInspector'
-import {getPathTypes} from './getPathTypes'
+import {getPathTitles} from './getPathTitles'
 import {DocumentInspectorProps, useTranslation} from 'sanity'
 
 const MARKER_ICON: Record<'error' | 'warning' | 'info', IconComponent> = {
@@ -110,7 +110,7 @@ function ValidationCard(props: {
               />
 
               <Text muted size={1}>
-                {marker.item.message}
+                {marker.message}
               </Text>
             </Stack>
           </Flex>
@@ -127,14 +127,16 @@ function DocumentNodePathBreadcrumbs(props: {
 }) {
   const {path, schemaType, value} = props
 
-  const pathTypes = useMemo(
-    () => getPathTypes({path, schemaType, value}),
+  const pathTitles = useMemo(
+    () => getPathTitles({path, schemaType, value}),
     [path, schemaType, value],
   )
 
+  if (!pathTitles.length) return null
+
   return (
     <Text size={1}>
-      {pathTypes.map((t, i) => (
+      {pathTitles.map((t, i) => (
         <Fragment key={i}>
           {i > 0 && <span style={{color: 'var(--card-muted-fg-color)', opacity: 0.5}}> / </span>}
           <span style={{fontWeight: 500}}>{t.title || t.name}</span>

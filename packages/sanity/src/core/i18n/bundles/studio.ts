@@ -411,6 +411,12 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'form.validation.summary.warnings-count_one': '{{count}} warning',
   'form.validation.summary.warnings-count_other': '{{count}} warnings',
 
+  /** Tooltip for free trial navbar button indicating remaining days */
+  'free-trial.tooltip.days-count_one': '{{count}} day left in trial',
+  'free-trial.tooltip.days-count_other': '{{count}} days left in trial',
+  /** Tooltip for free trial navbar button, once trial has ended */
+  'free-trial.tooltip.trial-finished': 'Upgrade your project',
+
   /**
    * Label for "contact sales" call to action
    * These are titles for fallback links in the event the help & resources endpoint isn't able to be fetched
@@ -1608,6 +1614,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'user-menu.locale-title': 'Language',
   /** Label for tooltip to show which provider the currently logged in user is using */
   'user-menu.login-provider': 'Signed in with {{providerTitle}}',
+  /** Label for open menu button for user menu */
+  'user-menu.open-menu': 'Open menu',
   /**
    * Label for action to add a workspace (currently a developer-oriented action, as this will
    * lead to the documentation on workspace configuration)
@@ -1626,6 +1634,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'workspaces.select-workspace-aria-label': 'Select workspace',
   /** Button label for opening the workspace switcher */
   'workspaces.select-workspace-label': 'Select workspace',
+  /** Tooltip for the workspace menu */
+  'workspaces.select-workspace-tooltip': 'Select workspace',
   /** Title for Workplaces dropdown menu */
   'workspaces.title': 'Workspaces',
 })

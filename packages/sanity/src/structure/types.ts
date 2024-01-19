@@ -179,11 +179,6 @@ export interface StructureToolOptions {
  * ]
  * ```
  *
- * see [`packages/@sanity/structure-tool/src/utils/parsePanesSegment.ts`][0]
- *
- * [0]: https://github.com/sanity-io/sanity/blob/287d308442938c98cbec4608d159401631792d7a/packages/%40sanity/structure-tool/src/utils/parsePanesSegment.ts#L71-L88
- *
- *
  * @hidden
  * @beta
  */

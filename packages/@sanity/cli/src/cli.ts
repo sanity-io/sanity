@@ -130,21 +130,16 @@ export async function runCli(cliRoot: string, {cliVersion}: {cliVersion: string}
   const cliCommandTrace = telemetry.trace(CliCommand, {
     groupOrCommand: args.groupOrCommand,
     extraArguments: args.extraArguments,
-    commandArguments: args.argsWithoutOptions,
-  })
-
-  cliCommandTrace.start()
-  cliCommandTrace.log({
-    groupOrCommand: args.groupOrCommand,
-    extraArguments: args.extraArguments,
-    commandArguments: args.argsWithoutOptions,
+    commandArguments: args.argsWithoutOptions.slice(0, 10),
     coreOptions: {
       help: args.coreOptions.help || undefined,
       version: args.coreOptions.help || undefined,
       debug: args.coreOptions.help || undefined,
     },
+    ...(!args.groupOrCommand && {emptyCommand: true}), // user did not entry a command
   })
 
+  cliCommandTrace.start()
   cliRunner
     .runCommand(args.groupOrCommand, args, {
       ...options,

@@ -28,4 +28,9 @@ export interface DocumentDefinition extends Omit<ObjectDefinition, 'type'> {
   __experimental_search?: {path: string; weight: number; mapWith?: string}[]
   /** @alpha */
   __experimental_omnisearch_visibility?: boolean
+  /**
+   * Determines whether the large preview title is displayed in the document pane form
+   * @alpha
+   * */
+  __experimental_formPreviewTitle?: boolean
 }

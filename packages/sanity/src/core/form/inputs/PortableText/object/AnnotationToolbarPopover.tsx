@@ -139,6 +139,19 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
   }, [])
 
   useEffect(() => {
+    const sel = window.getSelection()
+    if (sel && sel.rangeCount > 0) {
+      rangeRef.current = sel.getRangeAt(0)
+    }
+  }, [popoverOpen])
+
+  useEffect(() => {
+    //Attach and detach scroll event listener for popover to follow the current reference boundary
+    if (popoverOpen && referenceBoundary) {
+      referenceBoundary.addEventListener('scroll', handleScroll)
+      return () => referenceBoundary.removeEventListener('scroll', handleScroll)
+    }
+
     if (!popoverOpen) {
       return undefined
     }

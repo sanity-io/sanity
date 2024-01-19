@@ -1,6 +1,6 @@
 export type {ValidationContext} from './types'
 export {Rule} from './Rule'
-export {validateDocument} from './validateDocument'
+export {validateDocument, type ValidateDocumentOptions} from './validateDocument'
 export {inferFromSchema} from './inferFromSchema'
 export {inferFromSchemaType} from './inferFromSchemaType'
 export {validateDocumentObservable} from './validateDocument'

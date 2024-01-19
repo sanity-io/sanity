@@ -380,7 +380,8 @@ export interface ObjectSchemaType extends BaseSchemaType {
   __experimental_omnisearch_visibility?: boolean
   /** @alpha */
   __experimental_actions?: string[]
-
+  /** @alpha */
+  __experimental_formPreviewTitle?: boolean
   /**
    * @beta
    */

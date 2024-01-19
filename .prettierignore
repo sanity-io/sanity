@@ -32,3 +32,5 @@
 /turbo.json
 /packages/*/turbo.json
 /packages/@sanity/*/turbo.json
+
+/packages/sanity/playwright-ct/template/.cache/**/*

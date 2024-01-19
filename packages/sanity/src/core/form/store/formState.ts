@@ -677,7 +677,7 @@ function prepareObjectInputState<T>(
 
   const validation = props.validation
     .filter((item) => isEqual(item.path, props.path))
-    .map((v) => ({level: v.level, message: v.item.message, path: v.path}))
+    .map((v) => ({level: v.level, message: v.message, path: v.path}))
 
   const visibleMembers = members.filter(
     (member): member is ObjectMember => member.kind !== 'hidden',
@@ -795,7 +795,7 @@ function prepareArrayOfPrimitivesInputState<T extends (boolean | string | number
   const presence = filteredPresence.length ? filteredPresence : EMPTY_ARRAY
   const validation = props.validation
     .filter((item) => isEqual(item.path, props.path))
-    .map((v) => ({level: v.level, message: v.item.message, path: v.path}))
+    .map((v) => ({level: v.level, message: v.message, path: v.path}))
   const members = items.flatMap((item, index) =>
     prepareArrayOfPrimitivesMember({arrayItem: item, parent: props, index}),
   )
@@ -846,7 +846,7 @@ function prepareArrayOfObjectsInputState<T extends {_key: string}[]>(
   const presence = filteredPresence.length ? filteredPresence : EMPTY_ARRAY
   const validation = props.validation
     .filter((item) => isEqual(item.path, props.path))
-    .map((v) => ({level: v.level, message: v.item.message, path: v.path}))
+    .map((v) => ({level: v.level, message: v.message, path: v.path}))
 
   const members = items.flatMap((item, index) =>
     prepareArrayOfObjectsMember({
@@ -1035,7 +1035,7 @@ function preparePrimitiveInputState<SchemaType extends PrimitiveSchemaType>(
 
   const validation = props.validation
     .filter((item) => isEqual(item.path, props.path))
-    .map((v) => ({level: v.level, message: v.item.message, path: v.path}))
+    .map((v) => ({level: v.level, message: v.message, path: v.path}))
   return {
     schemaType: props.schemaType,
     changed: isChangedValue(props.value, props.comparisonValue),

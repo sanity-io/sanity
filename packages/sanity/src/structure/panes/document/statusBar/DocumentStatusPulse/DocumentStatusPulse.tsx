@@ -1,26 +1,28 @@
 import {ButtonTone, Flex, Text} from '@sanity/ui'
 import React from 'react'
 import {AnimatedStatusIcon} from './AnimatedStatusIcon'
-import {TextWithTone} from 'sanity'
+import {structureLocaleNamespace} from '../../../../i18n'
+import {TextWithTone, useTranslation} from 'sanity'
 
 type StatusType = 'saved' | 'syncing'
 interface ReviewChangesButtonProps {
   status?: StatusType
 }
 
-const STATUS_DICTIONARY: Record<StatusType, {text: string; tone: ButtonTone}> = {
+const STATUS_DICTIONARY: Record<StatusType, {i18nKey: string; tone: ButtonTone}> = {
   saved: {
-    text: 'Saved',
+    i18nKey: 'status-bar.document-status-pulse.status.saved.text',
     tone: 'positive',
   },
   syncing: {
-    text: 'Saving...',
+    i18nKey: 'status-bar.document-status-pulse.status.syncing.text',
     tone: 'default',
   },
 }
 
 export const DocumentStatusPulse = (props: ReviewChangesButtonProps) => {
   const {status} = props
+  const {t} = useTranslation(structureLocaleNamespace)
 
   if (status !== 'saved' && status !== 'syncing') {
     return null
@@ -35,7 +37,7 @@ export const DocumentStatusPulse = (props: ReviewChangesButtonProps) => {
       </TextWithTone>
 
       <Text muted size={1}>
-        {currentStatus.text}
+        {t(currentStatus.i18nKey)}
       </Text>
     </Flex>
   )

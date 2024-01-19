@@ -8,9 +8,14 @@ import {
 } from '@sanity/types'
 import {isPlainObject} from 'lodash'
 import {invokePrepare, prepareForPreview} from './utils/prepareForPreview'
-import type {ApiConfig, PreviewPath, PreparedSnapshot} from './types'
 import {getPreviewPaths} from './utils/getPreviewPaths'
-import {Previewable, PreviewableType} from './types'
+import {
+  Previewable,
+  PreviewableType,
+  type ApiConfig,
+  type PreviewPath,
+  type PreparedSnapshot,
+} from './types'
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return isPlainObject(value)

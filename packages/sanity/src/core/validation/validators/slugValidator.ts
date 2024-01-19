@@ -46,7 +46,7 @@ const defaultIsUnique: SlugIsUniqueValidator = (slug, context) => {
   const docType = document._type
   const atPath = serializePath(path.concat('current'))
 
-  if (!disableArrayWarning && atPath.includes('[]')) {
+  if (!disableArrayWarning && atPath.includes('[]') && context.environment === 'studio') {
     memoizedWarnOnArraySlug(serializePath(path))
   }
 

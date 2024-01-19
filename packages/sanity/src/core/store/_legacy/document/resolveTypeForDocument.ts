@@ -1,6 +1,5 @@
 import {SanityClient} from '@sanity/client'
-import type {Observable} from 'rxjs'
-import {of} from 'rxjs'
+import {of, type Observable} from 'rxjs'
 import {map} from 'rxjs/operators'
 import {getDraftId, getPublishedId} from '../../../util'
 

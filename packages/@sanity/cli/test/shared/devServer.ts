@@ -3,7 +3,7 @@ import {createHash} from 'crypto'
 import {cliBinPath, sanityEnv} from './environment'
 import {request, ResponseData} from './request'
 
-export function testServerCommand({
+export async function testServerCommand({
   command,
   port,
   cwd,
@@ -25,17 +25,16 @@ export function testServerCommand({
   stdout: string
   stderr: string
 }> {
-  return new Promise(async (resolve, reject) => {
-    const maxWaitForServer = 120000
+  const connect = await request(`http://localhost:${port}/`).catch(() => null)
+  if (connect !== null && 'statusCode' in connect) {
+    throw new Error(`Something is already listening on :${port}`)
+  }
+
+  return new Promise((resolve, reject) => {
+    const maxWaitForServer = 50_000
     const startedAt = Date.now()
     let hasSucceeded = false
     let timer: ReturnType<typeof setTimeout>
-
-    const connect = await request(`http://localhost:${port}/`).catch((err) => err as Error)
-    if ('statusCode' in connect) {
-      reject(new Error(`Something is already listening on :${port}`))
-      return
-    }
 
     const proc = spawn(process.argv[0], [cliBinPath, command, ...(args || [])], {
       cwd,

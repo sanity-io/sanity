@@ -5,7 +5,6 @@ import {
   type Validators,
 } from '@sanity/types'
 import {deepEquals} from '../util/deepEquals'
-import {ValidationError as ValidationErrorClass} from '../ValidationError'
 import {genericValidators} from './genericValidator'
 
 export const arrayValidators: Validators = {
@@ -63,9 +62,10 @@ export const arrayValidators: Validators = {
       paths.push([pathSegment])
     }
 
-    return paths.length === 0
-      ? true
-      : new ValidationErrorClass(message || i18n.t('validation:generic.not-allowed'), {paths})
+    // we emit the same message for each path we find in this array
+    const sharedMessage = message || i18n.t('validation:generic.not-allowed')
+
+    return paths.map((path) => ({message: sharedMessage, path}))
   },
 
   unique: (_unused, value, message, {i18n}) => {
@@ -99,8 +99,9 @@ export const arrayValidators: Validators = {
       return [pathSegment]
     })
 
-    return dupeIndices.length > 0
-      ? new ValidationErrorClass(message || i18n.t('validation:array.item-duplicate'), {paths})
-      : true
+    // we emit the same message for each path we find in this array
+    const sharedMessage = message || i18n.t('validation:array.item-duplicate')
+
+    return paths.map((path) => ({message: sharedMessage, path}))
   },
 }

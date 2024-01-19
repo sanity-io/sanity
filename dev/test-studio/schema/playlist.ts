@@ -4,6 +4,8 @@ export default defineType({
   name: 'playlist',
   title: 'Playlist',
   type: 'document',
+  // eslint-disable-next-line camelcase
+  __experimental_formPreviewTitle: false,
   liveEdit: true,
   fields: [
     {

@@ -1,0 +1,38 @@
+import {CommentReactionOption, CommentReactionShortNames} from './types'
+
+// These should not be alphabetized as the current order is intentional
+export const COMMENT_REACTION_OPTIONS: CommentReactionOption[] = [
+  {
+    shortName: ':+1:',
+    title: 'Thumbs up',
+  },
+  {
+    shortName: ':-1:',
+    title: 'Thumbs down',
+  },
+  {
+    shortName: ':heart:',
+    title: 'Heart',
+  },
+  {
+    shortName: ':rocket:',
+    title: 'Rocket',
+  },
+  {
+    shortName: ':heavy_plus_sign:',
+    title: 'Heavy plus sign',
+  },
+  {
+    shortName: ':eyes:',
+    title: 'Eyes',
+  },
+]
+
+export const COMMENT_REACTION_EMOJIS: Record<CommentReactionShortNames, string> = {
+  ':-1:': '👎',
+  ':+1:': '👍',
+  ':eyes:': '👀',
+  ':heart:': '❤️',
+  ':heavy_plus_sign:': '➕',
+  ':rocket:': '🚀',
+}

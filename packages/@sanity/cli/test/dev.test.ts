@@ -15,6 +15,7 @@ describeCliTest('CLI: `sanity dev`', () => {
       const {html: startHtml, fileHashes} = await testServerCommand({
         command: version === 'v2' ? 'start' : 'dev',
         port: testRunArgs.port,
+        args: ['--port', `${testRunArgs.port}`],
         cwd: path.join(studiosPath, version),
         expectedTitle: version === 'v2' ? `${version} studio` : 'Sanity Studio',
         expectedFiles,
