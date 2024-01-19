@@ -1,19 +1,19 @@
 // eslint-disable-next-line no-restricted-imports
 import {Button as UIButton, Grid} from '@sanity/ui'
 import React, {useCallback, useEffect, useState} from 'react'
-import {CommentReactionOption, CommentReactionShortNames} from '../../types'
+import {CommentReactionOption} from '../../types'
 import {COMMENT_REACTION_EMOJIS} from '../../constants'
+import {EmojiText} from './EmojiText.styled'
 
 const GRID_COLUMNS = 6
 
 interface CommentReactionsMenuProps {
   options: CommentReactionOption[]
-  selectedOptionNames?: CommentReactionShortNames[]
   onSelect: (option: CommentReactionOption) => void
 }
 
 export function CommentReactionsMenu(props: CommentReactionsMenuProps) {
-  const {options, onSelect, selectedOptionNames} = props
+  const {options, onSelect} = props
 
   const [focusableElements, setFocusableElements] = useState<HTMLButtonElement[]>([])
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
@@ -72,7 +72,6 @@ export function CommentReactionsMenu(props: CommentReactionsMenuProps) {
       role="menu"
     >
       {options.map((o) => {
-        const selected = selectedOptionNames?.includes(o.shortName)
         const emoji = COMMENT_REACTION_EMOJIS[o.shortName]
 
         return (
@@ -83,9 +82,12 @@ export function CommentReactionsMenu(props: CommentReactionsMenuProps) {
             onClick={handleOptionClick}
             padding={2}
             role="menuitem"
-            selected={selected}
-            text={emoji}
-          />
+            tabIndex={-1}
+          >
+            <EmojiText align="center" size={2}>
+              {emoji}
+            </EmojiText>
+          </UIButton>
         )
       })}
     </Grid>

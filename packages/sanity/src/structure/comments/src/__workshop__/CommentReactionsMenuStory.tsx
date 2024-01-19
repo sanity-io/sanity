@@ -1,4 +1,4 @@
-import React, {useCallback, useState} from 'react'
+import {useCallback, useState} from 'react'
 import {CommentReactionsMenu} from '../components'
 import {CommentReactionOption, CommentReactionShortNames} from '../types'
 import {COMMENT_REACTION_OPTIONS} from '../constants'
@@ -21,11 +21,7 @@ export default function CommentReactionsMenuStory() {
 
   return (
     <div>
-      <CommentReactionsMenu
-        onSelect={handleOnSelect}
-        options={COMMENT_REACTION_OPTIONS}
-        selectedOptionNames={selectedOptions}
-      />
+      <CommentReactionsMenu onSelect={handleOnSelect} options={COMMENT_REACTION_OPTIONS} />
     </div>
   )
 }
