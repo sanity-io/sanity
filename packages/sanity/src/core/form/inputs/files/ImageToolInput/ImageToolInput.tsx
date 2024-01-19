@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState} from 'react'
+import {ReactNode, useCallback, useEffect, useState} from 'react'
 import type {Image, ImageSchemaType} from '@sanity/types'
 import {Box, Card, Flex, Text, Grid, Heading} from '@sanity/ui'
 import styled from 'styled-components'
@@ -37,7 +37,7 @@ const Placeholder = styled.div`
   min-height: 6em;
 `
 
-function LoadStatus(props: {children: React.ReactNode}) {
+function LoadStatus(props: {children: ReactNode}) {
   return (
     <Flex align="center" justify="center" padding={4} style={{overflowWrap: 'break-word'}}>
       {props.children}

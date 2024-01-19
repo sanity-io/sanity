@@ -1,5 +1,5 @@
 import {Box, Flex, Grid, Spinner, Text} from '@sanity/ui'
-import React from 'react'
+import type {MouseEvent, KeyboardEvent} from 'react'
 import styled from 'styled-components'
 import {Asset} from '@sanity/types'
 import {AssetThumb} from './AssetThumb'
@@ -8,8 +8,8 @@ interface ImageListViewProps {
   isLoading?: boolean
   assets: Asset[]
   selectedAssets: Asset[]
-  onItemClick: (event: React.MouseEvent) => void
-  onItemKeyPress: (event: React.KeyboardEvent) => void
+  onItemClick: (event: MouseEvent) => void
+  onItemKeyPress: (event: KeyboardEvent) => void
   onDeleteFinished: (assetId: string) => void
 }
 

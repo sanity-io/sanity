@@ -1,5 +1,5 @@
 import {Layer} from '@sanity/ui'
-import React, {useCallback, useState} from 'react'
+import {useCallback, useState} from 'react'
 import styled from 'styled-components'
 import {usePaneLayout} from './usePaneLayout'
 

@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useMemo, useState} from 'react'
+import {useCallback, useEffect, useMemo, useState} from 'react'
 import {Box, Text} from '@sanity/ui'
 
 import {TimelineItem} from './timelineItem'

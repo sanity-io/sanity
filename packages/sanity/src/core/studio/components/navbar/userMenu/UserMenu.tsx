@@ -10,7 +10,7 @@ import {
   // eslint-disable-next-line no-restricted-imports
   Button, // Button with specific styling, user avatar .
 } from '@sanity/ui'
-import React, {useMemo} from 'react'
+import {useMemo} from 'react'
 import styled from 'styled-components'
 import {UserAvatar} from '../../../../components'
 import {getProviderTitle} from '../../../../store'

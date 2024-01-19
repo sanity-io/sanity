@@ -1,4 +1,4 @@
-import React, {MouseEventHandler, ReactNode, useCallback, useEffect, useState} from 'react'
+import {MouseEventHandler, ReactNode, useCallback, useEffect, useState} from 'react'
 import {CropIcon} from '@sanity/icons'
 import {Inline, Menu, useClickOutside, useGlobalKeyDown} from '@sanity/ui'
 import styled from 'styled-components'

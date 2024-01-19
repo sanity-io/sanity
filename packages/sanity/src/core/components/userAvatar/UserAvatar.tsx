@@ -1,5 +1,5 @@
 import {Avatar, AvatarPosition, AvatarProps, AvatarSize, AvatarStatus} from '@sanity/ui'
-import React, {forwardRef, useState} from 'react'
+import {ForwardedRef, forwardRef, useState} from 'react'
 import type {User} from '@sanity/types'
 import {useUser} from '../../store'
 import {isRecord} from '../../util'
@@ -72,7 +72,7 @@ function TooltipUserAvatar(props: Omit<UserAvatarProps, 'user'> & {user: User}) 
 
 const StaticUserAvatar = forwardRef(function StaticUserAvatar(
   props: Omit<UserAvatarProps, 'user'> & {user: User},
-  ref: React.ForwardedRef<HTMLDivElement>,
+  ref: ForwardedRef<HTMLDivElement>,
 ) {
   const {user, animateArrowFrom, position, size, status, tone, ...restProps} = props
   const [imageLoadError, setImageLoadError] = useState<null | Error>(null)

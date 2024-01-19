@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 
 import {AvatarStack} from '@sanity/ui'
-import React, {useMemo} from 'react'
+import {useMemo} from 'react'
 import styled, {css} from 'styled-components'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {UserAvatar} from '../components'

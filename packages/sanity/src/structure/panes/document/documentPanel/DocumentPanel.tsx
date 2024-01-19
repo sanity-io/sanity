@@ -1,5 +1,5 @@
 import {BoundaryElementProvider, Flex, PortalProvider, usePortal, Box} from '@sanity/ui'
-import React, {createElement, useEffect, useMemo, useRef, useState} from 'react'
+import {createElement, useEffect, useMemo, useRef, useState} from 'react'
 import styled, {css} from 'styled-components'
 import {PaneContent, usePane, usePaneLayout} from '../../../components'
 import {useDocumentPane} from '../useDocumentPane'

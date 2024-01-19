@@ -1,5 +1,6 @@
 import {ArrowLeftIcon} from '@sanity/icons'
-import React, {memo, useMemo} from 'react'
+import {memo, useMemo} from 'react'
+import * as React from 'react'
 import type {PaneMenuItem, PaneMenuItemGroup, StructureToolPaneActionHandler} from '../../types'
 import {BackLink, PaneHeader, PaneHeaderActions, usePane} from '../../components'
 import {Button, TooltipDelayGroupProvider} from '../../../ui-components'

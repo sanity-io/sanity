@@ -1,7 +1,6 @@
 /* eslint-disable max-nested-callbacks */
 import {render, waitFor} from '@testing-library/react'
-
-import React from 'react'
+import {RefObject, createRef} from 'react'
 import {PortableTextEditor} from '../../PortableTextEditor'
 import {
   PortableTextEditorTester,
@@ -9,12 +8,11 @@ import {
   schemaTypeWithColorAndLink,
 } from '../../__tests__/PortableTextEditorTester'
 import {EditorSelection} from '../../../types/editor'
-import {defineType} from '@sanity/types'
 
 describe('plugin:withPortableTextMarksModel', () => {
   describe('normalization', () => {
     it('merges adjacent spans correctly when removing annotations', async () => {
-      const editorRef: React.RefObject<PortableTextEditor> = React.createRef()
+      const editorRef: RefObject<PortableTextEditor> = createRef()
       const initialValue = [
         {
           _key: '5fc57af23597',
@@ -153,7 +151,7 @@ describe('plugin:withPortableTextMarksModel', () => {
     })
 
     it('splits correctly when adding marks', async () => {
-      const editorRef: React.RefObject<PortableTextEditor> = React.createRef()
+      const editorRef: RefObject<PortableTextEditor> = createRef()
       const initialValue = [
         {
           _key: 'a',
@@ -251,7 +249,7 @@ describe('plugin:withPortableTextMarksModel', () => {
       })
     })
     it('merges children correctly when toggling marks in various ranges', async () => {
-      const editorRef: React.RefObject<PortableTextEditor> = React.createRef()
+      const editorRef: RefObject<PortableTextEditor> = createRef()
       const initialValue = [
         {
           _key: 'a',
@@ -381,7 +379,7 @@ describe('plugin:withPortableTextMarksModel', () => {
       })
     })
     it('toggles marks on children with annotation marks correctly', async () => {
-      const editorRef: React.RefObject<PortableTextEditor> = React.createRef()
+      const editorRef: RefObject<PortableTextEditor> = createRef()
       const initialValue = [
         {
           _key: 'a',
@@ -470,7 +468,7 @@ describe('plugin:withPortableTextMarksModel', () => {
     })
 
     it('merges blocks correctly when containing links', async () => {
-      const editorRef: React.RefObject<PortableTextEditor> = React.createRef()
+      const editorRef: RefObject<PortableTextEditor> = createRef()
       const initialValue = [
         {
           _key: '5fc57af23597',
@@ -600,7 +598,7 @@ describe('plugin:withPortableTextMarksModel', () => {
     })
 
     it('resets markDefs when splitting a block in the beginning', async () => {
-      const editorRef: React.RefObject<PortableTextEditor> = React.createRef()
+      const editorRef: RefObject<PortableTextEditor> = createRef()
       const initialValue = [
         {
           _key: '1987f99da4a2',
@@ -719,7 +717,7 @@ describe('plugin:withPortableTextMarksModel', () => {
   })
   describe('selection', () => {
     it('should emit a new selection object when toggling marks, even though the value is the same', async () => {
-      const editorRef: React.RefObject<PortableTextEditor> = React.createRef()
+      const editorRef: RefObject<PortableTextEditor> = createRef()
       const initialValue = [
         {
           _key: '1987f99da4a2',
@@ -768,7 +766,7 @@ describe('plugin:withPortableTextMarksModel', () => {
   })
   describe('removing annotations', () => {
     it('removes the markDefs if the annotation is no longer in use', async () => {
-      const editorRef: React.RefObject<PortableTextEditor> = React.createRef()
+      const editorRef: RefObject<PortableTextEditor> = createRef()
       const initialValue = [
         {
           _key: '5fc57af23597',
@@ -836,7 +834,7 @@ describe('plugin:withPortableTextMarksModel', () => {
       })
     })
     it('preserves the markDefs if the annotation will continue in use', async () => {
-      const editorRef: React.RefObject<PortableTextEditor> = React.createRef()
+      const editorRef: RefObject<PortableTextEditor> = createRef()
       const initialValue = [
         {
           _key: '5fc57af23597',
@@ -919,7 +917,7 @@ describe('plugin:withPortableTextMarksModel', () => {
       })
     })
     it('removes the mark from the correct place', async () => {
-      const editorRef: React.RefObject<PortableTextEditor> = React.createRef()
+      const editorRef: RefObject<PortableTextEditor> = createRef()
       const initialValue = [
         {
           _key: '5fc57af23597',
@@ -1004,7 +1002,7 @@ describe('plugin:withPortableTextMarksModel', () => {
       })
     })
     it('preserves other marks that apply to the spans', async () => {
-      const editorRef: React.RefObject<PortableTextEditor> = React.createRef()
+      const editorRef: RefObject<PortableTextEditor> = createRef()
       const initialValue = [
         {
           _key: '5fc57af23597',

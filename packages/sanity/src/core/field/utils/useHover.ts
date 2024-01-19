@@ -1,6 +1,6 @@
-import {useEffect, useRef, useState} from 'react'
+import {MutableRefObject, useEffect, useRef, useState} from 'react'
 
-export function useHover<T extends HTMLElement>(): [React.MutableRefObject<T | null>, boolean] {
+export function useHover<T extends HTMLElement>(): [MutableRefObject<T | null>, boolean] {
   const ref = useRef<T | null>(null)
   const [value, setValue] = useState(false)
 

@@ -2,7 +2,15 @@ import {Box, Flex, Grid, Select, Text, useForwardedRef} from '@sanity/ui'
 import {ChevronLeftIcon, ChevronRightIcon} from '@sanity/icons'
 import {addDays, addMonths, setDate, setHours, setMinutes, setMonth, setYear} from 'date-fns'
 import {range} from 'lodash'
-import React, {KeyboardEvent, forwardRef, useCallback, useEffect} from 'react'
+import {
+  ComponentProps,
+  FormEvent,
+  ForwardedRef,
+  KeyboardEvent,
+  forwardRef,
+  useCallback,
+  useEffect,
+} from 'react'
 import {Button} from '../../../../../../ui-components'
 import {CalendarMonth} from './CalendarMonth'
 import {ARROW_KEYS, DEFAULT_TIME_PRESETS, HOURS_24} from './constants'
@@ -11,7 +19,7 @@ import {formatTime} from './utils'
 import {YearInput} from './YearInput'
 import {CalendarLabels, MonthNames} from './types'
 
-type CalendarProps = Omit<React.ComponentProps<'div'>, 'onSelect'> & {
+type CalendarProps = Omit<ComponentProps<'div'>, 'onSelect'> & {
   selectTime?: boolean
   selectedDate?: Date
   timeStep?: number
@@ -43,7 +51,7 @@ const CALENDAR_ICON_BUTTON_PROPS = {
 
 export const Calendar = forwardRef(function Calendar(
   props: CalendarProps,
-  forwardedRef: React.ForwardedRef<HTMLDivElement>,
+  forwardedRef: ForwardedRef<HTMLDivElement>,
 ) {
   const {
     selectTime,
@@ -67,7 +75,7 @@ export const Calendar = forwardRef(function Calendar(
   )
 
   const handleFocusedMonthChange = useCallback(
-    (e: React.FormEvent<HTMLSelectElement>) => setFocusedDateMonth(Number(e.currentTarget.value)),
+    (e: FormEvent<HTMLSelectElement>) => setFocusedDateMonth(Number(e.currentTarget.value)),
     [setFocusedDateMonth],
   )
 
@@ -89,7 +97,7 @@ export const Calendar = forwardRef(function Calendar(
   )
 
   const handleMinutesChange = useCallback(
-    (event: React.FormEvent<HTMLSelectElement>) => {
+    (event: FormEvent<HTMLSelectElement>) => {
       const m = Number(event.currentTarget.value)
       onSelect(setMinutes(selectedDate, m))
     },
@@ -97,7 +105,7 @@ export const Calendar = forwardRef(function Calendar(
   )
 
   const handleHoursChange = useCallback(
-    (event: React.FormEvent<HTMLSelectElement>) => {
+    (event: FormEvent<HTMLSelectElement>) => {
       const m = Number(event.currentTarget.value)
       onSelect(setHours(selectedDate, m))
     },
@@ -325,7 +333,7 @@ function CalendarTimePresetButton(props: {
 
 function CalendarMonthSelect(props: {
   moveFocusedDate: (by: number) => void
-  onChange: (e: React.FormEvent<HTMLSelectElement>) => void
+  onChange: (e: FormEvent<HTMLSelectElement>) => void
   value?: number
   monthNames: MonthNames
   labels: {

@@ -1,6 +1,5 @@
 import {Card, Flex} from '@sanity/ui'
 import {useSelect} from '@sanity/ui-workshop'
-import React from 'react'
 
 import {DocumentStatusPulse} from '../DocumentStatusPulse'
 

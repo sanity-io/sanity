@@ -1,4 +1,4 @@
-import React, {useCallback} from 'react'
+import {useCallback} from 'react'
 import {hues} from '@sanity/color'
 import {Box, Stack, Heading, Flex, Inline, Text, Grid, Button} from '@sanity/ui'
 import {

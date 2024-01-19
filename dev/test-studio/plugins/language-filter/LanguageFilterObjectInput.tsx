@@ -1,5 +1,5 @@
 import {pathFor} from '@sanity/util/paths'
-import React, {useMemo} from 'react'
+import {useMemo} from 'react'
 import {
   FieldError,
   FieldMember,

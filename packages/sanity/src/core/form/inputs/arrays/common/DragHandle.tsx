@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import React, {useContext} from 'react'
+import {createContext, useContext} from 'react'
 import {DragHandleIcon} from '@sanity/icons'
 import {useSortable} from '@dnd-kit/sortable'
 import {Button, ButtonProps} from '../../../../../ui-components'
@@ -9,7 +9,7 @@ const DragHandleButton = styled(Button)<{$grid?: boolean}>`
   cursor: ${(props) => (props.$grid ? 'move' : 'ns-resize')};
 `
 
-export const SortableItemIdContext = React.createContext<string | null>(null)
+export const SortableItemIdContext = createContext<string | null>(null)
 
 interface DragHandleProps {
   $grid?: boolean

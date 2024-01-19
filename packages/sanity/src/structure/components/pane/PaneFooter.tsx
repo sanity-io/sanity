@@ -1,11 +1,11 @@
 import {Box} from '@sanity/ui'
-import React, {forwardRef} from 'react'
+import {ForwardedRef, ReactNode, forwardRef} from 'react'
 import {usePane} from './usePane'
 import {Root, RootCard} from './PaneFooter.styles'
 import {LegacyLayerProvider} from 'sanity'
 
 interface PaneFooterProps {
-  children?: React.ReactNode
+  children?: ReactNode
   padding?: number | number[]
 }
 
@@ -16,7 +16,7 @@ interface PaneFooterProps {
  */
 export const PaneFooter = forwardRef(function PaneFooter(
   props: PaneFooterProps,
-  ref: React.ForwardedRef<HTMLDivElement>,
+  ref: ForwardedRef<HTMLDivElement>,
 ) {
   const {children, padding} = props
   const {collapsed} = usePane()

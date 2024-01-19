@@ -1,4 +1,5 @@
-import React, {type ReactNode, useState, useRef} from 'react'
+import type {ReactNode, DragEvent, ReactElement} from 'react'
+import {useState, useRef} from 'react'
 import {Box, ResponsiveWidthProps} from '@sanity/ui'
 import {Dialog} from '../../../ui-components'
 import {PresenceOverlay} from '../../presence'
@@ -19,11 +20,11 @@ interface Props {
   autofocus?: boolean
 }
 
-function onDragEnter(event: React.DragEvent<HTMLDivElement>) {
+function onDragEnter(event: DragEvent<HTMLDivElement>) {
   return event.stopPropagation()
 }
 
-export function EditPortal(props: Props): React.ReactElement {
+export function EditPortal(props: Props): ReactElement {
   const {
     children,
     header,

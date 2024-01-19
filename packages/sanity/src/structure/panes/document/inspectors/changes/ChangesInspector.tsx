@@ -1,6 +1,6 @@
 import {ObjectDiff} from '@sanity/diff'
 import {AvatarStack, BoundaryElementProvider, Box, Card, Flex} from '@sanity/ui'
-import React, {ReactElement, useRef} from 'react'
+import {useMemo, ReactElement, useRef} from 'react'
 import styled from 'styled-components'
 import {TimelineMenu} from '../../timeline'
 import {useDocumentPane} from '../../useDocumentPane'
@@ -46,7 +46,7 @@ export function ChangesInspector(props: DocumentInspectorProps): ReactElement {
   // be part of Sanity core (needs to be moved from structure at some point)
   const {t} = useTranslation('studio')
 
-  const documentContext: DocumentChangeContextInstance = React.useMemo(
+  const documentContext: DocumentChangeContextInstance = useMemo(
     () => ({
       documentId,
       schemaType,
@@ -58,7 +58,7 @@ export function ChangesInspector(props: DocumentInspectorProps): ReactElement {
     [documentId, diff, isComparingCurrent, schemaType, value],
   )
 
-  const changeAnnotations = React.useMemo(
+  const changeAnnotations = useMemo(
     () => (diff ? collectLatestAuthorAnnotations(diff) : []),
     [diff],
   )

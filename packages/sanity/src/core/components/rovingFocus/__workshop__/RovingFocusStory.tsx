@@ -1,6 +1,6 @@
 import {Card, Flex} from '@sanity/ui'
 import {useBoolean, useSelect} from '@sanity/ui-workshop'
-import React, {useState} from 'react'
+import {useState} from 'react'
 import {useRovingFocus} from '../useRovingFocus'
 import {Button} from '../../../../ui-components'
 

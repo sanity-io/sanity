@@ -1,4 +1,5 @@
-import React, {useCallback, useEffect, useMemo, useState} from 'react'
+import {useCallback, useEffect, useMemo, useState} from 'react'
+import * as React from 'react'
 import {SanityClient} from '@sanity/client'
 import {CommentPostPayload} from '../../types'
 import {CommentsSetupContext} from './CommentsSetupContext'

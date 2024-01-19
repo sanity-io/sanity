@@ -1,4 +1,3 @@
-import React from 'react'
 import {Box, Flex, Stack, Text} from '@sanity/ui'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 import {useTranslation} from '../../../i18n'

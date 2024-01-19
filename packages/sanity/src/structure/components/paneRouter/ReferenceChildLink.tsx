@@ -1,4 +1,5 @@
-import React, {forwardRef} from 'react'
+import {forwardRef} from 'react'
+import * as React from 'react'
 import {toString as pathToString} from '@sanity/util/paths'
 import {ChildLink} from './ChildLink'
 import {ReferenceChildLinkProps} from './types'

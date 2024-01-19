@@ -1,6 +1,8 @@
 /* eslint-disable camelcase */
 
-import React, {useCallback, useMemo, useRef} from 'react'
+import {useCallback, useMemo, useRef} from 'react'
+
+import * as React from 'react'
 import {RouterContext} from './RouterContext'
 import {RouterContextValue, RouterState} from './types'
 import {useRouter} from './useRouter'

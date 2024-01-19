@@ -4,7 +4,7 @@ import type {CurrentUser, Schema, SchemaValidationProblem} from '@sanity/types'
 import {studioTheme} from '@sanity/ui'
 import {startCase} from 'lodash'
 import {fromUrl} from '@sanity/bifur-client'
-import {createElement, isValidElement} from 'react'
+import {ComponentType, createElement, ElementType, isValidElement} from 'react'
 import {isValidElementType} from 'react-is'
 import type {i18n} from 'i18next'
 import {createSchema} from '../schema'
@@ -58,7 +58,7 @@ type InternalSource = WorkspaceSummary['__internal']['sources'][number]
 const isError = (p: SchemaValidationProblem) => p.severity === 'error'
 
 function normalizeIcon(
-  icon: React.ComponentType | React.ElementType | undefined,
+  icon: ComponentType | ElementType | undefined,
   title: string,
   subtitle = '',
 ): JSX.Element {

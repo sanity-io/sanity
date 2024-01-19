@@ -1,5 +1,5 @@
 import {Stack, Text} from '@sanity/ui'
-import React, {useCallback} from 'react'
+import {useCallback} from 'react'
 import {transparentize} from 'polished'
 import styled from 'styled-components'
 import {StringInputProps, set} from 'sanity'

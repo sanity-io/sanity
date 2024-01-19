@@ -1,4 +1,3 @@
-import React from 'react'
 import type {CrossDatasetReferenceValue, CrossDatasetReferenceSchemaType} from '@sanity/types'
 import {Stack, Text, TextSkeleton} from '@sanity/ui'
 import {Translate, useTranslation} from '../../../i18n'

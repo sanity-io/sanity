@@ -1,4 +1,4 @@
-import React, {ComponentProps, useCallback, useEffect, useState} from 'react'
+import {ComponentProps, ReactNode, useCallback, useEffect, useState} from 'react'
 
 import {AccessDeniedIcon, ImageIcon, ReadOnlyIcon} from '@sanity/icons'
 import {Box, Card, CardTone, Heading, Text, useElementRect} from '@sanity/ui'
@@ -131,7 +131,7 @@ function OverlayComponent({
 }: {
   cardTone: Exclude<CardTone, 'inherit'>
   drag: boolean
-  content: React.ReactNode
+  content: ReactNode
 }) {
   return (
     <Overlay justify="flex-end" padding={3} $drag={drag} $tone={cardTone}>

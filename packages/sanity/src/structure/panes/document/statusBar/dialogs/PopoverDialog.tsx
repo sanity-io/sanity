@@ -4,7 +4,7 @@ import {
   useGlobalKeyDown,
   useLayer,
 } from '@sanity/ui'
-import React, {useCallback, useState} from 'react'
+import {useCallback, useState} from 'react'
 import {POPOVER_FALLBACK_PLACEMENTS} from './constants'
 import {DocumentActionPopoverDialogProps} from 'sanity'
 

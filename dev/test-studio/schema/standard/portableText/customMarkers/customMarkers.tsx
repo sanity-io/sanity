@@ -1,5 +1,4 @@
 import {Card, Stack, Text} from '@sanity/ui'
-import React from 'react'
 import {RenderCustomMarkers} from 'sanity'
 
 export const renderCustomMarkers: RenderCustomMarkers = (markers) => {

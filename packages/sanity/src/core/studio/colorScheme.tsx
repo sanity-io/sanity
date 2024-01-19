@@ -1,4 +1,12 @@
-import React, {createContext, useContext, useEffect, useMemo, useSyncExternalStore} from 'react'
+import {
+  ComponentType,
+  ReactNode,
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useSyncExternalStore,
+} from 'react'
 import {studioTheme, ThemeColorSchemeKey, ThemeProvider, usePrefersDark} from '@sanity/ui'
 import {DesktopIcon, MoonIcon, SunIcon} from '@sanity/icons'
 import type {StudioThemeColorSchemeKey} from '../theme/types'
@@ -29,7 +37,7 @@ function ColorThemeProvider({
   children,
   scheme: _scheme,
 }: {
-  children: React.ReactNode
+  children: ReactNode
   scheme: StudioThemeColorSchemeKey
 }) {
   const systemScheme = useSystemScheme()
@@ -50,7 +58,7 @@ const LOCAL_STORAGE_KEY = 'sanityStudio:ui:colorScheme'
 
 /** @internal */
 export interface ColorSchemeProviderProps {
-  children: React.ReactNode
+  children: ReactNode
   onSchemeChange?: (nextScheme: StudioThemeColorSchemeKey) => void
   scheme?: StudioThemeColorSchemeKey
 }
@@ -192,7 +200,7 @@ export function useColorScheme() {
 }
 
 interface ColorSchemeOption {
-  icon: React.ComponentType
+  icon: ComponentType
   label: string
   name: StudioThemeColorSchemeKey
   onSelect: () => void

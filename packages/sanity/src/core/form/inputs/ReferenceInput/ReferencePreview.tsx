@@ -1,4 +1,4 @@
-import React, {useMemo} from 'react'
+import {useMemo} from 'react'
 import {ObjectSchemaType} from '@sanity/types'
 import {Badge, Box, Inline} from '@sanity/ui'
 import {DocumentStatus} from '../../../components/documentStatus'

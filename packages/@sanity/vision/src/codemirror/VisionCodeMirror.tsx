@@ -1,4 +1,3 @@
-import React from 'react'
 import {useTheme} from '@sanity/ui'
 import CodeMirror, {ReactCodeMirrorProps} from '@uiw/react-codemirror'
 import {codemirrorExtensions} from './extensions'

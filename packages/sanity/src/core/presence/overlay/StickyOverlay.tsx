@@ -1,6 +1,15 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 
-import React, {memo, useMemo} from 'react'
+import {
+  CSSProperties,
+  Fragment,
+  ReactElement,
+  ReactNode,
+  memo,
+  useCallback,
+  useMemo,
+  useRef,
+} from 'react'
 import {flatten, groupBy, orderBy, sortBy} from 'lodash'
 import {
   AVATAR_ARROW_HEIGHT,
@@ -22,7 +31,7 @@ import {FieldPresenceInner} from '../FieldPresence'
 import {RegionsWithIntersections} from './RegionsWithIntersections'
 import {ReportedPresenceData, useReportedValues} from './tracker'
 
-const ITEM_TRANSITION: React.CSSProperties = {
+const ITEM_TRANSITION: CSSProperties = {
   transitionProperty: 'transform',
   transitionDuration: '200ms',
   transitionTimingFunction: 'cubic-bezier(0.85, 0, 0.15, 1)',
@@ -98,7 +107,7 @@ function group(regionsWithIntersectionDetails: RegionWithIntersectionDetails[]):
   }
 }
 
-const Spacer = ({height, ...rest}: {height: number; style?: React.CSSProperties}) => (
+const Spacer = ({height, ...rest}: {height: number; style?: CSSProperties}) => (
   <div style={{height: Math.max(0, height), ...rest?.style}} />
 )
 
@@ -135,17 +144,17 @@ function regionsWithComputedRects(
   }))
 }
 
-type Props = {margins: Margins; children: React.ReactNode}
+type Props = {margins: Margins; children: ReactNode}
 export function StickyOverlay(props: Props) {
   const {children, margins = DEFAULT_MARGINS} = props
   const reportedValues = useReportedValues()
-  const ref = React.useRef<HTMLDivElement | null>(null)
-  const regions = React.useMemo(
+  const ref = useRef<HTMLDivElement | null>(null)
+  const regions = useMemo(
     () => (ref.current ? regionsWithComputedRects(reportedValues, ref.current) : EMPTY_ARRAY),
     [reportedValues],
   )
 
-  const renderCallback = React.useCallback(
+  const renderCallback = useCallback(
     (regionsWithIntersectionDetails: RegionWithIntersectionDetails[], containerWidth: any) => {
       const grouped = group(
         regionsWithIntersectionDetails.filter((item) => item.region.presence.length > 0),
@@ -233,7 +242,7 @@ const PresenceDock = memo(function PresenceDock(props: {
 
   const margin = position === 'top' ? topMargin : bottomMargin
 
-  const style: React.CSSProperties = useMemo(
+  const style: CSSProperties = useMemo(
     () => ({
       zIndex: 2,
       position: 'sticky',
@@ -278,7 +287,7 @@ function PresenceInside(props: {
 
         const {presence, maxAvatars} = withIntersection.region
         return (
-          <React.Fragment key={withIntersection.region.id}>
+          <Fragment key={withIntersection.region.id}>
             <div
               style={{
                 zIndex: 2,
@@ -300,14 +309,14 @@ function PresenceInside(props: {
                 />
               </DebugValue>
             </div>
-          </React.Fragment>
+          </Fragment>
         )
       })}
     </>
   )
 }
 
-const PassThrough = (props: {children: React.ReactElement; [prop: string]: any}) => props.children
+const PassThrough = (props: {children: ReactElement; [prop: string]: any}) => props.children
 
 const DebugValue = DEBUG
   ? function DebugValue(props: any) {

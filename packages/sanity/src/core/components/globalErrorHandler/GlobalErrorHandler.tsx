@@ -1,5 +1,3 @@
-import React from 'react'
-
 const errorHandlerScript = `
 ;(function () {
   var _caughtErrors = []

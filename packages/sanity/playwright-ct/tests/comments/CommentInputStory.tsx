@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import {useState} from 'react'
 import {CurrentUser, PortableTextBlock} from '@sanity/types'
 import {noop} from 'lodash'
 import {CommentInput} from '../../../src/structure/comments/src/components/pte/comment-input/CommentInput'

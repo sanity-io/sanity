@@ -1,6 +1,5 @@
 import {AvatarSize, Flex} from '@sanity/ui'
 import {useBoolean, useSelect} from '@sanity/ui-workshop'
-import React from 'react'
 import {UserAvatar} from '../UserAvatar'
 
 const SIZE_OPTIONS: Record<string, AvatarSize> = {

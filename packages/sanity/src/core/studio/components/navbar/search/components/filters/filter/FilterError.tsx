@@ -1,6 +1,5 @@
 import {ErrorOutlineIcon} from '@sanity/icons'
 import {Box, Flex, ResponsivePaddingProps, Stack} from '@sanity/ui'
-import React from 'react'
 import {TextWithTone} from '../../../../../../../components'
 import {useTranslation} from '../../../../../../../i18n'
 

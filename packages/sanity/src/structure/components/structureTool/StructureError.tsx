@@ -1,6 +1,6 @@
 import {generateHelpUrl} from '@sanity/generate-help-url'
 import {Box, Card, Code, Container, Heading, Stack, Text} from '@sanity/ui'
-import React, {useCallback} from 'react'
+import {useCallback} from 'react'
 import styled from 'styled-components'
 import {SyncIcon} from '@sanity/icons'
 import {Button} from '../../../ui-components'

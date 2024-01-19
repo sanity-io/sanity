@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {ChangeEvent, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {isBooleanSchemaType, isNumberSchemaType} from '@sanity/types'
 import {FieldMember} from '../../../store'
 import {
@@ -56,7 +56,7 @@ export function PrimitiveField(props: {
   )
 
   const handleNativeChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
+    (event: ChangeEvent<HTMLInputElement>) => {
       let inputValue: number | string | boolean = event.currentTarget.value
       if (isNumberSchemaType(member.field.schemaType)) {
         inputValue = event.currentTarget.valueAsNumber

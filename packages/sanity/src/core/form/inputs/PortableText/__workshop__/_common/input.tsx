@@ -1,5 +1,5 @@
 import {TextArea, Theme} from '@sanity/ui'
-import React, {forwardRef, useImperativeHandle, useRef} from 'react'
+import {ComponentType, forwardRef, useImperativeHandle, useRef} from 'react'
 import styled, {css} from 'styled-components'
 import {SchemaType} from '@sanity/types'
 import {PortableTextInput} from '../../PortableTextInput'
@@ -36,7 +36,7 @@ const DebugInput = forwardRef(function DebugInput(props: InputProps, ref) {
 export function inputResolver(
   input: SchemaType,
   form: SanityFormConfig,
-): React.ComponentType<Omit<InputProps, 'renderDefault'>> {
+): ComponentType<Omit<InputProps, 'renderDefault'>> {
   if (!input.type) {
     throw new Error('inputResolver: missing subtype')
   }

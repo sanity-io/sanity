@@ -1,6 +1,6 @@
 import {Text} from '@sanity/ui'
 import {WarningOutlineIcon, SyncIcon, CloseIcon} from '@sanity/icons'
-import React, {memo, useCallback, useMemo} from 'react'
+import {memo, useCallback, useMemo} from 'react'
 import {fromString as pathFromString, get as pathGet} from '@sanity/util/paths'
 import {KeyedSegment, Reference} from '@sanity/types'
 import {debounceTime, map} from 'rxjs/operators'

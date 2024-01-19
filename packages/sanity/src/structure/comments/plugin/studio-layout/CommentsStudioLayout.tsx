@@ -1,4 +1,3 @@
-import React from 'react'
 import {CommentsOnboardingProvider, CommentsSetupProvider, CommentsUpsellProvider} from '../../src'
 import {ConditionalWrapper} from '../../../../ui-components/conditionalWrapper'
 import {LayoutProps, useFeatureEnabled} from 'sanity'

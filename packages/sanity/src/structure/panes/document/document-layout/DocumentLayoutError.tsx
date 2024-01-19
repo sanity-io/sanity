@@ -1,5 +1,4 @@
 import {Card, Code, Stack, Text} from '@sanity/ui'
-import React from 'react'
 import {ErrorPane} from '../../error'
 import {Translate, isDev, useTranslation} from 'sanity'
 

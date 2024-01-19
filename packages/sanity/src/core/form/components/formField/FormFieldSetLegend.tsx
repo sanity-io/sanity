@@ -1,5 +1,5 @@
 import {Box, Flex, rem, Text, Theme} from '@sanity/ui'
-import React, {memo} from 'react'
+import {memo, ReactNode} from 'react'
 import {ToggleArrowRightIcon} from '@sanity/icons'
 import styled, {css} from 'styled-components'
 import {useTranslation} from '../../../i18n'
@@ -9,7 +9,7 @@ export interface FormFieldSetLegendProps {
   collapsed: boolean
   collapsible?: boolean
   onClick?: () => void
-  title: React.ReactNode
+  title: ReactNode
 }
 
 const Root = styled.legend`

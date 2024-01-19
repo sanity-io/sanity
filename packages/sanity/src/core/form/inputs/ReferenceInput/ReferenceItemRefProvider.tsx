@@ -1,11 +1,11 @@
-import React from 'react'
+import {ReactNode} from 'react'
 import {type ReferenceItemRef, ReferenceItemRefContext} from './useReferenceItemRef'
 
 /**
  * @internal
  */
 interface ReferenceItemRefProviderProps extends ReferenceItemRef {
-  children: React.ReactNode
+  children: ReactNode
 }
 
 /**

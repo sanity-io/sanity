@@ -1,5 +1,5 @@
 import {Box, Flex, TextInput} from '@sanity/ui'
-import React, {ChangeEvent, useCallback, useState} from 'react'
+import {ChangeEvent, useCallback, useState} from 'react'
 import {useSearchState} from '../../../../../contexts/search/useSearchState'
 import {OperatorNumberRangeValue} from '../../../../../definitions/operators/common'
 import {OperatorInputComponentProps} from '../../../../../definitions/operators/operatorTypes'

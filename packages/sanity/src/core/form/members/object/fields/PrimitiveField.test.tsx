@@ -1,7 +1,7 @@
 // eslint-disable-next-line import/no-unassigned-import
 import '@testing-library/jest-dom/extend-expect'
 import {render} from '@testing-library/react'
-import React, {PropsWithChildren} from 'react'
+import {PropsWithChildren} from 'react'
 import {ThemeProvider, studioTheme, LayerProvider} from '@sanity/ui'
 import userEvent from '@testing-library/user-event'
 import {ObjectSchemaType} from '@sanity/types'

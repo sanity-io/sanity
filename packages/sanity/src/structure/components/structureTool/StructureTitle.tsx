@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react'
+import {useEffect} from 'react'
 import type {ObjectSchemaType} from '@sanity/types'
 import type {Panes} from '../../structureResolvers'
 import {structureLocaleNamespace} from '../../i18n'

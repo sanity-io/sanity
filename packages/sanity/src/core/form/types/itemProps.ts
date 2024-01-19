@@ -14,7 +14,7 @@ import {
   SlugValue,
   StringSchemaType,
 } from '@sanity/types'
-import React from 'react'
+import {ReactNode, ReactElement, FocusEvent} from 'react'
 import {FormNodePresence} from '../../presence'
 import {ObjectInputProps} from './inputProps'
 import {ArrayInputInsertEvent} from './event'
@@ -50,9 +50,9 @@ export interface BaseItemProps<T> {
   /** The ID of the input element. */
   inputId: string
   /** The function to call when the item receives focus. */
-  onFocus: (event: React.FocusEvent) => void
+  onFocus: (event: FocusEvent) => void
   /** The function to call when the item loses focus. */
-  onBlur: (event: React.FocusEvent) => void
+  onBlur: (event: FocusEvent) => void
   /** Whether the item is read-only. */
   readOnly?: boolean
   /** Whether the item is focused. */
@@ -70,7 +70,7 @@ export interface BaseItemProps<T> {
   onInsert: (event: Omit<ArrayInputInsertEvent<T>, 'referenceItem'>) => void
 
   /** The children of the item. */
-  children: React.ReactNode
+  children: ReactNode
 
   /** The validation markers for the item. */
   validation: FormNodeValidation[]
@@ -81,7 +81,7 @@ export interface BaseItemProps<T> {
   presence: FormNodePresence[]
 
   /** The function to call to render the default item. See {@link ItemProps} */
-  renderDefault: (props: ItemProps) => React.ReactElement
+  renderDefault: (props: ItemProps) => ReactElement
 }
 
 /**

@@ -8,7 +8,7 @@ import {
 } from '@sanity/icons'
 import {Card} from '@sanity/ui'
 import {useBoolean, useString} from '@sanity/ui-workshop'
-import React, {createContext, useMemo, useState} from 'react'
+import {createContext, useMemo, useState} from 'react'
 import styled from 'styled-components'
 import {defineConfig, Tool} from '../../../../config'
 import {isNonNullable} from '../../../../util/isNonNullable'

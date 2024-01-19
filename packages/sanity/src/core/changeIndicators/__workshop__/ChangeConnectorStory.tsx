@@ -1,6 +1,6 @@
 import {Path} from '@sanity/types'
 import {Card, Container, Flex, LayerProvider, Stack, Text} from '@sanity/ui'
-import React, {useCallback, useState} from 'react'
+import {ReactNode, useCallback, useState} from 'react'
 import styled from 'styled-components'
 import {ScrollContainer} from '../../components/scroll'
 import {ChangeFieldWrapper} from '../ChangeFieldWrapper'
@@ -107,7 +107,7 @@ export default function ChangeConnectorStory() {
 }
 
 function DebugFormField(props: {
-  children?: React.ReactNode
+  children?: ReactNode
   focusPath: Path
   path: Path
   value: unknown
@@ -127,7 +127,7 @@ function DebugFormField(props: {
   )
 }
 
-function DebugDiffField(props: {children?: React.ReactNode; path: Path}) {
+function DebugDiffField(props: {children?: ReactNode; path: Path}) {
   const {children, path} = props
   const [hovered, setHovered] = useState(false)
 

@@ -1,4 +1,4 @@
-import React, {useCallback} from 'react'
+import {useCallback} from 'react'
 import {Box} from '@sanity/ui'
 import styled from 'styled-components'
 import {PaneContent, PaneItem, usePaneLayout} from '../../components'

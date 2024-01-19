@@ -1,6 +1,6 @@
 import {SearchIcon} from '@sanity/icons'
 import {Box, Flex} from '@sanity/ui'
-import React, {forwardRef} from 'react'
+import {forwardRef, KeyboardEvent} from 'react'
 import styled from 'styled-components'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import {CustomTextInput} from '../../common/CustomTextInput'
@@ -8,7 +8,7 @@ import {useTranslation} from '../../../../../../../i18n'
 
 interface FilterPopoverContentHeaderProps {
   ariaInputLabel: string
-  onChange: (e: React.KeyboardEvent<HTMLInputElement>) => void
+  onChange: (e: KeyboardEvent<HTMLInputElement>) => void
   onClear: () => void
   typeFilter: string
 }

@@ -1,6 +1,18 @@
 import {CloseIcon} from '@sanity/icons'
 import {Box, Card, Flex, isHTMLElement, rem, Text, type Theme, useForwardedRef} from '@sanity/ui'
-import React, {forwardRef, useCallback, useEffect, useRef, useState} from 'react'
+import {
+  ChangeEvent,
+  HTMLProps,
+  Ref,
+  forwardRef,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  KeyboardEvent,
+  PointerEvent,
+  FocusEvent,
+} from 'react'
 import styled, {css, type CSSObject} from 'styled-components'
 import {useTranslation} from '../../../i18n'
 import {studioLocaleNamespace} from '../../../i18n/localeNamespaces'
@@ -130,11 +142,11 @@ export const TagInput = forwardRef(
     props: {
       readOnly?: boolean
       onChange?: (newValue: {value: string}[]) => void
-      onFocus?: (event: React.FocusEvent) => void
+      onFocus?: (event: FocusEvent) => void
       placeholder?: string
       value?: {value: string}[]
-    } & Omit<React.HTMLProps<HTMLInputElement>, 'as' | 'onChange' | 'onFocus' | 'ref' | 'value'>,
-    ref: React.Ref<HTMLInputElement>,
+    } & Omit<HTMLProps<HTMLInputElement>, 'as' | 'onChange' | 'onFocus' | 'ref' | 'value'>,
+    ref: Ref<HTMLInputElement>,
   ) => {
     const {
       disabled,
@@ -154,7 +166,7 @@ export const TagInput = forwardRef(
     const rootRef = useRef<HTMLDivElement | null>(null)
 
     const handleRootPointerDown = useCallback(
-      (event: React.PointerEvent<HTMLDivElement>) => {
+      (event: PointerEvent<HTMLDivElement>) => {
         const isTagElement = isHTMLElement(event.target) && event.target.closest('[data-ui="Tag"]')
 
         if (isTagElement) return
@@ -172,12 +184,12 @@ export const TagInput = forwardRef(
       setFocused(false)
     }, [])
 
-    const handleInputChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleInputChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
       setInputValue(event.currentTarget.value)
     }, [])
 
     const handleInputFocus = useCallback(
-      (event: React.FocusEvent) => {
+      (event: FocusEvent) => {
         setFocused(true)
         if (onFocus) onFocus(event)
       },
@@ -185,7 +197,7 @@ export const TagInput = forwardRef(
     )
 
     const handleInputKeyDown = useCallback(
-      (event: React.KeyboardEvent<HTMLInputElement>) => {
+      (event: KeyboardEvent<HTMLInputElement>) => {
         if (event.key === 'Enter') {
           event.preventDefault()
           event.stopPropagation()

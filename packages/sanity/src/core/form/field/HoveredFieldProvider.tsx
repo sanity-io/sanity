@@ -1,5 +1,5 @@
 import {Path} from '@sanity/types'
-import React, {PropsWithChildren, useCallback, useMemo, useState} from 'react'
+import {PropsWithChildren, useCallback, useMemo, useState} from 'react'
 import {pathToString} from '../../field'
 import {HoveredFieldContext, HoveredFieldContextValue} from './HoveredFieldContext'
 

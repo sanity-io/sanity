@@ -1,4 +1,12 @@
-import React from 'react'
+import {
+  createContext,
+  useContext,
+  useState,
+  useLayoutEffect,
+  ReactNode,
+  useMemo,
+  useRef,
+} from 'react'
 import {Reported, TrackerContext} from './types'
 import {createUseReporter, IsEqualFunction} from './createUseReporter'
 import {createStore} from './createStore'
@@ -57,20 +65,20 @@ const getNextId = () => ++id
 
 /** @internal */
 export function createTrackerScope<Value>() {
-  const Context = React.createContext(DEFAULT_CONTEXT as TrackerContext<Value>)
+  const Context = createContext(DEFAULT_CONTEXT as TrackerContext<Value>)
 
   function useReportedValues() {
-    const context = React.useContext(Context)
-    const [values, setValues] = React.useState(context.read())
-    React.useLayoutEffect(() => {
+    const context = useContext(Context)
+    const [values, setValues] = useState(context.read())
+    useLayoutEffect(() => {
       setValues(context.read())
       return context.subscribe(setValues)
     }, [context])
     return values
   }
 
-  function Tracker(props: {children: React.ReactNode}) {
-    const store = React.useMemo(() => createStore<Value>(), [])
+  function Tracker(props: {children: ReactNode}) {
+    const store = useMemo(() => createStore<Value>(), [])
     return <Context.Provider value={store}>{props.children}</Context.Provider>
   }
 
@@ -83,6 +91,6 @@ export function createTrackerScope<Value>() {
     useAutoIdReporter: (
       value: Value | (() => Value),
       isEqual: IsEqualFunction<Value> = Object.is,
-    ) => useReporter(`element-${React.useRef(getNextId()).current}`, value, isEqual),
+    ) => useReporter(`element-${useRef(getNextId()).current}`, value, isEqual),
   }
 }

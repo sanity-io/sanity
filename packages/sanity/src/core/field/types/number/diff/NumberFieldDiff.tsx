@@ -1,4 +1,3 @@
-import React from 'react'
 import {DiffFromTo} from '../../../diff'
 import {DiffComponent, NumberDiff} from '../../../types'
 import {NumberPreview} from '../preview/NumberPreview'

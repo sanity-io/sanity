@@ -2,7 +2,6 @@
 
 import {act, waitForElementToBeRemoved, within} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import React from 'react'
 import {Observable, of} from 'rxjs'
 import {SanityClient} from '@sanity/client'
 import {renderCrossDatasetReferenceInput} from '../../../../../../test/form'

@@ -1,6 +1,6 @@
 import {ObjectSchemaType} from '@sanity/types'
 import {Card, Container} from '@sanity/ui'
-import React, {useCallback, useMemo} from 'react'
+import {useCallback, useMemo} from 'react'
 import {useSchema} from '../../hooks'
 import {ChangeList, DocumentChangeContext, DocumentChangeContextInstance} from '../diff'
 import {ObjectDiff, StringDiff} from '../types'

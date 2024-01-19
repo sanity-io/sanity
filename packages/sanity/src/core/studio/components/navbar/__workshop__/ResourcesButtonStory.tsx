@@ -1,5 +1,4 @@
 import {Flex} from '@sanity/ui'
-import React from 'react'
 import {ResourcesButton} from '../resources/ResourcesButton'
 
 export default function ResourcesButtonStory() {

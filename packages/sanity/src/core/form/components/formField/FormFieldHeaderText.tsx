@@ -1,7 +1,7 @@
 import styled from 'styled-components'
 import type {DeprecatedProperty, FormNodeValidation} from '@sanity/types'
 import {Badge, Box, Flex, Stack, Text} from '@sanity/ui'
-import React, {memo} from 'react'
+import {ReactNode, memo} from 'react'
 import {useTranslation} from '../../../i18n'
 import {createDescriptionId} from '../../members/common/createDescriptionId'
 import {TextWithTone} from '../../../components'
@@ -23,12 +23,12 @@ export interface FormFieldHeaderTextProps {
    * @beta
    */
   validation?: FormNodeValidation[]
-  description?: React.ReactNode
+  description?: ReactNode
   /**
    * The unique ID used to target the actual input element
    */
   inputId?: string
-  title?: React.ReactNode
+  title?: ReactNode
   deprecated?: DeprecatedProperty
 }
 

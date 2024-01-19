@@ -1,7 +1,7 @@
 import {SanityClient} from '@sanity/client'
 import {Card, Container, Flex} from '@sanity/ui'
 import {useAction, useSelect} from '@sanity/ui-workshop'
-import React, {useCallback, useMemo, useRef, useState} from 'react'
+import {useCallback, useMemo, useRef, useState} from 'react'
 import {Path} from '@sanity/types'
 import {createMockSanityClient} from '../../../../../../../test/mocks/mockSanityClient'
 import {createPatchChannel} from '../../../../patch/PatchChannel'

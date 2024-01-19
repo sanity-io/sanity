@@ -1,7 +1,7 @@
 import {DocumentIcon, EditIcon} from '@sanity/icons'
 import {Card, Container, Flex, Text} from '@sanity/ui'
 import {useBoolean, useSelect, useString} from '@sanity/ui-workshop'
-import React, {ComponentType, createElement, useMemo} from 'react'
+import {ComponentType, createElement, useMemo} from 'react'
 import {ContextMenuButton} from '../../contextMenuButton'
 import {PortableTextPreviewLayoutKey, PreviewProps} from '../types'
 import {InlinePreview} from '../portableText/InlinePreview'
@@ -21,13 +21,13 @@ const LAYOUT_OPTIONS: Record<string, PortableTextPreviewLayoutKey> = {
   Inline: 'inline',
 }
 
-// const mediaValues: Record<string, React.ReactNode> = {
+// const mediaValues: Record<string, ReactNode> = {
 //   image: <img src="https://source.unsplash.com/70x70/?abstract" />,
 //   icon: <DocumentIcon />,
 // }
 
 const previewComponents: {
-  [TLayoutKey in PortableTextPreviewLayoutKey]: React.ComponentType<
+  [TLayoutKey in PortableTextPreviewLayoutKey]: ComponentType<
     Omit<PreviewProps<TLayoutKey>, 'renderDefault'>
   >
 } = {

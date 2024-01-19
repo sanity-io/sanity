@@ -1,5 +1,6 @@
 // This is transitional in order to track usage of the ActivateOnFocusPart part from within the form-builder package
-import React, {KeyboardEvent, useCallback, useMemo, useState} from 'react'
+import {KeyboardEvent, ReactNode, useCallback, useMemo, useState} from 'react'
+
 import {Text} from '@sanity/ui'
 import {useTranslation} from '../../../i18n'
 import {
@@ -17,8 +18,8 @@ const isTouchDevice = () =>
  * @internal
  */
 export interface ActivateOnFocusProps {
-  children: React.ReactNode
-  message?: React.ReactNode
+  children: ReactNode
+  message?: ReactNode
   onActivate?: () => void
   isOverlayActive: boolean
 }

@@ -1,5 +1,4 @@
 import {Card, Code, Stack} from '@sanity/ui'
-import React from 'react'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import type {SearchFilter} from '../../../types'
 import {getFieldFromFilter} from '../../../utils/filterUtils'

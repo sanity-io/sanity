@@ -1,4 +1,3 @@
-import React from 'react'
 import {defineType} from 'sanity'
 import {structureGroupOptions} from '../../../../structure/groupByOption'
 import {

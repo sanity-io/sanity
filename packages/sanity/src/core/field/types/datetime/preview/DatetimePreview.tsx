@@ -1,7 +1,6 @@
 import * as legacyDateFormat from '@sanity/util/legacyDateFormat'
 import {StringSchemaType} from '@sanity/types'
 import {Box} from '@sanity/ui'
-import React from 'react'
 import styled from 'styled-components'
 import {FieldPreviewComponent} from '../../../preview'
 

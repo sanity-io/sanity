@@ -1,5 +1,5 @@
 import {useToast} from '@sanity/ui'
-import React, {memo, useEffect, useRef} from 'react'
+import {memo, useEffect, useRef} from 'react'
 import {structureLocaleNamespace} from '../../i18n'
 import {usePaneRouter} from '../../components'
 import {useDocumentPane} from './useDocumentPane'

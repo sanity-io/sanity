@@ -1,5 +1,4 @@
 import {Translate, useTranslation} from 'sanity'
-import React from 'react'
 import {Card, Stack, Text} from '@sanity/ui'
 import {InfoFilledIcon} from '@sanity/icons'
 

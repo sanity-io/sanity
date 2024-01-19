@@ -1,4 +1,4 @@
-import React, {memo, useCallback, useMemo} from 'react'
+import {ReactNode, MouseEvent, memo, useCallback, useMemo} from 'react'
 import {PortableTextEditor, usePortableTextEditor} from '@sanity/portable-text-editor'
 import {
   Menu,
@@ -46,7 +46,7 @@ const MENU_POPOVER_PROPS: MenuButtonProps['popover'] = {
   portal: 'default',
 }
 
-const TEXT_STYLE_OPTIONS: Record<string, (title: React.ReactNode) => React.ReactNode> = {
+const TEXT_STYLE_OPTIONS: Record<string, (title: ReactNode) => ReactNode> = {
   h1: (title) => <Heading1>{title}</Heading1>,
   h2: (title) => <Heading2>{title}</Heading2>,
   h3: (title) => <Heading3>{title}</Heading3>,
@@ -59,7 +59,7 @@ const TEXT_STYLE_OPTIONS: Record<string, (title: React.ReactNode) => React.React
 
 const TEXT_STYLE_KEYS = Object.keys(TEXT_STYLE_OPTIONS)
 
-const preventDefault = (event: React.MouseEvent<HTMLButtonElement>) => event.preventDefault()
+const preventDefault = (event: MouseEvent<HTMLButtonElement>) => event.preventDefault()
 
 const emptyStyle: BlockStyleItem = {
   key: 'style-none',

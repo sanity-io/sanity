@@ -1,5 +1,4 @@
 import {Box, Text} from '@sanity/ui'
-import React from 'react'
 import {LogoProps} from '../../../config'
 
 /**

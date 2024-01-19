@@ -1,6 +1,5 @@
 /* eslint-disable i18next/no-literal-string */
 import {defineArrayMember, defineField, defineType} from '@sanity/types'
-import React from 'react'
 import {Box, Text} from '@sanity/ui'
 import {TestWrapper} from '../../utils/TestWrapper'
 import {TestForm} from '../../utils/TestForm'

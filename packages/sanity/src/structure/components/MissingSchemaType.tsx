@@ -1,6 +1,5 @@
 import {WarningOutlineIcon} from '@sanity/icons'
 import {SanityDocument} from '@sanity/types'
-import React from 'react'
 import {structureLocaleNamespace} from '../i18n'
 import {GeneralPreviewLayoutKey, SanityDefaultPreview, Translate, useTranslation} from 'sanity'
 

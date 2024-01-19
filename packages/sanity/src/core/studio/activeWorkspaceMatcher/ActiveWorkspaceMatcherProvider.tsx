@@ -1,4 +1,4 @@
-import React, {memo, useMemo} from 'react'
+import {ReactNode, memo, useMemo} from 'react'
 import type {RouterHistory} from '../router'
 import {RouterHistoryProvider} from '../router/RouterHistoryContext'
 import type {WorkspacesContextValue} from '../workspaces'
@@ -14,7 +14,7 @@ export const ActiveWorkspaceMatcherProvider = memo(function ActiveWorkspaceMatch
   activeWorkspace,
   setActiveWorkspace,
 }: {
-  children: React.ReactNode
+  children: ReactNode
   history: RouterHistory
   activeWorkspace: WorkspacesContextValue[number]
   setActiveWorkspace: (workspaceName: string) => void

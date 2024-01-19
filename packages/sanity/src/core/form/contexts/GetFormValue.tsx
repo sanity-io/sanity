@@ -1,4 +1,4 @@
-import React, {createContext, ReactNode, useCallback, useContext, useMemo, useRef} from 'react'
+import {createContext, ReactNode, useCallback, useContext, useMemo, useRef} from 'react'
 import {Path} from '@sanity/types'
 import {getValueAtPath} from '../../field'
 import type {FormDocumentValue} from '../types'

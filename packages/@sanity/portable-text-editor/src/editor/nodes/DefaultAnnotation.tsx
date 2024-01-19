@@ -1,9 +1,9 @@
 import {PortableTextObject} from '@sanity/types'
-import React, {useCallback} from 'react'
+import {ReactNode, useCallback} from 'react'
 
 type Props = {
   annotation: PortableTextObject
-  children: React.ReactNode
+  children: ReactNode
 }
 export function DefaultAnnotation(props: Props) {
   // eslint-disable-next-line no-alert

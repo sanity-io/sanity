@@ -1,4 +1,3 @@
-import React from 'react'
 import {Flex} from '@sanity/ui'
 import {useNumber} from '@sanity/ui-workshop'
 import {CommentBreadcrumbs} from '../components'

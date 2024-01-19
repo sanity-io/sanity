@@ -7,7 +7,8 @@ import {
   Box,
   BoxHeight,
 } from '@sanity/ui'
-import React, {ComponentProps, forwardRef} from 'react'
+import {ComponentProps, forwardRef} from 'react'
+import * as React from 'react'
 import {useTranslation} from 'react-i18next'
 
 /** @internal */

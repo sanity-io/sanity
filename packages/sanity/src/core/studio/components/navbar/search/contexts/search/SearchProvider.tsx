@@ -1,13 +1,5 @@
 import isEqual from 'lodash/isEqual'
-import React, {
-  ReactNode,
-  useCallback,
-  useEffect,
-  useMemo,
-  useReducer,
-  useRef,
-  useState,
-} from 'react'
+import {ReactNode, useCallback, useEffect, useMemo, useReducer, useRef, useState} from 'react'
 import {CommandListHandle} from '../../../../../../components'
 import {useClient, useSchema} from '../../../../../../hooks'
 import type {SearchableType, SearchTerms} from '../../../../../../search'

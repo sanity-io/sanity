@@ -1,4 +1,4 @@
-import React, {ReactNode, useCallback, useEffect, useRef} from 'react'
+import {ReactNode, useCallback, useEffect, useRef} from 'react'
 import {useSearchState} from '../../contexts/search/useSearchState'
 import {useSearchHotkeys} from '../../hooks/useSearchHotkeys'
 

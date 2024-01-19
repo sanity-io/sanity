@@ -1,6 +1,5 @@
 /* eslint-disable max-nested-callbacks */
 import {expect, test} from '@playwright/experimental-ct-react'
-import React from 'react'
 import {Path, SanityDocument} from '@sanity/types'
 import {Page} from '@playwright/test'
 import CopyPasteStory from './CopyPasteStory'

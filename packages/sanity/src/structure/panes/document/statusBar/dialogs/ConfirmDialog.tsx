@@ -9,7 +9,7 @@ import {
   useGlobalKeyDown,
   useLayer,
 } from '@sanity/ui'
-import React, {useCallback, useState} from 'react'
+import {useCallback, useState} from 'react'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {POPOVER_FALLBACK_PLACEMENTS} from './constants'
 import {DocumentActionConfirmDialogProps, useTranslation} from 'sanity'

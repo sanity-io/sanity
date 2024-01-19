@@ -1,5 +1,4 @@
 import {Box, Flex, Text} from '@sanity/ui'
-import React from 'react'
 import {CommentIcon} from '@sanity/icons'
 import {PortableTextMarker} from '../../../../types'
 

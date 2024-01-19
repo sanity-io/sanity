@@ -37,7 +37,7 @@ import {
   UrlInput,
   UrlInputProps,
 } from 'sanity'
-import React, {ReactNode} from 'react'
+import {ReactNode} from 'react'
 import {Card} from '@sanity/ui'
 
 /* These ensure that all the native inputs are exported and assignable to defineField.components.input*/

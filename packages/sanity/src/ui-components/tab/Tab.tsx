@@ -1,6 +1,7 @@
 /* eslint-disable no-restricted-imports */
 import {Tab as UITab, TabProps as UITabProps} from '@sanity/ui'
-import React, {forwardRef} from 'react'
+import {forwardRef} from 'react'
+import * as React from 'react'
 
 /**
  * @internal

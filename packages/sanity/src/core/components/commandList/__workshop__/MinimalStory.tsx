@@ -1,4 +1,4 @@
-import React, {useCallback, useRef} from 'react'
+import {useCallback, useRef} from 'react'
 import styled from 'styled-components'
 import {CommandList} from '../CommandList'
 import {CommandListHandle, CommandListRenderItemCallback} from '../types'

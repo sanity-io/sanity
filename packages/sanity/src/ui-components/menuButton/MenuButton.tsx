@@ -4,7 +4,8 @@ import {
   MenuButton as UIMenuButton,
   MenuButtonProps as UIMenuButtonProps,
 } from '@sanity/ui'
-import React, {forwardRef} from 'react'
+import {forwardRef} from 'react'
+import * as React from 'react'
 
 /** @internal */
 export type MenuButtonProps = Omit<UIMenuButtonProps, 'popover'> & {

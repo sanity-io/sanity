@@ -2,7 +2,6 @@
 
 import {FileAsset, FileSchemaType} from '@sanity/types'
 import {fireEvent, waitFor} from '@testing-library/react'
-import React from 'react'
 import {Observable, of} from 'rxjs'
 import {renderFileInput} from '../../../../../../../test/form'
 import {BaseFileInput} from '../FileInput'

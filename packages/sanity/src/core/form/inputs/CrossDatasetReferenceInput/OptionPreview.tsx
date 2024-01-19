@@ -1,4 +1,3 @@
-import React from 'react'
 import {Stack, Text, TextSkeleton} from '@sanity/ui'
 import type {CrossDatasetReferenceSchemaType} from '@sanity/types'
 import type {Observable} from 'rxjs'

@@ -1,5 +1,4 @@
 import {LayerProvider} from '@sanity/ui'
-import React from 'react'
 import {SearchPopover} from '../components/SearchPopover'
 import {SearchProvider} from '../contexts/search/SearchProvider'
 

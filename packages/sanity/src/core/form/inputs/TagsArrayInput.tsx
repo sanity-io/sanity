@@ -1,4 +1,4 @@
-import React, {useCallback, useMemo} from 'react'
+import {useCallback, useMemo} from 'react'
 import {set, unset} from '../patch'
 import {TagInput} from '../components/tagInput'
 import {ArrayOfPrimitivesInputProps} from '../types'

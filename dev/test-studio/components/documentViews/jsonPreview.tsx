@@ -1,5 +1,4 @@
 import {Box, Card, Code} from '@sanity/ui'
-import React from 'react'
 
 export function JSONPreviewDocumentView(props: any) {
   return (

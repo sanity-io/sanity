@@ -1,6 +1,5 @@
 import {InfoOutlineIcon} from '@sanity/icons'
 import {Box, Flex, Text} from '@sanity/ui'
-import React from 'react'
 
 interface InfoBoxPreviewProps {
   value?: {_type: 'infobox'; body: unknown[]; title: string}

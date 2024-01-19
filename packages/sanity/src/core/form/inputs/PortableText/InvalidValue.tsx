@@ -9,7 +9,7 @@ import {
   Stack,
   Text,
 } from '@sanity/ui'
-import React, {useCallback} from 'react'
+import {useCallback} from 'react'
 import {Translate, useTranslation} from '../../../i18n'
 import {Alert} from '../../components/Alert'
 

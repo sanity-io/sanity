@@ -1,6 +1,6 @@
 import {ChevronDownIcon} from '@sanity/icons'
 import {Placement, useClickOutside, useGlobalKeyDown, useToast} from '@sanity/ui'
-import React, {useCallback, useState} from 'react'
+import {useCallback, useState} from 'react'
 import styled from 'styled-components'
 import {useDocumentPane} from '../useDocumentPane'
 import {Button, Popover} from '../../../../ui-components'

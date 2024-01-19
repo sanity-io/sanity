@@ -1,7 +1,7 @@
 import {upperFirst} from 'lodash'
 import {ChevronLeftIcon, ChevronRightIcon} from '@sanity/icons'
 import {Flex, Inline, Text} from '@sanity/ui'
-import React, {useCallback} from 'react'
+import {useCallback} from 'react'
 import {Button} from '../../../../../../../../../../../../ui-components'
 import {useTranslation} from '../../../../../../../../../../../i18n'
 import {useDateTimeFormat} from '../../../../../../../../../../../hooks/useDateTimeFormat'

@@ -1,5 +1,5 @@
 /* eslint-disable complexity, max-nested-callbacks, no-nested-ternary */
-import React, {useCallback, useMemo, useRef, useState, useId} from 'react'
+import {useCallback, useMemo, useRef, KeyboardEvent, FocusEvent, useState, useId} from 'react'
 import type {CrossDatasetReferenceValue, CrossDatasetReferenceSchemaType} from '@sanity/types'
 import {ResetIcon as ClearIcon, SyncIcon as ReplaceIcon} from '@sanity/icons'
 import {concat, of, type Observable} from 'rxjs'
@@ -117,7 +117,7 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
   }, [onChange])
 
   const handleAutocompleteKeyDown = useCallback(
-    (event: React.KeyboardEvent<HTMLInputElement>) => {
+    (event: KeyboardEvent<HTMLInputElement>) => {
       if (event.key === 'Escape') {
         onPathFocus?.([])
       }
@@ -166,7 +166,7 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
   const errors = useMemo(() => validation.filter((item) => item.level === 'error'), [validation])
 
   const handleFocus = useCallback(
-    (event: React.FocusEvent<HTMLDivElement>) => {
+    (event: FocusEvent<HTMLDivElement>) => {
       if (event.currentTarget === elementProps.ref.current) {
         onPathFocus?.([FOCUS_TERMINATOR])
       }
@@ -175,7 +175,7 @@ export function CrossDatasetReferenceInput(props: CrossDatasetReferenceInputProp
   )
 
   const handleAutocompleteFocus = useCallback(
-    (event: React.FocusEvent<HTMLInputElement>) => {
+    (event: FocusEvent<HTMLInputElement>) => {
       if (event.currentTarget === elementProps.ref.current) {
         onPathFocus?.(REF_PATH)
       }

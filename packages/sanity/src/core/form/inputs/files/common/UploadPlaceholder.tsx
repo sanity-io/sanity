@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import {ReactNode, memo, useState} from 'react'
 import {UploadIcon} from '@sanity/icons'
 import {Flex, useElementSize} from '@sanity/ui'
 import {FileLike} from '../../../studio/uploads/types'
@@ -9,7 +9,7 @@ import {PlaceholderText} from './PlaceholderText'
 interface UploadPlaceholderProps {
   accept: string
   acceptedFiles: FileLike[]
-  browse?: React.ReactNode
+  browse?: ReactNode
   directUploads?: boolean
   hoveringFiles: FileLike[]
   onUpload?: (files: File[]) => void
@@ -75,4 +75,4 @@ function UploadPlaceholderComponent(props: UploadPlaceholderProps) {
   )
 }
 
-export const UploadPlaceholder = React.memo(UploadPlaceholderComponent)
+export const UploadPlaceholder = memo(UploadPlaceholderComponent)

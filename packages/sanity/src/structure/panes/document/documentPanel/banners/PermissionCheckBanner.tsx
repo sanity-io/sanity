@@ -1,4 +1,3 @@
-import React from 'react'
 import {Text} from '@sanity/ui'
 import {ReadOnlyIcon} from '@sanity/icons'
 import {structureLocaleNamespace} from '../../../../i18n'

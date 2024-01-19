@@ -1,4 +1,3 @@
-import React from 'react'
 import {useTranslation} from '../../../i18n'
 import {PreviewPrimitive} from './PreviewPrimitive'
 import {PreviewObject} from './PreviewObject'

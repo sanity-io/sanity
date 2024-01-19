@@ -1,6 +1,6 @@
 import {Path} from '@sanity/types'
 import {Card, Container} from '@sanity/ui'
-import React, {useCallback, useMemo, useState} from 'react'
+import {useCallback, useMemo, useState, FocusEvent} from 'react'
 import {useDocumentOperation, useEditState, useSchema, useValidationStatus} from '../../hooks'
 import {useUnique} from '../../util'
 import {createPatchChannel} from '../patch/PatchChannel'
@@ -41,7 +41,7 @@ export default function FormBuilderStory() {
     [patch, initialValue.value],
   )
 
-  const handleFocus = useCallback((nextFocusPath?: Path | React.FocusEvent<any>) => {
+  const handleFocus = useCallback((nextFocusPath?: Path | FocusEvent<any>) => {
     if (Array.isArray(nextFocusPath)) {
       setFocusPath(nextFocusPath)
     }

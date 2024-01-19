@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useMemo, useState} from 'react'
+import {ReactNode, useCallback, useEffect, useMemo, useState} from 'react'
 import styled, {css} from 'styled-components'
 import {Box, Card, Flex} from '@sanity/ui'
 import {FieldPresence, FormNodePresence} from '../../../presence'
@@ -131,9 +131,9 @@ const MAX_AVATARS = 4
 
 interface FormFieldBaseHeaderProps {
   __internal_comments?: FieldCommentsProps // DO NOT USE
-  __internal_slot?: React.ReactNode // ONLY USED BY AI ASSIST PLUGIN
+  __internal_slot?: ReactNode // ONLY USED BY AI ASSIST PLUGIN
   actions?: DocumentFieldActionNode[]
-  content: React.ReactNode
+  content: ReactNode
   fieldFocused: boolean
   fieldHovered: boolean
   presence?: FormNodePresence[]

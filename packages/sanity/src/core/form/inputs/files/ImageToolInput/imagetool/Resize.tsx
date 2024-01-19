@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-shadow */
-import React, {useCallback, useEffect, useState} from 'react'
+import {ReactNode, useCallback, useEffect, useState} from 'react'
 
 export interface ResizeProps {
   image: HTMLImageElement
   maxHeight: number
   maxWidth: number
-  children: (canvas: HTMLCanvasElement) => React.ReactNode
+  children: (canvas: HTMLCanvasElement) => ReactNode
 }
 
 export function Resize(props: ResizeProps): any {

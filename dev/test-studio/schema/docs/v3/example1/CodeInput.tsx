@@ -1,6 +1,5 @@
 import {FieldMember, MemberField, ObjectInputProps} from 'sanity'
 import {Stack} from '@sanity/ui'
-import React from 'react'
 
 export function CodeInput(props: ObjectInputProps) {
   const {members, renderField, renderItem} = props

@@ -1,5 +1,5 @@
 import {Card, CardProps} from '@sanity/ui'
-import React, {createContext, forwardRef, useContext} from 'react'
+import {ForwardedRef, HTMLProps, createContext, forwardRef, useContext} from 'react'
 import styled, {css} from 'styled-components'
 
 /** @internal */
@@ -37,8 +37,8 @@ export function usePreviewCard(): PreviewCardContextValue {
 
 /** @internal */
 export const PreviewCard = forwardRef(function PreviewCard(
-  props: CardProps & Omit<React.HTMLProps<HTMLDivElement>, 'height'>,
-  ref: React.ForwardedRef<HTMLDivElement>,
+  props: CardProps & Omit<HTMLProps<HTMLDivElement>, 'height'>,
+  ref: ForwardedRef<HTMLDivElement>,
 ) {
   const {children, selected, as, ...restProps} = props
 

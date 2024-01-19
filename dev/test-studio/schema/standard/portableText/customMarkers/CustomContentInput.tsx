@@ -1,4 +1,4 @@
-import React, {useCallback, useMemo} from 'react'
+import {useCallback, useMemo} from 'react'
 import {PortableTextInput, PortableTextInputProps, PortableTextMarker} from 'sanity'
 import {htmlToBlocks} from '@sanity/block-tools'
 import {OnPasteFn, PortableTextBlock} from '@sanity/portable-text-editor'

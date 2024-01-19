@@ -1,4 +1,4 @@
-import React, {createElement, isValidElement} from 'react'
+import {ElementType, ReactNode, createElement, isValidElement} from 'react'
 import {isValidElementType} from 'react-is'
 import {Box, Flex, rem, Stack, Text, TextSkeleton} from '@sanity/ui'
 import styled from 'styled-components'
@@ -11,12 +11,12 @@ import {PREVIEW_SIZES} from '../constants'
  * @hidden
  * @beta */
 export interface TemplatePreviewProps {
-  description?: React.ReactNode
+  description?: ReactNode
   isPlaceholder?: boolean
   media?: MediaProps['media']
   mediaDimensions?: PreviewMediaDimensions
-  subtitle?: React.ElementType<{layout: 'default'}> | React.ReactNode
-  title?: React.ElementType<{layout: 'default'}> | React.ReactNode
+  subtitle?: ElementType<{layout: 'default'}> | ReactNode
+  title?: ElementType<{layout: 'default'}> | ReactNode
 }
 
 const DEFAULT_MEDIA_DIMENSION: PreviewMediaDimensions = {

@@ -1,4 +1,3 @@
-import React from 'react'
 import {DoubleChevronRightIcon} from '@sanity/icons'
 import {Box, Card, Container, Flex, Stack, Text} from '@sanity/ui'
 

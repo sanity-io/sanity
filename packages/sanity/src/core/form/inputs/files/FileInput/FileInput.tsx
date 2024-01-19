@@ -1,6 +1,7 @@
 /* eslint-disable import/no-unresolved,react/jsx-handler-names, react/display-name, react/no-this-in-sfc */
 
-import React, {ReactNode} from 'react'
+import {PureComponent, ReactNode, FocusEvent} from 'react'
+
 import {Observable, Subscription} from 'rxjs'
 import {get, startCase} from 'lodash'
 import {
@@ -43,7 +44,7 @@ export interface BaseFileInputValue extends Partial<BaseFile> {
   _upload?: UploadState
 }
 
-function passThrough({children}: {children?: React.ReactNode}) {
+function passThrough({children}: {children?: ReactNode}) {
   return children
 }
 
@@ -71,7 +72,7 @@ export interface BaseFileInputState {
 const ASSET_FIELD_PATH = ['asset']
 
 /** @internal */
-export class BaseFileInput extends React.PureComponent<BaseFileInputProps, BaseFileInputState> {
+export class BaseFileInput extends PureComponent<BaseFileInputProps, BaseFileInputState> {
   _assetFieldPath: Path
   uploadSubscription: Subscription | null = null
   browseButtonElement: HTMLButtonElement | null = null
@@ -293,7 +294,7 @@ export class BaseFileInput extends React.PureComponent<BaseFileInputProps, BaseF
     this.setState({selectedAssetSource: null})
   }
 
-  handleFileTargetFocus = (event: React.FocusEvent) => {
+  handleFileTargetFocus = (event: FocusEvent) => {
     // We want to handle focus when the file target element *itself* receives
     // focus, not when an interactive child element receives focus. Since React has decided
     // to let focus bubble, so this workaround is needed

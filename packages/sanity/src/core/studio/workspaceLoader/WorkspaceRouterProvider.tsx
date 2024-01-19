@@ -1,5 +1,5 @@
 import {escapeRegExp, isEqual} from 'lodash'
-import React, {useEffect, useMemo, useRef} from 'react'
+import {ComponentType, MutableRefObject, ReactNode, useEffect, useMemo, useRef} from 'react'
 import {useSyncExternalStoreWithSelector} from 'use-sync-external-store/with-selector'
 import type {Tool, Workspace} from '../../config'
 import {createRouter, type RouterStateEvent, type RouterHistory} from '../router'
@@ -8,8 +8,8 @@ import {useRouterHistory} from '../router/RouterHistoryContext'
 import {type Router, RouterProvider, type RouterState} from 'sanity/router'
 
 interface WorkspaceRouterProviderProps {
-  children: React.ReactNode
-  LoadingComponent: React.ComponentType
+  children: ReactNode
+  LoadingComponent: ComponentType
   workspace: Workspace
 }
 
@@ -138,7 +138,7 @@ function maybeResolveIntent(
   event: RouterStateEvent | null,
   router: Router,
   tools: Tool[],
-  prevEvent: React.MutableRefObject<RouterStateEvent | null>,
+  prevEvent: MutableRefObject<RouterStateEvent | null>,
 ): string | null {
   if (event?.type === 'state' && event.state?.intent) {
     const redirectState = resolveIntentState(

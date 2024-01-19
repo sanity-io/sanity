@@ -1,5 +1,4 @@
 import {Box, Text} from '@sanity/ui'
-import React from 'react'
 import {Pane, PaneContent, PaneHeader} from '../../components/pane'
 import {structureLocaleNamespace} from '../../i18n'
 import {isRecord, Translate, useTranslation} from 'sanity'

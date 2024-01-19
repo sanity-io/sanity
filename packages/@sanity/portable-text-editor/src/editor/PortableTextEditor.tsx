@@ -1,4 +1,4 @@
-import React, {PropsWithChildren} from 'react'
+import {Component, PropsWithChildren} from 'react'
 import {
   ArrayDefinition,
   ArraySchemaType,
@@ -85,7 +85,7 @@ export type PortableTextEditorProps = PropsWithChildren<{
  * The main Portable Text Editor component.
  * @public
  */
-export class PortableTextEditor extends React.Component<PortableTextEditorProps> {
+export class PortableTextEditor extends Component<PortableTextEditorProps> {
   /**
    * An observable of all the editor changes.
    */

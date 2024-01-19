@@ -17,8 +17,8 @@ import {
   type PortableTextMemberSchemaTypes,
 } from '@sanity/portable-text-editor'
 import {capitalize, get} from 'lodash'
-import React from 'react'
 import type {ObjectSchemaType} from '@sanity/types'
+import {ComponentType} from 'react'
 import type {BlockItem, BlockStyleItem, PTEToolbarAction, PTEToolbarActionGroup} from './types'
 import {CustomIcon} from './CustomIcon'
 
@@ -74,7 +74,7 @@ function getPTEListActions(
   })
 }
 
-function getAnnotationIcon(type: ObjectSchemaType): React.ComponentType | string | undefined {
+function getAnnotationIcon(type: ObjectSchemaType): ComponentType | string | undefined {
   return (
     get(type, 'icon') ||
     get(type, 'type.icon') ||
@@ -141,10 +141,7 @@ export function getBlockStyles(types: PortableTextMemberSchemaTypes): BlockStyle
   })
 }
 
-function getInsertMenuIcon(
-  type: ObjectSchemaType,
-  fallbackIcon: React.ComponentType,
-): React.ComponentType {
+function getInsertMenuIcon(type: ObjectSchemaType, fallbackIcon: ComponentType): ComponentType {
   const referenceIcon = get(type, 'to[0].icon')
 
   return type.icon || (type.type && type.type.icon) || referenceIcon || fallbackIcon
@@ -182,11 +179,11 @@ export function getInsertMenuItems(
   return filteredBlockItems
 }
 
-const annotationIcons: Record<string, React.ComponentType> = {
+const annotationIcons: Record<string, ComponentType> = {
   link: LinkIcon,
 }
 
-const formatIcons: Record<string, React.ComponentType> = {
+const formatIcons: Record<string, ComponentType> = {
   strong: BoldIcon,
   em: ItalicIcon,
   'strike-through': StrikethroughIcon,
@@ -194,7 +191,7 @@ const formatIcons: Record<string, React.ComponentType> = {
   code: CodeIcon,
 }
 
-const listStyleIcons: Record<string, React.ComponentType> = {
+const listStyleIcons: Record<string, ComponentType> = {
   number: OlistIcon,
   bullet: UlistIcon,
 }

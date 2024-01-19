@@ -1,6 +1,6 @@
 import {DeprecatedProperty, FormNodeValidation} from '@sanity/types'
 import {Stack} from '@sanity/ui'
-import React, {memo} from 'react'
+import {HTMLProps, ReactNode, memo} from 'react'
 import {FormNodePresence} from '../../../presence'
 import {DocumentFieldActionNode} from '../../../config'
 import {useFieldActions} from '../../field'
@@ -25,9 +25,9 @@ export interface FormFieldProps {
   /** @internal @deprecated DO NOT USE */
   __internal_comments?: FieldCommentsProps
   /** @internal @deprecated ONLY USED BY AI ASSIST PLUGIN */
-  __internal_slot?: React.ReactNode
-  children: React.ReactNode
-  description?: React.ReactNode
+  __internal_slot?: ReactNode
+  children: ReactNode
+  description?: ReactNode
   /**
    * The unique ID used to target the actual input element
    */
@@ -36,7 +36,7 @@ export interface FormFieldProps {
    * The nesting level of the form field
    */
   level?: number
-  title?: React.ReactNode
+  title?: ReactNode
   /**
    * @beta
    */
@@ -46,7 +46,7 @@ export interface FormFieldProps {
 
 /** @internal */
 export const FormField = memo(function FormField(
-  props: FormFieldProps & Omit<React.HTMLProps<HTMLDivElement>, 'as' | 'height' | 'ref'>,
+  props: FormFieldProps & Omit<HTMLProps<HTMLDivElement>, 'as' | 'height' | 'ref'>,
 ) {
   const {
     __unstable_headerActions: actions = EMPTY_ARRAY,

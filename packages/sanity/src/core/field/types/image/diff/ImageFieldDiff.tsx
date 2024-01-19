@@ -1,5 +1,4 @@
 import type {Image} from '@sanity/types'
-import React from 'react'
 import {Box, Card, Text} from '@sanity/ui'
 import {DiffCard, DiffTooltip, ChangeList, getAnnotationAtPath} from '../../../diff'
 import {type TFunction, useTranslation} from '../../../../i18n'

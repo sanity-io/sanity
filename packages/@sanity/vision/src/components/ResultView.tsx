@@ -1,4 +1,3 @@
-import React from 'react'
 import HLRU from 'hashlru'
 import JSONInspector from '@rexxars/react-json-inspector'
 import {Code} from '@sanity/ui'

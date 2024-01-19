@@ -1,5 +1,4 @@
 import {defineField, defineType} from '@sanity/types'
-import React from 'react'
 import {TestWrapper} from './utils/TestWrapper'
 import {TestForm} from './utils/TestForm'
 

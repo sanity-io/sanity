@@ -1,5 +1,5 @@
 import {UnknownIcon} from '@sanity/icons'
-import React, {createElement} from 'react'
+import {createElement} from 'react'
 import {getFilterDefinition} from '../../../definitions/filters'
 import type {SearchFilter} from '../../../types'
 import {useSearchState} from '../../../contexts/search/useSearchState'

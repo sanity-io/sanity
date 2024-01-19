@@ -1,5 +1,5 @@
 import {CardProps, useElementRect} from '@sanity/ui'
-import React, {useMemo, useState, useEffect} from 'react'
+import {useMemo, useState, useEffect, HTMLProps} from 'react'
 import {PaneLayoutContext} from './PaneLayoutContext'
 import {PaneLayoutContextValue} from './types'
 import {Root} from './PaneLayout.styles'
@@ -24,7 +24,7 @@ export interface PaneLayoutProps {
 export function PaneLayout(
   props: PaneLayoutProps &
     CardProps &
-    Omit<React.HTMLProps<HTMLDivElement>, 'as' | 'height' | 'ref' | 'wrap'>,
+    Omit<HTMLProps<HTMLDivElement>, 'as' | 'height' | 'ref' | 'wrap'>,
 ) {
   const {children, minWidth, onCollapse, onExpand, ...restProps} = props
   const controller = useMemo(() => createPaneLayoutController(), [])

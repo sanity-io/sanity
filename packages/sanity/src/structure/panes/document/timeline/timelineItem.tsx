@@ -1,4 +1,5 @@
-import React, {useCallback, createElement, useMemo} from 'react'
+import {useCallback, createElement, useMemo} from 'react'
+import * as React from 'react'
 import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
 import {ButtonProps} from '../../../../ui-components'
 import {getTimelineEventIconComponent} from './helpers'

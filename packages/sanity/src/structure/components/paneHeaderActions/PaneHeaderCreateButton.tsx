@@ -1,5 +1,6 @@
 import {AddIcon} from '@sanity/icons'
-import React, {useMemo, forwardRef} from 'react'
+import {useMemo, forwardRef} from 'react'
+import * as React from 'react'
 import {Menu} from '@sanity/ui'
 import {Schema} from '@sanity/types'
 import {Button, MenuButton, PopoverProps, MenuItem} from '../../../ui-components'

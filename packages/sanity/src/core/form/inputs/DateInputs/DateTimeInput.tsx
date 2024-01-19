@@ -5,7 +5,7 @@ import {
   DEFAULT_TIME_FORMAT,
 } from '@sanity/util/legacyDateFormat'
 import {getMinutes, setMinutes, parseISO} from 'date-fns'
-import React, {useCallback, useMemo} from 'react'
+import {useCallback, useMemo} from 'react'
 import {set, unset} from '../../patch'
 import {StringInputProps} from '../../types'
 import {useTranslation} from '../../../i18n'
@@ -88,12 +88,12 @@ export function DateTimeInput(props: DateTimeInputProps) {
     [onChange, timeStep],
   )
 
-  const formatInputValue = React.useCallback(
+  const formatInputValue = useCallback(
     (date: Date) => format(date, `${dateFormat} ${timeFormat}`),
     [dateFormat, timeFormat],
   )
 
-  const parseInputValue = React.useCallback(
+  const parseInputValue = useCallback(
     (inputValue: string) => parse(inputValue, `${dateFormat} ${timeFormat}`),
     [dateFormat, timeFormat],
   )

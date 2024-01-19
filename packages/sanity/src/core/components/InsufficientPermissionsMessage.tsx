@@ -2,7 +2,7 @@ import {AccessDeniedIcon} from '@sanity/icons'
 import type {CurrentUser} from '@sanity/types'
 import {Box, Inline, Text} from '@sanity/ui'
 import {startCase} from 'lodash'
-import React, {Fragment, useCallback} from 'react'
+import {Fragment, useCallback} from 'react'
 import {useListFormat} from '../hooks/useListFormat'
 // note: these are both available from the `../i18n` export but importing through
 // that export fails the build. may be due to a circular reference.

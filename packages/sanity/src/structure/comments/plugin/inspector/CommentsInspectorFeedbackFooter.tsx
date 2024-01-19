@@ -1,6 +1,5 @@
 import {LaunchIcon} from '@sanity/icons'
 import {Card, Text} from '@sanity/ui'
-import React from 'react'
 import styled from 'styled-components'
 import {commentsLocaleNamespace} from '../../i18n'
 import {useTranslation} from 'sanity'

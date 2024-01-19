@@ -14,7 +14,7 @@ import {
   useTheme,
 } from '@sanity/ui'
 import {useAction} from '@sanity/ui-workshop'
-import React, {useCallback, useState} from 'react'
+import {ReactNode, useCallback, useState} from 'react'
 import styled from 'styled-components'
 import {Button, Dialog} from '../../../../ui-components'
 import {Pane} from '../Pane'
@@ -244,7 +244,7 @@ function StringField(props: {
 }
 
 function DebugFormField(props: {
-  children?: React.ReactNode
+  children?: ReactNode
   focusPath: Path
   path: Path
   value: unknown
@@ -259,7 +259,7 @@ function DebugFormField(props: {
   )
 }
 
-function DebugDiffField(props: {children?: React.ReactNode; path: Path}) {
+function DebugDiffField(props: {children?: ReactNode; path: Path}) {
   const {children, path} = props
   const [hovered, setHovered] = useState(false)
 

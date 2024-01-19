@@ -1,4 +1,4 @@
-import React, {useState, useRef, useMemo, useEffect, useCallback, startTransition} from 'react'
+import {useState, useRef, useMemo, useEffect, useCallback, startTransition} from 'react'
 import {Box, Flex, Text, useGlobalKeyDown, useTheme} from '@sanity/ui'
 import {EditIcon, TrashIcon} from '@sanity/icons'
 import {useTranslation} from '../../../../i18n'

@@ -1,6 +1,6 @@
 import {PortableTextEditor, usePortableTextEditor} from '@sanity/portable-text-editor'
 import type {ObjectSchemaType, Path, PortableTextObject} from '@sanity/types'
-import React, {ComponentType, useCallback, useMemo, useState} from 'react'
+import {ComponentType, ReactElement, useCallback, useMemo, useState} from 'react'
 import {isEqual} from '@sanity/util/paths'
 import {Tooltip} from '../../../../../ui-components'
 import {pathToString} from '../../../../field'
@@ -28,7 +28,7 @@ import {Root, TooltipBox} from './Annotation.styles'
 import {ObjectEditModal} from './modals/ObjectEditModal'
 
 interface AnnotationProps {
-  children: React.ReactElement
+  children: ReactElement
   editorNodeFocused: boolean
   floatingBoundary: HTMLElement | null
   focused: boolean

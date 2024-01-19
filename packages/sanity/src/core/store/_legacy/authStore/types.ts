@@ -1,7 +1,7 @@
 import {SanityClient} from '@sanity/client'
 import {CurrentUser} from '@sanity/types'
 import {Observable} from 'rxjs'
-import {WorkspaceSummary} from '../../../config'
+import {ComponentType} from 'react'
 
 /**
  * The interface used by the Studio that produces a `SanityClient` and
@@ -33,7 +33,7 @@ export interface AuthStore {
    * authentication. For the typical case in `createAuthStore`, this means
    * loading the providers and showing them as options to the user.
    */
-  LoginComponent?: React.ComponentType<LoginComponentProps>
+  LoginComponent?: ComponentType<LoginComponentProps>
   /**
    * Custom auth stores can implement a function that runs when the user logs
    * out. The implementation is expected to remove all credentials both locally

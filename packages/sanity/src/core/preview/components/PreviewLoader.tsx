@@ -1,11 +1,5 @@
-import React, {
-  type ComponentType,
-  type CSSProperties,
-  type ReactElement,
-  createElement,
-  useMemo,
-  useState,
-} from 'react'
+import type {ComponentType, CSSProperties, ReactElement} from 'react'
+import {createElement, useMemo, useState} from 'react'
 import type {RenderPreviewCallbackProps} from '../../form'
 import {useVisibility} from '../useVisibility'
 

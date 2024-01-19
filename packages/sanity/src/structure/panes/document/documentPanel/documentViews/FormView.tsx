@@ -1,6 +1,7 @@
 /* eslint-disable no-nested-ternary */
 import {Box, Container, Flex, Spinner, Text, focusFirstDescendant} from '@sanity/ui'
-import React, {forwardRef, useEffect, useMemo, useCallback, useState} from 'react'
+import {forwardRef, useEffect, useMemo, useCallback, useState} from 'react'
+import * as React from 'react'
 import {tap} from 'rxjs/operators'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentTitle} from '../../useDocumentTitle'

@@ -6,7 +6,7 @@ import {
   rem,
   useClickOutside,
 } from '@sanity/ui'
-import React, {KeyboardEvent, useCallback, useState} from 'react'
+import {KeyboardEvent, useCallback, useState} from 'react'
 import styled from 'styled-components'
 import {Popover} from '../../../../../../../../ui-components'
 import {POPOVER_RADIUS, POPOVER_VERTICAL_MARGIN} from '../../../constants'

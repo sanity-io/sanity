@@ -1,7 +1,7 @@
-import React from 'react'
+import {createContext} from 'react'
 import {RouterContextValue} from './types'
 
 /**
  * @internal
  */
-export const RouterContext = React.createContext<RouterContextValue | null>(null)
+export const RouterContext = createContext<RouterContextValue | null>(null)

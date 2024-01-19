@@ -1,4 +1,4 @@
-import React, {useCallback} from 'react'
+import {ReactNode, useCallback} from 'react'
 import type {SanityDocument, SchemaType} from '@sanity/types'
 import {PaneItemPreview} from '../paneItem/PaneItemPreview'
 import {usePaneRouter} from '../paneRouter'
@@ -26,7 +26,7 @@ export function ReferencePreviewLink(props: ReferencePreviewLinkProps) {
   const {ReferenceChildLink} = usePaneRouter()
 
   const Link = useCallback(
-    function LinkComponent(linkProps: {children: React.ReactNode}) {
+    function LinkComponent(linkProps: {children: ReactNode}) {
       return (
         <ReferenceChildLink
           documentId={value?._id}

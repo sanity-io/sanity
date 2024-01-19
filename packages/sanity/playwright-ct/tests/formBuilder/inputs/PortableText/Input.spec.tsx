@@ -1,5 +1,4 @@
 import {expect, test} from '@playwright/experimental-ct-react'
-import React from 'react'
 import {testHelpers} from '../../../utils/testHelpers'
 import InputStory from './InputStory'
 

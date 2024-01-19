@@ -1,5 +1,5 @@
 import {Stack} from '@sanity/ui'
-import React, {useCallback} from 'react'
+import {useCallback} from 'react'
 import {useTranslation} from '../../../../../../../../../i18n'
 import {useSearchState} from '../../../../../contexts/search/useSearchState'
 import type {OperatorDateEqualValue} from '../../../../../definitions/operators/dateOperators'

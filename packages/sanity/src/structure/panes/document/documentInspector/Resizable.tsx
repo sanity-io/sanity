@@ -1,4 +1,4 @@
-import React, {HTMLProps, useCallback, useMemo, useRef, useState} from 'react'
+import {HTMLProps, useCallback, useMemo, useRef, useState} from 'react'
 import styled from 'styled-components'
 import {Box, BoxProps} from '@sanity/ui'
 import {Resizer} from './Resizer'

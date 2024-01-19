@@ -1,4 +1,4 @@
-import React, {useMemo} from 'react'
+import {useMemo} from 'react'
 import {startCase} from 'lodash'
 import {Box, Checkbox, Flex, Grid, Text} from '@sanity/ui'
 import {resolveTypeName} from '@sanity/util/content'

@@ -1,4 +1,3 @@
-import React from 'react'
 import {ImageIcon, OlistIcon} from '@sanity/icons'
 import {defineField, defineType} from 'sanity'
 

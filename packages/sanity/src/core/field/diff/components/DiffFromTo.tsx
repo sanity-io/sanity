@@ -1,5 +1,5 @@
 import type {Path, SchemaType} from '@sanity/types'
-import React, {createElement, CSSProperties} from 'react'
+import {createElement, CSSProperties} from 'react'
 import type {FieldPreviewComponent} from '../../preview'
 import type {Diff} from '../../types'
 import {useChangeVerb} from '../hooks/useChangeVerb'

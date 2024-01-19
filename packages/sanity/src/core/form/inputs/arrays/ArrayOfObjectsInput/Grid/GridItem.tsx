@@ -1,5 +1,5 @@
 import {Box, Card, CardTone, Menu} from '@sanity/ui'
-import React, {useCallback, useMemo, useRef} from 'react'
+import {useCallback, useMemo, useRef} from 'react'
 import {SchemaType} from '@sanity/types'
 import {CopyIcon as DuplicateIcon, TrashIcon} from '@sanity/icons'
 import styled from 'styled-components'

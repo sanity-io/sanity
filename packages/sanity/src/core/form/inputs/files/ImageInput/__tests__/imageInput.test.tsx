@@ -3,8 +3,6 @@
 // import {SanityClient} from '@sanity/client'
 // import imageUrlBuilder from '@sanity/image-url'
 import {ConditionalPropertyCallbackContext, defineField, defineType} from '@sanity/types'
-// import {fireEvent, waitFor} from '@testing-library/react'
-import React from 'react'
 // import {EMPTY, of} from 'rxjs'
 import {renderImageInput} from '../../../../../../../test/form'
 // import {UploadOptions} from '../../../../studio/uploads/types'

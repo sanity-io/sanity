@@ -1,3 +1,4 @@
+import {BaseSyntheticEvent} from 'react'
 import {PortableTextEditor} from '../editor/PortableTextEditor'
 import {PatchObservable} from './editor'
 
@@ -11,5 +12,5 @@ export type createEditorOptions = {
 
 export type HotkeyOptions = {
   marks?: Record<string, string>
-  custom?: Record<string, (event: React.BaseSyntheticEvent, editor: PortableTextEditor) => void>
+  custom?: Record<string, (event: BaseSyntheticEvent, editor: PortableTextEditor) => void>
 }

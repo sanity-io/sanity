@@ -1,4 +1,4 @@
-import React, {useCallback, useMemo} from 'react'
+import {ForwardedRef, forwardRef, useCallback, useMemo} from 'react'
 import {Box, Flex, Menu} from '@sanity/ui'
 import {SchemaType} from '@sanity/types'
 import {CopyIcon as DuplicateIcon, TrashIcon} from '@sanity/icons'
@@ -19,9 +19,9 @@ export type DefaultItemProps = Omit<PrimitiveItemProps, 'renderDefault'> & {
 
 const MENU_BUTTON_POPOVER_PROPS = {portal: true, tone: 'default'} as const
 
-export const ItemRow = React.forwardRef(function ItemRow(
+export const ItemRow = forwardRef(function ItemRow(
   props: DefaultItemProps,
-  ref: React.ForwardedRef<HTMLDivElement>,
+  ref: ForwardedRef<HTMLDivElement>,
 ) {
   const {
     sortable,

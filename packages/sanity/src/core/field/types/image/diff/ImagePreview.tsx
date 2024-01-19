@@ -1,4 +1,4 @@
-import React, {SyntheticEvent, useMemo} from 'react'
+import {ReactElement, SyntheticEvent, useMemo, useState} from 'react'
 import {getImageDimensions, isDefaultCrop, isDefaultHotspot} from '@sanity/asset-utils'
 import imageUrlBuilder from '@sanity/image-url'
 import {ImageIcon} from '@sanity/icons'
@@ -94,11 +94,11 @@ const HotspotDiff = styled.div`
   }
 `
 
-export function ImagePreview(props: ImagePreviewProps): React.ReactElement {
+export function ImagePreview(props: ImagePreviewProps): ReactElement {
   const {id, action, diff, hotspot, crop, is} = props
   const {t} = useTranslation()
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
-  const [imageError, setImageError] = React.useState<SyntheticEvent<HTMLImageElement, Event>>()
+  const [imageError, setImageError] = useState<SyntheticEvent<HTMLImageElement, Event>>()
   const {value: asset} = useDocumentValues<MinimalAsset>(id, ASSET_FIELDS)
   const dimensions = getImageDimensions(id)
   const imageBuilder = useMemo(() => imageUrlBuilder(client), [client])

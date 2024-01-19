@@ -1,4 +1,3 @@
-import React from 'react'
 import {Box} from '@sanity/ui'
 import {useTranslation} from 'sanity'
 import {visionLocaleNamespace} from '../i18n'

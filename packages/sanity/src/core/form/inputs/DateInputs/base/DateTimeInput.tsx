@@ -1,4 +1,12 @@
-import React, {KeyboardEvent, forwardRef, useCallback, useRef, useState} from 'react'
+import {
+  KeyboardEvent,
+  FocusEvent,
+  forwardRef,
+  useCallback,
+  useRef,
+  useState,
+  ForwardedRef,
+} from 'react'
 import FocusLock from 'react-focus-lock'
 import {Box, Flex, LayerProvider, useClickOutside, useForwardedRef} from '@sanity/ui'
 import {CalendarIcon} from '@sanity/icons'
@@ -12,7 +20,7 @@ export interface DateTimeInputProps {
   id?: string
   inputValue?: string
   onChange: (date: Date | null) => void
-  onInputChange?: (event: React.FocusEvent<HTMLInputElement>) => void
+  onInputChange?: (event: FocusEvent<HTMLInputElement>) => void
   placeholder?: string
   readOnly?: boolean
   selectTime?: boolean
@@ -23,7 +31,7 @@ export interface DateTimeInputProps {
 
 export const DateTimeInput = forwardRef(function DateTimeInput(
   props: DateTimeInputProps,
-  ref: React.ForwardedRef<HTMLInputElement>,
+  ref: ForwardedRef<HTMLInputElement>,
 ) {
   const {
     value,

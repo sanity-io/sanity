@@ -1,11 +1,11 @@
-import React, {useMemo} from 'react'
+import {ReactNode, useMemo} from 'react'
 import {Config, prepareConfig} from '../../config'
 import {WorkspacesContext} from './WorkspacesContext'
 
 /** @internal */
 export interface WorkspacesProviderProps {
   config: Config
-  children: React.ReactNode
+  children: ReactNode
   basePath?: string
 }
 

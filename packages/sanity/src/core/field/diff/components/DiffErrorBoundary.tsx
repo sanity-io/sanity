@@ -1,12 +1,12 @@
-import React from 'react'
 import {ErrorOutlineIcon} from '@sanity/icons'
+import {ReactNode, Component} from 'react'
 import {Box, Card, Flex, Text} from '@sanity/ui'
 import type {TFunction} from '../../../i18n'
 import {isDev} from '../../../environment'
 
 /** @internal */
 export interface DiffErrorBoundaryProps {
-  children: React.ReactNode
+  children: ReactNode
   t: TFunction
 }
 
@@ -16,10 +16,7 @@ export interface DiffErrorBoundaryState {
 }
 
 /** @internal */
-export class DiffErrorBoundary extends React.Component<
-  DiffErrorBoundaryProps,
-  DiffErrorBoundaryState
-> {
+export class DiffErrorBoundary extends Component<DiffErrorBoundaryProps, DiffErrorBoundaryState> {
   static getDerivedStateFromError(error: Error) {
     return {error}
   }

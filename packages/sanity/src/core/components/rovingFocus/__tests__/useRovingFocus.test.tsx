@@ -2,7 +2,7 @@
 import '@testing-library/jest-dom/extend-expect'
 import {render, fireEvent} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import React, {useState} from 'react'
+import {useState} from 'react'
 import {Card, studioTheme, ThemeProvider} from '@sanity/ui'
 import {RovingFocusProps} from '../types'
 import {Button} from '../../../../ui-components'

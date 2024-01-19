@@ -1,5 +1,4 @@
 import {Box, Grid, Text} from '@sanity/ui'
-import React from 'react'
 import styled from 'styled-components'
 import {useTranslation} from '../../../../../../../../../../../i18n'
 import {CalendarDay} from './CalendarDay'

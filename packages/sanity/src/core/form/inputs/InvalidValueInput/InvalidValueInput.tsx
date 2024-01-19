@@ -1,5 +1,5 @@
 import {Card, Code, Stack, Text} from '@sanity/ui'
-import React, {forwardRef, useCallback, useImperativeHandle, useMemo} from 'react'
+import {Ref, forwardRef, useCallback, useImperativeHandle, useMemo} from 'react'
 import {isPlainObject} from 'lodash'
 import {useTranslation, Translate} from '../../../i18n'
 import {PatchEvent, set, unset} from '../../patch'
@@ -38,7 +38,7 @@ interface InvalidValueProps {
 }
 
 export const InvalidValueInput = forwardRef(
-  (props: InvalidValueProps, ref: React.Ref<{focus: () => void}>) => {
+  (props: InvalidValueProps, ref: Ref<{focus: () => void}>) => {
     const {value, actualType, validTypes, onChange} = props
 
     useImperativeHandle(ref, () => ({

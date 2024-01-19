@@ -1,5 +1,5 @@
 import {Stack, Text} from '@sanity/ui'
-import React, {useCallback} from 'react'
+import {useCallback} from 'react'
 import {FormField} from '../../../components/formField'
 import {Button} from '../../../../../ui-components'
 import {Alert} from '../../../components/Alert'

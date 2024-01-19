@@ -1,6 +1,5 @@
 import userEvent from '@testing-library/user-event'
 import {defineField} from '@sanity/types'
-import React from 'react'
 import {renderBooleanInput} from '../../../../test/form/renderBooleanInput'
 import {BooleanInput} from './BooleanInput'
 

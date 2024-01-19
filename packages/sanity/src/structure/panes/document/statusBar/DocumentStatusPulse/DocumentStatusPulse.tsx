@@ -1,5 +1,4 @@
 import {ButtonTone, Flex, Text} from '@sanity/ui'
-import React from 'react'
 import {AnimatedStatusIcon} from './AnimatedStatusIcon'
 import {structureLocaleNamespace} from '../../../../i18n'
 import {TextWithTone, useTranslation} from 'sanity'

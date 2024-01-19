@@ -1,4 +1,4 @@
-import React, {useMemo} from 'react'
+import {useMemo} from 'react'
 import styled from 'styled-components'
 import {Avatar, AvatarProps} from '@sanity/ui'
 import {User} from '@sanity/types'

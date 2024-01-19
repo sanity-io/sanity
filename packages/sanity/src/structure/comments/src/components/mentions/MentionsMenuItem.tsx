@@ -1,5 +1,6 @@
 import {TextSkeleton, Flex, Text, Card, Box, Badge} from '@sanity/ui'
-import React, {useCallback} from 'react'
+import {useCallback} from 'react'
+import * as React from 'react'
 import styled from 'styled-components'
 import {MentionOptionUser} from '../../types'
 import {commentsLocaleNamespace} from '../../../i18n'

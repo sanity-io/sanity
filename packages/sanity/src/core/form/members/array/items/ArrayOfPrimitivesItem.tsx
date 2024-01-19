@@ -1,5 +1,5 @@
 import {isBooleanSchemaType, isNumberSchemaType, SchemaType} from '@sanity/types'
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {ChangeEvent, useCallback, useMemo, useRef, useState, FocusEvent} from 'react'
 import {FIXME} from '../../../../FIXME'
 import {ArrayOfPrimitivesItemMember} from '../../../store'
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
@@ -46,14 +46,14 @@ export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
   })
 
   const handleBlur = useCallback(
-    (event: React.FocusEvent) => {
+    (event: FocusEvent) => {
       onPathBlur(member.item.path)
     },
     [member.item.path, onPathBlur],
   )
 
   const handleFocus = useCallback(
-    (event: React.FocusEvent) => {
+    (event: FocusEvent) => {
       onPathFocus(member.item.path)
     },
     [member.item.path, onPathFocus],
@@ -66,7 +66,7 @@ export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
     [onChange, member.index],
   )
   const handleNativeChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
+    (event: ChangeEvent<HTMLInputElement>) => {
       let inputValue: number | string | boolean = event.currentTarget.value
       if (isNumberSchemaType(member.item.schemaType)) {
         inputValue = event.currentTarget.valueAsNumber

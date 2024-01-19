@@ -1,12 +1,3 @@
-import React from 'react'
-
-// const Root = styled(Card).attrs({height: 'fill', overflow: 'auto'})``
-// const Content = styled(Box).attrs({padding: 4})`
-//   margin: auto;
-//   width: 640px;
-//   max-width: 100%;
-// `
-
 export function ConfigErrorsScreen() {
   /* This screen is not currently being used anywhere. We're keeping it as a basis for future work */
   /* eslint-disable-next-line i18next/no-literal-string */

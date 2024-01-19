@@ -1,11 +1,11 @@
 import {CheckmarkIcon, ChevronDownIcon, DoubleChevronRightIcon} from '@sanity/icons'
 import {Card, Flex, Menu, Text} from '@sanity/ui'
-import React, {forwardRef, useCallback} from 'react'
+import {forwardRef, useCallback} from 'react'
 import styled from 'styled-components'
 import {Button, MenuButton, MenuItem} from '../../../../ui-components'
 import {commentsLocaleNamespace} from '../../i18n'
 import {BetaBadge, useTranslation} from 'sanity'
-import {CommentStatus, useCommentsEnabled, CommentsUIMode} from '../../src'
+import {CommentStatus, CommentsUIMode} from '../../src'
 
 const Root = styled(Card)({
   position: 'relative',

@@ -8,7 +8,7 @@ import {
 } from '@sanity/types'
 import {Card, Flex, Text, useClickOutside} from '@sanity/ui'
 import {FOCUS_TERMINATOR, toString} from '@sanity/util/paths'
-import React, {useCallback, useContext, useState, useEffect, useMemo} from 'react'
+import {useCallback, useContext, useState, useEffect, useMemo, MouseEvent} from 'react'
 import styled from 'styled-components'
 import {Popover} from '../../../../../../ui-components'
 import {useTranslation} from '../../../../../i18n'
@@ -110,7 +110,7 @@ function InlineObjectWithDiff({
   }, [focusPath, isEditing, onSetFocus])
 
   const handleOpenPopup = useCallback(
-    (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    (event: MouseEvent<HTMLDivElement, globalThis.MouseEvent>) => {
       event.stopPropagation()
       setOpen(true)
       if (!isRemoved) {

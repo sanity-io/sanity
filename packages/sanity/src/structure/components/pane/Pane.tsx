@@ -1,5 +1,14 @@
 import {BoundaryElementProvider, Card, CardProps, Code, Flex, useForwardedRef} from '@sanity/ui'
-import React, {forwardRef, useMemo, useState, useCallback, useEffect} from 'react'
+import {
+  forwardRef,
+  useMemo,
+  useState,
+  useCallback,
+  useEffect,
+  ReactNode,
+  HTMLProps,
+  ForwardedRef,
+} from 'react'
 import styled from 'styled-components'
 import {PANE_COLLAPSED_WIDTH, PANE_DEBUG, PANE_DEFAULT_MIN_WIDTH} from './constants'
 import {PaneContext} from './PaneContext'
@@ -8,7 +17,7 @@ import {usePaneLayout} from './usePaneLayout'
 import {LegacyLayerProvider} from 'sanity'
 
 interface PaneProps {
-  children?: React.ReactNode
+  children?: ReactNode
   currentMinWidth?: number
   currentMaxWidth?: number
   flex?: number
@@ -35,8 +44,8 @@ const Root = styled(Card)`
 export const Pane = forwardRef(function Pane(
   props: PaneProps &
     Omit<CardProps, 'as' | 'overflow'> &
-    Omit<React.HTMLProps<HTMLDivElement>, 'as' | 'height' | 'hidden' | 'id' | 'style'>,
-  ref: React.ForwardedRef<HTMLDivElement>,
+    Omit<HTMLProps<HTMLDivElement>, 'as' | 'height' | 'hidden' | 'id' | 'style'>,
+  ref: ForwardedRef<HTMLDivElement>,
 ) {
   const {
     children,

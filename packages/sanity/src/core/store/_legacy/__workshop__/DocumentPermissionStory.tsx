@@ -1,5 +1,5 @@
 import {Box, Code, Text} from '@sanity/ui'
-import React, {useEffect, useState} from 'react'
+import {useEffect, useState} from 'react'
 import {useGrantsStore} from '../datastores'
 import {PermissionCheckResult} from '../grants/types'
 

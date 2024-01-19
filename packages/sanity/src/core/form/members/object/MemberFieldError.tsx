@@ -1,4 +1,4 @@
-import React, {useCallback} from 'react'
+import {useCallback} from 'react'
 import {Box} from '@sanity/ui'
 import {FieldError} from '../../store/types/memberErrors'
 import {useFormCallbacks} from '../../studio/contexts/FormCallbacks'

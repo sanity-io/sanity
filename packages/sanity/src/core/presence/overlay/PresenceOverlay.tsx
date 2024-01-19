@@ -1,11 +1,11 @@
-import React from 'react'
+import {ReactNode} from 'react'
 import {DISABLE_OVERLAY} from '../constants'
 import {Tracker} from './tracker'
 import {StickyOverlay} from './StickyOverlay'
 
 /** @internal */
 export interface PresenceOverlayProps {
-  children: React.ReactNode
+  children: ReactNode
   margins?: [number, number, number, number]
 }
 

@@ -1,5 +1,6 @@
 import type {TFunction} from 'i18next'
-import React, {useMemo, type ComponentType, type ReactNode} from 'react'
+import type {ComponentType, ReactNode} from 'react'
+import {createElement, useMemo} from 'react'
 import {simpleParser, type CloseTagToken, type TextToken, type Token} from './simpleParser'
 
 const COMPONENT_NAME_RE = /^[A-Z]/
@@ -162,7 +163,7 @@ function render(tokens: Token[], componentMap: TranslateComponentMap): ReactNode
       </>
     ) : (
       <>
-        {React.createElement(head.name, {}, render(children, componentMap))}
+        {createElement(head.name, {}, render(children, componentMap))}
         {render(remaining, componentMap)}
       </>
     )

@@ -1,10 +1,10 @@
 import {ToggleArrowRightIcon} from '@sanity/icons'
 import {Box, Flex, Inline, Text} from '@sanity/ui'
-import React, {useCallback, useEffect, useState} from 'react'
+import {ReactNode, useCallback, useEffect, useState} from 'react'
 import styled from 'styled-components'
 
 interface DetailsProps {
-  children?: React.ReactNode
+  children?: ReactNode
   margin?: number | number[]
   marginX?: number | number[]
   marginY?: number | number[]
@@ -13,8 +13,8 @@ interface DetailsProps {
   marginBottom?: number | number[]
   marginLeft?: number | number[]
   open?: boolean
-  icon?: React.ReactNode
-  title?: React.ReactNode
+  icon?: ReactNode
+  title?: ReactNode
 }
 
 const HeaderButton = styled.button`

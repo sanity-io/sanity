@@ -1,5 +1,5 @@
 import {Flex, ToastProvider, PortalProvider, useTheme} from '@sanity/ui'
-import React, {useState, useCallback} from 'react'
+import {useState, useCallback, Dispatch, SetStateAction} from 'react'
 import {useBoolean} from '@sanity/ui-workshop'
 import {PaneLayout} from '../../PaneLayout'
 import {DocumentPane} from './DocumentPane'
@@ -46,7 +46,7 @@ function StructureTool(props: {
   onExpand: () => void
   onCollapse: () => void
   path: string[]
-  setPath: React.Dispatch<React.SetStateAction<string[]>>
+  setPath: Dispatch<SetStateAction<string[]>>
 }) {
   const {collapsed, onCollapse, onExpand, path, setPath} = props
 

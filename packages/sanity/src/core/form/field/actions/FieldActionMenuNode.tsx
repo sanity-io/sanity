@@ -1,5 +1,4 @@
 import {MenuDivider} from '@sanity/ui'
-import React from 'react'
 import {DocumentFieldActionNode} from '../../../config'
 import {FieldActionMenuItem} from './FieldActionMenuItem'
 import {FieldActionMenuGroup} from './FieldActionMenuGroup'

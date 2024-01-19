@@ -1,10 +1,10 @@
-import React, {createContext, useContext} from 'react'
+import {ReactChild, createContext, useContext} from 'react'
 import {Workspace} from '../config'
 
 /** @internal */
 export interface WorkspaceProviderProps {
   workspace: Workspace
-  children?: React.ReactChild
+  children?: ReactChild
 }
 const WorkspaceContext = createContext<Workspace | null>(null)
 

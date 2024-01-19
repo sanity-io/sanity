@@ -3,7 +3,7 @@
 import {SanityClient} from '@sanity/client'
 import {defineType, Path} from '@sanity/types'
 import {render} from '@testing-library/react'
-import React, {useMemo} from 'react'
+import {useMemo} from 'react'
 import {createMockSanityClient} from '../../../../test/mocks/mockSanityClient'
 import {createTestProvider} from '../../../../test/testUtils/TestProvider'
 import {useWorkspace} from '../../studio'

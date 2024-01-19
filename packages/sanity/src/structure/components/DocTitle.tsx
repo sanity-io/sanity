@@ -1,5 +1,4 @@
 import {SanityDocumentLike} from '@sanity/types'
-import React from 'react'
 import {structureLocaleNamespace} from '../i18n'
 import {useSchema, useTranslation, unstable_useValuePreview as useValuePreview} from 'sanity'
 

@@ -1,4 +1,4 @@
-import React from 'react'
+import {ReactElement, ComponentType} from 'react'
 import {Tool} from '../types'
 
 /**
@@ -6,7 +6,7 @@ import {Tool} from '../types'
  * @beta */
 // Components
 export interface LayoutProps {
-  renderDefault: (props: LayoutProps) => React.ReactElement
+  renderDefault: (props: LayoutProps) => ReactElement
 }
 
 /**
@@ -14,14 +14,14 @@ export interface LayoutProps {
  * @beta */
 export interface LogoProps {
   title: string
-  renderDefault: (props: LogoProps) => React.ReactElement
+  renderDefault: (props: LogoProps) => ReactElement
 }
 
 /**
  * @hidden
  * @beta */
 export interface NavbarProps {
-  renderDefault: (props: NavbarProps) => React.ReactElement
+  renderDefault: (props: NavbarProps) => ReactElement
 }
 
 /**
@@ -33,7 +33,7 @@ export interface ToolMenuProps {
   context: 'sidebar' | 'topbar'
   isSidebarOpen: boolean
   tools: Tool[]
-  renderDefault: (props: ToolMenuProps) => React.ReactElement
+  renderDefault: (props: ToolMenuProps) => ReactElement
 }
 
 /**
@@ -41,22 +41,22 @@ export interface ToolMenuProps {
  * @beta */
 // Config
 export interface StudioComponents {
-  layout: React.ComponentType<Omit<LayoutProps, 'renderDefault'>>
-  logo: React.ComponentType<Omit<LogoProps, 'renderDefault'>>
-  navbar: React.ComponentType<Omit<NavbarProps, 'renderDefault'>>
-  toolMenu: React.ComponentType<Omit<ToolMenuProps, 'renderDefault'>>
+  layout: ComponentType<Omit<LayoutProps, 'renderDefault'>>
+  logo: ComponentType<Omit<LogoProps, 'renderDefault'>>
+  navbar: ComponentType<Omit<NavbarProps, 'renderDefault'>>
+  toolMenu: ComponentType<Omit<ToolMenuProps, 'renderDefault'>>
 }
 
 /**
  * @hidden
  * @beta */
 export interface StudioComponentsPluginOptions {
-  layout?: React.ComponentType<LayoutProps>
+  layout?: ComponentType<LayoutProps>
   /**
    * @deprecated Add custom icons on a per-workspace basis by customizing workspace `icon` instead.
    * @see {@link https://www.sanity.io/docs/workspaces}
    */
-  logo?: React.ComponentType<LogoProps>
-  navbar?: React.ComponentType<NavbarProps>
-  toolMenu?: React.ComponentType<ToolMenuProps>
+  logo?: ComponentType<LogoProps>
+  navbar?: ComponentType<NavbarProps>
+  toolMenu?: ComponentType<ToolMenuProps>
 }

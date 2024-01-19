@@ -5,7 +5,7 @@ import {
   Dialog, // eslint-disable-line no-restricted-imports
   Stack,
 } from '@sanity/ui'
-import React, {useCallback, useEffect, useMemo, useState} from 'react'
+import {useCallback, useEffect, useMemo, useState} from 'react'
 import {StructureToolProvider} from '../StructureToolProvider'
 import {DocumentPaneProvider} from '../panes'
 import {DocumentPaneNode} from '../types'

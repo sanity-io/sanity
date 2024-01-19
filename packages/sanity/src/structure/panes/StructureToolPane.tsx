@@ -1,4 +1,4 @@
-import React, {memo, lazy, Suspense} from 'react'
+import {memo, lazy, Suspense} from 'react'
 import {isEqual} from 'lodash'
 import type {PaneNode} from '../types'
 import {PaneRouterProvider} from '../components/paneRouter'

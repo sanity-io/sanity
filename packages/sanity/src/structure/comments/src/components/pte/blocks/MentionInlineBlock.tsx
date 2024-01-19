@@ -1,4 +1,3 @@
-import React from 'react'
 import {Flex, Text, TextSkeleton} from '@sanity/ui'
 import styled, {css} from 'styled-components'
 import {Tooltip} from '../../../../../../ui-components'

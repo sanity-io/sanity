@@ -1,4 +1,4 @@
-import React, {useCallback, useMemo} from 'react'
+import {useCallback, useMemo} from 'react'
 import {format, parse, DEFAULT_DATE_FORMAT} from '@sanity/util/legacyDateFormat'
 import {set, unset} from '../../patch'
 import {StringInputProps} from '../../types'

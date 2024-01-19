@@ -1,4 +1,5 @@
-import React, {forwardRef, useMemo} from 'react'
+import {forwardRef, useMemo} from 'react'
+import * as React from 'react'
 import {PaneMenuItem} from '../types'
 import {Button, ButtonProps} from '../../ui-components'
 import {IntentLink} from 'sanity/router'

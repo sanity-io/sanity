@@ -1,4 +1,4 @@
-import React, {forwardRef, useMemo} from 'react'
+import {HTMLProps, ReactNode, forwardRef, useMemo} from 'react'
 import {Flex, Grid, rem, useTheme} from '@sanity/ui'
 import {FromToArrow} from './FromToArrow'
 
@@ -6,9 +6,9 @@ import {FromToArrow} from './FromToArrow'
 export type FromToProps = {
   align?: 'top' | 'center' | 'bottom'
   layout?: 'grid' | 'inline'
-  from?: React.ReactNode
-  to?: React.ReactNode
-} & Omit<React.HTMLProps<HTMLDivElement>, 'children' | 'as' | 'height' | 'wrap'>
+  from?: ReactNode
+  to?: ReactNode
+} & Omit<HTMLProps<HTMLDivElement>, 'children' | 'as' | 'height' | 'wrap'>
 
 const INLINE_COLUMN_STYLES = {flexShrink: 0}
 const BLOCK_COLUMN_STYLES = {alignItems: 'stretch'}

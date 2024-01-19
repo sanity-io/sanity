@@ -1,5 +1,4 @@
 import {Box, Flex, Stack, Text} from '@sanity/ui'
-import React from 'react'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 import {Media} from '../_common/Media'
 import {PREVIEW_SIZES} from '../constants'

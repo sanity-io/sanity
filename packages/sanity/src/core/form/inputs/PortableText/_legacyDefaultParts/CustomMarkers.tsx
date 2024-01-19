@@ -1,5 +1,4 @@
 /* eslint-disable i18next/no-literal-string */
-import React from 'react'
 import {Text} from '@sanity/ui'
 
 // This is the fallback marker renderer if the block editor didn't get the 'renderCustomMarkers' prop

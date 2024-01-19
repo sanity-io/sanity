@@ -1,4 +1,4 @@
-import React, {useCallback, useMemo, useState} from 'react'
+import {useCallback, useMemo, useState} from 'react'
 import {useBoolean, useSelect} from '@sanity/ui-workshop'
 import {Schema} from '@sanity/schema'
 import {uuid} from '@sanity/uuid'

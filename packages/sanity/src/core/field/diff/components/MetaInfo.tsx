@@ -1,13 +1,13 @@
 import {Text, Box, Flex, Stack} from '@sanity/ui'
-import React, {createElement} from 'react'
+import {ComponentType, ReactNode, createElement} from 'react'
 import styled from 'styled-components'
 
 /** @internal */
 export interface MetaInfoProps {
   title: string
   action?: string
-  icon?: React.ComponentType
-  children?: React.ReactNode
+  icon?: ComponentType
+  children?: ReactNode
   markRemoved?: boolean
 }
 
