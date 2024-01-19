@@ -1,7 +1,6 @@
 /* eslint-disable no-sync */
 import fs from 'fs'
 import path from 'path'
-import {first} from 'rxjs/operators'
 import {firstValueFrom} from 'rxjs'
 import {mockBrowserEnvironment} from './mockBrowserEnvironment'
 import {resolveConfig, Config, Workspace} from 'sanity'
@@ -24,7 +23,7 @@ export async function getStudioConfig(options: {
 
   let cleanup
   try {
-    cleanup = mockBrowserEnvironment(basePath)
+    cleanup = await mockBrowserEnvironment(basePath)
 
     let configPath = cfgPath
     if (configPath && !fs.existsSync(configPath)) {

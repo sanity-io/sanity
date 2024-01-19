@@ -299,7 +299,7 @@ async function validateDocuments() {
   // file gets compiled to CJS at this time
   const {default: pMap} = await import('p-map')
 
-  const cleanup = mockBrowserEnvironment(workDir)
+  const cleanup = await mockBrowserEnvironment(workDir)
 
   let tempFile: string | undefined
 
