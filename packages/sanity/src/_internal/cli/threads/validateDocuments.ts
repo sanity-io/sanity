@@ -24,7 +24,7 @@ import {isRecord, validateDocument} from 'sanity'
 const MAX_VALIDATION_CONCURRENCY = 100
 const DOCUMENT_VALIDATION_TIMEOUT = 30000
 const REFERENCE_INTEGRITY_BATCH_SIZE = 100
-const EXCLUDED_DOCUMENT_TYPE_PREFIXES = ['system.', 'sanity.']
+const EXCLUDED_DOCUMENT_TYPE_PREFIXES = ['system.']
 
 interface AvailabilityResponse {
   omitted: {id: string; reason: 'existence' | 'permission'}[]
