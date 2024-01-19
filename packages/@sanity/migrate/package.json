@@ -70,7 +70,8 @@
     "check:package": "pkg-utils --strict --tsconfig tsconfig.lib.json",
     "clean": "rimraf lib coverage",
     "lint": "eslint .",
-    "watch": "pkg-utils watch --tsconfig tsconfig.lib.json"
+    "watch": "pkg-utils watch --tsconfig tsconfig.lib.json",
+    "test": "jest"
   },
   "dependencies": {
     "@bjoerge/mutiny": "^0.5.1",
