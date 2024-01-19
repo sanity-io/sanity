@@ -262,7 +262,7 @@ function validateItemObservable({
       // if the schema type is an object type
       type?.jsonType === 'object' &&
       // and if somewhere in it's type chain, it inherits from object or document
-      getTypeChain(type).find((t) => t.name === 'object' || t.name === 'document') &&
+      getTypeChain(type).find((t) => ['object', 'document', 'file', 'image'].includes(t.name)) &&
       // and the environment is not the studio
       environment !== 'studio'
     ) {

@@ -17,7 +17,7 @@ export const unknownFieldsValidator =
       .filter((key) => !fieldNames.has(key))
 
     return unknownFields.map((unknownField) => ({
-      message: `Field '${unknownField}' does not exist on type ${type.name}`,
+      message: `Field '${unknownField}' does not exist on type '${type.name}'`,
       path: [unknownField],
     }))
   }
