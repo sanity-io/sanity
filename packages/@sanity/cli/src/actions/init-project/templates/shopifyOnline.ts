@@ -40,7 +40,7 @@ const shopifyTemplate: ProjectTemplate = {
   dependencies: {
     '@portabletext/toolkit': '^2.0.1',
     '@sanity/icons': '^2.6.0',
-    '@sanity/ui': '^2.0.0-beta',
+    '@sanity/ui': '^2.0.0',
     '@types/lodash.get': '^4.4.7',
     'lodash.get': '^4.4.2',
     'pluralize-esm': '^9.0.4',
