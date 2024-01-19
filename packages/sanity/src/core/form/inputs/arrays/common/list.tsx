@@ -15,8 +15,11 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
+  type SensorOptions,
+  type AutoScrollOptions,
+  type DragStartEvent,
+  type DragEndEvent,
 } from '@dnd-kit/core'
-import type {SensorOptions, AutoScrollOptions, DragStartEvent, DragEndEvent} from '@dnd-kit/core'
 import {
   horizontalListSortingStrategy,
   SortableContext,

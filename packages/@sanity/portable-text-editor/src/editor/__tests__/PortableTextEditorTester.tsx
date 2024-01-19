@@ -2,8 +2,12 @@ import React, {ForwardedRef, forwardRef, useCallback, useEffect} from 'react'
 import {Schema} from '@sanity/schema'
 
 import {defineArrayMember, defineField} from '@sanity/types'
-import {PortableTextEditor, PortableTextEditable} from '../../index'
-import type {PortableTextEditorProps, PortableTextEditableProps} from '../../index'
+import {
+  PortableTextEditor,
+  PortableTextEditable,
+  type PortableTextEditorProps,
+  type PortableTextEditableProps,
+} from '../../index'
 
 const imageType = defineField({
   type: 'image',
