@@ -6,8 +6,6 @@ import downloadBackupCommand from './backup/downloadBackupCommand'
 import enableBackupCommand from './backup/enableBackupCommand'
 import listBackupCommand from './backup/listBackupCommand'
 import buildCommand from './build/buildCommand'
-import checkCommand from './check/checkCommand'
-import configCheckCommand from './config/configCheckCommand'
 import addCorsOriginCommand from './cors/addCorsOriginCommand'
 import corsGroup from './cors/corsGroup'
 import deleteCorsOriginCommand from './cors/deleteCorsOriginCommand'
@@ -49,15 +47,12 @@ import previewCommand from './preview/previewCommand'
 import schemaGroup from './schema/schemaGroup'
 import validateSchemaCommand from './schema/validateSchemaCommand'
 import startCommand from './start/startCommand'
-import uninstallCommand from './uninstall/uninstallCommand'
 import inviteUserCommand from './users/inviteUserCommand'
 import listUsersCommand from './users/listUsersCommand'
 import usersGroup from './users/usersGroup'
 
 const commands: (CliCommandDefinition | CliCommandGroupDefinition)[] = [
   buildCommand,
-  checkCommand,
-  configCheckCommand,
   datasetGroup,
   deployCommand,
   undeployCommand,
@@ -106,7 +101,6 @@ const commands: (CliCommandDefinition | CliCommandGroupDefinition)[] = [
   schemaGroup,
   validateSchemaCommand,
   previewCommand,
-  uninstallCommand,
   execCommand,
 ]
 

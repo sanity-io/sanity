@@ -14,7 +14,6 @@ import disableTelemetryCommand from './telemetry/disableTelemetryCommand'
 import enableTelemetryCommand from './telemetry/enableTelemetryCommand'
 import telemetryGroup from './telemetry/telemetryGroup'
 import telemetryStatusCommand from './telemetry/telemetryStatusCommand'
-import upgradeCommand from './upgrade/upgradeCommand'
 import versionsCommand from './versions/versionsCommand'
 
 export const baseCommands: (CliCommandDefinition | CliCommandGroupDefinition)[] = [
@@ -22,7 +21,6 @@ export const baseCommands: (CliCommandDefinition | CliCommandGroupDefinition)[] 
   loginCommand,
   logoutCommand,
   installCommand,
-  upgradeCommand,
   versionsCommand,
   docsCommand,
   manageCommand,
