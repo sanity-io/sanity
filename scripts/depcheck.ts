@@ -28,11 +28,10 @@ const options: depcheck.Options = {
     depcheck.special.babel,
     depcheck.special.webpack,
     depcheck.special.jest,
-    sanityJSONParser,
     implicitDepsParser,
   ],
   package: manifest,
-} as const
+}
 
 depcheck(cwd, options).then((unused) => {
   const hasUnusedDeps = unused.dependencies.length > 0 || unused.devDependencies.length > 0
