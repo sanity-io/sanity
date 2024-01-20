@@ -23,7 +23,16 @@ const config = {
     '@sanity/eslint-config-i18n',
   ],
   parser: '@typescript-eslint/parser',
-  plugins: ['boundaries', 'import', '@typescript-eslint', 'prettier', 'react', 'tsdoc'],
+  plugins: [
+    'boundaries',
+    'import',
+    'simple-import-sort',
+    'unused-imports',
+    '@typescript-eslint',
+    'prettier',
+    'react',
+    'tsdoc',
+  ],
   ignorePatterns: [
     '**/etc/*',
     '**/.sanity/*',
@@ -48,7 +57,6 @@ const config = {
     'import/no-named-as-default-member': 'off',
     'import/no-unresolved': 'off',
     'prettier/prettier': 'error',
-    'sort-imports': 'off', // prefer import/order
     'tsdoc/syntax': 'error',
     'react-hooks/rules-of-hooks': 'error',
     'react-hooks/exhaustive-deps': [
@@ -72,6 +80,17 @@ const config = {
     '@typescript-eslint/no-dupe-class-members': ['error'],
     '@typescript-eslint/no-shadow': ['error'],
     '@typescript-eslint/no-unused-vars': ['warn'],
+    '@typescript-eslint/consistent-type-imports': ['error', {prefer: 'type-imports'}],
+    'unused-imports/no-unused-imports': 'error',
+    'unused-imports/no-unused-vars': ['warn'],
+    'import/no-duplicates': ['error', {'prefer-inline': true}],
+    'import/first': 'error',
+    'import/newline-after-import': 'error',
+    'import/consistent-type-specifier-style': ['error', 'prefer-inline'],
+    'import/order': 'off', // handled by simple-import-sort
+    'sort-imports': 'off', // handled by simple-import-sort
+    'simple-import-sort/imports': 'error',
+    'simple-import-sort/exports': 'error',
     'boundaries/element-types': [
       'error',
       {
