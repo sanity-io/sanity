@@ -3,15 +3,17 @@
 
 const path = require('path')
 const globby = require('globby')
-const pkg = require('./package.json')
+const yaml = require('js-yaml')
+const fs = require('node:fs')
 
+const workspaces = yaml.load(fs.readFileSync('./pnpm-workspace.yaml', 'utf8'))
 const jestConfigFiles = globby.sync(
-  pkg.workspaces.map((workspace) => path.join(__dirname, workspace, '/jest.config.cjs')),
+  workspaces.packages.map((workspace) => path.join(__dirname, workspace, '/jest.config.cjs')),
 )
 
 const IGNORE_PROJECTS = []
 
-/** @type {import('jest').Config} */
+/** @type {import("jest").Config} */
 module.exports = {
   projects: jestConfigFiles
     .map((file) => path.relative(__dirname, path.dirname(file)))
