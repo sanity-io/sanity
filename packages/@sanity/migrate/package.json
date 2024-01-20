@@ -74,6 +74,7 @@
     "p-map": "^7.0.1"
   },
   "devDependencies": {
+    "@jest/globals": "^29.7.0",
     "@types/arrify": "^2.0.1",
     "rimraf": "^3.0.2"
   },
