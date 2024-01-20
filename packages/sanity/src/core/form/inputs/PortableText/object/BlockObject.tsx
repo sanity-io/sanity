@@ -1,54 +1,55 @@
 /* eslint-disable complexity */
 import {
+  type EditorSelection,
   PortableTextEditor,
-  EditorSelection,
   usePortableTextEditor,
 } from '@sanity/portable-text-editor'
-import {ObjectSchemaType, Path, PortableTextBlock, isImage} from '@sanity/types'
-import {Box, Flex, ResponsivePaddingProps} from '@sanity/ui'
+import {isImage, type ObjectSchemaType, type Path, type PortableTextBlock} from '@sanity/types'
+import {Box, Flex, type ResponsivePaddingProps} from '@sanity/ui'
+import {isEqual} from '@sanity/util/paths'
 import {
-  PropsWithChildren,
-  RefObject,
-  MouseEvent,
+  type MouseEvent,
+  type PropsWithChildren,
+  type RefObject,
   useCallback,
   useEffect,
   useMemo,
   useRef,
   useState,
 } from 'react'
-import {isEqual} from '@sanity/util/paths'
+
 import {Tooltip} from '../../../../../ui-components'
+import {pathToString} from '../../../../field'
+import {useTranslation} from '../../../../i18n'
+import {EMPTY_ARRAY} from '../../../../util'
+import {useFormCallbacks} from '../../../studio'
+import {useChildPresence} from '../../../studio/contexts/Presence'
 import {
-  BlockProps,
-  RenderAnnotationCallback,
-  RenderArrayOfObjectsItemCallback,
-  RenderBlockCallback,
-  RenderCustomMarkers,
-  RenderFieldCallback,
-  RenderInputCallback,
-  RenderPreviewCallback,
+  type BlockProps,
+  type RenderAnnotationCallback,
+  type RenderArrayOfObjectsItemCallback,
+  type RenderBlockCallback,
+  type RenderCustomMarkers,
+  type RenderFieldCallback,
+  type RenderInputCallback,
+  type RenderPreviewCallback,
 } from '../../../types'
-import {RenderBlockActionsCallback} from '../../../types/_transitional'
-import {BlockActions} from '../BlockActions'
-import {ReviewChangesHighlightBlock, StyledChangeIndicatorWithProvidedFullPath} from '../_common'
+import {type RenderBlockActionsCallback} from '../../../types/_transitional'
 import {useFormBuilder} from '../../../useFormBuilder'
+import {ReviewChangesHighlightBlock, StyledChangeIndicatorWithProvidedFullPath} from '../_common'
+import {BlockActions} from '../BlockActions'
+import {debugRender} from '../debugRender'
 import {useMemberValidation} from '../hooks/useMemberValidation'
 import {usePortableTextMarkers} from '../hooks/usePortableTextMarkers'
 import {usePortableTextMemberItem} from '../hooks/usePortableTextMembers'
-import {pathToString} from '../../../../field'
-import {debugRender} from '../debugRender'
-import {EMPTY_ARRAY} from '../../../../util'
-import {useChildPresence} from '../../../studio/contexts/Presence'
-import {useFormCallbacks} from '../../../studio'
-import {useTranslation} from '../../../../i18n'
 import {
-  Root,
+  BlockActionsInner,
+  BlockActionsOuter,
   ChangeIndicatorWrapper,
   InnerFlex,
-  BlockActionsOuter,
-  BlockActionsInner,
-  TooltipBox,
   PreviewContainer,
+  Root,
+  TooltipBox,
 } from './BlockObject.styles'
 import {BlockObjectActionsMenu} from './BlockObjectActionsMenu'
 import {ObjectEditModal} from './modals/ObjectEditModal'

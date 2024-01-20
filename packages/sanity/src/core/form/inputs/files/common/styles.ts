@@ -1,8 +1,9 @@
 /* eslint-disable import/named */
 
 import {Card} from '@sanity/ui'
-import {fileTarget} from '../../common/fileTarget'
+
 import {withFocusRing} from '../../../components/withFocusRing'
+import {fileTarget} from '../../common/fileTarget'
 
 export type {FileInfo} from '../../common/fileTarget'
 

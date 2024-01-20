@@ -1,5 +1,5 @@
-import {Path} from '@sanity/types'
-import {Context, createContext} from 'react'
+import {type Path} from '@sanity/types'
+import {type Context, createContext} from 'react'
 
 /** @internal */
 export interface ChangeIndicatorContextValue {

@@ -1,16 +1,23 @@
 import intersection from 'lodash/intersection'
 import isEmpty from 'lodash/isEmpty'
-import type {SearchableType} from '../../../../../search'
+
+import {type SearchableType} from '../../../../../search'
 import {isNonNullable} from '../../../../../util'
-import type {SearchFieldDefinition, SearchFieldDefinitionDictionary} from '../definitions/fields'
+import {
+  type SearchFieldDefinition,
+  type SearchFieldDefinitionDictionary,
+} from '../definitions/fields'
 import {
   getFilterDefinition,
   type OperatorItem,
   type SearchFilterDefinition,
   type SearchFilterDefinitionDictionary,
 } from '../definitions/filters'
-import {getOperatorDefinition, SearchOperatorDefinitionDictionary} from '../definitions/operators'
-import type {SearchFilter} from '../types'
+import {
+  getOperatorDefinition,
+  type SearchOperatorDefinitionDictionary,
+} from '../definitions/operators'
+import {type SearchFilter} from '../types'
 
 export function buildSearchFilter(
   filterDefinition: SearchFilterDefinition,

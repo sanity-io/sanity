@@ -1,9 +1,9 @@
-import type {
-  Path,
-  ValidationMarker,
-  ValidationError as IValidationError,
-  ValidationErrorOptions,
-  ValidationErrorClass,
+import {
+  type Path,
+  type ValidationError as IValidationError,
+  type ValidationErrorClass,
+  type ValidationErrorOptions,
+  type ValidationMarker,
 } from '@sanity/types'
 
 /**

@@ -1,11 +1,21 @@
-import {SerializeOptions, StructureNode, Serializable, Child} from './StructureNodes'
-import {SerializeError, HELP_URL} from './SerializeError'
-import {MenuItem, MenuItemBuilder, maybeSerializeMenuItem} from './MenuItem'
-import {MenuItemGroup, MenuItemGroupBuilder, maybeSerializeMenuItemGroup} from './MenuItemGroup'
-import {validateId} from './util/validateId'
-import {UserComponent} from './types'
+import {type I18nTextRecord} from 'sanity'
+
+import {maybeSerializeMenuItem, type MenuItem, type MenuItemBuilder} from './MenuItem'
+import {
+  maybeSerializeMenuItemGroup,
+  type MenuItemGroup,
+  type MenuItemGroupBuilder,
+} from './MenuItemGroup'
+import {HELP_URL, SerializeError} from './SerializeError'
+import {
+  type Child,
+  type Serializable,
+  type SerializeOptions,
+  type StructureNode,
+} from './StructureNodes'
+import {type UserComponent} from './types'
 import {getStructureNodeId} from './util/getStructureNodeId'
-import {I18nTextRecord} from 'sanity'
+import {validateId} from './util/validateId'
 
 /**
  * Interface for component

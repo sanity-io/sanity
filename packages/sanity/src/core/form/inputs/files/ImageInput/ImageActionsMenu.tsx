@@ -1,10 +1,17 @@
-import {MouseEventHandler, ReactNode, useCallback, useEffect, useState} from 'react'
 import {CropIcon} from '@sanity/icons'
 import {Inline, Menu, useClickOutside, useGlobalKeyDown} from '@sanity/ui'
+import React, {
+  type MouseEventHandler,
+  type ReactNode,
+  useCallback,
+  useEffect,
+  useState,
+} from 'react'
 import styled from 'styled-components'
+
 import {Button, Popover, TooltipDelayGroupProvider} from '../../../../../ui-components'
-import {useTranslation} from '../../../../i18n'
 import {ContextMenuButton} from '../../../../components/contextMenuButton'
+import {useTranslation} from '../../../../i18n'
 
 export const MenuActionsWrapper = styled(Inline)`
   position: absolute;

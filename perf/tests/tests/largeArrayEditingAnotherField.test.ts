@@ -1,5 +1,6 @@
 import {range} from 'lodash'
-import {PerformanceTestProps} from '../runner/types'
+
+import {type PerformanceTestProps} from '../runner/types'
 import {KNOWN_TEST_IDS} from '../runner/utils/testIds'
 
 export default {

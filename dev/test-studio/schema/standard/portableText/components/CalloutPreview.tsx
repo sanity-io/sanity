@@ -1,5 +1,5 @@
-import {Box, Card, CardTone, Flex, Text} from '@sanity/ui'
-import {PreviewProps} from 'sanity'
+import {Box, Card, type CardTone, Flex, Text} from '@sanity/ui'
+import {type PreviewProps} from 'sanity'
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return Boolean(value) && typeof value === 'object' && !Array.isArray(value)

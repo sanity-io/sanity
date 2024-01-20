@@ -1,5 +1,5 @@
 import {SerializeError} from '../SerializeError'
-import {SerializePath} from '../StructureNodes'
+import {type SerializePath} from '../StructureNodes'
 
 export const disallowedPattern = /([^A-Za-z0-9-_.])/
 

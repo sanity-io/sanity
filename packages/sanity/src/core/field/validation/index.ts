@@ -1,6 +1,7 @@
-import {SchemaType, ObjectSchemaType} from '@sanity/types'
+import {type ObjectSchemaType, type SchemaType} from '@sanity/types'
+
+import {type StudioLocaleResourceKeys} from '../../i18n'
 import {getPrintableType} from '../../util/getPrintableType'
-import {StudioLocaleResourceKeys} from '../../i18n'
 
 /** @internal */
 export interface FieldValueError {

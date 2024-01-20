@@ -1,18 +1,19 @@
-import {map, switchMap} from 'rxjs/operators'
-import {CrossDatasetReferenceSchemaType} from '@sanity/types'
-import {combineLatest, Observable, of} from 'rxjs'
-import {SanityClient} from '@sanity/client'
+import {type SanityClient} from '@sanity/client'
+import {type CrossDatasetReferenceSchemaType} from '@sanity/types'
 import {keyBy} from 'lodash'
-import {CrossDatasetReferenceInfo} from '../../../../inputs/CrossDatasetReferenceInput/types'
+import {combineLatest, type Observable, of} from 'rxjs'
+import {map, switchMap} from 'rxjs/operators'
+
+import {type FIXME} from '../../../../../FIXME'
 import {
-  DocumentAvailability,
-  DocumentPreviewStore,
+  type DocumentAvailability,
+  type DocumentPreviewStore,
   getPreviewPaths,
   prepareForPreview,
-  Previewable,
+  type Previewable,
 } from '../../../../../preview'
-import {FIXME} from '../../../../../FIXME'
 import {isRecord} from '../../../../../util'
+import {type CrossDatasetReferenceInfo} from '../../../../inputs/CrossDatasetReferenceInput/types'
 
 const REQUEST_TAG_BASE = 'cross-dataset-refs'
 

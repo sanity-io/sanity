@@ -1,55 +1,56 @@
-import {BaseRange, Transforms, Text, Editor} from 'slate'
+import {type PortableTextBlock} from '@sanity/types'
+import {noop} from 'lodash'
 import {
-  useCallback,
-  useMemo,
-  useEffect,
+  type ClipboardEvent,
+  type CSSProperties,
+  type FocusEventHandler,
+  type ForwardedRef,
   forwardRef,
+  type HTMLProps,
+  type KeyboardEvent,
+  type ReactNode,
+  type TextareaHTMLAttributes,
+  useCallback,
+  useEffect,
+  useMemo,
   useState,
-  KeyboardEvent,
-  CSSProperties,
-  FocusEventHandler,
-  ForwardedRef,
-  HTMLProps,
-  ReactNode,
-  TextareaHTMLAttributes,
-  ClipboardEvent,
 } from 'react'
+import {type BaseRange, Editor, type Text, Transforms} from 'slate'
 import {
   Editable as SlateEditable,
   ReactEditor,
-  RenderElementProps,
-  RenderLeafProps,
+  type RenderElementProps,
+  type RenderLeafProps,
   useSlate,
 } from 'slate-react'
-import {noop} from 'lodash'
-import {PortableTextBlock} from '@sanity/types'
+
 import {
-  EditorChange,
-  EditorSelection,
-  OnCopyFn,
-  OnPasteFn,
-  OnPasteResult,
-  RenderAnnotationFunction,
-  RenderBlockFunction,
-  RenderChildFunction,
-  RenderDecoratorFunction,
-  RenderListItemFunction,
-  RenderStyleFunction,
-  ScrollSelectionIntoViewFunction,
+  type EditorChange,
+  type EditorSelection,
+  type OnCopyFn,
+  type OnPasteFn,
+  type OnPasteResult,
+  type RenderAnnotationFunction,
+  type RenderBlockFunction,
+  type RenderChildFunction,
+  type RenderDecoratorFunction,
+  type RenderListItemFunction,
+  type RenderStyleFunction,
+  type ScrollSelectionIntoViewFunction,
 } from '../types/editor'
-import {HotkeyOptions} from '../types/options'
-import {fromSlateValue, isEqualToEmptyEditor, toSlateValue} from '../utils/values'
-import {normalizeSelection} from '../utils/selection'
-import {toPortableTextRange, toSlateRange} from '../utils/ranges'
+import {type HotkeyOptions} from '../types/options'
 import {debugWithName} from '../utils/debug'
-import {usePortableTextEditorReadOnlyStatus} from './hooks/usePortableTextReadOnly'
-import {usePortableTextEditorKeyGenerator} from './hooks/usePortableTextEditorKeyGenerator'
-import {Leaf} from './components/Leaf'
+import {toPortableTextRange, toSlateRange} from '../utils/ranges'
+import {normalizeSelection} from '../utils/selection'
+import {fromSlateValue, isEqualToEmptyEditor, toSlateValue} from '../utils/values'
 import {Element} from './components/Element'
-import {usePortableTextEditor} from './hooks/usePortableTextEditor'
-import {PortableTextEditor} from './PortableTextEditor'
-import {createWithInsertData, createWithHotkeys} from './plugins'
+import {Leaf} from './components/Leaf'
 import {useForwardedRef} from './hooks/useForwardedRef'
+import {usePortableTextEditor} from './hooks/usePortableTextEditor'
+import {usePortableTextEditorKeyGenerator} from './hooks/usePortableTextEditorKeyGenerator'
+import {usePortableTextEditorReadOnlyStatus} from './hooks/usePortableTextReadOnly'
+import {createWithHotkeys, createWithInsertData} from './plugins'
+import {PortableTextEditor} from './PortableTextEditor'
 
 const debug = debugWithName('component:Editable')
 

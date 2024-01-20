@@ -1,4 +1,4 @@
-import {PortableTextBlock} from '@sanity/types'
+import {type PortableTextBlock} from '@sanity/types'
 import {createContext, useContext} from 'react'
 
 /**

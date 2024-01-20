@@ -1,12 +1,13 @@
 import {
+  isPortableTextTextBlock,
   type PortableTextBlock,
   type PortableTextSpan,
   type PortableTextTextBlock,
-  isPortableTextTextBlock,
 } from '@sanity/types'
 import {flatten, isPlainObject, uniq} from 'lodash'
-import {set, unset, insert} from '../patch/PatchEvent'
-import type {InvalidValueResolution, PortableTextMemberSchemaTypes} from '../types/editor'
+
+import {insert, set, unset} from '../patch/PatchEvent'
+import {type InvalidValueResolution, type PortableTextMemberSchemaTypes} from '../types/editor'
 
 export interface Validation {
   valid: boolean

@@ -1,17 +1,18 @@
 import {
-  ArraySchemaType,
-  BooleanSchemaType,
-  FormNodeValidation,
-  NumberSchemaType,
-  ObjectSchemaType,
-  Path,
-  SchemaType,
-  StringSchemaType,
+  type ArraySchemaType,
+  type BooleanSchemaType,
+  type FormNodeValidation,
+  type NumberSchemaType,
+  type ObjectSchemaType,
+  type Path,
+  type SchemaType,
+  type StringSchemaType,
 } from '@sanity/types'
-import {ObjectItem} from '../../types'
-import {FormNodePresence} from '../../../presence'
-import {ArrayOfObjectsMember, ArrayOfPrimitivesMember, ObjectMember} from './members'
-import {FormFieldGroup} from './fieldGroup'
+
+import {type FormNodePresence} from '../../../presence'
+import {type ObjectItem} from '../../types'
+import {type FormFieldGroup} from './fieldGroup'
+import {type ArrayOfObjectsMember, type ArrayOfPrimitivesMember, type ObjectMember} from './members'
 
 /**
  * @hidden

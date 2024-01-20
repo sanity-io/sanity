@@ -1,4 +1,4 @@
-import {PaneNode} from './types'
+import {type PaneNode} from './types'
 
 export const panes: PaneNode[] = [
   {

@@ -1,26 +1,27 @@
 import {
-  ArraySchemaType,
-  BlockDecoratorDefinition,
-  BlockListDefinition,
-  BlockStyleDefinition,
-  FormNodeValidation,
-  ObjectSchemaType,
-  Path,
-  PortableTextBlock,
-  PortableTextObject,
-  PortableTextTextBlock,
-  SchemaType,
+  type ArraySchemaType,
+  type BlockDecoratorDefinition,
+  type BlockListDefinition,
+  type BlockStyleDefinition,
+  type FormNodeValidation,
+  type ObjectSchemaType,
+  type Path,
+  type PortableTextBlock,
+  type PortableTextObject,
+  type PortableTextTextBlock,
+  type SchemaType,
 } from '@sanity/types'
-import {ReactElement, ReactNode} from 'react'
-import {FormNodePresence} from '../../presence'
-import {PortableTextMarker} from '../..'
+import {type ReactElement, type ReactNode} from 'react'
+
+import {type PortableTextMarker} from '../..'
+import {type FormNodePresence} from '../../presence'
 import {
-  RenderAnnotationCallback,
-  RenderArrayOfObjectsItemCallback,
-  RenderBlockCallback,
-  RenderFieldCallback,
-  RenderInputCallback,
-  RenderPreviewCallback,
+  type RenderAnnotationCallback,
+  type RenderArrayOfObjectsItemCallback,
+  type RenderBlockCallback,
+  type RenderFieldCallback,
+  type RenderInputCallback,
+  type RenderPreviewCallback,
 } from './renderCallback'
 
 /**

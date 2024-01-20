@@ -1,4 +1,4 @@
-import {Mutation} from './types'
+import {type Mutation} from './types'
 
 export interface Transaction {
   type: 'transaction'

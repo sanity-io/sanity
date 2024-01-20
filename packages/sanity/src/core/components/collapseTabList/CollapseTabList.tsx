@@ -1,20 +1,21 @@
-import {
+import {Flex} from '@sanity/ui'
+import React, {
   Children,
-  ForwardedRef,
-  ReactElement,
-  ReactNode,
   cloneElement,
+  type ForwardedRef,
   forwardRef,
+  type ReactElement,
+  type ReactNode,
   useCallback,
   useMemo,
   useState,
 } from 'react'
-import {Flex} from '@sanity/ui'
 import styled from 'styled-components'
-import {MenuButtonProps} from '../../../ui-components'
-import {ContextMenuButton} from '../contextMenuButton'
+
+import {type MenuButtonProps} from '../../../ui-components'
 import {CollapseOverflowMenu} from '../collapseMenu/CollapseOverflowMenu'
 import {ObserveElement} from '../collapseMenu/ObserveElement'
+import {ContextMenuButton} from '../contextMenuButton'
 
 function _isReactElement(node: unknown): node is ReactElement {
   return Boolean(node)

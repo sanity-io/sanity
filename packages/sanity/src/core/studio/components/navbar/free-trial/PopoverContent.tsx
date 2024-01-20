@@ -1,8 +1,9 @@
-import {Card, Heading, Flex, Box, Container} from '@sanity/ui'
+import {Box, Card, Container, Flex, Heading} from '@sanity/ui'
 import styled from 'styled-components'
+
 import {Button} from '../../../../../ui-components'
 import {UpsellDescriptionSerializer} from '../../../upsell'
-import {FreeTrialDialog} from './types'
+import {type FreeTrialDialog} from './types'
 
 const Image = styled.img`
   object-fit: cover;

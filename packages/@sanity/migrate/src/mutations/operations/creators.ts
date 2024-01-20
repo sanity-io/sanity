@@ -1,18 +1,19 @@
 import arrify from 'arrify'
-import {AnyArray, ArrayElement, NormalizeReadOnlyArray} from '../typeUtils'
-import type {
-  DecOp,
-  DiffMatchPatchOp,
-  IncOp,
-  IndexedSegment,
-  InsertOp,
-  KeyedSegment,
-  RelativePosition,
-  ReplaceOp,
-  SetIfMissingOp,
-  SetOp,
-  TruncateOp,
-  UnsetOp,
+
+import {type AnyArray, type ArrayElement, type NormalizeReadOnlyArray} from '../typeUtils'
+import {
+  type DecOp,
+  type DiffMatchPatchOp,
+  type IncOp,
+  type IndexedSegment,
+  type InsertOp,
+  type KeyedSegment,
+  type RelativePosition,
+  type ReplaceOp,
+  type SetIfMissingOp,
+  type SetOp,
+  type TruncateOp,
+  type UnsetOp,
 } from './types'
 
 /**

@@ -1,19 +1,25 @@
 /* eslint-disable complexity */
 /* eslint-disable max-statements */
-import {ReactElement, FunctionComponent, useRef, useMemo} from 'react'
-import {Element as SlateElement, Editor, Range} from 'slate'
-import {Path, PortableTextChild, PortableTextObject, PortableTextTextBlock} from '@sanity/types'
-import {useSelected, useSlateStatic, ReactEditor, RenderElementProps} from 'slate-react'
 import {
-  BlockRenderProps,
-  PortableTextMemberSchemaTypes,
-  RenderBlockFunction,
-  RenderChildFunction,
-  RenderListItemFunction,
-  RenderStyleFunction,
+  type Path,
+  type PortableTextChild,
+  type PortableTextObject,
+  type PortableTextTextBlock,
+} from '@sanity/types'
+import {type FunctionComponent, type ReactElement, useMemo, useRef} from 'react'
+import {Editor, Element as SlateElement, Range} from 'slate'
+import {ReactEditor, type RenderElementProps, useSelected, useSlateStatic} from 'slate-react'
+
+import {
+  type BlockRenderProps,
+  type PortableTextMemberSchemaTypes,
+  type RenderBlockFunction,
+  type RenderChildFunction,
+  type RenderListItemFunction,
+  type RenderStyleFunction,
 } from '../../types/editor'
-import {fromSlateValue} from '../../utils/values'
 import {debugWithName} from '../../utils/debug'
+import {fromSlateValue} from '../../utils/values'
 import {KEY_TO_VALUE_ELEMENT} from '../../utils/weakMaps'
 import ObjectNode from '../nodes/DefaultObject'
 import {DefaultBlockObject, DefaultListItem, DefaultListItemInner} from '../nodes/index'

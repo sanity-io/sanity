@@ -1,8 +1,9 @@
-import {forwardRef} from 'react'
-import * as React from 'react'
 import {toString as pathToString} from '@sanity/util/paths'
+import type * as React from 'react'
+import {forwardRef} from 'react'
+
 import {ChildLink} from './ChildLink'
-import {ReferenceChildLinkProps} from './types'
+import {type ReferenceChildLinkProps} from './types'
 
 export const ReferenceChildLink = forwardRef(function ReferenceChildLink(
   {documentId, documentType, parentRefPath, children, template, ...rest}: ReferenceChildLinkProps,

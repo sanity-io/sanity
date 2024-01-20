@@ -7,20 +7,26 @@ import {
   LinkIcon,
   OlistIcon,
   StrikethroughIcon,
+  UlistIcon,
   UnderlineIcon,
   UnknownIcon,
-  UlistIcon,
 } from '@sanity/icons'
 import {
-  PortableTextEditor,
   type HotkeyOptions,
+  PortableTextEditor,
   type PortableTextMemberSchemaTypes,
 } from '@sanity/portable-text-editor'
+import {type ObjectSchemaType} from '@sanity/types'
 import {capitalize, get} from 'lodash'
-import type {ObjectSchemaType} from '@sanity/types'
-import {ComponentType} from 'react'
-import type {BlockItem, BlockStyleItem, PTEToolbarAction, PTEToolbarActionGroup} from './types'
+import {type ComponentType} from 'react'
+
 import {CustomIcon} from './CustomIcon'
+import {
+  type BlockItem,
+  type BlockStyleItem,
+  type PTEToolbarAction,
+  type PTEToolbarActionGroup,
+} from './types'
 
 function getPTEFormatActions(
   editor: PortableTextEditor,

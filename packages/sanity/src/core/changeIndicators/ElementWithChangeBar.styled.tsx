@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 
-import styled, {css} from 'styled-components'
 import {getTheme_v2} from '@sanity/ui/theme'
+import styled, {css} from 'styled-components'
 
 interface RootProps {
   $changed?: boolean

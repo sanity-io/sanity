@@ -1,5 +1,5 @@
 import {DotIcon} from '@sanity/icons'
-import {PreviewValue, SanityDocument} from '@sanity/types'
+import {type PreviewValue, type SanityDocument} from '@sanity/types'
 import {Text} from '@sanity/ui'
 import {useMemo} from 'react'
 import styled from 'styled-components'

@@ -1,7 +1,8 @@
-import {catchError, map, shareReplay, startWith} from 'rxjs/operators'
-import {Observable, of} from 'rxjs'
-import {SanityClient} from '@sanity/client'
+import {type SanityClient} from '@sanity/client'
 import {useMemoObservable} from 'react-rx'
+import {type Observable, of} from 'rxjs'
+import {catchError, map, shareReplay, startWith} from 'rxjs/operators'
+
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../studioClient'
 import {useClient} from './useClient'
 

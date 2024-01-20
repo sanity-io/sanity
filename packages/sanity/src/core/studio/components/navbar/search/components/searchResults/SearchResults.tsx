@@ -1,14 +1,15 @@
 import {Card, Flex} from '@sanity/ui'
 import {useCallback} from 'react'
 import styled from 'styled-components'
-import {CommandList, CommandListRenderItemCallback} from '../../../../../../components'
-import {WeightedHit} from '../../../../../../search'
+
+import {CommandList, type CommandListRenderItemCallback} from '../../../../../../components'
+import {useTranslation} from '../../../../../../i18n'
+import {type WeightedHit} from '../../../../../../search'
 import {getPublishedId} from '../../../../../../util/draftUtils'
 import {useSearchState} from '../../contexts/search/useSearchState'
 import {NoResults} from '../NoResults'
 import {SearchError} from '../SearchError'
 import {SortMenu} from '../SortMenu'
-import {useTranslation} from '../../../../../../i18n'
 import {DebugOverlay} from './item/DebugOverlay'
 import {SearchResultItem} from './item/SearchResultItem'
 

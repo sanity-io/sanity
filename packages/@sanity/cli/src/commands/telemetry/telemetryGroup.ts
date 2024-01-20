@@ -1,4 +1,4 @@
-import type {CliCommandGroupDefinition} from '../../types'
+import {type CliCommandGroupDefinition} from '../../types'
 
 const telemetryGroup: CliCommandGroupDefinition = {
   name: 'telemetry',

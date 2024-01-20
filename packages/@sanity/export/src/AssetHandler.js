@@ -1,13 +1,13 @@
-const path = require('path')
 const crypto = require('crypto')
-const {parse: parseUrl, format: formatUrl} = require('url')
 const {mkdirSync, createWriteStream} = require('fs')
+const path = require('path')
+const {parse: parseUrl, format: formatUrl} = require('url')
+const {omit, noop} = require('lodash')
 const miss = require('mississippi')
 const PQueue = require('p-queue')
-const {omit, noop} = require('lodash')
 const pkg = require('../package.json')
-const requestStream = require('./requestStream')
 const debug = require('./debug')
+const requestStream = require('./requestStream')
 const rimraf = require('./util/rimraf')
 
 const EXCLUDE_PROPS = ['_id', '_type', 'assetId', 'extension', 'mimeType', 'path', 'url']

@@ -1,4 +1,4 @@
-import {ApiSpecification, GeneratedApiSpecification} from '../types'
+import {type ApiSpecification, type GeneratedApiSpecification} from '../types'
 import {generateTypeFilters} from './generateTypeFilters'
 import {generateTypeQueries} from './generateTypeQueries'
 

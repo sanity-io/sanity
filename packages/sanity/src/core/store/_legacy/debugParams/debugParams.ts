@@ -1,4 +1,4 @@
-import {concat, of, fromEvent} from 'rxjs'
+import {concat, fromEvent, of} from 'rxjs'
 import {distinctUntilChanged, map} from 'rxjs/operators'
 
 const DEBUG_PREFIX = '_debug_'

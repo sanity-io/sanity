@@ -1,4 +1,5 @@
-import {ConfigContext, defineField, defineType} from 'sanity'
+import {type ConfigContext, defineField, defineType} from 'sanity'
+
 import {structureGroupOptions} from '../../../../structure/groupByOption'
 
 export const validationTest = defineType({

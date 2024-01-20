@@ -1,12 +1,17 @@
-import type {TransactionLogEventWithEffects} from '@sanity/types'
-import {Diff} from '@sanity/diff'
+import {type Diff} from '@sanity/diff'
+import {type TransactionLogEventWithEffects} from '@sanity/types'
 import {applyPatch, incremental} from 'mendoza'
-import {Chunk, Annotation} from '../../../../field'
-import {Transaction, DocumentRemoteMutationVersionEvent, CombinedDocument} from './types'
-import {diffValue, Meta} from './diffValue'
+
+import {type Annotation, type Chunk} from '../../../../field'
+import {chunkFromTransaction, mergeChunk} from './chunker'
+import {diffValue, type Meta} from './diffValue'
+import {type TraceEvent} from './replay'
 import {TwoEndedArray} from './TwoEndedArray'
-import {mergeChunk, chunkFromTransaction} from './chunker'
-import {TraceEvent} from './replay'
+import {
+  type CombinedDocument,
+  type DocumentRemoteMutationVersionEvent,
+  type Transaction,
+} from './types'
 import {getAttrs} from './utils'
 
 /**

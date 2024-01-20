@@ -1,7 +1,5 @@
 import {CheckmarkCircleIcon, ErrorOutlineIcon, WarningOutlineIcon} from '@sanity/icons'
 import {useMemo} from 'react'
-import {VALIDATION_INSPECTOR_NAME} from '../../constants'
-import {ValidationInspector} from './ValidationInspector'
 import {
   type DocumentInspector,
   type DocumentInspectorMenuItem,
@@ -12,6 +10,9 @@ import {
   useTranslation,
   useValidationStatus,
 } from 'sanity'
+
+import {VALIDATION_INSPECTOR_NAME} from '../../constants'
+import {ValidationInspector} from './ValidationInspector'
 
 function useMenuItem(props: DocumentInspectorUseMenuItemProps): DocumentInspectorMenuItem {
   const {documentId, documentType} = props

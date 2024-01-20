@@ -1,27 +1,28 @@
-import type {Subscription} from 'rxjs'
-import {
-  ForwardedRef,
+import {DownloadIcon, InfoOutlineIcon} from '@sanity/icons'
+import {type Asset, type AssetFromSource, type AssetSourceComponentProps} from '@sanity/types'
+import {Card, Flex, Stack, Text} from '@sanity/ui'
+import {uniqueId} from 'lodash'
+import React, {
+  type ForwardedRef,
   forwardRef,
+  type KeyboardEvent,
   memo,
+  type MouseEvent,
   useCallback,
   useEffect,
   useMemo,
   useRef,
   useState,
-  MouseEvent,
-  KeyboardEvent,
 } from 'react'
-import {DownloadIcon, InfoOutlineIcon} from '@sanity/icons'
-import {Card, Flex, Stack, Text} from '@sanity/ui'
-import {Asset, AssetFromSource, AssetSourceComponentProps} from '@sanity/types'
-import {uniqueId} from 'lodash'
+import {type Subscription} from 'rxjs'
 import styled from 'styled-components'
+
+import {Button, Dialog} from '../../../../../ui-components'
 import {useClient, useListFormat} from '../../../../hooks'
-import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
 import {Translate, useTranslation} from '../../../../i18n'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
 import {FileListView} from '../file/FileListView'
 import {ImageListView} from '../image/ImageListView'
-import {Button, Dialog} from '../../../../../ui-components'
 
 const PER_PAGE = 200
 const ASSET_TYPE_IMAGE = 'sanity.imageAsset'

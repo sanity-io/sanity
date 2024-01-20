@@ -1,9 +1,11 @@
 // eslint-disable-next-line import/no-unassigned-import
 import '@testing-library/jest-dom/extend-expect'
+
+import {studioTheme, ThemeProvider} from '@sanity/ui'
 import {render, screen} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {useCallback} from 'react'
-import {studioTheme, ThemeProvider} from '@sanity/ui'
+
 import {CommandList} from '../CommandList'
 
 const CUSTOM_ACTIVE_ATTR = 'my-active-data-attribute'

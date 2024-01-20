@@ -1,9 +1,10 @@
-import {useState} from 'react'
-import {CurrentUser, PortableTextBlock} from '@sanity/types'
+import {type CurrentUser, type PortableTextBlock} from '@sanity/types'
 import {noop} from 'lodash'
+import React, {useState} from 'react'
+
+import {type MentionOptionsHookValue} from '../../../src/structure/comments'
 import {CommentInput} from '../../../src/structure/comments/src/components/pte/comment-input/CommentInput'
 import {TestWrapper} from '../formBuilder/utils/TestWrapper'
-import {MentionOptionsHookValue} from '../../../src/structure/comments'
 
 const currentUser: CurrentUser = {
   email: '',

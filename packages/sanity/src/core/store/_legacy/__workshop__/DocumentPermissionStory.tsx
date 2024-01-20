@@ -1,7 +1,8 @@
 import {Box, Code, Text} from '@sanity/ui'
 import {useEffect, useState} from 'react'
+
 import {useGrantsStore} from '../datastores'
-import {PermissionCheckResult} from '../grants/types'
+import {type PermissionCheckResult} from '../grants/types'
 
 export default function DocumentPermissionStory() {
   const grantsStore = useGrantsStore()

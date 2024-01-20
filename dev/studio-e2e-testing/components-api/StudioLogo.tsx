@@ -1,5 +1,5 @@
 import {Box} from '@sanity/ui'
-import {LogoProps} from 'sanity'
+import {type LogoProps} from 'sanity'
 
 export function StudioLogo(props: LogoProps & {testId: string}) {
   const {testId} = props

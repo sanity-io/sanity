@@ -1,7 +1,8 @@
 import {useCallback, useState} from 'react'
+
 import {CommentReactionsMenu} from '../components'
-import {CommentReactionOption, CommentReactionShortNames} from '../types'
 import {COMMENT_REACTION_OPTIONS} from '../constants'
+import {type CommentReactionOption, type CommentReactionShortNames} from '../types'
 
 export default function CommentReactionsMenuStory() {
   const [selectedOptions, setSelectedOptions] = useState<CommentReactionShortNames[]>([])

@@ -1,5 +1,5 @@
-import {useCallback} from 'react'
 import {Button, Card, Code, Stack} from '@sanity/ui'
+import {useCallback} from 'react'
 import {usePaneRouter} from 'sanity/structure'
 
 export function CustomPane(props: any) {

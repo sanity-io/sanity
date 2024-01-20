@@ -1,7 +1,12 @@
-import {AssetFromSource, FileSchemaType} from '@sanity/types'
-import {FIXME} from '../../../../FIXME'
-import {FormPatch, PatchEvent, set, setIfMissing, unset} from '../../../patch'
-import {Uploader, UploaderResolver, UploadOptions} from '../../../studio/uploads/types'
+import {type AssetFromSource, type FileSchemaType} from '@sanity/types'
+
+import {type FIXME} from '../../../../FIXME'
+import {type FormPatch, type PatchEvent, set, setIfMissing, unset} from '../../../patch'
+import {
+  type Uploader,
+  type UploaderResolver,
+  type UploadOptions,
+} from '../../../studio/uploads/types'
 import {base64ToFile, urlToFile} from '../ImageInput/utils/image'
 
 // We alias DOM File type here to distinguish it from the type of the File value

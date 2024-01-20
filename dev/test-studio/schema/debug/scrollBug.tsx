@@ -1,4 +1,3 @@
-import {defineArrayMember, defineField, defineType, PreviewProps} from 'sanity'
 import {
   ActivityIcon,
   ClipboardIcon,
@@ -9,6 +8,8 @@ import {
   TrendUpwardIcon,
 } from '@sanity/icons'
 import {Stack, Text} from '@sanity/ui'
+import React from 'react'
+import {defineArrayMember, defineField, defineType, type PreviewProps} from 'sanity'
 
 export const articleImage = defineType({
   type: 'image',

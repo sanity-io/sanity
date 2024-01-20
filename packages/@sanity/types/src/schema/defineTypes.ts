@@ -1,11 +1,11 @@
-import type {
-  ArrayOfEntry,
-  IntrinsicDefinitions,
-  TypeAliasDefinition,
-  IntrinsicTypeName,
+import {
+  type ArrayOfEntry,
+  type IntrinsicDefinitions,
+  type IntrinsicTypeName,
+  type TypeAliasDefinition,
 } from './definition'
-import type {PreviewConfig} from './preview'
-import type {InitialValueProperty, SchemaValidationValue} from './types'
+import {type PreviewConfig} from './preview'
+import {type InitialValueProperty, type SchemaValidationValue} from './types'
 
 /** @beta */
 export interface DefineSchemaOptions<

@@ -1,18 +1,19 @@
 import {
-  format,
-  parse,
   DEFAULT_DATE_FORMAT,
   DEFAULT_TIME_FORMAT,
+  format,
+  parse,
 } from '@sanity/util/legacyDateFormat'
-import {getMinutes, setMinutes, parseISO} from 'date-fns'
+import {getMinutes, parseISO, setMinutes} from 'date-fns'
 import {useCallback, useMemo} from 'react'
-import {set, unset} from '../../patch'
-import {StringInputProps} from '../../types'
+
 import {useTranslation} from '../../../i18n'
+import {set, unset} from '../../patch'
+import {type StringInputProps} from '../../types'
+import {type CalendarLabels} from './base/calendar/types'
 import {CommonDateTimeInput} from './CommonDateTimeInput'
-import {ParseResult} from './types'
+import {type ParseResult} from './types'
 import {getCalendarLabels, isValidDate} from './utils'
-import {CalendarLabels} from './base/calendar/types'
 
 interface ParsedOptions {
   dateFormat: string

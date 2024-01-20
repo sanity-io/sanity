@@ -2,13 +2,14 @@
 
 import {CloseIcon} from '@sanity/icons'
 import {Box, Flex, Text, useClickOutside, useGlobalKeyDown} from '@sanity/ui'
-import {ReactNode, useCallback, useEffect, useRef, useState} from 'react'
-import {Button, PopoverProps} from '../../../../../../ui-components'
+import {type ReactNode, useCallback, useEffect, useRef, useState} from 'react'
+
+import {Button, type PopoverProps} from '../../../../../../ui-components'
 import {PresenceOverlay} from '../../../../../presence'
-import {PortableTextEditorElement} from '../../Compositor'
 import {VirtualizerScrollInstanceProvider} from '../../../arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
-import {ModalWidth} from './types'
+import {type PortableTextEditorElement} from '../../Compositor'
 import {ContentHeaderBox, ContentScrollerBox, RootPopover} from './PopoverModal.styles'
+import {type ModalWidth} from './types'
 
 interface PopoverEditDialogProps {
   autoFocus?: boolean

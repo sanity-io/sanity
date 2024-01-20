@@ -1,10 +1,17 @@
-import {Avatar, AvatarPosition, AvatarProps, AvatarSize, AvatarStatus} from '@sanity/ui'
-import {ForwardedRef, forwardRef, useState} from 'react'
-import type {User} from '@sanity/types'
-import {useUser} from '../../store'
-import {isRecord} from '../../util'
-import {useUserColor} from '../../user-color'
+import {type User} from '@sanity/types'
+import {
+  Avatar,
+  type AvatarPosition,
+  type AvatarProps,
+  type AvatarSize,
+  type AvatarStatus,
+} from '@sanity/ui'
+import {type ForwardedRef, forwardRef, useState} from 'react'
+
 import {Tooltip} from '../../../ui-components'
+import {useUser} from '../../store'
+import {useUserColor} from '../../user-color'
+import {isRecord} from '../../util'
 
 /**
  * @hidden

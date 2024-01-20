@@ -1,6 +1,11 @@
 /* eslint-disable complexity */
 import SplitPane from '@rexxars/react-split-pane'
-import type {ClientPerspective, ListenEvent, MutationEvent, SanityClient} from '@sanity/client'
+import {
+  type ClientPerspective,
+  type ListenEvent,
+  type MutationEvent,
+  type SanityClient,
+} from '@sanity/client'
 import {CopyIcon, ErrorOutlineIcon, PlayIcon, StopIcon} from '@sanity/icons'
 import {
   Box,
@@ -14,16 +19,17 @@ import {
   Stack,
   Text,
   TextInput,
-  ToastContextValue,
+  type ToastContextValue,
   Tooltip,
 } from '@sanity/ui'
 import isHotkey from 'is-hotkey'
-import {ChangeEvent, type RefObject, PureComponent, createRef} from 'react'
-import {TFunction} from 'sanity'
+import {type ChangeEvent, createRef, PureComponent, type RefObject} from 'react'
+import {type TFunction} from 'sanity'
+
 import {API_VERSIONS, DEFAULT_API_VERSION} from '../apiVersions'
 import {VisionCodeMirror} from '../codemirror/VisionCodeMirror'
-import {DEFAULT_PERSPECTIVE, PERSPECTIVES, isPerspective} from '../perspectives'
-import type {VisionProps} from '../types'
+import {DEFAULT_PERSPECTIVE, isPerspective, PERSPECTIVES} from '../perspectives'
+import {type VisionProps} from '../types'
 import {encodeQueryString} from '../util/encodeQueryString'
 import {getLocalStorage, type LocalStorageish} from '../util/localStorage'
 import {parseApiQueryString, type ParsedApiQueryString} from '../util/parseApiQueryString'

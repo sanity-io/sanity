@@ -1,7 +1,8 @@
 import {omit} from 'lodash'
+
 import {getDraftId} from '../../../../../util'
 import {isLiveEditEnabled} from '../utils/isLiveEditEnabled'
-import {OperationImpl} from './types'
+import {type OperationImpl} from './types'
 
 const omitProps = ['_createdAt', '_updatedAt']
 

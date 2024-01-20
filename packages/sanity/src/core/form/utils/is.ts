@@ -1,4 +1,4 @@
-import {SchemaType} from '@sanity/types'
+import {type SchemaType} from '@sanity/types'
 
 const PRIMITIVES = ['string', 'number', 'boolean']
 

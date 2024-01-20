@@ -1,8 +1,9 @@
-import type {ArraySchemaType, PortableTextTextBlock} from '@sanity/types'
-import blockContentTypeFeatures from './util/blockContentTypeFeatures'
+import {type ArraySchemaType, type PortableTextTextBlock} from '@sanity/types'
+
 import HtmlDeserializer from './HtmlDeserializer'
+import {type BlockContentFeatures, type HtmlDeserializerOptions, type TypedObject} from './types'
+import blockContentTypeFeatures from './util/blockContentTypeFeatures'
 import {normalizeBlock} from './util/normalizeBlock'
-import {BlockContentFeatures, HtmlDeserializerOptions, TypedObject} from './types'
 
 /**
  * Convert HTML to blocks respecting the block content type's schema
@@ -35,12 +36,12 @@ export function getBlockContentFeatures(blockContentType: ArraySchemaType): Bloc
 
 export {normalizeBlock}
 export {randomKey} from './util/randomKey'
-export type {TypedObject, HtmlDeserializerOptions, BlockContentFeatures}
+export type {BlockContentFeatures, HtmlDeserializerOptions, TypedObject}
 export type {
-  ResolvedAnnotationType,
-  DeserializerRule,
-  HtmlParser,
   ArbitraryTypedObject,
   BlockEditorSchemaProps,
+  DeserializerRule,
+  HtmlParser,
+  ResolvedAnnotationType,
 } from './types'
 export type {BlockNormalizationOptions} from './util/normalizeBlock'

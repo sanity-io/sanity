@@ -1,21 +1,22 @@
 import {
-  useState,
-  useRef,
-  useMemo,
+  type DragEvent,
+  type MutableRefObject,
+  type ReactNode,
   useCallback,
-  DragEvent,
   useEffect,
-  MutableRefObject,
-  ReactNode,
+  useMemo,
+  useRef,
+  useState,
 } from 'react'
-import {Element as SlateElement, Transforms, Path, Editor} from 'slate'
+import {Editor, type Element as SlateElement, Path, Transforms} from 'slate'
 import {ReactEditor, useSlateStatic} from 'slate-react'
+
 import {debugWithName} from '../../utils/debug'
 import {
-  IS_DRAGGING_ELEMENT_TARGET,
-  IS_DRAGGING_BLOCK_ELEMENT,
   IS_DRAGGING,
+  IS_DRAGGING_BLOCK_ELEMENT,
   IS_DRAGGING_BLOCK_TARGET_POSITION,
+  IS_DRAGGING_ELEMENT_TARGET,
 } from '../../utils/weakMaps'
 
 const debug = debugWithName('components:DraggableBlock')

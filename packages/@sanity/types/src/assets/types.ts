@@ -1,6 +1,7 @@
-import type {ComponentType} from 'react'
-import type {Reference} from '../reference'
-import type {SanityDocument} from '../documents'
+import {type ComponentType} from 'react'
+
+import {type SanityDocument} from '../documents'
+import {type Reference} from '../reference'
 
 /** @public */
 // eslint-disable-next-line @typescript-eslint/no-empty-interface

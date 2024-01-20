@@ -3,13 +3,14 @@ import {
   Box,
   Flex,
   Hotkeys,
-  HotkeysProps,
+  type HotkeysProps,
   Text,
   Tooltip as UITooltip,
-  TooltipProps as UITooltipProps,
+  type TooltipProps as UITooltipProps,
 } from '@sanity/ui'
+import type * as React from 'react'
 import {forwardRef} from 'react'
-import * as React from 'react'
+
 import {TOOLTIP_DELAY_PROPS} from './constants'
 
 /** @internal */

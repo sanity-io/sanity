@@ -1,17 +1,22 @@
-import os from 'os'
+import {type SanityClient} from '@sanity/client'
+import chalk from 'chalk'
 import http, {type Server} from 'http'
 import open from 'open'
-import chalk from 'chalk'
-import type {SanityClient} from '@sanity/client'
+import os from 'os'
 
 import {debug as debugIt} from '../../debug'
-import {getCliToken} from '../../util/clientWrapper'
-import {getUserConfig} from '../../util/getUserConfig'
+import {
+  type CliApiClient,
+  type CliCommandArguments,
+  type CliCommandContext,
+  type CliPrompter,
+} from '../../types'
 import {canLaunchBrowser} from '../../util/canLaunchBrowser'
-import type {CliApiClient, CliCommandArguments, CliCommandContext, CliPrompter} from '../../types'
+import {getCliToken} from '../../util/clientWrapper'
 import {TELEMETRY_CONSENT_CONFIG_KEY} from '../../util/createTelemetryStore'
-import type {LoginProvider, ProvidersResponse, SamlLoginProvider} from './types'
+import {getUserConfig} from '../../util/getUserConfig'
 import {LoginTrace} from './login.telemetry'
+import {type LoginProvider, type ProvidersResponse, type SamlLoginProvider} from './types'
 
 const callbackEndpoint = '/callback'
 

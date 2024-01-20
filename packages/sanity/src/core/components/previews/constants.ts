@@ -1,4 +1,4 @@
-import {PreviewLayoutKey} from './types'
+import {type PreviewLayoutKey} from './types'
 
 export const PREVIEW_SIZES: Record<
   PreviewLayoutKey,

@@ -1,6 +1,7 @@
 import {identity} from 'lodash'
 import {useMemo} from 'react'
-import {RouterState} from './types'
+
+import {type RouterState} from './types'
 import {useRouter} from './useRouter'
 
 /**

@@ -1,4 +1,4 @@
-import {GlobalErrorChannel} from '../components/globalErrorHandler'
+import {type GlobalErrorChannel} from '../components/globalErrorHandler'
 
 /**
  * Gets the global scope instance in a given environment.

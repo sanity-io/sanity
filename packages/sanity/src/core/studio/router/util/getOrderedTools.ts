@@ -1,4 +1,4 @@
-import {Tool} from '../../../config'
+import {type Tool} from '../../../config'
 
 export function getOrderedTools(tools: Tool[]): Tool[] {
   const pluginConfig: {toolSwitcher?: {order?: string[]; hidden?: string[]}} = {}

@@ -1,7 +1,8 @@
-import {BifurClient} from '@sanity/bifur-client'
+import {type BifurClient} from '@sanity/bifur-client'
 import {observableCallback} from 'observable-callback'
+import {concat, fromEvent, merge, NEVER, type Observable, of, throwError, timer} from 'rxjs'
 import {map, mergeMapTo, startWith, take, takeUntil} from 'rxjs/operators'
-import {concat, fromEvent, merge, NEVER, Observable, of, throwError, timer} from 'rxjs'
+
 import {catchWithCount} from './utils/catchWithCount'
 
 /** @internal */

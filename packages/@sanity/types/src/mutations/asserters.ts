@@ -1,11 +1,11 @@
-import type {TransactionLogMutation} from '../transactionLog'
-import type {
-  CreateIfNotExistsMutation,
-  CreateMutation,
-  CreateOrReplaceMutation,
-  DeleteMutation,
-  Mutation,
-  PatchMutation,
+import {type TransactionLogMutation} from '../transactionLog'
+import {
+  type CreateIfNotExistsMutation,
+  type CreateMutation,
+  type CreateOrReplaceMutation,
+  type DeleteMutation,
+  type Mutation,
+  type PatchMutation,
 } from './types'
 
 /** @internal */

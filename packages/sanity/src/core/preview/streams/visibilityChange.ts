@@ -1,4 +1,4 @@
-import {EMPTY, fromEvent, Observable} from 'rxjs'
+import {EMPTY, fromEvent, type Observable} from 'rxjs'
 import {shareReplay} from 'rxjs/operators'
 
 export const visibilityChange$: Observable<Event> =

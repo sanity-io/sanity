@@ -1,7 +1,8 @@
-import type {Observable} from 'rxjs'
-import {SanityClient} from '@sanity/client'
+import {type SanityClient} from '@sanity/client'
+import {type Observable} from 'rxjs'
+
 import {SANITY_VERSION} from '../../../../../version'
-import {ResourcesResponse} from './types'
+import {type ResourcesResponse} from './types'
 
 /**
  * @internal Not a stable API yet

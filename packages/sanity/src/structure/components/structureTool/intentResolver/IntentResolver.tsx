@@ -1,9 +1,10 @@
 import {memo, useCallback, useEffect, useState} from 'react'
+import {isRecord, useDocumentStore} from 'sanity'
+import {useRouter, useRouterState} from 'sanity/router'
+
 import {resolveIntent} from '../../../structureResolvers'
 import {useStructureTool} from '../../../useStructureTool'
 import {ensureDocumentIdAndType} from './utils'
-import {useRouter, useRouterState} from 'sanity/router'
-import {isRecord, useDocumentStore} from 'sanity'
 
 const EMPTY_RECORD: Record<string, unknown> = {}
 

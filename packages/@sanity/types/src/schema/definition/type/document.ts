@@ -1,7 +1,7 @@
-import type {SanityDocument} from '../../../documents/types'
-import type {RuleDef, ValidationBuilder} from '../../ruleBuilder'
-import type {InitialValueProperty, SortOrdering} from '../../types'
-import type {ObjectDefinition} from './object'
+import {type SanityDocument} from '../../../documents/types'
+import {type RuleDef, type ValidationBuilder} from '../../ruleBuilder'
+import {type InitialValueProperty, type SortOrdering} from '../../types'
+import {type ObjectDefinition} from './object'
 
 /**
  * This exists only to allow for extensions using declaration-merging.

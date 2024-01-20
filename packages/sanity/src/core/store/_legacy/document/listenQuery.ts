@@ -1,8 +1,9 @@
-import type {ClientPerspective, SanityClient} from '@sanity/client'
-import {asyncScheduler, defer, merge, Observable, of, partition, throwError, timer} from 'rxjs'
+import {type ClientPerspective, type SanityClient} from '@sanity/client'
+import {asyncScheduler, defer, merge, type Observable, of, partition, throwError, timer} from 'rxjs'
 import {filter, mergeMap, share, take, throttleTime} from 'rxjs/operators'
 import {exhaustMapWithTrailing} from 'rxjs-exhaustmap-with-trailing'
-import {MutationEvent, ReconnectEvent, WelcomeEvent} from './types'
+
+import {type MutationEvent, type ReconnectEvent, type WelcomeEvent} from './types'
 
 /** @internal */
 export type ListenQueryParams = Record<string, string | number | boolean | string[]>

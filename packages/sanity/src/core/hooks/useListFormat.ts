@@ -1,5 +1,5 @@
-import {intlCache} from '../i18n/intlCache'
 import {useCurrentLocale} from '../i18n/hooks/useLocale'
+import {intlCache} from '../i18n/intlCache'
 
 /**
  * Options for the `useListFormat` hook

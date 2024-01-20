@@ -1,14 +1,15 @@
 /* eslint-disable i18next/no-literal-string */
-import type {AuthProvider, AuthProviderResponse, SanityClient} from '@sanity/client'
+import {type AuthProvider, type AuthProviderResponse, type SanityClient} from '@sanity/client'
 import {Heading, Stack} from '@sanity/ui'
 import {useEffect, useState} from 'react'
-import type {Observable} from 'rxjs'
-import type {AuthConfig} from '../../../config'
-import {createHookFromObservableFactory} from '../../../util'
+import {type Observable} from 'rxjs'
+
 import {Button} from '../../../../ui-components'
 import {LoadingBlock} from '../../../components/loadingBlock'
+import {type AuthConfig} from '../../../config'
+import {createHookFromObservableFactory} from '../../../util'
 import {CustomLogo, providerLogos} from './providerLogos'
-import type {LoginComponentProps} from './types'
+import {type LoginComponentProps} from './types'
 
 interface GetProvidersOptions extends AuthConfig {
   client: SanityClient

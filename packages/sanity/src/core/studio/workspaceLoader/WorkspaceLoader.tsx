@@ -1,11 +1,12 @@
-import {ComponentType, ReactNode, useEffect, useState} from 'react'
-import {map, catchError} from 'rxjs/operators'
-import {combineLatest, of} from 'rxjs'
 import {ErrorBoundary} from '@sanity/ui'
-import {ConfigResolutionError, Source, Workspace} from '../../config'
+import React, {type ComponentType, type ReactNode, useEffect, useState} from 'react'
+import {combineLatest, of} from 'rxjs'
+import {catchError, map} from 'rxjs/operators'
+
+import {ConfigResolutionError, type Source, type Workspace} from '../../config'
 import {useActiveWorkspace} from '../activeWorkspaceMatcher'
-import {WorkspaceProvider} from '../workspace'
 import {SourceProvider} from '../source'
+import {WorkspaceProvider} from '../workspace'
 import {WorkspaceRouterProvider} from './WorkspaceRouterProvider'
 
 // TODO: work on error handler

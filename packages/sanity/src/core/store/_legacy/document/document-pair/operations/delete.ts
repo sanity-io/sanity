@@ -1,5 +1,5 @@
 import {isLiveEditEnabled} from '../utils/isLiveEditEnabled'
-import {OperationImpl} from './types'
+import {type OperationImpl} from './types'
 
 export const del: OperationImpl<[], 'NOTHING_TO_DELETE'> = {
   disabled: ({snapshots}) => (snapshots.draft || snapshots.published ? false : 'NOTHING_TO_DELETE'),

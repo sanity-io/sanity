@@ -1,8 +1,9 @@
+import type * as React from 'react'
 import {forwardRef, useContext, useMemo} from 'react'
-import * as React from 'react'
-import {PaneRouterContext} from './PaneRouterContext'
-import {BackLinkProps} from './types'
 import {StateLink} from 'sanity/router'
+
+import {PaneRouterContext} from './PaneRouterContext'
+import {type BackLinkProps} from './types'
 
 /**
  * @internal

@@ -1,7 +1,7 @@
-import type {ApiSpecification, GeneratedApiSpecification, InputObjectType} from '../types'
+import {type ApiSpecification, type GeneratedApiSpecification, type InputObjectType} from '../types'
 import {generateTypeFilters} from './generateTypeFilters'
-import {generateTypeSortings} from './generateTypeSortings'
 import {generateTypeQueries} from './generateTypeQueries'
+import {generateTypeSortings} from './generateTypeSortings'
 
 export default (extracted: ApiSpecification): GeneratedApiSpecification => {
   const filters = generateTypeFilters(extracted.types)

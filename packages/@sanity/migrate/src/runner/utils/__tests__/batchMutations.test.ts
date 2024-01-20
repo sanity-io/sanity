@@ -1,5 +1,5 @@
-import {batchMutations} from '../batchMutations'
 import {toArray} from '../../../it-utils'
+import {batchMutations} from '../batchMutations'
 
 function byteLength(obj: unknown) {
   return JSON.stringify(obj).length

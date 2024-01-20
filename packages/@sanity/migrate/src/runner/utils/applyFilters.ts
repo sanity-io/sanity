@@ -1,7 +1,7 @@
-import {SanityDocument} from '@sanity/types'
+import {type SanityDocument} from '@sanity/types'
 import groq, {type ExprNode} from 'groq-js'
-import {Migration} from '../../types'
-import {groqFilter} from '../../it-utils/groqFilter'
+
+import {type Migration} from '../../types'
 
 function isSystemDocumentId(id: string) {
   return id.startsWith('_.')

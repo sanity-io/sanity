@@ -1,14 +1,14 @@
-import type {
-  DefineArrayMemberBase,
-  DefineSchemaOptions,
-  DefineSchemaBase,
-  MaybeAllowUnknownProps,
-  NarrowPreview,
-  StrictDefinition,
-  WidenInitialValue,
-  WidenValidation,
+import {
+  type DefineArrayMemberBase,
+  type DefineSchemaBase,
+  type DefineSchemaOptions,
+  type MaybeAllowUnknownProps,
+  type NarrowPreview,
+  type StrictDefinition,
+  type WidenInitialValue,
+  type WidenValidation,
 } from './defineTypes'
-import type {FieldDefinitionBase, IntrinsicTypeName} from './definition'
+import {type FieldDefinitionBase, type IntrinsicTypeName} from './definition'
 
 /**
  * Helper function for defining a Sanity type definition. This function does not do anything on its own;

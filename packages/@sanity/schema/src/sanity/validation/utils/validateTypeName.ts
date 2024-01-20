@@ -1,5 +1,6 @@
-import leven from 'leven'
 import humanize from 'humanize-list'
+import leven from 'leven'
+
 import {error, HELP_IDS} from '../createValidationResult'
 
 const quote = (str) => `"${str}"`

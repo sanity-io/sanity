@@ -1,12 +1,13 @@
-import {useMemo, useId} from 'react'
-import styled from 'styled-components'
 import {Box, Flex} from '@sanity/ui'
+import {useId, useMemo} from 'react'
+import {LoadingBlock, useTranslation} from 'sanity'
+import styled from 'styled-components'
+
 import {Dialog} from '../../../ui-components'
-import {DocTitle} from '../DocTitle'
 import {structureLocaleNamespace} from '../../i18n'
-import {useReferringDocuments} from './useReferringDocuments'
+import {DocTitle} from '../DocTitle'
 import {ConfirmDeleteDialogBody} from './ConfirmDeleteDialogBody'
-import {useTranslation, LoadingBlock} from 'sanity'
+import {useReferringDocuments} from './useReferringDocuments'
 
 /** @internal */
 export const DialogBody = styled(Box)`

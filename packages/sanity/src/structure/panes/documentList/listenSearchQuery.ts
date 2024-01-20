@@ -1,10 +1,10 @@
-import {SanityClient, SanityDocument} from '@sanity/client'
+import {type SanityClient, type SanityDocument} from '@sanity/client'
 import {
   asyncScheduler,
   defer,
   merge,
   mergeMap,
-  Observable,
+  type Observable,
   of,
   partition,
   share,
@@ -14,9 +14,16 @@ import {
   timer,
 } from 'rxjs'
 import {exhaustMapWithTrailing} from 'rxjs-exhaustmap-with-trailing'
-import {SortOrder} from './types'
-import {createSearchQuery, Schema, SearchOptions, SearchTerms, WeightedSearchOptions} from 'sanity'
+import {
+  createSearchQuery,
+  type Schema,
+  type SearchOptions,
+  type SearchTerms,
+  type WeightedSearchOptions,
+} from 'sanity'
 import {getSearchableTypes, getSearchTypesWithMaxDepth} from 'sanity/_internalBrowser'
+
+import {type SortOrder} from './types'
 
 interface ListenQueryOptions {
   client: SanityClient

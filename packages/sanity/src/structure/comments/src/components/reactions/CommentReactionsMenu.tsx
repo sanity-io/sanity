@@ -1,11 +1,12 @@
 // eslint-disable-next-line no-restricted-imports
 import {Button as UIButton, Grid} from '@sanity/ui'
-import React, {useCallback, useEffect, useState} from 'react'
-import {CommentReactionOption} from '../../types'
+import {useCallback, useEffect, useState} from 'react'
+import {useTranslation} from 'sanity'
+
 import {commentsLocaleNamespace} from '../../../i18n'
 import {COMMENT_REACTION_EMOJIS} from '../../constants'
+import {type CommentReactionOption} from '../../types'
 import {EmojiText} from './EmojiText.styled'
-import {useTranslation} from 'sanity'
 
 const GRID_COLUMNS = 6
 

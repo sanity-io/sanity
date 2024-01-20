@@ -1,16 +1,17 @@
-import {isKeySegment, Path} from '@sanity/types'
+import {isKeySegment, type Path} from '@sanity/types'
 import {castArray} from 'lodash'
-import {
-  ArrayOfObjectsFormNode,
-  ArrayOfObjectsItemMember,
-  BaseFormNode,
-  FieldMember,
-  FieldSetMember,
-  ObjectFormNode,
-  ObjectMember,
-} from '../types'
+
 import {isMemberArrayOfObjects, isMemberObject} from '../../members/object/fields/asserters'
 import {ALL_FIELDS_GROUP} from '../constants'
+import {
+  type ArrayOfObjectsFormNode,
+  type ArrayOfObjectsItemMember,
+  type BaseFormNode,
+  type FieldMember,
+  type FieldSetMember,
+  type ObjectFormNode,
+  type ObjectMember,
+} from '../types'
 import {isArrayOfObjectsFormNode, isObjectFormNode} from '../types/asserters'
 
 /** @internal */

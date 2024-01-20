@@ -1,6 +1,7 @@
 import {useContext} from 'react'
+
 import {LocaleContext, type LocaleContextValue} from '../LocaleContext'
-import type {Locale} from '../types'
+import {type Locale} from '../types'
 
 /**
  * Returns the currently active locale

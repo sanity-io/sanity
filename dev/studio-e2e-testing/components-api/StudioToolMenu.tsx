@@ -1,5 +1,5 @@
 import {Stack} from '@sanity/ui'
-import {ToolMenuProps} from 'sanity'
+import {type ToolMenuProps} from 'sanity'
 
 export function StudioToolMenu(props: ToolMenuProps & {testId: string}) {
   const {testId} = props

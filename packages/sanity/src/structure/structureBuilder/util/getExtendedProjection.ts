@@ -1,4 +1,4 @@
-import {SchemaType, SortOrderingItem} from '@sanity/types'
+import {type SchemaType, type SortOrderingItem} from '@sanity/types'
 
 const IMPLICIT_FIELDS = ['_id', '_type', '_createdAt', '_updatedAt', '_rev']
 

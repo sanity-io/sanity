@@ -1,6 +1,7 @@
 import styled from 'styled-components'
+
 import {DiffFromTo, DiffString} from '../../../diff'
-import {DiffComponent, StringDiff} from '../../../types'
+import {type DiffComponent, type StringDiff} from '../../../types'
 import {StringPreview} from '../preview/StringPreview'
 
 const StringWrapper = styled.div`

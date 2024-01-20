@@ -1,4 +1,4 @@
-import {AnnotationDetails, visitDiff, Diff} from 'sanity'
+import {type AnnotationDetails, type Diff, visitDiff} from 'sanity'
 
 export function collectLatestAuthorAnnotations(diff: Diff): AnnotationDetails[] {
   const authorMap = new Map<string, AnnotationDetails>()

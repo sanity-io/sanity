@@ -1,6 +1,6 @@
 const debug = require('debug')('sanity:import')
-const pMap = require('p-map')
 const {get} = require('lodash')
+const pMap = require('p-map')
 const {extractWithPath} = require('@sanity/mutator')
 const serializePath = require('./serializePath')
 const progressStepper = require('./util/progressStepper')

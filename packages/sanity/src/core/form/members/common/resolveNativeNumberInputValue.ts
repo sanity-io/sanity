@@ -1,4 +1,4 @@
-import {isNumberSchemaType, SchemaType} from '@sanity/types'
+import {isNumberSchemaType, type SchemaType} from '@sanity/types'
 
 export function resolveNativeNumberInputValue(
   schemaType: SchemaType,

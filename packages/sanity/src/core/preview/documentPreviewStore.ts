@@ -1,7 +1,8 @@
-import {Observable} from 'rxjs'
+import {type SanityClient} from '@sanity/client'
+import {type PrepareViewOptions, type SanityDocument} from '@sanity/types'
+import {type Observable} from 'rxjs'
 import {distinctUntilChanged, map} from 'rxjs/operators'
-import {SanityClient} from '@sanity/client'
-import {PrepareViewOptions, SanityDocument} from '@sanity/types'
+
 import {isRecord} from '../util'
 import {create_preview_availability} from './availability'
 import {createPathObserver} from './createPathObserver'
@@ -9,14 +10,14 @@ import {createPreviewObserver} from './createPreviewObserver'
 import {create_preview_documentPair} from './documentPair'
 import {create_preview_observeFields} from './observeFields'
 import {
-  ApiConfig,
-  DraftsModelDocument,
-  DraftsModelDocumentAvailability,
-  ObservePathsFn,
-  PreparedSnapshot,
-  Previewable,
-  PreviewableType,
-  PreviewPath,
+  type ApiConfig,
+  type DraftsModelDocument,
+  type DraftsModelDocumentAvailability,
+  type ObservePathsFn,
+  type PreparedSnapshot,
+  type Previewable,
+  type PreviewableType,
+  type PreviewPath,
 } from './types'
 
 /**

@@ -1,6 +1,7 @@
 import {useEffect, useState} from 'react'
 import {concat, of} from 'rxjs'
 import {delay, distinctUntilChanged, map, switchMap} from 'rxjs/operators'
+
 import {intersectionObservableFor} from './streams/intersectionObservableFor'
 import {visibilityChange$} from './streams/visibilityChange'
 

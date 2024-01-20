@@ -1,8 +1,9 @@
 import {useContext} from 'react'
-import {empty} from 'rxjs'
 import {useMemoObservable} from 'react-rx'
+import {empty} from 'rxjs'
+
 import {UserColorManagerContext} from './context'
-import {UserColor, UserColorManager} from './types'
+import {type UserColor, type UserColorManager} from './types'
 
 /** @internal */
 export function useUserColorManager(): UserColorManager {

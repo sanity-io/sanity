@@ -1,11 +1,12 @@
-import {TextArea, Theme} from '@sanity/ui'
-import {ComponentType, forwardRef, useImperativeHandle, useRef} from 'react'
+import {type SchemaType} from '@sanity/types'
+import {TextArea, type Theme} from '@sanity/ui'
+import {type ComponentType, forwardRef, useImperativeHandle, useRef} from 'react'
 import styled, {css} from 'styled-components'
-import {SchemaType} from '@sanity/types'
-import {PortableTextInput} from '../../PortableTextInput'
+
+import {type SanityFormConfig} from '../../../../../config'
 import {defaultResolveInputComponent} from '../../../../studio/inputResolver/inputResolver'
-import {InputProps} from '../../../../types'
-import {SanityFormConfig} from '../../../../../config'
+import {type InputProps} from '../../../../types'
+import {PortableTextInput} from '../../PortableTextInput'
 
 const DebugTextArea = styled(TextArea)(({theme}: {theme: Theme}) => {
   return css`

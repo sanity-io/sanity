@@ -1,42 +1,43 @@
-import {useCallback, useMemo, useRef, FocusEvent} from 'react'
 import {
-  BooleanSchemaType,
+  type BooleanSchemaType,
   isBooleanSchemaType,
   isNumberSchemaType,
   isStringSchemaType,
-  NumberSchemaType,
-  SchemaType,
-  StringSchemaType,
+  type NumberSchemaType,
+  type SchemaType,
+  type StringSchemaType,
 } from '@sanity/types'
+import {type FocusEvent, useCallback, useMemo, useRef} from 'react'
+import {type Subscription} from 'rxjs'
 import {filter, map, tap} from 'rxjs/operators'
-import {Subscription} from 'rxjs'
-import {FIXME} from '../../../../FIXME'
-import {ArrayOfPrimitivesFormNode, FieldMember} from '../../../store'
-import {
-  ArrayOfObjectsInputProps,
-  ArrayOfPrimitivesFieldProps,
-  ArrayOfPrimitivesInputProps,
-  ArrayInputMoveItemEvent,
-  RenderArrayOfPrimitivesItemCallback,
-  RenderFieldCallback,
-  RenderInputCallback,
-  RenderPreviewCallback,
-  UploadEvent,
-  RenderBlockCallback,
-  RenderAnnotationCallback,
-} from '../../../types'
-import {FormCallbacksProvider, useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
-import {useDidUpdate} from '../../../hooks/useDidUpdate'
-import {insert, PatchArg, PatchEvent, set, setIfMissing, unset} from '../../../patch'
-import {PrimitiveValue} from '../../../inputs/arrays/ArrayOfPrimitivesInput/types'
-import {Uploader, UploaderResolver, UploadProgressEvent} from '../../../studio'
+
+import {type FIXME} from '../../../../FIXME'
 import {useClient} from '../../../../hooks'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
-import {readAsText} from '../../../studio/uploads/file/readAsText'
-import {accepts} from '../../../studio/uploads/accepts'
+import {useDidUpdate} from '../../../hooks/useDidUpdate'
+import {type PrimitiveValue} from '../../../inputs/arrays/ArrayOfPrimitivesInput/types'
+import {insert, type PatchArg, PatchEvent, set, setIfMissing, unset} from '../../../patch'
 import {applyAll} from '../../../patch/applyPatch'
-import {createDescriptionId} from '../../common/createDescriptionId'
+import {type ArrayOfPrimitivesFormNode, type FieldMember} from '../../../store'
+import {type Uploader, type UploaderResolver, type UploadProgressEvent} from '../../../studio'
 import {useDocumentFieldActions} from '../../../studio/contexts/DocumentFieldActions'
+import {FormCallbacksProvider, useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
+import {accepts} from '../../../studio/uploads/accepts'
+import {readAsText} from '../../../studio/uploads/file/readAsText'
+import {
+  type ArrayInputMoveItemEvent,
+  type ArrayOfObjectsInputProps,
+  type ArrayOfPrimitivesFieldProps,
+  type ArrayOfPrimitivesInputProps,
+  type RenderAnnotationCallback,
+  type RenderArrayOfPrimitivesItemCallback,
+  type RenderBlockCallback,
+  type RenderFieldCallback,
+  type RenderInputCallback,
+  type RenderPreviewCallback,
+  type UploadEvent,
+} from '../../../types'
+import {createDescriptionId} from '../../common/createDescriptionId'
 
 function move<T>(arr: T[], from: number, to: number): T[] {
   const copy = arr.slice()

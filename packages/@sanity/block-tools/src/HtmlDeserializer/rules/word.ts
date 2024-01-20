@@ -1,5 +1,5 @@
-import type {DeserializerRule} from '../../types'
-import {DEFAULT_BLOCK, BLOCK_DEFAULT_STYLE} from '../../constants'
+import {BLOCK_DEFAULT_STYLE, DEFAULT_BLOCK} from '../../constants'
+import {type DeserializerRule} from '../../types'
 import {isElement, tagName} from '../helpers'
 
 function getListItemStyle(el: Node): string | undefined {

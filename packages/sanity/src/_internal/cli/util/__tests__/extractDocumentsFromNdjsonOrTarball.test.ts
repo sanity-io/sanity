@@ -1,6 +1,7 @@
+import {type SanityDocument} from '@sanity/types'
 import fs from 'fs'
 import path from 'path'
-import {type SanityDocument} from '@sanity/types'
+
 import {extractDocumentsFromNdjsonOrTarball} from '../extractDocumentsFromNdjsonOrTarball'
 
 describe('extractDocumentsFromNdjsonOrTarball', () => {

@@ -3,7 +3,12 @@
  * Some of these tests have no expect statement;
  * use of ts-expect-error serves the same purpose - TypeScript is the testrunner here
  */
-import type {ArrayOptions, ObjectOptions, StringOptions, TypeAliasDefinition} from '../definition'
+import {
+  type ArrayOptions,
+  type ObjectOptions,
+  type StringOptions,
+  type TypeAliasDefinition,
+} from '../definition'
 import {defineArrayMember, defineField, defineType} from '../types'
 
 describe('alias type test', () => {

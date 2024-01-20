@@ -1,27 +1,28 @@
 /* eslint-disable camelcase */
-import {Badge, Box, Flex, Stack, Text, Theme, useForwardedRef} from '@sanity/ui'
+import {type DeprecatedProperty, type FormNodeValidation} from '@sanity/types'
+import {Badge, Box, Flex, Stack, Text, type Theme, useForwardedRef} from '@sanity/ui'
 import {
-  ForwardedRef,
-  FocusEvent,
-  HTMLProps,
-  ReactNode,
+  type FocusEvent,
+  type ForwardedRef,
   forwardRef,
+  type HTMLProps,
+  type ReactNode,
   useCallback,
   useMemo,
 } from 'react'
 import styled, {css} from 'styled-components'
-import {DeprecatedProperty, FormNodeValidation} from '@sanity/types'
-import {FormNodePresence} from '../../../presence'
-import {DocumentFieldActionNode} from '../../../config'
+
+import {TextWithTone} from '../../../components'
+import {type DocumentFieldActionNode} from '../../../config'
+import {useTranslation} from '../../../i18n'
+import {type FormNodePresence} from '../../../presence'
 import {useFieldActions} from '../../field'
 import {createDescriptionId} from '../../members/common/createDescriptionId'
-import {FieldCommentsProps} from '../../types'
-import {TextWithTone} from '../../../components'
-import {useTranslation} from '../../../i18n'
-import {FormFieldValidationStatus} from './FormFieldValidationStatus'
-import {FormFieldSetLegend} from './FormFieldSetLegend'
-import {focusRingStyle, AlignedBottomGrid} from './styles'
+import {type FieldCommentsProps} from '../../types'
 import {FormFieldBaseHeader} from './FormFieldBaseHeader'
+import {FormFieldSetLegend} from './FormFieldSetLegend'
+import {FormFieldValidationStatus} from './FormFieldValidationStatus'
+import {AlignedBottomGrid, focusRingStyle} from './styles'
 
 /** @internal */
 export interface FormFieldSetProps {

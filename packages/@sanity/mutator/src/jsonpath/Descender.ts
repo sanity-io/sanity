@@ -1,6 +1,7 @@
 import {flatten} from 'lodash'
+
 import {Expression} from './Expression'
-import type {Probe} from './Probe'
+import {type Probe} from './Probe'
 
 /**
  * Descender models the state of one partial jsonpath evaluation. Head is the

@@ -1,5 +1,6 @@
-import path from 'path'
 import fs from 'fs/promises'
+import path from 'path'
+
 import {debug as serverDebug} from './debug'
 
 const debug = serverDebug.extend('config')

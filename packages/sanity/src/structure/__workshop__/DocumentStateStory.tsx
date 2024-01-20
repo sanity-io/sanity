@@ -6,15 +6,11 @@ import {
   Stack,
 } from '@sanity/ui'
 import {useCallback, useEffect, useMemo, useState} from 'react'
-import {StructureToolProvider} from '../StructureToolProvider'
-import {DocumentPaneProvider} from '../panes'
-import {DocumentPaneNode} from '../types'
-
 import {
-  DocumentActionComponent,
-  DocumentActionDescription,
-  DocumentActionProps,
-  EditStateFor,
+  type DocumentActionComponent,
+  type DocumentActionDescription,
+  type DocumentActionProps,
+  type EditStateFor,
   useConnectionState,
   useEditState,
   useInitialValue,
@@ -22,6 +18,10 @@ import {
   useUnique,
   useValidationStatus,
 } from 'sanity'
+
+import {DocumentPaneProvider} from '../panes'
+import {StructureToolProvider} from '../StructureToolProvider'
+import {type DocumentPaneNode} from '../types'
 
 export default function InitialValueStory() {
   const documentId = 'test'

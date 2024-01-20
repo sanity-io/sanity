@@ -1,11 +1,12 @@
-import {ElementType, ReactNode, createElement, isValidElement} from 'react'
-import {isValidElementType} from 'react-is'
 import {Box, Flex, rem, Stack, Text, TextSkeleton} from '@sanity/ui'
+import {createElement, type ElementType, isValidElement, type ReactNode} from 'react'
+import {isValidElementType} from 'react-is'
 import styled from 'styled-components'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
-import {PreviewMediaDimensions} from '../types'
-import {Media, MediaProps} from '../_common/Media'
+
+import {Media, type MediaProps} from '../_common/Media'
 import {PREVIEW_SIZES} from '../constants'
+import {type PreviewMediaDimensions} from '../types'
 
 /**
  * @hidden

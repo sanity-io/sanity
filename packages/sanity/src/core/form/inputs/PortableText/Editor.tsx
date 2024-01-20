@@ -1,9 +1,9 @@
 import {
-  PortableTextEditable,
   type EditorSelection,
   type HotkeyOptions,
   type OnCopyFn,
   type OnPasteFn,
+  PortableTextEditable,
   type RenderAnnotationFunction,
   type RenderBlockFunction,
   type RenderChildFunction,
@@ -11,14 +11,13 @@ import {
   type RenderListItemFunction,
   type RenderStyleFunction,
 } from '@sanity/portable-text-editor'
-import type {Path} from '@sanity/types'
+import {type Path} from '@sanity/types'
 import {BoundaryElementProvider, useBoundaryElement, useGlobalKeyDown, useLayer} from '@sanity/ui'
 import {useCallback, useMemo, useRef} from 'react'
+
 import {TooltipDelayGroupProvider} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'
 import {useFormBuilder} from '../../useFormBuilder'
-import {Toolbar} from './toolbar'
-import {Decorator} from './text'
 import {
   EditableCard,
   EditableContainer,
@@ -27,10 +26,12 @@ import {
   Scroller,
   ToolbarCard,
 } from './Editor.styles'
-import {useSpellcheck} from './hooks/useSpellCheck'
 import {useScrollSelectionIntoView} from './hooks/useScrollSelectionIntoView'
-import {Style} from './text/Style'
+import {useSpellcheck} from './hooks/useSpellCheck'
+import {Decorator} from './text'
 import {ListItem} from './text/ListItem'
+import {Style} from './text/Style'
+import {Toolbar} from './toolbar'
 
 const noOutlineStyle = {outline: 'none'} as const
 

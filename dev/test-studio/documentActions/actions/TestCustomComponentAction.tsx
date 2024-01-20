@@ -1,6 +1,6 @@
 import {Button, Card, Dialog, Stack, Text} from '@sanity/ui'
-import {DocumentActionComponent} from 'sanity'
 import {useCallback, useState} from 'react'
+import {type DocumentActionComponent} from 'sanity'
 
 export const TestCustomComponentAction: DocumentActionComponent = () => {
   const [open, setOpen] = useState<boolean>(false)

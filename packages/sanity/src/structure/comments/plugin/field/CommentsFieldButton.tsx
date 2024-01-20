@@ -1,25 +1,26 @@
 import {
-  Flex,
   // eslint-disable-next-line no-restricted-imports
   Button as SanityUIButton,
+  Flex,
   Stack,
   Text,
   useClickOutside,
 } from '@sanity/ui'
 import {useCallback, useMemo, useRef, useState} from 'react'
+import {type CurrentUser, type PortableTextBlock, Translate, useTranslation} from 'sanity'
 import styled from 'styled-components'
+
 import {Button, Popover, Tooltip} from '../../../../ui-components'
 import {commentsLocaleNamespace} from '../../i18n'
 import {
   AddCommentIcon,
   CommentIcon,
   CommentInput,
-  CommentMessage,
-  hasCommentMessageValue,
   type CommentInputHandle,
+  type CommentMessage,
+  hasCommentMessageValue,
   type MentionOptionsHookValue,
 } from '../../src'
-import {Translate, useTranslation, type CurrentUser, type PortableTextBlock} from 'sanity'
 
 const ContentStack = styled(Stack)`
   width: 320px;

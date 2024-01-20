@@ -1,30 +1,41 @@
 import {
-  Path,
-  Reference,
-  ReferenceFilterSearchOptions,
-  ReferenceOptions,
-  ReferenceSchemaType,
-  SanityDocument,
+  type Path,
+  type Reference,
+  type ReferenceFilterSearchOptions,
+  type ReferenceOptions,
+  type ReferenceSchemaType,
+  type SanityDocument,
 } from '@sanity/types'
 import * as PathUtils from '@sanity/util/paths'
 import {get} from '@sanity/util/paths'
-import {ComponentProps, ForwardedRef, forwardRef, useCallback, useMemo, useRef} from 'react'
+import {
+  type ComponentProps,
+  type ForwardedRef,
+  forwardRef,
+  useCallback,
+  useMemo,
+  useRef,
+} from 'react'
 import {from, throwError} from 'rxjs'
 import {catchError, mergeMap} from 'rxjs/operators'
-import * as adapter from '../client-adapters/reference'
-import {ReferenceInput} from '../../../inputs/ReferenceInput/ReferenceInput'
-import {CreateReferenceOption, EditReferenceEvent} from '../../../inputs/ReferenceInput/types'
-import {useReferenceInputOptions} from '../../contexts'
-import {ObjectInputProps} from '../../../types'
-import {Source} from '../../../../config'
-import {useSource} from '../../../../studio'
+
+import {type Source} from '../../../../config'
+import {type FIXME} from '../../../../FIXME'
 import {useSchema} from '../../../../hooks'
 import {useDocumentPreviewStore} from '../../../../store'
-import {FIXME} from '../../../../FIXME'
-import {isNonNullable} from '../../../../util'
-import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
-import {useFormValue} from '../../../contexts/FormValue'
+import {useSource} from '../../../../studio'
 import {useSearchMaxFieldDepth} from '../../../../studio/components/navbar/search/hooks/useSearchMaxFieldDepth'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
+import {isNonNullable} from '../../../../util'
+import {useFormValue} from '../../../contexts/FormValue'
+import {ReferenceInput} from '../../../inputs/ReferenceInput/ReferenceInput'
+import {
+  type CreateReferenceOption,
+  type EditReferenceEvent,
+} from '../../../inputs/ReferenceInput/types'
+import {type ObjectInputProps} from '../../../types'
+import {useReferenceInputOptions} from '../../contexts'
+import * as adapter from '../client-adapters/reference'
 
 async function resolveUserDefinedFilter(
   options: ReferenceOptions | undefined,

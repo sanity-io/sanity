@@ -1,5 +1,6 @@
-import {ReactNode, createContext} from 'react'
-import {PortableTextMarker} from '../../../types'
+import {createContext, type ReactNode} from 'react'
+
+import {type PortableTextMarker} from '../../../types'
 
 export const PortableTextMarkersContext = createContext<PortableTextMarker[]>([])
 

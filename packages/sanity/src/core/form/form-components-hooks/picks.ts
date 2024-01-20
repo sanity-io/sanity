@@ -1,7 +1,14 @@
-import {ComponentType} from 'react'
-import {PreviewProps} from '../../components/previews'
-import {PluginOptions} from '../../config'
-import {BlockAnnotationProps, BlockProps, FieldProps, InputProps, ItemProps} from '../types'
+import {type ComponentType} from 'react'
+
+import {type PreviewProps} from '../../components/previews'
+import {type PluginOptions} from '../../config'
+import {
+  type BlockAnnotationProps,
+  type BlockProps,
+  type FieldProps,
+  type InputProps,
+  type ItemProps,
+} from '../types'
 
 export function pickInputComponent(
   plugin: PluginOptions,

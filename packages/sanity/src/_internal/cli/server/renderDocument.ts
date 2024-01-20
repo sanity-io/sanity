@@ -6,17 +6,17 @@
  * Then renders using ReactDOM to a string, which is sent back to the parent
  * process over the worker `postMessage` channel.
  */
-import fs from 'fs'
-import path from 'path'
-import {Worker, parentPort, workerData, isMainThread} from 'worker_threads'
 import chalk from 'chalk'
+import fs from 'fs'
 import importFresh from 'import-fresh'
-import {generateHelpUrl} from '@sanity/generate-help-url'
+import path from 'path'
 import {createElement} from 'react'
 import {renderToStaticMarkup} from 'react-dom/server'
+import {isMainThread, parentPort, Worker, workerData} from 'worker_threads'
+
 import {getAliases} from './aliases'
-import {SanityMonorepo} from './sanityMonorepo'
 import {debug as serverDebug} from './debug'
+import {type SanityMonorepo} from './sanityMonorepo'
 
 const debug = serverDebug.extend('renderDocument')
 

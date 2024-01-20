@@ -1,4 +1,4 @@
-import type {BuiltInValidationReporter} from '../validateAction'
+import {type BuiltInValidationReporter} from '../validateAction'
 
 // TODO: replace with Array.fromAsync when it's out of stage3
 async function arrayFromAsync<T>(iterable: AsyncIterable<T>) {

@@ -1,5 +1,5 @@
-import type {CliCommandDefinition} from '../../types'
 import {createSetTelemetryConsentAction} from '../../actions/telemetry/setTelemetryConsent'
+import {type CliCommandDefinition} from '../../types'
 
 const helpText = `
 Examples

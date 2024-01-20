@@ -1,10 +1,11 @@
 import {Box, Flex, rem, Stack, Text} from '@sanity/ui'
 import styled from 'styled-components'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
+
 import {Media} from '../_common/Media'
 import {PREVIEW_SIZES} from '../constants'
-import {PreviewMediaDimensions, PreviewProps} from '../types'
 import {renderPreviewNode} from '../helpers'
+import {type PreviewMediaDimensions, type PreviewProps} from '../types'
 
 const DEFAULT_MEDIA_DIMENSIONS: PreviewMediaDimensions = {
   ...PREVIEW_SIZES.block.media,

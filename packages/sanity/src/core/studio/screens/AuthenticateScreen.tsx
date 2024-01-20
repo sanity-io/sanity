@@ -1,4 +1,5 @@
-import {Flex, Card, Container} from '@sanity/ui'
+import {Card, Container, Flex} from '@sanity/ui'
+
 import {WorkspaceAuth} from '../components/navbar/workspace'
 
 export function AuthenticateScreen() {

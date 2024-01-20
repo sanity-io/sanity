@@ -1,9 +1,9 @@
 /* eslint-disable no-process-env */
-import path from 'path'
-import {existsSync, readFileSync} from 'fs'
-import {spawn, SpawnOptions} from 'child_process'
-import {platform, tmpdir} from 'os'
 import {createClient} from '@sanity/client'
+import {spawn, type SpawnOptions} from 'child_process'
+import {existsSync, readFileSync} from 'fs'
+import {platform, tmpdir} from 'os'
+import path from 'path'
 import which from 'which'
 
 export const cliUserToken = (process.env.SANITY_CI_CLI_AUTH_TOKEN_STAGING || '').trim()

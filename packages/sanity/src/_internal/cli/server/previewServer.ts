@@ -1,11 +1,12 @@
+import {type UserViteConfig} from '@sanity/cli'
+import chalk from 'chalk'
 import fs from 'fs/promises'
 import path from 'path'
-import chalk from 'chalk'
 import {type InlineConfig, preview} from 'vite'
-import type {UserViteConfig} from '@sanity/cli'
+
 import {debug as serverDebug} from './debug'
-import {sanityBasePathRedirectPlugin} from './vite/plugin-sanity-basepath-redirect'
 import {extendViteConfigWithUserConfig} from './getViteConfig'
+import {sanityBasePathRedirectPlugin} from './vite/plugin-sanity-basepath-redirect'
 
 const debug = serverDebug.extend('preview')
 

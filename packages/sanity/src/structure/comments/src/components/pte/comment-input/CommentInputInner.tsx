@@ -1,15 +1,16 @@
+import {type CurrentUser} from '@sanity/types'
+import {Box, Card, Flex, MenuDivider, Stack} from '@sanity/ui'
+import type * as React from 'react'
 import {useCallback} from 'react'
-import * as React from 'react'
-import {Flex, MenuDivider, Box, Card, Stack} from '@sanity/ui'
+import {useTranslation, useUser} from 'sanity'
 import styled, {css} from 'styled-components'
-import {CurrentUser} from '@sanity/types'
-import {MentionIcon, SendIcon} from '../../icons'
-import {CommentsAvatar} from '../../avatars/CommentsAvatar'
+
 import {Button, TooltipDelayGroupProvider} from '../../../../../../ui-components'
 import {commentsLocaleNamespace} from '../../../../i18n'
-import {useCommentInput} from './useCommentInput'
+import {CommentsAvatar} from '../../avatars/CommentsAvatar'
+import {MentionIcon, SendIcon} from '../../icons'
 import {Editable} from './Editable'
-import {useTranslation, useUser} from 'sanity'
+import {useCommentInput} from './useCommentInput'
 
 const EditableWrap = styled(Box)`
   max-height: 20vh;

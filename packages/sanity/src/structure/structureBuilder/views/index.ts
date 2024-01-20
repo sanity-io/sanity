@@ -1,9 +1,9 @@
-import type {UserViewComponent} from '../types'
-import {ComponentView, ComponentViewBuilder} from './ComponentView'
-import {FormView, FormViewBuilder} from './FormView'
+import {type UserViewComponent} from '../types'
+import {type ComponentView, ComponentViewBuilder} from './ComponentView'
+import {type FormView, FormViewBuilder} from './FormView'
 
-export * from './FormView'
 export * from './ComponentView'
+export * from './FormView'
 export * from './View'
 
 /** @internal */

@@ -1,6 +1,6 @@
-const fromStream = require('./importFromStream')
-const fromFolder = require('./importFromFolder')
 const fromArray = require('./importFromArray')
+const fromFolder = require('./importFromFolder')
+const fromStream = require('./importFromStream')
 const validateOptions = require('./validateOptions')
 
 const importers = {

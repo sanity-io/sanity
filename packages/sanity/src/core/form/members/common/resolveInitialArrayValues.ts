@@ -1,11 +1,12 @@
-import {ArraySchemaType, Path, SchemaType} from '@sanity/types'
-import {concat, defer, EMPTY, from, Observable, of} from 'rxjs'
-import {catchError, filter, map, mergeMap} from 'rxjs/operators'
+import {type ArraySchemaType, type Path, type SchemaType} from '@sanity/types'
 import {resolveTypeName} from '@sanity/util/content'
-import {FormPatch, set, unset} from '../../patch'
-import {ObjectItem} from '../../types'
-import {isEmptyItem} from '../../store/utils/isEmptyItem'
+import {concat, defer, EMPTY, from, type Observable, of} from 'rxjs'
+import {catchError, filter, map, mergeMap} from 'rxjs/operators'
+
 import {isNonNullable} from '../../../util'
+import {type FormPatch, set, unset} from '../../patch'
+import {isEmptyItem} from '../../store/utils/isEmptyItem'
+import {type ObjectItem} from '../../types'
 
 const getMemberTypeOfItem = (schemaType: ArraySchemaType, item: any): SchemaType | undefined => {
   const itemTypeName = resolveTypeName(item)

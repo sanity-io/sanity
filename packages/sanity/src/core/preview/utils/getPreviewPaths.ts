@@ -1,5 +1,6 @@
-import {SchemaType} from '@sanity/types'
-import {PreviewPath} from '../types'
+import {type SchemaType} from '@sanity/types'
+
+import {type PreviewPath} from '../types'
 
 const DEFAULT_PREVIEW_PATHS: PreviewPath[] = [['_createdAt'], ['_updatedAt']]
 

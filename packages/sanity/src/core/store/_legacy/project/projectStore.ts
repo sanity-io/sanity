@@ -1,6 +1,7 @@
-import {SanityClient} from '@sanity/client'
-import {Observable} from 'rxjs'
-import {ProjectData, ProjectStore} from './types'
+import {type SanityClient} from '@sanity/client'
+import {type Observable} from 'rxjs'
+
+import {type ProjectData, type ProjectStore} from './types'
 
 /** @internal */
 export function createProjectStore(context: {client: SanityClient}): ProjectStore {

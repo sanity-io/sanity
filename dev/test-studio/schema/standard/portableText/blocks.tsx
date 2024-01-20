@@ -1,10 +1,10 @@
 import {ComposeIcon, DropIcon, ImageIcon} from '@sanity/icons'
 import {
   BlockEditor,
-  PortableTextInputProps,
   defineArrayMember,
   defineField,
   defineType,
+  type PortableTextInputProps,
 } from 'sanity'
 
 function CustomEditor(props: PortableTextInputProps) {

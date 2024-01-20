@@ -1,21 +1,22 @@
-import {Observable, of as observableOf} from 'rxjs'
-import {map, switchMap} from 'rxjs/operators'
 import {
   isCrossDatasetReference,
   isCrossDatasetReferenceSchemaType,
   isReferenceSchemaType,
-  PrepareViewOptions,
+  type PrepareViewOptions,
 } from '@sanity/types'
 import {isPlainObject} from 'lodash'
-import {invokePrepare, prepareForPreview} from './utils/prepareForPreview'
-import {getPreviewPaths} from './utils/getPreviewPaths'
+import {type Observable, of as observableOf} from 'rxjs'
+import {map, switchMap} from 'rxjs/operators'
+
 import {
-  Previewable,
-  PreviewableType,
   type ApiConfig,
-  type PreviewPath,
   type PreparedSnapshot,
+  type Previewable,
+  type PreviewableType,
+  type PreviewPath,
 } from './types'
+import {getPreviewPaths} from './utils/getPreviewPaths'
+import {invokePrepare, prepareForPreview} from './utils/prepareForPreview'
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return isPlainObject(value)

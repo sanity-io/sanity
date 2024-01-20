@@ -1,6 +1,7 @@
-import type {FlatNamespace, KeyPrefix, Namespace, TFunction} from 'i18next'
-import type {$Tuple} from 'react-i18next/helpers'
+import {type FlatNamespace, type KeyPrefix, type Namespace, type TFunction} from 'i18next'
 import {type FallbackNs, useTranslation as useOriginalTranslation} from 'react-i18next'
+import {type $Tuple} from 'react-i18next/helpers'
+
 import {maybeWrapT} from '../debug'
 
 /**

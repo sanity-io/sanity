@@ -1,26 +1,26 @@
-import {Card, Stack, Text, useTheme} from '@sanity/ui'
+import {type DragStartEvent} from '@dnd-kit/core'
 import {isKeySegment} from '@sanity/types'
-import {useCallback, useMemo, useRef, useState} from 'react'
-import shallowEquals from 'shallow-equals'
+import {Card, Stack, Text, useTheme} from '@sanity/ui'
 import {
   defaultRangeExtractor,
-  useVirtualizer,
-  VirtualizerOptions,
-  type Range,
   elementScroll,
+  type Range,
+  useVirtualizer,
+  type VirtualizerOptions,
 } from '@tanstack/react-virtual'
-import type {DragStartEvent} from '@dnd-kit/core'
-import {Item, List} from '../../common/list'
-import {ArrayOfObjectsInputProps, ObjectItem} from '../../../../types'
-import {ArrayOfObjectsItem} from '../../../../members'
+import React, {useCallback, useMemo, useRef, useState} from 'react'
+import shallowEquals from 'shallow-equals'
 
-import {createProtoArrayValue} from '../createProtoArrayValue'
+import {useTranslation} from '../../../../../i18n'
+import {ArrayOfObjectsItem} from '../../../../members'
+import {type ArrayOfObjectsInputProps, type ObjectItem} from '../../../../types'
+import {Item, List} from '../../common/list'
 import {UploadTargetCard} from '../../common/UploadTargetCard'
 import {ArrayOfObjectsFunctions} from '../ArrayOfObjectsFunctions'
-import {useTranslation} from '../../../../../i18n'
-import {useVirtualizerScrollInstance} from './useVirtualizerScrollInstance'
+import {createProtoArrayValue} from '../createProtoArrayValue'
 import {ErrorItem} from './ErrorItem'
 import {useMemoCompare} from './useMemoCompare'
+import {useVirtualizerScrollInstance} from './useVirtualizerScrollInstance'
 
 const EMPTY: [] = []
 

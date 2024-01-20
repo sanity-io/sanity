@@ -1,7 +1,8 @@
 import boxen from 'boxen'
 import chalk from 'chalk'
-import {debug} from '../debug'
+
 import {telemetryLearnMoreMessage} from '../commands/telemetry/telemetryStatusCommand'
+import {debug} from '../debug'
 import {getUserConfig} from './getUserConfig'
 import {isCi} from './isCi'
 

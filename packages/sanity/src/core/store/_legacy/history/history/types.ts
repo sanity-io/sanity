@@ -1,5 +1,6 @@
-import type {MendozaEffectPair} from '@sanity/types'
-import type {RemoteSnapshotVersionEvent} from '../../document/document-pair/checkoutPair'
+import {type MendozaEffectPair} from '@sanity/types'
+
+import {type RemoteSnapshotVersionEvent} from '../../document/document-pair/checkoutPair'
 
 /**
  * @hidden

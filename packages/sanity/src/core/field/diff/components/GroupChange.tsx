@@ -1,21 +1,29 @@
-import {HTMLAttributes, ReactElement, useCallback, useContext, useMemo, useState} from 'react'
 import {Box, Flex, Stack, Text, useClickOutside} from '@sanity/ui'
+import React, {
+  type HTMLAttributes,
+  type ReactElement,
+  useCallback,
+  useContext,
+  useMemo,
+  useState,
+} from 'react'
+
 import {Button, Popover} from '../../../../ui-components'
 import {useDocumentOperation} from '../../../hooks'
-import {undoChange} from '../changes/undoChange'
-import {isFieldChange} from '../helpers'
-import {isPTSchemaType} from '../../types/portableText/diff'
-import {GroupChangeNode, FieldOperationsAPI} from '../../types'
-import {useHover} from '../../utils/useHover'
-import {pathsAreEqual} from '../../paths'
-import {DiffContext} from '../contexts/DiffContext'
-import {useDocumentChange} from '../hooks'
-import {useDocumentPairPermissions} from '../../../store'
 import {useTranslation} from '../../../i18n'
+import {useDocumentPairPermissions} from '../../../store'
+import {pathsAreEqual} from '../../paths'
+import {type FieldOperationsAPI, type GroupChangeNode} from '../../types'
+import {isPTSchemaType} from '../../types/portableText/diff'
+import {useHover} from '../../utils/useHover'
+import {undoChange} from '../changes/undoChange'
+import {DiffContext} from '../contexts/DiffContext'
+import {isFieldChange} from '../helpers'
+import {useDocumentChange} from '../hooks'
 import {ChangeBreadcrumb} from './ChangeBreadcrumb'
 import {ChangeResolver} from './ChangeResolver'
-import {RevertChangesButton} from './RevertChangesButton'
 import {ChangeListWrapper, GroupChangeContainer} from './GroupChange.styled'
+import {RevertChangesButton} from './RevertChangesButton'
 
 /** @internal */
 export function GroupChange(

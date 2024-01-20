@@ -1,35 +1,27 @@
 import {
-  Text,
-  Range,
-  Transforms,
-  Editor,
-  Element as SlateElement,
-  Node,
-  Path as SlatePath,
-} from 'slate'
-import {
-  ObjectSchemaType,
-  Path,
-  PortableTextBlock,
-  PortableTextChild,
-  PortableTextObject,
-  PortableTextTextBlock,
-  SchemaType,
+  type ObjectSchemaType,
+  type Path,
+  type PortableTextBlock,
+  type PortableTextChild,
+  type PortableTextObject,
+  type PortableTextTextBlock,
+  type SchemaType,
 } from '@sanity/types'
+import {Editor, Element as SlateElement, Node, Range, Text, Transforms} from 'slate'
 import {ReactEditor} from 'slate-react'
-import {DOMNode} from 'slate-react/dist/utils/dom'
-import {
-  EditableAPIDeleteOptions,
-  EditorSelection,
-  PortableTextMemberSchemaTypes,
-  PortableTextSlateEditor,
-} from '../../types/editor'
-import {toSlateValue, fromSlateValue, isEqualToEmptyEditor} from '../../utils/values'
-import {toSlateRange, toPortableTextRange} from '../../utils/ranges'
-import {PortableTextEditor} from '../PortableTextEditor'
+import {type DOMNode} from 'slate-react/dist/utils/dom'
 
+import {
+  type EditableAPIDeleteOptions,
+  type EditorSelection,
+  type PortableTextMemberSchemaTypes,
+  type PortableTextSlateEditor,
+} from '../../types/editor'
 import {debugWithName} from '../../utils/debug'
+import {toPortableTextRange, toSlateRange} from '../../utils/ranges'
+import {fromSlateValue, isEqualToEmptyEditor, toSlateValue} from '../../utils/values'
 import {KEY_TO_VALUE_ELEMENT, SLATE_TO_PORTABLE_TEXT_RANGE} from '../../utils/weakMaps'
+import {type PortableTextEditor} from '../PortableTextEditor'
 import {normalizeMarkDefs} from './createWithPortableTextMarkModel'
 
 const debug = debugWithName('API:editable')

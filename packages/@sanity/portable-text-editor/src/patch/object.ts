@@ -1,4 +1,5 @@
-import {omit, clone, isObject} from 'lodash'
+import {clone, isObject, omit} from 'lodash'
+
 import applyPatch from './applyPatch'
 
 export default function apply(value: any, patch: {type: any; path: any; value: any}) {

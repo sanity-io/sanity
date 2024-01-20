@@ -1,5 +1,5 @@
-import {FormInput, ObjectInputProps} from 'sanity'
 import {Grid} from '@sanity/ui'
+import {FormInput, type ObjectInputProps} from 'sanity'
 
 export const formInputDebug = {
   name: 'formInputDebug',

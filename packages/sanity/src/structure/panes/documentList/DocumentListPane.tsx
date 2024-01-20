@@ -1,30 +1,11 @@
-import {memo, useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import * as React from 'react'
-import {Box, Card, Code, TextInput} from '@sanity/ui'
-import shallowEquals from 'shallow-equals'
-import {isEqual} from 'lodash'
 import {SearchIcon, SpinnerIcon} from '@sanity/icons'
-import styled, {keyframes} from 'styled-components'
-import {Observable, debounce, map, of, tap, timer} from 'rxjs'
+import {Box, Card, Code, TextInput} from '@sanity/ui'
+import {isEqual} from 'lodash'
+import {memo, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {useObservableCallback} from 'react-rx'
-import {Pane} from '../../components/pane'
-import {_DEBUG} from '../../constants'
-import {useStructureToolSetting} from '../../useStructureToolSetting'
-import {BaseStructureToolPaneProps} from '../types'
-import {PaneMenuItem} from '../../types'
-import {structureLocaleNamespace} from '../../i18n'
-import {DEFAULT_ORDERING, EMPTY_RECORD} from './constants'
+import {debounce, map, type Observable, of, tap, timer} from 'rxjs'
 import {
-  applyOrderingFunctions,
-  getTypeNameFromSingleTypeFilter,
-  isSimpleTypeFilter,
-} from './helpers'
-import {DocumentListPaneContent} from './DocumentListPaneContent'
-import {DocumentListPaneHeader} from './DocumentListPaneHeader'
-import {LoadingVariant, SortOrder} from './types'
-import {useDocumentList} from './useDocumentList'
-import {
-  GeneralPreviewLayoutKey,
+  type GeneralPreviewLayoutKey,
   SourceProvider,
   useI18nText,
   useSchema,
@@ -32,6 +13,25 @@ import {
   useTranslation,
   useUnique,
 } from 'sanity'
+import shallowEquals from 'shallow-equals'
+import styled, {keyframes} from 'styled-components'
+
+import {Pane} from '../../components/pane'
+import {_DEBUG} from '../../constants'
+import {structureLocaleNamespace} from '../../i18n'
+import {type PaneMenuItem} from '../../types'
+import {useStructureToolSetting} from '../../useStructureToolSetting'
+import {type BaseStructureToolPaneProps} from '../types'
+import {DEFAULT_ORDERING, EMPTY_RECORD} from './constants'
+import {DocumentListPaneContent} from './DocumentListPaneContent'
+import {DocumentListPaneHeader} from './DocumentListPaneHeader'
+import {
+  applyOrderingFunctions,
+  getTypeNameFromSingleTypeFilter,
+  isSimpleTypeFilter,
+} from './helpers'
+import {type LoadingVariant, type SortOrder} from './types'
+import {useDocumentList} from './useDocumentList'
 
 /**
  * @internal

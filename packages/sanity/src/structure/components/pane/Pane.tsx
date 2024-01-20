@@ -1,20 +1,28 @@
-import {BoundaryElementProvider, Card, CardProps, Code, Flex, useForwardedRef} from '@sanity/ui'
 import {
+  BoundaryElementProvider,
+  Card,
+  type CardProps,
+  Code,
+  Flex,
+  useForwardedRef,
+} from '@sanity/ui'
+import {
+  type ForwardedRef,
   forwardRef,
-  useMemo,
-  useState,
+  type HTMLProps,
+  type ReactNode,
   useCallback,
   useEffect,
-  ReactNode,
-  HTMLProps,
-  ForwardedRef,
+  useMemo,
+  useState,
 } from 'react'
+import {LegacyLayerProvider} from 'sanity'
 import styled from 'styled-components'
+
 import {PANE_COLLAPSED_WIDTH, PANE_DEBUG, PANE_DEFAULT_MIN_WIDTH} from './constants'
 import {PaneContext} from './PaneContext'
 import {PaneDivider} from './PaneDivider'
 import {usePaneLayout} from './usePaneLayout'
-import {LegacyLayerProvider} from 'sanity'
 
 interface PaneProps {
   children?: ReactNode

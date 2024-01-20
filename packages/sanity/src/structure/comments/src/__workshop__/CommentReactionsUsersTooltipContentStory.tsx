@@ -1,8 +1,9 @@
 import {Card, Flex} from '@sanity/ui'
-import React, {useMemo} from 'react'
 import {useNumber, useSelect} from '@sanity/ui-workshop'
-import {CommentReactionsUsersTooltipContent} from '../components'
+import React, {useMemo} from 'react'
 import {useCurrentUser} from 'sanity'
+
+import {CommentReactionsUsersTooltipContent} from '../components'
 
 const USER_IDS = [
   'p8U8TipFc', // Herman

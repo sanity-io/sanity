@@ -1,8 +1,9 @@
 import {Schema} from '@sanity/schema'
 import {renderHook} from '@testing-library/react'
 import {defer, lastValueFrom, of} from 'rxjs'
-import type {SearchTerms} from '..'
+
 import {useClient} from '../../hooks'
+import {type SearchTerms} from '..'
 import {getSearchableTypes} from '../common/utils'
 import {createWeightedSearch} from './createWeightedSearch'
 

@@ -1,15 +1,16 @@
-import {Box, Card, Flex, Stack} from '@sanity/ui'
-import {useCallback, useState} from 'react'
-import {omit} from 'lodash'
 import {AddIcon, ArrowLeftIcon, ChevronRightIcon} from '@sanity/icons'
+import {Box, Card, Flex, Stack} from '@sanity/ui'
+import {omit} from 'lodash'
+import {useCallback, useState} from 'react'
+
 import {Button} from '../../../../../../ui-components'
 import {LoadingBlock} from '../../../../../components/loadingBlock'
+import {useTranslation} from '../../../../../i18n'
 import {useActiveWorkspace} from '../../../../activeWorkspaceMatcher'
 import {useWorkspaces} from '../../../../workspaces'
-import {WorkspacePreview} from '../WorkspacePreview'
-import {useWorkspaceAuthStates} from '../hooks'
 import {WORKSPACES_DOCS_URL} from '../constants'
-import {useTranslation} from '../../../../../i18n'
+import {useWorkspaceAuthStates} from '../hooks'
+import {WorkspacePreview} from '../WorkspacePreview'
 import {Layout} from './Layout'
 
 export function WorkspaceAuth() {

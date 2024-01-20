@@ -1,4 +1,4 @@
-import {SanityClient, SanityDocument, SanityDocumentStub} from '@sanity/client'
+import {type SanityClient, type SanityDocument, type SanityDocumentStub} from '@sanity/client'
 import {uuid} from '@sanity/uuid'
 
 export async function createUniqueDocument(

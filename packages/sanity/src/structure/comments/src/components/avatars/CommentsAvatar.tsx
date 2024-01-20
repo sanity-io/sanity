@@ -1,7 +1,7 @@
+import {type User} from '@sanity/types'
+import {Avatar, type AvatarProps} from '@sanity/ui'
 import {useMemo} from 'react'
 import styled from 'styled-components'
-import {Avatar, AvatarProps} from '@sanity/ui'
-import {User} from '@sanity/types'
 
 const StyledAvatar = styled(Avatar)`
   svg > ellipse {

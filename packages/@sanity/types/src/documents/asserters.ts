@@ -1,5 +1,5 @@
 import {isObject} from '../helpers'
-import type {KeyedObject, SanityDocument, TypedObject} from './types'
+import {type KeyedObject, type SanityDocument, type TypedObject} from './types'
 
 /** @public */
 export function isSanityDocument(document: unknown): document is SanityDocument {

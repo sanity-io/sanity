@@ -1,5 +1,5 @@
 import {Stack} from '@sanity/ui'
-import {InputProps} from 'sanity'
+import {type InputProps} from 'sanity'
 
 export function FormInput(props: InputProps & {testId: string}) {
   const {testId} = props

@@ -1,7 +1,8 @@
 import {Text} from '@sanity/ui'
-import {ReactNode, createElement, isValidElement} from 'react'
+import {createElement, isValidElement, type ReactNode} from 'react'
 import {isValidElementType} from 'react-is'
-import {PreviewMediaDimensions, PreviewLayoutKey, PreviewProps} from '../types'
+
+import {type PreviewLayoutKey, type PreviewMediaDimensions, type PreviewProps} from '../types'
 import {MediaWrapper} from './Media.styled'
 
 export interface MediaProps {

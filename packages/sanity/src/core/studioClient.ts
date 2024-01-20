@@ -1,4 +1,4 @@
-import type {SourceClientOptions} from './config'
+import {type SourceClientOptions} from './config'
 
 /**
  * Unless otherwise specified, this is the API version we use for controlled

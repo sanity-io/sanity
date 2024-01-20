@@ -1,11 +1,13 @@
-import {Schema} from '@sanity/types'
-import {ButtonTone} from '@sanity/ui'
+import {type Schema} from '@sanity/types'
+import {type ButtonTone} from '@sanity/ui'
 import {difference, startCase} from 'lodash'
-import {SearchableType} from '../../../../../../../search'
+
+import {type TFunction} from '../../../../../../../i18n'
+import {type SearchableType} from '../../../../../../../search'
 import {isNonNullable} from '../../../../../../../util'
-import type {
-  SearchFieldDefinition,
-  SearchFieldDefinitionDictionary,
+import {
+  type SearchFieldDefinition,
+  type SearchFieldDefinitionDictionary,
 } from '../../../definitions/fields'
 import {
   getFilterDefinition,
@@ -13,14 +15,13 @@ import {
   type SearchFilterDefinitionDictionary,
   type SearchFilterPinnedDefinition,
 } from '../../../definitions/filters'
-import type {
-  FilterMenuItem,
-  FilterMenuItemFilter,
-  FilterMenuItemHeader,
-  SearchFilter,
+import {
+  type FilterMenuItem,
+  type FilterMenuItemFilter,
+  type FilterMenuItemHeader,
+  type SearchFilter,
 } from '../../../types'
 import {buildSearchFilter, getFieldFromFilter} from '../../../utils/filterUtils'
-import type {TFunction} from '../../../../../../../i18n'
 
 /**
  * Creates a flat list of filter menu items based on the current filter text input.

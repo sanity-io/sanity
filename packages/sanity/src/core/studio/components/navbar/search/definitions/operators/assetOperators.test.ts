@@ -1,4 +1,5 @@
-import type {ReferenceValue} from '@sanity/types'
+import {type ReferenceValue} from '@sanity/types'
+
 import {assetOperators} from './assetOperators'
 
 const fieldPath = 'asset'

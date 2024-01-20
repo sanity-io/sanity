@@ -1,4 +1,4 @@
-import {isKeyedObject, isKeySegment, Path, PathSegment} from '@sanity/types'
+import {isKeyedObject, isKeySegment, type Path, type PathSegment} from '@sanity/types'
 
 // Tests whether a keyed value matches a given keyed pathSegment
 function matchesSegment(segment: PathSegment, value: unknown) {

@@ -1,6 +1,6 @@
-import type {RuleDef, ValidationBuilder} from '../../ruleBuilder'
-import type {InitialValueProperty} from '../../types'
-import type {BaseSchemaDefinition} from './common'
+import {type RuleDef, type ValidationBuilder} from '../../ruleBuilder'
+import {type InitialValueProperty} from '../../types'
+import {type BaseSchemaDefinition} from './common'
 
 /**
  * Geographical point representing a pair of latitude and longitude coordinates,

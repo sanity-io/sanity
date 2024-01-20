@@ -1,7 +1,8 @@
-import {ArraySchemaType, ObjectSchemaType, SchemaType} from '@sanity/types'
-import {ComponentType} from 'react'
+import {type ArraySchemaType, type ObjectSchemaType, type SchemaType} from '@sanity/types'
+import {type ComponentType} from 'react'
+
 import {diffResolvers} from '../../TODO'
-import {Diff, DiffComponent, DiffComponentOptions} from '../../types'
+import {type Diff, type DiffComponent, type DiffComponentOptions} from '../../types'
 import {defaultComponents} from './defaultComponents'
 
 /** @internal */

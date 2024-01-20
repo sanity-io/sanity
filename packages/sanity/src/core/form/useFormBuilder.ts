@@ -1,5 +1,6 @@
 import {useContext} from 'react'
-import {FormBuilderContext, FormBuilderContextValue} from './FormBuilderContext'
+
+import {FormBuilderContext, type FormBuilderContextValue} from './FormBuilderContext'
 
 /**
  *

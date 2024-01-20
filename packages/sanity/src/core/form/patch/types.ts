@@ -1,4 +1,4 @@
-import type {Path} from '@sanity/types'
+import {type Path} from '@sanity/types'
 
 /**
  * @hidden

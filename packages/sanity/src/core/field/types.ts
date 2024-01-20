@@ -1,30 +1,31 @@
-import type {
-  Path,
-  Reference,
-  ArraySchemaType,
-  BooleanSchemaType,
-  NumberSchemaType,
-  ObjectSchemaType,
-  StringSchemaType,
-  ObjectFieldType,
-  ConditionalProperty,
-  SchemaType,
-  PatchOperations,
-} from '@sanity/types'
-import type {ComponentType} from 'react'
-import type {
-  ArrayDiff as AgnosticArrayDiff,
-  BooleanDiff as AgnosticBooleanDiff,
-  ItemDiff as AgnosticItemDiff,
-  NullDiff as AgnosticNullDiff,
-  NumberDiff as AgnosticNumberDiff,
-  ObjectDiff as AgnosticObjectDiff,
-  StringDiff as AgnosticStringDiff,
-  StringSegmentChanged as AgnosticStringSegmentChanged,
-  StringSegmentUnchanged as AgnosticStringSegmentUnchanged,
-  TypeChangeDiff as AgnosticTypeChangeDiff,
+import {
+  type ArrayDiff as AgnosticArrayDiff,
+  type BooleanDiff as AgnosticBooleanDiff,
+  type ItemDiff as AgnosticItemDiff,
+  type NullDiff as AgnosticNullDiff,
+  type NumberDiff as AgnosticNumberDiff,
+  type ObjectDiff as AgnosticObjectDiff,
+  type StringDiff as AgnosticStringDiff,
+  type StringSegmentChanged as AgnosticStringSegmentChanged,
+  type StringSegmentUnchanged as AgnosticStringSegmentUnchanged,
+  type TypeChangeDiff as AgnosticTypeChangeDiff,
 } from '@sanity/diff'
-import type {FieldValueError} from './validation'
+import {
+  type ArraySchemaType,
+  type BooleanSchemaType,
+  type ConditionalProperty,
+  type NumberSchemaType,
+  type ObjectFieldType,
+  type ObjectSchemaType,
+  type PatchOperations,
+  type Path,
+  type Reference,
+  type SchemaType,
+  type StringSchemaType,
+} from '@sanity/types'
+import {type ComponentType} from 'react'
+
+import {type FieldValueError} from './validation'
 
 /**
  * History timeline / chunking

@@ -1,12 +1,13 @@
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {concat, fromEvent, merge, of, Subject, throwError} from 'rxjs'
 import {catchError, map, mergeMap, scan, startWith, take} from 'rxjs/operators'
-import {DocumentListPaneItem, QueryResult, SortOrder} from './types'
-import {getTypeNameFromSingleTypeFilter, removePublishedWithDrafts} from './helpers'
-import {DEFAULT_ORDERING, FULL_LIST_LIMIT, PARTIAL_PAGE_LIMIT} from './constants'
-import {listenSearchQuery} from './listenSearchQuery'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS, useClient, useSchema} from 'sanity'
 import {useSearchMaxFieldDepth} from 'sanity/_internalBrowser'
+
+import {DEFAULT_ORDERING, FULL_LIST_LIMIT, PARTIAL_PAGE_LIMIT} from './constants'
+import {getTypeNameFromSingleTypeFilter, removePublishedWithDrafts} from './helpers'
+import {listenSearchQuery} from './listenSearchQuery'
+import {type DocumentListPaneItem, type QueryResult, type SortOrder} from './types'
 
 const EMPTY_ARRAY: [] = []
 

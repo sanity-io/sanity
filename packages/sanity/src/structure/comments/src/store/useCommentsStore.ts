@@ -1,9 +1,10 @@
-import {useMemo, useEffect, useCallback, useReducer, useState} from 'react'
-import {ListenEvent, ListenOptions, SanityClient} from '@sanity/client'
+import {type ListenEvent, type ListenOptions, type SanityClient} from '@sanity/client'
+import {useCallback, useEffect, useMemo, useReducer, useState} from 'react'
 import {catchError, of} from 'rxjs'
-import {CommentDocument, Loadable} from '../types'
-import {CommentsReducerAction, CommentsReducerState, commentsReducer} from './reducer'
 import {getPublishedId} from 'sanity'
+
+import {type CommentDocument, type Loadable} from '../types'
+import {commentsReducer, type CommentsReducerAction, type CommentsReducerState} from './reducer'
 
 export interface CommentsStoreOptions {
   documentId: string

@@ -1,7 +1,7 @@
-import {Matcher} from './Matcher'
+import {arrayToJSONMatchPath} from './arrayToJSONMatchPath'
 import {Expression} from './Expression'
 import {extract} from './extract'
 import {extractWithPath} from './extractWithPath'
-import {arrayToJSONMatchPath} from './arrayToJSONMatchPath'
+import {Matcher} from './Matcher'
 
-export {Matcher, Expression, extract, extractWithPath, arrayToJSONMatchPath}
+export {arrayToJSONMatchPath, Expression, extract, extractWithPath, Matcher}

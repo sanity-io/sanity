@@ -1,5 +1,6 @@
-import {SanityDocument} from '@sanity/types'
-import {Migration, MigrationContext} from '../types'
+import {type SanityDocument} from '@sanity/types'
+
+import {type Migration, type MigrationContext} from '../types'
 import {normalizeMigrateDefinition} from './normalizeMigrateDefinition'
 
 export function collectMigrationMutations(

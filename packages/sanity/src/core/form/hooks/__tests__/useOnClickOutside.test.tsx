@@ -1,5 +1,6 @@
 import {render, renderHook} from '@testing-library/react'
 import {createRef} from 'react'
+
 import {useOnClickOutside} from '../useOnClickOutside'
 
 describe('useOnClickOutside', () => {

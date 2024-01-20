@@ -1,9 +1,9 @@
-import {rem, Theme} from '@sanity/ui'
-import {EditorView} from '@codemirror/view'
 import {HighlightStyle, syntaxHighlighting} from '@codemirror/language'
-import {useMemo} from 'react'
-import {hues} from '@sanity/color'
+import {EditorView} from '@codemirror/view'
 import {tags as t} from '@lezer/highlight'
+import {hues} from '@sanity/color'
+import {rem, type Theme} from '@sanity/ui'
+import {useMemo} from 'react'
 
 export function useCodemirrorTheme(theme: Theme) {
   const cmTheme = useMemo(() => createTheme(theme), [theme])

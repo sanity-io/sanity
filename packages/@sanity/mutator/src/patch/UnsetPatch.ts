@@ -1,5 +1,5 @@
-import type {Expression} from '../jsonpath'
-import type {ImmutableAccessor} from './ImmutableAccessor'
+import {type Expression} from '../jsonpath'
+import {type ImmutableAccessor} from './ImmutableAccessor'
 import {targetsToIndicies} from './util'
 
 export class UnsetPatch {

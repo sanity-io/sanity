@@ -1,7 +1,7 @@
 /* eslint-disable no-restricted-imports */
-import {Popover as UIPopover, PopoverProps as UIPopoverProps} from '@sanity/ui'
+import {Popover as UIPopover, type PopoverProps as UIPopoverProps} from '@sanity/ui'
+import type * as React from 'react'
 import {forwardRef} from 'react'
-import * as React from 'react'
 
 /** @internal */
 export type PopoverProps = Omit<UIPopoverProps, 'animate'>

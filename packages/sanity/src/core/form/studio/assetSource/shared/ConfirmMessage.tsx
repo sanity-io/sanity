@@ -1,8 +1,9 @@
-import {CSSProperties} from 'react'
 import {WarningOutlineIcon} from '@sanity/icons'
 import {Card, Flex, Grid, Text} from '@sanity/ui'
+import React, {type CSSProperties} from 'react'
+
 import {Translate, useTranslation} from '../../../../i18n'
-import {UsageDialogProps} from './AssetDeleteDialog'
+import {type UsageDialogProps} from './AssetDeleteDialog'
 
 type ConfirmMessageProps = Omit<UsageDialogProps, 'onClose' | 'onDelete'> & {
   hasResults?: boolean

@@ -1,6 +1,9 @@
 /* eslint-disable react/jsx-handler-names */
+import {useSelect, useString} from '@sanity/ui-workshop'
 import {useMemo} from 'react'
-import {useString, useSelect} from '@sanity/ui-workshop'
+import {useCurrentUser} from 'sanity'
+
+import {ConditionalWrapper} from '../../../../ui-components/conditionalWrapper'
 import {CommentsList, CommentsUpsellPanel} from '../components'
 import {
   CommentsEnabledProvider,
@@ -9,9 +12,7 @@ import {
   CommentsUpsellProvider,
 } from '../context'
 import {useComments, useCommentsUpsell} from '../hooks'
-import {ConditionalWrapper} from '../../../../ui-components/conditionalWrapper'
-import {CommentsUIMode} from '../types'
-import {useCurrentUser} from 'sanity'
+import {type CommentsUIMode} from '../types'
 
 const noop = () => {
   // ...

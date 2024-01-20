@@ -1,5 +1,5 @@
 import {WarningOutlineIcon} from '@sanity/icons'
-import type {PreviewValue, SanityDocument} from '@sanity/types'
+import {type PreviewValue, type SanityDocument} from '@sanity/types'
 import {assignWith} from 'lodash'
 
 const getMissingDocumentFallback = (item: SanityDocument) => ({

@@ -1,8 +1,9 @@
 /* eslint-disable camelcase */
 
 import {negate} from 'lodash'
-import {_PaneMenuGroup, _PaneMenuItem, _PaneMenuNode} from './components/pane/types'
-import {PaneMenuItem, PaneMenuItemGroup, DocumentFieldMenuActionNode} from './types'
+
+import {type _PaneMenuGroup, type _PaneMenuItem, type _PaneMenuNode} from './components/pane/types'
+import {type DocumentFieldMenuActionNode, type PaneMenuItem, type PaneMenuItemGroup} from './types'
 
 export function isMenuNodeButton(node: _PaneMenuNode): node is _PaneMenuItem | _PaneMenuGroup {
   return (node.type === 'item' || node.type === 'group') && node.renderAsButton

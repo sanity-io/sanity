@@ -6,16 +6,17 @@ import {
   rem,
   useClickOutside,
 } from '@sanity/ui'
-import {KeyboardEvent, useCallback, useState} from 'react'
+import {type KeyboardEvent, useCallback, useState} from 'react'
 import styled from 'styled-components'
+
 import {Popover} from '../../../../../../../../ui-components'
+import {useTranslation} from '../../../../../../../i18n'
 import {POPOVER_RADIUS, POPOVER_VERTICAL_MARGIN} from '../../../constants'
 import {useSearchState} from '../../../contexts/search/useSearchState'
-import type {SearchFilter} from '../../../types'
+import {type SearchFilter} from '../../../types'
 import {getFilterKey, validateFilter} from '../../../utils/filterUtils'
 import {FilterLabel} from '../../common/FilterLabel'
 import {FilterPopoverWrapper} from '../common/FilterPopoverWrapper'
-import {useTranslation} from '../../../../../../../i18n'
 import {FilterPopoverContent} from './FilterPopoverContent'
 
 interface FilterButtonProps {

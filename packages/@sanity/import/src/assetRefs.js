@@ -1,6 +1,6 @@
+const {extractWithPath} = require('@sanity/mutator')
 const getFileUrl = require('file-url')
 const {get, set, unset} = require('lodash')
-const {extractWithPath} = require('@sanity/mutator')
 const serializePath = require('./serializePath')
 
 const assetKey = '_sanityAsset'

@@ -17,13 +17,15 @@
  * c) https://styled-components.com/docs/advanced#server-side-rendering
  */
 
-import {renderToStaticMarkup, renderToString} from 'react-dom/server'
-import {ServerStyleSheet} from 'styled-components'
-import {act} from 'react-dom/test-utils'
+import {type SanityClient} from '@sanity/client'
+import React from 'react'
 import {hydrateRoot} from 'react-dom/client'
-import {SanityClient} from '@sanity/client'
-import {createMockAuthStore} from '../store/_legacy/authStore/createMockAuthStore'
+import {renderToStaticMarkup, renderToString} from 'react-dom/server'
+import {act} from 'react-dom/test-utils'
+import {ServerStyleSheet} from 'styled-components'
+
 import {createMockSanityClient} from '../../../test/mocks/mockSanityClient'
+import {createMockAuthStore} from '../store/_legacy/authStore/createMockAuthStore'
 import {Studio} from './Studio'
 
 const client = createMockSanityClient() as any as SanityClient

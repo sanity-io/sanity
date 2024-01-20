@@ -5,16 +5,25 @@
  *
  */
 
-import {isEqual, flatten, uniq} from 'lodash'
-import {Editor, Range, Transforms, Text, Path, NodeEntry, Element, Descendant} from 'slate'
-
-import {Subject} from 'rxjs'
-import {debugWithName} from '../../utils/debug'
+import {flatten, isEqual, uniq} from 'lodash'
+import {type Subject} from 'rxjs'
 import {
-  EditorChange,
-  PortableTextMemberSchemaTypes,
-  PortableTextSlateEditor,
+  type Descendant,
+  Editor,
+  Element,
+  type NodeEntry,
+  Path,
+  Range,
+  Text,
+  Transforms,
+} from 'slate'
+
+import {
+  type EditorChange,
+  type PortableTextMemberSchemaTypes,
+  type PortableTextSlateEditor,
 } from '../../types/editor'
+import {debugWithName} from '../../utils/debug'
 import {toPortableTextRange} from '../../utils/ranges'
 
 const debug = debugWithName('plugin:withPortableTextMarkModel')

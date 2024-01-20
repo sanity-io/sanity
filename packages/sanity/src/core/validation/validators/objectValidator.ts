@@ -1,4 +1,5 @@
-import {type Validators, isReference} from '@sanity/types'
+import {isReference, type Validators} from '@sanity/types'
+
 import {genericValidators} from './genericValidator'
 
 const metaKeys = ['_key', '_type', '_weak']

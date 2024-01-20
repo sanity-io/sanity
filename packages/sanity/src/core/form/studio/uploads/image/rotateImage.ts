@@ -1,6 +1,7 @@
 import {Observable} from 'rxjs'
 import {mergeMap} from 'rxjs/operators'
-import {orient, Orientation} from './orient'
+
+import {orient, type Orientation} from './orient'
 
 function loadImage(url: string): Observable<HTMLImageElement> {
   return new Observable((observer) => {

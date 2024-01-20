@@ -1,7 +1,7 @@
 import {Patcher} from '../patch'
-import {luid} from './luid'
 import {debug} from './debug'
-import type {Doc, Mut} from './types'
+import {luid} from './luid'
+import {type Doc, type Mut} from './types'
 
 /**
  * Parameters attached to the mutation

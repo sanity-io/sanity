@@ -1,5 +1,6 @@
 import {createContext} from 'react'
-import {CommentsUpsellContextValue} from './types'
+
+import {type CommentsUpsellContextValue} from './types'
 
 /**
  * @beta

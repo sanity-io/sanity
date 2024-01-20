@@ -1,4 +1,5 @@
-import type {CliCommandContext} from '@sanity/cli'
+import {type CliCommandContext} from '@sanity/cli'
+
 import {debug} from '../../debug'
 import {promptForDatasetName} from './datasetNamePrompt'
 

@@ -1,16 +1,17 @@
-import {
-  ComponentType,
-  ReactNode,
+import {DesktopIcon, MoonIcon, SunIcon} from '@sanity/icons'
+import {studioTheme, type ThemeColorSchemeKey, ThemeProvider, usePrefersDark} from '@sanity/ui'
+import React, {
+  type ComponentType,
   createContext,
+  type ReactNode,
   useContext,
   useEffect,
   useMemo,
   useSyncExternalStore,
 } from 'react'
-import {studioTheme, ThemeColorSchemeKey, ThemeProvider, usePrefersDark} from '@sanity/ui'
-import {DesktopIcon, MoonIcon, SunIcon} from '@sanity/icons'
-import type {StudioThemeColorSchemeKey} from '../theme/types'
-import {TFunction} from '../i18n'
+
+import {type TFunction} from '../i18n'
+import {type StudioThemeColorSchemeKey} from '../theme/types'
 
 /**
  * Used to keep track of the internal value, which can be "system" in addition to "light" and "dark"

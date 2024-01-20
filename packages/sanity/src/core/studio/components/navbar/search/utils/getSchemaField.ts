@@ -1,4 +1,4 @@
-import {isObjectSchemaType, ObjectField, SchemaType} from '@sanity/types'
+import {isObjectSchemaType, type ObjectField, type SchemaType} from '@sanity/types'
 
 export function getSchemaField(
   schemaType: SchemaType,

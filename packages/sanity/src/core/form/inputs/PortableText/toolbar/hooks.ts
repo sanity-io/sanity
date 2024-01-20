@@ -4,13 +4,19 @@ import {
   usePortableTextEditor,
   usePortableTextEditorSelection,
 } from '@sanity/portable-text-editor'
-import type {ObjectSchemaType, Path, PortableTextBlock, PortableTextChild} from '@sanity/types'
+import {
+  type ObjectSchemaType,
+  type Path,
+  type PortableTextBlock,
+  type PortableTextChild,
+} from '@sanity/types'
 import {useCallback, useMemo} from 'react'
-import {FIXME} from '../../../../FIXME'
-import {useUnique} from '../../../../util'
+
+import {type FIXME} from '../../../../FIXME'
 import {useTranslation} from '../../../../i18n'
+import {useUnique} from '../../../../util'
 import {getPTEToolbarActionGroups} from './helpers'
-import type {BlockStyleItem, PTEToolbarAction, PTEToolbarActionGroup} from './types'
+import {type BlockStyleItem, type PTEToolbarAction, type PTEToolbarActionGroup} from './types'
 
 export function useFocusBlock(): PortableTextBlock | undefined {
   const editor = usePortableTextEditor()

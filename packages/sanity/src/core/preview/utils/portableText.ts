@@ -1,4 +1,4 @@
-import {isPortableTextTextBlock, isPortableTextSpan, PortableTextBlock} from '@sanity/types'
+import {isPortableTextSpan, isPortableTextTextBlock, type PortableTextBlock} from '@sanity/types'
 
 export function isPortableTextPreviewValue(value: unknown): value is PortableTextBlock[] {
   return Array.isArray(value) && (value.length === 0 || value.some(isPortableTextTextBlock))

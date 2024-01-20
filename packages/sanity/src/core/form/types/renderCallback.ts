@@ -1,10 +1,11 @@
-import {ComponentType, CSSProperties, ReactNode} from 'react'
-import {SchemaType} from '@sanity/types'
-import {PreviewLayoutKey, PreviewMediaDimensions, PreviewProps} from '../../components'
-import {ObjectItemProps, PrimitiveItemProps} from './itemProps'
-import {FieldProps} from './fieldProps'
-import {InputProps} from './inputProps'
-import {BlockAnnotationProps, BlockProps} from './blockProps'
+import {type SchemaType} from '@sanity/types'
+import {type ComponentType, type CSSProperties, type ReactNode} from 'react'
+
+import {type PreviewLayoutKey, type PreviewMediaDimensions} from '../../components'
+import {type BlockAnnotationProps, type BlockProps} from './blockProps'
+import {type FieldProps} from './fieldProps'
+import {type InputProps} from './inputProps'
+import {type ObjectItemProps, type PrimitiveItemProps} from './itemProps'
 
 /**
  * @hidden

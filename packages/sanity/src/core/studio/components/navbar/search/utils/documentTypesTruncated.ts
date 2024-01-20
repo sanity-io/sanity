@@ -1,5 +1,5 @@
-import {TFunction} from '../../../../../i18n'
-import type {SearchableType} from '../../../../../search'
+import {type TFunction} from '../../../../../i18n'
+import {type SearchableType} from '../../../../../search'
 
 const DEFAULT_AVAILABLE_CHARS = 40 // excluding "+x more" suffix
 

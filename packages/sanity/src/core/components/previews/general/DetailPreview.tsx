@@ -1,10 +1,11 @@
 import {Box, Flex, Stack, Text} from '@sanity/ui'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
+
 import {useTranslation} from '../../../i18n'
 import {Media} from '../_common/Media'
 import {PREVIEW_SIZES} from '../constants'
-import type {PreviewMediaDimensions, PreviewProps} from '../types'
 import {renderPreviewNode} from '../helpers'
+import {type PreviewMediaDimensions, type PreviewProps} from '../types'
 import {
   DescriptionSkeleton,
   DescriptionText,

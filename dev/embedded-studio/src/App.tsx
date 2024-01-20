@@ -1,14 +1,14 @@
+import {Button, Card, Flex, studioTheme, ThemeProvider, usePrefersDark} from '@sanity/ui'
+import {useCallback, useMemo, useState} from 'react'
 import {
   defineConfig,
-  StudioProvider,
-  StudioLayout,
   defineType,
-  StudioThemeColorSchemeKey,
   Studio,
+  StudioLayout,
+  StudioProvider,
+  type StudioThemeColorSchemeKey,
 } from 'sanity'
 import {structureTool} from 'sanity/structure'
-import {Button, Card, Flex, ThemeProvider, studioTheme, usePrefersDark} from '@sanity/ui'
-import {useCallback, useMemo, useState} from 'react'
 
 const BLOG_POST_SCHEMA = defineType({
   type: 'document',

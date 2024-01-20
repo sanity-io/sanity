@@ -1,51 +1,55 @@
+import {type HotkeyOptions, type OnCopyFn, type OnPasteFn} from '@sanity/portable-text-editor'
 import {
-  ArraySchemaType,
-  BooleanSchemaType,
-  CrossDatasetReferenceValue,
-  FileValue,
-  GeopointValue,
-  ImageValue,
-  NumberSchemaType,
-  ObjectSchemaType,
-  Path,
-  PortableTextBlock,
-  ReferenceValue,
-  SchemaType,
-  SlugValue,
-  StringSchemaType,
+  type ArraySchemaType,
+  type BooleanSchemaType,
+  type CrossDatasetReferenceValue,
+  type FileValue,
+  type GeopointValue,
+  type ImageValue,
+  type NumberSchemaType,
+  type ObjectSchemaType,
+  type Path,
+  type PortableTextBlock,
+  type ReferenceValue,
+  type SchemaType,
+  type SlugValue,
+  type StringSchemaType,
 } from '@sanity/types'
 import {
-  ComponentType,
-  FocusEventHandler,
-  FormEventHandler,
-  MutableRefObject,
-  ReactElement,
+  type ComponentType,
+  type FocusEventHandler,
+  type FormEventHandler,
+  type MutableRefObject,
+  type ReactElement,
 } from 'react'
-import {HotkeyOptions, OnCopyFn, OnPasteFn} from '@sanity/portable-text-editor'
-import {FormPatch, PatchEvent} from '../patch'
-import {
-  ArrayOfObjectsFormNode,
-  ArrayOfPrimitivesFormNode,
-  BooleanFormNode,
-  NumberFormNode,
-  ObjectFormNode,
-  StringFormNode,
-} from '../store/types/nodes'
 
-import {UploaderResolver} from '../studio'
-import {FormFieldGroup} from '../store'
-import {RenderBlockActionsCallback} from '../types'
+import {type FormPatch, type PatchEvent} from '../patch'
+import {type FormFieldGroup} from '../store'
 import {
-  RenderAnnotationCallback,
-  RenderArrayOfObjectsItemCallback,
-  RenderArrayOfPrimitivesItemCallback,
-  RenderBlockCallback,
-  RenderFieldCallback,
-  RenderInputCallback,
-  RenderPreviewCallback,
+  type ArrayOfObjectsFormNode,
+  type ArrayOfPrimitivesFormNode,
+  type BooleanFormNode,
+  type NumberFormNode,
+  type ObjectFormNode,
+  type StringFormNode,
+} from '../store/types/nodes'
+import {type UploaderResolver} from '../studio'
+import {type RenderBlockActionsCallback} from '../types'
+import {
+  type ArrayInputFunctionsProps,
+  type PortableTextMarker,
+  type RenderCustomMarkers,
+} from './_transitional'
+import {type ArrayInputInsertEvent, type ArrayInputMoveItemEvent, type UploadEvent} from './event'
+import {
+  type RenderAnnotationCallback,
+  type RenderArrayOfObjectsItemCallback,
+  type RenderArrayOfPrimitivesItemCallback,
+  type RenderBlockCallback,
+  type RenderFieldCallback,
+  type RenderInputCallback,
+  type RenderPreviewCallback,
 } from './renderCallback'
-import {ArrayInputInsertEvent, ArrayInputMoveItemEvent, UploadEvent} from './event'
-import {ArrayInputFunctionsProps, PortableTextMarker, RenderCustomMarkers} from './_transitional'
 
 /**
  * @hidden

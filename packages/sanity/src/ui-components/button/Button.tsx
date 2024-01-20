@@ -1,10 +1,14 @@
 /* eslint-disable no-restricted-imports */
 
-import {Button as UIButton, ButtonProps as UIButtonProps} from '@sanity/ui'
-import {ForwardedRef, HTMLProps, forwardRef, useCallback} from 'react'
+import {Button as UIButton, type ButtonProps as UIButtonProps} from '@sanity/ui'
+import {type ForwardedRef, forwardRef, type HTMLProps, useCallback} from 'react'
 import styled from 'styled-components'
-import {Tooltip, TooltipProps} from '..'
-import {ConditionalWrapper, ConditionalWrapperRenderWrapperCallback} from '../conditionalWrapper'
+
+import {Tooltip, type TooltipProps} from '..'
+import {
+  ConditionalWrapper,
+  type ConditionalWrapperRenderWrapperCallback,
+} from '../conditionalWrapper'
 
 type BaseButtonProps = Pick<
   UIButtonProps,

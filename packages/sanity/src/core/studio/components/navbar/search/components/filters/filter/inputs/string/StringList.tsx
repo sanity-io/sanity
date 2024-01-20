@@ -1,15 +1,16 @@
 import {ChevronDownIcon} from '@sanity/icons'
-import {isTitledListValue, StringOptions, TitledListValue} from '@sanity/types'
+import {isTitledListValue, type StringOptions, type TitledListValue} from '@sanity/types'
 import {Menu} from '@sanity/ui'
 import {capitalize, uniq} from 'lodash'
 import {useCallback, useId, useMemo} from 'react'
+
+import {Button, MenuButton, MenuItem} from '../../../../../../../../../../ui-components'
 import {useSchema} from '../../../../../../../../../hooks'
+import {useTranslation} from '../../../../../../../../../i18n'
 import {isNonNullable} from '../../../../../../../../../util'
 import {useSearchState} from '../../../../../contexts/search/useSearchState'
-import {OperatorInputComponentProps} from '../../../../../definitions/operators/operatorTypes'
+import {type OperatorInputComponentProps} from '../../../../../definitions/operators/operatorTypes'
 import {getSchemaField} from '../../../../../utils/getSchemaField'
-import {Button, MenuButton, MenuItem} from '../../../../../../../../../../ui-components'
-import {useTranslation} from '../../../../../../../../../i18n'
 
 interface TitledListValueGroup extends Omit<TitledListValue<number | string>, 'title'> {
   title: (number | string)[]

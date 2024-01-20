@@ -1,6 +1,7 @@
-import {ComponentType, ReactNode} from 'react'
-import {Intent} from '../../structureBuilder'
-import {I18nTextRecord} from 'sanity'
+import {type ComponentType, type ReactNode} from 'react'
+import {type I18nTextRecord} from 'sanity'
+
+import {type Intent} from '../../structureBuilder'
 
 /**
  * @internal

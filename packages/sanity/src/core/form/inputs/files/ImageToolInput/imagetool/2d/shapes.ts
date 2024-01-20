@@ -1,4 +1,4 @@
-import type {Crop} from '../types'
+import {type Crop} from '../types'
 
 export class Size {
   height: number

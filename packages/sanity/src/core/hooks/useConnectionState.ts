@@ -1,6 +1,7 @@
-import {distinctUntilChanged, map, mapTo, startWith, switchMap} from 'rxjs/operators'
-import {of, timer} from 'rxjs'
 import {useMemoObservable} from 'react-rx'
+import {of, timer} from 'rxjs'
+import {distinctUntilChanged, map, mapTo, startWith, switchMap} from 'rxjs/operators'
+
 import {useDocumentStore} from '../store'
 
 /** @internal */

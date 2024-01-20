@@ -1,11 +1,12 @@
-import {useEffect} from 'react'
-import {Flex, Text, Inline, Card} from '@sanity/ui'
-import {UploadState} from '@sanity/types'
-import {LinearProgress} from '../../../../components'
+import {type UploadState} from '@sanity/types'
+import {Card, Flex, Inline, Text} from '@sanity/ui'
+import React, {useEffect} from 'react'
+
 import {Button} from '../../../../../ui-components'
+import {LinearProgress} from '../../../../components'
 import {Translate, useTranslation} from '../../../../i18n'
 import {STALE_UPLOAD_MS} from '../constants'
-import {CardWrapper, FlexWrapper, LeftSection, CodeWrapper} from './UploadProgress.styled'
+import {CardWrapper, CodeWrapper, FlexWrapper, LeftSection} from './UploadProgress.styled'
 
 type Props = {
   uploadState: UploadState

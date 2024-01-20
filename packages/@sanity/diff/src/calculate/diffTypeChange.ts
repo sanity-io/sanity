@@ -1,5 +1,5 @@
-import type {TypeChangeDiff, Input, DiffOptions} from '../types'
-import {removedInput, addedInput} from './diffInput'
+import {type DiffOptions, type Input, type TypeChangeDiff} from '../types'
+import {addedInput, removedInput} from './diffInput'
 
 export function diffTypeChange<A>(
   fromInput: Input<A>,

@@ -1,5 +1,6 @@
-import {Editor, Range, Transforms, Text} from 'slate'
-import {PortableTextMemberSchemaTypes, PortableTextSlateEditor} from '../../types/editor'
+import {Editor, Range, Text, Transforms} from 'slate'
+
+import {type PortableTextMemberSchemaTypes, type PortableTextSlateEditor} from '../../types/editor'
 import {debugWithName} from '../../utils/debug'
 
 const debug = debugWithName('plugin:withUtils')

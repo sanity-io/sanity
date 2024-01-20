@@ -1,9 +1,10 @@
 import {Box, MenuDivider, Text} from '@sanity/ui'
-import {SANITY_VERSION} from '../../../../version'
+
 import {MenuItem} from '../../../../../ui-components'
 import {LoadingBlock} from '../../../../components/loadingBlock'
 import {useTranslation} from '../../../../i18n'
-import {ResourcesResponse, Section} from './helper-functions/types'
+import {SANITY_VERSION} from '../../../../version'
+import {type ResourcesResponse, type Section} from './helper-functions/types'
 
 interface ResourcesMenuItemProps {
   error: Error | null

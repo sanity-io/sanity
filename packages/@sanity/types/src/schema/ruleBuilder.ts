@@ -1,4 +1,8 @@
-import type {CustomValidator, FieldReference, LocalizedValidationMessages} from '../validation'
+import {
+  type CustomValidator,
+  type FieldReference,
+  type LocalizedValidationMessages,
+} from '../validation'
 
 /** @public */
 export interface RuleDef<T, FieldValue = unknown> {

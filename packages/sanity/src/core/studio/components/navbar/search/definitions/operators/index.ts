@@ -1,8 +1,8 @@
 import {
-  SearchOperatorBase,
-  SearchOperatorButtonValue,
-  SearchOperatorInput,
-  SearchOperatorParams,
+  type SearchOperatorBase,
+  type SearchOperatorButtonValue,
+  type SearchOperatorInput,
+  type SearchOperatorParams,
 } from './operatorTypes'
 
 /** @internal */

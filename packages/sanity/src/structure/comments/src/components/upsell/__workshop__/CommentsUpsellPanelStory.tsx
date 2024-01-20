@@ -1,9 +1,10 @@
 import {Flex, Stack} from '@sanity/ui'
 import styled from 'styled-components'
+
+import {DOCUMENT_INSPECTOR_MAX_WIDTH} from '../../../../../panes/document/constants'
 import {CommentsUpsellProvider} from '../../../context'
 import {useCommentsUpsell} from '../../../hooks'
 import {CommentsUpsellPanel} from '../CommentsUpsellPanel'
-import {DOCUMENT_INSPECTOR_MAX_WIDTH} from '../../../../../panes/document/constants'
 
 const InspectorPanel = styled(Stack)`
   max-width: ${DOCUMENT_INSPECTOR_MAX_WIDTH}px;

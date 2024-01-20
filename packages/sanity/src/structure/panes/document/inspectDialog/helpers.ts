@@ -1,4 +1,4 @@
-import {SanityDocumentLike} from '@sanity/types'
+import {type SanityDocumentLike} from '@sanity/types'
 import HLRU from 'hashlru'
 import {isRecord, isString} from 'sanity'
 

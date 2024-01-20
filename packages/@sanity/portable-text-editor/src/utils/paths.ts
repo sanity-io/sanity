@@ -1,8 +1,9 @@
+import {isKeySegment, type Path} from '@sanity/types'
 import {isEqual} from 'lodash'
-import {Editor, Point, Path as SlatePath, Element, Descendant} from 'slate'
-import {isKeySegment, Path} from '@sanity/types'
-import {EditorSelectionPoint, PortableTextMemberSchemaTypes} from '../types/editor'
-import {ObjectWithKeyAndType} from './ranges'
+import {type Descendant, Editor, Element, type Path as SlatePath, type Point} from 'slate'
+
+import {type EditorSelectionPoint, type PortableTextMemberSchemaTypes} from '../types/editor'
+import {type ObjectWithKeyAndType} from './ranges'
 
 export function createKeyedPath(
   point: Point,

@@ -1,4 +1,5 @@
-import {createClient, SanityClient} from '@sanity/client'
+import {createClient, type SanityClient} from '@sanity/client'
+
 import {getCliConfigSync} from './util/getCliConfig'
 import {resolveRootDir} from './util/resolveRootDir'
 

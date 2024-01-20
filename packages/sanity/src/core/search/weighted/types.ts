@@ -1,4 +1,4 @@
-import type {ObjectSchemaType} from '@sanity/types'
+import {type ObjectSchemaType} from '@sanity/types'
 
 /**
  * @internal

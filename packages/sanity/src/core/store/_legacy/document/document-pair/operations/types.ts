@@ -1,8 +1,9 @@
-import {SanityDocument, Schema} from '@sanity/types'
-import {SanityClient} from '@sanity/client'
-import {IdPair} from '../../types'
-import {DocumentVersionSnapshots} from '../snapshotPair'
-import {HistoryStore} from '../../../history'
+import {type SanityClient} from '@sanity/client'
+import {type SanityDocument, type Schema} from '@sanity/types'
+
+import {type HistoryStore} from '../../../history'
+import {type IdPair} from '../../types'
+import {type DocumentVersionSnapshots} from '../snapshotPair'
 
 /** @internal */
 export interface OperationImpl<

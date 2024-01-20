@@ -1,6 +1,6 @@
 import path from 'path'
 import {defineCliConfig} from 'sanity/cli'
-import {UserConfig} from 'vite'
+import {type UserConfig} from 'vite'
 
 export default defineCliConfig({
   api: {

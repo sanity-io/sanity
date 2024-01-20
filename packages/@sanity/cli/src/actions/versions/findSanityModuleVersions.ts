@@ -1,12 +1,13 @@
+import getLatestVersion from 'get-latest-version'
 import path from 'path'
 import promiseProps from 'promise-props-recursive'
 import semver from 'semver'
 import semverCompare from 'semver-compare'
-import getLatestVersion from 'get-latest-version'
-import type {CliCommandContext, PackageJson} from '../../types'
+
+import {type CliCommandContext, type PackageJson} from '../../types'
 import {dynamicRequire} from '../../util/dynamicRequire'
-import {getLocalVersion} from '../../util/getLocalVersion'
 import {getCliVersion} from '../../util/getCliVersion'
+import {getLocalVersion} from '../../util/getLocalVersion'
 
 /*
  * The `sanity upgrade` command should only be responsible for upgrading the

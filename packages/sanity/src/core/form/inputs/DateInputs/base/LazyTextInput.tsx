@@ -1,15 +1,15 @@
+import {TextInput, type TextInputProps} from '@sanity/ui'
 import {
-  ChangeEvent,
-  FocusEvent,
-  KeyboardEvent,
-  ForwardedRef,
-  HTMLProps,
-  SyntheticEvent,
+  type ChangeEvent,
+  type FocusEvent,
+  type ForwardedRef,
   forwardRef,
+  type HTMLProps,
+  type KeyboardEvent,
+  type SyntheticEvent,
   useCallback,
   useState,
 } from 'react'
-import {TextInput, TextInputProps} from '@sanity/ui'
 
 /**
  * A TextInput that only emit onChange when it has to

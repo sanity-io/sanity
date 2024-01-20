@@ -1,9 +1,10 @@
-import {useCallback, useState} from 'react'
 // eslint-disable-next-line no-restricted-imports
 import {Button, Flex} from '@sanity/ui'
+import {useCallback, useState} from 'react'
+
 import {CommentReactionsMenuButton} from '../components'
-import {CommentReactionOption, CommentReactionShortNames} from '../types'
 import {COMMENT_REACTION_OPTIONS} from '../constants'
+import {type CommentReactionOption, type CommentReactionShortNames} from '../types'
 
 export default function CommentReactionsMenuButtonStory() {
   const [selectedOptions, setSelectedOptions] = useState<CommentReactionShortNames[]>([])

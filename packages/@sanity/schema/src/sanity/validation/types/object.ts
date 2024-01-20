@@ -1,6 +1,7 @@
 import {isPlainObject} from 'lodash'
-import {error, HELP_IDS, warning} from '../createValidationResult'
+
 import inspect from '../../inspect'
+import {error, HELP_IDS, warning} from '../createValidationResult'
 import {validateComponent} from '../utils/validateComponent'
 
 const VALID_FIELD_RE = /^[A-Za-z]+[0-9A-Za-z_]*$/

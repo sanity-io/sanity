@@ -1,16 +1,17 @@
 import {Box, Card, Text, useMediaIndex} from '@sanity/ui'
 import {useCallback, useMemo, useRef} from 'react'
 import styled from 'styled-components'
+
+import {Button} from '../../../../../../../ui-components'
 import {
   CommandList,
-  CommandListHandle,
-  CommandListRenderItemCallback,
+  type CommandListHandle,
+  type CommandListRenderItemCallback,
 } from '../../../../../../components'
-import {Button} from '../../../../../../../ui-components'
-import {useSearchState} from '../../contexts/search/useSearchState'
-import {RecentSearch} from '../../datastores/recentSearches'
-import {Instructions} from '../Instructions'
 import {useTranslation} from '../../../../../../i18n'
+import {useSearchState} from '../../contexts/search/useSearchState'
+import {type RecentSearch} from '../../datastores/recentSearches'
+import {Instructions} from '../Instructions'
 import {RecentSearchItem} from './item/RecentSearchItem'
 
 const VIRTUAL_LIST_RECENT_SEARCH_ITEM_HEIGHT = 36 // px

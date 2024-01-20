@@ -1,5 +1,6 @@
-import {ReactNode, useCallback, useMemo} from 'react'
-import type {ObjectSchemaType} from '@sanity/types'
+import {type ObjectSchemaType} from '@sanity/types'
+import {type ReactNode, useCallback, useMemo} from 'react'
+
 import {useTranslation} from '../../../../../i18n'
 import {_getModalOption} from '../helpers'
 import {DefaultEditDialog} from './DialogModal'

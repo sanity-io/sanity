@@ -1,6 +1,12 @@
-import {createContext, useContext} from 'react'
 import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
-import {LogoProps, NavbarProps, LayoutProps, definePlugin, ToolMenuProps} from 'sanity'
+import React, {createContext, useContext} from 'react'
+import {
+  definePlugin,
+  type LayoutProps,
+  type LogoProps,
+  type NavbarProps,
+  type ToolMenuProps,
+} from 'sanity'
 
 export const studioComponentsPlugin = definePlugin({
   name: 'studio-components-plugin',

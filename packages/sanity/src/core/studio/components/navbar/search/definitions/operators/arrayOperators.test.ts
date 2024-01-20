@@ -1,6 +1,7 @@
-import type {ReferenceValue} from '@sanity/types'
+import {type ReferenceValue} from '@sanity/types'
+
 import {arrayOperators} from './arrayOperators'
-import {OperatorNumberRangeValue} from './common'
+import {type OperatorNumberRangeValue} from './common'
 
 const fieldPath = 'items'
 const valueCount = 10

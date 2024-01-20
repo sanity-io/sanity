@@ -1,5 +1,13 @@
-import {ChangeEvent, ForwardedRef, HTMLProps, forwardRef, useCallback, useId} from 'react'
-import {MenuItemProps} from '../../../../../../ui-components'
+import {
+  type ChangeEvent,
+  type ForwardedRef,
+  forwardRef,
+  type HTMLProps,
+  useCallback,
+  useId,
+} from 'react'
+
+import {type MenuItemProps} from '../../../../../../ui-components'
 import {FileMenuItem} from './FileInputMenuItem.styled'
 
 export interface FileInputMenuItemProps extends Omit<MenuItemProps, 'onSelect'> {

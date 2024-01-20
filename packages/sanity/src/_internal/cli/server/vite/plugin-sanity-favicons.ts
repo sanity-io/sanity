@@ -1,6 +1,7 @@
-import path from 'path'
 import fs from 'fs/promises'
-import type {Plugin} from 'vite'
+import path from 'path'
+import {type Plugin} from 'vite'
+
 import {generateWebManifest} from '../webManifest'
 
 const mimeTypes: Record<string, string | undefined> = {

@@ -1,4 +1,4 @@
-import type {CodeMod} from '../types'
+import {type CodeMod} from '../types'
 
 const purpose = 'Transform `sanity/desk` imports to `sanity/structure`'
 const description = `

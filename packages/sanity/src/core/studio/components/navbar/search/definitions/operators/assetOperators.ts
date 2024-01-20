@@ -1,4 +1,5 @@
-import type {ReferenceValue} from '@sanity/types'
+import {type ReferenceValue} from '@sanity/types'
+
 import {SearchButtonValueReference} from '../../components/filters/common/ButtonValue'
 import {SearchFilterAssetInput} from '../../components/filters/filter/inputs/asset/Asset'
 import {defineSearchOperator, type SearchOperatorButtonValue} from './operatorTypes'

@@ -1,4 +1,4 @@
-import type {Expr} from './types'
+import {type Expr} from './types'
 
 /**
  * Converts a parsed expression back into jsonpath2, roughly -

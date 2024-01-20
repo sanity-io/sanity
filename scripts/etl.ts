@@ -1,9 +1,9 @@
-import path from 'path'
-import cac from 'cac'
-import ora from 'ora'
 import {createClient} from '@sanity/client'
-import {SanityTSDocConfigOptions, _loadConfig, extract, load, transform} from '@sanity/tsdoc'
+import {_loadConfig, extract, load, type SanityTSDocConfigOptions, transform} from '@sanity/tsdoc'
+import cac from 'cac'
 import chalk from 'chalk'
+import ora from 'ora'
+import path from 'path'
 
 const cli = cac('yarn etl')
 

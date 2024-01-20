@@ -1,37 +1,44 @@
-import {useElementRect, DialogProvider, Flex, PortalProvider, DialogProviderProps} from '@sanity/ui'
-import {useState, useCallback, useMemo} from 'react'
-import {useTranslation} from 'react-i18next'
-import {Path} from 'sanity-diff-patch'
-import styled from 'styled-components'
+import {
+  DialogProvider,
+  type DialogProviderProps,
+  Flex,
+  PortalProvider,
+  useElementRect,
+} from '@sanity/ui'
 import isHotkey from 'is-hotkey'
-import {usePaneLayout, Pane, PaneFooter} from '../../../components'
+import {useCallback, useMemo, useState} from 'react'
+import {useTranslation} from 'react-i18next'
+import {
+  ChangeConnectorRoot,
+  type DocumentFieldActionNode,
+  type DocumentInspectorMenuItem,
+  FieldActionsProvider,
+  FieldActionsResolver,
+  useZIndex,
+} from 'sanity'
+import {type Path} from 'sanity-diff-patch'
+import styled from 'styled-components'
+
+import {TooltipDelayGroupProvider} from '../../../../ui-components'
+import {Pane, PaneFooter, usePaneLayout} from '../../../components'
 import {DOCUMENT_PANEL_PORTAL_ELEMENT} from '../../../constants'
 import {structureLocaleNamespace} from '../../../i18n'
 import {useStructureTool} from '../../../useStructureTool'
-import {DocumentOperationResults} from '../DocumentOperationResults'
 import {
-  DOCUMENT_PANEL_INITIAL_MIN_WIDTH,
   DOCUMENT_INSPECTOR_MIN_WIDTH,
+  DOCUMENT_PANEL_INITIAL_MIN_WIDTH,
   DOCUMENT_PANEL_MIN_WIDTH,
 } from '../constants'
+import {DocumentInspectorMenuItemsResolver} from '../DocumentInspectorMenuItemsResolver'
+import {DocumentOperationResults} from '../DocumentOperationResults'
 import {DocumentPanel} from '../documentPanel'
+import {DocumentPanelHeader} from '../documentPanel/header'
 import {DocumentActionShortcuts} from '../keyboardShortcuts'
+import {getMenuItems} from '../menuItems'
 import {DocumentStatusBar} from '../statusBar'
 import {useDocumentPane} from '../useDocumentPane'
-import {DocumentPanelHeader} from '../documentPanel/header'
-import {DocumentInspectorMenuItemsResolver} from '../DocumentInspectorMenuItemsResolver'
 import {usePreviewUrl} from '../usePreviewUrl'
-import {TooltipDelayGroupProvider} from '../../../../ui-components'
-import {getMenuItems} from '../menuItems'
 import {DocumentLayoutError} from './DocumentLayoutError'
-import {
-  useZIndex,
-  ChangeConnectorRoot,
-  DocumentInspectorMenuItem,
-  FieldActionsResolver,
-  DocumentFieldActionNode,
-  FieldActionsProvider,
-} from 'sanity'
 
 const EMPTY_ARRAY: [] = []
 

@@ -1,16 +1,14 @@
-import util from 'util'
-
 import {isUnion} from '../helpers'
-import type {
-  ApiCustomizationOptions,
-  ApiSpecification,
-  ConvertedType,
-  GeneratedApiSpecification,
-  InputObjectType,
+import {
+  type ApiCustomizationOptions,
+  type ApiSpecification,
+  type ConvertedType,
+  type GeneratedApiSpecification,
+  type InputObjectType,
 } from '../types'
 import {generateTypeFilters} from './generateTypeFilters'
-import {generateTypeSortings} from './generateTypeSortings'
 import {generateTypeQueries} from './generateTypeQueries'
+import {generateTypeSortings} from './generateTypeSortings'
 
 export default (
   extracted: ApiSpecification,

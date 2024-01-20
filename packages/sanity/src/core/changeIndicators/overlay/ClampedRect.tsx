@@ -1,5 +1,6 @@
-import {ComponentProps} from 'react'
-import {Rect} from './types'
+import {type ComponentProps} from 'react'
+
+import {type Rect} from './types'
 
 export function ClampedRect(
   props: {top: number; left: number; height: number; width: number; bounds: Rect} & Omit<

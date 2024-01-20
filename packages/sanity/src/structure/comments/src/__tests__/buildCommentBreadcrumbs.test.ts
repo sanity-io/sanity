@@ -1,5 +1,6 @@
 import {Schema} from '@sanity/schema'
-import {CurrentUser, defineField} from '@sanity/types'
+import {type CurrentUser, defineField} from '@sanity/types'
+
 import {buildCommentBreadcrumbs} from '../utils'
 
 const CURRENT_USER: CurrentUser = {

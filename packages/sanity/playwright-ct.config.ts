@@ -1,5 +1,5 @@
-import path from 'path'
 import {defineConfig, devices} from '@playwright/experimental-ct-react'
+import path from 'path'
 
 // Paths
 const TESTS_PATH = path.join(__dirname, 'playwright-ct', 'tests')

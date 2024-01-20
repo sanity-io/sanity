@@ -1,6 +1,6 @@
+import {readFileAsWebStream} from '../../fs-webstream/readFileAsWebStream'
 import {streamToAsyncIterator} from '../../utils/streamToAsyncIterator'
 import {untar} from '../untar'
-import {readFileAsWebStream} from '../../fs-webstream/readFileAsWebStream'
 
 async function* extract(file: string) {
   const fileStream = readFileAsWebStream(file)

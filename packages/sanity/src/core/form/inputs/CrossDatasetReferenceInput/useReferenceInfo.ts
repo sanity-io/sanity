@@ -1,9 +1,10 @@
 import {useCallback, useMemo, useState} from 'react'
-import {catchError, map, startWith} from 'rxjs/operators'
-import {Observable, of} from 'rxjs'
 import {useMemoObservable} from 'react-rx'
+import {type Observable, of} from 'rxjs'
+import {catchError, map, startWith} from 'rxjs/operators'
+
 import {usePrevious} from '../../hooks/usePrevious'
-import {CrossDatasetReferenceInfo} from './types'
+import {type CrossDatasetReferenceInfo} from './types'
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 const noop = () => {}

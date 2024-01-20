@@ -1,4 +1,5 @@
-import {SchemaType} from '@sanity/types'
+import {type SchemaType} from '@sanity/types'
+
 import {getPreviewPaths} from './getPreviewPaths'
 
 const preview: SchemaType['preview'] = {

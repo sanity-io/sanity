@@ -1,6 +1,7 @@
 import {BellIcon, ColorWheelIcon, ImageIcon, InfoOutlineIcon} from '@sanity/icons'
-import {Rule} from '@sanity/types'
+import {type Rule} from '@sanity/types'
 import {defineArrayMember, defineField, defineType} from 'sanity'
+
 import {InfoBoxPreview} from './InfoBoxPreview'
 
 export const ptAllTheBellsAndWhistlesType = defineType({

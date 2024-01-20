@@ -1,4 +1,4 @@
-import type {CliCommandArguments, CliCommandContext} from '@sanity/cli'
+import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
 
 export default async function undeployStudio(
   args: CliCommandArguments<Record<string, unknown>>,

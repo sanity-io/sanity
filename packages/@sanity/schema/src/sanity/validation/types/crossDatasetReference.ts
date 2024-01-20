@@ -1,7 +1,8 @@
 import {flatten, isPlainObject} from 'lodash'
+
+import {type SchemaValidationResult} from '../../typedefs'
 import {error, HELP_IDS} from '../createValidationResult'
 import {getDupes} from '../utils/getDupes'
-import {SchemaValidationResult} from '../../typedefs'
 
 function normalizeToProp(typeDef) {
   if (Array.isArray(typeDef.to)) {

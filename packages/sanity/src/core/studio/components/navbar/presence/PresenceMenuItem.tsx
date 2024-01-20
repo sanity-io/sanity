@@ -1,11 +1,20 @@
-import {ForwardedRef, forwardRef, memo, useCallback, useEffect, useMemo, useState} from 'react'
-import {orderBy} from 'lodash'
 import * as PathUtils from '@sanity/util/paths'
-import {GlobalPresence} from '../../../../store'
-import {UserAvatar} from '../../../../components'
-import {MenuItem} from '../../../../../ui-components'
-import {useTranslation} from '../../../../i18n'
+import {orderBy} from 'lodash'
+import React, {
+  type ForwardedRef,
+  forwardRef,
+  memo,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react'
 import {IntentLink} from 'sanity/router'
+
+import {MenuItem} from '../../../../../ui-components'
+import {UserAvatar} from '../../../../components'
+import {useTranslation} from '../../../../i18n'
+import {type GlobalPresence} from '../../../../store'
 
 interface PresenceListRowProps {
   focused: boolean

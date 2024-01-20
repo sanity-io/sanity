@@ -1,5 +1,6 @@
 import {useContext} from 'react'
-import {WorkspaceSummary} from '../../config'
+
+import {type WorkspaceSummary} from '../../config'
 import {WorkspacesContext} from './WorkspacesContext'
 
 /** @internal */

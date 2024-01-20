@@ -1,6 +1,7 @@
-import {Mutation as SanityMutation} from '@sanity/client'
+import {type Mutation as SanityMutation} from '@sanity/client'
 import arrify from 'arrify'
-import {TransactionPayload} from './toSanityMutations'
+
+import {type TransactionPayload} from './toSanityMutations'
 
 // We're working on "raw" mutations, e.g what will be put into the mutations array in the request body
 const PADDING_SIZE = '{"mutations":[]}'.length

@@ -1,8 +1,8 @@
-import React, {forwardRef} from 'react'
+import React, {forwardRef, type Ref, type SVGProps} from 'react'
 
 export const ReactionIcon = forwardRef(function Icon(
-  props: React.SVGProps<SVGSVGElement>,
-  ref: React.Ref<SVGSVGElement>,
+  props: SVGProps<SVGSVGElement>,
+  ref: Ref<SVGSVGElement>,
 ) {
   return (
     <svg

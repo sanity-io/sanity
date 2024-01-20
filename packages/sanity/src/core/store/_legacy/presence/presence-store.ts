@@ -1,6 +1,20 @@
 /* eslint-disable camelcase */
 
-import {BehaviorSubject, defer, EMPTY, from, fromEvent, merge, NEVER, Observable, timer} from 'rxjs'
+import {type BifurClient} from '@sanity/bifur-client'
+import {type User} from '@sanity/types'
+import {flatten, groupBy, omit, uniq} from 'lodash'
+import {nanoid} from 'nanoid'
+import {
+  BehaviorSubject,
+  defer,
+  EMPTY,
+  from,
+  fromEvent,
+  merge,
+  NEVER,
+  type Observable,
+  timer,
+} from 'rxjs'
 import {
   auditTime,
   distinctUntilChanged,
@@ -18,22 +32,25 @@ import {
   toArray,
   withLatestFrom,
 } from 'rxjs/operators'
-import {flatten, groupBy, omit, uniq} from 'lodash'
-import {nanoid} from 'nanoid'
-import {User} from '@sanity/types'
-import {BifurClient} from '@sanity/bifur-client'
+
+import {type ConnectionStatusStore} from '../connection-status/connection-status-store'
 import {debugParams$} from '../debugParams'
-import {ConnectionStatusStore} from '../connection-status/connection-status-store'
-import {UserStore} from '../user'
+import {type UserStore} from '../user'
+import {createBifurTransport} from './message-transports/bifurTransport'
 import {
-  DisconnectEvent,
-  RollCallEvent,
-  StateEvent,
-  TransportEvent,
+  type DisconnectEvent,
+  type RollCallEvent,
+  type StateEvent,
+  type TransportEvent,
 } from './message-transports/transport'
 import {mock$} from './mock-events'
-import {createBifurTransport} from './message-transports/bifurTransport'
-import {DocumentPresence, GlobalPresence, PresenceLocation, Session, UserSessionPair} from './types'
+import {
+  type DocumentPresence,
+  type GlobalPresence,
+  type PresenceLocation,
+  type Session,
+  type UserSessionPair,
+} from './types'
 
 /**
  * @hidden

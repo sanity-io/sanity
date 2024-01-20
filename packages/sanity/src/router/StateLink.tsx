@@ -1,5 +1,6 @@
+import type * as React from 'react'
 import {forwardRef} from 'react'
-import * as React from 'react'
+
 import {useStateLink} from './useStateLink'
 
 /**

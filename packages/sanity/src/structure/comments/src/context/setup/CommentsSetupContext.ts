@@ -1,5 +1,6 @@
 import {createContext} from 'react'
-import {CommentsSetupContextValue} from './types'
+
+import {type CommentsSetupContextValue} from './types'
 
 /**
  * @beta

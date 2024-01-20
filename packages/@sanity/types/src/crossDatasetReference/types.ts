@@ -1,8 +1,9 @@
-import type {ComponentType} from 'react'
-import type {Path} from '../paths'
-import type {SanityDocument} from '../documents'
-import type {ObjectSchemaType, PreviewConfig} from '../schema'
-import type {ReferenceFilterOptions} from '../reference'
+import {type ComponentType} from 'react'
+
+import {type SanityDocument} from '../documents'
+import {type Path} from '../paths'
+import {type ReferenceFilterOptions} from '../reference'
+import {type ObjectSchemaType, type PreviewConfig} from '../schema'
 
 /** @beta */
 export interface CrossDatasetReferenceValue {

@@ -1,4 +1,4 @@
-import {rem, Theme} from '@sanity/ui'
+import {rem, type Theme} from '@sanity/ui'
 import styled, {css} from 'styled-components'
 
 export const JSONInspectorWrapper = styled.div(({theme}: {theme: Theme}) => {

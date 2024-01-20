@@ -1,6 +1,7 @@
-import {SchemaType} from '@sanity/types'
+import {type SchemaType} from '@sanity/types'
 import {Box, Card, Code, Flex, Text} from '@sanity/ui'
 import {useMemo} from 'react'
+
 import {createSchema} from '../createSchema'
 
 export default function ReferenceSchemaStory() {

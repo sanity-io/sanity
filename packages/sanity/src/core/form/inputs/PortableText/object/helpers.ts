@@ -1,4 +1,4 @@
-import {ObjectSchemaType} from '@sanity/types'
+import {type ObjectSchemaType} from '@sanity/types'
 
 const parseResponsiveWidth = (value: unknown): (number | 'auto')[] => {
   if (Array.isArray(value)) {

@@ -1,4 +1,4 @@
-import type {CliCommandDefinition} from '../../types'
+import {type CliCommandDefinition} from '../../types'
 import {printDebugInfo} from './printDebugInfo'
 
 const help = `

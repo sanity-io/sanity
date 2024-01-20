@@ -1,8 +1,9 @@
-import path from 'path'
-import {Worker} from 'worker_threads'
 import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
-import readPkgUp from 'read-pkg-up'
 import logSymbols from 'log-symbols'
+import path from 'path'
+import readPkgUp from 'read-pkg-up'
+import {Worker} from 'worker_threads'
+
 import {
   type ValidateSchemaWorkerData,
   type ValidateSchemaWorkerResult,

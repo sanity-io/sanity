@@ -1,20 +1,24 @@
 /* eslint-disable no-restricted-imports */
 import {
+  Badge,
   Box,
   Flex,
-  MenuItem as UIMenuItem,
-  MenuItemProps as UIMenuItemProps,
-  Text,
-  Badge,
-  Stack,
   Hotkeys,
+  MenuItem as UIMenuItem,
+  type MenuItemProps as UIMenuItemProps,
+  Stack,
+  Text,
 } from '@sanity/ui'
+import type * as React from 'react'
 import {createElement, forwardRef, isValidElement, useCallback, useMemo} from 'react'
-import * as React from 'react'
 import {isValidElementType} from 'react-is'
 import styled from 'styled-components'
-import {ConditionalWrapper, ConditionalWrapperRenderWrapperCallback} from '../conditionalWrapper'
-import {Tooltip, TooltipProps} from '..'
+
+import {Tooltip, type TooltipProps} from '..'
+import {
+  ConditionalWrapper,
+  type ConditionalWrapperRenderWrapperCallback,
+} from '../conditionalWrapper'
 
 const FONT_SIZE = 1
 

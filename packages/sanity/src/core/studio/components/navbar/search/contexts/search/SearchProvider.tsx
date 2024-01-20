@@ -1,22 +1,23 @@
 import isEqual from 'lodash/isEqual'
-import {ReactNode, useCallback, useEffect, useMemo, useReducer, useRef, useState} from 'react'
-import {CommandListHandle} from '../../../../../../components'
+import {type ReactNode, useCallback, useEffect, useMemo, useReducer, useRef, useState} from 'react'
+
+import {type CommandListHandle} from '../../../../../../components'
 import {useClient, useSchema} from '../../../../../../hooks'
-import type {SearchableType, SearchTerms} from '../../../../../../search'
+import {type SearchableType, type SearchTerms} from '../../../../../../search'
 import {useCurrentUser} from '../../../../../../store'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../../../studioClient'
 import {useSource} from '../../../../../source'
 import {SEARCH_LIMIT} from '../../constants'
 import {
   createRecentSearchesStore,
-  RecentSearch,
   RECENT_SEARCH_VERSION,
+  type RecentSearch,
 } from '../../datastores/recentSearches'
 import {createFieldDefinitionDictionary, createFieldDefinitions} from '../../definitions/fields'
 import {createFilterDefinitionDictionary} from '../../definitions/filters'
 import {createOperatorDefinitionDictionary} from '../../definitions/operators'
 import {useSearch} from '../../hooks/useSearch'
-import type {SearchOrdering} from '../../types'
+import {type SearchOrdering} from '../../types'
 import {validateFilter} from '../../utils/filterUtils'
 import {hasSearchableTerms} from '../../utils/hasSearchableTerms'
 import {isRecentSearchTerms} from '../../utils/isRecentSearchTerms'

@@ -1,7 +1,8 @@
 import {SanityLogo} from '@sanity/logos'
 import {Box, Card, Flex, Heading, Stack, Text} from '@sanity/ui'
-import {ReactNode, Fragment} from 'react'
+import {Fragment, type ReactNode} from 'react'
 import styled from 'styled-components'
+
 import {useTranslation} from '../../../../../i18n'
 
 const LINKS = [

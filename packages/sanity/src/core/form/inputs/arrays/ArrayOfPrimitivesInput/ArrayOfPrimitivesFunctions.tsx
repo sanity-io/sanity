@@ -1,11 +1,12 @@
 /* eslint-disable react/no-unused-prop-types */
-import {ArraySchemaType, isReferenceSchemaType} from '@sanity/types'
 import {AddIcon} from '@sanity/icons'
-import {useCallback, useMemo, useId} from 'react'
+import {type ArraySchemaType, isReferenceSchemaType} from '@sanity/types'
 import {Grid, Menu} from '@sanity/ui'
-import {ArrayInputFunctionsProps} from '../../../types'
-import {Tooltip, Button, MenuButton, MenuItem} from '../../../../../ui-components'
+import React, {useCallback, useId, useMemo} from 'react'
+
+import {Button, MenuButton, MenuItem, Tooltip} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
+import {type ArrayInputFunctionsProps} from '../../../types'
 
 /**
  * @hidden

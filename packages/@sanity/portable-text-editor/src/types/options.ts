@@ -1,6 +1,7 @@
-import {BaseSyntheticEvent} from 'react'
-import {PortableTextEditor} from '../editor/PortableTextEditor'
-import {PatchObservable} from './editor'
+import {type BaseSyntheticEvent} from 'react'
+
+import {type PortableTextEditor} from '../editor/PortableTextEditor'
+import {type PatchObservable} from './editor'
 
 export type createEditorOptions = {
   keyGenerator: () => string

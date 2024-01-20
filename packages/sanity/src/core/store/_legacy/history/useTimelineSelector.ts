@@ -1,5 +1,6 @@
 import {useSyncExternalStoreWithSelector} from 'use-sync-external-store/with-selector'
-import {TimelineState, TimelineStore} from './useTimelineStore'
+
+import {type TimelineState, type TimelineStore} from './useTimelineStore'
 
 /**
  * Custom hook which wraps around `useSyncExternalStore`.

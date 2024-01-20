@@ -1,6 +1,7 @@
-import {PreviewValue, Reference, SchemaType} from '@sanity/types'
-import {useState, useEffect} from 'react'
-import {Subscription} from 'rxjs'
+import {type PreviewValue, type Reference, type SchemaType} from '@sanity/types'
+import {useEffect, useState} from 'react'
+import {type Subscription} from 'rxjs'
+
 import {useDocumentPreviewStore} from '../../../store'
 
 export function useRefPreview(

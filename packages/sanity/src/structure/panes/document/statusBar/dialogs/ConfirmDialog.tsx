@@ -10,9 +10,10 @@ import {
   useLayer,
 } from '@sanity/ui'
 import {useCallback, useState} from 'react'
+import {type DocumentActionConfirmDialogProps, useTranslation} from 'sanity'
+
 import {structureLocaleNamespace} from '../../../../i18n'
 import {POPOVER_FALLBACK_PLACEMENTS} from './constants'
-import {DocumentActionConfirmDialogProps, useTranslation} from 'sanity'
 
 export function ConfirmDialog(props: {
   dialog: DocumentActionConfirmDialogProps

@@ -1,3 +1,5 @@
+import {type SanityClient} from '@sanity/client'
+import {difference, flatten, memoize} from 'lodash'
 import {
   combineLatest,
   concat,
@@ -6,7 +8,7 @@ import {
   from,
   fromEvent,
   merge,
-  Observable,
+  type Observable,
   of as observableOf,
   timer,
 } from 'rxjs'
@@ -15,22 +17,26 @@ import {
   filter,
   map,
   mergeMap,
-  publishReplay,
-  refCount,
   share,
   shareReplay,
   startWith,
   switchMap,
   tap,
 } from 'rxjs/operators'
-import {difference, flatten, memoize} from 'lodash'
-import {SanityClient} from '@sanity/client'
-import {debounceCollect} from './utils/debounceCollect'
-import {combineSelections, reassemble, toQuery} from './utils/optimizeQuery'
-import {ApiConfig, FieldName, Id, ObservePathsFn, PreviewPath, Selection} from './types'
+
 import {INCLUDE_FIELDS} from './constants'
+import {
+  type ApiConfig,
+  type FieldName,
+  type Id,
+  type ObservePathsFn,
+  type PreviewPath,
+  type Selection,
+} from './types'
+import {debounceCollect} from './utils/debounceCollect'
 import {hasEqualFields} from './utils/hasEqualFields'
 import {isUniqueBy} from './utils/isUniqueBy'
+import {combineSelections, reassemble, toQuery} from './utils/optimizeQuery'
 
 type CachedFieldObserver = {
   id: Id

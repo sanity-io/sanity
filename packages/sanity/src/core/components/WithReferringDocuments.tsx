@@ -1,7 +1,8 @@
-import {SanityDocument} from '@sanity/types'
-import {ReactElement} from 'react'
-import {DocumentStore} from '../store'
+import {type SanityDocument} from '@sanity/types'
+import {type ReactElement} from 'react'
+
 import {useReferringDocuments} from '../hooks/useReferringDocuments'
+import {type DocumentStore} from '../store'
 
 /**
  * @internal

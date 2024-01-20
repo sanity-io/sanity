@@ -1,4 +1,5 @@
-import {ReactNode, ReactElement} from 'react'
+import {type ReactElement, type ReactNode} from 'react'
+
 import {defaults} from './defaults'
 import {ZIndexContext} from './ZIndexContext'
 

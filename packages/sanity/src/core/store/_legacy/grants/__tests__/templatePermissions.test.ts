@@ -1,15 +1,15 @@
 /* eslint-disable camelcase */
 
-import {first} from 'rxjs/operators'
-import {SanityClient} from '@sanity/client'
-import {InitialValueResolverContext} from '@sanity/types'
+import {type SanityClient} from '@sanity/client'
+import {type InitialValueResolverContext} from '@sanity/types'
 import {firstValueFrom} from 'rxjs'
+
 import {createMockSanityClient} from '../../../../../../test/mocks/mockSanityClient'
+import {createSchema} from '../../../../schema'
+import {defaultTemplatesForSchema, prepareTemplates} from '../../../../templates'
 import {requiresApproval} from '../debug/exampleGrants'
 import {createGrantsStore} from '../grantsStore'
 import {getTemplatePermissions} from '../templatePermissions'
-import {createSchema} from '../../../../schema'
-import {defaultTemplatesForSchema, prepareTemplates} from '../../../../templates'
 
 const schema = createSchema({
   name: 'test',

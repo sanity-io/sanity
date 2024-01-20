@@ -1,23 +1,24 @@
 /* eslint-disable camelcase */
 
 import {useMemo} from 'react'
+
 import {useClient, useSchema, useTemplates} from '../../hooks'
-import {createDocumentPreviewStore, DocumentPreviewStore} from '../../preview'
+import {createDocumentPreviewStore, type DocumentPreviewStore} from '../../preview'
 import {useSource, useWorkspace} from '../../studio'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {useCurrentUser} from '../user'
 import {
-  ConnectionStatusStore,
+  type ConnectionStatusStore,
   createConnectionStatusStore,
 } from './connection-status/connection-status-store'
-import {createDocumentStore, DocumentStore} from './document'
-import {createGrantsStore, GrantsStore} from './grants'
-import {createHistoryStore, HistoryStore} from './history'
-import {createProjectStore, ProjectStore} from './project'
+import {createDocumentStore, type DocumentStore} from './document'
+import {createGrantsStore, type GrantsStore} from './grants'
+import {createHistoryStore, type HistoryStore} from './history'
+import {__tmp_wrap_presenceStore, type PresenceStore} from './presence/presence-store'
+import {createProjectStore, type ProjectStore} from './project'
 import {useResourceCache} from './ResourceCacheProvider'
-import {createSettingsStore, SettingsStore} from './settings'
-import {createUserStore, UserStore} from './user'
-import {PresenceStore, __tmp_wrap_presenceStore} from './presence/presence-store'
+import {createSettingsStore, type SettingsStore} from './settings'
+import {createUserStore, type UserStore} from './user'
 
 /**
  * @hidden

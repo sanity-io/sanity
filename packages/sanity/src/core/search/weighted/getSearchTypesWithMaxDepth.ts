@@ -1,6 +1,7 @@
-import type {ObjectSchemaType, Schema} from '@sanity/types'
-import {SearchableType} from './types'
 import {resolveSearchConfig} from '@sanity/schema/_internal'
+import {type ObjectSchemaType} from '@sanity/types'
+
+import {type SearchableType} from './types'
 
 /**
  * @internal

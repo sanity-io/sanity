@@ -1,7 +1,7 @@
-import {StructureBuilder} from 'sanity/structure'
-import {Schema} from '@sanity/types'
+import {type Schema} from '@sanity/types'
 import {isObject} from 'lodash'
-import {PreviewLayoutKey} from 'sanity'
+import {type PreviewLayoutKey} from 'sanity'
+import {type StructureBuilder} from 'sanity/structure'
 
 const isNonNullable = isObject as <T>(value: T) => value is NonNullable<T>
 

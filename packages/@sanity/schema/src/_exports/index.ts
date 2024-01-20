@@ -1,4 +1,4 @@
-import {Schema as NamedSchema, DeprecatedDefaultSchema} from '../legacy/Schema'
+import {DeprecatedDefaultSchema, Schema as NamedSchema} from '../legacy/Schema'
 
 export default DeprecatedDefaultSchema
 export const Schema = NamedSchema

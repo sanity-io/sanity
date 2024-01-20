@@ -1,11 +1,16 @@
-import {CrossDatasetReferenceSchemaType, FieldDefinition, SchemaTypeDefinition} from '@sanity/types'
-import * as React from 'react'
+import {
+  type CrossDatasetReferenceSchemaType,
+  type FieldDefinition,
+  type SchemaTypeDefinition,
+} from '@sanity/types'
+import type * as React from 'react'
 import {of} from 'rxjs'
-import {ObjectInputProps} from '../../src/core'
-import {CrossDatasetReferenceInputProps} from '../../src/core/form/inputs/CrossDatasetReferenceInput'
-import {TestRenderInputContext} from './renderInput'
-import {TestRenderProps} from './types'
+
+import {type ObjectInputProps} from '../../src/core'
+import {type CrossDatasetReferenceInputProps} from '../../src/core/form/inputs/CrossDatasetReferenceInput'
+import {type TestRenderInputContext} from './renderInput'
 import {renderObjectInput} from './renderObjectInput'
+import {type TestRenderProps} from './types'
 
 const EMPTY_SEARCH = () => of([])
 

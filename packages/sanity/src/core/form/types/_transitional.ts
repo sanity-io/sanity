@@ -1,17 +1,18 @@
 import {
-  ArraySchemaType,
-  FormNodeValidation,
-  ObjectField,
-  ObjectSchemaType,
-  Path,
-  PortableTextBlock,
+  type ArraySchemaType,
+  type FormNodeValidation,
+  type ObjectField,
+  type ObjectSchemaType,
+  type Path,
+  type PortableTextBlock,
 } from '@sanity/types'
-import {ReactNode, ComponentType} from 'react'
-import {PatchEvent} from '../patch'
-import {PreviewProps} from '../../components'
-import {InputProps} from './inputProps'
-import {FieldProps} from './fieldProps'
-import {ItemProps} from './itemProps'
+import {type ComponentType, type ReactNode} from 'react'
+
+import {type PreviewProps} from '../../components'
+import {type PatchEvent} from '../patch'
+import {type FieldProps} from './fieldProps'
+import {type InputProps} from './inputProps'
+import {type ItemProps} from './itemProps'
 
 /**
  * Function for rendering custom block markers

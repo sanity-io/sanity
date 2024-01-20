@@ -1,23 +1,24 @@
-import type {SchemaType} from '@sanity/types'
-import type {Observable} from 'rxjs'
-import type {
-  DefaultDocumentNodeResolver,
-  Intent,
-  MenuItem as StructureToolMenuItem,
-  StructureBuilder,
-  StructureContext,
-  UserComponent,
-  View,
-} from './structureBuilder'
-import type {
-  ConfigContext,
-  DocumentFieldActionNode,
-  DocumentStore,
-  GeneralPreviewLayoutKey,
-  I18nTextRecord,
-  InitialValueTemplateItem,
-  LocaleSource,
+import {type SchemaType} from '@sanity/types'
+import {type Observable} from 'rxjs'
+import {
+  type ConfigContext,
+  type DocumentFieldActionNode,
+  type DocumentStore,
+  type GeneralPreviewLayoutKey,
+  type I18nTextRecord,
+  type InitialValueTemplateItem,
+  type LocaleSource,
 } from 'sanity'
+
+import {
+  type DefaultDocumentNodeResolver,
+  type Intent,
+  type MenuItem as StructureToolMenuItem,
+  type StructureBuilder,
+  type StructureContext,
+  type UserComponent,
+  type View,
+} from './structureBuilder'
 
 /** @internal */
 export interface StructureToolFeatures {

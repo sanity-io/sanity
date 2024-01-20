@@ -1,5 +1,5 @@
 import {Heading, Text} from '@sanity/ui'
-import {HTMLProps, ComponentType} from 'react'
+import {type ComponentType, type HTMLProps} from 'react'
 import styled from 'styled-components'
 
 type TextStyleProps = Omit<HTMLProps<HTMLDivElement>, 'as' | 'ref'>

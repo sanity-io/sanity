@@ -1,5 +1,6 @@
-import {ReactNode, createContext, useContext, useMemo} from 'react'
-import {createMultiKeyWeakMap, MultiKeyWeakMap} from './createMultiKeyWeakMap'
+import {createContext, type ReactNode, useContext, useMemo} from 'react'
+
+import {createMultiKeyWeakMap, type MultiKeyWeakMap} from './createMultiKeyWeakMap'
 
 /** @internal */
 export interface ResourceCache {

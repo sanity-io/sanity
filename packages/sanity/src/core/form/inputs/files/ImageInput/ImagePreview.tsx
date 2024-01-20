@@ -1,10 +1,10 @@
-import {ComponentProps, ReactNode, useCallback, useEffect, useState} from 'react'
-
 import {AccessDeniedIcon, ImageIcon, ReadOnlyIcon} from '@sanity/icons'
-import {Box, Card, CardTone, Heading, Text, useElementRect} from '@sanity/ui'
+import {Box, Card, type CardTone, Heading, Text, useElementRect} from '@sanity/ui'
+import React, {type ComponentProps, type ReactNode, useCallback, useEffect, useState} from 'react'
+
 import {LoadingBlock} from '../../../../components/loadingBlock'
 import {useTranslation} from '../../../../i18n'
-import {MAX_DEFAULT_HEIGHT, RatioBox, Overlay, FlexOverlay} from './ImagePreview.styled'
+import {FlexOverlay, MAX_DEFAULT_HEIGHT, Overlay, RatioBox} from './ImagePreview.styled'
 
 interface Props {
   readOnly?: boolean | null

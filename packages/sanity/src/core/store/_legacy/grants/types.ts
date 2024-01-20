@@ -1,5 +1,5 @@
-import {SanityDocument} from '@sanity/types'
-import type {Observable} from 'rxjs'
+import {type SanityDocument} from '@sanity/types'
+import {type Observable} from 'rxjs'
 
 /**
  * @hidden

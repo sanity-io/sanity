@@ -1,15 +1,16 @@
-import type {Reference} from '@sanity/types'
+import {type Reference} from '@sanity/types'
 import {isValid} from 'date-fns'
+
 import {useSchema} from '../../../../../../../hooks'
-import {useUnitFormatter} from '../../../../../../../hooks/useUnitFormatter'
 import {useDateTimeFormat} from '../../../../../../../hooks/useDateTimeFormat'
-import type {
-  OperatorDateEqualValue,
-  OperatorDateLastValue,
-  OperatorDateRangeValue,
-} from '../../../definitions/operators/dateOperators'
-import {OperatorButtonValueComponentProps} from '../../../definitions/operators/operatorTypes'
+import {useUnitFormatter} from '../../../../../../../hooks/useUnitFormatter'
 import {useTranslation} from '../../../../../../../i18n'
+import {
+  type OperatorDateEqualValue,
+  type OperatorDateLastValue,
+  type OperatorDateRangeValue,
+} from '../../../definitions/operators/dateOperators'
+import {type OperatorButtonValueComponentProps} from '../../../definitions/operators/operatorTypes'
 import {ReferencePreviewTitle} from './ReferencePreviewTitle'
 
 const DEFAULT_DATE_FORMAT = 'yyyy-MM-dd'

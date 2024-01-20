@@ -1,4 +1,5 @@
 import {flatten, uniq} from 'lodash'
+
 import {getDupes} from '../sanity/validation/utils/getDupes'
 
 type SchemaType = Record<string, any>

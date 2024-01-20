@@ -1,14 +1,14 @@
 import {memo} from 'react'
-import {ObjectMember} from '../../store'
-import {
-  RenderAnnotationCallback,
-  RenderArrayOfObjectsItemCallback,
-  RenderBlockCallback,
-  RenderFieldCallback,
-  RenderInputCallback,
-  RenderPreviewCallback,
-} from '../../types'
 
+import {type ObjectMember} from '../../store'
+import {
+  type RenderAnnotationCallback,
+  type RenderArrayOfObjectsItemCallback,
+  type RenderBlockCallback,
+  type RenderFieldCallback,
+  type RenderInputCallback,
+  type RenderPreviewCallback,
+} from '../../types'
 import {MemberField} from './MemberField'
 import {MemberFieldError} from './MemberFieldError'
 import {MemberFieldSet} from './MemberFieldset'

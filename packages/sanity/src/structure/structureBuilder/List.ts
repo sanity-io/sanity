@@ -1,19 +1,20 @@
 import {find} from 'lodash'
-import {SerializePath, SerializeOptions, Divider} from './StructureNodes'
-import {ChildResolverOptions, ChildResolver} from './ChildResolver'
-import {SerializeError, HELP_URL} from './SerializeError'
-import {ListItem, ListItemBuilder} from './ListItem'
-import {IntentChecker} from './Intent'
+import {isRecord} from 'sanity'
+
+import {type ChildResolver, type ChildResolverOptions} from './ChildResolver'
 import {isDocumentListItem} from './DocumentListItem'
 import {
+  type BuildableGenericList,
+  type GenericList,
   GenericListBuilder,
-  BuildableGenericList,
-  GenericList,
-  GenericListInput,
+  type GenericListInput,
   shallowIntentChecker,
 } from './GenericList'
-import {StructureContext} from './types'
-import {isRecord} from 'sanity'
+import {type IntentChecker} from './Intent'
+import {type ListItem, ListItemBuilder} from './ListItem'
+import {HELP_URL, SerializeError} from './SerializeError'
+import {type Divider, type SerializeOptions, type SerializePath} from './StructureNodes'
+import {type StructureContext} from './types'
 
 const getArgType = (thing: ListItem) => {
   if (thing instanceof ListBuilder) {

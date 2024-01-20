@@ -1,8 +1,9 @@
-import {omit, isPlainObject} from 'lodash'
 import humanizeList from 'humanize-list'
+import {isPlainObject, omit} from 'lodash'
+
+import {coreTypeNames} from '../../coreTypes'
 import {error, HELP_IDS, warning} from '../createValidationResult'
 import {isJSONTypeOf} from '../utils/isJSONTypeOf'
-import {coreTypeNames} from '../../coreTypes'
 
 const getTypeOf = (thing) => (Array.isArray(thing) ? 'array' : typeof thing)
 const quote = (str) => `"${str}"`

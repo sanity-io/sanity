@@ -1,37 +1,38 @@
 import {MenuIcon} from '@sanity/icons'
 import {
   BoundaryElementProvider,
+  Box,
   Card,
   Flex,
+  Grid,
   Layer,
   LayerProvider,
   PortalProvider,
   useMediaIndex,
-  Box,
-  Grid,
 } from '@sanity/ui'
-import {useCallback, useState, useMemo, useEffect, useRef, useContext} from 'react'
+import {useCallback, useContext, useEffect, useMemo, useRef, useState} from 'react'
+import {type RouterState, useRouterState} from 'sanity/router'
 import styled from 'styled-components'
-import {isDev} from '../../../environment'
-import {useWorkspace} from '../../workspace'
+
 import {Button, TooltipDelayGroupProvider} from '../../../../ui-components'
-import {NavbarContext} from '../../StudioLayout'
-import {useToolMenuComponent} from '../../studio-components-hooks'
+import {isDev} from '../../../environment'
 import {useTranslation} from '../../../i18n'
-import {UserMenu} from './userMenu'
-import {NewDocumentButton, useNewDocumentOptions} from './new-document'
-import {PresenceMenu} from './presence'
-import {NavDrawer} from './navDrawer'
-import {WorkspaceMenuButton} from './workspace'
+import {useToolMenuComponent} from '../../studio-components-hooks'
+import {NavbarContext} from '../../StudioLayout'
+import {useWorkspace} from '../../workspace'
 import {ConfigIssuesButton} from './configIssues/ConfigIssuesButton'
-import {SearchButton, SearchDialog} from './search'
-import {SearchProvider} from './search/contexts/search/SearchProvider'
-import {ResourcesButton} from './resources/ResourcesButton'
 import {FreeTrial} from './free-trial'
 import {FreeTrialProvider} from './free-trial/FreeTrialProvider'
 import {HomeButton} from './home/HomeButton'
+import {NavDrawer} from './navDrawer'
+import {NewDocumentButton, useNewDocumentOptions} from './new-document'
+import {PresenceMenu} from './presence'
+import {ResourcesButton} from './resources/ResourcesButton'
+import {SearchButton, SearchDialog} from './search'
 import {SearchPopover} from './search/components/SearchPopover'
-import {RouterState, useRouterState} from 'sanity/router'
+import {SearchProvider} from './search/contexts/search/SearchProvider'
+import {UserMenu} from './userMenu'
+import {WorkspaceMenuButton} from './workspace'
 
 const RootLayer = styled(Layer)`
   min-height: auto;

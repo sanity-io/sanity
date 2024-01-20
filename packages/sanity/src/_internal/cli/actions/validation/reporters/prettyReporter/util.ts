@@ -1,6 +1,6 @@
-import {isatty} from 'tty'
+import {type ValidationMarker} from '@sanity/types'
 import logSymbols from 'log-symbols'
-import type {ValidationMarker} from '@sanity/types'
+import {isatty} from 'tty'
 
 export type Level = ValidationMarker['level']
 

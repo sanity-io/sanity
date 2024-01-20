@@ -1,5 +1,6 @@
 import {padEnd} from 'lodash'
-import {CliCommandDefinition, CliCommandGroupDefinition} from '../types'
+
+import {type CliCommandDefinition, type CliCommandGroupDefinition} from '../types'
 import {getNoSuchCommandText} from './noSuchCommandText'
 
 /**

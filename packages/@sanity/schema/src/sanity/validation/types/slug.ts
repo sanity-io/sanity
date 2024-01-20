@@ -1,4 +1,4 @@
-import {warning, HELP_IDS} from '../createValidationResult'
+import {HELP_IDS, warning} from '../createValidationResult'
 
 export default (typeDef, visitorContext) => {
   const problems = []

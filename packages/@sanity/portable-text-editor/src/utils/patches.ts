@@ -1,5 +1,6 @@
 import {isEqual} from 'lodash'
-import type {Patch} from '../types/patch'
+
+import {type Patch} from '../types/patch'
 
 /**
  * Try to compact a set of patches

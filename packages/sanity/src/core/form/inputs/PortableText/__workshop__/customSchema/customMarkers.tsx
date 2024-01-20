@@ -1,6 +1,7 @@
-import {Box, Flex, Text} from '@sanity/ui'
 import {CommentIcon} from '@sanity/icons'
-import {PortableTextMarker} from '../../../../types'
+import {Box, Flex, Text} from '@sanity/ui'
+
+import {type PortableTextMarker} from '../../../../types'
 
 export function renderCustomMarkers(markers: PortableTextMarker[]) {
   return markers.map((marker) => {

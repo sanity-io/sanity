@@ -1,6 +1,7 @@
 import {useContext} from 'react'
+
 import {StructureToolContext} from './StructureToolContext'
-import type {StructureToolContextValue} from './types'
+import {type StructureToolContextValue} from './types'
 
 /** @internal */
 export function useStructureTool(): StructureToolContextValue {

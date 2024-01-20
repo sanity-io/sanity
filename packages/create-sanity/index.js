@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-const path = require('path')
 const childProcess = require('child_process')
+const path = require('path')
 const resolvePkg = require('resolve-pkg')
 
 const args = process.argv.slice(2)

@@ -1,13 +1,12 @@
 import {find} from 'lodash'
 import semver from 'semver'
-import chalk from 'chalk'
-import type {
-  CliCommandDefinition,
-  CliCommandGroupDefinition,
-  SanityCore,
-  SanityModuleInternal,
+
+import {
+  type CliCommandDefinition,
+  type CliCommandGroupDefinition,
+  type SanityCore,
+  type SanityModuleInternal,
 } from '../types'
-import {getCliUpgradeCommand} from '../packageManager'
 import {dynamicRequire} from './dynamicRequire'
 import {isCommandGroup} from './isCommandGroup'
 

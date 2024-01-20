@@ -1,5 +1,5 @@
 import customSchema from '../../../fixtures/customSchema'
-import type {BlockTestFn} from '../types'
+import {type BlockTestFn} from '../types'
 
 const blockContentType = customSchema
   .get('blogPost')

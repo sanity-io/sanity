@@ -1,4 +1,4 @@
-import type {ValidationMarker} from './types'
+import {type ValidationMarker} from './types'
 
 /** @internal */
 export function isValidationErrorMarker(

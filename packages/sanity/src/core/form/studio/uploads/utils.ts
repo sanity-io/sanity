@@ -1,6 +1,6 @@
-import {FormPatch, set, unset} from '../../patch'
-import {UploadProgressEvent} from './types'
+import {type FormPatch, set, unset} from '../../patch'
 import {UPLOAD_STATUS_KEY} from './constants'
+import {type UploadProgressEvent} from './types'
 
 const UNSET_UPLOAD_PATCH = unset([UPLOAD_STATUS_KEY])
 

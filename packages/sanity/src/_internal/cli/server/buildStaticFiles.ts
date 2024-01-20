@@ -1,13 +1,14 @@
-import path from 'path'
-import fs from 'fs/promises'
+import {type UserViteConfig} from '@sanity/cli'
 import {constants as fsConstants} from 'fs'
-import {build} from 'vite'
+import fs from 'fs/promises'
+import path from 'path'
 import readPkgUp from 'read-pkg-up'
-import type {UserViteConfig} from '@sanity/cli'
-import {extendViteConfigWithUserConfig, finalizeViteConfig, getViteConfig} from './getViteConfig'
-import {generateWebManifest} from './webManifest'
-import {writeSanityRuntime} from './runtime'
+import {build} from 'vite'
+
 import {debug as serverDebug} from './debug'
+import {extendViteConfigWithUserConfig, finalizeViteConfig, getViteConfig} from './getViteConfig'
+import {writeSanityRuntime} from './runtime'
+import {generateWebManifest} from './webManifest'
 
 const debug = serverDebug.extend('static')
 

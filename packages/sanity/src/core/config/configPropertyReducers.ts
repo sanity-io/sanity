@@ -1,24 +1,29 @@
-import type {AssetSource, SchemaTypeDefinition} from '@sanity/types'
+import {type AssetSource, type SchemaTypeDefinition} from '@sanity/types'
+
+import {type LocaleConfigContext, type LocaleDefinition, type LocaleResourceBundle} from '../i18n'
+import {type Template, type TemplateItem} from '../templates'
 import {getPrintableType} from '../util/getPrintableType'
-import type {Template, TemplateItem} from '../templates'
-import type {LocaleConfigContext, LocaleDefinition, LocaleResourceBundle} from '../i18n'
-import type {DocumentActionComponent, DocumentBadgeComponent, DocumentInspector} from './document'
-import type {
-  AsyncConfigPropertyReducer,
-  ConfigContext,
-  ConfigPropertyReducer,
-  DocumentActionsContext,
-  DocumentBadgesContext,
-  DocumentInspectorContext,
-  DocumentLanguageFilterComponent,
-  DocumentLanguageFilterContext,
-  NewDocumentOptionsContext,
-  ResolveProductionUrlContext,
-  Tool,
-  DocumentCommentsEnabledContext,
-  PluginOptions,
-} from './types'
+import {
+  type DocumentActionComponent,
+  type DocumentBadgeComponent,
+  type DocumentInspector,
+} from './document'
 import {flattenConfig} from './flattenConfig'
+import {
+  type AsyncConfigPropertyReducer,
+  type ConfigContext,
+  type ConfigPropertyReducer,
+  type DocumentActionsContext,
+  type DocumentBadgesContext,
+  type DocumentCommentsEnabledContext,
+  type DocumentInspectorContext,
+  type DocumentLanguageFilterComponent,
+  type DocumentLanguageFilterContext,
+  type NewDocumentOptionsContext,
+  type PluginOptions,
+  type ResolveProductionUrlContext,
+  type Tool,
+} from './types'
 
 export const initialDocumentBadges: DocumentBadgeComponent[] = []
 

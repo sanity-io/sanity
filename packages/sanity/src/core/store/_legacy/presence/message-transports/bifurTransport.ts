@@ -1,8 +1,9 @@
-import {Observable, EMPTY} from 'rxjs'
+import {type BifurClient} from '@sanity/bifur-client'
+import {EMPTY, type Observable} from 'rxjs'
 import {map, share} from 'rxjs/operators'
-import {BifurClient} from '@sanity/bifur-client'
-import {PresenceLocation} from '../types'
-import {Transport, TransportEvent, TransportMessage} from './transport'
+
+import {type PresenceLocation} from '../types'
+import {type Transport, type TransportEvent, type TransportMessage} from './transport'
 
 type BifurStateMessage = {
   type: 'state'

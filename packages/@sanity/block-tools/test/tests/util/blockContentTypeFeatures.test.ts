@@ -1,4 +1,5 @@
-import type {ObjectSchemaType} from '@sanity/types'
+import {type ObjectSchemaType} from '@sanity/types'
+
 import blockContentTypeFeatures from '../../../src/util/blockContentTypeFeatures'
 import customSchema from '../../fixtures/customSchema'
 import defaultSchema from '../../fixtures/defaultSchema'

@@ -1,6 +1,7 @@
 import {isKeyedObject} from '@sanity/types'
 import * as PathUtils from '@sanity/util/paths'
-import {TrackedChange, TrackedArea} from '../tracker'
+
+import {type TrackedArea, type TrackedChange} from '../tracker'
 
 export function findMostSpecificTarget(
   targetType: 'change' | 'field',

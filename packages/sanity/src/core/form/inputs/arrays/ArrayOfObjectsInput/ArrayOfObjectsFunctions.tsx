@@ -1,10 +1,17 @@
-import {ArraySchemaType, isReferenceSchemaType} from '@sanity/types'
 import {AddIcon} from '@sanity/icons'
-import {useId, useCallback} from 'react'
+import {type ArraySchemaType, isReferenceSchemaType} from '@sanity/types'
 import {Grid, Menu} from '@sanity/ui'
-import {ArrayInputFunctionsProps, ObjectItem} from '../../../types'
-import {Button, MenuButton, MenuButtonProps, MenuItem, Tooltip} from '../../../../../ui-components'
+import React, {useCallback, useId} from 'react'
+
+import {
+  Button,
+  MenuButton,
+  type MenuButtonProps,
+  MenuItem,
+  Tooltip,
+} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
+import {type ArrayInputFunctionsProps, type ObjectItem} from '../../../types'
 
 const POPOVER_PROPS: MenuButtonProps['popover'] = {
   constrainSize: true,

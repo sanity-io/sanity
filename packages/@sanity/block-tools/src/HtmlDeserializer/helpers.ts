@@ -1,18 +1,23 @@
-import {ArraySchemaType, PortableTextTextBlock, isPortableTextTextBlock} from '@sanity/types'
+import {
+  type ArraySchemaType,
+  isPortableTextTextBlock,
+  type PortableTextTextBlock,
+} from '@sanity/types'
 import {isEqual} from 'lodash'
+
 import {DEFAULT_BLOCK} from '../constants'
-import {resolveJsType} from '../util/resolveJsType'
-import type {
-  BlockEnabledFeatures,
-  HtmlParser,
-  HtmlPreprocessorOptions,
-  MinimalBlock,
-  MinimalSpan,
-  PlaceholderAnnotation,
-  PlaceholderDecorator,
-  TypedObject,
+import {
+  type BlockEnabledFeatures,
+  type HtmlParser,
+  type HtmlPreprocessorOptions,
+  type MinimalBlock,
+  type MinimalSpan,
+  type PlaceholderAnnotation,
+  type PlaceholderDecorator,
+  type TypedObject,
 } from '../types'
 import blockContentTypeFeatures from '../util/blockContentTypeFeatures'
+import {resolveJsType} from '../util/resolveJsType'
 import preprocessors from './preprocessors'
 
 /**

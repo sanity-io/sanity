@@ -1,27 +1,28 @@
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {Flex, Stack, useLayer} from '@sanity/ui'
-import styled, {css} from 'styled-components'
-import {CurrentUser} from '@sanity/types'
 import {ChevronDownIcon} from '@sanity/icons'
-import {CommentInput, CommentInputHandle} from '../pte'
-import {
-  CommentCreatePayload,
-  CommentDocument,
-  CommentEditPayload,
-  CommentMessage,
-  CommentReactionOption,
-  CommentStatus,
-  CommentsUIMode,
-  MentionOptionsHookValue,
-} from '../../types'
-import {SpacerAvatar} from '../avatars'
-import {hasCommentMessageValue} from '../../helpers'
-import {CommentsSelectedPath} from '../../context'
+import {type CurrentUser} from '@sanity/types'
+import {Flex, Stack, useLayer} from '@sanity/ui'
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {useTranslation} from 'sanity'
+import styled, {css} from 'styled-components'
+
 import {Button} from '../../../../../ui-components'
 import {commentsLocaleNamespace} from '../../../i18n'
+import {type CommentsSelectedPath} from '../../context'
+import {hasCommentMessageValue} from '../../helpers'
+import {
+  type CommentCreatePayload,
+  type CommentDocument,
+  type CommentEditPayload,
+  type CommentMessage,
+  type CommentReactionOption,
+  type CommentStatus,
+  type CommentsUIMode,
+  type MentionOptionsHookValue,
+} from '../../types'
+import {SpacerAvatar} from '../avatars'
+import {CommentInput, type CommentInputHandle} from '../pte'
 import {CommentsListItemLayout} from './CommentsListItemLayout'
 import {ThreadCard} from './styles'
-import {useTranslation} from 'sanity'
 
 const EMPTY_ARRAY: [] = []
 

@@ -1,4 +1,5 @@
 import {Container, Stack, Text} from '@sanity/ui'
+
 import {useTranslation} from '../../../../../i18n'
 
 export function NoResults() {

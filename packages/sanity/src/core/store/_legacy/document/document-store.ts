@@ -1,26 +1,31 @@
-import {SanityClient} from '@sanity/client'
-import {InitialValueResolverContext, Schema} from '@sanity/types'
-import {Observable} from 'rxjs'
+import {type SanityClient} from '@sanity/client'
+import {type InitialValueResolverContext, type Schema} from '@sanity/types'
+import {type Observable} from 'rxjs'
 import {filter, map} from 'rxjs/operators'
-import {HistoryStore} from '../history'
-import {DocumentPreviewStore} from '../../../preview'
-import {getDraftId, isDraftId} from '../../../util'
-import {Template} from '../../../templates'
-import {SourceClientOptions} from '../../../config'
+
+import {type SourceClientOptions} from '../../../config'
+import {type LocaleSource} from '../../../i18n'
+import {type DocumentPreviewStore} from '../../../preview'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
-import {checkoutPair, DocumentVersionEvent, Pair} from './document-pair/checkoutPair'
+import {type Template} from '../../../templates'
+import {getDraftId, isDraftId} from '../../../util'
+import {type HistoryStore} from '../history'
+import {checkoutPair, type DocumentVersionEvent, type Pair} from './document-pair/checkoutPair'
 import {consistencyStatus} from './document-pair/consistencyStatus'
 import {documentEvents} from './document-pair/documentEvents'
 import {editOperations} from './document-pair/editOperations'
-import {editState, EditStateFor} from './document-pair/editState'
-import {operationEvents, OperationError, OperationSuccess} from './document-pair/operationEvents'
-import {OperationsAPI} from './document-pair/operations'
-import {validation, ValidationStatus} from './document-pair/validation'
-import {listenQuery, ListenQueryOptions} from './listenQuery'
+import {editState, type EditStateFor} from './document-pair/editState'
+import {
+  type OperationError,
+  operationEvents,
+  type OperationSuccess,
+} from './document-pair/operationEvents'
+import {type OperationsAPI} from './document-pair/operations'
+import {validation, type ValidationStatus} from './document-pair/validation'
+import {getInitialValueStream, type InitialValueMsg, type InitialValueOptions} from './initialValue'
+import {listenQuery, type ListenQueryOptions} from './listenQuery'
 import {resolveTypeForDocument} from './resolveTypeForDocument'
-import type {IdPair} from './types'
-import {getInitialValueStream, InitialValueMsg, InitialValueOptions} from './initialValue'
-import {LocaleSource} from '../../../i18n'
+import {type IdPair} from './types'
 
 /**
  * @hidden

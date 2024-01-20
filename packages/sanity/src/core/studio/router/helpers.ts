@@ -1,8 +1,9 @@
+import {type Router, type RouterState} from 'sanity/router'
+
+import {type Tool} from '../../config'
 import {isRecord} from '../../util/isRecord'
-import type {Tool} from '../../config'
-import type {RouterEvent, RouterStateEvent} from './types'
+import {type RouterEvent, type RouterStateEvent} from './types'
 import {getOrderedTools} from './util/getOrderedTools'
-import type {RouterState, Router} from 'sanity/router'
 
 const WEIGHTED_CREATE_INTENT_PARAMS = ['template']
 const WEIGHTED_EDIT_INTENT_PARAMS = ['mode']

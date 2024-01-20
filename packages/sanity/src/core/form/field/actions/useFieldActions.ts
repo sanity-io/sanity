@@ -1,5 +1,6 @@
 import {useContext} from 'react'
-import {FieldActionsContext, FieldActionsContextValue} from './FieldActionsContext'
+
+import {FieldActionsContext, type FieldActionsContextValue} from './FieldActionsContext'
 
 /** @internal */
 export function useFieldActions(): FieldActionsContextValue {

@@ -1,11 +1,7 @@
 import {Card, Container, Flex, LayerProvider} from '@sanity/ui'
 import {useBoolean, useSelect} from '@sanity/ui-workshop'
-import {TestInput} from '../_common/TestInput'
-import {FIXME} from '../../../../../FIXME'
-import {schema, portableTextType} from './schema'
-import {values, valueOptions} from './values'
-import {renderCustomMarkers} from './customMarkers'
-import {renderBlockActions} from './blockActions'
+
+import {valueOptions, values} from './values'
 
 export default function Story() {
   const readOnly = useBoolean('Read only', false)

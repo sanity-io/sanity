@@ -1,10 +1,10 @@
+import {type SanityClient} from '@sanity/client'
 import {useCallback, useEffect, useMemo, useState} from 'react'
-import * as React from 'react'
-import {SanityClient} from '@sanity/client'
-import {CommentPostPayload} from '../../types'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS, useClient, useWorkspace} from 'sanity'
+
+import {type CommentPostPayload} from '../../types'
 import {CommentsSetupContext} from './CommentsSetupContext'
-import {CommentsSetupContextValue} from './types'
-import {useWorkspace, useClient, DEFAULT_STUDIO_CLIENT_OPTIONS} from 'sanity'
+import {type CommentsSetupContextValue} from './types'
 
 const API_VERSION = 'v2023-11-13'
 

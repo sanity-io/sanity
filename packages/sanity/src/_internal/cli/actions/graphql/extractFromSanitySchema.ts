@@ -1,28 +1,29 @@
-import {uniqBy, startCase} from 'lodash'
-import {
-  type SchemaType,
-  type Schema as CompiledSchema,
-  type ReferenceSchemaType,
-  type ObjectFieldType,
-  type ObjectField,
-  type ObjectSchemaType,
-  type ArraySchemaType,
-  type IntrinsicTypeName,
-  type CrossDatasetReferenceSchemaType,
-  isDeprecationConfiguration,
-} from '@sanity/types'
 import {generateHelpUrl} from '@sanity/generate-help-url'
 import {Schema} from '@sanity/schema'
+import {
+  type ArraySchemaType,
+  type CrossDatasetReferenceSchemaType,
+  type IntrinsicTypeName,
+  isDeprecationConfiguration,
+  type ObjectField,
+  type ObjectFieldType,
+  type ObjectSchemaType,
+  type ReferenceSchemaType,
+  type Schema as CompiledSchema,
+  type SchemaType,
+} from '@sanity/types'
+import {startCase, uniqBy} from 'lodash'
 import oneline from 'oneline'
+
 import * as helpUrls from './helpUrls'
 import {SchemaError} from './SchemaError'
-import type {
-  ApiSpecification,
-  ConvertedFieldDefinition,
-  ConvertedInterface,
-  ConvertedType,
-  ConvertedUnion,
-  Deprecation,
+import {
+  type ApiSpecification,
+  type ConvertedFieldDefinition,
+  type ConvertedInterface,
+  type ConvertedType,
+  type ConvertedUnion,
+  type Deprecation,
 } from './types'
 
 const skipTypes = ['document', 'reference']

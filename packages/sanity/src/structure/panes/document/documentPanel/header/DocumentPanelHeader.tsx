@@ -1,7 +1,10 @@
 import {ArrowLeftIcon, CloseIcon, SplitVerticalIcon} from '@sanity/icons'
 import {Flex} from '@sanity/ui'
-import {createElement, memo, forwardRef, useMemo} from 'react'
-import * as React from 'react'
+import type * as React from 'react'
+import {createElement, forwardRef, memo, useMemo} from 'react'
+import {useFieldActions, useTimelineSelector, useTranslation} from 'sanity'
+
+import {Button, TooltipDelayGroupProvider} from '../../../../../ui-components'
 import {
   PaneContextMenuButton,
   PaneHeader,
@@ -9,16 +12,14 @@ import {
   usePane,
   usePaneRouter,
 } from '../../../../components'
+import {structureLocaleNamespace} from '../../../../i18n'
+import {isMenuNodeButton, isNotMenuNodeButton, resolveMenuNodes} from '../../../../menuNodes'
+import {type PaneMenuItem} from '../../../../types'
+import {useStructureTool} from '../../../../useStructureTool'
 import {TimelineMenu} from '../../timeline'
 import {useDocumentPane} from '../../useDocumentPane'
-import {isMenuNodeButton, isNotMenuNodeButton, resolveMenuNodes} from '../../../../menuNodes'
-import {useStructureTool} from '../../../../useStructureTool'
-import {PaneMenuItem} from '../../../../types'
-import {Button, TooltipDelayGroupProvider} from '../../../../../ui-components'
-import {structureLocaleNamespace} from '../../../../i18n'
 import {DocumentHeaderTabs} from './DocumentHeaderTabs'
 import {DocumentHeaderTitle} from './DocumentHeaderTitle'
-import {useFieldActions, useTimelineSelector, useTranslation} from 'sanity'
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface DocumentPanelHeaderProps {

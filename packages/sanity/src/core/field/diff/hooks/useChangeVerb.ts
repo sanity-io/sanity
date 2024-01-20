@@ -1,5 +1,5 @@
 import {useTranslation} from '../../../i18n'
-import type {Diff} from '../../types'
+import {type Diff} from '../../types'
 
 /** @internal */
 export function useChangeVerb(diff: Diff): string {

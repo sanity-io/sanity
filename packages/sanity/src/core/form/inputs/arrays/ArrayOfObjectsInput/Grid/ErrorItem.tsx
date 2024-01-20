@@ -1,13 +1,14 @@
-import {useCallback, useId} from 'react'
 import {TrashIcon} from '@sanity/icons'
 import {Menu} from '@sanity/ui'
-import {ContextMenuButton} from '../../../../../components/contextMenuButton'
-import {ArrayItemError} from '../../../../store'
-import {useFormCallbacks} from '../../../../studio/contexts/FormCallbacks'
-import {PatchEvent, unset} from '../../../../patch'
-import {CellLayout} from '../../layouts/CellLayout'
+import React, {useCallback, useId} from 'react'
+
 import {MenuButton, MenuItem} from '../../../../../../ui-components'
+import {ContextMenuButton} from '../../../../../components/contextMenuButton'
 import {useTranslation} from '../../../../../i18n'
+import {PatchEvent, unset} from '../../../../patch'
+import {type ArrayItemError} from '../../../../store'
+import {useFormCallbacks} from '../../../../studio/contexts/FormCallbacks'
+import {CellLayout} from '../../layouts/CellLayout'
 import {IncompatibleItemType} from './IncompatibleItemType'
 
 const MENU_POPOVER_PROPS = {portal: true, tone: 'default'} as const

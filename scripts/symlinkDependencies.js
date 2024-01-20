@@ -10,8 +10,8 @@
 
 const fs = require('fs')
 const path = require('path')
-const rimraf = require('rimraf')
 const minimist = require('minimist')
+const rimraf = require('rimraf')
 
 const argv = minimist(process.argv.slice(2), {boolean: ['all']})
 

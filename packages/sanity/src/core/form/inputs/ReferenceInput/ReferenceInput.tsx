@@ -1,31 +1,31 @@
-import type {KeyboardEvent, FocusEvent} from 'react'
-import {useCallback, useRef, useState, useMemo} from 'react'
-import {concat, Observable, of} from 'rxjs'
-import {catchError, filter, map, scan, switchMap, tap} from 'rxjs/operators'
 import {Stack, Text, useToast} from '@sanity/ui'
-import {useObservableCallback} from 'react-rx'
 import {uuid} from '@sanity/uuid'
+import {type FocusEvent, type KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
+import {useObservableCallback} from 'react-rx'
+import {concat, type Observable, of} from 'rxjs'
+import {catchError, filter, map, scan, switchMap, tap} from 'rxjs/operators'
 import styled from 'styled-components'
-import {set, setIfMissing, unset} from '../../patch'
-import {Alert} from '../../components/Alert'
+
+import {Button} from '../../../../ui-components'
 import {PreviewCard} from '../../../components'
+import {Translate, useTranslation} from '../../../i18n'
 import {getPublishedId, isNonNullable} from '../../../util'
+import {Alert} from '../../components/Alert'
 import {useDidUpdate} from '../../hooks/useDidUpdate'
 import {useOnClickOutside} from '../../hooks/useOnClickOutside'
-import {Button} from '../../../../ui-components'
-import {Translate, useTranslation} from '../../../i18n'
-import {useReferenceInput} from './useReferenceInput'
-import type {
-  CreateReferenceOption,
-  ReferenceInputProps,
-  ReferenceSearchHit,
-  ReferenceSearchState,
-} from './types'
-import {OptionPreview} from './OptionPreview'
-import {useReferenceInfo} from './useReferenceInfo'
-import {CreateButton} from './CreateButton'
-import {ReferenceAutocomplete} from './ReferenceAutocomplete'
+import {set, setIfMissing, unset} from '../../patch'
 import {AutocompleteContainer} from './AutocompleteContainer'
+import {CreateButton} from './CreateButton'
+import {OptionPreview} from './OptionPreview'
+import {ReferenceAutocomplete} from './ReferenceAutocomplete'
+import {
+  type CreateReferenceOption,
+  type ReferenceInputProps,
+  type ReferenceSearchHit,
+  type ReferenceSearchState,
+} from './types'
+import {useReferenceInfo} from './useReferenceInfo'
+import {useReferenceInput} from './useReferenceInput'
 import {useReferenceItemRef} from './useReferenceItemRef'
 
 const StyledPreviewCard = styled(PreviewCard)`

@@ -1,2 +1,2 @@
-export * from './types'
 export * from './asserters'
+export * from './types'

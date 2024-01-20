@@ -1,4 +1,6 @@
-import {RenderChildFunction, BlockChildRenderProps} from '@sanity/portable-text-editor'
+import {type BlockChildRenderProps, type RenderChildFunction} from '@sanity/portable-text-editor'
+import React from 'react'
+
 import {MentionInlineBlock} from '../blocks'
 
 export const renderChild: RenderChildFunction = (childProps: BlockChildRenderProps) => {

@@ -1,5 +1,6 @@
-import {ReactNode, useMemo} from 'react'
-import {Config, prepareConfig} from '../../config'
+import {type ReactNode, useMemo} from 'react'
+
+import {type Config, prepareConfig} from '../../config'
 import {WorkspacesContext} from './WorkspacesContext'
 
 /** @internal */

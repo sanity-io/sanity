@@ -1,12 +1,13 @@
 /* eslint-disable i18next/no-literal-string */
 /* eslint-disable @sanity/i18n/no-attribute-string-literals */
-import {ReactNode, useCallback, useState} from 'react'
 import {Card, Code, Container, ErrorBoundary, Heading, Stack} from '@sanity/ui'
+import React, {type ReactNode, useCallback, useState} from 'react'
 import {useHotModuleReload} from 'use-hot-module-reload'
+
 import {Button} from '../../ui-components'
 import {SchemaError} from '../config'
-import {isRecord} from '../util'
 import {CorsOriginError} from '../store'
+import {isRecord} from '../util'
 import {CorsOriginErrorScreen, SchemaErrorsScreen} from './screens'
 
 interface StudioErrorBoundaryProps {

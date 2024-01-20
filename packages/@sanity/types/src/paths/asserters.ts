@@ -1,4 +1,4 @@
-import type {PathSegment, KeyedSegment, IndexTuple} from './types'
+import {type IndexTuple, type KeyedSegment, type PathSegment} from './types'
 
 const reKeySegment = /_key\s*==\s*['"](.*)['"]/
 const reIndexTuple = /^\d*:\d*$/

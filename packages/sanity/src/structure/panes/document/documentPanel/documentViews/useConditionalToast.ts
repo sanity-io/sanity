@@ -1,5 +1,5 @@
+import {type ToastParams, useToast} from '@sanity/ui'
 import {useEffect, useRef} from 'react'
-import {ToastParams, useToast} from '@sanity/ui'
 
 function usePrevious<T>(value: T) {
   const ref = useRef<T>()

@@ -1,8 +1,9 @@
-import {SanityClient} from '@sanity/client'
-import {Observable, combineLatest} from 'rxjs'
+import {type SanityClient} from '@sanity/client'
+import {combineLatest, type Observable} from 'rxjs'
 import {distinctUntilChanged, map, publishReplay, refCount, switchMap} from 'rxjs/operators'
+
+import {type IdPair} from '../types'
 import {memoize} from '../utils/createMemoizer'
-import {IdPair} from '../types'
 import {memoizedPair} from './memoizedPair'
 
 // A stream of all events related to either published or draft, each event comes with a 'target'

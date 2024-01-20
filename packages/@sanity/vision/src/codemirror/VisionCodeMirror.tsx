@@ -1,5 +1,7 @@
 import {useTheme} from '@sanity/ui'
-import CodeMirror, {ReactCodeMirrorProps} from '@uiw/react-codemirror'
+import CodeMirror, {type ReactCodeMirrorProps} from '@uiw/react-codemirror'
+import React from 'react'
+
 import {codemirrorExtensions} from './extensions'
 import {useCodemirrorTheme} from './useCodemirrorTheme'
 import {EditorRoot} from './VisionCodeMirror.styled'

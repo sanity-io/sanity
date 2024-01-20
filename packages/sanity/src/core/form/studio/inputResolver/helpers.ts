@@ -1,4 +1,4 @@
-import {isArraySchemaType, SchemaType} from '@sanity/types'
+import {isArraySchemaType, type SchemaType} from '@sanity/types'
 import {get} from 'lodash'
 
 export function getOption(type: SchemaType, optionName: string) {

@@ -1,4 +1,4 @@
-import imageUrlBuilder from '@sanity/image-url'
+import type imageUrlBuilder from '@sanity/image-url'
 
 /**
  * @hidden

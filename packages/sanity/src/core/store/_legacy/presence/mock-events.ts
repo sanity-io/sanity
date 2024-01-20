@@ -1,7 +1,8 @@
+import {sample} from 'lodash'
 import {defer, timer} from 'rxjs'
 import {map, mergeMapTo, shareReplay} from 'rxjs/operators'
-import {sample} from 'lodash'
-import {StateEvent} from './message-transports/transport'
+
+import {type StateEvent} from './message-transports/transport'
 
 const USERIDS = [
   'pqSMwf6hH',

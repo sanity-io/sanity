@@ -1,4 +1,5 @@
 import styled, {css} from 'styled-components'
+
 import {ChangeIndicator} from '../../../../changeIndicators'
 
 export const StyledChangeIndicatorWithProvidedFullPath = styled(ChangeIndicator)(() => {

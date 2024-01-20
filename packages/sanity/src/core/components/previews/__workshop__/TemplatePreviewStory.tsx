@@ -1,8 +1,9 @@
 import {DocumentIcon} from '@sanity/icons'
 import {Card, Container, Flex, Text} from '@sanity/ui'
 import {useBoolean, useSelect, useString, useText} from '@sanity/ui-workshop'
-import {ComponentType, ReactNode, createElement} from 'react'
-import {TemplatePreview, TemplatePreviewProps} from '../template/TemplatePreview'
+import {type ComponentType, createElement, type ReactNode} from 'react'
+
+import {TemplatePreview, type TemplatePreviewProps} from '../template/TemplatePreview'
 
 type LayoutKey = 'createDocument'
 

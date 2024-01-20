@@ -1,5 +1,5 @@
-import {PaneRouterContextValue} from '../../components'
-import {PaneMenuItemGroup} from '../../types'
+import {type PaneRouterContextValue} from '../../components'
+import {type PaneMenuItemGroup} from '../../types'
 
 export const DOCUMENT_PANEL_MIN_WIDTH = 320
 export const DOCUMENT_PANEL_INITIAL_MIN_WIDTH = 600

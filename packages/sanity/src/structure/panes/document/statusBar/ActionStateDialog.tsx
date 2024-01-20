@@ -1,12 +1,13 @@
-import {usePortal, PortalProvider, Text} from '@sanity/ui'
+import {PortalProvider, Text, usePortal} from '@sanity/ui'
+import type * as React from 'react'
 import {useId} from 'react'
-import * as React from 'react'
+import {type DocumentActionDialogProps} from 'sanity'
+
 import {Dialog} from '../../../../ui-components'
 import {DOCUMENT_PANEL_PORTAL_ELEMENT} from '../../../constants'
 import {ConfirmDialog} from './dialogs/ConfirmDialog'
 import {ModalDialog} from './dialogs/ModalDialog'
 import {PopoverDialog} from './dialogs/PopoverDialog'
-import {DocumentActionDialogProps} from 'sanity'
 
 export interface ActionStateDialogProps {
   dialog: DocumentActionDialogProps

@@ -1,7 +1,7 @@
-import {parseJsonPath} from '../src/jsonpath/parse'
 import {Expression} from '../src/jsonpath/Expression'
+import {parseJsonPath} from '../src/jsonpath/parse'
 import {PlainProbe} from '../src/jsonpath/PlainProbe'
-import {PathExpr, UnionExpr} from '../src/jsonpath/types'
+import {type PathExpr, type UnionExpr} from '../src/jsonpath/types'
 
 function parseAsPath(path: string): PathExpr | UnionExpr {
   const parsed = parseJsonPath(path)

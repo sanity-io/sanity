@@ -1,8 +1,9 @@
 /* eslint-disable camelcase */
 
 import {Layer} from '@sanity/ui'
-import styled, {css} from 'styled-components'
 import {getTheme_v2} from '@sanity/ui/theme'
+import styled, {css} from 'styled-components'
+
 import {focusRingBorderStyle, focusRingStyle} from '../../components/withFocusRing/helpers'
 
 export const Root = styled.div((props) => {

@@ -1,18 +1,19 @@
 import {
+  type ClientConfig as SanityClientConfig,
   createClient as createSanityClient,
-  ClientConfig as SanityClientConfig,
   type SanityClient,
 } from '@sanity/client'
+import {isEqual, memoize} from 'lodash'
 import {defer} from 'rxjs'
 import {distinctUntilChanged, map, shareReplay, startWith, switchMap} from 'rxjs/operators'
-import {isEqual, memoize} from 'lodash'
-import type {AuthConfig} from '../../../config'
+
+import {type AuthConfig} from '../../../config'
 import {CorsOriginError} from '../cors'
-import {AuthState, AuthStore} from './types'
 import {createBroadcastChannel} from './createBroadcastChannel'
+import {createLoginComponent} from './createLoginComponent'
 import {getSessionId} from './sessionId'
 import * as storage from './storage'
-import {createLoginComponent} from './createLoginComponent'
+import {type AuthState, type AuthStore} from './types'
 import {isCookielessCompatibleLoginMethod} from './utils/asserters'
 
 /** @internal */

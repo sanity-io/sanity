@@ -1,6 +1,11 @@
 import {PANE_COLLAPSED_WIDTH, PANE_DEFAULT_MIN_WIDTH} from './constants'
 import {_calcPaneResize, _sortElements} from './helpers'
-import {PaneConfigOpts, PaneData, PaneResizeCache, PaneResizeData} from './types'
+import {
+  type PaneConfigOpts,
+  type PaneData,
+  type PaneResizeCache,
+  type PaneResizeData,
+} from './types'
 
 export interface PaneLayoutState {
   expandedElement: HTMLElement | null

@@ -1,6 +1,7 @@
+import {type CustomValidatorResult, type LocalizedValidationMessages} from '@sanity/types'
 import {isPlainObject} from 'lodash'
-import type {CustomValidatorResult, LocalizedValidationMessages} from '@sanity/types'
-import type {LocaleSource} from '../../i18n'
+
+import {type LocaleSource} from '../../i18n'
 
 /**
  * Extracts the correct localized validation message based on given locale source

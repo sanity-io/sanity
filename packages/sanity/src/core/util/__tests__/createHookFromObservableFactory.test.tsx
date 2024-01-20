@@ -1,6 +1,7 @@
-import {Component, Profiler, PropsWithChildren, memo, useDeferredValue} from 'react'
 import {render, renderHook, waitFor} from '@testing-library/react'
+import React, {Component, memo, Profiler, type PropsWithChildren, useDeferredValue} from 'react'
 import * as Rx from 'rxjs'
+
 import {createHookFromObservableFactory} from '../createHookFromObservableFactory'
 
 const tick = () => new Promise((resolve) => setTimeout(resolve, 0))

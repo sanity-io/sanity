@@ -1,5 +1,9 @@
-import {ConditionalProperty, ConditionalPropertyCallbackContext, CurrentUser} from '@sanity/types'
-import {Children, ReactNode, cloneElement, isValidElement, useMemo} from 'react'
+import {
+  type ConditionalProperty,
+  type ConditionalPropertyCallbackContext,
+  type CurrentUser,
+} from '@sanity/types'
+import {Children, cloneElement, isValidElement, type ReactNode, useMemo} from 'react'
 
 export function isThenable(value: any) {
   return typeof value?.then === 'function'

@@ -1,7 +1,8 @@
 /* eslint-disable react/no-unused-prop-types */
-import {Path} from '@sanity/types'
-import {ReactNode, createContext, memo, useCallback, useContext, useMemo, useRef} from 'react'
-import {FormPatch, PatchEvent} from '../../patch'
+import {type Path} from '@sanity/types'
+import {createContext, memo, type ReactNode, useCallback, useContext, useMemo, useRef} from 'react'
+
+import {type FormPatch, type PatchEvent} from '../../patch'
 
 /** @internal */
 export interface FormCallbacksValue {

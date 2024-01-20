@@ -1,30 +1,31 @@
 import chalk from 'chalk'
-import {sortBy, cloneDeep} from 'lodash'
-import type {
-  CliCommandArguments,
-  CliCommandContext,
-  CliCommandDefinition,
-  CliConfig,
-  CliCommandGroupDefinition,
-  CliOutputter,
-  CliPrompter,
-  CommandRunnerOptions,
-  ResolvedCliCommand,
-  SanityJson,
-} from './types'
-import {prompt as cliPrompter} from './prompters/cliPrompter'
-import cliOutputter from './outputters/cliOutputter'
-import {getClientWrapper} from './util/clientWrapper'
-import {getNoSuchCommandText} from './util/noSuchCommandText'
-import {CliConfigResult} from './util/getCliConfig'
-import {isCommandGroup} from './util/isCommandGroup'
+import {cloneDeep, sortBy} from 'lodash'
+
 import {baseCommands} from './commands'
 import {debug} from './debug'
-import {
-  generateCommandsDocumentation,
-  generateCommandDocumentation,
-} from './util/generateCommandsDocumentation'
+import cliOutputter from './outputters/cliOutputter'
 import {cliPackageManager, getYarnStub} from './packageManager'
+import {prompt as cliPrompter} from './prompters/cliPrompter'
+import {
+  type CliCommandArguments,
+  type CliCommandContext,
+  type CliCommandDefinition,
+  type CliCommandGroupDefinition,
+  type CliConfig,
+  type CliOutputter,
+  type CliPrompter,
+  type CommandRunnerOptions,
+  type ResolvedCliCommand,
+  type SanityJson,
+} from './types'
+import {getClientWrapper} from './util/clientWrapper'
+import {
+  generateCommandDocumentation,
+  generateCommandsDocumentation,
+} from './util/generateCommandsDocumentation'
+import {type CliConfigResult} from './util/getCliConfig'
+import {isCommandGroup} from './util/isCommandGroup'
+import {getNoSuchCommandText} from './util/noSuchCommandText'
 
 interface Handlers {
   outputter: CliOutputter

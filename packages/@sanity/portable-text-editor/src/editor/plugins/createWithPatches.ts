@@ -1,34 +1,34 @@
 /* eslint-disable max-nested-callbacks */
-import {Subject} from 'rxjs'
+import {type Subject} from 'rxjs'
 import {
-  Descendant,
+  type Descendant,
   Editor,
-  InsertNodeOperation,
-  InsertTextOperation,
-  MergeNodeOperation,
-  MoveNodeOperation,
-  Operation,
-  RemoveNodeOperation,
-  RemoveTextOperation,
-  SetNodeOperation,
-  SplitNodeOperation,
+  type InsertNodeOperation,
+  type InsertTextOperation,
+  type MergeNodeOperation,
+  type MoveNodeOperation,
+  type Operation,
+  type RemoveNodeOperation,
+  type RemoveTextOperation,
+  type SetNodeOperation,
+  type SplitNodeOperation,
 } from 'slate'
-import {insert, setIfMissing, unset} from '../../patch/PatchEvent'
-import type {Patch} from '../../types/patch'
 
-import {fromSlateValue, isEqualToEmptyEditor} from '../../utils/values'
+import {insert, setIfMissing, unset} from '../../patch/PatchEvent'
 import {
-  EditorChange,
-  PatchObservable,
-  PortableTextMemberSchemaTypes,
-  PortableTextSlateEditor,
+  type EditorChange,
+  type PatchObservable,
+  type PortableTextMemberSchemaTypes,
+  type PortableTextSlateEditor,
 } from '../../types/editor'
-import {debugWithName} from '../../utils/debug'
-import {PATCHING, isPatching, withoutPatching} from '../../utils/withoutPatching'
-import {KEY_TO_VALUE_ELEMENT, IS_PROCESSING_REMOTE_CHANGES} from '../../utils/weakMaps'
+import {type Patch} from '../../types/patch'
 import {createApplyPatch} from '../../utils/applyPatch'
-import {withPreserveKeys} from '../../utils/withPreserveKeys'
+import {debugWithName} from '../../utils/debug'
+import {fromSlateValue, isEqualToEmptyEditor} from '../../utils/values'
+import {IS_PROCESSING_REMOTE_CHANGES, KEY_TO_VALUE_ELEMENT} from '../../utils/weakMaps'
 import {withRemoteChanges} from '../../utils/withChanges'
+import {isPatching, PATCHING, withoutPatching} from '../../utils/withoutPatching'
+import {withPreserveKeys} from '../../utils/withPreserveKeys'
 import {withoutSaving} from './createWithUndoRedo'
 
 const debug = debugWithName('plugin:withPatches')

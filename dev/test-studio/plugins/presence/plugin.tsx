@@ -1,8 +1,9 @@
+import {JoystickIcon} from '@sanity/icons'
 import {lazy} from 'react'
 import {definePlugin} from 'sanity'
-import {JoystickIcon} from '@sanity/icons'
 import {route} from 'sanity/router'
-import {PresenceToolConfig} from './types'
+
+import {type PresenceToolConfig} from './types'
 
 const Presence3D = lazy(() => import('./Presence3D'))
 

@@ -1,7 +1,8 @@
-import {Observable} from 'rxjs'
-import {createHookFromObservableFactory, PartialExcept} from '../../../util'
+import {type Observable} from 'rxjs'
+
+import {createHookFromObservableFactory, type PartialExcept} from '../../../util'
 import {useGrantsStore} from '../datastores'
-import {DocumentValuePermission, GrantsStore, PermissionCheckResult} from './types'
+import {type DocumentValuePermission, type GrantsStore, type PermissionCheckResult} from './types'
 
 /** @internal */
 export interface DocumentValuePermissionsOptions {

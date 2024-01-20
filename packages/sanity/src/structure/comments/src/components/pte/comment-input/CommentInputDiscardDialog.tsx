@@ -1,9 +1,10 @@
 import {DialogProvider, Text, ThemeColorProvider} from '@sanity/ui'
+import type * as React from 'react'
 import {useCallback} from 'react'
-import * as React from 'react'
+import {useTranslation} from 'sanity'
+
 import {Dialog} from '../../../../../../ui-components'
 import {commentsLocaleNamespace} from '../../../../i18n'
-import {useTranslation} from 'sanity'
 
 const Z_OFFSET = 9999999 // Change to appropriate z-offset
 

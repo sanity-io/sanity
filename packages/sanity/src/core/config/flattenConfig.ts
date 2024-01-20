@@ -1,4 +1,4 @@
-import {PluginOptions} from './types'
+import {type PluginOptions} from './types'
 
 /**
  * @internal

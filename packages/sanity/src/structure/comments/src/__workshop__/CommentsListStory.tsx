@@ -1,19 +1,20 @@
-import {useCallback, useMemo, useState} from 'react'
-import {useBoolean, useSelect} from '@sanity/ui-workshop'
 import {Schema} from '@sanity/schema'
-import {uuid} from '@sanity/uuid'
 import {Container, Flex} from '@sanity/ui'
+import {useBoolean, useSelect} from '@sanity/ui-workshop'
+import {uuid} from '@sanity/uuid'
+import React, {useCallback, useMemo, useState} from 'react'
+import {useCurrentUser} from 'sanity'
+
 import {CommentsList} from '../components'
+import {useMentionOptions} from '../hooks'
 import {
-  CommentDocument,
-  CommentCreatePayload,
-  CommentEditPayload,
-  CommentStatus,
-  CommentReactionOption,
+  type CommentCreatePayload,
+  type CommentDocument,
+  type CommentEditPayload,
+  type CommentReactionOption,
+  type CommentStatus,
 } from '../types'
 import {buildCommentThreadItems} from '../utils/buildCommentThreadItems'
-import {useMentionOptions} from '../hooks'
-import {useCurrentUser} from 'sanity'
 
 const noop = () => {
   // noop

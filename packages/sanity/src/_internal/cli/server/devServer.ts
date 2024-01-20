@@ -1,8 +1,9 @@
+import {type UserViteConfig} from '@sanity/cli'
 import chalk from 'chalk'
 import {createServer} from 'vite'
-import type {UserViteConfig} from '@sanity/cli'
-import {extendViteConfigWithUserConfig, getViteConfig} from './getViteConfig'
+
 import {debug} from './debug'
+import {extendViteConfigWithUserConfig, getViteConfig} from './getViteConfig'
 import {writeSanityRuntime} from './runtime'
 
 export interface DevServerOptions {

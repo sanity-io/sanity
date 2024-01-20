@@ -1,5 +1,3 @@
-import {Box, CardTone, Menu, MenuDivider} from '@sanity/ui'
-import {ComponentProps, ForwardedRef, forwardRef, useCallback, useMemo, useRef} from 'react'
 import {
   CloseIcon,
   CopyIcon as DuplicateIcon,
@@ -7,31 +5,41 @@ import {
   SyncIcon as ReplaceIcon,
   TrashIcon,
 } from '@sanity/icons'
-import type {Reference, ReferenceSchemaType, SchemaType} from '@sanity/types'
-import type {ObjectItem, ObjectItemProps} from '../../types'
-import {useScrollIntoViewOnFocusWithin} from '../../hooks/useScrollIntoViewOnFocusWithin'
-import {useDidUpdate} from '../../hooks/useDidUpdate'
-import {randomKey} from '../../utils/randomKey'
-import {FormFieldSet, FormFieldValidationStatus} from '../../components/formField'
-import {FieldPresence} from '../../../presence'
+import {type Reference, type ReferenceSchemaType, type SchemaType} from '@sanity/types'
+import {Box, type CardTone, Menu, MenuDivider} from '@sanity/ui'
+import React, {
+  type ComponentProps,
+  type ForwardedRef,
+  forwardRef,
+  useCallback,
+  useMemo,
+  useRef,
+} from 'react'
+import {IntentLink} from 'sanity/router'
+
 import {MenuButton, MenuItem} from '../../../../ui-components'
-import {LoadingBlock} from '../../../components/loadingBlock'
-import {ContextMenuButton} from '../../../components/contextMenuButton'
-import {useTranslation} from '../../../i18n'
 import {ChangeIndicator} from '../../../changeIndicators'
-import {RowLayout} from '../arrays/layouts/RowLayout'
+import {ContextMenuButton} from '../../../components/contextMenuButton'
+import {LoadingBlock} from '../../../components/loadingBlock'
+import {useTranslation} from '../../../i18n'
+import {FieldPresence} from '../../../presence'
+import {FormFieldSet, FormFieldValidationStatus} from '../../components/formField'
+import {useDidUpdate} from '../../hooks/useDidUpdate'
+import {useScrollIntoViewOnFocusWithin} from '../../hooks/useScrollIntoViewOnFocusWithin'
 import {set, unset} from '../../patch'
+import {type ObjectItem, type ObjectItemProps} from '../../types'
+import {randomKey} from '../../utils/randomKey'
 import {createProtoArrayValue} from '../arrays/ArrayOfObjectsInput/createProtoArrayValue'
 import {InsertMenu} from '../arrays/ArrayOfObjectsInput/InsertMenu'
-import {useReferenceInfo} from './useReferenceInfo'
+import {RowLayout} from '../arrays/layouts/RowLayout'
 import {PreviewReferenceValue} from './PreviewReferenceValue'
-import {useReferenceInput} from './useReferenceInput'
-import {ReferenceLinkCard} from './ReferenceLinkCard'
-import {ReferenceItemRefProvider} from './ReferenceItemRefProvider'
 import {ReferenceFinalizeAlertStrip} from './ReferenceFinalizeAlertStrip'
-import {ReferenceStrengthMismatchAlertStrip} from './ReferenceStrengthMismatchAlertStrip'
+import {ReferenceItemRefProvider} from './ReferenceItemRefProvider'
+import {ReferenceLinkCard} from './ReferenceLinkCard'
 import {ReferenceMetadataLoadErrorAlertStrip} from './ReferenceMetadataLoadFailure'
-import {IntentLink} from 'sanity/router'
+import {ReferenceStrengthMismatchAlertStrip} from './ReferenceStrengthMismatchAlertStrip'
+import {useReferenceInfo} from './useReferenceInfo'
+import {useReferenceInput} from './useReferenceInput'
 
 export interface ReferenceItemValue extends Omit<ObjectItem, '_type'>, Omit<Reference, '_key'> {}
 

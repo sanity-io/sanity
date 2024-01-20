@@ -1,14 +1,18 @@
-import {SanityDocument} from '@sanity/types'
-import {Observable} from 'rxjs'
-import {ListenerEvent} from '../getPairListener'
-import {CommitRequest, createObservableBufferedDocument} from './createObservableBufferedDocument'
+import {type SanityDocument} from '@sanity/types'
+import {type Observable} from 'rxjs'
+
+import {type ListenerEvent} from '../getPairListener'
 import {
-  CommittedEvent,
-  DocumentMutationEvent,
-  DocumentRebaseEvent,
-  MutationPayload,
-  RemoteSnapshotEvent,
-  SnapshotEvent,
+  type CommitRequest,
+  createObservableBufferedDocument,
+} from './createObservableBufferedDocument'
+import {
+  type CommittedEvent,
+  type DocumentMutationEvent,
+  type DocumentRebaseEvent,
+  type MutationPayload,
+  type RemoteSnapshotEvent,
+  type SnapshotEvent,
 } from './types'
 
 /**

@@ -1,5 +1,6 @@
-import {Path} from '@sanity/types'
-import {BaseStructureToolPaneProps} from '../types'
+import {type Path} from '@sanity/types'
+
+import {type BaseStructureToolPaneProps} from '../types'
 
 /** @internal */
 export type TimelineMode = 'since' | 'rev' | 'closed'

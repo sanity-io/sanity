@@ -1,6 +1,8 @@
 import path from 'node:path'
+
+import {type Migration} from '@sanity/migrate'
 import {isPlainObject} from 'lodash'
-import type {Migration} from '@sanity/migrate'
+
 import {MIGRATION_SCRIPT_EXTENSIONS, MIGRATIONS_DIRECTORY} from '../constants'
 
 interface ResolvedMigrationScript {

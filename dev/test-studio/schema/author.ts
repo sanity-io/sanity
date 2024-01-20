@@ -1,5 +1,5 @@
 import {UserIcon as icon} from '@sanity/icons'
-import {Rule} from 'sanity'
+import {type Rule} from 'sanity'
 
 const AUTHOR_ROLES = [
   {value: 'developer', title: 'Developer'},

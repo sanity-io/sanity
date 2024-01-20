@@ -1,6 +1,7 @@
 import {useCallback, useMemo} from 'react'
 import {usePaneRouter} from 'sanity/structure'
-import {LanguageFilterPluginOptions} from './types'
+
+import {type LanguageFilterPluginOptions} from './types'
 
 // NOTE: use `+` instead of `,` since the structure tool URL format already uses comma
 const LANG_ID_SEPARATOR = '+'

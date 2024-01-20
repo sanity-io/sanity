@@ -1,6 +1,7 @@
+import {type BackendModule, type ReadCallback} from 'i18next'
 import {isPlainObject} from 'lodash'
-import type {BackendModule, ReadCallback} from 'i18next'
-import type {LocaleResourceKey, LocaleResourceRecord, LocaleResourceBundle} from './types'
+
+import {type LocaleResourceBundle, type LocaleResourceKey, type LocaleResourceRecord} from './types'
 
 /**
  * Options for the Sanity i18next backend

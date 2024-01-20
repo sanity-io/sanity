@@ -1,23 +1,23 @@
+import {type ClientError, type SanityClient} from '@sanity/client'
 import {useMemo} from 'react'
-import {ClientError, SanityClient} from '@sanity/client'
-import {Observable, timer, fromEvent, EMPTY, of} from 'rxjs'
+import {EMPTY, fromEvent, type Observable, of, timer} from 'rxjs'
 import {
-  map,
-  startWith,
-  distinctUntilChanged,
-  switchMap,
-  shareReplay,
   catchError,
+  distinctUntilChanged,
+  map,
+  shareReplay,
+  startWith,
+  switchMap,
 } from 'rxjs/operators'
 import {
-  AvailabilityResponse,
-  DEFAULT_STUDIO_CLIENT_OPTIONS,
-  DocumentStore,
-  useDocumentStore,
+  type AvailabilityResponse,
   createHookFromObservableFactory,
+  DEFAULT_STUDIO_CLIENT_OPTIONS,
+  type DocumentStore,
   getDraftId,
   getPublishedId,
   useClient,
+  useDocumentStore,
 } from 'sanity'
 
 // this is used in place of `instanceof` so the matching can be more robust and

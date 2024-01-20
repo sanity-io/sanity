@@ -1,4 +1,4 @@
-import {SortOrder} from './types'
+import {type SortOrder} from './types'
 
 export const PARTIAL_PAGE_LIMIT = 100
 export const FULL_LIST_LIMIT = 2000

@@ -1,4 +1,4 @@
-import type {Patch} from '@sanity/diff-match-patch'
+import {type Patch} from '@sanity/diff-match-patch'
 
 /**
  * Takes a `patches` array as produced by diff-match-patch and adjusts the

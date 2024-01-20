@@ -1,7 +1,8 @@
 /* eslint max-nested-callbacks: */
 
-import {defineField, defineType, type ObjectSchemaType} from '@sanity/types'
 import {groupProblems, validateSchema} from '@sanity/schema/_internal'
+import {defineField, defineType, type ObjectSchemaType} from '@sanity/types'
+
 import {createSchema} from '../../../schema'
 import {getFieldLevel} from './helpers'
 

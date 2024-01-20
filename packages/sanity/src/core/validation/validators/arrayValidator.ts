@@ -4,6 +4,7 @@ import {
   type PathSegment,
   type Validators,
 } from '@sanity/types'
+
 import {deepEquals} from '../util/deepEquals'
 import {genericValidators} from './genericValidator'
 

@@ -1,14 +1,10 @@
 const debug = require('debug')('sanity:import:array')
 const flatten = require('lodash/flatten')
-const ensureUniqueIds = require('./util/ensureUniqueIds')
 const {getAssetRefs, unsetAssetRefs, absolutifyPaths} = require('./assetRefs')
-const validateAssetDocuments = require('./validateAssetDocuments')
-const validateCdrDatasets = require('./validateCdrDatasets')
 const assignArrayKeys = require('./assignArrayKeys')
 const assignDocumentId = require('./assignDocumentId')
-const uploadAssets = require('./uploadAssets')
-const documentHasErrors = require('./documentHasErrors')
 const batchDocuments = require('./batchDocuments')
+const documentHasErrors = require('./documentHasErrors')
 const importBatches = require('./importBatches')
 
 const {
@@ -17,6 +13,10 @@ const {
   cleanupReferences,
   strengthenReferences,
 } = require('./references')
+const uploadAssets = require('./uploadAssets')
+const ensureUniqueIds = require('./util/ensureUniqueIds')
+const validateAssetDocuments = require('./validateAssetDocuments')
+const validateCdrDatasets = require('./validateCdrDatasets')
 
 async function importDocuments(documents, options) {
   options.onProgress({step: 'Reading/validating data file'})

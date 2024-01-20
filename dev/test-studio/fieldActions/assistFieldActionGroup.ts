@@ -1,8 +1,9 @@
 import {SparklesIcon} from '@sanity/icons'
 import {useMemo} from 'react'
 import {defineDocumentFieldAction} from 'sanity'
-import {PrivateIcon} from './PrivateIcon'
+
 import {defineActionGroup, defineActionItem} from './define'
+import {PrivateIcon} from './PrivateIcon'
 
 export const assistFieldActionGroup = defineDocumentFieldAction({
   name: 'test/assist',

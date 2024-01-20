@@ -1,32 +1,33 @@
 import {ToastProvider} from '@sanity/ui'
-import {ReactNode} from 'react'
+import {type ReactNode} from 'react'
 import Refractor from 'react-refractor'
 import bash from 'refractor/lang/bash'
 import javascript from 'refractor/lang/javascript'
 import json from 'refractor/lang/json'
 import jsx from 'refractor/lang/jsx'
 import typescript from 'refractor/lang/typescript'
+
 import {LoadingBlock} from '../components/loadingBlock'
-import {UserColorManagerProvider} from '../user-color'
 import {ErrorLogger} from '../error/ErrorLogger'
-import {ResourceCacheProvider} from '../store'
 import {LocaleProvider} from '../i18n'
-import {AuthBoundary} from './AuthBoundary'
-import {StudioProps} from './Studio'
-import {StudioThemeProvider} from './StudioThemeProvider'
-import {StudioErrorBoundary} from './StudioErrorBoundary'
+import {ResourceCacheProvider} from '../store'
+import {UserColorManagerProvider} from '../user-color'
 import {ActiveWorkspaceMatcher} from './activeWorkspaceMatcher'
+import {AuthBoundary} from './AuthBoundary'
 import {ColorSchemeProvider} from './colorScheme'
 import {Z_OFFSET} from './constants'
 import {
-  ConfigErrorsScreen,
   AuthenticateScreen,
-  NotFoundScreen,
+  ConfigErrorsScreen,
   NotAuthenticatedScreen,
+  NotFoundScreen,
 } from './screens'
+import {type StudioProps} from './Studio'
+import {StudioErrorBoundary} from './StudioErrorBoundary'
+import {StudioTelemetryProvider} from './StudioTelemetryProvider'
+import {StudioThemeProvider} from './StudioThemeProvider'
 import {WorkspaceLoader} from './workspaceLoader'
 import {WorkspacesProvider} from './workspaces'
-import {StudioTelemetryProvider} from './StudioTelemetryProvider'
 
 Refractor.registerLanguage(bash)
 Refractor.registerLanguage(javascript)

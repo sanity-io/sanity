@@ -10,8 +10,9 @@ import {
   StringIcon,
   UlistIcon,
 } from '@sanity/icons'
-import {defineSearchFilter, SearchFilterDefinition} from './filters'
-import {SearchOperatorType} from './operators/defaultOperators'
+
+import {defineSearchFilter, type SearchFilterDefinition} from './filters'
+import {type SearchOperatorType} from './operators/defaultOperators'
 
 export const filterDefinitions: SearchFilterDefinition[] = [
   // 'Pinned' filters

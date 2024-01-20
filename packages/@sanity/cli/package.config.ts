@@ -1,9 +1,10 @@
 /* eslint-disable no-sync */
-import fs from 'fs'
-import path from 'path'
-import isBuiltin from 'is-builtin-module'
-import {defineConfig} from '@sanity/pkg-utils'
 import {nodeResolve} from '@rollup/plugin-node-resolve'
+import {defineConfig} from '@sanity/pkg-utils'
+import fs from 'fs'
+import isBuiltin from 'is-builtin-module'
+import path from 'path'
+
 import baseConfig from '../../../package.config'
 
 const workersDir = path.join(__dirname, 'src', 'workers')

@@ -1,5 +1,5 @@
 import {DiffFromTo} from '../../../diff'
-import {DiffComponent, NumberDiff} from '../../../types'
+import {type DiffComponent, type NumberDiff} from '../../../types'
 import {NumberPreview} from '../preview/NumberPreview'
 
 export const NumberFieldDiff: DiffComponent<NumberDiff> = ({diff, schemaType}) => {

@@ -1,4 +1,4 @@
-import {CommentReactionItem} from '../types'
+import {type CommentReactionItem} from '../types'
 import {mergeCommentReactions} from '../utils/mergeCommentReactions'
 
 const REACTIONS_A: CommentReactionItem[] = [

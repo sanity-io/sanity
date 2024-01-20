@@ -1,5 +1,4 @@
-import {fireEvent, waitFor} from '@testing-library/react'
-import {PortableTextMarker} from '../../../../types'
+import {type PortableTextMarker} from '../../../../types'
 // import {renderInput} from '../../../../test/renderInput'
 // import {PortableTextInput, PortableTextInputProps} from '../../PortableTextInput'
 // import {portableTextType} from './schema'

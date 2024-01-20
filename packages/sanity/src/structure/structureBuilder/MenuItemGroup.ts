@@ -1,7 +1,8 @@
-import {SerializeOptions, Serializable, SerializePath} from './StructureNodes'
-import {SerializeError, HELP_URL} from './SerializeError'
-import {StructureContext} from './types'
-import {I18nTextRecord} from 'sanity'
+import {type I18nTextRecord} from 'sanity'
+
+import {HELP_URL, SerializeError} from './SerializeError'
+import {type Serializable, type SerializeOptions, type SerializePath} from './StructureNodes'
+import {type StructureContext} from './types'
 
 /** @internal */
 export function maybeSerializeMenuItemGroup(

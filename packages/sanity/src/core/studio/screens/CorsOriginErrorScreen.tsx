@@ -1,9 +1,10 @@
 /* eslint-disable i18next/no-literal-string,@sanity/i18n/no-attribute-string-literals */
-import {Card, Stack, Text, TextInput, Flex} from '@sanity/ui'
-import {useEffect, useMemo} from 'react'
 import {LaunchIcon} from '@sanity/icons'
+import {Card, Stack, Text, TextInput} from '@sanity/ui'
+import {useEffect, useMemo} from 'react'
 import styled from 'styled-components'
-import {Button, Dialog} from '../../../ui-components'
+
+import {Dialog} from '../../../ui-components'
 
 interface CorsOriginErrorScreenProps {
   projectId?: string

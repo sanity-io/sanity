@@ -1,19 +1,20 @@
 import {ClockIcon, CloseIcon} from '@sanity/icons'
 import {
   Box,
+  // eslint-disable-next-line no-restricted-imports
+  Button, // Button with specific styling and children behavior.
   Flex,
   Inline,
   rem,
-  ResponsiveMarginProps,
-  ResponsivePaddingProps,
+  type ResponsiveMarginProps,
+  type ResponsivePaddingProps,
   Text,
-  // eslint-disable-next-line no-restricted-imports
-  Button, // Button with specific styling and children behavior.
 } from '@sanity/ui'
-import {MouseEvent, useCallback} from 'react'
+import {type MouseEvent, useCallback} from 'react'
 import styled from 'styled-components'
+
 import {useSearchState} from '../../../contexts/search/useSearchState'
-import type {RecentSearch} from '../../../datastores/recentSearches'
+import {type RecentSearch} from '../../../datastores/recentSearches'
 import {DocumentTypesPill} from '../../common/DocumentTypesPill'
 import {FilterPill} from '../../common/FilterPill'
 

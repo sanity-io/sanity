@@ -1,16 +1,17 @@
 import {Box, Flex, Text} from '@sanity/ui'
-import {useCallback, useMemo, useState, KeyboardEvent} from 'react'
+import {type KeyboardEvent, useCallback, useMemo, useState} from 'react'
+
 import {
   CommandList,
-  CommandListGetItemDisabledCallback,
-  CommandListRenderItemCallback,
+  type CommandListGetItemDisabledCallback,
+  type CommandListRenderItemCallback,
 } from '../../../../../../../components'
 import {useSchema} from '../../../../../../../hooks'
+import {useTranslation} from '../../../../../../../i18n'
 import {useSearchState} from '../../../contexts/search/useSearchState'
-import {FilterMenuItem} from '../../../types'
+import {type FilterMenuItem} from '../../../types'
 import {getFilterKey} from '../../../utils/filterUtils'
 import {FilterPopoverContentHeader} from '../common/FilterPopoverContentHeader'
-import {useTranslation} from '../../../../../../../i18n'
 import {createFilterMenuItems} from './createFilterMenuItems'
 import {MenuItemFilter} from './items/MenuItemFilter'
 import {MenuItemHeader} from './items/MenuItemHeader'

@@ -1,9 +1,10 @@
-import path from 'path'
-import fs from 'fs/promises'
-import type {CliCommandDefinition, CliPrompter} from '@sanity/cli'
-import prettyMs from 'pretty-ms'
-import {absolutify} from '@sanity/util/fs'
+import {type CliCommandDefinition, type CliPrompter} from '@sanity/cli'
 import exportDataset from '@sanity/export'
+import {absolutify} from '@sanity/util/fs'
+import fs from 'fs/promises'
+import path from 'path'
+import prettyMs from 'pretty-ms'
+
 import {chooseDatasetPrompt} from '../../actions/dataset/chooseDatasetPrompt'
 import {validateDatasetName} from '../../actions/dataset/validateDatasetName'
 

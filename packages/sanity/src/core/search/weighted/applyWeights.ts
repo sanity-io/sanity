@@ -1,5 +1,6 @@
 import {compact, intersection, keyBy, partition, toLower, union, uniq, words} from 'lodash'
-import {SearchHit, WeightedHit, SearchSpec} from './types'
+
+import {type SearchHit, type SearchSpec, type WeightedHit} from './types'
 
 type SearchScore = [number, string]
 

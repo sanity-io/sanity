@@ -1,7 +1,7 @@
-import type {FieldReference} from '../../../validation'
-import type {RuleDef, ValidationBuilder} from '../../ruleBuilder'
-import type {InitialValueProperty} from '../../types'
-import type {BaseSchemaDefinition, EnumListProps} from './common'
+import {type FieldReference} from '../../../validation'
+import {type RuleDef, type ValidationBuilder} from '../../ruleBuilder'
+import {type InitialValueProperty} from '../../types'
+import {type BaseSchemaDefinition, type EnumListProps} from './common'
 
 /** @public */
 // eslint-disable-next-line @typescript-eslint/no-empty-interface

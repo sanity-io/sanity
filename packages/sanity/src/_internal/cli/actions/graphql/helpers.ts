@@ -1,8 +1,8 @@
-import type {
-  ConvertedDocumentType,
-  ConvertedInterface,
-  ConvertedType,
-  ConvertedUnion,
+import {
+  type ConvertedDocumentType,
+  type ConvertedInterface,
+  type ConvertedType,
+  type ConvertedUnion,
 } from './types'
 
 export function isUnion(

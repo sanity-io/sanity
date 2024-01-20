@@ -1,26 +1,27 @@
-import {ObjectDiff} from '@sanity/diff'
+import {type ObjectDiff} from '@sanity/diff'
 import {AvatarStack, BoundaryElementProvider, Box, Card, Flex} from '@sanity/ui'
-import {useMemo, ReactElement, useRef} from 'react'
-import styled from 'styled-components'
-import {TimelineMenu} from '../../timeline'
-import {useDocumentPane} from '../../useDocumentPane'
-import {DocumentInspectorHeader} from '../../documentInspector'
-import {collectLatestAuthorAnnotations} from './helpers'
+import {type ReactElement, useMemo, useRef} from 'react'
 import {
   ChangeFieldWrapper,
   ChangeList,
   DiffTooltip,
   DocumentChangeContext,
-  DocumentChangeContextInstance,
-  DocumentInspectorProps,
+  type DocumentChangeContextInstance,
+  type DocumentInspectorProps,
+  LoadingBlock,
   NoChanges,
-  ObjectSchemaType,
+  type ObjectSchemaType,
   ScrollContainer,
   UserAvatar,
   useTimelineSelector,
   useTranslation,
-  LoadingBlock,
 } from 'sanity'
+import styled from 'styled-components'
+
+import {DocumentInspectorHeader} from '../../documentInspector'
+import {TimelineMenu} from '../../timeline'
+import {useDocumentPane} from '../../useDocumentPane'
+import {collectLatestAuthorAnnotations} from './helpers'
 
 const Scroller = styled(ScrollContainer)`
   height: 100%;

@@ -1,5 +1,5 @@
-import {HTMLProps} from 'react'
-import {Badge, BadgeProps} from '@sanity/ui'
+import {Badge, type BadgeProps} from '@sanity/ui'
+import {type HTMLProps} from 'react'
 
 /** @internal */
 export type BetaBadgeProps = Omit<BadgeProps, 'mode' | 'tone'>

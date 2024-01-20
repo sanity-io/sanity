@@ -1,12 +1,19 @@
-import {type ArraySchemaType, type SchemaType, type TypedObject, isKeyedObject} from '@sanity/types'
+import {type ArraySchemaType, isKeyedObject, type SchemaType, type TypedObject} from '@sanity/types'
 import {Box, Flex} from '@sanity/ui'
+
+import {useTranslation} from '../../../../i18n'
+import {Preview} from '../../../../preview/components/Preview'
 import {useUserColorManager} from '../../../../user-color'
 import {DiffTooltip, FromToArrow, getAnnotationColor} from '../../../diff'
-import type {Annotation, ArrayDiff, Diff, DiffComponent, ItemDiff} from '../../../types'
-import {useTranslation} from '../../../../i18n'
+import {
+  type Annotation,
+  type ArrayDiff,
+  type Diff,
+  type DiffComponent,
+  type ItemDiff,
+} from '../../../types'
 import {Checkbox} from '../../boolean/preview'
 import {isEqual} from '../util/arrayUtils'
-import {Preview} from '../../../../preview/components/Preview'
 
 interface NamedListOption {
   title?: string

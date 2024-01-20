@@ -2,17 +2,18 @@ import {CopyIcon} from '@sanity/icons'
 import {uuid} from '@sanity/uuid'
 import {useCallback, useState} from 'react'
 import {filter, firstValueFrom} from 'rxjs'
-import {structureLocaleNamespace} from '../i18n'
-import {useRouter} from 'sanity/router'
 import {
-  DocumentActionComponent,
+  type DocumentActionComponent,
   InsufficientPermissionsMessage,
-  useDocumentPairPermissions,
-  useDocumentOperation,
   useCurrentUser,
-  useTranslation,
+  useDocumentOperation,
+  useDocumentPairPermissions,
   useDocumentStore,
+  useTranslation,
 } from 'sanity'
+import {useRouter} from 'sanity/router'
+
+import {structureLocaleNamespace} from '../i18n'
 
 const DISABLED_REASON_KEY = {
   NOTHING_TO_DUPLICATE: 'action.duplicate.disabled.nothing-to-duplicate',

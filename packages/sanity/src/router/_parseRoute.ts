@@ -1,4 +1,4 @@
-import {Route, RouteSegment} from './types'
+import {type Route, type RouteSegment} from './types'
 
 const VALID_PARAM_SEGMENT = /^[a-zA-Z0-9_-]+$/
 

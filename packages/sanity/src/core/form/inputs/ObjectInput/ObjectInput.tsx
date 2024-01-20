@@ -1,10 +1,11 @@
-import {Fragment, memo, useCallback, useMemo} from 'react'
 import {Stack} from '@sanity/ui'
-import {ObjectInputProps} from '../../types'
+import {Fragment, memo, useCallback, useMemo} from 'react'
+
 import {ObjectInputMembers} from '../../members'
-import {UnknownFields} from './UnknownFields'
-import {FieldGroupTabsWrapper, AlignedBottomGrid} from './ObjectInput.styled'
+import {type ObjectInputProps} from '../../types'
 import {FieldGroupTabs} from './fieldGroups/FieldGroupTabs'
+import {AlignedBottomGrid, FieldGroupTabsWrapper} from './ObjectInput.styled'
+import {UnknownFields} from './UnknownFields'
 
 /**
  * @hidden

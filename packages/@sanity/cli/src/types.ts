@@ -1,12 +1,13 @@
-import ora, {type Ora} from 'ora'
+import {type SanityClient} from '@sanity/client'
+import {type TelemetryLogger} from '@sanity/telemetry'
 import type chalk from 'chalk'
-import type {SanityClient} from '@sanity/client'
-import type {Separator, DistinctQuestion, Answers, ChoiceCollection} from 'inquirer'
-import type {InlineConfig, ConfigEnv} from 'vite'
-import {TelemetryLogger} from '@sanity/telemetry'
-import type {ClientRequirements} from './util/clientWrapper'
-import type {CliConfigResult} from './util/getCliConfig'
-import type {CliPackageManager} from './packageManager'
+import {type Answers, type ChoiceCollection, type DistinctQuestion, type Separator} from 'inquirer'
+import {type Options, type Ora} from 'ora'
+import {type ConfigEnv, type InlineConfig} from 'vite'
+
+import {type CliPackageManager} from './packageManager'
+import {type ClientRequirements} from './util/clientWrapper'
+import {type CliConfigResult} from './util/getCliConfig'
 
 export interface SanityCore {
   requiredCliVersionRange: string
@@ -154,7 +155,7 @@ export interface CliOutputter {
   warn: (...args: unknown[]) => void
   error: (...args: unknown[]) => void
   clear: () => void
-  spinner(options: ora.Options | string): Ora
+  spinner(options: Options | string): Ora
 }
 
 export type SinglePrompt =

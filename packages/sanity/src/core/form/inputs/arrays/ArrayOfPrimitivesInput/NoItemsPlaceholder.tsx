@@ -1,5 +1,6 @@
-import type {ArraySchemaType} from '@sanity/types'
+import {type ArraySchemaType} from '@sanity/types'
 import {Card, Text} from '@sanity/ui'
+
 import {useTranslation} from '../../../../i18n'
 
 /**

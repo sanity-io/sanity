@@ -1,21 +1,22 @@
-import type {SanityClient} from '@sanity/client'
+import {type SanityClient} from '@sanity/client'
 import {
   concat,
-  ConnectableObservable,
-  timer,
-  Observable,
-  Subject,
-  of,
+  type ConnectableObservable,
   EMPTY,
   firstValueFrom,
   lastValueFrom,
+  type Observable,
+  of,
+  Subject,
+  timer,
 } from 'rxjs'
-import {buffer, takeWhile, publish} from 'rxjs/operators'
-import {getFallbackLocaleSource} from '../../../../i18n/fallback'
-import type {DocumentAvailability, DraftsModelDocumentAvailability} from '../../../../preview'
-import {createSchema} from '../../../../schema'
+import {buffer, publish, takeWhile} from 'rxjs/operators'
+
 import {createMockSanityClient} from '../../../../../../test/mocks/mockSanityClient'
-import {editState, EditStateFor} from './editState'
+import {getFallbackLocaleSource} from '../../../../i18n/fallback'
+import {type DocumentAvailability, type DraftsModelDocumentAvailability} from '../../../../preview'
+import {createSchema} from '../../../../schema'
+import {editState, type EditStateFor} from './editState'
 import {validation} from './validation'
 
 // Mock `./editState`

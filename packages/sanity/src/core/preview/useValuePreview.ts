@@ -1,10 +1,10 @@
-import {PreviewValue, SchemaType, SortOrdering} from '@sanity/types'
-
-import {catchError, map} from 'rxjs/operators'
-import {of} from 'rxjs'
+import {type PreviewValue, type SchemaType, type SortOrdering} from '@sanity/types'
 import {useMemoObservable} from 'react-rx'
+import {of} from 'rxjs'
+import {catchError, map} from 'rxjs/operators'
+
 import {useDocumentPreviewStore} from '../store'
-import {Previewable} from './types'
+import {type Previewable} from './types'
 
 export {useDocumentPreview as unstable_useValuePreview}
 

@@ -1,5 +1,6 @@
 import {useMemo} from 'react'
-import {IntentParameters} from './types'
+
+import {type IntentParameters} from './types'
 import {useLink} from './useLink'
 import {useRouter} from './useRouter'
 

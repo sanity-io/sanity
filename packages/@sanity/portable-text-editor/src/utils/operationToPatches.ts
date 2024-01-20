@@ -1,23 +1,24 @@
-import {Path, PortableTextSpan, PortableTextTextBlock} from '@sanity/types'
-import {omitBy, isUndefined, get} from 'lodash'
+import {type Path, type PortableTextSpan, type PortableTextTextBlock} from '@sanity/types'
+import {get, isUndefined, omitBy} from 'lodash'
 import {
-  Descendant,
-  InsertNodeOperation,
-  InsertTextOperation,
-  MergeNodeOperation,
-  MoveNodeOperation,
-  RemoveNodeOperation,
-  RemoveTextOperation,
-  SetNodeOperation,
-  SplitNodeOperation,
+  type Descendant,
+  type InsertNodeOperation,
+  type InsertTextOperation,
+  type MergeNodeOperation,
+  type MoveNodeOperation,
+  type RemoveNodeOperation,
+  type RemoveTextOperation,
+  type SetNodeOperation,
+  type SplitNodeOperation,
   Text,
 } from 'slate'
-import {set, insert, unset, diffMatchPatch, setIfMissing} from '../patch/PatchEvent'
-import type {Patch, InsertPosition} from '../types/patch'
-import {PatchFunctions} from '../editor/plugins/createWithPatches'
-import {PortableTextMemberSchemaTypes, PortableTextSlateEditor} from '../types/editor'
-import {fromSlateValue} from './values'
+
+import {type PatchFunctions} from '../editor/plugins/createWithPatches'
+import {diffMatchPatch, insert, set, setIfMissing, unset} from '../patch/PatchEvent'
+import {type PortableTextMemberSchemaTypes, type PortableTextSlateEditor} from '../types/editor'
+import {type InsertPosition, type Patch} from '../types/patch'
 import {debugWithName} from './debug'
+import {fromSlateValue} from './values'
 
 const debug = debugWithName('operationToPatches')
 debug.enabled = false

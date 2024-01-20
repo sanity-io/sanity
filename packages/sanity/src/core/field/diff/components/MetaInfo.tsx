@@ -1,5 +1,5 @@
-import {Text, Box, Flex, Stack} from '@sanity/ui'
-import {ComponentType, ReactNode, createElement} from 'react'
+import {Box, Flex, Stack, Text} from '@sanity/ui'
+import {type ComponentType, createElement, type ReactNode} from 'react'
 import styled from 'styled-components'
 
 /** @internal */

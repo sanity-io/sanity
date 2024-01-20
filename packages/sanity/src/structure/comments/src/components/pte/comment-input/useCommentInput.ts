@@ -1,5 +1,6 @@
 import {useContext} from 'react'
-import {CommentInputContext, CommentInputContextValue} from './CommentInputProvider'
+
+import {CommentInputContext, type CommentInputContextValue} from './CommentInputProvider'
 
 export function useCommentInput(): CommentInputContextValue {
   const ctx = useContext(CommentInputContext)

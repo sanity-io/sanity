@@ -1,7 +1,7 @@
+import {readEnv} from '../utils/envVars'
 import {sanityIdify} from '../utils/sanityIdify'
 import {startTimer} from '../utils/startTimer'
-import {readEnv} from '../utils/envVars'
-import {KnownEnvVar, createDocClient} from './docClient'
+import {createDocClient, type KnownEnvVar} from './docClient'
 
 const DATASET = readEnv<KnownEnvVar>('DOCS_REPORT_DATASET')
 const studioMetricsClient = createDocClient(DATASET)

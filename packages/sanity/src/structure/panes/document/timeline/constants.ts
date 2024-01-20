@@ -1,11 +1,11 @@
 import {
-  TrashIcon,
-  EditIcon,
-  IconComponent,
-  PublishIcon,
-  UnpublishIcon,
-  CloseIcon,
   AddCircleIcon,
+  CloseIcon,
+  EditIcon,
+  type IconComponent,
+  PublishIcon,
+  TrashIcon,
+  UnpublishIcon,
 } from '@sanity/icons'
 
 export const TIMELINE_ICON_COMPONENTS: {[key: string]: IconComponent | undefined} = {

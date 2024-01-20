@@ -1,10 +1,10 @@
-import {SetPatch} from './SetPatch'
+import {DiffMatchPatch} from './DiffMatchPatch'
 import {IncPatch} from './IncPatch'
 import {InsertPatch} from './InsertPatch'
 import {SetIfMissingPatch} from './SetIfMissingPatch'
+import {SetPatch} from './SetPatch'
+import {type PatchTypes, type SingleDocumentPatch} from './types'
 import {UnsetPatch} from './UnsetPatch'
-import {DiffMatchPatch} from './DiffMatchPatch'
-import type {PatchTypes, SingleDocumentPatch} from './types'
 
 // Parses a content lake patch into our own personal patch implementations
 export function parsePatch(patch: SingleDocumentPatch | SingleDocumentPatch[]): PatchTypes[] {

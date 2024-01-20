@@ -1,7 +1,14 @@
+import type * as React from 'react'
 import {useCallback, useMemo} from 'react'
-import * as React from 'react'
+
 import {RouterContext} from './RouterContext'
-import {IntentParameters, RouterContextValue, NavigateOptions, Router, RouterState} from './types'
+import {
+  type IntentParameters,
+  type NavigateOptions,
+  type Router,
+  type RouterContextValue,
+  type RouterState,
+} from './types'
 
 /**
  * The props for the {@link RouterProvider} component.

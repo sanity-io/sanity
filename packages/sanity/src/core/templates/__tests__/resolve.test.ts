@@ -1,7 +1,8 @@
-import {omit} from 'lodash'
-import {InitialValueResolverContext} from '@sanity/types'
 import {Schema as SchemaBuilder} from '@sanity/schema'
-import {resolveInitialValue, Template} from '../'
+import {type InitialValueResolverContext} from '@sanity/types'
+import {omit} from 'lodash'
+
+import {resolveInitialValue, type Template} from '../'
 import {schema} from './schema'
 
 beforeEach(() => {

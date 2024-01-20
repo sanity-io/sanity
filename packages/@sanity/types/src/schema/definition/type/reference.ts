@@ -1,8 +1,12 @@
-import type {RuleDef, ValidationBuilder} from '../../ruleBuilder'
-import type {InitialValueProperty} from '../../types'
-import type {SchemaTypeDefinition, TypeReference} from '../schemaDefinition'
-import type {Reference, ReferenceBaseOptions, ReferenceFilterOptions} from '../../../reference'
-import type {BaseSchemaDefinition} from './common'
+import {
+  type Reference,
+  type ReferenceBaseOptions,
+  type ReferenceFilterOptions,
+} from '../../../reference'
+import {type RuleDef, type ValidationBuilder} from '../../ruleBuilder'
+import {type InitialValueProperty} from '../../types'
+import {type SchemaTypeDefinition, type TypeReference} from '../schemaDefinition'
+import {type BaseSchemaDefinition} from './common'
 
 /** @public */
 export type ReferenceValue = Reference

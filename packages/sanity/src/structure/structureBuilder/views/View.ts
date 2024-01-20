@@ -1,10 +1,11 @@
 import {kebabCase} from 'lodash'
-import {Serializable, SerializeOptions, SerializePath} from '../StructureNodes'
+
 import {HELP_URL, SerializeError} from '../SerializeError'
+import {type Serializable, type SerializeOptions, type SerializePath} from '../StructureNodes'
+import {type View} from '../types'
 import {validateId} from '../util/validateId'
-import {View} from '../types'
-import {ComponentViewBuilder} from './ComponentView'
-import {FormViewBuilder} from './FormView'
+import {type ComponentViewBuilder} from './ComponentView'
+import {type FormViewBuilder} from './FormView'
 
 /**
  * Interface for base view

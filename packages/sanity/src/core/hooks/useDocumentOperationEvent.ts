@@ -1,4 +1,5 @@
 import {useMemoObservable} from 'react-rx'
+
 import {useDocumentStore} from '../store'
 
 /** @internal */

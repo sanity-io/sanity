@@ -1,8 +1,9 @@
 import {TranslateIcon} from '@sanity/icons'
 import {Box, Button, Card, Checkbox, Flex, Popover, Stack, Text, useClickOutside} from '@sanity/ui'
-import {FormEvent, useCallback, useState} from 'react'
-import {ObjectSchemaType} from 'sanity'
-import {LanguageFilterPluginOptions} from './types'
+import {type FormEvent, useCallback, useState} from 'react'
+import {type ObjectSchemaType} from 'sanity'
+
+import {type LanguageFilterPluginOptions} from './types'
 import {usePaneLanguages} from './usePaneLanguages'
 
 export interface LanguageFilterMenuButtonProps {

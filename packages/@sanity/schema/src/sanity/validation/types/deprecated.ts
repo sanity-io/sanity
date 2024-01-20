@@ -1,4 +1,4 @@
-import {SchemaValidationResult} from '../../typedefs'
+import {type SchemaValidationResult} from '../../typedefs'
 import {warning} from '../createValidationResult'
 
 export function validateDeprecatedProperties(type): SchemaValidationResult[] {

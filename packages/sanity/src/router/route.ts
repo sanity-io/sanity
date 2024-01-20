@@ -1,7 +1,7 @@
 import {_parseRoute} from './_parseRoute'
-import {_resolveStateFromPath} from './_resolveStateFromPath'
 import {_resolvePathFromState} from './_resolvePathFromState'
-import {RouteTransform, Router, RouteChildren} from './types'
+import {_resolveStateFromPath} from './_resolveStateFromPath'
+import {type RouteChildren, type Router, type RouteTransform} from './types'
 import {decodeJsonParams, encodeJsonParams} from './utils/jsonParamsEncoding'
 import {decodeParams, encodeParams} from './utils/paramsEncoding'
 

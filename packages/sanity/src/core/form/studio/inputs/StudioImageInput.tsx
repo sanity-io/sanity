@@ -1,14 +1,15 @@
-import {useMemo, useCallback} from 'react'
 import imageUrlBuilder from '@sanity/image-url'
-import {SchemaType} from '@sanity/types'
-import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
-import {BaseImageInput, BaseImageInputProps} from '../../inputs/files/ImageInput'
-import {useFormBuilder} from '../../useFormBuilder'
-import {resolveUploader as defaultResolveUploader} from '../uploads/resolveUploader'
-import {FileLike} from '../uploads/types'
-import {useDocumentPreviewStore} from '../../../store'
+import {type SchemaType} from '@sanity/types'
+import React, {useCallback, useMemo} from 'react'
+
 import {useClient} from '../../../hooks'
 import {useTranslation} from '../../../i18n'
+import {useDocumentPreviewStore} from '../../../store'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
+import {BaseImageInput, type BaseImageInputProps} from '../../inputs/files/ImageInput'
+import {useFormBuilder} from '../../useFormBuilder'
+import {resolveUploader as defaultResolveUploader} from '../uploads/resolveUploader'
+import {type FileLike} from '../uploads/types'
 import {observeImageAsset} from './client-adapters/assets'
 
 /**

@@ -1,11 +1,12 @@
 /* eslint-disable i18next/no-literal-string,@sanity/i18n/no-attribute-string-literals */
-import {ErrorOutlineIcon, WarningOutlineIcon} from '@sanity/icons'
-import {Box, Breadcrumbs, Card, Flex, Stack, Text, ThemeColorToneKey} from '@sanity/ui'
 import {generateHelpUrl} from '@sanity/generate-help-url'
-import {SchemaValidationProblemGroup} from '@sanity/types'
+import {ErrorOutlineIcon, WarningOutlineIcon} from '@sanity/icons'
+import {type SchemaValidationProblemGroup} from '@sanity/types'
+import {Box, Breadcrumbs, Card, Flex, Stack, Text, type ThemeColorToneKey} from '@sanity/ui'
+import {capitalize} from 'lodash'
 import {useMemo} from 'react'
 import styled from 'styled-components'
-import {capitalize} from 'lodash'
+
 import {useTranslation} from '../../../i18n'
 
 const TONES: Record<'error' | 'warning', ThemeColorToneKey> = {

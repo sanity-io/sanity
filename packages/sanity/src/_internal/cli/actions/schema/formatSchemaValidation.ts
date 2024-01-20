@@ -1,7 +1,7 @@
-import {isatty} from 'tty'
+import {type SchemaValidationProblemGroup, type SchemaValidationProblemPath} from '@sanity/types'
 import chalk from 'chalk'
-import {SchemaValidationProblemGroup, SchemaValidationProblemPath} from '@sanity/types'
 import logSymbols from 'log-symbols'
+import {isatty} from 'tty'
 
 const isTty = isatty(1)
 

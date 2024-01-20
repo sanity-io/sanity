@@ -1,20 +1,21 @@
+import {type SanityDocument} from '@sanity/client'
 import {
-  SchemaType,
-  ObjectField,
-  isObjectSchemaType,
-  CurrentUser,
-  ArraySchemaType,
-  ConditionalPropertyCallbackContext,
-  ObjectSchemaType,
-  ObjectFieldType,
-  PathSegment,
+  type ArraySchemaType,
+  type ConditionalPropertyCallbackContext,
+  type CurrentUser,
   isArraySchemaType,
+  isObjectSchemaType,
+  type ObjectField,
+  type ObjectFieldType,
+  type ObjectSchemaType,
+  type PathSegment,
+  type SchemaType,
 } from '@sanity/types'
-import {findIndex} from 'lodash'
 import * as PathUtils from '@sanity/util/paths'
-import {SanityDocument} from '@sanity/client'
-import {CommentListBreadcrumbs} from '../types'
+import {findIndex} from 'lodash'
 import {getSchemaTypeTitle, getValueAtPath, resolveConditionalProperty} from 'sanity'
+
+import {type CommentListBreadcrumbs} from '../types'
 
 function getSchemaField(
   schemaType: SchemaType,

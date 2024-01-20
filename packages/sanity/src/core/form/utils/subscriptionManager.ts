@@ -1,4 +1,4 @@
-import {Subscription} from 'rxjs'
+import {type Subscription} from 'rxjs'
 
 export function createSubscriptionManager(...keys: string[]) {
   const registry: Record<string, Subscription> = {}

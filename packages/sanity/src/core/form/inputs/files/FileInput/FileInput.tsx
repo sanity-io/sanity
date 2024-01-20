@@ -1,41 +1,45 @@
 /* eslint-disable import/no-unresolved,react/jsx-handler-names, react/display-name, react/no-this-in-sfc */
 
-import {PureComponent, ReactNode, FocusEvent} from 'react'
-
-import {Observable, Subscription} from 'rxjs'
-import {get, startCase} from 'lodash'
-import {
-  AssetFromSource,
-  AssetSource,
-  File as BaseFile,
-  FileAsset,
-  FileSchemaType,
-  Path,
-  UploadState,
-} from '@sanity/types'
-import {ImageIcon, SearchIcon} from '@sanity/icons'
-import {Box, Card, Menu, ThemeColorToneKey, ToastParams} from '@sanity/ui'
-import {SanityClient} from '@sanity/client'
 import {isFileSource} from '@sanity/asset-utils'
-import {WithReferencedAsset} from '../../../utils/WithReferencedAsset'
+import {type SanityClient} from '@sanity/client'
+import {ImageIcon, SearchIcon} from '@sanity/icons'
+import {
+  type AssetFromSource,
+  type AssetSource,
+  type File as BaseFile,
+  type FileAsset,
+  type FileSchemaType,
+  type Path,
+  type UploadState,
+} from '@sanity/types'
+import {Box, Card, Menu, type ThemeColorToneKey, type ToastParams} from '@sanity/ui'
+import {get, startCase} from 'lodash'
+import React, {type FocusEvent, PureComponent, type ReactNode} from 'react'
+import {type Observable, type Subscription} from 'rxjs'
+
 import {Button, MenuButton, MenuItem} from '../../../../../ui-components'
-import {Uploader, UploaderResolver, UploadOptions} from '../../../studio/uploads/types'
-import {FileInfo, FileTarget} from '../common/styles'
-import {UploadProgress} from '../common/UploadProgress'
-import {handleSelectAssetFromSource} from '../common/assetSource'
-import {ActionsMenu} from '../common/ActionsMenu'
-import {PlaceholderText} from '../common/PlaceholderText'
-import {UploadPlaceholder} from '../common/UploadPlaceholder'
-import {UploadWarning} from '../common/UploadWarning'
-import {InputProps, ObjectInputProps} from '../../../types'
-import {PatchEvent, setIfMissing, unset} from '../../../patch'
-import {MemberField, MemberFieldError, MemberFieldSet} from '../../../members'
-import {ImperativeToast} from '../../../../components'
 import {ChangeIndicator} from '../../../../changeIndicators'
-import {CardOverlay, FlexContainer} from './styles'
+import {ImperativeToast} from '../../../../components'
+import {MemberField, MemberFieldError, MemberFieldSet} from '../../../members'
+import {PatchEvent, setIfMissing, unset} from '../../../patch'
+import {
+  type Uploader,
+  type UploaderResolver,
+  type UploadOptions,
+} from '../../../studio/uploads/types'
+import {type InputProps, type ObjectInputProps} from '../../../types'
+import {WithReferencedAsset} from '../../../utils/WithReferencedAsset'
+import {ActionsMenu} from '../common/ActionsMenu'
+import {handleSelectAssetFromSource} from '../common/assetSource'
+import {PlaceholderText} from '../common/PlaceholderText'
+import {type FileInfo, FileTarget} from '../common/styles'
+import {UploadPlaceholder} from '../common/UploadPlaceholder'
+import {UploadProgress} from '../common/UploadProgress'
+import {UploadWarning} from '../common/UploadWarning'
 import {FileActionsMenu} from './FileActionsMenu'
 import {FileSkeleton} from './FileSkeleton'
 import {InvalidFileWarning} from './InvalidFileWarning'
+import {CardOverlay, FlexContainer} from './styles'
 
 /**
  * @hidden

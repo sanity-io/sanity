@@ -1,8 +1,9 @@
-import {useCallback, useEffect} from 'react'
 import {CommentIcon} from '@sanity/icons'
+import {useCallback, useEffect} from 'react'
+
+import {Button} from '../../../../../../ui-components'
 import {CommentsUpsellProvider} from '../../../context'
 import {useCommentsUpsell} from '../../../hooks'
-import {Button} from '../../../../../../ui-components'
 
 const CommentsUpsellDialogStoryInner = () => {
   const {upsellData, handleOpenDialog} = useCommentsUpsell()

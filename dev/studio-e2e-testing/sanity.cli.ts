@@ -1,4 +1,5 @@
 import {defineCliConfig} from 'sanity/cli'
+
 import {loadEnvFiles} from '../../scripts/utils/loadEnvFiles'
 
 loadEnvFiles()

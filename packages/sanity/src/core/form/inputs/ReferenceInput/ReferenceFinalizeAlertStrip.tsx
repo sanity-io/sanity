@@ -1,8 +1,9 @@
-import type {ReferenceSchemaType} from '@sanity/types'
+import {type ReferenceSchemaType} from '@sanity/types'
 import {Stack, Text} from '@sanity/ui'
-import {AlertStrip} from '../../components/AlertStrip'
+
 import {Button} from '../../../../ui-components'
 import {Translate, useTranslation} from '../../../i18n'
+import {AlertStrip} from '../../components/AlertStrip'
 
 /**
  * Alert strip that shows an explanation and action prompting the user to finalize a reference,

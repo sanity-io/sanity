@@ -1,21 +1,22 @@
 import {createElement} from 'react'
-import {
-  RenderAnnotationCallback,
-  RenderBlockCallback,
-  RenderFieldCallback,
-  RenderInputCallback,
-  RenderItemCallback,
-  RenderPreviewCallback,
-} from '../types'
+
 import {Preview} from '../../preview/components/Preview'
-import {defaultResolveInputComponent} from './inputResolver/inputResolver'
-import {defaultResolveItemComponent} from './inputResolver/itemResolver'
-import {defaultResolveFieldComponent} from './inputResolver/fieldResolver'
+import {
+  type RenderAnnotationCallback,
+  type RenderBlockCallback,
+  type RenderFieldCallback,
+  type RenderInputCallback,
+  type RenderItemCallback,
+  type RenderPreviewCallback,
+} from '../types'
 import {
   defaultResolveAnnotationComponent,
   defaultResolveBlockComponent,
   defaultResolveInlineBlockComponent,
 } from './inputResolver/blockResolver'
+import {defaultResolveFieldComponent} from './inputResolver/fieldResolver'
+import {defaultResolveInputComponent} from './inputResolver/inputResolver'
+import {defaultResolveItemComponent} from './inputResolver/itemResolver'
 
 /** @internal */
 export const defaultRenderAnnotation: RenderAnnotationCallback = (props) => {

@@ -1,4 +1,5 @@
 import {pick} from 'lodash'
+
 import primitivePreview from '../preview/primitivePreview'
 import {DEFAULT_OVERRIDEABLE_FIELDS} from './constants'
 

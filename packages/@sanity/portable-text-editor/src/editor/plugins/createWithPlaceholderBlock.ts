@@ -1,5 +1,6 @@
-import {Descendant} from 'slate'
-import {PortableTextMemberSchemaTypes, PortableTextSlateEditor} from '../../types/editor'
+import {type Descendant} from 'slate'
+
+import {type PortableTextMemberSchemaTypes, type PortableTextSlateEditor} from '../../types/editor'
 import {debugWithName} from '../../utils/debug'
 
 const debug = debugWithName('plugin:withPlaceholderBlock')

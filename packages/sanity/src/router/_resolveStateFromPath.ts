@@ -1,7 +1,11 @@
-import {partition} from 'lodash'
-import {InternalSearchParam, RouterNode, RouterState, SearchParam} from './types'
-import {debug} from './utils/debug'
+import {
+  type InternalSearchParam,
+  type RouterNode,
+  type RouterState,
+  type SearchParam,
+} from './types'
 import {arrayify} from './utils/arrayify'
+import {debug} from './utils/debug'
 import {parseScopedParams} from './utils/parseScopedParams'
 
 function matchPath(

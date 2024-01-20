@@ -1,8 +1,9 @@
+import type * as React from 'react'
 import {forwardRef, useContext} from 'react'
-import * as React from 'react'
-import {PaneRouterContext} from './PaneRouterContext'
-import {ChildLinkProps} from './types'
 import {StateLink} from 'sanity/router'
+
+import {PaneRouterContext} from './PaneRouterContext'
+import {type ChildLinkProps} from './types'
 
 /**
  * @internal

@@ -1,17 +1,23 @@
 /* eslint-disable react/jsx-handler-names */
-import {ArraySchemaType, NumberSchemaType, SchemaType, StringSchemaType} from '@sanity/types'
-import {ComponentType} from 'react'
-import {InputProps} from '../../types'
-import * as is from '../../utils/is'
-import {PreviewProps} from '../../../components'
+import {
+  type ArraySchemaType,
+  type NumberSchemaType,
+  type SchemaType,
+  type StringSchemaType,
+} from '@sanity/types'
+import {type ComponentType} from 'react'
+
+import {type PreviewProps} from '../../../components'
+import {type FIXME} from '../../../FIXME'
 import {SanityDefaultPreview} from '../../../preview'
-import {FIXME} from '../../../FIXME'
+import {type InputProps} from '../../types'
+import * as is from '../../utils/is'
 import {StudioReferenceInput} from '../inputs/reference/StudioReferenceInput'
-import {resolveArrayInput} from './resolveArrayInput'
-import {resolveStringInput} from './resolveStringInput'
-import {resolveNumberInput} from './resolveNumberInput'
 import {defaultInputs} from './defaultInputs'
 import {getTypeChain} from './helpers'
+import {resolveArrayInput} from './resolveArrayInput'
+import {resolveNumberInput} from './resolveNumberInput'
+import {resolveStringInput} from './resolveStringInput'
 
 function resolveComponentFromTypeVariants(type: SchemaType): ComponentType<FIXME> | undefined {
   if (is.type('array', type)) {

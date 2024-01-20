@@ -1,4 +1,4 @@
-import {CommentsUIMode} from '../../types'
+import {type CommentsUIMode} from '../../types'
 
 export type CommentsEnabledContextValue =
   | {

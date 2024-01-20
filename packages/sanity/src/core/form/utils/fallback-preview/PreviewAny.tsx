@@ -1,7 +1,7 @@
 import {useTranslation} from '../../../i18n'
-import {PreviewPrimitive} from './PreviewPrimitive'
-import {PreviewObject} from './PreviewObject'
 import {PreviewArray} from './PreviewArray'
+import {PreviewObject} from './PreviewObject'
+import {PreviewPrimitive} from './PreviewPrimitive'
 
 const NoValue = () => {
   const {t} = useTranslation()

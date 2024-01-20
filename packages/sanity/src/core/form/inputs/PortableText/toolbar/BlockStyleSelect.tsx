@@ -1,4 +1,4 @@
-import {ReactNode, MouseEvent, memo, useCallback, useMemo} from 'react'
+import {ChevronDownIcon} from '@sanity/icons'
 import {PortableTextEditor, usePortableTextEditor} from '@sanity/portable-text-editor'
 import {
   Menu,
@@ -6,22 +6,23 @@ import {
   MenuItem,
   Text,
 } from '@sanity/ui'
-import {ChevronDownIcon} from '@sanity/icons'
+import React, {memo, type MouseEvent, type ReactNode, useCallback, useMemo} from 'react'
 import styled from 'styled-components'
+
+import {Button, MenuButton, type MenuButtonProps} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
 import {
+  BlockQuote,
   Heading1,
   Heading2,
   Heading3,
   Heading4,
   Heading5,
   Heading6,
-  BlockQuote,
   Normal,
 } from '../text/textStyles'
-import {Button, MenuButton, MenuButtonProps} from '../../../../../ui-components'
 import {useActiveStyleKeys, useFocusBlock} from './hooks'
-import {BlockStyleItem} from './types'
+import {type BlockStyleItem} from './types'
 
 const MenuButtonMemo = memo(MenuButton)
 

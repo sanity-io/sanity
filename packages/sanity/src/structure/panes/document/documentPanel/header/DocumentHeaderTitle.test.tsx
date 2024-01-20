@@ -1,11 +1,13 @@
 import {render, waitFor} from '@testing-library/react'
-import {useDocumentPane} from '../../useDocumentPane'
-import {DocumentPaneContextValue} from '../../DocumentPaneContext'
-import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
+import React from 'react'
+import {defineConfig, type SanityClient, unstable_useValuePreview as useValuePreview} from 'sanity'
+
 import {createMockSanityClient} from '../../../../../../test/mocks/mockSanityClient'
+import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {structureUsEnglishLocaleBundle} from '../../../../i18n'
+import {type DocumentPaneContextValue} from '../../DocumentPaneContext'
+import {useDocumentPane} from '../../useDocumentPane'
 import {DocumentHeaderTitle} from './DocumentHeaderTitle'
-import {SanityClient, defineConfig, unstable_useValuePreview as useValuePreview} from 'sanity'
 
 function createWrapperComponent(client: SanityClient) {
   const config = defineConfig({

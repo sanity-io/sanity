@@ -1,13 +1,13 @@
-import type {Path, PathSegment} from '@sanity/types'
 import {makePatches, stringifyPatches} from '@sanity/diff-match-patch'
+import {type Path, type PathSegment} from '@sanity/types'
 
-import type {
-  SetIfMissingPatch,
-  InsertPatch,
-  InsertPosition,
-  SetPatch,
-  UnsetPatch,
-  DiffMatchPatch,
+import {
+  type DiffMatchPatch,
+  type InsertPatch,
+  type InsertPosition,
+  type SetIfMissingPatch,
+  type SetPatch,
+  type UnsetPatch,
 } from '../types/patch'
 
 export function setIfMissing(value: any, path: Path = []): SetIfMissingPatch {

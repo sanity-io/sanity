@@ -1,8 +1,9 @@
 import {ErrorOutlineIcon} from '@sanity/icons'
-import {ReactNode, Component} from 'react'
 import {Box, Card, Flex, Text} from '@sanity/ui'
-import type {TFunction} from '../../../i18n'
+import React, {Component, type ReactNode} from 'react'
+
 import {isDev} from '../../../environment'
+import {type TFunction} from '../../../i18n'
 
 /** @internal */
 export interface DiffErrorBoundaryProps {

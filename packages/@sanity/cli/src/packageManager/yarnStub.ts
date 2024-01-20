@@ -1,4 +1,4 @@
-import type {CliCommandContext, CliYarnOptions} from '../types'
+import {type CliCommandContext, type CliYarnOptions} from '../types'
 import {installDeclaredPackages, installNewPackages} from './installPackages'
 import {getPackageManagerChoice} from './packageManagerChoice'
 import {uninstallPackages} from './uninstallPackages'

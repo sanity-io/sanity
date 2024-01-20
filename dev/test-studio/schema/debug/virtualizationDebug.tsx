@@ -1,4 +1,4 @@
-import {FieldProps, SanityClient, defineField, defineType} from 'sanity'
+import {defineField, defineType, type FieldProps, type SanityClient} from 'sanity'
 
 interface Author {
   _id: string

@@ -1,15 +1,16 @@
 import {useForwardedRef} from '@sanity/ui'
 import createPubSub from 'nano-pubsub'
 import {
-  ElementType,
-  ForwardedRef,
-  HTMLProps,
   createElement,
+  type ElementType,
+  type ForwardedRef,
   forwardRef,
+  type HTMLProps,
   useContext,
   useEffect,
   useMemo,
 } from 'react'
+
 import {ScrollContext} from './scrollContext'
 
 /** @internal */

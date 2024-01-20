@@ -3,10 +3,11 @@ import {
   usePortableTextEditor,
   usePortableTextEditorSelection,
 } from '@sanity/portable-text-editor'
-import {Path, KeyedObject, isKeyedObject} from '@sanity/types'
+import {isKeyedObject, type KeyedObject, type Path} from '@sanity/types'
+import {isEqual} from '@sanity/util/paths'
 import {useLayoutEffect} from 'react'
 import scrollIntoView from 'scroll-into-view-if-needed'
-import {isEqual} from '@sanity/util/paths'
+
 import {usePortableTextMemberItems} from './usePortableTextMembers'
 
 interface Props {

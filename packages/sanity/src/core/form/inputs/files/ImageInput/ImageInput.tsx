@@ -1,47 +1,54 @@
 /* eslint-disable react/jsx-no-bind */
 /* eslint-disable import/no-unresolved,react/jsx-handler-names, react/display-name, react/no-this-in-sfc */
 
-import {Box, Card, Menu, Stack, ToastParams} from '@sanity/ui'
-import {get, startCase} from 'lodash'
-import {Observable, Subscription} from 'rxjs'
+import {isImageSource} from '@sanity/asset-utils'
+import {type SanityClient} from '@sanity/client'
 import {ChevronDownIcon, ImageIcon, SearchIcon} from '@sanity/icons'
 import {
-  AssetFromSource,
-  AssetSource,
-  Image as BaseImage,
-  ImageAsset,
-  ImageSchemaType,
-  Path,
-  UploadState,
+  type AssetFromSource,
+  type AssetSource,
+  type Image as BaseImage,
+  type ImageAsset,
+  type ImageSchemaType,
+  type Path,
+  type UploadState,
 } from '@sanity/types'
-import {PureComponent, ReactNode, FocusEvent} from 'react'
-import {SanityClient} from '@sanity/client'
-import {isImageSource} from '@sanity/asset-utils'
-import {Button, Dialog, MenuButton, MenuButtonProps, MenuItem} from '../../../../../ui-components'
-import {PatchEvent, setIfMissing, unset} from '../../../patch'
-import {FieldMember} from '../../../store'
-import {InputProps, ObjectInputProps} from '../../../types'
+import {Box, Card, Menu, Stack, type ToastParams} from '@sanity/ui'
+import {get, startCase} from 'lodash'
+import {type FocusEvent, PureComponent, type ReactNode} from 'react'
+import {type Observable, type Subscription} from 'rxjs'
+
 import {
-  ResolvedUploader,
-  Uploader,
-  UploaderResolver,
-  UploadOptions,
-} from '../../../studio/uploads/types'
-import {UploadPlaceholder} from '../common/UploadPlaceholder'
-import {WithReferencedAsset} from '../../../utils/WithReferencedAsset'
-import {FileTarget} from '../common/styles'
-import {ImageUrlBuilder} from '../types'
-import {UploadProgress} from '../common/UploadProgress'
-import {handleSelectAssetFromSource} from '../common/assetSource'
-import {ActionsMenu} from '../common/ActionsMenu'
-import {UploadWarning} from '../common/UploadWarning'
-import {ImageToolInput} from '../ImageToolInput'
+  Button,
+  Dialog,
+  MenuButton,
+  type MenuButtonProps,
+  MenuItem,
+} from '../../../../../ui-components'
+import {ChangeIndicator} from '../../../../changeIndicators'
+import {ImperativeToast} from '../../../../components'
+import {type FIXME} from '../../../../FIXME'
+import {PresenceOverlay} from '../../../../presence'
 import {FormInput} from '../../../components'
 import {MemberField, MemberFieldError, MemberFieldSet} from '../../../members'
-import {PresenceOverlay} from '../../../../presence'
-import {FIXME} from '../../../../FIXME'
-import {ImperativeToast} from '../../../../components'
-import {ChangeIndicator} from '../../../../changeIndicators'
+import {type PatchEvent, setIfMissing, unset} from '../../../patch'
+import {type FieldMember} from '../../../store'
+import {
+  type ResolvedUploader,
+  type Uploader,
+  type UploaderResolver,
+  type UploadOptions,
+} from '../../../studio/uploads/types'
+import {type InputProps, type ObjectInputProps} from '../../../types'
+import {WithReferencedAsset} from '../../../utils/WithReferencedAsset'
+import {ActionsMenu} from '../common/ActionsMenu'
+import {handleSelectAssetFromSource} from '../common/assetSource'
+import {FileTarget} from '../common/styles'
+import {UploadPlaceholder} from '../common/UploadPlaceholder'
+import {UploadProgress} from '../common/UploadProgress'
+import {UploadWarning} from '../common/UploadWarning'
+import {ImageToolInput} from '../ImageToolInput'
+import {type ImageUrlBuilder} from '../types'
 import {ImageActionsMenu} from './ImageActionsMenu'
 import {ImagePreview} from './ImagePreview'
 import {InvalidImageWarning} from './InvalidImageWarning'

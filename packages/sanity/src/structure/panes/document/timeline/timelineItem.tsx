@@ -1,12 +1,12 @@
-import {useCallback, createElement, useMemo} from 'react'
-import * as React from 'react'
 import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
-import {ButtonProps} from '../../../../ui-components'
+import {createElement, type MouseEvent, useCallback, useMemo} from 'react'
+import {type Chunk, type ChunkType, useDateTimeFormat, useTranslation} from 'sanity'
+
+import {type ButtonProps} from '../../../../ui-components'
 import {getTimelineEventIconComponent} from './helpers'
-import {UserAvatarStack} from './userAvatarStack'
-import {IconBox, IconWrapper, Root, TimestampBox} from './timelineItem.styled'
 import {TIMELINE_ITEM_I18N_KEY_MAPPING} from './timelineI18n'
-import {type ChunkType, type Chunk, useTranslation, useDateTimeFormat} from 'sanity'
+import {IconBox, IconWrapper, Root, TimestampBox} from './timelineItem.styled'
+import {UserAvatarStack} from './userAvatarStack'
 
 const TIMELINE_ITEM_EVENT_TONE: Record<ChunkType | 'withinSelection', ButtonProps['tone']> = {
   initial: 'primary',
@@ -55,7 +55,7 @@ export function TimelineItem({
   }, [timestamp, dateFormat])
 
   const handleClick = useCallback(
-    (evt: React.MouseEvent<HTMLButtonElement>) => {
+    (evt: MouseEvent<HTMLButtonElement>) => {
       evt.preventDefault()
       evt.stopPropagation()
 

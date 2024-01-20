@@ -1,4 +1,4 @@
-import {prepareTemplates, defaultTemplatesForSchema} from '../'
+import {defaultTemplatesForSchema, prepareTemplates} from '../'
 import {schema} from './schema'
 
 describe('getTemplates', () => {

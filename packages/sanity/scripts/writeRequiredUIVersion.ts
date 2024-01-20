@@ -30,9 +30,10 @@
 /* eslint-disable no-sync */
 
 import fs from 'fs'
-import path from 'path'
 import globby from 'globby'
+import path from 'path'
 import semver from 'semver'
+
 import pkg from '../package.json'
 
 const rawVersion = pkg.dependencies['@sanity/ui']

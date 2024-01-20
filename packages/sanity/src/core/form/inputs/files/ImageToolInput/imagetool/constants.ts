@@ -1,4 +1,4 @@
-import type {Crop, Hotspot} from './types'
+import {type Crop, type Hotspot} from './types'
 
 export const DEFAULT_HOTSPOT: Hotspot = {
   x: 0.5,

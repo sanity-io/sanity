@@ -1,6 +1,7 @@
-import type {ChunkMetadata, Plugin} from 'vite'
-import type {SanityMonorepo} from '../sanityMonorepo'
+import {type ChunkMetadata, type Plugin} from 'vite'
+
 import {renderDocument} from '../renderDocument'
+import {type SanityMonorepo} from '../sanityMonorepo'
 
 interface ViteOutputBundle {
   [fileName: string]: ViteRenderedChunk | ViteRenderedAsset

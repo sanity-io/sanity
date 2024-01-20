@@ -1,7 +1,8 @@
-import {isObjectSchemaType, SchemaType} from '@sanity/types'
+import {isObjectSchemaType, type SchemaType} from '@sanity/types'
 import {randomKey} from '@sanity/util/content'
+
+import {type ObjectItem} from '../../../types'
 import {createProtoValue} from '../../../utils/createProtoValue'
-import {ObjectItem} from '../../../types'
 
 export function createProtoArrayValue<Item extends ObjectItem>(type: SchemaType): Item {
   if (!isObjectSchemaType(type)) {

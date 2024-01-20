@@ -5,7 +5,7 @@ import {
   ARROW_THRESHOLD,
   CORNER_RADIUS,
 } from '../constants'
-import {ConnectorLine} from './types'
+import {type ConnectorLine} from './types'
 
 export function arrowPath(x: number, y: number, dir: number): string {
   return [

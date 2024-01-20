@@ -1,5 +1,5 @@
-import * as React from 'react'
 import {Flex, Text} from '@sanity/ui'
+import type * as React from 'react'
 import styled from 'styled-components'
 
 const NormalText = styled(Text)`

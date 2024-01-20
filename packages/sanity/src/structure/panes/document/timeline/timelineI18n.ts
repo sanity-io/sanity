@@ -1,4 +1,4 @@
-import type {ChunkType, StudioLocaleResourceKeys} from 'sanity'
+import {type ChunkType, type StudioLocaleResourceKeys} from 'sanity'
 
 /**
  * Maps from a chunk type to an i18n key for the operation

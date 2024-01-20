@@ -1,6 +1,11 @@
-import {ConditionalProperty, ConditionalPropertyCallbackContext, CurrentUser} from '@sanity/types'
+import {
+  type ConditionalProperty,
+  type ConditionalPropertyCallbackContext,
+  type CurrentUser,
+} from '@sanity/types'
 import {omit} from 'lodash'
 import {useMemo, useRef} from 'react'
+
 import {isRecord} from '../../util'
 
 export function isThenable(value: unknown): value is Promise<unknown> {

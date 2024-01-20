@@ -1,5 +1,5 @@
-import {ConfigPropertyReducer} from '../../types'
-import {DocumentFieldAction, DocumentFieldActionsResolverContext} from './types'
+import {type ConfigPropertyReducer} from '../../types'
+import {type DocumentFieldAction, type DocumentFieldActionsResolverContext} from './types'
 
 /** @internal */
 export const documentFieldActionsReducer: ConfigPropertyReducer<

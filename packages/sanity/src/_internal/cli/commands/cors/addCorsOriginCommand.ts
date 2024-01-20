@@ -1,6 +1,7 @@
+import {type CliCommandDefinition} from '@sanity/cli'
 import fs from 'fs'
 import path from 'path'
-import type {CliCommandDefinition} from '@sanity/cli'
+
 import {addCorsOrigin} from '../../actions/cors/addCorsOrigin'
 
 const helpText = `

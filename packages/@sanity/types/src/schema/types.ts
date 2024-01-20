@@ -1,27 +1,28 @@
-import type {ComponentType} from 'react'
-import type {SanityClient} from '@sanity/client'
-import type {Rule} from '../validation'
-import type {SanityDocument} from '../documents'
-import type {CurrentUser} from '../user'
-import type {PreviewConfig} from './preview'
-import type {SchemaTypeDefinition} from './definition/schemaDefinition'
-import type {ArrayOptions} from './definition/type/array'
-import type {
-  BlockDecoratorDefinition,
-  BlockOptions,
-  BooleanOptions,
-  DateOptions,
-  DatetimeOptions,
-  FileOptions,
-  ImageOptions,
-  NumberOptions,
-  ReferenceOptions,
-  SlugOptions,
-  StringOptions,
-  TextOptions,
-} from './definition/type'
+import {type SanityClient} from '@sanity/client'
+import {type ComponentType} from 'react'
 
-export {defineType, defineField, defineArrayMember, typed} from './define'
+import {type SanityDocument} from '../documents'
+import {type CurrentUser} from '../user'
+import {type Rule} from '../validation'
+import {type SchemaTypeDefinition} from './definition/schemaDefinition'
+import {
+  type BlockDecoratorDefinition,
+  type BlockOptions,
+  type BooleanOptions,
+  type DateOptions,
+  type DatetimeOptions,
+  type FileOptions,
+  type ImageOptions,
+  type NumberOptions,
+  type ReferenceOptions,
+  type SlugOptions,
+  type StringOptions,
+  type TextOptions,
+} from './definition/type'
+import {type ArrayOptions} from './definition/type/array'
+import {type PreviewConfig} from './preview'
+
+export {defineArrayMember, defineField, defineType, typed} from './define'
 
 /**
  * Note: you probably want `SchemaTypeDefinition` instead

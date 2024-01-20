@@ -1,12 +1,12 @@
-import type {ComponentType} from 'react'
-import type {
-  ArraySchemaType,
-  I18nTitledListValue,
-  ObjectSchemaType,
-  PortableTextObject,
-  SpanSchemaType,
-  TitledListValue,
+import {
+  type ArraySchemaType,
+  type I18nTitledListValue,
+  type ObjectSchemaType,
+  type PortableTextObject,
+  type SpanSchemaType,
+  type TitledListValue,
 } from '@sanity/types'
+import {type ComponentType} from 'react'
 
 /**
  * @public

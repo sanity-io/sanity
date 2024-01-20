@@ -1,5 +1,6 @@
-import {HTMLProps, ReactNode, forwardRef, useMemo} from 'react'
 import {Flex, Grid, rem, useTheme} from '@sanity/ui'
+import React, {forwardRef, type HTMLProps, type ReactNode, useMemo} from 'react'
+
 import {FromToArrow} from './FromToArrow'
 
 /** @internal */

@@ -6,28 +6,31 @@ import {
   type SpanSchemaType,
 } from '@sanity/types'
 import {uniq, xor} from 'lodash'
-import {createElement, ReactElement, ReactNode, useCallback, useMemo} from 'react'
+import {createElement, type ReactElement, type ReactNode, useCallback, useMemo} from 'react'
+
 import {type TFunction, useTranslation} from '../../../../../i18n'
 import {DiffCard} from '../../../../diff'
-import type {ArrayDiff, ObjectDiff, StringDiff, StringDiffSegment} from '../../../../types'
-import type {PortableTextDiff} from '../types'
-
-import * as TextSymbols from '../symbols'
-
+import {
+  type ArrayDiff,
+  type ObjectDiff,
+  type StringDiff,
+  type StringDiffSegment,
+} from '../../../../types'
 import {
   escapeRegExp,
-  getAllMarkDefs,
-  findChildDiff,
   findAnnotationDiff,
+  findChildDiff,
   findSpanDiffFromChild,
+  getAllMarkDefs,
   getChildSchemaType,
   getDecorators,
   getInlineObjects,
   isDecorator,
 } from '../helpers'
-
-import {Block} from './Block'
+import * as TextSymbols from '../symbols'
+import {type PortableTextDiff} from '../types'
 import {Annotation} from './Annotation'
+import {Block} from './Block'
 import {Decorator} from './Decorator'
 import {InlineObject} from './InlineObject'
 import {Text} from './Text'

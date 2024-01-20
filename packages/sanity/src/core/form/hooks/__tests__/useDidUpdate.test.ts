@@ -1,6 +1,7 @@
 /* eslint-disable max-nested-callbacks */
 import {renderHook} from '@testing-library/react'
 import {StrictMode} from 'react'
+
 import {useDidUpdate} from '../useDidUpdate'
 
 describe('useDidUpdate', () => {

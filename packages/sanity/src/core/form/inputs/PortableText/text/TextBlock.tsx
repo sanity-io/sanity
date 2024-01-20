@@ -1,35 +1,36 @@
-import {Box, Flex, ResponsivePaddingProps, Text} from '@sanity/ui'
-import {ReactNode, RefObject, useCallback, useMemo, useState} from 'react'
-import {ObjectSchemaType, Path, PortableTextTextBlock} from '@sanity/types'
 import {
-  EditorSelection,
+  type EditorSelection,
   PortableTextEditor,
   usePortableTextEditor,
 } from '@sanity/portable-text-editor'
+import {type ObjectSchemaType, type Path, type PortableTextTextBlock} from '@sanity/types'
+import {Box, Flex, type ResponsivePaddingProps, Text} from '@sanity/ui'
 import {isEqual} from '@sanity/util/paths'
+import {type ReactNode, type RefObject, useCallback, useMemo, useState} from 'react'
+
 import {Tooltip} from '../../../../../ui-components'
+import {pathToString} from '../../../../field'
+import {EMPTY_ARRAY} from '../../../../util'
+import {useFormCallbacks} from '../../../studio'
+import {useChildPresence} from '../../../studio/contexts/Presence'
 import {
-  BlockProps,
-  RenderAnnotationCallback,
-  RenderArrayOfObjectsItemCallback,
-  RenderBlockCallback,
-  RenderCustomMarkers,
-  RenderFieldCallback,
-  RenderInputCallback,
-  RenderPreviewCallback,
+  type BlockProps,
+  type RenderAnnotationCallback,
+  type RenderArrayOfObjectsItemCallback,
+  type RenderBlockCallback,
+  type RenderCustomMarkers,
+  type RenderFieldCallback,
+  type RenderInputCallback,
+  type RenderPreviewCallback,
 } from '../../../types'
+import {type RenderBlockActionsCallback} from '../../../types/_transitional'
 import {useFormBuilder} from '../../../useFormBuilder'
-import {BlockActions} from '../BlockActions'
 import {ReviewChangesHighlightBlock, StyledChangeIndicatorWithProvidedFullPath} from '../_common'
-import {RenderBlockActionsCallback} from '../../../types/_transitional'
+import {BlockActions} from '../BlockActions'
+import {debugRender} from '../debugRender'
 import {useMemberValidation} from '../hooks/useMemberValidation'
 import {usePortableTextMarkers} from '../hooks/usePortableTextMarkers'
 import {usePortableTextMemberItem} from '../hooks/usePortableTextMembers'
-import {pathToString} from '../../../../field'
-import {debugRender} from '../debugRender'
-import {EMPTY_ARRAY} from '../../../../util'
-import {useChildPresence} from '../../../studio/contexts/Presence'
-import {useFormCallbacks} from '../../../studio'
 import {TEXT_STYLE_PADDING} from './constants'
 import {
   BlockActionsInner,

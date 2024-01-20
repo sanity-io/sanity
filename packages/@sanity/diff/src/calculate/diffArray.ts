@@ -1,6 +1,6 @@
-import type {ArrayDiff, ArrayInput, ItemDiff, DiffOptions} from '../types'
 import {replaceProperty} from '../helpers'
-import {diffInput, removedInput, addedInput} from './diffInput'
+import {type ArrayDiff, type ArrayInput, type DiffOptions, type ItemDiff} from '../types'
+import {addedInput, diffInput, removedInput} from './diffInput'
 import {getLongestCommonSubsequence} from './lcs'
 
 export function diffArray<A>(

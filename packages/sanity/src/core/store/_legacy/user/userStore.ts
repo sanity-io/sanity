@@ -1,7 +1,8 @@
-import {SanityClient} from '@sanity/client'
-import {CurrentUser, User} from '@sanity/types'
+import {type SanityClient} from '@sanity/client'
+import {type CurrentUser, type User} from '@sanity/types'
 import DataLoader from 'dataloader'
 import raf from 'raf'
+
 import {isRecord} from '../../../util'
 
 /** @internal */

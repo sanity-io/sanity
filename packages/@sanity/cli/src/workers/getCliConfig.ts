@@ -1,4 +1,5 @@
 import {parentPort, workerData} from 'worker_threads'
+
 import {getCliConfig} from '../util/getCliConfig'
 
 // We're communicating with a parent process through a message channel

@@ -1,5 +1,5 @@
-import {useEffect, useState, startTransition} from 'react'
 import {usePrefersReducedMotion} from '@sanity/ui'
+import {startTransition, useEffect, useState} from 'react'
 
 export function useLazyFrameloop(ref: React.RefObject<any>): 'always' | 'demand' | 'never' {
   const reduceMotion = usePrefersReducedMotion()

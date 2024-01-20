@@ -1,4 +1,4 @@
-import type {CliCommandDefinition} from '@sanity/cli'
+import {type CliCommandDefinition} from '@sanity/cli'
 
 const description = `Downloads and validates all document specified in a workspace`
 

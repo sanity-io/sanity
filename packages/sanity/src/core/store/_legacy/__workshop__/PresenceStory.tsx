@@ -1,7 +1,8 @@
 import {Box, Code, Text} from '@sanity/ui'
 import {useEffect, useState} from 'react'
+
 import {usePresenceStore} from '../datastores'
-import {GlobalPresence} from '../presence'
+import {type GlobalPresence} from '../presence'
 
 export default function PresenceStory() {
   const presenceStore = usePresenceStore()

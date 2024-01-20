@@ -1,6 +1,7 @@
-import type {GraphQLAPIConfig} from '@sanity/cli'
-import type {Schema} from '@sanity/types'
-import {internal} from './extractFromSanitySchema'
+import {type GraphQLAPIConfig} from '@sanity/cli'
+import {type Schema} from '@sanity/types'
+
+import {type internal} from './extractFromSanitySchema'
 
 export interface GeneratedApiSpecification {
   types: (ConvertedType | ConvertedUnion | ConvertedEnum | InputObjectType)[]

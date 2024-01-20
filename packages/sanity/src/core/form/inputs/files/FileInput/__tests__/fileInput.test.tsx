@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
-import {FileAsset, FileSchemaType} from '@sanity/types'
+import {type FileAsset, type FileSchemaType} from '@sanity/types'
 import {fireEvent, waitFor} from '@testing-library/react'
-import {Observable, of} from 'rxjs'
+import {type Observable, of} from 'rxjs'
+
 import {renderFileInput} from '../../../../../../../test/form'
 import {BaseFileInput} from '../FileInput'
 

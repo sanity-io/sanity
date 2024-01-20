@@ -1,13 +1,14 @@
 import {format, isValid, parse} from 'date-fns'
 import {
-  ChangeEvent,
-  ComponentProps,
-  KeyboardEvent,
+  type ChangeEvent,
+  type ComponentProps,
+  type KeyboardEvent,
   useCallback,
   useEffect,
   useMemo,
   useState,
 } from 'react'
+
 import {Tooltip} from '../../../../../../../../../../ui-components'
 import {useTranslation} from '../../../../../../../../../i18n'
 import {CustomTextInput} from '../../../../common/CustomTextInput'

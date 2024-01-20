@@ -1,5 +1,6 @@
 import {defineConfig} from 'sanity'
 import {structureTool} from 'sanity/structure'
+
 import {MyLogo} from './components/MyLogo'
 import {schema} from './schema'
 

@@ -1,6 +1,7 @@
-import path from 'path'
 import {stat} from 'fs/promises'
+import path from 'path'
 import tar from 'tar'
+
 import {describeCliTest, testConcurrent} from './shared/describe'
 import {
   getTestRunArgs,

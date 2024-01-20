@@ -1,7 +1,8 @@
 import {Container, Flex} from '@sanity/ui'
 import {useMemo} from 'react'
+
 import {StructureToolProvider} from '../../../../StructureToolProvider'
-import {DocumentPaneNode} from '../../../../types'
+import {type DocumentPaneNode} from '../../../../types'
 import {DocumentPaneProvider} from '../../DocumentPaneProvider'
 import {DocumentBadges} from '../DocumentBadges'
 

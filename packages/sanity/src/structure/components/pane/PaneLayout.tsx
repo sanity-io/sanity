@@ -1,9 +1,10 @@
-import {CardProps, useElementRect} from '@sanity/ui'
-import {useMemo, useState, useEffect, HTMLProps} from 'react'
-import {PaneLayoutContext} from './PaneLayoutContext'
-import {PaneLayoutContextValue} from './types'
+import {type CardProps, useElementRect} from '@sanity/ui'
+import {type HTMLProps, useEffect, useMemo, useState} from 'react'
+
 import {Root} from './PaneLayout.styles'
-import {createPaneLayoutController, PaneLayoutState} from './paneLayoutController'
+import {PaneLayoutContext} from './PaneLayoutContext'
+import {createPaneLayoutController, type PaneLayoutState} from './paneLayoutController'
+import {type PaneLayoutContextValue} from './types'
 
 /**
  *

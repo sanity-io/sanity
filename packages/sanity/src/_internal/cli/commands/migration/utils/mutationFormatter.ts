@@ -1,10 +1,9 @@
 // An example of a compact formatter
 
-import type {Mutation, NodePatch, Transaction} from '@sanity/migrate'
-
-import type {Chalk} from 'chalk'
-import type {KeyedSegment} from '@sanity/types'
+import {type Mutation, type NodePatch, type Transaction} from '@sanity/migrate'
+import {type KeyedSegment} from '@sanity/types'
 import {toString as pathToString} from '@sanity/util/paths'
+import {type Chalk} from 'chalk'
 
 export type ItemRef = string | number
 

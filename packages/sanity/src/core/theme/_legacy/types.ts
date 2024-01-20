@@ -1,4 +1,4 @@
-import {ColorTintKey} from '@sanity/color'
+import {type ColorTintKey} from '@sanity/color'
 
 /** @internal */
 // eslint-disable-next-line no-unused-vars

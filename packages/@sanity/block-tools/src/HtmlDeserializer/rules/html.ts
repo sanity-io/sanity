@@ -1,18 +1,19 @@
-import type {ArraySchemaType} from '@sanity/types'
-import {randomKey} from '../../util/randomKey'
-import {isElement, tagName} from '../helpers'
+import {type ArraySchemaType} from '@sanity/types'
+
 import {
   DEFAULT_BLOCK,
   DEFAULT_SPAN,
   HTML_BLOCK_TAGS,
+  HTML_DECORATOR_TAGS,
   HTML_HEADER_TAGS,
-  HTML_SPAN_TAGS,
   HTML_LIST_CONTAINER_TAGS,
   HTML_LIST_ITEM_TAGS,
-  HTML_DECORATOR_TAGS,
-  PartialBlock,
+  HTML_SPAN_TAGS,
+  type PartialBlock,
 } from '../../constants'
-import {BlockEnabledFeatures, DeserializerRule} from '../../types'
+import {type BlockEnabledFeatures, type DeserializerRule} from '../../types'
+import {randomKey} from '../../util/randomKey'
+import {isElement, tagName} from '../helpers'
 
 export function resolveListItem(
   listNodeTagName: string,

@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/ban-types */
-import {ComponentType, createElement, Fragment, useMemo} from 'react'
-import {useSource} from '../../studio'
+import {type ComponentType, createElement, Fragment, useMemo} from 'react'
+
 import {flattenConfig} from '../../config'
-import {PluginOptions} from '../types'
+import {useSource} from '../../studio'
+import {type PluginOptions} from '../types'
 
 const emptyRender = () => createElement(Fragment)
 

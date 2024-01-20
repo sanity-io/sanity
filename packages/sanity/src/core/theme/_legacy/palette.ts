@@ -1,5 +1,5 @@
 import {_toHex} from './helpers'
-import {LegacyThemeProps} from './types'
+import {type LegacyThemeProps} from './types'
 
 export interface LegacyPalette {
   black: string

@@ -2,7 +2,8 @@ import {
   type ButtonTone,
   type DialogProps, // eslint-disable-line no-restricted-imports
 } from '@sanity/ui'
-import {ReactNode, ComponentType} from 'react'
+import {type ComponentType, type ReactNode} from 'react'
+
 import {type EditStateFor} from '../../store/_legacy'
 
 /**

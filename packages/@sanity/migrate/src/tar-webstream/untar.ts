@@ -1,7 +1,7 @@
 /* eslint-disable no-bitwise,callback-return */
 import {BufferList} from './BufferList'
-import type {TarHeader} from './headers'
 import * as headers from './headers'
+import {type TarHeader} from './headers'
 
 // Inspired by
 // - https://github.com/alanshaw/it-tar/blob/master/src/extract.ts

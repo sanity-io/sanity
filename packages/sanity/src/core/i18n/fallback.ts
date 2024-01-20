@@ -1,9 +1,10 @@
+import {createInstance, type Resource} from 'i18next'
 import {memoize} from 'lodash'
-import {type Resource, createInstance} from 'i18next'
-import type {LocaleSource} from './types'
+
+import {isStaticResourceBundle} from './helpers'
 import {studioLocaleNamespace} from './localeNamespaces'
 import {defaultLocale, usEnglishLocale} from './locales'
-import {isStaticResourceBundle} from './helpers'
+import {type LocaleSource} from './types'
 
 const shouldEscape = typeof window === 'undefined' || typeof document === 'undefined'
 const fallbackLocales: LocaleSource['locales'] = [defaultLocale]

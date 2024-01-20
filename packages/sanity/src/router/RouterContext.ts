@@ -1,5 +1,6 @@
 import {createContext} from 'react'
-import {RouterContextValue} from './types'
+
+import {type RouterContextValue} from './types'
 
 /**
  * @internal

@@ -1,13 +1,14 @@
-import type {SanityClient} from '@sanity/client'
+import {type SanityClient} from '@sanity/client'
 import {
   isReference,
-  Reference,
-  SanityDocument,
-  TransactionLogEventWithMutations,
+  type Reference,
+  type SanityDocument,
+  type TransactionLogEventWithMutations,
 } from '@sanity/types'
 import {reduce as jsonReduce} from 'json-reduce'
-import {from, Observable} from 'rxjs'
+import {from, type Observable} from 'rxjs'
 import {map, mergeMap} from 'rxjs/operators'
+
 import {isDev} from '../../../environment'
 import {getDraftId, getPublishedId, isRecord} from '../../../util'
 import {Timeline, TimelineController} from './history'

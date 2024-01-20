@@ -1,28 +1,35 @@
-import {ComponentProps, ForwardedRef, forwardRef, useCallback, useMemo, useRef} from 'react'
+import {
+  type Path,
+  type Reference,
+  type ReferenceFilterSearchOptions,
+  type ReferenceOptions,
+  type ReferenceSchemaType,
+  type SanityDocument,
+} from '@sanity/types'
+import * as PathUtils from '@sanity/util/paths'
+import {
+  type ComponentProps,
+  type ForwardedRef,
+  forwardRef,
+  useCallback,
+  useMemo,
+  useRef,
+} from 'react'
 import {from, throwError} from 'rxjs'
 import {catchError, mergeMap} from 'rxjs/operators'
-import * as PathUtils from '@sanity/util/paths'
-import type {
-  Path,
-  Reference,
-  ReferenceFilterSearchOptions,
-  ReferenceOptions,
-  ReferenceSchemaType,
-  SanityDocument,
-} from '@sanity/types'
-import {useSchema} from '../../../hooks'
-import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
-import {useDocumentPreviewStore} from '../../../store'
-import {useReferenceInputOptions} from '../../studio'
-import {useSource} from '../../../studio'
-import {Source} from '../../../config'
 
-import {FIXME} from '../../../FIXME'
-import * as adapter from '../../studio/inputs/client-adapters/reference'
+import {type Source} from '../../../config'
+import {type FIXME} from '../../../FIXME'
+import {useSchema} from '../../../hooks'
+import {useDocumentPreviewStore} from '../../../store'
+import {useSource} from '../../../studio'
+import {useSearchMaxFieldDepth} from '../../../studio/components/navbar/search/hooks/useSearchMaxFieldDepth'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
 import {isNonNullable} from '../../../util'
 import {useFormValue} from '../../contexts/FormValue'
-import {EditReferenceEvent} from './types'
-import {useSearchMaxFieldDepth} from '../../../studio/components/navbar/search/hooks/useSearchMaxFieldDepth'
+import {useReferenceInputOptions} from '../../studio'
+import * as adapter from '../../studio/inputs/client-adapters/reference'
+import {type EditReferenceEvent} from './types'
 
 function useValueRef<T>(value: T): {current: T} {
   const ref = useRef(value)

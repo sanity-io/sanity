@@ -1,4 +1,4 @@
-import type {Expr, PathExpr} from './types'
+import {type Expr, type PathExpr} from './types'
 
 /**
  * Splits an expression into a set of heads, tails. A head is the next leaf node to

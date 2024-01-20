@@ -1,5 +1,4 @@
-import {ObjectInputProps} from 'sanity'
-import {Stack, Skeleton} from '@sanity/ui'
+import {Skeleton, Stack} from '@sanity/ui'
 import {lazy, Suspense} from 'react'
 import styled from 'styled-components'
 

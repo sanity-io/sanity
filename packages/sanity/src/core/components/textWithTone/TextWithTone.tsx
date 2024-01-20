@@ -1,6 +1,6 @@
+import {type ButtonTone, Text} from '@sanity/ui'
+import {type ComponentProps, forwardRef, type Ref} from 'react'
 import styled from 'styled-components'
-import {ButtonTone, Text} from '@sanity/ui'
-import {ComponentProps, Ref, forwardRef} from 'react'
 
 /** @internal */
 export interface TextWithToneProps extends ComponentProps<typeof Text> {

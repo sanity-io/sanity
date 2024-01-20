@@ -1,8 +1,9 @@
 import {type Framework, frameworks} from '@vercel/frameworks'
 import {detectFrameworkRecord, LocalFileSystemDetector} from '@vercel/fs-detectors'
-import initProject from '../../actions/init-project/initProject'
+
 import initPlugin from '../../actions/init-plugin/initPlugin'
-import {CliCommandDefinition} from '../../types'
+import initProject from '../../actions/init-project/initProject'
+import {type CliCommandDefinition} from '../../types'
 
 const helpText = `
 Options

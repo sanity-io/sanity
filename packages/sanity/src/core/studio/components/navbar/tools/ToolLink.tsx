@@ -1,4 +1,4 @@
-import {ForwardedRef, HTMLProps, ReactNode, forwardRef, useCallback} from 'react'
+import {type ForwardedRef, forwardRef, type HTMLProps, type ReactNode, useCallback} from 'react'
 import {StateLink, useRouterState} from 'sanity/router'
 
 /**

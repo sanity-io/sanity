@@ -1,7 +1,7 @@
-import {DocumentActionComponent, DocumentActionDescription} from 'sanity'
 import {CopyIcon} from '@sanity/icons'
 import {Button, Grid, Text, useToast} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
+import {type DocumentActionComponent, type DocumentActionDescription} from 'sanity'
 
 export const TestModalDialogAction: DocumentActionComponent = (props) => {
   const {onComplete} = props

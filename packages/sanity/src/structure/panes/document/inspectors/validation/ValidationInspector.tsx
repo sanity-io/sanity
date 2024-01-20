@@ -1,11 +1,23 @@
-import {ErrorOutlineIcon, IconComponent, InfoOutlineIcon, WarningOutlineIcon} from '@sanity/icons'
-import {Box, Card, CardTone, ErrorBoundary, Flex, Stack, Text} from '@sanity/ui'
-import {ObjectSchemaType, Path, SanityDocument, SchemaType, ValidationMarker} from '@sanity/types'
-import {ErrorInfo, Fragment, createElement, useCallback, useMemo, useState} from 'react'
-import {useDocumentPane} from '../../useDocumentPane'
+import {
+  ErrorOutlineIcon,
+  type IconComponent,
+  InfoOutlineIcon,
+  WarningOutlineIcon,
+} from '@sanity/icons'
+import {
+  type ObjectSchemaType,
+  type Path,
+  type SanityDocument,
+  type SchemaType,
+  type ValidationMarker,
+} from '@sanity/types'
+import {Box, Card, type CardTone, ErrorBoundary, Flex, Stack, Text} from '@sanity/ui'
+import {createElement, type ErrorInfo, Fragment, useCallback, useMemo, useState} from 'react'
+import {type DocumentInspectorProps, useTranslation} from 'sanity'
+
 import {DocumentInspectorHeader} from '../../documentInspector'
+import {useDocumentPane} from '../../useDocumentPane'
 import {getPathTitles} from './getPathTitles'
-import {DocumentInspectorProps, useTranslation} from 'sanity'
 
 const MARKER_ICON: Record<'error' | 'warning' | 'info', IconComponent> = {
   error: ErrorOutlineIcon,

@@ -1,5 +1,6 @@
 import {createContext, useContext} from 'react'
-import type {FreeTrialResponse} from './types'
+
+import {type FreeTrialResponse} from './types'
 
 /**
  * @internal

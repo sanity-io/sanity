@@ -1,23 +1,24 @@
 /* eslint-disable max-nested-callbacks */
 
-import type {SanityClient} from '@sanity/client'
-import {combineLatest, defer, from, Observable, of} from 'rxjs'
+import {type SanityClient} from '@sanity/client'
+import {flatten, keyBy} from 'lodash'
+import {combineLatest, defer, from, type Observable, of} from 'rxjs'
 import {distinctUntilChanged, map, mergeMap, reduce, switchMap} from 'rxjs/operators'
 import shallowEquals from 'shallow-equals'
-import {flatten, keyBy} from 'lodash'
+
 import {getDraftId, getPublishedId, isRecord} from '../util'
-import {debounceCollect} from './utils/debounceCollect'
 import {
   AVAILABILITY_NOT_FOUND,
   AVAILABILITY_PERMISSION_DENIED,
   AVAILABILITY_READABLE,
 } from './constants'
 import {
-  ObservePathsFn,
   type AvailabilityResponse,
   type DocumentAvailability,
   type DraftsModelDocumentAvailability,
+  type ObservePathsFn,
 } from './types'
+import {debounceCollect} from './utils/debounceCollect'
 
 const MAX_DOCUMENT_ID_CHUNK_SIZE = 11164
 

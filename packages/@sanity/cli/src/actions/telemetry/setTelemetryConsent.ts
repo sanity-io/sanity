@@ -1,16 +1,17 @@
 import {type ConsentStatus} from '@sanity/telemetry'
-import {type CliCommandAction} from '../../types'
-import {debug} from '../../debug'
-import {getUserConfig} from '../../util/getUserConfig'
-import {
-  ConsentInformation,
-  resolveConsent,
-  TELEMETRY_CONSENT_CONFIG_KEY,
-} from '../../util/createTelemetryStore'
+
 import {
   telemetryLearnMoreMessage,
   telemetryStatusMessage,
 } from '../../commands/telemetry/telemetryStatusCommand'
+import {debug} from '../../debug'
+import {type CliCommandAction} from '../../types'
+import {
+  type ConsentInformation,
+  resolveConsent,
+  TELEMETRY_CONSENT_CONFIG_KEY,
+} from '../../util/createTelemetryStore'
+import {getUserConfig} from '../../util/getUserConfig'
 
 type SettableConsentStatus = Extract<ConsentStatus, 'granted' | 'denied'>
 

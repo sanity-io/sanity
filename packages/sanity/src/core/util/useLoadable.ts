@@ -1,5 +1,5 @@
 import {useMemoObservable} from 'react-rx'
-import {Observable, of, OperatorFunction} from 'rxjs'
+import {type Observable, of, type OperatorFunction} from 'rxjs'
 import {catchError, map} from 'rxjs/operators'
 
 /** @internal */

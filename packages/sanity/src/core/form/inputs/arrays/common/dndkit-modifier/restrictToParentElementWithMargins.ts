@@ -1,5 +1,5 @@
-import type {ClientRect, Modifier} from '@dnd-kit/core'
-import type {Transform} from '@dnd-kit/utilities'
+import {type ClientRect, type Modifier} from '@dnd-kit/core'
+import {type Transform} from '@dnd-kit/utilities'
 
 function restrictToBoundingRect(
   transform: Transform,

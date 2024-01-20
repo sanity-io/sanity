@@ -1,22 +1,23 @@
+import {type SanityClient} from '@sanity/client'
+import {type CurrentUser, type SchemaType} from '@sanity/types'
 import {useCallback, useMemo} from 'react'
-import {CurrentUser, SchemaType} from '@sanity/types'
-import {SanityClient} from '@sanity/client'
+import {useWorkspace} from 'sanity'
+import {useRouterState} from 'sanity/router'
+
 import {
-  CommentCreatePayload,
-  CommentDocument,
-  CommentEditPayload,
-  CommentOperations,
-  CommentPostPayload,
-  CommentReactionOption,
+  type CommentCreatePayload,
+  type CommentDocument,
+  type CommentEditPayload,
+  type CommentOperations,
+  type CommentPostPayload,
+  type CommentReactionOption,
 } from '../../types'
 import {useNotificationTarget} from '../useNotificationTarget'
-import {reactOperation} from './reactOperation'
-import {updateOperation} from './updateOperation'
-import {editOperation} from './editOperation'
-import {removeOperation} from './removeOperation'
 import {createOperation} from './createOperation'
-import {useRouterState} from 'sanity/router'
-import {useWorkspace} from 'sanity'
+import {editOperation} from './editOperation'
+import {reactOperation} from './reactOperation'
+import {removeOperation} from './removeOperation'
+import {updateOperation} from './updateOperation'
 
 export interface CommentOperationsHookValue {
   operation: CommentOperations

@@ -1,19 +1,20 @@
 import {memo} from 'react'
-import {FIXME} from '../../../FIXME'
-import {FieldMember} from '../../store'
+
+import {type FIXME} from '../../../FIXME'
+import {type FieldMember} from '../../store'
 import {
-  RenderFieldCallback,
-  RenderInputCallback,
-  RenderArrayOfObjectsItemCallback,
-  RenderPreviewCallback,
-  RenderBlockCallback,
-  RenderAnnotationCallback,
+  type RenderAnnotationCallback,
+  type RenderArrayOfObjectsItemCallback,
+  type RenderBlockCallback,
+  type RenderFieldCallback,
+  type RenderInputCallback,
+  type RenderPreviewCallback,
 } from '../../types'
 import {ArrayOfObjectsField} from './fields/ArrayOfObjectsField'
-import {PrimitiveField} from './fields/PrimitiveField'
-import {ObjectField} from './fields/ObjectField'
 import {ArrayOfPrimitivesField} from './fields/ArrayOfPrimitivesField'
 import {isMemberArrayOfObjects, isMemberArrayOfPrimitives, isMemberObject} from './fields/asserters'
+import {ObjectField} from './fields/ObjectField'
+import {PrimitiveField} from './fields/PrimitiveField'
 
 /** @internal */
 export interface MemberFieldProps {

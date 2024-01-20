@@ -2,16 +2,15 @@
 /* eslint-disable react/no-unknown-property */
 // Fork of https://codesandbox.io/s/object-clump-ssbdsw
 
-import {memo, useState} from 'react'
-
 import {Physics, useCylinder, useSphere} from '@react-three/cannon'
 import {Effects as EffectComposer, Environment, Sky, useTexture} from '@react-three/drei'
 import {Canvas, extend, useFrame, useThree} from '@react-three/fiber'
-import * as THREE from 'three'
-import {SSAOPass} from 'three-stdlib'
+import {Box, Card, Text} from '@sanity/ui'
+import React, {memo, useState} from 'react'
 import {useGlobalPresence, useUserColor, useWorkspace} from 'sanity'
 import styled from 'styled-components'
-import {Card, Box, Text} from '@sanity/ui'
+import * as THREE from 'three'
+import {SSAOPass} from 'three-stdlib'
 
 extend({SSAOPass})
 

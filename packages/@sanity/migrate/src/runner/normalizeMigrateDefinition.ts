@@ -1,18 +1,25 @@
-import {Path, SanityDocument} from '@sanity/types'
-import type {Mutation as RawMutation} from '@sanity/client'
-
-import arrify from 'arrify'
 import {SanityEncoder} from '@bjoerge/mutiny'
+import {type Mutation as RawMutation} from '@sanity/client'
+import {type Path, type SanityDocument} from '@sanity/types'
+import arrify from 'arrify'
+
+import {type JsonArray, type JsonObject, type JsonValue} from '../json'
 import {
-  AsyncIterableMigration,
-  Migration,
-  NodeMigration,
-  MigrationContext,
-  NodeMigrationReturnValue,
-} from '../types'
-import {JsonArray, JsonObject, JsonValue} from '../json'
-import {at, Mutation, patch, NodePatch, Operation, Transaction} from '../mutations'
+  at,
+  type Mutation,
+  type NodePatch,
+  type Operation,
+  patch,
+  type Transaction,
+} from '../mutations'
 import {isMutation, isNodePatch, isOperation, isTransaction} from '../mutations/asserters'
+import {
+  type AsyncIterableMigration,
+  type Migration,
+  type MigrationContext,
+  type NodeMigration,
+  type NodeMigrationReturnValue,
+} from '../types'
 import {flatMapDeep} from './utils/flatMapDeep'
 import {getValueType} from './utils/getValueType'
 

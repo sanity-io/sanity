@@ -1,4 +1,4 @@
-import {PortableTextBlock} from '@sanity/types'
+import {type PortableTextBlock} from '@sanity/types'
 
 export type UnsetCallback = () => void
 export type SetCallback = (block: PortableTextBlock) => void

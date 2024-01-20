@@ -1,7 +1,7 @@
+import {endpoints} from '../fetch-utils/endpoints'
 import {fetchAsyncIterator} from '../fetch-utils/fetchStream'
 import {toFetchOptions} from '../fetch-utils/sanityRequestOptions'
-import {endpoints} from '../fetch-utils/endpoints'
-import {APIConfig} from '../types'
+import {type APIConfig} from '../types'
 
 export function fromQueryEndpoint(options: APIConfig) {
   return fetchAsyncIterator(

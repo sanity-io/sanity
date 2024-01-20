@@ -1,10 +1,11 @@
-import {catchError, map, mergeMap} from 'rxjs/operators'
+import {type ProgressEvent, type SanityAssetDocument, type SanityClient} from '@sanity/client'
+import {type FileAsset, type ImageAsset} from '@sanity/types'
 import {Observable, of as observableOf} from 'rxjs'
-import {FileAsset, ImageAsset} from '@sanity/types'
-import {ProgressEvent, SanityAssetDocument, SanityClient} from '@sanity/client'
+import {catchError, map, mergeMap} from 'rxjs/operators'
+
+import {type DocumentPreviewStore} from '../../../../preview'
+import {type UploadOptions} from '../../uploads/types'
 import {withMaxConcurrency} from '../../utils'
-import {UploadOptions} from '../../uploads/types'
-import {DocumentPreviewStore} from '../../../../preview'
 
 const MAX_CONCURRENT_UPLOADS = 4
 

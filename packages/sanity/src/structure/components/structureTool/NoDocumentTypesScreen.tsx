@@ -1,7 +1,8 @@
 import {WarningOutlineIcon} from '@sanity/icons'
 import {Box, Card, Container, Flex, Stack, Text} from '@sanity/ui'
-import {structureLocaleNamespace} from '../../i18n'
 import {useTranslation} from 'sanity'
+
+import {structureLocaleNamespace} from '../../i18n'
 
 export function NoDocumentTypesScreen() {
   const {t} = useTranslation(structureLocaleNamespace)

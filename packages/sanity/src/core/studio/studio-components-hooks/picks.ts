@@ -1,5 +1,12 @@
-import {ComponentType} from 'react'
-import {LayoutProps, LogoProps, NavbarProps, PluginOptions, ToolMenuProps} from '../../config'
+import {type ComponentType} from 'react'
+
+import {
+  type LayoutProps,
+  type LogoProps,
+  type NavbarProps,
+  type PluginOptions,
+  type ToolMenuProps,
+} from '../../config'
 
 export function pickToolMenuComponent(
   plugin: PluginOptions,

@@ -1,6 +1,7 @@
 import {useContext} from 'react'
+
 import {RouterContext} from './RouterContext'
-import {RouterContextValue} from './types'
+import {type RouterContextValue} from './types'
 
 /**
  * Returns the router context value.

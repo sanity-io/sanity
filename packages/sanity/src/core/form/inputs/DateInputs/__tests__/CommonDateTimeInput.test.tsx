@@ -1,12 +1,13 @@
+import {defineField} from '@sanity/types'
 import {fireEvent} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {format, parse} from 'date-fns'
-import {defineField} from '@sanity/types'
-import {ParseResult} from '../types'
-import {CommonDateTimeInput} from '../CommonDateTimeInput'
-import {isValidDate} from '../utils'
+
 import {renderStringInput} from '../../../../../../test/form'
-import {CalendarLabels} from '../base/calendar/types'
+import {type CalendarLabels} from '../base/calendar/types'
+import {CommonDateTimeInput} from '../CommonDateTimeInput'
+import {type ParseResult} from '../types'
+import {isValidDate} from '../utils'
 
 function parseInputValue(input: string): ParseResult {
   const candidate = parse(input, 'yyyy-MM-dd HH:mm', 0)

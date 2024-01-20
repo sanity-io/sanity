@@ -1,34 +1,25 @@
-import {memo, useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import type {ObjectSchemaType, Path, SanityDocument, SanityDocumentLike} from '@sanity/types'
-import {omit} from 'lodash'
+import {isActionEnabled} from '@sanity/schema/_internal'
+import {
+  type ObjectSchemaType,
+  type Path,
+  type SanityDocument,
+  type SanityDocumentLike,
+} from '@sanity/types'
 import {useToast} from '@sanity/ui'
 import {fromString as pathFromString, resolveKeyedPath} from '@sanity/util/paths'
-import {isActionEnabled} from '@sanity/schema/_internal'
-import {usePaneRouter} from '../../components'
-import type {PaneMenuItem} from '../../types'
-import {useStructureTool} from '../../useStructureTool'
-import {structureLocaleNamespace} from '../../i18n'
-import {DocumentPaneContext, type DocumentPaneContextValue} from './DocumentPaneContext'
-import type {DocumentPaneProviderProps} from './types'
-import {usePreviewUrl} from './usePreviewUrl'
-import {getInitialValueTemplateOpts} from './getInitialValueTemplateOpts'
-import {
-  DEFAULT_MENU_ITEM_GROUPS,
-  EMPTY_PARAMS,
-  HISTORY_INSPECTOR_NAME,
-  INSPECT_ACTION_PREFIX,
-} from './constants'
+import {omit} from 'lodash'
+import {memo, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {
   type DocumentFieldAction,
   type DocumentInspector,
   type DocumentPresence,
-  type PatchEvent,
-  type StateTree,
   EMPTY_ARRAY,
   getDraftId,
   getExpandOperations,
   getPublishedId,
+  type PatchEvent,
   setAtPath,
+  type StateTree,
   toMutationPatches,
   useConnectionState,
   useDocumentOperation,
@@ -46,6 +37,21 @@ import {
   useUnique,
   useValidationStatus,
 } from 'sanity'
+
+import {usePaneRouter} from '../../components'
+import {structureLocaleNamespace} from '../../i18n'
+import {type PaneMenuItem} from '../../types'
+import {useStructureTool} from '../../useStructureTool'
+import {
+  DEFAULT_MENU_ITEM_GROUPS,
+  EMPTY_PARAMS,
+  HISTORY_INSPECTOR_NAME,
+  INSPECT_ACTION_PREFIX,
+} from './constants'
+import {DocumentPaneContext, type DocumentPaneContextValue} from './DocumentPaneContext'
+import {getInitialValueTemplateOpts} from './getInitialValueTemplateOpts'
+import {type DocumentPaneProviderProps} from './types'
+import {usePreviewUrl} from './usePreviewUrl'
 
 /**
  * @internal

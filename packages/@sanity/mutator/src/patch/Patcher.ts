@@ -1,10 +1,10 @@
-import type {Doc} from '../document/types'
+import {type Doc} from '../document/types'
 import {Matcher} from '../jsonpath'
-import {parsePatch} from './parse'
 import {ImmutableAccessor} from './ImmutableAccessor'
-import {PatchTypes, SingleDocumentPatch} from './types'
-import {SetPatch} from './SetPatch'
+import {parsePatch} from './parse'
 import {SetIfMissingPatch} from './SetIfMissingPatch'
+import {SetPatch} from './SetPatch'
+import {type PatchTypes, type SingleDocumentPatch} from './types'
 
 export interface Patch {
   id: string

@@ -1,9 +1,10 @@
 import {defineConfig} from 'sanity'
 import {structureTool} from 'sanity/structure'
-import {templates} from './templates'
+
 import {themePreviewTool} from './plugins/theme-preview-tool'
 import {schemaTypes} from './schemaTypes'
 import {structure} from './structure'
+import {templates} from './templates'
 
 export default defineConfig({
   plugins: [

@@ -1,4 +1,4 @@
-import {PreviewValue, SanityDocument} from '@sanity/types'
+import {type PreviewValue, type SanityDocument} from '@sanity/types'
 
 export interface PaneItemPreviewState {
   isLoading?: boolean

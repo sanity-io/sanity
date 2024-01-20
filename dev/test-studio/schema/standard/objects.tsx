@@ -1,8 +1,8 @@
 /* eslint-disable func-name-matching */
 // import {FaPuzzlePiece as icon} from 'react-icons/fa'
 
-import {defineType, FormPatch, set, TransformPatches} from 'sanity'
 import {useCallback} from 'react'
+import {defineType, type FormPatch, set, TransformPatches} from 'sanity'
 
 export const myObject = defineType({
   type: 'object',

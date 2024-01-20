@@ -1,8 +1,8 @@
 // https://beta.nextjs.org/docs/styling/css-in-js#styled-components
 
 'use client'
-import {ReactNode, useState} from 'react'
 import {useServerInsertedHTML} from 'next/navigation'
+import React, {type ReactNode, useState} from 'react'
 import {ServerStyleSheet, StyleSheetManager} from 'styled-components'
 
 export default function StyledComponentsRegistry({children}: {children: ReactNode}) {

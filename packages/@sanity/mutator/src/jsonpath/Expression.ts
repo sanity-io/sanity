@@ -1,10 +1,10 @@
 // A utility wrapper class to process parsed jsonpath expressions
 
-import type {Expr, HeadTail} from './types'
-import type {Probe} from './Probe'
 import {descend} from './descend'
-import {toPath} from './toPath'
 import {parseJsonPath} from './parse'
+import {type Probe} from './Probe'
+import {toPath} from './toPath'
+import {type Expr, type HeadTail} from './types'
 
 export interface Range {
   start: number

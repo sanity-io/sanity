@@ -1,7 +1,8 @@
 import {renderHook} from '@testing-library/react'
+
 import {createTestProvider} from '../../../../test/testUtils/TestProvider'
 import {
-  ConditionalPropertyProps,
+  type ConditionalPropertyProps,
   unstable_useConditionalProperty as useConditionalProperty,
 } from './useConditionalProperty'
 

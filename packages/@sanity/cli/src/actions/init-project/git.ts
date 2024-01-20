@@ -1,4 +1,4 @@
-import {execSync, execFileSync, ExecSyncOptions} from 'child_process'
+import {execFileSync, execSync, type ExecSyncOptions} from 'child_process'
 import path from 'path'
 import rimraf from 'rimraf'
 

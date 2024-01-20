@@ -1,28 +1,29 @@
 /* eslint-disable no-nested-ternary */
-import {Box, Container, Flex, Spinner, Text, focusFirstDescendant} from '@sanity/ui'
-import {forwardRef, useEffect, useMemo, useCallback, useState} from 'react'
-import * as React from 'react'
+import {Box, Container, Flex, focusFirstDescendant, Spinner, Text} from '@sanity/ui'
+import type * as React from 'react'
+import {forwardRef, useCallback, useEffect, useMemo, useState} from 'react'
 import {tap} from 'rxjs/operators'
-import {structureLocaleNamespace} from '../../../../i18n'
-import {useDocumentTitle} from '../../useDocumentTitle'
-import {useDocumentPane} from '../../useDocumentPane'
-import {Delay} from '../../../../components'
-import {useConditionalToast} from './useConditionalToast'
-import {FormHeader} from './FormHeader'
 import {
-  FormDocumentValue,
-  DocumentMutationEvent,
-  DocumentRebaseEvent,
-  FormBuilder,
-  PatchMsg,
-  PresenceOverlay,
   createPatchChannel,
+  type DocumentMutationEvent,
+  type DocumentRebaseEvent,
+  FormBuilder,
+  type FormDocumentValue,
   fromMutationPatches,
+  LoadingBlock,
+  type PatchMsg,
+  PresenceOverlay,
   useDocumentPresence,
   useDocumentStore,
   useTranslation,
-  LoadingBlock,
 } from 'sanity'
+
+import {Delay} from '../../../../components'
+import {structureLocaleNamespace} from '../../../../i18n'
+import {useDocumentPane} from '../../useDocumentPane'
+import {useDocumentTitle} from '../../useDocumentTitle'
+import {FormHeader} from './FormHeader'
+import {useConditionalToast} from './useConditionalToast'
 
 interface FormViewProps {
   hidden: boolean

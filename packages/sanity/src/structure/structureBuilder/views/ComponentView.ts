@@ -1,8 +1,9 @@
-import {SerializeOptions} from '../StructureNodes'
-import {SerializeError, HELP_URL} from '../SerializeError'
-import type {UserViewComponent} from '../types'
-import {BaseView, GenericViewBuilder} from './View'
 import {isRecord} from 'sanity'
+
+import {HELP_URL, SerializeError} from '../SerializeError'
+import {type SerializeOptions} from '../StructureNodes'
+import {type UserViewComponent} from '../types'
+import {type BaseView, GenericViewBuilder} from './View'
 
 /**
  * Interface for component views.

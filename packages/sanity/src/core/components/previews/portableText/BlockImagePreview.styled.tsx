@@ -1,5 +1,6 @@
 import {Box, Card, Flex, rem} from '@sanity/ui'
 import styled from 'styled-components'
+
 import {PREVIEW_SIZES} from '../constants'
 
 export const HeaderFlex = styled(Flex).attrs({align: 'center'})`

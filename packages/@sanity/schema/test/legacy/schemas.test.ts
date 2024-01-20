@@ -1,5 +1,4 @@
 import {Schema} from '../../src/legacy/Schema'
-
 import rawSchemas from './fixtures/schemas'
 
 function parseSchema(schemaDef) {

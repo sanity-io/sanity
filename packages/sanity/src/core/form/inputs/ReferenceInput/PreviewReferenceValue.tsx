@@ -1,16 +1,17 @@
-import {ComponentType, ReactNode, Fragment} from 'react'
-import type {Reference, ReferenceSchemaType} from '@sanity/types'
-import {Badge, Box, Flex, Inline, Stack, Text} from '@sanity/ui'
 import {AccessDeniedIcon, HelpCircleIcon} from '@sanity/icons'
+import {type Reference, type ReferenceSchemaType} from '@sanity/types'
+import {Badge, Box, Flex, Inline, Stack, Text} from '@sanity/ui'
+import React, {type ComponentType, Fragment, type ReactNode} from 'react'
+
 import {Tooltip} from '../../../../ui-components'
-import type {RenderPreviewCallback} from '../../types'
-import {SanityDefaultPreview} from '../../../preview'
-import {Translate, useTranslation} from '../../../i18n'
+import {type PreviewLayoutKey, TextWithTone} from '../../../components'
 import {useListFormat} from '../../../hooks'
-import {PreviewLayoutKey, TextWithTone} from '../../../components'
+import {Translate, useTranslation} from '../../../i18n'
+import {SanityDefaultPreview} from '../../../preview'
+import {type RenderPreviewCallback} from '../../types'
 import {ReferencePreview} from './ReferencePreview'
-import {Loadable} from './useReferenceInfo'
-import type {ReferenceInfo} from './types'
+import {type ReferenceInfo} from './types'
+import {type Loadable} from './useReferenceInfo'
 
 export function PreviewReferenceValue(props: {
   layout?: PreviewLayoutKey

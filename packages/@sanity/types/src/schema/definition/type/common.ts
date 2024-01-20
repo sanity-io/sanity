@@ -1,6 +1,7 @@
-import type {ComponentType, ReactElement, ReactNode} from 'react'
-import type {ConditionalProperty, DeprecatedProperty} from '../../types'
-import type {ObjectOptions} from './object'
+import {type ComponentType, type ReactElement, type ReactNode} from 'react'
+
+import {type ConditionalProperty, type DeprecatedProperty} from '../../types'
+import {type ObjectOptions} from './object'
 
 /** @public */
 export type FieldsetDefinition = {

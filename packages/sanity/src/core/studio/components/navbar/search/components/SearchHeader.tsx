@@ -1,7 +1,8 @@
 import {ArrowLeftIcon, ControlsIcon, SearchIcon, SpinnerIcon} from '@sanity/icons'
 import {Box, Card, Flex} from '@sanity/ui'
-import {forwardRef, useCallback, useEffect, useRef, KeyboardEvent} from 'react'
+import {forwardRef, type KeyboardEvent, useCallback, useEffect, useRef} from 'react'
 import styled, {keyframes} from 'styled-components'
+
 import {Button} from '../../../../../../ui-components'
 import {StatusButton} from '../../../../../components'
 import {useTranslation} from '../../../../../i18n'

@@ -1,4 +1,4 @@
-import type {CustomValidator, ObjectSchemaType} from '@sanity/types'
+import {type CustomValidator, type ObjectSchemaType} from '@sanity/types'
 
 /**
  * Given a schema type, returns a custom validator used to warn users of unknown

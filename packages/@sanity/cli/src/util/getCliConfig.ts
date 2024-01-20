@@ -13,12 +13,13 @@
  * approach b could be considered "safer" since any side-effects of running the config
  * file will not bleed into the current CLI process directly.
  */
-import path from 'path'
 import fs from 'fs'
+import path from 'path'
 import {Worker} from 'worker_threads'
-import type {CliConfig, SanityJson} from '../types'
-import {dynamicRequire} from './dynamicRequire'
+
+import {type CliConfig, type SanityJson} from '../types'
 import {getCliWorkerPath} from './cliWorker'
+import {dynamicRequire} from './dynamicRequire'
 
 export type CliMajorVersion = 2 | 3
 

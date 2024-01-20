@@ -1,34 +1,35 @@
+import {type SchemaType} from '@sanity/types'
 import {uniqueId} from 'lodash'
-import type {SchemaType} from '@sanity/types'
 import {isValidElementType} from 'react-is'
+import {getConfigContextFromSource, getPublishedId, type Source} from 'sanity'
+
 import {structureLocaleNamespace} from '../i18n'
-import {ListBuilder} from './List'
-import {
-  getDocumentTypeListItems,
-  getDocumentTypeListItem,
-  getDocumentTypeList,
-} from './documentTypeListItems'
-import {MenuItemBuilder, getOrderingMenuItemsForSchemaType, getOrderingMenuItem} from './MenuItem'
-import {ListItemBuilder} from './ListItem'
-import {MenuItemGroupBuilder} from './MenuItemGroup'
-import {DocumentListBuilder} from './DocumentList'
-import type {Divider} from './StructureNodes'
+import {ComponentBuilder, type ComponentInput} from './Component'
 import {DocumentBuilder, documentFromEditor, documentFromEditorWithInitialValue} from './Document'
-import {ComponentInput, ComponentBuilder} from './Component'
+import {DocumentListBuilder} from './DocumentList'
 import {DocumentListItemBuilder} from './DocumentListItem'
-import * as views from './views'
 import {
-  InitialValueTemplateItemBuilder,
+  getDocumentTypeList,
+  getDocumentTypeListItem,
+  getDocumentTypeListItems,
+} from './documentTypeListItems'
+import {
   defaultInitialValueTemplateItems,
+  InitialValueTemplateItemBuilder,
   menuItemsFromInitialValueTemplateItems,
 } from './InitialValueTemplateItem'
-import type {
-  StructureBuilder,
-  UserComponent,
-  StructureContext,
-  DefaultDocumentNodeResolver,
+import {ListBuilder} from './List'
+import {ListItemBuilder} from './ListItem'
+import {getOrderingMenuItem, getOrderingMenuItemsForSchemaType, MenuItemBuilder} from './MenuItem'
+import {MenuItemGroupBuilder} from './MenuItemGroup'
+import {type Divider} from './StructureNodes'
+import {
+  type DefaultDocumentNodeResolver,
+  type StructureBuilder,
+  type StructureContext,
+  type UserComponent,
 } from './types'
-import {Source, getConfigContextFromSource, getPublishedId} from 'sanity'
+import * as views from './views'
 
 /** @internal */
 export interface StructureBuilderOptions {

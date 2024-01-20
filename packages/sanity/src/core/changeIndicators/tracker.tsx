@@ -1,4 +1,5 @@
-import {Path} from '@sanity/types'
+import {type Path} from '@sanity/types'
+
 import {createNoopTrackerScope, createTrackerScope} from '../components/react-track-elements'
 import {ENABLED} from './constants'
 

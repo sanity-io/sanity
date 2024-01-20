@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 /* eslint-disable import/no-dynamic-require, no-process-env */
-import path from 'path'
-import fs from 'fs'
 import chalk from 'chalk'
-import depcheck, {Node} from 'depcheck'
+import depcheck, {type Node} from 'depcheck'
+import fs from 'fs'
+import path from 'path'
 
 const cwd = path.resolve(process.cwd(), process.argv[2] || '.')
 

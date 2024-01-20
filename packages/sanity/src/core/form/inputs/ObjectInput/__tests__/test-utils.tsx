@@ -1,8 +1,8 @@
 /* eslint-disable import/export */
-import {FC, ReactElement, ReactNode} from 'react'
 
-import {render, RenderOptions} from '@testing-library/react'
 import {LayerProvider, studioTheme, ThemeProvider} from '@sanity/ui'
+import {render, type RenderOptions} from '@testing-library/react'
+import {type FC, type ReactElement, type ReactNode} from 'react'
 
 const Providers: FC<{children?: ReactNode}> = ({children}) => {
   return (

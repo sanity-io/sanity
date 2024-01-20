@@ -1,7 +1,8 @@
-import {Flex, Container, Stack, Text} from '@sanity/ui'
-import {CommentStatus} from '../../types'
+import {Container, Flex, Stack, Text} from '@sanity/ui'
+import {LoadingBlock, type TFunction, useTranslation} from 'sanity'
+
 import {commentsLocaleNamespace} from '../../../i18n'
-import {LoadingBlock, TFunction, useTranslation} from 'sanity'
+import {type CommentStatus} from '../../types'
 
 interface EmptyStateMessage {
   title: string

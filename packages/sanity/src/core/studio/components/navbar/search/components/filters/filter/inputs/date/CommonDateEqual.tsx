@@ -1,9 +1,10 @@
 import {Stack} from '@sanity/ui'
 import {useCallback} from 'react'
+
 import {useTranslation} from '../../../../../../../../../i18n'
 import {useSearchState} from '../../../../../contexts/search/useSearchState'
-import type {OperatorDateEqualValue} from '../../../../../definitions/operators/dateOperators'
-import type {OperatorInputComponentProps} from '../../../../../definitions/operators/operatorTypes'
+import {type OperatorDateEqualValue} from '../../../../../definitions/operators/dateOperators'
+import {type OperatorInputComponentProps} from '../../../../../definitions/operators/operatorTypes'
 import {DateIncludeTimeFooter} from './dateIncludeTimeFooter/DateIncludeTimeFooter'
 import {DatePicker} from './datePicker/DatePicker'
 import {ParsedDateTextInput} from './ParsedDateTextInput'

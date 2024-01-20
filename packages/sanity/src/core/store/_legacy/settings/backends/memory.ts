@@ -1,5 +1,6 @@
-import {Observable, of as observableOf} from 'rxjs'
-import {Backend} from './types'
+import {type Observable, of as observableOf} from 'rxjs'
+
+import {type Backend} from './types'
 
 const DB = Object.create(null)
 

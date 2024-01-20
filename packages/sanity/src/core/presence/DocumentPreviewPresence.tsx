@@ -1,13 +1,14 @@
 /* eslint-disable camelcase */
 
 import {AvatarStack} from '@sanity/ui'
+import {getTheme_v2} from '@sanity/ui/theme'
 import {useMemo} from 'react'
 import styled, {css} from 'styled-components'
-import {getTheme_v2} from '@sanity/ui/theme'
+
+import {Tooltip, type TooltipProps} from '../../ui-components'
 import {UserAvatar} from '../components'
-import {DocumentPresence} from '../store'
+import {type DocumentPresence} from '../store'
 import {isNonNullable} from '../util'
-import {Tooltip, TooltipProps} from '../../ui-components'
 
 /** @internal */
 export interface DocumentPreviewPresenceProps {

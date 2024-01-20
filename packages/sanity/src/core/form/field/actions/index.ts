@@ -1,4 +1,4 @@
 export * from './FieldActionMenu'
-export * from './FieldActionsResolver'
 export * from './FieldActionsProvider'
+export * from './FieldActionsResolver'
 export * from './useFieldActions'

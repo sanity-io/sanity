@@ -1,5 +1,11 @@
-import {PreviewConfig, PreviewValue, Reference, SanityDocumentLike, SchemaType} from '@sanity/types'
-import {Observable} from 'rxjs'
+import {
+  type PreviewConfig,
+  type PreviewValue,
+  type Reference,
+  type SanityDocumentLike,
+  type SchemaType,
+} from '@sanity/types'
+import {type Observable} from 'rxjs'
 
 /** @internal */
 export type Id = string

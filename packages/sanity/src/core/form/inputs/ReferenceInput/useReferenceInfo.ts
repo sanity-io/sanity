@@ -1,9 +1,10 @@
 import {useCallback, useMemo} from 'react'
-import {catchError, concatMap, map, startWith, tap} from 'rxjs/operators'
-import {concat, Observable, of, Subject} from 'rxjs'
 import {useMemoObservable} from 'react-rx'
+import {concat, type Observable, of, Subject} from 'rxjs'
+import {catchError, concatMap, map, startWith} from 'rxjs/operators'
+
 import {usePrevious} from '../../hooks/usePrevious'
-import {ReferenceInfo} from './types'
+import {type ReferenceInfo} from './types'
 
 const noop = () => undefined
 

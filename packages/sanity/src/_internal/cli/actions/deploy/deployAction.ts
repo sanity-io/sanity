@@ -1,10 +1,11 @@
-import path from 'path'
-import zlib from 'zlib'
+import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
+import {type SanityClient} from '@sanity/client'
 import {promises as fs} from 'fs'
+import path from 'path'
 import tar from 'tar-fs'
-import type {SanityClient} from '@sanity/client'
-import type {CliCommandArguments, CliCommandContext} from '@sanity/cli'
-import buildSanityStudio, {BuildSanityStudioCommandFlags} from '../build/buildAction'
+import zlib from 'zlib'
+
+import buildSanityStudio, {type BuildSanityStudioCommandFlags} from '../build/buildAction'
 
 export interface DeployStudioActionFlags extends BuildSanityStudioCommandFlags {
   build?: boolean

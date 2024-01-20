@@ -1,5 +1,5 @@
 import {isObject} from '../helpers'
-import type {CrossDatasetReferenceValue} from './types'
+import {type CrossDatasetReferenceValue} from './types'
 
 /** @beta */
 export function isCrossDatasetReference(

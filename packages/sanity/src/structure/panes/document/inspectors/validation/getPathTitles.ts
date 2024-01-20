@@ -1,6 +1,6 @@
 /* eslint-disable no-loop-func */
 
-import {Path, SanityDocument, SchemaType} from '@sanity/types'
+import {type Path, type SanityDocument, type SchemaType} from '@sanity/types'
 import {isArray, isRecord} from 'sanity'
 
 export function getPathTitles(options: {

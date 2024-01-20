@@ -1,6 +1,7 @@
 import {useContext} from 'react'
+
 import {PaneLayoutContext} from './PaneLayoutContext'
-import {PaneLayoutContextValue} from './types'
+import {type PaneLayoutContextValue} from './types'
 
 /**
  *

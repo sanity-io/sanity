@@ -1,7 +1,8 @@
-import type {Path, SchemaType} from '@sanity/types'
-import {createElement, CSSProperties} from 'react'
-import type {FieldPreviewComponent} from '../../preview'
-import type {Diff} from '../../types'
+import {type Path, type SchemaType} from '@sanity/types'
+import {createElement, type CSSProperties} from 'react'
+
+import {type FieldPreviewComponent} from '../../preview'
+import {type Diff} from '../../types'
 import {useChangeVerb} from '../hooks/useChangeVerb'
 import {DiffCard} from './DiffCard'
 import {DiffTooltip} from './DiffTooltip'

@@ -1,11 +1,13 @@
-import {BoundaryElementProvider, Flex, PortalProvider, usePortal, Box} from '@sanity/ui'
+import {BoundaryElementProvider, Box, Flex, PortalProvider, usePortal} from '@sanity/ui'
 import {createElement, useEffect, useMemo, useRef, useState} from 'react'
+import {ScrollContainer, useTimelineSelector, VirtualizerScrollInstanceProvider} from 'sanity'
 import styled, {css} from 'styled-components'
+
 import {PaneContent, usePane, usePaneLayout} from '../../../components'
-import {useDocumentPane} from '../useDocumentPane'
 import {useStructureTool} from '../../../useStructureTool'
 import {DocumentInspectorPanel} from '../documentInspector'
 import {InspectDialog} from '../inspectDialog'
+import {useDocumentPane} from '../useDocumentPane'
 import {
   DeletedDocumentBanner,
   DeprecatedDocumentTypeBanner,
@@ -13,7 +15,6 @@ import {
   ReferenceChangedBanner,
 } from './banners'
 import {FormView} from './documentViews'
-import {ScrollContainer, useTimelineSelector, VirtualizerScrollInstanceProvider} from 'sanity'
 
 interface DocumentPanelProps {
   footerHeight: number | null

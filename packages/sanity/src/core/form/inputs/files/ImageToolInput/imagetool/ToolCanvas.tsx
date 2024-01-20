@@ -1,22 +1,22 @@
-import {PureComponent, PointerEvent} from 'react'
 import {memoize} from 'lodash'
-import {getBackingStoreRatio} from './getBackingStoreRatio'
-import * as utils2d from './2d/utils'
-import {Rect} from './2d/shapes'
-import {RootContainer, CanvasContainer} from './ToolCanvas.styles'
+import React, {type PointerEvent, PureComponent} from 'react'
 
-import * as cursors from './cursors'
+import {Rect} from './2d/shapes'
+import * as utils2d from './2d/utils'
 import {DEFAULT_CROP, DEFAULT_HOTSPOT} from './constants'
-import type {
-  Coordinate,
-  Crop,
-  CropAndHotspot,
-  CropHandles,
-  Dimensions,
-  Hotspot,
-  Offsets,
-  ToolCanvasProps,
-  ToolCanvasState,
+import * as cursors from './cursors'
+import {getBackingStoreRatio} from './getBackingStoreRatio'
+import {CanvasContainer, RootContainer} from './ToolCanvas.styles'
+import {
+  type Coordinate,
+  type Crop,
+  type CropAndHotspot,
+  type CropHandles,
+  type Dimensions,
+  type Hotspot,
+  type Offsets,
+  type ToolCanvasProps,
+  type ToolCanvasState,
 } from './types'
 
 // The margin available in all directions for drawing the crop tool

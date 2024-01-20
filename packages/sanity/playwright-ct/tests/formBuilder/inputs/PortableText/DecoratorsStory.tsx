@@ -1,7 +1,8 @@
-import {defineArrayMember, defineField, defineType} from '@sanity/types'
 import {BulbOutlineIcon} from '@sanity/icons'
-import {TestWrapper} from '../../utils/TestWrapper'
+import {defineArrayMember, defineField, defineType} from '@sanity/types'
+
 import {TestForm} from '../../utils/TestForm'
+import {TestWrapper} from '../../utils/TestWrapper'
 
 const SCHEMA_TYPES = [
   defineType({

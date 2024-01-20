@@ -1,9 +1,10 @@
-import {Text} from '@sanity/ui'
 import {ErrorOutlineIcon} from '@sanity/icons'
-import {useDocumentPane} from '../../useDocumentPane'
+import {Text} from '@sanity/ui'
+import {isDeprecatedSchemaType, Translate, useTranslation} from 'sanity'
+
 import {structureLocaleNamespace} from '../../../../i18n'
+import {useDocumentPane} from '../../useDocumentPane'
 import {Banner} from './Banner'
-import {Translate, isDeprecatedSchemaType, useTranslation} from 'sanity'
 
 export function DeprecatedDocumentTypeBanner() {
   const {schemaType} = useDocumentPane()

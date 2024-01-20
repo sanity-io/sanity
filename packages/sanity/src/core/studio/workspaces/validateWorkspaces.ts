@@ -1,5 +1,5 @@
-import {getWorkspaceIdentifier, getNamelessWorkspaceIdentifier} from './helpers'
-import type {WorkspaceLike} from './types'
+import {getNamelessWorkspaceIdentifier, getWorkspaceIdentifier} from './helpers'
+import {type WorkspaceLike} from './types'
 import {WorkspaceValidationError} from './WorkspaceValidationError'
 
 /** @internal */

@@ -1,14 +1,16 @@
-import path from 'node:path'
-import {writeFile} from 'node:fs/promises'
 import {existsSync, mkdirSync} from 'node:fs'
-import type {CliCommandDefinition} from '@sanity/cli'
+import {writeFile} from 'node:fs/promises'
+import path from 'node:path'
+
+import {type CliCommandDefinition} from '@sanity/cli'
 import deburr from 'lodash/deburr'
+
 import {MIGRATIONS_DIRECTORY} from './constants'
+import {minimalAdvanced} from './templates/minimalAdvanced'
+import {minimalSimple} from './templates/minimalSimple'
+import {renameField} from './templates/renameField'
 import {renameType} from './templates/renameType'
 import {stringToPTE} from './templates/stringToPTE'
-import {minimalSimple} from './templates/minimalSimple'
-import {minimalAdvanced} from './templates/minimalAdvanced'
-import {renameField} from './templates/renameField'
 
 const helpText = `
 Examples:

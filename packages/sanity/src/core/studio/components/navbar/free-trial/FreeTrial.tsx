@@ -1,10 +1,11 @@
-import {useCallback, useEffect, useRef, useState} from 'react'
+import {useCallback, useEffect, useState} from 'react'
+
 import {Popover} from '../../../../../ui-components'
 import {useColorSchemeValue} from '../../../colorScheme'
-import {PopoverContent} from './PopoverContent'
 import {DialogContent} from './DialogContent'
-import {FreeTrialButtonTopbar, FreeTrialButtonSidebar} from './FreeTrialButton'
+import {FreeTrialButtonSidebar, FreeTrialButtonTopbar} from './FreeTrialButton'
 import {useFreeTrialContext} from './FreeTrialContext'
+import {PopoverContent} from './PopoverContent'
 
 interface FreeTrialProps {
   type: 'sidebar' | 'topbar'

@@ -1,4 +1,4 @@
-import type {History, BrowserHistory, MemoryHistory, HashHistory} from 'history'
+import {type BrowserHistory, type HashHistory, type History, type MemoryHistory} from 'history'
 
 export interface RouterStateEvent {
   type: 'state'

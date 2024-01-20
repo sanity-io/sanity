@@ -1,4 +1,4 @@
-import type {PatchExample} from './types'
+import {type PatchExample} from './types'
 
 const examples: PatchExample[] = [
   {

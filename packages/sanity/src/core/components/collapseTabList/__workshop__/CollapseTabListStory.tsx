@@ -1,7 +1,8 @@
-import {useState} from 'react'
 import {IceCreamIcon} from '@sanity/icons'
 import {Card, Flex} from '@sanity/ui'
 import {useBoolean, useSelect} from '@sanity/ui-workshop'
+import {useState} from 'react'
+
 import {Button} from '../../../../ui-components'
 import {CollapseTabList} from '..'
 

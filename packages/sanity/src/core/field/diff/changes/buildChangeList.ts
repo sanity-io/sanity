@@ -1,27 +1,28 @@
 import {
-  Path,
-  MultiFieldSet,
-  ObjectField,
-  ArraySchemaType,
-  ObjectSchemaType,
-  SchemaType,
+  type ArraySchemaType,
+  type MultiFieldSet,
+  type ObjectField,
+  type ObjectSchemaType,
+  type Path,
+  type SchemaType,
 } from '@sanity/types'
-import {pathToString, pathsAreEqual, getItemKeySegment} from '../../paths'
-import {getValueError} from '../../validation'
+
+import {getItemKeySegment, pathsAreEqual, pathToString} from '../../paths'
 import {getArrayDiffItemType} from '../../schema/helpers'
-import {hasPTMemberType} from '../../types/portableText/diff/helpers'
 import {
-  ArrayDiff,
-  ChangeNode,
-  ChangeTitlePath,
-  Diff,
-  DiffComponent,
-  FieldChangeNode,
-  ItemDiff,
-  ObjectDiff,
+  type ArrayDiff,
+  type ChangeNode,
+  type ChangeTitlePath,
+  type Diff,
+  type DiffComponent,
+  type FieldChangeNode,
+  type ItemDiff,
+  type ObjectDiff,
 } from '../../types'
-import {resolveDiffComponent} from '../resolve/resolveDiffComponent'
+import {hasPTMemberType} from '../../types/portableText/diff/helpers'
+import {getValueError} from '../../validation'
 import {isFieldChange} from '../helpers'
+import {resolveDiffComponent} from '../resolve/resolveDiffComponent'
 
 interface DiffContext {
   itemDiff?: ItemDiff

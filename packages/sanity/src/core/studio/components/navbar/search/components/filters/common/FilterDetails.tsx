@@ -1,8 +1,9 @@
 import {ChevronRightIcon} from '@sanity/icons'
 import {Box, Flex, Stack, Text} from '@sanity/ui'
 import {Fragment} from 'react'
+
 import {useSearchState} from '../../../contexts/search/useSearchState'
-import type {SearchFilter} from '../../../types'
+import {type SearchFilter} from '../../../types'
 import {getFieldFromFilter} from '../../../utils/filterUtils'
 import {FilterTitle} from '../../common/FilterTitle'
 import {FilterIcon} from './FilterIcon'

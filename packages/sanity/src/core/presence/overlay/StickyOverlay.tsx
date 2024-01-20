@@ -1,16 +1,17 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 
-import {
-  CSSProperties,
+import {flatten, groupBy, orderBy, sortBy} from 'lodash'
+import React, {
+  type CSSProperties,
   Fragment,
-  ReactElement,
-  ReactNode,
   memo,
+  type ReactElement,
+  type ReactNode,
   useCallback,
   useMemo,
   useRef,
 } from 'react'
-import {flatten, groupBy, orderBy, sortBy} from 'lodash'
+
 import {
   AVATAR_ARROW_HEIGHT,
   AVATAR_DISTANCE,
@@ -20,16 +21,15 @@ import {
   SLIDE_RIGHT_THRESHOLD_BOTTOM,
   SLIDE_RIGHT_THRESHOLD_TOP,
 } from '../constants'
-import {
-  FieldPresenceData,
-  Rect,
-  ReportedRegionWithRect,
-  RegionWithIntersectionDetails,
-} from '../types'
 import {FieldPresenceInner} from '../FieldPresence'
-
+import {
+  type FieldPresenceData,
+  type Rect,
+  type RegionWithIntersectionDetails,
+  type ReportedRegionWithRect,
+} from '../types'
 import {RegionsWithIntersections} from './RegionsWithIntersections'
-import {ReportedPresenceData, useReportedValues} from './tracker'
+import {type ReportedPresenceData, useReportedValues} from './tracker'
 
 const ITEM_TRANSITION: CSSProperties = {
   transitionProperty: 'transform',

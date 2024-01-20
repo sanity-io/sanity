@@ -1,22 +1,23 @@
-import {Schema} from '@sanity/types'
+import {type Schema} from '@sanity/types'
 import {Box, Flex, MenuDivider, Stack, Text} from '@sanity/ui'
 import {partition} from 'lodash'
-import {useCallback, useMemo, useRef, useState, KeyboardEvent} from 'react'
+import {type KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
 import styled from 'styled-components'
+
+import {Button} from '../../../../../../../../ui-components'
 import {
   CommandList,
-  CommandListGetItemSelectedCallback,
-  CommandListHandle,
-  CommandListRenderItemCallback,
+  type CommandListGetItemSelectedCallback,
+  type CommandListHandle,
+  type CommandListRenderItemCallback,
 } from '../../../../../../../components'
 import {useSchema} from '../../../../../../../hooks'
-import type {SearchableType} from '../../../../../../../search'
-import {useSearchState} from '../../../contexts/search/useSearchState'
-import type {DocumentTypeMenuItem} from '../../../types'
-import {getSelectableOmnisearchTypes} from '../../../utils/selectors'
-import {Button} from '../../../../../../../../ui-components'
-import {FilterPopoverContentHeader} from '../common/FilterPopoverContentHeader'
 import {useTranslation} from '../../../../../../../i18n'
+import {type SearchableType} from '../../../../../../../search'
+import {useSearchState} from '../../../contexts/search/useSearchState'
+import {type DocumentTypeMenuItem} from '../../../types'
+import {getSelectableOmnisearchTypes} from '../../../utils/selectors'
+import {FilterPopoverContentHeader} from '../common/FilterPopoverContentHeader'
 import {DocumentTypeFilterItem} from './items/DocumentTypeFilterItem'
 
 const ClearButtonBox = styled(Box)`

@@ -1,4 +1,4 @@
-import {HtmlPreprocessorOptions} from '../../types'
+import {type HtmlPreprocessorOptions} from '../../types'
 import {normalizeWhitespace, removeAllWhitespace, tagName} from '../helpers'
 import {_XPathResult} from './xpathResult'
 

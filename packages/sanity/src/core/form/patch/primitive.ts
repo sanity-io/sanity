@@ -1,4 +1,4 @@
-import {FIXME} from '../../FIXME'
+import {type FIXME} from '../../FIXME'
 
 const OPERATIONS = {
   replace(currentValue: FIXME, nextValue: FIXME) {

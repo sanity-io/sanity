@@ -1,5 +1,6 @@
-import {Editor, Transforms, Element, Path, Text as SlateText, Node} from 'slate'
-import {PortableTextMemberSchemaTypes, PortableTextSlateEditor} from '../../types/editor'
+import {Editor, type Node, Path, Text as SlateText, Transforms} from 'slate'
+
+import {type PortableTextMemberSchemaTypes, type PortableTextSlateEditor} from '../../types/editor'
 import {debugWithName} from '../../utils/debug'
 
 const debug = debugWithName('plugin:withPortableTextBlockStyle')

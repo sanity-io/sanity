@@ -1,6 +1,7 @@
-import {types} from 'util'
-import {type SanityClient, createClient} from '@sanity/client'
+import {createClient, type SanityClient} from '@sanity/client'
 import {firstValueFrom, from} from 'rxjs'
+import {types} from 'util'
+
 import {createClientConcurrencyLimiter} from '../createClientConcurrencyLimiter'
 
 const tick = () => new Promise((resolve) => setTimeout(resolve, 0))

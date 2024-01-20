@@ -1,4 +1,5 @@
-import {Schema} from '@sanity/types'
+import {type Schema} from '@sanity/types'
+
 import {renderPath} from './utils'
 
 export function reportWarnings(schema: Schema) {

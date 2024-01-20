@@ -1,7 +1,7 @@
-import {Canvas, Vector3} from '@react-three/fiber'
+import {Canvas, type Vector3} from '@react-three/fiber'
+import {Box} from '@sanity/ui'
 import {memo, startTransition, Suspense, useEffect, useRef, useState} from 'react'
 import styled from 'styled-components'
-import {Box} from '@sanity/ui'
 
 import View from './TorusKnotScene'
 import {useLazyFrameloop} from './useLazyFrameLoop'

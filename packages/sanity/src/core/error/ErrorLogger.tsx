@@ -1,5 +1,6 @@
 import {useToast} from '@sanity/ui'
 import {useEffect} from 'react'
+
 import {ConfigResolutionError, SchemaError} from '../config'
 import {CorsOriginError} from '../store'
 import {globalScope} from '../util'

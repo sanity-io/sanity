@@ -1,19 +1,20 @@
-import {useCallback, useMemo, useState} from 'react'
+import {type Path} from '@sanity/types'
 import {sortBy} from 'lodash'
-import {Path} from '@sanity/types'
+import React, {useCallback, useMemo, useState} from 'react'
+
+import {type Reported} from '../../components/react-track-elements'
 import {ScrollMonitor} from '../../components/scroll'
+import {isNonNullable} from '../../util'
+import {DEBUG_LAYER_BOUNDS} from '../constants'
 import {findMostSpecificTarget} from '../helpers/findMostSpecificTarget'
+import {getOffsetsTo} from '../helpers/getOffsetsTo'
 import {isChangeBar} from '../helpers/isChangeBar'
 import {scrollIntoView} from '../helpers/scrollIntoView'
-import {DEBUG_LAYER_BOUNDS} from '../constants'
-import {getOffsetsTo} from '../helpers/getOffsetsTo'
-import {TrackedArea, TrackedChange, useReportedValues} from '../tracker'
-import {Reported} from '../../components/react-track-elements'
-import {isNonNullable} from '../../util'
+import {type TrackedArea, type TrackedChange, useReportedValues} from '../tracker'
 import {Connector} from './Connector'
+import {SvgWrapper} from './ConnectorsOverlay.styled'
 import {DebugLayers} from './DebugLayers'
 import {useResizeObserver} from './useResizeObserver'
-import {SvgWrapper} from './ConnectorsOverlay.styled'
 
 export interface Rect {
   height: number

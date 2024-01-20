@@ -1,4 +1,5 @@
-import {defineField, defineType, PortableTextInput} from 'sanity'
+import {defineField, defineType} from 'sanity'
+
 import {
   DelegatedArrayOfObjectsInput,
   DelegatedArrayOfOptionsInput,

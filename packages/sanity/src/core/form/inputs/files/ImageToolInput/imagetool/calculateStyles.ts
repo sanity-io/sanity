@@ -1,6 +1,7 @@
-import type {CSSProperties} from 'react'
-import {DEFAULT_HOTSPOT, DEFAULT_CROP} from './constants'
-import {Crop, Hotspot, CropMethod, CropAndHotspot} from './types'
+import {type CSSProperties} from 'react'
+
+import {DEFAULT_CROP, DEFAULT_HOTSPOT} from './constants'
+import {type Crop, type CropAndHotspot, type CropMethod, type Hotspot} from './types'
 
 interface Options {
   image?: {aspectRatio: number} | {height: number; width: number}

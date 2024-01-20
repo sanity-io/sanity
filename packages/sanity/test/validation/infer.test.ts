@@ -1,10 +1,11 @@
-import type {SanityClient} from '@sanity/client'
-import type {ObjectSchemaType, Rule, SanityDocument} from '@sanity/types'
+import {type SanityClient} from '@sanity/client'
 import {Schema as SchemaBuilder} from '@sanity/schema'
+import {type ObjectSchemaType, type Rule, type SanityDocument} from '@sanity/types'
+
+import {createSchema, type Workspace} from '../../src/core'
 import {getFallbackLocaleSource} from '../../src/core/i18n/fallback'
 import {inferFromSchema} from '../../src/core/validation/inferFromSchema'
 import {validateDocument} from '../../src/core/validation/validateDocument'
-import {Workspace, createSchema} from '../../src/core'
 import {createMockSanityClient} from './mocks/mockSanityClient'
 
 const client = createMockSanityClient()

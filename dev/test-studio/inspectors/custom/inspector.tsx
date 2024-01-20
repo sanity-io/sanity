@@ -1,5 +1,5 @@
 import {Box, Card, Flex, Text} from '@sanity/ui'
-import {DocumentInspectorProps} from 'sanity'
+import {type DocumentInspectorProps} from 'sanity'
 import {DocumentInspectorHeader} from 'sanity/structure'
 
 export function CustomInspector(props: DocumentInspectorProps) {

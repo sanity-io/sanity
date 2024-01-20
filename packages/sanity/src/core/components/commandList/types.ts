@@ -1,6 +1,6 @@
-import {ResponsivePaddingProps} from '@sanity/ui'
-import {ScrollToOptions} from '@tanstack/react-virtual'
-import {ReactNode} from 'react'
+import {type ResponsivePaddingProps} from '@sanity/ui'
+import {type ScrollToOptions} from '@tanstack/react-virtual'
+import {type ReactNode} from 'react'
 
 /** @internal */
 export type CommandListElementType = 'input' | 'list'

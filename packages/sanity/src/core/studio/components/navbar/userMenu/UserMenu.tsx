@@ -1,26 +1,27 @@
 import {LeaveIcon} from '@sanity/icons'
 import {
   Box,
+  // eslint-disable-next-line no-restricted-imports
+  Button, // Button with specific styling, user avatar .
   Card,
   Flex,
   Menu,
   MenuDivider,
   Stack,
   Text,
-  // eslint-disable-next-line no-restricted-imports
-  Button, // Button with specific styling, user avatar .
 } from '@sanity/ui'
 import {useMemo} from 'react'
 import styled from 'styled-components'
+
+import {MenuButton, type MenuButtonProps, MenuItem, Tooltip} from '../../../../../ui-components'
 import {UserAvatar} from '../../../../components'
+import {useTranslation} from '../../../../i18n'
 import {getProviderTitle} from '../../../../store'
 import {useColorSchemeSetValue, useColorSchemeValue} from '../../../colorScheme'
 import {useWorkspace} from '../../../workspace'
-import {MenuButton, MenuButtonProps, MenuItem, Tooltip} from '../../../../../ui-components'
-import {useTranslation} from '../../../../i18n'
-import {LoginProviderLogo} from './LoginProviderLogo'
-import {LocaleMenu} from './LocaleMenu'
 import {AppearanceMenu} from './ApperanceMenu'
+import {LocaleMenu} from './LocaleMenu'
+import {LoginProviderLogo} from './LoginProviderLogo'
 import {ManageMenu} from './ManageMenu'
 
 const StyledMenu = styled(Menu)`

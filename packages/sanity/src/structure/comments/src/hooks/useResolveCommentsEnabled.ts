@@ -1,6 +1,7 @@
 import {useMemo} from 'react'
-import {CommentsUIMode} from '../types'
 import {getPublishedId, useFeatureEnabled, useSource} from 'sanity'
+
+import {type CommentsUIMode} from '../types'
 
 type ResolveCommentsEnabled =
   | {

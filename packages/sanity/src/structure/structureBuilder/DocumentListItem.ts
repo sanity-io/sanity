@@ -1,10 +1,16 @@
-import {SchemaType} from '@sanity/types'
-import {SerializeOptions} from './StructureNodes'
-import {ListItemBuilder, ListItem, UnserializedListItem, ListItemInput} from './ListItem'
-import {SerializeError, HELP_URL} from './SerializeError'
-import {DocumentBuilder} from './Document'
-import {StructureContext} from './types'
+import {type SchemaType} from '@sanity/types'
 import {isRecord} from 'sanity'
+
+import {DocumentBuilder} from './Document'
+import {
+  type ListItem,
+  ListItemBuilder,
+  type ListItemInput,
+  type UnserializedListItem,
+} from './ListItem'
+import {HELP_URL, SerializeError} from './SerializeError'
+import {type SerializeOptions} from './StructureNodes'
+import {type StructureContext} from './types'
 
 /**
  * Interface for document list item input

@@ -1,13 +1,19 @@
-import {ComponentType} from 'react'
-import {LayoutProps, LogoProps, NavbarProps, ToolMenuProps} from '../../config/studio'
+import {type ComponentType} from 'react'
+
 import {useMiddlewareComponents} from '../../config'
+import {
+  type LayoutProps,
+  type LogoProps,
+  type NavbarProps,
+  type ToolMenuProps,
+} from '../../config/studio'
 import {StudioLogo, StudioNavbar, StudioToolMenu} from '../components'
 import {StudioLayoutComponent} from '../StudioLayout'
 import {
-  pickToolMenuComponent,
-  pickNavbarComponent,
-  pickLogoComponent,
   pickLayoutComponent,
+  pickLogoComponent,
+  pickNavbarComponent,
+  pickToolMenuComponent,
 } from './picks'
 
 /**

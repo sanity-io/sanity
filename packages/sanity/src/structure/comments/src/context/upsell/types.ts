@@ -1,4 +1,4 @@
-import {CommentsUpsellData} from '../../types'
+import {type CommentsUpsellData} from '../../types'
 
 export interface CommentsUpsellContextValue {
   upsellDialogOpen: boolean

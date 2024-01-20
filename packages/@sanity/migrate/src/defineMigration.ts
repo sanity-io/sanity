@@ -1,4 +1,4 @@
-import type {Migration} from './types'
+import {type Migration} from './types'
 
 export function defineMigration<T extends Migration>(migration: T): T {
   return migration

@@ -1,11 +1,12 @@
-import {isMainThread, parentPort, workerData, MessagePort} from 'worker_threads'
-import oneline from 'oneline'
+import {type CliV3CommandContext, type GraphQLAPIConfig} from '@sanity/cli'
+import {type Schema} from '@sanity/types'
 import {isPlainObject} from 'lodash'
-import type {Schema} from '@sanity/types'
-import type {CliV3CommandContext, GraphQLAPIConfig} from '@sanity/cli'
-import type {SchemaDefinitionish, TypeResolvedGraphQLAPI} from '../actions/graphql/types'
+import oneline from 'oneline'
+import {type Workspace} from 'sanity'
+import {isMainThread, type MessagePort, parentPort, workerData} from 'worker_threads'
+
+import {type SchemaDefinitionish, type TypeResolvedGraphQLAPI} from '../actions/graphql/types'
 import {getStudioWorkspaces} from '../util/getStudioWorkspaces'
-import {Workspace} from 'sanity'
 
 if (isMainThread || !parentPort) {
   throw new Error('This module must be run as a worker thread')

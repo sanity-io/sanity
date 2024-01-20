@@ -1,16 +1,17 @@
 import {Card, Flex, Stack, Text} from '@sanity/ui'
 import {startCase, uniq} from 'lodash'
-import {ReactElement, useMemo} from 'react'
+import {type ReactElement, useMemo} from 'react'
+
 import {Tooltip} from '../../../../../../../../../ui-components'
 import {TextWithTone} from '../../../../../../../../components'
 import {useSchema} from '../../../../../../../../hooks'
+import {useTranslation} from '../../../../../../../../i18n'
 import {isNonNullable, truncateString} from '../../../../../../../../util'
 import {useSearchState} from '../../../../contexts/search/useSearchState'
-import type {SearchFieldDefinition} from '../../../../definitions/fields'
-import type {SearchFilterDefinition} from '../../../../definitions/filters'
+import {type SearchFieldDefinition} from '../../../../definitions/fields'
+import {type SearchFilterDefinition} from '../../../../definitions/filters'
 import {getSchemaField} from '../../../../utils/getSchemaField'
 import {sanitizeFieldValue} from '../../../../utils/sanitizeField'
-import {useTranslation} from '../../../../../../../../i18n'
 
 interface FilterTooltipProps {
   children: ReactElement

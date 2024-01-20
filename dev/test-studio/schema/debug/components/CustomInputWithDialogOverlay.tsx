@@ -1,7 +1,7 @@
-import {DocumentPresence, FieldPresence, PresenceOverlay, setIfMissing} from 'sanity'
+import {type ObjectSchemaType, type Path} from '@sanity/types'
 import {Button, Dialog} from '@sanity/ui'
-import {ObjectSchemaType, Path} from '@sanity/types'
-import {forwardRef, useCallback, FocusEvent, useState, ForwardedRef} from 'react'
+import {type FocusEvent, type ForwardedRef, forwardRef, useCallback, useState} from 'react'
+import {type DocumentPresence, FieldPresence, PresenceOverlay, setIfMissing} from 'sanity'
 
 export const CustomInputWithDialogOverlay = forwardRef(function CustomInputWithDialogOverlay(
   props: {

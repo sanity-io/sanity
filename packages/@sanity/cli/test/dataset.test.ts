@@ -1,5 +1,5 @@
 import {describeCliTest, testConcurrent} from './shared/describe'
-import {testClient, getTestRunArgs, runSanityCmdCommand, studioVersions} from './shared/environment'
+import {getTestRunArgs, runSanityCmdCommand, studioVersions, testClient} from './shared/environment'
 
 describeCliTest('CLI: `sanity dataset`', () => {
   describe.each(studioVersions)('%s', (version) => {

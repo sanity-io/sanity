@@ -1,16 +1,17 @@
-import * as PathUtils from '@sanity/util/paths'
 import {
   isIndexSegment,
   isKeySegment,
   isReferenceSchemaType,
-  ObjectField,
-  ObjectFieldType,
-  ObjectSchemaType,
-  SanityDocument,
-  SchemaType,
+  type ObjectField,
+  type ObjectFieldType,
+  type ObjectSchemaType,
+  type SanityDocument,
+  type SchemaType,
 } from '@sanity/types'
-import {DocumentListPaneItem, SortOrder} from './types'
-import {getPublishedId, collate} from 'sanity'
+import * as PathUtils from '@sanity/util/paths'
+import {collate, getPublishedId} from 'sanity'
+
+import {type DocumentListPaneItem, type SortOrder} from './types'
 
 export function getDocumentKey(value: DocumentListPaneItem, index: number): string {
   return value._id ? getPublishedId(value._id) : `item-${index}`

@@ -1,4 +1,4 @@
-import type {Plugin} from 'vite'
+import {type Plugin} from 'vite'
 
 export function sanityBasePathRedirectPlugin(basePath: string | undefined): Plugin {
   return {

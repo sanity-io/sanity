@@ -1,8 +1,15 @@
-import {Observable} from 'rxjs'
-import {ComponentType, ReactNode} from 'react'
-import {Path, PreviewValue, Reference, ReferenceSchemaType, I18nTextRecord} from '@sanity/types'
-import {ObjectInputProps} from '../../types'
-import {DocumentAvailability} from '../../../preview'
+import {
+  type I18nTextRecord,
+  type Path,
+  type PreviewValue,
+  type Reference,
+  type ReferenceSchemaType,
+} from '@sanity/types'
+import {type ComponentType, type ReactNode} from 'react'
+import {type Observable} from 'rxjs'
+
+import {type DocumentAvailability} from '../../../preview'
+import {type ObjectInputProps} from '../../types'
 
 export interface ReferenceInfo {
   id: string

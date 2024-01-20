@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import type {BooleanDefinition, EmailDefinition} from '../definition'
+import {type BooleanDefinition, type EmailDefinition} from '../definition'
 import {defineType} from '../types'
 
 describe('email types', () => {

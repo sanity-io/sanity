@@ -1,7 +1,7 @@
-import url from 'url'
+import {type CliCommandContext, type CliPrompter} from '@sanity/cli'
 import logSymbols from 'log-symbols'
 import oneline from 'oneline'
-import type {CliCommandContext, CliPrompter} from '@sanity/cli'
+import url from 'url'
 
 const wildcardReplacement = 'a-wild-card-r3pl4c3m3n7-a'
 const portReplacement = ':7777777'

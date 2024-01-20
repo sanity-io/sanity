@@ -1,15 +1,16 @@
 /* eslint-disable camelcase */
 
+import {type SanityClient} from '@sanity/client'
 import {act, waitForElementToBeRemoved, within} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import {Observable, of} from 'rxjs'
-import {SanityClient} from '@sanity/client'
+import {type Observable, of} from 'rxjs'
+
 import {renderCrossDatasetReferenceInput} from '../../../../../../test/form'
-import {CrossDatasetReferenceInput} from '../CrossDatasetReferenceInput'
-import {CrossDatasetSearchHit} from '../types'
-import {defineConfig} from '../../../../config'
-import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {createMockSanityClient} from '../../../../../../test/mocks/mockSanityClient'
+import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
+import {defineConfig} from '../../../../config'
+import {CrossDatasetReferenceInput} from '../CrossDatasetReferenceInput'
+import {type CrossDatasetSearchHit} from '../types'
 import {featureDisabledRequest, featureEnabledRequest} from './mocks'
 
 const AVAILABLE = {

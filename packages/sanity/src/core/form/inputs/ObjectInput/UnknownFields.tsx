@@ -1,12 +1,13 @@
-import {useCallback} from 'react'
-import {Box, Card, Code, Stack, Text} from '@sanity/ui'
 import {TrashIcon} from '@sanity/icons'
-import {FormPatch, PatchEvent, unset} from '../../patch'
+import {Box, Card, Code, Stack, Text} from '@sanity/ui'
+import React, {useCallback} from 'react'
+
 import {Button} from '../../../../ui-components'
-import {Details} from '../../components/Details'
-import {Alert} from '../../components/Alert'
 import {isDev} from '../../../environment'
-import {useTranslation, Translate} from '../../../i18n'
+import {Translate, useTranslation} from '../../../i18n'
+import {Alert} from '../../components/Alert'
+import {Details} from '../../components/Details'
+import {type FormPatch, type PatchEvent, unset} from '../../patch'
 
 type Props = {
   fieldNames: string[]

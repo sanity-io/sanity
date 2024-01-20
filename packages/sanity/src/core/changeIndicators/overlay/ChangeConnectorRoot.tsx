@@ -1,5 +1,6 @@
-import {ReactNode, useMemo, useState} from 'react'
-import {Path} from '@sanity/types'
+import {type Path} from '@sanity/types'
+import React, {type ReactNode, useMemo, useState} from 'react'
+
 import {ScrollContainer} from '../../components/scroll'
 import {ConnectorContext} from '../ConnectorContext'
 import {ENABLED} from '../constants'

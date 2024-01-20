@@ -1,10 +1,11 @@
 import {Flex} from '@sanity/ui'
 import {useCallback, useEffect, useRef} from 'react'
+
+import {Button} from '../../../../../../../ui-components'
+import {useTranslation} from '../../../../../../i18n'
 import {DEBUG_MODE} from '../../constants'
 import {useSearchState} from '../../contexts/search/useSearchState'
 import {getFilterKey} from '../../utils/filterUtils'
-import {Button} from '../../../../../../../ui-components'
-import {useTranslation} from '../../../../../../i18n'
 import {AddFilterButton} from './addFilter/AddFilterButton'
 import {DebugDocumentTypesNarrowed} from './debug/_DebugDocumentTypesNarrowed'
 import {DebugFilterQuery} from './debug/_DebugFilterQuery'

@@ -1,4 +1,4 @@
-import {useRef, useLayoutEffect, useEffect, ForwardedRef, MutableRefObject} from 'react'
+import {type ForwardedRef, type MutableRefObject, useEffect, useLayoutEffect, useRef} from 'react'
 
 const useIsomorphicEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect
 

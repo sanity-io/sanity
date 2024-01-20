@@ -1,8 +1,9 @@
-import {Subject, Observable, merge, of as observableOf} from 'rxjs'
-import {map, mergeMap, filter} from 'rxjs/operators'
+import {merge, Observable, of as observableOf, Subject} from 'rxjs'
+import {filter, map, mergeMap} from 'rxjs/operators'
+
+import {orientationChange$} from './orientationChange'
 import {resize$} from './resize'
 import {scroll$} from './scroll'
-import {orientationChange$} from './orientationChange'
 
 const ROOT_MARGIN_PX = 150
 

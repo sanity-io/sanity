@@ -1,4 +1,4 @@
-import {InternalSearchParam} from '../types'
+import {type InternalSearchParam} from '../types'
 
 export function parseScopedParams(params: [key: string, value: string][]): InternalSearchParam[] {
   return params.map(([key, value]) => [parse(key), value])

@@ -1,4 +1,4 @@
-import type {FileLike} from './types'
+import {type FileLike} from './types'
 
 /**
  * Check if the provided file type should be accepted by the input with accept attribute.

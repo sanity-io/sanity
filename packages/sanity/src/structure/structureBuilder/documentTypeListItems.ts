@@ -1,16 +1,17 @@
-import {SchemaType} from '@sanity/types'
-import {startCase} from 'lodash'
 import {StackCompactIcon, StackIcon} from '@sanity/icons'
+import {type SchemaType} from '@sanity/types'
+import {startCase} from 'lodash'
+
 import {structureLocaleNamespace} from '../i18n'
-import {MenuItemBuilder, getOrderingMenuItemsForSchemaType} from './MenuItem'
-import {DEFAULT_SELECTED_ORDERING_OPTION} from './Sort'
-import {DocumentListBuilder} from './DocumentList'
-import {ListItemBuilder, ListItem} from './ListItem'
-import {DocumentTypeListBuilder, DocumentTypeListInput} from './DocumentTypeList'
+import {type DocumentListBuilder} from './DocumentList'
+import {DocumentTypeListBuilder, type DocumentTypeListInput} from './DocumentTypeList'
 import {defaultIntentChecker} from './Intent'
-import {List} from './List'
-import {Collection} from './StructureNodes'
-import {StructureContext} from './types'
+import {type List} from './List'
+import {type ListItem, ListItemBuilder} from './ListItem'
+import {getOrderingMenuItemsForSchemaType, MenuItemBuilder} from './MenuItem'
+import {DEFAULT_SELECTED_ORDERING_OPTION} from './Sort'
+import {type Collection} from './StructureNodes'
+import {type StructureContext} from './types'
 
 const BUNDLED_DOC_TYPES = ['sanity.imageAsset', 'sanity.fileAsset']
 

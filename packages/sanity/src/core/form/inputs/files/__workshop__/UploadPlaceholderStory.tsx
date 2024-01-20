@@ -1,6 +1,7 @@
 import {Card, Container, Flex} from '@sanity/ui'
-import {UploadPlaceholder} from '../common/UploadPlaceholder'
+
 import {Button} from '../../../../../ui-components'
+import {UploadPlaceholder} from '../common/UploadPlaceholder'
 
 export default function UploadPlaceholderStory() {
   return (

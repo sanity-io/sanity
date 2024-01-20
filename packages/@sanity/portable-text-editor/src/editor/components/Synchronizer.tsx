@@ -1,5 +1,7 @@
+import {type PortableTextBlock} from '@sanity/types'
+import {throttle} from 'lodash'
 import {
-  PropsWithChildren,
+  type PropsWithChildren,
   startTransition,
   useCallback,
   useEffect,
@@ -7,21 +9,20 @@ import {
   useRef,
   useState,
 } from 'react'
-import {PortableTextBlock} from '@sanity/types'
-import {throttle} from 'lodash'
-import {useSlate} from 'slate-react'
 import {Editor} from 'slate'
-import {EditorChange, EditorChanges, EditorSelection} from '../../types/editor'
-import {Patch} from '../../types/patch'
+import {useSlate} from 'slate-react'
+
+import {type EditorChange, type EditorChanges, type EditorSelection} from '../../types/editor'
+import {type Patch} from '../../types/patch'
 import {debugWithName} from '../../utils/debug'
-import {PortableTextEditor} from '../PortableTextEditor'
-import {PortableTextEditorSelectionContext} from '../hooks/usePortableTextEditorSelection'
+import {IS_PROCESSING_LOCAL_CHANGES} from '../../utils/weakMaps'
 import {PortableTextEditorContext} from '../hooks/usePortableTextEditor'
+import {PortableTextEditorKeyGeneratorContext} from '../hooks/usePortableTextEditorKeyGenerator'
+import {PortableTextEditorSelectionContext} from '../hooks/usePortableTextEditorSelection'
 import {PortableTextEditorValueContext} from '../hooks/usePortableTextEditorValue'
 import {PortableTextEditorReadOnlyContext} from '../hooks/usePortableTextReadOnly'
 import {useSyncValue} from '../hooks/useSyncValue'
-import {PortableTextEditorKeyGeneratorContext} from '../hooks/usePortableTextEditorKeyGenerator'
-import {IS_PROCESSING_LOCAL_CHANGES} from '../../utils/weakMaps'
+import {PortableTextEditor} from '../PortableTextEditor'
 
 const debug = debugWithName('component:PortableTextEditor:Synchronizer')
 const debugVerbose = debug.enabled && false

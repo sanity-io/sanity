@@ -1,10 +1,10 @@
 import {isDocumentType, isNonUnion} from '../helpers'
-import type {
-  ConvertedDocumentType,
-  ConvertedEnum,
-  ConvertedType,
-  ConvertedUnion,
-  InputObjectType,
+import {
+  type ConvertedDocumentType,
+  type ConvertedEnum,
+  type ConvertedType,
+  type ConvertedUnion,
+  type InputObjectType,
 } from '../types'
 
 const builtInTypes = [

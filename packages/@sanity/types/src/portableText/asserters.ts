@@ -1,4 +1,4 @@
-import type {PortableTextTextBlock, PortableTextSpan, PortableTextObject} from './types'
+import {type PortableTextObject, type PortableTextSpan, type PortableTextTextBlock} from './types'
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return !!value && (typeof value == 'object' || typeof value == 'function')

@@ -1,7 +1,8 @@
-import {useCallback, useState} from 'react'
-import {Popover, Stack, Inline, Text, Card, Badge, Button, useClickOutside} from '@sanity/ui'
 import {HelpCircleIcon} from '@sanity/icons'
+import {Badge, Button, Card, Inline, Popover, Stack, Text, useClickOutside} from '@sanity/ui'
+import {useCallback, useState} from 'react'
 import {useTranslation} from 'sanity'
+
 import {visionLocaleNamespace} from '../i18n'
 import {PerspectivePopoverContent, PerspectivePopoverLink} from './PerspectivePopover.styled'
 

@@ -1,7 +1,7 @@
-import {parseJsonPath} from './parse'
 import {Descender} from './Descender'
 import {Expression} from './Expression'
-import type {Probe} from './Probe'
+import {parseJsonPath} from './parse'
+import {type Probe} from './Probe'
 
 interface Result<P = unknown> {
   leads: {

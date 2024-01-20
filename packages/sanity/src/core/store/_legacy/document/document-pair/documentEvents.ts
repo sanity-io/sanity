@@ -1,9 +1,10 @@
-import {SanityClient} from '@sanity/client'
-import {merge, Observable} from 'rxjs'
+import {type SanityClient} from '@sanity/client'
+import {merge, type Observable} from 'rxjs'
 import {switchMap} from 'rxjs/operators'
-import {IdPair} from '../types'
+
+import {type IdPair} from '../types'
 import {memoize} from '../utils/createMemoizer'
-import {DocumentVersionEvent} from './checkoutPair'
+import {type DocumentVersionEvent} from './checkoutPair'
 import {memoizedPair} from './memoizedPair'
 import {memoizeKeyGen} from './memoizeKeyGen'
 

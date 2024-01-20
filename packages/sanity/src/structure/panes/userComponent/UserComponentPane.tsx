@@ -1,11 +1,12 @@
 import {createElement, isValidElement, useState} from 'react'
 import {isValidElementType} from 'react-is'
-import {Pane} from '../../components'
-import type {StructureToolPaneActionHandler} from '../../types'
-import type {BaseStructureToolPaneProps} from '../types'
-import {UserComponentPaneHeader} from './UserComponentPaneHeader'
-import {UserComponentPaneContent} from './UserComponentPaneContent'
 import {useI18nText} from 'sanity'
+
+import {Pane} from '../../components'
+import {type StructureToolPaneActionHandler} from '../../types'
+import {type BaseStructureToolPaneProps} from '../types'
+import {UserComponentPaneContent} from './UserComponentPaneContent'
+import {UserComponentPaneHeader} from './UserComponentPaneHeader'
 
 type UserComponentPaneProps = BaseStructureToolPaneProps<'component'>
 

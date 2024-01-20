@@ -1,5 +1,6 @@
 import {Schema} from '@sanity/schema'
-import {ObjectSchemaType} from '@sanity/types'
+import {type ObjectSchemaType} from '@sanity/types'
+
 import {applyOrderingFunctions, fieldExtendsType} from '../helpers'
 
 const mockSchema = Schema.compile({

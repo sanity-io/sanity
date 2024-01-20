@@ -1,13 +1,14 @@
+import {type ClientConfig} from '@sanity/client'
+import {type ValidationMarker} from '@sanity/types'
 import path from 'path'
-import {Worker} from 'worker_threads'
 import readPkgUp from 'read-pkg-up'
-import {ClientConfig} from '@sanity/client'
-import {ValidationMarker} from '@sanity/types'
-import type {
-  ValidateDocumentsWorkerData,
-  ValidationWorkerChannel,
+import {Worker} from 'worker_threads'
+
+import {
+  type ValidateDocumentsWorkerData,
+  type ValidationWorkerChannel,
 } from '../../threads/validateDocuments'
-import {createReceiver, WorkerChannelReceiver} from '../../util/workerChannels'
+import {createReceiver, type WorkerChannelReceiver} from '../../util/workerChannels'
 
 const DEFAULT_MAX_CUSTOM_VALIDATION_CONCURRENCY = 5
 

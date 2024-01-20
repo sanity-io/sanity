@@ -1,4 +1,5 @@
 const path = require('path')
+
 partsTypeDirective.parser = 'tsx'
 module.exports = partsTypeDirective
 

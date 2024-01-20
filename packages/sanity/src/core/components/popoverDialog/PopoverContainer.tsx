@@ -1,12 +1,12 @@
 import {
-  Container,
-  ContainerProps,
-  rem,
-  ResponsiveWidthStyleProps,
-  useArrayProp,
   _responsive,
+  Container,
+  type ContainerProps,
+  rem,
+  type ResponsiveWidthStyleProps,
+  useArrayProp,
 } from '@sanity/ui'
-import {ReactNode, Ref, forwardRef} from 'react'
+import {forwardRef, type ReactNode, type Ref} from 'react'
 import styled from 'styled-components'
 
 // This is a workaround to make sure that the Container gets the correct width when used inside a popover.

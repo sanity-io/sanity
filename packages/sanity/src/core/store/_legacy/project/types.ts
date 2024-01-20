@@ -1,5 +1,5 @@
-import {Role} from '@sanity/types'
-import {Observable} from 'rxjs'
+import {type Role} from '@sanity/types'
+import {type Observable} from 'rxjs'
 
 /**
  * @hidden

@@ -1,6 +1,6 @@
 import {createContext, useContext} from 'react'
 
-import {PortableTextEditor} from '../PortableTextEditor'
+import {type PortableTextEditor} from '../PortableTextEditor'
 
 /**
  * A React context for sharing the editor object.

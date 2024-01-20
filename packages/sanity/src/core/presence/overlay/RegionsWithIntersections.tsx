@@ -1,20 +1,32 @@
-import {ForwardedRef, ReactNode, forwardRef, useCallback, useMemo, useRef, useState} from 'react'
 import {
-  SNAP_TO_DOCK_DISTANCE_BOTTOM,
-  SNAP_TO_DOCK_DISTANCE_TOP,
+  type ForwardedRef,
+  forwardRef,
+  type ReactNode,
+  useCallback,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
+
+import {
   DEBUG,
   INTERSECTION_ELEMENT_PADDING,
   INTERSECTION_THRESHOLDS,
+  SNAP_TO_DOCK_DISTANCE_BOTTOM,
+  SNAP_TO_DOCK_DISTANCE_TOP,
 } from '../constants'
-import {ReportedRegionWithRect, RegionWithIntersectionDetails, FieldPresenceData} from '../types'
-import {createIntersectionObserver} from './intersectionObserver'
-
 import {
-  RootWrapper,
-  OverlayWrapper,
-  TopRegionWrapper,
-  MiddleRegionWrapper,
+  type FieldPresenceData,
+  type RegionWithIntersectionDetails,
+  type ReportedRegionWithRect,
+} from '../types'
+import {createIntersectionObserver} from './intersectionObserver'
+import {
   BottomRegionWrapper,
+  MiddleRegionWrapper,
+  OverlayWrapper,
+  RootWrapper,
+  TopRegionWrapper,
 } from './RegionsWithIntersections.styled'
 
 interface RegionsWithIntersectionsProps {

@@ -1,14 +1,14 @@
 /* eslint-disable no-restricted-imports */
 import {
-  Button as UIButton,
-  Flex,
-  Dialog as UIDialog,
-  DialogProps as UIDialogProps,
   Box,
-  BoxHeight,
+  type BoxHeight,
+  Button as UIButton,
+  Dialog as UIDialog,
+  type DialogProps as UIDialogProps,
+  Flex,
 } from '@sanity/ui'
-import {ComponentProps, forwardRef} from 'react'
-import * as React from 'react'
+import type * as React from 'react'
+import {type ComponentProps, forwardRef} from 'react'
 import {useTranslation} from 'react-i18next'
 
 /** @internal */

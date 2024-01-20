@@ -1,10 +1,11 @@
 /* eslint-disable no-process-exit, no-sync */
 import childProcess from 'child_process'
-import path from 'path'
 import fs from 'fs'
-import type {CliCommandAction, CliCommandContext} from '../../types'
-import type {CodeMod} from './types'
+import path from 'path'
+
+import {type CliCommandAction, type CliCommandContext} from '../../types'
 import mods from './mods'
+import {type CodeMod} from './types'
 
 export interface CodeModFlags {
   extensions?: string

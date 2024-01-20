@@ -1,5 +1,6 @@
-import {Observable, of} from 'rxjs'
+import {type Observable, of} from 'rxjs'
 import {distinctUntilChanged, filter, switchMap, tap} from 'rxjs/operators'
+
 import {isNonNullable} from '../../util'
 
 /**

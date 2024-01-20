@@ -1,16 +1,22 @@
-import {SchemaType} from '@sanity/types'
-import {Observable} from 'rxjs'
-import {SerializeOptions, Serializable, Collection, CollectionBuilder} from './StructureNodes'
-import {ChildResolver, ItemChild} from './ChildResolver'
-import {DocumentListBuilder} from './DocumentList'
-import {SerializeError, HELP_URL} from './SerializeError'
-import {ListBuilder} from './List'
-import {DocumentBuilder} from './Document'
+import {type SchemaType} from '@sanity/types'
+import {type Observable} from 'rxjs'
+import {type I18nTextRecord} from 'sanity'
+
+import {type ChildResolver, type ItemChild} from './ChildResolver'
 import {ComponentBuilder} from './Component'
-import {validateId} from './util/validateId'
-import {StructureContext} from './types'
+import {DocumentBuilder} from './Document'
+import {DocumentListBuilder} from './DocumentList'
+import {ListBuilder} from './List'
+import {HELP_URL, SerializeError} from './SerializeError'
+import {
+  type Collection,
+  type CollectionBuilder,
+  type Serializable,
+  type SerializeOptions,
+} from './StructureNodes'
+import {type StructureContext} from './types'
 import {getStructureNodeId} from './util/getStructureNodeId'
-import {I18nTextRecord} from 'sanity'
+import {validateId} from './util/validateId'
 
 /**
  * Unserialized list item child.

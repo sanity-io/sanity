@@ -1,5 +1,5 @@
-import type {Coordinate} from '../types'
-import type {Rect} from './shapes'
+import {type Coordinate} from '../types'
+import {type Rect} from './shapes'
 
 export function isPointInEllipse(point: Coordinate, ellipse: Rect): boolean {
   const center = {x: ellipse.center.x, y: ellipse.center.y}

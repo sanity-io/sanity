@@ -1,5 +1,5 @@
 import {useEffect, useMemo, useState} from 'react'
-import {concat, EMPTY, Observable, of, Subject, timer} from 'rxjs'
+import {concat, EMPTY, type Observable, of, Subject, timer} from 'rxjs'
 import {
   catchError,
   distinctUntilChanged,
@@ -9,11 +9,12 @@ import {
   share,
   switchMap,
 } from 'rxjs/operators'
+
 import {useClient, useSchema} from '../hooks'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../studioClient'
 import {isNonNullable} from '../util'
 import {createSearch} from './search'
-import type {WeightedHit} from './weighted/types'
+import {type WeightedHit} from './weighted/types'
 
 /** @internal */
 export interface DocumentSearchParams {

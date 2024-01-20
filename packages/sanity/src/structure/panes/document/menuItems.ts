@@ -1,7 +1,8 @@
-import {JsonIcon, EarthAmericasIcon} from '@sanity/icons'
-import type {StructureToolFeatures, PaneMenuItem} from '../../types'
+import {EarthAmericasIcon, JsonIcon} from '@sanity/icons'
+import {type DocumentInspector, type DocumentInspectorMenuItem, type TFunction} from 'sanity'
+
+import {type PaneMenuItem, type StructureToolFeatures} from '../../types'
 import {INSPECT_ACTION_PREFIX} from './constants'
-import type {DocumentInspector, DocumentInspectorMenuItem, TFunction} from 'sanity'
 
 interface GetMenuItemsParams {
   currentInspector?: DocumentInspector

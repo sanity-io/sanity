@@ -1,25 +1,15 @@
 /* eslint-disable camelcase */
 /* eslint-disable react/jsx-handler-names */
 
-import {ObjectSchemaType, Path, ValidationMarker} from '@sanity/types'
+import {type ObjectSchemaType, type Path, type ValidationMarker} from '@sanity/types'
 import {useCallback, useRef} from 'react'
-import {FormPatch, PatchChannel, PatchEvent} from '../patch'
-import {ObjectFormNode} from '../store/types/nodes'
-import {
-  BlockAnnotationProps,
-  BlockProps,
-  FieldProps,
-  InputProps,
-  ItemProps,
-  ObjectInputProps,
-  RenderPreviewCallbackProps,
-  type FormDocumentValue,
-} from '../types'
-import {StateTree} from '../store'
+
+import {type DocumentFieldAction} from '../../config'
+import {type FormNodePresence} from '../../presence'
+import {PreviewLoader} from '../../preview'
 import {EMPTY_ARRAY} from '../../util'
-import {FormNodePresence} from '../../presence'
-import {DocumentFieldAction} from '../../config'
-import {useSource} from '../../studio'
+import {FormValueProvider} from '../contexts/FormValue'
+import {GetFormValueProvider} from '../contexts/GetFormValue'
 import {
   useAnnotationComponent,
   useBlockComponent,
@@ -29,11 +19,21 @@ import {
   useItemComponent,
   usePreviewComponent,
 } from '../form-components-hooks'
-import {PreviewLoader} from '../../preview'
-import {FormValueProvider} from '../contexts/FormValue'
-import {GetFormValueProvider} from '../contexts/GetFormValue'
-import {FormProvider} from './FormProvider'
+import {type FormPatch, type PatchChannel, PatchEvent} from '../patch'
+import {type StateTree} from '../store'
+import {type ObjectFormNode} from '../store/types/nodes'
+import {
+  type BlockAnnotationProps,
+  type BlockProps,
+  type FieldProps,
+  type FormDocumentValue,
+  type InputProps,
+  type ItemProps,
+  type ObjectInputProps,
+  type RenderPreviewCallbackProps,
+} from '../types'
 import {DocumentFieldActionsProvider} from './contexts/DocumentFieldActions'
+import {FormProvider} from './FormProvider'
 
 /**
  * @alpha

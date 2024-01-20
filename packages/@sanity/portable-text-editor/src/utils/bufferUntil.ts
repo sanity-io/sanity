@@ -1,4 +1,4 @@
-import {EMPTY, Observable, OperatorFunction, defer, of, switchMap, tap} from 'rxjs'
+import {defer, EMPTY, type Observable, of, type OperatorFunction, switchMap, tap} from 'rxjs'
 
 export function bufferUntil<T>(
   emitWhen: (currentBuffer: T[]) => boolean,

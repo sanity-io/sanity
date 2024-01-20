@@ -1,8 +1,9 @@
 /* eslint-disable i18next/no-literal-string,@sanity/i18n/no-attribute-string-literals */
-import {Card, CardTone, Code, Inline, Stack} from '@sanity/ui'
+import {Card, type CardTone, Code, Inline, Stack} from '@sanity/ui'
 import styled from 'styled-components'
+
 import {Tooltip} from '../../../../../../../../ui-components'
-import type {WeightedHit} from '../../../../../../../search'
+import {type WeightedHit} from '../../../../../../../search'
 
 interface DebugScoreProps {
   data: WeightedHit

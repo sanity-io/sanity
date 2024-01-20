@@ -1,8 +1,9 @@
-import {useState, useRef, useMemo, useEffect, useCallback, startTransition} from 'react'
-import {Box, Flex, Text, useGlobalKeyDown, useTheme} from '@sanity/ui'
 import {EditIcon, TrashIcon} from '@sanity/icons'
+import {Box, Flex, Text, useGlobalKeyDown, useTheme} from '@sanity/ui'
+import React, {startTransition, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+
+import {Button, Popover, type PopoverProps} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
-import {Button, Popover, PopoverProps} from '../../../../../ui-components'
 
 const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['top', 'bottom']
 

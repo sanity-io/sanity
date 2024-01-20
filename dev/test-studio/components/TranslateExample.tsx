@@ -1,6 +1,6 @@
-import {Translate, useTranslation} from 'sanity'
-import {Card, Stack, Text} from '@sanity/ui'
 import {InfoFilledIcon} from '@sanity/icons'
+import {Card, Stack, Text} from '@sanity/ui'
+import {Translate, useTranslation} from 'sanity'
 
 export function TranslateExample() {
   const {t} = useTranslation('testStudio')

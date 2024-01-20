@@ -1,7 +1,7 @@
-import {SanityClient} from '@sanity/client'
-import {CurrentUser} from '@sanity/types'
-import {Observable} from 'rxjs'
-import {ComponentType} from 'react'
+import {type SanityClient} from '@sanity/client'
+import {type CurrentUser} from '@sanity/types'
+import {type ComponentType} from 'react'
+import {type Observable} from 'rxjs'
 
 /**
  * The interface used by the Studio that produces a `SanityClient` and

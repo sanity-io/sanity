@@ -1,11 +1,19 @@
 import {escapeRegExp, isEqual} from 'lodash'
-import {ComponentType, MutableRefObject, ReactNode, useEffect, useMemo, useRef} from 'react'
+import {
+  type ComponentType,
+  type MutableRefObject,
+  type ReactNode,
+  useEffect,
+  useMemo,
+  useRef,
+} from 'react'
+import {type Router, RouterProvider, type RouterState} from 'sanity/router'
 import {useSyncExternalStoreWithSelector} from 'use-sync-external-store/with-selector'
-import type {Tool, Workspace} from '../../config'
-import {createRouter, type RouterStateEvent, type RouterHistory} from '../router'
+
+import {type Tool, type Workspace} from '../../config'
+import {createRouter, type RouterHistory, type RouterStateEvent} from '../router'
 import {decodeUrlState, resolveDefaultState, resolveIntentState} from '../router/helpers'
 import {useRouterHistory} from '../router/RouterHistoryContext'
-import {type Router, RouterProvider, type RouterState} from 'sanity/router'
 
 interface WorkspaceRouterProviderProps {
   children: ReactNode

@@ -1,5 +1,5 @@
 import {ChangeList} from '../../../diff'
-import {DiffComponent, ObjectDiff} from '../../../types'
+import {type DiffComponent, type ObjectDiff} from '../../../types'
 
 export const ObjectFieldDiff: DiffComponent<ObjectDiff> = ({diff, schemaType}) => {
   return <ChangeList diff={diff} schemaType={schemaType} />

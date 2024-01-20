@@ -1,5 +1,6 @@
-import {ReactNode, createContext, useContext} from 'react'
-import {Source} from '../config'
+import {createContext, type ReactNode, useContext} from 'react'
+
+import {type Source} from '../config'
 import {useWorkspace} from './workspace'
 
 /** @internal */

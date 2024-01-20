@@ -1,4 +1,4 @@
-import type {SingleDocumentPatch} from '../../src/patch/types'
+import {type SingleDocumentPatch} from '../../src/patch/types'
 
 export interface PatchExample {
   name: string

@@ -1,4 +1,4 @@
-import type {BlockSchemaType, SchemaType} from '@sanity/types'
+import {type BlockSchemaType, type SchemaType} from '@sanity/types'
 
 export function findBlockType(type: SchemaType): type is BlockSchemaType {
   if (type.type) {

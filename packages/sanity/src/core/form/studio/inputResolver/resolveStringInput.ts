@@ -1,4 +1,5 @@
-import {StringSchemaType} from '@sanity/types'
+import {type StringSchemaType} from '@sanity/types'
+
 import {SelectInput} from '../../inputs/SelectInput'
 import {StringInput} from '../../inputs/StringInput'
 import {getOption} from './helpers'

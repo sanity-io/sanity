@@ -1,4 +1,5 @@
 import {pick} from 'lodash'
+
 import stringify from './JSONStringifyHuman'
 
 const OPTIONS = {

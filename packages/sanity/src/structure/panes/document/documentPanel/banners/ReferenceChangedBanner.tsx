@@ -1,16 +1,22 @@
+import {CloseIcon, SyncIcon, WarningOutlineIcon} from '@sanity/icons'
+import {type KeyedSegment, type Reference} from '@sanity/types'
 import {Text} from '@sanity/ui'
-import {WarningOutlineIcon, SyncIcon, CloseIcon} from '@sanity/icons'
-import {memo, useCallback, useMemo} from 'react'
 import {fromString as pathFromString, get as pathGet} from '@sanity/util/paths'
-import {KeyedSegment, Reference} from '@sanity/types'
-import {debounceTime, map} from 'rxjs/operators'
-import {concat, Observable, of} from 'rxjs'
+import React, {memo, useCallback, useMemo} from 'react'
 import {useMemoObservable} from 'react-rx'
-import {RouterPaneGroup} from '../../../../types'
+import {concat, type Observable, of} from 'rxjs'
+import {debounceTime, map} from 'rxjs/operators'
+import {
+  type DocumentAvailability,
+  getPublishedId,
+  useDocumentPreviewStore,
+  useTranslation,
+} from 'sanity'
+
 import {usePaneRouter} from '../../../../components'
 import {structureLocaleNamespace} from '../../../../i18n'
+import {type RouterPaneGroup} from '../../../../types'
 import {Banner} from './Banner'
-import {DocumentAvailability, useDocumentPreviewStore, getPublishedId, useTranslation} from 'sanity'
 
 interface ParentReferenceInfo {
   loading: boolean

@@ -1,16 +1,17 @@
-import {Descendant, Operation} from 'slate'
+import {makeDiff, makePatches, stringifyPatches} from '@sanity/diff-match-patch'
 import {
-  Path,
-  PortableTextBlock,
-  PortableTextSpan,
-  PortableTextTextBlock,
   isPortableTextSpan,
   isPortableTextTextBlock,
+  type Path,
+  type PortableTextBlock,
+  type PortableTextSpan,
+  type PortableTextTextBlock,
 } from '@sanity/types'
-import {makeDiff, makePatches, stringifyPatches} from '@sanity/diff-match-patch'
+import {type Descendant, type Operation} from 'slate'
+
+import {type PortableTextSlateEditor} from '../../types/editor'
+import {type DiffMatchPatch} from '../../types/patch'
 import {diffMatchPatch} from '../applyPatch'
-import {DiffMatchPatch} from '../../types/patch'
-import {PortableTextSlateEditor} from '../../types/editor'
 
 describe('operationToPatches: diffMatchPatch', () => {
   test.todo('skips patches for blocks that cannot be found locally')

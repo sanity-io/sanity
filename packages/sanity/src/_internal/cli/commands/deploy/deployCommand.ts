@@ -1,5 +1,10 @@
-import type {CliCommandArguments, CliCommandContext, CliCommandDefinition} from '@sanity/cli'
-import type {DeployStudioActionFlags} from '../../actions/deploy/deployAction'
+import {
+  type CliCommandArguments,
+  type CliCommandContext,
+  type CliCommandDefinition,
+} from '@sanity/cli'
+
+import {type DeployStudioActionFlags} from '../../actions/deploy/deployAction'
 
 const helpText = `
 Options

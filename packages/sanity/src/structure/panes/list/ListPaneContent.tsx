@@ -1,9 +1,15 @@
-import {useCallback} from 'react'
 import {Box} from '@sanity/ui'
+import {useCallback} from 'react'
+import {
+  CommandList,
+  type CommandListItemContext,
+  type GeneralPreviewLayoutKey,
+  useGetI18nText,
+} from 'sanity'
 import styled from 'styled-components'
+
 import {PaneContent, PaneItem, usePaneLayout} from '../../components'
-import {PaneListItem, PaneListItemDivider} from '../../types'
-import {CommandList, CommandListItemContext, GeneralPreviewLayoutKey, useGetI18nText} from 'sanity'
+import {type PaneListItem, type PaneListItemDivider} from '../../types'
 
 interface ListPaneContentProps {
   childItemId?: string

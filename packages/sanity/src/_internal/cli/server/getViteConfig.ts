@@ -1,17 +1,18 @@
-import path from 'path'
-import {ConfigEnv, InlineConfig, mergeConfig} from 'vite'
+import {type UserViteConfig} from '@sanity/cli'
 import viteReact from '@vitejs/plugin-react'
-import readPkgUp from 'read-pkg-up'
 import debug from 'debug'
-import {UserViteConfig} from '@sanity/cli'
+import path from 'path'
+import readPkgUp from 'read-pkg-up'
+import {type ConfigEnv, type InlineConfig, mergeConfig} from 'vite'
+
 import {getAliases} from './aliases'
+import {getStudioEnvironmentVariables} from './getStudioEnvironmentVariables'
 import {normalizeBasePath} from './helpers'
 import {loadSanityMonorepo} from './sanityMonorepo'
 import {sanityBuildEntries} from './vite/plugin-sanity-build-entries'
 import {sanityDotWorkaroundPlugin} from './vite/plugin-sanity-dot-workaround'
-import {sanityRuntimeRewritePlugin} from './vite/plugin-sanity-runtime-rewrite'
 import {sanityFaviconsPlugin} from './vite/plugin-sanity-favicons'
-import {getStudioEnvironmentVariables} from './getStudioEnvironmentVariables'
+import {sanityRuntimeRewritePlugin} from './vite/plugin-sanity-runtime-rewrite'
 
 export interface ViteOptions {
   /**

@@ -1,7 +1,9 @@
 /* eslint-disable max-nested-callbacks */
 import {expect, test} from '@playwright/experimental-ct-react'
-import {Path, SanityDocument} from '@sanity/types'
-import {Page} from '@playwright/test'
+import {type Page} from '@playwright/test'
+import {type Path, type SanityDocument} from '@sanity/types'
+import React from 'react'
+
 import FocusTrackingStory from './FocusTrackingStory'
 
 export type UpdateFn = () => {focusPath: Path; document: SanityDocument}

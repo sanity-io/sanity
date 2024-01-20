@@ -1,5 +1,5 @@
-import {RouterNode} from '../types'
 import {_resolveStateFromPath} from '../_resolveStateFromPath'
+import {type RouterNode} from '../types'
 
 const node: RouterNode = {
   route: {

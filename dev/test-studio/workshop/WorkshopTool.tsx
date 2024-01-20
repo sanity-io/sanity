@@ -1,7 +1,9 @@
-import {Tool, useColorScheme, useWorkspace} from 'sanity'
 import {Workshop} from '@sanity/ui-workshop'
-import {WorkshopOptions} from './types'
+import React from 'react'
+import {type Tool, useColorScheme, useWorkspace} from 'sanity'
+
 import {config} from './config'
+import {type WorkshopOptions} from './types'
 import {useLocationStore} from './useLocationStore'
 
 export function WorkshopTool(props: {tool: Tool<WorkshopOptions>}) {

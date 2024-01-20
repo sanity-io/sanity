@@ -1,20 +1,26 @@
-import {FolderIcon, ChevronRightIcon, DocumentIcon} from '@sanity/icons'
-import {isSanityDocument, PreviewValue, SanityDocument, SchemaType} from '@sanity/types'
-import {Box, CardProps, Text} from '@sanity/ui'
-import {ReactNode, useCallback, useEffect, useMemo, useState} from 'react'
-import * as React from 'react'
-import {MissingSchemaType} from '../MissingSchemaType'
-import {usePaneRouter} from '../paneRouter'
-import {PaneItemPreview} from './PaneItemPreview'
+import {ChevronRightIcon, DocumentIcon, FolderIcon} from '@sanity/icons'
 import {
-  FIXME,
-  GeneralPreviewLayoutKey,
+  isSanityDocument,
+  type PreviewValue,
+  type SanityDocument,
+  type SchemaType,
+} from '@sanity/types'
+import {Box, type CardProps, Text} from '@sanity/ui'
+import type * as React from 'react'
+import {type ReactNode, useCallback, useEffect, useMemo, useState} from 'react'
+import {
+  type FIXME,
+  type GeneralPreviewLayoutKey,
   PreviewCard,
   SanityDefaultPreview,
   useDocumentPresence,
   useDocumentPreviewStore,
   useSchema,
 } from 'sanity'
+
+import {MissingSchemaType} from '../MissingSchemaType'
+import {usePaneRouter} from '../paneRouter'
+import {PaneItemPreview} from './PaneItemPreview'
 
 interface PaneItemProps {
   id: string

@@ -1,8 +1,9 @@
-import {MultipleMutationResult} from '@sanity/client'
-import {fetchAsyncIterator, FetchOptions} from '../fetch-utils/fetchStream'
-import {parseJSON} from '../it-utils/json'
-import {decodeText} from '../it-utils/decodeText'
+import {type MultipleMutationResult} from '@sanity/client'
+
+import {fetchAsyncIterator, type FetchOptions} from '../fetch-utils/fetchStream'
 import {concatStr} from '../it-utils/concatStr'
+import {decodeText} from '../it-utils/decodeText'
+import {parseJSON} from '../it-utils/json'
 import {lastValueFrom} from '../it-utils/lastValueFrom'
 import {mapAsync} from '../it-utils/mapAsync'
 

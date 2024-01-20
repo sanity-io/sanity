@@ -1,9 +1,10 @@
 /* eslint-disable max-nested-callbacks */
 
 import {omit} from 'lodash'
-import {Observable, BehaviorSubject} from 'rxjs'
-import {createUserColorManager, UserColorManagerOptions} from '../manager'
-import {UserColor} from '../types'
+import {BehaviorSubject, type Observable} from 'rxjs'
+
+import {createUserColorManager, type UserColorManagerOptions} from '../manager'
+import {type UserColor} from '../types'
 
 const colorPreferences: Record<string, string> = {
   anders: 'orange',

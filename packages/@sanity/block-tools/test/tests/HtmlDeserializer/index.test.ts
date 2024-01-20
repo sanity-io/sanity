@@ -1,9 +1,10 @@
-import * as fs from 'fs'
 import * as assert from 'assert'
-import * as path from 'path'
+import * as fs from 'fs'
 import {JSDOM} from 'jsdom'
+import * as path from 'path'
+
 import * as blockTools from '../../../src'
-import type {BlockTestFn} from './types'
+import {type BlockTestFn} from './types'
 
 describe('HtmlDeserializer', () => {
   const tests = fs.readdirSync(__dirname)

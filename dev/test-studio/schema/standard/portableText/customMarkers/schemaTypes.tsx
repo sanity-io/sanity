@@ -1,5 +1,6 @@
-import {defineType} from 'sanity'
 import {LinkIcon, RocketIcon} from '@sanity/icons'
+import {defineType} from 'sanity'
+
 import {CustomContentInput} from './CustomContentInput'
 
 const boostRender = (props: any) => (

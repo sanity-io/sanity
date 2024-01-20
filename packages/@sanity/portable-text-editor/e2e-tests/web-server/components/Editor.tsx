@@ -1,25 +1,26 @@
 /* eslint-disable i18next/no-literal-string */
-import React, {useCallback, useMemo, useRef, useState, useEffect} from 'react'
-import {Text, Box, Card, Code} from '@sanity/ui'
+import {type PortableTextBlock} from '@sanity/types'
+import {Box, Card, Code, Text} from '@sanity/ui'
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {type Subject} from 'rxjs'
 import styled from 'styled-components'
-import {Subject} from 'rxjs'
-import {PortableTextBlock} from '@sanity/types'
+
 import {
-  BlockDecoratorRenderProps,
-  BlockRenderProps,
-  PortableTextEditor,
+  type BlockDecoratorRenderProps,
+  type BlockListItemRenderProps,
+  type BlockRenderProps,
+  type BlockStyleRenderProps,
+  type EditorChange,
+  type EditorSelection,
+  type HotkeyOptions,
+  type Patch,
   PortableTextEditable,
-  EditorChange,
-  RenderBlockFunction,
-  RenderChildFunction,
-  EditorSelection,
-  Patch,
-  HotkeyOptions,
-  BlockListItemRenderProps,
-  BlockStyleRenderProps,
+  PortableTextEditor,
+  type RenderBlockFunction,
+  type RenderChildFunction,
 } from '../../../src'
-import {createKeyGenerator} from '../keyGenerator'
 import {portableTextType} from '../../schema'
+import {createKeyGenerator} from '../keyGenerator'
 
 export const HOTKEYS: HotkeyOptions = {
   marks: {

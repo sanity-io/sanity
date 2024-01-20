@@ -1,19 +1,20 @@
 import {
+  type ArraySchemaType,
+  type BlockSchemaType,
+  type EnumListProps,
+  type I18nTitledListValue,
   isBlockChildrenObjectField,
   isBlockListObjectField,
   isBlockSchemaType,
   isBlockStyleObjectField,
   isObjectSchemaType,
   isTitledListValue,
-  type ArraySchemaType,
-  type BlockSchemaType,
-  type EnumListProps,
   type ObjectSchemaType,
   type SpanSchemaType,
   type TitledListValue,
-  type I18nTitledListValue,
 } from '@sanity/types'
-import type {BlockContentFeatures, ResolvedAnnotationType} from '../types'
+
+import {type BlockContentFeatures, type ResolvedAnnotationType} from '../types'
 import {findBlockType} from './findBlockType'
 
 // Helper method for describing a blockContentType's feature set

@@ -1,7 +1,8 @@
+import {readdir, readFile, stat} from 'fs/promises'
 import path from 'path'
-import {readFile, readdir, stat} from 'fs/promises'
-import {runSanityCmdCommand, studiosPath, studioVersions} from './shared/environment'
+
 import {describeCliTest, testConcurrent} from './shared/describe'
+import {runSanityCmdCommand, studiosPath, studioVersions} from './shared/environment'
 
 describeCliTest('CLI: `sanity build` / `sanity deploy`', () => {
   describe.each(studioVersions)('%s', (version) => {

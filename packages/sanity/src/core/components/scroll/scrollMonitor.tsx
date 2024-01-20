@@ -1,6 +1,7 @@
-import {ReactNode} from 'react'
+import {type ReactNode} from 'react'
+
 import {useOnScroll} from './hooks'
-import {ScrollEventHandler} from './types'
+import {type ScrollEventHandler} from './types'
 
 /** @internal */
 export interface ScrollMonitorProps {

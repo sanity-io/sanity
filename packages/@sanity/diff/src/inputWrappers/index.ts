@@ -1,8 +1,8 @@
-import type {Input} from '../types'
+import {type Input} from '../types'
 import ArrayWrapper from './array'
+import BasicWrapper from './basic'
 import ObjectWrapper from './object'
 import StringWrapper from './string'
-import BasicWrapper from './basic'
 
 /**
  * Takes an input (any JSON-serializable value) and an annotation, and generates an input

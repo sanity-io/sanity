@@ -1,9 +1,10 @@
-import {SchemaType} from '@sanity/types'
-import {DocumentListBuilder, DocumentListInput, PartialDocumentList} from './DocumentList'
-import {Child} from './StructureNodes'
+import {type SchemaType} from '@sanity/types'
+
+import {DocumentListBuilder, type DocumentListInput, type PartialDocumentList} from './DocumentList'
+import {type GenericListInput} from './GenericList'
 import {DEFAULT_INTENT_HANDLER} from './Intent'
-import {GenericListInput} from './GenericList'
-import {StructureContext} from './types'
+import {type Child} from './StructureNodes'
+import {type StructureContext} from './types'
 
 /**
  * Interface for document type list input

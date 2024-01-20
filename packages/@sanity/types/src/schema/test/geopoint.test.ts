@@ -3,8 +3,8 @@
  * Some of these tests have no expect statement;
  * use of ts-expect-error serves the same purpose - TypeScript is the testrunner here
  */
-import type {GeopointDefinition, StringDefinition} from '../definition'
-import {defineType, Schema} from '../types'
+import {type GeopointDefinition, type StringDefinition} from '../definition'
+import {defineType} from '../types'
 
 describe('geopoint types', () => {
   describe('defineType', () => {

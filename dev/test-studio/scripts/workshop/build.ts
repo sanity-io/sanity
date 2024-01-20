@@ -1,6 +1,6 @@
 import fs from 'fs'
-import path from 'path'
 import globby from 'globby'
+import path from 'path'
 
 const ROOT_PATH = path.resolve(__dirname, '../../../..')
 const WORKSHOP_SRC_PATH = path.resolve(__dirname, '../../workshop')

@@ -1,13 +1,19 @@
-import type {ComponentType, CSSProperties, ReactElement} from 'react'
-import {createElement, useMemo, useState} from 'react'
-import type {RenderPreviewCallbackProps} from '../../form'
-import {useVisibility} from '../useVisibility'
+import {
+  type ComponentType,
+  createElement,
+  type CSSProperties,
+  type ReactElement,
+  useMemo,
+  useState,
+} from 'react'
 
+import {type PreviewProps} from '../../components'
+import {type RenderPreviewCallbackProps} from '../../form'
 import {useTranslation} from '../../i18n'
 import {unstable_useValuePreview as useValuePreview} from '../useValuePreview'
-import type {PreviewProps} from '../../components'
-import {_extractUploadState} from './_extractUploadState'
+import {useVisibility} from '../useVisibility'
 import {_HIDE_DELAY} from './_constants'
+import {_extractUploadState} from './_extractUploadState'
 
 /**
  * This component is responsible for converting renderPreview() calls into an element.

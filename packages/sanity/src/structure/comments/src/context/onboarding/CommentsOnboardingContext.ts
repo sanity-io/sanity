@@ -1,4 +1,5 @@
 import {createContext} from 'react'
-import {CommentsOnboardingContextValue} from './types'
+
+import {type CommentsOnboardingContextValue} from './types'
 
 export const CommentsOnboardingContext = createContext<CommentsOnboardingContextValue | null>(null)

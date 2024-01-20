@@ -1,20 +1,21 @@
-import {useState, useMemo, useEffect, useCallback} from 'react'
-import type {ClientConfig} from '@sanity/client'
+import {type ClientConfig} from '@sanity/client'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {template} from 'lodash'
-import type {CommentsUpsellData} from '../../types'
-import {CommentsUpsellDialog} from '../../components'
-import {CommentsUpsellContext} from './CommentsUpsellContext'
-import type {CommentsUpsellContextValue} from './types'
+import {useCallback, useEffect, useMemo, useState} from 'react'
 import {
-  useClient,
   DEFAULT_STUDIO_CLIENT_OPTIONS,
-  useWorkspace,
   UpsellDialogDismissed,
   UpsellDialogLearnMoreCtaClicked,
   UpsellDialogUpgradeCtaClicked,
   UpsellDialogViewed,
+  useClient,
+  useWorkspace,
 } from 'sanity'
+
+import {CommentsUpsellDialog} from '../../components'
+import {type CommentsUpsellData} from '../../types'
+import {CommentsUpsellContext} from './CommentsUpsellContext'
+import {type CommentsUpsellContextValue} from './types'
 
 const QUERY = `*[_type == "upsellUI" && id == "comments-upsell"][0]{
     ...,
