@@ -75,6 +75,7 @@
     "slate-react": "0.101.0"
   },
   "devDependencies": {
+    "@jest/globals": "^29.7.0",
     "@playwright/test": "^1.39.0",
     "@portabletext/toolkit": "^2.0.10",
     "@sanity/diff-match-patch": "^3.1.1",

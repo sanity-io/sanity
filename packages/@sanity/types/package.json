@@ -60,6 +60,7 @@
     "@types/react": "^18.0.25"
   },
   "devDependencies": {
+    "@jest/globals": "^29.7.0",
     "rimraf": "^3.0.2"
   }
 }

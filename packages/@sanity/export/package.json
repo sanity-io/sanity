@@ -42,6 +42,7 @@
     "split2": "^3.2.2"
   },
   "devDependencies": {
+    "@jest/globals": "^29.7.0",
     "string-to-stream": "^1.1.0"
   },
   "engines": {
