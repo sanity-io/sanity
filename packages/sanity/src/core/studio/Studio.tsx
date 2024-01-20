@@ -1,14 +1,12 @@
+/* eslint-disable simple-import-sort/imports */
+/* disabling for now because the imports trigger side effects causing test snapshots to update */
 import {type ReactElement} from 'react'
-
 import {type Config} from '../config'
 import {type StudioThemeColorSchemeKey} from '../theme/types'
 import {GlobalStyle} from './GlobalStyle'
 import {type RouterHistory} from './router'
 import {StudioLayout} from './StudioLayout'
-/* eslint-disable import/order */
-/* disabling for now because the imports trigger side effects causing test snapshots to update */
 import {StudioProvider} from './StudioProvider'
-/* eslint-enable import/order */
 
 /**
  * @hidden
