@@ -15,6 +15,7 @@
     "studio:dev": "SANITY_STUDIO_DATASET=dev yarn --cwd studio dev"
   },
   "devDependencies": {
+    "@jest/globals": "^29.7.0",
     "@types/lodash": "^4.14.149",
     "@types/node": "^18.15.3",
     "esbuild": "^0.19.8",

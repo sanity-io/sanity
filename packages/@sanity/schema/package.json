@@ -83,6 +83,7 @@
     "object-inspect": "^1.6.0"
   },
   "devDependencies": {
+    "@jest/globals": "^29.7.0",
     "rimraf": "^3.0.2"
   }
 }
