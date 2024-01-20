@@ -1,9 +1,9 @@
-/* eslint-disable import/order */
+/* eslint-disable simple-import-sort/imports */
 /* this has to be imported after createStructureBuilder due to what looks like a circular import issue */
+import {createStructureBuilder, SerializeError} from '../../structureBuilder'
 import {type SchemaPluginOptions} from 'sanity'
 
 import {getMockSource} from '../../../../test/testUtils/getMockWorkspaceFromConfig'
-import {createStructureBuilder, SerializeError} from '../../structureBuilder'
 /* eslint-enable import/order */
 import {type PaneNode, type UnresolvedPaneNode} from '../../types'
 import {PaneResolutionError} from '../PaneResolutionError'
