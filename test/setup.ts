@@ -30,22 +30,4 @@ if (typeof window !== 'undefined') {
       disconnect = jest.fn()
     },
   })
-
-  jest.mock('@sanity/ui', () => {
-    // causes `ResizeObserver` not found errors
-    const sanityUi = jest.requireActual('@sanity/ui')
-    const mockDomRect: DOMRectReadOnly = {
-      bottom: 0,
-      height: 0,
-      left: 0,
-      right: 0,
-      top: 0,
-      width: 0,
-      x: 0,
-      y: 0,
-      toJSON: () => ({}),
-    }
-
-    return {...sanityUi, useElementRect: jest.fn(() => mockDomRect)}
-  })
 }
