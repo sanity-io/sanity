@@ -139,7 +139,7 @@ describe('Validation test', () => {
 
     const invalidObjectResult = validation.get('invalidObject')
     const problems = flatten(
-      invalidObjectResult.fields[0].of[0].of.map((item) => item._problems),
+      invalidObjectResult.fields[0].of[0].of.map((item: {_problems: unknown[]}) => item._problems),
     ).filter(Boolean)
     expect(problems).toHaveLength(7)
     expect(problems[0]).toMatchObject({

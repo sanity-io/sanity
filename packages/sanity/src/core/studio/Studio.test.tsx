@@ -39,7 +39,7 @@ jest.mock('./components/navbar/presence/PresenceMenu')
 
 describe('Studio', () => {
   it(`SSR to static markup doesn't throw or warn`, () => {
-    const spy = jest.spyOn(console, 'error').mockImplementation()
+    const spy = jest.spyOn(console, 'error')
     const sheet = new ServerStyleSheet()
     try {
       const html = renderToStaticMarkup(sheet.collectStyles(<Studio config={config} />))
@@ -57,7 +57,7 @@ describe('Studio', () => {
     spy.mockRestore()
   })
   it(`SSR to markup for hydration doesn't throw`, () => {
-    const spy = jest.spyOn(console, 'error').mockImplementation()
+    const spy = jest.spyOn(console, 'error')
     const sheet = new ServerStyleSheet()
     try {
       const html = renderToString(sheet.collectStyles(<Studio config={config} />))
@@ -74,7 +74,7 @@ describe('Studio', () => {
     spy.mockRestore()
   })
   it('SSR hydrateRoot finishes without warnings', () => {
-    const spy = jest.spyOn(console, 'error').mockImplementation()
+    const spy = jest.spyOn(console, 'error')
     const node = document.createElement('div')
     document.body.appendChild(node)
     const sheet = new ServerStyleSheet()

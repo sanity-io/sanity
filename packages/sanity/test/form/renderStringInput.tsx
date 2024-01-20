@@ -37,15 +37,11 @@ export async function renderStringInput(options: {
     }
   }
 
-  const result = await renderInput({
+  const result = await renderInput<PrimitiveInputElementProps>({
     fieldDefinition,
     props,
     render: (inputProps, context) => render(transformProps(inputProps), context),
   })
 
-  function rerender(subsequentRender: TestRenderStringInputCallback) {
-    result.rerender((inputProps, context) => subsequentRender(transformProps(inputProps), context))
-  }
-
-  return {...result, rerender}
+  return result
 }

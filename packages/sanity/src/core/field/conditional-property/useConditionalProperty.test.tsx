@@ -92,7 +92,9 @@ describe('Conditional property resolver', () => {
     const {result} = renderHook(
       () =>
         useConditionalProperty({
-          checkProperty: jest.fn(({document}) => document?.title !== 'Hello world'),
+          checkProperty: jest.fn<ConditionalPropertyCallback>(
+            ({document}) => document?.title !== 'Hello world',
+          ),
           ...DEFAULT_PROPS,
         }),
       {wrapper: TestWrapper},
@@ -105,7 +107,9 @@ describe('Conditional property resolver', () => {
     const {result} = renderHook(
       () =>
         useConditionalProperty({
-          checkProperty: jest.fn(({document}) => Boolean(document?.isPublished)),
+          checkProperty: jest.fn<ConditionalPropertyCallback>(({document}) =>
+            Boolean(document?.isPublished),
+          ),
           ...DEFAULT_PROPS,
         }),
       {wrapper: TestWrapper},
@@ -135,7 +139,7 @@ describe('Conditional property resolver', () => {
     const {result} = renderHook(
       () =>
         useConditionalProperty({
-          checkProperty: jest.fn(({value}) => value === 'test value'),
+          checkProperty: jest.fn<ConditionalPropertyCallback>(({value}) => value === 'test value'),
           ...DEFAULT_PROPS,
           value: 'test value',
         }),
@@ -149,7 +153,7 @@ describe('Conditional property resolver', () => {
     const {result} = renderHook(
       () =>
         useConditionalProperty({
-          checkProperty: jest.fn(({value}) => value === 'test'),
+          checkProperty: jest.fn<ConditionalPropertyCallback>(({value}) => value === 'test'),
           ...DEFAULT_PROPS,
           value: 'test value',
         }),
@@ -163,7 +167,7 @@ describe('Conditional property resolver', () => {
     const {result} = renderHook(
       () =>
         useConditionalProperty({
-          checkProperty: jest.fn(
+          checkProperty: jest.fn<ConditionalPropertyCallback>(
             ({currentUser}) => !currentUser?.roles.some((role) => role.name === 'developer'),
           ),
           ...DEFAULT_PROPS,
@@ -179,7 +183,7 @@ describe('Conditional property resolver', () => {
     const {result} = renderHook(
       () =>
         useConditionalProperty({
-          checkProperty: jest.fn(({currentUser}) =>
+          checkProperty: jest.fn<ConditionalPropertyCallback>(({currentUser}) =>
             Boolean(currentUser?.roles.some((role) => role.name === 'administrator')),
           ),
           ...DEFAULT_PROPS,
@@ -199,7 +203,9 @@ describe('Conditional property resolver', () => {
           document: dummyDocument,
           value: dummyDocument.venue.address,
           parent: dummyDocument.venue,
-          checkProperty: jest.fn(({parent}) => Boolean(parent.location)),
+          checkProperty: jest.fn<ConditionalPropertyCallback>(({parent}) =>
+            Boolean(parent.location),
+          ),
         }),
       {wrapper: TestWrapper},
     )

@@ -21,7 +21,7 @@ import {editState, type EditStateFor} from './editState'
 import {validation} from './validation'
 
 // Mock `./editState`
-const mockEditState = editState as jest.Mock<Observable<EditStateFor>, any[]>
+const mockEditState = editState as jest.Mock<typeof editState>
 jest.mock('./editState', () => ({editState: jest.fn()}))
 
 const schema = createSchema({
@@ -47,9 +47,7 @@ const NOT_FOUND: DocumentAvailability = {available: false, reason: 'NOT_FOUND'}
 // for certain events (e.g. when validation is finished running)
 function createSubscription(
   client: SanityClient,
-  observeDocumentPairAvailability: (
-    id: string,
-  ) => Observable<DraftsModelDocumentAvailability> = jest.fn().mockReturnValue(EMPTY),
+  observeDocumentPairAvailability: (id: string) => Observable<DraftsModelDocumentAvailability>,
 ) {
   const getClient = () => client
 
@@ -96,7 +94,10 @@ describe('validation', () => {
 
     mockEditState.mockImplementation(() => mockEditStateSubject.asObservable())
 
-    const {subscription, closeSubscription, doneValidating} = createSubscription(client)
+    const {subscription, closeSubscription, doneValidating} = createSubscription(
+      client,
+      () => EMPTY,
+    )
 
     // simulate first emission from validation listener
     mockEditStateSubject.next({
@@ -144,7 +145,10 @@ describe('validation', () => {
 
     mockEditState.mockImplementation(() => mockEditStateSubject.asObservable())
 
-    const {subscription, closeSubscription, doneValidating} = createSubscription(client)
+    const {subscription, closeSubscription, doneValidating} = createSubscription(
+      client,
+      () => EMPTY,
+    )
 
     // simulate first emission from validation listener
     mockEditStateSubject.next({
@@ -286,7 +290,7 @@ describe('validation', () => {
           client,
           schema,
           getClient: () => client,
-          observeDocumentPairAvailability: jest.fn().mockReturnValue(EMPTY),
+          observeDocumentPairAvailability: jest.fn(() => EMPTY),
           i18n: getFallbackLocaleSource(),
         },
         {publishedId: 'example-id', draftId: 'drafts.example-id'},
@@ -358,7 +362,10 @@ describe('validation', () => {
     const mockEditStateSubject = new Subject<EditStateFor>()
     mockEditState.mockImplementation(() => mockEditStateSubject.asObservable())
 
-    const {subscription, closeSubscription, doneValidating} = createSubscription(client)
+    const {subscription, closeSubscription, doneValidating} = createSubscription(
+      client,
+      () => EMPTY,
+    )
 
     mockEditStateSubject.next({
       id: 'example-id',

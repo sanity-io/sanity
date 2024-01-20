@@ -1,14 +1,23 @@
+/* eslint-disable simple-import-sort/imports */
+// Note: for some reason, this needs to be imported before the mocked module
+import {afterEach, describe, expect, it, jest} from '@jest/globals'
+/* eslint-enable simple-import-sort/imports */
+
 import {SanityEncoder} from '@bjoerge/mutiny'
 
 import {type Mutation, type Transaction} from '../../../mutations'
 import {toSanityMutations, type TransactionPayload} from '../toSanityMutations'
 
 jest.mock('@bjoerge/mutiny', () => {
-  const actual = jest.requireActual('@bjoerge/mutiny')
+  // eslint-disable-next-line @typescript-eslint/consistent-type-imports
+  const actual = jest.requireActual<typeof import('@bjoerge/mutiny')>('@bjoerge/mutiny')
   return {
     ...actual,
     SanityEncoder: {
-      encode: jest.fn().mockImplementation(actual.SanityEncoder.encode),
+      ...actual.SanityEncoder.encode,
+      encode: jest
+        .fn<typeof actual.SanityEncoder.encode>()
+        .mockImplementation(actual.SanityEncoder.encode),
     },
   }
 })

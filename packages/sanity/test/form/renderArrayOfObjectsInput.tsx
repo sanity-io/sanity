@@ -86,20 +86,16 @@ export async function renderArrayOfObjectsInput(options: {
       renderPreview: defaultRenderPreview,
       resolveInitialValue,
       schemaType: schemaType as ArraySchemaType,
-      value: value as any[],
+      value: value as {_key: string}[],
       renderDefault: noopRenderDefault,
     }
   }
 
-  const ret = await renderInput({
+  const ret = await renderInput<ComplexElementProps>({
     fieldDefinition,
     props,
     render: (inputProps, context) => render(transformProps(inputProps, context)),
   })
 
-  function rerender(renderFn: TestRenderArrayOfObjectInputCallback) {
-    return ret.rerender((inputProps, context) => renderFn(transformProps(inputProps, context)))
-  }
-
-  return {...ret, onItemAppend, rerender}
+  return ret
 }
