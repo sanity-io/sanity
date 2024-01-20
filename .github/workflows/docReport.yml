@@ -25,7 +25,7 @@ jobs:
           cache-name: cache-node-modules
         with:
           path: '**/node_modules'
-          key: ${{ runner.os }}-modules-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-modules-${{ env.cache-name }}-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-modules-${{ env.cache-name }}-
             ${{ runner.os }}-modules-
@@ -33,10 +33,10 @@ jobs:
 
       - name: Install project dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: yarn install --frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       - name: Build packages
-        run: yarn build
+        run: pnpm build
         env:
           NODE_OPTIONS: --max_old_space_size=8192
 
@@ -45,21 +45,21 @@ jobs:
         env:
           DOCS_REPORT_TOKEN: ${{ secrets.DOCS_REPORT_DATASET_TOKEN }}
           DOCS_REPORT_DATASET: ${{ github.ref == 'refs/heads/current' && 'production' || 'next'}}
-        run: yarn docs:report:create
+        run: pnpm docs:report:create
 
       - name: Create Docs Report on PR
         if: ${{ github.event_name == 'pull_request' }}
         env:
           DOCS_REPORT_TOKEN: ${{ secrets.DOCS_REPORT_DATASET_TOKEN }}
           DOCS_REPORT_DATASET: pr-${{ github.event.number }}
-        run: yarn docs:report:create
+        run: pnpm docs:report:create
 
       - name: Compare Docs Coverage on PR
         if: ${{ github.event_name == 'pull_request' }}
         env:
           DOCS_REPORT_TOKEN: ${{ secrets.DOCS_REPORT_DATASET_TOKEN }}
           DOCS_REPORT_DATASET: pr-${{ github.event.number }}
-        run: yarn docs:report
+        run: pnpm docs:report
 
       - name: PR comment with report
         uses: thollander/actions-comment-pull-request@1d3973dc4b8e1399c0620d3f2b1aa5e795465308 # v2

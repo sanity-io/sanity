@@ -30,7 +30,7 @@ jobs:
           cache-name: cache-node-modules
         with:
           path: '**/node_modules'
-          key: ${{ runner.os }}-modules-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-modules-${{ env.cache-name }}-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-modules-${{ env.cache-name }}-
             ${{ runner.os }}-modules-
@@ -38,7 +38,7 @@ jobs:
 
       - name: Install project dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: yarn install --frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       - name: Store Playwright's Version
         run: |
@@ -58,7 +58,7 @@ jobs:
         run: npx playwright install --with-deps
 
       - name: Build CLI
-        run: yarn build:cli # Needed for CLI tests
+        run: pnpm build:cli # Needed for CLI tests
 
       - name: Build E2E test studio on next
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/next' }}
@@ -69,7 +69,7 @@ jobs:
           SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW }}
           SANITY_E2E_PROJECT_ID: ${{ secrets.SANITY_E2E_PROJECT_ID }}
           SANITY_E2E_DATASET: ${{ secrets.SANITY_E2E_DATASET }}
-        run: yarn e2e:setup && yarn e2e:build
+        run: pnpm e2e:setup && pnpm e2e:build
 
       - name: Build E2E test studio on PR
         if: ${{ github.event_name == 'pull_request' }}
@@ -80,7 +80,7 @@ jobs:
           SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW }}
           SANITY_E2E_PROJECT_ID: ${{ secrets.SANITY_E2E_PROJECT_ID }}
           SANITY_E2E_DATASET: pr-${{ matrix.project }}-${{ github.event.number }}
-        run: yarn e2e:setup && yarn e2e:build
+        run: pnpm e2e:setup && pnpm e2e:build
 
       # Caches build from either PR or next
       - name: Cache build
@@ -121,7 +121,7 @@ jobs:
           cache-name: cache-node-modules
         with:
           path: '**/node_modules'
-          key: ${{ runner.os }}-modules-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-modules-${{ env.cache-name }}-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-modules-${{ env.cache-name }}-
             ${{ runner.os }}-modules-
@@ -129,7 +129,7 @@ jobs:
 
       - name: Install project dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: yarn install --frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       - name: Store Playwright's Version
         run: |
@@ -171,7 +171,7 @@ jobs:
           SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW }}
           SANITY_E2E_PROJECT_ID: ${{ secrets.SANITY_E2E_PROJECT_ID }}
           SANITY_E2E_DATASET: ${{ secrets.SANITY_E2E_DATASET }}
-        run: yarn test:e2e --project ${{ matrix.project }} --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
+        run: pnpm test:e2e --project ${{ matrix.project }} --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
 
       - name: Run E2E tests on PR
         if: ${{ github.event_name == 'pull_request' }}
@@ -185,7 +185,7 @@ jobs:
           SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW }}
           SANITY_E2E_PROJECT_ID: ${{ secrets.SANITY_E2E_PROJECT_ID }}
           SANITY_E2E_DATASET: pr-${{ matrix.project }}-${{ github.event.number }}
-        run: yarn test:e2e --project ${{ matrix.project }} --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
+        run: pnpm test:e2e --project ${{ matrix.project }} --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
 
       - uses: actions/upload-artifact@v3
         if: always()
@@ -210,7 +210,7 @@ jobs:
           cache-name: cache-node-modules
         with:
           path: '**/node_modules'
-          key: ${{ runner.os }}-modules-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-modules-${{ env.cache-name }}-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-modules-${{ env.cache-name }}-
             ${{ runner.os }}-modules-
@@ -218,7 +218,7 @@ jobs:
 
       - name: Install project dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: yarn install --frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       - name: Download blob reports from Github Actions Artifacts
         uses: actions/download-artifact@v3

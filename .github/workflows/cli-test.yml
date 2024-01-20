@@ -44,7 +44,7 @@ jobs:
           cache-name: cache-node-modules
         with:
           path: '**/node_modules'
-          key: ${{ runner.os }}-modules-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-modules-${{ env.cache-name }}-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-modules-${{ env.cache-name }}-
             ${{ runner.os }}-modules-
@@ -52,17 +52,17 @@ jobs:
 
       - name: Install project dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: yarn install --frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       - name: Build CLI
-        run: yarn build:cli # Needed for CLI tests
+        run: pnpm build:cli # Needed for CLI tests
 
       - name: Test
         id: test
         run: |
           node -v
           npm -v
-          yarn test --silent --selectProjects=@sanity/cli
+          pnpm test --silent --selectProjects=@sanity/cli
         env:
           # Update token in github and change below to ${{ secrets.SANITY_CI_CLI_AUTH_TOKEN }} after merge to next
           SANITY_CI_CLI_AUTH_TOKEN_STAGING: ${{ secrets.SANITY_CI_CLI_AUTH_TOKEN_STAGING }}

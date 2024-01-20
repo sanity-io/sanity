@@ -32,7 +32,7 @@ jobs:
           cache-name: cache-node-modules
         with:
           path: '**/node_modules'
-          key: ${{ runner.os }}-modules-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-modules-${{ env.cache-name }}-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-modules-${{ env.cache-name }}-
             ${{ runner.os }}-modules-
@@ -40,7 +40,7 @@ jobs:
 
       - name: Install project dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: yarn install --frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       - name: Store Playwright's Version
         run: |
@@ -60,4 +60,4 @@ jobs:
         run: npx playwright install --with-deps
 
       - name: Run end-to-end tests
-        run: cd packages/@sanity/portable-text-editor && yarn test:e2e --silent --shard=${{ matrix.shardIndex}}/${{ matrix.shardTotal }}
+        run: cd packages/@sanity/portable-text-editor && pnpm test:e2e --silent --shard=${{ matrix.shardIndex}}/${{ matrix.shardTotal }}

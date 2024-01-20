@@ -24,7 +24,7 @@ jobs:
           cache-name: cache-node-modules
         with:
           path: '**/node_modules'
-          key: ${{ runner.os }}-modules-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-modules-${{ env.cache-name }}-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-modules-${{ env.cache-name }}-
             ${{ runner.os }}-modules-
@@ -32,7 +32,7 @@ jobs:
 
       - name: Install project dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: yarn install --immutable --immutable-cache --check-cache
+        run: pnpm install --frozen-lockfile
 
       - name: Store Playwright's Version
         run: |
@@ -48,9 +48,9 @@ jobs:
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
       - name: Build CLI
-        run: yarn build:cli # Needed for CLI tests
+        run: pnpm build:cli # Needed for CLI tests
       - name: Run end-to-end tests
-        run: yarn workspace sanity test:ct
+        run: pnpm --filter sanity test:ct
         env:
           NODE_OPTIONS: --max_old_space_size=8192
       - name: Get Current Job Log URL
@@ -63,7 +63,7 @@ jobs:
       - name: Parse playwright report
         id: parse-playwright-report
         if: always()
-        run: yarn workspace sanity write:playwright-report-as-pr-comment
+        run: pnpm --filter sanity write:playwright-report-as-pr-comment
         env:
           GITHUB_WORKFLOW_URL: '${{ steps.job_html_url.outputs.html_url }}'
       - name: PR comment with report

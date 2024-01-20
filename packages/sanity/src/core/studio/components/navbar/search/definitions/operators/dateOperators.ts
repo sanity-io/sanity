@@ -53,7 +53,7 @@ export interface OperatorDateLastValue {
 }
 
 // @todo: don't manually cast `buttonValueComponent` and `inputComponent` once
-// we understand why `yarn etl` fails with 'Unable to follow symbol' errors
+// we understand why `npm run etl` fails with 'Unable to follow symbol' errors
 
 // Common values shared between date & datetime defs
 const COMMON = {
