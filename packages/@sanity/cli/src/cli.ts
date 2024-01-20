@@ -247,10 +247,10 @@ function installUnhandledRejectionsHandler() {
   })
 }
 
-function rejectionHasStack(
-  reason: Record<string, unknown> | null | undefined,
-): reason is {stack: string} {
-  return Boolean(reason && 'stack' in reason && typeof reason.stack === 'string')
+function rejectionHasStack(reason: unknown): reason is {stack: string} {
+  return Boolean(
+    reason && typeof reason === 'object' && 'stack' in reason && typeof reason.stack === 'string',
+  )
 }
 
 function warnOnInferredProjectDir(isInit: boolean, cwd: string, workDir: string): void {

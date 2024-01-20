@@ -59,7 +59,7 @@ interface Env {
 }
 
 interface Options {
-  env: Env
+  env: Env | NodeJS.ProcessEnv
 }
 
 export type ConsentInformation =
