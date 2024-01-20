@@ -1,6 +1,3 @@
-// eslint-disable-next-line import/no-unassigned-import
-import '@testing-library/jest-dom/extend-expect'
-
 import {describe, expect, it, jest} from '@jest/globals'
 import {type ObjectSchemaType} from '@sanity/types'
 import {LayerProvider, studioTheme, ThemeProvider} from '@sanity/ui'
