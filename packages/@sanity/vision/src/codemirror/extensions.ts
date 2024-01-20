@@ -8,6 +8,7 @@ import {
   syntaxHighlighting,
 } from '@codemirror/language'
 import {highlightSelectionMatches} from '@codemirror/search'
+import {Extension} from '@codemirror/state'
 import {
   drawSelection,
   highlightActiveLine,
@@ -17,7 +18,7 @@ import {
   lineNumbers,
 } from '@codemirror/view'
 
-export const codemirrorExtensions = [
+export const codemirrorExtensions: Extension[] = [
   [javascriptLanguage],
   lineNumbers(),
   highlightActiveLine(),

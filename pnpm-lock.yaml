@@ -1244,6 +1244,9 @@ importers:
       '@codemirror/search':
         specifier: ^6.0.1
         version: 6.5.5
+      '@codemirror/state':
+        specifier: ^6.0.0
+        version: 6.4.0
       '@codemirror/view':
         specifier: ^6.1.1
         version: 6.23.0
