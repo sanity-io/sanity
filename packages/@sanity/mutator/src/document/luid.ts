@@ -5,4 +5,4 @@ import {uuid} from '@sanity/uuid'
  * cryptographically unique, as the worst that can happen is that they get rejected because
  * of a collision, and then we should just retry with a new id.
  */
-export const luid = uuid
+export const luid: typeof uuid = uuid
