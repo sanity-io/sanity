@@ -22,7 +22,7 @@ jobs:
           cache-name: cache-node-modules
         with:
           path: '**/node_modules'
-          key: ${{ runner.os }}-modules-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-modules-${{ env.cache-name }}-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-modules-${{ env.cache-name }}-
             ${{ runner.os }}-modules-
@@ -31,7 +31,7 @@ jobs:
       - name: Install project dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
         working-directory: ./perf
-        run: yarn install --frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       - name: Store Playwright's Version
         run: |
@@ -58,4 +58,4 @@ jobs:
           PERF_TEST_BRANCH: 'next'
           PERF_TEST_SANITY_TOKEN: ${{ secrets.PERF_TEST_SANITY_TOKEN }}
           PERF_TEST_METRICS_TOKEN: ${{ secrets.PERF_TEST_METRICS_TOKEN }}
-        run: yarn perf:test:ci
+        run: pnpm perf:test:ci

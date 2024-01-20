@@ -5,7 +5,7 @@ import chalk from 'chalk'
 import ora from 'ora'
 import path from 'path'
 
-const cli = cac('yarn etl')
+const cli = cac('pnpm etl')
 
 cli
   .command('[packageName]', 'Extract, transform, and load API documents for a package')
@@ -24,7 +24,7 @@ async function main(options: {packageName: string; releaseVersion?: string}): Pr
   const {packageName, releaseVersion} = options
 
   if (!packageName) {
-    throw new Error('Missing package name. Usage: yarn etl [packageName]')
+    throw new Error('Missing package name. Usage: pnpm etl [packageName]')
   }
 
   const packagePath = path.resolve(__dirname, '../packages', packageName)

@@ -73,9 +73,7 @@ etc
 /test/e2e/state
 blob-report
 
-# Temporary files made by yarn when running canary releases
-.yarn
-.yarnrc
+# Temporary files made when running canary releases
 .turbo
 .yalc
 yalc.lock

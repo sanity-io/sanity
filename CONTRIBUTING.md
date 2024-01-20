@@ -8,14 +8,14 @@ Contributions are always welcome, no matter how large or small.
 
 Before contributing, please read our [code of conduct](https://github.com/sanity-io/sanity/blob/current/CODE_OF_CONDUCT.md).
 
-Then make sure you have _Node.js version 16 or newer_. We currently use [Yarn](https://classic.yarnpkg.com/en/docs/install) 1 as our package manager, so make sure you have that installed as well.
+Then make sure you have _Node.js version 18 or newer_. We currently use [pnpm](https://pnpm.io/installation) as our package manager, so make sure you have that installed as well.
 
 ```sh
 git clone git@github.com:sanity-io/sanity.git
 cd sanity
-yarn
-yarn build
-yarn dev
+pnpm install
+pnpm build
+pnpm dev
 ```
 
 # Release/workflow guidelines
@@ -72,15 +72,15 @@ If you find yourself wishing for a feature that doesn't exist in Sanity, you are
 
 # Troubleshooting
 
-If you run into build issues, you might want to run `yarn init`, which will delete all `node_modules` folders, then run a fresh `yarn bootstrap` to install and cross-symlink all modules, followed by building all ES6 code to ES5.
+If you run into build issues, you might want to run `pnpm clean && pnpm clean:deps`, which will delete all `node_modules` folders, then run a fresh `pnpm bootstrap` to install and cross-symlink all modules, followed by building all ES6 code to ES5.
 
 # Testing
 
 Some tests are based on compiled files, so you will need to build the repository first before running the tests:
 
 ```sh
-yarn build
-yarn test
+pnpm build
+pnpm test
 ```
 
-Note: this runs `yarn test` for all the Sanity packages - the output can be quite hard to read. If you encounter an issue, it's usually best to figure out which module is failing, then run `yarn test` in that individual module.
+Note: this runs `pnpm test` for all the Sanity packages - the output can be quite hard to read. If you encounter an issue, it's usually best to figure out which module is failing, then run `pnpm test` in that individual module.

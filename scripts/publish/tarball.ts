@@ -55,7 +55,7 @@ function _pack(opts: {cwd: string; filename: string}): Promise<void> {
   const {cwd, filename} = opts
 
   return new Promise((resolve, reject) => {
-    const stream = spawn('yarn', ['pack', '--filename', filename], {cwd})
+    const stream = spawn('pnpm', ['pack', '--filename', filename], {cwd})
 
     stream.on('close', () => resolve())
     stream.on('error', (err) => reject(err))
