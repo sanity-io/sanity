@@ -1,5 +1,5 @@
-const debug = require('debug')('sanity:import:asset-validation')
 const {generateHelpUrl} = require('@sanity/generate-help-url')
+const debug = require('debug')('sanity:import:asset-validation')
 const pMap = require('p-map')
 const urlExists = require('./util/urlExists')
 
