@@ -1,7 +1,6 @@
 import {type Framework, frameworks} from '@vercel/frameworks'
 import {detectFrameworkRecord, LocalFileSystemDetector} from '@vercel/fs-detectors'
 
-import initPlugin from '../../actions/init-plugin/initPlugin'
 import initProject from '../../actions/init-project/initProject'
 import {type CliCommandDefinition} from '../../types'
 
@@ -83,14 +82,6 @@ export const initCommand: CliCommandDefinition<InitFlags> = {
     const unattended = args.extOptions.y || args.extOptions.yes
 
     const warn = (msg: string) => output.warn(chalk.yellow.bgBlack(msg))
-
-    // `sanity init plugin`
-    if (type === 'plugin') {
-      return context.sanityMajorVersion === 2
-        ? // don't bother with telemetry here, as it's not supported in v3
-          initPlugin(args, context)
-        : Promise.reject(new Error(`'sanity init plugin' is not available in modern studios`))
-    }
 
     // `sanity init whatever`
     if (type) {

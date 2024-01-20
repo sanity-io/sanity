@@ -7,7 +7,7 @@ const uninstallCommand: CliCommandDefinition = {
   description: 'Removes a Sanity plugin from the current Sanity configuration',
   hideFromHelp: true,
   action: async (args, context) => {
-    await context.output.error('`sanity uninstall` is no longer supported - use npm/yarn')
+    await context.output.error('`sanity uninstall` is no longer supported - use npm/yarn/pnpm')
   },
 }
 
