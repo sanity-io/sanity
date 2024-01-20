@@ -18,7 +18,7 @@ import {
 import {toJSON} from './operatorUtils'
 
 // @todo: don't manually cast `buttonValueComponent` and `inputComponent` once
-// we understand why `yarn etl` fails with 'Unable to follow symbol' errors
+// we understand why `npm run etl` fails with 'Unable to follow symbol' errors
 export const arrayOperators = {
   arrayCountEqual: defineSearchOperator({
     nameKey: 'search.operator.array-count-equal.name',

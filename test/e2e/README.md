@@ -15,31 +15,31 @@ To run E2E tests run the following commands from the root of the project
 - Run all the tests
 
   ```sh
-  yarn test:e2e
+  pnpm test:e2e
   ```
 
 - Run all tests in specific directory, it runs relative to the `test/e2e/tests`
 
   ```sh
-  yarn test:e2e tests/default-layout
+  pnpm test:e2e tests/default-layout
   ```
 
 - Run files that have my-spec or my-spec-2 in the file name
 
   ```sh
-  yarn test:e2e my-spec my-spec-2
+  pnpm test:e2e my-spec my-spec-2
   ```
 
 - For help, run
   ```sh
-  yarn test:e2e --help
+  pnpm test:e2e --help
   ```
 
 Other useful helper commands
 
 - "e2e:dev": Starts the E2E studio using `sanity dev`
 - "e2e:build": Runs `sanity build` on E2E studio
-- "e2e:codegen": Runs [playwright codegen](https://playwright.dev/docs/codegen). **Note: Requires the studio to be running. Run `yarn e2e:dev` in another terminal first**
+- "e2e:codegen": Runs [playwright codegen](https://playwright.dev/docs/codegen). **Note: Requires the studio to be running. Run `pnpm e2e:dev` in another terminal first**
 - "e2e:start": Runs `sanity build` on E2E studio
 - "e2e:preview": Runs builds and runs`sanity start` on E2E studio
 

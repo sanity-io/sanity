@@ -31,22 +31,22 @@ jobs:
           cache-name: cache-node-modules
         with:
           path: '**/node_modules'
-          key: ${{ runner.os }}-modules-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-modules-${{ env.cache-name }}-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-modules-${{ env.cache-name }}-
             ${{ runner.os }}-modules-
             ${{ runner.os }}-
       - name: Install project dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: yarn install --ignore-scripts --frozen-lockfile
+        run: pnpm install --ignore-scripts --frozen-lockfile
       - name: Cache Prettier
         uses: actions/cache@v3
         with:
           path: node_modules/.cache/prettier/.prettier-cache
-          key: prettier-${{ hashFiles('yarn.lock') }}
-      - run: yarn prettier --write
+          key: prettier-${{ hashFiles('pnpm-lock.yaml') }}
+      - run: pnpm prettier --write
       - name: GitHub blocks PRs from automation that alter workflows in any way
-        run: git restore .github/workflows yarn.lock
+        run: git restore .github/workflows pnpm-lock.yaml
       - uses: tibdex/github-app-token@3beb63f4bd073e61482598c45c71c1019b59b73a # v2
         id: generate-token
         with:
@@ -54,7 +54,7 @@ jobs:
           private_key: ${{ secrets.ECOSPARK_APP_PRIVATE_KEY }}
       - uses: peter-evans/create-pull-request@b1ddad2c994a25fbc81a28b3ec0e368bb2021c50 # v6
         with:
-          body: I ran `yarn prettier` 🧑‍💻
+          body: I ran `prettier` 🧑‍💻
           branch: actions/prettier-if-needed
           commit-message: 'chore(prettier): fix unformatted files 🤖 ✨'
           labels: 🤖 bot

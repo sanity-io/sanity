@@ -4,7 +4,7 @@ import {defineSearchOperator, type SearchOperatorInput} from './operatorTypes'
 import {toJSON} from './operatorUtils'
 
 // @todo: don't manually cast `buttonValueComponent` and `inputComponent` once
-// we understand why `yarn etl` fails with 'Unable to follow symbol' errors
+// we understand why `npm etl` fails with 'Unable to follow symbol' errors
 export const stringOperators = {
   stringEqual: defineSearchOperator({
     nameKey: 'search.operator.string-equal.name',
