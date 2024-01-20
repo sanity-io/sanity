@@ -76,7 +76,7 @@
     "@rexxars/gitconfiglocal": "^3.0.1",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@sanity/client": "^6.12.4",
-    "@sanity/eslint-config-studio": "^2.0.4",
+    "@sanity/eslint-config-studio": "^3.0.1",
     "@sanity/generate-help-url": "^3.0.0",
     "@sanity/types": "3.28.0",
     "@sanity/util": "3.28.0",
