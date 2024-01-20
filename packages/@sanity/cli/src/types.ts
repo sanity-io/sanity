@@ -82,7 +82,6 @@ export interface CliBaseCommandContext {
   output: CliOutputter
   prompt: CliPrompter
   apiClient: CliApiClient
-  yarn: CliStubbedYarn
   sanityMajorVersion: 2 | 3
   cliConfigPath?: string
   cliRoot: string

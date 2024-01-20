@@ -62,7 +62,6 @@ import {
   promptForStudioPath,
 } from './prompts/nextjs'
 import {readPackageJson} from './readPackageJson'
-import {reconfigureV2Project} from './reconfigureV2Project'
 import templates from './templates'
 import {
   sanityCliTemplate,
@@ -115,16 +114,7 @@ export default async function initSanity(
     detectedFramework: Awaited<ReturnType<typeof detectFrameworkRecord>>
   },
 ): Promise<void> {
-  const {
-    output,
-    prompt,
-    workDir,
-    apiClient,
-    chalk,
-    sanityMajorVersion,
-    telemetry,
-    detectedFramework,
-  } = context
+  const {output, prompt, workDir, apiClient, chalk, telemetry, detectedFramework} = context
 
   const trace = telemetry.trace(CLIInitStepCompleted)
 
@@ -164,11 +154,6 @@ export default async function initSanity(
       env,
     },
   })
-
-  if (sanityMajorVersion === 2) {
-    await reconfigureV2Project(args, context)
-    return
-  }
 
   if (detectedFramework && detectedFramework.slug !== 'sanity' && remoteTemplateInfo) {
     throw new Error(
