@@ -1,3 +1,4 @@
+import {describe, expect, it, jest} from '@jest/globals'
 /* eslint-disable max-nested-callbacks */
 import {render, waitFor} from '@testing-library/react'
 import {createRef, type RefObject} from 'react'

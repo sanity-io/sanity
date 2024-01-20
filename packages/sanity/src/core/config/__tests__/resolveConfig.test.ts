@@ -1,3 +1,4 @@
+import {describe, expect, it} from '@jest/globals'
 import {createClient} from '@sanity/client'
 import {firstValueFrom, lastValueFrom, of} from 'rxjs'
 import {bufferTime} from 'rxjs/operators'

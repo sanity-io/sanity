@@ -1,3 +1,4 @@
+import {describe, expect, test} from '@jest/globals'
 import {makeDiff, makePatches, stringifyPatches} from '@sanity/diff-match-patch'
 import {
   isPortableTextSpan,

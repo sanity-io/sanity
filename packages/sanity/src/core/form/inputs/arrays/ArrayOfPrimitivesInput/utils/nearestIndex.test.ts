@@ -1,3 +1,5 @@
+import {expect, test} from '@jest/globals'
+
 import {nearestIndexOf} from './nearestIndex'
 
 test('nearestIndexOf', () => {

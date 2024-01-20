@@ -1,3 +1,5 @@
+import {expect, test} from '@jest/globals'
+
 import {extract} from '../src/jsonpath'
 
 test('basic extraction', () => {

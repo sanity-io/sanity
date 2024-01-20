@@ -1,3 +1,5 @@
+import {describe, expect, it} from '@jest/globals'
+
 import {slugOperators} from './slugOperators'
 
 const fieldPath = 'slug'

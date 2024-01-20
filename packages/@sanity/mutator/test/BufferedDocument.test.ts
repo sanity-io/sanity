@@ -1,3 +1,5 @@
+import {expect, test} from '@jest/globals'
+
 import {BufferedDocumentTester} from './util/BufferedDocumentTester'
 
 test('simple edit cycle', () => {

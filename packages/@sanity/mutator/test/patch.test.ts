@@ -1,3 +1,4 @@
+import {expect, test} from '@jest/globals'
 import {cloneDeep} from 'lodash'
 
 import {type Doc} from '../src/document/types'

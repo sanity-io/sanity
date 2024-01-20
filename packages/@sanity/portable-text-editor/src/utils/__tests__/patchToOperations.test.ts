@@ -1,3 +1,4 @@
+import {beforeEach, describe, expect, it} from '@jest/globals'
 import {noop} from 'lodash'
 import {createEditor, type Descendant} from 'slate'
 

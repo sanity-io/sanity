@@ -1,3 +1,5 @@
+import {expect, test} from '@jest/globals'
+
 import {readFileAsWebStream} from '../../fs-webstream/readFileAsWebStream'
 import {decodeText} from '../../it-utils/decodeText'
 import {toArray} from '../../it-utils/toArray'

@@ -1,3 +1,5 @@
+import {test} from '@jest/globals'
+
 import {DocumentTester} from './util/DocumentTester'
 
 test('simple remote mutation', () => {

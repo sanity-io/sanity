@@ -1,6 +1,8 @@
 // eslint-disable-next-line import/no-unassigned-import
 import '@testing-library/jest-dom/extend-expect'
 
+import {describe, expect, it} from '@jest/globals'
+
 import {renderNumberInput} from '../../../../test/form'
 import {NumberInput} from './NumberInput'
 

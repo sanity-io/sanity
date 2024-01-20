@@ -1,3 +1,5 @@
+import {describe, expect, it} from '@jest/globals'
+
 import {_prefixUrlWithBasePath} from '../renderDocument'
 
 describe('_prefixUrlWithBasePath', () => {

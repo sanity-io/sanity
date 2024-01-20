@@ -1,3 +1,4 @@
+import {beforeEach, describe, expect, it} from '@jest/globals'
 import {type PortableTextTextBlock} from '@sanity/types'
 import {createEditor, type Descendant} from 'slate'
 

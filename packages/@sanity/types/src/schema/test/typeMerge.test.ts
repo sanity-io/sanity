@@ -1,3 +1,5 @@
+import {describe, it} from '@jest/globals'
+
 import {type ExtensionTypeExampleDef, type ObjectDefinition} from '../definition'
 import {defineType} from '../types'
 

@@ -1,3 +1,4 @@
+import {describe, expect, test} from '@jest/globals'
 import {defineField, defineType, type Schema} from '@sanity/types'
 
 import {Schema as SchemaBuilder} from '../Schema'

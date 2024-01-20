@@ -1,3 +1,5 @@
+import {describe, test} from '@jest/globals'
+
 import {cliUserToken, hasBuiltCli} from './environment'
 
 // From jest typings, not exposed by jest

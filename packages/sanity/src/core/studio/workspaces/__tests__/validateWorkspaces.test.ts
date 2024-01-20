@@ -1,3 +1,5 @@
+import {describe, expect, it} from '@jest/globals'
+
 import {validateBasePaths, validateNames} from '../validateWorkspaces'
 
 describe('validateBasePaths', () => {

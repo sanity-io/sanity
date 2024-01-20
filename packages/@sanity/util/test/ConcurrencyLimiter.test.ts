@@ -1,3 +1,5 @@
+import {describe, expect, it, jest} from '@jest/globals'
+
 import {ConcurrencyLimiter} from '../src/concurrency-limiter'
 
 const tick = () => new Promise((resolve) => setTimeout(resolve, 0))

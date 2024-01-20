@@ -1,3 +1,5 @@
+import {expect, test} from '@jest/globals'
+
 import {Mutation} from '../src/document/Mutation'
 
 test('updates _updatedAt when there is a timestamp', () => {

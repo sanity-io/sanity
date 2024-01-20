@@ -1,3 +1,4 @@
+import {expect} from '@jest/globals'
 // A test jig for the Document model
 import {type PatchMutationOperation} from '@sanity/types'
 

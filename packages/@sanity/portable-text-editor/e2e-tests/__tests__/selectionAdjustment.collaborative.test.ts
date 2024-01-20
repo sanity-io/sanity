@@ -1,6 +1,7 @@
 /** @jest-environment ./setup/collaborative.jest.env.ts */
-
 import '../setup/globals.jest'
+
+import {describe, expect, it} from '@jest/globals'
 
 describe('selection adjustment', () => {
   describe('insert and unset blocks', () => {

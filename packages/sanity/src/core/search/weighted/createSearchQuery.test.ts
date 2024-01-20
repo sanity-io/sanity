@@ -1,3 +1,5 @@
+import {describe, expect, it} from '@jest/globals'
+
 /* eslint-disable camelcase */
 import {FINDABILITY_MVI} from '../constants'
 import {createSearchQuery, DEFAULT_LIMIT, extractTermsFromQuery} from './createSearchQuery'

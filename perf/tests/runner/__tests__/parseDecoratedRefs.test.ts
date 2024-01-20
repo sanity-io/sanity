@@ -1,3 +1,5 @@
+import {expect, test} from '@jest/globals'
+
 import {parseDecoratedRefs} from '../utils/gitUtils'
 
 test('parseDecoratedRefs', () => {

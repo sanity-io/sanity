@@ -1,3 +1,4 @@
+import {describe, expect, it, test} from '@jest/globals'
 import {Schema} from '@sanity/schema'
 import {type ObjectSchemaType, type Path} from '@sanity/types'
 

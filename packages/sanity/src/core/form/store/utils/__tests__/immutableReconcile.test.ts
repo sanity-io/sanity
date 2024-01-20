@@ -1,3 +1,5 @@
+import {expect, test} from '@jest/globals'
+
 import {immutableReconcile} from '../immutableReconcile'
 
 test('it preserves previous value if shallow equal', () => {

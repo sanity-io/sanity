@@ -1,3 +1,4 @@
+import {expect, test} from '@jest/globals'
 import {Schema} from '@sanity/schema'
 import {type ConditionalProperty} from '@sanity/types'
 

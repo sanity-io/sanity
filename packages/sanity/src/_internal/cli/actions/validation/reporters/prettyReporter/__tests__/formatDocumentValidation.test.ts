@@ -1,3 +1,5 @@
+import {describe, expect, it, jest} from '@jest/globals'
+
 import {formatDocumentValidation} from '../formatDocumentValidation'
 
 // disables some terminal specific things that are typically auto detected

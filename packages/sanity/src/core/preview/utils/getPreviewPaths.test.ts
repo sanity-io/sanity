@@ -1,3 +1,4 @@
+import {describe, expect, it} from '@jest/globals'
 import {type SchemaType} from '@sanity/types'
 
 import {getPreviewPaths} from './getPreviewPaths'

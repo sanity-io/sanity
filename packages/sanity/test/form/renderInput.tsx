@@ -1,3 +1,4 @@
+import {jest} from '@jest/globals'
 import {type SanityClient} from '@sanity/client'
 import {
   defineType,
