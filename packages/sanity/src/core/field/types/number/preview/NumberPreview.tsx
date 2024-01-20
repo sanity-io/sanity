@@ -1,6 +1,7 @@
 import {Box} from '@sanity/ui'
 import styled from 'styled-components'
-import {FieldPreviewComponent} from '../../../preview'
+
+import {type FieldPreviewComponent} from '../../../preview'
 
 const NumberWrapper = styled.div`
   display: inline-block;

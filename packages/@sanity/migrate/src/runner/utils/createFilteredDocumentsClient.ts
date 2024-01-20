@@ -1,8 +1,9 @@
-import {SanityDocument} from '@sanity/types'
-import {MigrationContext} from '../../types'
-import {decodeText, JSONParser, parse} from '../../it-utils'
-import {streamToAsyncIterator} from '../../utils/streamToAsyncIterator'
+import {type SanityDocument} from '@sanity/types'
+
+import {decodeText, type JSONParser, parse} from '../../it-utils'
 import {safeJsonParser} from '../../sources/fromExportEndpoint'
+import {type MigrationContext} from '../../types'
+import {streamToAsyncIterator} from '../../utils/streamToAsyncIterator'
 
 export function createFilteredDocumentsClient(
   getFilteredDocumentsReadableStream: () => ReadableStream<Uint8Array>,

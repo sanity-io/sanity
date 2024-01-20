@@ -1,6 +1,7 @@
-import {forwardRef, ComponentProps, ForwardedRef, useState, useCallback} from 'react'
+import {type ComponentProps, type ForwardedRef, forwardRef, useCallback, useState} from 'react'
+
 import {Calendar} from './calendar/Calendar'
-import {CalendarLabels} from './calendar/types'
+import {type CalendarLabels} from './calendar/types'
 
 export const DatePicker = forwardRef(function DatePicker(
   props: Omit<ComponentProps<'div'>, 'onChange'> & {

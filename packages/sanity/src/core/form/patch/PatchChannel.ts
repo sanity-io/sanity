@@ -1,4 +1,4 @@
-import {FormPatch} from './types'
+import {type FormPatch} from './types'
 
 /**
  *

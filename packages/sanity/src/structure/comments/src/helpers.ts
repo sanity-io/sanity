@@ -1,7 +1,8 @@
-import {useMemo, useRef} from 'react'
 import {isEqual} from 'lodash'
-import {CommentMessage} from './types'
+import {useMemo, useRef} from 'react'
 import {isPortableTextSpan, isPortableTextTextBlock} from 'sanity'
+
+import {type CommentMessage} from './types'
 
 export function useCommentHasChanged(message: CommentMessage): boolean {
   const prevMessage = useRef<CommentMessage>(message)

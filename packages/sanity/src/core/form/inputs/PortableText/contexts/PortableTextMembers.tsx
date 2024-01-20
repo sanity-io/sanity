@@ -1,5 +1,6 @@
-import {ReactNode, createContext} from 'react'
-import {PortableTextMemberItem} from '../PortableTextInput'
+import {createContext, type ReactNode} from 'react'
+
+import {type PortableTextMemberItem} from '../PortableTextInput'
 
 export const PortableTextMemberItemsContext = createContext<PortableTextMemberItem[]>([])
 

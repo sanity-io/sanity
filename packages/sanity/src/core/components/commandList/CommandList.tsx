@@ -1,10 +1,10 @@
 import {Box, rem, Stack} from '@sanity/ui'
-import {ScrollToOptions, useVirtualizer, Virtualizer} from '@tanstack/react-virtual'
+import {type ScrollToOptions, useVirtualizer, type Virtualizer} from '@tanstack/react-virtual'
 import throttle from 'lodash/throttle'
 import {
   cloneElement,
   forwardRef,
-  ReactElement,
+  type ReactElement,
   useCallback,
   useEffect,
   useId,
@@ -14,8 +14,9 @@ import {
   useState,
 } from 'react'
 import styled, {css} from 'styled-components'
+
 import {focusRingStyle} from '../../form/components/formField/styles'
-import {CommandListElementType, CommandListHandle, CommandListProps} from './types'
+import {type CommandListElementType, type CommandListHandle, type CommandListProps} from './types'
 
 // Data attribute to assign to the current active virtual list element
 const LIST_ITEM_DATA_ATTR_ACTIVE = 'data-active'

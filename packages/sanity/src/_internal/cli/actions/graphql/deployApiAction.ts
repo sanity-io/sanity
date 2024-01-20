@@ -1,22 +1,21 @@
 /* eslint-disable no-process-env, no-process-exit, max-statements */
+import {type CliCommandContext, type CliOutputter, type CliPrompter} from '@sanity/cli'
+import {type SanityClient} from '@sanity/client'
 import {get} from 'lodash'
-import yargs from 'yargs/yargs'
-import type {SanityClient} from '@sanity/client'
-import type {CliCommandContext, CliOutputter, CliPrompter} from '@sanity/cli'
-import {hideBin} from 'yargs/helpers'
 import oneline from 'oneline'
+import {hideBin} from 'yargs/helpers'
+import yargs from 'yargs/yargs'
 
 import {debug} from '../../debug'
 import {getClientUrl} from '../../util/getClientUrl'
 import {getUrlHeaders} from '../../util/getUrlHeaders'
 import {extractFromSanitySchema} from './extractFromSanitySchema'
-import {SchemaError} from './SchemaError'
-import {DeployResponse, GeneratedApiSpecification, ValidationResponse} from './types'
-import {getGraphQLAPIs} from './getGraphQLAPIs'
-
 import gen1 from './gen1'
 import gen2 from './gen2'
 import gen3 from './gen3'
+import {getGraphQLAPIs} from './getGraphQLAPIs'
+import {SchemaError} from './SchemaError'
+import {type DeployResponse, type GeneratedApiSpecification, type ValidationResponse} from './types'
 
 const latestGeneration = 'gen3'
 const generations = {

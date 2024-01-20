@@ -1,6 +1,7 @@
-import {PortableTextTextBlock, PortableTextSpan, isPortableTextSpan} from '@sanity/types'
+import {isPortableTextSpan, type PortableTextSpan, type PortableTextTextBlock} from '@sanity/types'
 import {isEqual} from 'lodash'
-import {TypedObject} from '../types'
+
+import {type TypedObject} from '../types'
 import {randomKey} from './randomKey'
 
 /**

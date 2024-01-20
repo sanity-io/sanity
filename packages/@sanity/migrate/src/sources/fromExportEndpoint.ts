@@ -1,9 +1,10 @@
+import {type SanityDocument} from '@sanity/types'
 import {createSafeJsonParser} from '@sanity/util/createSafeJsonParser'
-import {SanityDocument} from '@sanity/types'
+
+import {endpoints} from '../fetch-utils/endpoints'
 import {fetchStream} from '../fetch-utils/fetchStream'
 import {toFetchOptions} from '../fetch-utils/sanityRequestOptions'
-import {endpoints} from '../fetch-utils/endpoints'
-import {ExportAPIConfig} from '../types'
+import {type ExportAPIConfig} from '../types'
 
 export function fromExportEndpoint(options: ExportAPIConfig) {
   return fetchStream(

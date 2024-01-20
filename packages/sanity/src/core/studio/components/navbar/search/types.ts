@@ -1,13 +1,14 @@
-import {ButtonTone, CardTone} from '@sanity/ui'
-import type {
-  SearchableType,
-  SearchOptions,
-  SearchSort,
-  SearchTerms,
-  WeightedHit,
+import {type ButtonTone, type CardTone} from '@sanity/ui'
+
+import {
+  type SearchableType,
+  type SearchOptions,
+  type SearchSort,
+  type SearchTerms,
+  type WeightedHit,
 } from '../../../../search'
-import type {SearchFieldDefinition} from './definitions/fields'
-import type {SearchFilterDefinition} from './definitions/filters'
+import {type SearchFieldDefinition} from './definitions/fields'
+import {type SearchFilterDefinition} from './definitions/filters'
 
 export type DocumentTypeMenuItem =
   | DocumentTypeMenuDivider

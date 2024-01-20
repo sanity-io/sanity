@@ -1,10 +1,11 @@
-import type {CurrentUser} from '@sanity/types'
-import {useState, useCallback, useRef, useMemo} from 'react'
-import type {CommentMessage, CommentsUIMode, MentionOptionsHookValue} from '../../types'
-import {CommentInput, CommentInputHandle, CommentInputProps} from '../pte'
+import {type CurrentUser} from '@sanity/types'
+import {useCallback, useMemo, useRef, useState} from 'react'
+import {EMPTY_ARRAY, Translate, useTranslation} from 'sanity'
+
 import {commentsLocaleNamespace} from '../../../i18n'
 import {hasCommentMessageValue} from '../../helpers'
-import {EMPTY_ARRAY, Translate, useTranslation} from 'sanity'
+import {type CommentMessage, type CommentsUIMode, type MentionOptionsHookValue} from '../../types'
+import {CommentInput, type CommentInputHandle, type CommentInputProps} from '../pte'
 
 interface CreateNewThreadInputProps {
   currentUser: CurrentUser

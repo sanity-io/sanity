@@ -1,10 +1,11 @@
-import {useState} from 'react'
+import {type PortableTextBlock} from '@sanity/types'
 import {Card, Container, Flex} from '@sanity/ui'
-import {PortableTextBlock} from '@sanity/types'
 import {useBoolean} from '@sanity/ui-workshop'
+import React, {useState} from 'react'
+import {useCurrentUser} from 'sanity'
+
 import {CommentInput} from '../components'
 import {CommentMessageSerializer} from '../components/pte'
-import {useCurrentUser} from 'sanity'
 
 const noop = () => {
   // ...

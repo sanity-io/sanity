@@ -1,23 +1,24 @@
 import {
-  ArraySchemaType,
-  BooleanSchemaType,
-  CrossDatasetReferenceValue,
-  FileValue,
-  FormNodeValidation,
-  GeopointValue,
-  ImageValue,
-  NumberSchemaType,
-  ObjectSchemaType,
-  Path,
-  ReferenceValue,
-  SchemaType,
-  SlugValue,
-  StringSchemaType,
+  type ArraySchemaType,
+  type BooleanSchemaType,
+  type CrossDatasetReferenceValue,
+  type FileValue,
+  type FormNodeValidation,
+  type GeopointValue,
+  type ImageValue,
+  type NumberSchemaType,
+  type ObjectSchemaType,
+  type Path,
+  type ReferenceValue,
+  type SchemaType,
+  type SlugValue,
+  type StringSchemaType,
 } from '@sanity/types'
-import {ReactNode, ReactElement, FocusEvent} from 'react'
-import {FormNodePresence} from '../../presence'
-import {ObjectInputProps} from './inputProps'
-import {ArrayInputInsertEvent} from './event'
+import {type FocusEvent, type ReactElement, type ReactNode} from 'react'
+
+import {type FormNodePresence} from '../../presence'
+import {type ArrayInputInsertEvent} from './event'
+import {type ObjectInputProps} from './inputProps'
 
 /** @public */
 export type ObjectItem = {

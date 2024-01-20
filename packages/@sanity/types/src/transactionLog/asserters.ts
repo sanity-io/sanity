@@ -1,5 +1,5 @@
-import type {Mutation} from '../mutations'
-import type {CreateSquashedMutation, TransactionLogMutation} from './types'
+import {type Mutation} from '../mutations'
+import {type CreateSquashedMutation, type TransactionLogMutation} from './types'
 
 /** @internal */
 export function isCreateSquashedMutation(

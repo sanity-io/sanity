@@ -1,30 +1,31 @@
-import {useCallback, useMemo, useRef} from 'react'
-import {Path} from '@sanity/types'
-import {tap} from 'rxjs/operators'
+import {type Path} from '@sanity/types'
 import {useToast} from '@sanity/ui'
-import {useDidUpdate} from '../../../hooks/useDidUpdate'
-import {
-  ArrayInputInsertEvent,
-  ObjectInputProps,
-  ObjectItem,
-  ObjectItemProps,
-  RenderAnnotationCallback,
-  RenderArrayOfObjectsItemCallback,
-  RenderBlockCallback,
-  RenderFieldCallback,
-  RenderInputCallback,
-  RenderPreviewCallback,
-} from '../../../types'
-import {insert, PatchArg, PatchEvent, setIfMissing, unset} from '../../../patch'
-import {ensureKey} from '../../../utils/ensureKey'
-import {FormCallbacksProvider, useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
-import {ArrayOfObjectsItemMember} from '../../../store'
-import {createProtoValue} from '../../../utils/createProtoValue'
-import {isEmptyItem} from '../../../store/utils/isEmptyItem'
-import {useResolveInitialValueForType} from '../../../../store'
-import {resolveInitialArrayValues} from '../../common/resolveInitialArrayValues'
-import {createDescriptionId} from '../../common/createDescriptionId'
+import React, {useCallback, useMemo, useRef} from 'react'
+import {tap} from 'rxjs/operators'
+
 import {useTranslation} from '../../../../i18n'
+import {useResolveInitialValueForType} from '../../../../store'
+import {useDidUpdate} from '../../../hooks/useDidUpdate'
+import {insert, type PatchArg, PatchEvent, setIfMissing, unset} from '../../../patch'
+import {type ArrayOfObjectsItemMember} from '../../../store'
+import {isEmptyItem} from '../../../store/utils/isEmptyItem'
+import {FormCallbacksProvider, useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
+import {
+  type ArrayInputInsertEvent,
+  type ObjectInputProps,
+  type ObjectItem,
+  type ObjectItemProps,
+  type RenderAnnotationCallback,
+  type RenderArrayOfObjectsItemCallback,
+  type RenderBlockCallback,
+  type RenderFieldCallback,
+  type RenderInputCallback,
+  type RenderPreviewCallback,
+} from '../../../types'
+import {createProtoValue} from '../../../utils/createProtoValue'
+import {ensureKey} from '../../../utils/ensureKey'
+import {createDescriptionId} from '../../common/createDescriptionId'
+import {resolveInitialArrayValues} from '../../common/resolveInitialArrayValues'
 
 /**
  *

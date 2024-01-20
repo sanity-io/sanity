@@ -1,5 +1,5 @@
 import {Component} from 'react'
-import {ObjectInputProps, set, setIfMissing} from 'sanity'
+import {type ObjectInputProps, set, setIfMissing} from 'sanity'
 
 export default class CustomMyObjectInput extends Component<ObjectInputProps> {
   handleChange = (field, event) => {

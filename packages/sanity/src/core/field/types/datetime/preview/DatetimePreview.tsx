@@ -1,8 +1,9 @@
-import * as legacyDateFormat from '@sanity/util/legacyDateFormat'
-import {StringSchemaType} from '@sanity/types'
+import {type StringSchemaType} from '@sanity/types'
 import {Box} from '@sanity/ui'
+import * as legacyDateFormat from '@sanity/util/legacyDateFormat'
 import styled from 'styled-components'
-import {FieldPreviewComponent} from '../../../preview'
+
+import {type FieldPreviewComponent} from '../../../preview'
 
 const DatetimeWrapper = styled.div`
   display: inline-block;

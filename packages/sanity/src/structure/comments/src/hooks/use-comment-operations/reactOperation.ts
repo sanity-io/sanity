@@ -1,11 +1,12 @@
-import {SanityClient} from '@sanity/client'
-import {CurrentUser} from '@sanity/types'
+import {type SanityClient} from '@sanity/client'
+import {type CurrentUser} from '@sanity/types'
+
 import {
-  CommentReactionShortNames,
-  CommentReactionItem,
-  CommentCreatePayload,
-  CommentDocument,
-  CommentReactionOption,
+  type CommentCreatePayload,
+  type CommentDocument,
+  type CommentReactionItem,
+  type CommentReactionOption,
+  type CommentReactionShortNames,
 } from '../../types'
 
 // We construct the reaction key by combining the user id and the short name of the reaction.

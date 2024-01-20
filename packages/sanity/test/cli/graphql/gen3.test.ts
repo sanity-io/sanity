@@ -2,9 +2,8 @@ import {orderBy} from 'lodash'
 
 import {extractFromSanitySchema} from '../../../src/_internal/cli/actions/graphql/extractFromSanitySchema'
 import generateSchema from '../../../src/_internal/cli/actions/graphql/gen3'
-
-import testStudioSchema from './fixtures/test-studio'
 import manySelfRefsSchema from './fixtures/many-self-refs'
+import testStudioSchema from './fixtures/test-studio'
 
 describe('GraphQL - Generation 3', () => {
   beforeEach(() => {

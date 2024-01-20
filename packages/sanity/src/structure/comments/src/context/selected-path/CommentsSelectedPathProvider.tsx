@@ -1,7 +1,8 @@
 import {useCallback, useMemo, useState} from 'react'
 import * as React from 'react'
+
 import {CommentsSelectedPathContext} from './CommentsSelectedPathContext'
-import {CommentsSelectedPath, CommentsSelectedPathContextValue} from './types'
+import {type CommentsSelectedPath, type CommentsSelectedPathContextValue} from './types'
 
 interface CommentsSelectedPathProviderProps {
   children: React.ReactNode

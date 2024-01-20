@@ -1,10 +1,11 @@
 import {createBatchedStore, createSessionId} from '@sanity/telemetry'
 import {TelemetryProvider} from '@sanity/telemetry/react'
-import React, {ReactNode, useEffect, useMemo} from 'react'
 import arrify from 'arrify'
-import {SANITY_VERSION} from '../version'
-import {Config} from '../config'
+import React, {type ReactNode, useEffect, useMemo} from 'react'
+
+import {type Config} from '../config'
 import {useClient} from '../hooks'
+import {SANITY_VERSION} from '../version'
 
 const sessionId = createSessionId()
 

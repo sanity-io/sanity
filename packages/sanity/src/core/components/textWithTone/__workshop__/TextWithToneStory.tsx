@@ -1,6 +1,7 @@
 import {InfoOutlineIcon} from '@sanity/icons'
 import {Box, Card, Flex, Grid, Stack} from '@sanity/ui'
 import {useBoolean, useSelect} from '@sanity/ui-workshop'
+
 import {TextWithTone} from '../TextWithTone'
 
 const TEXT_SIZE_OPTIONS = {'0': 0, '1': 1, '2': 2, '3': 3, '4': 4}

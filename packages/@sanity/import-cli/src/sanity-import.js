@@ -3,13 +3,13 @@
 /* eslint-disable id-length, no-console, no-process-env */
 const fs = require('fs')
 const path = require('path')
-const ora = require('ora')
+const {createClient} = require('@sanity/client')
+const sanityImport = require('@sanity/import')
 const {getIt} = require('get-it')
 const {promise} = require('get-it/middleware')
 const meow = require('meow')
+const ora = require('ora')
 const prettyMs = require('pretty-ms')
-const {createClient} = require('@sanity/client')
-const sanityImport = require('@sanity/import')
 
 const red = (str) => `\u001b[31m${str}\u001b[39m`
 const yellow = (str) => `\u001b[33m${str}\u001b[39m`

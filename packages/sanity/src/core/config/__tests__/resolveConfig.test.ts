@@ -1,8 +1,9 @@
 import {createClient} from '@sanity/client'
 import {firstValueFrom, lastValueFrom, of} from 'rxjs'
 import {bufferTime} from 'rxjs/operators'
+
 import {createMockAuthStore} from '../../store'
-import {resolveConfig, createWorkspaceFromConfig, createSourceFromConfig} from '../resolveConfig'
+import {createSourceFromConfig, createWorkspaceFromConfig, resolveConfig} from '../resolveConfig'
 
 describe('resolveConfig', () => {
   it('throws on invalid tools property', async () => {

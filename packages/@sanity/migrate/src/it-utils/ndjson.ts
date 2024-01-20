@@ -1,6 +1,6 @@
-import {split} from './split'
-import {type JSONOptions, parseJSON} from './json'
 import {filter} from './filter'
+import {type JSONOptions, parseJSON} from './json'
+import {split} from './split'
 
 export function parse<Type>(
   it: AsyncIterableIterator<string>,

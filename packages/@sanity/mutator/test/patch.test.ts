@@ -1,15 +1,15 @@
 import {cloneDeep} from 'lodash'
-import {Patcher} from '../src/patch'
-import type {Doc} from '../src/document/types'
 
+import {type Doc} from '../src/document/types'
+import {Patcher} from '../src/patch'
 // Test suites
+import diffMatchPatch from './patchExamples/diffMatchPatch'
+import incDec from './patchExamples/incDec'
+import insert from './patchExamples/insert'
+import mixed from './patchExamples/mixed'
 import set from './patchExamples/set'
 import setIfMissing from './patchExamples/setIfMissing'
 import unset from './patchExamples/unset'
-import diffMatchPatch from './patchExamples/diffMatchPatch'
-import insert from './patchExamples/insert'
-import incDec from './patchExamples/incDec'
-import mixed from './patchExamples/mixed'
 
 const examples = [
   ...set,

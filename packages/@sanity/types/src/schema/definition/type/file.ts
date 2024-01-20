@@ -1,8 +1,8 @@
-import type {AssetSource} from '../../../assets'
-import type {Reference} from '../../../reference'
-import type {RuleDef, ValidationBuilder} from '../../ruleBuilder'
-import type {InitialValueProperty} from '../../types'
-import type {ObjectDefinition, ObjectOptions} from './object'
+import {type AssetSource} from '../../../assets'
+import {type Reference} from '../../../reference'
+import {type RuleDef, type ValidationBuilder} from '../../ruleBuilder'
+import {type InitialValueProperty} from '../../types'
+import {type ObjectDefinition, type ObjectOptions} from './object'
 
 /** @public */
 export interface FileOptions extends ObjectOptions {

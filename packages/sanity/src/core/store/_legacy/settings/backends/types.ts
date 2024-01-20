@@ -1,4 +1,4 @@
-import {Observable} from 'rxjs'
+import {type Observable} from 'rxjs'
 
 export interface Backend {
   get: (key: string, defValue: unknown) => Observable<unknown>

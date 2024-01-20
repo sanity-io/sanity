@@ -1,7 +1,8 @@
-import {BaseOperation, Editor, NodeEntry, Node} from 'slate'
 import {noop} from 'lodash'
-import {PortableTextSlateEditor} from '../../types/editor'
-import {createEditorOptions} from '../../types/options'
+import {type BaseOperation, type Editor, type Node, type NodeEntry} from 'slate'
+
+import {type PortableTextSlateEditor} from '../../types/editor'
+import {type createEditorOptions} from '../../types/options'
 import {createOperationToPatches} from '../../utils/operationToPatches'
 import {createWithEditableAPI} from './createWithEditableAPI'
 import {createWithMaxBlocks} from './createWithMaxBlocks'

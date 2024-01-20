@@ -1,6 +1,7 @@
 import {HelpCircleIcon} from '@sanity/icons'
 import {Menu} from '@sanity/ui'
 import styled from 'styled-components'
+
 import {Button, MenuButton} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
 import {useGetHelpResources} from './helper-functions/hooks'

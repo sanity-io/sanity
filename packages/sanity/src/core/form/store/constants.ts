@@ -1,4 +1,4 @@
-import {FieldGroup} from '@sanity/types'
+import {type FieldGroup} from '@sanity/types'
 
 /**
  * Max supported field depth. Fields deeper than this will be considered hidden.

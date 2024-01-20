@@ -1,5 +1,8 @@
 import {MasterDetailIcon} from '@sanity/icons'
 import {lazy} from 'react'
+import {definePlugin} from 'sanity'
+
+import {comments} from './comments'
 import {
   DeleteAction,
   DiscardChangesAction,
@@ -10,13 +13,11 @@ import {
 } from './documentActions'
 import {LiveEditBadge} from './documentBadges'
 import {getIntentState} from './getIntentState'
-import {router} from './router'
-import type {StructureToolOptions} from './types'
-import {comments} from './comments'
-import {changesInspector} from './panes/document/inspectors/changes'
 import {structureUsEnglishLocaleBundle} from './i18n'
+import {changesInspector} from './panes/document/inspectors/changes'
 import {validationInspector} from './panes/document/inspectors/validation'
-import {definePlugin} from 'sanity'
+import {router} from './router'
+import {type StructureToolOptions} from './types'
 
 const documentActions = [
   PublishAction,

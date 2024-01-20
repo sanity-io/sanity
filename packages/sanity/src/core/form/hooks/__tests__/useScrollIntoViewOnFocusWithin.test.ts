@@ -1,5 +1,6 @@
 import {renderHook} from '@testing-library/react'
 import scrollIntoView from 'scroll-into-view-if-needed'
+
 import * as useDidUpdate from '../useDidUpdate'
 import {useScrollIntoViewOnFocusWithin} from '../useScrollIntoViewOnFocusWithin'
 

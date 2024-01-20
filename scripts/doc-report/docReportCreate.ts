@@ -1,6 +1,3 @@
-import path from 'path'
-import fs from 'fs'
-import ts, {type JSDoc, type JSDocComment, SyntaxKind} from 'typescript'
 import {
   at,
   createIfNotExists,
@@ -11,13 +8,17 @@ import {
   setIfMissing,
   upsert,
 } from '@bjoerge/mutiny'
+import fs from 'fs'
+import path from 'path'
 import {filter, map, mergeMap, of, tap} from 'rxjs'
+import ts, {type JSDoc, type JSDocComment, SyntaxKind} from 'typescript'
+
+import {type PackageManifest} from '../types'
+import {readEnv} from '../utils/envVars'
 import readPackages from '../utils/readPackages'
-import type {PackageManifest} from '../types'
 import {sanityIdify} from '../utils/sanityIdify'
 import {startTimer} from '../utils/startTimer'
-import {readEnv} from '../utils/envVars'
-import {KnownEnvVar, createDocClient} from './docClient'
+import {createDocClient, type KnownEnvVar} from './docClient'
 
 const ALLOWED_TAGS = ['public', 'alpha', 'beta', 'internal', 'experimental', 'deprecated']
 interface Package {

@@ -1,4 +1,4 @@
-import type {BuiltInValidationReporter} from '../validateAction'
+import {type BuiltInValidationReporter} from '../validateAction'
 
 export const ndjson: BuiltInValidationReporter = async ({output, worker}) => {
   let overallLevel: 'error' | 'warning' | 'info' = 'info'

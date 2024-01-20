@@ -1,4 +1,4 @@
-import {SchemaType} from '@sanity/types'
+import {type SchemaType} from '@sanity/types'
 import {Card, Text} from '@sanity/ui'
 
 export function LanguageFilter(props: {schemaType: SchemaType}) {

@@ -1,4 +1,5 @@
-import type {Validators} from '@sanity/types'
+import {type Validators} from '@sanity/types'
+
 import {genericValidators} from './genericValidator'
 
 const DUMMY_ORIGIN = 'http://sanity'

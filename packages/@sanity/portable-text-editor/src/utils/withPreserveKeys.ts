@@ -1,4 +1,4 @@
-import {Editor} from 'slate'
+import {type Editor} from 'slate'
 
 export const PRESERVE_KEYS: WeakMap<Editor, boolean | undefined> = new WeakMap()
 

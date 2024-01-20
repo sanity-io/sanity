@@ -1,26 +1,27 @@
-import {useCallback, useMemo, useRef} from 'react'
 import {
-  CrossDatasetReferenceSchemaType,
-  CrossDatasetReferenceValue,
-  Path,
-  ReferenceFilterOptions,
-  ReferenceFilterSearchOptions,
-  SanityDocument,
+  type CrossDatasetReferenceSchemaType,
+  type CrossDatasetReferenceValue,
+  type Path,
+  type ReferenceFilterOptions,
+  type ReferenceFilterSearchOptions,
+  type SanityDocument,
 } from '@sanity/types'
 import {get} from '@sanity/util/paths'
+import React, {useCallback, useMemo, useRef} from 'react'
 import {from, throwError} from 'rxjs'
 import {catchError, mergeMap} from 'rxjs/operators'
-import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
-import {CrossDatasetReferenceInput} from '../../../inputs/CrossDatasetReferenceInput'
-import {ObjectInputProps} from '../../../types'
-import {Source} from '../../../../config'
-import {useSource} from '../../../../studio'
+
+import {type Source} from '../../../../config'
+import {type FIXME} from '../../../../FIXME'
 import {useDocumentPreviewStore} from '../../../../store'
-import {FIXME} from '../../../../FIXME'
-import {useFormValue} from '../../../contexts/FormValue'
-import {search} from './datastores/search'
-import {createGetReferenceInfo} from './datastores/getReferenceInfo'
+import {useSource} from '../../../../studio'
 import {useSearchMaxFieldDepth} from '../../../../studio/components/navbar/search/hooks/useSearchMaxFieldDepth'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
+import {useFormValue} from '../../../contexts/FormValue'
+import {CrossDatasetReferenceInput} from '../../../inputs/CrossDatasetReferenceInput'
+import {type ObjectInputProps} from '../../../types'
+import {createGetReferenceInfo} from './datastores/getReferenceInfo'
+import {search} from './datastores/search'
 
 async function resolveUserDefinedFilter(
   options: ReferenceFilterOptions | undefined,

@@ -2,9 +2,10 @@
 // than the document we are seeing.
 
 import {isEqual} from 'lodash'
-import {Mutation} from './Mutation'
+
 import {debug} from './debug'
-import type {Doc} from './types'
+import {Mutation} from './Mutation'
+import {type Doc} from './types'
 
 /**
  * @internal

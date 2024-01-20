@@ -1,8 +1,9 @@
 import {Schema} from '@sanity/schema'
-import {ObjectSchemaType, Path} from '@sanity/types'
+import {type ObjectSchemaType, type Path} from '@sanity/types'
+
 import {pathToString} from '../../../field'
 import {prepareFormState} from '../formState'
-import {FieldMember, ObjectFormNode} from '../types'
+import {type FieldMember, type ObjectFormNode} from '../types'
 import {isObjectFormNode} from '../types/asserters'
 import {DEFAULT_PROPS} from './shared'
 

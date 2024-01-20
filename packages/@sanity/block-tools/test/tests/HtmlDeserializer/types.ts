@@ -1,5 +1,5 @@
-import type {TypedObject} from '../../../src/types'
-import {getBlockContentFeatures, normalizeBlock, htmlToBlocks} from '../../../src'
+import {type getBlockContentFeatures, type htmlToBlocks, type normalizeBlock} from '../../../src'
+import {type TypedObject} from '../../../src/types'
 
 interface BlockContentFunctions {
   getBlockContentFeatures: typeof getBlockContentFeatures

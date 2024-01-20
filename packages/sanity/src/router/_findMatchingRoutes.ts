@@ -1,11 +1,12 @@
 import {difference, intersection, isPlainObject, pick} from 'lodash'
+
 import {
-  InternalSearchParam,
-  MatchError,
-  MatchOk,
-  MatchResult,
-  RouterNode,
-  RouterState,
+  type InternalSearchParam,
+  type MatchError,
+  type MatchOk,
+  type MatchResult,
+  type RouterNode,
+  type RouterState,
 } from './types'
 import {arrayify} from './utils/arrayify'
 

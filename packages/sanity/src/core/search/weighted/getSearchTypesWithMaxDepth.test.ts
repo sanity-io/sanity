@@ -1,4 +1,5 @@
 import {Schema} from '@sanity/schema'
+
 import {getSearchableTypes} from '../common/utils'
 import {getSearchTypesWithMaxDepth} from './getSearchTypesWithMaxDepth'
 

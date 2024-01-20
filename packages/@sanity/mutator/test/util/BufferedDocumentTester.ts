@@ -1,9 +1,10 @@
 // A test jig for the BufferedDocument model
+import {type PatchMutationOperation} from '@sanity/types'
 import debugLogger from 'debug'
-import type {PatchMutationOperation} from '@sanity/types'
-import type {CommitHandlerMessage} from '../../src/document/BufferedDocument'
-import type {Doc, Mut} from '../../src/document/types'
+
 import {BufferedDocument, Mutation} from '../../src/document'
+import {type CommitHandlerMessage} from '../../src/document/BufferedDocument'
+import {type Doc, type Mut} from '../../src/document/types'
 import {extract} from '../../src/jsonpath'
 
 const debug = debugLogger('buffered-document-tester')

@@ -1,4 +1,4 @@
-import type {SanityClient} from '@sanity/client'
+import {type SanityClient} from '@sanity/client'
 import {useEffect, useState} from 'react'
 
 export function useDatasets(client: SanityClient): string[] | Error | undefined {

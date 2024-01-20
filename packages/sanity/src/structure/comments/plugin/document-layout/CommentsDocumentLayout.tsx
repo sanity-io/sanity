@@ -1,13 +1,14 @@
 import {useCallback} from 'react'
+import {type DocumentLayoutProps} from 'sanity'
+
+import {useDocumentPane} from '../../..'
+import {COMMENTS_INSPECTOR_NAME} from '../../../panes/document/constants'
 import {
   CommentsEnabledProvider,
   CommentsProvider,
   CommentsSelectedPathProvider,
   useCommentsEnabled,
 } from '../../src'
-import {useDocumentPane} from '../../..'
-import {COMMENTS_INSPECTOR_NAME} from '../../../panes/document/constants'
-import {DocumentLayoutProps} from 'sanity'
 
 export function CommentsDocumentLayout(props: DocumentLayoutProps) {
   const {documentId, documentType} = props

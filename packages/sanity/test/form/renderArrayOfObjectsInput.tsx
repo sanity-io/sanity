@@ -1,10 +1,10 @@
-import {ArraySchemaType, FieldDefinition} from '@sanity/types'
-import * as React from 'react'
+import {type ArraySchemaType, type FieldDefinition} from '@sanity/types'
+import type * as React from 'react'
+
 import {
-  ArrayOfObjectsFormNode,
-  ArrayOfObjectsInputProps,
-  ComplexElementProps,
-  FieldMember,
+  type ArrayOfObjectsFormNode,
+  type ArrayOfObjectsInputProps,
+  type ComplexElementProps,
   defaultRenderAnnotation,
   defaultRenderBlock,
   defaultRenderField,
@@ -12,9 +12,10 @@ import {
   defaultRenderInput,
   defaultRenderItem,
   defaultRenderPreview,
+  type FieldMember,
 } from '../../src/core'
-import {renderInput, TestRenderInputContext, TestRenderInputProps} from './renderInput'
-import {TestRenderProps} from './types'
+import {renderInput, type TestRenderInputContext, type TestRenderInputProps} from './renderInput'
+import {type TestRenderProps} from './types'
 
 const noopRenderDefault = () => <></>
 

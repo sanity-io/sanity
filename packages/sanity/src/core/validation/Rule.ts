@@ -1,29 +1,29 @@
-import type {
-  CustomValidator,
-  FieldRules,
-  Rule as IRule,
-  LocalizedValidationMessages,
-  RuleClass,
-  RuleSpec,
-  RuleSpecConstraint,
-  RuleTypeConstraint,
-  SchemaType,
-  ValidationMarker,
-  Validator,
+import {
+  type CustomValidator,
+  type FieldRules,
+  type LocalizedValidationMessages,
+  type Rule as IRule,
+  type RuleClass,
+  type RuleSpec,
+  type RuleSpecConstraint,
+  type RuleTypeConstraint,
+  type SchemaType,
+  type ValidationMarker,
+  type Validator,
 } from '@sanity/types'
 import {cloneDeep, get} from 'lodash'
-import {escapeRegex} from './util/escapeRegex'
+
 import {convertToValidationMarker} from './util/convertToValidationMarker'
+import {escapeRegex} from './util/escapeRegex'
 import {isLocalizedMessages, localizeMessage} from './util/localizeMessage'
 import {pathToString} from './util/pathToString'
-import {genericValidators} from './validators/genericValidator'
-import {booleanValidators} from './validators/booleanValidator'
-import {numberValidators} from './validators/numberValidator'
-import {stringValidators} from './validators/stringValidator'
 import {arrayValidators} from './validators/arrayValidator'
-import {objectValidators} from './validators/objectValidator'
+import {booleanValidators} from './validators/booleanValidator'
 import {dateValidators} from './validators/dateValidator'
-import type {ValidationContext} from './types'
+import {genericValidators} from './validators/genericValidator'
+import {numberValidators} from './validators/numberValidator'
+import {objectValidators} from './validators/objectValidator'
+import {stringValidators} from './validators/stringValidator'
 
 const typeValidators = {
   Boolean: booleanValidators,

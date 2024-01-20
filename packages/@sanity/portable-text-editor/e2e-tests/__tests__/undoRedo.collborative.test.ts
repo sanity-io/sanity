@@ -1,7 +1,8 @@
 /** @jest-environment ./setup/collaborative.jest.env.ts */
-import {toPlainText} from '@portabletext/toolkit'
 import '../setup/globals.jest'
-import type {PortableTextBlock} from '@sanity/types'
+
+import {toPlainText} from '@portabletext/toolkit'
+import {type PortableTextBlock} from '@sanity/types'
 
 const initialValue: PortableTextBlock[] = [
   {

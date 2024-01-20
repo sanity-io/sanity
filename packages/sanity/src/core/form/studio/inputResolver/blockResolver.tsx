@@ -1,12 +1,13 @@
-import {SchemaType} from '@sanity/types'
-import {ComponentType} from 'react'
-import {BlockAnnotationProps, BlockProps} from '../../types'
-import {FIXME} from '../../../FIXME'
-import {DefaultBlockObjectComponent} from '../../inputs/PortableText/object/BlockObject'
-import {DefaultComponent as DefaultBlockTextComponent} from '../../inputs/PortableText/text/TextBlock'
-import {DefaultInlineObjectComponent} from '../../inputs/PortableText/object/InlineObject'
+import {type SchemaType} from '@sanity/types'
+import {type ComponentType} from 'react'
+
+import {type FIXME} from '../../../FIXME'
 import {isBlockType} from '../../inputs/PortableText/_helpers'
 import {DefaultAnnotationComponent} from '../../inputs/PortableText/object/Annotation'
+import {DefaultBlockObjectComponent} from '../../inputs/PortableText/object/BlockObject'
+import {DefaultInlineObjectComponent} from '../../inputs/PortableText/object/InlineObject'
+import {DefaultComponent as DefaultBlockTextComponent} from '../../inputs/PortableText/text/TextBlock'
+import {type BlockAnnotationProps, type BlockProps} from '../../types'
 
 export function defaultResolveBlockComponent(
   schemaType: SchemaType,

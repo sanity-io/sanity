@@ -1,9 +1,10 @@
-import styled from 'styled-components'
-import {rem, Flex, Text, Box, Inline} from '@sanity/ui'
 import {InfoOutlineIcon} from '@sanity/icons'
+import {Box, Flex, Inline, rem, Text} from '@sanity/ui'
+import {useTranslation} from 'sanity'
+import styled from 'styled-components'
+
 import {Tooltip} from '../../../ui-components'
 import {structureLocaleNamespace} from '../../i18n'
-import {useTranslation} from 'sanity'
 
 export const ChevronWrapper = styled(Box)`
   margin-left: auto;

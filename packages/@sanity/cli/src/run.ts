@@ -1,4 +1,5 @@
 import path from 'path'
+
 import {runCli} from './cli'
 import {getCliVersion} from './util/getCliVersion'
 

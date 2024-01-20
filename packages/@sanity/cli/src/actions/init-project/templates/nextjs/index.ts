@@ -1,4 +1,4 @@
-import {blogSchemaFolder, blogSchemaTS, blogSchemaJS} from './schemaTypes/blog'
+import {blogSchemaFolder, blogSchemaJS, blogSchemaTS} from './schemaTypes/blog'
 
 export const sanityConfigTemplate = `/**
  * This configuration is used to for the Sanity Studio that’s mounted on the \`:route:\` route

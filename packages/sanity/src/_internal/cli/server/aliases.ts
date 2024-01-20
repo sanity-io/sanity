@@ -1,5 +1,6 @@
 import path from 'path'
-import type {SanityMonorepo} from './sanityMonorepo'
+
+import {type SanityMonorepo} from './sanityMonorepo'
 
 /**
  * Returns an object of aliases for vite to use

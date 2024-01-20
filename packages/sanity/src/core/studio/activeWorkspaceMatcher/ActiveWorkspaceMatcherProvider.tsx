@@ -1,7 +1,8 @@
-import {ReactNode, memo, useMemo} from 'react'
-import type {RouterHistory} from '../router'
+import {memo, type ReactNode, useMemo} from 'react'
+
+import {type RouterHistory} from '../router'
 import {RouterHistoryProvider} from '../router/RouterHistoryContext'
-import type {WorkspacesContextValue} from '../workspaces'
+import {type WorkspacesContextValue} from '../workspaces'
 import {
   ActiveWorkspaceMatcherContext,
   type ActiveWorkspaceMatcherContextValue,

@@ -1,4 +1,4 @@
-import type {Rect} from './2d/shapes'
+import {type Rect} from './2d/shapes'
 
 export type CropMethod = 'full_width' | 'letterbox' | 'full_height'
 

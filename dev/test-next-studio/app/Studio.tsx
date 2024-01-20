@@ -1,7 +1,7 @@
 'use client'
 
 import {useMemo} from 'react'
-import {defineConfig, Studio, StudioProps} from 'sanity'
+import {defineConfig, Studio, type StudioProps} from 'sanity'
 import {structureTool} from 'sanity/structure'
 
 export default function StudioRoot({

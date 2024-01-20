@@ -1,9 +1,10 @@
-import React, {useCallback, useState} from 'react'
 import {Flex} from '@sanity/ui'
 import {uuid} from '@sanity/uuid'
-import {CommentReactionsBar} from '../components'
-import {CommentReactionItem, CommentReactionOption} from '../types'
+import React, {useCallback, useState} from 'react'
 import {useCurrentUser} from 'sanity'
+
+import {CommentReactionsBar} from '../components'
+import {type CommentReactionItem, type CommentReactionOption} from '../types'
 
 const INITIAL_REACTIONS: CommentReactionItem[] = [
   {

@@ -1,9 +1,9 @@
-import {Reference} from '@sanity/types'
-import styled from 'styled-components'
+import {type Reference} from '@sanity/types'
 import {Box} from '@sanity/ui'
+import styled from 'styled-components'
 
-import {FieldPreviewComponent} from '../../../preview'
 import {Preview} from '../../../../preview/components/Preview'
+import {type FieldPreviewComponent} from '../../../preview'
 
 const ReferenceWrapper = styled.div`
   word-wrap: break-word;

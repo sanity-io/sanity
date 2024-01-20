@@ -1,9 +1,10 @@
 import {useToast} from '@sanity/ui'
 import {memo, useEffect, useRef} from 'react'
-import {structureLocaleNamespace} from '../../i18n'
-import {usePaneRouter} from '../../components'
-import {useDocumentPane} from './useDocumentPane'
 import {Translate, useDocumentOperationEvent, useTranslation} from 'sanity'
+
+import {usePaneRouter} from '../../components'
+import {structureLocaleNamespace} from '../../i18n'
+import {useDocumentPane} from './useDocumentPane'
 
 const IGNORE_OPS = ['patch', 'commit']
 

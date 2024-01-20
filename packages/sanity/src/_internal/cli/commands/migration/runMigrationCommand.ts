@@ -1,16 +1,17 @@
-import type {CliCommandDefinition} from '@sanity/cli'
+import {type CliCommandDefinition} from '@sanity/cli'
 import {
   DEFAULT_MUTATION_CONCURRENCY,
-  MAX_MUTATION_CONCURRENCY,
   dryRun,
-  run,
+  MAX_MUTATION_CONCURRENCY,
   type Migration,
   type MigrationProgress,
+  run,
 } from '@sanity/migrate'
 import {Table} from 'console-table-printer'
 import {register} from 'esbuild-register/dist/node'
 import {hideBin} from 'yargs/helpers'
 import yargs from 'yargs/yargs'
+
 import {debug} from '../../debug'
 import {resolveMigrations} from './listMigrationsCommand'
 import {prettyFormat} from './prettyMutationFormatter'

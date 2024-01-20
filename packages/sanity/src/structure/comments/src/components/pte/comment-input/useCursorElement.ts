@@ -1,4 +1,4 @@
-import {useState, useMemo, useEffect, useCallback} from 'react'
+import {useCallback, useEffect, useMemo, useState} from 'react'
 
 const EVENT_LISTENER_OPTIONS: AddEventListenerOptions = {passive: true}
 

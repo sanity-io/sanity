@@ -1,6 +1,6 @@
-import type {AuthStore} from '../types'
-import type {LoginMethod, CookielessCompatibleLoginMethod} from '../../../../config'
+import {type CookielessCompatibleLoginMethod, type LoginMethod} from '../../../../config'
 import {isRecord} from '../../../../util'
+import {type AuthStore} from '../types'
 
 /**
  * Duck-type check for whether or not this looks like an auth store

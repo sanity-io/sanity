@@ -1,17 +1,18 @@
 import {PortalProvider, useTheme, useToast} from '@sanity/ui'
-import {memo, Fragment, useState, useEffect, useCallback} from 'react'
-import styled from 'styled-components'
 import isHotkey from 'is-hotkey'
+import {Fragment, memo, useCallback, useEffect, useState} from 'react'
+import {_isCustomDocumentTypeDefinition, useSchema} from 'sanity'
+import {useRouterState} from 'sanity/router'
+import styled from 'styled-components'
+
 import {LOADING_PANE} from '../../constants'
 import {LoadingPane, StructureToolPane} from '../../panes'
 import {useResolvedPanes} from '../../structureResolvers'
-import type {PaneNode} from '../../types'
-import {PaneLayout} from '../pane'
+import {type PaneNode} from '../../types'
 import {useStructureTool} from '../../useStructureTool'
+import {PaneLayout} from '../pane'
 import {NoDocumentTypesScreen} from './NoDocumentTypesScreen'
 import {StructureTitle} from './StructureTitle'
-import {useSchema, _isCustomDocumentTypeDefinition} from 'sanity'
-import {useRouterState} from 'sanity/router'
 
 interface StructureToolProps {
   onPaneChange: (panes: Array<PaneNode | typeof LOADING_PANE>) => void

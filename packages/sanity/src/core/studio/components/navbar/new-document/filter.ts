@@ -1,4 +1,4 @@
-import {NewDocumentOption} from './types'
+import {type NewDocumentOption} from './types'
 
 function isQueryMatch(query: string, option: NewDocumentOption): boolean {
   const lowercaseTitle = option.title.toLowerCase()

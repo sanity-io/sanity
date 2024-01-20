@@ -1,14 +1,14 @@
 import {
-  EditorSelection,
+  type EditorSelection,
   PortableTextEditor,
   usePortableTextEditor,
 } from '@sanity/portable-text-editor'
-import {useCallback, useMemo, useState} from 'react'
-import * as React from 'react'
-import {Path, isPortableTextSpan} from '@sanity/types'
-import {CommentMessage, MentionOptionsHookValue} from '../../../types'
-import {hasCommentMessageValue, useCommentHasChanged} from '../../../helpers'
+import {isPortableTextSpan, type Path} from '@sanity/types'
+import React, {useCallback, useMemo, useState} from 'react'
 import {useDidUpdate} from 'sanity'
+
+import {hasCommentMessageValue, useCommentHasChanged} from '../../../helpers'
+import {type CommentMessage, type MentionOptionsHookValue} from '../../../types'
 
 export interface CommentInputContextValue {
   canSubmit?: boolean

@@ -1,4 +1,4 @@
-import {Observable} from 'rxjs'
+import {type Observable} from 'rxjs'
 
 export function memoize<T, Arg1>(
   fn: (arg1: Arg1) => Observable<T>,

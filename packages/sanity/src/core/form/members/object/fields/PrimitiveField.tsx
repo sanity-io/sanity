@@ -1,17 +1,18 @@
-import {ChangeEvent, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {isBooleanSchemaType, isNumberSchemaType} from '@sanity/types'
-import {FieldMember} from '../../../store'
-import {
-  PrimitiveFieldProps,
-  PrimitiveInputProps,
-  RenderFieldCallback,
-  RenderInputCallback,
-} from '../../../types'
-import {FormPatch, PatchEvent, set, unset} from '../../../patch'
-import {useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
-import {resolveNativeNumberInputValue} from '../../common/resolveNativeNumberInputValue'
+import React, {type ChangeEvent, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+
+import {type FormPatch, PatchEvent, set, unset} from '../../../patch'
+import {type FieldMember} from '../../../store'
 import {useDocumentFieldActions} from '../../../studio/contexts/DocumentFieldActions'
+import {useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
+import {
+  type PrimitiveFieldProps,
+  type PrimitiveInputProps,
+  type RenderFieldCallback,
+  type RenderInputCallback,
+} from '../../../types'
 import {createDescriptionId} from '../../common/createDescriptionId'
+import {resolveNativeNumberInputValue} from '../../common/resolveNativeNumberInputValue'
 
 /**
  * Responsible for creating inputProps and fieldProps to pass to ´renderInput´ and ´renderField´ for a primitive field/input

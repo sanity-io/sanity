@@ -1,5 +1,5 @@
-import type {Expression} from '../jsonpath'
-import type {ImmutableAccessor} from './ImmutableAccessor'
+import {type Expression} from '../jsonpath'
+import {type ImmutableAccessor} from './ImmutableAccessor'
 
 function performIncrement(previousValue: unknown, delta: number): number {
   if (typeof previousValue !== 'number' || !Number.isFinite(previousValue)) {

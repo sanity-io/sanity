@@ -1,6 +1,7 @@
-import {CommentsOnboardingProvider, CommentsSetupProvider, CommentsUpsellProvider} from '../../src'
+import {type LayoutProps, useFeatureEnabled} from 'sanity'
+
 import {ConditionalWrapper} from '../../../../ui-components/conditionalWrapper'
-import {LayoutProps, useFeatureEnabled} from 'sanity'
+import {CommentsOnboardingProvider, CommentsSetupProvider, CommentsUpsellProvider} from '../../src'
 
 export function CommentsStudioLayout(props: LayoutProps) {
   const {enabled, isLoading} = useFeatureEnabled('studioComments')

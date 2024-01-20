@@ -1,19 +1,20 @@
-import {memo, forwardRef, useCallback, useImperativeHandle, useMemo, useState} from 'react'
+import {type CurrentUser} from '@sanity/types'
 import {BoundaryElementProvider, Flex, Stack} from '@sanity/ui'
-import {CurrentUser} from '@sanity/types'
+import {forwardRef, memo, useCallback, useImperativeHandle, useMemo, useState} from 'react'
+
+import {type CommentsSelectedPath} from '../../context'
 import {
-  CommentCreatePayload,
-  CommentEditPayload,
-  CommentReactionOption,
-  CommentStatus,
-  CommentThreadItem,
-  CommentsUIMode,
-  MentionOptionsHookValue,
+  type CommentCreatePayload,
+  type CommentEditPayload,
+  type CommentReactionOption,
+  type CommentStatus,
+  type CommentsUIMode,
+  type CommentThreadItem,
+  type MentionOptionsHookValue,
 } from '../../types'
-import {CommentsSelectedPath} from '../../context'
 import {CommentsListItem} from './CommentsListItem'
-import {CommentThreadLayout} from './CommentThreadLayout'
 import {CommentsListStatus} from './CommentsListStatus'
+import {CommentThreadLayout} from './CommentThreadLayout'
 
 const SCROLL_INTO_VIEW_OPTIONS: ScrollIntoViewOptions = {
   behavior: 'smooth',

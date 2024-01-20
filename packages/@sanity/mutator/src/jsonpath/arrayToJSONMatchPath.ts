@@ -1,4 +1,5 @@
-import type {Path, PathSegment} from '@sanity/types'
+import {type Path, type PathSegment} from '@sanity/types'
+
 import {isRecord} from '../util'
 
 const IS_DOTTABLE = /^[a-z_$]+/

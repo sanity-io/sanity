@@ -1,4 +1,5 @@
-import {ComponentType, Ref, forwardRef, useCallback} from 'react'
+import {type ComponentType, forwardRef, type Ref, useCallback} from 'react'
+
 import {Tab} from '../../../../../ui-components'
 
 interface GroupType {

@@ -1,5 +1,5 @@
 import {isLiveEditEnabled} from '../utils/isLiveEditEnabled'
-import {OperationImpl} from './types'
+import {type OperationImpl} from './types'
 
 // todo: we could also consider exposing 'mutate' directly
 export const patch: OperationImpl<[patches: any[], initialDocument?: Record<string, any>]> = {

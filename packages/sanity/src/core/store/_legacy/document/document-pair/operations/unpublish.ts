@@ -1,6 +1,7 @@
 import {omit} from 'lodash'
+
 import {isLiveEditEnabled} from '../utils/isLiveEditEnabled'
-import {OperationImpl} from './types'
+import {type OperationImpl} from './types'
 
 type DisabledReason = 'LIVE_EDIT_ENABLED' | 'NOT_PUBLISHED'
 

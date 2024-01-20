@@ -1,6 +1,7 @@
-import type {SanityClient} from '@sanity/client'
-import type {Path} from '../paths'
-import type {SanityDocument} from '../documents'
+import {type SanityClient} from '@sanity/client'
+
+import {type SanityDocument} from '../documents'
+import {type Path} from '../paths'
 
 /** @public */
 export interface Reference {

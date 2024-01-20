@@ -1,14 +1,15 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 
-import {SanityClient} from '@sanity/client'
-import {Schema} from '@sanity/types'
-import {combineLatest, Observable} from 'rxjs'
+import {type SanityClient} from '@sanity/client'
+import {type Schema} from '@sanity/types'
+import {combineLatest, type Observable} from 'rxjs'
 import {map, publishReplay, refCount, switchMap} from 'rxjs/operators'
-import {HistoryStore} from '../../history'
-import {IdPair} from '../types'
+
+import {type HistoryStore} from '../../history'
+import {type IdPair} from '../types'
 import {memoize} from '../utils/createMemoizer'
+import {type OperationArgs} from './operations'
 import {snapshotPair} from './snapshotPair'
-import {OperationArgs} from './operations'
 
 export const operationArgs = memoize(
   (

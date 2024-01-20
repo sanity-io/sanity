@@ -1,13 +1,14 @@
 import {
+  type IndexTuple,
   isIndexSegment,
   isIndexTuple,
   isKeyedObject,
   isKeySegment,
-  type IndexTuple,
   type KeyedSegment,
   type Path,
   type PathSegment,
 } from '@sanity/types'
+
 import {isRecord} from '../../util'
 
 const rePropName =

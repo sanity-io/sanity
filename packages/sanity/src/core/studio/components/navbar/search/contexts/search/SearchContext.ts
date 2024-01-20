@@ -1,7 +1,8 @@
-import {createContext, Dispatch, SetStateAction} from 'react'
-import type {CommandListHandle} from '../../../../../../components/commandList/types'
-import {RecentSearchesStore} from '../../datastores/recentSearches'
-import {SearchAction, SearchReducerState} from './reducer'
+import {createContext, type Dispatch, type SetStateAction} from 'react'
+
+import {type CommandListHandle} from '../../../../../../components/commandList/types'
+import {type RecentSearchesStore} from '../../datastores/recentSearches'
+import {type SearchAction, type SearchReducerState} from './reducer'
 
 export interface SearchContextValue {
   dispatch: Dispatch<SearchAction>

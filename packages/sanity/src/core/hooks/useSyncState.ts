@@ -1,5 +1,6 @@
 import {useMemoObservable} from 'react-rx'
 import {map} from 'rxjs/operators'
+
 import {useDocumentStore} from '../store'
 
 /** @internal */

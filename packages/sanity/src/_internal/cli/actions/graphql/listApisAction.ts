@@ -1,4 +1,5 @@
-import type {CliCommandArguments, CliCommandContext} from '@sanity/cli'
+import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
+
 import {getClientUrl} from '../../util/getClientUrl'
 
 type ListApisResponse = {

@@ -1,6 +1,7 @@
 import {Card} from '@sanity/ui'
 import styled from 'styled-components'
-import type {SearchFilter} from '../../types'
+
+import {type SearchFilter} from '../../types'
 import {FilterLabel} from './FilterLabel'
 
 interface FilterPillProps {

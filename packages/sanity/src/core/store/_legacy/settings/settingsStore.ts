@@ -1,7 +1,8 @@
-import {merge, Observable, Subject} from 'rxjs'
+import {merge, type Observable, Subject} from 'rxjs'
 import {filter, map, switchMap} from 'rxjs/operators'
+
 import {resolveBackend} from './backends/resolve'
-import {Settings, SettingsStore} from './types'
+import {type Settings, type SettingsStore} from './types'
 
 /** @internal */
 export function createSettingsStore(): SettingsStore {

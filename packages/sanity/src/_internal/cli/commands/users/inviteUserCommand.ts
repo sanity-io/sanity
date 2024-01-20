@@ -1,6 +1,7 @@
-import type {CliCommandDefinition, CliPrompter} from '@sanity/cli'
+import {type CliCommandDefinition, type CliPrompter} from '@sanity/cli'
+
 import {prettifyQuotaError} from '../../util/prettifyQuotaError'
-import type {Role} from './types'
+import {type Role} from './types'
 
 const helpText = `
 Options

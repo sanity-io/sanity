@@ -1,6 +1,6 @@
 import {ErrorOutlineIcon, WarningOutlineIcon} from '@sanity/icons'
 import {Box, Card, Flex, Text} from '@sanity/ui'
-import {ComponentProps, ReactNode} from 'react'
+import {type ComponentProps, type ReactNode} from 'react'
 import styled from 'styled-components'
 
 interface AlertProps extends Omit<ComponentProps<typeof Card>, 'title'> {

@@ -1,7 +1,9 @@
+import {PortableText, type PortableTextComponents} from '@portabletext/react'
 import {Stack} from '@sanity/ui'
+import React from 'react'
 import styled, {css} from 'styled-components'
-import {PortableText, PortableTextComponents} from '@portabletext/react'
-import {CommentMessage} from '../../types'
+
+import {type CommentMessage} from '../../types'
 import {MentionInlineBlock, NormalBlock} from './blocks'
 
 const PortableTextWrap = styled(Stack)(() => {

@@ -1,27 +1,27 @@
-import {useCallback} from 'react'
-import * as React from 'react'
 import {
-  DocumentsIcon,
-  CopyIcon,
-  UnknownIcon,
   ChevronDownIcon,
+  CopyIcon,
+  DocumentsIcon,
+  UnknownIcon,
   WarningOutlineIcon,
 } from '@sanity/icons'
-import {useToast, Text, Box, Flex, Card, Stack} from '@sanity/ui'
+import {Box, Card, Flex, Stack, Text, useToast} from '@sanity/ui'
+import {useCallback} from 'react'
 import CopyToClipboard from 'react-copy-to-clipboard'
+import {SanityDefaultPreview, Translate, useSchema, useTranslation} from 'sanity'
+
 import {Button} from '../../../ui-components'
 import {structureLocaleNamespace} from '../../i18n'
-import {ReferencePreviewLink} from './ReferencePreviewLink'
-import {ReferringDocuments} from './useReferringDocuments'
 import {
-  OtherReferenceCount,
+  ChevronWrapper,
   CrossDatasetReferencesDetails,
   CrossDatasetReferencesSummary,
-  Table,
-  ChevronWrapper,
   DocumentIdFlex,
+  OtherReferenceCount,
+  Table,
 } from './ConfirmDeleteDialogBody.styles'
-import {SanityDefaultPreview, Translate, useSchema, useTranslation} from 'sanity'
+import {ReferencePreviewLink} from './ReferencePreviewLink'
+import {type ReferringDocuments} from './useReferringDocuments'
 
 type DeletionConfirmationDialogBodyProps = Required<ReferringDocuments> & {
   documentTitle: React.ReactNode

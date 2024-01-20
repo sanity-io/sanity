@@ -1,4 +1,5 @@
-import {pick, omit} from 'lodash'
+import {omit, pick} from 'lodash'
+
 import {DEFAULT_OVERRIDEABLE_FIELDS} from './constants'
 
 const OVERRIDABLE_FIELDS = [...DEFAULT_OVERRIDEABLE_FIELDS]

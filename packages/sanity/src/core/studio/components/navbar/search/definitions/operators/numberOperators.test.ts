@@ -1,4 +1,4 @@
-import type {OperatorNumberRangeValue} from './common'
+import {type OperatorNumberRangeValue} from './common'
 import {numberOperators} from './numberOperators'
 
 const fieldPath = 'title'

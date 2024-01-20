@@ -1,7 +1,8 @@
-import {TextArea, Theme} from '@sanity/ui'
+import {TextArea, type Theme} from '@sanity/ui'
 import {forwardRef, useImperativeHandle, useRef} from 'react'
 import styled, {css} from 'styled-components'
-import {InputProps} from '../../types'
+
+import {type InputProps} from '../../types'
 
 const DebugTextArea = styled(TextArea)(({theme}: {theme: Theme}) => {
   return css`

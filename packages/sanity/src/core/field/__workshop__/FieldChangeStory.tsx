@@ -1,4 +1,5 @@
 import {Box} from '@sanity/ui'
+
 import {FieldChange} from '../diff/components/FieldChange'
 
 /**

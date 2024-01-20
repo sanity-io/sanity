@@ -1,12 +1,12 @@
+import {type Image, type ObjectSchemaType} from '@sanity/types'
 import {Box, Card, Container} from '@sanity/ui'
 import {useSelect} from '@sanity/ui-workshop'
 import {useMemo} from 'react'
-import {Image, ObjectSchemaType} from '@sanity/types'
-import {PreviewLoader} from '../components/PreviewLoader'
-import {Previewable} from '../types'
-import {PreviewLayoutKey} from '../../components'
+
+import {type PreviewLayoutKey} from '../../components'
 import {useSchema} from '../../hooks'
 import {Preview} from '../components/Preview'
+import {type Previewable} from '../types'
 
 const LAYOUT_OPTIONS: Record<string, PreviewLayoutKey> = {
   Default: 'default',

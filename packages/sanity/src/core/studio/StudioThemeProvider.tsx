@@ -1,9 +1,10 @@
 /* eslint-disable no-nested-ternary */
 
-import {ThemeProvider, LayerProvider} from '@sanity/ui'
-import {RootTheme} from '@sanity/ui/theme'
-import {ReactNode} from 'react'
-import {StudioTheme, defaultTheme} from '../theme'
+import {LayerProvider, ThemeProvider} from '@sanity/ui'
+import {type RootTheme} from '@sanity/ui/theme'
+import {type ReactNode} from 'react'
+
+import {defaultTheme, type StudioTheme} from '../theme'
 import {useActiveWorkspace} from './activeWorkspaceMatcher'
 import {ColorSchemeSetValueContext, ColorSchemeValueContext} from './colorScheme'
 

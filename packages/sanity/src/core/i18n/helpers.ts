@@ -1,8 +1,8 @@
-import type {
-  ImplicitLocaleResourceBundle,
-  LocaleDefinition,
-  LocaleResourceBundle,
-  StaticLocaleResourceBundle,
+import {
+  type ImplicitLocaleResourceBundle,
+  type LocaleDefinition,
+  type LocaleResourceBundle,
+  type StaticLocaleResourceBundle,
 } from './types'
 
 /**

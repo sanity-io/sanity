@@ -1,7 +1,8 @@
-import {ButtonTone, Flex, Text} from '@sanity/ui'
-import {AnimatedStatusIcon} from './AnimatedStatusIcon'
-import {structureLocaleNamespace} from '../../../../i18n'
+import {type ButtonTone, Flex, Text} from '@sanity/ui'
 import {TextWithTone, useTranslation} from 'sanity'
+
+import {structureLocaleNamespace} from '../../../../i18n'
+import {AnimatedStatusIcon} from './AnimatedStatusIcon'
 
 type StatusType = 'saved' | 'syncing'
 interface ReviewChangesButtonProps {

@@ -1,8 +1,9 @@
 import fs from 'fs/promises'
 import path from 'path'
-import type {CliCommandContext, CliCommandArguments, SanityJson} from '../../types'
-import type {InitFlags} from '../../commands/init/initCommand'
+
+import {type InitFlags} from '../../commands/init/initCommand'
 import {debug} from '../../debug'
+import {type CliCommandArguments, type CliCommandContext, type SanityJson} from '../../types'
 import {bootstrapFromTemplate} from './bootstrapFromTemplate'
 import {pluginTemplates} from './pluginTemplates'
 

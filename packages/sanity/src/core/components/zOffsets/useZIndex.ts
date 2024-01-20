@@ -1,5 +1,6 @@
 import {useContext} from 'react'
-import {ZIndexContextValue} from './types'
+
+import {type ZIndexContextValue} from './types'
 import {ZIndexContext} from './ZIndexContext'
 
 /**

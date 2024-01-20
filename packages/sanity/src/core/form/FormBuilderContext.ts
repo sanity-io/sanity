@@ -1,18 +1,19 @@
-import {AssetSource, ObjectSchemaType, Path, SanityDocument} from '@sanity/types'
+import {type AssetSource, type ObjectSchemaType, type Path} from '@sanity/types'
 import {createContext} from 'react'
-import {PatchChannel} from './patch'
+
+import {type PatchChannel} from './patch'
+import {type FormFieldGroup, type StateTree} from './store'
 import {
-  FormBuilderCustomMarkersComponent,
-  FormBuilderFilterFieldFn,
-  FormBuilderMarkersComponent,
-  RenderAnnotationCallback,
-  RenderBlockCallback,
-  RenderFieldCallback,
-  RenderInputCallback,
-  RenderItemCallback,
-  RenderPreviewCallback,
+  type FormBuilderCustomMarkersComponent,
+  type FormBuilderFilterFieldFn,
+  type FormBuilderMarkersComponent,
+  type RenderAnnotationCallback,
+  type RenderBlockCallback,
+  type RenderFieldCallback,
+  type RenderInputCallback,
+  type RenderItemCallback,
+  type RenderPreviewCallback,
 } from './types'
-import {FormFieldGroup, StateTree} from './store'
 
 /**
  *

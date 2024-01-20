@@ -1,6 +1,7 @@
-import {PreviewValue, SanityDocument} from '@sanity/types'
+import {type PreviewValue, type SanityDocument} from '@sanity/types'
 import {Flex, Text} from '@sanity/ui'
 import styled from 'styled-components'
+
 import {useDateTimeFormat, useRelativeTime} from '../../hooks'
 import {useTranslation} from '../../i18n'
 

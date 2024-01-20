@@ -1,6 +1,6 @@
-const noop = require('lodash/noop')
 const {createClient, requester: defaultRequester} = require('@sanity/client')
 const {injectResponse} = require('get-it/middleware')
+const noop = require('lodash/noop')
 
 process.on('unhandledRejection', (reason) => {
   // eslint-disable-next-line no-console

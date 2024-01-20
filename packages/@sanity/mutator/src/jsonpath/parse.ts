@@ -1,19 +1,19 @@
 // Converts a string into an abstract syntax tree representation
 
 import {tokenize} from './tokenize'
-import type {
-  AliasExpr,
-  AttributeExpr,
-  BooleanExpr,
-  ConstraintExpr,
-  IndexExpr,
-  NumberExpr,
-  PathExpr,
-  RangeExpr,
-  RecursiveExpr,
-  StringExpr,
-  Token,
-  UnionExpr,
+import {
+  type AliasExpr,
+  type AttributeExpr,
+  type BooleanExpr,
+  type ConstraintExpr,
+  type IndexExpr,
+  type NumberExpr,
+  type PathExpr,
+  type RangeExpr,
+  type RecursiveExpr,
+  type StringExpr,
+  type Token,
+  type UnionExpr,
 } from './types'
 
 // TODO: Support '*'

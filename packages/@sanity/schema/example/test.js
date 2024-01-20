@@ -1,4 +1,5 @@
 import assert from 'assert'
+
 import {Schema} from '../src/legacy/Schema'
 import schemaDef from './schema-def'
 

@@ -1,10 +1,10 @@
-import type {
-  IdentifierToken,
-  NumberToken,
-  QuotedToken,
-  SymbolClass,
-  SymbolToken,
-  Token,
+import {
+  type IdentifierToken,
+  type NumberToken,
+  type QuotedToken,
+  type SymbolClass,
+  type SymbolToken,
+  type Token,
 } from './types'
 
 // TODO: Support '*'

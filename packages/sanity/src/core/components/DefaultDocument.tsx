@@ -1,8 +1,9 @@
 /* eslint-disable i18next/no-literal-string */
-import {ReactElement} from 'react'
-import {NoJavascript} from './NoJavascript'
-import {GlobalErrorHandler} from './globalErrorHandler'
+import {type ReactElement} from 'react'
+
 import {Favicons} from './Favicons'
+import {GlobalErrorHandler} from './globalErrorHandler'
+import {NoJavascript} from './NoJavascript'
 
 const globalStyles = `
   @font-face {

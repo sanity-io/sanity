@@ -1,12 +1,13 @@
 import {Box, Flex, Stack, Text} from '@sanity/ui'
-import React, {useCallback} from 'react'
+import {useCallback} from 'react'
+import {type CurrentUser, Translate, useListFormat, useTranslation, useUser} from 'sanity'
 import styled from 'styled-components'
+
 import {Tooltip} from '../../../../../ui-components'
 import {commentsLocaleNamespace} from '../../../i18n'
 import {COMMENT_REACTION_EMOJIS} from '../../constants'
-import type {CommentReactionShortNames} from '../../types'
+import {type CommentReactionShortNames} from '../../types'
 import {EmojiText} from './EmojiText.styled'
-import {Translate, useListFormat, useTranslation, useUser, type CurrentUser} from 'sanity'
 
 const TEXT_SIZE: number | number[] = 1
 

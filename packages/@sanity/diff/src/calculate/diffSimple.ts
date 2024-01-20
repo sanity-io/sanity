@@ -1,4 +1,10 @@
-import type {DiffOptions, NumberInput, BooleanInput, NumberDiff, BooleanDiff} from '../types'
+import {
+  type BooleanDiff,
+  type BooleanInput,
+  type DiffOptions,
+  type NumberDiff,
+  type NumberInput,
+} from '../types'
 
 export function diffNumber<A>(
   fromInput: NumberInput<A>,

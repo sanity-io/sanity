@@ -1,7 +1,8 @@
 import chalk from 'chalk'
-import type {CliCommandDefinition} from '../../types'
-import {getUserConfig} from '../../util/getUserConfig'
+
+import {type CliCommandDefinition} from '../../types'
 import {TELEMETRY_CONSENT_CONFIG_KEY} from '../../util/createTelemetryStore'
+import {getUserConfig} from '../../util/getUserConfig'
 
 const helpText = `
 Examples

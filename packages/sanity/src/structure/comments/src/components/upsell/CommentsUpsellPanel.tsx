@@ -1,9 +1,10 @@
-import {Box, Card, Container, Flex, Stack} from '@sanity/ui'
 import {LaunchIcon} from '@sanity/icons'
-import styled from 'styled-components'
-import {Button} from '../../../../../ui-components'
-import {CommentsUpsellData} from '../../types'
+import {Box, Card, Container, Flex, Stack} from '@sanity/ui'
 import {UpsellDescriptionSerializer} from 'sanity'
+import styled from 'styled-components'
+
+import {Button} from '../../../../../ui-components'
+import {type CommentsUpsellData} from '../../types'
 
 const Image = styled.img`
   object-fit: cover;

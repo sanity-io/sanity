@@ -1,17 +1,18 @@
-import {SanityClient} from '@sanity/client'
-import {EMPTY, from, merge, Observable} from 'rxjs'
+import {type SanityClient} from '@sanity/client'
+import {type Mutation} from '@sanity/mutator'
+import {type SanityDocument} from '@sanity/types'
+import {EMPTY, from, merge, type Observable} from 'rxjs'
 import {filter, map, mergeMap, mergeMapTo, share, tap} from 'rxjs/operators'
-import {SanityDocument} from '@sanity/types'
-import {Mutation} from '@sanity/mutator'
-import {getPairListener, ListenerEvent} from '../getPairListener'
+
 import {
-  BufferedDocumentEvent,
+  type BufferedDocumentEvent,
+  type CommitRequest,
   createBufferedDocument,
-  RemoteSnapshotEvent,
-  CommitRequest,
-  MutationPayload,
+  type MutationPayload,
+  type RemoteSnapshotEvent,
 } from '../buffered-doc'
-import {IdPair, PendingMutationsEvent, ReconnectEvent} from '../types'
+import {getPairListener, type ListenerEvent} from '../getPairListener'
+import {type IdPair, type PendingMutationsEvent, type ReconnectEvent} from '../types'
 
 const isMutationEventForDocId =
   (id: string) =>

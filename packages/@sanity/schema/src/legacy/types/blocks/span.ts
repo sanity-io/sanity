@@ -1,6 +1,7 @@
 import {pick} from 'lodash'
-import {lazyGetter} from '../utils'
+
 import createPreviewGetter from '../../preview/createPreviewGetter'
+import {lazyGetter} from '../utils'
 
 const INHERITED_FIELDS = [
   'type',

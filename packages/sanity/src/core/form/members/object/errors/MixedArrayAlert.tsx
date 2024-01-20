@@ -1,13 +1,15 @@
 import {Stack, Text} from '@sanity/ui'
 import {isPlainObject} from 'lodash'
+import React from 'react'
+
 import {Button} from '../../../../../ui-components'
+import {isDev} from '../../../../environment'
+import {useTranslation} from '../../../../i18n'
 import {Alert} from '../../../components/Alert'
 import {Details} from '../../../components/Details'
-import {isDev} from '../../../../environment'
-import {PatchEvent, unset} from '../../../patch'
 import {FormField} from '../../../components/formField'
-import {MixedArrayError} from '../../../store'
-import {useTranslation} from '../../../../i18n'
+import {PatchEvent, unset} from '../../../patch'
+import {type MixedArrayError} from '../../../store'
 
 interface Props {
   error: MixedArrayError

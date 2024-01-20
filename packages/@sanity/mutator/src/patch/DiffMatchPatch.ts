@@ -1,6 +1,7 @@
 import {applyPatches, parsePatch, type Patch} from '@sanity/diff-match-patch'
-import {Expression} from '../jsonpath'
-import {ImmutableAccessor} from './ImmutableAccessor'
+
+import {type Expression} from '../jsonpath'
+import {type ImmutableAccessor} from './ImmutableAccessor'
 
 function applyPatch(patch: Patch[], oldValue: unknown) {
   // Silently avoid patching if the value type is not string

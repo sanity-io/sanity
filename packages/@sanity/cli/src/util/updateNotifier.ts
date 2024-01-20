@@ -2,11 +2,12 @@
 import boxen from 'boxen'
 import chalk from 'chalk'
 import latestVersion from 'get-latest-version'
-import semverCompare from 'semver-compare'
 import pTimeout from 'p-timeout'
-import type {PackageJson} from '../types'
-import {getCliUpgradeCommand} from '../packageManager'
+import semverCompare from 'semver-compare'
+
 import {debug} from '../debug'
+import {getCliUpgradeCommand} from '../packageManager'
+import {type PackageJson} from '../types'
 import {getUserConfig} from './getUserConfig'
 import {isCi} from './isCi'
 

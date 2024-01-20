@@ -1,5 +1,6 @@
-import {ReactNode, memo, useCallback, useMemo} from 'react'
-import {FormPatch, PatchEvent} from '../patch'
+import {memo, type ReactNode, useCallback, useMemo} from 'react'
+
+import {type FormPatch, PatchEvent} from '../patch'
 import {FormCallbacksContext, useFormCallbacks} from '../studio'
 
 type PatchTransformer = (patches: FormPatch[]) => FormPatch[]

@@ -1,7 +1,8 @@
 import {Menu, MenuDivider} from '@sanity/ui'
-import {ForwardedRef, Fragment, ReactElement, forwardRef} from 'react'
-import {MenuButton, MenuButtonProps, MenuItem} from '../../../ui-components'
-import {CollapseMenuProps} from './CollapseMenu'
+import {type ForwardedRef, forwardRef, Fragment, type ReactElement} from 'react'
+
+import {MenuButton, type MenuButtonProps, MenuItem} from '../../../ui-components'
+import {type CollapseMenuProps} from './CollapseMenu'
 
 const MENU_BUTTON_POPOVER_PROPS: MenuButtonProps['popover'] = {
   portal: true,

@@ -1,9 +1,9 @@
 import {
-  CommentDocument,
-  CommentOperations,
-  CommentStatus,
-  CommentThreadItem,
-  MentionOptionsHookValue,
+  type CommentDocument,
+  type CommentOperations,
+  type CommentStatus,
+  type CommentThreadItem,
+  type MentionOptionsHookValue,
 } from '../../types'
 
 /**

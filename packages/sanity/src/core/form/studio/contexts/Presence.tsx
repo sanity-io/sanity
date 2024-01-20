@@ -1,9 +1,10 @@
 /* eslint-disable react/no-unused-prop-types */
-import {ReactNode, createContext, useContext, useRef} from 'react'
 
-import {Path} from '@sanity/types'
+import {type Path} from '@sanity/types'
 import {isEqual, startsWith} from '@sanity/util/paths'
-import {FormNodePresence} from '../../../presence'
+import React, {createContext, type ReactNode, useContext, useRef} from 'react'
+
+import {type FormNodePresence} from '../../../presence'
 import {immutableReconcile} from '../../store/utils/immutableReconcile'
 
 const PresenceContext = createContext<FormNodePresence[]>([])

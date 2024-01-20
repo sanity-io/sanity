@@ -1,13 +1,15 @@
 import {parseArgs} from 'node:util'
-import globby from 'globby'
-import {config} from 'dotenv'
+
 import {createClient} from '@sanity/client'
-import {run} from './runner/runner'
+import {config} from 'dotenv'
+import globby from 'globby'
+
+import {STUDIO_DATASET, STUDIO_PROJECT_ID} from './config/constants'
 import {findEnv, readEnv} from './config/envVars'
 import * as queries from './queries'
+import {run} from './runner/runner'
+import {type Deployment} from './runner/types'
 import {getCurrentBranchSync, getGitInfoSync} from './runner/utils/gitUtils'
-import {STUDIO_DATASET, STUDIO_PROJECT_ID} from './config/constants'
-import {Deployment} from './runner/types'
 import {sanityIdify} from './runner/utils/sanityIdIfy'
 import {KNOWN_TEST_IDS} from './runner/utils/testIds'
 

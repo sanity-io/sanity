@@ -1,4 +1,4 @@
-import {UserIcon, MoonIcon, BookIcon} from '@sanity/icons'
+import {BookIcon, MoonIcon, UserIcon} from '@sanity/icons'
 import {defineType} from 'sanity'
 
 export const crossDatasetSubtype = defineType({

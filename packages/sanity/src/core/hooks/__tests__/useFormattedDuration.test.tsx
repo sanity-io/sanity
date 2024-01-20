@@ -1,10 +1,11 @@
-import type {ReactElement} from 'react'
-import {ThemeProvider, studioTheme} from '@sanity/ui'
+import {studioTheme, ThemeProvider} from '@sanity/ui'
 import {renderHook} from '@testing-library/react'
-import {useFormattedDuration} from '../useFormattedDuration'
+import {type ReactElement} from 'react'
+
 import {LocaleProviderBase, usEnglishLocale} from '../../i18n'
-import {prepareI18n} from '../../i18n/i18nConfig'
 import {studioDefaultLocaleResources} from '../../i18n/bundles/studio'
+import {prepareI18n} from '../../i18n/i18nConfig'
+import {useFormattedDuration} from '../useFormattedDuration'
 
 describe('useFormattedDuration', () => {
   const {i18next} = prepareI18n({

@@ -1,6 +1,6 @@
 import {CheckmarkIcon} from '@sanity/icons'
-import {Flex, Stack, Box, Text} from '@sanity/ui'
-import {ComponentType, ReactNode, createElement, isValidElement, useMemo} from 'react'
+import {Box, Flex, Stack, Text} from '@sanity/ui'
+import {type ComponentType, createElement, isValidElement, type ReactNode, useMemo} from 'react'
 import {isValidElementType} from 'react-is'
 import styled from 'styled-components'
 

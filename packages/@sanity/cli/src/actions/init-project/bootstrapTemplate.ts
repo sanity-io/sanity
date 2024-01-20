@@ -1,15 +1,16 @@
-import path from 'path'
-import fs from 'fs/promises'
 import chalk from 'chalk'
+import fs from 'fs/promises'
+import path from 'path'
+
 import {debug} from '../../debug'
 import {studioDependencies} from '../../studioDependencies'
-import type {CliCommandContext} from '../../types'
-import {resolveLatestVersions} from '../../util/resolveLatestVersions'
+import {type CliCommandContext} from '../../types'
 import {copy} from '../../util/copy'
-import {createPackageManifest} from './createPackageManifest'
+import {resolveLatestVersions} from '../../util/resolveLatestVersions'
 import {createCliConfig} from './createCliConfig'
-import {createStudioConfig, GenerateConfigOptions} from './createStudioConfig'
-import type {ProjectTemplate} from './initProject'
+import {createPackageManifest} from './createPackageManifest'
+import {createStudioConfig, type GenerateConfigOptions} from './createStudioConfig'
+import {type ProjectTemplate} from './initProject'
 import templates from './templates'
 
 export interface BootstrapOptions {

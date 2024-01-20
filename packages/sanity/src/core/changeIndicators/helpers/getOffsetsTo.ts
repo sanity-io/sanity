@@ -1,4 +1,4 @@
-import {Rect} from '../overlay/types'
+import {type Rect} from '../overlay/types'
 import {hasOverflowScroll} from './scrollUtils'
 
 export const getOffsetsTo = (

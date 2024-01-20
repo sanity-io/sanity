@@ -1,4 +1,4 @@
-import {SanityClient} from '@sanity/client'
+import {type SanityClient} from '@sanity/client'
 
 interface RemoveOperationProps {
   client: SanityClient

@@ -1,6 +1,6 @@
+import traverse from '@babel/traverse'
 import {parse, print} from 'recast'
 import * as parser from 'recast/parsers/typescript'
-import traverse from '@babel/traverse'
 
 const defaultTemplate = `
 import {defineCliConfig} from 'sanity/cli'

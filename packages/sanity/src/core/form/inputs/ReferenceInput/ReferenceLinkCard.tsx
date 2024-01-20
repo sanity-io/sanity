@@ -1,6 +1,6 @@
-import {ForwardedRef, HTMLProps, forwardRef} from 'react'
+import {Card, type CardProps} from '@sanity/ui'
+import {type ForwardedRef, forwardRef, type HTMLProps} from 'react'
 import styled from 'styled-components'
-import {Card, CardProps} from '@sanity/ui'
 
 export const StyledCard = styled(Card)`
   /* this is a hack to avoid layout jumps while previews are loading

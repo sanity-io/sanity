@@ -1,6 +1,7 @@
-import {map, startWith} from 'rxjs/operators'
+import {type SanityDocument} from '@sanity/types'
 import {useMemoObservable} from 'react-rx'
-import {SanityDocument} from '@sanity/types'
+import {map, startWith} from 'rxjs/operators'
+
 import {useDocumentStore} from '../store'
 
 interface ReferringDocumentsState {

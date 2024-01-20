@@ -1,10 +1,11 @@
-import {Box, ResponsiveMarginProps, ResponsivePaddingProps} from '@sanity/ui'
-import {MouseEvent, useCallback, useMemo} from 'react'
-import {GeneralPreviewLayoutKey, PreviewCard} from '../../../../../../../components'
+import {Box, type ResponsiveMarginProps, type ResponsivePaddingProps} from '@sanity/ui'
+import {type MouseEvent, useCallback, useMemo} from 'react'
+import {useIntentLink} from 'sanity/router'
+
+import {type GeneralPreviewLayoutKey, PreviewCard} from '../../../../../../../components'
 import {useSchema} from '../../../../../../../hooks'
 import {useDocumentPresence} from '../../../../../../../store'
 import SearchResultItemPreview from './SearchResultItemPreview'
-import {useIntentLink} from 'sanity/router'
 
 interface SearchResultItemProps extends ResponsiveMarginProps, ResponsivePaddingProps {
   disableIntentLink?: boolean

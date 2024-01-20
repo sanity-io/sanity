@@ -1,8 +1,8 @@
 import {
   isPortableTextTextBlock,
-  PortableTextObject,
   type PortableTextBlock,
-  PortableTextSpan,
+  type PortableTextObject,
+  type PortableTextSpan,
 } from '@sanity/types'
 
 const TRANSFORMATIONS: {

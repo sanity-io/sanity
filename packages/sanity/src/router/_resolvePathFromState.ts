@@ -1,7 +1,7 @@
 import {_findMatchingRoutes} from './_findMatchingRoutes'
-import {InternalSearchParam, MatchOk, RouterNode, RouterState} from './types'
-import {debug} from './utils/debug'
 import {encodeURIComponentExcept} from './encodeURIComponentExcept'
+import {type InternalSearchParam, type MatchOk, type RouterNode, type RouterState} from './types'
+import {debug} from './utils/debug'
 
 /** @internal */
 export function _resolvePathFromState(node: RouterNode, _state: RouterState): string {

@@ -1,15 +1,16 @@
 import {compact, flatten, flow, toLower, trim, union, uniq, words} from 'lodash'
+
 import {joinPath} from '../../../core/util/searchUtils'
 import {tokenize} from '../common/tokenize'
 import {FINDABILITY_MVI} from '../constants'
-import type {
-  SearchableType,
-  SearchOptions,
-  SearchPath,
-  SearchSort,
-  SearchSpec,
-  SearchTerms,
-  WeightedSearchOptions,
+import {
+  type SearchableType,
+  type SearchOptions,
+  type SearchPath,
+  type SearchSort,
+  type SearchSpec,
+  type SearchTerms,
+  type WeightedSearchOptions,
 } from './types'
 
 export interface SearchParams {

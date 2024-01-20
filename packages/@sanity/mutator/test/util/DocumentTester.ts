@@ -1,8 +1,9 @@
 // A test jig for the Document model
-import type {PatchMutationOperation} from '@sanity/types'
-import type {SubmissionResponder} from '../../src/document/Document'
-import type {Doc} from '../../src/document/types'
+import {type PatchMutationOperation} from '@sanity/types'
+
 import {Document, Mutation} from '../../src/document'
+import {type SubmissionResponder} from '../../src/document/Document'
+import {type Doc} from '../../src/document/types'
 import {extract} from '../../src/jsonpath'
 
 export class DocumentTester {

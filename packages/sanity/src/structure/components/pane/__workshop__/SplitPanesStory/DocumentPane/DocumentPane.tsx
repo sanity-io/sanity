@@ -1,9 +1,10 @@
 import {Flex} from '@sanity/ui'
-import {useState, useCallback, useEffect} from 'react'
-import * as React from 'react'
+import type * as React from 'react'
+import {useCallback, useEffect, useState} from 'react'
+
 import {Pane} from '../../../Pane'
 import {usePaneLayout} from '../../../usePaneLayout'
-import {DocumentPaneNode} from '../types'
+import {type DocumentPaneNode} from '../types'
 import {DocumentViewPanel} from './DocumentViewPanel'
 import {ReviewChangesPanel} from './ReviewChangesPanel'
 

@@ -1,6 +1,10 @@
 import {ConfigPropertyError} from './ConfigPropertyError'
 import {flattenConfig} from './flattenConfig'
-import {PluginOptions, ConfigPropertyReducer, AsyncConfigPropertyReducer} from './types'
+import {
+  type AsyncConfigPropertyReducer,
+  type ConfigPropertyReducer,
+  type PluginOptions,
+} from './types'
 
 interface ResolveConfigPropertyOptions<TValue, TContext> {
   propertyName: string

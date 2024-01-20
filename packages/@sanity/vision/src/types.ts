@@ -1,5 +1,5 @@
-import type {SanityClient} from '@sanity/client'
-import type {ComponentType} from 'react'
+import {type SanityClient} from '@sanity/client'
+import {type ComponentType} from 'react'
 
 export interface VisionProps {
   client: SanityClient

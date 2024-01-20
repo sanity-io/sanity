@@ -1,5 +1,6 @@
 import {uuid} from '@sanity/uuid'
-import {PerformanceTestContext, PerformanceTestProps} from '../runner/types'
+
+import {type PerformanceTestContext, type PerformanceTestProps} from '../runner/types'
 import {KNOWN_TEST_IDS} from '../runner/utils/testIds'
 
 export default {

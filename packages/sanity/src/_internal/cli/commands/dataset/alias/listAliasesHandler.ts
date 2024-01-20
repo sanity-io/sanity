@@ -1,4 +1,5 @@
-import type {CliCommandAction} from '@sanity/cli'
+import {type CliCommandAction} from '@sanity/cli'
+
 import * as aliasClient from './datasetAliasesClient'
 import {ALIAS_PREFIX} from './datasetAliasesClient'
 

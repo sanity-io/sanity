@@ -1,10 +1,10 @@
 #!/usr/bin/env node -r esbuild-register
 
 import {writeFileSync} from 'fs'
-import {inspect} from 'util'
 import path from 'path'
-import _ from 'lodash'
-import {readJsonFile, generateOutput, groupTests} from './utils'
+import {inspect} from 'util'
+
+import {generateOutput, groupTests, readJsonFile} from './utils'
 
 const DEBUG = Boolean(parseInt(process.env.DEBUG || '0', 2))
 const DEFAULT_ARTIFACT_OUTPUT_PATH = path.resolve(path.join(__dirname, '..', 'results'))

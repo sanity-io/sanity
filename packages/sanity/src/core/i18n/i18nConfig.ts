@@ -1,14 +1,20 @@
-import {createInstance as createI18nInstance, type InitOptions, type i18n} from 'i18next'
+import {createInstance as createI18nInstance, type i18n, type InitOptions} from 'i18next'
 import {initReactI18next} from 'react-i18next'
-import type {SourceOptions} from '../config'
-import {resolveConfigProperty} from '../config/resolveConfigProperty'
+
+import {type SourceOptions} from '../config'
 import {localeBundlesReducer, localeDefReducer} from '../config/configPropertyReducers'
-import {defaultLocale} from './locales'
+import {resolveConfigProperty} from '../config/resolveConfigProperty'
 import {createSanityI18nBackend} from './backend'
-import type {LocaleSource, LocaleDefinition, LocaleResourceBundle, Locale} from './types'
-import {studioLocaleNamespace} from './localeNamespaces'
-import {getPreferredLocale} from './localeStore'
 import {DEBUG_I18N, maybeWrapT} from './debug'
+import {studioLocaleNamespace} from './localeNamespaces'
+import {defaultLocale} from './locales'
+import {getPreferredLocale} from './localeStore'
+import {
+  type Locale,
+  type LocaleDefinition,
+  type LocaleResourceBundle,
+  type LocaleSource,
+} from './types'
 
 /**
  * @internal

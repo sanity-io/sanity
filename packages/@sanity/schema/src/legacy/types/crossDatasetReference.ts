@@ -1,8 +1,9 @@
 import arrify from 'arrify'
 import {capitalize, pick} from 'lodash'
+
 import {resolveSearchConfigForBaseFieldPaths} from '../searchConfig/resolve'
-import {lazyGetter} from './utils'
 import {DEFAULT_OVERRIDEABLE_FIELDS} from './constants'
+import {lazyGetter} from './utils'
 
 export const REF_FIELD = {
   name: '_ref',

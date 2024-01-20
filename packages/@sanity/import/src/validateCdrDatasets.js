@@ -1,5 +1,5 @@
-const {get} = require('lodash')
 const {extractWithPath} = require('@sanity/mutator')
+const {get} = require('lodash')
 
 module.exports = async function validateCdrDatasets(docs, options) {
   const datasets = getDatasetsFromCrossDatasetReferences(docs)

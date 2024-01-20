@@ -1,6 +1,7 @@
 import {Box, Card, Inline, Stack, Text} from '@sanity/ui'
+
 import {StructureToolProvider} from '../../../../StructureToolProvider'
-import type {DocumentPaneNode} from '../../../../types'
+import {type DocumentPaneNode} from '../../../../types'
 import {DocumentPaneProvider} from '../../DocumentPaneProvider'
 import {TimelineMenu} from '../timelineMenu'
 

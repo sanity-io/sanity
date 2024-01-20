@@ -1,6 +1,7 @@
 /* eslint-disable camelcase */
 
 import styled from 'styled-components'
+
 import {ClampedRect} from './ClampedRect'
 
 export const DebugRect = styled.rect`

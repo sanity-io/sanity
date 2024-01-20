@@ -1,6 +1,7 @@
+import {type Page} from '@playwright/test'
 import {uuid} from '@sanity/uuid'
-import {Page} from '@playwright/test'
-import {PerformanceTestContext, PerformanceTestProps} from '../runner/types'
+
+import {type PerformanceTestContext, type PerformanceTestProps} from '../runner/types'
 import {KNOWN_TEST_IDS} from '../runner/utils/testIds'
 
 export default {

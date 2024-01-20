@@ -1,4 +1,4 @@
-import {PortableTextBlock, User} from '@sanity/types'
+import {type PortableTextBlock, type User} from '@sanity/types'
 
 /**
  * @beta

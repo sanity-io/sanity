@@ -1,17 +1,18 @@
-import {memo, useCallback, useMemo} from 'react'
-import {useTranslation} from 'react-i18next'
 import {
   PortableTextEditor,
   usePortableTextEditor,
   usePortableTextEditorSelection,
 } from '@sanity/portable-text-editor'
 import {isKeySegment} from '@sanity/types'
-import {PopoverProps} from '../../../../../ui-components'
+import React, {memo, useCallback, useMemo} from 'react'
+import {useTranslation} from 'react-i18next'
+
+import {type PopoverProps} from '../../../../../ui-components'
 import {CollapseMenu, CollapseMenuButton} from '../../../../components/collapseMenu'
 import {ContextMenuButton} from '../../../../components/contextMenuButton'
-import {PTEToolbarAction, PTEToolbarActionGroup} from './types'
-import {useActiveActionKeys, useFocusBlock} from './hooks'
 import {getActionIcon} from './helpers'
+import {useActiveActionKeys, useFocusBlock} from './hooks'
+import {type PTEToolbarAction, type PTEToolbarActionGroup} from './types'
 
 const CollapseMenuMemo = memo(CollapseMenu)
 

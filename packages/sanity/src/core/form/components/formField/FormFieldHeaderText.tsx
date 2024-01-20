@@ -1,10 +1,11 @@
-import styled from 'styled-components'
-import type {DeprecatedProperty, FormNodeValidation} from '@sanity/types'
+import {type DeprecatedProperty, type FormNodeValidation} from '@sanity/types'
 import {Badge, Box, Flex, Stack, Text} from '@sanity/ui'
-import {ReactNode, memo} from 'react'
+import {memo, type ReactNode} from 'react'
+import styled from 'styled-components'
+
+import {TextWithTone} from '../../../components'
 import {useTranslation} from '../../../i18n'
 import {createDescriptionId} from '../../members/common/createDescriptionId'
-import {TextWithTone} from '../../../components'
 import {FormFieldValidationStatus} from './FormFieldValidationStatus'
 
 const LabelSuffix = styled(Flex)`

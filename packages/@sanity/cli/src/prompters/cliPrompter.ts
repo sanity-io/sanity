@@ -1,4 +1,4 @@
-import inquirer, {Answers, DistinctQuestion} from 'inquirer'
+import inquirer, {type Answers, type DistinctQuestion} from 'inquirer'
 
 export function prompt<T extends Answers = Answers>(questions: DistinctQuestion<T>[]): Promise<T> {
   return inquirer.prompt(questions)

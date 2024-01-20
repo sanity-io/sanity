@@ -1,22 +1,24 @@
 // eslint-disable-next-line import/no-unassigned-import
 import '@testing-library/jest-dom/extend-expect'
+
+import {type ObjectSchemaType} from '@sanity/types'
+import {LayerProvider, studioTheme, ThemeProvider} from '@sanity/ui'
 import {render} from '@testing-library/react'
-import {PropsWithChildren} from 'react'
-import {ThemeProvider, studioTheme, LayerProvider} from '@sanity/ui'
 import userEvent from '@testing-library/user-event'
-import {ObjectSchemaType} from '@sanity/types'
-import {FieldMember} from '../../../store'
+import React, {type PropsWithChildren} from 'react'
+
+import {type FIXME} from '../../../../FIXME'
+import {DocumentIdProvider} from '../../../contexts/DocumentIdProvider'
+import {FormBuilderContext, type FormBuilderContextValue} from '../../../FormBuilderContext'
+import {PatchEvent, set} from '../../../patch'
+import {type FieldMember} from '../../../store'
 import {
   defaultRenderField,
   defaultRenderInput,
   FormCallbacksProvider,
-  FormCallbacksValue,
+  type FormCallbacksValue,
 } from '../../../studio'
-import {PatchEvent, set} from '../../../patch'
-import {FIXME} from '../../../../FIXME'
-import {FormBuilderContext, FormBuilderContextValue} from '../../../FormBuilderContext'
 import {DocumentFieldActionsProvider} from '../../../studio/contexts/DocumentFieldActions'
-import {DocumentIdProvider} from '../../../contexts/DocumentIdProvider'
 import {PrimitiveField} from './PrimitiveField'
 
 const EMPTY_ARRAY: never[] = []

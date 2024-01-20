@@ -1,5 +1,5 @@
 import {sortBy} from 'lodash'
-import {CSSProperties} from 'react'
+import {type CSSProperties} from 'react'
 
 const OVERLAY_STYLE: CSSProperties = {
   position: 'absolute',

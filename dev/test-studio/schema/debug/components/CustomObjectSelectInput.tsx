@@ -1,6 +1,6 @@
-import {ObjectInputProps, ObjectSchemaType, set, unset, isValidationError} from 'sanity'
 import {Select} from '@sanity/ui'
-import {ForwardedRef, forwardRef, useCallback, useState} from 'react'
+import {type ForwardedRef, forwardRef, useCallback, useState} from 'react'
+import {isValidationError, type ObjectInputProps, type ObjectSchemaType, set, unset} from 'sanity'
 
 type Value = {title: string; value: string}
 

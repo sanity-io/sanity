@@ -1,5 +1,6 @@
-import {Element, Transforms, Node, Editor} from 'slate'
-import {PortableTextMemberSchemaTypes, PortableTextSlateEditor} from '../../types/editor'
+import {Editor, Element, Node, Transforms} from 'slate'
+
+import {type PortableTextMemberSchemaTypes, type PortableTextSlateEditor} from '../../types/editor'
 import {isPreservingKeys, PRESERVE_KEYS} from '../../utils/withPreserveKeys'
 
 /**

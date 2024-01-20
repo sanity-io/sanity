@@ -1,10 +1,11 @@
+import {DEFAULT_DATE_FORMAT, format, parse} from '@sanity/util/legacyDateFormat'
 import {useCallback, useMemo} from 'react'
-import {format, parse, DEFAULT_DATE_FORMAT} from '@sanity/util/legacyDateFormat'
-import {set, unset} from '../../patch'
-import {StringInputProps} from '../../types'
+
 import {useTranslation} from '../../../i18n'
+import {set, unset} from '../../patch'
+import {type StringInputProps} from '../../types'
+import {type CalendarLabels} from './base/calendar/types'
 import {CommonDateTimeInput} from './CommonDateTimeInput'
-import {CalendarLabels} from './base/calendar/types'
 import {getCalendarLabels} from './utils'
 
 /**

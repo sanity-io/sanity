@@ -1,5 +1,6 @@
-import {useContext, useRef, useLayoutEffect, Context as ReactContext} from 'react'
-import {TrackerContext} from './types'
+import {type Context as ReactContext, useContext, useLayoutEffect, useRef} from 'react'
+
+import {type TrackerContext} from './types'
 
 /** @internal */
 export type ReporterHook<Payload> = (

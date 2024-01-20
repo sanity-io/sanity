@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-shadow */
-import {useEffect, useState, type ReactElement} from 'react'
+import {type ReactElement, useEffect, useState} from 'react'
 
 interface ImageLoaderProps {
   src: string

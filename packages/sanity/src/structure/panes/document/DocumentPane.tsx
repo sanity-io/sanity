@@ -1,15 +1,7 @@
+import {type Path} from '@sanity/types'
 import {Stack, Text} from '@sanity/ui'
-import {memo, useMemo} from 'react'
 import {fromString as pathFromString} from '@sanity/util/paths'
-import {Path} from '@sanity/types'
-import {DocumentPaneNode} from '../../types'
-import {usePaneRouter} from '../../components'
-import {ErrorPane} from '../error'
-import {LoadingPane} from '../loading'
-import {structureLocaleNamespace} from '../../i18n'
-import {DocumentPaneProviderProps} from './types'
-import {DocumentPaneProvider} from './DocumentPaneProvider'
-import {useDocumentLayoutComponent} from './document-layout'
+import {memo, useMemo} from 'react'
 import {
   ReferenceInputOptionsProvider,
   SourceProvider,
@@ -20,6 +12,15 @@ import {
   useTemplates,
   useTranslation,
 } from 'sanity'
+
+import {usePaneRouter} from '../../components'
+import {structureLocaleNamespace} from '../../i18n'
+import {type DocumentPaneNode} from '../../types'
+import {ErrorPane} from '../error'
+import {LoadingPane} from '../loading'
+import {useDocumentLayoutComponent} from './document-layout'
+import {DocumentPaneProvider} from './DocumentPaneProvider'
+import {type DocumentPaneProviderProps} from './types'
 
 type DocumentPaneOptions = DocumentPaneNode['options']
 

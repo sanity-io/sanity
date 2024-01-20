@@ -1,17 +1,18 @@
-import {SanityClient} from '@sanity/client'
-import {CurrentUser, SanityDocument} from '@sanity/types'
+import {type SanityClient} from '@sanity/client'
+import {type CurrentUser, type SanityDocument} from '@sanity/types'
 import {evaluate, parse} from 'groq-js'
 import {defer, of} from 'rxjs'
 import {distinctUntilChanged, publishReplay, switchMap} from 'rxjs/operators'
 import {refCountDelay} from 'rxjs-etc/operators'
 import shallowEquals from 'shallow-equals'
+
 import {debugGrants$} from './debug'
 import {
-  GrantsStore,
-  DocumentValuePermission,
-  Grant,
-  PermissionCheckResult,
-  EvaluationParams,
+  type DocumentValuePermission,
+  type EvaluationParams,
+  type Grant,
+  type GrantsStore,
+  type PermissionCheckResult,
 } from './types'
 
 async function getDatasetGrants(

@@ -1,5 +1,5 @@
 import {PANE_DEFAULT_MIN_WIDTH} from '../constants'
-import {PaneConfigOpts, PaneResizeCache} from '../types'
+import {type PaneConfigOpts, type PaneResizeCache} from '../types'
 
 export function _calcPaneResize(
   cache: PaneResizeCache,

@@ -1,19 +1,20 @@
-import util from 'util'
-import path from 'path'
-import {promises as fs} from 'fs'
 import boxen from 'boxen'
+import {promises as fs} from 'fs'
+import {noop, padStart} from 'lodash'
+import path from 'path'
+import resolveFrom from 'resolve-from'
 import rimrafCb from 'rimraf'
 import semver from 'semver'
-import resolveFrom from 'resolve-from'
-import {padStart, noop} from 'lodash'
-import type {CliCommandAction, PackageJson} from '../../types'
+import util from 'util'
+
+import {type CliCommandContext} from '../..'
 import {
   findSanityModuleVersions,
-  ModuleVersionResult,
+  type ModuleVersionResult,
 } from '../../actions/versions/findSanityModuleVersions'
-import {getFormatters} from '../versions/printVersionResult'
 import {debug} from '../../debug'
-import {CliCommandContext} from '../..'
+import {type CliCommandAction, type PackageJson} from '../../types'
+import {getFormatters} from '../versions/printVersionResult'
 
 const rimraf = util.promisify(rimrafCb)
 

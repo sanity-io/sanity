@@ -1,5 +1,5 @@
 import {generateHelpUrl} from '@sanity/generate-help-url'
-import {SchemaType} from '@sanity/types'
+import {type SchemaType} from '@sanity/types'
 import {difference} from 'lodash'
 
 const ACTIONS_FLAG = '__experimental_actions'

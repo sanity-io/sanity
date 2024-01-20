@@ -1,7 +1,8 @@
+import {type BlockDecoratorRenderProps} from '@sanity/portable-text-editor'
 import {useCallback, useMemo} from 'react'
 import styled from 'styled-components'
-import {BlockDecoratorRenderProps} from '@sanity/portable-text-editor'
-import {BlockDecoratorProps} from '../../../types'
+
+import {type BlockDecoratorProps} from '../../../types'
 import {TEXT_DECORATOR_TAGS} from './constants'
 
 const Root = styled.span`

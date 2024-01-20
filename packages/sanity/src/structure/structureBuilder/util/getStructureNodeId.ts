@@ -1,5 +1,6 @@
 import {camelCase} from 'lodash'
 import getSlug from 'speakingurl'
+
 import {disallowedPattern} from './validateId'
 
 export function getStructureNodeId(title: string, id?: string): string {

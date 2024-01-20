@@ -1,7 +1,8 @@
 /* eslint-disable i18next/no-literal-string,@sanity/i18n/no-attribute-string-literals */
-import {CurrentUser} from '@sanity/types'
+import {type CurrentUser} from '@sanity/types'
 import {Card, Stack, Text} from '@sanity/ui'
 import {useCallback, useEffect, useState} from 'react'
+
 import {Dialog} from '../../../ui-components'
 import {getProviderTitle} from '../../store'
 import {useActiveWorkspace} from '../activeWorkspaceMatcher'

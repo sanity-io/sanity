@@ -1,5 +1,6 @@
-import {isKeySegment, Path} from '@sanity/types'
-import {StateTree} from './types'
+import {isKeySegment, type Path} from '@sanity/types'
+
+import {type StateTree} from './types'
 
 /** @internal */
 export function setAtPath<T>(

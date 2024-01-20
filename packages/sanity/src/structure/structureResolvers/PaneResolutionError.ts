@@ -1,4 +1,4 @@
-import {RouterPaneSiblingContext} from '../types'
+import {type RouterPaneSiblingContext} from '../types'
 
 export interface PaneResolutionErrorOptions {
   message: string

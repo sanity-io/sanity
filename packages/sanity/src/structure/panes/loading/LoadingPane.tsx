@@ -1,12 +1,13 @@
-import {type CardTone, Flex, _raf2} from '@sanity/ui'
-import {memo, useMemo, useState, useEffect} from 'react'
-import {Observable} from 'rxjs'
+import {_raf2, type CardTone, Flex} from '@sanity/ui'
+import {memo, useEffect, useMemo, useState} from 'react'
+import {type Observable} from 'rxjs'
+import {LoadingBlock, useTranslation} from 'sanity'
 import styled from 'styled-components'
-import {structureLocaleNamespace} from '../../i18n'
+
 import {Delay} from '../../components/Delay'
 import {Pane, PaneContent} from '../../components/pane'
-import {WaitMessage, getWaitMessages} from './getWaitMessages'
-import {LoadingBlock, useTranslation} from 'sanity'
+import {structureLocaleNamespace} from '../../i18n'
+import {getWaitMessages, type WaitMessage} from './getWaitMessages'
 
 interface LoadingPaneProps {
   delay?: number

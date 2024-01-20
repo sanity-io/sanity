@@ -1,7 +1,8 @@
 import {useTheme} from '@sanity/ui'
-import {useMemo, HTMLProps, forwardRef, ForwardedRef, ReactNode} from 'react'
+import {type ForwardedRef, forwardRef, type HTMLProps, type ReactNode, useMemo} from 'react'
 import styled from 'styled-components'
-import {Button, ButtonProps} from '../../ui-components'
+
+import {Button, type ButtonProps} from '../../ui-components'
 
 /** @hidden @beta */
 export type StatusButtonProps = ButtonProps & {

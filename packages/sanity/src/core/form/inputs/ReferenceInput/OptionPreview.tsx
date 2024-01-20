@@ -1,12 +1,13 @@
+import {type ReferenceSchemaType} from '@sanity/types'
 import {Stack, Text, TextSkeleton} from '@sanity/ui'
-import type {ReferenceSchemaType} from '@sanity/types'
-import type {Observable} from 'rxjs'
-import {Alert} from '../../components/Alert'
+import {type Observable} from 'rxjs'
+
 import {useTranslation} from '../../../i18n'
-import type {RenderPreviewCallback} from '../../types'
-import type {ReferenceInfo} from './types'
-import {useReferenceInfo} from './useReferenceInfo'
+import {Alert} from '../../components/Alert'
+import {type RenderPreviewCallback} from '../../types'
 import {ReferencePreview} from './ReferencePreview'
+import {type ReferenceInfo} from './types'
+import {useReferenceInfo} from './useReferenceInfo'
 
 /**
  * Used to preview a referenced type

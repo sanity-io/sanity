@@ -1,13 +1,14 @@
 import {
   Box,
-  ResponsiveMarginProps,
-  ResponsivePaddingProps,
   // eslint-disable-next-line no-restricted-imports
   Button, // Button with specific styling and children.
+  type ResponsiveMarginProps,
+  type ResponsivePaddingProps,
 } from '@sanity/ui'
 import {memo, useCallback} from 'react'
+
 import {useSearchState} from '../../../../contexts/search/useSearchState'
-import type {FilterMenuItemFilter} from '../../../../types'
+import {type FilterMenuItemFilter} from '../../../../types'
 import {getFilterKey} from '../../../../utils/filterUtils'
 import {FilterDetails} from '../../common/FilterDetails'
 import {FilterTooltip} from './FilterTooltip'

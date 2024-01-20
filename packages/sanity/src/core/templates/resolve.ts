@@ -1,19 +1,20 @@
 import {
-  ArraySchemaType,
-  InitialValueProperty,
-  InitialValueResolver,
-  InitialValueResolverContext,
+  type ArraySchemaType,
+  type InitialValueProperty,
+  type InitialValueResolver,
+  type InitialValueResolverContext,
   isArraySchemaType,
   isObjectSchemaType,
-  ObjectSchemaType,
-  Schema,
-  SchemaType,
+  type ObjectSchemaType,
+  type Schema,
+  type SchemaType,
 } from '@sanity/types'
 import {isDeepEmpty, randomKey, resolveTypeName} from '@sanity/util/content'
-import {isRecord} from './util/isRecord'
-import {Template} from './types'
-import {validateInitialObjectValue} from './validate'
+
+import {type Template} from './types'
 import deepAssign from './util/deepAssign'
+import {isRecord} from './util/isRecord'
+import {validateInitialObjectValue} from './validate'
 
 /** @internal */
 export type Serializeable<T> = {

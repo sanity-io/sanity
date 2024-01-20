@@ -1,4 +1,4 @@
-import {Box, Flex, Layer, rgba, TextSkeleton, Text, Theme, Card} from '@sanity/ui'
+import {Box, Card, Flex, Layer, rgba, Text, TextSkeleton, type Theme} from '@sanity/ui'
 import styled, {css} from 'styled-components'
 
 interface RootProps {

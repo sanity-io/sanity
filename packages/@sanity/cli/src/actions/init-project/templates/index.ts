@@ -1,4 +1,4 @@
-import type {ProjectTemplate} from '../initProject'
+import {type ProjectTemplate} from '../initProject'
 import blog from './blog'
 import clean from './clean'
 import getStartedTemplate from './getStarted'

@@ -1,4 +1,4 @@
-import {isValidElement, ReactElement} from 'react'
+import {isValidElement, type ReactElement} from 'react'
 import {renderToString} from 'react-dom/server'
 
 /**

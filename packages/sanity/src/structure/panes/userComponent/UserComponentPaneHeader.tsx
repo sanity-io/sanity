@@ -1,7 +1,12 @@
 import {ArrowLeftIcon} from '@sanity/icons'
+
 import {Button} from '../../../ui-components'
-import type {PaneMenuItem, PaneMenuItemGroup, StructureToolPaneActionHandler} from '../../types'
 import {BackLink, PaneHeader, PaneHeaderActions} from '../../components'
+import {
+  type PaneMenuItem,
+  type PaneMenuItemGroup,
+  type StructureToolPaneActionHandler,
+} from '../../types'
 import {useStructureTool} from '../../useStructureTool'
 
 interface UserComponentPaneHeaderProps {

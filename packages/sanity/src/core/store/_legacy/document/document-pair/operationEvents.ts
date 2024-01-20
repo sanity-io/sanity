@@ -1,6 +1,7 @@
 /* eslint-disable max-nested-callbacks */
-import {SanityClient} from '@sanity/client'
-import {asyncScheduler, defer, EMPTY, merge, Observable, of, Subject} from 'rxjs'
+import {type SanityClient} from '@sanity/client'
+import {type Schema} from '@sanity/types'
+import {asyncScheduler, defer, EMPTY, merge, type Observable, of, Subject} from 'rxjs'
 import {
   catchError,
   filter,
@@ -15,21 +16,21 @@ import {
   tap,
   throttleTime,
 } from 'rxjs/operators'
-import {Schema} from '@sanity/types'
-import {IdPair} from '../types'
-import {HistoryStore} from '../../history'
+
+import {type HistoryStore} from '../../history'
+import {type IdPair} from '../types'
 import {memoize} from '../utils/createMemoizer'
-import {OperationArgs, OperationsAPI} from './operations'
-import {operationArgs} from './operationArgs'
-import {del} from './operations/delete'
-import {publish} from './operations/publish'
-import {patch} from './operations/patch'
-import {commit} from './operations/commit'
-import {discardChanges} from './operations/discardChanges'
-import {unpublish} from './operations/unpublish'
-import {duplicate} from './operations/duplicate'
-import {restore} from './operations/restore'
 import {consistencyStatus} from './consistencyStatus'
+import {operationArgs} from './operationArgs'
+import {type OperationArgs, type OperationsAPI} from './operations'
+import {commit} from './operations/commit'
+import {del} from './operations/delete'
+import {discardChanges} from './operations/discardChanges'
+import {duplicate} from './operations/duplicate'
+import {patch} from './operations/patch'
+import {publish} from './operations/publish'
+import {restore} from './operations/restore'
+import {unpublish} from './operations/unpublish'
 
 interface ExecuteArgs {
   operationName: keyof OperationsAPI

@@ -1,5 +1,5 @@
+import {type Path} from '@sanity/types'
 import {createContext} from 'react'
-import {Path} from '@sanity/types'
 
 /** @internal */
 export interface HoveredFieldContextValue {

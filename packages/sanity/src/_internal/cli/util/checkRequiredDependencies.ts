@@ -1,10 +1,11 @@
-import path from 'path'
-import {readFile} from 'fs/promises'
+import {type CliCommandContext, type PackageJson} from '@sanity/cli'
 import execa from 'execa'
-import semver, {SemVer} from 'semver'
-import resolveFrom from 'resolve-from'
+import {readFile} from 'fs/promises'
 import oneline from 'oneline'
-import type {CliCommandContext, PackageJson} from '@sanity/cli'
+import path from 'path'
+import resolveFrom from 'resolve-from'
+import semver, {type SemVer} from 'semver'
+
 import {peerDependencies} from '../../../../package.json'
 
 const defaultStudioManifestProps: PartialPackageManifest = {

@@ -4,8 +4,8 @@ import {GteIcon} from '../../components/filters/icons/GteIcon'
 import {GtIcon} from '../../components/filters/icons/GtIcon'
 import {LteIcon} from '../../components/filters/icons/LteIcon'
 import {LtIcon} from '../../components/filters/icons/LtIcon'
-import {OperatorNumberRangeValue} from './common'
-import {defineSearchOperator, SearchOperatorInput} from './operatorTypes'
+import {type OperatorNumberRangeValue} from './common'
+import {defineSearchOperator, type SearchOperatorInput} from './operatorTypes'
 import {toJSON} from './operatorUtils'
 
 // @todo: don't manually cast `buttonValueComponent` and `inputComponent` once

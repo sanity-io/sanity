@@ -1,5 +1,5 @@
 import {type ComponentFixtures} from '@playwright/experimental-ct-react'
-import type {PlaywrightTestArgs, Locator} from '@playwright/test'
+import {type Locator, type PlaywrightTestArgs} from '@playwright/test'
 
 export const DEFAULT_TYPE_DELAY = 20
 

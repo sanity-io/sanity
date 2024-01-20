@@ -1,6 +1,7 @@
-import {ForwardedRef, forwardRef} from 'react'
-import * as React from 'react'
-import {IntentParameters} from './types'
+import type * as React from 'react'
+import {type ForwardedRef, forwardRef} from 'react'
+
+import {type IntentParameters} from './types'
 import {useIntentLink} from './useIntentLink'
 
 /**

@@ -1,4 +1,4 @@
-import {ActionHook} from './types'
+import {type ActionHook} from './types'
 
 const actionIds = new WeakMap<ActionHook<any, any>, string>()
 

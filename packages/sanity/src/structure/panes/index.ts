@@ -1,3 +1,3 @@
-export * from './StructureToolPane'
-export * from './loading'
 export * from './document'
+export * from './loading'
+export * from './StructureToolPane'

@@ -1,4 +1,4 @@
-import {WorkspaceLike} from './types'
+import {type WorkspaceLike} from './types'
 
 /**
  * Gets a printable identifer for the workspace - either the name, or the index

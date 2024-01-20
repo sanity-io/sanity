@@ -1,33 +1,34 @@
 import {hues} from '@sanity/color'
-import type {CurrentUser} from '@sanity/types'
+import {type CurrentUser} from '@sanity/types'
 import {Box, Card, Flex, Stack, Text, TextSkeleton, useClickOutside} from '@sanity/ui'
-import React, {useCallback, useMemo, useRef, useState} from 'react'
-import styled, {css} from 'styled-components'
-import {commentsLocaleNamespace} from '../../../i18n'
-import {hasCommentMessageValue, useCommentHasChanged} from '../../helpers'
+import {useCallback, useMemo, useRef, useState} from 'react'
 import {
-  CommentDocument,
-  CommentEditPayload,
-  CommentMessage,
-  CommentReactionOption,
-  CommentStatus,
-  CommentsUIMode,
-  MentionOptionsHookValue,
-} from '../../types'
-import {AVATAR_HEIGHT, CommentsAvatar, SpacerAvatar} from '../avatars'
-import {FLEX_GAP} from '../constants'
-import {CommentMessageSerializer} from '../pte'
-import {CommentInput, CommentInputHandle} from '../pte/comment-input'
-import {CommentReactionsBar} from '../reactions'
-import {CommentsListItemContextMenu} from './CommentsListItemContextMenu'
-import {
+  type RelativeTimeOptions,
   useDateTimeFormat,
   useDidUpdate,
   useRelativeTime,
   useTranslation,
   useUser,
-  type RelativeTimeOptions,
 } from 'sanity'
+import styled, {css} from 'styled-components'
+
+import {commentsLocaleNamespace} from '../../../i18n'
+import {hasCommentMessageValue, useCommentHasChanged} from '../../helpers'
+import {
+  type CommentDocument,
+  type CommentEditPayload,
+  type CommentMessage,
+  type CommentReactionOption,
+  type CommentStatus,
+  type CommentsUIMode,
+  type MentionOptionsHookValue,
+} from '../../types'
+import {AVATAR_HEIGHT, CommentsAvatar, SpacerAvatar} from '../avatars'
+import {FLEX_GAP} from '../constants'
+import {CommentMessageSerializer} from '../pte'
+import {CommentInput, type CommentInputHandle} from '../pte/comment-input'
+import {CommentReactionsBar} from '../reactions'
+import {CommentsListItemContextMenu} from './CommentsListItemContextMenu'
 
 const stopPropagation = (e: React.MouseEvent<HTMLDivElement>) => e.stopPropagation()
 

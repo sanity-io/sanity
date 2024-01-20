@@ -1,5 +1,6 @@
 import {isArrayOfObjectsSchemaType, isObjectSchemaType} from '@sanity/types'
-import {ArrayOfObjectsFormNode, BaseFormNode, ObjectFormNode} from './nodes'
+
+import {type ArrayOfObjectsFormNode, type BaseFormNode, type ObjectFormNode} from './nodes'
 
 /** @internal */
 export function isObjectFormNode(formNode: BaseFormNode): formNode is ObjectFormNode {

@@ -1,5 +1,5 @@
 import {Heading} from '@sanity/ui'
-import {ReactNode} from 'react'
+import {type ReactNode} from 'react'
 import styled from 'styled-components'
 
 const headingSizes: Record<string, number | undefined> = {

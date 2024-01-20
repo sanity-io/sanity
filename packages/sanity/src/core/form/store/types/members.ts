@@ -1,7 +1,8 @@
-import {ArraySchemaType} from '@sanity/types'
-import {FieldsetState} from './fieldsetState'
-import {BaseFormNode, ObjectArrayFormNode, PrimitiveFormNode} from './nodes'
-import {ArrayItemError, FieldError} from './memberErrors'
+import {type ArraySchemaType} from '@sanity/types'
+
+import {type FieldsetState} from './fieldsetState'
+import {type ArrayItemError, type FieldError} from './memberErrors'
+import {type BaseFormNode, type ObjectArrayFormNode, type PrimitiveFormNode} from './nodes'
 
 /** @public */
 export type ObjectMember = FieldMember | FieldSetMember | FieldError

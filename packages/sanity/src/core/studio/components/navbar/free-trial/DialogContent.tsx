@@ -1,10 +1,11 @@
+import {CloseIcon} from '@sanity/icons'
 import {Box, Flex, Heading} from '@sanity/ui'
 import styled from 'styled-components'
-import {CloseIcon} from '@sanity/icons'
-import {useColorSchemeValue} from '../../../colorScheme'
+
 import {Button, Dialog} from '../../../../../ui-components'
+import {useColorSchemeValue} from '../../../colorScheme'
 import {UpsellDescriptionSerializer} from '../../../upsell'
-import {FreeTrialDialog} from './types'
+import {type FreeTrialDialog} from './types'
 
 /**
  * Absolute positioned button to close the dialog.

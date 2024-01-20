@@ -1,7 +1,8 @@
 import {useContext} from 'react'
+
 import {
   ActiveWorkspaceMatcherContext,
-  ActiveWorkspaceMatcherContextValue,
+  type ActiveWorkspaceMatcherContextValue,
 } from './ActiveWorkspaceMatcherContext'
 
 /** @internal */

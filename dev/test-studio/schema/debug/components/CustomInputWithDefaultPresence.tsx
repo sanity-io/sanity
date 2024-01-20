@@ -1,6 +1,6 @@
-import {ForwardedRef, forwardRef, useCallback} from 'react'
 import {range} from 'lodash'
-import {FieldPresence, ObjectInputProps, PresenceScope, set, setIfMissing} from 'sanity'
+import React, {type ForwardedRef, forwardRef, useCallback} from 'react'
+import {FieldPresence, type ObjectInputProps, PresenceScope, set, setIfMissing} from 'sanity'
 
 export const CustomInputWithDefaultPresence = forwardRef(function CustomInputWithDefaultPresence(
   props: ObjectInputProps<Record<string, any>>,

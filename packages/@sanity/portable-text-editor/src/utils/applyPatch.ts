@@ -1,26 +1,33 @@
 /* eslint-disable max-statements */
-import {Transforms, Element, Path as SlatePath, Descendant, Text, Node} from 'slate'
 import {
   applyPatches as diffMatchPatchApplyPatches,
   cleanupEfficiency,
-  makeDiff,
-  parsePatch,
   DIFF_DELETE,
   DIFF_EQUAL,
   DIFF_INSERT,
+  makeDiff,
+  parsePatch,
 } from '@sanity/diff-match-patch'
 import {
-  type Path,
   type KeyedSegment,
+  type Path,
   type PathSegment,
   type PortableTextBlock,
   type PortableTextChild,
 } from '@sanity/types'
-import type {Patch, InsertPatch, UnsetPatch, SetPatch, DiffMatchPatch} from '../types/patch'
+import {type Descendant, Element, type Node, type Path as SlatePath, Text, Transforms} from 'slate'
+
 import {applyAll} from '../patch/applyPatch'
-import {PortableTextMemberSchemaTypes, PortableTextSlateEditor} from '../types/editor'
-import {toSlateValue} from './values'
+import {type PortableTextMemberSchemaTypes, type PortableTextSlateEditor} from '../types/editor'
+import {
+  type DiffMatchPatch,
+  type InsertPatch,
+  type Patch,
+  type SetPatch,
+  type UnsetPatch,
+} from '../types/patch'
 import {debugWithName} from './debug'
+import {toSlateValue} from './values'
 import {KEY_TO_SLATE_ELEMENT} from './weakMaps'
 
 const debug = debugWithName('applyPatches')

@@ -5,8 +5,9 @@ import {
   useLayer,
 } from '@sanity/ui'
 import {useCallback, useState} from 'react'
+import {type DocumentActionPopoverDialogProps} from 'sanity'
+
 import {POPOVER_FALLBACK_PLACEMENTS} from './constants'
-import {DocumentActionPopoverDialogProps} from 'sanity'
 
 export function PopoverDialog(props: {
   dialog: DocumentActionPopoverDialogProps

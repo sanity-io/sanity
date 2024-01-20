@@ -1,5 +1,5 @@
 import {Card, Stack, Text} from '@sanity/ui'
-import {RenderCustomMarkers} from 'sanity'
+import {type RenderCustomMarkers} from 'sanity'
 
 export const renderCustomMarkers: RenderCustomMarkers = (markers) => {
   return (

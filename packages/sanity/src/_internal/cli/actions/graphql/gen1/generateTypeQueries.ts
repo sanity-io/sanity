@@ -1,7 +1,13 @@
-import pluralize from 'pluralize-esm'
 import {startCase, upperFirst} from 'lodash'
-import type {ConvertedType, ConvertedUnion, InputObjectType, QueryDefinition} from '../types'
+import pluralize from 'pluralize-esm'
+
 import {isNonUnion} from '../helpers'
+import {
+  type ConvertedType,
+  type ConvertedUnion,
+  type InputObjectType,
+  type QueryDefinition,
+} from '../types'
 
 function pluralizeTypeName(name: string): string {
   const words = startCase(name).split(' ')

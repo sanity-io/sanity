@@ -1,4 +1,5 @@
 import {useEffect, useState} from 'react'
+
 import {useClient} from '../../../hooks'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
 

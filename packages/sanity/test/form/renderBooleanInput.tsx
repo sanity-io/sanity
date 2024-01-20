@@ -1,8 +1,9 @@
-import * as React from 'react'
-import {BooleanSchemaType, FieldDefinition} from '@sanity/types'
-import {BooleanInputProps, PrimitiveInputElementProps} from '../../src/core'
-import {renderInput, TestRenderInputProps} from './renderInput'
-import {TestRenderProps} from './types'
+import {type BooleanSchemaType, type FieldDefinition} from '@sanity/types'
+import type * as React from 'react'
+
+import {type BooleanInputProps, type PrimitiveInputElementProps} from '../../src/core'
+import {renderInput, type TestRenderInputProps} from './renderInput'
+import {type TestRenderProps} from './types'
 
 const noopRenderDefault = () => <></>
 

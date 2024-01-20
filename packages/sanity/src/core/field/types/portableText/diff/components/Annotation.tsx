@@ -1,16 +1,24 @@
 import {ChevronDownIcon} from '@sanity/icons'
-import {useClickOutside, Flex, Text} from '@sanity/ui'
-import {toString} from '@sanity/util/paths'
 import {isKeySegment, type ObjectSchemaType, type Path, type PortableTextChild} from '@sanity/types'
-import type {ReactNode, MouseEvent} from 'react'
-import {useCallback, useContext, useEffect, useMemo, useState} from 'react'
+import {Flex, Text, useClickOutside} from '@sanity/ui'
+import {toString} from '@sanity/util/paths'
+import {
+  type MouseEvent,
+  type ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react'
 import styled from 'styled-components'
+
 import {Popover} from '../../../../../../ui-components'
+import {ConnectorContext, useReportedValues} from '../../../../../changeIndicators'
 import {useTranslation} from '../../../../../i18n'
 import {ChangeList, DiffContext, DiffTooltip, useDiffAnnotationColor} from '../../../../diff'
-import type {ObjectDiff} from '../../../../types'
+import {type ObjectDiff} from '../../../../types'
 import {isEmptyObject} from '../helpers'
-import {ConnectorContext, useReportedValues} from '../../../../../changeIndicators'
 import {InlineBox, InlineText, PopoverContainer, PreviewContainer} from './styledComponents'
 
 interface AnnotationProps {

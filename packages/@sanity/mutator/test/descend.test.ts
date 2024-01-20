@@ -1,7 +1,7 @@
+import {descend} from '../src/jsonpath/descend'
 import {parseJsonPath} from '../src/jsonpath/parse'
 import {toPath} from '../src/jsonpath/toPath'
-import {descend} from '../src/jsonpath/descend'
-import {Expr, PathExpr} from '../src/jsonpath/types'
+import {type Expr, type PathExpr} from '../src/jsonpath/types'
 
 function headTailToStr(headTail: [Expr | null, PathExpr | null]): string {
   if (!headTail[0]) {

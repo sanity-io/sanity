@@ -1,10 +1,11 @@
 import isHotkey from 'is-hotkey'
-import {ElementType, createElement, useCallback, useMemo, useState} from 'react'
 import * as React from 'react'
-import {ActionStateDialog} from '../statusBar'
+import {createElement, type ElementType, useCallback, useMemo, useState} from 'react'
+import {type DocumentActionDescription, type DocumentActionProps, LegacyLayerProvider} from 'sanity'
+
 import {RenderActionCollectionState} from '../../../components'
+import {ActionStateDialog} from '../statusBar'
 import {useDocumentPane} from '../useDocumentPane'
-import {DocumentActionDescription, DocumentActionProps, LegacyLayerProvider} from 'sanity'
 
 export interface KeyboardShortcutResponderProps {
   actionsBoxElement: HTMLElement | null

@@ -1,6 +1,7 @@
-import leven from 'leven'
 import chalk from 'chalk'
-import {CliCommandDefinition, CliCommandGroupDefinition} from '../types'
+import leven from 'leven'
+
+import {type CliCommandDefinition, type CliCommandGroupDefinition} from '../types'
 
 const commonMistakes: Record<string, string | undefined> = {get: 'list'}
 const levenThreshold = 3

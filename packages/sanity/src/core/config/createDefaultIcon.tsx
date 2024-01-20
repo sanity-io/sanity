@@ -1,6 +1,6 @@
-import styled from 'styled-components'
 import {COLOR_HUES, hues} from '@sanity/color'
-import {darken, lighten, hasBadContrast, readableColor} from 'color2k'
+import {darken, hasBadContrast, lighten, readableColor} from 'color2k'
+import styled from 'styled-components'
 
 function pseudoRandomNumber(seed: string) {
   const hashCode = seed

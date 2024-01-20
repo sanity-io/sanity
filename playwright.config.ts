@@ -1,5 +1,6 @@
 import {defineConfig} from '@playwright/test'
 import {createPlaywrightConfig} from '@sanity/test'
+
 import {loadEnvFiles} from './scripts/utils/loadEnvFiles'
 import {readBoolEnv, readEnv} from './test/e2e/helpers/envVars'
 

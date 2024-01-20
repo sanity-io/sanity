@@ -1,19 +1,20 @@
-import {isBooleanSchemaType, isNumberSchemaType, SchemaType} from '@sanity/types'
-import {ChangeEvent, useCallback, useMemo, useRef, useState, FocusEvent} from 'react'
-import {FIXME} from '../../../../FIXME'
-import {ArrayOfPrimitivesItemMember} from '../../../store'
+import {isBooleanSchemaType, isNumberSchemaType, type SchemaType} from '@sanity/types'
+import {type ChangeEvent, type FocusEvent, useCallback, useMemo, useRef, useState} from 'react'
+
+import {type FIXME} from '../../../../FIXME'
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
 import {getEmptyValue} from '../../../inputs/arrays/ArrayOfPrimitivesInput/getEmptyValue'
-import {
-  PrimitiveInputProps,
-  PrimitiveItemProps,
-  RenderArrayOfPrimitivesItemCallback,
-  RenderInputCallback,
-} from '../../../types'
-import {insert, PatchArg, PatchEvent, set, unset} from '../../../patch'
+import {insert, type PatchArg, PatchEvent, set, unset} from '../../../patch'
+import {type ArrayOfPrimitivesItemMember} from '../../../store'
 import {useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
-import {resolveNativeNumberInputValue} from '../../common/resolveNativeNumberInputValue'
+import {
+  type PrimitiveInputProps,
+  type PrimitiveItemProps,
+  type RenderArrayOfPrimitivesItemCallback,
+  type RenderInputCallback,
+} from '../../../types'
 import {createDescriptionId} from '../../common/createDescriptionId'
+import {resolveNativeNumberInputValue} from '../../common/resolveNativeNumberInputValue'
 
 /**
  *

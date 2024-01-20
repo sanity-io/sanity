@@ -1,5 +1,4 @@
-import {DiffComponent, DiffComponentOptions} from '../../types'
-
+import {type DiffComponent, type DiffComponentOptions} from '../../types'
 import {BooleanFieldDiff} from '../../types/boolean/diff'
 import {DatetimeFieldDiff} from '../../types/datetime/diff'
 import {FileFieldDiff} from '../../types/file/diff'

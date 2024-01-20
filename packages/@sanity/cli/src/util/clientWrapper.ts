@@ -1,14 +1,15 @@
-import path from 'path'
-import chalk from 'chalk'
 import {
+  type ClientError,
   createClient,
   requester as defaultRequester,
-  type ClientError,
   type SanityClient,
   type ServerError,
 } from '@sanity/client'
 import {generateHelpUrl} from '@sanity/generate-help-url'
-import type {CliApiConfig} from '../types'
+import chalk from 'chalk'
+import path from 'path'
+
+import {type CliApiConfig} from '../types'
 import {getUserConfig} from './getUserConfig'
 
 const apiHosts: Record<string, string | undefined> = {

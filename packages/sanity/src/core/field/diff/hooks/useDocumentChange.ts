@@ -1,7 +1,8 @@
 import {useContext} from 'react'
+
 import {
   DocumentChangeContext,
-  DocumentChangeContextInstance,
+  type DocumentChangeContextInstance,
 } from '../contexts/DocumentChangeContext'
 
 /** @internal */

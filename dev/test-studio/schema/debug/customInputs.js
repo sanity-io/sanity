@@ -1,7 +1,7 @@
-import CustomStringInput from './components/CustomStringInput'
-import CustomMyObjectInput from './components/CustomMyObjectInput'
-import CustomFontStringInput from './components/CustomFontStringInput'
 import {AuthorReferenceInput} from './components/AuthorReferenceInput'
+import CustomFontStringInput from './components/CustomFontStringInput'
+import CustomMyObjectInput from './components/CustomMyObjectInput'
+import CustomStringInput from './components/CustomStringInput'
 
 export default {
   name: 'customInputsTest',

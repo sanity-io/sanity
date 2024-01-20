@@ -1,14 +1,14 @@
+import {type IdPair} from '../../types'
 import {emitOperation} from '../operationEvents'
-import {IdPair} from '../../types'
-import {del} from './delete'
-import {publish} from './publish'
-import {patch} from './patch'
 import {commit} from './commit'
+import {del} from './delete'
 import {discardChanges} from './discardChanges'
-import {unpublish} from './unpublish'
 import {duplicate} from './duplicate'
+import {patch} from './patch'
+import {publish} from './publish'
 import {restore} from './restore'
-import {Operation, OperationArgs, OperationImpl, OperationsAPI} from './types'
+import {type Operation, type OperationArgs, type OperationImpl, type OperationsAPI} from './types'
+import {unpublish} from './unpublish'
 
 function createOperationGuard(opName: string): Operation<any[], 'NOT_READY'> {
   return {

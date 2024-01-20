@@ -1,4 +1,4 @@
-import {defineConfig, defineType, defineField} from 'sanity'
+import {defineConfig, defineField, defineType} from 'sanity'
 
 export default defineConfig({
   projectId: 'ppsg7ml5',

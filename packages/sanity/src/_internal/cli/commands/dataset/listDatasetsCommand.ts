@@ -1,4 +1,5 @@
-import type {CliCommandDefinition} from '@sanity/cli'
+import {type CliCommandDefinition} from '@sanity/cli'
+
 import {listAliasesHandler} from './alias/listAliasesHandler'
 
 const listDatasetsCommand: CliCommandDefinition = {

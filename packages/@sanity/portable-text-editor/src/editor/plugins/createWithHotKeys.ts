@@ -1,16 +1,17 @@
 /* eslint-disable max-statements */
 /* eslint-disable complexity */
-import {KeyboardEvent} from 'react'
-import {Editor, Transforms, Path, Range, Node} from 'slate'
-import isHotkey from 'is-hotkey'
-import {ReactEditor} from 'slate-react'
 import {isPortableTextSpan, isPortableTextTextBlock} from '@sanity/types'
-import {PortableTextMemberSchemaTypes, PortableTextSlateEditor} from '../../types/editor'
-import {HotkeyOptions} from '../../types/options'
+import isHotkey from 'is-hotkey'
+import {type KeyboardEvent} from 'react'
+import {Editor, Node, Path, Range, Transforms} from 'slate'
+import {type ReactEditor} from 'slate-react'
+
+import {type PortableTextMemberSchemaTypes, type PortableTextSlateEditor} from '../../types/editor'
+import {type HotkeyOptions} from '../../types/options'
+import {type SlateTextBlock, type VoidElement} from '../../types/slate'
 import {debugWithName} from '../../utils/debug'
 import {toSlateValue} from '../../utils/values'
-import {PortableTextEditor} from '../PortableTextEditor'
-import {SlateTextBlock, VoidElement} from '../../types/slate'
+import {type PortableTextEditor} from '../PortableTextEditor'
 
 const debug = debugWithName('plugin:withHotKeys')
 

@@ -1,5 +1,6 @@
-import {ReactElement, ComponentType} from 'react'
-import {Tool} from '../types'
+import {type ComponentType, type ReactElement} from 'react'
+
+import {type Tool} from '../types'
 
 /**
  * @hidden

@@ -1,10 +1,9 @@
-import {from, isObservable, Observable, of as observableOf, Subscribable} from 'rxjs'
-
+import {from, isObservable, type Observable, of as observableOf} from 'rxjs'
 import {publishReplay, refCount, switchMap} from 'rxjs/operators'
-
-import {PaneNode, RouterPaneSiblingContext, UnresolvedPaneNode} from '../types'
-import {PaneResolutionError} from './PaneResolutionError'
 import {isRecord} from 'sanity'
+
+import {type PaneNode, type RouterPaneSiblingContext, type UnresolvedPaneNode} from '../types'
+import {PaneResolutionError} from './PaneResolutionError'
 
 interface Serializable {
   serialize: (...args: never[]) => unknown

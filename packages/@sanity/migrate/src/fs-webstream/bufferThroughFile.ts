@@ -1,4 +1,5 @@
-import {FileHandle, open, unlink} from 'node:fs/promises'
+import {type FileHandle, open, unlink} from 'node:fs/promises'
+
 import baseDebug from '../debug'
 
 const debug = baseDebug.extend('bufferThroughFile')

@@ -1,27 +1,28 @@
-import {CurrentUser} from '@sanity/types'
+import {type CurrentUser} from '@sanity/types'
 import {
-  Flex,
-  Stack,
   // eslint-disable-next-line no-restricted-imports
   Button, // Button with specific styling and children behavior.
+  Flex,
+  Stack,
 } from '@sanity/ui'
-import {useCallback, useMemo} from 'react'
-import * as React from 'react'
 import {uuid} from '@sanity/uuid'
+import type * as React from 'react'
+import {useCallback, useMemo} from 'react'
+import {useTranslation} from 'sanity'
 import styled, {css} from 'styled-components'
+
+import {commentsLocaleNamespace} from '../../../i18n'
+import {type CommentsSelectedPath} from '../../context'
 import {
-  CommentMessage,
-  CommentCreatePayload,
-  MentionOptionsHookValue,
-  CommentListBreadcrumbs,
-  CommentsUIMode,
+  type CommentCreatePayload,
+  type CommentListBreadcrumbs,
+  type CommentMessage,
+  type CommentsUIMode,
+  type MentionOptionsHookValue,
 } from '../../types'
 import {CommentBreadcrumbs} from '../CommentBreadcrumbs'
-import {CommentsSelectedPath} from '../../context'
-import {commentsLocaleNamespace} from '../../../i18n'
 import {CreateNewThreadInput} from './CreateNewThreadInput'
 import {ThreadCard} from './styles'
-import {useTranslation} from 'sanity'
 
 const HeaderFlex = styled(Flex)`
   min-height: 25px;

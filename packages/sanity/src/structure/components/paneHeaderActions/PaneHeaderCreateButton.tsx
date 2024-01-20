@@ -1,25 +1,25 @@
 import {AddIcon} from '@sanity/icons'
-import {useMemo, forwardRef} from 'react'
-import * as React from 'react'
+import {type Schema} from '@sanity/types'
 import {Menu} from '@sanity/ui'
-import {Schema} from '@sanity/types'
-import {Button, MenuButton, PopoverProps, MenuItem} from '../../../ui-components'
-import {IntentButton} from '../IntentButton'
-import {structureLocaleNamespace} from '../../i18n'
-import {InsufficientPermissionsMessageTooltip} from './InsufficientPermissionsMessageTooltip'
-import {IntentLink} from 'sanity/router'
+import {type ComponentProps, type ForwardedRef, forwardRef, useMemo} from 'react'
 import {
-  useTemplatePermissions,
-  TemplatePermissionsResult,
-  Template,
-  InitialValueTemplateItem,
+  type InitialValueTemplateItem,
+  type Template,
+  type TemplatePermissionsResult,
+  useGetI18nText,
   useSchema,
+  useTemplatePermissions,
   useTemplates,
   useTranslation,
-  useGetI18nText,
 } from 'sanity'
+import {IntentLink} from 'sanity/router'
 
-export type PaneHeaderIntentProps = React.ComponentProps<typeof IntentButton>['intent']
+import {Button, MenuButton, MenuItem, type PopoverProps} from '../../../ui-components'
+import {structureLocaleNamespace} from '../../i18n'
+import {IntentButton} from '../IntentButton'
+import {InsufficientPermissionsMessageTooltip} from './InsufficientPermissionsMessageTooltip'
+
+export type PaneHeaderIntentProps = ComponentProps<typeof IntentButton>['intent']
 
 const POPOVER_PROPS: PopoverProps = {
   constrainSize: true,
@@ -146,7 +146,7 @@ export function PaneHeaderCreateButton({templateItems}: PaneHeaderCreateButtonPr
             const template = templates.find((i) => i.id === item.templateId)
             if (!template || !intent) return null
 
-            const Link = forwardRef((linkProps, linkRef: React.ForwardedRef<never>) =>
+            const Link = forwardRef((linkProps, linkRef: ForwardedRef<never>) =>
               disabled ? (
                 <button type="button" disabled {...linkProps} ref={linkRef} />
               ) : (

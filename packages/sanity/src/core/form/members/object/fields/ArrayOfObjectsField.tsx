@@ -1,39 +1,40 @@
-import {useCallback, useEffect, useMemo, useRef, FocusEvent} from 'react'
-import {Path, SchemaType} from '@sanity/types'
-import {map, tap} from 'rxjs/operators'
-import {Subscription} from 'rxjs'
+import {type Path, type SchemaType} from '@sanity/types'
 import {useToast} from '@sanity/ui'
-import {ArrayOfObjectsFormNode, FieldMember} from '../../../store'
-import {
-  ArrayFieldProps,
-  ArrayInputInsertEvent,
-  ArrayInputMoveItemEvent,
-  ArrayOfObjectsInputProps,
-  ObjectItem,
-  RenderAnnotationCallback,
-  RenderArrayOfObjectsItemCallback,
-  RenderBlockCallback,
-  RenderFieldCallback,
-  RenderInputCallback,
-  RenderPreviewCallback,
-  UploadEvent,
-} from '../../../types'
-import {FormCallbacksProvider, useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
-import {useDidUpdate} from '../../../hooks/useDidUpdate'
-import {insert, PatchArg, PatchEvent, setIfMissing, unset} from '../../../patch'
-import {ensureKey} from '../../../utils/ensureKey'
-import {FileLike, UploadProgressEvent} from '../../../studio/uploads/types'
-import {createProtoArrayValue} from '../../../inputs/arrays/ArrayOfObjectsInput/createProtoArrayValue'
+import React, {type FocusEvent, useCallback, useEffect, useMemo, useRef} from 'react'
+import {type Subscription} from 'rxjs'
+import {map, tap} from 'rxjs/operators'
+
 import {useClient} from '../../../../hooks'
-import {resolveUploader as defaultResolveUploader} from '../../../studio/uploads/resolveUploader'
-import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
-import {useFormBuilder} from '../../../useFormBuilder'
-import * as is from '../../../utils/is'
 import {useResolveInitialValueForType} from '../../../../store'
-import {resolveInitialArrayValues} from '../../common/resolveInitialArrayValues'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
+import {useDidUpdate} from '../../../hooks/useDidUpdate'
+import {createProtoArrayValue} from '../../../inputs/arrays/ArrayOfObjectsInput/createProtoArrayValue'
+import {insert, type PatchArg, PatchEvent, setIfMissing, unset} from '../../../patch'
 import {applyAll} from '../../../patch/applyPatch'
-import {createDescriptionId} from '../../common/createDescriptionId'
+import {type ArrayOfObjectsFormNode, type FieldMember} from '../../../store'
 import {useDocumentFieldActions} from '../../../studio/contexts/DocumentFieldActions'
+import {FormCallbacksProvider, useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
+import {resolveUploader as defaultResolveUploader} from '../../../studio/uploads/resolveUploader'
+import {type FileLike, type UploadProgressEvent} from '../../../studio/uploads/types'
+import {
+  type ArrayFieldProps,
+  type ArrayInputInsertEvent,
+  type ArrayInputMoveItemEvent,
+  type ArrayOfObjectsInputProps,
+  type ObjectItem,
+  type RenderAnnotationCallback,
+  type RenderArrayOfObjectsItemCallback,
+  type RenderBlockCallback,
+  type RenderFieldCallback,
+  type RenderInputCallback,
+  type RenderPreviewCallback,
+  type UploadEvent,
+} from '../../../types'
+import {useFormBuilder} from '../../../useFormBuilder'
+import {ensureKey} from '../../../utils/ensureKey'
+import * as is from '../../../utils/is'
+import {createDescriptionId} from '../../common/createDescriptionId'
+import {resolveInitialArrayValues} from '../../common/resolveInitialArrayValues'
 
 /**
  * Responsible for creating inputProps and fieldProps to pass to ´renderInput´ and ´renderField´ for an array input

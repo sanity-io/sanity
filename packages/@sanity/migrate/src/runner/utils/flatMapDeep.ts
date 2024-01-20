@@ -1,5 +1,6 @@
-import {Path, PathSegment} from '@sanity/types'
-import {JsonArray, JsonObject, JsonValue} from '../../json'
+import {type Path, type PathSegment} from '@sanity/types'
+
+import {type JsonArray, type JsonObject, type JsonValue} from '../../json'
 import {getValueType} from './getValueType'
 
 type SkipMarker = {_: 'SKIP_MARKER'}

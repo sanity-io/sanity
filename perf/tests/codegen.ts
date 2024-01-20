@@ -1,6 +1,6 @@
-import {createSanitySessionCookie} from './runner/utils/createSanitySessionCookie'
 import {STUDIO_PROJECT_ID} from './config/constants'
 import {readEnv} from './config/envVars'
+import {createSanitySessionCookie} from './runner/utils/createSanitySessionCookie'
 
 const {chromium} = require('@playwright/test')
 

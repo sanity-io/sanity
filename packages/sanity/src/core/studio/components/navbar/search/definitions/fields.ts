@@ -1,14 +1,15 @@
 import {
-  ArrayDefinition,
-  ObjectDefinition,
-  Schema,
-  SchemaTypeDefinition,
-  StringDefinition,
+  type ArrayDefinition,
+  type ObjectDefinition,
+  type Schema,
+  type SchemaTypeDefinition,
+  type StringDefinition,
 } from '@sanity/types'
 import startCase from 'lodash/startCase'
+
 import {sanitizeFieldValue} from '../utils/sanitizeField'
 import {getSearchableOmnisearchTypes} from '../utils/selectors'
-import {getSupportedFieldTypes, SearchFilterDefinition} from './filters'
+import {getSupportedFieldTypes, type SearchFilterDefinition} from './filters'
 
 export const MAX_OBJECT_TRAVERSAL_DEPTH = 3
 

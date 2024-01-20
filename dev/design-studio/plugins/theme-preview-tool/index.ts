@@ -1,5 +1,6 @@
-import {definePlugin} from 'sanity'
 import {IceCreamIcon} from '@sanity/icons'
+import {definePlugin} from 'sanity'
+
 import {ColorCanvas} from './ColorCanvas'
 
 export function themePreviewTool() {

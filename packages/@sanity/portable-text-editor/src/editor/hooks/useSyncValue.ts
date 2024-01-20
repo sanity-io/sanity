@@ -1,18 +1,19 @@
 /* eslint-disable max-nested-callbacks */
-import {useCallback, useMemo, useRef} from 'react'
-import {PortableTextBlock} from '@sanity/types'
+import {type PortableTextBlock} from '@sanity/types'
 import {debounce, isEqual} from 'lodash'
-import {Editor, Transforms, Node, Descendant, Text} from 'slate'
+import {useCallback, useMemo, useRef} from 'react'
+import {type Descendant, Editor, type Node, Text, Transforms} from 'slate'
 import {useSlate} from 'slate-react'
-import {PortableTextEditor} from '../PortableTextEditor'
-import {EditorChange, PortableTextSlateEditor} from '../../types/editor'
+
+import {type EditorChange, type PortableTextSlateEditor} from '../../types/editor'
 import {debugWithName} from '../../utils/debug'
-import {VOID_CHILD_KEY, toSlateValue} from '../../utils/values'
-import {withoutSaving} from '../plugins/createWithUndoRedo'
-import {withPreserveKeys} from '../../utils/withPreserveKeys'
-import {withoutPatching} from '../../utils/withoutPatching'
 import {validateValue} from '../../utils/validateValue'
+import {toSlateValue, VOID_CHILD_KEY} from '../../utils/values'
 import {isChangingLocally, isChangingRemotely, withRemoteChanges} from '../../utils/withChanges'
+import {withoutPatching} from '../../utils/withoutPatching'
+import {withPreserveKeys} from '../../utils/withPreserveKeys'
+import {withoutSaving} from '../plugins/createWithUndoRedo'
+import {type PortableTextEditor} from '../PortableTextEditor'
 
 const debug = debugWithName('hook:useSyncValue')
 

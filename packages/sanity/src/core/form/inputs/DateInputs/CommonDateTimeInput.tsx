@@ -1,11 +1,19 @@
 /* eslint-disable no-nested-ternary */
 
-import {FocusEvent, ForwardedRef, forwardRef, useCallback, useEffect, useState} from 'react'
 import {TextInput, useForwardedRef} from '@sanity/ui'
+import {
+  type FocusEvent,
+  type ForwardedRef,
+  forwardRef,
+  useCallback,
+  useEffect,
+  useState,
+} from 'react'
+
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {type CalendarLabels} from './base/calendar/types'
 import {DateTimeInput} from './base/DateTimeInput'
-import {ParseResult} from './types'
-import {CalendarLabels} from './base/calendar/types'
+import {type ParseResult} from './types'
 
 export interface CommonDateTimeInputProps {
   id: string

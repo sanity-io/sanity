@@ -1,14 +1,15 @@
 import {ArrowLeftIcon, ChevronRightIcon} from '@sanity/icons'
 import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
+import type * as React from 'react'
 import {useCallback} from 'react'
-import * as React from 'react'
+import {ContextMenuButton} from 'sanity'
+
 import {Button} from '../../../../../../ui-components'
-import {usePaneLayout} from '../../../usePaneLayout'
 import {Pane} from '../../../Pane'
 import {PaneContent} from '../../../PaneContent'
 import {PaneHeader} from '../../../PaneHeader'
-import {ListPaneNode} from '../types'
-import {ContextMenuButton} from 'sanity'
+import {usePaneLayout} from '../../../usePaneLayout'
+import {type ListPaneNode} from '../types'
 
 export function ListPane(props: {
   active: boolean

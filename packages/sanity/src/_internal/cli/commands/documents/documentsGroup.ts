@@ -1,4 +1,4 @@
-import type {CliCommandGroupDefinition} from '@sanity/cli'
+import {type CliCommandGroupDefinition} from '@sanity/cli'
 
 const documentsGroup: CliCommandGroupDefinition = {
   name: 'documents',

@@ -1,6 +1,7 @@
 /* eslint-disable no-sync */
-import path from 'path'
 import fs from 'fs'
+import path from 'path'
+
 import {debug} from '../debug'
 
 /**

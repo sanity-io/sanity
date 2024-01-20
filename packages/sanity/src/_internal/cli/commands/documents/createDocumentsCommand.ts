@@ -1,18 +1,18 @@
-import path from 'path'
-import fs from 'fs/promises'
-import os from 'os'
-import type {CliCommandDefinition} from '@sanity/cli'
-import type {
-  SanityClient,
-  MultipleMutationResult,
-  Mutation,
-  IdentifiedSanityDocumentStub,
+import {type CliCommandDefinition} from '@sanity/cli'
+import {
+  type IdentifiedSanityDocumentStub,
+  type MultipleMutationResult,
+  type Mutation,
+  type SanityClient,
 } from '@sanity/client'
-import json5 from 'json5'
-import execa from 'execa'
-import chokidar from 'chokidar'
-import {isPlainObject, isEqual, noop} from 'lodash'
 import {uuid} from '@sanity/uuid'
+import chokidar from 'chokidar'
+import execa from 'execa'
+import fs from 'fs/promises'
+import json5 from 'json5'
+import {isEqual, isPlainObject, noop} from 'lodash'
+import os from 'os'
+import path from 'path'
 
 type MutationOperationName = 'create' | 'createOrReplace' | 'createIfNotExists'
 

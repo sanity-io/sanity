@@ -1,4 +1,4 @@
-import {OperationImpl} from './types'
+import {type OperationImpl} from './types'
 
 type DisabledReason = 'NO_CHANGES' | 'NOT_PUBLISHED'
 

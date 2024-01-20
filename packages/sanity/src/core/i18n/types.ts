@@ -1,4 +1,4 @@
-import type {TFunction} from 'i18next'
+import {type TFunction} from 'i18next'
 
 /**
  * An object of locale resources, or a string array of resources

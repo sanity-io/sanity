@@ -1,30 +1,31 @@
 import {PortableTextEditor, usePortableTextEditor} from '@sanity/portable-text-editor'
-import type {ObjectSchemaType, Path, PortableTextObject} from '@sanity/types'
-import {ComponentType, ReactElement, useCallback, useMemo, useState} from 'react'
+import {type ObjectSchemaType, type Path, type PortableTextObject} from '@sanity/types'
 import {isEqual} from '@sanity/util/paths'
+import React, {type ComponentType, type ReactElement, useCallback, useMemo, useState} from 'react'
+
 import {Tooltip} from '../../../../../ui-components'
 import {pathToString} from '../../../../field'
-import type {
-  BlockAnnotationProps,
-  RenderAnnotationCallback,
-  RenderArrayOfObjectsItemCallback,
-  RenderBlockCallback,
-  RenderCustomMarkers,
-  RenderFieldCallback,
-  RenderInputCallback,
-  RenderPreviewCallback,
+import {useTranslation} from '../../../../i18n'
+import {EMPTY_ARRAY} from '../../../../util'
+import {useChildPresence} from '../../../studio/contexts/Presence'
+import {
+  type BlockAnnotationProps,
+  type RenderAnnotationCallback,
+  type RenderArrayOfObjectsItemCallback,
+  type RenderBlockCallback,
+  type RenderCustomMarkers,
+  type RenderFieldCallback,
+  type RenderInputCallback,
+  type RenderPreviewCallback,
 } from '../../../types'
-import {DefaultMarkers} from '../_legacyDefaultParts/Markers'
 import {useFormBuilder} from '../../../useFormBuilder'
+import {DefaultMarkers} from '../_legacyDefaultParts/Markers'
+import {debugRender} from '../debugRender'
 import {useMemberValidation} from '../hooks/useMemberValidation'
 import {usePortableTextMarkers} from '../hooks/usePortableTextMarkers'
 import {usePortableTextMemberItem} from '../hooks/usePortableTextMembers'
-import {debugRender} from '../debugRender'
-import {useChildPresence} from '../../../studio/contexts/Presence'
-import {EMPTY_ARRAY} from '../../../../util'
-import {useTranslation} from '../../../../i18n'
-import {AnnotationToolbarPopover} from './AnnotationToolbarPopover'
 import {Root, TooltipBox} from './Annotation.styles'
+import {AnnotationToolbarPopover} from './AnnotationToolbarPopover'
 import {ObjectEditModal} from './modals/ObjectEditModal'
 
 interface AnnotationProps {

@@ -1,6 +1,7 @@
-import {ComponentType, FunctionComponent} from 'react'
-import * as React from 'react'
-import {RouterContextValue} from './types'
+import type * as React from 'react'
+import {type ComponentType, type FunctionComponent} from 'react'
+
+import {type RouterContextValue} from './types'
 import {useRouter} from './useRouter'
 
 /**

@@ -2,6 +2,7 @@
 /* eslint-disable i18next/no-literal-string */
 import {Button, Card, Code, Container, Heading, Stack} from '@sanity/ui'
 import {Component, type PropsWithChildren} from 'react'
+
 import {clearLocalStorage} from '../util/localStorage'
 
 /**

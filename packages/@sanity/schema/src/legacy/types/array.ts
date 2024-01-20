@@ -1,6 +1,7 @@
 import {pick} from 'lodash'
-import {lazyGetter} from './utils'
+
 import {DEFAULT_OVERRIDEABLE_FIELDS} from './constants'
+import {lazyGetter} from './utils'
 
 const OVERRIDABLE_FIELDS = [...DEFAULT_OVERRIDEABLE_FIELDS]
 

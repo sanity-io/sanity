@@ -1,10 +1,11 @@
 import {useCallback} from 'react'
 import {useMemoObservable} from 'react-rx'
 import {of} from 'rxjs'
+import {getPreviewStateObservable, useDocumentPreviewStore, useSchema, useWorkspace} from 'sanity'
+
 import {usePaneRouter} from '../../../components'
 import {COMMENTS_INSPECTOR_NAME} from '../../../panes/document/constants'
-import {CommentContext} from '../types'
-import {getPreviewStateObservable, useDocumentPreviewStore, useSchema, useWorkspace} from 'sanity'
+import {type CommentContext} from '../types'
 
 interface NotificationTargetHookOptions {
   documentId: string

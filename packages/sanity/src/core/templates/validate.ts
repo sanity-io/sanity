@@ -1,7 +1,8 @@
-import {toString as pathToString} from '@sanity/util/paths'
+import {type Schema} from '@sanity/types'
 import {randomKey} from '@sanity/util/content'
-import {Schema} from '@sanity/types'
-import {TemplateParameter, Template} from './types'
+import {toString as pathToString} from '@sanity/util/paths'
+
+import {type Template, type TemplateParameter} from './types'
 import {isRecord} from './util/isRecord'
 
 const ALLOWED_REF_PROPS = ['_key', '_ref', '_weak', '_type']

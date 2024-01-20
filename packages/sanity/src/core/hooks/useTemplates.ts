@@ -1,5 +1,5 @@
 import {useSource} from '../studio'
-import {Template} from '../templates'
+import {type Template} from '../templates'
 
 /**
  *

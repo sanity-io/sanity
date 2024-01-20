@@ -1,14 +1,15 @@
 import {upperFirst} from 'lodash'
-import {isDocumentType, isUnion} from '../helpers'
-import type {
-  ApiCustomizationOptions,
-  ConvertedType,
-  ConvertedUnion,
-  Deprecation,
-  InputObjectType,
-  QueryDefinition,
-} from '../types'
+
 import {internal} from '../extractFromSanitySchema'
+import {isDocumentType, isUnion} from '../helpers'
+import {
+  type ApiCustomizationOptions,
+  type ConvertedType,
+  type ConvertedUnion,
+  type Deprecation,
+  type InputObjectType,
+  type QueryDefinition,
+} from '../types'
 import {getFilterFieldName} from './utils'
 
 export function generateTypeQueries(

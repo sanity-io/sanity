@@ -1,4 +1,5 @@
-import {SchemaValidationProblemGroup} from '@sanity/types'
+import {type SchemaValidationProblemGroup} from '@sanity/types'
+
 import {formatSchemaValidation} from '../formatSchemaValidation'
 
 // disables some terminal specific things that are typically auto detected

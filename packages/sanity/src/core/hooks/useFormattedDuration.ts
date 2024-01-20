@@ -1,6 +1,7 @@
 import {useMemo} from 'react'
-import {intlCache} from '../i18n/intlCache'
+
 import {useCurrentLocale} from '../i18n/hooks/useLocale'
+import {intlCache} from '../i18n/intlCache'
 import {useListFormat} from './useListFormat'
 
 type Duration = {

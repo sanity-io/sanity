@@ -1,4 +1,4 @@
-import type {Expression} from './Expression'
+import {type Expression} from './Expression'
 
 export type SymbolClass = 'boolean' | 'operator' | 'comparator' | 'keyword' | 'paren'
 

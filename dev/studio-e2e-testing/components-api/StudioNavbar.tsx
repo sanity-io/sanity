@@ -1,5 +1,5 @@
 import {Stack} from '@sanity/ui'
-import {NavbarProps} from 'sanity'
+import {type NavbarProps} from 'sanity'
 
 export function StudioNavbar(props: NavbarProps & {testId: string}) {
   const {testId} = props

@@ -1,5 +1,5 @@
 import {arrayToJSONMatchPath} from '@sanity/mutator'
-import {Path, PathSegment} from '@sanity/types'
+import {type Path, type PathSegment} from '@sanity/types'
 
 const IS_NUMERIC = /^\d+$/
 

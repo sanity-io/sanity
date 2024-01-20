@@ -1,22 +1,28 @@
-import {Path, SanityDocument, ValidationContext, ValidationMarker} from '@sanity/types'
+import {
+  type Path,
+  type SanityDocument,
+  type ValidationContext,
+  type ValidationMarker,
+} from '@sanity/types'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {applyAll} from '../../../../src/core/form/patch/applyPatch'
-import {createMockSanityClient} from '../../mocks/createMockSanityClient'
-import type {FormDocumentValue} from '../../../../src/core/form/types'
 import {
   createPatchChannel,
   EMPTY_ARRAY,
   FormBuilder,
-  FormBuilderProps,
+  type FormBuilderProps,
   getExpandOperations,
-  PatchEvent,
+  type PatchEvent,
   setAtPath,
-  StateTree,
+  type StateTree,
   useFormState,
   useWorkspace,
   validateDocument,
-  Workspace,
+  type Workspace,
 } from 'sanity'
+
+import {applyAll} from '../../../../src/core/form/patch/applyPatch'
+import {type FormDocumentValue} from '../../../../src/core/form/types'
+import {createMockSanityClient} from '../../mocks/createMockSanityClient'
 
 const NOOP = () => null
 

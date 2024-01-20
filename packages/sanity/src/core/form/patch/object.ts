@@ -1,5 +1,6 @@
-import {omit, clone, isObject} from 'lodash'
-import {FIXME} from '../../FIXME'
+import {clone, isObject, omit} from 'lodash'
+
+import {type FIXME} from '../../FIXME'
 import {applyPatch} from './applyPatch'
 
 export function _objectApply(value: FIXME, patch: FIXME) {

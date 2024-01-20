@@ -1,22 +1,23 @@
 import {CloseIcon} from '@sanity/icons'
 import {Box, Card, Flex, isHTMLElement, rem, Text, type Theme, useForwardedRef} from '@sanity/ui'
 import {
-  ChangeEvent,
-  HTMLProps,
-  Ref,
+  type ChangeEvent,
+  type FocusEvent,
   forwardRef,
+  type HTMLProps,
+  type KeyboardEvent,
+  type PointerEvent,
+  type Ref,
   useCallback,
   useEffect,
   useRef,
   useState,
-  KeyboardEvent,
-  PointerEvent,
-  FocusEvent,
 } from 'react'
 import styled, {css, type CSSObject} from 'styled-components'
+
+import {Button} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'
 import {studioLocaleNamespace} from '../../../i18n/localeNamespaces'
-import {Button} from '../../../../ui-components'
 import {focusRingBorderStyle, focusRingStyle} from './styles'
 
 const Root = styled(Card)((props: {theme: Theme}): CSSObject => {

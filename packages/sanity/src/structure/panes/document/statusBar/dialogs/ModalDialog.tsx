@@ -3,8 +3,9 @@ import {
   Dialog, // eslint-disable-line no-restricted-imports
 } from '@sanity/ui'
 import {useId} from 'react'
+import {type DocumentActionModalDialogProps, LegacyLayerProvider} from 'sanity'
+
 import {DIALOG_WIDTH_TO_UI_WIDTH} from './constants'
-import {DocumentActionModalDialogProps, LegacyLayerProvider} from 'sanity'
 
 /**
  * Dialog rendered by custom document actions of dialog type `dialog`.

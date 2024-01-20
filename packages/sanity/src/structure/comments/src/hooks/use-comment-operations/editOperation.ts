@@ -1,5 +1,6 @@
-import {SanityClient} from '@sanity/client'
-import {CommentEditPayload} from '../../types'
+import {type SanityClient} from '@sanity/client'
+
+import {type CommentEditPayload} from '../../types'
 
 interface EditOperationProps {
   client: SanityClient

@@ -1,6 +1,6 @@
-import {VOID_CHILD_KEY, fromSlateValue, toSlateValue} from '../values'
 import {schemaType} from '../../editor/__tests__/PortableTextEditorTester'
 import {getPortableTextMemberSchemaTypes} from '../getPortableTextMemberSchemaTypes'
+import {fromSlateValue, toSlateValue} from '../values'
 
 const schemaTypes = getPortableTextMemberSchemaTypes(schemaType)
 

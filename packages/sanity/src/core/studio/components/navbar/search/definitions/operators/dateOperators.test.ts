@@ -1,11 +1,12 @@
 /* eslint-disable max-nested-callbacks */
 import {endOfDay, endOfMinute, startOfDay, startOfMinute, sub} from 'date-fns'
+
 import {
   dateOperators,
-  OperatorDateDirectionValue,
-  OperatorDateEqualValue,
-  OperatorDateLastValue,
-  OperatorDateRangeValue,
+  type OperatorDateDirectionValue,
+  type OperatorDateEqualValue,
+  type OperatorDateLastValue,
+  type OperatorDateRangeValue,
 } from './dateOperators'
 
 interface OperatorDateEqualValueWithDate extends OperatorDateEqualValue {

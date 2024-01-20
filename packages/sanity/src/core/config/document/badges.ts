@@ -1,5 +1,6 @@
-import {ReactNode, ComponentType} from 'react'
-import {EditStateFor} from '../../store'
+import {type ComponentType, type ReactNode} from 'react'
+
+import {type EditStateFor} from '../../store'
 
 /**
  * @hidden

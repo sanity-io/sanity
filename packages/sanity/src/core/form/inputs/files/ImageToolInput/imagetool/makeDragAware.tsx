@@ -1,6 +1,7 @@
 import Debug from 'debug'
-import {PureComponent, type PointerEvent} from 'react'
-import type {Coordinate} from './types'
+import {type PointerEvent, PureComponent} from 'react'
+
+import {type Coordinate} from './types'
 
 const debug = Debug('sanity-imagetool')
 

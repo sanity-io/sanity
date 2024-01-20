@@ -1,19 +1,24 @@
 import {generateHelpUrl} from '@sanity/generate-help-url'
 import {isEqual} from 'lodash'
-import {Observable, NEVER, of as observableOf, concat} from 'rxjs'
-import {switchMap, map, scan, distinctUntilChanged, pairwise, startWith} from 'rxjs/operators'
+import {concat, NEVER, type Observable, of as observableOf} from 'rxjs'
+import {distinctUntilChanged, map, pairwise, scan, startWith, switchMap} from 'rxjs/operators'
+
+import {type StructureContext} from '../structureBuilder'
 import {
-  DocumentPaneNode,
-  PaneNode,
-  RouterPaneSiblingContext,
-  RouterPanes,
-  RouterPaneSibling,
-  PaneNodeResolver,
-  UnresolvedPaneNode,
+  type DocumentPaneNode,
+  type PaneNode,
+  type PaneNodeResolver,
+  type RouterPanes,
+  type RouterPaneSibling,
+  type RouterPaneSiblingContext,
+  type UnresolvedPaneNode,
 } from '../types'
-import {StructureContext} from '../structureBuilder'
 import {assignId} from './assignId'
-import {createPaneResolver, PaneResolver, PaneResolverMiddleware} from './createPaneResolver'
+import {
+  createPaneResolver,
+  type PaneResolver,
+  type PaneResolverMiddleware,
+} from './createPaneResolver'
 import {memoBind} from './memoBind'
 import {PaneResolutionError} from './PaneResolutionError'
 

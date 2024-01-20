@@ -1,4 +1,5 @@
 import {memo} from 'react'
+
 import {
   ARROW_MARGIN_X,
   ARROW_MARGIN_Y,
@@ -7,10 +8,10 @@ import {
   INTERACTIVE_STROKE_WIDTH,
   STROKE_WIDTH,
 } from '../constants'
+import {ConnectorPath, DebugRect, InteractivePath, RightBarWrapper} from './Connector.styled'
 import {arrowPath, generateConnectorPath} from './connectorPath'
 import {mapConnectorToLine} from './mapConnectorToLine'
-import {Rect} from './types'
-import {DebugRect, ConnectorPath, InteractivePath, RightBarWrapper} from './Connector.styled'
+import {type Rect} from './types'
 
 interface Props {
   from: {rect: Rect; bounds: Rect}

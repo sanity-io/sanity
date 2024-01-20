@@ -1,4 +1,4 @@
-import {Card, Flex, Stack, Code} from '@sanity/ui'
+import {Card, Code, Flex, Stack} from '@sanity/ui'
 import styled from 'styled-components'
 
 export const CardWrapper = styled(Card)`

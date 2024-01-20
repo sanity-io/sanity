@@ -1,6 +1,7 @@
-import {ForwardedRef, forwardRef, useCallback, useMemo} from 'react'
-import {Card, Code, Grid, Stack, TextArea, Text} from '@sanity/ui'
+import {Card, Code, Grid, Stack, Text, TextArea} from '@sanity/ui'
+import React, {type ForwardedRef, forwardRef, useCallback, useMemo} from 'react'
 import styled from 'styled-components'
+
 import {Button} from '../../../../ui-components'
 
 const ExampleCode = styled(Code)`

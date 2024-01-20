@@ -1,6 +1,7 @@
 import {createContext} from 'react'
-import {ZIndexContextValue} from './types'
+
 import {defaults} from './defaults'
+import {type ZIndexContextValue} from './types'
 
 /**
  * TODO: Rename to `ZOffsetsContext`

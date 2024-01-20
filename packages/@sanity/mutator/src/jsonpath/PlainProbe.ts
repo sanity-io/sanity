@@ -1,5 +1,5 @@
 import {isRecord} from '../util'
-import type {Probe} from './Probe'
+import {type Probe} from './Probe'
 
 // A default implementation of a probe for vanilla JS _values
 export class PlainProbe implements Probe {

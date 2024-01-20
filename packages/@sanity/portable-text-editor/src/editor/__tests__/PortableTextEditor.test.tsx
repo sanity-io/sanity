@@ -1,10 +1,11 @@
 /* eslint-disable no-irregular-whitespace */
 
-import {RefObject, createRef} from 'react'
+import {type PortableTextBlock} from '@sanity/types'
 import {render, waitFor} from '@testing-library/react'
-import {PortableTextBlock} from '@sanity/types'
+import React, {createRef, type RefObject} from 'react'
+
+import {type EditorSelection} from '../..'
 import {PortableTextEditor} from '../PortableTextEditor'
-import {EditorSelection} from '../..'
 import {PortableTextEditorTester, schemaType} from './PortableTextEditorTester'
 
 const helloBlock: PortableTextBlock = {

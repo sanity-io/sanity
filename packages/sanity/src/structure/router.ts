@@ -1,6 +1,7 @@
 import {omit} from 'lodash'
-import {RouterPanes, RouterPaneGroup, RouterPaneSibling} from './types'
-import {route, decodeJsonParams, encodeJsonParams} from 'sanity/router'
+import {decodeJsonParams, encodeJsonParams, route} from 'sanity/router'
+
+import {type RouterPaneGroup, type RouterPanes, type RouterPaneSibling} from './types'
 
 const EMPTY_PARAMS = {}
 

@@ -1,5 +1,9 @@
 import {SearchFilterBooleanInput} from '../../components/filters/filter/inputs/boolean/Boolean'
-import {defineSearchOperator, SearchOperatorInput, SearchOperatorParams} from './operatorTypes'
+import {
+  defineSearchOperator,
+  type SearchOperatorInput,
+  type SearchOperatorParams,
+} from './operatorTypes'
 import {toJSON} from './operatorUtils'
 
 // @todo: don't manually cast `buttonValueComponent` and `inputComponent` once

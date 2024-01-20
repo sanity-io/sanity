@@ -1,4 +1,4 @@
-import type {CliCommandDefinition} from '@sanity/cli'
+import {type CliCommandDefinition} from '@sanity/cli'
 
 const uninstallCommand: CliCommandDefinition = {
   name: 'uninstall',

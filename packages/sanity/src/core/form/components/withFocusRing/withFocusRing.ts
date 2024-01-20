@@ -1,9 +1,10 @@
 /* eslint-disable camelcase */
 
-import styled, {css} from 'styled-components'
-import {rem, Theme} from '@sanity/ui'
-import {ComponentType} from 'react'
+import {rem, type Theme} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
+import {type ComponentType} from 'react'
+import styled, {css} from 'styled-components'
+
 import {focusRingBorderStyle, focusRingStyle} from './helpers'
 
 export function withFocusRing<Props>(component: ComponentType<Props>) {

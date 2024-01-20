@@ -1,4 +1,4 @@
-import type {InvalidValueResolution} from '@sanity/portable-text-editor'
+import {type InvalidValueResolution} from '@sanity/portable-text-editor'
 import {
   Box,
   // eslint-disable-next-line no-restricted-imports
@@ -10,6 +10,7 @@ import {
   Text,
 } from '@sanity/ui'
 import {useCallback} from 'react'
+
 import {Translate, useTranslation} from '../../../i18n'
 import {Alert} from '../../components/Alert'
 

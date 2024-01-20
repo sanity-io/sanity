@@ -1,8 +1,9 @@
-import {ReactNode, memo, useState} from 'react'
 import {UploadIcon} from '@sanity/icons'
 import {Flex, useElementSize} from '@sanity/ui'
-import {FileLike} from '../../../studio/uploads/types'
+import React, {memo, type ReactNode, useState} from 'react'
+
 import {useTranslation} from '../../../../i18n'
+import {type FileLike} from '../../../studio/uploads/types'
 import {FileInputButton} from './FileInputButton/FileInputButton'
 import {PlaceholderText} from './PlaceholderText'
 

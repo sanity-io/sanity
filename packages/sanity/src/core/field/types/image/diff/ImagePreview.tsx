@@ -1,18 +1,19 @@
-import {ReactElement, SyntheticEvent, useMemo, useState} from 'react'
 import {getImageDimensions, isDefaultCrop, isDefaultHotspot} from '@sanity/asset-utils'
-import imageUrlBuilder from '@sanity/image-url'
-import {ImageIcon} from '@sanity/icons'
-import {Box, Card, Flex, Text} from '@sanity/ui'
-import styled from 'styled-components'
 import {hues} from '@sanity/color'
+import {ImageIcon} from '@sanity/icons'
+import imageUrlBuilder from '@sanity/image-url'
+import {Box, Card, Flex, Text} from '@sanity/ui'
+import React, {type ReactElement, type SyntheticEvent, useMemo, useState} from 'react'
+import styled from 'styled-components'
+
 import {useClient} from '../../../../hooks'
 import {useTranslation} from '../../../../i18n'
+import {useDocumentValues} from '../../../../store'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
 import {MetaInfo} from '../../../diff'
-import {useDocumentValues} from '../../../../store'
 import {getDeviceDpr, simpleHash} from './helpers'
 import {HotspotCropSVG} from './HotspotCropSVG'
-import type {ImagePreviewProps, MinimalAsset} from './types'
+import {type ImagePreviewProps, type MinimalAsset} from './types'
 
 const ASSET_FIELDS = ['originalFilename']
 

@@ -1,5 +1,4 @@
-import {StudioProvider} from 'sanity'
-import {ThemeColorSchemeKey, usePrefersDark} from '@sanity/ui'
+import {type ThemeColorSchemeKey, usePrefersDark} from '@sanity/ui'
 import {WorkshopFrame} from '@sanity/ui-workshop'
 import {createMemoryHistory} from 'history'
 import {useState} from 'react'
@@ -9,6 +8,8 @@ import javascript from 'refractor/lang/javascript'
 import json from 'refractor/lang/json'
 import jsx from 'refractor/lang/jsx'
 import typescript from 'refractor/lang/typescript'
+import {StudioProvider} from 'sanity'
+
 import sanityConfig from '../../sanity.config'
 import {config} from '../config'
 

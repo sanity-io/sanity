@@ -1,6 +1,7 @@
 import {StrictMode} from 'react'
 import {createRoot} from 'react-dom/client'
 import {Studio} from 'sanity'
+
 import config from './sanity.config'
 
 // eslint-disable-next-line no-console

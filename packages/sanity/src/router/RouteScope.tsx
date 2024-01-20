@@ -1,10 +1,10 @@
 /* eslint-disable camelcase */
 
+import type * as React from 'react'
 import {useCallback, useMemo, useRef} from 'react'
 
-import * as React from 'react'
 import {RouterContext} from './RouterContext'
-import {RouterContextValue, RouterState} from './types'
+import {type RouterContextValue, type RouterState} from './types'
 import {useRouter} from './useRouter'
 
 function addScope(

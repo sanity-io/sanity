@@ -1,7 +1,8 @@
 import {Flex} from '@sanity/ui'
 import styled from 'styled-components'
+
 import {DEBUG_MODE} from '../../../constants'
-import type {SearchFilter} from '../../../types'
+import {type SearchFilter} from '../../../types'
 import {DebugDocumentTypes} from '../debug/_DebugDocumentTypes'
 import {DebugFilterValues} from '../debug/_DebugFilterValues'
 import {FilterForm} from './FilterForm'

@@ -1,13 +1,13 @@
 /* eslint-disable no-constant-condition */
 import {stat} from 'node:fs/promises'
-
 import path from 'node:path'
-import {bufferThroughFile} from '../bufferThroughFile'
-import {decodeText, parse, toArray} from '../../it-utils'
-import {streamToAsyncIterator} from '../../utils/streamToAsyncIterator'
-import {asyncIterableToStream} from '../../utils/asyncIterableToStream'
-import {lastValueFrom} from '../../it-utils/lastValueFrom'
+
+import {decodeText, parse} from '../../it-utils'
 import {firstValueFrom} from '../../it-utils/firstValueFrom'
+import {lastValueFrom} from '../../it-utils/lastValueFrom'
+import {asyncIterableToStream} from '../../utils/asyncIterableToStream'
+import {streamToAsyncIterator} from '../../utils/streamToAsyncIterator'
+import {bufferThroughFile} from '../bufferThroughFile'
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 

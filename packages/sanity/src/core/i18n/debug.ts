@@ -1,5 +1,5 @@
 /* eslint-disable no-process-env */
-import type {TFunction} from 'i18next'
+import {type TFunction} from 'i18next'
 
 /**
  * Mode to use for debugging. `reverse`, `triangles` or `log`.

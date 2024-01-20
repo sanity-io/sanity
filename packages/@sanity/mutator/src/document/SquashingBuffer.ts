@@ -1,9 +1,10 @@
 import {makePatches, stringifyPatches} from '@sanity/diff-match-patch'
-import {extractWithPath} from '../jsonpath/extractWithPath'
+
 import {arrayToJSONMatchPath} from '../jsonpath/arrayToJSONMatchPath'
-import {Mutation} from './Mutation'
+import {extractWithPath} from '../jsonpath/extractWithPath'
 import {debug} from './debug'
-import type {Doc, Mut} from './types'
+import {Mutation} from './Mutation'
+import {type Doc, type Mut} from './types'
 
 /**
  * Implements a buffer for mutations that incrementally optimises the mutations by

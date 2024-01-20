@@ -2,49 +2,51 @@
 /* eslint-disable camelcase, no-else-return */
 
 import {
-  ArraySchemaType,
-  BooleanSchemaType,
-  CurrentUser,
+  type ArraySchemaType,
+  type BooleanSchemaType,
+  type CurrentUser,
   isArrayOfObjectsSchemaType,
   isArraySchemaType,
   isObjectSchemaType,
-  NumberSchemaType,
-  ObjectField,
-  ObjectSchemaType,
-  Path,
-  StringSchemaType,
-  ValidationMarker,
+  type NumberSchemaType,
+  type ObjectField,
+  type ObjectSchemaType,
+  type Path,
+  type StringSchemaType,
+  type ValidationMarker,
 } from '@sanity/types'
-
-import {castArray, isEqual as _isEqual, pick} from 'lodash'
-import {isEqual, pathFor, startsWith, toString, trimChildPath} from '@sanity/util/paths'
 import {resolveTypeName} from '@sanity/util/content'
+import {isEqual, pathFor, startsWith, toString, trimChildPath} from '@sanity/util/paths'
+import {castArray, isEqual as _isEqual, pick} from 'lodash'
 
-import {EMPTY_ARRAY, isNonNullable, isRecord} from '../../util'
+import {type FIXME} from '../../FIXME'
+import {type FormNodePresence} from '../../presence'
+import {EMPTY_ARRAY, isRecord} from '../../util'
 import {getFieldLevel} from '../studio/inputResolver/helpers'
-import {FIXME} from '../../FIXME'
-import {FormNodePresence} from '../../presence'
-
-import {
-  FieldSetMember,
-  HiddenField,
-  ObjectArrayFormNode,
-  PrimitiveFormNode,
-  StateTree,
-} from './types'
 import {resolveConditionalProperty} from './conditional-property'
 import {ALL_FIELDS_GROUP, MAX_FIELD_DEPTH} from './constants'
-import {getItemType, getPrimitiveItemType} from './utils/getItemType'
 import {
-  ArrayOfObjectsMember,
-  ArrayOfPrimitivesMember,
-  FieldMember,
-  ObjectMember,
+  type FieldSetMember,
+  type HiddenField,
+  type ObjectArrayFormNode,
+  type PrimitiveFormNode,
+  type StateTree,
+} from './types'
+import {type FormFieldGroup} from './types/fieldGroup'
+import {type FieldError} from './types/memberErrors'
+import {
+  type ArrayOfObjectsMember,
+  type ArrayOfPrimitivesMember,
+  type FieldMember,
+  type ObjectMember,
 } from './types/members'
-import {ArrayOfObjectsFormNode, ArrayOfPrimitivesFormNode, ObjectFormNode} from './types/nodes'
-import {FormFieldGroup} from './types/fieldGroup'
+import {
+  type ArrayOfObjectsFormNode,
+  type ArrayOfPrimitivesFormNode,
+  type ObjectFormNode,
+} from './types/nodes'
 import {getCollapsedWithDefaults} from './utils/getCollapsibleOptions'
-import {FieldError} from './types/memberErrors'
+import {getItemType, getPrimitiveItemType} from './utils/getItemType'
 
 type PrimitiveSchemaType = BooleanSchemaType | NumberSchemaType | StringSchemaType
 

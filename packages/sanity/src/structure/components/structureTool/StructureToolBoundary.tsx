@@ -1,12 +1,13 @@
-import {useEffect, useState} from 'react'
 import {ErrorBoundary} from '@sanity/ui'
-import type {StructureToolOptions} from '../../types'
-import {StructureToolProvider} from '../../StructureToolProvider'
+import React, {useEffect, useState} from 'react'
+import {SourceProvider, type Tool, useWorkspace} from 'sanity'
+
 import {setActivePanes} from '../../getIntentState'
+import {StructureToolProvider} from '../../StructureToolProvider'
+import {type StructureToolOptions} from '../../types'
 import {IntentResolver} from './intentResolver'
 import {StructureError} from './StructureError'
 import {StructureTool} from './StructureTool'
-import {SourceProvider, useWorkspace, Tool} from 'sanity'
 
 interface StructureToolBoundaryProps {
   tool: Tool<StructureToolOptions>

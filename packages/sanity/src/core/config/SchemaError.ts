@@ -1,4 +1,4 @@
-import {Schema} from '@sanity/types'
+import {type Schema} from '@sanity/types'
 
 /** @internal */
 // TODO: consider removing this error in favor of the `ConfigResolutionError`

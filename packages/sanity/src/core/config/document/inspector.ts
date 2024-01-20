@@ -1,5 +1,5 @@
-import {ButtonTone} from '@sanity/ui'
-import {ComponentType} from 'react'
+import {type ButtonTone} from '@sanity/ui'
+import {type ComponentType} from 'react'
 
 /** @hidden @beta */
 export interface DocumentInspectorProps {

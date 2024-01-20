@@ -1,8 +1,10 @@
 import {Card, Portal, useClickOutside, useLayer} from '@sanity/ui'
-import {AnimatePresence, motion, Transition, Variants} from 'framer-motion'
+import {AnimatePresence, motion, type Transition, type Variants} from 'framer-motion'
 import {useCallback, useRef, useState} from 'react'
 import FocusLock from 'react-focus-lock'
 import styled from 'styled-components'
+
+import {useTranslation} from '../../../../../i18n'
 import {supportsTouch} from '../../../../../util'
 import {
   POPOVER_INPUT_PADDING,
@@ -12,7 +14,6 @@ import {
 } from '../constants'
 import {useSearchState} from '../contexts/search/useSearchState'
 import {hasSearchableTerms} from '../utils/hasSearchableTerms'
-import {useTranslation} from '../../../../../i18n'
 import {SearchWrapper} from './common/SearchWrapper'
 import {Filters} from './filters/Filters'
 import {RecentSearches} from './recentSearches/RecentSearches'

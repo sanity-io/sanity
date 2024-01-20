@@ -1,26 +1,27 @@
-import {useCallback, useMemo, useState, KeyboardEvent, ChangeEvent} from 'react'
-import {Text, useClickOutside, Stack, TextInput, TextInputProps, Card, Flex} from '@sanity/ui'
 import {AddIcon, SearchIcon} from '@sanity/icons'
-import ReactFocusLock from 'react-focus-lock'
 import {isDeprecatedSchemaType} from '@sanity/types'
-import {useGetI18nText, useTranslation} from '../../../../i18n'
+import {Card, Flex, Stack, Text, TextInput, type TextInputProps, useClickOutside} from '@sanity/ui'
+import {type ChangeEvent, type KeyboardEvent, useCallback, useMemo, useState} from 'react'
+import ReactFocusLock from 'react-focus-lock'
+
+import {Button, type ButtonProps, Tooltip, type TooltipProps} from '../../../../../ui-components'
 import {InsufficientPermissionsMessage} from '../../../../components'
+import {useSchema} from '../../../../hooks'
+import {useGetI18nText, useTranslation} from '../../../../i18n'
 import {useCurrentUser} from '../../../../store'
 import {useColorScheme} from '../../../colorScheme'
-import {Button, ButtonProps, Tooltip, TooltipProps} from '../../../../../ui-components'
-import {useSchema} from '../../../../hooks'
-import {NewDocumentList, NewDocumentListProps} from './NewDocumentList'
-import {ModalType, NewDocumentOption} from './types'
 import {filterOptions} from './filter'
 import {
   DialogHeaderCard,
   PopoverHeaderCard,
+  PopoverListFlex,
   RootFlex,
   StyledDialog,
   StyledPopover,
-  PopoverListFlex,
 } from './NewDocumentButton.style'
+import {NewDocumentList, type NewDocumentListProps} from './NewDocumentList'
 import {INLINE_PREVIEW_HEIGHT} from './NewDocumentListOption'
+import {type ModalType, type NewDocumentOption} from './types'
 
 const MAX_DISPLAYED_ITEMS = 10
 

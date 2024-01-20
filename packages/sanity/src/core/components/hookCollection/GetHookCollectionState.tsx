@@ -1,10 +1,11 @@
-import type {ThrottleSettings} from 'lodash'
-import {ReactNode, useCallback, useMemo, useRef, useState} from 'react'
+import {type ThrottleSettings} from 'lodash'
+import {type ReactNode, useCallback, useMemo, useRef, useState} from 'react'
+
 import {isNonNullable, useThrottledCallback} from '../../util'
 import {getHookId} from './actionId'
 import {HookStateContainer} from './HookStateContainer'
 import {cancelIdleCallback, requestIdleCallback} from './requestIdleCallback'
-import {ActionHook} from './types'
+import {type ActionHook} from './types'
 
 /** @internal */
 export interface GetHookCollectionStateProps<T, K> {

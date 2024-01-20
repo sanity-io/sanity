@@ -1,12 +1,13 @@
-import {Ref, forwardRef, useMemo, useState} from 'react'
-import {startCase} from 'lodash'
 import {Flex} from '@sanity/ui'
-import {CollapseTabList} from '../../../../components/collapseTabList/CollapseTabList'
-import {useRovingFocus} from '../../../../components'
-import {useColorScheme} from '../../../colorScheme'
-import {Tool} from '../../../../config'
+import {startCase} from 'lodash'
+import React, {forwardRef, type Ref, useMemo, useState} from 'react'
+
 import {Button} from '../../../../../ui-components'
-import {ToolLink, ToolLinkProps} from './ToolLink'
+import {useRovingFocus} from '../../../../components'
+import {CollapseTabList} from '../../../../components/collapseTabList/CollapseTabList'
+import {type Tool} from '../../../../config'
+import {useColorScheme} from '../../../colorScheme'
+import {ToolLink, type ToolLinkProps} from './ToolLink'
 
 interface ToolCollapseMenuProps {
   activeToolName?: string

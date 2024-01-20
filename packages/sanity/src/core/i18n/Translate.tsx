@@ -1,7 +1,7 @@
-import type {TFunction} from 'i18next'
-import type {ComponentType, ReactNode} from 'react'
-import {createElement, useMemo} from 'react'
-import {simpleParser, type CloseTagToken, type TextToken, type Token} from './simpleParser'
+import {type TFunction} from 'i18next'
+import {type ComponentType, createElement, type ReactNode, useMemo} from 'react'
+
+import {type CloseTagToken, simpleParser, type TextToken, type Token} from './simpleParser'
 
 const COMPONENT_NAME_RE = /^[A-Z]/
 const RECOGNIZED_HTML_TAGS = [

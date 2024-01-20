@@ -1,8 +1,9 @@
 import arrify from 'arrify'
 import {pick} from 'lodash'
-import {lazyGetter} from './utils'
+
 import {DEFAULT_OVERRIDEABLE_FIELDS} from './constants'
 import {createFieldsets} from './object'
+import {lazyGetter} from './utils'
 
 export const REF_FIELD = {
   name: '_ref',

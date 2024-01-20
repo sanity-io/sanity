@@ -1,4 +1,4 @@
-import {SchemaType} from '@sanity/types'
+import {type SchemaType} from '@sanity/types'
 
 export function getEmptyValue(type: SchemaType): number | string | boolean {
   switch (type.jsonType) {

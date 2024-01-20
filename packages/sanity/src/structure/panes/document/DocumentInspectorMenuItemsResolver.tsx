@@ -1,5 +1,5 @@
 import {memo, useCallback, useEffect, useRef, useState} from 'react'
-import {DocumentInspector, DocumentInspectorMenuItem, useUnique} from 'sanity'
+import {type DocumentInspector, type DocumentInspectorMenuItem, useUnique} from 'sanity'
 
 interface InspectorMenuItemProps {
   documentId: string

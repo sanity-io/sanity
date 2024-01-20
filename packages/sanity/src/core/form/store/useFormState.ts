@@ -1,14 +1,15 @@
 /* eslint-disable camelcase */
 
-import {ObjectSchemaType, Path, ValidationMarker} from '@sanity/types'
-import {useLayoutEffect, useMemo, useRef} from 'react'
+import {type ObjectSchemaType, type Path, type ValidationMarker} from '@sanity/types'
 import {pathFor} from '@sanity/util/paths'
-import {FormNodePresence} from '../../presence'
+import {useLayoutEffect, useMemo, useRef} from 'react'
+
+import {type FormNodePresence} from '../../presence'
 import {useCurrentUser} from '../../store'
-import {StateTree, ObjectFormNode} from './types'
-import {prepareFormState, FIXME_SanityDocument} from './formState'
+import {type FIXME_SanityDocument, prepareFormState} from './formState'
+import {type ObjectFormNode, type StateTree} from './types'
+import {type DocumentFormNode} from './types/nodes'
 import {immutableReconcile} from './utils/immutableReconcile'
-import {DocumentFormNode} from './types/nodes'
 
 /** @internal */
 export type FormState<

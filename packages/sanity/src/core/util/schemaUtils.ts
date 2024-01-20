@@ -1,4 +1,4 @@
-import {SchemaTypeDefinition} from '@sanity/types'
+import {type SchemaTypeDefinition} from '@sanity/types'
 
 const BUNDLED_DOC_TYPES = ['sanity.imageAsset', 'sanity.fileAsset']
 

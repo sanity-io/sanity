@@ -1,12 +1,12 @@
 import {Card} from '@sanity/ui'
 import {
+  type BlockAnnotationProps,
+  type BlockProps,
   definePlugin,
-  InputProps,
-  FieldProps,
-  ItemProps,
-  PreviewProps,
-  BlockProps,
-  BlockAnnotationProps,
+  type FieldProps,
+  type InputProps,
+  type ItemProps,
+  type PreviewProps,
 } from 'sanity'
 
 export function Input(props: InputProps) {

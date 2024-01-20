@@ -1,5 +1,6 @@
-import {of, from, map} from 'rxjs'
-import type {SanityClient} from '@sanity/client'
+import {type SanityClient} from '@sanity/client'
+import {from, map, of} from 'rxjs'
+
 import {
   createBatchedGetDocumentExists,
   MAX_BUFFER_SIZE,

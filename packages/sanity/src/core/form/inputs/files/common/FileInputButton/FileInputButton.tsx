@@ -1,5 +1,13 @@
-import {ChangeEvent, ForwardedRef, HTMLProps, forwardRef, useCallback, useId} from 'react'
-import {ButtonProps} from '../../../../../../ui-components'
+import {
+  type ChangeEvent,
+  type ForwardedRef,
+  forwardRef,
+  type HTMLProps,
+  useCallback,
+  useId,
+} from 'react'
+
+import {type ButtonProps} from '../../../../../../ui-components'
 import {FileButton} from './styles'
 
 export type FileInputButtonProps = ButtonProps & {

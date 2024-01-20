@@ -1,6 +1,7 @@
-import type {ArraySchemaType} from '@sanity/types'
-import type {DeserializerRule} from '../../types'
+import {type ArraySchemaType} from '@sanity/types'
+
 import {DEFAULT_SPAN, HTML_BLOCK_TAGS, HTML_HEADER_TAGS} from '../../constants'
+import {type DeserializerRule} from '../../types'
 import {isElement, tagName} from '../helpers'
 
 // font-style:italic seems like the most important rule for italic / emphasis in their html

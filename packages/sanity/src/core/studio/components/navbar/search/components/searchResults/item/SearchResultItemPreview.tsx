@@ -1,9 +1,11 @@
-import type {SanityDocument} from '@sanity/client'
-import type {SchemaType} from '@sanity/types'
+import {type SanityDocument} from '@sanity/client'
+import {type SchemaType} from '@sanity/types'
 import {Badge, Box, Flex} from '@sanity/ui'
 import {useMemo} from 'react'
 import {useMemoObservable} from 'react-rx'
 import styled from 'styled-components'
+
+import {type GeneralPreviewLayoutKey} from '../../../../../../../components'
 import {DocumentStatus} from '../../../../../../../components/documentStatus'
 import {DocumentStatusIndicator} from '../../../../../../../components/documentStatusIndicator'
 import {DocumentPreviewPresence} from '../../../../../../../presence'
@@ -12,8 +14,7 @@ import {
   getPreviewValueWithFallback,
   SanityDefaultPreview,
 } from '../../../../../../../preview'
-import {DocumentPresence, useDocumentPreviewStore} from '../../../../../../../store'
-import {GeneralPreviewLayoutKey} from '../../../../../../../components'
+import {type DocumentPresence, useDocumentPreviewStore} from '../../../../../../../store'
 
 interface SearchResultItemPreviewProps {
   documentId: string

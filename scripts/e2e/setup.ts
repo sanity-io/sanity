@@ -1,7 +1,7 @@
 import {readEnv} from '../utils/envVars'
 import {sanityIdify} from '../utils/sanityIdify'
 import {startTimer} from '../utils/startTimer'
-import {KnownEnvVar, createE2EClient} from './e2eClient'
+import {createE2EClient, type KnownEnvVar} from './e2eClient'
 
 const dataset = sanityIdify(readEnv<KnownEnvVar>('SANITY_E2E_DATASET'))
 

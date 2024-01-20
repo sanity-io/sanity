@@ -1,9 +1,10 @@
 import {useMemo} from 'react'
-import {LoadableState, useLoadable} from '../../../../../util'
-import {useCurrentLocale} from '../../../../../i18n/hooks/useLocale'
+
 import {useClient} from '../../../../../hooks'
-import {ResourcesResponse} from './types'
+import {useCurrentLocale} from '../../../../../i18n/hooks/useLocale'
+import {type LoadableState, useLoadable} from '../../../../../util'
 import {getHelpResources} from './helpResources'
+import {type ResourcesResponse} from './types'
 
 /**
  * Fetch help resources (content for the navbar help menu) from `/help`.

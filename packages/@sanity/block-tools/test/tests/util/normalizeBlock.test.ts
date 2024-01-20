@@ -1,4 +1,5 @@
 import * as assert from 'assert'
+
 import {normalizeBlock} from '../../../src/util/normalizeBlock'
 
 describe('normalizeBlock', () => {

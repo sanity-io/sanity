@@ -1,9 +1,9 @@
+import {PortableText} from '@portabletext/react'
+import {createClient} from '@sanity/client'
+import {createQueryStore} from '@sanity/react-loader'
+import {enableVisualEditing} from '@sanity/visual-editing'
 import React, {Suspense, useEffect} from 'react'
 import {createRoot} from 'react-dom/client'
-import {enableVisualEditing} from '@sanity/visual-editing'
-import {createQueryStore} from '@sanity/react-loader'
-import {createClient} from '@sanity/client'
-import {PortableText} from '@portabletext/react'
 
 const client = createClient({
   projectId: 'ppsg7ml5',

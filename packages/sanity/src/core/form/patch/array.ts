@@ -1,5 +1,6 @@
 import {findIndex} from 'lodash'
-import {FIXME} from '../../FIXME'
+
+import {type FIXME} from '../../FIXME'
 import {applyPatch} from './applyPatch'
 import {arrayInsert} from './arrayInsert'
 

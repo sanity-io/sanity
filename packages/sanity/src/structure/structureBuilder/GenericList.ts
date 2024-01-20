@@ -1,16 +1,26 @@
-import {Child, Serializable, SerializeOptions, StructureNode} from './StructureNodes'
-import {layoutOptions} from './Layout'
-import {MenuItem, MenuItemBuilder, maybeSerializeMenuItem} from './MenuItem'
-import {MenuItemGroup, MenuItemGroupBuilder, maybeSerializeMenuItemGroup} from './MenuItemGroup'
-import {IntentChecker, defaultIntentChecker} from './Intent'
-import {SerializeError} from './SerializeError'
+import {type I18nTextRecord, type InitialValueTemplateItem, type PreviewLayoutKey} from 'sanity'
+
 import {
-  InitialValueTemplateItemBuilder,
+  type InitialValueTemplateItemBuilder,
   maybeSerializeInitialValueTemplateItem,
 } from './InitialValueTemplateItem'
-import {validateId} from './util/validateId'
+import {defaultIntentChecker, type IntentChecker} from './Intent'
+import {layoutOptions} from './Layout'
+import {maybeSerializeMenuItem, type MenuItem, type MenuItemBuilder} from './MenuItem'
+import {
+  maybeSerializeMenuItemGroup,
+  type MenuItemGroup,
+  type MenuItemGroupBuilder,
+} from './MenuItemGroup'
+import {SerializeError} from './SerializeError'
+import {
+  type Child,
+  type Serializable,
+  type SerializeOptions,
+  type StructureNode,
+} from './StructureNodes'
 import {getStructureNodeId} from './util/getStructureNodeId'
-import {PreviewLayoutKey, InitialValueTemplateItem, I18nTextRecord} from 'sanity'
+import {validateId} from './util/validateId'
 
 function noChildResolver() {
   return undefined

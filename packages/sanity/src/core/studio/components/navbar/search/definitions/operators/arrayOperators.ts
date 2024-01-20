@@ -1,4 +1,5 @@
 import {type ReferenceValue} from '@sanity/types'
+
 import {SearchButtonValueReference} from '../../components/filters/common/ButtonValue'
 import {SearchFilterNumberInput} from '../../components/filters/filter/inputs/number/Number'
 import {SearchFilterNumberRangeInput} from '../../components/filters/filter/inputs/number/NumberRange'
@@ -8,8 +9,12 @@ import {GteIcon} from '../../components/filters/icons/GteIcon'
 import {GtIcon} from '../../components/filters/icons/GtIcon'
 import {LteIcon} from '../../components/filters/icons/LteIcon'
 import {LtIcon} from '../../components/filters/icons/LtIcon'
-import {OperatorNumberRangeValue} from './common'
-import {defineSearchOperator, SearchOperatorButtonValue, SearchOperatorInput} from './operatorTypes'
+import {type OperatorNumberRangeValue} from './common'
+import {
+  defineSearchOperator,
+  type SearchOperatorButtonValue,
+  type SearchOperatorInput,
+} from './operatorTypes'
 import {toJSON} from './operatorUtils'
 
 // @todo: don't manually cast `buttonValueComponent` and `inputComponent` once

@@ -1,48 +1,58 @@
+import {type DatasetAclMode} from '@sanity/client'
+import {type Framework} from '@vercel/frameworks'
+import dotenv from 'dotenv'
+import execa, {type CommonOptions} from 'execa'
 import {existsSync, readFileSync} from 'fs'
 import fs from 'fs/promises'
-import path from 'path'
-import dotenv from 'dotenv'
+import {evaluate, patch} from 'golden-fleece'
 import deburr from 'lodash/deburr'
 import noop from 'lodash/noop'
 import pFilter from 'p-filter'
+import path from 'path'
 import resolveFrom from 'resolve-from'
 import which from 'which'
 
-import type {DatasetAclMode} from '@sanity/client'
-import {type Framework} from '@vercel/frameworks'
-import execa, {CommonOptions} from 'execa'
-import {evaluate, patch} from 'golden-fleece'
-import type {InitFlags} from '../../commands/init/initCommand'
+import {CLIInitStepCompleted} from '../../__telemetry__/init.telemetry'
+import {type InitFlags} from '../../commands/init/initCommand'
 import {debug} from '../../debug'
 import {
   getPackageManagerChoice,
   installDeclaredPackages,
   installNewPackages,
 } from '../../packageManager'
-import {getPartialEnvWithNpmPath, PackageManager} from '../../packageManager/packageManagerChoice'
 import {
-  CliApiClient,
-  CliCommandArguments,
-  CliCommandContext,
-  CliCommandDefinition,
-  SanityCore,
-  SanityModuleInternal,
+  getPartialEnvWithNpmPath,
+  type PackageManager,
+} from '../../packageManager/packageManagerChoice'
+import {
+  type CliApiClient,
+  type CliCommandArguments,
+  type CliCommandContext,
+  type CliCommandDefinition,
+  type SanityCore,
+  type SanityModuleInternal,
 } from '../../types'
 import {getClientWrapper} from '../../util/clientWrapper'
 import {dynamicRequire} from '../../util/dynamicRequire'
-import {getProjectDefaults, ProjectDefaults} from '../../util/getProjectDefaults'
+import {getProjectDefaults, type ProjectDefaults} from '../../util/getProjectDefaults'
 import {getUserConfig} from '../../util/getUserConfig'
 import {isCommandGroup} from '../../util/isCommandGroup'
 import {isInteractive} from '../../util/isInteractive'
-import {login, LoginFlags} from '../login/login'
+import {login, type LoginFlags} from '../login/login'
 import {createProject} from '../project/createProject'
-import {CLIInitStepCompleted} from '../../__telemetry__/init.telemetry'
-import {BootstrapOptions, bootstrapTemplate} from './bootstrapTemplate'
-import {GenerateConfigOptions} from './createStudioConfig'
+import {type BootstrapOptions, bootstrapTemplate} from './bootstrapTemplate'
+import {type GenerateConfigOptions} from './createStudioConfig'
 import {absolutify, validateEmptyPath} from './fsUtils'
 import {tryGitInit} from './git'
 import {promptForDatasetName} from './promptForDatasetName'
 import {promptForAclMode, promptForDefaultConfig, promptForTypeScript} from './prompts'
+import {
+  promptForAppDir,
+  promptForAppendEnv,
+  promptForEmbeddedStudio,
+  promptForNextTemplate,
+  promptForStudioPath,
+} from './prompts/nextjs'
 import {reconfigureV2Project} from './reconfigureV2Project'
 import templates from './templates'
 import {
@@ -52,13 +62,6 @@ import {
   sanityStudioAppTemplate,
   sanityStudioPagesTemplate,
 } from './templates/nextjs'
-import {
-  promptForAppDir,
-  promptForAppendEnv,
-  promptForEmbeddedStudio,
-  promptForNextTemplate,
-  promptForStudioPath,
-} from './prompts/nextjs'
 
 // eslint-disable-next-line no-process-env
 const isCI = process.env.CI

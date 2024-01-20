@@ -1,7 +1,8 @@
-import {Path} from '@sanity/types'
+import {type Path} from '@sanity/types'
 import {isEqual} from '@sanity/util/paths'
 import {useContext, useMemo} from 'react'
-import {PortableTextMarker} from '../../../types'
+
+import {type PortableTextMarker} from '../../../types'
 import {PortableTextMarkersContext} from '../contexts/PortableTextMarkers'
 
 export function usePortableTextMarkers(path: Path): PortableTextMarker[] {

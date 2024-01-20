@@ -1,29 +1,30 @@
 import {
-  ArraySchemaType,
-  BooleanSchemaType,
-  CrossDatasetReferenceValue,
-  FileValue,
-  FormNodeValidation,
-  GeopointValue,
-  ImageValue,
-  NumberSchemaType,
-  ObjectSchemaType,
-  Path,
-  ReferenceValue,
-  SchemaType,
-  SlugValue,
-  StringSchemaType,
+  type ArraySchemaType,
+  type BooleanSchemaType,
+  type CrossDatasetReferenceValue,
+  type FileValue,
+  type FormNodeValidation,
+  type GeopointValue,
+  type ImageValue,
+  type NumberSchemaType,
+  type ObjectSchemaType,
+  type Path,
+  type ReferenceValue,
+  type SchemaType,
+  type SlugValue,
+  type StringSchemaType,
 } from '@sanity/types'
-import {ReactElement, ReactNode} from 'react'
-import {FormNodePresence} from '../../presence'
-import {DocumentFieldAction} from '../../config'
+import {type ReactElement, type ReactNode} from 'react'
+
+import {type DocumentFieldAction} from '../../config'
+import {type FormNodePresence} from '../../presence'
 import {
-  ArrayOfObjectsInputProps,
-  ArrayOfPrimitivesInputProps,
-  BooleanInputProps,
-  NumberInputProps,
-  ObjectInputProps,
-  StringInputProps,
+  type ArrayOfObjectsInputProps,
+  type ArrayOfPrimitivesInputProps,
+  type BooleanInputProps,
+  type NumberInputProps,
+  type ObjectInputProps,
+  type StringInputProps,
 } from './inputProps'
 
 /** @internal @deprecated DO NOT USE */

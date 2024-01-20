@@ -1,38 +1,39 @@
-import {ComponentType} from 'react'
 import {
-  CrossDatasetReferenceValue,
-  FileValue,
-  GeopointValue,
-  ImageValue,
-  ReferenceValue,
-  SlugValue,
+  type CrossDatasetReferenceValue,
+  type FileValue,
+  type GeopointValue,
+  type ImageValue,
+  type ReferenceValue,
+  type SlugValue,
 } from '@sanity/types'
-import {PreviewProps} from '../../components'
-import {CrossDatasetReferenceInputProps, ReferenceInputProps} from '../studio'
+import {type ComponentType} from 'react'
+
+import {type PreviewProps} from '../../components'
+import {type CrossDatasetReferenceInputProps, type ReferenceInputProps} from '../studio'
 import {
-  ArrayFieldProps,
-  ArrayOfPrimitivesFieldProps,
-  BooleanFieldProps,
-  NumberFieldProps,
-  ObjectFieldProps,
-  StringFieldProps,
+  type BlockAnnotationProps,
+  type BlockDecoratorProps,
+  type BlockListItemProps,
+  type BlockProps,
+  type BlockStyleProps,
+} from './blockProps'
+import {
+  type ArrayFieldProps,
+  type ArrayOfPrimitivesFieldProps,
+  type BooleanFieldProps,
+  type NumberFieldProps,
+  type ObjectFieldProps,
+  type StringFieldProps,
 } from './fieldProps'
 import {
-  ArrayOfObjectsInputProps,
-  ArrayOfPrimitivesInputProps,
-  BooleanInputProps,
-  NumberInputProps,
-  ObjectInputProps,
-  StringInputProps,
+  type ArrayOfObjectsInputProps,
+  type ArrayOfPrimitivesInputProps,
+  type BooleanInputProps,
+  type NumberInputProps,
+  type ObjectInputProps,
+  type StringInputProps,
 } from './inputProps'
-import {ObjectItem, ObjectItemProps, PrimitiveItemProps} from './itemProps'
-import {
-  BlockAnnotationProps,
-  BlockDecoratorProps,
-  BlockListItemProps,
-  BlockProps,
-  BlockStyleProps,
-} from './blockProps'
+import {type ObjectItem, type ObjectItemProps, type PrimitiveItemProps} from './itemProps'
 
 /**
  *

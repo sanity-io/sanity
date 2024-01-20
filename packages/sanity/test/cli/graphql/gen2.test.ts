@@ -2,7 +2,6 @@ import {orderBy} from 'lodash'
 
 import {extractFromSanitySchema} from '../../../src/_internal/cli/actions/graphql/extractFromSanitySchema'
 import generateSchema from '../../../src/_internal/cli/actions/graphql/gen2'
-
 import testStudioSchema from './fixtures/test-studio'
 
 describe('GraphQL - Generation 2', () => {

@@ -1,9 +1,10 @@
-import type {SchemaType} from '@sanity/types'
+import {type SchemaType} from '@sanity/types'
+
+import {type FIXME} from '../../../FIXME'
 import * as is from '../../utils/is'
-import {FIXME} from '../../../FIXME'
-import type {FileLike, Uploader} from './types'
-import {uploaders} from './uploaders'
 import {accepts} from './accepts'
+import {type FileLike, type Uploader} from './types'
+import {uploaders} from './uploaders'
 
 export function resolveUploader(type: SchemaType, file: FileLike): Uploader | null {
   return (

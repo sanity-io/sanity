@@ -1,5 +1,5 @@
-import {ComponentProps, lazy, memo, Suspense} from 'react'
 import {Skeleton, Stack, TextSkeleton} from '@sanity/ui'
+import React, {type ComponentProps, lazy, memo, Suspense} from 'react'
 
 const TorusKnotPreview = lazy(() => import('./TorusKnotPreview'))
 

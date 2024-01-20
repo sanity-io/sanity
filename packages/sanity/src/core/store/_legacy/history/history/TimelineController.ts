@@ -1,11 +1,12 @@
-import type {SanityClient} from '@sanity/client'
-import {Diff, ObjectDiff} from '@sanity/diff'
-import {Annotation, Chunk} from '../../../../field'
-import {RemoteSnapshotVersionEvent} from '../../document/document-pair/checkoutPair'
-import {Timeline, ParsedTimeRef} from './Timeline'
-import {getJsonStream} from './getJsonStream'
+import {type SanityClient} from '@sanity/client'
+import {type Diff, type ObjectDiff} from '@sanity/diff'
+
+import {type Annotation, type Chunk} from '../../../../field'
+import {type RemoteSnapshotVersionEvent} from '../../document/document-pair/checkoutPair'
 import {Aligner} from './Aligner'
+import {getJsonStream} from './getJsonStream'
 import {Reconstruction} from './Reconstruction'
+import {type ParsedTimeRef, type Timeline} from './Timeline'
 
 const TRANSLOG_ENTRY_LIMIT = 50
 

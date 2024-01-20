@@ -1,4 +1,4 @@
-import {Observable, OperatorFunction} from 'rxjs'
+import {type Observable, type OperatorFunction} from 'rxjs'
 import {catchError, tap} from 'rxjs/operators'
 
 type Selector<T, K> = (error: any, attemptNo: number, caught: Observable<T>) => Observable<K>

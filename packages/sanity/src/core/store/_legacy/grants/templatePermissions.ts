@@ -1,18 +1,19 @@
-import {InitialValueResolverContext, Schema} from '@sanity/types'
-import {combineLatest, from, Observable, of} from 'rxjs'
+import {type InitialValueResolverContext, type Schema} from '@sanity/types'
+import {combineLatest, from, type Observable, of} from 'rxjs'
 import {map, switchMap} from 'rxjs/operators'
+
 import {useSchema, useTemplates} from '../../../hooks'
-import {InitialValueTemplateItem, resolveInitialValue, Template} from '../../../templates'
+import {type InitialValueTemplateItem, resolveInitialValue, type Template} from '../../../templates'
 import {
-  type PartialExcept,
   createHookFromObservableFactory,
   getDraftId,
   getPublishedId,
+  type PartialExcept,
 } from '../../../util'
 import {useGrantsStore} from '../datastores'
 import {useInitialValueResolverContext} from '../document'
 import {getDocumentValuePermissions} from './documentValuePermissions'
-import {GrantsStore, PermissionCheckResult} from './types'
+import {type GrantsStore, type PermissionCheckResult} from './types'
 
 /** @internal */
 export interface TemplatePermissionsResult<TInitialValue = Record<string, unknown>>

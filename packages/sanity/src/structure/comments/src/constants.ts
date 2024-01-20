@@ -1,4 +1,4 @@
-import {CommentReactionOption, CommentReactionShortNames} from './types'
+import {type CommentReactionOption, type CommentReactionShortNames} from './types'
 
 // These should not be alphabetized as the current order is intentional
 export const COMMENT_REACTION_OPTIONS: CommentReactionOption[] = [

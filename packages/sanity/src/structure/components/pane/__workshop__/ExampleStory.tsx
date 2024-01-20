@@ -2,13 +2,14 @@ import {ChevronDownIcon} from '@sanity/icons'
 import {Container, Stack, TabList, Text} from '@sanity/ui'
 import {useBoolean, useSelect} from '@sanity/ui-workshop'
 import {useMemo} from 'react'
+import {ContextMenuButton} from 'sanity'
+
 import {Button, Tab} from '../../../../ui-components'
 import {Pane} from '../Pane'
 import {PaneContent} from '../PaneContent'
 import {PaneFooter} from '../PaneFooter'
 import {PaneHeader} from '../PaneHeader'
 import {PaneLayout} from '../PaneLayout'
-import {ContextMenuButton} from 'sanity'
 
 const PANE_TONE_OPTIONS = {
   Default: 'default',

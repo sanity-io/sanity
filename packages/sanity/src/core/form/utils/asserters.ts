@@ -1,12 +1,13 @@
 // eslint-disable-next-line no-empty-function,@typescript-eslint/no-empty-function
 
 import {isArraySchemaType, isBooleanSchemaType, isObjectSchemaType} from '@sanity/types'
-import {ArrayOfObjectsInputProps, InputProps, ObjectInputProps} from '../types'
+
+import {type ArrayOfObjectsInputProps, type InputProps, type ObjectInputProps} from '../types'
 import {
-  BooleanFieldProps,
-  FieldProps,
-  ObjectFieldProps,
-  PrimitiveFieldProps,
+  type BooleanFieldProps,
+  type FieldProps,
+  type ObjectFieldProps,
+  type PrimitiveFieldProps,
 } from '../types/fieldProps'
 
 export function assertType<T>(v: unknown): asserts v is T {

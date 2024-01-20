@@ -1,4 +1,4 @@
-import {EffectCallback, memo, useEffect, useRef} from 'react'
+import {type EffectCallback, memo, useEffect, useRef} from 'react'
 import shallowEquals from 'shallow-equals'
 
 function useShallowCompareMemoize<T>(value: T): Array<T | undefined> {

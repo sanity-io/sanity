@@ -1,9 +1,8 @@
 import {maybeDecompress} from '../fs-webstream/maybeDecompress'
-
-import {untar} from '../tar-webstream/untar'
-import {streamToAsyncIterator} from '../utils/streamToAsyncIterator'
 import {readFileAsWebStream} from '../fs-webstream/readFileAsWebStream'
 import {drain} from '../tar-webstream/drain'
+import {untar} from '../tar-webstream/untar'
+import {streamToAsyncIterator} from '../utils/streamToAsyncIterator'
 
 export async function* fromExportArchive(path: string) {
   for await (const [header, entry] of streamToAsyncIterator(

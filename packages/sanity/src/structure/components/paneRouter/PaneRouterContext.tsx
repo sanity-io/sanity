@@ -1,5 +1,6 @@
 import {createContext} from 'react'
-import {PaneRouterContextValue} from './types'
+
+import {type PaneRouterContextValue} from './types'
 
 function missingContext<T = unknown>(): T {
   throw new Error('Pane is missing router context')

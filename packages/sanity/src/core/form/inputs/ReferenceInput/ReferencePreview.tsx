@@ -1,13 +1,14 @@
-import {useMemo} from 'react'
-import {ObjectSchemaType} from '@sanity/types'
+import {type ObjectSchemaType} from '@sanity/types'
 import {Badge, Box, Inline} from '@sanity/ui'
+import React, {useMemo} from 'react'
+
+import {type PreviewLayoutKey} from '../../../components'
 import {DocumentStatus} from '../../../components/documentStatus'
 import {DocumentStatusIndicator} from '../../../components/documentStatusIndicator'
-import {PreviewLayoutKey} from '../../../components'
-import {RenderPreviewCallback} from '../../types'
-import {useDocumentPresence} from '../../../store'
 import {DocumentPreviewPresence} from '../../../presence'
-import {ReferenceInfo} from './types'
+import {useDocumentPresence} from '../../../store'
+import {type RenderPreviewCallback} from '../../types'
+import {type ReferenceInfo} from './types'
 
 /**
  * Used to preview a referenced type

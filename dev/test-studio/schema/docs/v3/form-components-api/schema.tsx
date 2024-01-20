@@ -1,12 +1,13 @@
 import {defineType} from 'sanity'
+
 import {structureGroupOptions} from '../../../../structure/groupByOption'
 import {
-  FormInput,
+  ArrayWithCustomActions,
   CustomField,
   CustomInput,
-  CustomPreview,
   CustomItem,
-  ArrayWithCustomActions,
+  CustomPreview,
+  FormInput,
 } from './components'
 
 export const formComponentsSchema = defineType({

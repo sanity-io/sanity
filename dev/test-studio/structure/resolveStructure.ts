@@ -1,23 +1,25 @@
 import {
+  CodeIcon,
   EarthGlobeIcon,
   ImagesIcon,
+  JoystickIcon,
   PlugIcon,
   RocketIcon,
   SyncIcon,
   TerminalIcon,
   UsersIcon,
-  JoystickIcon,
-  CodeIcon,
 } from '@sanity/icons'
 import {uuid} from '@sanity/uuid'
-import type {DocumentStore, SanityDocument, Schema} from 'sanity'
-import {ItemChild, StructureBuilder, StructureResolver} from 'sanity/structure'
-import {map} from 'rxjs/operators'
 import {type Observable, timer} from 'rxjs'
+import {map} from 'rxjs/operators'
+import {type DocumentStore, type SanityDocument, type Schema} from 'sanity'
+import {type ItemChild, type StructureBuilder, type StructureResolver} from 'sanity/structure'
+
 import {DebugPane} from '../components/panes/debug'
 import {JsonDocumentDump} from '../components/panes/JsonDocumentDump'
 import {TranslateExample} from '../components/TranslateExample'
 import {_buildTypeGroup} from './_buildTypeGroup'
+import {delayValue} from './_helpers'
 import {
   CI_INPUT_TYPES,
   DEBUG_FIELD_GROUP_TYPES,
@@ -28,7 +30,6 @@ import {
   STANDARD_PORTABLE_TEXT_INPUT_TYPES,
   TS_DOC_TYPES,
 } from './constants'
-import {delayValue} from './_helpers'
 import {typesInOptionGroup} from './groupByOption'
 
 export const structure: StructureResolver = (S, {schema, documentStore, i18n}) => {

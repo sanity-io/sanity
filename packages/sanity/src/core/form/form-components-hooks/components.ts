@@ -1,18 +1,25 @@
-import {SchemaType} from '@sanity/types'
-import {ComponentType, ReactElement, createElement, useCallback} from 'react'
-import {PreviewProps} from '../../components/previews'
+import {type SchemaType} from '@sanity/types'
+import {type ComponentType, createElement, type ReactElement, useCallback} from 'react'
+
+import {type PreviewProps} from '../../components/previews'
+import {
+  defaultResolveAnnotationComponent,
+  defaultResolveBlockComponent,
+  defaultResolveInlineBlockComponent,
+} from '../studio/inputResolver/blockResolver'
+import {defaultResolveFieldComponent} from '../studio/inputResolver/fieldResolver'
 import {
   defaultResolveInputComponent,
   defaultResolvePreviewComponent,
 } from '../studio/inputResolver/inputResolver'
-import {BlockAnnotationProps, BlockProps, FieldProps, InputProps, ItemProps} from '../types'
-import {defaultResolveFieldComponent} from '../studio/inputResolver/fieldResolver'
 import {defaultResolveItemComponent} from '../studio/inputResolver/itemResolver'
 import {
-  defaultResolveBlockComponent,
-  defaultResolveInlineBlockComponent,
-  defaultResolveAnnotationComponent,
-} from '../studio/inputResolver/blockResolver'
+  type BlockAnnotationProps,
+  type BlockProps,
+  type FieldProps,
+  type InputProps,
+  type ItemProps,
+} from '../types'
 
 function useResolveDefaultComponent<T extends {schemaType?: SchemaType}>(props: {
   componentProps: Omit<T, 'renderDefault'>

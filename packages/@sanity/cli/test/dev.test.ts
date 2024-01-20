@@ -1,6 +1,7 @@
-import path from 'path'
 import {createHash} from 'crypto'
 import {readFile} from 'fs/promises'
+import path from 'path'
+
 import {describeCliTest} from './shared/describe'
 import {testServerCommand} from './shared/devServer'
 import {getTestRunArgs, studiosPath, studioVersions} from './shared/environment'

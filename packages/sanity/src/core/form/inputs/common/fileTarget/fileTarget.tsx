@@ -1,16 +1,17 @@
-import {
-  ComponentType,
-  ForwardedRef,
+import {useForwardedRef} from '@sanity/ui'
+import React, {
+  type ClipboardEvent,
+  type ComponentType,
+  type DragEvent,
+  type ForwardedRef,
   forwardRef,
+  type KeyboardEvent,
   useCallback,
   useEffect,
   useRef,
   useState,
-  KeyboardEvent,
-  DragEvent,
-  ClipboardEvent,
 } from 'react'
-import {useForwardedRef} from '@sanity/ui'
+
 import {extractDroppedFiles, extractPastedFiles} from './utils/extractFiles'
 import {imageUrlToBlob} from './utils/imageUrlToBlob'
 

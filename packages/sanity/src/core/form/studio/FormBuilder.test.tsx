@@ -1,17 +1,18 @@
 /* eslint-disable camelcase */
 
-import {SanityClient} from '@sanity/client'
-import {defineType, Path} from '@sanity/types'
+import {type SanityClient} from '@sanity/client'
+import {defineType, type Path} from '@sanity/types'
 import {render} from '@testing-library/react'
 import {useMemo} from 'react'
+
 import {createMockSanityClient} from '../../../../test/mocks/mockSanityClient'
 import {createTestProvider} from '../../../../test/testUtils/TestProvider'
 import {useWorkspace} from '../../studio'
 import {EMPTY_ARRAY} from '../../util'
 import {createPatchChannel} from '../patch'
 import {useFormState} from '../store/useFormState'
-import {FormDocumentValue} from '../types'
-import {FormBuilder, FormBuilderProps} from './FormBuilder'
+import {type FormDocumentValue} from '../types'
+import {FormBuilder, type FormBuilderProps} from './FormBuilder'
 
 const schemaTypes = [
   defineType({

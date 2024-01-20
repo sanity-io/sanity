@@ -1,5 +1,5 @@
 import {hues} from '@sanity/color'
-import {Theme} from '@sanity/ui'
+import {type Theme} from '@sanity/ui'
 import styled, {css} from 'styled-components'
 
 const SIZE = 43

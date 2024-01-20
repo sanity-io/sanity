@@ -1,36 +1,37 @@
-import type {BifurClient} from '@sanity/bifur-client'
-import type {ClientConfig as SanityClientConfig, SanityClient} from '@sanity/client'
-import type {
-  AssetSource,
-  CurrentUser,
-  ObjectSchemaType,
-  SanityDocumentLike,
-  Schema,
-  SchemaType,
-  SchemaTypeDefinition,
+import {type BifurClient} from '@sanity/bifur-client'
+import {type ClientConfig as SanityClientConfig, type SanityClient} from '@sanity/client'
+import {
+  type AssetSource,
+  type CurrentUser,
+  type ObjectSchemaType,
+  type SanityDocumentLike,
+  type Schema,
+  type SchemaType,
+  type SchemaTypeDefinition,
 } from '@sanity/types'
-import type {ComponentType, ReactElement, ReactNode} from 'react'
-import type {Observable} from 'rxjs'
-import type {i18n} from 'i18next'
-import type {FormBuilderCustomMarkersComponent, FormBuilderMarkersComponent} from '../form'
-import type {LocalePluginOptions, LocaleSource} from '../i18n/types'
-import type {InitialValueTemplateItem, Template, TemplateItem} from '../templates'
-import type {AuthStore} from '../store'
-import type {StudioTheme} from '../theme'
-import type {SearchFilterDefinition} from '../studio/components/navbar/search/definitions/filters'
-import type {SearchOperatorDefinition} from '../studio/components/navbar/search/definitions/operators'
-import type {StudioComponents, StudioComponentsPluginOptions} from './studio'
-import type {AuthConfig} from './auth/types'
-import type {
-  DocumentActionComponent,
-  DocumentBadgeComponent,
-  DocumentFieldAction,
-  DocumentFieldActionsResolver,
-  DocumentFieldActionsResolverContext,
-  DocumentInspector,
+import {type i18n} from 'i18next'
+import {type ComponentType, type ReactElement, type ReactNode} from 'react'
+import {type Observable} from 'rxjs'
+import {type Router, type RouterState} from 'sanity/router'
+
+import {type FormBuilderCustomMarkersComponent, type FormBuilderMarkersComponent} from '../form'
+import {type LocalePluginOptions, type LocaleSource} from '../i18n/types'
+import {type AuthStore} from '../store'
+import {type SearchFilterDefinition} from '../studio/components/navbar/search/definitions/filters'
+import {type SearchOperatorDefinition} from '../studio/components/navbar/search/definitions/operators'
+import {type InitialValueTemplateItem, type Template, type TemplateItem} from '../templates'
+import {type StudioTheme} from '../theme'
+import {type AuthConfig} from './auth/types'
+import {
+  type DocumentActionComponent,
+  type DocumentBadgeComponent,
+  type DocumentFieldAction,
+  type DocumentFieldActionsResolver,
+  type DocumentFieldActionsResolverContext,
+  type DocumentInspector,
 } from './document'
-import {FormComponents} from './form'
-import type {Router, RouterState} from 'sanity/router'
+import {type FormComponents} from './form'
+import {type StudioComponents, type StudioComponentsPluginOptions} from './studio'
 
 /**
  * @hidden
@@ -826,6 +827,6 @@ export interface PreparedConfig {
 export type {
   AuthConfig,
   AuthProvider,
-  LoginMethod,
   CookielessCompatibleLoginMethod,
+  LoginMethod,
 } from './auth/types'

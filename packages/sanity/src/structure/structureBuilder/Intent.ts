@@ -1,5 +1,5 @@
-import {PartialDocumentList, getTypeNamesFromFilter} from './DocumentList'
-import {StructureNode} from './StructureNodes'
+import {getTypeNamesFromFilter, type PartialDocumentList} from './DocumentList'
+import {type StructureNode} from './StructureNodes'
 
 /**
  * Intent parameters (json)

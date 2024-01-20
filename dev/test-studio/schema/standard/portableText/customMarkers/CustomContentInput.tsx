@@ -1,7 +1,8 @@
-import {useCallback, useMemo} from 'react'
-import {PortableTextInput, PortableTextInputProps, PortableTextMarker} from 'sanity'
 import {htmlToBlocks} from '@sanity/block-tools'
-import {OnPasteFn, PortableTextBlock} from '@sanity/portable-text-editor'
+import {type OnPasteFn, type PortableTextBlock} from '@sanity/portable-text-editor'
+import React, {useCallback, useMemo} from 'react'
+import {PortableTextInput, type PortableTextInputProps, type PortableTextMarker} from 'sanity'
+
 import {renderBlockActions} from './blockActions'
 import {renderCustomMarkers} from './customMarkers'
 

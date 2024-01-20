@@ -1,6 +1,6 @@
-export * from './PaneContextMenuButton'
 export * from './Pane'
 export * from './PaneContent'
+export * from './PaneContextMenuButton'
 export * from './PaneFooter'
 export * from './PaneHeader'
 export * from './PaneHeaderActionButton'

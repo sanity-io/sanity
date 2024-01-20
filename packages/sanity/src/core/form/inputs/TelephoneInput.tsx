@@ -1,5 +1,7 @@
 import {TextInput} from '@sanity/ui'
-import {StringInputProps} from '../types'
+import React from 'react'
+
+import {type StringInputProps} from '../types'
 
 /**
  *

@@ -1,6 +1,7 @@
-import type {Path} from '@sanity/types'
-import type {Operation} from './operations/types'
-import {Optional} from './typeUtils'
+import {type Path} from '@sanity/types'
+
+import {type Operation} from './operations/types'
+import {type Optional} from './typeUtils'
 
 export type NodePatchList =
   | [NodePatch, ...NodePatch[]]

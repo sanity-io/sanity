@@ -1,21 +1,24 @@
 import {Flex, Layer, useClickOutside, useLayer, useToast} from '@sanity/ui'
-import {Fragment, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import * as PathUtils from '@sanity/util/paths'
+import {Fragment, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {type DocumentInspectorProps, useCurrentUser, useTranslation, useUnique} from 'sanity'
 import styled from 'styled-components'
+
 import {usePaneRouter} from '../../../components'
 import {EMPTY_PARAMS} from '../../../constants'
 import {useDocumentPane} from '../../../panes/document/useDocumentPane'
+import {commentsLocaleNamespace} from '../../i18n'
 import {
-  CommentCreatePayload,
+  type CommentCreatePayload,
   CommentDeleteDialog,
-  CommentEditPayload,
-  CommentReactionOption,
+  type CommentEditPayload,
+  type CommentReactionOption,
   CommentsList,
-  CommentsListHandle,
+  type CommentsListHandle,
   CommentsOnboardingPopover,
-  CommentsSelectedPath,
-  CommentStatus,
-  CommentsUIMode,
+  type CommentsSelectedPath,
+  type CommentStatus,
+  type CommentsUIMode,
   CommentsUpsellPanel,
   useComments,
   useCommentsEnabled,
@@ -23,10 +26,8 @@ import {
   useCommentsSelectedPath,
   useCommentsUpsell,
 } from '../../src'
-import {commentsLocaleNamespace} from '../../i18n'
-import {CommentsInspectorHeader} from './CommentsInspectorHeader'
 import {CommentsInspectorFeedbackFooter} from './CommentsInspectorFeedbackFooter'
-import {DocumentInspectorProps, useCurrentUser, useTranslation, useUnique} from 'sanity'
+import {CommentsInspectorHeader} from './CommentsInspectorHeader'
 
 interface CommentToDelete {
   commentId: string

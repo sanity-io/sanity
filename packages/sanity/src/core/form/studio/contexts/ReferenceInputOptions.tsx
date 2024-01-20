@@ -1,6 +1,14 @@
-import {ComponentType, createContext, HTMLProps, ReactNode, useContext, useMemo} from 'react'
-import {Path} from '@sanity/types'
-import {TemplatePermissionsResult} from '../../../store'
+import {type Path} from '@sanity/types'
+import React, {
+  type ComponentType,
+  createContext,
+  type HTMLProps,
+  type ReactNode,
+  useContext,
+  useMemo,
+} from 'react'
+
+import {type TemplatePermissionsResult} from '../../../store'
 
 const Context = createContext<ReferenceInputOptions>({})
 

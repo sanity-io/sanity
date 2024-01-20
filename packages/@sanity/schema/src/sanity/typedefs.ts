@@ -1,5 +1,3 @@
-import type {SchemaType} from '@sanity/types'
-
 /**
  * @internal
  */

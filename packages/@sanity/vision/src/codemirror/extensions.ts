@@ -1,21 +1,21 @@
-import {history, defaultKeymap, historyKeymap} from '@codemirror/commands'
-import {highlightSelectionMatches} from '@codemirror/search'
-import {javascriptLanguage} from '@codemirror/lang-javascript'
 import {closeBrackets} from '@codemirror/autocomplete'
+import {defaultKeymap, history, historyKeymap} from '@codemirror/commands'
+import {javascriptLanguage} from '@codemirror/lang-javascript'
 import {
-  lineNumbers,
-  highlightActiveLineGutter,
-  highlightSpecialChars,
-  drawSelection,
-  highlightActiveLine,
-  keymap,
-} from '@codemirror/view'
-import {
+  bracketMatching,
+  defaultHighlightStyle,
   indentOnInput,
   syntaxHighlighting,
-  defaultHighlightStyle,
-  bracketMatching,
 } from '@codemirror/language'
+import {highlightSelectionMatches} from '@codemirror/search'
+import {
+  drawSelection,
+  highlightActiveLine,
+  highlightActiveLineGutter,
+  highlightSpecialChars,
+  keymap,
+  lineNumbers,
+} from '@codemirror/view'
 
 export const codemirrorExtensions = [
   [javascriptLanguage],

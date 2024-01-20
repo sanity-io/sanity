@@ -1,4 +1,4 @@
-import {SchemaValidationProblemPath} from '@sanity/types'
+import {type SchemaValidationProblemPath} from '@sanity/types'
 
 export function renderPath(path: SchemaValidationProblemPath) {
   return path

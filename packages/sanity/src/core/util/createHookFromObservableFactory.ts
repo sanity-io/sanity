@@ -1,6 +1,7 @@
 import {useMemoObservable} from 'react-rx'
-import {concat, Observable, of} from 'rxjs'
+import {concat, type Observable, of} from 'rxjs'
 import {catchError, distinctUntilChanged, map, scan, switchMap} from 'rxjs/operators'
+
 import {useUnique} from './useUnique'
 
 /** @internal */

@@ -1,5 +1,6 @@
 import {useEffect} from 'react'
 import shallowEquals from 'shallow-equals'
+
 import {usePrevious} from './usePrevious'
 
 /**

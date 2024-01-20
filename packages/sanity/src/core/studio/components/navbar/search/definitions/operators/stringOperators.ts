@@ -1,6 +1,6 @@
 import {SearchFilterStringInput} from '../../components/filters/filter/inputs/string/String'
 import {SearchFilterStringListInput} from '../../components/filters/filter/inputs/string/StringList'
-import {defineSearchOperator, SearchOperatorInput} from './operatorTypes'
+import {defineSearchOperator, type SearchOperatorInput} from './operatorTypes'
 import {toJSON} from './operatorUtils'
 
 // @todo: don't manually cast `buttonValueComponent` and `inputComponent` once

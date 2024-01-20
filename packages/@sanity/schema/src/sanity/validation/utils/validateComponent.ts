@@ -1,6 +1,6 @@
-import {warning} from '../createValidationResult'
 import inspect from '../../inspect'
-import type {SchemaValidationResult} from '../../typedefs'
+import {type SchemaValidationResult} from '../../typedefs'
+import {warning} from '../createValidationResult'
 import {isComponentLike} from './isComponent'
 
 export function validateComponent(typeDef: any): SchemaValidationResult[] {

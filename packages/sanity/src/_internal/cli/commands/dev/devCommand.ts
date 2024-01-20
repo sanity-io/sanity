@@ -1,5 +1,10 @@
-import type {CliCommandArguments, CliCommandContext, CliCommandDefinition} from '@sanity/cli'
-import type {StartDevServerCommandFlags} from '../../actions/dev/devAction'
+import {
+  type CliCommandArguments,
+  type CliCommandContext,
+  type CliCommandDefinition,
+} from '@sanity/cli'
+
+import {type StartDevServerCommandFlags} from '../../actions/dev/devAction'
 
 const helpText = `
 Notes
@@ -38,7 +43,7 @@ export async function getDevAction(): Promise<
   // NOTE: in dev-mode we want to include from `src` so we need to use `.ts` extension
   // NOTE: this `if` statement is not included in the output bundle
   if (__DEV__) {
-    // eslint-disable-next-line import/extensions
+    // eslint-disable-next-line import/extensions,@typescript-eslint/consistent-type-imports
     const mod: typeof import('../../actions/dev/devAction') = require('../../actions/dev/devAction.ts')
 
     return mod.default

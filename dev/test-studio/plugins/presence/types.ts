@@ -1,4 +1,4 @@
-import type {ComponentType} from 'react'
+import {type ComponentType} from 'react'
 
 export interface PresenceToolConfig {
   name?: string

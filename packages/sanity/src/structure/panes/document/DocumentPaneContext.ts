@@ -1,27 +1,28 @@
 import {
-  ValidationMarker,
-  Path,
-  SanityDocument,
-  ObjectSchemaType,
-  SanityDocumentLike,
+  type ObjectSchemaType,
+  type Path,
+  type SanityDocument,
+  type SanityDocumentLike,
+  type ValidationMarker,
 } from '@sanity/types'
 import {createContext} from 'react'
-import {View} from '../../structureBuilder'
-import {PaneMenuItem, PaneMenuItemGroup} from '../../types'
-import {TimelineMode} from './types'
 import {
-  DocumentActionComponent,
-  DocumentBadgeComponent,
-  DocumentFieldAction,
-  DocumentFormNode,
-  DocumentInspector,
-  DocumentLanguageFilterComponent,
-  EditStateFor,
-  PatchEvent,
-  PermissionCheckResult,
-  StateTree,
-  TimelineStore,
+  type DocumentActionComponent,
+  type DocumentBadgeComponent,
+  type DocumentFieldAction,
+  type DocumentFormNode,
+  type DocumentInspector,
+  type DocumentLanguageFilterComponent,
+  type EditStateFor,
+  type PatchEvent,
+  type PermissionCheckResult,
+  type StateTree,
+  type TimelineStore,
 } from 'sanity'
+
+import {type View} from '../../structureBuilder'
+import {type PaneMenuItem, type PaneMenuItemGroup} from '../../types'
+import {type TimelineMode} from './types'
 
 /** @internal */
 export interface DocumentPaneContextValue {

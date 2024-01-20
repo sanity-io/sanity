@@ -1,4 +1,4 @@
-import type {TransactionLogEventWithEffects} from '@sanity/types'
+import {type TransactionLogEventWithEffects} from '@sanity/types'
 
 type StreamResult = TransactionLogEventWithEffects | {error: {description?: string; type: string}}
 

@@ -1,8 +1,9 @@
 import {JSDOM} from 'jsdom'
-import {BlockTestFn} from '../types'
-import defaultSchema from '../../../fixtures/defaultSchema'
-import {DeserializerRule} from '../../../../src/types'
+
 import {isElement} from '../../../../src/HtmlDeserializer/helpers'
+import {type DeserializerRule} from '../../../../src/types'
+import defaultSchema from '../../../fixtures/defaultSchema'
+import {type BlockTestFn} from '../types'
 
 const blockContentType = defaultSchema
   .get('blogPost')

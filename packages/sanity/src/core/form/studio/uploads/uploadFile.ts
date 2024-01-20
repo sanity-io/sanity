@@ -1,10 +1,11 @@
-import {concat, Observable, of} from 'rxjs'
+import {type SanityClient} from '@sanity/client'
+import {concat, type Observable, of} from 'rxjs'
 import {map} from 'rxjs/operators'
-import {SanityClient} from '@sanity/client'
+
 import {set} from '../../patch'
 import {uploadFileAsset} from '../inputs/client-adapters/assets'
-import {UploadOptions, UploadProgressEvent} from './types'
 import {UPLOAD_STATUS_KEY} from './constants'
+import {type UploadOptions, type UploadProgressEvent} from './types'
 import {CLEANUP_EVENT, createInitialUploadEvent, createUploadEvent} from './utils'
 
 export function uploadFile(

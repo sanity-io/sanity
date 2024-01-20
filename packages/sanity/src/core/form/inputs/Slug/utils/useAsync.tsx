@@ -1,4 +1,4 @@
-import {DependencyList, useState, useRef, useCallback} from 'react'
+import {type DependencyList, useCallback, useRef, useState} from 'react'
 
 export type AsyncCompleteState<T> = {
   status: 'complete'

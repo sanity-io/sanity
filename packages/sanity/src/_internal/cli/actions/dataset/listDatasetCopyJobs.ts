@@ -1,6 +1,6 @@
-import {parseISO, formatDistanceToNow, formatDistance} from 'date-fns'
+import {type CliCommandContext} from '@sanity/cli'
 import {Table} from 'console-table-printer'
-import type {CliCommandContext} from '@sanity/cli'
+import {formatDistance, formatDistanceToNow, parseISO} from 'date-fns'
 
 interface ListFlags {
   offset?: number

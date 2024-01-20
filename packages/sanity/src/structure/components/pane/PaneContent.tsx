@@ -1,8 +1,9 @@
-import {BoxOverflow} from '@sanity/ui'
-import {ElementType, ForwardedRef, HTMLProps, forwardRef} from 'react'
+import {type BoxOverflow} from '@sanity/ui'
+import {type ElementType, type ForwardedRef, forwardRef, type HTMLProps} from 'react'
+
+import {Root} from './PaneContent.styles'
 import {usePane} from './usePane'
 import {usePaneLayout} from './usePaneLayout'
-import {Root} from './PaneContent.styles'
 
 interface PaneContentProps {
   as?: ElementType | keyof JSX.IntrinsicElements

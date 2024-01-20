@@ -3,8 +3,8 @@
  * Some of these tests have no expect statement;
  * use of ts-expect-error serves the same purpose - TypeScript is the testrunner here
  */
-import type {ImageDefinition} from '../definition'
-import {defineField, defineType, Schema} from '../types'
+import {type ImageDefinition} from '../definition'
+import {defineField, defineType} from '../types'
 
 describe('image types', () => {
   it('should define image schema', () => {

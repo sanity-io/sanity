@@ -1,11 +1,12 @@
 import {render} from '@testing-library/react'
-import {Panes} from '../../structureResolvers'
-import * as USE_STRUCTURE_TOOL from '../../useStructureTool'
+import * as SANITY from 'sanity'
+
+import {createMockSanityClient} from '../../../../test/mocks/mockSanityClient'
 import {createTestProvider} from '../../../../test/testUtils/TestProvider'
 import {structureUsEnglishLocaleBundle} from '../../i18n'
-import {createMockSanityClient} from '../../../../test/mocks/mockSanityClient'
+import {type Panes} from '../../structureResolvers'
+import * as USE_STRUCTURE_TOOL from '../../useStructureTool'
 import {StructureTitle} from './StructureTitle'
-import * as SANITY from 'sanity'
 
 jest.mock('sanity', () => {
   const actual = jest.requireActual('sanity')

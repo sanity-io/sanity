@@ -1,7 +1,8 @@
-import {createContext, ReactNode, useCallback, useContext, useMemo, useRef} from 'react'
-import {Path} from '@sanity/types'
+import {type Path} from '@sanity/types'
+import React, {createContext, type ReactNode, useCallback, useContext, useRef} from 'react'
+
 import {getValueAtPath} from '../../field'
-import type {FormDocumentValue} from '../types'
+import {type FormDocumentValue} from '../types'
 
 /**
  * @internal

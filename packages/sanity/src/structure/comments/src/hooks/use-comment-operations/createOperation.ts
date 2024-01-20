@@ -1,12 +1,13 @@
+import {type SanityClient} from '@sanity/client'
 import {uuid} from '@sanity/uuid'
-import {SanityClient} from '@sanity/client'
+import {type CurrentUser, type Tool} from 'sanity'
+
 import {
-  CommentContext,
-  CommentCreatePayload,
-  CommentDocument,
-  CommentPostPayload,
+  type CommentContext,
+  type CommentCreatePayload,
+  type CommentDocument,
+  type CommentPostPayload,
 } from '../../types'
-import {CurrentUser, Tool} from 'sanity'
 
 interface CreateOperationProps {
   activeTool: Tool | undefined

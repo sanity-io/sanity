@@ -1,11 +1,3 @@
-import type {
-  ApiCustomizationOptions,
-  ConvertedDocumentType,
-  ConvertedType,
-  ConvertedUnion,
-  InputObjectType,
-} from '../types'
-import {isDocumentType, isNonUnion, isUnion} from '../helpers'
 import {createBooleanFilters} from '../gen2/filters/booleanFilters'
 import {createDateFilters} from '../gen2/filters/dateFilters'
 import {createDateTimeFilters} from '../gen2/filters/dateTimeFilters'
@@ -13,6 +5,14 @@ import {createFloatFilters} from '../gen2/filters/floatFilters'
 import {createIdFilters} from '../gen2/filters/idFilters'
 import {createIntegerFilters} from '../gen2/filters/integerFilters'
 import {createStringFilters} from '../gen2/filters/stringFilters'
+import {isDocumentType, isNonUnion, isUnion} from '../helpers'
+import {
+  type ApiCustomizationOptions,
+  type ConvertedDocumentType,
+  type ConvertedType,
+  type ConvertedUnion,
+  type InputObjectType,
+} from '../types'
 import {createDocumentFilters} from './filters/documentFilters'
 import {getFilterFieldName} from './utils'
 

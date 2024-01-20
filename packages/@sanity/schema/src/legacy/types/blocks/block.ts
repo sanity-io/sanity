@@ -1,15 +1,15 @@
 import {pick} from 'lodash'
-import {lazyGetter} from '../utils'
-import createPreviewGetter from '../../preview/createPreviewGetter'
 
+import createPreviewGetter from '../../preview/createPreviewGetter'
+import {lazyGetter} from '../utils'
 import {
   BLOCK_STYLES,
   DEFAULT_BLOCK_STYLES,
+  DEFAULT_DECORATORS,
   DEFAULT_LINK_ANNOTATION,
   DEFAULT_LIST_TYPES,
   DEFAULT_MARKS_FIELD,
   DEFAULT_TEXT_FIELD,
-  DEFAULT_DECORATORS,
 } from './defaults'
 
 const INHERITED_FIELDS = [

@@ -1,13 +1,14 @@
-import {catchError, map, shareReplay, startWith} from 'rxjs/operators'
-import {Observable, of} from 'rxjs'
-import {SanityClient} from '@sanity/client'
-import {useMemoObservable} from 'react-rx'
-import {isFinite} from 'lodash'
+import {type SanityClient} from '@sanity/client'
 import {DEFAULT_MAX_FIELD_DEPTH} from '@sanity/schema/_internal'
+import {isFinite} from 'lodash'
+import {useMemo} from 'react'
+import {useMemoObservable} from 'react-rx'
+import {type Observable, of} from 'rxjs'
+import {catchError, map, shareReplay, startWith} from 'rxjs/operators'
+
+import {useClient} from '../../../../../hooks'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../../studioClient'
 import {useWorkspace} from '../../../../workspace'
-import {useClient} from '../../../../../hooks'
-import {useMemo} from 'react'
 
 /** By default the API will return 0 = all fields */
 const DEFAULT_API_FIELD_DEPTH = 0

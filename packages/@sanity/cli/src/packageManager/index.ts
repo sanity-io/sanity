@@ -1,16 +1,16 @@
-import {getCliUpgradeCommand} from './getUpgradeCommand'
-import {uninstallPackages} from './uninstallPackages'
-import {installNewPackages, installDeclaredPackages} from './installPackages'
-import {getPackageManagerChoice} from './packageManagerChoice'
 import {getInstallCommand} from './getInstallCommand'
+import {getCliUpgradeCommand} from './getUpgradeCommand'
+import {installDeclaredPackages, installNewPackages} from './installPackages'
+import {getPackageManagerChoice} from './packageManagerChoice'
+import {uninstallPackages} from './uninstallPackages'
 import {getYarnStub} from './yarnStub'
 
 // Exported for internal CLI usage
 export {
-  getYarnStub,
   getCliUpgradeCommand,
   getInstallCommand,
   getPackageManagerChoice,
+  getYarnStub,
   installDeclaredPackages,
   installNewPackages,
   uninstallPackages,

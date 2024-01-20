@@ -1,6 +1,7 @@
-import type {CliCommandAction} from '@sanity/cli'
+import {type CliCommandAction} from '@sanity/cli'
 import {hideBin} from 'yargs/helpers'
 import yargs from 'yargs/yargs'
+
 import {promptForDatasetAliasName} from '../../../actions/dataset/alias/promptForDatasetAliasName'
 import {validateDatasetAliasName} from '../../../actions/dataset/alias/validateDatasetAliasName'
 import * as aliasClient from './datasetAliasesClient'

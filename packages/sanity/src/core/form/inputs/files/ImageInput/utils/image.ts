@@ -1,5 +1,6 @@
 import {uuid} from '@sanity/uuid'
-import {FIXME} from '../../../../../FIXME'
+
+import {type FIXME} from '../../../../../FIXME'
 
 export function urlToFile(url: string, filename?: string): Promise<File> {
   return new Promise((resolve, reject) => {

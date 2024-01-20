@@ -1,4 +1,4 @@
-import {isArraySchemaType, isObjectSchemaType, SchemaType} from '@sanity/types'
+import {isArraySchemaType, isObjectSchemaType, type SchemaType} from '@sanity/types'
 
 export function createProtoValue(type: SchemaType): any {
   if (isObjectSchemaType(type)) {

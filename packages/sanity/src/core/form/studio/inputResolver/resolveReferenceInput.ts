@@ -1,5 +1,6 @@
-import {ReferenceSchemaType} from '@sanity/types'
+import {type ReferenceSchemaType} from '@sanity/types'
 import {once} from 'lodash'
+
 import {StudioReferenceInput} from '../inputs/reference/StudioReferenceInput'
 
 /* eslint-disable no-console */

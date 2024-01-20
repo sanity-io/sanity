@@ -1,6 +1,7 @@
-import {type SanityClient, createClient} from '@sanity/client'
-import {sanityIdify} from '../utils/sanityIdify'
+import {createClient, type SanityClient} from '@sanity/client'
+
 import {readEnv} from '../utils/envVars'
+import {sanityIdify} from '../utils/sanityIdify'
 
 export type KnownEnvVar =
   | 'SANITY_E2E_DATASET'

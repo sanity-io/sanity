@@ -1,16 +1,17 @@
-import {memo, useCallback} from 'react'
 import {capitalize} from 'lodash'
-import {FieldSetMember} from '../../store'
-import {
-  RenderAnnotationCallback,
-  RenderArrayOfObjectsItemCallback,
-  RenderBlockCallback,
-  RenderFieldCallback,
-  RenderInputCallback,
-  RenderPreviewCallback,
-} from '../../types'
+import React, {memo, useCallback} from 'react'
+
 import {FormFieldSet} from '../../components/formField'
+import {type FieldSetMember} from '../../store'
 import {useFormCallbacks} from '../../studio/contexts/FormCallbacks'
+import {
+  type RenderAnnotationCallback,
+  type RenderArrayOfObjectsItemCallback,
+  type RenderBlockCallback,
+  type RenderFieldCallback,
+  type RenderInputCallback,
+  type RenderPreviewCallback,
+} from '../../types'
 import {MemberField} from './MemberField'
 import {MemberFieldError} from './MemberFieldError'
 

@@ -1,9 +1,9 @@
-import type {BuiltInValidationReporter} from '../../validateAction'
+import {type BuiltInValidationReporter} from '../../validateAction'
 import {formatDocumentValidation} from './formatDocumentValidation'
 import {
-  DocumentValidationResult,
-  Level,
   count,
+  type DocumentValidationResult,
+  type Level,
   levelValues,
   percent,
   seconds,

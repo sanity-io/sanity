@@ -1,4 +1,5 @@
-import type {CliPrompter} from '@sanity/cli'
+import {type CliPrompter} from '@sanity/cli'
+
 import {validateDatasetAliasName} from './validateDatasetAliasName'
 
 export function promptForDatasetAliasName(

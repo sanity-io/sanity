@@ -1,26 +1,33 @@
 import {
-  ArraySchemaType,
-  BlockDecoratorDefinition,
-  BlockListDefinition,
-  BlockSchemaType,
-  BlockStyleDefinition,
-  ObjectSchemaType,
-  Path,
-  PortableTextBlock,
-  PortableTextChild,
-  PortableTextListBlock,
-  PortableTextObject,
-  PortableTextSpan,
-  PortableTextTextBlock,
-  SpanSchemaType,
-  TypedObject,
+  type ArraySchemaType,
+  type BlockDecoratorDefinition,
+  type BlockListDefinition,
+  type BlockSchemaType,
+  type BlockStyleDefinition,
+  type ObjectSchemaType,
+  type Path,
+  type PortableTextBlock,
+  type PortableTextChild,
+  type PortableTextListBlock,
+  type PortableTextObject,
+  type PortableTextSpan,
+  type PortableTextTextBlock,
+  type SpanSchemaType,
+  type TypedObject,
 } from '@sanity/types'
-import {Subject, Observable} from 'rxjs'
-import {Descendant, Node as SlateNode, Operation as SlateOperation} from 'slate'
-import {ReactEditor} from 'slate-react'
-import {FocusEvent, ClipboardEvent, KeyboardEvent, ReactElement, RefObject} from 'react'
-import type {Patch} from '../types/patch'
-import {PortableTextEditor} from '../editor/PortableTextEditor'
+import {
+  type ClipboardEvent,
+  type FocusEvent,
+  type KeyboardEvent,
+  type ReactElement,
+  type RefObject,
+} from 'react'
+import {type Observable, type Subject} from 'rxjs'
+import {type Descendant, type Node as SlateNode, type Operation as SlateOperation} from 'slate'
+import {type ReactEditor} from 'slate-react'
+
+import {type PortableTextEditor} from '../editor/PortableTextEditor'
+import {type Patch} from '../types/patch'
 
 /** @beta */
 export interface EditableAPIDeleteOptions {

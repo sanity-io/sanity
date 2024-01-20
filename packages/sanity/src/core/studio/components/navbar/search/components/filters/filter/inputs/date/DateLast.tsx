@@ -1,9 +1,10 @@
 import {Box, Flex, Select, TextInput} from '@sanity/ui'
-import {ChangeEvent, useCallback, useRef, useState} from 'react'
+import {type ChangeEvent, useCallback, useRef, useState} from 'react'
+
+import {type StudioLocaleResourceKeys, useTranslation} from '../../../../../../../../../i18n'
 import {useSearchState} from '../../../../../contexts/search/useSearchState'
-import type {OperatorDateLastValue} from '../../../../../definitions/operators/dateOperators'
-import type {OperatorInputComponentProps} from '../../../../../definitions/operators/operatorTypes'
-import {StudioLocaleResourceKeys, useTranslation} from '../../../../../../../../../i18n'
+import {type OperatorDateLastValue} from '../../../../../definitions/operators/dateOperators'
+import {type OperatorInputComponentProps} from '../../../../../definitions/operators/operatorTypes'
 
 type UnitChoice = {
   unit: OperatorDateLastValue['unit']

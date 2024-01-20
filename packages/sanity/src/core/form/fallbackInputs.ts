@@ -1,9 +1,10 @@
-import {ComponentType} from 'react'
-import {FIXME} from '../FIXME'
-import {ObjectInput} from './inputs/ObjectInput'
+import {type ComponentType} from 'react'
+
+import {type FIXME} from '../FIXME'
 import {UniversalArrayInput} from './inputs/arrays/UniversalArrayInput'
 import {BooleanInput} from './inputs/BooleanInput'
 import {NumberInput} from './inputs/NumberInput'
+import {ObjectInput} from './inputs/ObjectInput'
 import {TextInput} from './inputs/TextInput'
 
 export const fallbackInputs = {

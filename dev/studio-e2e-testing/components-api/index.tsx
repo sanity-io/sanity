@@ -1,11 +1,11 @@
 import {definePlugin} from 'sanity'
+
+import {DocumentLayout} from './DocumentLayout'
+import {FormField} from './FormField'
+import {FormInput} from './FormInput'
 import {StudioLayout} from './StudioLayout'
 import {StudioNavbar} from './StudioNavbar'
-import {StudioLogo} from './StudioLogo'
 import {StudioToolMenu} from './StudioToolMenu'
-import {FormInput} from './FormInput'
-import {FormField} from './FormField'
-import {DocumentLayout} from './DocumentLayout'
 
 const childComponents = definePlugin({
   name: 'child-components',

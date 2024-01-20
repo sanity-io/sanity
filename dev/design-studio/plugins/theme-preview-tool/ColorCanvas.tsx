@@ -1,28 +1,28 @@
-import {Tool} from 'sanity'
 import {
   Box,
   Card,
-  CardTone,
+  type CardTone,
   Flex,
   Grid,
   Stack,
   Text,
-  ThemeColor,
-  ThemeColorButton,
-  ThemeColorButtonState,
-  ThemeColorButtonStates,
-  ThemeColorButtonTones,
-  ThemeColorMuted,
-  ThemeColorMutedTone,
+  type ThemeColor,
+  type ThemeColorButton,
+  type ThemeColorButtonState,
+  type ThemeColorButtonStates,
+  type ThemeColorButtonTones,
+  type ThemeColorMuted,
+  type ThemeColorMutedTone,
   ThemeColorProvider,
-  ThemeColorScheme,
-  ThemeColorSelectable,
-  ThemeColorSelectableStates,
-  ThemeColorSolid,
-  ThemeColorSolidTone,
+  type ThemeColorScheme,
+  type ThemeColorSelectable,
+  type ThemeColorSelectableStates,
+  type ThemeColorSolid,
+  type ThemeColorSolidTone,
   useRootTheme,
 } from '@sanity/ui'
 import {createContext, useContext, useMemo} from 'react'
+import {type Tool} from 'sanity'
 
 interface Features {
   button: boolean

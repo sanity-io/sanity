@@ -1,5 +1,6 @@
-import {range} from 'lodash'
 import {RocketIcon} from '@sanity/icons'
+import {range} from 'lodash'
+
 import {CustomInputWithDefaultPresence} from './components/CustomInputWithDefaultPresence'
 import {CustomInputWithDialogOverlay} from './components/CustomInputWithDialogOverlay'
 

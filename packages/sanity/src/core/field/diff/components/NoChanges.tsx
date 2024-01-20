@@ -1,4 +1,5 @@
 import {Stack, Text} from '@sanity/ui'
+
 import {useTranslation} from '../../../i18n'
 
 /** @internal */

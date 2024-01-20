@@ -1,19 +1,19 @@
-import {castArray, flatMap, pick, startCase} from 'lodash'
-import type {
-  FieldGroup,
-  FieldGroupDefinition,
-  Fieldset,
-  FieldsetDefinition,
-  ObjectDefinition,
-  ObjectField,
+import {
+  type FieldGroup,
+  type FieldGroupDefinition,
+  type Fieldset,
+  type FieldsetDefinition,
+  type ObjectDefinition,
+  type ObjectField,
 } from '@sanity/types'
-import createPreviewGetter from '../preview/createPreviewGetter'
+import {castArray, flatMap, pick, startCase} from 'lodash'
+
 import guessOrderingConfig from '../ordering/guessOrderingConfig'
+import createPreviewGetter from '../preview/createPreviewGetter'
 import {normalizeSearchConfigs} from '../searchConfig/normalize'
 import {resolveSearchConfig} from '../searchConfig/resolve'
-import {lazyGetter} from './utils'
-
 import {DEFAULT_OVERRIDEABLE_FIELDS} from './constants'
+import {lazyGetter} from './utils'
 
 const OVERRIDABLE_FIELDS = [
   ...DEFAULT_OVERRIDEABLE_FIELDS,

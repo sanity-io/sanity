@@ -1,4 +1,4 @@
-import {DocumentFieldAction} from './types'
+import {type DocumentFieldAction} from './types'
 
 export * from './define'
 export * from './reducer'

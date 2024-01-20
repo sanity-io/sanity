@@ -1,11 +1,11 @@
 /* eslint-disable no-restricted-imports */
 import {
-  PopoverProps,
   MenuButton as UIMenuButton,
-  MenuButtonProps as UIMenuButtonProps,
+  type MenuButtonProps as UIMenuButtonProps,
+  type PopoverProps,
 } from '@sanity/ui'
+import type * as React from 'react'
 import {forwardRef} from 'react'
-import * as React from 'react'
 
 /** @internal */
 export type MenuButtonProps = Omit<UIMenuButtonProps, 'popover'> & {

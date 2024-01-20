@@ -1,5 +1,6 @@
-import {ReactChild, createContext, useContext} from 'react'
-import {Workspace} from '../config'
+import {createContext, type ReactChild, useContext} from 'react'
+
+import {type Workspace} from '../config'
 
 /** @internal */
 export interface WorkspaceProviderProps {

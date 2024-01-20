@@ -1,5 +1,6 @@
-import {studioTheme as defaults, ThemeFonts} from '@sanity/ui'
-import {LegacyThemeProps} from './types'
+import {studioTheme as defaults, type ThemeFonts} from '@sanity/ui'
+
+import {type LegacyThemeProps} from './types'
 
 export function buildFonts(cssCustomProperties: LegacyThemeProps): ThemeFonts {
   return {

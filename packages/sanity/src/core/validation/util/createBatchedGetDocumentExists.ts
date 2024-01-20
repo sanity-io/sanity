@@ -1,17 +1,18 @@
-import type {SanityClient} from '@sanity/client'
+import {type SanityClient} from '@sanity/client'
 import {
-  Subject,
   bufferTime,
   filter,
+  finalize,
+  firstValueFrom,
+  from,
   map,
   mergeMap,
-  firstValueFrom,
   share,
-  from,
+  Subject,
   switchMap,
-  finalize,
 } from 'rxjs'
-import {AvailabilityResponse} from '../../preview'
+
+import {type AvailabilityResponse} from '../../preview'
 import {ConcurrencyLimiter} from './ConcurrencyLimiter'
 
 /**

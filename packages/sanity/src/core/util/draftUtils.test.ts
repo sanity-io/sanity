@@ -1,4 +1,5 @@
-import {SanityDocument} from '@sanity/types'
+import {type SanityDocument} from '@sanity/types'
+
 import {collate, documentIdEquals, removeDupes} from './draftUtils'
 
 test('collate()', () => {

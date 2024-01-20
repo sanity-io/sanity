@@ -1,4 +1,4 @@
-import type {SchemaType} from '@sanity/types'
+import {type SchemaType} from '@sanity/types'
 
 /**
  * Get the most specific defined title of a schema type

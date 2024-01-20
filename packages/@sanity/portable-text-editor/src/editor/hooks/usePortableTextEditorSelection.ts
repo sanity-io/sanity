@@ -1,5 +1,6 @@
 import {createContext, useContext} from 'react'
-import {EditorSelection} from '../../types/editor'
+
+import {type EditorSelection} from '../../types/editor'
 
 /**
  * A React context for sharing the editor selection.

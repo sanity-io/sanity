@@ -1,21 +1,22 @@
+import {isImageSource} from '@sanity/asset-utils'
 import {DocumentIcon} from '@sanity/icons'
 import imageUrlBuilder from '@sanity/image-url'
-import {ImageUrlFitMode} from '@sanity/types'
+import {type SanityImageSource} from '@sanity/image-url/lib/types/types'
+import {type ImageUrlFitMode} from '@sanity/types'
 import {
-  ComponentType,
+  type ComponentType,
   createElement,
-  ElementType,
+  type ElementType,
   isValidElement,
-  ReactElement,
-  ReactNode,
+  type ReactElement,
+  type ReactNode,
   useCallback,
   useMemo,
 } from 'react'
 import {isValidElementType} from 'react-is'
-import {SanityImageSource} from '@sanity/image-url/lib/types/types'
-import {isImageSource} from '@sanity/asset-utils'
+
 import {Tooltip} from '../../../ui-components'
-import {PreviewProps} from '../../components/previews'
+import {type PreviewProps} from '../../components/previews'
 import {useClient} from '../../hooks'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {isString} from '../../util'

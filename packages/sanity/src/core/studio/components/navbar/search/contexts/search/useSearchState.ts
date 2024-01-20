@@ -1,5 +1,6 @@
 import {useContext} from 'react'
-import {SearchContext, SearchContextValue} from './SearchContext'
+
+import {SearchContext, type SearchContextValue} from './SearchContext'
 
 export function useSearchState(): SearchContextValue {
   const context = useContext(SearchContext)

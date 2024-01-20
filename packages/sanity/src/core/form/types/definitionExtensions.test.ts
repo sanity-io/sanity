@@ -2,59 +2,58 @@
 // noinspection JSUnusedLocalSymbols
 
 import {
-  CrossDatasetReferenceValue,
+  type CrossDatasetReferenceValue,
   defineArrayMember,
   defineField,
   defineType,
-  FileValue,
-  GeopointValue,
-  ImageValue,
-  ReferenceValue,
-  SlugValue,
+  type FileValue,
+  type GeopointValue,
+  type ImageValue,
+  type ReferenceValue,
+  type SlugValue,
 } from '@sanity/types'
-import {defineConfig} from '../../config'
-import {PreviewProps} from '../../components'
-import {CrossDatasetReferenceInputProps, ReferenceInputProps} from '../studio'
+
+import {type PreviewProps} from '../../components'
+import {type CrossDatasetReferenceInputProps, type ReferenceInputProps} from '../studio'
 import {
-  ArrayOfObjectsInputProps,
-  ArrayOfPrimitivesInputProps,
-  BooleanInputProps,
-  InputProps,
-  NumberInputProps,
-  ObjectInputProps,
-  StringInputProps,
-} from './inputProps'
-import {
-  ArrayFieldProps,
-  ArrayOfPrimitivesFieldProps,
-  BooleanFieldProps,
-  FieldProps,
-  NumberFieldProps,
-  ObjectFieldProps,
-  StringFieldProps,
-} from './fieldProps'
-import {ObjectItem, ObjectItemProps, PrimitiveItemProps} from './itemProps'
-import {
-  ArrayOfObjectsComponents,
-  ArrayOfPrimitivesComponents,
-  BooleanComponents,
-  CrossDatasetReferenceComponents,
-  DateComponents,
-  DatetimeComponents,
-  DocumentComponents,
-  EmailComponents,
-  FileComponents,
-  GeopointComponents,
-  ImageComponents,
-  NumberComponents,
-  ObjectComponents,
-  ReferenceComponents,
-  SlugComponents,
-  SpanComponents,
-  StringComponents,
-  TextComponents,
-  UrlComponents,
+  type ArrayOfObjectsComponents,
+  type ArrayOfPrimitivesComponents,
+  type BooleanComponents,
+  type CrossDatasetReferenceComponents,
+  type DateComponents,
+  type DatetimeComponents,
+  type DocumentComponents,
+  type EmailComponents,
+  type FileComponents,
+  type GeopointComponents,
+  type ImageComponents,
+  type NumberComponents,
+  type ObjectComponents,
+  type ReferenceComponents,
+  type SlugComponents,
+  type StringComponents,
+  type TextComponents,
+  type UrlComponents,
 } from './definitionExtensions'
+import {
+  type ArrayFieldProps,
+  type ArrayOfPrimitivesFieldProps,
+  type BooleanFieldProps,
+  type FieldProps,
+  type NumberFieldProps,
+  type ObjectFieldProps,
+  type StringFieldProps,
+} from './fieldProps'
+import {
+  type ArrayOfObjectsInputProps,
+  type ArrayOfPrimitivesInputProps,
+  type BooleanInputProps,
+  type InputProps,
+  type NumberInputProps,
+  type ObjectInputProps,
+  type StringInputProps,
+} from './inputProps'
+import {type ObjectItem, type ObjectItemProps, type PrimitiveItemProps} from './itemProps'
 
 describe('definitionExtensions', () => {
   describe('array-like types', () => {

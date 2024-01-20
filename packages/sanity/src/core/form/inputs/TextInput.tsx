@@ -1,7 +1,8 @@
-import {TextSchemaType} from '@sanity/types'
+import {type TextSchemaType} from '@sanity/types'
 import {TextArea} from '@sanity/ui'
 import styled from 'styled-components'
-import {StringInputProps} from '../types'
+
+import {type StringInputProps} from '../types'
 
 /**
  *

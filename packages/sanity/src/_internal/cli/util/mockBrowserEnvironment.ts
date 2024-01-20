@@ -1,8 +1,9 @@
-import {addHook} from 'pirates'
-import jsdomGlobal from 'jsdom-global'
-import resolveFrom from 'resolve-from'
-import {register as registerESBuild} from 'esbuild-register/dist/node'
 import {ResizeObserver} from '@juggle/resize-observer'
+import {register as registerESBuild} from 'esbuild-register/dist/node'
+import jsdomGlobal from 'jsdom-global'
+import {addHook} from 'pirates'
+import resolveFrom from 'resolve-from'
+
 import {getStudioEnvironmentVariables} from '../server/getStudioEnvironmentVariables'
 
 const jsdomDefaultHtml = `<!doctype html>

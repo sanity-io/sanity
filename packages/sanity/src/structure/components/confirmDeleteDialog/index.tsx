@@ -1,15 +1,15 @@
-import {useCallback, useState, useId} from 'react'
-import * as React from 'react'
 import {Box, ErrorBoundary, Text} from '@sanity/ui'
+import {type ComponentProps, useCallback, useId, useState} from 'react'
+import {useTranslation} from 'sanity'
+
 import {Dialog} from '../../../ui-components'
 import {structureLocaleNamespace} from '../../i18n'
-import {ConfirmDeleteDialog, ConfirmDeleteDialogProps} from './ConfirmDeleteDialog'
-import {useTranslation} from 'sanity'
+import {ConfirmDeleteDialog, type ConfirmDeleteDialogProps} from './ConfirmDeleteDialog'
 
 export type {ConfirmDeleteDialogProps}
 
 type ArgType<T> = T extends (arg: infer U) => unknown ? U : never
-type ErrorInfo = ArgType<React.ComponentProps<typeof ErrorBoundary>['onCatch']>
+type ErrorInfo = ArgType<ComponentProps<typeof ErrorBoundary>['onCatch']>
 
 /** @internal */
 function ConfirmDeleteDialogContainer(props: ConfirmDeleteDialogProps) {

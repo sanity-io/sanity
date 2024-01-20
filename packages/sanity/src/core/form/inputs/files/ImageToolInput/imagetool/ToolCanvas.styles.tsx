@@ -1,4 +1,5 @@
 import styled from 'styled-components'
+
 import {makeDragAware} from './makeDragAware'
 
 export const DragAwareCanvas = makeDragAware('canvas')

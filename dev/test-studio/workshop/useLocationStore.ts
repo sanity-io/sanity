@@ -1,7 +1,7 @@
-import {useRouter} from 'sanity/router'
-import {WorkshopLocation, WorkshopLocationStore} from '@sanity/ui-workshop'
+import {type WorkshopLocation, type WorkshopLocationStore} from '@sanity/ui-workshop'
 import qs from 'qs'
 import {useCallback, useMemo, useRef} from 'react'
+import {useRouter} from 'sanity/router'
 
 export function useLocationStore(props: {baseUrl?: string} = {}): WorkshopLocationStore {
   const {baseUrl = ''} = props

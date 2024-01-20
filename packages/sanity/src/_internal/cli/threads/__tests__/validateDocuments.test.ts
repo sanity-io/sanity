@@ -1,9 +1,10 @@
+import {type SanityDocument, type SanityProject} from '@sanity/client'
+import {evaluate, parse} from 'groq-js'
+import {createServer, type Server} from 'http'
 import {Worker} from 'worker_threads'
-import {Server, createServer} from 'http'
-import type {SanityDocument, SanityProject} from '@sanity/client'
-import {parse, evaluate} from 'groq-js'
-import type {ValidateDocumentsWorkerData, ValidationWorkerChannel} from '../validateDocuments'
-import {WorkerChannelReceiver, createReceiver} from '../../util/workerChannels'
+
+import {createReceiver, type WorkerChannelReceiver} from '../../util/workerChannels'
+import {type ValidateDocumentsWorkerData, type ValidationWorkerChannel} from '../validateDocuments'
 
 async function toArray<T>(asyncIterator: AsyncIterable<T>) {
   const arr: T[] = []

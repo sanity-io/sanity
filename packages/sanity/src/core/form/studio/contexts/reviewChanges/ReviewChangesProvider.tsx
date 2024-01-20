@@ -1,6 +1,7 @@
-import {ReactElement, ReactNode, useMemo} from 'react'
+import {type ReactElement, type ReactNode, useMemo} from 'react'
+
 import {ReviewChangesContext} from './ReviewChangesContext'
-import {ReviewChangesContextValue} from './types'
+import {type ReviewChangesContextValue} from './types'
 
 /**
  * @internal

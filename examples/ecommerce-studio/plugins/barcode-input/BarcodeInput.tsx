@@ -1,9 +1,9 @@
 // Copied from packages/@sanity/cli/templates/ecommerce/plugins/barcode-input/BarcodeInput.js
 
-import {useState} from 'react'
 import {Box, Text} from '@sanity/ui'
+import {useState} from 'react'
 import Barcode from 'react-barcode'
-import {FieldMember, MemberField, ObjectInputProps} from 'sanity'
+import {type FieldMember, MemberField, type ObjectInputProps} from 'sanity'
 import styled from 'styled-components'
 
 const BarcodeRoot = styled(Box)`

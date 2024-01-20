@@ -1,11 +1,12 @@
-import {TextSkeleton, Flex, Text, Card, Box, Badge} from '@sanity/ui'
+import {Badge, Box, Card, Flex, Text, TextSkeleton} from '@sanity/ui'
+import type * as React from 'react'
 import {useCallback} from 'react'
-import * as React from 'react'
+import {useTranslation, useUser} from 'sanity'
 import styled from 'styled-components'
-import {MentionOptionUser} from '../../types'
+
 import {commentsLocaleNamespace} from '../../../i18n'
+import {type MentionOptionUser} from '../../types'
 import {CommentsAvatar} from '../avatars'
-import {useUser, useTranslation} from 'sanity'
 
 const InnerFlex = styled(Flex)``
 

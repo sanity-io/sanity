@@ -1,21 +1,21 @@
-import type {CrossDatasetReferenceSchemaType} from '../crossDatasetReference'
-import type {TitledListValue} from './definition'
-import type {
-  ArraySchemaType,
-  BaseSchemaType,
-  BlockChildrenObjectField,
-  BlockListObjectField,
-  BlockSchemaType,
-  BlockStyleObjectField,
-  BooleanSchemaType,
-  DeprecatedSchemaType,
-  DeprecationConfiguration,
-  NumberSchemaType,
-  ObjectSchemaType,
-  ReferenceSchemaType,
-  SchemaType,
-  SpanSchemaType,
-  StringSchemaType,
+import {type CrossDatasetReferenceSchemaType} from '../crossDatasetReference'
+import {type TitledListValue} from './definition'
+import {
+  type ArraySchemaType,
+  type BaseSchemaType,
+  type BlockChildrenObjectField,
+  type BlockListObjectField,
+  type BlockSchemaType,
+  type BlockStyleObjectField,
+  type BooleanSchemaType,
+  type DeprecatedSchemaType,
+  type DeprecationConfiguration,
+  type NumberSchemaType,
+  type ObjectSchemaType,
+  type ReferenceSchemaType,
+  type SchemaType,
+  type SpanSchemaType,
+  type StringSchemaType,
 } from './types'
 
 function isRecord(value: unknown): value is Record<string, unknown> {

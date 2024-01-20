@@ -1,6 +1,7 @@
 import {uuid} from '@sanity/uuid'
-import {PaneNode, RouterPanes} from './types'
-import {EMPTY_PARAMS, LOADING_PANE} from './constants'
+
+import {EMPTY_PARAMS, type LOADING_PANE} from './constants'
+import {type PaneNode, type RouterPanes} from './types'
 
 const state: {
   activePanes: Array<PaneNode | typeof LOADING_PANE>

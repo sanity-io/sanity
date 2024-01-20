@@ -1,5 +1,5 @@
-import {MatchResult, RouterNode} from '../types'
 import {_findMatchingRoutes} from '../_findMatchingRoutes'
+import {type MatchResult, type RouterNode} from '../types'
 
 const node: RouterNode = {
   route: {

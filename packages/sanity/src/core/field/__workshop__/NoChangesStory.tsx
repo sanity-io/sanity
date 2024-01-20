@@ -1,4 +1,5 @@
 import {Box} from '@sanity/ui'
+
 import {NoChanges} from '../diff'
 
 export default function NoChangesStory() {

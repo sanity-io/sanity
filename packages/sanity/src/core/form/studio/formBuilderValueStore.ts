@@ -1,14 +1,15 @@
 import {map, scan} from 'rxjs/operators'
-import {FIXME} from '../../FIXME'
+
+import {type FIXME} from '../../FIXME'
 import {
-  DocumentMutationEvent,
-  DocumentRebaseEvent,
-  DocumentStore,
-  DocumentVersion,
-  DocumentVersionEvent,
-  IdPair,
+  type DocumentMutationEvent,
+  type DocumentRebaseEvent,
+  type DocumentStore,
+  type DocumentVersion,
+  type DocumentVersionEvent,
+  type IdPair,
 } from '../../store'
-import {FormPatch} from '../patch'
+import {type FormPatch} from '../patch'
 import {fromMutationPatches, toMutationPatches} from '../utils/mutationPatch'
 
 interface LocalMutationEvent extends DocumentMutationEvent {

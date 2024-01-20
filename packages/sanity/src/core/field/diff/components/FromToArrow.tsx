@@ -1,6 +1,6 @@
-import {Text, TextProps} from '@sanity/ui'
-import {HTMLProps, createElement} from 'react'
-import {ArrowRightIcon, ArrowDownIcon} from '@sanity/icons'
+import {ArrowDownIcon, ArrowRightIcon} from '@sanity/icons'
+import {Text, type TextProps} from '@sanity/ui'
+import {createElement, type HTMLProps} from 'react'
 
 /** @internal */
 export type FromToArrowDirection = 'down' | 'right'

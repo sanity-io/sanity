@@ -1,8 +1,9 @@
 // import sanityClient from 'part:@sanity/base/client'
-import {points, featureCollection} from '@turf/helpers'
+import {featureCollection, points} from '@turf/helpers'
 import pointsWithinPolygon from '@turf/points-within-polygon'
-import norway from './data/norway'
+
 import {CustomObjectSelectInput} from './components/CustomObjectSelectInput'
+import norway from './data/norway'
 
 export const validationArraySuperType = {
   name: 'imageArray',

@@ -1,5 +1,5 @@
-import type {FileHandle} from 'node:fs/promises'
-import {open} from 'node:fs/promises'
+import {type FileHandle, open} from 'node:fs/promises'
+
 import baseDebug from '../debug'
 
 const debug = baseDebug.extend('readFileAsWebStream')

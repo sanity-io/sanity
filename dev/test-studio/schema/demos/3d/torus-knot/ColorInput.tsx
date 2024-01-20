@@ -1,8 +1,8 @@
 import {Stack, Text} from '@sanity/ui'
-import {useCallback} from 'react'
 import {transparentize} from 'polished'
+import {type ChangeEventHandler, useCallback} from 'react'
+import {set, type StringInputProps} from 'sanity'
 import styled from 'styled-components'
-import {StringInputProps, set} from 'sanity'
 
 const StyledColorInput = styled.input.attrs({type: 'color'})`
   cursor: pointer;
@@ -44,7 +44,7 @@ const StyledColorInput = styled.input.attrs({type: 'color'})`
 export default function ColorInput(props: StringInputProps) {
   const {value, onChange, id} = props
   // const id = useId()
-  const handleChange = useCallback<React.ChangeEventHandler<HTMLInputElement>>(
+  const handleChange = useCallback<ChangeEventHandler<HTMLInputElement>>(
     (event) => {
       onChange(set(event.target.value))
     },

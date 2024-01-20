@@ -1,11 +1,12 @@
-import {Box, Card, Flex, Text, rem} from '@sanity/ui'
+import {Box, Card, Flex, rem, Text} from '@sanity/ui'
+import {useStateLink} from 'sanity/router'
 import styled from 'styled-components'
+
 import {focusRingStyle} from '../../../../form/components/withFocusRing/helpers'
 import {useActiveWorkspace} from '../../../activeWorkspaceMatcher'
 import {useWorkspaces} from '../../../workspaces'
 import {SanityLogo} from '../SanityLogo'
 import {WorkspacePreviewIcon} from '../workspace'
-import {useStateLink} from 'sanity/router'
 
 const LOGO_MARK_SIZE = 25 // width and height, px
 const RADIUS = 2

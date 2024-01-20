@@ -1,17 +1,18 @@
 import {pathFor} from '@sanity/util/paths'
 import {useMemo} from 'react'
 import {
-  FieldError,
-  FieldMember,
-  FieldSetMember,
+  type FieldError,
+  type FieldMember,
+  type FieldSetMember,
   ObjectInput,
-  ObjectInputProps,
-  ObjectMember,
+  type ObjectInputProps,
+  type ObjectMember,
   useFormBuilder,
 } from 'sanity'
-import {LanguageFilterPluginOptions} from './types'
-import {usePaneLanguages} from './usePaneLanguages'
+
 import {_isPathCollapsed} from './_helpers'
+import {type LanguageFilterPluginOptions} from './types'
+import {usePaneLanguages} from './usePaneLanguages'
 
 export function LanguageFilterObjectInput(
   props: {options: LanguageFilterPluginOptions} & ObjectInputProps,

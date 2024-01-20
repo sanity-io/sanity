@@ -1,16 +1,16 @@
-import {useCallback, useState} from 'react'
-import * as React from 'react'
 import {Flex} from '@sanity/ui'
-import {SpacerButton} from '../../../components/spacerButton'
-import {useDocumentPane} from '../useDocumentPane'
-import {DocumentStatusBarActions, HistoryStatusBarActions} from './DocumentStatusBarActions'
-import {useResizeObserver} from './useResizeObserver'
-import {DocumentBadges} from './DocumentBadges'
-import {DocumentStatusLine} from './DocumentStatusLine'
+import {type Ref, useCallback, useState} from 'react'
 import {useTimelineSelector} from 'sanity'
 
+import {SpacerButton} from '../../../components/spacerButton'
+import {useDocumentPane} from '../useDocumentPane'
+import {DocumentBadges} from './DocumentBadges'
+import {DocumentStatusBarActions, HistoryStatusBarActions} from './DocumentStatusBarActions'
+import {DocumentStatusLine} from './DocumentStatusLine'
+import {useResizeObserver} from './useResizeObserver'
+
 export interface DocumentStatusBarProps {
-  actionsBoxRef?: React.Ref<HTMLDivElement>
+  actionsBoxRef?: Ref<HTMLDivElement>
 }
 
 const CONTAINER_BREAKPOINT = 480 // px

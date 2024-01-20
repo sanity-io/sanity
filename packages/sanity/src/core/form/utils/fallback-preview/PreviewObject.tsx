@@ -1,5 +1,7 @@
 import {capitalize} from 'lodash'
+
 import {PreviewAny} from './PreviewAny'
+
 type Props = {
   value: Record<string, any>
   maxDepth?: number

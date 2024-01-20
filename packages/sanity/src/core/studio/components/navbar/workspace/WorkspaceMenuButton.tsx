@@ -7,14 +7,15 @@ import {
   Menu,
   Text,
 } from '@sanity/ui'
+import {useRouter} from 'sanity/router'
 import styled from 'styled-components'
-import {MenuButton, MenuButtonProps, MenuItem, Tooltip} from '../../../../../ui-components'
+
+import {MenuButton, type MenuButtonProps, MenuItem, Tooltip} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
 import {useActiveWorkspace} from '../../../activeWorkspaceMatcher'
 import {useWorkspaces} from '../../../workspaces'
-import {STATE_TITLES, WorkspacePreviewIcon} from './WorkspacePreview'
 import {useWorkspaceAuthStates} from './hooks'
-import {useRouter} from 'sanity/router'
+import {STATE_TITLES, WorkspacePreviewIcon} from './WorkspacePreview'
 
 const StyledMenu = styled(Menu)`
   max-width: 350px;

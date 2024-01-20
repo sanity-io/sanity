@@ -1,7 +1,8 @@
 import {ErrorOutlineIcon} from '@sanity/icons'
-import {Text, Box, Card, Flex} from '@sanity/ui'
-import type {FieldValueError} from '../../validation'
+import {Box, Card, Flex, Text} from '@sanity/ui'
+
 import {useTranslation} from '../../../i18n'
+import {type FieldValueError} from '../../validation'
 
 /** @internal */
 export function ValueError({error}: {error: FieldValueError}) {

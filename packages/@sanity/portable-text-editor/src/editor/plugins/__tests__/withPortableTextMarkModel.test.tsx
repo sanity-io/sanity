@@ -1,13 +1,14 @@
 /* eslint-disable max-nested-callbacks */
 import {render, waitFor} from '@testing-library/react'
-import {RefObject, createRef} from 'react'
-import {PortableTextEditor} from '../../PortableTextEditor'
+import {createRef, type RefObject} from 'react'
+
+import {type EditorSelection} from '../../../types/editor'
 import {
   PortableTextEditorTester,
   schemaType,
   schemaTypeWithColorAndLink,
 } from '../../__tests__/PortableTextEditorTester'
-import {EditorSelection} from '../../../types/editor'
+import {PortableTextEditor} from '../../PortableTextEditor'
 
 describe('plugin:withPortableTextMarksModel', () => {
   describe('normalization', () => {

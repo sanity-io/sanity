@@ -1,8 +1,9 @@
-import {ReactNode, useCallback, useEffect, useState} from 'react'
+import {type ReactNode, useCallback, useEffect, useState} from 'react'
+
 import {useClient} from '../../../../hooks'
 import {SANITY_VERSION} from '../../../../version'
 import {FreeTrialContext} from './FreeTrialContext'
-import type {FreeTrialResponse} from './types'
+import {type FreeTrialResponse} from './types'
 
 /**
  * @internal

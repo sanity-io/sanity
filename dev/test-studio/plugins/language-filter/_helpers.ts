@@ -1,4 +1,4 @@
-import {Path, StateTree, isArray} from 'sanity'
+import {isArray, type Path, type StateTree} from 'sanity'
 
 export function _isPathCollapsed(
   path: Path,

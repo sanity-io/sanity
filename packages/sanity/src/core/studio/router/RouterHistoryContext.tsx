@@ -1,5 +1,6 @@
-import {ReactNode, createContext, useContext} from 'react'
-import type {RouterHistory} from './types'
+import {createContext, type ReactNode, useContext} from 'react'
+
+import {type RouterHistory} from './types'
 
 /**
  * Internal use only. Userland should leverage the public `useRouter` APIs.

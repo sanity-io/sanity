@@ -1,5 +1,5 @@
-import {error, warning, HELP_IDS} from '../createValidationResult'
-import {validateFields, validateField} from './object'
+import {error, HELP_IDS, warning} from '../createValidationResult'
+import {validateField, validateFields} from './object'
 
 const autoMeta = ['dimensions', 'hasAlpha', 'isOpaque']
 

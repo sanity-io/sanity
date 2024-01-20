@@ -1,4 +1,4 @@
-import {ToolMenuProps} from '../../../../config'
+import {type ToolMenuProps} from '../../../../config'
 import {ToolCollapseMenu} from './ToolCollapseMenu'
 import {ToolVerticalMenu} from './ToolVerticalMenu'
 

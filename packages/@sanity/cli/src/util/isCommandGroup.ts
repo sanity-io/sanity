@@ -1,4 +1,4 @@
-import type {CliCommandDefinition, CliCommandGroupDefinition} from '../types'
+import {type CliCommandDefinition, type CliCommandGroupDefinition} from '../types'
 
 export function isCommandGroup(
   cmdOrGroup: CliCommandDefinition | CliCommandGroupDefinition,

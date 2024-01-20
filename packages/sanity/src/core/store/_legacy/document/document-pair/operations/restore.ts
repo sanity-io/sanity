@@ -1,5 +1,5 @@
 import {isLiveEditEnabled} from '../utils/isLiveEditEnabled'
-import {OperationImpl} from './types'
+import {type OperationImpl} from './types'
 
 export const restore: OperationImpl<[fromRevision: string]> = {
   disabled: (): false => false,

@@ -1,4 +1,5 @@
 import {Box} from '@sanity/ui'
+
 import {DiffString} from '../diff'
 
 /**

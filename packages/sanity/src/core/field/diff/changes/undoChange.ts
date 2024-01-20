@@ -1,11 +1,10 @@
-import {toArray} from 'rxjs/operators'
 import {
   isIndexSegment,
   isKeyedObject,
   isKeySegment,
   isTypedObject,
-  PatchOperations,
-  Path,
+  type PatchOperations,
+  type Path,
 } from '@sanity/types'
 import {
   diffItem,
@@ -14,6 +13,7 @@ import {
   type SetPatch,
   type UnsetPatch,
 } from 'sanity-diff-patch'
+
 import {isRecord} from '../../../util'
 import {
   findIndex,
@@ -22,13 +22,13 @@ import {
   isEmptyObject,
   pathToString,
 } from '../../paths'
-import type {
-  ArrayDiff,
-  ChangeNode,
-  Diff,
-  ItemDiff,
-  ObjectDiff,
-  FieldOperationsAPI,
+import {
+  type ArrayDiff,
+  type ChangeNode,
+  type Diff,
+  type FieldOperationsAPI,
+  type ItemDiff,
+  type ObjectDiff,
 } from '../../types'
 import {flattenChangeNode, isAddedAction, isSubpathOf, pathSegmentOfCorrectType} from './helpers'
 

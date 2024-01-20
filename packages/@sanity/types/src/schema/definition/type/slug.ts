@@ -1,9 +1,9 @@
-import type {RuleDef, ValidationBuilder} from '../../ruleBuilder'
-import type {InitialValueProperty} from '../../types'
-import type {Path} from '../../../paths'
-import type {SlugifierFn, SlugSourceFn} from '../../../slug'
-import type {SlugIsUniqueValidator} from '../../../validation'
-import type {BaseSchemaDefinition} from './common'
+import {type Path} from '../../../paths'
+import {type SlugifierFn, type SlugSourceFn} from '../../../slug'
+import {type SlugIsUniqueValidator} from '../../../validation'
+import {type RuleDef, type ValidationBuilder} from '../../ruleBuilder'
+import {type InitialValueProperty} from '../../types'
+import {type BaseSchemaDefinition} from './common'
 
 /** @public */
 export interface SlugValue {

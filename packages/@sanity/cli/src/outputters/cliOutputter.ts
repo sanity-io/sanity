@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
-import ora, {Ora} from 'ora'
 import chalk from 'chalk'
+import ora, {type Ora} from 'ora'
 
 let isFirstClear = true
 

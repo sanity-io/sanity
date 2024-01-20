@@ -1,12 +1,13 @@
 import {Box, Card, Code, Flex} from '@sanity/ui'
 import {memo, useCallback, useEffect, useMemo, useState} from 'react'
 import styled from 'styled-components'
-import {usePaneLayout} from '../usePaneLayout'
+
+import {PANE_COLLAPSED_WIDTH, PANE_DEFAULT_MIN_WIDTH} from '../constants'
 import {PaneDivider} from '../PaneDivider'
 import {PaneLayoutContext} from '../PaneLayoutContext'
-import {PaneLayoutContextValue} from '../types'
-import {PANE_COLLAPSED_WIDTH, PANE_DEFAULT_MIN_WIDTH} from '../constants'
-import {createPaneLayoutController, PaneLayoutState} from '../paneLayoutController'
+import {createPaneLayoutController, type PaneLayoutState} from '../paneLayoutController'
+import {type PaneLayoutContextValue} from '../types'
+import {usePaneLayout} from '../usePaneLayout'
 
 const PaneLayoutRoot = styled(Flex)`
   &[data-resizing] {

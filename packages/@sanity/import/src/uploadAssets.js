@@ -3,11 +3,11 @@ const parseUrl = require('url').parse
 const debug = require('debug')('sanity:import')
 const pMap = require('p-map')
 const {isSanityImageUrl} = require('@sanity/asset-utils')
-const progressStepper = require('./util/progressStepper')
 const getHashedBufferForUri = require('./util/getHashedBufferForUri')
+const progressStepper = require('./util/progressStepper')
 const retryOnFailure = require('./util/retryOnFailure')
-const urlExists = require('./util/urlExists')
 const suffixTag = require('./util/suffixTag')
+const urlExists = require('./util/urlExists')
 
 const ASSET_UPLOAD_CONCURRENCY = 8
 const ASSET_PATCH_CONCURRENCY = 30

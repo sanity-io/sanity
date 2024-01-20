@@ -1,31 +1,32 @@
-import {Component, PropsWithChildren} from 'react'
 import {
-  ArrayDefinition,
-  ArraySchemaType,
-  BlockSchemaType,
-  ObjectSchemaType,
-  Path,
-  PortableTextBlock,
-  PortableTextChild,
-  PortableTextObject,
-  SpanSchemaType,
+  type ArrayDefinition,
+  type ArraySchemaType,
+  type BlockSchemaType,
+  type ObjectSchemaType,
+  type Path,
+  type PortableTextBlock,
+  type PortableTextChild,
+  type PortableTextObject,
+  type SpanSchemaType,
 } from '@sanity/types'
+import React, {Component, type PropsWithChildren} from 'react'
 import {Subject} from 'rxjs'
-import {compileType} from '../utils/schema'
-import {getPortableTextMemberSchemaTypes} from '../utils/getPortableTextMemberSchemaTypes'
+
 import {
-  EditableAPI,
-  EditableAPIDeleteOptions,
-  EditorChange,
-  EditorChanges,
-  EditorSelection,
-  PatchObservable,
-  PortableTextMemberSchemaTypes,
+  type EditableAPI,
+  type EditableAPIDeleteOptions,
+  type EditorChange,
+  type EditorChanges,
+  type EditorSelection,
+  type PatchObservable,
+  type PortableTextMemberSchemaTypes,
 } from '../types/editor'
 import {debugWithName} from '../utils/debug'
-import {defaultKeyGenerator} from './hooks/usePortableTextEditorKeyGenerator'
+import {getPortableTextMemberSchemaTypes} from '../utils/getPortableTextMemberSchemaTypes'
+import {compileType} from '../utils/schema'
 import {SlateContainer} from './components/SlateContainer'
 import {Synchronizer} from './components/Synchronizer'
+import {defaultKeyGenerator} from './hooks/usePortableTextEditorKeyGenerator'
 
 const debug = debugWithName('component:PortableTextEditor')
 

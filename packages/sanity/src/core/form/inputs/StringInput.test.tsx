@@ -1,4 +1,5 @@
 import userEvent from '@testing-library/user-event'
+
 import {renderStringInput} from '../../../../test/form/renderStringInput'
 import {StringInput} from './StringInput'
 

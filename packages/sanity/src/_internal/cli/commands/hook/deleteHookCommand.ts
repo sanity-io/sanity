@@ -1,5 +1,6 @@
-import type {CliCommandContext, CliCommandDefinition} from '@sanity/cli'
-import type {Hook} from './types'
+import {type CliCommandContext, type CliCommandDefinition} from '@sanity/cli'
+
+import {type Hook} from './types'
 
 const deleteHookCommand: CliCommandDefinition = {
   name: 'delete',

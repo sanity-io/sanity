@@ -1,9 +1,9 @@
-import type {
-  CreateIfNotExistsMutation,
-  CreateMutation,
-  CreateOrReplaceMutation,
-  DeleteMutation,
-  PatchMutation,
+import {
+  type CreateIfNotExistsMutation,
+  type CreateMutation,
+  type CreateOrReplaceMutation,
+  type DeleteMutation,
+  type PatchMutation,
 } from '@sanity/types'
 
 /**

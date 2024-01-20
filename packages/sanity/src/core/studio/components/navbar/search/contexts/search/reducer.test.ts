@@ -1,10 +1,11 @@
-import type {CurrentUser} from '@sanity/types'
+import {type CurrentUser} from '@sanity/types'
 import {act, renderHook} from '@testing-library/react'
 import {useReducer} from 'react'
-import type {SearchableType} from '../../../../../../search'
-import type {RecentSearch} from '../../datastores/recentSearches'
-import type {SearchOrdering} from '../../types'
-import {initialSearchState, searchReducer, SearchReducerState} from './reducer'
+
+import {type SearchableType} from '../../../../../../search'
+import {type RecentSearch} from '../../datastores/recentSearches'
+import {type SearchOrdering} from '../../types'
+import {initialSearchState, searchReducer, type SearchReducerState} from './reducer'
 
 const mockUser: CurrentUser = {
   id: 'mock-user',

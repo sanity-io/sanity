@@ -1,4 +1,5 @@
-import {DefaultDocumentNodeResolver} from 'sanity/structure'
+import {type DefaultDocumentNodeResolver} from 'sanity/structure'
+
 import {JSONPreviewDocumentView} from '../components/documentViews/jsonPreview'
 
 export const defaultDocumentNode: DefaultDocumentNodeResolver = (S, {schemaType}) => {

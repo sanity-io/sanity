@@ -3,11 +3,12 @@ import {Card, Flex, Menu, MenuDivider} from '@sanity/ui'
 import isEqual from 'lodash/isEqual'
 import {useCallback, useId, useMemo} from 'react'
 import styled from 'styled-components'
-import {useTranslation} from '../../../../../i18n'
-import {ORDERINGS} from '../definitions/orderings'
+
 import {Button, MenuButton, MenuItem} from '../../../../../../ui-components'
+import {useTranslation} from '../../../../../i18n'
 import {useSearchState} from '../contexts/search/useSearchState'
-import type {SearchOrdering} from '../types'
+import {ORDERINGS} from '../definitions/orderings'
+import {type SearchOrdering} from '../types'
 
 interface SearchDivider {
   type: 'divider'

@@ -1,10 +1,11 @@
-import {SanityClient} from '@sanity/client'
-import {combineLatest, Observable, of} from 'rxjs'
+import {type SanityClient} from '@sanity/client'
+import {type SanityDocument} from '@sanity/types'
+import {combineLatest, type Observable, of} from 'rxjs'
 import {map, switchMap} from 'rxjs/operators'
-import {SanityDocument} from '@sanity/types'
+
 import {getIdPair, isRecord} from '../util'
-import {DraftsModelDocument, ObservePathsFn, PreviewPath, Previewable} from './types'
 import {create_preview_availability} from './availability'
+import {type DraftsModelDocument, type ObservePathsFn, type PreviewPath} from './types'
 
 export function create_preview_documentPair(
   versionedClient: SanityClient,

@@ -1,13 +1,14 @@
+import {type EditorChange, keyGenerator, PortableTextEditor} from '@sanity/portable-text-editor'
+import {type CurrentUser, type PortableTextBlock} from '@sanity/types'
+import {focusFirstDescendant, focusLastDescendant, Stack} from '@sanity/ui'
+import type * as React from 'react'
 import {forwardRef, useCallback, useImperativeHandle, useMemo, useRef, useState} from 'react'
-import * as React from 'react'
-import {EditorChange, PortableTextEditor, keyGenerator} from '@sanity/portable-text-editor'
-import {CurrentUser, PortableTextBlock} from '@sanity/types'
-import {Stack, focusFirstDescendant, focusLastDescendant} from '@sanity/ui'
+
+import {type MentionOptionsHookValue} from '../../../types'
 import {editorSchemaType} from '../config'
-import {MentionOptionsHookValue} from '../../../types'
+import {CommentInputDiscardDialog} from './CommentInputDiscardDialog'
 import {CommentInputInner} from './CommentInputInner'
 import {CommentInputProvider} from './CommentInputProvider'
-import {CommentInputDiscardDialog} from './CommentInputDiscardDialog'
 
 const EMPTY_ARRAY: [] = []
 

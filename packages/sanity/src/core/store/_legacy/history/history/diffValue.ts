@@ -1,7 +1,16 @@
-import {incremental} from 'mendoza'
-import {Input, ArrayInput, ObjectInput, StringInput, wrap, Diff, diffInput} from '@sanity/diff'
-import {Annotation, Chunk} from '../../../../field'
-import {Timeline} from './Timeline'
+import {
+  type ArrayInput,
+  type Diff,
+  diffInput,
+  type Input,
+  type ObjectInput,
+  type StringInput,
+  wrap,
+} from '@sanity/diff'
+import {type incremental} from 'mendoza'
+
+import {type Annotation, type Chunk} from '../../../../field'
+import {type Timeline} from './Timeline'
 import {isSameAnnotation} from './utils'
 
 export type Meta = {chunk: Chunk; transactionIndex: number} | null

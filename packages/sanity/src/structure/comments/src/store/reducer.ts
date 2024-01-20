@@ -1,4 +1,4 @@
-import {CommentDocument, CommentPostPayload} from '../types'
+import {type CommentDocument, type CommentPostPayload} from '../types'
 import {mergeCommentReactions} from '../utils'
 
 interface CommentAddedAction {

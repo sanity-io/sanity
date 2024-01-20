@@ -1,4 +1,4 @@
-import {Rect} from '../overlay/types'
+import {type Rect} from '../overlay/types'
 import {isScrollable} from './scrollUtils'
 
 const SCROLL_INTO_VIEW_TOP_PADDING = -15

@@ -1,21 +1,22 @@
-import {ReactNode, memo, useCallback, useMemo} from 'react'
-import {isEqual, startsWith, trimLeft} from '@sanity/util/paths'
 import {isIndexSegment, isKeySegment, type Path} from '@sanity/types'
+import {isEqual, startsWith, trimLeft} from '@sanity/util/paths'
+import React, {memo, type ReactNode, useCallback, useMemo} from 'react'
+
 import {pathToString} from '../../field'
 import {Translate, useTranslation} from '../../i18n'
-import {isArrayInputProps, isObjectInputProps} from '../utils/asserters'
-import {MemberField, ArrayOfObjectsItem, MemberItemError} from '../members'
-import type {FieldMember} from '../store'
-import type {
-  ArrayOfObjectsInputProps,
-  ObjectInputProps,
-  RenderAnnotationCallback,
-  RenderArrayOfObjectsItemCallback,
-  RenderBlockCallback,
-  RenderFieldCallback,
-  RenderInputCallback,
-  RenderPreviewCallback,
+import {ArrayOfObjectsItem, MemberField, MemberItemError} from '../members'
+import {type FieldMember} from '../store'
+import {
+  type ArrayOfObjectsInputProps,
+  type ObjectInputProps,
+  type RenderAnnotationCallback,
+  type RenderArrayOfObjectsItemCallback,
+  type RenderBlockCallback,
+  type RenderFieldCallback,
+  type RenderInputCallback,
+  type RenderPreviewCallback,
 } from '../types'
+import {isArrayInputProps, isObjectInputProps} from '../utils/asserters'
 
 const pass = ({children}: {children: ReactNode}) => children
 

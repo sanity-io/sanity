@@ -1,11 +1,12 @@
-import {Box, Flex, Skeleton, Stack, Text, TextSkeleton, rem} from '@sanity/ui'
+import {Box, Flex, rem, Skeleton, Stack, Text, TextSkeleton} from '@sanity/ui'
 import styled from 'styled-components'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
+
 import {useTranslation} from '../../../i18n'
-import {PreviewMediaDimensions, PreviewProps} from '../types'
+import {Media} from '../_common/Media'
 import {PREVIEW_SIZES} from '../constants'
 import {renderPreviewNode} from '../helpers'
-import {Media} from '../_common/Media'
+import {type PreviewMediaDimensions, type PreviewProps} from '../types'
 
 /**
  * @hidden

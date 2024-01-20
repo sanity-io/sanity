@@ -1,7 +1,8 @@
-import {CSSProperties} from 'react'
 import {IceCreamIcon} from '@sanity/icons'
 import {Card, Flex} from '@sanity/ui'
 import {useBoolean, useSelect, useString} from '@sanity/ui-workshop'
+import React, {type CSSProperties} from 'react'
+
 import {WorkspacePreview} from '../workspace'
 
 const CARD_INLINE_STYLE: CSSProperties = {

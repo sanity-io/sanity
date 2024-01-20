@@ -1,12 +1,13 @@
-import {SanityDocument} from '@sanity/types'
+import {type SanityClient} from '@sanity/client'
+import {type SanityDocument} from '@sanity/types'
+import {type Observable} from 'rxjs'
 import {filter, map, publishReplay, refCount} from 'rxjs/operators'
-import {Observable} from 'rxjs'
-import {SanityClient} from '@sanity/client'
-import {IdPair, PendingMutationsEvent, ReconnectEvent} from '../types'
-import {BufferedDocumentEvent, MutationPayload, SnapshotEvent} from '../buffered-doc'
+
+import {type BufferedDocumentEvent, type MutationPayload, type SnapshotEvent} from '../buffered-doc'
+import {type IdPair, type PendingMutationsEvent, type ReconnectEvent} from '../types'
 import {memoize} from '../utils/createMemoizer'
+import {type DocumentVersion} from './checkoutPair'
 import {memoizedPair} from './memoizedPair'
-import {DocumentVersion} from './checkoutPair'
 
 // return true if the event comes with a document snapshot
 function isSnapshotEvent(event: BufferedDocumentEvent | ReconnectEvent): event is SnapshotEvent & {

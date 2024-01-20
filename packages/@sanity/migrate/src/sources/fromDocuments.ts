@@ -1,4 +1,4 @@
-import {SanityDocument} from '@sanity/types'
+import {type SanityDocument} from '@sanity/types'
 
 export function* fromDocuments(documents: SanityDocument[]) {
   for (const document of documents) {

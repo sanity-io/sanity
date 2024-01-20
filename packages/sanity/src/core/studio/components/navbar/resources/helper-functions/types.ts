@@ -1,4 +1,4 @@
-import {Image, PortableTextBlock} from '@sanity/types'
+import {type Image, type PortableTextBlock} from '@sanity/types'
 
 interface WelcomeVideo {
   link?: Link

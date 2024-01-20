@@ -1,4 +1,5 @@
-import {createContext, ReactNode, useContext, useMemo} from 'react'
+import {createContext, type ReactNode, useContext, useMemo} from 'react'
+
 import {getDraftId, getPublishedId} from '../../util'
 
 export interface DocumentIdContextValue {

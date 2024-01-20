@@ -1,9 +1,10 @@
 import {Box, Card, Flex, Stack, Text, TextInput} from '@sanity/ui'
 import {useBoolean} from '@sanity/ui-workshop'
-import {KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
+import {type KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
 import styled from 'styled-components'
+
 import {CommandList} from '../CommandList'
-import {CommandListHandle, CommandListRenderItemCallback} from '../types'
+import {type CommandListHandle, type CommandListRenderItemCallback} from '../types'
 
 const ITEMS = [...Array(50000).keys()]
 

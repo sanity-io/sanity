@@ -1,5 +1,5 @@
 // Modified version of https://usehooks.com/useOnClickOutside that can take multiple refs
-import {RefObject, useEffect} from 'react'
+import {type RefObject, useEffect} from 'react'
 
 export function useOnClickOutside(refs: RefObject<HTMLElement>[], handler: (event: Event) => void) {
   useEffect(() => {

@@ -1,14 +1,16 @@
 // eslint-disable-next-line import/no-unassigned-import
 import '@testing-library/jest-dom/extend-expect'
-import {render} from '@testing-library/react'
-import {ComponentProps, ReactNode} from 'react'
+
 import {studioTheme, ThemeProvider} from '@sanity/ui'
-import {Translate} from '../Translate'
+import {render} from '@testing-library/react'
+import {type ComponentProps, type ReactNode} from 'react'
+
 import {LocaleProviderBase} from '../components/LocaleProvider'
+import {defineLocaleResourceBundle} from '../helpers'
 import {useTranslation} from '../hooks/useTranslation'
 import {prepareI18n} from '../i18nConfig'
-import {LocaleResourceBundle, LocaleResourceRecord} from '../types'
-import {defineLocaleResourceBundle} from '../helpers'
+import {Translate} from '../Translate'
+import {type LocaleResourceBundle, type LocaleResourceRecord} from '../types'
 
 type TestComponentProps = Omit<ComponentProps<typeof Translate>, 't'>
 

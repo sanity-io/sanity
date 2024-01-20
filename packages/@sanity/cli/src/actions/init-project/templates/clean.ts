@@ -1,4 +1,4 @@
-import type {ProjectTemplate} from '../initProject'
+import {type ProjectTemplate} from '../initProject'
 
 const cleanTemplate: ProjectTemplate = {}
 

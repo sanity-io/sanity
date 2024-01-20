@@ -1,4 +1,5 @@
 import {LayerProvider} from '@sanity/ui'
+
 import {SearchDialog} from '..'
 import {SearchProvider} from '../contexts/search/SearchProvider'
 

@@ -1,5 +1,6 @@
 import path from 'path'
 import resolveFrom from 'resolve-from'
+
 import {dynamicRequire} from './dynamicRequire'
 
 export function getLocalVersion(moduleId: string, workDir: string): string | undefined {

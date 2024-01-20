@@ -1,5 +1,5 @@
-import type {WorkspacesContextValue} from '../workspaces'
-import type {NormalizedWorkspace} from './types'
+import {type WorkspacesContextValue} from '../workspaces'
+import {type NormalizedWorkspace} from './types'
 
 /** @internal */
 export interface MatchWorkspaceOptions {

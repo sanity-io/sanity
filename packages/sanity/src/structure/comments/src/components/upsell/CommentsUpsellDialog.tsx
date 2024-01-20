@@ -1,12 +1,13 @@
-import styled from 'styled-components'
-import {CloseIcon, LaunchIcon} from '@sanity/icons'
 import {white} from '@sanity/color'
+import {CloseIcon, LaunchIcon} from '@sanity/icons'
 import {Box, Stack} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
-import {Button, Dialog} from '../../../../../ui-components'
-import {CommentsUpsellData} from '../../types'
 import {UpsellDescriptionSerializer} from 'sanity'
+import styled from 'styled-components'
+
+import {Button, Dialog} from '../../../../../ui-components'
+import {type CommentsUpsellData} from '../../types'
 
 /**
  * Absolute positioned button to close the dialog.

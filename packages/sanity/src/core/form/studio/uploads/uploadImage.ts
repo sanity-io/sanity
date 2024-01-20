@@ -1,13 +1,14 @@
-import {concat, merge, Observable, of} from 'rxjs'
+import {type SanityClient} from '@sanity/client'
+import {concat, merge, type Observable, of} from 'rxjs'
 import {catchError, filter, map, mergeMap} from 'rxjs/operators'
-import type {SanityClient} from '@sanity/client'
+
 import {set} from '../../patch'
 import {uploadImageAsset} from '../inputs/client-adapters/assets'
+import {UPLOAD_STATUS_KEY} from './constants'
+import {DEFAULT_ORIENTATION, type Orientation} from './image/orient'
 import {readExif} from './image/readExif'
 import {rotateImage} from './image/rotateImage'
-import {DEFAULT_ORIENTATION, Orientation} from './image/orient'
-import {UploadOptions, UploadProgressEvent} from './types'
-import {UPLOAD_STATUS_KEY} from './constants'
+import {type UploadOptions, type UploadProgressEvent} from './types'
 import {CLEANUP_EVENT, createInitialUploadEvent, createUploadEvent} from './utils'
 
 type Exif = {

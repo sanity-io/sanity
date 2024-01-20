@@ -1,6 +1,6 @@
-import {Mutation, NodePatch} from './types'
-import {Transaction} from './transaction'
-import {Operation} from './operations/types'
+import {type Operation} from './operations/types'
+import {type Transaction} from './transaction'
+import {type Mutation, type NodePatch} from './types'
 
 export function isMutation(mutation: unknown): mutation is Mutation {
   return (

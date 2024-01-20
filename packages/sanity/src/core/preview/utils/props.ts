@@ -6,6 +6,7 @@ import {
   of as observableOf,
 } from 'rxjs'
 import {map, mergeAll, scan, switchMap} from 'rxjs/operators'
+
 import {keysOf} from './keysOf'
 
 function setKey(source: Record<string, unknown>, key: any, value: unknown) {

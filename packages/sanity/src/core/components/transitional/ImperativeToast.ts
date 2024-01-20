@@ -1,5 +1,5 @@
 import {useToast} from '@sanity/ui'
-import {ReactNode, forwardRef, useImperativeHandle} from 'react'
+import {forwardRef, type ReactNode, useImperativeHandle} from 'react'
 
 /** @internal */
 export interface ToastParams {

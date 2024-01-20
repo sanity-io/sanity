@@ -1,9 +1,13 @@
-import {PaneNode, UnresolvedPaneNode} from '../../types'
-import {createStructureBuilder, SerializeError} from '../../structureBuilder'
-import {resolveIntent} from '../resolveIntent'
-import {PaneResolutionError} from '../PaneResolutionError'
+/* eslint-disable import/order */
+/* this has to be imported after createStructureBuilder due to what looks like a circular import issue */
+import {type SchemaPluginOptions} from 'sanity'
+
 import {getMockSource} from '../../../../test/testUtils/getMockWorkspaceFromConfig'
-import {SchemaPluginOptions} from 'sanity'
+import {createStructureBuilder, SerializeError} from '../../structureBuilder'
+/* eslint-enable import/order */
+import {type PaneNode, type UnresolvedPaneNode} from '../../types'
+import {PaneResolutionError} from '../PaneResolutionError'
+import {resolveIntent} from '../resolveIntent'
 
 const mockSchema: SchemaPluginOptions = {
   name: 'mockSchema',

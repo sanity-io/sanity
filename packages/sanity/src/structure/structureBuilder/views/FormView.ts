@@ -1,5 +1,5 @@
-import {SerializeOptions} from '../StructureNodes'
-import {BaseView, GenericViewBuilder} from './View'
+import {type SerializeOptions} from '../StructureNodes'
+import {type BaseView, GenericViewBuilder} from './View'
 
 /**
  * Interface for form views.

@@ -1,24 +1,25 @@
 import {Flex} from '@sanity/ui'
+import {difference} from 'lodash'
 import {
   Children,
   cloneElement,
-  ForwardedRef,
+  type ForwardedRef,
   forwardRef,
   Fragment,
   memo,
-  ReactElement,
-  ReactNode,
+  type ReactElement,
+  type ReactNode,
   useCallback,
   useMemo,
   useState,
 } from 'react'
 import styled, {css} from 'styled-components'
-import {difference} from 'lodash'
-import {MenuButtonProps, Tooltip} from '../../../ui-components'
+
+import {type MenuButtonProps, Tooltip} from '../../../ui-components'
 import {ContextMenuButton} from '../contextMenuButton'
+import {CollapseMenuDivider} from './CollapseMenuDivider'
 import {CollapseOverflowMenu} from './CollapseOverflowMenu'
 import {ObserveElement} from './ObserveElement'
-import {CollapseMenuDivider} from './CollapseMenuDivider'
 
 /** @internal */
 export interface CollapseMenuProps {

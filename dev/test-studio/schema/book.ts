@@ -1,5 +1,5 @@
 import {BookIcon} from '@sanity/icons'
-import {Rule} from '@sanity/types'
+import {type Rule} from '@sanity/types'
 
 function formatSubtitle(book: any) {
   return [

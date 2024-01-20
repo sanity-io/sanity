@@ -1,5 +1,6 @@
-import {set, StringInputProps} from 'sanity'
 import {Component} from 'react'
+import {set, type StringInputProps} from 'sanity'
+
 import styles from './CustomFontStringInput.module.css'
 
 export default class CustomStringInput extends Component<StringInputProps> {

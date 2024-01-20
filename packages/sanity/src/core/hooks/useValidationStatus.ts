@@ -1,5 +1,6 @@
 import {useMemoObservable} from 'react-rx'
-import {useDocumentStore, ValidationStatus} from '../store'
+
+import {useDocumentStore, type ValidationStatus} from '../store'
 
 const INITIAL: ValidationStatus = {validation: [], isValidating: false}
 

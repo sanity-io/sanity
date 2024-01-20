@@ -1,6 +1,6 @@
-import {request} from './shared/request'
 import {describeCliTest, testConcurrent} from './shared/describe'
 import {getTestRunArgs, runSanityCmdCommand, studioVersions, testClient} from './shared/environment'
+import {request} from './shared/request'
 
 describeCliTest('CLI: `sanity graphql`', () => {
   describeCliTest.each(studioVersions)('%s', (version) => {

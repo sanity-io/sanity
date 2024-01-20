@@ -1,23 +1,24 @@
-import {InitialValueResolverContext, Schema} from '@sanity/types'
-import {from, merge, Observable, of} from 'rxjs'
+import {type InitialValueResolverContext, type Schema} from '@sanity/types'
+import {from, merge, type Observable, of} from 'rxjs'
 import {
-  map,
-  switchMap,
-  scan,
-  filter,
-  distinctUntilChanged,
   catchError,
   debounceTime,
+  distinctUntilChanged,
+  filter,
+  map,
+  scan,
   startWith,
+  switchMap,
 } from 'rxjs/operators'
-import {DocumentPreviewStore} from '../../../../preview'
-import {resolveInitialValue, Template} from '../../../../templates'
+
+import {type DocumentPreviewStore} from '../../../../preview'
+import {resolveInitialValue, type Template} from '../../../../templates'
 import {getDraftId, getPublishedId} from '../../../../util'
 import {
-  InitialValueErrorMsg,
-  InitialValueLoadingMsg,
-  InitialValueSuccessMsg,
-  InitialValueMsg,
+  type InitialValueErrorMsg,
+  type InitialValueLoadingMsg,
+  type InitialValueMsg,
+  type InitialValueSuccessMsg,
 } from './types'
 
 /**

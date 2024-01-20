@@ -1,11 +1,12 @@
-import type {ImageAsset, ReferenceValue} from '@sanity/types'
+import {type ImageAsset, type ReferenceValue} from '@sanity/types'
 import {Card} from '@sanity/ui'
 import {useCallback, useState} from 'react'
 import styled from 'styled-components'
+
+import {LoadingBlock} from '../../../../../../../../../../components/loadingBlock'
 import {observeImageAsset} from '../../../../../../../../../../form/studio/inputs/client-adapters/assets'
 import {WithReferencedAsset} from '../../../../../../../../../../form/utils/WithReferencedAsset'
 import {useDocumentPreviewStore} from '../../../../../../../../../../store'
-import {LoadingBlock} from '../../../../../../../../../../components/loadingBlock'
 
 interface ImageReferencePreviewProps {
   reference: ReferenceValue

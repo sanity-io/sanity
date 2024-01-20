@@ -1,4 +1,4 @@
-import {ArraySchemaType, SchemaType} from '@sanity/types'
+import {type ArraySchemaType, type SchemaType} from '@sanity/types'
 import {resolveTypeName} from '@sanity/util/content'
 
 export function getItemType(arrayType: ArraySchemaType, item: unknown): SchemaType | undefined {

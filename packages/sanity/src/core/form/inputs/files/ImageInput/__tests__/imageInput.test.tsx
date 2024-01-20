@@ -2,15 +2,13 @@
 
 // import {SanityClient} from '@sanity/client'
 // import imageUrlBuilder from '@sanity/image-url'
-import {ConditionalPropertyCallbackContext, defineField, defineType} from '@sanity/types'
 // import {EMPTY, of} from 'rxjs'
+import {type ConditionalPropertyCallbackContext, defineField, defineType} from '@sanity/types'
+
 import {renderImageInput} from '../../../../../../../test/form'
 // import {UploadOptions} from '../../../../studio/uploads/types'
 // import {ImageUrlBuilder} from '../../types'
-import {
-  BaseImageInput,
-  // ImageInputProps
-} from '../ImageInput'
+import {BaseImageInput} from '../ImageInput'
 
 const defs = {
   mainImage: defineType({

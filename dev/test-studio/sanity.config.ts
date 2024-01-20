@@ -1,34 +1,20 @@
-import {BookIcon} from '@sanity/icons'
-import {SanityMonogram} from '@sanity/logos'
-import {visionTool} from '@sanity/vision'
-import {defineConfig, definePlugin} from 'sanity'
-import {structureTool} from 'sanity/structure'
-import {presentationTool} from 'sanity/presentation'
-import {muxInput} from 'sanity-plugin-mux-input'
 import {assist} from '@sanity/assist'
 import {googleMapsInput} from '@sanity/google-maps-input'
-import {tsdoc} from '@sanity/tsdoc/studio'
+import {BookIcon} from '@sanity/icons'
 import {koKRLocale} from '@sanity/locale-ko-kr'
 import {nbNOLocale} from '@sanity/locale-nb-no'
 import {nnNOLocale} from '@sanity/locale-nn-no'
 import {ptPTLocale} from '@sanity/locale-pt-pt'
 import {svSELocale} from '@sanity/locale-sv-se'
-import {theme as tailwindTheme} from './sanity.theme.mjs'
+import {SanityMonogram} from '@sanity/logos'
+import {tsdoc} from '@sanity/tsdoc/studio'
+import {visionTool} from '@sanity/vision'
+import {defineConfig, definePlugin} from 'sanity'
+import {presentationTool} from 'sanity/presentation'
+import {structureTool} from 'sanity/structure'
+import {muxInput} from 'sanity-plugin-mux-input'
+
 import {imageAssetSource} from './assetSources'
-import {resolveDocumentActions as documentActions} from './documentActions'
-import {resolveInitialValueTemplates} from './initialValueTemplates'
-import {languageFilter} from './plugins/language-filter'
-import {schemaTypes} from './schema'
-import {defaultDocumentNode, newDocumentOptions, structure} from './structure'
-import {workshopTool} from './workshop'
-import {presenceTool} from './plugins/presence'
-import {
-  CustomLayout,
-  CustomLogo,
-  CustomNavbar,
-  CustomToolMenu,
-  studioComponentsPlugin,
-} from './components/studioComponents'
 import {
   Annotation,
   Block,
@@ -40,16 +26,31 @@ import {
   Item,
   Preview,
 } from './components/formComponents'
+import {
+  CustomLayout,
+  CustomLogo,
+  CustomNavbar,
+  CustomToolMenu,
+  studioComponentsPlugin,
+} from './components/studioComponents'
+import {GoogleLogo, TailwindLogo, VercelLogo} from './components/workspaceLogos'
+import {resolveDocumentActions as documentActions} from './documentActions'
+import {assistFieldActionGroup} from './fieldActions/assistFieldActionGroup'
+import {copyAction} from './fieldActions/copyAction'
+import {pasteAction} from './fieldActions/pasteAction'
+import {resolveInitialValueTemplates} from './initialValueTemplates'
+import {customInspector} from './inspectors/custom'
+import {testStudioLocaleBundles} from './locales'
+import {languageFilter} from './plugins/language-filter'
+import {presenceTool} from './plugins/presence'
+import {routerDebugTool} from './plugins/router-debug'
+import {theme as tailwindTheme} from './sanity.theme.mjs'
+import {schemaTypes} from './schema'
+import {StegaDebugger} from './schema/debug/components/DebugStega'
+import {defaultDocumentNode, newDocumentOptions, structure} from './structure'
 import {googleTheme} from './themes/google'
 import {vercelTheme} from './themes/vercel'
-import {GoogleLogo, TailwindLogo, VercelLogo} from './components/workspaceLogos'
-import {copyAction} from './fieldActions/copyAction'
-import {assistFieldActionGroup} from './fieldActions/assistFieldActionGroup'
-import {customInspector} from './inspectors/custom'
-import {pasteAction} from './fieldActions/pasteAction'
-import {routerDebugTool} from './plugins/router-debug'
-import {StegaDebugger} from './schema/debug/components/DebugStega'
-import {testStudioLocaleBundles} from './locales'
+import {workshopTool} from './workshop'
 
 const localePlugins = [koKRLocale(), nbNOLocale(), nnNOLocale(), ptPTLocale(), svSELocale()]
 

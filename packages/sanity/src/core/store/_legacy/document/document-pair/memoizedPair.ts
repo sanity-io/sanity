@@ -1,7 +1,8 @@
-import type {SanityClient} from '@sanity/client'
+import {type SanityClient} from '@sanity/client'
 import {Observable} from 'rxjs'
 import {publishReplay, refCount} from 'rxjs/operators'
-import type {IdPair} from '../types'
+
+import {type IdPair} from '../types'
 import {memoize} from '../utils/createMemoizer'
 import {checkoutPair, type Pair} from './checkoutPair'
 import {memoizeKeyGen} from './memoizeKeyGen'

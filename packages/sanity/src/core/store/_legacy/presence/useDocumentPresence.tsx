@@ -1,6 +1,7 @@
-import {useState, useEffect} from 'react'
+import {useEffect, useState} from 'react'
+
 import {usePresenceStore} from '../datastores'
-import {DocumentPresence} from './types'
+import {type DocumentPresence} from './types'
 
 /** @internal */
 export function useDocumentPresence(documentId: string): DocumentPresence[] {

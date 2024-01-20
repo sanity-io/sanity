@@ -1,6 +1,6 @@
 import {_buildTints, _isDark} from './helpers'
-import {LegacyThemeTints} from './types'
-import {LegacyPalette} from './palette'
+import {type LegacyPalette} from './palette'
+import {type LegacyThemeTints} from './types'
 
 export interface LegacyTones {
   button: {

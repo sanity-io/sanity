@@ -1,6 +1,7 @@
-import {Path, PathSegment} from '@sanity/types'
-import {ChangeNode, FieldChangeNode} from '../../types'
+import {type Path, type PathSegment} from '@sanity/types'
+
 import {getItemKey} from '../../paths'
+import {type ChangeNode, type FieldChangeNode} from '../../types'
 
 const isAddedAction = (change: ChangeNode): boolean => {
   return change.type === 'field' && change.diff.action === 'added'
@@ -55,4 +56,4 @@ const pathSegmentOfCorrectType = (item: Record<string, unknown>, child: string):
   return child
 }
 
-export {isAddedAction, flattenChangeNode, isSubpathOf, pathSegmentOfCorrectType}
+export {flattenChangeNode, isAddedAction, isSubpathOf, pathSegmentOfCorrectType}

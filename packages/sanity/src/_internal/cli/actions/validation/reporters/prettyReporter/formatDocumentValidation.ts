@@ -1,9 +1,9 @@
+import {type Path, type ValidationMarker} from '@sanity/types'
 import chalk from 'chalk'
-import {Path, ValidationMarker} from '@sanity/types'
 import logSymbols from 'log-symbols'
 
-import {convertToTree, formatTree, maxKeyLength, Tree} from '../../../../util/tree'
-import {DocumentValidationResult, isTty, Level, levelValues} from './util'
+import {convertToTree, formatTree, maxKeyLength, type Tree} from '../../../../util/tree'
+import {type DocumentValidationResult, isTty, type Level, levelValues} from './util'
 
 export interface FormatDocumentValidationOptions extends DocumentValidationResult {
   studioHost?: string

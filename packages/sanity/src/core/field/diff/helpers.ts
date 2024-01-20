@@ -1,4 +1,10 @@
-import type {ChangeNode, Diff, FieldChangeNode, GroupChangeNode, ItemDiff} from '../types'
+import {
+  type ChangeNode,
+  type Diff,
+  type FieldChangeNode,
+  type GroupChangeNode,
+  type ItemDiff,
+} from '../types'
 
 /** @internal */
 // eslint-disable-next-line @typescript-eslint/no-empty-function

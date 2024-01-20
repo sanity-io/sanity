@@ -1,4 +1,4 @@
-import {Card, CardProps} from '@sanity/ui'
+import {Card, type CardProps} from '@sanity/ui'
 import styled from 'styled-components'
 
 export const ThreadCard = styled(Card).attrs<CardProps>(({tone}) => ({

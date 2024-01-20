@@ -1,13 +1,14 @@
 import {DocumentIcon, EditIcon} from '@sanity/icons'
 import {Card, Container, Flex, Text} from '@sanity/ui'
 import {useBoolean, useNumber, useSelect, useString, useText} from '@sanity/ui-workshop'
-import {ComponentType, createElement, useMemo} from 'react'
-import {GeneralPreviewLayoutKey, PreviewProps} from '../types'
+import {type ComponentType, createElement, useMemo} from 'react'
+
+import {PREVIEW_SIZES} from '../constants'
 import {CompactPreview} from '../general/CompactPreview'
 import {DefaultPreview} from '../general/DefaultPreview'
 import {DetailPreview} from '../general/DetailPreview'
 import {MediaPreview} from '../general/MediaPreview'
-import {PREVIEW_SIZES} from '../constants'
+import {type GeneralPreviewLayoutKey, type PreviewProps} from '../types'
 
 // Exclude deprecated layout mode
 type LayoutKey = Exclude<GeneralPreviewLayoutKey, 'card'>

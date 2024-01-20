@@ -1,17 +1,18 @@
-import type {SanityClient} from '@sanity/client'
+import {type SanityClient} from '@sanity/client'
 import {sortBy} from 'lodash'
-import type {Observable} from 'rxjs'
+import {type Observable} from 'rxjs'
 import {map, tap} from 'rxjs/operators'
+
 import {removeDupes} from '../../util/draftUtils'
 import {applyWeights} from './applyWeights'
 import {createSearchQuery} from './createSearchQuery'
-import type {
-  SearchableType,
-  SearchHit,
-  SearchOptions,
-  SearchTerms,
-  WeightedHit,
-  WeightedSearchOptions,
+import {
+  type SearchableType,
+  type SearchHit,
+  type SearchOptions,
+  type SearchTerms,
+  type WeightedHit,
+  type WeightedSearchOptions,
 } from './types'
 
 function getSearchTerms(searchParams: string | SearchTerms, types: SearchableType[]) {

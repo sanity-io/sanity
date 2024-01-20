@@ -1,8 +1,8 @@
+import {type DiffComponentResolver} from '../../types'
 import {ArrayOfOptionsFieldDiff} from '../../types/array/diff'
 import {DatetimeFieldDiff} from '../../types/datetime/diff'
-import {UrlFieldDiff} from '../../types/url/diff'
 import {SlugFieldDiff} from '../../types/slug/diff'
-import {DiffComponentResolver} from '../../types'
+import {UrlFieldDiff} from '../../types/url/diff'
 
 /** @internal */
 export const diffResolver: DiffComponentResolver = ({schemaType}) => {

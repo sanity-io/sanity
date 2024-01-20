@@ -1,4 +1,4 @@
-import type {StringInput} from '../types'
+import {type StringInput} from '../types'
 
 export default class StringWrapper<A> implements StringInput<A> {
   type = 'string' as const

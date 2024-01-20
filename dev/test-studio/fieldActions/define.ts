@@ -1,4 +1,4 @@
-import {DocumentFieldActionGroup, DocumentFieldActionItem} from 'sanity'
+import {type DocumentFieldActionGroup, type DocumentFieldActionItem} from 'sanity'
 
 // TODO: consider adding this to core
 export function defineActionItem(node: DocumentFieldActionItem): DocumentFieldActionItem {

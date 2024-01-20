@@ -1,5 +1,6 @@
-import {SchemaType} from '@sanity/types'
+import {type SchemaType} from '@sanity/types'
 import {useCallback} from 'react'
+
 import {DEFAULT_MAX_RECURSION_DEPTH, resolveInitialValueForType} from '../../../templates'
 import {useInitialValueResolverContext} from './useInitialValue'
 

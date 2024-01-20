@@ -1,8 +1,9 @@
-import styled from 'styled-components'
-import {createContext, useContext} from 'react'
-import {DragHandleIcon} from '@sanity/icons'
 import {useSortable} from '@dnd-kit/sortable'
-import {Button, ButtonProps} from '../../../../../ui-components'
+import {DragHandleIcon} from '@sanity/icons'
+import React, {createContext, useContext} from 'react'
+import styled from 'styled-components'
+
+import {Button, type ButtonProps} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
 
 const DragHandleButton = styled(Button)<{$grid?: boolean}>`

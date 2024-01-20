@@ -1,7 +1,14 @@
-import {ComponentType} from 'react'
+import {type ComponentType} from 'react'
+
+import {type PreviewProps} from '../../components'
 import {useMiddlewareComponents} from '../../config/components'
-import {BlockAnnotationProps, BlockProps, FieldProps, InputProps, ItemProps} from '../types'
-import {PreviewProps} from '../../components'
+import {
+  type BlockAnnotationProps,
+  type BlockProps,
+  type FieldProps,
+  type InputProps,
+  type ItemProps,
+} from '../types'
 import {
   DefaultAnnotation,
   DefaultBlock,
@@ -15,8 +22,8 @@ import {
   pickAnnotationComponent,
   pickBlockComponent,
   pickFieldComponent,
-  pickInputComponent,
   pickInlineBlockComponent,
+  pickInputComponent,
   pickItemComponent,
   pickPreviewComponent,
 } from './picks'

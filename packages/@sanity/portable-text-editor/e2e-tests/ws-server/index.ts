@@ -1,11 +1,12 @@
-import ipc from 'node-ipc'
+import {type PortableTextBlock} from '@sanity/types'
 import express from 'express'
 import expressWS from 'express-ws'
+import ipc from 'node-ipc'
 import {Subject} from 'rxjs'
-import type {WebSocket} from 'ws'
-import {PortableTextBlock} from '@sanity/types'
+import {type WebSocket} from 'ws'
+
+import {type Patch} from '../../src'
 import {applyAll} from '../../src/patch/applyPatch'
-import {Patch} from '../../src'
 
 const WEBSOCKET_PORT = 3001
 

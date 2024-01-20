@@ -1,10 +1,11 @@
 import {ErrorOutlineIcon, InfoOutlineIcon, WarningOutlineIcon} from '@sanity/icons'
-import type {FormNodeValidation} from '@sanity/types'
-import {Box, Flex, Placement, Stack, Text} from '@sanity/ui'
+import {type FormNodeValidation} from '@sanity/types'
+import {Box, Flex, type Placement, Stack, Text} from '@sanity/ui'
 import styled from 'styled-components'
-import {useTranslation} from '../../../i18n'
-import {useListFormat} from '../../../hooks'
+
 import {Tooltip} from '../../../../ui-components'
+import {useListFormat} from '../../../hooks'
+import {useTranslation} from '../../../i18n'
 
 /** @internal */
 export interface FormFieldValidationStatusProps {

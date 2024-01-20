@@ -1,5 +1,6 @@
-import {SanityClient} from '@sanity/client'
-import {CommentPostPayload} from '../../types'
+import {type SanityClient} from '@sanity/client'
+
+import {type CommentPostPayload} from '../../types'
 
 /**
  * @beta

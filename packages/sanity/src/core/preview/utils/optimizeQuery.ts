@@ -1,7 +1,8 @@
 import {identity, sortBy, values} from 'lodash'
-import {FieldName, Id, Selection} from '../types'
-import {INCLUDE_FIELDS_QUERY} from '../constants'
+
 import {escapeField, fieldNeedsEscape} from '../../util'
+import {INCLUDE_FIELDS_QUERY} from '../constants'
+import {type FieldName, type Id, type Selection} from '../types'
 
 type CombinedSelection = {
   ids: Id[]

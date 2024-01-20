@@ -1,36 +1,28 @@
-import type {Subscription} from 'rxjs'
-import {
-  MouseEvent,
-  KeyboardEvent,
-  memo,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
-import styled from 'styled-components'
+import {type Asset} from '@sanity/types'
 import {
   // eslint-disable-next-line no-restricted-imports
   Button,
   Card,
   useToast,
 } from '@sanity/ui'
-import {Asset} from '@sanity/types'
+import {memo, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {type Subscription} from 'rxjs'
+import styled from 'styled-components'
+
 import {LoadingBlock} from '../../../../components/loadingBlock'
 import {useClient} from '../../../../hooks'
+import {useTranslation} from '../../../../i18n'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
+import {AssetDeleteDialog} from '../shared/AssetDeleteDialog'
 import {AssetMenu} from '../shared/AssetMenu'
 import {AssetUsageDialog} from '../shared/AssetUsageDialog'
-import {AssetDeleteDialog} from '../shared/AssetDeleteDialog'
-import {AssetMenuAction} from '../types'
-import {useTranslation} from '../../../../i18n'
+import {type AssetMenuAction} from '../types'
 
 interface AssetProps {
   asset: Asset
   isSelected: boolean
-  onClick?: (event: MouseEvent) => void
-  onKeyPress?: (event: KeyboardEvent) => void
+  onClick?: (event: React.MouseEvent) => void
+  onKeyPress?: (event: React.KeyboardEvent) => void
   onDeleteFinished: (assetId: string) => void
 }
 

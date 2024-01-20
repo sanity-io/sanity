@@ -1,35 +1,36 @@
-import type {
-  ArraySchemaType,
-  PortableTextBlock,
-  PortableTextObject,
-  PortableTextTextBlock,
+import {
+  type ArraySchemaType,
+  type PortableTextBlock,
+  type PortableTextObject,
+  type PortableTextTextBlock,
 } from '@sanity/types'
 import {flatten} from 'lodash'
+
+import {
+  type ArbitraryTypedObject,
+  type DeserializerRule,
+  type HtmlDeserializerOptions,
+  type PlaceholderAnnotation,
+  type PlaceholderDecorator,
+  type TypedObject,
+} from '../types'
 import {findBlockType} from '../util/findBlockType'
 import {resolveJsType} from '../util/resolveJsType'
-import type {
-  ArbitraryTypedObject,
-  DeserializerRule,
-  HtmlDeserializerOptions,
-  PlaceholderAnnotation,
-  PlaceholderDecorator,
-  TypedObject,
-} from '../types'
-import {createRules} from './rules'
 import {
   createRuleOptions,
   defaultParseHtml,
   ensureRootIsBlocks,
   flattenNestedBlocks,
-  trimWhitespace,
+  isMinimalBlock,
+  isMinimalSpan,
+  isNodeList,
+  isPlaceholderAnnotation,
+  isPlaceholderDecorator,
   preprocess,
   tagName,
-  isNodeList,
-  isMinimalSpan,
-  isPlaceholderDecorator,
-  isPlaceholderAnnotation,
-  isMinimalBlock,
+  trimWhitespace,
 } from './helpers'
+import {createRules} from './rules'
 
 /**
  * HTML Deserializer

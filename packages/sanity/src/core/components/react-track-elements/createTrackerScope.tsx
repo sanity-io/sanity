@@ -1,15 +1,16 @@
 import {
   createContext,
+  type ReactNode,
   useContext,
-  useState,
   useLayoutEffect,
-  ReactNode,
   useMemo,
   useRef,
+  useState,
 } from 'react'
-import {Reported, TrackerContext} from './types'
-import {createUseReporter, IsEqualFunction} from './createUseReporter'
+
 import {createStore} from './createStore'
+import {createUseReporter, type IsEqualFunction} from './createUseReporter'
+import {type Reported, type TrackerContext} from './types'
 
 // Todo: consider memozing individual functions or move the context assertion/guard to a separate step.
 let didWarn = false

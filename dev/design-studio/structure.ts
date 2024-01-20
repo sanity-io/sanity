@@ -1,5 +1,6 @@
-import {StructureResolver, DefaultDocumentNodeResolver} from 'sanity/structure'
 import {CogIcon} from '@sanity/icons'
+import {type DefaultDocumentNodeResolver, type StructureResolver} from 'sanity/structure'
+
 import {CustomPane} from './components/CustomPane'
 import {IFrameView} from './components/IframeView'
 import {JSONPreviewDocumentView} from './components/jsonPreview'

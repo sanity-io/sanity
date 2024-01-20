@@ -1,17 +1,18 @@
-import {SanityClient} from '@sanity/client'
+import {type SanityClient} from '@sanity/client'
 import {LayerProvider, studioTheme, ThemeProvider, ToastProvider} from '@sanity/ui'
-import {ReactNode} from 'react'
+import {type ReactNode} from 'react'
+
 import {
   LocaleProviderBase,
-  LocaleResourceBundle,
+  type LocaleResourceBundle,
   ResourceCacheProvider,
-  SingleWorkspace,
+  type SingleWorkspace,
   SourceProvider,
   usEnglishLocale,
   WorkspaceProvider,
 } from '../../src/core'
-import {prepareI18n} from '../../src/core/i18n/i18nConfig'
 import {studioDefaultLocaleResources} from '../../src/core/i18n/bundles/studio'
+import {prepareI18n} from '../../src/core/i18n/i18nConfig'
 import {getMockWorkspace} from './getMockWorkspaceFromConfig'
 
 interface TestProviderOptions {

@@ -1,10 +1,11 @@
-import {SchemaType} from '@sanity/types'
+import {type SanityClient} from '@sanity/client'
+import {type SchemaType} from '@sanity/types'
 import {map} from 'rxjs/operators'
-import {SanityClient} from '@sanity/client'
+
 import {set} from '../../patch'
-import {uploadImage} from './uploadImage'
+import {type Uploader, type UploaderDef, type UploadOptions} from './types'
 import {uploadFile} from './uploadFile'
-import {Uploader, UploaderDef, UploadOptions} from './types'
+import {uploadImage} from './uploadImage'
 
 const UPLOAD_IMAGE: UploaderDef = {
   type: 'image',

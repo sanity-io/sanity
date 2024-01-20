@@ -1,11 +1,12 @@
 import {ReadOnlyIcon} from '@sanity/icons'
 import {Text} from '@sanity/ui'
 import {useCallback} from 'react'
+import {useDocumentOperation, useTranslation} from 'sanity'
+import {useRouter} from 'sanity/router'
+
 import {structureLocaleNamespace} from '../../../../i18n'
 import {useDocumentPane} from '../../useDocumentPane'
 import {Banner} from './Banner'
-import {useDocumentOperation, useTranslation} from 'sanity'
-import {useRouter} from 'sanity/router'
 
 interface DeletedDocumentBannerProps {
   revisionId?: string | null

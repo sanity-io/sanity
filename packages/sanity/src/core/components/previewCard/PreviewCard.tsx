@@ -1,5 +1,5 @@
-import {Card, CardProps} from '@sanity/ui'
-import {ForwardedRef, HTMLProps, createContext, forwardRef, useContext} from 'react'
+import {Card, type CardProps} from '@sanity/ui'
+import {createContext, type ForwardedRef, forwardRef, type HTMLProps, useContext} from 'react'
 import styled, {css} from 'styled-components'
 
 /** @internal */

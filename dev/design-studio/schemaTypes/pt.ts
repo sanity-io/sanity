@@ -1,4 +1,4 @@
-import {Rule} from 'sanity'
+import {type Rule} from 'sanity'
 
 const objectExample = {
   type: 'object',

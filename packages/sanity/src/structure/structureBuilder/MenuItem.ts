@@ -1,12 +1,13 @@
-import {SchemaType, SortOrdering, SortOrderingItem} from '@sanity/types'
 import {SortIcon} from '@sanity/icons'
-import {getExtendedProjection} from './util/getExtendedProjection'
-import {Intent} from './Intent'
+import {type SchemaType, type SortOrdering, type SortOrderingItem} from '@sanity/types'
+import {type I18nTextRecord} from 'sanity'
+
+import {type Intent} from './Intent'
+import {HELP_URL, SerializeError} from './SerializeError'
 import {DEFAULT_ORDERING_OPTIONS} from './Sort'
-import {SerializeOptions, Serializable, SerializePath} from './StructureNodes'
-import {SerializeError, HELP_URL} from './SerializeError'
-import {StructureContext} from './types'
-import {I18nTextRecord} from 'sanity'
+import {type Serializable, type SerializeOptions, type SerializePath} from './StructureNodes'
+import {type StructureContext} from './types'
+import {getExtendedProjection} from './util/getExtendedProjection'
 
 /** @internal */
 export function maybeSerializeMenuItem(

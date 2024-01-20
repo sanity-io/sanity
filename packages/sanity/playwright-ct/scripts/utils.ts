@@ -1,7 +1,15 @@
+import {addMinutes, format} from 'date-fns'
 import fs from 'fs'
 import _ from 'lodash'
-import {addMinutes, format} from 'date-fns'
-import {GroupedSpec, GroupedTests, JSONReportCustom, Spec, Suite, SummaryRow} from './types'
+
+import {
+  type GroupedSpec,
+  type GroupedTests,
+  type JSONReportCustom,
+  type Spec,
+  type Suite,
+  type SummaryRow,
+} from './types'
 
 /**
  * Typed parse of Playwright report output

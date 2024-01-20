@@ -1,14 +1,15 @@
 import {RestoreIcon} from '@sanity/icons'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {structureLocaleNamespace} from '../i18n'
 import {
-  DocumentActionComponent,
-  DocumentActionDialogProps,
+  type DocumentActionComponent,
+  type DocumentActionDialogProps,
   useDocumentOperation,
   useDocumentOperationEvent,
   useTranslation,
 } from 'sanity'
 import {useRouter} from 'sanity/router'
+
+import {structureLocaleNamespace} from '../i18n'
 
 /** @internal */
 export const HistoryRestoreAction: DocumentActionComponent = ({id, type, revision, onComplete}) => {

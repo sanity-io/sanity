@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 import {FINDABILITY_MVI} from '../constants'
 import {createSearchQuery, DEFAULT_LIMIT, extractTermsFromQuery} from './createSearchQuery'
-import type {SearchableType} from './types'
+import {type SearchableType} from './types'
 
 const testType: SearchableType = {
   name: 'basic-schema-test',

@@ -1,5 +1,6 @@
-import {Editor, Element, Range} from 'slate'
-import {EditorSelection} from '..'
+import {type Editor, type Element, type Range} from 'slate'
+
+import {type EditorSelection} from '..'
 
 // Is the editor currently receiving remote changes that are being applied to the content?
 export const IS_PROCESSING_REMOTE_CHANGES: WeakMap<Editor, boolean> = new WeakMap()

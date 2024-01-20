@@ -1,9 +1,10 @@
+import {type Path} from '@sanity/types'
 import * as PathUtils from '@sanity/util/paths'
-import {ReactNode, SyntheticEvent, useCallback, useContext, useRef, useState} from 'react'
-import {Path} from '@sanity/types'
+import {type ReactNode, type SyntheticEvent, useCallback, useContext, useRef, useState} from 'react'
 import deepCompare from 'react-fast-compare'
-import {useReporter} from './tracker'
+
 import {ConnectorContext} from './ConnectorContext'
+import {useReporter} from './tracker'
 
 /**
  * This is used to draw the bar that wraps the diff components in the changes panel

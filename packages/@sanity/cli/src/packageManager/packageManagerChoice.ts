@@ -1,9 +1,10 @@
 /* eslint-disable no-process-env */
 import path from 'path'
-import which from 'which'
 import preferredPM from 'preferred-pm'
+import which from 'which'
+
+import {type CliPrompter} from '../types'
 import {isInteractive} from '../util/isInteractive'
-import {CliPrompter} from '../types'
 
 export type PackageManager = 'npm' | 'yarn' | 'pnpm' | 'bun' | 'manual'
 

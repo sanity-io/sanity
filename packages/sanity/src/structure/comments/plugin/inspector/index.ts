@@ -1,9 +1,10 @@
 import {CommentIcon} from '@sanity/icons'
+import {defineDocumentInspector, type DocumentInspectorMenuItem, useTranslation} from 'sanity'
+
 import {COMMENTS_INSPECTOR_NAME} from '../../../panes/document/constants'
 import {commentsLocaleNamespace} from '../../i18n'
 import {useCommentsEnabled} from '../../src'
 import {CommentsInspector} from './CommentsInspector'
-import {DocumentInspectorMenuItem, defineDocumentInspector, useTranslation} from 'sanity'
 
 function useMenuItem(): DocumentInspectorMenuItem {
   const {t} = useTranslation(commentsLocaleNamespace)

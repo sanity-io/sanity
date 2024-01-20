@@ -1,13 +1,14 @@
 import {Stack, Text} from '@sanity/ui'
 import {useCallback} from 'react'
-import {FormField} from '../../../components/formField'
+
 import {Button} from '../../../../../ui-components'
-import {Alert} from '../../../components/Alert'
-import {DuplicateKeysError} from '../../../store/types/memberErrors'
-import {PatchEvent, set} from '../../../patch'
-import {Details} from '../../../components/Details'
 import {isDev} from '../../../../environment'
 import {Translate, useTranslation} from '../../../../i18n'
+import {Alert} from '../../../components/Alert'
+import {Details} from '../../../components/Details'
+import {FormField} from '../../../components/formField'
+import {PatchEvent, set} from '../../../patch'
+import {type DuplicateKeysError} from '../../../store/types/memberErrors'
 
 interface Props {
   error: DuplicateKeysError

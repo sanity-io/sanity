@@ -1,27 +1,35 @@
-import type {ComponentProps, ForwardedRef} from 'react'
-import {forwardRef, useCallback, useMemo, useRef, useState} from 'react'
-import type {Reference, ReferenceSchemaType} from '@sanity/types'
-import {Box, Card, CardTone, Flex, Menu, MenuDivider, Stack} from '@sanity/ui'
 import {LaunchIcon as OpenInNewTabIcon, SyncIcon as ReplaceIcon, TrashIcon} from '@sanity/icons'
-import type {ObjectFieldProps, RenderPreviewCallback} from '../../types'
-import {FormField} from '../../components'
-import {useScrollIntoViewOnFocusWithin} from '../../hooks/useScrollIntoViewOnFocusWithin'
-import {useDidUpdate} from '../../hooks/useDidUpdate'
-import {set, unset} from '../../patch'
-import {FieldActionsProvider, FieldActionsResolver} from '../../field'
-import {DocumentFieldActionNode} from '../../../config'
-import {usePublishedId} from '../../contexts/DocumentIdProvider'
-import {useTranslation} from '../../../i18n'
+import {type Reference, type ReferenceSchemaType} from '@sanity/types'
+import {Box, Card, type CardTone, Flex, Menu, MenuDivider, Stack} from '@sanity/ui'
+import {
+  type ComponentProps,
+  type ForwardedRef,
+  forwardRef,
+  useCallback,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
+import {IntentLink} from 'sanity/router'
+
 import {MenuButton, MenuItem, TooltipDelayGroupProvider} from '../../../../ui-components'
 import {ContextMenuButton} from '../../../components/contextMenuButton'
-import {useReferenceInput} from './useReferenceInput'
-import {useReferenceInfo} from './useReferenceInfo'
+import {type DocumentFieldActionNode} from '../../../config'
+import {useTranslation} from '../../../i18n'
+import {FormField} from '../../components'
+import {usePublishedId} from '../../contexts/DocumentIdProvider'
+import {FieldActionsProvider, FieldActionsResolver} from '../../field'
+import {useDidUpdate} from '../../hooks/useDidUpdate'
+import {useScrollIntoViewOnFocusWithin} from '../../hooks/useScrollIntoViewOnFocusWithin'
+import {set, unset} from '../../patch'
+import {type ObjectFieldProps, type RenderPreviewCallback} from '../../types'
 import {PreviewReferenceValue} from './PreviewReferenceValue'
-import {ReferenceLinkCard} from './ReferenceLinkCard'
 import {ReferenceFinalizeAlertStrip} from './ReferenceFinalizeAlertStrip'
-import {ReferenceStrengthMismatchAlertStrip} from './ReferenceStrengthMismatchAlertStrip'
+import {ReferenceLinkCard} from './ReferenceLinkCard'
 import {ReferenceMetadataLoadErrorAlertStrip} from './ReferenceMetadataLoadFailure'
-import {IntentLink} from 'sanity/router'
+import {ReferenceStrengthMismatchAlertStrip} from './ReferenceStrengthMismatchAlertStrip'
+import {useReferenceInfo} from './useReferenceInfo'
+import {useReferenceInput} from './useReferenceInput'
 
 interface ReferenceFieldProps extends Omit<ObjectFieldProps, 'renderDefault'> {
   schemaType: ReferenceSchemaType

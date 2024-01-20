@@ -1,30 +1,31 @@
 /* eslint-disable camelcase */
 
-import {ObjectSchemaType, Path, ValidationMarker} from '@sanity/types'
-import {ReactNode, useMemo} from 'react'
-import {DocumentFieldAction, Source} from '../config'
-import {FormNodePresence} from '../presence'
+import {type ObjectSchemaType, type Path, type ValidationMarker} from '@sanity/types'
+import {type ReactNode, useMemo} from 'react'
+
+import {type DocumentFieldAction, type Source} from '../config'
+import {type FormNodePresence} from '../presence'
 import {EMPTY_ARRAY} from '../util'
-import {FormBuilderContext, FormBuilderContextValue} from './FormBuilderContext'
-import {
-  FormBuilderFilterFieldFn,
-  RenderAnnotationCallback,
-  RenderBlockCallback,
-  RenderFieldCallback,
-  RenderInputCallback,
-  RenderItemCallback,
-  RenderPreviewCallback,
-} from './types'
-import {FormFieldGroup, StateTree} from './store'
+import {DocumentIdProvider} from './contexts/DocumentIdProvider'
+import {HoveredFieldProvider} from './field'
+import {FormBuilderContext, type FormBuilderContextValue} from './FormBuilderContext'
 import {ArrayOfObjectsFunctions} from './inputs/arrays/ArrayOfObjectsInput/ArrayOfObjectsFunctions'
-import {DefaultMarkers} from './inputs/PortableText/_legacyDefaultParts/Markers'
 import {DefaultCustomMarkers} from './inputs/PortableText/_legacyDefaultParts/CustomMarkers'
-import {PatchChannel, PatchEvent} from './patch'
+import {DefaultMarkers} from './inputs/PortableText/_legacyDefaultParts/Markers'
+import {type PatchChannel, type PatchEvent} from './patch'
+import {type FormFieldGroup, type StateTree} from './store'
 import {FormCallbacksProvider} from './studio/contexts/FormCallbacks'
 import {PresenceProvider} from './studio/contexts/Presence'
 import {ValidationProvider} from './studio/contexts/Validation'
-import {HoveredFieldProvider} from './field'
-import {DocumentIdProvider} from './contexts/DocumentIdProvider'
+import {
+  type FormBuilderFilterFieldFn,
+  type RenderAnnotationCallback,
+  type RenderBlockCallback,
+  type RenderFieldCallback,
+  type RenderInputCallback,
+  type RenderItemCallback,
+  type RenderPreviewCallback,
+} from './types'
 
 export interface FormBuilderProviderProps {
   /** @internal */

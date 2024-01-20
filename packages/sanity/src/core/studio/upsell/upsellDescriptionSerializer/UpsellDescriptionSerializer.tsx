@@ -2,8 +2,9 @@ import {PortableText, type PortableTextComponents} from '@portabletext/react'
 import {Icon, LinkIcon} from '@sanity/icons'
 import {type PortableTextBlock} from '@sanity/types'
 import {Box, Card, Flex, Heading, Text} from '@sanity/ui'
+import {type ReactNode, useEffect, useMemo, useState} from 'react'
 import styled, {css} from 'styled-components'
-import {ReactNode, useEffect, useMemo, useState} from 'react'
+
 import {ConditionalWrapper} from '../../../../ui-components/conditionalWrapper'
 import {transformBlocks} from './helpers'
 

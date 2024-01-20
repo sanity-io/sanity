@@ -1,14 +1,15 @@
-import {
-  ComponentProps,
-  ForwardedRef,
-  ReactElement,
-  Ref,
-  RefObject,
+import {Autocomplete, Box, Flex, type Placement, Text} from '@sanity/ui'
+import React, {
+  type ComponentProps,
+  type ForwardedRef,
   forwardRef,
+  type ReactElement,
+  type Ref,
+  type RefObject,
   useCallback,
 } from 'react'
-import {Autocomplete, Box, Flex, Placement, Text} from '@sanity/ui'
 import styled from 'styled-components'
+
 import {Popover} from '../../../../ui-components'
 import {Translate, useTranslation} from '../../../i18n'
 

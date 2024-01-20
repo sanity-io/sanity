@@ -1,5 +1,6 @@
-import {Validators} from '@sanity/types'
+import {type Validators} from '@sanity/types'
 import * as legacyDateFormat from '@sanity/util/legacyDateFormat'
+
 import {genericValidators} from './genericValidator'
 
 function isRecord(obj: unknown): obj is Record<string, unknown> {

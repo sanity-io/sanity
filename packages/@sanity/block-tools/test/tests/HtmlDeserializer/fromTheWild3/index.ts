@@ -1,6 +1,6 @@
-import {BlockTestFn} from '../types'
-import defaultSchema from '../../../fixtures/defaultSchema'
 import {isElement} from '../../../../src/HtmlDeserializer/helpers'
+import defaultSchema from '../../../fixtures/defaultSchema'
+import {type BlockTestFn} from '../types'
 
 const blockContentType = defaultSchema
   .get('blogPost')

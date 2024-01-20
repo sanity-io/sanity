@@ -1,5 +1,6 @@
 import {createContext} from 'react'
-import {ReviewChangesContextValue} from './types'
+
+import {type ReviewChangesContextValue} from './types'
 
 /**
  * @internal

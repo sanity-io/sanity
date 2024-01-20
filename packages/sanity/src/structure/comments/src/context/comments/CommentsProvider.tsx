@@ -1,26 +1,26 @@
-import {memo, useCallback, useMemo, useState} from 'react'
-import * as React from 'react'
 import {orderBy} from 'lodash'
+import {memo, type ReactNode, useCallback, useMemo, useState} from 'react'
+import {getPublishedId, useCurrentUser, useEditState, useSchema, useWorkspace} from 'sanity'
+
 import {
-  CommentCreatePayload,
-  CommentEditPayload,
-  CommentPostPayload,
-  CommentStatus,
-  CommentThreadItem,
-} from '../../types'
-import {
-  CommentOperationsHookOptions,
-  MentionHookOptions,
+  type CommentOperationsHookOptions,
+  type MentionHookOptions,
   useCommentOperations,
   useCommentsEnabled,
   useCommentsSetup,
   useMentionOptions,
 } from '../../hooks'
 import {useCommentsStore} from '../../store'
+import {
+  type CommentCreatePayload,
+  type CommentEditPayload,
+  type CommentPostPayload,
+  type CommentStatus,
+  type CommentThreadItem,
+} from '../../types'
 import {buildCommentThreadItems} from '../../utils/buildCommentThreadItems'
 import {CommentsContext} from './CommentsContext'
-import {CommentsContextValue} from './types'
-import {getPublishedId, useEditState, useSchema, useCurrentUser, useWorkspace} from 'sanity'
+import {type CommentsContextValue} from './types'
 
 const EMPTY_ARRAY: [] = []
 
@@ -39,7 +39,7 @@ interface ThreadItemsByStatus {
  * @hidden
  */
 export interface CommentsProviderProps {
-  children: React.ReactNode
+  children: ReactNode
   documentId: string
   documentType: string
 

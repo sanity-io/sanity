@@ -1,4 +1,4 @@
-import type {InputObjectType} from '../../types'
+import {type InputObjectType} from '../../types'
 
 export function createDateTimeFilters(): InputObjectType {
   return {

@@ -8,15 +8,16 @@ import {
 } from '@sanity/types'
 import {Card, Flex, Text, useClickOutside} from '@sanity/ui'
 import {FOCUS_TERMINATOR, toString} from '@sanity/util/paths'
-import {useCallback, useContext, useState, useEffect, useMemo, MouseEvent} from 'react'
+import {type MouseEvent, useCallback, useContext, useEffect, useMemo, useState} from 'react'
 import styled from 'styled-components'
+
 import {Popover} from '../../../../../../ui-components'
-import {useTranslation} from '../../../../../i18n'
-import {ChangeList, DiffContext, DiffTooltip, useDiffAnnotationColor} from '../../../../diff'
-import type {ObjectDiff} from '../../../../types'
-import {isEmptyObject} from '../helpers'
 import {ConnectorContext, useReportedValues} from '../../../../../changeIndicators'
+import {useTranslation} from '../../../../../i18n'
 import {Preview} from '../../../../../preview/components/Preview'
+import {ChangeList, DiffContext, DiffTooltip, useDiffAnnotationColor} from '../../../../diff'
+import {type ObjectDiff} from '../../../../types'
+import {isEmptyObject} from '../helpers'
 import {InlineBox, InlineText, PopoverContainer, PreviewContainer} from './styledComponents'
 
 interface InlineObjectProps {

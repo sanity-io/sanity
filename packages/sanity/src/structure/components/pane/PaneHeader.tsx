@@ -1,8 +1,9 @@
-import {useElementRect, Box, Card, Flex, LayerProvider} from '@sanity/ui'
-import {useMemo, useCallback, forwardRef, ForwardedRef, ReactNode} from 'react'
-import {usePane} from './usePane'
-import {Layout, Root, TabsBox, TitleCard, TitleTextSkeleton, TitleText} from './PaneHeader.styles'
+import {Box, Card, Flex, LayerProvider, useElementRect} from '@sanity/ui'
+import {type ForwardedRef, forwardRef, type ReactNode, useCallback, useMemo} from 'react'
 import {LegacyLayerProvider} from 'sanity'
+
+import {Layout, Root, TabsBox, TitleCard, TitleText, TitleTextSkeleton} from './PaneHeader.styles'
+import {usePane} from './usePane'
 
 /**
  * @beta This API will change. DO NOT USE IN PRODUCTION.

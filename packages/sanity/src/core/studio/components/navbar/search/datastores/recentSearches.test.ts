@@ -1,17 +1,18 @@
 import {Schema} from '@sanity/schema'
-import type {CurrentUser, ObjectSchemaType} from '@sanity/types'
-import type {SearchTerms} from '../../../../../search'
+import {type CurrentUser, type ObjectSchemaType} from '@sanity/types'
+
+import {type SearchTerms} from '../../../../../search'
 import {filterDefinitions} from '../definitions/defaultFilters'
 import {createFieldDefinitionDictionary, createFieldDefinitions} from '../definitions/fields'
 import {createFilterDefinitionDictionary} from '../definitions/filters'
 import {createOperatorDefinitionDictionary} from '../definitions/operators'
 import {operatorDefinitions} from '../definitions/operators/defaultOperators'
-import {SearchFilter} from '../types'
+import {type SearchFilter} from '../types'
 import {
   createRecentSearchesStore,
   MAX_RECENT_SEARCHES,
-  RecentSearchesStore,
   RECENT_SEARCH_VERSION,
+  type RecentSearchesStore,
 } from './recentSearches'
 
 const mockSchema = Schema.compile({

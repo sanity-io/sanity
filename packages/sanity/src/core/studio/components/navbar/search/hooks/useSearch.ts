@@ -1,8 +1,8 @@
-import type {Schema} from '@sanity/types'
+import {type Schema} from '@sanity/types'
 import isEqual from 'lodash/isEqual'
 import {useCallback, useMemo, useState} from 'react'
 import {useObservableCallback} from 'react-rx'
-import {concat, EMPTY, iif, Observable, of, timer} from 'rxjs'
+import {concat, EMPTY, iif, type Observable, of, timer} from 'rxjs'
 import {
   catchError,
   debounce,
@@ -13,13 +13,19 @@ import {
   switchMap,
   tap,
 } from 'rxjs/operators'
+
 import {useClient} from '../../../../../hooks'
-import {createWeightedSearch, SearchOptions, SearchTerms, WeightedHit} from '../../../../../search'
+import {
+  createWeightedSearch,
+  type SearchOptions,
+  type SearchTerms,
+  type WeightedHit,
+} from '../../../../../search'
+import {getSearchTypesWithMaxDepth} from '../../../../../search/weighted/getSearchTypesWithMaxDepth'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../../studioClient'
-import type {SearchState} from '../types'
+import {type SearchState} from '../types'
 import {hasSearchableTerms} from '../utils/hasSearchableTerms'
 import {getSearchableOmnisearchTypes} from '../utils/selectors'
-import {getSearchTypesWithMaxDepth} from '../../../../../search/weighted/getSearchTypesWithMaxDepth'
 import {useSearchMaxFieldDepth} from './useSearchMaxFieldDepth'
 
 interface SearchRequest {

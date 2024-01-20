@@ -1,22 +1,23 @@
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {uuid} from '@sanity/uuid'
-import * as PathUtils from '@sanity/util/paths'
-import {PortableTextBlock} from '@sanity/types'
-import {Stack, useBoundaryElement} from '@sanity/ui'
-import styled, {css} from 'styled-components'
-import scrollIntoViewIfNeeded, {Options} from 'scroll-into-view-if-needed'
-import {motion, AnimatePresence, Variants} from 'framer-motion'
 import {hues} from '@sanity/color'
+import {type PortableTextBlock} from '@sanity/types'
+import {Stack, useBoundaryElement} from '@sanity/ui'
+import * as PathUtils from '@sanity/util/paths'
+import {uuid} from '@sanity/uuid'
+import {AnimatePresence, motion, type Variants} from 'framer-motion'
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {type FieldProps, getSchemaTypeTitle, useCurrentUser} from 'sanity'
+import scrollIntoViewIfNeeded, {type Options} from 'scroll-into-view-if-needed'
+import styled, {css} from 'styled-components'
+
 import {
-  useCommentsEnabled,
+  type CommentCreatePayload,
+  type CommentsUIMode,
   useComments,
-  CommentCreatePayload,
+  useCommentsEnabled,
   useCommentsSelectedPath,
   useCommentsUpsell,
-  CommentsUIMode,
 } from '../../src'
 import {CommentsFieldButton} from './CommentsFieldButton'
-import {FieldProps, getSchemaTypeTitle, useCurrentUser} from 'sanity'
 
 const HIGHLIGHT_BLOCK_VARIANTS: Variants = {
   initial: {

@@ -1,8 +1,8 @@
+import chalk from 'chalk'
 import {spawn} from 'child_process'
 import fs from 'fs/promises'
-import path from 'path'
-import chalk from 'chalk'
 import globby from 'globby'
+import path from 'path'
 
 main().catch((err) => {
   console.error(chalk.red(err))

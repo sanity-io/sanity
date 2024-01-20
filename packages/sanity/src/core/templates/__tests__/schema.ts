@@ -1,5 +1,5 @@
 import {Schema as SchemaBuilder} from '@sanity/schema'
-import {Schema} from '@sanity/types'
+import {type Schema} from '@sanity/types'
 
 const Icon = () => null
 

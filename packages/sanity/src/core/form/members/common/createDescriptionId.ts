@@ -1,4 +1,4 @@
-import {ReactNode} from 'react'
+import {type ReactNode} from 'react'
 
 /**
  * Creates a description id from a field id, for use with aria-describedby in the field,

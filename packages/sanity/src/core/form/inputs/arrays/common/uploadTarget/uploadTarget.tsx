@@ -1,14 +1,26 @@
+import {type SchemaType} from '@sanity/types'
 import {Box, Flex, Text, useToast} from '@sanity/ui'
-import {SchemaType} from '@sanity/types'
 import {sortBy} from 'lodash'
+import React, {
+  type ComponentType,
+  type ForwardedRef,
+  forwardRef,
+  type ReactNode,
+  useCallback,
+  useState,
+} from 'react'
 import styled from 'styled-components'
-import {ReactNode, ComponentType, forwardRef, ForwardedRef, useCallback, useState} from 'react'
-import {FileLike, ResolvedUploader, UploaderResolver} from '../../../../studio/uploads/types'
-import {FileInfo, fileTarget} from '../../../common/fileTarget'
-import {DropMessage} from '../../../files/common/DropMessage'
-import {UploadEvent} from '../../../../types'
-import {FIXME} from '../../../../../FIXME'
+
+import {type FIXME} from '../../../../../FIXME'
 import {useTranslation} from '../../../../../i18n'
+import {
+  type FileLike,
+  type ResolvedUploader,
+  type UploaderResolver,
+} from '../../../../studio/uploads/types'
+import {type UploadEvent} from '../../../../types'
+import {type FileInfo, fileTarget} from '../../../common/fileTarget'
+import {DropMessage} from '../../../files/common/DropMessage'
 import {Overlay} from './styles'
 
 export interface UploadTargetProps {

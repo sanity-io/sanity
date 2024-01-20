@@ -1,5 +1,5 @@
-import type {FetchOptions} from './fetchStream'
-import type {Endpoint} from './endpoints'
+import {type Endpoint} from './endpoints'
+import {type FetchOptions} from './fetchStream'
 
 function getUserAgent() {
   if (typeof window === 'undefined') {

@@ -1,6 +1,7 @@
-import {Path} from '@sanity/types'
-import {FieldError} from './memberErrors'
-import {FieldMember} from './members'
+import {type Path} from '@sanity/types'
+
+import {type FieldError} from './memberErrors'
+import {type FieldMember} from './members'
 
 /**
  * @hidden

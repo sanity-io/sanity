@@ -1,6 +1,7 @@
 import createImageUrlBuilder from '@sanity/image-url'
-import {ImageUrlFitMode} from '@sanity/types'
-import {ForwardedRef, HTMLAttributes, forwardRef, useMemo} from 'react'
+import {type ImageUrlFitMode} from '@sanity/types'
+import {type ForwardedRef, forwardRef, type HTMLAttributes, useMemo} from 'react'
+
 import {useClient} from '../../hooks'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 

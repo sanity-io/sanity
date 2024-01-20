@@ -1,10 +1,10 @@
-export {type FileInputProps, StudioFileInput as FileInput} from './StudioFileInput'
-export {type ImageInputProps, StudioImageInput as ImageInput} from './StudioImageInput'
 export {
-  type StudioReferenceInputProps as ReferenceInputProps,
-  StudioReferenceInput as ReferenceInput,
-} from './reference/StudioReferenceInput'
-export {
-  type StudioCrossDatasetReferenceInputProps as CrossDatasetReferenceInputProps,
   StudioCrossDatasetReferenceInput as CrossDatasetReferenceInput,
+  type StudioCrossDatasetReferenceInputProps as CrossDatasetReferenceInputProps,
 } from './crossDatasetReference/StudioCrossDatasetReferenceInput'
+export {
+  StudioReferenceInput as ReferenceInput,
+  type StudioReferenceInputProps as ReferenceInputProps,
+} from './reference/StudioReferenceInput'
+export {StudioFileInput as FileInput, type FileInputProps} from './StudioFileInput'
+export {StudioImageInput as ImageInput, type ImageInputProps} from './StudioImageInput'

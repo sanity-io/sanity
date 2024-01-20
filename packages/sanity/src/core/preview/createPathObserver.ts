@@ -1,9 +1,10 @@
-import {uniq} from 'lodash'
-import {Observable, of as observableOf} from 'rxjs'
-import {switchMap} from 'rxjs/operators'
 import {isCrossDatasetReference, isReference} from '@sanity/types'
+import {uniq} from 'lodash'
+import {type Observable, of as observableOf} from 'rxjs'
+import {switchMap} from 'rxjs/operators'
+
 import {isRecord} from '../util'
-import {ApiConfig, FieldName, PreviewPath, Previewable} from './types'
+import {type ApiConfig, type FieldName, type Previewable, type PreviewPath} from './types'
 import {props} from './utils/props'
 
 function createEmpty(fields: FieldName[]) {

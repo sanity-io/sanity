@@ -1,5 +1,5 @@
-import type {Expression} from '../jsonpath'
-import type {ImmutableAccessor} from './ImmutableAccessor'
+import {type Expression} from '../jsonpath'
+import {type ImmutableAccessor} from './ImmutableAccessor'
 
 export function targetsToIndicies(targets: Expression[], accessor: ImmutableAccessor): number[] {
   const result: number[] = []

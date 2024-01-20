@@ -1,7 +1,7 @@
 // import {Type} from '@sanity/portable-text-editor'
 
-import {ObjectSchemaType} from '@sanity/types'
-import {ComponentType, ElementType, ReactNode} from 'react'
+import {type ObjectSchemaType} from '@sanity/types'
+import {type ComponentType, type ElementType, type ReactNode} from 'react'
 
 export interface BlockItem {
   handle: () => void

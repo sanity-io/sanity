@@ -1,13 +1,14 @@
-import type {Path, PathSegment} from '@sanity/types'
-import type {
-  FormSetIfMissingPatch,
-  FormInsertPatch,
-  FormInsertPatchPosition,
-  FormSetPatch,
-  FormUnsetPatch,
-  FormIncPatch,
-  FormDecPatch,
-  FormDiffMatchPatch,
+import {type Path, type PathSegment} from '@sanity/types'
+
+import {
+  type FormDecPatch,
+  type FormDiffMatchPatch,
+  type FormIncPatch,
+  type FormInsertPatch,
+  type FormInsertPatchPosition,
+  type FormSetIfMissingPatch,
+  type FormSetPatch,
+  type FormUnsetPatch,
 } from './types'
 
 /** @internal */

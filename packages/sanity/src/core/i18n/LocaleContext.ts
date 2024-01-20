@@ -1,6 +1,7 @@
+import {type i18n} from 'i18next'
 import {createContext} from 'react'
-import {i18n} from 'i18next'
-import type {Locale} from './types'
+
+import {type Locale} from './types'
 
 /**
  * @internal

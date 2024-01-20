@@ -1,4 +1,5 @@
 import {flatten} from 'lodash'
+
 import {validateSchema} from '../../src/sanity/validateSchema'
 
 describe('Validation test', () => {

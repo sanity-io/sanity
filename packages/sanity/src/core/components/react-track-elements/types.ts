@@ -1,4 +1,4 @@
-import {Subscriber} from 'nano-pubsub'
+import {type Subscriber} from 'nano-pubsub'
 
 /** @internal */
 export type Reported<Value> = [string, Value]

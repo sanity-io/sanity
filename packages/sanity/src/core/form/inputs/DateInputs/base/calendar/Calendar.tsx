@@ -1,23 +1,24 @@
-import {Box, Flex, Grid, Select, Text, useForwardedRef} from '@sanity/ui'
 import {ChevronLeftIcon, ChevronRightIcon} from '@sanity/icons'
+import {Box, Flex, Grid, Select, Text, useForwardedRef} from '@sanity/ui'
 import {addDays, addMonths, setDate, setHours, setMinutes, setMonth, setYear} from 'date-fns'
 import {range} from 'lodash'
 import {
-  ComponentProps,
-  FormEvent,
-  ForwardedRef,
-  KeyboardEvent,
+  type ComponentProps,
+  type FormEvent,
+  type ForwardedRef,
   forwardRef,
+  type KeyboardEvent,
   useCallback,
   useEffect,
 } from 'react'
+
 import {Button} from '../../../../../../ui-components'
 import {CalendarMonth} from './CalendarMonth'
 import {ARROW_KEYS, DEFAULT_TIME_PRESETS, HOURS_24} from './constants'
 import {features} from './features'
+import {type CalendarLabels, type MonthNames} from './types'
 import {formatTime} from './utils'
 import {YearInput} from './YearInput'
-import {CalendarLabels, MonthNames} from './types'
 
 type CalendarProps = Omit<ComponentProps<'div'>, 'onSelect'> & {
   selectTime?: boolean

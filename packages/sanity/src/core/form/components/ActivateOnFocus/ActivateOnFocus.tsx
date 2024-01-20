@@ -1,13 +1,13 @@
 // This is transitional in order to track usage of the ActivateOnFocusPart part from within the form-builder package
-import {KeyboardEvent, ReactNode, useCallback, useMemo, useState} from 'react'
-
 import {Text} from '@sanity/ui'
+import React, {type KeyboardEvent, type ReactNode, useCallback, useMemo, useState} from 'react'
+
 import {useTranslation} from '../../../i18n'
 import {
-  OverlayContainer,
-  FlexContainer,
   CardContainer,
   ContentContainer,
+  FlexContainer,
+  OverlayContainer,
 } from './ActivateOnFocus.styles'
 
 const isTouchDevice = () =>

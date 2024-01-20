@@ -1,6 +1,7 @@
-import {Path} from '@sanity/types'
+import {type Path} from '@sanity/types'
 import * as PathUtils from '@sanity/util/paths'
-import {ReactNode, useContext, useMemo} from 'react'
+import {type ReactNode, useContext, useMemo} from 'react'
+
 import {FormFieldPresenceContext} from './context'
 
 const EMPTY_ARRAY: never[] = []

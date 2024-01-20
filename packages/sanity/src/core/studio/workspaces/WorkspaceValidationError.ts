@@ -1,5 +1,5 @@
 import {getWorkspaceIdentifier} from './helpers'
-import type {WorkspaceLike} from './types'
+import {type WorkspaceLike} from './types'
 
 export interface WorkspaceValidationErrorOptions {
   workspace: WorkspaceLike

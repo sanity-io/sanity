@@ -1,5 +1,5 @@
 /* eslint-disable no-nested-ternary */
-import {ConditionalProperty, CurrentUser} from '@sanity/types'
+import {type ConditionalProperty, type CurrentUser} from '@sanity/types'
 
 /**
  * @internal

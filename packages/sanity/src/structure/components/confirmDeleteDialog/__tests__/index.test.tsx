@@ -1,5 +1,3 @@
-import {ConfirmDeleteDialog} from '../index'
-
 describe('confirmDeleteDialog', () => {
   it.todo('works')
 })

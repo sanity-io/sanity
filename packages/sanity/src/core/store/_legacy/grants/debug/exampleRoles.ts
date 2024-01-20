@@ -1,4 +1,4 @@
-import {Role} from '@sanity/types'
+import {type Role} from '@sanity/types'
 
 export const exampleRoles: Record<string, Role> = {
   // basic

@@ -1,8 +1,9 @@
 import {CheckmarkIcon} from '@sanity/icons'
 import {Card, Stack} from '@sanity/ui'
+
 import {Button} from '../../../../../ui-components'
-import {type StudioThemeColorSchemeKey} from '../../../../theme'
 import {useTranslation} from '../../../../i18n'
+import {type StudioThemeColorSchemeKey} from '../../../../theme'
 import {useColorSchemeOptions} from '../../../colorScheme'
 
 export function AppearanceMenu({

@@ -1,4 +1,4 @@
-import {RootTheme, buildTheme} from '@sanity/ui/theme'
+import {buildTheme, type RootTheme} from '@sanity/ui/theme'
 
 export * from './_legacy'
 export * from './types'

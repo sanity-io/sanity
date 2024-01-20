@@ -1,18 +1,18 @@
-import type {
-  Diff,
-  Input,
-  ArrayInput,
-  StringInput,
-  ObjectInput,
-  DiffOptions,
-  BooleanInput,
-  NumberInput,
+import {
+  type ArrayInput,
+  type BooleanInput,
+  type Diff,
+  type DiffOptions,
+  type Input,
+  type NumberInput,
+  type ObjectInput,
+  type StringInput,
 } from '../types'
-import {diffArray, addedArray, removedArray} from './diffArray'
-import {diffString, removedString, addedString} from './diffString'
-import {diffTypeChange} from './diffTypeChange'
-import {diffObject, removedObject, addedObject} from './diffObject'
+import {addedArray, diffArray, removedArray} from './diffArray'
+import {addedObject, diffObject, removedObject} from './diffObject'
 import {diffBoolean, diffNumber} from './diffSimple'
+import {addedString, diffString, removedString} from './diffString'
+import {diffTypeChange} from './diffTypeChange'
 
 /**
  * Takes a `from` and `to` input and calulates a diff between the two

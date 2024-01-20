@@ -1,17 +1,18 @@
-import {SanityDocument} from '@sanity/types'
-import {APIConfig, Migration} from '../types'
-import {fromExportEndpoint, safeJsonParser} from '../sources/fromExportEndpoint'
-import {fromExportArchive} from '../sources/fromExportArchive'
-import {streamToAsyncIterator} from '../utils/streamToAsyncIterator'
+import {type SanityDocument} from '@sanity/types'
+
 import {bufferThroughFile} from '../fs-webstream/bufferThroughFile'
-import {asyncIterableToStream} from '../utils/asyncIterableToStream'
-import {parse, stringify} from '../it-utils/ndjson'
 import {decodeText} from '../it-utils'
+import {parse, stringify} from '../it-utils/ndjson'
+import {fromExportArchive} from '../sources/fromExportArchive'
+import {fromExportEndpoint, safeJsonParser} from '../sources/fromExportEndpoint'
+import {type APIConfig, type Migration} from '../types'
+import {asyncIterableToStream} from '../utils/asyncIterableToStream'
+import {streamToAsyncIterator} from '../utils/streamToAsyncIterator'
 import {collectMigrationMutations} from './collectMigrationMutations'
-import {createBufferFile} from './utils/getBufferFile'
-import {createFilteredDocumentsClient} from './utils/createFilteredDocumentsClient'
 import {applyFilters} from './utils/applyFilters'
 import {createContextClient} from './utils/createContextClient'
+import {createFilteredDocumentsClient} from './utils/createFilteredDocumentsClient'
+import {createBufferFile} from './utils/getBufferFile'
 
 interface MigrationRunnerOptions {
   api: APIConfig

@@ -1,9 +1,10 @@
-import type {KeyedSegment} from '@sanity/types'
-import {AnyArray} from '../typeUtils'
+import {type KeyedSegment} from '@sanity/types'
+
+import {type AnyArray} from '../typeUtils'
 
 type IndexedSegment = number
 
-export type {KeyedSegment, IndexedSegment}
+export type {IndexedSegment, KeyedSegment}
 
 export type SetOp<T> = {
   type: 'set'

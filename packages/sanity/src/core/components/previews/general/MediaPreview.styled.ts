@@ -1,4 +1,4 @@
-import {Box, Card, Flex, rem, Skeleton, Stack} from '@sanity/ui'
+import {Box, Flex, rem, Skeleton, Stack} from '@sanity/ui'
 import styled from 'styled-components'
 
 export const RootBox = styled(Box)`

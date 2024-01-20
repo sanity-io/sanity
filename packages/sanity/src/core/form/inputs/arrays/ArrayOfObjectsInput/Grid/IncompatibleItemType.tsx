@@ -1,8 +1,9 @@
-import {Box, Card, Code, Stack, Text, Theme, useClickOutside} from '@sanity/ui'
-import {useCallback, useState, FocusEvent} from 'react'
 import {BulbOutlineIcon, UnknownIcon} from '@sanity/icons'
+import {Box, Card, Code, Stack, Text, type Theme, useClickOutside} from '@sanity/ui'
 import {resolveTypeName} from '@sanity/util/content'
+import React, {type FocusEvent, useCallback, useState} from 'react'
 import styled from 'styled-components'
+
 import {Popover} from '../../../../../../ui-components'
 import {Translate, useTranslation} from '../../../../../i18n'
 

@@ -1,8 +1,7 @@
-import {useClient} from 'sanity'
-import {SanityDocument} from '@sanity/types'
+import {type SanityDocument} from '@sanity/types'
 import {Box, Code, Flex, Spinner, Text} from '@sanity/ui'
 import {
-  ForwardedRef,
+  type ForwardedRef,
   forwardRef,
   useCallback,
   useEffect,
@@ -10,7 +9,8 @@ import {
   useRef,
   useState,
 } from 'react'
-import {Subscription} from 'rxjs'
+import {type Subscription} from 'rxjs'
+import {useClient} from 'sanity'
 
 export const JsonDocumentDump = forwardRef(function JsonDocumentDump(
   props: {itemId: string},

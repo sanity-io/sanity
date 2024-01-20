@@ -1,5 +1,5 @@
-import {type Observable, of, merge} from 'rxjs'
-import {mapTo, delay} from 'rxjs/operators'
+import {merge, type Observable, of} from 'rxjs'
+import {delay, mapTo} from 'rxjs/operators'
 import {isDev} from 'sanity'
 
 /**

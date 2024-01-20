@@ -1,4 +1,4 @@
-import type {Probe} from '../jsonpath/Probe'
+import {type Probe} from '../jsonpath/Probe'
 
 /**
  * An immutable probe/writer for plain JS objects that will never mutate

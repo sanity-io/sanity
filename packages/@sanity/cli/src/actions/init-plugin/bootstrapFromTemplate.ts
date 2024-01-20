@@ -1,18 +1,19 @@
-import path from 'path'
+import {absolutify, pathIsEmpty} from '@sanity/util/fs'
+import decompress from 'decompress'
 import fs from 'fs/promises'
-import semver from 'semver'
 import {getIt} from 'get-it'
 import {promise} from 'get-it/middleware'
-import decompress from 'decompress'
+import path from 'path'
 import resolveFrom from 'resolve-from'
+import semver from 'semver'
 import validateNpmPackageName from 'validate-npm-package-name'
-import {absolutify, pathIsEmpty} from '@sanity/util/fs'
+
+import {type CliCommandContext} from '../..'
+import {debug} from '../../debug'
+import {type SanityJson} from '../../types'
+import {dynamicRequire} from '../../util/dynamicRequire'
 import {getCliVersion} from '../../util/getCliVersion'
 import {readJson} from '../../util/readJson'
-import {dynamicRequire} from '../../util/dynamicRequire'
-import {SanityJson} from '../../types'
-import {debug} from '../../debug'
-import {CliCommandContext} from '../..'
 
 const request = getIt([promise()])
 

@@ -1,4 +1,4 @@
-import type {CurrentUser} from '@sanity/types'
+import {type CurrentUser} from '@sanity/types'
 
 /**
  * Checks whether or not the given user has the role with the given ID

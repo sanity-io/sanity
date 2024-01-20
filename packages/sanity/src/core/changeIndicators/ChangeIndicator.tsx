@@ -1,11 +1,20 @@
+import {type Path} from '@sanity/types'
 import {useLayer} from '@sanity/ui'
-import {ComponentProps, HTMLProps, MouseEvent, memo, useCallback, useRef, useState} from 'react'
-import deepCompare from 'react-fast-compare'
 import * as PathUtils from '@sanity/util/paths'
-import {Path} from '@sanity/types'
+import {
+  type ComponentProps,
+  type HTMLProps,
+  memo,
+  type MouseEvent,
+  useCallback,
+  useRef,
+  useState,
+} from 'react'
+import deepCompare from 'react-fast-compare'
+
 import {EMPTY_ARRAY} from '../util'
-import {useReporter} from './tracker'
 import {ElementWithChangeBar} from './ElementWithChangeBar'
+import {useReporter} from './tracker'
 
 const ChangeBarWrapper = memo(function ChangeBarWrapper(
   props: Omit<ComponentProps<'div'>, 'onChange'> & {

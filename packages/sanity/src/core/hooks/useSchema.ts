@@ -1,4 +1,5 @@
-import {Schema} from '@sanity/types'
+import {type Schema} from '@sanity/types'
+
 import {useSource} from '../studio'
 
 /**

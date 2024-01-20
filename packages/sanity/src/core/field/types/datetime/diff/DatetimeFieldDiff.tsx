@@ -1,5 +1,5 @@
 import {DiffFromTo} from '../../../diff'
-import {DiffComponent, StringDiff} from '../../../types'
+import {type DiffComponent, type StringDiff} from '../../../types'
 import {DatetimePreview} from '../preview'
 
 export const DatetimeFieldDiff: DiffComponent<StringDiff> = ({diff, schemaType}) => {

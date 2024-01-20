@@ -1,16 +1,17 @@
+import {type ObjectSchemaType} from '@sanity/types'
 import {useEffect} from 'react'
-import type {ObjectSchemaType} from '@sanity/types'
-import type {Panes} from '../../structureResolvers'
-import {structureLocaleNamespace} from '../../i18n'
-import type {DocumentPaneNode} from '../../types'
-import {useStructureTool} from '../../useStructureTool'
-import {LOADING_PANE} from '../../constants'
 import {
+  unstable_useValuePreview as useValuePreview,
   useEditState,
   useSchema,
   useTranslation,
-  unstable_useValuePreview as useValuePreview,
 } from 'sanity'
+
+import {LOADING_PANE} from '../../constants'
+import {structureLocaleNamespace} from '../../i18n'
+import {type Panes} from '../../structureResolvers'
+import {type DocumentPaneNode} from '../../types'
+import {useStructureTool} from '../../useStructureTool'
 
 interface StructureTitleProps {
   resolvedPanes: Panes['resolvedPanes']

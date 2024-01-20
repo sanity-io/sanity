@@ -1,10 +1,10 @@
+import {purple, yellow} from '@sanity/color'
+import {BoltIcon} from '@sanity/icons'
+import {Card, Text} from '@sanity/ui'
+import {forwardRef, type Ref} from 'react'
+import {useTranslation} from 'react-i18next'
 import styled from 'styled-components'
 
-import {Card, Text} from '@sanity/ui'
-import {BoltIcon} from '@sanity/icons'
-import {purple, yellow} from '@sanity/color'
-import {useTranslation} from 'react-i18next'
-import {Ref, forwardRef} from 'react'
 import {Button} from '../../../../../ui-components'
 
 const CenteredStroke = styled.div`

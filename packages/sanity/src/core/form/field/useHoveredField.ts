@@ -1,5 +1,6 @@
 import {useContext} from 'react'
-import {HoveredFieldContext, HoveredFieldContextValue} from './HoveredFieldContext'
+
+import {HoveredFieldContext, type HoveredFieldContextValue} from './HoveredFieldContext'
 
 /** @internal */
 export function useHoveredField(): HoveredFieldContextValue {

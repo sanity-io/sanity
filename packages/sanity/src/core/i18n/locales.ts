@@ -1,6 +1,6 @@
-import {defineLocale} from './helpers'
 import {studioDefaultLocaleResources} from './bundles/studio'
 import {validationLocaleResources} from './bundles/validation'
+import {defineLocale} from './helpers'
 
 /**
  * The default US English locale for the studio.

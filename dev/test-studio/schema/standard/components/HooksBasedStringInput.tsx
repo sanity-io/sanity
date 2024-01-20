@@ -1,6 +1,6 @@
 import {Inline, Text} from '@sanity/ui'
 import {forwardRef, useState} from 'react'
-import {StringInputProps, set} from 'sanity'
+import {set, type StringInputProps} from 'sanity'
 
 export const HooksBasedStringInput = forwardRef<any, StringInputProps>((props, ref) => {
   const {value, schemaType, onChange} = props

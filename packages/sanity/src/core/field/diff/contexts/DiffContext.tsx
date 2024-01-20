@@ -1,4 +1,4 @@
-import {Path} from '@sanity/types'
+import {type Path} from '@sanity/types'
 import {createContext} from 'react'
 
 /** @internal */

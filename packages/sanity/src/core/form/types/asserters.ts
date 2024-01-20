@@ -7,16 +7,17 @@ import {
   isObjectSchemaType,
   isStringSchemaType,
 } from '@sanity/types'
+
 import {
-  ArrayOfObjectsInputProps,
-  ArrayOfPrimitivesInputProps,
-  BooleanInputProps,
-  InputProps,
-  NumberInputProps,
-  ObjectInputProps,
-  StringInputProps,
+  type ArrayOfObjectsInputProps,
+  type ArrayOfPrimitivesInputProps,
+  type BooleanInputProps,
+  type InputProps,
+  type NumberInputProps,
+  type ObjectInputProps,
+  type StringInputProps,
 } from './inputProps'
-import {ItemProps, ObjectItemProps} from './itemProps'
+import {type ItemProps, type ObjectItemProps} from './itemProps'
 
 /**
  * @hidden

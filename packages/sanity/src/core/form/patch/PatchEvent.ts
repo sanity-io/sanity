@@ -1,7 +1,8 @@
-import {PathSegment} from '@sanity/types'
+import {type PathSegment} from '@sanity/types'
 import {flatten} from 'lodash'
+
 import {prefixPath} from './patch'
-import {FormPatch, PatchArg} from './types'
+import {type FormPatch, type PatchArg} from './types'
 
 /**
  *

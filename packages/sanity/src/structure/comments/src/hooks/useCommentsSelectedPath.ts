@@ -1,5 +1,6 @@
 import {useContext} from 'react'
-import {CommentsSelectedPathContext, CommentsSelectedPathContextValue} from '../context'
+
+import {CommentsSelectedPathContext, type CommentsSelectedPathContextValue} from '../context'
 
 export function useCommentsSelectedPath(): CommentsSelectedPathContextValue {
   const ctx = useContext(CommentsSelectedPathContext)

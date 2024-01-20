@@ -1,6 +1,7 @@
-import {SanityDocument} from '@sanity/client'
-import {SchemaType, CurrentUser} from '@sanity/types'
-import {CommentDocument, CommentThreadItem} from '../types'
+import {type SanityDocument} from '@sanity/client'
+import {type CurrentUser, type SchemaType} from '@sanity/types'
+
+import {type CommentDocument, type CommentThreadItem} from '../types'
 import {buildCommentBreadcrumbs} from './buildCommentBreadcrumbs'
 
 interface BuildCommentThreadItemsProps {

@@ -1,9 +1,9 @@
+import {type PackageJson} from '@sanity/cli'
+import {generateHelpUrl} from '@sanity/generate-help-url'
 import fs from 'fs'
 import path from 'path'
-import semver, {SemVer} from 'semver'
 import resolveFrom from 'resolve-from'
-import {generateHelpUrl} from '@sanity/generate-help-url'
-import type {PackageJson} from '@sanity/cli'
+import semver, {type SemVer} from 'semver'
 
 interface PackageInfo {
   name: string

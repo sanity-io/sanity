@@ -1,4 +1,4 @@
-import {RefObject, useEffect} from 'react'
+import {type RefObject, useEffect} from 'react'
 
 // This is a modified version of https://usehooks.com/useOnClickOutside that can take multiple element refs
 // There is currently a bug in the `useClickOutside` hook from @sanity/ui that requires the refs to be passed as

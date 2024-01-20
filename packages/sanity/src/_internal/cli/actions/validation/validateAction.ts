@@ -1,13 +1,14 @@
-import path from 'path'
-import fs from 'fs'
-import type {CliCommandArguments, CliCommandContext, CliOutputter} from '@sanity/cli'
-import logSymbols from 'log-symbols'
+import {type CliCommandArguments, type CliCommandContext, type CliOutputter} from '@sanity/cli'
+import {type ClientConfig} from '@sanity/client'
 import chalk from 'chalk'
-import {ClientConfig} from '@sanity/client'
-import type {WorkerChannelReceiver} from '../../util/workerChannels'
-import type {ValidationWorkerChannel} from '../../threads/validateDocuments'
-import {validateDocuments} from './validateDocuments'
+import fs from 'fs'
+import logSymbols from 'log-symbols'
+import path from 'path'
+
+import {type ValidationWorkerChannel} from '../../threads/validateDocuments'
+import {type WorkerChannelReceiver} from '../../util/workerChannels'
 import {reporters} from './reporters'
+import {validateDocuments} from './validateDocuments'
 
 interface ValidateFlags {
   workspace?: string

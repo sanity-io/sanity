@@ -1,7 +1,8 @@
+import type * as React from 'react'
 import {useMemo} from 'react'
-import * as React from 'react'
-import {useRouter} from './useRouter'
+
 import {useLink} from './useLink'
+import {useRouter} from './useRouter'
 
 const EMPTY_STATE = {}
 

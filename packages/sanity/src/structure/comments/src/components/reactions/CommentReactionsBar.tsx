@@ -1,20 +1,21 @@
-import React, {useCallback, useMemo, useRef} from 'react'
-import {CurrentUser} from '@sanity/types'
+import {type CurrentUser} from '@sanity/types'
 import {
   // eslint-disable-next-line no-restricted-imports
   Button as UIButton,
   Flex,
   Text,
 } from '@sanity/ui'
-import {
-  CommentReactionItem,
-  CommentReactionOption,
-  CommentReactionShortNames,
-  CommentsUIMode,
-} from '../../types'
-import {COMMENT_REACTION_EMOJIS, COMMENT_REACTION_OPTIONS} from '../../constants'
-import {ReactionIcon} from '../icons'
+import React, {useCallback, useMemo, useRef} from 'react'
+
 import {Tooltip, TooltipDelayGroupProvider} from '../../../../../ui-components'
+import {COMMENT_REACTION_EMOJIS, COMMENT_REACTION_OPTIONS} from '../../constants'
+import {
+  type CommentReactionItem,
+  type CommentReactionOption,
+  type CommentReactionShortNames,
+  type CommentsUIMode,
+} from '../../types'
+import {ReactionIcon} from '../icons'
 import {CommentReactionsMenuButton} from './CommentReactionsMenuButton'
 import {CommentReactionsUsersTooltip} from './CommentReactionsUsersTooltip'
 import {EmojiText} from './EmojiText.styled'

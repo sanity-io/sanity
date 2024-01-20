@@ -1,5 +1,6 @@
-import {defineArrayMember, defineType} from 'sanity'
 import {toPlainText} from '@portabletext/react'
+import {defineArrayMember, defineType} from 'sanity'
+
 import {CalloutPreview} from './components/CalloutPreview'
 
 const linkType = defineArrayMember({

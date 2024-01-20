@@ -1,5 +1,6 @@
-import {ConsentStatus} from '@sanity/telemetry'
-import type {CliCommandContext, CliCommandDefinition} from '../../types'
+import {type ConsentStatus} from '@sanity/telemetry'
+
+import {type CliCommandContext, type CliCommandDefinition} from '../../types'
 import {resolveConsent} from '../../util/createTelemetryStore'
 
 const helpText = `

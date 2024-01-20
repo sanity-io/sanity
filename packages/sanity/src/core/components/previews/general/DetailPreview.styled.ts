@@ -1,5 +1,6 @@
 import {Box, Flex, rem, Skeleton, Text, TextSkeleton} from '@sanity/ui'
 import styled, {css} from 'styled-components'
+
 import {PREVIEW_SIZES} from '../constants'
 
 export const RootFlex = styled(Flex).attrs({align: 'center'})`

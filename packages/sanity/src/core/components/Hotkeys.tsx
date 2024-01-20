@@ -1,5 +1,5 @@
-import type {HTMLProps, RefAttributes} from 'react'
-import {type HotkeysProps as UIHotkeysProps, Hotkeys as UIHotkeys} from '@sanity/ui'
+import {Hotkeys as UIHotkeys, type HotkeysProps as UIHotkeysProps} from '@sanity/ui'
+import {type HTMLProps, type RefAttributes} from 'react'
 
 /**
  * Properties for the `Hotkeys` component.

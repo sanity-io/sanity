@@ -1,15 +1,15 @@
-import {useCallback} from 'react'
 import {hues} from '@sanity/color'
-import {Box, Stack, Heading, Flex, Inline, Text, Grid, Button} from '@sanity/ui'
+import {Box, Button, Flex, Grid, Heading, Inline, Stack, Text} from '@sanity/ui'
+import React, {useCallback} from 'react'
 import {
-  ArrayOfPrimitivesInputProps,
-  ArraySchemaType,
+  type ArrayInputFunctionsProps,
   ArrayOfPrimitivesFunctions,
-  FieldProps,
-  ArrayInputFunctionsProps,
-  InputProps,
-  ItemProps,
-  PreviewProps,
+  type ArrayOfPrimitivesInputProps,
+  type ArraySchemaType,
+  type FieldProps,
+  type InputProps,
+  type ItemProps,
+  type PreviewProps,
 } from 'sanity'
 
 const COMPONENT_COLORS = {

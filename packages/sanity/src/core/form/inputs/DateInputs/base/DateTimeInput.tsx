@@ -1,19 +1,20 @@
+import {CalendarIcon} from '@sanity/icons'
+import {Box, Flex, LayerProvider, useClickOutside, useForwardedRef} from '@sanity/ui'
 import {
-  KeyboardEvent,
-  FocusEvent,
+  type FocusEvent,
+  type ForwardedRef,
   forwardRef,
+  type KeyboardEvent,
   useCallback,
   useRef,
   useState,
-  ForwardedRef,
 } from 'react'
 import FocusLock from 'react-focus-lock'
-import {Box, Flex, LayerProvider, useClickOutside, useForwardedRef} from '@sanity/ui'
-import {CalendarIcon} from '@sanity/icons'
+
 import {Button, Popover} from '../../../../../ui-components'
+import {type CalendarLabels} from './calendar/types'
 import {DatePicker} from './DatePicker'
 import {LazyTextInput} from './LazyTextInput'
-import {CalendarLabels} from './calendar/types'
 
 export interface DateTimeInputProps {
   customValidity?: string

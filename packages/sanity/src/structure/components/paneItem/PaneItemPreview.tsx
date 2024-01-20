@@ -1,23 +1,24 @@
-import type {SanityDocument, SchemaType} from '@sanity/types'
-import {isValidElement} from 'react'
-import * as React from 'react'
-import {isNumber, isString} from 'lodash'
+import {type SanityDocument, type SchemaType} from '@sanity/types'
 import {Flex} from '@sanity/ui'
+import {isNumber, isString} from 'lodash'
+import type * as React from 'react'
+import {isValidElement} from 'react'
 import {useMemoObservable} from 'react-rx'
-import {TooltipDelayGroupProvider} from '../../../ui-components'
-import type {PaneItemPreviewState} from './types'
 import {
-  DocumentPresence,
+  type DocumentPresence,
   DocumentPreviewPresence,
-  DocumentPreviewStore,
-  GeneralPreviewLayoutKey,
+  type DocumentPreviewStore,
+  DocumentStatus,
+  DocumentStatusIndicator,
+  type GeneralPreviewLayoutKey,
   getPreviewStateObservable,
   getPreviewValueWithFallback,
-  SanityDefaultPreview,
   isRecord,
-  DocumentStatusIndicator,
-  DocumentStatus,
+  SanityDefaultPreview,
 } from 'sanity'
+
+import {TooltipDelayGroupProvider} from '../../../ui-components'
+import {type PaneItemPreviewState} from './types'
 
 export interface PaneItemPreviewProps {
   documentPreviewStore: DocumentPreviewStore

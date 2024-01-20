@@ -1,4 +1,4 @@
-import {CommentReactionItem} from '../types'
+import {type CommentReactionItem} from '../types'
 
 /**
  * A function to merge two arrays of comment reactions.

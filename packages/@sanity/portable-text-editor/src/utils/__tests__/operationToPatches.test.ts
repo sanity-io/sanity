@@ -1,11 +1,12 @@
-import {createEditor, Descendant} from 'slate'
-import {PortableTextTextBlock} from '@sanity/types'
-import {getPortableTextMemberSchemaTypes} from '../getPortableTextMemberSchemaTypes'
+import {type PortableTextTextBlock} from '@sanity/types'
+import {createEditor, type Descendant} from 'slate'
+
+import {PortableTextEditor, type PortableTextEditorProps} from '../..'
 import {schemaType} from '../../editor/__tests__/PortableTextEditorTester'
-import {createOperationToPatches} from '../operationToPatches'
-import {withPlugins} from '../../editor/plugins'
-import {PortableTextEditor, PortableTextEditorProps} from '../..'
 import {defaultKeyGenerator} from '../../editor/hooks/usePortableTextEditorKeyGenerator'
+import {withPlugins} from '../../editor/plugins'
+import {getPortableTextMemberSchemaTypes} from '../getPortableTextMemberSchemaTypes'
+import {createOperationToPatches} from '../operationToPatches'
 
 const portableTextFeatures = getPortableTextMemberSchemaTypes(schemaType)
 

@@ -1,7 +1,7 @@
 /* eslint-disable i18next/no-literal-string,@sanity/i18n/no-attribute-string-literals */
-import {useEffect} from 'react'
-import {Flex, Box, Card, Code, Text} from '@sanity/ui'
+import {Box, Card, Code, Flex, Text} from '@sanity/ui'
 import {startCase} from 'lodash'
+import {useEffect} from 'react'
 import styled from 'styled-components'
 
 const ListItem = styled(Flex)``

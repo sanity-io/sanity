@@ -1,6 +1,7 @@
-import {min, max} from 'lodash'
-import type {Expression} from '../jsonpath'
-import type {ImmutableAccessor} from './ImmutableAccessor'
+import {max, min} from 'lodash'
+
+import {type Expression} from '../jsonpath'
+import {type ImmutableAccessor} from './ImmutableAccessor'
 import {targetsToIndicies} from './util'
 
 export class InsertPatch {

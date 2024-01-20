@@ -1,14 +1,15 @@
-import {isEqual} from 'lodash'
-import {Node, Element, Text, Descendant} from 'slate'
 import {
-  PathSegment,
-  PortableTextBlock,
-  PortableTextChild,
-  PortableTextObject,
-  PortableTextTextBlock,
+  type PathSegment,
+  type PortableTextBlock,
+  type PortableTextChild,
+  type PortableTextObject,
+  type PortableTextTextBlock,
 } from '@sanity/types'
-import {PortableTextMemberSchemaTypes} from '../types/editor'
+import {isEqual} from 'lodash'
+import {type Descendant, Element, type Node, Text} from 'slate'
+
 import {defaultKeyGenerator as keyGenerator} from '../editor/hooks/usePortableTextEditorKeyGenerator'
+import {type PortableTextMemberSchemaTypes} from '../types/editor'
 
 const EMPTY_MARKDEFS: PortableTextObject[] = []
 const EMPTY_MARKS: string[] = []

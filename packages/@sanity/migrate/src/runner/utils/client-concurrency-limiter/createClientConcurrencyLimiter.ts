@@ -1,5 +1,6 @@
-import type {SanityClient, ObservableSanityClient} from '@sanity/client'
-import {from, switchMap, finalize} from 'rxjs'
+import {type ObservableSanityClient, type SanityClient} from '@sanity/client'
+import {finalize, from, switchMap} from 'rxjs'
+
 import {ConcurrencyLimiter} from './ConcurrencyLimiter'
 
 /**

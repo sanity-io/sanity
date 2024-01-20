@@ -1,8 +1,9 @@
 // Takes a observable-returning function and returns a new function that limits on the number of
 // concurrent observables.
+import {from as observableFrom, Observable, Subject, type Subscription} from 'rxjs'
 import {first, mergeMap} from 'rxjs/operators'
-import {from as observableFrom, Observable, Subject, Subscription} from 'rxjs'
-import {FIXME} from '../../../FIXME'
+
+import {type FIXME} from '../../../FIXME'
 
 const DEFAULT_CONCURRENCY = 4
 

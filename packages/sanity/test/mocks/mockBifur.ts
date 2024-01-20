@@ -1,4 +1,4 @@
-import {BifurClient} from '@sanity/bifur-client'
+import {type BifurClient} from '@sanity/bifur-client'
 import {of} from 'rxjs'
 
 export function createMockBifurClient(): BifurClient {

@@ -1,5 +1,6 @@
-import {useDocumentPane} from './useDocumentPane'
 import {unstable_useValuePreview as useValuePreview} from 'sanity'
+
+import {useDocumentPane} from './useDocumentPane'
 
 /**
  * useDocumentTitle hook return type.

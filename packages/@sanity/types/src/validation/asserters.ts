@@ -1,4 +1,4 @@
-import type {FormNodeValidation} from './types'
+import {type FormNodeValidation} from './types'
 
 /** @internal */
 export function isValidationError(

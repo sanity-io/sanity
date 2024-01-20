@@ -1,7 +1,7 @@
-import {ReactNode} from 'react'
-import {Observable} from 'rxjs'
-import {Reference} from '@sanity/types'
+import {type Reference} from '@sanity/types'
+import React, {type ReactNode} from 'react'
 import {useMemoObservable} from 'react-rx'
+import {type Observable} from 'rxjs'
 
 interface Props<AssetDoc> {
   reference: Reference

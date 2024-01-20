@@ -1,12 +1,13 @@
-import {SanityDocument, Schema} from '@sanity/types'
-import {combineLatest, Observable} from 'rxjs'
+import {type SanityClient} from '@sanity/client'
+import {type SanityDocument, type Schema} from '@sanity/types'
+import {combineLatest, type Observable} from 'rxjs'
 import {map, publishReplay, refCount, startWith, switchMap} from 'rxjs/operators'
-import {SanityClient} from '@sanity/client'
-import {IdPair, PendingMutationsEvent} from '../types'
+
+import {type IdPair, type PendingMutationsEvent} from '../types'
 import {memoize} from '../utils/createMemoizer'
-import {isLiveEditEnabled} from './utils/isLiveEditEnabled'
-import {snapshotPair} from './snapshotPair'
 import {memoizeKeyGen} from './memoizeKeyGen'
+import {snapshotPair} from './snapshotPair'
+import {isLiveEditEnabled} from './utils/isLiveEditEnabled'
 
 interface TransactionSyncLockState {
   enabled: boolean

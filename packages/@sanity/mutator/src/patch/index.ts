@@ -1,2 +1,2 @@
-export {Patcher} from './Patcher'
 export {ImmutableAccessor} from './ImmutableAccessor'
+export {Patcher} from './Patcher'

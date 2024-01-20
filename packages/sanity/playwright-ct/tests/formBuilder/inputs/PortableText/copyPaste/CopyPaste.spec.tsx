@@ -1,9 +1,10 @@
 /* eslint-disable max-nested-callbacks */
 import {expect, test} from '@playwright/experimental-ct-react'
-import {Path, SanityDocument} from '@sanity/types'
-import {Page} from '@playwright/test'
-import CopyPasteStory from './CopyPasteStory'
+import {type Path, type SanityDocument} from '@sanity/types'
+import React from 'react'
+
 import {testHelpers} from '../../../../utils/testHelpers'
+import CopyPasteStory from './CopyPasteStory'
 import {GDOCS_INPUT, NORMALIZED_INPUT_SNAPSHOT, REMOVED_INPUT_SNAPSHOT} from './input'
 
 export type UpdateFn = () => {focusPath: Path; document: SanityDocument}

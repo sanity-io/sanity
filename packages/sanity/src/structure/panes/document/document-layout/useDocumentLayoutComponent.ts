@@ -1,6 +1,7 @@
-import {ComponentType} from 'react'
+import {type ComponentType} from 'react'
+import {type DocumentLayoutProps, type PluginOptions, useMiddlewareComponents} from 'sanity'
+
 import {DocumentLayout} from './DocumentLayout'
-import {DocumentLayoutProps, PluginOptions, useMiddlewareComponents} from 'sanity'
 
 function pick(plugin: PluginOptions) {
   return plugin.document?.components?.unstable_layout as ComponentType<

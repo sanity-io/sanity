@@ -1,10 +1,17 @@
-import {chromium, Browser, Page, ElementHandle, BrowserContext} from '@playwright/test'
+import {
+  type Browser,
+  type BrowserContext,
+  chromium,
+  type ElementHandle,
+  type Page,
+} from '@playwright/test'
+import {type PortableTextBlock} from '@sanity/types'
 import NodeEnvironment from 'jest-environment-node'
 import {isEqual} from 'lodash'
 import ipc from 'node-ipc'
-import {PortableTextBlock} from '@sanity/types'
+
+import {type EditorSelection} from '../../src'
 import {normalizeSelection} from '../../src/utils/selection'
-import type {EditorSelection} from '../../src'
 
 ipc.config.id = 'collaborative-jest-environment-ipc-client'
 ipc.config.retry = 5000

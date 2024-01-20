@@ -1,4 +1,4 @@
-import {ZIndexContextValue} from './types'
+import {type ZIndexContextValue} from './types'
 
 /**
  * @internal

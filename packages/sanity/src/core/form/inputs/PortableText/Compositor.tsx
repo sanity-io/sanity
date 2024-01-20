@@ -1,29 +1,30 @@
-import {useState, useMemo, useCallback} from 'react'
 import {
-  OnCopyFn,
-  OnPasteFn,
+  type BlockAnnotationRenderProps,
+  type BlockChildRenderProps as EditorChildRenderProps,
+  type BlockRenderProps as EditorBlockRenderProps,
+  type EditorSelection,
+  type HotkeyOptions,
+  type OnCopyFn,
+  type OnPasteFn,
   usePortableTextEditor,
-  HotkeyOptions,
-  BlockRenderProps as EditorBlockRenderProps,
-  BlockChildRenderProps as EditorChildRenderProps,
-  BlockAnnotationRenderProps,
-  EditorSelection,
 } from '@sanity/portable-text-editor'
-import {Path, PortableTextBlock, PortableTextTextBlock} from '@sanity/types'
+import {type Path, type PortableTextBlock, type PortableTextTextBlock} from '@sanity/types'
 import {Box, Portal, PortalProvider, useBoundaryElement, usePortal} from '@sanity/ui'
-import {ArrayOfObjectsInputProps, RenderCustomMarkers} from '../../types'
-import {ActivateOnFocus} from '../../components/ActivateOnFocus/ActivateOnFocus'
-import {EMPTY_ARRAY} from '../../../util'
+import React, {useCallback, useMemo, useState} from 'react'
+
 import {ChangeIndicator} from '../../../changeIndicators'
-import {RenderBlockActionsCallback} from '../../types/_transitional'
+import {EMPTY_ARRAY} from '../../../util'
+import {ActivateOnFocus} from '../../components/ActivateOnFocus/ActivateOnFocus'
+import {type ArrayOfObjectsInputProps, type RenderCustomMarkers} from '../../types'
+import {type RenderBlockActionsCallback} from '../../types/_transitional'
+import {ExpandedLayer, Root} from './Compositor.styles'
+import {Editor} from './Editor'
+import {useHotkeys} from './hooks/useHotKeys'
+import {useTrackFocusPath} from './hooks/useTrackFocusPath'
 import {Annotation} from './object/Annotation'
 import {BlockObject} from './object/BlockObject'
 import {InlineObject} from './object/InlineObject'
 import {TextBlock} from './text'
-import {Editor} from './Editor'
-import {ExpandedLayer, Root} from './Compositor.styles'
-import {useHotkeys} from './hooks/useHotKeys'
-import {useTrackFocusPath} from './hooks/useTrackFocusPath'
 
 interface InputProps extends ArrayOfObjectsInputProps<PortableTextBlock> {
   hasFocusWithin: boolean

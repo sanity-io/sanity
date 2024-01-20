@@ -1,12 +1,17 @@
 import {ArrowLeftIcon} from '@sanity/icons'
+import type * as React from 'react'
 import {memo, useMemo} from 'react'
-import * as React from 'react'
-import type {PaneMenuItem, PaneMenuItemGroup, StructureToolPaneActionHandler} from '../../types'
-import {BackLink, PaneHeader, PaneHeaderActions, usePane} from '../../components'
+import {type GeneralPreviewLayoutKey, type InitialValueTemplateItem} from 'sanity'
+
 import {Button, TooltipDelayGroupProvider} from '../../../ui-components'
+import {BackLink, PaneHeader, PaneHeaderActions, usePane} from '../../components'
+import {
+  type PaneMenuItem,
+  type PaneMenuItemGroup,
+  type StructureToolPaneActionHandler,
+} from '../../types'
 import {useStructureTool} from '../../useStructureTool'
-import type {SortOrder} from './types'
-import type {GeneralPreviewLayoutKey, InitialValueTemplateItem} from 'sanity'
+import {type SortOrder} from './types'
 
 interface DocumentListPaneHeaderProps {
   contentAfter?: React.ReactNode

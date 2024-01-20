@@ -1,5 +1,5 @@
 import {Flex} from '@sanity/ui'
-import {ReactElement, useEffect, useState} from 'react'
+import {type ReactElement, useEffect, useState} from 'react'
 
 interface ObserveElementProps {
   children: ReactElement

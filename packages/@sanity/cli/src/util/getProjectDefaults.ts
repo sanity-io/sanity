@@ -1,9 +1,10 @@
-import path from 'path'
-import fs from 'fs/promises'
 import getGitConfig from '@rexxars/gitconfiglocal'
+import fs from 'fs/promises'
 import {getGitUserInfo} from 'git-user-info'
+import path from 'path'
 import promiseProps from 'promise-props-recursive'
-import type {CliCommandContext} from '../types'
+
+import {type CliCommandContext} from '../types'
 import {getCliToken} from './clientWrapper'
 
 export interface ProjectDefaults {

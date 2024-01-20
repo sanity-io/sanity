@@ -1,4 +1,5 @@
 import {Card, Code} from '@sanity/ui'
+
 import {useMentionOptions} from '../hooks'
 
 const DOCUMENT = {

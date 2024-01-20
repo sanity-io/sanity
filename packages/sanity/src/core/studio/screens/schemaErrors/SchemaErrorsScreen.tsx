@@ -1,9 +1,10 @@
 /* eslint-disable i18next/no-literal-string,@sanity/i18n/no-attribute-string-literals */
-import {Schema} from '@sanity/types'
+import {type Schema} from '@sanity/types'
 import {Card, Container, Heading, Stack} from '@sanity/ui'
 import {useEffect} from 'react'
-import {SchemaProblemGroups} from './SchemaProblemGroups'
+
 import {reportWarnings} from './reportWarnings'
+import {SchemaProblemGroups} from './SchemaProblemGroups'
 
 interface SchemaErrorsScreenProps {
   schema: Schema

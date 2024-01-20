@@ -1,5 +1,6 @@
 import {Container, Flex, TextArea} from '@sanity/ui'
 import {useBoolean} from '@sanity/ui-workshop'
+
 import {ElementWithChangeBar} from '../ElementWithChangeBar'
 
 export default function ChangeBarStory() {

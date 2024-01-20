@@ -1,41 +1,40 @@
-import {PortableTextBlock} from '@sanity/types'
 import {
-  EditorChange,
-  Patch as EditorPatch,
+  type EditorChange,
+  type InvalidValue,
+  type Patch as EditorPatch,
+  type Patch,
   PortableTextEditor,
-  InvalidValue,
-  Patch,
 } from '@sanity/portable-text-editor'
-
-import {
-  useEffect,
-  useState,
-  useMemo,
-  useCallback,
-  useRef,
-  useImperativeHandle,
-  ReactNode,
-  startTransition,
-  MutableRefObject,
-} from 'react'
-
-import {Subject} from 'rxjs'
-import {Box, useToast} from '@sanity/ui'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {SANITY_PATCH_TYPE} from '../../patch'
-import {ArrayOfObjectsItemMember, ObjectFormNode} from '../../store'
-import type {PortableTextInputProps} from '../../types'
+import {type PortableTextBlock} from '@sanity/types'
+import {Box, useToast} from '@sanity/ui'
+import {
+  type MutableRefObject,
+  type ReactNode,
+  startTransition,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
+import {Subject} from 'rxjs'
+
 import {EMPTY_ARRAY} from '../../../util'
 import {
   PortableTextInputCollapsed,
   PortableTextInputExpanded,
 } from '../../__telemetry__/form.telemetry'
-import {Compositor, PortableTextEditorElement} from './Compositor'
-import {InvalidValue as RespondToInvalidContent} from './InvalidValue'
-import {usePatches} from './usePatches'
+import {SANITY_PATCH_TYPE} from '../../patch'
+import {type ArrayOfObjectsItemMember, type ObjectFormNode} from '../../store'
+import {type PortableTextInputProps} from '../../types'
+import {Compositor, type PortableTextEditorElement} from './Compositor'
 import {PortableTextMarkersProvider} from './contexts/PortableTextMarkers'
 import {PortableTextMemberItemsProvider} from './contexts/PortableTextMembers'
 import {usePortableTextMemberItemsFromProps} from './hooks/usePortableTextMembers'
+import {InvalidValue as RespondToInvalidContent} from './InvalidValue'
+import {usePatches} from './usePatches'
 
 /** @internal */
 export interface PortableTextMemberItem {

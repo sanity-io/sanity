@@ -1,9 +1,10 @@
-import {Path, PathSegment} from '@sanity/types'
-import {get, find} from 'lodash'
+import {type Path, type PathSegment} from '@sanity/types'
+import {find, get} from 'lodash'
 import {useCallback} from 'react'
 import shallowEquals from 'shallow-equals'
+
 import {isRecord} from '../../../util'
-import {FormPatch} from '../../patch'
+import {type FormPatch} from '../../patch'
 import {useFormBuilder} from '../../useFormBuilder'
 
 /**

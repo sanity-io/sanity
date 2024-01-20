@@ -1,5 +1,5 @@
 import {UserIcon} from '@sanity/icons'
-import {Rule} from 'sanity'
+import {type Rule} from 'sanity'
 
 export default {
   type: 'document',

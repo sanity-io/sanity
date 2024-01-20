@@ -1,7 +1,7 @@
-import arrify from 'arrify'
 import {SanityEncoder} from '@bjoerge/mutiny'
-import {toSanityMutations, TransactionPayload} from '../toSanityMutations'
-import {Mutation, Transaction} from '../../../mutations'
+
+import {type Mutation, type Transaction} from '../../../mutations'
+import {toSanityMutations, type TransactionPayload} from '../toSanityMutations'
 
 jest.mock('@bjoerge/mutiny', () => {
   const actual = jest.requireActual('@bjoerge/mutiny')

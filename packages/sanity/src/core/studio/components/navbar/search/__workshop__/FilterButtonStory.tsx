@@ -1,10 +1,11 @@
 import {Card, Text} from '@sanity/ui'
 import {useBoolean} from '@sanity/ui-workshop'
 import {useMemo} from 'react'
+
 import {FilterButton} from '../components/filters/filter/FilterButton'
 import {SearchProvider} from '../contexts/search/SearchProvider'
 import {useSearchState} from '../contexts/search/useSearchState'
-import type {SearchFilter} from '../types'
+import {type SearchFilter} from '../types'
 
 export default function FilterButtonStory() {
   const fullscreen = useBoolean('Fullscreen layout', false, 'Props')

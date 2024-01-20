@@ -3,7 +3,7 @@
  * Some of these tests have no expect statement;
  * use of ts-expect-error serves the same purpose - TypeScript is the testrunner here
  */
-import type {SlugDefinition, StringDefinition} from '../definition'
+import {type SlugDefinition, type StringDefinition} from '../definition'
 import {defineType} from '../types'
 
 describe('slug types', () => {

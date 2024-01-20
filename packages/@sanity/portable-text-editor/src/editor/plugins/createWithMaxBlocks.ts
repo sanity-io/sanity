@@ -1,4 +1,4 @@
-import {PortableTextSlateEditor} from '../../types/editor'
+import {type PortableTextSlateEditor} from '../../types/editor'
 
 /**
  * This plugin makes sure that the PTE maxBlocks prop is respected

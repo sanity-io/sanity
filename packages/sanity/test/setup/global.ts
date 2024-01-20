@@ -1,6 +1,6 @@
 /* eslint-disable no-process-env */
-import os from 'os'
 import {execSync} from 'child_process'
+import os from 'os'
 
 const wantedUnixTZ = 'America/Los_Angeles'
 const wantedWindowsTZ = 'Pacific Standard Time'

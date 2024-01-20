@@ -1,16 +1,19 @@
-import {isMainThread, parentPort, workerData as _workerData} from 'worker_threads'
-import readline from 'readline'
-import {Readable} from 'stream'
-import os from 'os'
-import fs from 'fs'
-import path from 'path'
 import {
   type ClientConfig,
+  createClient,
   type SanityClient,
   type SanityDocument,
-  createClient,
 } from '@sanity/client'
-import {type ValidationContext, type ValidationMarker, isReference} from '@sanity/types'
+import {isReference, type ValidationContext, type ValidationMarker} from '@sanity/types'
+import fs from 'fs'
+import os from 'os'
+import path from 'path'
+import readline from 'readline'
+import {isRecord, validateDocument} from 'sanity'
+import {Readable} from 'stream'
+import {isMainThread, parentPort, workerData as _workerData} from 'worker_threads'
+
+import {extractDocumentsFromNdjsonOrTarball} from '../util/extractDocumentsFromNdjsonOrTarball'
 import {getStudioWorkspaces} from '../util/getStudioWorkspaces'
 import {mockBrowserEnvironment} from '../util/mockBrowserEnvironment'
 import {
@@ -19,8 +22,6 @@ import {
   type WorkerChannelEvent,
   type WorkerChannelStream,
 } from '../util/workerChannels'
-import {extractDocumentsFromNdjsonOrTarball} from '../util/extractDocumentsFromNdjsonOrTarball'
-import {isRecord, validateDocument} from 'sanity'
 
 const MAX_VALIDATION_CONCURRENCY = 100
 const DOCUMENT_VALIDATION_TIMEOUT = 30000

@@ -1,12 +1,13 @@
-import {memo, useCallback, useMemo} from 'react'
 import {PortableTextEditor, usePortableTextEditor} from '@sanity/portable-text-editor'
 import {upperFirst} from 'lodash'
-import {PopoverProps} from '../../../../../ui-components'
+import React, {memo, useCallback, useMemo} from 'react'
+
+import {type PopoverProps} from '../../../../../ui-components'
+import {CollapseMenu, CollapseMenuButton} from '../../../../components/collapseMenu'
 import {ContextMenuButton} from '../../../../components/contextMenuButton'
 import {useTranslation} from '../../../../i18n'
-import {CollapseMenu, CollapseMenuButton} from '../../../../components/collapseMenu'
-import {BlockItem} from './types'
 import {useFocusBlock} from './hooks'
+import {type BlockItem} from './types'
 
 const CollapseMenuMemo = memo(CollapseMenu)
 

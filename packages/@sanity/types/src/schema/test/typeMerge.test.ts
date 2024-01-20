@@ -1,9 +1,9 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import {ExtensionTypeExampleDef, ObjectDefinition} from '../definition'
-import {defineType, Schema as S} from '../types'
+import {type ExtensionTypeExampleDef, type ObjectDefinition} from '../definition'
+import {defineType} from '../types'
 
 declare module '../definition' {
   // here we type up our custom schema definition
+  // eslint-disable-next-line @typescript-eslint/no-shadow
   export type ExtensionTypeExampleDef = Omit<ObjectDefinition, 'type' | 'fields'> & {
     type: 'test-added-extension-type'
     options: {

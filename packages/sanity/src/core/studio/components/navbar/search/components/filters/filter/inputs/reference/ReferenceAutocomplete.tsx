@@ -1,9 +1,9 @@
-import type {ReferenceValue} from '@sanity/types'
+import {type ReferenceValue} from '@sanity/types'
 import {Autocomplete, Box, Flex, Text} from '@sanity/ui'
 import {
-  ForwardedRef,
+  type ForwardedRef,
   forwardRef,
-  ReactElement,
+  type ReactElement,
   useCallback,
   useId,
   useMemo,
@@ -11,16 +11,17 @@ import {
   useState,
 } from 'react'
 import styled from 'styled-components'
+
 import {Popover} from '../../../../../../../../../../ui-components'
 import {useSchema} from '../../../../../../../../../hooks'
-import type {SearchableType, WeightedHit} from '../../../../../../../../../search'
+import {Translate, useTranslation} from '../../../../../../../../../i18n'
+import {type SearchableType, type WeightedHit} from '../../../../../../../../../search'
 import {getPublishedId} from '../../../../../../../../../util'
 import {POPOVER_RADIUS} from '../../../../../constants'
 import {useSearchState} from '../../../../../contexts/search/useSearchState'
 import {useSearch} from '../../../../../hooks/useSearch'
 import {getDocumentTypesTruncated} from '../../../../../utils/documentTypesTruncated'
 import {SearchResultItem} from '../../../../searchResults/item/SearchResultItem'
-import {Translate, useTranslation} from '../../../../../../../../../i18n'
 
 interface SearchHit {
   hit: WeightedHit

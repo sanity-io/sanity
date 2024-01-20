@@ -1,8 +1,9 @@
-import {inspect} from 'util'
-import type {CliCommandContext, CliCommandDefinition} from '@sanity/cli'
+import {type CliCommandContext, type CliCommandDefinition} from '@sanity/cli'
 import {groupBy} from 'lodash'
+import {inspect} from 'util'
+
 import {formatFailure} from './printHookAttemptCommand'
-import type {DeliveryAttempt, Hook, HookMessage} from './types'
+import {type DeliveryAttempt, type Hook, type HookMessage} from './types'
 
 interface ListHookFlags {
   detailed?: boolean
