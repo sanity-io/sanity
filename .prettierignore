@@ -32,5 +32,6 @@
 /turbo.json
 /packages/*/turbo.json
 /packages/@sanity/*/turbo.json
+/pnpm-lock.yaml
 
 /packages/sanity/playwright-ct/template/.cache/**/*
