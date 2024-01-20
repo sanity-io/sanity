@@ -1,3 +1,4 @@
+import {it, expect} from '@jest/globals'
 import {isDeepEmpty} from '../isDeepEmpty'
 
 it('returns true for undefined', () => {

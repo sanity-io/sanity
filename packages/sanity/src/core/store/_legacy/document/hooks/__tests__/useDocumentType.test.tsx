@@ -33,7 +33,7 @@ test('should resolve document type from API on undefined type (with loading stat
   const client = createMockSanityClient()
   const response = defer(() => of(['book']).pipe(observeOn(asyncScheduler)))
 
-  client.observable.fetch = jest.fn().mockReturnValueOnce(response)
+  client.observable.fetch = jest.fn(() => response)
 
   const {result} = renderHook(() => useDocumentType('asoiaf-got', undefined), {
     wrapper: await createWrapperComponent(client as any),
@@ -50,7 +50,7 @@ test('should resolve document type from API on undefined type (with loading stat
 
 test('should return correct document type on document type transition', async () => {
   const client = createMockSanityClient()
-  client.observable.fetch = jest.fn()
+  client.observable.fetch = jest.fn<typeof client.observable.fetch>()
 
   let documentType = 'book'
 
@@ -104,7 +104,7 @@ test('should return correct document type when transitioning from undefined type
 
   const responseGrrm = defer(() => of(['author']).pipe(observeOn(asyncScheduler)))
 
-  client.observable.fetch = jest.fn().mockReturnValue(responseGrrm)
+  client.observable.fetch = jest.fn<typeof client.observable.fetch>().mockReturnValue(responseGrrm)
 
   // eslint-disable-next-line no-undef-init
   let documentType: string | undefined = undefined
@@ -134,7 +134,7 @@ test('should return correct document type when transitioning from specified to u
 
   const responseGrrm = defer(() => of(['person']).pipe(observeOn(asyncScheduler)))
 
-  client.observable.fetch = jest.fn().mockReturnValue(responseGrrm)
+  client.observable.fetch = jest.fn<typeof client.observable.fetch>().mockReturnValue(responseGrrm)
 
   // eslint-disable-next-line no-undef-init
   let documentType: string | undefined = 'author'
@@ -169,7 +169,7 @@ test('should cancel ongoing requests when transitioning document ID', async () =
   const responseGot = defer(() => of(['book']).pipe(observeOn(asyncScheduler)))
 
   client.observable.fetch = jest
-    .fn()
+    .fn<typeof client.observable.fetch>()
     .mockReturnValueOnce(responseDelayedGrrm)
     .mockReturnValueOnce(responseGot)
 

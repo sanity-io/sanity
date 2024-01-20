@@ -33,15 +33,11 @@ export async function renderNumberInput(options: {
     }
   }
 
-  const result = await renderInput({
+  const result = await renderInput<PrimitiveInputElementProps>({
     fieldDefinition,
     props,
     render: (inputProps, context) => initialRender(transformProps(inputProps), context),
   })
 
-  function rerender(subsequentRender: TestRenderNumberInputCallback) {
-    result.rerender((inputProps, context) => subsequentRender(transformProps(inputProps), context))
-  }
-
-  return {...result, rerender}
+  return result
 }

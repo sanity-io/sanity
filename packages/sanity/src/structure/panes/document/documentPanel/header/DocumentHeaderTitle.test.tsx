@@ -24,7 +24,8 @@ function createWrapperComponent(client: SanityClient) {
 
 jest.mock('../../useDocumentPane')
 jest.mock('sanity', () => {
-  const actual = jest.requireActual('sanity')
+  // eslint-disable-next-line @typescript-eslint/consistent-type-imports
+  const actual = jest.requireActual<typeof import('sanity')>('sanity')
   return {
     ...actual,
     unstable_useValuePreview: jest.fn(),

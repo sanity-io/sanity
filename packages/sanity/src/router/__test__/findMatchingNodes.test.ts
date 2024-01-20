@@ -1,7 +1,7 @@
 import {expect, test} from '@jest/globals'
 
 import {_findMatchingRoutes} from '../_findMatchingRoutes'
-import {type MatchResult, type RouterNode} from '../types'
+import {type RouterNode} from '../types'
 
 const node: RouterNode = {
   route: {
@@ -53,7 +53,7 @@ const node: RouterNode = {
   ],
 }
 
-const examples: [Record<string, unknown>, MatchResult][] = [
+const examples = [
   [
     {},
     {
@@ -122,7 +122,7 @@ const examples: [Record<string, unknown>, MatchResult][] = [
       missingKeys: [],
     },
   ],
-]
+] as const
 
 examples.forEach(([state, result]) => {
   test(`state ${JSON.stringify(state)} matches`, () => {

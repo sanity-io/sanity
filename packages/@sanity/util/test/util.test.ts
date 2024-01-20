@@ -1,4 +1,3 @@
-import { expect, test } from '@jest/globals';
 /* eslint-disable no-sync */
 import {expect, test} from '@jest/globals'
 import * as fs from 'fs'

@@ -78,17 +78,11 @@ export async function renderObjectInput(options: {
     }
   }
 
-  const result = await renderInput({
+  const result = await renderInput<ComplexElementProps>({
     fieldDefinition,
     props,
     render: (inputProps, context) => initialRender(transformProps(inputProps, context), context),
   })
 
-  function rerender(subsequentRender: TestRenderObjectInputCallback) {
-    result.rerender((inputProps, context) =>
-      subsequentRender(transformProps(inputProps, context), context),
-    )
-  }
-
-  return {...result, rerender}
+  return result
 }

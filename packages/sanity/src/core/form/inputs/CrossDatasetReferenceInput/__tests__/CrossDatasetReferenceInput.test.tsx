@@ -3,14 +3,13 @@ import {describe, expect, jest, test} from '@jest/globals'
 import {type SanityClient} from '@sanity/client'
 import {act, waitForElementToBeRemoved, within} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import {type Observable, of} from 'rxjs'
+import {of} from 'rxjs'
 
 import {renderCrossDatasetReferenceInput} from '../../../../../../test/form'
 import {createMockSanityClient} from '../../../../../../test/mocks/mockSanityClient'
 import {createTestProvider} from '../../../../../../test/testUtils/TestProvider'
 import {defineConfig} from '../../../../config'
 import {CrossDatasetReferenceInput} from '../CrossDatasetReferenceInput'
-import {type CrossDatasetSearchHit} from '../types'
 import {featureDisabledRequest, featureEnabledRequest} from './mocks'
 
 const AVAILABLE = {
@@ -79,9 +78,9 @@ describe('render states', () => {
     const client = createMockSanityClient({requests: {'/features': featureEnabledRequest}})
     const TestProvider = await createWrapperComponent(client as any)
 
-    const getReferenceInfo = jest.fn().mockReturnValue(
+    const getReferenceInfo = jest.fn(() =>
       of({
-        _id: 'foo',
+        id: 'foo',
         type: 'product',
         availability: AVAILABLE,
         preview: {
@@ -130,9 +129,9 @@ describe('render states', () => {
     const client = createMockSanityClient({requests: {'/features': featureEnabledRequest}})
     const TestProvider = await createWrapperComponent(client as any)
 
-    const getReferenceInfo = jest.fn().mockReturnValue(
+    const getReferenceInfo = jest.fn(() =>
       of({
-        _id: 'foo',
+        id: 'foo',
         type: 'product',
         availability: AVAILABLE,
         preview: {
@@ -183,9 +182,9 @@ describe('render states', () => {
     const client = createMockSanityClient({requests: {'/features': featureDisabledRequest}})
     const TestProvider = await createWrapperComponent(client as any)
 
-    const getReferenceInfo = jest.fn().mockReturnValue(
+    const getReferenceInfo = jest.fn(() =>
       of({
-        _id: 'foo',
+        id: 'foo',
         type: 'product',
         availability: AVAILABLE,
         preview: {
@@ -237,7 +236,7 @@ describe('user interaction happy paths', () => {
     const client = createMockSanityClient({requests: {'/features': featureEnabledRequest}})
     const TestProvider = await createWrapperComponent(client as any)
 
-    const handleSearch = jest.fn<Observable<CrossDatasetSearchHit[]>, [string]>().mockReturnValue(
+    const handleSearch = jest.fn(() =>
       of([
         {id: 'one', type: 'product', published: {_id: 'one', _type: 'product'}},
         {id: 'two', type: 'product', published: {_id: 'two', _type: 'product'}},
@@ -325,7 +324,7 @@ describe('user interaction happy paths', () => {
     const client = createMockSanityClient({requests: {'/features': featureEnabledRequest}})
     const TestProvider = await createWrapperComponent(client as any)
 
-    const handleSearch = jest.fn<Observable<CrossDatasetSearchHit[]>, [string]>().mockReturnValue(
+    const handleSearch = jest.fn(() =>
       of([
         {id: 'one', type: 'product', published: {_id: 'one', _type: 'product'}},
         {id: 'two', type: 'product', published: {_id: 'two', _type: 'product'}},
@@ -349,7 +348,7 @@ describe('user interaction happy paths', () => {
       _projectId: 'mock-project-id',
     }
 
-    const {onChange, onPathFocus, rerender, result} = await renderCrossDatasetReferenceInput({
+    const {onChange, onPathFocus, result} = await renderCrossDatasetReferenceInput({
       getReferenceInfo,
       onSearch: handleSearch,
 
@@ -385,11 +384,11 @@ describe('user interaction happy paths', () => {
     expect(onPathFocus).toHaveBeenCalledTimes(1)
     expect(onPathFocus).toHaveBeenCalledWith(['_ref'])
 
-    rerender((inputProps) => (
-      <TestProvider>
-        <CrossDatasetReferenceInput {...inputProps} focusPath={['_ref']} />
-      </TestProvider>
-    ))
+    // rerender((inputProps) => (
+    //   <TestProvider>
+    //     <CrossDatasetReferenceInput {...inputProps} focusPath={['_ref']} />
+    //   </TestProvider>
+    // ))
 
     // rerender({
     //   focusPath: ['_ref'],

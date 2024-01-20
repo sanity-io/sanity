@@ -53,11 +53,5 @@ export async function renderCrossDatasetReferenceInput(options: {
     render: (baseProps, context) => initialRender(transformProps(baseProps, context), context),
   })
 
-  function rerender(subsequentRender: TestRenderCrossDatasetReferenceInputCallback) {
-    result.rerender((baseProps, context) =>
-      subsequentRender(transformProps(baseProps, context), context),
-    )
-  }
-
-  return {...result, rerender}
+  return result
 }
