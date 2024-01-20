@@ -87,11 +87,6 @@
       "eslint --quiet --fix"
     ]
   },
-  "resolutions": {
-    "**/@types/react": "^18.0.25",
-    "@types/react": "^18.2.37",
-    "wide-align/string-width": "^4.2.0"
-  },
   "devDependencies": {
     "@babel/plugin-proposal-class-properties": "^7.18.6",
     "@babel/preset-env": "^7.23.7",
@@ -162,6 +157,6 @@
   "optionalDependencies": {
     "node-notifier": "^10.0.0"
   },
-  "packageManager": "yarn@1.22.19",
+  "packageManager": "pnpm@8.14.0",
   "isSanityMonorepo": true
 }
