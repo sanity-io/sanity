@@ -14,7 +14,7 @@ import {
 } from '@sanity/types'
 import {Box, Card, Menu, type ThemeColorToneKey, type ToastParams} from '@sanity/ui'
 import {get, startCase} from 'lodash'
-import React, {type FocusEvent, PureComponent, type ReactNode} from 'react'
+import {PureComponent, type ReactNode} from 'react'
 import {type Observable, type Subscription} from 'rxjs'
 
 import {Button, MenuButton, MenuItem} from '../../../../../ui-components'
@@ -48,7 +48,7 @@ export interface BaseFileInputValue extends Partial<BaseFile> {
   _upload?: UploadState
 }
 
-function passThrough({children}: {children?: ReactNode}) {
+function passThrough({children}: {children?: React.ReactNode}) {
   return children
 }
 
@@ -298,7 +298,7 @@ export class BaseFileInput extends PureComponent<BaseFileInputProps, BaseFileInp
     this.setState({selectedAssetSource: null})
   }
 
-  handleFileTargetFocus = (event: FocusEvent) => {
+  handleFileTargetFocus = (event: React.FocusEvent) => {
     // We want to handle focus when the file target element *itself* receives
     // focus, not when an interactive child element receives focus. Since React has decided
     // to let focus bubble, so this workaround is needed

@@ -10,7 +10,7 @@ import {
   type SchemaTypeDefinition,
 } from '@sanity/types'
 import {type i18n} from 'i18next'
-import {type ComponentType, type ReactElement, type ReactNode} from 'react'
+import {type ComponentType, type ReactNode} from 'react'
 import {type Observable} from 'rxjs'
 import {type Router, type RouterState} from 'sanity/router'
 
@@ -521,7 +521,7 @@ export interface DocumentLayoutProps {
    * The type of the document. This is a read-only property and changing it will have no effect.
    */
   documentType: string
-  renderDefault: (props: DocumentLayoutProps) => ReactElement
+  renderDefault: (props: DocumentLayoutProps) => React.ReactElement
 }
 
 interface DocumentComponents {

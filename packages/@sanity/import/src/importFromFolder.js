@@ -1,8 +1,8 @@
 const fs = require('fs')
 const path = require('path')
+const debug = require('debug')('sanity:import:folder')
 const getFileUrl = require('file-url')
 const globby = require('globby')
-const debug = require('debug')('sanity:import:folder')
 const readJson = require('./util/readJson')
 const rimraf = require('./util/rimraf')
 

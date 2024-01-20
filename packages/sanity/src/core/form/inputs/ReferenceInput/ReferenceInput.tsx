@@ -1,6 +1,14 @@
 import {Stack, Text, useToast} from '@sanity/ui'
 import {uuid} from '@sanity/uuid'
-import {type FocusEvent, type KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
+import {
+  type FocusEvent,
+  forwardRef,
+  type KeyboardEvent,
+  useCallback,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import {useObservableCallback} from 'react-rx'
 import {concat, type Observable, of} from 'rxjs'
 import {catchError, filter, map, scan, switchMap, tap} from 'rxjs/operators'
@@ -28,11 +36,21 @@ import {useReferenceInfo} from './useReferenceInfo'
 import {useReferenceInput} from './useReferenceInput'
 import {useReferenceItemRef} from './useReferenceItemRef'
 
-const StyledPreviewCard = styled(PreviewCard)`
-  /* this is a hack to avoid layout jumps while previews are loading
-  there's probably better ways of solving this */
-  min-height: 36px;
-`
+// This is a workaround for a circular import issue.
+// Calling `styled(PreviewCard)` at program load time triggered a build error with the commonjs bundle because it tried
+// to access the PreviewCard variable/symbol before it was initialized.
+// The workaround is to defer creating StyledPreviewCard until react render time
+let StyledPreviewCardImpl: undefined | typeof PreviewCard
+const StyledPreviewCard: typeof PreviewCard = forwardRef(function StyledPreviewCard(props, ref) {
+  if (!StyledPreviewCardImpl) {
+    StyledPreviewCardImpl = styled(PreviewCard)`
+      /* this is a hack to avoid layout jumps while previews are loading
+      there's probably better ways of solving this */
+      min-height: 36px;
+    `
+  }
+  return <StyledPreviewCardImpl ref={ref} {...props} />
+})
 
 const INITIAL_SEARCH_STATE: ReferenceSearchState = {
   hits: [],
