@@ -1,15 +1,6 @@
-import {type ComponentFixtures} from '@playwright/experimental-ct-react'
 import type {PlaywrightTestArgs, Locator} from '@playwright/test'
 
 export const DEFAULT_TYPE_DELAY = 20
-
-/**
- * The delay between key presses in milliseconds for fast typing. This is usually used for typing in the PTE.
- * The PTE normally need some time to process the input and sync its internal state with the document
- */
-export const TYPE_DELAY_HIGH = 150
-
-export type MountResult = Awaited<ReturnType<ComponentFixtures['mount']>>
 
 export function testHelpers({page}: {page: PlaywrightTestArgs['page']}) {
   const activatePTInputOverlay = async ($pteField: Locator) => {
