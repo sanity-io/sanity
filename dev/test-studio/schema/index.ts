@@ -1,4 +1,3 @@
-// Test documents with standard inputs
 import {allTypes} from './allTypes'
 import author from './author'
 import book from './book'
@@ -65,9 +64,6 @@ import review from './debug/review'
 import * as scrollBugTypes from './debug/scrollBug'
 import select from './debug/select'
 import {simpleArrayOfObjects} from './debug/simpleArrayOfObjects'
-// Test documents for docs
-// Demo documents for 3d experiments
-// Test documents for debugging
 import {simpleReferences} from './debug/simpleReferences'
 import typeWithNoToplevelStrings from './debug/typeWithNoToplevelStrings'
 import uploads from './debug/uploads'
@@ -76,22 +72,16 @@ import {virtualizationDebug} from './debug/virtualizationDebug'
 import {virtualizationInObject} from './debug/virtualizationInObject'
 import {demos3d} from './demos/3d'
 import {v3docs} from './docs/v3'
-// import {orderableCategoryDocumentType} from './plugins/orderableCategory'
-// import {orderableTagDocumentType} from './plugins/orderableTag'
-// Test documents with 3rd party plugin inputs
 import markdown from './externalPlugins/markdown'
 import mux from './externalPlugins/mux'
 import playlist from './playlist'
 import playlistTrack from './playlistTrack'
-// Test documents with official plugin inputs
 import code from './plugins/code'
 import color from './plugins/color'
 import geopoint from './plugins/geopoint'
-// Other documents
 import species from './species'
 import arrays, {topLevelArrayType, topLevelPrimitiveArrayType} from './standard/arrays'
 import booleans from './standard/booleans'
-// CI documents
 import crossDatasetReference, {crossDatasetSubtype} from './standard/crossDatasetReference'
 import date from './standard/date'
 import datetime from './standard/datetime'
@@ -151,123 +141,139 @@ const codeInputType = {
 }
 
 export const schemaTypes = [
-  actions,
+  // Test documents with standard inputs
   arrays,
-  author,
-  blocks,
-  book,
+  topLevelArrayType,
+  topLevelPrimitiveArrayType,
   booleans,
+  date,
+  datetime,
+  emails,
+  files,
+  images,
+  numbers,
+  objects,
+  ptAllTheBellsAndWhistlesType,
+  blocks,
+  ptCustomMarkersTestType,
+  richTextObject,
+  ...Object.values(scrollBugTypes),
+  simpleBlock,
+  manyEditors,
+  simpleBlockNote,
+  simpleBlockNoteBody,
+  simpleBlockNoteUrl,
+  spotifyEmbed,
+  references,
+  referenceAlias,
+  slugs,
+  slugAlias,
+  strings,
+  texts,
+  urls,
+
+  // Test documents for debugging
+  actions,
   button,
-  code,
-  codeInputType, // @todo temporary, until code input is v3 compatible
-  color,
-  commentsDebug,
   conditionalFields,
-  conditionalFieldset,
-  customBlock,
   customInputs,
   customInputsWithPatches,
   customNumber,
-  date,
-  datetime,
+  collapsibleObjects,
   deprecatedFields,
   deprecatedDocument,
   documentActions,
-  emails,
   empty,
   experiment,
   fieldActionsTest,
   fieldComponentsTest,
-  fieldValidationInferReproDoc,
-  fieldValidationInferReproSharedObject,
   fieldsets,
-  files,
+
+  fieldValidationInferReproSharedObject,
+  fieldValidationInferReproDoc,
+
   focus,
   gallery,
-  geopoint,
   hoistedPt,
   hoistedPtDocument,
-  images,
-  collapsibleObjects,
+  customBlock,
   initialValuesTest,
+  superlatives,
+  inspectorsTestType,
   invalidPreviews,
   languageFilterDebugType,
   liveEdit,
   localeString,
   manyFieldsTest,
-  markdown,
-  mux,
   myImage,
   myObject,
   namedDeprecatedObject,
   namedDeprecatedArray,
   notitle,
-  numbers,
-  objectWithNestedArray,
-  objects,
-  formInputDebug,
-  // orderableCategoryDocumentType,
-  // orderableTagDocumentType,
-  manyEditors,
-  playlist,
-  playlistTrack,
   poppers,
   presence,
+  objectWithNestedArray,
   previewImageUrlTest,
+  formInputDebug,
   previewMediaTest,
   previewSelectBugRepro,
-  ptAllTheBellsAndWhistlesType,
-  ptCustomMarkersTestType,
-  ptReference,
   radio,
   readOnly,
   recursive,
   recursiveArray,
-  recursiveObject,
   recursiveObjectTest,
+  recursiveObject,
   recursivePopover,
-  references,
-  referenceAlias,
-  crossDatasetReference,
-  crossDatasetSubtype,
-  circularCrossDatasetReferenceTest,
-  reservedFieldNames,
-  review,
-  richTextObject,
-  ...Object.values(scrollBugTypes),
-  select,
-  simpleBlock,
-  simpleBlockNote,
-  simpleBlockNoteBody,
-  simpleBlockNoteUrl,
   simpleArrayOfObjects,
   simpleReferences,
-  slugs,
-  slugAlias,
-  species,
-  spotifyEmbed,
-  strings,
-  superlatives,
-  inspectorsTestType,
-  texts,
-  topLevelArrayType,
-  topLevelPrimitiveArrayType,
+  reservedFieldNames,
+  review,
+  select,
   typeWithNoToplevelStrings,
   uploads,
-  urls,
   validation,
   validationArraySuperType,
-  validationTest,
-  virtualizationDebug,
-  virtualizationInObject,
   fieldGroups,
   fieldGroupsDefault,
   fieldGroupsMany,
   fieldGroupsWithValidation,
-  fieldGroupsWithFieldsets,
   fieldGroupsWithFieldsetsAndValidation,
+  virtualizationInObject,
+  virtualizationDebug,
+
+  // Test documents with official plugin inputs
+  code,
+  // @todo temporary, until code input is v3 compatible
+  codeInputType,
+  color,
+  geopoint,
+
+  // Test documents with 3rd party plugin inputs
+  markdown,
+  mux,
+
+  // Other documents
+  author,
+  book,
+  species,
+  playlist,
+  playlistTrack,
+
+  // CI documents
+  conditionalFieldset,
+  validationTest,
+  crossDatasetReference,
+  crossDatasetSubtype,
+  circularCrossDatasetReferenceTest,
   allNativeInputComponents,
   allTypes,
+  fieldGroupsWithFieldsets,
+  ptReference,
+  commentsDebug,
+
+  // Test documents for docs
   ...v3docs.types,
+
+  // Demo documents for 3d experiments
   ...demos3d.types,
 ]
