@@ -166,7 +166,7 @@ test('all permutations', () => {
     del('corge'),
   ]
 
-  expect(mutations).toEqual<Mutation[]>([
+  expect(mutations).toEqual([
     {
       type: 'create',
       document: {

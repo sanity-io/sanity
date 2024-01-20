@@ -72,11 +72,5 @@ export async function renderFileInput(options: {
     render: (inputProps, context) => initialRender(transformProps(inputProps, context), context),
   })
 
-  function rerender(subsequentRender: TestRenderFileInputCallback) {
-    result.rerender((inputProps, context) =>
-      subsequentRender(transformProps(inputProps, context), context),
-    )
-  }
-
-  return {...result, rerender}
+  return result
 }

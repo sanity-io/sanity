@@ -3,6 +3,7 @@ import {type SchemaTypeDefinition} from '@sanity/types'
 
 import {definePlugin} from '../definePlugin'
 import {resolveConfigProperty} from '../resolveConfigProperty'
+import {type AsyncConfigPropertyReducer, type ConfigPropertyReducer} from '../types'
 
 describe('resolveConfigProperty', () => {
   it('traverses configs and returns a resolved configuration property', () => {
@@ -50,9 +51,11 @@ describe('resolveConfigProperty', () => {
     const context = {}
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const reducer = jest.fn((prev, config, _context) => {
-      return [...prev, ...config.schema.types]
-    })
+    const reducer = jest.fn<ConfigPropertyReducer<SchemaTypeDefinition[], unknown>>(
+      (prev, config, _context) => {
+        return [...prev, ...((config.schema?.types || []) as SchemaTypeDefinition[])]
+      },
+    )
 
     const result = resolveConfigProperty({
       config: {
@@ -119,10 +122,12 @@ describe('resolveConfigProperty', () => {
     const context = {}
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const asyncReducer = jest.fn(async (prev, config, _context) => {
-      await new Promise((resolve) => setTimeout(resolve, 0))
-      return [...prev, ...config.schema.types]
-    })
+    const asyncReducer = jest.fn<AsyncConfigPropertyReducer<SchemaTypeDefinition[], unknown>>(
+      async (prev, config, _context) => {
+        await new Promise((resolve) => setTimeout(resolve, 0))
+        return [...prev, ...((config.schema?.types || []) as SchemaTypeDefinition[])]
+      },
+    )
 
     const result = await resolveConfigProperty({
       config: {

@@ -20,11 +20,16 @@ import {
 } from '../../src/core/validation/validateDocument'
 import {createMockSanityClient} from './mocks/mockSanityClient'
 
+type ConvertToValidationMarker =
+  // eslint-disable-next-line @typescript-eslint/consistent-type-imports
+  typeof import('../../src/core/validation/util/convertToValidationMarker')
+
 jest.mock('../../src/core/validation/util/convertToValidationMarker', () => {
   return {
     convertToValidationMarker: jest.fn(
-      jest.requireActual('../../src/core/validation/util/convertToValidationMarker')
-        .convertToValidationMarker,
+      jest.requireActual<ConvertToValidationMarker>(
+        '../../src/core/validation/util/convertToValidationMarker',
+      ).convertToValidationMarker,
     ),
   }
 })

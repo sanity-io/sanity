@@ -57,11 +57,24 @@ export type TestRenderInputCallback<ElementProps> = (
   context: TestRenderInputContext,
 ) => React.ReactElement
 
-export async function renderInput(props: {
+export type RenderInputResult = {
+  container: Element
+  focusRef: React.RefObject<HTMLElement>
+  onBlur: jest.Mock<(event: FocusEvent) => void>
+  onFocus: jest.Mock<(event: FocusEvent) => void>
+  onChange: jest.Mock<(path: PatchArg | PatchEvent) => void>
+  onNativeChange: jest.Mock<(event: FocusEvent) => void>
+  onPathBlur: jest.Mock<(path: Path) => void>
+  onPathFocus: jest.Mock<(path: Path) => void>
+  onFieldGroupSelect: jest.Mock<(field: string) => void>
+  onSetFieldSetCollapsed: jest.Mock<(field: string, collapsed: boolean) => void>
+  result: ReturnType<typeof render>
+}
+export async function renderInput<ElementProps>(props: {
   fieldDefinition: FieldDefinition
   props?: TestRenderProps
-  render: TestRenderInputCallback<any>
-}) {
+  render: TestRenderInputCallback<ElementProps>
+}): Promise<RenderInputResult> {
   const {render: initialRender, fieldDefinition, props: initialTestProps} = props
   const name = fieldDefinition.name
 
@@ -201,16 +214,6 @@ export async function renderInput(props: {
     </TestProvider>,
   )
 
-  function rerender(subsequentRender: TestRenderInputCallback<any>) {
-    render(
-      <TestProvider>
-        <div id="__test_container__">
-          <TestForm {...initialTestProps} render={subsequentRender} />
-        </div>
-      </TestProvider>,
-    )
-  }
-
   const container = result.container.querySelector('#__test_container__')!
 
   return {
@@ -224,7 +227,6 @@ export async function renderInput(props: {
     onPathFocus,
     onFieldGroupSelect,
     onSetFieldSetCollapsed,
-    rerender,
     result,
   }
 }

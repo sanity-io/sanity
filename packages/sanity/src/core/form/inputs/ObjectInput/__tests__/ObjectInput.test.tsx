@@ -2,6 +2,7 @@ import {describe, expect, it, jest} from '@jest/globals'
 import {defineType} from '@sanity/types'
 
 import {renderObjectInput} from '../../../../../../test/form'
+import {type RenderFieldCallback, type RenderInputCallback} from '../../../types'
 import {ObjectInput} from '../ObjectInput'
 
 const defs = {
@@ -38,13 +39,13 @@ describe('ObjectInput', () => {
 
   it('calls renderField and renderInput for each member', async () => {
     const renderField = jest
-      .fn()
+      .fn<RenderFieldCallback>()
       .mockImplementationOnce((props) => (
         <div data-testid={`field-${props.inputId}`}>{props.children}</div>
       ))
 
     const renderInput = jest
-      .fn()
+      .fn<RenderInputCallback>()
       .mockImplementationOnce((props) => <div data-testid={`input-${props.id}`} />)
 
     const {result} = await renderObjectInput({
