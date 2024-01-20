@@ -4367,6 +4367,11 @@
     "@types/through" "*"
     rxjs "^6.4.0"
 
+"@types/is-hotkey@^0.1.10":
+  version "0.1.10"
+  resolved "https://registry.yarnpkg.com/@types/is-hotkey/-/is-hotkey-0.1.10.tgz#cf440fab9bf75ffba4e1a16e8df28938de0778c9"
+  integrity sha512-RvC8KMw5BCac1NvRRyaHgMMEtBaZ6wh0pyPTBu7izn4Sj/AX9Y4aXU5c7rX8PnM/knsuUpC1IeoBkANtxBypsQ==
+
 "@types/is-hotkey@^0.1.7", "@types/is-hotkey@^0.1.8":
   version "0.1.9"
   resolved "https://registry.npmjs.org/@types/is-hotkey/-/is-hotkey-0.1.9.tgz#cd79e64ad8e14d5581295ea67f3397b6dfdd6842"
