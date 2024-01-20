@@ -36,7 +36,7 @@
     "@sanity/generate-help-url": "^3.0.0",
     "@sanity/mutator": "3.29.0",
     "@sanity/uuid": "^3.0.1",
-    "debug": "^3.2.7",
+    "debug": "^4.3.4",
     "file-url": "^2.0.2",
     "get-it": "^8.4.4",
     "get-uri": "^2.0.2",
