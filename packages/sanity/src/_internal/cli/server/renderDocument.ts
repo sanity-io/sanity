@@ -53,7 +53,7 @@ export function renderDocument(options: {
 
     debug('Starting worker thread for %s', __filename)
     const worker = new Worker(__filename, {
-      execArgv: __DEV__ ? ['-r', 'esbuild-register'] : undefined,
+      execArgv: __DEV__ ? ['-r', `${__dirname}/esbuild-register.js`] : undefined,
       workerData: {...options, dev: __DEV__, shouldWarn: true},
       // eslint-disable-next-line no-process-env
       env: process.env,
@@ -174,6 +174,7 @@ function renderDocumentFromWorkerData() {
     ? {unregister: () => undefined}
     : require('esbuild-register/dist/node').register({
         target: `node${process.version.slice(1)}`,
+        jsx: 'automatic',
         extensions: ['.jsx', '.ts', '.tsx', '.mjs'],
       })
 
@@ -185,6 +186,7 @@ function renderDocumentFromWorkerData() {
     : require('esbuild-register/dist/node').register({
         target: `node${process.version.slice(1)}`,
         extensions: ['.js'],
+        jsx: 'automatic',
         loader: 'jsx',
       })
 

@@ -2,7 +2,7 @@
   "extends": "../tsconfig.dev",
   "include": ["**/*.ts", "**/*.tsx"],
   "compilerOptions": {
-    "jsx": "preserve",
+    "jsx": "react-jsx",
     "allowJs": true,
     "isolatedModules": false
   },
