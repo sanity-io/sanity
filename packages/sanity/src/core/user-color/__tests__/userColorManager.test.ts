@@ -1,5 +1,5 @@
+import {describe, expect, test} from '@jest/globals'
 /* eslint-disable max-nested-callbacks */
-
 import {omit} from 'lodash'
 import {BehaviorSubject, type Observable} from 'rxjs'
 

@@ -1,3 +1,6 @@
+import {describe, expect, it, jest} from '@jest/globals'
+import {type SchemaTypeDefinition} from '@sanity/types'
+
 import {definePlugin} from '../definePlugin'
 import {resolveConfigProperty} from '../resolveConfigProperty'
 

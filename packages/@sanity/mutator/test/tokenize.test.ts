@@ -1,3 +1,5 @@
+import {expect, test} from '@jest/globals'
+
 import {tokenize} from '../src/jsonpath/tokenize'
 
 const cases = {

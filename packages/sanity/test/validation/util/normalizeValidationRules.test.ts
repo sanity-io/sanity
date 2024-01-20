@@ -1,3 +1,4 @@
+import {describe, expect, it} from '@jest/globals'
 import {type NumberSchemaType, type SchemaType, type StringSchemaType} from '@sanity/types'
 
 import {Rule as RuleClass} from '../../../src/core/validation'

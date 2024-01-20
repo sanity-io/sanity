@@ -1,3 +1,5 @@
+import {expect, test} from '@jest/globals'
+
 import {split} from '../split'
 
 test('split multiple chunks by newline', async () => {

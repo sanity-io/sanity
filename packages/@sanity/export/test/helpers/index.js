@@ -1,3 +1,5 @@
+import {jest} from '@jest/globals'
+
 const os = require('os')
 const path = require('path')
 const stringToStream = require('string-to-stream')

@@ -1,3 +1,5 @@
+import {expect, test} from '@jest/globals'
+
 import {parseJSON} from '../json'
 
 test('parse JSON', async () => {

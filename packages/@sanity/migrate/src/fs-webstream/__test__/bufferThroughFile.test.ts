@@ -2,6 +2,8 @@
 import {stat} from 'node:fs/promises'
 import path from 'node:path'
 
+import {describe, expect, test} from '@jest/globals'
+
 import {decodeText, parse} from '../../it-utils'
 import {firstValueFrom} from '../../it-utils/firstValueFrom'
 import {lastValueFrom} from '../../it-utils/lastValueFrom'

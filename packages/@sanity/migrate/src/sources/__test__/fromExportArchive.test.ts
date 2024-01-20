@@ -1,3 +1,5 @@
+import {expect, test} from '@jest/globals'
+
 import {decodeText, parse, toArray} from '../../it-utils'
 import {fromExportArchive} from '../fromExportArchive'
 

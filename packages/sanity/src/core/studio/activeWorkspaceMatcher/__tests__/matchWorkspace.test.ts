@@ -1,3 +1,4 @@
+import {describe, expect, it} from '@jest/globals'
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import assert from 'assert'
 

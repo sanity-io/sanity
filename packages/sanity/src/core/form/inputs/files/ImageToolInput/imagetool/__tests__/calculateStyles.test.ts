@@ -1,3 +1,5 @@
+import {describe, expect, it} from '@jest/globals'
+
 import {calculateStyles} from '../calculateStyles'
 
 // Todo: write test for cropping container too

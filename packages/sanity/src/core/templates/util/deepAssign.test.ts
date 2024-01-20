@@ -1,3 +1,5 @@
+import {expect, it} from '@jest/globals'
+
 import deepAssign from './deepAssign'
 
 it('ignores undefined values', () => {

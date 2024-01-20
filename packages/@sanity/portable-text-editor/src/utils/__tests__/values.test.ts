@@ -1,3 +1,5 @@
+import {describe, expect, it} from '@jest/globals'
+
 import {schemaType} from '../../editor/__tests__/PortableTextEditorTester'
 import {getPortableTextMemberSchemaTypes} from '../getPortableTextMemberSchemaTypes'
 import {fromSlateValue, toSlateValue} from '../values'

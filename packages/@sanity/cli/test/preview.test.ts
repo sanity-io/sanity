@@ -1,3 +1,4 @@
+import {describe, expect} from '@jest/globals'
 import path from 'path'
 
 import {describeCliTest, testConcurrent} from './shared/describe'

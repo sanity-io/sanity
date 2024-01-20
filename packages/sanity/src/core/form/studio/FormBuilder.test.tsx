@@ -1,5 +1,5 @@
+import {describe, expect, it, jest} from '@jest/globals'
 /* eslint-disable camelcase */
-
 import {type SanityClient} from '@sanity/client'
 import {defineType, type Path} from '@sanity/types'
 import {render} from '@testing-library/react'

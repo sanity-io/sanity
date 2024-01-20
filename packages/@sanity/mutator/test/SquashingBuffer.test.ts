@@ -1,3 +1,4 @@
+import {expect, test} from '@jest/globals'
 import {type PatchMutationOperation} from '@sanity/types'
 
 import {Mutation} from '../src/document/Mutation'

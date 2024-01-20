@@ -3,6 +3,8 @@
 import {createStructureBuilder, SerializeError} from '../../structureBuilder'
 import {type SchemaPluginOptions} from 'sanity'
 
+import {expect, describe, it, jest} from '@jest/globals'
+
 import {getMockSource} from '../../../../test/testUtils/getMockWorkspaceFromConfig'
 /* eslint-enable import/order */
 import {type PaneNode, type UnresolvedPaneNode} from '../../types'

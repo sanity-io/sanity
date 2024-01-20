@@ -1,3 +1,5 @@
+import {expect, test} from '@jest/globals'
+
 import {route} from '../route'
 
 function mock<T, K extends keyof T>(obj: T, methodName: K, mockFn: T[K]) {

@@ -1,3 +1,5 @@
+import {describe, expect, it} from '@jest/globals'
+
 import {memoBind} from '../memoBind'
 
 describe('memoBind', () => {

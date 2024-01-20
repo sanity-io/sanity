@@ -1,3 +1,5 @@
+import {expect, test} from '@jest/globals'
+
 import {_resolvePathFromState} from '../_resolvePathFromState'
 import {route} from '../route'
 import {type Router} from '../types'

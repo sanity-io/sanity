@@ -1,3 +1,4 @@
+import {describe, expect, it, jest} from '@jest/globals'
 /**
  * SSR Hydration is hard to get right.
  * It's not a concern when using `sanity dev`, `sanity build` or `sanity deploy` as we ship a client-only application
@@ -16,7 +17,6 @@
  * b) https://beta.reactjs.org/apis/react-dom/server/renderToString
  * c) https://styled-components.com/docs/advanced#server-side-rendering
  */
-
 import {type SanityClient} from '@sanity/client'
 import {hydrateRoot} from 'react-dom/client'
 import {renderToStaticMarkup, renderToString} from 'react-dom/server'

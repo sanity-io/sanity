@@ -1,3 +1,4 @@
+import {describe, expect, it} from '@jest/globals'
 import {defineField} from '@sanity/types'
 import userEvent from '@testing-library/user-event'
 

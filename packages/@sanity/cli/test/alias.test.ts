@@ -1,3 +1,5 @@
+import {describe, expect, jest} from '@jest/globals'
+
 import {describeCliTest, testConcurrent} from './shared/describe'
 import {getTestRunArgs, runSanityCmdCommand, studioVersions} from './shared/environment'
 

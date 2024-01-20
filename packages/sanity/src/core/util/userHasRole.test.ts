@@ -1,3 +1,4 @@
+import {expect, test} from '@jest/globals'
 import {type ConditionalPropertyCallbackContext, type CurrentUser} from '@sanity/types'
 
 import {userHasRole} from './userHasRole'

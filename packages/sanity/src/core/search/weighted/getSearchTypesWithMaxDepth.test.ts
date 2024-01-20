@@ -1,3 +1,4 @@
+import {describe, expect, it} from '@jest/globals'
 import {Schema} from '@sanity/schema'
 
 import {getSearchableTypes} from '../common/utils'

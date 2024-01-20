@@ -1,5 +1,6 @@
-// Converts an array of simple values (strings, numbers only) to a jsonmatch path string.
+import {describe, expect, test} from '@jest/globals'
 
+// Converts an array of simple values (strings, numbers only) to a jsonmatch path string.
 import {arrayToJSONMatchPath} from '../src/jsonpath/arrayToJSONMatchPath'
 
 const cases: [any, string][] = [
