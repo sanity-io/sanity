@@ -1,3 +1,5 @@
+import {expect, test} from '@jest/globals'
+
 import {_findMatchingRoutes} from '../_findMatchingRoutes'
 import {type MatchResult, type RouterNode} from '../types'
 

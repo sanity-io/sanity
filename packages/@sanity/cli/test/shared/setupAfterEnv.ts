@@ -1,3 +1,4 @@
+import {jest} from '@jest/globals'
 /**
  * Jest has a bug where it does not respect the project `testTimeout`:
  * https://github.com/facebook/jest/issues/9696

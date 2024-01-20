@@ -1,3 +1,5 @@
+import {expect, test} from '@jest/globals'
+
 const path = require('path')
 const fileUrl = require('file-url')
 const noop = require('lodash/noop')

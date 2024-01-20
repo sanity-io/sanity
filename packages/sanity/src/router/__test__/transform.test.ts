@@ -1,3 +1,5 @@
+import {expect, test} from '@jest/globals'
+
 import {route} from '../route'
 import {decodeParams, encodeParams} from '../utils/paramsEncoding'
 

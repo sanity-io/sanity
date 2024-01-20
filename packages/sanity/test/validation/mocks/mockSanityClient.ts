@@ -1,3 +1,5 @@
+import {jest} from '@jest/globals'
+
 export function createMockSanityClient() {
   const _client = {
     fetch: jest.fn((query: string) => Promise.resolve(null)) as jest.Mock<

@@ -1,3 +1,5 @@
+import {describe, expect, it} from '@jest/globals'
+
 import {type CommentReactionItem} from '../types'
 import {mergeCommentReactions} from '../utils/mergeCommentReactions'
 

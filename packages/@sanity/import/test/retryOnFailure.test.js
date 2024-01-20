@@ -1,3 +1,5 @@
+import {describe, expect, jest, test} from '@jest/globals'
+
 const retryOnFailure = require('../src/util/retryOnFailure')
 
 describe('retry on failure utility', () => {

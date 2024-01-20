@@ -21,7 +21,7 @@ const CHUNK_SIZE = 1024
  * @returns A function that can be called multiple times to create a readable stream on top of the buffer file.
  */
 export function bufferThroughFile(
-  source: ReadableStream<Uint8Array | string>,
+  source: ReadableStream<Uint8Array>,
   filename: string,
   options?: {signal: AbortSignal; keepFile?: boolean},
 ) {
@@ -45,7 +45,7 @@ export function bufferThroughFile(
   let readerCount = 0
   let ready: Promise<void>
 
-  async function pump(reader: ReadableStreamDefaultReader<Uint8Array | string>) {
+  async function pump(reader: ReadableStreamDefaultReader<Uint8Array>) {
     try {
       // eslint-disable-next-line no-constant-condition
       while (true) {

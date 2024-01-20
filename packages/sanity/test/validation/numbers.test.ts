@@ -1,3 +1,5 @@
+import {describe, expect, test} from '@jest/globals'
+
 import {getFallbackLocaleSource} from '../../src/core/i18n/fallback'
 import {Rule} from '../../src/core/validation'
 

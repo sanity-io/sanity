@@ -1,3 +1,5 @@
+import {expect, test} from '@jest/globals'
+
 import {parseJsonPath} from '../src/jsonpath/parse'
 
 const cases = {

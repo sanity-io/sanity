@@ -316,6 +316,7 @@
     "@testing-library/user-event": "^13.0.16",
     "@types/archiver": "^6.0.2",
     "@types/arrify": "^1.0.4",
+    "@types/configstore": "^5.0.1",
     "@types/connect-history-api-fallback": "^1.5.2",
     "@types/debug": "^4.1.12",
     "@types/lodash": "^4.14.149",

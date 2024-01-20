@@ -1,5 +1,5 @@
+import {describe, expect, it} from '@jest/globals'
 /* eslint max-nested-callbacks: */
-
 import {groupProblems, validateSchema} from '@sanity/schema/_internal'
 import {defineField, defineType, type ObjectSchemaType} from '@sanity/types'
 

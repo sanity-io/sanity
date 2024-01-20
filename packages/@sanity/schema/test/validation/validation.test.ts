@@ -1,3 +1,4 @@
+import {describe, expect, test} from '@jest/globals'
 import {flatten} from 'lodash'
 
 import {validateSchema} from '../../src/sanity/validateSchema'

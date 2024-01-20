@@ -1,3 +1,4 @@
+import {describe, expect, test} from '@jest/globals'
 import {type InitialValueResolverContext} from '@sanity/types'
 
 import {resolveInitialValue} from '../'

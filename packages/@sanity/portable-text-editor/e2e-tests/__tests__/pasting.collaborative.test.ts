@@ -1,6 +1,7 @@
 /** @jest-environment ./setup/collaborative.jest.env.ts */
 import '../setup/globals.jest'
 
+import {describe, expect, it} from '@jest/globals'
 import {noop} from 'lodash'
 import os from 'os'
 

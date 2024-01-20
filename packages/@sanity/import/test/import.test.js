@@ -1,3 +1,4 @@
+import {expect, test} from '@jest/globals'
 /* eslint-disable no-sync */
 const fs = require('fs')
 const path = require('path')

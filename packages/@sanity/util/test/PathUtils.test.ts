@@ -1,3 +1,4 @@
+import { expect, test } from '@jest/globals';
 /* eslint-disable max-nested-callbacks, @typescript-eslint/ban-ts-comment */
 import {fromString, get, resolveKeyedPath, toString} from '../src/paths'
 

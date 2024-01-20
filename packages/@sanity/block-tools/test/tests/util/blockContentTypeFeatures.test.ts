@@ -1,3 +1,4 @@
+import {describe, expect, it} from '@jest/globals'
 import {type ObjectSchemaType} from '@sanity/types'
 
 import blockContentTypeFeatures from '../../../src/util/blockContentTypeFeatures'

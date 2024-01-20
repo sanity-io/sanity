@@ -1,3 +1,5 @@
+import {expect, test} from '@jest/globals'
+
 import {escapeField, fieldNeedsEscape, joinPath} from './searchUtils'
 
 test('fieldNeedsEscape', () => {

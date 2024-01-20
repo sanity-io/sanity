@@ -1,3 +1,5 @@
+import {describe, expect, test} from '@jest/globals'
+
 import {descend} from '../src/jsonpath/descend'
 import {parseJsonPath} from '../src/jsonpath/parse'
 import {toPath} from '../src/jsonpath/toPath'

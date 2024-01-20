@@ -1,3 +1,5 @@
+import {expect, test} from '@jest/globals'
+
 import {tokenize} from './tokenize'
 
 const tests = [

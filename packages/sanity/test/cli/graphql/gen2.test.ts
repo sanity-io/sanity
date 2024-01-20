@@ -1,3 +1,4 @@
+import {afterEach, beforeEach, describe, expect, it, jest} from '@jest/globals'
 import {orderBy} from 'lodash'
 
 import {extractFromSanitySchema} from '../../../src/_internal/cli/actions/graphql/extractFromSanitySchema'

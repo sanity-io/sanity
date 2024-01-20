@@ -1,3 +1,4 @@
+import {jest} from '@jest/globals'
 import {Schema} from '@sanity/schema'
 import {defineArrayMember, defineField} from '@sanity/types'
 import {type ForwardedRef, forwardRef, useCallback, useEffect} from 'react'

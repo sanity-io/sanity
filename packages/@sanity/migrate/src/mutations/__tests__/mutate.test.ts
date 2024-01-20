@@ -1,6 +1,7 @@
+import {expect, test} from '@jest/globals'
+
 import {at, create, createIfNotExists, createOrReplace, del, patch} from '../creators'
 import {inc, insert, set, setIfMissing, unset} from '../operations/creators'
-import {type Mutation} from '../types'
 
 test('single patch mutation', () => {
   expect(patch('cat', at(['title'], set('hello world')))).toStrictEqual({

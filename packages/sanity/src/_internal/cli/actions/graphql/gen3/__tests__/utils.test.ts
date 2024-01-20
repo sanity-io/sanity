@@ -1,3 +1,5 @@
+import {expect, test} from '@jest/globals'
+
 import {getFilterFieldName} from '../utils'
 
 test('#getFilterFieldName with no suffix argument', () => {

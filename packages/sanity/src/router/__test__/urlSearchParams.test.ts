@@ -1,3 +1,5 @@
+import {describe, expect, test} from '@jest/globals'
+
 import {route} from '../route'
 
 describe('decode w/UrlSearchParams', () => {

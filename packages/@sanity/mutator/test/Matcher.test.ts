@@ -1,3 +1,5 @@
+import {expect, test} from '@jest/globals'
+
 import {Matcher} from '../src/jsonpath/Matcher'
 import {PlainProbe} from '../src/jsonpath/PlainProbe'
 

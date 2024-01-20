@@ -1,3 +1,4 @@
+import {describe, expect, it} from '@jest/globals'
 import {type SanityDocument} from '@sanity/types'
 import fs from 'fs'
 import path from 'path'

@@ -1,3 +1,4 @@
+import {jest} from '@jest/globals'
 import {type ArraySchemaType, type FieldDefinition} from '@sanity/types'
 import type * as React from 'react'
 
