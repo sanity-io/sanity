@@ -1,6 +1,3 @@
-// eslint-disable-next-line import/no-unassigned-import
-import '@testing-library/jest-dom/extend-expect'
-
 import {describe, expect, it} from '@jest/globals'
 import {Card, studioTheme, ThemeProvider} from '@sanity/ui'
 import {fireEvent, render} from '@testing-library/react'
