@@ -6,13 +6,13 @@
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
   "scripts": {
-    "build": "yarn build:cli && (cd studio && yarn build)",
+    "build": "pnpm build:cli && (cd studio && pnpm build)",
     "perf:codegen": "ts-node --files -r dotenv/config codegen",
     "perf:test": "ts-node --files cli",
     "perf:test:ci": "ts-node --files cli",
     "lint": "eslint .",
-    "studio": "yarn --cwd studio build && yarn --cwd studio start",
-    "studio:dev": "SANITY_STUDIO_DATASET=dev yarn --cwd studio dev"
+    "studio": "cd perf/studio && (pnpm build && pnpm start)",
+    "studio:dev": "cd perf/studio && SANITY_STUDIO_DATASET=dev pnpm dev"
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",

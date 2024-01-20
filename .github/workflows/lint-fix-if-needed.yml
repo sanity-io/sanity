@@ -31,32 +31,32 @@ jobs:
           cache-name: cache-node-modules
         with:
           path: '**/node_modules'
-          key: ${{ runner.os }}-modules-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-modules-${{ env.cache-name }}-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-modules-${{ env.cache-name }}-
             ${{ runner.os }}-modules-
             ${{ runner.os }}-
       - name: Install project dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: yarn install --frozen-lockfile
+        run: pnpm install --frozen-lockfile
       - name: Cache ESLint cache
         uses: actions/cache@v3
         with:
           path: .eslintcache
           key: eslint-v1-${{ hashFiles('.eslintrc.cjs') }}
-      - run: "yarn lint:fix --rule 'prettier/prettier: [off]'"
+      - run: "pnpm lint:fix --rule 'prettier/prettier: [off]'"
       - uses: tibdex/github-app-token@3beb63f4bd073e61482598c45c71c1019b59b73a # v2
-        # Run even if `yarn lint:fix` fails
+        # Run even if `pnpm lint:fix` fails
         if: always()
         id: generate-token
         with:
           app_id: ${{ secrets.ECOSPARK_APP_ID }}
           private_key: ${{ secrets.ECOSPARK_APP_PRIVATE_KEY }}
       - uses: peter-evans/create-pull-request@b1ddad2c994a25fbc81a28b3ec0e368bb2021c50 # v6
-        # Run even if `yarn lint:fix` fails
+        # Run even if `lint:fix` fails
         if: always()
         with:
-          body: "I ran `yarn lint:fix --rule 'prettier/prettier: [off]'` 🧑‍💻"
+          body: "I ran `lint:fix --rule 'prettier/prettier: [off]'` 🧑‍💻"
           branch: actions/lint-fix-if-needed
           commit-message: 'chore(lint): fix linter issues 🤖 ✨'
           labels: 🤖 bot

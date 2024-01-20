@@ -134,11 +134,16 @@ function getUpgradeInstructions(pkgs: PackageInfo[]) {
 
   return `To upgrade, run either:
 
+  npm install ${inst}
+
+  or
+
   yarn add ${inst}
 
   or
 
-  npm install ${inst}
+  pnpm add ${inst}
+
 
 Read more at ${generateHelpUrl('upgrade-packages')}`
 }
@@ -160,7 +165,11 @@ function getDowngradeInstructions(pkgs: PackageInfo[]) {
 
   or
 
-  npm install ${inst}`
+  npm install ${inst}
+
+  or
+
+  pnpm install ${inst}`
 }
 
 function readPackageJson(filePath: string): PackageJson {

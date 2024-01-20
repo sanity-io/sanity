@@ -1,11 +1,11 @@
 ---
-name: Dedupe yarn lockfile
+name: Dedupe lockfile
 
 on:
   push:
     branches: [next]
     paths:
-      - 'yarn.lock'
+      - 'pnpm-lock.yaml'
   workflow_dispatch:
 
 concurrency:
@@ -17,7 +17,7 @@ permissions:
 
 jobs:
   run:
-    name: Can yarn.lock be deduped? 🤔
+    name: Can pnpm-lock.yaml be deduped? 🤔
     runs-on: ubuntu-latest
     # workflow_dispatch always lets you select the branch ref, even though in this case we only ever want to run the action on `main` thus we need an if check
     if: ${{ github.ref_name == 'next' }}
@@ -30,15 +30,15 @@ jobs:
           cache-name: cache-node-modules
         with:
           path: '**/node_modules'
-          key: ${{ runner.os }}-modules-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-modules-${{ env.cache-name }}-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-modules-${{ env.cache-name }}-
             ${{ runner.os }}-modules-
             ${{ runner.os }}-
       - name: Install project dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: yarn install --ignore-scripts --frozen-lockfile --update-checksums --force
-      - run: npx yarn-deduplicate -- yarn.lock --strategy highest
+        run: pnpm install --ignore-scripts --frozen-lockfile --force
+      - run: pnpm dedupe
       - uses: tibdex/github-app-token@3beb63f4bd073e61482598c45c71c1019b59b73a # v2
         id: generate-token
         with:
@@ -46,9 +46,9 @@ jobs:
           private_key: ${{ secrets.ECOSPARK_APP_PRIVATE_KEY }}
       - uses: peter-evans/create-pull-request@b1ddad2c994a25fbc81a28b3ec0e368bb2021c50 # v6
         with:
-          body: I ran `npx yarn-deduplicate -- yarn.lock --strategy highest` 🧑‍💻
-          branch: actions/yarn-if-needed
-          commit-message: 'chore(deps): dedupe yarn.lock'
+          body: I ran `pnpm dedupe` 🧑‍💻
+          branch: actions/dedupe-if-needed
+          commit-message: 'chore(deps): dedupe pnpm-lock.yaml'
           labels: 🤖 bot
-          title: 'chore(deps): dedupe yarn.lock'
+          title: 'chore(deps): dedupe pnpm-lock.yaml'
           token: ${{ steps.generate-token.outputs.token }}

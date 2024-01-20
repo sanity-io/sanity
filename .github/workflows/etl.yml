@@ -25,7 +25,7 @@ jobs:
           cache-name: cache-node-modules
         with:
           path: '**/node_modules'
-          key: ${{ runner.os }}-modules-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-modules-${{ env.cache-name }}-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-modules-${{ env.cache-name }}-
             ${{ runner.os }}-modules-
@@ -33,10 +33,10 @@ jobs:
 
       - name: Install project dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: yarn install --frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       - name: Build packages
-        run: yarn build
+        run: pnpm build
         env:
           NODE_OPTIONS: --max_old_space_size=8192
 
@@ -45,4 +45,4 @@ jobs:
           EXTRACT_SANITY_PROJECT_ID: "${{(github.event_name == 'push' && github.ref == 'refs/heads/current') && secrets.EXTRACT_SANITY_PROJECT_ID || secrets.DEV_EXTRACT_SANITY_PROJECT_ID}}"
           EXTRACT_SANITY_DATASET: "${{(github.event_name == 'push' && github.ref == 'refs/heads/current') && secrets.EXTRACT_SANITY_DATASET || secrets.DEV_EXTRACT_SANITY_DATASET}}"
           EXTRACT_SANITY_API_TOKEN: "${{(github.event_name == 'push' && github.ref == 'refs/heads/current') && secrets.EXTRACT_SANITY_API_TOKEN || secrets.DEV_EXTRACT_SANITY_API_TOKEN}}"
-        run: yarn etl sanity
+        run: pnpm etl sanity

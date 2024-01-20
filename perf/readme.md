@@ -15,7 +15,7 @@ Before you can run the perf tests you need to add a session token so the tests a
 Run the perf tests against the perf studio locally to see how it compares to the current `next`-build of the same studio:
 
 ```
-$ yarn perf:test
+$ pnpm perf:test
 ```
 
 This will build the perf studio and run it in preview mode locally and run each test defined in the `perf/tests/tests`-folder against it.

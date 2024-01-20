@@ -88,7 +88,7 @@ export async function checkRequiredDependencies(context: CliCommandContext): Pro
   if (!installedStyledComponentsVersion) {
     throw new Error(oneline`
       Declared dependency \`styled-components\` is not installed - run
-      \`npm install\` or \`yarn\` to install it before re-running this command.
+      \`npm install\`, \`yarn install\` or \`pnpm install\` to install it before re-running this command.
     `)
   }
 
@@ -145,8 +145,8 @@ async function readPackageManifest(
 
 /**
  * Install the passed dependencies at the given version/version range,
- * prompting the user whether to use yarn or npm. If a `yarn.lock` file
- * is found in the working directory, we will default the choice to yarn
+ * prompting the user which package manager to use. We will try to detect
+ * a package manager from files in the directory and show that as the default
  *
  * @param dependencies - Object of dependencies `({[package name]: version})`
  * @param context - CLI context

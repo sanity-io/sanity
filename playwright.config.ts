@@ -20,7 +20,7 @@ const playwrightConfig = createPlaywrightConfig({
       },
       webServer: {
         ...config.webServer,
-        command: CI ? 'yarn e2e:start' : 'yarn e2e:dev',
+        command: CI ? 'pnpm e2e:start' : 'pnpm e2e:dev',
         port: 3339,
       },
     }

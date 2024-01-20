@@ -6,7 +6,7 @@ import {defineSearchOperator, type SearchOperatorButtonValue} from './operatorTy
 import {toJSON} from './operatorUtils'
 
 // @todo: don't manually cast `buttonValueComponent` and `inputComponent` once
-// we understand why `yarn etl` fails with 'Unable to follow symbol' errors
+// we understand why `npm run etl` fails with 'Unable to follow symbol' errors
 export const assetOperators = {
   assetFileEqual: defineSearchOperator({
     nameKey: 'search.operator.asset-file-equal.name',
