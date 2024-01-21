@@ -1,4 +1,0 @@
-{
-  "ignore": ["@optimize-lodash/rollup-plugin", "@sanity/pkg-utils", "groq"],
-  "ignoreDirs": ["test"]
-}
