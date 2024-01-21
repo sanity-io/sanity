@@ -315,6 +315,7 @@
     "@types/archiver": "^6.0.2",
     "@types/arrify": "^1.0.4",
     "@types/connect-history-api-fallback": "^1.5.2",
+    "@types/debug": "^4.1.12",
     "@types/lodash": "^4.14.149",
     "@types/log-symbols": "^2.0.0",
     "@types/raf": "^3.4.0",
