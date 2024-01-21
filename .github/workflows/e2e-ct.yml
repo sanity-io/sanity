@@ -17,6 +17,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 18
+
+      - name: Install pnpm
+        run: corepack enable && pnpm --version
+
       - name: Cache node modules
         id: cache-node-modules
         uses: actions/cache@v3
