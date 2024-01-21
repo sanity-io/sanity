@@ -51,8 +51,8 @@ jobs:
           key: playwright-browsers-${{ env.PLAYWRIGHT_VERSION }}
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
-      - name: Build CLI
-        run: pnpm build:cli # Needed for CLI tests
+      - name: Build packages
+        run: pnpm build
       - name: Run end-to-end tests
         run: pnpm --filter sanity test:ct
         env:

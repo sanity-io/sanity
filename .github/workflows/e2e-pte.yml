@@ -63,4 +63,4 @@ jobs:
         run: npx playwright install --with-deps
 
       - name: Run end-to-end tests
-        run: cd packages/@sanity/portable-text-editor && pnpm test:e2e --silent --shard=${{ matrix.shardIndex}}/${{ matrix.shardTotal }}
+        run: cd packages/@sanity/portable-text-editor && pnpm test:e2e -- --silent --shard=${{ matrix.shardIndex}}/${{ matrix.shardTotal }}

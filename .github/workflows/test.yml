@@ -68,7 +68,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build CLI
-        run: pnpm build:cli # Needed for CLI tests
+        run: pnpm build # Needed for CLI tests
 
   test:
     timeout-minutes: 60
@@ -103,6 +103,9 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
 
+      - name: Install pnpm
+        run: corepack enable && pnpm --version
+
       - name: Restore node_modules cache
         uses: actions/cache/restore@v3
         id: restore-node-modules
@@ -136,7 +139,7 @@ jobs:
         run: |
           node -v
           npm -v
-          pnpm test --silent --shard=${{ matrix.shardIndex}}/${{ matrix.shardTotal }} --ignoreProjects=@sanity/cli
+          pnpm test -- --silent --shard=${{ matrix.shardIndex}}/${{ matrix.shardTotal }} --ignoreProjects=@sanity/cli
         env:
           GITHUB_SHARD_IDENTIFIER: ${{ matrix.shardIndex }}-${{ matrix.shardTotal }}
 
