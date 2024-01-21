@@ -58,14 +58,14 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build CLI
-        run: pnpm build:cli # Needed for CLI tests
+        run: pnpm build # Needed for CLI tests
 
       - name: Test
         id: test
         run: |
           node -v
           npm -v
-          pnpm test --silent --selectProjects=@sanity/cli
+          pnpm test -- --silent --selectProjects=@sanity/cli
         env:
           # Update token in github and change below to ${{ secrets.SANITY_CI_CLI_AUTH_TOKEN }} after merge to next
           SANITY_CI_CLI_AUTH_TOKEN_STAGING: ${{ secrets.SANITY_CI_CLI_AUTH_TOKEN_STAGING }}

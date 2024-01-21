@@ -60,8 +60,8 @@ jobs:
         if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps
 
-      - name: Build CLI
-        run: pnpm build:cli # Needed for CLI tests
+      - name: Build packages
+        run: pnpm build
 
       - name: Build E2E test studio on next
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/next' }}
@@ -116,6 +116,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 18
+
+      - name: Install pnpm
+        run: corepack enable && pnpm --version
 
       - name: Cache node modules
         id: cache-node-modules
@@ -205,6 +208,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 18
+
+      - name: Install pnpm
+        run: corepack enable && pnpm --version
 
       - name: Cache node modules
         id: cache-node-modules
