@@ -48,7 +48,7 @@ jobs:
         with:
           path: .eslintcache
           key: eslint-v1-${{ hashFiles('.eslintrc.cjs') }}
-      - run: "pnpm lint:fix --rule 'prettier/prettier: [off]'"
+      - run: "pnpm lint:fix -- --rule 'prettier/prettier: [off]'"
       - uses: tibdex/github-app-token@3beb63f4bd073e61482598c45c71c1019b59b73a # v2
         # Run even if `pnpm lint:fix` fails
         if: always()
