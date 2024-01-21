@@ -23,7 +23,7 @@
     "clean:deps": "rimraf packages/@sanity/*/node_modules packages/*/node_modules node_modules perf/tests/node_modules perf/studio/node_modules",
     "check:deps-updates": "npx npm-check-updates --workspaces --root -m",
     "check:versions": "node -r esbuild-register scripts/normalizeDependencyVersions.ts",
-    "depcheck": "lerna exec \"node -r esbuild-register \\$LERNA_ROOT_PATH/scripts/depcheck.ts\" --no-bail --parallel",
+    "depcheck": "lerna exec depcheck --no-bail --parallel",
     "deploy:movies": "yarn build && cd examples/movies-studio && sanity deploy",
     "deploy:test": "yarn build && cd dev/test-studio && sanity deploy",
     "dev": "yarn start",
