@@ -551,7 +551,7 @@ function prepareObjectInputState<T>(
     props.readOnly ||
     resolveConditionalProperty(props.schemaType.readOnly, conditionalPropertyContext)
 
-  const schemaTypeGroupConfig = props.schemaType.groups || []
+  const schemaTypeGroupConfig = props.schemaType.groups.filter(group => group?.name !== ALL_FIELDS_GROUP?.name) || []
   const defaultGroupName = (schemaTypeGroupConfig.find((g) => g.default) || ALL_FIELDS_GROUP)?.name
 
   const groups = [ALL_FIELDS_GROUP, ...schemaTypeGroupConfig].flatMap((group): FormFieldGroup[] => {
