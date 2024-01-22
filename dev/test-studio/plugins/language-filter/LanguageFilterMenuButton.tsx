@@ -15,8 +15,8 @@ export interface LanguageFilterMenuButtonProps {
 
 export function LanguageFilterMenuButton(props: LanguageFilterMenuButtonProps) {
   const {options} = props
-  const defaultLanguages = options.supportedLanguages.filter(
-    (l) => options.defaultLanguages?.includes(l.id),
+  const defaultLanguages = options.supportedLanguages.filter((l) =>
+    options.defaultLanguages?.includes(l.id),
   )
   const languageOptions = options.supportedLanguages.filter(
     (l) => !options.defaultLanguages?.includes(l.id),

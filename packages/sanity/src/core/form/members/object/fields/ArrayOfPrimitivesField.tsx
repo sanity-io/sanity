@@ -107,12 +107,11 @@ function createPlainTextUploader(itemTypes: PrimitiveSchemaType[]): Uploader<Pri
     type: 'string',
     upload(client, file) {
       return readAsText(file, 'utf-8').pipe(
-        map(
-          (textContent) =>
-            textContent
-              ?.split(/[\n\r]/)
-              .map((value) => convertToSchemaType(value, itemTypes))
-              .filter((v) => v !== undefined),
+        map((textContent) =>
+          textContent
+            ?.split(/[\n\r]/)
+            .map((value) => convertToSchemaType(value, itemTypes))
+            .filter((v) => v !== undefined),
         ),
         filter((v: unknown[] | undefined): v is unknown[] => Array.isArray(v)),
         map((lines: unknown[]) => ({

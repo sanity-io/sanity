@@ -7,7 +7,7 @@
     "outDir": "./lib/dts",
 
     "noUnusedLocals": false,
-    "strict": false
+    "strict": false,
   },
-  "references": [{"path": "../types/tsconfig.lib.json"}]
+  "references": [{"path": "../types/tsconfig.lib.json"}],
 }

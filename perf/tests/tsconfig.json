@@ -5,6 +5,6 @@
     "esModuleInterop": true,
     "module": "CommonJS",
     "noEmit": true,
-    "resolveJsonModule": true
-  }
+    "resolveJsonModule": true,
+  },
 }
