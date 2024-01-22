@@ -46,7 +46,7 @@ export async function* run(config: MigrationRunnerOptions, migration: Migration)
 
   const batches = batchMutations(toSanityMutations(mutations), MUTATION_ENDPOINT_MAX_BODY_SIZE)
 
-  const commits = commitMutations(toFetchOptionsIterable(config.api, batches), {concurrency})
+  const commits = await commitMutations(toFetchOptionsIterable(config.api, batches), {concurrency})
 
   for await (const result of commits) {
     yield formatMutationResponse(result)
