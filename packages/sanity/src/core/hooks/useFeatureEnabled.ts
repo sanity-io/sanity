@@ -34,7 +34,14 @@ export function useFeatureEnabled(featureKey: string): Features {
   const versionedClient = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
 
   if (!cachedFeatureRequest) {
-    cachedFeatureRequest = fetchFeatures({versionedClient}).pipe(shareReplay())
+    cachedFeatureRequest = fetchFeatures({versionedClient}).pipe(
+      shareReplay(),
+      catchError((error) => {
+        console.error(error)
+        // Return an empty list of features if the request fails
+        return of([])
+      }),
+    )
   }
 
   const featureInfo = useMemoObservable(
