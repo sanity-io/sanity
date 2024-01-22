@@ -7,6 +7,8 @@ import {
   fromExportArchive,
   fromExportEndpoint,
   safeJsonParser,
+  MAX_MUTATION_CONCURRENCY,
+  DEFAULT_MUTATION_CONCURRENCY,
   Migration,
   ndjson,
   run,
@@ -16,7 +18,10 @@ import {format} from './mutationFormatter'
 
 const helpText = `
 Options
-  --dryRun <boolean> Whether or not to dry run the migration. Default to true, to actually run the migration this has to be set to false
+  --dry <boolean> Whether or not to dry run the migration. Default to true, to actually run the migration this has to be set to false
+  --from-export <export.tar.gz> Use a local dataset export as source for migration instead of calling the Sanity API. Note: this is only supported for dry runs.
+  --concurrency <concurrent> How many mutation requests to run in parallel. Must be between 1 and ${MAX_MUTATION_CONCURRENCY}. Default: ${DEFAULT_MUTATION_CONCURRENCY}.
+
 
 Examples
   sanity migration run
@@ -27,6 +32,7 @@ Examples
 interface CreateFlags {
   dry?: 'true' | 'false' | 'yes' | 'no'
   'from-export'?: string
+  concurrency?: number
 }
 
 const tryExtensions = ['mjs', 'js', 'ts', 'cjs']
@@ -112,6 +118,19 @@ const createMigrationCommand: CliCommandDefinition<CreateFlags> = {
       throw new Error('Can only dry run migrations from a dataset export file')
     }
 
+    const concurrency = args.extOptions.concurrency
+    if (concurrency !== undefined) {
+      if (concurrency > MAX_MUTATION_CONCURRENCY) {
+        throw new Error(
+          `Concurrency exceeds the maximum allowed value of ${MAX_MUTATION_CONCURRENCY}`,
+        )
+      }
+
+      if (concurrency === 0) {
+        throw new Error(`Concurrency must be a positive number, got ${concurrency}`)
+      }
+    }
+
     const {dataset, projectId, apiHost, token} = apiClient({
       requireUser: true,
       requireProject: true,
@@ -127,7 +146,7 @@ const createMigrationCommand: CliCommandDefinition<CreateFlags> = {
 
     const progress = dry
       ? dryRun({api: apiConfig}, migration, context)
-      : run({api: apiConfig}, migration)
+      : run({api: apiConfig, concurrency}, migration)
 
     for await (const result of progress) {
       output.print(result)
