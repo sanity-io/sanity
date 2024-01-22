@@ -10,7 +10,7 @@
     "checkJs": false,
     "allowJs": true,
     "jsx": "react-jsx",
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
   },
-  "references": [{"path": "../types/tsconfig.lib.json"}, {"path": "../util/tsconfig.lib.json"}]
+  "references": [{"path": "../types/tsconfig.lib.json"}, {"path": "../util/tsconfig.lib.json"}],
 }

@@ -4,7 +4,7 @@
   "compilerOptions": {
     "emitDeclarationOnly": true,
     "outDir": "./node_modules/.sanity-monorepo/dts",
-    "allowJs": true
+    "allowJs": true,
   },
   "references": [
     {"path": "./packages/@sanity/block-tools"},
@@ -16,6 +16,6 @@
     {"path": "./packages/@sanity/types"},
     {"path": "./packages/@sanity/util"},
     {"path": "./packages/@sanity/vision"},
-    {"path": "./packages/sanity"}
-  ]
+    {"path": "./packages/sanity"},
+  ],
 }
