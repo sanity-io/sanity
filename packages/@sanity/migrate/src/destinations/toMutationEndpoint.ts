@@ -1,5 +1,4 @@
-import {type Mutation, SanityEncoder} from '@bjoerge/mutiny'
-import {MultipleMutationResult} from '@sanity/client'
+import {MultipleMutationResult, Mutation as SanityMutation} from '@sanity/client'
 import {toFetchOptions} from '../fetch-utils/sanityRequestOptions'
 import {endpoints} from '../fetch-utils/endpoints'
 import {fetchAsyncIterator} from '../fetch-utils/fetchStream'
@@ -17,18 +16,16 @@ interface APIOptions {
 
 export async function* toMutationEndpoint(
   options: APIOptions,
-  mutations: AsyncIterableIterator<Mutation[] | Mutation>,
+  mutations: AsyncIterableIterator<SanityMutation[] | SanityMutation>,
 ) {
-  for await (const mutation of mutations) {
+  for await (const mut of mutations) {
     const fetchOptions = toFetchOptions({
       projectId: options.projectId,
       apiVersion: options.apiVersion,
       token: options.token,
       apiHost: options.apiHost ?? 'api.sanity.io',
       endpoint: endpoints.data.mutate(options.dataset, {returnIds: true}),
-      body: JSON.stringify({
-        mutations: SanityEncoder.encode(Array.isArray(mutation) ? mutation : [mutation]),
-      }),
+      body: JSON.stringify({mutations: mut}),
     })
 
     for await (const result of parseJSON(

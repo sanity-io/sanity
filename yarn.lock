@@ -3774,7 +3774,7 @@
   dependencies:
     "@sanity/uuid" "3.0.2"
 
-"@sanity/telemetry@^0.7.7":
+"@sanity/telemetry@^0.7.6":
   version "0.7.7"
   resolved "https://registry.yarnpkg.com/@sanity/telemetry/-/telemetry-0.7.7.tgz#7905bb51aaf4217363242d229618ca65a0ec773f"
   integrity sha512-YUoAMrl0XEf5C4Jt0n+wmJAR7gDrraic3u7yxog0U2QukgeOn9BDhXF5rF9jMuDllGZmUbBaFq+mh5sW/tACWw==
@@ -4072,6 +4072,13 @@
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/@types/arrify/-/arrify-1.0.4.tgz#0b7bc8d80e29db296e8e0c59e009274a03dcf783"
   integrity sha512-63nK8r8jvEVJ1r0ENaY9neB1wDzPHFYAzKiIxPawuzcijEX8XeOywwPL8fkSCwiTIYop9MSh+TKy9L2ZzTXV6g==
+
+"@types/arrify@^2.0.1":
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/@types/arrify/-/arrify-2.0.1.tgz#d50abf903b1019b08c2ee21cf3ded40084201512"
+  integrity sha512-eL0bkcwbr+BXp/PPat6+z8C11Hf6+CcB8aE1lIk+Nwvj7uDA3NUmEUgfKLYqvvSuVmeldmaWvo6+s7q9tC9xUQ==
+  dependencies:
+    arrify "*"
 
 "@types/babel__core@^7.1.14", "@types/babel__core@^7.20.4":
   version "7.20.4"
@@ -5312,6 +5319,11 @@ arraybuffer.prototype.slice@^1.0.2:
     get-intrinsic "^1.2.1"
     is-array-buffer "^3.0.2"
     is-shared-array-buffer "^1.0.2"
+
+arrify@*:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/arrify/-/arrify-3.0.0.tgz#ccdefb8eaf2a1d2ab0da1ca2ce53118759fd46bc"
+  integrity sha512-tLkvA81vQG/XqE2mjDkGQHoOINtMHtysSnemrmoGe6PydDPMRbVugqyk4A6V/WDWEfm3l+0d8anA9r8cv/5Jaw==
 
 arrify@^1.0.1:
   version "1.0.1"
