@@ -16,7 +16,6 @@ import {
 import {getFallbackLocaleSource} from '../../src/core/i18n/fallback'
 import {convertToValidationMarker} from '../../src/core/validation/util/convertToValidationMarker'
 import {Workspace, createSchema} from '../../src/core'
-// import {createSchema} from './helpers/createSchema'
 import {createMockSanityClient} from './mocks/mockSanityClient'
 
 jest.mock('../../src/core/validation/util/convertToValidationMarker', () => {
