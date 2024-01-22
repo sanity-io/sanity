@@ -4,12 +4,12 @@
   "compilerOptions": {
     "jsx": "react-jsx",
     "allowJs": true,
-    "isolatedModules": false
+    "isolatedModules": false,
   },
   "references": [
     {"path": "../../packages/@sanity/types/tsconfig.lib.json"},
     {"path": "../../packages/@sanity/vision/tsconfig.lib.json"},
     {"path": "../../packages/sanity/tsconfig.lib.json"},
-    {"path": "../../packages/@sanity/migrate/tsconfig.lib.json"}
-  ]
+    {"path": "../../packages/@sanity/migrate/tsconfig.lib.json"},
+  ],
 }

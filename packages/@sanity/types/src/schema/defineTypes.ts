@@ -75,11 +75,12 @@ export type MaybeAllowUnknownProps<TStrict extends StrictDefinition> = TStrict e
 export type MaybePreview<
   Select extends Record<string, string> | undefined,
   PrepareValue extends Record<keyof Select, any> | undefined,
-> = Select extends Record<string, string>
-  ? PrepareValue extends Record<keyof Select, any>
-    ? PreviewConfig<Select, PrepareValue>
+> =
+  Select extends Record<string, string>
+    ? PrepareValue extends Record<keyof Select, any>
+      ? PreviewConfig<Select, PrepareValue>
+      : never
     : never
-  : never
 
 /** @beta */
 export type NarrowPreview<
@@ -87,11 +88,12 @@ export type NarrowPreview<
   TAlias extends IntrinsicTypeName | undefined,
   TSelect extends Record<string, string> | undefined,
   TPrepareValue extends Record<keyof TSelect, any> | undefined,
-> = DefineSchemaType<TType, TAlias> extends {preview?: Record<string, any>}
-  ? {
-      preview?: MaybePreview<TSelect, TPrepareValue>
-    }
-  : unknown
+> =
+  DefineSchemaType<TType, TAlias> extends {preview?: Record<string, any>}
+    ? {
+        preview?: MaybePreview<TSelect, TPrepareValue>
+      }
+    : unknown
 
 /** @beta */
 // Must type-widen some fields on the way out of the define functions to be compatible with FieldDefinition and ArrayDefinition

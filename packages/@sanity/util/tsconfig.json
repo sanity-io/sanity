@@ -4,7 +4,7 @@
   "compilerOptions": {
     "composite": true,
     "rootDir": ".",
-    "outDir": "./lib"
+    "outDir": "./lib",
   },
-  "references": [{"path": "../types/tsconfig.lib.json"}]
+  "references": [{"path": "../types/tsconfig.lib.json"}],
 }

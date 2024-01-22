@@ -4,6 +4,6 @@
   "compilerOptions": {
     "composite": true,
     "rootDir": ".",
-    "outDir": "./lib/dts"
-  }
+    "outDir": "./lib/dts",
+  },
 }
