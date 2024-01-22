@@ -5,7 +5,7 @@
     "composite": true,
     "rootDir": ".",
     "outDir": "./lib/dts",
-    "declarationDir": "./lib/dts"
+    "declarationDir": "./lib/dts",
   },
-  "references": [{"path": "../@sanity/types/tsconfig.lib.json"}]
+  "references": [{"path": "../@sanity/types/tsconfig.lib.json"}],
 }

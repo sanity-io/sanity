@@ -2,7 +2,7 @@
   "extends": "../tsconfig.dev",
   "include": ["**/*.ts", "**/*.tsx"],
   "compilerOptions": {
-    "jsx": "preserve"
+    "jsx": "preserve",
   },
-  "references": [{"path": "../../packages/sanity/tsconfig.lib.json"}]
+  "references": [{"path": "../../packages/sanity/tsconfig.lib.json"}],
 }

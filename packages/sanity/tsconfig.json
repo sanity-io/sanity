@@ -7,7 +7,7 @@
     "./scripts",
     "./src",
     "./test",
-    "./typings"
+    "./typings",
   ],
   "compilerOptions": {
     "composite": true,
@@ -21,7 +21,7 @@
       "sanity/desk": ["./exports/desk.ts"],
       "sanity/router": ["./exports/router.ts"],
       "sanity/structure": ["./exports/structure.ts"],
-      "sanity": ["./exports/index.ts"]
+      "sanity": ["./exports/index.ts"],
     },
 
     "emitDeclarationOnly": true,
@@ -31,7 +31,7 @@
     "resolveJsonModule": true,
 
     // For import.meta.env/import.meta.hot definition and similar
-    "types": ["vite/client"]
+    "types": ["vite/client"],
   },
   "references": [
     {"path": "../@sanity/cli/tsconfig.lib.json"},
@@ -42,6 +42,6 @@
     {"path": "../@sanity/types/tsconfig.lib.json"},
     {"path": "../@sanity/cli/tsconfig.lib.json"},
     {"path": "../@sanity/util/tsconfig.lib.json"},
-    {"path": "../@sanity/migrate/tsconfig.lib.json"}
-  ]
+    {"path": "../@sanity/migrate/tsconfig.lib.json"},
+  ],
 }
