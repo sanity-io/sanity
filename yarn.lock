@@ -3749,13 +3749,14 @@
     uuid "^9.0.1"
     zod "^3.22.4"
 
-"@sanity/presentation@1.6.1":
-  version "1.6.1"
-  resolved "https://registry.yarnpkg.com/@sanity/presentation/-/presentation-1.6.1.tgz#7f3c0880c94ca2346ab364316a0406430ad43d43"
-  integrity sha512-MyktJUPEscqVpNmXcbNfmHS+y80pDFMpWyUYwxSSOXFhgdZ/C6OmBu9pCMka3ZES4iMHGvk9Bi37bV9HJiDoog==
+"@sanity/presentation@1.7.0":
+  version "1.7.0"
+  resolved "https://registry.yarnpkg.com/@sanity/presentation/-/presentation-1.7.0.tgz#1fe6c82e758c87d7b4dd63b47429ae1374a53577"
+  integrity sha512-QoxT0tnWxYxs7SBkzy591iFnkVZIO2NM3xsJYKuxp1T7xCcHd4eAklmtzkmrwgPWgsx7l3/FJU7JJoIV5NNHBg==
   dependencies:
     "@sanity/icons" "^2.8.0"
     "@sanity/preview-url-secret" "^1.5.3"
+    "@sanity/uuid" "3.0.2"
     "@types/lodash.isequal" "^4.5.8"
     fast-deep-equal "3.1.3"
     framer-motion "^10.18.0"
