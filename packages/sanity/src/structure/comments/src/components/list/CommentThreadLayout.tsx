@@ -13,6 +13,7 @@ import {
   CommentCreatePayload,
   MentionOptionsHookValue,
   CommentListBreadcrumbs,
+  CommentPathSelection,
 } from '../../types'
 import {CommentBreadcrumbs} from '../CommentBreadcrumbs'
 import {CommentsSelectedPath} from '../../context'
@@ -45,6 +46,7 @@ interface CommentThreadLayoutProps {
   onNewThreadCreate: (payload: CommentCreatePayload) => void
   onPathSelect?: (nextPath: CommentsSelectedPath) => void
   readOnly?: boolean
+  selection?: CommentPathSelection
 }
 
 export function CommentThreadLayout(props: CommentThreadLayoutProps) {
@@ -59,12 +61,14 @@ export function CommentThreadLayout(props: CommentThreadLayoutProps) {
     onNewThreadCreate,
     onPathSelect,
     readOnly,
+    selection,
   } = props
 
   const handleNewThreadCreate = useCallback(
     (payload: CommentMessage) => {
       const nextComment: CommentCreatePayload = {
         fieldPath,
+        selection,
         message: payload,
         parentCommentId: undefined,
         status: 'open',
@@ -76,7 +80,7 @@ export function CommentThreadLayout(props: CommentThreadLayoutProps) {
 
       onNewThreadCreate?.(nextComment)
     },
-    [onNewThreadCreate, fieldPath],
+    [fieldPath, selection, onNewThreadCreate],
   )
 
   const handleBreadcrumbsClick = useCallback(
@@ -86,6 +90,7 @@ export function CommentThreadLayout(props: CommentThreadLayoutProps) {
       onPathSelect?.({
         fieldPath,
         origin: 'inspector',
+        target: 'field',
         threadId: null,
       })
     },
@@ -104,6 +109,7 @@ export function CommentThreadLayout(props: CommentThreadLayoutProps) {
         fieldPath,
         origin: 'inspector',
         threadId: null,
+        target: 'field',
       })
     },
     [fieldPath, onPathSelect],

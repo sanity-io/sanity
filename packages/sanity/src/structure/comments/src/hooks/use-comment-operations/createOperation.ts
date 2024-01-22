@@ -91,6 +91,7 @@ export async function createOperation(props: CreateOperationProps): Promise<void
     target: {
       path: {
         field: comment.fieldPath,
+        selection: comment?.selection,
       },
       document: {
         _dataset: dataset,

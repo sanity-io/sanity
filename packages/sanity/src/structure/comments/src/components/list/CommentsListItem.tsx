@@ -130,6 +130,7 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
   const handleReplySubmit = useCallback(() => {
     const nextComment: CommentCreatePayload = {
       fieldPath: parentComment.target.path.field,
+      selection: parentComment?.target.path?.selection,
       message: value,
       parentCommentId: parentComment._id,
       status: parentComment?.status || 'open',
@@ -146,6 +147,7 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
     parentComment._id,
     parentComment?.status,
     parentComment.target.path.field,
+    parentComment.target.path?.selection,
     parentComment.threadId,
     value,
   ])
@@ -193,13 +195,22 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
       // outside e.g. a popover or a menu
       if (!isTopLayer) return
 
+      const target = parentComment.target.path.selection?.type === 'blocks' ? 'block' : 'field'
+
       onPathSelect?.({
         fieldPath: parentComment.target.path.field,
         origin: 'inspector',
         threadId: parentComment.threadId,
+        target,
       })
     },
-    [isTopLayer, onPathSelect, parentComment.target.path.field, parentComment.threadId],
+    [
+      isTopLayer,
+      onPathSelect,
+      parentComment.target.path.field,
+      parentComment.target.path.selection?.type,
+      parentComment.threadId,
+    ],
   )
 
   const handleExpand = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {

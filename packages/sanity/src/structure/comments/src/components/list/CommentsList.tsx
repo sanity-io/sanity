@@ -171,6 +171,9 @@ const CommentsListInner = forwardRef<CommentsListHandle, CommentsListProps>(
                       onNewThreadCreate={onNewThreadCreate}
                       onPathSelect={onPathSelect}
                       readOnly={readOnly}
+                      // The selection is undefined because we create a new thread for the
+                      // field (i.e the root field) so there is no selection.
+                      selection={undefined}
                     >
                       {group.map((item) => {
                         // The default sort order is by date, descending (newest first).
@@ -184,17 +187,14 @@ const CommentsListInner = forwardRef<CommentsListHandle, CommentsListProps>(
                           item.parentComment._state?.type !== 'createError' &&
                           item.parentComment._state?.type !== 'createRetrying'
 
-                        // The thread is selected if the thread ID and field path matches the
-                        // selected path.
-                        const threadIsSelected =
-                          selectedPath?.threadId === item.parentComment.threadId &&
-                          selectedPath?.fieldPath === item.parentComment.target.path.field
+                        // The list item is selected if the thread ID matches the selected thread ID.
+                        const isSelected = selectedPath?.threadId === item.parentComment.threadId
 
                         return (
                           <CommentsListItem
                             canReply={canReply}
                             currentUser={currentUser}
-                            isSelected={threadIsSelected}
+                            isSelected={isSelected}
                             key={item.parentComment._id}
                             mentionOptions={mentionOptions}
                             onCopyLink={onCopyLink}

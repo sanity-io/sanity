@@ -47,6 +47,7 @@ export interface CommentThreadItem {
   fieldPath: string
   parentComment: CommentDocument
   replies: CommentDocument[]
+  selection: CommentPathSelection | undefined
   threadId: string
 }
 
@@ -62,12 +63,24 @@ export type CommentMessage = PortableTextBlock[] | null
  */
 export type CommentStatus = 'open' | 'resolved'
 
+interface CommentPathBlockSelection {
+  type: 'blocks'
+  data: {_key: string}[]
+}
+
+/**
+ * @beta
+ * @hidden
+ */
+export type CommentPathSelection = CommentPathBlockSelection
+
 /**
  * @beta
  * @hidden
  */
 export interface CommentPath {
   field: string
+  selection?: CommentPathSelection
 }
 
 /**
@@ -189,6 +202,7 @@ export type CommentPostPayload = Omit<CommentDocument, '_rev' | '_updatedAt' | '
  */
 export interface CommentCreatePayload {
   fieldPath: string
+  selection?: CommentPathSelection
   id?: string
   message: CommentMessage
   parentCommentId: string | undefined

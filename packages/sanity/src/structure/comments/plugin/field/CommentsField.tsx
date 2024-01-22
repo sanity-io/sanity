@@ -14,6 +14,7 @@ import {
   useCommentsSelectedPath,
 } from '../../src'
 import {CommentsFieldButton} from './CommentsFieldButton'
+import {CommentsFieldProvider} from './CommentsFieldProvider'
 import {FieldProps, getSchemaTypeTitle, useCurrentUser} from 'sanity'
 
 const HIGHLIGHT_BLOCK_VARIANTS: Variants = {
@@ -94,9 +95,22 @@ function CommentFieldInner(props: FieldProps) {
   // Determine if the current field is selected
   const isSelected = useMemo(() => {
     if (!isCommentsOpen) return false
-    if (selectedPath?.origin === 'form' || selectedPath?.origin === 'url') return false
+    if (
+      selectedPath?.origin === 'form' ||
+      selectedPath?.origin === 'url' ||
+      selectedPath?.target !== 'field'
+    ) {
+      return false
+    }
+
     return selectedPath?.fieldPath === PathUtils.toString(props.path)
-  }, [isCommentsOpen, props.path, selectedPath?.fieldPath, selectedPath?.origin])
+  }, [
+    isCommentsOpen,
+    props.path,
+    selectedPath?.fieldPath,
+    selectedPath?.origin,
+    selectedPath?.target,
+  ])
 
   // Total number of comments for the current field
   const count = useMemo(() => {
@@ -165,40 +179,37 @@ function CommentFieldInner(props: FieldProps) {
   ])
 
   const handleCommentAdd = useCallback(() => {
-    if (value) {
-      // Since this is a new comment, we generate a new thread ID
-      const newThreadId = uuid()
+    if (!value) return
 
-      // Construct the comment payload
-      const nextComment: CommentCreatePayload = {
-        fieldPath: PathUtils.toString(props.path),
-        message: value,
-        parentCommentId: undefined,
-        status: 'open',
-        threadId: newThreadId,
-        // New comments have no reactions
-        reactions: [],
-      }
+    // Since this is a new comment, we generate a new thread ID
+    const newThreadId = uuid()
 
-      // Execute the create mutation
-      operation.create(nextComment)
+    // Execute the create mutation
+    operation.create({
+      fieldPath: PathUtils.toString(props.path),
+      message: value,
+      parentCommentId: undefined,
+      status: 'open',
+      threadId: newThreadId,
+      // New comments have no reactions
+      reactions: [],
+    })
 
-      // If a comment is added to a field when viewing resolved comments, we switch
-      // to open comments and scroll to the comment that was just added
-      // Open the inspector when a new comment is added
-      onCommentsOpen?.()
+    // If a comment is added to a field when viewing resolved comments, we switch
+    // to open comments and scroll to the comment that was just added
+    // Open the inspector when a new comment is added
+    onCommentsOpen?.()
 
-      if (status === 'resolved') {
-        // Set the status to 'open' so that the comment is visible
-        setStatus('open')
-      }
-
-      // Reset the value
-      setValue(null)
-
-      // Set the thread ID to scroll to
-      handleSetThreadToScrollTo(newThreadId)
+    if (status === 'resolved') {
+      // Set the status to 'open' so that the comment is visible
+      setStatus('open')
     }
+
+    // Reset the value
+    setValue(null)
+
+    // Set the thread ID to scroll to
+    handleSetThreadToScrollTo(newThreadId)
   }, [handleSetThreadToScrollTo, onCommentsOpen, operation, props.path, setStatus, status, value])
 
   const handleDiscard = useCallback(() => setValue(null), [])
@@ -209,7 +220,7 @@ function CommentFieldInner(props: FieldProps) {
         ...SCROLL_INTO_VIEW_OPTIONS,
         boundary: boundaryElement,
         scrollMode: 'if-needed',
-        block: 'start',
+        block: 'center',
       }) satisfies Options,
     [boundaryElement],
   )
@@ -270,23 +281,25 @@ function CommentFieldInner(props: FieldProps) {
   )
 
   return (
-    <FieldStack ref={rootElementRef}>
-      {props.renderDefault({
-        ...props,
-        // eslint-disable-next-line camelcase
-        __internal_comments: internalComments,
-      })}
+    <CommentsFieldProvider path={props.path}>
+      <FieldStack ref={rootElementRef}>
+        {props.renderDefault({
+          ...props,
+          // eslint-disable-next-line camelcase
+          __internal_comments: internalComments,
+        })}
 
-      <AnimatePresence>
-        {isSelected && (
-          <HighlightDiv
-            animate="animate"
-            exit="exit"
-            initial="initial"
-            variants={HIGHLIGHT_BLOCK_VARIANTS}
-          />
-        )}
-      </AnimatePresence>
-    </FieldStack>
+        <AnimatePresence>
+          {isSelected && (
+            <HighlightDiv
+              animate="animate"
+              exit="exit"
+              initial="initial"
+              variants={HIGHLIGHT_BLOCK_VARIANTS}
+            />
+          )}
+        </AnimatePresence>
+      </FieldStack>
+    </CommentsFieldProvider>
   )
 }

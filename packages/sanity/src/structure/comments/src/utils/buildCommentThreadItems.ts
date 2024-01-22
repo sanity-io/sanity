@@ -43,8 +43,9 @@ export function buildCommentThreadItems(props: BuildCommentThreadItemsProps): Co
         fieldPath: parentComment.target.path.field,
         parentComment,
         replies,
+        selection: parentComment.target.path.selection,
         threadId: parentComment.threadId,
-      }
+      } satisfies CommentThreadItem
     })
     .filter(Boolean) as CommentThreadItem[]
 

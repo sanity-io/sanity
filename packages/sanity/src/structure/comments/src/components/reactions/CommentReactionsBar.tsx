@@ -7,13 +7,13 @@ import {
   Text,
 } from '@sanity/ui'
 import {CommentReactionItem, CommentReactionOption, CommentReactionShortNames} from '../../types'
-import {COMMENT_REACTION_EMOJIS, COMMENT_REACTION_OPTIONS} from '../../constants'
 import {ReactionIcon} from '../icons'
 import {Tooltip, TooltipDelayGroupProvider} from '../../../../../ui-components'
-import {CommentReactionsMenuButton} from './CommentReactionsMenuButton'
-import {CommentReactionsUsersTooltip} from './CommentReactionsUsersTooltip'
+import {COMMENT_REACTION_OPTIONS, COMMENT_REACTION_EMOJIS} from '../../constants'
 import {EmojiText} from './EmojiText.styled'
 import {TransparentCard} from './TransparentCard.styled'
+import {CommentReactionsUsersTooltip} from './CommentReactionsUsersTooltip'
+import {CommentReactionsMenuButton} from './CommentReactionsMenuButton'
 
 /**
  * A function that groups reactions by name. For example:
