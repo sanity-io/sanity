@@ -74,7 +74,7 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
   props: PortableTextInputProps,
 ) {
   const currentUser = useCurrentUser()
-  const {mentionOptions, comments, create, onCommentsOpen} = useComments()
+  const {mentionOptions, comments, operation, onCommentsOpen} = useComments()
   const {setSelectedPath} = useCommentsSelectedPath()
 
   const [nextCommentValue, setNextCommentValue] = useState<CommentMessage | null>(null)
@@ -96,7 +96,7 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
   const handleSubmit = useCallback(() => {
     if (!nextCommentSelection) return
 
-    create.execute({
+    operation.create({
       fieldPath: stringFieldPath,
       message: nextCommentValue,
       // This is a new comment, so we don't have a parent comment id
@@ -106,6 +106,8 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
       // This is a new comment, so we need to generate a new thread id
       threadId: uuid(),
 
+      reactions: [],
+
       // TODO: add this
       // documentValueSnapshot: currentSelectionPlainText
     })
@@ -114,7 +116,7 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
     setNextCommentValue(null)
     setNextCommentSelection(null) // Rename to setNextCommentSelection
     currentSelectionRef.current = null
-  }, [create, nextCommentSelection, nextCommentValue, stringFieldPath])
+  }, [nextCommentSelection, nextCommentValue, operation, stringFieldPath])
 
   // This will set the current selection state to the current selection ref.
   // When this value is set, the popover with the comment input will open and
