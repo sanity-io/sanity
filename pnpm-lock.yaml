@@ -195,6 +195,9 @@ importers:
       rxjs:
         specifier: ^7.8.1
         version: 7.8.1
+      sanity:
+        specifier: ^3.25.0
+        version: link:packages/sanity
       semver:
         specifier: ^7.3.5
         version: 7.5.4
