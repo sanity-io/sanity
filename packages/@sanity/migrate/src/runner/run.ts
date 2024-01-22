@@ -8,7 +8,11 @@ import {toFetchOptions} from '../fetch-utils/sanityRequestOptions'
 import {commitMutations} from '../destinations/commitMutations'
 import {collectMigrationMutations} from './collectMigrationMutations'
 import {batchMutations} from './utils/batchMutations'
-import {DEFAULT_MUTATION_CONCURRENCY, MUTATION_ENDPOINT_MAX_BODY_SIZE} from './constants'
+import {
+  DEFAULT_MUTATION_CONCURRENCY,
+  MAX_MUTATION_CONCURRENCY,
+  MUTATION_ENDPOINT_MAX_BODY_SIZE,
+} from './constants'
 import {toSanityMutations} from './utils/toSanityMutations'
 
 interface MigrationRunnerOptions {
@@ -39,10 +43,11 @@ export async function* run(config: MigrationRunnerOptions, migration: Migration)
     }),
   )
 
-  const concurrency = Math.min(
-    DEFAULT_MUTATION_CONCURRENCY,
-    config?.concurrency ?? DEFAULT_MUTATION_CONCURRENCY,
-  )
+  const concurrency = config?.concurrency ?? DEFAULT_MUTATION_CONCURRENCY
+
+  if (concurrency > MAX_MUTATION_CONCURRENCY) {
+    throw new Error(`Concurrency exceeds maximum allowed value (${MAX_MUTATION_CONCURRENCY})`)
+  }
 
   const batches = batchMutations(toSanityMutations(mutations), MUTATION_ENDPOINT_MAX_BODY_SIZE)
 
