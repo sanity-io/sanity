@@ -24,14 +24,16 @@ export const count = (amount: number, subject: string): string =>
     amount === 1 ? subject.substring(0, subject.length - 1) : subject
   }`
 
-/**
- * Given a decimal, this will return that number formatted as a percentage
- */
-export const percent = new Intl.NumberFormat('en-US', {
+const percentageFormatter = new Intl.NumberFormat('en-US', {
   style: 'percent',
   minimumFractionDigits: 1,
   maximumFractionDigits: 1,
-}).format.bind(Intl.NumberFormat)
+})
+
+/**
+ * Given a decimal, this will return that number formatted as a percentage
+ */
+export const percent = (value: number): string => percentageFormatter.format(Math.max(value, 1))
 
 const secondFormatter = new Intl.NumberFormat('en-US', {
   minimumFractionDigits: 1,

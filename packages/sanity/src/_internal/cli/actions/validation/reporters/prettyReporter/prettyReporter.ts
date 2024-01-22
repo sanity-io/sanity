@@ -39,6 +39,7 @@ export const pretty: BuiltInValidationReporter = async ({output, worker, flags})
     spinner.text = `Downloading ${count(documentCount, 'documents')}… ${percentage}`
   }
   spinner.succeed(`Downloaded ${count(documentCount, 'documents')} ${seconds(downloadStart)}`)
+  const {totalDocumentsToValidate} = await worker.event.exportFinished()
 
   const referenceIntegrityStart = Date.now()
   spinner.start(`Checking reference existence…`)
@@ -47,7 +48,7 @@ export const pretty: BuiltInValidationReporter = async ({output, worker, flags})
 
   // Report validation progress
   const validationStart = Date.now()
-  spinner.start(`Validating ${count(documentCount, 'documents')}…`)
+  spinner.start(`Validating ${count(totalDocumentsToValidate, 'documents')}…`)
 
   const results: DocumentValidationResult[] = []
 
@@ -89,9 +90,9 @@ export const pretty: BuiltInValidationReporter = async ({output, worker, flags})
     }
 
     spinner.text =
-      `Validating ${count(documentCount, 'documents')}…\n\n` +
+      `Validating ${count(totalDocumentsToValidate, 'documents')}…\n\n` +
       `Processed ${count(validatedCount, 'documents')} (${percent(
-        validatedCount / documentCount,
+        validatedCount / totalDocumentsToValidate,
       )}):\n${summary(totals, flags.level)}`
   }
 

@@ -15,9 +15,9 @@ interface ValidationTree {
 }
 
 const levelHeaders = {
-  error: isTty ? chalk.bold(chalk.bgRed(' ERROR ')) : chalk.red('[ERROR]'),
-  warning: isTty ? chalk.bold(chalk.bgYellow(' WARN ')) : chalk.yellow('[WARN]'),
-  info: isTty ? chalk.bold(chalk.cyan(' INFO ')) : chalk.cyan('[INFO]'),
+  error: isTty ? chalk.bold(chalk.bgRed(chalk.black(' ERROR '))) : chalk.red('[ERROR]'),
+  warning: isTty ? chalk.bold(chalk.bgYellow(chalk.black(' WARN '))) : chalk.yellow('[WARN]'),
+  info: isTty ? chalk.bold(chalk.cyan(chalk.black(' INFO '))) : chalk.cyan('[INFO]'),
 }
 /**
  * Creates a terminal hyperlink. Only outputs a hyperlink if the output is
@@ -162,7 +162,9 @@ export function formatDocumentValidation({
       documentId,
     )};type=${encodeURIComponent(documentType)}`
 
-  const documentTypeHeader = isTty ? chalk.bgWhite(` ${documentType} `) : `[${documentType}]`
+  const documentTypeHeader = isTty
+    ? chalk.bgWhite(chalk.black(` ${documentType} `))
+    : `[${documentType}]`
 
   const header = `${levelHeaders[level]} ${documentTypeHeader} ${
     editLink ? link(documentId, editLink) : chalk.underline(documentId)

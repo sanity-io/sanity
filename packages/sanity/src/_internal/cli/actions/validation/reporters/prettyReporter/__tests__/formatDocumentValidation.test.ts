@@ -2,11 +2,6 @@ import {formatDocumentValidation} from '../formatDocumentValidation'
 
 // disables some terminal specific things that are typically auto detected
 jest.mock('tty', () => ({isatty: () => false}))
-jest.mock('chalk', () => {
-  const chalk = jest.requireActual('chalk')
-  chalk.level = 0
-  return chalk
-})
 
 describe('formatDocumentValidation', () => {
   it('formats a set of markers in to a printed tree, sorting markers, and adding spacing', () => {

@@ -24,6 +24,7 @@ import {isRecord, validateDocument} from 'sanity'
 const MAX_VALIDATION_CONCURRENCY = 100
 const DOCUMENT_VALIDATION_TIMEOUT = 30000
 const REFERENCE_INTEGRITY_BATCH_SIZE = 100
+const EXCLUDED_DOCUMENT_TYPE_PREFIXES = ['system.']
 
 interface AvailabilityResponse {
   omitted: {id: string; reason: 'existence' | 'permission'}[]
@@ -50,6 +51,7 @@ export type ValidationWorkerChannel = WorkerChannel<{
   }>
   loadedDocumentCount: WorkerChannelEvent<{documentCount: number}>
   exportProgress: WorkerChannelStream<{downloadedCount: number; documentCount: number}>
+  exportFinished: WorkerChannelEvent<{totalDocumentsToValidate: number}>
   loadedReferenceIntegrity: WorkerChannelEvent
   validation: WorkerChannelStream<{
     validatedCount: number
@@ -144,14 +146,6 @@ async function loadWorkspace() {
     ...clientConfig,
     dataset: dataset || workspace.dataset,
     projectId: projectId || workspace.projectId,
-    // we set this explictly to true because the default client configuration
-    // from the CLI comes configured with `useProjectHostname: false` when
-    // `requireProject` is set to false
-    useProjectHostname: true,
-    // we set this explictly to true because we pass in a token via the
-    // `clientConfiguration` object and also mock a browser environment in
-    // this worker which triggers the browser warning
-    ignoreBrowserTokenWarning: true,
     requestTagPrefix: 'sanity.cli.validate',
   }).config({apiVersion: 'v2021-03-25'})
 
@@ -209,12 +203,18 @@ async function downloadDocuments(client: SanityClient) {
 
   for await (const line of lines) {
     const document = JSON.parse(line) as SanityDocument
-    documentIds.add(document._id)
-    for (const referenceId of getReferenceIds(document)) {
-      referencedIds.add(referenceId)
-    }
+    const shouldIncludeDocument = EXCLUDED_DOCUMENT_TYPE_PREFIXES.every(
+      (prefix) => !document._id.startsWith(prefix),
+    )
 
-    outputStream.write(`${line}\n`)
+    if (shouldIncludeDocument) {
+      documentIds.add(document._id)
+      for (const referenceId of getReferenceIds(document)) {
+        referencedIds.add(referenceId)
+      }
+
+      outputStream.write(`${line}\n`)
+    }
 
     downloadedCount++
     report.stream.exportProgress.emit({downloadedCount, documentCount})
@@ -223,6 +223,9 @@ async function downloadDocuments(client: SanityClient) {
   await new Promise<void>((resolve, reject) =>
     outputStream.close((err) => (err ? reject(err) : resolve())),
   )
+
+  report.stream.exportProgress.end()
+  report.event.exportFinished({totalDocumentsToValidate: documentIds.size})
 
   async function* getDocuments() {
     const rl = readline.createInterface({input: fs.createReadStream(tempOutputFile)})
@@ -234,8 +237,6 @@ async function downloadDocuments(client: SanityClient) {
 
     rl.close()
   }
-
-  report.stream.exportProgress.end()
 
   return {getDocuments, documentIds, referencedIds, tempOutputFile}
 }
@@ -265,7 +266,7 @@ async function checkReferenceExistence({
     },
     Array.from<string[]>({
       length: Math.ceil(idsToCheck.length / REFERENCE_INTEGRITY_BATCH_SIZE),
-    }).fill([]),
+    }).map(() => []),
   )
 
   for (const batch of batches) {
@@ -385,7 +386,7 @@ async function validateDocuments() {
       report.stream.validation.emit({
         documentId: document._id,
         documentType: document._type,
-        revision: document.rev,
+        revision: document._rev,
         markers,
         validatedCount,
         level: getLevel(markers),
