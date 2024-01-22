@@ -14,7 +14,7 @@ export async function* batchMutations(
   mutations: AsyncIterableIterator<SanityMutation | SanityMutation[]>,
   maxBatchSize: number,
   options?: {preserveTransactions: boolean},
-): AsyncIterableIterator<SanityMutation | SanityMutation[]> {
+): AsyncIterableIterator<SanityMutation[]> {
   let currentBatch: SanityMutation[] = []
   let currentBatchSize = 0
 
