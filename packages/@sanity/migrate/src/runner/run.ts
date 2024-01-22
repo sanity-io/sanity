@@ -3,7 +3,7 @@ import {MultipleMutationResult} from '@sanity/client'
 import {APIConfig, Migration} from '../types'
 import {ndjson} from '../it-utils/ndjson'
 import {fromExportEndpoint} from '../sources/fromExportEndpoint'
-import {toMutationEndpoint} from '../targets/toMutationEndpoint'
+import {toMutationEndpoint} from '../destinations/toMutationEndpoint'
 import {collectMigrationMutations} from './collectMigrationMutations'
 
 interface MigrationRunnerOptions {
