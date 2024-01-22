@@ -56,15 +56,15 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
   const title = t('new-document.title')
   const openDialogAriaLabel = t('new-document.open-dialog-aria-label')
 
-  // Filter options based on search query and document type deprecations
+  const validOptions = useMemo(
+    () => options.filter((option) => !isDeprecatedSchemaType(schema.get(option.schemaType))),
+    [options, schema],
+  )
+
+  // Filter options based on search query
   const filteredOptions = useMemo(
-    () =>
-      filterOptions(
-        options.filter((option) => !isDeprecatedSchemaType(schema.get(option.schemaType))),
-        searchQuery,
-        getI18nText,
-      ),
-    [options, searchQuery, getI18nText, schema],
+    () => filterOptions(validOptions, searchQuery, getI18nText),
+    [validOptions, searchQuery, getI18nText],
   )
 
   const handleSearchChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
