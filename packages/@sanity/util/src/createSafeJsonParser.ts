@@ -7,8 +7,7 @@ type Parser<Type> = (line: string) => Type
 /**
  * Create a safe JSON parser that is able to handle lines interrupted by an error object.
  *
- * TODO: Unify with the `tryParseJson` function that already exists at
- * `packages/@sanity/export/src/tryParseJson.js`.
+ * @internal
  */
 export function createSafeJsonParser<Type>({errorLabel}: Options): Parser<Type> {
   return function safeJsonParser(line) {
