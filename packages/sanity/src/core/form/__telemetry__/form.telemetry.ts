@@ -1,13 +1,13 @@
 import {defineEvent} from '@sanity/telemetry'
 
-export const ExpandPortableTextInput = defineEvent({
+export const PortableTextInputExpanded = defineEvent({
   version: 1,
-  name: 'Expand PTE',
+  name: 'Portable Text Editor expanded',
   description: 'The portable text editor was expanded',
 })
 
-export const CollapsePortableTextInput = defineEvent({
+export const PortableTextInputCollapsed = defineEvent({
   version: 1,
-  name: 'Collapse PTE',
+  name: 'Portable Text Editor collapsed',
   description: 'The portable text editor was collapsed',
 })

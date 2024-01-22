@@ -24,8 +24,8 @@ import {ArrayOfObjectsItemMember, ObjectFormNode} from '../../store'
 import type {PortableTextInputProps} from '../../types'
 import {EMPTY_ARRAY} from '../../../util'
 import {
-  CollapsePortableTextInput,
-  ExpandPortableTextInput,
+  PortableTextInputCollapsed,
+  PortableTextInputExpanded,
 } from '../../__telemetry__/form.telemetry'
 import {Compositor, PortableTextEditorElement} from './Compositor'
 import {InvalidValue as RespondToInvalidContent} from './InvalidValue'
@@ -112,9 +112,9 @@ export function PortableTextInput(props: PortableTextInputProps) {
       setIsFullscreen((v) => {
         const next = !v
         if (next) {
-          telemetry.log(ExpandPortableTextInput)
+          telemetry.log(PortableTextInputExpanded)
         } else {
-          telemetry.log(CollapsePortableTextInput)
+          telemetry.log(PortableTextInputCollapsed)
         }
         return next
       })
