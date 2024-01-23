@@ -60,5 +60,10 @@ export default defineScope({
       title: 'CommentReactionsUsersTooltipContent',
       component: lazy(() => import('./CommentReactionsUsersTooltipContentStory')),
     },
+    {
+      name: 'comment-inline-highlight-debug',
+      title: 'CommentInlineHighlightDebugStory',
+      component: lazy(() => import('./CommentInlineHighlightDebugStory')),
+    },
   ],
 })
