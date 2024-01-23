@@ -3595,13 +3595,13 @@
   resolved "https://registry.yarnpkg.com/@sanity/diff-match-patch/-/diff-match-patch-3.1.1.tgz#16514d3a550d880bae1f59cc3ffe6865f5a4b58a"
   integrity sha512-dSZqGeYjHKGIkqAzGqLcG92LZyJGX+nYbs/FWawhBbTBDWi21kvQ0hsL3DJThuFVWtZMWTQijN3z6Cnd44Pf2g==
 
-"@sanity/eslint-config-i18n@^1.1.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@sanity/eslint-config-i18n/-/eslint-config-i18n-1.1.0.tgz#f7a94d513f0bbe7c7478188de80272a7a2231764"
-  integrity sha512-mMD0CB1R3n9vN+wWpmjIge1EW2yVYlNIO/N4LJd1kNZUs5FhyT4ZeFoJT79wj3lmr9K+yoHjqjTQ5HuZkRCSXw==
+"@sanity/eslint-config-i18n@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@sanity/eslint-config-i18n/-/eslint-config-i18n-1.0.0.tgz#19b89c05f3bc78a8025936d71d79c4ebda51ce56"
+  integrity sha512-BIeD9IVT7O5I6vDyDaICoidN02qeImdXDRAW062iHY9gV4JrGScWBFio2HQLso7C+Z6SrQB8jOft6SzeYqDhdQ==
   dependencies:
     "@rushstack/eslint-patch" "^1.3.2"
-    "@sanity/eslint-plugin-i18n" "^1.1.0"
+    "@sanity/eslint-plugin-i18n" "^1.0.0"
     "@typescript-eslint/parser" "^6.2.1"
     eslint-plugin-i18next "^6.0.3"
 
@@ -3622,10 +3622,10 @@
     eslint-plugin-react "^7.32.2"
     eslint-plugin-react-hooks "^4.6.0"
 
-"@sanity/eslint-plugin-i18n@^1.1.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@sanity/eslint-plugin-i18n/-/eslint-plugin-i18n-1.1.0.tgz#5fb1d97d030dd28545475cd0394b4dba71d87197"
-  integrity sha512-EpoqPVqaP2NSmG8vGa4zsD6BuyBTVHwmD3VigOya7roHB8GZXuJjDg6+SXzhb+cTVuZtWaAjt8NMYVYx4uWCIQ==
+"@sanity/eslint-plugin-i18n@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@sanity/eslint-plugin-i18n/-/eslint-plugin-i18n-1.0.0.tgz#b7838e83ebda73a6853c2d6c52525dd62e6f3380"
+  integrity sha512-ibPaZttafAWLRz2SXAk8LOBr+nykU4BoMUYjdQVIx/N3D2deZdJp0s1c0lmljkrE2B3LmB0B7oTzF9CUrw3Kyg==
 
 "@sanity/eventsource@^5.0.0":
   version "5.0.1"

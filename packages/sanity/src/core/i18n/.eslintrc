@@ -1,5 +1,0 @@
-{
-  "rules": {
-    "@sanity/i18n/no-i18next-import": "off"
-  }
-}

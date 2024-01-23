@@ -1,5 +1,6 @@
 import {useElementRect, DialogProvider, Flex, PortalProvider, DialogProviderProps} from '@sanity/ui'
 import {useState, useCallback, useMemo} from 'react'
+import {useTranslation} from 'react-i18next'
 import {Path} from 'sanity-diff-patch'
 import styled from 'styled-components'
 import isHotkey from 'is-hotkey'
@@ -24,7 +25,6 @@ import {TooltipDelayGroupProvider} from '../../../../ui-components'
 import {getMenuItems} from '../menuItems'
 import {DocumentLayoutError} from './DocumentLayoutError'
 import {
-  useTranslation,
   useZIndex,
   ChangeConnectorRoot,
   DocumentInspectorMenuItem,

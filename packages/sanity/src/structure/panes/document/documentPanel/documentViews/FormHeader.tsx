@@ -1,8 +1,8 @@
-import type {ObjectSchemaType} from '@sanity/types'
+import {ObjectSchemaType, SchemaType} from '@sanity/types'
 import {Heading, Stack, Text} from '@sanity/ui'
+import {useTranslation} from 'react-i18next'
 import styled, {css} from 'styled-components'
 import {structureLocaleNamespace} from '../../../../i18n'
-import {useTranslation} from 'sanity'
 
 interface DocumentHeaderProps {
   documentId: string
