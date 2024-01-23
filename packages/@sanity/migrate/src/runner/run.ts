@@ -13,9 +13,9 @@ interface MigrationRunnerOptions {
 export async function* run(config: MigrationRunnerOptions, migration: Migration) {
   const mutations = collectMigrationMutations(
     migration,
-    ndjson(await fromExportEndpoint(config.api), {
+    ndjson<SanityDocument>(await fromExportEndpoint(config.api), {
       parse: safeJsonParser,
-    }) as AsyncIterableIterator<SanityDocument>,
+    }),
   )
 
   for await (const result of toMutationEndpoint(config.api, mutations)) {

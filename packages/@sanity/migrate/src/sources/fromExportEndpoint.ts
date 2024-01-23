@@ -3,6 +3,7 @@ import {fetchAsyncIterator} from '../fetch-utils/fetchStream'
 import {toFetchOptions} from '../fetch-utils/sanityRequestOptions'
 import {endpoints} from '../fetch-utils/endpoints'
 import {APIConfig} from '../types'
+import {SanityDocument} from '@sanity/types'
 
 export function fromExportEndpoint(options: APIConfig) {
   return fetchAsyncIterator(
@@ -24,6 +25,6 @@ export function fromExportEndpoint(options: APIConfig) {
  * @internal
  * @see {@link https://github.com/sanity-io/sanity/pull/1787 | Initial pull request}
  */
-export const safeJsonParser = createSafeJsonParser({
+export const safeJsonParser = createSafeJsonParser<SanityDocument>({
   errorLabel: 'Error streaming dataset',
 })
