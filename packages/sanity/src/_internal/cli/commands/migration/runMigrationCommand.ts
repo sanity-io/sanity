@@ -6,6 +6,7 @@ import {
   collectMigrationMutations,
   fromExportArchive,
   fromExportEndpoint,
+  safeJsonParser,
   Migration,
   ndjson,
   run,
@@ -164,7 +165,9 @@ async function* dryRun(
 ) {
   const mutations = collectMigrationMutations(
     migration,
-    ndjson(await fromExportEndpoint(config.api)) as AsyncIterableIterator<SanityDocument>,
+    ndjson(await fromExportEndpoint(config.api), {
+      parse: safeJsonParser,
+    }) as AsyncIterableIterator<SanityDocument>,
   )
 
   for await (const mutation of mutations) {
