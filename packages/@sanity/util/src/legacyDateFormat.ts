@@ -1,6 +1,9 @@
 /* eslint-disable @typescript-eslint/no-shadow */
 import moment from 'moment'
 
+export const DEFAULT_DATE_FORMAT = 'YYYY-MM-DD'
+export const DEFAULT_TIME_FORMAT = 'HH:mm'
+
 export type ParseResult = {isValid: boolean; date?: Date; error?: string} & (
   | {isValid: true; date: Date}
   | {isValid: false; error?: string}

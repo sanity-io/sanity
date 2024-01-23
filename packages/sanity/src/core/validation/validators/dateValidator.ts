@@ -1,6 +1,6 @@
 import {Validators} from '@sanity/types'
-import formatDate from 'date-fns/format'
 import {genericValidators} from './genericValidator'
+import * as legacyDateFormat from '@sanity/util/legacyDateFormat'
 
 function isRecord(obj: unknown): obj is Record<string, unknown> {
   return typeof obj === 'object' && obj !== null && !Array.isArray(obj)
@@ -18,28 +18,13 @@ interface DateTimeOptions {
 }
 
 const getFormattedDate = (type = '', value: string | number | Date, options?: DateTimeOptions) => {
-  let format = 'yyyy-MM-dd'
-  if (options && options.dateFormat) {
-    format = options.dateFormat
-  }
+  const dateFormat = options?.dateFormat || legacyDateFormat.DEFAULT_DATE_FORMAT
+  const timeFormat = options?.timeFormat || legacyDateFormat.DEFAULT_TIME_FORMAT
 
-  // normalize date format. It seems we advertise using YYYY and DD to control date formatting in forms
-  // but the library we are using here expects yyyy and dd respectively.
-  format = format.replaceAll('YY', 'yy').replaceAll('DD', 'dd')
-
-  if (type === 'date') {
-    // If the type is date only
-    return formatDate(new Date(value), format)
-  }
-
-  // If the type is datetime
-  if (options && options.timeFormat) {
-    format += ` ${options.timeFormat}`
-  } else {
-    format += ' HH:mm'
-  }
-
-  return formatDate(new Date(value), format)
+  return legacyDateFormat.format(
+    new Date(value),
+    type === 'date' ? dateFormat : `${dateFormat} ${timeFormat}`,
+  )
 }
 
 function parseDate(date: unknown): Date | null
