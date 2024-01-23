@@ -6,6 +6,7 @@ import {startCase} from 'lodash'
 import {fromUrl} from '@sanity/bifur-client'
 import {createElement, isValidElement} from 'react'
 import {isValidElementType} from 'react-is'
+// eslint-disable-next-line @sanity/i18n/no-i18next-import
 import type {i18n} from 'i18next'
 import {createSchema} from '../schema'
 import {type AuthStore, createAuthStore, isAuthStore} from '../store/_legacy'

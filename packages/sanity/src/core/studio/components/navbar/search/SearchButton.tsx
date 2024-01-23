@@ -1,6 +1,6 @@
 import {SearchIcon} from '@sanity/icons'
 import React, {forwardRef} from 'react'
-import {useTranslation} from 'react-i18next'
+import {useTranslation} from '../../../../i18n'
 import {Button} from '../../../../../ui-components'
 import {GLOBAL_SEARCH_KEY, GLOBAL_SEARCH_KEY_MODIFIER} from './constants'
 
