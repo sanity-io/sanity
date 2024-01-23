@@ -21,6 +21,8 @@ import {useActionGroups} from './hooks'
 import {BlockItem, BlockStyleItem, PTEToolbarActionGroup} from './types'
 
 interface ToolbarProps {
+  /** Whether annotation and block menu buttons should fully collapse at smaller element widths */
+  collapsible?: boolean
   hotkeys: HotkeyOptions
   isFullscreen: boolean
   onMemberOpen: (relativePath: Path) => void
@@ -61,6 +63,7 @@ const IS_MAC =
 const InnerToolbar = memo(function InnerToolbar({
   actionGroups,
   blockStyles,
+  collapsible,
   disabled,
   insertMenuItems,
   isFullscreen,
@@ -68,6 +71,7 @@ const InnerToolbar = memo(function InnerToolbar({
 }: {
   actionGroups: PTEToolbarActionGroup[]
   blockStyles: BlockStyleItem[]
+  collapsible?: boolean
   disabled: boolean
   insertMenuItems: BlockItem[]
   isFullscreen: boolean
@@ -80,7 +84,7 @@ const InnerToolbar = memo(function InnerToolbar({
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
   const rootElementRect = useElementRect(rootElement)
 
-  const collapsed = rootElementRect ? rootElementRect?.width < 400 : false
+  const collapsed = collapsible && rootElementRect ? rootElementRect?.width < 400 : false
   const showBlockStyleSelect = blockStyles.length > 1
 
   useRovingFocus({
@@ -151,7 +155,7 @@ const InnerToolbar = memo(function InnerToolbar({
 })
 
 export function Toolbar(props: ToolbarProps) {
-  const {hotkeys, isFullscreen, readOnly, onMemberOpen, onToggleFullscreen} = props
+  const {collapsible, hotkeys, isFullscreen, readOnly, onMemberOpen, onToggleFullscreen} = props
   const editor = usePortableTextEditor()
   const selection = usePortableTextEditorSelection()
   const resolveInitialValueForType = useResolveInitialValueForType()
@@ -239,6 +243,7 @@ export function Toolbar(props: ToolbarProps) {
     <InnerToolbar
       actionGroups={actionGroups}
       blockStyles={blockStyles}
+      collapsible={collapsible}
       disabled={disabled}
       insertMenuItems={insertMenuItems}
       isFullscreen={isFullscreen}

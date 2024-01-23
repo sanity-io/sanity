@@ -84,6 +84,7 @@ export const InsertMenu = memo(function InsertMenu(props: InsertMenuProps) {
 
   return (
     <CollapseMenuMemo
+      data-testid="insert-menu-auto-collapse-menu"
       collapsed={collapsed}
       collapseText={false}
       disableRestoreFocusOnClose

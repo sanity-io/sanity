@@ -16,6 +16,7 @@ import {BoundaryElementProvider, useBoundaryElement, useGlobalKeyDown, useLayer}
 import React, {useCallback, useMemo, useRef} from 'react'
 import {TooltipDelayGroupProvider} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'
+import {useFormBuilder} from '../../useFormBuilder'
 import {Toolbar} from './toolbar'
 import {Decorator} from './text'
 import {
@@ -32,6 +33,10 @@ import {Style} from './text/Style'
 import {ListItem} from './text/ListItem'
 
 const noOutlineStyle = {outline: 'none'} as const
+
+// The <FormBuilder> id that represents the default (document pane) form layout.
+// This is used to determine whether this editor should apply document pane specific styling.
+const FORM_BUILDER_DEFAULT_ID = 'root'
 
 interface EditorProps {
   hotkeys: HotkeyOptions
@@ -87,6 +92,7 @@ export function Editor(props: EditorProps) {
     setScrollElement,
     ariaDescribedBy,
   } = props
+  const {id} = useFormBuilder()
   const {t} = useTranslation()
   const {isTopLayer} = useLayer()
   const editableRef = useRef<HTMLDivElement | null>(null)
@@ -161,12 +167,16 @@ export function Editor(props: EditorProps) {
     [onItemOpen, path],
   )
 
+  // Always collapse toolbars at smaller container widths when in 'default' (document pane) FormBuilder instances
+  const collapsibleToolbar = id === FORM_BUILDER_DEFAULT_ID
+
   return (
     <Root $fullscreen={isFullscreen} data-testid="pt-editor">
       {isActive && (
         <TooltipDelayGroupProvider>
           <ToolbarCard data-testid="pt-editor__toolbar-card" shadow={1}>
             <Toolbar
+              collapsible={collapsibleToolbar}
               hotkeys={hotkeys}
               isFullscreen={isFullscreen}
               onMemberOpen={handleToolBarOnMemberOpen}

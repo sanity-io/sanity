@@ -56,10 +56,10 @@ const SCHEMA_TYPES = [
   }),
 ]
 
-export function ToolbarStory() {
+export function ToolbarStory({id = 'root'}: {id?: string}) {
   return (
     <TestWrapper schemaTypes={SCHEMA_TYPES}>
-      <TestForm />
+      <TestForm id={id} />
     </TestWrapper>
   )
 }
