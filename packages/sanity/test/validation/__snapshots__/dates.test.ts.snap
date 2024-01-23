@@ -1,0 +1,69 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`date max length constraint: Must be at or after 1`] = `Array []`;
+
+exports[`date max length constraint: max length: valid 1`] = `
+Array [
+  Object {
+    "item": Object {
+      "message": "Must be at or after 2023-12-31",
+    },
+    "level": "error",
+    "message": "Must be at or after 2023-12-31",
+    "path": Array [],
+  },
+]
+`;
+
+exports[`date max length constraint: max length: valid 2`] = `Array []`;
+
+exports[`date min length constraint: Must be at or after 1`] = `
+Array [
+  Object {
+    "item": Object {
+      "message": "Must be at or after 2023-12-31",
+    },
+    "level": "error",
+    "message": "Must be at or after 2023-12-31",
+    "path": Array [],
+  },
+]
+`;
+
+exports[`date min length constraint: min length: valid 1`] = `Array []`;
+
+exports[`date min length constraint: min length: valid 2`] = `Array []`;
+
+exports[`date with custom format max length constraint: Must be at or after 1`] = `Array []`;
+
+exports[`date with custom format max length constraint: max length: valid 1`] = `
+Array [
+  Object {
+    "item": Object {
+      "message": "Must be at or after 12-31-2023",
+    },
+    "level": "error",
+    "message": "Must be at or after 12-31-2023",
+    "path": Array [],
+  },
+]
+`;
+
+exports[`date with custom format max length constraint: max length: valid 2`] = `Array []`;
+
+exports[`date with custom format min length constraint: Must be at or after 1`] = `
+Array [
+  Object {
+    "item": Object {
+      "message": "Must be at or after 12-31-2023",
+    },
+    "level": "error",
+    "message": "Must be at or after 12-31-2023",
+    "path": Array [],
+  },
+]
+`;
+
+exports[`date with custom format min length constraint: min length: valid 1`] = `Array []`;
+
+exports[`date with custom format min length constraint: min length: valid 2`] = `Array []`;
