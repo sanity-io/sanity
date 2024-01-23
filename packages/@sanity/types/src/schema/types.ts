@@ -123,6 +123,13 @@ export interface DeprecatedProperty {
   reason: string
 }
 
+/**
+ * @public
+ */
+export interface DeprecationConfiguration {
+  deprecated: DeprecatedProperty
+}
+
 /** @public */
 export interface InitialValueResolverContext {
   projectId: string
@@ -177,12 +184,11 @@ export type SchemaValidationValue =
   | ((rule: Rule) => SchemaValidationValue)
 
 /** @public */
-export interface DeprecatedSchemaType {
-  deprecated: DeprecatedProperty
-}
+export type DeprecatedSchemaType<TSchemaType extends BaseSchemaType = BaseSchemaType> =
+  TSchemaType & DeprecationConfiguration
 
 /** @public */
-export interface BaseSchemaType extends Partial<DeprecatedSchemaType> {
+export interface BaseSchemaType extends Partial<DeprecationConfiguration> {
   name: string
   title?: string
   description?: string

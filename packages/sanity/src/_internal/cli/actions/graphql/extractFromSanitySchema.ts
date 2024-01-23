@@ -9,7 +9,7 @@ import {
   type ArraySchemaType,
   type IntrinsicTypeName,
   type CrossDatasetReferenceSchemaType,
-  isDeprecatedSchemaType,
+  isDeprecationConfiguration,
 } from '@sanity/types'
 import {generateHelpUrl} from '@sanity/generate-help-url'
 import {Schema} from '@sanity/schema'
@@ -728,9 +728,9 @@ class HelpfulError extends Error {
 }
 
 function getDeprecation(
-  type?: SchemaType | ConvertedType | ObjectFieldType<SchemaType> | ObjectField<SchemaType>,
+  type?: SchemaType | ObjectFieldType<SchemaType> | ObjectField<SchemaType>,
 ): Partial<Deprecation> {
-  return isDeprecatedSchemaType(type)
+  return isDeprecationConfiguration(type)
     ? {
         deprecationReason: type.deprecated.reason,
       }

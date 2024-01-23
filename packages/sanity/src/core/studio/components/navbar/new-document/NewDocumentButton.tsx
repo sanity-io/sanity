@@ -57,7 +57,11 @@ export function NewDocumentButton(props: NewDocumentButtonProps) {
   const openDialogAriaLabel = t('new-document.open-dialog-aria-label')
 
   const validOptions = useMemo(
-    () => options.filter((option) => !isDeprecatedSchemaType(schema.get(option.schemaType))),
+    () =>
+      options.filter((option) => {
+        const optionSchema = schema.get(option.schemaType)
+        return optionSchema && !isDeprecatedSchemaType(optionSchema)
+      }),
     [options, schema],
   )
 
