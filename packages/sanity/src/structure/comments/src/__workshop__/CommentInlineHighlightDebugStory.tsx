@@ -33,6 +33,39 @@ import {PropsWithChildren, useCallback, useMemo, useRef, useState} from 'react'
 
 const CHILD_SYMBOL = '\uF0D0'
 const INLINE_STYLE: React.CSSProperties = {outline: 'none'}
+const FALLBACK_TO_BLOCK = true
+const EMPTY_ARRAY: [] = []
+
+const INITIAL_VALUE: PortableTextBlock[] = [
+  {
+    _key: '6222e4072b6e',
+    children: [
+      {
+        _type: 'span',
+        marks: [],
+        text: 'The passage is attributed to an unknown typesetter in the 15th century who is thought to have scrambled parts of. ',
+        _key: '9d9c95878a6e0',
+      },
+    ],
+    markDefs: [],
+    _type: 'block',
+    style: 'normal',
+  },
+  {
+    _key: 'f0de711f24bd',
+    markDefs: [],
+    _type: 'block',
+    style: 'normal',
+    children: [
+      {
+        _type: 'span',
+        marks: [],
+        _key: 'a9a55f97580a',
+        text: "Cicero's De Finibus Bonorum et Malorum for use in a type specimen book. It usually begins with.",
+      },
+    ],
+  },
+]
 
 const blockType = defineField({
   type: 'block',
@@ -72,10 +105,9 @@ interface Comment {
 }
 
 export default function CommentInlineHighlightDebugStory() {
-  const [value, setValue] = useState<PortableTextBlock[]>([])
+  const [value, setValue] = useState<PortableTextBlock[]>(INITIAL_VALUE)
   const [comments, setComments] = useState<Comment[]>([])
   const [hasSelectedRange, setHasSelectedRange] = useState<boolean>(false)
-
   const editorRef = useRef<PortableTextEditor | null>(null)
 
   const handleChange = useCallback((change: EditorChange) => {
@@ -90,7 +122,7 @@ export default function CommentInlineHighlightDebugStory() {
     }
   }, [])
 
-  const handleAddRange = useCallback(() => {
+  const handleAddComment = useCallback(() => {
     if (!editorRef.current) return
     const fragment = PortableTextEditor.getFragment(editorRef.current)
 
@@ -145,7 +177,7 @@ export default function CommentInlineHighlightDebugStory() {
               <Flex gap={1}>
                 <Button
                   text="Add comment"
-                  onClick={handleAddRange}
+                  onClick={handleAddComment}
                   disabled={!hasSelectedRange}
                   padding={2}
                   fontSize={1}
@@ -242,7 +274,7 @@ function CommentDecorator(props: PropsWithChildren<{commentId: string}>) {
     <span
       data-inline-comment-state="added"
       data-inline-comment-id={commentId}
-      style={{backgroundColor: '#fc0', color: '#000'}}
+      style={{backgroundColor: '#ffcc00', color: '#000'}}
     >
       {children}
     </span>
@@ -251,119 +283,129 @@ function CommentDecorator(props: PropsWithChildren<{commentId: string}>) {
 
 function useCommentRanges(value: PortableTextBlock[] | undefined, comments: Comment[]) {
   return useMemo((): RangeDecoration[] => {
-    if (!value || value.length === 0) return []
-    const decorators = flatten(
-      comments.map((comment) => {
-        const decoratorRanges = flatten(
-          comment.selection.map((range) => {
-            const matchedBlock = value.find((block) => block._key === range._key)
-            if (!matchedBlock || !isPortableTextTextBlock(matchedBlock)) {
-              return []
-            }
-            const positions: EditorSelection[] = []
-            let isMatched = false
-            if (typeof range.text === 'string') {
-              const text = toPlainTextWithChildSeparators(matchedBlock)
-              const matchData = fuzzy(range.text, text, {returnMatchData: true})
-              const matchPosition = matchData.match.index
+    if (!value || value.length === 0) return EMPTY_ARRAY
 
-              const childIndicatorRegex = new RegExp(
-                CHILD_SYMBOL.replace(/([.?*+^$[\]\\(){}|-])/g, '\\$1'),
-                'g',
-              )
-              if (matchPosition > -1 && matchData.score > 0.8) {
-                isMatched = true
-                const segments = buildSegments(text, range.text)
-                let childIndex = 0
-                // eslint-disable-next-line max-nested-callbacks
-                segments.forEach((segment) => {
-                  if (segment.action === 'removed') {
-                    const childIndicatorMatches = segment.text.match(childIndicatorRegex)
-                    childIndex += childIndicatorMatches ? childIndicatorMatches.length : 0
-                  }
-                  if (segment.action === 'unchanged') {
-                    const childIndicatorMatches = segment.text.match(childIndicatorRegex)
-                    childIndex += childIndicatorMatches ? childIndicatorMatches.length : 0
-                  }
-                })
-                positions.push({
-                  anchor: {
-                    path: [
-                      {_key: matchedBlock._key},
-                      'children',
-                      {_key: matchedBlock.children[childIndex]._key},
-                    ],
-                    offset:
-                      matchPosition -
-                      matchedBlock.children
-                        .slice(0, childIndex)
-                        .map((child) => (isPortableTextSpan(child) ? child.text.length : 0))
-                        .reduce((a, b) => a + b, 0) -
-                      childIndex,
-                  },
-                  focus: {
-                    path: [
-                      {_key: matchedBlock._key},
-                      'children',
-                      {_key: matchedBlock.children[childIndex]._key},
-                    ],
-                    offset:
-                      matchPosition -
-                      matchedBlock.children
-                        .slice(0, childIndex)
-                        .map((child) => (isPortableTextSpan(child) ? child.text.length : 0))
-                        .reduce((a, b) => a + b, 0) -
-                      childIndex +
-                      range.text.length,
-                  },
-                })
-                return positions
+    const decorators = comments.map((comment) => {
+      const decoratorRanges = comment.selection.map((range) => {
+        const matchedBlock = value.find((block) => block._key === range._key)
+
+        if (!matchedBlock || !isPortableTextTextBlock(matchedBlock)) {
+          return EMPTY_ARRAY
+        }
+
+        const positions: EditorSelection[] = []
+        let isMatched = false
+
+        if (typeof range.text === 'string') {
+          const text = toPlainTextWithChildSeparators(matchedBlock)
+          const matchData = fuzzy(range.text, text, {returnMatchData: true})
+          const matchPosition = matchData.match.index
+
+          const childIndicatorRegex = new RegExp(
+            CHILD_SYMBOL.replace(/([.?*+^$[\]\\(){}|-])/g, '\\$1'),
+            'g',
+          )
+
+          if (matchPosition > -1 && matchData.score > 0.8) {
+            isMatched = true
+
+            const segments = buildSegments(text, range.text)
+            let childIndex = 0
+
+            // eslint-disable-next-line max-nested-callbacks
+            segments.forEach((segment) => {
+              if (segment.action === 'removed') {
+                const childIndicatorMatches = segment.text.match(childIndicatorRegex)
+                childIndex += childIndicatorMatches ? childIndicatorMatches.length : 0
               }
-            }
-            const fallbackToWholeBlockWhenUnmatchedText = true
-            if ((!isMatched && fallbackToWholeBlockWhenUnmatchedText) || !range.text) {
-              let endOffset = 0
-              const lastChild = matchedBlock.children[matchedBlock.children.length - 1]
-              if (isPortableTextSpan(lastChild)) {
-                endOffset = lastChild.text.length
+              if (segment.action === 'unchanged') {
+                const childIndicatorMatches = segment.text.match(childIndicatorRegex)
+                childIndex += childIndicatorMatches ? childIndicatorMatches.length : 0
               }
-              positions.push({
-                anchor: {
-                  path: [
-                    {_key: matchedBlock._key},
-                    'children',
-                    {_key: matchedBlock.children[0]._key},
-                  ],
-                  offset: 0,
-                },
-                focus: {
-                  path: [
-                    {_key: matchedBlock._key},
-                    'children',
-                    {_key: matchedBlock.children[matchedBlock.children.length - 1]._key},
-                  ],
-                  offset: endOffset,
-                },
-              })
-              return positions
+            })
+
+            const decorationSelection: RangeDecoration['selection'] = {
+              anchor: {
+                path: [
+                  {_key: matchedBlock._key},
+                  'children',
+                  {_key: matchedBlock.children[childIndex]._key},
+                ],
+                offset:
+                  matchPosition -
+                  matchedBlock.children
+                    .slice(0, childIndex)
+                    .map((child) => (isPortableTextSpan(child) ? child.text.length : 0))
+                    .reduce((a, b) => a + b, 0) -
+                  childIndex,
+              },
+              focus: {
+                path: [
+                  {_key: matchedBlock._key},
+                  'children',
+                  {_key: matchedBlock.children[childIndex]._key},
+                ],
+                offset:
+                  matchPosition -
+                  matchedBlock.children
+                    .slice(0, childIndex)
+                    .map((child) => (isPortableTextSpan(child) ? child.text.length : 0))
+                    .reduce((a, b) => a + b, 0) -
+                  childIndex +
+                  range.text.length,
+              },
             }
-            return []
-          }),
-        )
 
-        return decoratorRanges.map(
-          (range) =>
-            ({
-              component: ({children}) => (
-                <CommentDecorator commentId={comment._id}>{children}</CommentDecorator>
-              ),
-              isRangeInvalid: () => false,
-              selection: range,
-            }) as RangeDecoration,
-        )
-      }),
-    )
+            positions.push(decorationSelection)
 
-    return decorators
+            return positions
+          }
+        }
+
+        if ((!isMatched && FALLBACK_TO_BLOCK) || !range.text) {
+          let endOffset = 0
+          const lastChild = matchedBlock.children[matchedBlock.children.length - 1]
+
+          if (isPortableTextSpan(lastChild)) {
+            endOffset = lastChild.text.length
+          }
+
+          const decorationSelection: RangeDecoration['selection'] = {
+            anchor: {
+              path: [{_key: matchedBlock._key}, 'children', {_key: matchedBlock.children[0]._key}],
+              offset: 0,
+            },
+            focus: {
+              path: [
+                {_key: matchedBlock._key},
+                'children',
+                {_key: matchedBlock.children[matchedBlock.children.length - 1]._key},
+              ],
+              offset: endOffset,
+            },
+          }
+
+          positions.push(decorationSelection)
+
+          return positions
+        }
+
+        return EMPTY_ARRAY
+      })
+
+      return flatten(decoratorRanges).map((range) => {
+        const rangeDecoration: RangeDecoration = {
+          component: ({children}) => (
+            <CommentDecorator commentId={comment._id}>{children}</CommentDecorator>
+          ),
+          isRangeInvalid: () => false,
+          selection: range,
+        }
+
+        return rangeDecoration
+      })
+    })
+
+    return flatten(decorators)
   }, [comments, value])
 }
