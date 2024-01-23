@@ -8,7 +8,7 @@ import {
   BoxHeight,
 } from '@sanity/ui'
 import React, {ComponentProps, forwardRef} from 'react'
-import {useTranslation} from 'react-i18next'
+import {useTranslation} from 'sanity'
 
 /** @internal */
 export type DialogProps = Pick<

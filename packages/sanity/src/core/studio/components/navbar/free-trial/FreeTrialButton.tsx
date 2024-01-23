@@ -3,8 +3,8 @@ import styled from 'styled-components'
 import {Card, Text} from '@sanity/ui'
 import {BoltIcon} from '@sanity/icons'
 import {purple, yellow} from '@sanity/color'
-import {useTranslation} from 'react-i18next'
 import {forwardRef} from 'react'
+import {useTranslation} from '../../../../i18n'
 import {Button} from '../../../../../ui-components'
 
 const CenteredStroke = styled.div`
