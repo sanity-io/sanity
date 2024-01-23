@@ -2,11 +2,14 @@ import type {CrossDatasetReferenceSchemaType} from '../crossDatasetReference'
 import type {TitledListValue} from './definition'
 import type {
   ArraySchemaType,
+  BaseSchemaType,
   BlockChildrenObjectField,
   BlockListObjectField,
   BlockSchemaType,
   BlockStyleObjectField,
   BooleanSchemaType,
+  DeprecatedSchemaType,
+  DeprecationConfiguration,
   NumberSchemaType,
   ObjectSchemaType,
   ReferenceSchemaType,
@@ -103,6 +106,20 @@ export function isPrimitiveSchemaType(
 /** @internal */
 export function isReferenceSchemaType(type: unknown): type is ReferenceSchemaType {
   return isRecord(type) && (type.name === 'reference' || isReferenceSchemaType(type.type))
+}
+
+/** @internal */
+export function isDeprecatedSchemaType<TSchemaType extends BaseSchemaType>(
+  type: TSchemaType,
+): type is DeprecatedSchemaType<TSchemaType> {
+  if (!isRecord(type)) return false
+  return typeof type.deprecated !== 'undefined'
+}
+
+/** @internal */
+export function isDeprecationConfiguration(type: unknown): type is DeprecationConfiguration {
+  if (!isRecord(type)) return false
+  return typeof type.deprecated !== 'undefined'
 }
 
 /** @internal */

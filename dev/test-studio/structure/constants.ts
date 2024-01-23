@@ -41,6 +41,8 @@ export const DEBUG_INPUT_TYPES = [
   'conditionalFieldsTest',
   'customInputsTest',
   'customInputsWithPatches',
+  'deprecatedFields',
+  'deprecatedDocument',
   'documentActionsTest',
   'documentWithHoistedPt',
   'empty',

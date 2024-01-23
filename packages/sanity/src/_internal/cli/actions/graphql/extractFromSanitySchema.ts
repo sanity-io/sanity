@@ -1,14 +1,15 @@
 import {uniqBy, startCase} from 'lodash'
-import type {
-  SchemaType,
-  Schema as CompiledSchema,
-  ReferenceSchemaType,
-  ObjectFieldType,
-  ObjectField,
-  ObjectSchemaType,
-  ArraySchemaType,
-  IntrinsicTypeName,
-  CrossDatasetReferenceSchemaType,
+import {
+  type SchemaType,
+  type Schema as CompiledSchema,
+  type ReferenceSchemaType,
+  type ObjectFieldType,
+  type ObjectField,
+  type ObjectSchemaType,
+  type ArraySchemaType,
+  type IntrinsicTypeName,
+  type CrossDatasetReferenceSchemaType,
+  isDeprecationConfiguration,
 } from '@sanity/types'
 import {generateHelpUrl} from '@sanity/generate-help-url'
 import {Schema} from '@sanity/schema'
@@ -21,6 +22,7 @@ import type {
   ConvertedInterface,
   ConvertedType,
   ConvertedUnion,
+  Deprecation,
 } from './types'
 
 const skipTypes = ['document', 'reference']
@@ -28,6 +30,12 @@ const allowedJsonTypes = ['object', 'array']
 const disallowedCustomizedMembers = ['object', 'array', 'image', 'file', 'block']
 const disabledBlockFields = ['markDefs']
 const scalars = ['string', 'number', 'boolean']
+
+/**
+ * Data required elsewhere in the API specification generation process, but that should not be
+ * included in the generated API specification.
+ */
+export const internal = Symbol('internal')
 
 function getBaseType(baseSchema: CompiledSchema, typeName: IntrinsicTypeName): SchemaType {
   if (typeName === 'crossDatasetReference') {
@@ -266,7 +274,7 @@ export function extractFromSanitySchema(
   function convertType(
     type: SchemaType | ObjectField,
     parent?: string,
-    props: {fieldName?: string} = {},
+    props: {fieldName?: string} & Partial<Deprecation> = {},
   ): ConvertedType {
     const mapped = _convertType(type, parent || '', {isField: Boolean(props.fieldName)})
     const gqlName = props.fieldName || mapped.name
@@ -275,6 +283,7 @@ export function extractFromSanitySchema(
     const crossDatasetReferenceMetadata = getCrossDatasetReferenceMetadata(type)
 
     return {
+      ...getDeprecation(type.type),
       ...props,
       ...mapped,
       ...original,
@@ -332,8 +341,14 @@ export function extractFromSanitySchema(
       fields: objectFields.map((field) =>
         isArrayOfBlocks(field)
           ? buildRawField(field, name)
-          : (convertType(field, name, {fieldName: field.name}) as any),
+          : (convertType(field, name, {
+              fieldName: field.name,
+              ...getDeprecation(def),
+            }) as any),
       ),
+      [internal]: {
+        ...getDeprecation(def),
+      },
     }
   }
 
@@ -554,7 +569,7 @@ export function extractFromSanitySchema(
 
   function getDocumentDefinition(def: ObjectSchemaType) {
     const objectDef = getObjectDefinition(def)
-    const fields = getDocumentInterfaceFields().concat(objectDef.fields)
+    const fields = getDocumentInterfaceFields(def).concat(objectDef.fields)
 
     return {...objectDef, fields, interfaces: ['Document']}
   }
@@ -568,7 +583,7 @@ export function extractFromSanitySchema(
     }
   }
 
-  function getDocumentInterfaceFields(): ConvertedFieldDefinition[] {
+  function getDocumentInterfaceFields(type?: ObjectSchemaType): ConvertedFieldDefinition[] {
     const isNullable = typeof nonNullDocumentFields === 'boolean' ? !nonNullDocumentFields : true
     return [
       {
@@ -576,30 +591,35 @@ export function extractFromSanitySchema(
         type: 'ID',
         isNullable,
         description: 'Document ID',
+        ...getDeprecation(type),
       },
       {
         fieldName: '_type',
         type: 'String',
         isNullable,
         description: 'Document type',
+        ...getDeprecation(type),
       },
       {
         fieldName: '_createdAt',
         type: 'Datetime',
         isNullable,
         description: 'Date the document was created',
+        ...getDeprecation(type),
       },
       {
         fieldName: '_updatedAt',
         type: 'Datetime',
         isNullable,
         description: 'Date the document was last modified',
+        ...getDeprecation(type),
       },
       {
         fieldName: '_rev',
         type: 'String',
         isNullable,
         description: 'Current document revision',
+        ...getDeprecation(type),
       },
     ]
   }
@@ -705,4 +725,14 @@ class HelpfulError extends Error {
     super(message)
     this.helpUrl = helpUrl
   }
+}
+
+function getDeprecation(
+  type?: SchemaType | ObjectFieldType<SchemaType> | ObjectField<SchemaType>,
+): Partial<Deprecation> {
+  return isDeprecationConfiguration(type)
+    ? {
+        deprecationReason: type.deprecated.reason,
+      }
+    : {}
 }

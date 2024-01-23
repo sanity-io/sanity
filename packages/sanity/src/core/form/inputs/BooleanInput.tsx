@@ -1,4 +1,3 @@
-import React from 'react'
 import styled from 'styled-components'
 import {Box, Card, CardTone, Checkbox, Flex, Switch} from '@sanity/ui'
 import {BooleanInputProps} from '../types'
@@ -42,8 +41,9 @@ export function BooleanInput(props: BooleanInputProps) {
             style={{margin: -4}}
           />
         </ZeroLineHeightBox>
-        <Box flex={1} paddingY={3}>
+        <Box flex={1} paddingY={2}>
           <FormFieldHeaderText
+            deprecated={schemaType.deprecated}
             description={schemaType.description}
             inputId={id}
             validation={validation}

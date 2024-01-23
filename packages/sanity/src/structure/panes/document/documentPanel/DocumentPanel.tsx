@@ -6,7 +6,12 @@ import {useDocumentPane} from '../useDocumentPane'
 import {useStructureTool} from '../../../useStructureTool'
 import {DocumentInspectorPanel} from '../documentInspector'
 import {InspectDialog} from '../inspectDialog'
-import {DeletedDocumentBanner, PermissionCheckBanner, ReferenceChangedBanner} from './banners'
+import {
+  DeletedDocumentBanner,
+  DeprecatedDocumentTypeBanner,
+  PermissionCheckBanner,
+  ReferenceChangedBanner,
+} from './banners'
 import {FormView} from './documentViews'
 import {ScrollContainer, useTimelineSelector, VirtualizerScrollInstanceProvider} from 'sanity'
 
@@ -152,6 +157,7 @@ export const DocumentPanel = function DocumentPanel(props: DocumentPanelProps) {
                         <DeletedDocumentBanner revisionId={lastNonDeletedRevId} />
                       )}
                       <ReferenceChangedBanner />
+                      <DeprecatedDocumentTypeBanner />
                     </>
                   )}
 

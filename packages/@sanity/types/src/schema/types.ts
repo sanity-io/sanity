@@ -119,6 +119,18 @@ export type ConditionalPropertyCallback = (context: ConditionalPropertyCallbackC
 export type ConditionalProperty = boolean | ConditionalPropertyCallback | undefined
 
 /** @public */
+export interface DeprecatedProperty {
+  reason: string
+}
+
+/**
+ * @public
+ */
+export interface DeprecationConfiguration {
+  deprecated: DeprecatedProperty
+}
+
+/** @public */
 export interface InitialValueResolverContext {
   projectId: string
   dataset: string
@@ -172,7 +184,11 @@ export type SchemaValidationValue =
   | ((rule: Rule) => SchemaValidationValue)
 
 /** @public */
-export interface BaseSchemaType {
+export type DeprecatedSchemaType<TSchemaType extends BaseSchemaType = BaseSchemaType> =
+  TSchemaType & DeprecationConfiguration
+
+/** @public */
+export interface BaseSchemaType extends Partial<DeprecationConfiguration> {
   name: string
   title?: string
   description?: string

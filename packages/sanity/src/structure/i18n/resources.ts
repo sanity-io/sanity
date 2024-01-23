@@ -91,6 +91,8 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'banners.deleted-document-banner.restore-button.text': 'Restore most recent version',
   /** The text content for the deleted document banner */
   'banners.deleted-document-banner.text': 'This document has been deleted.',
+  /** The text content for the deprecated document type banner */
+  'banners.deprecated-document-type-banner.text': 'This document type has been deprecated.',
   /** The text for the permission check banner if the user only has one role, and it does not allow updating this document */
   'banners.permission-check-banner.missing-permission_create_one':
     'Your role <Roles/> does not have permissions to create this document.',
