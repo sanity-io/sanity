@@ -1,8 +1,11 @@
 import {CheckmarkIcon, PublishIcon} from '@sanity/icons'
 import {isValidationErrorMarker} from '@sanity/types'
 import React, {useCallback, useEffect, useState} from 'react'
+import {useTelemetry} from '@sanity/telemetry/react'
 import {useDocumentPane} from '../panes/document/useDocumentPane'
 import {structureLocaleNamespace, type StructureLocaleResourceKeys} from '../i18n'
+
+import {DocumentPublished} from './__telemetry__/documentActions.telemetry'
 import {
   DocumentActionComponent,
   InsufficientPermissionsMessage,
@@ -122,7 +125,13 @@ export const PublishAction: DocumentActionComponent = (props) => {
     return () => clearTimeout(timer)
   }, [changesOpen, publishState, hasDraft, onHistoryOpen])
 
+  const telemetry = useTelemetry()
+
   const handle = useCallback(() => {
+    telemetry.log(DocumentPublished, {
+      publishedImmediately: !draft?._createdAt,
+      previouslyPublished: Boolean(published),
+    })
     if (
       syncState.isSyncing ||
       validationStatus.isValidating ||
@@ -133,6 +142,9 @@ export const PublishAction: DocumentActionComponent = (props) => {
       doPublish()
     }
   }, [
+    telemetry,
+    draft?._createdAt,
+    published,
     syncState.isSyncing,
     validationStatus.isValidating,
     validationStatus.revision,
