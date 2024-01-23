@@ -15,33 +15,29 @@ import React, {
   PropsWithChildren,
   Fragment,
 } from 'react'
+import {Searcher, fuzzy} from 'fast-fuzzy'
 import {flatten, isEqual} from 'lodash'
 import {uuid} from '@sanity/uuid'
 import * as PathUtils from '@sanity/util/paths'
 import {toPlainText} from '@portabletext/react'
-import {block} from '@sanity/schema/src/legacy/types'
 import {
   DIFF_DELETE,
   DIFF_EQUAL,
   DIFF_INSERT,
   cleanupEfficiency,
-  cleanupSemantic,
   makeDiff,
-  match,
 } from '@sanity/diff-match-patch'
+import {t} from 'i18next'
+import {build} from 'vite'
 import {CommentMessage, CommentThreadItem, useComments, useCommentsEnabled} from '../../../src'
 import {Button, PopoverProps} from '../../../../../ui-components'
 import {createDomRectFromElements} from '../helpers'
-import {select} from '../../../../panes/document/inspectDialog/helpers'
-import {bitap} from '../bitap'
 import {InlineCommentInputPopover} from './InlineCommentInputPopover'
 import {HighlightSpan} from './HighlightSpan'
 
 import {
-  PortableTextBlock,
   PortableTextInputProps,
   PortableTextTextBlock,
-  isKeySegment,
   isPortableTextSpan,
   isPortableTextTextBlock,
   useCurrentUser,
@@ -90,6 +86,7 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
   const [nextCommentValue, setNextCommentValue] = useState<CommentMessage | null>(null)
   const [nextCommentSelection, setNextCommentSelection] = useState<EditorSelection | null>(null)
   const [currentSelectionPlainText, setCurrentSelectionPlainText] = useState<string | null>(null)
+  const [forceUpdateRanges, setForceUpdateRanges] = useState(0)
 
   const [canSubmit, setCanSubmit] = useState<boolean>(false)
 
@@ -145,18 +142,8 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
 
   const onEditorChange = useCallback(
     (change: EditorChange, editor: PortableTextEditor) => {
-      if (change.type === 'rangeDecorationMoved') {
-        const comment = change.rangeDecoration.payload?.comment as CommentThreadItem
-        // console.log(
-        //   `Decorator range changed affecting comment ${comment.parentComment._id}`,
-        //   `From offset ${change.rangeDecoration?.selection?.focus?.offset} to ${change.newRangeSelection?.focus?.offset}`,
-        // )
-        edit.execute(comment.parentComment._id, {
-          selection: change.newRangeSelection,
-        })
-        return
-      }
       if (change.type === 'selection') {
+        setForceUpdateRanges((prev) => prev + 1)
         if (!PortableTextEditor.isExpandedSelection(editor)) {
           return
         }
@@ -167,31 +154,31 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
         // should only do the bare minimum. We should probably move this logic to a separate
         // function where the comment is created.
 
-        if (hasSelectionRange) {
-          // Store the current selection in a ref so that, when clicking the "add comment"
-          // button, we use the selection and set it as the current selection state so that
-          // the popover opens with the selection.
-          currentSelectionRef.current = change.selection
+        // if (hasSelectionRange) {
+        //   // Store the current selection in a ref so that, when clicking the "add comment"
+        //   // button, we use the selection and set it as the current selection state so that
+        //   // the popover opens with the selection.
+        //   currentSelectionRef.current = change.selection
 
-          const valueAtRange = PortableTextEditor.getFragment(editor)
-          const plainTextValue = valueAtRange ? toPlainText(valueAtRange) : null
+        //   const valueAtRange = PortableTextEditor.getFragment(editor)
+        //   const plainTextValue = valueAtRange ? toPlainText(valueAtRange) : null
 
-          // Check if the selection is valid. A valid selection is a selection that only
-          // contains text blocks. If the selection contains other types of blocks, we
-          // should not allow the user to add a comment and we disable the "add comment"
-          // button.
-          const isValidSelection = valueAtRange?.every(isPortableTextTextBlock)
+        //   // Check if the selection is valid. A valid selection is a selection that only
+        //   // contains text blocks. If the selection contains other types of blocks, we
+        //   // should not allow the user to add a comment and we disable the "add comment"
+        //   // button.
+        //   const isValidSelection = valueAtRange?.every(isPortableTextTextBlock)
 
-          setCanSubmit(Boolean(isValidSelection))
-          setCurrentSelectionPlainText(plainTextValue)
-        } else {
-          currentSelectionRef.current = null
-          setCurrentSelectionPlainText(null)
-          setCanSubmit(false)
-        }
+        //   setCanSubmit(Boolean(isValidSelection))
+        //   setCurrentSelectionPlainText(plainTextValue)
+        // } else {
+        //   currentSelectionRef.current = null
+        //   setCurrentSelectionPlainText(null)
+        //   setCanSubmit(false)
+        // }
       }
     },
-    [edit, nextCommentSelection],
+    [nextCommentSelection],
   )
 
   // The range decorations for existing comments
@@ -199,64 +186,114 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
     const decorators = flatten(
       fieldComments.map((comment) => {
         if (!editorRef.current) return []
-        if (!comment.selection) return []
-        const key =
-          isKeySegment(comment.selection.anchor.path[0]) && comment.selection.anchor.path[0]._key
-        if (!key) return []
-        const commentRanges = [
+        const commentRanges: Array<{_key: string; text?: string; occurrenceIndex?: number}> = [
+          {_key: 'b357c5ff0b28', text: 'comment', occurrenceIndex: 2},
           {
-            path: [{_key: key}],
-            start: comment.selection.anchor.offset,
-            text: 'one hyperlink to another without explicitly closing',
+            _key: '332821555f6e',
+            text: 'Floppy disks store digital data which can be read and written when the disk is inserted into a floppy disk drive (FDD) connected to or inside a computer or other device.',
+          },
+          {_key: 'fe37f55efe95'},
+          {
+            _key: '4713e726aedf',
+            text: 'Floppy disks were so common in late 20th-century culture that many electronic and software programs continue to use save icons that look like floppy disks well into the 21st century, as a form of skeuomorphic design.',
           },
         ]
 
         const decoratorRanges = flatten(
           commentRanges.map((range) => {
             if (!editorRef.current) return []
-            const [matchedBlock, matchedPath] = PortableTextEditor.findByPath(
-              editorRef.current,
-              range.path,
-            )
+            const [matchedBlock] = PortableTextEditor.findByPath(editorRef.current, [
+              {_key: range._key},
+            ])
             if (!matchedBlock || !isPortableTextTextBlock(matchedBlock)) {
               return []
             }
-            const text = toPlainTextWithNodeSeparators(matchedBlock)
-            const matchPosition = bitap(text, range.text, 0, {distance: 4000}) // TODO: this is from diff-match-patch but with more bits!
-
-            const regex = new RegExp(CHILD_SYMBOL.replace(/([.?*+^$[\]\\(){}|-])/g, '\\$1'), 'g')
-            const childStartMatch = text.substring(0, matchPosition).match(regex)?.length || 0
-
             const positions: EditorSelection[] = []
-            if (matchPosition > -1) {
-              const segments = buildSegments(text, range.text)
-              let childIndex = 0
-              segments.forEach((segment) => {
-                if (segment.action === 'removed') {
-                  const matches = segment.text.match(regex)
-                  childIndex += matches ? matches.length : 0
-                }
-                if (segment.action === 'unchanged') {
-                  const matches = segment.text.match(regex)
-                  childIndex += matches ? matches.length : 0
-                }
-              })
+            let isMatched = false
+            if (typeof range.text === 'string') {
+              const text = toPlainTextWithChildSeparators(matchedBlock)
+              const matchData = fuzzy(range.text, text, {returnMatchData: true})
+              const matchPosition = matchData.match.index
+
+              // console.log('needle: ', range.text)
+              // console.log('haystack: ', text)
+              // console.log('matchPosition: ', matchPosition)
+
+              const childIndicatorRegex = new RegExp(
+                CHILD_SYMBOL.replace(/([.?*+^$[\]\\(){}|-])/g, '\\$1'),
+                'g',
+              )
+              if (matchPosition > -1 && matchData.score > 0.8) {
+                isMatched = true
+                const segments = buildSegments(text, range.text)
+                let childIndex = 0
+                segments.forEach((segment) => {
+                  if (segment.action === 'removed') {
+                    const childIndicatorMatches = segment.text.match(childIndicatorRegex)
+                    childIndex += childIndicatorMatches ? childIndicatorMatches.length : 0
+                  }
+                  if (segment.action === 'unchanged') {
+                    const childIndicatorMatches = segment.text.match(childIndicatorRegex)
+                    childIndex += childIndicatorMatches ? childIndicatorMatches.length : 0
+                  }
+                })
+                positions.push({
+                  anchor: {
+                    path: [
+                      {_key: matchedBlock._key},
+                      'children',
+                      {_key: matchedBlock.children[childIndex]._key},
+                    ],
+                    offset:
+                      matchPosition -
+                      matchedBlock.children
+                        .slice(0, childIndex)
+                        .map((child) => (isPortableTextSpan(child) ? child.text.length : 0))
+                        .reduce((a, b) => a + b, 0) -
+                      childIndex,
+                  },
+                  focus: {
+                    path: [
+                      {_key: matchedBlock._key},
+                      'children',
+                      {_key: matchedBlock.children[childIndex]._key},
+                    ],
+                    offset:
+                      matchPosition -
+                      matchedBlock.children
+                        .slice(0, childIndex)
+                        .map((child) => (isPortableTextSpan(child) ? child.text.length : 0))
+                        .reduce((a, b) => a + b, 0) -
+                      childIndex +
+                      range.text.length,
+                  },
+                })
+                return positions
+              }
+            }
+            const fallbackToWholeBlockWhenUnmatchedText = true
+            if ((!isMatched && fallbackToWholeBlockWhenUnmatchedText) || !range.text) {
+              let endOffset = 0
+              const lastChild = matchedBlock.children[matchedBlock.children.length - 1]
+              if (isPortableTextSpan(lastChild)) {
+                endOffset = lastChild.text.length
+              }
               positions.push({
                 anchor: {
                   path: [
                     {_key: matchedBlock._key},
                     'children',
-                    {_key: matchedBlock.children[childStartMatch]._key},
+                    {_key: matchedBlock.children[0]._key},
                   ],
-                  offset: matchPosition,
+                  offset: 0,
                 },
                 focus: {
                   path: [
                     {_key: matchedBlock._key},
                     'children',
-                    {_key: matchedBlock.children[childStartMatch]._key},
+                    {_key: matchedBlock.children[matchedBlock.children.length - 1]._key},
                   ],
-                  offset: matchPosition + range.text.length,
+                  offset: endOffset,
                 },
               })
               return positions
@@ -264,6 +301,7 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
             return []
           }),
         )
+        // console.log(decoratorRanges)
 
         return decoratorRanges.map(
           (range) =>
@@ -282,7 +320,7 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
     )
 
     return decorators
-  }, [fieldComments])
+  }, [fieldComments, forceUpdateRanges])
 
   const rangeDecorations = useMemo((): RangeDecoration[] => {
     const currentRangeDecoration: RangeDecoration = {
@@ -378,7 +416,7 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
   )
 })
 
-function toPlainTextWithNodeSeparators(inputBlock: PortableTextTextBlock) {
+function toPlainTextWithChildSeparators(inputBlock: PortableTextTextBlock) {
   return inputBlock.children.map((child) => child.text).join(CHILD_SYMBOL)
 }
 
