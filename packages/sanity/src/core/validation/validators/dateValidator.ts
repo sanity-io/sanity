@@ -23,6 +23,10 @@ const getFormattedDate = (type = '', value: string | number | Date, options?: Da
     format = options.dateFormat
   }
 
+  // normalize date format. It seems we advertise using YYYY and DD to control date formatting in forms
+  // but the library we are using here expects yyyy and dd respectively.
+  format = format.replaceAll('YY', 'yy').replaceAll('DD', 'dd')
+
   if (type === 'date') {
     // If the type is date only
     return formatDate(new Date(value), format)
