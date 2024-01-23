@@ -2,7 +2,6 @@ import {hues} from '@sanity/color'
 import {CheckmarkIcon, CircleIcon} from '@sanity/icons'
 import {Avatar, Box, Card, Container, Menu, Stack, Text} from '@sanity/ui'
 import {useString} from '@sanity/ui-workshop'
-import React from 'react'
 import {MenuItem} from '../menuItem'
 
 const HOTKEYS = ['Ctrl', 'Alt', 'P']
@@ -13,7 +12,14 @@ export default function MenuItemStory() {
 
   return (
     <Container width={0} padding={4}>
-      <Stack space={2}>
+      <Stack space={4}>
+        <Card>
+          <Text size={1}>
+            <code>MenuItem</code> components enforce a single line of content with pre-determined
+            font size and padding, and also prevents custom children.
+          </Text>
+        </Card>
+
         <Card border radius={2}>
           <Box marginBottom={3} padding={3}>
             <Text size={2} weight="medium">
@@ -21,6 +27,7 @@ export default function MenuItemStory() {
             </Text>
           </Box>
           <Menu>
+            <MenuItem text={`${text} (with tooltip)`} tooltipProps={{content: 'Example tooltip'}} />
             <MenuItem text={text} />
             <MenuItem icon={CircleIcon} text={text} />
             <MenuItem iconRight={CheckmarkIcon} text={text} />
