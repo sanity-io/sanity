@@ -1,6 +1,7 @@
 import {CopyIcon} from '@sanity/icons'
 import {uuid} from '@sanity/uuid'
 import React, {useCallback, useState} from 'react'
+import {filter, firstValueFrom} from 'rxjs'
 import {structureLocaleNamespace} from '../i18n'
 import {useRouter} from 'sanity/router'
 import {
@@ -10,6 +11,7 @@ import {
   useDocumentOperation,
   useCurrentUser,
   useTranslation,
+  useDocumentStore,
 } from 'sanity'
 
 const DISABLED_REASON_KEY = {
@@ -19,6 +21,7 @@ const DISABLED_REASON_KEY = {
 
 /** @internal */
 export const DuplicateAction: DocumentActionComponent = ({id, type, onComplete}) => {
+  const documentStore = useDocumentStore()
   const {duplicate} = useDocumentOperation(id, type)
   const {navigateIntent} = useRouter()
   const [isDuplicating, setDuplicating] = useState(false)
@@ -32,14 +35,25 @@ export const DuplicateAction: DocumentActionComponent = ({id, type, onComplete})
 
   const currentUser = useCurrentUser()
 
-  const handle = useCallback(() => {
+  const handle = useCallback(async () => {
     const dupeId = uuid()
 
     setDuplicating(true)
+
+    // set up the listener before executing
+    const duplicateSuccess = firstValueFrom(
+      documentStore.pair
+        .operationEvents(id, type)
+        .pipe(filter((e) => e.op === 'duplicate' && e.type === 'success')),
+    )
     duplicate.execute(dupeId)
+
+    // only navigate to the duplicated document when the operation is successful
+    await duplicateSuccess
     navigateIntent('edit', {id: dupeId, type})
+
     onComplete()
-  }, [duplicate, navigateIntent, onComplete, type])
+  }, [documentStore.pair, duplicate, id, navigateIntent, onComplete, type])
 
   if (!isPermissionsLoading && !permissions?.granted) {
     return {
