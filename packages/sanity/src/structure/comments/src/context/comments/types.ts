@@ -39,4 +39,6 @@ export interface CommentsContextValue {
 
   status: CommentStatus
   setStatus: (status: CommentStatus) => void
+  upsellDialogOpen: boolean
+  setUpsellDialogOpen: (open: boolean) => void
 }

@@ -21,6 +21,7 @@ import {
   useCommentsSelectedPath,
 } from '../../src'
 import {commentsLocaleNamespace} from '../../i18n'
+import UpsellPanel from '../../src/components/upsell/UpsellPanel'
 import {CommentsInspectorHeader} from './CommentsInspectorHeader'
 import {CommentsInspectorFeedbackFooter} from './CommentsInspectorFeedbackFooter'
 import {DocumentInspectorProps, useCurrentUser, useTranslation, useUnique} from 'sanity'
@@ -338,6 +339,7 @@ function CommentsInspectorInner(props: DocumentInspectorProps) {
             view={status}
           />
         </CommentsOnboardingPopover>
+        {commentsEnabled === 'read-only' && <UpsellPanel />}
 
         {currentUser && (
           <CommentsList
@@ -361,7 +363,7 @@ function CommentsInspectorInner(props: DocumentInspectorProps) {
             status={status}
           />
         )}
-        {commentsEnabled === 'read-only' ? null : <CommentsInspectorFeedbackFooter />}
+        {commentsEnabled === 'enabled' && <CommentsInspectorFeedbackFooter />}
       </Flex>
     </Fragment>
   )
