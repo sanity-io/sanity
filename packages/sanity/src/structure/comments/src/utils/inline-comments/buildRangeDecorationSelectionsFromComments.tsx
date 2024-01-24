@@ -19,8 +19,8 @@ function toPlainTextWithChildSeparators(inputBlock: PortableTextTextBlock) {
     .join(CHILD_SYMBOL)
 }
 
-// The fuzzy matching library will return a match if the score is above this threshold (higher is more strict)
-const FUZZY_MATCH_SCORE_THRESHOLD = 0.5
+// The fuzzy matching library will return a match if the score is above this threshold (0-1 where 1 is exact match)
+const FUZZY_MATCH_SCORE_THRESHOLD = 0.75
 
 const EMPTY_ARRAY: [] = []
 
@@ -46,21 +46,22 @@ export function buildRangeDecorationSelectionsFromComments(
   return flatten(
     textSelections.map((comment) => {
       return flatten(
-        comment.selection?.value.map((range) => {
-          const matchedBlock = value.find((block) => block._key === range._key)
+        comment.selection?.value.map((selectionMember) => {
+          const matchedBlock = value.find((block) => block._key === selectionMember._key)
           if (!matchedBlock || !isPortableTextTextBlock(matchedBlock)) {
             return EMPTY_ARRAY
           }
-          if (typeof range.text === 'string') {
+          if (typeof selectionMember.text === 'string') {
             const text = toPlainTextWithChildSeparators(matchedBlock)
-            const matchData = fuzzy(range.text, text, {
-              returnMatchData: true,
-              useSeparatedUnicode: true,
-              useDamerau: text.length > 10,
-              threshold: FUZZY_MATCH_SCORE_THRESHOLD,
+            const matchData = fuzzy(selectionMember.text, text, {
+              ignoreCase: false,
               ignoreSymbols: true,
+              normalizeWhitespace: true,
+              returnMatchData: true,
+              useDamerau: selectionMember.text.length > 10,
+              useSeparatedUnicode: true,
             })
-            if (matchData) {
+            if (matchData.score > FUZZY_MATCH_SCORE_THRESHOLD) {
               let childIndexAnchor = 0
               let anchorOffset = 0
               let childIndexFocus = 0
