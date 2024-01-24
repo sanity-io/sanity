@@ -14,12 +14,12 @@ describe('date', () => {
   })
 
   test('max length constraint', async () => {
-    const rule = Rule.dateTime().min('2024-01-01')
+    const rule = Rule.dateTime().max('2024-01-01')
     await expect(rule.validate('2024-01-02', context)).resolves.toMatchSnapshot(
-      'Must be at or after',
+      'Must be at or before',
     )
     await expect(rule.validate('2023-12-31', context)).resolves.toMatchSnapshot('max length: valid')
-    await expect(rule.validate('2024-01-02', context)).resolves.toMatchSnapshot('max length: valid')
+    await expect(rule.validate('2024-01-01', context)).resolves.toMatchSnapshot('max length: valid')
   })
 })
 
@@ -40,11 +40,11 @@ describe('date with custom format', () => {
   })
 
   test('max length constraint', async () => {
-    const rule = Rule.dateTime().min('2024-01-01')
+    const rule = Rule.dateTime().max('2024-01-01')
     await expect(rule.validate('2024-01-02', context)).resolves.toMatchSnapshot(
-      'Must be at or after',
+      'Must be at or before',
     )
     await expect(rule.validate('2023-12-31', context)).resolves.toMatchSnapshot('max length: valid')
-    await expect(rule.validate('2024-01-02', context)).resolves.toMatchSnapshot('max length: valid')
+    await expect(rule.validate('2024-01-01', context)).resolves.toMatchSnapshot('max length: valid')
   })
 })
