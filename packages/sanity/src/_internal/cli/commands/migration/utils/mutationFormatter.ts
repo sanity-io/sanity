@@ -4,19 +4,20 @@ import {Mutation, Index, KeyedPathElement, NodePatch} from '@bjoerge/mutiny'
 import {stringify} from '@bjoerge/mutiny/path'
 
 import {SanityDocument} from '@sanity/types'
+
 import {Chalk} from 'chalk'
 
 export type ItemRef = string | number
 
-export function format<Doc extends SanityDocument>(chalk: Chalk, mutations: Mutation[]): string {
-  return mutations.flatMap((m) => encodeMutation<Doc>(chalk, m)).join('\n')
+export function format(chalk: Chalk, mutations: Mutation[]): string {
+  return mutations.flatMap((m) => formatMutation(chalk, m)).join('\n')
 }
 
 function encodeItemRef(ref: Index | KeyedPathElement): ItemRef {
   return typeof ref === 'number' ? ref : ref._key
 }
 
-function encodeMutation<Doc extends SanityDocument>(chalk: Chalk, mutation: Mutation): string {
+export function formatMutation(chalk: Chalk, mutation: Mutation): string {
   if (
     mutation.type === 'create' ||
     mutation.type === 'createIfNotExists' ||
