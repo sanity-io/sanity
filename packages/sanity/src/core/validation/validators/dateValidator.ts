@@ -1,6 +1,6 @@
 import {Validators} from '@sanity/types'
-import {genericValidators} from './genericValidator'
 import * as legacyDateFormat from '@sanity/util/legacyDateFormat'
+import {genericValidators} from './genericValidator'
 
 function isRecord(obj: unknown): obj is Record<string, unknown> {
   return typeof obj === 'object' && obj !== null && !Array.isArray(obj)
@@ -21,8 +21,11 @@ const getFormattedDate = (type = '', value: string | number | Date, options?: Da
   const dateFormat = options?.dateFormat || legacyDateFormat.DEFAULT_DATE_FORMAT
   const timeFormat = options?.timeFormat || legacyDateFormat.DEFAULT_TIME_FORMAT
 
+  // adding the time information in the date only case causes timezone information to be kept
+  // instead of it being assumed to be UTC. This was a problem because midnight UTC is the previous
+  // day in many other timezones resulting in the date displayed to be the previous day.
   return legacyDateFormat.format(
-    new Date(value),
+    new Date(type === 'date' ? `${value}T00:00:00` : value),
     type === 'date' ? dateFormat : `${dateFormat} ${timeFormat}`,
   )
 }
