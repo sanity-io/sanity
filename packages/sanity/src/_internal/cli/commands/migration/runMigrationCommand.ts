@@ -14,7 +14,8 @@ import {
   run,
 } from '@sanity/migrate'
 import {SanityDocument} from '@sanity/types'
-import {format} from './mutationFormatter'
+import {Mutation} from '@bjoerge/mutiny'
+import {format, formatMutation} from './utils/mutationFormatter'
 
 const helpText = `
 Options
@@ -144,13 +145,46 @@ const createMigrationCommand: CliCommandDefinition<CreateFlags> = {
       apiVersion: 'v2024-01-09',
     } as const
 
-    const progress = dry
+    const spinner = output.spinner('Running migration…').start()
+    await (dry
       ? dryRun({api: apiConfig}, migration, context)
-      : run({api: apiConfig, concurrency}, migration)
+      : run(
+          {
+            api: apiConfig,
+            concurrency,
+            onProgress(progress) {
+              if (progress.done) {
+                spinner.text = `Migration "${migrationName}" completed.
 
-    for await (const result of progress) {
-      output.print(result)
-    }
+Project id:  ${chalk.bold(projectId)}
+Dataset:     ${chalk.bold(dataset)}
+
+${progress.documents} documents processed.
+${progress.mutations} mutations generated.
+${chalk.green(progress.completedTransactions.length)} transactions committed.`
+                spinner.stopAndPersist({symbol: chalk.green('✔')})
+                return
+              }
+
+              ;['', ...progress.currentMutations].forEach((mutation) => {
+                spinner.text = `Running migration "${migrationName}"…
+
+Project id:     ${chalk.bold(projectId)}
+Dataset:        ${chalk.bold(dataset)}
+Document type:  ${chalk.bold(migration.documentType)}
+
+${progress.documents} documents processed…
+${progress.mutations} mutations generated…
+${chalk.blue(progress.pending)} requests pending…
+${chalk.green(progress.completedTransactions.length)} transactions committed.
+
+${mutation && !progress.done ? `» ${chalk.grey(formatMutation(chalk, mutation as Mutation))}` : ''}`
+              })
+            },
+          },
+          migration,
+        ))
+    spinner.stop()
   },
 }
 
