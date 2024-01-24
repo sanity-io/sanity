@@ -1,5 +1,4 @@
 import {parseJSON} from '../json'
-import {createSafeJsonParser} from '../createSafeJsonParser'
 
 test('parse JSON', async () => {
   const gen = async function* () {
@@ -7,33 +6,26 @@ test('parse JSON', async () => {
     yield '{"someNumber": 42}'
   }
 
-  const it = parseJSON(gen(), {})
+  const it = parseJSON(gen())
 
   expect(await it.next()).toEqual({value: {someString: 'string'}, done: false})
   expect(await it.next()).toEqual({value: {someNumber: 42}, done: false})
   expect(await it.next()).toEqual({value: undefined, done: true})
 })
 
-test('parse JSON with interrupting error', async () => {
+test('parse JSON with a custom parser', async () => {
   const gen = async function* () {
     yield '{"someString": "string"}'
-    yield '{"someString": "str{"error":{"description":"Some error"}}'
+    yield '{"someNumber": 42}'
   }
 
   const it = parseJSON(gen(), {
-    parse: createSafeJsonParser({
-      errorLabel: 'Error parsing JSON',
+    parse: (line) => ({
+      parsed: JSON.parse(line),
     }),
   })
 
-  expect(await it.next()).toEqual({value: {someString: 'string'}, done: false})
-
-  await expect(async () => {
-    await it.next()
-  }).rejects.toThrowErrorMatchingInlineSnapshot(`
-"Error parsing JSON: Some error
-
-{\\"error\\":{\\"description\\":\\"Some error\\"}}
-"
-`)
+  expect(await it.next()).toEqual({value: {parsed: {someString: 'string'}}, done: false})
+  expect(await it.next()).toEqual({value: {parsed: {someNumber: 42}}, done: false})
+  expect(await it.next()).toEqual({value: undefined, done: true})
 })
