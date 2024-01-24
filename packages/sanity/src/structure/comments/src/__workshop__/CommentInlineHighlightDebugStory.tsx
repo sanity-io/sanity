@@ -13,8 +13,13 @@ import {defineField, defineArrayMember, PortableTextBlock} from '@sanity/types'
 import {Button, Card, Code, Container, Flex, Stack, Text} from '@sanity/ui'
 import {uuid} from '@sanity/uuid'
 import {useCallback, useMemo, useRef, useState} from 'react'
-import {BuildCommentsRangeDecorationsProps, buildRangeDecorationsFromComments} from '../utils'
-import {CommentTextSelection, CommentThreadItem} from '../types'
+import {
+  BuildCommentsRangeDecorationsProps,
+  buildRangeDecorationsFromComments,
+  buildCommentThreadItems,
+} from '../utils'
+import {CommentDocument, CommentTextSelection} from '../types'
+import {useCurrentUser} from 'sanity'
 
 const INLINE_STYLE: React.CSSProperties = {outline: 'none'}
 
@@ -73,9 +78,30 @@ const portableTextType = defineArrayMember({
   of: [blockType],
 })
 
-const schema = Schema.compile({
-  name: 'comments',
+const pteSchema = Schema.compile({
+  name: 'body',
   types: [portableTextType],
+})
+
+const schema = Schema.compile({
+  name: 'article',
+  types: [
+    {
+      name: 'article',
+      type: 'document',
+      fields: [
+        {
+          name: 'body',
+          type: 'array',
+          of: [
+            {
+              type: 'block',
+            },
+          ],
+        },
+      ],
+    },
+  ],
 })
 
 function useCommentRangeDecorations(props: BuildCommentsRangeDecorationsProps): RangeDecoration[] {
@@ -84,9 +110,27 @@ function useCommentRangeDecorations(props: BuildCommentsRangeDecorationsProps): 
 
 export default function CommentInlineHighlightDebugStory() {
   const [value, setValue] = useState<PortableTextBlock[]>(INITIAL_VALUE)
-  const [comments, setComments] = useState<CommentThreadItem[]>([])
+  const [commentDocuments, setCommentDocuments] = useState<CommentDocument[]>([])
   const [hasSelectedRange, setHasSelectedRange] = useState<boolean>(false)
   const editorRef = useRef<PortableTextEditor | null>(null)
+  const currentUser = useCurrentUser()
+
+  const comments = useMemo(() => {
+    if (!currentUser) return []
+
+    // Build comment thread items here so that we can test the validation of each comment
+    // since that is done in the `buildCommentThreadItems` function.
+    return buildCommentThreadItems({
+      comments: commentDocuments,
+      currentUser,
+      schemaType: schema.get('article'),
+      documentValue: {
+        _id: 'foo',
+        _type: 'article',
+        body: value,
+      },
+    })
+  }, [commentDocuments, currentUser, value])
 
   const rangeDecorations = useCommentRangeDecorations({value, comments})
 
@@ -118,20 +162,37 @@ export default function CommentInlineHighlightDebugStory() {
 
     if (!selection) return
 
-    const comment: CommentThreadItem = {
-      selection,
-      breadcrumbs: [],
-      commentsCount: 0,
-      fieldPath: '',
-      replies: [],
-      parentComment: {
-        _id: uuid(),
-      } as any,
+    const comment: CommentDocument = {
+      _createdAt: new Date().toISOString(),
+      _id: uuid(),
+      _rev: 'foo',
+      _type: 'comment',
+      authorId: currentUser?.id || '',
+      message: null,
+      reactions: [],
+      status: 'open',
       threadId: uuid(),
+      target: {
+        documentType: 'article',
+        path: {
+          field: 'body',
+          selection: {
+            type: 'text',
+            value: selection.value,
+          },
+        },
+        document: {
+          _dataset: 'foo',
+          _projectId: 'foo',
+          _ref: 'foo',
+          _type: 'crossDatasetReference',
+          _weak: false,
+        },
+      },
     }
 
-    setComments((prev) => [...prev, comment])
-  }, [])
+    setCommentDocuments((prev) => [...prev, comment])
+  }, [currentUser?.id])
 
   return (
     <Flex align="center" justify="center" height="fill" sizing="border" overflow="hidden">
@@ -144,7 +205,7 @@ export default function CommentInlineHighlightDebugStory() {
                   <PortableTextEditor
                     onChange={handleChange}
                     value={value}
-                    schemaType={schema.get('body')}
+                    schemaType={pteSchema.get('body')}
                     ref={editorRef}
                   >
                     <PortableTextEditable
@@ -172,7 +233,7 @@ export default function CommentInlineHighlightDebugStory() {
                 />
                 <Button
                   text="Clear comments"
-                  onClick={() => setComments([])}
+                  onClick={() => setCommentDocuments([])}
                   mode="bleed"
                   padding={2}
                   fontSize={1}
