@@ -12,12 +12,8 @@ import {Schema} from '@sanity/schema'
 import {defineField, defineArrayMember, PortableTextBlock} from '@sanity/types'
 import {Button, Card, Code, Container, Flex, Stack, Text} from '@sanity/ui'
 import {uuid} from '@sanity/uuid'
-import {useCallback, useMemo, useRef, useState} from 'react'
-import {
-  BuildCommentsRangeDecorationsProps,
-  buildRangeDecorationsFromComments,
-  buildCommentThreadItems,
-} from '../utils'
+import {PropsWithChildren, useCallback, useMemo, useRef, useState} from 'react'
+import {buildRangeDecorationSelectionsFromComments, buildCommentThreadItems} from '../utils'
 import {CommentDocument, CommentTextSelection} from '../types'
 import {useCurrentUser} from 'sanity'
 
@@ -104,8 +100,17 @@ const schema = Schema.compile({
   ],
 })
 
-function useCommentRangeDecorations(props: BuildCommentsRangeDecorationsProps): RangeDecoration[] {
-  return useMemo(() => buildRangeDecorationsFromComments(props), [props])
+function CommentDecorator(props: PropsWithChildren<{commentId: string}>) {
+  const {children, commentId} = props
+  return (
+    <span
+      data-inline-comment-state="added"
+      data-inline-comment-id={commentId}
+      style={{backgroundColor: '#ffcc00', color: '#000'}}
+    >
+      {children}
+    </span>
+  )
 }
 
 export default function CommentInlineHighlightDebugStory() {
@@ -132,7 +137,20 @@ export default function CommentInlineHighlightDebugStory() {
     })
   }, [commentDocuments, currentUser, value])
 
-  const rangeDecorations = useCommentRangeDecorations({value, comments})
+  const rangeDecorations = useMemo(
+    () =>
+      buildRangeDecorationSelectionsFromComments({comments, value}).map(
+        ({selection, comment}) =>
+          ({
+            component: ({children}) => (
+              <CommentDecorator commentId={comment.parentComment._id}>{children}</CommentDecorator>
+            ),
+            isRangeInvalid: () => false,
+            selection,
+          }) as RangeDecoration,
+      ),
+    [comments, value],
+  )
 
   const handleChange = useCallback((change: EditorChange) => {
     if (change.type === 'patch' && editorRef.current) {
