@@ -1,17 +1,17 @@
 import {CliCommandDefinition} from '@sanity/cli'
-import resolveApiClient from '../../../actions/dataset/backup/resolveApiClient'
-import {defaultApiVersion} from './datasetBackupGroup'
+import resolveApiClient from '../../actions/backup/resolveApiClient'
+import {defaultApiVersion} from './backupGroup'
 
 const helpText = `
 Examples
-  sanity dataset-backup disable <dataset-name>
+  sanity backup enable DATASET_NAME
 `
 
-const disableDatasetBackupCommand: CliCommandDefinition = {
-  name: 'disable',
-  group: 'dataset-backup',
+const enableDatasetBackupCommand: CliCommandDefinition = {
+  name: 'enable',
+  group: 'backup',
   signature: '[DATASET_NAME]',
-  description: 'Disable backup for a dataset.',
+  description: 'Enable backup for a dataset.',
   helpText,
   action: async (args, context) => {
     const {output, chalk} = context
@@ -28,16 +28,21 @@ const disableDatasetBackupCommand: CliCommandDefinition = {
         headers: {Authorization: `Bearer ${token}`},
         uri: `/projects/${projectId}/datasets/${datasetName}/settings/backups`,
         body: {
-          enabled: false,
+          enabled: true,
         },
       })
-      output.print(`${chalk.green(`Dataset backup disabled\n`)}`)
+
+      output.print(`${chalk.green(`Enabled daily backups for dataset ${datasetName}.\n`)}`)
+
+      output.print(
+        `${chalk.bold(`Retention policies may apply depending on your plan and agreement.\n`)}`,
+      )
     } catch (error) {
       const msg = error.statusCode
         ? error.response.body.message
         : error.message || error.statusMessage
-      output.print(`${chalk.red(`Disabling dataset backup failed: ${msg}`)}\n`)
+      output.print(`${chalk.red(`Enabling dataset backup failed: ${msg}`)}\n`)
     }
   },
 }
-export default disableDatasetBackupCommand
+export default enableDatasetBackupCommand

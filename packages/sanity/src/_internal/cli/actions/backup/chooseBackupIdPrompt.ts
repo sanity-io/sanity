@@ -1,5 +1,5 @@
 import type {CliCommandContext} from '@sanity/cli'
-import {defaultApiVersion} from '../../../commands/dataset/backup/datasetBackupGroup'
+import {defaultApiVersion} from '../../commands/backup/backupGroup'
 import resolveApiClient from './resolveApiClient'
 
 // maxBackupIdsShown is the maximum number of backup IDs to show in the prompt.

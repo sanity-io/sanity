@@ -5,13 +5,14 @@ import path from 'path'
 import type {CliCommandDefinition, SanityClient} from '@sanity/cli'
 import {QueryParams} from '@sanity/client'
 import {absolutify} from '@sanity/util/fs'
+import {isNumber} from 'lodash'
 import pMap from 'p-map'
 import prettyMs from 'pretty-ms'
 import rimraf from 'rimraf'
-import chooseBackupIdPrompt from '../../../actions/dataset/backup/chooseBackupIdPrompt'
-import resolveApiClient from '../../../actions/dataset/backup/resolveApiClient'
-import getOutputPath from '../../../actions/dataset/getOutoutPath'
-import {defaultApiVersion} from './datasetBackupGroup'
+import chooseBackupIdPrompt from '../../actions/backup/chooseBackupIdPrompt'
+import resolveApiClient from '../../actions/backup/resolveApiClient'
+import getOutputPath from '../../actions/dataset/getOutoutPath'
+import {defaultApiVersion} from './backupGroup'
 
 const archiver = require('archiver')
 const {getIt} = require('get-it')
@@ -54,21 +55,20 @@ interface ProgressEvent {
 
 const helpText = `
 Options
-  --backup-id <string> The backup ID to download (required)
-  --out <string>       The file path the backup should download to
+  --backup-id <string> The backup ID to download. (required)
+  --out <string>       The file or directory path the backup should download to.
   --overwrite          Allows overwriting of existing backup file.
-  --concurrency <num>  Concurrent number of backup item downloads (max: 24)
-  --no-compress        Skips compressing tarball entries (still generates a gzip file)
+  --concurrency <num>  Concurrent number of backup item downloads. (max: 24)
 
 Examples
-  sanity dataset-backup download <dataset-name> --backup-id 2020-01-01-backup-abcd1234
-  sanity dataset-backup download <dataset-name> --backup-id 2020-01-01-backup-abcd1234 --out /path/to/file
-  sanity dataset-backup download <dataset-name> --backup-id 2020-01-01-backup-abcd1234 --out /path/to/file --overwrite
+  sanity backup download DATASET_NAME --backup-id 2020-01-01-backup-abcd1234
+  sanity backup download DATASET_NAME --backup-id 2020-01-01-backup-abcd1234 --out /path/to/file
+  sanity backup download DATASET_NAME --backup-id 2020-01-01-backup-abcd1234 --out /path/to/file --overwrite
 `
 
-const downloadDatasetBackupCommand: CliCommandDefinition = {
+const downloadBackupCommand: CliCommandDefinition = {
   name: 'download',
-  group: 'dataset-backup',
+  group: 'backup',
   signature: '[DATASET_NAME]',
   description: 'Download a dataset backup to a local file.',
   helpText,
@@ -76,6 +76,16 @@ const downloadDatasetBackupCommand: CliCommandDefinition = {
     const {output, prompt, workDir, chalk} = context
     const flags = args.extOptions
     const [dataset] = args.argsWithoutOptions
+
+    if ('concurrency' in flags) {
+      if (
+        !isNumber(flags.concurrency) ||
+        Number(flags.concurrency) < 1 ||
+        Number(flags.concurrency) > 24
+      ) {
+        throw new Error(`concurrency should be in 1 to 24 range`)
+      }
+    }
 
     const {projectId, datasetName, client} = await resolveApiClient(
       context,
@@ -121,6 +131,7 @@ const downloadDatasetBackupCommand: CliCommandDefinition = {
 
     output.print(`Downloading backup to "${chalk.cyan(outputPath)}"`)
 
+    const start = Date.now()
     let currentStep = 'Downloading documents and assets...'
     let spinner = output.spinner(currentStep).start()
     const onProgress = (progress: ProgressEvent) => {
@@ -133,7 +144,6 @@ const downloadDatasetBackupCommand: CliCommandDefinition = {
 
       currentStep = progress.step
     }
-    const start = Date.now()
 
     // Create temporary directory to store files before bundling them into the archive at outputPath.
     const tmpDir = tmpdir()
@@ -255,6 +265,10 @@ async function downloadFiles(
 }
 
 async function downloadFile(file: file, dir: string) {
+  // File names that contain a path to file (sanity-storage/assets/file-name) fail when archive is created, so we
+  // want to handle them by taking the base name as file name.
+  file.name = path.basename(file.name)
+
   let error
   const filepath = path.join(dir, file.name)
   for (let retryCount = 0; retryCount < MAX_RETRIES; retryCount++) {
@@ -294,4 +308,4 @@ async function downloadFile(file: file, dir: string) {
   throw error
 }
 
-export default downloadDatasetBackupCommand
+export default downloadBackupCommand
