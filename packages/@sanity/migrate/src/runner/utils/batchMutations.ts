@@ -31,7 +31,7 @@ export async function* batchMutations(
     const mutationSize = JSON.stringify(mutation).length
 
     if (mutationSize >= maxBatchSize + PADDING_SIZE) {
-      // the mutation size itself is bigger then max batch size, yield it as a single batch and hope for the best (the server has a bigger limit)
+      // the mutation size itself is bigger than max batch size, yield it as a single batch and hope for the best (the server has a bigger limit)
       if (currentBatch.length) {
         yield currentBatch
       }

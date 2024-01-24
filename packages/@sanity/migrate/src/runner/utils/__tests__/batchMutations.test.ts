@@ -1,5 +1,3 @@
-import {at, createIfNotExists, createOrReplace, patch, set} from '@bjoerge/mutiny'
-import {Mutation} from '@sanity/client'
 import {batchMutations} from '../batchMutations'
 
 function byteLength(obj: unknown) {
@@ -40,7 +38,8 @@ describe('mutation payload batching', () => {
     expect(await it.next()).toEqual({value: [second], done: false})
     expect(await it.next()).toEqual({value: undefined, done: true})
   })
-  test('when each mutation is smaller then max batch size', async () => {
+
+  test('when each mutation is bigger than max batch size', async () => {
     const first = {createIfNotExists: {_id: 'foo', _type: 'something', bar: 'baz'}}
     const second = {patch: {id: 'foo', set: {bar: 'baz'}}}
     const gen = async function* () {
