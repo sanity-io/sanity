@@ -1,21 +1,13 @@
-module.exports = (line) => {
-  try {
-    return JSON.parse(line)
-  } catch (err) {
-    // Catch half-done lines with an error at the end
-    const errorPosition = line.lastIndexOf('{"error":')
-    if (errorPosition === -1) {
-      err.message = `${err.message} (${line})`
-      throw err
-    }
+const {createSafeJsonParser} = require('@sanity/util/createSafeJsonParser')
 
-    const errorJson = line.slice(errorPosition)
-    const errorLine = JSON.parse(errorJson)
-    const error = errorLine && errorLine.error
-    if (error && error.description) {
-      throw new Error(`Error streaming dataset: ${error.description}\n\n${errorJson}\n`)
-    }
-
-    throw err
-  }
-}
+/**
+ * Safe JSON parser that is able to handle lines interrupted by an error object.
+ *
+ * This may occur when streaming NDJSON from the Export HTTP API.
+ *
+ * @internal
+ * @see {@link https://github.com/sanity-io/sanity/pull/1787 | Initial pull request}
+ */
+module.exports = createSafeJsonParser({
+  errorLabel: 'Error streaming dataset',
+})

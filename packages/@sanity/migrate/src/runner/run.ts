@@ -2,7 +2,7 @@ import {SanityDocument} from '@sanity/types'
 import {MultipleMutationResult} from '@sanity/client'
 import {APIConfig, Migration} from '../types'
 import {ndjson} from '../it-utils/ndjson'
-import {fromExportEndpoint} from '../sources/fromExportEndpoint'
+import {fromExportEndpoint, safeJsonParser} from '../sources/fromExportEndpoint'
 import {toMutationEndpoint} from '../destinations/toMutationEndpoint'
 import {collectMigrationMutations} from './collectMigrationMutations'
 
@@ -13,7 +13,9 @@ interface MigrationRunnerOptions {
 export async function* run(config: MigrationRunnerOptions, migration: Migration) {
   const mutations = collectMigrationMutations(
     migration,
-    ndjson(await fromExportEndpoint(config.api)) as AsyncIterableIterator<SanityDocument>,
+    ndjson<SanityDocument>(await fromExportEndpoint(config.api), {
+      parse: safeJsonParser,
+    }),
   )
 
   for await (const result of toMutationEndpoint(config.api, mutations)) {

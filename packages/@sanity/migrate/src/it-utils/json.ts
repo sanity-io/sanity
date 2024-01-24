@@ -1,12 +1,12 @@
-type Parser<Type> = (line: string) => Type
+export type JSONParser<Type> = (line: string) => Type
 
-interface Options<Type> {
-  parse?: Parser<Type>
+export interface JSONOptions<Type> {
+  parse?: JSONParser<Type>
 }
 
 export async function* parseJSON<Type>(
   it: AsyncIterableIterator<string>,
-  {parse = JSON.parse}: Options<Type> = {},
+  {parse = JSON.parse}: JSONOptions<Type> = {},
 ): AsyncIterableIterator<Type> {
   for await (const chunk of it) {
     yield parse(chunk)
