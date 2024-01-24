@@ -1,5 +1,5 @@
 import React, {useCallback, useMemo} from 'react'
-import {format, parse} from '@sanity/util/legacyDateFormat'
+import {format, parse, DEFAULT_DATE_FORMAT} from '@sanity/util/legacyDateFormat'
 import {set, unset} from '../../patch'
 import {StringInputProps} from '../../types'
 import {useTranslation} from '../../../i18n'
@@ -12,13 +12,8 @@ import {getCalendarLabels} from './utils'
  * @beta */
 export type DateInputProps = StringInputProps
 
-// This is the format dates are stored on
-const VALUE_FORMAT = 'YYYY-MM-DD'
-// default to how they are stored
-const DEFAULT_DATE_FORMAT = VALUE_FORMAT
-
-const deserialize = (value: string) => parse(value, VALUE_FORMAT)
-const serialize = (date: Date) => format(date, VALUE_FORMAT)
+const deserialize = (value: string) => parse(value, DEFAULT_DATE_FORMAT)
+const serialize = (date: Date) => format(date, DEFAULT_DATE_FORMAT)
 
 /**
  * @hidden
