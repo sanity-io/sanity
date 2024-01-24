@@ -6,7 +6,7 @@ describe('date', () => {
     const context: any = {client: {}, i18n: getFallbackLocaleSource(), type: {name: 'date'}}
 
     test('min length constraint', async () => {
-      const rule = Rule.dateTime().min(Date.parse('2024-01-01'))
+      const rule = Rule.dateTime().min('2024-01-01')
       await expect(rule.validate('2023-12-31', context)).resolves.toMatchSnapshot(
         'Must be at or after',
       )
@@ -15,7 +15,7 @@ describe('date', () => {
     })
 
     test('max length constraint', async () => {
-      const rule = Rule.dateTime().max(Date.parse('2024-01-01'))
+      const rule = Rule.dateTime().max('2024-01-01')
       await expect(rule.validate('2024-01-02', context)).resolves.toMatchSnapshot(
         'Must be at or before',
       )
@@ -32,7 +32,7 @@ describe('date', () => {
     }
 
     test('min length constraint', async () => {
-      const rule = Rule.dateTime().min(Date.parse('2024-01-01'))
+      const rule = Rule.dateTime().min('2024-01-01')
       await expect(rule.validate('2023-12-31', context)).resolves.toMatchSnapshot(
         'Must be at or after',
       )
@@ -41,7 +41,7 @@ describe('date', () => {
     })
 
     test('max length constraint', async () => {
-      const rule = Rule.dateTime().max(Date.parse('2024-01-01'))
+      const rule = Rule.dateTime().max('2024-01-01')
       await expect(rule.validate('2024-01-02', context)).resolves.toMatchSnapshot(
         'Must be at or before',
       )
@@ -56,7 +56,7 @@ describe('datetime', () => {
     const context: any = {client: {}, i18n: getFallbackLocaleSource(), type: {name: 'datetime'}}
 
     test('min length constraint', async () => {
-      const rule = Rule.dateTime().min(Date.parse('2024-01-01T17:31:00.000Z'))
+      const rule = Rule.dateTime().min('2024-01-01T17:31:00.000Z')
       await expect(rule.validate('2023-12-31T17:31:00.000Z', context)).resolves.toMatchSnapshot(
         'Must be at or after',
       )
@@ -65,7 +65,7 @@ describe('datetime', () => {
     })
 
     test('max length constraint', async () => {
-      const rule = Rule.dateTime().max(Date.parse('2024-01-01T17:31:00.000Z'))
+      const rule = Rule.dateTime().max('2024-01-01T17:31:00.000Z')
       await expect(rule.validate('2024-01-02T17:31:00.000Z', context)).resolves.toMatchSnapshot(
         'Must be at or before',
       )
@@ -82,7 +82,7 @@ describe('datetime', () => {
     }
 
     test('min length constraint', async () => {
-      const rule = Rule.dateTime().min(Date.parse('2024-01-01T17:31:00.000Z'))
+      const rule = Rule.dateTime().min('2024-01-01T17:31:00.000Z')
       await expect(rule.validate('2023-12-31T17:31:00.000Z', context)).resolves.toMatchSnapshot(
         'Must be at or after',
       )
@@ -91,7 +91,7 @@ describe('datetime', () => {
     })
 
     test('max length constraint', async () => {
-      const rule = Rule.dateTime().max(Date.parse('2024-01-01T17:31:00.000Z'))
+      const rule = Rule.dateTime().max('2024-01-01T17:31:00.000Z')
       await expect(rule.validate('2024-01-02T17:31:00.000Z', context)).resolves.toMatchSnapshot(
         'Must be at or before',
       )
