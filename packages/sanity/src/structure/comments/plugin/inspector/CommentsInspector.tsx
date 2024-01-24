@@ -53,7 +53,7 @@ export function CommentsInspector(props: DocumentInspectorProps) {
 
 function CommentsInspectorInner(props: DocumentInspectorProps) {
   const {onClose} = props
-
+  const commentsEnabled = useCommentsEnabled()
   const [showDeleteDialog, setShowDeleteDialog] = useState<boolean>(false)
   const [commentToDelete, setCommentToDelete] = useState<CommentToDelete | null>(null)
   const [deleteLoading, setDeleteLoading] = useState<boolean>(false)
@@ -359,8 +359,7 @@ function CommentsInspectorInner(props: DocumentInspectorProps) {
             status={status}
           />
         )}
-
-        <CommentsInspectorFeedbackFooter />
+        {commentsEnabled === 'read-only' ? null : <CommentsInspectorFeedbackFooter />}
       </Flex>
     </Fragment>
   )

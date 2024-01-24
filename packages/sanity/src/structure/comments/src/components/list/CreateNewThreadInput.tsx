@@ -3,6 +3,7 @@ import React, {useState, useCallback, useRef, useMemo} from 'react'
 import type {CommentMessage, MentionOptionsHookValue} from '../../types'
 import {CommentInput, CommentInputHandle, CommentInputProps} from '../pte'
 import {hasCommentMessageValue} from '../../helpers'
+import {useCommentsEnabled} from '../../hooks'
 import {EMPTY_ARRAY} from 'sanity'
 
 interface CreateNewThreadInputProps {
@@ -27,7 +28,7 @@ export function CreateNewThreadInput(props: CreateNewThreadInputProps) {
     onNewThreadCreate,
     readOnly,
   } = props
-
+  const commentsEnabled = useCommentsEnabled()
   const [value, setValue] = useState<CommentMessage>(EMPTY_ARRAY)
   const commentInputHandle = useRef<CommentInputHandle | null>(null)
 
@@ -73,11 +74,14 @@ export function CreateNewThreadInput(props: CreateNewThreadInputProps) {
     commentInputHandle.current?.discardDialogController.close()
   }, [])
 
-  const placeholder = (
-    <>
-      Add comment to <b>{fieldName}</b>
-    </>
-  )
+  const placeholder =
+    commentsEnabled === 'read-only' ? (
+      <>Upgrade to add comment</>
+    ) : (
+      <>
+        Add comment to <b>{fieldName}</b>
+      </>
+    )
 
   return (
     <CommentInput
@@ -92,7 +96,7 @@ export function CreateNewThreadInput(props: CreateNewThreadInputProps) {
       onFocus={onFocus}
       onSubmit={handleSubmit}
       placeholder={placeholder}
-      readOnly={readOnly}
+      readOnly={readOnly || commentsEnabled === 'read-only'}
       ref={commentInputHandle}
       value={value}
     />

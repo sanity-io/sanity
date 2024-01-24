@@ -17,6 +17,7 @@ import {SpacerAvatar} from '../avatars'
 import {hasCommentMessageValue} from '../../helpers'
 import {CommentsSelectedPath} from '../../context'
 import {Button} from '../../../../../ui-components'
+import {useCommentsEnabled} from '../../hooks'
 import {CommentsListItemLayout} from './CommentsListItemLayout'
 import {ThreadCard} from './styles'
 
@@ -113,6 +114,7 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
     readOnly,
     replies = EMPTY_ARRAY,
   } = props
+  const commentsEnabled = useCommentsEnabled()
   const [value, setValue] = useState<CommentMessage>(EMPTY_ARRAY)
   const [collapsed, setCollapsed] = useState<boolean>(true)
   const didExpand = useRef<boolean>(false)
@@ -331,8 +333,8 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
               onDiscardConfirm={confirmDiscard}
               onKeyDown={handleInputKeyDown}
               onSubmit={handleReplySubmit}
-              placeholder="Reply"
-              readOnly={readOnly}
+              placeholder={commentsEnabled === 'read-only' ? 'Upgrade to reply' : 'Reply'}
+              readOnly={readOnly || commentsEnabled === 'read-only'}
               ref={replyInputRef}
               value={value}
             />

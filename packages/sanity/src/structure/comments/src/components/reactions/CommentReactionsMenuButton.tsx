@@ -2,6 +2,8 @@ import React, {cloneElement, useCallback, useMemo, useState} from 'react'
 import {Card, useClickOutside} from '@sanity/ui'
 import {CommentReactionOption} from '../../types'
 import {Popover, PopoverProps} from '../../../../../ui-components'
+import {useCommentsEnabled} from '../../hooks'
+import {CommentsEnabledContextValue} from '../../context/enabled/types'
 import {CommentReactionsMenu} from './CommentReactionsMenu'
 
 const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['top', 'bottom']
@@ -12,7 +14,10 @@ export interface CommentReactionsMenuButtonProps {
   onSelect: (option: CommentReactionOption) => void
   options: CommentReactionOption[]
   readOnly?: boolean
-  renderMenuButton: (props: {open: boolean}) => React.ReactElement
+  renderMenuButton: (props: {
+    open: boolean
+    commentsEnabled: CommentsEnabledContextValue
+  }) => React.ReactElement
 }
 
 export function CommentReactionsMenuButton(props: CommentReactionsMenuButtonProps) {
@@ -21,6 +26,7 @@ export function CommentReactionsMenuButton(props: CommentReactionsMenuButtonProp
   const [popoverElement, setPopoverElement] = useState<HTMLDivElement | null>(null)
 
   const [open, setOpen] = useState<boolean>(false)
+  const commentsEnabled = useCommentsEnabled()
 
   const handleClick = useCallback(() => {
     const next = !open
@@ -66,18 +72,18 @@ export function CommentReactionsMenuButton(props: CommentReactionsMenuButtonProp
 
   const button = useMemo(() => {
     // Get the button element from the renderMenuButton function.
-    const btn = renderMenuButton({open})
+    const btn = renderMenuButton({open, commentsEnabled})
 
     // Clone the button element and add the necessary props.
     return cloneElement(btn, {
       'aria-expanded': open,
       'aria-haspopup': 'true',
-      disabled: readOnly,
       id: 'reactions-menu-button',
       onClick: handleClick,
       ref: setButtonElement,
+      disabled: readOnly || commentsEnabled === 'read-only',
     })
-  }, [handleClick, open, readOnly, renderMenuButton])
+  }, [handleClick, open, readOnly, renderMenuButton, commentsEnabled])
 
   const popoverContent = (
     <Card

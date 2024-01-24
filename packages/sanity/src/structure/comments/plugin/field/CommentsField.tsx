@@ -76,6 +76,7 @@ function CommentFieldInner(props: FieldProps) {
   const {element: boundaryElement} = useBoundaryElement()
 
   const currentUser = useCurrentUser()
+  const commentsEnabled = useCommentsEnabled()
 
   const {
     comments,
@@ -152,6 +153,11 @@ function CommentFieldInner(props: FieldProps) {
       return
     }
 
+    if (commentsEnabled === 'read-only') {
+      // TODO:  Open the upsell dialog
+      return
+    }
+
     // Else, toggle the comment input open/closed
     setOpen((v) => !v)
   }, [
@@ -162,6 +168,7 @@ function CommentFieldInner(props: FieldProps) {
     setStatus,
     props.path,
     handleSetThreadToScrollTo,
+    commentsEnabled,
   ])
 
   const handleCommentAdd = useCallback(() => {
