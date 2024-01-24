@@ -15,6 +15,7 @@ import {
 } from '@sanity/migrate'
 import {SanityDocument} from '@sanity/types'
 import {Mutation} from '@bjoerge/mutiny'
+import {debug} from '../../debug'
 import {format, formatMutation} from './utils/mutationFormatter'
 
 const helpText = `
@@ -145,46 +146,66 @@ const createMigrationCommand: CliCommandDefinition<CreateFlags> = {
       apiVersion: 'v2024-01-09',
     } as const
 
-    const spinner = output.spinner('Running migration…').start()
-    await (dry
-      ? dryRun({api: apiConfig}, migration, context)
-      : run(
-          {
-            api: apiConfig,
-            concurrency,
-            onProgress(progress) {
-              if (progress.done) {
-                spinner.text = `Migration "${migrationName}" completed.
+    if (dry) {
+      const spinner = output.spinner(`Running migration "${migrationName}" in dry mode`).start()
+      await dryRun({api: apiConfig}, migration, context)
 
-Project id:  ${chalk.bold(projectId)}
-Dataset:     ${chalk.bold(dataset)}
+      spinner.stop()
+    } else {
+      const response = await prompt.single<boolean>({
+        message: `This migration will run on the ${chalk.yellow(
+          chalk.bold(apiConfig.dataset),
+        )} dataset in ${chalk.yellow(chalk.bold(apiConfig.projectId))} project. Are you sure?`,
+        type: 'confirm',
+      })
 
-${progress.documents} documents processed.
-${progress.mutations} mutations generated.
-${chalk.green(progress.completedTransactions.length)} transactions committed.`
-                spinner.stopAndPersist({symbol: chalk.green('✔')})
-                return
-              }
+      if (response === false) {
+        debug('User aborted migration')
+        return
+      }
 
-              ;['', ...progress.currentMutations].forEach((mutation) => {
-                spinner.text = `Running migration "${migrationName}"…
+      const spinner = output.spinner(`Running migration "${migrationName}"`).start()
 
-Project id:     ${chalk.bold(projectId)}
-Dataset:        ${chalk.bold(dataset)}
-Document type:  ${chalk.bold(migration.documentType)}
+      await run(
+        {
+          api: apiConfig,
+          concurrency,
+          onProgress(progress) {
+            if (progress.done) {
+              spinner.text = `Migration "${migrationName}" completed.
 
-${progress.documents} documents processed…
-${progress.mutations} mutations generated…
-${chalk.blue(progress.pending)} requests pending…
-${chalk.green(progress.completedTransactions.length)} transactions committed.
+  Project id:  ${chalk.bold(projectId)}
+  Dataset:     ${chalk.bold(dataset)}
 
-${mutation && !progress.done ? `» ${chalk.grey(formatMutation(chalk, mutation as Mutation))}` : ''}`
-              })
-            },
+  ${progress.documents} documents processed.
+  ${progress.mutations} mutations generated.
+  ${chalk.green(progress.completedTransactions.length)} transactions committed.`
+              spinner.stopAndPersist({symbol: chalk.green('✔')})
+              return
+            }
+
+            ;['', ...progress.currentMutations].forEach((mutation) => {
+              spinner.text = `Running migration "${migrationName}"…
+
+  Project id:     ${chalk.bold(projectId)}
+  Dataset:        ${chalk.bold(dataset)}
+  Document type:  ${chalk.bold(migration.documentType)}
+
+  ${progress.documents} documents processed…
+  ${progress.mutations} mutations generated…
+  ${chalk.blue(progress.pending)} requests pending…
+  ${chalk.green(progress.completedTransactions.length)} transactions committed.
+
+  ${
+    mutation && !progress.done ? `» ${chalk.grey(formatMutation(chalk, mutation as Mutation))}` : ''
+  }`
+            })
           },
-          migration,
-        ))
-    spinner.stop()
+        },
+        migration,
+      )
+      spinner.stop()
+    }
   },
 }
 
