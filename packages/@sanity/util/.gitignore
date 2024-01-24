@@ -13,6 +13,7 @@
 
 # Exports
 /content.js
+/createSafeJsonParser.js
 /fs.js
 /legacyDateFormat.js
 /paths.js

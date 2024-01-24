@@ -3,7 +3,15 @@
   "extends": ["//"],
   "pipeline": {
     "build": {
-      "outputs": ["lib/**", "index.js", "content.js", "fs.js", "legacyDateFormat.js", "paths.js"]
+      "outputs": [
+        "lib/**",
+        "index.js",
+        "content.js",
+        "createSafeJsonParser.js",
+        "fs.js",
+        "legacyDateFormat.js",
+        "paths.js"
+      ]
     }
   }
 }
