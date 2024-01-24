@@ -2,7 +2,14 @@
   "name": "@sanity/util",
   "version": "3.25.0",
   "description": "Utilities shared across projects of Sanity",
-  "keywords": ["sanity", "cms", "headless", "realtime", "content", "util"],
+  "keywords": [
+    "sanity",
+    "cms",
+    "headless",
+    "realtime",
+    "content",
+    "util"
+  ],
   "homepage": "https://www.sanity.io/",
   "bugs": {
     "url": "https://github.com/sanity-io/sanity/issues"
@@ -89,11 +96,21 @@
   "types": "./lib/exports/index.d.ts",
   "typesVersions": {
     "*": {
-      "fs": ["./lib/exports/fs.d.ts"],
-      "content": ["./lib/exports/content.d.ts"],
-      "createSafeJsonParser": ["./lib/exports/createSafeJsonParser.d.ts"],
-      "legacyDateFormat": ["./lib/exports/legacyDateFormat.d.ts"],
-      "paths": ["./lib/exports/paths.d.ts"]
+      "fs": [
+        "./lib/exports/fs.d.ts"
+      ],
+      "content": [
+        "./lib/exports/content.d.ts"
+      ],
+      "createSafeJsonParser": [
+        "./lib/exports/createSafeJsonParser.d.ts"
+      ],
+      "legacyDateFormat": [
+        "./lib/exports/legacyDateFormat.d.ts"
+      ],
+      "paths": [
+        "./lib/exports/paths.d.ts"
+      ]
     }
   },
   "files": [
