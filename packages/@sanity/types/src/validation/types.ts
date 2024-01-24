@@ -153,8 +153,8 @@ export interface Rule {
   optional(): Rule
   required(): Rule
   custom<T = unknown>(fn: CustomValidator<T>, options?: {bypassConcurrencyLimit?: boolean}): Rule
-  min(len: number | FieldReference): Rule
-  max(len: number | FieldReference): Rule
+  min(len: number | string | FieldReference): Rule
+  max(len: number | string | FieldReference): Rule
   length(len: number | FieldReference): Rule
   valid(value: unknown | unknown[]): Rule
   integer(): Rule
@@ -203,8 +203,8 @@ export type RuleSpec =
   | {flag: 'either'; constraint: Rule[]}
   | {flag: 'presence'; constraint: 'optional' | 'required'}
   | {flag: 'custom'; constraint: CustomValidator}
-  | {flag: 'min'; constraint: number}
-  | {flag: 'max'; constraint: number}
+  | {flag: 'min'; constraint: number | string}
+  | {flag: 'max'; constraint: number | string}
   | {flag: 'length'; constraint: number}
   | {flag: 'valid'; constraint: unknown[]}
   | {flag: 'precision'; constraint: number}
