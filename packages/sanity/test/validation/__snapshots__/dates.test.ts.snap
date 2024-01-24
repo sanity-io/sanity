@@ -1,39 +1,5 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`date max length constraint: Must be at or before 1`] = `
-Array [
-  Object {
-    "item": Object {
-      "message": "Must be at or before 2024-01-01",
-    },
-    "level": "error",
-    "message": "Must be at or before 2024-01-01",
-    "path": Array [],
-  },
-]
-`;
-
-exports[`date max length constraint: max length: valid 1`] = `Array []`;
-
-exports[`date max length constraint: max length: valid 2`] = `Array []`;
-
-exports[`date min length constraint: Must be at or after 1`] = `
-Array [
-  Object {
-    "item": Object {
-      "message": "Must be at or after 2024-01-01",
-    },
-    "level": "error",
-    "message": "Must be at or after 2024-01-01",
-    "path": Array [],
-  },
-]
-`;
-
-exports[`date min length constraint: min length: valid 1`] = `Array []`;
-
-exports[`date min length constraint: min length: valid 2`] = `Array []`;
-
 exports[`date with custom format max length constraint: Must be at or before 1`] = `
 Array [
   Object {
@@ -46,10 +12,6 @@ Array [
   },
 ]
 `;
-
-exports[`date with custom format max length constraint: max length: valid 1`] = `Array []`;
-
-exports[`date with custom format max length constraint: max length: valid 2`] = `Array []`;
 
 exports[`date with custom format min length constraint: Must be at or after 1`] = `
 Array [
@@ -64,6 +26,80 @@ Array [
 ]
 `;
 
-exports[`date with custom format min length constraint: min length: valid 1`] = `Array []`;
+exports[`date with default format max length constraint: Must be at or before 1`] = `
+Array [
+  Object {
+    "item": Object {
+      "message": "Must be at or before 2024-01-01",
+    },
+    "level": "error",
+    "message": "Must be at or before 2024-01-01",
+    "path": Array [],
+  },
+]
+`;
 
-exports[`date with custom format min length constraint: min length: valid 2`] = `Array []`;
+exports[`date with default format min length constraint: Must be at or after 1`] = `
+Array [
+  Object {
+    "item": Object {
+      "message": "Must be at or after 2024-01-01",
+    },
+    "level": "error",
+    "message": "Must be at or after 2024-01-01",
+    "path": Array [],
+  },
+]
+`;
+
+exports[`datetime with custom format max length constraint: Must be at or before 1`] = `
+Array [
+  Object {
+    "item": Object {
+      "message": "Must be at or before 1st. January 2024 09:31",
+    },
+    "level": "error",
+    "message": "Must be at or before 1st. January 2024 09:31",
+    "path": Array [],
+  },
+]
+`;
+
+exports[`datetime with custom format min length constraint: Must be at or after 1`] = `
+Array [
+  Object {
+    "item": Object {
+      "message": "Must be at or after 1st. January 2024 09:31",
+    },
+    "level": "error",
+    "message": "Must be at or after 1st. January 2024 09:31",
+    "path": Array [],
+  },
+]
+`;
+
+exports[`datetime with default format max length constraint: Must be at or before 1`] = `
+Array [
+  Object {
+    "item": Object {
+      "message": "Must be at or before 2024-01-01 09:31",
+    },
+    "level": "error",
+    "message": "Must be at or before 2024-01-01 09:31",
+    "path": Array [],
+  },
+]
+`;
+
+exports[`datetime with default format min length constraint: Must be at or after 1`] = `
+Array [
+  Object {
+    "item": Object {
+      "message": "Must be at or after 2024-01-01 09:31",
+    },
+    "level": "error",
+    "message": "Must be at or after 2024-01-01 09:31",
+    "path": Array [],
+  },
+]
+`;
