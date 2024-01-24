@@ -6,8 +6,7 @@ import {flatten} from 'lodash'
 import {PropsWithChildren} from 'react'
 import {CommentMessage, CommentThreadItem} from '../../types'
 
-// const CHILD_SYMBOL = '\uF0D0'
-const CHILD_SYMBOL = '|'
+const CHILD_SYMBOL = process.env.NODE_ENV === 'test' ? '|' : '\uF0D0'
 const EMPTY_ARRAY: [] = []
 const FALLBACK_TO_BLOCK = true
 
