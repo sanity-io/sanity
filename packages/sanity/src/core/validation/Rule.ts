@@ -232,11 +232,11 @@ export const Rule: RuleClass = class Rule implements IRule {
     return this.cloneWithRules([{flag: 'custom', constraint: fn as CustomValidator}])
   }
 
-  min(len: number): Rule {
+  min(len: number | string): Rule {
     return this.cloneWithRules([{flag: 'min', constraint: len}])
   }
 
-  max(len: number): Rule {
+  max(len: number | string): Rule {
     return this.cloneWithRules([{flag: 'max', constraint: len}])
   }
 
