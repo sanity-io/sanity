@@ -3,33 +3,60 @@
 exports[`buildRangeDecorationsFromComments allows something to be bolded before the range 1`] = `
 Array [
   Object {
-    "component": [Function],
-    "isRangeInvalid": [Function],
-    "selection": Object {
-      "anchor": Object {
-        "offset": 1,
-        "path": Array [
-          Object {
-            "_key": "6222e4072b6e",
-          },
-          "children",
-          Object {
-            "_key": "5d176cf77466",
-          },
-        ],
-      },
-      "focus": Object {
-        "offset": 6,
-        "path": Array [
-          Object {
-            "_key": "6222e4072b6e",
-          },
-          "children",
-          Object {
-            "_key": "5d176cf77466",
-          },
-        ],
-      },
+    "anchor": Object {
+      "offset": 1,
+      "path": Array [
+        Object {
+          "_key": "6222e4072b6e",
+        },
+        "children",
+        Object {
+          "_key": "5d176cf77466",
+        },
+      ],
+    },
+    "focus": Object {
+      "offset": 6,
+      "path": Array [
+        Object {
+          "_key": "6222e4072b6e",
+        },
+        "children",
+        Object {
+          "_key": "5d176cf77466",
+        },
+      ],
+    },
+  },
+]
+`;
+
+exports[`buildRangeDecorationsFromComments allows something to be bolded inside and outside of the range 1`] = `
+Array [
+  Object {
+    "anchor": Object {
+      "offset": 3,
+      "path": Array [
+        Object {
+          "_key": "6222e4072b6e",
+        },
+        "children",
+        Object {
+          "_key": "897d8881c889",
+        },
+      ],
+    },
+    "focus": Object {
+      "offset": 3,
+      "path": Array [
+        Object {
+          "_key": "6222e4072b6e",
+        },
+        "children",
+        Object {
+          "_key": "3b404dd88fc1",
+        },
+      ],
     },
   },
 ]
@@ -38,33 +65,29 @@ Array [
 exports[`buildRangeDecorationsFromComments allows something to be bolded inside the range 1`] = `
 Array [
   Object {
-    "component": [Function],
-    "isRangeInvalid": [Function],
-    "selection": Object {
-      "anchor": Object {
-        "offset": 6,
-        "path": Array [
-          Object {
-            "_key": "6222e4072b6e",
-          },
-          "children",
-          Object {
-            "_key": "9d9c95878a6e0",
-          },
-        ],
-      },
-      "focus": Object {
-        "offset": 2,
-        "path": Array [
-          Object {
-            "_key": "6222e4072b6e",
-          },
-          "children",
-          Object {
-            "_key": "8daa33e86194",
-          },
-        ],
-      },
+    "anchor": Object {
+      "offset": 6,
+      "path": Array [
+        Object {
+          "_key": "6222e4072b6e",
+        },
+        "children",
+        Object {
+          "_key": "9d9c95878a6e0",
+        },
+      ],
+    },
+    "focus": Object {
+      "offset": 2,
+      "path": Array [
+        Object {
+          "_key": "6222e4072b6e",
+        },
+        "children",
+        Object {
+          "_key": "8daa33e86194",
+        },
+      ],
     },
   },
 ]
@@ -73,33 +96,29 @@ Array [
 exports[`buildRangeDecorationsFromComments creates initial ranges 1`] = `
 Array [
   Object {
-    "component": [Function],
-    "isRangeInvalid": [Function],
-    "selection": Object {
-      "anchor": Object {
-        "offset": 6,
-        "path": Array [
-          Object {
-            "_key": "6222e4072b6e",
-          },
-          "children",
-          Object {
-            "_key": "9d9c95878a6e0",
-          },
-        ],
-      },
-      "focus": Object {
-        "offset": 11,
-        "path": Array [
-          Object {
-            "_key": "6222e4072b6e",
-          },
-          "children",
-          Object {
-            "_key": "9d9c95878a6e0",
-          },
-        ],
-      },
+    "anchor": Object {
+      "offset": 6,
+      "path": Array [
+        Object {
+          "_key": "6222e4072b6e",
+        },
+        "children",
+        Object {
+          "_key": "9d9c95878a6e0",
+        },
+      ],
+    },
+    "focus": Object {
+      "offset": 11,
+      "path": Array [
+        Object {
+          "_key": "6222e4072b6e",
+        },
+        "children",
+        Object {
+          "_key": "9d9c95878a6e0",
+        },
+      ],
     },
   },
 ]

@@ -1,29 +1,34 @@
-import {renderHook} from '@testing-library/react'
-import {buildRangeDecorationsFromComments} from '../buildRangeDecorationsFromComments'
+import {buildRangeDecorationSelectionsFromComments} from '../buildRangeDecorationSelectionsFromComments'
 import {CommentThreadItem} from '../../../types'
 
-describe('buildRangeDecorationsFromComments', () => {
-  it('can be tested', () => {
-    const {result} = renderHook(() => buildRangeDecorationsFromComments({value: [], comments: []}))
-    expect(result.current).toEqual([])
-  })
+describe('buildRangeDecorationSelectionsFromComments', () => {
   it('creates initial ranges', () => {
-    const {result} = renderHook(() =>
-      buildRangeDecorationsFromComments({value: initialValue, comments: initialComments}),
-    )
-    expect(result.current).toMatchSnapshot()
+    const decorators = buildRangeDecorationSelectionsFromComments({
+      value: initialValue,
+      comments: initialComments,
+    })
+    expect(decorators).toMatchSnapshot()
   })
   it('allows something to be bolded before the range', () => {
-    const {result} = renderHook(() =>
-      buildRangeDecorationsFromComments({value: boldedBeforeValue, comments: initialComments}),
-    )
-    expect(result.current).toMatchSnapshot()
+    const decorators = buildRangeDecorationSelectionsFromComments({
+      value: boldedBeforeValue,
+      comments: initialComments,
+    })
+    expect(decorators).toMatchSnapshot()
   })
   it('allows something to be bolded inside the range', () => {
-    const {result} = renderHook(() =>
-      buildRangeDecorationsFromComments({value: boldedInsideValue, comments: initialComments}),
-    )
-    expect(result.current).toMatchSnapshot()
+    const decorators = buildRangeDecorationSelectionsFromComments({
+      value: boldedInsideValue,
+      comments: initialComments,
+    })
+    expect(decorators).toMatchSnapshot()
+  })
+  it('allows something to be bolded inside and outside of the range', () => {
+    const decorators = buildRangeDecorationSelectionsFromComments({
+      value: boldedInsideAndOutsideValue,
+      comments: initialComments,
+    })
+    expect(decorators).toMatchSnapshot()
   })
 })
 
@@ -88,6 +93,35 @@ const boldedInsideValue = [
         marks: [],
         _key: '8daa33e86194',
         text: 're world',
+      },
+    ],
+    markDefs: [],
+    _type: 'block',
+    style: 'normal',
+  },
+]
+
+const boldedInsideAndOutsideValue = [
+  {
+    _key: '6222e4072b6e',
+    children: [
+      {
+        _type: 'span',
+        marks: [],
+        text: 'Hel',
+        _key: '9d9c95878a6e0',
+      },
+      {
+        _type: 'span',
+        marks: ['strong'],
+        _key: '897d8881c889',
+        text: 'lo th',
+      },
+      {
+        _type: 'span',
+        marks: [],
+        _key: '3b404dd88fc1',
+        text: 'ere world',
       },
     ],
     markDefs: [],

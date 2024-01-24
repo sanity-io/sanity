@@ -1,1 +1,1 @@
-export * from './buildRangeDecorationsFromComments'
+export * from './buildRangeDecorationSelectionsFromComments'
