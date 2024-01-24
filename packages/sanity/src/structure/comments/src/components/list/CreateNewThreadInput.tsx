@@ -4,6 +4,7 @@ import type {CommentMessage, MentionOptionsHookValue} from '../../types'
 import {CommentInput, CommentInputHandle, CommentInputProps} from '../pte'
 import {commentsLocaleNamespace} from '../../../i18n'
 import {hasCommentMessageValue} from '../../helpers'
+import {useCommentsEnabled} from '../../hooks'
 import {EMPTY_ARRAY, Translate, useTranslation} from 'sanity'
 
 interface CreateNewThreadInputProps {
@@ -30,6 +31,7 @@ export function CreateNewThreadInput(props: CreateNewThreadInputProps) {
   } = props
   const {t} = useTranslation(commentsLocaleNamespace)
 
+  const commentsEnabled = useCommentsEnabled()
   const [value, setValue] = useState<CommentMessage>(EMPTY_ARRAY)
   const commentInputHandle = useRef<CommentInputHandle | null>(null)
 
@@ -75,9 +77,17 @@ export function CreateNewThreadInput(props: CreateNewThreadInputProps) {
     commentInputHandle.current?.discardDialogController.close()
   }, [])
 
-  const placeholder = (
-    <Translate t={t} i18nKey="compose.add-comment-input-placeholder" values={{field: fieldTitle}} />
-  )
+  const placeholder =
+    commentsEnabled === 'read-only' ? (
+      // TODO: Comments - localize
+      <>Upgrade to add comment</>
+    ) : (
+      <Translate
+        t={t}
+        i18nKey="compose.add-comment-input-placeholder"
+        values={{field: fieldTitle}}
+      />
+    )
 
   return (
     <CommentInput
@@ -92,7 +102,7 @@ export function CreateNewThreadInput(props: CreateNewThreadInputProps) {
       onFocus={onFocus}
       onSubmit={handleSubmit}
       placeholder={placeholder}
-      readOnly={readOnly}
+      readOnly={readOnly || commentsEnabled === 'read-only'}
       ref={commentInputHandle}
       value={value}
     />

@@ -11,6 +11,7 @@ import {
   CommentOperationsHookOptions,
   MentionHookOptions,
   useCommentOperations,
+  useCommentsEnabled,
   useCommentsSetup,
   useMentionOptions,
 } from '../../hooks'
@@ -50,6 +51,7 @@ export interface CommentsProviderProps {
  */
 export const CommentsProvider = memo(function CommentsProvider(props: CommentsProviderProps) {
   const {children, documentId, documentType, isCommentsOpen, onCommentsOpen} = props
+  const commentsEnabled = useCommentsEnabled()
   const [status, setStatus] = useState<CommentStatus>('open')
 
   const {client, runSetup, isRunningSetup} = useCommentsSetup()
@@ -72,6 +74,16 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
     return editState.draft || editState.published
   }, [editState.draft, editState.published])
 
+  const handleSetStatus = useCallback(
+    (newStatus: CommentStatus) => {
+      // Avoids going to "resolved" when using links to comments
+      if (commentsEnabled === 'read-only' && newStatus === 'resolved') {
+        return null
+      }
+      return setStatus(newStatus)
+    },
+    [setStatus, commentsEnabled],
+  )
   const mentionOptions = useMentionOptions(
     useMemo((): MentionHookOptions => ({documentValue}), [documentValue]),
   )
@@ -223,7 +235,7 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
       isRunningSetup,
 
       status,
-      setStatus,
+      setStatus: handleSetStatus,
 
       getComment,
 
@@ -259,6 +271,7 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
       operation.remove,
       operation.update,
       status,
+      handleSetStatus,
       threadItemsByStatus,
     ],
   )

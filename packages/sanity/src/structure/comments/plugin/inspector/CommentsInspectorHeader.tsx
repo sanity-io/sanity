@@ -6,6 +6,7 @@ import {Button, MenuButton, MenuItem} from '../../../../ui-components'
 import {commentsLocaleNamespace} from '../../i18n'
 import {CommentStatus} from '../../src'
 import {BetaBadge, useTranslation} from 'sanity'
+import {CommentStatus, useCommentsEnabled} from '../../src'
 
 const Root = styled(Card)({
   position: 'relative',
@@ -25,6 +26,7 @@ export const CommentsInspectorHeader = forwardRef(function CommentsInspectorHead
 ) {
   const {t} = useTranslation(commentsLocaleNamespace)
   const {onClose, onViewChange, view} = props
+  const commentsEnabled = useCommentsEnabled()
 
   const handleSetOpenView = useCallback(() => onViewChange('open'), [onViewChange])
   const handleSetResolvedView = useCallback(() => onViewChange('resolved'), [onViewChange])
@@ -65,6 +67,13 @@ export const CommentsInspectorHeader = forwardRef(function CommentsInspectorHead
                   iconRight={view === 'resolved' ? CheckmarkIcon : undefined}
                   onClick={handleSetResolvedView}
                   text={t('status-filter.status-resolved-full')}
+                  tooltipProps={
+                    // TODO: Comments - localize
+                    commentsEnabled === 'read-only'
+                      ? {content: 'Upgrade to see resolved comments'}
+                      : undefined
+                  }
+                  disabled={commentsEnabled !== 'enabled'}
                 />
               </Menu>
             }

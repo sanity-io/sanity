@@ -13,15 +13,29 @@ import {COMMENT_REACTION_OPTIONS} from '../../constants'
 import type {CommentReactionOption, CommentStatus} from '../../types'
 import {ReactionIcon} from '../icons'
 import {CommentReactionsMenuButton} from '../reactions'
+import {useCommentsEnabled} from '../../hooks'
+import {CommentsEnabledContextValue} from '../../context/enabled/types'
 import {ContextMenuButton, useTranslation, type TFunction} from 'sanity'
 
-const renderMenuButton = ({open, t}: {open: boolean; t: TFunction}) => (
+const renderMenuButton = ({
+  open,
+  commentsEnabled,
+  t,
+}: {
+  open: boolean
+  commentsEnabled: CommentsEnabledContextValue
+  t: TFunction
+}) => (
   <Button
     aria-label={t('list-item.context-menu-add-reaction-aria-label')}
     icon={ReactionIcon}
     mode="bleed"
     selected={open}
-    tooltipProps={{content: t('list-item.context-menu-add-reaction')}}
+    tooltipProps={
+      commentsEnabled === 'read-only'
+        ? {content: 'Upgrade to add reactions'}
+        : {content: t('list-item.context-menu-add-reaction')}
+    }
   />
 )
 
@@ -51,6 +65,7 @@ interface CommentsListItemContextMenuProps {
 }
 
 export function CommentsListItemContextMenu(props: CommentsListItemContextMenuProps) {
+  const commentsEnabled = useCommentsEnabled()
   const {
     canDelete,
     canEdit,
@@ -123,6 +138,13 @@ export function CommentsListItemContextMenu(props: CommentsListItemContextMenuPr
                   icon={EditIcon}
                   onClick={onEditStart}
                   text={t('list-item.edit-comment')}
+                  tooltipProps={
+                    commentsEnabled === 'read-only'
+                      ? // TODO: Comments - localize
+                        {content: 'Upgrade to edit comments'}
+                      : undefined
+                  }
+                  disabled={commentsEnabled === 'read-only'}
                 />
 
                 <MenuItem

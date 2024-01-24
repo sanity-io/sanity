@@ -18,6 +18,7 @@ import {hasCommentMessageValue} from '../../helpers'
 import {CommentsSelectedPath} from '../../context'
 import {Button} from '../../../../../ui-components'
 import {commentsLocaleNamespace} from '../../../i18n'
+import {useCommentsEnabled} from '../../hooks'
 import {CommentsListItemLayout} from './CommentsListItemLayout'
 import {ThreadCard} from './styles'
 import {useTranslation} from 'sanity'
@@ -116,6 +117,7 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
     replies = EMPTY_ARRAY,
   } = props
   const {t} = useTranslation(commentsLocaleNamespace)
+  const commentsEnabled = useCommentsEnabled()
   const [value, setValue] = useState<CommentMessage>(EMPTY_ARRAY)
   const [collapsed, setCollapsed] = useState<boolean>(true)
   const didExpand = useRef<boolean>(false)
@@ -337,8 +339,13 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
               onDiscardConfirm={confirmDiscard}
               onKeyDown={handleInputKeyDown}
               onSubmit={handleReplySubmit}
-              placeholder={t('compose.reply-placeholder')}
-              readOnly={readOnly}
+              placeholder={
+                commentsEnabled === 'read-only'
+                  ? // TODO: Comments - localize
+                    'Upgrade to reply'
+                  : t('compose.reply-placeholder')
+              }
+              readOnly={readOnly || commentsEnabled === 'read-only'}
               ref={replyInputRef}
               value={value}
             />
