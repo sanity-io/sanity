@@ -17,6 +17,7 @@ import {
 } from '../../hooks'
 import {useCommentsStore} from '../../store'
 import {buildCommentThreadItems} from '../../utils/buildCommentThreadItems'
+import UpsellDialog from '../../components/upsell/UpsellDialog'
 import {CommentsContext} from './CommentsContext'
 import {CommentsContextValue} from './types'
 import {getPublishedId, useEditState, useSchema, useCurrentUser, useWorkspace} from 'sanity'
@@ -53,7 +54,7 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
   const {children, documentId, documentType, isCommentsOpen, onCommentsOpen} = props
   const commentsEnabled = useCommentsEnabled()
   const [status, setStatus] = useState<CommentStatus>('open')
-
+  const [upsellDialogOpen, setUpsellDialogOpen] = useState(false)
   const {client, runSetup, isRunningSetup} = useCommentsSetup()
   const publishedId = getPublishedId(documentId)
   const editState = useEditState(publishedId, documentType, 'low')
@@ -243,7 +244,8 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
 
       status,
       setStatus: handleSetStatus,
-
+      upsellDialogOpen,
+      setUpsellDialogOpen,
       getComment,
 
       isCommentsOpen,
@@ -280,8 +282,15 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
       status,
       handleSetStatus,
       threadItemsByStatus,
+      setUpsellDialogOpen,
+      upsellDialogOpen,
     ],
   )
 
-  return <CommentsContext.Provider value={ctxValue}>{children}</CommentsContext.Provider>
+  return (
+    <CommentsContext.Provider value={ctxValue}>
+      {children}
+      {commentsEnabled === 'read-only' && <UpsellDialog />}
+    </CommentsContext.Provider>
+  )
 })
