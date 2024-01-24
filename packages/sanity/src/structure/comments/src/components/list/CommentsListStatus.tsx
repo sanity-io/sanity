@@ -1,6 +1,7 @@
 import {Flex, Container, Stack, Text} from '@sanity/ui'
 import React from 'react'
 import {CommentStatus} from '../../types'
+import {useCommentsEnabled} from '../../hooks'
 import {LoadingBlock} from 'sanity'
 
 interface EmptyStateMessage {
@@ -38,6 +39,7 @@ interface CommentsListStatusProps {
 
 export function CommentsListStatus(props: CommentsListStatusProps) {
   const {status, error, loading, hasNoComments} = props
+  const commentsEnabled = useCommentsEnabled()
 
   if (error) {
     return (
@@ -56,7 +58,7 @@ export function CommentsListStatus(props: CommentsListStatusProps) {
     return <LoadingBlock showText title="Loading comments" />
   }
 
-  if (hasNoComments) {
+  if (hasNoComments && commentsEnabled === 'enabled') {
     return (
       <Flex align="center" justify="center" flex={1} sizing="border">
         <Container width={0} padding={4}>
