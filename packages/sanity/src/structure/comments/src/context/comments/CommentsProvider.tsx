@@ -11,6 +11,7 @@ import {
   CommentOperationsHookOptions,
   MentionHookOptions,
   useCommentOperations,
+  useCommentsEnabled,
   useCommentsSetup,
   useMentionOptions,
 } from '../../hooks'
@@ -50,6 +51,7 @@ export interface CommentsProviderProps {
  */
 export const CommentsProvider = memo(function CommentsProvider(props: CommentsProviderProps) {
   const {children, documentId, documentType, isCommentsOpen, onCommentsOpen} = props
+  const commentsEnabled = useCommentsEnabled()
   const [status, setStatus] = useState<CommentStatus>('open')
 
   const {client, runSetup, isRunningSetup} = useCommentsSetup()
@@ -72,6 +74,16 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
     return editState.draft || editState.published
   }, [editState.draft, editState.published])
 
+  const handleSetStatus = useCallback(
+    (newStatus: CommentStatus) => {
+      // Avoids going to "resolved" when using links to comments
+      if (commentsEnabled === 'read-only' && newStatus === 'resolved') {
+        return null
+      }
+      return setStatus(newStatus)
+    },
+    [setStatus, commentsEnabled],
+  )
   const mentionOptions = useMentionOptions(
     useMemo((): MentionHookOptions => ({documentValue}), [documentValue]),
   )
@@ -92,11 +104,18 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
       documentValue,
     })
 
-    return {
-      open: items.filter((item) => item.parentComment.status === 'open'),
-      resolved: items.filter((item) => item.parentComment.status === 'resolved'),
-    }
-  }, [currentUser, data, documentValue, schemaType])
+    return items.reduce(
+      (acc: ThreadItemsByStatus, item) => {
+        if (item.parentComment.status === 'open') {
+          acc.open.push(item)
+        } else if (commentsEnabled === 'enabled') {
+          acc.resolved.push(item)
+        }
+        return acc
+      },
+      {open: [], resolved: []},
+    )
+  }, [currentUser, data, documentValue, schemaType, commentsEnabled])
 
   const getThreadLength = useCallback(
     (threadId: string) => {
@@ -223,7 +242,7 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
       isRunningSetup,
 
       status,
-      setStatus,
+      setStatus: handleSetStatus,
 
       getComment,
 
@@ -259,6 +278,7 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
       operation.remove,
       operation.update,
       status,
+      handleSetStatus,
       threadItemsByStatus,
     ],
   )

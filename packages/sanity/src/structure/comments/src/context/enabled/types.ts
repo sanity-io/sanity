@@ -1,1 +1,1 @@
-export type CommentsEnabledContextValue = boolean
+export type CommentsEnabledContextValue = 'enabled' | 'read-only' | false
