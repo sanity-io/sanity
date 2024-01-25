@@ -221,3 +221,27 @@ export interface CommentsListBreadcrumbItem {
  * @hidden
  */
 export type CommentListBreadcrumbs = CommentsListBreadcrumbItem[]
+
+export interface CommentsUpsellData {
+  _createdAt: string
+  _id: string
+  _rev: string
+  _type: string
+  _updatedAt: string
+  id: string
+  image: {
+    asset: {
+      url: string
+      altText: string | null
+    }
+  }
+  descriptionText: PortableTextBlock[]
+  ctaButton: {
+    text: string
+    url: string
+  }
+  secondaryButton: {
+    rightIcon: string
+    text: string
+  }
+}

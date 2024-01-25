@@ -14,6 +14,7 @@ import {
   useCommentsEnabled,
   useCommentsSetup,
   useMentionOptions,
+  useCommentsUpsellData,
 } from '../../hooks'
 import {useCommentsStore} from '../../store'
 import {buildCommentThreadItems} from '../../utils/buildCommentThreadItems'
@@ -55,6 +56,7 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
   const commentsEnabled = useCommentsEnabled()
   const [status, setStatus] = useState<CommentStatus>('open')
   const [upsellDialogOpen, setUpsellDialogOpen] = useState(false)
+  const upsellData = useCommentsUpsellData(commentsEnabled === 'read-only')
   const {client, runSetup, isRunningSetup} = useCommentsSetup()
   const publishedId = getPublishedId(documentId)
   const editState = useEditState(publishedId, documentType, 'low')
@@ -241,7 +243,7 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
   const ctxValue = useMemo(
     (): CommentsContextValue => ({
       isRunningSetup,
-
+      upsellData,
       status,
       setStatus: handleSetStatus,
       upsellDialogOpen,
@@ -284,6 +286,7 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
       threadItemsByStatus,
       setUpsellDialogOpen,
       upsellDialogOpen,
+      upsellData,
     ],
   )
 
