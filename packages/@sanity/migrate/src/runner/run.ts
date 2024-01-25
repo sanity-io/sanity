@@ -62,7 +62,10 @@ export async function run(config: MigrationRunnerOptions, migration: Migration) 
     currentMutations: [],
   }
   const documents = tap(
-    ndjson<SanityDocument>(await fromExportEndpoint(config.api), {parse: safeJsonParser}),
+    ndjson<SanityDocument>(
+      await fromExportEndpoint({...config.api, documentTypes: migration.documentTypes}),
+      {parse: safeJsonParser},
+    ),
     () => {
       config.onProgress?.({...stats, documents: ++stats.documents})
     },

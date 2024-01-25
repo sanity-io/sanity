@@ -5,7 +5,7 @@ import {set} from 'sanity/migrate/mutations'
 
 export default defineMigration({
   name: 'Convert string to PortableText at `some.path` in documents of type `someType`',
-  documentType: 'someType',
+  documentTypes: ['someType'],
   migrate: {
     string(node, path, ctx) {
       if (isEqual(path, ['some', 'path'])) {
