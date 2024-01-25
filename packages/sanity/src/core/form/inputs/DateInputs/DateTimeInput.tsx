@@ -1,4 +1,9 @@
-import {format, parse} from '@sanity/util/legacyDateFormat'
+import {
+  format,
+  parse,
+  DEFAULT_DATE_FORMAT,
+  DEFAULT_TIME_FORMAT,
+} from '@sanity/util/legacyDateFormat'
 import {getMinutes, setMinutes, parseISO} from 'date-fns'
 import React, {useCallback, useMemo} from 'react'
 import {set, unset} from '../../patch'
@@ -25,9 +30,6 @@ interface SchemaOptions {
  * @hidden
  * @beta */
 export type DateTimeInputProps = StringInputProps
-
-const DEFAULT_DATE_FORMAT = 'YYYY-MM-DD'
-const DEFAULT_TIME_FORMAT = 'HH:mm'
 
 function parseOptions(options: SchemaOptions = {}): ParsedOptions {
   return {

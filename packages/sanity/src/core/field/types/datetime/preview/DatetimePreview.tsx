@@ -5,9 +5,6 @@ import React from 'react'
 import styled from 'styled-components'
 import {FieldPreviewComponent} from '../../../preview'
 
-const DEFAULT_DATE_FORMAT = 'YYYY-MM-DD'
-const DEFAULT_TIME_FORMAT = 'HH:mm'
-
 const DatetimeWrapper = styled.div`
   display: inline-block;
   word-wrap: break-word;
@@ -26,8 +23,8 @@ export const DatetimePreview: FieldPreviewComponent<string> = function DatetimeP
 
 function formatDateTime(value: string, schemaType: StringSchemaType): string {
   const {options, name} = schemaType
-  const dateFormat = options?.dateFormat || DEFAULT_DATE_FORMAT
-  const timeFormat = options?.timeFormat || DEFAULT_TIME_FORMAT
+  const dateFormat = options?.dateFormat || legacyDateFormat.DEFAULT_DATE_FORMAT
+  const timeFormat = options?.timeFormat || legacyDateFormat.DEFAULT_TIME_FORMAT
 
   return legacyDateFormat.format(
     new Date(value),
