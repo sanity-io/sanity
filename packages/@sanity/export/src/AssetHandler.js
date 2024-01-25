@@ -171,6 +171,7 @@ class AssetHandler {
     return {url: formatUrl(url), headers}
   }
 
+  // eslint-disable-next-line max-statements
   async downloadAsset(assetDoc, dstPath) {
     const {url} = assetDoc
     const options = this.getAssetRequestOptions(assetDoc)
@@ -185,21 +186,35 @@ class AssetHandler {
 
     if (stream.statusCode !== 200) {
       this.queue.clear()
-      const err = await tryGetErrorFromStream(stream)
-      let errMsg = `Referenced asset URL "${url}" returned HTTP ${stream.statusCode}`
-      if (err) {
-        errMsg = `${errMsg}:\n\n${err}`
-      }
+      try {
+        const err = await tryGetErrorFromStream(stream)
+        let errMsg = `Referenced asset URL "${url}" returned HTTP ${stream.statusCode}`
+        if (err) {
+          errMsg = `${errMsg}:\n\n${err}`
+        }
 
-      this.reject(new Error(errMsg))
-      return false
+        this.reject(new Error(errMsg))
+        return false
+      } catch (err) {
+        throw new Error('Failed to parse error response from asset stream', {cause: err})
+      }
     }
 
     this.maybeCreateAssetDirs()
 
     debug('Asset stream ready, writing to filesystem at %s', dstPath)
     const tmpPath = path.join(this.tmpDir, dstPath)
-    const {sha1, md5, size} = await writeHashedStream(tmpPath, stream)
+    let sha1 = ''
+    let md5 = ''
+    let size = 0
+    try {
+      const res = await writeHashedStream(tmpPath, stream)
+      sha1 = res.sha1
+      md5 = res.md5
+      size = res.size
+    } catch (err) {
+      throw new Error('Failed to write asset stream to filesystem', {cause: err})
+    }
 
     // Verify it against our downloaded stream to make sure we have the same copy
     const contentLength = stream.headers['content-length']
