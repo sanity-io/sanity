@@ -3,7 +3,7 @@ import {Box, Card, Flex, Stack} from '@sanity/ui'
 import {LaunchIcon} from '@sanity/icons'
 import styled from 'styled-components'
 import {Button} from '../../../../../ui-components'
-import {DescriptionSerializer} from './UpsellDescriptionSerializer'
+import {DescriptionSerializer} from 'sanity'
 
 interface UpsellData {
   _createdAt: string
