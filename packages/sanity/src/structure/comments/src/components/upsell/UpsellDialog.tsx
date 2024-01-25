@@ -4,7 +4,6 @@ import {CloseIcon} from '@sanity/icons'
 import {Box, Stack} from '@sanity/ui'
 import {useComments} from '../../hooks'
 import {Button, Dialog} from '../../../../../ui-components'
-import {data} from './UpsellPanel'
 import {DescriptionSerializer} from 'sanity'
 
 /**
@@ -38,14 +37,13 @@ const Image = styled.img`
 // `
 
 const UpsellDialog = () => {
-  // TODO: Replace for real data
-  const content = data
-  const {upsellDialogOpen, setUpsellDialogOpen} = useComments()
+  const {upsellDialogOpen, setUpsellDialogOpen, upsellData} = useComments()
   const handleClose = useCallback(() => {
     setUpsellDialogOpen(false)
   }, [setUpsellDialogOpen])
 
   if (!upsellDialogOpen) return null
+  if (!upsellData) return null
 
   return (
     <Dialog
@@ -56,19 +54,19 @@ const UpsellDialog = () => {
       bodyHeight="fill"
       padding={false}
       footer={{
-        cancelButton: content.secondaryButton?.text
+        cancelButton: upsellData.secondaryButton?.text
           ? {
-              text: content.secondaryButton.text,
+              text: upsellData.secondaryButton.text,
               mode: 'bleed',
               tone: 'default',
               onClick: handleClose,
             }
           : undefined,
         confirmButton: {
-          text: content.ctaButton?.text,
+          text: upsellData.ctaButton?.text,
           mode: 'default',
           tone: 'primary',
-          href: content.ctaButton.url,
+          href: upsellData.ctaButton.url,
           target: '_blank',
           rel: 'noopener noreferrer',
           as: 'a',
@@ -83,12 +81,12 @@ const UpsellDialog = () => {
         tabIndex={-1}
         tooltipProps={null}
       />
-      {content.image && (
-        <Image src={content.image.asset.url} alt={content.image.asset.altText ?? ''} />
+      {upsellData.image && (
+        <Image src={upsellData.image.asset.url} alt={upsellData.image.asset.altText ?? ''} />
       )}
       <Box padding={3}>
         <Stack space={4} paddingBottom={2}>
-          <DescriptionSerializer blocks={content.descriptionText} />
+          <DescriptionSerializer blocks={upsellData.descriptionText} />
         </Stack>
       </Box>
     </Dialog>

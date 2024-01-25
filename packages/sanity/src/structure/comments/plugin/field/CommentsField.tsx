@@ -87,6 +87,7 @@ function CommentFieldInner(props: FieldProps) {
     operation,
     setStatus,
     status,
+    upsellData,
     setUpsellDialogOpen,
   } = useComments()
   const {selectedPath, setSelectedPath} = useCommentsSelectedPath()
@@ -155,7 +156,12 @@ function CommentFieldInner(props: FieldProps) {
     }
 
     if (commentsEnabled === 'read-only') {
-      setUpsellDialogOpen(true)
+      if (upsellData) {
+        setUpsellDialogOpen(true)
+      } else {
+        // Open the comments inspector
+        onCommentsOpen?.()
+      }
       return
     }
 
@@ -171,6 +177,7 @@ function CommentFieldInner(props: FieldProps) {
     handleSetThreadToScrollTo,
     commentsEnabled,
     setUpsellDialogOpen,
+    upsellData,
   ])
 
   const handleCommentAdd = useCallback(() => {
