@@ -1,7 +1,7 @@
 import {PortableText, type PortableTextComponents} from '@portabletext/react'
 import {LinkIcon} from '@sanity/icons'
 import type {PortableTextBlock} from '@sanity/types'
-import {Box, Card, Flex, Text} from '@sanity/ui'
+import {Box, Card, Flex, Heading, Text} from '@sanity/ui'
 import styled from 'styled-components'
 import React, {useEffect, useState} from 'react'
 
@@ -16,6 +16,10 @@ const Divider = styled(Box)`
 `
 
 const SerializerContainer = styled.div`
+  // Remove margin top of first element
+  > div:first-child {
+    margin-top: 0;
+  }
   // Remove margin bottom to last box.
   > [data-ui='Box']:last-child {
     margin-bottom: 0;
@@ -83,9 +87,21 @@ function NormalBlock(props: {children: React.ReactNode}) {
   )
 }
 
+function HeadingBlock(props: {children: React.ReactNode}) {
+  const {children} = props
+  return (
+    <Box paddingX={2} marginY={4}>
+      <Heading size={2} as="h2">
+        {children}
+      </Heading>
+    </Box>
+  )
+}
+
 const components: PortableTextComponents = {
   block: {
     normal: ({children}) => <NormalBlock>{children}</NormalBlock>,
+    h2: ({children}) => <HeadingBlock>{children}</HeadingBlock>,
   },
   list: {
     bullet: ({children}) => children,
@@ -124,15 +140,15 @@ const components: PortableTextComponents = {
     iconAndText: (props) => (
       <Flex align="flex-start" paddingX={2} paddingTop={1} paddingBottom={2} marginTop={2} gap={2}>
         <Flex gap={2} style={{flexShrink: 0}}>
-          <Text size={1}>
+          <Text size={1} accent={props.value.accent}>
             <DynamicIcon icon={props.value.icon} />
           </Text>
-          <Text size={1} weight="semibold">
+          <Text size={1} weight="semibold" accent={props.value.accent}>
             {props.value.title}
           </Text>
         </Flex>
 
-        <Text size={1} muted>
+        <Text size={1} muted accent={props.value.accent}>
           {props.value.text}
         </Text>
       </Flex>
@@ -140,6 +156,11 @@ const components: PortableTextComponents = {
   },
 }
 
+/**
+ * Portable text serializer for the description text for upsell elements.
+ * Not meant for public consumption.
+ * @internal
+ */
 export function DescriptionSerializer(props: DescriptionSerializerProps) {
   return (
     <Card tone="default">
