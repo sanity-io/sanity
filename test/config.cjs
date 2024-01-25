@@ -73,8 +73,29 @@ exports.createJestConfig = function createJestConfig(
       ...transform,
       '\\.[jt]sx?$': [
         'babel-jest',
-        // rootMode upwards makes use of the global babel.config.js
-        {rootMode: 'upward'},
+        {
+          // Don't look for babel.config.{ts,js,json} files or .babelrc files
+          configFile: false,
+          babelrc: false,
+          // The rest is only needed by Jest, if Jest is updated to no longer need babel then this can be removed as well as related dependencies
+          presets: [
+            [
+              '@babel/preset-env',
+              {
+                targets: {
+                  node: '14',
+                  chrome: '61',
+                  safari: '11.3',
+                  firefox: '60',
+                  edge: '79',
+                },
+              },
+            ],
+            '@babel/preset-typescript',
+            ['@babel/preset-react', {runtime: 'automatic'}],
+          ],
+          plugins: ['@babel/plugin-proposal-class-properties'],
+        },
       ],
     },
     snapshotFormat: {
