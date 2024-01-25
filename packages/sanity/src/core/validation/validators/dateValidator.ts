@@ -1,5 +1,5 @@
 import {Validators} from '@sanity/types'
-import formatDate from 'date-fns/format'
+import * as legacyDateFormat from '@sanity/util/legacyDateFormat'
 import {genericValidators} from './genericValidator'
 
 function isRecord(obj: unknown): obj is Record<string, unknown> {
@@ -17,25 +17,18 @@ interface DateTimeOptions {
   timeFormat?: string
 }
 
-const getFormattedDate = (type = '', value: string | number | Date, options?: DateTimeOptions) => {
-  let format = 'yyyy-MM-dd'
-  if (options && options.dateFormat) {
-    format = options.dateFormat
-  }
+const getFormattedDate = (type = '', value: Date, options?: DateTimeOptions) => {
+  const dateFormat = options?.dateFormat || legacyDateFormat.DEFAULT_DATE_FORMAT
+  const timeFormat = options?.timeFormat || legacyDateFormat.DEFAULT_TIME_FORMAT
 
-  if (type === 'date') {
-    // If the type is date only
-    return formatDate(new Date(value), format)
-  }
-
-  // If the type is datetime
-  if (options && options.timeFormat) {
-    format += ` ${options.timeFormat}`
-  } else {
-    format += ' HH:mm'
-  }
-
-  return formatDate(new Date(value), format)
+  // adding the time information in the date only case causes timezone information to be kept
+  // instead of it being assumed to be UTC. This was a problem because midnight UTC is the previous
+  // day in many other timezones resulting in the date displayed to be the previous day.
+  return legacyDateFormat.format(
+    value,
+    type === 'date' ? dateFormat : `${dateFormat} ${timeFormat}`,
+    type === 'date',
+  )
 }
 
 function parseDate(date: unknown): Date | null
@@ -67,11 +60,13 @@ export const dateValidators: Validators = {
 
   min: (minDate, value, message, {type, i18n}) => {
     const dateVal = parseDate(value)
+    const minDateVal = parseDate(minDate, true)
+
     if (!dateVal) {
       return true // `type()` should catch parse errors
     }
 
-    if (!value || dateVal >= parseDate(minDate, true)) {
+    if (!value || dateVal >= minDateVal) {
       return true
     }
 
@@ -89,7 +84,7 @@ export const dateValidators: Validators = {
       // validator is available as `providedMinDate`. This because the formatted date is likely
       // what the developer wants to present to the user
       i18n.t('validation:date.minimum', {
-        minDate: getFormattedDate(type.name, minDate, dateTimeOptions),
+        minDate: getFormattedDate(type.name, minDateVal, dateTimeOptions),
         providedMinDate: minDate,
       })
     )
@@ -97,11 +92,13 @@ export const dateValidators: Validators = {
 
   max: (maxDate, value, message, {type, i18n}) => {
     const dateVal = parseDate(value)
+    const maxDateVal = parseDate(maxDate, true)
+
     if (!dateVal) {
       return true // `type()` should catch parse errors
     }
 
-    if (!value || dateVal <= parseDate(maxDate, true)) {
+    if (!value || dateVal <= maxDateVal) {
       return true
     }
 
@@ -119,7 +116,7 @@ export const dateValidators: Validators = {
       // validator is available as `providedMaxDate`. This because the formatted date is likely
       // what the developer wants to present to the user
       i18n.t('validation:date.maximum', {
-        maxDate: getFormattedDate(type.name, maxDate, dateTimeOptions),
+        maxDate: getFormattedDate(type.name, maxDateVal, dateTimeOptions),
         providedMaxDate: maxDate,
       })
     )

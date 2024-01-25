@@ -1,6 +1,9 @@
 /* eslint-disable @typescript-eslint/no-shadow */
 import moment from 'moment'
 
+export const DEFAULT_DATE_FORMAT = 'YYYY-MM-DD'
+export const DEFAULT_TIME_FORMAT = 'HH:mm'
+
 export type ParseResult = {isValid: boolean; date?: Date; error?: string} & (
   | {isValid: true; date: Date}
   | {isValid: false; error?: string}
@@ -9,7 +12,9 @@ export type ParseResult = {isValid: boolean; date?: Date; error?: string} & (
 // todo: find a way to get rid of moment there.
 // note: the format comes form peoples schemas, so we need to deprecate it for a while and
 // find a way to tell people that they need to change it
-export function format(input: Date, format: string) {
+export function format(input: Date, format: string, useUTC = false) {
+  if (useUTC) return moment.utc(input).format(format)
+
   return moment(input).format(format)
 }
 
