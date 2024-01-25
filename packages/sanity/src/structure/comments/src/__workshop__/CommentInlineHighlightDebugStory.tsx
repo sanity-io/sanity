@@ -106,12 +106,13 @@ function CommentDecorator(
     commentId: string
     onHoverStart: (commentId: string) => void
     onHoverEnd: (commentId: null) => void
-    isHovered: boolean
+    currentHoveredCommentId: string | null
   }>,
 ) {
-  const {children, commentId, isHovered, onHoverEnd, onHoverStart} = props
+  const {children, commentId, onHoverEnd, onHoverStart, currentHoveredCommentId} = props
   const [decoratorEl, setDecoratorEl] = useState<HTMLSpanElement | null>(null)
   const [isNested, setIsNested] = useState<boolean>(false)
+  const parentCommentId = useRef<string | null>(null)
 
   useEffect(() => {
     // Get the previous and next sibling of the decorator element
@@ -124,12 +125,13 @@ function CommentDecorator(
       return
     }
 
-    const prev = prevEl.hasAttribute('data-inline-comment-id')
-    const next = nextEl.hasAttribute('data-inline-comment-id')
+    const prevId = prevEl.getAttribute('data-inline-comment-id')
+    const nextId = nextEl.getAttribute('data-inline-comment-id')
 
-    // If both the previous and next sibling have the `data-inline-comment-id` attribute,
-    // then the decorator is nested.
-    const isNestedDecorator = Boolean(next && prev)
+    const isEqual = prevId === nextId
+
+    const isNestedDecorator = Boolean(prevId && nextId && isEqual)
+    parentCommentId.current = isNestedDecorator ? prevId : null
 
     setIsNested(isNestedDecorator)
   }, [decoratorEl])
@@ -137,12 +139,16 @@ function CommentDecorator(
   const handleMouseEnter = useCallback(() => onHoverStart(commentId), [commentId, onHoverStart])
   const handleMouseLeave = useCallback(() => onHoverEnd(null), [onHoverEnd])
 
+  const hovered =
+    currentHoveredCommentId === commentId ||
+    (currentHoveredCommentId === parentCommentId.current && isNested)
+
   return (
     <HighlightSpan
       data-inline-comment-state="added"
       data-inline-comment-id={commentId}
       data-nested-inline-comment={isNested}
-      data-hovered={isHovered}
+      data-hovered={hovered}
       ref={setDecoratorEl}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
@@ -188,7 +194,7 @@ export default function CommentInlineHighlightDebugStory() {
                 commentId={comment.parentComment._id}
                 onHoverStart={setCurrentHoveredCommentId}
                 onHoverEnd={setCurrentHoveredCommentId}
-                isHovered={currentHoveredCommentId === comment.parentComment._id}
+                currentHoveredCommentId={currentHoveredCommentId}
               >
                 {children}
               </CommentDecorator>
