@@ -12,9 +12,10 @@ import {Schema} from '@sanity/schema'
 import {defineField, defineArrayMember, PortableTextBlock} from '@sanity/types'
 import {Button, Card, Code, Container, Flex, Stack, Text} from '@sanity/ui'
 import {uuid} from '@sanity/uuid'
-import {PropsWithChildren, useCallback, useMemo, useRef, useState} from 'react'
+import {PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {buildRangeDecorationSelectionsFromComments, buildCommentThreadItems} from '../utils'
 import {CommentDocument, CommentTextSelection} from '../types'
+import {HighlightSpan} from '../../plugin/input/components/HighlightSpan'
 import {useCurrentUser} from 'sanity'
 
 const INLINE_STYLE: React.CSSProperties = {outline: 'none'}
@@ -100,16 +101,54 @@ const schema = Schema.compile({
   ],
 })
 
-function CommentDecorator(props: PropsWithChildren<{commentId: string}>) {
-  const {children, commentId} = props
+function CommentDecorator(
+  props: PropsWithChildren<{
+    commentId: string
+    onHoverStart: (commentId: string) => void
+    onHoverEnd: (commentId: null) => void
+    isHovered: boolean
+  }>,
+) {
+  const {children, commentId, isHovered, onHoverEnd, onHoverStart} = props
+  const [decoratorEl, setDecoratorEl] = useState<HTMLSpanElement | null>(null)
+  const [isNested, setIsNested] = useState<boolean>(false)
+
+  useEffect(() => {
+    // Get the previous and next sibling of the decorator element
+    const prevEl = decoratorEl?.previousSibling as HTMLElement | null
+    const nextEl = decoratorEl?.nextSibling as HTMLElement | null
+
+    // If there is no previous or next sibling, then the decorator is not nested
+    if (!prevEl || !nextEl) {
+      setIsNested(false)
+      return
+    }
+
+    const prev = prevEl.hasAttribute('data-inline-comment-id')
+    const next = nextEl.hasAttribute('data-inline-comment-id')
+
+    // If both the previous and next sibling have the `data-inline-comment-id` attribute,
+    // then the decorator is nested.
+    const isNestedDecorator = Boolean(next && prev)
+
+    setIsNested(isNestedDecorator)
+  }, [decoratorEl])
+
+  const handleMouseEnter = useCallback(() => onHoverStart(commentId), [commentId, onHoverStart])
+  const handleMouseLeave = useCallback(() => onHoverEnd(null), [onHoverEnd])
+
   return (
-    <span
+    <HighlightSpan
       data-inline-comment-state="added"
       data-inline-comment-id={commentId}
-      style={{backgroundColor: '#ffcc00', color: '#000'}}
+      data-nested-inline-comment={isNested}
+      data-hovered={isHovered}
+      ref={setDecoratorEl}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
       {children}
-    </span>
+    </HighlightSpan>
   )
 }
 
@@ -119,6 +158,8 @@ export default function CommentInlineHighlightDebugStory() {
   const [hasSelectedRange, setHasSelectedRange] = useState<boolean>(false)
   const editorRef = useRef<PortableTextEditor | null>(null)
   const currentUser = useCurrentUser()
+
+  const [currentHoveredCommentId, setCurrentHoveredCommentId] = useState<string | null>(null)
 
   const comments = useMemo(() => {
     if (!currentUser) return []
@@ -143,13 +184,20 @@ export default function CommentInlineHighlightDebugStory() {
         ({selection, comment}) =>
           ({
             component: ({children}) => (
-              <CommentDecorator commentId={comment.parentComment._id}>{children}</CommentDecorator>
+              <CommentDecorator
+                commentId={comment.parentComment._id}
+                onHoverStart={setCurrentHoveredCommentId}
+                onHoverEnd={setCurrentHoveredCommentId}
+                isHovered={currentHoveredCommentId === comment.parentComment._id}
+              >
+                {children}
+              </CommentDecorator>
             ),
             isRangeInvalid: () => false,
             selection,
           }) as RangeDecoration,
       ),
-    [comments, value],
+    [comments, currentHoveredCommentId, value],
   )
 
   const handleChange = useCallback((change: EditorChange) => {
@@ -214,7 +262,7 @@ export default function CommentInlineHighlightDebugStory() {
 
   return (
     <Flex align="center" justify="center" height="fill" sizing="border" overflow="hidden">
-      <Card flex={0.75} height="fill" borderRight overflow="auto">
+      <Card flex={1} height="fill" borderRight overflow="auto">
         <Flex height="fill" padding={4}>
           <Container width={1}>
             <Stack space={2}>
@@ -227,6 +275,7 @@ export default function CommentInlineHighlightDebugStory() {
                     ref={editorRef}
                   >
                     <PortableTextEditable
+                      spellCheck={false}
                       style={INLINE_STYLE}
                       renderDecorator={(decoratorProps) => (
                         <strong>{decoratorProps.children}</strong>
@@ -264,7 +313,7 @@ export default function CommentInlineHighlightDebugStory() {
 
       <Flex direction="column" flex={1} height="fill">
         <Card flex={1} borderRight padding={4} overflow="auto">
-          <Code size={1} language="typescript">
+          <Code size={0} language="typescript">
             {JSON.stringify(value, null, 2)}
           </Code>
         </Card>
@@ -272,7 +321,7 @@ export default function CommentInlineHighlightDebugStory() {
 
       <Flex direction="column" flex={1} height="fill" overflow="auto">
         <Card flex={1} padding={4} borderRight>
-          <Code size={1} language="typescript">
+          <Code size={0} language="typescript">
             {JSON.stringify(comments, null, 2)}
           </Code>
         </Card>
@@ -280,7 +329,7 @@ export default function CommentInlineHighlightDebugStory() {
 
       <Flex direction="column" flex={1} height="fill" overflow="auto">
         <Card flex={1} padding={4}>
-          <Code size={1} language="typescript">
+          <Code size={0} language="typescript">
             {JSON.stringify(rangeDecorations, null, 2)}
           </Code>
         </Card>
