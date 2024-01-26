@@ -79,18 +79,26 @@ export function prettyFormatMutation(
   chalk: Chalk,
   mutation: Mutation,
   migration: Migration,
-  indent = 0,
+  indentSize = 0,
 ): string {
   const lock =
     'options' in mutation ? chalk.cyan(`(if revision==${mutation.options?.ifRevision})`) : ''
   const header = [mutationHeader(chalk, mutation, migration), lock].join(' ')
+  const indent = ' '.repeat(indentSize)
 
   if (
     mutation.type === 'create' ||
     mutation.type === 'createIfNotExists' ||
     mutation.type === 'createOrReplace'
   ) {
-    return [header, '\n', JSON.stringify(mutation.document, null, 2)].join('')
+    return [
+      header,
+      '\n',
+      JSON.stringify(mutation.document, null, 2)
+        .split('\n')
+        .map((line) => indent + line)
+        .join('\n'),
+    ].join('')
   }
 
   if (mutation.type === 'patch') {
@@ -99,7 +107,7 @@ export function prettyFormatMutation(
     return [
       header,
       '\n',
-      formatTree(tree.children, paddingLength, ' '.repeat(indent), (patch) =>
+      formatTree(tree.children, paddingLength, indent, (patch) =>
         formatPatchMutation(chalk, patch),
       ),
     ].join('')
