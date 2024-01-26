@@ -10,7 +10,7 @@ import {CurrentUser, Tool} from 'sanity'
 
 interface CreateOperationProps {
   activeTool: Tool | undefined
-  client: SanityClient
+  client: SanityClient | null
   comment: CommentCreatePayload
   currentUser: CurrentUser
   dataset: string
