@@ -78,7 +78,11 @@ export function useCommentOperations(
 
   const handleCreate = useCallback(
     async (comment: CommentCreatePayload) => {
-      if (!client || !currentUser?.id) return
+      // Unlike the other operations, we want to proceed with create operation even
+      // though there is no client available. This is because if there is no client for the
+      // comments addon dataset, it will be created in the `createOperation`, and the
+      // comment will be created in that dataset when the client is eventually created.
+      if (!currentUser?.id) return
 
       await createOperation({
         activeTool,
