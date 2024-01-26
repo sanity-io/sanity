@@ -29,7 +29,7 @@ const renderMenuButton = ({
     mode="bleed"
     selected={open}
     tooltipProps={
-      commentsEnabled === 'read-only'
+      commentsEnabled.reason === 'upsell'
         ? {content: 'Upgrade to add reactions'}
         : {content: 'Add reaction'}
     }
@@ -125,11 +125,11 @@ export function CommentsListItemContextMenu(props: CommentsListItemContextMenuPr
                   onClick={onEditStart}
                   text="Edit comment"
                   tooltipProps={
-                    commentsEnabled === 'read-only'
+                    commentsEnabled.reason === 'upsell'
                       ? {content: 'Upgrade to edit comments'}
                       : undefined
                   }
-                  disabled={commentsEnabled === 'read-only'}
+                  disabled={commentsEnabled.reason === 'upsell'}
                 />
 
                 <MenuItem

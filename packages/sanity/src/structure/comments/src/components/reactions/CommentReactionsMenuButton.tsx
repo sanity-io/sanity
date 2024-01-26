@@ -81,7 +81,7 @@ export function CommentReactionsMenuButton(props: CommentReactionsMenuButtonProp
       id: 'reactions-menu-button',
       onClick: handleClick,
       ref: setButtonElement,
-      disabled: readOnly || commentsEnabled === 'read-only',
+      disabled: readOnly || commentsEnabled.reason === 'upsell',
     })
   }, [handleClick, open, readOnly, renderMenuButton, commentsEnabled])
 

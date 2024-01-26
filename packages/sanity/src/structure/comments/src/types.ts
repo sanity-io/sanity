@@ -241,7 +241,7 @@ export interface CommentsUpsellData {
     url: string
   }
   secondaryButton: {
-    rightIcon: string
+    url: string
     text: string
   }
 }

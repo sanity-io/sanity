@@ -56,11 +56,11 @@ export const CommentsInspectorHeader = forwardRef(function CommentsInspectorHead
                   onClick={handleSetResolvedView}
                   text="Resolved comments"
                   tooltipProps={
-                    commentsEnabled === 'read-only'
+                    commentsEnabled.reason === 'upsell'
                       ? {content: 'Upgrade to see resolved comments'}
                       : undefined
                   }
-                  disabled={commentsEnabled !== 'enabled'}
+                  disabled={commentsEnabled.reason === 'upsell'}
                 />
               </Menu>
             }

@@ -1,1 +1,4 @@
-export type CommentsEnabledContextValue = 'enabled' | 'read-only' | false
+export type CommentsEnabledContextValue = {
+  enabled: boolean
+  reason: 'upsell' | null
+}

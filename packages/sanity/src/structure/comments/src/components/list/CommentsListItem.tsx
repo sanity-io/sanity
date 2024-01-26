@@ -333,8 +333,8 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
               onDiscardConfirm={confirmDiscard}
               onKeyDown={handleInputKeyDown}
               onSubmit={handleReplySubmit}
-              placeholder={commentsEnabled === 'read-only' ? 'Upgrade to reply' : 'Reply'}
-              readOnly={readOnly || commentsEnabled === 'read-only'}
+              placeholder={commentsEnabled.reason === 'upsell' ? 'Upgrade to reply' : 'Reply'}
+              readOnly={readOnly || commentsEnabled.reason === 'upsell'}
               ref={replyInputRef}
               value={value}
             />

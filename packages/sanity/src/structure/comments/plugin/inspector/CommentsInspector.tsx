@@ -38,9 +38,9 @@ const RootLayer = styled(Layer)`
 `
 
 export function CommentsInspector(props: DocumentInspectorProps) {
-  const isEnabled = useCommentsEnabled()
+  const {enabled} = useCommentsEnabled()
 
-  if (!isEnabled) return null
+  if (!enabled) return null
 
   // We wrap the comments inspector in a Layer in order to know when the comments inspector
   // is the top layer (that is, if there is e.g. a popover open). This is used to determine
@@ -337,7 +337,7 @@ function CommentsInspectorInner(props: DocumentInspectorProps) {
             view={status}
           />
         </CommentsOnboardingPopover>
-        {commentsEnabled === 'read-only' && <UpsellPanel />}
+        {commentsEnabled.reason === 'upsell' && <UpsellPanel />}
 
         {currentUser && (
           <CommentsList
@@ -361,7 +361,7 @@ function CommentsInspectorInner(props: DocumentInspectorProps) {
             status={status}
           />
         )}
-        {commentsEnabled === 'enabled' && <CommentsInspectorFeedbackFooter />}
+        {commentsEnabled.reason !== 'upsell' && <CommentsInspectorFeedbackFooter />}
       </Flex>
     </Fragment>
   )
