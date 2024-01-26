@@ -180,8 +180,7 @@ class AssetHandler {
     try {
       stream = await requestStream(options)
     } catch (err) {
-      this.reject(err)
-      return false
+      throw new Error('Failed create asset stream', {cause: err})
     }
 
     if (stream.statusCode !== 200) {
@@ -193,8 +192,7 @@ class AssetHandler {
           errMsg = `${errMsg}:\n\n${err}`
         }
 
-        this.reject(new Error(errMsg))
-        return false
+        throw new Error(errMsg)
       } catch (err) {
         throw new Error('Failed to parse error response from asset stream', {cause: err})
       }
