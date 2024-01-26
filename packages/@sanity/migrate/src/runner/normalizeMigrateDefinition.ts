@@ -13,7 +13,7 @@ export function normalizeMigrateDefinition(migration: Migration): AsyncIterableM
   }
   return createAsyncIterableMutation(migration.migrate, {
     filter: migration.filter,
-    documentType: migration.documentType,
+    documentTypes: migration.documentTypes,
   })
 }
 
@@ -38,11 +38,14 @@ function isOperation(value: Mutation | NodePatch | Operation): value is Operatio
 
 export function createAsyncIterableMutation(
   migration: NodeMigration,
-  opts: {filter?: string; documentType?: string},
+  opts: {filter?: string; documentTypes?: string[]},
 ): AsyncIterableMigration {
+  const documentTypesSet = new Set(opts.documentTypes)
+
   return async function* run(docs, context) {
     for await (const doc of docs) {
-      if (doc._type !== opts.documentType) continue
+      if (!documentTypesSet.has(doc._type)) continue
+
       const documentMutations = collectDocumentMutations(migration, doc, context)
       if (documentMutations.length > 0) {
         yield documentMutations

@@ -16,7 +16,7 @@ export interface Migration<Def extends MigrateDefinition = MigrateDefinition> {
    * Define input for the migration. If the migration uses an existing set of documents as starting point, define the filter here.
    */
   filter?: string
-  documentType: string
+  documentTypes: string[]
   migrate: Def
 }
 
@@ -32,6 +32,10 @@ export interface APIConfig {
   token: string
   dataset: string
   apiHost?: string
+}
+
+export interface ExportAPIConfig extends APIConfig {
+  documentTypes: string[]
 }
 
 export interface NodeMigrationContext {

@@ -22,11 +22,11 @@ export const endpoints = {
       path: `/query/${dataset}`,
       searchParams: [],
     }),
-    export: (dataset: string): Endpoint => ({
+    export: (dataset: string, documentTypes: string): Endpoint => ({
       global: false,
       method: 'GET',
       path: `/data/export/${dataset}`,
-      searchParams: [],
+      searchParams: [['types', documentTypes]],
     }),
     mutate: (
       dataset: string,
