@@ -10,7 +10,9 @@ export interface HTTPError extends Error {
 
 export async function assert2xx(res: Response): Promise<void> {
   if (res.status < 200 || res.status > 299) {
-    const response = await res.json()
+    const response = await res.json().catch(() => {
+      throw new Error(`Error parsing JSON ${res.status}: ${res.statusText}`)
+    })
 
     const message = response.error
       ? response.error.description
