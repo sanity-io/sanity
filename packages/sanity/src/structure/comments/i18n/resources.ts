@@ -120,8 +120,6 @@ const commentsLocaleStrings = defineLocalesResources('comments', {
   /**The list status message for loading status */
   'comments.list-status-loading': 'Loading comments',
 
-  /**The inline mention loading state */
-  'comments.mention-inline-block': '@Loading',
   /**The text for no users found for mentions */
   'comments.mentions-not-found': 'No users found',
   /**The text for unauthorized mentions */

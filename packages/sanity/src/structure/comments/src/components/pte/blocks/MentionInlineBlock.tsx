@@ -36,7 +36,8 @@ export function MentionInlineBlock(props: MentionInlineBlockProps) {
   const currentUser = useCurrentUser()
   const {t} = useTranslation(commentsLocaleNamespace)
 
-  if (!user || loading) return <Span>{t('comments.mention-inline-block')}</Span> // todo: improve
+  // eslint-disable-next-line i18next/no-literal-string
+  if (!user || loading) return <Span>@Loading</Span> // todo: improve
 
   return (
     <Tooltip
