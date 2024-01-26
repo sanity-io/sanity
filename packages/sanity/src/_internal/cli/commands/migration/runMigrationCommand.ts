@@ -189,7 +189,7 @@ const createMigrationCommand: CliCommandDefinition<CreateFlags> = {
 
   Project id:     ${chalk.bold(projectId)}
   Dataset:        ${chalk.bold(dataset)}
-  Document type:  ${chalk.bold(migration.documentType)}
+  Document type:  ${chalk.bold(migration.documentTypes.join(','))}
 
   ${progress.documents} documents processed…
   ${progress.mutations} mutations generated…
@@ -235,13 +235,16 @@ interface MigrationRunnerOptions {
 async function* dryRun(
   config: MigrationRunnerOptions,
   migration: Migration,
-  {output, chalk}: CliCommandContext,
+  {chalk}: CliCommandContext,
 ) {
   const mutations = collectMigrationMutations(
     migration,
-    ndjson<SanityDocument>(await fromExportEndpoint(config.api), {
-      parse: safeJsonParser,
-    }),
+    ndjson<SanityDocument>(
+      await fromExportEndpoint({...config.api, documentTypes: migration.documentTypes}),
+      {
+        parse: safeJsonParser,
+      },
+    ),
   )
 
   for await (const mutation of mutations) {
