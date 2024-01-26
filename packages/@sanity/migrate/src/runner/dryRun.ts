@@ -64,6 +64,13 @@ export async function dryRun(config: MigrationRunnerOptions, migration: Migratio
     },
   )
 
+  // yield *
+  //   collectMigrationMutations(
+  //     migration,
+  //     () => parse(decodeText(streamToAsyncIterator(createReader())), {parse: safeJsonParser}),
+  //     context,
+  //   )
+
   for await (const mutation of await toArray(mutations)) {
     config.onProgress?.({
       ...stats,

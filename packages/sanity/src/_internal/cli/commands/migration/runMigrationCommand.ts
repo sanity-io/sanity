@@ -15,6 +15,7 @@ import {Table} from 'console-table-printer'
 import {debug} from '../../debug'
 import {formatTransaction} from './utils/mutationFormatter'
 import {resolveMigrations} from './listMigrationsCommand'
+import {prettyFormat, prettyFormatMutation} from './prettyMutationFormatter'
 
 const helpText = `
 Options
@@ -185,6 +186,7 @@ const runMigrationCommand: CliCommandDefinition<CreateFlags> = {
     if (dry) {
       const spinner = output.spinner(`Running migration "${id}" in dry mode`).start()
       if (fromExport) {
+        // TODO: Dry run output when using archive source.
         await runFromArchive(migration, fromExport, {
           api: apiConfig,
           concurrency,
@@ -193,6 +195,18 @@ const runMigrationCommand: CliCommandDefinition<CreateFlags> = {
       } else {
         await dryRun({api: apiConfig, onProgress: createProgress(spinner)}, migration)
       }
+
+      // for await (const mutation of dryRun({api: apiConfig}, migration)) {
+      //   if (!mutation) continue
+      //   output.print()
+      //   output.print(
+      //     prettyFormat({
+      //       chalk,
+      //       mutations: Array.isArray(mutation) ? mutation : [mutation],
+      //       migration,
+      //     }),
+      //   )
+      // }
 
       spinner.stop()
     } else {
