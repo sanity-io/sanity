@@ -7,7 +7,7 @@ const QUERY = `*[_type == "commentsUpsell"]{
     ...,
    image {
        asset-> { url, altText }
-     },        
+     },
      descriptionText[]{
        ...,
        _type == "iconAndText" => {
@@ -25,28 +25,21 @@ const QUERY = `*[_type == "commentsUpsell"]{
              }
          }
        }
-     } 
+     }
  }[0]`
 
-const TRIAL_EXPERIENCE_CLIENT: Partial<ClientConfig> = {
-  dataset: 'staging',
+const UPSELL_CLIENT: Partial<ClientConfig> = {
+  dataset: 'upsell-public-development', // TODO: Update for production when ready
   projectId: 'pyrmmpch',
+  withCredentials: false,
   useCdn: true,
 }
 
 export const useCommentsUpsellData = (enabled: boolean): CommentsUpsellData | null => {
   const [data, setData] = useState<CommentsUpsellData | null>(null)
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
-
   const fetchCommentsUpsellData = useCallback(async () => {
-    // TODO: Is there a better way to handle this? credentials are required in localhost but not in *
-    const isLocalhost = window.location.origin.startsWith('http://localhost:3333')
-    const trialExperienceClient = client.withConfig({
-      ...TRIAL_EXPERIENCE_CLIENT,
-      withCredentials: isLocalhost,
-    })
-
-    const res = await trialExperienceClient.fetch(QUERY)
+    const res = await client.withConfig(UPSELL_CLIENT).fetch(QUERY)
     setData(res)
   }, [client])
 
