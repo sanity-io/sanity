@@ -17,7 +17,7 @@ interface FormatterOptions {
 }
 
 export function prettyFormat({chalk, mutations, migration}: FormatterOptions): string {
-  return `${[...mutations].flatMap((m) => prettyFormatMutation(chalk, m, migration)).join('\n')}\n`
+  return `${[...mutations].flatMap((m) => prettyFormatMutation(chalk, m, migration)).join('\n')}`
 }
 
 function encodeItemRef(ref: number | KeyedSegment): ItemRef {
