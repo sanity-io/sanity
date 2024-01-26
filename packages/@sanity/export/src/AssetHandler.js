@@ -124,7 +124,7 @@ class AssetHandler {
     this.downloading.push(assetDoc.url)
 
     const doDownload = retryHelper(
-      5, // try 5 times
+      10, // try 10 times
       () => this.downloadAsset(assetDoc, dstPath),
       (err, attempt) => {
         debug(
