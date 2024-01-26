@@ -15,6 +15,7 @@ export interface DevServerOptions {
   projectName?: string
 
   reactStrictMode: boolean
+  warnUnknownForwardedProps: boolean
   vite?: UserViteConfig
 }
 
@@ -23,11 +24,19 @@ export interface DevServer {
 }
 
 export async function startDevServer(options: DevServerOptions): Promise<DevServer> {
-  const {cwd, httpPort, httpHost, basePath, reactStrictMode, vite: extendViteConfig} = options
+  const {
+    cwd,
+    httpPort,
+    httpHost,
+    basePath,
+    reactStrictMode,
+    warnUnknownForwardedProps,
+    vite: extendViteConfig,
+  } = options
 
   const startTime = Date.now()
   debug('Writing Sanity runtime files')
-  await writeSanityRuntime({cwd, reactStrictMode, watch: true, basePath})
+  await writeSanityRuntime({cwd, reactStrictMode, warnUnknownForwardedProps, watch: true, basePath})
 
   debug('Resolving vite config')
   const mode = 'development'

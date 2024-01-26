@@ -58,6 +58,9 @@ function getDevServerConfig({
   const reactStrictMode = env.SANITY_STUDIO_REACT_STRICT_MODE
     ? env.SANITY_STUDIO_REACT_STRICT_MODE === 'true'
     : Boolean(cliConfig?.reactStrictMode)
+  const warnUnknownForwardedProps = env.SANITY_STUDIO_WARN_UNKNOWN_FORWARDED_PROPS
+    ? env.SANITY_STUDIO_WARN_UNKNOWN_FORWARDED_PROPS === 'true'
+    : Boolean(cliConfig?.warnUnknownForwardedProps)
 
   if (env.SANITY_STUDIO_BASEPATH && cliConfig?.project?.basePath) {
     output.warn(
@@ -69,5 +72,6 @@ function getDevServerConfig({
     ...baseConfig,
     staticPath: path.join(workDir, 'static'),
     reactStrictMode,
+    warnUnknownForwardedProps,
   }
 }

@@ -122,6 +122,8 @@ export const DocumentActionShortcuts = React.memo(
 
     if (!actionProps || !actions) return null
 
+    return createElement(as, {}, children)
+
     return (
       <RenderActionCollectionState actionProps={actionProps} actions={actions}>
         {({states}) => (

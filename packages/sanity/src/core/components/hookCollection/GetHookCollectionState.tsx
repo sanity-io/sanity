@@ -1,10 +1,50 @@
 import type {ThrottleSettings} from 'lodash'
-import React, {useCallback, useMemo, useRef, useState} from 'react'
+import React, {useCallback, useEffect, useMemo, useRef, useState, memo} from 'react'
 import {isNonNullable, useThrottledCallback} from '../../util'
 import {getHookId} from './actionId'
-import {HookStateContainer} from './HookStateContainer'
 import {cancelIdleCallback, requestIdleCallback} from './requestIdleCallback'
 import {ActionHook} from './types'
+import shallowEquals from 'shallow-equals'
+
+function useShallowCompareMemoize<T>(value: T): Array<T | undefined> {
+  const ref = useRef<T | undefined>(undefined)
+
+  if (!shallowEquals(value, ref.current)) {
+    ref.current = value
+  }
+
+  return [ref.current]
+}
+
+function useShallowCompareEffect(callback: React.EffectCallback, dependencies: any) {
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- the linter isn't able to see that deps are properly handled here
+  useEffect(callback, useShallowCompareMemoize(dependencies))
+}
+
+const HookStateContainer = memo(
+  function HookStateContainer(props: any) {
+    const {hook, args, id, onNext, onReset, onRequestUpdate} = props
+
+    const hookState = hook({
+      ...args,
+      onComplete: () => {
+        onReset(id)
+      },
+    })
+
+    useShallowCompareEffect(() => {
+      onNext(id, hookState)
+      onRequestUpdate()
+      return () => {
+        onNext(id, null)
+        onRequestUpdate()
+      }
+    }, hookState)
+
+    return null
+  },
+  (prev, next) => prev.args === next.args,
+)
 
 /** @internal */
 export interface GetHookCollectionStateProps<T, K> {
@@ -19,6 +59,10 @@ const throttleOptions: ThrottleSettings = {trailing: true}
 /** @internal */
 export function GetHookCollectionState<T, K>(props: GetHookCollectionStateProps<T, K>) {
   const {hooks, args, children, onReset} = props
+
+  useEffect(() => {
+    console.log('GetHookCollectionState', props)
+  }, [props])
 
   const statesRef = useRef<Record<string, {value: K}>>({})
   const [tickId, setTick] = useState(0)
@@ -72,6 +116,10 @@ export function GetHookCollectionState<T, K>(props: GetHookCollectionStateProps<
     // eslint-disable-next-line react-hooks/exhaustive-deps -- tickId is used to refresh the memo, before it can be removed it needs to be investigated what impact it has
     [hookIds, tickId],
   )
+
+  useEffect(() => {
+    console.log('GetHookCollectionState states', states)
+  }, [states])
 
   return (
     <>

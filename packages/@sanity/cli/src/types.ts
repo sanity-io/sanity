@@ -300,6 +300,12 @@ export interface CliConfig {
    * Defaults to `false`
    */
   reactStrictMode?: boolean
+  /**
+   * Warns about unknown props being forwarded to DOM elements in the Studio in styled-components.
+   * Only affects `sanity dev` in dev mode, it's ignored in `sanity build` and in production.
+   * Defaults to `false`
+   */
+  warnUnknownForwardedProps?: boolean
 
   server?: {
     hostname?: string

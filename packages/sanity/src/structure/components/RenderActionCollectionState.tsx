@@ -22,6 +22,8 @@ export interface RenderActionCollectionProps {
 export const RenderActionCollectionState = (props: RenderActionCollectionProps) => {
   const {actions, children, actionProps, onActionComplete} = props
 
+  return null
+
   return (
     <GetHookCollectionState onReset={onActionComplete} hooks={actions} args={actionProps}>
       {children}

@@ -1,4 +1,4 @@
 {
   "//": "https://github.com/depcheck/depcheck/pull/756",
-  "ignore": ["https:", "@sanity/client", "@vercel/stega"]
+  "ignore": ["https:", "@sanity/client", "@vercel/stega", "@emotion/is-prop-valid", "use-hot-module-reload"]
 }

@@ -46,7 +46,13 @@ export async function buildStaticFiles(
   } = options
 
   debug('Writing Sanity runtime files')
-  await writeSanityRuntime({cwd, reactStrictMode: false, watch: false, basePath})
+  await writeSanityRuntime({
+    cwd,
+    reactStrictMode: false,
+    warnUnknownForwardedProps: false,
+    watch: false,
+    basePath,
+  })
 
   debug('Resolving vite config')
   const mode = 'production'

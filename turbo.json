@@ -1,7 +1,7 @@
 {
   "$schema": "https://turbo.build/schema.json",
    // This is probably overkill, this will segment between GH actions and everything else for now.
-  "globalEnv": ["OS", "RUNNER_OS"],
+  "globalEnv": ["OS", "RUNNER_OS", "WHY_DID_YOU_RENDER"],
   // These root workspace files are reused in workspaces and may affect their build output
   "globalDependencies": [
     ".babelrc",

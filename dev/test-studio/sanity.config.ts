@@ -28,6 +28,7 @@ import {
   CustomToolMenu,
   studioComponentsPlugin,
 } from './components/studioComponents'
+// import {styledComponentsPlugin} from './components/styledComponents'
 import {
   Annotation,
   Block,
@@ -92,6 +93,7 @@ const sharedSettings = definePlugin({
     badges: (prev, context) => (context.schemaType === 'author' ? [CustomBadge, ...prev] : prev),
   },
   plugins: [
+    // styledComponentsPlugin(),
     structureTool({
       icon: BookIcon,
       structure,
@@ -277,3 +279,19 @@ export default defineConfig([
     },
   },
 ])
+
+const orig = console.warn
+console.warn = function (...args) {
+  orig.apply(console, args)
+  const [msg] = args
+  if (
+    typeof msg === 'string' &&
+    msg.startsWith('styled-components: it looks like an unknown prop')
+  ) {
+    throw new Error(
+      `Unknown prop warning: ${msg}`,
+      // @ts-expect-error -- valid type but TS isn't updated to declare it yet
+      {cause: args},
+    )
+  }
+}

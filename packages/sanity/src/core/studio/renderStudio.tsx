@@ -6,6 +6,7 @@ import {Studio} from './Studio'
 interface RenderStudioOptions {
   basePath?: string
   reactStrictMode?: boolean
+  warnUnknownForwardedProps?: boolean
 }
 
 /**
@@ -39,17 +40,27 @@ export function renderStudio(
   }
 
   const opts = typeof options === 'boolean' ? {reactStrictMode: options} : options
-  const {reactStrictMode = false, basePath} = opts
+  const {reactStrictMode = false, warnUnknownForwardedProps = false, basePath} = opts
 
   const root = createRoot(rootElement)
 
   root.render(
     reactStrictMode ? (
       <StrictMode>
-        <Studio config={config} basePath={basePath} unstable_globalStyles />
+        <Studio
+          config={config}
+          basePath={basePath}
+          unstable_globalStyles
+          unstable_warnUnknownForwardedProps={warnUnknownForwardedProps}
+        />
       </StrictMode>
     ) : (
-      <Studio config={config} basePath={basePath} unstable_globalStyles />
+      <Studio
+        config={config}
+        basePath={basePath}
+        unstable_globalStyles
+        unstable_warnUnknownForwardedProps={warnUnknownForwardedProps}
+      />
     ),
   )
 

@@ -100,7 +100,7 @@
     "@playwright/test": "^1.39.0",
     "@sanity/client": "^6.11.1",
     "@sanity/eslint-config-i18n": "^1.0.0",
-    "@sanity/pkg-utils": "^3.3.2",
+    "@sanity/pkg-utils": "3.3.9-canary.0",
     "@sanity/test": "0.0.1-alpha.1",
     "@sanity/tsdoc": "1.0.0-alpha.38",
     "@sanity/uuid": "^3.0.2",

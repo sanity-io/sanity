@@ -16,6 +16,7 @@ const debug = serverDebug.extend('runtime')
 export interface RuntimeOptions {
   cwd: string
   reactStrictMode: boolean
+  warnUnknownForwardedProps: boolean
   watch: boolean
   basePath?: string
 }
@@ -30,6 +31,7 @@ export interface RuntimeOptions {
 export async function writeSanityRuntime({
   cwd,
   reactStrictMode,
+  warnUnknownForwardedProps,
   watch,
   basePath,
 }: RuntimeOptions): Promise<void> {
@@ -73,6 +75,6 @@ export async function writeSanityRuntime({
 
   await fs.writeFile(
     path.join(runtimeDir, 'app.js'),
-    getEntryModule({reactStrictMode, relativeConfigLocation, basePath}),
+    getEntryModule({reactStrictMode, warnUnknownForwardedProps, relativeConfigLocation, basePath}),
   )
 }
