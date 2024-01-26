@@ -12,6 +12,7 @@ import {
   useComments,
   CommentCreatePayload,
   useCommentsSelectedPath,
+  useCommentsUpsell,
 } from '../../src'
 import {CommentsFieldButton} from './CommentsFieldButton'
 import {FieldProps, getSchemaTypeTitle, useCurrentUser} from 'sanity'
@@ -87,9 +88,8 @@ function CommentFieldInner(props: FieldProps) {
     operation,
     setStatus,
     status,
-    upsellData,
-    setUpsellDialogOpen,
   } = useComments()
+  const {upsellData, setUpsellDialogOpen} = useCommentsUpsell()
   const {selectedPath, setSelectedPath} = useCommentsSelectedPath()
 
   const fieldTitle = useMemo(() => getSchemaTypeTitle(props.schemaType), [props.schemaType])

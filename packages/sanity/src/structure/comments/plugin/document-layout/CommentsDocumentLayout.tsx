@@ -1,11 +1,13 @@
-import React, {useCallback} from 'react'
+import {useCallback} from 'react'
 import {
   CommentsEnabledProvider,
   CommentsProvider,
   CommentsSelectedPathProvider,
+  CommentsUpsellProvider,
   useCommentsEnabled,
 } from '../../src'
 import {useDocumentPane} from '../../..'
+import {ConditionalWrapper} from '../../../../ui-components/conditionalWrapper'
 import {COMMENTS_INSPECTOR_NAME} from '../../../panes/document/constants'
 import {DocumentLayoutProps} from 'sanity'
 
@@ -21,7 +23,7 @@ export function CommentsDocumentLayout(props: DocumentLayoutProps) {
 
 function CommentsDocumentLayoutInner(props: DocumentLayoutProps) {
   const {documentId, documentType} = props
-  const {enabled} = useCommentsEnabled()
+  const commentsEnabled = useCommentsEnabled()
   const {openInspector, inspector} = useDocumentPane()
 
   const handleOpenCommentsInspector = useCallback(() => {
@@ -31,7 +33,7 @@ function CommentsDocumentLayoutInner(props: DocumentLayoutProps) {
   }, [inspector?.name, openInspector])
 
   // If comments are not enabled, render the default document layout
-  if (!enabled) {
+  if (!commentsEnabled.enabled) {
     return props.renderDefault(props)
   }
 
@@ -42,7 +44,13 @@ function CommentsDocumentLayoutInner(props: DocumentLayoutProps) {
       isCommentsOpen={inspector?.name === COMMENTS_INSPECTOR_NAME}
       onCommentsOpen={handleOpenCommentsInspector}
     >
-      <CommentsSelectedPathProvider>{props.renderDefault(props)}</CommentsSelectedPathProvider>
+      <ConditionalWrapper
+        condition={commentsEnabled.reason === 'upsell'}
+        // eslint-disable-next-line react/jsx-no-bind
+        wrapper={(children) => <CommentsUpsellProvider>{children}</CommentsUpsellProvider>}
+      >
+        <CommentsSelectedPathProvider>{props.renderDefault(props)}</CommentsSelectedPathProvider>
+      </ConditionalWrapper>
     </CommentsProvider>
   )
 }
