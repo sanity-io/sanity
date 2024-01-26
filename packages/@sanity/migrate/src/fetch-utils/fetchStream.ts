@@ -24,9 +24,13 @@ export async function assert2xx(res: Response): Promise<void> {
   }
 }
 
-export async function fetchAsyncIterator({url, init}: FetchOptions) {
+export async function fetchStream({url, init}: FetchOptions) {
   const response = await fetch(url, init)
   await assert2xx(response)
   if (response.body === null) throw new Error('No response received')
-  return streamAsyncIterator(response.body)
+  return response.body
+}
+
+export async function fetchAsyncIterator(options: FetchOptions) {
+  return streamAsyncIterator(await fetchStream(options))
 }

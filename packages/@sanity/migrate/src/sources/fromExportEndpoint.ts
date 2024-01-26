@@ -1,14 +1,12 @@
 import {createSafeJsonParser} from '@sanity/util/createSafeJsonParser'
 import {SanityDocument} from '@sanity/types'
-import {fetchAsyncIterator} from '../fetch-utils/fetchStream'
+import {fetchStream} from '../fetch-utils/fetchStream'
 import {toFetchOptions} from '../fetch-utils/sanityRequestOptions'
 import {endpoints} from '../fetch-utils/endpoints'
 import {ExportAPIConfig} from '../types'
 
-export function fromExportEndpoint(
-  options: ExportAPIConfig,
-): Promise<AsyncGenerator<Uint8Array, void, unknown>> {
-  return fetchAsyncIterator(
+export function fromExportEndpoint(options: ExportAPIConfig) {
+  return fetchStream(
     toFetchOptions({
       projectId: options.projectId,
       apiVersion: options.apiVersion,
