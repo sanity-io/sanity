@@ -68,7 +68,9 @@ const renderMenuButton = ({
       <Flex paddingX={3} paddingY={2}>
         <Tooltip
           animate
-          content={commentsEnabled === 'read-only' ? 'Upgrade to add reactions' : 'Add reaction'}
+          content={
+            commentsEnabled.reason === 'upsell' ? 'Upgrade to add reactions' : 'Add reaction'
+          }
           disabled={open}
         >
           <Text size={1}>
@@ -160,7 +162,7 @@ export const CommentReactionsBar = React.memo(function CommentReactionsBar(
             >
               <TransparentCard tone="default">
                 <UIButton
-                  disabled={readOnly || commentsEnabled === 'read-only'}
+                  disabled={readOnly || commentsEnabled.reason === 'upsell'}
                   mode="ghost"
                   // eslint-disable-next-line react/jsx-no-bind
                   onClick={() => handleSelect(name)}

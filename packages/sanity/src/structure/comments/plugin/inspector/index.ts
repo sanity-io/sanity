@@ -5,10 +5,10 @@ import {CommentsInspector} from './CommentsInspector'
 import {DocumentInspectorMenuItem, defineDocumentInspector} from 'sanity'
 
 function useMenuItem(): DocumentInspectorMenuItem {
-  const isEnabled = useCommentsEnabled()
+  const {enabled} = useCommentsEnabled()
 
   return {
-    hidden: !isEnabled,
+    hidden: !enabled,
     icon: CommentIcon,
     showAsAction: true,
     title: 'Comments',

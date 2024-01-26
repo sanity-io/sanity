@@ -1,4 +1,5 @@
 import {useMemo} from 'react'
+import {CommentsEnabledContextValue} from '../context/enabled/types'
 import {getPublishedId, useFeatureEnabled, useSource} from 'sanity'
 
 /**
@@ -9,7 +10,7 @@ import {getPublishedId, useFeatureEnabled, useSource} from 'sanity'
 export function useResolveCommentsEnabled(
   documentId: string,
   documentType: string,
-): false | 'enabled' | 'read-only' {
+): CommentsEnabledContextValue {
   // Check if the projects plan has the feature enabled
   const {enabled: featureEnabled, isLoading} = useFeatureEnabled('studioComments')
 
@@ -20,8 +21,10 @@ export function useResolveCommentsEnabled(
     [documentId, documentType, enabled],
   )
 
-  // If the feature is disabled to the project, because they are not in the correct plan we want to show the read-only view
-  const featureStatus = featureEnabled ? 'enabled' : 'read-only'
-
-  return !isLoading && enabledFromConfig ? featureStatus : false
+  return {
+    enabled: !isLoading && enabledFromConfig,
+    // TODO: Restore
+    // reason: featureEnabled ? null : 'upsell',
+    reason: 'upsell',
+  }
 }

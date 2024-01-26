@@ -33,6 +33,10 @@ const UpsellPanel = () => {
                 text={upsellData.secondaryButton.text}
                 tone="primary"
                 iconRight={LaunchIcon}
+                href={upsellData.secondaryButton.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                as="a"
               />
               <Button
                 text={upsellData.ctaButton.text}

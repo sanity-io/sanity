@@ -75,7 +75,7 @@ export function CreateNewThreadInput(props: CreateNewThreadInputProps) {
   }, [])
 
   const placeholder =
-    commentsEnabled === 'read-only' ? (
+    commentsEnabled.reason === 'upsell' ? (
       <>Upgrade to add comment</>
     ) : (
       <>
@@ -96,7 +96,7 @@ export function CreateNewThreadInput(props: CreateNewThreadInputProps) {
       onFocus={onFocus}
       onSubmit={handleSubmit}
       placeholder={placeholder}
-      readOnly={readOnly || commentsEnabled === 'read-only'}
+      readOnly={readOnly || commentsEnabled.reason === 'upsell'}
       ref={commentInputHandle}
       value={value}
     />
