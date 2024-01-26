@@ -13,6 +13,8 @@ import {lastValueFrom} from '../it-utils/lastValueFrom'
 import {decodeText, parseJSON} from '../it-utils'
 import {concatStr} from '../it-utils/concatStr'
 import {fetchAsyncIterator, FetchOptions} from '../fetch-utils/fetchStream'
+import {bufferThroughFile} from '../fs-webstream/bufferThroughFile'
+import {streamAsyncIterator} from '../utils/streamToAsyncIterator'
 import {toSanityMutations} from './utils/toSanityMutations'
 import {
   DEFAULT_MUTATION_CONCURRENCY,
@@ -21,6 +23,7 @@ import {
 } from './constants'
 import {batchMutations} from './utils/batchMutations'
 import {collectMigrationMutations} from './collectMigrationMutations'
+import {getBufferFilePath} from './utils/getBufferFile'
 
 type MigrationProgress = {
   documents: number
@@ -61,11 +64,14 @@ export async function run(config: MigrationRunnerOptions, migration: Migration) 
     completedTransactions: [],
     currentMutations: [],
   }
+
+  const exportStream = bufferThroughFile(
+    await fromExportEndpoint({...config.api, documentTypes: migration.documentTypes}),
+    getBufferFilePath(),
+  )
+
   const documents = tap(
-    ndjson<SanityDocument>(
-      await fromExportEndpoint({...config.api, documentTypes: migration.documentTypes}),
-      {parse: safeJsonParser},
-    ),
+    ndjson<SanityDocument>(streamAsyncIterator(exportStream), {parse: safeJsonParser}),
     () => {
       config.onProgress?.({...stats, documents: ++stats.documents})
     },
@@ -109,6 +115,8 @@ export async function run(config: MigrationRunnerOptions, migration: Migration) 
       ...stats,
     })
   }
+  // Cancel export/buffer stream, it's not needed anymore
+  await exportStream.cancel()
   config.onProgress?.({
     ...stats,
     done: true,
