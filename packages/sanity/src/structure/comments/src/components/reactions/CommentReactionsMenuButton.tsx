@@ -1,12 +1,11 @@
-import {Card, useClickOutside} from '@sanity/ui'
 import React, {cloneElement, useCallback, useMemo, useState} from 'react'
+import {Card, useClickOutside} from '@sanity/ui'
 import {Popover, PopoverProps} from '../../../../../ui-components'
 import {commentsLocaleNamespace} from '../../../i18n'
 import type {CommentReactionOption} from '../../types'
 import {useCommentsEnabled} from '../../hooks'
-import type {CommentsEnabledContextValue} from '../../context/enabled/types'
 import {CommentReactionsMenu} from './CommentReactionsMenu'
-import {useTranslation, type TFunction} from 'sanity'
+import {useTranslation} from 'sanity'
 
 const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['top', 'bottom']
 
@@ -16,11 +15,7 @@ export interface CommentReactionsMenuButtonProps {
   onSelect: (option: CommentReactionOption) => void
   options: CommentReactionOption[]
   readOnly?: boolean
-  renderMenuButton: (props: {
-    open: boolean
-    t: TFunction
-    commentsEnabled: CommentsEnabledContextValue
-  }) => React.ReactElement
+  renderMenuButton: (props: {open: boolean; tooltipContent: string}) => React.ReactElement
 }
 
 export function CommentReactionsMenuButton(props: CommentReactionsMenuButtonProps) {
@@ -76,7 +71,13 @@ export function CommentReactionsMenuButton(props: CommentReactionsMenuButtonProp
 
   const button = useMemo(() => {
     // Get the button element from the renderMenuButton function.
-    const btn = renderMenuButton({open, t, commentsEnabled})
+    const btn = renderMenuButton({
+      open,
+      tooltipContent:
+        commentsEnabled.reason === 'upsell'
+          ? 'Upgrade to add reactions'
+          : t('list-item.context-menu-add-reaction'),
+    })
 
     // Clone the button element and add the necessary props.
     return cloneElement(btn, {

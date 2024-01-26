@@ -14,28 +14,15 @@ import type {CommentReactionOption, CommentStatus} from '../../types'
 import {ReactionIcon} from '../icons'
 import {CommentReactionsMenuButton} from '../reactions'
 import {useCommentsEnabled} from '../../hooks'
-import {CommentsEnabledContextValue} from '../../context/enabled/types'
-import {ContextMenuButton, useTranslation, type TFunction} from 'sanity'
+import {ContextMenuButton, useTranslation} from 'sanity'
 
-const renderMenuButton = ({
-  open,
-  commentsEnabled,
-  t,
-}: {
-  open: boolean
-  commentsEnabled: CommentsEnabledContextValue
-  t: TFunction
-}) => (
+const renderMenuButton = ({open, tooltipContent}: {open: boolean; tooltipContent: string}) => (
   <Button
     aria-label={t('list-item.context-menu-add-reaction-aria-label')}
     icon={ReactionIcon}
     mode="bleed"
     selected={open}
-    tooltipProps={
-      commentsEnabled.reason === 'upsell'
-        ? {content: 'Upgrade to add reactions'}
-        : {content: t('list-item.context-menu-add-reaction')}
-    }
+    tooltipProps={{content: tooltipContent}}
   />
 )
 

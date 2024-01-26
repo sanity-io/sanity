@@ -10,13 +10,11 @@ import {CommentReactionItem, CommentReactionOption, CommentReactionShortNames} f
 import {COMMENT_REACTION_EMOJIS, COMMENT_REACTION_OPTIONS} from '../../constants'
 import {ReactionIcon} from '../icons'
 import {Tooltip, TooltipDelayGroupProvider} from '../../../../../ui-components'
-import {CommentsEnabledContextValue} from '../../context/enabled/types'
 import {useCommentsEnabled} from '../../hooks'
 import {CommentReactionsMenuButton} from './CommentReactionsMenuButton'
 import {CommentReactionsUsersTooltip} from './CommentReactionsUsersTooltip'
 import {EmojiText} from './EmojiText.styled'
 import {TransparentCard} from './TransparentCard.styled'
-import {TFunction} from 'sanity'
 
 /**
  * A function that groups reactions by name. For example:
@@ -57,27 +55,11 @@ function groupReactionsByName(reactions: CommentReactionItem[]) {
   return sorted as [CommentReactionShortNames, CommentReactionItem[]][]
 }
 
-const renderMenuButton = ({
-  open,
-  commentsEnabled,
-  t,
-}: {
-  open: boolean
-  commentsEnabled: CommentsEnabledContextValue
-  t: TFunction
-}) => {
+const renderMenuButton = ({open, tooltipContent}: {open: boolean; tooltipContent: string}) => {
   return (
     <UIButton fontSize={1} mode="ghost" padding={0} radius="full" selected={open}>
       <Flex paddingX={3} paddingY={2}>
-        <Tooltip
-          animate
-          content={
-            commentsEnabled.reason === 'upsell'
-              ? 'Upgrade to add reactions'
-              : t('reactions.add-reaction-tooltip')
-          }
-          disabled={open}
-        >
+        <Tooltip animate content={tooltipContent} disabled={open}>
           <Text size={1}>
             <ReactionIcon />
           </Text>
