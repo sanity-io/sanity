@@ -15,6 +15,24 @@ const ACTION_REMOVE = 'remove'
 const ACTION_REWRITE = 'rewrite'
 const ASSET_DOWNLOAD_CONCURRENCY = 8
 
+const retryHelper = (times, fn, onError) => {
+  let attempt = 0
+  const caller = (...args) => {
+    return fn(...args).catch((err) => {
+      if (onError) {
+        onError(err, attempt)
+      }
+      if (attempt < times) {
+        attempt++
+        return caller(...args)
+      }
+
+      throw err
+    })
+  }
+  return caller
+}
+
 class AssetHandler {
   constructor(options) {
     const concurrency = options.concurrency || ASSET_DOWNLOAD_CONCURRENCY
@@ -104,7 +122,27 @@ class AssetHandler {
     debug('Adding download task for %s (destination: %s)', assetDoc._id, dstPath)
     this.queueSize++
     this.downloading.push(assetDoc.url)
-    this.queue.add(() => this.downloadAsset(assetDoc, dstPath))
+
+    const doDownload = retryHelper(
+      10, // try 10 times
+      () => this.downloadAsset(assetDoc, dstPath),
+      (err, attempt) => {
+        debug(
+          `Error downloading asset %s (destination: %s), attempt %d`,
+          assetDoc._id,
+          dstPath,
+          attempt,
+          err,
+        )
+      },
+    )
+    this.queue.add(() =>
+      doDownload().catch((err) => {
+        debug('Error downloading asset', err)
+        this.queue.clear()
+        this.reject(err)
+      }),
+    )
   }
 
   maybeCreateAssetDirs() {
@@ -133,7 +171,8 @@ class AssetHandler {
     return {url: formatUrl(url), headers}
   }
 
-  async downloadAsset(assetDoc, dstPath, attemptNum = 0) {
+  // eslint-disable-next-line max-statements
+  async downloadAsset(assetDoc, dstPath) {
     const {url} = assetDoc
     const options = this.getAssetRequestOptions(assetDoc)
 
@@ -141,27 +180,39 @@ class AssetHandler {
     try {
       stream = await requestStream(options)
     } catch (err) {
-      this.reject(err)
-      return false
+      throw new Error('Failed create asset stream', {cause: err})
     }
 
     if (stream.statusCode !== 200) {
       this.queue.clear()
-      const err = await tryGetErrorFromStream(stream)
-      let errMsg = `Referenced asset URL "${url}" returned HTTP ${stream.statusCode}`
-      if (err) {
-        errMsg = `${errMsg}:\n\n${err}`
-      }
+      try {
+        const err = await tryGetErrorFromStream(stream)
+        let errMsg = `Referenced asset URL "${url}" returned HTTP ${stream.statusCode}`
+        if (err) {
+          errMsg = `${errMsg}:\n\n${err}`
+        }
 
-      this.reject(new Error(errMsg))
-      return false
+        throw new Error(errMsg)
+      } catch (err) {
+        throw new Error('Failed to parse error response from asset stream', {cause: err})
+      }
     }
 
     this.maybeCreateAssetDirs()
 
     debug('Asset stream ready, writing to filesystem at %s', dstPath)
     const tmpPath = path.join(this.tmpDir, dstPath)
-    const {sha1, md5, size} = await writeHashedStream(tmpPath, stream)
+    let sha1 = ''
+    let md5 = ''
+    let size = 0
+    try {
+      const res = await writeHashedStream(tmpPath, stream)
+      sha1 = res.sha1
+      md5 = res.md5
+      size = res.size
+    } catch (err) {
+      throw new Error('Failed to write asset stream to filesystem', {cause: err})
+    }
 
     // Verify it against our downloaded stream to make sure we have the same copy
     const contentLength = stream.headers['content-length']
@@ -177,10 +228,7 @@ class AssetHandler {
     const md5Differs = remoteMd5 && md5 !== remoteMd5
     const differs = sha1Differs && md5Differs
 
-    if (differs && attemptNum < 3) {
-      debug('%s does not match downloaded asset, retrying (#%d) [%s]', method, attemptNum + 1, url)
-      return this.downloadAsset(assetDoc, dstPath, attemptNum + 1)
-    } else if (differs) {
+    if (differs) {
       const details = [
         hasHash &&
           (method === 'md5'
@@ -197,14 +245,8 @@ class AssetHandler {
       const detailsString = `Details:\n - ${details.filter(Boolean).join('\n - ')}`
 
       await rimraf(tmpPath)
-      this.queue.clear()
 
-      const error = new Error(
-        `Failed to download asset at ${assetDoc.url}, giving up. ${detailsString}`,
-      )
-
-      this.reject(error)
-      return false
+      throw new Error(`Failed to download asset at ${assetDoc.url}. ${detailsString}`)
     }
 
     const isImage = assetDoc._type === 'sanity.imageAsset'
