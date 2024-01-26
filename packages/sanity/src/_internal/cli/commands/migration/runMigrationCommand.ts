@@ -146,7 +146,7 @@ const createMigrationCommand: CliCommandDefinition<CreateFlags> = {
 
     if (dry) {
       const spinner = output.spinner(`Running migration "${migrationName}" in dry mode`).start()
-      await dryRun({api: apiConfig}, migration, context)
+      await dryRun({api: apiConfig}, migration)
 
       spinner.stop()
     } else {
