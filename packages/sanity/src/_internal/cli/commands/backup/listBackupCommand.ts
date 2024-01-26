@@ -29,7 +29,7 @@ type ListBackupResponseItem = {
 
 const helpText = `
 Options
-  --limit <int>     Maximum number of backups returned. Default 30. Cannot exceed 100.
+  --limit <int>     Maximum number of backups returned. Default 30.
   --after <string>  Only return backups after this timestamp (inclusive)
   --before <string> Only return backups before this timestamp (exclusive). Cannot be younger than <after> if specified.
 
