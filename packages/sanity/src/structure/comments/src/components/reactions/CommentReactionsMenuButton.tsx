@@ -82,7 +82,7 @@ export function CommentReactionsMenuButton(props: CommentReactionsMenuButtonProp
     return cloneElement(btn, {
       'aria-expanded': open,
       'aria-haspopup': 'true',
-      disabled: readOnly || commentsEnabled === 'read-only',
+      disabled: readOnly || commentsEnabled.reason === 'upsell',
       id: 'reactions-menu-button',
       onClick: handleClick,
       ref: setButtonElement,

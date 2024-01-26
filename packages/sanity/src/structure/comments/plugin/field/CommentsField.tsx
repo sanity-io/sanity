@@ -29,9 +29,9 @@ const HIGHLIGHT_BLOCK_VARIANTS: Variants = {
 }
 
 export function CommentsField(props: FieldProps) {
-  const isEnabled = useCommentsEnabled()
+  const {enabled} = useCommentsEnabled()
 
-  if (!isEnabled) {
+  if (!enabled) {
     return props.renderDefault(props)
   }
 
@@ -155,7 +155,7 @@ function CommentFieldInner(props: FieldProps) {
       return
     }
 
-    if (commentsEnabled === 'read-only') {
+    if (commentsEnabled.reason === 'upsell') {
       if (upsellData) {
         setUpsellDialogOpen(true)
       } else {

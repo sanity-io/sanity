@@ -340,12 +340,12 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
               onKeyDown={handleInputKeyDown}
               onSubmit={handleReplySubmit}
               placeholder={
-                commentsEnabled === 'read-only'
+                commentsEnabled.reason === 'upsell'
                   ? // TODO: Comments - localize
                     'Upgrade to reply'
                   : t('compose.reply-placeholder')
               }
-              readOnly={readOnly || commentsEnabled === 'read-only'}
+              readOnly={readOnly || commentsEnabled.reason === 'upsell'}
               ref={replyInputRef}
               value={value}
             />

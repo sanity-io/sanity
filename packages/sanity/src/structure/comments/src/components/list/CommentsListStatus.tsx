@@ -52,7 +52,7 @@ export function CommentsListStatus(props: CommentsListStatusProps) {
     return <LoadingBlock showText title={t('list-status.loading')} />
   }
 
-  if (hasNoComments && commentsEnabled === 'enabled') {
+  if (hasNoComments && commentsEnabled.reason !== 'upsell') {
     return (
       <Flex align="center" justify="center" flex={1} sizing="border">
         <Container width={0} padding={4}>

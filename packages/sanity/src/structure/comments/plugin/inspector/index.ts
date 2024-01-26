@@ -6,11 +6,11 @@ import {CommentsInspector} from './CommentsInspector'
 import {DocumentInspectorMenuItem, defineDocumentInspector, useTranslation} from 'sanity'
 
 function useMenuItem(): DocumentInspectorMenuItem {
-  const isEnabled = useCommentsEnabled()
   const {t} = useTranslation(commentsLocaleNamespace)
+  const {enabled} = useCommentsEnabled()
 
   return {
-    hidden: !isEnabled,
+    hidden: !enabled,
     icon: CommentIcon,
     showAsAction: true,
     title: t('feature-name'),

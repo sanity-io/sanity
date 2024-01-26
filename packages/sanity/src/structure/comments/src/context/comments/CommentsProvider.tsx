@@ -56,7 +56,7 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
   const commentsEnabled = useCommentsEnabled()
   const [status, setStatus] = useState<CommentStatus>('open')
   const [upsellDialogOpen, setUpsellDialogOpen] = useState(false)
-  const upsellData = useCommentsUpsellData(commentsEnabled === 'read-only')
+  const upsellData = useCommentsUpsellData(commentsEnabled.reason === 'upsell')
   const {client, runSetup, isRunningSetup} = useCommentsSetup()
   const publishedId = getPublishedId(documentId)
   const editState = useEditState(publishedId, documentType, 'low')
@@ -80,7 +80,7 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
   const handleSetStatus = useCallback(
     (newStatus: CommentStatus) => {
       // Avoids going to "resolved" when using links to comments
-      if (commentsEnabled === 'read-only' && newStatus === 'resolved') {
+      if (commentsEnabled.reason === 'upsell' && newStatus === 'resolved') {
         return null
       }
       return setStatus(newStatus)
@@ -286,7 +286,7 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
   return (
     <CommentsContext.Provider value={ctxValue}>
       {children}
-      {commentsEnabled === 'read-only' && <UpsellDialog />}
+      {commentsEnabled.reason === 'upsell' && <UpsellDialog />}
     </CommentsContext.Provider>
   )
 })

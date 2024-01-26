@@ -21,7 +21,7 @@ export function CommentsDocumentLayout(props: DocumentLayoutProps) {
 
 function CommentsDocumentLayoutInner(props: DocumentLayoutProps) {
   const {documentId, documentType} = props
-  const commentsEnabled = useCommentsEnabled()
+  const {enabled} = useCommentsEnabled()
   const {openInspector, inspector} = useDocumentPane()
 
   const handleOpenCommentsInspector = useCallback(() => {
@@ -31,7 +31,7 @@ function CommentsDocumentLayoutInner(props: DocumentLayoutProps) {
   }, [inspector?.name, openInspector])
 
   // If comments are not enabled, render the default document layout
-  if (!commentsEnabled) {
+  if (!enabled) {
     return props.renderDefault(props)
   }
 

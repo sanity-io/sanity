@@ -78,8 +78,7 @@ export function CreateNewThreadInput(props: CreateNewThreadInputProps) {
   }, [])
 
   const placeholder =
-    commentsEnabled === 'read-only' ? (
-      // TODO: Comments - localize
+    commentsEnabled.reason === 'upsell' ? (
       <>Upgrade to add comment</>
     ) : (
       <Translate
@@ -102,7 +101,7 @@ export function CreateNewThreadInput(props: CreateNewThreadInputProps) {
       onFocus={onFocus}
       onSubmit={handleSubmit}
       placeholder={placeholder}
-      readOnly={readOnly || commentsEnabled === 'read-only'}
+      readOnly={readOnly || commentsEnabled.reason === 'upsell'}
       ref={commentInputHandle}
       value={value}
     />

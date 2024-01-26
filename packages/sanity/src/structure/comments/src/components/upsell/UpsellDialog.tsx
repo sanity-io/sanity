@@ -59,7 +59,10 @@ const UpsellDialog = () => {
               text: upsellData.secondaryButton.text,
               mode: 'bleed',
               tone: 'default',
-              onClick: handleClose,
+              href: upsellData.secondaryButton.url,
+              target: '_blank',
+              rel: 'noopener noreferrer',
+              as: 'a',
             }
           : undefined,
         confirmButton: {
