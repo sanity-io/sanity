@@ -10,13 +10,20 @@ import {
 } from '../../../../../ui-components'
 import {commentsLocaleNamespace} from '../../../i18n'
 import {COMMENT_REACTION_OPTIONS} from '../../constants'
-import type {CommentReactionOption, CommentStatus} from '../../types'
 import {ReactionIcon} from '../icons'
 import {CommentReactionsMenuButton} from '../reactions'
-import {useCommentsEnabled} from '../../hooks'
-import {ContextMenuButton, useTranslation} from 'sanity'
+import type {CommentReactionOption, CommentStatus, CommentsUIMode} from '../../types'
+import {ContextMenuButton, TFunction, useTranslation} from 'sanity'
 
-const renderMenuButton = ({open, tooltipContent}: {open: boolean; tooltipContent: string}) => (
+const renderMenuButton = ({
+  open,
+  tooltipContent,
+  t,
+}: {
+  open: boolean
+  tooltipContent: string
+  t: TFunction
+}) => (
   <Button
     aria-label={t('list-item.context-menu-add-reaction-aria-label')}
     icon={ReactionIcon}
@@ -49,10 +56,10 @@ interface CommentsListItemContextMenuProps {
   onStatusChange?: () => void
   readOnly?: boolean
   status: CommentStatus
+  mode: CommentsUIMode
 }
 
 export function CommentsListItemContextMenu(props: CommentsListItemContextMenuProps) {
-  const commentsEnabled = useCommentsEnabled()
   const {
     canDelete,
     canEdit,
@@ -66,6 +73,7 @@ export function CommentsListItemContextMenu(props: CommentsListItemContextMenuPr
     onStatusChange,
     readOnly,
     status,
+    mode,
   } = props
 
   const showMenuButton = Boolean(onCopyLink || onDeleteStart || onEditStart)
@@ -79,6 +87,7 @@ export function CommentsListItemContextMenu(props: CommentsListItemContextMenuPr
           {onReactionSelect && (
             <CommentReactionsMenuButton
               onMenuClose={onMenuClose}
+              mode={mode}
               onMenuOpen={onMenuOpen}
               onSelect={onReactionSelect}
               options={COMMENT_REACTION_OPTIONS}
@@ -126,12 +135,12 @@ export function CommentsListItemContextMenu(props: CommentsListItemContextMenuPr
                   onClick={onEditStart}
                   text={t('list-item.edit-comment')}
                   tooltipProps={
-                    commentsEnabled.reason === 'upsell'
+                    mode === 'upsell'
                       ? // TODO: Comments - localize
                         {content: 'Upgrade to edit comments'}
                       : undefined
                   }
-                  disabled={commentsEnabled.reason === 'upsell'}
+                  disabled={mode === 'upsell'}
                 />
 
                 <MenuItem

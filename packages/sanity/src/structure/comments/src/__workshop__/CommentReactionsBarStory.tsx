@@ -68,6 +68,7 @@ export default function CommentReactionsBarStory() {
         reactions={selectedOptions}
         onSelect={handleReactionSelect}
         currentUser={currentUser}
+        mode="default"
       />
     </Flex>
   )

@@ -290,6 +290,7 @@ export default function CommentsListStory() {
           readOnly={readOnly}
           selectedPath={null}
           status={status}
+          mode="default"
         />
       </Container>
     </Flex>

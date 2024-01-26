@@ -11,6 +11,7 @@ import {
   CommentMessage,
   CommentReactionOption,
   CommentStatus,
+  CommentsUIMode,
   MentionOptionsHookValue,
 } from '../../types'
 import {SpacerAvatar} from '../avatars'
@@ -18,7 +19,6 @@ import {hasCommentMessageValue} from '../../helpers'
 import {CommentsSelectedPath} from '../../context'
 import {Button} from '../../../../../ui-components'
 import {commentsLocaleNamespace} from '../../../i18n'
-import {useCommentsEnabled} from '../../hooks'
 import {CommentsListItemLayout} from './CommentsListItemLayout'
 import {ThreadCard} from './styles'
 import {useTranslation} from 'sanity'
@@ -95,6 +95,7 @@ interface CommentsListItemProps {
   parentComment: CommentDocument
   readOnly?: boolean
   replies: CommentDocument[] | undefined
+  mode: CommentsUIMode
 }
 
 export const CommentsListItem = React.memo(function CommentsListItem(props: CommentsListItemProps) {
@@ -115,9 +116,9 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
     parentComment,
     readOnly,
     replies = EMPTY_ARRAY,
+    mode,
   } = props
   const {t} = useTranslation(commentsLocaleNamespace)
-  const commentsEnabled = useCommentsEnabled()
   const [value, setValue] = useState<CommentMessage>(EMPTY_ARRAY)
   const [collapsed, setCollapsed] = useState<boolean>(true)
   const didExpand = useRef<boolean>(false)
@@ -240,6 +241,7 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
       splicedReplies.map((reply) => (
         <Stack as="li" key={reply._id} data-comment-id={reply._id}>
           <CommentsListItemLayout
+            mode={mode}
             canDelete={reply.authorId === currentUser.id}
             canEdit={reply.authorId === currentUser.id}
             comment={reply}
@@ -268,6 +270,7 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
       onReactionSelect,
       readOnly,
       splicedReplies,
+      mode,
     ],
   )
 
@@ -295,6 +298,7 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
         >
           <Stack as="li" data-comment-id={parentComment._id}>
             <CommentsListItemLayout
+              mode={mode}
               canDelete={parentComment.authorId === currentUser.id}
               canEdit={parentComment.authorId === currentUser.id}
               comment={parentComment}
@@ -340,12 +344,12 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
               onKeyDown={handleInputKeyDown}
               onSubmit={handleReplySubmit}
               placeholder={
-                commentsEnabled.reason === 'upsell'
+                mode === 'upsell'
                   ? // TODO: Comments - localize
                     'Upgrade to reply'
                   : t('compose.reply-placeholder')
               }
-              readOnly={readOnly || commentsEnabled.reason === 'upsell'}
+              readOnly={readOnly || mode === 'upsell'}
               ref={replyInputRef}
               value={value}
             />

@@ -11,6 +11,7 @@ import {
   CommentMessage,
   CommentReactionOption,
   CommentStatus,
+  CommentsUIMode,
   MentionOptionsHookValue,
 } from '../../types'
 import {AVATAR_HEIGHT, CommentsAvatar, SpacerAvatar} from '../avatars'
@@ -122,6 +123,7 @@ interface CommentsListItemLayoutProps {
   onReactionSelect?: (id: string, reaction: CommentReactionOption) => void
   onStatusChange?: (id: string, status: CommentStatus) => void
   readOnly?: boolean
+  mode: CommentsUIMode
 }
 
 const RELATIVE_TIME_OPTIONS: RelativeTimeOptions = {useTemporalPhrase: true}
@@ -144,6 +146,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
     onReactionSelect,
     onStatusChange,
     readOnly,
+    mode,
   } = props
   const {_createdAt, authorId, message, _id, lastEditedAt} = comment
   const [user] = useUser(authorId)
@@ -321,6 +324,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
           {!isEditing && !displayError && (
             <ContextMenuBox data-root-menu={isParent ? 'true' : 'false'} onClick={stopPropagation}>
               <CommentsListItemContextMenu
+                mode={mode}
                 canDelete={canDelete}
                 canEdit={canEdit}
                 isParent={isParent}
@@ -375,6 +379,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
 
             <Box onClick={stopPropagation}>
               <CommentReactionsBar
+                mode={mode}
                 currentUser={currentUser}
                 onSelect={handleReactionSelect}
                 reactions={reactions}

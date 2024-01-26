@@ -6,11 +6,15 @@ import {
   Flex,
   Text,
 } from '@sanity/ui'
-import {CommentReactionItem, CommentReactionOption, CommentReactionShortNames} from '../../types'
+import {
+  CommentReactionItem,
+  CommentReactionOption,
+  CommentReactionShortNames,
+  CommentsUIMode,
+} from '../../types'
 import {COMMENT_REACTION_EMOJIS, COMMENT_REACTION_OPTIONS} from '../../constants'
 import {ReactionIcon} from '../icons'
 import {Tooltip, TooltipDelayGroupProvider} from '../../../../../ui-components'
-import {useCommentsEnabled} from '../../hooks'
 import {CommentReactionsMenuButton} from './CommentReactionsMenuButton'
 import {CommentReactionsUsersTooltip} from './CommentReactionsUsersTooltip'
 import {EmojiText} from './EmojiText.styled'
@@ -74,13 +78,13 @@ interface CommentReactionsBarProps {
   onSelect: (reaction: CommentReactionOption) => void
   reactions: CommentReactionItem[]
   readOnly?: boolean
+  mode: CommentsUIMode
 }
 
 export const CommentReactionsBar = React.memo(function CommentReactionsBar(
   props: CommentReactionsBarProps,
 ) {
-  const {currentUser, onSelect, reactions, readOnly} = props
-  const commentsEnabled = useCommentsEnabled()
+  const {currentUser, onSelect, reactions, readOnly, mode} = props
   const handleSelect = useCallback(
     (name: CommentReactionShortNames) => {
       const option = COMMENT_REACTION_OPTIONS.find((o) => o.shortName === name)
@@ -149,7 +153,7 @@ export const CommentReactionsBar = React.memo(function CommentReactionsBar(
             >
               <TransparentCard tone="default">
                 <UIButton
-                  disabled={readOnly || commentsEnabled.reason === 'upsell'}
+                  disabled={readOnly || mode === 'upsell'}
                   mode="ghost"
                   // eslint-disable-next-line react/jsx-no-bind
                   onClick={() => handleSelect(name)}
@@ -178,6 +182,7 @@ export const CommentReactionsBar = React.memo(function CommentReactionsBar(
             options={COMMENT_REACTION_OPTIONS}
             readOnly={readOnly}
             renderMenuButton={renderMenuButton}
+            mode={mode}
           />
         </TransparentCard>
       </TooltipDelayGroupProvider>
