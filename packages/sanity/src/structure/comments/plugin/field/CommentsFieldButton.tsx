@@ -18,7 +18,8 @@ import {
   MentionOptionsHookValue,
 } from '../../src'
 import {Button, Popover, Tooltip} from '../../../../ui-components'
-import {CurrentUser, PortableTextBlock} from 'sanity'
+import {commentsLocaleNamespace} from '../../i18n'
+import {CurrentUser, PortableTextBlock, Translate, useTranslation} from 'sanity'
 
 const ContentStack = styled(Stack)`
   width: 320px;
@@ -56,6 +57,7 @@ export function CommentsFieldButton(props: CommentsFieldButtonProps) {
     setOpen,
     value,
   } = props
+  const {t} = useTranslation(commentsLocaleNamespace)
   const [popoverElement, setPopoverElement] = useState<HTMLDivElement | null>(null)
   const [addCommentButtonElement, setAddCommentButtonElement] = useState<HTMLButtonElement | null>(
     null,
@@ -129,9 +131,11 @@ export function CommentsFieldButton(props: CommentsFieldButtonProps) {
 
   if (!hasComments) {
     const placeholder = (
-      <>
-        Add comment to <b>{fieldTitle}</b>
-      </>
+      <Translate
+        t={t}
+        i18nKey="comments.placeholder-add-comment-field-title"
+        components={{Strong: () => <b>{fieldTitle}</b>}}
+      />
     )
 
     const content = (
@@ -167,7 +171,7 @@ export function CommentsFieldButton(props: CommentsFieldButtonProps) {
       >
         <div>
           <Button
-            aria-label="Add comment"
+            aria-label={t('comments.field-button-aria-label-add')}
             disabled={isRunningSetup}
             icon={AddCommentIcon}
             mode="bleed"
@@ -175,7 +179,7 @@ export function CommentsFieldButton(props: CommentsFieldButtonProps) {
             ref={setAddCommentButtonElement}
             selected={open}
             tooltipProps={{
-              content: 'Add comment',
+              content: t('comments.field-button-title'),
               placement: 'top',
             }}
           />
@@ -185,9 +189,17 @@ export function CommentsFieldButton(props: CommentsFieldButtonProps) {
   }
 
   return (
-    <Tooltip portal placement="top" content={`View comment${count > 1 ? 's' : ''}`}>
+    <Tooltip
+      portal
+      placement="top"
+      content={
+        count > 1
+          ? t('comments.field-button-content_other')
+          : t('comments.field-button-content_one')
+      }
+    >
       <SanityUIButton
-        aria-label="Open comments"
+        aria-label={t('comments.field-button-aria-label-open')}
         mode="bleed"
         onClick={onClick}
         padding={2}

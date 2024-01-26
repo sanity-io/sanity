@@ -2,6 +2,8 @@ import {Box, Flex, Stack, Text} from '@sanity/ui'
 import React from 'react'
 import styled, {keyframes} from 'styled-components'
 import {Button, Popover, PopoverProps} from '../../../../../ui-components'
+import {commentsLocaleNamespace} from '../../../i18n'
+import {useTranslation} from 'sanity'
 
 const Root = styled(Box)`
   max-width: 280px;
@@ -29,6 +31,7 @@ interface CommentsOnboardingPopoverProps extends Omit<PopoverProps, 'content'> {
 
 export function CommentsOnboardingPopover(props: CommentsOnboardingPopoverProps) {
   const {onDismiss} = props
+  const {t} = useTranslation(commentsLocaleNamespace)
 
   return (
     <StyledPopover
@@ -36,16 +39,17 @@ export function CommentsOnboardingPopover(props: CommentsOnboardingPopoverProps)
         <Root padding={4}>
           <Stack space={3}>
             <Text weight="medium" size={1}>
-              Document fields now have comments
+              {t('comments.onboarding-popover-header')}
             </Text>
 
-            <Text size={1}>
-              You can add comments to any field in a document. They'll show up here, grouped by
-              field.
-            </Text>
+            <Text size={1}>{t('comments.onboarding-popover-body')}</Text>
 
             <Flex justify="flex-end" marginTop={2}>
-              <Button text="Got it" tone="primary" onClick={onDismiss} />
+              <Button
+                text={t('comments.onboarding-popover-dismiss')}
+                tone="primary"
+                onClick={onDismiss}
+              />
             </Flex>
           </Stack>
         </Root>

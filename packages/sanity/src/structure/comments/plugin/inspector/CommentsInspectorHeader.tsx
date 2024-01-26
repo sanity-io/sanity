@@ -1,11 +1,11 @@
 import {CheckmarkIcon, ChevronDownIcon, DoubleChevronRightIcon} from '@sanity/icons'
 import {Card, Flex, Menu, Text} from '@sanity/ui'
-import {startCase} from 'lodash'
 import React, {forwardRef, useCallback} from 'react'
 import styled from 'styled-components'
 import {Button, MenuButton, MenuItem} from '../../../../ui-components'
+import {commentsLocaleNamespace} from '../../i18n'
 import {CommentStatus} from '../../src'
-import {BetaBadge} from 'sanity'
+import {BetaBadge, useTranslation} from 'sanity'
 
 const Root = styled(Card)({
   position: 'relative',
@@ -23,6 +23,7 @@ export const CommentsInspectorHeader = forwardRef(function CommentsInspectorHead
   props: CommentsInspectorHeaderProps,
   ref: React.ForwardedRef<HTMLDivElement>,
 ) {
+  const {t} = useTranslation(commentsLocaleNamespace)
   const {onClose, onViewChange, view} = props
 
   const handleSetOpenView = useCallback(() => onViewChange('open'), [onViewChange])
@@ -33,7 +34,7 @@ export const CommentsInspectorHeader = forwardRef(function CommentsInspectorHead
       <Flex padding={2}>
         <Flex align="center" flex={1} gap={2} paddingY={2} padding={3}>
           <Text as="h1" size={1} weight="medium">
-            Comments
+            {t('comments.header-title')}
           </Text>
 
           <BetaBadge />
@@ -42,18 +43,28 @@ export const CommentsInspectorHeader = forwardRef(function CommentsInspectorHead
         <Flex flex="none" padding={1} gap={2}>
           <MenuButton
             id="comment-status-menu-button"
-            button={<Button text={startCase(view)} mode="bleed" iconRight={ChevronDownIcon} />}
+            button={
+              <Button
+                text={
+                  view === 'open'
+                    ? t('comments.dropdown-title-open')
+                    : t('comments.dropdown-title-resolved')
+                }
+                mode="bleed"
+                iconRight={ChevronDownIcon}
+              />
+            } //this startcase needs to be fixed
             menu={
               <Menu style={{width: '180px'}}>
                 <MenuItem
                   iconRight={view === 'open' ? CheckmarkIcon : undefined}
                   onClick={handleSetOpenView}
-                  text="Open comments"
+                  text={t('comments.dropdown-item-open')}
                 />
                 <MenuItem
                   iconRight={view === 'resolved' ? CheckmarkIcon : undefined}
                   onClick={handleSetResolvedView}
-                  text="Resolved comments"
+                  text={t('comments.dropdown-item-resolved')}
                 />
               </Menu>
             }
@@ -61,11 +72,11 @@ export const CommentsInspectorHeader = forwardRef(function CommentsInspectorHead
           />
 
           <Button
-            aria-label="Close comments"
+            aria-label={t('comments.button-close-pane-text-aria-label')}
             icon={DoubleChevronRightIcon}
             mode="bleed"
             onClick={onClose}
-            tooltipProps={{content: 'Close comments'}}
+            tooltipProps={{content: t('comments.button-close-pane-text')}}
           />
         </Flex>
       </Flex>

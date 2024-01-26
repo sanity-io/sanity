@@ -5,9 +5,10 @@ import {CurrentUser} from '@sanity/types'
 import {MentionIcon, SendIcon} from '../../icons'
 import {CommentsAvatar} from '../../avatars/CommentsAvatar'
 import {Button, TooltipDelayGroupProvider} from '../../../../../../ui-components'
+import {commentsLocaleNamespace} from '../../../../i18n'
 import {useCommentInput} from './useCommentInput'
 import {Editable} from './Editable'
-import {useUser} from 'sanity'
+import {useTranslation, useUser} from 'sanity'
 
 const EditableWrap = styled(Box)`
   max-height: 20vh;
@@ -83,6 +84,7 @@ export function CommentInputInner(props: CommentInputInnerProps) {
   const {canSubmit, expandOnFocus, focused, hasChanges, insertAtChar, openMentions, readOnly} =
     useCommentInput()
 
+  const {t} = useTranslation(commentsLocaleNamespace)
   const avatar = withAvatar ? <CommentsAvatar user={user} /> : null
 
   const handleMentionButtonClicked = useCallback(
@@ -121,25 +123,25 @@ export function CommentInputInner(props: CommentInputInnerProps) {
           <Flex align="center" data-ui="CommentInputActions" gap={1} justify="flex-end" padding={1}>
             <TooltipDelayGroupProvider>
               <Button
-                aria-label="Mention user"
+                aria-label={t('comments.tooltip-mention-user-aria-label')}
                 data-testid="comment-mention-button"
                 disabled={readOnly}
                 icon={MentionIcon}
                 mode="bleed"
                 onClick={handleMentionButtonClicked}
-                tooltipProps={{content: 'Mention user'}}
+                tooltipProps={{content: t('comments.tooltip-mention-user')}}
               />
 
               <ButtonDivider />
 
               <Button
-                aria-label="Send comment"
+                aria-label={t('comments.tooltip-send-comment-aria-label')}
                 disabled={!canSubmit || !hasChanges || readOnly}
                 icon={SendIcon}
                 mode={hasChanges && canSubmit ? 'default' : 'bleed'}
                 onClick={onSubmit}
                 tone={hasChanges && canSubmit ? 'primary' : 'default'}
-                tooltipProps={{content: 'Send comment'}}
+                tooltipProps={{content: t('comments.tooltip-send-comment')}}
               />
             </TooltipDelayGroupProvider>
           </Flex>
