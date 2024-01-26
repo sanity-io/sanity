@@ -4,7 +4,7 @@ import {unset} from 'sanity/migrate/mutations'
 
 export default defineMigration({
   name: 'Cleanup empty values',
-  documentType: 'species',
+  documentTypes: ['playlist', 'species'],
   migrate: {
     object(node) {
       if (Object.keys(node).filter((k) => !k.startsWith('_')).length) {
