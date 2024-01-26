@@ -46,6 +46,7 @@ export function CommentsInputStory({
     <TestWrapper schemaTypes={SCHEMA_TYPES}>
       <CommentInput
         focusOnMount
+        // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
         placeholder="Your comment..."
         focusLock
         currentUser={currentUser}

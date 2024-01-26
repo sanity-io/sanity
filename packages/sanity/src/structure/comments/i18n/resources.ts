@@ -120,6 +120,8 @@ const commentsLocaleStrings = defineLocalesResources('comments', {
   /**The list status message for loading status */
   'comments.list-status-loading': 'Loading comments',
 
+  /**The inline mention loading state */
+  'comments.mention-inline-block': '@Loading',
   /**The text for no users found for mentions */
   'comments.mentions-not-found': 'No users found',
   /**The text for unauthorized mentions */
@@ -148,6 +150,10 @@ const commentsLocaleStrings = defineLocalesResources('comments', {
 
   /**The tooltip text for unknown user */
   'comments.reaction-unknown-user': 'Unknown user',
+  /**The aria label for the reactions menu button */
+  'comments.reactions-menu-button-aria-label': 'React with {{reaction}}',
+  /**The thread breadcrumb button aria label */
+  'comments.thread-breadcrumb-layout-aria-label': 'Go to {{lastCrumb}} field',
   /**The tooltip text for mentioning a user */
   'comments.tooltip-mention-user': 'Mention user',
   /**The tooltip aria label for mentioning a user */
