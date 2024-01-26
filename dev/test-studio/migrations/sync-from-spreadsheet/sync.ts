@@ -6,7 +6,7 @@ declare function fetchGoogleSpreadSheet(id: string): AsyncIterable<Record<string
 // defineSync?
 export default defineMigration({
   name: 'Sync from some spreadsheet somewhere',
-  documentType: 'someType',
+  documentTypes: ['someType'],
   async *migrate() {
     for await (const row of fetchGoogleSpreadSheet('some-spreadsheet-id')) {
       yield createIfNotExists({_type: 'someType', _id: row.id, name: row.name})
