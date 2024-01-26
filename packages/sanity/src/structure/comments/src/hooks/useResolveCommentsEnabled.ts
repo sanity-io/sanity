@@ -1,6 +1,10 @@
 import {useMemo} from 'react'
-import {CommentsEnabledContextValue} from '../context/enabled/types'
 import {getPublishedId, useFeatureEnabled, useSource} from 'sanity'
+
+interface ResolveCommentsEnabled {
+  enabled: boolean
+  reason: 'upsell' | null
+}
 
 /**
  * @internal
@@ -10,7 +14,7 @@ import {getPublishedId, useFeatureEnabled, useSource} from 'sanity'
 export function useResolveCommentsEnabled(
   documentId: string,
   documentType: string,
-): CommentsEnabledContextValue {
+): ResolveCommentsEnabled {
   // Check if the projects plan has the feature enabled
   const {enabled: featureEnabled, isLoading} = useFeatureEnabled('studioComments')
 
