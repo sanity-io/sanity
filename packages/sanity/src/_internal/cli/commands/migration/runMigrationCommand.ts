@@ -2,13 +2,11 @@ import path from 'path'
 import type {CliCommandContext, CliCommandDefinition} from '@sanity/cli'
 import {register} from 'esbuild-register/dist/node'
 import {
-  APIConfig,
   collectMigrationMutations,
-  fromExportArchive,
-  fromExportEndpoint,
-  safeJsonParser,
-  MAX_MUTATION_CONCURRENCY,
   DEFAULT_MUTATION_CONCURRENCY,
+  dryRun,
+  fromExportArchive,
+  MAX_MUTATION_CONCURRENCY,
   Migration,
   ndjson,
   run,
@@ -227,30 +225,4 @@ async function runFromArchive(
 
   output.print('Done!')
 }
-
-interface MigrationRunnerOptions {
-  api: APIConfig
-}
-
-async function* dryRun(
-  config: MigrationRunnerOptions,
-  migration: Migration,
-  {chalk}: CliCommandContext,
-) {
-  const mutations = collectMigrationMutations(
-    migration,
-    ndjson<SanityDocument>(
-      await fromExportEndpoint({...config.api, documentTypes: migration.documentTypes}),
-      {
-        parse: safeJsonParser,
-      },
-    ),
-  )
-
-  for await (const mutation of mutations) {
-    if (!mutation) continue
-    yield format(chalk, Array.isArray(mutation) ? mutation : ([mutation] as any))
-  }
-}
-
 export default createMigrationCommand
