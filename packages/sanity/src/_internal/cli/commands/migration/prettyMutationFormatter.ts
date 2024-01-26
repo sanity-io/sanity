@@ -79,6 +79,7 @@ export function prettyFormatMutation(
   chalk: Chalk,
   mutation: Mutation,
   migration: Migration,
+  indent = 0,
 ): string {
   const lock =
     'options' in mutation ? chalk.cyan(`(if revision==${mutation.options?.ifRevision})`) : ''
@@ -98,7 +99,9 @@ export function prettyFormatMutation(
     return [
       header,
       '\n',
-      formatTree(tree.children, paddingLength, '', (patch) => formatPatchMutation(chalk, patch)),
+      formatTree(tree.children, paddingLength, ' '.repeat(indent), (patch) =>
+        formatPatchMutation(chalk, patch),
+      ),
     ].join('')
   }
 
