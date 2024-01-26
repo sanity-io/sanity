@@ -20,11 +20,15 @@ export function useResolveCommentsEnabled(
     () => enabled({documentType, documentId: getPublishedId(documentId)}),
     [documentId, documentType, enabled],
   )
+  const value = useMemo(
+    () => ({
+      enabled: !isLoading && enabledFromConfig,
+      // TODO: Restore
+      // reason: featureEnabled ? null : 'upsell',
+      reason: 'upsell' as const,
+    }),
+    [isLoading, enabledFromConfig],
+  )
 
-  return {
-    enabled: !isLoading && enabledFromConfig,
-    // TODO: Restore
-    // reason: featureEnabled ? null : 'upsell',
-    reason: 'upsell',
-  }
+  return value
 }
