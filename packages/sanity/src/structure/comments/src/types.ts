@@ -245,3 +245,5 @@ export interface CommentsUpsellData {
     text: string
   }
 }
+
+export type CommentsUIMode = 'default' | 'upsell'

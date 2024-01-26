@@ -7,9 +7,11 @@ import {
   CommentReactionOption,
   CommentStatus,
   CommentThreadItem,
+  CommentsUIMode,
   MentionOptionsHookValue,
 } from '../../types'
 import {CommentsSelectedPath} from '../../context'
+import {UpsellPanel} from '../upsell'
 import {CommentsListItem} from './CommentsListItem'
 import {CommentThreadLayout} from './CommentThreadLayout'
 import {CommentsListStatus} from './CommentsListStatus'
@@ -60,6 +62,7 @@ export interface CommentsListProps {
   readOnly?: boolean
   selectedPath: CommentsSelectedPath | null
   status: CommentStatus
+  mode: CommentsUIMode
 }
 
 /**
@@ -90,6 +93,7 @@ const CommentsListInner = forwardRef<CommentsListHandle, CommentsListProps>(
       readOnly,
       selectedPath,
       status,
+      mode,
     } = props
     const [boundaryElement, setBoundaryElement] = useState<HTMLDivElement | null>(null)
 
@@ -126,6 +130,7 @@ const CommentsListInner = forwardRef<CommentsListHandle, CommentsListProps>(
       >
         <CommentsListStatus
           error={error}
+          mode={mode}
           hasNoComments={groupedThreads.length === 0}
           loading={loading}
           status={status}
@@ -142,6 +147,7 @@ const CommentsListInner = forwardRef<CommentsListHandle, CommentsListProps>(
             sizing="border"
             space={1}
           >
+            {mode === 'upsell' && <UpsellPanel />}
             <BoundaryElementProvider element={boundaryElement}>
               {groupedThreads?.map(([fieldPath, group]) => {
                 // Since all threads in the group point to the same field, the breadcrumbs will be
@@ -161,6 +167,7 @@ const CommentsListInner = forwardRef<CommentsListHandle, CommentsListProps>(
                 return (
                   <Stack as="li" key={fieldPath} data-group-id={firstThreadId} paddingTop={3}>
                     <CommentThreadLayout
+                      mode={mode}
                       breadcrumbs={breadcrumbs}
                       canCreateNewThread={status === 'open'}
                       currentUser={currentUser}
@@ -192,6 +199,7 @@ const CommentsListInner = forwardRef<CommentsListHandle, CommentsListProps>(
 
                         return (
                           <CommentsListItem
+                            mode={mode}
                             canReply={canReply}
                             currentUser={currentUser}
                             isSelected={threadIsSelected}

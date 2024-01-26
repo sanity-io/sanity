@@ -4,7 +4,7 @@ import {startCase} from 'lodash'
 import React, {forwardRef, useCallback} from 'react'
 import styled from 'styled-components'
 import {Button, MenuButton, MenuItem} from '../../../../ui-components'
-import {CommentStatus, useCommentsEnabled} from '../../src'
+import {CommentStatus, CommentsUIMode} from '../../src'
 import {BetaBadge} from 'sanity'
 
 const Root = styled(Card)({
@@ -17,14 +17,14 @@ interface CommentsInspectorHeaderProps {
   onClose: () => void
   onViewChange: (view: CommentStatus) => void
   view: CommentStatus
+  mode: CommentsUIMode
 }
 
 export const CommentsInspectorHeader = forwardRef(function CommentsInspectorHeader(
   props: CommentsInspectorHeaderProps,
   ref: React.ForwardedRef<HTMLDivElement>,
 ) {
-  const {onClose, onViewChange, view} = props
-  const commentsEnabled = useCommentsEnabled()
+  const {onClose, onViewChange, view, mode} = props
 
   const handleSetOpenView = useCallback(() => onViewChange('open'), [onViewChange])
   const handleSetResolvedView = useCallback(() => onViewChange('resolved'), [onViewChange])
@@ -56,11 +56,9 @@ export const CommentsInspectorHeader = forwardRef(function CommentsInspectorHead
                   onClick={handleSetResolvedView}
                   text="Resolved comments"
                   tooltipProps={
-                    commentsEnabled.reason === 'upsell'
-                      ? {content: 'Upgrade to see resolved comments'}
-                      : undefined
+                    mode === 'upsell' ? {content: 'Upgrade to see resolved comments'} : undefined
                   }
-                  disabled={commentsEnabled.reason === 'upsell'}
+                  disabled={mode === 'upsell'}
                 />
               </Menu>
             }

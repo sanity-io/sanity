@@ -20,7 +20,6 @@ import {
   useCommentsOnboarding,
   useCommentsSelectedPath,
 } from '../../src'
-import {UpsellPanel} from '../../src/components'
 import {CommentsInspectorHeader} from './CommentsInspectorHeader'
 import {CommentsInspectorFeedbackFooter} from './CommentsInspectorFeedbackFooter'
 import {DocumentInspectorProps, useCurrentUser, useUnique} from 'sanity'
@@ -306,6 +305,8 @@ function CommentsInspectorInner(props: DocumentInspectorProps) {
     }
   }, [getComment, handleScrollToComment, loading, params, setParams, setStatus])
 
+  const mode = commentsEnabled.reason === 'upsell' ? 'upsell' : 'default'
+
   return (
     <Fragment>
       {commentToDelete && showDeleteDialog && (
@@ -335,9 +336,9 @@ function CommentsInspectorInner(props: DocumentInspectorProps) {
             onClose={handleCloseInspector}
             onViewChange={handleChangeView}
             view={status}
+            mode={mode}
           />
         </CommentsOnboardingPopover>
-        {commentsEnabled.reason === 'upsell' && <UpsellPanel />}
 
         {currentUser && (
           <CommentsList
@@ -359,9 +360,10 @@ function CommentsInspectorInner(props: DocumentInspectorProps) {
             ref={commentsListHandleRef}
             selectedPath={selectedPath}
             status={status}
+            mode={mode}
           />
         )}
-        {commentsEnabled.reason !== 'upsell' && <CommentsInspectorFeedbackFooter />}
+        {mode === 'default' && <CommentsInspectorFeedbackFooter />}
       </Flex>
     </Fragment>
   )

@@ -1,9 +1,8 @@
 import type {CurrentUser} from '@sanity/types'
 import React, {useState, useCallback, useRef, useMemo} from 'react'
-import type {CommentMessage, MentionOptionsHookValue} from '../../types'
+import type {CommentMessage, CommentsUIMode, MentionOptionsHookValue} from '../../types'
 import {CommentInput, CommentInputHandle, CommentInputProps} from '../pte'
 import {hasCommentMessageValue} from '../../helpers'
-import {useCommentsEnabled} from '../../hooks'
 import {EMPTY_ARRAY} from 'sanity'
 
 interface CreateNewThreadInputProps {
@@ -15,6 +14,7 @@ interface CreateNewThreadInputProps {
   onKeyDown?: (event: React.KeyboardEvent<Element>) => void
   onNewThreadCreate: (payload: CommentMessage) => void
   readOnly?: boolean
+  mode: CommentsUIMode
 }
 
 export function CreateNewThreadInput(props: CreateNewThreadInputProps) {
@@ -27,8 +27,8 @@ export function CreateNewThreadInput(props: CreateNewThreadInputProps) {
     onKeyDown,
     onNewThreadCreate,
     readOnly,
+    mode,
   } = props
-  const commentsEnabled = useCommentsEnabled()
   const [value, setValue] = useState<CommentMessage>(EMPTY_ARRAY)
   const commentInputHandle = useRef<CommentInputHandle | null>(null)
 
@@ -75,7 +75,7 @@ export function CreateNewThreadInput(props: CreateNewThreadInputProps) {
   }, [])
 
   const placeholder =
-    commentsEnabled.reason === 'upsell' ? (
+    mode === 'upsell' ? (
       <>Upgrade to add comment</>
     ) : (
       <>
@@ -96,7 +96,7 @@ export function CreateNewThreadInput(props: CreateNewThreadInputProps) {
       onFocus={onFocus}
       onSubmit={handleSubmit}
       placeholder={placeholder}
-      readOnly={readOnly || commentsEnabled.reason === 'upsell'}
+      readOnly={readOnly || mode === 'upsell'}
       ref={commentInputHandle}
       value={value}
     />
