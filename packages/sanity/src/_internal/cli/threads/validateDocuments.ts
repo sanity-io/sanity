@@ -19,12 +19,12 @@ import {
   type WorkerChannelEvent,
   type WorkerChannelStream,
 } from '../util/workerChannels'
+import {extractDocumentsFromNdjsonOrTarball} from '../util/extractDocumentsFromNdjsonOrTarball'
 import {isRecord, validateDocument} from 'sanity'
 
 const MAX_VALIDATION_CONCURRENCY = 100
 const DOCUMENT_VALIDATION_TIMEOUT = 30000
 const REFERENCE_INTEGRITY_BATCH_SIZE = 100
-const EXCLUDED_DOCUMENT_TYPE_PREFIXES = ['system.']
 
 interface AvailabilityResponse {
   omitted: {id: string; reason: 'existence' | 'permission'}[]
@@ -37,6 +37,7 @@ export interface ValidateDocumentsWorkerData {
   clientConfig?: Partial<ClientConfig>
   projectId?: string
   dataset?: string
+  ndjsonFilePath?: string
   level?: ValidationMarker['level']
   maxCustomValidationConcurrency?: number
 }
@@ -69,6 +70,7 @@ const {
   workspace: workspaceName,
   configPath,
   dataset,
+  ndjsonFilePath,
   projectId,
   level,
   maxCustomValidationConcurrency,
@@ -93,9 +95,7 @@ const getReferenceIds = (value: unknown) => {
 
     if (typeof node === 'object' && node) {
       // Note: this works for arrays too
-      for (const item of Object.values(node)) {
-        traverse(item)
-      }
+      for (const item of Object.values(node)) traverse(item)
     }
   }
 
@@ -108,8 +108,9 @@ const idRegex = /^[^-][A-Z0-9._-]*$/i
 
 // during testing, the `doc` endpoint 502'ed if given an invalid ID
 const isValidId = (id: unknown) => typeof id === 'string' && idRegex.test(id)
+const shouldIncludeDocument = (document: SanityDocument) => !document._id.startsWith('system.')
 
-async function* readerGenerator(reader: ReadableStreamDefaultReader<Uint8Array>) {
+async function* readerToGenerator(reader: ReadableStreamDefaultReader<Uint8Array>) {
   while (true) {
     const {value, done} = await reader.read()
     if (value) yield value
@@ -169,7 +170,7 @@ async function loadWorkspace() {
   return {workspace, client}
 }
 
-async function downloadDocuments(client: SanityClient) {
+async function downloadFromExport(client: SanityClient) {
   const exportUrl = new URL(client.getUrl(`/data/export/${client.config().dataset}`, false))
 
   const documentCount = await client.fetch('length(*)')
@@ -177,19 +178,16 @@ async function downloadDocuments(client: SanityClient) {
 
   const {token} = client.config()
   const response = await fetch(exportUrl, {
-    headers: new Headers({
-      ...(token && {Authorization: `Bearer ${token}`}),
-    }),
+    headers: new Headers({...(token && {Authorization: `Bearer ${token}`})}),
   })
 
   const reader = response.body?.getReader()
   if (!reader) throw new Error('Could not get reader from response body.')
 
-  const lines = readline.createInterface({input: Readable.from(readerGenerator(reader))})
-
   let downloadedCount = 0
   const referencedIds = new Set<string>()
   const documentIds = new Set<string>()
+  const lines = readline.createInterface({input: Readable.from(readerToGenerator(reader))})
 
   // Note: we stream the export to a file and then re-read from that file to
   // make this less memory intensive.
@@ -203,11 +201,8 @@ async function downloadDocuments(client: SanityClient) {
 
   for await (const line of lines) {
     const document = JSON.parse(line) as SanityDocument
-    const shouldIncludeDocument = EXCLUDED_DOCUMENT_TYPE_PREFIXES.every(
-      (prefix) => !document._id.startsWith(prefix),
-    )
 
-    if (shouldIncludeDocument) {
+    if (shouldIncludeDocument(document)) {
       documentIds.add(document._id)
       for (const referenceId of getReferenceIds(document)) {
         referencedIds.add(referenceId)
@@ -227,18 +222,29 @@ async function downloadDocuments(client: SanityClient) {
   report.stream.exportProgress.end()
   report.event.exportFinished({totalDocumentsToValidate: documentIds.size})
 
-  async function* getDocuments() {
-    const rl = readline.createInterface({input: fs.createReadStream(tempOutputFile)})
-    for await (const line of rl) {
-      if (line) {
-        yield JSON.parse(line) as SanityDocument
+  const getDocuments = () =>
+    extractDocumentsFromNdjsonOrTarball(fs.createReadStream(tempOutputFile))
+
+  return {documentIds, referencedIds, getDocuments, cleanup: () => fs.promises.rm(tempOutputFile)}
+}
+
+async function downloadFromFile(filePath: string) {
+  const referencedIds = new Set<string>()
+  const documentIds = new Set<string>()
+  const getDocuments = () => extractDocumentsFromNdjsonOrTarball(fs.createReadStream(filePath))
+
+  for await (const document of getDocuments()) {
+    if (shouldIncludeDocument(document)) {
+      documentIds.add(document._id)
+      for (const referenceId of getReferenceIds(document)) {
+        referencedIds.add(referenceId)
       }
     }
-
-    rl.close()
   }
 
-  return {getDocuments, documentIds, referencedIds, tempOutputFile}
+  report.event.exportFinished({totalDocumentsToValidate: documentIds.size})
+
+  return {documentIds, referencedIds, getDocuments, cleanup: undefined}
 }
 
 interface CheckReferenceExistenceOptions {
@@ -300,16 +306,17 @@ async function validateDocuments() {
   // file gets compiled to CJS at this time
   const {default: pMap} = await import('p-map')
 
-  const cleanup = mockBrowserEnvironment(workDir)
+  const cleanupBrowserEnvironment = mockBrowserEnvironment(workDir)
 
-  let tempFile: string | undefined
+  let cleanupDownloadedDocuments: (() => Promise<void>) | undefined
 
   try {
     const {client, workspace} = await loadWorkspace()
-    const {getDocuments, documentIds, referencedIds, tempOutputFile} =
-      await downloadDocuments(client)
+    const {documentIds, referencedIds, getDocuments, cleanup} = ndjsonFilePath
+      ? await downloadFromFile(ndjsonFilePath)
+      : await downloadFromExport(client)
+    cleanupDownloadedDocuments = cleanup
     const {existingIds} = await checkReferenceExistence({client, referencedIds, documentIds})
-    tempFile = tempOutputFile
 
     const getClient = <TOptions extends Partial<ClientConfig>>(options: TOptions) =>
       client.withConfig(options)
@@ -397,11 +404,7 @@ async function validateDocuments() {
 
     report.stream.validation.end()
   } finally {
-    cleanup()
-
-    // eslint-disable-next-line no-sync
-    if (tempFile && fs.existsSync(tempFile)) {
-      await fs.promises.rm(tempFile)
-    }
+    await cleanupDownloadedDocuments?.()
+    cleanupBrowserEnvironment()
   }
 }
