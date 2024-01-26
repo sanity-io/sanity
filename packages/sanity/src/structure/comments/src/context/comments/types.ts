@@ -4,7 +4,6 @@ import {
   CommentStatus,
   CommentThreadItem,
   MentionOptionsHookValue,
-  CommentsUpsellData,
 } from '../../types'
 
 /**
@@ -40,7 +39,4 @@ export interface CommentsContextValue {
 
   status: CommentStatus
   setStatus: (status: CommentStatus) => void
-  upsellDialogOpen: boolean
-  setUpsellDialogOpen: (open: boolean) => void
-  upsellData: CommentsUpsellData | null
 }

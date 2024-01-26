@@ -21,7 +21,7 @@ import {
   useCommentsSelectedPath,
 } from '../../src'
 import {commentsLocaleNamespace} from '../../i18n'
-import UpsellPanel from '../../src/components/upsell/UpsellPanel'
+import {UpsellPanel} from '../../src/components'
 import {CommentsInspectorHeader} from './CommentsInspectorHeader'
 import {CommentsInspectorFeedbackFooter} from './CommentsInspectorFeedbackFooter'
 import {DocumentInspectorProps, useCurrentUser, useTranslation, useUnique} from 'sanity'

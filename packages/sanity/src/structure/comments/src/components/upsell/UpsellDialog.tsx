@@ -2,8 +2,8 @@ import {useCallback} from 'react'
 import styled from 'styled-components'
 import {CloseIcon} from '@sanity/icons'
 import {Box, Stack} from '@sanity/ui'
-import {useComments} from '../../hooks'
 import {Button, Dialog} from '../../../../../ui-components'
+import {useCommentsUpsell} from '../../hooks'
 import {DescriptionSerializer} from 'sanity'
 
 /**
@@ -30,14 +30,9 @@ const Image = styled.img`
   height: 100%;
   height: 200px;
 `
-// const StyledDialog = styled(Dialog)`
-//   > [data-ui='DialogCard'] {
-//        max-width: 22.5rem;
-//   }
-// `
 
-const UpsellDialog = () => {
-  const {upsellDialogOpen, setUpsellDialogOpen, upsellData} = useComments()
+export function UpsellDialog() {
+  const {upsellDialogOpen, setUpsellDialogOpen, upsellData} = useCommentsUpsell()
   const handleClose = useCallback(() => {
     setUpsellDialogOpen(false)
   }, [setUpsellDialogOpen])
@@ -95,5 +90,3 @@ const UpsellDialog = () => {
     </Dialog>
   )
 }
-
-export default UpsellDialog

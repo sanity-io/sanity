@@ -2,7 +2,7 @@ import {Box, Card, Container, Flex, Stack} from '@sanity/ui'
 import {LaunchIcon} from '@sanity/icons'
 import styled from 'styled-components'
 import {Button} from '../../../../../ui-components'
-import {useComments} from '../../hooks'
+import {useCommentsUpsell} from '../../hooks'
 import {DescriptionSerializer} from 'sanity'
 
 const Image = styled.img`
@@ -12,8 +12,8 @@ const Image = styled.img`
   height: 180px;
 `
 
-const UpsellPanel = () => {
-  const {upsellData} = useComments()
+export function UpsellPanel() {
+  const {upsellData} = useCommentsUpsell()
 
   if (!upsellData) return null
   return (
@@ -53,5 +53,3 @@ const UpsellPanel = () => {
     </Container>
   )
 }
-
-export default UpsellPanel
