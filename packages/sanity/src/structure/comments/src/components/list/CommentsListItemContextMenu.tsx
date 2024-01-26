@@ -13,26 +13,15 @@ import {CommentReactionsMenuButton} from '../reactions'
 import {COMMENT_REACTION_OPTIONS} from '../../constants'
 import {ReactionIcon} from '../icons'
 import {useCommentsEnabled} from '../../hooks'
-import {CommentsEnabledContextValue} from '../../context/enabled/types'
 import {ContextMenuButton} from 'sanity'
 
-const renderMenuButton = ({
-  open,
-  commentsEnabled,
-}: {
-  open: boolean
-  commentsEnabled: CommentsEnabledContextValue
-}) => (
+const renderMenuButton = ({open, tooltipContent}: {open: boolean; tooltipContent: string}) => (
   <Button
     aria-label="Add reaction"
     icon={ReactionIcon}
     mode="bleed"
     selected={open}
-    tooltipProps={
-      commentsEnabled.reason === 'upsell'
-        ? {content: 'Upgrade to add reactions'}
-        : {content: 'Add reaction'}
-    }
+    tooltipProps={{content: tooltipContent}}
   />
 )
 
