@@ -2,7 +2,7 @@ import {Flex, Container, Stack, Text} from '@sanity/ui'
 import React from 'react'
 import {commentsLocaleNamespace} from '../../../i18n'
 import {CommentStatus, CommentsUIMode} from '../../types'
-import {useCommentsEnabled} from '../../hooks'
+import {UpsellPanel} from '../upsell'
 import {LoadingBlock, TFunction, useTranslation} from 'sanity'
 
 interface EmptyStateMessage {
@@ -68,6 +68,9 @@ export function CommentsListStatus(props: CommentsListStatusProps) {
         </Container>
       </Flex>
     )
+  }
+  if (hasNoComments && mode === 'upsell') {
+    return <UpsellPanel />
   }
 
   return null
