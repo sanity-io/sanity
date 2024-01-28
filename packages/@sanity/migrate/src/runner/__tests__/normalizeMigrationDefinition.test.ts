@@ -8,7 +8,7 @@ describe('#normalizeMigrateDefinition', () => {
   it('should return the migrate function if it is a function', () => {
     const mockMigration: Migration = {
       name: 'mockMigration',
-      documentType: 'mockDocumentType',
+      documentTypes: ['mockDocumentType'],
       migrate: jest.fn(),
     }
 
@@ -19,7 +19,7 @@ describe('#normalizeMigrateDefinition', () => {
   it('should return a new function if migrate is not a function', () => {
     const mockMigration: Migration = {
       name: 'mockMigration',
-      documentType: 'mockDocumentType',
+      documentTypes: ['mockDocumentType'],
       migrate: {},
     }
 
@@ -51,7 +51,7 @@ describe('#createAsyncIterableMutation', () => {
       document: jest.fn(),
     }
 
-    const iterable = createAsyncIterableMutation(mockMigration, {documentType: 'foo'})
+    const iterable = createAsyncIterableMutation(mockMigration, {documentTypes: ['foo']})
 
     expect(typeof iterable).toBe('function')
 
