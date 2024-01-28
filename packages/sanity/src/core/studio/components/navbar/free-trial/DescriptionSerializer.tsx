@@ -1,14 +1,14 @@
 import {PortableText, type PortableTextComponents} from '@portabletext/react'
-import {LinkIcon} from '@sanity/icons'
-import type {PortableTextBlock} from '@sanity/types'
+import {Icon, LinkIcon} from '@sanity/icons'
+import {isPortableTextTextBlock, type PortableTextBlock} from '@sanity/types'
 import {Box, Card, Flex, Heading, Text} from '@sanity/ui'
 import styled from 'styled-components'
-import React, {useEffect, useState} from 'react'
+import React, {useEffect, useMemo, useState} from 'react'
+import {ConditionalWrapper} from '../../../../../ui-components/conditionalWrapper'
 
 interface DescriptionSerializerProps {
   blocks: PortableTextBlock[]
 }
-
 const Divider = styled(Box)`
   height: 1px;
   background: var(--card-border-color);
@@ -23,6 +23,36 @@ const SerializerContainer = styled.div`
   // Remove margin bottom to last box.
   > [data-ui='Box']:last-child {
     margin-bottom: 0;
+  }
+`
+
+const IconTextContainer = styled(Text)((props) => {
+  if (props.accent) {
+    return `
+    --card-icon-color: var(--card-accent-fg-color);
+    `
+  }
+  return ``
+})
+
+const AccentSpan = styled.span`
+  color: var(--card-accent-fg-color);
+  --card-icon-color: var(--card-accent-fg-color);
+`
+
+const SemiboldSpan = styled.span`
+  font-weight: 600;
+`
+
+interface InlineIconProps {
+  $hasTextLeft: boolean
+  $hasTextRight: boolean
+}
+const InlineIcon = styled(Icon)<InlineIconProps>`
+  &[data-sanity-icon] {
+    /* Forces the icon to leave the necessary space to the right or left it has surrounding text */
+    margin-left: ${(props) => (props.$hasTextLeft ? '0' : '')};
+    margin-right: ${(props) => (props.$hasTextRight ? '0' : '')};
   }
 `
 
@@ -41,6 +71,9 @@ const DynamicIconContainer = styled.span`
     }
   }
 `
+
+const accentSpanWrapper = (children: React.ReactNode) => <AccentSpan>{children}</AccentSpan>
+
 const DynamicIcon = (props: {icon: {url: string}}) => {
   const [ref, setRef] = useState<HTMLSpanElement | null>(null)
   useEffect(() => {
@@ -116,6 +149,7 @@ const components: PortableTextComponents = {
 
   marks: {
     strong: ({children}) => <strong>{children}</strong>,
+    semibold: ({children}) => <SemiboldSpan>{children}</SemiboldSpan>,
     link: (props) => (
       <Link
         href={props.value.href}
@@ -127,9 +161,24 @@ const components: PortableTextComponents = {
         {props.value.showIcon && <LinkIcon style={{marginLeft: '2px'}} />}
       </Link>
     ),
+    accent: (props) => <AccentSpan>{props.children}</AccentSpan>,
   },
   types: {
-    inlineIcon: (props) => <DynamicIcon icon={props.value.icon} />,
+    inlineIcon: (props) => {
+      return (
+        <ConditionalWrapper condition={props.value.accent} wrapper={accentSpanWrapper}>
+          {props.value.sanityIcon ? (
+            <InlineIcon
+              symbol={props.value.sanityIcon}
+              $hasTextLeft={props.value.hasTextLeft}
+              $hasTextRight={props.value.hasTextRight}
+            />
+          ) : (
+            <DynamicIcon icon={props.value.icon} />
+          )}
+        </ConditionalWrapper>
+      )
+    },
     divider: () => (
       <Box marginY={3}>
         <Box paddingY={3}>
@@ -140,9 +189,13 @@ const components: PortableTextComponents = {
     iconAndText: (props) => (
       <Flex align="flex-start" paddingX={2} paddingTop={1} paddingBottom={2} marginTop={2} gap={2}>
         <Flex gap={2} style={{flexShrink: 0}}>
-          <Text size={1} accent={props.value.accent}>
-            <DynamicIcon icon={props.value.icon} />
-          </Text>
+          <IconTextContainer size={1} accent={props.value.accent}>
+            {props.value.sanityIcon ? (
+              <Icon symbol={props.value.sanityIcon} />
+            ) : (
+              <DynamicIcon icon={props.value.icon} />
+            )}
+          </IconTextContainer>
           <Text size={1} weight="semibold" accent={props.value.accent}>
             {props.value.title}
           </Text>
@@ -156,17 +209,53 @@ const components: PortableTextComponents = {
   },
 }
 
+interface DescriptionSerializerProps {
+  blocks: PortableTextBlock[]
+}
+
+const transformBlocks = (blocks: PortableTextBlock[]): PortableTextBlock[] => {
+  return blocks.map((block) => {
+    if (block._type === 'block') {
+      if (!isPortableTextTextBlock(block)) return block
+
+      const children = block.children.map((child, idx) => {
+        if (child._type === 'inlineIcon') {
+          // Updates the inlineIcon with information about the surrounding text.
+          const hasTextLeft = Boolean(
+            block.children[idx - 1]?._type === 'span' && block.children[idx - 1]?.text,
+          )
+          const hasTextRight = Boolean(
+            block.children[idx + 1]?._type === 'span' && block.children[idx + 1]?.text,
+          )
+          return {
+            ...child,
+            hasTextRight,
+            hasTextLeft,
+          }
+        }
+        return child
+      })
+
+      return {
+        ...block,
+        children,
+      }
+    }
+    return block
+  })
+}
 /**
  * Portable text serializer for the description text for upsell elements.
  * Not meant for public consumption.
  * @internal
  */
 export function DescriptionSerializer(props: DescriptionSerializerProps) {
+  const value = useMemo(() => transformBlocks(props.blocks), [props.blocks])
   return (
     <Card tone="default">
       <SerializerContainer>
         <PortableText
-          value={props.blocks}
+          value={value}
           components={components}
           /* Disable warnings on missing components */
           onMissingComponent={false}
