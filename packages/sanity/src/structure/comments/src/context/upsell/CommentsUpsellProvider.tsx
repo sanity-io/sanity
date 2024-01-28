@@ -6,7 +6,7 @@ import {CommentsUpsellContext} from './CommentsUpsellContext'
 import {CommentsUpsellContextValue} from './types'
 import {useClient, DEFAULT_STUDIO_CLIENT_OPTIONS} from 'sanity'
 
-const QUERY = `*[_type == "commentsUpsell"]{
+const QUERY = `*[_type == "upsellUI" && id == "comments-upsell"][0]{
     ...,
    image {
        asset-> { url, altText }
@@ -29,7 +29,7 @@ const QUERY = `*[_type == "commentsUpsell"]{
          }
        }
      }
- }[0]`
+ }`
 
 const UPSELL_CLIENT: Partial<ClientConfig> = {
   dataset: 'upsell-public-development', // TODO: Update for production when ready
