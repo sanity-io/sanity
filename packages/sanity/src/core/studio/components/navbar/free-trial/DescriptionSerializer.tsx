@@ -1,10 +1,11 @@
 import {PortableText, type PortableTextComponents} from '@portabletext/react'
 import {Icon, LinkIcon} from '@sanity/icons'
-import {isPortableTextTextBlock, type PortableTextBlock} from '@sanity/types'
+import {type PortableTextBlock} from '@sanity/types'
 import {Box, Card, Flex, Heading, Text} from '@sanity/ui'
 import styled from 'styled-components'
 import React, {useEffect, useMemo, useState} from 'react'
 import {ConditionalWrapper} from '../../../../../ui-components/conditionalWrapper'
+import {transformBlocks} from './DescriptionSerializerUtils'
 
 interface DescriptionSerializerProps {
   blocks: PortableTextBlock[]
@@ -213,37 +214,6 @@ interface DescriptionSerializerProps {
   blocks: PortableTextBlock[]
 }
 
-const transformBlocks = (blocks: PortableTextBlock[]): PortableTextBlock[] => {
-  return blocks.map((block) => {
-    if (block._type === 'block') {
-      if (!isPortableTextTextBlock(block)) return block
-
-      const children = block.children.map((child, idx) => {
-        if (child._type === 'inlineIcon') {
-          // Updates the inlineIcon with information about the surrounding text.
-          const hasTextLeft = Boolean(
-            block.children[idx - 1]?._type === 'span' && block.children[idx - 1]?.text,
-          )
-          const hasTextRight = Boolean(
-            block.children[idx + 1]?._type === 'span' && block.children[idx + 1]?.text,
-          )
-          return {
-            ...child,
-            hasTextRight,
-            hasTextLeft,
-          }
-        }
-        return child
-      })
-
-      return {
-        ...block,
-        children,
-      }
-    }
-    return block
-  })
-}
 /**
  * Portable text serializer for the description text for upsell elements.
  * Not meant for public consumption.
