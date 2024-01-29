@@ -1,22 +1,24 @@
 import {Stack, Text} from '@sanity/ui'
 import React, {useCallback} from 'react'
 import {Dialog} from '../../../../ui-components'
-import {TextWithTone} from 'sanity'
+import {commentsLocaleNamespace} from '../../i18n'
+import {TFunction, TextWithTone, useTranslation} from 'sanity'
 
-const DIALOG_COPY: Record<
-  'thread' | 'comment',
-  {title: string; body: string; confirmButtonText: string}
-> = {
-  thread: {
-    title: 'Delete this comment thread?',
-    body: 'This comment and its replies will be deleted, and once deleted cannot be recovered.',
-    confirmButtonText: 'Delete thread',
-  },
-  comment: {
-    title: 'Delete this comment?',
-    body: 'Once deleted, a comment cannot be recovered.',
-    confirmButtonText: 'Delete comment',
-  },
+function getDialogCopy(
+  t: TFunction,
+): Record<'thread' | 'comment', {title: string; body: string; confirmButtonText: string}> {
+  return {
+    thread: {
+      title: t('comments.delete-thread-title'),
+      body: t('comments.delete-thread-body'),
+      confirmButtonText: t('comments.delete-thread-confirm'),
+    },
+    comment: {
+      title: t('comments.delete-comment-title'),
+      body: t('comments.delete-comment-body'),
+      confirmButtonText: t('comments.delete-comment-confirm'),
+    },
+  }
 }
 
 /**
@@ -38,7 +40,9 @@ export interface CommentDeleteDialogProps {
  */
 export function CommentDeleteDialog(props: CommentDeleteDialogProps) {
   const {isParent, onClose, commentId, onConfirm, loading, error} = props
-  const {title, body, confirmButtonText} = DIALOG_COPY[isParent ? 'thread' : 'comment']
+  const {t} = useTranslation(commentsLocaleNamespace)
+  const dialogCopy = getDialogCopy(t)
+  const {title, body, confirmButtonText} = dialogCopy[isParent ? 'thread' : 'comment']
 
   const handleDelete = useCallback(() => {
     onConfirm(commentId)
@@ -65,11 +69,7 @@ export function CommentDeleteDialog(props: CommentDeleteDialogProps) {
       <Stack space={4}>
         <Text size={1}>{body}</Text>
 
-        {error && (
-          <TextWithTone tone="critical">
-            An error occurred while deleting the comment. Please try again.
-          </TextWithTone>
-        )}
+        {error && <TextWithTone tone="critical">{t('comments.delete-dialog-error')}</TextWithTone>}
       </Stack>
     </Dialog>
   )

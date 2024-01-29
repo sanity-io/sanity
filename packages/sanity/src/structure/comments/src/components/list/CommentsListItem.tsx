@@ -17,8 +17,10 @@ import {SpacerAvatar} from '../avatars'
 import {hasCommentMessageValue} from '../../helpers'
 import {CommentsSelectedPath} from '../../context'
 import {Button} from '../../../../../ui-components'
+import {commentsLocaleNamespace} from '../../../i18n'
 import {CommentsListItemLayout} from './CommentsListItemLayout'
 import {ThreadCard} from './styles'
+import {useTranslation} from 'sanity'
 
 const EMPTY_ARRAY: [] = []
 
@@ -113,6 +115,7 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
     readOnly,
     replies = EMPTY_ARRAY,
   } = props
+  const {t} = useTranslation(commentsLocaleNamespace)
   const [value, setValue] = useState<CommentMessage>(EMPTY_ARRAY)
   const [collapsed, setCollapsed] = useState<boolean>(true)
   const didExpand = useRef<boolean>(false)
@@ -276,7 +279,10 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
         onMouseLeave={handleMouseLeave}
         tone={isSelected ? 'caution' : undefined}
       >
-        <GhostButton data-ui="GhostButton" aria-label="Go to field" />
+        <GhostButton
+          data-ui="GhostButton"
+          aria-label={t('comments.button-go-to-field-aria-label')}
+        />
 
         <Stack
           as="ul"
@@ -331,7 +337,7 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
               onDiscardConfirm={confirmDiscard}
               onKeyDown={handleInputKeyDown}
               onSubmit={handleReplySubmit}
-              placeholder="Reply"
+              placeholder={t('comments.placeholder-reply')}
               readOnly={readOnly}
               ref={replyInputRef}
               value={value}

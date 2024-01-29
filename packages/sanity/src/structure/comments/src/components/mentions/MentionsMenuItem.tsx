@@ -2,8 +2,9 @@ import {TextSkeleton, Flex, Text, Card, Box, Badge} from '@sanity/ui'
 import React, {useCallback} from 'react'
 import styled from 'styled-components'
 import {MentionOptionUser} from '../../types'
+import {commentsLocaleNamespace} from '../../../i18n'
 import {CommentsAvatar} from '../avatars'
-import {useUser} from 'sanity'
+import {useUser, useTranslation} from 'sanity'
 
 const InnerFlex = styled(Flex)``
 
@@ -17,6 +18,7 @@ interface MentionsItemProps {
 export function MentionsMenuItem(props: MentionsItemProps) {
   const {user, onSelect} = props
   const [loadedUser] = useUser(user.id)
+  const {t} = useTranslation(commentsLocaleNamespace)
 
   const avatar = (
     <CommentsAvatar user={loadedUser} status={user.canBeMentioned ? undefined : 'inactive'} />
@@ -44,7 +46,7 @@ export function MentionsMenuItem(props: MentionsItemProps) {
 
         {!user.canBeMentioned && (
           <Badge fontSize={1} mode="outline">
-            Unauthorized
+            {t('comments.mentions-unauthorized')}
           </Badge>
         )}
       </Flex>

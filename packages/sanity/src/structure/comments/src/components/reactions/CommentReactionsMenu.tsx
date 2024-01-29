@@ -2,8 +2,10 @@
 import {Button as UIButton, Grid} from '@sanity/ui'
 import React, {useCallback, useEffect, useState} from 'react'
 import {CommentReactionOption} from '../../types'
+import {commentsLocaleNamespace} from '../../../i18n'
 import {COMMENT_REACTION_EMOJIS} from '../../constants'
 import {EmojiText} from './EmojiText.styled'
+import {useTranslation} from 'sanity'
 
 const GRID_COLUMNS = 6
 
@@ -14,7 +16,7 @@ interface CommentReactionsMenuProps {
 
 export function CommentReactionsMenu(props: CommentReactionsMenuProps) {
   const {options, onSelect} = props
-
+  const {t} = useTranslation(commentsLocaleNamespace)
   const [focusableElements, setFocusableElements] = useState<HTMLButtonElement[]>([])
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
   const [focusedIndex, setFocusedIndex] = useState<number>(0)
@@ -76,7 +78,9 @@ export function CommentReactionsMenu(props: CommentReactionsMenuProps) {
 
         return (
           <UIButton
-            aria-label={`React with ${o.title || o.shortName}`}
+            aria-label={t('comments.reactions-menu-button-aria-label', {
+              reaction: o.title || o.shortName,
+            })}
             key={o.shortName}
             mode="bleed"
             onClick={handleOptionClick}

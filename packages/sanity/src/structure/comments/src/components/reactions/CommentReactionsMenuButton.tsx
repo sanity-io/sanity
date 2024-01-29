@@ -1,8 +1,11 @@
+import {TFunction} from 'i18next'
 import React, {cloneElement, useCallback, useMemo, useState} from 'react'
 import {Card, useClickOutside} from '@sanity/ui'
 import {CommentReactionOption} from '../../types'
 import {Popover, PopoverProps} from '../../../../../ui-components'
+import {commentsLocaleNamespace} from '../../../i18n'
 import {CommentReactionsMenu} from './CommentReactionsMenu'
+import {useTranslation} from 'sanity'
 
 const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['top', 'bottom']
 
@@ -12,7 +15,7 @@ export interface CommentReactionsMenuButtonProps {
   onSelect: (option: CommentReactionOption) => void
   options: CommentReactionOption[]
   readOnly?: boolean
-  renderMenuButton: (props: {open: boolean}) => React.ReactElement
+  renderMenuButton: (props: {open: boolean; t: TFunction}) => React.ReactElement
 }
 
 export function CommentReactionsMenuButton(props: CommentReactionsMenuButtonProps) {
@@ -21,6 +24,7 @@ export function CommentReactionsMenuButton(props: CommentReactionsMenuButtonProp
   const [popoverElement, setPopoverElement] = useState<HTMLDivElement | null>(null)
 
   const [open, setOpen] = useState<boolean>(false)
+  const {t} = useTranslation(commentsLocaleNamespace)
 
   const handleClick = useCallback(() => {
     const next = !open
@@ -66,7 +70,7 @@ export function CommentReactionsMenuButton(props: CommentReactionsMenuButtonProp
 
   const button = useMemo(() => {
     // Get the button element from the renderMenuButton function.
-    const btn = renderMenuButton({open})
+    const btn = renderMenuButton({open, t})
 
     // Clone the button element and add the necessary props.
     return cloneElement(btn, {
@@ -76,8 +80,9 @@ export function CommentReactionsMenuButton(props: CommentReactionsMenuButtonProp
       id: 'reactions-menu-button',
       onClick: handleClick,
       ref: setButtonElement,
+      t: t,
     })
-  }, [handleClick, open, readOnly, renderMenuButton])
+  }, [handleClick, open, readOnly, renderMenuButton, t])
 
   const popoverContent = (
     <Card

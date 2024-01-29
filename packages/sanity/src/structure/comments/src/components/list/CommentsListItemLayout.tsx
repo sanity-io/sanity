@@ -18,8 +18,9 @@ import {FLEX_GAP} from '../constants'
 import {hasCommentMessageValue, useCommentHasChanged} from '../../helpers'
 import {AVATAR_HEIGHT, CommentsAvatar, SpacerAvatar} from '../avatars'
 import {CommentReactionsBar} from '../reactions'
+import {commentsLocaleNamespace} from '../../../i18n'
 import {CommentsListItemContextMenu} from './CommentsListItemContextMenu'
-import {TimeAgoOpts, useTimeAgo, useUser, useDidUpdate} from 'sanity'
+import {TimeAgoOpts, useTimeAgo, useUser, useDidUpdate, useTranslation} from 'sanity'
 
 const stopPropagation = (e: React.MouseEvent<HTMLDivElement>) => e.stopPropagation()
 
@@ -140,6 +141,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
   } = props
   const {_createdAt, authorId, message, _id, lastEditedAt} = comment
   const [user] = useUser(authorId)
+  const {t} = useTranslation(commentsLocaleNamespace)
 
   const [value, setValue] = useState<CommentMessage>(message)
   const [isEditing, setIsEditing] = useState<boolean>(false)
@@ -297,7 +299,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
 
                   {formattedLastEditAt && (
                     <TimeText muted size={0} title={formattedLastEditAt}>
-                      (edited)
+                      ({t('comments.list-item-layout-edited')})
                     </TimeText>
                   )}
                 </Flex>
@@ -378,8 +380,8 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
 
           <Flex align="center" gap={1} flex={1}>
             <Text muted size={1}>
-              {hasError && 'Failed to send.'}
-              {isRetrying && 'Posting...'}
+              {hasError && t('comments.list-item-layout-failed-sent')}
+              {isRetrying && t('comments.list-item-layout-posting')}
             </Text>
 
             <Flex hidden={isRetrying}>
@@ -393,7 +395,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
                 tone="primary"
               >
                 <Text size={1} muted>
-                  Retry
+                  {t('comments.list-item-layout-retry')}
                 </Text>
               </RetryCardButton>
             </Flex>

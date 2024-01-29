@@ -1,3 +1,4 @@
+import {commentsUsEnglishLocaleBundle} from '../i18n'
 import {commentsInspector} from './inspector'
 import {CommentsField} from './field'
 import {CommentsDocumentLayout} from './document-layout'
@@ -25,4 +26,6 @@ export const comments = definePlugin({
       layout: CommentsStudioLayout,
     },
   },
+
+  i18n: {bundles: [commentsUsEnglishLocaleBundle]},
 })

@@ -2,6 +2,8 @@ import {LaunchIcon} from '@sanity/icons'
 import {Card, Text} from '@sanity/ui'
 import React from 'react'
 import styled from 'styled-components'
+import {commentsLocaleNamespace} from '../../i18n'
+import {useTranslation} from 'sanity'
 
 const FEEDBACK_FORM_LINK = 'https://snty.link/comments-beta-feedback'
 
@@ -19,12 +21,13 @@ const FooterCard = styled(Card)({
 })
 
 export function CommentsInspectorFeedbackFooter() {
+  const {t} = useTranslation(commentsLocaleNamespace)
   return (
     <FooterCard padding={4}>
       <Text muted size={1}>
-        Help improve comments.{' '}
+        {t('comments.feedback-footer-title')}{' '}
         <Link href={FEEDBACK_FORM_LINK} target="_blank" rel="noreferrer">
-          <Span>Share your feedback </Span> <LaunchIcon />
+          <Span>{t('comments.feedback-footer-link')} </Span> <LaunchIcon />
         </Link>
       </Text>
     </FooterCard>

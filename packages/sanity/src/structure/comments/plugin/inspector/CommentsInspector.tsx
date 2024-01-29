@@ -20,9 +20,10 @@ import {
   useCommentsOnboarding,
   useCommentsSelectedPath,
 } from '../../src'
+import {commentsLocaleNamespace} from '../../i18n'
 import {CommentsInspectorHeader} from './CommentsInspectorHeader'
 import {CommentsInspectorFeedbackFooter} from './CommentsInspectorFeedbackFooter'
-import {DocumentInspectorProps, useCurrentUser, useUnique} from 'sanity'
+import {DocumentInspectorProps, useCurrentUser, useTranslation, useUnique} from 'sanity'
 
 interface CommentToDelete {
   commentId: string
@@ -52,6 +53,7 @@ export function CommentsInspector(props: DocumentInspectorProps) {
 }
 
 function CommentsInspectorInner(props: DocumentInspectorProps) {
+  const {t} = useTranslation(commentsLocaleNamespace)
   const {onClose} = props
 
   const [showDeleteDialog, setShowDeleteDialog] = useState<boolean>(false)
@@ -119,18 +121,18 @@ function CommentsInspectorInner(props: DocumentInspectorProps) {
           pushToast({
             closable: true,
             status: 'info',
-            title: 'Copied link to clipboard',
+            title: t('comments.copy-link-success-message'),
           })
         })
         .catch(() => {
           pushToast({
             closable: true,
             status: 'error',
-            title: 'Unable to copy link to clipboard',
+            title: t('comments.copy-link-error-message'),
           })
         })
     },
-    [createPathWithParams, params, pushToast],
+    [createPathWithParams, params, pushToast, t],
   )
 
   const handleCreateRetry = useCallback(

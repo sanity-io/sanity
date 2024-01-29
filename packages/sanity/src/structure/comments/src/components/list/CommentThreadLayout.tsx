@@ -16,8 +16,10 @@ import {
 } from '../../types'
 import {CommentBreadcrumbs} from '../CommentBreadcrumbs'
 import {CommentsSelectedPath} from '../../context'
+import {commentsLocaleNamespace} from '../../../i18n'
 import {CreateNewThreadInput} from './CreateNewThreadInput'
 import {ThreadCard} from './styles'
+import {useTranslation} from 'sanity'
 
 const HeaderFlex = styled(Flex)`
   min-height: 25px;
@@ -60,6 +62,8 @@ export function CommentThreadLayout(props: CommentThreadLayoutProps) {
     onPathSelect,
     readOnly,
   } = props
+
+  const {t} = useTranslation(commentsLocaleNamespace)
 
   const handleNewThreadCreate = useCallback(
     (payload: CommentMessage) => {
@@ -118,7 +122,7 @@ export function CommentThreadLayout(props: CommentThreadLayoutProps) {
         <Stack flex={1}>
           <Flex align="center">
             <BreadcrumbsButton
-              aria-label={`Go to ${lastCrumb} field`}
+              aria-label={t('comments.thread-breadcrumb-layout-aria-label', {lastCrumb: lastCrumb})}
               mode="bleed"
               onClick={handleBreadcrumbsClick}
               padding={2}

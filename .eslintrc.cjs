@@ -249,16 +249,6 @@ const config = {
       },
     },
 
-    // Ignore i18n in Comments files for now. This will need to be removed before Comments feature is GA
-    {
-      files: ['**/*/Comment*.{js,ts,tsx}', '**/*/comments/**/*'],
-      rules: {
-        'i18next/no-literal-string': 'off',
-        '@sanity/i18n/no-attribute-string-literals': 'off',
-        '@sanity/i18n/no-attribute-template-literals': 'off',
-      },
-    },
-
     // Prefer local components vs certain @sanity/ui imports (in sanity package)
     {
       files: ['packages/sanity/**'],

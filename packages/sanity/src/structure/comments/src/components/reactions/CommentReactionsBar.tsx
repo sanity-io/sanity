@@ -14,6 +14,7 @@ import {CommentReactionsMenuButton} from './CommentReactionsMenuButton'
 import {CommentReactionsUsersTooltip} from './CommentReactionsUsersTooltip'
 import {EmojiText} from './EmojiText.styled'
 import {TransparentCard} from './TransparentCard.styled'
+import {TFunction} from 'sanity'
 
 /**
  * A function that groups reactions by name. For example:
@@ -54,11 +55,11 @@ function groupReactionsByName(reactions: CommentReactionItem[]) {
   return sorted as [CommentReactionShortNames, CommentReactionItem[]][]
 }
 
-const renderMenuButton = ({open}: {open: boolean}) => {
+const renderMenuButton = ({open, t}: {open: boolean; t: TFunction}) => {
   return (
     <UIButton fontSize={1} mode="ghost" padding={0} radius="full" selected={open}>
       <Flex paddingX={3} paddingY={2}>
-        <Tooltip animate content="Add reaction" disabled={open}>
+        <Tooltip animate content={t('comments.reaction-bar-tooltip')} disabled={open}>
           <Text size={1}>
             <ReactionIcon />
           </Text>

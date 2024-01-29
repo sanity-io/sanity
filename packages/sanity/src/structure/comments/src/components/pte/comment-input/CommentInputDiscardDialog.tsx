@@ -1,6 +1,8 @@
 import {DialogProvider, Text, ThemeColorProvider} from '@sanity/ui'
 import React, {useCallback} from 'react'
 import {Dialog} from '../../../../../../ui-components'
+import {commentsLocaleNamespace} from '../../../../i18n'
+import {useTranslation} from 'sanity'
 
 const Z_OFFSET = 9999999 // Change to appropriate z-offset
 
@@ -18,6 +20,7 @@ export interface CommentInputDiscardDialogProps {
  * @hidden
  */
 export function CommentInputDiscardDialog(props: CommentInputDiscardDialogProps) {
+  const {t} = useTranslation(commentsLocaleNamespace)
   const {onClose, onConfirm} = props
 
   const handleCancelClick = useCallback(
@@ -44,7 +47,7 @@ export function CommentInputDiscardDialog(props: CommentInputDiscardDialogProps)
     <ThemeColorProvider tone="default">
       <DialogProvider zOffset={Z_OFFSET}>
         <Dialog
-          header="Discard comment?"
+          header={t('comments.discard-header')}
           id="discard-comment-dialog"
           onClose={onClose}
           width={0}
@@ -55,12 +58,12 @@ export function CommentInputDiscardDialog(props: CommentInputDiscardDialogProps)
             },
             confirmButton: {
               onClick: handleConfirmClick,
-              text: 'Discard',
+              text: t('comments.discard-button-confirm'),
               tone: 'critical',
             },
           }}
         >
-          <Text size={1}>Do you want to discard the comment?</Text>
+          <Text size={1}>{t('comments.discard-text')}</Text>
         </Dialog>
       </DialogProvider>
     </ThemeColorProvider>
