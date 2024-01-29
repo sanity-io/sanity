@@ -1,11 +1,10 @@
 // An example of a compact formatter
 
-import {Mutation, Index, KeyedPathElement, NodePatch} from '@bjoerge/mutiny'
-import {stringify} from '@bjoerge/mutiny/path'
-
-import {SanityDocument} from '@sanity/types'
+import {Mutation, NodePatch} from '@sanity/migrate'
 
 import {Chalk} from 'chalk'
+import {KeyedSegment} from '@sanity/types'
+import {toString as pathToString} from '@sanity/util/paths'
 
 export type ItemRef = string | number
 
@@ -13,7 +12,7 @@ export function format(chalk: Chalk, mutations: Mutation[]): string {
   return mutations.flatMap((m) => formatMutation(chalk, m)).join('\n')
 }
 
-function encodeItemRef(ref: Index | KeyedPathElement): ItemRef {
+function encodeItemRef(ref: number | KeyedSegment): ItemRef {
   return typeof ref === 'number' ? ref : ref._key
 }
 
@@ -46,7 +45,7 @@ export function formatMutation(chalk: Chalk, mutation: Mutation): string {
 
 function formatPatchMutation(chalk: Chalk, patch: NodePatch<any>): string {
   const {op} = patch
-  const path = chalk.grey(stringify(patch.path))
+  const path = chalk.grey(pathToString(patch.path))
   const formattedType = chalk.bold(op.type)
   if (op.type === 'unset') {
     return [path, `${formattedType}()`].join(': ')
