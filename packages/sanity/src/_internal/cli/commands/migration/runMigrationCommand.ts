@@ -7,13 +7,12 @@ import {
   MAX_MUTATION_CONCURRENCY,
   Migration,
   MigrationProgress,
-  Mutation,
   run,
   runFromArchive,
 } from '@sanity/migrate'
 
 import {debug} from '../../debug'
-import {formatMutation} from './utils/mutationFormatter'
+import {formatTransaction} from './utils/mutationFormatter'
 
 const helpText = `
 Options
@@ -195,7 +194,7 @@ const createMigrationCommand: CliCommandDefinition<CreateFlags> = {
           return
         }
 
-        ;['', ...progress.currentMutations].forEach((mutation) => {
+        ;[null, ...progress.currentTransactions].forEach((transaction) => {
           spinner.text = `Running migration "${migrationName}"…
 
   Project id:     ${chalk.bold(projectId)}
@@ -207,9 +206,7 @@ const createMigrationCommand: CliCommandDefinition<CreateFlags> = {
   ${chalk.blue(progress.pending)} requests pending…
   ${chalk.green(progress.completedTransactions.length)} transactions committed.
 
-  ${
-    mutation && !progress.done ? `» ${chalk.grey(formatMutation(chalk, mutation as Mutation))}` : ''
-  }`
+  ${transaction && !progress.done ? `» ${chalk.grey(formatTransaction(chalk, transaction))}` : ''}`
         })
       }
     }

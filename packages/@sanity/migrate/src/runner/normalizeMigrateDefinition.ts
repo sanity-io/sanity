@@ -1,15 +1,25 @@
 import {Path, SanityDocument} from '@sanity/types'
+import type {Mutation as RawMutation} from '@sanity/client'
+
 import arrify from 'arrify'
-import {at, Mutation, NodePatch, Operation, patch} from '../mutations'
-import {AsyncIterableMigration, Migration, MigrationContext, NodeMigration} from '../types'
+import {SanityEncoder} from '@bjoerge/mutiny'
+import {
+  AsyncIterableMigration,
+  Migration,
+  NodeMigration,
+  MigrationContext,
+  NodeMigrationReturnValue,
+} from '../types'
 import {JsonArray, JsonObject, JsonValue} from '../json'
+import {at, Mutation, patch, NodePatch, Operation, Transaction} from '../mutations'
+import {isMutation, isTransaction} from '../mutations/asserters'
 import {flatMapDeep} from './utils/flatMapDeep'
 import {getValueType} from './utils/getValueType'
 
 export function normalizeMigrateDefinition(migration: Migration): AsyncIterableMigration {
   if (typeof migration.migrate == 'function') {
     // assume AsyncIterableMigration
-    return migration.migrate
+    return normalizeIteratorValues(migration.migrate)
   }
   return createAsyncIterableMutation(migration.migrate, {
     filter: migration.filter,
@@ -17,9 +27,44 @@ export function normalizeMigrateDefinition(migration: Migration): AsyncIterableM
   })
 }
 
-function isMutation(mutation: Mutation | NodePatch | Operation): mutation is Mutation {
-  return 'type' in mutation
+function normalizeIteratorValues(asyncIterable: AsyncIterableMigration): AsyncIterableMigration {
+  return async function* run(docs, context) {
+    for await (const documentMutations of asyncIterable(docs, context)) {
+      yield normalizeMutation(documentMutations)
+    }
+  }
 }
+
+/**
+ * Normalize a mutation or a NodePatch to a document mutation
+ * @param documentId - The document id
+ * @param change - The Mutation or NodePatch
+ */
+function normalizeMutation(
+  change: Transaction | Mutation | RawMutation | (Mutation | Transaction | RawMutation)[],
+): (Mutation | Transaction)[] {
+  if (Array.isArray(change)) {
+    return change.flatMap((ch) => normalizeMutation(ch))
+  }
+  if (isRawMutation(change)) {
+    return SanityEncoder.decode([change] as any) as Mutation[]
+  }
+  return [change]
+}
+
+function isRawMutation(
+  mutation: Transaction | Mutation | NodePatch | Operation | RawMutation,
+): mutation is RawMutation {
+  return (
+    'mutations' in mutation ||
+    'createIfNotExists' in mutation ||
+    'createOrReplace' in mutation ||
+    'create' in mutation ||
+    'patch' in mutation ||
+    'delete' in mutation
+  )
+}
+
 function isOperation(value: Mutation | NodePatch | Operation): value is Operation {
   return (
     'type' in value &&
@@ -58,7 +103,7 @@ async function collectDocumentMutations(
   migration: NodeMigration,
   doc: SanityDocument,
   context: MigrationContext,
-) {
+): Promise<(Mutation | Transaction)[]> {
   const documentMutations = Promise.resolve(migration.document?.(doc, context))
   const nodeMigrations = flatMapDeep(doc as JsonValue, async (value, path) => {
     const [nodeReturnValues, nodeTypeReturnValues] = await Promise.all([
@@ -81,7 +126,24 @@ async function collectDocumentMutations(
  * @param documentId - The document id
  * @param change - The Mutation or NodePatch
  */
-function normalizeDocumentMutation(documentId: string, change: Mutation | NodePatch): Mutation {
+function normalizeDocumentMutation(
+  documentId: string,
+  change:
+    | Transaction
+    | Mutation
+    | NodePatch
+    | RawMutation
+    | (Mutation | NodePatch | Transaction | RawMutation)[],
+): Mutation | Transaction | (Mutation | Transaction)[] {
+  if (Array.isArray(change)) {
+    return change.flatMap((ch) => normalizeDocumentMutation(documentId, ch))
+  }
+  if (isRawMutation(change)) {
+    return SanityEncoder.decode([change] as any)[0] as Mutation
+  }
+  if (isTransaction(change)) {
+    return change
+  }
   return isMutation(change) ? change : patch(documentId, change)
 }
 
@@ -92,8 +154,15 @@ function normalizeDocumentMutation(documentId: string, change: Mutation | NodePa
  */
 function normalizeNodeMutation(
   path: Path,
-  change: Mutation | NodePatch | Operation,
-): Mutation | NodePatch {
+  change: Mutation | NodePatch | Operation | RawMutation | RawMutation[],
+): Mutation | NodePatch | (Mutation | NodePatch)[] {
+  if (Array.isArray(change)) {
+    return change.flatMap((ch) => normalizeNodeMutation(path, ch))
+  }
+  if (isRawMutation(change)) {
+    return SanityEncoder.decode([change] as any)[0] as Mutation
+  }
+
   return isOperation(change) ? at(path, change) : change
 }
 
@@ -102,7 +171,7 @@ function migrateNodeType(
   value: JsonValue,
   path: Path,
   context: MigrationContext,
-) {
+): NodeMigrationReturnValue {
   switch (getValueType(value)) {
     case 'string':
       return migration.string?.(value as string, path, context)

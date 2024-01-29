@@ -1,6 +1,6 @@
 // An example of a compact formatter
 
-import {Mutation, NodePatch} from '@sanity/migrate'
+import {Mutation, NodePatch, Transaction} from '@sanity/migrate'
 
 import {Chalk} from 'chalk'
 import {KeyedSegment} from '@sanity/types'
@@ -9,14 +9,17 @@ import {toString as pathToString} from '@sanity/util/paths'
 export type ItemRef = string | number
 
 export function format(chalk: Chalk, mutations: Mutation[]): string {
-  return mutations.flatMap((m) => formatMutation(chalk, m)).join('\n')
+  return mutations.flatMap((m) => formatTransaction(chalk, m)).join('\n')
 }
 
 function encodeItemRef(ref: number | KeyedSegment): ItemRef {
   return typeof ref === 'number' ? ref : ref._key
 }
 
-export function formatMutation(chalk: Chalk, mutation: Mutation): string {
+export function formatTransaction(chalk: Chalk, mutation: Mutation | Transaction): string {
+  if (mutation.type === 'transaction') {
+    return mutation.mutations.flatMap((m) => formatTransaction(chalk, m)).join('\n')
+  }
   if (
     mutation.type === 'create' ||
     mutation.type === 'createIfNotExists' ||
