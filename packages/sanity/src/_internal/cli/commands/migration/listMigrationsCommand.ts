@@ -21,7 +21,7 @@ const createMigrationCommand: CliCommandDefinition<CreateFlags> = {
   helpText,
   description: 'List available migrations',
   action: async (args, context) => {
-    const {apiClient, output, prompt, workDir} = context
+    const {output, workDir} = context
 
     if (!__DEV__) {
       register({

@@ -1,11 +1,20 @@
-export const cleanSimple = `
-import {defineMigration} from 'sanity/migrate'
+export const minimalSimple = ({
+  migrationName,
+  documentTypes,
+}: {
+  migrationName: string
+  documentTypes: string[]
+}) => `import {defineMigration} from 'sanity/migrate'
 
 export default defineMigration({
-  name: '%migrationName%',
-  documentType: '%type%',
+  name: '${migrationName}',
+${
+  documentTypes.length > 0
+    ? `  documentTypes: ['${documentTypes.map((t) => JSON.stringify(t)).join(', ')}'],\n`
+    : ''
+}
   migrate: {
-    document(doc) {
+    document(doc, context) {
       // this will be called for every document of the matching type
       // any patch returned will be applied to the document
       // you can also return mutations that touches other documents
