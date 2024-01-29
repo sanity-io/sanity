@@ -1,4 +1,4 @@
-import type {SchemaType, SchemaTypeDefinition} from '@sanity/types'
+import type {SchemaType, SchemaTypeDefinition, SchemaValidationProblemGroup} from '@sanity/types'
 import {flatten, get} from 'lodash'
 import {error} from './validation/createValidationResult'
 import type {ProblemPath, ProblemPathPropertySegment, TypeWithProblems} from './typedefs'
@@ -6,7 +6,7 @@ import type {ProblemPath, ProblemPathPropertySegment, TypeWithProblems} from './
 /**
  * @internal
  */
-export function groupProblems(types: SchemaTypeDefinition[]): TypeWithProblems[] {
+export function groupProblems(types: SchemaTypeDefinition[]): SchemaValidationProblemGroup[] {
   return flatten<TypeWithProblems>(types.map((type) => getTypeProblems(type))).filter(
     (type) => type.problems.length > 0,
   )

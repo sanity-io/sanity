@@ -22,7 +22,7 @@ export interface SchemaDef {
  * @internal
  */
 export interface SchemaValidationResult {
-  severity: 'warning' | 'info' | 'error'
+  severity: 'warning' | 'error'
   message: string
   helpId?: string
 }
@@ -40,7 +40,7 @@ export interface TypeWithProblems {
  */
 export interface ProblemPathTypeSegment {
   kind: 'type'
-  type: SchemaType
+  type: string
   name: string
 }
 

@@ -11,7 +11,7 @@ import {
   createClient,
 } from '@sanity/client'
 import {type ValidationContext, type ValidationMarker, isReference} from '@sanity/types'
-import {getStudioConfig} from '../util/getStudioConfig'
+import {getStudioWorkspaces} from '../util/getStudioWorkspaces'
 import {mockBrowserEnvironment} from '../util/mockBrowserEnvironment'
 import {
   createReporter,
@@ -124,7 +124,7 @@ async function* readerToGenerator(reader: ReadableStreamDefaultReader<Uint8Array
 validateDocuments()
 
 async function loadWorkspace() {
-  const workspaces = await getStudioConfig({basePath: workDir, configPath})
+  const workspaces = await getStudioWorkspaces({basePath: workDir, configPath})
 
   if (!workspaces.length) {
     throw new Error(`Configuration did not return any workspaces.`)
