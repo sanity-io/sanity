@@ -16,3 +16,4 @@ export {
   type SchemaValidationResult as ValidationResult,
 } from '../sanity/typedefs'
 export {validateSchema} from '../sanity/validateSchema'
+export {extractSchema} from '../sanity/extractSchema'
