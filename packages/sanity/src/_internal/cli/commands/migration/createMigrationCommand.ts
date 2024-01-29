@@ -83,7 +83,7 @@ const createMigrationCommand: CliCommandDefinition<CreateMigrationFlags> = {
     }
     mkdirp.sync(destDir)
 
-    const renderedTemplate = templatesByName[template].template?.({
+    const renderedTemplate = (templatesByName[template].template || minimalSimple)({
       migrationName: name,
       documentTypes: types
         .split(',')
@@ -100,25 +100,25 @@ const createMigrationCommand: CliCommandDefinition<CreateMigrationFlags> = {
     output.print()
     output.print('Next steps:')
     output.print(
-      `  • Open ./${chalk.bold(
+      `Open ./${chalk.bold(
         definitionFile,
       )} in your code editor and write the code for your migration.`,
     )
     output.print(
-      `  • Dry run the migration with \`${chalk.bold(
+      `Dry run the migration with:\n\`${chalk.bold(
         `sanity migration run ${sluggedName} --dry --project-id=<projectId> --dataset <dataset> `,
       )}\``,
     )
     output.print(
-      `  • Run the migration against a dataset with \`${chalk.bold(
+      `Run the migration against a dataset with:\n \`${chalk.bold(
         `sanity migration run ${sluggedName} --project-id=<projectId> --dataset <dataset> --no-dry`,
       )}\``,
     )
     output.print()
     output.print(
-      `  👉 Learn more about schema and content migrations at \`${chalk.bold(
+      `👉 Learn more about schema and content migrations at ${chalk.bold(
         'https://www.sanity.io/docs/schema-and-content-migrations',
-      )}\``,
+      )}`,
     )
   },
 }
