@@ -38,6 +38,14 @@ export function StudioTelemetryProvider(props: {children: ReactNode; config: Con
 
   useEffect(() => {
     store.logger.updateUserProperties({
+      userAgent: navigator.userAgent,
+      screen: {
+        density: window.devicePixelRatio,
+        height: window.screen.height,
+        width: window.screen.width,
+        innerHeight: window.innerHeight,
+        innerWidth: window.innerWidth,
+      },
       studioVersion: SANITY_VERSION,
       plugins: arrify(props.config).flatMap(
         (config) =>
