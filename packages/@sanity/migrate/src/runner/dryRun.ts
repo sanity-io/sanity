@@ -1,7 +1,7 @@
 import {CompactFormatter} from '@bjoerge/mutiny'
 import {SanityDocument} from '@sanity/types'
 import {APIConfig, Migration} from '../types'
-import {ndjson} from '../it-utils/ndjson'
+import {parse} from '../it-utils/ndjson'
 import {fromExportEndpoint, safeJsonParser} from '../sources/fromExportEndpoint'
 import {streamToAsyncIterator} from '../utils/streamToAsyncIterator'
 import {bufferThroughFile} from '../fs-webstream/bufferThroughFile'
@@ -20,7 +20,7 @@ export async function* dryRun(config: MigrationRunnerOptions, migration: Migrati
 
   const mutations = collectMigrationMutations(
     migration,
-    ndjson<SanityDocument>(streamToAsyncIterator(exportStream), {
+    parse<SanityDocument>(streamToAsyncIterator(exportStream), {
       parse: safeJsonParser,
     }),
   )

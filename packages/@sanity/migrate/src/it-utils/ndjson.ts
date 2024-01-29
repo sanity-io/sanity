@@ -1,14 +1,19 @@
 import {split} from './split'
-import {decodeText} from './decodeText'
 import {type JSONOptions, parseJSON} from './json'
 import {filter} from './filter'
 
-export function ndjson<Type>(
-  it: AsyncIterableIterator<Uint8Array>,
+export function parse<Type>(
+  it: AsyncIterableIterator<string>,
   options?: JSONOptions<Type>,
 ): AsyncIterableIterator<Type> {
   return parseJSON(
-    filter(split(decodeText(it), '\n'), (line) => Boolean(line && line.trim())),
+    filter(split(it, '\n'), (line) => Boolean(line && line.trim())),
     options,
   )
+}
+
+export async function* stringify(iterable: AsyncIterableIterator<unknown>) {
+  for await (const doc of iterable) {
+    yield `${JSON.stringify(doc)}\n`
+  }
 }
