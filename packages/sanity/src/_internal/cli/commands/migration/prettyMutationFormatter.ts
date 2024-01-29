@@ -2,7 +2,7 @@ import {isatty} from 'tty'
 import {Migration, Mutation, NodePatch, NodePatchList} from '@sanity/migrate'
 import {KeyedSegment} from '@sanity/types'
 import {Chalk} from 'chalk'
-import {pathToString} from 'sanity'
+import {convertToTree, formatTree, maxKeyLength} from '../../util/tree'
 
 type ItemRef = string | number
 type Impact = 'destructive' | 'maybeDestructive' | 'incremental'
@@ -112,14 +112,18 @@ export function prettyFormatMutation(
   }
 
   if (mutation.type === 'patch') {
-    const tree = convertToTree(mutation.patches)
+    const tree = convertToTree<NodePatch>(mutation.patches.flat())
     const paddingLength = Math.max(maxKeyLength(tree.children) + 2, 30)
+
     return [
       header,
       '\n',
-      formatTree(tree.children, paddingLength, indent, (patch) =>
-        formatPatchMutation(chalk, patch),
-      ),
+      formatTree<NodePatch>({
+        node: tree.children,
+        paddingLength,
+        indent,
+        getMessage: (patch) => formatPatchMutation(chalk, patch),
+      }),
     ].join('')
   }
 
@@ -170,94 +174,4 @@ function formatPatchMutation(chalk: Chalk, patch: NodePatch): string {
   }
   // @ts-expect-error all cases are covered
   throw new Error(`Invalid operation type: ${op.type}`)
-}
-
-interface PatchTree {
-  patches?: Extract<NodePatchList, [NodePatch, ...NodePatch[]] | NodePatch[]>
-  children?: Record<string, PatchTree>
-}
-
-/**
- * Converts a set of markers with paths into a tree of markers where the paths
- * are embedded in the tree
- */
-function convertToTree(patches: NodePatchList): PatchTree {
-  const root: PatchTree = {}
-
-  // add the markers to the tree
-  function addPatch(patch: NodePatch, node: PatchTree = root) {
-    // if we've traversed the whole path
-    if (!patch.path.length) {
-      if (!node.patches) node.patches = [] // ensure markers is defined
-
-      // then add the marker to the front
-      node.patches.push(patch)
-      return
-    }
-
-    const [current, ...rest] = patch.path
-    const key = pathToString([current])
-
-    // ensure the current node has children and the next node
-    if (!node.children) node.children = {}
-    if (!(key in node.children)) node.children[key] = {}
-
-    addPatch({...patch, path: rest}, node.children[key])
-  }
-
-  for (const patch of patches.flat()) addPatch(patch)
-  return root
-}
-
-/**
- * Recursively formats a given tree into a printed user-friendly tree structure
- *
- * TODO: Handle multiline output.
- */
-function formatTree(
-  node: Record<string, PatchTree> = {},
-  paddingLength: number,
-  indent = '',
-  formatPatch: (patch: NodePatch) => string = (patch) => patch.op.type,
-): string {
-  const entries = Object.entries(node)
-
-  return entries
-    .map(([key, child], index) => {
-      const isLast = index === entries.length - 1
-      const nextIndent = `${indent}${isLast ? '  ' : '│ '}`
-      const nested = formatTree(child.children, paddingLength, nextIndent, formatPatch)
-
-      if (!child.patches?.length) {
-        const current = `${indent}${isLast ? '└' : '├'}─ ${key}`
-        return [current, nested].filter(Boolean).join('\n')
-      }
-
-      const [first, ...rest] = child.patches
-      const firstPadding = '.'.repeat(paddingLength - indent.length - key.length)
-      const elbow = isLast ? '└' : '├'
-      const subsequentPadding = ' '.repeat(paddingLength - indent.length + 2)
-
-      const firstMessage = `${indent}${elbow}─ ${key} ${firstPadding} ${formatPatch(first)}`
-      const subsequentMessages = rest
-        .map((patch) => `${nextIndent}${subsequentPadding} ${formatPatch(patch)}`)
-        .join('\n')
-
-      const current = [firstMessage, subsequentMessages].filter(Boolean).join('\n')
-      return [current, nested].filter(Boolean).join('\n')
-    })
-    .join('\n')
-}
-
-/**
- * Recursively calculates the max length of all the keys in the given validation
- * tree respecting extra length due to indentation depth. Used to calculate the
- * padding for the rest of the tree.
- */
-const maxKeyLength = (children: Record<string, PatchTree> = {}, depth = 0): number => {
-  return Object.entries(children)
-    .map(([key, child]) =>
-      Math.max(key.length + depth * 2, maxKeyLength(child.children, depth + 1)),
-    )
-    .reduce((max, next) => (next > max ? next : max), 0)
 }
