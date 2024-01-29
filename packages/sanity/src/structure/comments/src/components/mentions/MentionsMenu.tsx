@@ -3,8 +3,9 @@ import styled from 'styled-components'
 import React, {useCallback, useImperativeHandle, useMemo, useRef, useState} from 'react'
 import {deburr} from 'lodash'
 import {MentionOptionUser} from '../../types'
+import {commentsLocaleNamespace} from '../../../i18n'
 import {MentionsMenuItem} from './MentionsMenuItem'
-import {CommandList, CommandListHandle, LoadingBlock} from 'sanity'
+import {CommandList, CommandListHandle, LoadingBlock, useTranslation} from 'sanity'
 
 const EMPTY_ARRAY: MentionOptionUser[] = []
 
@@ -34,6 +35,7 @@ export const MentionsMenu = React.forwardRef(function MentionsMenu(
   props: MentionsMenuProps,
   ref: React.Ref<MentionsMenuHandle>,
 ) {
+  const {t} = useTranslation(commentsLocaleNamespace)
   const {loading, onSelect, options = [], inputElement} = props
   const [searchTerm, setSearchTerm] = useState<string>('')
   const commandListRef = useRef<CommandListHandle>(null)
@@ -111,7 +113,7 @@ export const MentionsMenu = React.forwardRef(function MentionsMenu(
       {filteredOptions.length === 0 && (
         <Box padding={5}>
           <Text align="center" size={1} muted>
-            No users found
+            {t('comments.mentions-not-found')}
           </Text>
         </Box>
       )}
@@ -120,7 +122,7 @@ export const MentionsMenu = React.forwardRef(function MentionsMenu(
         <FlexWrap direction="column" flex={1} overflow="hidden">
           <CommandList
             activeItemDataAttr="data-hovered"
-            ariaLabel="List of users to mention"
+            ariaLabel={t('comments.mentions-user-list-aria-label')}
             fixedHeight
             getItemDisabled={getItemDisabled}
             inputElement={_inputElement}

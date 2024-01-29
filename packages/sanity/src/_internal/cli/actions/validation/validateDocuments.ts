@@ -19,6 +19,7 @@ export interface ValidateDocumentsOptions<TReturn = unknown> {
   clientConfig?: Partial<ClientConfig>
   projectId?: string // override
   dataset?: string // override
+  ndjsonFilePath?: string
   maxCustomValidationConcurrency?: number
   reporter?: (worker: WorkerChannelReceiver<ValidationWorkerChannel>) => TReturn
 }
@@ -69,6 +70,7 @@ export function validateDocuments(options: ValidateDocumentsOptions): unknown {
     reporter = defaultReporter,
     level,
     maxCustomValidationConcurrency,
+    ndjsonFilePath,
   } = options
 
   const rootPkgPath = readPkgUp.sync({cwd: __dirname})?.path
@@ -95,6 +97,7 @@ export function validateDocuments(options: ValidateDocumentsOptions): unknown {
       dataset,
       projectId,
       level,
+      ndjsonFilePath,
       maxCustomValidationConcurrency:
         maxCustomValidationConcurrency ?? DEFAULT_MAX_CUSTOM_VALIDATION_CONCURRENCY,
     } satisfies ValidateDocumentsWorkerData,

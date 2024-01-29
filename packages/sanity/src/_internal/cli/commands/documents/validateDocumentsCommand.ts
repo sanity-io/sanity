@@ -17,6 +17,7 @@ Options
   -y, --yes Skips the first confirmation prompt.
   --workspace <name> The name of the workspace to use when downloading and validating all documents.
   --dataset <name> Override the dataset used. By default, this is derived from the given workspace.
+  --file <filepath> Provide a path to either an .ndjson file or a tarball containing an .ndjson file.
   --format <pretty|ndjson|json> The output format used to print the found validation markers and report progress.
   --level <error|warning|info> The minimum level reported out. Defaults to warning.
   --max-custom-validation-concurrency <number> Specify how many custom validators can run concurrently. Defaults to 5.

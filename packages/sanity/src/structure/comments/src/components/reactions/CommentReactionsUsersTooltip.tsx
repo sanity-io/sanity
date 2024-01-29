@@ -4,8 +4,9 @@ import styled from 'styled-components'
 import {COMMENT_REACTION_EMOJIS} from '../../constants'
 import {CommentReactionShortNames} from '../../types'
 import {Tooltip} from '../../../../../ui-components'
+import {commentsLocaleNamespace} from '../../../i18n'
 import {EmojiText} from './EmojiText.styled'
-import {CurrentUser, useUser} from 'sanity'
+import {CurrentUser, Translate, useTranslation, useUser} from 'sanity'
 
 const TEXT_SIZE: number | number[] = 1
 
@@ -32,10 +33,11 @@ interface UserDisplayNameProps {
 function UserDisplayName(props: UserDisplayNameProps) {
   const {currentUserId, isFirst, userId, separator} = props
   const [user] = useUser(userId)
+  const {t} = useTranslation(commentsLocaleNamespace)
 
   const isCurrentUser = currentUserId === userId
-  const you = isFirst ? 'You' : 'you'
-  const content = isCurrentUser ? you : user?.displayName ?? 'Unknown user'
+  const you = isFirst ? t('comments.reaction-user-you') : t('comments.reaction-user-you-lowercase')
+  const content = isCurrentUser ? you : user?.displayName ?? t('comments.reaction-unknown-user')
   const text = separator ? `${content}, ` : content
 
   return <InlineText weight="medium"> {text} </InlineText>
@@ -66,7 +68,7 @@ export function CommentReactionsUsersTooltipContent(
   props: Omit<CommentReactionsUsersTooltipProps, 'children'>,
 ) {
   const {currentUser, reactionName, userIds} = props
-
+  const {t} = useTranslation(commentsLocaleNamespace)
   const content = useMemo(() => {
     const len = userIds.length
 
@@ -80,7 +82,7 @@ export function CommentReactionsUsersTooltipContent(
         <Fragment key={id}>
           {showAnd && (
             <>
-              <InlineText>and </InlineText>{' '}
+              <InlineText>{t('comments.reaction-separator')} </InlineText>{' '}
             </>
           )}
           <UserDisplayName
@@ -92,7 +94,7 @@ export function CommentReactionsUsersTooltipContent(
         </Fragment>
       )
     })
-  }, [currentUser, userIds])
+  }, [currentUser, userIds, t])
 
   return (
     <ContentStack padding={1}>
@@ -101,8 +103,20 @@ export function CommentReactionsUsersTooltipContent(
       </Flex>
 
       <TextBox>
-        {content} <InlineText muted>reacted with </InlineText> <wbr />{' '}
-        <InlineText muted>{reactionName}</InlineText>
+        <Translate
+          t={t}
+          i18nKey="comments.user-reacted-with"
+          values={{reactionName: reactionName}}
+          components={{
+            Content: () => <>{content}</>,
+            Text: ({children}) => (
+              <>
+                <InlineText muted>{children}</InlineText> <wbr />{' '}
+              </>
+            ),
+            ReactionName: ({children}) => <InlineText muted>{children}</InlineText>,
+          }}
+        />
       </TextBox>
     </ContentStack>
   )

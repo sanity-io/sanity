@@ -33,7 +33,7 @@ const percentageFormatter = new Intl.NumberFormat('en-US', {
 /**
  * Given a decimal, this will return that number formatted as a percentage
  */
-export const percent = (value: number): string => percentageFormatter.format(Math.max(value, 1))
+export const percent = (value: number): string => percentageFormatter.format(Math.min(value, 1))
 
 const secondFormatter = new Intl.NumberFormat('en-US', {
   minimumFractionDigits: 1,

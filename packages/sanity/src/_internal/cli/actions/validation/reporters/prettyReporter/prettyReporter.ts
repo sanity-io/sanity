@@ -13,6 +13,7 @@ import {
 /**
  * Represents the default stylish/pretty reporter
  */
+// eslint-disable-next-line max-statements
 export const pretty: BuiltInValidationReporter = async ({output, worker, flags}) => {
   const workspaceLoadStart = Date.now()
   // Report workspace loaded
@@ -27,18 +28,21 @@ export const pretty: BuiltInValidationReporter = async ({output, worker, flags})
     }' ${seconds(workspaceLoadStart)}`,
   )
 
-  // Report document count
-  spinner.start('Calculating documents to be validated…')
-  const {documentCount} = await worker.event.loadedDocumentCount()
+  if (!flags.file) {
+    // Report document count
+    spinner.start('Calculating documents to be validated…')
+    const {documentCount} = await worker.event.loadedDocumentCount()
 
-  // Report export progress
-  const downloadStart = Date.now()
-  spinner.text = `Downloading ${count(documentCount, 'documents')}…`
-  for await (const {downloadedCount} of worker.stream.exportProgress()) {
-    const percentage = percent(downloadedCount / documentCount)
-    spinner.text = `Downloading ${count(documentCount, 'documents')}… ${percentage}`
+    // Report export progress
+    const downloadStart = Date.now()
+    spinner.text = `Downloading ${count(documentCount, 'documents')}…`
+    for await (const {downloadedCount} of worker.stream.exportProgress()) {
+      const percentage = percent(downloadedCount / documentCount)
+      spinner.text = `Downloading ${count(documentCount, 'documents')}… ${percentage}`
+    }
+    spinner.succeed(`Downloaded ${count(documentCount, 'documents')} ${seconds(downloadStart)}`)
   }
-  spinner.succeed(`Downloaded ${count(documentCount, 'documents')} ${seconds(downloadStart)}`)
+
   const {totalDocumentsToValidate} = await worker.event.exportFinished()
 
   const referenceIntegrityStart = Date.now()
@@ -96,7 +100,9 @@ export const pretty: BuiltInValidationReporter = async ({output, worker, flags})
       )}):\n${summary(totals, flags.level)}`
   }
 
-  spinner.succeed(`Validated ${count(documentCount, 'documents')} ${seconds(validationStart)}`)
+  spinner.succeed(
+    `Validated ${count(totalDocumentsToValidate, 'documents')} ${seconds(validationStart)}`,
+  )
   output.print(`\nValidation results:\n${summary(totals, flags.level)}`)
 
   results.sort((a, b) => {

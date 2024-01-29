@@ -12,15 +12,16 @@ import {CommentReactionOption, CommentStatus} from '../../types'
 import {CommentReactionsMenuButton} from '../reactions'
 import {COMMENT_REACTION_OPTIONS} from '../../constants'
 import {ReactionIcon} from '../icons'
-import {ContextMenuButton} from 'sanity'
+import {commentsLocaleNamespace} from '../../../i18n'
+import {ContextMenuButton, TFunction, useTranslation} from 'sanity'
 
-const renderMenuButton = ({open}: {open: boolean}) => (
+const renderMenuButton = ({open, t}: {open: boolean; t: TFunction}) => (
   <Button
-    aria-label="Add reaction"
+    aria-label={t('comments.list-item-context-menu-add-reaction-aria-label')}
     icon={ReactionIcon}
     mode="bleed"
     selected={open}
-    tooltipProps={{content: 'Add reaction'}}
+    tooltipProps={{content: t('comments.list-item-context-menu-add-reaction')}}
   />
 )
 
@@ -67,6 +68,8 @@ export function CommentsListItemContextMenu(props: CommentsListItemContextMenuPr
 
   const showMenuButton = Boolean(onCopyLink || onDeleteStart || onEditStart)
 
+  const {t} = useTranslation(commentsLocaleNamespace)
+
   return (
     <TooltipDelayGroupProvider>
       <Flex>
@@ -84,12 +87,21 @@ export function CommentsListItemContextMenu(props: CommentsListItemContextMenuPr
 
           {isParent && (
             <Button
-              aria-label={status === 'open' ? 'Mark comment as resolved' : 'Re-open'}
+              aria-label={
+                status === 'open'
+                  ? t('comments.list-item-resolved-tooltip-aria-label')
+                  : t('comments.list-item-re-open-resolved-aria-label')
+              }
               disabled={readOnly}
               icon={status === 'open' ? CheckmarkCircleIcon : UndoIcon}
               mode="bleed"
               onClick={onStatusChange}
-              tooltipProps={{content: status === 'open' ? 'Mark as resolved' : 'Re-open'}}
+              tooltipProps={{
+                content:
+                  status === 'open'
+                    ? t('comments.list-item-resolved-tooltip-content')
+                    : t('comments.list-item-re-open-resolved'),
+              }}
             />
           )}
 
@@ -97,7 +109,7 @@ export function CommentsListItemContextMenu(props: CommentsListItemContextMenuPr
             id="comment-actions-menu"
             button={
               <ContextMenuButton
-                aria-label="Open comment actions menu"
+                aria-label={t('comments.list-item-open-menu-aria-label')}
                 disabled={readOnly}
                 hidden={!showMenuButton}
               />
@@ -110,14 +122,14 @@ export function CommentsListItemContextMenu(props: CommentsListItemContextMenuPr
                   hidden={!canEdit}
                   icon={EditIcon}
                   onClick={onEditStart}
-                  text="Edit comment"
+                  text={t('comments.list-item-edit-comment')}
                 />
 
                 <MenuItem
                   hidden={!canDelete}
                   icon={TrashIcon}
                   onClick={onDeleteStart}
-                  text="Delete comment"
+                  text={t('comments.list-item-delete-comment')}
                   tone="critical"
                 />
 
@@ -127,7 +139,7 @@ export function CommentsListItemContextMenu(props: CommentsListItemContextMenuPr
                   hidden={!onCopyLink}
                   icon={LinkIcon}
                   onClick={onCopyLink}
-                  text="Copy link to comment"
+                  text={t('comments.list-item-copy-link')}
                 />
               </Menu>
             }

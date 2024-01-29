@@ -1,32 +1,25 @@
 import {Flex, Container, Stack, Text} from '@sanity/ui'
 import React from 'react'
+import {commentsLocaleNamespace} from '../../../i18n'
 import {CommentStatus} from '../../types'
-import {LoadingBlock} from 'sanity'
+import {LoadingBlock, TFunction, useTranslation} from 'sanity'
 
 interface EmptyStateMessage {
   title: string
   message: React.ReactNode
 }
 
-export const EMPTY_STATE_MESSAGES: Record<CommentStatus, EmptyStateMessage> = {
-  open: {
-    title: 'No open comments yet',
-    message: (
-      <span>
-        Open comments on this document <br />
-        will be shown here.
-      </span>
-    ),
-  },
-  resolved: {
-    title: 'No resolved comments yet',
-    message: (
-      <>
-        Resolved comments on this document <br />
-        will be shown here.
-      </>
-    ),
-  },
+export function getEmptyStateMessages(t: TFunction): Record<CommentStatus, EmptyStateMessage> {
+  return {
+    open: {
+      title: t('comments.list-status-empty-state-open-title'),
+      message: t('comments.list-status-empty-state-open-text'),
+    },
+    resolved: {
+      title: t('comments.list-status-empty-state-resolved-title'),
+      message: t('comments.list-status-empty-state-resolved-text'),
+    },
+  }
 }
 
 interface CommentsListStatusProps {
@@ -38,13 +31,15 @@ interface CommentsListStatusProps {
 
 export function CommentsListStatus(props: CommentsListStatusProps) {
   const {status, error, loading, hasNoComments} = props
+  const {t} = useTranslation(commentsLocaleNamespace)
+  const emptyStateMessages = getEmptyStateMessages(t)
 
   if (error) {
     return (
       <Flex align="center" justify="center" flex={1} padding={4}>
         <Flex align="center">
           <Text size={1} muted>
-            Something went wrong
+            {t('comments.list-status-error')}
           </Text>
         </Flex>
       </Flex>
@@ -52,8 +47,7 @@ export function CommentsListStatus(props: CommentsListStatusProps) {
   }
 
   if (loading) {
-    // @todo: localize
-    return <LoadingBlock showText title="Loading comments" />
+    return <LoadingBlock showText title={t('comments.list-status-loading')} />
   }
 
   if (hasNoComments) {
@@ -62,11 +56,11 @@ export function CommentsListStatus(props: CommentsListStatusProps) {
         <Container width={0} padding={4}>
           <Stack space={3}>
             <Text align="center" size={1} muted weight="medium">
-              {EMPTY_STATE_MESSAGES[status].title}
+              {emptyStateMessages[status].title}
             </Text>
 
             <Text align="center" size={1} muted>
-              {EMPTY_STATE_MESSAGES[status].message}
+              {emptyStateMessages[status].message}
             </Text>
           </Stack>
         </Container>
