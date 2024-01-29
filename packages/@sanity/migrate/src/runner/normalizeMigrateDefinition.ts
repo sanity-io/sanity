@@ -89,7 +89,7 @@ export function createAsyncIterableMutation(
 
   return async function* run(docs, context) {
     for await (const doc of docs()) {
-      if (!documentTypesSet.has(doc._type)) continue
+      if (opts.documentTypes && !documentTypesSet.has(doc._type)) continue
 
       const documentMutations = await collectDocumentMutations(migration, doc, context)
       if (documentMutations.length > 0) {
