@@ -22,6 +22,7 @@ Options
   --dry <boolean> Whether or not to dry run the migration. Default to true, to actually run the migration this has to be set to false
   --from-export <export.tar.gz> Use a local dataset export as source for migration instead of calling the Sanity API. Note: this is only supported for dry runs.
   --concurrency <concurrent> How many mutation requests to run in parallel. Must be between 1 and ${MAX_MUTATION_CONCURRENCY}. Default: ${DEFAULT_MUTATION_CONCURRENCY}.
+  --no-progress Don't output progress. Useful if you want debug your migration script and see the output of console.log() statements.
 
 
 Examples
@@ -34,6 +35,7 @@ interface CreateFlags {
   dry?: 'true' | 'false' | 'yes' | 'no'
   'from-export'?: string
   concurrency?: number
+  progress?: boolean
 }
 
 const tryExtensions = ['mjs', 'js', 'ts', 'cjs']
@@ -64,7 +66,11 @@ const createMigrationCommand: CliCommandDefinition<CreateFlags> = {
   action: async (args, context) => {
     const {apiClient, output, prompt, chalk, workDir} = context
     const [migrationName] = args.argsWithoutOptions
-    const [fromExport, dry] = [args.extOptions['from-export'], args.extOptions.dry !== 'false']
+    const [fromExport, dry, showProgress] = [
+      args.extOptions['from-export'],
+      args.extOptions.dry !== 'false',
+      args.extOptions.progress,
+    ]
 
     if (!migrationName) {
       throw new Error('MIGRATION NAME must be provided. `sanity migration run <name>`')
