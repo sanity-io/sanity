@@ -10,7 +10,7 @@ const oldType = 'old'
 const newType = 'new'
 
 export default defineMigration({
-  name: '${migrationName}',
+  title: '${migrationName}',
 ${
   documentTypes.length > 0
     ? `  documentTypes: [${documentTypes.map((t) => JSON.stringify(t)).join(', ')}],\n`
