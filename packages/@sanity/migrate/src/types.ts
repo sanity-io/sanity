@@ -57,7 +57,6 @@ export interface ExportAPIConfig extends APIConfig {
 }
 
 export type DocumentMigrationReturnValue =
-  | undefined
   | Mutation
   | Mutation[]
   | NodePatch
@@ -71,40 +70,44 @@ export interface NodeMigration {
   document?: <Doc extends SanityDocument>(
     doc: Doc,
     context: MigrationContext,
-  ) => DocumentMigrationReturnValue | Transaction | Promise<NodeMigrationReturnValue | Transaction>
+  ) =>
+    | void
+    | DocumentMigrationReturnValue
+    | Transaction
+    | Promise<DocumentMigrationReturnValue | Transaction>
   node?: <Node extends JsonValue>(
     node: Node,
     path: Path,
     context: MigrationContext,
-  ) => NodeMigrationReturnValue | Promise<NodeMigrationReturnValue>
+  ) => void | NodeMigrationReturnValue | Promise<void | NodeMigrationReturnValue>
   object?: <Node extends JsonObject>(
     node: Node,
     path: Path,
     context: MigrationContext,
-  ) => NodeMigrationReturnValue | Promise<NodeMigrationReturnValue>
+  ) => void | NodeMigrationReturnValue | Promise<void | NodeMigrationReturnValue>
   array?: <Node extends JsonArray>(
     node: Node,
     path: Path,
     context: MigrationContext,
-  ) => NodeMigrationReturnValue | Promise<NodeMigrationReturnValue>
+  ) => void | NodeMigrationReturnValue | Promise<void | NodeMigrationReturnValue>
   string?: <Node extends string>(
     node: Node,
     path: Path,
     context: MigrationContext,
-  ) => NodeMigrationReturnValue | Promise<NodeMigrationReturnValue>
+  ) => void | NodeMigrationReturnValue | Promise<void | NodeMigrationReturnValue>
   number?: <Node extends number>(
     node: Node,
     path: Path,
     context: MigrationContext,
-  ) => NodeMigrationReturnValue | Promise<NodeMigrationReturnValue>
+  ) => void | NodeMigrationReturnValue | Promise<void | NodeMigrationReturnValue>
   boolean?: <Node extends boolean>(
     node: Node,
     path: Path,
     context: MigrationContext,
-  ) => NodeMigrationReturnValue | Promise<NodeMigrationReturnValue>
+  ) => NodeMigrationReturnValue | Promise<void | NodeMigrationReturnValue>
   null?: <Node extends null>(
     node: Node,
     path: Path,
     context: MigrationContext,
-  ) => NodeMigrationReturnValue | Promise<NodeMigrationReturnValue>
+  ) => void | NodeMigrationReturnValue | Promise<void | NodeMigrationReturnValue>
 }
