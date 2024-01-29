@@ -61,13 +61,6 @@ export default async function validateAction(
       )
     }
 
-    output.print()
-    output.print(
-      "Note: As it's currently in beta, we encourage users to report any issues encountered here:\n",
-    )
-    output.print('    https://github.com/sanity-io/sanity/issues/5510')
-    output.print()
-
     const confirmed = await prompt.single<boolean>({
       type: 'confirm',
       message: `Are you sure you want to continue?`,

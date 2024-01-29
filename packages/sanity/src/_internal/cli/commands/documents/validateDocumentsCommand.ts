@@ -1,16 +1,6 @@
-import chalk from 'chalk'
 import type {CliCommandDefinition} from '@sanity/cli'
 
-const description = `Downloads and validates all document specified in a workspace (beta)${chalk.cyan(
-  '*',
-)}.
-
-${chalk.cyan('*')}Note: As it's currently in beta, some features may not be fully stable.
-We encourage users to report any issues encountered to help us improve.
-Thank you for your understanding and support!
-
-https://github.com/sanity-io/sanity/issues/5510
-`
+const description = `Downloads and validates all document specified in a workspace`
 
 const helpText = `
 Options
