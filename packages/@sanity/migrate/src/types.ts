@@ -1,4 +1,5 @@
 import type {SanityDocument, Path} from '@sanity/types'
+import {MultipleMutationResult} from '@sanity/client'
 import {JsonArray, JsonObject, JsonValue} from './json'
 import {Mutation, NodePatch, Operation} from './mutations'
 
@@ -6,7 +7,7 @@ export type {Path}
 export type * from './json'
 
 export type AsyncIterableMigration = (
-  documents: AsyncIterableIterator<SanityDocument>,
+  documents: () => AsyncIterableIterator<SanityDocument>,
   context: MigrationContext,
 ) => AsyncGenerator<Mutation | Mutation[]>
 
@@ -16,14 +17,31 @@ export interface Migration<Def extends MigrateDefinition = MigrateDefinition> {
    * Define input for the migration. If the migration uses an existing set of documents as starting point, define the filter here.
    */
   filter?: string
-  documentTypes: string[]
+
+  /**
+   * What document types to migrate
+   */
+  documentTypes?: string[]
+
   migrate: Def
 }
 
 export type MigrateDefinition = NodeMigration | AsyncIterableMigration
 
+export type MigrationProgress = {
+  documents: number
+  mutations: number
+  pending: number
+  queuedBatches: number
+  currentMutations: Mutation[]
+  completedTransactions: MultipleMutationResult[]
+  done?: boolean
+}
+
 export interface MigrationContext {
-  withDocument(id: string): Promise<SanityDocument | null>
+  getDocument<T extends SanityDocument>(id: string): Promise<T | undefined>
+  getDocuments<T extends SanityDocument>(ids: string[]): Promise<T[]>
+  query<T>(query: string, params?: Record<string, unknown>): Promise<T>
 }
 
 export interface APIConfig {
@@ -35,11 +53,7 @@ export interface APIConfig {
 }
 
 export interface ExportAPIConfig extends APIConfig {
-  documentTypes: string[]
-}
-
-export interface NodeMigrationContext {
-  withDocument(id: string): Promise<SanityDocument | null>
+  documentTypes?: string[]
 }
 
 export type DocumentMigrationReturnValue =
@@ -54,41 +68,41 @@ export type NodeMigrationReturnValue = DocumentMigrationReturnValue | Operation 
 export interface NodeMigration {
   document?: <Doc extends SanityDocument>(
     doc: Doc,
-    context: NodeMigrationContext,
+    context: MigrationContext,
   ) => DocumentMigrationReturnValue
   node?: <Node extends JsonValue>(
     node: Node,
     path: Path,
-    context: NodeMigrationContext,
+    context: MigrationContext,
   ) => NodeMigrationReturnValue
   object?: <Node extends JsonObject>(
     node: Node,
     path: Path,
-    context: NodeMigrationContext,
+    context: MigrationContext,
   ) => NodeMigrationReturnValue
   array?: <Node extends JsonArray>(
     node: Node,
     path: Path,
-    context: NodeMigrationContext,
+    context: MigrationContext,
   ) => NodeMigrationReturnValue
   string?: <Node extends string>(
     node: Node,
     path: Path,
-    context: NodeMigrationContext,
+    context: MigrationContext,
   ) => NodeMigrationReturnValue
   number?: <Node extends number>(
     node: Node,
     path: Path,
-    context: NodeMigrationContext,
+    context: MigrationContext,
   ) => NodeMigrationReturnValue
   boolean?: <Node extends boolean>(
     node: Node,
     path: Path,
-    context: NodeMigrationContext,
+    context: MigrationContext,
   ) => NodeMigrationReturnValue
   null?: <Node extends null>(
     node: Node,
     path: Path,
-    context: NodeMigrationContext,
+    context: MigrationContext,
   ) => NodeMigrationReturnValue
 }

@@ -1,8 +1,8 @@
 import {SanityDocument} from '@sanity/types'
 import {MultipleMutationResult, Mutation as SanityMutation} from '@sanity/client'
 import arrify from 'arrify'
-import {APIConfig, Migration} from '../types'
-import {parse} from '../it-utils/ndjson'
+import {APIConfig, Migration, MigrationProgress} from '../types'
+import {parse, stringify} from '../it-utils/ndjson'
 import {fromExportEndpoint, safeJsonParser} from '../sources/fromExportEndpoint'
 import {endpoints} from '../fetch-utils/endpoints'
 import {toFetchOptions} from '../fetch-utils/sanityRequestOptions'
@@ -14,7 +14,7 @@ import {concatStr} from '../it-utils/concatStr'
 import {fetchAsyncIterator, FetchOptions} from '../fetch-utils/fetchStream'
 import {bufferThroughFile} from '../fs-webstream/bufferThroughFile'
 import {streamToAsyncIterator} from '../utils/streamToAsyncIterator'
-import {Mutation} from '../mutations'
+import {asyncIterableToStream} from '../utils/asyncIterableToStream'
 import {toSanityMutations} from './utils/toSanityMutations'
 import {
   DEFAULT_MUTATION_CONCURRENCY,
@@ -24,17 +24,10 @@ import {
 import {batchMutations} from './utils/batchMutations'
 import {collectMigrationMutations} from './collectMigrationMutations'
 import {getBufferFilePath} from './utils/getBufferFile'
+import {createBufferFileContext} from './utils/createBufferFileContext'
+import {applyFilters} from './utils/applyFilters'
 
-type MigrationProgress = {
-  documents: number
-  mutations: number
-  pending: number
-  queuedBatches: number
-  currentMutations: Mutation[]
-  completedTransactions: MultipleMutationResult[]
-  done?: boolean
-}
-interface MigrationRunnerOptions {
+export interface MigrationRunnerConfig {
   api: APIConfig
   concurrency?: number
   onProgress?: (event: MigrationProgress) => void
@@ -55,7 +48,8 @@ export async function* toFetchOptionsIterable(
     })
   }
 }
-export async function run(config: MigrationRunnerOptions, migration: Migration) {
+
+export async function run(config: MigrationRunnerConfig, migration: Migration) {
   const stats: MigrationProgress = {
     documents: 0,
     mutations: 0,
@@ -65,19 +59,38 @@ export async function run(config: MigrationRunnerOptions, migration: Migration) 
     currentMutations: [],
   }
 
-  const exportStream = bufferThroughFile(
-    await fromExportEndpoint({...config.api, documentTypes: migration.documentTypes}),
+  const filteredDocuments = applyFilters(
+    migration,
+    parse<SanityDocument>(
+      decodeText(
+        streamToAsyncIterator(
+          await fromExportEndpoint({...config.api, documentTypes: migration.documentTypes}),
+        ),
+      ),
+      {parse: safeJsonParser},
+    ),
+  )
+  const abortController = new AbortController()
+
+  const createReader = bufferThroughFile(
+    asyncIterableToStream(stringify(filteredDocuments)),
     getBufferFilePath(),
+    {signal: abortController.signal},
   )
 
-  const documents = tap(
-    parse<SanityDocument>(streamToAsyncIterator(exportStream), {parse: safeJsonParser}),
-    () => {
-      config.onProgress?.({...stats, documents: ++stats.documents})
-    },
-  )
+  const context = createBufferFileContext(createReader)
 
-  const mutations = tap(collectMigrationMutations(migration, documents), (muts) => {
+  const documents = () =>
+    tap(
+      parse<SanityDocument>(decodeText(streamToAsyncIterator(createReader())), {
+        parse: safeJsonParser,
+      }),
+      () => {
+        config.onProgress?.({...stats, documents: ++stats.documents})
+      },
+    )
+
+  const mutations = tap(collectMigrationMutations(migration, documents, context), (muts) => {
     stats.currentMutations = arrify(muts)
     config.onProgress?.({
       ...stats,
@@ -109,16 +122,18 @@ export async function run(config: MigrationRunnerOptions, migration: Migration) 
     },
     concurrency,
   )
+
   for await (const result of commits) {
     stats.completedTransactions.push(result)
     config.onProgress?.({
       ...stats,
     })
   }
-  // Cancel export/buffer stream, it's not needed anymore
-  await exportStream.cancel()
   config.onProgress?.({
     ...stats,
     done: true,
   })
+
+  // Cancel export/buffer stream, it's not needed anymore
+  abortController.abort()
 }

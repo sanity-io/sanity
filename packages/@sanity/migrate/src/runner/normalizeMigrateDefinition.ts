@@ -1,6 +1,7 @@
 import {Path, SanityDocument} from '@sanity/types'
 import arrify from 'arrify'
-import {AsyncIterableMigration, Migration, NodeMigration, NodeMigrationContext} from '../types'
+import {at, Mutation, NodePatch, Operation, patch} from '../mutations'
+import {AsyncIterableMigration, Migration, MigrationContext, NodeMigration} from '../types'
 import {JsonArray, JsonObject, JsonValue} from '../json'
 import {flatMapDeep} from './utils/flatMapDeep'
 import {getValueType} from './utils/getValueType'
@@ -42,7 +43,7 @@ export function createAsyncIterableMutation(
   const documentTypesSet = new Set(opts.documentTypes)
 
   return async function* run(docs, context) {
-    for await (const doc of docs) {
+    for await (const doc of docs()) {
       if (!documentTypesSet.has(doc._type)) continue
 
       const documentMutations = collectDocumentMutations(migration, doc, context)
@@ -56,7 +57,7 @@ export function createAsyncIterableMutation(
 function collectDocumentMutations(
   migration: NodeMigration,
   doc: SanityDocument,
-  context: NodeMigrationContext,
+  context: MigrationContext,
 ) {
   const documentMutations = migration.document?.(doc, context)
   const nodeMigrations = flatMapDeep(doc as JsonValue, (value, path) => {
@@ -96,7 +97,7 @@ function migrateNodeType(
   migration: NodeMigration,
   value: JsonValue,
   path: Path,
-  context: NodeMigrationContext,
+  context: MigrationContext,
 ) {
   switch (getValueType(value)) {
     case 'string':
