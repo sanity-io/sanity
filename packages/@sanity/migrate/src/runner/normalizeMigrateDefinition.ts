@@ -111,14 +111,14 @@ async function collectDocumentMutations(
       Promise.resolve(migrateNodeType(migration, value, path, context)),
     ])
 
-    return [...arrify(nodeReturnValues), ...arrify(nodeTypeReturnValues)].map((change) =>
-      normalizeNodeMutation(path, change),
+    return [...arrify(nodeReturnValues), ...arrify(nodeTypeReturnValues)].map(
+      (change) => change && normalizeNodeMutation(path, change),
     )
   })
 
   return (await Promise.all([...arrify(await documentMutations), ...nodeMigrations]))
     .flat()
-    .map((change) => normalizeDocumentMutation(doc._id, change))
+    .flatMap((change) => (change ? normalizeDocumentMutation(doc._id, change) : []))
 }
 
 /**
@@ -171,7 +171,7 @@ function migrateNodeType(
   value: JsonValue,
   path: Path,
   context: MigrationContext,
-): NodeMigrationReturnValue {
+): void | NodeMigrationReturnValue | Promise<void | NodeMigrationReturnValue> {
   switch (getValueType(value)) {
     case 'string':
       return migration.string?.(value as string, path, context)
