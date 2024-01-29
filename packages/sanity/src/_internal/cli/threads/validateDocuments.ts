@@ -108,7 +108,10 @@ const idRegex = /^[^-][A-Z0-9._-]*$/i
 
 // during testing, the `doc` endpoint 502'ed if given an invalid ID
 const isValidId = (id: unknown) => typeof id === 'string' && idRegex.test(id)
-const shouldIncludeDocument = (document: SanityDocument) => !document._id.startsWith('system.')
+const shouldIncludeDocument = (document: SanityDocument) => {
+  // Filter out system documents
+  return !document._type.startsWith('system.')
+}
 
 async function* readerToGenerator(reader: ReadableStreamDefaultReader<Uint8Array>) {
   while (true) {
