@@ -221,7 +221,7 @@ async function runFromArchive(
   for await (const mutation of mutations) {
     if (!mutation) continue
     output.print()
-    output.print(format(chalk, Array.isArray(mutation) ? mutation : ([mutation] as any)))
+    output.print(JSON.stringify(mutation))
   }
 
   output.print('Done!')
