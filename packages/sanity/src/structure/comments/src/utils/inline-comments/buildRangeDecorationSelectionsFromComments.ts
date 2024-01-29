@@ -25,7 +25,7 @@ const FUZZY_MATCH_SCORE_THRESHOLD = 0.75
 const EMPTY_ARRAY: [] = []
 
 export interface BuildCommentsRangeDecorationsProps {
-  value: CommentMessage
+  value: CommentMessage | undefined
   comments: CommentThreadItem[]
 }
 
