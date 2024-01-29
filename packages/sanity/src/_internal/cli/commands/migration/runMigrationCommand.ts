@@ -3,12 +3,13 @@ import type {CliCommandContext, CliCommandDefinition} from '@sanity/cli'
 import {register} from 'esbuild-register/dist/node'
 import {
   collectMigrationMutations,
+  decodeText,
   DEFAULT_MUTATION_CONCURRENCY,
   dryRun,
   fromExportArchive,
   MAX_MUTATION_CONCURRENCY,
   Migration,
-  ndjson,
+  parse,
   run,
 } from '@sanity/migrate'
 import {SanityDocument} from '@sanity/types'
@@ -214,7 +215,7 @@ async function runFromArchive(
 ) {
   const mutations = collectMigrationMutations(
     migration,
-    ndjson(fromExportArchive(archive)) as AsyncIterableIterator<SanityDocument>,
+    parse(decodeText(fromExportArchive(archive))) as AsyncIterableIterator<SanityDocument>,
   )
 
   for await (const mutation of mutations) {
