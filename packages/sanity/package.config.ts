@@ -39,6 +39,11 @@ export default defineConfig({
       require: './lib/_internal/cli/threads/validateSchema.js',
       default: './lib/_internal/cli/threads/validateSchema.js',
     },
+    './_internal/cli/threads/extractSchema': {
+      source: './src/_internal/cli/threads/extractSchema.ts',
+      require: './lib/_internal/cli/threads/extractSchema.js',
+      default: './lib/_internal/cli/threads/extractSchema.js',
+    },
   }),
 
   extract: {
