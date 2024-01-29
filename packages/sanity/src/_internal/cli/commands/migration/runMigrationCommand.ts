@@ -1,21 +1,19 @@
 import path from 'path'
-import type {CliCommandContext, CliCommandDefinition} from '@sanity/cli'
+import type {CliCommandDefinition} from '@sanity/cli'
 import {register} from 'esbuild-register/dist/node'
 import {
-  collectMigrationMutations,
-  decodeText,
   DEFAULT_MUTATION_CONCURRENCY,
   dryRun,
-  fromExportArchive,
   MAX_MUTATION_CONCURRENCY,
   Migration,
-  parse,
+  MigrationProgress,
+  Mutation,
   run,
+  runFromArchive,
 } from '@sanity/migrate'
-import {SanityDocument} from '@sanity/types'
-import {Mutation} from '@bjoerge/mutiny'
+
 import {debug} from '../../debug'
-import {format, formatMutation} from './utils/mutationFormatter'
+import {formatMutation} from './utils/mutationFormatter'
 
 const helpText = `
 Options
@@ -115,12 +113,6 @@ const createMigrationCommand: CliCommandDefinition<CreateFlags> = {
 
     const migration: Migration = mod.default
 
-    if (fromExport && dry) {
-      output.print('Running migration from archive…')
-      await runFromArchive(migration, fromExport, context)
-      return
-    }
-
     if (fromExport && !dry) {
       throw new Error('Can only dry run migrations from a dataset export file')
     }
@@ -153,7 +145,16 @@ const createMigrationCommand: CliCommandDefinition<CreateFlags> = {
 
     if (dry) {
       const spinner = output.spinner(`Running migration "${migrationName}" in dry mode`).start()
-      await dryRun({api: apiConfig}, migration)
+      if (fromExport) {
+        await runFromArchive(migration, fromExport, {
+          api: apiConfig,
+          concurrency,
+          onProgress: createProgress(spinner),
+        })
+        return
+      }
+
+      dryRun({api: apiConfig}, migration)
 
       spinner.stop()
     } else {
@@ -170,14 +171,18 @@ const createMigrationCommand: CliCommandDefinition<CreateFlags> = {
       }
 
       const spinner = output.spinner(`Running migration "${migrationName}"`).start()
+      await run({api: apiConfig, concurrency, onProgress: createProgress(spinner)}, migration)
+      spinner.stop()
+    }
 
-      await run(
-        {
-          api: apiConfig,
-          concurrency,
-          onProgress(progress) {
-            if (progress.done) {
-              spinner.text = `Migration "${migrationName}" completed.
+    function createProgress(spinner: ReturnType<typeof output.spinner>) {
+      return function onProgress(progress: MigrationProgress) {
+        if (!showProgress) {
+          spinner.stop()
+          return
+        }
+        if (progress.done) {
+          spinner.text = `Migration "${migrationName}" completed.
 
   Project id:  ${chalk.bold(projectId)}
   Dataset:     ${chalk.bold(dataset)}
@@ -185,16 +190,16 @@ const createMigrationCommand: CliCommandDefinition<CreateFlags> = {
   ${progress.documents} documents processed.
   ${progress.mutations} mutations generated.
   ${chalk.green(progress.completedTransactions.length)} transactions committed.`
-              spinner.stopAndPersist({symbol: chalk.green('✔')})
-              return
-            }
+          spinner.stopAndPersist({symbol: chalk.green('✔')})
+          return
+        }
 
-            ;['', ...progress.currentMutations].forEach((mutation) => {
-              spinner.text = `Running migration "${migrationName}"…
+        ;['', ...progress.currentMutations].forEach((mutation) => {
+          spinner.text = `Running migration "${migrationName}"…
 
   Project id:     ${chalk.bold(projectId)}
   Dataset:        ${chalk.bold(dataset)}
-  Document type:  ${chalk.bold(migration.documentTypes.join(','))}
+  Document type:  ${chalk.bold(migration.documentTypes?.join(','))}
 
   ${progress.documents} documents processed…
   ${progress.mutations} mutations generated…
@@ -204,32 +209,10 @@ const createMigrationCommand: CliCommandDefinition<CreateFlags> = {
   ${
     mutation && !progress.done ? `» ${chalk.grey(formatMutation(chalk, mutation as Mutation))}` : ''
   }`
-            })
-          },
-        },
-        migration,
-      )
-      spinner.stop()
+        })
+      }
     }
   },
 }
 
-async function runFromArchive(
-  migration: Migration,
-  archive: string,
-  {output, chalk}: CliCommandContext,
-) {
-  const mutations = collectMigrationMutations(
-    migration,
-    parse(decodeText(fromExportArchive(archive))) as AsyncIterableIterator<SanityDocument>,
-  )
-
-  for await (const mutation of mutations) {
-    if (!mutation) continue
-    output.print()
-    output.print(JSON.stringify(mutation))
-  }
-
-  output.print('Done!')
-}
 export default createMigrationCommand

@@ -12,7 +12,7 @@ export function fromExportEndpoint(options: ExportAPIConfig) {
       apiVersion: options.apiVersion,
       token: options.token,
       apiHost: options.apiHost ?? 'api.sanity.io',
-      endpoint: endpoints.data.export(options.dataset, options.documentTypes.join(',')),
+      endpoint: endpoints.data.export(options.dataset, options.documentTypes),
     }),
   )
 }
