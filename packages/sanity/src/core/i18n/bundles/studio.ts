@@ -83,7 +83,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'asset-source.file.asset-list.header.size': 'Size',
   'asset-source.file.asset-list.header.type': 'Type',
   /** Text displayed on button or menu invoking the file asset source */
-  'asset-source.file.title': 'Uplaoded files',
+  'asset-source.file.title': 'Uploaded files',
   'asset-source.image.asset-list.delete-failed': 'Image could not be deleted',
   /** Image asset source */
   'asset-source.image.asset-list.delete-successful': 'Image was deleted',
