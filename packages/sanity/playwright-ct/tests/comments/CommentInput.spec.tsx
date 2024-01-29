@@ -30,6 +30,7 @@ test.describe('Comments', () => {
       await page.keyboard.press('Enter')
       await expect(page.getByTestId('comments-mentions-menu')).not.toBeVisible()
       // TODO: find a way to mock `useUser`!
+      await expect(page.getByTestId('comment-mentions-loading-skeleton')).toBeVisible()
     })
 
     test('Should bring up mentions menu when pressing the @ button, whilst retaining focus on PTE', async ({
