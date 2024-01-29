@@ -299,7 +299,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
 
                   {formattedLastEditAt && (
                     <TimeText muted size={0} title={formattedLastEditAt}>
-                      {`(${t('comments.list-item-layout-edited')})`}
+                      ({t('comments.list-item-layout-edited')})
                     </TimeText>
                   )}
                 </Flex>

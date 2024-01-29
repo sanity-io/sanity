@@ -189,15 +189,7 @@ export function CommentsFieldButton(props: CommentsFieldButtonProps) {
   }
 
   return (
-    <Tooltip
-      portal
-      placement="top"
-      content={
-        count > 1
-          ? t('comments.field-button-content_other')
-          : t('comments.field-button-content_one')
-      }
-    >
+    <Tooltip portal placement="top" content={t('comments.field-button-content', {count: count})}>
       <SanityUIButton
         aria-label={t('comments.field-button-aria-label-open')}
         mode="bleed"
