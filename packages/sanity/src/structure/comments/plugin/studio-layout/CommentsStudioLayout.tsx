@@ -1,11 +1,13 @@
 import React from 'react'
-import {CommentsOnboardingProvider, CommentsSetupProvider} from '../../src'
+import {CommentsOnboardingProvider, CommentsSetupProvider, CommentsUpsellProvider} from '../../src'
 import {LayoutProps} from 'sanity'
 
 export function CommentsStudioLayout(props: LayoutProps) {
   return (
     <CommentsSetupProvider>
-      <CommentsOnboardingProvider>{props.renderDefault(props)}</CommentsOnboardingProvider>
+      <CommentsOnboardingProvider>
+        <CommentsUpsellProvider>{props.renderDefault(props)}</CommentsUpsellProvider>
+      </CommentsOnboardingProvider>
     </CommentsSetupProvider>
   )
 }

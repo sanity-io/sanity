@@ -15,10 +15,12 @@ import {
   CommentsOnboardingPopover,
   CommentsSelectedPath,
   CommentStatus,
+  CommentsUpsellPanel,
   useComments,
   useCommentsEnabled,
   useCommentsOnboarding,
   useCommentsSelectedPath,
+  useCommentsUpsell,
 } from '../../src'
 import {CommentsInspectorHeader} from './CommentsInspectorHeader'
 import {CommentsInspectorFeedbackFooter} from './CommentsInspectorFeedbackFooter'
@@ -307,6 +309,24 @@ function CommentsInspectorInner(props: DocumentInspectorProps) {
 
   const mode = commentsEnabled.reason === 'upsell' ? 'upsell' : 'default'
 
+  const {upsellData, telemetryLogs} = useCommentsUpsell()
+
+  const beforeListNode = useMemo(() => {
+    if (mode === 'upsell' && upsellData) {
+      return (
+        <CommentsUpsellPanel
+          data={upsellData}
+          // eslint-disable-next-line react/jsx-handler-names
+          onPrimaryClick={telemetryLogs.panelPrimaryClicked}
+          // eslint-disable-next-line react/jsx-handler-names
+          onSecondaryClick={telemetryLogs.panelSecondaryClicked}
+        />
+      )
+    }
+
+    return null
+  }, [mode, telemetryLogs.panelPrimaryClicked, telemetryLogs.panelSecondaryClicked, upsellData])
+
   return (
     <Fragment>
       {commentToDelete && showDeleteDialog && (
@@ -342,11 +362,13 @@ function CommentsInspectorInner(props: DocumentInspectorProps) {
 
         {currentUser && (
           <CommentsList
+            beforeListNode={beforeListNode}
             comments={currentComments}
             currentUser={currentUser}
             error={comments.error}
             loading={loading}
             mentionOptions={mentionOptions}
+            mode={mode}
             onCopyLink={handleCopyLink}
             onCreateRetry={handleCreateRetry}
             onDelete={onDeleteStart}
@@ -360,9 +382,9 @@ function CommentsInspectorInner(props: DocumentInspectorProps) {
             ref={commentsListHandleRef}
             selectedPath={selectedPath}
             status={status}
-            mode={mode}
           />
         )}
+
         {mode === 'default' && <CommentsInspectorFeedbackFooter />}
       </Flex>
     </Fragment>

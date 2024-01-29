@@ -1,2 +1,2 @@
-export * from './UpsellDialog'
-export * from './UpsellPanel'
+export * from './CommentsUpsellDialog'
+export * from './CommentsUpsellPanel'
