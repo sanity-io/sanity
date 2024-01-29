@@ -36,7 +36,7 @@ function UserDisplayName(props: UserDisplayNameProps) {
   const {t} = useTranslation(commentsLocaleNamespace)
 
   const isCurrentUser = currentUserId === userId
-  const you = isFirst ? 'You' : 'you'
+  const you = isFirst ? t('comments.reaction-user-you') : t('comments.reaction-user-you-lowercase')
   const content = isCurrentUser ? you : user?.displayName ?? t('comments.reaction-unknown-user')
   const text = separator ? `${content}, ` : content
 

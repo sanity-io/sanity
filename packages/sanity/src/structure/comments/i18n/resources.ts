@@ -14,6 +14,11 @@ const commentsLocaleStrings = defineLocalesResources('comments', {
   /**The text for the button to go to the correct field */
   'comments.button-go-to-field-aria-label': 'Go to field',
 
+  /**The inspector text when error copying link */
+  'comments.copy-link-error-message': 'Unable to copy link to clipboard',
+  /**The inspector successfully copied link text */
+  'comments.copy-link-success-message': 'Copied link to clipboard',
+
   /**The delete dialog body for a comment */
   'comments.delete-comment-body': 'Once deleted, a comment cannot be recovered.',
   /**The delete dialog confirm button text for a comment */
@@ -69,11 +74,6 @@ const commentsLocaleStrings = defineLocalesResources('comments', {
 
   /**The comments pane header title */
   'comments.header-title': 'Comments',
-
-  /**The inspector copied link text */
-  'comments.inspector-copy-title': 'Copied link to clipboard',
-  /**The inspector text when error copying link */
-  'comments.inspector-copy-title-error': 'Unable to copy link to clipboard',
 
   /**The button tooltip content for the add reaction button*/
   'comments.list-item-context-menu-add-reaction': 'Add reaction',
@@ -148,6 +148,10 @@ const commentsLocaleStrings = defineLocalesResources('comments', {
 
   /**The tooltip text for unknown user */
   'comments.reaction-unknown-user': 'Unknown user',
+  /**This is the tooltip text for when you are the user that has reacted */
+  'comments.reaction-user-you': 'You',
+  /**This is the tooltip lowercase text for when you are the user that has reacted */
+  'comments.reaction-user-you-lowercase': 'you',
   /**The aria label for the reactions menu button */
   'comments.reactions-menu-button-aria-label': 'React with {{reaction}}',
   /**The thread breadcrumb button aria label */
