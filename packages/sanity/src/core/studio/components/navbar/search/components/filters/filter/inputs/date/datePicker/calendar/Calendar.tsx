@@ -1,6 +1,6 @@
 import {Box, Flex} from '@sanity/ui'
-import {addDays, addMonths, isAfter, isBefore, set} from 'date-fns'
-import React, {KeyboardEvent, useCallback, useEffect, useRef, useState} from 'react'
+import {addDays, addMonths, formatISO, isAfter, isBefore, set} from 'date-fns'
+import React, {KeyboardEvent, useCallback, useEffect, useState} from 'react'
 import {useCurrentLocale} from '../../../../../../../../../../../i18n/hooks/useLocale'
 import {CalendarContext} from './contexts/CalendarContext'
 import {CalendarHeader} from './CalendarHeader'
@@ -10,7 +10,15 @@ import {ARROW_KEYS} from './constants'
 type CalendarProps = Omit<React.ComponentProps<'div'>, 'onSelect'> & {
   date?: Date
   endDate?: Date
+  /** Date which is focused on initial mount. By default, this is the current date. */
+  initialFocusedDate?: Date
   onSelect: ({date, endDate}: {date: Date | null; endDate?: Date | null}) => void
+  /**
+   * Whether the next date selection should update the end date.
+   * Only applicable when `selectRange` is `true`.
+   **/
+  selectEndDate?: boolean
+  /** Whether date ranges should be displayed */
   selectRange?: boolean
   selectTime?: boolean
 }
@@ -31,14 +39,11 @@ const PRESERVE_FOCUS_ELEMENT = (
 )
 
 export function Calendar(props: CalendarProps) {
-  const {date, endDate, onSelect, selectRange, selectTime} = props
+  const {date, endDate, initialFocusedDate, onSelect, selectEndDate, selectRange, selectTime} =
+    props
 
   const [calendarElement, setCalendarElement] = useState<HTMLElement | null>(null)
-  const [selectEndValue, setSelectEndValue] = useState(false)
-  const [focusedDate, setFocusedDate] = useState(date || new Date())
-
-  const previousDate = useRef<Date | null>(date || null)
-  const previousEndDate = useRef<Date | null>(endDate || null)
+  const [focusedDate, setFocusedDate] = useState(initialFocusedDate || new Date())
 
   const {
     weekInfo: {firstDay: firstWeekDay},
@@ -59,25 +64,32 @@ export function Calendar(props: CalendarProps) {
 
       const dateIsBeforeStartDate = date && isBefore(selectedDate, date)
       const dateIsAfterEndDate = endDate && isAfter(selectedDate, endDate)
+      const dateIsOutsideRange = dateIsBeforeStartDate || dateIsAfterEndDate
 
       if (selectRange) {
-        // Update existing start date and clear end date
-        if (dateIsBeforeStartDate || dateIsAfterEndDate) {
-          onSelect({date: selectedDate, endDate: null})
-          return
-        }
-        if (selectEndValue) {
-          // Update end date, retain start date if present
-          onSelect({date: date || null, endDate: selectedDate})
+        if (dateIsOutsideRange) {
+          if (selectEndDate) {
+            onSelect({
+              date: dateIsBeforeStartDate ? null : date || null,
+              endDate: selectedDate,
+            })
+          } else {
+            onSelect({
+              date: selectedDate,
+              endDate: dateIsAfterEndDate ? null : endDate || null,
+            })
+          }
         } else {
-          // Update start date, retain end date only if no date is present
-          onSelect({date: selectedDate, endDate: date ? null : endDate || null})
+          onSelect({
+            date: selectEndDate ? date || null : selectedDate,
+            endDate: selectEndDate ? selectedDate : endDate || null,
+          })
         }
       } else {
         onSelect({date: selectedDate})
       }
     },
-    [date, endDate, onSelect, selectEndValue, selectRange],
+    [date, endDate, onSelect, selectEndDate, selectRange],
   )
 
   const handleNowClick = useCallback(() => {
@@ -130,52 +142,11 @@ export function Calendar(props: CalendarProps) {
     const currentFocusInCalendarGrid = document.activeElement?.matches(
       '[data-calendar-grid], [data-calendar-grid] [data-preserve-focus]',
     )
-    if (
-      // Only move focus if it's currently in the calendar grid
-      currentFocusInCalendarGrid
-    ) {
+    // Only move focus if it's currently in the calendar grid
+    if (currentFocusInCalendarGrid) {
       focusCurrentWeekDay()
     }
   }, [focusCurrentWeekDay, focusedDate])
-
-  useEffect(() => {
-    const dateChanged = date?.getTime() !== previousDate.current?.getTime()
-    const endDateChanged = endDate?.getTime() !== previousEndDate.current?.getTime()
-    const onlyDateChanged = dateChanged && !endDateChanged
-    const onlyEndDateChanged = !dateChanged && endDateChanged
-    const dateIsAfterEndDate = date && endDate && isAfter(date, endDate)
-
-    // Only date has changed
-    if (onlyDateChanged) {
-      if (dateIsAfterEndDate) {
-        setSelectEndValue(true)
-        onSelect({date, endDate: null})
-      }
-      setSelectEndValue(!!date)
-      // Focus start date
-      if (date) setFocusedDate(date)
-    }
-    // Only end date has changed
-    if (onlyEndDateChanged) {
-      if (dateIsAfterEndDate) {
-        setSelectEndValue(true)
-        onSelect({date: endDate, endDate: null})
-      }
-      // Switch to end value, only if we have an existing start date and no end date
-      setSelectEndValue(!!date && !endDate)
-      // Focus end date
-      if (endDate) setFocusedDate(endDate)
-    }
-    // Both dates have changed
-    if (dateChanged && endDateChanged) {
-      setSelectEndValue(true)
-      // Focus start date
-      if (date) setFocusedDate(date)
-    }
-
-    previousDate.current = date || null
-    previousEndDate.current = endDate || null
-  }, [date, endDate, onSelect])
 
   return (
     <CalendarContext.Provider
@@ -188,7 +159,11 @@ export function Calendar(props: CalendarProps) {
         firstWeekDay,
       }}
     >
-      <Box data-ui="Calendar" ref={setCalendarElement}>
+      <Box
+        data-focused-date={formatISO(focusedDate, {representation: 'date'})}
+        data-ui="Calendar"
+        ref={setCalendarElement}
+      >
         {/* Select month and year */}
         <Flex>
           <Box flex={1}>

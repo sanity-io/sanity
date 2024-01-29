@@ -50,18 +50,13 @@ export default defineConfig({
     /* Port to use for Playwright component endpoint. */
     ctPort: 3100,
     /* Configure Playwright vite config */
-    /*
     ctViteConfig: {
       resolve: {
         alias: {
-          '@sanity/util/content': path.join(
-            __dirname,
-            './packages/@sanity/util/src/content/index.ts'
-          ),
+          sanity: path.join(__dirname, './exports'),
         },
       },
     },
-    */
     /* Where to find playwright-ct template files */
     ctTemplateDir: './playwright-ct/template',
   },

@@ -1,10 +1,12 @@
 import {SanityClient} from '@sanity/client'
 import {Card, LayerProvider, studioTheme, ThemeProvider, ToastProvider} from '@sanity/ui'
 import React, {useEffect, useState} from 'react'
+import {SearchProvider} from '../../../../src/core/studio/components/navbar/search/contexts/search/SearchProvider'
 import {Pane, PaneContent, PaneLayout} from '../../../../src/structure/components'
 import {createMockSanityClient} from '../../../../test/mocks/mockSanityClient'
 import {getMockWorkspace} from '../../../../test/testUtils/getMockWorkspaceFromConfig'
 import {
+  LocaleProvider,
   ResourceCacheProvider,
   SchemaTypeDefinition,
   SourceProvider,
@@ -53,17 +55,21 @@ export const TestWrapper = ({
       <ToastProvider>
         <LayerProvider>
           <WorkspaceProvider workspace={mockWorkspace}>
-            <ResourceCacheProvider>
-              <SourceProvider source={mockWorkspace.unstable_sources[0]}>
-                <PaneLayout height="fill">
-                  <Pane id="test-pane">
-                    <PaneContent>
-                      <Card padding={3}>{children}</Card>
-                    </PaneContent>
-                  </Pane>
-                </PaneLayout>
-              </SourceProvider>
-            </ResourceCacheProvider>
+            <SourceProvider source={mockWorkspace.unstable_sources[0]}>
+              <LocaleProvider>
+                <ResourceCacheProvider>
+                  <SearchProvider>
+                    <PaneLayout height="fill">
+                      <Pane id="test-pane">
+                        <PaneContent>
+                          <Card padding={3}>{children}</Card>
+                        </PaneContent>
+                      </Pane>
+                    </PaneLayout>
+                  </SearchProvider>
+                </ResourceCacheProvider>
+              </LocaleProvider>
+            </SourceProvider>
           </WorkspaceProvider>
         </LayerProvider>
       </ToastProvider>

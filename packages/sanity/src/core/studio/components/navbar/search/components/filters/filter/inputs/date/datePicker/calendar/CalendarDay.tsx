@@ -1,6 +1,6 @@
 import {Card, Text, Theme} from '@sanity/ui'
-import {isAfter, isBefore, isSameDay, isSameMonth} from 'date-fns'
-import React, {useCallback} from 'react'
+import {formatISO, isAfter, isBefore, isSameDay, isSameMonth} from 'date-fns'
+import {useCallback} from 'react'
 import styled, {css} from 'styled-components'
 import {useCalendar} from './contexts/useDatePicker'
 
@@ -27,17 +27,18 @@ const CircleSvg = styled.svg(({theme}: {theme: Theme}) => {
 
 const CustomCard = styled(Card)`
   position: relative;
+  user-select: none;
 
   &[data-focused='true'] {
     z-index: 1;
   }
 
-  &[data-start-date='true'] {
+  &[data-start-date='true']:not([data-end-date='true']) {
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
   }
 
-  &[data-end-date='true'] {
+  &[data-end-date='true']:not([data-start-date='true']) {
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
   }
@@ -75,6 +76,7 @@ export function CalendarDay({date, onSelect}: CalendarDayProps) {
       __unstable_focusRing
       aria-label={date.toDateString()}
       aria-pressed={isSelected}
+      data-date={formatISO(date, {representation: 'date'})}
       data-end-date={isEndDate ? true : undefined}
       data-focused={isFocused ? 'true' : ''}
       data-ui="CalendarDay"
