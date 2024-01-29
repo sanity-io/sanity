@@ -1,8 +1,14 @@
 import {Box, Card, Container, Flex, Stack} from '@sanity/ui'
 import {LaunchIcon} from '@sanity/icons'
+import {useTelemetry} from '@sanity/telemetry/react'
+import {useCallback} from 'react'
 import styled from 'styled-components'
 import {Button} from '../../../../../ui-components'
 import {useCommentsUpsell} from '../../hooks'
+import {
+  CommentsUpsellPanelPrimaryBtnClicked,
+  CommentsUpsellPanelSecondaryBtnClicked,
+} from '../../../__telemetry__/comments.telemetry'
 import {DescriptionSerializer} from 'sanity'
 
 const Image = styled.img`
@@ -14,6 +20,15 @@ const Image = styled.img`
 
 export function UpsellPanel() {
   const {upsellData} = useCommentsUpsell()
+  const telemetry = useTelemetry()
+
+  const handlePrimaryClick = useCallback(() => {
+    telemetry.log(CommentsUpsellPanelPrimaryBtnClicked)
+  }, [telemetry])
+
+  const handleSecondaryClicked = useCallback(() => {
+    telemetry.log(CommentsUpsellPanelSecondaryBtnClicked)
+  }, [telemetry])
 
   if (!upsellData) return null
   return (
@@ -33,18 +48,24 @@ export function UpsellPanel() {
                 text={upsellData.secondaryButton.text}
                 tone="primary"
                 iconRight={LaunchIcon}
-                href={upsellData.secondaryButton.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                as="a"
+                {...(upsellData.secondaryButton.url && {
+                  target: '_blank',
+                  rel: 'noopener noreferrer',
+                  as: 'a',
+                  href: upsellData.secondaryButton.url,
+                })}
+                onClick={handleSecondaryClicked}
               />
               <Button
                 text={upsellData.ctaButton.text}
                 tone="primary"
-                href={upsellData.ctaButton.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                as="a"
+                {...(upsellData.ctaButton.url && {
+                  target: '_blank',
+                  rel: 'noopener noreferrer',
+                  as: 'a',
+                  href: upsellData.ctaButton.url,
+                })}
+                onClick={handlePrimaryClick}
               />
             </Flex>
           </Box>
