@@ -28,9 +28,8 @@ export const HighlightSpan = styled.span(({theme}: {theme: Theme}) => {
       background-color 100ms ease,
       border-color 100ms ease;
 
-    &[data-inline-comment-state='authoring'] {
-      background-color: ${lightBg};
-      border-bottom: 2px solid ${lightBorder};
+    * {
+      mix-blend-mode: multiply;
     }
 
     &[data-inline-comment-state='added'][data-nested-inline-comment='false'] {
@@ -53,8 +52,23 @@ export const HighlightSpan = styled.span(({theme}: {theme: Theme}) => {
       border-bottom: 2px solid ${nestedHoverBorder};
     }
 
+    &[data-inline-comment-state='authoring'] {
+      background-color: ${lightBg};
+      border-bottom: 2px solid ${lightBorder};
+    }
+
     @media (hover: hover) {
       &:hover {
+        &[data-inline-comment-state='added'][data-nested-inline-comment='false'] {
+          background-color: ${hoverBg};
+          border-bottom: 2px solid ${hoverBorder};
+        }
+
+        &[data-inline-comment-state='added'][data-nested-inline-comment='true'] {
+          background-color: ${nestedHoverBg};
+          border-bottom: 2px solid ${nestedHoverBorder};
+        }
+
         [data-ui='CommentDecorator'] {
           background-color: inherit;
           border-bottom: inherit;

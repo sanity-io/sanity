@@ -1,7 +1,7 @@
-import {buildRangeDecorationSelectionsFromComments} from '../buildRangeDecorationSelectionsFromComments'
-import {CommentThreadItem} from '../../../types'
+import {buildRangeDecorationSelectionsFromComments} from '../utils/inline-comments/buildRangeDecorationSelectionsFromComments'
+import {CommentThreadItem} from '../types'
 
-describe('buildRangeDecorationSelectionsFromComments', () => {
+describe('comments: buildRangeDecorationSelectionsFromComments', () => {
   it('creates initial ranges', () => {
     const decorators = buildRangeDecorationSelectionsFromComments({
       value: initialValue,

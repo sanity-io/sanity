@@ -4,15 +4,7 @@ import {
   PortableTextEditor,
   RangeDecoration,
 } from '@sanity/portable-text-editor'
-import React, {
-  useState,
-  useRef,
-  useCallback,
-  useMemo,
-  useEffect,
-  PropsWithChildren,
-  Fragment,
-} from 'react'
+import React, {useState, useRef, useCallback, useMemo, useEffect} from 'react'
 import {isEqual} from 'lodash'
 import {uuid} from '@sanity/uuid'
 import * as PathUtils from '@sanity/util/paths'
@@ -20,7 +12,8 @@ import {toPlainText} from '@portabletext/react'
 import {AddCommentIcon} from '@sanity/icons'
 import {
   CommentMessage,
-  CommentThreadItem,
+  buildRangeDecorators,
+  buildTextSelectionFromFragment,
   useComments,
   useCommentsEnabled,
   useCommentsSelectedPath,
@@ -42,24 +35,6 @@ function isRangeInvalid() {
   return false
 }
 
-function AddCommentDecorator(props: PropsWithChildren) {
-  const {children} = props
-  return <HighlightSpan data-inline-comment-state="authoring">{children}</HighlightSpan>
-}
-
-function CommentDecorator(props: PropsWithChildren<{commentId: string; onClick: () => void}>) {
-  const {children, commentId, onClick} = props
-  return (
-    <HighlightSpan
-      data-inline-comment-id={commentId}
-      data-inline-comment-state="added"
-      onClick={onClick}
-    >
-      {children}
-    </HighlightSpan>
-  )
-}
-
 export function CommentsPortableTextInput(props: PortableTextInputProps) {
   const isEnabled = useCommentsEnabled()
 
@@ -74,12 +49,15 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
   props: PortableTextInputProps,
 ) {
   const currentUser = useCurrentUser()
-  const {mentionOptions, comments, operation, onCommentsOpen} = useComments()
+  const {mentionOptions, comments, operation, onCommentsOpen, getComment} = useComments()
   const {setSelectedPath} = useCommentsSelectedPath()
+
+  const editorRef = useRef<PortableTextEditor | null>(null)
 
   const [nextCommentValue, setNextCommentValue] = useState<CommentMessage | null>(null)
   const [nextCommentSelection, setNextCommentSelection] = useState<EditorSelection | null>(null)
   const [currentSelectionPlainText, setCurrentSelectionPlainText] = useState<string | null>(null)
+  const [currentHoveredCommentId, setCurrentHoveredCommentId] = useState<string | null>(null)
 
   const [canSubmit, setCanSubmit] = useState<boolean>(false)
 
@@ -93,30 +71,34 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
     return comments.data.open?.filter((comment) => comment.fieldPath === stringFieldPath)
   }, [comments, stringFieldPath])
 
+  const getFragment = useCallback(() => {
+    if (!editorRef.current) return EMPTY_ARRAY
+    return PortableTextEditor.getFragment(editorRef.current)
+  }, [])
+
   const handleSubmit = useCallback(() => {
-    if (!nextCommentSelection) return
+    if (!nextCommentSelection || !editorRef.current) return
+
+    const fragment = getFragment() || EMPTY_ARRAY
+    const textSelection = buildTextSelectionFromFragment({fragment})
 
     operation.create({
       fieldPath: stringFieldPath,
       message: nextCommentValue,
       // This is a new comment, so we don't have a parent comment id
       parentCommentId: undefined,
-      selection: nextCommentSelection,
+      selection: textSelection,
       status: 'open',
       // This is a new comment, so we need to generate a new thread id
       threadId: uuid(),
-
-      reactions: [],
-
-      // TODO: add this
-      // documentValueSnapshot: currentSelectionPlainText
+      reactions: EMPTY_ARRAY,
     })
 
     // Reset the states when submitting
     setNextCommentValue(null)
-    setNextCommentSelection(null) // Rename to setNextCommentSelection
+    setNextCommentSelection(null)
     currentSelectionRef.current = null
-  }, [nextCommentSelection, nextCommentValue, operation, stringFieldPath])
+  }, [getFragment, nextCommentSelection, nextCommentValue, operation, stringFieldPath])
 
   // This will set the current selection state to the current selection ref.
   // When this value is set, the popover with the comment input will open and
@@ -136,7 +118,7 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
   }, [])
 
   const onEditorChange = useCallback(
-    (change: EditorChange, editor: PortableTextEditor) => {
+    (change: EditorChange) => {
       if (change.type === 'selection') {
         const hasSelectionRange = !isEqual(change.selection, nextCommentSelection)
 
@@ -146,14 +128,14 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
           // the popover opens with the selection.
           currentSelectionRef.current = change.selection
 
-          const valueAtRange = PortableTextEditor.getFragment(editor)
-          const plainTextValue = valueAtRange ? toPlainText(valueAtRange) : null
+          const fragment = getFragment()
+          const plainTextValue = fragment ? toPlainText(fragment) : null
 
           // Check if the selection is valid. A valid selection is a selection that only
           // contains text blocks. If the selection contains other types of blocks, we
           // should not allow the user to add a comment and we disable the "add comment"
           // button.
-          const isValidSelection = valueAtRange?.every(isPortableTextTextBlock)
+          const isValidSelection = fragment?.every(isPortableTextTextBlock)
 
           setCanSubmit(Boolean(isValidSelection))
           setCurrentSelectionPlainText(plainTextValue)
@@ -164,13 +146,22 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
         }
       }
     },
-    [nextCommentSelection],
+    [getFragment, nextCommentSelection],
   )
 
-  const handleInlineCommentClick = useCallback(
-    (comment: CommentThreadItem) => {
+  const handleDecoratorClick = useCallback(
+    (commentId: string) => {
+      const comment = getComment(commentId)
+
+      if (!comment) return
+
+      setSelectedPath({
+        fieldPath: comment.target.path.field,
+        threadId: comment.threadId,
+        origin: 'form',
+      })
+
       onCommentsOpen?.()
-      setSelectedPath({fieldPath: comment.fieldPath, threadId: comment.threadId, origin: 'form'})
 
       // Temporary fix for scrolling to the comment thread when clicking the comment
       requestAnimationFrame(() => {
@@ -181,55 +172,43 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
         })
       })
     },
-    [onCommentsOpen, setSelectedPath],
+    [getComment, onCommentsOpen, setSelectedPath],
   )
 
   // The range decorations for existing comments
-  const commentDecorators = useMemo(
-    () =>
-      fieldComments
-        .map((comment) => {
-          if (!comment.selection) return null
+  const addCommentsDecorators = useMemo(() => {
+    const commentsWithTextSelection = fieldComments.filter((c) => c.selection?.type === 'text')
 
-          const decorator: RangeDecoration = {
-            component: ({children}) => (
-              <CommentDecorator
-                commentId={comment.parentComment._id}
-                // eslint-disable-next-line react/jsx-no-bind
-                onClick={() => handleInlineCommentClick(comment)}
-              >
-                {children}
-              </CommentDecorator>
-            ),
-            isRangeInvalid,
-            selection: comment.selection,
-          }
-
-          return decorator
-        })
-        .filter(Boolean) as RangeDecoration[],
-
-    [fieldComments, handleInlineCommentClick],
-  )
+    return buildRangeDecorators({
+      comments: commentsWithTextSelection,
+      value: props.value,
+      currentHoveredCommentId,
+      onDecoratorHoverEnd: setCurrentHoveredCommentId,
+      onDecoratorHoverStart: setCurrentHoveredCommentId,
+      onDecoratorClick: handleDecoratorClick,
+    })
+  }, [currentHoveredCommentId, fieldComments, handleDecoratorClick, props.value])
 
   const rangeDecorations = useMemo((): RangeDecoration[] => {
-    const currentRangeDecoration: RangeDecoration = {
-      component: AddCommentDecorator,
+    const nextCommentDecorator: RangeDecoration = {
+      component: ({children}) => (
+        <HighlightSpan data-inline-comment-state="authoring">{children}</HighlightSpan>
+      ),
       isRangeInvalid,
       selection: nextCommentSelection,
     }
 
-    const currentDecorator = nextCommentSelection ? [currentRangeDecoration] : EMPTY_ARRAY
+    const authoringDecorator = nextCommentSelection ? [nextCommentDecorator] : EMPTY_ARRAY
 
     return [
       // Existing range decorations
       ...(props?.rangeDecorations || EMPTY_ARRAY),
       // The range decoration when adding a comment
-      ...currentDecorator,
+      ...authoringDecorator,
       // The range decorations for existing comments
-      ...commentDecorators,
+      ...addCommentsDecorators,
     ]
-  }, [commentDecorators, nextCommentSelection, props?.rangeDecorations])
+  }, [addCommentsDecorators, nextCommentSelection, props?.rangeDecorations])
 
   // Construct a virtual element used to position the popover relative to the selection.
   const popoverReferenceElement = useMemo((): PopoverProps['referenceElement'] => {
@@ -256,6 +235,7 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
     (): PortableTextInputProps => ({
       ...props,
       onEditorChange,
+      editorRef,
       rangeDecorations,
       // eslint-disable-next-line camelcase
       __internal_customActions: (props?.__internal_customActions || EMPTY_ARRAY).concat(

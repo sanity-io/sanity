@@ -2,20 +2,18 @@
 /* eslint-disable no-restricted-imports */
 /* eslint-disable react/jsx-no-bind */
 import {toPlainText} from '@portabletext/react'
-import {
-  EditorChange,
-  PortableTextEditable,
-  PortableTextEditor,
-  RangeDecoration,
-} from '@sanity/portable-text-editor'
+import {EditorChange, PortableTextEditable, PortableTextEditor} from '@sanity/portable-text-editor'
 import {Schema} from '@sanity/schema'
 import {defineField, defineArrayMember, PortableTextBlock} from '@sanity/types'
 import {Button, Card, Code, Container, Flex, Stack, Text} from '@sanity/ui'
 import {uuid} from '@sanity/uuid'
-import {PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {buildRangeDecorationSelectionsFromComments, buildCommentThreadItems} from '../utils'
+import {useCallback, useMemo, useRef, useState} from 'react'
+import {
+  buildCommentThreadItems,
+  buildRangeDecorators,
+  buildTextSelectionFromFragment,
+} from '../utils'
 import {CommentDocument, CommentTextSelection} from '../types'
-import {HighlightSpan} from '../../plugin/input/components/HighlightSpan'
 import {useCurrentUser} from 'sanity'
 
 const INLINE_STYLE: React.CSSProperties = {outline: 'none'}
@@ -101,63 +99,6 @@ const schema = Schema.compile({
   ],
 })
 
-function CommentDecorator(
-  props: PropsWithChildren<{
-    commentId: string
-    onHoverStart: (commentId: string) => void
-    onHoverEnd: (commentId: null) => void
-    currentHoveredCommentId: string | null
-  }>,
-) {
-  const {children, commentId, onHoverEnd, onHoverStart, currentHoveredCommentId} = props
-  const [decoratorEl, setDecoratorEl] = useState<HTMLSpanElement | null>(null)
-  const [isNested, setIsNested] = useState<boolean>(false)
-  const parentCommentId = useRef<string | null>(null)
-
-  useEffect(() => {
-    // Get the previous and next sibling of the decorator element
-    const prevEl = decoratorEl?.previousSibling as HTMLElement | null
-    const nextEl = decoratorEl?.nextSibling as HTMLElement | null
-
-    // If there is no previous or next sibling, then the decorator is not nested
-    if (!prevEl || !nextEl) {
-      setIsNested(false)
-      return
-    }
-
-    const prevId = prevEl.getAttribute('data-inline-comment-id')
-    const nextId = nextEl.getAttribute('data-inline-comment-id')
-
-    const isEqual = prevId === nextId
-
-    const isNestedDecorator = Boolean(prevId && nextId && isEqual)
-    parentCommentId.current = isNestedDecorator ? prevId : null
-
-    setIsNested(isNestedDecorator)
-  }, [decoratorEl])
-
-  const handleMouseEnter = useCallback(() => onHoverStart(commentId), [commentId, onHoverStart])
-  const handleMouseLeave = useCallback(() => onHoverEnd(null), [onHoverEnd])
-
-  const hovered =
-    currentHoveredCommentId === commentId ||
-    (currentHoveredCommentId === parentCommentId.current && isNested)
-
-  return (
-    <HighlightSpan
-      data-inline-comment-state="added"
-      data-inline-comment-id={commentId}
-      data-nested-inline-comment={isNested}
-      data-hovered={hovered}
-      ref={setDecoratorEl}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-    >
-      {children}
-    </HighlightSpan>
-  )
-}
-
 export default function CommentInlineHighlightDebugStory() {
   const [value, setValue] = useState<PortableTextBlock[]>(INITIAL_VALUE)
   const [commentDocuments, setCommentDocuments] = useState<CommentDocument[]>([])
@@ -186,23 +127,13 @@ export default function CommentInlineHighlightDebugStory() {
 
   const rangeDecorations = useMemo(
     () =>
-      buildRangeDecorationSelectionsFromComments({comments, value}).map(
-        ({selection, comment}) =>
-          ({
-            component: ({children}) => (
-              <CommentDecorator
-                commentId={comment.parentComment._id}
-                onHoverStart={setCurrentHoveredCommentId}
-                onHoverEnd={setCurrentHoveredCommentId}
-                currentHoveredCommentId={currentHoveredCommentId}
-              >
-                {children}
-              </CommentDecorator>
-            ),
-            isRangeInvalid: () => false,
-            selection,
-          }) as RangeDecoration,
-      ),
+      buildRangeDecorators({
+        comments,
+        value,
+        onDecoratorHoverStart: setCurrentHoveredCommentId,
+        onDecoratorHoverEnd: setCurrentHoveredCommentId,
+        currentHoveredCommentId,
+      }),
     [comments, currentHoveredCommentId, value],
   )
 
@@ -220,17 +151,9 @@ export default function CommentInlineHighlightDebugStory() {
 
   const handleAddComment = useCallback(() => {
     if (!editorRef.current) return
-    const fragment = PortableTextEditor.getFragment(editorRef.current)
+    const fragment = PortableTextEditor.getFragment(editorRef.current) || []
 
-    const selection: CommentTextSelection = {
-      type: 'text',
-      value: (fragment || [])?.map((block) => {
-        return {
-          _key: block._key,
-          text: toPlainText([block]),
-        }
-      }),
-    }
+    const selection = buildTextSelectionFromFragment({fragment})
 
     if (!selection) return
 
