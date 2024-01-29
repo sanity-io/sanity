@@ -1,6 +1,6 @@
-import type {SanityDocument} from '@sanity/types'
-import type {Mutation, NodePatch, Operation, Path} from '@bjoerge/mutiny'
+import type {SanityDocument, Path} from '@sanity/types'
 import {JsonArray, JsonObject, JsonValue} from './json'
+import {Mutation, NodePatch, Operation} from './mutations'
 
 export type {Path}
 export type * from './json'

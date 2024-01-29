@@ -1,4 +1,4 @@
-import {Path, PathElement} from '@bjoerge/mutiny'
+import {Path, PathSegment} from '@sanity/types'
 import {JsonArray, JsonObject, JsonValue} from '../../json'
 import {getValueType} from './getValueType'
 
@@ -14,7 +14,7 @@ function getPathWithKey(
   item: unknown,
   index: number | string,
   container: JsonArray | JsonObject,
-): PathElement {
+): PathSegment {
   if (
     item &&
     Array.isArray(container) &&

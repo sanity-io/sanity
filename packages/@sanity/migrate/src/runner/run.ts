@@ -1,6 +1,5 @@
 import {SanityDocument} from '@sanity/types'
 import {MultipleMutationResult, Mutation as SanityMutation} from '@sanity/client'
-import {Mutation} from '@bjoerge/mutiny'
 import arrify from 'arrify'
 import {APIConfig, Migration} from '../types'
 import {parse} from '../it-utils/ndjson'
@@ -15,6 +14,7 @@ import {concatStr} from '../it-utils/concatStr'
 import {fetchAsyncIterator, FetchOptions} from '../fetch-utils/fetchStream'
 import {bufferThroughFile} from '../fs-webstream/bufferThroughFile'
 import {streamToAsyncIterator} from '../utils/streamToAsyncIterator'
+import {Mutation} from '../mutations'
 import {toSanityMutations} from './utils/toSanityMutations'
 import {
   DEFAULT_MUTATION_CONCURRENCY,

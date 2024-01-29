@@ -1,5 +1,4 @@
-import {at, Mutation, NodePatch, Operation, patch, Path} from '@bjoerge/mutiny'
-import {SanityDocument} from '@sanity/types'
+import {Path, SanityDocument} from '@sanity/types'
 import arrify from 'arrify'
 import {AsyncIterableMigration, Migration, NodeMigration, NodeMigrationContext} from '../types'
 import {JsonArray, JsonObject, JsonValue} from '../json'
