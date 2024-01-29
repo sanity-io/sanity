@@ -27,7 +27,7 @@ export async function* dryRun(config: MigrationRunnerOptions, migration: Migrati
 
   for await (const mutation of mutations) {
     if (!mutation) continue
-    yield CompactFormatter.format(Array.isArray(mutation) ? mutation : [mutation])
+    yield JSON.stringify(mutation)
   }
   await exportStream.cancel()
 }
