@@ -10,7 +10,7 @@ export default defineMigration({
   name: '${migrationName}',
 ${
   documentTypes.length > 0
-    ? `  documentTypes: ['${documentTypes.map((t) => JSON.stringify(t)).join(', ')}'],\n`
+    ? `  documentTypes: [${documentTypes.map((t) => JSON.stringify(t)).join(', ')}],\n`
     : ''
 }
   migrate: {
