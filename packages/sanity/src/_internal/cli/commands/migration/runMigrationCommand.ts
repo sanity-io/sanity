@@ -185,6 +185,7 @@ const runMigrationCommand: CliCommandDefinition<CreateFlags> = {
 
     if (dry) {
       const spinner = output.spinner(`Running migration "${id}" in dry mode`).start()
+
       if (fromExport) {
         // TODO: Dry run output when using archive source.
         await runFromArchive(migration, fromExport, {
@@ -195,6 +196,11 @@ const runMigrationCommand: CliCommandDefinition<CreateFlags> = {
       } else {
         await dryRun({api: apiConfig, onProgress: createProgress(spinner)}, migration)
       }
+
+      // output.print(`Running migration "${migrationName}" in dry mode`)
+      // output.print()
+      // output.print(`Project id:  ${chalk.bold(projectId)}`)
+      // output.print(`Dataset:     ${chalk.bold(dataset)}`)
 
       // for await (const mutation of dryRun({api: apiConfig}, migration)) {
       //   if (!mutation) continue
