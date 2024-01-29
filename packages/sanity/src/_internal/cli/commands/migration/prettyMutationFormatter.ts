@@ -63,13 +63,23 @@ function documentId(mutation: Mutation): string | undefined {
   return undefined
 }
 
+const listFormatter = new Intl.ListFormat('en-US', {
+  type: 'disjunction',
+})
+
 function mutationHeader(chalk: Chalk, mutation: Mutation, migration: Migration): string {
   const mutationType = badge(mutation.type, mutationImpact[mutation.type], chalk)
-  const documentType = badge(
-    'document' in mutation ? mutation.document._type : migration.documentType,
-    'info',
-    chalk,
-  )
+
+  const documentType =
+    'document' in mutation || migration.documentTypes
+      ? badge(
+          'document' in mutation
+            ? mutation.document._type
+            : listFormatter.format(migration.documentTypes ?? []),
+          'info',
+          chalk,
+        )
+      : null
 
   // TODO: Should we list documentType when a mutation can be yielded for any document type?
   return [mutationType, documentType, documentId(mutation)].filter(Boolean).join(' ')
