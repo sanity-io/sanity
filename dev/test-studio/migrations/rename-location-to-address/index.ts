@@ -10,7 +10,7 @@ const addresses = [
 ]
 
 export default defineMigration({
-  name: 'Rename Location to Address',
+  title: 'Rename Location to Address',
   documentTypes: ['author'],
   migrate: {
     document(doc) {

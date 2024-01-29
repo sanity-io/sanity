@@ -2,7 +2,7 @@
 import {defineMigration, unset} from 'sanity/migrate'
 
 export default defineMigration({
-  name: 'Cleanup empty values',
+  title: 'Cleanup empty values',
   documentTypes: ['playlist', 'species'],
   migrate: {
     object(node) {

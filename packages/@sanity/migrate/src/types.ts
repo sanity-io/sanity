@@ -12,17 +12,25 @@ export type AsyncIterableMigration = (
 ) => AsyncGenerator<Mutation | Transaction | (Mutation | Transaction)[]>
 
 export interface Migration<Def extends MigrateDefinition = MigrateDefinition> {
-  name: string
   /**
-   * Define input for the migration. If the migration uses an existing set of documents as starting point, define the filter here.
+   * The title of the migration
+   */
+  title: string
+
+  /**
+   * What document types to use in the migration
+   */
+  documentTypes?: string[]
+
+  /**
+   * What document types to use in the migration
    */
   filter?: string
 
   /**
-   * What document types to migrate
+   * The actual migration. This can be either a function that returns an async iterable, or an object with hooks for different node types.
+   * Currently only "json"-type hooks are supported
    */
-  documentTypes?: string[]
-
   migrate: Def
 }
 
@@ -104,7 +112,7 @@ export interface NodeMigration {
     node: Node,
     path: Path,
     context: MigrationContext,
-  ) => NodeMigrationReturnValue | Promise<void | NodeMigrationReturnValue>
+  ) => void | NodeMigrationReturnValue | Promise<void | NodeMigrationReturnValue>
   null?: <Node extends null>(
     node: Node,
     path: Path,

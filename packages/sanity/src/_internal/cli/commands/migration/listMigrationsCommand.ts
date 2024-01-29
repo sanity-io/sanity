@@ -50,12 +50,12 @@ const createMigrationCommand: CliCommandDefinition<CreateFlags> = {
       title: `Found ${migrationModules.length} migrations in project`,
       columns: [
         {name: 'id', title: 'ID', alignment: 'left'},
-        {name: 'name', title: 'Name', alignment: 'left'},
+        {name: 'name', title: 'Title', alignment: 'left'},
       ],
     })
 
     migrationModules.forEach((definedMigration) => {
-      table.addRow({id: definedMigration.dirname, name: definedMigration.migration.name})
+      table.addRow({id: definedMigration.dirname, title: definedMigration.migration.title})
     })
     table.printTable()
     output.print(`\nRun "sanity migration run <MIGRATION ID>" to run a migration`)
