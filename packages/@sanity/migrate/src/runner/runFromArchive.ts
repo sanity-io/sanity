@@ -34,7 +34,7 @@ export async function runFromArchive(
     pending: 0,
     queuedBatches: 0,
     completedTransactions: [],
-    currentMutations: [],
+    currentTransactions: [],
   }
 
   const filteredDocuments = applyFilters(
@@ -63,8 +63,8 @@ export async function runFromArchive(
       },
     )
 
-  const mutations = tap(collectMigrationMutations(migration, documents, context), (muts) => {
-    stats.currentMutations = arrify(muts)
+  const payloads = tap(collectMigrationMutations(migration, documents, context), (muts) => {
+    stats.currentTransactions = arrify(muts)
     config.onProgress?.({
       ...stats,
       mutations: ++stats.mutations,
@@ -72,7 +72,7 @@ export async function runFromArchive(
   })
 
   const batches = tap(
-    batchMutations(toSanityMutations(mutations), MUTATION_ENDPOINT_MAX_BODY_SIZE),
+    batchMutations(toSanityMutations(payloads), MUTATION_ENDPOINT_MAX_BODY_SIZE),
     () => {
       config.onProgress?.({...stats, queuedBatches: ++stats.queuedBatches})
     },

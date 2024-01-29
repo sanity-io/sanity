@@ -1,5 +1,5 @@
 import {SanityDocument} from '@sanity/types'
-import {MultipleMutationResult, Mutation as SanityMutation} from '@sanity/client'
+import {MultipleMutationResult} from '@sanity/client'
 import arrify from 'arrify'
 import {APIConfig, Migration, MigrationProgress} from '../types'
 import {parse, stringify} from '../it-utils/ndjson'
@@ -15,7 +15,7 @@ import {fetchAsyncIterator, FetchOptions} from '../fetch-utils/fetchStream'
 import {bufferThroughFile} from '../fs-webstream/bufferThroughFile'
 import {streamToAsyncIterator} from '../utils/streamToAsyncIterator'
 import {asyncIterableToStream} from '../utils/asyncIterableToStream'
-import {toSanityMutations} from './utils/toSanityMutations'
+import {toSanityMutations, TransactionPayload} from './utils/toSanityMutations'
 import {
   DEFAULT_MUTATION_CONCURRENCY,
   MAX_MUTATION_CONCURRENCY,
@@ -35,16 +35,16 @@ export interface MigrationRunnerConfig {
 
 export async function* toFetchOptionsIterable(
   apiConfig: APIConfig,
-  mutations: AsyncIterableIterator<SanityMutation[]>,
+  mutations: AsyncIterableIterator<TransactionPayload>,
 ) {
-  for await (const mut of mutations) {
+  for await (const transaction of mutations) {
     yield toFetchOptions({
       projectId: apiConfig.projectId,
       apiVersion: apiConfig.apiVersion,
       token: apiConfig.token,
       apiHost: apiConfig.apiHost ?? 'api.sanity.io',
       endpoint: endpoints.data.mutate(apiConfig.dataset, {returnIds: true}),
-      body: JSON.stringify({mutations: mut}),
+      body: JSON.stringify(transaction),
     })
   }
 }
@@ -56,7 +56,7 @@ export async function run(config: MigrationRunnerConfig, migration: Migration) {
     pending: 0,
     queuedBatches: 0,
     completedTransactions: [],
-    currentMutations: [],
+    currentTransactions: [],
   }
 
   const filteredDocuments = applyFilters(
@@ -91,7 +91,7 @@ export async function run(config: MigrationRunnerConfig, migration: Migration) {
     )
 
   const mutations = tap(collectMigrationMutations(migration, documents, context), (muts) => {
-    stats.currentMutations = arrify(muts)
+    stats.currentTransactions = arrify(muts)
     config.onProgress?.({
       ...stats,
       mutations: ++stats.mutations,

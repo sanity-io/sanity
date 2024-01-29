@@ -1,8 +1,13 @@
 import {Mutation as SanityMutation} from '@sanity/client'
 import arrify from 'arrify'
+import {TransactionPayload} from './toSanityMutations'
 
 // We're working on "raw" mutations, e.g what will be put into the mutations array in the request body
 const PADDING_SIZE = '{"mutations":[]}'.length
+
+function isTransactionPayload(payload: any): payload is TransactionPayload {
+  return payload && payload.mutations && Array.isArray(payload.mutations)
+}
 
 /**
  *
@@ -11,16 +16,15 @@ const PADDING_SIZE = '{"mutations":[]}'.length
  * Todo: add support for transaction ids too
  */
 export async function* batchMutations(
-  mutations: AsyncIterableIterator<SanityMutation | SanityMutation[]>,
+  mutations: AsyncIterableIterator<TransactionPayload | SanityMutation | SanityMutation[]>,
   maxBatchSize: number,
-  options?: {preserveTransactions: boolean},
-): AsyncIterableIterator<SanityMutation[]> {
+): AsyncIterableIterator<TransactionPayload> {
   let currentBatch: SanityMutation[] = []
   let currentBatchSize = 0
 
   for await (const mutation of mutations) {
-    if (options?.preserveTransactions && Array.isArray(mutation)) {
-      yield currentBatch
+    if (isTransactionPayload(mutation)) {
+      yield {mutations: currentBatch}
       yield mutation
       currentBatch = []
       currentBatchSize = 0
@@ -33,16 +37,16 @@ export async function* batchMutations(
     if (mutationSize >= maxBatchSize + PADDING_SIZE) {
       // the mutation size itself is bigger than max batch size, yield it as a single batch and hope for the best (the server has a bigger limit)
       if (currentBatch.length) {
-        yield currentBatch
+        yield {mutations: currentBatch}
       }
-      yield [...arrify(mutation)]
+      yield {mutations: [...arrify(mutation)]}
       currentBatch = []
       currentBatchSize = 0
       continue
     }
     currentBatchSize += mutationSize
     if (currentBatchSize >= maxBatchSize + PADDING_SIZE) {
-      yield currentBatch
+      yield {mutations: currentBatch}
       currentBatch = []
       currentBatchSize = 0
     }
@@ -50,6 +54,6 @@ export async function* batchMutations(
   }
 
   if (currentBatch.length > 0) {
-    yield currentBatch
+    yield {mutations: currentBatch}
   }
 }
