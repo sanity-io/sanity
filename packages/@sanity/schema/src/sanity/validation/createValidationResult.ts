@@ -53,6 +53,3 @@ export const error = (message: string, helpId?: string | null): SchemaValidation
 
 export const warning = (message: string, helpId?: string | null): SchemaValidationResult =>
   createValidationResult('warning', message, helpId)
-
-export const info = (message: string, helpId?: string | null): SchemaValidationResult =>
-  createValidationResult('info', message, helpId)

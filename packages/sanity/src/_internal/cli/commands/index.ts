@@ -21,6 +21,7 @@ import createDocumentsCommand from './documents/createDocumentsCommand'
 import validateDocumentsCommand from './documents/validateDocumentsCommand'
 import devCommand from './dev/devCommand'
 import startCommand from './start/startCommand'
+import validateSchemaCommand from './schema/validateSchemaCommand'
 import previewCommand from './preview/previewCommand'
 import uninstallCommand from './uninstall/uninstallCommand'
 import hookGroup from './hook/hookGroup'
@@ -82,6 +83,7 @@ const commands: (CliCommandDefinition | CliCommandGroupDefinition)[] = [
   deleteGraphQLAPICommand,
   devCommand,
   startCommand,
+  validateSchemaCommand,
   previewCommand,
   uninstallCommand,
   execCommand,

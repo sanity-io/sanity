@@ -8,20 +8,13 @@ export function validateTypeName(typeName: string, visitorContext) {
   const possibleTypeNames = visitorContext.getTypeNames()
 
   if (!typeName) {
-    return [
-      error(
-        `Type is missing a type. Valid types are: ${humanize(possibleTypeNames)}`,
-        HELP_IDS.TYPE_MISSING_TYPE,
-      ),
-    ]
+    return [error(`Type is missing a type.`, HELP_IDS.TYPE_MISSING_TYPE)]
   }
 
   if (typeof typeName !== 'string') {
     return [
       error(
-        `Type has an invalid "type"-property - should be a string. Valid types are: ${humanize(
-          possibleTypeNames,
-        )}`,
+        `Type has an invalid "type"-property - should be a string.`,
         HELP_IDS.TYPE_MISSING_TYPE,
       ),
     ]
@@ -42,13 +35,7 @@ export function validateTypeName(typeName: string, visitorContext) {
         ? ` Did you mean ${humanize(suggestions.map(quote), {conjunction: 'or'})}?`
         : ''
 
-    return [
-      error(
-        `Unknown type: ${typeName}.${suggestion}\n\nValid types are: ${humanize(
-          possibleTypeNames,
-        )}`,
-      ),
-    ]
+    return [error(`Unknown type: ${typeName}.${suggestion}`)]
   }
   return []
 }

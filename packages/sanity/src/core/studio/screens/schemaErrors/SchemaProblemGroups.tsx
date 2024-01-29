@@ -77,7 +77,9 @@ export function SchemaProblemGroups(props: {problemGroups: SchemaValidationProbl
                 >
                   {group.path.map((segment, j) => {
                     if (segment.kind === 'type') {
-                      const text = `${_renderSegmentName(segment.name)}:${segment.type}`
+                      const text = `${_renderSegmentName(
+                        segment.name || `<anonymous ${segment.type}>`,
+                      )}:${segment.type}`
                       return (
                         <Text title={text} key={j} size={1} textOverflow="ellipsis">
                           <SegmentSpan>{text}</SegmentSpan>
@@ -132,7 +134,7 @@ function getTypeInfo(problem: SchemaValidationProblemGroup): {name: string; type
   // a possible API improvement is to add schemaType info to the problem group interface itself
   const first = problem.path[0]
   if (first.kind === 'type') {
-    return {name: first.name, type: first.type}
+    return {name: first.name || `<anonymous ${first.type}>`, type: first.type}
   }
   return null
 }

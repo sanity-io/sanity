@@ -57,7 +57,7 @@ export type SchemaValidationProblem = SchemaValidationError | SchemaValidationWa
 
 /** @internal */
 export type SchemaValidationProblemPath = Array<
-  {kind: 'type'; type: string; name: string} | {kind: 'property'; name: string}
+  {kind: 'type'; type: string; name?: string} | {kind: 'property'; name: string}
 >
 
 /** @internal */
