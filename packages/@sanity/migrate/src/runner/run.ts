@@ -3,7 +3,7 @@ import {MultipleMutationResult, Mutation as SanityMutation} from '@sanity/client
 import {Mutation} from '@bjoerge/mutiny'
 import arrify from 'arrify'
 import {APIConfig, Migration} from '../types'
-import {ndjson} from '../it-utils/ndjson'
+import {parse} from '../it-utils/ndjson'
 import {fromExportEndpoint, safeJsonParser} from '../sources/fromExportEndpoint'
 import {endpoints} from '../fetch-utils/endpoints'
 import {toFetchOptions} from '../fetch-utils/sanityRequestOptions'
@@ -71,7 +71,7 @@ export async function run(config: MigrationRunnerOptions, migration: Migration) 
   )
 
   const documents = tap(
-    ndjson<SanityDocument>(streamToAsyncIterator(exportStream), {parse: safeJsonParser}),
+    parse<SanityDocument>(streamToAsyncIterator(exportStream), {parse: safeJsonParser}),
     () => {
       config.onProgress?.({...stats, documents: ++stats.documents})
     },
