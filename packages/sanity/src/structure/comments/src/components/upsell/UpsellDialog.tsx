@@ -1,9 +1,14 @@
 import {useCallback} from 'react'
 import styled from 'styled-components'
-import {CloseIcon} from '@sanity/icons'
+import {CloseIcon, LaunchIcon} from '@sanity/icons'
 import {Box, Stack} from '@sanity/ui'
+import {useTelemetry} from '@sanity/telemetry/react'
 import {Button, Dialog} from '../../../../../ui-components'
 import {useCommentsUpsell} from '../../hooks'
+import {
+  CommentsUpsellDialogPrimaryBtnClicked,
+  CommentsUpsellDialogSecondaryBtnClicked,
+} from '../../../__telemetry__/comments.telemetry'
 import {DescriptionSerializer} from 'sanity'
 
 /**
@@ -33,9 +38,19 @@ const Image = styled.img`
 
 export function UpsellDialog() {
   const {upsellDialogOpen, setUpsellDialogOpen, upsellData} = useCommentsUpsell()
+  const telemetry = useTelemetry()
+
   const handleClose = useCallback(() => {
     setUpsellDialogOpen(false)
   }, [setUpsellDialogOpen])
+
+  const handlePrimaryClick = useCallback(() => {
+    telemetry.log(CommentsUpsellDialogPrimaryBtnClicked)
+  }, [telemetry])
+
+  const handleSecondaryClicked = useCallback(() => {
+    telemetry.log(CommentsUpsellDialogSecondaryBtnClicked)
+  }, [telemetry])
 
   if (!upsellDialogOpen) return null
   if (!upsellData) return null
@@ -54,20 +69,27 @@ export function UpsellDialog() {
               text: upsellData.secondaryButton.text,
               mode: 'bleed',
               tone: 'default',
-              href: upsellData.secondaryButton.url,
-              target: '_blank',
-              rel: 'noopener noreferrer',
-              as: 'a',
+              iconRight: LaunchIcon,
+              ...(upsellData.secondaryButton.url && {
+                target: '_blank',
+                rel: 'noopener noreferrer',
+                as: 'a',
+                href: upsellData.secondaryButton.url,
+              }),
+              onClick: handleSecondaryClicked,
             }
           : undefined,
         confirmButton: {
           text: upsellData.ctaButton?.text,
           mode: 'default',
           tone: 'primary',
-          href: upsellData.ctaButton.url,
-          target: '_blank',
-          rel: 'noopener noreferrer',
-          as: 'a',
+          ...(upsellData.ctaButton.url && {
+            target: '_blank',
+            rel: 'noopener noreferrer',
+            as: 'a',
+            href: upsellData.ctaButton.url,
+          }),
+          onClick: handlePrimaryClick,
         },
       }}
     >
