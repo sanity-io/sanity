@@ -46,7 +46,7 @@ export function createAsyncIterableMutation(
     for await (const doc of docs()) {
       if (!documentTypesSet.has(doc._type)) continue
 
-      const documentMutations = collectDocumentMutations(migration, doc, context)
+      const documentMutations = await collectDocumentMutations(migration, doc, context)
       if (documentMutations.length > 0) {
         yield documentMutations
       }
@@ -54,22 +54,26 @@ export function createAsyncIterableMutation(
   }
 }
 
-function collectDocumentMutations(
+async function collectDocumentMutations(
   migration: NodeMigration,
   doc: SanityDocument,
   context: MigrationContext,
 ) {
-  const documentMutations = migration.document?.(doc, context)
-  const nodeMigrations = flatMapDeep(doc as JsonValue, (value, path) => {
-    return [
-      ...arrify(migration.node?.(value, path, context)),
-      ...arrify(migrateNodeType(migration, value, path, context)),
-    ].map((change) => normalizeNodeMutation(path, change))
+  const documentMutations = Promise.resolve(migration.document?.(doc, context))
+  const nodeMigrations = flatMapDeep(doc as JsonValue, async (value, path) => {
+    const [nodeReturnValues, nodeTypeReturnValues] = await Promise.all([
+      Promise.resolve(migration.node?.(value, path, context)),
+      Promise.resolve(migrateNodeType(migration, value, path, context)),
+    ])
+
+    return [...arrify(nodeReturnValues), ...arrify(nodeTypeReturnValues)].map((change) =>
+      normalizeNodeMutation(path, change),
+    )
   })
 
-  return [...arrify(documentMutations), ...nodeMigrations].map((change) =>
-    normalizeDocumentMutation(doc._id, change),
-  )
+  return (await Promise.all([...arrify(await documentMutations), ...nodeMigrations]))
+    .flat()
+    .map((change) => normalizeDocumentMutation(doc._id, change))
 }
 
 /**
