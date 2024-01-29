@@ -1,11 +1,11 @@
-import {streamAsyncIterator} from '../../utils/streamToAsyncIterator'
+import {streamToAsyncIterator} from '../../utils/streamToAsyncIterator'
 import {untar} from '../untar'
 import {readFileAsWebStream} from '../../fs-webstream/readFileAsWebStream'
 
 async function* extract(file: string) {
   const fileStream = readFileAsWebStream(file)
-  for await (const [header, body] of streamAsyncIterator(untar(fileStream))) {
-    yield [header.name, streamAsyncIterator(body)]
+  for await (const [header, body] of streamToAsyncIterator(untar(fileStream))) {
+    yield [header.name, streamToAsyncIterator(body)]
   }
 }
 

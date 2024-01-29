@@ -1,4 +1,4 @@
-import {streamAsyncIterator} from '../../utils/streamToAsyncIterator'
+import {streamToAsyncIterator} from '../../utils/streamToAsyncIterator'
 import {toArray} from '../../it-utils/toArray'
 import {untar} from '../untar'
 import {readFileAsWebStream} from '../../fs-webstream/readFileAsWebStream'
@@ -30,9 +30,9 @@ const file = `7eeec7b86ddfefd7d7b66e137b2b9220a527528f-185x278.jpg`
 test('untar movies dataset export', async () => {
   const fileStream = readFileAsWebStream(`${__dirname}/fixtures/movies.tar`)
 
-  for await (const [header, body] of streamAsyncIterator(untar(fileStream))) {
+  for await (const [header, body] of streamToAsyncIterator(untar(fileStream))) {
     if (header.name.includes(file)) {
-      const chunks = await toArray(streamAsyncIterator(body))
+      const chunks = await toArray(streamToAsyncIterator(body))
       const sum = await shasum(concatUint8Arrays(chunks))
       expect(sum).toEqual('02c936cda5695fa4f43f5dc919c1f55c362faa6dd558dfb2d77d524f004069db')
     } else {
