@@ -1,7 +1,7 @@
 import type {SanityDocument, Path} from '@sanity/types'
-import {MultipleMutationResult} from '@sanity/client'
+import {MultipleMutationResult, Mutation as RawMutation} from '@sanity/client'
 import {JsonArray, JsonObject, JsonValue} from './json'
-import {Mutation, NodePatch, Operation} from './mutations'
+import {Mutation, NodePatch, Operation, Transaction} from './mutations'
 
 export type {Path}
 export type * from './json'
@@ -9,7 +9,7 @@ export type * from './json'
 export type AsyncIterableMigration = (
   documents: () => AsyncIterableIterator<SanityDocument>,
   context: MigrationContext,
-) => AsyncGenerator<Mutation | Mutation[]>
+) => AsyncGenerator<Mutation | Transaction | (Mutation | Transaction)[]>
 
 export interface Migration<Def extends MigrateDefinition = MigrateDefinition> {
   name: string
@@ -33,7 +33,7 @@ export type MigrationProgress = {
   mutations: number
   pending: number
   queuedBatches: number
-  currentMutations: Mutation[]
+  currentTransactions: (Transaction | Mutation)[]
   completedTransactions: MultipleMutationResult[]
   done?: boolean
 }
@@ -62,6 +62,8 @@ export type DocumentMigrationReturnValue =
   | Mutation[]
   | NodePatch
   | NodePatch[]
+  | RawMutation
+  | RawMutation[]
 
 export type NodeMigrationReturnValue = DocumentMigrationReturnValue | Operation | Operation[]
 
@@ -69,7 +71,7 @@ export interface NodeMigration {
   document?: <Doc extends SanityDocument>(
     doc: Doc,
     context: MigrationContext,
-  ) => DocumentMigrationReturnValue | Promise<DocumentMigrationReturnValue>
+  ) => DocumentMigrationReturnValue | Transaction | Promise<NodeMigrationReturnValue | Transaction>
   node?: <Node extends JsonValue>(
     node: Node,
     path: Path,

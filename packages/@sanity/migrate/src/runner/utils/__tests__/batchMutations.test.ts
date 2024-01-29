@@ -1,4 +1,5 @@
 import {batchMutations} from '../batchMutations'
+import {toArray} from '../../../it-utils'
 
 function byteLength(obj: unknown) {
   return JSON.stringify(obj).length
@@ -18,7 +19,7 @@ describe('mutation payload batching', () => {
 
     const it = batchMutations(gen(), firstSize + secondSize)
 
-    expect(await it.next()).toEqual({value: [first, second], done: false})
+    expect(await it.next()).toEqual({value: {mutations: [first, second]}, done: false})
     expect(await it.next()).toEqual({value: undefined, done: true})
   })
 
@@ -34,8 +35,8 @@ describe('mutation payload batching', () => {
 
     const it = batchMutations(gen(), firstSize)
 
-    expect(await it.next()).toEqual({value: [first], done: false})
-    expect(await it.next()).toEqual({value: [second], done: false})
+    expect(await it.next()).toEqual({value: {mutations: [first]}, done: false})
+    expect(await it.next()).toEqual({value: {mutations: [second]}, done: false})
     expect(await it.next()).toEqual({value: undefined, done: true})
   })
 
@@ -49,8 +50,8 @@ describe('mutation payload batching', () => {
 
     const it = batchMutations(gen(), 1)
 
-    expect(await it.next()).toEqual({value: [first], done: false})
-    expect(await it.next()).toEqual({value: [second], done: false})
+    expect(await it.next()).toEqual({value: {mutations: [first]}, done: false})
+    expect(await it.next()).toEqual({value: {mutations: [second]}, done: false})
     expect(await it.next()).toEqual({value: undefined, done: true})
   })
 
@@ -79,8 +80,8 @@ describe('mutation payload batching', () => {
     }
     const it = batchMutations(gen(), byteLength(first) + byteLength(second))
 
-    expect(await it.next()).toEqual({value: [first, second], done: false})
-    expect(await it.next()).toEqual({value: third, done: false})
+    expect(await it.next()).toEqual({value: {mutations: [first, second]}, done: false})
+    expect(await it.next()).toEqual({value: {mutations: third}, done: false})
   })
 })
 
@@ -90,17 +91,19 @@ test('transactions are always in the same batch, but might include other mutatio
   const second = {patch: {id: 'foo', set: {bar: 'baz'}}}
 
   // Note: this is an array of mutations and should not be split up as it may be intentional to keep it in a transaction
-  const transaction = [
-    {
-      createOrReplace: {
-        _id: 'foo',
-        _type: 'something',
-        bar: 'baz',
-        baz: 'qux',
+  const transaction = {
+    mutations: [
+      {
+        createOrReplace: {
+          _id: 'foo',
+          _type: 'something',
+          bar: 'baz',
+          baz: 'qux',
+        },
       },
-    },
-    {patch: {id: 'foo', set: {bar: 'baz'}}},
-  ]
+      {patch: {id: 'foo', set: {bar: 'baz'}}},
+    ],
+  }
 
   const fourth = {patch: {id: 'another', set: {this: 'that'}}}
 
@@ -115,7 +118,11 @@ test('transactions are always in the same batch, but might include other mutatio
     [first, second, transaction, fourth].reduce((l, m) => l + byteLength(m), 0),
   )
 
-  expect(await it.next()).toEqual({value: [first, second, ...transaction, fourth], done: false})
+  expect(await toArray(it)).toEqual([
+    {mutations: [first, second]},
+    transaction,
+    {mutations: [fourth]},
+  ])
   expect(await it.next()).toEqual({value: undefined, done: true})
 })
 
@@ -124,17 +131,19 @@ test('transactions are always batched as-is if preserveTransactions: true', asyn
   const second = {patch: {id: 'foo', set: {bar: 'baz'}}}
 
   // Note: this is an array of mutations and should not be split up as it may be intentional to keep it in a transaction
-  const transaction = [
-    {
-      createOrReplace: {
-        _id: 'foo',
-        _type: 'something',
-        bar: 'baz',
-        baz: 'qux',
+  const transaction = {
+    mutations: [
+      {
+        createOrReplace: {
+          _id: 'foo',
+          _type: 'something',
+          bar: 'baz',
+          baz: 'qux',
+        },
       },
-    },
-    {patch: {id: 'foo', set: {bar: 'baz'}}},
-  ]
+      {patch: {id: 'foo', set: {bar: 'baz'}}},
+    ],
+  }
 
   const fourth = {patch: {id: 'another', set: {this: 'that'}}}
 
@@ -147,11 +156,10 @@ test('transactions are always batched as-is if preserveTransactions: true', asyn
   const it = batchMutations(
     gen(),
     [first, second, transaction, fourth].reduce((l, m) => l + byteLength(m), 0),
-    {preserveTransactions: true},
   )
 
-  expect(await it.next()).toEqual({value: [first, second], done: false})
+  expect(await it.next()).toEqual({value: {mutations: [first, second]}, done: false})
   expect(await it.next()).toEqual({value: transaction, done: false})
-  expect(await it.next()).toEqual({value: [fourth], done: false})
+  expect(await it.next()).toEqual({value: {mutations: [fourth]}, done: false})
   expect(await it.next()).toEqual({value: undefined, done: true})
 })
