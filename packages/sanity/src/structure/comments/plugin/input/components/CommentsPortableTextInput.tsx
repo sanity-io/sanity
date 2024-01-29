@@ -82,6 +82,8 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
     const fragment = getFragment() || EMPTY_ARRAY
     const textSelection = buildTextSelectionFromFragment({fragment})
 
+    const threadId = uuid()
+
     operation.create({
       fieldPath: stringFieldPath,
       message: nextCommentValue,
@@ -90,15 +92,31 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
       selection: textSelection,
       status: 'open',
       // This is a new comment, so we need to generate a new thread id
-      threadId: uuid(),
+      threadId,
       reactions: EMPTY_ARRAY,
+    })
+
+    onCommentsOpen?.()
+
+    setSelectedPath({
+      fieldPath: stringFieldPath,
+      threadId,
+      origin: 'form',
     })
 
     // Reset the states when submitting
     setNextCommentValue(null)
     setNextCommentSelection(null)
     currentSelectionRef.current = null
-  }, [getFragment, nextCommentSelection, nextCommentValue, operation, stringFieldPath])
+  }, [
+    getFragment,
+    nextCommentSelection,
+    nextCommentValue,
+    onCommentsOpen,
+    operation,
+    setSelectedPath,
+    stringFieldPath,
+  ])
 
   // This will set the current selection state to the current selection ref.
   // When this value is set, the popover with the comment input will open and
