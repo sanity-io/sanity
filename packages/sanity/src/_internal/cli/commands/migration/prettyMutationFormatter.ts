@@ -1,5 +1,5 @@
 import {isatty} from 'tty'
-import {Migration, Mutation, NodePatch, NodePatchList} from '@sanity/migrate'
+import {Migration, Mutation, NodePatch} from '@sanity/migrate'
 import {KeyedSegment} from '@sanity/types'
 import {Chalk} from 'chalk'
 import {convertToTree, formatTree, maxKeyLength} from '../../util/tree'
