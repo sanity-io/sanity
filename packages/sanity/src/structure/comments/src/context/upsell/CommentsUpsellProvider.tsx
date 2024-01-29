@@ -32,7 +32,7 @@ const QUERY = `*[_type == "upsellUI" && id == "comments-upsell"][0]{
  }`
 
 const UPSELL_CLIENT: Partial<ClientConfig> = {
-  dataset: 'upsell-public-development', // TODO: Update for production when ready
+  dataset: 'upsell-public-production',
   projectId: 'pyrmmpch',
   withCredentials: false,
   useCdn: true,
