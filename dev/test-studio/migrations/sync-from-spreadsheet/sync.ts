@@ -1,5 +1,4 @@
-import {defineMigration} from '@sanity/migrate'
-import {createIfNotExists} from '@sanity/migrate/mutations'
+import {createIfNotExists, defineMigration} from 'sanity/migrate'
 
 declare function fetchGoogleSpreadSheet(id: string): AsyncIterable<Record<string, string>>
 

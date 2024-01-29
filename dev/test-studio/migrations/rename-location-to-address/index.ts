@@ -1,5 +1,4 @@
-import {defineMigration} from '@sanity/migrate'
-import {at, patch, set, unset} from '@sanity/migrate/mutations'
+import {defineMigration, at, patch, set, unset} from '@sanity/migrate'
 
 const addresses = [
   {city: 'Oslo', country: 'Norway'},
