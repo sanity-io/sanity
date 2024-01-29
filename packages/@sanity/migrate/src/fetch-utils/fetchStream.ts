@@ -1,4 +1,4 @@
-import {streamAsyncIterator} from '../utils/streamToAsyncIterator'
+import {streamToAsyncIterator} from '../utils/streamToAsyncIterator'
 
 export interface FetchOptions {
   url: string | URL
@@ -32,5 +32,5 @@ export async function fetchStream({url, init}: FetchOptions) {
 }
 
 export async function fetchAsyncIterator(options: FetchOptions) {
-  return streamAsyncIterator(await fetchStream(options))
+  return streamToAsyncIterator(await fetchStream(options))
 }

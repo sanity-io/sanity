@@ -3,7 +3,7 @@ import {stat} from 'node:fs/promises'
 
 import {bufferThroughFile} from '../bufferThroughFile'
 import {ndjson} from '../../it-utils'
-import {streamAsyncIterator} from '../../utils/streamToAsyncIterator'
+import {streamToAsyncIterator} from '../../utils/streamToAsyncIterator'
 import {asyncIterableToStream} from '../../utils/asyncIterableToStream'
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
@@ -24,7 +24,7 @@ test('stops buffering when the consumer is done', async () => {
   const fileBufferStream = bufferThroughFile(asyncIterableToStream(gen()), bufferFile)
 
   const lines = []
-  for await (const chunk of ndjson(streamAsyncIterator(fileBufferStream))) {
+  for await (const chunk of ndjson(streamToAsyncIterator(fileBufferStream))) {
     lines.push(chunk)
     if (lines.length === 3) {
       // we only pick 3 lines and break out of the iteration. This should stop the buffering
@@ -70,7 +70,7 @@ test('it runs to completion if consumer needs it', async () => {
   const fileBufferStream = bufferThroughFile(asyncIterableToStream(gen()), bufferFile)
 
   const lines = []
-  for await (const chunk of ndjson(streamAsyncIterator(fileBufferStream))) {
+  for await (const chunk of ndjson(streamToAsyncIterator(fileBufferStream))) {
     if (lines.length < 3) {
       // in contrast to the test above, we don't break out of the iteration early, but let it run to completion
       lines.push(chunk)
