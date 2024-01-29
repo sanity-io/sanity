@@ -1,13 +1,13 @@
-export const renameField = ({
+export const renameType = ({
   migrationName,
   documentTypes,
 }: {
   migrationName: string
   documentTypes: string[]
-}) => `import {defineMigration, at, setIfMissing, unset} from 'sanity/migrate'
+}) => `import {defineMigration, at, set} from 'sanity/migrate'
 
-const from = 'oldFieldName'
-const to = 'newFieldName'
+const oldType = 'old'
+const newType = 'new'
 
 export default defineMigration({
   name: '${migrationName}',
@@ -17,11 +17,10 @@ ${
     : ''
 }
   migrate: {
-    document(doc, path, context) {
-      return [
-        at(to, setIfMissing(doc[from]))
-        at(from, unset())
-      ]
+    object(object, path, context) {
+      if (object._type === oldType) {
+        return at('_type', set(newType))
+      }
     }
   }
 })

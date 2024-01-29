@@ -1,15 +1,24 @@
-export const stringToPTE = `
-import {defineMigration} from 'sanity/migrate'
-import {patch, at, set, unset} from 'sanity/mutations'
+export const stringToPTE = ({
+  migrationName,
+  documentTypes,
+}: {
+  migrationName: string
+  documentTypes: string[]
+}) => `import {pathsAreEqual, stringToPath} from 'sanity'
+import {defineMigration, set} from 'sanity/migrate'
 
-const targetPath = parsePath('%targetPath%')
+const targetPath = stringToPath('some.path')
 
 export default defineMigration({
-  name: '%migrationName%',
-  type: '%type%',
+  name: '${migrationName}',
+${
+  documentTypes.length > 0
+    ? `  documentTypes: ['${documentTypes.map((t) => JSON.stringify(t)).join(', ')}'],\n`
+    : ''
+}
   migrate: {
     string(node, path, ctx) {
-      if (isEqual(path, targetPath)) {
+      if (pathsAreEqual(path, targetPath)) {
         return set([
           {
             style: 'normal',

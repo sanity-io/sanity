@@ -20,11 +20,19 @@ Options
   --from-export <export.tar.gz> Use a local dataset export as source for migration instead of calling the Sanity API. Note: this is only supported for dry runs.
   --concurrency <concurrent> How many mutation requests to run in parallel. Must be between 1 and ${MAX_MUTATION_CONCURRENCY}. Default: ${DEFAULT_MUTATION_CONCURRENCY}.
   --no-progress Don't output progress. Useful if you want debug your migration script and see the output of console.log() statements.
+  --dataset <dataset> Dataset to migrate. Defaults to the dataset configured in your Sanity CLI config.
+  --projectId <project id> Project ID of the dataset to migrate. Defaults to the projectId configured in your Sanity CLI config.
+  --no-confirm Skip the confirmation prompt before running the migration. Make sure you know what you're doing before using this flag.
 
 
 Examples
-  sanity migration run
+  # dry run the migration
   sanity migration run <name>
+
+  # execute the migration against a dataset
+  sanity migration run <name> --no-dry --projectId xyz --dataset staging
+
+  # run the migration using the dataset export as the source
   sanity migration run <name> --dry false --from-export=production.tar.gz --projectId xyz --dataset staging
 `
 
@@ -33,6 +41,9 @@ interface CreateFlags {
   'from-export'?: string
   concurrency?: number
   progress?: boolean
+  dataset?: string
+  'project-id'?: string
+  confirm?: boolean
 }
 
 const tryExtensions = ['mjs', 'js', 'ts', 'cjs']
@@ -64,11 +75,18 @@ const createMigrationCommand: CliCommandDefinition<CreateFlags> = {
     const {apiClient, output, prompt, chalk, workDir} = context
     const [migrationName] = args.argsWithoutOptions
 
-    const [fromExport, dry, showProgress] = [
+    const [fromExport, dry, showProgress, dataset, projectId, shouldConfirm] = [
       args.extOptions['from-export'],
       args.extOptions.dry !== false,
       args.extOptions.progress !== false,
+      args.extOptions.dataset,
+      args.extOptions['project-id'],
+      args.extOptions.confirm !== false,
     ]
+
+    if ((dataset && !projectId) || (projectId && !dataset)) {
+      throw new Error('If either --dataset or --projectId is provided, both must be provided')
+    }
 
     if (!migrationName) {
       throw new Error('MIGRATION NAME must be provided. `sanity migration run <name>`')
@@ -100,6 +118,7 @@ const createMigrationCommand: CliCommandDefinition<CreateFlags> = {
    .join('\n - ')}`,
       )
     }
+
     const script = resolvedScripts[0]!
 
     const mod = script!.mod
@@ -130,17 +149,17 @@ const createMigrationCommand: CliCommandDefinition<CreateFlags> = {
       }
     }
 
-    const {dataset, projectId, apiHost, token} = apiClient({
+    const projectConfig = apiClient({
       requireUser: true,
       requireProject: true,
     }).config()
 
     const apiConfig = {
-      dataset: dataset!,
-      projectId: projectId!,
-      apiHost,
-      token: token!,
-      apiVersion: 'v2024-01-09',
+      dataset: dataset ?? projectConfig.dataset!,
+      projectId: projectId ?? projectConfig.projectId!,
+      apiHost: projectConfig.apiHost!,
+      token: projectConfig.token!,
+      apiVersion: 'v2024-01-29',
     } as const
 
     if (dry) {
@@ -158,12 +177,14 @@ const createMigrationCommand: CliCommandDefinition<CreateFlags> = {
 
       spinner.stop()
     } else {
-      const response = await prompt.single<boolean>({
-        message: `This migration will run on the ${chalk.yellow(
-          chalk.bold(apiConfig.dataset),
-        )} dataset in ${chalk.yellow(chalk.bold(apiConfig.projectId))} project. Are you sure?`,
-        type: 'confirm',
-      })
+      const response =
+        shouldConfirm &&
+        (await prompt.single<boolean>({
+          message: `This migration will run on the ${chalk.yellow(
+            chalk.bold(apiConfig.dataset),
+          )} dataset in ${chalk.yellow(chalk.bold(apiConfig.projectId))} project. Are you sure?`,
+          type: 'confirm',
+        }))
 
       if (response === false) {
         debug('User aborted migration')
