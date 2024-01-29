@@ -1,10 +1,9 @@
 import React from 'react'
-import {Flex, Text} from '@sanity/ui'
+import {Flex, Text, TextSkeleton} from '@sanity/ui'
 import styled, {css} from 'styled-components'
 import {Tooltip} from '../../../../../../ui-components'
-import {commentsLocaleNamespace} from '../../../../i18n'
 import {CommentsAvatar} from '../../avatars'
-import {useCurrentUser, useTranslation, useUser} from 'sanity'
+import {useCurrentUser, useUser} from 'sanity'
 
 const Span = styled.span(({theme}) => {
   const {regular} = theme.sanity.fonts?.text.weights
@@ -34,10 +33,18 @@ export function MentionInlineBlock(props: MentionInlineBlockProps) {
   const {selected, userId} = props
   const [user, loading] = useUser(userId)
   const currentUser = useCurrentUser()
-  const {t} = useTranslation(commentsLocaleNamespace)
 
-  // eslint-disable-next-line i18next/no-literal-string
-  if (!user || loading) return <Span>@Loading</Span> // todo: improve
+  if (!user || loading)
+    return (
+      <TextSkeleton
+        data-testid="comment-mentions-loading-skeleton"
+        style={{width: '10ch'}}
+        size={0}
+        muted
+        radius={1}
+        animated
+      />
+    )
 
   return (
     <Tooltip
