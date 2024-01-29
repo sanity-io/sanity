@@ -3,7 +3,7 @@ import {SanityDocument} from '@sanity/types'
 import {APIConfig, Migration} from '../types'
 import {ndjson} from '../it-utils/ndjson'
 import {fromExportEndpoint, safeJsonParser} from '../sources/fromExportEndpoint'
-import {streamAsyncIterator} from '../utils/streamToAsyncIterator'
+import {streamToAsyncIterator} from '../utils/streamToAsyncIterator'
 import {bufferThroughFile} from '../fs-webstream/bufferThroughFile'
 import {collectMigrationMutations} from './collectMigrationMutations'
 import {getBufferFilePath} from './utils/getBufferFile'
@@ -20,7 +20,7 @@ export async function* dryRun(config: MigrationRunnerOptions, migration: Migrati
 
   const mutations = collectMigrationMutations(
     migration,
-    ndjson<SanityDocument>(streamAsyncIterator(exportStream), {
+    ndjson<SanityDocument>(streamToAsyncIterator(exportStream), {
       parse: safeJsonParser,
     }),
   )

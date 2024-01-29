@@ -14,7 +14,7 @@ import {decodeText, parseJSON} from '../it-utils'
 import {concatStr} from '../it-utils/concatStr'
 import {fetchAsyncIterator, FetchOptions} from '../fetch-utils/fetchStream'
 import {bufferThroughFile} from '../fs-webstream/bufferThroughFile'
-import {streamAsyncIterator} from '../utils/streamToAsyncIterator'
+import {streamToAsyncIterator} from '../utils/streamToAsyncIterator'
 import {toSanityMutations} from './utils/toSanityMutations'
 import {
   DEFAULT_MUTATION_CONCURRENCY,
@@ -71,7 +71,7 @@ export async function run(config: MigrationRunnerOptions, migration: Migration) 
   )
 
   const documents = tap(
-    ndjson<SanityDocument>(streamAsyncIterator(exportStream), {parse: safeJsonParser}),
+    ndjson<SanityDocument>(streamToAsyncIterator(exportStream), {parse: safeJsonParser}),
     () => {
       config.onProgress?.({...stats, documents: ++stats.documents})
     },
