@@ -1,10 +1,9 @@
 /* eslint-disable no-sync */
 import fs from 'fs'
 import path from 'path'
-import {first} from 'rxjs/operators'
 import {firstValueFrom} from 'rxjs'
 import {mockBrowserEnvironment} from './mockBrowserEnvironment'
-import {resolveConfig, Config, Workspace} from 'sanity'
+import {resolveConfig, Config, Workspace, WorkspaceOptions} from 'sanity'
 
 const candidates = [
   'sanity.config.js',
@@ -13,15 +12,18 @@ const candidates = [
   'sanity.config.tsx',
 ]
 
+interface GetStudioWorkspacesOptions {
+  configPath?: string
+  basePath: string
+}
+
 /**
  * Note: Don't run this on the main thread, use it a forked process
  */
-export async function getStudioConfig(options: {
-  configPath?: string
-  basePath: string
-}): Promise<Workspace[]> {
-  const {basePath, configPath: cfgPath} = options
-
+export function getStudioConfig({
+  basePath,
+  configPath: cfgPath,
+}: GetStudioWorkspacesOptions): WorkspaceOptions[] {
   let cleanup
   try {
     cleanup = mockBrowserEnvironment(basePath)
@@ -51,7 +53,27 @@ export async function getStudioConfig(options: {
     }
 
     if (!config) throw new Error('Configuration did not export expected config shape')
+    const normalized = Array.isArray(config)
+      ? config
+      : [{...config, name: config.name || 'default', basePath: config.basePath || '/'}]
 
+    return normalized
+  } finally {
+    cleanup?.()
+  }
+}
+
+/**
+ * Note: Don't run this on the main thread, use it a forked process
+ */
+export async function getStudioWorkspaces(
+  options: GetStudioWorkspacesOptions,
+): Promise<Workspace[]> {
+  let cleanup
+
+  try {
+    cleanup = mockBrowserEnvironment(options.basePath)
+    const config = getStudioConfig(options)
     const workspaces = await firstValueFrom(resolveConfig(config))
     if (!workspaces) throw new Error('Failed to resolve configuration')
     return workspaces

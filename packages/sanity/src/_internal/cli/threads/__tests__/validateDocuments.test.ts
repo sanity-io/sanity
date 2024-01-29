@@ -230,7 +230,7 @@ describe('validateDocuments', () => {
     expect(await receiver.event.loadedWorkspace()).toMatchObject({
       basePath: '/',
       dataset: 'test',
-      name: undefined,
+      name: 'default',
       projectId: 'ppsg7ml5',
     })
     expect(await receiver.event.loadedDocumentCount()).toEqual({documentCount: documents.length})

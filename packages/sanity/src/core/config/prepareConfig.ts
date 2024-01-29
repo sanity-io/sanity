@@ -44,7 +44,6 @@ import {
   partialIndexingEnabledReducer,
   resolveProductionUrlReducer,
   schemaTemplatesReducer,
-  schemaTypesReducer,
   toolsReducer,
 } from './configPropertyReducers'
 import {resolveConfigProperty} from './resolveConfigProperty'
@@ -52,6 +51,7 @@ import {ConfigResolutionError} from './ConfigResolutionError'
 import {SchemaError} from './SchemaError'
 import {createDefaultIcon} from './createDefaultIcon'
 import {documentFieldActionsReducer, initialDocumentFieldActions} from './document'
+import {resolveSchemaTypes} from './resolveSchemaTypes'
 
 type InternalSource = WorkspaceSummary['__internal']['sources'][number]
 
@@ -118,12 +118,9 @@ export function prepareConfig(
 
       let schemaTypes
       try {
-        schemaTypes = resolveConfigProperty({
-          propertyName: 'schema.types',
+        schemaTypes = resolveSchemaTypes({
           config: source,
           context: {projectId, dataset},
-          initialValue: [],
-          reducer: schemaTypesReducer,
         })
       } catch (e) {
         throw new ConfigResolutionError({

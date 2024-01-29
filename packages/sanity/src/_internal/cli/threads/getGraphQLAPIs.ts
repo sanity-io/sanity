@@ -4,7 +4,7 @@ import {isPlainObject} from 'lodash'
 import type {Schema} from '@sanity/types'
 import type {CliV3CommandContext, GraphQLAPIConfig} from '@sanity/cli'
 import type {SchemaDefinitionish, TypeResolvedGraphQLAPI} from '../actions/graphql/types'
-import {getStudioConfig} from '../util/getStudioConfig'
+import {getStudioWorkspaces} from '../util/getStudioWorkspaces'
 import {Workspace} from 'sanity'
 
 if (isMainThread || !parentPort) {
@@ -26,7 +26,7 @@ async function resolveGraphQLApis({
 }: Pick<CliV3CommandContext, 'cliConfig' | 'cliConfigPath' | 'workDir'>): Promise<
   TypeResolvedGraphQLAPI[]
 > {
-  const workspaces = await getStudioConfig({basePath: workDir})
+  const workspaces = await getStudioWorkspaces({basePath: workDir})
   const numSources = workspaces.reduce(
     (count, workspace) => count + workspace.unstable_sources.length,
     0,
