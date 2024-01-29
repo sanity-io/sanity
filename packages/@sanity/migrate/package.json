@@ -34,17 +34,6 @@
       "import": "./lib/_exports/index.esm.js",
       "default": "./lib/_exports/index.esm.js"
     },
-    "./mutations": {
-      "types": "./lib/dts/src/_exports/mutations.d.ts",
-      "source": "./src/_exports/mutations.ts",
-      "require": "./lib/_exports/mutations.js",
-      "node": {
-        "module": "./lib/_exports/mutations.esm.js",
-        "import": "./lib/_exports/mutations.cjs.mjs"
-      },
-      "import": "./lib/_exports/mutations.esm.js",
-      "default": "./lib/_exports/mutations.esm.js"
-    },
     "./package.json": "./package.json"
   },
   "typesVersions": {
