@@ -56,7 +56,6 @@ function isRawMutation(
   mutation: Transaction | Mutation | NodePatch | Operation | RawMutation,
 ): mutation is RawMutation {
   return (
-    'mutations' in mutation ||
     'createIfNotExists' in mutation ||
     'createOrReplace' in mutation ||
     'create' in mutation ||

@@ -14,7 +14,6 @@ export function transaction(
   const [id, mutations] =
     typeof idOrMutations === 'string'
       ? [idOrMutations, _mutations as Mutation[]]
-      : [undefined, _mutations as Mutation[]]
-
+      : [undefined, idOrMutations as Mutation[]]
   return {type: 'transaction', id, mutations}
 }

@@ -1,5 +1,6 @@
 import {Mutation as SanityMutation} from '@sanity/client'
 import {SanityEncoder} from '@bjoerge/mutiny'
+import arrify from 'arrify'
 import {Mutation, Transaction} from '../../mutations'
 import {isTransaction} from '../../mutations/asserters'
 
@@ -12,13 +13,15 @@ export async function* toSanityMutations(
   it: AsyncIterableIterator<Mutation | Transaction | (Mutation | Transaction)[]>,
 ): AsyncIterableIterator<SanityMutation[] | TransactionPayload> {
   for await (const mutation of it) {
-    if (isTransaction(mutation)) {
-      yield {
-        id: mutation.id,
-        mutations: SanityEncoder.encode(mutation.mutations as any) as SanityMutation[],
+    for (const mut of arrify(mutation)) {
+      if (isTransaction(mut)) {
+        yield {
+          id: mut.id,
+          mutations: SanityEncoder.encode(mut.mutations as any) as SanityMutation[],
+        }
+        continue
       }
-      continue
+      yield SanityEncoder.encode(mutation as any[]) as SanityMutation[]
     }
-    yield SanityEncoder.encode(mutation as any[]) as SanityMutation[]
   }
 }
