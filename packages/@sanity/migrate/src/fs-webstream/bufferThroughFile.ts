@@ -1,4 +1,7 @@
 import {FileHandle, open} from 'node:fs/promises'
+import baseDebug from '../debug'
+
+const debug = baseDebug.extend('bufferThroughFile')
 
 const CHUNK_SIZE = 1024
 
@@ -30,6 +33,7 @@ export function bufferThroughFile(
   let bufferDone = false
 
   signal?.addEventListener('abort', async () => {
+    debug('Aborting bufferThroughFile')
     await Promise.all([
       writeHandle && writeHandle.close(),
       readHandle && (await readHandle).close(),
@@ -69,6 +73,7 @@ export function bufferThroughFile(
         totalBytesRead,
       )
       if (bytesRead === 0 && !bufferDone && !signal?.aborted) {
+        debug('Not enough data in buffer file, waiting for more data to be written')
         // we're waiting for more data to be written to the buffer file, try again
         return tryReadFromBuffer(handle)
       }
@@ -80,10 +85,14 @@ export function bufferThroughFile(
   function init(): Promise<void> {
     if (!ready) {
       ready = (async () => {
+        debug('Initializing bufferThroughFile')
         writeHandle = await open(filename, 'w')
         // start pumping data from the source stream to the buffer file
         // note, don't await this, as it will block the ReadableStream.start() method
-        pump(source.getReader())
+        debug('Start buffering source stream to file')
+        pump(source.getReader()).then(() => {
+          debug('Buffering source stream to buffer file')
+        })
       })()
     }
     return ready
@@ -91,6 +100,7 @@ export function bufferThroughFile(
 
   function getReadHandle(): Promise<FileHandle> {
     if (!readHandle) {
+      debug('Opening read handle on %s', filename)
       readHandle = open(filename, 'r')
     }
     return readHandle
@@ -104,6 +114,7 @@ export function bufferThroughFile(
     if (readerCount === 0 && readHandle) {
       const handle = readHandle
       readHandle = null
+      debug('Closing read handle on %s', filename)
       await (await handle).close()
     }
   }
@@ -116,6 +127,7 @@ export function bufferThroughFile(
         if (signal?.aborted) {
           throw new Error('Cannot create new buffered readers on aborted stream')
         }
+        debug('Reader started reading from file handle')
         onReaderStart()
         await init()
         await getReadHandle()
@@ -126,6 +138,7 @@ export function bufferThroughFile(
         }
         const {bytesRead, buffer} = await readChunk(await readHandle)
         if (bytesRead === 0 && bufferDone) {
+          debug('Reader done reading from file handle')
           await onReaderEnd()
           controller.close()
         } else {
