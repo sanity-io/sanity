@@ -116,13 +116,7 @@ export const pretty: BuiltInValidationReporter = async ({output, worker, flags})
     if (result.level === 'error') overallLevel = 'error'
     if (result.level === 'warning' && overallLevel !== 'error') overallLevel = 'warning'
 
-    output.print(
-      `${formatDocumentValidation({
-        basePath: workspace.basePath,
-        studioHost: workspace.studioHost,
-        ...result,
-      })}\n`,
-    )
+    output.print(`${formatDocumentValidation(result)}\n`)
   }
 
   await worker.dispose()

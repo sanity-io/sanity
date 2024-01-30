@@ -6,12 +6,10 @@ jest.mock('tty', () => ({isatty: () => false}))
 describe('formatDocumentValidation', () => {
   it('formats a set of markers in to a printed tree, sorting markers, and adding spacing', () => {
     const result = formatDocumentValidation({
-      basePath: '/test',
       documentId: 'my-document-id',
       documentType: 'person',
       level: 'error',
       revision: 'rev',
-      studioHost: null,
       markers: [
         {level: 'error', message: 'Top-level marker', path: []},
         {level: 'error', message: '2nd top-level marker', path: []},
@@ -42,12 +40,10 @@ describe('formatDocumentValidation', () => {
 
   it('formats a set of top-level markers only (should have an elbow at first message)', () => {
     const result = formatDocumentValidation({
-      basePath: '/test',
       documentId: 'my-document-id',
       documentType: 'person',
       level: 'error',
       revision: 'rev',
-      studioHost: null,
       markers: [
         {level: 'info', message: '2nd top-level marker (should come last)', path: []},
         {level: 'error', message: 'Lone top-level marker (should get elbow)', path: []},

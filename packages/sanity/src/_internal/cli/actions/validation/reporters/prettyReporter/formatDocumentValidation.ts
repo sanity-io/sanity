@@ -4,11 +4,6 @@ import logSymbols from 'log-symbols'
 import {DocumentValidationResult, Level, isTty, levelValues} from './util'
 import {pathToString} from 'sanity'
 
-export interface FormatDocumentValidationOptions extends DocumentValidationResult {
-  studioHost: string | null
-  basePath: string
-}
-
 interface ValidationTree {
   markers?: Pick<ValidationMarker, 'level' | 'message'>[]
   children?: Record<string, ValidationTree>
@@ -148,26 +143,20 @@ function convertToTree(markers: ValidationMarker[]): ValidationTree {
  * Formats document validation results into a user-friendly tree structure
  */
 export function formatDocumentValidation({
-  basePath,
   documentId,
   documentType,
   level,
-  studioHost,
   markers,
-}: FormatDocumentValidationOptions): string {
+  intentUrl,
+}: DocumentValidationResult): string {
   const tree = convertToTree(markers)
-  const editLink =
-    studioHost &&
-    `${studioHost}${basePath}/intent/edit/id=${encodeURIComponent(
-      documentId,
-    )};type=${encodeURIComponent(documentType)}`
 
   const documentTypeHeader = isTty
     ? chalk.bgWhite(chalk.black(` ${documentType} `))
     : `[${documentType}]`
 
   const header = `${levelHeaders[level]} ${documentTypeHeader} ${
-    editLink ? link(documentId, editLink) : chalk.underline(documentId)
+    intentUrl ? link(documentId, intentUrl) : chalk.underline(documentId)
   }`
 
   const paddingLength = Math.max(maxKeyLength(tree.children) + 2, 30)
