@@ -15,6 +15,7 @@ import {
   CommentsOnboardingPopover,
   CommentsSelectedPath,
   CommentStatus,
+  UpsellPanel,
   useComments,
   useCommentsEnabled,
   useCommentsOnboarding,
@@ -310,6 +311,14 @@ function CommentsInspectorInner(props: DocumentInspectorProps) {
 
   const mode = commentsEnabled.reason === 'upsell' ? 'upsell' : 'default'
 
+  const beforeListNode = useMemo(() => {
+    if (mode === 'upsell') {
+      return <UpsellPanel />
+    }
+
+    return null
+  }, [mode])
+
   return (
     <Fragment>
       {commentToDelete && showDeleteDialog && (
@@ -345,11 +354,13 @@ function CommentsInspectorInner(props: DocumentInspectorProps) {
 
         {currentUser && (
           <CommentsList
+            beforeListNode={beforeListNode}
             comments={currentComments}
             currentUser={currentUser}
             error={comments.error}
             loading={loading}
             mentionOptions={mentionOptions}
+            mode={mode}
             onCopyLink={handleCopyLink}
             onCreateRetry={handleCreateRetry}
             onDelete={onDeleteStart}
@@ -363,7 +374,6 @@ function CommentsInspectorInner(props: DocumentInspectorProps) {
             ref={commentsListHandleRef}
             selectedPath={selectedPath}
             status={status}
-            mode={mode}
           />
         )}
         {mode === 'default' && <CommentsInspectorFeedbackFooter />}

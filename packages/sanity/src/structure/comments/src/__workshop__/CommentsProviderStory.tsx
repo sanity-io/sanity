@@ -1,7 +1,7 @@
 /* eslint-disable react/jsx-handler-names */
-import React from 'react'
+import React, {useMemo} from 'react'
 import {useString, useSelect} from '@sanity/ui-workshop'
-import {CommentsList} from '../components'
+import {CommentsList, UpsellPanel} from '../components'
 import {
   CommentsEnabledProvider,
   CommentsProvider,
@@ -47,15 +47,25 @@ function Inner({mode}: {mode: CommentsUIMode}) {
   const {comments, mentionOptions, operation} = useComments()
   const currentUser = useCurrentUser()
 
+  const beforeListNode = useMemo(() => {
+    if (mode === 'upsell') {
+      return <UpsellPanel />
+    }
+
+    return null
+  }, [mode])
+
   if (!currentUser) return null
 
   return (
     <CommentsList
+      beforeListNode={beforeListNode}
       comments={comments.data.open}
       currentUser={currentUser}
       error={comments.error}
       loading={comments.loading}
       mentionOptions={mentionOptions}
+      mode={mode}
       onCreateRetry={noop}
       onDelete={operation.remove}
       onEdit={operation.edit}
@@ -64,7 +74,6 @@ function Inner({mode}: {mode: CommentsUIMode}) {
       onReply={operation.create}
       selectedPath={null}
       status="open"
-      mode={mode}
     />
   )
 }

@@ -33,8 +33,8 @@ export function UpsellPanel() {
   if (!upsellData) return null
   return (
     <Container width={1}>
-      <Box paddingX={3} marginBottom={6}>
-        <Card radius={3} marginRight={3} overflow={'hidden'} border>
+      <Box marginBottom={6}>
+        <Card radius={3} overflow={'hidden'} border>
           {upsellData.image && (
             <Image src={upsellData.image.asset.url} alt={upsellData.image.asset.altText ?? ''} />
           )}

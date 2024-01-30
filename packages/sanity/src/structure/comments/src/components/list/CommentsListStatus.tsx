@@ -1,8 +1,7 @@
 import {Flex, Container, Stack, Text} from '@sanity/ui'
 import React from 'react'
 import {commentsLocaleNamespace} from '../../../i18n'
-import {CommentStatus, CommentsUIMode} from '../../types'
-import {UpsellPanel} from '../upsell'
+import {CommentStatus} from '../../types'
 import {LoadingBlock, TFunction, useTranslation} from 'sanity'
 
 interface EmptyStateMessage {
@@ -28,11 +27,10 @@ interface CommentsListStatusProps {
   hasNoComments: boolean
   loading: boolean
   status: CommentStatus
-  mode: CommentsUIMode
 }
 
 export function CommentsListStatus(props: CommentsListStatusProps) {
-  const {status, error, loading, hasNoComments, mode} = props
+  const {status, error, loading, hasNoComments} = props
   const {t} = useTranslation(commentsLocaleNamespace)
   const emptyStateMessages = getEmptyStateMessages(t)
 
@@ -52,7 +50,7 @@ export function CommentsListStatus(props: CommentsListStatusProps) {
     return <LoadingBlock showText title={t('list-status.loading')} />
   }
 
-  if (hasNoComments && mode !== 'upsell') {
+  if (hasNoComments) {
     return (
       <Flex align="center" justify="center" flex={1} sizing="border">
         <Container width={0} padding={4}>
@@ -68,9 +66,6 @@ export function CommentsListStatus(props: CommentsListStatusProps) {
         </Container>
       </Flex>
     )
-  }
-  if (hasNoComments && mode === 'upsell') {
-    return <UpsellPanel />
   }
 
   return null
