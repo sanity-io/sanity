@@ -5,11 +5,11 @@ import {streamToAsyncIterator} from '../../utils/streamToAsyncIterator'
 import {safeJsonParser} from '../../sources/fromExportEndpoint'
 import {groqQuery} from '../../it-utils/groqQuery'
 
-export function createBufferFileContext(
-  getReader: () => ReadableStream<Uint8Array>,
-): MigrationContext {
+export function createFilteredDocumentsClient(
+  getFilteredDocumentsReadableStream: () => ReadableStream<Uint8Array>,
+): MigrationContext['filtered'] {
   function getAllDocumentsFromBuffer<T extends SanityDocument>() {
-    return parse<T>(decodeText(streamToAsyncIterator(getReader())), {
+    return parse<T>(decodeText(streamToAsyncIterator(getFilteredDocumentsReadableStream())), {
       parse: safeJsonParser as JSONParser<T>,
     })
   }

@@ -1,5 +1,6 @@
 import {SanityDocument} from '@sanity/types'
 import arrify from 'arrify'
+import {createClient} from '@sanity/client'
 import {Migration, MigrationProgress} from '../types'
 import {decodeText} from '../it-utils'
 import {fromExportArchive} from '../sources/fromExportArchive'
@@ -17,11 +18,12 @@ import {
   MAX_MUTATION_CONCURRENCY,
   MUTATION_ENDPOINT_MAX_BODY_SIZE,
 } from './constants'
-import {createBufferFileContext} from './utils/createBufferFileContext'
+import {createFilteredDocumentsClient} from './utils/createFilteredDocumentsClient'
 import {getBufferFilePath} from './utils/getBufferFile'
 import {collectMigrationMutations} from './collectMigrationMutations'
 import {MigrationRunnerConfig, toFetchOptionsIterable} from './run'
 import {applyFilters} from './utils/applyFilters'
+import {limitClientConcurrency} from './utils/limitClientConcurrency'
 
 export async function runFromArchive(
   migration: Migration,
@@ -50,9 +52,6 @@ export async function runFromArchive(
     getBufferFilePath(),
     {signal: abortController.signal},
   )
-
-  const context = createBufferFileContext(createReader)
-
   const documents = () =>
     tap(
       parse<SanityDocument>(decodeText(streamToAsyncIterator(createReader())), {
@@ -62,6 +61,14 @@ export async function runFromArchive(
         config.onProgress?.({...stats, documents: ++stats.documents})
       },
     )
+
+  const client = limitClientConcurrency(createClient({...config.api, useCdn: false}))
+
+  const filteredDocumentsClient = createFilteredDocumentsClient(createReader)
+  const context = {
+    client,
+    filtered: filteredDocumentsClient,
+  }
 
   const payloads = tap(collectMigrationMutations(migration, documents, context), (muts) => {
     stats.currentTransactions = arrify(muts)
