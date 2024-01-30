@@ -58,7 +58,9 @@ function resolveMigrationScript(workDir: string, migrationName: string) {
         // eslint-disable-next-line import/no-dynamic-require
         mod = require(absolutePath)
       } catch (err) {
-        // console.error(err)
+        if (err.code !== 'MODULE_NOT_FOUND') {
+          throw new Error(`Error: ${err.message}"`)
+        }
       }
       return {relativePath, absolutePath, mod}
     }),
