@@ -48,7 +48,7 @@ const RootCard = styled(Card)`
 `
 
 const NavGrid = styled(Grid)`
-  grid-template-columns: auto auto auto;
+  grid-template-columns: auto 1fr auto;
 `
 
 /**
