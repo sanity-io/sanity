@@ -4,7 +4,7 @@ export const minimalSimple = ({
 }: {
   migrationName: string
   documentTypes: string[]
-}) => `import {defineMigration} from 'sanity/migrate'
+}) => `import {at, defineMigration, setIfMissing, unset} from 'sanity/migrate'
 
 export default defineMigration({
   title: '${migrationName}',
@@ -18,16 +18,26 @@ ${
       // this will be called for every document of the matching type
       // any patch returned will be applied to the document
       // you can also return mutations that touches other documents
+
+      return at('title', setIfMissing('Default title'))
     },
     node(node, path, context) {
       // this will be called for every node in every document of the matching type
       // any patch returned will be applied to the document
       // you can also return mutations that touches other documents
+
+      if (typeof node === 'string' && node === 'deleteme') {
+        return unset()
+      }
     },
     object(node, path, context) {
       // this will be called for every object node in every document of the matching type
       // any patch returned will be applied to the document
       // you can also return mutations that touches other documents
+      if (node._type === 'author') {
+        // make sure all authors objects have a books array
+        return at('books', setIfMissing([]))
+      }
     },
     array(node, path, context) {
       // this will be called for every array node in every document of the matching type

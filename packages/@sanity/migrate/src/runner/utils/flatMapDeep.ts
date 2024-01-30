@@ -60,6 +60,11 @@ function flatMapAny<T>(mapFn: MapFn<T>, val: JsonValue, path: Path) {
   return callMap(mapFn, val, path)
 }
 
+/**
+ * Iterating depth first over the JSON tree, calling the mapFn for parents before children
+ * @param value - the value to map deeply over
+ * @param mapFn - the mapFn to call for each value
+ */
 export function flatMapDeep<T>(value: JsonValue, mapFn: MapFn<T>): T[] {
   return flatMapAny(mapFn, value, [])
 }
