@@ -3,7 +3,7 @@ import {stat} from 'node:fs/promises'
 
 import path from 'node:path'
 import {bufferThroughFile} from '../bufferThroughFile'
-import {decodeText, parse} from '../../it-utils'
+import {decodeText, parse, toArray} from '../../it-utils'
 import {streamToAsyncIterator} from '../../utils/streamToAsyncIterator'
 import {asyncIterableToStream} from '../../utils/asyncIterableToStream'
 import {lastValueFrom} from '../../it-utils/lastValueFrom'
@@ -32,6 +32,7 @@ describe('using primary stream', () => {
     const abortController = new AbortController()
     const createReader = bufferThroughFile(asyncIterableToStream(gen()), bufferFile, {
       signal: abortController.signal,
+      keepFile: true,
     })
     const fileBufferStream = createReader()
     const lines = []
@@ -82,6 +83,7 @@ describe('using primary stream', () => {
     const controller = new AbortController()
     const createReader = bufferThroughFile(asyncIterableToStream(gen()), bufferFile, {
       signal: controller.signal,
+      keepFile: true,
     })
     const fileBufferStream = createReader()
     const lines = []
@@ -120,6 +122,7 @@ describe('using secondary stream', () => {
     const abortController = new AbortController()
     const createReader = bufferThroughFile(asyncIterableToStream(gen()), bufferFile, {
       signal: abortController.signal,
+      keepFile: true,
     })
     const fileBufferStream = createReader()
 
@@ -181,6 +184,7 @@ describe('using secondary stream', () => {
     const controller = new AbortController()
     const createReader = bufferThroughFile(asyncIterableToStream(gen()), bufferFile, {
       signal: controller.signal,
+      keepFile: true,
     })
     const primary = createReader()
     const first = await firstValueFrom(parse(decodeText(streamToAsyncIterator(primary))))
@@ -196,5 +200,66 @@ describe('using secondary stream', () => {
     ).rejects.toThrowErrorMatchingInlineSnapshot(
       `"Cannot create new buffered readers on aborted stream"`,
     )
+  })
+})
+
+describe('cleanup', () => {
+  test('cleans up the file after cancel', async () => {
+    const encoder = new TextEncoder()
+
+    async function* gen() {
+      for (let n = 0; n < 100; n++) {
+        yield encoder.encode(`{"foo": ${n},`)
+        yield encoder.encode(`"bar": ${n}, "baz": ${n}}`)
+        yield encoder.encode('\n')
+      }
+    }
+
+    const bufferFile = getTestBufferFileName()
+    const controller = new AbortController()
+    const createReader = bufferThroughFile(asyncIterableToStream(gen()), bufferFile, {
+      signal: controller.signal,
+    })
+    const reader = createReader()
+
+    const first = await firstValueFrom(parse(decodeText(streamToAsyncIterator(reader))))
+
+    expect(first).toEqual({bar: 0, baz: 0, foo: 0})
+
+    await reader.cancel()
+
+    await sleep(10)
+    await expect(stat(bufferFile)).rejects.toThrow('ENOENT')
+  })
+  test('cleans up after the abortController aborts', async () => {
+    const encoder = new TextEncoder()
+
+    async function* gen() {
+      for (let n = 0; n < 100; n++) {
+        yield encoder.encode(`{"foo": ${n},`)
+        yield encoder.encode(`"bar": ${n}, "baz": ${n}}`)
+        yield encoder.encode('\n')
+      }
+    }
+
+    const bufferFile = getTestBufferFileName()
+    const controller = new AbortController()
+    const createReader = bufferThroughFile(asyncIterableToStream(gen()), bufferFile, {
+      signal: controller.signal,
+    })
+
+    const firstReader = createReader()
+
+    const first = await firstValueFrom(parse(decodeText(streamToAsyncIterator(firstReader))))
+
+    expect(first).toEqual({bar: 0, baz: 0, foo: 0})
+
+    const second = await lastValueFrom(parse(decodeText(streamToAsyncIterator(firstReader))))
+    expect(second).toEqual({bar: 99, baz: 99, foo: 99})
+
+    controller.abort()
+
+    await sleep(10)
+    await expect(stat(bufferFile)).rejects.toThrow('ENOENT')
   })
 })

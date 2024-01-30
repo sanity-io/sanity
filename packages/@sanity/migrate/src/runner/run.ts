@@ -23,7 +23,7 @@ import {
 } from './constants'
 import {batchMutations} from './utils/batchMutations'
 import {collectMigrationMutations} from './collectMigrationMutations'
-import {getBufferFilePath} from './utils/getBufferFile'
+import {createBufferFile} from './utils/getBufferFile'
 import {createFilteredDocumentsClient} from './utils/createFilteredDocumentsClient'
 import {applyFilters} from './utils/applyFilters'
 import {createContextClient} from './utils/createContextClient'
@@ -76,7 +76,7 @@ export async function run(config: MigrationRunnerConfig, migration: Migration) {
 
   const createReader = bufferThroughFile(
     asyncIterableToStream(stringify(filteredDocuments)),
-    getBufferFilePath(),
+    await createBufferFile(),
     {signal: abortController.signal},
   )
 

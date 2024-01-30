@@ -18,7 +18,7 @@ import {
   MUTATION_ENDPOINT_MAX_BODY_SIZE,
 } from './constants'
 import {createFilteredDocumentsClient} from './utils/createFilteredDocumentsClient'
-import {getBufferFilePath} from './utils/getBufferFile'
+import {createBufferFile} from './utils/getBufferFile'
 import {collectMigrationMutations} from './collectMigrationMutations'
 import {MigrationRunnerConfig, toFetchOptionsIterable} from './run'
 import {applyFilters} from './utils/applyFilters'
@@ -48,7 +48,7 @@ export async function runFromArchive(
 
   const createReader = bufferThroughFile(
     asyncIterableToStream(stringify(filteredDocuments)),
-    getBufferFilePath(),
+    await createBufferFile(),
     {signal: abortController.signal},
   )
   const documents = () =>

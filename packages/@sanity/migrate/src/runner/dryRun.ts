@@ -7,7 +7,7 @@ import {asyncIterableToStream} from '../utils/asyncIterableToStream'
 import {parse, stringify} from '../it-utils/ndjson'
 import {decodeText} from '../it-utils'
 import {collectMigrationMutations} from './collectMigrationMutations'
-import {getBufferFilePath} from './utils/getBufferFile'
+import {createBufferFile} from './utils/getBufferFile'
 import {createFilteredDocumentsClient} from './utils/createFilteredDocumentsClient'
 import {applyFilters} from './utils/applyFilters'
 import {createContextClient} from './utils/createContextClient'
@@ -34,7 +34,7 @@ export async function* dryRun(config: MigrationRunnerOptions, migration: Migrati
 
   const createReader = bufferThroughFile(
     asyncIterableToStream(stringify(filteredDocuments)),
-    getBufferFilePath(),
+    await createBufferFile(),
     {signal: abortController.signal},
   )
 
