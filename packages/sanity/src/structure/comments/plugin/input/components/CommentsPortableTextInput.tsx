@@ -4,30 +4,26 @@ import {
   PortableTextEditor,
   RangeDecoration,
 } from '@sanity/portable-text-editor'
-import React, {useState, useRef, useCallback, useMemo, useEffect} from 'react'
-import {isEqual} from 'lodash'
+import React, {useState, useRef, useCallback, useMemo} from 'react'
+import {debounce} from 'lodash'
 import {uuid} from '@sanity/uuid'
 import * as PathUtils from '@sanity/util/paths'
-import {toPlainText} from '@portabletext/react'
-import {AddCommentIcon} from '@sanity/icons'
+import {AnimatePresence} from 'framer-motion'
+import {useClickOutside} from '@sanity/ui'
 import {
   CommentMessage,
   buildRangeDecorators,
   buildTextSelectionFromFragment,
+  hasCommentMessageValue,
   useComments,
   useCommentsEnabled,
   useCommentsSelectedPath,
 } from '../../../src'
-import {PopoverProps} from '../../../../../ui-components'
-import {createDomRectFromElements} from '../helpers'
+import {useReferenceElement} from '../helpers'
 import {InlineCommentInputPopover} from './InlineCommentInputPopover'
 import {HighlightSpan} from './HighlightSpan'
-import {
-  PortableTextInputProps,
-  PortableTextCustomAction,
-  isPortableTextTextBlock,
-  useCurrentUser,
-} from 'sanity'
+import {FloatingButtonPopover} from './FloatingButtonPopover'
+import {PortableTextInputProps, isPortableTextTextBlock, useCurrentUser} from 'sanity'
 
 const EMPTY_ARRAY: [] = []
 
@@ -53,17 +49,23 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
   const {setSelectedPath} = useCommentsSelectedPath()
 
   const editorRef = useRef<PortableTextEditor | null>(null)
+  const floatingButtonPopoverRef = useRef<HTMLDivElement | null>(null)
 
   const [nextCommentValue, setNextCommentValue] = useState<CommentMessage | null>(null)
-  const [nextCommentSelection, setNextCommentSelection] = useState<EditorSelection | null>(null)
-  const [currentSelectionPlainText, setCurrentSelectionPlainText] = useState<string | null>(null)
   const [currentHoveredCommentId, setCurrentHoveredCommentId] = useState<string | null>(null)
-
+  const [nextCommentSelection, setNextCommentSelection] = useState<EditorSelection | null>(null)
+  const [currentSelection, setCurrentSelection] = useState<EditorSelection | null>(null)
   const [canSubmit, setCanSubmit] = useState<boolean>(false)
 
-  const rootElementRef = useMemo(() => props.elementProps.ref, [props.elementProps.ref])
-  const currentSelectionRef = useRef<EditorSelection | null>(null)
-  const [rect, setRect] = useState<DOMRect | null>(null)
+  const popoverAuthoringReferenceElement = useReferenceElement({
+    selector: '[data-inline-comment-state="authoring"]',
+    dependency: nextCommentSelection,
+  })
+
+  const popoverSelectionReferenceElement = useReferenceElement({
+    selector: '[data-ui="InlineCommentSelectionSpan"]',
+    dependency: currentSelection,
+  })
 
   const stringFieldPath = useMemo(() => PathUtils.toString(props.path), [props.path])
 
@@ -71,9 +73,20 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
     return comments.data.open?.filter((comment) => comment.fieldPath === stringFieldPath)
   }, [comments, stringFieldPath])
 
+  const textComments = useMemo(() => {
+    return fieldComments.filter((c) => c.selection?.type === 'text')
+  }, [fieldComments])
+
   const getFragment = useCallback(() => {
     if (!editorRef.current) return EMPTY_ARRAY
     return PortableTextEditor.getFragment(editorRef.current)
+  }, [])
+
+  const clearSelection = useCallback(() => {
+    setCurrentSelection(null)
+    setNextCommentSelection(null)
+    setCanSubmit(false)
+    setNextCommentValue(null)
   }, [])
 
   const handleSubmit = useCallback(() => {
@@ -81,7 +94,6 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
 
     const fragment = getFragment() || EMPTY_ARRAY
     const textSelection = buildTextSelectionFromFragment({fragment})
-
     const threadId = uuid()
 
     operation.create({
@@ -107,8 +119,10 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
     // Reset the states when submitting
     setNextCommentValue(null)
     setNextCommentSelection(null)
-    currentSelectionRef.current = null
+    setCurrentSelection(null)
+    clearSelection()
   }, [
+    clearSelection,
     getFragment,
     nextCommentSelection,
     nextCommentValue,
@@ -121,56 +135,76 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
   // This will set the current selection state to the current selection ref.
   // When this value is set, the popover with the comment input will open and
   // the comment being added will use the current selection in it's data.
-  const handleAddSelection = useCallback(() => {
-    setNextCommentSelection(currentSelectionRef.current)
-  }, [])
+  const handleSelectCurrentSelection = useCallback(() => {
+    setCurrentSelection(null)
+    setNextCommentSelection(currentSelection)
+  }, [currentSelection])
 
   const handleDiscardConfirm = useCallback(() => {
-    setNextCommentValue(null)
+    clearSelection()
+  }, [clearSelection])
+
+  const onClickOutsideCommentInputPopover = useCallback(() => {
     setNextCommentSelection(null)
   }, [])
 
-  const onClickOutsidePopover = useCallback(() => {
-    setRect(null)
-    setNextCommentSelection(null)
-  }, [])
+  const handleClickOutside = useCallback(() => {
+    // If the user clicks outside the comment input with a value
+    // we don't want to clear the selection and close the popover
+    // but instead display the discard dialog. This is handled in
+    // the `InlineCommentInputPopover` component.
+    if (hasCommentMessageValue(nextCommentValue)) return
+
+    clearSelection()
+  }, [nextCommentValue, clearSelection])
+
+  useClickOutside(handleClickOutside, [
+    props.elementProps.ref.current,
+    floatingButtonPopoverRef.current,
+  ])
+
+  const handleSelectionChange = useCallback(
+    (selection: EditorSelection | null, isRangeSelected: boolean) => {
+      const fragment = getFragment()
+      const isValidSelection = fragment?.every(isPortableTextTextBlock)
+
+      if (!isValidSelection || !isRangeSelected) {
+        clearSelection()
+        return
+      }
+
+      setCurrentSelection(selection)
+      setCanSubmit(true)
+    },
+    [clearSelection, getFragment],
+  )
+
+  const debounceSelectionChange = useMemo(
+    () => debounce(handleSelectionChange, 200),
+    [handleSelectionChange],
+  )
 
   const onEditorChange = useCallback(
     (change: EditorChange) => {
       if (change.type === 'selection') {
-        const hasSelectionRange = !isEqual(change.selection, nextCommentSelection)
+        const isRangeSelected = change.selection?.anchor.offset !== change.selection?.focus.offset
 
-        if (hasSelectionRange) {
-          // Store the current selection in a ref so that, when clicking the "add comment"
-          // button, we use the selection and set it as the current selection state so that
-          // the popover opens with the selection.
-          currentSelectionRef.current = change.selection
-
-          const fragment = getFragment()
-          const plainTextValue = fragment ? toPlainText(fragment) : null
-
-          // Check if the selection is valid. A valid selection is a selection that only
-          // contains text blocks. If the selection contains other types of blocks, we
-          // should not allow the user to add a comment and we disable the "add comment"
-          // button.
-          const isValidSelection = fragment?.every(isPortableTextTextBlock)
-
-          setCanSubmit(Boolean(isValidSelection))
-          setCurrentSelectionPlainText(plainTextValue)
-        } else {
-          currentSelectionRef.current = null
-          setCurrentSelectionPlainText(null)
-          setCanSubmit(false)
+        // Set the current selection to null if the selection is not a range.
+        // This will make sure that the floating button is not displayed immediately
+        // and we don't need to wait for the debounce to finish before hiding it.
+        if (!isRangeSelected) {
+          setCurrentSelection(null)
         }
+
+        debounceSelectionChange(change.selection, isRangeSelected)
       }
     },
-    [getFragment, nextCommentSelection],
+    [debounceSelectionChange],
   )
 
   const handleDecoratorClick = useCallback(
     (commentId: string) => {
       const comment = getComment(commentId)
-
       if (!comment) return
 
       setSelectedPath({
@@ -194,111 +228,103 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
   )
 
   // The range decorations for existing comments
-  const addCommentsDecorators = useMemo(() => {
-    const commentsWithTextSelection = fieldComments.filter((c) => c.selection?.type === 'text')
-
+  const addedCommentsDecorators = useMemo(() => {
     return buildRangeDecorators({
-      comments: commentsWithTextSelection,
-      value: props.value,
+      comments: textComments,
       currentHoveredCommentId,
+      onDecoratorClick: handleDecoratorClick,
       onDecoratorHoverEnd: setCurrentHoveredCommentId,
       onDecoratorHoverStart: setCurrentHoveredCommentId,
-      onDecoratorClick: handleDecoratorClick,
+      value: props.value,
     })
-  }, [currentHoveredCommentId, fieldComments, handleDecoratorClick, props.value])
+  }, [textComments, props.value, currentHoveredCommentId, handleDecoratorClick])
 
-  const rangeDecorations = useMemo((): RangeDecoration[] => {
-    const nextCommentDecorator: RangeDecoration = {
+  // The range decoration for the current selection. This is used to position the
+  // floating button popover on the current selection.
+  const selectDecorator = useMemo((): RangeDecoration => {
+    return {
+      component: ({children}) => <span data-ui="InlineCommentSelectionSpan">{children}</span>,
+      isRangeInvalid: () => !currentSelection,
+      selection: currentSelection,
+    }
+  }, [currentSelection])
+
+  // The range decoration for the comment input. This is used to position the
+  // comment input popover on the current selection and to highlight the
+  // selected text.
+  const authoringDecorator = useMemo((): RangeDecoration | null => {
+    if (!nextCommentSelection) return null
+
+    return {
       component: ({children}) => (
-        <HighlightSpan data-inline-comment-state="authoring">{children}</HighlightSpan>
+        <HighlightSpan data-inline-comment-state="authoring" style={{userSelect: 'none'}}>
+          {children}
+        </HighlightSpan>
       ),
       isRangeInvalid,
       selection: nextCommentSelection,
     }
+  }, [nextCommentSelection])
 
-    const authoringDecorator = nextCommentSelection ? [nextCommentDecorator] : EMPTY_ARRAY
-
+  // All the range decorations
+  const rangeDecorations = useMemo((): RangeDecoration[] => {
     return [
       // Existing range decorations
       ...(props?.rangeDecorations || EMPTY_ARRAY),
       // The range decoration when adding a comment
-      ...authoringDecorator,
+      ...(authoringDecorator ? [authoringDecorator] : EMPTY_ARRAY),
+      // The range decoration for the current selection
+      ...(selectDecorator ? [selectDecorator] : EMPTY_ARRAY),
       // The range decorations for existing comments
-      ...addCommentsDecorators,
+      ...addedCommentsDecorators,
     ]
-  }, [addCommentsDecorators, nextCommentSelection, props?.rangeDecorations])
+  }, [addedCommentsDecorators, authoringDecorator, props?.rangeDecorations, selectDecorator])
 
-  // Construct a virtual element used to position the popover relative to the selection.
-  const popoverReferenceElement = useMemo((): PopoverProps['referenceElement'] => {
-    if (!rect) return null
-
-    return {
-      getBoundingClientRect: () => rect,
-    } as HTMLElement
-  }, [rect])
-
-  const commentAction = useMemo(
-    (): PortableTextCustomAction => ({
-      disabled: !canSubmit || !currentSelectionPlainText,
-      icon: AddCommentIcon,
-      name: 'comment',
-      onAction: handleAddSelection,
-      title: 'Add comment',
-    }),
-    [canSubmit, currentSelectionPlainText, handleAddSelection],
-  )
-
-  // The props passed to the portable text input
+  // The input props for the portable text input
   const inputProps = useMemo(
     (): PortableTextInputProps => ({
       ...props,
       onEditorChange,
       editorRef,
       rangeDecorations,
-      // eslint-disable-next-line camelcase
-      __internal_customActions: (props?.__internal_customActions || EMPTY_ARRAY).concat(
-        commentAction,
-      ),
     }),
-    [props, onEditorChange, rangeDecorations, commentAction],
+    [props, onEditorChange, rangeDecorations],
   )
 
-  // This effect will run when the current selection changes and will calculate the
-  // bounding box for the selection and set it as the rect state. This is used to
-  // position the popover.
-  useEffect(() => {
-    if (!rootElementRef.current) return undefined
+  const showFloatingButton = Boolean(
+    currentSelection && canSubmit && popoverSelectionReferenceElement,
+  )
 
-    // Get all the elements that have the `data-inline-comment-state="authoring"` attribute
-    const elements = document?.querySelectorAll('[data-inline-comment-state="authoring"]')
-
-    // Create a DOMRect from the elements. This is used to position the popover.
-    const nextRect = createDomRectFromElements(Array.from(elements || EMPTY_ARRAY))
-
-    const raf = requestAnimationFrame(() => {
-      setRect(nextRect)
-    })
-
-    return () => {
-      cancelAnimationFrame(raf)
-    }
-  }, [nextCommentSelection, rootElementRef])
+  const showFloatingInput = Boolean(
+    nextCommentSelection && canSubmit && popoverAuthoringReferenceElement,
+  )
 
   return (
     <>
-      {currentUser && (
-        <InlineCommentInputPopover
-          currentUser={currentUser}
-          mentionOptions={mentionOptions}
-          onChange={setNextCommentValue}
-          onClickOutside={onClickOutsidePopover}
-          onDiscardConfirm={handleDiscardConfirm}
-          onSubmit={handleSubmit}
-          open={!!nextCommentSelection}
-          referenceElement={popoverReferenceElement}
-          value={nextCommentValue}
-        />
-      )}
+      <AnimatePresence>
+        {showFloatingInput && currentUser && !showFloatingButton && (
+          <InlineCommentInputPopover
+            currentUser={currentUser}
+            mentionOptions={mentionOptions}
+            onChange={setNextCommentValue}
+            onClickOutside={onClickOutsideCommentInputPopover}
+            onDiscardConfirm={handleDiscardConfirm}
+            onSubmit={handleSubmit}
+            referenceElement={popoverAuthoringReferenceElement}
+            value={nextCommentValue}
+            key="comment-input-popover"
+          />
+        )}
+
+        {showFloatingButton && !showFloatingInput && (
+          <FloatingButtonPopover
+            onClick={handleSelectCurrentSelection}
+            referenceElement={popoverSelectionReferenceElement}
+            key="comment-input-floating-button"
+            ref={floatingButtonPopoverRef}
+          />
+        )}
+      </AnimatePresence>
 
       {props.renderDefault(inputProps)}
     </>
