@@ -3,6 +3,7 @@ import jsdomGlobal from 'jsdom-global'
 import resolveFrom from 'resolve-from'
 import {register as registerESBuild} from 'esbuild-register/dist/node'
 import {ResizeObserver} from '@juggle/resize-observer'
+import {getStudioEnvironmentVariables} from '../server/getStudioEnvironmentVariables'
 
 const jsdomDefaultHtml = `<!doctype html>
 <html>
@@ -34,6 +35,12 @@ export function mockBrowserEnvironment(basePath: string): () => void {
     format: 'cjs',
     extensions: ['.js', '.jsx', '.ts', '.tsx', '.mjs'],
     jsx: 'automatic',
+    define: {
+      // define the `process.env` global
+      ...getStudioEnvironmentVariables({prefix: 'process.env.', jsonEncode: true}),
+      // define the `import.meta.env` global
+      ...getStudioEnvironmentVariables({prefix: 'import.meta.env.', jsonEncode: true}),
+    },
   })
 
   return function cleanupBrowserEnvironment() {
