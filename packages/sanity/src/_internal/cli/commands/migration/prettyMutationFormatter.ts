@@ -82,7 +82,9 @@ function mutationHeader(chalk: Chalk, mutation: Mutation, migration: Migration):
       : null
 
   // TODO: Should we list documentType when a mutation can be yielded for any document type?
-  return [mutationType, documentType, documentId(mutation)].filter(Boolean).join(' ')
+  return [mutationType, documentType, chalk.underline(documentId(mutation))]
+    .filter(Boolean)
+    .join(' ')
 }
 
 export function prettyFormatMutation(
