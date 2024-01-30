@@ -13,8 +13,8 @@ import {
 
 import {Table} from 'console-table-printer'
 import {debug} from '../../debug'
-import {formatTransaction} from './utils/mutationFormatter'
 import {resolveMigrations} from './listMigrationsCommand'
+import {prettyFormat} from './prettyMutationFormatter'
 
 const helpText = `
 Options
@@ -183,46 +183,36 @@ const runMigrationCommand: CliCommandDefinition<CreateFlags> = {
     } as const
 
     if (dry) {
-      const spinner = output.spinner(`Running migration "${id}" in dry mode`).start()
-      if (fromExport) {
-        await runFromArchive(migration, fromExport, {
-          api: apiConfig,
-          concurrency,
-          onProgress: createProgress(spinner),
-        })
-      } else {
-        await dryRun({api: apiConfig, onProgress: createProgress(spinner)}, migration)
-      }
-
-      spinner.stop()
-    } else {
-      const response =
-        shouldConfirm &&
-        (await prompt.single<boolean>({
-          message: `This migration will run on the ${chalk.yellow(
-            chalk.bold(apiConfig.dataset),
-          )} dataset in ${chalk.yellow(chalk.bold(apiConfig.projectId))} project. Are you sure?`,
-          type: 'confirm',
-        }))
-
-      if (response === false) {
-        debug('User aborted migration')
-        return
-      }
-
-      const spinner = output.spinner(`Running migration "${id}"`).start()
-      await run({api: apiConfig, concurrency, onProgress: createProgress(spinner)}, migration)
-      spinner.stop()
+      dryRunHandler()
+      return
     }
 
-    function createProgress(spinner: ReturnType<typeof output.spinner>) {
+    const response =
+      shouldConfirm &&
+      (await prompt.single<boolean>({
+        message: `This migration will run on the ${chalk.yellow(
+          chalk.bold(apiConfig.dataset),
+        )} dataset in ${chalk.yellow(chalk.bold(apiConfig.projectId))} project. Are you sure?`,
+        type: 'confirm',
+      }))
+
+    if (response === false) {
+      debug('User aborted migration')
+      return
+    }
+
+    const spinner = output.spinner(`Running migration "${id}"`).start()
+    await run({api: apiConfig, concurrency, onProgress: createProgress(spinner)}, migration)
+    spinner.stop()
+
+    function createProgress(progressSpinner: ReturnType<typeof output.spinner>) {
       return function onProgress(progress: MigrationProgress) {
         if (!showProgress) {
-          spinner.stop()
+          progressSpinner.stop()
           return
         }
         if (progress.done) {
-          spinner.text = `Migration "${id}" completed.
+          progressSpinner.text = `Migration "${id}" completed.
 
   Project id:  ${chalk.bold(apiConfig.projectId)}
   Dataset:     ${chalk.bold(apiConfig.dataset)}
@@ -230,12 +220,12 @@ const runMigrationCommand: CliCommandDefinition<CreateFlags> = {
   ${progress.documents} documents processed.
   ${progress.mutations} mutations generated.
   ${chalk.green(progress.completedTransactions.length)} transactions committed.`
-          spinner.stopAndPersist({symbol: chalk.green('✔')})
+          progressSpinner.stopAndPersist({symbol: chalk.green('✔')})
           return
         }
 
         ;[null, ...progress.currentTransactions].forEach((transaction) => {
-          spinner.text = `Running migration "${id}" ${dry ? 'in dry mode...' : '...'}
+          progressSpinner.text = `Running migration "${id}" ${dry ? 'in dry mode...' : '...'}
 
   Project id:     ${chalk.bold(apiConfig.projectId)}
   Dataset:        ${chalk.bold(apiConfig.dataset)}
@@ -246,8 +236,44 @@ const runMigrationCommand: CliCommandDefinition<CreateFlags> = {
   ${chalk.blue(progress.pending)} requests pending…
   ${chalk.green(progress.completedTransactions.length)} transactions committed.
 
-  ${transaction && !progress.done ? `» ${chalk.grey(formatTransaction(chalk, transaction))}` : ''}`
+  ${
+    transaction && !progress.done
+      ? `» ${prettyFormat({chalk, subject: transaction, migration, indentSize: 2})}`
+      : ''
+  }`
         })
+      }
+    }
+
+    async function dryRunHandler() {
+      if (fromExport) {
+        const dryRunSpinner = output.spinner(`Running migration "${id}" in dry mode`).start()
+
+        // TODO: Dry run output when using archive source.
+        await runFromArchive(migration, fromExport, {
+          api: apiConfig,
+          concurrency,
+          onProgress: createProgress(dryRunSpinner),
+        })
+
+        dryRunSpinner.stop()
+      } else {
+        output.print(`Running migration "${id}" in dry mode`)
+        output.print()
+        output.print(`Project id:  ${chalk.bold(apiConfig.projectId)}`)
+        output.print(`Dataset:     ${chalk.bold(apiConfig.dataset)}`)
+
+        for await (const mutation of dryRun({api: apiConfig}, migration)) {
+          if (!mutation) continue
+          output.print()
+          output.print(
+            prettyFormat({
+              chalk,
+              subject: mutation,
+              migration,
+            }),
+          )
+        }
       }
     }
   },
