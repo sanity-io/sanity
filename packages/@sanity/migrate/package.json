@@ -64,7 +64,7 @@
   },
   "dependencies": {
     "@bjoerge/mutiny": "^0.5.1",
-    "@sanity/client": "^6.11.1",
+    "@sanity/client": "^6.12.3",
     "@sanity/types": "3.27.1",
     "@sanity/util": "3.27.1",
     "arrify": "^2.0.1",
