@@ -3,7 +3,6 @@ import {MigrationContext} from '../../types'
 import {decodeText, JSONParser, parse} from '../../it-utils'
 import {streamToAsyncIterator} from '../../utils/streamToAsyncIterator'
 import {safeJsonParser} from '../../sources/fromExportEndpoint'
-import {groqQuery} from '../../it-utils/groqQuery'
 
 export function createFilteredDocumentsClient(
   getFilteredDocumentsReadableStream: () => ReadableStream<Uint8Array>,
@@ -33,13 +32,8 @@ export function createFilteredDocumentsClient(
     return (await getDocumentsFromBuffer<T>([id]))[0]
   }
 
-  function queryFromBuffer<T>(query: string, params?: Record<string, unknown>) {
-    return groqQuery<T>(getAllDocumentsFromBuffer<SanityDocument>(), query, params)
-  }
-
   return {
     getDocument: getDocumentFromBuffer,
     getDocuments: getDocumentsFromBuffer,
-    query: queryFromBuffer,
   }
 }
