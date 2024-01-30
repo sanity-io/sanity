@@ -50,7 +50,7 @@ const createMigrationCommand: CliCommandDefinition<CreateFlags> = {
       title: `Found ${migrationModules.length} migrations in project`,
       columns: [
         {name: 'id', title: 'ID', alignment: 'left'},
-        {name: 'name', title: 'Title', alignment: 'left'},
+        {name: 'title', title: 'Title', alignment: 'left'},
       ],
     })
 
