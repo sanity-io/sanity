@@ -5,7 +5,7 @@ import {Mutation, Transaction} from '../../mutations'
 import {isTransaction} from '../../mutations/asserters'
 
 export interface TransactionPayload {
-  id?: string
+  transactionId?: string
   mutations: SanityMutation[]
 }
 
@@ -16,7 +16,7 @@ export async function* toSanityMutations(
     for (const mut of arrify(mutation)) {
       if (isTransaction(mut)) {
         yield {
-          id: mut.id,
+          transactionId: mut.id,
           mutations: SanityEncoder.encode(mut.mutations as any) as SanityMutation[],
         }
         continue
