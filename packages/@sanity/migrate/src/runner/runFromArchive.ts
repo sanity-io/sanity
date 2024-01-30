@@ -1,6 +1,5 @@
 import {SanityDocument} from '@sanity/types'
 import arrify from 'arrify'
-import {createClient} from '@sanity/client'
 import {Migration, MigrationProgress} from '../types'
 import {decodeText} from '../it-utils'
 import {fromExportArchive} from '../sources/fromExportArchive'
@@ -23,7 +22,7 @@ import {getBufferFilePath} from './utils/getBufferFile'
 import {collectMigrationMutations} from './collectMigrationMutations'
 import {MigrationRunnerConfig, toFetchOptionsIterable} from './run'
 import {applyFilters} from './utils/applyFilters'
-import {limitClientConcurrency} from './utils/limitClientConcurrency'
+import {createContextClient} from './utils/createContextClient'
 
 export async function runFromArchive(
   migration: Migration,
@@ -62,7 +61,7 @@ export async function runFromArchive(
       },
     )
 
-  const client = limitClientConcurrency(createClient({...config.api, useCdn: false}))
+  const client = createContextClient({...config.api, useCdn: false})
 
   const filteredDocumentsClient = createFilteredDocumentsClient(createReader)
   const context = {

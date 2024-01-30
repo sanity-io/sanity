@@ -2,6 +2,7 @@ import type {Path, SanityDocument} from '@sanity/types'
 import {MultipleMutationResult, Mutation as RawMutation, SanityClient} from '@sanity/client'
 import {JsonArray, JsonObject, JsonValue} from './json'
 import {Mutation, NodePatch, Operation, Transaction} from './mutations'
+import {RestrictedClient} from './runner/utils/createContextClient'
 
 export type {Path}
 export type * from './json'
@@ -47,7 +48,7 @@ export type MigrationProgress = {
 }
 
 export interface MigrationContext {
-  client: SanityClient
+  client: RestrictedClient
   filtered: {
     getDocument<T extends SanityDocument>(id: string): Promise<T | undefined>
     getDocuments<T extends SanityDocument>(ids: string[]): Promise<T[]>
