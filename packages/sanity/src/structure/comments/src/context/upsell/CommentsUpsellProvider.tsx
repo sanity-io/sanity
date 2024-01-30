@@ -49,12 +49,15 @@ export function CommentsUpsellProvider(props: {children: React.ReactNode}) {
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
 
   useEffect(() => {
-    client
+    const data$ = client
       .withConfig(UPSELL_CLIENT)
-      .fetch<CommentsUpsellData | null>(QUERY)
-      .then((res) => {
-        setUpsellData(res)
-      })
+      .observable.fetch<CommentsUpsellData | null>(QUERY)
+
+    const sub = data$.subscribe(setUpsellData)
+
+    return () => {
+      sub.unsubscribe()
+    }
   }, [client])
 
   const ctxValue = useMemo<CommentsUpsellContextValue>(
