@@ -58,6 +58,7 @@ export type ValidationWorkerChannel = WorkerChannel<{
     validatedCount: number
     documentId: string
     documentType: string
+    intentUrl?: string
     revision: string
     level: ValidationMarker['level']
     markers: ValidationMarker[]
@@ -170,7 +171,7 @@ async function loadWorkspace() {
     basePath: workspace.basePath,
   })
 
-  return {workspace, client}
+  return {workspace, client, studioHost}
 }
 
 async function downloadFromExport(client: SanityClient) {
@@ -314,7 +315,7 @@ async function validateDocuments() {
   let cleanupDownloadedDocuments: (() => Promise<void>) | undefined
 
   try {
-    const {client, workspace} = await loadWorkspace()
+    const {client, workspace, studioHost} = await loadWorkspace()
     const {documentIds, referencedIds, getDocuments, cleanup} = ndjsonFilePath
       ? await downloadFromFile(ndjsonFilePath)
       : await downloadFromExport(client)
@@ -393,10 +394,20 @@ async function validateDocuments() {
 
       validatedCount++
 
+      const intentUrl =
+        studioHost &&
+        `${studioHost}${path.resolve(
+          workspace.basePath,
+          `/intent/edit/id=${encodeURIComponent(document._id)};type=${encodeURIComponent(
+            document._type,
+          )}`,
+        )}`
+
       report.stream.validation.emit({
         documentId: document._id,
         documentType: document._type,
         revision: document._rev,
+        ...(intentUrl && {intentUrl}),
         markers,
         validatedCount,
         level: getLevel(markers),

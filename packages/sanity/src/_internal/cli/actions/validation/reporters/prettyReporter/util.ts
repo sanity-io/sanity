@@ -8,6 +8,7 @@ export interface DocumentValidationResult {
   revision: string
   documentId: string
   documentType: string
+  intentUrl?: string
   level: ValidationMarker['level']
   markers: ValidationMarker[]
 }

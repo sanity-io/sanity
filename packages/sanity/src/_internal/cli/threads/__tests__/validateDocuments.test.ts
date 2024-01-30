@@ -59,11 +59,11 @@ const documents: SanityDocument[] = [
     },
   },
   {
-    _id: 'system.some-system-document.foo',
-    _rev: 'rev6',
+    _id: 'some-system-document.foo',
     _type: 'system.some-system-document',
     _createdAt: '2024-01-18T19:18:39.048Z',
     _updatedAt: '2024-01-18T19:18:39.048Z',
+    _rev: 'rev6',
   },
 ]
 
@@ -243,14 +243,15 @@ describe('validateDocuments', () => {
 
     expect(await receiver.event.exportFinished()).toEqual({
       totalDocumentsToValidate:
-        documents.length - documents.filter((doc) => doc._id.startsWith('system.')).length,
+        documents.length - documents.filter((doc) => doc._type.startsWith('system.')).length,
     })
     await receiver.event.loadedReferenceIntegrity()
 
-    expect(await toArray(receiver.stream.validation())).toEqual([
+    expect(await toArray(receiver.stream.validation())).toMatchObject([
       {
         documentId: 'valid-author',
         documentType: 'author',
+        intentUrl: `${localhost}/intent/edit/id=valid-author;type=author`,
         level: 'info',
         markers: [],
         revision: 'rev1',
@@ -259,6 +260,7 @@ describe('validateDocuments', () => {
       {
         documentId: 'author-no-name',
         documentType: 'author',
+        intentUrl: `${localhost}/intent/edit/id=author-no-name;type=author`,
         level: 'error',
         markers: [{level: 'error', message: 'Required', path: ['name']}],
         revision: 'rev2',
@@ -267,6 +269,7 @@ describe('validateDocuments', () => {
       {
         documentId: 'valid-book',
         documentType: 'book',
+        intentUrl: `${localhost}/intent/edit/id=valid-book;type=book`,
         level: 'info',
         markers: [],
         revision: 'rev3',
@@ -275,6 +278,7 @@ describe('validateDocuments', () => {
       {
         documentId: 'book-no-title-no-author',
         documentType: 'book',
+        intentUrl: `${localhost}/intent/edit/id=book-no-title-no-author;type=book`,
         level: 'error',
         markers: [
           {level: 'error', message: 'Required', path: ['title']},
@@ -286,6 +290,7 @@ describe('validateDocuments', () => {
       {
         documentId: 'book-ref-not-published',
         documentType: 'book',
+        intentUrl: `${localhost}/intent/edit/id=book-ref-not-published;type=book`,
         level: 'info',
         markers: [],
         revision: 'rev5',
