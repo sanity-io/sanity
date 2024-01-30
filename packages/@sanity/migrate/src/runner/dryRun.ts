@@ -1,4 +1,5 @@
 import {SanityDocument} from '@sanity/types'
+import {createClient} from '@sanity/client'
 import {APIConfig, Migration, MigrationProgress} from '../types'
 import {fromExportEndpoint, safeJsonParser} from '../sources/fromExportEndpoint'
 import {streamToAsyncIterator} from '../utils/streamToAsyncIterator'
@@ -8,8 +9,9 @@ import {parse, stringify} from '../it-utils/ndjson'
 import {decodeText} from '../it-utils'
 import {collectMigrationMutations} from './collectMigrationMutations'
 import {getBufferFilePath} from './utils/getBufferFile'
-import {createBufferFileContext} from './utils/createBufferFileContext'
+import {createFilteredDocumentsClient} from './utils/createFilteredDocumentsClient'
 import {applyFilters} from './utils/applyFilters'
+import {limitClientConcurrency} from './utils/limitClientConcurrency'
 
 interface MigrationRunnerOptions {
   api: APIConfig
@@ -37,7 +39,14 @@ export async function* dryRun(config: MigrationRunnerOptions, migration: Migrati
     {signal: abortController.signal},
   )
 
-  const context = createBufferFileContext(createReader)
+  // Create a client exposed to the migration script. This will have a max concurrency of 10
+  const client = limitClientConcurrency(createClient({...config.api, useCdn: false}))
+
+  const filteredDocumentsClient = createFilteredDocumentsClient(createReader)
+  const context = {
+    client,
+    filtered: filteredDocumentsClient,
+  }
 
   yield* collectMigrationMutations(
     migration,

@@ -1,5 +1,5 @@
 import {SanityDocument} from '@sanity/types'
-import {MultipleMutationResult} from '@sanity/client'
+import {createClient, MultipleMutationResult} from '@sanity/client'
 import arrify from 'arrify'
 import {APIConfig, Migration, MigrationProgress} from '../types'
 import {parse, stringify} from '../it-utils/ndjson'
@@ -24,8 +24,9 @@ import {
 import {batchMutations} from './utils/batchMutations'
 import {collectMigrationMutations} from './collectMigrationMutations'
 import {getBufferFilePath} from './utils/getBufferFile'
-import {createBufferFileContext} from './utils/createBufferFileContext'
+import {createFilteredDocumentsClient} from './utils/createFilteredDocumentsClient'
 import {applyFilters} from './utils/applyFilters'
+import {limitClientConcurrency} from './utils/limitClientConcurrency'
 
 export interface MigrationRunnerConfig {
   api: APIConfig
@@ -78,7 +79,13 @@ export async function run(config: MigrationRunnerConfig, migration: Migration) {
     {signal: abortController.signal},
   )
 
-  const context = createBufferFileContext(createReader)
+  const client = limitClientConcurrency(createClient({...config.api, useCdn: false}))
+
+  const filteredDocumentsClient = createFilteredDocumentsClient(createReader)
+  const context = {
+    client,
+    filtered: filteredDocumentsClient,
+  }
 
   const documents = () =>
     tap(

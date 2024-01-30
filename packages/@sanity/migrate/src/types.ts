@@ -1,5 +1,5 @@
-import type {SanityDocument, Path} from '@sanity/types'
-import {MultipleMutationResult, Mutation as RawMutation} from '@sanity/client'
+import type {Path, SanityDocument} from '@sanity/types'
+import {MultipleMutationResult, Mutation as RawMutation, SanityClient} from '@sanity/client'
 import {JsonArray, JsonObject, JsonValue} from './json'
 import {Mutation, NodePatch, Operation, Transaction} from './mutations'
 
@@ -47,9 +47,12 @@ export type MigrationProgress = {
 }
 
 export interface MigrationContext {
-  getDocument<T extends SanityDocument>(id: string): Promise<T | undefined>
-  getDocuments<T extends SanityDocument>(ids: string[]): Promise<T[]>
-  query<T>(query: string, params?: Record<string, unknown>): Promise<T>
+  client: SanityClient
+  filtered: {
+    getDocument<T extends SanityDocument>(id: string): Promise<T | undefined>
+    getDocuments<T extends SanityDocument>(ids: string[]): Promise<T[]>
+    query<T>(query: string, params?: Record<string, unknown>): Promise<T>
+  }
 }
 
 export interface APIConfig {
