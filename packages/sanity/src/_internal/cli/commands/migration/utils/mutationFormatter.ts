@@ -83,7 +83,7 @@ function formatPatchMutation(chalk: Chalk, patch: NodePatch<any>): string {
     ].join(': ')
   }
   if (op.type === 'truncate') {
-    return [path, `${formattedType}(${op.startIndex}, ${op.endIndex}`].join(': ')
+    return [path, `${formattedType}(${op.startIndex}, ${op.endIndex})`].join(': ')
   }
   // @ts-expect-error all cases are covered
   throw new Error(`Invalid operation type: ${op.type}`)
