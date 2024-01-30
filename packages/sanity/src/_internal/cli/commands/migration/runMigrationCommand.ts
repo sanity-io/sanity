@@ -65,7 +65,7 @@ function resolveMigrationScript(workDir: string, migrationName: string) {
   )
 }
 
-const createMigrationCommand: CliCommandDefinition<CreateFlags> = {
+const runMigrationCommand: CliCommandDefinition<CreateFlags> = {
   name: 'run',
   group: 'migration',
   signature: '[NAME] [MIGRATION NAME]',
@@ -170,10 +170,9 @@ const createMigrationCommand: CliCommandDefinition<CreateFlags> = {
           concurrency,
           onProgress: createProgress(spinner),
         })
-        return
+      } else {
+        await dryRun({api: apiConfig, onProgress: createProgress(spinner)}, migration)
       }
-
-      dryRun({api: apiConfig}, migration)
 
       spinner.stop()
     } else {
@@ -205,8 +204,8 @@ const createMigrationCommand: CliCommandDefinition<CreateFlags> = {
         if (progress.done) {
           spinner.text = `Migration "${migrationName}" completed.
 
-  Project id:  ${chalk.bold(projectId)}
-  Dataset:     ${chalk.bold(dataset)}
+  Project id:  ${chalk.bold(apiConfig.projectId)}
+  Dataset:     ${chalk.bold(apiConfig.dataset)}
 
   ${progress.documents} documents processed.
   ${progress.mutations} mutations generated.
@@ -216,10 +215,10 @@ const createMigrationCommand: CliCommandDefinition<CreateFlags> = {
         }
 
         ;[null, ...progress.currentTransactions].forEach((transaction) => {
-          spinner.text = `Running migration "${migrationName}"…
+          spinner.text = `Running migration "${migrationName}" ${dry ? 'in dry mode...' : '...'}
 
-  Project id:     ${chalk.bold(projectId)}
-  Dataset:        ${chalk.bold(dataset)}
+  Project id:     ${chalk.bold(apiConfig.projectId)}
+  Dataset:        ${chalk.bold(apiConfig.dataset)}
   Document type:  ${chalk.bold(migration.documentTypes?.join(','))}
 
   ${progress.documents} documents processed…
@@ -234,4 +233,4 @@ const createMigrationCommand: CliCommandDefinition<CreateFlags> = {
   },
 }
 
-export default createMigrationCommand
+export default runMigrationCommand
