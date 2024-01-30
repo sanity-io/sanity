@@ -1,4 +1,4 @@
-import {FileHandle, open} from 'node:fs/promises'
+import {FileHandle, open, unlink} from 'node:fs/promises'
 import baseDebug from '../debug'
 
 const debug = baseDebug.extend('bufferThroughFile')
@@ -22,7 +22,7 @@ const CHUNK_SIZE = 1024
 export function bufferThroughFile(
   source: ReadableStream<Uint8Array | string>,
   filename: string,
-  options?: {signal: AbortSignal},
+  options?: {signal: AbortSignal; keepFile?: boolean},
 ) {
   const signal = options?.signal
 
@@ -116,12 +116,24 @@ export function bufferThroughFile(
       readHandle = null
       debug('Closing read handle on %s', filename)
       await (await handle).close()
+      if (options?.keepFile !== true) {
+        debug('Removing buffer file', filename)
+        await unlink(filename)
+      }
     }
   }
 
   return () => {
     const readChunk = createBufferedReader()
 
+    let didEnd = false
+    function onEnd() {
+      if (didEnd) {
+        return
+      }
+      didEnd = true
+      onReaderEnd()
+    }
     return new ReadableStream<Uint8Array>({
       async start() {
         if (signal?.aborted) {
@@ -139,11 +151,14 @@ export function bufferThroughFile(
         const {bytesRead, buffer} = await readChunk(await readHandle)
         if (bytesRead === 0 && bufferDone) {
           debug('Reader done reading from file handle')
-          await onReaderEnd()
+          await onEnd()
           controller.close()
         } else {
           controller.enqueue(buffer.subarray(0, bytesRead))
         }
+      },
+      cancel() {
+        onEnd()
       },
     })
   }
