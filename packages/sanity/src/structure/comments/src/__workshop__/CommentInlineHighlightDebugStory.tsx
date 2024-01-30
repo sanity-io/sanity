@@ -1,7 +1,6 @@
 /* eslint-disable max-nested-callbacks */
 /* eslint-disable no-restricted-imports */
 /* eslint-disable react/jsx-no-bind */
-import {toPlainText} from '@portabletext/react'
 import {EditorChange, PortableTextEditable, PortableTextEditor} from '@sanity/portable-text-editor'
 import {Schema} from '@sanity/schema'
 import {defineField, defineArrayMember, PortableTextBlock} from '@sanity/types'
@@ -13,7 +12,7 @@ import {
   buildRangeDecorators,
   buildTextSelectionFromFragment,
 } from '../utils'
-import {CommentDocument, CommentTextSelection} from '../types'
+import {CommentDocument} from '../types'
 import {useCurrentUser} from 'sanity'
 
 const INLINE_STYLE: React.CSSProperties = {outline: 'none'}
@@ -133,6 +132,9 @@ export default function CommentInlineHighlightDebugStory() {
         onDecoratorHoverStart: setCurrentHoveredCommentId,
         onDecoratorHoverEnd: setCurrentHoveredCommentId,
         currentHoveredCommentId,
+        onDecoratorClick: () => {
+          // ...
+        },
       }),
     [comments, currentHoveredCommentId, value],
   )
