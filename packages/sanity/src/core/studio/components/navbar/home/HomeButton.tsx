@@ -1,5 +1,5 @@
 import {Box, Card, Flex, Text, rem} from '@sanity/ui'
-import styled, {css} from 'styled-components'
+import styled from 'styled-components'
 import {focusRingStyle} from '../../../../form/components/withFocusRing/helpers'
 import {useActiveWorkspace} from '../../../activeWorkspaceMatcher'
 import {useWorkspaces} from '../../../workspaces'
@@ -18,19 +18,19 @@ const LogoMarkContainer = styled(Card).attrs({
   width: ${LOGO_MARK_SIZE}px;
 `
 
-const StyledCard = styled(Card)(({theme}) => {
-  const {focusRing} = theme.sanity
-  const {base} = theme.sanity.color
-  return css`
-    border-radius: ${rem(theme.sanity.radius[RADIUS])};
-    display: flex;
-    outline: none;
-    text-decoration: none;
-    &:focus-visible {
-      box-shadow: ${focusRingStyle({base, focusRing: {...focusRing, offset: 1}})};
-    }
-  `
-})
+const StyledCard = styled(Card)`
+  border-radius: ${({theme}) => rem(theme.sanity.radius[RADIUS])};
+  display: flex;
+  outline: none;
+  text-decoration: none;
+  &:focus-visible {
+    box-shadow: ${({theme}) =>
+      focusRingStyle({
+        base: theme.sanity.color.base,
+        focusRing: {...theme.sanity.focusRing, offset: 1},
+      })};
+  }
+`
 
 /**
  * Home button in the main navbar.
@@ -50,7 +50,7 @@ export function HomeButton() {
   const multipleWorkspaces = workspaces.length > 1
 
   return (
-    <StyledCard __unstable_focusRing as="a" href={rootHref} onClick={handleRootClick}>
+    <StyledCard as="a" href={rootHref} onClick={handleRootClick}>
       <Flex align="center">
         <LogoMarkContainer>
           <Flex align="center" height="fill" justify="center">
