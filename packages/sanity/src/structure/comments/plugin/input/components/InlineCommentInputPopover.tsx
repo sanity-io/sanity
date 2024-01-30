@@ -1,7 +1,7 @@
 import {CurrentUser} from '@sanity/types'
 import {useClickOutside, Stack} from '@sanity/ui'
 import {useCallback, useRef} from 'react'
-import {AnimatePresence, Variants, motion} from 'framer-motion'
+import {Variants, motion} from 'framer-motion'
 import styled from 'styled-components'
 import {
   CommentInputProps,
@@ -20,8 +20,8 @@ const RootStack = styled(Stack)`
 `
 
 const VARIANTS: Variants = {
-  hidden: {opacity: 0, y: -4},
-  visible: {opacity: 1, y: 0},
+  hidden: {opacity: 0},
+  visible: {opacity: 1},
 }
 
 interface InlineCommentInputPopoverProps {
@@ -31,7 +31,6 @@ interface InlineCommentInputPopoverProps {
   onClickOutside: () => void
   onDiscardConfirm: CommentInputProps['onDiscardConfirm']
   onSubmit: CommentInputProps['onSubmit']
-  open: boolean
   referenceElement?: HTMLElement | null
   value: CommentInputProps['value']
 }
@@ -44,7 +43,6 @@ export function InlineCommentInputPopover(props: InlineCommentInputPopoverProps)
     onClickOutside,
     onDiscardConfirm,
     onSubmit,
-    open,
     referenceElement,
     value,
   } = props
@@ -86,26 +84,19 @@ export function InlineCommentInputPopover(props: InlineCommentInputPopoverProps)
     </RootStack>
   )
 
-  // We use `AnimatePresence` so that there's a slight delay before the popover is rendered.
-  // This is because the bounding box from the `referenceElement` is not always stable, and
-  // we want to avoid the popover jumping around on initial render.
   return (
-    <AnimatePresence mode="wait">
-      {open && (
-        <MotionPopover
-          animate="visible"
-          content={content}
-          data-ui="InlineCommentInputPopover"
-          fallbackPlacements={POPOVER_FALLBACK_PLACEMENTS}
-          initial="hidden"
-          open
-          placement="bottom"
-          // portal
-          ref={popoverElementRef}
-          referenceElement={referenceElement}
-          variants={VARIANTS}
-        />
-      )}
-    </AnimatePresence>
+    <MotionPopover
+      animate="visible"
+      content={content}
+      data-ui="InlineCommentInputPopover"
+      fallbackPlacements={POPOVER_FALLBACK_PLACEMENTS}
+      initial="hidden"
+      open
+      placement="bottom"
+      portal
+      ref={popoverElementRef}
+      referenceElement={referenceElement}
+      variants={VARIANTS}
+    />
   )
 }
