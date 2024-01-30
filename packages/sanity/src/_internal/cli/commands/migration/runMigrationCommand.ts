@@ -8,7 +8,6 @@ import {
   Migration,
   MigrationProgress,
   run,
-  runFromArchive,
 } from '@sanity/migrate'
 import yargs from 'yargs/yargs'
 import {hideBin} from 'yargs/helpers'
@@ -250,34 +249,26 @@ const runMigrationCommand: CliCommandDefinition<CreateFlags> = {
     }
 
     async function dryRunHandler() {
+      output.print(`Running migration "${id}" in dry mode`)
+
       if (fromExport) {
-        const dryRunSpinner = output.spinner(`Running migration "${id}" in dry mode`).start()
+        output.print(`Using export ${chalk.cyan(fromExport)}`)
+      }
 
-        // TODO: Dry run output when using archive source.
-        await runFromArchive(migration, fromExport, {
-          api: apiConfig,
-          concurrency,
-          onProgress: createProgress(dryRunSpinner),
-        })
+      output.print()
+      output.print(`Project id:  ${chalk.bold(apiConfig.projectId)}`)
+      output.print(`Dataset:     ${chalk.bold(apiConfig.dataset)}`)
 
-        dryRunSpinner.stop()
-      } else {
-        output.print(`Running migration "${id}" in dry mode`)
+      for await (const mutation of dryRun({api: apiConfig, exportPath: fromExport}, migration)) {
+        if (!mutation) continue
         output.print()
-        output.print(`Project id:  ${chalk.bold(apiConfig.projectId)}`)
-        output.print(`Dataset:     ${chalk.bold(apiConfig.dataset)}`)
-
-        for await (const mutation of dryRun({api: apiConfig}, migration)) {
-          if (!mutation) continue
-          output.print()
-          output.print(
-            prettyFormat({
-              chalk,
-              subject: mutation,
-              migration,
-            }),
-          )
-        }
+        output.print(
+          prettyFormat({
+            chalk,
+            subject: mutation,
+            migration,
+          }),
+        )
       }
     }
   },

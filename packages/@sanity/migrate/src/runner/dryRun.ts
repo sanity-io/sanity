@@ -1,6 +1,7 @@
 import {SanityDocument} from '@sanity/types'
 import {APIConfig, Migration} from '../types'
 import {fromExportEndpoint, safeJsonParser} from '../sources/fromExportEndpoint'
+import {fromExportArchive} from '../sources/fromExportArchive'
 import {streamToAsyncIterator} from '../utils/streamToAsyncIterator'
 import {bufferThroughFile} from '../fs-webstream/bufferThroughFile'
 import {asyncIterableToStream} from '../utils/asyncIterableToStream'
@@ -14,19 +15,19 @@ import {createContextClient} from './utils/createContextClient'
 
 interface MigrationRunnerOptions {
   api: APIConfig
+  exportPath?: string
 }
 
 export async function* dryRun(config: MigrationRunnerOptions, migration: Migration) {
+  const source = config.exportPath
+    ? fromExportArchive(config.exportPath)
+    : streamToAsyncIterator(
+        await fromExportEndpoint({...config.api, documentTypes: migration.documentTypes}),
+      )
+
   const filteredDocuments = applyFilters(
     migration,
-    parse<SanityDocument>(
-      decodeText(
-        streamToAsyncIterator(
-          await fromExportEndpoint({...config.api, documentTypes: migration.documentTypes}),
-        ),
-      ),
-      {parse: safeJsonParser},
-    ),
+    parse<SanityDocument>(decodeText(source), {parse: safeJsonParser}),
   )
 
   const abortController = new AbortController()
