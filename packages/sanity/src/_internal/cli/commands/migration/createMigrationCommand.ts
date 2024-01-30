@@ -114,12 +114,12 @@ const createMigrationCommand: CliCommandDefinition<CreateMigrationFlags> = {
     )
     output.print(
       `Dry run the migration with:\n\`${chalk.bold(
-        `sanity migration run ${sluggedName} --dry --project-id=<projectId> --dataset <dataset> `,
+        `sanity migration run ${sluggedName} --project=<projectId> --dataset <dataset> `,
       )}\``,
     )
     output.print(
       `Run the migration against a dataset with:\n \`${chalk.bold(
-        `sanity migration run ${sluggedName} --project-id=<projectId> --dataset <dataset> --no-dry`,
+        `sanity migration run ${sluggedName} --project=<projectId> --dataset <dataset> --no-dry-run`,
       )}\``,
     )
     output.print()

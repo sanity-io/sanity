@@ -10,7 +10,8 @@ import {
   run,
   runFromArchive,
 } from '@sanity/migrate'
-
+import yargs from 'yargs/yargs'
+import {hideBin} from 'yargs/helpers'
 import {Table} from 'console-table-printer'
 import {debug} from '../../debug'
 import {resolveMigrations} from './listMigrationsCommand'
@@ -22,7 +23,7 @@ Options
   --concurrency <concurrent> How many mutation requests to run in parallel. Must be between 1 and ${MAX_MUTATION_CONCURRENCY}. Default: ${DEFAULT_MUTATION_CONCURRENCY}.
   --no-progress Don't output progress. Useful if you want debug your migration script and see the output of console.log() statements.
   --dataset <dataset> Dataset to migrate. Defaults to the dataset configured in your Sanity CLI config.
-  --projectId <project id> Project ID of the dataset to migrate. Defaults to the projectId configured in your Sanity CLI config.
+  --project <project id> Project ID of the dataset to migrate. Defaults to the projectId configured in your Sanity CLI config.
   --no-confirm Skip the confirmation prompt before running the migration. Make sure you know what you're doing before using this flag.
 
 
@@ -31,7 +32,7 @@ Examples
   sanity migration run <id>
 
   # execute the migration against a dataset
-  sanity migration run <id> --no-dry-run --projectId xyz --dataset staging
+  sanity migration run <id> --no-dry-run --project xyz --dataset staging
 `
 
 interface CreateFlags {
@@ -39,7 +40,7 @@ interface CreateFlags {
   concurrency?: number
   progress?: boolean
   dataset?: string
-  'project-id'?: string
+  project?: string
   confirm?: boolean
 }
 
@@ -64,29 +65,36 @@ function resolveMigrationScript(workDir: string, migrationId: string) {
   )
 }
 
+function parseCliFlags(args: {argv?: string[]}) {
+  return yargs(hideBin(args.argv || process.argv).slice(2))
+    .options('dry-run', {type: 'boolean', default: true})
+    .options('concurrency', {type: 'number', default: DEFAULT_MUTATION_CONCURRENCY})
+    .options('progress', {type: 'boolean', default: true})
+    .options('dataset', {type: 'string'})
+    .options('project', {type: 'string'})
+    .options('confirm', {type: 'boolean', default: true}).argv
+}
+
 const runMigrationCommand: CliCommandDefinition<CreateFlags> = {
   name: 'run',
   group: 'migration',
   signature: 'ID',
   helpText,
   description: 'Run a migration against a dataset',
+  // eslint-disable-next-line max-statements
   action: async (args, context) => {
     const {apiClient, output, prompt, chalk, workDir} = context
     const [id] = args.argsWithoutOptions
 
+    const flags = await parseCliFlags(args)
     // disabling from-export for now
     const fromExport = undefined
+    const dry = flags.dryRun
+    const dataset = flags.dataset
+    const project = flags.project
 
-    const [dry, showProgress, dataset, projectId, shouldConfirm] = [
-      args.extOptions['dry-run'] !== false,
-      args.extOptions.progress !== false,
-      args.extOptions.dataset,
-      args.extOptions['project-id'],
-      args.extOptions.confirm !== false,
-    ]
-
-    if ((dataset && !projectId) || (projectId && !dataset)) {
-      throw new Error('If either --dataset or --projectId is provided, both must be provided')
+    if ((dataset && !project) || (project && !dataset)) {
+      throw new Error('If either --dataset or --project is provided, both must be provided')
     }
 
     if (!id) {
@@ -153,7 +161,7 @@ const runMigrationCommand: CliCommandDefinition<CreateFlags> = {
       throw new Error('Can only dry run migrations from a dataset export file')
     }
 
-    const concurrency = args.extOptions.concurrency
+    const concurrency = flags.concurrency
     if (concurrency !== undefined) {
       if (concurrency > MAX_MUTATION_CONCURRENCY) {
         throw new Error(
@@ -173,7 +181,7 @@ const runMigrationCommand: CliCommandDefinition<CreateFlags> = {
 
     const apiConfig = {
       dataset: dataset ?? projectConfig.dataset!,
-      projectId: projectId ?? projectConfig.projectId!,
+      projectId: project ?? projectConfig.projectId!,
       apiHost: projectConfig.apiHost!,
       token: projectConfig.token!,
       apiVersion: 'v2024-01-29',
@@ -184,7 +192,7 @@ const runMigrationCommand: CliCommandDefinition<CreateFlags> = {
     }
 
     const response =
-      shouldConfirm &&
+      flags.confirm &&
       (await prompt.single<boolean>({
         message: `This migration will run on the ${chalk.yellow(
           chalk.bold(apiConfig.dataset),
@@ -203,7 +211,7 @@ const runMigrationCommand: CliCommandDefinition<CreateFlags> = {
 
     function createProgress(progressSpinner: ReturnType<typeof output.spinner>) {
       return function onProgress(progress: MigrationProgress) {
-        if (!showProgress) {
+        if (!flags.progress) {
           progressSpinner.stop()
           return
         }
