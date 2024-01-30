@@ -17,13 +17,14 @@ import React, {
   startTransition,
 } from 'react'
 import {Subject} from 'rxjs'
-import {Box, useToast} from '@sanity/ui'
+import {Box, ErrorBoundary, useToast} from '@sanity/ui'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {SANITY_PATCH_TYPE} from '../../patch'
 import {ArrayOfObjectsItemMember, ObjectFormNode} from '../../store'
 import type {PortableTextInputProps} from '../../types'
 import {EMPTY_ARRAY} from '../../../util'
 import {
+  PortableTextEditorFormError,
   PortableTextInputCollapsed,
   PortableTextInputExpanded,
 } from '../../__telemetry__/form.telemetry'
@@ -44,6 +45,7 @@ export interface PortableTextMemberItem {
   input?: ReactNode
 }
 
+const LOCATION = 'sanity/src/core/form/inputs/PortableText/PortableTextInput'
 /**
  * Input component for editing block content
  * ({@link https://github.com/portabletext/portabletext | Portable Text}) in the Sanity Studio.
@@ -56,7 +58,7 @@ export interface PortableTextMemberItem {
  * @public
  * @param props - {@link PortableTextInputProps} component props.
  */
-export function PortableTextInput(props: PortableTextInputProps) {
+function PortableTextInputInner(props: PortableTextInputProps) {
   const {
     elementProps,
     hotkeys,
@@ -147,51 +149,70 @@ export function PortableTextInput(props: PortableTextInputProps) {
   // Handle editor changes
   const handleEditorChange = useCallback(
     (change: EditorChange): void => {
-      switch (change.type) {
-        case 'mutation':
-          onChange(toFormPatches(change.patches))
-          break
-        case 'connection':
-          if (change.value === 'offline') {
-            setIsOffline(true)
-          } else if (change.value === 'online') {
-            setIsOffline(false)
-          }
-          break
-        case 'selection':
-          // This doesn't need to be immediate,
-          // call through startTransition
-          startTransition(() => {
-            if (change.selection) {
-              onPathFocus(change.selection.focus.path)
+      try {
+        switch (change.type) {
+          case 'mutation':
+            onChange(toFormPatches(change.patches))
+            break
+          case 'connection':
+            if (change.value === 'offline') {
+              setIsOffline(true)
+            } else if (change.value === 'online') {
+              setIsOffline(false)
             }
-          })
-          break
-        case 'focus':
-          setIsActive(true)
-          setHasFocusWithin(true)
-          break
-        case 'blur':
-          onBlur(change.event)
-          setHasFocusWithin(false)
-          break
-        case 'undo':
-        case 'redo':
-          onChange(toFormPatches(change.patches))
-          break
-        case 'invalidValue':
-          setInvalidValue(change)
-          break
-        case 'error':
-          toast.push({
-            status: change.level,
-            description: change.description,
-          })
-          break
-        default:
+            break
+          case 'selection':
+            // This doesn't need to be immediate,
+            // call through startTransition
+            startTransition(() => {
+              if (change.selection) {
+                onPathFocus(change.selection.focus.path)
+              }
+            })
+            break
+          case 'focus':
+            setIsActive(true)
+            setHasFocusWithin(true)
+            break
+          case 'blur':
+            onBlur(change.event)
+            setHasFocusWithin(false)
+            break
+          case 'undo':
+          case 'redo':
+            onChange(toFormPatches(change.patches))
+            break
+          case 'invalidValue':
+            telemetry.log(PortableTextEditorFormError, {
+              message: 'InvalidValue',
+              location: `${LOCATION} | handleEditorChange:invalidValue`,
+              payload: change.resolution,
+            })
+            setInvalidValue(change)
+            break
+          case 'error':
+            telemetry.log(PortableTextEditorFormError, {
+              message: change.description,
+              location: `${LOCATION} | handleEditorChange:error`,
+            })
+            toast.push({
+              status: change.level,
+              description: change.description,
+            })
+            break
+          default:
+        }
+      } catch (e) {
+        telemetry.log(PortableTextEditorFormError, {
+          message: e.message,
+          error: e,
+          location: `${LOCATION} | handleEditorChange`,
+          payload: change,
+        })
+        throw e
       }
     },
-    [onBlur, onChange, onPathFocus, toast],
+    [onBlur, onChange, onPathFocus, toast, telemetry],
   )
 
   useEffect(() => {
@@ -265,6 +286,38 @@ export function PortableTextInput(props: PortableTextInputProps) {
   )
 }
 
+/**
+ * Input component for editing block content
+ * ({@link https://github.com/portabletext/portabletext | Portable Text}) in the Sanity Studio.
+ *
+ * Supports multi-user real-time block content editing on larger documents.
+ *
+ * This component can be configured and customized extensively.
+ * {@link https://www.sanity.io/docs/portable-text-features | Go to the documentation for more details}.
+ *
+ * @public
+ * @param props - {@link PortableTextInputProps} component props.
+ */
+export function PortableTextInput(props: PortableTextInputProps) {
+  const telemetry = useTelemetry()
+  const handleCatch = useCallback(
+    ({error, info}: {error: Error; info: React.ErrorInfo}) => {
+      telemetry.log(PortableTextEditorFormError, {
+        error: error,
+        location: `${LOCATION} | ErrorBoundary`,
+        message: error.message,
+        payload: info,
+      })
+    },
+    [telemetry],
+  )
+
+  return (
+    <ErrorBoundary onCatch={handleCatch}>
+      <PortableTextInputInner {...props} />
+    </ErrorBoundary>
+  )
+}
 function toFormPatches(patches: any) {
   return patches.map((p: Patch) => ({...p, patchType: SANITY_PATCH_TYPE}))
 }
