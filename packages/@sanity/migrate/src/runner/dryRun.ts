@@ -1,11 +1,13 @@
+import arrify from 'arrify'
 import {SanityDocument} from '@sanity/types'
-import {APIConfig, Migration} from '../types'
+import {APIConfig, Migration, MigrationProgress} from '../types'
 import {fromExportEndpoint, safeJsonParser} from '../sources/fromExportEndpoint'
 import {streamToAsyncIterator} from '../utils/streamToAsyncIterator'
 import {bufferThroughFile} from '../fs-webstream/bufferThroughFile'
 import {asyncIterableToStream} from '../utils/asyncIterableToStream'
-import {parse} from '../it-utils/ndjson'
-import {decodeText} from '../it-utils'
+import {tap} from '../it-utils/tap'
+import {parse, stringify} from '../it-utils/ndjson'
+import {decodeText, toArray} from '../it-utils'
 import {collectMigrationMutations} from './collectMigrationMutations'
 import {getBufferFilePath} from './utils/getBufferFile'
 import {createBufferFileContext} from './utils/createBufferFileContext'
@@ -13,9 +15,19 @@ import {applyFilters} from './utils/applyFilters'
 
 interface MigrationRunnerOptions {
   api: APIConfig
+  onProgress?: (event: MigrationProgress) => void
 }
 
-export async function* dryRun(config: MigrationRunnerOptions, migration: Migration) {
+export async function dryRun(config: MigrationRunnerOptions, migration: Migration) {
+  const stats: MigrationProgress = {
+    documents: 0,
+    mutations: 0,
+    pending: 0,
+    queuedBatches: 0,
+    completedTransactions: [],
+    currentTransactions: [],
+  }
+
   const filteredDocuments = applyFilters(
     migration,
     parse<SanityDocument>(
@@ -30,24 +42,38 @@ export async function* dryRun(config: MigrationRunnerOptions, migration: Migrati
 
   const abortController = new AbortController()
   const createReader = bufferThroughFile(
-    asyncIterableToStream(filteredDocuments),
+    asyncIterableToStream(stringify(filteredDocuments)),
     getBufferFilePath(),
     {signal: abortController.signal},
   )
 
   const context = createBufferFileContext(createReader)
 
-  const mutations = collectMigrationMutations(
-    migration,
-    () => parse(decodeText(streamToAsyncIterator(createReader())), {parse: safeJsonParser}),
-    context,
+  const mutations = tap(
+    collectMigrationMutations(
+      migration,
+      () => parse(decodeText(streamToAsyncIterator(createReader())), {parse: safeJsonParser}),
+      context,
+    ),
+    (muts) => {
+      stats.currentTransactions = arrify(muts)
+      config.onProgress?.({
+        ...stats,
+        mutations: ++stats.mutations,
+      })
+    },
   )
 
+  for await (const mutation of await toArray(mutations)) {
+    config.onProgress?.({
+      ...stats,
+    })
+  }
+
+  config.onProgress?.({
+    ...stats,
+    done: true,
+  })
   // stop buffering the export once we're done collecting all mutations
   abortController.abort()
-
-  for await (const mutation of mutations) {
-    if (!mutation) continue
-    yield JSON.stringify(mutation, null, 2)
-  }
 }
