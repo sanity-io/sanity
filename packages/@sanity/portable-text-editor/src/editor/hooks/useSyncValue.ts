@@ -1,5 +1,5 @@
 /* eslint-disable max-nested-callbacks */
-import {useCallback, useMemo, useRef} from 'react'
+import {useMemo, useRef} from 'react'
 import {PortableTextBlock} from '@sanity/types'
 import {debounce, isEqual} from 'lodash'
 import {Editor, Transforms, Node, Descendant, Text} from 'slate'
@@ -13,6 +13,7 @@ import {withPreserveKeys} from '../../utils/withPreserveKeys'
 import {withoutPatching} from '../../utils/withoutPatching'
 import {validateValue} from '../../utils/validateValue'
 import {isChangingLocally, isChangingRemotely, withRemoteChanges} from '../../utils/withChanges'
+import {useCallbackWithTelemetry} from '../../__telemetry__/useCallbackWithTelemetry'
 
 const debug = debugWithName('hook:useSyncValue')
 
@@ -49,22 +50,27 @@ export function useSyncValue(
   const slateEditor = useSlate()
   const updateValueFunctionRef = useRef<(value: PortableTextBlock[] | undefined) => void>()
 
-  const updateFromCurrentValue = useCallback(() => {
-    const currentValue = CURRENT_VALUE.get(portableTextEditor)
-    if (previousValue.current === currentValue) {
-      debug('Value is the same object as previous, not need to sync')
-      return
-    }
-    if (updateValueFunctionRef.current && currentValue) {
-      debug('Updating the value debounced')
-      updateValueFunctionRef.current(currentValue)
-    }
-  }, [portableTextEditor])
+  const updateFromCurrentValue = useCallbackWithTelemetry(
+    () => {
+      const currentValue = CURRENT_VALUE.get(portableTextEditor)
+      if (previousValue.current === currentValue) {
+        debug('Value is the same object as previous, not need to sync')
+        return
+      }
+      if (updateValueFunctionRef.current && currentValue) {
+        debug('Updating the value debounced')
+        updateValueFunctionRef.current(currentValue)
+      }
+    },
+    [portableTextEditor],
+    'useSyncValue:updateFromCurrentValue',
+  )
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const updateValueDebounced = useCallback(
+  const updateValueDebounced = useCallbackWithTelemetry(
     debounce(updateFromCurrentValue, 1000, {trailing: true, leading: false}),
     [updateFromCurrentValue],
+    'useSyncValue:updateValueDebounced',
   )
 
   return useMemo(() => {

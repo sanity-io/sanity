@@ -1,5 +1,5 @@
 import {BaseRange, Transforms, Text, select, Editor} from 'slate'
-import React, {useCallback, useMemo, useEffect, forwardRef, useState, KeyboardEvent} from 'react'
+import React, {useMemo, useEffect, forwardRef, useState, KeyboardEvent, useCallback} from 'react'
 import {
   Editable as SlateEditable,
   ReactEditor,
@@ -9,6 +9,8 @@ import {
 } from 'slate-react'
 import {noop} from 'lodash'
 import {PortableTextBlock} from '@sanity/types'
+import {ErrorBoundary} from '@sanity/ui'
+import {useTelemetry} from '@sanity/telemetry/react'
 import {
   EditorChange,
   EditorSelection,
@@ -27,7 +29,9 @@ import {HotkeyOptions} from '../types/options'
 import {fromSlateValue, isEqualToEmptyEditor, toSlateValue} from '../utils/values'
 import {normalizeSelection} from '../utils/selection'
 import {toPortableTextRange, toSlateRange} from '../utils/ranges'
+import {useCallbackWithTelemetry} from '../__telemetry__/useCallbackWithTelemetry'
 import {debugWithName} from '../utils/debug'
+import {PortableTextEditorError} from '../__telemetry__/portable-text-editor.telemetry'
 import {usePortableTextEditorReadOnlyStatus} from './hooks/usePortableTextReadOnly'
 import {usePortableTextEditorKeyGenerator} from './hooks/usePortableTextEditorKeyGenerator'
 import {Leaf} from './components/Leaf'
@@ -135,7 +139,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
     return withInsertData(withHotKeys(slateEditor))
   }, [readOnly, slateEditor, withHotKeys, withInsertData])
 
-  const renderElement = useCallback(
+  const renderElement = useCallbackWithTelemetry(
     (eProps: RenderElementProps) => (
       <Element
         {...eProps}
@@ -149,9 +153,10 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
       />
     ),
     [schemaTypes, spellCheck, readOnly, renderBlock, renderChild, renderListItem, renderStyle],
+    'Editable:renderElement',
   )
 
-  const renderLeaf = useCallback(
+  const renderLeaf = useCallbackWithTelemetry(
     (lProps: RenderLeafProps & {leaf: Text & {placeholder?: boolean}}) => {
       const rendered = (
         <Leaf
@@ -176,30 +181,35 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
       return rendered
     },
     [readOnly, renderAnnotation, renderChild, renderDecorator, renderPlaceholder, schemaTypes],
+    'Editable:renderLeaf',
   )
 
-  const restoreSelectionFromProps = useCallback(() => {
-    if (propsSelection) {
-      debug(`Selection from props ${JSON.stringify(propsSelection)}`)
-      const normalizedSelection = normalizeSelection(
-        propsSelection,
-        fromSlateValue(slateEditor.children, blockTypeName),
-      )
-      if (normalizedSelection !== null) {
-        debug(`Normalized selection from props ${JSON.stringify(normalizedSelection)}`)
-        const slateRange = toSlateRange(normalizedSelection, slateEditor)
-        if (slateRange) {
-          Transforms.select(slateEditor, slateRange)
-          // Output selection here in those cases where the editor selection was the same, and there are no set_selection operations made.
-          // The selection is usually automatically emitted to change$ by the withPortableTextSelections plugin whenever there is a set_selection operation applied.
-          if (!slateEditor.operations.some((o) => o.type === 'set_selection')) {
-            change$.next({type: 'selection', selection: normalizedSelection})
+  const restoreSelectionFromProps = useCallbackWithTelemetry(
+    () => {
+      if (propsSelection) {
+        debug(`Selection from props ${JSON.stringify(propsSelection)}`)
+        const normalizedSelection = normalizeSelection(
+          propsSelection,
+          fromSlateValue(slateEditor.children, blockTypeName),
+        )
+        if (normalizedSelection !== null) {
+          debug(`Normalized selection from props ${JSON.stringify(normalizedSelection)}`)
+          const slateRange = toSlateRange(normalizedSelection, slateEditor)
+          if (slateRange) {
+            Transforms.select(slateEditor, slateRange)
+            // Output selection here in those cases where the editor selection was the same, and there are no set_selection operations made.
+            // The selection is usually automatically emitted to change$ by the withPortableTextSelections plugin whenever there is a set_selection operation applied.
+            if (!slateEditor.operations.some((o) => o.type === 'set_selection')) {
+              change$.next({type: 'selection', selection: normalizedSelection})
+            }
+            slateEditor.onChange()
           }
-          slateEditor.onChange()
         }
       }
-    }
-  }, [propsSelection, slateEditor, blockTypeName, change$])
+    },
+    [propsSelection, slateEditor, blockTypeName, change$],
+    'Editable:restoreSelectionFromProps',
+  )
 
   // Subscribe to change$ and restore selection from props when the editor has been initialized properly with it's value
   useEffect(() => {
@@ -232,7 +242,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
   }, [hasInvalidValue, propsSelection, restoreSelectionFromProps])
 
   // Handle from props onCopy function
-  const handleCopy = useCallback(
+  const handleCopy = useCallbackWithTelemetry(
     (event: React.ClipboardEvent<HTMLDivElement>): void | ReactEditor => {
       if (onCopy) {
         const result = onCopy(event)
@@ -243,10 +253,11 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
       }
     },
     [onCopy],
+    'Editable:handleCopy',
   )
 
   // Handle incoming pasting events in the editor
-  const handlePaste = useCallback(
+  const handlePaste = useCallbackWithTelemetry(
     (event: React.ClipboardEvent<HTMLDivElement>): Promise<void> | void => {
       event.preventDefault()
       if (!slateEditor.selection) {
@@ -295,9 +306,10 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
         })
     },
     [change$, onPaste, portableTextEditor, schemaTypes, slateEditor],
+    'Editable:handlePaste',
   )
 
-  const handleOnFocus: React.FocusEventHandler<HTMLDivElement> = useCallback(
+  const handleOnFocus: React.FocusEventHandler<HTMLDivElement> = useCallbackWithTelemetry(
     (event) => {
       if (onFocus) {
         onFocus(event)
@@ -321,9 +333,10 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
       }
     },
     [onFocus, portableTextEditor, change$, slateEditor],
+    'Editable:handleOnFocus',
   )
 
-  const handleOnBlur: React.FocusEventHandler<HTMLDivElement> = useCallback(
+  const handleOnBlur: React.FocusEventHandler<HTMLDivElement> = useCallbackWithTelemetry(
     (event) => {
       if (onBlur) {
         onBlur(event)
@@ -333,15 +346,17 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
       }
     },
     [change$, onBlur],
+    'Editable:handleOnBlur',
   )
 
-  const handleOnBeforeInput = useCallback(
+  const handleOnBeforeInput = useCallbackWithTelemetry(
     (event: InputEvent) => {
       if (onBeforeInput) {
         onBeforeInput(event)
       }
     },
     [onBeforeInput],
+    'Editable:handleOnBeforeInput',
   )
 
   // This function will handle unexpected DOM changes inside the Editable rendering,
@@ -360,45 +375,49 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
   // if the current editor.selection is invalid according to the DOM.
   // If this is the case, default to selecting the top of the document, if the
   // user already had a selection.
-  const validateSelection = useCallback(() => {
-    if (!slateEditor.selection) {
-      return
-    }
-    const root = ReactEditor.findDocumentOrShadowRoot(slateEditor)
-    const {activeElement} = root
-    // Return if the editor isn't the active element
-    if (ref.current !== activeElement) {
-      return
-    }
-    const window = ReactEditor.getWindow(slateEditor)
-    const domSelection = window.getSelection()
-    if (!domSelection || domSelection.rangeCount === 0) {
-      return
-    }
-    const existingDOMRange = domSelection.getRangeAt(0)
-    try {
-      const newDOMRange = ReactEditor.toDOMRange(slateEditor, slateEditor.selection)
-      if (
-        newDOMRange.startOffset !== existingDOMRange.startOffset ||
-        newDOMRange.endOffset !== existingDOMRange.endOffset
-      ) {
-        debug('DOM range out of sync, validating selection')
-        // Remove all ranges temporary
-        domSelection?.removeAllRanges()
-        // Set the correct range
-        domSelection.addRange(newDOMRange)
+  const validateSelection = useCallbackWithTelemetry(
+    () => {
+      if (!slateEditor.selection) {
+        return
       }
-    } catch (error) {
-      debug(`Could not resolve selection, selecting top document`)
-      // Deselect the editor
-      Transforms.deselect(slateEditor)
-      // Select top document if there is a top block to select
-      if (slateEditor.children.length > 0) {
-        Transforms.select(slateEditor, [0, 0])
+      const root = ReactEditor.findDocumentOrShadowRoot(slateEditor)
+      const {activeElement} = root
+      // Return if the editor isn't the active element
+      if (ref.current !== activeElement) {
+        return
       }
-      slateEditor.onChange()
-    }
-  }, [ref, slateEditor])
+      const window = ReactEditor.getWindow(slateEditor)
+      const domSelection = window.getSelection()
+      if (!domSelection || domSelection.rangeCount === 0) {
+        return
+      }
+      const existingDOMRange = domSelection.getRangeAt(0)
+      try {
+        const newDOMRange = ReactEditor.toDOMRange(slateEditor, slateEditor.selection)
+        if (
+          newDOMRange.startOffset !== existingDOMRange.startOffset ||
+          newDOMRange.endOffset !== existingDOMRange.endOffset
+        ) {
+          debug('DOM range out of sync, validating selection')
+          // Remove all ranges temporary
+          domSelection?.removeAllRanges()
+          // Set the correct range
+          domSelection.addRange(newDOMRange)
+        }
+      } catch (error) {
+        debug(`Could not resolve selection, selecting top document`)
+        // Deselect the editor
+        Transforms.deselect(slateEditor)
+        // Select top document if there is a top block to select
+        if (slateEditor.children.length > 0) {
+          Transforms.select(slateEditor, [0, 0])
+        }
+        slateEditor.onChange()
+      }
+    },
+    [ref, slateEditor],
+    'Editable:validateSelection',
+  )
 
   // Observe mutations (child list and subtree) to this component's DOM,
   // and make sure the editor selection is valid when that happens.
@@ -419,7 +438,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
     return undefined
   }, [validateSelection, editableElement])
 
-  const handleKeyDown = useCallback(
+  const handleKeyDown = useCallbackWithTelemetry(
     (event: KeyboardEvent<HTMLDivElement>) => {
       if (props.onKeyDown) {
         props.onKeyDown(event)
@@ -429,6 +448,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
       }
     },
     [props, slateEditor],
+    'Editable:handleKeyDown',
   )
 
   const scrollSelectionIntoViewToSlate = useMemo(() => {
@@ -446,24 +466,28 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
     }
   }, [portableTextEditor, scrollSelectionIntoView])
 
-  const decorate = useCallback(() => {
-    if (isEqualToEmptyEditor(slateEditor.children, schemaTypes)) {
-      return [
-        {
-          anchor: {
-            path: [0, 0],
-            offset: 0,
+  const decorate = useCallbackWithTelemetry(
+    () => {
+      if (isEqualToEmptyEditor(slateEditor.children, schemaTypes)) {
+        return [
+          {
+            anchor: {
+              path: [0, 0],
+              offset: 0,
+            },
+            focus: {
+              path: [0, 0],
+              offset: 0,
+            },
+            placeholder: true,
           },
-          focus: {
-            path: [0, 0],
-            offset: 0,
-          },
-          placeholder: true,
-        },
-      ]
-    }
-    return EMPTY_DECORATORS
-  }, [schemaTypes, slateEditor])
+        ]
+      }
+      return EMPTY_DECORATORS
+    },
+    [schemaTypes, slateEditor],
+    'Editable:decorate',
+  )
 
   // Set the forwarded ref to be the Slate editable DOM element
   // Also set the editable element in a state so that the MutationObserver
@@ -472,29 +496,42 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
     ref.current = ReactEditor.toDOMNode(slateEditor, slateEditor) as HTMLDivElement | null
     setEditableElement(ref.current)
   }, [slateEditor, ref])
+  const telemetry = useTelemetry()
+  const handleCatch = useCallback(
+    ({error, info}: {error: Error; info: React.ErrorInfo}) => {
+      telemetry.log(PortableTextEditorError, {
+        error: error,
+        args: info,
+        fnName: 'Editable:errorBoundary',
+      })
+    },
+    [telemetry],
+  )
 
   if (!portableTextEditor) {
     return null
   }
   return hasInvalidValue ? null : (
-    <SlateEditable
-      {...restProps}
-      autoFocus={false}
-      className={restProps.className || 'pt-editable'}
-      decorate={decorate}
-      onBlur={handleOnBlur}
-      onCopy={handleCopy}
-      onDOMBeforeInput={handleOnBeforeInput}
-      onFocus={handleOnFocus}
-      onKeyDown={handleKeyDown}
-      onPaste={handlePaste}
-      readOnly={readOnly}
-      // We have implemented our own placeholder logic with decorations.
-      // This 'renderPlaceholder' should not be used.
-      renderPlaceholder={undefined}
-      renderElement={renderElement}
-      renderLeaf={renderLeaf}
-      scrollSelectionIntoView={scrollSelectionIntoViewToSlate}
-    />
+    <ErrorBoundary onCatch={handleCatch}>
+      <SlateEditable
+        {...restProps}
+        autoFocus={false}
+        className={restProps.className || 'pt-editable'}
+        decorate={decorate}
+        onBlur={handleOnBlur}
+        onCopy={handleCopy}
+        onDOMBeforeInput={handleOnBeforeInput}
+        onFocus={handleOnFocus}
+        onKeyDown={handleKeyDown}
+        onPaste={handlePaste}
+        readOnly={readOnly}
+        // We have implemented our own placeholder logic with decorations.
+        // This 'renderPlaceholder' should not be used.
+        renderPlaceholder={undefined}
+        renderElement={renderElement}
+        renderLeaf={renderLeaf}
+        scrollSelectionIntoView={scrollSelectionIntoViewToSlate}
+      />
+    </ErrorBoundary>
   )
 })

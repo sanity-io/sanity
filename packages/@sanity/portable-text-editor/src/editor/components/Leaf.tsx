@@ -1,11 +1,4 @@
-import React, {
-  ReactElement,
-  startTransition,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react'
+import React, {ReactElement, startTransition, useEffect, useMemo, useState} from 'react'
 import {Text} from 'slate'
 import {RenderLeafProps, useSelected} from 'slate-react'
 import {isEqual, uniq} from 'lodash'
@@ -23,6 +16,7 @@ import {debugWithName} from '../../utils/debug'
 import {DefaultAnnotation} from '../nodes/DefaultAnnotation'
 import {usePortableTextEditor} from '../hooks/usePortableTextEditor'
 import {PortableTextEditor} from '../PortableTextEditor'
+import {useCallbackWithTelemetry} from '../../__telemetry__/useCallbackWithTelemetry'
 
 const debug = debugWithName('components:Leaf')
 
@@ -97,27 +91,31 @@ export const Leaf = (props: LeafProps) => {
   }, [shouldTrackSelectionAndFocus, path, portableTextEditor])
 
   // Function to check if this leaf is currently inside the user's text selection
-  const setSelectedFromRange = useCallback(() => {
-    if (!shouldTrackSelectionAndFocus) {
-      return
-    }
-    debug('Setting selection and focus from range')
-    const winSelection = window.getSelection()
-    if (!winSelection) {
-      setSelected(false)
-      return
-    }
-    if (winSelection && winSelection.rangeCount > 0) {
-      const range = winSelection.getRangeAt(0)
-      if (spanRef.current && range.intersectsNode(spanRef.current)) {
-        setSelected(true)
+  const setSelectedFromRange = useCallbackWithTelemetry(
+    () => {
+      if (!shouldTrackSelectionAndFocus) {
+        return
+      }
+      debug('Setting selection and focus from range')
+      const winSelection = window.getSelection()
+      if (!winSelection) {
+        setSelected(false)
+        return
+      }
+      if (winSelection && winSelection.rangeCount > 0) {
+        const range = winSelection.getRangeAt(0)
+        if (spanRef.current && range.intersectsNode(spanRef.current)) {
+          setSelected(true)
+        } else {
+          setSelected(false)
+        }
       } else {
         setSelected(false)
       }
-    } else {
-      setSelected(false)
-    }
-  }, [shouldTrackSelectionAndFocus])
+    },
+    [shouldTrackSelectionAndFocus],
+    'Leaf:setSelectedFromRange',
+  )
 
   useEffect(() => {
     if (!shouldTrackSelectionAndFocus) {

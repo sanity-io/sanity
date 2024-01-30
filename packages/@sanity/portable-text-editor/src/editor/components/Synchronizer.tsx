@@ -1,7 +1,6 @@
 import React, {
   PropsWithChildren,
   startTransition,
-  useCallback,
   useEffect,
   useMemo,
   useRef,
@@ -22,6 +21,7 @@ import {PortableTextEditorReadOnlyContext} from '../hooks/usePortableTextReadOnl
 import {useSyncValue} from '../hooks/useSyncValue'
 import {PortableTextEditorKeyGeneratorContext} from '../hooks/usePortableTextEditorKeyGenerator'
 import {IS_PROCESSING_LOCAL_CHANGES} from '../../utils/weakMaps'
+import {useCallbackWithTelemetry} from '../../__telemetry__/useCallbackWithTelemetry'
 
 const debug = debugWithName('component:PortableTextEditor:Synchronizer')
 const debugVerbose = debug.enabled && false
@@ -64,18 +64,22 @@ export function Synchronizer(props: SynchronizerProps) {
     IS_PROCESSING_LOCAL_CHANGES.set(slateEditor, false)
   }, [slateEditor])
 
-  const onFlushPendingPatches = useCallback(() => {
-    if (pendingPatches.current.length > 0) {
-      debug('Flushing pending patches')
-      if (debugVerbose) {
-        debug(`Patches:\n${JSON.stringify(pendingPatches.current, null, 2)}`)
+  const onFlushPendingPatches = useCallbackWithTelemetry(
+    () => {
+      if (pendingPatches.current.length > 0) {
+        debug('Flushing pending patches')
+        if (debugVerbose) {
+          debug(`Patches:\n${JSON.stringify(pendingPatches.current, null, 2)}`)
+        }
+        const snapshot = PortableTextEditor.getValue(portableTextEditor)
+        change$.next({type: 'mutation', patches: pendingPatches.current, snapshot})
+        pendingPatches.current = []
       }
-      const snapshot = PortableTextEditor.getValue(portableTextEditor)
-      change$.next({type: 'mutation', patches: pendingPatches.current, snapshot})
-      pendingPatches.current = []
-    }
-    IS_PROCESSING_LOCAL_CHANGES.set(slateEditor, false)
-  }, [slateEditor, portableTextEditor, change$])
+      IS_PROCESSING_LOCAL_CHANGES.set(slateEditor, false)
+    },
+    [slateEditor, portableTextEditor, change$],
+    'Synchronizer:onFlushPendingPatches',
+  )
 
   const onFlushPendingPatchesThrottled = useMemo(() => {
     return throttle(
@@ -134,16 +138,24 @@ export function Synchronizer(props: SynchronizerProps) {
   }, [change$, onChange, onFlushPendingPatchesThrottled, slateEditor])
 
   // Sync the value when going online
-  const handleOnline = useCallback(() => {
-    debug('Editor is online, syncing from props.value')
-    change$.next({type: 'connection', value: 'online'})
-    syncValue(value)
-  }, [change$, syncValue, value])
+  const handleOnline = useCallbackWithTelemetry(
+    () => {
+      debug('Editor is online, syncing from props.value')
+      change$.next({type: 'connection', value: 'online'})
+      syncValue(value)
+    },
+    [change$, syncValue, value],
+    'Synchronizer:handleOnline',
+  )
 
-  const handleOffline = useCallback(() => {
-    debug('Editor is offline')
-    change$.next({type: 'connection', value: 'offline'})
-  }, [change$])
+  const handleOffline = useCallbackWithTelemetry(
+    () => {
+      debug('Editor is offline')
+      change$.next({type: 'connection', value: 'offline'})
+    },
+    [change$],
+    'Synchronizer:handleOffline',
+  )
 
   // Notify about window online and offline status changes
   useEffect(() => {
