@@ -13,6 +13,13 @@ import {renameField} from './templates/renameField'
 
 const helpText = `
 Create a new migration within your project
+
+Examples:
+    # Create a new migration, you will be prompted to provide a type
+    sanity migration create
+
+    # Create a new migration, specifying the title
+    sanity migration create "Rename field from location to address"
 `
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
