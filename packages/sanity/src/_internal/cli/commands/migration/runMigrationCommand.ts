@@ -17,23 +17,23 @@ import {formatTransaction} from './utils/mutationFormatter'
 const helpText = `
 Options
   --dry <boolean> Whether or not to dry run the migration. Default to true, to actually run the migration, pass --no-dry
-  --from-export <export.tar.gz> Use a local dataset export as source for migration instead of calling the Sanity API. Note: this is only supported for dry runs.
   --concurrency <concurrent> How many mutation requests to run in parallel. Must be between 1 and ${MAX_MUTATION_CONCURRENCY}. Default: ${DEFAULT_MUTATION_CONCURRENCY}.
   --no-progress Don't output progress. Useful if you want debug your migration script and see the output of console.log() statements.
   --dataset <dataset> Dataset to migrate. Defaults to the dataset configured in your Sanity CLI config.
   --projectId <project id> Project ID of the dataset to migrate. Defaults to the projectId configured in your Sanity CLI config.
   --no-confirm Skip the confirmation prompt before running the migration. Make sure you know what you're doing before using this flag.
+  --from-export <export.tar.gz> Use a local dataset export as source for migration instead of calling the Sanity API. Note: this is only supported for dry runs.
 
 
 Examples
   # dry run the migration
-  sanity migration run <name>
+  sanity migration run <id>
 
   # execute the migration against a dataset
-  sanity migration run <name> --no-dry --projectId xyz --dataset staging
+  sanity migration run <id> --no-dry --projectId xyz --dataset staging
 
   # run the migration using the dataset export as the source
-  sanity migration run <name> --dry false --from-export=production.tar.gz --projectId xyz --dataset staging
+  sanity migration run <id> --dry false --from-export=production.tar.gz --projectId xyz --dataset staging
 `
 
 interface CreateFlags {
@@ -48,8 +48,8 @@ interface CreateFlags {
 
 const tryExtensions = ['mjs', 'js', 'ts', 'cjs']
 
-function resolveMigrationScript(workDir: string, migrationName: string) {
-  return [migrationName, path.join(migrationName, 'index')].flatMap((location) =>
+function resolveMigrationScript(workDir: string, migrationId: string) {
+  return [migrationId, path.join(migrationId, 'index')].flatMap((location) =>
     tryExtensions.map((ext) => {
       const relativePath = path.join('migrations', `${location}.${ext}`)
       const absolutePath = path.resolve(workDir, relativePath)
@@ -70,12 +70,12 @@ function resolveMigrationScript(workDir: string, migrationName: string) {
 const runMigrationCommand: CliCommandDefinition<CreateFlags> = {
   name: 'run',
   group: 'migration',
-  signature: '[NAME] [MIGRATION NAME]',
+  signature: 'ID',
   helpText,
   description: 'Run a migration against a dataset',
   action: async (args, context) => {
     const {apiClient, output, prompt, chalk, workDir} = context
-    const [migrationName] = args.argsWithoutOptions
+    const [id] = args.argsWithoutOptions
 
     const [fromExport, dry, showProgress, dataset, projectId, shouldConfirm] = [
       args.extOptions['from-export'],
@@ -90,8 +90,10 @@ const runMigrationCommand: CliCommandDefinition<CreateFlags> = {
       throw new Error('If either --dataset or --projectId is provided, both must be provided')
     }
 
-    if (!migrationName) {
-      throw new Error('MIGRATION NAME must be provided. `sanity migration run <name>`')
+    if (!id) {
+      throw new Error(
+        "Migration ID must be provided. `sanity migration run <ID>`. To see a list of available migrations and their ID's, run `sanity migration list`",
+      )
     }
 
     if (!__DEV__) {
@@ -100,21 +102,21 @@ const runMigrationCommand: CliCommandDefinition<CreateFlags> = {
       })
     }
 
-    const candidates = resolveMigrationScript(workDir, migrationName)
+    const candidates = resolveMigrationScript(workDir, id)
 
     const resolvedScripts = candidates.filter((candidate) => candidate!.mod?.default)
 
     if (resolvedScripts.length > 1) {
       // todo: consider prompt user about which one to run? note: it's likely a mistake if multiple files resolve to the same name
       throw new Error(
-        `Found multiple migrations for "${migrationName}" in current directory ${candidates
+        `Found multiple migrations for "${id}" in current directory ${candidates
           .map((candidate) => candidate!.relativePath)
           .join(', ')}`,
       )
     }
     if (resolvedScripts.length === 0) {
       throw new Error(
-        `No migration found for "${migrationName}" in current directory. Make sure that the migration file exists and exports a valid migration as its default export.\n
+        `No migration found for "${id}" in current directory. Make sure that the migration file exists and exports a valid migration as its default export.\n
  Tried the following files:\n -${candidates
    .map((candidate) => candidate.relativePath)
    .join('\n - ')}`,
@@ -165,7 +167,7 @@ const runMigrationCommand: CliCommandDefinition<CreateFlags> = {
     } as const
 
     if (dry) {
-      const spinner = output.spinner(`Running migration "${migrationName}" in dry mode`).start()
+      const spinner = output.spinner(`Running migration "${id}" in dry mode`).start()
       if (fromExport) {
         await runFromArchive(migration, fromExport, {
           api: apiConfig,
@@ -192,7 +194,7 @@ const runMigrationCommand: CliCommandDefinition<CreateFlags> = {
         return
       }
 
-      const spinner = output.spinner(`Running migration "${migrationName}"`).start()
+      const spinner = output.spinner(`Running migration "${id}"`).start()
       await run({api: apiConfig, concurrency, onProgress: createProgress(spinner)}, migration)
       spinner.stop()
     }
@@ -204,7 +206,7 @@ const runMigrationCommand: CliCommandDefinition<CreateFlags> = {
           return
         }
         if (progress.done) {
-          spinner.text = `Migration "${migrationName}" completed.
+          spinner.text = `Migration "${id}" completed.
 
   Project id:  ${chalk.bold(apiConfig.projectId)}
   Dataset:     ${chalk.bold(apiConfig.dataset)}
@@ -217,7 +219,7 @@ const runMigrationCommand: CliCommandDefinition<CreateFlags> = {
         }
 
         ;[null, ...progress.currentTransactions].forEach((transaction) => {
-          spinner.text = `Running migration "${migrationName}" ${dry ? 'in dry mode...' : '...'}
+          spinner.text = `Running migration "${id}" ${dry ? 'in dry mode...' : '...'}
 
   Project id:     ${chalk.bold(apiConfig.projectId)}
   Dataset:        ${chalk.bold(apiConfig.dataset)}
