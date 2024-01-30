@@ -20,6 +20,7 @@ import {
   useCommentsEnabled,
   useCommentsOnboarding,
   useCommentsSelectedPath,
+  useCommentsUpsell,
 } from '../../src'
 import {commentsLocaleNamespace} from '../../i18n'
 import {UpsellPanel} from '../../src/components'
@@ -311,13 +312,23 @@ function CommentsInspectorInner(props: DocumentInspectorProps) {
 
   const mode = commentsEnabled.reason === 'upsell' ? 'upsell' : 'default'
 
+  const {upsellData, telemetryLogs} = useCommentsUpsell()
+
   const beforeListNode = useMemo(() => {
-    if (mode === 'upsell') {
-      return <CommentsUpsellPanel />
+    if (mode === 'upsell' && upsellData) {
+      return (
+        <CommentsUpsellPanel
+          data={upsellData}
+          // eslint-disable-next-line react/jsx-handler-names
+          onPrimaryClick={telemetryLogs.panelPrimaryClicked}
+          // eslint-disable-next-line react/jsx-handler-names
+          onSecondaryClick={telemetryLogs.panelSecondaryClicked}
+        />
+      )
     }
 
     return null
-  }, [mode])
+  }, [mode, telemetryLogs.panelPrimaryClicked, telemetryLogs.panelSecondaryClicked, upsellData])
 
   return (
     <Fragment>

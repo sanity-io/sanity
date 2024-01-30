@@ -1,14 +1,8 @@
 import {Box, Card, Container, Flex, Stack} from '@sanity/ui'
 import {LaunchIcon} from '@sanity/icons'
-import {useTelemetry} from '@sanity/telemetry/react'
-import {useCallback} from 'react'
 import styled from 'styled-components'
 import {Button} from '../../../../../ui-components'
-import {useCommentsUpsell} from '../../hooks'
-import {
-  CommentsUpsellPanelPrimaryBtnClicked,
-  CommentsUpsellPanelSecondaryBtnClicked,
-} from '../../../__telemetry__/comments.telemetry'
+import {CommentsUpsellData} from '../../types'
 import {DescriptionSerializer} from 'sanity'
 
 const Image = styled.img`
@@ -18,54 +12,47 @@ const Image = styled.img`
   height: 180px;
 `
 
-export function CommentsUpsellPanel() {
-  const {upsellData} = useCommentsUpsell()
-  const telemetry = useTelemetry()
+interface CommentsUpsellPanelProps {
+  data: CommentsUpsellData
+  onPrimaryClick: () => void
+  onSecondaryClick: () => void
+}
 
-  const handlePrimaryClick = useCallback(() => {
-    telemetry.log(CommentsUpsellPanelPrimaryBtnClicked)
-  }, [telemetry])
-
-  const handleSecondaryClicked = useCallback(() => {
-    telemetry.log(CommentsUpsellPanelSecondaryBtnClicked)
-  }, [telemetry])
-
-  if (!upsellData) return null
+export function CommentsUpsellPanel(props: CommentsUpsellPanelProps) {
+  const {data, onPrimaryClick, onSecondaryClick} = props
   return (
     <Container width={1}>
       <Box marginBottom={6}>
         <Card radius={3} overflow={'hidden'} border>
-          {upsellData.image && (
-            <Image src={upsellData.image.asset.url} alt={upsellData.image.asset.altText ?? ''} />
-          )}
+          {data.image && <Image src={data.image.asset.url} alt={data.image.asset.altText ?? ''} />}
           <Box padding={3} marginTop={2}>
             <Stack space={4}>
-              <DescriptionSerializer blocks={upsellData.descriptionText} />
+              <DescriptionSerializer blocks={data.descriptionText} />
             </Stack>
             <Flex gap={2} justify={'flex-end'} marginTop={5}>
               <Button
                 mode="bleed"
-                text={upsellData.secondaryButton.text}
+                text={data.secondaryButton.text}
                 tone="primary"
                 iconRight={LaunchIcon}
-                {...(upsellData.secondaryButton.url && {
+                {...(data.secondaryButton.url && {
                   target: '_blank',
                   rel: 'noopener noreferrer',
                   as: 'a',
-                  href: upsellData.secondaryButton.url,
+                  href: data.secondaryButton.url,
                 })}
-                onClick={handleSecondaryClicked}
+                onClick={onSecondaryClick}
               />
               <Button
-                text={upsellData.ctaButton.text}
+                text={data.ctaButton.text}
                 tone="primary"
-                {...(upsellData.ctaButton.url && {
+                {...(data.ctaButton.url && {
                   target: '_blank',
                   rel: 'noopener noreferrer',
                   as: 'a',
-                  href: upsellData.ctaButton.url,
+                  href: data.ctaButton.url,
                 })}
-                onClick={handlePrimaryClick}
+                onClick={onPrimaryClick}
               />
             </Flex>
           </Box>

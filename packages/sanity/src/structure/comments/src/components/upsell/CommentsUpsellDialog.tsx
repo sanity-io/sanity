@@ -1,14 +1,8 @@
-import {useCallback} from 'react'
 import styled from 'styled-components'
 import {CloseIcon, LaunchIcon} from '@sanity/icons'
 import {Box, Stack} from '@sanity/ui'
-import {useTelemetry} from '@sanity/telemetry/react'
 import {Button, Dialog} from '../../../../../ui-components'
-import {useCommentsUpsell} from '../../hooks'
-import {
-  CommentsUpsellDialogPrimaryBtnClicked,
-  CommentsUpsellDialogSecondaryBtnClicked,
-} from '../../../__telemetry__/comments.telemetry'
+import {CommentsUpsellData} from '../../types'
 import {DescriptionSerializer} from 'sanity'
 
 /**
@@ -36,60 +30,51 @@ const Image = styled.img`
   height: 200px;
 `
 
-export function CommentsUpsellDialog() {
-  const {upsellDialogOpen, setUpsellDialogOpen, upsellData} = useCommentsUpsell()
-  const telemetry = useTelemetry()
+interface CommentsUpsellDialogProps {
+  data: CommentsUpsellData
+  onClose: () => void
+  onPrimaryClick: () => void
+  onSecondaryClick: () => void
+}
 
-  const handleClose = useCallback(() => {
-    setUpsellDialogOpen(false)
-  }, [setUpsellDialogOpen])
-
-  const handlePrimaryClick = useCallback(() => {
-    telemetry.log(CommentsUpsellDialogPrimaryBtnClicked)
-  }, [telemetry])
-
-  const handleSecondaryClicked = useCallback(() => {
-    telemetry.log(CommentsUpsellDialogSecondaryBtnClicked)
-  }, [telemetry])
-
-  if (!upsellDialogOpen) return null
-  if (!upsellData) return null
+export function CommentsUpsellDialog(props: CommentsUpsellDialogProps) {
+  const {data, onClose, onPrimaryClick, onSecondaryClick} = props
 
   return (
     <Dialog
       id="comments-upsell"
-      onClose={handleClose}
-      onClickOutside={handleClose}
+      onClose={onClose}
+      onClickOutside={onClose}
       __unstable_hideCloseButton
       bodyHeight="fill"
       padding={false}
       footer={{
-        cancelButton: upsellData.secondaryButton?.text
+        cancelButton: data.secondaryButton?.text
           ? {
-              text: upsellData.secondaryButton.text,
+              text: data.secondaryButton.text,
               mode: 'bleed',
               tone: 'default',
               iconRight: LaunchIcon,
-              ...(upsellData.secondaryButton.url && {
+              ...(data.secondaryButton.url && {
                 target: '_blank',
                 rel: 'noopener noreferrer',
                 as: 'a',
-                href: upsellData.secondaryButton.url,
+                href: data.secondaryButton.url,
               }),
-              onClick: handleSecondaryClicked,
+              onClick: onSecondaryClick,
             }
           : undefined,
         confirmButton: {
-          text: upsellData.ctaButton?.text,
+          text: data.ctaButton?.text,
           mode: 'default',
           tone: 'primary',
-          ...(upsellData.ctaButton.url && {
+          ...(data.ctaButton.url && {
             target: '_blank',
             rel: 'noopener noreferrer',
             as: 'a',
-            href: upsellData.ctaButton.url,
+            href: data.ctaButton.url,
           }),
-          onClick: handlePrimaryClick,
+          onClick: onPrimaryClick,
         },
       }}
     >
@@ -97,16 +82,14 @@ export function CommentsUpsellDialog() {
         icon={CloseIcon}
         mode="bleed"
         tone="default"
-        onClick={handleClose}
+        onClick={onClose}
         tabIndex={-1}
         tooltipProps={null}
       />
-      {upsellData.image && (
-        <Image src={upsellData.image.asset.url} alt={upsellData.image.asset.altText ?? ''} />
-      )}
-      <Box padding={3}>
+      {data.image && <Image src={data.image.asset.url} alt={data.image.asset.altText ?? ''} />}
+      <Box padding={3} marginTop={2}>
         <Stack space={4} paddingBottom={2}>
-          <DescriptionSerializer blocks={upsellData.descriptionText} />
+          <DescriptionSerializer blocks={data.descriptionText} />
         </Stack>
       </Box>
     </Dialog>

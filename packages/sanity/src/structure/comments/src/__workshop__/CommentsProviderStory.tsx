@@ -8,7 +8,7 @@ import {
   CommentsSetupProvider,
   CommentsUpsellProvider,
 } from '../context'
-import {useComments} from '../hooks'
+import {useComments, useCommentsUpsell} from '../hooks'
 import {ConditionalWrapper} from '../../../../ui-components/conditionalWrapper'
 import {CommentsUIMode} from '../types'
 import {useCurrentUser} from 'sanity'
@@ -46,14 +46,23 @@ export default function CommentsProviderStory() {
 function Inner({mode}: {mode: CommentsUIMode}) {
   const {comments, mentionOptions, operation} = useComments()
   const currentUser = useCurrentUser()
+  const {upsellData, telemetryLogs} = useCommentsUpsell()
 
   const beforeListNode = useMemo(() => {
-    if (mode === 'upsell') {
-      return <CommentsUpsellPanel />
+    if (mode === 'upsell' && upsellData) {
+      return (
+        <CommentsUpsellPanel
+          data={upsellData}
+          // eslint-disable-next-line react/jsx-handler-names
+          onPrimaryClick={telemetryLogs.panelPrimaryClicked}
+          // eslint-disable-next-line react/jsx-handler-names
+          onSecondaryClick={telemetryLogs.panelSecondaryClicked}
+        />
+      )
     }
 
     return null
-  }, [mode])
+  }, [mode, telemetryLogs.panelPrimaryClicked, telemetryLogs.panelSecondaryClicked, upsellData])
 
   if (!currentUser) return null
 
