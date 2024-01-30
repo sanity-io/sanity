@@ -43,6 +43,7 @@ export async function* toFetchOptionsIterable(
       projectId: apiConfig.projectId,
       apiVersion: apiConfig.apiVersion,
       token: apiConfig.token,
+      tag: 'sanity.migration.mutate',
       apiHost: apiConfig.apiHost ?? 'api.sanity.io',
       endpoint: endpoints.data.mutate(apiConfig.dataset, {returnIds: true}),
       body: JSON.stringify(transaction),
@@ -79,7 +80,9 @@ export async function run(config: MigrationRunnerConfig, migration: Migration) {
     {signal: abortController.signal},
   )
 
-  const client = limitClientConcurrency(createClient({...config.api, useCdn: false}))
+  const client = limitClientConcurrency(
+    createClient({...config.api, useCdn: false, requestTagPrefix: 'sanity.migration'}),
+  )
 
   const filteredDocumentsClient = createFilteredDocumentsClient(createReader)
   const context = {
