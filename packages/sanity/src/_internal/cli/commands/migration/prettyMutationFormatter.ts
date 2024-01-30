@@ -26,12 +26,22 @@ export function prettyFormat({
   return (Array.isArray(subject) ? subject : [subject])
     .map((subjectEntry) => {
       if (subjectEntry.type === 'transaction') {
-        return prettyFormat({
-          chalk,
-          subject: subjectEntry.mutations,
-          migration,
-          indentSize,
-        })
+        return [
+          [
+            badge('transaction', 'info', chalk),
+            typeof subjectEntry.id === 'undefined' ? null : chalk.underline(subjectEntry.id),
+          ]
+            .filter(Boolean)
+            .join(' '),
+          indent(
+            prettyFormat({
+              chalk,
+              subject: subjectEntry.mutations,
+              migration,
+              indentSize: indentSize,
+            }),
+          ),
+        ].join('\n\n')
       }
       return prettyFormatMutation({
         chalk,
@@ -40,7 +50,7 @@ export function prettyFormat({
         indentSize,
       })
     })
-    .join('\n')
+    .join('\n\n')
 }
 
 function encodeItemRef(ref: number | KeyedSegment): ItemRef {
@@ -119,21 +129,14 @@ export function prettyFormatMutation({
   const lock =
     'options' in subject ? chalk.cyan(`(if revision==${subject.options?.ifRevision})`) : ''
   const header = [mutationHeader(chalk, subject, migration), lock].join(' ')
-  const indent = ' '.repeat(indentSize)
+  const padding = ' '.repeat(indentSize)
 
   if (
     subject.type === 'create' ||
     subject.type === 'createIfNotExists' ||
     subject.type === 'createOrReplace'
   ) {
-    return [
-      header,
-      '\n',
-      JSON.stringify(subject.document, null, 2)
-        .split('\n')
-        .map((line) => indent + line)
-        .join('\n'),
-    ].join('')
+    return [header, '\n', indent(JSON.stringify(subject.document, null, 2), indentSize)].join('')
   }
 
   if (subject.type === 'patch') {
@@ -146,7 +149,7 @@ export function prettyFormatMutation({
       formatTree<NodePatch>({
         node: tree.children,
         paddingLength,
-        indent,
+        indent: padding,
         getMessage: (patch) => formatPatchMutation(chalk, patch),
       }),
     ].join('')
@@ -199,4 +202,13 @@ function formatPatchMutation(chalk: Chalk, patch: NodePatch): string {
   }
   // @ts-expect-error all cases are covered
   throw new Error(`Invalid operation type: ${op.type}`)
+}
+
+function indent(subject: string, size = 2): string {
+  const padding = ' '.repeat(size)
+
+  return subject
+    .split('\n')
+    .map((line) => padding + line)
+    .join('\n')
 }
