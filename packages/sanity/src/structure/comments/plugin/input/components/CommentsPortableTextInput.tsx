@@ -14,6 +14,7 @@ import {
   CommentMessage,
   buildRangeDecorators,
   buildTextSelectionFromFragment,
+  currentSelectionIsOverlappingWithComment,
   hasCommentMessageValue,
   useComments,
   useCommentsEnabled,
@@ -163,6 +164,31 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
     floatingButtonPopoverRef.current,
   ])
 
+  const handleDecoratorClick = useCallback(
+    (commentId: string) => {
+      const comment = getComment(commentId)
+      if (!comment) return
+
+      setSelectedPath({
+        fieldPath: comment.target.path.field,
+        threadId: comment.threadId,
+        origin: 'form',
+      })
+
+      onCommentsOpen?.()
+
+      // Temporary fix for scrolling to the comment thread when clicking the comment
+      requestAnimationFrame(() => {
+        const node = document.querySelector(`[data-group-id="${comment.threadId}"]`)
+
+        node?.scrollIntoView({
+          behavior: 'smooth',
+        })
+      })
+    },
+    [getComment, onCommentsOpen, setSelectedPath],
+  )
+
   const handleSelectionChange = useCallback(
     (selection: EditorSelection | null, isRangeSelected: boolean) => {
       const fragment = getFragment()
@@ -200,31 +226,6 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
       }
     },
     [debounceSelectionChange],
-  )
-
-  const handleDecoratorClick = useCallback(
-    (commentId: string) => {
-      const comment = getComment(commentId)
-      if (!comment) return
-
-      setSelectedPath({
-        fieldPath: comment.target.path.field,
-        threadId: comment.threadId,
-        origin: 'form',
-      })
-
-      onCommentsOpen?.()
-
-      // Temporary fix for scrolling to the comment thread when clicking the comment
-      requestAnimationFrame(() => {
-        const node = document.querySelector(`[data-group-id="${comment.threadId}"]`)
-
-        node?.scrollIntoView({
-          behavior: 'smooth',
-        })
-      })
-    },
-    [getComment, onCommentsOpen, setSelectedPath],
   )
 
   // The range decorations for existing comments
@@ -280,6 +281,17 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
     ]
   }, [addedCommentsDecorators, authoringDecorator, props?.rangeDecorations, selectDecorator])
 
+  const currentSelectionIsOverlapping = useMemo(() => {
+    if (!currentSelection) return false
+
+    const overlaps = currentSelectionIsOverlappingWithComment({
+      currentSelection,
+      addedCommentsSelections: addedCommentsDecorators.map((decorator) => decorator.selection),
+    })
+
+    return overlaps
+  }, [addedCommentsDecorators, currentSelection])
+
   // The input props for the portable text input
   const inputProps = useMemo(
     (): PortableTextInputProps => ({
@@ -292,7 +304,10 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
   )
 
   const showFloatingButton = Boolean(
-    currentSelection && canSubmit && popoverSelectionReferenceElement,
+    currentSelection &&
+      canSubmit &&
+      popoverSelectionReferenceElement &&
+      !currentSelectionIsOverlapping,
   )
 
   const showFloatingInput = Boolean(

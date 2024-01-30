@@ -1,4 +1,4 @@
-import {buildRangeDecorationSelectionsFromComments} from '../utils/inline-comments/buildRangeDecorationSelectionsFromComments'
+import {buildRangeDecorationSelectionsFromComments} from '../utils'
 import {CommentThreadItem} from '../types'
 
 describe('comments: buildRangeDecorationSelectionsFromComments', () => {
