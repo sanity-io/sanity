@@ -181,7 +181,6 @@ const runMigrationCommand: CliCommandDefinition<CreateFlags> = {
       token: projectConfig.token!,
       apiVersion: 'v2024-01-29',
     } as const
-
     if (dry) {
       dryRunHandler()
       return
