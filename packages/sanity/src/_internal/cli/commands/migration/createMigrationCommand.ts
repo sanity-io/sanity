@@ -32,20 +32,21 @@ const TEMPLATES = [
 const createMigrationCommand: CliCommandDefinition<CreateMigrationFlags> = {
   name: 'create',
   group: 'migration',
-  signature: '[NAME]',
+  signature: '[TITLE]',
   helpText,
   description: 'Create a new content migration within your project',
   action: async (args, context) => {
     const {output, prompt, workDir, chalk} = context
 
-    let name = ''
-    while (!name.trim()) {
-      name = await prompt.single({
+    let [title] = args.argsWithoutOptions
+
+    while (!title.trim()) {
+      title = await prompt.single({
         type: 'input',
-        suffix: ' (e.g. rename field from location to address)',
-        message: 'Name of migration',
+        suffix: ' (e.g. "Rename field from location to address")',
+        message: 'Title of migration',
       })
-      if (!name.trim()) {
+      if (!title.trim()) {
         output.print(chalk.red('Name cannot be empty'))
       }
     }
@@ -65,7 +66,7 @@ const createMigrationCommand: CliCommandDefinition<CreateMigrationFlags> = {
       })),
     })
 
-    const sluggedName = deburr(name.toLowerCase())
+    const sluggedName = deburr(title.toLowerCase())
       .replace(/\s+/g, '-')
       .replace(/[^a-z0-9-]/g, '')
 
@@ -84,7 +85,7 @@ const createMigrationCommand: CliCommandDefinition<CreateMigrationFlags> = {
     mkdirp.sync(destDir)
 
     const renderedTemplate = (templatesByName[template].template || minimalSimple)({
-      migrationName: name,
+      migrationName: title,
       documentTypes: types
         .split(',')
         .map((t) => t.trim())
