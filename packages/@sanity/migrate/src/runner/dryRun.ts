@@ -1,5 +1,5 @@
 import {SanityDocument} from '@sanity/types'
-import {APIConfig, Migration, MigrationProgress} from '../types'
+import {APIConfig, Migration} from '../types'
 import {fromExportEndpoint, safeJsonParser} from '../sources/fromExportEndpoint'
 import {streamToAsyncIterator} from '../utils/streamToAsyncIterator'
 import {bufferThroughFile} from '../fs-webstream/bufferThroughFile'
@@ -14,7 +14,6 @@ import {createContextClient} from './utils/createContextClient'
 
 interface MigrationRunnerOptions {
   api: APIConfig
-  onProgress?: (event: MigrationProgress) => void
 }
 
 export async function* dryRun(config: MigrationRunnerOptions, migration: Migration) {
