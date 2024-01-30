@@ -1,5 +1,5 @@
 import {SanityDocument} from '@sanity/types'
-import {createClient, MultipleMutationResult} from '@sanity/client'
+import {MultipleMutationResult} from '@sanity/client'
 import arrify from 'arrify'
 import {APIConfig, Migration, MigrationProgress} from '../types'
 import {parse, stringify} from '../it-utils/ndjson'
@@ -26,7 +26,7 @@ import {collectMigrationMutations} from './collectMigrationMutations'
 import {getBufferFilePath} from './utils/getBufferFile'
 import {createFilteredDocumentsClient} from './utils/createFilteredDocumentsClient'
 import {applyFilters} from './utils/applyFilters'
-import {limitClientConcurrency} from './utils/limitClientConcurrency'
+import {createContextClient} from './utils/createContextClient'
 
 export interface MigrationRunnerConfig {
   api: APIConfig
@@ -80,9 +80,11 @@ export async function run(config: MigrationRunnerConfig, migration: Migration) {
     {signal: abortController.signal},
   )
 
-  const client = limitClientConcurrency(
-    createClient({...config.api, useCdn: false, requestTagPrefix: 'sanity.migration'}),
-  )
+  const client = createContextClient({
+    ...config.api,
+    useCdn: false,
+    requestTagPrefix: 'sanity.migration',
+  })
 
   const filteredDocumentsClient = createFilteredDocumentsClient(createReader)
   const context = {
