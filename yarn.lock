@@ -3568,7 +3568,7 @@
     nanoid "^3.1.12"
     rxjs "^7.0.0"
 
-"@sanity/client@^6.1.2", "@sanity/client@^6.12.3", "@sanity/client@^6.8.6":
+"@sanity/client@^6.1.2", "@sanity/client@^6.11.1", "@sanity/client@^6.12.3", "@sanity/client@^6.8.6":
   version "6.12.3"
   resolved "https://registry.yarnpkg.com/@sanity/client/-/client-6.12.3.tgz#240d50c55b3ed4e0f3a24a055c852d0aea992c89"
   integrity sha512-oA9LkDZOpVN8nciGb6/h+1r4ElH0IUTC3bHyBdVsxB5namdWBJKZzuVjJiWQlsK8up7U1xsATB4hyimSgUCSjA==
