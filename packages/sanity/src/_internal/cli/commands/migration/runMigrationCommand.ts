@@ -13,7 +13,6 @@ import {
 
 import {Table} from 'console-table-printer'
 import {debug} from '../../debug'
-import {formatTransaction} from './utils/mutationFormatter'
 import {resolveMigrations} from './listMigrationsCommand'
 import {prettyFormat} from './prettyMutationFormatter'
 
@@ -237,7 +236,11 @@ const runMigrationCommand: CliCommandDefinition<CreateFlags> = {
   ${chalk.blue(progress.pending)} requests pending…
   ${chalk.green(progress.completedTransactions.length)} transactions committed.
 
-  ${transaction && !progress.done ? `» ${chalk.grey(formatTransaction(chalk, transaction))}` : ''}`
+  ${
+    transaction && !progress.done
+      ? `» ${prettyFormat({chalk, subject: transaction, migration, indentSize: 2})}`
+      : ''
+  }`
         })
       }
     }
