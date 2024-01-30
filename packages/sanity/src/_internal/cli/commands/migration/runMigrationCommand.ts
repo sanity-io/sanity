@@ -31,11 +31,11 @@ Examples
   sanity migration run <id>
 
   # execute the migration against a dataset
-  sanity migration run <id> --no-dry --projectId xyz --dataset staging
+  sanity migration run <id> --no-dry-run --projectId xyz --dataset staging
 `
 
 interface CreateFlags {
-  dry?: boolean
+  ['dry-run']?: boolean
   concurrency?: number
   progress?: boolean
   dataset?: string
@@ -78,7 +78,7 @@ const runMigrationCommand: CliCommandDefinition<CreateFlags> = {
     const fromExport = undefined
 
     const [dry, showProgress, dataset, projectId, shouldConfirm] = [
-      args.extOptions.dry !== false,
+      args.extOptions['dry-run'] !== false,
       args.extOptions.progress !== false,
       args.extOptions.dataset,
       args.extOptions['project-id'],
