@@ -50,7 +50,7 @@ export function StudioTelemetryProvider(props: {children: ReactNode; config: Con
       plugins: arrify(props.config).flatMap(
         (config) =>
           config.plugins?.flatMap((plugin) => ({
-            name: plugin.name,
+            name: plugin.name || '<unnamed>',
           })) || [],
       ),
     })
