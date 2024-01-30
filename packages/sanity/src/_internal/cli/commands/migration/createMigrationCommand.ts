@@ -40,14 +40,14 @@ const createMigrationCommand: CliCommandDefinition<CreateMigrationFlags> = {
 
     let [title] = args.argsWithoutOptions
 
-    while (!title.trim()) {
+    while (!title?.trim()) {
       title = await prompt.single({
         type: 'input',
         suffix: ' (e.g. "Rename field from location to address")',
         message: 'Title of migration',
       })
       if (!title.trim()) {
-        output.print(chalk.red('Name cannot be empty'))
+        output.error(chalk.red('Name cannot be empty'))
       }
     }
     const types = await prompt.single({

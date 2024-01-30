@@ -11,8 +11,10 @@ import {
   runFromArchive,
 } from '@sanity/migrate'
 
+import {Table} from 'console-table-printer'
 import {debug} from '../../debug'
 import {formatTransaction} from './utils/mutationFormatter'
+import {resolveMigrations} from './listMigrationsCommand'
 
 const helpText = `
 Options
@@ -91,9 +93,23 @@ const runMigrationCommand: CliCommandDefinition<CreateFlags> = {
     }
 
     if (!id) {
-      throw new Error(
-        "Migration ID must be provided. `sanity migration run <ID>`. To see a list of available migrations and their ID's, run `sanity migration list`",
-      )
+      output.error(chalk.red('Error: Migration ID must be provided'))
+      const migrations = await resolveMigrations(workDir)
+      const table = new Table({
+        title: `Migrations found in project`,
+        columns: [
+          {name: 'id', title: 'ID', alignment: 'left'},
+          {name: 'title', title: 'Title', alignment: 'left'},
+        ],
+      })
+
+      migrations.forEach((definedMigration) => {
+        table.addRow({id: definedMigration.dirname, title: definedMigration.migration.title})
+      })
+      table.printTable()
+      output.print('\nRun `sanity migration run <ID>` to run a migration')
+
+      return
     }
 
     if (!__DEV__) {
