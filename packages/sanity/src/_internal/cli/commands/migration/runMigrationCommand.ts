@@ -15,7 +15,7 @@ import {Table} from 'console-table-printer'
 import {debug} from '../../debug'
 import {formatTransaction} from './utils/mutationFormatter'
 import {resolveMigrations} from './listMigrationsCommand'
-import {prettyFormat, prettyFormatMutation} from './prettyMutationFormatter'
+import {prettyFormat} from './prettyMutationFormatter'
 
 const helpText = `
 Options
@@ -184,37 +184,35 @@ const runMigrationCommand: CliCommandDefinition<CreateFlags> = {
     } as const
 
     if (dry) {
-      const spinner = output.spinner(`Running migration "${id}" in dry mode`).start()
-
       if (fromExport) {
+        const spinner = output.spinner(`Running migration "${id}" in dry mode`).start()
+
         // TODO: Dry run output when using archive source.
         await runFromArchive(migration, fromExport, {
           api: apiConfig,
           concurrency,
           onProgress: createProgress(spinner),
         })
+
+        spinner.stop()
       } else {
-        await dryRun({api: apiConfig, onProgress: createProgress(spinner)}, migration)
+        output.print(`Running migration "${id}" in dry mode`)
+        output.print()
+        output.print(`Project id:  ${chalk.bold(apiConfig.projectId)}`)
+        output.print(`Dataset:     ${chalk.bold(apiConfig.dataset)}`)
+
+        for await (const mutation of await dryRun({api: apiConfig}, migration)) {
+          if (!mutation) continue
+          output.print()
+          output.print(
+            prettyFormat({
+              chalk,
+              mutations: Array.isArray(mutation) ? mutation : [mutation],
+              migration,
+            }),
+          )
+        }
       }
-
-      // output.print(`Running migration "${migrationName}" in dry mode`)
-      // output.print()
-      // output.print(`Project id:  ${chalk.bold(projectId)}`)
-      // output.print(`Dataset:     ${chalk.bold(dataset)}`)
-
-      // for await (const mutation of dryRun({api: apiConfig}, migration)) {
-      //   if (!mutation) continue
-      //   output.print()
-      //   output.print(
-      //     prettyFormat({
-      //       chalk,
-      //       mutations: Array.isArray(mutation) ? mutation : [mutation],
-      //       migration,
-      //     }),
-      //   )
-      // }
-
-      spinner.stop()
     } else {
       const response =
         shouldConfirm &&
