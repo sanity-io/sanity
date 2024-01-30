@@ -51,7 +51,6 @@ export interface MigrationContext {
   filtered: {
     getDocument<T extends SanityDocument>(id: string): Promise<T | undefined>
     getDocuments<T extends SanityDocument>(ids: string[]): Promise<T[]>
-    query<T>(query: string, params?: Record<string, unknown>): Promise<T>
   }
 }
 
