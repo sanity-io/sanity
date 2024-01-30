@@ -12,7 +12,7 @@ import {
 } from '../types'
 import {JsonArray, JsonObject, JsonValue} from '../json'
 import {at, Mutation, patch, NodePatch, Operation, Transaction} from '../mutations'
-import {isMutation, isTransaction} from '../mutations/asserters'
+import {isMutation, isNodePatch, isOperation, isTransaction} from '../mutations/asserters'
 import {flatMapDeep} from './utils/flatMapDeep'
 import {getValueType} from './utils/getValueType'
 
@@ -63,23 +63,6 @@ function isRawMutation(
     'delete' in mutation
   )
 }
-
-function isOperation(value: Mutation | NodePatch | Operation): value is Operation {
-  return (
-    'type' in value &&
-    (value.type === 'set' ||
-      value.type === 'unset' ||
-      value.type === 'insert' ||
-      value.type === 'diffMatchPatch' ||
-      value.type === 'dec' ||
-      value.type === 'inc' ||
-      value.type === 'upsert' ||
-      value.type === 'unassign' ||
-      value.type === 'truncate' ||
-      value.type === 'setIfMissing')
-  )
-}
-
 export function createAsyncIterableMutation(
   migration: NodeMigration,
   opts: {filter?: string; documentTypes?: string[]},
@@ -162,6 +145,9 @@ function normalizeNodeMutation(
     return SanityEncoder.decode([change] as any)[0] as Mutation
   }
 
+  if (isNodePatch(change)) {
+    return at(path.concat(change.path), change.op)
+  }
   return isOperation(change) ? at(path, change) : change
 }
 
