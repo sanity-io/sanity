@@ -1051,7 +1051,7 @@
     "@babel/parser" "^7.22.15"
     "@babel/types" "^7.22.15"
 
-"@babel/traverse@^7.12.5", "@babel/traverse@^7.23.5", "@babel/traverse@^7.23.7":
+"@babel/traverse@^7.12.5", "@babel/traverse@^7.23.5":
   version "7.23.7"
   resolved "https://registry.yarnpkg.com/@babel/traverse/-/traverse-7.23.7.tgz#9a7bf285c928cb99b5ead19c3b1ce5b310c9c305"
   integrity sha512-tY3mM8rH9jM0YHFGyfC0/xf+SB5eKUu7HPj7/k3fpi9dAlsMc5YbQvDi0Sh2QTPXqMhyaAtzAr807TIyfQrmyg==
@@ -3571,7 +3571,7 @@
     nanoid "^3.1.12"
     rxjs "^7.0.0"
 
-"@sanity/client@^6.1.2", "@sanity/client@^6.12.3", "@sanity/client@^6.8.6":
+"@sanity/client@^6.1.2", "@sanity/client@^6.11.1", "@sanity/client@^6.12.3", "@sanity/client@^6.8.6":
   version "6.12.3"
   resolved "https://registry.yarnpkg.com/@sanity/client/-/client-6.12.3.tgz#240d50c55b3ed4e0f3a24a055c852d0aea992c89"
   integrity sha512-oA9LkDZOpVN8nciGb6/h+1r4ElH0IUTC3bHyBdVsxB5namdWBJKZzuVjJiWQlsK8up7U1xsATB4hyimSgUCSjA==
@@ -3750,10 +3750,10 @@
     uuid "^9.0.1"
     zod "^3.22.4"
 
-"@sanity/presentation@1.7.2":
-  version "1.7.2"
-  resolved "https://registry.yarnpkg.com/@sanity/presentation/-/presentation-1.7.2.tgz#06e9cbd1fa2b4fdbb803f384230cd1766719dfda"
-  integrity sha512-K3SbHT5NMyhPF4NYp4VTLGdD87PNe0eH6lOkkMJzE8x7CMpAU1s9aKAdOT8bolunP0/hYsNS90/Hb1su+ugy7w==
+"@sanity/presentation@1.7.3":
+  version "1.7.3"
+  resolved "https://registry.yarnpkg.com/@sanity/presentation/-/presentation-1.7.3.tgz#5f16c3dcdc9682f600889ac8c97d18124b461ea4"
+  integrity sha512-n6urLfMAUHaa7p8t741t9jE1ZmllPTmTWFKeL8yfnLxJi5c/iHIYYm88SYsllPC/O5A6Y+HG6tcw8GUjcoivvw==
   dependencies:
     "@sanity/icons" "^2.10.0"
     "@sanity/preview-url-secret" "^1.5.5"
@@ -5376,13 +5376,6 @@ ast-types@0.15.2:
   version "0.15.2"
   resolved "https://registry.yarnpkg.com/ast-types/-/ast-types-0.15.2.tgz#39ae4809393c4b16df751ee563411423e85fb49d"
   integrity sha512-c27loCv9QkZinsa5ProX751khO9DJl/AcB5c2KNtA6NRvHKS0PgLfcftz72KVq504vB0Gku5s2kUZzDBvQWvHg==
-  dependencies:
-    tslib "^2.0.1"
-
-ast-types@^0.16.1:
-  version "0.16.1"
-  resolved "https://registry.yarnpkg.com/ast-types/-/ast-types-0.16.1.tgz#7a9da1617c9081bc121faafe91711b4c8bb81da2"
-  integrity sha512-6t10qk83GOG8p0vKmaCr8eiilZwO171AvbROMtvvNiwrTly62t+7XkA8RdIIVbpMhCASAsxgAzdRSwh6nw/5Dg==
   dependencies:
     tslib "^2.0.1"
 
@@ -13717,17 +13710,6 @@ recast@^0.22.0:
   dependencies:
     assert "^2.0.0"
     ast-types "0.15.2"
-    esprima "~4.0.0"
-    source-map "~0.6.1"
-    tslib "^2.0.1"
-
-recast@^0.23.4:
-  version "0.23.4"
-  resolved "https://registry.yarnpkg.com/recast/-/recast-0.23.4.tgz#ca1bac7bfd3011ea5a28dfecb5df678559fb1ddf"
-  integrity sha512-qtEDqIZGVcSZCHniWwZWbRy79Dc6Wp3kT/UmDA2RJKBPg7+7k51aQBZirHmUGn5uvHf2rg8DkjizrN26k61ATw==
-  dependencies:
-    assert "^2.0.0"
-    ast-types "^0.16.1"
     esprima "~4.0.0"
     source-map "~0.6.1"
     tslib "^2.0.1"
