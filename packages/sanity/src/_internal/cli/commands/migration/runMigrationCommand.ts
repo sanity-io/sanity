@@ -207,7 +207,7 @@ const runMigrationCommand: CliCommandDefinition<CreateFlags> = {
           output.print(
             prettyFormat({
               chalk,
-              mutations: Array.isArray(mutation) ? mutation : [mutation],
+              subject: mutation,
               migration,
             }),
           )

@@ -1,5 +1,5 @@
 import {isatty} from 'tty'
-import {Migration, Mutation, NodePatch} from '@sanity/migrate'
+import {Migration, Mutation, NodePatch, Transaction} from '@sanity/migrate'
 import {KeyedSegment} from '@sanity/types'
 import {Chalk} from 'chalk'
 import {convertToTree, formatTree, maxKeyLength} from '../../util/tree'
@@ -10,14 +10,37 @@ type Variant = Impact | 'info'
 
 const isTty = isatty(1)
 
-interface FormatterOptions {
+interface FormatterOptions<Subject> {
   chalk: Chalk
-  mutations: Mutation[]
+  subject: Subject
   migration: Migration
+  indentSize?: number
 }
 
-export function prettyFormat({chalk, mutations, migration}: FormatterOptions): string {
-  return `${[...mutations].flatMap((m) => prettyFormatMutation(chalk, m, migration)).join('\n')}`
+export function prettyFormat({
+  chalk,
+  subject,
+  migration,
+  indentSize = 0,
+}: FormatterOptions<Mutation | Transaction | (Mutation | Transaction)[]>): string {
+  return (Array.isArray(subject) ? subject : [subject])
+    .map((subjectEntry) => {
+      if (subjectEntry.type === 'transaction') {
+        return prettyFormat({
+          chalk,
+          subject: subjectEntry.mutations,
+          migration,
+          indentSize,
+        })
+      }
+      return prettyFormatMutation({
+        chalk,
+        subject: subjectEntry,
+        migration,
+        indentSize,
+      })
+    })
+    .join('\n')
 }
 
 function encodeItemRef(ref: number | KeyedSegment): ItemRef {
@@ -87,34 +110,34 @@ function mutationHeader(chalk: Chalk, mutation: Mutation, migration: Migration):
     .join(' ')
 }
 
-export function prettyFormatMutation(
-  chalk: Chalk,
-  mutation: Mutation,
-  migration: Migration,
+export function prettyFormatMutation({
+  chalk,
+  subject,
+  migration,
   indentSize = 0,
-): string {
+}: FormatterOptions<Mutation>): string {
   const lock =
-    'options' in mutation ? chalk.cyan(`(if revision==${mutation.options?.ifRevision})`) : ''
-  const header = [mutationHeader(chalk, mutation, migration), lock].join(' ')
+    'options' in subject ? chalk.cyan(`(if revision==${subject.options?.ifRevision})`) : ''
+  const header = [mutationHeader(chalk, subject, migration), lock].join(' ')
   const indent = ' '.repeat(indentSize)
 
   if (
-    mutation.type === 'create' ||
-    mutation.type === 'createIfNotExists' ||
-    mutation.type === 'createOrReplace'
+    subject.type === 'create' ||
+    subject.type === 'createIfNotExists' ||
+    subject.type === 'createOrReplace'
   ) {
     return [
       header,
       '\n',
-      JSON.stringify(mutation.document, null, 2)
+      JSON.stringify(subject.document, null, 2)
         .split('\n')
         .map((line) => indent + line)
         .join('\n'),
     ].join('')
   }
 
-  if (mutation.type === 'patch') {
-    const tree = convertToTree<NodePatch>(mutation.patches.flat())
+  if (subject.type === 'patch') {
+    const tree = convertToTree<NodePatch>(subject.patches.flat())
     const paddingLength = Math.max(maxKeyLength(tree.children) + 2, 30)
 
     return [
