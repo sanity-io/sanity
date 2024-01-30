@@ -24,7 +24,6 @@ Options
   --dataset <dataset> Dataset to migrate. Defaults to the dataset configured in your Sanity CLI config.
   --projectId <project id> Project ID of the dataset to migrate. Defaults to the projectId configured in your Sanity CLI config.
   --no-confirm Skip the confirmation prompt before running the migration. Make sure you know what you're doing before using this flag.
-  --from-export <export.tar.gz> Use a local dataset export as source for migration instead of calling the Sanity API. Note: this is only supported for dry runs.
 
 
 Examples
@@ -33,14 +32,10 @@ Examples
 
   # execute the migration against a dataset
   sanity migration run <id> --no-dry --projectId xyz --dataset staging
-
-  # run the migration using the dataset export as the source
-  sanity migration run <id> --dry false --from-export=production.tar.gz --projectId xyz --dataset staging
 `
 
 interface CreateFlags {
   dry?: boolean
-  'from-export'?: string
   concurrency?: number
   progress?: boolean
   dataset?: string
@@ -79,8 +74,10 @@ const runMigrationCommand: CliCommandDefinition<CreateFlags> = {
     const {apiClient, output, prompt, chalk, workDir} = context
     const [id] = args.argsWithoutOptions
 
-    const [fromExport, dry, showProgress, dataset, projectId, shouldConfirm] = [
-      args.extOptions['from-export'],
+    // disabling from-export for now
+    const fromExport = undefined
+
+    const [dry, showProgress, dataset, projectId, shouldConfirm] = [
       args.extOptions.dry !== false,
       args.extOptions.progress !== false,
       args.extOptions.dataset,
