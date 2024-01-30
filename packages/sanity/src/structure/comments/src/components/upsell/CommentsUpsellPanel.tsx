@@ -18,7 +18,7 @@ const Image = styled.img`
   height: 180px;
 `
 
-export function UpsellPanel() {
+export function CommentsUpsellPanel() {
   const {upsellData} = useCommentsUpsell()
   const telemetry = useTelemetry()
 

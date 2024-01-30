@@ -1,7 +1,7 @@
 import {useState, useMemo, useEffect} from 'react'
 import {ClientConfig} from '@sanity/client'
 import {CommentsUpsellData} from '../../types'
-import {UpsellDialog} from '../../components'
+import {CommentsUpsellDialog} from '../../components'
 import {CommentsUpsellContext} from './CommentsUpsellContext'
 import {CommentsUpsellContextValue} from './types'
 import {useClient, DEFAULT_STUDIO_CLIENT_OPTIONS} from 'sanity'
@@ -72,7 +72,7 @@ export function CommentsUpsellProvider(props: {children: React.ReactNode}) {
   return (
     <CommentsUpsellContext.Provider value={ctxValue}>
       {props.children}
-      <UpsellDialog />
+      <CommentsUpsellDialog />
     </CommentsUpsellContext.Provider>
   )
 }

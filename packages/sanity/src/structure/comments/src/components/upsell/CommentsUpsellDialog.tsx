@@ -36,7 +36,7 @@ const Image = styled.img`
   height: 200px;
 `
 
-export function UpsellDialog() {
+export function CommentsUpsellDialog() {
   const {upsellDialogOpen, setUpsellDialogOpen, upsellData} = useCommentsUpsell()
   const telemetry = useTelemetry()
 

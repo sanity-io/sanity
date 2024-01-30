@@ -1,7 +1,7 @@
 /* eslint-disable react/jsx-handler-names */
 import React, {useMemo} from 'react'
 import {useString, useSelect} from '@sanity/ui-workshop'
-import {CommentsList, UpsellPanel} from '../components'
+import {CommentsList, CommentsUpsellPanel} from '../components'
 import {
   CommentsEnabledProvider,
   CommentsProvider,
@@ -49,7 +49,7 @@ function Inner({mode}: {mode: CommentsUIMode}) {
 
   const beforeListNode = useMemo(() => {
     if (mode === 'upsell') {
-      return <UpsellPanel />
+      return <CommentsUpsellPanel />
     }
 
     return null

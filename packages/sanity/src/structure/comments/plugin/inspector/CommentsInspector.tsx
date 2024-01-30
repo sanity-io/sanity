@@ -15,7 +15,7 @@ import {
   CommentsOnboardingPopover,
   CommentsSelectedPath,
   CommentStatus,
-  UpsellPanel,
+  CommentsUpsellPanel,
   useComments,
   useCommentsEnabled,
   useCommentsOnboarding,
@@ -313,7 +313,7 @@ function CommentsInspectorInner(props: DocumentInspectorProps) {
 
   const beforeListNode = useMemo(() => {
     if (mode === 'upsell') {
-      return <UpsellPanel />
+      return <CommentsUpsellPanel />
     }
 
     return null
