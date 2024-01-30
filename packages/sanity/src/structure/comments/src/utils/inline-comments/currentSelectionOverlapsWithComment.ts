@@ -70,7 +70,15 @@ export function currentSelectionIsOverlappingWithComment(
       (compareValue.anchor.offset < commentSelection.focus.offset &&
         compareValue.focus.offset > commentSelection.focus.offset)
 
-    return isInside || envelops || wrapsAround
+    // TODO: something is wrong in the `buildRangeDecorationSelectionsFromComments` function as the
+    // `anchor.offset` is often 0 which is incorrect. Once that is fixed, the logic in this
+    // function should work as expected.
+
+    return (
+      (isInside || envelops || wrapsAround) &&
+      commentSelection.anchor.stringPath === compareValue.anchor.stringPath &&
+      commentSelection.focus.stringPath === compareValue.focus.stringPath
+    )
   })
 
   return overlaps

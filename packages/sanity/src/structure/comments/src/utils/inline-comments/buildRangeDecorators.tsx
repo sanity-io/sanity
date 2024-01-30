@@ -78,11 +78,11 @@ function isRangeInvalid() {
 
 interface BuildRangeDecoratorsProps {
   comments: CommentThreadItem[]
-  value: CommentMessage | undefined
-  onDecoratorHoverStart: (commentId: string) => void
-  onDecoratorHoverEnd: (commentId: null) => void
-  onDecoratorClick: (commentId: string) => void
   currentHoveredCommentId: string | null
+  onDecoratorClick: (commentId: string) => void
+  onDecoratorHoverEnd: (commentId: null) => void
+  onDecoratorHoverStart: (commentId: string) => void
+  value: CommentMessage | undefined
 }
 
 export function buildRangeDecorators(props: BuildRangeDecoratorsProps) {

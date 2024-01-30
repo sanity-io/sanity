@@ -23,13 +23,14 @@ export const HighlightSpan = styled.span(({theme}: {theme: Theme}) => {
 
   return css`
     box-sizing: border-box;
-    mix-blend-mode: ${isDark ? 'screen' : 'multiply'};
     transition:
       background-color 100ms ease,
       border-color 100ms ease;
 
+    // Make sure that child elements appropriately blend with the
+    // background of the highlight span
     * {
-      mix-blend-mode: multiply;
+      mix-blend-mode: ${isDark ? 'screen' : 'multiply'};
     }
 
     &[data-inline-comment-state='added'][data-nested-inline-comment='false'] {
