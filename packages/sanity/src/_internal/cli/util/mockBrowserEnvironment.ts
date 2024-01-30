@@ -34,6 +34,11 @@ export function mockBrowserEnvironment(basePath: string): () => void {
     format: 'cjs',
     extensions: ['.js', '.jsx', '.ts', '.tsx', '.mjs'],
     jsx: 'automatic',
+    define: {
+      // alias usages of import.meta.env to `process.env`.
+      // TODO: consider supporting .env files and mimicking the build + dev command
+      'import.meta.env': 'process.env',
+    },
   })
 
   return function cleanupBrowserEnvironment() {
