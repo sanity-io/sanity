@@ -62,7 +62,7 @@ jobs:
         run: yarn docs:report
 
       - name: PR comment with report
-        uses: thollander/actions-comment-pull-request@d61db783da9abefc3437960d0cce08552c7c004f # v2
+        uses: thollander/actions-comment-pull-request@1d3973dc4b8e1399c0620d3f2b1aa5e795465308 # v2
         if: ${{ github.event_name == 'pull_request' }}
         with:
           comment_tag: 'docs-report'
