@@ -70,6 +70,8 @@ export default {
       type: 'number',
       name: 'x',
       title: 'X position',
+      description:
+        'This is a number field. Lets try with a longer description. How does this look? ',
       fieldset: 'settings',
       group: 'group1',
       validation: (Rule) => Rule.required(),

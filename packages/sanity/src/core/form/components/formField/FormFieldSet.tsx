@@ -1,5 +1,5 @@
 /* eslint-disable camelcase */
-import {Badge, Box, Flex, Grid, Stack, Text, Theme, useForwardedRef} from '@sanity/ui'
+import {Badge, Box, Flex, Stack, Text, Theme, useForwardedRef} from '@sanity/ui'
 import React, {forwardRef, useCallback, useMemo} from 'react'
 import styled, {css} from 'styled-components'
 import {DeprecatedProperty, FormNodeValidation} from '@sanity/types'
@@ -12,7 +12,7 @@ import {TextWithTone} from '../../../components'
 import {useTranslation} from '../../../i18n'
 import {FormFieldValidationStatus} from './FormFieldValidationStatus'
 import {FormFieldSetLegend} from './FormFieldSetLegend'
-import {focusRingStyle} from './styles'
+import {focusRingStyle, StyledGrid} from './styles'
 import {FormFieldBaseHeader} from './FormFieldBaseHeader'
 
 /** @internal */
@@ -149,9 +149,9 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
       return null
     }
     return (
-      <Grid columns={columns} gapX={4} gapY={5}>
+      <StyledGrid columns={columns} gapX={4} gapY={5}>
         {getChildren(children)}
-      </Grid>
+      </StyledGrid>
     )
   }, [children, collapsed, columns])
 
