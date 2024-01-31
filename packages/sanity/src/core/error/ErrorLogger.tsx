@@ -36,9 +36,13 @@ export function ErrorLogger(): null {
         return
       }
 
+      // Track errors produced in production
       if (isProd) {
-        // Track errors produced in production
-        telemetry.log(ErrorLoggerCatch, {error: msg.error})
+        telemetry.log(ErrorLoggerCatch, {
+          error: msg.error,
+          errorCause: msg.error.cause,
+          errorName: msg.error.name,
+        })
       }
 
       console.error(msg.error)

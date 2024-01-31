@@ -8,7 +8,7 @@ import {
   IS_DRAGGING,
   IS_DRAGGING_BLOCK_TARGET_POSITION,
 } from '../../utils/weakMaps'
-import {useCallbackWithTelemetry} from '../../__telemetry__/useCallbackWithTelemetry'
+import {useCallbackWithTryCatch} from '../hooks/useCallbackWithTryCatch'
 
 const debug = debugWithName('components:DraggableBlock')
 const debugRenders = false
@@ -42,7 +42,7 @@ export const DraggableBlock = ({children, element, readOnly, blockRef}: Draggabl
   )
 
   // Note: this is called not for the dragging block, but for the targets when the block is dragged over them
-  const handleDragOver = useCallbackWithTelemetry(
+  const handleDragOver = useCallbackWithTryCatch(
     (event: DragEvent) => {
       const isMyDragOver = IS_DRAGGING_BLOCK_ELEMENT.get(editor)
       // debug('Drag over', blockElement)
@@ -78,7 +78,7 @@ export const DraggableBlock = ({children, element, readOnly, blockRef}: Draggabl
   )
 
   // Note: this is called not for the dragging block, but for the targets when the block is dragged over them
-  const handleDragLeave = useCallbackWithTelemetry(
+  const handleDragLeave = useCallbackWithTryCatch(
     () => {
       setIsDragOver(false)
     },
@@ -87,7 +87,7 @@ export const DraggableBlock = ({children, element, readOnly, blockRef}: Draggabl
   )
 
   // Note: this is called for the dragging block
-  const handleDragEnd = useCallbackWithTelemetry(
+  const handleDragEnd = useCallbackWithTryCatch(
     (event: DragEvent) => {
       const targetBlock = IS_DRAGGING_ELEMENT_TARGET.get(editor)
       if (targetBlock) {
@@ -147,7 +147,7 @@ export const DraggableBlock = ({children, element, readOnly, blockRef}: Draggabl
     'DraggableBlock:handleDragEnd',
   )
   // Note: this is called not for the dragging block, but for the drop target
-  const handleDrop = useCallbackWithTelemetry(
+  const handleDrop = useCallbackWithTryCatch(
     (event: DragEvent) => {
       if (IS_DRAGGING_BLOCK_ELEMENT.get(editor)) {
         debug('On drop (prevented)', element)
@@ -160,7 +160,7 @@ export const DraggableBlock = ({children, element, readOnly, blockRef}: Draggabl
     'DraggableBlock:handleDrop',
   )
   // Note: this is called for the dragging block
-  const handleDrag = useCallbackWithTelemetry(
+  const handleDrag = useCallbackWithTryCatch(
     (event: DragEvent) => {
       if (!isVoid) {
         IS_DRAGGING_BLOCK_ELEMENT.delete(editor)
@@ -181,7 +181,7 @@ export const DraggableBlock = ({children, element, readOnly, blockRef}: Draggabl
   )
 
   // Note: this is called for the dragging block
-  const handleDragStart = useCallbackWithTelemetry(
+  const handleDragStart = useCallbackWithTryCatch(
     (event: DragEvent) => {
       if (!isVoid || isInline) {
         debug('Not dragging block')

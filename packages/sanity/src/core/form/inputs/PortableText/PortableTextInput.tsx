@@ -46,7 +46,6 @@ export interface PortableTextMemberItem {
   input?: ReactNode
 }
 
-const LOCATION = 'sanity/src/core/form/inputs/PortableText/PortableTextInput'
 /**
  * Input component for editing block content
  * ({@link https://github.com/portabletext/portabletext | Portable Text}) in the Sanity Studio.
@@ -186,7 +185,7 @@ function PortableTextInputInner(props: PortableTextInputProps) {
           case 'invalidValue':
             telemetry.log(PortableTextEditorFormError, {
               message: 'InvalidValue',
-              location: `${LOCATION} | handleEditorChange:invalidValue`,
+              location: `$PortableTextInput_handleEditorChange:invalidValue`,
               payload: change.resolution,
             })
             setInvalidValue(change)
@@ -194,7 +193,7 @@ function PortableTextInputInner(props: PortableTextInputProps) {
           case 'error':
             telemetry.log(PortableTextEditorFormError, {
               message: change.description,
-              location: `${LOCATION} | handleEditorChange:error`,
+              location: `$PortableTextInput_handleEditorChange:error`,
             })
             toast.push({
               status: change.level,
@@ -207,7 +206,7 @@ function PortableTextInputInner(props: PortableTextInputProps) {
         telemetry.log(PortableTextEditorFormError, {
           message: e.message,
           error: e,
-          location: `${LOCATION} | handleEditorChange`,
+          location: `$PortableTextInput_handleEditorChange`,
           payload: change,
         })
         throw e
@@ -306,7 +305,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
       if (!isProd) return
       telemetry.log(PortableTextEditorFormError, {
         error: error,
-        location: `${LOCATION} | ErrorBoundary`,
+        location: `PortableTextInput:ErrorBoundary`,
         message: error.message,
         payload: info,
       })

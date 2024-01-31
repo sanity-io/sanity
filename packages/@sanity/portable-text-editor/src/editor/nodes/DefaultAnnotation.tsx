@@ -1,13 +1,13 @@
 import {PortableTextObject} from '@sanity/types'
 import React from 'react'
-import {useCallbackWithTelemetry} from '../../__telemetry__/useCallbackWithTelemetry'
+import {useCallbackWithTryCatch} from '../hooks/useCallbackWithTryCatch'
 
 type Props = {
   annotation: PortableTextObject
   children: React.ReactNode
 }
 export function DefaultAnnotation(props: Props) {
-  const handleClick = useCallbackWithTelemetry(
+  const handleClick = useCallbackWithTryCatch(
     // eslint-disable-next-line no-alert
     () => alert(JSON.stringify(props.annotation)),
     [props.annotation],

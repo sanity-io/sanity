@@ -16,7 +16,7 @@ import {debugWithName} from '../../utils/debug'
 import {DefaultAnnotation} from '../nodes/DefaultAnnotation'
 import {usePortableTextEditor} from '../hooks/usePortableTextEditor'
 import {PortableTextEditor} from '../PortableTextEditor'
-import {useCallbackWithTelemetry} from '../../__telemetry__/useCallbackWithTelemetry'
+import {useCallbackWithTryCatch} from '../hooks/useCallbackWithTryCatch'
 
 const debug = debugWithName('components:Leaf')
 
@@ -91,7 +91,7 @@ export const Leaf = (props: LeafProps) => {
   }, [shouldTrackSelectionAndFocus, path, portableTextEditor])
 
   // Function to check if this leaf is currently inside the user's text selection
-  const setSelectedFromRange = useCallbackWithTelemetry(
+  const setSelectedFromRange = useCallbackWithTryCatch(
     () => {
       if (!shouldTrackSelectionAndFocus) {
         return

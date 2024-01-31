@@ -13,7 +13,7 @@ import {withPreserveKeys} from '../../utils/withPreserveKeys'
 import {withoutPatching} from '../../utils/withoutPatching'
 import {validateValue} from '../../utils/validateValue'
 import {isChangingLocally, isChangingRemotely, withRemoteChanges} from '../../utils/withChanges'
-import {useCallbackWithTelemetry} from '../../__telemetry__/useCallbackWithTelemetry'
+import {useCallbackWithTryCatch} from './useCallbackWithTryCatch'
 
 const debug = debugWithName('hook:useSyncValue')
 
@@ -50,7 +50,7 @@ export function useSyncValue(
   const slateEditor = useSlate()
   const updateValueFunctionRef = useRef<(value: PortableTextBlock[] | undefined) => void>()
 
-  const updateFromCurrentValue = useCallbackWithTelemetry(
+  const updateFromCurrentValue = useCallbackWithTryCatch(
     () => {
       const currentValue = CURRENT_VALUE.get(portableTextEditor)
       if (previousValue.current === currentValue) {
@@ -67,7 +67,7 @@ export function useSyncValue(
   )
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const updateValueDebounced = useCallbackWithTelemetry(
+  const updateValueDebounced = useCallbackWithTryCatch(
     debounce(updateFromCurrentValue, 1000, {trailing: true, leading: false}),
     [updateFromCurrentValue],
     'useSyncValue:updateValueDebounced',

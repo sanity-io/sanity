@@ -21,7 +21,7 @@ import {PortableTextEditorReadOnlyContext} from '../hooks/usePortableTextReadOnl
 import {useSyncValue} from '../hooks/useSyncValue'
 import {PortableTextEditorKeyGeneratorContext} from '../hooks/usePortableTextEditorKeyGenerator'
 import {IS_PROCESSING_LOCAL_CHANGES} from '../../utils/weakMaps'
-import {useCallbackWithTelemetry} from '../../__telemetry__/useCallbackWithTelemetry'
+import {useCallbackWithTryCatch} from '../hooks/useCallbackWithTryCatch'
 
 const debug = debugWithName('component:PortableTextEditor:Synchronizer')
 const debugVerbose = debug.enabled && false
@@ -64,7 +64,7 @@ export function Synchronizer(props: SynchronizerProps) {
     IS_PROCESSING_LOCAL_CHANGES.set(slateEditor, false)
   }, [slateEditor])
 
-  const onFlushPendingPatches = useCallbackWithTelemetry(
+  const onFlushPendingPatches = useCallbackWithTryCatch(
     () => {
       if (pendingPatches.current.length > 0) {
         debug('Flushing pending patches')
@@ -138,7 +138,7 @@ export function Synchronizer(props: SynchronizerProps) {
   }, [change$, onChange, onFlushPendingPatchesThrottled, slateEditor])
 
   // Sync the value when going online
-  const handleOnline = useCallbackWithTelemetry(
+  const handleOnline = useCallbackWithTryCatch(
     () => {
       debug('Editor is online, syncing from props.value')
       change$.next({type: 'connection', value: 'online'})
@@ -148,7 +148,7 @@ export function Synchronizer(props: SynchronizerProps) {
     'Synchronizer:handleOnline',
   )
 
-  const handleOffline = useCallbackWithTelemetry(
+  const handleOffline = useCallbackWithTryCatch(
     () => {
       debug('Editor is offline')
       change$.next({type: 'connection', value: 'offline'})

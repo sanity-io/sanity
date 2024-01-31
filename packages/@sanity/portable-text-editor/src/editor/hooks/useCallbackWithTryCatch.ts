@@ -1,15 +1,21 @@
 import {useCallback, DependencyList} from 'react'
-import {useTelemetry} from '@sanity/telemetry/react'
-import {isProd} from '../environment'
-import {PortableTextEditorError} from './portable-text-editor.telemetry'
 
 type CallbackFunction<T extends any[], R> = (...args: T) => R
+export class PortableTextEditorError extends Error {
+  cause: string
+
+  constructor(message: string, cause: string) {
+    super(message)
+    this.name = 'PortableTextEditorError'
+    this.cause = cause
+  }
+}
 
 /**
  * Wraps a callback function in a try/catch block and logs any errors to telemetry
  * usage:
  * ``` ts
- * const callback = useCallbackWithTelemetry(
+ * const callback = useCallbackWithTryCatch(
  *  functionToWrap,
  *  [dep1, dep2, ...],
  *  'callbackName',
@@ -17,27 +23,18 @@ type CallbackFunction<T extends any[], R> = (...args: T) => R
  * ```
  * @internal
  */
-export const useCallbackWithTelemetry = <T extends any[], R>(
+export const useCallbackWithTryCatch = <T extends any[], R>(
   callback: CallbackFunction<T, R>,
   deps: DependencyList,
   fnName: string,
 ): CallbackFunction<T, R> => {
-  const telemetry = useTelemetry()
   return useCallback(
     (...args: T) => {
       try {
         return callback(...args)
       } catch (error) {
-        console.error(error)
-        if (isProd) {
-          telemetry.log(PortableTextEditorError, {
-            error,
-            fnName,
-            args,
-          })
-        }
-        // Propagate the error to the caller
-        throw error
+        // Propagate the error.
+        throw new PortableTextEditorError(error.message, fnName)
       }
     },
     // Avoid adding the callback, as it will be unstable and cause unnecessary re-renders.

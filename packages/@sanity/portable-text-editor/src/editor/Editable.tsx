@@ -1,5 +1,5 @@
-import {BaseRange, Transforms, Text, select, Editor} from 'slate'
-import React, {useMemo, useEffect, forwardRef, useState, KeyboardEvent, useCallback} from 'react'
+import {BaseRange, Transforms, Text, Editor} from 'slate'
+import React, {useMemo, useEffect, forwardRef, useState, KeyboardEvent} from 'react'
 import {
   Editable as SlateEditable,
   ReactEditor,
@@ -9,8 +9,6 @@ import {
 } from 'slate-react'
 import {noop} from 'lodash'
 import {PortableTextBlock} from '@sanity/types'
-import {ErrorBoundary} from '@sanity/ui'
-import {useTelemetry} from '@sanity/telemetry/react'
 import {
   EditorChange,
   EditorSelection,
@@ -29,10 +27,8 @@ import {HotkeyOptions} from '../types/options'
 import {fromSlateValue, isEqualToEmptyEditor, toSlateValue} from '../utils/values'
 import {normalizeSelection} from '../utils/selection'
 import {toPortableTextRange, toSlateRange} from '../utils/ranges'
-import {useCallbackWithTelemetry} from '../__telemetry__/useCallbackWithTelemetry'
 import {debugWithName} from '../utils/debug'
-import {isProd} from '../environment'
-import {PortableTextEditorError} from '../__telemetry__/portable-text-editor.telemetry'
+import {useCallbackWithTryCatch} from './hooks/useCallbackWithTryCatch'
 import {usePortableTextEditorReadOnlyStatus} from './hooks/usePortableTextReadOnly'
 import {usePortableTextEditorKeyGenerator} from './hooks/usePortableTextEditorKeyGenerator'
 import {Leaf} from './components/Leaf'
@@ -140,7 +136,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
     return withInsertData(withHotKeys(slateEditor))
   }, [readOnly, slateEditor, withHotKeys, withInsertData])
 
-  const renderElement = useCallbackWithTelemetry(
+  const renderElement = useCallbackWithTryCatch(
     (eProps: RenderElementProps) => (
       <Element
         {...eProps}
@@ -157,7 +153,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
     'Editable:renderElement',
   )
 
-  const renderLeaf = useCallbackWithTelemetry(
+  const renderLeaf = useCallbackWithTryCatch(
     (lProps: RenderLeafProps & {leaf: Text & {placeholder?: boolean}}) => {
       const rendered = (
         <Leaf
@@ -185,7 +181,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
     'Editable:renderLeaf',
   )
 
-  const restoreSelectionFromProps = useCallbackWithTelemetry(
+  const restoreSelectionFromProps = useCallbackWithTryCatch(
     () => {
       if (propsSelection) {
         debug(`Selection from props ${JSON.stringify(propsSelection)}`)
@@ -243,7 +239,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
   }, [hasInvalidValue, propsSelection, restoreSelectionFromProps])
 
   // Handle from props onCopy function
-  const handleCopy = useCallbackWithTelemetry(
+  const handleCopy = useCallbackWithTryCatch(
     (event: React.ClipboardEvent<HTMLDivElement>): void | ReactEditor => {
       if (onCopy) {
         const result = onCopy(event)
@@ -258,7 +254,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
   )
 
   // Handle incoming pasting events in the editor
-  const handlePaste = useCallbackWithTelemetry(
+  const handlePaste = useCallbackWithTryCatch(
     (event: React.ClipboardEvent<HTMLDivElement>): Promise<void> | void => {
       event.preventDefault()
       if (!slateEditor.selection) {
@@ -310,7 +306,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
     'Editable:handlePaste',
   )
 
-  const handleOnFocus: React.FocusEventHandler<HTMLDivElement> = useCallbackWithTelemetry(
+  const handleOnFocus: React.FocusEventHandler<HTMLDivElement> = useCallbackWithTryCatch(
     (event) => {
       if (onFocus) {
         onFocus(event)
@@ -337,7 +333,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
     'Editable:handleOnFocus',
   )
 
-  const handleOnBlur: React.FocusEventHandler<HTMLDivElement> = useCallbackWithTelemetry(
+  const handleOnBlur: React.FocusEventHandler<HTMLDivElement> = useCallbackWithTryCatch(
     (event) => {
       if (onBlur) {
         onBlur(event)
@@ -350,7 +346,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
     'Editable:handleOnBlur',
   )
 
-  const handleOnBeforeInput = useCallbackWithTelemetry(
+  const handleOnBeforeInput = useCallbackWithTryCatch(
     (event: InputEvent) => {
       if (onBeforeInput) {
         onBeforeInput(event)
@@ -376,7 +372,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
   // if the current editor.selection is invalid according to the DOM.
   // If this is the case, default to selecting the top of the document, if the
   // user already had a selection.
-  const validateSelection = useCallbackWithTelemetry(
+  const validateSelection = useCallbackWithTryCatch(
     () => {
       if (!slateEditor.selection) {
         return
@@ -439,7 +435,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
     return undefined
   }, [validateSelection, editableElement])
 
-  const handleKeyDown = useCallbackWithTelemetry(
+  const handleKeyDown = useCallbackWithTryCatch(
     (event: KeyboardEvent<HTMLDivElement>) => {
       if (props.onKeyDown) {
         props.onKeyDown(event)
@@ -467,7 +463,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
     }
   }, [portableTextEditor, scrollSelectionIntoView])
 
-  const decorate = useCallbackWithTelemetry(
+  const decorate = useCallbackWithTryCatch(
     () => {
       if (isEqualToEmptyEditor(slateEditor.children, schemaTypes)) {
         return [
@@ -497,43 +493,29 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
     ref.current = ReactEditor.toDOMNode(slateEditor, slateEditor) as HTMLDivElement | null
     setEditableElement(ref.current)
   }, [slateEditor, ref])
-  const telemetry = useTelemetry()
-  const handleCatch = useCallback(
-    ({error, info}: {error: Error; info: React.ErrorInfo}) => {
-      if (!isProd) return
-      telemetry.log(PortableTextEditorError, {
-        error: error,
-        args: info,
-        fnName: 'Editable:errorBoundary',
-      })
-    },
-    [telemetry],
-  )
 
   if (!portableTextEditor) {
     return null
   }
   return hasInvalidValue ? null : (
-    <ErrorBoundary onCatch={handleCatch}>
-      <SlateEditable
-        {...restProps}
-        autoFocus={false}
-        className={restProps.className || 'pt-editable'}
-        decorate={decorate}
-        onBlur={handleOnBlur}
-        onCopy={handleCopy}
-        onDOMBeforeInput={handleOnBeforeInput}
-        onFocus={handleOnFocus}
-        onKeyDown={handleKeyDown}
-        onPaste={handlePaste}
-        readOnly={readOnly}
-        // We have implemented our own placeholder logic with decorations.
-        // This 'renderPlaceholder' should not be used.
-        renderPlaceholder={undefined}
-        renderElement={renderElement}
-        renderLeaf={renderLeaf}
-        scrollSelectionIntoView={scrollSelectionIntoViewToSlate}
-      />
-    </ErrorBoundary>
+    <SlateEditable
+      {...restProps}
+      autoFocus={false}
+      className={restProps.className || 'pt-editable'}
+      decorate={decorate}
+      onBlur={handleOnBlur}
+      onCopy={handleCopy}
+      onDOMBeforeInput={handleOnBeforeInput}
+      onFocus={handleOnFocus}
+      onKeyDown={handleKeyDown}
+      onPaste={handlePaste}
+      readOnly={readOnly}
+      // We have implemented our own placeholder logic with decorations.
+      // This 'renderPlaceholder' should not be used.
+      renderPlaceholder={undefined}
+      renderElement={renderElement}
+      renderLeaf={renderLeaf}
+      scrollSelectionIntoView={scrollSelectionIntoViewToSlate}
+    />
   )
 })
