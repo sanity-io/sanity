@@ -19,10 +19,10 @@ import {hasCommentMessageValue} from '../../helpers'
 import {CommentsSelectedPath} from '../../context'
 import {Button} from '../../../../../ui-components'
 import {commentsLocaleNamespace} from '../../../i18n'
+import {generateCommentsCommentIdAttr} from '../../hooks'
 import {CommentsListItemLayout} from './CommentsListItemLayout'
 import {ThreadCard} from './styles'
 import {useTranslation} from 'sanity'
-import {generateCommentsCommentIdAttr} from '../../hooks'
 
 const EMPTY_ARRAY: [] = []
 

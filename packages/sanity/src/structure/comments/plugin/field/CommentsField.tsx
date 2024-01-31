@@ -73,10 +73,8 @@ function CommentFieldInner(
   const {mode} = props
   const [open, setOpen] = useState<boolean>(false)
   const [value, setValue] = useState<PortableTextBlock[] | null>(null)
-  const [threadIdToScrollTo, setThreadIdToScrollTo] = useState<string | null>(null)
 
   const currentUser = useCurrentUser()
-
   const {element: boundaryElement} = useBoundaryElement()
 
   const {
@@ -94,6 +92,8 @@ function CommentFieldInner(
   const {scrollToField, scrollToGroup} = useCommentsScroll({
     boundaryElement,
   })
+
+  const [threadIdToScrollTo, setThreadIdToScrollTo] = useState<string | null>(null)
 
   const fieldTitle = useMemo(() => getSchemaTypeTitle(props.schemaType), [props.schemaType])
 
@@ -149,8 +149,8 @@ function CommentFieldInner(
         (c) => c.fieldPath === PathUtils.toString(props.path),
       )?.threadId
 
-      // 5. Set the thread ID to scroll to in a state and then scroll to it
-      // in the `useEffect` below.
+      // 5. Set the latest thread ID as the selected thread ID
+      //    and scroll to the it.
       if (scrollToThreadId) {
         handleSetThreadToScrollTo(scrollToThreadId)
       }
@@ -171,15 +171,15 @@ function CommentFieldInner(
     // Else, toggle the comment input open/closed
     setOpen((v) => !v)
   }, [
-    hasComments,
-    status,
-    onCommentsOpen,
     comments.data.open,
-    setStatus,
-    props.path,
-    handleSetThreadToScrollTo,
-    mode,
     handleOpenDialog,
+    handleSetThreadToScrollTo,
+    hasComments,
+    mode,
+    onCommentsOpen,
+    props.path,
+    setStatus,
+    status,
     upsellData,
   ])
 
@@ -215,7 +215,7 @@ function CommentFieldInner(
       // Reset the value
       setValue(null)
 
-      // Set the thread ID to scroll to
+      // Scroll to the thread
       handleSetThreadToScrollTo(newThreadId)
     }
   }, [handleSetThreadToScrollTo, onCommentsOpen, operation, props.path, setStatus, status, value])
@@ -229,12 +229,12 @@ function CommentFieldInner(
     }
   }, [isSelected, isCommentsOpen, props.path, scrollToField])
 
-  // // Effect that handles scroll the comment thread into view when it's selected
+  // Effect that handles scrolling to the selected thread
   useEffect(() => {
-    if (isCommentsOpen && threadIdToScrollTo) {
+    if (threadIdToScrollTo) {
       scrollToGroup(threadIdToScrollTo)
     }
-  }, [isCommentsOpen, scrollToGroup, threadIdToScrollTo])
+  }, [scrollToGroup, threadIdToScrollTo])
 
   const internalComments: FieldProps['__internal_comments'] = useMemo(
     () => ({

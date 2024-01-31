@@ -26,7 +26,11 @@ const SCROLL_INTO_VIEW_IF_NEEDED_OPTIONS: StandardBehaviorOptions = {
  * ```
  */
 function generateValidAttrValue(id: string): string {
-  return id.replace(/[!"#$%&'()*+,./:;<=>?@[\\\]^`{|}~]/g, '\\$&')
+  const symbolsToRemove = /[[\]_"_=.]/g
+
+  const result = id.replace(symbolsToRemove, '')
+
+  return result
 }
 
 export function generateCommentsCommentIdAttr(
