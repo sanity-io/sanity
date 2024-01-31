@@ -1,11 +1,36 @@
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import scrollIntoViewIfNeeded, {StandardBehaviorOptions} from 'scroll-into-view-if-needed'
 
-const SCROLL_INTO_VIEW_IF_NEEDED_OPTIONS: StandardBehaviorOptions = {
+const BASE_SCROLL_OPTIONS: StandardBehaviorOptions = {
   behavior: 'smooth',
-  block: 'start',
-  inline: 'center',
   scrollMode: 'if-needed',
+}
+
+const GROUP_SCROLL_OPTIONS: StandardBehaviorOptions = {
+  ...BASE_SCROLL_OPTIONS,
+  block: 'center',
+}
+
+const INLINE_COMMENT_SCROLL_OPTIONS: StandardBehaviorOptions = {
+  ...BASE_SCROLL_OPTIONS,
+  block: 'start',
+}
+
+const SCROLL_TO_FIELD_OPTIONS: StandardBehaviorOptions = {
+  ...BASE_SCROLL_OPTIONS,
+  block: 'center',
+}
+
+const SCROLL_TO_COMMENT_OPTIONS: StandardBehaviorOptions = {
+  ...BASE_SCROLL_OPTIONS,
+  block: 'center',
+}
+
+const SCROLL_OPTIONS_BY_TYPE: Record<ScrollTargetTypes, StandardBehaviorOptions> = {
+  comment: SCROLL_TO_COMMENT_OPTIONS,
+  field: SCROLL_TO_FIELD_OPTIONS,
+  group: GROUP_SCROLL_OPTIONS,
+  'inline-comment': INLINE_COMMENT_SCROLL_OPTIONS,
 }
 
 /**
@@ -84,8 +109,9 @@ interface CommentsScrollHookOptions {
   boundaryElement?: HTMLElement | null
 }
 
+type ScrollTargetTypes = 'comment' | 'field' | 'group' | 'inline-comment'
 interface ScrollTarget {
-  type: 'comment' | 'field' | 'group' | 'inline-comment'
+  type: ScrollTargetTypes
   id: string
 }
 
@@ -93,13 +119,14 @@ export function useCommentsScroll(opts?: CommentsScrollHookOptions): CommentsScr
   const {boundaryElement} = opts || {}
   const [scrollTarget, setScrollTarget] = useState<ScrollTarget | null>(null)
 
-  const scrollOpts: StandardBehaviorOptions = useMemo(
-    () => ({
-      ...SCROLL_INTO_VIEW_IF_NEEDED_OPTIONS,
+  const scrollOpts: StandardBehaviorOptions = useMemo(() => {
+    const options = SCROLL_OPTIONS_BY_TYPE[scrollTarget?.type || 'comment']
+
+    return {
+      ...options,
       boundary: boundaryElement,
-    }),
-    [boundaryElement],
-  )
+    }
+  }, [boundaryElement, scrollTarget?.type])
 
   const handleScrollToComment = useCallback((commentId: string) => {
     setScrollTarget({type: 'comment', id: commentId})

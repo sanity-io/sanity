@@ -1,10 +1,10 @@
-import React, {useCallback, useEffect, useMemo, useState} from 'react'
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {uuid} from '@sanity/uuid'
 import * as PathUtils from '@sanity/util/paths'
 import {PortableTextBlock} from '@sanity/types'
 import {Stack, useBoundaryElement} from '@sanity/ui'
 import styled, {css} from 'styled-components'
-import {motion, AnimatePresence, Variants} from 'framer-motion'
+import {motion, AnimatePresence, Variants, useInView} from 'framer-motion'
 import {hues} from '@sanity/color'
 import {
   useCommentsEnabled,
@@ -77,6 +77,8 @@ function CommentFieldInner(
   const currentUser = useCurrentUser()
   const {element: boundaryElement} = useBoundaryElement()
 
+  const rootRef = useRef<HTMLDivElement | null>(null)
+
   const {
     comments,
     isCommentsOpen,
@@ -89,9 +91,10 @@ function CommentFieldInner(
   } = useComments()
   const {upsellData, handleOpenDialog} = useCommentsUpsell()
   const {selectedPath, setSelectedPath} = useCommentsSelectedPath()
-  const {scrollToField, scrollToGroup, scrollToInlineComment} = useCommentsScroll({
+  const {scrollToField, scrollToGroup} = useCommentsScroll({
     boundaryElement,
   })
+  const {scrollToInlineComment} = useCommentsScroll({boundaryElement: rootRef.current})
 
   const [threadIdToScrollTo, setThreadIdToScrollTo] = useState<string | null>(null)
 
@@ -235,20 +238,17 @@ function CommentFieldInner(
       scrollToField(PathUtils.toString(props.path))
     }
 
-    // Scroll to the inline comment inside the field when it's selected
     if (isSelected && isInlineCommentThread && selectedPath?.threadId) {
       scrollToInlineComment(selectedPath?.threadId)
     }
   }, [
-    isSelected,
     isCommentsOpen,
+    isInlineCommentThread,
+    isSelected,
     props.path,
     scrollToField,
-    threadIdToScrollTo,
     scrollToInlineComment,
-    comments.data.open,
     selectedPath?.threadId,
-    isInlineCommentThread,
   ])
 
   // Effect that handles scrolling to the selected thread
@@ -295,7 +295,7 @@ function CommentFieldInner(
   )
 
   return (
-    <FieldStack {...generateCommentsFieldIdAttr(PathUtils.toString(props.path))}>
+    <FieldStack {...generateCommentsFieldIdAttr(PathUtils.toString(props.path))} ref={rootRef}>
       {props.renderDefault({
         ...props,
         // eslint-disable-next-line camelcase
