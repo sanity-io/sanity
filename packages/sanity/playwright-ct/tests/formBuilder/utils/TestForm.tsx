@@ -29,9 +29,11 @@ declare global {
 export function TestForm({
   focusPath: focusPathFromProps,
   document: documentFromProps,
+  id: idFromProps = 'root',
 }: {
   focusPath?: Path
   document?: SanityDocument
+  id?: string
 }) {
   const [validation, setValidation] = useState<ValidationMarker[]>([])
   const [openPath, onSetOpenPath] = useState<Path>([])
@@ -176,7 +178,7 @@ export function TestForm({
       focused: formState?.focused,
       focusPath: formState?.focusPath || EMPTY_ARRAY,
       groups: formState?.groups || EMPTY_ARRAY,
-      id: formState?.id || '',
+      id: idFromProps,
       level: formState?.level || 0,
       members: formState?.members || EMPTY_ARRAY,
       onChange: handleChange,
@@ -197,7 +199,6 @@ export function TestForm({
       formState?.focusPath,
       formState?.focused,
       formState?.groups,
-      formState?.id,
       formState?.level,
       formState?.members,
       formState?.schemaType,
@@ -208,6 +209,7 @@ export function TestForm({
       handleOnSetCollapsedFieldSet,
       handleOnSetCollapsedPath,
       handleSetActiveFieldGroup,
+      idFromProps,
       patchChannel,
       schemaType,
       setOpenPath,
