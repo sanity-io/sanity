@@ -1,10 +1,9 @@
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import {uuid} from '@sanity/uuid'
 import * as PathUtils from '@sanity/util/paths'
 import {PortableTextBlock} from '@sanity/types'
 import {Stack, useBoundaryElement} from '@sanity/ui'
 import styled, {css} from 'styled-components'
-import scrollIntoViewIfNeeded, {Options} from 'scroll-into-view-if-needed'
 import {motion, AnimatePresence, Variants} from 'framer-motion'
 import {hues} from '@sanity/color'
 import {
@@ -14,6 +13,8 @@ import {
   useCommentsSelectedPath,
   useCommentsUpsell,
   CommentsUIMode,
+  useCommentsScroll,
+  generateCommentsFieldIdAttr,
 } from '../../src'
 import {CommentsFieldButton} from './CommentsFieldButton'
 import {FieldProps, getSchemaTypeTitle, useCurrentUser} from 'sanity'
@@ -38,11 +39,6 @@ export function CommentsField(props: FieldProps) {
   }
 
   return <CommentFieldInner {...props} mode={mode} />
-}
-
-const SCROLL_INTO_VIEW_OPTIONS: ScrollIntoViewOptions = {
-  behavior: 'smooth',
-  block: 'start',
 }
 
 const HighlightDiv = styled(motion.div)(({theme}) => {
@@ -77,12 +73,11 @@ function CommentFieldInner(
   const {mode} = props
   const [open, setOpen] = useState<boolean>(false)
   const [value, setValue] = useState<PortableTextBlock[] | null>(null)
-  const rootElementRef = useRef<HTMLDivElement | null>(null)
   const [threadIdToScrollTo, setThreadIdToScrollTo] = useState<string | null>(null)
 
-  const {element: boundaryElement} = useBoundaryElement()
-
   const currentUser = useCurrentUser()
+
+  const {element: boundaryElement} = useBoundaryElement()
 
   const {
     comments,
@@ -96,6 +91,9 @@ function CommentFieldInner(
   } = useComments()
   const {upsellData, handleOpenDialog} = useCommentsUpsell()
   const {selectedPath, setSelectedPath} = useCommentsSelectedPath()
+  const {scrollToField, scrollToGroup} = useCommentsScroll({
+    boundaryElement,
+  })
 
   const fieldTitle = useMemo(() => getSchemaTypeTitle(props.schemaType), [props.schemaType])
 
@@ -224,35 +222,19 @@ function CommentFieldInner(
 
   const handleDiscard = useCallback(() => setValue(null), [])
 
-  const scrollIntoViewIfNeededOpts = useMemo(
-    () =>
-      ({
-        ...SCROLL_INTO_VIEW_OPTIONS,
-        boundary: boundaryElement,
-        scrollMode: 'if-needed',
-        block: 'start',
-      }) satisfies Options,
-    [boundaryElement],
-  )
-
   // Effect that handles scroll the field into view when it's selected
   useEffect(() => {
-    if (isSelected && rootElementRef.current && isCommentsOpen) {
-      scrollIntoViewIfNeeded(rootElementRef.current, scrollIntoViewIfNeededOpts)
+    if (isSelected && isCommentsOpen) {
+      scrollToField(PathUtils.toString(props.path))
     }
-  }, [boundaryElement, isCommentsOpen, isSelected, props.path, scrollIntoViewIfNeededOpts])
+  }, [isSelected, isCommentsOpen, props.path, scrollToField])
 
   // // Effect that handles scroll the comment thread into view when it's selected
   useEffect(() => {
     if (isCommentsOpen && threadIdToScrollTo) {
-      const node = document.querySelector(`[data-group-id="${threadIdToScrollTo}"]`)
-
-      if (node) {
-        node.scrollIntoView(SCROLL_INTO_VIEW_OPTIONS)
-        setThreadIdToScrollTo(null)
-      }
+      scrollToGroup(threadIdToScrollTo)
     }
-  }, [isCommentsOpen, threadIdToScrollTo])
+  }, [isCommentsOpen, scrollToGroup, threadIdToScrollTo])
 
   const internalComments: FieldProps['__internal_comments'] = useMemo(
     () => ({
@@ -291,7 +273,7 @@ function CommentFieldInner(
   )
 
   return (
-    <FieldStack ref={rootElementRef}>
+    <FieldStack {...generateCommentsFieldIdAttr(PathUtils.toString(props.path))}>
       {props.renderDefault({
         ...props,
         // eslint-disable-next-line camelcase

@@ -22,6 +22,7 @@ import {commentsLocaleNamespace} from '../../../i18n'
 import {CommentsListItemLayout} from './CommentsListItemLayout'
 import {ThreadCard} from './styles'
 import {useTranslation} from 'sanity'
+import {generateCommentsCommentIdAttr} from '../../hooks'
 
 const EMPTY_ARRAY: [] = []
 
@@ -239,7 +240,7 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
   const renderedReplies = useMemo(
     () =>
       splicedReplies.map((reply) => (
-        <Stack as="li" key={reply._id} data-comment-id={reply._id}>
+        <Stack as="li" key={reply._id} {...generateCommentsCommentIdAttr(reply._id)}>
           <CommentsListItemLayout
             canDelete={reply.authorId === currentUser.id}
             canEdit={reply.authorId === currentUser.id}
@@ -296,7 +297,7 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
           paddingBottom={canReply ? undefined : 1}
           space={4}
         >
-          <Stack as="li" data-comment-id={parentComment._id}>
+          <Stack as="li" {...generateCommentsCommentIdAttr(parentComment._id)}>
             <CommentsListItemLayout
               canDelete={parentComment.authorId === currentUser.id}
               canEdit={parentComment.authorId === currentUser.id}

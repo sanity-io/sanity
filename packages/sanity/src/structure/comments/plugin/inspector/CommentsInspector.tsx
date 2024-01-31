@@ -11,7 +11,6 @@ import {
   CommentEditPayload,
   CommentReactionOption,
   CommentsList,
-  CommentsListHandle,
   CommentsOnboardingPopover,
   CommentsSelectedPath,
   CommentStatus,
@@ -20,6 +19,7 @@ import {
   useComments,
   useCommentsEnabled,
   useCommentsOnboarding,
+  useCommentsScroll,
   useCommentsSelectedPath,
   useCommentsUpsell,
 } from '../../src'
@@ -66,7 +66,6 @@ function CommentsInspectorInner(
   const [commentToDelete, setCommentToDelete] = useState<CommentToDelete | null>(null)
   const [deleteLoading, setDeleteLoading] = useState<boolean>(false)
   const [deleteError, setDeleteError] = useState<Error | null>(null)
-  const commentsListHandleRef = useRef<CommentsListHandle>(null)
 
   const rootRef = useRef<HTMLDivElement | null>(null)
 
@@ -80,8 +79,10 @@ function CommentsInspectorInner(
   const pushToast = useToast().push
   const {onPathOpen, ready} = useDocumentPane()
 
+  const {selectedPath, setSelectedPath} = useCommentsSelectedPath()
   const {isDismissed, setDismissed} = useCommentsOnboarding()
-
+  const {scrollToComment} = useCommentsScroll()
+  const {upsellData, telemetryLogs} = useCommentsUpsell()
   const {comments, getComment, isRunningSetup, mentionOptions, setStatus, status, operation} =
     useComments()
 
@@ -96,9 +97,6 @@ function CommentsInspectorInner(
     // that the document is ready before we allow the user to interact with the comments.
     return comments.loading || !ready
   }, [comments.loading, ready])
-
-  const {selectedPath, setSelectedPath} = useCommentsSelectedPath()
-  const {upsellData, telemetryLogs} = useCommentsUpsell()
 
   useEffect(() => {
     if (mode === 'upsell') {
@@ -265,12 +263,10 @@ function CommentsInspectorInner(
           threadId: comment.threadId || null,
         })
 
-        setTimeout(() => {
-          commentsListHandleRef.current?.scrollToComment(id)
-        })
+        scrollToComment(id)
       }
     },
-    [getComment, setSelectedPath],
+    [getComment, scrollToComment, setSelectedPath],
   )
 
   const handleStatusChange = useCallback(
@@ -401,7 +397,6 @@ function CommentsInspectorInner(
             onReply={handleReply}
             onStatusChange={handleStatusChange}
             readOnly={isRunningSetup}
-            ref={commentsListHandleRef}
             selectedPath={selectedPath}
             status={status}
           />

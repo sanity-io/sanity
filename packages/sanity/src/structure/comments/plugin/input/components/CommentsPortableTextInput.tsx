@@ -18,6 +18,7 @@ import {
   hasCommentMessageValue,
   useComments,
   useCommentsEnabled,
+  useCommentsScroll,
   useCommentsSelectedPath,
 } from '../../../src'
 import {useReferenceElement} from '../helpers'
@@ -48,6 +49,7 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
   const currentUser = useCurrentUser()
   const {mentionOptions, comments, operation, onCommentsOpen, getComment} = useComments()
   const {setSelectedPath} = useCommentsSelectedPath()
+  const {scrollToComment} = useCommentsScroll()
 
   const editorRef = useRef<PortableTextEditor | null>(null)
   const floatingButtonPopoverRef = useRef<HTMLDivElement | null>(null)
@@ -177,16 +179,9 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
 
       onCommentsOpen?.()
 
-      // Temporary fix for scrolling to the comment thread when clicking the comment
-      requestAnimationFrame(() => {
-        const node = document.querySelector(`[data-group-id="${comment.threadId}"]`)
-
-        node?.scrollIntoView({
-          behavior: 'smooth',
-        })
-      })
+      scrollToComment(comment._id)
     },
-    [getComment, onCommentsOpen, setSelectedPath],
+    [getComment, onCommentsOpen, scrollToComment, setSelectedPath],
   )
 
   const handleSelectionChange = useCallback(
