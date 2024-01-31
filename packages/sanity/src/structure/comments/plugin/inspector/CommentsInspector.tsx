@@ -15,6 +15,7 @@ import {
   CommentsOnboardingPopover,
   CommentsSelectedPath,
   CommentStatus,
+  CommentsUIMode,
   CommentsUpsellPanel,
   useComments,
   useCommentsEnabled,
@@ -23,7 +24,6 @@ import {
   useCommentsUpsell,
 } from '../../src'
 import {commentsLocaleNamespace} from '../../i18n'
-import {UpsellPanel} from '../../src/components'
 import {CommentsInspectorHeader} from './CommentsInspectorHeader'
 import {CommentsInspectorFeedbackFooter} from './CommentsInspectorFeedbackFooter'
 import {DocumentInspectorProps, useCurrentUser, useTranslation, useUnique} from 'sanity'
@@ -41,24 +41,29 @@ const RootLayer = styled(Layer)`
 `
 
 export function CommentsInspector(props: DocumentInspectorProps) {
-  const {enabled} = useCommentsEnabled()
+  const {enabled, reason} = useCommentsEnabled()
 
   if (!enabled) return null
+
+  const mode = reason === 'upsell' ? 'upsell' : 'default'
 
   // We wrap the comments inspector in a Layer in order to know when the comments inspector
   // is the top layer (that is, if there is e.g. a popover open). This is used to determine
   // if we should deselect the selected path when clicking outside the comments inspector.
   return (
     <RootLayer>
-      <CommentsInspectorInner {...props} />
+      <CommentsInspectorInner {...props} mode={mode} />
     </RootLayer>
   )
 }
 
-function CommentsInspectorInner(props: DocumentInspectorProps) {
+function CommentsInspectorInner(
+  props: DocumentInspectorProps & {
+    mode: CommentsUIMode
+  },
+) {
   const {t} = useTranslation(commentsLocaleNamespace)
-  const {onClose} = props
-  const commentsEnabled = useCommentsEnabled()
+  const {onClose, mode} = props
   const [showDeleteDialog, setShowDeleteDialog] = useState<boolean>(false)
   const [commentToDelete, setCommentToDelete] = useState<CommentToDelete | null>(null)
   const [deleteLoading, setDeleteLoading] = useState<boolean>(false)
@@ -309,8 +314,6 @@ function CommentsInspectorInner(props: DocumentInspectorProps) {
       })
     }
   }, [getComment, handleScrollToComment, loading, params, setParams, setStatus])
-
-  const mode = commentsEnabled.reason === 'upsell' ? 'upsell' : 'default'
 
   const {upsellData, telemetryLogs} = useCommentsUpsell()
 

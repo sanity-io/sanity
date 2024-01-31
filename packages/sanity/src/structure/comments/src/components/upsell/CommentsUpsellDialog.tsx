@@ -1,6 +1,9 @@
 import styled from 'styled-components'
 import {CloseIcon, LaunchIcon} from '@sanity/icons'
+import {white} from '@sanity/color'
 import {Box, Stack} from '@sanity/ui'
+// eslint-disable-next-line camelcase
+import {getTheme_v2} from '@sanity/ui/theme'
 import {Button, Dialog} from '../../../../../ui-components'
 import {CommentsUpsellData} from '../../types'
 import {DescriptionSerializer} from 'sanity'
@@ -8,20 +11,23 @@ import {DescriptionSerializer} from 'sanity'
 /**
  * Absolute positioned button to close the dialog.
  */
-const StyledButton = styled(Button)`
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  z-index: 20;
-  background: transparent;
-  border-radius: 9999px;
-  box-shadow: none;
-  color: white;
-  --card-fg-color: white;
-  :hover {
-    --card-fg-color: white;
-  }
-`
+const StyledButton = styled(Button)(({theme}) => {
+  const {space} = getTheme_v2(theme)
+  return `
+      position: absolute;
+      top: ${space[3]}px;
+      right: ${space[3]}px;
+      z-index: 20;
+      background: transparent;
+      border-radius: 9999px;
+      box-shadow: none;
+      color: ${white.hex};
+      --card-fg-color: ${white.hex};
+      :hover {
+        --card-fg-color: ${white.hex};
+      }
+    `
+})
 
 const Image = styled.img`
   object-fit: cover;

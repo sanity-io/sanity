@@ -9,13 +9,17 @@ import {useTranslation} from 'sanity'
 const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['top', 'bottom']
 
 export interface CommentReactionsMenuButtonProps {
+  mode: CommentsUIMode
   onMenuClose?: () => void
   onMenuOpen?: () => void
   onSelect: (option: CommentReactionOption) => void
   options: CommentReactionOption[]
   readOnly?: boolean
-  renderMenuButton: (props: {open: boolean; tooltipContent: string}) => React.ReactElement
-  mode: CommentsUIMode
+  renderMenuButton: (props: {
+    open: boolean
+    tooltipContent: string
+    t: TFunction
+  }) => React.ReactElement
 }
 
 export function CommentReactionsMenuButton(props: CommentReactionsMenuButtonProps) {
@@ -74,6 +78,7 @@ export function CommentReactionsMenuButton(props: CommentReactionsMenuButtonProp
       open,
       tooltipContent:
         mode === 'upsell' ? 'Upgrade to add reactions' : t('list-item.context-menu-add-reaction'),
+      t,
     })
 
     // Clone the button element and add the necessary props.

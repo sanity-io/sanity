@@ -45,10 +45,10 @@ interface CommentThreadLayoutProps {
   fieldPath: string
   isSelected: boolean
   mentionOptions: MentionOptionsHookValue
+  mode: CommentsUIMode
   onNewThreadCreate: (payload: CommentCreatePayload) => void
   onPathSelect?: (nextPath: CommentsSelectedPath) => void
   readOnly?: boolean
-  mode: CommentsUIMode
 }
 
 export function CommentThreadLayout(props: CommentThreadLayoutProps) {
@@ -60,10 +60,10 @@ export function CommentThreadLayout(props: CommentThreadLayoutProps) {
     fieldPath,
     isSelected,
     mentionOptions,
+    mode,
     onNewThreadCreate,
     onPathSelect,
     readOnly,
-    mode,
   } = props
 
   const {t} = useTranslation(commentsLocaleNamespace)
@@ -142,10 +142,10 @@ export function CommentThreadLayout(props: CommentThreadLayoutProps) {
       {canCreateNewThread && (
         <ThreadCard onClick={handleNewThreadClick} tone={isSelected ? 'caution' : undefined}>
           <CreateNewThreadInput
-            mode={mode}
             currentUser={currentUser}
             fieldTitle={lastCrumb}
             mentionOptions={mentionOptions}
+            mode={mode}
             onNewThreadCreate={handleNewThreadCreate}
             readOnly={readOnly}
           />

@@ -2,10 +2,10 @@ import {PortableText, type PortableTextComponents} from '@portabletext/react'
 import {Icon, LinkIcon} from '@sanity/icons'
 import {type PortableTextBlock} from '@sanity/types'
 import {Box, Card, Flex, Heading, Text} from '@sanity/ui'
-import styled from 'styled-components'
+import styled, {css} from 'styled-components'
 import React, {useEffect, useMemo, useState} from 'react'
 import {ConditionalWrapper} from '../../../../../ui-components/conditionalWrapper'
-import {transformBlocks} from './DescriptionSerializerUtils'
+import {transformBlocks} from './descriptionSerializerUtils'
 
 interface DescriptionSerializerProps {
   blocks: PortableTextBlock[]
@@ -41,9 +41,13 @@ const AccentSpan = styled.span`
   --card-icon-color: var(--card-accent-fg-color);
 `
 
-const SemiboldSpan = styled.span`
-  font-weight: 600;
-`
+const SemiboldSpan = styled.span(({theme}) => {
+  const {weights} = theme.sanity.fonts.text
+
+  return css`
+    font-weight: ${weights.semibold};
+  `
+})
 
 interface InlineIconProps {
   $hasTextLeft: boolean
