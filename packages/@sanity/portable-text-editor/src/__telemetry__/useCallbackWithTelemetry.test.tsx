@@ -2,6 +2,9 @@ import {renderHook, act} from '@testing-library/react'
 import {useCallbackWithTelemetry} from './useCallbackWithTelemetry'
 
 const mockedTelemetryLog = jest.fn()
+jest.mock('../environment', () => ({
+  isProd: true,
+}))
 
 jest.mock('@sanity/telemetry/react', () => ({
   useTelemetry: () => ({
@@ -86,5 +89,22 @@ describe('useCallbackWithTelemetry', () => {
       returnValue = result.current()
     })
     expect(returnValue).toBe(updatedDependency)
+  })
+
+  it('should preserve the correct return type', () => {
+    const callback = () => "I'm a string"
+    const {result} = renderHook(() => useCallbackWithTelemetry(callback, [], 'testCallback'))
+    let returnValue: number | undefined
+    act(() => {
+      // @ts-expect-error the return type of the function is a string
+      returnValue = result.current()
+    })
+    expect(returnValue).toBe("I'm a string")
+  })
+  it('should preserve the correct function params', () => {
+    const callback = (a: number, b: number) => a + b
+    const {result} = renderHook(() => useCallbackWithTelemetry(callback, [], 'testCallback'))
+    // @ts-expect-error the return type of the function is a string
+    result.current()
   })
 })
