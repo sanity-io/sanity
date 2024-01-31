@@ -264,6 +264,10 @@ function CommentsInspectorInner(
         })
 
         scrollToComment(id)
+
+        // Consider: do we also want to scroll to the associated field
+        // in the document pane when we scroll to the comment from
+        // the URL?
       }
     },
     [getComment, scrollToComment, setSelectedPath],

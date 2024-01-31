@@ -3,8 +3,8 @@ import scrollIntoViewIfNeeded, {StandardBehaviorOptions} from 'scroll-into-view-
 
 const SCROLL_INTO_VIEW_IF_NEEDED_OPTIONS: StandardBehaviorOptions = {
   behavior: 'smooth',
-  block: 'start',
-  inline: 'nearest',
+  block: 'center',
+  inline: 'center',
   scrollMode: 'if-needed',
 }
 
@@ -53,6 +53,14 @@ export function generateCommentsGroupIdAttr(id: string): Record<'data-comments-g
   }
 }
 
+export function generateCommentsInlineCommentIdAttr(
+  id: string,
+): Record<'data-comments-inline-comment-id', string> {
+  return {
+    'data-comments-inline-comment-id': generateValidAttrValue(id),
+  }
+}
+
 interface CommentsScrollHookValue {
   /**
    * Scroll to the comment with the given ID.
@@ -66,6 +74,10 @@ interface CommentsScrollHookValue {
    * Scroll to the group with the given ID.
    */
   scrollToGroup: (groupId: string) => void
+  /**
+   * Scroll to the inline comment with the given ID.
+   */
+  scrollToInlineComment: (commentId: string) => void
 }
 
 interface CommentsScrollHookOptions {
@@ -73,7 +85,7 @@ interface CommentsScrollHookOptions {
 }
 
 interface ScrollTarget {
-  type: 'comment' | 'field' | 'group'
+  type: 'comment' | 'field' | 'group' | 'inline-comment'
   id: string
 }
 
@@ -101,6 +113,10 @@ export function useCommentsScroll(opts?: CommentsScrollHookOptions): CommentsScr
     setScrollTarget({type: 'field', id: fieldPath})
   }, [])
 
+  const handleScrollToInlineComment = useCallback((commentId: string) => {
+    setScrollTarget({type: 'inline-comment', id: commentId})
+  }, [])
+
   useEffect(() => {
     const raf = requestAnimationFrame(() => {
       if (!scrollTarget) return
@@ -126,8 +142,9 @@ export function useCommentsScroll(opts?: CommentsScrollHookOptions): CommentsScr
       scrollToComment: handleScrollToComment,
       scrollToField: handleScrollToField,
       scrollToGroup: handleScrollToGroup,
+      scrollToInlineComment: handleScrollToInlineComment,
     }),
-    [handleScrollToComment, handleScrollToField, handleScrollToGroup],
+    [handleScrollToComment, handleScrollToField, handleScrollToGroup, handleScrollToInlineComment],
   )
 
   return value

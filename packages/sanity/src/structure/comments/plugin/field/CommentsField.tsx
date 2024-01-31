@@ -89,7 +89,7 @@ function CommentFieldInner(
   } = useComments()
   const {upsellData, handleOpenDialog} = useCommentsUpsell()
   const {selectedPath, setSelectedPath} = useCommentsSelectedPath()
-  const {scrollToField, scrollToGroup} = useCommentsScroll({
+  const {scrollToField, scrollToGroup, scrollToInlineComment} = useCommentsScroll({
     boundaryElement,
   })
 
@@ -103,6 +103,12 @@ function CommentFieldInner(
     if (selectedPath?.origin === 'form' || selectedPath?.origin === 'url') return false
     return selectedPath?.fieldPath === PathUtils.toString(props.path)
   }, [isCommentsOpen, props.path, selectedPath?.fieldPath, selectedPath?.origin])
+
+  const isInlineCommentThread = useMemo(() => {
+    return comments.data.open
+      .filter((c) => c.threadId === selectedPath?.threadId)
+      .some((x) => x.selection?.type === 'text')
+  }, [comments.data.open, selectedPath?.threadId])
 
   // Total number of comments for the current field
   const count = useMemo(() => {
@@ -224,10 +230,26 @@ function CommentFieldInner(
 
   // Effect that handles scroll the field into view when it's selected
   useEffect(() => {
+    // Scroll to the field when it's selected
     if (isSelected && isCommentsOpen) {
       scrollToField(PathUtils.toString(props.path))
     }
-  }, [isSelected, isCommentsOpen, props.path, scrollToField])
+
+    // Scroll to the inline comment inside the field when it's selected
+    if (isSelected && isInlineCommentThread && selectedPath?.threadId) {
+      scrollToInlineComment(selectedPath?.threadId)
+    }
+  }, [
+    isSelected,
+    isCommentsOpen,
+    props.path,
+    scrollToField,
+    threadIdToScrollTo,
+    scrollToInlineComment,
+    comments.data.open,
+    selectedPath?.threadId,
+    isInlineCommentThread,
+  ])
 
   // Effect that handles scrolling to the selected thread
   useEffect(() => {
@@ -281,7 +303,7 @@ function CommentFieldInner(
       })}
 
       <AnimatePresence>
-        {isSelected && (
+        {isSelected && !isInlineCommentThread && (
           <HighlightDiv
             animate="animate"
             exit="exit"

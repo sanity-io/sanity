@@ -2,6 +2,7 @@ import {RangeDecoration} from '@sanity/portable-text-editor'
 import {useState, useRef, useEffect, useCallback} from 'react'
 import {HighlightSpan} from '../../../plugin/input/components/HighlightSpan'
 import {CommentMessage, CommentThreadItem} from '../../types'
+import {generateCommentsInlineCommentIdAttr} from '../../hooks'
 import {buildRangeDecorationSelectionsFromComments} from './buildRangeDecorationSelectionsFromComments'
 
 interface CommentRangeDecoratorProps {
@@ -11,10 +12,19 @@ interface CommentRangeDecoratorProps {
   onClick: (commentId: string) => void
   onHoverEnd: (commentId: null) => void
   onHoverStart: (commentId: string) => void
+  threadId: string
 }
 
 function CommentRangeDecorator(props: CommentRangeDecoratorProps) {
-  const {children, commentId, onHoverEnd, onHoverStart, currentHoveredCommentId, onClick} = props
+  const {
+    children,
+    commentId,
+    onHoverEnd,
+    onHoverStart,
+    currentHoveredCommentId,
+    onClick,
+    threadId,
+  } = props
   const [decoratorEl, setDecoratorEl] = useState<HTMLSpanElement | null>(null)
   const [isNested, setIsNested] = useState<boolean>(false)
   const parentCommentId = useRef<string | null>(null)
@@ -66,6 +76,7 @@ function CommentRangeDecorator(props: CommentRangeDecoratorProps) {
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       ref={setDecoratorEl}
+      {...generateCommentsInlineCommentIdAttr(threadId)}
     >
       {children}
     </HighlightSpan>
@@ -105,6 +116,7 @@ export function buildRangeDecorators(props: BuildRangeDecoratorsProps) {
           onClick={onDecoratorClick}
           onHoverEnd={onDecoratorHoverEnd}
           onHoverStart={onDecoratorHoverStart}
+          threadId={comment.threadId}
         >
           {children}
         </CommentRangeDecorator>
