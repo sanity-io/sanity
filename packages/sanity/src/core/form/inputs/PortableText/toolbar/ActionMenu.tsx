@@ -134,6 +134,7 @@ export const ActionMenu = memo(function ActionMenu(props: ActionMenuProps) {
 
   return (
     <CollapseMenuMemo
+      data-testid="action-menu-auto-collapse-menu"
       collapsed={collapsed}
       disableRestoreFocusOnClose
       gap={1}
