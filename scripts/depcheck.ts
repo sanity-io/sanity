@@ -9,9 +9,9 @@ const cwd = path.resolve(process.cwd(), process.argv[2] || '.')
 
 const manifest = JSON.parse(fs.readFileSync(`${cwd}/package.json`, 'utf-8'))
 
-const options = {
+const options: depcheck.Options = {
   ignoreMatches: ['@types/jest', '@types/webpack-env', 'ts-node', ...getProjectIgnores(cwd)],
-  ignoreDirs: ['lib'],
+  ignoreDirs: ['lib', ...getProjectIgnoresDirs(cwd)],
   detectors: [
     depcheck.detector.exportDeclaration,
     depcheck.detector.extract,
@@ -90,12 +90,7 @@ const IMPLICIT_DEPS: Record<string, string | string[]> = {
   recast: '@babel/parser', // recast/parsers/typescript implicitly requires @babel/parser
 }
 
-function implicitDepsParser(
-  content: string,
-  filePath: string,
-  deps: ReadonlyArray<string>,
-  rootDir: string,
-) {
+function implicitDepsParser(filePath: string, deps: ReadonlyArray<string>) {
   return deps.flatMap((dep) => IMPLICIT_DEPS[dep] || [])
 }
 
@@ -103,6 +98,14 @@ function getProjectIgnores(baseDir: string) {
   try {
     return JSON.parse(fs.readFileSync(`${baseDir}/.depcheckignore.json`, 'utf-8'))?.ignore || []
   } catch {
+    return []
+  }
+}
+
+function getProjectIgnoresDirs(baseDir: string) {
+  try {
+    return JSON.parse(fs.readFileSync(`${baseDir}/.depcheckignore.json`, 'utf-8'))?.ignoreDirs || []
+  } catch (e) {
     return []
   }
 }
@@ -115,12 +118,7 @@ function typeScriptReferencesDirective(node: Node): ReadonlyArray<string> | stri
   return []
 }
 
-function sanityJSONParser(
-  content: string,
-  filePath: string,
-  deps: ReadonlyArray<string>,
-  rootDir: string,
-) {
+function sanityJSONParser(filePath: string, deps: ReadonlyArray<string>) {
   const filename = path.basename(filePath)
   if (filename === 'sanity.json') {
     const sanityConfig = JSON.parse(fs.readFileSync(filePath, 'utf-8'))
