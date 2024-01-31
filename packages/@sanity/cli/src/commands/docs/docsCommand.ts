@@ -9,7 +9,7 @@ const docsCommand: CliCommandDefinition = {
   async action(args, context) {
     const {output} = context
     const {print} = output
-    const url = 'https://beta.sanity.io/docs'
+    const url = 'https://www.sanity.io/docs'
 
     print(`Opening ${url}`)
     await open(url)
