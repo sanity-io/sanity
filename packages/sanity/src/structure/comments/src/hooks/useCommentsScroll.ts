@@ -3,7 +3,7 @@ import scrollIntoViewIfNeeded, {StandardBehaviorOptions} from 'scroll-into-view-
 
 const SCROLL_INTO_VIEW_IF_NEEDED_OPTIONS: StandardBehaviorOptions = {
   behavior: 'smooth',
-  block: 'center',
+  block: 'start',
   inline: 'center',
   scrollMode: 'if-needed',
 }

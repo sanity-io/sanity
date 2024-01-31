@@ -49,7 +49,7 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
   const currentUser = useCurrentUser()
   const {mentionOptions, comments, operation, onCommentsOpen, getComment} = useComments()
   const {setSelectedPath} = useCommentsSelectedPath()
-  const {scrollToComment} = useCommentsScroll()
+  const {scrollToComment, scrollToGroup} = useCommentsScroll()
 
   const editorRef = useRef<PortableTextEditor | null>(null)
   const floatingButtonPopoverRef = useRef<HTMLDivElement | null>(null)
@@ -119,6 +119,8 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
       origin: 'form',
     })
 
+    scrollToGroup(threadId)
+
     // Reset the states when submitting
     setNextCommentValue(null)
     setNextCommentSelection(null)
@@ -131,6 +133,7 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
     nextCommentValue,
     onCommentsOpen,
     operation,
+    scrollToGroup,
     setSelectedPath,
     stringFieldPath,
   ])
