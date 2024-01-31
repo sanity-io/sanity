@@ -31,6 +31,7 @@ import {normalizeSelection} from '../utils/selection'
 import {toPortableTextRange, toSlateRange} from '../utils/ranges'
 import {useCallbackWithTelemetry} from '../__telemetry__/useCallbackWithTelemetry'
 import {debugWithName} from '../utils/debug'
+import {isProd} from '../environment'
 import {PortableTextEditorError} from '../__telemetry__/portable-text-editor.telemetry'
 import {usePortableTextEditorReadOnlyStatus} from './hooks/usePortableTextReadOnly'
 import {usePortableTextEditorKeyGenerator} from './hooks/usePortableTextEditorKeyGenerator'
@@ -499,6 +500,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
   const telemetry = useTelemetry()
   const handleCatch = useCallback(
     ({error, info}: {error: Error; info: React.ErrorInfo}) => {
+      if (!isProd) return
       telemetry.log(PortableTextEditorError, {
         error: error,
         args: info,

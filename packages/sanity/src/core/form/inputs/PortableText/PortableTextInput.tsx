@@ -28,6 +28,7 @@ import {
   PortableTextInputCollapsed,
   PortableTextInputExpanded,
 } from '../../__telemetry__/form.telemetry'
+import {isProd} from '../../../environment'
 import {Compositor, PortableTextEditorElement} from './Compositor'
 import {InvalidValue as RespondToInvalidContent} from './InvalidValue'
 import {usePatches} from './usePatches'
@@ -302,6 +303,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
   const telemetry = useTelemetry()
   const handleCatch = useCallback(
     ({error, info}: {error: Error; info: React.ErrorInfo}) => {
+      if (!isProd) return
       telemetry.log(PortableTextEditorFormError, {
         error: error,
         location: `${LOCATION} | ErrorBoundary`,
