@@ -1,9 +1,11 @@
 import {type ReactNode, useCallback, useEffect, useState} from 'react'
+import {useTelemetry} from '@sanity/telemetry/react'
 
 import {useClient} from '../../../../hooks'
 import {SANITY_VERSION} from '../../../../version'
 import {FreeTrialContext} from './FreeTrialContext'
 import {type FreeTrialResponse} from './types'
+import {TrialDialogViewed, getTrialStage} from './__telemetry__/trialDialogEvents.telemetry'
 
 /**
  * @internal
@@ -20,6 +22,25 @@ export const FreeTrialProvider = ({children}: FreeTrialProviderProps) => {
   const [showDialog, setShowDialog] = useState(false)
   const [showOnLoad, setShowOnLoad] = useState(false)
   const client = useClient({apiVersion: '2023-12-11'})
+  const telemetry = useTelemetry()
+
+  // Whenever showDialog changes, run effect to track
+  // the dialog view
+  useEffect(() => {
+    const dialog = data?.showOnLoad || data?.showOnClick
+    if (showDialog && dialog) {
+      telemetry.log(TrialDialogViewed, {
+        dialogId: dialog.id,
+        dialogRevision: dialog._rev,
+        dialogTrialStage: getTrialStage({showOnLoad, dialogId: dialog.id}),
+        dialogTrigger: showOnLoad ? 'auto' : 'from_click',
+        dialogType: dialog.dialogType,
+        source: 'studio',
+        trialDaysLeft: data.daysLeft,
+      })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showDialog])
 
   useEffect(() => {
     const request = client.observable
