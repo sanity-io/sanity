@@ -33,6 +33,7 @@ export const TitleContainer = styled(Stack)`
         font-size: ${theme.sanity.fonts.heading.sizes[4].fontSize}px;
         line-height: ${theme.sanity.fonts.heading.sizes[4].lineHeight}px;
         overflow-wrap: break-word;
+        text-wrap: pretty;
       }
 
       @container (max-width: 560px) {
