@@ -41,6 +41,7 @@ export const FormFieldHeaderText = memo(function FormFieldHeaderText(
   const {description, inputId, title, deprecated, validation = EMPTY_ARRAY} = props
   const {t} = useTranslation()
   const hasValidations = validation.length > 0
+  const hasLabelSuffix = deprecated || hasValidations
 
   return (
     <Stack space={3}>
@@ -53,21 +54,23 @@ export const FormFieldHeaderText = memo(function FormFieldHeaderText(
           )}
         </Text>
 
-        <LabelSuffix align="center" flex={1}>
-          {deprecated && (
-            <Box marginLeft={2}>
-              <Badge data-testid={`deprecated-badge-${title}`} tone="caution">
-                {t('form.field.deprecated-label')}
-              </Badge>
-            </Box>
-          )}
+        {hasLabelSuffix && (
+          <LabelSuffix align="center" flex={1}>
+            {deprecated && (
+              <Box marginLeft={2}>
+                <Badge data-testid={`deprecated-badge-${title}`} tone="caution">
+                  {t('form.field.deprecated-label')}
+                </Badge>
+              </Box>
+            )}
 
-          {hasValidations && (
-            <Box marginLeft={2}>
-              <FormFieldValidationStatus fontSize={1} placement="top" validation={validation} />
-            </Box>
-          )}
-        </LabelSuffix>
+            {hasValidations && (
+              <Box marginLeft={2}>
+                <FormFieldValidationStatus fontSize={1} placement="top" validation={validation} />
+              </Box>
+            )}
+          </LabelSuffix>
+        )}
       </Flex>
 
       {deprecated && (
