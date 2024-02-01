@@ -1,6 +1,6 @@
 import {Flex, Stack} from '@sanity/ui'
 import {addDays} from 'date-fns'
-import React, {useCallback, useMemo} from 'react'
+import {useCallback, useMemo, useState} from 'react'
 import {useSearchState} from '../../../../../contexts/search/useSearchState'
 import type {OperatorDateRangeValue} from '../../../../../definitions/operators/dateOperators'
 import type {OperatorInputComponentProps} from '../../../../../definitions/operators/operatorTypes'
@@ -13,12 +13,16 @@ import {getDateISOString} from './utils/getDateISOString'
 const PLACEHOLDER_START_DATE_OFFSET = -7 // days
 
 export function CommonDateRangeInput({
+  initialFocusedDate,
   isDateTime,
   onChange,
   value,
 }: OperatorInputComponentProps<OperatorDateRangeValue> & {
+  initialFocusedDate?: Date
   isDateTime: boolean
 }) {
+  const [selectEndDate, setSelectEndDate] = useState(false)
+
   const {t} = useTranslation()
   const {
     state: {fullscreen},
@@ -33,6 +37,10 @@ export function CommonDateRangeInput({
 
   const handleDatePickerChange = useCallback(
     ({date, endDate}: {date?: Date | null; endDate?: Date | null}) => {
+      // After a date has been picked, alternate target _only_ if either date or endDate is set.
+      if (date && !endDate) setSelectEndDate(true)
+      if (!date && endDate) setSelectEndDate(false)
+
       onChange(
         getStartAndEndDate({
           date,
@@ -68,6 +76,8 @@ export function CommonDateRangeInput({
     [onChange, value],
   )
 
+  const handleTextEndDateFocus = useCallback(() => setSelectEndDate(true), [])
+
   const handleTextStartDateChange = useCallback(
     (date: string | null) => {
       onChange({
@@ -79,6 +89,8 @@ export function CommonDateRangeInput({
     [onChange, value],
   )
 
+  const handleTextStartDateFocus = useCallback(() => setSelectEndDate(false), [])
+
   return (
     <div>
       <Stack space={3}>
@@ -86,10 +98,12 @@ export function CommonDateRangeInput({
           {/* Start date */}
           <ParsedDateTextInput
             aria-label={t('search.filter-date-range-start-date-aria-label')}
+            data-testid="input-start-date"
             fontSize={fullscreen ? 2 : 1}
             isDateTime={isDateTime}
             isDateTimeFormat={isDateTime && value?.includeTime}
             onChange={handleTextStartDateChange}
+            onFocus={handleTextStartDateFocus}
             placeholderDate={placeholderStartDate}
             radius={2}
             value={value?.from}
@@ -97,10 +111,12 @@ export function CommonDateRangeInput({
           {/* End date */}
           <ParsedDateTextInput
             aria-label={t('search.filter-date-range-end-date-aria-label')}
+            data-testid="input-end-date"
             fontSize={fullscreen ? 2 : 1}
             isDateTime={isDateTime}
             isDateTimeFormat={isDateTime && value?.includeTime}
             onChange={handleTextEndDateChange}
+            onFocus={handleTextEndDateFocus}
             placeholderDate={placeholderEndDate}
             radius={2}
             value={value?.to}
@@ -109,7 +125,9 @@ export function CommonDateRangeInput({
         <DatePicker
           date={value?.from ? new Date(value.from) : undefined}
           endDate={value?.to ? new Date(value.to) : undefined}
+          initialFocusedDate={initialFocusedDate}
           onChange={handleDatePickerChange}
+          selectEndDate={selectEndDate}
           selectRange
           selectTime={isDateTime}
         />

@@ -2,6 +2,7 @@ import {format, isValid, parse} from 'date-fns'
 import React, {
   ChangeEvent,
   ComponentProps,
+  FocusEventHandler,
   KeyboardEvent,
   useCallback,
   useEffect,
@@ -50,6 +51,7 @@ const FORMAT: Record<
 
 export function ParsedDateTextInput({
   isDateTime,
+  onBlur,
   onChange,
   placeholderDate,
   isDateTimeFormat,
@@ -104,9 +106,13 @@ export function ParsedDateTextInput({
   /**
    * Re-process (parse, validate and update) current input value on blur
    */
-  const handleTextInputBlur = useCallback(() => {
-    processInputString({dateString: inputValue, triggerOnChange: true})
-  }, [inputValue, processInputString])
+  const handleTextInputBlur = useCallback<FocusEventHandler<HTMLInputElement>>(
+    (event) => {
+      processInputString({dateString: inputValue, triggerOnChange: true})
+      onBlur?.(event)
+    },
+    [inputValue, onBlur, processInputString],
+  )
 
   const handleTextInputChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
     setInputValue(event.currentTarget.value)
@@ -155,7 +161,6 @@ export function ParsedDateTextInput({
       placement="top"
       portal
     >
-      {/* HACK: Wrapping element required for <Tooltip> to function */}
       <CustomTextInput
         {...rest}
         clearButton={!!inputValue}
