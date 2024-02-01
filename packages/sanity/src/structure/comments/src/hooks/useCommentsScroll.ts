@@ -14,12 +14,12 @@ const GROUP_SCROLL_OPTIONS: StandardBehaviorOptions = {
 
 const INLINE_COMMENT_SCROLL_OPTIONS: StandardBehaviorOptions = {
   ...BASE_SCROLL_OPTIONS,
-  block: 'start',
+  block: 'center',
 }
 
 const SCROLL_TO_FIELD_OPTIONS: StandardBehaviorOptions = {
   ...BASE_SCROLL_OPTIONS,
-  block: 'start',
+  block: 'center',
 }
 
 const SCROLL_TO_COMMENT_OPTIONS: StandardBehaviorOptions = {
