@@ -115,6 +115,7 @@ interface CommentsListItemLayoutProps {
   isParent?: boolean
   isRetrying?: boolean
   mentionOptions: MentionOptionsHookValue
+  mode: CommentsUIMode
   onCopyLink?: (id: string) => void
   onCreateRetry?: (id: string) => void
   onDelete: (id: string) => void
@@ -123,7 +124,6 @@ interface CommentsListItemLayoutProps {
   onReactionSelect?: (id: string, reaction: CommentReactionOption) => void
   onStatusChange?: (id: string, status: CommentStatus) => void
   readOnly?: boolean
-  mode: CommentsUIMode
 }
 
 const RELATIVE_TIME_OPTIONS: RelativeTimeOptions = {useTemporalPhrase: true}
@@ -138,6 +138,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
     isParent,
     isRetrying,
     mentionOptions,
+    mode,
     onCopyLink,
     onCreateRetry,
     onDelete,
@@ -146,7 +147,6 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
     onReactionSelect,
     onStatusChange,
     readOnly,
-    mode,
   } = props
   const {_createdAt, authorId, message, _id, lastEditedAt} = comment
   const [user] = useUser(authorId)
@@ -324,10 +324,10 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
           {!isEditing && !displayError && (
             <ContextMenuBox data-root-menu={isParent ? 'true' : 'false'} onClick={stopPropagation}>
               <CommentsListItemContextMenu
-                mode={mode}
                 canDelete={canDelete}
                 canEdit={canEdit}
                 isParent={isParent}
+                mode={mode}
                 onCopyLink={handleCopyLink}
                 onDeleteStart={handleDelete}
                 onEditStart={toggleEdit}
@@ -379,8 +379,8 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
 
             <Box onClick={stopPropagation}>
               <CommentReactionsBar
-                mode={mode}
                 currentUser={currentUser}
+                mode={mode}
                 onSelect={handleReactionSelect}
                 reactions={reactions}
                 readOnly={readOnly}

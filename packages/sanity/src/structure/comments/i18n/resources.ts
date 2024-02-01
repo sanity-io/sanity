@@ -14,6 +14,8 @@ const commentsLocaleStrings = defineLocalesResources('comments', {
 
   /** When composing a comment, the placeholder text shown when adding a comment to a field with no current comments */
   'compose.add-comment-input-placeholder': 'Add comment to <strong>{{field}}</strong>',
+  /** When composing a comment, the placeholder text shown when adding a comment to a field with no current comments and the mode is upsell */
+  'compose.add-comment-input-placeholder-upsell': 'Upgrade to add comment',
   /** When composing a comment, the placeholder text shown when the input is empty */
   'compose.create-comment-placeholder': 'Create a new comment',
   /** When composing a comment, the aria label for the button to mention a user */
@@ -22,6 +24,8 @@ const commentsLocaleStrings = defineLocalesResources('comments', {
   'compose.mention-user-tooltip': 'Mention user',
   /** When composing a reply, the placeholder text shown when the input is empty */
   'compose.reply-placeholder': 'Reply',
+  /** When composing a reply, the placeholder text shown when the input is empty and the mode is upsell */
+  'compose.reply-placeholder-upsell': 'Reply',
   /** When composing a comment, the aria label for the button to send a comment */
   'compose.send-comment-aria-label': 'Send comment',
   /** When composing a comment, the tooltip text for the button to send a comment */
@@ -86,6 +90,8 @@ const commentsLocaleStrings = defineLocalesResources('comments', {
   'list-item.delete-comment': 'Delete comment',
   /** The action menu item for editing a comment */
   'list-item.edit-comment': 'Edit comment',
+  /** The action menu item for editing a comment and the mode is upsell */
+  'list-item.edit-comment-upsell': 'Upgrade to edit comment',
   /** Aria label for the button that takes you to the field, which wraps a thread/comment */
   'list-item.go-to-field-button.aria-label': 'Go to field',
   /** The marker to indicate that a comment has been edited in brackets */

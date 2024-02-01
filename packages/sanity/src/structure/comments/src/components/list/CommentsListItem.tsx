@@ -83,6 +83,7 @@ interface CommentsListItemProps {
   currentUser: CurrentUser
   isSelected: boolean
   mentionOptions: MentionOptionsHookValue
+  mode: CommentsUIMode
   onCopyLink?: (id: string) => void
   onCreateRetry: (id: string) => void
   onDelete: (id: string) => void
@@ -95,7 +96,6 @@ interface CommentsListItemProps {
   parentComment: CommentDocument
   readOnly?: boolean
   replies: CommentDocument[] | undefined
-  mode: CommentsUIMode
 }
 
 export const CommentsListItem = React.memo(function CommentsListItem(props: CommentsListItemProps) {
@@ -241,7 +241,6 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
       splicedReplies.map((reply) => (
         <Stack as="li" key={reply._id} data-comment-id={reply._id}>
           <CommentsListItemLayout
-            mode={mode}
             canDelete={reply.authorId === currentUser.id}
             canEdit={reply.authorId === currentUser.id}
             comment={reply}
@@ -249,6 +248,7 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
             hasError={reply._state?.type === 'createError'}
             isRetrying={reply._state?.type === 'createRetrying'}
             mentionOptions={mentionOptions}
+            mode={mode}
             onCopyLink={onCopyLink}
             onCreateRetry={onCreateRetry}
             onDelete={onDelete}
@@ -298,7 +298,6 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
         >
           <Stack as="li" data-comment-id={parentComment._id}>
             <CommentsListItemLayout
-              mode={mode}
               canDelete={parentComment.authorId === currentUser.id}
               canEdit={parentComment.authorId === currentUser.id}
               comment={parentComment}
@@ -307,6 +306,7 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
               isParent
               isRetrying={parentComment._state?.type === 'createRetrying'}
               mentionOptions={mentionOptions}
+              mode={mode}
               onCopyLink={onCopyLink}
               onCreateRetry={onCreateRetry}
               onDelete={onDelete}
@@ -345,8 +345,7 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
               onSubmit={handleReplySubmit}
               placeholder={
                 mode === 'upsell'
-                  ? // TODO: Comments - localize
-                    'Upgrade to reply'
+                  ? t('compose.reply-placeholder-upsell')
                   : t('compose.reply-placeholder')
               }
               readOnly={readOnly || mode === 'upsell'}

@@ -177,12 +177,12 @@ export const CommentReactionsBar = React.memo(function CommentReactionsBar(
 
         <TransparentCard tone="default">
           <CommentReactionsMenuButton
+            mode={mode}
             // eslint-disable-next-line react/jsx-no-bind
             onSelect={(o) => handleSelect(o.shortName)}
             options={COMMENT_REACTION_OPTIONS}
             readOnly={readOnly}
             renderMenuButton={renderMenuButton}
-            mode={mode}
           />
         </TransparentCard>
       </TooltipDelayGroupProvider>

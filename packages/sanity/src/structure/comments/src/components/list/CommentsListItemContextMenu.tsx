@@ -135,10 +135,7 @@ export function CommentsListItemContextMenu(props: CommentsListItemContextMenuPr
                   onClick={onEditStart}
                   text={t('list-item.edit-comment')}
                   tooltipProps={
-                    mode === 'upsell'
-                      ? // TODO: Comments - localize
-                        {content: 'Upgrade to edit comments'}
-                      : undefined
+                    mode === 'upsell' ? {content: t('list-item-edit-comment-upsell')} : undefined
                   }
                   disabled={mode === 'upsell'}
                 />

@@ -10,12 +10,12 @@ interface CreateNewThreadInputProps {
   currentUser: CurrentUser
   fieldTitle: string
   mentionOptions: MentionOptionsHookValue
+  mode: CommentsUIMode
   onBlur?: CommentInputProps['onBlur']
   onFocus?: CommentInputProps['onFocus']
   onKeyDown?: (event: React.KeyboardEvent<Element>) => void
   onNewThreadCreate: (payload: CommentMessage) => void
   readOnly?: boolean
-  mode: CommentsUIMode
 }
 
 export function CreateNewThreadInput(props: CreateNewThreadInputProps) {
@@ -23,12 +23,12 @@ export function CreateNewThreadInput(props: CreateNewThreadInputProps) {
     currentUser,
     fieldTitle,
     mentionOptions,
+    mode,
     onBlur,
     onFocus,
     onKeyDown,
     onNewThreadCreate,
     readOnly,
-    mode,
   } = props
   const {t} = useTranslation(commentsLocaleNamespace)
 
@@ -79,7 +79,7 @@ export function CreateNewThreadInput(props: CreateNewThreadInputProps) {
 
   const placeholder =
     mode === 'upsell' ? (
-      <>Upgrade to add comment</>
+      t('compose.add-comment-input-placeholder-upsell')
     ) : (
       <Translate
         t={t}
