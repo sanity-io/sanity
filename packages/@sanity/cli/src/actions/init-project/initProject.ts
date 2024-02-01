@@ -166,10 +166,32 @@ export default async function initSanity(
       selectedPlan = await getPlanFromCoupon(apiClient, intendedCoupon)
       print(`Coupon "${intendedCoupon}" validated!\n`)
     } catch (err) {
-      throw new Error(`Unable to validate coupon code "${intendedCoupon}":\n\n${err.message}`)
+      const useDefaultPlan = await prompt.single({
+        type: 'confirm',
+        message: `Coupon "${intendedCoupon}" is not available, use default plan instead?`,
+        default: true,
+      })
+      if (useDefaultPlan) {
+        print(`Using default plan!`)
+      } else {
+        throw new Error(`Unable to validate coupon code "${intendedCoupon}":\n\n${err.message}`)
+      }
     }
   } else if (intendedPlan) {
-    selectedPlan = intendedPlan
+    try {
+      selectedPlan = await getPlanFromId(apiClient, intendedPlan)
+    } catch (err) {
+      const useDefaultPlan = await prompt.single({
+        type: 'confirm',
+        message: `Project plan "${intendedPlan}" is not available, use default plan instead?`,
+        default: true,
+      })
+      if (useDefaultPlan) {
+        print(`Using default plan!`)
+      } else {
+        throw new Error(`Unable to validate plan ID "${intendedPlan}":\n\n${err.message}`)
+      }
+    }
   }
 
   if (reconfigure) {
@@ -1245,15 +1267,27 @@ async function getPlanFromCoupon(apiClient: CliApiClient, couponCode: string): P
     uri: `plans/coupon/${couponCode}`,
   })
 
-  try {
-    const planId = response[0].id
-    if (!planId) {
-      throw new Error('Unable to find a plan from coupon code')
-    }
-    return planId
-  } catch (err) {
-    throw err
+  const planId = response[0].id
+  if (!planId) {
+    throw new Error('Unable to find a plan from coupon code')
   }
+  return planId
+}
+
+async function getPlanFromId(apiClient: CliApiClient, planId: string): Promise<string> {
+  const response = await apiClient({
+    requireUser: false,
+    requireProject: false,
+  }).request({
+    method: 'GET',
+    uri: `plans/${planId}`,
+  })
+
+  const id = response[0].id
+  if (!id) {
+    throw new Error(`Unable to find a plan with id ${planId}`)
+  }
+  return id
 }
 
 function getImportCommand(
