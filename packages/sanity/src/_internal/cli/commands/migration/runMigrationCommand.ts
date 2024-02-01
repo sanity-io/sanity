@@ -19,7 +19,7 @@ import {prettyFormat} from './prettyMutationFormatter'
 
 const helpText = `
 Options
-  --dry <boolean> Whether or not to dry run the migration. Default to true, to actually run the migration, pass --no-dry
+  --no-dry-run By default the migration runs in dry mode. Pass this option to migrate dataset.
   --concurrency <concurrent> How many mutation requests to run in parallel. Must be between 1 and ${MAX_MUTATION_CONCURRENCY}. Default: ${DEFAULT_MUTATION_CONCURRENCY}.
   --no-progress Don't output progress. Useful if you want debug your migration script and see the output of console.log() statements.
   --dataset <dataset> Dataset to migrate. Defaults to the dataset configured in your Sanity CLI config.

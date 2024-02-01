@@ -1,6 +1,7 @@
 import path from 'path'
 import {readdir} from 'node:fs/promises'
-import type {CliCommandContext, CliCommandDefinition} from '@sanity/cli'
+import chalk from 'chalk'
+import type {CliCommandDefinition} from '@sanity/cli'
 import {register} from 'esbuild-register/dist/node'
 import {Migration} from '@sanity/migrate'
 import {Table} from 'console-table-printer'
@@ -9,33 +10,48 @@ import {MIGRATIONS_DIRECTORY} from './constants'
 
 const helpText = ``
 
-interface CreateFlags {
-  dry?: 'true' | 'false' | 'yes' | 'no'
-  'from-export'?: string
-}
-
-const createMigrationCommand: CliCommandDefinition<CreateFlags> = {
+const listMigrationCommand: CliCommandDefinition = {
   name: 'list',
   group: 'migration',
-  signature: '[NAME]',
+  signature: '',
   helpText,
   description: 'List available migrations',
-  action: async (args, context) => {
+  action: async (_, context) => {
     const {workDir, output} = context
-    const migrations = await resolveMigrations(workDir)
-    const table = new Table({
-      title: `Found ${migrations.length} migrations in project`,
-      columns: [
-        {name: 'id', title: 'ID', alignment: 'left'},
-        {name: 'title', title: 'Title', alignment: 'left'},
-      ],
-    })
+    try {
+      const migrations = await resolveMigrations(workDir)
 
-    migrations.forEach((definedMigration) => {
-      table.addRow({id: definedMigration.dirname, title: definedMigration.migration.title})
-    })
-    table.printTable()
-    output.print('\nRun `sanity migration run <ID>` to run a migration')
+      if (migrations.length === 0) {
+        output.print('No migrations found in migrations folder of the project')
+        output.print(
+          `\nRun ${chalk.green(`\`sanity migration create <NAME>\``)} to create a new migration`,
+        )
+        return
+      }
+
+      const table = new Table({
+        title: `Found ${migrations.length} migrations in project`,
+        columns: [
+          {name: 'id', title: 'ID', alignment: 'left'},
+          {name: 'title', title: 'Title', alignment: 'left'},
+        ],
+      })
+
+      migrations.forEach((definedMigration) => {
+        table.addRow({id: definedMigration.dirname, title: definedMigration.migration.title})
+      })
+      table.printTable()
+      output.print('\nRun `sanity migration run <ID>` to run a migration')
+    } catch (error) {
+      if (error.code === 'ENOENT') {
+        output.print('No migrations folder found in the project')
+        output.print(
+          `\nRun ${chalk.green(`\`sanity migration create <NAME>\``)} to create a new migration`,
+        )
+        return
+      }
+      throw new Error(`An error occurred while listing migrations: ${error.message}`)
+    }
   },
 }
 
@@ -65,4 +81,4 @@ export async function resolveMigrations(workDir: string) {
     .filter(Boolean) as {dirname: string; migration: Migration}[]
 }
 
-export default createMigrationCommand
+export default listMigrationCommand
