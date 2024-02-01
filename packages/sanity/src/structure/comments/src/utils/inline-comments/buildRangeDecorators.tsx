@@ -12,6 +12,7 @@ interface CommentRangeDecoratorProps {
   onClick: (commentId: string) => void
   onHoverEnd: (commentId: null) => void
   onHoverStart: (commentId: string) => void
+  selectedThreadId: string | null
   threadId: string
 }
 
@@ -23,6 +24,7 @@ function CommentRangeDecorator(props: CommentRangeDecoratorProps) {
     onHoverStart,
     currentHoveredCommentId,
     onClick,
+    selectedThreadId,
     threadId,
   } = props
   const [decoratorEl, setDecoratorEl] = useState<HTMLSpanElement | null>(null)
@@ -66,9 +68,11 @@ function CommentRangeDecorator(props: CommentRangeDecoratorProps) {
     currentHoveredCommentId === commentId ||
     (currentHoveredCommentId === parentCommentId.current && isNested)
 
+  const selected = selectedThreadId === threadId
+
   return (
     <HighlightSpan
-      data-hovered={hovered}
+      data-hovered={hovered || selected}
       data-inline-comment-id={commentId}
       data-inline-comment-state="added"
       data-nested-inline-comment={isNested}
@@ -93,17 +97,19 @@ interface BuildRangeDecoratorsProps {
   onDecoratorClick: (commentId: string) => void
   onDecoratorHoverEnd: (commentId: null) => void
   onDecoratorHoverStart: (commentId: string) => void
+  selectedThreadId: string | null
   value: CommentMessage | undefined
 }
 
 export function buildRangeDecorators(props: BuildRangeDecoratorsProps) {
   const {
     comments,
-    value,
-    onDecoratorHoverStart,
-    onDecoratorHoverEnd,
     currentHoveredCommentId,
     onDecoratorClick,
+    onDecoratorHoverEnd,
+    onDecoratorHoverStart,
+    selectedThreadId,
+    value,
   } = props
   const rangeSelections = buildRangeDecorationSelectionsFromComments({comments, value})
 
@@ -116,6 +122,7 @@ export function buildRangeDecorators(props: BuildRangeDecoratorsProps) {
           onClick={onDecoratorClick}
           onHoverEnd={onDecoratorHoverEnd}
           onHoverStart={onDecoratorHoverStart}
+          selectedThreadId={selectedThreadId}
           threadId={comment.threadId}
         >
           {children}

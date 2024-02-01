@@ -48,7 +48,7 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
 ) {
   const currentUser = useCurrentUser()
   const {mentionOptions, comments, operation, onCommentsOpen, getComment} = useComments()
-  const {setSelectedPath} = useCommentsSelectedPath()
+  const {setSelectedPath, selectedPath} = useCommentsSelectedPath()
   const {scrollToComment, scrollToGroup} = useCommentsScroll()
 
   const editorRef = useRef<PortableTextEditor | null>(null)
@@ -234,9 +234,16 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
       onDecoratorClick: handleDecoratorClick,
       onDecoratorHoverEnd: setCurrentHoveredCommentId,
       onDecoratorHoverStart: setCurrentHoveredCommentId,
+      selectedThreadId: selectedPath?.threadId,
       value: props.value,
     })
-  }, [textComments, props.value, currentHoveredCommentId, handleDecoratorClick])
+  }, [
+    textComments,
+    currentHoveredCommentId,
+    selectedPath?.threadId,
+    handleDecoratorClick,
+    props.value,
+  ])
 
   // The range decoration for the current selection. This is used to position the
   // floating button popover on the current selection.
