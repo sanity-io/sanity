@@ -21,7 +21,10 @@ export async function* toSanityMutations(
         }
         continue
       }
-      yield SanityEncoder.encode(mutation as any[]) as SanityMutation[]
     }
+
+    yield SanityEncoder.encode(
+      Array.isArray(mutation) ? mutation : (arrify(mutation) as any[]),
+    ) as SanityMutation[]
   }
 }
