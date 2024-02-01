@@ -64,7 +64,7 @@ function resolveMigrationScript(workDir: string, migrationId: string) {
     }),
   )
 }
- 
+
 function parseCliFlags(args: {argv?: string[]}) {
   return yargs(hideBin(args.argv || process.argv).slice(2))
     .options('dry-run', {type: 'boolean', default: true})
