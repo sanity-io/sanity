@@ -77,16 +77,15 @@ function CommentsInspectorInner(
   const didScrollToCommentFromParam = useRef<boolean>(false)
 
   const pushToast = useToast().push
+  const {isTopLayer} = useLayer()
   const {onPathOpen, ready} = useDocumentPane()
 
+  const {scrollToComment, scrollToField, scrollToInlineComment} = useCommentsScroll()
   const {selectedPath, setSelectedPath} = useCommentsSelectedPath()
   const {isDismissed, setDismissed} = useCommentsOnboarding()
-  const {scrollToComment} = useCommentsScroll()
   const {upsellData, telemetryLogs} = useCommentsUpsell()
   const {comments, getComment, isRunningSetup, mentionOptions, setStatus, status, operation} =
     useComments()
-
-  const {isTopLayer} = useLayer()
 
   const currentComments = useMemo(() => comments.data[status], [comments, status])
 
@@ -190,9 +189,19 @@ function CommentsInspectorInner(
       if (nextPath?.fieldPath) {
         const path = PathUtils.fromString(nextPath.fieldPath)
         onPathOpen(path)
+
+        scrollToField(nextPath.fieldPath)
+
+        const isInlineComment = comments.data.open
+          .filter((c) => c.threadId === nextPath?.threadId)
+          .some((x) => x.selection?.type === 'text')
+
+        if (isInlineComment && nextPath.threadId) {
+          scrollToInlineComment(nextPath.threadId)
+        }
       }
     },
-    [onPathOpen, setSelectedPath],
+    [comments.data.open, onPathOpen, scrollToField, scrollToInlineComment, setSelectedPath],
   )
 
   const handleNewThreadCreate = useCallback(
@@ -306,6 +315,7 @@ function CommentsInspectorInner(
 
   useClickOutside(handleDeselectPath, [rootRef.current])
 
+  // Handle scroll to comment from URL param
   useEffect(() => {
     // Make sure that the comment exists before we try to scroll to it.
     // We can't solely rely on the comment id from the url since the comment might not be loaded yet.

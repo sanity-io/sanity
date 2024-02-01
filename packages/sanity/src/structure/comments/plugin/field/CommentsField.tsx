@@ -1,10 +1,10 @@
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {useCallback, useMemo, useRef, useState} from 'react'
 import {uuid} from '@sanity/uuid'
 import * as PathUtils from '@sanity/util/paths'
 import {PortableTextBlock} from '@sanity/types'
 import {Stack, useBoundaryElement} from '@sanity/ui'
 import styled, {css} from 'styled-components'
-import {motion, AnimatePresence, Variants, useInView} from 'framer-motion'
+import {motion, AnimatePresence, Variants} from 'framer-motion'
 import {hues} from '@sanity/color'
 import {
   useCommentsEnabled,
@@ -91,12 +91,9 @@ function CommentFieldInner(
   } = useComments()
   const {upsellData, handleOpenDialog} = useCommentsUpsell()
   const {selectedPath, setSelectedPath} = useCommentsSelectedPath()
-  const {scrollToField, scrollToGroup} = useCommentsScroll({
+  const {scrollToGroup} = useCommentsScroll({
     boundaryElement,
   })
-  const {scrollToInlineComment} = useCommentsScroll({boundaryElement: rootRef.current})
-
-  const [threadIdToScrollTo, setThreadIdToScrollTo] = useState<string | null>(null)
 
   const fieldTitle = useMemo(() => getSchemaTypeTitle(props.schemaType), [props.schemaType])
 
@@ -126,19 +123,6 @@ function CommentFieldInner(
 
   const hasComments = Boolean(count > 0)
 
-  const handleSetThreadToScrollTo = useCallback(
-    (threadId: string | null) => {
-      setSelectedPath({
-        threadId,
-        origin: 'form',
-        fieldPath: PathUtils.toString(props.path),
-      })
-
-      setThreadIdToScrollTo(threadId)
-    },
-    [props.path, setSelectedPath],
-  )
-
   const handleClick = useCallback(() => {
     // When clicking a comment button when the field has comments, we want to:
     if (hasComments) {
@@ -161,7 +145,14 @@ function CommentFieldInner(
       // 5. Set the latest thread ID as the selected thread ID
       //    and scroll to the it.
       if (scrollToThreadId) {
-        handleSetThreadToScrollTo(scrollToThreadId)
+        // handleSetThreadToScrollTo(scrollToThreadId)
+        setSelectedPath({
+          threadId: scrollToThreadId,
+          origin: 'form',
+          fieldPath: PathUtils.toString(props.path),
+        })
+
+        scrollToGroup(scrollToThreadId)
       }
 
       return
@@ -182,11 +173,12 @@ function CommentFieldInner(
   }, [
     comments.data.open,
     handleOpenDialog,
-    handleSetThreadToScrollTo,
     hasComments,
     mode,
     onCommentsOpen,
     props.path,
+    scrollToGroup,
+    setSelectedPath,
     setStatus,
     status,
     upsellData,
@@ -225,38 +217,26 @@ function CommentFieldInner(
       setValue(null)
 
       // Scroll to the thread
-      handleSetThreadToScrollTo(newThreadId)
-    }
-  }, [handleSetThreadToScrollTo, onCommentsOpen, operation, props.path, setStatus, status, value])
+      setSelectedPath({
+        threadId: newThreadId,
+        origin: 'form',
+        fieldPath: PathUtils.toString(props.path),
+      })
 
-  const handleDiscard = useCallback(() => setValue(null), [])
-
-  // Effect that handles scroll the field into view when it's selected
-  useEffect(() => {
-    // Scroll to the field when it's selected
-    if (isSelected && isCommentsOpen) {
-      scrollToField(PathUtils.toString(props.path))
-    }
-
-    if (isSelected && isInlineCommentThread && selectedPath?.threadId) {
-      scrollToInlineComment(selectedPath?.threadId)
+      scrollToGroup(newThreadId)
     }
   }, [
-    isCommentsOpen,
-    isInlineCommentThread,
-    isSelected,
+    onCommentsOpen,
+    operation,
     props.path,
-    scrollToField,
-    scrollToInlineComment,
-    selectedPath?.threadId,
+    scrollToGroup,
+    setSelectedPath,
+    setStatus,
+    status,
+    value,
   ])
 
-  // Effect that handles scrolling to the selected thread
-  useEffect(() => {
-    if (threadIdToScrollTo) {
-      scrollToGroup(threadIdToScrollTo)
-    }
-  }, [scrollToGroup, threadIdToScrollTo])
+  const handleDiscard = useCallback(() => setValue(null), [])
 
   const internalComments: FieldProps['__internal_comments'] = useMemo(
     () => ({

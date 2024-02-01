@@ -3,12 +3,13 @@ import scrollIntoViewIfNeeded, {StandardBehaviorOptions} from 'scroll-into-view-
 
 const BASE_SCROLL_OPTIONS: StandardBehaviorOptions = {
   behavior: 'smooth',
+  inline: 'center',
   scrollMode: 'if-needed',
 }
 
 const GROUP_SCROLL_OPTIONS: StandardBehaviorOptions = {
   ...BASE_SCROLL_OPTIONS,
-  block: 'center',
+  block: 'start',
 }
 
 const INLINE_COMMENT_SCROLL_OPTIONS: StandardBehaviorOptions = {
@@ -18,7 +19,7 @@ const INLINE_COMMENT_SCROLL_OPTIONS: StandardBehaviorOptions = {
 
 const SCROLL_TO_FIELD_OPTIONS: StandardBehaviorOptions = {
   ...BASE_SCROLL_OPTIONS,
-  block: 'center',
+  block: 'start',
 }
 
 const SCROLL_TO_COMMENT_OPTIONS: StandardBehaviorOptions = {
