@@ -4,8 +4,8 @@ import {type PortableTextBlock} from '@sanity/types'
 import {Box, Card, Flex, Heading, Text} from '@sanity/ui'
 import styled, {css} from 'styled-components'
 import React, {useEffect, useMemo, useState} from 'react'
-import {ConditionalWrapper} from '../../../../../ui-components/conditionalWrapper'
-import {transformBlocks} from './descriptionSerializerUtils'
+import {ConditionalWrapper} from '../../../ui-components/conditionalWrapper'
+import {transformBlocks} from './helpers'
 
 interface DescriptionSerializerProps {
   blocks: PortableTextBlock[]
@@ -223,7 +223,7 @@ interface DescriptionSerializerProps {
  * Not meant for public consumption.
  * @internal
  */
-export function DescriptionSerializer(props: DescriptionSerializerProps) {
+export function UpsellDescriptionSerializer(props: DescriptionSerializerProps) {
   const value = useMemo(() => transformBlocks(props.blocks), [props.blocks])
   return (
     <Card tone="default">

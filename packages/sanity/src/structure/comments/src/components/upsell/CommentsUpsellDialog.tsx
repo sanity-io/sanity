@@ -6,7 +6,7 @@ import {Box, Stack} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {Button, Dialog} from '../../../../../ui-components'
 import {CommentsUpsellData} from '../../types'
-import {DescriptionSerializer} from 'sanity'
+import {UpsellDescriptionSerializer} from 'sanity'
 
 /**
  * Absolute positioned button to close the dialog.
@@ -95,7 +95,7 @@ export function CommentsUpsellDialog(props: CommentsUpsellDialogProps) {
       {data.image && <Image src={data.image.asset.url} alt={data.image.asset.altText ?? ''} />}
       <Box padding={3} marginTop={2}>
         <Stack space={4} paddingBottom={2}>
-          <DescriptionSerializer blocks={data.descriptionText} />
+          <UpsellDescriptionSerializer blocks={data.descriptionText} />
         </Stack>
       </Box>
     </Dialog>

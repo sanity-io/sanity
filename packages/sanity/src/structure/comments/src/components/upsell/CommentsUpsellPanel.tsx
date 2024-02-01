@@ -3,7 +3,7 @@ import {LaunchIcon} from '@sanity/icons'
 import styled from 'styled-components'
 import {Button} from '../../../../../ui-components'
 import {CommentsUpsellData} from '../../types'
-import {DescriptionSerializer} from 'sanity'
+import {UpsellDescriptionSerializer} from 'sanity'
 
 const Image = styled.img`
   object-fit: cover;
@@ -27,7 +27,7 @@ export function CommentsUpsellPanel(props: CommentsUpsellPanelProps) {
           {data.image && <Image src={data.image.asset.url} alt={data.image.asset.altText ?? ''} />}
           <Box padding={3} marginTop={2}>
             <Stack space={4}>
-              <DescriptionSerializer blocks={data.descriptionText} />
+              <UpsellDescriptionSerializer blocks={data.descriptionText} />
             </Stack>
             <Flex gap={2} justify={'flex-end'} marginTop={5}>
               <Button
