@@ -6,7 +6,7 @@ import {Schema} from '@sanity/schema'
 import {defineField, defineArrayMember, PortableTextBlock} from '@sanity/types'
 import {Button, Card, Code, Container, Flex, Stack, Text} from '@sanity/ui'
 import {uuid} from '@sanity/uuid'
-import {useCallback, useMemo, useRef, useState} from 'react'
+import React, {useCallback, useMemo, useRef, useState} from 'react'
 import {
   buildCommentThreadItems,
   buildRangeDecorators,
@@ -132,6 +132,7 @@ export default function CommentInlineHighlightDebugStory() {
         onDecoratorHoverStart: setCurrentHoveredCommentId,
         onDecoratorHoverEnd: setCurrentHoveredCommentId,
         currentHoveredCommentId,
+        selectedThreadId: null,
         onDecoratorClick: () => {
           // ...
         },

@@ -12,6 +12,7 @@ import {AnimatePresence} from 'framer-motion'
 import {useClickOutside} from '@sanity/ui'
 import {
   CommentMessage,
+  CommentInlineHighlightSpan,
   buildRangeDecorators,
   buildTextSelectionFromFragment,
   currentSelectionIsOverlappingWithComment,
@@ -23,7 +24,6 @@ import {
 } from '../../../src'
 import {useReferenceElement} from '../helpers'
 import {InlineCommentInputPopover} from './InlineCommentInputPopover'
-import {HighlightSpan} from './HighlightSpan'
 import {FloatingButtonPopover} from './FloatingButtonPopover'
 import {PortableTextInputProps, isPortableTextTextBlock, useCurrentUser} from 'sanity'
 
@@ -263,9 +263,9 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
 
     return {
       component: ({children}) => (
-        <HighlightSpan data-inline-comment-state="authoring" style={{userSelect: 'none'}}>
+        <CommentInlineHighlightSpan data-inline-comment-state="authoring">
           {children}
-        </HighlightSpan>
+        </CommentInlineHighlightSpan>
       ),
       isRangeInvalid,
       selection: nextCommentSelection,

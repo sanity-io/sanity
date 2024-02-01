@@ -30,9 +30,7 @@ const MAX_COLLAPSED_REPLIES = 5
 
 // data-active = when the comment is selected
 // data-hovered = when the mouse is over the comment
-const StyledThreadCard = styled(ThreadCard)(({theme}) => {
-  const {hovered} = theme.sanity.color.button.bleed.default
-
+const StyledThreadCard = styled(ThreadCard)(() => {
   return css`
     position: relative;
 
@@ -43,7 +41,6 @@ const StyledThreadCard = styled(ThreadCard)(({theme}) => {
         0 0 0 2px var(--card-focus-ring-color);
     }
 
-    // When the comment is not selected, we want to apply hover styles.
     // The hover styles is managed with the [data-hovered] attribute instead of the :hover pseudo class
     // since we want to show the hover styles when hovering over the menu items in the context menu as well.
     // The context menu is rendered using a portal, so the :hover pseudo class won't work when hovering over
@@ -51,8 +48,6 @@ const StyledThreadCard = styled(ThreadCard)(({theme}) => {
     &:not([data-active='true']) {
       @media (hover: hover) {
         &[data-hovered='true'] {
-          --card-bg-color: ${hovered.bg2};
-
           [data-root-menu='true'] {
             opacity: 1;
           }
@@ -283,7 +278,6 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
         onClick={handleThreadRootClick}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
-        tone={isSelected ? 'caution' : undefined}
       >
         <GhostButton
           data-ui="GhostButton"

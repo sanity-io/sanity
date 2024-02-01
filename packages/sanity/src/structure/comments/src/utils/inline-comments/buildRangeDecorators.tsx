@@ -1,8 +1,8 @@
 import {RangeDecoration} from '@sanity/portable-text-editor'
-import {useState, useRef, useEffect, useCallback} from 'react'
-import {HighlightSpan} from '../../../plugin/input/components/HighlightSpan'
+import {useRef, useEffect, useCallback, memo} from 'react'
 import {CommentMessage, CommentThreadItem} from '../../types'
 import {generateCommentsInlineCommentIdAttr} from '../../hooks'
+import {CommentInlineHighlightSpan} from '../../components'
 import {buildRangeDecorationSelectionsFromComments} from './buildRangeDecorationSelectionsFromComments'
 
 interface CommentRangeDecoratorProps {
@@ -16,29 +16,31 @@ interface CommentRangeDecoratorProps {
   threadId: string
 }
 
-function CommentRangeDecorator(props: CommentRangeDecoratorProps) {
+const CommentRangeDecorator = memo(function CommentRangeDecorator(
+  props: CommentRangeDecoratorProps,
+) {
   const {
     children,
     commentId,
-    onHoverEnd,
-    onHoverStart,
     currentHoveredCommentId,
     onClick,
+    onHoverEnd,
+    onHoverStart,
     selectedThreadId,
     threadId,
   } = props
-  const [decoratorEl, setDecoratorEl] = useState<HTMLSpanElement | null>(null)
-  const [isNested, setIsNested] = useState<boolean>(false)
+  const decoratorRef = useRef<HTMLSpanElement | null>(null)
+  const isNestedRef = useRef<boolean>(false)
   const parentCommentId = useRef<string | null>(null)
 
   useEffect(() => {
     // Get the previous and next sibling of the decorator element
-    const prevEl = decoratorEl?.previousSibling as HTMLElement | null
-    const nextEl = decoratorEl?.nextSibling as HTMLElement | null
+    const prevEl = decoratorRef.current?.previousSibling as HTMLElement | null
+    const nextEl = decoratorRef.current?.nextSibling as HTMLElement | null
 
     // If there is no previous or next sibling, then the decorator is not nested
     if (!prevEl || !nextEl) {
-      setIsNested(false)
+      isNestedRef.current = false
       return
     }
 
@@ -50,42 +52,35 @@ function CommentRangeDecorator(props: CommentRangeDecoratorProps) {
     const isNestedDecorator = Boolean(prevId && nextId && isEqual)
     parentCommentId.current = isNestedDecorator ? prevId : null
 
-    setIsNested(isNestedDecorator)
-  }, [decoratorEl])
+    isNestedRef.current = isNestedDecorator
+  }, [])
 
   const handleMouseEnter = useCallback(() => onHoverStart(commentId), [commentId, onHoverStart])
   const handleMouseLeave = useCallback(() => onHoverEnd(null), [onHoverEnd])
-  const handleClick = useCallback(
-    (e: React.MouseEvent) => {
-      e.stopPropagation()
-      e.preventDefault()
-      onClick(commentId)
-    },
-    [commentId, onClick],
-  )
+  const handleClick = useCallback(() => onClick(commentId), [commentId, onClick])
 
   const hovered =
     currentHoveredCommentId === commentId ||
-    (currentHoveredCommentId === parentCommentId.current && isNested)
+    (currentHoveredCommentId === parentCommentId.current && isNestedRef.current)
 
   const selected = selectedThreadId === threadId
 
   return (
-    <HighlightSpan
+    <CommentInlineHighlightSpan
       data-hovered={hovered || selected}
       data-inline-comment-id={commentId}
       data-inline-comment-state="added"
-      data-nested-inline-comment={isNested}
+      data-inline-comment-nested={isNestedRef.current}
       onClick={handleClick}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      ref={setDecoratorEl}
+      ref={decoratorRef}
       {...generateCommentsInlineCommentIdAttr(threadId)}
     >
       {children}
-    </HighlightSpan>
+    </CommentInlineHighlightSpan>
   )
-}
+})
 
 function isRangeInvalid() {
   return false
