@@ -41,11 +41,9 @@ const RootLayer = styled(Layer)`
 `
 
 export function CommentsInspector(props: DocumentInspectorProps) {
-  const {enabled, reason} = useCommentsEnabled()
+  const {enabled, mode} = useCommentsEnabled()
 
   if (!enabled) return null
-
-  const mode = reason === 'upsell' ? 'upsell' : 'default'
 
   // We wrap the comments inspector in a Layer in order to know when the comments inspector
   // is the top layer (that is, if there is e.g. a popover open). This is used to determine

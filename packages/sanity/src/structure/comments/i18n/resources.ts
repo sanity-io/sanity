@@ -84,6 +84,8 @@ const commentsLocaleStrings = defineLocalesResources('comments', {
   'list-item.context-menu-add-reaction': 'Add reaction',
   /** The button tooltip aria label for adding a reaction */
   'list-item.context-menu-add-reaction-aria-label': 'Add reaction',
+  /** The button tooltip content for the add reaction button and mode is upsell */
+  'list-item.context-menu-add-reaction-upsell': 'Upgrade to add reaction',
   /** The action menu item for copying a comment link */
   'list-item.copy-link': 'Copy link to comment',
   /** The action menu item for deleting a comment */

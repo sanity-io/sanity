@@ -1,4 +1,11 @@
-export type CommentsEnabledContextValue = {
-  enabled: boolean
-  reason: 'upsell' | null
-}
+import {CommentsUIMode} from '../../types'
+
+export type CommentsEnabledContextValue =
+  | {
+      enabled: false
+      mode: null
+    }
+  | {
+      enabled: true
+      mode: CommentsUIMode
+    }

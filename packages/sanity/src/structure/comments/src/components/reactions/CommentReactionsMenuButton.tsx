@@ -4,7 +4,7 @@ import type {CommentReactionOption, CommentsUIMode} from '../../types'
 import {Popover, PopoverProps} from '../../../../../ui-components'
 import {commentsLocaleNamespace} from '../../../i18n'
 import {CommentReactionsMenu} from './CommentReactionsMenu'
-import {useTranslation} from 'sanity'
+import {type TFunction, useTranslation} from 'sanity'
 
 const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['top', 'bottom']
 
@@ -77,7 +77,9 @@ export function CommentReactionsMenuButton(props: CommentReactionsMenuButtonProp
     const btn = renderMenuButton({
       open,
       tooltipContent:
-        mode === 'upsell' ? 'Upgrade to add reactions' : t('list-item.context-menu-add-reaction'),
+        mode === 'upsell'
+          ? t('list-item.context-menu-add-reaction-upsell')
+          : t('list-item.context-menu-add-reaction'),
       t,
     })
 

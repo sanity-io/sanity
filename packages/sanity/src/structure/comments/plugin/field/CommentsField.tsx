@@ -13,6 +13,7 @@ import {
   CommentCreatePayload,
   useCommentsSelectedPath,
   useCommentsUpsell,
+  CommentsUIMode,
 } from '../../src'
 import {CommentsFieldButton} from './CommentsFieldButton'
 import {FieldProps, getSchemaTypeTitle, useCurrentUser} from 'sanity'
@@ -30,13 +31,13 @@ const HIGHLIGHT_BLOCK_VARIANTS: Variants = {
 }
 
 export function CommentsField(props: FieldProps) {
-  const {enabled} = useCommentsEnabled()
+  const {enabled, mode} = useCommentsEnabled()
 
   if (!enabled) {
     return props.renderDefault(props)
   }
 
-  return <CommentFieldInner {...props} />
+  return <CommentFieldInner {...props} mode={mode} />
 }
 
 const SCROLL_INTO_VIEW_OPTIONS: ScrollIntoViewOptions = {
@@ -68,7 +69,12 @@ const FieldStack = styled(Stack)`
   position: relative;
 `
 
-function CommentFieldInner(props: FieldProps) {
+function CommentFieldInner(
+  props: FieldProps & {
+    mode: CommentsUIMode
+  },
+) {
+  const {mode} = props
   const [open, setOpen] = useState<boolean>(false)
   const [value, setValue] = useState<PortableTextBlock[] | null>(null)
   const rootElementRef = useRef<HTMLDivElement | null>(null)
@@ -77,7 +83,6 @@ function CommentFieldInner(props: FieldProps) {
   const {element: boundaryElement} = useBoundaryElement()
 
   const currentUser = useCurrentUser()
-  const commentsEnabled = useCommentsEnabled()
 
   const {
     comments,
@@ -155,7 +160,7 @@ function CommentFieldInner(props: FieldProps) {
       return
     }
 
-    if (commentsEnabled.reason === 'upsell') {
+    if (mode === 'upsell') {
       if (upsellData) {
         setUpsellDialogOpen(true)
       } else {
@@ -175,7 +180,7 @@ function CommentFieldInner(props: FieldProps) {
     setStatus,
     props.path,
     handleSetThreadToScrollTo,
-    commentsEnabled,
+    mode,
     setUpsellDialogOpen,
     upsellData,
   ])

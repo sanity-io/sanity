@@ -76,7 +76,7 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
   const handleSetStatus = useCallback(
     (newStatus: CommentStatus) => {
       // Avoids going to "resolved" when using links to comments
-      if (commentsEnabled.reason === 'upsell' && newStatus === 'resolved') {
+      if (commentsEnabled.mode === 'upsell' && newStatus === 'resolved') {
         return null
       }
       return setStatus(newStatus)

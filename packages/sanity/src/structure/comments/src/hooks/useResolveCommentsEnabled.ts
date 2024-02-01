@@ -1,10 +1,16 @@
 import {useMemo} from 'react'
+import {CommentsUIMode} from '../types'
 import {getPublishedId, useFeatureEnabled, useSource} from 'sanity'
 
-interface ResolveCommentsEnabled {
-  enabled: boolean
-  reason: 'upsell' | null
-}
+type ResolveCommentsEnabled =
+  | {
+      enabled: false
+      mode: null
+    }
+  | {
+      enabled: true
+      mode: CommentsUIMode
+    }
 
 /**
  * @internal
@@ -25,15 +31,15 @@ export function useResolveCommentsEnabled(
     [documentId, documentType, enabled],
   )
 
-  const value = useMemo(() => {
+  const value: ResolveCommentsEnabled = useMemo(() => {
     if (isLoading || !enabledFromConfig) {
-      return {enabled: false, reason: null}
+      return {enabled: false, mode: null}
     }
 
     return {
       enabled: true,
-      // reason: featureEnabled ? null : 'upsell',
-      reason: 'upsell' as const,
+      // mode: featureEnabled ? 'default' : 'upsell',
+      mode: 'upsell',
     }
   }, [isLoading, enabledFromConfig])
 
