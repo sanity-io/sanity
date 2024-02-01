@@ -166,30 +166,48 @@ export default async function initSanity(
       selectedPlan = await getPlanFromCoupon(apiClient, intendedCoupon)
       print(`Coupon "${intendedCoupon}" validated!\n`)
     } catch (err) {
-      const useDefaultPlan = await prompt.single({
-        type: 'confirm',
-        message: `Coupon "${intendedCoupon}" is not available, use default plan instead?`,
-        default: true,
-      })
-      if (useDefaultPlan) {
-        print(`Using default plan!`)
+      if (err.statusCode == '404') {
+        const useDefaultPlan = await prompt.single({
+          type: 'confirm',
+          message: `Coupon "${intendedCoupon}" is not available, use default plan instead?`,
+          default: true,
+        })
+        trace.log({
+          step: 'useDefaultPlanCoupon',
+          selectedOption: useDefaultPlan ? 'yes' : 'no',
+          coupon: intendedCoupon,
+        })
+        if (useDefaultPlan) {
+          print(`Using default plan.`)
+        } else {
+          throw new Error(`Coupon "${intendedCoupon}" does not exist`)
+        }
       } else {
-        throw new Error(`Unable to validate coupon code "${intendedCoupon}":\n\n${err.message}`)
+        throw new Error(`Unable to validate coupon, please try again later:\n\n${err.message}`)
       }
     }
   } else if (intendedPlan) {
     try {
       selectedPlan = await getPlanFromId(apiClient, intendedPlan)
     } catch (err) {
-      const useDefaultPlan = await prompt.single({
-        type: 'confirm',
-        message: `Project plan "${intendedPlan}" is not available, use default plan instead?`,
-        default: true,
-      })
-      if (useDefaultPlan) {
-        print(`Using default plan!`)
+      if (err.statusCode == '404') {
+        const useDefaultPlan = await prompt.single({
+          type: 'confirm',
+          message: `Project plan "${intendedPlan}" does not exist, use default plan instead?`,
+          default: true,
+        })
+        trace.log({
+          step: 'useDefaultPlanId',
+          selectedOption: useDefaultPlan ? 'yes' : 'no',
+          planId: intendedPlan,
+        })
+        if (useDefaultPlan) {
+          print(`Using default plan.`)
+        } else {
+          throw new Error(`Plan id "${intendedPlan}" does not exist`)
+        }
       } else {
-        throw new Error(`Unable to validate plan ID "${intendedPlan}":\n\n${err.message}`)
+        throw new Error(`Unable to validate plan, please try again later:\n\n${err.message}`)
       }
     }
   }
