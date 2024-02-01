@@ -55,18 +55,28 @@ const listMigrationCommand: CliCommandDefinition = {
   },
 }
 
-export async function resolveMigrations(workDir: string) {
+/**
+ * Resolves all migrations in the studio working directory
+ *
+ * @param workDir - The studio working directory
+ * @returns Array of migrations and their respective paths
+ * @internal
+ */
+export async function resolveMigrations(
+  workDir: string,
+): Promise<{dirname: string; migration: Migration}[]> {
+  let unregister
   if (!__DEV__) {
-    register({
+    unregister = register({
       target: `node${process.version.slice(1)}`,
-    })
+    }).unregister
   }
 
   const directories = (
     await readdir(path.join(workDir, MIGRATIONS_DIRECTORY), {withFileTypes: true})
   ).filter((ent) => ent.isDirectory())
 
-  return directories
+  const entries = directories
     .map((ent) => {
       const candidates = resolveMigrationScript(workDir, ent.name)
       const found = candidates.find((candidate) => candidate.mod?.default)
@@ -79,6 +89,12 @@ export async function resolveMigrations(workDir: string) {
       }
     })
     .filter(Boolean) as {dirname: string; migration: Migration}[]
+
+  if (unregister) {
+    unregister()
+  }
+
+  return entries
 }
 
 export default listMigrationCommand
