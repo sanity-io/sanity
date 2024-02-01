@@ -3,49 +3,89 @@ import {
   normalizeMigrateDefinition,
 } from '../normalizeMigrateDefinition'
 import {Migration, NodeMigration} from '../../types'
+import {createIfNotExists} from '../../mutations'
+
+const mockAsyncIterableIterator = () => {
+  const data = [{_id: 'mockId', _type: 'mockDocumentType'}]
+  let index = 0
+
+  return {
+    next: jest.fn().mockImplementation(() => {
+      if (index < data.length) {
+        return Promise.resolve({value: data[index++], done: false})
+      }
+      return Promise.resolve({value: undefined, done: true})
+    }),
+    [Symbol.asyncIterator]: jest.fn().mockImplementation(function (this: unknown) {
+      return this
+    }),
+  }
+}
 
 describe('#normalizeMigrateDefinition', () => {
-  it('should return the migrate function if it is a function', () => {
+  it('should return the migrate is a function', async () => {
     const mockMigration: Migration = {
-      name: 'mockMigration',
+      title: 'mockMigration',
       documentTypes: ['mockDocumentType'],
-      migrate: jest.fn(),
+      async *migrate() {
+        yield createIfNotExists({_type: 'mockDocumentType', _id: 'mockId'})
+      },
     }
 
     const result = normalizeMigrateDefinition(mockMigration)
-    expect(result).toBe(mockMigration.migrate)
+
+    const res = []
+    for await (const item of result(jest.fn(), {} as any)) {
+      res.push(item)
+    }
+
+    expect(res.flat()).toEqual([createIfNotExists({_type: 'mockDocumentType', _id: 'mockId'})])
   })
 
-  it('should return a new function if migrate is not a function', () => {
+  it('should return a new mutations if migrate is not a function', async () => {
     const mockMigration: Migration = {
-      name: 'mockMigration',
+      title: 'mockMigration',
       documentTypes: ['mockDocumentType'],
-      migrate: {},
+      migrate: {
+        document() {
+          return createIfNotExists({_type: 'mockDocumentType', _id: 'mockId'})
+        },
+      },
     }
 
     const result = normalizeMigrateDefinition(mockMigration)
-    expect(typeof result).toBe('function')
+    const res = []
+
+    for await (const item of result(mockAsyncIterableIterator, {} as any)) {
+      res.push(item)
+    }
+
+    expect(res.flat()).toEqual([createIfNotExists({_type: 'mockDocumentType', _id: 'mockId'})])
+  })
+
+  it('should not return undefined if migrate is returning undefined', async () => {
+    const mockMigration: Migration = {
+      title: 'mockMigration',
+      documentTypes: ['mockDocumentType'],
+      migrate: {
+        document() {
+          return undefined
+        },
+      },
+    }
+
+    const result = normalizeMigrateDefinition(mockMigration)
+    const res = []
+
+    for await (const item of result(mockAsyncIterableIterator, {} as any)) {
+      res.push(item)
+    }
+
+    expect(res.flat()).toEqual([])
   })
 })
 
 describe('#createAsyncIterableMutation', () => {
-  const mockAsyncIterableIterator = () => {
-    const data = ['item1', 'item2', 'item3'] // Sample data to be returned by the iterator
-    let index = 0
-
-    return {
-      next: jest.fn().mockImplementation(() => {
-        if (index < data.length) {
-          return Promise.resolve({value: data[index++], done: false})
-        }
-        return Promise.resolve({value: undefined, done: true})
-      }),
-      [Symbol.asyncIterator]: jest.fn().mockImplementation(function (this: unknown) {
-        return this
-      }),
-    }
-  }
-
   it('should return an async iterable', async () => {
     const mockMigration: NodeMigration = {
       document: jest.fn(),
@@ -55,9 +95,7 @@ describe('#createAsyncIterableMutation', () => {
 
     expect(typeof iterable).toBe('function')
 
-    const iterator = iterable(mockAsyncIterableIterator(), {
-      withDocument: jest.fn(),
-    })
+    const iterator = iterable(mockAsyncIterableIterator() as any, {} as any)
     expect(typeof iterator.next).toBe('function')
     expect(typeof iterator.return).toBe('function')
     expect(typeof iterator.throw).toBe('function')
