@@ -1,11 +1,9 @@
 import {useToast} from '@sanity/ui'
-import {useTelemetry} from '@sanity/telemetry/react'
 import {useEffect} from 'react'
 import {ConfigResolutionError, SchemaError} from '../config'
 import {CorsOriginError} from '../store'
 import {globalScope} from '../util'
-import {isProd} from '../environment'
-import {ErrorLoggerCatch} from './__telemetry__/error.telemetry'
+import {useGlobalErrorLogger} from './useGlobalErrorLogger'
 
 const errorChannel = globalScope.__sanityErrorChannel
 
@@ -17,7 +15,7 @@ const errorChannel = globalScope.__sanityErrorChannel
  */
 export function ErrorLogger(): null {
   const {push: pushToast} = useToast()
-  const telemetry = useTelemetry()
+  const {logErrorToTelemetry} = useGlobalErrorLogger()
 
   useEffect(() => {
     if (!errorChannel) return undefined
@@ -35,16 +33,7 @@ export function ErrorLogger(): null {
       if (isKnownError(msg.error)) {
         return
       }
-
-      // Track errors produced in production
-      if (isProd) {
-        telemetry.log(ErrorLoggerCatch, {
-          error: msg.error,
-          errorCause: msg.error.cause,
-          errorName: msg.error.name,
-        })
-      }
-
+      logErrorToTelemetry(msg.error)
       console.error(msg.error)
 
       pushToast({
@@ -58,7 +47,7 @@ export function ErrorLogger(): null {
         status: 'error',
       })
     })
-  }, [pushToast, telemetry])
+  }, [pushToast, logErrorToTelemetry])
 
   return null
 }

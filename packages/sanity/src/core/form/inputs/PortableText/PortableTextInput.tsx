@@ -24,7 +24,7 @@ import {ArrayOfObjectsItemMember, ObjectFormNode} from '../../store'
 import type {PortableTextInputProps} from '../../types'
 import {EMPTY_ARRAY} from '../../../util'
 import {
-  PortableTextEditorFormError,
+  PortableTextEditorError,
   PortableTextInputCollapsed,
   PortableTextInputExpanded,
 } from '../../__telemetry__/form.telemetry'
@@ -183,7 +183,7 @@ function PortableTextInputInner(props: PortableTextInputProps) {
             onChange(toFormPatches(change.patches))
             break
           case 'invalidValue':
-            telemetry.log(PortableTextEditorFormError, {
+            telemetry.log(PortableTextEditorError, {
               message: 'InvalidValue',
               location: `$PortableTextInput_handleEditorChange:invalidValue`,
               payload: change.resolution,
@@ -191,7 +191,7 @@ function PortableTextInputInner(props: PortableTextInputProps) {
             setInvalidValue(change)
             break
           case 'error':
-            telemetry.log(PortableTextEditorFormError, {
+            telemetry.log(PortableTextEditorError, {
               message: change.description,
               location: `$PortableTextInput_handleEditorChange:error`,
             })
@@ -203,7 +203,7 @@ function PortableTextInputInner(props: PortableTextInputProps) {
           default:
         }
       } catch (e) {
-        telemetry.log(PortableTextEditorFormError, {
+        telemetry.log(PortableTextEditorError, {
           message: e.message,
           error: e,
           location: `$PortableTextInput_handleEditorChange`,
@@ -303,7 +303,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
   const handleCatch = useCallback(
     ({error, info}: {error: Error; info: React.ErrorInfo}) => {
       if (!isProd) return
-      telemetry.log(PortableTextEditorFormError, {
+      telemetry.log(PortableTextEditorError, {
         error: error,
         location: `PortableTextInput:ErrorBoundary`,
         message: error.message,

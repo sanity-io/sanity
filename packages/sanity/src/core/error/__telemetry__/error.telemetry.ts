@@ -2,8 +2,7 @@ import {defineEvent} from '@sanity/telemetry'
 
 interface ErrorLoggerEvent {
   error: Error
-  errorName: string
-  errorCause: string
+  stack: string
 }
 export const ErrorLoggerCatch = defineEvent<ErrorLoggerEvent>({
   version: 1,

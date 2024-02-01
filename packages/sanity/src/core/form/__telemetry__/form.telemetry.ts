@@ -14,11 +14,12 @@ export const PortableTextInputCollapsed = defineEvent({
 
 interface ErrorInfo {
   message: string
-  location: string
+  location?: string
   error?: Error
+  stack?: string
   payload?: unknown
 }
-export const PortableTextEditorFormError = defineEvent<ErrorInfo>({
+export const PortableTextEditorError = defineEvent<ErrorInfo>({
   version: 1,
   name: 'Portable Text Editor form error',
   description: 'The portable text editor encountered an error',
