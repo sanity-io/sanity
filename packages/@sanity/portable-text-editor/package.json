@@ -69,7 +69,7 @@
     "@sanity/types": "3.27.1",
     "@sanity/util": "3.27.1",
     "debug": "^3.2.7",
-    "is-hotkey": "^0.1.6",
+    "is-hotkey": "^0.2.0",
     "lodash": "^4.17.21",
     "slate": "0.100.0",
     "slate-react": "0.101.0"
