@@ -43,7 +43,6 @@ export function FreeTrial({type}: FreeTrialProps) {
 
   function handleClose(dialogType?: 'modal' | 'popover') {
     return (action?: TrialDialogDismissedInfo['dialogDismissAction']) => {
-      toggleDialog()
       const dialog = data?.showOnLoad || data?.showOnClick
       if (dialog)
         telemetry.log(TrialDialogDismissed, {
@@ -55,13 +54,13 @@ export function FreeTrial({type}: FreeTrialProps) {
           dialogTrialStage: getTrialStage({showOnLoad, dialogId: dialog.id}),
           dialogDismissAction: action,
         })
+      toggleDialog()
     }
   }
 
   const handleDialogCTAClick = useCallback(
     (action?: 'openURL' | 'openNext') => {
       return () => {
-        closeAndReOpen()
         const dialog = data?.showOnLoad || data?.showOnClick
         if (dialog)
           telemetry.log(TrialDialogCTAClicked, {
@@ -73,13 +72,13 @@ export function FreeTrial({type}: FreeTrialProps) {
             dialogTrialStage: getTrialStage({showOnLoad, dialogId: dialog.id}),
             dialogCtaType: action === 'openURL' ? 'upgrade' : 'learn_more',
           })
+        closeAndReOpen()
       }
     },
     [data, closeAndReOpen, telemetry, showOnLoad],
   )
 
   const handlePopoverCTAClick = useCallback(() => {
-    closeAndReOpen()
     if (data?.showOnLoad)
       telemetry.log(TrialDialogCTAClicked, {
         dialogId: data.showOnLoad.id,
@@ -90,10 +89,10 @@ export function FreeTrial({type}: FreeTrialProps) {
         dialogTrialStage: getTrialStage({showOnLoad: true, dialogId: data.showOnLoad.id}),
         dialogCtaType: 'learn_more',
       })
+    closeAndReOpen()
   }, [data, closeAndReOpen, telemetry])
 
   const handleOnTrialButtonClick = useCallback(() => {
-    closeAndReOpen()
     if (data?.showOnClick)
       telemetry.log(TrialDialogViewed, {
         dialogId: data.showOnClick.id,
@@ -104,6 +103,7 @@ export function FreeTrial({type}: FreeTrialProps) {
         trialDaysLeft: data.daysLeft,
         dialogTrialStage: getTrialStage({showOnLoad: true, dialogId: data.showOnClick.id}),
       })
+    closeAndReOpen()
   }, [data, telemetry, closeAndReOpen])
 
   if (!data?.id) return null
