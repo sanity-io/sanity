@@ -234,7 +234,7 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
       onDecoratorClick: handleDecoratorClick,
       onDecoratorHoverEnd: setCurrentHoveredCommentId,
       onDecoratorHoverStart: setCurrentHoveredCommentId,
-      selectedThreadId: selectedPath?.threadId,
+      selectedThreadId: selectedPath?.threadId || null,
       value: props.value,
     })
   }, [
