@@ -79,7 +79,7 @@ describe('#toSanityMutations', () => {
     expect(SanityEncoder.encode).toHaveBeenCalledWith(mockMutations)
   })
 
-  it.only('should handle transaction', async () => {
+  it('should handle transaction', async () => {
     const mockTransaction: Transaction = {
       type: 'transaction',
       id: 'transaction1',
