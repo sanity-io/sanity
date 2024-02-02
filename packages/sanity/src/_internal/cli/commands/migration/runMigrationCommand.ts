@@ -14,7 +14,7 @@ import yargs from 'yargs/yargs'
 import {debug} from '../../debug'
 import {resolveMigrations} from './listMigrationsCommand'
 import {prettyFormat} from './prettyMutationFormatter'
-import {isLoadableMigrationScript, resolveMigrationScript} from './utils'
+import {isLoadableMigrationScript, resolveMigrationScript} from './utils/resolveMigrationScript'
 
 const helpText = `
 Options

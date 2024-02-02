@@ -1,7 +1,7 @@
 import path from 'node:path'
 import {isPlainObject} from 'lodash'
 import type {Migration} from '@sanity/migrate'
-import {MIGRATION_SCRIPT_EXTENSIONS, MIGRATIONS_DIRECTORY} from './constants'
+import {MIGRATION_SCRIPT_EXTENSIONS, MIGRATIONS_DIRECTORY} from '../constants'
 
 interface ResolvedMigrationScript {
   /**
