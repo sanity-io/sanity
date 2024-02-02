@@ -9,14 +9,14 @@ function getDialogCopy(
 ): Record<'thread' | 'comment', {title: string; body: string; confirmButtonText: string}> {
   return {
     thread: {
-      title: t('delete-thread-title'),
-      body: t('delete-thread-body'),
-      confirmButtonText: t('delete-thread-confirm'),
+      title: t('delete-thread.title'),
+      body: t('delete-thread.body'),
+      confirmButtonText: t('delete-thread.confirm'),
     },
     comment: {
-      title: t('delete-comment-title'),
-      body: t('delete-comment-body'),
-      confirmButtonText: t('delete-comment-confirm'),
+      title: t('delete-comment.title'),
+      body: t('delete-comment.body'),
+      confirmButtonText: t('delete-comment.confirm'),
     },
   }
 }
@@ -69,7 +69,7 @@ export function CommentDeleteDialog(props: CommentDeleteDialogProps) {
       <Stack space={4}>
         <Text size={1}>{body}</Text>
 
-        {error && <TextWithTone tone="critical">{t('delete-dialog-error')}</TextWithTone>}
+        {error && <TextWithTone tone="critical">{t('delete-dialog.error')}</TextWithTone>}
       </Stack>
     </Dialog>
   )

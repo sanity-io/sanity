@@ -281,7 +281,7 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
       >
         <GhostButton
           data-ui="GhostButton"
-          aria-label={t('list-item-go-to-field-button-aria-label')}
+          aria-label={t('list-item.go-to-field-button.aria-label')}
         />
 
         <Stack

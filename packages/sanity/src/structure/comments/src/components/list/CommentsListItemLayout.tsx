@@ -309,7 +309,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
                   {formattedLastEditAt && editedDate && (
                     <TimeText muted size={0} title={formattedLastEditAt}>
                       <time dateTime={editedDate.toISOString()} title={formattedLastEditAt}>
-                        ({t('list-item-layout-edited')})
+                        ({t('list-item.layout-edited')})
                       </time>
                     </TimeText>
                   )}
@@ -391,8 +391,8 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
 
           <Flex align="center" gap={1} flex={1}>
             <Text muted size={1}>
-              {hasError && t('list-item-layout-failed-sent')}
-              {isRetrying && t('list-item-layout-posting')}
+              {hasError && t('list-item.layout-failed-sent')}
+              {isRetrying && t('list-item.layout-posting')}
             </Text>
 
             <Flex hidden={isRetrying}>
@@ -406,7 +406,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
                 tone="primary"
               >
                 <Text size={1} muted>
-                  {t('list-item-layout-retry')}
+                  {t('list-item.layout-retry')}
                 </Text>
               </RetryCardButton>
             </Flex>
