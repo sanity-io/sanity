@@ -1,4 +1,4 @@
-import {useState, useEffect, useMemo} from 'react'
+import {useState, useEffect, useMemo, useCallback} from 'react'
 
 /**
  * A function that creates a DOMRect from an array of elements.
@@ -8,10 +8,10 @@ export function createDomRectFromElements(elements: Element[]): DOMRect | null {
 
   const rects = elements.map((el) => el.getBoundingClientRect())
 
-  const minX = Math.min(...rects.map((r) => r.x))
-  const minY = Math.min(...rects.map((r) => r.y))
-  const maxRight = Math.max(...rects.map((r) => r.right))
-  const maxBottom = Math.max(...rects.map((r) => r.bottom))
+  const minX = Math.min(...rects.map((r) => r.x)) || 0
+  const minY = Math.min(...rects.map((r) => r.y)) || 0
+  const maxRight = Math.max(...rects.map((r) => r.right)) || 0
+  const maxBottom = Math.max(...rects.map((r) => r.bottom)) || 0
 
   return {
     x: minX,
@@ -25,20 +25,21 @@ export function createDomRectFromElements(elements: Element[]): DOMRect | null {
   } as DOMRect
 }
 
-interface UseRectFromElementsOptions {
+interface RectFromElementsHookOptions {
+  scrollElement: HTMLElement | null
+  disabled: boolean
   selector: string
-  dependency: any
 }
 
 /**
  * A hook that returns a DOMRect from an array of elements.
  */
-function useRectFromElements(props: UseRectFromElementsOptions): DOMRect | null {
-  const {selector, dependency} = props
+function useRectFromElements(props: RectFromElementsHookOptions): DOMRect | null {
+  const {scrollElement, disabled, selector} = props
   const [rect, setRect] = useState<DOMRect | null>(null)
 
-  useEffect(() => {
-    if (!dependency) return undefined
+  const handleSetRect = useCallback(() => {
+    if (disabled) return undefined
     const elements = document?.querySelectorAll(selector)
     if (!elements) return undefined
 
@@ -51,32 +52,50 @@ function useRectFromElements(props: UseRectFromElementsOptions): DOMRect | null 
     return () => {
       cancelAnimationFrame(raf)
     }
-  }, [dependency, selector])
+  }, [disabled, selector])
+
+  useEffect(() => {
+    handleSetRect()
+  }, [handleSetRect, disabled])
+
+  useEffect(() => {
+    if (disabled || !scrollElement) return undefined
+
+    scrollElement.addEventListener('wheel', handleSetRect)
+
+    return () => {
+      scrollElement.removeEventListener('wheel', handleSetRect)
+    }
+  }, [handleSetRect, disabled, scrollElement])
 
   return rect
 }
 
-interface UseReferenceElementRectOptions {
+export interface ReferenceElementHookOptions {
+  scrollElement: HTMLElement | null
+  disabled: boolean
   selector: string
-  dependency: any
 }
 
 /**
  * A hook that returns a reference element that can be used to position a popover.
  */
-export function useReferenceElement(props: UseReferenceElementRectOptions): HTMLElement | null {
-  const {selector, dependency} = props
+export function useReferenceElement(props: ReferenceElementHookOptions): HTMLElement | null {
+  const {scrollElement, disabled, selector} = props
 
   const rect = useRectFromElements({
+    scrollElement,
+    disabled,
     selector,
-    dependency,
   })
 
-  return useMemo(() => {
+  const element = useMemo((): HTMLElement | null => {
     if (!rect) return null
 
     return {
       getBoundingClientRect: () => rect,
     } as HTMLElement
   }, [rect])
+
+  return element
 }

@@ -9,7 +9,7 @@ import {debounce} from 'lodash'
 import {uuid} from '@sanity/uuid'
 import * as PathUtils from '@sanity/util/paths'
 import {AnimatePresence} from 'framer-motion'
-import {useClickOutside} from '@sanity/ui'
+import {BoundaryElementProvider, useClickOutside, usePortal} from '@sanity/ui'
 import {
   CommentMessage,
   CommentInlineHighlightSpan,
@@ -22,7 +22,7 @@ import {
   useCommentsScroll,
   useCommentsSelectedPath,
 } from '../../../src'
-import {useReferenceElement} from '../helpers'
+import {ReferenceElementHookOptions, useReferenceElement} from '../helpers'
 import {InlineCommentInputPopover} from './InlineCommentInputPopover'
 import {FloatingButtonPopover} from './FloatingButtonPopover'
 import {PortableTextInputProps, isPortableTextTextBlock, useCurrentUser} from 'sanity'
@@ -52,7 +52,9 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
   const {scrollToComment, scrollToGroup} = useCommentsScroll()
 
   const editorRef = useRef<PortableTextEditor | null>(null)
-  const floatingButtonPopoverRef = useRef<HTMLDivElement | null>(null)
+  const [floatingButtonPopoverEl, setFloatingButtonPopoverEl] = useState<HTMLDivElement | null>(
+    null,
+  )
 
   const [nextCommentValue, setNextCommentValue] = useState<CommentMessage | null>(null)
   const [currentHoveredCommentId, setCurrentHoveredCommentId] = useState<string | null>(null)
@@ -60,15 +62,7 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
   const [currentSelection, setCurrentSelection] = useState<EditorSelection | null>(null)
   const [canSubmit, setCanSubmit] = useState<boolean>(false)
 
-  const popoverAuthoringReferenceElement = useReferenceElement({
-    selector: '[data-inline-comment-state="authoring"]',
-    dependency: nextCommentSelection,
-  })
-
-  const popoverSelectionReferenceElement = useReferenceElement({
-    selector: '[data-ui="InlineCommentSelectionSpan"]',
-    dependency: currentSelection,
-  })
+  const [isFullScreen, setIsFullScreen] = useState<boolean>(false)
 
   const stringFieldPath = useMemo(() => PathUtils.toString(props.path), [props.path])
 
@@ -164,10 +158,7 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
     clearSelection()
   }, [nextCommentValue, clearSelection])
 
-  useClickOutside(handleClickOutside, [
-    props.elementProps.ref.current,
-    floatingButtonPopoverRef.current,
-  ])
+  useClickOutside(handleClickOutside, [floatingButtonPopoverEl, props.elementProps.ref.current])
 
   const handleDecoratorClick = useCallback(
     (commentId: string) => {
@@ -304,8 +295,53 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
       onEditorChange,
       editorRef,
       rangeDecorations,
+      onFullScreenChange: setIsFullScreen,
     }),
     [props, onEditorChange, rangeDecorations],
+  )
+
+  const portal = usePortal()
+
+  // The scroll element used to update the reference element for the
+  // popover on scroll.
+  const scrollElement = useMemo(() => {
+    if (!isFullScreen) {
+      return props.elementProps.ref.current
+    }
+
+    return document.body
+  }, [isFullScreen, props.elementProps.ref])
+
+  // The boundary element used to position the popover properly
+  // inside the editor.
+  const boundaryElement = useMemo(() => {
+    if (!isFullScreen) {
+      return props.elementProps.ref.current
+    }
+
+    return portal.elements?.documentScrollElement || document.body
+  }, [isFullScreen, portal.elements?.documentScrollElement, props.elementProps.ref])
+
+  const popoverAuthoringReferenceElement = useReferenceElement(
+    useMemo(
+      (): ReferenceElementHookOptions => ({
+        scrollElement,
+        disabled: !nextCommentSelection,
+        selector: '[data-inline-comment-state="authoring"]',
+      }),
+      [scrollElement, nextCommentSelection],
+    ),
+  )
+
+  const popoverSelectionReferenceElement = useReferenceElement(
+    useMemo(
+      (): ReferenceElementHookOptions => ({
+        scrollElement,
+        disabled: !currentSelection,
+        selector: '[data-ui="InlineCommentSelectionSpan"]',
+      }),
+      [currentSelection, scrollElement],
+    ),
   )
 
   const showFloatingButton = Boolean(
@@ -321,30 +357,32 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
 
   return (
     <>
-      <AnimatePresence>
-        {showFloatingInput && currentUser && !showFloatingButton && (
-          <InlineCommentInputPopover
-            currentUser={currentUser}
-            mentionOptions={mentionOptions}
-            onChange={setNextCommentValue}
-            onClickOutside={onClickOutsideCommentInputPopover}
-            onDiscardConfirm={handleDiscardConfirm}
-            onSubmit={handleSubmit}
-            referenceElement={popoverAuthoringReferenceElement}
-            value={nextCommentValue}
-            key="comment-input-popover"
-          />
-        )}
+      <BoundaryElementProvider element={boundaryElement}>
+        <AnimatePresence>
+          {showFloatingInput && currentUser && (
+            <InlineCommentInputPopover
+              currentUser={currentUser}
+              key="comment-input-popover"
+              mentionOptions={mentionOptions}
+              onChange={setNextCommentValue}
+              onClickOutside={onClickOutsideCommentInputPopover}
+              onDiscardConfirm={handleDiscardConfirm}
+              onSubmit={handleSubmit}
+              referenceElement={popoverAuthoringReferenceElement}
+              value={nextCommentValue}
+            />
+          )}
 
-        {showFloatingButton && !showFloatingInput && (
-          <FloatingButtonPopover
-            onClick={handleSelectCurrentSelection}
-            referenceElement={popoverSelectionReferenceElement}
-            key="comment-input-floating-button"
-            ref={floatingButtonPopoverRef}
-          />
-        )}
-      </AnimatePresence>
+          {showFloatingButton && (
+            <FloatingButtonPopover
+              key="comment-input-floating-button"
+              onClick={handleSelectCurrentSelection}
+              ref={setFloatingButtonPopoverEl}
+              referenceElement={popoverSelectionReferenceElement}
+            />
+          )}
+        </AnimatePresence>
+      </BoundaryElementProvider>
 
       {props.renderDefault(inputProps)}
     </>

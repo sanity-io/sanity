@@ -38,18 +38,18 @@ export const FloatingButtonPopover = forwardRef(function FloatingButtonPopover(
 
   return (
     <MotionPopover
-      contentEditable={false}
       animate="visible"
       content={content}
+      contentEditable={false}
       fallbackPlacements={POPOVER_FALLBACK_PLACEMENTS}
       initial="hidden"
       open
-      portal
       padding={1}
-      placement={'bottom'}
+      placement="bottom"
+      portal
+      ref={ref}
       referenceElement={referenceElement}
       variants={VARIANTS}
-      ref={ref}
     />
   )
 })
