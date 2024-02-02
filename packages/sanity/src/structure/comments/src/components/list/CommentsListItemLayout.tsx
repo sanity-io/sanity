@@ -175,10 +175,11 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
   const commentInputRef = useRef<CommentInputHandle>(null)
 
   const createdDate = _createdAt ? new Date(_createdAt) : new Date()
+  const editedDate = lastEditedAt ? new Date(lastEditedAt) : null
   const createdTimeAgo = useRelativeTime(createdDate, RELATIVE_TIME_OPTIONS)
-  const formattedCreatedAt = format(createdDate, 'PPPPp')
-
-  const formattedLastEditAt = lastEditedAt ? format(new Date(lastEditedAt), 'PPPPp') : null
+  const dateTimeFormat = useDateTimeFormat({dateStyle: 'full', timeStyle: 'medium'})
+  const formattedCreatedAt = dateTimeFormat.format(createdDate)
+  const formattedLastEditAt = editedDate ? dateTimeFormat.format(editedDate) : null
   const displayError = hasError || isRetrying
 
   const handleMenuOpen = useCallback(() => setMenuOpen(true), [])
@@ -299,13 +300,17 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
 
               {!displayError && (
                 <Flex align="center" gap={1}>
-                  <TimeText muted size={0} title={formattedCreatedAt}>
-                    {createdTimeAgo}
+                  <TimeText muted size={0}>
+                    <time dateTime={createdDate.toISOString()} title={formattedCreatedAt}>
+                      {createdTimeAgo}
+                    </time>
                   </TimeText>
 
-                  {formattedLastEditAt && (
+                  {formattedLastEditAt && editedDate && (
                     <TimeText muted size={0} title={formattedLastEditAt}>
-                      ({t('list-item-layout-edited')})
+                      <time dateTime={editedDate.toISOString()} title={formattedLastEditAt}>
+                        ({t('list-item-layout-edited')})
+                      </time>
                     </TimeText>
                   )}
                 </Flex>
