@@ -306,11 +306,11 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
   // popover on scroll.
   const scrollElement = useMemo(() => {
     if (!isFullScreen) {
-      return props.elementProps.ref.current
+      return portal.elements?.documentScrollElement || document.body
     }
 
     return document.body
-  }, [isFullScreen, props.elementProps.ref])
+  }, [isFullScreen, portal.elements?.documentScrollElement])
 
   // The boundary element used to position the popover properly
   // inside the editor.
