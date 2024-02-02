@@ -121,14 +121,14 @@ function CommentsInspectorInner(props: DocumentInspectorProps) {
           pushToast({
             closable: true,
             status: 'info',
-            title: t('comments.copy-link-success-message'),
+            title: t('copy-link-success-message'),
           })
         })
         .catch(() => {
           pushToast({
             closable: true,
             status: 'error',
-            title: t('comments.copy-link-error-message'),
+            title: t('copy-link-error-message'),
           })
         })
     },

@@ -113,7 +113,7 @@ export const MentionsMenu = React.forwardRef(function MentionsMenu(
       {filteredOptions.length === 0 && (
         <Box padding={5}>
           <Text align="center" size={1} muted>
-            {t('comments.mentions-not-found')}
+            {t('mentions-not-found')}
           </Text>
         </Box>
       )}
@@ -122,7 +122,7 @@ export const MentionsMenu = React.forwardRef(function MentionsMenu(
         <FlexWrap direction="column" flex={1} overflow="hidden">
           <CommandList
             activeItemDataAttr="data-hovered"
-            ariaLabel={t('comments.mentions-user-list-aria-label')}
+            ariaLabel={t('mentions-user-list-aria-label')}
             fixedHeight
             getItemDisabled={getItemDisabled}
             inputElement={_inputElement}

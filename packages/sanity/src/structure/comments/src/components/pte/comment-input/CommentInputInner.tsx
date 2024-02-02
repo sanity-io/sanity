@@ -123,25 +123,25 @@ export function CommentInputInner(props: CommentInputInnerProps) {
           <Flex align="center" data-ui="CommentInputActions" gap={1} justify="flex-end" padding={1}>
             <TooltipDelayGroupProvider>
               <Button
-                aria-label={t('comments.tooltip-mention-user-aria-label')}
+                aria-label={t('tooltip-mention-user-aria-label')}
                 data-testid="comment-mention-button"
                 disabled={readOnly}
                 icon={MentionIcon}
                 mode="bleed"
                 onClick={handleMentionButtonClicked}
-                tooltipProps={{content: t('comments.tooltip-mention-user')}}
+                tooltipProps={{content: t('tooltip-mention-user')}}
               />
 
               <ButtonDivider />
 
               <Button
-                aria-label={t('comments.tooltip-send-comment-aria-label')}
+                aria-label={t('tooltip-send-comment-aria-label')}
                 disabled={!canSubmit || !hasChanges || readOnly}
                 icon={SendIcon}
                 mode={hasChanges && canSubmit ? 'default' : 'bleed'}
                 onClick={onSubmit}
                 tone={hasChanges && canSubmit ? 'primary' : 'default'}
-                tooltipProps={{content: t('comments.tooltip-send-comment')}}
+                tooltipProps={{content: t('tooltip-send-comment')}}
               />
             </TooltipDelayGroupProvider>
           </Flex>

@@ -133,7 +133,7 @@ export function CommentsFieldButton(props: CommentsFieldButtonProps) {
     const placeholder = (
       <Translate
         t={t}
-        i18nKey="comments.placeholder-add-comment-field-title"
+        i18nKey="placeholder-add-comment-field-title"
         components={{Strong: () => <b>{fieldTitle}</b>}}
       />
     )
@@ -171,7 +171,7 @@ export function CommentsFieldButton(props: CommentsFieldButtonProps) {
       >
         <div>
           <Button
-            aria-label={t('comments.field-button-aria-label-add')}
+            aria-label={t('field-button-aria-label-add')}
             disabled={isRunningSetup}
             icon={AddCommentIcon}
             mode="bleed"
@@ -179,7 +179,7 @@ export function CommentsFieldButton(props: CommentsFieldButtonProps) {
             ref={setAddCommentButtonElement}
             selected={open}
             tooltipProps={{
-              content: t('comments.field-button-title'),
+              content: t('field-button-title'),
               placement: 'top',
             }}
           />
@@ -189,9 +189,9 @@ export function CommentsFieldButton(props: CommentsFieldButtonProps) {
   }
 
   return (
-    <Tooltip portal placement="top" content={t('comments.field-button-content', {count: count})}>
+    <Tooltip portal placement="top" content={t('field-button-content', {count: count})}>
       <SanityUIButton
-        aria-label={t('comments.field-button-aria-label-open')}
+        aria-label={t('field-button-aria-label-open')}
         mode="bleed"
         onClick={onClick}
         padding={2}

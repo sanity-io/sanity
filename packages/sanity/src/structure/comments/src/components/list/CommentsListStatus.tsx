@@ -12,12 +12,12 @@ interface EmptyStateMessage {
 export function getEmptyStateMessages(t: TFunction): Record<CommentStatus, EmptyStateMessage> {
   return {
     open: {
-      title: t('comments.list-status-empty-state-open-title'),
-      message: t('comments.list-status-empty-state-open-text'),
+      title: t('list-status-empty-state-open-title'),
+      message: t('list-status-empty-state-open-text'),
     },
     resolved: {
-      title: t('comments.list-status-empty-state-resolved-title'),
-      message: t('comments.list-status-empty-state-resolved-text'),
+      title: t('list-status-empty-state-resolved-title'),
+      message: t('list-status-empty-state-resolved-text'),
     },
   }
 }
@@ -39,7 +39,7 @@ export function CommentsListStatus(props: CommentsListStatusProps) {
       <Flex align="center" justify="center" flex={1} padding={4}>
         <Flex align="center">
           <Text size={1} muted>
-            {t('comments.list-status-error')}
+            {t('list-status-error')}
           </Text>
         </Flex>
       </Flex>
@@ -47,7 +47,7 @@ export function CommentsListStatus(props: CommentsListStatusProps) {
   }
 
   if (loading) {
-    return <LoadingBlock showText title={t('comments.list-status-loading')} />
+    return <LoadingBlock showText title={t('list-status-loading')} />
   }
 
   if (hasNoComments) {
