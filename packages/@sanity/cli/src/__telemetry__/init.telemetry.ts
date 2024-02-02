@@ -16,17 +16,23 @@ interface CreateOrSelectProjectStep {
   selectedOption: 'create' | 'select' | 'none'
 }
 
-interface CreateOrSelectProjectStep {
-  step: 'createOrSelectProject'
-  projectId: string
-  selectedOption: 'create' | 'select' | 'none'
-}
-
 interface CreateOrSelectDatasetStep {
   step: 'createOrSelectDataset'
   datasetName: string
   selectedOption: 'create' | 'select' | 'none'
   visibility: 'private' | 'public'
+}
+
+interface UseDefaultPlanCoupon {
+  step: 'useDefaultPlanCoupon'
+  selectedOption: 'yes' | 'no'
+  coupon?: string
+}
+
+interface UseDefaultPlanId {
+  step: 'useDefaultPlanId'
+  selectedOption: 'yes' | 'no'
+  planId?: string
 }
 
 interface UseDetectedFrameworkStep {
@@ -70,6 +76,8 @@ type InitStepResult =
   | SendCommunityInviteStep
   | SelectPackageManagerStep
   | SelectTemplateStep
+  | UseDefaultPlanCoupon
+  | UseDefaultPlanId
 
 export const CLIInitStepCompleted = defineTrace<InitStepResult>({
   name: 'CLI Init Step Completed',
