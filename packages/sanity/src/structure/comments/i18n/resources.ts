@@ -42,9 +42,6 @@ const commentsLocaleStrings = defineLocalesResources('comments', {
   /** The text for discard comment dialog */
   'discard-text': 'Do you want to discard the comment?',
 
-  /** The document inspector title for comments */
-  'document-inspector-title': 'Comments',
-
   /** The text for dropdown menu item for open comments */
   'dropdown-item-open': 'Open comments',
   /** The text for dropdown menu item for resolved comments */
@@ -53,6 +50,9 @@ const commentsLocaleStrings = defineLocalesResources('comments', {
   'dropdown-title-open': 'Open',
   /** The title for dropdown for resolved comments */
   'dropdown-title-resolved': 'Resolved',
+
+  /** The name of the comments feature, for use in header. Capitalized, eg "Comments". */
+  'feature-name': 'Comments',
 
   /** Sharing feedback on the comments feature: The link title */
   'feedback-footer-link': 'Share your feedback',
@@ -71,9 +71,6 @@ const commentsLocaleStrings = defineLocalesResources('comments', {
   'field-button-placeholder-text': 'Add comment to',
   /** The field button text for adding a comment */
   'field-button-title': 'Add comment',
-
-  /** The comments pane header title */
-  'header-title': 'Comments',
 
   /** The button tooltip content for the add reaction button*/
   'list-item-context-menu-add-reaction': 'Add reaction',
