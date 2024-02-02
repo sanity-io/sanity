@@ -11,7 +11,7 @@ import {
   MentionOptionsHookValue,
 } from '../../types'
 import {CommentsSelectedPath} from '../../context'
-import {generateCommentsGroupIdAttr} from '../../hooks'
+import {applyCommentsGroupAttr} from '../../hooks'
 import {CommentsListItem} from './CommentsListItem'
 import {CommentThreadLayout} from './CommentThreadLayout'
 import {CommentsListStatus} from './CommentsListStatus'
@@ -152,7 +152,7 @@ const CommentsListInner = forwardRef(function CommentsListInner(
                   as="li"
                   key={fieldPath}
                   paddingTop={3}
-                  {...generateCommentsGroupIdAttr(firstThreadId)}
+                  {...applyCommentsGroupAttr(firstThreadId)}
                 >
                   <CommentThreadLayout
                     breadcrumbs={breadcrumbs}

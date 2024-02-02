@@ -19,7 +19,7 @@ import {hasCommentMessageValue} from '../../helpers'
 import {CommentsSelectedPath} from '../../context'
 import {Button} from '../../../../../ui-components'
 import {commentsLocaleNamespace} from '../../../i18n'
-import {generateCommentsCommentIdAttr} from '../../hooks'
+import {applyCommentIdAttr} from '../../hooks'
 import {CommentsListItemLayout} from './CommentsListItemLayout'
 import {ThreadCard} from './styles'
 import {useTranslation} from 'sanity'
@@ -235,7 +235,7 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
   const renderedReplies = useMemo(
     () =>
       splicedReplies.map((reply) => (
-        <Stack as="li" key={reply._id} {...generateCommentsCommentIdAttr(reply._id)}>
+        <Stack as="li" key={reply._id} {...applyCommentIdAttr(reply._id)}>
           <CommentsListItemLayout
             canDelete={reply.authorId === currentUser.id}
             canEdit={reply.authorId === currentUser.id}
@@ -291,7 +291,7 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
           paddingBottom={canReply ? undefined : 1}
           space={4}
         >
-          <Stack as="li" {...generateCommentsCommentIdAttr(parentComment._id)}>
+          <Stack as="li" {...applyCommentIdAttr(parentComment._id)}>
             <CommentsListItemLayout
               canDelete={parentComment.authorId === currentUser.id}
               canEdit={parentComment.authorId === currentUser.id}

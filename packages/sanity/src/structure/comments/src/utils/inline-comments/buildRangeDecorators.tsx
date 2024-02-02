@@ -1,7 +1,7 @@
 import {RangeDecoration} from '@sanity/portable-text-editor'
 import {useRef, useEffect, useCallback, memo} from 'react'
 import {CommentMessage, CommentThreadItem} from '../../types'
-import {generateCommentsInlineCommentIdAttr} from '../../hooks'
+import {applyInlineCommentIdAttr} from '../../hooks'
 import {CommentInlineHighlightSpan} from '../../components'
 import {buildRangeDecorationSelectionsFromComments} from './buildRangeDecorationSelectionsFromComments'
 
@@ -75,7 +75,7 @@ const CommentRangeDecorator = memo(function CommentRangeDecorator(
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       ref={decoratorRef}
-      {...generateCommentsInlineCommentIdAttr(threadId)}
+      {...applyInlineCommentIdAttr(threadId)}
     >
       {children}
     </CommentInlineHighlightSpan>

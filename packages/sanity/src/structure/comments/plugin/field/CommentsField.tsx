@@ -14,7 +14,7 @@ import {
   useCommentsUpsell,
   CommentsUIMode,
   useCommentsScroll,
-  generateCommentsFieldIdAttr,
+  applyCommentsFieldAttr,
 } from '../../src'
 import {CommentsFieldButton} from './CommentsFieldButton'
 import {FieldProps, getSchemaTypeTitle, useCurrentUser} from 'sanity'
@@ -275,7 +275,7 @@ function CommentFieldInner(
   )
 
   return (
-    <FieldStack {...generateCommentsFieldIdAttr(PathUtils.toString(props.path))} ref={rootRef}>
+    <FieldStack {...applyCommentsFieldAttr(PathUtils.toString(props.path))} ref={rootRef}>
       {props.renderDefault({
         ...props,
         // eslint-disable-next-line camelcase

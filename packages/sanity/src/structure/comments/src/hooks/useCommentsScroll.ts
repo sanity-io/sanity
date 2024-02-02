@@ -59,27 +59,25 @@ function generateValidAttrValue(id: string): string {
   return result
 }
 
-export function generateCommentsCommentIdAttr(
-  id: string,
-): Record<'data-comments-comment-id', string> {
+export function applyCommentIdAttr(id: string): Record<'data-comments-comment-id', string> {
   return {
     'data-comments-comment-id': generateValidAttrValue(id),
   }
 }
 
-export function generateCommentsFieldIdAttr(id: string): Record<'data-comments-field-id', string> {
+export function applyCommentsFieldAttr(id: string): Record<'data-comments-field-id', string> {
   return {
     'data-comments-field-id': generateValidAttrValue(id),
   }
 }
 
-export function generateCommentsGroupIdAttr(id: string): Record<'data-comments-group-id', string> {
+export function applyCommentsGroupAttr(id: string): Record<'data-comments-group-id', string> {
   return {
     'data-comments-group-id': generateValidAttrValue(id),
   }
 }
 
-export function generateCommentsInlineCommentIdAttr(
+export function applyInlineCommentIdAttr(
   id: string,
 ): Record<'data-comments-inline-comment-id', string> {
   return {
