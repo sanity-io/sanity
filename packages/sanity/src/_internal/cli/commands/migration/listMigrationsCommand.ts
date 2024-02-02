@@ -5,7 +5,7 @@ import type {Migration} from '@sanity/migrate'
 import chalk from 'chalk'
 import {Table} from 'console-table-printer'
 import {register} from 'esbuild-register/dist/node'
-import {MIGRATIONS_DIRECTORY} from './constants'
+import {MIGRATIONS_DIRECTORY, MIGRATION_SCRIPT_EXTENSIONS} from './constants'
 import {resolveMigrationScript} from './utils'
 
 const helpText = ``
@@ -38,7 +38,7 @@ const listMigrationCommand: CliCommandDefinition = {
       })
 
       migrations.forEach((definedMigration) => {
-        table.addRow({id: definedMigration.dirname, title: definedMigration.migration.title})
+        table.addRow({id: definedMigration.id, title: definedMigration.migration.title})
       })
       table.printTable()
       output.print('\nRun `sanity migration run <ID>` to run a migration')
@@ -56,15 +56,23 @@ const listMigrationCommand: CliCommandDefinition = {
 }
 
 /**
+ * A resolved migration, where you are guaranteed that the migration file exists
+ *
+ * @internal
+ */
+export interface ResolvedMigration {
+  id: string
+  migration: Migration
+}
+
+/**
  * Resolves all migrations in the studio working directory
  *
  * @param workDir - The studio working directory
  * @returns Array of migrations and their respective paths
  * @internal
  */
-export async function resolveMigrations(
-  workDir: string,
-): Promise<{dirname: string; migration: Migration}[]> {
+export async function resolveMigrations(workDir: string): Promise<ResolvedMigration[]> {
   let unregister
   if (!__DEV__) {
     unregister = register({
@@ -72,29 +80,39 @@ export async function resolveMigrations(
     }).unregister
   }
 
-  const directories = (
-    await readdir(path.join(workDir, MIGRATIONS_DIRECTORY), {withFileTypes: true})
-  ).filter((ent) => ent.isDirectory())
+  const migrationsDir = path.join(workDir, MIGRATIONS_DIRECTORY)
+  const migrationEntries = await readdir(migrationsDir, {withFileTypes: true})
 
-  const entries = directories
-    .map((ent) => {
-      const candidates = resolveMigrationScript(workDir, ent.name)
-      const found = candidates.find((candidate) => candidate.mod?.default)
-      if (!found) {
-        return null
+  const migrations: ResolvedMigration[] = []
+  for (const entry of migrationEntries) {
+    const entryName = entry.isDirectory() ? entry.name : removeMigrationScriptExtension(entry.name)
+    const candidates = resolveMigrationScript(workDir, entryName)
+
+    for (const candidate of candidates) {
+      if (!candidate.mod?.default) {
+        continue
       }
-      return {
-        dirname: ent.name,
-        migration: found.mod.default as Migration,
-      }
-    })
-    .filter(Boolean) as {dirname: string; migration: Migration}[]
+
+      migrations.push({
+        id: entryName,
+        migration: candidate.mod.default,
+      })
+    }
+  }
 
   if (unregister) {
     unregister()
   }
 
-  return entries
+  return migrations
+}
+
+function removeMigrationScriptExtension(fileName: string) {
+  // Remove `.ts`, `.js` etc from the end of a filename
+  return MIGRATION_SCRIPT_EXTENSIONS.reduce(
+    (name, ext) => (name.endsWith(`.${ext}`) ? path.basename(name, `.${ext}`) : name),
+    fileName,
+  )
 }
 
 export default listMigrationCommand
