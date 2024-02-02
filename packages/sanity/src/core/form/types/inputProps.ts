@@ -527,6 +527,12 @@ export interface PortableTextInputProps
    * Array of {@link RangeDecoration} that can be used to decorate the content.
    */
   rangeDecorations?: RangeDecoration[]
+
+  /**
+   * @hidden
+   * @beta
+   */
+  onFullScreenChange?: (isFullScreen: boolean) => void
 }
 
 /**
