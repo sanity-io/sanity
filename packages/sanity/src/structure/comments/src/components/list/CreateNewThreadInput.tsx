@@ -76,7 +76,7 @@ export function CreateNewThreadInput(props: CreateNewThreadInputProps) {
   }, [])
 
   const placeholder = (
-    <Translate t={t} i18nKey="placeholder-create-thread" values={{field: fieldTitle}} />
+    <Translate t={t} i18nKey="placeholder-add-comment-to-field" values={{field: fieldTitle}} />
   )
 
   return (
