@@ -1,4 +1,3 @@
-import path from 'node:path'
 import type {CliCommandDefinition} from '@sanity/cli'
 import {
   DEFAULT_MUTATION_CONCURRENCY,
@@ -15,6 +14,7 @@ import yargs from 'yargs/yargs'
 import {debug} from '../../debug'
 import {resolveMigrations} from './listMigrationsCommand'
 import {prettyFormat} from './prettyMutationFormatter'
+import {isLoadableMigrationScript, resolveMigrationScript} from './utils'
 
 const helpText = `
 Options
@@ -41,27 +41,6 @@ interface CreateFlags {
   dataset?: string
   project?: string
   confirm?: boolean
-}
-
-const tryExtensions = ['mjs', 'js', 'ts', 'cjs']
-
-function resolveMigrationScript(workDir: string, migrationId: string) {
-  return [migrationId, path.join(migrationId, 'index')].flatMap((location) =>
-    tryExtensions.map((ext) => {
-      const relativePath = path.join('migrations', `${location}.${ext}`)
-      const absolutePath = path.resolve(workDir, relativePath)
-      let mod
-      try {
-        // eslint-disable-next-line import/no-dynamic-require
-        mod = require(absolutePath)
-      } catch (err) {
-        if (err.code !== 'MODULE_NOT_FOUND') {
-          throw new Error(`Error: ${err.message}"`)
-        }
-      }
-      return {relativePath, absolutePath, mod}
-    }),
-  )
 }
 
 function parseCliFlags(args: {argv?: string[]}) {
@@ -123,8 +102,7 @@ const runMigrationCommand: CliCommandDefinition<CreateFlags> = {
     }
 
     const candidates = resolveMigrationScript(workDir, id)
-
-    const resolvedScripts = candidates.filter((candidate) => candidate!.mod?.default)
+    const resolvedScripts = candidates.filter(isLoadableMigrationScript)
 
     if (resolvedScripts.length > 1) {
       // todo: consider prompt user about which one to run? note: it's likely a mistake if multiple files resolve to the same name
@@ -134,7 +112,9 @@ const runMigrationCommand: CliCommandDefinition<CreateFlags> = {
           .join(', ')}`,
       )
     }
-    if (resolvedScripts.length === 0) {
+
+    const script = resolvedScripts[0]
+    if (!script) {
       throw new Error(
         `No migration found for "${id}" in current directory. Make sure that the migration file exists and exports a valid migration as its default export.\n
  Tried the following files:\n -${candidates
@@ -143,9 +123,7 @@ const runMigrationCommand: CliCommandDefinition<CreateFlags> = {
       )
     }
 
-    const script = resolvedScripts[0]!
-
-    const mod = script!.mod
+    const mod = script.mod
     if ('up' in mod || 'down' in mod) {
       // todo: consider adding support for up/down as separate named exports
       // For now, make sure we reserve the names for future use

@@ -1,4 +1,5 @@
-import path from 'path'
+import path from 'node:path'
+import {isPlainObject} from 'lodash'
 import type {Migration} from '@sanity/migrate'
 import {MIGRATION_SCRIPT_EXTENSIONS, MIGRATIONS_DIRECTORY} from './constants'
 
@@ -16,7 +17,7 @@ interface ResolvedMigrationScript {
   /**
    * The migration module, if it could be resolved - otherwise `undefined`
    */
-  mod?: {default: Migration}
+  mod?: {default: Migration; up?: unknown; down?: unknown}
 }
 
 /**
@@ -54,4 +55,22 @@ export function resolveMigrationScript(
       return {relativePath, absolutePath, mod}
     }),
   )
+}
+
+/**
+ * Checks whether or not the passed resolved migration script is actually loadable (eg has a default export)
+ *
+ * @param script - The resolved migration script to check
+ * @returns `true` if the script is loadable, `false` otherwise
+ * @internal
+ */
+export function isLoadableMigrationScript(
+  script: ResolvedMigrationScript,
+): script is Required<ResolvedMigrationScript> {
+  if (typeof script.mod === 'undefined' || !isPlainObject(script.mod.default)) {
+    return false
+  }
+
+  const mod = script.mod.default
+  return typeof mod.title === 'string' && mod.migrate !== undefined
 }

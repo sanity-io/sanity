@@ -5,7 +5,7 @@ import type {Migration} from '@sanity/migrate'
 import {Table} from 'console-table-printer'
 import {register} from 'esbuild-register/dist/node'
 import {MIGRATIONS_DIRECTORY, MIGRATION_SCRIPT_EXTENSIONS} from './constants'
-import {resolveMigrationScript} from './utils'
+import {isLoadableMigrationScript, resolveMigrationScript} from './utils'
 
 const helpText = ``
 
@@ -85,13 +85,9 @@ export async function resolveMigrations(workDir: string): Promise<ResolvedMigrat
   const migrations: ResolvedMigration[] = []
   for (const entry of migrationEntries) {
     const entryName = entry.isDirectory() ? entry.name : removeMigrationScriptExtension(entry.name)
-    const candidates = resolveMigrationScript(workDir, entryName)
+    const candidates = resolveMigrationScript(workDir, entryName).filter(isLoadableMigrationScript)
 
     for (const candidate of candidates) {
-      if (!candidate.mod?.default) {
-        continue
-      }
-
       migrations.push({
         id: entryName,
         migration: candidate.mod.default,
