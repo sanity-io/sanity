@@ -56,7 +56,6 @@ jobs:
         # Run even if `yarn lint:fix` fails
         if: always()
         with:
-          author: github-actions <41898282+github-actions[bot]@users.noreply.github.com>
           body: "I ran `yarn lint:fix --rule 'prettier/prettier: [off]'` 🧑‍💻"
           branch: actions/lint-fix-if-needed
           commit-message: 'chore(lint): fix linter issues 🤖 ✨'
