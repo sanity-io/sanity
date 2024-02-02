@@ -45,22 +45,26 @@ export const CommentsInspectorHeader = forwardRef(function CommentsInspectorHead
             id="comment-status-menu-button"
             button={
               <Button
-                text={view === 'open' ? t('dropdown-title-open') : t('dropdown-title-resolved')}
+                text={
+                  view === 'open'
+                    ? t('status-filter.status-open')
+                    : t('status-filter.status-resolved')
+                }
                 mode="bleed"
                 iconRight={ChevronDownIcon}
               />
-            } //this startcase needs to be fixed
+            }
             menu={
               <Menu style={{width: '180px'}}>
                 <MenuItem
                   iconRight={view === 'open' ? CheckmarkIcon : undefined}
                   onClick={handleSetOpenView}
-                  text={t('dropdown-item-open')}
+                  text={t('status-filter.status-open-full')}
                 />
                 <MenuItem
                   iconRight={view === 'resolved' ? CheckmarkIcon : undefined}
                   onClick={handleSetResolvedView}
-                  text={t('dropdown-item-resolved')}
+                  text={t('status-filter.status-resolved-full')}
                 />
               </Menu>
             }

@@ -57,15 +57,6 @@ const commentsLocaleStrings = defineLocalesResources('comments', {
   /** The text for discard comment dialog */
   'discard-text': 'Do you want to discard the comment?',
 
-  /** The text for dropdown menu item for open comments */
-  'dropdown-item-open': 'Open comments',
-  /** The text for dropdown menu item for resolved comments */
-  'dropdown-item-resolved': 'Resolved comments',
-  /** The title for dropdown for open comments */
-  'dropdown-title-open': 'Open',
-  /** The title for dropdown for resolved comments */
-  'dropdown-title-resolved': 'Resolved',
-
   /** The name of the comments feature, for use in header. Capitalized, eg "Comments". */
   'feature-name': 'Comments',
 
@@ -171,6 +162,15 @@ const commentsLocaleStrings = defineLocalesResources('comments', {
    * - `<ReactionName/>` - the name of the reaction emoji, eg ":heavy_plus_sign:"
    */
   'reactions.users-reacted-with-reaction': '<UserList/> <Text>reacted with</Text> <ReactionName/>',
+
+  /** Status filter: The short title describing filtering on open (non-resolved) comments */
+  'status-filter.status-open': 'Open',
+  /** Status filter: The full text for describing filtering on open (non-resolved) comments */
+  'status-filter.status-open-full': 'Open comments',
+  /** Status filter: The short title describing filtering on resolved comments */
+  'status-filter.status-resolved': 'Resolved',
+  /** Status filter: The full text for describing filtering on resolved comments */
+  'status-filter.status-resolved-full': 'Resolved comments',
 
   /** The thread breadcrumb button aria label */
   'thread-breadcrumb-layout-aria-label': 'Go to {{lastCrumb}} field',
