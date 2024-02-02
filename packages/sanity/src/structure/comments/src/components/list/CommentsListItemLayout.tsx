@@ -20,7 +20,13 @@ import {AVATAR_HEIGHT, CommentsAvatar, SpacerAvatar} from '../avatars'
 import {CommentReactionsBar} from '../reactions'
 import {commentsLocaleNamespace} from '../../../i18n'
 import {CommentsListItemContextMenu} from './CommentsListItemContextMenu'
-import {TimeAgoOpts, useTimeAgo, useUser, useDidUpdate, useTranslation} from 'sanity'
+import {
+  useUser,
+  useDidUpdate,
+  useTranslation,
+  useRelativeTime,
+  type RelativeTimeOptions,
+} from 'sanity'
 
 const stopPropagation = (e: React.MouseEvent<HTMLDivElement>) => e.stopPropagation()
 
@@ -118,7 +124,7 @@ interface CommentsListItemLayoutProps {
   readOnly?: boolean
 }
 
-const TIME_AGO_OPTS: TimeAgoOpts = {agoSuffix: true}
+const RELATIVE_TIME_OPTIONS: RelativeTimeOptions = {useTemporalPhrase: true}
 
 export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
   const {
@@ -169,7 +175,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
   const commentInputRef = useRef<CommentInputHandle>(null)
 
   const createdDate = _createdAt ? new Date(_createdAt) : new Date()
-  const createdTimeAgo = useTimeAgo(createdDate, TIME_AGO_OPTS)
+  const createdTimeAgo = useRelativeTime(createdDate, RELATIVE_TIME_OPTIONS)
   const formattedCreatedAt = format(createdDate, 'PPPPp')
 
   const formattedLastEditAt = lastEditedAt ? format(new Date(lastEditedAt), 'PPPPp') : null
