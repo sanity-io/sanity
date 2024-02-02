@@ -72,11 +72,11 @@ export const CommentsInspectorHeader = forwardRef(function CommentsInspectorHead
           />
 
           <Button
-            aria-label={t('button-close-pane-text-aria-label')}
+            aria-label={t('close-pane-button-text-aria-label')}
             icon={DoubleChevronRightIcon}
             mode="bleed"
             onClick={onClose}
-            tooltipProps={{content: t('button-close-pane-text')}}
+            tooltipProps={{content: t('close-pane-button-text')}}
           />
         </Flex>
       </Flex>

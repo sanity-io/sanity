@@ -39,13 +39,13 @@ export function CommentsOnboardingPopover(props: CommentsOnboardingPopoverProps)
         <Root padding={4}>
           <Stack space={3}>
             <Text weight="medium" size={1}>
-              {t('onboarding-popover-header')}
+              {t('onboarding.header')}
             </Text>
 
-            <Text size={1}>{t('onboarding-popover-body')}</Text>
+            <Text size={1}>{t('onboarding.body')}</Text>
 
             <Flex justify="flex-end" marginTop={2}>
-              <Button text={t('onboarding-popover-dismiss')} tone="primary" onClick={onDismiss} />
+              <Button text={t('onboarding.dismiss')} tone="primary" onClick={onDismiss} />
             </Flex>
           </Stack>
         </Root>

@@ -47,7 +47,7 @@ export function CommentInputDiscardDialog(props: CommentInputDiscardDialogProps)
     <ThemeColorProvider tone="default">
       <DialogProvider zOffset={Z_OFFSET}>
         <Dialog
-          header={t('discard-header')}
+          header={t('discard.header')}
           id="discard-comment-dialog"
           onClose={onClose}
           width={0}
@@ -58,12 +58,12 @@ export function CommentInputDiscardDialog(props: CommentInputDiscardDialogProps)
             },
             confirmButton: {
               onClick: handleConfirmClick,
-              text: t('discard-button-confirm'),
+              text: t('discard.button-confirm'),
               tone: 'critical',
             },
           }}
         >
-          <Text size={1}>{t('discard-text')}</Text>
+          <Text size={1}>{t('discard.text')}</Text>
         </Dialog>
       </DialogProvider>
     </ThemeColorProvider>

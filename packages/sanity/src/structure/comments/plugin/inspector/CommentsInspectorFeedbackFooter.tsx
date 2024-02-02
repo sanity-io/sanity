@@ -25,9 +25,9 @@ export function CommentsInspectorFeedbackFooter() {
   return (
     <FooterCard padding={4}>
       <Text muted size={1}>
-        {t('feedback-footer-title')}{' '}
+        {t('feature-feedback.title')}{' '}
         <Link href={FEEDBACK_FORM_LINK} target="_blank" rel="noreferrer">
-          <Span>{t('feedback-footer-link')} </Span> <LaunchIcon />
+          <Span>{t('feature-feedback.link')} </Span> <LaunchIcon />
         </Link>
       </Text>
     </FooterCard>

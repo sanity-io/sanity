@@ -8,9 +8,9 @@ import {defineLocalesResources} from 'sanity'
  */
 const commentsLocaleStrings = defineLocalesResources('comments', {
   /** The close comments button text */
-  'button-close-pane-text': 'Close comments',
+  'close-pane-button-text': 'Close comments',
   /** The aria label for the close comments button */
-  'button-close-pane-text-aria-label': 'Close comments',
+  'close-pane-button-text-aria-label': 'Close comments',
 
   /** When composing a comment, the placeholder text shown when adding a comment to a field with no current comments */
   'compose.add-comment-input-placeholder': 'Add comment to <strong>{{field}}</strong>',
@@ -33,93 +33,93 @@ const commentsLocaleStrings = defineLocalesResources('comments', {
   'copy-link-success-message': 'Copied link to clipboard',
 
   /** The delete dialog body for a comment */
-  'delete-comment-body': 'Once deleted, a comment cannot be recovered.',
+  'delete-comment.body': 'Once deleted, a comment cannot be recovered.',
   /** The delete dialog confirm button text for a comment */
-  'delete-comment-confirm': 'Delete comment',
+  'delete-comment.confirm': 'Delete comment',
   /** The delete dialog title for a comment */
-  'delete-comment-title': 'Delete this comment?',
+  'delete-comment.title': 'Delete this comment?',
   /** The delete dialog error */
-  'delete-dialog-error': 'An error occurred while deleting the comment. Please try again.',
+  'delete-dialog.error': 'An error occurred while deleting the comment. Please try again.',
   /** The delete dialog body for a thread */
-  'delete-thread-body':
+  'delete-thread.body':
     'This comment and its replies will be deleted, and once deleted cannot be recovered.',
   /** The delete dialog conform button text for a thread */
-  'delete-thread-confirm': 'Delete thread',
+  'delete-thread.confirm': 'Delete thread',
   /** The delete dialog title for a thread */
-  'delete-thread-title': 'Delete this comment thread?',
+  'delete-thread.title': 'Delete this comment thread?',
 
   /** The button text for confirming discard */
-  'discard-button-confirm': 'Discard',
+  'discard.button-confirm': 'Discard',
   /** The header for discard comment dialog */
-  'discard-header': 'Discard comment?',
+  'discard.header': 'Discard comment?',
   /** The text for discard comment dialog */
-  'discard-text': 'Do you want to discard the comment?',
+  'discard.text': 'Do you want to discard the comment?',
+
+  /** Sharing feedback on the comments feature: The link title */
+  'feature-feedback.link': 'Share your feedback',
+  /** Sharing feedback on the comments feature: The form title  */
+  'feature-feedback.title': 'Help improve ',
 
   /** The name of the comments feature, for use in header. Capitalized, eg "Comments". */
   'feature-name': 'Comments',
 
-  /** Sharing feedback on the comments feature: The link title */
-  'feedback-footer-link': 'Share your feedback',
-  /** Sharing feedback on the comments feature: The form title  */
-  'feedback-footer-title': 'Help improve ',
-
   /** Aria label for button above fields to add a comment, when the field currently do not have any comments */
-  'field-button-aria-label-add': 'Add comment',
+  'field-button.aria-label-add': 'Add comment',
   /** Aria label for button above fields that opens the comments for this field, when there are existing comments */
-  'field-button-aria-label-open': 'Open comments',
+  'field-button.aria-label-open': 'Open comments',
   /** Text shown in popover when hovering the button above fields that opens the comments panel, when there is a single comment present */
-  'field-button-content_one': 'View comment',
+  'field-button.content_one': 'View comment',
   /** Text shown in popover when hovering the button above fields that opens the comments panel, when there are more than one comment present */
-  'field-button-content_other': 'View comments',
+  'field-button.content_other': 'View comments',
   /** Text shown in popover when hovering the button above fields to add a comment, when the field currently do not have any comments */
-  'field-button-title': 'Add comment',
+  'field-button.title': 'Add comment',
 
   /** Aria label for the breadcrumb button showing the field path. `{{field}}` is the last (most specific) field. */
-  'list-item-breadcrumb-button-go-to-field-aria-label': 'Go to {{field}} field',
+  'list-item.breadcrumb-button-go-to-field-aria-label': 'Go to {{field}} field',
   /** The button tooltip content for the add reaction button */
-  'list-item-context-menu-add-reaction': 'Add reaction',
+  'list-item.context-menu-add-reaction': 'Add reaction',
   /** The button tooltip aria label for adding a reaction */
-  'list-item-context-menu-add-reaction-aria-label': 'Add reaction',
+  'list-item.context-menu-add-reaction-aria-label': 'Add reaction',
   /** The action menu item for copying a comment link */
-  'list-item-copy-link': 'Copy link to comment',
+  'list-item.copy-link': 'Copy link to comment',
   /** The action menu item for deleting a comment */
-  'list-item-delete-comment': 'Delete comment',
+  'list-item.delete-comment': 'Delete comment',
   /** The action menu item for editing a comment */
-  'list-item-edit-comment': 'Edit comment',
+  'list-item.edit-comment': 'Edit comment',
   /** Aria label for the button that takes you to the field, which wraps a thread/comment */
-  'list-item-go-to-field-button-aria-label': 'Go to field',
+  'list-item.go-to-field-button.aria-label': 'Go to field',
   /** The marker to indicate that a comment has been edited in brackets */
-  'list-item-layout-edited': 'edited',
+  'list-item.layout-edited': 'edited',
   /** The error text when sending a comment has failed */
-  'list-item-layout-failed-sent': 'Failed to send.',
+  'list-item.layout-failed-sent': 'Failed to send.',
   /** The loading message when posting a comment is in progress */
-  'list-item-layout-posting': 'Posting...',
+  'list-item.layout-posting': 'Posting...',
   /** The text for retrying posting a comment */
-  'list-item-layout-retry': 'Retry',
+  'list-item.layout-retry': 'Retry',
   /** The aria label for the comments menu button to open the actions menu */
-  'list-item-open-menu-aria-label': 'Open comment actions menu',
+  'list-item.open-menu-aria-label': 'Open comment actions menu',
 
   /** The button text to re-open a resolved comment  */
-  'list-item-re-open-resolved': 'Re-open',
+  'list-item.re-open-resolved': 'Re-open',
   /** The button aria label to re-open a comment that is resolved */
-  'list-item-re-open-resolved-aria-label': 'Re-open',
+  'list-item.re-open-resolved-aria-label': 'Re-open',
   /** The button aria label to mark a comment as resolved */
-  'list-item-resolved-tooltip-aria-label': 'Mark comment as resolved',
+  'list-item.resolved-tooltip-aria-label': 'Mark comment as resolved',
   /** The button text to mark a comment as resolved */
-  'list-item-resolved-tooltip-content': 'Mark as resolved',
+  'list-item.resolved-tooltip-content': 'Mark as resolved',
 
   /** The empty state text for open comments */
-  'list-status-empty-state-open-text': 'Open comments on this document will be shown here.',
+  'list-status.empty-state-open-text': 'Open comments on this document will be shown here.',
   /** The empty state title for open comments */
-  'list-status-empty-state-open-title': 'No open comments yet',
+  'list-status.empty-state-open-title': 'No open comments yet',
   /** The empty state text for resolved comments */
-  'list-status-empty-state-resolved-text': 'Resolved comments on this document will be shown here.',
+  'list-status.empty-state-resolved-text': 'Resolved comments on this document will be shown here.',
   /** The empty state title for resolved comments */
-  'list-status-empty-state-resolved-title': 'No resolved comments yet',
+  'list-status.empty-state-resolved-title': 'No resolved comments yet',
   /** The list status message for error */
-  'list-status-error': 'Something went wrong',
+  'list-status.error': 'Something went wrong',
   /** The list status message for loading status */
-  'list-status-loading': 'Loading comments',
+  'list-status.loading': 'Loading comments',
 
   /** Text shown when no users can be found to mention */
   'mentions.no-users-found': 'No users found',
@@ -129,12 +129,12 @@ const commentsLocaleStrings = defineLocalesResources('comments', {
   'mentions.user-list-aria-label': 'List of users to mention',
 
   /** The comments onboarding popover text */
-  'onboarding-popover-body':
+  'onboarding.body':
     "You can add comments to any field in a document. They'll show up here, grouped by field.",
   /** The comments onboarding dismiss text */
-  'onboarding-popover-dismiss': 'Got it',
+  'onboarding.dismiss': 'Got it',
   /** The comments onboarding popover header text */
-  'onboarding-popover-header': 'Document fields now have comments',
+  'onboarding.header': 'Document fields now have comments',
 
   /** Tooltip for the button to add a reaction to a comment */
   'reactions.add-reaction-tooltip': 'Add reaction',
