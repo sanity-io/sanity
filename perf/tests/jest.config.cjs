@@ -1,6 +1,6 @@
 'use strict'
 
-const {createJestConfig} = require('../test/config.cjs')
+const {createJestConfig} = require('../../test/config.cjs')
 
 module.exports = createJestConfig({
   // ignore performance tests

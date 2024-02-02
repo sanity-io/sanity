@@ -3,7 +3,7 @@
   "useWorkspaces": true,
   "packages": [
     "dev/*",
-    "perf",
+    "perf/tests",
     "perf/studio",
     "examples/*",
     "packages/@sanity/*",
