@@ -52,11 +52,10 @@ jobs:
         with:
           app_id: ${{ secrets.ECOSPARK_APP_ID }}
           private_key: ${{ secrets.ECOSPARK_APP_PRIVATE_KEY }}
-      - uses: peter-evans/create-pull-request@153407881ec5c347639a548ade7d8ad1d6740e38 # v5
+      - uses: peter-evans/create-pull-request@b1ddad2c994a25fbc81a28b3ec0e368bb2021c50 # v6
         # Run even if `yarn lint:fix` fails
         if: always()
         with:
-          author: github-actions <41898282+github-actions[bot]@users.noreply.github.com>
           body: "I ran `yarn lint:fix --rule 'prettier/prettier: [off]'` 🧑‍💻"
           branch: actions/lint-fix-if-needed
           commit-message: 'chore(lint): fix linter issues 🤖 ✨'
