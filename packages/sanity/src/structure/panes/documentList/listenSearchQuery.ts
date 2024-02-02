@@ -83,7 +83,7 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Sanit
         mergeMap((typeNames: string[]) => {
           const types = getSearchTypesWithMaxDepth(
             getSearchableTypes(schema).filter((type) => {
-              return typeNames.includes(type.name) || type.name === "sanity.previewUrlSecret"
+              return typeNames.includes(type.name) || type.name === 'sanity.previewUrlSecret'
             }),
             maxFieldDepth,
           )
