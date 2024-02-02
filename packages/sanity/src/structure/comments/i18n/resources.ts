@@ -14,6 +14,15 @@ const commentsLocaleStrings = defineLocalesResources('comments', {
   /** The text for the button to go to the correct field */
   'button-go-to-field-aria-label': 'Go to field',
 
+  /** When composing a comment, the aria label for the button to mention a user */
+  'compose.mention-user-aria-label': 'Mention user',
+  /** When composing a comment, the tooltip text for the button to mention a user */
+  'compose.mention-user-tooltip': 'Mention user',
+  /** When composing a comment, the aria label for the button to send a comment */
+  'compose.send-comment-aria-label': 'Send comment',
+  /** When composing a comment, the tooltip text for the button to send a comment */
+  'compose.send-comment-tooltip': 'Send comment',
+
   /** The inspector text when error copying link */
   'copy-link-error-message': 'Unable to copy link to clipboard',
   /** The inspector successfully copied link text */
@@ -70,7 +79,7 @@ const commentsLocaleStrings = defineLocalesResources('comments', {
   /** Text shown in popover when hovering the button above fields to add a comment, when the field currently do not have any comments */
   'field-button-title': 'Add comment',
 
-  /** The button tooltip content for the add reaction button*/
+  /** The button tooltip content for the add reaction button */
   'list-item-context-menu-add-reaction': 'Add reaction',
   /** The button tooltip aria label for adding a reaction */
   'list-item-context-menu-add-reaction-aria-label': 'Add reaction',
@@ -164,14 +173,6 @@ const commentsLocaleStrings = defineLocalesResources('comments', {
 
   /** The thread breadcrumb button aria label */
   'thread-breadcrumb-layout-aria-label': 'Go to {{lastCrumb}} field',
-  /** The tooltip text for mentioning a user */
-  'tooltip-mention-user': 'Mention user',
-  /** The tooltip aria label for mentioning a user */
-  'tooltip-mention-user-aria-label': 'Mention user',
-  /** The tooltip text for sending a comment*/
-  'tooltip-send-comment': 'Send comment',
-  /** The tooltip aria label for sending a comment*/
-  'tooltip-send-comment-aria-label': 'Send comment',
 })
 
 /**
