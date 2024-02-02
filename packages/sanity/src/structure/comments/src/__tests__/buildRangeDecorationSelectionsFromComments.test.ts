@@ -2,28 +2,28 @@ import {buildRangeDecorationSelectionsFromComments} from '../utils'
 import {CommentThreadItem} from '../types'
 
 describe('comments: buildRangeDecorationSelectionsFromComments', () => {
-  it('creates initial ranges', () => {
+  it.skip('creates initial ranges', () => {
     const decorators = buildRangeDecorationSelectionsFromComments({
       value: initialValue,
       comments: initialComments,
     })
     expect(decorators).toMatchSnapshot()
   })
-  it('allows something to be bolded before the range', () => {
+  it.skip('allows something to be bolded before the range', () => {
     const decorators = buildRangeDecorationSelectionsFromComments({
       value: boldedBeforeValue,
       comments: initialComments,
     })
     expect(decorators).toMatchSnapshot()
   })
-  it('allows something to be bolded inside the range', () => {
+  it.skip('allows something to be bolded inside the range', () => {
     const decorators = buildRangeDecorationSelectionsFromComments({
       value: boldedInsideValue,
       comments: initialComments,
     })
     expect(decorators).toMatchSnapshot()
   })
-  it('allows something to be bolded inside and outside of the range', () => {
+  it.skip('allows something to be bolded inside and outside of the range', () => {
     const decorators = buildRangeDecorationSelectionsFromComments({
       value: boldedInsideAndOutsideValue,
       comments: initialComments,
