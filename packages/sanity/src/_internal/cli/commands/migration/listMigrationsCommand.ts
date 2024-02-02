@@ -1,12 +1,12 @@
-import path from 'path'
 import {readdir} from 'node:fs/promises'
-import chalk from 'chalk'
+import path from 'node:path'
 import type {CliCommandDefinition} from '@sanity/cli'
-import {register} from 'esbuild-register/dist/node'
-import {Migration} from '@sanity/migrate'
+import type {Migration} from '@sanity/migrate'
+import chalk from 'chalk'
 import {Table} from 'console-table-printer'
-import {resolveMigrationScript} from './utils'
+import {register} from 'esbuild-register/dist/node'
 import {MIGRATIONS_DIRECTORY} from './constants'
+import {resolveMigrationScript} from './utils'
 
 const helpText = ``
 

@@ -1,7 +1,7 @@
-import {isatty} from 'tty'
-import {Migration, Mutation, NodePatch, Transaction} from '@sanity/migrate'
-import {KeyedSegment} from '@sanity/types'
-import {Chalk} from 'chalk'
+import {isatty} from 'node:tty'
+import type {Migration, Mutation, NodePatch, Transaction} from '@sanity/migrate'
+import type {KeyedSegment} from '@sanity/types'
+import type {Chalk} from 'chalk'
 import {convertToTree, formatTree, maxKeyLength} from '../../util/tree'
 
 type ItemRef = string | number

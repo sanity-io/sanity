@@ -1,5 +1,5 @@
-import path from 'path'
-import fs from 'node:fs/promises'
+import path from 'node:path'
+import {writeFile} from 'node:fs/promises'
 import {existsSync} from 'node:fs'
 import type {CliCommandDefinition} from '@sanity/cli'
 import deburr from 'lodash/deburr'
@@ -101,7 +101,7 @@ const createMigrationCommand: CliCommandDefinition<CreateMigrationFlags> = {
 
     const definitionFile = path.join(destDir, 'index.ts')
 
-    await fs.writeFile(path.join(workDir, definitionFile), renderedTemplate)
+    await writeFile(path.join(workDir, definitionFile), renderedTemplate)
     // To dry run it, run \`sanity migration run ${sluggedName}\``)
     output.print()
     output.print(`${chalk.green('✓')} Migration created!`)

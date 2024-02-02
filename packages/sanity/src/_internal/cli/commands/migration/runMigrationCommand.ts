@@ -1,17 +1,17 @@
-import path from 'path'
+import path from 'node:path'
 import type {CliCommandDefinition} from '@sanity/cli'
-import {register} from 'esbuild-register/dist/node'
 import {
   DEFAULT_MUTATION_CONCURRENCY,
-  dryRun,
   MAX_MUTATION_CONCURRENCY,
-  Migration,
-  MigrationProgress,
+  dryRun,
   run,
+  type Migration,
+  type MigrationProgress,
 } from '@sanity/migrate'
-import yargs from 'yargs/yargs'
-import {hideBin} from 'yargs/helpers'
 import {Table} from 'console-table-printer'
+import {register} from 'esbuild-register/dist/node'
+import {hideBin} from 'yargs/helpers'
+import yargs from 'yargs/yargs'
 import {debug} from '../../debug'
 import {resolveMigrations} from './listMigrationsCommand'
 import {prettyFormat} from './prettyMutationFormatter'
