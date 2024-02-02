@@ -1,11 +1,10 @@
 import {hues} from '@sanity/color'
-import {TextSkeleton, Flex, Stack, Text, Card, useClickOutside, Box} from '@sanity/ui'
+import type {CurrentUser} from '@sanity/types'
+import {Box, Card, Flex, Stack, Text, TextSkeleton, useClickOutside} from '@sanity/ui'
 import React, {useCallback, useMemo, useRef, useState} from 'react'
-import {CurrentUser} from '@sanity/types'
 import styled, {css} from 'styled-components'
-import {format} from 'date-fns'
-import {CommentMessageSerializer} from '../pte'
-import {CommentInput, CommentInputHandle} from '../pte/comment-input'
+import {commentsLocaleNamespace} from '../../../i18n'
+import {hasCommentMessageValue, useCommentHasChanged} from '../../helpers'
 import {
   CommentDocument,
   CommentEditPayload,
@@ -14,17 +13,18 @@ import {
   CommentStatus,
   MentionOptionsHookValue,
 } from '../../types'
-import {FLEX_GAP} from '../constants'
-import {hasCommentMessageValue, useCommentHasChanged} from '../../helpers'
 import {AVATAR_HEIGHT, CommentsAvatar, SpacerAvatar} from '../avatars'
+import {FLEX_GAP} from '../constants'
+import {CommentMessageSerializer} from '../pte'
+import {CommentInput, CommentInputHandle} from '../pte/comment-input'
 import {CommentReactionsBar} from '../reactions'
-import {commentsLocaleNamespace} from '../../../i18n'
 import {CommentsListItemContextMenu} from './CommentsListItemContextMenu'
 import {
-  useUser,
+  useDateTimeFormat,
   useDidUpdate,
-  useTranslation,
   useRelativeTime,
+  useTranslation,
+  useUser,
   type RelativeTimeOptions,
 } from 'sanity'
 
