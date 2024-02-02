@@ -5,7 +5,7 @@ import type {Migration} from '@sanity/migrate'
 import {Table} from 'console-table-printer'
 import {register} from 'esbuild-register/dist/node'
 import {MIGRATIONS_DIRECTORY, MIGRATION_SCRIPT_EXTENSIONS} from './constants'
-import {isLoadableMigrationScript, resolveMigrationScript} from './utils'
+import {isLoadableMigrationScript, resolveMigrationScript} from './utils/resolveMigrationScript'
 
 const helpText = ``
 
