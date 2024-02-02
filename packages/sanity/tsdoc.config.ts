@@ -12,6 +12,6 @@ export default defineConfig({
   },
   input: {
     type: 'fs',
-    bundledPackages: ['@sanity/types'],
+    bundledPackages: ['@sanity/types', '@sanity/migrate'],
   },
 })
