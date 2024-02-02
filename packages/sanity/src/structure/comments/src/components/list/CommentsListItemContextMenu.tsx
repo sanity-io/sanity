@@ -1,4 +1,4 @@
-import {CheckmarkCircleIcon, UndoIcon, EditIcon, TrashIcon, LinkIcon} from '@sanity/icons'
+import {CheckmarkCircleIcon, EditIcon, LinkIcon, TrashIcon, UndoIcon} from '@sanity/icons'
 import {Card, Flex, Menu, MenuDivider} from '@sanity/ui'
 import styled from 'styled-components'
 import {
@@ -8,12 +8,12 @@ import {
   MenuItem,
   TooltipDelayGroupProvider,
 } from '../../../../../ui-components'
-import {CommentReactionOption, CommentStatus} from '../../types'
-import {CommentReactionsMenuButton} from '../reactions'
-import {COMMENT_REACTION_OPTIONS} from '../../constants'
-import {ReactionIcon} from '../icons'
 import {commentsLocaleNamespace} from '../../../i18n'
-import {ContextMenuButton, TFunction, useTranslation} from 'sanity'
+import {COMMENT_REACTION_OPTIONS} from '../../constants'
+import type {CommentReactionOption, CommentStatus} from '../../types'
+import {ReactionIcon} from '../icons'
+import {CommentReactionsMenuButton} from '../reactions'
+import {ContextMenuButton, useTranslation, type TFunction} from 'sanity'
 
 const renderMenuButton = ({open, t}: {open: boolean; t: TFunction}) => (
   <Button

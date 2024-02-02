@@ -1,25 +1,25 @@
-import React, {useCallback, useMemo, useRef, useState} from 'react'
 import {
   Flex,
+  // eslint-disable-next-line no-restricted-imports
+  Button as SanityUIButton,
   Stack,
   Text,
   useClickOutside,
-  // eslint-disable-next-line no-restricted-imports
-  Button as SanityUIButton, // Button with specific styling for the children
 } from '@sanity/ui'
+import React, {useCallback, useMemo, useRef, useState} from 'react'
 import styled from 'styled-components'
-import {
-  CommentMessage,
-  CommentInput,
-  CommentInputHandle,
-  hasCommentMessageValue,
-  AddCommentIcon,
-  CommentIcon,
-  MentionOptionsHookValue,
-} from '../../src'
 import {Button, Popover, Tooltip} from '../../../../ui-components'
 import {commentsLocaleNamespace} from '../../i18n'
-import {CurrentUser, PortableTextBlock, Translate, useTranslation} from 'sanity'
+import {
+  AddCommentIcon,
+  CommentIcon,
+  CommentInput,
+  CommentMessage,
+  hasCommentMessageValue,
+  type CommentInputHandle,
+  type MentionOptionsHookValue,
+} from '../../src'
+import {Translate, useTranslation, type CurrentUser, type PortableTextBlock} from 'sanity'
 
 const ContentStack = styled(Stack)`
   width: 320px;
