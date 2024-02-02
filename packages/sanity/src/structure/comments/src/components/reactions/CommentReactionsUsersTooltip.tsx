@@ -1,12 +1,12 @@
-import {Flex, Text, Stack, Box} from '@sanity/ui'
-import React, {Fragment, useMemo} from 'react'
+import {Box, Flex, Stack, Text} from '@sanity/ui'
+import React, {useCallback} from 'react'
 import styled from 'styled-components'
-import {COMMENT_REACTION_EMOJIS} from '../../constants'
-import {CommentReactionShortNames} from '../../types'
 import {Tooltip} from '../../../../../ui-components'
 import {commentsLocaleNamespace} from '../../../i18n'
+import {COMMENT_REACTION_EMOJIS} from '../../constants'
+import type {CommentReactionShortNames} from '../../types'
 import {EmojiText} from './EmojiText.styled'
-import {CurrentUser, Translate, useTranslation, useUser} from 'sanity'
+import {Translate, useListFormat, useTranslation, useUser, type CurrentUser} from 'sanity'
 
 const TEXT_SIZE: number | number[] = 1
 
@@ -26,21 +26,21 @@ const TextBox = styled(Box)`
 interface UserDisplayNameProps {
   currentUserId: string
   isFirst?: boolean
-  separator?: boolean
   userId: string
 }
 
-function UserDisplayName(props: UserDisplayNameProps) {
-  const {currentUserId, isFirst, userId, separator} = props
+function UserDisplayName(props: UserDisplayNameProps): string {
+  const {currentUserId, isFirst, userId} = props
   const [user] = useUser(userId)
   const {t} = useTranslation(commentsLocaleNamespace)
 
   const isCurrentUser = currentUserId === userId
-  const you = isFirst ? t('reaction-user-you') : t('reaction-user-you-lowercase')
-  const content = isCurrentUser ? you : user?.displayName ?? t('reaction-unknown-user')
-  const text = separator ? `${content}, ` : content
+  if (isCurrentUser) {
+    const context = isFirst ? 'leading' : undefined
+    return t('reactions.user-list.you', {context, replace: {name: user?.displayName}})
+  }
 
-  return <InlineText weight="medium"> {text} </InlineText>
+  return user?.displayName || t('reactions.user-list.unknown-user-fallback-name')
 }
 
 interface CommentReactionsUsersTooltipProps {
@@ -69,32 +69,33 @@ export function CommentReactionsUsersTooltipContent(
 ) {
   const {currentUser, reactionName, userIds} = props
   const {t} = useTranslation(commentsLocaleNamespace)
-  const content = useMemo(() => {
+  const listFormat = useListFormat({style: 'long', type: 'conjunction'})
+
+  const UserList = useCallback(() => {
     const len = userIds.length
 
     if (len === 0 || !currentUser) return null
 
-    return userIds.map((id, index) => {
-      const separator = index < userIds.length - 1 && len > 2 && index !== userIds.length - 2
-      const showAnd = index === len - 1 && len > 1
-
-      return (
-        <Fragment key={id}>
-          {showAnd && (
+    return (
+      <>
+        {listFormat.formatToParts(userIds).map((item, index) =>
+          item.type === 'element' ? (
+            <InlineText weight="medium" key={item.value}>
+              <UserDisplayName
+                currentUserId={currentUser.id}
+                isFirst={index === 0}
+                userId={item.value}
+              />
+            </InlineText>
+          ) : (
             <>
-              <InlineText>{t('reaction-separator')} </InlineText>{' '}
+              <InlineText key={item.value}> {item.value} </InlineText>{' '}
             </>
-          )}
-          <UserDisplayName
-            currentUserId={currentUser.id}
-            isFirst={index === 0}
-            separator={separator}
-            userId={id}
-          />{' '}
-        </Fragment>
-      )
-    })
-  }, [currentUser, userIds, t])
+          ),
+        )}
+      </>
+    )
+  }, [currentUser, listFormat, userIds])
 
   return (
     <ContentStack padding={1}>
@@ -105,16 +106,16 @@ export function CommentReactionsUsersTooltipContent(
       <TextBox>
         <Translate
           t={t}
-          i18nKey="user-reacted-with"
-          values={{reactionName: reactionName}}
+          i18nKey="reactions.users-reacted-with-reaction"
+          values={{reactionName}}
           components={{
-            Content: () => <>{content}</>,
+            UserList,
+            ReactionName: () => <InlineText muted>{reactionName}</InlineText>,
             Text: ({children}) => (
               <>
                 <InlineText muted>{children}</InlineText> <wbr />{' '}
               </>
             ),
-            ReactionName: ({children}) => <InlineText muted>{children}</InlineText>,
           }}
         />
       </TextBox>

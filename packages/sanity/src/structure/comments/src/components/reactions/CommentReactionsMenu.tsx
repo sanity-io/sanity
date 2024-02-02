@@ -78,8 +78,8 @@ export function CommentReactionsMenu(props: CommentReactionsMenuProps) {
 
         return (
           <UIButton
-            aria-label={t('reactions-menu-button-aria-label', {
-              reaction: o.title || o.shortName,
+            aria-label={t('reactions.react-with-aria-label', {
+              reactionName: o.title || o.shortName,
             })}
             key={o.shortName}
             mode="bleed"
