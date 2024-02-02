@@ -14,6 +14,8 @@ const commentsLocaleStrings = defineLocalesResources('comments', {
   /** The text for the button to go to the correct field */
   'button-go-to-field-aria-label': 'Go to field',
 
+  /** When composing a comment, the placeholder text shown when the input is empty */
+  'compose.create-comment-placeholder': 'Create a new comment',
   /** When composing a comment, the aria label for the button to mention a user */
   'compose.mention-user-aria-label': 'Mention user',
   /** When composing a comment, the tooltip text for the button to mention a user */
