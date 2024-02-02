@@ -12,14 +12,12 @@ import {minimalAdvanced} from './templates/minimalAdvanced'
 import {renameField} from './templates/renameField'
 
 const helpText = `
-Create a new migration within your project
-
 Examples:
-    # Create a new migration, you will be prompted to provide a type
-    sanity migration create
+  # Create a new migration, prompting for title and options
+  sanity migration create
 
-    # Create a new migration, specifying the title
-    sanity migration create "Rename field from location to address"
+  # Create a new migration with the provided title, prompting for options
+  sanity migration create "Rename field from location to address"
 `
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
@@ -41,7 +39,7 @@ const createMigrationCommand: CliCommandDefinition<CreateMigrationFlags> = {
   group: 'migration',
   signature: '[TITLE]',
   helpText,
-  description: 'Create a new content migration within your project',
+  description: 'Create a new migration within your project',
   action: async (args, context) => {
     const {output, prompt, workDir, chalk} = context
 
