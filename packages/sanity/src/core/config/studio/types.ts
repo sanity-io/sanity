@@ -28,6 +28,14 @@ export interface NavbarProps {
 /**
  * @hidden
  * @beta */
+export interface ActiveToolLayoutProps {
+  renderDefault: (props: ActiveToolLayoutProps) => React.ReactElement
+  activeTool: Tool
+}
+
+/**
+ * @hidden
+ * @beta */
 export interface ToolMenuProps {
   activeToolName?: string
   closeSidebar: () => void
@@ -52,6 +60,7 @@ export interface StudioComponents {
  * @hidden
  * @beta */
 export interface StudioComponentsPluginOptions {
+  activeToolLayout?: ComponentType<ActiveToolLayoutProps>
   layout?: ComponentType<LayoutProps>
   /**
    * @deprecated Add custom icons on a per-workspace basis by customizing workspace `icon` instead.
