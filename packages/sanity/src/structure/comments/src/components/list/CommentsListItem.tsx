@@ -279,7 +279,10 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
         onMouseLeave={handleMouseLeave}
         tone={isSelected ? 'caution' : undefined}
       >
-        <GhostButton data-ui="GhostButton" aria-label={t('button-go-to-field-aria-label')} />
+        <GhostButton
+          data-ui="GhostButton"
+          aria-label={t('list-item-go-to-field-button-aria-label')}
+        />
 
         <Stack
           as="ul"
