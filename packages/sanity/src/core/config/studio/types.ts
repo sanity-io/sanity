@@ -27,6 +27,14 @@ export interface NavbarProps {
 /**
  * @hidden
  * @beta */
+export interface ActiveToolLayoutProps {
+  renderDefault: (props: ActiveToolLayoutProps) => React.ReactElement
+  activeTool: Tool
+}
+
+/**
+ * @hidden
+ * @beta */
 export interface ToolMenuProps {
   activeToolName?: string
   closeSidebar: () => void
@@ -59,4 +67,5 @@ export interface StudioComponentsPluginOptions {
   logo?: React.ComponentType<LogoProps>
   navbar?: React.ComponentType<NavbarProps>
   toolMenu?: React.ComponentType<ToolMenuProps>
+  activeToolLayout?: React.ComponentType<ActiveToolLayoutProps>
 }
