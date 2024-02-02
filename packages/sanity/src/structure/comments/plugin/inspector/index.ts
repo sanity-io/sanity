@@ -13,7 +13,7 @@ function useMenuItem(): DocumentInspectorMenuItem {
     hidden: !isEnabled,
     icon: CommentIcon,
     showAsAction: true,
-    title: t('document-inspector-title'),
+    title: t('feature-name'),
   }
 }
 
