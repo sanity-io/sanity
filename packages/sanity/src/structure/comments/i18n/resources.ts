@@ -11,8 +11,6 @@ const commentsLocaleStrings = defineLocalesResources('comments', {
   'button-close-pane-text': 'Close comments',
   /** The aria label for the close comments button */
   'button-close-pane-text-aria-label': 'Close comments',
-  /** The text for the button to go to the correct field */
-  'button-go-to-field-aria-label': 'Go to field',
 
   /** When composing a comment, the placeholder text shown when adding a comment to a field with no current comments */
   'compose.add-comment-input-placeholder': 'Add comment to <strong>{{field}}</strong>',
@@ -76,6 +74,8 @@ const commentsLocaleStrings = defineLocalesResources('comments', {
   /** Text shown in popover when hovering the button above fields to add a comment, when the field currently do not have any comments */
   'field-button-title': 'Add comment',
 
+  /** Aria label for the breadcrumb button showing the field path. `{{field}}` is the last (most specific) field. */
+  'list-item-breadcrumb-button-go-to-field-aria-label': 'Go to {{field}} field',
   /** The button tooltip content for the add reaction button */
   'list-item-context-menu-add-reaction': 'Add reaction',
   /** The button tooltip aria label for adding a reaction */
@@ -86,6 +86,8 @@ const commentsLocaleStrings = defineLocalesResources('comments', {
   'list-item-delete-comment': 'Delete comment',
   /** The action menu item for editing a comment */
   'list-item-edit-comment': 'Edit comment',
+  /** Aria label for the button that takes you to the field, which wraps a thread/comment */
+  'list-item-go-to-field-button-aria-label': 'Go to field',
   /** The marker to indicate that a comment has been edited in brackets */
   'list-item-layout-edited': 'edited',
   /** The error text when sending a comment has failed */
@@ -171,9 +173,6 @@ const commentsLocaleStrings = defineLocalesResources('comments', {
   'status-filter.status-resolved': 'Resolved',
   /** Status filter: The full text for describing filtering on resolved comments */
   'status-filter.status-resolved-full': 'Resolved comments',
-
-  /** The thread breadcrumb button aria label */
-  'thread-breadcrumb-layout-aria-label': 'Go to {{lastCrumb}} field',
 })
 
 /**

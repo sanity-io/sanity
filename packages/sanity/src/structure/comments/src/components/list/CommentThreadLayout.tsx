@@ -122,7 +122,9 @@ export function CommentThreadLayout(props: CommentThreadLayoutProps) {
         <Stack flex={1}>
           <Flex align="center">
             <BreadcrumbsButton
-              aria-label={t('thread-breadcrumb-layout-aria-label', {lastCrumb: lastCrumb})}
+              aria-label={t('list-item-breadcrumb-button-go-to-field-aria-label', {
+                field: lastCrumb,
+              })}
               mode="bleed"
               onClick={handleBreadcrumbsClick}
               padding={2}
