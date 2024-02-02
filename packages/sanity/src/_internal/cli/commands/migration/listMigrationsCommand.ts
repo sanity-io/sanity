@@ -2,7 +2,6 @@ import {readdir} from 'node:fs/promises'
 import path from 'node:path'
 import type {CliCommandDefinition} from '@sanity/cli'
 import type {Migration} from '@sanity/migrate'
-import chalk from 'chalk'
 import {Table} from 'console-table-printer'
 import {register} from 'esbuild-register/dist/node'
 import {MIGRATIONS_DIRECTORY, MIGRATION_SCRIPT_EXTENSIONS} from './constants'
@@ -17,7 +16,7 @@ const listMigrationCommand: CliCommandDefinition = {
   helpText,
   description: 'List available migrations',
   action: async (_, context) => {
-    const {workDir, output} = context
+    const {workDir, output, chalk} = context
     try {
       const migrations = await resolveMigrations(workDir)
 
