@@ -167,11 +167,13 @@ export default async function initSanity(
       print(`Coupon "${intendedCoupon}" validated!\n`)
     } catch (err) {
       if (err.statusCode == '404') {
-        const useDefaultPlan = await prompt.single({
-          type: 'confirm',
-          message: `Coupon "${intendedCoupon}" is not available, use default plan instead?`,
-          default: true,
-        })
+        const useDefaultPlan =
+          unattended ??
+          (await prompt.single({
+            type: 'confirm',
+            message: `Coupon "${intendedCoupon}" is not available, use default plan instead?`,
+            default: true,
+          }))
         trace.log({
           step: 'useDefaultPlanCoupon',
           selectedOption: useDefaultPlan ? 'yes' : 'no',
@@ -191,11 +193,13 @@ export default async function initSanity(
       selectedPlan = await getPlanFromId(apiClient, intendedPlan)
     } catch (err) {
       if (err.statusCode == '404') {
-        const useDefaultPlan = await prompt.single({
-          type: 'confirm',
-          message: `Project plan "${intendedPlan}" does not exist, use default plan instead?`,
-          default: true,
-        })
+        const useDefaultPlan =
+          unattended ??
+          (await prompt.single({
+            type: 'confirm',
+            message: `Project plan "${intendedPlan}" does not exist, use default plan instead?`,
+            default: true,
+          }))
         trace.log({
           step: 'useDefaultPlanId',
           selectedOption: useDefaultPlan ? 'yes' : 'no',
