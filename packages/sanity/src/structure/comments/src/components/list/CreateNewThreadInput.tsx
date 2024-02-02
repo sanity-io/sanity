@@ -8,7 +8,7 @@ import {EMPTY_ARRAY, Translate, useTranslation} from 'sanity'
 
 interface CreateNewThreadInputProps {
   currentUser: CurrentUser
-  fieldName: string
+  fieldTitle: string
   mentionOptions: MentionOptionsHookValue
   onBlur?: CommentInputProps['onBlur']
   onFocus?: CommentInputProps['onFocus']
@@ -20,7 +20,7 @@ interface CreateNewThreadInputProps {
 export function CreateNewThreadInput(props: CreateNewThreadInputProps) {
   const {
     currentUser,
-    fieldName,
+    fieldTitle,
     mentionOptions,
     onBlur,
     onFocus,
@@ -76,7 +76,7 @@ export function CreateNewThreadInput(props: CreateNewThreadInputProps) {
   }, [])
 
   const placeholder = (
-    <Translate t={t} i18nKey="placeholder-create-thread" values={{field: fieldName}} />
+    <Translate t={t} i18nKey="placeholder-create-thread" values={{field: fieldTitle}} />
   )
 
   return (

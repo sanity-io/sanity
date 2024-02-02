@@ -138,7 +138,7 @@ export function CommentThreadLayout(props: CommentThreadLayoutProps) {
         <ThreadCard onClick={handleNewThreadClick} tone={isSelected ? 'caution' : undefined}>
           <CreateNewThreadInput
             currentUser={currentUser}
-            fieldName={lastCrumb}
+            fieldTitle={lastCrumb}
             mentionOptions={mentionOptions}
             onNewThreadCreate={handleNewThreadCreate}
             readOnly={readOnly}
