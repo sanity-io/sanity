@@ -8,7 +8,7 @@ const MotionPopover = styled(motion(Popover))`
   user-select: none;
 `
 
-const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['bottom-end']
+const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['bottom', 'top']
 
 const VARIANTS: Variants = {
   hidden: {opacity: 0, y: -4},
