@@ -54,9 +54,9 @@ const commentsLocaleStrings = defineLocalesResources('comments', {
   /** The title for dropdown for resolved comments */
   'dropdown-title-resolved': 'Resolved',
 
-  /** The feedback form footer link to sharing feedback */
+  /** Sharing feedback on the comments feature: The link title */
   'feedback-footer-link': 'Share your feedback',
-  /** The feedback form footer title */
+  /** Sharing feedback on the comments feature: The form title  */
   'feedback-footer-title': 'Help improve ',
 
   /** The field button aria-label for add comment */
