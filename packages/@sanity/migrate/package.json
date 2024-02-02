@@ -2,7 +2,15 @@
   "name": "@sanity/migrate",
   "version": "3.29.0",
   "description": "Tooling for running data migrations on Sanity.io projects",
-  "keywords": ["sanity", "cms", "headless", "realtime", "content", "migrate", "migration"],
+  "keywords": [
+    "sanity",
+    "cms",
+    "headless",
+    "realtime",
+    "content",
+    "migrate",
+    "migration"
+  ],
   "homepage": "https://www.sanity.io/",
   "bugs": {
     "url": "https://github.com/sanity-io/sanity/issues"
@@ -30,14 +38,20 @@
   },
   "typesVersions": {
     "*": {
-      "mutations": ["./lib/dts/src/_exports/mutations.d.ts"]
+      "mutations": [
+        "./lib/dts/src/_exports/mutations.d.ts"
+      ]
     }
   },
   "main": "./lib/_exports/index.js",
   "module": "./lib/_exports/index.esm.js",
   "source": "./src/_exports/index.ts",
   "types": "./lib/dts/src/_exports/index.d.ts",
-  "files": ["lib", "src", "!**/__tests__/**"],
+  "files": [
+    "lib",
+    "src",
+    "!**/__tests__/**"
+  ],
   "scripts": {
     "prebuild": "run-s clean",
     "build": "pkg-utils build --tsconfig tsconfig.lib.json",
