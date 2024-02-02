@@ -1,3 +1,4 @@
 {
-  "ignore": ["@optimize-lodash/rollup-plugin", "@sanity/pkg-utils"]
+  "ignore": ["@optimize-lodash/rollup-plugin", "@sanity/pkg-utils"],
+  "ignoreDirs": ["test"]
 }

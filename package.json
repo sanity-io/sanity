@@ -115,7 +115,7 @@
     "babel-jest": "^29.7.0",
     "cac": "^6.7.12",
     "chalk": "^4.1.2",
-    "depcheck": "^1.4.3",
+    "depcheck": "^1.4.7",
     "dotenv": "^16.0.3",
     "dotenv-flow": "^3.2.0",
     "esbuild": "^0.19.8",
