@@ -14,12 +14,16 @@ const commentsLocaleStrings = defineLocalesResources('comments', {
   /** The text for the button to go to the correct field */
   'button-go-to-field-aria-label': 'Go to field',
 
+  /** When composing a comment, the placeholder text shown when adding a comment to a field with no current comments */
+  'compose.add-comment-input-placeholder': 'Add comment to <strong>{{field}}</strong>',
   /** When composing a comment, the placeholder text shown when the input is empty */
   'compose.create-comment-placeholder': 'Create a new comment',
   /** When composing a comment, the aria label for the button to mention a user */
   'compose.mention-user-aria-label': 'Mention user',
   /** When composing a comment, the tooltip text for the button to mention a user */
   'compose.mention-user-tooltip': 'Mention user',
+  /** When composing a reply, the placeholder text shown when the input is empty */
+  'compose.reply-placeholder': 'Reply',
   /** When composing a comment, the aria label for the button to send a comment */
   'compose.send-comment-aria-label': 'Send comment',
   /** When composing a comment, the tooltip text for the button to send a comment */
@@ -138,11 +142,6 @@ const commentsLocaleStrings = defineLocalesResources('comments', {
   'onboarding-popover-dismiss': 'Got it',
   /** The comments onboarding popover header text */
   'onboarding-popover-header': 'Document fields now have comments',
-
-  /** The placeholder for creating a new comment thread for a given field */
-  'placeholder-add-comment-to-field': 'Add comment to <strong>{{field}}</strong>',
-  /** The placeholder for replying to a comment */
-  'placeholder-reply': 'Reply',
 
   /** Tooltip for the button to add a reaction to a comment */
   'reactions.add-reaction-tooltip': 'Add reaction',
