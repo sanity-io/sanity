@@ -108,7 +108,7 @@ const runMigrationCommand: CliCommandDefinition<CreateFlags> = {
       })
 
       migrations.forEach((definedMigration) => {
-        table.addRow({id: definedMigration.dirname, title: definedMigration.migration.title})
+        table.addRow({id: definedMigration.id, title: definedMigration.migration.title})
       })
       table.printTable()
       output.print('\nRun `sanity migration run <ID>` to run a migration')
