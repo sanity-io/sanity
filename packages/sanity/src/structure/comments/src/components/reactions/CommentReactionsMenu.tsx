@@ -78,7 +78,7 @@ export function CommentReactionsMenu(props: CommentReactionsMenuProps) {
 
         return (
           <UIButton
-            aria-label={t('comments.reactions-menu-button-aria-label', {
+            aria-label={t('reactions-menu-button-aria-label', {
               reaction: o.title || o.shortName,
             })}
             key={o.shortName}

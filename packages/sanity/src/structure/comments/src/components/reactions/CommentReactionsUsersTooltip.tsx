@@ -36,8 +36,8 @@ function UserDisplayName(props: UserDisplayNameProps) {
   const {t} = useTranslation(commentsLocaleNamespace)
 
   const isCurrentUser = currentUserId === userId
-  const you = isFirst ? t('comments.reaction-user-you') : t('comments.reaction-user-you-lowercase')
-  const content = isCurrentUser ? you : user?.displayName ?? t('comments.reaction-unknown-user')
+  const you = isFirst ? t('reaction-user-you') : t('reaction-user-you-lowercase')
+  const content = isCurrentUser ? you : user?.displayName ?? t('reaction-unknown-user')
   const text = separator ? `${content}, ` : content
 
   return <InlineText weight="medium"> {text} </InlineText>
@@ -82,7 +82,7 @@ export function CommentReactionsUsersTooltipContent(
         <Fragment key={id}>
           {showAnd && (
             <>
-              <InlineText>{t('comments.reaction-separator')} </InlineText>{' '}
+              <InlineText>{t('reaction-separator')} </InlineText>{' '}
             </>
           )}
           <UserDisplayName
@@ -105,7 +105,7 @@ export function CommentReactionsUsersTooltipContent(
       <TextBox>
         <Translate
           t={t}
-          i18nKey="comments.user-reacted-with"
+          i18nKey="user-reacted-with"
           values={{reactionName: reactionName}}
           components={{
             Content: () => <>{content}</>,

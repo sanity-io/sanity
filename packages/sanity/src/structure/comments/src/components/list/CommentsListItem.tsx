@@ -279,10 +279,7 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
         onMouseLeave={handleMouseLeave}
         tone={isSelected ? 'caution' : undefined}
       >
-        <GhostButton
-          data-ui="GhostButton"
-          aria-label={t('comments.button-go-to-field-aria-label')}
-        />
+        <GhostButton data-ui="GhostButton" aria-label={t('button-go-to-field-aria-label')} />
 
         <Stack
           as="ul"
@@ -337,7 +334,7 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
               onDiscardConfirm={confirmDiscard}
               onKeyDown={handleInputKeyDown}
               onSubmit={handleReplySubmit}
-              placeholder={t('comments.placeholder-reply')}
+              placeholder={t('placeholder-reply')}
               readOnly={readOnly}
               ref={replyInputRef}
               value={value}

@@ -78,7 +78,7 @@ export function CreateNewThreadInput(props: CreateNewThreadInputProps) {
   const placeholder = (
     <Translate
       t={t}
-      i18nKey="comments.placeholder-create-thread"
+      i18nKey="placeholder-create-thread"
       components={{Strong: () => <b>{fieldName}</b>}}
     />
   )

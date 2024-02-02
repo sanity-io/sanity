@@ -17,11 +17,11 @@ import {ContextMenuButton, TFunction, useTranslation} from 'sanity'
 
 const renderMenuButton = ({open, t}: {open: boolean; t: TFunction}) => (
   <Button
-    aria-label={t('comments.list-item-context-menu-add-reaction-aria-label')}
+    aria-label={t('list-item-context-menu-add-reaction-aria-label')}
     icon={ReactionIcon}
     mode="bleed"
     selected={open}
-    tooltipProps={{content: t('comments.list-item-context-menu-add-reaction')}}
+    tooltipProps={{content: t('list-item-context-menu-add-reaction')}}
   />
 )
 
@@ -89,8 +89,8 @@ export function CommentsListItemContextMenu(props: CommentsListItemContextMenuPr
             <Button
               aria-label={
                 status === 'open'
-                  ? t('comments.list-item-resolved-tooltip-aria-label')
-                  : t('comments.list-item-re-open-resolved-aria-label')
+                  ? t('list-item-resolved-tooltip-aria-label')
+                  : t('list-item-re-open-resolved-aria-label')
               }
               disabled={readOnly}
               icon={status === 'open' ? CheckmarkCircleIcon : UndoIcon}
@@ -99,8 +99,8 @@ export function CommentsListItemContextMenu(props: CommentsListItemContextMenuPr
               tooltipProps={{
                 content:
                   status === 'open'
-                    ? t('comments.list-item-resolved-tooltip-content')
-                    : t('comments.list-item-re-open-resolved'),
+                    ? t('list-item-resolved-tooltip-content')
+                    : t('list-item-re-open-resolved'),
               }}
             />
           )}
@@ -109,7 +109,7 @@ export function CommentsListItemContextMenu(props: CommentsListItemContextMenuPr
             id="comment-actions-menu"
             button={
               <ContextMenuButton
-                aria-label={t('comments.list-item-open-menu-aria-label')}
+                aria-label={t('list-item-open-menu-aria-label')}
                 disabled={readOnly}
                 hidden={!showMenuButton}
               />
@@ -122,14 +122,14 @@ export function CommentsListItemContextMenu(props: CommentsListItemContextMenuPr
                   hidden={!canEdit}
                   icon={EditIcon}
                   onClick={onEditStart}
-                  text={t('comments.list-item-edit-comment')}
+                  text={t('list-item-edit-comment')}
                 />
 
                 <MenuItem
                   hidden={!canDelete}
                   icon={TrashIcon}
                   onClick={onDeleteStart}
-                  text={t('comments.list-item-delete-comment')}
+                  text={t('list-item-delete-comment')}
                   tone="critical"
                 />
 
@@ -139,7 +139,7 @@ export function CommentsListItemContextMenu(props: CommentsListItemContextMenuPr
                   hidden={!onCopyLink}
                   icon={LinkIcon}
                   onClick={onCopyLink}
-                  text={t('comments.list-item-copy-link')}
+                  text={t('list-item-copy-link')}
                 />
               </Menu>
             }

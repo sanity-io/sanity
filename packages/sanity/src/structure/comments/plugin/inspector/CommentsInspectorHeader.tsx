@@ -34,7 +34,7 @@ export const CommentsInspectorHeader = forwardRef(function CommentsInspectorHead
       <Flex padding={2}>
         <Flex align="center" flex={1} gap={2} paddingY={2} padding={3}>
           <Text as="h1" size={1} weight="medium">
-            {t('comments.header-title')}
+            {t('header-title')}
           </Text>
 
           <BetaBadge />
@@ -45,11 +45,7 @@ export const CommentsInspectorHeader = forwardRef(function CommentsInspectorHead
             id="comment-status-menu-button"
             button={
               <Button
-                text={
-                  view === 'open'
-                    ? t('comments.dropdown-title-open')
-                    : t('comments.dropdown-title-resolved')
-                }
+                text={view === 'open' ? t('dropdown-title-open') : t('dropdown-title-resolved')}
                 mode="bleed"
                 iconRight={ChevronDownIcon}
               />
@@ -59,12 +55,12 @@ export const CommentsInspectorHeader = forwardRef(function CommentsInspectorHead
                 <MenuItem
                   iconRight={view === 'open' ? CheckmarkIcon : undefined}
                   onClick={handleSetOpenView}
-                  text={t('comments.dropdown-item-open')}
+                  text={t('dropdown-item-open')}
                 />
                 <MenuItem
                   iconRight={view === 'resolved' ? CheckmarkIcon : undefined}
                   onClick={handleSetResolvedView}
-                  text={t('comments.dropdown-item-resolved')}
+                  text={t('dropdown-item-resolved')}
                 />
               </Menu>
             }
@@ -72,11 +68,11 @@ export const CommentsInspectorHeader = forwardRef(function CommentsInspectorHead
           />
 
           <Button
-            aria-label={t('comments.button-close-pane-text-aria-label')}
+            aria-label={t('button-close-pane-text-aria-label')}
             icon={DoubleChevronRightIcon}
             mode="bleed"
             onClick={onClose}
-            tooltipProps={{content: t('comments.button-close-pane-text')}}
+            tooltipProps={{content: t('button-close-pane-text')}}
           />
         </Flex>
       </Flex>
