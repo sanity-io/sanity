@@ -1,6 +1,6 @@
 import {Card, Flex} from '@sanity/ui'
 import React, {useMemo} from 'react'
-import {useNumber} from '@sanity/ui-workshop'
+import {useNumber, useSelect} from '@sanity/ui-workshop'
 import {CommentReactionsUsersTooltipContent} from '../components'
 import {useCurrentUser} from 'sanity'
 
@@ -16,10 +16,34 @@ const USER_IDS = [
   'pHbfjdoZr', // Fred
 ]
 
+const INCLUDES_YOU_OPTIONS = {
+  First: 'first',
+  Last: 'last',
+  No: 'no',
+}
+
 export default function CommentReactionsUsersTooltipContentStory() {
   const currentUser = useCurrentUser()
-  const usersLength = useNumber('Users length', USER_IDS.length, 'Props')
-  const userIds = useMemo(() => USER_IDS.slice(0, usersLength), [usersLength])
+  const currentUserId = currentUser?.id
+  const usersLength = useNumber('Users length', USER_IDS.length, 'Props') || USER_IDS.length
+  const includesYou = useSelect('Includes you', INCLUDES_YOU_OPTIONS, 'last', 'Props')
+
+  const userIds = useMemo(() => {
+    if (!currentUserId) {
+      return USER_IDS.slice(0, usersLength)
+    }
+
+    const withoutYou = USER_IDS.filter((id) => id !== currentUserId)
+    if (includesYou === 'first') {
+      return [currentUserId, ...withoutYou].slice(0, usersLength)
+    }
+
+    if (includesYou === 'last') {
+      return [...withoutYou.slice(0, usersLength - 1), currentUserId]
+    }
+
+    return withoutYou.slice(0, usersLength)
+  }, [usersLength, includesYou, currentUserId])
 
   if (!currentUser) return null
 
