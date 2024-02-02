@@ -1,13 +1,22 @@
 import {ComponentType} from 'react'
-import {LayoutProps, LogoProps, NavbarProps, ToolMenuProps} from '../../config/studio'
+import {
+  ActiveToolLayoutProps,
+  LayoutProps,
+  LogoProps,
+  NavbarProps,
+  ToolMenuProps,
+} from '../../config/studio'
 import {useMiddlewareComponents} from '../../config'
 import {StudioLogo, StudioNavbar, StudioToolMenu} from '../components'
 import {StudioLayoutComponent} from '../StudioLayout'
+import {StudioActiveToolLayout} from '../components/navbar/StudioActiveToolLayout'
 import {
   pickToolMenuComponent,
   pickNavbarComponent,
   pickLogoComponent,
   pickLayoutComponent,
+  pickSidebarComponent,
+  pickActiveToolLayoutComponent,
 } from './picks'
 
 /**
@@ -48,5 +57,19 @@ export function useLayoutComponent(): ComponentType<Omit<LayoutProps, 'renderDef
   return useMiddlewareComponents({
     defaultComponent: StudioLayoutComponent as ComponentType<Omit<LayoutProps, 'renderDefault'>>,
     pick: pickLayoutComponent,
+  })
+}
+
+/**
+ * @internal
+ */
+export function useActiveToolLayoutComponent(): ComponentType<
+  Omit<ActiveToolLayoutProps, 'renderDefault'>
+> {
+  return useMiddlewareComponents({
+    defaultComponent: StudioActiveToolLayout as ComponentType<
+      Omit<ActiveToolLayoutProps, 'renderDefault'>
+    >,
+    pick: pickActiveToolLayoutComponent,
   })
 }

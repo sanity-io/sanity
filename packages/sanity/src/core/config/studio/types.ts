@@ -24,6 +24,11 @@ export interface NavbarProps {
   renderDefault: (props: NavbarProps) => React.ReactElement
 }
 
+export interface ActiveToolLayoutProps {
+  renderDefault: (props: ActiveToolLayoutProps) => React.ReactElement
+  activeTool: Tool
+}
+
 /**
  * @hidden
  * @beta */
@@ -59,4 +64,5 @@ export interface StudioComponentsPluginOptions {
   logo?: React.ComponentType<LogoProps>
   navbar?: React.ComponentType<NavbarProps>
   toolMenu?: React.ComponentType<ToolMenuProps>
+  activeToolLayout?: React.ComponentType<ActiveToolLayoutProps>
 }

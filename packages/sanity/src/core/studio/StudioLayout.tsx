@@ -1,21 +1,17 @@
 /* eslint-disable i18next/no-literal-string, @sanity/i18n/no-attribute-template-literals */
 import {Card, Flex} from '@sanity/ui'
 import {startCase} from 'lodash'
-import React, {
-  createContext,
-  createElement,
-  Suspense,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react'
+import React, {createContext, Suspense, useCallback, useEffect, useMemo, useState} from 'react'
 import styled from 'styled-components'
 import {LoadingBlock} from '../components/loadingBlock'
 import {NoToolsScreen} from './screens/NoToolsScreen'
 import {RedirectingScreen} from './screens/RedirectingScreen'
 import {ToolNotFoundScreen} from './screens/ToolNotFoundScreen'
-import {useLayoutComponent, useNavbarComponent} from './studio-components-hooks'
+import {
+  useActiveToolLayoutComponent,
+  useLayoutComponent,
+  useNavbarComponent,
+} from './studio-components-hooks'
 import {StudioErrorBoundary} from './StudioErrorBoundary'
 import {useWorkspace} from './workspace'
 import {RouteScope, useRouter, useRouterState} from 'sanity/router'
@@ -145,6 +141,7 @@ export function StudioLayoutComponent() {
   )
 
   const Navbar = useNavbarComponent()
+  const ActiveToolLayout = useActiveToolLayoutComponent()
 
   /**
    * Handle legacy URL redirects from `/desk` to `/structure`
@@ -192,7 +189,7 @@ export function StudioLayoutComponent() {
               }
             >
               <Suspense fallback={<LoadingBlock showText />}>
-                {createElement(activeTool.component, {tool: activeTool})}
+                <ActiveToolLayout activeTool={activeTool} />
               </Suspense>
             </RouteScope>
           )}
