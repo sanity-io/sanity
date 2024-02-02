@@ -146,6 +146,16 @@ export default defineConfig([
     icon: SanityMonogram,
   },
   {
+    name: 'testStudioStaging',
+    title: 'Test Studio (staging)',
+    projectId: 'dl41hj45',
+    dataset: 'test',
+    plugins: [sharedSettings()],
+    basePath: '/test-staging',
+    icon: SanityMonogram,
+    apiHost: 'https://api.sanity.work',
+  },
+  {
     name: 'partialIndexing',
     title: 'Partial Indexing',
     projectId: 'ppsg7ml5',
