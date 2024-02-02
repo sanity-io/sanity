@@ -59,7 +59,7 @@ const renderMenuButton = ({open, t}: {open: boolean; t: TFunction}) => {
   return (
     <UIButton fontSize={1} mode="ghost" padding={0} radius="full" selected={open}>
       <Flex paddingX={3} paddingY={2}>
-        <Tooltip animate content={t('reaction-bar-tooltip')} disabled={open}>
+        <Tooltip animate content={t('reactions.add-reaction-tooltip')} disabled={open}>
           <Text size={1}>
             <ReactionIcon />
           </Text>

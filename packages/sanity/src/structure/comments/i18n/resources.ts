@@ -139,19 +139,36 @@ const commentsLocaleStrings = defineLocalesResources('comments', {
   'placeholder-create-thread': 'Add comment to <strong>{{field}}</strong>',
   /** The placeholder for replying to a comment */
   'placeholder-reply': 'Reply',
-  /** The comment reaction bar tooltip text */
-  'reaction-bar-tooltip': 'Add reaction',
-  /** Separator for several reactions */
-  'reaction-separator': 'and ',
 
-  /** The tooltip text for unknown user */
-  'reaction-unknown-user': 'Unknown user',
-  /** This is the tooltip text for when you are the user that has reacted */
-  'reaction-user-you': 'You',
-  /** This is the tooltip lowercase text for when you are the user that has reacted */
-  'reaction-user-you-lowercase': 'you',
-  /** The aria label for the reactions menu button */
-  'reactions-menu-button-aria-label': 'React with {{reaction}}',
+  /** Tooltip for the button to add a reaction to a comment */
+  'reactions.add-reaction-tooltip': 'Add reaction',
+  /** Aria label for the individual reactions you can choose from when reacting to a comment */
+  'reactions.react-with-aria-label': 'React with {{reactionName}}',
+  /** When a users' name cannot be resolved, fall back to this name */
+  'reactions.user-list.unknown-user-fallback-name': 'Unknown user',
+  /**
+   * When showing list of users who have reacted, replaces your own name with "you", eg
+   * "Donna, you, James, and Tyler reacted with 👍". A different key (`_leading` suffix)
+   * is used when you are the first to react, eg "You, Donna and Tyler reacted with 👍".
+   * Use `{{name}}` if you want to instead use the current users' actual name.
+   */
+  'reactions.user-list.you': 'you',
+  /**
+   * When showing list of users who have reacted, replaces your own name with "You", eg
+   * "You, Donna, James, and Tyler reacted with 👍". A different key (`_leading` suffix)
+   * is used when you are not the first to react, eg "Donna, you, James and Tyler reacted with 👍".
+   * Use `{{name}}` if you want to instead use the current users' actual name.
+   */
+  'reactions.user-list.you_leading': 'You',
+  /**
+   * The text shown for the tooltip that appears when hovering over the reaction count, eg
+   * "Donna, James, and Tyler Reacted with 👍". Three components are available for use:
+   * - `<UserList/>` - the list of names of users who have reacted, using the locales list format
+   * - `<Text>` - should be wrapped around the text describing the action ("reacted with")
+   * - `<ReactionName/>` - the name of the reaction emoji, eg ":heavy_plus_sign:"
+   */
+  'reactions.users-reacted-with-reaction': '<UserList/> <Text>reacted with</Text> <ReactionName/>',
+
   /** The thread breadcrumb button aria label */
   'thread-breadcrumb-layout-aria-label': 'Go to {{lastCrumb}} field',
   /** The tooltip text for mentioning a user */
@@ -162,9 +179,6 @@ const commentsLocaleStrings = defineLocalesResources('comments', {
   'tooltip-send-comment': 'Send comment',
   /** The tooltip aria label for sending a comment*/
   'tooltip-send-comment-aria-label': 'Send comment',
-  /** The reactions that the user has reacted with */
-  'user-reacted-with':
-    '<Content/> <Text>reacted with </Text> <ReactionName>{{reactionName}}</ReactionName>',
 })
 
 /**
