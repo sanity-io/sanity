@@ -1585,6 +1585,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'timeline.since': 'Since: {{timestamp, datetime}}',
   /** Label for missing change version for timeline menu dropdown are showing */
   'timeline.since-version-missing': 'Since: unknown version',
+  /**Aria label for the action buttons in the PTE toolbar */
+  'toolbar.portable-text.action-button-aria-label': 'Action button for {{action}} formatting',
   /** Label for the button showed after trial ended */
   'user-menu.action.free-trial-finished': 'Upgrade from free',
   /** Label for button showing the free trial days left */
