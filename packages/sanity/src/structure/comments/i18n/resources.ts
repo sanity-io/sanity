@@ -59,17 +59,15 @@ const commentsLocaleStrings = defineLocalesResources('comments', {
   /** Sharing feedback on the comments feature: The form title  */
   'feedback-footer-title': 'Help improve ',
 
-  /** The field button aria-label for add comment */
+  /** Aria label for button above fields to add a comment, when the field currently do not have any comments */
   'field-button-aria-label-add': 'Add comment',
-  /** The field button aria label for open comments*/
+  /** Aria label for button above fields that opens the comments for this field, when there are existing comments */
   'field-button-aria-label-open': 'Open comments',
-  /** The field button popover text when there is one comment */
+  /** Text shown in popover when hovering the button above fields that opens the comments panel, when there is a single comment present */
   'field-button-content_one': 'View comment',
-  /** The field button popover text when there are several comments*/
+  /** Text shown in popover when hovering the button above fields that opens the comments panel, when there are more than one comment present */
   'field-button-content_other': 'View comments',
-  /** The field button placeholder text */
-  'field-button-placeholder-text': 'Add comment to',
-  /** The field button text for adding a comment */
+  /** Text shown in popover when hovering the button above fields to add a comment, when the field currently do not have any comments */
   'field-button-title': 'Add comment',
 
   /** The button tooltip content for the add reaction button*/
