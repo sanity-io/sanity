@@ -663,8 +663,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'inputs.object.unknown-fields.warning.title_other': 'Unknown fields found',
   /** Collapse the editor to save screen space  */
   'inputs.portable-text.action.collapse-editor': 'Collapse editor',
-  /** Label for action to edit an existing annotation */
-  'inputs.portable-text.action.edit-annotation': 'Edit annotation',
+  /** Aria label for action to edit an existing annotation */
+  'inputs.portable-text.action.edit-annotation-aria-label': 'Edit annotation',
   /** Expand the editor to give more editing space */
   'inputs.portable-text.action.expand-editor': 'Expand editor',
   /** Label label for action to insert a block of a given type (`{{typeName}}`) */
@@ -675,8 +675,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'inputs.portable-text.action.insert-inline-object': 'Insert {{typeName}}',
   /** Accessibility label for action to insert an inline object of a given type (`{{typeName}}`) */
   'inputs.portable-text.action.insert-inline-object-aria-label': 'Insert {{typeName}} (inline)',
-  /** Label for action to remove an annotation */
-  'inputs.portable-text.action.remove-annotation': 'Remove annotation',
+  /** Aria label for action to remove an annotation */
+  'inputs.portable-text.action.remove-annotation-aria-label': 'Remove annotation',
   /** Label for activate on focus with context of click and not focused */
   'inputs.portable-text.activate-on-focus-message_click': 'Click to activate',
   /** Label for activate on focus with context of click and focused */
@@ -684,10 +684,14 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
     'Click or press space to activate',
   /** Label for activate on focus with context of tap and not focused */
   'inputs.portable-text.activate-on-focus-message_tap': 'Tap to activate',
+  /**Aria label for the annotation object */
+  'inputs.portable-text.annotation-aria-label': 'Annotation object',
   /** Title for dialog that allows editing an annotation */
   'inputs.portable-text.annotation-editor.title': 'Edit {{schemaType}}',
   /** Title of the default "link" annotation */
   'inputs.portable-text.annotation.link': 'Link',
+  /**Aria label for the block object */
+  'inputs.portable-text.block.aria-label': 'Block object',
   /** Label for action to edit a block item, in the case where it is editable */
   'inputs.portable-text.block.edit': 'Edit',
   /** Accessibility label for the button that opens the actions menu on blocks */
@@ -710,10 +714,16 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'inputs.portable-text.decorator.underline': 'Underline',
   /** Placeholder text for when the editor is empty */
   'inputs.portable-text.empty-placeholder': 'Empty',
+  /**Aria label for the block object */
+  'inputs.portable-text.inline-block.aria-label': 'Inline object',
   /** Label for action to edit an inline object item */
   'inputs.portable-text.inline-object.edit': 'Edit object',
+  /** Aria label for icon for action to edit an inline object item */
+  'inputs.portable-text.inline-object.edit-aria-label': 'Edit object',
   /** Label for action to remove an inline object item */
   'inputs.portable-text.inline-object.remove': 'Remove object',
+  /** Aria label for icon for action to remove an inline object item */
+  'inputs.portable-text.inline-object.remove-aria-label': 'Remove object',
   /** Disclaimer text shown on invalid Portable Text value, when an action is available to unblock the user, but it is not guaranteed to be safe */
   'inputs.portable-text.invalid-value.action-disclaimer':
     'NOTE: It’s generally safe to perform the action above, but if you are in doubt, get in touch with those responsible for configuring your studio.',

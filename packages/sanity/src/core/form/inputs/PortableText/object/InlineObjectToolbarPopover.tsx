@@ -79,6 +79,7 @@ export function InlineObjectToolbarPopover(props: InlineObjectToolbarPopoverProp
             </Text>
           </Box>
           <Button
+            aria-label={t('inputs.portable-text.inline-object.edit-aria-label')}
             icon={EditIcon}
             mode="bleed"
             onClick={onEdit}
@@ -86,6 +87,7 @@ export function InlineObjectToolbarPopover(props: InlineObjectToolbarPopoverProp
             tooltipProps={{content: t('inputs.portable-text.inline-object.edit')}}
           />
           <Button
+            aria-label={t('inputs.portable-text.inline-object.remove-aria-label')}
             ref={deleteButtonRef}
             icon={TrashIcon}
             mode="bleed"

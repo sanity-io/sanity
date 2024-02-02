@@ -24,6 +24,7 @@ import {usePortableTextMemberItem} from '../hooks/usePortableTextMembers'
 import {pathToString} from '../../../../field/paths'
 import {EMPTY_ARRAY} from '../../../../util'
 import {useChildPresence} from '../../../studio/contexts/Presence'
+import {useTranslation} from '../../../../i18n'
 import {InlineObjectToolbarPopover} from './InlineObjectToolbarPopover'
 import {ObjectEditModal} from './modals/ObjectEditModal'
 import {PreviewSpan, Root, TooltipBox} from './InlineObject.styles'
@@ -237,6 +238,7 @@ export const DefaultInlineObjectComponent = (props: BlockProps) => {
     validation,
     value,
   } = props
+  const {t} = useTranslation()
   const hasMarkers = markers.length > 0
   const [popoverOpen, setPopoverOpen] = useState<boolean>(false)
   const popoverTitle = schemaType?.title || schemaType.name
@@ -280,6 +282,7 @@ export const DefaultInlineObjectComponent = (props: BlockProps) => {
   return (
     <>
       <Root
+        aria-label={t('inputs.portable-text.inline-block.aria-label')}
         data-focused={focused || undefined}
         data-invalid={hasError || undefined}
         data-markers={hasMarkers || undefined}
