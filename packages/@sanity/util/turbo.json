@@ -6,6 +6,7 @@
       "outputs": [
         "lib/**",
         "index.js",
+        "client.js",
         "content.js",
         "createSafeJsonParser.js",
         "fs.js",

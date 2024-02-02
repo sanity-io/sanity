@@ -2,14 +2,7 @@
   "name": "@sanity/util",
   "version": "3.29.0",
   "description": "Utilities shared across projects of Sanity",
-  "keywords": [
-    "sanity",
-    "cms",
-    "headless",
-    "realtime",
-    "content",
-    "util"
-  ],
+  "keywords": ["sanity", "cms", "headless", "realtime", "content", "util"],
   "homepage": "https://www.sanity.io/",
   "bugs": {
     "url": "https://github.com/sanity-io/sanity/issues"
@@ -43,6 +36,17 @@
       },
       "import": "./lib/fs.esm.js",
       "default": "./lib/fs.esm.js"
+    },
+    "./client": {
+      "types": "./lib/exports/client.d.ts",
+      "source": "./exports/client.ts",
+      "require": "./lib/client.js",
+      "node": {
+        "module": "./lib/client.esm.js",
+        "import": "./lib/client.cjs.mjs"
+      },
+      "import": "./lib/client.esm.js",
+      "default": "./lib/client.esm.js"
     },
     "./content": {
       "types": "./lib/exports/content.d.ts",
@@ -96,24 +100,16 @@
   "types": "./lib/exports/index.d.ts",
   "typesVersions": {
     "*": {
-      "fs": [
-        "./lib/exports/fs.d.ts"
-      ],
-      "content": [
-        "./lib/exports/content.d.ts"
-      ],
-      "createSafeJsonParser": [
-        "./lib/exports/createSafeJsonParser.d.ts"
-      ],
-      "legacyDateFormat": [
-        "./lib/exports/legacyDateFormat.d.ts"
-      ],
-      "paths": [
-        "./lib/exports/paths.d.ts"
-      ]
+      "fs": ["./lib/exports/fs.d.ts"],
+      "client": ["./lib/exports/client.d.ts"],
+      "content": ["./lib/exports/content.d.ts"],
+      "createSafeJsonParser": ["./lib/exports/createSafeJsonParser.d.ts"],
+      "legacyDateFormat": ["./lib/exports/legacyDateFormat.d.ts"],
+      "paths": ["./lib/exports/paths.d.ts"]
     }
   },
   "files": [
+    "client.js",
     "content.js",
     "createSafeJsonParser.js",
     "fs.js",
@@ -127,14 +123,16 @@
     "build": "pkg-utils build --tsconfig tsconfig.lib.json",
     "postbuild": "run-s check:package",
     "check:package": "pkg-utils --tsconfig tsconfig.lib.json",
-    "clean": "rimraf content.js createSafeJsonParser.js fs.js legacyDateFormat.js lib paths.js",
+    "clean": "rimraf client.js content.js createSafeJsonParser.js fs.js legacyDateFormat.js lib paths.js",
     "test": "jest",
     "watch": "pkg-utils watch --tsconfig tsconfig.lib.json"
   },
   "dependencies": {
+    "@sanity/client": "^6.12.3",
     "@sanity/types": "3.29.0",
     "get-random-values-esm": "^1.0.0",
-    "moment": "^2.29.4"
+    "moment": "^2.29.4",
+    "rxjs": "^7.8.1"
   },
   "devDependencies": {
     "@types/moment": "^2.13.0",

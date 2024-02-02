@@ -13,11 +13,10 @@ import {concat, defer, from, lastValueFrom, merge, Observable, of} from 'rxjs'
 import {catchError, map, mergeAll, mergeMap, switchMap, toArray} from 'rxjs/operators'
 
 import {type SourceClientOptions, type Workspace} from '../config'
+import {ConcurrencyLimiter, createClientConcurrencyLimiter} from '@sanity/util/client'
 import {getFallbackLocaleSource} from '../i18n/fallback'
 import {type ValidationContext} from './types'
-import {ConcurrencyLimiter} from './util/ConcurrencyLimiter'
 import {createBatchedGetDocumentExists} from './util/createBatchedGetDocumentExists'
-import {createClientConcurrencyLimiter} from './util/createClientConcurrencyLimiter'
 import {getTypeChain, normalizeValidationRules} from './util/normalizeValidationRules'
 import {cancelIdleCallback, requestIdleCallback} from './util/requestIdleCallback'
 import {typeString} from './util/typeString'
@@ -32,7 +31,7 @@ const limitConcurrency = createClientConcurrencyLimiter(MAX_FETCH_CONCURRENCY)
 const isRecord = (maybeRecord: unknown): maybeRecord is Record<string, unknown> =>
   typeof maybeRecord === 'object' && maybeRecord !== null && !Array.isArray(maybeRecord)
 
-const isNonNullable = <T>(value: T): value is NonNullable<T> =>
+const isNonNullable = <T,>(value: T): value is NonNullable<T> =>
   value !== null && value !== undefined
 
 /**

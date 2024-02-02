@@ -12,6 +12,7 @@
 /lib
 
 # Exports
+/client.js
 /content.js
 /createSafeJsonParser.js
 /fs.js
