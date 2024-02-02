@@ -1,4 +1,4 @@
-import {ConcurrencyLimiter} from '../ConcurrencyLimiter'
+import {ConcurrencyLimiter} from '../src/ConcurrencyLimiter'
 
 const tick = () => new Promise((resolve) => setTimeout(resolve, 0))
 

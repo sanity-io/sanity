@@ -48,6 +48,17 @@
       "import": "./lib/client.esm.js",
       "default": "./lib/client.esm.js"
     },
+    "./ConcurrencyLimiter": {
+      "types": "./lib/exports/ConcurrencyLimiter.d.ts",
+      "source": "./exports/ConcurrencyLimiter.ts",
+      "require": "./lib/ConcurrencyLimiter.js",
+      "node": {
+        "module": "./lib/ConcurrencyLimiter.esm.js",
+        "import": "./lib/ConcurrencyLimiter.cjs.mjs"
+      },
+      "import": "./lib/ConcurrencyLimiter.esm.js",
+      "default": "./lib/ConcurrencyLimiter.esm.js"
+    },
     "./content": {
       "types": "./lib/exports/content.d.ts",
       "source": "./exports/content.ts",
@@ -102,6 +113,7 @@
     "*": {
       "fs": ["./lib/exports/fs.d.ts"],
       "client": ["./lib/exports/client.d.ts"],
+      "ConcurrencyLimiter": ["./lib/exports/ConcurrencyLimiter.d.ts"],
       "content": ["./lib/exports/content.d.ts"],
       "createSafeJsonParser": ["./lib/exports/createSafeJsonParser.d.ts"],
       "legacyDateFormat": ["./lib/exports/legacyDateFormat.d.ts"],
@@ -110,6 +122,7 @@
   },
   "files": [
     "client.js",
+    "ConcurrencyLimiter.js",
     "content.js",
     "createSafeJsonParser.js",
     "fs.js",
@@ -123,7 +136,7 @@
     "build": "pkg-utils build --tsconfig tsconfig.lib.json",
     "postbuild": "run-s check:package",
     "check:package": "pkg-utils --tsconfig tsconfig.lib.json",
-    "clean": "rimraf client.js content.js createSafeJsonParser.js fs.js legacyDateFormat.js lib paths.js",
+    "clean": "rimraf client.js ConcurrencyLimiter.js content.js createSafeJsonParser.js fs.js legacyDateFormat.js lib paths.js",
     "test": "jest",
     "watch": "pkg-utils watch --tsconfig tsconfig.lib.json"
   },

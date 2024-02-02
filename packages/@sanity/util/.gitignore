@@ -13,6 +13,7 @@
 
 # Exports
 /client.js
+/ConcurrencyLimiter.js
 /content.js
 /createSafeJsonParser.js
 /fs.js
