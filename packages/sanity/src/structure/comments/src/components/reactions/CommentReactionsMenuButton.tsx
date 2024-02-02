@@ -79,7 +79,6 @@ export function CommentReactionsMenuButton(props: CommentReactionsMenuButtonProp
       id: 'reactions-menu-button',
       onClick: handleClick,
       ref: setButtonElement,
-      t: t,
     })
   }, [handleClick, open, readOnly, renderMenuButton, t])
 
