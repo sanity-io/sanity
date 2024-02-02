@@ -127,7 +127,7 @@ const commentsLocaleStrings = defineLocalesResources('comments', {
 
   /** The comments onboarding popover text */
   'onboarding-popover-body':
-    'You can add comments to any field in a document. They`ll show up here, grouped by field.',
+    "You can add comments to any field in a document. They'll show up here, grouped by field.",
   /** The comments onboarding dismiss text */
   'onboarding-popover-dismiss': 'Got it',
   /** The comments onboarding popover header text */
