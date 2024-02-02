@@ -65,8 +65,9 @@ export function PortableTextInput(props: PortableTextInputProps) {
     hotkeys,
     markers = EMPTY_ARRAY,
     onChange,
-    onEditorChange,
     onCopy,
+    onEditorChange,
+    onFullScreenChange,
     onInsert,
     onItemRemove,
     onPaste,
@@ -123,9 +124,11 @@ export function PortableTextInput(props: PortableTextInputProps) {
       } else {
         telemetry.log(PortableTextInputCollapsed)
       }
+
+      onFullScreenChange?.(next)
       return next
     })
-  }, [telemetry])
+  }, [onFullScreenChange, telemetry])
 
   // Reset invalidValue if new value is coming in from props
   useEffect(() => {
