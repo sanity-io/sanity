@@ -130,10 +130,8 @@ const commentsLocaleStrings = defineLocalesResources('comments', {
   /** The comments onboarding popover header text */
   'onboarding-popover-header': 'Document fields now have comments',
 
-  /** The placeholder for adding a comment to a field title */
-  'placeholder-add-comment-field-title': 'Add comment to <strong>{{field}}</strong>',
-  /** The placeholder for creating a new thread to the field name */
-  'placeholder-create-thread': 'Add comment to <strong>{{field}}</strong>',
+  /** The placeholder for creating a new comment thread for a given field */
+  'placeholder-add-comment-to-field': 'Add comment to <strong>{{field}}</strong>',
   /** The placeholder for replying to a comment */
   'placeholder-reply': 'Reply',
 

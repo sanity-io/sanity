@@ -131,7 +131,7 @@ export function CommentsFieldButton(props: CommentsFieldButtonProps) {
 
   if (!hasComments) {
     const placeholder = (
-      <Translate t={t} i18nKey="placeholder-add-comment-field-title" values={{field: fieldTitle}} />
+      <Translate t={t} i18nKey="placeholder-add-comment-to-field" values={{field: fieldTitle}} />
     )
 
     const content = (
