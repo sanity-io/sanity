@@ -124,12 +124,12 @@ const commentsLocaleStrings = defineLocalesResources('comments', {
   /** The list status message for loading status */
   'list-status-loading': 'Loading comments',
 
-  /** The text for no users found for mentions */
-  'mentions-not-found': 'No users found',
-  /** The text for unauthorized mentions */
-  'mentions-unauthorized': 'Unauthorized',
-  /** The aria label for the command list for users to mention */
-  'mentions-user-list-aria-label': 'List of users to mention',
+  /** Text shown when no users can be found to mention */
+  'mentions.no-users-found': 'No users found',
+  /** Label/badge shown for users that are not authorized to see the document, and thus cannot be mentioned */
+  'mentions.unauthorized-user': 'Unauthorized',
+  /** Aria label for the command list for users to mention */
+  'mentions.user-list-aria-label': 'List of users to mention',
 
   /** The comments onboarding popover text */
   'onboarding-popover-body':

@@ -46,7 +46,7 @@ export function MentionsMenuItem(props: MentionsItemProps) {
 
         {!user.canBeMentioned && (
           <Badge fontSize={1} mode="outline">
-            {t('mentions-unauthorized')}
+            {t('mentions.unauthorized-user')}
           </Badge>
         )}
       </Flex>
