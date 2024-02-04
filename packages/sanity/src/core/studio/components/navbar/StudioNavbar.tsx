@@ -17,6 +17,7 @@ import {useWorkspace} from '../../workspace'
 import {Button, TooltipDelayGroupProvider} from '../../../../ui-components'
 import {NavbarContext} from '../../StudioLayout'
 import {useToolMenuComponent} from '../../studio-components-hooks'
+import {TasksNavbarButton} from '../../tasks/components'
 import {useTranslation} from '../../../i18n'
 import {UserMenu} from './userMenu'
 import {NewDocumentButton, useNewDocumentOptions} from './new-document'
@@ -100,6 +101,7 @@ export function StudioNavbar() {
       configIssues: mediaIndex > 1 && isDev,
       newDocumentFullscreen: mediaIndex <= 1,
       tools: mediaIndex >= 3,
+      tasks: mediaIndex >= 3,
     }),
     [mediaIndex],
   )
@@ -241,6 +243,7 @@ export function StudioNavbar() {
                       ref={setSearchOpenButtonEl}
                     />
                   )}
+                  {shouldRender.tasks && <TasksNavbarButton />}
                 </Flex>
                 {shouldRender.tools && (
                   <Box flex="none" marginLeft={1}>
