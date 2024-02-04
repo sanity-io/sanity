@@ -18,6 +18,7 @@ import {ToolNotFoundScreen} from './screens/ToolNotFoundScreen'
 import {useLayoutComponent, useNavbarComponent} from './studio-components-hooks'
 import {StudioErrorBoundary} from './StudioErrorBoundary'
 import {useWorkspace} from './workspace'
+import {StudioSidebar} from './StudioSidebar'
 import {RouteScope, useRouter, useRouterState} from 'sanity/router'
 
 const SearchFullscreenPortalCard = styled(Card)`
@@ -29,6 +30,10 @@ const SearchFullscreenPortalCard = styled(Card)`
   top: 0;
   width: 100%;
   z-index: 200;
+`
+
+const ActiveToolContainer = styled.div`
+  flex: 1;
 `
 
 /** @internal */
@@ -192,7 +197,12 @@ export function StudioLayoutComponent() {
               }
             >
               <Suspense fallback={<LoadingBlock showText />}>
-                {createElement(activeTool.component, {tool: activeTool})}
+                <Flex height="fill">
+                  <ActiveToolContainer>
+                    {createElement(activeTool.component, {tool: activeTool})}
+                  </ActiveToolContainer>
+                  <StudioSidebar />
+                </Flex>
               </Suspense>
             </RouteScope>
           )}
