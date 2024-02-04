@@ -147,6 +147,9 @@ export default defineConfig([
     plugins: [sharedSettings()],
     basePath: '/test',
     icon: SanityMonogram,
+    unstable_tasks: {
+      enabled: true,
+    },
   },
   {
     name: 'partialIndexing',
