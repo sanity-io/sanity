@@ -4,6 +4,10 @@ import {BooleanInputProps} from '../types'
 import {FormFieldHeaderText} from '../components/formField/FormFieldHeaderText'
 import {FormFieldStatus} from '../components/formField/FormFieldStatus'
 
+const Root = styled(Card)`
+  line-height: 1;
+`
+
 const CenterAlignedBox = styled(Box)`
   align-self: center;
 `
@@ -29,7 +33,7 @@ export function BooleanInput(props: BooleanInputProps) {
   const tone: CardTone | undefined = readOnly ? 'transparent' : undefined
 
   return (
-    <Card border data-testid="boolean-input" radius={2} tone={tone}>
+    <Root border data-testid="boolean-input" radius={2} tone={tone}>
       <Flex>
         <ZeroLineHeightBox padding={3}>
           <LayoutSpecificInput
@@ -56,6 +60,6 @@ export function BooleanInput(props: BooleanInputProps) {
           </FormFieldStatus>
         </CenterAlignedBox>
       </Flex>
-    </Card>
+    </Root>
   )
 }

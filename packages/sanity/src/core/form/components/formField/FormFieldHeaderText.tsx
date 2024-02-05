@@ -1,3 +1,4 @@
+import styled from 'styled-components'
 import type {DeprecatedProperty, FormNodeValidation} from '@sanity/types'
 import {Badge, Box, Flex, Stack, Text} from '@sanity/ui'
 import React, {memo} from 'react'
@@ -5,6 +6,14 @@ import {useTranslation} from '../../../i18n'
 import {createDescriptionId} from '../../members/common/createDescriptionId'
 import {TextWithTone} from '../../../components'
 import {FormFieldValidationStatus} from './FormFieldValidationStatus'
+
+const LabelSuffix = styled(Flex)`
+  /*
+   * Prevent the block size of appended elements (such as the deprecated field badge) affecting
+   * the intrinsic block size of the label.
+   */
+  contain: size;
+`
 
 /** @internal */
 export interface FormFieldHeaderTextProps {
@@ -32,10 +41,11 @@ export const FormFieldHeaderText = memo(function FormFieldHeaderText(
   const {description, inputId, title, deprecated, validation = EMPTY_ARRAY} = props
   const {t} = useTranslation()
   const hasValidations = validation.length > 0
+  const hasLabelSuffix = deprecated || hasValidations
 
   return (
     <Stack space={3}>
-      <Flex align="center">
+      <Flex align="center" paddingY={1}>
         <Text as="label" htmlFor={inputId} weight="medium" size={1}>
           {title || (
             <span style={{color: 'var(--card-muted-fg-color)'}}>
@@ -44,18 +54,22 @@ export const FormFieldHeaderText = memo(function FormFieldHeaderText(
           )}
         </Text>
 
-        {deprecated && (
-          <Box marginLeft={2}>
-            <Badge data-testid={`deprecated-badge-${title}`} tone="caution">
-              {t('form.field.deprecated-label')}
-            </Badge>
-          </Box>
-        )}
+        {hasLabelSuffix && (
+          <LabelSuffix align="center" flex={1}>
+            {deprecated && (
+              <Box marginLeft={2}>
+                <Badge data-testid={`deprecated-badge-${title}`} tone="caution">
+                  {t('form.field.deprecated-label')}
+                </Badge>
+              </Box>
+            )}
 
-        {hasValidations && (
-          <Box marginLeft={2}>
-            <FormFieldValidationStatus fontSize={1} placement="top" validation={validation} />
-          </Box>
+            {hasValidations && (
+              <Box marginLeft={2}>
+                <FormFieldValidationStatus fontSize={1} placement="top" validation={validation} />
+              </Box>
+            )}
+          </LabelSuffix>
         )}
       </Flex>
 
