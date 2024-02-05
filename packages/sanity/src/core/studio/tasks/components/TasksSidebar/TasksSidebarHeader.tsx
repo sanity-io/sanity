@@ -5,7 +5,7 @@ import {useTasks} from '../..'
 import {BetaBadge} from '../../../../components'
 
 export function TasksSidebarHeader() {
-  const {handleToggleSidebar} = useTasks()
+  const {toggleOpen} = useTasks()
 
   return (
     <Box padding={2}>
@@ -30,7 +30,7 @@ export function TasksSidebarHeader() {
             }}
             iconRight={DoubleChevronRightIcon}
             mode="bleed"
-            onClick={handleToggleSidebar}
+            onClick={toggleOpen}
           />
         </TooltipDelayGroupProvider>
       </Flex>
