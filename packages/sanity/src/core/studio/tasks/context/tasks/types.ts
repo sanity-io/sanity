@@ -1,4 +1,4 @@
 export interface TasksContextValue {
-  isSidebarOpen: boolean
-  handleToggleSidebar: () => void
+  isOpen: boolean
+  toggleOpen: () => void
 }
