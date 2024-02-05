@@ -23,6 +23,7 @@ import {parseArguments} from './util/parseArguments'
 import {resolveRootDir} from './util/resolveRootDir'
 import {telemetryDisclosure} from './util/telemetryDisclosure'
 import {runUpdateCheck} from './util/updateNotifier'
+import {getProjectRoot} from './util/getProjectRoot'
 
 const sanityEnv = process.env.SANITY_INTERNAL_ENV || 'production' // eslint-disable-line no-process-env
 const knownEnvs = ['development', 'staging', 'production']
@@ -98,6 +99,7 @@ export async function runCli(cliRoot: string, {cliVersion}: {cliVersion: string}
     cliRoot: cliRoot,
     workDir: workDir,
     corePath: await getCoreModulePath(workDir, cliConfig),
+    projectRootPath: cliConfig ? workDir : await getProjectRoot(),
     cliConfig,
     telemetry,
   }

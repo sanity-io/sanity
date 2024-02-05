@@ -97,7 +97,7 @@ export class CommandRunner {
       ...commandOptions,
       commandRunner: this,
       yarn: getYarnStub({output, workDir: commandOptions.workDir}),
-      ...getVersionedContextParams(cliConfig),
+      ...getVersionedContextParams(cliConfig, options),
     }
 
     if (isCommandGroup(command)) {
@@ -203,9 +203,15 @@ export function getCliRunner(commands: CommandOrGroup[]): CommandRunner {
 
 function getVersionedContextParams(
   cliConfig: CliConfigResult | null,
+  options: CommandRunnerOptions,
 ):
   | {sanityMajorVersion: 2; cliConfig?: SanityJson; cliConfigPath?: string}
-  | {sanityMajorVersion: 3; cliConfig?: CliConfig; cliConfigPath?: string} {
+  | {
+      sanityMajorVersion: 3
+      cliConfig?: CliConfig
+      cliConfigPath?: string
+      projectRootPath?: string
+    } {
   return cliConfig?.version === 2
     ? {
         sanityMajorVersion: 2,
@@ -216,5 +222,6 @@ function getVersionedContextParams(
         sanityMajorVersion: 3,
         cliConfig: cliConfig?.config || undefined,
         cliConfigPath: cliConfig?.path || undefined,
+        projectRootPath: options.projectRootPath,
       }
 }

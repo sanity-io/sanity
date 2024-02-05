@@ -116,6 +116,7 @@ export interface CliV3CommandContext extends CliBaseCommandContext {
   cliConfig?: CliConfig
   cliPackageManager: CliPackageManager
   telemetry: TelemetryLogger<TelemetryUserProperties>
+  projectRootPath?: string
 }
 
 export interface CliCommandRunner {
@@ -147,6 +148,7 @@ export interface CommandRunnerOptions {
   cliRoot: string
   workDir: string
   corePath: string | undefined
+  projectRootPath: string | undefined
   telemetry: TelemetryLogger<TelemetryUserProperties>
 }
 
