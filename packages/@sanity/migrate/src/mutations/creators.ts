@@ -19,7 +19,7 @@ import {type NormalizeReadOnlyArray, type Optional, type Tuplify} from './typeUt
 /**
  * Creates a new document.
  * @param document - The document to be created.
- * @returns The mutation operation to create the document.
+ * @returns The mutation to create the document.
  * @beta
  */
 export function create<Doc extends Optional<SanityDocument, '_id'>>(
@@ -30,10 +30,10 @@ export function create<Doc extends Optional<SanityDocument, '_id'>>(
 
 /**
  * Applies a patch to a document.
- * @param id - The id of the document to be patched.
+ * @param id - The ID of the document to be patched.
  * @param patches - The patches to be applied.
  * @param options - Optional patch options.
- * @returns The mutation operation to patch the document.
+ * @returns The mutation to patch the document.
  * @beta
  */
 export function patch<P extends NodePatchList | NodePatch>(
@@ -50,7 +50,7 @@ export function patch<P extends NodePatchList | NodePatch>(
 }
 
 /**
- * Creates a node patch at a specific path.
+ * Creates a {@link NodePatch} at a specific path.
  * @param path - The path where the operation should be applied.
  * @param operation - The operation to be applied.
  * @returns The node patch.
@@ -98,6 +98,6 @@ export function delete_(id: string): DeleteMutation {
 }
 
 /**
- * Alias for delete_
+ * Alias for delete
  */
 export const del = delete_
