@@ -3,6 +3,7 @@ import {useEffect} from 'react'
 import {ConfigResolutionError, SchemaError} from '../config'
 import {CorsOriginError} from '../store'
 import {globalScope} from '../util'
+import {useTelemetryErrorLogger} from './useTelemetryErrorLogger'
 
 const errorChannel = globalScope.__sanityErrorChannel
 
@@ -14,7 +15,7 @@ const errorChannel = globalScope.__sanityErrorChannel
  */
 export function ErrorLogger(): null {
   const {push: pushToast} = useToast()
-
+  const {logErrorToTelemetry} = useTelemetryErrorLogger()
   useEffect(() => {
     if (!errorChannel) return undefined
 
@@ -32,6 +33,8 @@ export function ErrorLogger(): null {
         return
       }
 
+      logErrorToTelemetry(msg.error)
+
       console.error(msg.error)
 
       pushToast({
@@ -45,7 +48,7 @@ export function ErrorLogger(): null {
         status: 'error',
       })
     })
-  }, [pushToast])
+  }, [pushToast, logErrorToTelemetry])
 
   return null
 }

@@ -56,6 +56,7 @@ export function StudioProvider({
   const _children = (
     <WorkspaceLoader LoadingComponent={LoadingBlock} ConfigErrorsComponent={ConfigErrorsScreen}>
       <StudioTelemetryProvider config={config}>
+        <ErrorLogger />
         <LocaleProvider>
           <ResourceCacheProvider>{children}</ResourceCacheProvider>
         </LocaleProvider>
@@ -66,7 +67,6 @@ export function StudioProvider({
   return (
     <ColorSchemeProvider onSchemeChange={onSchemeChange} scheme={scheme}>
       <ToastProvider paddingY={7} zOffset={Z_OFFSET.toast}>
-        <ErrorLogger />
         <StudioErrorBoundary>
           <WorkspacesProvider config={config} basePath={basePath}>
             <ActiveWorkspaceMatcher
