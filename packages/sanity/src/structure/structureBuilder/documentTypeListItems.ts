@@ -12,11 +12,6 @@ import {List} from './List'
 import {Collection} from './StructureNodes'
 import {StructureContext} from './types'
 
-function shouldShowIcon(schemaType: SchemaType): boolean {
-  const preview = schemaType.preview
-  return Boolean(preview && (preview.prepare || (preview.select && preview.select.media)))
-}
-
 const BUNDLED_DOC_TYPES = ['sanity.imageAsset', 'sanity.fileAsset']
 
 function isBundledDocType(typeName: string) {
@@ -95,7 +90,6 @@ export function getDocumentTypeList(
   }
 
   const title = type.title || startCase(typeName)
-  const showIcons = shouldShowIcon(type)
 
   return new DocumentTypeListBuilder(context)
     .id(spec.id || typeName)
@@ -103,7 +97,6 @@ export function getDocumentTypeList(
     .filter('_type == $type')
     .params({type: typeName})
     .schemaType(type)
-    .showIcons(showIcons)
     .defaultOrdering(DEFAULT_SELECTED_ORDERING_OPTION.by)
     .menuItemGroups(
       spec.menuItemGroups || [
