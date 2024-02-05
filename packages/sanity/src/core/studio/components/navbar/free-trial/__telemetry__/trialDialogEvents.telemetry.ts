@@ -29,7 +29,6 @@ export interface TrialDialogDismissedInfo extends BaseDialogEventAttributes {
   dialogDismissAction: 'cta_clicked' | 'x_click' | 'outside_click'
 }
 
-// TODO: space the names of these
 export const TrialDialogDismissed = defineEvent<TrialDialogDismissedInfo>({
   name: 'Trial Dialog Dismissed',
   version: 1,

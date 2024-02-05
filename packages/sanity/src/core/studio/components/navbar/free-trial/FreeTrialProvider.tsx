@@ -40,8 +40,7 @@ export const FreeTrialProvider = ({children}: FreeTrialProviderProps) => {
         trialDaysLeft: data.daysLeft,
       })
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [showDialog, data, showOnLoad])
+  }, [showDialog, data, showOnLoad, telemetry])
 
   useEffect(() => {
     // See if we have any parameters from the current route

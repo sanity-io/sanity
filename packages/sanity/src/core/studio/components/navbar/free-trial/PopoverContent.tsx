@@ -4,6 +4,7 @@ import styled from 'styled-components'
 import {Button} from '../../../../../ui-components'
 import {UpsellDescriptionSerializer} from '../../../upsell'
 import {type FreeTrialDialog} from './types'
+import {TrialDialogDismissedInfo} from './__telemetry__/trialDialogEvents.telemetry'
 
 const Image = styled.img`
   object-fit: cover;
@@ -14,7 +15,7 @@ const Image = styled.img`
 
 interface PopoverContentProps {
   content: FreeTrialDialog
-  handleClose: () => void
+  handleClose: (action?: TrialDialogDismissedInfo['dialogDismissAction']) => void
   handleOpenNext: () => void
 }
 
@@ -39,7 +40,7 @@ export function PopoverContent({content, handleClose, handleOpenNext}: PopoverCo
               mode="bleed"
               text={content.secondaryButton.text}
               tone="default"
-              onClick={handleClose}
+              onClick={() => handleClose('x_click')}
             />
           )}
           <Button
@@ -56,7 +57,10 @@ export function PopoverContent({content, handleClose, handleOpenNext}: PopoverCo
                   as: 'a',
                 }
               : {
-                  onClick: content.ctaButton?.action === 'openNext' ? handleOpenNext : handleClose,
+                  onClick:
+                    content.ctaButton?.action === 'openNext'
+                      ? handleOpenNext
+                      : () => handleClose('cta_clicked'),
                 })}
           />
         </Flex>
