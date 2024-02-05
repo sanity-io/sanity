@@ -295,25 +295,31 @@ function CommentsInspectorInner(
     [operation],
   )
 
-  const handleDeselectPath = useCallback(
+  const handleDeselectPath = useCallback(() => {
+    // Clear the selected path when:
+    // - Clicking outside the inspector when it's the top layer
+    // - The target is not a slate editor string. This is needed because we do not want to
+    //   frequently deselect the selected path when clicking inside the editor.
+    if (selectedPath && isTopLayer) {
+      setSelectedPath(null)
+    }
+  }, [isTopLayer, selectedPath, setSelectedPath])
+
+  const handleClickOutside = useCallback(
     (e: MouseEvent) => {
       // Clear the selected path when clicking outside the comments inspector.
       // We do this only when the comments inspector is the top layer.
       const isPTETarget =
         e.target instanceof HTMLElement && e.target?.hasAttribute('data-slate-string')
 
-      // Clear the selected path when:
-      // - Clicking outside the inspector when it's the top layer
-      // - The target is not a slate editor string. This is needed because we do not want to
-      //   frequently deselect the selected path when clicking inside the editor.
-      if (selectedPath && isTopLayer && !isPTETarget) {
-        setSelectedPath(null)
+      if (!isPTETarget) {
+        handleDeselectPath()
       }
     },
-    [isTopLayer, selectedPath, setSelectedPath],
+    [handleDeselectPath],
   )
 
-  useClickOutside(handleDeselectPath, [rootRef.current])
+  useClickOutside(handleClickOutside, [rootRef.current])
 
   // Handle scroll to comment from URL param
   useEffect(() => {
