@@ -80,7 +80,9 @@ export interface ReferenceElementHookOptions {
 /**
  * A hook that returns a reference element that can be used to position a popover.
  */
-export function useReferenceElement(props: ReferenceElementHookOptions): HTMLElement | null {
+export function useAuthoringReferenceElement(
+  props: ReferenceElementHookOptions,
+): HTMLElement | null {
   const {scrollElement, disabled, selector} = props
 
   const rect = useRectFromElements({

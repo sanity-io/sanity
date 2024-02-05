@@ -4,7 +4,7 @@ import {
   PortableTextEditor,
   RangeDecoration,
 } from '@sanity/portable-text-editor'
-import React, {useState, useRef, useCallback, useMemo} from 'react'
+import React, {useState, useRef, useCallback, useMemo, useEffect} from 'react'
 import {debounce} from 'lodash'
 import {uuid} from '@sanity/uuid'
 import * as PathUtils from '@sanity/util/paths'
@@ -22,7 +22,7 @@ import {
   useCommentsScroll,
   useCommentsSelectedPath,
 } from '../../../src'
-import {ReferenceElementHookOptions, useReferenceElement} from '../helpers'
+import {ReferenceElementHookOptions, useAuthoringReferenceElement} from '../helpers'
 import {InlineCommentInputPopover} from './InlineCommentInputPopover'
 import {FloatingButtonPopover} from './FloatingButtonPopover'
 import {PortableTextInputProps, isPortableTextTextBlock, useCurrentUser} from 'sanity'
@@ -43,10 +43,20 @@ export function CommentsPortableTextInput(props: PortableTextInputProps) {
   return <CommentsPortableTextInputInner {...props} />
 }
 
+function getSelectionBoundingRect(): DOMRect | null {
+  const selection = window.getSelection()
+  const range = selection?.getRangeAt(0)
+  const rect = range?.getBoundingClientRect()
+
+  return rect || null
+}
+
 export const CommentsPortableTextInputInner = React.memo(function CommentsPortableTextInputInner(
   props: PortableTextInputProps,
 ) {
   const currentUser = useCurrentUser()
+  const portal = usePortal()
+
   const {mentionOptions, comments, operation, onCommentsOpen, getComment} = useComments()
   const {setSelectedPath, selectedPath} = useCommentsSelectedPath()
   const {scrollToComment, scrollToGroup} = useCommentsScroll()
@@ -61,6 +71,8 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
   const [nextCommentSelection, setNextCommentSelection] = useState<EditorSelection | null>(null)
   const [currentSelection, setCurrentSelection] = useState<EditorSelection | null>(null)
   const [canSubmit, setCanSubmit] = useState<boolean>(false)
+
+  const [selectionRect, setSelectionRect] = useState<DOMRect | null>(null)
 
   const [isFullScreen, setIsFullScreen] = useState<boolean>(false)
 
@@ -84,6 +96,7 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
     setNextCommentSelection(null)
     setCanSubmit(false)
     setNextCommentValue(null)
+    setSelectionRect(null)
   }, [])
 
   const handleSubmit = useCallback(() => {
@@ -148,6 +161,11 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
     setNextCommentSelection(null)
   }, [])
 
+  const handleSetSelectionRect = useCallback(() => {
+    const rect = getSelectionBoundingRect()
+    setSelectionRect(rect)
+  }, [])
+
   const handleClickOutside = useCallback(() => {
     // If the user clicks outside the comment input with a value
     // we don't want to clear the selection and close the popover
@@ -188,10 +206,11 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
         return
       }
 
+      handleSetSelectionRect()
       setCurrentSelection(selection)
       setCanSubmit(true)
     },
-    [clearSelection, getFragment],
+    [clearSelection, getFragment, handleSetSelectionRect],
   )
 
   const debounceSelectionChange = useMemo(
@@ -209,6 +228,7 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
         // and we don't need to wait for the debounce to finish before hiding it.
         if (!isRangeSelected) {
           setCurrentSelection(null)
+          setSelectionRect(null)
         }
 
         debounceSelectionChange(change.selection, isRangeSelected)
@@ -236,16 +256,6 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
     props.value,
   ])
 
-  // The range decoration for the current selection. This is used to position the
-  // floating button popover on the current selection.
-  const selectDecorator = useMemo((): RangeDecoration => {
-    return {
-      component: ({children}) => <span data-ui="InlineCommentSelectionSpan">{children}</span>,
-      isRangeInvalid: () => !currentSelection,
-      selection: currentSelection,
-    }
-  }, [currentSelection])
-
   // The range decoration for the comment input. This is used to position the
   // comment input popover on the current selection and to highlight the
   // selected text.
@@ -270,12 +280,15 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
       ...(props?.rangeDecorations || EMPTY_ARRAY),
       // The range decoration when adding a comment
       ...(authoringDecorator ? [authoringDecorator] : EMPTY_ARRAY),
-      // The range decoration for the current selection
-      ...(selectDecorator ? [selectDecorator] : EMPTY_ARRAY),
       // The range decorations for existing comments
       ...addedCommentsDecorators,
     ]
-  }, [addedCommentsDecorators, authoringDecorator, props?.rangeDecorations, selectDecorator])
+  }, [
+    addedCommentsDecorators,
+    authoringDecorator,
+    props?.rangeDecorations,
+    // selectDecorator
+  ])
 
   const currentSelectionIsOverlapping = useMemo(() => {
     if (!currentSelection) return false
@@ -300,8 +313,6 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
     [props, onEditorChange, rangeDecorations],
   )
 
-  const portal = usePortal()
-
   // The scroll element used to update the reference element for the
   // popover on scroll.
   const scrollElement = useMemo(() => {
@@ -322,7 +333,7 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
     return portal.elements?.documentScrollElement || document.body
   }, [isFullScreen, portal.elements?.documentScrollElement, props.elementProps.ref])
 
-  const popoverAuthoringReferenceElement = useReferenceElement(
+  const popoverAuthoringReferenceElement = useAuthoringReferenceElement(
     useMemo(
       (): ReferenceElementHookOptions => ({
         scrollElement,
@@ -333,22 +344,26 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
     ),
   )
 
-  const popoverSelectionReferenceElement = useReferenceElement(
-    useMemo(
-      (): ReferenceElementHookOptions => ({
-        scrollElement,
-        disabled: !currentSelection,
-        selector: '[data-ui="InlineCommentSelectionSpan"]',
-      }),
-      [currentSelection, scrollElement],
-    ),
-  )
+  const selectionReferenceElement = useMemo(() => {
+    if (!selectionRect) return null
+
+    return {
+      getBoundingClientRect: () => selectionRect,
+    } as HTMLElement
+  }, [selectionRect])
+
+  useEffect(() => {
+    if (!currentSelection) return undefined
+
+    scrollElement?.addEventListener('wheel', handleSetSelectionRect)
+
+    return () => {
+      scrollElement?.removeEventListener('wheel', handleSetSelectionRect)
+    }
+  }, [currentSelection, scrollElement, handleSetSelectionRect])
 
   const showFloatingButton = Boolean(
-    currentSelection &&
-      canSubmit &&
-      popoverSelectionReferenceElement &&
-      !currentSelectionIsOverlapping,
+    currentSelection && canSubmit && selectionReferenceElement && !currentSelectionIsOverlapping,
   )
 
   const showFloatingInput = Boolean(
@@ -378,7 +393,7 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
               key="comment-input-floating-button"
               onClick={handleSelectCurrentSelection}
               ref={setFloatingButtonPopoverEl}
-              referenceElement={popoverSelectionReferenceElement}
+              referenceElement={selectionReferenceElement}
             />
           )}
         </AnimatePresence>
