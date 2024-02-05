@@ -34,7 +34,7 @@ export const endpoints = {
       options?: {
         returnIds?: boolean
         returnDocuments?: boolean
-        visiblity?: 'async' | 'sync' | 'deferred'
+        visibility?: 'async' | 'sync' | 'deferred'
         dryRun?: boolean
         tag?: string
       },
@@ -43,7 +43,7 @@ export const endpoints = {
         options?.tag && ['tag', options.tag],
         options?.returnIds && ['returnIds', 'true'],
         options?.returnDocuments && ['returnDocuments', 'true'],
-        options?.visiblity && ['visibility', options.visiblity],
+        options?.visibility && ['visibility', options.visibility],
         options?.dryRun && ['dryRun', 'true'],
       ].filter(Boolean) as [string, string][]
 
