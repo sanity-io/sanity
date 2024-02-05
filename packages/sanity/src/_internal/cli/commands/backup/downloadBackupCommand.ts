@@ -2,6 +2,7 @@
 import {PathLike, createWriteStream, existsSync, mkdirSync} from 'fs'
 import {tmpdir} from 'os'
 import path from 'path'
+import {Readable} from 'stream'
 import zlib from 'zlib'
 import {randomKey} from '@sanity/block-tools'
 import type {
@@ -15,7 +16,6 @@ import {QueryParams} from '@sanity/client'
 import {absolutify} from '@sanity/util/fs'
 import type chalk from 'chalk'
 import {isBoolean, isNumber, isString} from 'lodash'
-import pMap from 'p-map'
 import prettyMs from 'pretty-ms'
 import rimraf from 'rimraf'
 import chooseBackupIdPrompt from '../../actions/backup/chooseBackupIdPrompt'
@@ -50,7 +50,7 @@ type DownloadBackupOptions = {
 
 type GetBackupResponse = {
   createdAt: string
-  totalSize: number
+  totalFiles: number
   files: file[]
   nextCursor?: string
 }
@@ -58,6 +58,7 @@ type GetBackupResponse = {
 type file = {
   name: string
   url: string
+  type: string
 }
 
 interface ProgressEvent {
@@ -103,19 +104,19 @@ const downloadBackupCommand: CliCommandDefinition = {
 
     // Check if the file already exists at the path, ask for confirmation if it does.
     // Also, generate absolute path for the file.
-    const absOutputPath = await getOutputPath(
+    const absOutFilePath = await getOutputPath(
       prompt,
       datasetName,
       path.join(outDir, outFileName),
       overwrite,
     )
 
-    if (!absOutputPath) {
+    if (!absOutFilePath) {
       output.print('Cancelled')
       return
     }
 
-    output.print(`Downloading backup to "${chalk.cyan(absOutputPath)}"`)
+    output.print(`Downloading backup to "${chalk.cyan(absOutFilePath)}"`)
 
     const start = Date.now()
     let currentStep = 'Downloading documents and assets...'
@@ -137,17 +138,41 @@ const downloadBackupCommand: CliCommandDefinition = {
     // behind, hence it is important to create a unique directory for each attempt.
     // We intentionally avoid `datasetName` and `backupId`in path since some operating system have a max length
     // of 256 chars on path names and both of them can be quite long in some cases.
-    const tmpDir = path.join(tmpdir(), `backup-${Date.now()}-${randomKey(5)}`)
-    if (!existsSync(tmpDir)) {
-      mkdirSync(tmpDir)
+    const tmpOutDir = path.join(tmpdir(), `backup-${Date.now()}-${randomKey(5)}`)
+
+    // Create temporary directories if they don't exist.
+    for (const dir of [tmpOutDir, path.join(tmpOutDir, 'images'), path.join(tmpOutDir, 'files')]) {
+      if (!existsSync(dir)) {
+        mkdirSync(dir)
+      }
     }
 
-    debug('Writing to temporary directory %s', tmpDir)
+    debug('Writing to temporary directory %s', tmpOutDir)
     try {
-      await downloadFiles(client, {...opts, outDir: tmpDir}, onProgress)
-    } catch (err) {
+      const backupFileStream = new PaginatedGetBackupStream(client, opts)
+      let totalItemsDownloaded = 0
+
+      for await (const file of backupFileStream) {
+        await downloadFile(file, tmpOutDir)
+
+        totalItemsDownloaded += 1
+        onProgress({
+          step: `Downloading documents and assets...`,
+          update: true,
+          current: totalItemsDownloaded,
+          total: backupFileStream.totalFiles,
+        })
+      }
+    } catch (error) {
       spinner.fail()
-      throw err
+      let msg = error.statusCode ? error.response.body.message : error.message
+      // eslint-disable-next-line no-warning-comments
+      // TODO: Pull this out in a common error handling function for reusability.
+      // If no message can be extracted, print the whole error.
+      if (msg === undefined) {
+        msg = String(error)
+      }
+      throw new Error(`Downloading dataset backup failed: ${msg}`)
     }
 
     onProgress({
@@ -164,7 +189,7 @@ const downloadBackupCommand: CliCommandDefinition = {
 
     archive.on('error', (err: Error) => {
       debug('Archiving errored!\n%s', err.stack)
-      cleanupTmpDir(output, chalk, tmpDir)
+      cleanupTmpDir(output, chalk, tmpOutDir)
       throw err
     })
 
@@ -173,14 +198,14 @@ const downloadBackupCommand: CliCommandDefinition = {
       debug('Archive warning: %s', err.message)
     })
 
-    const archiveDestination = createWriteStream(absOutputPath as PathLike)
+    const archiveDestination = createWriteStream(absOutFilePath as PathLike)
     archiveDestination.on('error', (err: Error) => {
       throw err
     })
 
     archiveDestination.on('close', () => {
       debug(`Written ${archive.pointer()} total bytes to archive`)
-      cleanupTmpDir(output, chalk, tmpDir)
+      cleanupTmpDir(output, chalk, tmpOutDir)
     })
 
     // Pipe archive data to the file
@@ -189,12 +214,8 @@ const downloadBackupCommand: CliCommandDefinition = {
     // We are archiving content of tmpDir into a sub-directory based on `outFileName` so that upon
     // unarchiving, content is not spread in root path.
     // E.g. If archive name is foo.tar.gz, then we will be putting all the content inside foo/
-    const archiveSubDir = outFileName.split('.')[0]
-
-    // We intentionally download all files first, then bundle them into the archive. This lets us
-    // download multiple files concurrently. A possible optimisation is to stream files into the
-    // archive as soon as they've downloaded.
-    archive.directory(tmpDir, archiveSubDir)
+    // const archiveSubDir = outFileName.split('.')[0]
+    archive.directory(tmpOutDir, false)
     archive.finalize()
 
     onProgress({
@@ -207,75 +228,92 @@ const downloadBackupCommand: CliCommandDefinition = {
   },
 }
 
-// eslint-disable-next-line max-params
-async function downloadFiles(
-  client: SanityClient,
-  opts: DownloadBackupOptions,
-  onProgress: (progress: ProgressEvent) => void,
-) {
-  let totalItemsDownloaded = 0
-  let cursor: string | null = ''
-  while (cursor !== null) {
-    const query: QueryParams = cursor === '' ? {} : {nextCursor: cursor}
+class PaginatedGetBackupStream extends Readable {
+  private cursor = ''
+  private client: SanityClient
+  private opts: DownloadBackupOptions
+  public totalFiles = 0
 
-    let response: GetBackupResponse
+  constructor(client: SanityClient, opts: DownloadBackupOptions) {
+    super({objectMode: true})
+    this.client = client
+    this.opts = opts
+  }
+
+  async _read() {
     try {
-      response = await client.request({
-        headers: {Authorization: `Bearer ${opts.token}`},
-        uri: `/projects/${opts.projectId}/datasets/${opts.datasetName}/backups/${opts.backupId}`,
-        query,
-      })
+      const data = await fetchNextBackupPage(this.client, this.opts, this.cursor)
 
-      if (!response || !response.files || response.files.length === 0) {
-        throw new Error('No files to download')
+      // Set totalFiles when it's fetched for the first time
+      if (this.totalFiles === 0 && typeof data.totalFiles === 'number') {
+        this.totalFiles = data.totalFiles
       }
 
-      const {nextCursor, files} = response
+      data.files.forEach((file) => this.push(file))
 
-      // Mapper function to handle file download and progress update.
-      // eslint-disable-next-line no-loop-func
-      const mapper = async (f: file) => {
-        await downloadFile(f, opts.outDir).then(() => {
-          totalItemsDownloaded += 1
-
-          // eslint-disable-next-line no-warning-comments
-          // TODO: total should be the total number of files to download, but the API doesn't return it atm.
-          onProgress({
-            step: `Downloading documents and assets...`,
-            update: true,
-            current: totalItemsDownloaded,
-            total: totalItemsDownloaded,
-          })
-        })
+      if (typeof data.nextCursor === 'string' && data.nextCursor !== '') {
+        this.cursor = data.nextCursor
+      } else {
+        // No more pages left to fetch.
+        this.push(null)
       }
-      await pMap(files, mapper, {concurrency: opts.concurrency})
-
-      cursor = nextCursor || null
-    } catch (error) {
-      let msg = error.statusCode ? error.response.body.message : error.message
-      // eslint-disable-next-line no-warning-comments
-      // TODO: Pull this out in a common error handling function for reusability.
-      // If no message can be extracted, print the whole error.
-      if (msg === undefined) {
-        msg = String(error)
-      }
-      throw new Error(`Downloading dataset backup failed: ${msg}`)
+    } catch (err) {
+      this.destroy(err as Error)
     }
   }
 }
 
-async function downloadFile(file: file, dir: string) {
+// fetchNextBackupPage fetches the next page of backed up files from the backup API.
+async function fetchNextBackupPage(
+  client: SanityClient,
+  opts: DownloadBackupOptions,
+  cursor: string,
+): Promise<GetBackupResponse> {
+  const query: QueryParams = cursor === '' ? {} : {nextCursor: cursor}
+
+  let response: GetBackupResponse
+  try {
+    response = await client.request({
+      headers: {Authorization: `Bearer ${opts.token}`},
+      uri: `/projects/${opts.projectId}/datasets/${opts.datasetName}/backups/${opts.backupId}`,
+      query,
+    })
+
+    if (!response || !response.files || response.files.length === 0) {
+      throw new Error('No files to download')
+    }
+
+    return response
+  } catch (error) {
+    // It can be clearer to pull this logic out in a  common error handling function for reusability.
+    let msg = error.statusCode ? error.response.body.message : error.message
+
+    // If no message can be extracted, print the whole error.
+    if (msg === undefined) {
+      msg = String(error)
+    }
+    throw new Error(`Downloading dataset backup failed: ${msg}`)
+  }
+}
+
+async function downloadFile(file: file, tmpOutDir: string) {
   // File names that contain a path to file (sanity-storage/assets/file-name) fail when archive is created, so we
   // want to handle them by taking the base name as file name.
   file.name = path.basename(file.name)
 
+  let assetFilePath = ''
+  if (file.type === 'image') {
+    assetFilePath = path.join(path.join(tmpOutDir, 'images'), file.name)
+  } else if (file.type === 'file') {
+    assetFilePath = path.join(path.join(tmpOutDir, 'files'), file.name)
+  }
+
   let error
-  const filepath = path.join(dir, file.name)
   for (let retryCount = 0; retryCount < MAX_RETRIES; retryCount++) {
     try {
       const response = await request({
         url: file.url,
-        stream: true,
+        stream: assetFilePath !== '',
         maxRedirects: 5,
         timeout: {connect: CONNECTION_TIMEOUT, socket: READ_TIMEOUT},
       })
@@ -292,7 +330,15 @@ async function downloadFile(file: file, dir: string) {
           )
         })
       }
-      response.pipe(createWriteStream(filepath))
+
+      if (assetFilePath === '') {
+        const tmpOutDocumentsFile = path.join(tmpOutDir, 'data.ndjson')
+        const outputStream = createWriteStream(tmpOutDocumentsFile, {flags: 'a'})
+        outputStream.write(`${response}\n`)
+      } else {
+        response.pipe(createWriteStream(assetFilePath))
+      }
+
       return true
     } catch (err) {
       error = err
@@ -308,6 +354,7 @@ async function downloadFile(file: file, dir: string) {
   throw error
 }
 
+// prepareBackupOptions validates backup options from CLI and prepares Client and DownloadBackupOptions.
 async function prepareBackupOptions(
   context: CliCommandContext,
   args: CliCommandArguments,
@@ -350,12 +397,12 @@ async function prepareBackupOptions(
   }
 
   const defaultBackupFileName = `${datasetName}-backup-${backupId}.tar.gz`
-  const out = await (async (): Promise<string> => {
+  let out = await (async (): Promise<string> => {
     if ('out' in flags) {
       if (!isString(flags.out)) {
         throw new Error(`out path should be valid string`)
       }
-      return flags.out
+      return absolutify(flags.out)
     }
 
     const input = await prompt.single({
@@ -368,8 +415,12 @@ async function prepareBackupOptions(
   })()
 
   // If path is a directory name, then add a default file name to the path.
+  if (isPathDirName(out)) {
+    out = path.join(out, defaultBackupFileName)
+  }
+
   const outDir = path.dirname(out)
-  const outFileName = path.dirname(outDir) == outDir ? defaultBackupFileName : path.basename(outDir)
+  const outFileName = path.basename(out)
 
   return [
     client,
@@ -393,6 +444,15 @@ function cleanupTmpDir(output: CliOutputter, chalk: chalk.Chalk, tmpDir: string)
       debug(`Error cleaning up temporary files: ${err.message}`)
     }
   })
+}
+
+function isPathDirName(filepath: string): boolean {
+  // Check if the path has an extension, commonly indicating a file
+  if (/\.\w+$/.test(filepath)) {
+    return false
+  }
+
+  return true
 }
 
 export default downloadBackupCommand
