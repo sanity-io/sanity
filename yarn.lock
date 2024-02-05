@@ -3747,13 +3747,13 @@
     uuid "^9.0.1"
     zod "^3.22.4"
 
-"@sanity/presentation@1.7.3":
-  version "1.7.3"
-  resolved "https://registry.yarnpkg.com/@sanity/presentation/-/presentation-1.7.3.tgz#5f16c3dcdc9682f600889ac8c97d18124b461ea4"
-  integrity sha512-n6urLfMAUHaa7p8t741t9jE1ZmllPTmTWFKeL8yfnLxJi5c/iHIYYm88SYsllPC/O5A6Y+HG6tcw8GUjcoivvw==
+"@sanity/presentation@1.7.4":
+  version "1.7.4"
+  resolved "https://registry.yarnpkg.com/@sanity/presentation/-/presentation-1.7.4.tgz#4d83df3c533cb4a5dfe50b0711dabd269e413986"
+  integrity sha512-mGK7rK9qQ36AeRWCz2lXXm+WtRX5HHTUc5EyiVsvoWMteE2ZHhhmnfMVbqEs31V4/+u1WONBSdQ71seT49OXlQ==
   dependencies:
     "@sanity/icons" "^2.10.0"
-    "@sanity/preview-url-secret" "^1.5.5"
+    "@sanity/preview-url-secret" "^1.6.0"
     "@sanity/uuid" "3.0.2"
     "@types/lodash.isequal" "^4.5.8"
     fast-deep-equal "3.1.3"
@@ -3764,10 +3764,10 @@
     rxjs "^7.8.1"
     suspend-react "0.1.3"
 
-"@sanity/preview-url-secret@^1.5.5":
-  version "1.5.5"
-  resolved "https://registry.yarnpkg.com/@sanity/preview-url-secret/-/preview-url-secret-1.5.5.tgz#2b44c67cb9ae10196228ce4bfc1cf6f85efbad34"
-  integrity sha512-NZVRAVt4tS427SLa702Cw7H0mOb/oE73xcTA1+UQ/0pJ9V4GAqCZICKDn0wIN7vhkadl1j5pCSo7y6V7yi1d0A==
+"@sanity/preview-url-secret@^1.6.0":
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/@sanity/preview-url-secret/-/preview-url-secret-1.6.0.tgz#b4f81bc8f35faf836722a52cc42ba47c97a96ad7"
+  integrity sha512-0XCX16w3f/3maxK4RwYY5s7hLXHrDsJeaJFXc2nETxhyG6DUEt5CLyo4mpr6JZ+o31b7crqdgJ11Zd9nVChm+w==
   dependencies:
     "@sanity/uuid" "3.0.2"
 
