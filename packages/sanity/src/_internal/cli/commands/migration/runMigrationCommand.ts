@@ -24,6 +24,7 @@ Options
   --dataset <dataset> Dataset to migrate. Defaults to the dataset configured in your Sanity CLI config.
   --project <project id> Project ID of the dataset to migrate. Defaults to the projectId configured in your Sanity CLI config.
   --no-confirm Skip the confirmation prompt before running the migration. Make sure you know what you're doing before using this flag.
+  --from-export <export.tar.gz> Use a local dataset export as source for migration instead of calling the Sanity API. Note: this is only supported for dry runs.
 
 
 Examples
@@ -32,11 +33,15 @@ Examples
 
   # execute the migration against a dataset
   sanity migration run <id> --no-dry-run --project xyz --dataset staging
+
+  # execute the migration using a dataset export as the source
+  sanity migration run <id>  --from-export=production.tar.gz --no-dry-run --projectId xyz --dataset staging
 `
 
 interface CreateFlags {
   ['dry-run']?: boolean
   concurrency?: number
+  ['from-export']?: string
   progress?: boolean
   dataset?: string
   project?: string
@@ -49,6 +54,7 @@ function parseCliFlags(args: {argv?: string[]}) {
     .options('concurrency', {type: 'number', default: DEFAULT_MUTATION_CONCURRENCY})
     .options('progress', {type: 'boolean', default: true})
     .options('dataset', {type: 'string'})
+    .options('from-export', {type: 'string'})
     .options('project', {type: 'string'})
     .options('confirm', {type: 'boolean', default: true}).argv
 }
@@ -65,8 +71,8 @@ const runMigrationCommand: CliCommandDefinition<CreateFlags> = {
     const [id] = args.argsWithoutOptions
 
     const flags = await parseCliFlags(args)
-    // disabling from-export for now
-    const fromExport = undefined
+
+    const fromExport = flags.fromExport
     const dry = flags.dryRun
     const dataset = flags.dataset
     const project = flags.project
