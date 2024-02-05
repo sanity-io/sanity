@@ -12,17 +12,15 @@ interface TasksProviderProps {
 export function TasksProvider(props: TasksProviderProps) {
   const {children} = props
   // TODO: Get this state into the router?
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState(false)
 
-  const handleToggleSidebar = useCallback(() => {
-    setIsSidebarOpen((prev) => !prev)
+  const toggleOpen = useCallback(() => {
+    setIsOpen((prev) => !prev)
   }, [])
 
   return (
     <TasksEnabledProvider>
-      <TasksContext.Provider value={{isSidebarOpen, handleToggleSidebar}}>
-        {children}
-      </TasksContext.Provider>
+      <TasksContext.Provider value={{isOpen, toggleOpen}}>{children}</TasksContext.Provider>
     </TasksEnabledProvider>
   )
 }
