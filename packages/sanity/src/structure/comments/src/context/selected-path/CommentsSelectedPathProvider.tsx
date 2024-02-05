@@ -1,4 +1,5 @@
 import React, {useCallback, useMemo, useState} from 'react'
+import {isEqual} from 'lodash'
 import {CommentsSelectedPathContext} from './CommentsSelectedPathContext'
 import {CommentsSelectedPath, CommentsSelectedPathContextValue} from './types'
 
@@ -12,9 +13,14 @@ export const CommentsSelectedPathProvider = React.memo(function CommentsSelected
   const {children} = props
   const [selectedPath, setSelectedPath] = useState<CommentsSelectedPath | null>(null)
 
-  const handleSelectPath = useCallback((nextPath: CommentsSelectedPath | null) => {
-    setSelectedPath(nextPath)
-  }, [])
+  const handleSelectPath = useCallback(
+    (nextPath: CommentsSelectedPath | null) => {
+      if (isEqual(selectedPath, nextPath)) return
+
+      setSelectedPath(nextPath)
+    },
+    [selectedPath],
+  )
 
   const ctxValue = useMemo(
     (): CommentsSelectedPathContextValue => ({

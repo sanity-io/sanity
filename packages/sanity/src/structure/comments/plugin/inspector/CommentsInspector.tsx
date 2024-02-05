@@ -1,4 +1,4 @@
-import {Flex, Layer, useClickOutside, useLayer, useToast} from '@sanity/ui'
+import {ClickOutsideListener, Flex, Layer, useClickOutside, useLayer, useToast} from '@sanity/ui'
 import {Fragment, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import * as PathUtils from '@sanity/util/paths'
 import styled from 'styled-components'
@@ -295,13 +295,23 @@ function CommentsInspectorInner(
     [operation],
   )
 
-  const handleDeselectPath = useCallback(() => {
-    // Clear the selected path when clicking outside the comments inspector.
-    // We do this only when the comments inspector is the top layer.
-    if (selectedPath && isTopLayer) {
-      setSelectedPath(null)
-    }
-  }, [isTopLayer, selectedPath, setSelectedPath])
+  const handleDeselectPath = useCallback(
+    (e: MouseEvent) => {
+      // Clear the selected path when clicking outside the comments inspector.
+      // We do this only when the comments inspector is the top layer.
+      const isPTETarget =
+        e.target instanceof HTMLElement && e.target?.hasAttribute('data-slate-string')
+
+      // Clear the selected path when:
+      // - Clicking outside the inspector when it's the top layer
+      // - The target is not a slate editor string. This is needed because we do not want to
+      //   frequently deselect the selected path when clicking inside the editor.
+      if (selectedPath && isTopLayer && !isPTETarget) {
+        setSelectedPath(null)
+      }
+    },
+    [isTopLayer, selectedPath, setSelectedPath],
+  )
 
   useClickOutside(handleDeselectPath, [rootRef.current])
 
