@@ -1,57 +1,57 @@
 /* eslint-disable complexity */
-import React, {ChangeEvent, type RefObject} from 'react'
 import SplitPane from '@rexxars/react-split-pane'
-import type {ListenEvent, MutationEvent, SanityClient, ClientPerspective} from '@sanity/client'
-import {PlayIcon, StopIcon, CopyIcon, ErrorOutlineIcon} from '@sanity/icons'
-import isHotkey from 'is-hotkey'
+import type {ClientPerspective, ListenEvent, MutationEvent, SanityClient} from '@sanity/client'
+import {CopyIcon, ErrorOutlineIcon, PlayIcon, StopIcon} from '@sanity/icons'
 import {
-  Flex,
-  Card,
-  Stack,
   Box,
+  Button,
+  Card,
+  Flex,
+  Grid,
   Hotkeys,
+  Inline,
   Select,
+  Stack,
   Text,
   TextInput,
-  Tooltip,
-  Grid,
-  Button,
   ToastContextValue,
-  Inline,
+  Tooltip,
 } from '@sanity/ui'
+import isHotkey from 'is-hotkey'
+import React, {ChangeEvent, type RefObject} from 'react'
 import {TFunction} from 'sanity'
-import {VisionCodeMirror} from '../codemirror/VisionCodeMirror'
-import {getLocalStorage, LocalStorageish} from '../util/localStorage'
-import {parseApiQueryString, ParsedApiQueryString} from '../util/parseApiQueryString'
-import {validateApiVersion} from '../util/validateApiVersion'
-import {prefixApiVersion} from '../util/prefixApiVersion'
-import {tryParseParams} from '../util/tryParseParams'
-import {encodeQueryString} from '../util/encodeQueryString'
 import {API_VERSIONS, DEFAULT_API_VERSION} from '../apiVersions'
-import {PERSPECTIVES, DEFAULT_PERSPECTIVE, isPerspective} from '../perspectives'
-import {ResizeObserver} from '../util/resizeObserver'
+import {VisionCodeMirror} from '../codemirror/VisionCodeMirror'
+import {DEFAULT_PERSPECTIVE, PERSPECTIVES, isPerspective} from '../perspectives'
 import type {VisionProps} from '../types'
+import {encodeQueryString} from '../util/encodeQueryString'
+import {getLocalStorage, type LocalStorageish} from '../util/localStorage'
+import {parseApiQueryString, type ParsedApiQueryString} from '../util/parseApiQueryString'
+import {prefixApiVersion} from '../util/prefixApiVersion'
+import {ResizeObserver} from '../util/resizeObserver'
+import {tryParseParams} from '../util/tryParseParams'
+import {validateApiVersion} from '../util/validateApiVersion'
 import {DelayedSpinner} from './DelayedSpinner'
 import {ParamsEditor, type ParamsEditorChangeEvent} from './ParamsEditor'
-import {ResultView} from './ResultView'
-import {QueryErrorDialog} from './QueryErrorDialog'
 import {PerspectivePopover} from './PerspectivePopover'
+import {QueryErrorDialog} from './QueryErrorDialog'
+import {ResultView} from './ResultView'
 import {
-  Root,
+  ControlsContainer,
   Header,
-  SplitpaneContainer,
-  QueryCopyLink,
   InputBackgroundContainer,
   InputBackgroundContainerLeft,
   InputContainer,
-  StyledLabel,
-  ResultOuterContainer,
-  ResultInnerContainer,
-  ResultContainer,
+  QueryCopyLink,
   Result,
-  ControlsContainer,
-  TimingsFooter,
+  ResultContainer,
+  ResultInnerContainer,
+  ResultOuterContainer,
+  Root,
+  SplitpaneContainer,
+  StyledLabel,
   TimingsCard,
+  TimingsFooter,
   TimingsTextContainer,
 } from './VisionGui.styled'
 
