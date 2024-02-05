@@ -11,7 +11,7 @@ import {
 } from '../../../__telemetry__/comments.telemetry'
 import {CommentsUpsellContext} from './CommentsUpsellContext'
 import {CommentsUpsellContextValue} from './types'
-import {useClient, DEFAULT_STUDIO_CLIENT_OPTIONS} from 'sanity'
+import {useClient, DEFAULT_STUDIO_CLIENT_OPTIONS, useWorkspace} from 'sanity'
 
 const QUERY = `*[_type == "upsellUI" && id == "comments-upsell"][0]{
     ...,
@@ -52,6 +52,7 @@ const UPSELL_CLIENT: Partial<ClientConfig> = {
 export function CommentsUpsellProvider(props: {children: React.ReactNode}) {
   const [upsellDialogOpen, setUpsellDialogOpen] = useState(false)
   const [upsellData, setUpsellData] = useState<CommentsUpsellData | null>(null)
+  const {projectId} = useWorkspace()
   const telemetry = useTelemetry()
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
 
@@ -80,12 +81,23 @@ export function CommentsUpsellProvider(props: {children: React.ReactNode}) {
       .withConfig(UPSELL_CLIENT)
       .observable.fetch<CommentsUpsellData | null>(QUERY)
 
-    const sub = data$.subscribe(setUpsellData)
+    const sub = data$.subscribe((data) => {
+      if (!data) return
+      data.ctaButton.url = replaceTemplateValues(data.ctaButton.url, {
+        baseUrl: 'sanity.io',
+        projectId,
+      })
+      data.secondaryButton.url = replaceTemplateValues(data.secondaryButton.url, {
+        baseUrl: 'sanity.io',
+        projectId,
+      })
+      setUpsellData(data)
+    })
 
     return () => {
       sub.unsubscribe()
     }
-  }, [client])
+  }, [client, projectId])
 
   const ctxValue = useMemo<CommentsUpsellContextValue>(
     () => ({
@@ -110,4 +122,17 @@ export function CommentsUpsellProvider(props: {children: React.ReactNode}) {
       )}
     </CommentsUpsellContext.Provider>
   )
+}
+
+/**
+ * Takes a string and replaces all occurrences of `{{key}}` with the value of key in the values object
+ */
+const replaceTemplateValues = (message: string, values: Record<string, string> = {}): string => {
+  if (!message) return ''
+
+  // Perform replacement
+  return message.replace(/{{(.*?)}}/g, (match, key) => {
+    const trimmedKey = key.trim()
+    return values[trimmedKey] ?? match
+  })
 }
