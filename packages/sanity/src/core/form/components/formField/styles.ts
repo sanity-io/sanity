@@ -1,6 +1,13 @@
+import {Grid} from '@sanity/ui'
+import styled from 'styled-components'
+
 function focusRingBorderStyle(border: {color: string; width: number}): string {
   return `inset 0 0 0 ${border.width}px ${border.color}`
 }
+
+export const AlignedBottomGrid = styled(Grid)`
+  align-items: flex-end;
+`
 
 export function focusRingStyle(opts: {
   base?: {bg: string}

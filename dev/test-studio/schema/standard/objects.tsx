@@ -72,6 +72,7 @@ export default defineType({
         {
           type: 'string',
           title: 'String 1',
+          description: 'this is a king kong description',
           name: 'string1',
         },
         {

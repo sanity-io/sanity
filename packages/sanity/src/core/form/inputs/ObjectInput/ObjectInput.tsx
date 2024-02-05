@@ -1,9 +1,9 @@
 import React, {Fragment, memo, useCallback, useMemo} from 'react'
-import {Grid, Stack} from '@sanity/ui'
+import {Stack} from '@sanity/ui'
 import {ObjectInputProps} from '../../types'
 import {ObjectInputMembers} from '../../members'
 import {UnknownFields} from './UnknownFields'
-import {FieldGroupTabsWrapper} from './ObjectInput.styled'
+import {FieldGroupTabsWrapper, AlignedBottomGrid} from './ObjectInput.styled'
 import {FieldGroupTabs} from './fieldGroups/FieldGroupTabs'
 
 /**
@@ -97,9 +97,9 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
         key={selectedGroup?.name}
       >
         {columns ? (
-          <Grid columns={columns} gap={4} marginTop={1}>
+          <AlignedBottomGrid columns={columns} gap={4} marginTop={1}>
             {renderObjectMembers()}
-          </Grid>
+          </AlignedBottomGrid>
         ) : (
           renderObjectMembers()
         )}
