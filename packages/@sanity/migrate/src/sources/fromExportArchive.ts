@@ -3,6 +3,7 @@ import {maybeDecompress} from '../fs-webstream/maybeDecompress'
 import {untar} from '../tar-webstream/untar'
 import {streamToAsyncIterator} from '../utils/streamToAsyncIterator'
 import {readFileAsWebStream} from '../fs-webstream/readFileAsWebStream'
+import {drain} from '../tar-webstream/drain'
 
 export async function* fromExportArchive(path: string) {
   for await (const [header, entry] of streamToAsyncIterator(
@@ -12,6 +13,9 @@ export async function* fromExportArchive(path: string) {
       for await (const chunk of streamToAsyncIterator(entry)) {
         yield chunk
       }
+    } else {
+      // It's not ndjson, so drain the entry stream, so we can move on with the next entry
+      await drain(entry)
     }
   }
 }
