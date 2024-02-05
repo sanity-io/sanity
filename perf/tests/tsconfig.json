@@ -1,5 +1,5 @@
 {
-  "extends": "../tsconfig.settings.json",
+  "extends": "../../tsconfig.settings.json",
   "include": ["./**/*"],
   "compilerOptions": {
     "esModuleInterop": true,

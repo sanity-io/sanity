@@ -10,7 +10,8 @@
     "clean": "rimraf .sanity dist",
     "dev": "sanity dev --port 3300",
     "lint": "eslint .",
-    "start": "sanity start --port 3300"
+    "start": "sanity start --port 3300",
+    "preview": "yarn build && yarn start"
   },
   "dependencies": {
     "react": "^18.2.0",

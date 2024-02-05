@@ -2,7 +2,7 @@
 import {defineConfig, defineDocumentFieldAction, type PluginOptions} from 'sanity'
 import {structureTool} from 'sanity/structure'
 import {useCallback} from 'react'
-import {STUDIO_DATASET, STUDIO_PROJECT_ID} from '../config/constants'
+import {STUDIO_DATASET, STUDIO_PROJECT_ID} from '../tests/config/constants'
 import {simple} from './schema/simple'
 import {deepObject} from './schema/deepObject'
 import {deepArray} from './schema/deepArray'
