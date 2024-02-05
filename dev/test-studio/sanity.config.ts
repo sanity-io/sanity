@@ -147,9 +147,6 @@ export default defineConfig([
     plugins: [sharedSettings()],
     basePath: '/test',
     icon: SanityMonogram,
-    unstable_tasks: {
-      enabled: true,
-    },
   },
   {
     name: 'partialIndexing',
@@ -201,6 +198,9 @@ export default defineConfig([
     apiHost: 'https://api.sanity.work',
     auth: {
       loginMethod: 'token',
+    },
+    unstable_tasks: {
+      enabled: true,
     },
   },
   {
