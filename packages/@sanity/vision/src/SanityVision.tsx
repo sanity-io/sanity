@@ -3,6 +3,7 @@ import {type Tool, useClient} from 'sanity'
 import {type VisionConfig} from './types'
 import {DEFAULT_API_VERSION} from './apiVersions'
 import {VisionContainer} from './containers/VisionContainer'
+import {VisionErrorBoundary} from './containers/VisionErrorBoundary'
 
 interface SanityVisionProps {
   tool: Tool<VisionConfig>
@@ -15,7 +16,11 @@ function SanityVision(props: SanityVisionProps) {
     ...props.tool.options,
   }
 
-  return <VisionContainer client={client} config={config} />
+  return (
+    <VisionErrorBoundary>
+      <VisionContainer client={client} config={config} />
+    </VisionErrorBoundary>
+  )
 }
 
 export default SanityVision
