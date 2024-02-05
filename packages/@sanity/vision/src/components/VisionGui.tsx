@@ -643,22 +643,24 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
   render() {
     const {datasets, t} = this.props
     const {
-      error,
-      queryResult,
-      url,
-      queryInProgress,
-      listenInProgress,
-      paneSizeOptions,
-      queryTime,
-      e2eTime,
-      listenMutations,
       apiVersion,
-      dataset,
       customApiVersion,
-      isValidApiVersion,
+      dataset,
+      e2eTime,
+      error,
       hasValidParams,
+      isValidApiVersion,
+      listenInProgress,
+      listenMutations,
+      paneSizeOptions,
       paramsError,
       perspective,
+      query,
+      queryInProgress,
+      queryResult,
+      queryTime,
+      rawParams,
+      url,
     } = this.state
     const hasResult = !error && !queryInProgress && typeof queryResult !== 'undefined'
 
@@ -825,7 +827,7 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
                         <StyledLabel muted>{t('query.label')}</StyledLabel>
                       </Flex>
                     </InputBackgroundContainerLeft>
-                    <VisionCodeMirror value={this.state.query} onChange={this.handleQueryChange} />
+                    <VisionCodeMirror value={query} onChange={this.handleQueryChange} />
                   </Box>
                 </InputContainer>
                 <InputContainer display="flex" ref={this._paramsEditorContainer}>
@@ -844,7 +846,7 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
                         )}
                       </Flex>
                     </InputBackgroundContainerLeft>
-                    <ParamsEditor value={this.state.rawParams} onChange={this.handleParamsChange} />
+                    <ParamsEditor value={rawParams} onChange={this.handleParamsChange} />
                   </Card>
                   {/* Controls (listen/run) */}
                   <ControlsContainer>
