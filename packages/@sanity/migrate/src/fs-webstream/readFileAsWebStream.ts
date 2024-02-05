@@ -16,9 +16,12 @@ export function readFileAsWebStream(filename: string): ReadableStream<Uint8Array
       fileHandle = await open(filename, 'r')
     },
     async pull(controller) {
-      const buffer = new Uint8Array(CHUNK_SIZE)
-
-      const {bytesRead} = await fileHandle.read(buffer, 0, CHUNK_SIZE, position)
+      const {bytesRead, buffer} = await fileHandle.read(
+        new Uint8Array(CHUNK_SIZE),
+        0,
+        CHUNK_SIZE,
+        position,
+      )
       if (bytesRead === 0) {
         await fileHandle.close()
         debug('Closing readable stream from', filename)
