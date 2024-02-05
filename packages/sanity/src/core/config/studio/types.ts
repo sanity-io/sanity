@@ -52,7 +52,10 @@ export interface StudioComponents {
  * @beta */
 export interface StudioComponentsPluginOptions {
   layout?: React.ComponentType<LayoutProps>
-  /** @deprecated Use logoMark instead */
+  /**
+   * @deprecated Add custom icons on a per-workspace basis by customizing workspace `icon` instead.
+   * @see {@link https://www.sanity.io/docs/workspaces}
+   */
   logo?: React.ComponentType<LogoProps>
   navbar?: React.ComponentType<NavbarProps>
   toolMenu?: React.ComponentType<ToolMenuProps>
