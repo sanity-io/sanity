@@ -20,7 +20,7 @@ export interface TrialDialogViewedInfo extends BaseDialogEventAttributes {
 }
 
 export const TrialDialogViewed = defineEvent<TrialDialogViewedInfo>({
-  name: 'TrialDialogViewed',
+  name: 'Trial Dialog Viewed',
   version: 1,
   description: 'User viewed a dialog or popover related to free trial',
 })
@@ -29,8 +29,9 @@ export interface TrialDialogDismissedInfo extends BaseDialogEventAttributes {
   dialogDismissAction: 'cta_clicked' | 'x_click' | 'outside_click'
 }
 
+// TODO: space the names of these
 export const TrialDialogDismissed = defineEvent<TrialDialogDismissedInfo>({
-  name: 'TrialDialogDismissed',
+  name: 'Trial Dialog Dismissed',
   version: 1,
   description: 'User dismissed a dialog or popover related to free trial',
 })
@@ -40,7 +41,7 @@ export interface TrialDialogCTAClickedInfo extends BaseDialogEventAttributes {
 }
 
 export const TrialDialogCTAClicked = defineEvent<TrialDialogCTAClickedInfo>({
-  name: 'TrialDialogCTAClicked',
+  name: 'Trial Dialog CTA Clicked',
   version: 1,
   description: 'User clicked a CTA in a dialog or popover related to free trial',
 })

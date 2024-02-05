@@ -28,8 +28,8 @@ export const FreeTrialProvider = ({children}: FreeTrialProviderProps) => {
   // Whenever showDialog changes, run effect to track
   // the dialog view
   useEffect(() => {
-    const dialog = data?.showOnLoad || data?.showOnClick
-    if (showDialog && dialog) {
+    const dialog = data?.showOnLoad
+    if (showDialog && showOnLoad && dialog) {
       telemetry.log(TrialDialogViewed, {
         dialogId: dialog.id,
         dialogRevision: dialog._rev,
@@ -41,7 +41,7 @@ export const FreeTrialProvider = ({children}: FreeTrialProviderProps) => {
       })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [showDialog])
+  }, [showDialog, data, showOnLoad])
 
   useEffect(() => {
     // See if we have any parameters from the current route
