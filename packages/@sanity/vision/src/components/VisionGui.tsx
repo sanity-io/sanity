@@ -345,7 +345,7 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
       () => {
         this._localStorage.merge({
           query: this.state.query,
-          params: this.state.params,
+          params: this.state.rawParams,
           dataset: this.state.dataset,
           apiVersion: customApiVersion || apiVersion,
           perspective: this.state.perspective,
