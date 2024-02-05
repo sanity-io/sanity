@@ -158,15 +158,14 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
     const {client, datasets, config} = props
     this._localStorage = getLocalStorage(client.config().projectId || 'default')
 
-    const lastQuery = this._localStorage.get('query', '')
-    const lastParams = this._localStorage.get('params', '{\n  \n}')
-
     const defaultDataset = config.defaultDataset || client.config().dataset || datasets[0]
     const defaultApiVersion = prefixApiVersion(`${config.defaultApiVersion}`)
     const defaultPerspective = DEFAULT_PERSPECTIVE
 
     let dataset = this._localStorage.get('dataset', defaultDataset)
     let apiVersion = this._localStorage.get('apiVersion', defaultApiVersion)
+    let lastQuery = this._localStorage.get('query', '')
+    let lastParams = this._localStorage.get('params', '{\n  \n}')
     const customApiVersion = API_VERSIONS.includes(apiVersion) ? false : apiVersion
     let perspective = this._localStorage.get('perspective', defaultPerspective)
 
@@ -180,6 +179,14 @@ export class VisionGui extends React.PureComponent<VisionGuiProps, VisionGuiStat
 
     if (!PERSPECTIVES.includes(perspective)) {
       perspective = DEFAULT_PERSPECTIVE
+    }
+
+    if (typeof lastQuery !== 'string') {
+      lastQuery = ''
+    }
+
+    if (typeof lastParams !== 'string') {
+      lastParams = '{\n  \n}'
     }
 
     this._visionRoot = React.createRef()
