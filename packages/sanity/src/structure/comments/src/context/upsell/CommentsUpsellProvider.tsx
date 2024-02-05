@@ -1,6 +1,7 @@
 import {useState, useMemo, useEffect, useCallback} from 'react'
 import {ClientConfig} from '@sanity/client'
 import {useTelemetry} from '@sanity/telemetry/react'
+import {set, template} from 'lodash'
 import {CommentsUpsellData} from '../../types'
 import {CommentsUpsellDialog} from '../../components'
 import {
@@ -45,6 +46,7 @@ const UPSELL_CLIENT: Partial<ClientConfig> = {
   useCdn: true,
 }
 
+const TEMPLATE_OPTIONS = {interpolate: /{{([\s\S]+?)}}/g}
 /**
  * @beta
  * @hidden
@@ -83,15 +85,16 @@ export function CommentsUpsellProvider(props: {children: React.ReactNode}) {
 
     const sub = data$.subscribe((data) => {
       if (!data) return
-      data.ctaButton.url = replaceTemplateValues(data.ctaButton.url, {
-        baseUrl: 'sanity.io',
-        projectId,
-      })
-      data.secondaryButton.url = replaceTemplateValues(data.secondaryButton.url, {
-        baseUrl: 'sanity.io',
-        projectId,
-      })
-      setUpsellData(data)
+      try {
+        const ctaUrl = template(data.ctaButton.url, TEMPLATE_OPTIONS)
+        data.ctaButton.url = ctaUrl({baseUrl: 'sanity.io', projectId})
+
+        const secondaryUrl = template(data.secondaryButton.url, TEMPLATE_OPTIONS)
+        data.secondaryButton.url = secondaryUrl({baseUrl: 'sanity.io', projectId})
+        setUpsellData(data)
+      } catch (e) {
+        // silently fail
+      }
     })
 
     return () => {
@@ -122,17 +125,4 @@ export function CommentsUpsellProvider(props: {children: React.ReactNode}) {
       )}
     </CommentsUpsellContext.Provider>
   )
-}
-
-/**
- * Takes a string and replaces all occurrences of `{{key}}` with the value of key in the values object
- */
-const replaceTemplateValues = (message: string, values: Record<string, string> = {}): string => {
-  if (!message) return ''
-
-  // Perform replacement
-  return message.replace(/{{(.*?)}}/g, (match, key) => {
-    const trimmedKey = key.trim()
-    return values[trimmedKey] ?? match
-  })
 }
