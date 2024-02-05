@@ -1,9 +1,8 @@
 import path from 'node:path'
 import {writeFile} from 'node:fs/promises'
-import {existsSync} from 'node:fs'
+import {existsSync, mkdirSync} from 'node:fs'
 import type {CliCommandDefinition} from '@sanity/cli'
 import deburr from 'lodash/deburr'
-import mkdirp from 'mkdirp'
 import {MIGRATIONS_DIRECTORY} from './constants'
 import {renameType} from './templates/renameType'
 import {stringToPTE} from './templates/stringToPTE'
@@ -87,7 +86,7 @@ const createMigrationCommand: CliCommandDefinition<CreateMigrationFlags> = {
         return
       }
     }
-    mkdirp.sync(destDir)
+    mkdirSync(destDir, {recursive: true})
 
     const renderedTemplate = (templatesByName[template].template || minimalSimple)({
       migrationName: title,
