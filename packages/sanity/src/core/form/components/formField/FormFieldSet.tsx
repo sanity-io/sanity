@@ -12,7 +12,7 @@ import {TextWithTone} from '../../../components'
 import {useTranslation} from '../../../i18n'
 import {FormFieldValidationStatus} from './FormFieldValidationStatus'
 import {FormFieldSetLegend} from './FormFieldSetLegend'
-import {focusRingStyle, StyledGrid} from './styles'
+import {focusRingStyle, AlignedBottomGrid} from './styles'
 import {FormFieldBaseHeader} from './FormFieldBaseHeader'
 
 /** @internal */
@@ -149,9 +149,9 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
       return null
     }
     return (
-      <StyledGrid columns={columns} gapX={4} gapY={5}>
+      <AlignedBottomGrid columns={columns} gapX={4} gapY={5}>
         {getChildren(children)}
-      </StyledGrid>
+      </AlignedBottomGrid>
     )
   }, [children, collapsed, columns])
 

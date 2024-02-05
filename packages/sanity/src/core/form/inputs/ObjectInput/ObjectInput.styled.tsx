@@ -7,6 +7,6 @@ export const FieldGroupTabsWrapper = styled(Card)<{$level?: number}>`
   padding-bottom: ${({$level, theme}) =>
     $level === 0 ? theme.sanity.space[4] : theme.sanity.space[4]}px;
 `
-export const StyledGrid = styled(Grid)`
+export const AlignedBottomGrid = styled(Grid)`
   align-items: flex-end;
 `

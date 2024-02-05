@@ -5,7 +5,7 @@ function focusRingBorderStyle(border: {color: string; width: number}): string {
   return `inset 0 0 0 ${border.width}px ${border.color}`
 }
 
-export const StyledGrid = styled(Grid)`
+export const AlignedBottomGrid = styled(Grid)`
   align-items: flex-end;
 `
 

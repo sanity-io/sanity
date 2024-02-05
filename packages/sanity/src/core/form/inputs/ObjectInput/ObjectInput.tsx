@@ -3,7 +3,7 @@ import {Stack} from '@sanity/ui'
 import {ObjectInputProps} from '../../types'
 import {ObjectInputMembers} from '../../members'
 import {UnknownFields} from './UnknownFields'
-import {FieldGroupTabsWrapper, StyledGrid} from './ObjectInput.styled'
+import {FieldGroupTabsWrapper, AlignedBottomGrid} from './ObjectInput.styled'
 import {FieldGroupTabs} from './fieldGroups/FieldGroupTabs'
 
 /**
@@ -97,9 +97,9 @@ export const ObjectInput = memo(function ObjectInput(props: ObjectInputProps) {
         key={selectedGroup?.name}
       >
         {columns ? (
-          <StyledGrid columns={columns} gap={4} marginTop={1}>
+          <AlignedBottomGrid columns={columns} gap={4} marginTop={1}>
             {renderObjectMembers()}
-          </StyledGrid>
+          </AlignedBottomGrid>
         ) : (
           renderObjectMembers()
         )}
