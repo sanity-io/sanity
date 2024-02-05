@@ -174,6 +174,9 @@ export default async function initSanity(
             message: `Coupon "${intendedCoupon}" is not available, use default plan instead?`,
             default: true,
           }))
+        if (unattended) {
+          output.warn(`Coupon "${intendedCoupon}" is not available - using default plan`)
+        }
         trace.log({
           step: 'useDefaultPlanCoupon',
           selectedOption: useDefaultPlan ? 'yes' : 'no',
@@ -200,6 +203,9 @@ export default async function initSanity(
             message: `Project plan "${intendedPlan}" does not exist, use default plan instead?`,
             default: true,
           }))
+        if (unattended) {
+          output.warn(`Project plan "${intendedPlan}" does not exist - using default plan`)
+        }
         trace.log({
           step: 'useDefaultPlanId',
           selectedOption: useDefaultPlan ? 'yes' : 'no',
