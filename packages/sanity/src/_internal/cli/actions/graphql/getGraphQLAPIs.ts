@@ -1,6 +1,7 @@
 import {type CliCommandContext, type CliV3CommandContext} from '@sanity/cli'
 import path from 'path'
 import readPkgUp from 'read-pkg-up'
+import {isModernCliConfig} from '../../util/isModernCliConfig'
 import {createSchema} from 'sanity'
 import {isMainThread, Worker} from 'worker_threads'
 
@@ -56,10 +57,6 @@ function getApisWithSchemaTypes(cliContext: CliCommandContext): Promise<TypeReso
       if (code !== 0) reject(new Error(`Worker stopped with exit code ${code}`))
     })
   })
-}
-
-function isModernCliConfig(config: CliCommandContext): config is CliV3CommandContext {
-  return config.sanityMajorVersion >= 3
 }
 
 function serialize<T>(obj: T): T {
