@@ -4,9 +4,9 @@ import baseDebug from '../debug'
 
 const debug = baseDebug.extend('readFileAsWebStream')
 
-export function readFileAsWebStream(filename: string): ReadableStream<Uint8Array> {
-  const CHUNK_SIZE = 1024
+const CHUNK_SIZE = 1024 * 16
 
+export function readFileAsWebStream(filename: string): ReadableStream<Uint8Array> {
   let fileHandle: FileHandle
   let position = 0
 
