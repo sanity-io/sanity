@@ -1,6 +1,7 @@
 import {isPlainObject} from './isPlainObject'
 
 const hasLocalStorage = supportsLocalStorage()
+const keyPrefix = 'sanityVision:'
 
 export interface LocalStorageish {
   get: <T>(key: string, defaultVal: T) => T
@@ -8,8 +9,21 @@ export interface LocalStorageish {
   merge: <T>(props: T) => T
 }
 
+export function clearLocalStorage() {
+  if (!hasLocalStorage) {
+    return
+  }
+
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i)
+    if (key?.startsWith(keyPrefix)) {
+      localStorage.removeItem(key)
+    }
+  }
+}
+
 export function getLocalStorage(namespace: string): LocalStorageish {
-  const storageKey = `sanityVision:${namespace}`
+  const storageKey = `${keyPrefix}${namespace}`
   let loadedState: Record<string, unknown> | null = null
 
   return {get, set, merge}
