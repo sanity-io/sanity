@@ -1,7 +1,7 @@
 import {test} from '@sanity/test'
 import {expect} from '@playwright/test'
 
-test(`date shows validation on selecting date from datepicker`, async ({
+test(`date input shows validation on selecting date from datepicker`, async ({
   page,
   createDraftDocument,
 }) => {
@@ -11,12 +11,12 @@ test(`date shows validation on selecting date from datepicker`, async ({
 
   await page.getByTestId('field-date').getByTestId('select-date-button').click()
   await page.getByLabel('Mon Feb 19 2024').click()
-  expect(
-    await page.getByTestId('field-date').getByTestId('input-validation-icon-error'),
+  await expect(
+    page.getByTestId('field-date').getByTestId('input-validation-icon-error'),
   ).toBeVisible()
 })
 
-test(`date shows validation on entering date in the textfield`, async ({
+test(`date input shows validation on entering date in the text field`, async ({
   page,
   createDraftDocument,
 }) => {
@@ -24,15 +24,14 @@ test(`date shows validation on entering date in the textfield`, async ({
 
   await page.waitForSelector(`data-testid=field-date`)
 
-  await page.getByTestId('field-date').getByTestId('date-input').fill('2024-01-01 00:00')
+  await page.getByTestId('field-date').getByTestId('date-input').fill('2024-01-01')
 
-  expect(
-    await page.getByTestId('field-date').getByTestId('input-validation-icon-error'),
+  await expect(
+    page.getByTestId('field-date').getByTestId('input-validation-icon-error'),
   ).toBeVisible()
 })
 
-// TODO: remove after fixing the issue
-test(`date only shows validation on entering date in the textfield and onBlur`, async ({
+test(`date input shows validation on entering date in the textfield and onBlur`, async ({
   page,
   createDraftDocument,
 }) => {
@@ -43,7 +42,7 @@ test(`date only shows validation on entering date in the textfield and onBlur`, 
   await page.getByTestId('field-date').getByTestId('date-input').fill('2024-01-01')
   await page.getByTestId('field-date').getByTestId('date-input').blur()
 
-  expect(
-    await page.getByTestId('field-date').getByTestId('input-validation-icon-error'),
+  await expect(
+    page.getByTestId('field-date').getByTestId('input-validation-icon-error'),
   ).toBeVisible()
 })
