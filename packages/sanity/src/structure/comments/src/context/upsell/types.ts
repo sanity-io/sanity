@@ -7,6 +7,8 @@ export interface CommentsUpsellContextValue {
   telemetryLogs: {
     dialogSecondaryClicked: () => void
     dialogPrimaryClicked: () => void
+    panelViewed: (source: 'document_action' | 'field_action' | 'link') => void
+    panelDismissed: () => void
     panelPrimaryClicked: () => void
     panelSecondaryClicked: () => void
   }

@@ -18,6 +18,8 @@ export function useCommentsUpsell(): CommentsUpsellContextValue {
       telemetryLogs: {
         dialogSecondaryClicked: () => null,
         dialogPrimaryClicked: () => null,
+        panelViewed: () => null,
+        panelDismissed: () => null,
         panelPrimaryClicked: () => null,
         panelSecondaryClicked: () => null,
       },

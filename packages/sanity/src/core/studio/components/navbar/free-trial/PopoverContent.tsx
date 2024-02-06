@@ -1,7 +1,7 @@
 import {Card, Heading, Flex, Box, Container} from '@sanity/ui'
 import styled from 'styled-components'
 import {Button} from '../../../../../ui-components'
-import {UpsellDescriptionSerializer} from '../../../../components'
+import {UpsellDescriptionSerializer} from '../../../upsell'
 import {FreeTrialDialog} from './types'
 
 const Image = styled.img`

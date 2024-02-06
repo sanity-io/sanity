@@ -4,7 +4,7 @@ import {type PortableTextBlock} from '@sanity/types'
 import {Box, Card, Flex, Heading, Text} from '@sanity/ui'
 import styled, {css} from 'styled-components'
 import React, {useEffect, useMemo, useState} from 'react'
-import {ConditionalWrapper} from '../../../ui-components/conditionalWrapper'
+import {ConditionalWrapper} from '../../../../ui-components/conditionalWrapper'
 import {transformBlocks} from './helpers'
 
 interface DescriptionSerializerProps {

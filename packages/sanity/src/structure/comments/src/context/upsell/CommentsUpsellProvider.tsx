@@ -1,18 +1,20 @@
 import {useState, useMemo, useEffect, useCallback} from 'react'
 import {ClientConfig} from '@sanity/client'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {set, template} from 'lodash'
+import {template} from 'lodash'
 import {CommentsUpsellData} from '../../types'
 import {CommentsUpsellDialog} from '../../components'
-import {
-  CommentsUpsellDialogPrimaryBtnClicked,
-  CommentsUpsellDialogSecondaryBtnClicked,
-  CommentsUpsellPanelPrimaryBtnClicked,
-  CommentsUpsellPanelSecondaryBtnClicked,
-} from '../../../__telemetry__/comments.telemetry'
 import {CommentsUpsellContext} from './CommentsUpsellContext'
 import {CommentsUpsellContextValue} from './types'
-import {useClient, DEFAULT_STUDIO_CLIENT_OPTIONS, useWorkspace} from 'sanity'
+import {
+  useClient,
+  DEFAULT_STUDIO_CLIENT_OPTIONS,
+  useWorkspace,
+  UpsellDialogDismissed,
+  UpsellDialogLearnMoreCtaClicked,
+  UpsellDialogUpgradeCtaClicked,
+  UpsellDialogViewed,
+} from 'sanity'
 
 const QUERY = `*[_type == "upsellUI" && id == "comments-upsell"][0]{
     ...,
@@ -46,6 +48,7 @@ const UPSELL_CLIENT: Partial<ClientConfig> = {
   useCdn: true,
 }
 
+const FEATURE = 'comments'
 const TEMPLATE_OPTIONS = {interpolate: /{{([\s\S]+?)}}/g}
 /**
  * @beta
@@ -60,10 +63,37 @@ export function CommentsUpsellProvider(props: {children: React.ReactNode}) {
 
   const telemetryLogs = useMemo(
     (): CommentsUpsellContextValue['telemetryLogs'] => ({
-      dialogSecondaryClicked: () => telemetry.log(CommentsUpsellDialogPrimaryBtnClicked),
-      dialogPrimaryClicked: () => telemetry.log(CommentsUpsellDialogSecondaryBtnClicked),
-      panelPrimaryClicked: () => telemetry.log(CommentsUpsellPanelPrimaryBtnClicked),
-      panelSecondaryClicked: () => telemetry.log(CommentsUpsellPanelSecondaryBtnClicked),
+      dialogSecondaryClicked: () =>
+        telemetry.log(UpsellDialogLearnMoreCtaClicked, {
+          feature: FEATURE,
+          type: 'modal',
+        }),
+      dialogPrimaryClicked: () =>
+        telemetry.log(UpsellDialogUpgradeCtaClicked, {
+          feature: FEATURE,
+          type: 'modal',
+        }),
+      panelViewed: (source) =>
+        telemetry.log(UpsellDialogViewed, {
+          feature: FEATURE,
+          type: 'inspector',
+          source,
+        }),
+      panelDismissed: () =>
+        telemetry.log(UpsellDialogDismissed, {
+          feature: FEATURE,
+          type: 'inspector',
+        }),
+      panelPrimaryClicked: () =>
+        telemetry.log(UpsellDialogUpgradeCtaClicked, {
+          feature: FEATURE,
+          type: 'inspector',
+        }),
+      panelSecondaryClicked: () =>
+        telemetry.log(UpsellDialogLearnMoreCtaClicked, {
+          feature: FEATURE,
+          type: 'inspector',
+        }),
     }),
     [telemetry],
   )
@@ -76,7 +106,13 @@ export function CommentsUpsellProvider(props: {children: React.ReactNode}) {
     telemetryLogs.dialogSecondaryClicked()
   }, [telemetryLogs])
 
-  const handleClose = useCallback(() => setUpsellDialogOpen(false), [])
+  const handleClose = useCallback(() => {
+    setUpsellDialogOpen(false)
+    telemetry.log(UpsellDialogDismissed, {
+      feature: FEATURE,
+      type: 'modal',
+    })
+  }, [telemetry])
 
   useEffect(() => {
     const data$ = client
@@ -101,6 +137,17 @@ export function CommentsUpsellProvider(props: {children: React.ReactNode}) {
       sub.unsubscribe()
     }
   }, [client, projectId])
+
+  useEffect(() => {
+    if (upsellDialogOpen) {
+      telemetry.log(UpsellDialogViewed, {
+        feature: FEATURE,
+        type: 'modal',
+        source: 'field_action',
+      })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [upsellDialogOpen])
 
   const ctxValue = useMemo<CommentsUpsellContextValue>(
     () => ({

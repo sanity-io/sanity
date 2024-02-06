@@ -98,6 +98,26 @@ function CommentsInspectorInner(
   }, [comments.loading, ready])
 
   const {selectedPath, setSelectedPath} = useCommentsSelectedPath()
+  const {upsellData, telemetryLogs} = useCommentsUpsell()
+
+  useEffect(() => {
+    if (mode === 'upsell') {
+      if (selectedPath?.origin === 'form') {
+        telemetryLogs.panelViewed('field_action')
+      } else if (selectedPath?.origin === 'url') {
+        telemetryLogs.panelViewed('link')
+      } else {
+        telemetryLogs.panelViewed('document_action')
+      }
+    }
+    return () => {
+      if (mode === 'upsell') {
+        telemetryLogs.panelDismissed()
+      }
+    }
+    // We want to run this effect only on mount and unmount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const handleChangeView = useCallback(
     (nextView: CommentStatus) => {
@@ -312,8 +332,6 @@ function CommentsInspectorInner(
       })
     }
   }, [getComment, handleScrollToComment, loading, params, setParams, setStatus])
-
-  const {upsellData, telemetryLogs} = useCommentsUpsell()
 
   const beforeListNode = useMemo(() => {
     if (mode === 'upsell' && upsellData) {

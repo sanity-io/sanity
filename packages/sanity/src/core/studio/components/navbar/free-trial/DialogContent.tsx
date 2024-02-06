@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import {CloseIcon} from '@sanity/icons'
 import {useColorSchemeValue} from '../../../colorScheme'
 import {Button, Dialog} from '../../../../../ui-components'
-import {UpsellDescriptionSerializer} from '../../../../components'
+import {UpsellDescriptionSerializer} from '../../../upsell'
 import {FreeTrialDialog} from './types'
 
 /**
