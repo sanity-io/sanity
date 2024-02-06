@@ -50,7 +50,10 @@ export function useTrackFocusPath(props: Props): void {
       }
 
       // Don't do anything if the selection focus path is already equal to the focusPath
-      if (selection?.focus.path && isEqual(selection.focus.path, focusPath)) {
+      if (
+        selection?.focus.path &&
+        isEqual(selection.focus.path, focusPath.slice(0, selection.focus.path.length))
+      ) {
         return
       }
 
