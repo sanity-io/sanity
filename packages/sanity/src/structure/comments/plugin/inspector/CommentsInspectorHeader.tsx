@@ -4,8 +4,8 @@ import React, {forwardRef, useCallback} from 'react'
 import styled from 'styled-components'
 import {Button, MenuButton, MenuItem} from '../../../../ui-components'
 import {commentsLocaleNamespace} from '../../i18n'
-import {CommentStatus} from '../../src'
 import {BetaBadge, useTranslation} from 'sanity'
+import {CommentStatus, useCommentsEnabled, CommentsUIMode} from '../../src'
 
 const Root = styled(Card)({
   position: 'relative',
@@ -17,6 +17,7 @@ interface CommentsInspectorHeaderProps {
   onClose: () => void
   onViewChange: (view: CommentStatus) => void
   view: CommentStatus
+  mode: CommentsUIMode
 }
 
 export const CommentsInspectorHeader = forwardRef(function CommentsInspectorHeader(
@@ -24,7 +25,7 @@ export const CommentsInspectorHeader = forwardRef(function CommentsInspectorHead
   ref: React.ForwardedRef<HTMLDivElement>,
 ) {
   const {t} = useTranslation(commentsLocaleNamespace)
-  const {onClose, onViewChange, view} = props
+  const {onClose, onViewChange, view, mode} = props
 
   const handleSetOpenView = useCallback(() => onViewChange('open'), [onViewChange])
   const handleSetResolvedView = useCallback(() => onViewChange('resolved'), [onViewChange])
@@ -65,6 +66,12 @@ export const CommentsInspectorHeader = forwardRef(function CommentsInspectorHead
                   iconRight={view === 'resolved' ? CheckmarkIcon : undefined}
                   onClick={handleSetResolvedView}
                   text={t('status-filter.status-resolved-full')}
+                  tooltipProps={
+                    mode === 'upsell'
+                      ? {content: t('status-filter.status-resolved-full-upsell')}
+                      : undefined
+                  }
+                  disabled={mode === 'upsell'}
                 />
               </Menu>
             }

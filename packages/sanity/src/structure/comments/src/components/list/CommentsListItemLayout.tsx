@@ -11,6 +11,7 @@ import {
   CommentMessage,
   CommentReactionOption,
   CommentStatus,
+  CommentsUIMode,
   MentionOptionsHookValue,
 } from '../../types'
 import {AVATAR_HEIGHT, CommentsAvatar, SpacerAvatar} from '../avatars'
@@ -114,6 +115,7 @@ interface CommentsListItemLayoutProps {
   isParent?: boolean
   isRetrying?: boolean
   mentionOptions: MentionOptionsHookValue
+  mode: CommentsUIMode
   onCopyLink?: (id: string) => void
   onCreateRetry?: (id: string) => void
   onDelete: (id: string) => void
@@ -136,6 +138,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
     isParent,
     isRetrying,
     mentionOptions,
+    mode,
     onCopyLink,
     onCreateRetry,
     onDelete,
@@ -324,6 +327,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
                 canDelete={canDelete}
                 canEdit={canEdit}
                 isParent={isParent}
+                mode={mode}
                 onCopyLink={handleCopyLink}
                 onDeleteStart={handleDelete}
                 onEditStart={toggleEdit}
@@ -376,6 +380,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
             <Box onClick={stopPropagation}>
               <CommentReactionsBar
                 currentUser={currentUser}
+                mode={mode}
                 onSelect={handleReactionSelect}
                 reactions={reactions}
                 readOnly={readOnly}

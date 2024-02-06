@@ -7,6 +7,7 @@ import {
   CommentReactionOption,
   CommentStatus,
   CommentThreadItem,
+  CommentsUIMode,
   MentionOptionsHookValue,
 } from '../../types'
 import {CommentsSelectedPath} from '../../context'
@@ -43,11 +44,13 @@ function groupThreads(comments: CommentThreadItem[]) {
  * @hidden
  */
 export interface CommentsListProps {
+  beforeListNode?: React.ReactNode
   comments: CommentThreadItem[]
   currentUser: CurrentUser
   error: Error | null
   loading: boolean
   mentionOptions: MentionOptionsHookValue
+  mode: CommentsUIMode
   onCopyLink?: (id: string) => void
   onCreateRetry: (id: string) => void
   onDelete: (id: string) => void
@@ -73,11 +76,13 @@ export interface CommentsListHandle {
 const CommentsListInner = forwardRef<CommentsListHandle, CommentsListProps>(
   function CommentsListInner(props: CommentsListProps, ref) {
     const {
+      beforeListNode,
       comments,
       currentUser,
       error,
       loading,
       mentionOptions,
+      mode,
       onCopyLink,
       onCreateRetry,
       onDelete,
@@ -124,14 +129,16 @@ const CommentsListInner = forwardRef<CommentsListHandle, CommentsListProps>(
         ref={setBoundaryElement}
         sizing="border"
       >
-        <CommentsListStatus
-          error={error}
-          hasNoComments={groupedThreads.length === 0}
-          loading={loading}
-          status={status}
-        />
+        {mode !== 'upsell' && (
+          <CommentsListStatus
+            error={error}
+            hasNoComments={groupedThreads.length === 0}
+            loading={loading}
+            status={status}
+          />
+        )}
 
-        {showComments && (
+        {(showComments || beforeListNode) && (
           <Stack
             as="ul"
             flex={1}
@@ -142,6 +149,7 @@ const CommentsListInner = forwardRef<CommentsListHandle, CommentsListProps>(
             sizing="border"
             space={1}
           >
+            {beforeListNode}
             <BoundaryElementProvider element={boundaryElement}>
               {groupedThreads?.map(([fieldPath, group]) => {
                 // Since all threads in the group point to the same field, the breadcrumbs will be
@@ -161,6 +169,7 @@ const CommentsListInner = forwardRef<CommentsListHandle, CommentsListProps>(
                 return (
                   <Stack as="li" key={fieldPath} data-group-id={firstThreadId} paddingTop={3}>
                     <CommentThreadLayout
+                      mode={mode}
                       breadcrumbs={breadcrumbs}
                       canCreateNewThread={status === 'open'}
                       currentUser={currentUser}
@@ -192,6 +201,7 @@ const CommentsListInner = forwardRef<CommentsListHandle, CommentsListProps>(
 
                         return (
                           <CommentsListItem
+                            mode={mode}
                             canReply={canReply}
                             currentUser={currentUser}
                             isSelected={threadIsSelected}

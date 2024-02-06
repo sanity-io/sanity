@@ -28,6 +28,7 @@ export default function CommentReactionsMenuButtonStory() {
         renderMenuButton={({open}) => <Button text="Reactions" selected={open} />}
         onSelect={handleOnSelect}
         options={COMMENT_REACTION_OPTIONS}
+        mode="default"
       />
     </Flex>
   )

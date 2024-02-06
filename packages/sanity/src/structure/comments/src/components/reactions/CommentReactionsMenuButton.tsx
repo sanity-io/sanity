@@ -1,24 +1,29 @@
-import {Card, useClickOutside} from '@sanity/ui'
 import React, {cloneElement, useCallback, useMemo, useState} from 'react'
+import {Card, useClickOutside} from '@sanity/ui'
+import type {CommentReactionOption, CommentsUIMode} from '../../types'
 import {Popover, PopoverProps} from '../../../../../ui-components'
 import {commentsLocaleNamespace} from '../../../i18n'
-import type {CommentReactionOption} from '../../types'
 import {CommentReactionsMenu} from './CommentReactionsMenu'
-import {useTranslation, type TFunction} from 'sanity'
+import {type TFunction, useTranslation} from 'sanity'
 
 const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['top', 'bottom']
 
 export interface CommentReactionsMenuButtonProps {
+  mode: CommentsUIMode
   onMenuClose?: () => void
   onMenuOpen?: () => void
   onSelect: (option: CommentReactionOption) => void
   options: CommentReactionOption[]
   readOnly?: boolean
-  renderMenuButton: (props: {open: boolean; t: TFunction}) => React.ReactElement
+  renderMenuButton: (props: {
+    open: boolean
+    tooltipContent: string
+    t: TFunction
+  }) => React.ReactElement
 }
 
 export function CommentReactionsMenuButton(props: CommentReactionsMenuButtonProps) {
-  const {onMenuClose, onMenuOpen, onSelect, options, readOnly, renderMenuButton} = props
+  const {onMenuClose, onMenuOpen, onSelect, options, readOnly, renderMenuButton, mode} = props
   const [buttonElement, setButtonElement] = useState<HTMLButtonElement | null>(null)
   const [popoverElement, setPopoverElement] = useState<HTMLDivElement | null>(null)
 
@@ -69,18 +74,25 @@ export function CommentReactionsMenuButton(props: CommentReactionsMenuButtonProp
 
   const button = useMemo(() => {
     // Get the button element from the renderMenuButton function.
-    const btn = renderMenuButton({open, t})
+    const btn = renderMenuButton({
+      open,
+      tooltipContent:
+        mode === 'upsell'
+          ? t('list-item.context-menu-add-reaction-upsell')
+          : t('list-item.context-menu-add-reaction'),
+      t,
+    })
 
     // Clone the button element and add the necessary props.
     return cloneElement(btn, {
       'aria-expanded': open,
       'aria-haspopup': 'true',
-      disabled: readOnly,
+      disabled: readOnly || mode === 'upsell',
       id: 'reactions-menu-button',
       onClick: handleClick,
       ref: setButtonElement,
     })
-  }, [handleClick, open, readOnly, renderMenuButton, t])
+  }, [handleClick, open, readOnly, renderMenuButton, t, mode])
 
   const popoverContent = (
     <Card

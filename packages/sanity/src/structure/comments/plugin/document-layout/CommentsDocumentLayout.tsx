@@ -1,4 +1,4 @@
-import React, {useCallback} from 'react'
+import {useCallback} from 'react'
 import {
   CommentsEnabledProvider,
   CommentsProvider,
@@ -31,7 +31,7 @@ function CommentsDocumentLayoutInner(props: DocumentLayoutProps) {
   }, [inspector?.name, openInspector])
 
   // If comments are not enabled, render the default document layout
-  if (!commentsEnabled) {
+  if (!commentsEnabled.enabled) {
     return props.renderDefault(props)
   }
 

@@ -6,7 +6,12 @@ import {
   Flex,
   Text,
 } from '@sanity/ui'
-import {CommentReactionItem, CommentReactionOption, CommentReactionShortNames} from '../../types'
+import {
+  CommentReactionItem,
+  CommentReactionOption,
+  CommentReactionShortNames,
+  CommentsUIMode,
+} from '../../types'
 import {COMMENT_REACTION_EMOJIS, COMMENT_REACTION_OPTIONS} from '../../constants'
 import {ReactionIcon} from '../icons'
 import {Tooltip, TooltipDelayGroupProvider} from '../../../../../ui-components'
@@ -14,7 +19,6 @@ import {CommentReactionsMenuButton} from './CommentReactionsMenuButton'
 import {CommentReactionsUsersTooltip} from './CommentReactionsUsersTooltip'
 import {EmojiText} from './EmojiText.styled'
 import {TransparentCard} from './TransparentCard.styled'
-import {TFunction} from 'sanity'
 
 /**
  * A function that groups reactions by name. For example:
@@ -55,11 +59,11 @@ function groupReactionsByName(reactions: CommentReactionItem[]) {
   return sorted as [CommentReactionShortNames, CommentReactionItem[]][]
 }
 
-const renderMenuButton = ({open, t}: {open: boolean; t: TFunction}) => {
+const renderMenuButton = ({open, tooltipContent}: {open: boolean; tooltipContent: string}) => {
   return (
     <UIButton fontSize={1} mode="ghost" padding={0} radius="full" selected={open}>
       <Flex paddingX={3} paddingY={2}>
-        <Tooltip animate content={t('reactions.add-reaction-tooltip')} disabled={open}>
+        <Tooltip animate content={tooltipContent} disabled={open}>
           <Text size={1}>
             <ReactionIcon />
           </Text>
@@ -74,13 +78,13 @@ interface CommentReactionsBarProps {
   onSelect: (reaction: CommentReactionOption) => void
   reactions: CommentReactionItem[]
   readOnly?: boolean
+  mode: CommentsUIMode
 }
 
 export const CommentReactionsBar = React.memo(function CommentReactionsBar(
   props: CommentReactionsBarProps,
 ) {
-  const {currentUser, onSelect, reactions, readOnly} = props
-
+  const {currentUser, onSelect, reactions, readOnly, mode} = props
   const handleSelect = useCallback(
     (name: CommentReactionShortNames) => {
       const option = COMMENT_REACTION_OPTIONS.find((o) => o.shortName === name)
@@ -149,7 +153,7 @@ export const CommentReactionsBar = React.memo(function CommentReactionsBar(
             >
               <TransparentCard tone="default">
                 <UIButton
-                  disabled={readOnly}
+                  disabled={readOnly || mode === 'upsell'}
                   mode="ghost"
                   // eslint-disable-next-line react/jsx-no-bind
                   onClick={() => handleSelect(name)}
@@ -173,6 +177,7 @@ export const CommentReactionsBar = React.memo(function CommentReactionsBar(
 
         <TransparentCard tone="default">
           <CommentReactionsMenuButton
+            mode={mode}
             // eslint-disable-next-line react/jsx-no-bind
             onSelect={(o) => handleSelect(o.shortName)}
             options={COMMENT_REACTION_OPTIONS}

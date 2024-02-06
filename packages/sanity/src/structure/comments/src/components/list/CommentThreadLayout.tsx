@@ -13,6 +13,7 @@ import {
   CommentCreatePayload,
   MentionOptionsHookValue,
   CommentListBreadcrumbs,
+  CommentsUIMode,
 } from '../../types'
 import {CommentBreadcrumbs} from '../CommentBreadcrumbs'
 import {CommentsSelectedPath} from '../../context'
@@ -44,6 +45,7 @@ interface CommentThreadLayoutProps {
   fieldPath: string
   isSelected: boolean
   mentionOptions: MentionOptionsHookValue
+  mode: CommentsUIMode
   onNewThreadCreate: (payload: CommentCreatePayload) => void
   onPathSelect?: (nextPath: CommentsSelectedPath) => void
   readOnly?: boolean
@@ -58,6 +60,7 @@ export function CommentThreadLayout(props: CommentThreadLayoutProps) {
     fieldPath,
     isSelected,
     mentionOptions,
+    mode,
     onNewThreadCreate,
     onPathSelect,
     readOnly,
@@ -142,6 +145,7 @@ export function CommentThreadLayout(props: CommentThreadLayoutProps) {
             currentUser={currentUser}
             fieldTitle={lastCrumb}
             mentionOptions={mentionOptions}
+            mode={mode}
             onNewThreadCreate={handleNewThreadCreate}
             readOnly={readOnly}
           />

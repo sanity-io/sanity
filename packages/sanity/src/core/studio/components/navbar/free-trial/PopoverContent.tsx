@@ -1,8 +1,8 @@
 import {Card, Heading, Flex, Box, Container} from '@sanity/ui'
 import styled from 'styled-components'
 import {Button} from '../../../../../ui-components'
+import {UpsellDescriptionSerializer} from '../../../upsell'
 import {FreeTrialDialog} from './types'
-import {DescriptionSerializer} from './DescriptionSerializer'
 
 const Image = styled.img`
   object-fit: cover;
@@ -29,7 +29,7 @@ export function PopoverContent({content, handleClose, handleOpenNext}: PopoverCo
             <Heading size={1}>{content.headingText}</Heading>
           </Box>
           <Box marginTop={4}>
-            <DescriptionSerializer blocks={content.descriptionText} />
+            <UpsellDescriptionSerializer blocks={content.descriptionText} />
           </Box>
         </Flex>
         <Flex width="full" gap={3} justify="flex-end" padding={3}>

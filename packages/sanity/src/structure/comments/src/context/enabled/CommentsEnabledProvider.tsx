@@ -13,9 +13,7 @@ export const CommentsEnabledProvider = React.memo(function CommentsEnabledProvid
 ) {
   const {children, documentId, documentType} = props
 
-  const isEnabled = useResolveCommentsEnabled(documentId, documentType)
+  const value = useResolveCommentsEnabled(documentId, documentType)
 
-  return (
-    <CommentsEnabledContext.Provider value={isEnabled}>{children}</CommentsEnabledContext.Provider>
-  )
+  return <CommentsEnabledContext.Provider value={value}>{children}</CommentsEnabledContext.Provider>
 })

@@ -12,6 +12,8 @@ import {
   useComments,
   CommentCreatePayload,
   useCommentsSelectedPath,
+  useCommentsUpsell,
+  CommentsUIMode,
 } from '../../src'
 import {CommentsFieldButton} from './CommentsFieldButton'
 import {FieldProps, getSchemaTypeTitle, useCurrentUser} from 'sanity'
@@ -29,13 +31,13 @@ const HIGHLIGHT_BLOCK_VARIANTS: Variants = {
 }
 
 export function CommentsField(props: FieldProps) {
-  const isEnabled = useCommentsEnabled()
+  const {enabled, mode} = useCommentsEnabled()
 
-  if (!isEnabled) {
+  if (!enabled) {
     return props.renderDefault(props)
   }
 
-  return <CommentFieldInner {...props} />
+  return <CommentFieldInner {...props} mode={mode} />
 }
 
 const SCROLL_INTO_VIEW_OPTIONS: ScrollIntoViewOptions = {
@@ -67,7 +69,12 @@ const FieldStack = styled(Stack)`
   position: relative;
 `
 
-function CommentFieldInner(props: FieldProps) {
+function CommentFieldInner(
+  props: FieldProps & {
+    mode: CommentsUIMode
+  },
+) {
+  const {mode} = props
   const [open, setOpen] = useState<boolean>(false)
   const [value, setValue] = useState<PortableTextBlock[] | null>(null)
   const rootElementRef = useRef<HTMLDivElement | null>(null)
@@ -87,6 +94,7 @@ function CommentFieldInner(props: FieldProps) {
     setStatus,
     status,
   } = useComments()
+  const {upsellData, handleOpenDialog} = useCommentsUpsell()
   const {selectedPath, setSelectedPath} = useCommentsSelectedPath()
 
   const fieldTitle = useMemo(() => getSchemaTypeTitle(props.schemaType), [props.schemaType])
@@ -152,6 +160,16 @@ function CommentFieldInner(props: FieldProps) {
       return
     }
 
+    if (mode === 'upsell') {
+      if (upsellData) {
+        handleOpenDialog()
+      } else {
+        // Open the comments inspector
+        onCommentsOpen?.()
+      }
+      return
+    }
+
     // Else, toggle the comment input open/closed
     setOpen((v) => !v)
   }, [
@@ -162,6 +180,9 @@ function CommentFieldInner(props: FieldProps) {
     setStatus,
     props.path,
     handleSetThreadToScrollTo,
+    mode,
+    handleOpenDialog,
+    upsellData,
   ])
 
   const handleCommentAdd = useCallback(() => {

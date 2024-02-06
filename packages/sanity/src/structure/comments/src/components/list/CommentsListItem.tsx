@@ -11,6 +11,7 @@ import {
   CommentMessage,
   CommentReactionOption,
   CommentStatus,
+  CommentsUIMode,
   MentionOptionsHookValue,
 } from '../../types'
 import {SpacerAvatar} from '../avatars'
@@ -82,6 +83,7 @@ interface CommentsListItemProps {
   currentUser: CurrentUser
   isSelected: boolean
   mentionOptions: MentionOptionsHookValue
+  mode: CommentsUIMode
   onCopyLink?: (id: string) => void
   onCreateRetry: (id: string) => void
   onDelete: (id: string) => void
@@ -114,6 +116,7 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
     parentComment,
     readOnly,
     replies = EMPTY_ARRAY,
+    mode,
   } = props
   const {t} = useTranslation(commentsLocaleNamespace)
   const [value, setValue] = useState<CommentMessage>(EMPTY_ARRAY)
@@ -245,6 +248,7 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
             hasError={reply._state?.type === 'createError'}
             isRetrying={reply._state?.type === 'createRetrying'}
             mentionOptions={mentionOptions}
+            mode={mode}
             onCopyLink={onCopyLink}
             onCreateRetry={onCreateRetry}
             onDelete={onDelete}
@@ -266,6 +270,7 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
       onReactionSelect,
       readOnly,
       splicedReplies,
+      mode,
     ],
   )
 
@@ -301,6 +306,7 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
               isParent
               isRetrying={parentComment._state?.type === 'createRetrying'}
               mentionOptions={mentionOptions}
+              mode={mode}
               onCopyLink={onCopyLink}
               onCreateRetry={onCreateRetry}
               onDelete={onDelete}
@@ -337,8 +343,12 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
               onDiscardConfirm={confirmDiscard}
               onKeyDown={handleInputKeyDown}
               onSubmit={handleReplySubmit}
-              placeholder={t('compose.reply-placeholder')}
-              readOnly={readOnly}
+              placeholder={
+                mode === 'upsell'
+                  ? t('compose.reply-placeholder-upsell')
+                  : t('compose.reply-placeholder')
+              }
+              readOnly={readOnly || mode === 'upsell'}
               ref={replyInputRef}
               value={value}
             />

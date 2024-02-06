@@ -1,5 +1,6 @@
 import {useContext} from 'react'
 import {CommentsEnabledContext} from '../context/enabled'
+import {CommentsEnabledContextValue} from '../context/enabled/types'
 
 /**
  * @internal
@@ -7,7 +8,7 @@ import {CommentsEnabledContext} from '../context/enabled'
  * It checks if the project has the `studioComments` feature flag enabled and
  * if comments is enabled for the current document in the config API.
  */
-export function useCommentsEnabled(): boolean {
+export function useCommentsEnabled(): CommentsEnabledContextValue {
   const ctx = useContext(CommentsEnabledContext)
 
   if (ctx === null) {

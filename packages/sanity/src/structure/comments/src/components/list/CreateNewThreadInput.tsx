@@ -1,6 +1,6 @@
 import type {CurrentUser} from '@sanity/types'
 import React, {useState, useCallback, useRef, useMemo} from 'react'
-import type {CommentMessage, MentionOptionsHookValue} from '../../types'
+import type {CommentMessage, CommentsUIMode, MentionOptionsHookValue} from '../../types'
 import {CommentInput, CommentInputHandle, CommentInputProps} from '../pte'
 import {commentsLocaleNamespace} from '../../../i18n'
 import {hasCommentMessageValue} from '../../helpers'
@@ -10,6 +10,7 @@ interface CreateNewThreadInputProps {
   currentUser: CurrentUser
   fieldTitle: string
   mentionOptions: MentionOptionsHookValue
+  mode: CommentsUIMode
   onBlur?: CommentInputProps['onBlur']
   onFocus?: CommentInputProps['onFocus']
   onKeyDown?: (event: React.KeyboardEvent<Element>) => void
@@ -22,6 +23,7 @@ export function CreateNewThreadInput(props: CreateNewThreadInputProps) {
     currentUser,
     fieldTitle,
     mentionOptions,
+    mode,
     onBlur,
     onFocus,
     onKeyDown,
@@ -75,9 +77,16 @@ export function CreateNewThreadInput(props: CreateNewThreadInputProps) {
     commentInputHandle.current?.discardDialogController.close()
   }, [])
 
-  const placeholder = (
-    <Translate t={t} i18nKey="compose.add-comment-input-placeholder" values={{field: fieldTitle}} />
-  )
+  const placeholder =
+    mode === 'upsell' ? (
+      t('compose.add-comment-input-placeholder-upsell')
+    ) : (
+      <Translate
+        t={t}
+        i18nKey="compose.add-comment-input-placeholder"
+        values={{field: fieldTitle}}
+      />
+    )
 
   return (
     <CommentInput
@@ -92,7 +101,7 @@ export function CreateNewThreadInput(props: CreateNewThreadInputProps) {
       onFocus={onFocus}
       onSubmit={handleSubmit}
       placeholder={placeholder}
-      readOnly={readOnly}
+      readOnly={readOnly || mode === 'upsell'}
       ref={commentInputHandle}
       value={value}
     />

@@ -14,6 +14,8 @@ const commentsLocaleStrings = defineLocalesResources('comments', {
 
   /** When composing a comment, the placeholder text shown when adding a comment to a field with no current comments */
   'compose.add-comment-input-placeholder': 'Add comment to <strong>{{field}}</strong>',
+  /** When composing a comment, the placeholder text shown when adding a comment to a field with no current comments and the mode is upsell */
+  'compose.add-comment-input-placeholder-upsell': 'Upgrade to add comment',
   /** When composing a comment, the placeholder text shown when the input is empty */
   'compose.create-comment-placeholder': 'Create a new comment',
   /** When composing a comment, the aria label for the button to mention a user */
@@ -22,6 +24,8 @@ const commentsLocaleStrings = defineLocalesResources('comments', {
   'compose.mention-user-tooltip': 'Mention user',
   /** When composing a reply, the placeholder text shown when the input is empty */
   'compose.reply-placeholder': 'Reply',
+  /** When composing a reply, the placeholder text shown when the input is empty and the mode is upsell */
+  'compose.reply-placeholder-upsell': 'Upgrade to reply',
   /** When composing a comment, the aria label for the button to send a comment */
   'compose.send-comment-aria-label': 'Send comment',
   /** When composing a comment, the tooltip text for the button to send a comment */
@@ -80,12 +84,16 @@ const commentsLocaleStrings = defineLocalesResources('comments', {
   'list-item.context-menu-add-reaction': 'Add reaction',
   /** The button tooltip aria label for adding a reaction */
   'list-item.context-menu-add-reaction-aria-label': 'Add reaction',
+  /** The button tooltip content for the add reaction button and mode is upsell */
+  'list-item.context-menu-add-reaction-upsell': 'Upgrade to add reaction',
   /** The action menu item for copying a comment link */
   'list-item.copy-link': 'Copy link to comment',
   /** The action menu item for deleting a comment */
   'list-item.delete-comment': 'Delete comment',
   /** The action menu item for editing a comment */
   'list-item.edit-comment': 'Edit comment',
+  /** The action menu item for editing a comment and the mode is upsell */
+  'list-item.edit-comment-upsell': 'Upgrade to edit comment',
   /** Aria label for the button that takes you to the field, which wraps a thread/comment */
   'list-item.go-to-field-button.aria-label': 'Go to field',
   /** The marker to indicate that a comment has been edited in brackets */
@@ -173,6 +181,8 @@ const commentsLocaleStrings = defineLocalesResources('comments', {
   'status-filter.status-resolved': 'Resolved',
   /** Status filter: The full text for describing filtering on resolved comments */
   'status-filter.status-resolved-full': 'Resolved comments',
+  /** Status filter: The full text for describing filtering on resolved comments and is upsell mode */
+  'status-filter.status-resolved-full-upsell': 'Upgrade to see resolved comments',
 })
 
 /**

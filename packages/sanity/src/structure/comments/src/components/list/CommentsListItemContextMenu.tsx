@@ -10,18 +10,26 @@ import {
 } from '../../../../../ui-components'
 import {commentsLocaleNamespace} from '../../../i18n'
 import {COMMENT_REACTION_OPTIONS} from '../../constants'
-import type {CommentReactionOption, CommentStatus} from '../../types'
 import {ReactionIcon} from '../icons'
 import {CommentReactionsMenuButton} from '../reactions'
-import {ContextMenuButton, useTranslation, type TFunction} from 'sanity'
+import type {CommentReactionOption, CommentStatus, CommentsUIMode} from '../../types'
+import {ContextMenuButton, TFunction, useTranslation} from 'sanity'
 
-const renderMenuButton = ({open, t}: {open: boolean; t: TFunction}) => (
+const renderMenuButton = ({
+  open,
+  tooltipContent,
+  t,
+}: {
+  open: boolean
+  tooltipContent: string
+  t: TFunction
+}) => (
   <Button
     aria-label={t('list-item.context-menu-add-reaction-aria-label')}
     icon={ReactionIcon}
     mode="bleed"
     selected={open}
-    tooltipProps={{content: t('list-item.context-menu-add-reaction')}}
+    tooltipProps={{content: tooltipContent}}
   />
 )
 
@@ -48,6 +56,7 @@ interface CommentsListItemContextMenuProps {
   onStatusChange?: () => void
   readOnly?: boolean
   status: CommentStatus
+  mode: CommentsUIMode
 }
 
 export function CommentsListItemContextMenu(props: CommentsListItemContextMenuProps) {
@@ -64,6 +73,7 @@ export function CommentsListItemContextMenu(props: CommentsListItemContextMenuPr
     onStatusChange,
     readOnly,
     status,
+    mode,
   } = props
 
   const showMenuButton = Boolean(onCopyLink || onDeleteStart || onEditStart)
@@ -77,6 +87,7 @@ export function CommentsListItemContextMenu(props: CommentsListItemContextMenuPr
           {onReactionSelect && (
             <CommentReactionsMenuButton
               onMenuClose={onMenuClose}
+              mode={mode}
               onMenuOpen={onMenuOpen}
               onSelect={onReactionSelect}
               options={COMMENT_REACTION_OPTIONS}
@@ -123,6 +134,10 @@ export function CommentsListItemContextMenu(props: CommentsListItemContextMenuPr
                   icon={EditIcon}
                   onClick={onEditStart}
                   text={t('list-item.edit-comment')}
+                  tooltipProps={
+                    mode === 'upsell' ? {content: t('list-item.edit-comment-upsell')} : undefined
+                  }
+                  disabled={mode === 'upsell'}
                 />
 
                 <MenuItem

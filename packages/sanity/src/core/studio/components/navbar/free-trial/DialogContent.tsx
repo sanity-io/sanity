@@ -3,8 +3,8 @@ import styled from 'styled-components'
 import {CloseIcon} from '@sanity/icons'
 import {useColorSchemeValue} from '../../../colorScheme'
 import {Button, Dialog} from '../../../../../ui-components'
+import {UpsellDescriptionSerializer} from '../../../upsell'
 import {FreeTrialDialog} from './types'
-import {DescriptionSerializer} from './DescriptionSerializer'
 
 /**
  * Absolute positioned button to close the dialog.
@@ -96,7 +96,7 @@ export function DialogContent({handleClose, handleOpenNext, content, open}: Moda
           <Heading size={2}>{content.headingText}</Heading>
         </Box>
         <Box marginTop={4} paddingBottom={3}>
-          <DescriptionSerializer blocks={content.descriptionText} />
+          <UpsellDescriptionSerializer blocks={content.descriptionText} />
         </Box>
       </Flex>
     </StyledDialog>
