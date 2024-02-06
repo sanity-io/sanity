@@ -6,7 +6,7 @@ import {
   PortableTextEditor,
 } from '@sanity/portable-text-editor'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {type PortableTextBlock} from '@sanity/types'
+import {isKeySegment, type Path, type PortableTextBlock} from '@sanity/types'
 import {Box, useToast} from '@sanity/ui'
 import {
   type MutableRefObject,
@@ -146,6 +146,27 @@ export function PortableTextInput(props: PortableTextInputProps) {
     }
   }, [hasFocusWithin])
 
+  const setFocusPathFromEditorSelection = useCallback(
+    (focusPath: Path) => {
+      // Report focus on spans with `.text` appended to the reported focusPath.
+      // This is done to support the Presentation tool which uses this kind of paths to refer to texts.
+      // The PT-input already supports these paths the other way around.
+      // It's a bit ugly right here, but it's a rather simple way to support the Presentation tool without
+      // having to change the PTE's internals.
+      if (
+        focusPath.length === 3 &&
+        focusPath[1] === 'children' &&
+        isKeySegment(focusPath[2]) &&
+        !portableTextMemberItems.some(
+          (item) => isKeySegment(focusPath[2]) && item.key === focusPath[2]._key,
+        ) // Not an inline object
+      ) {
+        onPathFocus(focusPath.concat('text'))
+      }
+    },
+    [onPathFocus, portableTextMemberItems],
+  )
+
   // Handle editor changes
   const handleEditorChange = useCallback(
     (change: EditorChange): void => {
@@ -165,7 +186,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
           // call through startTransition
           startTransition(() => {
             if (change.selection) {
-              onPathFocus(change.selection.focus.path)
+              setFocusPathFromEditorSelection(change.selection.focus.path)
             }
           })
           break
@@ -193,7 +214,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
         default:
       }
     },
-    [onBlur, onChange, onPathFocus, toast],
+    [onBlur, onChange, setFocusPathFromEditorSelection, toast],
   )
 
   useEffect(() => {
