@@ -4,9 +4,7 @@ import {ConditionalWrapper} from '../../../../ui-components/conditionalWrapper'
 import {LayoutProps, useFeatureEnabled} from 'sanity'
 
 export function CommentsStudioLayout(props: LayoutProps) {
-  // TODO: Remove _enabled before merging
-  const {enabled: _enabled, isLoading} = useFeatureEnabled('studioComments')
-  const enabled = false
+  const {enabled, isLoading} = useFeatureEnabled('studioComments')
 
   return (
     <CommentsSetupProvider>

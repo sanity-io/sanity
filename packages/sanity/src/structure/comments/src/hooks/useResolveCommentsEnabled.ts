@@ -38,10 +38,9 @@ export function useResolveCommentsEnabled(
 
     return {
       enabled: true,
-      // mode: featureEnabled ? 'default' : 'upsell',
-      mode: 'upsell',
+      mode: featureEnabled ? 'default' : 'upsell',
     }
-  }, [isLoading, enabledFromConfig])
+  }, [isLoading, enabledFromConfig, featureEnabled])
 
   return value
 }
