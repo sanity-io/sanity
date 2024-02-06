@@ -18,7 +18,12 @@ export default defineCliConfig({
       optimizeDeps: {
         ...viteConfig.optimizeDeps,
         include: ['react/jsx-runtime'],
-        exclude: [...(viteConfig.optimizeDeps?.exclude || []), '@sanity/tsdoc', '@sanity/assist'],
+        exclude: [
+          ...(viteConfig.optimizeDeps?.exclude || []),
+          '@sanity/tsdoc',
+          '@sanity/assist',
+          'sanity',
+        ],
       },
       build: {
         ...viteConfig.build,
@@ -27,6 +32,8 @@ export default defineCliConfig({
           input: {
             // NOTE: this is required to build static files for the workshop frame
             'workshop/frame': path.resolve(__dirname, 'workshop/frame/index.html'),
+            // NOTE: this is required to build static files for the presentation preview iframe
+            preview: path.resolve(__dirname, 'preview/index.html'),
           },
         },
       },

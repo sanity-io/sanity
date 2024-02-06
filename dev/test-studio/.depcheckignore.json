@@ -1,4 +1,11 @@
 {
   "//": "https://github.com/depcheck/depcheck/pull/756",
-  "ignore": ["https:", "@sanity/client", "@vercel/stega"]
+  "ignore": [
+    "https:",
+    "@sanity/client",
+    "@vercel/stega",
+    "@sanity/visual-editing",
+    "@sanity/react-loader",
+    "@portabletext/react"
+  ]
 }
