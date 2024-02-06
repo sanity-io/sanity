@@ -46,6 +46,7 @@ import migrationGroup from './migration/migrationGroup'
 import createMigrationCommand from './migration/createMigrationCommand'
 import runMigrationCommand from './migration/runMigrationCommand'
 import listMigrationsCommand from './migration/listMigrationsCommand'
+import schemaGroup from './schema/schemaGroup'
 
 const commands: (CliCommandDefinition | CliCommandGroupDefinition)[] = [
   buildCommand,
@@ -91,6 +92,7 @@ const commands: (CliCommandDefinition | CliCommandGroupDefinition)[] = [
   deleteGraphQLAPICommand,
   devCommand,
   startCommand,
+  schemaGroup,
   validateSchemaCommand,
   previewCommand,
   uninstallCommand,

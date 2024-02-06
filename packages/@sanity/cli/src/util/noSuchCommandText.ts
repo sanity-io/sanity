@@ -18,6 +18,7 @@ const coreCommands = [
   'hook',
   'preview',
   'migrate',
+  'schema',
   'start',
   'undeploy',
   'uninstall',
