@@ -7,6 +7,7 @@ import {Table} from 'console-table-printer'
 import {register} from 'esbuild-register/dist/node'
 
 import {MIGRATION_SCRIPT_EXTENSIONS, MIGRATIONS_DIRECTORY} from './constants'
+import {ensureCwdIsProjectRoot} from '../../util/ensureCwdIsProjectRoot'
 import {isLoadableMigrationScript, resolveMigrationScript} from './utils/resolveMigrationScript'
 
 const helpText = ``
@@ -19,6 +20,13 @@ const listMigrationCommand: CliCommandDefinition = {
   description: 'List available migrations',
   action: async (_, context) => {
     const {workDir, output, chalk} = context
+    const {cwdIsProjectRoot, printCwdProjectRootWarning} = ensureCwdIsProjectRoot(context)
+
+    if (!cwdIsProjectRoot) {
+      printCwdProjectRootWarning()
+      return
+    }
+
     try {
       const migrations = await resolveMigrations(workDir)
 

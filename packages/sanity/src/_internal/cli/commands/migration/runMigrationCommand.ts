@@ -13,6 +13,7 @@ import {hideBin} from 'yargs/helpers'
 import yargs from 'yargs/yargs'
 
 import {debug} from '../../debug'
+import {ensureCwdIsProjectRoot} from '../../util/ensureCwdIsProjectRoot'
 import {resolveMigrations} from './listMigrationsCommand'
 import {prettyFormat} from './prettyMutationFormatter'
 import {isLoadableMigrationScript, resolveMigrationScript} from './utils/resolveMigrationScript'
@@ -77,6 +78,13 @@ const runMigrationCommand: CliCommandDefinition<CreateFlags> = {
     const dry = flags.dryRun
     const dataset = flags.dataset
     const project = flags.project
+
+    const {cwdIsProjectRoot, printCwdProjectRootWarning} = ensureCwdIsProjectRoot(context)
+
+    if (!cwdIsProjectRoot) {
+      printCwdProjectRootWarning()
+      return
+    }
 
     if ((dataset && !project) || (project && !dataset)) {
       throw new Error('If either --dataset or --project is provided, both must be provided')

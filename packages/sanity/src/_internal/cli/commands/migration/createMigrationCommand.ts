@@ -5,6 +5,7 @@ import path from 'node:path'
 import {type CliCommandDefinition} from '@sanity/cli'
 import deburr from 'lodash/deburr'
 
+import {ensureCwdIsProjectRoot} from '../../util/ensureCwdIsProjectRoot'
 import {MIGRATIONS_DIRECTORY} from './constants'
 import {minimalAdvanced} from './templates/minimalAdvanced'
 import {minimalSimple} from './templates/minimalSimple'
@@ -45,6 +46,13 @@ const createMigrationCommand: CliCommandDefinition<CreateMigrationFlags> = {
     const {output, prompt, workDir, chalk} = context
 
     let [title] = args.argsWithoutOptions
+
+    const {cwdIsProjectRoot, printCwdProjectRootWarning} = ensureCwdIsProjectRoot(context)
+
+    if (!cwdIsProjectRoot) {
+      printCwdProjectRootWarning()
+      return
+    }
 
     while (!title?.trim()) {
       title = await prompt.single({
