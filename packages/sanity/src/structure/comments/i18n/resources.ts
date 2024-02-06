@@ -25,7 +25,7 @@ const commentsLocaleStrings = defineLocalesResources('comments', {
   /** When composing a reply, the placeholder text shown when the input is empty */
   'compose.reply-placeholder': 'Reply',
   /** When composing a reply, the placeholder text shown when the input is empty and the mode is upsell */
-  'compose.reply-placeholder-upsell': 'Reply',
+  'compose.reply-placeholder-upsell': 'Upgrade to reply',
   /** When composing a comment, the aria label for the button to send a comment */
   'compose.send-comment-aria-label': 'Send comment',
   /** When composing a comment, the tooltip text for the button to send a comment */
@@ -181,6 +181,8 @@ const commentsLocaleStrings = defineLocalesResources('comments', {
   'status-filter.status-resolved': 'Resolved',
   /** Status filter: The full text for describing filtering on resolved comments */
   'status-filter.status-resolved-full': 'Resolved comments',
+  /** Status filter: The full text for describing filtering on resolved comments and is upsell mode */
+  'status-filter.status-resolved-full-upsell': 'Upgrade to see resolved comments',
 })
 
 /**
