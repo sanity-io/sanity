@@ -104,7 +104,7 @@ function CommentsInspectorInner(
     if (mode === 'upsell') {
       if (selectedPath?.origin === 'form') {
         telemetryLogs.panelViewed('field_action')
-      } else if (selectedPath?.origin === 'url') {
+      } else if (commentIdParamRef.current) {
         telemetryLogs.panelViewed('link')
       } else {
         telemetryLogs.panelViewed('document_action')
