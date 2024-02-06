@@ -4,7 +4,7 @@ const corsGroup: CliCommandGroupDefinition = {
   name: 'cors',
   signature: '[COMMAND]',
   isGroupRoot: true,
-  description: 'Interact with CORS-entries for your project',
+  description: 'Configures Cross-Origin Resource Sharing (CORS) settings for Sanity projects',
 }
 
 export default corsGroup

@@ -4,7 +4,7 @@ const projectGroup: CliCommandGroupDefinition = {
   name: 'projects',
   signature: '[COMMAND]',
   isGroupRoot: true,
-  description: 'Interact with projects connected to your logged in user',
+  description: 'Lists all Sanity projects associated with your logged-in user account',
 }
 
 export default projectGroup

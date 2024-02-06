@@ -15,7 +15,7 @@ Examples
 const deployCommand: CliCommandDefinition = {
   name: 'deploy',
   signature: '[SOURCE_DIR] [--no-build]  [--source-maps] [--no-minify]',
-  description: 'Deploys a statically built Sanity studio',
+  description: 'Deploys a statically built studio to the Sanity hosting environment',
   action: async (
     args: CliCommandArguments<DeployStudioActionFlags>,
     context: CliCommandContext,

@@ -4,7 +4,7 @@ const documentsGroup: CliCommandGroupDefinition = {
   name: 'documents',
   signature: '[COMMAND]',
   isGroupRoot: true,
-  description: 'Interact with documents in your project',
+  description: 'Manages and interacts with documents in your Sanity Content Lake datasets',
 }
 
 export default documentsGroup

@@ -26,7 +26,7 @@ Examples
 export const execCommand: CliCommandDefinition = {
   name: 'exec',
   signature: 'SCRIPT',
-  description: 'Runs a script in Sanity context',
+  description: 'Executes a given script within the context of Sanity Studio',
   helpText,
   action: async (args, context) => {
     const mod = await import('../../actions/exec/execScript')

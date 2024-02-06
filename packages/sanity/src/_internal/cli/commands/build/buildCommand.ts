@@ -15,7 +15,7 @@ Examples
 const buildCommand: CliCommandDefinition = {
   name: 'build',
   signature: '[OUTPUT_DIR]',
-  description: 'Builds the current Sanity configuration to a static bundle',
+  description: 'Builds the current Sanity Studio configuration into a static bundle for deployment',
   action: async (
     args: CliCommandArguments<BuildSanityStudioCommandFlags>,
     context: CliCommandContext,

@@ -24,7 +24,7 @@ Examples
 const codemodCommand: CliCommandDefinition = {
   name: 'codemod',
   signature: '[CODEMOD_NAME]',
-  description: 'Runs a code modification script',
+  description: 'Executes a code modification script to update Sanity Studio codebase',
   helpText,
   action: codemodAction,
 }

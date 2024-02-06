@@ -4,7 +4,7 @@ const graphqlGroup: CliCommandGroupDefinition = {
   name: 'graphql',
   signature: '[COMMAND]',
   isGroupRoot: true,
-  description: 'Interact with GraphQL APIs',
+  description: "Create and deploy changes to your project's GraphQL API(s)",
 }
 
 export default graphqlGroup
