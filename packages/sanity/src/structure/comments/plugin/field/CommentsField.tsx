@@ -94,7 +94,7 @@ function CommentFieldInner(
     setStatus,
     status,
   } = useComments()
-  const {upsellData, setUpsellDialogOpen} = useCommentsUpsell()
+  const {upsellData, handleOpenDialog} = useCommentsUpsell()
   const {selectedPath, setSelectedPath} = useCommentsSelectedPath()
 
   const fieldTitle = useMemo(() => getSchemaTypeTitle(props.schemaType), [props.schemaType])
@@ -162,7 +162,7 @@ function CommentFieldInner(
 
     if (mode === 'upsell') {
       if (upsellData) {
-        setUpsellDialogOpen(true)
+        handleOpenDialog()
       } else {
         // Open the comments inspector
         onCommentsOpen?.()
@@ -181,7 +181,7 @@ function CommentFieldInner(
     props.path,
     handleSetThreadToScrollTo,
     mode,
-    setUpsellDialogOpen,
+    handleOpenDialog,
     upsellData,
   ])
 

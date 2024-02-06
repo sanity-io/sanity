@@ -5,14 +5,14 @@ import {useCommentsUpsell} from '../../../hooks'
 import {Button} from '../../../../../../ui-components'
 
 const CommentsUpsellDialogStoryInner = () => {
-  const {upsellData, setUpsellDialogOpen} = useCommentsUpsell()
+  const {upsellData, handleOpenDialog} = useCommentsUpsell()
   const handleOpen = useCallback(() => {
-    setUpsellDialogOpen(true)
-  }, [setUpsellDialogOpen])
+    handleOpenDialog()
+  }, [handleOpenDialog])
 
   useEffect(() => {
-    setUpsellDialogOpen(true)
-  }, [setUpsellDialogOpen])
+    handleOpenDialog()
+  }, [handleOpenDialog])
 
   if (!upsellData) return null
 

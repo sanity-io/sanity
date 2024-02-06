@@ -50,6 +50,7 @@ const UPSELL_CLIENT: Partial<ClientConfig> = {
 
 const FEATURE = 'comments'
 const TEMPLATE_OPTIONS = {interpolate: /{{([\s\S]+?)}}/g}
+const BASE_URL = 'www.sanity.io'
 /**
  * @beta
  * @hidden
@@ -123,10 +124,10 @@ export function CommentsUpsellProvider(props: {children: React.ReactNode}) {
       if (!data) return
       try {
         const ctaUrl = template(data.ctaButton.url, TEMPLATE_OPTIONS)
-        data.ctaButton.url = ctaUrl({baseUrl: 'sanity.io', projectId})
+        data.ctaButton.url = ctaUrl({baseUrl: BASE_URL, projectId})
 
         const secondaryUrl = template(data.secondaryButton.url, TEMPLATE_OPTIONS)
-        data.secondaryButton.url = secondaryUrl({baseUrl: 'sanity.io', projectId})
+        data.secondaryButton.url = secondaryUrl({baseUrl: BASE_URL, projectId})
         setUpsellData(data)
       } catch (e) {
         // silently fail
@@ -138,25 +139,23 @@ export function CommentsUpsellProvider(props: {children: React.ReactNode}) {
     }
   }, [client, projectId])
 
-  useEffect(() => {
-    if (upsellDialogOpen) {
-      telemetry.log(UpsellDialogViewed, {
-        feature: FEATURE,
-        type: 'modal',
-        source: 'field_action',
-      })
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [upsellDialogOpen])
+  const handleOpenDialog = useCallback(() => {
+    setUpsellDialogOpen(true)
+    telemetry.log(UpsellDialogViewed, {
+      feature: FEATURE,
+      type: 'modal',
+      source: 'field_action',
+    })
+  }, [telemetry])
 
   const ctxValue = useMemo<CommentsUpsellContextValue>(
     () => ({
       upsellDialogOpen,
-      setUpsellDialogOpen,
+      handleOpenDialog,
       upsellData,
       telemetryLogs,
     }),
-    [upsellDialogOpen, setUpsellDialogOpen, upsellData, telemetryLogs],
+    [handleOpenDialog, upsellDialogOpen, upsellData, telemetryLogs],
   )
 
   return (
