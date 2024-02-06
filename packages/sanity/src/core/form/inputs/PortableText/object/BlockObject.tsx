@@ -31,6 +31,7 @@ import {debugRender} from '../debugRender'
 import {EMPTY_ARRAY} from '../../../../util'
 import {useChildPresence} from '../../../studio/contexts/Presence'
 import {useFormCallbacks} from '../../../studio'
+import {useTranslation} from '../../../../i18n'
 import {
   Root,
   ChangeIndicatorWrapper,
@@ -355,6 +356,7 @@ export const DefaultBlockObjectComponent = (props: BlockProps) => {
     validation,
   } = props
 
+  const {t} = useTranslation()
   const isImagePreview = isImage(value)
   const hasError = validation.filter((v) => v.level === 'error').length > 0
   const hasWarning = validation.filter((v) => v.level === 'warning').length > 0
@@ -373,6 +375,7 @@ export const DefaultBlockObjectComponent = (props: BlockProps) => {
   return (
     <>
       <Root
+        aria-label={t('inputs.portable-text.block.aria-label')}
         data-focused={focused ? '' : undefined}
         data-image-preview={isImagePreview ? '' : undefined}
         data-invalid={hasError ? '' : undefined}

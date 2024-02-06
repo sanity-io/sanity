@@ -22,10 +22,10 @@ import {usePortableTextMemberItem} from '../hooks/usePortableTextMembers'
 import {debugRender} from '../debugRender'
 import {useChildPresence} from '../../../studio/contexts/Presence'
 import {EMPTY_ARRAY} from '../../../../util'
+import {useTranslation} from '../../../../i18n'
 import {AnnotationToolbarPopover} from './AnnotationToolbarPopover'
 import {Root, TooltipBox} from './Annotation.styles'
 import {ObjectEditModal} from './modals/ObjectEditModal'
-import {useTranslation} from '../../../../i18n'
 
 interface AnnotationProps {
   children: React.ReactElement
@@ -284,6 +284,7 @@ export const DefaultAnnotationComponent = (props: BlockAnnotationProps) => {
   return (
     <Root
       $toneKey={toneKey}
+      aria-label={t('inputs.portable-text.annotation-aria-label')}
       data-link={isLink ? '' : undefined}
       data-error={hasError ? '' : undefined}
       data-warning={hasWarning ? '' : undefined}

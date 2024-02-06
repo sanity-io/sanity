@@ -181,7 +181,7 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
               </Text>
             </Box>
             <Button
-              aria-label={t('inputs.portable-text.action.edit-annotation')}
+              aria-label={t('inputs.portable-text.action.edit-annotation-aria-label')}
               icon={EditIcon}
               mode="bleed"
               onClick={handleEditButtonClicked}
@@ -189,7 +189,7 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
               tooltipProps={null}
             />
             <Button
-              aria-label={t('inputs.portable-text.action.remove-annotation')}
+              aria-label={t('inputs.portable-text.action.remove-annotation-aria-label')}
               icon={TrashIcon}
               mode="bleed"
               onClick={handleRemoveButtonClicked}
