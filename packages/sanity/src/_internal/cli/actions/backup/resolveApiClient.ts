@@ -23,10 +23,11 @@ async function resolveApiClient(
     throw new Error('Project ID not defined')
   }
 
-  // Do not use dataset configured in Sanity config since dataset specified in command should override.
-  let dataset = datasetName
-  if (!dataset) {
-    dataset = await chooseDatasetPrompt(context, {
+  // If no dataset provided, explicitly ask for dataset instead of using dataset
+  // configured in Sanity config. Aligns with `sanity dataset export` behavior.
+  let selectedDataset: string = datasetName
+  if (!selectedDataset) {
+    selectedDataset = await chooseDatasetPrompt(context, {
       message: 'Select the dataset name:',
     })
   }
@@ -35,7 +36,7 @@ async function resolveApiClient(
 
   return {
     projectId,
-    datasetName: dataset,
+    datasetName: selectedDataset,
     token,
     client,
   }

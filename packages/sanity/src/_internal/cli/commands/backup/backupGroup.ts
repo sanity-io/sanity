@@ -8,7 +8,7 @@ const datasetBackupGroup: CliCommandGroupDefinition = {
   signature: '[COMMAND]',
   description: 'Manage dataset backups.',
   isGroupRoot: true,
-  hideFromHelp: false,
+  hideFromHelp: true,
 }
 
 export function validateLimit(limit: string): string {

@@ -32,7 +32,7 @@ const enableDatasetBackupCommand: CliCommandDefinition = {
         },
       })
 
-      output.print(`${chalk.green(`Enabled daily backups for dataset ${datasetName}.\n`)}`)
+      output.print(`${chalk.green(`Enabled backups for dataset ${datasetName}.\n`)}`)
 
       output.print(
         `${chalk.bold(`Retention policies may apply depending on your plan and agreement.\n`)}`,
