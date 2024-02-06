@@ -11,6 +11,7 @@ import {
   buildCommentThreadItems,
   buildRangeDecorators,
   buildTextSelectionFromFragment,
+  currentSelectionIsOverlappingWithComment,
 } from '../utils'
 import {CommentDocument} from '../types'
 import {useCurrentUser} from 'sanity'
@@ -101,7 +102,7 @@ const schema = Schema.compile({
 export default function CommentInlineHighlightDebugStory() {
   const [value, setValue] = useState<PortableTextBlock[]>(INITIAL_VALUE)
   const [commentDocuments, setCommentDocuments] = useState<CommentDocument[]>([])
-  const [hasSelectedRange, setHasSelectedRange] = useState<boolean>(false)
+  const [canAddComment, setCanAddComment] = useState<boolean>(false)
   const editorRef = useRef<PortableTextEditor | null>(null)
   const currentUser = useCurrentUser()
 
@@ -140,17 +141,27 @@ export default function CommentInlineHighlightDebugStory() {
     [comments, currentHoveredCommentId, value],
   )
 
-  const handleChange = useCallback((change: EditorChange) => {
-    if (change.type === 'patch' && editorRef.current) {
-      const editorStateValue = PortableTextEditor.getValue(editorRef.current)
+  const handleChange = useCallback(
+    (change: EditorChange) => {
+      if (change.type === 'patch' && editorRef.current) {
+        const editorStateValue = PortableTextEditor.getValue(editorRef.current)
 
-      setValue(editorStateValue || [])
-    }
+        setValue(editorStateValue || [])
+      }
 
-    if (change.type === 'selection') {
-      setHasSelectedRange(change.selection?.anchor.offset !== change.selection?.focus.offset)
-    }
-  }, [])
+      if (change.type === 'selection') {
+        const overlapping = currentSelectionIsOverlappingWithComment({
+          currentSelection: change.selection,
+          addedCommentsSelections: rangeDecorations.map((x) => x.selection),
+        })
+
+        const hasRange = change.selection?.anchor.offset !== change.selection?.focus.offset
+
+        setCanAddComment(!overlapping && hasRange)
+      }
+    },
+    [rangeDecorations],
+  )
 
   const handleAddComment = useCallback(() => {
     if (!editorRef.current) return
@@ -226,7 +237,7 @@ export default function CommentInlineHighlightDebugStory() {
                 <Button
                   text="Add comment"
                   onClick={handleAddComment}
-                  disabled={!hasSelectedRange}
+                  disabled={!canAddComment}
                   padding={2}
                   fontSize={1}
                 />
