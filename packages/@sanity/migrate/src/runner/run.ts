@@ -45,7 +45,11 @@ export async function* toFetchOptionsIterable(
       token: apiConfig.token,
       tag: 'sanity.migration.mutate',
       apiHost: apiConfig.apiHost ?? 'api.sanity.io',
-      endpoint: endpoints.data.mutate(apiConfig.dataset, {returnIds: true, visibility: 'async'}),
+      endpoint: endpoints.data.mutate(apiConfig.dataset, {
+        returnIds: true,
+        visibility: 'async',
+        autoGenerateArrayKeys: true,
+      }),
       body: JSON.stringify(transaction),
     })
   }

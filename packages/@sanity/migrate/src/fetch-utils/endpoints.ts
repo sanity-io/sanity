@@ -34,6 +34,7 @@ export const endpoints = {
       options?: {
         returnIds?: boolean
         returnDocuments?: boolean
+        autoGenerateArrayKeys?: boolean
         visibility?: 'async' | 'sync' | 'deferred'
         dryRun?: boolean
         tag?: string
@@ -43,6 +44,7 @@ export const endpoints = {
         options?.tag && ['tag', options.tag],
         options?.returnIds && ['returnIds', 'true'],
         options?.returnDocuments && ['returnDocuments', 'true'],
+        options?.autoGenerateArrayKeys && ['autoGenerateArrayKeys', 'true'],
         options?.visibility && ['visibility', options.visibility],
         options?.dryRun && ['dryRun', 'true'],
       ].filter(Boolean) as [string, string][]
