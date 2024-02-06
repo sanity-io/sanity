@@ -9,6 +9,10 @@
       "dest": "/workshop/frame/index.html"
     },
     {
+      "src": "/preview/(.*)",
+      "dest": "/preview/index.html"
+    },
+    {
       "src": "/(.*)",
       "dest": "/index.html"
     }

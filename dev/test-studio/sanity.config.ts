@@ -3,6 +3,7 @@ import {SanityMonogram} from '@sanity/logos'
 import {visionTool} from '@sanity/vision'
 import {defineConfig, definePlugin} from 'sanity'
 import {structureTool} from 'sanity/structure'
+import {presentationTool} from 'sanity/presentation'
 import {muxInput} from 'sanity-plugin-mux-input'
 import {assist} from '@sanity/assist'
 import {googleMapsInput} from '@sanity/google-maps-input'
@@ -275,5 +276,18 @@ export default defineConfig([
         input: StegaDebugger,
       },
     },
+  },
+  {
+    name: 'presentation',
+    title: 'Presentation Studio',
+    projectId: 'ppsg7ml5',
+    dataset: 'playground',
+    plugins: [
+      presentationTool({
+        previewUrl: '/preview/index.html',
+      }),
+      sharedSettings(),
+    ],
+    basePath: '/presentation',
   },
 ])
