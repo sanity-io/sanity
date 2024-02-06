@@ -49,6 +49,9 @@ const RootCard = styled(Card)`
 
 const NavGrid = styled(Grid)`
   grid-template-columns: auto auto auto;
+  @media screen and (min-width: ${({theme}) => `${theme.sanity.media[3]}px`}) {
+    grid-template-columns: 1fr auto 1fr;
+  }
 `
 
 /**
