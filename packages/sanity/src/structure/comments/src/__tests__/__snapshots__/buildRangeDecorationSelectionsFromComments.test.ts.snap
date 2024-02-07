@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`buildRangeDecorationSelectionsFromComments allows something to be bolded before the range 1`] = `
+exports[`comments: buildRangeDecorationSelectionsFromComments allows something to be bolded before the range 1`] = `
 Array [
   Object {
     "comment": Object {
@@ -73,7 +73,7 @@ Array [
 ]
 `;
 
-exports[`buildRangeDecorationSelectionsFromComments allows something to be bolded inside and outside of the range 1`] = `
+exports[`comments: buildRangeDecorationSelectionsFromComments allows something to be bolded inside and outside of the range 1`] = `
 Array [
   Object {
     "comment": Object {
@@ -146,7 +146,7 @@ Array [
 ]
 `;
 
-exports[`buildRangeDecorationSelectionsFromComments allows something to be bolded inside the range 1`] = `
+exports[`comments: buildRangeDecorationSelectionsFromComments allows something to be bolded inside the range 1`] = `
 Array [
   Object {
     "comment": Object {
@@ -219,7 +219,7 @@ Array [
 ]
 `;
 
-exports[`buildRangeDecorationSelectionsFromComments creates initial ranges 1`] = `
+exports[`comments: buildRangeDecorationSelectionsFromComments creates initial ranges 1`] = `
 Array [
   Object {
     "comment": Object {
