@@ -4,6 +4,7 @@ import {visionTool} from '@sanity/vision'
 import {defineConfig, definePlugin} from 'sanity'
 import {structureTool} from 'sanity/structure'
 import {presentationTool} from 'sanity/presentation'
+import {tasks} from 'sanity/tasks'
 import {muxInput} from 'sanity-plugin-mux-input'
 import {assist} from '@sanity/assist'
 import {googleMapsInput} from '@sanity/google-maps-input'
@@ -50,7 +51,6 @@ import {pasteAction} from './fieldActions/pasteAction'
 import {routerDebugTool} from './plugins/router-debug'
 import {StegaDebugger} from './schema/debug/components/DebugStega'
 import {testStudioLocaleBundles} from './locales'
-
 const localePlugins = [koKRLocale(), nbNOLocale(), nnNOLocale(), ptPTLocale(), svSELocale()]
 
 const sharedSettings = definePlugin({
@@ -142,7 +142,7 @@ export default defineConfig([
     title: 'Test Studio',
     projectId: 'ppsg7ml5',
     dataset: 'test',
-    plugins: [sharedSettings()],
+    plugins: [tasks(), sharedSettings()],
     basePath: '/test',
     icon: SanityMonogram,
   },
