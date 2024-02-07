@@ -51,7 +51,7 @@ export interface PortableTextMemberItem {
  * Supports multi-user real-time block content editing on larger documents.
  *
  * This component can be configured and customized extensively.
- * {@link https://www.sanity.io/docs/portable-text-features | Go to the documentation for more details}.
+ * {@link https://www.sanity.io/docs/customizing-the-portable-text-editor | Go to the documentation for more details}.
  *
  * @public
  * @param props - {@link PortableTextInputProps} component props.
