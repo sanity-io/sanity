@@ -27,7 +27,7 @@ import {
 import {WorkspaceLoader} from './workspaceLoader'
 import {WorkspacesProvider} from './workspaces'
 import {StudioTelemetryProvider} from './StudioTelemetryProvider'
-import {TasksProvider} from './tasks'
+import {TasksProvider, TasksSetupProvider} from './tasks'
 
 Refractor.registerLanguage(bash)
 Refractor.registerLanguage(javascript)
@@ -59,7 +59,9 @@ export function StudioProvider({
       <StudioTelemetryProvider config={config}>
         <LocaleProvider>
           <ResourceCacheProvider>
-            <TasksProvider>{children}</TasksProvider>
+            <TasksSetupProvider>
+              <TasksProvider>{children}</TasksProvider>
+            </TasksSetupProvider>
           </ResourceCacheProvider>
         </LocaleProvider>
       </StudioTelemetryProvider>
