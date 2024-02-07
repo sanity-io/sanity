@@ -1,0 +1,6 @@
+{"_id": "_.retention.maximum", "_type": "system.retention", "days": 90, "maximum": true, "preferShorter": true}
+{"_id": "_.retention.normal", "_type": "system.retention", "days": 3}
+{"_id": "_.groups.user", "_type": "system.group", "members": ["user"], "grants": []}
+{"_id": "radhe", "_type": "employee", "name": "Radhe"}
+{"_id": "robin", "_type": "employee", "name": "Robin"}
+{"_id": "matt", "_type": "employee", "name": "Matt"}

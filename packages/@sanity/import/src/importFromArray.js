@@ -30,9 +30,15 @@ async function importDocuments(documents, options) {
     validateCdrDatasets(documents, options)
   }
 
+  let filteredDocuments = documents
+  // Always filter out system documents unless explicitly allowed.
+  if (options.allowSystemDocuments !== true) {
+    filteredDocuments = documents.filter((doc) => !doc._id?.startsWith('_.'))
+  }
+
   // Replace relative asset paths if one is defined
   // (file://./images/foo-bar.png -> file:///abs/olute/images/foo-bar.png)
-  const absPathed = documents.map((doc) => absolutifyPaths(doc, options.assetsBase))
+  const absPathed = filteredDocuments.map((doc) => absolutifyPaths(doc, options.assetsBase))
 
   // Assign document IDs for document that do not have one. This is necessary
   // for us to strengthen references and import assets properly.
