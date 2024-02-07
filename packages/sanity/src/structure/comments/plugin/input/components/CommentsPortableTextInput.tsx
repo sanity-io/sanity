@@ -78,13 +78,11 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
 
   const stringFieldPath = useMemo(() => PathUtils.toString(props.path), [props.path])
 
-  const fieldComments = useMemo(() => {
-    return comments.data.open?.filter((comment) => comment.fieldPath === stringFieldPath)
-  }, [comments, stringFieldPath])
-
   const textComments = useMemo(() => {
-    return fieldComments.filter((c) => c.selection?.type === 'text')
-  }, [fieldComments])
+    return comments.data.open
+      .filter((comment) => comment.fieldPath === stringFieldPath)
+      .filter((c) => c.selection?.type === 'text')
+  }, [comments.data.open, stringFieldPath])
 
   const getFragment = useCallback(() => {
     if (!editorRef.current) return EMPTY_ARRAY
@@ -129,9 +127,6 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
     scrollToGroup(threadId)
 
     // Reset the states when submitting
-    setNextCommentValue(null)
-    setNextCommentSelection(null)
-    setCurrentSelection(null)
     clearSelection()
   }, [
     clearSelection,
@@ -145,15 +140,15 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
     stringFieldPath,
   ])
 
-  // This will set the current selection state to the current selection ref.
-  // When this value is set, the popover with the comment input will open and
-  // the comment being added will use the current selection in it's data.
+  // Set the next comment selection to the current selection so that we can
+  // render the comment input popover on the current selection using a range decoration.
   const handleSelectCurrentSelection = useCallback(() => {
     setCurrentSelection(null)
     setNextCommentSelection(currentSelection)
   }, [currentSelection])
 
-  const handleDiscardConfirm = useCallback(() => {
+  // Clear the selection and close the popover when discarding the comment
+  const handleCommentDiscardConfirm = useCallback(() => {
     clearSelection()
   }, [clearSelection])
 
@@ -379,7 +374,7 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
               mentionOptions={mentionOptions}
               onChange={setNextCommentValue}
               onClickOutside={onClickOutsideCommentInputPopover}
-              onDiscardConfirm={handleDiscardConfirm}
+              onDiscardConfirm={handleCommentDiscardConfirm}
               onSubmit={handleSubmit}
               referenceElement={popoverAuthoringReferenceElement}
               value={nextCommentValue}

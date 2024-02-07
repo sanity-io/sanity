@@ -47,6 +47,7 @@ interface CommentsListItemContextMenuProps {
   canDelete: boolean | undefined
   canEdit: boolean | undefined
   isParent: boolean | undefined
+  mode: CommentsUIMode
   onCopyLink?: () => void
   onDeleteStart?: () => void
   onEditStart?: () => void
@@ -56,7 +57,6 @@ interface CommentsListItemContextMenuProps {
   onStatusChange?: () => void
   readOnly?: boolean
   status: CommentStatus
-  mode: CommentsUIMode
 }
 
 export function CommentsListItemContextMenu(props: CommentsListItemContextMenuProps) {
@@ -64,6 +64,7 @@ export function CommentsListItemContextMenu(props: CommentsListItemContextMenuPr
     canDelete,
     canEdit,
     isParent,
+    mode,
     onCopyLink,
     onDeleteStart,
     onEditStart,
@@ -73,7 +74,6 @@ export function CommentsListItemContextMenu(props: CommentsListItemContextMenuPr
     onStatusChange,
     readOnly,
     status,
-    mode,
   } = props
 
   const showMenuButton = Boolean(onCopyLink || onDeleteStart || onEditStart)
@@ -86,8 +86,8 @@ export function CommentsListItemContextMenu(props: CommentsListItemContextMenuPr
         <FloatingCard display="flex" shadow={2} padding={1} radius={2} sizing="border">
           {onReactionSelect && (
             <CommentReactionsMenuButton
-              onMenuClose={onMenuClose}
               mode={mode}
+              onMenuClose={onMenuClose}
               onMenuOpen={onMenuOpen}
               onSelect={onReactionSelect}
               options={COMMENT_REACTION_OPTIONS}
