@@ -1,5 +1,6 @@
 import {hues} from '@sanity/color'
 import {Theme} from '@sanity/ui'
+import {forwardRef} from 'react'
 import styled, {css} from 'styled-components'
 
 /**
@@ -12,7 +13,7 @@ import styled, {css} from 'styled-components'
  * - `[data-inline-comment-nested='true']` - The comment is a nested comment
  * - `[data-hovered='true']` - The comment is hovered
  */
-export const CommentInlineHighlightSpan = styled.span(({theme}: {theme: Theme}) => {
+export const HighlightSpan = styled.span(({theme}: {theme: Theme}) => {
   const isDark = theme.sanity.v2?.color._dark
 
   // Colors used when a comment is added
@@ -61,19 +62,35 @@ export const CommentInlineHighlightSpan = styled.span(({theme}: {theme: Theme}) 
       background-color: ${authoringBg};
       border-bottom: 2px solid ${authoringBorder};
     }
-
-    @media (hover: hover) {
-      &:hover {
-        &[data-inline-comment-state='added'][data-inline-comment-nested='false'] {
-          background-color: ${addedHoverBg};
-          border-bottom: 2px solid ${addedHoverBorder};
-        }
-
-        [data-ui='CommentDecorator'] {
-          background-color: inherit;
-          border-bottom: inherit;
-        }
-      }
-    }
   `
+})
+
+interface CommentInlineHighlightSpanProps {
+  children: React.ReactNode
+  isAdded?: boolean
+  isAuthoring?: boolean
+  isHovered?: boolean
+  isNested?: boolean
+}
+
+export const CommentInlineHighlightSpan = forwardRef(function CommentInlineHighlightSpan(
+  props: CommentInlineHighlightSpanProps & React.HTMLProps<HTMLSpanElement>,
+  ref: React.Ref<HTMLSpanElement>,
+) {
+  const {children, isAdded, isAuthoring, isHovered, isNested, ...rest} = props
+
+  // eslint-disable-next-line no-nested-ternary
+  const state = isAdded ? 'added' : isAuthoring ? 'authoring' : undefined
+
+  return (
+    <HighlightSpan
+      {...rest}
+      data-hovered={isHovered ? 'true' : 'false'}
+      data-inline-comment-nested={isNested ? 'true' : 'false'}
+      data-inline-comment-state={state}
+      ref={ref}
+    >
+      {children}
+    </HighlightSpan>
+  )
 })

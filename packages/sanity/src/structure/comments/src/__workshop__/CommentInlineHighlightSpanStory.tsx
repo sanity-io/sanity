@@ -1,4 +1,3 @@
-import React from 'react'
 import {Card, Container, Flex, Stack, Text} from '@sanity/ui'
 import {CommentInlineHighlightSpan} from '../components'
 
@@ -12,17 +11,14 @@ function Content() {
     <Stack space={4}>
       <Text size={1}>
         Highlight style{' '}
-        <CommentInlineHighlightSpan data-inline-comment-state="authoring">
+        <CommentInlineHighlightSpan isAuthoring>
           when authoring a comment.
         </CommentInlineHighlightSpan>{' '}
       </Text>
 
       <Text size={1}>
         Highlight style{' '}
-        <CommentInlineHighlightSpan
-          data-inline-comment-state="added"
-          data-inline-comment-nested="false"
-        >
+        <CommentInlineHighlightSpan isAdded>
           when a comment has been added
         </CommentInlineHighlightSpan>
         .
@@ -30,33 +26,15 @@ function Content() {
 
       <Text size={1}>
         Highlight style{' '}
-        <CommentInlineHighlightSpan
-          data-inline-comment-state="added"
-          data-inline-comment-nested="false"
-        >
-          when a comment{' '}
-        </CommentInlineHighlightSpan>{' '}
-        <CommentInlineHighlightSpan
-          data-inline-comment-state="added"
-          data-inline-comment-nested="true"
-        >
+        <CommentInlineHighlightSpan isAdded>when a comment </CommentInlineHighlightSpan>{' '}
+        <CommentInlineHighlightSpan isAdded isNested>
           is nested
         </CommentInlineHighlightSpan>
-        <CommentInlineHighlightSpan
-          data-inline-comment-state="added"
-          data-inline-comment-nested="false"
-        >
-          {' '}
-          within another comment
-        </CommentInlineHighlightSpan>
+        <CommentInlineHighlightSpan isAdded> within another comment</CommentInlineHighlightSpan>
       </Text>
 
       <Text size={1}>
-        <CommentInlineHighlightSpan
-          data-hovered="true"
-          data-inline-comment-state="added"
-          data-inline-comment-nested="false"
-        >
+        <CommentInlineHighlightSpan isHovered isAdded>
           Highlight style when hovered or active
         </CommentInlineHighlightSpan>
       </Text>

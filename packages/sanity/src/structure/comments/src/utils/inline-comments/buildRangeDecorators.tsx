@@ -69,8 +69,9 @@ const CommentRangeDecorator = memo(function CommentRangeDecorator(
     <CommentInlineHighlightSpan
       data-hovered={hovered || selected}
       data-inline-comment-id={commentId}
-      data-inline-comment-state="added"
-      data-inline-comment-nested={isNestedRef.current}
+      isAdded
+      isHovered={hovered}
+      isNested={isNestedRef.current}
       onClick={handleClick}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}

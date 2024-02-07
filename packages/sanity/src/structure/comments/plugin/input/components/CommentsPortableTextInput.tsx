@@ -264,9 +264,7 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
 
     return {
       component: ({children}) => (
-        <CommentInlineHighlightSpan data-inline-comment-state="authoring">
-          {children}
-        </CommentInlineHighlightSpan>
+        <CommentInlineHighlightSpan isAuthoring>{children}</CommentInlineHighlightSpan>
       ),
       isRangeInvalid,
       selection: nextCommentSelection,
@@ -291,7 +289,7 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
   ])
 
   const currentSelectionIsOverlapping = useMemo(() => {
-    if (!currentSelection) return false
+    if (!currentSelection || addedCommentsDecorators.length === 0) return false
 
     const overlaps = currentSelectionIsOverlappingWithComment({
       currentSelection,
