@@ -1,11 +1,11 @@
 import {useState, useMemo, useEffect, useCallback} from 'react'
-import {ClientConfig} from '@sanity/client'
+import type {ClientConfig} from '@sanity/client'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {template} from 'lodash'
-import {CommentsUpsellData} from '../../types'
+import type {CommentsUpsellData} from '../../types'
 import {CommentsUpsellDialog} from '../../components'
 import {CommentsUpsellContext} from './CommentsUpsellContext'
-import {CommentsUpsellContextValue} from './types'
+import type {CommentsUpsellContextValue} from './types'
 import {
   useClient,
   DEFAULT_STUDIO_CLIENT_OPTIONS,
@@ -120,18 +120,23 @@ export function CommentsUpsellProvider(props: {children: React.ReactNode}) {
       .withConfig(UPSELL_CLIENT)
       .observable.fetch<CommentsUpsellData | null>(QUERY)
 
-    const sub = data$.subscribe((data) => {
-      if (!data) return
-      try {
-        const ctaUrl = template(data.ctaButton.url, TEMPLATE_OPTIONS)
-        data.ctaButton.url = ctaUrl({baseUrl: BASE_URL, projectId})
+    const sub = data$.subscribe({
+      next: (data) => {
+        if (!data) return
+        try {
+          const ctaUrl = template(data.ctaButton.url, TEMPLATE_OPTIONS)
+          data.ctaButton.url = ctaUrl({baseUrl: BASE_URL, projectId})
 
-        const secondaryUrl = template(data.secondaryButton.url, TEMPLATE_OPTIONS)
-        data.secondaryButton.url = secondaryUrl({baseUrl: BASE_URL, projectId})
-        setUpsellData(data)
-      } catch (e) {
+          const secondaryUrl = template(data.secondaryButton.url, TEMPLATE_OPTIONS)
+          data.secondaryButton.url = secondaryUrl({baseUrl: BASE_URL, projectId})
+          setUpsellData(data)
+        } catch (e) {
+          // silently fail
+        }
+      },
+      error: () => {
         // silently fail
-      }
+      },
     })
 
     return () => {
