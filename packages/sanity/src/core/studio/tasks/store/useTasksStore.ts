@@ -53,7 +53,7 @@ export function useTasksStore(opts: TasksStoreOptions): TasksStoreReturnType {
   const {client, documentId} = opts
 
   const [state, dispatch] = useReducer(tasksReducer, INITIAL_STATE)
-  const [loading, setLoading] = useState<boolean>(client !== null)
+  const [isLoading, setIsLoading] = useState<boolean>(client !== null)
   const [error, setError] = useState<Error | null>(null)
 
   const params = useMemo(
@@ -63,14 +63,14 @@ export function useTasksStore(opts: TasksStoreOptions): TasksStoreReturnType {
 
   const initialFetch = useCallback(async () => {
     if (!client) {
-      setLoading(false)
+      setIsLoading(false)
       return
     }
 
     try {
       const res = await client.fetch(QUERY, params)
       dispatch({type: 'TASKS_SET', tasks: res})
-      setLoading(false)
+      setIsLoading(false)
     } catch (err) {
       setError(err)
     }
@@ -80,9 +80,9 @@ export function useTasksStore(opts: TasksStoreOptions): TasksStoreReturnType {
     async (event: ListenEvent<Record<string, TaskDocument>>) => {
       // Fetch all tasks on initial connection
       if (event.type === 'welcome') {
-        setLoading(true)
+        setIsLoading(true)
         await initialFetch()
-        setLoading(false)
+        setIsLoading(false)
       }
 
       // The reconnect event means that we are trying to reconnect to the realtime listener.
@@ -90,7 +90,7 @@ export function useTasksStore(opts: TasksStoreOptions): TasksStoreReturnType {
       // reconnect. Once a connection has been established, the welcome event
       // will be received and we'll fetch all tasks again (above).
       if (event.type === 'reconnect') {
-        setLoading(true)
+        setIsLoading(true)
       }
 
       // Handle mutations (create, update, delete) from the realtime listener
@@ -154,6 +154,6 @@ export function useTasksStore(opts: TasksStoreOptions): TasksStoreReturnType {
     data: tasksAsArray,
     dispatch,
     error,
-    loading,
+    isLoading,
   }
 }
