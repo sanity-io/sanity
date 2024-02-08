@@ -21,7 +21,7 @@ const TRANSITION: Transition = {duration: 0.2}
 
 export function TasksStudioSidebar() {
   const {enabled} = useTasksEnabled()
-  const {isOpen, data, isLoading} = useTasks()
+  const {activeDocumentId, isOpen, data, isLoading} = useTasks()
 
   if (!enabled) return null
   return (
@@ -30,7 +30,11 @@ export function TasksStudioSidebar() {
         <motion.div variants={VARIANTS} transition={TRANSITION} initial="hidden" animate="visible">
           <SidebarRoot borderLeft height="fill" marginLeft={1}>
             <TasksSidebarHeader />
-            {isLoading ? <Spinner /> : <TaskSidebarContent items={data ?? []} />}
+            {isLoading ? (
+              <Spinner />
+            ) : (
+              <TaskSidebarContent items={data} activeDocumentId={activeDocumentId} />
+            )}
           </SidebarRoot>
         </motion.div>
       )}
