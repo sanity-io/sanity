@@ -1,5 +1,5 @@
 import {CalendarIcon} from '@sanity/icons'
-import {Box, Flex, LayerProvider, TextInput, useClickOutside, useForwardedRef} from '@sanity/ui'
+import {Box, Flex, LayerProvider, useClickOutside, useForwardedRef} from '@sanity/ui'
 import {
   type FocusEvent,
   type ForwardedRef,
@@ -14,6 +14,7 @@ import FocusLock from 'react-focus-lock'
 import {Button, Popover} from '../../../../../ui-components'
 import {type CalendarLabels} from './calendar/types'
 import {DatePicker} from './DatePicker'
+import {LazyTextInput} from './LazyTextInput'
 
 export interface DateTimeInputProps {
   customValidity?: string
@@ -79,8 +80,7 @@ export const DateTimeInput = forwardRef(function DateTimeInput(
   )
 
   return (
-    <TextInput
-      data-testid="date-input"
+    <LazyTextInput
       ref={forwardedRef}
       {...rest}
       value={inputValue}

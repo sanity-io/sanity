@@ -1,5 +1,5 @@
 import {defineField} from '@sanity/types'
-import {waitFor} from '@testing-library/react'
+import {fireEvent} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
 import {renderStringInput} from '../../../../../../test/form'
@@ -24,6 +24,9 @@ test('does not emit onChange after invalid value has been typed', async () => {
 
   userEvent.type(input, 'this is invalid')
   expect(input.value).toBe('this is invalid')
+  expect(onChange.mock.calls.length).toBe(0)
+
+  fireEvent.blur(input)
 
   expect(onChange.mock.calls.length).toBe(0)
 })
@@ -42,9 +45,9 @@ test('emits onChange on correct format if a valid value has been typed', async (
   // NOTE: the date is entered and displayed in local timezone
   // (which is hardcoded to America/Los_Angeles)
   userEvent.type(input, '2021-03-28 10:23')
-  waitFor(() => {
-    expect(input.value).toBe('2021-03-28 10:23')
-  })
+  expect(input.value).toBe('2021-03-28 10:23')
+
+  fireEvent.blur(input)
 
   // NOTE: the date is entered and displayed in local timezone but stored in utc
   expect(onChange.mock.calls).toMatchSnapshot()

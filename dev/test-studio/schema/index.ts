@@ -13,6 +13,8 @@ import conditionalFields from './debug/conditionalFields'
 import customInputs from './debug/customInputs'
 import customInputsWithPatches from './debug/customInputsWithPatches'
 import customNumber from './debug/customNumber'
+import dateTimeValidation from './debug/dateTimeValidation'
+import dateValidation from './debug/dateValidation'
 import {deprecatedDocument} from './debug/deprecatedDocument'
 import {
   deprecatedFields,
@@ -180,6 +182,10 @@ export const schemaTypes = [
   customInputsWithPatches,
   customNumber,
   collapsibleObjects,
+  date,
+  dateValidation,
+  datetime,
+  dateTimeValidation,
   deprecatedFields,
   deprecatedDocument,
   documentActions,
