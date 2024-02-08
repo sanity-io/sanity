@@ -22,6 +22,7 @@ export interface LogoProps {
  * @beta */
 export interface NavbarProps {
   renderDefault: (props: NavbarProps) => React.ReactElement
+  __internal_tasks_button?: React.ReactNode
 }
 
 /**

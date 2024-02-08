@@ -18,6 +18,7 @@ import {Button, TooltipDelayGroupProvider} from '../../../../ui-components'
 import {NavbarContext} from '../../StudioLayout'
 import {useToolMenuComponent} from '../../studio-components-hooks'
 import {useTranslation} from '../../../i18n'
+import {NavbarProps} from '../../../config'
 import {UserMenu} from './userMenu'
 import {NewDocumentButton, useNewDocumentOptions} from './new-document'
 import {PresenceMenu} from './presence'
@@ -57,11 +58,16 @@ const NavGrid = styled(Grid)`
 /**
  * @hidden
  * @beta */
-export function StudioNavbar() {
+export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
   const {name, tools} = useWorkspace()
   const routerState = useRouterState()
   const mediaIndex = useMediaIndex()
   const activeToolName = typeof routerState.tool === 'string' ? routerState.tool : undefined
+
+  // eslint-disable-next-line camelcase
+  const tasksButtonNode = props?.__internal_tasks_button ? (
+    <Box marginLeft={2}>{props?.__internal_tasks_button}</Box>
+  ) : null
 
   const newDocumentOptions = useNewDocumentOptions()
   const {t} = useTranslation()
@@ -245,11 +251,14 @@ export function StudioNavbar() {
                     />
                   )}
                 </Flex>
+
                 {shouldRender.tools && (
                   <Box flex="none" marginLeft={1}>
                     <UserMenu />
                   </Box>
                 )}
+
+                {tasksButtonNode}
               </Flex>
             </TooltipDelayGroupProvider>
           </NavGrid>
