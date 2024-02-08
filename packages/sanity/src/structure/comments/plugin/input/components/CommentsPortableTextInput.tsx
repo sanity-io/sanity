@@ -14,7 +14,6 @@ import {
   CommentMessage,
   CommentInlineHighlightSpan,
   buildRangeDecorators,
-  buildTextSelectionFromFragment,
   currentSelectionIsOverlappingWithComment,
   hasCommentMessageValue,
   useComments,
@@ -82,8 +81,8 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
     return comments.data.open?.filter((comment) => comment.fieldPath === stringFieldPath)
   }, [comments, stringFieldPath])
 
-  const textComments = useMemo(() => {
-    return fieldComments.filter((c) => c.selection?.type === 'text')
+  const rangeComments = useMemo(() => {
+    return fieldComments.filter((c) => c.selection?.type === 'range')
   }, [fieldComments])
 
   const getFragment = useCallback(() => {
@@ -102,8 +101,6 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
   const handleSubmit = useCallback(() => {
     if (!nextCommentSelection || !editorRef.current) return
 
-    const fragment = getFragment() || EMPTY_ARRAY
-    const textSelection = buildTextSelectionFromFragment({fragment})
     const threadId = uuid()
 
     operation.create({
@@ -111,7 +108,7 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
       message: nextCommentValue,
       // This is a new comment, so we don't have a parent comment id
       parentCommentId: undefined,
-      selection: textSelection,
+      selection: {type: 'range', value: PortableTextEditor.getSelection(editorRef.current)},
       status: 'open',
       // This is a new comment, so we need to generate a new thread id
       threadId,
@@ -135,7 +132,6 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
     clearSelection()
   }, [
     clearSelection,
-    getFragment,
     nextCommentSelection,
     nextCommentValue,
     onCommentsOpen,
@@ -220,6 +216,14 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
 
   const onEditorChange = useCallback(
     (change: EditorChange) => {
+      if (change.type === 'rangeDecorationMoved') {
+        const comment = rangeComments.find(
+          (c) => c.parentComment._id === change.rangeDecoration.payload?.commentId,
+        )
+        if (comment && comment.selection?.type === 'range') {
+          // TODO: patch the comment with the new selection
+        }
+      }
       if (change.type === 'selection') {
         const isRangeSelected = change.selection?.anchor.offset !== change.selection?.focus.offset
 
@@ -234,13 +238,13 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
         debounceSelectionChange(change.selection, isRangeSelected)
       }
     },
-    [debounceSelectionChange],
+    [debounceSelectionChange, rangeComments],
   )
 
   // The range decorations for existing comments
   const addedCommentsDecorators = useMemo(() => {
     return buildRangeDecorators({
-      comments: textComments,
+      comments: rangeComments,
       currentHoveredCommentId,
       onDecoratorClick: handleDecoratorClick,
       onDecoratorHoverEnd: setCurrentHoveredCommentId,
@@ -249,7 +253,7 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
       value: props.value,
     })
   }, [
-    textComments,
+    rangeComments,
     currentHoveredCommentId,
     selectedPath?.threadId,
     handleDecoratorClick,

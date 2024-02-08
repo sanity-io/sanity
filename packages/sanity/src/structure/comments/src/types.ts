@@ -72,7 +72,12 @@ export interface CommentTextSelection {
   }[]
 }
 
-type CommentPathSelection = CommentTextSelection
+export interface CommentRangeSelection {
+  type: 'range'
+  value: EditorSelection
+}
+
+type CommentPathSelection = CommentTextSelection | CommentRangeSelection
 
 /**
  * @beta

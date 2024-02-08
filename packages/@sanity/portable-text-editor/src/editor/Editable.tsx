@@ -216,13 +216,89 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
     }
   }, [propsSelection, slateEditor, blockTypeName, change$])
 
+  // This function will update the slate editor version of the range decorations and
+  // adapt them to any immediate changes in the editor state
+  const syncRangeDecorations = useCallback(() => {
+    if (
+      slateEditor.operations.length > 0 &&
+      !slateEditor.operations.every((op) => op.type === 'set_selection') &&
+      rangeDecorations !== undefined &&
+      rangeDecorations.length !== 0
+    ) {
+      // debug('Updating decoration ranges', rangeDecorations, slateEditor.operations)
+      rangeDecorations.map((decoration) => {
+        const slateRange = toSlateRange(decoration.selection, slateEditor)
+        if (!slateRange) {
+          return null
+        }
+        const isOverlapping = slateEditor.operations.some(
+          // eslint-disable-next-line max-nested-callbacks
+          (op) => 'path' in op && slateRange && SlateRange.includes(slateRange, op.path),
+        )
+        // if (!isOverlapping) {
+        //   return decoration
+        // }
+        // eslint-disable-next-line max-nested-callbacks
+        slateEditor.operations.forEach((op) => {
+          let changed = false
+          if (
+            op.type === 'insert_text' &&
+            isOverlapping &&
+            op.offset + op.text.length <= slateRange.anchor.offset &&
+            op.offset + op.text.length <= slateRange.focus.offset
+          ) {
+            slateRange.anchor.offset += op.text.length
+            slateRange.focus.offset += op.text.length
+            changed = true
+          } else if (
+            op.type === 'remove_text' &&
+            isOverlapping &&
+            op.offset - op.text.length <= slateRange.anchor.offset &&
+            op.offset - op.text.length <= slateRange.focus.offset
+          ) {
+            slateRange.anchor.offset -= op.text.length
+            slateRange.focus.offset -= op.text.length
+            changed = true
+          } else if (
+            op.type === 'split_node' &&
+            op.path.length === 2 &&
+            isOverlapping &&
+            op.path[0] === slateRange.anchor.path[0] &&
+            op.path[0] === slateRange.focus.path[0] &&
+            op.position <= slateRange.anchor.offset &&
+            op.position <= slateRange.focus.offset
+          ) {
+            changed = true
+            // const [spanBefore] = Editor.node(slateEditor, op.path)
+            // if (spanBefore && Text.isText(spanBefore)) {
+            //   slateRange.anchor.offset -= spanBefore.text.length
+            //   slateRange.focus.offset -= spanBefore.text.length
+            // }
+          }
+          if (changed) {
+            const value = PortableTextEditor.getValue(portableTextEditor)
+            change$.next({
+              type: 'rangeDecorationMoved',
+              rangeDecoration: decoration,
+              newRangeSelection: toPortableTextRange(value, slateRange, schemaTypes),
+            })
+          }
+        })
+        return decoration
+      })
+    }
+  }, [change$, portableTextEditor, rangeDecorations, schemaTypes, slateEditor])
+
   // Subscribe to change$ and restore selection from props when the editor has been initialized properly with it's value
   useEffect(() => {
-    debug('Subscribing to editor changes$')
+    // debug('Subscribing to editor changes$')
     const sub = change$.subscribe((next: EditorChange): void => {
       switch (next.type) {
         case 'ready':
           restoreSelectionFromProps()
+          break
+        case 'patch':
+          syncRangeDecorations()
           break
         case 'invalidValue':
           setHasInvalidValue(true)
@@ -234,10 +310,10 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
       }
     })
     return () => {
-      debug('Unsubscribing to changes$')
+      // debug('Unsubscribing to changes$')
       sub.unsubscribe()
     }
-  }, [change$, restoreSelectionFromProps])
+  }, [change$, restoreSelectionFromProps, syncRangeDecorations])
 
   // Restore selection from props when it changes
   useEffect(() => {
@@ -478,14 +554,15 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
           },
         ]
       }
-      return rangeDecorations && rangeDecorations.length
-        ? getChildNodeToRangeDecorations({
-            slateEditor,
-            portableTextEditor,
-            rangeDecorations,
-            nodeEntry: [node, path],
-          })
-        : EMPTY_DECORATORS
+      if (rangeDecorations && rangeDecorations.length) {
+        return getChildNodeToRangeDecorations({
+          slateEditor,
+          portableTextEditor,
+          rangeDecorations,
+          nodeEntry: [node, path],
+        })
+      }
+      return EMPTY_DECORATORS
     },
     [slateEditor, schemaTypes, portableTextEditor, rangeDecorations],
   )

@@ -106,7 +106,16 @@ export function buildRangeDecorators(props: BuildRangeDecoratorsProps) {
     selectedThreadId,
     value,
   } = props
-  const rangeSelections = buildRangeDecorationSelectionsFromComments({comments, value})
+  // const rangeSelections = buildRangeDecorationSelectionsFromComments({comments, value})
+  const rangeSelections = comments.map((comment) => {
+    if (comment.selection?.type == 'range') {
+      return {
+        selection: comment.selection.value,
+        comment,
+      }
+    }
+    return buildRangeDecorationSelectionsFromComments({comments: [comment], value})[0]
+  })
 
   return rangeSelections.map(({selection, comment}) => {
     const decorator: RangeDecoration = {
@@ -125,6 +134,7 @@ export function buildRangeDecorators(props: BuildRangeDecoratorsProps) {
       ),
       isRangeInvalid,
       selection,
+      payload: {commentId: comment.parentComment._id},
     }
 
     return decorator

@@ -1,19 +1,26 @@
 /* eslint-disable max-nested-callbacks */
 /* eslint-disable no-restricted-imports */
 /* eslint-disable react/jsx-no-bind */
-import {EditorChange, PortableTextEditable, PortableTextEditor} from '@sanity/portable-text-editor'
+import {
+  EditorChange,
+  PortableTextEditable,
+  PortableTextEditor,
+  RangeDecoration,
+} from '@sanity/portable-text-editor'
 import {Schema} from '@sanity/schema'
 import {defineField, defineArrayMember, PortableTextBlock} from '@sanity/types'
 import {Button, Card, Code, Container, Flex, Stack, Text} from '@sanity/ui'
 import {uuid} from '@sanity/uuid'
-import React, {useCallback, useMemo, useRef, useState} from 'react'
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {set} from 'lodash'
 import {
   buildCommentThreadItems,
   buildRangeDecorators,
   buildTextSelectionFromFragment,
   currentSelectionIsOverlappingWithComment,
 } from '../utils'
-import {CommentDocument} from '../types'
+import {CommentDocument, CommentThreadItem} from '../types'
+import {select} from '../../../panes/document/inspectDialog/helpers'
 import {useCurrentUser} from 'sanity'
 
 const INLINE_STYLE: React.CSSProperties = {outline: 'none'}
@@ -105,6 +112,7 @@ export default function CommentInlineHighlightDebugStory() {
   const [canAddComment, setCanAddComment] = useState<boolean>(false)
   const editorRef = useRef<PortableTextEditor | null>(null)
   const currentUser = useCurrentUser()
+  const commentIdToDecoratorMap = useRef(new Map<string, RangeDecoration>())
 
   const [currentHoveredCommentId, setCurrentHoveredCommentId] = useState<string | null>(null)
 
@@ -143,6 +151,46 @@ export default function CommentInlineHighlightDebugStory() {
 
   const handleChange = useCallback(
     (change: EditorChange) => {
+      if (change.type === 'rangeDecorationMoved') {
+        const commentId = change.rangeDecoration.payload?.commentId as undefined | string
+        let decorator
+        const rangeComment = comments.find(
+          (comment) => comment.parentComment._id === change.rangeDecoration.payload?.commentId,
+        )
+        if (commentId && commentIdToDecoratorMap.current.get(commentId)) {
+          decorator = commentIdToDecoratorMap.current.get(commentId)
+        } else if (rangeComment) {
+          decorator = rangeDecorations.find(
+            (x) => x.payload?.commentId === rangeComment.parentComment._id,
+          )
+          if (decorator) {
+            commentIdToDecoratorMap.current.set(rangeComment.parentComment._id, decorator)
+          }
+        }
+        if (rangeComment && decorator) {
+          setCommentDocuments((prev) => {
+            return prev.map((comment) => {
+              if (comment._id === rangeComment.parentComment._id) {
+                const newComment = {
+                  ...comment,
+                  target: {
+                    ...comment.target,
+                    path: {
+                      ...comment.target.path,
+                      selection: {
+                        type: 'range',
+                        value: change.newRangeSelection,
+                      },
+                    },
+                  },
+                } as CommentDocument
+                return newComment
+              }
+              return comment
+            })
+          })
+        }
+      }
       if (change.type === 'patch' && editorRef.current) {
         const editorStateValue = PortableTextEditor.getValue(editorRef.current)
 
@@ -160,14 +208,15 @@ export default function CommentInlineHighlightDebugStory() {
         setCanAddComment(!overlapping && hasRange)
       }
     },
-    [rangeDecorations],
+    [comments, rangeDecorations],
   )
 
   const handleAddComment = useCallback(() => {
     if (!editorRef.current) return
-    const fragment = PortableTextEditor.getFragment(editorRef.current) || []
+    // const fragment = PortableTextEditor.getFragment(editorRef.current) || []
 
-    const selection = buildTextSelectionFromFragment({fragment})
+    // const selection = buildTextSelectionFromFragment({fragment})
+    const selection = PortableTextEditor.getSelection(editorRef.current)
 
     if (!selection) return
 
@@ -186,8 +235,8 @@ export default function CommentInlineHighlightDebugStory() {
         path: {
           field: 'body',
           selection: {
-            type: 'text',
-            value: selection.value,
+            type: 'range',
+            value: selection,
           },
         },
         document: {
