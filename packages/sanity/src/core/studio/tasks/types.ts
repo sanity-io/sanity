@@ -7,7 +7,7 @@ import {PortableTextBlock, User} from '@sanity/types'
 export interface Loadable<T> {
   data: T | null
   error: Error | null
-  loading: boolean
+  isLoading: boolean
 }
 
 /**
@@ -47,14 +47,6 @@ export type TaskMessage = PortableTextBlock[] | null
  * @hidden
  */
 export type TaskStatus = 'open' | 'closed'
-
-/**
- * @beta
- * @hidden
- */
-export interface TaskPath {
-  field: string
-}
 
 /**
  * @beta
@@ -146,19 +138,3 @@ export type TaskEditPayload = {
   description?: TaskMessage
   lastEditedAt?: string
 }
-
-/**
- * @beta
- * @hidden
- */
-export interface TasksListBreadcrumbItem {
-  invalid: boolean
-  isArrayItem?: boolean
-  title: string
-}
-
-/**
- * @beta
- * @hidden
- */
-export type TaskListBreadcrumbs = TasksListBreadcrumbItem[]

@@ -20,7 +20,7 @@ export function TasksProvider(props: TasksProviderProps) {
   const [isOpen, setIsOpen] = useState(false)
   const {client} = useTasksSetup()
   const publishedId = undefined
-  const {data = EMPTY_ARRAY, loading: isLoading} = useTasksStore({
+  const {data = EMPTY_ARRAY, isLoading} = useTasksStore({
     documentId: publishedId,
     client,
   })
