@@ -3894,10 +3894,10 @@
     "@types/uuid" "^8.0.0"
     uuid "^8.0.0"
 
-"@sanity/visual-editing@1.0.1":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@sanity/visual-editing/-/visual-editing-1.0.1.tgz#299fcb0cfaddd2eecd4e22b755c47faee049ee8f"
-  integrity sha512-7BawhAozxkZskdpwJxXi19dztMNju27RPDzsBZQZV/HJnzAm7gdcpZJSkpGBpMbIY0+9HNGkqlajMAjXGiFE1w==
+"@sanity/visual-editing@1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@sanity/visual-editing/-/visual-editing-1.2.0.tgz#2a7eb0e4aeeaa41bc0657190020c0e1ccc45d3a9"
+  integrity sha512-L4i6cdAUhMXRFBSdnhzMY0IdNN7TF3grrOxMY0GcPgZ3E28cQmEIv39ZdeoUlrUhXMuMOnfbsgHvbN+jkm8mng==
   dependencies:
     "@vercel/stega" "0.1.0"
     react "^18.2.0"
