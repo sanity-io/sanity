@@ -2,7 +2,6 @@ import {useState, useCallback} from 'react'
 import {TasksEnabledProvider} from '../enabled'
 import {TasksContext} from './TasksContext'
 import {useTasksStore} from '../../store'
-import {useClient} from '../../../../hooks'
 import {useTasksSetup} from '../../hooks/useTasksSetup'
 
 interface TasksProviderProps {
@@ -18,10 +17,10 @@ export function TasksProvider(props: TasksProviderProps) {
   const {children} = props
   // TODO: Get this state into the router?
   const [isOpen, setIsOpen] = useState(false)
+  const [activeDocumentId, setActiveDocumentId] = useState<string | undefined>()
   const {client} = useTasksSetup()
-  const publishedId = undefined
   const {data = EMPTY_ARRAY, isLoading} = useTasksStore({
-    documentId: publishedId,
+    documentId: activeDocumentId,
     client,
   })
 
@@ -31,7 +30,16 @@ export function TasksProvider(props: TasksProviderProps) {
 
   return (
     <TasksEnabledProvider>
-      <TasksContext.Provider value={{isOpen, toggleOpen, isLoading, data}}>
+      <TasksContext.Provider
+        value={{
+          activeDocumentId,
+          setActiveDocumentId,
+          isOpen,
+          toggleOpen,
+          isLoading,
+          data: data ?? [],
+        }}
+      >
         {children}
       </TasksContext.Provider>
     </TasksEnabledProvider>
