@@ -20,8 +20,7 @@ Examples
 const startCommand: CliCommandDefinition = {
   name: 'start',
   signature: '[BUILD_OUTPUT_DIR] [--port <port>] [--host <host>]',
-  description:
-    'Alias for `sanity preview` to run a local preview of a production built Sanity Studio',
+  description: 'Alias for `sanity preview`',
   action: async (
     args: CliCommandArguments<StartPreviewServerCommandFlags>,
     context: CliCommandContext,

@@ -17,7 +17,7 @@ Examples
 const devCommand: CliCommandDefinition = {
   name: 'dev',
   signature: '[--port <port>] [--host <host>]',
-  description: 'Starts the local development server for Sanity Studio with live reloading',
+  description: 'Starts a local dev server for Sanity Studio with live reloading',
   action: async (
     args: CliCommandArguments<StartDevServerCommandFlags>,
     context: CliCommandContext,

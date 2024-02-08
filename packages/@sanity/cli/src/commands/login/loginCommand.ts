@@ -22,7 +22,7 @@ const loginCommand: CliCommandDefinition = {
   name: 'login',
   signature: '[--sso <slug>] [--provider <providerId>] [--no-open]',
   helpText,
-  description: 'Authenticates the CLI for necessary access to your Sanity projects',
+  description: 'Authenticates the CLI for access to Sanity projects',
   action: login,
 }
 

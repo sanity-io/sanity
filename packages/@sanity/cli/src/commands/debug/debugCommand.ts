@@ -18,7 +18,7 @@ Examples
 const debugCommand: CliCommandDefinition = {
   name: 'debug',
   signature: '[--secrets]',
-  description: 'Provides detailed diagnostic information for troubleshooting a Sanity Studio',
+  description: 'Provides diagnostic info for Sanity Studio troubleshooting',
   helpText: help,
   action: printDebugInfo,
 }

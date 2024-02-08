@@ -5,7 +5,7 @@ const manageCommand: CliCommandDefinition = {
   name: 'manage',
   signature: 'manage',
   helpText: '',
-  description: 'Opens the Sanity project management interface in your default web browser',
+  description: 'Opens project management interface in your web browser',
   async action(args, context) {
     const {output, cliConfig} = context
     const {print} = output

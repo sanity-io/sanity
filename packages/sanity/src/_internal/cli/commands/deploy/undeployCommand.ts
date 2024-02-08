@@ -8,7 +8,7 @@ Examples
 const undeployCommand: CliCommandDefinition = {
   name: 'undeploy',
   signature: '',
-  description: 'Removes the deployed Sanity Studio from the studio hosting',
+  description: 'Removes the deployed Sanity Studio from Sanity hosting',
   action: async (
     args: CliCommandArguments<Record<string, unknown>>,
     context: CliCommandContext,

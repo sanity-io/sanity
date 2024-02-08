@@ -9,7 +9,7 @@ const installCommand: CliCommandDefinition = {
   name: 'install',
   signature: '',
   helpText: '',
-  description: 'Installs dependencies for a Sanity Studio project',
+  description: 'Installs dependencies for Sanity Studio project',
   action: async (args, context) => {
     const {workDir, prompt, sanityMajorVersion} = context
     const packages = args.argsWithoutOptions
