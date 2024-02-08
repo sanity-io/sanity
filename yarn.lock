@@ -3874,16 +3874,16 @@
     framer-motion "^10.16.2"
     react-refractor "^2.1.7"
 
-"@sanity/ui@^2.0.1":
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/@sanity/ui/-/ui-2.0.1.tgz#98b2298d8ed32cb211b4df444ee033651bfed07f"
-  integrity sha512-jrdLQmU+fRLTx54uuxqfe+m/lLJTcRMk46X45UMJgOosSgvz27r0DM0uJ+hSxu/mJg0OlMNfWFZlK0e6LhDoUA==
+"@sanity/ui@^2.0.1", "@sanity/ui@^2.0.2":
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/@sanity/ui/-/ui-2.0.2.tgz#3331ef0d2e5591c5eaa9c97a034c5fe1049759f1"
+  integrity sha512-G6KS287u7TzKJq4pGWeCQdb4keDoicEfe0AsuUOqfJiiB6EJoBAWZ4HkdOCfDCy5jztgKllcfYEC+ExKQcXMwQ==
   dependencies:
     "@floating-ui/react-dom" "^2.0.4"
     "@sanity/color" "^3.0.0"
     "@sanity/icons" "^2.7.0"
     csstype "^3.1.2"
-    framer-motion "^10.16.5"
+    framer-motion "^11.0.3"
     react-refractor "^2.1.7"
 
 "@sanity/uuid@3.0.2", "@sanity/uuid@^3", "@sanity/uuid@^3.0.1", "@sanity/uuid@^3.0.2":
@@ -8472,7 +8472,7 @@ fragment-cache@^0.2.1:
   dependencies:
     map-cache "^0.2.2"
 
-framer-motion@^10.16.2, framer-motion@^10.16.5:
+framer-motion@^10.16.2:
   version "10.18.0"
   resolved "https://registry.yarnpkg.com/framer-motion/-/framer-motion-10.18.0.tgz#1f4fc51403996ea7170af885bd44a7079d255950"
   integrity sha512-oGlDh1Q1XqYPksuTD/usb0I70hq95OUzmL9+6Zd+Hs4XV0oaISBa/UUMSjYiq6m8EUF32132mOJ8xVZS+I0S6w==
