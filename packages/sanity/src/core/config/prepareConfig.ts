@@ -52,6 +52,8 @@ import {SchemaError} from './SchemaError'
 import {createDefaultIcon} from './createDefaultIcon'
 import {documentFieldActionsReducer, initialDocumentFieldActions} from './document'
 import {resolveSchemaTypes} from './resolveSchemaTypes'
+import {definePlugin} from './definePlugin'
+import {corePlugins} from '../core-plugins'
 
 type InternalSource = WorkspaceSummary['__internal']['sources'][number]
 
@@ -149,8 +151,17 @@ export function prepareConfig(
       const i18n = prepareI18n(source)
       const source$ = auth.state.pipe(
         map(({client, authenticated, currentUser}) => {
+          const {plugins} = source
+
+          const nextPlugins = (plugins || []).concat(corePlugins())
+
+          const nextSource = {
+            ...source,
+            plugins: nextPlugins,
+          }
+
           return resolveSource({
-            config: source,
+            config: nextSource,
             client,
             currentUser,
             schema,
