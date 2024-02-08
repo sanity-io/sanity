@@ -1,12 +1,11 @@
 import {defineEvent} from '@sanity/telemetry'
-import {FreeTrialDialog} from '../types'
 
 type BaseDialogEventAttributes = {
   source: 'studio'
   trialDaysLeft: number
-  dialogType: FreeTrialDialog['dialogType']
-  dialogId: FreeTrialDialog['id']
-  dialogRevision: FreeTrialDialog['_rev']
+  dialogType: 'modal' | 'popover'
+  dialogId: string
+  dialogRevision: string
   dialogTrialStage:
     | 'trial_started'
     | 'trial_active'
