@@ -1,2 +1,2 @@
-export * from './TasksSidebar'
-export * from './TasksNavbarButton'
+export * from './sidebar'
+export * from './navbar'
