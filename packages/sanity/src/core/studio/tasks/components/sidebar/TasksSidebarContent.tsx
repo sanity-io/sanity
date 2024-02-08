@@ -4,25 +4,16 @@ import {useMemo, useState} from 'react'
 import {useCurrentUser} from '../../../../store'
 import {Tab} from '../../../../../ui-components'
 import {TaskList} from '../list/TaskList'
+import {TaskListTabs} from './TaskListTabs'
 
-export function TaskSidebarContent({items}: {items: TaskDocument[]}) {
+export function TaskSidebarContent({
+  items,
+  activeDocumentId,
+}: {
+  items: TaskDocument[]
+  activeDocumentId?: string
+}) {
   const currentUser = useCurrentUser()
-  const tabs = useMemo(() => {
-    return [
-      {
-        id: 'assigned',
-        label: 'Assigned',
-      },
-      {
-        id: 'created',
-        label: 'Created',
-      },
-      {
-        id: 'document',
-        label: 'This document',
-      },
-    ]
-  }, [])
   const [id, setId] = useState('assigned')
   const filteredList = useMemo(() => {
     return items.filter((item) => {
@@ -37,27 +28,16 @@ export function TaskSidebarContent({items}: {items: TaskDocument[]}) {
         return item.authorId === currentUser?.id
       }
       if (id === 'document') {
-        return item.target?.document._ref
+        return activeDocumentId && item.target?.document._ref === activeDocumentId
       }
       return false
     })
-  }, [id, items, currentUser])
+  }, [activeDocumentId, id, items, currentUser])
 
   return (
     <Box>
       <Card padding={3} marginBottom={2} borderTop borderBottom>
-        <TabList space={2}>
-          {tabs.map((tab) => (
-            <Tab
-              key={`${tab.id}-tab`}
-              aria-controls={`${tab.id}-panel`}
-              id={`${tab.id}-tab`}
-              label={tab.label}
-              onClick={() => setId(tab.id)}
-              selected={id === tab.id}
-            />
-          ))}
-        </TabList>
+        <TaskListTabs activeTabId={id} onChange={setId} />
       </Card>
       <TaskList items={filteredList} />
     </Box>

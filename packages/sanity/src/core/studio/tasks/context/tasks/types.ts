@@ -1,8 +1,10 @@
 import {TaskDocument} from '../../types'
 
 export interface TasksContextValue {
+  activeDocumentId?: string
+  data: TaskDocument[]
   isOpen: boolean
-  data: TaskDocument[] | null
   isLoading: boolean
   toggleOpen: () => void
+  setActiveDocumentId: (id: string | undefined) => void
 }
