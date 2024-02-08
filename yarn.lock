@@ -3754,10 +3754,10 @@
     uuid "^9.0.1"
     zod "^3.22.4"
 
-"@sanity/presentation@1.7.6":
-  version "1.7.6"
-  resolved "https://registry.yarnpkg.com/@sanity/presentation/-/presentation-1.7.6.tgz#7a0353178266a2306357f7f648a986be60f747ce"
-  integrity sha512-sfnKv/Pc2Vllx6djHAvtFdnwtmkbYtAUq5JVn4N9Ww3F14zZogCW+nriEroaWVTePYPAgE6ASFGEqpm6Sjh6Bw==
+"@sanity/presentation@1.8.0":
+  version "1.8.0"
+  resolved "https://registry.yarnpkg.com/@sanity/presentation/-/presentation-1.8.0.tgz#fe08c030e3c10ac86988ba34a888c58ec2b867ac"
+  integrity sha512-ETBfCPZG2BGDdT8n/t+h8N+7rLJHPdGzJ/ox1vzMdaAo+SyXxQEzIsrUm48qJfIZfnwWk9o6UN+f+EX8C2WfsA==
   dependencies:
     "@sanity/icons" "^2.10.1"
     "@sanity/preview-url-secret" "^1.6.1"
