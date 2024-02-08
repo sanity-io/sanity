@@ -40,27 +40,27 @@ const StyledDialog = styled(Dialog)`
 `
 interface ModalContentProps {
   content: FreeTrialDialog
-  handleClose: (action?: TrialDialogDismissedInfo['dialogDismissAction']) => void
-  handleOpenNext: () => void
-  handleOpenUrlCallback: () => void
+  onClose: (action?: TrialDialogDismissedInfo['dialogDismissAction']) => void
+  onOpenNext: () => void
+  onOpenUrlCallback: () => void
   open: boolean
 }
 
 export function DialogContent({
-  handleClose,
-  handleOpenNext,
-  handleOpenUrlCallback,
+  onClose,
+  onOpenNext,
+  onOpenUrlCallback,
   content,
   open,
 }: ModalContentProps) {
-  function onClose() {
-    handleClose('x_click')
+  function handleClose() {
+    onClose('x_click')
   }
-  function onClickOutside() {
-    handleClose('outside_click')
+  function handleClickOutside() {
+    onClose('outside_click')
   }
-  function onCTAClose() {
-    handleClose('cta_clicked')
+  function handleCTAClose() {
+    onClose('cta_clicked')
   }
   const schemeValue = useColorSchemeValue()
   if (!open) return null
@@ -68,7 +68,7 @@ export function DialogContent({
     <StyledDialog
       id="free-trial-modal"
       onClose={onClose}
-      onClickOutside={onClickOutside}
+      onClickOutside={handleClickOutside}
       padding={false}
       __unstable_hideCloseButton
       scheme={schemeValue}
@@ -78,7 +78,7 @@ export function DialogContent({
               text: content.secondaryButton.text,
               mode: 'bleed',
               tone: 'default',
-              onClick: onClose,
+              onClick: handleClose,
             }
           : undefined,
         confirmButton: {
@@ -91,10 +91,10 @@ export function DialogContent({
                 target: '_blank',
                 rel: 'noopener noreferrer',
                 as: 'a',
-                onClick: handleOpenUrlCallback,
+                onClick: onOpenUrlCallback,
               }
             : {
-                onClick: content.ctaButton?.action === 'openNext' ? handleOpenNext : onCTAClose,
+                onClick: content.ctaButton?.action === 'openNext' ? onOpenNext : handleCTAClose,
               }),
         },
       }}
@@ -103,7 +103,7 @@ export function DialogContent({
         icon={CloseIcon}
         mode="bleed"
         tone="default"
-        onClick={onClose}
+        onClick={handleClose}
         tabIndex={-1}
         tooltipProps={null}
       />

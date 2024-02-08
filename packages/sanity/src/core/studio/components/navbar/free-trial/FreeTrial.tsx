@@ -158,9 +158,9 @@ export function FreeTrial({type}: FreeTrialProps) {
       {button}
       <DialogContent
         content={dialogToRender}
-        handleClose={handleClose('modal')}
-        handleOpenNext={handleDialogCTAClick('openNext')}
-        handleOpenUrlCallback={handleDialogCTAClick('openURL')}
+        onClose={handleClose('modal')}
+        onOpenNext={handleDialogCTAClick('openNext')}
+        onOpenUrlCallback={handleDialogCTAClick('openURL')}
         open={showDialog}
       />
     </>
