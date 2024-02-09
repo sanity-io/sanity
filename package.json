@@ -83,7 +83,9 @@
     "watch": "lerna run --parallel --scope '{@sanity/*,sanity}' watch"
   },
   "lint-staged": {
-    "*.{js,jsx,ts,tsx}": "eslint --quiet"
+    "*.{js,jsx,ts,tsx}": [
+      "eslint --quiet --fix"
+    ]
   },
   "resolutions": {
     "**/@types/react": "^18.0.25",
