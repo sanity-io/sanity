@@ -11,6 +11,7 @@ import {debugSecrets} from '@sanity/preview-url-secret/sanity-plugin-debug-secre
 import {tsdoc} from '@sanity/tsdoc/studio'
 import {visionTool} from '@sanity/vision'
 import {defineConfig, definePlugin} from 'sanity'
+import {tasks} from 'sanity/tasks'
 import {presentationTool} from 'sanity/presentation'
 import {structureTool} from 'sanity/structure'
 import {muxInput} from 'sanity-plugin-mux-input'
@@ -193,14 +194,11 @@ export default defineConfig([
     subtitle: 'Staging dataset',
     projectId: 'exx11uqh',
     dataset: 'playground',
-    plugins: [sharedSettings()],
+    plugins: [tasks(), sharedSettings()],
     basePath: '/staging',
     apiHost: 'https://api.sanity.work',
     auth: {
       loginMethod: 'token',
-    },
-    unstable_tasks: {
-      enabled: true,
     },
   },
   {
