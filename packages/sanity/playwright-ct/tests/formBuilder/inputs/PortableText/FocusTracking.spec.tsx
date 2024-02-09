@@ -2,7 +2,6 @@
 import {expect, test} from '@playwright/experimental-ct-react'
 import {type Page} from '@playwright/test'
 import {type Path, type SanityDocument} from '@sanity/types'
-import React from 'react'
 
 import FocusTrackingStory from './FocusTrackingStory'
 

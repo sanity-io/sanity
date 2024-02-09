@@ -1,6 +1,6 @@
 import {isIndexSegment, isKeySegment, type Path} from '@sanity/types'
 import {isEqual, startsWith, trimLeft} from '@sanity/util/paths'
-import React, {memo, type ReactNode, useCallback, useMemo} from 'react'
+import {memo, type ReactNode, useCallback, useMemo} from 'react'
 
 import {pathToString} from '../../field'
 import {Translate, useTranslation} from '../../i18n'

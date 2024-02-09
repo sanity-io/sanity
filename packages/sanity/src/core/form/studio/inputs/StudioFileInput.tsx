@@ -1,5 +1,5 @@
 import {type SchemaType} from '@sanity/types'
-import React, {useCallback, useMemo} from 'react'
+import {useCallback, useMemo} from 'react'
 
 import {useClient} from '../../../hooks'
 import {useTranslation} from '../../../i18n'

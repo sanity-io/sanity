@@ -1,5 +1,5 @@
 import {type Path} from '@sanity/types'
-import React, {
+import {
   type ComponentType,
   createContext,
   type HTMLProps,

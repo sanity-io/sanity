@@ -2,7 +2,7 @@ import {type SanityDocument} from '@sanity/client'
 import {RevertIcon} from '@sanity/icons'
 import {type ObjectSchemaType} from '@sanity/types'
 import {Box, Card, Flex, Stack, Text, useClickOutside} from '@sanity/ui'
-import React, {type ReactElement, useCallback, useContext, useMemo, useState} from 'react'
+import {type ReactElement, useCallback, useContext, useMemo, useState} from 'react'
 
 import {Button, Popover} from '../../../../ui-components'
 import {useDocumentOperation} from '../../../hooks'

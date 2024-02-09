@@ -1,6 +1,6 @@
 import {type Asset as AssetType, type SanityDocument} from '@sanity/types'
 import {Card, Flex, Text} from '@sanity/ui'
-import React, {type HTMLProps, useCallback} from 'react'
+import {type HTMLProps, useCallback} from 'react'
 import {IntentLink} from 'sanity/router'
 
 import {useSchema} from '../../../../hooks'

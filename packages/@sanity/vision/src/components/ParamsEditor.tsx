@@ -1,5 +1,5 @@
 import {debounce} from 'lodash'
-import React, {useCallback, useEffect, useMemo, useState} from 'react'
+import {useCallback, useEffect, useMemo, useState} from 'react'
 import {type TFunction, useTranslation} from 'sanity'
 
 import {VisionCodeMirror} from '../codemirror/VisionCodeMirror'

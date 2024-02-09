@@ -2,7 +2,7 @@ import {Schema} from '@sanity/schema'
 import {Container, Flex} from '@sanity/ui'
 import {useBoolean, useSelect} from '@sanity/ui-workshop'
 import {uuid} from '@sanity/uuid'
-import React, {useCallback, useMemo, useState} from 'react'
+import {useCallback, useMemo, useState} from 'react'
 import {useCurrentUser} from 'sanity'
 
 import {CommentsList} from '../components'

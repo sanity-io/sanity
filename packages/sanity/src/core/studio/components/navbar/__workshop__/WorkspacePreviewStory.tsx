@@ -1,7 +1,7 @@
 import {IceCreamIcon} from '@sanity/icons'
 import {Card, Flex} from '@sanity/ui'
 import {useBoolean, useSelect, useString} from '@sanity/ui-workshop'
-import React, {type CSSProperties} from 'react'
+import {type CSSProperties} from 'react'
 
 import {WorkspacePreview} from '../workspace'
 

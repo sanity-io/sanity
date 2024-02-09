@@ -1,5 +1,5 @@
 import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
-import React, {createContext, useContext} from 'react'
+import {createContext, useContext} from 'react'
 import {
   definePlugin,
   type LayoutProps,

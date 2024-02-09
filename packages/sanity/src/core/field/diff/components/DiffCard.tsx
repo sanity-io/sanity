@@ -1,6 +1,6 @@
 import {type Path} from '@sanity/types'
 import {Card, rem} from '@sanity/ui'
-import React, {type ElementType, forwardRef, type HTMLProps, type ReactNode, useMemo} from 'react'
+import {type ElementType, forwardRef, type HTMLProps, type ReactNode, useMemo} from 'react'
 import styled from 'styled-components'
 
 import {type Annotation, type Diff} from '../../types'

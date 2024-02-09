@@ -3,7 +3,7 @@ import {type Reference} from '@sanity/types'
 import {LayerProvider, studioTheme, ThemeProvider, ToastProvider} from '@sanity/ui'
 import {render} from '@testing-library/react'
 import {noop} from 'lodash'
-import React, {forwardRef, useImperativeHandle} from 'react'
+import {forwardRef, useImperativeHandle} from 'react'
 import {of} from 'rxjs'
 import {route, RouterProvider} from 'sanity/router'
 

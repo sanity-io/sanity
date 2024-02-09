@@ -1,5 +1,5 @@
 import {Box, Flex, Stack, Text, useClickOutside} from '@sanity/ui'
-import React, {
+import {
   type HTMLAttributes,
   type ReactElement,
   useCallback,

@@ -1,5 +1,5 @@
 import {ErrorBoundary} from '@sanity/ui'
-import React, {useEffect, useState} from 'react'
+import {useEffect, useState} from 'react'
 import {SourceProvider, type Tool, useWorkspace} from 'sanity'
 
 import {setActivePanes} from '../../getIntentState'

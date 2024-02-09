@@ -1,5 +1,5 @@
 import {isBooleanSchemaType, isNumberSchemaType} from '@sanity/types'
-import React, {type ChangeEvent, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {type ChangeEvent, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
 import {type FormPatch, PatchEvent, set, unset} from '../../../patch'
 import {type FieldMember} from '../../../store'

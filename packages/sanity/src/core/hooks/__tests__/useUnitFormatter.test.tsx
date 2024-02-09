@@ -1,6 +1,6 @@
 import {studioTheme, ThemeProvider} from '@sanity/ui'
 import {renderHook} from '@testing-library/react'
-import React, {type ReactElement} from 'react'
+import {type ReactElement} from 'react'
 
 import {LocaleProviderBase, usEnglishLocale} from '../../i18n'
 import {studioDefaultLocaleResources} from '../../i18n/bundles/studio'

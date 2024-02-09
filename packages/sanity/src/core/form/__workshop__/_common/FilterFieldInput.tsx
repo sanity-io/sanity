@@ -1,5 +1,5 @@
 import {Card, Code, Grid, Stack, Text, TextArea} from '@sanity/ui'
-import React, {type ForwardedRef, forwardRef, useCallback, useMemo} from 'react'
+import {type ForwardedRef, forwardRef, useCallback, useMemo} from 'react'
 import styled from 'styled-components'
 
 import {Button} from '../../../../ui-components'

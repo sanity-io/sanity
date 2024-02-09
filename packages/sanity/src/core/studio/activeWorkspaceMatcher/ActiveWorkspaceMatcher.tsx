@@ -1,5 +1,5 @@
 import {createBrowserHistory, createMemoryHistory} from 'history'
-import React, {type ComponentType, type ReactNode, useCallback, useEffect, useMemo} from 'react'
+import {type ComponentType, type ReactNode, useCallback, useEffect, useMemo} from 'react'
 
 import {type RouterHistory} from '../router'
 import {useWorkspaces} from '../workspaces'

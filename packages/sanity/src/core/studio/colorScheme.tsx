@@ -1,6 +1,6 @@
 import {DesktopIcon, MoonIcon, SunIcon} from '@sanity/icons'
 import {studioTheme, type ThemeColorSchemeKey, ThemeProvider, usePrefersDark} from '@sanity/ui'
-import React, {
+import {
   type ComponentType,
   createContext,
   type ReactNode,

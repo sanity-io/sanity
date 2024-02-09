@@ -1,5 +1,5 @@
 import {memoize} from 'lodash'
-import React, {type PointerEvent, PureComponent} from 'react'
+import {type PointerEvent, PureComponent} from 'react'
 
 import {Rect} from './2d/shapes'
 import * as utils2d from './2d/utils'

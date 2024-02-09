@@ -2,7 +2,7 @@
 
 import {type PortableTextBlock} from '@sanity/types'
 import {render, waitFor} from '@testing-library/react'
-import React, {createRef, type RefObject} from 'react'
+import {createRef, type RefObject} from 'react'
 
 import {type EditorSelection} from '../..'
 import {PortableTextEditor} from '../PortableTextEditor'

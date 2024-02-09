@@ -1,5 +1,5 @@
 import {capitalize} from 'lodash'
-import React, {memo, useCallback} from 'react'
+import {memo, useCallback} from 'react'
 
 import {FormFieldSet} from '../../components/formField'
 import {type FieldSetMember} from '../../store'

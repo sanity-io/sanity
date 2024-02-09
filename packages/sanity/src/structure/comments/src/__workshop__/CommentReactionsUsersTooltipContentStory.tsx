@@ -1,6 +1,6 @@
 import {Card, Flex} from '@sanity/ui'
 import {useNumber, useSelect} from '@sanity/ui-workshop'
-import React, {useMemo} from 'react'
+import {useMemo} from 'react'
 import {useCurrentUser} from 'sanity'
 
 import {CommentReactionsUsersTooltipContent} from '../components'

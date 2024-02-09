@@ -1,6 +1,6 @@
 import {Flex, PortalProvider, ToastProvider, useTheme} from '@sanity/ui'
 import {useBoolean} from '@sanity/ui-workshop'
-import React, {type Dispatch, type SetStateAction, useCallback, useState} from 'react'
+import {type Dispatch, type SetStateAction, useCallback, useState} from 'react'
 
 import {PaneLayout} from '../../PaneLayout'
 import {panes} from './config'

@@ -1,6 +1,5 @@
 import {Stack, Text} from '@sanity/ui'
 import {isPlainObject} from 'lodash'
-import React from 'react'
 
 import {Button} from '../../../../../ui-components'
 import {isDev} from '../../../../environment'

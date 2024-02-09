@@ -8,7 +8,7 @@ import {
   useVirtualizer,
   type VirtualizerOptions,
 } from '@tanstack/react-virtual'
-import React, {useCallback, useMemo, useRef, useState} from 'react'
+import {useCallback, useMemo, useRef, useState} from 'react'
 import shallowEquals from 'shallow-equals'
 
 import {useTranslation} from '../../../../../i18n'

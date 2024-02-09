@@ -1,6 +1,6 @@
 import {Schema} from '@sanity/schema'
 import {defineArrayMember, defineField} from '@sanity/types'
-import React, {type ForwardedRef, forwardRef, useCallback, useEffect} from 'react'
+import {type ForwardedRef, forwardRef, useCallback, useEffect} from 'react'
 
 import {
   PortableTextEditable,

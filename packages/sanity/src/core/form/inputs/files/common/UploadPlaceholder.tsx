@@ -1,6 +1,6 @@
 import {UploadIcon} from '@sanity/icons'
 import {Flex, useElementSize} from '@sanity/ui'
-import React, {memo, type ReactNode, useState} from 'react'
+import {memo, type ReactNode, useState} from 'react'
 
 import {useTranslation} from '../../../../i18n'
 import {type FileLike} from '../../../studio/uploads/types'

@@ -1,6 +1,5 @@
 import {PortableText, type PortableTextComponents} from '@portabletext/react'
 import {Stack} from '@sanity/ui'
-import React from 'react'
 import styled, {css} from 'styled-components'
 
 import {type CommentMessage} from '../../types'

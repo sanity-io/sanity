@@ -1,14 +1,6 @@
 import * as PathUtils from '@sanity/util/paths'
 import {orderBy} from 'lodash'
-import React, {
-  type ForwardedRef,
-  forwardRef,
-  memo,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react'
+import {type ForwardedRef, forwardRef, memo, useCallback, useEffect, useMemo, useState} from 'react'
 import {IntentLink} from 'sanity/router'
 
 import {MenuItem} from '../../../../../ui-components'

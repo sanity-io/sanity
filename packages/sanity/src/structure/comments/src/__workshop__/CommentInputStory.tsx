@@ -1,7 +1,7 @@
 import {type PortableTextBlock} from '@sanity/types'
 import {Card, Container, Flex} from '@sanity/ui'
 import {useBoolean} from '@sanity/ui-workshop'
-import React, {useState} from 'react'
+import {useState} from 'react'
 import {useCurrentUser} from 'sanity'
 
 import {CommentInput} from '../components'

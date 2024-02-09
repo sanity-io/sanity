@@ -1,7 +1,7 @@
 import {type SchemaType} from '@sanity/types'
 import {Box, Flex, Text, useToast} from '@sanity/ui'
 import {sortBy} from 'lodash'
-import React, {
+import {
   type ComponentType,
   type ForwardedRef,
   forwardRef,

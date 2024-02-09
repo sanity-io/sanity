@@ -1,6 +1,6 @@
 import {Flex} from '@sanity/ui'
 import {uuid} from '@sanity/uuid'
-import React, {useCallback, useState} from 'react'
+import {useCallback, useState} from 'react'
 import {useCurrentUser} from 'sanity'
 
 import {CommentReactionsBar} from '../components'

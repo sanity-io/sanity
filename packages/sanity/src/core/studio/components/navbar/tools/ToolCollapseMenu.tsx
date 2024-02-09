@@ -1,6 +1,6 @@
 import {Flex} from '@sanity/ui'
 import {startCase} from 'lodash'
-import React, {forwardRef, type Ref, useMemo, useState} from 'react'
+import {forwardRef, type Ref, useMemo, useState} from 'react'
 
 import {Button} from '../../../../../ui-components'
 import {useRovingFocus} from '../../../../components'

@@ -1,6 +1,6 @@
 import {hues} from '@sanity/color'
 import {Box, Button, Flex, Grid, Heading, Inline, Stack, Text} from '@sanity/ui'
-import React, {useCallback} from 'react'
+import {useCallback} from 'react'
 import {
   type ArrayInputFunctionsProps,
   ArrayOfPrimitivesFunctions,

@@ -1,7 +1,7 @@
 import {TrashIcon} from '@sanity/icons'
 import {type Asset as AssetType} from '@sanity/types'
 import {Box, Stack} from '@sanity/ui'
-import React, {useMemo} from 'react'
+import {useMemo} from 'react'
 
 import {Dialog} from '../../../../../ui-components'
 import {LoadingBlock} from '../../../../components/loadingBlock'

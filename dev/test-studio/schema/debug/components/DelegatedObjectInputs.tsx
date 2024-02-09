@@ -1,5 +1,5 @@
 import {Card} from '@sanity/ui'
-import React, {type ReactNode} from 'react'
+import {type ReactNode} from 'react'
 import {
   ArrayOfObjectsInput,
   type ArrayOfObjectsInputProps,

@@ -5,7 +5,7 @@ import {type ObjectSchemaType} from '@sanity/types'
 import {LayerProvider, studioTheme, ThemeProvider} from '@sanity/ui'
 import {render} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import React, {type PropsWithChildren} from 'react'
+import {type PropsWithChildren} from 'react'
 
 import {type FIXME} from '../../../../FIXME'
 import {DocumentIdProvider} from '../../../contexts/DocumentIdProvider'

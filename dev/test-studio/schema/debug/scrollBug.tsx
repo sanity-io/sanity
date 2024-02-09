@@ -8,7 +8,6 @@ import {
   TrendUpwardIcon,
 } from '@sanity/icons'
 import {Stack, Text} from '@sanity/ui'
-import React from 'react'
 import {defineArrayMember, defineField, defineType, type PreviewProps} from 'sanity'
 
 export const articleImage = defineType({

@@ -1,5 +1,5 @@
 import {Autocomplete, Box, Flex, type Placement, Text} from '@sanity/ui'
-import React, {
+import {
   type ComponentProps,
   type ForwardedRef,
   forwardRef,

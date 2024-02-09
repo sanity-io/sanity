@@ -1,7 +1,7 @@
 import {CopyIcon as DuplicateIcon, TrashIcon} from '@sanity/icons'
 import {type SchemaType} from '@sanity/types'
 import {Box, Flex, Menu} from '@sanity/ui'
-import React, {type ForwardedRef, forwardRef, useCallback, useMemo} from 'react'
+import {type ForwardedRef, forwardRef, useCallback, useMemo} from 'react'
 
 import {MenuButton, MenuItem} from '../../../../../ui-components'
 import {ContextMenuButton} from '../../../../components/contextMenuButton'

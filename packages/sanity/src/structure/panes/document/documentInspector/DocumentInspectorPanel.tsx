@@ -1,5 +1,5 @@
 import {Box} from '@sanity/ui'
-import React, {createElement, type ReactElement, useCallback} from 'react'
+import {createElement, type ReactElement, useCallback} from 'react'
 
 import {usePane} from '../../../components'
 import {useStructureTool} from '../../../useStructureTool'

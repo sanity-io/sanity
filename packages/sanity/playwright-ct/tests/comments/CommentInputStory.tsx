@@ -1,6 +1,6 @@
 import {type CurrentUser, type PortableTextBlock} from '@sanity/types'
 import {noop} from 'lodash'
-import React, {useState} from 'react'
+import {useState} from 'react'
 
 import {type MentionOptionsHookValue} from '../../../src/structure/comments'
 import {CommentInput} from '../../../src/structure/comments/src/components/pte/comment-input/CommentInput'

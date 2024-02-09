@@ -1,5 +1,5 @@
 import {type Asset as AssetType} from '@sanity/types'
-import React, {useMemo} from 'react'
+import {useMemo} from 'react'
 
 import {Dialog} from '../../../../../ui-components'
 import {LoadingBlock} from '../../../../components/loadingBlock'

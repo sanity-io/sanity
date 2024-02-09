@@ -1,5 +1,5 @@
 import {ElementQuery, Select, TabList} from '@sanity/ui'
-import React, {type ChangeEvent, memo, useCallback} from 'react'
+import {type ChangeEvent, memo, useCallback} from 'react'
 import styled from 'styled-components'
 
 import {useTranslation} from '../../../../i18n'

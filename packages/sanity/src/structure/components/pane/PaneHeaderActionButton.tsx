@@ -1,6 +1,6 @@
 import {UnknownIcon} from '@sanity/icons'
 import {Menu} from '@sanity/ui'
-import React, {type MouseEvent, useCallback, useId} from 'react'
+import {type MouseEvent, useCallback, useId} from 'react'
 import {StatusButton, useI18nText} from 'sanity'
 import {useIntentLink} from 'sanity/router'
 

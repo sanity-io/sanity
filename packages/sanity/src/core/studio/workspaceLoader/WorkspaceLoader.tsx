@@ -1,5 +1,5 @@
 import {ErrorBoundary} from '@sanity/ui'
-import React, {type ComponentType, type ReactNode, useEffect, useState} from 'react'
+import {type ComponentType, type ReactNode, useEffect, useState} from 'react'
 import {combineLatest, of} from 'rxjs'
 import {catchError, map} from 'rxjs/operators'
 

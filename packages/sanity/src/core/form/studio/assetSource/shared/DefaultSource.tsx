@@ -2,7 +2,7 @@ import {DownloadIcon, InfoOutlineIcon} from '@sanity/icons'
 import {type Asset, type AssetFromSource, type AssetSourceComponentProps} from '@sanity/types'
 import {Card, Flex, Stack, Text} from '@sanity/ui'
 import {uniqueId} from 'lodash'
-import React, {
+import {
   type ForwardedRef,
   forwardRef,
   type KeyboardEvent,

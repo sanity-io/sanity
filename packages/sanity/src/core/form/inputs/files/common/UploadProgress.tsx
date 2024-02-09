@@ -1,6 +1,6 @@
 import {type UploadState} from '@sanity/types'
 import {Card, Flex, Inline, Text} from '@sanity/ui'
-import React, {useEffect} from 'react'
+import {useEffect} from 'react'
 
 import {Button} from '../../../../../ui-components'
 import {LinearProgress} from '../../../../components'
