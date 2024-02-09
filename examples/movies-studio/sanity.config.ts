@@ -2,7 +2,7 @@ import {defineConfig} from 'sanity'
 import {structureTool} from 'sanity/structure'
 import {googleMapsInput} from '@sanity/google-maps-input'
 
-import {schemaTypes} from '../../packages/@sanity/cli/templates/moviedb/schemas'
+import {schemaTypes} from '../../packages/@sanity/cli/templates/moviedb/schemaTypes'
 import {BrandLogo} from './components/BrandLogo'
 
 export default defineConfig({

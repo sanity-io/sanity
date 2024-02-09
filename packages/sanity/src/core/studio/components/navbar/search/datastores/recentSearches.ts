@@ -215,7 +215,7 @@ function getRecentStoredSearch(lsKey: string, version: number): StoredSearch {
 
 /**
  * Get a list of recent searches from Local Storage.
- * Recent searches contain full document schemas.
+ * Recent searches contain full document schema types.
  */
 function getRecentSearchTerms({
   lsKey,
@@ -292,7 +292,7 @@ function verifySearchVersionNumber({
  * Sanitize stored search.
  *
  * Ignore searches containing:
- * - Any number of invalid document schemas
+ * - Any number of invalid document schema types
  * - Document types hidden from omnisearch with __experimental_omnisearch_visibility
  * - Invalid filters
  *

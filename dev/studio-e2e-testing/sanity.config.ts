@@ -14,7 +14,7 @@ import {copyAction} from 'sanity-test-studio/fieldActions/copyAction'
 import {assistFieldActionGroup} from 'sanity-test-studio/fieldActions/assistFieldActionGroup'
 import {customInspector} from 'sanity-test-studio/inspectors/custom'
 import {pasteAction} from 'sanity-test-studio/fieldActions/pasteAction'
-import {schemaTypes} from './schemas'
+import {schemaTypes} from './schemaTypes'
 import {customComponents} from './components-api'
 
 const sharedSettings = definePlugin({

@@ -47,7 +47,7 @@ export function promptForNextTemplate(prompt: CliPrompter): Promise<'clean' | 'b
     choices: [
       {
         value: 'clean',
-        name: 'Clean project with no predefined schemas',
+        name: 'Clean project with no predefined schema types',
       },
       {
         value: 'blog',

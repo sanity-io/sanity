@@ -458,20 +458,20 @@ const postJS = `export const post = {
 
 export const blogSchemaTS = `import { type SchemaTypeDefinition } from 'sanity'
 
-import blockContent from './schemas/blockContent'
-import category from './schemas/category'
-import post from './schemas/post'
-import author from './schemas/author'
+import blockContent from './schemaTypes/blockContent'
+import category from './schemaTypes/category'
+import post from './schemaTypes/post'
+import author from './schemaTypes/author'
 
 export const schema: { types: SchemaTypeDefinition[] } = {
   types: [post, author, category, blockContent],
 }
 `
 
-export const blogSchemaJS = `import {blockContent} from './schemas/blockContent'
-import {category} from './schemas/category'
-import {post} from './schemas/post'
-import {author} from './schemas/author'
+export const blogSchemaJS = `import {blockContent} from './schemaTypes/blockContent'
+import {category} from './schemaTypes/category'
+import {post} from './schemaTypes/post'
+import {author} from './schemaTypes/author'
 
 export const schema = {
   types: [post, author, category, blockContent],

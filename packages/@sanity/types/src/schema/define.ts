@@ -16,7 +16,7 @@ import type {FieldDefinitionBase, IntrinsicTypeName} from './definition'
  *
  * This function will narrow the schema type down to fields and options based on the provided type-string.
  *
- * Schemas defined using `defineType` should typically be added to the Studio config under `schema.types`.
+ * Schema types defined using `defineType` should typically be added to the Studio config under `schema.types`.
  * Defined types can be referenced by their `name`. This is referred to as a type-alias.
  *
  * When using type-aliases as `type`, `defineType` cannot know the base-type, so type-safety will be reduced.

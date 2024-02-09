@@ -12,7 +12,7 @@ This studio can be used with our [Hydrogen starter][hydrogen-demo], your fronten
 
 ## Features
 
-This studio comes preconfigured with Shopify-friendly content schemas and a whole host of customizations to make managing Shopify data in your Sanity studio easier.
+This studio comes preconfigured with Shopify-friendly content schema types and a whole host of customizations to make managing Shopify data in your Sanity studio easier.
 
 It also comes with several convenient layout modules which can be re-used across various pages.
 

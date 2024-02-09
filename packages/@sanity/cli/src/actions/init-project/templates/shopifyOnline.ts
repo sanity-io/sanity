@@ -6,7 +6,7 @@ import {defineConfig, isDev} from 'sanity'
 import {structureTool} from 'sanity/structure'
 import {visionTool} from '@sanity/vision'
 import {shopifyDocumentActions} from './plugins/shopifyDocumentActions'
-import {schemaTypes} from './schemas'
+import {schemaTypes} from './schemaTypes'
 import {structure} from './structure'
 import {SHOPIFY_STORE_ID} from './constants'
 

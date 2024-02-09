@@ -943,7 +943,7 @@ export default async function initSanity(
         },
         {
           value: 'clean',
-          name: 'Clean project with no predefined schemas',
+          name: 'Clean project with no predefined schema types',
         },
       ],
     })

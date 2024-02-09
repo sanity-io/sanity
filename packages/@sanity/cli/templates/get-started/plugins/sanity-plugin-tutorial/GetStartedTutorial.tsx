@@ -82,7 +82,7 @@ export const GetStartedTutorial = () => {
               size={isSmallScreen ? 1 : undefined}
               align={isSmallScreen ? 'left' : 'center'}
             >
-              Next, our docs will guide you through building schemas, adding content, and connecting
+              Next, our docs will guide you through building schema types, adding content, and connecting
               a frontend. You’ll see updates reflected in your Studio below.
             </TextContainer>
           </Container>

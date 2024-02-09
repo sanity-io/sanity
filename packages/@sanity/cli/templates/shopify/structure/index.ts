@@ -14,7 +14,7 @@ import settings from './settingStructure'
  * and `settings` document types as singletons, and grouping product details
  * and variants for easy editorial access.
  *
- * You can customize this even further as your schemas progress.
+ * You can customize this even further as your schema types progress.
  * To learn more about structure builder, visit our docs:
  * https://www.sanity.io/docs/overview-structure-builder
  */

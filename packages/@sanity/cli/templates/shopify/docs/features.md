@@ -1,16 +1,16 @@
 # Studio features
 
-## Shopify friendly content schemas
+## Shopify friendly content schema types
 
 This studio is built to accommodate both collections and products coming from a Shopify Store.
 
 You can use the official [Sanity Connect app on Shopify][sanity-shopify] to sync your Shopify collection and products with your dataset. All your data will be available over APIs that you can access with [`@sanity/client`][docs-js-client] or the [HTTP API][docs-http-api].
 
-Inside `/schemas` you'll find schema definitions for all the content types. They are organized in folders:
+Inside `/schemaTypes` you'll find schema definitions for all the content types. They are organized in folders:
 
-- `/schemas/annotations/`: Annotations let editors mark up inline text in the block content editor with rich objects. These can be used to augment editorial content with product information.
-- `/schemas/documents/`: Document types determines the shape of the JSON documents that's stored in your content lake. This is where you define the content forms for things like collections, products, product variants, as well as articles.
-- `/schemas/objects/`: General purpose & re-usable content structures, such as links, custom product options and modules.
+- `/schemaTypes/annotations/`: Annotations let editors mark up inline text in the block content editor with rich objects. These can be used to augment editorial content with product information.
+- `/schemaTypes/documents/`: Document types determines the shape of the JSON documents that's stored in your content lake. This is where you define the content forms for things like collections, products, product variants, as well as articles.
+- `/schemaTypes/objects/`: General purpose & re-usable content structures, such as links, custom product options and modules.
 
 ## Structure
 
@@ -27,37 +27,37 @@ Sanity Studio will automatically list all your [document types][docs-document-ty
 
 <p><img width="600" src="https://user-images.githubusercontent.com/209129/173630522-1251875d-175d-430a-bdc7-8923ebe08044.png"></p>
 
-`/schemas/objects/module/callToAction.tsx`
+`/schemaTypes/objects/module/callToAction.tsx`
 
 ### Callout
 
 <p><img width="600"src="https://user-images.githubusercontent.com/209129/173630517-003a6942-b45e-48d4-8ec6-d87365e957c7.png"></p>
 
-`/schemas/objects/module/callout.tsx`
+`/schemaTypes/objects/module/callout.tsx`
 
 ### Collection
 
 <p><img width="600" src="https://user-images.githubusercontent.com/209129/173630535-73eab084-f424-435f-b426-7fbc9baed152.png"></p>
 
-`/schemas/objects/module/collection.tsx`
+`/schemaTypes/objects/module/collection.tsx`
 
 ### Image
 
 <p><img width="600" src="https://user-images.githubusercontent.com/209129/174492490-aefa1a0d-40ea-473d-be73-ba6326d66ee8.png"></p>
 
-`/schemas/objects/module/image.ts`
+`/schemaTypes/objects/module/image.ts`
 
 ### Instagram
 
 <p><img width="600" src="https://user-images.githubusercontent.com/209129/173630524-b8b7253f-704a-4935-9b66-1c5673477b1c.png"></p>
 
-`/schemas/objects/module/instagram.ts`
+`/schemaTypes/objects/module/instagram.ts`
 
 ### Product
 
 <p><img width="600" src="https://user-images.githubusercontent.com/209129/173630533-b4a202bd-6385-4eef-a7e2-c67ba596dad1.png"></p>
 
-`/schemas/objects/module/product.tsx`
+`/schemaTypes/objects/module/product.tsx`
 
 ## Custom document actions
 

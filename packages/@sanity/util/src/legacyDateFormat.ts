@@ -10,7 +10,7 @@ export type ParseResult = {isValid: boolean; date?: Date; error?: string} & (
 )
 
 // todo: find a way to get rid of moment there.
-// note: the format comes form peoples schemas, so we need to deprecate it for a while and
+// note: the format comes from peoples schema types, so we need to deprecate it for a while and
 // find a way to tell people that they need to change it
 export function format(input: Date, format: string, useUTC = false) {
   if (useUTC) return moment.utc(input).format(format)

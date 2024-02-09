@@ -268,7 +268,7 @@ export interface GraphQLAPIConfig {
 
   /**
    * Define document interface fields (`_id`, `_type` etc) as non-nullable.
-   * If you never use a document type as an object (within other documents) in your schemas,
+   * If you never use a document type as an object (within other documents) in your schema types,
    * you can (and probably should) set this to `true`. Because a document type _could_ be used
    * inside other documents, it is by default set to `false`, as in these cases these fields
    * _can_ be null.
