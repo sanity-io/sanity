@@ -1,8 +1,8 @@
-import {Box, Flex, Stack, Text, Card, CardProps} from '@sanity/ui'
+import {Flex, Stack, Text, Card, CardProps} from '@sanity/ui'
 import styled from 'styled-components'
-import {useDateTimeFormat} from '../../../../hooks'
 import {useMemo} from 'react'
 import {CalendarIcon} from '@sanity/icons'
+import {useDateTimeFormat} from '../../../../hooks'
 
 interface TasksListItemProps {
   title?: string
@@ -18,6 +18,9 @@ export const ThreadCard = styled(Card).attrs<CardProps>(({tone}) => ({
   // ...
 `
 
+/**
+ * @internal
+ */
 export function TasksListItem({title, dueBy}: TasksListItemProps) {
   const dateFormatter = useDateTimeFormat({
     dateStyle: 'medium',

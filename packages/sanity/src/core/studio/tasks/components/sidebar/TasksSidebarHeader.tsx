@@ -4,6 +4,9 @@ import {Button, TooltipDelayGroupProvider} from '../../../../../ui-components'
 import {useTasks} from '../..'
 import {BetaBadge} from '../../../../components'
 
+/**
+ * @internal
+ */
 export function TasksSidebarHeader() {
   const {toggleOpen} = useTasks()
 

@@ -1,8 +1,8 @@
 import {useState, useCallback} from 'react'
 import {TasksEnabledProvider} from '../enabled'
-import {TasksContext} from './TasksContext'
 import {useTasksStore} from '../../store'
-import {useTasksSetup} from '../../hooks/useTasksSetup'
+import {useTasksSetup} from '../setup/useTasksSetup'
+import {TasksContext} from './TasksContext'
 
 interface TasksProviderProps {
   children: React.ReactNode
