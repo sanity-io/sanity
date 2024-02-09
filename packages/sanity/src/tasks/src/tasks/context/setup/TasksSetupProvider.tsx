@@ -3,9 +3,7 @@ import {SanityClient} from '@sanity/client'
 import {TaskPostPayload} from '../../types'
 import {TasksSetupContext} from './TasksSetupContext'
 import {TasksSetupContextValue} from './types'
-import {useWorkspace} from '../../../workspace'
-import {useClient} from '../../../../hooks'
-import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS, useWorkspace, useClient} from 'sanity'
 
 const API_VERSION = 'v2023-11-13'
 

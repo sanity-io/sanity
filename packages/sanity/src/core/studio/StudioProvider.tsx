@@ -11,6 +11,7 @@ import {UserColorManagerProvider} from '../user-color'
 import {ErrorLogger} from '../error/ErrorLogger'
 import {ResourceCacheProvider} from '../store'
 import {LocaleProvider} from '../i18n'
+import {TasksProvider, TasksSetupProvider} from '../../tasks'
 import {AuthBoundary} from './AuthBoundary'
 import {StudioProps} from './Studio'
 import {StudioThemeProvider} from './StudioThemeProvider'
@@ -27,7 +28,6 @@ import {
 import {WorkspaceLoader} from './workspaceLoader'
 import {WorkspacesProvider} from './workspaces'
 import {StudioTelemetryProvider} from './StudioTelemetryProvider'
-import {TasksProvider, TasksSetupProvider} from './tasks'
 
 Refractor.registerLanguage(bash)
 Refractor.registerLanguage(javascript)

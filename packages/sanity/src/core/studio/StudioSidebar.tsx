@@ -1,4 +1,4 @@
-import {TasksStudioSidebar} from './tasks/components'
+import {TasksStudioSidebar} from '../../tasks'
 
 /**
  * @beta
