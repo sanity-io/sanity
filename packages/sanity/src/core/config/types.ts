@@ -433,13 +433,6 @@ export interface WorkspaceOptions extends SourceOptions {
    * @beta
    */
   unstable_sources?: SourceOptions[]
-  /**
-   * @hidden
-   * @beta
-   */
-  unstable_tasks?: {
-    enabled: boolean
-  }
 }
 
 /**
@@ -783,7 +776,6 @@ export interface WorkspaceSummary {
       source: Observable<Source>
     }>
   }
-  tasks: WorkspaceOptions['unstable_tasks']
 }
 
 /**
@@ -810,12 +802,6 @@ export interface Workspace extends Omit<Source, 'type'> {
    * @beta
    */
   unstable_sources: Source[]
-  /**
-   *
-   * @hidden
-   * @beta
-   */
-  tasks: WorkspaceOptions['unstable_tasks']
 }
 
 /**
