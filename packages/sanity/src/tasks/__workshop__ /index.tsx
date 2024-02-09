@@ -15,10 +15,5 @@ export default defineScope({
       title: 'TasksCreate',
       component: lazy(() => import('./TasksCreateStory')),
     },
-    // {
-    //   name: 'tasks-tablist',
-    //   title: 'TabsList',
-    //   component: lazy(() => import('./TasksTabsStory')),
-    // },
   ],
 })
