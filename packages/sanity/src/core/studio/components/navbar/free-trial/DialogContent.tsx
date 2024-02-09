@@ -54,13 +54,13 @@ export function DialogContent({
   open,
 }: ModalContentProps) {
   function handleClose() {
-    onClose('x_click')
+    onClose('xClick')
   }
   function handleClickOutside() {
-    onClose('outside_click')
+    onClose('outsideClick')
   }
   function handleCTAClose() {
-    onClose('cta_clicked')
+    onClose('ctaClicked')
   }
   const schemeValue = useColorSchemeValue()
   if (!open) return null

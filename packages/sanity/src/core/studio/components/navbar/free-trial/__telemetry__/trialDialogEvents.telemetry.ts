@@ -1,21 +1,18 @@
 import {defineEvent} from '@sanity/telemetry'
 
+type TrialStage = 'trialStarted' | 'trialActive' | 'trialEndingSoon' | 'trialEnded' | 'postTrial'
+
 type BaseDialogEventAttributes = {
   source: 'studio'
   trialDaysLeft: number
   dialogType: 'modal' | 'popover'
   dialogId: string
   dialogRevision: string
-  dialogTrialStage:
-    | 'trial_started'
-    | 'trial_active'
-    | 'trial_ending_soon'
-    | 'trial_ended'
-    | 'post_trial'
+  dialogTrialStage: TrialStage
 }
 
 export interface TrialDialogViewedInfo extends BaseDialogEventAttributes {
-  dialogTrigger: 'from_click' | 'auto'
+  dialogTrigger: 'fromClick' | 'auto'
 }
 
 export const TrialDialogViewed = defineEvent<TrialDialogViewedInfo>({
@@ -25,7 +22,7 @@ export const TrialDialogViewed = defineEvent<TrialDialogViewedInfo>({
 })
 
 export interface TrialDialogDismissedInfo extends BaseDialogEventAttributes {
-  dialogDismissAction: 'cta_clicked' | 'x_click' | 'outside_click'
+  dialogDismissAction: 'ctaClicked' | 'xClick' | 'outsideClick'
 }
 
 export const TrialDialogDismissed = defineEvent<TrialDialogDismissedInfo>({
@@ -35,7 +32,7 @@ export const TrialDialogDismissed = defineEvent<TrialDialogDismissedInfo>({
 })
 
 export interface TrialDialogCTAClickedInfo extends BaseDialogEventAttributes {
-  dialogCtaType: 'upgrade' | 'learn_more'
+  dialogCtaType: 'upgrade' | 'learnMore'
 }
 
 export const TrialDialogCTAClicked = defineEvent<TrialDialogCTAClickedInfo>({
@@ -50,10 +47,10 @@ export function getTrialStage({
 }: {
   showOnLoad: boolean
   dialogId: string
-}): 'trial_started' | 'trial_ending_soon' | 'trial_ended' | 'post_trial' | 'trial_active' {
-  if (showOnLoad && dialogId === 'Free-upgrade-popover') return 'trial_started'
-  if (showOnLoad && dialogId === 'trial-ending-popover') return 'trial_ending_soon'
-  if (showOnLoad && dialogId === 'project-downgraded-to-free') return 'trial_ended'
-  if (!showOnLoad && dialogId === 'after-trial-upgrade') return 'post_trial'
-  return 'trial_active'
+}): TrialStage {
+  if (showOnLoad && dialogId === 'Free-upgrade-popover') return 'trialStarted'
+  if (showOnLoad && dialogId === 'trial-ending-popover') return 'trialEndingSoon'
+  if (showOnLoad && dialogId === 'project-downgraded-to-free') return 'trialEnded'
+  if (!showOnLoad && dialogId === 'after-trial-upgrade') return 'postTrial'
+  return 'trialActive'
 }

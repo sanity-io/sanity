@@ -75,7 +75,7 @@ export function FreeTrial({type}: FreeTrialProps) {
             source: 'studio',
             trialDaysLeft: data.daysLeft,
             dialogTrialStage: getTrialStage({showOnLoad, dialogId: dialog.id}),
-            dialogCtaType: action === 'openURL' ? 'upgrade' : 'learn_more',
+            dialogCtaType: action === 'openURL' ? 'upgrade' : 'learnMore',
           })
         closeAndReOpen()
       }
@@ -92,7 +92,7 @@ export function FreeTrial({type}: FreeTrialProps) {
         source: 'studio',
         trialDaysLeft: data.daysLeft,
         dialogTrialStage: getTrialStage({showOnLoad: true, dialogId: data.showOnLoad.id}),
-        dialogCtaType: 'learn_more',
+        dialogCtaType: 'learnMore',
       })
     closeAndReOpen()
   }, [data?.showOnLoad, data?.daysLeft, closeAndReOpen, telemetry])
@@ -102,7 +102,7 @@ export function FreeTrial({type}: FreeTrialProps) {
       telemetry.log(TrialDialogViewed, {
         dialogId: data.showOnClick.id,
         dialogRevision: data.showOnClick._rev,
-        dialogTrigger: 'from_click',
+        dialogTrigger: 'fromClick',
         dialogType: 'modal',
         source: 'studio',
         trialDaysLeft: data.daysLeft,

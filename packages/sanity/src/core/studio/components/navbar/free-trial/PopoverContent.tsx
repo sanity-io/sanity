@@ -40,7 +40,7 @@ export function PopoverContent({content, handleClose, handleOpenNext}: PopoverCo
               mode="bleed"
               text={content.secondaryButton.text}
               tone="default"
-              onClick={() => handleClose('x_click')}
+              onClick={() => handleClose('xClick')}
             />
           )}
           <Button
@@ -60,7 +60,7 @@ export function PopoverContent({content, handleClose, handleOpenNext}: PopoverCo
                   onClick:
                     content.ctaButton?.action === 'openNext'
                       ? handleOpenNext
-                      : () => handleClose('cta_clicked'),
+                      : () => handleClose('ctaClicked'),
                 })}
           />
         </Flex>

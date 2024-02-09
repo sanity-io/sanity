@@ -34,7 +34,7 @@ export const FreeTrialProvider = ({children}: FreeTrialProviderProps) => {
         dialogId: dialog.id,
         dialogRevision: dialog._rev,
         dialogTrialStage: getTrialStage({showOnLoad, dialogId: dialog.id}),
-        dialogTrigger: showOnLoad ? 'auto' : 'from_click',
+        dialogTrigger: showOnLoad ? 'auto' : 'fromClick',
         dialogType: dialog.dialogType,
         source: 'studio',
         trialDaysLeft: data.daysLeft,
