@@ -1,5 +1,4 @@
 import {useState, useCallback} from 'react'
-import {TasksEnabledProvider} from '../enabled'
 import {useTasksStore} from '../../store'
 import {useTasksSetup} from '../setup/useTasksSetup'
 import {TasksContext} from './TasksContext'
@@ -29,19 +28,17 @@ export function TasksProvider(props: TasksProviderProps) {
   }, [])
 
   return (
-    <TasksEnabledProvider>
-      <TasksContext.Provider
-        value={{
-          activeDocumentId,
-          setActiveDocumentId,
-          isOpen,
-          toggleOpen,
-          isLoading,
-          data: data ?? [],
-        }}
-      >
-        {children}
-      </TasksContext.Provider>
-    </TasksEnabledProvider>
+    <TasksContext.Provider
+      value={{
+        activeDocumentId,
+        setActiveDocumentId,
+        isOpen,
+        toggleOpen,
+        isLoading,
+        data: data ?? [],
+      }}
+    >
+      {children}
+    </TasksContext.Provider>
   )
 }

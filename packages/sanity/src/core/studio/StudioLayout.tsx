@@ -1,7 +1,15 @@
 /* eslint-disable i18next/no-literal-string, @sanity/i18n/no-attribute-template-literals */
 import {Card, Flex} from '@sanity/ui'
 import {startCase} from 'lodash'
-import React, {createContext, Suspense, useCallback, useEffect, useMemo, useState} from 'react'
+import React, {
+  createContext,
+  createElement,
+  Suspense,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react'
 import styled from 'styled-components'
 import {LoadingBlock} from '../components/loadingBlock'
 import {NoToolsScreen} from './screens/NoToolsScreen'
@@ -14,7 +22,6 @@ import {
 } from './studio-components-hooks'
 import {StudioErrorBoundary} from './StudioErrorBoundary'
 import {useWorkspace} from './workspace'
-import {StudioSidebar} from './StudioSidebar'
 import {RouteScope, useRouter, useRouterState} from 'sanity/router'
 
 const SearchFullscreenPortalCard = styled(Card)`
@@ -26,10 +33,6 @@ const SearchFullscreenPortalCard = styled(Card)`
   top: 0;
   width: 100%;
   z-index: 200;
-`
-
-const ActiveToolContainer = styled.div`
-  flex: 1;
 `
 
 /** @internal */

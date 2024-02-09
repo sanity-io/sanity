@@ -11,7 +11,6 @@ import {UserColorManagerProvider} from '../user-color'
 import {ErrorLogger} from '../error/ErrorLogger'
 import {ResourceCacheProvider} from '../store'
 import {LocaleProvider} from '../i18n'
-import {TasksProvider, TasksSetupProvider} from '../../tasks'
 import {AuthBoundary} from './AuthBoundary'
 import {StudioProps} from './Studio'
 import {StudioThemeProvider} from './StudioThemeProvider'
@@ -58,11 +57,7 @@ export function StudioProvider({
     <WorkspaceLoader LoadingComponent={LoadingBlock} ConfigErrorsComponent={ConfigErrorsScreen}>
       <StudioTelemetryProvider config={config}>
         <LocaleProvider>
-          <ResourceCacheProvider>
-            <TasksSetupProvider>
-              <TasksProvider>{children}</TasksProvider>
-            </TasksSetupProvider>
-          </ResourceCacheProvider>
+          <ResourceCacheProvider>{children}</ResourceCacheProvider>
         </LocaleProvider>
       </StudioTelemetryProvider>
     </WorkspaceLoader>
