@@ -72,6 +72,9 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
   const [currentSelection, setCurrentSelection] = useState<EditorSelection | null>(null)
   const [canSubmit, setCanSubmit] = useState<boolean>(false)
 
+  const [addedCommentsDecorators, setAddedCommentsDecorators] =
+    useState<RangeDecoration[]>(EMPTY_ARRAY)
+
   const [selectionRect, setSelectionRect] = useState<DOMRect | null>(null)
 
   const [isFullScreen, setIsFullScreen] = useState<boolean>(false)
@@ -213,6 +216,27 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
     [handleSelectionChange],
   )
 
+  const handleBuildAddedRangeDecorators = useCallback(() => {
+    if (!editorRef.current) return
+    // We need to use the value from the editor state to build the range decorators
+    // instead of `props.value` as that value is debounced – and we want to immediately
+    // update the range decorators when the user is typing and not wait for the debounce
+    // to finish.
+    const editorStateValue = PortableTextEditor.getValue(editorRef.current)
+
+    const decorators = buildRangeDecorators({
+      comments: textComments,
+      currentHoveredCommentId,
+      onDecoratorClick: handleDecoratorClick,
+      onDecoratorHoverEnd: setCurrentHoveredCommentId,
+      onDecoratorHoverStart: setCurrentHoveredCommentId,
+      selectedThreadId: selectedPath?.threadId || null,
+      value: editorStateValue,
+    })
+
+    setAddedCommentsDecorators(decorators)
+  }, [currentHoveredCommentId, handleDecoratorClick, selectedPath?.threadId, textComments])
+
   const onEditorChange = useCallback(
     (change: EditorChange) => {
       if (change.type === 'selection') {
@@ -224,32 +248,18 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
         if (!isRangeSelected) {
           setCurrentSelection(null)
           setSelectionRect(null)
+          debounceSelectionChange.cancel()
         }
 
         debounceSelectionChange(change.selection, isRangeSelected)
       }
-    },
-    [debounceSelectionChange],
-  )
 
-  // The range decorations for existing comments
-  const addedCommentsDecorators = useMemo(() => {
-    return buildRangeDecorators({
-      comments: textComments,
-      currentHoveredCommentId,
-      onDecoratorClick: handleDecoratorClick,
-      onDecoratorHoverEnd: setCurrentHoveredCommentId,
-      onDecoratorHoverStart: setCurrentHoveredCommentId,
-      selectedThreadId: selectedPath?.threadId || null,
-      value: props.value,
-    })
-  }, [
-    textComments,
-    currentHoveredCommentId,
-    selectedPath?.threadId,
-    handleDecoratorClick,
-    props.value,
-  ])
+      if (change.type === 'patch') {
+        handleBuildAddedRangeDecorators()
+      }
+    },
+    [debounceSelectionChange, handleBuildAddedRangeDecorators],
+  )
 
   // The range decoration for the comment input. This is used to position the
   // comment input popover on the current selection and to highlight the
@@ -276,12 +286,7 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
       // The range decorations for existing comments
       ...addedCommentsDecorators,
     ]
-  }, [
-    addedCommentsDecorators,
-    authoringDecorator,
-    props?.rangeDecorations,
-    // selectDecorator
-  ])
+  }, [addedCommentsDecorators, authoringDecorator, props?.rangeDecorations])
 
   const currentSelectionIsOverlapping = useMemo(() => {
     if (!currentSelection || addedCommentsDecorators.length === 0) return false
@@ -354,6 +359,14 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
       scrollElement?.removeEventListener('wheel', handleSetSelectionRect)
     }
   }, [currentSelection, scrollElement, handleSetSelectionRect])
+
+  useEffect(() => {
+    handleBuildAddedRangeDecorators()
+
+    // Whenever the comments change, we need to update the range decorators
+    // for the comments. Therefore we use the comments as a dependency
+    // in the effect.
+  }, [handleBuildAddedRangeDecorators, textComments])
 
   const showFloatingButton = Boolean(
     currentSelection && canSubmit && selectionReferenceElement && !currentSelectionIsOverlapping,
