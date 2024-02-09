@@ -1,7 +1,10 @@
-import {Box, Flex, Stack, Text} from '@sanity/ui'
+import {Box, Stack} from '@sanity/ui'
 import {TaskDocument} from '../../types'
 import {TasksListItem} from './TasksListItem'
 
+/**
+ * @internal
+ */
 export function TaskList({items}: {items: TaskDocument[]}) {
   return (
     <Box padding={3}>

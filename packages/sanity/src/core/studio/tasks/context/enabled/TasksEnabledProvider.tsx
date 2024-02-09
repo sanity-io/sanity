@@ -8,6 +8,9 @@ interface TaksEnabledProviderProps {
   children: React.ReactNode
 }
 
+/**
+ * @internal
+ */
 export function TasksEnabledProvider({children}: TaksEnabledProviderProps) {
   // TODO: Restore this once the feature flag is enabled by the ENTX team, see ENTX-1330.
   const {enabled: featureEnabled, isLoading} = useFeatureEnabled('studioTasks')
