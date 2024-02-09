@@ -19,6 +19,7 @@ const config = {
     'sanity/typescript',
     'plugin:@typescript-eslint/recommended',
     'plugin:react-hooks/recommended',
+    'plugin:react/jsx-runtime',
     'prettier',
     '@sanity/eslint-config-i18n',
   ],
@@ -66,7 +67,6 @@ const config = {
       },
     ],
     'react/no-unescaped-entities': 'off',
-    'react/jsx-uses-react': 'warn',
     'i18next/no-literal-string': ['error'],
     '@sanity/i18n/no-attribute-string-literals': [
       'error',
