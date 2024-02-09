@@ -1,4 +1,4 @@
-import {type ComponentType, type ReactElement} from 'react'
+import {type ComponentType, type ReactElement, type ReactNode} from 'react'
 
 import {type Tool} from '../types'
 
@@ -23,6 +23,10 @@ export interface LogoProps {
  * @beta */
 export interface NavbarProps {
   renderDefault: (props: NavbarProps) => ReactElement
+  /**
+   * @internal
+   * @beta */
+  __internal_rightSectionNode?: ReactNode
 }
 
 /**
