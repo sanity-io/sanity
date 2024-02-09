@@ -1,8 +1,8 @@
 import {useMemo, useState} from 'react'
 import {Box, Card} from '@sanity/ui'
 import {TaskDocument} from '../../types'
-import {TaskList} from '../list/TaskList'
-import {TaskListTabs} from './TaskListTabs'
+import {TasksList} from '../list/TasksList'
+import {TasksListTabs} from './TasksListTabs'
 import {SidebarTabsIds} from './types'
 import {useCurrentUser} from 'sanity'
 
@@ -40,9 +40,9 @@ export function TaskSidebarContent({
   return (
     <Box>
       <Card padding={3} marginBottom={2} borderTop borderBottom>
-        <TaskListTabs activeTabId={activeTabId} onChange={setActiveTabId} />
+        <TasksListTabs activeTabId={activeTabId} onChange={setActiveTabId} />
       </Card>
-      <TaskList items={filteredList} />
+      <TasksList items={filteredList} />
     </Box>
   )
 }
