@@ -17,8 +17,8 @@ import {useWorkspace} from '../../workspace'
 import {Button, TooltipDelayGroupProvider} from '../../../../ui-components'
 import {NavbarContext} from '../../StudioLayout'
 import {useToolMenuComponent} from '../../studio-components-hooks'
-import {TasksNavbarButton} from '../../../../tasks'
 import {useTranslation} from '../../../i18n'
+import {NavbarProps} from '../../../config'
 import {UserMenu} from './userMenu'
 import {NewDocumentButton, useNewDocumentOptions} from './new-document'
 import {PresenceMenu} from './presence'
@@ -58,7 +58,8 @@ const NavGrid = styled(Grid)`
 /**
  * @hidden
  * @beta */
-export function StudioNavbar() {
+export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
+  const {rightSectionNode = null} = props
   const {name, tools} = useWorkspace()
   const routerState = useRouterState()
   const mediaIndex = useMediaIndex()
@@ -104,7 +105,6 @@ export function StudioNavbar() {
       configIssues: mediaIndex > 1 && isDev,
       newDocumentFullscreen: mediaIndex <= 1,
       tools: mediaIndex >= 3,
-      tasks: mediaIndex >= 3,
     }),
     [mediaIndex],
   )
@@ -246,7 +246,7 @@ export function StudioNavbar() {
                       ref={setSearchOpenButtonEl}
                     />
                   )}
-                  {shouldRender.tasks && <TasksNavbarButton />}
+                  {rightSectionNode}
                 </Flex>
                 {shouldRender.tools && (
                   <Box flex="none" marginLeft={1}>

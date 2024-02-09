@@ -21,6 +21,10 @@ export interface LogoProps {
  * @hidden
  * @beta */
 export interface NavbarProps {
+  /**
+   * @internal
+   * @beta */
+  rightSectionNode?: React.ReactNode
   renderDefault: (props: NavbarProps) => React.ReactElement
 }
 
