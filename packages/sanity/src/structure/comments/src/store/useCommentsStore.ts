@@ -1,4 +1,4 @@
-import {useMemo, useEffect, useCallback, useReducer, useState} from 'react'
+import {useMemo, useEffect, useCallback, useReducer, useState, useRef} from 'react'
 import {ListenEvent, ListenOptions, SanityClient} from '@sanity/client'
 import {catchError, of} from 'rxjs'
 import {CommentDocument, Loadable} from '../types'
@@ -8,6 +8,14 @@ import {getPublishedId} from 'sanity'
 export interface CommentsStoreOptions {
   documentId: string
   client: SanityClient | null
+  /**
+   * The transaction ID of the latest operation.
+   */
+  latestTransactions: {commentId: string; transactionId: string}[]
+  /**
+   * A callback that is called when the latest transaction is received.
+   */
+  onLatestTransactionReceived: (commentId: string) => void
 }
 
 interface CommentsStoreReturnType extends Loadable<CommentDocument[]> {
@@ -48,11 +56,13 @@ const QUERY_SORT_ORDER = `order(${SORT_FIELD} ${SORT_ORDER})`
 const QUERY = `*[${QUERY_FILTERS.join(' && ')}] ${QUERY_PROJECTION} | ${QUERY_SORT_ORDER}`
 
 export function useCommentsStore(opts: CommentsStoreOptions): CommentsStoreReturnType {
-  const {client, documentId} = opts
+  const {client, documentId, latestTransactions, onLatestTransactionReceived} = opts
 
   const [state, dispatch] = useReducer(commentsReducer, INITIAL_STATE)
   const [loading, setLoading] = useState<boolean>(client !== null)
   const [error, setError] = useState<Error | null>(null)
+
+  const ranInitialFetch = useRef<boolean>(false)
 
   const params = useMemo(() => ({documentId: getPublishedId(documentId)}), [documentId])
 
@@ -74,9 +84,10 @@ export function useCommentsStore(opts: CommentsStoreOptions): CommentsStoreRetur
   const handleListenerEvent = useCallback(
     async (event: ListenEvent<Record<string, CommentDocument>>) => {
       // Fetch all comments on initial connection
-      if (event.type === 'welcome') {
+      if (event.type === 'welcome' && !ranInitialFetch.current) {
         setLoading(true)
         await initialFetch()
+        ranInitialFetch.current = true
         setLoading(false)
       }
 
@@ -86,6 +97,7 @@ export function useCommentsStore(opts: CommentsStoreOptions): CommentsStoreRetur
       // will be received and we'll fetch all comments again (above).
       if (event.type === 'reconnect') {
         setLoading(true)
+        ranInitialFetch.current = false
       }
 
       // Handle mutations (create, update, delete) from the realtime listener
@@ -108,17 +120,28 @@ export function useCommentsStore(opts: CommentsStoreOptions): CommentsStoreRetur
 
         if (event.transition === 'update') {
           const updatedComment = event.result as CommentDocument | undefined
+          const commentId = (updatedComment?._id || '') as string
+          const latestTransactionId = latestTransactions.find((t) => t.commentId === commentId)
+            ?.transactionId
+          const isLatestTransactionId = event.transactionId === latestTransactionId
+
+          // If there's a latestTransactionId set, we only want to update the comment
+          // if the transactionId of the event matches the latestTransactionId.
+          // This is to avoid updating the comment with an old transactionId.
+          if (!isLatestTransactionId && latestTransactionId) return
 
           if (updatedComment) {
             dispatch({
               type: 'COMMENT_UPDATED',
               payload: updatedComment,
             })
+
+            onLatestTransactionReceived(commentId)
           }
         }
       }
     },
-    [initialFetch],
+    [initialFetch, onLatestTransactionReceived, latestTransactions],
   )
 
   const listener$ = useMemo(() => {

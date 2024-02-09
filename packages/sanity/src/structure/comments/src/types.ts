@@ -20,7 +20,7 @@ export interface CommentOperations {
   edit: (id: string, comment: CommentEditPayload) => Promise<void>
   react: (id: string, reaction: CommentReactionOption) => Promise<void>
   remove: (id: string) => Promise<void>
-  update: (id: string, comment: Partial<CommentCreatePayload>) => Promise<void>
+  update: (id: string, comment: Partial<CommentDocument>) => Promise<void>
 }
 
 /**

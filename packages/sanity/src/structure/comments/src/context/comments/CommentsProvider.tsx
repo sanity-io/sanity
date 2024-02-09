@@ -1,7 +1,7 @@
 import React, {memo, useCallback, useMemo, useState} from 'react'
 import {orderBy} from 'lodash'
 import {
-  CommentCreatePayload,
+  CommentDocument,
   CommentEditPayload,
   CommentPostPayload,
   CommentStatus,
@@ -20,6 +20,7 @@ import {buildCommentThreadItems} from '../../utils/buildCommentThreadItems'
 import {CommentsContext} from './CommentsContext'
 import {CommentsContextValue} from './types'
 import {getPublishedId, useEditState, useSchema, useCurrentUser, useWorkspace} from 'sanity'
+import {uuid} from '@sanity/uuid'
 
 const EMPTY_ARRAY: [] = []
 
@@ -58,6 +59,15 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
   const editState = useEditState(publishedId, documentType, 'low')
   const schemaType = useSchema().get(documentType)
   const currentUser = useCurrentUser()
+
+  const [latestTransactions, setLatestTransactions] = useState<
+    {commentId: string; transactionId: string}[]
+  >([])
+
+  const handleTransactionStart = useCallback((commentId: string, transactionId: string) => {
+    setLatestTransactions((prev) => [...prev, {commentId, transactionId}])
+  }, [])
+
   const {name: workspaceName, dataset, projectId} = useWorkspace()
   const {
     dispatch,
@@ -67,7 +77,20 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
   } = useCommentsStore({
     documentId: publishedId,
     client,
+    // Pass the latestTransactionId to the store so that we can make sure to only update the
+    // local state of the comments when the transactionId of the event from the real time listener
+    // matches the latestTransactionId (i.e. the latest transaction that was executed by the user).
+    latestTransactions,
+    // When the latest transaction is received, we want to reset the latestTransactionId
+    // so that we can receive other transactions.
+    onLatestTransactionReceived: useCallback((commentId: string) => {
+      // Remove the item in the latestTransactions object that matches the commentId
+      // eslint-disable-next-line max-nested-callbacks
+      setLatestTransactions((prev) => prev.filter((item) => item.commentId !== commentId))
+    }, []),
   })
+
+  // console.log(latestTransactions)
 
   const documentValue = useMemo(() => {
     return editState.draft || editState.published
@@ -137,7 +160,7 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
   )
 
   const handleOnUpdate = useCallback(
-    (id: string, payload: Partial<CommentCreatePayload>) => {
+    (id: string, payload: Partial<CommentDocument>) => {
       dispatch({
         type: 'COMMENT_UPDATED',
         payload: {
@@ -208,6 +231,7 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
         onCreateError: handleOnCreateError,
         onEdit: handleOnEdit,
         onUpdate: handleOnUpdate,
+        onTransactionStart: handleTransactionStart,
       }),
       [
         client,
@@ -225,6 +249,7 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
         handleOnCreateError,
         handleOnEdit,
         handleOnUpdate,
+        handleTransactionStart,
       ],
     ),
   )
@@ -255,21 +280,21 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
       mentionOptions,
     }),
     [
-      error,
+      isRunningSetup,
+      status,
+      handleSetStatus,
       getComment,
       isCommentsOpen,
-      isRunningSetup,
-      loading,
-      mentionOptions,
       onCommentsOpen,
+      threadItemsByStatus,
+      error,
+      loading,
       operation.create,
       operation.edit,
       operation.react,
       operation.remove,
       operation.update,
-      status,
-      handleSetStatus,
-      threadItemsByStatus,
+      mentionOptions,
     ],
   )
 

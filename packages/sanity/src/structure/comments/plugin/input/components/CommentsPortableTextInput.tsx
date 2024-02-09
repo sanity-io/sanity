@@ -3,6 +3,7 @@ import {
   EditorSelection,
   PortableTextEditor,
   RangeDecoration,
+  RangeDecorationMovedChange,
 } from '@sanity/portable-text-editor'
 import React, {useState, useRef, useCallback, useMemo, useEffect} from 'react'
 import {debounce} from 'lodash'
@@ -214,16 +215,35 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
     [handleSelectionChange],
   )
 
+  const handleRangeDecorationMoveChange = useCallback(
+    (change: RangeDecorationMovedChange) => {
+      const commentId = (change.rangeDecoration.payload?.commentId || '') as string
+      const comment = getComment(commentId)
+
+      if (comment && comment.target.path.selection?.type === 'range') {
+        operation.update(commentId, {
+          target: {
+            ...comment.target,
+            path: {
+              ...comment.target.path,
+              selection: {
+                type: 'range',
+                value: change.newRangeSelection,
+              },
+            },
+          },
+        })
+      }
+    },
+    [getComment, operation],
+  )
+
   const onEditorChange = useCallback(
     (change: EditorChange) => {
       if (change.type === 'rangeDecorationMoved') {
-        const comment = rangeComments.find(
-          (c) => c.parentComment._id === change.rangeDecoration.payload?.commentId,
-        )
-        if (comment && comment.selection?.type === 'range') {
-          // TODO: patch the comment with the new selection
-        }
+        handleRangeDecorationMoveChange(change)
       }
+
       if (change.type === 'selection') {
         const isRangeSelected = change.selection?.anchor.offset !== change.selection?.focus.offset
 
@@ -238,7 +258,7 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
         debounceSelectionChange(change.selection, isRangeSelected)
       }
     },
-    [debounceSelectionChange, rangeComments],
+    [debounceSelectionChange, handleRangeDecorationMoveChange],
   )
 
   // The range decorations for existing comments

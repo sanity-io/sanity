@@ -1,6 +1,7 @@
-import {useCallback, useMemo} from 'react'
+import {useCallback, useMemo, useState} from 'react'
 import {CurrentUser, SchemaType} from '@sanity/types'
 import {SanityClient} from '@sanity/client'
+import {debounce} from 'lodash'
 import {
   CommentCreatePayload,
   CommentDocument,
@@ -34,7 +35,8 @@ export interface CommentOperationsHookOptions {
   onCreateError: (id: string, error: Error) => void
   onEdit?: (id: string, comment: CommentEditPayload) => void
   onRemove?: (id: string) => void
-  onUpdate?: (id: string, comment: Partial<CommentCreatePayload>) => void
+  onTransactionStart: (commentId: string, transactionId: string) => void
+  onUpdate?: (id: string, comment: Partial<CommentDocument>) => void
   projectId: string
   runSetup: (comment: CommentPostPayload) => Promise<void>
   schemaType: SchemaType | undefined
@@ -56,6 +58,7 @@ export function useCommentOperations(
     onCreateError,
     onEdit,
     onRemove,
+    onTransactionStart,
     onUpdate,
     projectId,
     runSetup,
@@ -145,18 +148,39 @@ export function useCommentOperations(
     [client, onEdit],
   )
 
-  const handleUpdate = useCallback(
-    async (id: string, comment: Partial<CommentCreatePayload>) => {
+  // Handle the actual update API call
+  const postCommentUpdate = useCallback(
+    async (id: string, comment: Partial<CommentDocument>) => {
       if (!client) return
 
       await updateOperation({
         client,
         id,
         comment,
-        onUpdate,
+        onTransactionStart: (transactionId) => onTransactionStart(id, transactionId),
       })
     },
-    [client, onUpdate],
+    [client, onTransactionStart],
+  )
+
+  // Debounce the update API call
+  const debouncedPostCommentUpdate = useMemo(
+    () => debounce(postCommentUpdate, 500),
+    [postCommentUpdate],
+  )
+
+  // Handle the update operation, that is:
+  // - Optimistically update the comment with `onUpdate`
+  // - Debounce the actual API call with `debouncedPostCommentUpdate`
+  const handleUpdate = useCallback(
+    async (id: string, comment: Partial<CommentDocument>) => {
+      if (!client) return
+
+      onUpdate?.(id, comment)
+
+      await debouncedPostCommentUpdate(id, comment)
+    },
+    [client, onUpdate, debouncedPostCommentUpdate],
   )
 
   const handleReact = useCallback(
