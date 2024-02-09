@@ -1,5 +1,4 @@
 import {render, waitFor} from '@testing-library/react'
-import React from 'react'
 import {defineConfig, type SanityClient, unstable_useValuePreview as useValuePreview} from 'sanity'
 
 import {createMockSanityClient} from '../../../../../../test/mocks/mockSanityClient'

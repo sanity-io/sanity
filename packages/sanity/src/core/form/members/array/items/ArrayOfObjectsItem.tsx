@@ -1,6 +1,6 @@
 import {type Path} from '@sanity/types'
 import {useToast} from '@sanity/ui'
-import React, {useCallback, useMemo, useRef} from 'react'
+import {useCallback, useMemo, useRef} from 'react'
 import {tap} from 'rxjs/operators'
 
 import {useTranslation} from '../../../../i18n'

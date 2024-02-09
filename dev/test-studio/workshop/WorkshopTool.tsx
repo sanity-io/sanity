@@ -1,5 +1,4 @@
 import {Workshop} from '@sanity/ui-workshop'
-import React from 'react'
 import {type Tool, useColorScheme, useWorkspace} from 'sanity'
 
 import {config} from './config'

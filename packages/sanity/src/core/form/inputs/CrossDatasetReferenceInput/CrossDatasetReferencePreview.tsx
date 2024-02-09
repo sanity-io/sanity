@@ -3,7 +3,7 @@ import {AccessDeniedIcon, HelpCircleIcon, LaunchIcon} from '@sanity/icons'
 import imageUrlBuilder from '@sanity/image-url'
 import {type CrossDatasetType, type PreviewValue} from '@sanity/types'
 import {Badge, Box, Flex, Inline, Text} from '@sanity/ui'
-import React, {createElement, isValidElement as ReactIsValidElement, useMemo} from 'react'
+import {createElement, isValidElement as ReactIsValidElement, useMemo} from 'react'
 
 import {Tooltip} from '../../../../ui-components'
 import {DefaultPreview, type PreviewMediaDimensions, TextWithTone} from '../../../components'

@@ -18,7 +18,6 @@
  */
 
 import {type SanityClient} from '@sanity/client'
-import React from 'react'
 import {hydrateRoot} from 'react-dom/client'
 import {renderToStaticMarkup, renderToString} from 'react-dom/server'
 import {act} from 'react-dom/test-utils'

@@ -11,14 +11,7 @@ import {
   Text,
   useToast,
 } from '@sanity/ui'
-import React, {
-  type KeyboardEvent,
-  type MouseEvent,
-  useCallback,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
+import {type KeyboardEvent, type MouseEvent, useCallback, useMemo, useRef, useState} from 'react'
 import {type Subscription} from 'rxjs'
 import styled, {css} from 'styled-components'
 

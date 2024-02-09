@@ -7,7 +7,7 @@ import {
 } from '@sanity/portable-text-editor'
 import {type ObjectSchemaType, type Path, type SchemaType} from '@sanity/types'
 import {Box, Flex, useElementRect, useToast} from '@sanity/ui'
-import React, {memo, type MouseEvent, useCallback, useMemo, useState} from 'react'
+import {memo, type MouseEvent, useCallback, useMemo, useState} from 'react'
 import styled, {css} from 'styled-components'
 
 import {Button} from '../../../../../ui-components'

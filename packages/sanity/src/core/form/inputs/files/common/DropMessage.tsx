@@ -1,7 +1,6 @@
 import {AccessDeniedIcon, UploadIcon} from '@sanity/icons'
 import {type SchemaType} from '@sanity/types'
 import {Box, Inline, Text} from '@sanity/ui'
-import React from 'react'
 
 import {useTranslation} from '../../../../i18n'
 import {type FileLike, type UploaderResolver} from '../../../studio/uploads/types'

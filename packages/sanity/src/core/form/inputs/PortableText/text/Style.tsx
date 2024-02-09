@@ -1,5 +1,5 @@
 import {type BlockStyleRenderProps} from '@sanity/portable-text-editor'
-import React, {useCallback, useMemo} from 'react'
+import {useCallback, useMemo} from 'react'
 
 import {type BlockStyleProps} from '../../../types'
 import {Normal as FallbackComponent, TEXT_STYLES, TextContainer} from './textStyles'

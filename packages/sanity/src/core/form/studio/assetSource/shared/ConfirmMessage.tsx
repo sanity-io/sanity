@@ -1,6 +1,6 @@
 import {WarningOutlineIcon} from '@sanity/icons'
 import {Card, Flex, Grid, Text} from '@sanity/ui'
-import React, {type CSSProperties} from 'react'
+import {type CSSProperties} from 'react'
 
 import {Translate, useTranslation} from '../../../../i18n'
 import {type UsageDialogProps} from './AssetDeleteDialog'

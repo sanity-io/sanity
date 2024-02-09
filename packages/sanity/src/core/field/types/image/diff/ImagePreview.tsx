@@ -3,7 +3,7 @@ import {hues} from '@sanity/color'
 import {ImageIcon} from '@sanity/icons'
 import imageUrlBuilder from '@sanity/image-url'
 import {Box, Card, Flex, Text} from '@sanity/ui'
-import React, {type ReactElement, type SyntheticEvent, useMemo, useState} from 'react'
+import {type ReactElement, type SyntheticEvent, useMemo, useState} from 'react'
 import styled from 'styled-components'
 
 import {useClient} from '../../../../hooks'

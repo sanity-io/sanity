@@ -1,6 +1,6 @@
 import {Stack, Text} from '@sanity/ui'
 import {randomKey} from '@sanity/util/content'
-import React, {useCallback} from 'react'
+import {useCallback} from 'react'
 
 import {Button} from '../../../../../ui-components'
 import {isDev} from '../../../../environment'

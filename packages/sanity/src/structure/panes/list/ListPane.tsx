@@ -1,5 +1,4 @@
 import {Card, Code} from '@sanity/ui'
-import React from 'react'
 import {useI18nText} from 'sanity'
 
 import {Pane} from '../../components'

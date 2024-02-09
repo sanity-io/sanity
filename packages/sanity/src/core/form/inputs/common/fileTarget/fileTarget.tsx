@@ -1,5 +1,5 @@
 import {useForwardedRef} from '@sanity/ui'
-import React, {
+import {
   type ClipboardEvent,
   type ComponentType,
   type DragEvent,

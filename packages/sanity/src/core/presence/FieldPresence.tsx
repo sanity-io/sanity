@@ -1,6 +1,6 @@
 import {AvatarCounter, type AvatarPosition} from '@sanity/ui'
 import {sortBy, uniqBy} from 'lodash'
-import React, {memo, useContext, useId, useMemo, useRef} from 'react'
+import {memo, useContext, useId, useMemo, useRef} from 'react'
 
 import {UserAvatar} from '../components/userAvatar'
 import {

@@ -1,7 +1,7 @@
 import {type ArraySchemaType, isKeyedObject} from '@sanity/types'
 import {Box, Card, Checkbox, Flex, Grid} from '@sanity/ui'
 import {resolveTypeName} from '@sanity/util/content'
-import React, {useCallback, useMemo} from 'react'
+import {useCallback, useMemo} from 'react'
 
 import {ChangeIndicator} from '../../../../changeIndicators'
 import {IncompatibleItemType} from '../../../members/array/IncompatibleItemType'

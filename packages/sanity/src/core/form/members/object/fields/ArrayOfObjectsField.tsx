@@ -1,6 +1,6 @@
 import {type Path, type SchemaType} from '@sanity/types'
 import {useToast} from '@sanity/ui'
-import React, {type FocusEvent, useCallback, useEffect, useMemo, useRef} from 'react'
+import {type FocusEvent, useCallback, useEffect, useMemo, useRef} from 'react'
 import {type Subscription} from 'rxjs'
 import {map, tap} from 'rxjs/operators'
 

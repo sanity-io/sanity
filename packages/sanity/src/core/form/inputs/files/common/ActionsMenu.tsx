@@ -1,6 +1,6 @@
 import {CopyIcon, DownloadIcon, ResetIcon, UploadIcon} from '@sanity/icons'
 import {MenuDivider, useToast} from '@sanity/ui'
-import React, {type MouseEventHandler, type ReactNode, useCallback} from 'react'
+import {type MouseEventHandler, type ReactNode, useCallback} from 'react'
 
 import {MenuItem} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'

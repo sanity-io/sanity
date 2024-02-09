@@ -1,5 +1,5 @@
 import {render, renderHook, waitFor} from '@testing-library/react'
-import React, {Component, memo, Profiler, type PropsWithChildren, useDeferredValue} from 'react'
+import {Component, memo, Profiler, type PropsWithChildren, useDeferredValue} from 'react'
 import * as Rx from 'rxjs'
 
 import {createHookFromObservableFactory} from '../createHookFromObservableFactory'

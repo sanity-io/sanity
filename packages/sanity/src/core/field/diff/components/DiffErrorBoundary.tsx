@@ -1,6 +1,6 @@
 import {ErrorOutlineIcon} from '@sanity/icons'
 import {Box, Card, Flex, Text} from '@sanity/ui'
-import React, {Component, type ReactNode} from 'react'
+import {Component, type ReactNode} from 'react'
 
 import {isDev} from '../../../environment'
 import {type TFunction} from '../../../i18n'

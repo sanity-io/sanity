@@ -2,7 +2,7 @@ import {PortableText} from '@portabletext/react'
 import {createClient} from '@sanity/client'
 import {createQueryStore} from '@sanity/react-loader'
 import {enableVisualEditing} from '@sanity/visual-editing'
-import React, {Suspense, useEffect} from 'react'
+import {Suspense, useEffect} from 'react'
 import {createRoot} from 'react-dom/client'
 
 const client = createClient({

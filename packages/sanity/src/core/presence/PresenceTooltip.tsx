@@ -1,5 +1,5 @@
 import {Flex, Stack, Text} from '@sanity/ui'
-import React, {type ReactElement, useMemo} from 'react'
+import {type ReactElement, useMemo} from 'react'
 
 import {Tooltip} from '../../ui-components'
 import {UserAvatar} from '../components/userAvatar'

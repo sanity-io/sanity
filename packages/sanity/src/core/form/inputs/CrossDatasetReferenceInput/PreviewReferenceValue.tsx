@@ -1,6 +1,5 @@
 import {type CrossDatasetReferenceSchemaType, type CrossDatasetReferenceValue} from '@sanity/types'
 import {Stack, Text, TextSkeleton} from '@sanity/ui'
-import React from 'react'
 
 import {Translate, useTranslation} from '../../../i18n'
 import {CrossDatasetReferencePreview} from './CrossDatasetReferencePreview'

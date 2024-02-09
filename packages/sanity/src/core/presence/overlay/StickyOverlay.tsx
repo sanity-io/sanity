@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 
 import {flatten, groupBy, orderBy, sortBy} from 'lodash'
-import React, {
+import {
   type CSSProperties,
   Fragment,
   memo,

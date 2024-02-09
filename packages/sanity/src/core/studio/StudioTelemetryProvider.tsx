@@ -1,7 +1,7 @@
 import {createBatchedStore, createSessionId} from '@sanity/telemetry'
 import {TelemetryProvider} from '@sanity/telemetry/react'
 import arrify from 'arrify'
-import React, {type ReactNode, useEffect, useMemo} from 'react'
+import {type ReactNode, useEffect, useMemo} from 'react'
 
 import {type Config} from '../config'
 import {useClient} from '../hooks'

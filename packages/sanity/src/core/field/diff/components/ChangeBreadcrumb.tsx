@@ -1,6 +1,5 @@
 import {ChevronRightIcon} from '@sanity/icons'
 import {Breadcrumbs, Text} from '@sanity/ui'
-import React from 'react'
 
 import {type ChangeTitlePath, type FieldChangeNode} from '../../types'
 import {ChangeTitleSegment} from './ChangeTitleSegment'

@@ -4,7 +4,7 @@ import {
   usePortableTextEditorSelection,
 } from '@sanity/portable-text-editor'
 import {isKeySegment} from '@sanity/types'
-import React, {memo, useCallback, useMemo} from 'react'
+import {memo, useCallback, useMemo} from 'react'
 import {useTranslation} from 'react-i18next'
 
 import {type PopoverProps} from '../../../../../ui-components'

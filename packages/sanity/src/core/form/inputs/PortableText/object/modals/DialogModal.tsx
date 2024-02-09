@@ -1,5 +1,5 @@
 import {Box} from '@sanity/ui'
-import React, {type ReactNode, useId, useRef, useState} from 'react'
+import {type ReactNode, useId, useRef, useState} from 'react'
 
 import {Dialog} from '../../../../../../ui-components'
 import {PresenceOverlay} from '../../../../../presence'

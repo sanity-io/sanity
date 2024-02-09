@@ -1,6 +1,6 @@
 import {type Asset} from '@sanity/types'
 import {Box, Card, Flex, Grid, Spinner, Stack, Text, useMediaIndex} from '@sanity/ui'
-import React, {type KeyboardEvent, type MouseEvent} from 'react'
+import {type KeyboardEvent, type MouseEvent} from 'react'
 
 import {useTranslation} from '../../../../i18n'
 import {AssetRow} from './AssetRow'

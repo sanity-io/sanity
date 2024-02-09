@@ -1,6 +1,6 @@
 import {Card, Code, Stack, Text} from '@sanity/ui'
 import {isPlainObject} from 'lodash'
-import React, {forwardRef, type Ref, useCallback, useImperativeHandle, useMemo} from 'react'
+import {forwardRef, type Ref, useCallback, useImperativeHandle, useMemo} from 'react'
 
 import {Button} from '../../../../ui-components'
 import {isDev} from '../../../environment'

@@ -1,6 +1,6 @@
 import {type Path} from '@sanity/types'
 import {isShallowEmptyObject} from '@sanity/util/content'
-import React, {useCallback, useEffect, useMemo, useRef} from 'react'
+import {useCallback, useEffect, useMemo, useRef} from 'react'
 
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
 import {type PatchArg, PatchEvent, setIfMissing, unset} from '../../../patch'

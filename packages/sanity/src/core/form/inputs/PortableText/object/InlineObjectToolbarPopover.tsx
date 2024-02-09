@@ -1,6 +1,6 @@
 import {EditIcon, TrashIcon} from '@sanity/icons'
 import {Box, Inline, Text, useGlobalKeyDown, useTheme} from '@sanity/ui'
-import React, {type MouseEvent, useCallback, useMemo, useRef} from 'react'
+import {type MouseEvent, useCallback, useMemo, useRef} from 'react'
 
 import {Button, Popover, type PopoverProps} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'

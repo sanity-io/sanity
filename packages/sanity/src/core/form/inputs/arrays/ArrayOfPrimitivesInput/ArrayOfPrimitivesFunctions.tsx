@@ -2,7 +2,7 @@
 import {AddIcon} from '@sanity/icons'
 import {type ArraySchemaType, isReferenceSchemaType} from '@sanity/types'
 import {Grid, Menu} from '@sanity/ui'
-import React, {useCallback, useId, useMemo} from 'react'
+import {useCallback, useId, useMemo} from 'react'
 
 import {Button, MenuButton, MenuItem, Tooltip} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'

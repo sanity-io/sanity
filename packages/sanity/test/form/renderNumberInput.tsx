@@ -1,5 +1,5 @@
 import {type FieldDefinition, type NumberSchemaType} from '@sanity/types'
-import React, {type ReactElement} from 'react'
+import {type ReactElement} from 'react'
 
 import {type NumberInputProps, type PrimitiveInputElementProps} from '../../src/core'
 import {renderInput, type TestRenderInputContext, type TestRenderInputProps} from './renderInput'

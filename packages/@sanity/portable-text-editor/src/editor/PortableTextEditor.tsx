@@ -9,7 +9,7 @@ import {
   type PortableTextObject,
   type SpanSchemaType,
 } from '@sanity/types'
-import React, {Component, type PropsWithChildren} from 'react'
+import {Component, type PropsWithChildren} from 'react'
 import {Subject} from 'rxjs'
 
 import {

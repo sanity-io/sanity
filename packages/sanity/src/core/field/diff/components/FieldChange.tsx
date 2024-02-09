@@ -1,6 +1,6 @@
 import {type ObjectSchemaType} from '@sanity/types'
 import {Box, Flex, Stack, Text, useClickOutside} from '@sanity/ui'
-import React, {Fragment, type HTMLAttributes, useCallback, useMemo, useState} from 'react'
+import {Fragment, type HTMLAttributes, useCallback, useMemo, useState} from 'react'
 
 import {Button, Popover} from '../../../../ui-components'
 import {useDocumentOperation} from '../../../hooks'

@@ -1,6 +1,6 @@
 import {type Path} from '@sanity/types'
 import {sortBy} from 'lodash'
-import React, {useCallback, useMemo, useState} from 'react'
+import {useCallback, useMemo, useState} from 'react'
 
 import {type Reported} from '../../components/react-track-elements'
 import {ScrollMonitor} from '../../components/scroll'

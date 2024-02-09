@@ -1,6 +1,6 @@
 import {TrashIcon} from '@sanity/icons'
 import {Box, Card, Code, Stack, Text} from '@sanity/ui'
-import React, {useCallback} from 'react'
+import {useCallback} from 'react'
 
 import {Button} from '../../../../ui-components'
 import {isDev} from '../../../environment'

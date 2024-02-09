@@ -1,5 +1,5 @@
 import {type Path} from '@sanity/types'
-import React, {type PropsWithChildren, useCallback, useMemo} from 'react'
+import {type PropsWithChildren, useCallback, useMemo} from 'react'
 
 import {type DocumentFieldActionNode} from '../../../config'
 import {pathToString} from '../../../field'

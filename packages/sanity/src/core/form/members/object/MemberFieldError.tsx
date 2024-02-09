@@ -1,5 +1,5 @@
 import {Box} from '@sanity/ui'
-import React, {useCallback} from 'react'
+import {useCallback} from 'react'
 
 import {useTranslation} from '../../../i18n'
 import {InvalidValueInput} from '../../inputs/InvalidValueInput'

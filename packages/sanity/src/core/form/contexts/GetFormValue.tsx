@@ -1,5 +1,5 @@
 import {type Path} from '@sanity/types'
-import React, {createContext, type ReactNode, useCallback, useContext, useRef} from 'react'
+import {createContext, type ReactNode, useCallback, useContext, useRef} from 'react'
 
 import {getValueAtPath} from '../../field'
 import {type FormDocumentValue} from '../types'

@@ -1,5 +1,5 @@
 import {type Reference} from '@sanity/types'
-import React, {type ReactNode} from 'react'
+import {type ReactNode} from 'react'
 import {useMemoObservable} from 'react-rx'
 import {type Observable} from 'rxjs'
 

@@ -1,7 +1,7 @@
 /* eslint-disable i18next/no-literal-string */
 import {type PortableTextBlock} from '@sanity/types'
 import {Box, Card, Heading, Inline, Stack, studioTheme, Text, ThemeProvider} from '@sanity/ui'
-import React, {useCallback, useMemo, useState} from 'react'
+import {useCallback, useMemo, useState} from 'react'
 import {Subject} from 'rxjs'
 
 import {type EditorSelection, type Patch} from '../../src'

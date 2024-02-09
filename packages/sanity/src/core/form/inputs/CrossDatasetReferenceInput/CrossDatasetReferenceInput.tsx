@@ -3,7 +3,7 @@ import {ResetIcon as ClearIcon, SyncIcon as ReplaceIcon} from '@sanity/icons'
 import {type CrossDatasetReferenceSchemaType, type CrossDatasetReferenceValue} from '@sanity/types'
 import {Box, Card, Flex, Inline, Menu, Stack, useToast} from '@sanity/ui'
 import {FOCUS_TERMINATOR} from '@sanity/util/paths'
-import React, {
+import {
   type FocusEvent,
   type KeyboardEvent,
   useCallback,

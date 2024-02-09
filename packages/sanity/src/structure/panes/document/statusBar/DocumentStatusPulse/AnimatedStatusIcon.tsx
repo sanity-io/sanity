@@ -1,5 +1,5 @@
 import {motion} from 'framer-motion'
-import React, {type ComponentProps} from 'react'
+import {type ComponentProps} from 'react'
 import styled, {keyframes} from 'styled-components'
 
 const StyledMotionPath = styled(motion.path)`
