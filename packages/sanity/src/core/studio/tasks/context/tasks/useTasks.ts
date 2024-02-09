@@ -2,6 +2,9 @@ import {useContext} from 'react'
 import {TasksContext} from './TasksContext'
 import {TasksContextValue} from './types'
 
+/**
+ * @internal
+ */
 export function useTasks(): TasksContextValue {
   const context = useContext(TasksContext)
   if (!context) {

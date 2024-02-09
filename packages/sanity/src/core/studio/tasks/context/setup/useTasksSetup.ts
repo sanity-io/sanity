@@ -1,6 +1,10 @@
 import {useContext} from 'react'
-import {TasksSetupContext, TasksSetupContextValue} from '../context'
+import {TasksSetupContext, TasksSetupContextValue} from '..'
 
+/**
+ * @beta
+ * @hidden
+ */
 export function useTasksSetup(): TasksSetupContextValue {
   const ctx = useContext(TasksSetupContext)
 

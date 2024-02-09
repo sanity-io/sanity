@@ -19,6 +19,9 @@ const VARIANTS: Variants = {
 
 const TRANSITION: Transition = {duration: 0.2}
 
+/**
+ * @internal
+ */
 export function TasksStudioSidebar() {
   const {enabled} = useTasksEnabled()
   const {activeDocumentId, isOpen, data, isLoading} = useTasks()

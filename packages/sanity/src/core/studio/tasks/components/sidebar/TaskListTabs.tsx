@@ -1,25 +1,26 @@
-import {Box, Card, TabList} from '@sanity/ui'
-import {TaskDocument} from '../../types'
-import {useCallback, useMemo, useState} from 'react'
-import {useCurrentUser} from '../../../../store'
+import {Dispatch, SetStateAction, useMemo} from 'react'
+import {TabList} from '@sanity/ui'
 import {Tab} from '../../../../../ui-components'
-import {TaskList} from '../list/TaskList'
 import {useTasks} from '../../context'
+import {SidebarTabsIds} from './types'
 
 interface TaskListTabsProps {
   activeTabId: string
-  onChange: (id: string) => void
+  onChange: Dispatch<SetStateAction<SidebarTabsIds>>
 }
 
 interface TaskListTab {
-  id: string
+  id: SidebarTabsIds
   label: string
 }
 
+/**
+ * @internal
+ */
 export function TaskListTabs({activeTabId, onChange}: TaskListTabsProps) {
   const {activeDocumentId} = useTasks()
   const tabs: TaskListTab[] = useMemo(() => {
-    const defaultTabs = [
+    const defaultTabs: TaskListTab[] = [
       {
         id: 'assigned',
         label: 'Assigned',
@@ -39,16 +40,8 @@ export function TaskListTabs({activeTabId, onChange}: TaskListTabsProps) {
         },
       ]
     }
-
     return defaultTabs
   }, [activeDocumentId])
-
-  const handleTabChange = useCallback(
-    (id: string) => {
-      onChange(id)
-    },
-    [onChange],
-  )
 
   return (
     <TabList space={2}>
@@ -58,7 +51,8 @@ export function TaskListTabs({activeTabId, onChange}: TaskListTabsProps) {
           aria-controls={`${tab.id}-panel`}
           id={`${tab.id}-tab`}
           label={tab.label}
-          onClick={() => handleTabChange(tab.id)}
+          // eslint-disable-next-line react/jsx-no-bind
+          onClick={() => onChange(tab.id)}
           selected={activeTabId === tab.id}
         />
       ))}

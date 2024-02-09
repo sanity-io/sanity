@@ -2,6 +2,9 @@ import {PanelRightIcon} from '@sanity/icons'
 import {Button} from '../../../../../ui-components'
 import {useTasksEnabled, useTasks} from '../../context'
 
+/**
+ * @internal
+ */
 export function TasksNavbarButton() {
   const {enabled} = useTasksEnabled()
   const {toggleOpen, isOpen} = useTasks()
