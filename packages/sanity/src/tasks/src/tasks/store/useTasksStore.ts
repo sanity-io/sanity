@@ -2,8 +2,8 @@ import {useMemo, useEffect, useCallback, useReducer, useState} from 'react'
 import {ListenEvent, ListenOptions, SanityClient} from '@sanity/client'
 import {catchError, of} from 'rxjs'
 import {TaskDocument, Loadable} from '../types'
-import {getPublishedId} from '../../../util'
 import {TasksReducerAction, TasksReducerState, tasksReducer} from './reducer'
+import {getPublishedId} from 'sanity'
 
 export interface TasksStoreOptions {
   documentId?: string

@@ -1,10 +1,10 @@
 import {useMemo, useState} from 'react'
 import {Box, Card} from '@sanity/ui'
 import {TaskDocument} from '../../types'
-import {useCurrentUser} from '../../../../store'
 import {TaskList} from '../list/TaskList'
 import {TaskListTabs} from './TaskListTabs'
 import {SidebarTabsIds} from './types'
+import {useCurrentUser} from 'sanity'
 
 /**
  * @internal

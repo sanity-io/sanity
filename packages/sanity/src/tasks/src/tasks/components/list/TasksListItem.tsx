@@ -2,7 +2,7 @@ import {Flex, Stack, Text, Card, CardProps} from '@sanity/ui'
 import styled from 'styled-components'
 import {useMemo} from 'react'
 import {CalendarIcon} from '@sanity/icons'
-import {useDateTimeFormat} from '../../../../hooks'
+import {useDateTimeFormat} from 'sanity'
 
 interface TasksListItemProps {
   title?: string

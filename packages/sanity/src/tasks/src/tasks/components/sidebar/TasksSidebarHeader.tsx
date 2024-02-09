@@ -2,7 +2,7 @@ import {Box, Flex, Text} from '@sanity/ui'
 import {DoubleChevronRightIcon, AddIcon} from '@sanity/icons'
 import {Button, TooltipDelayGroupProvider} from '../../../../../ui-components'
 import {useTasks} from '../..'
-import {BetaBadge} from '../../../../components'
+import {BetaBadge} from 'sanity'
 
 /**
  * @internal
