@@ -107,7 +107,6 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
       configIssues: mediaIndex > 1 && isDev,
       newDocumentFullscreen: mediaIndex <= 1,
       tools: mediaIndex >= 3,
-      tasks: mediaIndex >= 3,
     }),
     [mediaIndex],
   )
