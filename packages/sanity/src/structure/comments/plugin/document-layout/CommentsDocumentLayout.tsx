@@ -11,9 +11,14 @@ import {DocumentLayoutProps} from 'sanity'
 
 export function CommentsDocumentLayout(props: DocumentLayoutProps) {
   const {documentId, documentType} = props
+  const {permissions} = useDocumentPane()
 
   return (
-    <CommentsEnabledProvider documentId={documentId} documentType={documentType}>
+    <CommentsEnabledProvider
+      documentId={documentId}
+      documentType={documentType}
+      permission={permissions}
+    >
       <CommentsDocumentLayoutInner {...props} />
     </CommentsEnabledProvider>
   )

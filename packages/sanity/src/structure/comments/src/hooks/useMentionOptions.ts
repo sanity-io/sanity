@@ -112,7 +112,12 @@ export function useMentionOptions(opts: MentionHookOptions): MentionOptionsHookV
     const initial$ = of(INITIAL_STATE)
     const state$ = concat(initial$, list$)
 
-    const sub = state$.subscribe(setState)
+    const sub = state$.subscribe({
+      next: setState,
+      error: (error) => {
+        setState({data: [], error, loading: false})
+      },
+    })
 
     return () => {
       sub.unsubscribe()
