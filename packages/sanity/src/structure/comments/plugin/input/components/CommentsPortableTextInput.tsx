@@ -13,7 +13,7 @@ import {BoundaryElementProvider, useClickOutside, usePortal} from '@sanity/ui'
 import {
   CommentMessage,
   CommentInlineHighlightSpan,
-  buildRangeDecorators,
+  buildRangeDecorations,
   buildTextSelectionFromFragment,
   currentSelectionIsOverlappingWithComment,
   hasCommentMessageValue,
@@ -230,7 +230,7 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
     // to finish.
     const editorStateValue = PortableTextEditor.getValue(editorRef.current)
 
-    const decorators = buildRangeDecorators({
+    const decorators = buildRangeDecorations({
       comments: textComments,
       currentHoveredCommentId,
       onDecoratorClick: handleDecoratorClick,

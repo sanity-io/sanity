@@ -1,4 +1,4 @@
 export * from './buildRangeDecorationSelectionsFromComments'
-export * from './buildRangeDecorators'
+export * from './buildRangeDecorations'
 export * from './buildTextSelectionFromFragment'
 export * from './currentSelectionOverlapsWithComment'

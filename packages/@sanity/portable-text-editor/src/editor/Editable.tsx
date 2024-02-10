@@ -7,7 +7,7 @@ import {
   RenderLeafProps,
   useSlate,
 } from 'slate-react'
-import {flatten, noop} from 'lodash'
+import {noop} from 'lodash'
 import {PortableTextBlock} from '@sanity/types'
 import {
   EditorChange,
@@ -114,7 +114,8 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
   const ref = useForwardedRef(forwardedRef)
   const [editableElement, setEditableElement] = useState<HTMLDivElement | null>(null)
   const [hasInvalidValue, setHasInvalidValue] = useState(false)
-  const [rangeDecorationState, setRangeDecorationsState] = useState<BaseRangeWithDecoration[]>([])
+  const [rangeDecorationState, setRangeDecorationsState] =
+    useState<BaseRangeWithDecoration[]>(EMPTY_DECORATORS)
 
   const {change$, schemaTypes} = portableTextEditor
   const slateEditor = useSlate()
@@ -130,27 +131,6 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
     () => createWithHotkeys(schemaTypes, keyGenerator, portableTextEditor, hotkeys),
     [hotkeys, keyGenerator, portableTextEditor, schemaTypes],
   )
-
-  useEffect(() => {
-    if (rangeDecorations === undefined || rangeDecorations.length === 0) {
-      setRangeDecorationsState(EMPTY_DECORATORS)
-      return
-    }
-    const result = flatten(
-      rangeDecorations.map((decoration) => {
-        const slateRange = toSlateRange(decoration.selection, slateEditor)
-        if (!slateRange || decoration.isRangeInvalid(portableTextEditor)) {
-          return null
-        }
-        return {...slateRange, rangeDecoration: decoration}
-      }),
-    ).filter(Boolean) as BaseRangeWithDecoration[]
-    if (result.length === 0) {
-      setRangeDecorationsState(EMPTY_DECORATORS)
-      return
-    }
-    setRangeDecorationsState(result)
-  }, [portableTextEditor, rangeDecorations, slateEditor])
 
   // Output a minimal React editor inside Editable when in readOnly mode.
   // NOTE: make sure all the plugins used here can be safely run over again at any point.
@@ -241,82 +221,71 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
     }
   }, [propsSelection, slateEditor, blockTypeName, change$])
 
-  // This function will update the slate editor version of the range decorations and
-  // adapt them to any immediate changes in the editor state
   const syncRangeDecorations = useCallback(() => {
-    if (
-      slateEditor.operations.length > 0 &&
-      !slateEditor.operations.every((op) => op.type === 'set_selection') &&
-      rangeDecorationState !== undefined &&
-      rangeDecorationState.length !== 0
-    ) {
-      // debug('Updating decoration ranges', rangeDecorationState, slateEditor.operations)
-      const newDecoratorRanges: BaseRangeWithDecoration[] = []
-      let anyDecoratorChanged = false
-      rangeDecorationState.map((item) => {
-        const isOverlapping = slateEditor.operations.some(
-          // eslint-disable-next-line max-nested-callbacks
-          (op) => 'path' in op && SlateRange.includes(item, op.path),
-        )
-        // if (!isOverlapping) {
-        //   return decoration
-        // }
+    if (rangeDecorations && rangeDecorations.length > 0) {
+      debug('Updating decoration ranges', rangeDecorations, slateEditor.operations)
+      const newSlateRanges: BaseRangeWithDecoration[] = []
+      rangeDecorations.forEach((rangeDecorationItem) => {
+        const slateRange = toSlateRange(rangeDecorationItem.selection, slateEditor)
+        if (!SlateRange.isRange(slateRange)) {
+          return
+        }
+        newSlateRanges.push({...slateRange, rangeDecoration: rangeDecorationItem})
+        const slateRangeCopy = {...slateRange}
         // eslint-disable-next-line max-nested-callbacks
         slateEditor.operations.forEach((op) => {
-          let changed = false
+          const isOverlapping = 'path' in op && SlateRange.includes(slateRange, op.path)
           if (
             op.type === 'insert_text' &&
             isOverlapping &&
-            op.offset + op.text.length <= item.anchor.offset &&
-            op.offset + op.text.length <= item.focus.offset
+            op.offset + op.text.length <= slateRange.anchor.offset &&
+            op.offset + op.text.length <= slateRange.focus.offset
           ) {
-            item.anchor.offset += op.text.length
-            item.focus.offset += op.text.length
-            changed = true
+            slateRangeCopy.anchor.offset += op.text.length
+            slateRangeCopy.focus.offset += op.text.length
           } else if (
             op.type === 'remove_text' &&
             isOverlapping &&
-            op.offset - op.text.length <= item.anchor.offset &&
-            op.offset - op.text.length <= item.focus.offset
+            op.offset - op.text.length <= slateRange.anchor.offset &&
+            op.offset - op.text.length <= slateRange.focus.offset
           ) {
-            item.anchor.offset -= op.text.length
-            item.focus.offset -= op.text.length
-            changed = true
+            slateRangeCopy.anchor.offset -= op.text.length
+            slateRangeCopy.focus.offset -= op.text.length
           } else if (
             op.type === 'split_node' &&
             op.path.length === 2 &&
             isOverlapping &&
-            op.path[0] === item.anchor.path[0] &&
-            op.path[0] === item.focus.path[0] &&
-            op.position <= item.anchor.offset &&
-            op.position <= item.focus.offset
+            op.path[0] === slateRange.anchor.path[0] &&
+            op.path[0] === slateRange.focus.path[0] &&
+            op.position <= slateRange.anchor.offset &&
+            op.position <= slateRange.focus.offset
           ) {
-            changed = true
-            item.anchor.offset -= op.position
-            item.focus.offset -= op.position
-            item.anchor.path = Path.next(op.path)
-            item.focus.path = item.anchor.path
+            slateRangeCopy.anchor.offset -= op.position
+            slateRangeCopy.focus.offset -= op.position
+            slateRangeCopy.anchor.path = Path.next(op.path)
+            slateRangeCopy.focus.path = slateRange.anchor.path
+          } else if (op.type === 'merge_node' && isOverlapping) {
+            //
           }
-          if (changed) {
-            anyDecoratorChanged = true
+          if (isOverlapping) {
             const value = PortableTextEditor.getValue(portableTextEditor)
-            const newRangeSelection = toPortableTextRange(value, item, schemaTypes)
+            const newRangeSelection = toPortableTextRange(value, slateRangeCopy, schemaTypes)
             // eslint-disable-next-line max-nested-callbacks
             change$.next({
               type: 'rangeDecorationMoved',
-              rangeDecoration: item.rangeDecoration,
+              rangeDecoration: rangeDecorationItem,
               newRangeSelection,
             })
           }
         })
-        newDecoratorRanges.push(item)
-        return item
       })
-      if (anyDecoratorChanged) {
-        setRangeDecorationsState(newDecoratorRanges)
+      if (newSlateRanges.length > 0) {
+        setRangeDecorationsState(newSlateRanges)
+        return
       }
     }
-  }, [change$, portableTextEditor, rangeDecorationState, schemaTypes, slateEditor.operations])
+    setRangeDecorationsState(EMPTY_DECORATORS)
+  }, [change$, portableTextEditor, rangeDecorations, schemaTypes, slateEditor])
 
   // Subscribe to change$ and restore selection from props when the editor has been initialized properly with it's value
   useEffect(() => {
@@ -325,11 +294,6 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
       switch (next.type) {
         case 'ready':
           restoreSelectionFromProps()
-          break
-        case 'patch':
-          if (next.patch.origin === 'local') {
-            syncRangeDecorations()
-          }
           break
         case 'invalidValue':
           setHasInvalidValue(true)
@@ -352,6 +316,19 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
       restoreSelectionFromProps()
     }
   }, [hasInvalidValue, propsSelection, restoreSelectionFromProps])
+
+  const originalOnChange = useMemo(() => slateEditor.onChange, [slateEditor])
+
+  useEffect(() => {
+    slateEditor.onChange = () => {
+      syncRangeDecorations()
+      originalOnChange()
+    }
+  }, [originalOnChange, slateEditor, syncRangeDecorations])
+
+  useEffect(() => {
+    syncRangeDecorations()
+  }, [rangeDecorations, syncRangeDecorations])
 
   // Handle from props onCopy function
   const handleCopy = useCallback(
