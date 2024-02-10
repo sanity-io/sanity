@@ -104,7 +104,13 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
     if (!nextCommentSelection || !editorRef.current) return
 
     const fragment = getFragment() || EMPTY_ARRAY
-    const textSelection = buildTextSelectionFromFragment({fragment})
+    const editorValue = PortableTextEditor.getValue(editorRef.current)
+    if (!editorValue) return
+    const textSelection = buildTextSelectionFromFragment({
+      fragment,
+      selection: nextCommentSelection,
+      value: editorValue,
+    })
     const threadId = uuid()
 
     operation.create({
