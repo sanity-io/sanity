@@ -21,6 +21,9 @@ export function buildTextSelectionFromFragment(
   if (!selection) {
     throw new Error('Selection is required')
   }
+  const normalizedSelection: EditorSelection = selection.backward
+    ? {backward: false, anchor: selection.focus, focus: selection.anchor}
+    : selection
   const textSelection: CommentTextSelection = {
     type: 'text',
     value: fragment.map((fragmentBlock) => {
@@ -31,8 +34,10 @@ export function buildTextSelectionFromFragment(
           text: '',
         }
       }
-      const anchorBlockKey = isKeySegment(selection.anchor.path[0]) && selection.anchor.path[0]._key
-      const focusBlockKey = isKeySegment(selection.focus.path[0]) && selection.focus.path[0]._key
+      const anchorBlockKey =
+        isKeySegment(normalizedSelection.anchor.path[0]) && normalizedSelection.anchor.path[0]._key
+      const focusBlockKey =
+        isKeySegment(normalizedSelection.focus.path[0]) && normalizedSelection.focus.path[0]._key
       const fragmentBlockText = toPlainText([fragmentBlock])
       const fragmentStartSpan = isPortableTextTextBlock(fragmentBlock)
         ? fragmentBlock.children[0]
@@ -47,7 +52,9 @@ export function buildTextSelectionFromFragment(
           startChildIndex++
           if (child._key === fragmentStartSpan?._key) {
             originalTextBeforeSelection +=
-              (isPortableTextSpan(child) && child.text.substring(0, selection.anchor.offset)) || ''
+              (isPortableTextSpan(child) &&
+                child.text.substring(0, normalizedSelection.anchor.offset)) ||
+              ''
             break
           }
           originalTextBeforeSelection += child.text
@@ -59,7 +66,7 @@ export function buildTextSelectionFromFragment(
           if (child._key === fragmentEndSpan?._key) {
             originalTextAfterSelection =
               ((isPortableTextSpan(child) &&
-                child.text.substring(selection.focus.offset, child.text.length)) ||
+                child.text.substring(normalizedSelection.focus.offset, child.text.length)) ||
                 '') + originalTextAfterSelection
             break
           }
