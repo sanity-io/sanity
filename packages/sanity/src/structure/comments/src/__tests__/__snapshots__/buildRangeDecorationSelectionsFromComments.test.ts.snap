@@ -3,71 +3,29 @@
 exports[`comments: buildRangeDecorationSelectionsFromComments allows something to be bolded before the range 1`] = `
 Array [
   Object {
-    "comment": Object {
-      "breadcrumbs": Array [],
-      "commentsCount": 0,
-      "fieldPath": "",
-      "parentComment": Object {
-        "_createdAt": "",
-        "_id": "a14fb200-a4c4-4c44-b2c1-c17aa6d79aa8",
-        "_rev": "",
-        "_type": "comment",
-        "authorId": "",
-        "message": null,
-        "reactions": null,
-        "status": "open",
-        "target": Object {
-          "document": Object {
-            "_dataset": "",
-            "_projectId": "",
-            "_ref": "",
-            "_type": "crossDatasetReference",
-            "_weak": false,
-          },
-          "documentType": "",
-          "path": Object {
-            "field": "",
-          },
+    "anchor": Object {
+      "offset": 1,
+      "path": Array [
+        Object {
+          "_key": "6222e4072b6e",
         },
-        "threadId": "",
-      },
-      "replies": Array [],
-      "selection": Object {
-        "type": "text",
-        "value": Array [
-          Object {
-            "_key": "6222e4072b6e",
-            "text": "there",
-          },
-        ],
-      },
-      "threadId": "de1f947c-93a7-4f71-9b9c-5f20023f9c98",
+        "children",
+        Object {
+          "_key": "5d176cf77466",
+        },
+      ],
     },
-    "selection": Object {
-      "anchor": Object {
-        "offset": 1,
-        "path": Array [
-          Object {
-            "_key": "6222e4072b6e",
-          },
-          "children",
-          Object {
-            "_key": "5d176cf77466",
-          },
-        ],
-      },
-      "focus": Object {
-        "offset": 6,
-        "path": Array [
-          Object {
-            "_key": "6222e4072b6e",
-          },
-          "children",
-          Object {
-            "_key": "5d176cf77466",
-          },
-        ],
-      },
+    "focus": Object {
+      "offset": 6,
+      "path": Array [
+        Object {
+          "_key": "6222e4072b6e",
+        },
+        "children",
+        Object {
+          "_key": "5d176cf77466",
+        },
+      ],
     },
   },
 ]
@@ -76,71 +34,29 @@ Array [
 exports[`comments: buildRangeDecorationSelectionsFromComments allows something to be bolded inside and outside of the range 1`] = `
 Array [
   Object {
-    "comment": Object {
-      "breadcrumbs": Array [],
-      "commentsCount": 0,
-      "fieldPath": "",
-      "parentComment": Object {
-        "_createdAt": "",
-        "_id": "a14fb200-a4c4-4c44-b2c1-c17aa6d79aa8",
-        "_rev": "",
-        "_type": "comment",
-        "authorId": "",
-        "message": null,
-        "reactions": null,
-        "status": "open",
-        "target": Object {
-          "document": Object {
-            "_dataset": "",
-            "_projectId": "",
-            "_ref": "",
-            "_type": "crossDatasetReference",
-            "_weak": false,
-          },
-          "documentType": "",
-          "path": Object {
-            "field": "",
-          },
+    "anchor": Object {
+      "offset": 3,
+      "path": Array [
+        Object {
+          "_key": "6222e4072b6e",
         },
-        "threadId": "",
-      },
-      "replies": Array [],
-      "selection": Object {
-        "type": "text",
-        "value": Array [
-          Object {
-            "_key": "6222e4072b6e",
-            "text": "there",
-          },
-        ],
-      },
-      "threadId": "de1f947c-93a7-4f71-9b9c-5f20023f9c98",
+        "children",
+        Object {
+          "_key": "897d8881c889",
+        },
+      ],
     },
-    "selection": Object {
-      "anchor": Object {
-        "offset": 3,
-        "path": Array [
-          Object {
-            "_key": "6222e4072b6e",
-          },
-          "children",
-          Object {
-            "_key": "897d8881c889",
-          },
-        ],
-      },
-      "focus": Object {
-        "offset": 3,
-        "path": Array [
-          Object {
-            "_key": "6222e4072b6e",
-          },
-          "children",
-          Object {
-            "_key": "3b404dd88fc1",
-          },
-        ],
-      },
+    "focus": Object {
+      "offset": 8,
+      "path": Array [
+        Object {
+          "_key": "6222e4072b6e",
+        },
+        "children",
+        Object {
+          "_key": "897d8881c889",
+        },
+      ],
     },
   },
 ]
@@ -149,71 +65,29 @@ Array [
 exports[`comments: buildRangeDecorationSelectionsFromComments allows something to be bolded inside the range 1`] = `
 Array [
   Object {
-    "comment": Object {
-      "breadcrumbs": Array [],
-      "commentsCount": 0,
-      "fieldPath": "",
-      "parentComment": Object {
-        "_createdAt": "",
-        "_id": "a14fb200-a4c4-4c44-b2c1-c17aa6d79aa8",
-        "_rev": "",
-        "_type": "comment",
-        "authorId": "",
-        "message": null,
-        "reactions": null,
-        "status": "open",
-        "target": Object {
-          "document": Object {
-            "_dataset": "",
-            "_projectId": "",
-            "_ref": "",
-            "_type": "crossDatasetReference",
-            "_weak": false,
-          },
-          "documentType": "",
-          "path": Object {
-            "field": "",
-          },
+    "anchor": Object {
+      "offset": 6,
+      "path": Array [
+        Object {
+          "_key": "6222e4072b6e",
         },
-        "threadId": "",
-      },
-      "replies": Array [],
-      "selection": Object {
-        "type": "text",
-        "value": Array [
-          Object {
-            "_key": "6222e4072b6e",
-            "text": "there",
-          },
-        ],
-      },
-      "threadId": "de1f947c-93a7-4f71-9b9c-5f20023f9c98",
+        "children",
+        Object {
+          "_key": "9d9c95878a6e0",
+        },
+      ],
     },
-    "selection": Object {
-      "anchor": Object {
-        "offset": 6,
-        "path": Array [
-          Object {
-            "_key": "6222e4072b6e",
-          },
-          "children",
-          Object {
-            "_key": "9d9c95878a6e0",
-          },
-        ],
-      },
-      "focus": Object {
-        "offset": 2,
-        "path": Array [
-          Object {
-            "_key": "6222e4072b6e",
-          },
-          "children",
-          Object {
-            "_key": "8daa33e86194",
-          },
-        ],
-      },
+    "focus": Object {
+      "offset": 11,
+      "path": Array [
+        Object {
+          "_key": "6222e4072b6e",
+        },
+        "children",
+        Object {
+          "_key": "9d9c95878a6e0",
+        },
+      ],
     },
   },
 ]
@@ -222,71 +96,29 @@ Array [
 exports[`comments: buildRangeDecorationSelectionsFromComments creates initial ranges 1`] = `
 Array [
   Object {
-    "comment": Object {
-      "breadcrumbs": Array [],
-      "commentsCount": 0,
-      "fieldPath": "",
-      "parentComment": Object {
-        "_createdAt": "",
-        "_id": "a14fb200-a4c4-4c44-b2c1-c17aa6d79aa8",
-        "_rev": "",
-        "_type": "comment",
-        "authorId": "",
-        "message": null,
-        "reactions": null,
-        "status": "open",
-        "target": Object {
-          "document": Object {
-            "_dataset": "",
-            "_projectId": "",
-            "_ref": "",
-            "_type": "crossDatasetReference",
-            "_weak": false,
-          },
-          "documentType": "",
-          "path": Object {
-            "field": "",
-          },
+    "anchor": Object {
+      "offset": 6,
+      "path": Array [
+        Object {
+          "_key": "6222e4072b6e",
         },
-        "threadId": "",
-      },
-      "replies": Array [],
-      "selection": Object {
-        "type": "text",
-        "value": Array [
-          Object {
-            "_key": "6222e4072b6e",
-            "text": "there",
-          },
-        ],
-      },
-      "threadId": "de1f947c-93a7-4f71-9b9c-5f20023f9c98",
+        "children",
+        Object {
+          "_key": "9d9c95878a6e0",
+        },
+      ],
     },
-    "selection": Object {
-      "anchor": Object {
-        "offset": 6,
-        "path": Array [
-          Object {
-            "_key": "6222e4072b6e",
-          },
-          "children",
-          Object {
-            "_key": "9d9c95878a6e0",
-          },
-        ],
-      },
-      "focus": Object {
-        "offset": 11,
-        "path": Array [
-          Object {
-            "_key": "6222e4072b6e",
-          },
-          "children",
-          Object {
-            "_key": "9d9c95878a6e0",
-          },
-        ],
-      },
+    "focus": Object {
+      "offset": 11,
+      "path": Array [
+        Object {
+          "_key": "6222e4072b6e",
+        },
+        "children",
+        Object {
+          "_key": "9d9c95878a6e0",
+        },
+      ],
     },
   },
 ]

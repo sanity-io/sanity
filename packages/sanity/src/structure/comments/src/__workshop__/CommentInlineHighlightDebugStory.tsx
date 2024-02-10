@@ -25,7 +25,7 @@ const INITIAL_VALUE: PortableTextBlock[] = [
       {
         _type: 'span',
         marks: [],
-        text: 'The passage is attributed to an unknown typesetter in the 15th century who is thought to have scrambled parts of. ',
+        text: 'test test test test test test test test',
         _key: '9d9c95878a6e0',
       },
     ],
@@ -33,20 +33,20 @@ const INITIAL_VALUE: PortableTextBlock[] = [
     _type: 'block',
     style: 'normal',
   },
-  {
-    _key: 'f0de711f24bd',
-    markDefs: [],
-    _type: 'block',
-    style: 'normal',
-    children: [
-      {
-        _type: 'span',
-        marks: [],
-        _key: 'a9a55f97580a',
-        text: "Cicero's De Finibus Bonorum et Malorum for use in a type specimen book. It usually begins with.",
-      },
-    ],
-  },
+  // {
+  //   _key: 'f0de711f24bd',
+  //   markDefs: [],
+  //   _type: 'block',
+  //   style: 'normal',
+  //   children: [
+  //     {
+  //       _type: 'span',
+  //       marks: [],
+  //       _key: 'a9a55f97580a',
+  //       text: "Cicero's De Finibus Bonorum et Malorum for use in a type specimen book. It usually begins with.",
+  //     },
+  //   ],
+  // },
 ]
 
 const blockType = defineField({
@@ -149,6 +149,40 @@ export default function CommentInlineHighlightDebugStory() {
         setValue(editorStateValue || [])
       }
 
+      if (change.type === 'rangeDecorationMoved') {
+        const commentId = change.rangeDecoration.payload?.commentId as undefined | string
+        const range = change.rangeDecoration.payload?.range as
+          | undefined
+          | {_key: string; text: string}
+        if (commentId && range) {
+          setCommentDocuments((prev) => {
+            return prev.map((comment) => {
+              if (comment._id === commentId) {
+                const newComment = {
+                  ...comment,
+                  target: {
+                    ...comment.target,
+                    path: {
+                      ...comment.target.path,
+                      selection: {
+                        type: 'text',
+                        value: [
+                          ...(comment.target.path.selection?.value
+                            .filter((r) => r._key !== range._key)
+                            .concat(range) || []),
+                        ],
+                      },
+                    },
+                  },
+                } as CommentDocument
+                return newComment
+              }
+              return comment
+            })
+          })
+        }
+      }
+
       if (change.type === 'selection') {
         const overlapping = currentSelectionIsOverlappingWithComment({
           currentSelection: change.selection,
@@ -166,10 +200,17 @@ export default function CommentInlineHighlightDebugStory() {
   const handleAddComment = useCallback(() => {
     if (!editorRef.current) return
     const fragment = PortableTextEditor.getFragment(editorRef.current) || []
+    const editorSelection = PortableTextEditor.getSelection(editorRef.current)
+    const editorValue = PortableTextEditor.getValue(editorRef.current)
+    if (!editorValue) return
 
-    const selection = buildTextSelectionFromFragment({fragment})
+    const textSelection = buildTextSelectionFromFragment({
+      fragment,
+      value: editorValue,
+      selection: editorSelection,
+    })
 
-    if (!selection) return
+    if (!textSelection) return
 
     const comment: CommentDocument = {
       _createdAt: new Date().toISOString(),
@@ -187,7 +228,7 @@ export default function CommentInlineHighlightDebugStory() {
           field: 'body',
           selection: {
             type: 'text',
-            value: selection.value,
+            value: textSelection.value,
           },
         },
         document: {

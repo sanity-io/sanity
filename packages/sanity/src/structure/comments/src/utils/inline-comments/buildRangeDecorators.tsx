@@ -108,7 +108,7 @@ export function buildRangeDecorators(props: BuildRangeDecoratorsProps) {
   } = props
   const rangeSelections = buildRangeDecorationSelectionsFromComments({comments, value})
 
-  return rangeSelections.map(({selection, comment}) => {
+  return rangeSelections.map(({selection, comment, range}) => {
     const decorator: RangeDecoration = {
       component: ({children}) => (
         <CommentRangeDecorator
@@ -125,6 +125,10 @@ export function buildRangeDecorators(props: BuildRangeDecoratorsProps) {
       ),
       isRangeInvalid,
       selection,
+      payload: {
+        commentId: comment.parentComment._id,
+        range,
+      },
     }
 
     return decorator
