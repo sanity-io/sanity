@@ -1,6 +1,5 @@
 import {type SchemaType, type SortOrderingItem} from '@sanity/types'
-
-const IMPLICIT_FIELDS = ['_id', '_type', '_createdAt', '_updatedAt', '_rev']
+import {IMPLICIT_SCHEMA_TYPE_FIELDS} from '../../constants'
 
 // Takes a path array and a schema type and builds a GROQ join every time it enters a reference field
 function joinReferences(schemaType: SchemaType, path: string[]): string {
@@ -12,7 +11,7 @@ function joinReferences(schemaType: SchemaType, path: string[]): string {
 
   const schemaField = schemaType.fields.find((field) => field.name === head)
   if (!schemaField) {
-    if (!IMPLICIT_FIELDS.includes(head)) {
+    if (!IMPLICIT_SCHEMA_TYPE_FIELDS.includes(head)) {
       // eslint-disable-next-line no-console
       console.warn(
         'The current ordering config targeted the nonexistent field "%s" on schema type "%s". It should be one of %o',
