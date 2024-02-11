@@ -1,4 +1,5 @@
 import isValidDate from 'date-fns/isValid'
+import {randomKey} from '@sanity/block-tools'
 
 const TRUTHY_STRINGS = ['yes', 'true', '1']
 const FALSEY_STRINGS = ['false', 'no', 'false', '0', 'null']
@@ -55,6 +56,32 @@ export const converters: {[fromType: string]: {[toType: string]: ValueConverter}
           offset: new Date().getTimezoneOffset(),
         }
       },
+    },
+    portableText: {
+      test: TRUE,
+      convert: (value: string) => [
+        {
+          _type: 'block',
+          _key: randomKey(12),
+          children: [{_type: 'span', text: value, _key: randomKey(12)}],
+          markDefs: [],
+        },
+      ],
+    },
+  },
+  text: {
+    portableText: {
+      test: TRUE,
+      convert: (value: string) => [
+        {
+          _type: 'block',
+          _key: randomKey(12),
+          children: value
+            .split('\n')
+            .map((line) => ({_type: 'span', text: line, _key: randomKey(12)})),
+          markDefs: [],
+        },
+      ],
     },
   },
   date: {
