@@ -1,4 +1,4 @@
-import {TaskDocument} from '../../types'
+import {TaskDocument, TaskOperations} from '../../types'
 
 export interface TasksContextValue {
   activeDocumentId?: string
@@ -7,4 +7,5 @@ export interface TasksContextValue {
   isLoading: boolean
   toggleOpen: () => void
   setActiveDocumentId: (id: string | undefined) => void
+  operations: TaskOperations
 }

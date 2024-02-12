@@ -1,5 +1,14 @@
-import {TasksCreate} from '../src'
+import {TasksProvider, TasksSetupProvider, TasksCreate} from '../src'
 
+function noop() {
+  return null
+}
 export default function TasksCreateStory() {
-  return <TasksCreate />
+  return (
+    <TasksSetupProvider>
+      <TasksProvider>
+        <TasksCreate onCancel={noop} />
+      </TasksProvider>
+    </TasksSetupProvider>
+  )
 }
