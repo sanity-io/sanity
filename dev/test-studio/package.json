@@ -43,7 +43,7 @@
     "@sanity/util": "3.28.0",
     "@sanity/uuid": "^3.0.1",
     "@sanity/vision": "3.28.0",
-    "@sanity/visual-editing": "1.2.0",
+    "@sanity/visual-editing": "1.2.2",
     "@turf/helpers": "^6.0.1",
     "@turf/points-within-polygon": "^5.1.5",
     "@types/three": "^0.150.0",
