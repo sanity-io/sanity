@@ -1,4 +1,4 @@
-import {TasksCreate} from '../src/tasks/components/TasksCreate'
+import {TasksCreate} from '../src'
 
 export default function TasksCreateStory() {
   return <TasksCreate />
