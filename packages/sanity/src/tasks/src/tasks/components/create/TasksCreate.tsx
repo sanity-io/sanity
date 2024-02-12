@@ -5,17 +5,31 @@ import {Button} from '../../../../../ui-components'
 import {useTasks} from '../../context'
 import {CommentInput, useMentionOptions} from '../../../../../structure/comments'
 import {useCurrentUser} from '../../../../../core'
+import {TaskDocument} from '../../types'
 import {WarningText} from './WarningText'
+import {RemoveTask} from '../remove/RemoveTask'
 
-interface TasksCreateProps {
+type ModeProps =
+  | {
+      mode: 'create'
+      initialValues?: undefined
+    }
+  | {
+      // TODO: This will be moved to it's own view which is different from creation. This is just for bootstrapping
+      mode: 'edit'
+      initialValues: TaskDocument
+    }
+type TasksCreateProps = ModeProps & {
   onCancel: () => void
 }
 export const TasksCreate = (props: TasksCreateProps) => {
-  const {onCancel} = props
+  const {onCancel, initialValues, mode} = props
   const {operations} = useTasks()
   // WIP implementation, we will later use the Form to handle the creation of a task
-  const [title, setTitle] = useState('')
-  const [description, setDescription] = useState<PortableTextBlock[]>([])
+  const [title, setTitle] = useState(initialValues?.title || '')
+  const [description, setDescription] = useState<PortableTextBlock[]>(
+    initialValues?.description || [],
+  )
   const [createStatus, setCreateStatus] = useState<'idle' | 'loading' | 'error'>('idle')
   const [error, setError] = useState<string | null>(null)
   const formRootRef = useRef<HTMLDivElement>(null)
@@ -29,17 +43,29 @@ export const TasksCreate = (props: TasksCreateProps) => {
         return
       }
       setCreateStatus('loading')
-      const created = await operations.create({title, status: 'open', description})
-      // eslint-disable-next-line no-console
-      console.log('It is created', created)
-      setTitle('')
-      setDescription([])
+      if (mode === 'create') {
+        const created = await operations.create({title, status: 'open', description})
+        // eslint-disable-next-line no-console
+        console.log('It is created', created)
+        setTitle('')
+        setDescription([])
+      }
+
+      if (mode === 'edit') {
+        // TODO: This will be moved to it's own view which is different from creation. This is just for bootstrapping
+        const updated = await operations.edit(initialValues._id, {
+          title,
+          description,
+        })
+        // eslint-disable-next-line no-console
+        console.log('It is updated', updated)
+      }
       setCreateStatus('idle')
     } catch (err) {
       setCreateStatus('error')
       setError(err.message)
     }
-  }, [title, operations, description])
+  }, [title, operations, description, mode, initialValues?._id])
 
   const submitListener = useCallback(
     (e: KeyboardEvent) => {
@@ -89,13 +115,24 @@ export const TasksCreate = (props: TasksCreateProps) => {
         </Box>
 
         <Flex justify="flex-end" gap={4} marginTop={4}>
+          {mode === 'edit' && (
+            <div style={{marginRight: 'auto'}}>
+              <RemoveTask id={initialValues._id} />
+            </div>
+          )}
           <Button
             text="Cancel"
             mode="bleed"
             onClick={onCancel}
             disabled={createStatus === 'loading'}
           />
-          <Button text="Create" mode="ghost" tone="primary" loading={createStatus === 'loading'} />
+          <Button
+            text={mode === 'create' ? 'Create' : 'Save changes'}
+            mode="ghost"
+            tone="primary"
+            loading={createStatus === 'loading'}
+            onClick={handleSubmit}
+          />
         </Flex>
       </Stack>
 
@@ -103,7 +140,7 @@ export const TasksCreate = (props: TasksCreateProps) => {
         <Card tone="critical" padding={2} marginTop={4} border radius={2}>
           <Stack space={3}>
             <Text size={0} weight="semibold">
-              Failed to create task
+              {mode === 'create' ? 'Failed to create task' : 'Failed to update task'}
             </Text>
             <Text size={0}>{error}</Text>
           </Stack>
