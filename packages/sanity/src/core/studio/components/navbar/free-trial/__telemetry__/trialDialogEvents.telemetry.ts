@@ -48,9 +48,11 @@ export function getTrialStage({
   showOnLoad: boolean
   dialogId: string
 }): TrialStage {
-  if (showOnLoad && dialogId === 'Free-upgrade-popover') return 'trialStarted'
-  if (showOnLoad && dialogId === 'trial-ending-popover') return 'trialEndingSoon'
-  if (showOnLoad && dialogId === 'project-downgraded-to-free') return 'trialEnded'
-  if (!showOnLoad && dialogId === 'after-trial-upgrade') return 'postTrial'
+  // Note: some of the ids in the trial experience studio have uppercase letters
+  // so the toLowerCase is important here
+  if (showOnLoad && dialogId.toLowerCase() === 'free-upgrade-popover') return 'trialStarted'
+  if (showOnLoad && dialogId.toLowerCase() === 'trial-ending-popover') return 'trialEndingSoon'
+  if (showOnLoad && dialogId.toLowerCase() === 'project-downgraded-to-free') return 'trialEnded'
+  if (!showOnLoad && dialogId.toLowerCase() === 'after-trial-upgrade') return 'postTrial'
   return 'trialActive'
 }
