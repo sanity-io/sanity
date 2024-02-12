@@ -14,6 +14,7 @@ function validateOptions(input, opts) {
     allowAssetsInDifferentDataset: false,
     replaceAssets: false,
     skipCrossDatasetReferences: false,
+    allowSystemDocuments: false,
   })
 
   if (!isValidInput(input)) {

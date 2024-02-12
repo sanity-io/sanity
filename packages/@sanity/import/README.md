@@ -85,6 +85,16 @@ const options = {
    * Optional, defaults to `false`.
    */
   skipCrossDatasetReferences: false,
+
+  /**
+   * Whether or not to import system documents (like permissions and custom retention). This
+   * is usually not necessary, and may cause conflicts if the target dataset
+   * already contains these documents. On a new dataset, it is recommended that roles are re-created
+   * manually, and that any custom retention policies are re-created manually.
+   *
+   * Optional, defaults to `false`.
+   */
+  allowSystemDocuments: false,
 }
 
 sanityImport(input, options)

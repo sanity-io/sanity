@@ -47,3 +47,85 @@ exports[`rejects on missing asset type prefix 1`] = `
 \`_sanityAsset\` values must be prefixed with a type, eg image@url or file@url.
 See document with ID "deadpool", path: image._sanityAsset]
 `;
+
+exports[`skips system documents if asked: employee creation 1`] = `
+Object {
+  "mutations": Array [
+    Object {
+      "create": Object {
+        "_id": "_.retention.maximum",
+        "_type": "system.retention",
+        "days": 90,
+        "maximum": true,
+        "preferShorter": true,
+      },
+    },
+    Object {
+      "create": Object {
+        "_id": "_.retention.normal",
+        "_type": "system.retention",
+        "days": 3,
+      },
+    },
+    Object {
+      "create": Object {
+        "_id": "_.groups.user",
+        "_type": "system.group",
+        "grants": Array [],
+        "members": Array [
+          "user",
+        ],
+      },
+    },
+    Object {
+      "create": Object {
+        "_id": "radhe",
+        "_type": "employee",
+        "name": "Radhe",
+      },
+    },
+    Object {
+      "create": Object {
+        "_id": "robin",
+        "_type": "employee",
+        "name": "Robin",
+      },
+    },
+    Object {
+      "create": Object {
+        "_id": "matt",
+        "_type": "employee",
+        "name": "Matt",
+      },
+    },
+  ],
+}
+`;
+
+exports[`skips system documents if asked: employee creation 2`] = `
+Object {
+  "mutations": Array [
+    Object {
+      "create": Object {
+        "_id": "radhe",
+        "_type": "employee",
+        "name": "Radhe",
+      },
+    },
+    Object {
+      "create": Object {
+        "_id": "robin",
+        "_type": "employee",
+        "name": "Robin",
+      },
+    },
+    Object {
+      "create": Object {
+        "_id": "matt",
+        "_type": "employee",
+        "name": "Matt",
+      },
+    },
+  ],
+}
+`;

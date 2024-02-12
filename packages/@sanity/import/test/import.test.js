@@ -158,6 +158,20 @@ test('can drop cross-dataset references', async () => {
   expect(res).toMatchObject({numDocs: 6, warnings: []})
 })
 
+test('skips system documents if asked', async () => {
+  const client = getSanityClient(getMockMutationHandler())
+  let res = await importer(getFixtureStream('system-documents'), {
+    client,
+    allowSystemDocuments: true,
+  })
+  expect(res).toMatchObject({numDocs: 6, warnings: []})
+
+  res = await importer(getFixtureStream('system-documents'), {
+    client,
+  })
+  expect(res).toMatchObject({numDocs: 3, warnings: []})
+})
+
 function getMockMutationHandler(match = 'employee creation') {
   return (req) => {
     const options = req.context.options

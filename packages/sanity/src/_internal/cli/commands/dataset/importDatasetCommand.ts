@@ -24,6 +24,7 @@ Options
 
 Rarely used options (should generally not be used)
   --allow-assets-in-different-dataset Allow asset documents to reference different project/dataset
+  --allow-system-documents Allow system documents like dataset permissions and custom retention to be imported
 
 Examples
   # Import "moviedb.ndjson" from the current directory to the dataset called "moviedb"
@@ -48,6 +49,7 @@ interface ImportFlags {
   'asset-concurrency'?: boolean
   'replace-assets'?: boolean
   'skip-cross-dataset-references'?: boolean
+  'allow-system-documents'?: boolean
   replace?: boolean
   missing?: boolean
 }
@@ -57,6 +59,7 @@ interface ParsedImportFlags {
   allowFailingAssets?: boolean
   assetConcurrency?: boolean
   skipCrossDatasetReferences?: boolean
+  allowSystemDocuments?: boolean
   replaceAssets?: boolean
   replace?: boolean
   missing?: boolean
@@ -83,6 +86,7 @@ function parseFlags(rawFlags: ImportFlags): ParsedImportFlags {
   const assetConcurrency = toBoolIfSet(rawFlags['asset-concurrency'])
   const replaceAssets = toBoolIfSet(rawFlags['replace-assets'])
   const skipCrossDatasetReferences = toBoolIfSet(rawFlags['skip-cross-dataset-references'])
+  const allowSystemDocuments = toBoolIfSet(rawFlags['allow-system-documents'])
   const replace = toBoolIfSet(rawFlags.replace)
   const missing = toBoolIfSet(rawFlags.missing)
   return {
@@ -90,6 +94,7 @@ function parseFlags(rawFlags: ImportFlags): ParsedImportFlags {
     allowFailingAssets,
     assetConcurrency,
     skipCrossDatasetReferences,
+    allowSystemDocuments,
     replaceAssets,
     replace,
     missing,
@@ -111,6 +116,7 @@ const importDatasetCommand: CliCommandDefinition = {
       allowFailingAssets,
       assetConcurrency,
       skipCrossDatasetReferences,
+      allowSystemDocuments,
       replaceAssets,
     } = flags
 
@@ -249,6 +255,7 @@ const importDatasetCommand: CliCommandDefinition = {
         allowFailingAssets,
         allowAssetsInDifferentDataset,
         skipCrossDatasetReferences,
+        allowSystemDocuments,
         assetConcurrency,
         replaceAssets,
       })
