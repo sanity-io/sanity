@@ -6,9 +6,10 @@ import {useTasks} from '../../context'
 interface RemoveTaskProps {
   id: string
   onError?: (message: string) => void
+  onRemoved?: () => void
 }
 export function RemoveTask(props: RemoveTaskProps) {
-  const {id, onError} = props
+  const {id, onError, onRemoved} = props
   const [removeStatus, setRemoveStatus] = useState<'idle' | 'loading' | 'error'>('idle')
   const [showDialog, setShowDialog] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -19,12 +20,13 @@ export function RemoveTask(props: RemoveTaskProps) {
       await operations.remove(id)
       setRemoveStatus('idle')
       setShowDialog(false)
+      onRemoved?.()
     } catch (e) {
       onError?.(e.message)
       setError(e.message)
       setRemoveStatus('error')
     }
-  }, [id, operations, onError])
+  }, [id, operations, onError, onRemoved])
 
   return (
     <>
