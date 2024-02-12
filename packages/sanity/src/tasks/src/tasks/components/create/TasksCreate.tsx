@@ -1,13 +1,13 @@
 import {useCallback, useEffect, useRef, useState} from 'react'
-import {Box, Card, Flex, Stack, Text, TextInput} from '@sanity/ui'
+import {Box, Card, Flex, Stack, Text, TextInput, useToast} from '@sanity/ui'
 import {PortableTextBlock} from '@sanity/types'
 import {Button} from '../../../../../ui-components'
 import {useTasks} from '../../context'
 import {CommentInput, useMentionOptions} from '../../../../../structure/comments'
 import {useCurrentUser} from '../../../../../core'
 import {TaskDocument} from '../../types'
-import {WarningText} from './WarningText'
 import {RemoveTask} from '../remove/RemoveTask'
+import {WarningText} from './WarningText'
 
 type ModeProps =
   | {
@@ -21,9 +21,10 @@ type ModeProps =
     }
 type TasksCreateProps = ModeProps & {
   onCancel: () => void
+  onCreate?: () => void
 }
 export const TasksCreate = (props: TasksCreateProps) => {
-  const {onCancel, initialValues, mode} = props
+  const {initialValues, mode, onCancel, onCreate} = props
   const {operations} = useTasks()
   // WIP implementation, we will later use the Form to handle the creation of a task
   const [title, setTitle] = useState(initialValues?.title || '')
@@ -35,11 +36,11 @@ export const TasksCreate = (props: TasksCreateProps) => {
   const formRootRef = useRef<HTMLDivElement>(null)
   const [submitted, setSubmitted] = useState(false)
   const currentUser = useCurrentUser()
-
+  const toast = useToast()
   const handleSubmit = useCallback(async () => {
     try {
       setSubmitted(true)
-      if (!title || !description?.[0]) {
+      if (!title) {
         return
       }
       setCreateStatus('loading')
@@ -47,8 +48,11 @@ export const TasksCreate = (props: TasksCreateProps) => {
         const created = await operations.create({title, status: 'open', description})
         // eslint-disable-next-line no-console
         console.log('It is created', created)
-        setTitle('')
-        setDescription([])
+        toast.push({
+          closable: true,
+          status: 'success',
+          title: 'Task created',
+        })
       }
 
       if (mode === 'edit') {
@@ -59,13 +63,19 @@ export const TasksCreate = (props: TasksCreateProps) => {
         })
         // eslint-disable-next-line no-console
         console.log('It is updated', updated)
+        toast.push({
+          closable: true,
+          status: 'success',
+          title: 'Changes saved',
+        })
       }
       setCreateStatus('idle')
+      onCreate?.()
     } catch (err) {
       setCreateStatus('error')
       setError(err.message)
     }
-  }, [title, operations, description, mode, initialValues?._id])
+  }, [title, operations, description, mode, initialValues?._id, onCreate, toast])
 
   const submitListener = useCallback(
     (e: KeyboardEvent) => {
@@ -111,7 +121,6 @@ export const TasksCreate = (props: TasksCreateProps) => {
             withAvatar={false}
             placeholder="Task description"
           />
-          {submitted && !description?.[0] && <WarningText>Description is required</WarningText>}
         </Box>
 
         <Flex justify="flex-end" gap={4} marginTop={4}>
