@@ -1,5 +1,4 @@
 import {SanityClient} from '@sanity/client'
-import {TaskPostPayload} from '../../types'
 
 /**
  * @beta
@@ -8,5 +7,9 @@ import {TaskPostPayload} from '../../types'
 export interface TasksSetupContextValue {
   client: SanityClient | null
   isRunningSetup: boolean
-  runSetup: (task: TaskPostPayload) => Promise<void>
+  /**
+   * Creates a client for the addon dataset and returns it.
+   * Also, sets the client in the state to reuse.
+   */
+  runSetup: () => Promise<SanityClient>
 }
