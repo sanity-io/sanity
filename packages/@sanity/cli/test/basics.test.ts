@@ -11,7 +11,9 @@ describeCliTest('CLI: basic commands', () => {
 
     testConcurrent('debug', async () => {
       const result = await runSanityCmdCommand(version, ['debug'])
-      expect(result.stdout).toContain(await getCliUserEmail())
+      expect(result.stdout).toContain(
+        `Email: \x1B[1m${(await getCliUserEmail()) || 'null'}\x1B[22m`,
+      )
       expect(result.code).toBe(0)
     })
 
