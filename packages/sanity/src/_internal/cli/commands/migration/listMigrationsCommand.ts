@@ -6,8 +6,8 @@ import {type Migration} from '@sanity/migrate'
 import {Table} from 'console-table-printer'
 import {register} from 'esbuild-register/dist/node'
 
-import {MIGRATION_SCRIPT_EXTENSIONS, MIGRATIONS_DIRECTORY} from './constants'
 import {ensureCwdIsProjectRoot} from '../../util/ensureCwdIsProjectRoot'
+import {MIGRATION_SCRIPT_EXTENSIONS, MIGRATIONS_DIRECTORY} from './constants'
 import {isLoadableMigrationScript, resolveMigrationScript} from './utils/resolveMigrationScript'
 
 const helpText = ``

@@ -1,5 +1,7 @@
 import path from 'node:path'
+
 import {type CliCommandContext} from '@sanity/cli'
+
 import {isModernCliConfig} from './isModernCliConfig'
 
 interface EnsureCwdIsProjectRootApi {
