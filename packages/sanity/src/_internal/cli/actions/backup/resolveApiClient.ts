@@ -32,7 +32,7 @@ async function resolveApiClient(
     })
   }
 
-  client = client.clone().config({dataset: datasetName, apiVersion})
+  client = client.withConfig({dataset: datasetName, apiVersion})
 
   return {
     projectId,

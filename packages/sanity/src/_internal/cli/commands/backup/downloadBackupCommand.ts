@@ -1,8 +1,7 @@
-import {createWriteStream, existsSync, mkdirSync} from 'fs'
-import {tmpdir} from 'os'
-import path from 'path'
+import {createWriteStream, existsSync, mkdirSync} from 'node:fs'
+import {tmpdir} from 'node:os'
+import path from 'node:path'
 import {mkdtemp} from 'node:fs/promises'
-import {randomKey} from '@sanity/block-tools'
 import type {
   CliCommandArguments,
   CliCommandContext,
@@ -13,23 +12,24 @@ import {absolutify} from '@sanity/util/fs'
 import {isBoolean, isNumber, isString} from 'lodash'
 import prettyMs from 'pretty-ms'
 import {Mutex} from 'async-mutex'
-import {ProgressData} from 'archiver'
+import createDebug from 'debug'
 import chooseBackupIdPrompt from '../../actions/backup/chooseBackupIdPrompt'
 import resolveApiClient from '../../actions/backup/resolveApiClient'
 import downloadAsset from '../../actions/backup/downloadAsset'
 import downloadDocument from '../../actions/backup/downloadDocument'
 import newProgress from '../../actions/backup/progressSpinner'
 import {PaginatedGetBackupStream, File} from '../../actions/backup/fetchNextBackupPage'
-import {archiveDir, humanFileSize} from '../../actions/backup/archiveDir'
+import archiveDir from '../../actions/backup/archiveDir'
 import cleanupTmpDir from '../../actions/backup/cleanupTmpDir'
+import humanFileSize from '../../util/humanFileSize'
 import {defaultApiVersion} from './backupGroup'
 
-const debug = require('debug')('sanity:backup')
+const debug = createDebug('sanity:backup')
 
 const DEFAULT_DOWNLOAD_CONCURRENCY = 10
 const MAX_DOWNLOAD_CONCURRENCY = 24
 
-type DownloadBackupOptions = {
+interface DownloadBackupOptions {
   projectId: string
   datasetName: string
   token: string
@@ -89,7 +89,7 @@ const downloadBackupCommand: CliCommandDefinition = {
     // Create a unique temporary directory to store files before bundling them into the archive at outputPath.
     // Temporary directories are normally deleted at the end of backup process, any unexpected exit may leave them
     // behind, hence it is important to create a unique directory for each attempt.
-    const tmpOutDir = await mkdtemp(path.join(tmpdir(), `backup-`))
+    const tmpOutDir = await mkdtemp(path.join(tmpdir(), `sanity-backup-`))
 
     // Create required directories if they don't exist.
     for (const dir of [outDir, path.join(tmpOutDir, 'images'), path.join(tmpOutDir, 'files')]) {

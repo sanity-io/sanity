@@ -1,5 +1,5 @@
-import zlib from 'zlib'
-import {createWriteStream} from 'fs'
+import zlib from 'node:zlib'
+import {createWriteStream} from 'node:fs'
 import {ProgressData} from 'archiver'
 import debug from './debug'
 
@@ -46,9 +46,4 @@ function archiveDir(tmpOutDir: string, outFilePath: string, progressCb: Progress
   })
 }
 
-function humanFileSize(size: number): string {
-  const i = size == 0 ? 0 : Math.floor(Math.log(size) / Math.log(1024))
-  return `${(size / Math.pow(1024, i)).toFixed(2)} ${['B', 'kB', 'MB', 'GB', 'TB'][i]}`
-}
-
-export {archiveDir, humanFileSize}
+export default archiveDir

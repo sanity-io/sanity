@@ -1,5 +1,5 @@
-import path from 'path'
-import {createWriteStream} from 'fs'
+import path from 'node:path'
+import {createWriteStream} from 'node:fs'
 import {getIt} from 'get-it'
 import {keepAlive, promise} from 'get-it/middleware'
 import withRetry from './withRetry'
