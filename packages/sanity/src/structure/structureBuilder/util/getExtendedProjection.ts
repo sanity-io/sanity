@@ -1,4 +1,5 @@
 import {type SchemaType, type SortOrderingItem} from '@sanity/types'
+
 import {IMPLICIT_SCHEMA_TYPE_FIELDS} from '../../constants'
 
 // Takes a path array and a schema type and builds a GROQ join every time it enters a reference field
