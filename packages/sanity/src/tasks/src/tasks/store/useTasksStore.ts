@@ -31,16 +31,6 @@ export const SORT_ORDER = 'desc'
 const QUERY_FILTERS = [`_type == "tasks.task"`]
 
 const QUERY_PROJECTION = `{
-  assignedTo,
-  _createdAt,
-  _id,
-  authorId,
-  lastEditedAt,
-  dueBy,
-  title,
-  description,
-  status,
-  target,
   ...,
 }`
 

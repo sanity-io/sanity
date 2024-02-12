@@ -1,4 +1,4 @@
-import {Dispatch, SetStateAction, useMemo} from 'react'
+import {Dispatch, SetStateAction, useCallback, useEffect, useMemo, useState} from 'react'
 import {TabList} from '@sanity/ui'
 import {Tab} from '../../../../../ui-components'
 import {useTasks} from '../../context'
@@ -12,6 +12,7 @@ interface TasksListTabsProps {
 interface TasksListTab {
   id: SidebarTabsIds
   label: string
+  isDisabled?: boolean
 }
 
 /**
@@ -19,6 +20,27 @@ interface TasksListTab {
  */
 export function TasksListTabs({activeTabId, onChange}: TasksListTabsProps) {
   const {activeDocumentId} = useTasks()
+  const [isDisabledTab, setIsDisabledTab] = useState<boolean>(!activeDocumentId)
+
+  useEffect(() => {
+    let timeoutId: NodeJS.Timeout | null = null
+
+    if (activeDocumentId && isDisabledTab) {
+      setIsDisabledTab(false)
+    } else {
+      timeoutId = setTimeout(() => {
+        setIsDisabledTab(true)
+        onChange('assigned')
+      }, 1000)
+    }
+
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId)
+      }
+    }
+  }, [activeDocumentId, isDisabledTab, onChange])
+
   const tabs: TasksListTab[] = useMemo(() => {
     const defaultTabs: TasksListTab[] = [
       {
@@ -29,19 +51,26 @@ export function TasksListTabs({activeTabId, onChange}: TasksListTabsProps) {
         id: 'created',
         label: 'Created',
       },
+      {
+        id: 'document',
+        label: 'This document',
+        isDisabled: isDisabledTab,
+      },
     ]
 
-    if (activeDocumentId) {
-      return [
-        ...defaultTabs,
-        {
-          id: 'document',
-          label: 'This document',
-        },
-      ]
-    }
     return defaultTabs
-  }, [activeDocumentId])
+  }, [isDisabledTab])
+
+  const handleTabChange = useCallback(
+    (tab: TasksListTab) => {
+      if (tab.isDisabled) {
+        return
+      }
+
+      onChange(tab.id)
+    },
+    [onChange],
+  )
 
   return (
     <TabList space={2}>
@@ -52,8 +81,9 @@ export function TasksListTabs({activeTabId, onChange}: TasksListTabsProps) {
           id={`${tab.id}-tab`}
           label={tab.label}
           // eslint-disable-next-line react/jsx-no-bind
-          onClick={() => onChange(tab.id)}
+          onClick={() => handleTabChange(tab)}
           selected={activeTabId === tab.id}
+          disabled={tab?.isDisabled}
         />
       ))}
     </TabList>

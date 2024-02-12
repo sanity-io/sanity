@@ -1,4 +1,4 @@
-import {Card, Spinner} from '@sanity/ui'
+import {Box, Card, Flex, Spinner} from '@sanity/ui'
 import styled from 'styled-components'
 import {AnimatePresence, motion, Transition, Variants} from 'framer-motion'
 import {useCallback, useState} from 'react'
@@ -51,7 +51,11 @@ export function TasksStudioSidebar() {
             {viewMode === 'list' && (
               <>
                 {isLoading ? (
-                  <Spinner />
+                  <Box padding={3}>
+                    <Flex align="center">
+                      <Spinner />
+                    </Flex>
+                  </Box>
                 ) : (
                   <TaskSidebarContent
                     items={data}

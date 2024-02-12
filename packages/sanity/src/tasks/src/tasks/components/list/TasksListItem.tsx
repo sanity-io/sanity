@@ -1,13 +1,22 @@
-import {Flex, Stack, Text, Card, CardProps} from '@sanity/ui'
+import {Flex, Stack, Text, Card, CardProps, TextSkeleton} from '@sanity/ui'
 import styled from 'styled-components'
-import {useMemo} from 'react'
-import {CalendarIcon} from '@sanity/icons'
-import {useDateTimeFormat} from 'sanity'
+import {useEffect, useMemo, useState} from 'react'
+import {CalendarIcon, DocumentIcon, UserIcon} from '@sanity/icons'
+import {
+  unstable_useValuePreview as useValuePreview,
+  useDateTimeFormat,
+  useUser,
+  useSchema,
+  useClient,
+} from '../../../../../core'
+import {SanityDocument} from '@sanity/types'
 
 interface TasksListItemProps {
   title?: string
+  assignedTo?: string
   dueBy?: string
   onSelect: () => void
+  target?: any
 }
 
 export const ThreadCard = styled(Card).attrs<CardProps>(({tone}) => ({
@@ -24,10 +33,40 @@ const Title = styled(Text)`
     text-decoration: underline;
   }
 `
-/**
- * @internal
- */
-export function TasksListItem({title, dueBy, onSelect}: TasksListItemProps) {
+
+const SKELETON_INLINE_STYLE: React.CSSProperties = {width: '50%'}
+
+function AssignedToSection({userId}: {userId: string}) {
+  const [user] = useUser(userId)
+
+  const name = user?.displayName ? (
+    <Text muted size={1} weight="medium" textOverflow="ellipsis" title={user.displayName}>
+      {user.displayName}
+    </Text>
+  ) : (
+    <TextSkeleton size={1} style={SKELETON_INLINE_STYLE} />
+  )
+
+  return (
+    <Flex align="center" gap={1}>
+      <UserIcon />
+      {name}
+    </Flex>
+  )
+}
+
+function getTargetDocumentMeta(target: any) {
+  if (!target?.document._ref) {
+    return undefined
+  }
+
+  return {
+    _ref: target?.document._ref,
+    _type: target?.documentType,
+  }
+}
+
+export function TasksListItem({assignedTo, title, dueBy, target, onSelect}: TasksListItemProps) {
   const dateFormatter = useDateTimeFormat({
     dateStyle: 'medium',
   })
@@ -35,12 +74,15 @@ export function TasksListItem({title, dueBy, onSelect}: TasksListItemProps) {
     return dueBy ? dateFormatter.format(new Date(dueBy)) : undefined
   }, [dateFormatter, dueBy])
 
+  const targetDocument = useMemo(() => getTargetDocumentMeta(target), [target])
+
   return (
     <ThreadCard tone={undefined}>
       <Stack space={2}>
         <Title size={1} weight="semibold" onClick={onSelect}>
           {title || 'Untitled'}
         </Title>
+        {assignedTo && <AssignedToSection userId={assignedTo} />}
         {dueByeDisplayValue && (
           <Flex align="center" gap={1}>
             <CalendarIcon />
@@ -49,7 +91,53 @@ export function TasksListItem({title, dueBy, onSelect}: TasksListItemProps) {
             </Text>
           </Flex>
         )}
+        {targetDocument && (
+          <DocumentPreview documentId={targetDocument._ref} documentType={targetDocument._type} />
+        )}
       </Stack>
     </ThreadCard>
+  )
+}
+
+function DocumentPreview({documentId, documentType}: {documentId: string; documentType: string}) {
+  const [documentValue, setDocumentValue] = useState<SanityDocument | null>(null)
+  const client = useClient({
+    apiVersion: '2023-01-01',
+  }).withConfig({
+    perspective: 'previewDrafts',
+  })
+  const schema = useSchema()
+  const documentSchema = schema.get(documentType)
+  const {isLoading, value} = useValuePreview({
+    enabled: true,
+    schemaType: documentSchema,
+    value: {
+      _id: documentValue?._originalId ?? documentId,
+    },
+  })
+
+  useEffect(() => {
+    if (client) {
+      client
+        .fetch(`*[_id == $id && _type == $type][0]`, {id: documentId, type: documentType})
+        .then((res) => setDocumentValue(res))
+    }
+  }, [client, documentId, documentType])
+
+  if (!documentSchema) {
+    return null
+  }
+
+  return (
+    <Flex align="center" gap={1}>
+      <DocumentIcon />
+      {isLoading ? (
+        <TextSkeleton size={1} muted />
+      ) : (
+        <Text size={1} muted>
+          {value?.title ?? documentSchema.name}
+        </Text>
+      )}
+    </Flex>
   )
 }
