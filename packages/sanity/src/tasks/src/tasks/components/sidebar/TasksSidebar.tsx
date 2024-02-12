@@ -2,12 +2,12 @@ import {Box, Card, Flex, Spinner} from '@sanity/ui'
 import styled from 'styled-components'
 import {AnimatePresence, motion, Transition, Variants} from 'framer-motion'
 import {useCallback, useState} from 'react'
+import {TaskEdit} from '../edit'
 import {useTasksEnabled, useTasks} from '../../context'
 import {TasksCreate} from '../create/'
 import {TasksSidebarHeader} from './TasksSidebarHeader'
 import {TaskSidebarContent} from './TasksSidebarContent'
-import {ViewMode} from './types'
-import {TaskEdit} from '../edit'
+import {SidebarTabsIds, ViewMode} from './types'
 
 const SidebarRoot = styled(Card)`
   width: 360px;
@@ -32,12 +32,18 @@ export function TasksStudioSidebar() {
   const {activeDocumentId, isOpen, data, isLoading} = useTasks()
   const [viewMode, setViewMode] = useState<ViewMode>('list')
   const [selectedTask, setSelectedTask] = useState<null | string>(null)
+  const [activeTabId, setActiveTabId] = useState<SidebarTabsIds>('assigned')
 
   const onCancel = useCallback(() => setViewMode('list'), [])
 
   const onTaskSelect = useCallback((id: string) => {
     setViewMode('edit')
     setSelectedTask(id)
+  }, [])
+
+  const onTaskCreate = useCallback(() => {
+    setViewMode('list')
+    setActiveTabId('created')
   }, [])
 
   if (!enabled) return null
@@ -61,11 +67,15 @@ export function TasksStudioSidebar() {
                     items={data}
                     activeDocumentId={activeDocumentId}
                     onTaskSelect={onTaskSelect}
+                    setActiveTabId={setActiveTabId}
+                    activeTabId={activeTabId}
                   />
                 )}
               </>
             )}
-            {viewMode === 'create' && <TasksCreate onCancel={onCancel} mode="create" />}
+            {viewMode === 'create' && (
+              <TasksCreate onCancel={onCancel} mode="create" onCreate={onTaskCreate} />
+            )}
             {viewMode === 'edit' && <TaskEdit onCancel={onCancel} selectedTask={selectedTask} />}
           </SidebarRoot>
         </motion.div>

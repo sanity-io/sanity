@@ -1,4 +1,4 @@
-import {useMemo, useState} from 'react'
+import {useMemo} from 'react'
 import {Box, Card} from '@sanity/ui'
 import {TaskDocument} from '../../types'
 import {TasksList} from '../list/TasksList'
@@ -13,13 +13,16 @@ export function TaskSidebarContent({
   items,
   activeDocumentId,
   onTaskSelect,
+  activeTabId,
+  setActiveTabId,
 }: {
   items: TaskDocument[]
   activeDocumentId?: string
   onTaskSelect: (id: string) => void
+  activeTabId: SidebarTabsIds
+  setActiveTabId: (id: SidebarTabsIds) => void
 }) {
   const currentUser = useCurrentUser()
-  const [activeTabId, setActiveTabId] = useState<SidebarTabsIds>('assigned')
   const filteredList = useMemo(() => {
     return items.filter((item) => {
       if (!item.title) {
