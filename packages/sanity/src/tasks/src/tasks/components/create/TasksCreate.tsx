@@ -22,9 +22,10 @@ type ModeProps =
 type TasksCreateProps = ModeProps & {
   onCancel: () => void
   onCreate?: () => void
+  onDelete?: () => void
 }
 export const TasksCreate = (props: TasksCreateProps) => {
-  const {initialValues, mode, onCancel, onCreate} = props
+  const {initialValues, mode, onCancel, onCreate, onDelete} = props
   const {operations} = useTasks()
   // WIP implementation, we will later use the Form to handle the creation of a task
   const [title, setTitle] = useState(initialValues?.title || '')
@@ -37,6 +38,15 @@ export const TasksCreate = (props: TasksCreateProps) => {
   const [submitted, setSubmitted] = useState(false)
   const currentUser = useCurrentUser()
   const toast = useToast()
+  const handleRemoved = useCallback(async () => {
+    toast.push({
+      closable: true,
+      status: 'success',
+      title: 'Task removed',
+    })
+    onDelete?.()
+  }, [toast, onDelete])
+
   const handleSubmit = useCallback(async () => {
     try {
       setSubmitted(true)
@@ -126,7 +136,7 @@ export const TasksCreate = (props: TasksCreateProps) => {
         <Flex justify="flex-end" gap={4} marginTop={4}>
           {mode === 'edit' && (
             <div style={{marginRight: 'auto'}}>
-              <RemoveTask id={initialValues._id} />
+              <RemoveTask id={initialValues._id} onRemoved={handleRemoved} />
             </div>
           )}
           <Button

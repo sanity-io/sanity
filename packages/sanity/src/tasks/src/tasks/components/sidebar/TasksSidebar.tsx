@@ -35,6 +35,10 @@ export function TasksStudioSidebar() {
   const [activeTabId, setActiveTabId] = useState<SidebarTabsIds>('assigned')
 
   const onCancel = useCallback(() => setViewMode('list'), [])
+  const handleOnDelete = useCallback(() => {
+    setViewMode('list')
+    setActiveTabId('created')
+  }, [])
 
   const onTaskSelect = useCallback((id: string) => {
     setViewMode('edit')
@@ -76,7 +80,9 @@ export function TasksStudioSidebar() {
             {viewMode === 'create' && (
               <TasksCreate onCancel={onCancel} mode="create" onCreate={onTaskCreate} />
             )}
-            {viewMode === 'edit' && <TaskEdit onCancel={onCancel} selectedTask={selectedTask} />}
+            {viewMode === 'edit' && (
+              <TaskEdit onCancel={onCancel} onDelete={handleOnDelete} selectedTask={selectedTask} />
+            )}
           </SidebarRoot>
         </motion.div>
       )}
