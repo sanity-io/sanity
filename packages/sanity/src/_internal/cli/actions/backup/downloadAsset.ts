@@ -1,9 +1,11 @@
-import path from 'node:path'
 import {createWriteStream} from 'node:fs'
+import path from 'node:path'
+
 import {getIt} from 'get-it'
 import {keepAlive, promise} from 'get-it/middleware'
-import withRetry from './withRetry'
+
 import debug from './debug'
+import withRetry from './withRetry'
 
 const CONNECTION_TIMEOUT = 15 * 1000 // 15 seconds
 const READ_TIMEOUT = 3 * 60 * 1000 // 3 minutes

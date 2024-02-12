@@ -1,4 +1,4 @@
-import type {CliOutputter} from '@sanity/cli'
+import {type CliOutputter} from '@sanity/cli'
 import prettyMs from 'pretty-ms'
 
 type ProgressEvent = {

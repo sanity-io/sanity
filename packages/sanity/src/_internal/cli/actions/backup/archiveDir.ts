@@ -1,6 +1,8 @@
-import zlib from 'node:zlib'
 import {createWriteStream} from 'node:fs'
-import {ProgressData} from 'archiver'
+import zlib from 'node:zlib'
+
+import {type ProgressData} from 'archiver'
+
 import debug from './debug'
 
 const archiver = require('archiver')

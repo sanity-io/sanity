@@ -1,4 +1,5 @@
-import type {CliCommandContext} from '@sanity/cli'
+import {type CliCommandContext} from '@sanity/cli'
+
 import {defaultApiVersion} from '../../commands/backup/backupGroup'
 import resolveApiClient from './resolveApiClient'
 

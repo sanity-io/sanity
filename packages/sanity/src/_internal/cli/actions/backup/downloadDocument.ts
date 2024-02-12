@@ -1,6 +1,6 @@
-import type {MiddlewareResponse} from 'get-it'
-import {getIt} from 'get-it'
+import {getIt, type MiddlewareResponse} from 'get-it'
 import {keepAlive, promise} from 'get-it/middleware'
+
 import debug from './debug'
 import withRetry from './withRetry'
 

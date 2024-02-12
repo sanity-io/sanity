@@ -1,5 +1,6 @@
 import {Readable} from 'node:stream'
-import {SanityClient, QueryParams} from '@sanity/client'
+
+import {type QueryParams, type SanityClient} from '@sanity/client'
 
 type File = {
   name: string

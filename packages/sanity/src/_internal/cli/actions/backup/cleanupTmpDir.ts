@@ -1,4 +1,5 @@
 import rimraf from 'rimraf'
+
 import debug from './debug'
 
 function cleanupTmpDir(tmpDir: string): void {

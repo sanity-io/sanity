@@ -1,27 +1,33 @@
 import {createWriteStream, existsSync, mkdirSync} from 'node:fs'
+import {mkdtemp} from 'node:fs/promises'
 import {tmpdir} from 'node:os'
 import path from 'node:path'
-import {mkdtemp} from 'node:fs/promises'
-import type {
-  CliCommandArguments,
-  CliCommandContext,
-  CliCommandDefinition,
-  SanityClient,
+
+import {
+  type CliCommandArguments,
+  type CliCommandContext,
+  type CliCommandDefinition,
+  type SanityClient,
 } from '@sanity/cli'
 import {absolutify} from '@sanity/util/fs'
-import {isBoolean, isNumber, isString} from 'lodash'
-import prettyMs from 'pretty-ms'
 import {Mutex} from 'async-mutex'
 import createDebug from 'debug'
+import {isString} from 'lodash'
+import prettyMs from 'pretty-ms'
+import {hideBin} from 'yargs/helpers'
+import yargs from 'yargs/yargs'
+
+import archiveDir from '../../actions/backup/archiveDir'
 import chooseBackupIdPrompt from '../../actions/backup/chooseBackupIdPrompt'
-import resolveApiClient from '../../actions/backup/resolveApiClient'
+import cleanupTmpDir from '../../actions/backup/cleanupTmpDir'
 import downloadAsset from '../../actions/backup/downloadAsset'
 import downloadDocument from '../../actions/backup/downloadDocument'
+import {type File, PaginatedGetBackupStream} from '../../actions/backup/fetchNextBackupPage'
+import parseApiErr from '../../actions/backup/parseApiErr'
 import newProgress from '../../actions/backup/progressSpinner'
-import {PaginatedGetBackupStream, File} from '../../actions/backup/fetchNextBackupPage'
-import archiveDir from '../../actions/backup/archiveDir'
-import cleanupTmpDir from '../../actions/backup/cleanupTmpDir'
+import resolveApiClient from '../../actions/backup/resolveApiClient'
 import humanFileSize from '../../util/humanFileSize'
+import isPathDirName from '../../util/isPathDirName'
 import {defaultApiVersion} from './backupGroup'
 
 const debug = createDebug('sanity:backup')
@@ -52,6 +58,14 @@ Examples
   sanity backup download DATASET_NAME --backup-id 2024-01-01-backup-2 --out /path/to/file
   sanity backup download DATASET_NAME --backup-id 2024-01-01-backup-3 --out /path/to/file --overwrite
 `
+
+function parseCliFlags(args: {argv?: string[]}) {
+  return yargs(hideBin(args.argv || process.argv).slice(2))
+    .options('backup-id', {type: 'string'})
+    .options('out', {type: 'string'})
+    .options('concurrency', {type: 'number', default: DEFAULT_DOWNLOAD_CONCURRENCY})
+    .options('overwrite', {type: 'boolean', default: false}).argv
+}
 
 const downloadBackupCommand: CliCommandDefinition = {
   name: 'download',
@@ -152,12 +166,8 @@ const downloadBackupCommand: CliCommandDefinition = {
       )
     } catch (error) {
       progressSpinner.fail()
-      let msg = error.statusCode ? error.response.body.message : error.message
-      // If no message can be extracted, print the whole error.
-      if (msg === undefined) {
-        msg = String(error)
-      }
-      throw new Error(`Downloading dataset backup failed: ${msg}`)
+      const {message} = parseApiErr(error)
+      throw new Error(`Downloading dataset backup failed: ${message}`)
     }
 
     progressSpinner.set({step: `Archiving files into a tarball...`, update: true})
@@ -189,7 +199,7 @@ async function prepareBackupOptions(
   context: CliCommandContext,
   args: CliCommandArguments,
 ): Promise<[SanityClient, DownloadBackupOptions]> {
-  const flags = args.extOptions
+  const flags = await parseCliFlags(args)
   const [dataset] = args.argsWithoutOptions
   const {prompt, workDir} = context
   const {projectId, datasetName, client} = await resolveApiClient(
@@ -213,25 +223,14 @@ async function prepareBackupOptions(
   }
 
   if ('concurrency' in flags) {
-    if (
-      !isNumber(flags.concurrency) ||
-      Number(flags.concurrency) < 1 ||
-      Number(flags.concurrency) > MAX_DOWNLOAD_CONCURRENCY
-    ) {
+    if (flags.concurrency < 1 || flags.concurrency > MAX_DOWNLOAD_CONCURRENCY) {
       throw new Error(`concurrency should be in 1 to ${MAX_DOWNLOAD_CONCURRENCY} range`)
     }
   }
 
-  if ('overwrite' in flags && !isBoolean(flags.overwrite)) {
-    throw new Error(`overwrite should be valid boolean`)
-  }
-
   const defaultOutFileName = `${datasetName}-backup-${backupId}.tar.gz`
   let out = await (async (): Promise<string> => {
-    if ('out' in flags) {
-      if (!isString(flags.out)) {
-        throw new Error(`output path should be valid string`)
-      }
+    if (flags.out !== undefined) {
       // Rewrite the output path to an absolute path, if it is not already.
       return absolutify(flags.out)
     }
@@ -274,15 +273,10 @@ async function prepareBackupOptions(
       token,
       outDir: path.dirname(out),
       outFileName: path.basename(out),
-      overwrite: Boolean(flags.overwrite),
-      concurrency: Number(flags.concurrency) || DEFAULT_DOWNLOAD_CONCURRENCY,
+      overwrite: flags.overwrite,
+      concurrency: flags.concurrency || DEFAULT_DOWNLOAD_CONCURRENCY,
     },
   ]
-}
-
-function isPathDirName(filepath: string): boolean {
-  // Check if the path has an extension, commonly indicating a file
-  return !/\.\w+$/.test(filepath)
 }
 
 export default downloadBackupCommand

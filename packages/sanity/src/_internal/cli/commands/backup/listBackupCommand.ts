@@ -1,8 +1,12 @@
-import type {CliCommandDefinition} from '@sanity/cli'
+import {type CliCommandDefinition} from '@sanity/cli'
 import {Table} from 'console-table-printer'
 import {isAfter, isValid, lightFormat, parse} from 'date-fns'
+import {hideBin} from 'yargs/helpers'
+import yargs from 'yargs/yargs'
+
+import parseApiErr from '../../actions/backup/parseApiErr'
 import resolveApiClient from '../../actions/backup/resolveApiClient'
-import {defaultApiVersion, validateLimit} from './backupGroup'
+import {defaultApiVersion} from './backupGroup'
 
 const DEFAULT_LIST_BACKUP_LIMIT = 30
 
@@ -40,6 +44,13 @@ Examples
   sanity backup list DATASET_NAME --after 2024-01-31 --before 2024-01-10
 `
 
+function parseCliFlags(args: {argv?: string[]}) {
+  return yargs(hideBin(args.argv || process.argv).slice(2))
+    .options('after', {type: 'string'})
+    .options('before', {type: 'string'})
+    .options('limit', {type: 'number', default: DEFAULT_LIST_BACKUP_LIMIT, alias: 'l'}).argv
+}
+
 const listDatasetBackupCommand: CliCommandDefinition<ListDatasetBackupFlags> = {
   name: 'list',
   group: 'backup',
@@ -48,7 +59,7 @@ const listDatasetBackupCommand: CliCommandDefinition<ListDatasetBackupFlags> = {
   helpText,
   action: async (args, context) => {
     const {output, chalk} = context
-    const flags = args.extOptions
+    const flags = await parseCliFlags(args)
     const [dataset] = args.argsWithoutOptions
 
     const {projectId, datasetName, token, client} = await resolveApiClient(
@@ -59,11 +70,14 @@ const listDatasetBackupCommand: CliCommandDefinition<ListDatasetBackupFlags> = {
 
     const query: ListBackupRequestQueryParams = {limit: DEFAULT_LIST_BACKUP_LIMIT.toString()}
     if (flags.limit) {
-      try {
-        query.limit = validateLimit(flags.limit)
-      } catch (err) {
-        throw new Error(`Parsing --limit: ${err}`)
+      // We allow limit up to Number.MAX_SAFE_INTEGER to leave it for server-side validation,
+      //  while still sending sensible value in limit string.
+      if (flags.limit < 1 || flags.limit > Number.MAX_SAFE_INTEGER) {
+        throw new Error(
+          `Parsing --limit: must be an integer between 1 and ${Number.MAX_SAFE_INTEGER}`,
+        )
       }
+      query.limit = flags.limit.toString()
     }
 
     if (flags.before || flags.after) {
@@ -71,7 +85,7 @@ const listDatasetBackupCommand: CliCommandDefinition<ListDatasetBackupFlags> = {
         const parsedBefore = processDateFlags(flags.before)
         const parsedAfter = processDateFlags(flags.after)
 
-        if (parsedAfter && parsedBefore && isAfter(parsedBefore, parsedAfter)) {
+        if (parsedAfter && parsedBefore && isAfter(parsedAfter, parsedBefore)) {
           throw new Error('--after date must be before --before')
         }
 
@@ -90,10 +104,8 @@ const listDatasetBackupCommand: CliCommandDefinition<ListDatasetBackupFlags> = {
         query: {...query},
       })
     } catch (error) {
-      const msg = error.statusCode
-        ? error.response.body.message
-        : error.message || error.statusMessage
-      output.error(`${chalk.red(`List dataset backup failed: ${msg}`)}\n`)
+      const {message} = parseApiErr(error)
+      output.error(`${chalk.red(`List dataset backup failed: ${message}`)}\n`)
     }
 
     if (response && response.backups) {
@@ -126,7 +138,7 @@ const listDatasetBackupCommand: CliCommandDefinition<ListDatasetBackupFlags> = {
 
 function processDateFlags(date: string | undefined): Date | undefined {
   if (!date) return undefined
-  const parsedDate = parse(date, 'YYYY-MM-DD', new Date())
+  const parsedDate = parse(date, 'yyyy-MM-dd', new Date())
   if (isValid(parsedDate)) {
     return parsedDate
   }
