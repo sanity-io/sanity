@@ -1,10 +1,10 @@
-import {type CliCommandContext, type CliV3CommandContext} from '@sanity/cli'
+import {type CliCommandContext} from '@sanity/cli'
 import path from 'path'
 import readPkgUp from 'read-pkg-up'
-import {isModernCliConfig} from '../../util/isModernCliConfig'
 import {createSchema} from 'sanity'
 import {isMainThread, Worker} from 'worker_threads'
 
+import {isModernCliConfig} from '../../util/isModernCliConfig'
 import {
   type ResolvedGraphQLAPI,
   type ResolvedSourceProperties,
