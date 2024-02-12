@@ -1,4 +1,4 @@
-import {Box, Stack} from '@sanity/ui'
+import {Box, Stack, Text} from '@sanity/ui'
 import {TaskDocument} from '../../types'
 import {TasksListItem} from './TasksListItem'
 
@@ -15,6 +15,13 @@ export function TasksList(props: TasksListProps) {
   return (
     <Box padding={3}>
       <Stack space={3}>
+        {items.length === 0 && (
+          <Box padding={3}>
+            <Text as="p" size={1} muted>
+              No tasks
+            </Text>
+          </Box>
+        )}
         {items
           .filter((item) => Boolean(item.title))
           .map((item) => (
@@ -22,7 +29,8 @@ export function TasksList(props: TasksListProps) {
               key={item._id}
               title={item.title}
               dueBy={item.dueBy}
-              // eslint-disable-next-line react/jsx-no-bind
+              assignedTo={item.assignedTo}
+              target={item.target}
               onSelect={() => onTaskSelect(item._id)}
             />
           ))}
