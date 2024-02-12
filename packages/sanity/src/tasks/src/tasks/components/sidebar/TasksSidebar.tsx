@@ -7,6 +7,7 @@ import {TasksCreate} from '../create/'
 import {TasksSidebarHeader} from './TasksSidebarHeader'
 import {TaskSidebarContent} from './TasksSidebarContent'
 import {ViewMode} from './types'
+import {TaskEdit} from '../edit'
 
 const SidebarRoot = styled(Card)`
   width: 360px;
@@ -30,7 +31,15 @@ export function TasksStudioSidebar() {
   const {enabled} = useTasksEnabled()
   const {activeDocumentId, isOpen, data, isLoading} = useTasks()
   const [viewMode, setViewMode] = useState<ViewMode>('list')
+  const [selectedTask, setSelectedTask] = useState<null | string>(null)
+
   const onCancel = useCallback(() => setViewMode('list'), [])
+
+  const onTaskSelect = useCallback((id: string) => {
+    setViewMode('edit')
+    setSelectedTask(id)
+  }, [])
+
   if (!enabled) return null
 
   return (
@@ -44,11 +53,16 @@ export function TasksStudioSidebar() {
                 {isLoading ? (
                   <Spinner />
                 ) : (
-                  <TaskSidebarContent items={data} activeDocumentId={activeDocumentId} />
+                  <TaskSidebarContent
+                    items={data}
+                    activeDocumentId={activeDocumentId}
+                    onTaskSelect={onTaskSelect}
+                  />
                 )}
               </>
             )}
-            {viewMode === 'create' && <TasksCreate onCancel={onCancel} />}
+            {viewMode === 'create' && <TasksCreate onCancel={onCancel} mode="create" />}
+            {viewMode === 'edit' && <TaskEdit onCancel={onCancel} selectedTask={selectedTask} />}
           </SidebarRoot>
         </motion.div>
       )}

@@ -7,6 +7,7 @@ import {useDateTimeFormat} from 'sanity'
 interface TasksListItemProps {
   title?: string
   dueBy?: string
+  onSelect: () => void
 }
 
 export const ThreadCard = styled(Card).attrs<CardProps>(({tone}) => ({
@@ -18,10 +19,15 @@ export const ThreadCard = styled(Card).attrs<CardProps>(({tone}) => ({
   // ...
 `
 
+const Title = styled(Text)`
+  :hover {
+    text-decoration: underline;
+  }
+`
 /**
  * @internal
  */
-export function TasksListItem({title, dueBy}: TasksListItemProps) {
+export function TasksListItem({title, dueBy, onSelect}: TasksListItemProps) {
   const dateFormatter = useDateTimeFormat({
     dateStyle: 'medium',
   })
@@ -32,9 +38,9 @@ export function TasksListItem({title, dueBy}: TasksListItemProps) {
   return (
     <ThreadCard tone={undefined}>
       <Stack space={2}>
-        <Text size={1} weight="bold">
+        <Title size={1} weight="semibold" onClick={onSelect}>
           {title || 'Untitled'}
-        </Text>
+        </Title>
         {dueByeDisplayValue && (
           <Flex align="center" gap={1}>
             <CalendarIcon />
