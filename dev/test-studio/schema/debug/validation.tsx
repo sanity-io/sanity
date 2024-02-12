@@ -1,6 +1,6 @@
-import {points, featureCollection} from '@turf/helpers'
-import {defineType} from 'sanity'
+import {featureCollection, points} from '@turf/helpers'
 import pointsWithinPolygon from '@turf/points-within-polygon'
+import {defineType} from 'sanity'
 
 import {CustomObjectSelectInput} from './components/CustomObjectSelectInput'
 import norway from './data/norway'
@@ -100,7 +100,7 @@ export default defineType({
       type: 'datetime',
       title: 'Some datetime',
       description: 'ISO-formatted datetime, inferred, must be in 2017',
-      validation: (Rule) => Rule.min('2017-01-01 00:00:00').max('2017-12-31 00:00:00'),
+      validation: (Rule) => Rule.min('2017-01-01 00:00:00').max('2017-12-31 23:59:59'),
     },
     {
       name: 'date',
