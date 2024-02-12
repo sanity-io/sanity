@@ -18,7 +18,7 @@ const SidebarRoot = styled(Card)`
 `
 
 const VARIANTS: Variants = {
-  hidden: {opacity: 0, x: 16},
+  hidden: {opacity: 0, x: 0},
   visible: {opacity: 1, x: 0},
 }
 
