@@ -1,5 +1,10 @@
 import {type CliCommandDefinition, type CliCommandGroupDefinition} from '@sanity/cli'
 
+import backupGroup from './backup/backupGroup'
+import disableBackupCommand from './backup/disableBackupCommand'
+import downloadBackupCommand from './backup/downloadBackupCommand'
+import enableBackupCommand from './backup/enableBackupCommand'
+import listBackupCommand from './backup/listBackupCommand'
 import buildCommand from './build/buildCommand'
 import checkCommand from './check/checkCommand'
 import configCheckCommand from './config/configCheckCommand'
@@ -64,6 +69,11 @@ const commands: (CliCommandDefinition | CliCommandGroupDefinition)[] = [
   deleteDatasetCommand,
   copyDatasetCommand,
   aliasDatasetCommand,
+  backupGroup,
+  listBackupCommand,
+  downloadBackupCommand,
+  disableBackupCommand,
+  enableBackupCommand,
   corsGroup,
   listCorsOriginsCommand,
   addCorsOriginCommand,
