@@ -110,7 +110,7 @@ export type TaskPostPayload = Omit<TaskDocument, '_rev' | '_updatedAt' | '_creat
 export interface TaskCreatePayload {
   id?: string
   title: string
-  description?: TaskMessage
+  description: TaskMessage
   status: TaskStatus
   assignedTo?: string
   target?: TaskTarget
