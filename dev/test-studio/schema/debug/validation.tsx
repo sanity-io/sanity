@@ -1,6 +1,6 @@
-// import sanityClient from 'part:@sanity/base/client'
 import {featureCollection, points} from '@turf/helpers'
 import pointsWithinPolygon from '@turf/points-within-polygon'
+import {defineType} from 'sanity'
 
 import {CustomObjectSelectInput} from './components/CustomObjectSelectInput'
 import norway from './data/norway'
@@ -18,7 +18,7 @@ export const validationArraySuperType = {
   ],
 }
 
-export default {
+export default defineType({
   name: 'validationTest',
   type: 'document',
   title: 'Validation test',
@@ -96,11 +96,18 @@ export default {
       validation: (Rule) => Rule.uri({allowRelative: true}),
     },
     {
-      name: 'date',
+      name: 'datetime',
       type: 'datetime',
+      title: 'Some datetime',
+      description: 'ISO-formatted datetime, inferred, must be in 2017',
+      validation: (Rule) => Rule.min('2017-01-01 00:00:00').max('2017-12-31 23:59:59'),
+    },
+    {
+      name: 'date',
+      type: 'date',
       title: 'Some date',
       description: 'ISO-formatted date, inferred, must be in 2017',
-      validation: (Rule) => Rule.min('2017-01-01 00:00:00').max('2017-12-31 00:00:00'),
+      validation: (Rule) => Rule.min('2017-01-01').max('2017-12-31'),
     },
     {
       name: 'email',
@@ -582,4 +589,4 @@ export default {
       ],
     },
   ],
-}
+})

@@ -1,7 +1,12 @@
 import {defineField} from '@sanity/types'
+import {
+  DEFAULT_DATE_FORMAT,
+  DEFAULT_TIME_FORMAT,
+  format,
+  parse,
+} from '@sanity/util/legacyDateFormat'
 import {fireEvent} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import {format, parse} from 'date-fns'
 
 import {renderStringInput} from '../../../../../../test/form'
 import {type CalendarLabels} from '../base/calendar/types'
@@ -10,13 +15,12 @@ import {type ParseResult} from '../types'
 import {isValidDate} from '../utils'
 
 function parseInputValue(input: string): ParseResult {
-  const candidate = parse(input, 'yyyy-MM-dd HH:mm', 0)
-  if (isValidDate(candidate)) return {isValid: true, date: candidate}
-  return {isValid: false, error: `Invalid date string: ${input}`}
+  const candidate = parse(input, `${DEFAULT_DATE_FORMAT} ${DEFAULT_TIME_FORMAT}`)
+  return candidate
 }
 
 function formatInputValue(date: Date): string {
-  return format(date, 'yyyy-MM-dd HH:mm')
+  return format(date, `${DEFAULT_DATE_FORMAT} ${DEFAULT_TIME_FORMAT}`)
 }
 
 function deserialize(value: string): ParseResult {
@@ -113,7 +117,7 @@ test('emits onChange on correct format if a valid value has been typed', async (
 
   // NOTE: the date is entered and displayed in local timezone (which is hardcoded to America/Los_Angeles)
   userEvent.type(input, '2021-03-28 10:23')
-  expect(input?.value).toBe('2021-03-28 10:23')
+  expect(input.value).toBe('2021-03-28 10:23')
 
   fireEvent.blur(input)
 
