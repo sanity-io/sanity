@@ -16,7 +16,7 @@ export function TasksList(props: TasksListProps) {
     <Box padding={3}>
       <Stack space={3}>
         {items.length === 0 && (
-          <Box padding={3}>
+          <Box paddingX={2}>
             <Text as="p" size={1} muted>
               No tasks
             </Text>
