@@ -1,5 +1,7 @@
 import React, {useCallback} from 'react'
 import {Flex, MenuDivider, Box, Card, Stack} from '@sanity/ui'
+// eslint-disable-next-line camelcase
+import {getTheme_v2} from '@sanity/ui/theme'
 import styled, {css} from 'styled-components'
 import {CurrentUser} from '@sanity/types'
 import {MentionIcon, SendIcon} from '../../icons'
@@ -20,11 +22,22 @@ const ButtonDivider = styled(MenuDivider)({
   width: 1,
 })
 
+function focusRingBorderStyle(border: {color: string; width: number}): string {
+  return `inset 0 0 0 ${border.width}px ${border.color}`
+}
+
 const RootCard = styled(Card)(({theme}) => {
-  const radii = theme.sanity.radius[2]
+  const {color, input, radius} = getTheme_v2(theme)
+  const radii = radius[2]
 
   return css`
     border-radius: ${radii}px;
+    box-shadow: var(--input-box-shadow);
+
+    --input-box-shadow: ${focusRingBorderStyle({
+      color: color.input.default.enabled.border,
+      width: input.border.width,
+    })};
 
     &:not([data-expand-on-focus='false'], :focus-within) {
       background: transparent;
@@ -36,7 +49,11 @@ const RootCard = styled(Card)(({theme}) => {
         min-height: 1em;
       }
 
-      box-shadow: inset 0 0 0 1px var(--card-focus-ring-color);
+      /* box-shadow: inset 0 0 0 1px var(--card-focus-ring-color); */
+      --input-box-shadow: ${focusRingBorderStyle({
+        color: 'var(--card-focus-ring-color)',
+        width: input.border.width,
+      })};
     }
 
     &:focus-within {
@@ -62,6 +79,12 @@ const RootCard = styled(Card)(({theme}) => {
         }
       }
     }
+    &:hover {
+      --input-box-shadow: ${focusRingBorderStyle({
+        color: color.input.default.hovered.border,
+        width: input.border.width,
+      })};
+    }
   `
 })
 
@@ -71,7 +94,7 @@ interface CommentInputInnerProps {
   onBlur?: (e: React.FormEvent<HTMLDivElement>) => void
   onFocus?: (e: React.FormEvent<HTMLDivElement>) => void
   onKeyDown?: (e: React.KeyboardEvent<Element>) => void
-  onSubmit: () => void
+  onSubmit?: () => void
   placeholder?: React.ReactNode
   withAvatar?: boolean
 }
@@ -104,12 +127,11 @@ export function CommentInputInner(props: CommentInputInnerProps) {
         data-expand-on-focus={expandOnFocus && !canSubmit ? 'true' : 'false'}
         data-focused={focused ? 'true' : 'false'}
         flex={1}
-        shadow={1}
         sizing="border"
         tone={readOnly ? 'transparent' : 'default'}
       >
         <Stack>
-          <EditableWrap paddingX={1} paddingY={2} sizing="border">
+          <EditableWrap paddingX={2} paddingY={3} sizing="border">
             <Editable
               focusLock={focusLock}
               onBlur={onBlur}
@@ -128,21 +150,25 @@ export function CommentInputInner(props: CommentInputInnerProps) {
                 disabled={readOnly}
                 icon={MentionIcon}
                 mode="bleed"
+                type="button"
                 onClick={handleMentionButtonClicked}
                 tooltipProps={{content: t('compose.mention-user-tooltip')}}
               />
+              {onSubmit && (
+                <>
+                  <ButtonDivider />
 
-              <ButtonDivider />
-
-              <Button
-                aria-label={t('compose.send-comment-aria-label')}
-                disabled={!canSubmit || !hasChanges || readOnly}
-                icon={SendIcon}
-                mode={hasChanges && canSubmit ? 'default' : 'bleed'}
-                onClick={onSubmit}
-                tone={hasChanges && canSubmit ? 'primary' : 'default'}
-                tooltipProps={{content: t('compose.send-comment-tooltip')}}
-              />
+                  <Button
+                    aria-label={t('compose.send-comment-aria-label')}
+                    disabled={!canSubmit || !hasChanges || readOnly}
+                    icon={SendIcon}
+                    mode={hasChanges && canSubmit ? 'default' : 'bleed'}
+                    onClick={onSubmit}
+                    tone={hasChanges && canSubmit ? 'primary' : 'default'}
+                    tooltipProps={{content: t('compose.send-comment-tooltip')}}
+                  />
+                </>
+              )}
             </TooltipDelayGroupProvider>
           </Flex>
         </Stack>
