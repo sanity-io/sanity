@@ -25,13 +25,15 @@ export function TasksListTabs({activeTabId, onChange}: TasksListTabsProps) {
   useEffect(() => {
     let timeoutId: NodeJS.Timeout | null = null
 
-    if (activeDocumentId && isDisabledTab) {
-      setIsDisabledTab(false)
-    } else {
+    if (!activeDocumentId && !isDisabledTab) {
       timeoutId = setTimeout(() => {
         setIsDisabledTab(true)
         onChange('assigned')
       }, 1000)
+    }
+
+    if (isDisabledTab && activeDocumentId) {
+      setIsDisabledTab(false)
     }
 
     return () => {
