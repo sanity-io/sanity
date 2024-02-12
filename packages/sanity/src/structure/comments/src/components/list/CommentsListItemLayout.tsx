@@ -342,7 +342,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
 
             {comment.context?.intent && (
               <Box flex={1}>
-                <IntentText muted size={0} textOverflow="ellipsis" title={''}>
+                <IntentText muted size={0} textOverflow="ellipsis">
                   <Translate
                     t={t}
                     i18nKey="list-item.layout-context"
