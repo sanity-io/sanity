@@ -21,7 +21,6 @@ export function TasksProvider(props: TasksProviderProps) {
   const [activeDocumentId, setActiveDocumentId] = useState<string | undefined>()
   const {client, runSetup} = useTasksSetup()
   const {data = EMPTY_ARRAY, isLoading} = useTasksStore({
-    documentId: activeDocumentId,
     client,
   })
   const operations = useTaskOperations({client, runSetup})
