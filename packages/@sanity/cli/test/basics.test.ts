@@ -1,3 +1,5 @@
+import path from 'node:path'
+
 import {describeCliTest, testConcurrent} from './shared/describe'
 import {getCliUserEmail, runSanityCmdCommand, studioVersions} from './shared/environment'
 
@@ -19,6 +21,15 @@ describeCliTest('CLI: basic commands', () => {
 
     testConcurrent('help', async () => {
       const result = await runSanityCmdCommand(version, ['help'])
+      expect(result.stdout).toMatch(/usage:/i)
+      expect(result.code).toBe(0)
+    })
+
+    testConcurrent('help (from subdirectory)', async () => {
+      const result = await runSanityCmdCommand(version, ['help'], {
+        cwd: (cwd) => path.join(cwd, 'components'),
+      })
+      expect(result.stdout).toContain('Not in project directory')
       expect(result.stdout).toMatch(/usage:/i)
       expect(result.code).toBe(0)
     })
