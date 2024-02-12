@@ -96,6 +96,8 @@ const commentsLocaleStrings = defineLocalesResources('comments', {
   'list-item.edit-comment-upsell': 'Upgrade to edit comment',
   /** Aria label for the button that takes you to the field, which wraps a thread/comment */
   'list-item.go-to-field-button.aria-label': 'Go to field',
+  /** The text showing the comment context */
+  'list-item.layout-context': 'on <IntentLink>{{title}}</IntentLink>',
   /** The marker to indicate that a comment has been edited in brackets */
   'list-item.layout-edited': 'edited',
   /** The error text when sending a comment has failed */

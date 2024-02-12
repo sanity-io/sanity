@@ -79,6 +79,45 @@ const BASE: CommentDocument = {
   ],
 }
 
+const INTENT: CommentDocument = {
+  ...BASE,
+  _id: '2',
+  message: [
+    {
+      _type: 'block',
+      _key: '36a3f0d3832d',
+      style: 'normal',
+      markDefs: [],
+      children: [
+        {
+          _type: 'span',
+          _key: '89014dd684cc',
+          text: 'A comment with context',
+          marks: [],
+        },
+      ],
+    },
+  ],
+  context: {
+    payload: {
+      workspace: 'default',
+    },
+    intent: {
+      title: 'Presentation Comments Test',
+      name: 'edit',
+      params: {
+        id: 'd73bb3d8-b1b7-4ca3-8f55-969bba902cd3',
+        path: 'string',
+        type: 'commentsDebug',
+        inspect: 'sanity/structure/comments',
+        mode: 'structure',
+        preview: '/',
+      },
+    },
+    tool: 'structure',
+  },
+}
+
 const MENTION_HOOK_OPTIONS = {
   documentValue: {
     _type: 'author',
@@ -92,7 +131,7 @@ const MENTION_HOOK_OPTIONS = {
 const STATUS_OPTIONS: Record<CommentStatus, CommentStatus> = {open: 'open', resolved: 'resolved'}
 
 export default function CommentsListStory() {
-  const [state, setState] = useState<CommentDocument[]>([BASE])
+  const [state, setState] = useState<CommentDocument[]>([BASE, INTENT])
 
   const error = useBoolean('Error', false, 'Props') || null
   const loading = useBoolean('Loading', false, 'Props') || false
