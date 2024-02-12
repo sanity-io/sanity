@@ -12,9 +12,11 @@ import {useCurrentUser} from 'sanity'
 export function TaskSidebarContent({
   items,
   activeDocumentId,
+  onTaskSelect,
 }: {
   items: TaskDocument[]
   activeDocumentId?: string
+  onTaskSelect: (id: string) => void
 }) {
   const currentUser = useCurrentUser()
   const [activeTabId, setActiveTabId] = useState<SidebarTabsIds>('assigned')
@@ -42,7 +44,7 @@ export function TaskSidebarContent({
       <Card padding={3} marginBottom={2} borderTop borderBottom>
         <TasksListTabs activeTabId={activeTabId} onChange={setActiveTabId} />
       </Card>
-      <TasksList items={filteredList} />
+      <TasksList items={filteredList} onTaskSelect={onTaskSelect} />
     </Box>
   )
 }
