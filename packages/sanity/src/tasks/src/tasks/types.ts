@@ -15,7 +15,7 @@ export interface Loadable<T> {
  * @hidden
  */
 export interface TaskOperations {
-  create: (task: TaskCreatePayload) => Promise<void>
+  create: (task: TaskCreatePayload) => Promise<TaskDocument>
   edit: (id: string, task: TaskEditPayload) => Promise<void>
   remove: (id: string) => Promise<void>
   update: (id: string, task: Partial<TaskCreatePayload>) => Promise<void>
@@ -122,10 +122,9 @@ export type TaskPostPayload = Omit<TaskDocument, '_rev' | '_updatedAt' | '_creat
  * @hidden
  */
 export interface TaskCreatePayload {
-  fieldPath: string
   id?: string
   title: string
-  description?: TaskMessage
+  description: TaskMessage
   status: TaskStatus
 }
 
