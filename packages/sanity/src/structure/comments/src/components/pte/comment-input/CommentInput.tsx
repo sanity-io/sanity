@@ -136,7 +136,7 @@ export const CommentInput = forwardRef<CommentInputHandle, CommentInputProps>(
     }, [onSubmit, requestFocus, resetEditorInstance, scrollToEditor])
 
     const handleDiscardConfirm = useCallback(() => {
-      onDiscardConfirm()
+      onDiscardConfirm?.()
       resetEditorInstance()
     }, [onDiscardConfirm, resetEditorInstance])
 

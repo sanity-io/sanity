@@ -1,9 +1,9 @@
+import {useCallback} from 'react'
 import {type CurrentUser} from '@sanity/types'
 import {Box, Card, Flex, MenuDivider, Stack} from '@sanity/ui'
+import {useTranslation, useUser} from 'sanity'
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
-import {useCallback} from 'react'
-import {useTranslation, useUser} from 'sanity'
 import styled, {css} from 'styled-components'
 
 import {Button, TooltipDelayGroupProvider} from '../../../../../../ui-components'
@@ -35,7 +35,10 @@ const RootCard = styled(Card)(({theme}) => {
     border-radius: ${radii}px;
     box-shadow: var(--input-box-shadow);
 
-    --input-box-shadow: inset 0 0 0 ${input.border.width}px ${color.input.default.enabled.border};
+    --input-box-shadow: ${focusRingBorderStyle({
+      color: color.input.default.enabled.border,
+      width: input.border.width,
+    })};
 
     &:not([data-expand-on-focus='false'], :focus-within) {
       background: transparent;
@@ -46,7 +49,12 @@ const RootCard = styled(Card)(({theme}) => {
       ${EditableWrap} {
         min-height: 1em;
       }
-      --input-box-shadow: inset 0 0 0 ${input.border.width}px var(--card-focus-ring-color);
+
+      /* box-shadow: inset 0 0 0 1px var(--card-focus-ring-color); */
+      --input-box-shadow: ${focusRingBorderStyle({
+        color: 'var(--card-focus-ring-color)',
+        width: input.border.width,
+      })};
     }
 
     &:focus-within {
