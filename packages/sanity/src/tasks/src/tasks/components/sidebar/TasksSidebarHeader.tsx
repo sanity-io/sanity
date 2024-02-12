@@ -43,6 +43,11 @@ export function TasksSidebarHeader(props: TasksSidebarHeaderProps) {
               <ChevronRightIcon /> Create new
             </Text>
           )}
+          {viewMode === 'edit' && (
+            <Text size={1} muted>
+              <ChevronRightIcon /> Edit
+            </Text>
+          )}
           <BetaBadge />
         </Flex>
         <TooltipDelayGroupProvider>

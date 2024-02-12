@@ -1,3 +1,3 @@
 export type SidebarTabsIds = 'assigned' | 'created' | 'document'
 
-export type ViewMode = 'create' | 'list'
+export type ViewMode = 'create' | 'edit' | 'list'
