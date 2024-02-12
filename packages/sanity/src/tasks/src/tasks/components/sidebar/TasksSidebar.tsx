@@ -1,12 +1,16 @@
 import {Card, Spinner} from '@sanity/ui'
 import styled from 'styled-components'
 import {AnimatePresence, motion, Transition, Variants} from 'framer-motion'
+import {useCallback, useState} from 'react'
 import {useTasksEnabled, useTasks} from '../../context'
+import {TasksCreate} from '../create/'
 import {TasksSidebarHeader} from './TasksSidebarHeader'
 import {TaskSidebarContent} from './TasksSidebarContent'
+import {ViewMode} from './types'
 
 const SidebarRoot = styled(Card)`
   width: 360px;
+  flex: 1;
   box-shadow:
     0px 6px 8px -4px rgba(134, 144, 160, 0.2),
     0px -6px 8px -4px rgba(134, 144, 160, 0.2);
@@ -25,19 +29,26 @@ const TRANSITION: Transition = {duration: 0.2}
 export function TasksStudioSidebar() {
   const {enabled} = useTasksEnabled()
   const {activeDocumentId, isOpen, data, isLoading} = useTasks()
-
+  const [viewMode, setViewMode] = useState<ViewMode>('list')
+  const onCancel = useCallback(() => setViewMode('list'), [])
   if (!enabled) return null
+
   return (
     <AnimatePresence initial={false}>
       {isOpen && (
         <motion.div variants={VARIANTS} transition={TRANSITION} initial="hidden" animate="visible">
           <SidebarRoot borderLeft height="fill" marginLeft={1}>
-            <TasksSidebarHeader />
-            {isLoading ? (
-              <Spinner />
-            ) : (
-              <TaskSidebarContent items={data} activeDocumentId={activeDocumentId} />
+            <TasksSidebarHeader setViewMode={setViewMode} viewMode={viewMode} />
+            {viewMode === 'list' && (
+              <>
+                {isLoading ? (
+                  <Spinner />
+                ) : (
+                  <TaskSidebarContent items={data} activeDocumentId={activeDocumentId} />
+                )}
+              </>
             )}
+            {viewMode === 'create' && <TasksCreate onCancel={onCancel} />}
           </SidebarRoot>
         </motion.div>
       )}
