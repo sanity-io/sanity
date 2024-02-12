@@ -3,6 +3,9 @@ import {TabList} from '@sanity/ui'
 import {Tab} from '../../../../../ui-components'
 import {useTasks} from '../../context'
 import {SidebarTabsIds} from './types'
+import {CSSProperties} from 'styled-components'
+
+const LIST_STYLES: CSSProperties = {marginLeft: '-0.5em'}
 
 interface TasksListTabsProps {
   activeTabId: string
@@ -75,7 +78,7 @@ export function TasksListTabs({activeTabId, onChange}: TasksListTabsProps) {
   )
 
   return (
-    <TabList space={2}>
+    <TabList space={2} style={LIST_STYLES}>
       {tabs.map((tab) => (
         <Tab
           key={`${tab.id}-tab`}
