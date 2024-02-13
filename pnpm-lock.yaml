@@ -57,6 +57,9 @@ importers:
       '@sanity/uuid':
         specifier: ^3.0.2
         version: 3.0.2
+      '@types/glob':
+        specifier: ^7.2.0
+        version: 7.2.0
       '@types/node':
         specifier: ^18.19.8
         version: 18.19.8
