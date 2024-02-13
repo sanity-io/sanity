@@ -17,7 +17,6 @@ import {
 } from '../../hooks'
 import {useCommentsStore} from '../../store'
 import {
-  type CommentEditPayload,
   type CommentPostPayload,
   type CommentStatus,
   type CommentThreadItem,
@@ -52,6 +51,9 @@ export interface CommentsProviderProps {
   onCommentsOpen?: () => void
 }
 
+type DocumentId = string
+type TransactionId = string
+
 /**
  * @beta
  */
@@ -65,6 +67,18 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
   const schemaType = useSchema().get(documentType)
   const currentUser = useCurrentUser()
   const {name: workspaceName, dataset, projectId} = useWorkspace()
+
+  // A map to keep track of the latest transaction ID for each comment document.
+  const transactionsIdMap = useMemo(() => new Map<DocumentId, TransactionId>(), [])
+
+  // When the latest transaction ID is received, we remove the transaction id from the map.
+  const handleOnLatestTransactionIdReceived = useCallback(
+    (commentDocumentId: string) => {
+      transactionsIdMap.delete(commentDocumentId)
+    },
+    [transactionsIdMap],
+  )
+
   const {
     dispatch,
     data = EMPTY_ARRAY,
@@ -73,7 +87,22 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
   } = useCommentsStore({
     documentId: publishedId,
     client,
+    transactionsIdMap,
+    onLatestTransactionIdReceived: handleOnLatestTransactionIdReceived,
   })
+
+  // When a comment update is started, we store the transaction id in a map.
+  // This is used to make sure that we only use the latest transaction received
+  // in the real time listener. See `useCommentsStore`.
+  // This is needed since we use optimistic updates in the UI, and we want to
+  // avoid that the UI is updated with an old transaction id when multiple
+  // transactions are started in a short time span.
+  const handleOnTransactionStart = useCallback(
+    (commentDocumentId: string, transactionId: string) => {
+      transactionsIdMap.set(commentDocumentId, transactionId)
+    },
+    [transactionsIdMap],
+  )
 
   const documentValue = useMemo(() => {
     return editState.draft || editState.published
@@ -156,7 +185,7 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
   )
 
   const handleOnEdit = useCallback(
-    (id: string, payload: CommentEditPayload) => {
+    (id: string, payload: CommentUpdatePayload) => {
       dispatch({
         type: 'COMMENT_UPDATED',
         payload: {
@@ -212,8 +241,8 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
         // event from the real time listener.
         onCreate: handleOnCreate,
         onCreateError: handleOnCreateError,
-        onEdit: handleOnEdit,
         onUpdate: handleOnUpdate,
+        onTransactionStart: handleOnTransactionStart,
       }),
       [
         client,
@@ -229,8 +258,8 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
         createAddonDataset,
         handleOnCreate,
         handleOnCreateError,
-        handleOnEdit,
         handleOnUpdate,
+        handleOnTransactionStart,
       ],
     ),
   )
@@ -253,7 +282,6 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
 
       operation: {
         create: operation.create,
-        edit: operation.edit,
         react: operation.react,
         remove: operation.remove,
         update: operation.update,
@@ -269,7 +297,6 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
       mentionOptions,
       onCommentsOpen,
       operation.create,
-      operation.edit,
       operation.react,
       operation.remove,
       operation.update,
