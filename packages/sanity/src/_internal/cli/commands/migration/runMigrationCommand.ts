@@ -124,7 +124,7 @@ const runMigrationCommand: CliCommandDefinition<CreateFlags> = {
     if (!script) {
       throw new Error(
         `No migration found for "${id}" in current directory. Make sure that the migration file exists and exports a valid migration as its default export.\n
- Tried the following files:\n -${candidates
+ Tried the following files:\n - ${candidates
    .map((candidate) => candidate.relativePath)
    .join('\n - ')}`,
       )
