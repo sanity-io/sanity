@@ -1,14 +1,19 @@
 import {type ListenEvent, type ListenOptions, type SanityClient} from '@sanity/client'
-import {useCallback, useEffect, useMemo, useReducer, useState} from 'react'
+import {useCallback, useEffect, useMemo, useReducer, useRef, useState} from 'react'
 import {catchError, of} from 'rxjs'
 import {getPublishedId} from 'sanity'
 
 import {type CommentDocument, type Loadable} from '../types'
 import {commentsReducer, type CommentsReducerAction, type CommentsReducerState} from './reducer'
 
+type DocumentId = string
+type TransactionId = string
+
 export interface CommentsStoreOptions {
-  documentId: string
   client: SanityClient | null
+  documentId: string
+  onLatestTransactionIdReceived: (documentId: DocumentId) => void
+  transactionsIdMap: Map<DocumentId, TransactionId>
 }
 
 interface CommentsStoreReturnType extends Loadable<CommentDocument[]> {
@@ -50,11 +55,13 @@ const QUERY_SORT_ORDER = `order(${SORT_FIELD} ${SORT_ORDER})`
 const QUERY = `*[${QUERY_FILTERS.join(' && ')}] ${QUERY_PROJECTION} | ${QUERY_SORT_ORDER}`
 
 export function useCommentsStore(opts: CommentsStoreOptions): CommentsStoreReturnType {
-  const {client, documentId} = opts
+  const {client, documentId, onLatestTransactionIdReceived, transactionsIdMap} = opts
 
   const [state, dispatch] = useReducer(commentsReducer, INITIAL_STATE)
   const [loading, setLoading] = useState<boolean>(client !== null)
   const [error, setError] = useState<Error | null>(null)
+
+  const didInitialFetch = useRef<boolean>(false)
 
   const params = useMemo(() => ({documentId: getPublishedId(documentId)}), [documentId])
 
@@ -76,10 +83,11 @@ export function useCommentsStore(opts: CommentsStoreOptions): CommentsStoreRetur
   const handleListenerEvent = useCallback(
     async (event: ListenEvent<Record<string, CommentDocument>>) => {
       // Fetch all comments on initial connection
-      if (event.type === 'welcome') {
+      if (event.type === 'welcome' && !didInitialFetch.current) {
         setLoading(true)
         await initialFetch()
         setLoading(false)
+        didInitialFetch.current = true
       }
 
       // The reconnect event means that we are trying to reconnect to the realtime listener.
@@ -88,6 +96,7 @@ export function useCommentsStore(opts: CommentsStoreOptions): CommentsStoreRetur
       // will be received and we'll fetch all comments again (above).
       if (event.type === 'reconnect') {
         setLoading(true)
+        didInitialFetch.current = false
       }
 
       // Handle mutations (create, update, delete) from the realtime listener
@@ -111,16 +120,34 @@ export function useCommentsStore(opts: CommentsStoreOptions): CommentsStoreRetur
         if (event.transition === 'update') {
           const updatedComment = event.result as CommentDocument | undefined
 
+          const id = event.result?._id || ''
+          const transactionId = event.transactionId
+          const latestTransactionId = transactionsIdMap.get(id)
+          const isLatestTransaction = transactionId === latestTransactionId
+
+          // If we have a transaction id stored for the received comment id, but the
+          // received transaction id is not the latest, we don't want to update the
+          // comment in the store. This is to avoid that the UI is updated with an old
+          // transaction id when multiple transactions are started in a short time span.
+          if (!isLatestTransaction && latestTransactionId) return
+
           if (updatedComment) {
             dispatch({
               type: 'COMMENT_UPDATED',
               payload: updatedComment,
             })
+
+            // If the received transaction id is the latest, we'll call the
+            // `onLatestTransactionIdReceived` callback to let the parent consumer
+            // know that the transaction id has been received.
+            if (isLatestTransaction) {
+              onLatestTransactionIdReceived(id)
+            }
           }
         }
       }
     },
-    [initialFetch],
+    [initialFetch, onLatestTransactionIdReceived, transactionsIdMap],
   )
 
   const listener$ = useMemo(() => {
