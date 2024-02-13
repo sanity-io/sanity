@@ -9,7 +9,7 @@ import {
   UpsellDialogUpgradeCtaClicked,
   UpsellDialogViewed,
   useClient,
-  useWorkspace,
+  useProjectId,
 } from 'sanity'
 
 import {CommentsUpsellDialog} from '../../components'
@@ -17,34 +17,9 @@ import {type CommentsUpsellData} from '../../types'
 import {CommentsUpsellContext} from './CommentsUpsellContext'
 import {type CommentsUpsellContextValue} from './types'
 
-const QUERY = `*[_type == "upsellUI" && id == "comments-upsell"][0]{
-    ...,
-   image {
-       asset-> { url, altText }
-     },
-     descriptionText[]{
-       ...,
-       _type == "iconAndText" => {
-         ...,
-         icon {
-           "url": asset->.url
-         }
-       },
-       _type == "block" => {
-         ...,
-           children[] {
-             ...,
-             _type == "inlineIcon" => {
-               icon {"url": asset->.url}
-             }
-         }
-       }
-     }
- }`
-
-const UPSELL_CLIENT: Partial<ClientConfig> = {
-  dataset: 'upsell-public-production',
-  projectId: 'pyrmmpch',
+const UPSELL_CLIENT_OPTIONS: Partial<ClientConfig> = {
+  apiVersion: '2023-12-11',
+  useProjectHostname: false,
   withCredentials: false,
   useCdn: true,
 }
@@ -52,6 +27,7 @@ const UPSELL_CLIENT: Partial<ClientConfig> = {
 const FEATURE = 'comments'
 const TEMPLATE_OPTIONS = {interpolate: /{{([\s\S]+?)}}/g}
 const BASE_URL = 'www.sanity.io'
+
 /**
  * @beta
  * @hidden
@@ -59,7 +35,7 @@ const BASE_URL = 'www.sanity.io'
 export function CommentsUpsellProvider(props: {children: React.ReactNode}) {
   const [upsellDialogOpen, setUpsellDialogOpen] = useState(false)
   const [upsellData, setUpsellData] = useState<CommentsUpsellData | null>(null)
-  const {projectId} = useWorkspace()
+  const projectId = useProjectId()
   const telemetry = useTelemetry()
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
 
@@ -118,8 +94,10 @@ export function CommentsUpsellProvider(props: {children: React.ReactNode}) {
 
   useEffect(() => {
     const data$ = client
-      .withConfig(UPSELL_CLIENT)
-      .observable.fetch<CommentsUpsellData | null>(QUERY)
+      .withConfig(UPSELL_CLIENT_OPTIONS)
+      .observable.request<CommentsUpsellData | null>({
+        uri: '/journey/comments',
+      })
 
     const sub = data$.subscribe({
       next: (data) => {
