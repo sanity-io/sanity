@@ -6,11 +6,11 @@ import {type CommentsSelectedPath} from '../../context'
 import {applyCommentsGroupAttr} from '../../hooks'
 import {
   type CommentCreatePayload,
-  type CommentEditPayload,
   type CommentReactionOption,
   type CommentStatus,
   type CommentsUIMode,
   type CommentThreadItem,
+  type CommentUpdatePayload,
   type MentionOptionsHookValue,
 } from '../../types'
 import {CommentsListItem} from './CommentsListItem'
@@ -50,7 +50,7 @@ export interface CommentsListProps {
   onCopyLink?: (id: string) => void
   onCreateRetry: (id: string) => void
   onDelete: (id: string) => void
-  onEdit: (id: string, payload: CommentEditPayload) => void
+  onEdit: (id: string, payload: CommentUpdatePayload) => void
   onNewThreadCreate: (payload: CommentCreatePayload) => void
   onPathSelect?: (nextPath: CommentsSelectedPath) => void
   onReactionSelect?: (id: string, reaction: CommentReactionOption) => void

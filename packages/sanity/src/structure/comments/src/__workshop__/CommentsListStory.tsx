@@ -10,9 +10,9 @@ import {useMentionOptions} from '../hooks'
 import {
   type CommentCreatePayload,
   type CommentDocument,
-  type CommentEditPayload,
   type CommentReactionOption,
   type CommentStatus,
+  type CommentUpdatePayload,
 } from '../types'
 import {buildCommentThreadItems} from '../utils/buildCommentThreadItems'
 
@@ -210,7 +210,7 @@ export default function CommentsListStory() {
     [currentUser?.id],
   )
 
-  const handleEdit = useCallback((id: string, payload: CommentEditPayload) => {
+  const handleEdit = useCallback((id: string, payload: CommentUpdatePayload) => {
     setState((prev) => {
       return prev.map((item) => {
         if (item._id === id) {

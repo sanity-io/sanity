@@ -78,7 +78,7 @@ function Inner({mode}: {mode: CommentsUIMode}) {
       mode={mode}
       onCreateRetry={noop}
       onDelete={operation.remove}
-      onEdit={operation.edit}
+      onEdit={operation.update}
       onNewThreadCreate={operation.create}
       onReactionSelect={operation.react}
       onReply={operation.create}

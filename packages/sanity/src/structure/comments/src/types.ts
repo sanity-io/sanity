@@ -17,7 +17,6 @@ export interface Loadable<T> {
  */
 export interface CommentOperations {
   create: (comment: CommentCreatePayload) => Promise<void>
-  edit: (id: string, comment: CommentEditPayload) => Promise<void>
   react: (id: string, reaction: CommentReactionOption) => Promise<void>
   remove: (id: string) => Promise<void>
   update: (id: string, comment: CommentUpdatePayload) => Promise<void>
@@ -231,15 +230,7 @@ export interface CommentCreatePayload {
  * @beta
  * @hidden
  */
-export type CommentUpdatePayload = Partial<Omit<CommentDocument, '_id'>>
-/**
- * @beta
- * @hidden
- */
-export type CommentEditPayload = {
-  message: CommentMessage
-  lastEditedAt?: string
-}
+export type CommentUpdatePayload = Partial<Omit<CommentPostPayload, '_id' | '_type'>>
 
 /**
  * @beta

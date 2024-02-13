@@ -13,11 +13,11 @@ import {applyCommentIdAttr} from '../../hooks'
 import {
   type CommentCreatePayload,
   type CommentDocument,
-  type CommentEditPayload,
   type CommentMessage,
   type CommentReactionOption,
   type CommentStatus,
   type CommentsUIMode,
+  type CommentUpdatePayload,
   type MentionOptionsHookValue,
 } from '../../types'
 import {SpacerAvatar} from '../avatars'
@@ -84,7 +84,7 @@ interface CommentsListItemProps {
   onCopyLink?: (id: string) => void
   onCreateRetry: (id: string) => void
   onDelete: (id: string) => void
-  onEdit: (id: string, payload: CommentEditPayload) => void
+  onEdit: (id: string, payload: CommentUpdatePayload) => void
   onKeyDown?: (event: React.KeyboardEvent<Element>) => void
   onPathSelect?: (nextPath: CommentsSelectedPath) => void
   onReactionSelect?: (id: string, reaction: CommentReactionOption) => void

@@ -11,7 +11,6 @@ import {commentsLocaleNamespace} from '../../i18n'
 import {
   type CommentCreatePayload,
   CommentDeleteDialog,
-  type CommentEditPayload,
   type CommentReactionOption,
   CommentsList,
   CommentsOnboardingPopover,
@@ -19,6 +18,7 @@ import {
   type CommentStatus,
   type CommentsUIMode,
   CommentsUpsellPanel,
+  type CommentUpdatePayload,
   useComments,
   useCommentsEnabled,
   useCommentsOnboarding,
@@ -226,8 +226,8 @@ function CommentsInspectorInner(
   )
 
   const handleEdit = useCallback(
-    (id: string, payload: CommentEditPayload) => {
-      operation.edit(id, payload)
+    (id: string, payload: CommentUpdatePayload) => {
+      operation.update(id, payload)
     },
     [operation],
   )
