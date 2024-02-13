@@ -1,4 +1,8 @@
+import {type ColorHueKey} from '@sanity/color'
+
 import {type CommentReactionOption, type CommentReactionShortNames} from './types'
+
+export const COMMENTS_HIGHLIGHT_HUE_KEY: ColorHueKey = 'yellow'
 
 // These should not be alphabetized as the current order is intentional
 export const COMMENT_REACTION_OPTIONS: CommentReactionOption[] = [

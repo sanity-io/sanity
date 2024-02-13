@@ -9,6 +9,7 @@ import {Button} from '../../../../../ui-components'
 import {commentsLocaleNamespace} from '../../../i18n'
 import {type CommentsSelectedPath} from '../../context'
 import {commentIntentIfDiffers, hasCommentMessageValue} from '../../helpers'
+import {applyCommentIdAttr} from '../../hooks'
 import {
   type CommentCreatePayload,
   type CommentDocument,
@@ -29,9 +30,7 @@ const MAX_COLLAPSED_REPLIES = 5
 
 // data-active = when the comment is selected
 // data-hovered = when the mouse is over the comment
-const StyledThreadCard = styled(ThreadCard)(({theme}) => {
-  const {hovered} = theme.sanity.color.button.bleed.default
-
+const StyledThreadCard = styled(ThreadCard)(() => {
   return css`
     position: relative;
 
@@ -42,7 +41,6 @@ const StyledThreadCard = styled(ThreadCard)(({theme}) => {
         0 0 0 2px var(--card-focus-ring-color);
     }
 
-    // When the comment is not selected, we want to apply hover styles.
     // The hover styles is managed with the [data-hovered] attribute instead of the :hover pseudo class
     // since we want to show the hover styles when hovering over the menu items in the context menu as well.
     // The context menu is rendered using a portal, so the :hover pseudo class won't work when hovering over
@@ -50,8 +48,6 @@ const StyledThreadCard = styled(ThreadCard)(({theme}) => {
     &:not([data-active='true']) {
       @media (hover: hover) {
         &[data-hovered='true'] {
-          --card-bg-color: ${hovered.bg2};
-
           [data-root-menu='true'] {
             opacity: 1;
           }
@@ -239,7 +235,7 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
   const renderedReplies = useMemo(
     () =>
       splicedReplies.map((reply) => (
-        <Stack as="li" key={reply._id} data-comment-id={reply._id}>
+        <Stack as="li" key={reply._id} {...applyCommentIdAttr(reply._id)}>
           <CommentsListItemLayout
             canDelete={reply.authorId === currentUser.id}
             canEdit={reply.authorId === currentUser.id}
@@ -284,7 +280,6 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
         onClick={handleThreadRootClick}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
-        tone={isSelected ? 'caution' : undefined}
       >
         <GhostButton
           data-ui="GhostButton"
@@ -298,7 +293,7 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
           paddingBottom={canReply ? undefined : 1}
           space={4}
         >
-          <Stack as="li" data-comment-id={parentComment._id}>
+          <Stack as="li" {...applyCommentIdAttr(parentComment._id)}>
             <CommentsListItemLayout
               canDelete={parentComment.authorId === currentUser.id}
               canEdit={parentComment.authorId === currentUser.id}

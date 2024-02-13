@@ -1,11 +1,27 @@
+import {hues} from '@sanity/color'
 import {Card, type CardProps} from '@sanity/ui'
-import styled from 'styled-components'
+import {type Theme} from '@sanity/ui/theme'
+import styled, {css} from 'styled-components'
 
-export const ThreadCard = styled(Card).attrs<CardProps>(({tone}) => ({
-  padding: 3,
-  radius: 3,
-  sizing: 'border',
-  tone: tone || 'transparent',
-}))<CardProps>`
-  // ...
-`
+import {COMMENTS_HIGHLIGHT_HUE_KEY} from '../../constants'
+
+interface ThreadCardProps extends Omit<CardProps, 'tone'> {
+  theme: Theme
+}
+
+export const ThreadCard = styled(Card).attrs({padding: 3, radius: 3, sizing: 'border'})(
+  (props: ThreadCardProps) => {
+    const {theme} = props
+    const isDark = theme.sanity.color.dark
+    const activeBg = hues[COMMENTS_HIGHLIGHT_HUE_KEY][isDark ? 900 : 50].hex
+    const defaultBg = hues.gray[isDark ? 900 : 50].hex
+
+    return css`
+      background-color: ${defaultBg};
+
+      &[data-active='true'] {
+        background-color: ${activeBg};
+      }
+    `
+  },
+)
