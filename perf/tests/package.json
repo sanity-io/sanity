@@ -1,6 +1,6 @@
 {
   "name": "sanity-perf-tests",
-  "version": "3.28.0",
+  "version": "3.29.0",
   "private": true,
   "description": "Sanity Studio perf tests",
   "license": "MIT",
@@ -30,6 +30,6 @@
     "globby": "^10.0.0",
     "lodash": "^4.17.21",
     "rxjs": "^7.8.0",
-    "sanity": "3.28.0"
+    "sanity": "3.29.0"
   }
 }

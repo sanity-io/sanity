@@ -74,7 +74,6 @@ jobs:
         run: |
           # Just bump the versions first, no push yet
           lerna version           \
-            --no-private          \
             --no-git-tag-version  \
             --no-push             \
             --force-publish       \
@@ -89,7 +88,6 @@ jobs:
         run: |
           # Re-run lerna version and push since the build was successful
           lerna version           \
-            --no-private          \
             --force-git-tag       \
             --force-publish       \
             --exact               \
