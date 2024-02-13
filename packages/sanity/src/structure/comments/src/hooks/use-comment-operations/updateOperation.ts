@@ -1,12 +1,12 @@
 import {type SanityClient} from '@sanity/client'
 
-import {type CommentCreatePayload} from '../../types'
+import {type CommentUpdatePayload} from '../../types'
 
 interface UpdateOperationProps {
   client: SanityClient
   id: string
-  comment: Partial<CommentCreatePayload>
-  onUpdate?: (id: string, comment: Partial<CommentCreatePayload>) => void
+  comment: CommentUpdatePayload
+  onUpdate?: (id: string, comment: CommentUpdatePayload) => void
 }
 
 export async function updateOperation(props: UpdateOperationProps): Promise<void> {
