@@ -60,5 +60,20 @@ export default defineScope({
       title: 'CommentReactionsUsersTooltipContent',
       component: lazy(() => import('./CommentReactionsUsersTooltipContentStory')),
     },
+    {
+      name: 'comment-inline-highlight-debug',
+      title: 'CommentInlineHighlightDebugStory',
+      component: lazy(() => import('./CommentInlineHighlightDebugStory')),
+    },
+    {
+      name: 'comment-inline-highlight-span',
+      title: 'CommentInlineHighlightSpan',
+      component: lazy(() => import('./CommentInlineHighlightSpanStory')),
+    },
+    {
+      name: 'comments-list-item-referenced-value',
+      title: 'CommentsListItemReferencedValue',
+      component: lazy(() => import('./CommentsListItemReferencedValueStory')),
+    },
   ],
 })

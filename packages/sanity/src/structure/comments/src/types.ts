@@ -20,7 +20,7 @@ export interface CommentOperations {
   edit: (id: string, comment: CommentEditPayload) => Promise<void>
   react: (id: string, reaction: CommentReactionOption) => Promise<void>
   remove: (id: string) => Promise<void>
-  update: (id: string, comment: Partial<CommentCreatePayload>) => Promise<void>
+  update: (id: string, comment: CommentUpdatePayload) => Promise<void>
 }
 
 /**
@@ -48,6 +48,7 @@ export interface CommentThreadItem {
   fieldPath: string
   parentComment: CommentDocument
   replies: CommentDocument[]
+  selection: CommentPathSelection | undefined
   threadId: string
 }
 
@@ -63,12 +64,23 @@ export type CommentMessage = PortableTextBlock[] | null
  */
 export type CommentStatus = 'open' | 'resolved'
 
+export interface CommentTextSelection {
+  type: 'text'
+  value: {
+    _key: string
+    text: string
+  }[]
+}
+
+type CommentPathSelection = CommentTextSelection
+
 /**
  * @beta
  * @hidden
  */
 export interface CommentPath {
   field: string
+  selection?: CommentPathSelection
 }
 
 /**
@@ -182,6 +194,7 @@ export interface CommentDocument {
 
   target: {
     path: CommentPath
+
     documentType: string
     document: {
       _dataset: string
@@ -208,11 +221,17 @@ export interface CommentCreatePayload {
   id?: string
   message: CommentMessage
   parentCommentId: string | undefined
+  selection?: CommentPathSelection
   status: CommentStatus
   threadId: string
   reactions: CommentReactionItem[]
 }
 
+/**
+ * @beta
+ * @hidden
+ */
+export type CommentUpdatePayload = Partial<Omit<CommentDocument, '_id'>>
 /**
  * @beta
  * @hidden

@@ -142,7 +142,7 @@ export function CommentThreadLayout(props: CommentThreadLayoutProps) {
       </HeaderFlex>
 
       {canCreateNewThread && (
-        <ThreadCard onClick={handleNewThreadClick} tone={isSelected ? 'caution' : undefined}>
+        <ThreadCard onClick={handleNewThreadClick} data-active={isSelected}>
           <CreateNewThreadInput
             currentUser={currentUser}
             fieldTitle={lastCrumb}

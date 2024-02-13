@@ -12,11 +12,11 @@ import {
 } from '../../hooks'
 import {useCommentsStore} from '../../store'
 import {
-  type CommentCreatePayload,
   type CommentEditPayload,
   type CommentPostPayload,
   type CommentStatus,
   type CommentThreadItem,
+  type CommentUpdatePayload,
 } from '../../types'
 import {buildCommentThreadItems} from '../../utils/buildCommentThreadItems'
 import {CommentsContext} from './CommentsContext'
@@ -138,7 +138,7 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
   )
 
   const handleOnUpdate = useCallback(
-    (id: string, payload: Partial<CommentCreatePayload>) => {
+    (id: string, payload: CommentUpdatePayload) => {
       dispatch({
         type: 'COMMENT_UPDATED',
         payload: {

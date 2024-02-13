@@ -32,6 +32,7 @@ import {CommentMessageSerializer} from '../pte'
 import {CommentInput, type CommentInputHandle} from '../pte/comment-input'
 import {CommentReactionsBar} from '../reactions'
 import {CommentsListItemContextMenu} from './CommentsListItemContextMenu'
+import {CommentsListItemReferencedValue} from './CommentsListItemReferencedValue'
 
 const stopPropagation = (e: React.MouseEvent<HTMLDivElement>) => e.stopPropagation()
 
@@ -384,6 +385,16 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
             </ContextMenuBox>
           )}
         </Flex>
+
+        {comment.target.path.selection?.type === 'text' && comment.target.path.selection.value && (
+          <Flex gap={FLEX_GAP} marginBottom={3}>
+            <SpacerAvatar />
+
+            <CommentsListItemReferencedValue
+              value={comment.target.path.selection.value.map((v) => v.text).join('')}
+            />
+          </Flex>
+        )}
 
         {isEditing && (
           <Flex align="flex-start" gap={2}>

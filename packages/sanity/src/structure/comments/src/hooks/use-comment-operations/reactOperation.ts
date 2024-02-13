@@ -2,11 +2,11 @@ import {type SanityClient} from '@sanity/client'
 import {type CurrentUser} from '@sanity/types'
 
 import {
-  type CommentCreatePayload,
   type CommentDocument,
   type CommentReactionItem,
   type CommentReactionOption,
   type CommentReactionShortNames,
+  type CommentUpdatePayload,
 } from '../../types'
 
 // We construct the reaction key by combining the user id and the short name of the reaction.
@@ -23,7 +23,7 @@ interface ReactOperationProps {
   id: string
   reaction: CommentReactionOption
   getComment?: (id: string) => CommentDocument | undefined
-  onUpdate?: (id: string, comment: Partial<CommentCreatePayload>) => void
+  onUpdate?: (id: string, comment: CommentUpdatePayload) => void
 }
 
 export async function reactOperation(props: ReactOperationProps): Promise<void> {

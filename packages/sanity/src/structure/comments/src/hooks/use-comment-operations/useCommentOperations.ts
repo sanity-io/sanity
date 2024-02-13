@@ -11,6 +11,7 @@ import {
   type CommentOperations,
   type CommentPostPayload,
   type CommentReactionOption,
+  type CommentUpdatePayload,
 } from '../../types'
 import {useCommentsIntent} from '../useCommentsIntent'
 import {useNotificationTarget} from '../useNotificationTarget'
@@ -36,7 +37,7 @@ export interface CommentOperationsHookOptions {
   onCreateError: (id: string, error: Error) => void
   onEdit?: (id: string, comment: CommentEditPayload) => void
   onRemove?: (id: string) => void
-  onUpdate?: (id: string, comment: Partial<CommentCreatePayload>) => void
+  onUpdate?: (id: string, comment: CommentUpdatePayload) => void
   projectId: string
   runSetup: (comment: CommentPostPayload) => Promise<void>
   schemaType: SchemaType | undefined
@@ -152,7 +153,7 @@ export function useCommentOperations(
   )
 
   const handleUpdate = useCallback(
-    async (id: string, comment: Partial<CommentCreatePayload>) => {
+    async (id: string, comment: CommentUpdatePayload) => {
       if (!client) return
 
       await updateOperation({
