@@ -1,0 +1,114 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version'
+        required: true
+        type: string
+
+jobs:
+  release:
+    environment:
+      name: npm-production
+    permissions:
+      contents: write
+      id-token: write
+    env:
+      NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      NPM_CONFIG_PROVENANCE: true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetches all history for all branches and tags
+
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: 'yarn'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install
+        run: yarn install --frozen-lockfile
+
+      - name: Pre-flight
+        run: |
+          # Check incoming version is at or above the currently published version on NPM
+          # Note: we allow the current version in the even that a publish partially fails
+          npx semver ${{ inputs.version }} -r ">=$(npm show sanity version) 3.x"
+
+          # Check if `NODE_AUTH_TOKEN` is working
+          npm whoami
+
+          # Configure git
+          # https://github.com/actions/checkout/pull/1184
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git config --global advice.skippedCherryPicks false
+
+          # Fetch all branches (-u allows fetching the current branch)
+          git fetch origin current:current -u
+          git fetch origin next:next -u
+          git fetch origin ${{ github.ref }}:${{ github.ref }} -u
+
+          # Check for unexpected commits in 'next'
+          git log next..current --oneline | grep -q '.' && { \
+            echo "Error: 'current' has commits that 'next' does not. Aborting."; \
+            exit 1; } || true
+
+          # Check for unexpected commits in selected branch
+          git log ${{ github.ref }}..current --oneline | grep -q '.' && { \
+            echo "Error: 'current' has commits that '${{ github.ref }}' does not. Aborting."; \
+            exit 1; } || true
+
+      - name: Rebase 'current'
+        run: |
+          git checkout current
+          git rebase ${{ github.ref }}
+
+      - name: Version
+        run: |
+          # Just bump the versions first, no push yet
+          lerna version           \
+            --no-private          \
+            --no-git-tag-version  \
+            --no-push             \
+            --force-publish       \
+            --exact               \
+            --yes                 \
+            ${{ inputs.version }}
+
+      - name: Build
+        run: yarn build
+
+      - name: Publish
+        run: |
+          # Re-run lerna version and push since the build was successful
+          lerna version           \
+            --no-private          \
+            --force-git-tag       \
+            --force-publish       \
+            --exact               \
+            --yes                 \
+            ${{ inputs.version }}
+
+          # https://github.com/lerna/lerna/tree/v8.1.2/libs/commands/publish#bump-from-package
+          lerna publish           \
+            --force-publish       \
+            --exact               \
+            --yes                 \
+            from-package
+
+      - name: Rebase 'next'
+        run: |
+          # Ensure branches are up to date
+          git fetch origin current:current -u
+          git fetch origin next:next -u
+
+          git checkout next
+          git rebase current
+          git push --set-upstream origin next
