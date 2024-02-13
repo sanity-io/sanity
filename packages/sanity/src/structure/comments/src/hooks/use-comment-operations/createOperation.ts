@@ -6,6 +6,7 @@ import {
   type CommentContext,
   type CommentCreatePayload,
   type CommentDocument,
+  type CommentIntentGetter,
   type CommentPostPayload,
 } from '../../types'
 
@@ -18,6 +19,7 @@ interface CreateOperationProps {
   documentId: string
   documentType: string
   getComment?: (id: string) => CommentDocument | undefined
+  getIntent?: CommentIntentGetter
   getNotificationValue: (comment: {commentId: string}) => CommentContext['notification']
   getThreadLength?: (threadId: string) => number
   onCreate?: (comment: CommentPostPayload) => void
@@ -36,6 +38,7 @@ export async function createOperation(props: CreateOperationProps): Promise<void
     dataset,
     documentId,
     documentType,
+    getIntent,
     getNotificationValue,
     getThreadLength,
     onCreate,
@@ -69,6 +72,8 @@ export async function createOperation(props: CreateOperationProps): Promise<void
     workspaceTitle,
   }
 
+  const intent = getIntent?.({id: documentId, type: documentType, path: comment.fieldPath})
+
   const nextComment: CommentPostPayload = {
     _id: commentId,
     _type: 'comment',
@@ -83,6 +88,7 @@ export async function createOperation(props: CreateOperationProps): Promise<void
       payload: {
         workspace,
       },
+      intent,
       notification,
       tool: activeTool?.name || '',
     },

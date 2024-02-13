@@ -34,6 +34,7 @@ const QUERY_PROJECTION = `{
   _createdAt,
   _id,
   authorId,
+  context,
   lastEditedAt,
   message,
   parentCommentId,

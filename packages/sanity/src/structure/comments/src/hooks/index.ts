@@ -1,6 +1,7 @@
 export * from './use-comment-operations'
 export * from './useComments'
 export * from './useCommentsEnabled'
+export * from './useCommentsIntent'
 export * from './useCommentsOnboarding'
 export * from './useCommentsSelectedPath'
 export * from './useCommentsSetup'

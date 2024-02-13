@@ -12,6 +12,7 @@ import {
   type CommentPostPayload,
   type CommentReactionOption,
 } from '../../types'
+import {useCommentsIntent} from '../useCommentsIntent'
 import {useNotificationTarget} from '../useNotificationTarget'
 import {createOperation} from './createOperation'
 import {editOperation} from './editOperation'
@@ -63,6 +64,8 @@ export function useCommentOperations(
     workspace,
   } = opts
 
+  const getIntent = useCommentsIntent()
+
   const activeToolName = useRouterState(
     useCallback(
       (routerState) => (typeof routerState.tool === 'string' ? routerState.tool : undefined),
@@ -93,6 +96,7 @@ export function useCommentOperations(
         dataset,
         documentId,
         documentType,
+        getIntent,
         getNotificationValue,
         getThreadLength,
         onCreate,
@@ -109,6 +113,7 @@ export function useCommentOperations(
       dataset,
       documentId,
       documentType,
+      getIntent,
       getNotificationValue,
       getThreadLength,
       onCreate,

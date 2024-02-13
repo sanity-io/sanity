@@ -79,6 +79,91 @@ const BASE: CommentDocument = {
   ],
 }
 
+const INTENT: CommentDocument = {
+  ...BASE,
+  _id: '2',
+  threadId: '2',
+  message: [
+    {
+      _type: 'block',
+      _key: '36a3f0d3832d',
+      style: 'normal',
+      markDefs: [],
+      children: [
+        {
+          _type: 'span',
+          _key: '89014dd684cc',
+          text: 'A comment with context',
+          marks: [],
+        },
+      ],
+    },
+  ],
+  context: {
+    payload: {
+      workspace: 'default',
+    },
+    intent: {
+      title: 'Page One',
+      name: 'edit',
+      params: {
+        id: 'd73bb3d8-b1b7-4ca3-8f55-969bba902cd3',
+        path: 'string',
+        type: 'commentsDebug',
+        inspect: 'sanity/structure/comments',
+        mode: 'structure',
+        preview: '/page-one',
+      },
+    },
+    tool: 'structure',
+  },
+}
+
+const INTENT_RESPONSE_SAME = {
+  ...INTENT,
+  _id: '3',
+  parentCommentId: '2',
+  message: [
+    {
+      _type: 'block',
+      _key: '36a3f0d3832d',
+      style: 'normal',
+      markDefs: [],
+      children: [
+        {
+          _type: 'span',
+          _key: '89014dd684cc',
+          text: 'A response with context',
+          marks: [],
+        },
+      ],
+    },
+  ],
+}
+
+const INTENT_RESPONSE_DIFF = {
+  ...INTENT_RESPONSE_SAME,
+  _id: '4',
+  context: {
+    payload: {
+      workspace: 'default',
+    },
+    intent: {
+      title: 'Page Two',
+      name: 'edit',
+      params: {
+        id: 'd73bb3d8-b1b7-4ca3-8f55-969bba902cd3',
+        path: 'string',
+        type: 'commentsDebug',
+        inspect: 'sanity/structure/comments',
+        mode: 'structure',
+        preview: '/page-two',
+      },
+    },
+    tool: 'structure',
+  },
+}
+
 const MENTION_HOOK_OPTIONS = {
   documentValue: {
     _type: 'author',
@@ -92,7 +177,12 @@ const MENTION_HOOK_OPTIONS = {
 const STATUS_OPTIONS: Record<CommentStatus, CommentStatus> = {open: 'open', resolved: 'resolved'}
 
 export default function CommentsListStory() {
-  const [state, setState] = useState<CommentDocument[]>([BASE])
+  const [state, setState] = useState<CommentDocument[]>([
+    BASE,
+    INTENT,
+    INTENT_RESPONSE_DIFF,
+    INTENT_RESPONSE_SAME,
+  ])
 
   const error = useBoolean('Error', false, 'Props') || null
   const loading = useBoolean('Loading', false, 'Props') || false

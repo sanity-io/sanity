@@ -1,4 +1,5 @@
 import {type PortableTextBlock, type User} from '@sanity/types'
+import {type IntentParameters} from 'sanity/router'
 
 /**
  * @beta
@@ -83,7 +84,22 @@ export interface CommentContext {
     workspaceTitle: string
     currentThreadLength?: number
   }
+  intent?: {
+    title: string
+    name: string
+    params: IntentParameters
+  }
 }
+
+/**
+ * @beta
+ * @hidden
+ */
+export type CommentIntentGetter = (comment: {
+  id: string
+  type: string
+  path: string
+}) => CommentContext['intent']
 
 interface CommentCreateRetryingState {
   type: 'createRetrying'

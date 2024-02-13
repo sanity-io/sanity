@@ -4,17 +4,20 @@ import {Box, Card, Flex, Stack, Text, TextSkeleton, useClickOutside} from '@sani
 import {useCallback, useMemo, useRef, useState} from 'react'
 import {
   type RelativeTimeOptions,
+  Translate,
   useDateTimeFormat,
   useDidUpdate,
   useRelativeTime,
   useTranslation,
   useUser,
 } from 'sanity'
+import {IntentLink} from 'sanity/router'
 import styled, {css} from 'styled-components'
 
 import {commentsLocaleNamespace} from '../../../i18n'
 import {hasCommentMessageValue, useCommentHasChanged} from '../../helpers'
 import {
+  type CommentContext,
   type CommentDocument,
   type CommentEditPayload,
   type CommentMessage,
@@ -44,6 +47,16 @@ const TimeText = styled(Text)(({theme}) => {
 
   return css`
     min-width: max-content;
+    --card-fg-color: ${fg};
+    color: var(--card-fg-color);
+  `
+})
+
+const IntentText = styled(Text)(({theme}) => {
+  const isDark = theme.sanity.color.dark
+  const fg = hues.gray[isDark ? 200 : 800].hex
+
+  return css`
     --card-fg-color: ${fg};
     color: var(--card-fg-color);
   `
@@ -125,6 +138,7 @@ interface CommentsListItemLayoutProps {
   onReactionSelect?: (id: string, reaction: CommentReactionOption) => void
   onStatusChange?: (id: string, status: CommentStatus) => void
   readOnly?: boolean
+  intent?: CommentContext['intent']
 }
 
 const RELATIVE_TIME_OPTIONS: RelativeTimeOptions = {useTemporalPhrase: true}
@@ -136,6 +150,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
     comment,
     currentUser,
     hasError,
+    intent,
     isParent,
     isRetrying,
     mentionOptions,
@@ -298,28 +313,55 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
         <Flex align="center" gap={FLEX_GAP} flex={1}>
           <CommentsAvatar user={user} />
 
-          <Flex align="center" paddingBottom={1} sizing="border" flex={1}>
-            <Flex align="flex-end" gap={2}>
-              <Box flex={1}>{name}</Box>
+          <Flex direction="column" gap={2} paddingY={intent ? 2 : 0}>
+            <Flex
+              align="center"
+              paddingBottom={comment.context?.intent ? 0 : 1}
+              sizing="border"
+              flex={1}
+            >
+              <Flex align="flex-end" gap={2}>
+                <Box flex={1}>{name}</Box>
 
-              {!displayError && (
-                <Flex align="center" gap={1}>
-                  <TimeText muted size={0}>
-                    <time dateTime={createdDate.toISOString()} title={formattedCreatedAt}>
-                      {createdTimeAgo}
-                    </time>
-                  </TimeText>
-
-                  {formattedLastEditAt && editedDate && (
-                    <TimeText muted size={0} title={formattedLastEditAt}>
-                      <time dateTime={editedDate.toISOString()} title={formattedLastEditAt}>
-                        ({t('list-item.layout-edited')})
+                {!displayError && (
+                  <Flex align="center" gap={1}>
+                    <TimeText muted size={0}>
+                      <time dateTime={createdDate.toISOString()} title={formattedCreatedAt}>
+                        {createdTimeAgo}
                       </time>
                     </TimeText>
-                  )}
-                </Flex>
-              )}
+
+                    {formattedLastEditAt && editedDate && (
+                      <TimeText muted size={0} title={formattedLastEditAt}>
+                        <time dateTime={editedDate.toISOString()} title={formattedLastEditAt}>
+                          ({t('list-item.layout-edited')})
+                        </time>
+                      </TimeText>
+                    )}
+                  </Flex>
+                )}
+              </Flex>
             </Flex>
+
+            {intent && (
+              <Box flex={1}>
+                <IntentText muted size={0} textOverflow="ellipsis">
+                  <Translate
+                    t={t}
+                    i18nKey="list-item.layout-context"
+                    values={{title: intent.title, intent: 'edit'}}
+                    components={{
+                      IntentLink: ({children}) =>
+                        intent ? (
+                          <IntentLink params={intent.params} intent={intent.name}>
+                            {children}
+                          </IntentLink>
+                        ) : undefined,
+                    }}
+                  />
+                </IntentText>
+              </Box>
+            )}
           </Flex>
 
           {!isEditing && !displayError && (
