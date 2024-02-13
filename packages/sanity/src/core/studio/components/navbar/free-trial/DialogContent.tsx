@@ -5,8 +5,8 @@ import styled from 'styled-components'
 import {Button, Dialog} from '../../../../../ui-components'
 import {useColorSchemeValue} from '../../../colorScheme'
 import {UpsellDescriptionSerializer} from '../../../upsell'
+import {type TrialDialogDismissedInfo} from './__telemetry__/trialDialogEvents.telemetry'
 import {type FreeTrialDialog} from './types'
-import {TrialDialogDismissedInfo} from './__telemetry__/trialDialogEvents.telemetry'
 
 /**
  * Absolute positioned button to close the dialog.

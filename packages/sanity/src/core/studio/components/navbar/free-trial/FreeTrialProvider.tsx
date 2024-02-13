@@ -1,12 +1,12 @@
-import {type ReactNode, useCallback, useEffect, useState} from 'react'
 import {useTelemetry} from '@sanity/telemetry/react'
+import {type ReactNode, useCallback, useEffect, useState} from 'react'
+import {useRouter} from 'sanity/router'
 
 import {useClient} from '../../../../hooks'
 import {SANITY_VERSION} from '../../../../version'
+import {getTrialStage, TrialDialogViewed} from './__telemetry__/trialDialogEvents.telemetry'
 import {FreeTrialContext} from './FreeTrialContext'
 import {type FreeTrialResponse} from './types'
-import {TrialDialogViewed, getTrialStage} from './__telemetry__/trialDialogEvents.telemetry'
-import {useRouter} from 'sanity/router'
 /**
  * @internal
  */

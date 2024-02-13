@@ -3,8 +3,8 @@ import styled from 'styled-components'
 
 import {Button} from '../../../../../ui-components'
 import {UpsellDescriptionSerializer} from '../../../upsell'
+import {type TrialDialogDismissedInfo} from './__telemetry__/trialDialogEvents.telemetry'
 import {type FreeTrialDialog} from './types'
-import {TrialDialogDismissedInfo} from './__telemetry__/trialDialogEvents.telemetry'
 
 const Image = styled.img`
   object-fit: cover;

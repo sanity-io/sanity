@@ -1,18 +1,18 @@
+import {useTelemetry} from '@sanity/telemetry/react'
 import {useCallback, useEffect, useState} from 'react'
 
 import {Popover} from '../../../../../ui-components'
 import {useColorSchemeValue} from '../../../colorScheme'
+import {
+  getTrialStage,
+  TrialDialogCTAClicked,
+  TrialDialogDismissed,
+  type TrialDialogDismissedInfo,
+  TrialDialogViewed,
+} from './__telemetry__/trialDialogEvents.telemetry'
 import {DialogContent} from './DialogContent'
 import {FreeTrialButtonSidebar, FreeTrialButtonTopbar} from './FreeTrialButton'
 import {useFreeTrialContext} from './FreeTrialContext'
-import {useTelemetry} from '@sanity/telemetry/react'
-import {
-  TrialDialogCTAClicked,
-  TrialDialogDismissed,
-  TrialDialogDismissedInfo,
-  TrialDialogViewed,
-  getTrialStage,
-} from './__telemetry__/trialDialogEvents.telemetry'
 import {PopoverContent} from './PopoverContent'
 
 interface FreeTrialProps {
