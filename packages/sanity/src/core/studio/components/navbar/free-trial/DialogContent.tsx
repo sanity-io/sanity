@@ -5,6 +5,7 @@ import styled from 'styled-components'
 import {Button, Dialog} from '../../../../../ui-components'
 import {useColorSchemeValue} from '../../../colorScheme'
 import {UpsellDescriptionSerializer} from '../../../upsell'
+import {type TrialDialogDismissedInfo} from './__telemetry__/trialDialogEvents.telemetry'
 import {type FreeTrialDialog} from './types'
 
 /**
@@ -39,19 +40,35 @@ const StyledDialog = styled(Dialog)`
 `
 interface ModalContentProps {
   content: FreeTrialDialog
-  handleClose: () => void
-  handleOpenNext: () => void
+  onClose: (action?: TrialDialogDismissedInfo['dialogDismissAction']) => void
+  onOpenNext: () => void
+  onOpenUrlCallback: () => void
   open: boolean
 }
 
-export function DialogContent({handleClose, handleOpenNext, content, open}: ModalContentProps) {
+export function DialogContent({
+  onClose,
+  onOpenNext,
+  onOpenUrlCallback,
+  content,
+  open,
+}: ModalContentProps) {
+  function handleClose() {
+    onClose('xClick')
+  }
+  function handleClickOutside() {
+    onClose('outsideClick')
+  }
+  function handleCTAClose() {
+    onClose('ctaClicked')
+  }
   const schemeValue = useColorSchemeValue()
   if (!open) return null
   return (
     <StyledDialog
       id="free-trial-modal"
-      onClose={handleClose}
-      onClickOutside={handleClose}
+      onClose={onClose}
+      onClickOutside={handleClickOutside}
       padding={false}
       __unstable_hideCloseButton
       scheme={schemeValue}
@@ -74,9 +91,10 @@ export function DialogContent({handleClose, handleOpenNext, content, open}: Moda
                 target: '_blank',
                 rel: 'noopener noreferrer',
                 as: 'a',
+                onClick: onOpenUrlCallback,
               }
             : {
-                onClick: content.ctaButton?.action === 'openNext' ? handleOpenNext : handleClose,
+                onClick: content.ctaButton?.action === 'openNext' ? onOpenNext : handleCTAClose,
               }),
         },
       }}

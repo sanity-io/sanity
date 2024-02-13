@@ -1,7 +1,15 @@
+import {useTelemetry} from '@sanity/telemetry/react'
 import {useCallback, useEffect, useState} from 'react'
 
 import {Popover} from '../../../../../ui-components'
 import {useColorSchemeValue} from '../../../colorScheme'
+import {
+  getTrialStage,
+  TrialDialogCTAClicked,
+  TrialDialogDismissed,
+  type TrialDialogDismissedInfo,
+  TrialDialogViewed,
+} from './__telemetry__/trialDialogEvents.telemetry'
 import {DialogContent} from './DialogContent'
 import {FreeTrialButtonSidebar, FreeTrialButtonTopbar} from './FreeTrialButton'
 import {useFreeTrialContext} from './FreeTrialContext'
@@ -14,6 +22,7 @@ interface FreeTrialProps {
 export function FreeTrial({type}: FreeTrialProps) {
   const {data, showDialog, showOnLoad, toggleShowContent} = useFreeTrialContext()
   const scheme = useColorSchemeValue()
+  const telemetry = useTelemetry()
 
   // Use callback refs to get the element handle when it's ready/changed
   const [ref, setRef] = useState<HTMLButtonElement | null>(null)
@@ -32,6 +41,76 @@ export function FreeTrial({type}: FreeTrialProps) {
     toggleShowContent(false)
   }, [toggleShowContent, ref])
 
+  const handleClose = useCallback(
+    (dialogType?: 'modal' | 'popover') => {
+      return (action?: TrialDialogDismissedInfo['dialogDismissAction']) => {
+        const dialog = data?.showOnLoad || data?.showOnClick
+
+        if (dialog)
+          telemetry.log(TrialDialogDismissed, {
+            dialogId: dialog.id,
+            dialogRevision: dialog._rev,
+            dialogType,
+            source: 'studio',
+            trialDaysLeft: data.daysLeft,
+            dialogTrialStage: getTrialStage({showOnLoad, dialogId: dialog.id}),
+            dialogDismissAction: action,
+          })
+
+        toggleDialog()
+      }
+    },
+    [data, toggleDialog, showOnLoad, telemetry],
+  )
+
+  const handleDialogCTAClick = useCallback(
+    (action?: 'openURL' | 'openNext') => {
+      return () => {
+        const dialog = data?.showOnLoad || data?.showOnClick
+        if (dialog)
+          telemetry.log(TrialDialogCTAClicked, {
+            dialogId: dialog.id,
+            dialogRevision: dialog._rev,
+            dialogType: 'modal',
+            source: 'studio',
+            trialDaysLeft: data.daysLeft,
+            dialogTrialStage: getTrialStage({showOnLoad, dialogId: dialog.id}),
+            dialogCtaType: action === 'openURL' ? 'upgrade' : 'learnMore',
+          })
+        closeAndReOpen()
+      }
+    },
+    [data, closeAndReOpen, telemetry, showOnLoad],
+  )
+
+  const handlePopoverCTAClick = useCallback(() => {
+    if (data?.showOnLoad)
+      telemetry.log(TrialDialogCTAClicked, {
+        dialogId: data.showOnLoad.id,
+        dialogRevision: data.showOnLoad._rev,
+        dialogType: 'popover',
+        source: 'studio',
+        trialDaysLeft: data.daysLeft,
+        dialogTrialStage: getTrialStage({showOnLoad: true, dialogId: data.showOnLoad.id}),
+        dialogCtaType: 'learnMore',
+      })
+    closeAndReOpen()
+  }, [data?.showOnLoad, data?.daysLeft, closeAndReOpen, telemetry])
+
+  const handleOnTrialButtonClick = useCallback(() => {
+    if (data?.showOnClick)
+      telemetry.log(TrialDialogViewed, {
+        dialogId: data.showOnClick.id,
+        dialogRevision: data.showOnClick._rev,
+        dialogTrigger: 'fromClick',
+        dialogType: 'modal',
+        source: 'studio',
+        trialDaysLeft: data.daysLeft,
+        dialogTrialStage: getTrialStage({showOnLoad: true, dialogId: data.showOnClick.id}),
+      })
+    closeAndReOpen()
+  }, [data?.showOnClick, data?.daysLeft, telemetry, closeAndReOpen])
+
   if (!data?.id) return null
   const dialogToRender = showOnLoad ? data.showOnLoad : data.showOnClick
   if (!dialogToRender) return null
@@ -39,13 +118,13 @@ export function FreeTrial({type}: FreeTrialProps) {
   const button =
     type === 'sidebar' ? (
       <FreeTrialButtonSidebar
-        toggleShowContent={closeAndReOpen}
+        toggleShowContent={handleOnTrialButtonClick}
         daysLeft={data.daysLeft}
         ref={setRef}
       />
     ) : (
       <FreeTrialButtonTopbar
-        toggleShowContent={closeAndReOpen}
+        toggleShowContent={handleOnTrialButtonClick}
         daysLeft={data.daysLeft}
         totalDays={data.totalDays}
         ref={setRef}
@@ -64,8 +143,8 @@ export function FreeTrial({type}: FreeTrialProps) {
         content={
           <PopoverContent
             content={dialogToRender}
-            handleClose={toggleDialog}
-            handleOpenNext={closeAndReOpen}
+            handleClose={handleClose('popover')}
+            handleOpenNext={handlePopoverCTAClick}
           />
         }
       >
@@ -79,8 +158,9 @@ export function FreeTrial({type}: FreeTrialProps) {
       {button}
       <DialogContent
         content={dialogToRender}
-        handleClose={toggleDialog}
-        handleOpenNext={closeAndReOpen}
+        onClose={handleClose('modal')}
+        onOpenNext={handleDialogCTAClick('openNext')}
+        onOpenUrlCallback={handleDialogCTAClick('openURL')}
         open={showDialog}
       />
     </>
