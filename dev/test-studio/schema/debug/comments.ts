@@ -13,6 +13,11 @@ export const commentsDebug = defineType({
       title: 'String title',
     },
     {
+      type: 'array',
+      name: 'body',
+      of: [{type: 'block'}],
+    },
+    {
       name: 'hideFields',
       type: 'boolean',
       title: 'Hide fields',
