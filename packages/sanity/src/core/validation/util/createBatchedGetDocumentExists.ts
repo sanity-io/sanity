@@ -1,5 +1,5 @@
 import {type SanityClient} from '@sanity/client'
-import {ConcurrencyLimiter} from '@sanity/util/ConcurrencyLimiter'
+import {ConcurrencyLimiter} from '@sanity/util/concurrency-limiter'
 import {
   bufferTime,
   filter,

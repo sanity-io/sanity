@@ -7,7 +7,7 @@
         "lib/**",
         "index.js",
         "client.js",
-        "ConcurrencyLimiter.js",
+        "concurrency-limiter.js",
         "content.js",
         "createSafeJsonParser.js",
         "fs.js",

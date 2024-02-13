@@ -2,14 +2,7 @@
   "name": "@sanity/util",
   "version": "3.29.0",
   "description": "Utilities shared across projects of Sanity",
-  "keywords": [
-    "sanity",
-    "cms",
-    "headless",
-    "realtime",
-    "content",
-    "util"
-  ],
+  "keywords": ["sanity", "cms", "headless", "realtime", "content", "util"],
   "homepage": "https://www.sanity.io/",
   "bugs": {
     "url": "https://github.com/sanity-io/sanity/issues"
@@ -55,16 +48,16 @@
       "import": "./lib/client.esm.js",
       "default": "./lib/client.esm.js"
     },
-    "./ConcurrencyLimiter": {
-      "types": "./lib/exports/ConcurrencyLimiter.d.ts",
-      "source": "./exports/ConcurrencyLimiter.ts",
-      "require": "./lib/ConcurrencyLimiter.js",
+    "./concurrency-limiter": {
+      "types": "./lib/exports/concurrency-limiter.d.ts",
+      "source": "./exports/concurrency-limiter.ts",
+      "require": "./lib/concurrency-limiter.js",
       "node": {
-        "module": "./lib/ConcurrencyLimiter.esm.js",
-        "import": "./lib/ConcurrencyLimiter.cjs.mjs"
+        "module": "./lib/concurrency-limiter.esm.js",
+        "import": "./lib/concurrency-limiter.cjs.mjs"
       },
-      "import": "./lib/ConcurrencyLimiter.esm.js",
-      "default": "./lib/ConcurrencyLimiter.esm.js"
+      "import": "./lib/concurrency-limiter.esm.js",
+      "default": "./lib/concurrency-limiter.esm.js"
     },
     "./content": {
       "types": "./lib/exports/content.d.ts",
@@ -118,32 +111,18 @@
   "types": "./lib/exports/index.d.ts",
   "typesVersions": {
     "*": {
-      "fs": [
-        "./lib/exports/fs.d.ts"
-      ],
-      "client": [
-        "./lib/exports/client.d.ts"
-      ],
-      "ConcurrencyLimiter": [
-        "./lib/exports/ConcurrencyLimiter.d.ts"
-      ],
-      "content": [
-        "./lib/exports/content.d.ts"
-      ],
-      "createSafeJsonParser": [
-        "./lib/exports/createSafeJsonParser.d.ts"
-      ],
-      "legacyDateFormat": [
-        "./lib/exports/legacyDateFormat.d.ts"
-      ],
-      "paths": [
-        "./lib/exports/paths.d.ts"
-      ]
+      "fs": ["./lib/exports/fs.d.ts"],
+      "client": ["./lib/exports/client.d.ts"],
+      "concurrency-limiter": ["./lib/exports/concurrency-limiter.d.ts"],
+      "content": ["./lib/exports/content.d.ts"],
+      "createSafeJsonParser": ["./lib/exports/createSafeJsonParser.d.ts"],
+      "legacyDateFormat": ["./lib/exports/legacyDateFormat.d.ts"],
+      "paths": ["./lib/exports/paths.d.ts"]
     }
   },
   "files": [
     "client.js",
-    "ConcurrencyLimiter.js",
+    "concurrency-limiter.js",
     "content.js",
     "createSafeJsonParser.js",
     "fs.js",
@@ -157,7 +136,7 @@
     "build": "pkg-utils build --tsconfig tsconfig.lib.json",
     "postbuild": "run-s check:package",
     "check:package": "pkg-utils --tsconfig tsconfig.lib.json",
-    "clean": "rimraf client.js ConcurrencyLimiter.js content.js createSafeJsonParser.js fs.js legacyDateFormat.js lib paths.js",
+    "clean": "rimraf client.js concurrency-limiter.js content.js createSafeJsonParser.js fs.js legacyDateFormat.js lib paths.js",
     "test": "jest",
     "watch": "pkg-utils watch --tsconfig tsconfig.lib.json"
   },
