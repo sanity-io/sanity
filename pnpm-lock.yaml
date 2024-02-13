@@ -1281,6 +1281,9 @@ importers:
       '@sanity/client':
         specifier: ^6.12.4
         version: 6.12.4
+      '@types/is-hotkey':
+        specifier: ^0.1.10
+        version: 0.1.10
       react:
         specifier: ^18.2.0
         version: 18.2.0
