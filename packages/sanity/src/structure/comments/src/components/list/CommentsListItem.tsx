@@ -8,7 +8,7 @@ import styled, {css} from 'styled-components'
 import {Button} from '../../../../../ui-components'
 import {commentsLocaleNamespace} from '../../../i18n'
 import {type CommentsSelectedPath} from '../../context'
-import {hasCommentMessageValue} from '../../helpers'
+import {commentIntentIfDiffers, hasCommentMessageValue} from '../../helpers'
 import {
   type CommentCreatePayload,
   type CommentDocument,
@@ -257,6 +257,7 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
             onInputKeyDown={handleInputKeyDown}
             onReactionSelect={onReactionSelect}
             readOnly={readOnly}
+            intent={commentIntentIfDiffers(parentComment, reply)}
           />
         </Stack>
       )),
@@ -269,6 +270,7 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
       onDelete,
       onEdit,
       onReactionSelect,
+      parentComment,
       readOnly,
       splicedReplies,
       mode,
@@ -316,6 +318,7 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
               onReactionSelect={onReactionSelect}
               onStatusChange={onStatusChange}
               readOnly={readOnly}
+              intent={parentComment.context?.intent}
             />
           </Stack>
 

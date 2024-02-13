@@ -17,6 +17,7 @@ import styled, {css} from 'styled-components'
 import {commentsLocaleNamespace} from '../../../i18n'
 import {hasCommentMessageValue, useCommentHasChanged} from '../../helpers'
 import {
+  type CommentContext,
   type CommentDocument,
   type CommentEditPayload,
   type CommentMessage,
@@ -137,6 +138,7 @@ interface CommentsListItemLayoutProps {
   onReactionSelect?: (id: string, reaction: CommentReactionOption) => void
   onStatusChange?: (id: string, status: CommentStatus) => void
   readOnly?: boolean
+  intent?: CommentContext['intent']
 }
 
 const RELATIVE_TIME_OPTIONS: RelativeTimeOptions = {useTemporalPhrase: true}
@@ -148,6 +150,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
     comment,
     currentUser,
     hasError,
+    intent,
     isParent,
     isRetrying,
     mentionOptions,
@@ -310,7 +313,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
         <Flex align="center" gap={FLEX_GAP} flex={1}>
           <CommentsAvatar user={user} />
 
-          <Flex direction="column" gap={2} paddingY={comment.context?.intent ? 2 : 0}>
+          <Flex direction="column" gap={2} paddingY={intent ? 2 : 0}>
             <Flex
               align="center"
               paddingBottom={comment.context?.intent ? 0 : 1}
@@ -340,20 +343,17 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
               </Flex>
             </Flex>
 
-            {comment.context?.intent && (
+            {intent && (
               <Box flex={1}>
                 <IntentText muted size={0} textOverflow="ellipsis">
                   <Translate
                     t={t}
                     i18nKey="list-item.layout-context"
-                    values={{title: comment.context.intent.title, intent: 'edit'}}
+                    values={{title: intent.title, intent: 'edit'}}
                     components={{
                       IntentLink: ({children}) =>
-                        comment.context?.intent ? (
-                          <IntentLink
-                            params={comment.context.intent.params}
-                            intent={comment.context.intent.name}
-                          >
+                        intent ? (
+                          <IntentLink params={intent.params} intent={intent.name}>
                             {children}
                           </IntentLink>
                         ) : undefined,
