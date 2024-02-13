@@ -219,12 +219,11 @@ describe('validateDocuments', () => {
   afterAll(async () => {
     await receiver?.dispose()
 
-    await new Promise<void>(
-      (resolve, reject) =>
-        server?.close((err) => {
-          if (err) reject(err)
-          else resolve()
-        }),
+    await new Promise<void>((resolve, reject) =>
+      server?.close((err) => {
+        if (err) reject(err)
+        else resolve()
+      }),
     )
   })
 
