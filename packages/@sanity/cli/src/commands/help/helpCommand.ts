@@ -13,7 +13,7 @@ the command list.
 const command: CliCommandDefinition = {
   name: 'help',
   signature: '[COMMAND]',
-  description: 'Displays help information about Sanity',
+  description: 'Displays help information about Sanity CLI commands',
   action: showHelp,
   helpText: help,
 }

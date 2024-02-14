@@ -75,7 +75,7 @@ export interface InitFlags {
 export const initCommand: CliCommandDefinition<InitFlags> = {
   name: 'init',
   signature: '',
-  description: 'Initialize a new Sanity Studio project',
+  description: 'Initializes a new Sanity Studio and/or project',
   helpText,
   action: async (args, context) => {
     const {output, chalk, prompt} = context
