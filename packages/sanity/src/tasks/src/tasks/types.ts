@@ -134,7 +134,8 @@ export interface TaskCreatePayload {
  * @hidden
  */
 export type TaskEditPayload = {
-  title: string
+  title?: string
   description?: TaskMessage
   lastEditedAt?: string
+  status?: TaskStatus
 }
