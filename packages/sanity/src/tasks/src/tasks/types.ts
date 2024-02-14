@@ -87,6 +87,7 @@ type TaskState = TaskCreateFailedState | TaskCreateRetryingState | undefined
 export interface TaskDocument {
   _type: 'tasks.task'
   _createdAt: string
+  _updatedAt: string
   _id: string
   _rev: string
   _state?: TaskState
