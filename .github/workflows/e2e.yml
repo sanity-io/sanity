@@ -23,8 +23,18 @@ jobs:
         with:
           node-version: 18
 
-      - name: Install pnpm
-        run: corepack enable && pnpm --version
+      - uses: pnpm/action-setup@v2
+        name: Install pnpm
+        id: pnpm-install
+        with:
+          version: 8
+          run_install: false
+
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
 
       - name: Cache node modules
         id: cache-node-modules
@@ -32,15 +42,14 @@ jobs:
         env:
           cache-name: cache-node-modules
         with:
-          path: '**/node_modules'
-          key: ${{ runner.os }}-modules-${{ env.cache-name }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ env.cache-name }}-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
-            ${{ runner.os }}-modules-${{ env.cache-name }}-
-            ${{ runner.os }}-modules-
-            ${{ runner.os }}-
+            v1-${{ runner.os }}-pnpm-store-${{ env.cache-name }}-
+            v1-${{ runner.os }}-pnpm-store-
+            v1-${{ runner.os }}-
 
       - name: Install project dependencies
-        if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: pnpm install
 
       - name: Store Playwright's Version
@@ -114,24 +123,33 @@ jobs:
         with:
           node-version: 18
 
-      - name: Install pnpm
-        run: corepack enable && pnpm --version
+      - uses: pnpm/action-setup@v2
+        name: Install pnpm
+        id: pnpm-install
+        with:
+          version: 8
+          run_install: false
+
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
 
       - name: Cache node modules
         id: cache-node-modules
-        uses: actions/cache/restore@v3
+        uses: actions/cache@v3
         env:
           cache-name: cache-node-modules
         with:
-          path: '**/node_modules'
-          key: ${{ runner.os }}-modules-${{ env.cache-name }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ env.cache-name }}-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
-            ${{ runner.os }}-modules-${{ env.cache-name }}-
-            ${{ runner.os }}-modules-
-            ${{ runner.os }}-
+            v1-${{ runner.os }}-pnpm-store-${{ env.cache-name }}-
+            v1-${{ runner.os }}-pnpm-store-
+            v1-${{ runner.os }}-
 
       - name: Install project dependencies
-        if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: pnpm install
 
       - name: Store Playwright's Version
@@ -174,7 +192,7 @@ jobs:
           SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW }}
           SANITY_E2E_PROJECT_ID: ${{ secrets.SANITY_E2E_PROJECT_ID }}
           SANITY_E2E_DATASET: ${{ secrets.SANITY_E2E_DATASET }}
-        run: npx playwright test --project ${{ matrix.project }} --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
+        run: pnpm test:e2e --project ${{ matrix.project }} --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
 
       - name: Run E2E tests on PR
         if: ${{ github.event_name == 'pull_request' }}
@@ -188,7 +206,7 @@ jobs:
           SANITY_E2E_SESSION_TOKEN: ${{ secrets.SANITY_E2E_SESSION_TOKEN_NEW }}
           SANITY_E2E_PROJECT_ID: ${{ secrets.SANITY_E2E_PROJECT_ID }}
           SANITY_E2E_DATASET: pr-${{ matrix.project }}-${{ github.event.number }}
-        run: npx playwright test --project ${{ matrix.project }} --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
+        run: pnpm test:e2e --project ${{ matrix.project }} --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
 
       - uses: actions/upload-artifact@v3
         if: always()
