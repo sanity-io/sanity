@@ -18,6 +18,7 @@ const BlockQuoteStack = styled(Stack)(({theme}) => {
 
   return css`
     border-left: 2px solid ${borderColor};
+    word-break: break-word;
   `
 })
 
