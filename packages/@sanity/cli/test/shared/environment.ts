@@ -125,14 +125,16 @@ export const getTestRunArgs = (version: string) => {
 export function runSanityCmdCommand(
   version: string,
   args: string[],
-  options: {env?: Record<string, string | undefined>} = {},
+  options: {env?: Record<string, string | undefined>; cwd?: (cwd: string) => string} = {},
 ): Promise<{
   code: number | null
   stdout: string
   stderr: string
 }> {
+  const cwd = options.cwd ?? ((currentCwd) => currentCwd)
+
   return exec(process.argv[0], [cliBinPath, ...args], {
-    cwd: path.join(studiosPath, version),
+    cwd: cwd(path.join(studiosPath, version)),
     env: {...sanityEnv, ...options.env},
   })
 }
