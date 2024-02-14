@@ -30,10 +30,19 @@ import {InlineCommentInputPopover} from './InlineCommentInputPopover'
 
 const EMPTY_ARRAY: [] = []
 
-export function CommentsPortableTextInput(props: PortableTextInputProps) {
-  const {enabled} = useCommentsEnabled()
+const AI_ASSIST_TYPE = 'sanity.assist.instruction.prompt'
 
-  if (!enabled) {
+export function CommentsPortableTextInput(props: PortableTextInputProps) {
+  const {enabled, mode} = useCommentsEnabled()
+
+  // This is a workaround solution to disable comments for the AI assist type.
+  // The AI assist uses the official PTE input which is composed from the
+  // Form Components API for the authoring of the prompt. Consequently, the input
+  // will get the comments functionality as well, which  we don't want.
+  // Therefore we disable the comments for the AI assist type.
+  const isAiAssist = props.schemaType.name === AI_ASSIST_TYPE
+
+  if (!enabled || mode === 'upsell' || isAiAssist) {
     return props.renderDefault(props)
   }
 
