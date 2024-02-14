@@ -7,7 +7,7 @@ export default function TasksCreateStory() {
   return (
     <TasksSetupProvider>
       <TasksProvider>
-        <TasksCreate onCancel={noop} />
+        <TasksCreate onCancel={noop} mode="create" />
       </TasksProvider>
     </TasksSetupProvider>
   )
