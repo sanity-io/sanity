@@ -96,7 +96,11 @@ const commentsLocaleStrings = defineLocalesResources('comments', {
   'list-item.edit-comment-upsell': 'Upgrade to edit comment',
   /** Aria label for the button that takes you to the field, which wraps a thread/comment */
   'list-item.go-to-field-button.aria-label': 'Go to field',
-  /** The text showing the comment context */
+  /**
+   * The text shown below the author and timestamp of a comment including a link back to the context in which the comment was made.
+   * Consists of a document title wrapped in a link, and a word or phrase to indicate that the link refers to a location:
+   * eg "on Home", "on Coffee Machine | Products", "on Pricing – Sanity"
+   */
   'list-item.layout-context': 'on <IntentLink>{{title}}</IntentLink>',
   /** The marker to indicate that a comment has been edited in brackets */
   'list-item.layout-edited': 'edited',
