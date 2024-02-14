@@ -63,7 +63,7 @@ export function TasksStudioSidebar() {
               <>
                 {isLoading ? (
                   <Box padding={3}>
-                    <Flex align="center">
+                    <Flex align="center" justify="center">
                       <Spinner />
                     </Flex>
                   </Box>
