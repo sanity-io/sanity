@@ -77,6 +77,8 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
 
   const [canSubmit, setCanSubmit] = useState<boolean>(false)
 
+  const didPatch = useRef<boolean>(false)
+
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
   const [isFullScreen, setIsFullScreen] = useState<boolean>(false)
   const [addedCommentsDecorators, setAddedCommentsDecorators] =
@@ -245,7 +247,21 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
 
         debounceSelectionChange(change.selection, isRangeSelected)
       }
-      if (change.type === 'rangeDecorationMoved') {
+
+      // The `rangeDecorationMoved` event triggers when range decorations move, even if
+      // not caused by the current user. This means edits by others that move decorations
+      // will also trigger this event. While expected, we need to ensure the comment document(s)
+      // aren't updated when another user is making changes. Updates should only happen when the
+      // current user is editing the content.
+      // To manage this, we use the `didPatch` ref to track if the movement was
+      // caused by the current user by checking the `patch` change type. If true, we set
+      // `didPatch` to true. It's reset to false when a `mutation` change type occurs,
+      // indicating the current user finished editing. This prevents comment updates from
+      // other users' changes.
+      if (change.type === 'patch') didPatch.current = true
+      if (change.type === 'mutation') didPatch.current = false
+
+      if (change.type === 'rangeDecorationMoved' && didPatch.current) {
         handleBuildAddedRangeDecorators()
         const commentId = change.rangeDecoration.payload?.commentId as undefined | string
         let currentBlockKey: string | undefined
