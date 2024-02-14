@@ -6,7 +6,7 @@ import {applyInlineCommentIdAttr} from '../../hooks'
 import {type CommentMessage, type CommentThreadItem} from '../../types'
 import {buildRangeDecorationSelectionsFromComments} from './buildRangeDecorationSelectionsFromComments'
 
-interface CommentRangeDecoratorProps {
+interface CommentRangeDecorationProps {
   children: React.ReactNode
   commentId: string
   currentHoveredCommentId: string | null
@@ -17,8 +17,8 @@ interface CommentRangeDecoratorProps {
   threadId: string
 }
 
-const CommentRangeDecorator = memo(function CommentRangeDecorator(
-  props: CommentRangeDecoratorProps,
+const CommentRangeDecoration = memo(function CommentRangeDecoration(
+  props: CommentRangeDecorationProps,
 ) {
   const {
     children,
@@ -87,7 +87,7 @@ function isRangeInvalid() {
   return false
 }
 
-interface BuildRangeDecoratorsProps {
+interface BuildRangeDecorationsProps {
   comments: CommentThreadItem[]
   currentHoveredCommentId: string | null
   onDecoratorClick: (commentId: string) => void
@@ -97,7 +97,7 @@ interface BuildRangeDecoratorsProps {
   value: CommentMessage | undefined
 }
 
-export function buildRangeDecorators(props: BuildRangeDecoratorsProps) {
+export function buildRangeDecorations(props: BuildRangeDecorationsProps) {
   const {
     comments,
     currentHoveredCommentId,
@@ -109,10 +109,10 @@ export function buildRangeDecorators(props: BuildRangeDecoratorsProps) {
   } = props
   const rangeSelections = buildRangeDecorationSelectionsFromComments({comments, value})
 
-  return rangeSelections.map(({selection, comment}) => {
-    const decorator: RangeDecoration = {
+  const decorations = rangeSelections.map(({selection, comment, range}) => {
+    const decoration: RangeDecoration = {
       component: ({children}) => (
-        <CommentRangeDecorator
+        <CommentRangeDecoration
           commentId={comment.parentComment._id}
           currentHoveredCommentId={currentHoveredCommentId}
           onClick={onDecoratorClick}
@@ -122,12 +122,16 @@ export function buildRangeDecorators(props: BuildRangeDecoratorsProps) {
           threadId={comment.threadId}
         >
           {children}
-        </CommentRangeDecorator>
+        </CommentRangeDecoration>
       ),
       isRangeInvalid,
       selection,
+      payload: {
+        commentId: comment.parentComment._id,
+        range,
+      },
     }
-
-    return decorator
+    return decoration
   })
+  return decorations
 }
