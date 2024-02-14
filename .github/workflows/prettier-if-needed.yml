@@ -42,7 +42,7 @@ jobs:
             ${{ runner.os }}-
       - name: Install project dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: pnpm install --ignore-scripts --frozen-lockfile
+        run: pnpm install --config.ignore-scripts=true
       - name: Cache Prettier
         uses: actions/cache@v3
         with:
@@ -58,7 +58,7 @@ jobs:
           private_key: ${{ secrets.ECOSPARK_APP_PRIVATE_KEY }}
       - uses: peter-evans/create-pull-request@b1ddad2c994a25fbc81a28b3ec0e368bb2021c50 # v6
         with:
-          body: I ran `prettier` 🧑‍💻
+          body: I ran `pnpm prettier` 🧑‍💻
           branch: actions/prettier-if-needed
           commit-message: 'chore(prettier): fix unformatted files 🤖 ✨'
           labels: 🤖 bot
