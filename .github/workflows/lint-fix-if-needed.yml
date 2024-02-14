@@ -42,7 +42,7 @@ jobs:
             ${{ runner.os }}-
       - name: Install project dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: pnpm install --frozen-lockfile
+        run: pnpm install
       - name: Cache ESLint cache
         uses: actions/cache@v3
         with:
@@ -60,7 +60,7 @@ jobs:
         # Run even if `lint:fix` fails
         if: always()
         with:
-          body: "I ran `lint:fix --rule 'prettier/prettier: [off]'` 🧑‍💻"
+          body: "I ran `pnpm lint:fix --rule 'prettier/prettier: [off]'` 🧑‍💻"
           branch: actions/lint-fix-if-needed
           commit-message: 'chore(lint): fix linter issues 🤖 ✨'
           labels: 🤖 bot

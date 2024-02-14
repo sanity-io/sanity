@@ -65,7 +65,7 @@ jobs:
 
       - name: Install project dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: pnpm install --frozen-lockfile
+        run: pnpm install
 
       - name: Build CLI
         run: pnpm build # Needed for CLI tests
@@ -132,7 +132,7 @@ jobs:
 
       - name: Install project dependencies
         if: steps.restore-node-modules.outputs.cache-hit != 'true'
-        run: pnpm install --frozen-lockfile
+        run: pnpm install
 
       - name: Test
         id: test
