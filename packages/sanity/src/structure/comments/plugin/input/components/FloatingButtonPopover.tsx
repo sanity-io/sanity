@@ -1,10 +1,10 @@
 import {AddCommentIcon} from '@sanity/icons'
-import {useClickOutside} from '@sanity/ui'
+import {Box, ConditionalWrapper, Text, useClickOutside} from '@sanity/ui'
 import {motion, type Variants} from 'framer-motion'
 import {useState} from 'react'
 import styled from 'styled-components'
 
-import {Button, Popover, type PopoverProps} from '../../../../../ui-components'
+import {Button, Popover, type PopoverProps, Tooltip} from '../../../../../ui-components'
 
 const MotionPopover = styled(motion(Popover))`
   user-select: none;
@@ -17,29 +17,49 @@ const VARIANTS: Variants = {
   visible: {opacity: 1, y: 0},
 }
 
+// TODO: Localize these strings
+const TMP_BUTTON_COPY = 'Add comment'
+const TMP_TOOLTIP_COPY = `Overlapping comments aren't supported yet. Please choose a different segment or join the existing thread.`
+
+function ConditionalWrapperContent(content: React.ReactNode) {
+  return (
+    <Tooltip
+      content={
+        <Box style={{width: 200}} padding={1}>
+          <Text size={1}>{TMP_TOOLTIP_COPY}</Text>
+        </Box>
+      }
+    >
+      <div>{content}</div>
+    </Tooltip>
+  )
+}
+
 interface FloatingButtonPopoverProps {
+  disabled: boolean
   onClick: () => void
   onClickOutside: (e: MouseEvent) => void
   referenceElement: PopoverProps['referenceElement']
 }
 
 export function FloatingButtonPopover(props: FloatingButtonPopoverProps) {
-  const {onClick, onClickOutside, referenceElement} = props
+  const {disabled, onClick, onClickOutside, referenceElement} = props
 
   const [popoverElement, setPopoverElement] = useState<HTMLButtonElement | null>(null)
 
   useClickOutside(onClickOutside, [popoverElement])
 
   const content = (
-    <Button
-      icon={AddCommentIcon}
-      ref={setPopoverElement}
-      mode="bleed"
-      onClick={onClick}
-      // TODO: localize
-      // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
-      text="Add comment"
-    />
+    <ConditionalWrapper condition={disabled} wrapper={ConditionalWrapperContent}>
+      <Button
+        disabled={disabled}
+        icon={AddCommentIcon}
+        ref={setPopoverElement}
+        mode="bleed"
+        onClick={onClick}
+        text={TMP_BUTTON_COPY}
+      />
+    </ConditionalWrapper>
   )
 
   return (
