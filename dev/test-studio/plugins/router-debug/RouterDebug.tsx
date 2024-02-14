@@ -1,4 +1,6 @@
+import {createPreviewSecret} from '@sanity/preview-url-secret/create-secret'
 import {Button, Card, Code, Flex, Stack, Text} from '@sanity/ui'
+import {useClient} from 'sanity'
 import {IntentLink, RouteScope, StateLink, useRouter, useStateLink} from 'sanity/router'
 
 export function RouterDebug() {
@@ -11,10 +13,16 @@ export function RouterDebug() {
     },
   })
 
+  const client = useClient()
+
   return (
     <Card sizing="border" padding={5}>
       <Flex>
         <Stack space={4}>
+          <Button onClick={() => createPreviewSecret(client, 'test-studio', location.href)}>
+            Create Secret
+          </Button>
+
           <StateLink state={{}}>Tool home</StateLink>
           <StateLink
             state={{

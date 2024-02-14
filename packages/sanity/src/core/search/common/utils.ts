@@ -5,7 +5,8 @@ import {isNonNullable} from '../../util/isNonNullable'
 const isDocumentType = (type: SchemaType): type is ObjectSchemaType =>
   Boolean(type.type && type.type.name === 'document')
 
-const isSanityType = (type: SchemaType): boolean => type.name.startsWith('sanity.')
+const isIgnoredType = (type: SchemaType): boolean =>
+  type.name.startsWith('sanity.') && type.name !== 'sanity.previewUrlSecret'
 
 /**
  * @internal
@@ -16,4 +17,4 @@ export const getSearchableTypes = (schema: Schema): ObjectSchemaType[] =>
     .map((typeName) => schema.get(typeName))
     .filter(isNonNullable)
     .filter((schemaType) => isDocumentType(schemaType))
-    .filter((type) => !isSanityType(type)) as ObjectSchemaType[]
+    .filter((type) => !isIgnoredType(type)) as ObjectSchemaType[]
