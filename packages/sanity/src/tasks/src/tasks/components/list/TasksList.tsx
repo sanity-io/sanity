@@ -27,6 +27,7 @@ export function TasksList(props: TasksListProps) {
           .map((item) => (
             <TasksListItem
               key={item._id}
+              documentId={item._id}
               title={item.title}
               dueBy={item.dueBy}
               assignedTo={item.assignedTo}
