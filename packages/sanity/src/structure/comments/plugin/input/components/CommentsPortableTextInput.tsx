@@ -31,9 +31,9 @@ import {InlineCommentInputPopover} from './InlineCommentInputPopover'
 const EMPTY_ARRAY: [] = []
 
 export function CommentsPortableTextInput(props: PortableTextInputProps) {
-  const isEnabled = useCommentsEnabled()
+  const {enabled} = useCommentsEnabled()
 
-  if (!isEnabled) {
+  if (!enabled) {
     return props.renderDefault(props)
   }
 
@@ -74,20 +74,13 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
     setCurrenSelectionRect(rect)
   }, [])
 
-  const clearFloatingButtonData = useCallback(() => {
+  const resetStates = useCallback(() => {
     setCurrentSelection(null)
     setCurrenSelectionRect(null)
-  }, [])
-
-  const clearFloatingInputData = useCallback(() => {
     setNextCommentSelection(null)
     setNextCommentValue(null)
+    setCanSubmit(false)
   }, [])
-
-  const clearAllFloatingData = useCallback(() => {
-    clearFloatingButtonData()
-    clearFloatingInputData()
-  }, [clearFloatingButtonData, clearFloatingInputData])
 
   // Set the next comment selection to the current selection so that we can
   // render the comment input popover on the current selection using a range decoration.
@@ -97,8 +90,8 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
 
   // Clear the selection and close the popover when discarding the comment
   const handleCommentDiscardConfirm = useCallback(() => {
-    clearAllFloatingData()
-  }, [clearAllFloatingData])
+    resetStates()
+  }, [resetStates])
 
   const textComments = useMemo(() => {
     return comments.data.open
@@ -140,9 +133,9 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
 
     scrollToGroup(threadId)
 
-    clearAllFloatingData()
+    resetStates()
   }, [
-    clearAllFloatingData,
+    resetStates,
     getFragment,
     nextCommentSelection,
     nextCommentValue,
@@ -223,7 +216,7 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
         // This will make sure that the floating button is not displayed immediately
         // and we don't need to wait for the debounce to finish before hiding it.
         if (!isRangeSelected && !hasValue) {
-          clearAllFloatingData()
+          resetStates()
           debounceSelectionChange.cancel()
           return
         }
@@ -235,7 +228,7 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
         handleBuildAddedRangeDecorators()
       }
     },
-    [clearAllFloatingData, debounceSelectionChange, handleBuildAddedRangeDecorators, hasValue],
+    [resetStates, debounceSelectionChange, handleBuildAddedRangeDecorators, hasValue],
   )
 
   // The range decoration for the comment input. This is used to position the
@@ -334,7 +327,7 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
               currentUser={currentUser}
               mentionOptions={mentionOptions}
               onChange={setNextCommentValue}
-              onClickOutside={clearAllFloatingData}
+              onClickOutside={resetStates}
               onDiscardConfirm={handleCommentDiscardConfirm}
               onSubmit={handleSubmit}
               referenceElement={popoverAuthoringReferenceElement}
@@ -345,7 +338,7 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
           {showFloatingButton && !showFloatingInput && (
             <FloatingButtonPopover
               onClick={handleSelectCurrentSelection}
-              onClickOutside={clearAllFloatingData}
+              onClickOutside={resetStates}
               referenceElement={selectionReferenceElement}
             />
           )}
