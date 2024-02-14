@@ -1,4 +1,4 @@
-import {type BaseRange, type Editor, type Range} from 'slate'
+import {type BaseRange, type Editor, Range} from 'slate'
 
 import {
   type EditorSelection,
@@ -37,7 +37,8 @@ export function toPortableTextRange(
       offset: range.focus.offset,
     }
   }
-  return anchor && focus ? {anchor, focus} : null
+  const backward = Boolean(Range.isRange(range) ? Range.isBackward(range) : undefined)
+  return anchor && focus ? {anchor, focus, backward} : null
 }
 
 export function toSlateRange(selection: EditorSelection, editor: Editor): Range | null {

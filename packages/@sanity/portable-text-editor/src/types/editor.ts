@@ -88,7 +88,11 @@ export interface History {
 /** @beta */
 export type EditorSelectionPoint = {path: Path; offset: number}
 /** @beta */
-export type EditorSelection = {anchor: EditorSelectionPoint; focus: EditorSelectionPoint} | null
+export type EditorSelection = {
+  anchor: EditorSelectionPoint
+  focus: EditorSelectionPoint
+  backward?: boolean
+} | null
 /** @internal */
 export interface PortableTextSlateEditor extends ReactEditor {
   _key: 'editor'
