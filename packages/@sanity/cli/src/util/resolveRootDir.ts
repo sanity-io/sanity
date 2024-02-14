@@ -17,8 +17,8 @@ export function resolveRootDir(cwd: string): string {
 
 function hasStudioConfig(basePath: string): boolean {
   const buildConfigs = [
-    fileExists(path.join(basePath, 'studio.config.js')),
-    fileExists(path.join(basePath, 'studio.config.ts')),
+    fileExists(path.join(basePath, 'sanity.config.js')),
+    fileExists(path.join(basePath, 'sanity.config.ts')),
     isSanityV2StudioRoot(basePath),
   ]
 
