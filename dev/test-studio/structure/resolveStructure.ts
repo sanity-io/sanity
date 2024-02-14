@@ -1,5 +1,6 @@
 import {
   CodeIcon,
+  CogIcon,
   EarthGlobeIcon,
   ImagesIcon,
   JoystickIcon,
@@ -48,6 +49,19 @@ export const structure: StructureResolver = (S, {schema, documentStore, i18n}) =
         .child(
           S.list()
             .title('Untitled repro')
+            .menuItems([
+              S.menuItem()
+                .title('Edit GRRM')
+                .icon(CogIcon)
+                .showAsAction(true)
+                .intent({
+                  type: 'edit',
+                  params: {
+                    id: 'grrm',
+                    type: 'author',
+                  },
+                }),
+            ])
             .items([
               S.documentListItem().id('grrm').schemaType('author'),
               S.listItem()
