@@ -133,7 +133,7 @@
   },
   "dependencies": {
     "@sanity/types": "3.29.0",
-    "get-random-values-esm": "^1.0.0",
+    "get-random-values-esm": "1.0.0",
     "moment": "^2.29.4"
   },
   "devDependencies": {
