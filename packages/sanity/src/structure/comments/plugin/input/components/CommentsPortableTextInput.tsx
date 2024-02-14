@@ -10,10 +10,15 @@ import {uuid} from '@sanity/uuid'
 import {AnimatePresence} from 'framer-motion'
 import {debounce} from 'lodash'
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {isPortableTextTextBlock, type PortableTextInputProps, useCurrentUser} from 'sanity'
+import {
+  isKeySegment,
+  isPortableTextTextBlock,
+  type PortableTextInputProps,
+  useCurrentUser,
+} from 'sanity'
 
 import {
-  buildRangeDecorators,
+  buildRangeDecorations,
   buildTextSelectionFromFragment,
   CommentInlineHighlightSpan,
   type CommentMessage,
@@ -117,7 +122,13 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
     if (!nextCommentSelection || !editorRef.current) return
 
     const fragment = getFragment() || EMPTY_ARRAY
-    const textSelection = buildTextSelectionFromFragment({fragment})
+    const editorValue = PortableTextEditor.getValue(editorRef.current)
+    if (!editorValue) return
+    const textSelection = buildTextSelectionFromFragment({
+      fragment,
+      selection: nextCommentSelection,
+      value: editorValue,
+    })
     const threadId = uuid()
 
     operation.create({
@@ -203,7 +214,7 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
     // to finish.
     const editorStateValue = PortableTextEditor.getValue(editorRef.current)
 
-    const decorators = buildRangeDecorators({
+    const decorators = buildRangeDecorations({
       comments: textComments,
       currentHoveredCommentId,
       onDecoratorClick: handleDecoratorClick,
@@ -232,12 +243,55 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
 
         debounceSelectionChange(change.selection, isRangeSelected)
       }
-
-      if (change.type === 'patch') {
+      if (change.type === 'rangeDecorationMoved') {
         handleBuildAddedRangeDecorators()
+        const commentId = change.rangeDecoration.payload?.commentId as undefined | string
+        let currentBlockKey: string | undefined
+        let previousBlockKey: string | undefined
+        let newRange: {text: string; _key: string} | undefined
+        if (
+          change.newRangeSelection?.focus.path[0] &&
+          isKeySegment(change.newRangeSelection.focus.path[0]) &&
+          change.rangeDecoration.selection?.focus.path[0] &&
+          isKeySegment(change.rangeDecoration.selection?.focus.path[0])
+        ) {
+          previousBlockKey = change.rangeDecoration.selection?.focus.path[0]?._key
+          currentBlockKey = change.newRangeSelection.focus.path[0]._key
+          const oldRange = change.rangeDecoration.payload?.range as
+            | undefined
+            | {_key: string; text: string}
+          newRange = {_key: currentBlockKey, text: oldRange?.text || ''}
+        }
+
+        const comment = getComment(commentId || '')
+        if (comment && newRange) {
+          operation.update(comment._id, {
+            target: {
+              ...comment.target,
+              path: {
+                ...comment.target.path,
+                selection: {
+                  type: 'text',
+                  value: [
+                    ...(comment.target.path.selection?.value
+                      .filter((r) => r._key !== previousBlockKey && r._key !== currentBlockKey)
+                      .concat(newRange) || []),
+                  ],
+                },
+              },
+            },
+          })
+        }
       }
     },
-    [resetStates, debounceSelectionChange, handleBuildAddedRangeDecorators, hasValue],
+    [
+      hasValue,
+      debounceSelectionChange,
+      resetStates,
+      handleBuildAddedRangeDecorators,
+      getComment,
+      operation,
+    ],
   )
 
   // The range decoration for the comment input. This is used to position the
