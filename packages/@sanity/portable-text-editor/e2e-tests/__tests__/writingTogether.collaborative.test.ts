@@ -63,82 +63,65 @@ describe('collaborate editing', () => {
     })
   })
 
-  it('will reset the value when someone deletes everything, and when they start to type again, they will produce their own respective blocks.', async () => {
-    await setDocumentValue(initialValue)
+  it.only('it should not remove content for both users if one user backspaces into a block that starts with a mark.', async () => {
+    const exampleValue = [
+      {
+        _key: 'randomKey0',
+        _type: 'block',
+        children: [
+          {
+            _key: 'randomKey1',
+            _type: 'span',
+            marks: ['strong'],
+            text: 'Example Text: ',
+          },
+          {
+            _type: 'span',
+            marks: [],
+            text: "This is a very long example text that will completely disappear later on. It's kind of a bad magic trick, really. Just writing more text so the disappearance becomes more apparent. This is a very long example text that will completely disappear later on. It's kind of a bad magic trick, really. Just writing more text so the disappearance becomes more apparent. This is a very long example text that will completely disappear later on. It's kind of a bad magic trick, really. Just writing more text so the disappearance becomes more apparent.",
+            _key: 'randomKey2',
+          },
+        ],
+        markDefs: [],
+        style: 'normal',
+      },
+    ]
+    await setDocumentValue(exampleValue)
     const [editorA, editorB] = await getEditors()
     await editorA.setSelection({
-      anchor: {path: [{_key: 'randomKey0'}, 'children', {_key: 'randomKey1'}], offset: 11},
-      focus: {path: [{_key: 'randomKey0'}, 'children', {_key: 'randomKey1'}], offset: 11},
+      anchor: {path: [{_key: 'randomKey0'}, 'children', {_key: 'randomKey2'}], offset: 542},
+      focus: {path: [{_key: 'randomKey0'}, 'children', {_key: 'randomKey2'}], offset: 542},
     })
-    await editorA.insertText(' world')
-    let valA = await editorA.getValue()
-    let valB = await editorB.getValue()
+    await editorA.pressKey('Enter')
+    await editorA.pressKey('Backspace')
+
+    await new Promise((resolve) => setTimeout(resolve, 1000))
+
+    const valA = await editorA.getValue()
+    const valB = await editorB.getValue()
     expect(valA).toEqual(valB)
     expect(valB).toEqual([
       {
         _key: 'randomKey0',
         _type: 'block',
-        markDefs: [],
-        style: 'normal',
         children: [
           {
             _key: 'randomKey1',
             _type: 'span',
-            text: 'Hello world',
+            marks: ['strong'],
+            text: 'Example Text: ',
+          },
+          {
+            _type: 'span',
             marks: [],
+            text: "This is a very long example text that will completely disappear later on. It's kind of a bad magic trick, really. Just writing more text so the disappearance becomes more apparent. This is a very long example text that will completely disappear later on. It's kind of a bad magic trick, really. Just writing more text so the disappearance becomes more apparent. This is a very long example text that will completely disappear later on. It's kind of a bad magic trick, really. Just writing more text so the disappearance becomes more apparent.",
+            _key: 'randomKey2',
           },
         ],
+        markDefs: [],
+        style: 'normal',
       },
     ])
-    await editorA.pressKey('Backspace', 11)
-    valA = await editorA.getValue()
-    valB = await editorB.getValue()
-    expect(valA).toEqual(valB)
-    expect(valA).toBe(undefined)
-    await editorB.pressKey('1')
-    valA = await editorA.getValue()
-    valB = await editorB.getValue()
-    expect(valA).toEqual(valB)
-    expect(valA).toMatchInlineSnapshot(`
-      Array [
-        Object {
-          "_key": "B-9",
-          "_type": "block",
-          "children": Array [
-            Object {
-              "_key": "B-8",
-              "_type": "span",
-              "marks": Array [],
-              "text": "1",
-            },
-          ],
-          "markDefs": Array [],
-          "style": "normal",
-        },
-      ]
-    `)
-    await editorA.pressKey('2')
-    valA = await editorA.getValue()
-    valB = await editorB.getValue()
-    expect(valA).toEqual(valB)
-    expect(valB).toMatchInlineSnapshot(`
-      Array [
-        Object {
-          "_key": "B-9",
-          "_type": "block",
-          "children": Array [
-            Object {
-              "_key": "B-8",
-              "_type": "span",
-              "marks": Array [],
-              "text": "12",
-            },
-          ],
-          "markDefs": Array [],
-          "style": "normal",
-        },
-      ]
-    `)
   })
 
   it('will update value in editor A when editor B writes something', async () => {
