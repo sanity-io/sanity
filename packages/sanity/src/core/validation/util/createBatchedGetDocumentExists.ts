@@ -1,4 +1,5 @@
 import {type SanityClient} from '@sanity/client'
+import {ConcurrencyLimiter} from '@sanity/util/concurrency-limiter'
 import {
   bufferTime,
   filter,
@@ -13,7 +14,6 @@ import {
 } from 'rxjs'
 
 import {type AvailabilityResponse} from '../../preview'
-import {ConcurrencyLimiter} from './ConcurrencyLimiter'
 
 /**
  * The amount of time reserved for waiting for new IDs.

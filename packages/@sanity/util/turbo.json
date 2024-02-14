@@ -6,6 +6,8 @@
       "outputs": [
         "lib/**",
         "index.js",
+        "client.js",
+        "concurrency-limiter.js",
         "content.js",
         "createSafeJsonParser.js",
         "fs.js",

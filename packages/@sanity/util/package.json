@@ -44,6 +44,28 @@
       "import": "./lib/fs.esm.js",
       "default": "./lib/fs.esm.js"
     },
+    "./client": {
+      "types": "./lib/exports/client.d.ts",
+      "source": "./exports/client.ts",
+      "require": "./lib/client.js",
+      "node": {
+        "module": "./lib/client.esm.js",
+        "import": "./lib/client.cjs.mjs"
+      },
+      "import": "./lib/client.esm.js",
+      "default": "./lib/client.esm.js"
+    },
+    "./concurrency-limiter": {
+      "types": "./lib/exports/concurrency-limiter.d.ts",
+      "source": "./exports/concurrency-limiter.ts",
+      "require": "./lib/concurrency-limiter.js",
+      "node": {
+        "module": "./lib/concurrency-limiter.esm.js",
+        "import": "./lib/concurrency-limiter.cjs.mjs"
+      },
+      "import": "./lib/concurrency-limiter.esm.js",
+      "default": "./lib/concurrency-limiter.esm.js"
+    },
     "./content": {
       "types": "./lib/exports/content.d.ts",
       "source": "./exports/content.ts",
@@ -99,6 +121,12 @@
       "fs": [
         "./lib/exports/fs.d.ts"
       ],
+      "client": [
+        "./lib/exports/client.d.ts"
+      ],
+      "concurrency-limiter": [
+        "./lib/exports/concurrency-limiter.d.ts"
+      ],
       "content": [
         "./lib/exports/content.d.ts"
       ],
@@ -114,6 +142,8 @@
     }
   },
   "files": [
+    "client.js",
+    "concurrency-limiter.js",
     "content.js",
     "createSafeJsonParser.js",
     "fs.js",
@@ -127,14 +157,16 @@
     "build": "pkg-utils build --tsconfig tsconfig.lib.json",
     "postbuild": "run-s check:package",
     "check:package": "pkg-utils --tsconfig tsconfig.lib.json",
-    "clean": "rimraf content.js createSafeJsonParser.js fs.js legacyDateFormat.js lib paths.js",
+    "clean": "rimraf client.js concurrency-limiter.js content.js createSafeJsonParser.js fs.js legacyDateFormat.js lib paths.js",
     "test": "jest",
     "watch": "pkg-utils watch --tsconfig tsconfig.lib.json"
   },
   "dependencies": {
+    "@sanity/client": "^6.12.3",
     "@sanity/types": "3.29.1",
     "get-random-values-esm": "1.0.0",
-    "moment": "^2.29.4"
+    "moment": "^2.29.4",
+    "rxjs": "^7.8.1"
   },
   "devDependencies": {
     "@types/moment": "^2.13.0",
