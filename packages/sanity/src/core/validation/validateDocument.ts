@@ -8,6 +8,8 @@ import {
   type SchemaType,
   type ValidationMarker,
 } from '@sanity/types'
+import {createClientConcurrencyLimiter} from '@sanity/util/client'
+import {ConcurrencyLimiter} from '@sanity/util/concurrency-limiter'
 import {flatten, uniqBy} from 'lodash'
 import {concat, defer, from, lastValueFrom, merge, Observable, of} from 'rxjs'
 import {catchError, map, mergeAll, mergeMap, switchMap, toArray} from 'rxjs/operators'
@@ -15,9 +17,7 @@ import {catchError, map, mergeAll, mergeMap, switchMap, toArray} from 'rxjs/oper
 import {type SourceClientOptions, type Workspace} from '../config'
 import {getFallbackLocaleSource} from '../i18n/fallback'
 import {type ValidationContext} from './types'
-import {ConcurrencyLimiter} from './util/ConcurrencyLimiter'
 import {createBatchedGetDocumentExists} from './util/createBatchedGetDocumentExists'
-import {createClientConcurrencyLimiter} from './util/createClientConcurrencyLimiter'
 import {getTypeChain, normalizeValidationRules} from './util/normalizeValidationRules'
 import {cancelIdleCallback, requestIdleCallback} from './util/requestIdleCallback'
 import {typeString} from './util/typeString'
