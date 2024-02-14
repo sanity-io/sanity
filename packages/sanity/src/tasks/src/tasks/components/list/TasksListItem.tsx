@@ -1,18 +1,12 @@
-import {CalendarIcon, DocumentIcon, UserIcon} from '@sanity/icons'
-import {type SanityDocument} from '@sanity/types'
+import {CalendarIcon, UserIcon} from '@sanity/icons'
 import {Card, type CardProps, Flex, Stack, Text, TextSkeleton} from '@sanity/ui'
-import {forwardRef, useEffect, useMemo, useState} from 'react'
-import {
-  unstable_useValuePreview as useValuePreview,
-  useClient,
-  useDateTimeFormat,
-  useSchema,
-  useUser,
-} from 'sanity'
+import {useMemo} from 'react'
+import {useDateTimeFormat, useUser} from 'sanity'
 import {IntentLink} from 'sanity/router'
 import styled from 'styled-components'
 
 import {type TaskDocument} from '../../types'
+import {DocumentPreview} from './DocumentPreview'
 import {TasksStatus} from './TasksStatus'
 
 interface TasksListItemProps
@@ -31,6 +25,14 @@ export const ThreadCard = styled(Card).attrs<CardProps>(({tone}) => ({
 `
 
 const Title = styled(Text)`
+  &:hover {
+    text-decoration: underline;
+  }
+`
+
+export const StyledIntentLink = styled(IntentLink)`
+  text-decoration: none;
+
   :hover {
     text-decoration: underline;
   }
@@ -99,7 +101,7 @@ export function TasksListItem({
         {dueByeDisplayValue && (
           <Flex align="center" gap={1}>
             <CalendarIcon />
-            <Text size={1} muted>
+            <Text as="time" size={1} dateTime={dueBy} muted>
               {dueByeDisplayValue}
             </Text>
           </Flex>
@@ -109,62 +111,5 @@ export function TasksListItem({
         )}
       </Stack>
     </ThreadCard>
-  )
-}
-
-function DocumentPreview({documentId, documentType}: {documentId: string; documentType: string}) {
-  const [documentValue, setDocumentValue] = useState<SanityDocument | null>(null)
-  const client = useClient({
-    apiVersion: '2023-01-01',
-  }).withConfig({
-    perspective: 'previewDrafts',
-  })
-  const schema = useSchema()
-  const documentSchema = schema.get(documentType)
-  const {isLoading, value} = useValuePreview({
-    enabled: true,
-    schemaType: documentSchema,
-    value: {
-      _id: documentValue?._originalId ?? documentId,
-    },
-  })
-
-  useEffect(() => {
-    if (client) {
-      client
-        .fetch(`*[_id == $id && _type == $type][0]`, {id: documentId, type: documentType})
-        .then((res) => setDocumentValue(res))
-    }
-  }, [client, documentId, documentType])
-
-  const Link = useMemo(
-    () =>
-      forwardRef(function LinkComponent(linkProps, ref: React.ForwardedRef<HTMLAnchorElement>) {
-        return (
-          <IntentLink
-            {...linkProps}
-            intent="edit"
-            params={{id: documentId, type: documentType}}
-            ref={ref}
-          />
-        )
-      }),
-    [documentId, documentType],
-  )
-
-  if (!documentSchema) {
-    return null
-  }
-  return (
-    <Flex align="center" gap={1}>
-      <DocumentIcon />
-      {isLoading ? (
-        <TextSkeleton size={1} muted />
-      ) : (
-        <Text size={1} muted as={Link}>
-          {value?.title ?? documentSchema.name}
-        </Text>
-      )}
-    </Flex>
   )
 }
