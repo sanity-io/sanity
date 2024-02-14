@@ -13,6 +13,7 @@ import {
 import {useClient, useSchema} from '../hooks'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../studioClient'
 import {isNonNullable} from '../util'
+import {getSearchableTypes} from './common/utils'
 import {createSearch} from './search'
 import {type WeightedHit} from './weighted/types'
 
@@ -47,6 +48,7 @@ const LOADING_STATE: DocumentSearchResultsState = {
 const DEBOUNCE_VALUE = 400
 
 /** @internal */
+// TODO: Is this totally unused? It seems to be.
 export function useDocumentSearchResults(props: {
   includeDrafts?: boolean
   limit?: number
@@ -58,7 +60,7 @@ export function useDocumentSearchResults(props: {
   const [state, setState] = useState<DocumentSearchResultsState>(EMPTY_STATE)
   const paramsSubject = useMemo(() => new Subject<DocumentSearchParams>(), [])
 
-  const search = useMemo(() => createSearch(client, schema), [client, schema])
+  const search = useMemo(() => createSearch(getSearchableTypes(schema), client), [client, schema])
 
   const state$ = useMemo(
     () =>

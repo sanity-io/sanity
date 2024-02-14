@@ -1,23 +1,32 @@
 import {type SanityClient} from '@sanity/client'
-import {type Schema} from '@sanity/types'
 import {type Observable} from 'rxjs'
 
-import {getSearchableTypes} from './common/utils'
-import {createWeightedSearch} from './weighted/createWeightedSearch'
-import {type SearchOptions, type WeightedHit} from './weighted/types'
+import {createTextSearch} from './text-search'
+import {createWeightedSearch} from './weighted'
+import {
+  type SearchableType,
+  type SearchOptions,
+  type WeightedHit,
+  type WeightedSearchOptions,
+} from './weighted/types'
+
+const searchStrategies = {
+  weighted: createWeightedSearch,
+  text: createTextSearch,
+} as const
+
+type SearchStrategy = keyof typeof searchStrategies
+
+// TODO: Refine approach for opting into and/or automatically enabling text search strategy based
+// on search config.
+const SEARCH_STRATEGY: SearchStrategy = 'text'
 
 /** @internal */
 export function createSearch(
+  searchableTypes: SearchableType[],
   client: SanityClient,
-  schema: Schema,
+  options: WeightedSearchOptions = {},
 ): (query: string, opts?: SearchOptions) => Observable<WeightedHit[]> {
-  const searchClient = client.withConfig({
-    // Use >= 2021-03-25 for pt::text() support
-    apiVersion: '2021-03-25',
-  })
-
-  return createWeightedSearch(getSearchableTypes(schema), searchClient, {
-    unique: true,
-    tag: 'search.global',
-  })
+  const searchStrategy = searchStrategies[SEARCH_STRATEGY]
+  return searchStrategy(searchableTypes, client, options)
 }
