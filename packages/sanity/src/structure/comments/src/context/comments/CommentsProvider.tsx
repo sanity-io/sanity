@@ -179,19 +179,6 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
     [dispatch],
   )
 
-  const handleOnEdit = useCallback(
-    (id: string, payload: CommentUpdatePayload) => {
-      dispatch({
-        type: 'COMMENT_UPDATED',
-        payload: {
-          _id: id,
-          ...payload,
-        },
-      })
-    },
-    [dispatch],
-  )
-
   const handleOnCreateError = useCallback(
     (id: string, err: Error) => {
       // When an error occurs during comment creation, we update the comment state
