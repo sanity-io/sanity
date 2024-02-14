@@ -43,10 +43,10 @@ const QUERY_PROJECTION = `{
   lastEditedAt,
   message,
   parentCommentId,
+  reactions
   status,
   target,
   threadId,
-  reactions
 }`
 
 // Newest comments first

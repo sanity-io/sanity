@@ -16,12 +16,14 @@ export async function updateOperation(props: UpdateOperationProps): Promise<void
 
   const hasEditedMessage = 'message' in comment
 
+  const editedComment: CommentUpdatePayload = {
+    ...comment,
+    lastEditedAt: new Date().toISOString(),
+  }
+
   // If the comment message has been edited, we'll update the lastEditedAt field
   // to reflect the time of the edit.
-  const nextComment: CommentUpdatePayload = {
-    ...comment,
-    lastEditedAt: hasEditedMessage ? new Date().toISOString() : comment?.lastEditedAt,
-  }
+  const nextComment: CommentUpdatePayload = hasEditedMessage ? editedComment : comment
 
   onUpdate?.(id, nextComment)
 
