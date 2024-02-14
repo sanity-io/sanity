@@ -56,10 +56,12 @@ describe('collaborate editing', () => {
     expect(selectionA).toEqual({
       anchor: {path: [{_key: 'randomKey0'}, 'children', {_key: 'randomKey1'}], offset: 11},
       focus: {path: [{_key: 'randomKey0'}, 'children', {_key: 'randomKey1'}], offset: 11},
+      backward: false,
     })
     expect(selectionB).toEqual({
       anchor: {offset: 0, path: [{_key: 'randomKey0'}, 'children', {_key: 'randomKey1'}]},
       focus: {offset: 0, path: [{_key: 'randomKey0'}, 'children', {_key: 'randomKey1'}]},
+      backward: false,
     })
   })
 
@@ -162,6 +164,7 @@ describe('collaborate editing', () => {
     const desiredSelectionA = {
       anchor: {path: [{_key: 'randomKey0'}, 'children', {_key: 'randomKey1'}], offset: 18},
       focus: {path: [{_key: 'randomKey0'}, 'children', {_key: 'randomKey1'}], offset: 18},
+      backward: false,
     }
     await editorA.setSelection(desiredSelectionA)
     await editorB.setSelection({
@@ -194,6 +197,7 @@ describe('collaborate editing', () => {
     expect(selectionB).toEqual({
       anchor: {path: [{_key: 'randomKey0'}, 'children', {_key: 'randomKey1'}], offset: 18},
       focus: {path: [{_key: 'randomKey0'}, 'children', {_key: 'randomKey1'}], offset: 18},
+      backward: false,
     })
   })
 
@@ -218,6 +222,7 @@ describe('collaborate editing', () => {
     const desiredSelectionA = {
       anchor: {path: [{_key: 'randomKey0'}, 'children', {_key: 'randomKey1'}], offset: 11},
       focus: {path: [{_key: 'randomKey0'}, 'children', {_key: 'randomKey1'}], offset: 11},
+      backward: false,
     }
     await editorB.setSelection({
       anchor: {path: [{_key: 'randomKey0'}, 'children', {_key: 'randomKey1'}], offset: 18},
@@ -264,6 +269,7 @@ describe('collaborate editing', () => {
     expect(selectionB).toEqual({
       anchor: {offset: 0, path: [{_key: 'B-6'}, 'children', {_key: 'B-5'}]},
       focus: {offset: 0, path: [{_key: 'B-6'}, 'children', {_key: 'B-5'}]},
+      backward: false,
     })
   })
 
@@ -337,10 +343,12 @@ describe('collaborate editing', () => {
     expect(selectionA).toEqual({
       anchor: {path: [{_key: 'randomKey0'}, 'children', {_key: 'randomKey1'}], offset: 11},
       focus: {path: [{_key: 'randomKey0'}, 'children', {_key: 'randomKey1'}], offset: 11},
+      backward: false,
     })
     expect(selectionB).toEqual({
       anchor: {offset: 17, path: [{_key: 'B-3'}, 'children', {_key: 'B-2'}]},
       focus: {offset: 17, path: [{_key: 'B-3'}, 'children', {_key: 'B-2'}]},
+      backward: false,
     })
   })
 
@@ -379,6 +387,7 @@ describe('collaborate editing', () => {
     const startSelectionA = {
       anchor: {path: [{_key: 'randomKey0'}, 'children', {_key: 'randomKey1'}], offset: 11},
       focus: {path: [{_key: 'randomKey0'}, 'children', {_key: 'randomKey1'}], offset: 11},
+      backward: false,
     }
     await editorA.setSelection(startSelectionA)
     await editorB.setSelection({
@@ -415,10 +424,12 @@ describe('collaborate editing', () => {
     expect(selectionA).toEqual({
       anchor: {path: [{_key: 'randomKey0'}, 'children', {_key: 'randomKey1'}], offset: 52},
       focus: {path: [{_key: 'randomKey0'}, 'children', {_key: 'randomKey1'}], offset: 52},
+      backward: false,
     })
     expect(selectionB).toEqual({
       anchor: {offset: 17, path: [{_key: 'B-3'}, 'children', {_key: 'B-2'}]},
       focus: {offset: 17, path: [{_key: 'B-3'}, 'children', {_key: 'B-2'}]},
+      backward: false,
     })
   })
 
@@ -460,6 +471,7 @@ describe('collaborate editing', () => {
     const newExpectedSelA = {
       anchor: {path: [{_key: 'randomKey0'}, 'children', {_key: 'randomKey1'}], offset: 52},
       focus: {path: [{_key: 'randomKey0'}, 'children', {_key: 'randomKey1'}], offset: 52},
+      backward: false,
     }
     await editorA.setSelection(newExpectedSelA)
     const newSelA = await editorA.getSelection()
@@ -532,6 +544,7 @@ describe('collaborate editing', () => {
             },
           ],
         },
+        "backward": false,
         "focus": Object {
           "offset": 0,
           "path": Array [
@@ -597,11 +610,13 @@ describe('collaborate editing', () => {
     expect(selectionA).toEqual({
       anchor: {path: [{_key: 'A-8'}, 'children', {_key: 'A-7'}], offset: 0},
       focus: {path: [{_key: 'A-8'}, 'children', {_key: 'A-7'}], offset: 0},
+      backward: false,
     })
     const selectionB = await editorB.getSelection()
     expect(selectionB).toEqual({
       anchor: {offset: 17, path: [{_key: 'B-3'}, 'children', {_key: 'B-2'}]},
       focus: {offset: 17, path: [{_key: 'B-3'}, 'children', {_key: 'B-2'}]},
+      backward: false,
     })
   })
 
@@ -680,6 +695,7 @@ describe('collaborate editing', () => {
     expect(newSelectionA).toEqual({
       anchor: {path: [{_key: '26901064a3c9'}, 'children', {_key: 'ef4627c1c11b'}], offset: 16},
       focus: {path: [{_key: '26901064a3c9'}, 'children', {_key: 'ef4627c1c11b'}], offset: 16},
+      backward: false,
     })
   })
   it('will not result in duplicate keys when overwriting some partial bold text line, as the only content in the editor', async () => {

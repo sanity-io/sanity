@@ -140,6 +140,7 @@ describe('plugin:withEditableAPI: .insertChild()', () => {
                 },
               ],
             },
+            "backward": false,
             "focus": Object {
               "offset": 1,
               "path": Array [

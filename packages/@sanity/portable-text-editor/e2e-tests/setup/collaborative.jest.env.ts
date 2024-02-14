@@ -183,6 +183,9 @@ export default class CollaborationEnvironment extends NodeEnvironment {
           }
 
           const waitForSelection = async (selection: EditorSelection) => {
+            if (selection && typeof selection.backward === 'undefined') {
+              selection.backward = false
+            }
             const value = await valueHandle.evaluate((node): PortableTextBlock[] | undefined =>
               node instanceof HTMLElement && node.innerText
                 ? JSON.parse(node.innerText)
