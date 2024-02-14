@@ -4,7 +4,7 @@ import {
   PortableTextEditor,
   type RangeDecoration,
 } from '@sanity/portable-text-editor'
-import {BoundaryElementProvider, usePortal} from '@sanity/ui'
+import {BoundaryElementProvider, Stack, usePortal} from '@sanity/ui'
 import * as PathUtils from '@sanity/util/paths'
 import {uuid} from '@sanity/uuid'
 import {AnimatePresence} from 'framer-motion'
@@ -77,6 +77,7 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
 
   const [canSubmit, setCanSubmit] = useState<boolean>(false)
 
+  const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
   const [isFullScreen, setIsFullScreen] = useState<boolean>(false)
   const [addedCommentsDecorators, setAddedCommentsDecorators] =
     useState<RangeDecoration[]>(EMPTY_ARRAY)
@@ -351,8 +352,7 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
   // inside the editor.
   const boundaryElement = isFullScreen
     ? portal.elements?.documentScrollElement || document.body
-    : document.body // TODO: replace this with appropriate boundary element
-  // : props.elementProps.ref.current
+    : rootElement
 
   const popoverAuthoringReferenceElement = useAuthoringReferenceElement({
     scrollElement,
@@ -417,13 +417,15 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
         </AnimatePresence>
       </BoundaryElementProvider>
 
-      {props.renderDefault({
-        ...props,
-        onEditorChange,
-        editorRef,
-        rangeDecorations,
-        onFullScreenChange: setIsFullScreen,
-      })}
+      <Stack ref={setRootElement}>
+        {props.renderDefault({
+          ...props,
+          onEditorChange,
+          editorRef,
+          rangeDecorations,
+          onFullScreenChange: setIsFullScreen,
+        })}
+      </Stack>
     </>
   )
 })
