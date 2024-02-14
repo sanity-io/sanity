@@ -115,8 +115,8 @@ jobs:
         # Be sure to update all instances in this file and `pr-cleanup.yml` if updated
         project: [chromium, firefox]
         # Add more shards here if needed
-        shardIndex: [1, 2]
-        shardTotal: [2]
+        shardIndex: [1, 2, 3]
+        shardTotal: [3]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

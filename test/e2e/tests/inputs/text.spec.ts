@@ -21,7 +21,15 @@ test.describe('inputs: text', () => {
     function getRemoteValue() {
       return sanityClient
         .getDocument(`drafts.${documentId}`)
-        .then((doc) => (doc ? doc.simple : null))
+        .then((doc) => {
+          // eslint-disable-next-line no-console
+          console.log('doc', doc)
+          return doc ? doc.simple : null
+        })
+        .catch((err) => {
+          console.error('Error fetching remote value', err)
+          return null
+        })
     }
 
     await page.waitForSelector('data-testid=field-simple', {timeout: 30000})
