@@ -24,12 +24,7 @@ import {
   useCommentsScroll,
   useCommentsSelectedPath,
 } from '../../../src'
-import {
-  getSelectionBoundingRect,
-  isRangeInvalid,
-  type ReferenceElementHookOptions,
-  useAuthoringReferenceElement,
-} from '../helpers'
+import {getSelectionBoundingRect, isRangeInvalid, useAuthoringReferenceElement} from '../helpers'
 import {FloatingButtonPopover} from './FloatingButtonPopover'
 import {InlineCommentInputPopover} from './InlineCommentInputPopover'
 
@@ -283,34 +278,21 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
 
   // The scroll element used to update the reference element for the
   // popover on scroll.
-  const scrollElement = useMemo(() => {
-    if (!isFullScreen) {
-      return portal.elements?.documentScrollElement || document.body
-    }
-
-    return document.body
-  }, [isFullScreen, portal.elements?.documentScrollElement])
+  const scrollElement = isFullScreen
+    ? document.body
+    : portal.elements?.documentScrollElement || document.body
 
   // The boundary element used to position the popover properly
   // inside the editor.
-  const boundaryElement = useMemo(() => {
-    if (!isFullScreen) {
-      return props.elementProps.ref.current
-    }
+  const boundaryElement = isFullScreen
+    ? portal.elements?.documentScrollElement || document.body
+    : props.elementProps.ref.current
 
-    return portal.elements?.documentScrollElement || document.body
-  }, [isFullScreen, portal.elements?.documentScrollElement, props.elementProps.ref])
-
-  const popoverAuthoringReferenceElement = useAuthoringReferenceElement(
-    useMemo(
-      (): ReferenceElementHookOptions => ({
-        scrollElement,
-        disabled: !nextCommentSelection,
-        selector: '[data-inline-comment-state="authoring"]',
-      }),
-      [scrollElement, nextCommentSelection],
-    ),
-  )
+  const popoverAuthoringReferenceElement = useAuthoringReferenceElement({
+    scrollElement,
+    disabled: !nextCommentSelection,
+    selector: '[data-inline-comment-state="authoring"]',
+  })
 
   const selectionReferenceElement = useMemo(() => {
     if (!currentSelectionRect) return null
@@ -322,7 +304,6 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
 
   useEffect(() => {
     if (!currentSelection) return undefined
-
     scrollElement?.addEventListener('wheel', handleSetCurrentSelectionRect)
 
     return () => {
