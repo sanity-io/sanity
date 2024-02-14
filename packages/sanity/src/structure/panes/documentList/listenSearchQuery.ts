@@ -2,6 +2,7 @@ import {type SanityClient, type SanityDocument} from '@sanity/client'
 import {
   asyncScheduler,
   defer,
+  map,
   merge,
   mergeMap,
   type Observable,
@@ -24,6 +25,9 @@ import {
 import {getSearchableTypes, getSearchTypesWithMaxDepth} from 'sanity/_internalBrowser'
 
 import {getExtendedProjection} from '../../structureBuilder/util/getExtendedProjection'
+// FIXME
+// eslint-disable-next-line boundaries/element-types
+import {type TextSearchResponse} from '../../../core/search/text-search/types'
 import {type SortOrder} from './types'
 
 interface ListenQueryOptions {
@@ -117,11 +121,31 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Sanit
             sort: sortBy,
           }
 
-          const {query: createdQuery, params: createdParams} = createSearchQuery(
-            searchTerms,
-            searchOptions,
-          )
-          const doFetch = () => client.observable.fetch(createdQuery, createdParams)
+          const {
+            query: createdQuery,
+            params: createdParams,
+            searchSpec,
+          } = createSearchQuery(searchTerms, searchOptions)
+
+          const doFetch = () => {
+            if (searchQuery.length === 0) {
+              return client.observable.fetch(createdQuery, createdParams)
+            }
+
+            return client.observable
+              .request({
+                uri: `/data/textsearch/${client.config().dataset}`,
+                method: 'POST',
+                json: true,
+                body: {
+                  query: {
+                    string: searchTerms.query,
+                  },
+                  filter: `_type in ${JSON.stringify(searchSpec.map((spec) => spec.typeName))}`,
+                },
+              })
+              .pipe(map(normalizeTextSearchResults))
+          }
 
           if (event.type === 'mutation' && event.visibility !== 'query') {
             // Even though the listener request specifies visibility=query, the events are not guaranteed to be delivered with visibility=query
@@ -134,4 +158,8 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Sanit
       )
     }),
   )
+}
+
+function normalizeTextSearchResults(textSearchResponse: TextSearchResponse): SanityDocument[] {
+  return textSearchResponse.hits.map((hit) => hit.attributes)
 }
