@@ -1,34 +1,36 @@
+import {describe, expect, it} from '@jest/globals'
+
 import {type CommentThreadItem} from '../types'
 import {buildRangeDecorationSelectionsFromComments} from '../utils'
 
 describe('comments: buildRangeDecorationSelectionsFromComments', () => {
   it('creates initial ranges', () => {
-    const decorators = buildRangeDecorationSelectionsFromComments({
+    const decoratorRanges = buildRangeDecorationSelectionsFromComments({
       value: initialValue,
       comments: initialComments,
     })
-    expect(decorators).toMatchSnapshot()
+    expect(decoratorRanges.map((r) => r.selection)).toMatchSnapshot()
   })
   it('allows something to be bolded before the range', () => {
-    const decorators = buildRangeDecorationSelectionsFromComments({
+    const decoratorRanges = buildRangeDecorationSelectionsFromComments({
       value: boldedBeforeValue,
       comments: initialComments,
     })
-    expect(decorators).toMatchSnapshot()
+    expect(decoratorRanges.map((r) => r.selection)).toMatchSnapshot()
   })
   it('allows something to be bolded inside the range', () => {
-    const decorators = buildRangeDecorationSelectionsFromComments({
+    const decoratorRanges = buildRangeDecorationSelectionsFromComments({
       value: boldedInsideValue,
       comments: initialComments,
     })
-    expect(decorators).toMatchSnapshot()
+    expect(decoratorRanges.map((r) => r.selection)).toMatchSnapshot()
   })
   it('allows something to be bolded inside and outside of the range', () => {
-    const decorators = buildRangeDecorationSelectionsFromComments({
+    const decoratorRanges = buildRangeDecorationSelectionsFromComments({
       value: boldedInsideAndOutsideValue,
       comments: initialComments,
     })
-    expect(decorators).toMatchSnapshot()
+    expect(decoratorRanges.map((r) => r.selection)).toMatchSnapshot()
   })
 })
 
@@ -137,7 +139,7 @@ const initialComments: CommentThreadItem[] = [
       value: [
         {
           _key: '6222e4072b6e',
-          text: 'there',
+          text: 'Hello <comment>there</comment> world',
         },
       ],
     },

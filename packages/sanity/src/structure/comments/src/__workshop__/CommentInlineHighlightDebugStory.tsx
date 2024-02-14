@@ -5,18 +5,20 @@ import {
   type EditorChange,
   PortableTextEditable,
   PortableTextEditor,
+  type RangeDecoration,
 } from '@sanity/portable-text-editor'
 import {Schema} from '@sanity/schema'
 import {defineArrayMember, defineField, type PortableTextBlock} from '@sanity/types'
-import {Button, Card, Code, Container, Flex, Stack, Text} from '@sanity/ui'
+import {Box, Button, Card, Code, Container, Flex, Label, Stack, Text} from '@sanity/ui'
 import {uuid} from '@sanity/uuid'
-import {useCallback, useMemo, useRef, useState} from 'react'
+import {isEqual} from 'lodash'
+import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {useCurrentUser} from 'sanity'
 
 import {type CommentDocument} from '../types'
 import {
   buildCommentThreadItems,
-  buildRangeDecorators,
+  buildRangeDecorations,
   buildTextSelectionFromFragment,
   currentSelectionIsOverlappingWithComment,
 } from '../utils'
@@ -25,13 +27,13 @@ const INLINE_STYLE: React.CSSProperties = {outline: 'none'}
 
 const INITIAL_VALUE: PortableTextBlock[] = [
   {
-    _key: '6222e4072b6e',
+    _key: '3d4c655d6844',
     children: [
       {
         _type: 'span',
         marks: [],
-        text: 'The passage is attributed to an unknown typesetter in the 15th century who is thought to have scrambled parts of. ',
-        _key: '9d9c95878a6e0',
+        text: 'A floppy disk or floppy diskette (casually referred to as a floppy or a diskette) is a type of disk storage composed of a thin and flexible disk of a magnetic storage medium in a square or nearly square plastic enclosure lined with a fabric that removes dust particles from the spinning disk. Floppy disks store digital data which can be read and written when the disk is inserted into a floppy disk drive (FDD) connected to or inside a computer or other device.',
+        _key: '0eec07fc05500',
       },
     ],
     markDefs: [],
@@ -39,18 +41,32 @@ const INITIAL_VALUE: PortableTextBlock[] = [
     style: 'normal',
   },
   {
-    _key: 'f0de711f24bd',
-    markDefs: [],
-    _type: 'block',
-    style: 'normal',
+    _key: '0252abaf4c95',
     children: [
       {
         _type: 'span',
         marks: [],
-        _key: 'a9a55f97580a',
-        text: "Cicero's De Finibus Bonorum et Malorum for use in a type specimen book. It usually begins with.",
+        text: 'The first floppy disks, invented and made by IBM, had a disk diameter of 8 inches (203.2 mm).[1] Subsequently, the 5¼-inch and then the 3½-inch (90 mm) became a ubiquitous form of data storage and transfer into the first years of the 21st century.[2] 3½-inch floppy disks can still be used with an external USB floppy disk drive. USB drives for 5¼-inch, 8-inch, and other-size floppy disks are rare to non-existent. Some individuals and organizations continue to use older equipment to read or transfer data from floppy disks.',
+        _key: '887af29b60f70',
       },
     ],
+    markDefs: [],
+    _type: 'block',
+    style: 'normal',
+  },
+  {
+    _key: '042540219e8f',
+    children: [
+      {
+        _type: 'span',
+        marks: [],
+        text: 'Floppy disks were so common in late 20th-century culture that many electronic and software programs continue to use save icons that look like floppy disks well into the 21st century, as a form of skeuomorphic design. While floppy disk drives still have some limited uses, especially with legacy industrial computer equipment, they have been superseded by data storage methods with much greater data storage capacity and data transfer speed, such as USB flash drives, memory cards, optical discs, and storage available through local computer networks and cloud storage.',
+        _key: '14a1d1408eac0',
+      },
+    ],
+    markDefs: [],
+    _type: 'block',
+    style: 'normal',
   },
 ]
 
@@ -110,6 +126,7 @@ export default function CommentInlineHighlightDebugStory() {
   const [canAddComment, setCanAddComment] = useState<boolean>(false)
   const editorRef = useRef<PortableTextEditor | null>(null)
   const currentUser = useCurrentUser()
+  const [rangeDecorations, setRangeDecorations] = useState<RangeDecoration[]>([])
 
   const [currentHoveredCommentId, setCurrentHoveredCommentId] = useState<string | null>(null)
 
@@ -130,9 +147,9 @@ export default function CommentInlineHighlightDebugStory() {
     })
   }, [commentDocuments, currentUser, value])
 
-  const rangeDecorations = useMemo(
+  const buildRangeDecorationsCallback = useCallback(
     () =>
-      buildRangeDecorators({
+      buildRangeDecorations({
         comments,
         value,
         onDecoratorHoverStart: setCurrentHoveredCommentId,
@@ -154,6 +171,41 @@ export default function CommentInlineHighlightDebugStory() {
         setValue(editorStateValue || [])
       }
 
+      if (change.type === 'rangeDecorationMoved') {
+        setRangeDecorations(buildRangeDecorationsCallback())
+        const commentId = change.rangeDecoration.payload?.commentId as undefined | string
+        const range = change.rangeDecoration.payload?.range as
+          | undefined
+          | {_key: string; text: string}
+        if (commentId && range) {
+          setCommentDocuments((prev) => {
+            return prev.map((comment) => {
+              if (comment._id === commentId) {
+                const newComment = {
+                  ...comment,
+                  target: {
+                    ...comment.target,
+                    path: {
+                      ...comment.target.path,
+                      selection: {
+                        type: 'text',
+                        value: [
+                          ...(comment.target.path.selection?.value
+                            .filter((r) => r._key !== range._key)
+                            .concat(range) || []),
+                        ],
+                      },
+                    },
+                  },
+                } as CommentDocument
+                return newComment
+              }
+              return comment
+            })
+          })
+        }
+      }
+
       if (change.type === 'selection') {
         const overlapping = currentSelectionIsOverlappingWithComment({
           currentSelection: change.selection,
@@ -165,16 +217,38 @@ export default function CommentInlineHighlightDebugStory() {
         setCanAddComment(!overlapping && hasRange)
       }
     },
-    [rangeDecorations],
+    [buildRangeDecorationsCallback, rangeDecorations],
   )
+
+  useEffect(() => {
+    setRangeDecorations((prev) => {
+      const next = buildRangeDecorationsCallback()
+      if (
+        !isEqual(
+          prev.map((d) => d.payload),
+          next.map((d) => d.payload),
+        )
+      ) {
+        return next
+      }
+      return prev
+    })
+  }, [buildRangeDecorationsCallback])
 
   const handleAddComment = useCallback(() => {
     if (!editorRef.current) return
     const fragment = PortableTextEditor.getFragment(editorRef.current) || []
+    const editorSelection = PortableTextEditor.getSelection(editorRef.current)
+    const editorValue = PortableTextEditor.getValue(editorRef.current)
+    if (!editorValue) return
 
-    const selection = buildTextSelectionFromFragment({fragment})
+    const textSelection = buildTextSelectionFromFragment({
+      fragment,
+      value: editorValue,
+      selection: editorSelection,
+    })
 
-    if (!selection) return
+    if (!textSelection) return
 
     const comment: CommentDocument = {
       _createdAt: new Date().toISOString(),
@@ -192,7 +266,7 @@ export default function CommentInlineHighlightDebugStory() {
           field: 'body',
           selection: {
             type: 'text',
-            value: selection.value,
+            value: textSelection.value,
           },
         },
         document: {
@@ -206,7 +280,8 @@ export default function CommentInlineHighlightDebugStory() {
     }
 
     setCommentDocuments((prev) => [...prev, comment])
-  }, [currentUser?.id])
+    setRangeDecorations(buildRangeDecorationsCallback())
+  }, [buildRangeDecorationsCallback, currentUser?.id])
 
   return (
     <Flex align="center" justify="center" height="fill" sizing="border" overflow="hidden">
@@ -261,6 +336,9 @@ export default function CommentInlineHighlightDebugStory() {
 
       <Flex direction="column" flex={1} height="fill">
         <Card flex={1} borderRight padding={4} overflow="auto">
+          <Box marginBottom={4}>
+            <Label>Persisted Portable Text</Label>
+          </Box>
           <Code size={0} language="typescript">
             {JSON.stringify(value, null, 2)}
           </Code>
@@ -269,6 +347,9 @@ export default function CommentInlineHighlightDebugStory() {
 
       <Flex direction="column" flex={1} height="fill" overflow="auto">
         <Card flex={1} padding={4} borderRight>
+          <Box marginBottom={4}>
+            <Label>Persisted comment object</Label>
+          </Box>
           <Code size={0} language="typescript">
             {JSON.stringify(comments, null, 2)}
           </Code>
@@ -277,6 +358,9 @@ export default function CommentInlineHighlightDebugStory() {
 
       <Flex direction="column" flex={1} height="fill" overflow="auto">
         <Card flex={1} padding={4}>
+          <Box marginBottom={4}>
+            <Label>In-memory Portable Text Decorator Range</Label>
+          </Box>
           <Code size={0} language="typescript">
             {JSON.stringify(rangeDecorations, null, 2)}
           </Code>
