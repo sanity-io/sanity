@@ -27,7 +27,7 @@ import {getSearchableTypes, getSearchTypesWithMaxDepth} from 'sanity/_internalBr
 import {getExtendedProjection} from '../../structureBuilder/util/getExtendedProjection'
 // FIXME
 // eslint-disable-next-line boundaries/element-types
-import {type TextSearchResponse} from '../../../core/search/text-search/types'
+import {type TextSearchResponse} from '../../../core/search'
 import {type SortOrder} from './types'
 
 interface ListenQueryOptions {
