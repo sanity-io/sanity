@@ -20,7 +20,7 @@
     "check:test": "run-s test -- --silent",
     "check:types": "tsc --build",
     "chore:format:fix": "prettier --cache --write .",
-    "chore:lint:fix": "check:lint -- --quiet --fix",
+    "chore:lint:fix": "pnpm check:lint -- --quiet --fix",
     "chore:normalize-versions": "node -r esbuild-register scripts/normalizeDependencyVersions.ts",
     "clean": "run-s build:clean clean:deps",
     "clean:deps": "rimraf packages/@sanity/*/node_modules packages/*/node_modules node_modules",
