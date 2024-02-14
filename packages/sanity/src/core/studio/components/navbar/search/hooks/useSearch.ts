@@ -16,7 +16,7 @@ import {
 
 import {useClient} from '../../../../../hooks'
 import {
-  createWeightedSearch,
+  createSearch,
   type SearchOptions,
   type SearchTerms,
   type WeightedHit,
@@ -85,7 +85,7 @@ export function useSearch({
 
   const searchWeighted = useMemo(
     () =>
-      createWeightedSearch(
+      createSearch(
         getSearchTypesWithMaxDepth(getSearchableOmnisearchTypes(schema), maxFieldDepth),
         client,
         {
