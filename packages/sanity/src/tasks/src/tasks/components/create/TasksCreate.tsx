@@ -4,10 +4,10 @@ import {PortableTextBlock} from '@sanity/types'
 import {Button} from '../../../../../ui-components'
 import {useTasks} from '../../context'
 import {CommentInput, useMentionOptions} from '../../../../../structure/comments'
-import {useCurrentUser} from '../../../../../core'
 import {TaskDocument} from '../../types'
 import {RemoveTask} from '../remove/RemoveTask'
 import {WarningText} from './WarningText'
+import {useCurrentUser} from 'sanity'
 
 type ModeProps =
   | {

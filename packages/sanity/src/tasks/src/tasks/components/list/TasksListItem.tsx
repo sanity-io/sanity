@@ -1,22 +1,21 @@
 import {Flex, Stack, Text, Card, CardProps, TextSkeleton} from '@sanity/ui'
 import styled from 'styled-components'
-import {useEffect, useMemo, useState} from 'react'
+import {forwardRef, useEffect, useMemo, useState} from 'react'
 import {CalendarIcon, DocumentIcon, UserIcon} from '@sanity/icons'
+import {SanityDocument} from '@sanity/types'
+import {TaskDocument} from '../../types'
 import {
   unstable_useValuePreview as useValuePreview,
   useDateTimeFormat,
   useUser,
   useSchema,
   useClient,
-} from '../../../../../core'
-import {SanityDocument} from '@sanity/types'
+} from 'sanity'
+import {IntentLink} from 'sanity/router'
 
-interface TasksListItemProps {
-  title?: string
-  assignedTo?: string
-  dueBy?: string
+interface TasksListItemProps
+  extends Pick<TaskDocument, 'title' | 'assignedTo' | 'dueBy' | 'target'> {
   onSelect: () => void
-  target?: any
 }
 
 export const ThreadCard = styled(Card).attrs<CardProps>(({tone}) => ({
@@ -55,7 +54,7 @@ function AssignedToSection({userId}: {userId: string}) {
   )
 }
 
-function getTargetDocumentMeta(target: any) {
+function getTargetDocumentMeta(target?: TaskDocument['target']) {
   if (!target?.document._ref) {
     return undefined
   }
@@ -124,17 +123,31 @@ function DocumentPreview({documentId, documentType}: {documentId: string; docume
     }
   }, [client, documentId, documentType])
 
+  const Link = useMemo(
+    () =>
+      forwardRef(function LinkComponent(linkProps, ref: React.ForwardedRef<HTMLAnchorElement>) {
+        return (
+          <IntentLink
+            {...linkProps}
+            intent="edit"
+            params={{id: documentId, type: documentType}}
+            ref={ref}
+          />
+        )
+      }),
+    [documentId, documentType],
+  )
+
   if (!documentSchema) {
     return null
   }
-
   return (
     <Flex align="center" gap={1}>
       <DocumentIcon />
       {isLoading ? (
         <TextSkeleton size={1} muted />
       ) : (
-        <Text size={1} muted>
+        <Text size={1} muted as={Link}>
           {value?.title ?? documentSchema.name}
         </Text>
       )}
