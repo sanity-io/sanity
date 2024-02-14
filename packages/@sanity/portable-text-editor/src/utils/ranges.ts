@@ -1,4 +1,4 @@
-import {type BaseRange, type Editor, type Range} from 'slate'
+import {type BaseRange, type Editor, type Operation, Path, Range} from 'slate'
 
 import {
   type EditorSelection,
@@ -54,4 +54,60 @@ export function toSlateRange(selection: EditorSelection, editor: Editor): Range 
   }
   const range = anchor && focus ? {anchor, focus} : null
   return range
+}
+
+export function moveRangeByOperation(range: Range, operation: Operation): Range | undefined {
+  const isOverlapping = 'path' in operation && Range.includes(range, operation.path)
+  if (!isOverlapping) {
+    return undefined
+  }
+  const rangeCopy = {...range}
+  if (
+    operation.type === 'insert_text' &&
+    operation.offset + operation.text.length <= range.anchor.offset &&
+    operation.offset + operation.text.length <= range.focus.offset
+  ) {
+    rangeCopy.anchor.offset += operation.text.length
+    rangeCopy.focus.offset += operation.text.length
+  } else if (
+    operation.type === 'remove_text' &&
+    operation.offset - operation.text.length <= range.anchor.offset &&
+    operation.offset - operation.text.length <= range.focus.offset
+  ) {
+    rangeCopy.anchor.offset -= operation.text.length
+    rangeCopy.focus.offset -= operation.text.length
+  } else if (operation.type === 'split_node') {
+    if (
+      operation.path.length === 2 &&
+      operation.path[0] === range.anchor.path[0] &&
+      operation.path[0] === range.focus.path[0] &&
+      operation.position <= range.anchor.offset &&
+      operation.position <= range.focus.offset
+    ) {
+      rangeCopy.anchor.offset -= operation.position
+      rangeCopy.focus.offset -= operation.position
+      rangeCopy.anchor.path = Path.next(operation.path)
+      rangeCopy.focus.path = range.anchor.path
+    } else if (operation.path.length === 1) {
+      rangeCopy.anchor.path = Path.next(operation.path)
+      rangeCopy.focus.path = Path.next(operation.path)
+    }
+  } else if (operation.type === 'merge_node') {
+    if (
+      operation.path.length === 2 &&
+      operation.path[0] === range.anchor.path[0] &&
+      operation.path[0] === range.focus.path[0] &&
+      operation.position >= range.anchor.offset &&
+      operation.position >= range.focus.offset
+    ) {
+      rangeCopy.anchor.offset += operation.position
+      rangeCopy.focus.offset += operation.position
+      rangeCopy.anchor.path = Path.previous(operation.path)
+      rangeCopy.focus.path = range.anchor.path
+    } else if (operation.path.length === 1) {
+      rangeCopy.anchor.path = Path.previous(operation.path)
+      rangeCopy.focus.path = Path.previous(operation.path)
+    }
+  }
+  return rangeCopy
 }

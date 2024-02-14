@@ -19,16 +19,17 @@ import {
   type ClipboardEvent,
   type FocusEvent,
   type KeyboardEvent,
+  type PropsWithChildren,
   type ReactElement,
   type RefObject,
-  type PropsWithChildren,
 } from 'react'
 import {type Observable, type Subject} from 'rxjs'
 import {type Descendant, type Node as SlateNode, type Operation as SlateOperation} from 'slate'
 import {type ReactEditor} from 'slate-react'
+import {type DOMNode} from 'slate-react/dist/utils/dom'
+
 import {type PortableTextEditor} from '../editor/PortableTextEditor'
-import {DOMNode} from 'slate-react/dist/utils/dom'
-import type {Patch} from '../types/patch'
+import {type Patch} from '../types/patch'
 
 /** @beta */
 export interface EditableAPIDeleteOptions {
@@ -105,7 +106,6 @@ export interface PortableTextSlateEditor extends ReactEditor {
   isTextSpan: (value: unknown) => value is PortableTextSpan
   isListBlock: (value: unknown) => value is PortableTextListBlock
   subscriptions: (() => () => void)[]
-  nodeToRangeDecorations?: Map<Node, Range[]>
 
   /**
    * Increments selected list items levels, or decrements them if `reverse` is true.
@@ -285,6 +285,16 @@ export type ErrorChange = {
 }
 
 /**
+ * If a rangeDecoration was moved (for instance by user adding characters in front of it),
+ * this event will be emitted with the new range selection and the original range decoration.
+ * @beta */
+export type RangeDecorationMovedChange = {
+  type: 'rangeDecorationMoved'
+  newRangeSelection: EditorSelection
+  rangeDecoration: RangeDecoration
+}
+
+/**
  * The editor has invalid data in the value that can be resolved by the user
  * @beta */
 export type InvalidValueResolution = {
@@ -355,6 +365,7 @@ export type EditorChange =
   | LoadingChange
   | MutationChange
   | PatchChange
+  | RangeDecorationMovedChange
   | ReadyChange
   | RedoChange
   | SelectionChange
@@ -534,6 +545,10 @@ export interface RangeDecoration {
    * The editor content selection range
    */
   selection: EditorSelection
+  /**
+   * The editor content selection range
+   */
+  payload?: Record<string, unknown>
 }
 
 /** @internal */
