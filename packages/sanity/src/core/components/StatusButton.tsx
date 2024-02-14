@@ -6,6 +6,7 @@ import {Button, type ButtonProps} from '../../ui-components'
 
 /** @hidden @beta */
 export type StatusButtonProps = ButtonProps & {
+  forwardedAs?: string
   disabled?: boolean | {reason: ReactNode}
   mode?: ButtonProps['mode']
   iconRight?: undefined
