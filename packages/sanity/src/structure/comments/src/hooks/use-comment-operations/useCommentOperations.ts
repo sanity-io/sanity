@@ -11,6 +11,7 @@ import {
   type CommentOperations,
   type CommentPostPayload,
   type CommentReactionOption,
+  type CommentUpdateOperationOptions,
   type CommentUpdatePayload,
 } from '../../types'
 import {useCommentsIntent} from '../useCommentsIntent'
@@ -138,8 +139,13 @@ export function useCommentOperations(
   )
 
   const handleUpdate = useCallback(
-    async (id: string, comment: CommentUpdatePayload) => {
+    async (
+      id: string,
+      comment: CommentUpdatePayload,
+      updateOpts?: CommentUpdateOperationOptions,
+    ) => {
       if (!client) return
+      const {throttle} = updateOpts || {}
 
       // Generate a new transaction ID to use for the update operation transaction
       const nextTransactionId = uuid()
@@ -156,6 +162,7 @@ export function useCommentOperations(
       await updateOperation({
         client,
         comment,
+        throttle,
         id,
         onUpdate,
         transactionId: nextTransactionId,

@@ -11,6 +11,10 @@ export interface Loadable<T> {
   loading: boolean
 }
 
+export interface CommentUpdateOperationOptions {
+  throttle: boolean
+}
+
 /**
  * @beta
  * @hidden
@@ -19,7 +23,11 @@ export interface CommentOperations {
   create: (comment: CommentCreatePayload) => Promise<void>
   react: (id: string, reaction: CommentReactionOption) => Promise<void>
   remove: (id: string) => Promise<void>
-  update: (id: string, comment: CommentUpdatePayload) => Promise<void>
+  update: (
+    id: string,
+    comment: CommentUpdatePayload,
+    opts?: CommentUpdateOperationOptions,
+  ) => Promise<void>
 }
 
 /**

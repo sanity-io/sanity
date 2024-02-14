@@ -22,6 +22,7 @@ import {
   buildTextSelectionFromFragment,
   CommentInlineHighlightSpan,
   type CommentMessage,
+  type CommentUpdatePayload,
   currentSelectionIsOverlappingWithComment,
   hasCommentMessageValue,
   useComments,
@@ -249,6 +250,7 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
         let currentBlockKey: string | undefined
         let previousBlockKey: string | undefined
         let newRange: {text: string; _key: string} | undefined
+
         if (
           change.newRangeSelection?.focus.path[0] &&
           isKeySegment(change.newRangeSelection.focus.path[0]) &&
@@ -257,15 +259,18 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
         ) {
           previousBlockKey = change.rangeDecoration.selection?.focus.path[0]?._key
           currentBlockKey = change.newRangeSelection.focus.path[0]._key
+
           const oldRange = change.rangeDecoration.payload?.range as
             | undefined
             | {_key: string; text: string}
+
           newRange = {_key: currentBlockKey, text: oldRange?.text || ''}
         }
 
         const comment = getComment(commentId || '')
+
         if (comment && newRange) {
-          operation.update(comment._id, {
+          const nextComment: CommentUpdatePayload = {
             target: {
               ...comment.target,
               path: {
@@ -275,11 +280,15 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
                   value: [
                     ...(comment.target.path.selection?.value
                       .filter((r) => r._key !== previousBlockKey && r._key !== currentBlockKey)
-                      .concat(newRange) || []),
+                      .concat(newRange) || EMPTY_ARRAY),
                   ],
                 },
               },
             },
+          }
+
+          operation.update(comment._id, nextComment, {
+            throttle: true,
           })
         }
       }
@@ -342,7 +351,8 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
   // inside the editor.
   const boundaryElement = isFullScreen
     ? portal.elements?.documentScrollElement || document.body
-    : props.elementProps.ref.current
+    : document.body // TODO: replace this with appropriate boundary element
+  // : props.elementProps.ref.current
 
   const popoverAuthoringReferenceElement = useAuthoringReferenceElement({
     scrollElement,
@@ -375,9 +385,7 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
     textComments,
   ])
 
-  const showFloatingButton = Boolean(
-    currentSelection && canSubmit && selectionReferenceElement && !currentSelectionIsOverlapping,
-  )
+  const showFloatingButton = Boolean(currentSelection && canSubmit && selectionReferenceElement)
 
   const showFloatingInput = Boolean(nextCommentSelection && popoverAuthoringReferenceElement)
 
@@ -400,6 +408,7 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
 
           {showFloatingButton && !showFloatingInput && (
             <FloatingButtonPopover
+              disabled={currentSelectionIsOverlapping}
               onClick={handleSelectCurrentSelection}
               onClickOutside={resetStates}
               referenceElement={selectionReferenceElement}
