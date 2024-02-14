@@ -1,4 +1,4 @@
-import {useMemo} from 'react'
+import {Dispatch, SetStateAction, useMemo} from 'react'
 import {Box, Card} from '@sanity/ui'
 import {TaskDocument} from '../../types'
 import {TasksList} from '../list/TasksList'
@@ -20,7 +20,7 @@ export function TaskSidebarContent({
   activeDocumentId?: string
   onTaskSelect: (id: string) => void
   activeTabId: SidebarTabsIds
-  setActiveTabId: (id: SidebarTabsIds) => void
+  setActiveTabId: Dispatch<SetStateAction<SidebarTabsIds>>
 }) {
   const currentUser = useCurrentUser()
   const filteredList = useMemo(() => {
