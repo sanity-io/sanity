@@ -76,8 +76,9 @@
     "lodash": "^4.17.21"
   },
   "devDependencies": {
-    "@sanity/client": "^6.12.4",
+    "@sanity/client": "^6.13.3",
     "@types/is-hotkey": "^0.1.10",
+    "@types/lodash": "^4.14.202",
     "react": "^18.2.0",
     "sanity": "3.29.1",
     "styled-components": "^6.1.6"

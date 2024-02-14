@@ -96,7 +96,7 @@
     "@jest/globals": "^29.7.0",
     "@optimize-lodash/rollup-plugin": "^4.0.4",
     "@playwright/test": "^1.39.0",
-    "@sanity/client": "^6.12.4",
+    "@sanity/client": "^6.13.3",
     "@sanity/eslint-config-i18n": "^1.0.0",
     "@sanity/eslint-config-studio": "^3.0.1",
     "@sanity/pkg-utils": "^3.3.2",
