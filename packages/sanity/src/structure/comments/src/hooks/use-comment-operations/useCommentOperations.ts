@@ -2,7 +2,7 @@ import {type SanityClient} from '@sanity/client'
 import {type CurrentUser, type SchemaType} from '@sanity/types'
 import {uuid} from '@sanity/uuid'
 import {useCallback, useMemo} from 'react'
-import {useWorkspace} from 'sanity'
+import {useTools} from 'sanity'
 import {useRouterState} from 'sanity/router'
 
 import {
@@ -72,7 +72,7 @@ export function useCommentOperations(
       [],
     ),
   )
-  const {tools} = useWorkspace()
+  const tools = useTools()
 
   const activeTool = useMemo(
     () => tools.find((tool) => tool.name === activeToolName),
