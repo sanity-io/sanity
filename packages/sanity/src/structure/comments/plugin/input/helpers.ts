@@ -33,6 +33,7 @@ interface RectFromElementsHookOptions {
 
 /**
  * A hook that returns a DOMRect from an array of elements.
+ * This is needed because the Range Decoration API might render se
  */
 function useRectFromElements(props: RectFromElementsHookOptions): DOMRect | null {
   const {scrollElement, disabled, selector} = props
