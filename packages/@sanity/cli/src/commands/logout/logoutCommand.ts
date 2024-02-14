@@ -14,7 +14,7 @@ const logoutCommand: CliCommandDefinition = {
   name: 'logout',
   helpText,
   signature: 'logout',
-  description: 'Logs out of the Sanity.io session',
+  description: 'Logs out the CLI from the current user session',
   async action(args, {output, apiClient}) {
     const cfg = getUserConfig()
 

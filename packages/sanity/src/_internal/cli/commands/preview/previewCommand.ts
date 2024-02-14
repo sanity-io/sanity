@@ -23,7 +23,7 @@ Examples
 const previewCommand: CliCommandDefinition = {
   name: 'preview',
   signature: '[BUILD_OUTPUT_DIR] [--port <port>] [--host <host>]',
-  description: 'Starts a local web server for previewing production build',
+  description: 'Starts a server to preview a production build of Sanity Studio',
   action: async (
     args: CliCommandArguments<StartPreviewServerCommandFlags>,
     context: CliCommandContext,

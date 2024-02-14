@@ -7,7 +7,7 @@ checks the npm registry for the latest available versions.`
 export default {
   name: 'versions',
   signature: '',
-  description: 'Shows the installed versions of Sanity CLI and core components',
+  description: 'Shows installed versions of Sanity Studio and components',
   helpText: help,
   action: printVersionResult,
 }
