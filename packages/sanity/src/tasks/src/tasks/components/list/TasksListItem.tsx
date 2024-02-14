@@ -1,8 +1,8 @@
 import {Flex, Stack, Text, Card, CardProps, TextSkeleton} from '@sanity/ui'
 import styled from 'styled-components'
 import {forwardRef, useEffect, useMemo, useState} from 'react'
-import {CalendarIcon, DocumentIcon, UserIcon} from '@sanity/icons'
 import {SanityDocument} from '@sanity/types'
+import {CalendarIcon, DocumentIcon, UserIcon} from '@sanity/icons'
 import {TaskDocument} from '../../types'
 import {
   unstable_useValuePreview as useValuePreview,
@@ -11,10 +11,12 @@ import {
   useSchema,
   useClient,
 } from 'sanity'
+import {TasksStatus} from './TasksStatus'
 import {IntentLink} from 'sanity/router'
 
 interface TasksListItemProps
   extends Pick<TaskDocument, 'title' | 'assignedTo' | 'dueBy' | 'target'> {
+  documentId: string
   onSelect: () => void
 }
 
@@ -65,7 +67,14 @@ function getTargetDocumentMeta(target?: TaskDocument['target']) {
   }
 }
 
-export function TasksListItem({assignedTo, title, dueBy, target, onSelect}: TasksListItemProps) {
+export function TasksListItem({
+  assignedTo,
+  title,
+  dueBy,
+  target,
+  onSelect,
+  documentId,
+}: TasksListItemProps) {
   const dateFormatter = useDateTimeFormat({
     dateStyle: 'medium',
   })
@@ -78,9 +87,12 @@ export function TasksListItem({assignedTo, title, dueBy, target, onSelect}: Task
   return (
     <ThreadCard tone={undefined}>
       <Stack space={2}>
-        <Title size={1} weight="semibold" onClick={onSelect}>
-          {title || 'Untitled'}
-        </Title>
+        <Flex>
+          <TasksStatus documentId={documentId} />
+          <Title size={1} weight="semibold" onClick={onSelect}>
+            {title || 'Untitled'}
+          </Title>
+        </Flex>
         {assignedTo && <AssignedToSection userId={assignedTo} />}
         {dueByeDisplayValue && (
           <Flex align="center" gap={1}>

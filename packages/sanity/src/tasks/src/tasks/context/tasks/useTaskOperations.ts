@@ -48,18 +48,12 @@ export function useTaskOperations(opts: TaskOperationsOptions): TaskOperations {
   )
 
   const handleEdit = useCallback(
-    async (id: string, task: TaskEditPayload) => {
+    async (id: string, set: TaskEditPayload) => {
       try {
         if (!client) {
           throw new Error('No client. Unable to create task.')
         }
-        const edited = (await client
-          .patch(id)
-          .set({
-            title: task.title,
-            description: task.description,
-          })
-          .commit()) as TaskDocument
+        const edited = (await client.patch(id).set(set).commit()) as TaskDocument
         return edited
       } catch (e) {
         // TODO: Handle error
