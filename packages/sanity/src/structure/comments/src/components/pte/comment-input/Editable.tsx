@@ -5,6 +5,8 @@ import {
 } from '@sanity/portable-text-editor'
 import {isPortableTextSpan, isPortableTextTextBlock} from '@sanity/types'
 import {useClickOutside} from '@sanity/ui'
+// eslint-disable-next-line camelcase
+import {getTheme_v2} from '@sanity/ui/theme'
 import {isEqual} from 'lodash'
 import {type KeyboardEvent, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {useTranslation} from 'sanity'
@@ -21,8 +23,10 @@ const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['bottom
 const INLINE_STYLE: React.CSSProperties = {outline: 'none'}
 const EMPTY_ARRAY: [] = []
 
-const PlaceholderWrapper = styled.span(() => {
+const PlaceholderWrapper = styled.span((props) => {
+  const {color} = getTheme_v2(props.theme)
   return css`
+    color: ${color.input.default.enabled.placeholder};
     overflow: hidden;
     text-overflow: ellipsis;
     text-wrap: nowrap;

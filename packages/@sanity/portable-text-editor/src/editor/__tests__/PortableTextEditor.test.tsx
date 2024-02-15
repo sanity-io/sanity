@@ -64,7 +64,7 @@ describe('initialization', () => {
           >
             <span
               contenteditable="false"
-              style="opacity: 0.5; position: absolute; user-select: none; pointer-events: none; left: 0px; right: 0px;"
+              style="position: absolute; user-select: none; pointer-events: none; left: 0px; right: 0px;"
             >
               Jot something down here
             </span>

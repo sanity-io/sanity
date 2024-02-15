@@ -55,7 +55,6 @@ import {PortableTextEditor} from './PortableTextEditor'
 const debug = debugWithName('component:Editable')
 
 const PLACEHOLDER_STYLE: CSSProperties = {
-  opacity: 0.5,
   position: 'absolute',
   userSelect: 'none',
   pointerEvents: 'none',
