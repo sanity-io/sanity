@@ -18,18 +18,23 @@ test.describe('inputs: text', () => {
   test('correctly applies kanji edits', async ({page, sanityClient, createDraftDocument}) => {
     const documentId = await createDraftDocument('/test/content/input-ci;textsTest')
 
-    function getRemoteValue() {
-      return sanityClient
-        .getDocument(`drafts.${documentId}`)
-        .then((doc) => {
-          // eslint-disable-next-line no-console
-          console.log('doc', `drafts.${documentId}`, doc)
-          return doc ? doc.simple : null
+    async function getRemoteValue() {
+      try {
+        const docs = await sanityClient.fetch(`*[_type == $type] { _id, _type, simple }`, {
+          type: 'textsTest',
         })
-        .catch((err) => {
-          console.error('Error fetching remote value', err)
-          return null
-        })
+
+        // eslint-disable-next-line no-console
+        console.log('docs', JSON.stringify(docs, null, 2))
+        const doc = await sanityClient.getDocument(`drafts.${documentId}`)
+
+        // eslint-disable-next-line no-console
+        console.log('doc', `drafts.${documentId}`, doc)
+        return doc ? doc.simple : null
+      } catch (err) {
+        console.error('Error fetching remote value', err)
+        return null
+      }
     }
 
     await page.waitForSelector('data-testid=field-simple', {timeout: 30000})
