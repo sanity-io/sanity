@@ -27,7 +27,8 @@
     "depcheck": "pnpm check:deps",
     "deploy:movies": "pnpm build && cd examples/movies-studio && sanity deploy",
     "deploy:test": "pnpm build && cd dev/test-studio && sanity deploy",
-    "dev": "pnpm start",
+    "dev": "pnpm dev:test-studio",
+    "dev:cli": "pnpm watch",
     "dev:design-studio": "pnpm --filter design-studio dev",
     "dev:embedded-studio": "pnpm --filter embedded-studio dev",
     "dev:i18n": "SANITY_STUDIO_DEBUG_I18N=triangles pnpm start",
@@ -80,7 +81,7 @@
     "test:e2e": "playwright test",
     "tsdoc:dev": "sanity-tsdoc dev",
     "updated": "lerna updated",
-    "watch": "lerna run --parallel --scope '{@sanity/*,sanity}' watch"
+    "watch": "lerna run --parallel --stream --scope '{@sanity/*,sanity}' watch"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
