@@ -425,6 +425,9 @@ importers:
       '@sanity/portable-text-editor':
         specifier: 3.29.1
         version: link:../../packages/@sanity/portable-text-editor
+      '@sanity/preview-url-secret':
+        specifier: ^1.6.1
+        version: 1.6.1(@sanity/client@6.12.4)
       '@sanity/react-loader':
         specifier: ^1.8.3
         version: 1.8.3(@sanity/client@6.12.4)(react@18.2.0)
