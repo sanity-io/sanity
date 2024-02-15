@@ -15,6 +15,7 @@ import {type RouterState, useRouterState} from 'sanity/router'
 import styled from 'styled-components'
 
 import {Button, TooltipDelayGroupProvider} from '../../../../ui-components'
+import {type NavbarProps} from '../../../config/studio/types'
 import {isDev} from '../../../environment'
 import {useTranslation} from '../../../i18n'
 import {useToolMenuComponent} from '../../studio-components-hooks'
@@ -58,7 +59,9 @@ const NavGrid = styled(Grid)`
 /**
  * @hidden
  * @beta */
-export function StudioNavbar() {
+export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
+  // eslint-disable-next-line camelcase
+  const {__internal_rightSectionNode = null} = props
   const {name, tools} = useWorkspace()
   const routerState = useRouterState()
   const mediaIndex = useMediaIndex()
@@ -233,7 +236,6 @@ export function StudioNavbar() {
                       </BoundaryElementProvider>
                     </SearchProvider>
                   </LayerProvider>
-
                   {shouldRender.tools && <FreeTrial type="topbar" />}
                   {shouldRender.configIssues && <ConfigIssuesButton />}
                   {shouldRender.resources && <ResourcesButton />}
@@ -245,6 +247,11 @@ export function StudioNavbar() {
                       ref={setSearchOpenButtonEl}
                     />
                   )}
+
+                  {
+                    // eslint-disable-next-line camelcase
+                    __internal_rightSectionNode
+                  }
                 </Flex>
                 {shouldRender.tools && (
                   <Box flex="none" marginLeft={1}>

@@ -1,4 +1,4 @@
-import {type ComponentType, type ReactElement} from 'react'
+import {type ComponentType, type ReactElement, type ReactNode} from 'react'
 
 import {type Tool} from '../types'
 
@@ -23,6 +23,18 @@ export interface LogoProps {
  * @beta */
 export interface NavbarProps {
   renderDefault: (props: NavbarProps) => ReactElement
+  /**
+   * @internal
+   * @beta */
+  __internal_rightSectionNode?: ReactNode
+}
+
+/**
+ * @hidden
+ * @beta */
+export interface ActiveToolLayoutProps {
+  renderDefault: (props: ActiveToolLayoutProps) => React.ReactElement
+  activeTool: Tool
 }
 
 /**
@@ -52,6 +64,7 @@ export interface StudioComponents {
  * @hidden
  * @beta */
 export interface StudioComponentsPluginOptions {
+  activeToolLayout?: ComponentType<ActiveToolLayoutProps>
   layout?: ComponentType<LayoutProps>
   /**
    * @deprecated Add custom icons on a per-workspace basis by customizing workspace `icon` instead.

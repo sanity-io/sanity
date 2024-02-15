@@ -1,6 +1,7 @@
 import {type ComponentType} from 'react'
 
 import {
+  type ActiveToolLayoutProps,
   type LayoutProps,
   type LogoProps,
   type NavbarProps,
@@ -30,4 +31,12 @@ export function pickLogoComponent(
   plugin: PluginOptions,
 ): ComponentType<Omit<LogoProps, 'renderDefault'>> {
   return plugin.studio?.components?.logo as ComponentType<Omit<LogoProps, 'renderDefault'>>
+}
+
+export function pickActiveToolLayoutComponent(
+  plugin: PluginOptions,
+): ComponentType<Omit<ActiveToolLayoutProps, 'renderDefault'>> {
+  return plugin.studio?.components?.activeToolLayout as ComponentType<
+    Omit<ActiveToolLayoutProps, 'renderDefault'>
+  >
 }
