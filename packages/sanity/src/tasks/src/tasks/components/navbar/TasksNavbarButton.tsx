@@ -1,6 +1,7 @@
 import {PanelRightIcon} from '@sanity/icons'
+
 import {Button} from '../../../../../ui-components'
-import {useTasksEnabled, useTasks} from '../../context'
+import {useTasks, useTasksEnabled} from '../../context'
 
 /**
  * @internal

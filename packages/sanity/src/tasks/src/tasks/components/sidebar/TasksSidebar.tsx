@@ -1,13 +1,14 @@
 import {Box, Card, Flex, Spinner} from '@sanity/ui'
-import styled from 'styled-components'
-import {AnimatePresence, motion, Transition, Variants} from 'framer-motion'
+import {AnimatePresence, motion, type Transition, type Variants} from 'framer-motion'
 import {useCallback, useState} from 'react'
-import {TaskEdit} from '../edit'
-import {useTasksEnabled, useTasks} from '../../context'
+import styled from 'styled-components'
+
+import {useTasks, useTasksEnabled} from '../../context'
 import {TasksCreate} from '../create/'
-import {TasksSidebarHeader} from './TasksSidebarHeader'
+import {TaskEdit} from '../edit'
 import {TaskSidebarContent} from './TasksSidebarContent'
-import {SidebarTabsIds, ViewMode} from './types'
+import {TasksSidebarHeader} from './TasksSidebarHeader'
+import {type SidebarTabsIds, type ViewMode} from './types'
 
 const SidebarRoot = styled(Card)`
   width: 360px;

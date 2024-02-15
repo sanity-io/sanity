@@ -1,5 +1,6 @@
 import {Checkbox, Flex, Spinner} from '@sanity/ui'
-import React, {useCallback, useState} from 'react'
+import {useCallback, useState} from 'react'
+
 import {useTasks} from '../../context'
 
 interface TasksStatusProps {

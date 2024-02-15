@@ -1,18 +1,19 @@
-import {Flex, Stack, Text, Card, CardProps, TextSkeleton} from '@sanity/ui'
-import styled from 'styled-components'
-import {forwardRef, useEffect, useMemo, useState} from 'react'
-import {SanityDocument} from '@sanity/types'
 import {CalendarIcon, DocumentIcon, UserIcon} from '@sanity/icons'
-import {TaskDocument} from '../../types'
-import {TasksStatus} from './TasksStatus'
+import {type SanityDocument} from '@sanity/types'
+import {Card, type CardProps, Flex, Stack, Text, TextSkeleton} from '@sanity/ui'
+import {forwardRef, useEffect, useMemo, useState} from 'react'
 import {
   unstable_useValuePreview as useValuePreview,
-  useDateTimeFormat,
-  useUser,
-  useSchema,
   useClient,
+  useDateTimeFormat,
+  useSchema,
+  useUser,
 } from 'sanity'
 import {IntentLink} from 'sanity/router'
+import styled from 'styled-components'
+
+import {type TaskDocument} from '../../types'
+import {TasksStatus} from './TasksStatus'
 
 interface TasksListItemProps
   extends Pick<TaskDocument, 'title' | 'assignedTo' | 'dueBy' | 'target' | 'status'> {

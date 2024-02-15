@@ -1,5 +1,6 @@
 import {Box, Flex, Label, Stack, Text} from '@sanity/ui'
-import {TaskDocument} from '../../types'
+
+import {type TaskDocument} from '../../types'
 import {TasksListItem} from './TasksListItem'
 
 interface TasksListProps {

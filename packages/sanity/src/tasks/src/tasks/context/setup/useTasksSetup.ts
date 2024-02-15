@@ -1,5 +1,6 @@
 import {useContext} from 'react'
-import {TasksSetupContext, TasksSetupContextValue} from '..'
+
+import {TasksSetupContext, type TasksSetupContextValue} from '..'
 
 /**
  * @beta

@@ -1,10 +1,11 @@
-import {Dispatch, SetStateAction, useMemo} from 'react'
 import {Box, Card} from '@sanity/ui'
-import {TaskDocument} from '../../types'
+import {type Dispatch, type SetStateAction, useMemo} from 'react'
+import {useCurrentUser} from 'sanity'
+
+import {type TaskDocument} from '../../types'
 import {TasksList} from '../list/TasksList'
 import {TasksListTabs} from './TasksListTabs'
-import {SidebarTabsIds} from './types'
-import {useCurrentUser} from 'sanity'
+import {type SidebarTabsIds} from './types'
 
 /**
  * @internal

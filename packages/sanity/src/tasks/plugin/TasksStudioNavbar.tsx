@@ -1,5 +1,6 @@
+import {type NavbarProps} from 'sanity'
+
 import {TasksNavbarButton, useTasksEnabled} from '../src'
-import {NavbarProps} from 'sanity'
 
 export function TasksStudioNavbar(props: NavbarProps) {
   const {enabled} = useTasksEnabled()

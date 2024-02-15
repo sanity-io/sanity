@@ -1,4 +1,4 @@
-import {TasksProvider, TasksSetupProvider, TasksCreate} from '../src'
+import {TasksCreate, TasksProvider, TasksSetupProvider} from '../src'
 
 function noop() {
   return null

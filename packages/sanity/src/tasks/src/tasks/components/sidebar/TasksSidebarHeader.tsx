@@ -1,15 +1,16 @@
+import {AddIcon, ChevronRightIcon, DoubleChevronRightIcon} from '@sanity/icons'
 import {
   Box,
-  Flex,
-  Text,
   // eslint-disable-next-line no-restricted-imports
   Button as UIButton,
+  Flex,
+  Text,
 } from '@sanity/ui'
-import {DoubleChevronRightIcon, AddIcon, ChevronRightIcon} from '@sanity/icons'
+import {BetaBadge} from 'sanity'
+
 import {Button, TooltipDelayGroupProvider} from '../../../../../ui-components'
 import {useTasks} from '../..'
-import {ViewMode} from './types'
-import {BetaBadge} from 'sanity'
+import {type ViewMode} from './types'
 
 interface TasksSidebarHeaderProps {
   viewMode: ViewMode
