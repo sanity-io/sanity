@@ -13,8 +13,11 @@ import {
   type WeightedSearchOptions,
 } from '../weighted/types'
 
-export interface SearchParams {
+export interface BaseSearchParams {
   __types: string[]
+}
+
+export interface SearchParams extends BaseSearchParams {
   __limit: number
   __offset: number
   [key: string]: unknown
@@ -26,6 +29,10 @@ export interface SearchQuery {
   options: Record<string, unknown>
   searchSpec: SearchSpec[]
   terms: string[]
+  textSearch: {
+    filters: string[]
+    params: BaseSearchParams
+  }
 }
 
 export const DEFAULT_LIMIT = 1000
@@ -168,13 +175,14 @@ export function createSearchQuery(
     : exactSearchSpecs
 
   // Construct search filters used in this GROQ query
-  const filters = [
+  const baseFilters = [
     '_type in $__types',
     searchOpts.includeDrafts === false && `!(_id in path('drafts.**'))`,
-    ...createConstraints(terms, optimizedSpecs),
-    filter ? `(${filter})` : '',
-    searchTerms.filter ? `(${searchTerms.filter})` : '',
-  ].filter(Boolean)
+    filter ? `(${filter})` : false,
+    searchTerms.filter ? `(${searchTerms.filter})` : false,
+  ].filter((baseFilter): baseFilter is string => Boolean(filter))
+
+  const filters = [...baseFilters, ...createConstraints(terms, optimizedSpecs)]
 
   const selections = exactSearchSpecs.map((spec) => {
     const constraint = `_type == "${spec.typeName}" => `
@@ -220,18 +228,26 @@ export function createSearchQuery(
   const offset = searchOpts?.offset ?? 0
   const limit = (searchOpts?.limit ?? DEFAULT_LIMIT) + offset
 
+  const baseParams = {
+    __types: exactSearchSpecs.map((spec) => spec.typeName),
+    ...(params || {}),
+  }
+
   return {
     query: updatedQuery,
     params: {
+      ...baseParams,
       ...toGroqParams(terms),
-      __types: exactSearchSpecs.map((spec) => spec.typeName),
       __limit: limit,
       __offset: offset,
-      ...(params || {}),
     },
     options: {tag},
     searchSpec: exactSearchSpecs,
     terms,
+    textSearch: {
+      filters: baseFilters,
+      params: baseParams,
+    },
   }
 }
 
