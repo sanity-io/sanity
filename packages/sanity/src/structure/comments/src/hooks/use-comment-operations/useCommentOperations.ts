@@ -145,7 +145,7 @@ export function useCommentOperations(
       updateOpts?: CommentUpdateOperationOptions,
     ) => {
       if (!client) return
-      const {throttle} = updateOpts || {}
+      const {throttled} = updateOpts || {}
 
       // Generate a new transaction ID to use for the update operation transaction
       const nextTransactionId = uuid()
@@ -162,7 +162,7 @@ export function useCommentOperations(
       await updateOperation({
         client,
         comment,
-        throttle,
+        throttled,
         id,
         onUpdate,
         transactionId: nextTransactionId,

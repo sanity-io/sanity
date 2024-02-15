@@ -12,7 +12,7 @@ export interface Loadable<T> {
 }
 
 export interface CommentUpdateOperationOptions {
-  throttle: boolean
+  throttled: boolean
 }
 
 /**
