@@ -18,7 +18,7 @@ const sanityClient = createClient({
   dataset: process.env.SANITY_E2E_DATASET,
   token: process.env.SANITY_E2E_SESSION_TOKEN,
   useCdn: false,
-  apiVersion: '2021-08-31',
+  apiVersion: '2024-02-14',
 })
 
 test.describe('inputs: text', () => {
