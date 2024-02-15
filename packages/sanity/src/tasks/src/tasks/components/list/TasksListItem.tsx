@@ -4,6 +4,7 @@ import {forwardRef, useEffect, useMemo, useState} from 'react'
 import {SanityDocument} from '@sanity/types'
 import {CalendarIcon, DocumentIcon, UserIcon} from '@sanity/icons'
 import {TaskDocument} from '../../types'
+import {TasksStatus} from './TasksStatus'
 import {
   unstable_useValuePreview as useValuePreview,
   useDateTimeFormat,
@@ -11,11 +12,10 @@ import {
   useSchema,
   useClient,
 } from 'sanity'
-import {TasksStatus} from './TasksStatus'
 import {IntentLink} from 'sanity/router'
 
 interface TasksListItemProps
-  extends Pick<TaskDocument, 'title' | 'assignedTo' | 'dueBy' | 'target'> {
+  extends Pick<TaskDocument, 'title' | 'assignedTo' | 'dueBy' | 'target' | 'status'> {
   documentId: string
   onSelect: () => void
 }
@@ -74,6 +74,7 @@ export function TasksListItem({
   target,
   onSelect,
   documentId,
+  status,
 }: TasksListItemProps) {
   const dateFormatter = useDateTimeFormat({
     dateStyle: 'medium',
@@ -88,7 +89,7 @@ export function TasksListItem({
     <ThreadCard tone={undefined}>
       <Stack space={2}>
         <Flex>
-          <TasksStatus documentId={documentId} />
+          <TasksStatus documentId={documentId} status={status} />
           <Title size={1} weight="semibold" onClick={onSelect}>
             {title || 'Untitled'}
           </Title>
