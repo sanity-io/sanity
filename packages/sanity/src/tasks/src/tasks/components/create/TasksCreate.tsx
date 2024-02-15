@@ -1,12 +1,13 @@
 import {type PortableTextBlock} from '@sanity/types'
-import {Box, Card, Flex, Stack, Text, TextInput, useToast} from '@sanity/ui'
+import {Card, Flex, Stack, Text, TextInput, useToast} from '@sanity/ui'
 import {useCallback, useEffect, useRef, useState} from 'react'
 import {useCurrentUser} from 'sanity'
 
 import {CommentInput, useMentionOptions} from '../../../../../structure/comments'
 import {Button} from '../../../../../ui-components'
 import {useTasks} from '../../context'
-import {type TaskDocument} from '../../types'
+import {type TaskCreatePayload, type TaskDocument} from '../../types'
+import {MentionUser} from '../mentionUser'
 import {RemoveTask} from '../remove/RemoveTask'
 import {WarningText} from './WarningText'
 
@@ -25,14 +26,15 @@ type TasksCreateProps = ModeProps & {
   onCreate?: () => void
   onDelete?: () => void
 }
+
 export const TasksCreate = (props: TasksCreateProps) => {
   const {initialValues, mode, onCancel, onCreate, onDelete} = props
   const {operations} = useTasks()
   // WIP implementation, we will later use the Form to handle the creation of a task
-  const [title, setTitle] = useState(initialValues?.title || '')
-  const [description, setDescription] = useState<PortableTextBlock[]>(
-    initialValues?.description || [],
+  const [values, setValues] = useState<TaskCreatePayload>(() =>
+    initialValues ? initialValues : {title: '', description: null, assignedTo: '', status: 'open'},
   )
+
   const [createStatus, setCreateStatus] = useState<'idle' | 'loading' | 'error'>('idle')
   const [error, setError] = useState<string | null>(null)
   const formRootRef = useRef<HTMLDivElement>(null)
@@ -51,12 +53,12 @@ export const TasksCreate = (props: TasksCreateProps) => {
   const handleSubmit = useCallback(async () => {
     try {
       setSubmitted(true)
-      if (!title) {
+      if (!values.title) {
         return
       }
       setCreateStatus('loading')
       if (mode === 'create') {
-        const created = await operations.create({title, status: 'open', description})
+        const created = await operations.create(values)
         // eslint-disable-next-line no-console
         console.log('It is created', created)
         toast.push({
@@ -68,10 +70,7 @@ export const TasksCreate = (props: TasksCreateProps) => {
 
       if (mode === 'edit') {
         // TODO: This will be moved to it's own view which is different from creation. This is just for bootstrapping
-        const updated = await operations.edit(initialValues._id, {
-          title,
-          description,
-        })
+        const updated = await operations.edit(initialValues._id, values)
         // eslint-disable-next-line no-console
         console.log('It is updated', updated)
         toast.push({
@@ -86,7 +85,7 @@ export const TasksCreate = (props: TasksCreateProps) => {
       setCreateStatus('error')
       setError(err.message)
     }
-  }, [title, operations, description, mode, initialValues?._id, onCreate, toast])
+  }, [operations, mode, initialValues?._id, onCreate, toast, values])
 
   const submitListener = useCallback(
     (e: KeyboardEvent) => {
@@ -108,33 +107,47 @@ export const TasksCreate = (props: TasksCreateProps) => {
     }
   }, [formRootRef, submitListener])
 
+  const handleTitleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setValues((prev) => ({...prev, title: e.target.value}))
+  }, [])
+  const handleAssignedToChange = useCallback((id: string) => {
+    setValues((prev) => ({...prev, assignedTo: id}))
+  }, [])
+  const handleDescriptionChange = useCallback((value: PortableTextBlock[]) => {
+    setValues((prev) => ({...prev, description: value}))
+  }, [])
+
+  // TODO: When the document is added, check if the user has permissions to see the document, using the "canBeMentioned" property.
   const mentionOptions = useMentionOptions({documentValue: null})
+
   if (!currentUser) return null
   return (
     <Card padding={4}>
-      <Stack ref={formRootRef}>
+      <Stack ref={formRootRef} space={3}>
         <TextInput
           placeholder="Enter task title"
           autoFocus
           fontSize={1}
-          // eslint-disable-next-line react/jsx-no-bind
-          onChange={(e) => setTitle(e.currentTarget.value)}
-          value={title}
+          onChange={handleTitleChange}
+          value={values.title}
         />
-        {submitted && !title && <WarningText>Title is required</WarningText>}
+        {submitted && !values.title && <WarningText>Title is required</WarningText>}
 
-        <Box marginTop={3}>
-          <CommentInput
-            currentUser={currentUser}
-            mentionOptions={mentionOptions}
-            onChange={(val) => setDescription(val)}
-            value={description}
-            withAvatar={false}
-            placeholder="Task description"
-          />
-        </Box>
+        <CommentInput
+          currentUser={currentUser}
+          mentionOptions={mentionOptions}
+          onChange={handleDescriptionChange}
+          value={values.description}
+          withAvatar={false}
+          placeholder="Task description"
+        />
 
-        <Flex justify="flex-end" gap={4} marginTop={4}>
+        <MentionUser
+          mentionOptions={{...mentionOptions, isLoading: mentionOptions.loading}}
+          value={values.assignedTo}
+          onChange={handleAssignedToChange}
+        />
+        <Flex justify="flex-end" gap={4} marginTop={2}>
           {mode === 'edit' && (
             <div style={{marginRight: 'auto'}}>
               <RemoveTask id={initialValues._id} onRemoved={handleRemoved} />
