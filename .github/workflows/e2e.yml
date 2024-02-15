@@ -214,6 +214,15 @@ jobs:
           name: playwright-report
           path: blob-report
           retention-days: 30
+
+      # Upload tracing reports
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: ${{ matrix.project }}-test-report
+          path: test/e2e/results
+          retention-days: 30
+
   merge-reports:
     if: always()
     needs: [playwright-test]
