@@ -95,6 +95,8 @@ export async function createOperation(props: CreateOperationProps): Promise<void
 
     reactions: [],
 
+    contentSnapshot: comment.contentSnapshot,
+
     target: {
       path: {
         field: comment.fieldPath,

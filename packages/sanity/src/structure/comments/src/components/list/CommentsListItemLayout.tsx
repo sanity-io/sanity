@@ -396,13 +396,11 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
           )}
         </Flex>
 
-        {comment.target.path.selection?.type === 'text' && comment.target.path.selection.value && (
+        {comment.target.path.selection?.type === 'text' && Boolean(comment?.contentSnapshot) && (
           <Flex gap={FLEX_GAP} marginBottom={3}>
             <SpacerAvatar />
 
-            <CommentsListItemReferencedValue
-              value={comment.target.path.selection.value.map((v) => v.text).join('')}
-            />
+            <CommentsListItemReferencedValue value={comment?.contentSnapshot} />
           </Flex>
         )}
 
