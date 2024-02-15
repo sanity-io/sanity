@@ -1,43 +1,24 @@
-import {compact, flatten, flow, toLower, trim, union, uniq, words} from 'lodash'
+import {compact, toLower, trim, uniq, words} from 'lodash'
 
 import {joinPath} from '../../../core/util/searchUtils'
 import {tokenize} from '../common/tokenize'
-import {FINDABILITY_MVI} from '../constants'
 import {
   type SearchableType,
   type SearchOptions,
-  type SearchPath,
-  type SearchSort,
-  type SearchSpec,
   type SearchTerms,
   type WeightedSearchOptions,
 } from '../weighted/types'
 
-export interface BaseSearchParams {
+export interface SearchParams {
   __types: string[]
 }
 
-export interface SearchParams extends BaseSearchParams {
-  __limit: number
-  __offset: number
-  [key: string]: unknown
-}
-
 export interface SearchQuery {
-  query: string
+  filters: string[]
   params: SearchParams
-  options: Record<string, unknown>
-  searchSpec: SearchSpec[]
-  terms: string[]
-  textSearch: {
-    filters: string[]
-    params: BaseSearchParams
-  }
 }
 
 export const DEFAULT_LIMIT = 1000
-
-const combinePaths: (paths: string[][]) => string[] = flow([flatten, union, compact])
 
 /**
  * Create an object containing all available document types and weighted paths, used to construct a GROQ query for search.
@@ -77,24 +58,8 @@ function createSearchSpecs(types: SearchableType[], optimizeIndexedPaths: boolea
   }
 }
 
-const pathWithMapper = ({mapWith, path}: SearchPath): string =>
-  mapWith ? `${mapWith}(${path})` : path
-
-/**
- * Create GROQ constraints, given search terms and the full spec of available document types and fields.
- * Essentially a large list of all possible fields (joined by logical OR) to match our search terms against.
- */
-function createConstraints(terms: string[], specs: SearchSpec[]) {
-  const combinedSearchPaths = combinePaths(
-    specs.map((configForType) => (configForType.paths || []).map((opt) => pathWithMapper(opt))),
-  )
-
-  const constraints = terms
-    .map((_term, i) => combinedSearchPaths.map((joinedPath) => `${joinedPath} match $t${i}`))
-    .filter((constraint) => constraint.length > 0)
-
-  return constraints.map((constraint) => `(${constraint.join(' || ')})`)
-}
+// const pathWithMapper = ({mapWith, path}: SearchPath): string =>
+//   mapWith ? `${mapWith}(${path})` : path
 
 /**
  * Convert a string into an array of tokenized terms.
@@ -130,21 +95,6 @@ export function extractTermsFromQuery(query: string): string[] {
   return [...quotedTerms, ...remainingTerms]
 }
 
-function toOrderClause(orderBy: SearchSort[]): string {
-  function wrapFieldWithFn(ordering: SearchSort): string {
-    return ordering.mapWith ? `${ordering.mapWith}(${ordering.field})` : ordering.field
-  }
-
-  return (orderBy || [])
-    .map((ordering) =>
-      [wrapFieldWithFn(ordering), (ordering.direction || '').toLowerCase()]
-        .map((str) => str.trim())
-        .filter(Boolean)
-        .join(' '),
-    )
-    .join(',')
-}
-
 /**
  * @internal
  */
@@ -152,81 +102,32 @@ export function createSearchQuery(
   searchTerms: SearchTerms,
   searchOpts: SearchOptions & WeightedSearchOptions = {},
 ): SearchQuery {
-  const {filter, params, tag} = searchOpts
+  const {filter, params} = searchOpts
 
   /**
    * First pass: create initial search specs and determine if this subset of types contains
    * any indexed paths in `__experimental_search`.
    * e.g. "authors.0.title" or ["authors", 0, "title"]
    */
-  const {specs: exactSearchSpecs, hasIndexedPaths} = createSearchSpecs(searchTerms.types, false)
-
-  // Extract search terms from string query, factoring in phrases wrapped in quotes
-  const terms = extractTermsFromQuery(searchTerms.query)
-
-  /**
-   * Second pass: create an optimized spec (with array indices removed), but only if types with any
-   * indexed paths have been previously found. Otherwise, passthrough original search specs.
-   *
-   * These optimized specs are only used when building constraints in this search query.
-   */
-  const optimizedSpecs = hasIndexedPaths
-    ? createSearchSpecs(searchTerms.types, true).specs
-    : exactSearchSpecs
+  const {specs: exactSearchSpecs} = createSearchSpecs(searchTerms.types, false)
 
   // Construct search filters used in this GROQ query
-  const baseFilters = [
+  const filters = [
     '_type in $__types',
     searchOpts.includeDrafts === false && `!(_id in path('drafts.**'))`,
     filter ? `(${filter})` : false,
     searchTerms.filter ? `(${searchTerms.filter})` : false,
-  ].filter((baseFilter): baseFilter is string => Boolean(filter))
+  ].filter((baseFilter): baseFilter is string => Boolean(baseFilter))
 
-  const filters = [...baseFilters, ...createConstraints(terms, optimizedSpecs)]
-
-  const selections = exactSearchSpecs.map((spec) => {
-    const constraint = `_type == "${spec.typeName}" => `
-    const selection = `{ ${spec.paths.map((cfg, i) => `"w${i}": ${pathWithMapper(cfg)}`)} }`
-    return `${constraint}${selection}`
-  })
-
-  // Default to `_id asc` (GROQ default) if no search sort is provided
-  const sortOrder = toOrderClause(searchOpts?.sort || [{field: '_id', direction: 'asc'}])
-
-  const projectionFields = ['_type', '_id']
-  const selection = selections.length > 0 ? `...select(${selections.join(',\n')})` : ''
-  const finalProjection = projectionFields.join(', ') + (selection ? `, ${selection}` : '')
-
-  let query =
-    `*[${filters.join(' && ')}]` +
-    `| order(${sortOrder})` +
-    `[$__offset...$__limit]` +
-    // the following would improve search quality for paths-with-numbers, but increases the size of the query by up to 50%
-    // `${hasIndexedPaths ? `[${createConstraints(terms, exactSearchSpec).join(' && ')}]` : ''}` +
-    `{${finalProjection}}`
-
-  // Optionally prepend our query with an 'extended' projection.
-  // Required if we want to sort on nested object or reference fields.
-  // In future, creating the extended projection should be handled internally by `createSearchQuery`.
-  if (searchOpts?.__unstable_extendedProjection) {
-    const extendedProjection = searchOpts?.__unstable_extendedProjection
-    const firstProjection = projectionFields.concat(extendedProjection).join(', ')
-
-    query = [
-      `*[${filters.join(' && ')}]{${firstProjection}}`,
-      `order(${sortOrder})[$__offset...$__limit]{${finalProjection}}`,
-    ].join('|')
-  }
-
-  // Prepend GROQ comments
-  const groqComments = [`findability-mvi:${FINDABILITY_MVI}`]
-    .concat(searchOpts?.comments || [])
-    .map((s) => `// ${s}`)
-    .join('\n')
-  const updatedQuery = groqComments ? `${groqComments}\n${query}` : query
-
-  const offset = searchOpts?.offset ?? 0
-  const limit = (searchOpts?.limit ?? DEFAULT_LIMIT) + offset
+  // const selections = exactSearchSpecs.map((spec) => {
+  //   const constraint = `_type == "${spec.typeName}" => `
+  //   const selection = `{ ${spec.paths.map((cfg, i) => `"w${i}": ${pathWithMapper(cfg)}`)} }`
+  //   return `${constraint}${selection}`
+  // })
+  //
+  // const projectionFields = ['_type', '_id']
+  // const selection = selections.length > 0 ? `...select(${selections.join(',\n')})` : ''
+  // const finalProjection = projectionFields.join(', ') + (selection ? `, ${selection}` : '')
 
   const baseParams = {
     __types: exactSearchSpecs.map((spec) => spec.typeName),
@@ -234,27 +135,7 @@ export function createSearchQuery(
   }
 
   return {
-    query: updatedQuery,
-    params: {
-      ...baseParams,
-      ...toGroqParams(terms),
-      __limit: limit,
-      __offset: offset,
-    },
-    options: {tag},
-    searchSpec: exactSearchSpecs,
-    terms,
-    textSearch: {
-      filters: baseFilters,
-      params: baseParams,
-    },
+    filters: filters,
+    params: baseParams,
   }
-}
-
-const toGroqParams = (terms: string[]): Record<string, string> => {
-  const params: Record<string, string> = {}
-  return terms.reduce((acc, term, i) => {
-    acc[`t${i}`] = `${term}*` // "t" is short for term
-    return acc
-  }, params)
 }
