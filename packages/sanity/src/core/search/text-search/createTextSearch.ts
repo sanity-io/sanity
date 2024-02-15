@@ -40,7 +40,7 @@ export function createTextSearch(
   return function search(searchParams, searchOpts = {}) {
     const searchTerms = getSearchTerms(searchParams, types)
 
-    const {searchSpec, terms} = createSearchQuery(searchTerms, {
+    const {textSearch} = createSearchQuery(searchTerms, {
       ...commonOpts,
       ...searchOpts,
     })
@@ -53,7 +53,8 @@ export function createTextSearch(
         query: {
           string: searchTerms.query,
         },
-        filter: `_type in ${JSON.stringify(searchSpec.map((spec) => spec.typeName))}`,
+        filter: textSearch.filters.join(' && '),
+        params: textSearch.params,
       },
     })
 
