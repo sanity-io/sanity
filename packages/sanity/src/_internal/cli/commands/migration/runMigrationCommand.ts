@@ -1,3 +1,6 @@
+import {mkdirSync} from 'node:fs'
+import {type FileHandle, open} from 'node:fs/promises'
+
 import {type CliCommandDefinition} from '@sanity/cli'
 import {
   DEFAULT_MUTATION_CONCURRENCY,
@@ -9,6 +12,8 @@ import {
 } from '@sanity/migrate'
 import {Table} from 'console-table-printer'
 import {register} from 'esbuild-register/dist/node'
+import deburr from 'lodash/deburr'
+import path from 'path'
 import {hideBin} from 'yargs/helpers'
 import yargs from 'yargs/yargs'
 
@@ -22,6 +27,7 @@ Options
   --no-dry-run By default the migration runs in dry mode. Pass this option to migrate dataset.
   --concurrency <concurrent> How many mutation requests to run in parallel. Must be between 1 and ${MAX_MUTATION_CONCURRENCY}. Default: ${DEFAULT_MUTATION_CONCURRENCY}.
   --no-progress Don't output progress. Useful if you want debug your migration script and see the output of console.log() statements.
+  --no-transaction-log Don't write a log of transactions submitted. By default, a log of all the submitted transactions will be logged to a separate logfile.
   --dataset <dataset> Dataset to migrate. Defaults to the dataset configured in your Sanity CLI config.
   --project <project id> Project ID of the dataset to migrate. Defaults to the projectId configured in your Sanity CLI config.
   --no-confirm Skip the confirmation prompt before running the migration. Make sure you know what you're doing before using this flag.
@@ -56,6 +62,7 @@ function parseCliFlags(args: {argv?: string[]}) {
     .options('progress', {type: 'boolean', default: true})
     .options('dataset', {type: 'string'})
     .options('from-export', {type: 'string'})
+    .options('log-transactions', {type: 'boolean', default: true})
     .options('project', {type: 'string'})
     .options('confirm', {type: 'boolean', default: true}).argv
 }
@@ -77,6 +84,7 @@ const runMigrationCommand: CliCommandDefinition<CreateFlags> = {
     const dry = flags.dryRun
     const dataset = flags.dataset
     const project = flags.project
+    const logTransactions = flags.logTransactions
 
     if ((dataset && !project) || (project && !dataset)) {
       throw new Error('If either --dataset or --project is provided, both must be provided')
@@ -188,9 +196,25 @@ const runMigrationCommand: CliCommandDefinition<CreateFlags> = {
       debug('User aborted migration')
       return
     }
+    const logFile = logTransactions
+      ? getLogFileWriter(
+          `${deburr(new Date().toISOString())
+            .replace(/\s+/g, '_')
+            .replace(/[^A-Za-z0-9-]/g, '_')}-${id}.ndjson`,
+          script,
+        )
+      : null
 
     const spinner = output.spinner(`Running migration "${id}"`).start()
-    await run({api: apiConfig, concurrency, onProgress: createProgress(spinner)}, migration)
+
+    for await (const transaction of run(
+      {api: apiConfig, concurrency, onProgress: createProgress(spinner)},
+      migration,
+    )) {
+      await logFile?.write(transaction)
+    }
+    await logFile?.close()
+
     spinner.stop()
 
     function createProgress(progressSpinner: ReturnType<typeof output.spinner>) {
@@ -207,7 +231,9 @@ const runMigrationCommand: CliCommandDefinition<CreateFlags> = {
 
   ${progress.documents} documents processed.
   ${progress.mutations} mutations generated.
-  ${chalk.green(progress.completedTransactions.length)} transactions committed.`
+  ${chalk.green(progress.completedTransactionsLength)} transactions committed.
+  ${logFile ? `\nA log of all submitted transactions has been written to:\n./${chalk.bold(logFile.relativePath)}\n` : ''}
+  `
           progressSpinner.stopAndPersist({symbol: chalk.green('✔')})
           return
         }
@@ -219,10 +245,12 @@ const runMigrationCommand: CliCommandDefinition<CreateFlags> = {
   Dataset:        ${chalk.bold(apiConfig.dataset)}
   Document type:  ${chalk.bold(migration.documentTypes?.join(','))}
 
+  ${logFile ? `\nA log of all submitted transactions will be written to:\n./${chalk.bold(logFile.relativePath)}\n` : ''}
+
   ${progress.documents} documents processed…
   ${progress.mutations} mutations generated…
   ${chalk.blue(progress.pending)} requests pending…
-  ${chalk.green(progress.completedTransactions.length)} transactions committed.
+  ${chalk.green(progress.completedTransactionsLength)} transactions committed.
 
   ${
     transaction && !progress.done
@@ -260,3 +288,36 @@ const runMigrationCommand: CliCommandDefinition<CreateFlags> = {
 }
 
 export default runMigrationCommand
+
+function getLogFileWriter(fileName: string, script: {absolutePath: string; relativePath: string}) {
+  const logFileDir = {
+    absolute: path.join(path.dirname(script.absolutePath), 'logs'),
+    relative: path.join(path.dirname(script.relativePath), 'logs'),
+  }
+
+  const logFilePath = {
+    absolute: path.join(logFileDir.absolute, fileName),
+    relative: path.join(logFileDir.relative, fileName),
+  }
+
+  let fileHandle: Promise<FileHandle> | null = null
+
+  const getFileHandle = () => {
+    if (!fileHandle) {
+      mkdirSync(logFileDir.absolute, {recursive: true})
+      fileHandle = open(logFilePath.absolute, 'w')
+    }
+    return fileHandle
+  }
+
+  return {
+    async write(value: unknown) {
+      return (await getFileHandle()).write(`${JSON.stringify(value)}\n`)
+    },
+    async close() {
+      return fileHandle ? (await fileHandle).close() : Promise.resolve()
+    },
+    absolutePath: logFilePath.absolute,
+    relativePath: logFilePath.relative,
+  }
+}

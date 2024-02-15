@@ -1,4 +1,4 @@
-import {type MultipleMutationResult, type Mutation as RawMutation} from '@sanity/client'
+import {type Mutation as RawMutation} from '@sanity/client'
 import {type Path, type SanityDocument} from '@sanity/types'
 
 import {type JsonArray, type JsonObject, type JsonValue} from './json'
@@ -44,7 +44,7 @@ export type MigrationProgress = {
   pending: number
   queuedBatches: number
   currentTransactions: (Transaction | Mutation)[]
-  completedTransactions: MultipleMutationResult[]
+  completedTransactionsLength: number
   done?: boolean
 }
 
