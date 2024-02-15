@@ -54,6 +54,7 @@ export function createTextSearch(
         query: {
           string: searchTerms.query,
         },
+        filter: `_type in ${JSON.stringify(searchSpec.map((spec) => spec.typeName))}`,
       },
     })
 
