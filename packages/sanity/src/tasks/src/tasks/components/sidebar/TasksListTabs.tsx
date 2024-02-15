@@ -47,8 +47,8 @@ export function TasksListTabs({activeTabId, onChange}: TasksListTabsProps) {
     }
   }, [activeDocumentId, isDisabledTab, onChange])
 
-  const tabs: TasksListTab[] = useMemo(() => {
-    const defaultTabs: TasksListTab[] = [
+  const tabs: TasksListTab[] = useMemo(
+    () => [
       {
         id: 'assigned',
         label: 'Assigned',
@@ -62,10 +62,9 @@ export function TasksListTabs({activeTabId, onChange}: TasksListTabsProps) {
         label: 'This document',
         isDisabled: isDisabledTab,
       },
-    ]
-
-    return defaultTabs
-  }, [isDisabledTab])
+    ],
+    [isDisabledTab],
+  )
 
   const handleTabChange = useCallback(
     (tab: TasksListTab) => {
