@@ -8,21 +8,21 @@ interface TasksListProps {
   items: TaskDocument[]
 }
 
+const checkboxValues = [
+  {name: 'open', label: 'To do'},
+  {name: 'closed', label: 'Done'},
+]
+
+const getLabelForStatus = (status: string) => {
+  const statusConfig = checkboxValues.find((item) => item.name === status)
+  return statusConfig?.label
+}
+
 /**
  * @internal
  */
 export function TasksList(props: TasksListProps) {
   const {items, onTaskSelect} = props
-
-  const checkboxValues = [
-    {name: 'open', label: 'To do'},
-    {name: 'closed', label: 'Done'},
-  ]
-
-  const getLabelForStatus = (status: string) => {
-    const statusConfig = checkboxValues.find((item) => item.name === status)
-    return statusConfig?.label
-  }
 
   // Filter tasks by status to render them in separate lists
   const tasksByStatus = (status: string) => items.filter((item) => item.status === status)
