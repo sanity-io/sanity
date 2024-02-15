@@ -40,22 +40,14 @@ export function createTextSearch(
   return function search(searchParams, searchOpts = {}) {
     const searchTerms = getSearchTerms(searchParams, types)
 
-    const {filters, params} = createSearchQuery(searchTerms, {
-      ...commonOpts,
-      ...searchOpts,
-    })
-
     const searchRequest = client.observable.request({
       uri: `/data/textsearch/${client.config().dataset}`,
       method: 'POST',
       json: true,
-      body: {
-        query: {
-          string: searchTerms.query,
-        },
-        filter: filters.join(' && '),
-        params: params,
-      },
+      body: createSearchQuery(searchTerms, {
+        ...commonOpts,
+        ...searchOpts,
+      }),
     })
 
     return searchRequest.pipe(

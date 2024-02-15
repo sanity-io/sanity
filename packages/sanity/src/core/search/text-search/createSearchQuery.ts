@@ -8,15 +8,7 @@ import {
   type SearchTerms,
   type WeightedSearchOptions,
 } from '../weighted/types'
-
-export interface SearchParams {
-  __types: string[]
-}
-
-export interface SearchQuery {
-  filters: string[]
-  params: SearchParams
-}
+import {type TextSearchParams} from './types'
 
 export const DEFAULT_LIMIT = 1000
 
@@ -101,7 +93,7 @@ export function extractTermsFromQuery(query: string): string[] {
 export function createSearchQuery(
   searchTerms: SearchTerms,
   searchOpts: SearchOptions & WeightedSearchOptions = {},
-): SearchQuery {
+): TextSearchParams {
   const {filter, params} = searchOpts
 
   /**
@@ -129,13 +121,14 @@ export function createSearchQuery(
   // const selection = selections.length > 0 ? `...select(${selections.join(',\n')})` : ''
   // const finalProjection = projectionFields.join(', ') + (selection ? `, ${selection}` : '')
 
-  const baseParams = {
-    __types: exactSearchSpecs.map((spec) => spec.typeName),
-    ...(params || {}),
-  }
-
   return {
-    filters: filters,
-    params: baseParams,
+    query: {
+      string: searchTerms.query,
+    },
+    filter: filters.join(' && '),
+    params: {
+      __types: exactSearchSpecs.map((spec) => spec.typeName),
+      ...(params || {}),
+    },
   }
 }
