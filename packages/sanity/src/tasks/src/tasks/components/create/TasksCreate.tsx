@@ -27,6 +27,9 @@ type TasksCreateProps = ModeProps & {
   onDelete?: () => void
 }
 
+/**
+ * @internal
+ */
 export const TasksCreate = (props: TasksCreateProps) => {
   const {initialValues, mode, onCancel, onCreate, onDelete} = props
   const {operations} = useTasks()
