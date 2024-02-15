@@ -11,7 +11,7 @@
     "dev": "sanity dev --port 3300",
     "lint": "eslint .",
     "start": "sanity start --port 3300",
-    "preview": "yarn build && yarn start"
+    "preview": "pnpm build && pnpm start"
   },
   "dependencies": {
     "react": "^18.2.0",

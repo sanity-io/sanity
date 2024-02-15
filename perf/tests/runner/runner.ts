@@ -127,7 +127,7 @@ export async function run({
     givenIds.forEach((testId) => {
       if (!testModules.some((testModule) => testModule.id === testId)) {
         throw new Error(
-          `Invalid test id: "${testId}". Use yarn perf:test --list to see all tests ids`,
+          `Invalid test id: "${testId}". Use pnpm perf:test --list to see all tests ids`,
         )
       }
     })
