@@ -8,6 +8,7 @@ export function TasksStudioNavbar(props: NavbarProps) {
   if (!enabled) return props.renderDefault(props)
   return props.renderDefault({
     ...props,
-    rightSectionNode: <TasksNavbarButton />,
+    // eslint-disable-next-line camelcase
+    __internal_rightSectionNode: <TasksNavbarButton />,
   })
 }
