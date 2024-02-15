@@ -1,5 +1,9 @@
 import {type TaskDocument, type TaskOperations} from '../../types'
 
+/**
+ * @beta
+ * @hidden
+ */
 export interface TasksContextValue {
   activeDocumentId?: string
   data: TaskDocument[]

@@ -5,6 +5,10 @@ import {TasksStudioActiveToolLayout} from './TasksStudioActiveToolLayout'
 import {TasksStudioLayout} from './TasksStudioLayout'
 import {TasksStudioNavbar} from './TasksStudioNavbar'
 
+/**
+ * @internal
+ * @beta
+ */
 export const tasks = definePlugin({
   name: 'sanity/tasks',
   studio: {
