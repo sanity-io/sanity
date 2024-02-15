@@ -1,6 +1,6 @@
 import {Flex} from '@sanity/ui'
+import {type ActiveToolLayoutProps} from 'sanity'
 
-import {type ActiveToolLayoutProps} from '../../core'
 import {TasksStudioSidebar, useTasks, useTasksEnabled} from '../src'
 
 export function TasksStudioActiveToolLayout(props: ActiveToolLayoutProps) {

@@ -1,6 +1,6 @@
 import {useEffect} from 'react'
+import {getPublishedId} from 'sanity'
 
-import {getPublishedId} from '../../../../core'
 import {usePane} from '../../../../structure/components'
 import {useTasks} from '../context'
 
