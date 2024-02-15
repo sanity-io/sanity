@@ -23,7 +23,7 @@ test.describe('inputs: text', () => {
         .getDocument(`drafts.${documentId}`)
         .then((doc) => {
           // eslint-disable-next-line no-console
-          console.log('doc', doc)
+          console.log('doc', `drafts.${documentId}`, doc)
           return doc ? doc.simple : null
         })
         .catch((err) => {
@@ -35,7 +35,11 @@ test.describe('inputs: text', () => {
     await page.waitForSelector('data-testid=field-simple', {timeout: 30000})
     const field = page.getByTestId('field-simple').getByRole('textbox')
 
-    const response1 = page.waitForResponse(/mutate/)
+    const response1 = page.waitForResponse(async (res) => {
+      // eslint-disable-next-line no-console
+      console.log(res.url(), await res.json())
+      return res.url().includes('mutate') && res.status() === 200
+    })
     await field.fill(kanji)
     // Enter initial text and wait for the mutate call to be sent
     await response1
