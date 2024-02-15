@@ -98,7 +98,10 @@ jobs:
         env:
           cache-name: cache-e2e-build
         with:
-          path: './*'
+          # get everything but node_modules
+          path: |
+            - './*'
+            - '!**/node_modules'
           # Unique key for a workflow run. Should be invalidated in the next run
           key: ${{ runner.os }}-${{ matrix.project }}-${{ env.cache-name }}-${{ github.run_id }}
 
@@ -213,14 +216,6 @@ jobs:
         with:
           name: playwright-report
           path: blob-report
-          retention-days: 30
-
-      # Upload tracing reports
-      - uses: actions/upload-artifact@v3
-        if: always()
-        with:
-          name: ${{ matrix.project }}-test-report
-          path: test/e2e/results
           retention-days: 30
 
   merge-reports:

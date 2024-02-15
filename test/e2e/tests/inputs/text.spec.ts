@@ -46,7 +46,10 @@ test.describe('inputs: text', () => {
     const field = page.getByTestId('field-simple').getByRole('textbox')
 
     // Enter initial text and wait for the mutate call to be sent
-    const response = page.waitForResponse(/mutate/)
+    const response = page.waitForResponse((res) => {
+      console.log('url', res.status())
+      return res.request().url().includes('mutate') && res.status() === 200
+    })
     await field.fill(kanji)
     await response
 
