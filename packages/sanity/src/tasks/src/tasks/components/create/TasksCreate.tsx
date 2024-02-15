@@ -1,13 +1,14 @@
-import {useCallback, useEffect, useRef, useState} from 'react'
+import {type PortableTextBlock} from '@sanity/types'
 import {Box, Card, Flex, Stack, Text, TextInput, useToast} from '@sanity/ui'
-import {PortableTextBlock} from '@sanity/types'
+import {useCallback, useEffect, useRef, useState} from 'react'
+import {useCurrentUser} from 'sanity'
+
+import {CommentInput, useMentionOptions} from '../../../../../structure/comments'
 import {Button} from '../../../../../ui-components'
 import {useTasks} from '../../context'
-import {CommentInput, useMentionOptions} from '../../../../../structure/comments'
-import {TaskDocument} from '../../types'
+import {type TaskDocument} from '../../types'
 import {RemoveTask} from '../remove/RemoveTask'
 import {WarningText} from './WarningText'
-import {useCurrentUser} from 'sanity'
 
 type ModeProps =
   | {

@@ -1,5 +1,6 @@
+import {type LayoutProps} from 'sanity'
+
 import {TasksEnabledProvider, TasksProvider, TasksSetupProvider} from '../src'
-import {LayoutProps} from 'sanity'
 
 export function TasksStudioLayout(props: LayoutProps) {
   return (

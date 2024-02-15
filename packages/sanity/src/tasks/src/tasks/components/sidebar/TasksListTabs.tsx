@@ -1,9 +1,10 @@
-import {Dispatch, SetStateAction, useCallback, useEffect, useMemo, useState} from 'react'
 import {TabList} from '@sanity/ui'
+import {type Dispatch, type SetStateAction, useCallback, useEffect, useMemo, useState} from 'react'
+import {type CSSProperties} from 'styled-components'
+
 import {Tab} from '../../../../../ui-components'
 import {useTasks} from '../../context'
-import {SidebarTabsIds} from './types'
-import {CSSProperties} from 'styled-components'
+import {type SidebarTabsIds} from './types'
 
 const LIST_STYLES: CSSProperties = {marginLeft: '-0.5em'}
 

@@ -1,5 +1,6 @@
 import {createContext} from 'react'
-import {TasksEnabledContextValue} from './types'
+
+import {type TasksEnabledContextValue} from './types'
 
 /**
  * @internal

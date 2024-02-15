@@ -1,2 +1,2 @@
-export * from './src/tasks'
 export * from './plugin'
+export * from './src/tasks'

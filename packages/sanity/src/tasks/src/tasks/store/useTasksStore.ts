@@ -1,9 +1,10 @@
-import {useMemo, useEffect, useCallback, useReducer, useState} from 'react'
-import {ListenEvent, ListenOptions, SanityClient} from '@sanity/client'
+import {type ListenEvent, type ListenOptions, type SanityClient} from '@sanity/client'
+import {useCallback, useEffect, useMemo, useReducer, useState} from 'react'
 import {catchError, of} from 'rxjs'
-import {TaskDocument, Loadable} from '../types'
-import {TasksReducerAction, TasksReducerState, tasksReducer} from './reducer'
 import {getPublishedId} from 'sanity'
+
+import {type Loadable, type TaskDocument} from '../types'
+import {tasksReducer, type TasksReducerAction, type TasksReducerState} from './reducer'
 
 export interface TasksStoreOptions {
   documentId?: string

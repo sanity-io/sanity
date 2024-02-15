@@ -1,4 +1,4 @@
-import {TaskDocument, TaskOperations} from '../../types'
+import {type TaskDocument, type TaskOperations} from '../../types'
 
 export interface TasksContextValue {
   activeDocumentId?: string

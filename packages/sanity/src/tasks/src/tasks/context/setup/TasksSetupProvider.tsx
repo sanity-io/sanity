@@ -1,8 +1,9 @@
-import React, {useCallback, useEffect, useMemo, useState} from 'react'
-import {SanityClient} from '@sanity/client'
+import {type SanityClient} from '@sanity/client'
+import {useCallback, useEffect, useMemo, useState} from 'react'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS, useClient, useWorkspace} from 'sanity'
+
 import {TasksSetupContext} from './TasksSetupContext'
-import {TasksSetupContextValue} from './types'
-import {DEFAULT_STUDIO_CLIENT_OPTIONS, useWorkspace, useClient} from 'sanity'
+import {type TasksSetupContextValue} from './types'
 
 const API_VERSION = 'v2023-11-13'
 

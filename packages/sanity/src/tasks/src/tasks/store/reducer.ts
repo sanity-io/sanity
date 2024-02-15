@@ -1,4 +1,4 @@
-import {TaskDocument, TaskPostPayload} from '../types'
+import {type TaskDocument, type TaskPostPayload} from '../types'
 
 interface TaskAddedAction {
   payload: TaskDocument | TaskPostPayload
