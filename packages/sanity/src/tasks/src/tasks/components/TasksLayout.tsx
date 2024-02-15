@@ -2,6 +2,9 @@ import {TabList} from '@sanity/ui'
 
 import {Tab} from '../../../../ui-components'
 
+/**
+ * @internal
+ */
 export const TasksLayout = () => {
   const tabLabels = ['Assigned', 'Created', 'This document']
 
