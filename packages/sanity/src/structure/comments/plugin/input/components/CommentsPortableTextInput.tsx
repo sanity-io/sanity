@@ -136,15 +136,14 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
     const threadId = uuid()
 
     operation.create({
+      contentSnapshot: fragment,
       fieldPath: stringFieldPath,
       message: nextCommentValue,
-      // This is a new comment, so we don't have a parent comment id
       parentCommentId: undefined,
+      reactions: EMPTY_ARRAY,
       selection: textSelection,
       status: 'open',
-      // This is a new comment, so we need to generate a new thread id
       threadId,
-      reactions: EMPTY_ARRAY,
     })
 
     onCommentsOpen?.()

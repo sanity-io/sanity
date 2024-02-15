@@ -11,6 +11,10 @@ export interface Loadable<T> {
   loading: boolean
 }
 
+/**
+ * @beta
+ * @hidden
+ */
 export interface CommentUpdateOperationOptions {
   throttled: boolean
 }
@@ -34,7 +38,6 @@ export interface CommentOperations {
  * @beta
  * @hidden
  */
-
 export type MentionOptionsHookValue = Loadable<MentionOptionUser[]>
 
 /**
@@ -71,6 +74,10 @@ export type CommentMessage = PortableTextBlock[] | null
  */
 export type CommentStatus = 'open' | 'resolved'
 
+/**
+ * @beta
+ * @hidden
+ */
 export interface CommentTextSelection {
   type: 'text'
   value: {
@@ -199,6 +206,11 @@ export interface CommentDocument {
   reactions: CommentReactionItem[] | null
   context?: CommentContext
 
+  /**
+   * A snapshot value of the content that the comment is related to.
+   */
+  contentSnapshot?: unknown
+
   target: {
     path: CommentPath
 
@@ -224,14 +236,18 @@ export type CommentPostPayload = Omit<CommentDocument, '_rev' | '_updatedAt' | '
  * @hidden
  */
 export interface CommentCreatePayload {
+  contentSnapshot?: CommentDocument['contentSnapshot']
+  /**
+   * The stringified path to the field where the comment was created.
+   */
   fieldPath: string
-  id?: string
-  message: CommentMessage
-  parentCommentId: string | undefined
+  id?: CommentDocument['_id']
+  message: CommentDocument['message']
+  parentCommentId: CommentDocument['parentCommentId']
+  reactions: CommentDocument['reactions']
   selection?: CommentPathSelection
-  status: CommentStatus
-  threadId: string
-  reactions: CommentReactionItem[]
+  status: CommentDocument['status']
+  threadId: CommentDocument['threadId']
 }
 
 /**
@@ -256,6 +272,10 @@ export interface CommentsListBreadcrumbItem {
  */
 export type CommentListBreadcrumbs = CommentsListBreadcrumbItem[]
 
+/**
+ * @beta
+ * @hidden
+ */
 export interface CommentsUpsellData {
   _createdAt: string
   _id: string
@@ -280,4 +300,8 @@ export interface CommentsUpsellData {
   }
 }
 
+/**
+ * @beta
+ * @hidden
+ */
 export type CommentsUIMode = 'default' | 'upsell'
