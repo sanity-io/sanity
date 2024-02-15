@@ -47,7 +47,7 @@ test.describe('inputs: text', () => {
 
     // Enter initial text and wait for the mutate call to be sent
     const response = page.waitForResponse((res) => {
-      console.log('url', res.status())
+      console.log('url', res.request().url())
       return res.request().url().includes('mutate') && res.status() === 200
     })
     await field.fill(kanji)
