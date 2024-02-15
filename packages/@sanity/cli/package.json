@@ -80,6 +80,8 @@
     "@jest/globals": "^29.7.0",
     "@rexxars/gitconfiglocal": "^3.0.1",
     "@types/decompress": "^4.2.4",
+    "@types/lodash": "^4.14.149",
+    "@types/rimraf": "^3.0.2",
     "@types/validate-npm-package-name": "^3.0.3",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@sanity/client": "^6.12.4",

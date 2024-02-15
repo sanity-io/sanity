@@ -610,6 +610,9 @@ importers:
       '@types/jsdom':
         specifier: ^20.0.0
         version: 20.0.1
+      '@types/lodash':
+        specifier: ^4.14.149
+        version: 4.14.202
       '@types/react':
         specifier: ^18.2.37
         version: 18.2.48
@@ -695,12 +698,18 @@ importers:
       '@types/inquirer':
         specifier: ^6.0.0
         version: 6.5.0
+      '@types/lodash':
+        specifier: ^4.14.149
+        version: 4.14.202
       '@types/minimist':
         specifier: ^1.2.5
         version: 1.2.5
       '@types/node':
         specifier: ^18.19.8
         version: 18.19.8
+      '@types/rimraf':
+        specifier: ^3.0.2
+        version: 3.0.2
       '@types/semver':
         specifier: ^7.5.6
         version: 7.5.6
@@ -1284,6 +1293,9 @@ importers:
       '@types/is-hotkey':
         specifier: ^0.1.10
         version: 0.1.10
+      '@types/lodash':
+        specifier: ^4.14.149
+        version: 4.14.202
       react:
         specifier: ^18.2.0
         version: 18.2.0
@@ -1701,6 +1713,9 @@ importers:
       '@types/raf':
         specifier: ^3.4.0
         version: 3.4.3
+      '@types/react-dom':
+        specifier: ^18.2.15
+        version: 18.2.18
       '@types/refractor':
         specifier: ^3.0.0
         version: 3.4.0
