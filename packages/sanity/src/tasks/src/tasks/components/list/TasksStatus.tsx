@@ -9,15 +9,17 @@ interface TasksStatusProps {
 }
 
 export function TasksStatus(props: TasksStatusProps) {
-  const {operations, isLoading} = useTasks()
+  const {operations} = useTasks()
   const {documentId, status} = props
 
   const [checkboxValue, setCheckboxValue] = useState(status === 'closed')
+  const [isLoading, setIsLoading] = useState(false)
 
   const handleCheckboxChange = useCallback(
     async (event: React.ChangeEvent<HTMLInputElement>) => {
       const isChecked = event.target.checked
       setCheckboxValue(isChecked)
+      setIsLoading(true)
 
       try {
         if (isChecked) {
@@ -27,18 +29,20 @@ export function TasksStatus(props: TasksStatusProps) {
         }
       } catch (error) {
         console.error('An error occurred while updating the task status', error)
+      } finally {
+        setIsLoading(false)
       }
     },
     [documentId, operations],
   )
 
-  return isLoading ? (
+  return (
     <Flex paddingRight={2}>
-      <Spinner />
-    </Flex>
-  ) : (
-    <Flex paddingRight={2}>
-      <Checkbox onChange={handleCheckboxChange} checked={checkboxValue} />
+      {isLoading ? (
+        <Spinner />
+      ) : (
+        <Checkbox onChange={handleCheckboxChange} checked={checkboxValue} disabled={isLoading} />
+      )}
     </Flex>
   )
 }
