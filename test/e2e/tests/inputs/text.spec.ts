@@ -47,7 +47,8 @@ test.describe('inputs: text', () => {
     // Expect the document to now have the base value
     let currentExpectedValue = kanji
     await expect(field).toHaveValue(currentExpectedValue)
-    await expect(await getRemoteValue()).toBe(currentExpectedValue)
+    const remoteValue1 = await getRemoteValue()
+    expect(remoteValue1).toBe(currentExpectedValue)
 
     // Edit the value to start with "Paragraph 1: "
     const p1Prefix = 'Paragraph 1: '
@@ -59,7 +60,8 @@ test.describe('inputs: text', () => {
     // Expect both the browser input and the document to now have the updated value
     currentExpectedValue = `${p1Prefix}${kanji}`
     await expect(field).toHaveValue(currentExpectedValue)
-    await expect(await getRemoteValue()).toBe(currentExpectedValue)
+    const remoteValue2 = await getRemoteValue()
+    expect(remoteValue2).toBe(currentExpectedValue)
 
     // Now move to the end of the paragraph and add a suffix
     const p1Suffix = ' (end of paragraph 1)'
@@ -71,7 +73,8 @@ test.describe('inputs: text', () => {
     // Expect both the browser input and the document to now have the updated value
     currentExpectedValue = nextExpectedValue
     await expect(field).toHaveValue(currentExpectedValue)
-    await expect(await getRemoteValue()).toBe(currentExpectedValue)
+    const remoteValue3 = await getRemoteValue()
+    expect(remoteValue3).toBe(currentExpectedValue)
 
     // Move to the end of the field and add a final suffix
     const p2Suffix = `. EOL.`
@@ -83,6 +86,7 @@ test.describe('inputs: text', () => {
     // Expect both the browser input and the document to now have the updated value
     currentExpectedValue = nextExpectedValue
     await expect(field).toHaveValue(currentExpectedValue)
-    await expect(await getRemoteValue()).toBe(currentExpectedValue)
+    const remoteValue4 = await getRemoteValue()
+    expect(remoteValue4).toBe(currentExpectedValue)
   })
 })
