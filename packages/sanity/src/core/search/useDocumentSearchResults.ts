@@ -15,7 +15,7 @@ import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../studioClient'
 import {isNonNullable} from '../util'
 import {getSearchableTypes} from './common/utils'
 import {createSearch} from './search'
-import {type WeightedHit} from './weighted/types'
+import {type SearchHit, type WeightedHit} from './weighted/types'
 
 /** @internal */
 export interface DocumentSearchParams {
@@ -27,7 +27,7 @@ export interface DocumentSearchParams {
 export interface DocumentSearchResultsState {
   loading: boolean
   error: Error | null
-  value: WeightedHit[]
+  value: (WeightedHit | {hit: SearchHit})[]
 }
 
 const EMPTY_STATE: DocumentSearchResultsState = {
