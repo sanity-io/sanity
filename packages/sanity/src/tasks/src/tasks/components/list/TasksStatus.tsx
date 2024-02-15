@@ -1,32 +1,31 @@
 import {Checkbox, Flex, Spinner} from '@sanity/ui'
-import {useTasks} from '../../context'
 import React, {useCallback, useState} from 'react'
+import {useTasks} from '../../context'
 
 interface TasksStatusProps {
   documentId: string
+  status?: string
 }
 
 export function TasksStatus(props: TasksStatusProps) {
   const {operations, isLoading} = useTasks()
+  const {documentId, status} = props
 
-  const {documentId} = props
-  const [checkboxValue, setCheckboxValue] = useState(false)
+  const [checkboxValue, setCheckboxValue] = useState(status === 'closed')
 
-  const checkboxValues = [
-    {name: 'open', label: 'To do'},
-    {name: 'closed', label: 'Done'},
-  ]
-
-  //Sort it todo and done
   const handleCheckboxChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
+    async (event: React.ChangeEvent<HTMLInputElement>) => {
       const isChecked = event.target.checked
       setCheckboxValue(isChecked)
 
-      if (isChecked) {
-        operations.edit(documentId, {status: 'closed'})
-      } else {
-        operations.edit(documentId, {status: 'open'})
+      try {
+        if (isChecked) {
+          await operations.edit(documentId, {status: 'closed'})
+        } else if (!isChecked) {
+          await operations.edit(documentId, {status: 'open'})
+        }
+      } catch (error) {
+        console.error('An error occurred while updating the task status', error)
       }
     },
     [documentId, operations],
