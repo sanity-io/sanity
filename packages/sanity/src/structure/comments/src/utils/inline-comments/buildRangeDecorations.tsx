@@ -45,8 +45,12 @@ const CommentRangeDecoration = memo(function CommentRangeDecoration(
       return
     }
 
-    const prevId = prevEl.getAttribute('data-inline-comment-id')
-    const nextId = nextEl.getAttribute('data-inline-comment-id')
+    // We use the `applyInlineCommentIdAttr` to get the key of the data attribute
+    // used for the inline comment id on the decorator element.
+    const [key] = Object.keys(applyInlineCommentIdAttr(''))
+
+    const prevId = prevEl.getAttribute(key)
+    const nextId = nextEl.getAttribute(key)
 
     const isEqual = prevId === nextId
 
@@ -68,7 +72,6 @@ const CommentRangeDecoration = memo(function CommentRangeDecoration(
 
   return (
     <CommentInlineHighlightSpan
-      data-inline-comment-id={commentId}
       isAdded
       isHovered={hovered || selected}
       isNested={isNestedRef.current}
