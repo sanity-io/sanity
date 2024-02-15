@@ -5,16 +5,6 @@ import styled, {css} from 'styled-components'
 
 import {COMMENTS_HIGHLIGHT_HUE_KEY} from '../../constants'
 
-/**
- * The styling needs to be applied using data attributes as they are also used
- * in query selectors.
- *
- * The available selectors are:
- * - `[data-inline-comment-state='added']` - The comment has been added
- * - `[data-inline-comment-state='authoring']` - The comment is being authored
- * - `[data-inline-comment-nested='true']` - The comment is a nested comment
- * - `[data-hovered='true']` - The comment is hovered
- */
 export const HighlightSpan = styled.span(({theme}: {theme: Theme}) => {
   const isDark = theme.sanity.v2?.color._dark
 
@@ -29,9 +19,10 @@ export const HighlightSpan = styled.span(({theme}: {theme: Theme}) => {
   const addedNestedBg = hues[COMMENTS_HIGHLIGHT_HUE_KEY][isDark ? 700 : 200].hex
   const addedNesterBorder = hues[COMMENTS_HIGHLIGHT_HUE_KEY][isDark ? 600 : 400].hex
 
-  // Colors used when a comment is being authored
-  const authoringBg = hues[COMMENTS_HIGHLIGHT_HUE_KEY][isDark ? 900 : 50].hex
-  const authoringBorder = hues[COMMENTS_HIGHLIGHT_HUE_KEY][isDark ? 800 : 200].hex
+  // Colors used when a comment is being authored.
+  // For now, we use the same colors as when a comment is added.
+  const authoringBg = addedBg
+  const authoringBorder = addedBorder
 
   return css`
     box-sizing: border-box;
