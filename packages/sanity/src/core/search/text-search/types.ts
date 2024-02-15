@@ -16,6 +16,10 @@ export type TextSearchParams = {
    */
   filter?: string
   /**
+   * Parameters for the GROQ filter expression.
+   */
+  params?: Record<string, string>
+  /**
    * A list of document paths to include in the response. If not provided, all
    * attributes are returned.
    *
