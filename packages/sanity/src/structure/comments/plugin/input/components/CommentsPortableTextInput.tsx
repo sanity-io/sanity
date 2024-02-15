@@ -261,8 +261,15 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
       if (change.type === 'patch') didPatch.current = true
       if (change.type === 'mutation') didPatch.current = false
 
-      if (change.type === 'rangeDecorationMoved' && didPatch.current) {
+      if (change.type === 'rangeDecorationMoved') {
+        // Recalculate the range decorators when the range decorations move.
+        // But only proceed with the update if the `patch` change type was triggered.
+        // This is to ensure the comment document(s) are only updated when the current user.
+        // See comment above for more details.
         handleBuildAddedRangeDecorators()
+
+        if (!didPatch.current) return
+
         const commentId = change.rangeDecoration.payload?.commentId as undefined | string
         let currentBlockKey: string | undefined
         let previousBlockKey: string | undefined
