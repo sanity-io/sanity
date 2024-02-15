@@ -251,13 +251,13 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
       // The `rangeDecorationMoved` event triggers when range decorations move, even if
       // not caused by the current user. This means edits by others that move decorations
       // will also trigger this event. While expected, we need to ensure the comment document(s)
-      // aren't updated when another user is making changes. Updates should only happen when the
-      // current user is editing the content.
-      // To manage this, we use the `didPatch` ref to track if the movement was
-      // caused by the current user by checking the `patch` change type. If true, we set
-      // `didPatch` to true. It's reset to false when a `mutation` change type occurs,
-      // indicating the current user finished editing. This prevents comment updates from
-      // other users' changes.
+      // aren't updated when another user is making changes. Updates to the comment document(s)
+      // should only happen when the current user is editing the content.
+      // To manage this, we use the `didPatch` ref to track if the event was
+      // triggered by the current user by checking the `patch` change type was triggered.
+      // The `patch` event only triggers when the current user is making changes to the content.
+      // That way, we can ensure the comment document(s) are only updated when the current user
+      // is editing the content.
       if (change.type === 'patch') didPatch.current = true
       if (change.type === 'mutation') didPatch.current = false
 
@@ -305,7 +305,7 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
           }
 
           operation.update(comment._id, nextComment, {
-            throttle: true,
+            throttled: true,
           })
         }
       }

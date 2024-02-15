@@ -1,15 +1,13 @@
 import {type SanityClient} from '@sanity/client'
 import {uuid} from '@sanity/uuid'
-import {throttle} from 'lodash'
+import {throttle, type ThrottleSettings} from 'lodash'
 
 import {type CommentUpdatePayload} from '../../types'
-
-const THROTTLE_TIME_MS = 1000
 
 interface UpdateOperationProps {
   client: SanityClient
   comment: CommentUpdatePayload
-  throttle: boolean | undefined
+  throttled: boolean | undefined
   id: string
   onUpdate?: (id: string, comment: CommentUpdatePayload) => void
   transactionId: string | undefined
@@ -42,13 +40,35 @@ async function postCommentUpdate(props: UpdateOperationProps) {
   await transaction.commit()
 }
 
-const throttlePostCommentUpdate = throttle(postCommentUpdate, THROTTLE_TIME_MS, {
+const THROTTLE_TIME_MS = 1000
+
+const THROTTLE_SETTINGS: ThrottleSettings = {
   trailing: true,
   leading: false,
-})
+}
+
+const throttleFunctionsMap = new Map()
+
+/*
+ * Retrieves or creates a unique throttled function for each comment based on its ID.
+ * This is necessary because using a single throttled function for all updates would
+ * mean subsequent calls within the throttle period could be ignored, which isn't ideal
+ * when updates are not uniform across all operations. By creating a unique throttled
+ * function for each ID, we ensure each comment update operation is individually throttled,
+ * allowing for controlled execution while preventing rapid, consecutive calls from
+ * bypassing the intended throttle behavior.
+ */
+function getThrottledFunction(id: string) {
+  if (!throttleFunctionsMap.has(id)) {
+    const throttledFunction = throttle(postCommentUpdate, THROTTLE_TIME_MS, THROTTLE_SETTINGS)
+    throttleFunctionsMap.set(id, throttledFunction)
+    return throttledFunction
+  }
+  return throttleFunctionsMap.get(id)
+}
 
 export async function updateOperation(props: UpdateOperationProps): Promise<void> {
-  const {id, comment, onUpdate, throttle: throttleProp} = props
+  const {id, comment, onUpdate, throttled: throttledProp} = props
 
   const hasEditedMessage = 'message' in comment
 
@@ -57,13 +77,11 @@ export async function updateOperation(props: UpdateOperationProps): Promise<void
     lastEditedAt: new Date().toISOString(),
   }
 
-  // If the comment message has been edited, we'll update the lastEditedAt field
-  // to reflect the time of the edit.
   const nextComment: CommentUpdatePayload = hasEditedMessage ? editedComment : comment
 
   onUpdate?.(id, nextComment)
 
-  if (!throttleProp) {
+  if (!throttledProp) {
     await postCommentUpdate({
       ...props,
       comment: nextComment,
@@ -71,6 +89,7 @@ export async function updateOperation(props: UpdateOperationProps): Promise<void
     return
   }
 
+  const throttlePostCommentUpdate = getThrottledFunction(id)
   await throttlePostCommentUpdate({
     ...props,
     comment: nextComment,
