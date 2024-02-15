@@ -1,51 +1,7 @@
-import {joinPath} from '../../../core/util/searchUtils'
-import {
-  type SearchableType,
-  type SearchOptions,
-  type SearchTerms,
-  type WeightedSearchOptions,
-} from '../weighted/types'
+import {type SearchOptions, type SearchTerms, type WeightedSearchOptions} from '../weighted/types'
 import {type TextSearchParams} from './types'
 
 export const DEFAULT_LIMIT = 1000
-
-/**
- * Create an object containing all available document types and weighted paths, used to construct a GROQ query for search.
- * System fields `_id` and `_type` are included by default.
- *
- * If `optimizeIndexPaths` is true, this will will convert all `__experimental_search` paths containing numbers
- * into array syntax. E.g. ['cover', 0, 'cards', 0, 'title'] =\> "cover[].cards[].title"
- *
- * This optimization will yield more search results than may be intended, but offers better performance over arrays with indices.
- * (which are currently unoptimizable by Content Lake)
- */
-function createSearchSpecs(types: SearchableType[], optimizeIndexedPaths: boolean) {
-  let hasIndexedPaths = false
-
-  const specs = types.map((type) => ({
-    typeName: type.name,
-    paths: type.__experimental_search.map((config) => {
-      const path = config.path.map((p) => {
-        if (typeof p === 'number') {
-          hasIndexedPaths = true
-          if (optimizeIndexedPaths) {
-            return [] as []
-          }
-        }
-        return p
-      })
-      return {
-        weight: config.weight,
-        path: joinPath(path),
-        mapWith: config.mapWith,
-      }
-    }),
-  }))
-  return {
-    specs,
-    hasIndexedPaths,
-  }
-}
 
 // const pathWithMapper = ({mapWith, path}: SearchPath): string =>
 //   mapWith ? `${mapWith}(${path})` : path
@@ -64,7 +20,6 @@ export function createSearchQuery(
    * any indexed paths in `__experimental_search`.
    * e.g. "authors.0.title" or ["authors", 0, "title"]
    */
-  const {specs: exactSearchSpecs} = createSearchSpecs(searchTerms.types, false)
 
   // Construct search filters used in this GROQ query
   const filters = [
@@ -90,7 +45,7 @@ export function createSearchQuery(
     },
     filter: filters.join(' && '),
     params: {
-      __types: exactSearchSpecs.map((spec) => spec.typeName),
+      __types: searchTerms.types.map((type) => type.name),
       ...(params || {}),
     },
     limit: DEFAULT_LIMIT,
