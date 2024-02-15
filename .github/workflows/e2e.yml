@@ -101,7 +101,7 @@ jobs:
           # get everything but node_modules
           path: |
             - ./*
-            - !**/node_modules/**
+            - !node_modules/**
           # Unique key for a workflow run. Should be invalidated in the next run
           key: ${{ runner.os }}-${{ matrix.project }}-${{ env.cache-name }}-${{ github.run_id }}
 
@@ -180,7 +180,7 @@ jobs:
         with:
           path: |
             - ./*
-            - !**/node_modules/**
+            - !node_modules/**
           key: ${{ runner.os }}-${{ matrix.project }}-${{ env.cache-name }}-${{ github.run_id }}
           # If the cached build from the pervious step is not available. Fail the build
           fail-on-cache-miss: true
