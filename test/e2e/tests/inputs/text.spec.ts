@@ -20,7 +20,10 @@ test.describe('inputs: text', () => {
     const documentId = await createDraftDocument('/test/content/input-ci;textsTest')
 
     async function getRemoteValue() {
-      await page.waitForTimeout(10000) // hack, testing if it's a time issue
+      const {token, ...rest} = sanityClient.config()
+      console.log(rest)
+
+      await page.waitForTimeout(5000) // hack, testing if it's a time issue
       try {
         const docs = await sanityClient.fetch(`*[_type == $type] { _id, _type, simple }`, {
           type: 'textsTest',
