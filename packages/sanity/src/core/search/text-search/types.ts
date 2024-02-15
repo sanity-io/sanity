@@ -1,5 +1,7 @@
 import {type SanityDocument} from '@sanity/types'
 
+type Primitive = string | number | boolean
+
 export type TextSearchParams = {
   query: {
     string: string
@@ -18,7 +20,7 @@ export type TextSearchParams = {
   /**
    * Parameters for the GROQ filter expression.
    */
-  params?: Record<string, string>
+  params?: Record<string, Primitive | Primitive[]>
   /**
    * A list of document paths to include in the response. If not provided, all
    * attributes are returned.
