@@ -22,7 +22,6 @@
       "sanity/router": ["./exports/router.ts"],
       "sanity/structure": ["./exports/structure.ts"],
       "sanity": ["./exports/index.ts"],
-      "sanity/tasks": ["./exports/tasks.ts"],
     },
 
     "emitDeclarationOnly": true,
