@@ -127,6 +127,7 @@ export interface TaskCreatePayload {
   title: string
   description: TaskMessage
   status: TaskStatus
+  assignedTo?: string
 }
 
 /**
@@ -138,4 +139,5 @@ export type TaskEditPayload = {
   description?: TaskMessage
   lastEditedAt?: string
   status?: TaskStatus
+  assignedTo?: string
 }
