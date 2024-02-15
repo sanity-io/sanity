@@ -4,6 +4,7 @@
  * Makeshift code to reproduce a specific bug.
  */
 import {expect} from '@playwright/test'
+import {createClient} from '@sanity/client'
 import {test} from '@sanity/test'
 
 const kanji = `
@@ -12,10 +13,18 @@ const kanji = `
 住ゅなぜ日16語約セヤチ任政崎ソオユ枠体ぞン古91一専泉給12関モリレネ解透ぴゃラぼ転地す球北ドざう記番重投ぼづ。期ゃ更緒リだすし夫内オ代他られくド潤刊本クヘフ伊一ウムニヘ感週け出入ば勇起ょ関図ぜ覧説めわぶ室訪おがト強車傾町コ本喰杜椿榎ほれた。暮る生的更芸窓どさはむ近問ラ入必ラニス療心コウ怒応りめけひ載総ア北吾ヌイヘ主最ニ余記エツヤ州5念稼め化浮ヌリ済毎養ぜぼ。
 `.trim()
 
+const sanityClient = createClient({
+  projectId: process.env.SANITY_E2E_PROJECT_ID,
+  dataset: process.env.SANITY_E2E_DATASET,
+  token: process.env.SANITY_E2E_SESSION_TOKEN,
+  useCdn: false,
+  apiVersion: '2021-08-31',
+})
+
 test.describe('inputs: text', () => {
   test.slow() // Because of waiting for mutations, remote values etc
 
-  test('correctly applies kanji edits', async ({page, sanityClient, createDraftDocument}) => {
+  test('correctly applies kanji edits', async ({page, createDraftDocument}) => {
     const documentId = await createDraftDocument('/test/content/input-ci;textsTest')
 
     async function getRemoteValue() {
