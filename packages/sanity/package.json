@@ -225,6 +225,7 @@
     "@tanstack/react-virtual": "3.0.0-beta.54",
     "@types/is-hotkey": "^0.1.7",
     "@types/react-copy-to-clipboard": "^5.0.2",
+    "@types/react-dom": "^18.2.15",
     "@types/react-is": "^18.2.0",
     "@types/shallow-equals": "^1.0.0",
     "@types/speakingurl": "^13.0.3",

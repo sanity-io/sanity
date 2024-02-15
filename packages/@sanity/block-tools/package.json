@@ -62,6 +62,7 @@
     "@jest/globals": "^29.7.0",
     "@sanity/schema": "3.29.1",
     "@sanity/types": "3.29.1",
+    "@types/lodash": "^4.14.149",
     "@types/jsdom": "^20.0.0",
     "@types/react": "^18.2.37",
     "jsdom": "^23.0.1"

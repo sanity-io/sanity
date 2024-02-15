@@ -610,6 +610,9 @@ importers:
       '@types/jsdom':
         specifier: ^20.0.0
         version: 20.0.1
+      '@types/lodash':
+        specifier: ^4.14.149
+        version: 4.14.149
       '@types/react':
         specifier: ^18.2.37
         version: 18.2.48
@@ -695,12 +698,18 @@ importers:
       '@types/inquirer':
         specifier: ^6.0.0
         version: 6.5.0
+      '@types/lodash':
+        specifier: ^4.14.149
+        version: 4.14.149
       '@types/minimist':
         specifier: ^1.2.5
         version: 1.2.5
       '@types/node':
         specifier: ^18.19.8
         version: 18.19.8
+      '@types/rimraf':
+        specifier: ^3.0.2
+        version: 3.0.2
       '@types/semver':
         specifier: ^7.5.6
         version: 7.5.6
@@ -1284,6 +1293,9 @@ importers:
       '@types/is-hotkey':
         specifier: ^0.1.10
         version: 0.1.10
+      '@types/lodash':
+        specifier: 4.14.149
+        version: 4.14.149
       react:
         specifier: ^18.2.0
         version: 18.2.0
@@ -1412,6 +1424,9 @@ importers:
       '@types/react-copy-to-clipboard':
         specifier: ^5.0.2
         version: 5.0.7
+      '@types/react-dom':
+        specifier: ^18.2.15
+        version: 18.2.18
       '@types/react-is':
         specifier: ^18.2.0
         version: 18.2.4
@@ -6125,7 +6140,7 @@ packages:
       express: 4.18.2
       globby: 11.1.0
       groq: 3.25.0
-      groq-js: 1.4.1
+      groq-js: 1.4.0
       history: 5.3.0
       jsonc-parser: 3.2.0
       mkdirp: 1.0.4
@@ -6807,8 +6822,11 @@ packages:
   /@types/lodash.isequal@4.5.8:
     resolution: {integrity: sha512-uput6pg4E/tj2LGxCZo9+y27JNyB2OZuuI/T5F+ylVDYuqICLG2/ktjxx0v6GvVntAf8TvEzeQLcV0ffRirXuA==}
     dependencies:
-      '@types/lodash': 4.14.202
+      '@types/lodash': 4.14.149
     dev: false
+
+  /@types/lodash@4.14.149:
+    resolution: {integrity: sha512-ijGqzZt/b7BfzcK9vTrS6MFljQRPn5BFWOx8oE0GYxribu6uV+aA9zZuXI1zc/etK9E8nrgdoF2+LgUw7+9tJQ==}
 
   /@types/lodash@4.14.202:
     resolution: {integrity: sha512-OvlIYQK9tNneDlS0VN54LLd5uiPCBOp7gS5Z0f1mjoJYBrtStzgmJBxONW3U6OZqdtNzZPmn9BS/7WI7BFFcFQ==}
@@ -6897,7 +6915,6 @@ packages:
     resolution: {integrity: sha512-TJxDm6OfAX2KJWJdMEVTwWke5Sc/E/RlnPGvGfS0W7+6ocy2xhDVQVh/KvC2Uf7kACs+gDytdusDSdWfWkaNzw==}
     dependencies:
       '@types/react': 18.2.48
-    dev: true
 
   /@types/react-is@18.2.4:
     resolution: {integrity: sha512-wBc7HgmbCcrvw0fZjxbgz/xrrlZKzEqmABBMeSvpTvdm25u6KI6xdIi9pRE2G0C1Lw5ETFdcn4UbYZ4/rpqUYw==}
@@ -11524,6 +11541,7 @@ packages:
   /groq-js@1.4.1:
     resolution: {integrity: sha512-AA9n7NRxGd0smsAW/vE+dudCL3mBd73Fe21I7cMrrpDHamVFvWHNMs8LdkfvFBsnHI9XKQph8swzI4ExDWhsgg==}
     engines: {node: '>= 14'}
+    dev: false
 
   /groq@3.25.0:
     resolution: {integrity: sha512-rfJO+qvo/vErznGqNDZXcdqEdmtGjovKqJNYIoPOdeKYbmYAQTHOGmxwvrBUuvq9teYmh4LhPazThmcUwhV1kw==}
