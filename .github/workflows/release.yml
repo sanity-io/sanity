@@ -29,11 +29,11 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: lts/*
-          cache: 'yarn'
+          cache: 'pnpm'
           registry-url: 'https://registry.npmjs.org'
 
       - name: Install
-        run: yarn install --frozen-lockfile
+        run: pnpm install
 
       - name: Pre-flight
         run: |
@@ -82,7 +82,7 @@ jobs:
             ${{ inputs.version }}
 
       - name: Build
-        run: yarn build
+        run: pnpm build
 
       - name: Publish
         run: |
