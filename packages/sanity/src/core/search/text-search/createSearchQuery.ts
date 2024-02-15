@@ -130,5 +130,6 @@ export function createSearchQuery(
       __types: exactSearchSpecs.map((spec) => spec.typeName),
       ...(params || {}),
     },
+    limit: DEFAULT_LIMIT,
   }
 }
