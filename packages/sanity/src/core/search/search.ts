@@ -5,6 +5,7 @@ import {createTextSearch} from './text-search'
 import {createWeightedSearch} from './weighted'
 import {
   type SearchableType,
+  type SearchHit,
   type SearchOptions,
   type WeightedHit,
   type WeightedSearchOptions,
@@ -26,7 +27,7 @@ export function createSearch(
   searchableTypes: SearchableType[],
   client: SanityClient,
   options: WeightedSearchOptions = {},
-): (query: string, opts?: SearchOptions) => Observable<WeightedHit[]> {
+): (query: string, opts?: SearchOptions) => Observable<(WeightedHit | {hit: SearchHit})[]> {
   const searchStrategy = searchStrategies[SEARCH_STRATEGY]
   return searchStrategy(searchableTypes, client, options)
 }
