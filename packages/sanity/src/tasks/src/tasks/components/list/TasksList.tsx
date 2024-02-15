@@ -1,4 +1,5 @@
 import {Box, Flex, Label, Stack, Text} from '@sanity/ui'
+import {useCallback, useMemo} from 'react'
 
 import {type TaskDocument} from '../../types'
 import {TasksListItem} from './TasksListItem'
@@ -25,35 +26,48 @@ export function TasksList(props: TasksListProps) {
   const {items, onTaskSelect} = props
 
   // Filter tasks by status to render them in separate lists
-  const tasksByStatus = (status: string) => items.filter((item) => item.status === status)
+  const tasksByStatus = useMemo(
+    () =>
+      items.reduce((acc: Record<string, TaskDocument[]>, task) => {
+        if (!acc[task.status]) {
+          acc[task.status] = []
+        }
+        acc[task.status].push(task)
+        return acc
+      }, {}),
+    [items],
+  )
 
-  const renderTasksList = (status: string) => {
-    const tasks = tasksByStatus(status)
-    if (tasks.length === 0) {
-      return null
-    }
-    return (
-      <Box padding={3}>
-        <Flex paddingBottom={3}>
-          <Label>{getLabelForStatus(status)}</Label>
-        </Flex>
-        <Stack space={3}>
-          {tasks.map((task) => (
-            <TasksListItem
-              key={task._id}
-              documentId={task._id}
-              title={task.title}
-              dueBy={task.dueBy}
-              assignedTo={task.assignedTo}
-              target={task.target}
-              onSelect={() => onTaskSelect(task._id)}
-              status={task.status}
-            />
-          ))}
-        </Stack>
-      </Box>
-    )
-  }
+  const renderTasksList = useCallback(
+    (status: string) => {
+      const tasks = tasksByStatus[status] || []
+      if (tasks.length === 0) {
+        return null
+      }
+      return (
+        <Box padding={3}>
+          <Flex paddingBottom={3}>
+            <Label>{getLabelForStatus(status)}</Label>
+          </Flex>
+          <Stack space={3}>
+            {tasks.map((task) => (
+              <TasksListItem
+                key={task._id}
+                documentId={task._id}
+                title={task.title}
+                dueBy={task.dueBy}
+                assignedTo={task.assignedTo}
+                target={task.target}
+                onSelect={() => onTaskSelect(task._id)}
+                status={task.status}
+              />
+            ))}
+          </Stack>
+        </Box>
+      )
+    },
+    [onTaskSelect, tasksByStatus],
+  )
 
   return (
     <Box padding={3}>
