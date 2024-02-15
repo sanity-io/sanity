@@ -6,5 +6,6 @@ form.js
 presentation.js
 router.js
 structure.js
+tasks.js
 migrate.js
 /migrate/*
