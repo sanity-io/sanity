@@ -1,7 +1,8 @@
 import {useMemo} from 'react'
-import {TasksEnabledContext} from './TasksEnabledContext'
-import {TasksEnabledContextValue} from './types'
 import {useFeatureEnabled} from 'sanity'
+
+import {TasksEnabledContext} from './TasksEnabledContext'
+import {type TasksEnabledContextValue} from './types'
 
 interface TaksEnabledProviderProps {
   children: React.ReactNode

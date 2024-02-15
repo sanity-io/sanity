@@ -1,9 +1,10 @@
-import {useState, useCallback, useMemo} from 'react'
+import {useCallback, useMemo, useState} from 'react'
+
 import {useTasksStore} from '../../store'
 import {useTasksSetup} from '../setup/useTasksSetup'
 import {TasksContext} from './TasksContext'
+import {type TasksContextValue} from './types'
 import {useTaskOperations} from './useTaskOperations'
-import {TasksContextValue} from './types'
 
 interface TasksProviderProps {
   children: React.ReactNode

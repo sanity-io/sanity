@@ -1,8 +1,9 @@
-import {TasksStudioActiveToolLayout} from './TasksStudioActiveToolLayout'
+import {definePlugin, type ObjectInputProps} from 'sanity'
+
 import {TasksDocumentInputLayout} from './TasksDocumentInputLayout'
+import {TasksStudioActiveToolLayout} from './TasksStudioActiveToolLayout'
 import {TasksStudioLayout} from './TasksStudioLayout'
 import {TasksStudioNavbar} from './TasksStudioNavbar'
-import {ObjectInputProps, definePlugin} from 'sanity'
 
 export const tasks = definePlugin({
   name: 'sanity/tasks',

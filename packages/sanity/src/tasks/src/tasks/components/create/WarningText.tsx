@@ -1,6 +1,6 @@
+import {Box, Text} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
-import {Box, Text} from '@sanity/ui'
 import styled from 'styled-components'
 
 const RedText = styled(Text)((props) => {

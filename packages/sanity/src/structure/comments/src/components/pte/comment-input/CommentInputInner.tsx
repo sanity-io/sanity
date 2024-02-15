@@ -1,10 +1,9 @@
-import {useCallback} from 'react'
 import {type CurrentUser} from '@sanity/types'
 import {Box, Card, Flex, MenuDivider, Stack} from '@sanity/ui'
-
-import {useTranslation, useUser} from 'sanity'
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
+import {useCallback} from 'react'
+import {useTranslation, useUser} from 'sanity'
 import styled, {css} from 'styled-components'
 
 import {Button, TooltipDelayGroupProvider} from '../../../../../../ui-components'
