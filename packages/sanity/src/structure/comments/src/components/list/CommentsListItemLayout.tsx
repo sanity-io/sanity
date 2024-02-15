@@ -15,7 +15,7 @@ import {IntentLink} from 'sanity/router'
 import styled, {css} from 'styled-components'
 
 import {commentsLocaleNamespace} from '../../../i18n'
-import {hasCommentMessageValue, useCommentHasChanged} from '../../helpers'
+import {hasCommentMessageValue, isTextSelectionComment, useCommentHasChanged} from '../../helpers'
 import {
   type CommentContext,
   type CommentDocument,
@@ -396,7 +396,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
           )}
         </Flex>
 
-        {comment.target.path.selection?.type === 'text' && Boolean(comment?.contentSnapshot) && (
+        {isTextSelectionComment(comment) && Boolean(comment?.contentSnapshot) && (
           <Flex gap={FLEX_GAP} marginBottom={3}>
             <SpacerAvatar />
 

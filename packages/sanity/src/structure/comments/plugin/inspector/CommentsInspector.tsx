@@ -19,6 +19,7 @@ import {
   type CommentsUIMode,
   CommentsUpsellPanel,
   type CommentUpdatePayload,
+  isTextSelectionComment,
   useComments,
   useCommentsEnabled,
   useCommentsOnboarding,
@@ -195,7 +196,7 @@ function CommentsInspectorInner(
 
         const isInlineComment = comments.data.open
           .filter((c) => c.threadId === nextPath?.threadId)
-          .some((x) => x.selection?.type === 'text')
+          .some((x) => isTextSelectionComment(x.parentComment))
 
         if (isInlineComment && nextPath.threadId) {
           scrollToInlineComment(nextPath.threadId)
