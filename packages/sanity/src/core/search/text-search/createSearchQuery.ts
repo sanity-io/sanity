@@ -1,7 +1,4 @@
-import {compact, toLower, trim, uniq, words} from 'lodash'
-
 import {joinPath} from '../../../core/util/searchUtils'
-import {tokenize} from '../common/tokenize'
 import {
   type SearchableType,
   type SearchOptions,
@@ -52,40 +49,6 @@ function createSearchSpecs(types: SearchableType[], optimizeIndexedPaths: boolea
 
 // const pathWithMapper = ({mapWith, path}: SearchPath): string =>
 //   mapWith ? `${mapWith}(${path})` : path
-
-/**
- * Convert a string into an array of tokenized terms.
- *
- * Any (multi word) text wrapped in double quotes will be treated as "phrases", or separate tokens that
- * will not have its special characters removed.
- * E.g.`"the" "fantastic mr" fox fox book` =\> ["the", `"fantastic mr"`, "fox", "book"]
- *
- * Phrases wrapped in quotes are assigned relevance scoring differently from regular words.
- *
- * @internal
- */
-export function extractTermsFromQuery(query: string): string[] {
-  const quotedQueries = [] as string[]
-  const unquotedQuery = query.replace(/("[^"]*")/g, (match) => {
-    if (words(match).length > 1) {
-      quotedQueries.push(match)
-      return ''
-    }
-    return match
-  })
-
-  // Lowercase and trim quoted queries
-  const quotedTerms = quotedQueries.map((str) => trim(toLower(str)))
-
-  /**
-   * Convert (remaining) search query into an array of deduped, sanitized tokens.
-   * All white space and special characters are removed.
-   * e.g. "The saint of Saint-Germain-des-Prés" =\> ['the', 'saint', 'of', 'germain', 'des', 'pres']
-   */
-  const remainingTerms = uniq(compact(tokenize(toLower(unquotedQuery))))
-
-  return [...quotedTerms, ...remainingTerms]
-}
 
 /**
  * @internal
