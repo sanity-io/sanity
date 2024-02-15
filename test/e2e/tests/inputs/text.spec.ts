@@ -35,9 +35,10 @@ test.describe('inputs: text', () => {
     await page.waitForSelector('data-testid=field-simple', {timeout: 30000})
     const field = page.getByTestId('field-simple').getByRole('textbox')
 
+    const response1 = page.waitForResponse(/mutate/)
     await field.fill(kanji)
     // Enter initial text and wait for the mutate call to be sent
-    await page.waitForResponse(/mutate/)
+    await response1
 
     // Expect the document to now have the base value
     let currentExpectedValue = kanji
@@ -47,8 +48,9 @@ test.describe('inputs: text', () => {
     // Edit the value to start with "Paragraph 1: "
     const p1Prefix = 'Paragraph 1: '
     let nextExpectedValue = `${p1Prefix}${kanji}`
+    const response2 = page.waitForResponse(/mutate/)
     await field.fill(nextExpectedValue)
-    await page.waitForResponse(/mutate/)
+    await response2
 
     // Expect both the browser input and the document to now have the updated value
     currentExpectedValue = `${p1Prefix}${kanji}`
@@ -58,8 +60,9 @@ test.describe('inputs: text', () => {
     // Now move to the end of the paragraph and add a suffix
     const p1Suffix = ' (end of paragraph 1)'
     nextExpectedValue = currentExpectedValue.replace(/\n\n/, `${p1Suffix}\n\n`)
+    const response3 = page.waitForResponse(/mutate/)
     await field.fill(nextExpectedValue)
-    await page.waitForResponse(/mutate/)
+    await response3
 
     // Expect both the browser input and the document to now have the updated value
     currentExpectedValue = nextExpectedValue
@@ -69,8 +72,9 @@ test.describe('inputs: text', () => {
     // Move to the end of the field and add a final suffix
     const p2Suffix = `. EOL.`
     nextExpectedValue = `${currentExpectedValue}${p2Suffix}`
+    const response4 = page.waitForResponse(/mutate/)
     await field.fill(nextExpectedValue)
-    await page.waitForResponse(/mutate/)
+    await response4
 
     // Expect both the browser input and the document to now have the updated value
     currentExpectedValue = nextExpectedValue
