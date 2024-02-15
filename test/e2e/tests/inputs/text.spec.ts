@@ -7,8 +7,6 @@
 import {expect} from '@playwright/test'
 import {test} from '@sanity/test'
 
-console.log('has session token:', typeof process.env.SANITY_E2E_SESSION_TOKEN)
-
 const kanji = `
 速ヒマヤレ誌相ルなあね日諸せ変評ホ真攻同潔ク作先た員勝どそ際接レゅ自17浅ッ実情スヤ籍認ス重力務鳥の。8平はートご多乗12青國暮整ル通国うれけこ能新ロコラハ元横ミ休探ミソ梓批ざょにね薬展むい本隣ば禁抗ワアミ部真えくト提知週むすほ。査ル人形ルおじつ政謙減セヲモ読見れレぞえ録精てざ定第ぐゆとス務接産ヤ写馬エモス聞氏サヘマ有午ごね客岡ヘロ修彩枝雨父のけリド。
 
@@ -19,14 +17,10 @@ test.describe('inputs: text', () => {
   test.slow() // Because of waiting for mutations, remote values etc
 
   test('correctly applies kanji edits', async ({page, sanityClient, createDraftDocument}) => {
-    console.log('has session token in the test:', typeof process.env.SANITY_E2E_SESSION_TOKEN)
     const documentId = await createDraftDocument('/test/content/input-ci;textsTest')
 
     async function getRemoteValue() {
-      console.log(
-        'has session token in the getRemoteValue:',
-        typeof process.env.SANITY_E2E_SESSION_TOKEN,
-      )
+      await page.waitForTimeout(2000) // hack, testing if it's a time issue
       try {
         const docs = await sanityClient.fetch(`*[_type == $type] { _id, _type, simple }`, {
           type: 'textsTest',
