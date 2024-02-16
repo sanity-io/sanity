@@ -11,6 +11,7 @@ import {
 } from 'rxjs/operators'
 
 import {useClient, useSchema} from '../hooks'
+import {useWorkspace} from '../studio'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../studioClient'
 import {isNonNullable} from '../util'
 import {getSearchableTypes} from './common/utils'
@@ -59,8 +60,15 @@ export function useDocumentSearchResults(props: {
   const {includeDrafts = false, limit = 1000, query: queryProp} = props
   const [state, setState] = useState<DocumentSearchResultsState>(EMPTY_STATE)
   const paramsSubject = useMemo(() => new Subject<DocumentSearchParams>(), [])
+  const strategy = useWorkspace().search.__experimental_strategy
 
-  const search = useMemo(() => createSearch(getSearchableTypes(schema), client), [client, schema])
+  const search = useMemo(
+    () =>
+      createSearch(getSearchableTypes(schema), client, {
+        strategy,
+      }),
+    [client, schema, strategy],
+  )
 
   const state$ = useMemo(
     () =>

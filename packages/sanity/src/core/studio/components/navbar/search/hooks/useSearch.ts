@@ -23,6 +23,7 @@ import {
 } from '../../../../../search'
 import {getSearchTypesWithMaxDepth} from '../../../../../search/weighted/getSearchTypesWithMaxDepth'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../../studioClient'
+import {useWorkspace} from '../../../../workspace'
 import {type SearchState} from '../types'
 import {hasSearchableTerms} from '../utils/hasSearchableTerms'
 import {getSearchableOmnisearchTypes} from '../utils/selectors'
@@ -82,6 +83,7 @@ export function useSearch({
   const [searchState, setSearchState] = useState(initialState)
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const maxFieldDepth = useSearchMaxFieldDepth()
+  const strategy = useWorkspace().search.__experimental_strategy
 
   const searchWeighted = useMemo(
     () =>
@@ -91,9 +93,10 @@ export function useSearch({
         {
           tag: 'search.global',
           unique: true,
+          strategy,
         },
       ),
-    [client, schema, maxFieldDepth],
+    [client, schema, maxFieldDepth, strategy],
   )
 
   const handleQueryChange = useObservableCallback(

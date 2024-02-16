@@ -8,6 +8,7 @@ import {
   type Schema,
   type SchemaType,
   type SchemaTypeDefinition,
+  type SearchStrategy,
 } from '@sanity/types'
 import {type i18n} from 'i18next'
 import {type ComponentType, type ReactNode} from 'react'
@@ -373,6 +374,7 @@ export interface PluginOptions {
     unstable_partialIndexing?: {
       enabled: boolean
     }
+    __experimental_strategy?: SearchStrategy
   }
 }
 
@@ -707,6 +709,7 @@ export interface Source {
     unstable_partialIndexing?: {
       enabled: boolean
     }
+    __experimental_strategy?: SearchStrategy
   }
 
   /** @internal */
