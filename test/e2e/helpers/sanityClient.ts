@@ -1,6 +1,5 @@
-import {createClient} from '@sanity/client'
+import {createClient, type SanityClient} from '@sanity/client'
 import {uuid} from '@sanity/uuid'
-import {type SanityClient} from 'sanity'
 
 import {SANITY_E2E_DATASET, SANITY_E2E_PROJECT_ID, SANITY_E2E_SESSION_TOKEN} from '../env'
 
