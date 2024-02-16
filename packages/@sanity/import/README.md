@@ -1,6 +1,6 @@
 # @sanity/import
 
-Imports documents from an [ndjson](http://ndjson.org/)-stream to a Sanity dataset
+Imports documents from an [ndjson](https://github.com/ndjson/ndjson-spec)-stream to a Sanity dataset
 
 ## Installing
 
