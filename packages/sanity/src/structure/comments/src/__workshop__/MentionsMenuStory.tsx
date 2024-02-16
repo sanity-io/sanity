@@ -11,7 +11,7 @@ const DOC = {
     _createdAt: '2021-05-04T14:54:37Z',
     _updatedAt: '2021-05-04T14:54:37Z',
   },
-  permissions: 'read',
+  permission: 'read' as const,
 }
 
 export default function MentionsMenuStory() {
