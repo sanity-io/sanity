@@ -22,7 +22,7 @@ import {type Source} from '../../../config'
 import {type FIXME} from '../../../FIXME'
 import {useSchema} from '../../../hooks'
 import {useDocumentPreviewStore} from '../../../store'
-import {useSource} from '../../../studio'
+import {useSource, useWorkspace} from '../../../studio'
 import {useSearchMaxFieldDepth} from '../../../studio/components/navbar/search/hooks/useSearchMaxFieldDepth'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
 import {isNonNullable} from '../../../util'
@@ -84,6 +84,7 @@ export function useReferenceInput(options: Options) {
   const searchClient = useMemo(() => client.withConfig({apiVersion: '2021-03-25'}), [client])
   const {EditReferenceLinkComponent, onEditReference, activePath, initialValueTemplateItems} =
     useReferenceInputOptions()
+  const searchStrategy = useWorkspace().search.__experimental_strategy
 
   const documentValue = useFormValue([]) as FIXME
   const documentRef = useValueRef(documentValue)
@@ -101,13 +102,19 @@ export function useReferenceInput(options: Options) {
     (searchString: string) =>
       from(resolveUserDefinedFilter(schemaType.options, documentRef.current, path, getClient)).pipe(
         mergeMap(({filter, params}) =>
-          adapter.referenceSearch(searchClient, searchString, schemaType, {
-            ...schemaType.options,
-            filter,
-            params,
-            tag: 'search.reference',
-            maxFieldDepth,
-          }),
+          adapter.referenceSearch(
+            searchClient,
+            searchString,
+            schemaType,
+            {
+              ...schemaType.options,
+              filter,
+              params,
+              tag: 'search.reference',
+              maxFieldDepth,
+            },
+            searchStrategy,
+          ),
         ),
 
         catchError((err: SearchError) => {
@@ -119,7 +126,7 @@ export function useReferenceInput(options: Options) {
         }),
       ),
 
-    [documentRef, path, searchClient, schemaType, maxFieldDepth, getClient],
+    [documentRef, path, searchClient, schemaType, maxFieldDepth, getClient, searchStrategy],
   )
 
   const template = options.value?._strengthenOnPublish?.template

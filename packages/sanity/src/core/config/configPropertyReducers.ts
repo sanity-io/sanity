@@ -1,4 +1,4 @@
-import {type AssetSource, type SchemaTypeDefinition} from '@sanity/types'
+import {type AssetSource, type SchemaTypeDefinition, type SearchStrategy} from '@sanity/types'
 
 import {type LocaleConfigContext, type LocaleDefinition, type LocaleResourceBundle} from '../i18n'
 import {type Template, type TemplateItem} from '../templates'
@@ -323,6 +323,35 @@ export const partialIndexingEnabledReducer = (opts: {
 
     throw new Error(
       `Expected \`search.unstable_partialIndexing.enabled\` to be a boolean, but received ${getPrintableType(
+        resolver,
+      )}`,
+    )
+  }, initialValue)
+
+  return result
+}
+
+export const searchStrategyReducer = (opts: {
+  config: PluginOptions
+  initialValue: SearchStrategy
+}): SearchStrategy => {
+  const {config, initialValue} = opts
+  const flattenedConfig = flattenConfig(config, [])
+  const permittedValues = ['weighted', 'text', 'hybrid']
+
+  const formatter = new Intl.ListFormat('en-US', {
+    style: 'long',
+    type: 'disjunction',
+  })
+
+  const result = flattenedConfig.reduce((acc, {config: innerConfig}) => {
+    const resolver = innerConfig.search?.__experimental_strategy
+
+    if (!resolver) return acc
+    if (permittedValues.includes(resolver)) return resolver
+
+    throw new Error(
+      `Expected \`search.__experimental_strategy\` to be ${formatter.format(permittedValues)}, but received ${getPrintableType(
         resolver,
       )}`,
     )

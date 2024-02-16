@@ -33,6 +33,7 @@ import {
   partialIndexingEnabledReducer,
   resolveProductionUrlReducer,
   schemaTemplatesReducer,
+  searchStrategyReducer,
   toolsReducer,
 } from './configPropertyReducers'
 import {ConfigResolutionError} from './ConfigResolutionError'
@@ -569,6 +570,11 @@ function resolveSource({
           initialValue: config.search?.unstable_partialIndexing?.enabled ?? false,
         }),
       },
+      // eslint-disable-next-line camelcase
+      __experimental_strategy: searchStrategyReducer({
+        config,
+        initialValue: config.search?.__experimental_strategy ?? 'weighted',
+      }),
       // we will use this when we add search config to PluginOptions
       /*filters: resolveConfigProperty({
         config,

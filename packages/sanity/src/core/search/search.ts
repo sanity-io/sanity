@@ -1,4 +1,5 @@
 import {type SanityClient} from '@sanity/client'
+import {type SearchStrategy} from '@sanity/types'
 import {type Observable} from 'rxjs'
 
 import {createHybridSearch} from './hybrid'
@@ -8,28 +9,36 @@ import {
   type SearchableType,
   type SearchHit,
   type SearchOptions,
+  type SearchTerms,
   type WeightedHit,
   type WeightedSearchOptions,
 } from './weighted/types'
 
-const searchStrategies = {
+type SearchStrategyFactory = (
+  types: SearchableType[],
+  client: SanityClient,
+  commonOpts: WeightedSearchOptions,
+) => (
+  searchTerms: string | SearchTerms,
+  searchOpts?: SearchOptions,
+) => Observable<(WeightedHit | {hit: SearchHit})[]>
+
+const searchStrategies: Record<SearchStrategy, SearchStrategyFactory> = {
   weighted: createWeightedSearch,
   text: createTextSearch,
   hybrid: createHybridSearch,
-} as const
+}
 
-type SearchStrategy = keyof typeof searchStrategies
-
-// TODO: Refine approach for opting into and/or automatically enabling text search strategy based
-// on search config.
-const SEARCH_STRATEGY: SearchStrategy = 'text'
+interface Options extends WeightedSearchOptions {
+  strategy?: SearchStrategy
+}
 
 /** @internal */
 export function createSearch(
   searchableTypes: SearchableType[],
   client: SanityClient,
-  options: WeightedSearchOptions = {},
+  options: Options = {},
 ): (query: string, opts?: SearchOptions) => Observable<(WeightedHit | {hit: SearchHit})[]> {
-  const searchStrategy = searchStrategies[SEARCH_STRATEGY]
-  return searchStrategy(searchableTypes, client, options)
+  const strategy = options.strategy ?? 'weighted'
+  return searchStrategies[strategy](searchableTypes, client, options)
 }
