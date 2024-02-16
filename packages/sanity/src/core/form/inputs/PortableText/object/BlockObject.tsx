@@ -287,7 +287,8 @@ export function BlockObject(props: BlockObjectProps) {
             <Tooltip
               placement="top"
               portal="editor"
-              disabled={!tooltipEnabled}
+              // If the object modal is open, disable the tooltip to avoid it rerendering the inner items when the validation changes.
+              disabled={isOpen ? true : !tooltipEnabled}
               content={toolTipContent}
             >
               <PreviewContainer {...innerPaddingProps}>
@@ -342,6 +343,7 @@ export function BlockObject(props: BlockObjectProps) {
       toolTipContent,
       tooltipEnabled,
       value,
+      isOpen,
     ],
   )
 }
