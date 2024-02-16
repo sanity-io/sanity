@@ -12,6 +12,7 @@ import {
   applyCommentsFieldAttr,
   type CommentCreatePayload,
   type CommentsUIMode,
+  isTextSelectionComment,
   useComments,
   useCommentsEnabled,
   useCommentsScroll,
@@ -109,7 +110,7 @@ function CommentFieldInner(
   const isInlineCommentThread = useMemo(() => {
     return comments.data.open
       .filter((c) => c.threadId === selectedPath?.threadId)
-      .some((x) => x.selection?.type === 'text')
+      .some((x) => isTextSelectionComment(x.parentComment))
   }, [comments.data.open, selectedPath?.threadId])
 
   // Total number of comments for the current field

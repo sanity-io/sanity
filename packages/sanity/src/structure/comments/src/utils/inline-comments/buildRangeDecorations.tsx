@@ -1,9 +1,10 @@
 import {type RangeDecoration} from '@sanity/portable-text-editor'
 import {memo, useCallback, useEffect, useRef} from 'react'
+import {type PortableTextBlock} from 'sanity'
 
 import {CommentInlineHighlightSpan} from '../../components'
 import {applyInlineCommentIdAttr} from '../../hooks'
-import {type CommentMessage, type CommentThreadItem} from '../../types'
+import {type CommentDocument} from '../../types'
 import {buildRangeDecorationSelectionsFromComments} from './buildRangeDecorationSelectionsFromComments'
 
 interface CommentRangeDecorationProps {
@@ -91,13 +92,13 @@ function isRangeInvalid() {
 }
 
 interface BuildRangeDecorationsProps {
-  comments: CommentThreadItem[]
+  comments: CommentDocument[]
   currentHoveredCommentId: string | null
   onDecoratorClick: (commentId: string) => void
   onDecoratorHoverEnd: (commentId: null) => void
   onDecoratorHoverStart: (commentId: string) => void
   selectedThreadId: string | null
-  value: CommentMessage | undefined
+  value: PortableTextBlock[] | undefined
 }
 
 export function buildRangeDecorations(props: BuildRangeDecorationsProps) {
@@ -116,7 +117,7 @@ export function buildRangeDecorations(props: BuildRangeDecorationsProps) {
     const decoration: RangeDecoration = {
       component: ({children}) => (
         <CommentRangeDecoration
-          commentId={comment.parentComment._id}
+          commentId={comment._id}
           currentHoveredCommentId={currentHoveredCommentId}
           onClick={onDecoratorClick}
           onHoverEnd={onDecoratorHoverEnd}
@@ -130,7 +131,7 @@ export function buildRangeDecorations(props: BuildRangeDecorationsProps) {
       isRangeInvalid,
       selection,
       payload: {
-        commentId: comment.parentComment._id,
+        commentId: comment._id,
         range,
       },
     }

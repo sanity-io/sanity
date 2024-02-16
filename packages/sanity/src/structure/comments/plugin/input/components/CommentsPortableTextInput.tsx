@@ -25,6 +25,7 @@ import {
   type CommentUpdatePayload,
   currentSelectionIsOverlappingWithComment,
   hasCommentMessageValue,
+  isTextSelectionComment,
   useComments,
   useCommentsEnabled,
   useCommentsScroll,
@@ -114,7 +115,7 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
   const textComments = useMemo(() => {
     return comments.data.open
       .filter((comment) => comment.fieldPath === stringFieldPath)
-      .filter((c) => c.selection?.type === 'text')
+      .filter((c) => isTextSelectionComment(c.parentComment))
   }, [comments.data.open, stringFieldPath])
 
   const getFragment = useCallback(() => {
@@ -217,8 +218,10 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
     // to finish.
     const editorStateValue = PortableTextEditor.getValue(editorRef.current)
 
+    const parentComments = textComments.map((c) => c.parentComment)
+
     const decorators = buildRangeDecorations({
-      comments: textComments,
+      comments: parentComments,
       currentHoveredCommentId,
       onDecoratorClick: handleDecoratorClick,
       onDecoratorHoverEnd: setCurrentHoveredCommentId,

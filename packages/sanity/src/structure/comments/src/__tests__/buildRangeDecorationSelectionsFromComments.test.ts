@@ -1,6 +1,6 @@
 import {describe, expect, it} from '@jest/globals'
 
-import {type CommentThreadItem} from '../types'
+import {type CommentDocument} from '../types'
 import {buildRangeDecorationSelectionsFromComments} from '../utils'
 
 describe('comments: buildRangeDecorationSelectionsFromComments', () => {
@@ -132,45 +132,38 @@ const boldedInsideAndOutsideValue = [
   },
 ]
 
-const initialComments: CommentThreadItem[] = [
+const initialComments: CommentDocument[] = [
   {
-    selection: {
-      type: 'text',
-      value: [
-        {
-          _key: '6222e4072b6e',
-          text: 'Hello <comment>there</comment> world',
-        },
-      ],
-    },
-    breadcrumbs: [],
-    commentsCount: 0,
-    fieldPath: '',
-    replies: [],
-    parentComment: {
-      _id: 'a14fb200-a4c4-4c44-b2c1-c17aa6d79aa8',
-      _type: 'comment',
-      _createdAt: '',
-      _rev: '',
-      authorId: '',
-      message: null,
-      threadId: '',
-      status: 'open',
-      reactions: null,
-      target: {
-        path: {
-          field: '',
-        },
-        documentType: '',
-        document: {
-          _dataset: '',
-          _projectId: '',
-          _ref: '',
-          _type: 'crossDatasetReference',
-          _weak: false,
+    _id: 'a14fb200-a4c4-4c44-b2c1-c17aa6d79aa8',
+    _type: 'comment',
+    _createdAt: '',
+    _rev: '',
+    authorId: '',
+    message: null,
+    threadId: '',
+    status: 'open',
+    reactions: null,
+    target: {
+      path: {
+        field: '',
+        selection: {
+          type: 'text',
+          value: [
+            {
+              _key: '6222e4072b6e',
+              text: 'Hello <comment>there</comment> world',
+            },
+          ],
         },
       },
+      documentType: '',
+      document: {
+        _dataset: '',
+        _projectId: '',
+        _ref: '',
+        _type: 'crossDatasetReference',
+        _weak: false,
+      },
     },
-    threadId: 'de1f947c-93a7-4f71-9b9c-5f20023f9c98',
   },
 ]

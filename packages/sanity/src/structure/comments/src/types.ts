@@ -44,7 +44,6 @@ export interface CommentThreadItem {
   fieldPath: string
   parentComment: CommentDocument
   replies: CommentDocument[]
-  selection: CommentPathSelection | undefined
   threadId: string
 }
 
