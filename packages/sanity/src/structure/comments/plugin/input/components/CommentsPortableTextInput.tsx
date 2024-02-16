@@ -20,6 +20,7 @@ import {
 import {
   buildRangeDecorations,
   buildTextSelectionFromFragment,
+  type CommentDocument,
   CommentInlineHighlightSpan,
   type CommentMessage,
   type CommentUpdatePayload,
@@ -210,28 +211,25 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
     [handleSelectionChange],
   )
 
-  const handleBuildAddedRangeDecorators = useCallback(() => {
-    if (!editorRef.current) return
-    // We need to use the value from the editor state to build the range decorators
-    // instead of `props.value` as that value is debounced – and we want to immediately
-    // update the range decorators when the user is typing and not wait for the debounce
-    // to finish.
-    const editorStateValue = PortableTextEditor.getValue(editorRef.current)
+  const handleBuildAddedRangeDecorations = useCallback(
+    (commentsToDecorate: CommentDocument[]) => {
+      if (!editorRef.current) return EMPTY_ARRAY
+      const editorValue = PortableTextEditor.getValue(editorRef.current) || EMPTY_ARRAY
 
-    const parentComments = textComments.map((c) => c.parentComment)
+      const decorators = buildRangeDecorations({
+        comments: commentsToDecorate,
+        currentHoveredCommentId,
+        onDecoratorClick: handleDecoratorClick,
+        onDecoratorHoverEnd: setCurrentHoveredCommentId,
+        onDecoratorHoverStart: setCurrentHoveredCommentId,
+        selectedThreadId: selectedPath?.threadId || null,
+        value: editorValue,
+      })
 
-    const decorators = buildRangeDecorations({
-      comments: parentComments,
-      currentHoveredCommentId,
-      onDecoratorClick: handleDecoratorClick,
-      onDecoratorHoverEnd: setCurrentHoveredCommentId,
-      onDecoratorHoverStart: setCurrentHoveredCommentId,
-      selectedThreadId: selectedPath?.threadId || null,
-      value: editorStateValue,
-    })
-
-    setAddedCommentsDecorators(decorators)
-  }, [currentHoveredCommentId, handleDecoratorClick, selectedPath?.threadId, textComments])
+      return decorators
+    },
+    [currentHoveredCommentId, handleDecoratorClick, selectedPath?.threadId],
+  )
 
   const onEditorChange = useCallback(
     (change: EditorChange) => {
@@ -264,18 +262,18 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
       if (change.type === 'mutation') didPatch.current = false
 
       if (change.type === 'rangeDecorationMoved') {
-        // Recalculate the range decorators when the range decorations move.
-        // But only proceed with the update if the `patch` change type was triggered.
-        // This is to ensure the comment document(s) are only updated when the current user.
-        // See comment above for more details.
-        handleBuildAddedRangeDecorators()
-
         if (!didPatch.current) return
 
         const commentId = change.rangeDecoration.payload?.commentId as undefined | string
         let currentBlockKey: string | undefined
         let previousBlockKey: string | undefined
         let newRange: {text: string; _key: string} | undefined
+
+        const comment = getComment(commentId || '')
+
+        if (!comment) return
+
+        const nextDecorators = handleBuildAddedRangeDecorations([comment])
 
         if (
           change.newRangeSelection?.focus.path[0] &&
@@ -286,14 +284,13 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
           previousBlockKey = change.rangeDecoration.selection?.focus.path[0]?._key
           currentBlockKey = change.newRangeSelection.focus.path[0]._key
 
-          const oldRange = change.rangeDecoration.payload?.range as
-            | undefined
-            | {_key: string; text: string}
+          const currentRange = nextDecorators.find((d) => d.payload?.commentId === commentId)
+            ?.payload?.range as {_key: string; text: string} | undefined
 
-          newRange = {_key: currentBlockKey, text: oldRange?.text || ''}
+          const currentRangeText = currentRange?.text || ''
+
+          newRange = {_key: currentBlockKey, text: currentRangeText}
         }
-
-        const comment = getComment(commentId || '')
 
         if (comment && newRange) {
           const nextComment: CommentUpdatePayload = {
@@ -323,7 +320,7 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
       hasValue,
       debounceSelectionChange,
       resetStates,
-      handleBuildAddedRangeDecorators,
+      handleBuildAddedRangeDecorations,
       getComment,
       operation,
     ],
@@ -402,13 +399,12 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
     }
   }, [currentSelection, scrollElement, handleSetCurrentSelectionRect])
 
-  useEffect(handleBuildAddedRangeDecorators, [
-    handleBuildAddedRangeDecorators,
-    // Whenever the comments change, we need to update the range decorators
-    // for the comments. Therefore we use the comments as a dependency
-    // in the effect.
-    textComments,
-  ])
+  useEffect(() => {
+    const parentComments = textComments.map((c) => c.parentComment)
+    const nextDecorators = handleBuildAddedRangeDecorations(parentComments)
+
+    setAddedCommentsDecorators(nextDecorators)
+  }, [handleBuildAddedRangeDecorations, textComments])
 
   const showFloatingButton = Boolean(currentSelection && canSubmit && selectionReferenceElement)
 
