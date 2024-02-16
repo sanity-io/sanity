@@ -8,7 +8,7 @@ import {
 import {uuid} from '@sanity/uuid'
 import type * as React from 'react'
 import {useCallback, useMemo} from 'react'
-import {useTranslation} from 'sanity'
+import {type UserListWithPermissionsHookValue, useTranslation} from 'sanity'
 import styled, {css} from 'styled-components'
 
 import {commentsLocaleNamespace} from '../../../i18n'
@@ -18,7 +18,6 @@ import {
   type CommentListBreadcrumbs,
   type CommentMessage,
   type CommentsUIMode,
-  type MentionOptionsHookValue,
 } from '../../types'
 import {CommentBreadcrumbs} from '../CommentBreadcrumbs'
 import {CreateNewThreadInput} from './CreateNewThreadInput'
@@ -46,7 +45,7 @@ interface CommentThreadLayoutProps {
   currentUser: CurrentUser
   fieldPath: string
   isSelected: boolean
-  mentionOptions: MentionOptionsHookValue
+  mentionOptions: UserListWithPermissionsHookValue
   mode: CommentsUIMode
   onNewThreadCreate: (payload: CommentCreatePayload) => void
   onPathSelect?: (nextPath: CommentsSelectedPath) => void

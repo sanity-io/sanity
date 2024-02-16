@@ -5,10 +5,10 @@ import {
 } from '@sanity/portable-text-editor'
 import {isPortableTextSpan, type Path} from '@sanity/types'
 import React, {useCallback, useMemo, useState} from 'react'
-import {useDidUpdate} from 'sanity'
+import {useDidUpdate, type UserListWithPermissionsHookValue} from 'sanity'
 
 import {hasCommentMessageValue, useCommentHasChanged} from '../../../helpers'
-import {type CommentMessage, type MentionOptionsHookValue} from '../../../types'
+import {type CommentMessage} from '../../../types'
 
 export interface CommentInputContextValue {
   canSubmit?: boolean
@@ -21,7 +21,7 @@ export interface CommentInputContextValue {
   hasChanges: boolean
   insertAtChar: () => void
   insertMention: (userId: string) => void
-  mentionOptions: MentionOptionsHookValue
+  mentionOptions: UserListWithPermissionsHookValue
   mentionsMenuOpen: boolean
   mentionsSearchTerm: string
   onBeforeInput: (event: InputEvent) => void
@@ -37,7 +37,7 @@ interface CommentInputProviderProps {
   expandOnFocus?: boolean
   focused: boolean
   focusOnMount?: boolean
-  mentionOptions: MentionOptionsHookValue
+  mentionOptions: UserListWithPermissionsHookValue
   onMentionMenuOpenChange?: (open: boolean) => void
   readOnly?: boolean
   value: CommentMessage

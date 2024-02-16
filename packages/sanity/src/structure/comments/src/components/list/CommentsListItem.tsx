@@ -2,7 +2,7 @@ import {ChevronDownIcon} from '@sanity/icons'
 import {type CurrentUser} from '@sanity/types'
 import {Flex, Stack, useLayer} from '@sanity/ui'
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {useTranslation} from 'sanity'
+import {type UserListWithPermissionsHookValue, useTranslation} from 'sanity'
 import styled, {css} from 'styled-components'
 
 import {Button} from '../../../../../ui-components'
@@ -17,7 +17,6 @@ import {
   type CommentReactionOption,
   type CommentStatus,
   type CommentsUIMode,
-  type MentionOptionsHookValue,
 } from '../../types'
 import {SpacerAvatar} from '../avatars'
 import {CommentInput, type CommentInputHandle} from '../pte'
@@ -83,7 +82,7 @@ interface CommentsListItemProps {
   canReply?: boolean
   currentUser: CurrentUser
   isSelected: boolean
-  mentionOptions: MentionOptionsHookValue
+  mentionOptions: UserListWithPermissionsHookValue
   mode: CommentsUIMode
   onCopyLink?: (id: string) => void
   onCreateRetry: (id: string) => void

@@ -1,7 +1,7 @@
 import {Container, Flex} from '@sanity/ui'
+import {useUserListWithPermissions} from 'sanity'
 
 import {MentionsMenu} from '../components/mentions'
-import {useMentionOptions} from '../hooks'
 
 const DOC = {
   documentValue: {
@@ -11,10 +11,11 @@ const DOC = {
     _createdAt: '2021-05-04T14:54:37Z',
     _updatedAt: '2021-05-04T14:54:37Z',
   },
+  permissions: 'read',
 }
 
 export default function MentionsMenuStory() {
-  const {data, loading} = useMentionOptions(DOC)
+  const {data, loading} = useUserListWithPermissions(DOC)
 
   return (
     <Flex height="fill" align="center">

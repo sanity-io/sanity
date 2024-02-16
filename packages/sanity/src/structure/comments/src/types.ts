@@ -1,4 +1,4 @@
-import {type PortableTextBlock, type User} from '@sanity/types'
+import {type PortableTextBlock} from '@sanity/types'
 import {type IntentParameters} from 'sanity/router'
 
 /**
@@ -21,21 +21,6 @@ export interface CommentOperations {
   react: (id: string, reaction: CommentReactionOption) => Promise<void>
   remove: (id: string) => Promise<void>
   update: (id: string, comment: Partial<CommentCreatePayload>) => Promise<void>
-}
-
-/**
- * @beta
- * @hidden
- */
-
-export type MentionOptionsHookValue = Loadable<MentionOptionUser[]>
-
-/**
- * @beta
- * @hidden
- */
-export interface MentionOptionUser extends User {
-  canBeMentioned: boolean
 }
 
 /**

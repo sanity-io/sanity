@@ -3,10 +3,9 @@ import {Container, Flex} from '@sanity/ui'
 import {useBoolean, useSelect} from '@sanity/ui-workshop'
 import {uuid} from '@sanity/uuid'
 import {useCallback, useMemo, useState} from 'react'
-import {useCurrentUser} from 'sanity'
+import {useCurrentUser, useUserListWithPermissions} from 'sanity'
 
 import {CommentsList} from '../components'
-import {useMentionOptions} from '../hooks'
 import {
   type CommentCreatePayload,
   type CommentDocument,
@@ -172,6 +171,7 @@ const MENTION_HOOK_OPTIONS = {
     _rev: '1',
     _updatedAt: '2021-05-04T14:54:37Z',
   },
+  permission: 'read' as const,
 }
 
 const STATUS_OPTIONS: Record<CommentStatus, CommentStatus> = {open: 'open', resolved: 'resolved'}
@@ -192,7 +192,7 @@ export default function CommentsListStory() {
 
   const currentUser = useCurrentUser()
 
-  const mentionOptions = useMentionOptions(MENTION_HOOK_OPTIONS)
+  const mentionOptions = useUserListWithPermissions(MENTION_HOOK_OPTIONS)
 
   const handleReplySubmit = useCallback(
     (payload: CommentCreatePayload) => {

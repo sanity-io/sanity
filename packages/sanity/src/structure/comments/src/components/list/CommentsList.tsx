@@ -1,6 +1,7 @@
 import {type CurrentUser} from '@sanity/types'
 import {BoundaryElementProvider, Flex, Stack} from '@sanity/ui'
 import {forwardRef, memo, useCallback, useImperativeHandle, useMemo, useState} from 'react'
+import {type UserListWithPermissionsHookValue} from 'sanity'
 
 import {type CommentsSelectedPath} from '../../context'
 import {
@@ -10,7 +11,6 @@ import {
   type CommentStatus,
   type CommentsUIMode,
   type CommentThreadItem,
-  type MentionOptionsHookValue,
 } from '../../types'
 import {CommentsListItem} from './CommentsListItem'
 import {CommentsListStatus} from './CommentsListStatus'
@@ -50,7 +50,7 @@ export interface CommentsListProps {
   currentUser: CurrentUser
   error: Error | null
   loading: boolean
-  mentionOptions: MentionOptionsHookValue
+  mentionOptions: UserListWithPermissionsHookValue
   mode: CommentsUIMode
   onCopyLink?: (id: string) => void
   onCreateRetry: (id: string) => void
