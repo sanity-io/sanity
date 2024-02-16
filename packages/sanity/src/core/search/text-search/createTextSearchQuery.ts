@@ -15,12 +15,6 @@ export function createTextSearchQuery(
 ): TextSearchParams {
   const {filter, params} = searchOpts
 
-  /**
-   * First pass: create initial search specs and determine if this subset of types contains
-   * any indexed paths in `__experimental_search`.
-   * e.g. "authors.0.title" or ["authors", 0, "title"]
-   */
-
   // Construct search filters used in this GROQ query
   const filters = [
     '_type in $__types',
