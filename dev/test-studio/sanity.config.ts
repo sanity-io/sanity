@@ -66,6 +66,10 @@ const sharedSettings = definePlugin({
       assetSources: [imageAssetSource],
     },
   },
+  search: {
+    // eslint-disable-next-line camelcase
+    __experimental_strategy: 'text',
+  },
 
   i18n: {
     bundles: testStudioLocaleBundles,
