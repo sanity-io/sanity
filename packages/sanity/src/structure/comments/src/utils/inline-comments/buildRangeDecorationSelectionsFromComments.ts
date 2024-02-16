@@ -9,10 +9,12 @@ import {type RangeDecoration} from '@sanity/portable-text-editor'
 import {
   isPortableTextSpan,
   isPortableTextTextBlock,
+  type PortableTextBlock,
   type PortableTextTextBlock,
 } from '@sanity/types'
 
-import {type CommentMessage, type CommentThreadItem} from '../../types'
+import {isTextSelectionComment} from '../../helpers'
+import {type CommentDocument} from '../../types'
 
 function diffText(current: string, next: string) {
   const diff = makeDiff(current, next)
@@ -43,13 +45,13 @@ function toPlainTextWithChildSeparators(inputBlock: PortableTextTextBlock) {
 const EMPTY_ARRAY: [] = []
 
 export interface BuildCommentsRangeDecorationsProps {
-  value: CommentMessage | undefined
-  comments: CommentThreadItem[]
+  value: PortableTextBlock[] | undefined
+  comments: CommentDocument[]
 }
 
 export interface BuildCommentsRangeDecorationsResultItem {
   selection: RangeDecoration['selection']
-  comment: CommentThreadItem
+  comment: CommentDocument
   range: {_key: string; text: string}
 }
 
@@ -63,13 +65,11 @@ export function buildRangeDecorationSelectionsFromComments(
 
   if (!value || value.length === 0) return EMPTY_ARRAY
 
-  const textSelections = comments.filter(
-    (comment) => comment.selection?.type === 'text' && comment.selection.value,
-  )
+  const textSelections = comments.filter(isTextSelectionComment)
   const decorators: BuildCommentsRangeDecorationsResultItem[] = []
 
   textSelections.forEach((comment) => {
-    comment.selection?.value.forEach((selectionMember) => {
+    comment.target.path.selection?.value.forEach((selectionMember) => {
       const matchedBlock = value.find((block) => block._key === selectionMember._key)
       if (!matchedBlock || !isPortableTextTextBlock(matchedBlock)) {
         return
@@ -134,4 +134,23 @@ export function buildRangeDecorationSelectionsFromComments(
   })
   if (decorators.length === 0) return EMPTY_ARRAY
   return decorators
+}
+
+export interface BuildCommentRangeDecorationsProps {
+  value: PortableTextBlock[] | undefined
+  comment: CommentDocument
+}
+
+interface ValidateTextSelectionCommentProps {
+  comment: CommentDocument
+  value: PortableTextBlock[]
+}
+
+export function validateTextSelectionComment(props: ValidateTextSelectionCommentProps): boolean {
+  const {comment, value} = props
+  if (!isTextSelectionComment(comment)) return false
+
+  const selections = buildRangeDecorationSelectionsFromComments({comments: [comment], value})
+
+  return selections.length > 0
 }

@@ -150,7 +150,7 @@ export default function CommentInlineHighlightDebugStory() {
   const buildRangeDecorationsCallback = useCallback(
     () =>
       buildRangeDecorations({
-        comments,
+        comments: comments.map((c) => c.parentComment),
         value,
         onDecoratorHoverStart: setCurrentHoveredCommentId,
         onDecoratorHoverEnd: setCurrentHoveredCommentId,
