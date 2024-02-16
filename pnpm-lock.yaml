@@ -187,7 +187,7 @@ importers:
         specifier: ^7.8.1
         version: 7.8.1
       sanity:
-        specifier: ^3.25.0
+        specifier: workspace:^
         version: link:packages/sanity
       semver:
         specifier: ^7.3.5
@@ -1306,7 +1306,7 @@ importers:
         specifier: ^18.2.0
         version: 18.2.0
       sanity:
-        specifier: 3.29.1
+        specifier: workspace:^
         version: link:../../sanity
       styled-components:
         specifier: ^6.1.6
