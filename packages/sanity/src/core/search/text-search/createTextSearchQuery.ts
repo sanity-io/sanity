@@ -9,7 +9,7 @@ export const DEFAULT_LIMIT = 1000
 /**
  * @internal
  */
-export function createSearchQuery(
+export function createTextSearchQuery(
   searchTerms: SearchTerms,
   searchOpts: SearchOptions & WeightedSearchOptions = {},
 ): TextSearchParams {
