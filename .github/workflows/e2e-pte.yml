@@ -63,4 +63,4 @@ jobs:
         run: npx playwright install --with-deps
 
       - name: Run end-to-end tests
-        run: npx jest --config=packages/@sanity/portable-text-editor/e2e-tests/e2e.config.cjs --silent --shard=${{ matrix.shardIndex}}/${{ matrix.shardTotal }}
+        run: cd packages/@sanity/portable-text-editor && npx jest --config=e2e-tests/e2e.config.cjs --silent --shard=${{ matrix.shardIndex}}/${{ matrix.shardTotal }}
