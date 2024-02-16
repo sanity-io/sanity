@@ -12,9 +12,7 @@ interface TaksEnabledProviderProps {
  * @internal
  */
 export function TasksEnabledProvider({children}: TaksEnabledProviderProps) {
-  // TODO: Restore this once the feature flag is enabled by the ENTX team, see ENTX-1330.
-  const {enabled: featureEnabled, isLoading} = useFeatureEnabled('studioTasks')
-  const enabled = true
+  const {enabled, isLoading} = useFeatureEnabled('studioTasks')
 
   const value: TasksEnabledContextValue = useMemo(() => {
     if (!enabled || isLoading) {
