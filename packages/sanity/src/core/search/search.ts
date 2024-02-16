@@ -1,6 +1,7 @@
 import {type SanityClient} from '@sanity/client'
 import {type Observable} from 'rxjs'
 
+import {createHybridSearch} from './hybrid'
 import {createTextSearch} from './text-search'
 import {createWeightedSearch} from './weighted'
 import {
@@ -14,6 +15,7 @@ import {
 const searchStrategies = {
   weighted: createWeightedSearch,
   text: createTextSearch,
+  hybrid: createHybridSearch,
 } as const
 
 type SearchStrategy = keyof typeof searchStrategies
