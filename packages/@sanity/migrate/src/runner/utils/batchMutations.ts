@@ -14,6 +14,8 @@ function isTransactionPayload(payload: any): payload is TransactionPayload {
  *
  * @param mutations - Async iterable of either single values or arrays of values
  * @param maxBatchSize - Max batch size in bytes
+ * @public
+ *
  */
 export async function* batchMutations(
   mutations: AsyncIterableIterator<TransactionPayload | SanityMutation | SanityMutation[]>,

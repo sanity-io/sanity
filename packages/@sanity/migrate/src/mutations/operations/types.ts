@@ -3,6 +3,8 @@ import {type KeyedSegment} from '@sanity/types'
 import {type AnyArray} from '../typeUtils'
 
 /**
+ * @public
+ *
  * Represents an indexed segment in a document.
  */
 type IndexedSegment = number
@@ -10,6 +12,8 @@ type IndexedSegment = number
 export type {IndexedSegment, KeyedSegment}
 
 /**
+ * @public
+ *
  * Represents a set-operation that can be applied to any value
  */
 export type SetOp<T> = {
@@ -18,6 +22,8 @@ export type SetOp<T> = {
 }
 
 /**
+ * @public
+ *
  * Represents an unset operation that can be applied to any value
  */
 export type UnsetOp = {
@@ -25,6 +31,8 @@ export type UnsetOp = {
 }
 
 /**
+ * @public
+ *
  * Represents a setIfMissing operation that can be applied to any value
  */
 export type SetIfMissingOp<T> = {
@@ -33,7 +41,9 @@ export type SetIfMissingOp<T> = {
 }
 
 /**
- * Represents a increment-operation that can be applied to a number
+ * @public
+ *
+ * Represents an increment-operation that can be applied to a number
  */
 export type IncOp<Amount extends number> = {
   type: 'inc'
@@ -41,6 +51,8 @@ export type IncOp<Amount extends number> = {
 }
 
 /**
+ * @public
+ *
  * Represents a decrement-operation that can be applied to a number
  */
 export type DecOp<Amount extends number> = {
@@ -49,11 +61,15 @@ export type DecOp<Amount extends number> = {
 }
 
 /**
+ * @public
+ *
  * Represents a relative position in a document.
  */
 export type RelativePosition = 'before' | 'after'
 
 /**
+ * @public
+ *
  * Represents an insert-operation that can be applied to an array
  */
 export type InsertOp<
@@ -68,6 +84,8 @@ export type InsertOp<
 }
 
 /**
+ * @public
+ *
  * Represents a truncate-operation that can be applied to an array
  */
 export type TruncateOp = {
@@ -77,6 +95,8 @@ export type TruncateOp = {
 }
 
 /**
+ * @public
+ *
  * Represents a replace-operation that can be applied to an array
  */
 export type ReplaceOp<
@@ -89,7 +109,10 @@ export type ReplaceOp<
 }
 
 /**
- * Represents a diffMatchPatch operation that can be applied to a string
+ * @public
+ *
+ * Represents a diff-match-patch operation that can be applied to a string
+ * {@link https://www.npmjs.com/package/@sanity/diff-match-patch}
  */
 export type DiffMatchPatchOp = {
   type: 'diffMatchPatch'
@@ -97,26 +120,36 @@ export type DiffMatchPatchOp = {
 }
 
 /**
+ * @public
+ *
  * Represents an operation that can be applied to values of all types
  */
 export type Operation = PrimitiveOp | ArrayOp
 
 /**
+ * @public
+ *
  * Represents an operation that can be applied to values of all types
  */
 export type AnyOp = SetOp<unknown> | SetIfMissingOp<unknown> | UnsetOp
 
 /**
+ * @public
+ *
  * Represents an operation that can be applied to a number
  */
 export type NumberOp = IncOp<number> | DecOp<number>
 
 /**
+ * @public
+ *
  * Represents an operation that can be applied to a string
  */
 export type StringOp = DiffMatchPatchOp
 
 /**
+ * @public
+ *
  * Represents ann operation that can be applied to an array
  */
 export type ArrayOp =
@@ -125,6 +158,8 @@ export type ArrayOp =
   | TruncateOp
 
 /**
+ * @public
+ *
  * Represents an operation that can be applied to any primitive value
  */
 export type PrimitiveOp = AnyOp | StringOp | NumberOp

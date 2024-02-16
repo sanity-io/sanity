@@ -23,7 +23,7 @@ import {
  * {@link https://www.sanity.io/docs/http-patches#6TPENSW3}
  * @beta
  *
- * ### Examples
+ * @example
  * ```ts
  * const setFoo = set('foo')
  * const setEmptyArray = set([])
@@ -37,7 +37,7 @@ export const set = <const T>(value: T): SetOp<T> => ({type: 'set', value})
  * @returns A `setIfMissing` operation.
  * {@link https://www.sanity.io/docs/http-patches#A80781bT}
  * @beta
- * ### Examples
+ * @example
  * ```ts
  * const setFooIfMissing = setIfMissing('foo')
  * const setEmptyArrayIfMissing = setIfMissing([])
@@ -54,7 +54,7 @@ export const setIfMissing = <const T>(value: T): SetIfMissingOp<T> => ({
  * {@link https://www.sanity.io/docs/http-patches#xRtBjp8o}
  * @beta
  *
- * ### Example
+ * @example
  * ```ts
  * const unsetAnyValue = unset()
  * ```
@@ -68,7 +68,7 @@ export const unset = (): UnsetOp => ({type: 'unset'})
  * {@link https://www.sanity.io/docs/http-patches#vIT8WWQo}
  * @beta
  *
- * ### Example
+ * @example
  * ```ts
  * const incBy1 = inc()
  * const incBy5 = inc(5)
@@ -86,7 +86,7 @@ export const inc = <const N extends number = 1>(amount: N = 1 as N): IncOp<N> =>
  * {@link https://www.sanity.io/docs/http-patches#vIT8WWQo}
  * @beta
  *
- * ### Example
+ * @example
  * ```ts
  * const decBy1 = dec()
  * const decBy10 = dec(10)
@@ -102,7 +102,7 @@ export const dec = <const N extends number = 1>(amount: N = 1 as N): DecOp<N> =>
  * @param value - The value for the diff match patch operation.
  * @returns A `diffMatchPatch` operation.
  * {@link https://www.sanity.io/docs/http-patches#aTbJhlAJ}
- *
+ * @public
  */
 export const diffMatchPatch = (value: string): DiffMatchPatchOp => ({
   type: 'diffMatchPatch',
@@ -118,7 +118,7 @@ export const diffMatchPatch = (value: string): DiffMatchPatchOp => ({
  * {@link https://www.sanity.io/docs/http-patches#febxf6Fk}
  * @beta
  *
- * ### Example
+ * @example
  * ```ts
  * const prependFoo = insert(['foo'], 'before')
  * const appendFooAndBar = insert(['foo', 'bar'], 'after')
@@ -145,11 +145,11 @@ export function insert<
 /**
  * Creates an `insert` operation that appends the provided items.
  * @param items - The items to append.
- * @returns An `insert` operation at the end of the array.
+ * @returns An `insert` operation for adding a value to the end of an array.
  * {@link https://www.sanity.io/docs/http-patches#Cw4vhD88}
  * @beta
  *
- * ### Example
+ * @example
  * ```ts
  * const appendFoo = append('foo')
  * const appendObject = append({name: 'foo'})
@@ -163,11 +163,11 @@ export function append<const Items extends AnyArray<unknown>>(items: Items | Arr
 /**
  * Creates an `insert` operation that prepends the provided items.
  * @param items - The items to prepend.
- * @returns An `insert` operation at the beginning of the array.
+ * @returns An `insert` operation for adding a value to the start of an array.
  * {@link https://www.sanity.io/docs/http-patches#refAUsf0}
  * @beta
  *
- * ### Example
+ * @example
  * ```ts
  * const prependFoo = prepend('foo')
  * const prependObject = prepend({name: 'foo'})
@@ -184,8 +184,9 @@ export function prepend<const Items extends AnyArray<unknown>>(items: Items | Ar
  * @param indexOrReferenceItem - The index or reference item to insert before.
  * @returns An `insert` operation before the provided index or reference item.
  * {@link https://www.sanity.io/docs/http-patches#0SQmPlb6}
+ * @public
  *
- * ### Example
+ * @example
  * ```ts
  * const insertFooBeforeIndex3 = insertBefore('foo', 3)
  * const insertObjectBeforeKey = insertBefore({name: 'foo'}, {_key: 'xyz'}]
@@ -206,7 +207,7 @@ export function insertBefore<
  * {@link https://www.sanity.io/docs/http-patches#0SQmPlb6}
  * @beta
  *
- * ### Example
+ * @example
  * ```ts
  * const insertFooAfterIndex3 = insertAfter('foo', 3)
  * const insertObjectAfterKey = insertAfter({name: 'foo'}, {_key: 'xyz'}]
@@ -231,7 +232,7 @@ export const insertAfter = <
  * {@link https://www.sanity.io/docs/http-patches#xRtBjp8o}
  * @beta
  *
- * ### Example
+ * @example
  * ```ts
  * const clearArray = truncate(0)
  * const removeItems = truncate(3, 5) // Removes items at index 3, 4, and 5
@@ -255,7 +256,7 @@ export function truncate(startIndex: number, endIndex?: number): TruncateOp {
  * {@link https://www.sanity.io/docs/http-patches#GnVSwcPa}
  * @beta
  *
- * ### Example
+ * @example
  * ```ts
  * const replaceItem3WithFoo = replace('foo', 3)
  * const replaceItem3WithFooAndBar = replace(['foo', 'bar'], 3)

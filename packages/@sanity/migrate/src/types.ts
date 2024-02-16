@@ -14,8 +14,10 @@ export type AsyncIterableMigration = (
 ) => AsyncGenerator<Mutation | Transaction | (Mutation | Transaction)[]>
 
 /**
+ * @public
+ *
  * Main interface for a content migration definition
- * @see https://www.sanity.io/docs/schema-and-content-migrations#af2be129ccd6
+ * {@link https://www.sanity.io/docs/schema-and-content-migrations#af2be129ccd6}
  */
 export interface Migration<Def extends MigrateDefinition = MigrateDefinition> {
   /**
@@ -49,6 +51,8 @@ export interface Migration<Def extends MigrateDefinition = MigrateDefinition> {
 }
 
 /**
+ * @public
+ *
  * Migration context. This will be passed to both async iterable migrations and node migration helper functions
  */
 export interface MigrationContext {
@@ -60,6 +64,8 @@ export interface MigrationContext {
 }
 
 /**
+ * @public
+ *
  * Interface for `Migration['migrate']`. Either a NodeMigration or an AsyncIterableMigration
  * {@link NodeMigration}
  * {@link AsyncIterableMigration}
@@ -69,6 +75,7 @@ export type MigrateDefinition = NodeMigration | AsyncIterableMigration
 /**
  * Migration progress, only used internally (for now)
  * @internal
+ * @hidden
  */
 export type MigrationProgress = {
   documents: number
@@ -83,6 +90,7 @@ export type MigrationProgress = {
 /**
  * API configuration for the migration runner
  * @internal
+ * @hidden
  */
 export interface APIConfig {
   projectId: string
@@ -95,12 +103,15 @@ export interface APIConfig {
 /**
  * API configuration for exports
  * @internal
+ * @hidden
  */
 export interface ExportAPIConfig extends APIConfig {
   documentTypes?: string[]
 }
 
 /**
+ * @public
+ *
  * Possible return values from a migration helper that runs on a document as a whole
  * Currently, this is only applies to {@link NodeMigration.document}
  */
@@ -113,11 +124,15 @@ export type DocumentMigrationReturnValue =
   | RawMutation[]
 
 /**
+ * @public
+ *
  * Possible return values from a migration helper that runs on nodes within a document
  */
 export type NodeMigrationReturnValue = DocumentMigrationReturnValue | Operation | Operation[]
 
 /**
+ * @public
+ *
  * Node migration helper functions. As the migration is processing a document, it will visit each node in the document, depth-first, call the appropriate helper function for the node type and collect any mutations returned from it.
  */
 export interface NodeMigration {

@@ -1,12 +1,14 @@
 import {type Migration} from './types'
 
 /**
+ * @public
+ *
  * Helper function for defining a Sanity content migration. This function does not do anything on its own;
  * it exists to check that your schema definition is correct, and help autocompletion in your IDE.
  *
- * @see https://www.sanity.io/docs/schema-and-content-migrations#af2be129ccd6
+ * {@link https://www.sanity.io/docs/schema-and-content-migrations#af2be129ccd6}
 
- * ### Basic usage
+ * @example Basic usage
  *
  * ```ts
  * export default defineMigration({

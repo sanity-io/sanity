@@ -4,6 +4,8 @@ import {type Operation} from './operations/types'
 import {type Optional} from './typeUtils'
 
 /**
+ * @public
+ *
  * A list of {@link NodePatch} objects.
  */
 export type NodePatchList =
@@ -13,7 +15,9 @@ export type NodePatchList =
   | readonly [NodePatch, ...NodePatch[]]
 
 /**
- * A sanity document
+ * @public
+ *
+ * A Sanity Content Lake document
  */
 export type SanityDocument = {
   _id?: string
@@ -24,7 +28,9 @@ export type SanityDocument = {
 }
 
 /**
- * Represents a create-mutation that can be applied to a Sanity document.
+ * @public
+ *
+ * Represents a mutation that creates a new document in the Sanity Content Lake. This mutation will fail if the ID already exist.
  */
 export type CreateMutation<Doc extends Optional<SanityDocument, '_id'>> = {
   type: 'create'
@@ -32,7 +38,9 @@ export type CreateMutation<Doc extends Optional<SanityDocument, '_id'>> = {
 }
 
 /**
- * Represents a createIfNotExists-mutation that can be applied to a Sanity document if it does not exist.
+ * @public
+ *
+ * Represents a mutation that can create a new document in the Sanity Content Lake if its ID does not exist.
  */
 export type CreateIfNotExistsMutation<Doc extends SanityDocument> = {
   type: 'createIfNotExists'
@@ -40,6 +48,8 @@ export type CreateIfNotExistsMutation<Doc extends SanityDocument> = {
 }
 
 /**
+ * @public
+ *
  * Represents a mutation that can create or replace a document in the Sanity Content Lake given its ID.
  */
 export type CreateOrReplaceMutation<Doc extends SanityDocument> = {
@@ -48,6 +58,8 @@ export type CreateOrReplaceMutation<Doc extends SanityDocument> = {
 }
 
 /**
+ * @public
+ *
  * Represents a mutation that can delete a document in the Sanity Content Lake.
  */
 export type DeleteMutation = {
@@ -56,6 +68,8 @@ export type DeleteMutation = {
 }
 
 /**
+ * @public
+ *
  * Represents a patch mutation that can change a value for a document in the Sanity Content Lake.
  */
 export type PatchMutation<Patches extends NodePatchList = NodePatchList> = {
@@ -66,6 +80,8 @@ export type PatchMutation<Patches extends NodePatchList = NodePatchList> = {
 }
 
 /**
+ * @public
+ *
  * Represents a mutation that can be applied to a document in the Sanity Content Lake.
  */
 export type Mutation<Doc extends SanityDocument = any> =
@@ -76,6 +92,8 @@ export type Mutation<Doc extends SanityDocument = any> =
   | PatchMutation
 
 /**
+ * @public
+ *
  * A NodePatch represents a single operation that can be applied at a node at a specific path in a Sanity document.
  */
 export type NodePatch<P extends Path = Path, O extends Operation = Operation> = {
@@ -84,8 +102,13 @@ export type NodePatch<P extends Path = Path, O extends Operation = Operation> = 
 }
 
 /**
+ * @public
+ *
  * Options for a patch operation.
  */
 export type PatchOptions = {
+  /**
+   * {@link https://www.sanity.io/docs/http-mutations#26600a871378}
+   */
   ifRevision?: string
 }
