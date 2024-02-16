@@ -84,7 +84,7 @@
     "@types/rimraf": "^3.0.2",
     "@types/validate-npm-package-name": "^3.0.3",
     "@rollup/plugin-node-resolve": "^15.2.3",
-    "@sanity/client": "^6.12.4",
+    "@sanity/client": "^6.13.3",
     "@sanity/eslint-config-studio": "^3.0.1",
     "@sanity/generate-help-url": "^3.0.0",
     "@types/babel__traverse": "^7.18.1",
