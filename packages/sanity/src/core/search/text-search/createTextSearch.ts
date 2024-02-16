@@ -11,7 +11,7 @@ import {
   type SearchTerms,
   type WeightedSearchOptions,
 } from '../weighted/types'
-import {createSearchQuery} from './createSearchQuery'
+import {createTextSearchQuery} from './createTextSearchQuery'
 import {type TextSearchResponse} from './types'
 
 function getSearchTerms(searchParams: string | SearchTerms, types: SearchableType[]) {
@@ -44,7 +44,7 @@ export function createTextSearch(
       uri: `/data/textsearch/${client.config().dataset}`,
       method: 'POST',
       json: true,
-      body: createSearchQuery(searchTerms, {
+      body: createTextSearchQuery(searchTerms, {
         ...commonOpts,
         ...searchOpts,
       }),
