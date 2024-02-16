@@ -187,7 +187,7 @@ importers:
         specifier: ^7.8.1
         version: 7.8.1
       sanity:
-        specifier: ^3.25.0
+        specifier: ^3.29.1
         version: link:packages/sanity
       semver:
         specifier: ^7.3.5
