@@ -40,3 +40,14 @@ export function commentIntentIfDiffers(
   }
   return undefined
 }
+
+/**
+ * A function that checks whether a comment is a text selection comment
+ */
+export function isTextSelectionComment(comment: CommentDocument): boolean {
+  if (!comment) return false
+
+  return Boolean(
+    comment?.target?.path?.selection?.type === 'text' && comment?.target?.path?.selection?.value,
+  )
+}
