@@ -4,6 +4,33 @@ import {throttle, type ThrottleSettings} from 'lodash'
 
 import {type CommentUpdatePayload} from '../../types'
 
+const THROTTLE_TIME_MS = 1000
+
+const THROTTLE_SETTINGS: ThrottleSettings = {
+  trailing: true,
+  leading: false,
+}
+
+const throttleFunctionsMap = new Map()
+
+/*
+ * Retrieves or creates a unique throttled function for each comment based on its ID.
+ * This is necessary because using a single throttled function for all updates would
+ * mean subsequent calls within the throttle period could be ignored, which isn't ideal
+ * when updates are not uniform across all operations. By creating a unique throttled
+ * function for each ID, we ensure each comment update operation is individually throttled,
+ * allowing for controlled execution while preventing rapid, consecutive calls from
+ * bypassing the intended throttle behavior.
+ */
+function getThrottledFunction(id: string) {
+  if (!throttleFunctionsMap.has(id)) {
+    const throttledFunction = throttle(postCommentUpdate, THROTTLE_TIME_MS, THROTTLE_SETTINGS)
+    throttleFunctionsMap.set(id, throttledFunction)
+    return throttledFunction
+  }
+  return throttleFunctionsMap.get(id)
+}
+
 interface UpdateOperationProps {
   client: SanityClient
   comment: CommentUpdatePayload
@@ -32,39 +59,14 @@ async function postCommentUpdate(props: UpdateOperationProps) {
         status: comment.status,
       })
       .commit()
-
-    return
+  } else {
+    // Else we'll just update the comment itself
+    await transaction.commit()
   }
 
-  // Else we'll just update the comment itself
-  await transaction.commit()
-}
-
-const THROTTLE_TIME_MS = 1000
-
-const THROTTLE_SETTINGS: ThrottleSettings = {
-  trailing: true,
-  leading: false,
-}
-
-const throttleFunctionsMap = new Map()
-
-/*
- * Retrieves or creates a unique throttled function for each comment based on its ID.
- * This is necessary because using a single throttled function for all updates would
- * mean subsequent calls within the throttle period could be ignored, which isn't ideal
- * when updates are not uniform across all operations. By creating a unique throttled
- * function for each ID, we ensure each comment update operation is individually throttled,
- * allowing for controlled execution while preventing rapid, consecutive calls from
- * bypassing the intended throttle behavior.
- */
-function getThrottledFunction(id: string) {
-  if (!throttleFunctionsMap.has(id)) {
-    const throttledFunction = throttle(postCommentUpdate, THROTTLE_TIME_MS, THROTTLE_SETTINGS)
-    throttleFunctionsMap.set(id, throttledFunction)
-    return throttledFunction
-  }
-  return throttleFunctionsMap.get(id)
+  // Remove the throttled function from the map when the operation is complete
+  // to prevent memory leaks.
+  throttleFunctionsMap.delete(id)
 }
 
 export async function updateOperation(props: UpdateOperationProps): Promise<void> {
