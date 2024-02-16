@@ -1,8 +1,9 @@
 import {type SanityClient} from '@sanity/client'
 import {useCallback, useEffect, useMemo, useState} from 'react'
-import {DEFAULT_STUDIO_CLIENT_OPTIONS, useClient, useWorkspace} from 'sanity'
 
-import {type CommentPostPayload} from '../../types'
+import {useClient} from '../../hooks'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
+import {useWorkspace} from '../workspace'
 import {CommentsSetupContext} from './CommentsSetupContext'
 import {type CommentsSetupContextValue} from './types'
 
@@ -13,6 +14,8 @@ interface CommentsSetupProviderProps {
 }
 
 /**
+ * This providers sets the addon dataset client, currently called `comments` dataset.
+ * It also exposes a `runSetup` function that can be used to create the addon dataset if it does not exist.
  * @beta
  * @hidden
  */
@@ -51,60 +54,56 @@ export function CommentsSetupProvider(props: CommentsSetupProviderProps) {
     [originalClient, projectId],
   )
 
-  const handleRunSetup = useCallback(
-    async (comment: CommentPostPayload) => {
-      setIsRunningSetup(true)
+  const handleRunSetup = useCallback(async (): Promise<SanityClient | null> => {
+    setIsRunningSetup(true)
 
-      // Before running the setup, we check if the addon dataset already exists.
-      // The addon dataset might already exist if another user has already run
-      // the setup, but the current user has not refreshed the page yet and
-      // therefore don't have a client for the addon dataset yet.
-      try {
-        const addonDatasetName = await getAddonDatasetName()
+    // Before running the setup, we check if the addon dataset already exists.
+    // The addon dataset might already exist if another user has already run
+    // the setup, but the current user has not refreshed the page yet and
+    // therefore don't have a client for the addon dataset yet.
+    try {
+      const addonDatasetName = await getAddonDatasetName()
 
-        if (addonDatasetName) {
-          const client = handleCreateClient(addonDatasetName)
-          setAddonDatasetClient(client)
-          await client.create(comment)
-          setIsRunningSetup(false)
-          return
-        }
-      } catch (_) {
-        // If the dataset does not exist we will get an error, but we can ignore
-        // it since we will create the dataset in the next step.
-      }
-
-      try {
-        // 1. Create the addon dataset
-        const res = await originalClient.withConfig({apiVersion: API_VERSION}).request({
-          uri: `/comments/${dataset}/setup`,
-          method: 'POST',
-        })
-
-        const datasetName = res?.datasetName
-
-        // 2. We can't continue if the addon dataset name is not returned
-        if (!datasetName) {
-          setIsRunningSetup(false)
-          return
-        }
-
-        // 3. Create a client for the addon dataset and set it in the context value
-        //    so that the consumers can use it to execute comment operations and set up
-        //    the real time listener for the addon dataset.
-        const client = handleCreateClient(datasetName)
+      if (addonDatasetName) {
+        const client = handleCreateClient(addonDatasetName)
         setAddonDatasetClient(client)
-
-        // 4. Create the comment
-        await client.create(comment)
-      } catch (err) {
-        throw err
-      } finally {
         setIsRunningSetup(false)
+        return client
       }
-    },
-    [dataset, getAddonDatasetName, handleCreateClient, originalClient],
-  )
+    } catch (_) {
+      // If the dataset does not exist we will get an error, but we can ignore
+      // it since we will create the dataset in the next step.
+    }
+
+    try {
+      // 1. Create the addon dataset
+      const res = await originalClient.withConfig({apiVersion: API_VERSION}).request({
+        uri: `/comments/${dataset}/setup`,
+        method: 'POST',
+      })
+
+      const datasetName = res?.datasetName
+
+      // 2. We can't continue if the addon dataset name is not returned
+      if (!datasetName) {
+        setIsRunningSetup(false)
+        return null
+      }
+
+      // 3. Create a client for the addon dataset and set it in the context value
+      //    so that the consumers can use it to execute comment operations and set up
+      //    the real time listener for the addon dataset.
+      const client = handleCreateClient(datasetName)
+      setAddonDatasetClient(client)
+
+      // 4. Return the client so that the caller can use it to execute operations
+      return client
+    } catch (err) {
+      throw err
+    } finally {
+      setIsRunningSetup(false)
+    }
+  }, [dataset, getAddonDatasetName, handleCreateClient, originalClient])
 
   useEffect(() => {
     // On mount, we check if the addon dataset already exists. If it does, we create

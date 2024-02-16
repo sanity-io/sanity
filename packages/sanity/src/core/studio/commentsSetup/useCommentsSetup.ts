@@ -1,7 +1,12 @@
 import {useContext} from 'react'
 
-import {CommentsSetupContext, type CommentsSetupContextValue} from '../context'
+import {CommentsSetupContext} from './CommentsSetupContext'
+import {type CommentsSetupContextValue} from './types'
 
+/**
+ * @beta
+ * @hidden
+ */
 export function useCommentsSetup(): CommentsSetupContextValue {
   const ctx = useContext(CommentsSetupContext)
 

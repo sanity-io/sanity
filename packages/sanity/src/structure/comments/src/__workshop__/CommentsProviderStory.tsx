@@ -1,16 +1,11 @@
 /* eslint-disable react/jsx-handler-names */
 import {useSelect, useString} from '@sanity/ui-workshop'
 import {useMemo} from 'react'
-import {useCurrentUser} from 'sanity'
+import {CommentsSetupProvider, useCurrentUser} from 'sanity'
 
 import {ConditionalWrapper} from '../../../../ui-components/conditionalWrapper'
 import {CommentsList, CommentsUpsellPanel} from '../components'
-import {
-  CommentsEnabledProvider,
-  CommentsProvider,
-  CommentsSetupProvider,
-  CommentsUpsellProvider,
-} from '../context'
+import {CommentsEnabledProvider, CommentsProvider, CommentsUpsellProvider} from '../context'
 import {useComments, useCommentsUpsell} from '../hooks'
 import {type CommentsUIMode} from '../types'
 

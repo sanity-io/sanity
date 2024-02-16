@@ -38,7 +38,7 @@ export interface CommentOperationsHookOptions {
   onRemove?: (id: string) => void
   onUpdate?: (id: string, comment: Partial<CommentCreatePayload>) => void
   projectId: string
-  runSetup: (comment: CommentPostPayload) => Promise<void>
+  runSetup: () => Promise<SanityClient | null>
   schemaType: SchemaType | undefined
   workspace: string
 }
