@@ -1,9 +1,11 @@
+import {describe, expect, it, jest} from '@jest/globals'
+
+import {createIfNotExists} from '../../mutations'
+import {type Migration, type NodeMigration} from '../../types'
 import {
   createAsyncIterableMutation,
   normalizeMigrateDefinition,
 } from '../normalizeMigrateDefinition'
-import {Migration, NodeMigration} from '../../types'
-import {createIfNotExists} from '../../mutations'
 
 const mockAsyncIterableIterator = () => {
   const data = [{_id: 'mockId', _type: 'mockDocumentType'}]
@@ -35,7 +37,7 @@ describe('#normalizeMigrateDefinition', () => {
     const result = normalizeMigrateDefinition(mockMigration)
 
     const res = []
-    for await (const item of result(jest.fn(), {} as any)) {
+    for await (const item of result(jest.fn() as any, {} as any)) {
       res.push(item)
     }
 
@@ -56,7 +58,7 @@ describe('#normalizeMigrateDefinition', () => {
     const result = normalizeMigrateDefinition(mockMigration)
     const res = []
 
-    for await (const item of result(mockAsyncIterableIterator, {} as any)) {
+    for await (const item of result(mockAsyncIterableIterator as any, {} as any)) {
       res.push(item)
     }
 
@@ -77,7 +79,7 @@ describe('#normalizeMigrateDefinition', () => {
     const result = normalizeMigrateDefinition(mockMigration)
     const res = []
 
-    for await (const item of result(mockAsyncIterableIterator, {} as any)) {
+    for await (const item of result(mockAsyncIterableIterator as any, {} as any)) {
       res.push(item)
     }
 
@@ -88,7 +90,7 @@ describe('#normalizeMigrateDefinition', () => {
 describe('#createAsyncIterableMutation', () => {
   it('should return an async iterable', async () => {
     const mockMigration: NodeMigration = {
-      document: jest.fn(),
+      document: jest.fn() as any,
     }
 
     const iterable = createAsyncIterableMutation(mockMigration, {documentTypes: ['foo']})
