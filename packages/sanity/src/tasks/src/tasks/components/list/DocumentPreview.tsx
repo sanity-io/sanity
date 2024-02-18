@@ -47,10 +47,11 @@ export function DocumentPreview({
   if (!documentSchema) {
     return null
   }
+
   return (
     <Flex align="center" gap={1}>
       <DocumentIcon />
-      {isLoading || !value?.title ? (
+      {isLoading ? (
         <TextSkeleton size={1} muted />
       ) : (
         <Text size={1} muted as={Link}>
