@@ -2,9 +2,18 @@ import {DocumentIcon} from '@sanity/icons'
 import {Flex, Text, TextSkeleton} from '@sanity/ui'
 import {forwardRef, useMemo} from 'react'
 import {useSchema} from 'sanity'
+import {IntentLink} from 'sanity/router'
+import styled from 'styled-components'
 
 import {useDocumentPreviewValues} from '../../hooks/useDocumentPreviewValues'
-import {StyledIntentLink} from './TasksListItem'
+
+const StyledIntentLink = styled(IntentLink)`
+  text-decoration: none;
+
+  :hover {
+    text-decoration: underline;
+  }
+`
 
 export function DocumentPreview({
   documentId,
