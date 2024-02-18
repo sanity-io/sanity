@@ -80,7 +80,10 @@ const reconcilePortableTextMembers = ({
           member.item.validation.length > 0 ||
           member.item.changed ||
           member.item.presence?.length ||
-          member.item.focusPath.length > 0
+          // set focusPath in the studio to a node inside the editor and have the relevant text node focused inside
+          (member.item.focusPath[0] === 'children' &&
+            (member.item.focusPath.length === 2 ||
+              (member.item.focusPath.length === 3 && member.item.focusPath[2] === 'text')))
         ) {
           result.push({kind: 'textBlock', member, node: member.item})
         }
