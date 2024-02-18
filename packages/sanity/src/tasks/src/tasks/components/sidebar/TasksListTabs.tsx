@@ -10,7 +10,7 @@ const LIST_STYLES: CSSProperties = {marginLeft: '-0.5em'}
 
 interface TasksListTabsProps {
   activeTabId: string
-  onChange: (id: SidebarTabsIds) => void
+  onChange: Dispatch<SetStateAction<SidebarTabsIds>>
 }
 
 interface TasksListTab {
