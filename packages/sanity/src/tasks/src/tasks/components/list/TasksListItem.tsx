@@ -2,7 +2,6 @@ import {CalendarIcon, UserIcon} from '@sanity/icons'
 import {Card, type CardProps, Flex, Stack, Text, TextSkeleton} from '@sanity/ui'
 import {useMemo} from 'react'
 import {useDateTimeFormat, useUser} from 'sanity'
-import {IntentLink} from 'sanity/router'
 import styled from 'styled-components'
 
 import {type TaskDocument} from '../../types'
@@ -26,14 +25,6 @@ export const ThreadCard = styled(Card).attrs<CardProps>(({tone}) => ({
 
 const Title = styled(Text)`
   &:hover {
-    text-decoration: underline;
-  }
-`
-
-export const StyledIntentLink = styled(IntentLink)`
-  text-decoration: none;
-
-  :hover {
     text-decoration: underline;
   }
 `
