@@ -6,6 +6,7 @@ import {useClient, useSchema, useTemplates} from '../../hooks'
 import {createDocumentPreviewStore, type DocumentPreviewStore} from '../../preview'
 import {useSource, useWorkspace} from '../../studio'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
+import {createKeyValueStore, type KeyValueStore} from '../key-value'
 import {useCurrentUser} from '../user'
 import {
   type ConnectionStatusStore,
@@ -17,7 +18,6 @@ import {createHistoryStore, type HistoryStore} from './history'
 import {__tmp_wrap_presenceStore, type PresenceStore} from './presence/presence-store'
 import {createProjectStore, type ProjectStore} from './project'
 import {useResourceCache} from './ResourceCacheProvider'
-import {createSettingsStore, type SettingsStore} from './settings'
 import {createUserStore, type UserStore} from './user'
 
 /**
@@ -230,23 +230,23 @@ export function useProjectStore(): ProjectStore {
 }
 
 /** @internal */
-export function useSettingsStore(): SettingsStore {
+export function useKeyValueStore(): KeyValueStore {
   const resourceCache = useResourceCache()
   const workspace = useWorkspace()
 
   return useMemo(() => {
-    const settingsStore =
-      resourceCache.get<SettingsStore>({
+    const keyValueStore =
+      resourceCache.get<KeyValueStore>({
         dependencies: [workspace],
-        namespace: 'settingsStore',
-      }) || createSettingsStore()
+        namespace: 'KeyValueStore',
+      }) || createKeyValueStore()
 
     resourceCache.set({
       dependencies: [workspace],
-      namespace: 'settingsStore',
-      value: settingsStore,
+      namespace: 'KeyValueStore',
+      value: keyValueStore,
     })
 
-    return settingsStore
+    return keyValueStore
   }, [resourceCache, workspace])
 }
