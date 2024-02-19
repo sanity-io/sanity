@@ -23,7 +23,8 @@ interface TasksListTab {
  * @internal
  */
 export function TasksListTabs({activeTabId, onChange}: TasksListTabsProps) {
-  const {activeDocumentId} = useTasks()
+  const {activeDocument} = useTasks()
+  const activeDocumentId = activeDocument?.documentId
   const [isDisabledTab, setIsDisabledTab] = useState<boolean>(!activeDocumentId)
 
   useEffect(() => {

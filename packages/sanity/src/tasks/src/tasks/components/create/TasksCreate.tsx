@@ -1,25 +1,27 @@
 import {type PortableTextBlock} from '@sanity/types'
 import {Card, Flex, Stack, Text, TextInput, useToast} from '@sanity/ui'
 import {useCallback, useEffect, useRef, useState} from 'react'
+import {getPublishedId, useEditState, useWorkspace} from 'sanity'
 
 import {useMentionOptions} from '../../../../../structure/comments'
 import {Button} from '../../../../../ui-components'
 import {useTasks} from '../../context'
-import {type TaskCreatePayload, type TaskDocument} from '../../types'
+import {type TaskCreatePayload, type TaskDocument, type TaskTarget} from '../../types'
 import {MentionUser} from '../mentionUser'
 import {RemoveTask} from '../remove/RemoveTask'
 import {DescriptionInput} from './DescriptionInput'
+import {TargetInput} from './TargetInput'
 import {WarningText} from './WarningText'
 
 type ModeProps =
   | {
       mode: 'create'
-      initialValues?: undefined
+      task?: undefined
     }
   | {
       // TODO: This will be moved to it's own view which is different from creation. This is just for bootstrapping
       mode: 'edit'
-      initialValues: TaskDocument
+      task: TaskDocument
     }
 type TasksCreateProps = ModeProps & {
   onCancel: () => void
@@ -31,18 +33,57 @@ type TasksCreateProps = ModeProps & {
  * @internal
  */
 export const TasksCreate = (props: TasksCreateProps) => {
-  const {initialValues, mode, onCancel, onCreate, onDelete} = props
-  const {operations} = useTasks()
-  // WIP implementation, we will later use the Form to handle the creation of a task
-  const [values, setValues] = useState<TaskCreatePayload>(() =>
-    initialValues ? initialValues : {title: '', description: null, assignedTo: '', status: 'open'},
+  const {task, mode, onCancel, onCreate, onDelete} = props
+  const toast = useToast()
+  const {operations, activeDocument} = useTasks()
+  const {dataset, projectId} = useWorkspace()
+
+  const getTargetValue = useCallback(
+    (documentType: string, documentId: string): TaskTarget => ({
+      documentType: documentType,
+      document: {
+        _ref: getPublishedId(documentId),
+        _type: 'crossDatasetReference',
+        _dataset: dataset,
+        _projectId: projectId,
+        _weak: true,
+      },
+    }),
+    [dataset, projectId],
   )
+
+  const getTaskInitialValues = () => {
+    if (mode === 'edit') {
+      return task
+    }
+    const initialValues: TaskCreatePayload = {
+      title: '',
+      description: null,
+      assignedTo: '',
+      status: 'open',
+      target: activeDocument
+        ? getTargetValue(activeDocument.documentType, activeDocument.documentId)
+        : undefined,
+    }
+    return initialValues
+  }
+
+  // WIP implementation, we will later use the Form to handle the creation of a task
+  const [values, setValues] = useState<TaskCreatePayload>(getTaskInitialValues)
 
   const [createStatus, setCreateStatus] = useState<'idle' | 'loading' | 'error'>('idle')
   const [error, setError] = useState<string | null>(null)
   const formRootRef = useRef<HTMLDivElement>(null)
   const [submitted, setSubmitted] = useState(false)
-  const toast = useToast()
+  const {draft, published} = useEditState(
+    values.target?.document._ref || '_fake',
+    values.target?.documentType || '_fake',
+    'low',
+  )
+  const mentionOptions = useMentionOptions({
+    documentValue: draft || published || null,
+  })
+
   const handleRemoved = useCallback(async () => {
     toast.push({
       closable: true,
@@ -60,9 +101,7 @@ export const TasksCreate = (props: TasksCreateProps) => {
       }
       setCreateStatus('loading')
       if (mode === 'create') {
-        const created = await operations.create(values)
-        // eslint-disable-next-line no-console
-        console.log('It is created', created)
+        await operations.create(values)
         toast.push({
           closable: true,
           status: 'success',
@@ -72,9 +111,7 @@ export const TasksCreate = (props: TasksCreateProps) => {
 
       if (mode === 'edit') {
         // TODO: This will be moved to it's own view which is different from creation. This is just for bootstrapping
-        const updated = await operations.edit(initialValues._id, values)
-        // eslint-disable-next-line no-console
-        console.log('It is updated', updated)
+        await operations.edit(task._id, values)
         toast.push({
           closable: true,
           status: 'success',
@@ -87,7 +124,7 @@ export const TasksCreate = (props: TasksCreateProps) => {
       setCreateStatus('error')
       setError(err.message)
     }
-  }, [operations, mode, initialValues?._id, onCreate, toast, values])
+  }, [operations, mode, task?._id, onCreate, toast, values])
 
   const submitListener = useCallback(
     (e: KeyboardEvent) => {
@@ -119,14 +156,25 @@ export const TasksCreate = (props: TasksCreateProps) => {
     setValues((prev) => ({...prev, description: value}))
   }, [])
 
-  // TODO: When the document is added, check if the user has permissions to see the document, using the "canBeMentioned" property.
-  const mentionOptions = useMentionOptions({documentValue: null})
+  const handleTargetChange = useCallback(
+    (document: {documentId: string; documentType: string} | null) => {
+      if (!document) {
+        setValues((prev) => ({...prev, target: undefined}))
+        return
+      }
+      setValues((prev) => ({
+        ...prev,
+        target: getTargetValue(document.documentType, document.documentId),
+      }))
+    },
+    [getTargetValue],
+  )
 
   return (
     <Card padding={4}>
       <Stack ref={formRootRef} space={3}>
         <TextInput
-          placeholder="Enter task title"
+          placeholder="Task title"
           autoFocus
           fontSize={1}
           onChange={handleTitleChange}
@@ -145,10 +193,11 @@ export const TasksCreate = (props: TasksCreateProps) => {
           value={values.assignedTo}
           onChange={handleAssignedToChange}
         />
+        <TargetInput onChange={handleTargetChange} value={values.target} />
         <Flex justify="flex-end" gap={4} marginTop={2}>
           {mode === 'edit' && (
             <div style={{marginRight: 'auto'}}>
-              <RemoveTask id={initialValues._id} onRemoved={handleRemoved} />
+              <RemoveTask id={task._id} onRemoved={handleRemoved} />
             </div>
           )}
           <Button

@@ -80,6 +80,16 @@ interface TaskCreateFailedState {
  */
 type TaskState = TaskCreateFailedState | TaskCreateRetryingState | undefined
 
+export interface TaskTarget {
+  documentType: string
+  document: {
+    _dataset: string
+    _projectId: string
+    _ref: string
+    _type: 'crossDatasetReference'
+    _weak: boolean
+  }
+}
 /**
  * @beta
  * @hidden
@@ -92,7 +102,7 @@ export interface TaskDocument {
   _rev: string
   _state?: TaskState
   title: string
-  description: TaskMessage
+  description?: TaskMessage
   status: TaskStatus
   lastEditedAt?: string
   context?: TaskContext
@@ -100,16 +110,7 @@ export interface TaskDocument {
   dueBy?: string
   assignedTo?: string
 
-  target?: {
-    documentType: string
-    document: {
-      _dataset: string
-      _projectId: string
-      _ref: string
-      _type: 'crossDatasetReference'
-      _weak: boolean
-    }
-  }
+  target?: TaskTarget
 }
 
 /**
@@ -125,9 +126,10 @@ export type TaskPostPayload = Omit<TaskDocument, '_rev' | '_updatedAt' | '_creat
 export interface TaskCreatePayload {
   id?: string
   title: string
-  description: TaskMessage
+  description?: TaskMessage
   status: TaskStatus
   assignedTo?: string
+  target?: TaskTarget
 }
 
 /**
