@@ -53,8 +53,8 @@ let cachedSystemGroups: [] | null = null
 
 /**
  * @beta
- * returns a list of users with the specified permission on the document.
- * If not document is provided it will return all as `granted: true`
+ * Returns a list of users with the specified permission on the document.
+ * If no document is provided it will return all as `granted: true`
  */
 export function useUserListWithPermissions(
   opts: UserListWithPermissionsOptions,
