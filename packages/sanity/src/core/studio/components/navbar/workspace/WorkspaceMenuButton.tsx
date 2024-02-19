@@ -15,7 +15,7 @@ import {useTranslation} from '../../../../i18n'
 import {useActiveWorkspace} from '../../../activeWorkspaceMatcher'
 import {useWorkspaces} from '../../../workspaces'
 import {useWorkspaceAuthStates} from './hooks'
-import {STATE_TITLES, TitleTextBox, WorkspacePreviewIcon} from './WorkspacePreview'
+import {STATE_TITLES, WorkspacePreviewIcon} from './WorkspacePreview'
 
 const StyledMenu = styled(Menu)`
   max-width: 350px;
@@ -98,7 +98,8 @@ export function WorkspaceMenuButton() {
                   pressed={isSelected}
                   preview={<WorkspacePreviewIcon icon={workspace.icon} size="small" />}
                   selected={isSelected}
-                  text={<TitleTextBox title={workspace.title} subtitle={workspace.subtitle} />}
+                  subtitle={workspace.subtitle}
+                  text={workspace?.title || workspace.name}
                 />
               )
             })}

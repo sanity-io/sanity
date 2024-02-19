@@ -21,6 +21,11 @@ import {
 } from '../conditionalWrapper'
 
 const FONT_SIZE = 1
+const SUBTITLE_FONT_SIZE = 0
+
+const SubtitleText = styled(Text)`
+  margin-top: 2px;
+`
 
 /** @internal */
 export type MenuItemProps = Pick<
@@ -41,17 +46,26 @@ export type MenuItemProps = Pick<
    */
   renderMenuItem?: (menuItemContent: React.JSX.Element) => React.ReactNode
   tooltipProps?: TooltipProps | null
+  /**
+   * Optional subtitle prop for the menu item.
+   * It is not recommended, but it is used for the workspace menu button.
+   */
+  subtitle?: string
 }
 
 const PreviewWrapper = styled(Box)`
   height: 25px;
   width: 25px;
   overflow: hidden;
+  padding-right: 4px;
 `
 
 /**
  * Customized Sanity UI <MenuItem> that restricts usage of `children` to encourage simple,
  * single line menu items.
+ *
+ * The workspace menu button needed a subtitle - hence, the StudioUI MenuIten now takes a subtitle prop.
+ * This is only an escape hatch for the workspace menu button and is not recommended for general use.
  *
  * It also accepts a prop to attach tooltips as well as custom badges too.
  *
@@ -69,6 +83,7 @@ export const MenuItem = forwardRef(function MenuItem(
     renderMenuItem,
     text,
     tooltipProps,
+    subtitle,
     ...rest
   }: MenuItemProps &
     Omit<
@@ -96,10 +111,15 @@ export const MenuItem = forwardRef(function MenuItem(
           </Box>
         )}
         {text && (
-          <Stack flex={1} space={2}>
+          <Stack flex={1} space={subtitle ? 1 : 2} paddingLeft={subtitle ? 1 : 0}>
             <Text size={FONT_SIZE} textOverflow="ellipsis" weight="medium">
               {text}
             </Text>
+            {subtitle && (
+              <SubtitleText size={SUBTITLE_FONT_SIZE} textOverflow="ellipsis" weight="medium" muted>
+                {subtitle}
+              </SubtitleText>
+            )}
           </Stack>
         )}
         {(badgeText || hotkeys || iconRight) && (
@@ -122,7 +142,7 @@ export const MenuItem = forwardRef(function MenuItem(
         )}
       </Flex>
     )
-  }, [badgeText, disabled, hotkeys, icon, iconRight, preview, text])
+  }, [badgeText, disabled, hotkeys, icon, iconRight, preview, text, subtitle])
 
   const renderWrapper = useCallback<ConditionalWrapperRenderWrapperCallback>(
     (children) => {

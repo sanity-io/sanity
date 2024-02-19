@@ -29,11 +29,15 @@ export default function MenuItemStory() {
           </Box>
           <Menu>
             <MenuItem text={`${text} (with tooltip)`} tooltipProps={{content: 'Example tooltip'}} />
-            <MenuItem text={text} />
+            <MenuItem text={text} subtitle="With a subtitle" />
             <MenuItem icon={CircleIcon} text={text} />
             <MenuItem iconRight={CheckmarkIcon} text={text} />
             <MenuItem hotkeys={HOTKEYS} text={text} />
-            <MenuItem preview={<Avatar initials={AVATAR_INITIALS} size={1} />} text={text} />
+            <MenuItem
+              preview={<Avatar initials={AVATAR_INITIALS} size={1} />}
+              subtitle="With a subtitle"
+              text={text}
+            />
             <MenuItem
               preview={<Avatar initials={AVATAR_INITIALS} size={1} />}
               text={text}
@@ -97,6 +101,7 @@ export default function MenuItemStory() {
               hotkeys={HOTKEYS}
               badgeText={'badge'}
               iconRight={CheckmarkIcon}
+              subtitle="With a subtitle"
             />
             <MenuItem
               preview={<Avatar initials={AVATAR_INITIALS} size={1} />}
@@ -105,6 +110,7 @@ export default function MenuItemStory() {
               hotkeys={HOTKEYS}
               badgeText={'badge'}
               iconRight={CheckmarkIcon}
+              subtitle="With a subtitle"
             />
           </Menu>
         </Card>
