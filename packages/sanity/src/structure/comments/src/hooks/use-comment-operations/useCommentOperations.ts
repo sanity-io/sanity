@@ -30,6 +30,7 @@ export interface CommentOperationsHookOptions {
   currentUser: CurrentUser | null
   dataset: string
   documentId: string
+  documentRevisionId?: string
   documentType: string
   getComment?: (id: string) => CommentDocument | undefined
   getThreadLength?: (threadId: string) => number
@@ -52,6 +53,7 @@ export function useCommentOperations(
     currentUser,
     dataset,
     documentId,
+    documentRevisionId,
     documentType,
     getComment,
     getThreadLength,
@@ -96,6 +98,7 @@ export function useCommentOperations(
         currentUser,
         dataset,
         documentId,
+        documentRevisionId,
         documentType,
         getIntent,
         getNotificationValue,
@@ -113,6 +116,7 @@ export function useCommentOperations(
       currentUser,
       dataset,
       documentId,
+      documentRevisionId,
       documentType,
       getIntent,
       getNotificationValue,

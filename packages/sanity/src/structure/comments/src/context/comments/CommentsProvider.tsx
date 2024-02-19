@@ -66,6 +66,7 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
   const editState = useEditState(publishedId, documentType, 'low')
   const schemaType = useSchema().get(documentType)
   const currentUser = useCurrentUser()
+
   const {name: workspaceName, dataset, projectId} = useWorkspace()
 
   // A map to keep track of the latest transaction ID for each comment document.
@@ -108,6 +109,8 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
     return editState.draft || editState.published
   }, [editState.draft, editState.published])
 
+  const documentRevisionId = useMemo(() => documentValue?._rev, [documentValue])
+
   const handleSetStatus = useCallback(
     (newStatus: CommentStatus) => {
       // Avoids going to "resolved" when using links to comments
@@ -118,6 +121,7 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
     },
     [setStatus, commentsEnabled],
   )
+
   const mentionOptions = useUserListWithPermissions(
     useMemo(() => ({documentValue, permission: 'read'}), [documentValue]),
   )
@@ -210,12 +214,13 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
         currentUser,
         dataset,
         documentId: publishedId,
+        documentRevisionId,
         documentType,
+        getComment,
+        getThreadLength,
         projectId,
         schemaType,
         workspace: workspaceName,
-        getThreadLength,
-        getComment,
         // This function runs when the first comment creation is executed.
         // It is used to create the addon dataset and configure a client for
         // the addon dataset.
@@ -235,18 +240,19 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
         client,
         currentUser,
         dataset,
-        publishedId,
+        documentRevisionId,
         documentType,
-        projectId,
-        schemaType,
-        workspaceName,
-        getThreadLength,
         getComment,
         createAddonDataset,
+        getThreadLength,
         handleOnCreate,
         handleOnCreateError,
-        handleOnUpdate,
         handleOnTransactionStart,
+        handleOnUpdate,
+        projectId,
+        publishedId,
+        schemaType,
+        workspaceName,
       ],
     ),
   )

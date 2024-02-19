@@ -42,6 +42,7 @@ export interface CommentThreadItem {
   breadcrumbs: CommentListBreadcrumbs
   commentsCount: number
   fieldPath: string
+  hasReferencedValue: boolean
   parentComment: CommentDocument
   replies: CommentDocument[]
   threadId: string
@@ -205,6 +206,7 @@ export interface CommentDocument {
   target: {
     path: CommentPath
 
+    documentRevisionId: string
     documentType: string
     document: {
       _dataset: string
