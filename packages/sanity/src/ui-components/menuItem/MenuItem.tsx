@@ -51,13 +51,18 @@ export type MenuItemProps = Pick<
    * It is not recommended, but it is used for the workspace menu button.
    */
   subtitle?: string
+  /**
+   * Optional space prop for the menu item.
+   * It is not recommended, but it is used for the workspace menu button.
+   * This is the space between the icon and the text in the preview component.
+   */
+  space?: boolean
 }
 
 const PreviewWrapper = styled(Box)`
   height: 25px;
   width: 25px;
   overflow: hidden;
-  padding-right: 4px;
 `
 
 /**
@@ -84,6 +89,7 @@ export const MenuItem = forwardRef(function MenuItem(
     text,
     tooltipProps,
     subtitle,
+    space = false,
     ...rest
   }: MenuItemProps &
     Omit<
@@ -96,7 +102,9 @@ export const MenuItem = forwardRef(function MenuItem(
     return (
       <Flex align="center" gap={2}>
         {preview && (
-          <PreviewWrapper style={{opacity: disabled ? 0.25 : undefined}}>
+          <PreviewWrapper
+            style={{opacity: disabled ? 0.25 : undefined, paddingRight: space ? '4px' : '0'}}
+          >
             <Flex align="center" height="fill" justify="center">
               {preview}
             </Flex>
@@ -142,7 +150,7 @@ export const MenuItem = forwardRef(function MenuItem(
         )}
       </Flex>
     )
-  }, [badgeText, disabled, hotkeys, icon, iconRight, preview, text, subtitle])
+  }, [badgeText, disabled, hotkeys, icon, iconRight, preview, text, subtitle, space])
 
   const renderWrapper = useCallback<ConditionalWrapperRenderWrapperCallback>(
     (children) => {
