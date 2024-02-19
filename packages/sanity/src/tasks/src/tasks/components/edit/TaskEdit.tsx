@@ -17,5 +17,5 @@ export function TaskEdit(props: TaskEditProps) {
     return <Text>Task not found</Text>
   }
 
-  return <TasksCreate onCancel={onCancel} onDelete={onDelete} mode="edit" initialValues={task} />
+  return <TasksCreate onCancel={onCancel} onDelete={onDelete} mode="edit" task={task} />
 }

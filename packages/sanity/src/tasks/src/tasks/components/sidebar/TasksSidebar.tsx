@@ -30,7 +30,7 @@ const TRANSITION: Transition = {duration: 0.2}
  */
 export function TasksStudioSidebar() {
   const {enabled} = useTasksEnabled()
-  const {activeDocumentId, isOpen, data, isLoading} = useTasks()
+  const {activeDocument, isOpen, data, isLoading} = useTasks()
   const [viewMode, setViewMode] = useState<ViewMode>('list')
   const [selectedTask, setSelectedTask] = useState<null | string>(null)
   const [activeTabId, setActiveTabId] = useState<SidebarTabsIds>('assigned')
@@ -70,7 +70,7 @@ export function TasksStudioSidebar() {
                 ) : (
                   <TaskSidebarContent
                     items={data}
-                    activeDocumentId={activeDocumentId}
+                    activeDocumentId={activeDocument?.documentId}
                     onTaskSelect={onTaskSelect}
                     setActiveTabId={setActiveTabId}
                     activeTabId={activeTabId}

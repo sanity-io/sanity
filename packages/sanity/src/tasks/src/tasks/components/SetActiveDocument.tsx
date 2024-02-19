@@ -2,23 +2,27 @@ import {useEffect} from 'react'
 import {getPublishedId} from 'sanity'
 
 import {usePane} from '../../../../structure/components'
-import {useTasks} from '../context'
+import {type ActiveDocument, useTasks} from '../context'
 
-export function SetActiveDocument({documentId}: {documentId: string}) {
+export function SetActiveDocument(document: ActiveDocument) {
+  const {documentId, documentType} = document
   const {isLast} = usePane()
-  const {setActiveDocumentId} = useTasks()
+  const {setActiveDocument} = useTasks()
 
   useEffect(() => {
-    if (documentId && isLast) {
-      setActiveDocumentId?.(getPublishedId(documentId))
+    if (documentId && isLast && documentType) {
+      setActiveDocument?.({
+        documentId: getPublishedId(documentId),
+        documentType,
+      })
     }
 
     return () => {
       if (isLast) {
-        setActiveDocumentId?.(undefined)
+        setActiveDocument?.(null)
       }
     }
-  }, [documentId, isLast, setActiveDocumentId])
+  }, [documentId, documentType, isLast, setActiveDocument])
 
   return null
 }
