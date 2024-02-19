@@ -1,14 +1,14 @@
 import {type PortableTextBlock} from '@sanity/types'
 import {Card, Flex, Stack, Text, TextInput, useToast} from '@sanity/ui'
 import {useCallback, useEffect, useRef, useState} from 'react'
-import {useCurrentUser} from 'sanity'
 
-import {CommentInput, useMentionOptions} from '../../../../../structure/comments'
+import {useMentionOptions} from '../../../../../structure/comments'
 import {Button} from '../../../../../ui-components'
 import {useTasks} from '../../context'
 import {type TaskCreatePayload, type TaskDocument} from '../../types'
 import {MentionUser} from '../mentionUser'
 import {RemoveTask} from '../remove/RemoveTask'
+import {DescriptionInput} from './DescriptionInput'
 import {WarningText} from './WarningText'
 
 type ModeProps =
@@ -42,7 +42,6 @@ export const TasksCreate = (props: TasksCreateProps) => {
   const [error, setError] = useState<string | null>(null)
   const formRootRef = useRef<HTMLDivElement>(null)
   const [submitted, setSubmitted] = useState(false)
-  const currentUser = useCurrentUser()
   const toast = useToast()
   const handleRemoved = useCallback(async () => {
     toast.push({
@@ -123,7 +122,6 @@ export const TasksCreate = (props: TasksCreateProps) => {
   // TODO: When the document is added, check if the user has permissions to see the document, using the "canBeMentioned" property.
   const mentionOptions = useMentionOptions({documentValue: null})
 
-  if (!currentUser) return null
   return (
     <Card padding={4}>
       <Stack ref={formRootRef} space={3}>
@@ -136,13 +134,10 @@ export const TasksCreate = (props: TasksCreateProps) => {
         />
         {submitted && !values.title && <WarningText>Title is required</WarningText>}
 
-        <CommentInput
-          currentUser={currentUser}
-          mentionOptions={mentionOptions}
+        <DescriptionInput
           onChange={handleDescriptionChange}
-          value={values.description}
-          withAvatar={false}
-          placeholder="Task description"
+          mentionOptions={mentionOptions}
+          value={values.description || []}
         />
 
         <MentionUser

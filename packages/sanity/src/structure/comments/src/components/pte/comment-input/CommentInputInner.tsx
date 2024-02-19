@@ -35,10 +35,7 @@ const RootCard = styled(Card)(({theme}) => {
     border-radius: ${radii}px;
     box-shadow: var(--input-box-shadow);
 
-    --input-box-shadow: ${focusRingBorderStyle({
-      color: color.input.default.enabled.border,
-      width: input.border.width,
-    })};
+    --input-box-shadow: inset 0 0 0 ${input.border.width}px ${color.input.default.enabled.border};
 
     &:not([data-expand-on-focus='false'], :focus-within) {
       background: transparent;
@@ -49,12 +46,7 @@ const RootCard = styled(Card)(({theme}) => {
       ${EditableWrap} {
         min-height: 1em;
       }
-
-      /* box-shadow: inset 0 0 0 1px var(--card-focus-ring-color); */
-      --input-box-shadow: ${focusRingBorderStyle({
-        color: 'var(--card-focus-ring-color)',
-        width: input.border.width,
-      })};
+      --input-box-shadow: inset 0 0 0 ${input.border.width}px var(--card-focus-ring-color);
     }
 
     &:focus-within {
@@ -132,7 +124,7 @@ export function CommentInputInner(props: CommentInputInnerProps) {
         tone={readOnly ? 'transparent' : 'default'}
       >
         <Stack>
-          <EditableWrap paddingX={2} paddingY={3} sizing="border">
+          <EditableWrap paddingX={1} paddingY={2} sizing="border" id="editable-wrap">
             <Editable
               focusLock={focusLock}
               onBlur={onBlur}
