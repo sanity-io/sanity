@@ -6,8 +6,7 @@ import {debug} from '../../debug'
 import {studioDependencies} from '../../studioDependencies'
 import {type CliCommandContext} from '../../types'
 import {copy} from '../../util/copy'
-import {resolveLatestVersions} from '../../util/resolveLatestVersions'
-import {getAndWriteBuilderSchemaWorker} from '../../util/builderSchema'
+import {getAndWriteJourneySchemaWorker} from '../../util/journeyConfig'
 import {createCliConfig} from './createCliConfig'
 import {createPackageManifest} from './createPackageManifest'
 import {createStudioConfig, type GenerateConfigOptions} from './createStudioConfig'
@@ -18,11 +17,11 @@ export interface BootstrapOptions {
   packageName: string
   templateName: string
   /**
-   * Used for initializing a project from a Schema Builder schema.
+   * Used for initializing a project from a server schema that is saved in the Journey API
    * This will override the `template` option.
    * @beta
    */
-  schemaId?: string
+  journeyProjectId?: string
   outputPath: string
   useTypeScript: boolean
   variables: GenerateConfigOptions['variables']
@@ -47,7 +46,14 @@ export async function bootstrapTemplate(
 
   // Copy template files
   debug('Copying files from template "%s" to "%s"', templateName, outputPath)
-  let spinner = output.spinner('Bootstrapping files from template').start()
+  let spinner = output
+    .spinner(
+      opts.journeyProjectId
+        ? 'Extracting your Sanity configuration'
+        : 'Bootstrapping files from template',
+    )
+    .start()
+
   await copy(sourceDir, outputPath, {
     rename: useTypeScript ? toTypeScriptPath : undefined,
   })
@@ -57,13 +63,13 @@ export async function bootstrapTemplate(
     await fs.copyFile(path.join(sharedDir, 'tsconfig.json'), path.join(outputPath, 'tsconfig.json'))
   }
 
-  // If we have a schemaId, the template is assembled from the builder schema
-  if (opts.schemaId) {
-    debug('Fetching and write builder schema "%s"', opts.schemaId)
-    await getAndWriteBuilderSchemaWorker({
+  // If we have a journeyProjectId, the template is assembled from the builder schema
+  if (opts.journeyProjectId) {
+    debug('Fetching and write journey schema "%s"', opts.journeyProjectId)
+    await getAndWriteJourneySchemaWorker({
       schemasPath: path.join(outputPath, 'schemas'),
       useTypeScript,
-      schemaId: opts.schemaId,
+      projectId: opts.journeyProjectId,
     })
   }
 

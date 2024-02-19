@@ -1,6 +1,6 @@
 import {parentPort, workerData} from 'worker_threads'
-import {getAndWriteBuilderSchema} from '../util/builderSchema'
+import {getAndWriteJourneySchema} from '../util/journeyConfig'
 
-getAndWriteBuilderSchema(workerData)
+getAndWriteJourneySchema(workerData)
   .then(() => parentPort?.postMessage({type: 'success'}))
   .catch((error) => parentPort?.postMessage({type: 'error', error}))

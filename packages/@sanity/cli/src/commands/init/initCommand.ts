@@ -52,14 +52,19 @@ export interface InitFlags {
   project?: string
   dataset?: string
   template?: string
-  /**
-   * Used for initializing a project from a Schema Builder schema.
-   * This will override the `template` option.
-   * @beta
-   */
-  schemaId?: string
+
   visibility?: string
   typescript?: boolean
+  /**
+   * Used for initializing a project from a server schema that is saved in the Journey API
+   * Overrides `project` option.
+   * Overrides `dataset` option.
+   * Overrides `template` option.
+   * Overrides `template` option.
+   * Overrides `visibility` option.
+   * @beta
+   */
+  config?: string
   bare?: boolean
   env?: boolean | string
   git?: boolean | string

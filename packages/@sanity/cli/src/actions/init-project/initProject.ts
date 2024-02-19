@@ -42,6 +42,7 @@ import {login, type LoginFlags} from '../login/login'
 import {createProject} from '../project/createProject'
 import {type BootstrapOptions, bootstrapTemplate} from './bootstrapTemplate'
 import {type GenerateConfigOptions} from './createStudioConfig'
+import {fetchJourneyConfig} from '../../util/journeyConfig'
 import {absolutify, validateEmptyPath} from './fsUtils'
 import {tryGitInit} from './git'
 import {promptForDatasetName} from './promptForDatasetName'
@@ -69,11 +70,11 @@ const isCI = process.env.CI
 export interface InitOptions {
   template: string
   /**
-   * Used for initializing a project from a Schema Builder schema.
+   * Used for initializing a project from a server schema that is saved in the Journey API
    * This will override the `template` option.
    * @beta
    */
-  schemaId?: string
+  journeyProjectId?: string
   outputDir: string
   name: string
   displayName: string
@@ -266,38 +267,11 @@ export default async function initSanity(
   }
 
   const flags = await prepareFlags()
+  const {projectId, displayName, isFirstProject, datasetName} = await getProjectDetails()
 
-  // We're authenticated, now lets select or create a project
-  debug('Prompting user to select or create a project')
-  const {
-    projectId,
-    displayName,
-    isFirstProject,
-    userAction: getOrCreateUserAction,
-  } = await getOrCreateProject()
-  trace.log({step: 'createOrSelectProject', projectId, selectedOption: getOrCreateUserAction})
   const sluggedName = deburr(displayName.toLowerCase())
     .replace(/\s+/g, '-')
     .replace(/[^a-z0-9-]/g, '')
-
-  debug(`Project with name ${displayName} selected`)
-
-  // Now let's pick or create a dataset
-  debug('Prompting user to select or create a dataset')
-  const {datasetName, userAction: getOrCreateDatasetUserAction} = await getOrCreateDataset({
-    projectId,
-    displayName,
-    dataset: flags.dataset,
-    aclMode: flags.visibility,
-    defaultConfig: flags['dataset-default'],
-  })
-  trace.log({
-    step: 'createOrSelectDataset',
-    selectedOption: getOrCreateDatasetUserAction,
-    datasetName,
-    visibility: flags.visibility as 'private' | 'public',
-  })
-  debug(`Dataset with name ${datasetName} selected`)
 
   // If user doesn't want to output any template code
   if (bareOutput) {
@@ -548,7 +522,7 @@ export default async function initSanity(
     outputPath,
     packageName: sluggedName,
     templateName,
-    schemaId: cliFlags.schemaId,
+    journeyProjectId: cliFlags.config,
     useTypeScript,
     variables: {
       dataset: datasetName,
@@ -661,6 +635,50 @@ export default async function initSanity(
 
     print("Good stuff, you're now authenticated. You'll need a project to keep your")
     print('datasets and collaborators safe and snug.')
+  }
+
+  async function getProjectDetails(): Promise<{
+    projectId: string
+    datasetName: string
+    displayName: string
+    isFirstProject: boolean
+  }> {
+    let data
+
+    if (flags.config) {
+      debug('Fetching project details from Journey API')
+      data = await fetchJourneyConfig(flags.config)
+    } else {
+      // We're authenticated, now lets select or create a project
+      debug('Prompting user to select or create a project')
+      const project = await getOrCreateProject()
+      debug(`Project with name ${project.displayName} selected`)
+
+      // Now let's pick or create a dataset
+      debug('Prompting user to select or create a dataset')
+      const dataset = await getOrCreateDataset({
+        projectId: project.projectId,
+        displayName: project.displayName,
+        dataset: flags.dataset,
+        aclMode: flags.visibility,
+        defaultConfig: flags['dataset-default'],
+      })
+      trace.log({
+        step: 'createOrSelectDataset',
+        selectedOption: dataset.userAction,
+        datasetName,
+        visibility: flags.visibility as 'private' | 'public',
+      })
+      data = {
+        projectId: project.projectId,
+        displayName: project.displayName,
+        isFirstProject: project.isFirstProject,
+        datasetName: dataset.datasetName,
+      }
+
+      debug(`Dataset with name ${dataset.datasetName} selected`)
+    }
+    return data
   }
 
   // eslint-disable-next-line complexity
@@ -930,9 +948,9 @@ export default async function initSanity(
   }
 
   function selectProjectTemplate() {
-    // Make sure the schemaId and the template flag are not used together
-    // Force template to clean if schemaId is used
-    if (flags.schemaId) {
+    // Make sure the --config and --template are not used together
+    // Force template to clean if --config is used
+    if (flags.config) {
       return 'clean'
     }
 
