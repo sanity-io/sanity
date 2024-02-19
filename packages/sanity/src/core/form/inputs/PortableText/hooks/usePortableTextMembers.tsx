@@ -66,21 +66,21 @@ const reconcilePortableTextMembers = ({
     renderInlineBlock,
     renderPreview,
   } = props
-
   for (const member of members) {
     if (member.kind === 'item') {
       const isObjectBlock = !isBlockType(member.item.schemaType)
       if (isObjectBlock) {
         result.push({kind: 'objectBlock', member, node: member.item})
       } else {
-        // Also include regular text blocks with validation, presence, changes or that are focused by the user.
+        // Also include regular text blocks with validation, presence, changes or that are open or focused.
         // This is a performance optimization to avoid accounting for blocks that
         // doesn't need to be re-rendered (which usually is most of the blocks).
         if (
           member.item.validation.length > 0 ||
           member.item.changed ||
           member.item.presence?.length ||
-          member.item.focusPath.length > 0
+          member.open ||
+          member.item.focusPath.length
         ) {
           result.push({kind: 'textBlock', member, node: member.item})
         }
