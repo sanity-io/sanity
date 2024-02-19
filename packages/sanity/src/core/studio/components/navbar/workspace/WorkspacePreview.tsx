@@ -57,7 +57,7 @@ export const TitleTextBox = (props: TitleTextBoxProps) => {
       </Text>
 
       {subtitle && (
-        <Text muted size={1} textOverflow="ellipsis">
+        <Text muted size={0} textOverflow="ellipsis">
           {subtitle}
         </Text>
       )}

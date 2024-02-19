@@ -100,7 +100,7 @@ export function WorkspaceMenuButton() {
                   preview={<WorkspacePreviewIcon icon={workspace.icon} size="small" />}
                   selected={isSelected}
                   text={
-                    <Stack flex={1} space={2} paddingY={3}>
+                    <Stack flex={1} space={1} paddingY={2}>
                       <TitleTextBox title={workspace.title} subtitle={workspace.subtitle} />
                     </Stack>
                   }
