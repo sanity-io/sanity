@@ -68,7 +68,7 @@ const sharedSettings = definePlugin({
   },
   search: {
     // eslint-disable-next-line camelcase
-    __experimental_strategy: 'text',
+    __experimental_strategy: 'hybrid',
   },
 
   i18n: {
