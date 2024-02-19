@@ -5,7 +5,6 @@ import {
   Button as UIButton,
   Flex,
   Menu,
-  Stack,
   Text,
 } from '@sanity/ui'
 import {useRouter} from 'sanity/router'
@@ -99,11 +98,7 @@ export function WorkspaceMenuButton() {
                   pressed={isSelected}
                   preview={<WorkspacePreviewIcon icon={workspace.icon} size="small" />}
                   selected={isSelected}
-                  text={
-                    <Stack flex={1} space={1} paddingY={2}>
-                      <TitleTextBox title={workspace.title} subtitle={workspace.subtitle} />
-                    </Stack>
-                  }
+                  text={<TitleTextBox title={workspace.title} subtitle={workspace.subtitle} />}
                 />
               )
             })}

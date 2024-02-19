@@ -48,20 +48,24 @@ interface TitleTextBoxProps {
   subtitle?: string
 }
 
+const StyledText = styled(Text)`
+  margin-top: 2px;
+`
+
 export const TitleTextBox = (props: TitleTextBoxProps) => {
   const {title, subtitle} = props
   return (
-    <>
+    <Stack flex={1} space={1} paddingY={1}>
       <Text size={1} textOverflow="ellipsis" weight="medium">
         {title}
       </Text>
 
       {subtitle && (
-        <Text muted size={0} textOverflow="ellipsis">
+        <StyledText muted size={0} textOverflow="ellipsis">
           {subtitle}
-        </Text>
+        </StyledText>
       )}
-    </>
+    </Stack>
   )
 }
 
@@ -83,9 +87,8 @@ export function WorkspacePreview(props: WorkspacePreviewProps) {
     <Flex align="center" flex="none" gap={3}>
       <WorkspacePreviewIcon icon={icon} size="small" />
 
-      <Stack flex={1} space={2}>
-        <TitleTextBox title={title} subtitle={subtitle} />
-      </Stack>
+      <TitleTextBox title={title} subtitle={subtitle} />
+
       {state && STATE_TITLES[state] && (
         <Box paddingLeft={1}>
           <Text size={1} muted textOverflow="ellipsis">
