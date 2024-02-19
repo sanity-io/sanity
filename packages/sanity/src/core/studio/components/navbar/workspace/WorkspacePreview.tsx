@@ -43,6 +43,28 @@ const createIcon = (icon: ComponentType | ReactNode) => {
   return undefined
 }
 
+interface TitleTextBoxProps {
+  title: string
+  subtitle?: string
+}
+
+export const TitleTextBox = (props: TitleTextBoxProps) => {
+  const {title, subtitle} = props
+  return (
+    <>
+      <Text size={1} textOverflow="ellipsis" weight="medium">
+        {title}
+      </Text>
+
+      {subtitle && (
+        <Text muted size={1} textOverflow="ellipsis">
+          {subtitle}
+        </Text>
+      )}
+    </>
+  )
+}
+
 export interface WorkspacePreviewProps {
   icon?: ComponentType | ReactNode
   iconRight?: ComponentType | ReactNode
@@ -62,17 +84,8 @@ export function WorkspacePreview(props: WorkspacePreviewProps) {
       <WorkspacePreviewIcon icon={icon} size="small" />
 
       <Stack flex={1} space={2}>
-        <Text size={1} textOverflow="ellipsis" weight="medium">
-          {title}
-        </Text>
-
-        {subtitle && (
-          <Text muted size={1} textOverflow="ellipsis">
-            {subtitle}
-          </Text>
-        )}
+        <TitleTextBox title={title} subtitle={subtitle} />
       </Stack>
-
       {state && STATE_TITLES[state] && (
         <Box paddingLeft={1}>
           <Text size={1} muted textOverflow="ellipsis">

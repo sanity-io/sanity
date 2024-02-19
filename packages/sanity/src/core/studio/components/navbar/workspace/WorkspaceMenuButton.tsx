@@ -5,6 +5,7 @@ import {
   Button as UIButton,
   Flex,
   Menu,
+  Stack,
   Text,
 } from '@sanity/ui'
 import {useRouter} from 'sanity/router'
@@ -15,7 +16,7 @@ import {useTranslation} from '../../../../i18n'
 import {useActiveWorkspace} from '../../../activeWorkspaceMatcher'
 import {useWorkspaces} from '../../../workspaces'
 import {useWorkspaceAuthStates} from './hooks'
-import {STATE_TITLES, WorkspacePreviewIcon} from './WorkspacePreview'
+import {STATE_TITLES, TitleTextBox, WorkspacePreviewIcon} from './WorkspacePreview'
 
 const StyledMenu = styled(Menu)`
   max-width: 350px;
@@ -98,14 +99,10 @@ export function WorkspaceMenuButton() {
                   pressed={isSelected}
                   preview={<WorkspacePreviewIcon icon={workspace.icon} size="small" />}
                   selected={isSelected}
-                  text={workspace?.title || workspace.name}
-                  tooltipProps={
-                    workspace?.subtitle
-                      ? {
-                          content: workspace.subtitle,
-                          placement: 'right',
-                        }
-                      : undefined
+                  text={
+                    <Stack flex={1} space={2} paddingY={3}>
+                      <TitleTextBox title={workspace.title} subtitle={workspace.subtitle} />
+                    </Stack>
                   }
                 />
               )
