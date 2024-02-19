@@ -21,9 +21,7 @@ export function MentionsMenuItem(props: MentionsItemProps) {
   const [loadedUser] = useUser(user.id)
   const {t} = useTranslation(commentsLocaleNamespace)
 
-  const avatar = (
-    <CommentsAvatar user={loadedUser} status={user.canBeMentioned ? undefined : 'inactive'} />
-  )
+  const avatar = <CommentsAvatar user={loadedUser} status={user.granted ? undefined : 'inactive'} />
 
   const text = loadedUser ? (
     <Text size={1} textOverflow="ellipsis" title={loadedUser.displayName}>
@@ -38,14 +36,14 @@ export function MentionsMenuItem(props: MentionsItemProps) {
   }, [onSelect, user.id])
 
   return (
-    <Card as="button" disabled={!user.canBeMentioned} onClick={handleSelect} padding={2} radius={2}>
+    <Card as="button" disabled={!user.granted} onClick={handleSelect} padding={2} radius={2}>
       <Flex align="center" gap={3}>
         <InnerFlex align="center" gap={2} flex={1}>
           {avatar}
           <Box>{text}</Box>
         </InnerFlex>
 
-        {!user.canBeMentioned && (
+        {!user.granted && (
           <Badge fontSize={1} mode="outline">
             {t('mentions.unauthorized-user')}
           </Badge>

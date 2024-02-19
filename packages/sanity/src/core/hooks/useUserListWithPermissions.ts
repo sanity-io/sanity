@@ -32,7 +32,7 @@ export type UserListWithPermissionsHookValue = Loadable<UserWithPermission[]>
  * @hidden
  */
 export interface UserWithPermission extends User {
-  canBeMentioned: boolean
+  granted: boolean
 }
 
 const INITIAL_STATE: UserListWithPermissionsHookValue = {
@@ -54,7 +54,7 @@ let cachedSystemGroups: [] | null = null
 /**
  * @beta
  * returns a list of users with the specified permission on the document.
- * If not document is provided, the list will be of all the users.
+ * If not document is provided it will return all as `granted: true`
  */
 export function useUserListWithPermissions(
   opts: UserListWithPermissionsOptions,
@@ -84,7 +84,7 @@ export function useUserListWithPermissions(
         res.map((user) => ({
           displayName: user.displayName,
           id: user.id,
-          canBeMentioned: false,
+          granted: false,
         })),
       ),
     )
@@ -93,7 +93,7 @@ export function useUserListWithPermissions(
     const cached = cachedSystemGroups
     const systemGroup$ = cached ? of(cached) : client.observable.fetch('*[_type == "system.group"]')
 
-    // 4. Check if the user has read permission on the document and set the `canBeMentioned` property
+    // 4. Check if the user has read permission on the document and set the `granted` property
     const grants$: Observable<UserWithPermission[]> = forkJoin([users$, systemGroup$]).pipe(
       mergeMap(async ([users, groups]) => {
         if (!cached) {
@@ -119,7 +119,7 @@ export function useUserListWithPermissions(
 
           return {
             ...user,
-            canBeMentioned: granted,
+            granted: granted,
           }
         })
 

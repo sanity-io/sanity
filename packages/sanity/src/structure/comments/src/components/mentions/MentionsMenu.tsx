@@ -68,7 +68,7 @@ export const MentionsMenu = React.forwardRef(function MentionsMenu(
 
   const getItemDisabled = useCallback(
     (index: number) => {
-      return !options?.[index]?.canBeMentioned
+      return !options?.[index]?.granted
     },
     [options],
   )

@@ -24,7 +24,7 @@ const MENTION_DATA: UserListWithPermissionsHookValue = {
       id: 'l33t',
       displayName: 'Test Person',
       email: 'test@test.com',
-      canBeMentioned: true,
+      granted: true,
     },
   ],
   loading: false,
