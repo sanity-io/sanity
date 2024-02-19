@@ -3,7 +3,9 @@ import {
   type InvalidValue,
   type Patch as EditorPatch,
   type Patch,
+  type PortableTextEditableProps,
   PortableTextEditor,
+  type RenderEditableFunction,
 } from '@sanity/portable-text-editor'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {type PortableTextBlock} from '@sanity/types'
@@ -45,6 +47,10 @@ export interface PortableTextMemberItem {
   elementRef?: MutableRefObject<PortableTextEditorElement | null>
   input?: ReactNode
 }
+/** @public */
+export interface RenderPortableTextInputEditableProps extends PortableTextEditableProps {
+  renderDefault: RenderEditableFunction
+}
 
 /**
  * Input component for editing block content
@@ -60,10 +66,14 @@ export interface PortableTextMemberItem {
  */
 export function PortableTextInput(props: PortableTextInputProps) {
   const {
+    active: activeProp,
+    editorRef: editorRefProp,
     elementProps,
+    fullscreen: fullscreenProp,
     hotkeys,
     markers = EMPTY_ARRAY,
     onChange,
+    onEditorChange,
     onCopy,
     onInsert,
     onItemRemove,
@@ -71,15 +81,20 @@ export function PortableTextInput(props: PortableTextInputProps) {
     onPathFocus,
     path,
     readOnly,
+    rangeDecorations,
     renderBlockActions,
     renderCustomMarkers,
+    renderEditable,
     schemaType,
     value,
   } = props
 
   const {onBlur} = elementProps
+  const defaultEditorRef = useRef<PortableTextEditor>()
+  const editorRef = editorRefProp || defaultEditorRef
 
-  // Make the PTE focusable from the outside
+  // This handle will allow for natively calling .focus
+  // on the element and have the PortableTextEditor focused.
   useImperativeHandle(elementProps.ref, () => ({
     focus() {
       if (editorRef.current) {
@@ -89,11 +104,10 @@ export function PortableTextInput(props: PortableTextInputProps) {
   }))
 
   const {subscribe} = usePatches({path})
-  const editorRef = useRef<PortableTextEditor | null>(null)
   const [ignoreValidationError, setIgnoreValidationError] = useState(false)
   const [invalidValue, setInvalidValue] = useState<InvalidValue | null>(null)
-  const [isFullscreen, setIsFullscreen] = useState(false)
-  const [isActive, setIsActive] = useState(false)
+  const [isFullscreen, setIsFullscreen] = useState(fullscreenProp || false)
+  const [isActive, setIsActive] = useState(activeProp || false)
   const [isOffline, setIsOffline] = useState(false)
   const [hasFocusWithin, setHasFocusWithin] = useState(false)
   const telemetry = useTelemetry()
@@ -109,10 +123,16 @@ export function PortableTextInput(props: PortableTextInputProps) {
 
   const innerElementRef = useRef<HTMLDivElement | null>(null)
 
+  useEffect(() => {
+    if (fullscreenProp !== undefined) {
+      setIsFullscreen(fullscreenProp)
+    }
+  }, [fullscreenProp])
+
   const handleToggleFullscreen = useCallback(() => {
     if (editorRef.current) {
       setIsFullscreen((v) => {
-        const next = !v
+        const next = fullscreenProp === undefined ? !v : fullscreenProp
         if (next) {
           telemetry.log(PortableTextInputExpanded)
         } else {
@@ -121,7 +141,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
         return next
       })
     }
-  }, [telemetry])
+  }, [editorRef, fullscreenProp, telemetry])
 
   // Reset invalidValue if new value is coming in from props
   useEffect(() => {
@@ -139,12 +159,15 @@ export function PortableTextInput(props: PortableTextInputProps) {
 
   const portableTextMemberItems = usePortableTextMemberItemsFromProps(props)
 
-  // Set active if focused within the editor
+  // Set active if focused within the editor, or activeProp is changed
   useEffect(() => {
     if (hasFocusWithin) {
       setIsActive(true)
     }
-  }, [hasFocusWithin])
+    if (activeProp !== undefined) {
+      setIsActive(true)
+    }
+  }, [activeProp, hasFocusWithin])
 
   // Handle editor changes
   const handleEditorChange = useCallback(
@@ -192,8 +215,11 @@ export function PortableTextInput(props: PortableTextInputProps) {
           break
         default:
       }
+      if (editorRef.current && onEditorChange) {
+        onEditorChange(change, editorRef.current)
+      }
     },
-    [onBlur, onChange, onPathFocus, toast],
+    [editorRef, onBlur, onChange, onEditorChange, onPathFocus, toast],
   )
 
   useEffect(() => {
@@ -227,7 +253,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
         PortableTextEditor.focus(editorRef.current)
       }
     }
-  }, [isActive])
+  }, [editorRef, isActive])
 
   return (
     <Box ref={innerElementRef}>
@@ -256,6 +282,8 @@ export function PortableTextInput(props: PortableTextInputProps) {
                 onInsert={onInsert}
                 onPaste={onPaste}
                 onToggleFullscreen={handleToggleFullscreen}
+                rangeDecorations={rangeDecorations}
+                renderEditable={renderEditable}
                 renderBlockActions={renderBlockActions}
                 renderCustomMarkers={renderCustomMarkers}
               />

@@ -6,6 +6,7 @@ import {
   type HotkeyOptions,
   type OnCopyFn,
   type OnPasteFn,
+  type RangeDecoration,
   usePortableTextEditor,
 } from '@sanity/portable-text-editor'
 import {type Path, type PortableTextBlock, type PortableTextTextBlock} from '@sanity/types'
@@ -15,7 +16,11 @@ import {useCallback, useMemo, useState} from 'react'
 import {ChangeIndicator} from '../../../changeIndicators'
 import {EMPTY_ARRAY} from '../../../util'
 import {ActivateOnFocus} from '../../components/ActivateOnFocus/ActivateOnFocus'
-import {type ArrayOfObjectsInputProps, type RenderCustomMarkers} from '../../types'
+import {
+  type ArrayOfObjectsInputProps,
+  type PortableTextInputProps,
+  type RenderCustomMarkers,
+} from '../../types'
 import {type RenderBlockActionsCallback} from '../../types/_transitional'
 import {ExpandedLayer, Root} from './Compositor.styles'
 import {Editor} from './Editor'
@@ -28,6 +33,7 @@ import {TextBlock} from './text'
 
 interface InputProps extends ArrayOfObjectsInputProps<PortableTextBlock> {
   hasFocusWithin: boolean
+  hideToolbar?: boolean
   hotkeys?: HotkeyOptions
   isActive: boolean
   isFullscreen: boolean
@@ -36,8 +42,10 @@ interface InputProps extends ArrayOfObjectsInputProps<PortableTextBlock> {
   onPaste?: OnPasteFn
   onToggleFullscreen: () => void
   path: Path
+  rangeDecorations?: RangeDecoration[]
   renderBlockActions?: RenderBlockActionsCallback
   renderCustomMarkers?: RenderCustomMarkers
+  renderEditable?: PortableTextInputProps['renderEditable']
 }
 
 /** @internal */
@@ -50,6 +58,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
     focused,
     focusPath = EMPTY_ARRAY,
     hasFocusWithin,
+    hideToolbar,
     hotkeys,
     isActive,
     isFullscreen,
@@ -63,10 +72,12 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
     onToggleFullscreen,
     path,
     readOnly,
+    rangeDecorations,
     renderAnnotation,
     renderBlock,
     renderBlockActions,
     renderCustomMarkers,
+    renderEditable,
     renderField,
     renderInlineBlock,
     renderInput,
@@ -146,13 +157,12 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
     [
       _renderBlockActions,
       _renderCustomMarkers,
-      scrollElement,
+      boundaryElement,
       isFullscreen,
       onItemClose,
       onItemOpen,
       onItemRemove,
       onPathFocus,
-      boundaryElement,
       path,
       readOnly,
       renderAnnotation,
@@ -162,6 +172,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       renderInput,
       renderItem,
       renderPreview,
+      scrollElement,
     ],
   )
 
@@ -278,14 +289,14 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       )
     },
     [
-      boundaryElement,
-      scrollElement,
       editor.schemaTypes.span.name,
+      boundaryElement,
       onItemClose,
       onItemOpen,
       onPathFocus,
       path,
       readOnly,
+      scrollElement,
       renderAnnotation,
       renderBlock,
       renderCustomMarkers,
@@ -386,6 +397,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       <Editor
         ariaDescribedBy={ariaDescribedBy}
         initialSelection={initialSelection}
+        hideToolbar={hideToolbar}
         hotkeys={editorHotkeys}
         isActive={isActive}
         isFullscreen={isFullscreen}
@@ -394,10 +406,12 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
         onPaste={onPaste}
         onToggleFullscreen={handleToggleFullscreen}
         path={path}
+        rangeDecorations={rangeDecorations}
         readOnly={readOnly}
         renderAnnotation={editorRenderAnnotation}
         renderBlock={editorRenderBlock}
         renderChild={editorRenderChild}
+        renderEditable={renderEditable}
         setPortalElement={setPortalElement}
         scrollElement={scrollElement}
         setScrollElement={setScrollElement}
@@ -407,19 +421,22 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
     // Keep only stable ones here!
     [
       ariaDescribedBy,
+      initialSelection,
+      hideToolbar,
       editorHotkeys,
+      isActive,
+      isFullscreen,
+      onItemOpen,
+      onCopy,
+      onPaste,
+      handleToggleFullscreen,
+      path,
+      rangeDecorations,
+      readOnly,
       editorRenderAnnotation,
       editorRenderBlock,
       editorRenderChild,
-      handleToggleFullscreen,
-      initialSelection,
-      isActive,
-      isFullscreen,
-      onCopy,
-      onItemOpen,
-      onPaste,
-      path,
-      readOnly,
+      renderEditable,
       scrollElement,
     ],
   )

@@ -1,4 +1,11 @@
-import {type HotkeyOptions, type OnCopyFn, type OnPasteFn} from '@sanity/portable-text-editor'
+import {
+  type EditorChange,
+  type HotkeyOptions,
+  type OnCopyFn,
+  type OnPasteFn,
+  type PortableTextEditor,
+  type RangeDecoration,
+} from '@sanity/portable-text-editor'
 import {
   type ArraySchemaType,
   type BooleanSchemaType,
@@ -23,6 +30,7 @@ import {
   type ReactElement,
 } from 'react'
 
+import {type RenderPortableTextInputEditableProps} from '../inputs'
 import {type FormPatch, type PatchEvent} from '../patch'
 import {type FormFieldGroup} from '../store'
 import {
@@ -489,6 +497,23 @@ export type PrimitiveInputProps = StringInputProps | BooleanInputProps | NumberI
 export interface PortableTextInputProps
   extends ArrayOfObjectsInputProps<PortableTextBlock, ArraySchemaType<PortableTextBlock>> {
   /**
+   * If the input should be active (take events) or not.
+   * The default is that it is activated when the user clicks on it.
+   */
+  active?: boolean
+  /**
+   * A React Ref that can reference the underlying editor instance
+   */
+  editorRef: React.MutableRefObject<PortableTextEditor | null>
+  /**
+   * Open the input in fullscreen mode
+   */
+  fullscreen?: boolean
+  /**
+   * Option to hide the default toolbar
+   */
+  hideToolbar?: boolean
+  /**
    * Assign hotkeys that can be attached to custom editing functions
    */
   hotkeys?: HotkeyOptions
@@ -499,6 +524,10 @@ export interface PortableTextInputProps
    */
   markers?: PortableTextMarker[]
   /**
+   * Returns changes from the underlying editor
+   */
+  onEditorChange?: (change: EditorChange, editor: PortableTextEditor) => void
+  /**
    * Custom copy function
    */
   onCopy?: OnCopyFn
@@ -506,6 +535,7 @@ export interface PortableTextInputProps
    * Custom paste function
    */
   onPaste?: OnPasteFn
+
   /**
    * Function to render custom block actions
    * @deprecated will be removed in the next major version of Sanity Studio.
@@ -518,6 +548,15 @@ export interface PortableTextInputProps
    * Use the `renderBlock` interface instead.
    */
   renderCustomMarkers?: RenderCustomMarkers
+  /**
+   * Function to render the PortableTextInput's editable component.
+   * This is the actual contentEditable element that users type into.
+   */
+  renderEditable?: (props: RenderPortableTextInputEditableProps) => JSX.Element
+  /**
+   * Array of {@link RangeDecoration} that can be used to decorate the content.
+   */
+  rangeDecorations?: RangeDecoration[]
 }
 
 /**

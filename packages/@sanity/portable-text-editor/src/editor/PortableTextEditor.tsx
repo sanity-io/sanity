@@ -104,7 +104,7 @@ export class PortableTextEditor extends Component<PortableTextEditorProps> {
     super(props)
 
     if (!props.schemaType) {
-      throw new Error('PortableTextEditor: missing "type" property')
+      throw new Error('PortableTextEditor: missing "schemaType" property')
     }
 
     if (props.incomingPatches$) {
@@ -271,5 +271,9 @@ export class PortableTextEditor extends Component<PortableTextEditorProps> {
   static toggleMark = (editor: PortableTextEditor, mark: string): void => {
     debug(`Host toggling mark`, mark)
     editor.editable?.toggleMark(mark)
+  }
+  static getFragment = (editor: PortableTextEditor): PortableTextBlock[] | undefined => {
+    debug(`Host getting fragment`)
+    return editor.editable?.getFragment()
   }
 }

@@ -23,7 +23,6 @@ export const Root = styled.div((props) => {
       overflow: hidden;
       overflow: clip;
       position: relative;
-      z-index: 1;
       padding: ${input.border.width}px;
     }
 
@@ -34,7 +33,6 @@ export const Root = styled.div((props) => {
       right: 0;
       bottom: 0;
       box-shadow: var(--input-box-shadow);
-      z-index: 2;
       border-radius: ${radius[2]}px;
       pointer-events: none;
     }

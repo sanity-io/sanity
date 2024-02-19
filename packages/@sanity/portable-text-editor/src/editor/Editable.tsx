@@ -1,5 +1,5 @@
-import {type PortableTextBlock} from '@sanity/types'
-import {noop} from 'lodash'
+import {type PortableTextBlock, type SchemaType} from '@sanity/types'
+import {flatten, noop} from 'lodash'
 import {
   type ClipboardEvent,
   type CSSProperties,
@@ -15,7 +15,14 @@ import {
   useMemo,
   useState,
 } from 'react'
-import {type BaseRange, Editor, type Text, Transforms} from 'slate'
+import {
+  type BaseRange,
+  Editor,
+  type NodeEntry,
+  Range as SlateRange,
+  type Text,
+  Transforms,
+} from 'slate'
 import {
   Editable as SlateEditable,
   ReactEditor,
@@ -30,6 +37,8 @@ import {
   type OnCopyFn,
   type OnPasteFn,
   type OnPasteResult,
+  type PortableTextSlateEditor,
+  type RangeDecoration,
   type RenderAnnotationFunction,
   type RenderBlockFunction,
   type RenderChildFunction,
@@ -73,9 +82,12 @@ export type PortableTextEditableProps = Omit<
   'onPaste' | 'onCopy' | 'onBeforeInput'
 > & {
   hotkeys?: HotkeyOptions
+  isDraggableType?: (schemaType: SchemaType) => boolean
   onBeforeInput?: (event: InputEvent) => void
   onPaste?: OnPasteFn
   onCopy?: OnCopyFn
+  ref: React.MutableRefObject<HTMLDivElement | null>
+  rangeDecorations?: RangeDecoration[]
   renderAnnotation?: RenderAnnotationFunction
   renderBlock?: RenderBlockFunction
   renderChild?: RenderChildFunction
@@ -98,11 +110,13 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
 ) {
   const {
     hotkeys,
+    isDraggableType,
     onBlur,
     onFocus,
     onBeforeInput,
     onPaste,
     onCopy,
+    rangeDecorations,
     renderAnnotation,
     renderBlock,
     renderChild,
@@ -154,6 +168,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
     (eProps: RenderElementProps) => (
       <Element
         {...eProps}
+        isDraggableType={isDraggableType}
         readOnly={readOnly}
         renderBlock={renderBlock}
         renderChild={renderChild}
@@ -163,32 +178,52 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
         spellCheck={spellCheck}
       />
     ),
-    [schemaTypes, spellCheck, readOnly, renderBlock, renderChild, renderListItem, renderStyle],
+    [
+      schemaTypes,
+      spellCheck,
+      readOnly,
+      renderBlock,
+      renderChild,
+      renderListItem,
+      renderStyle,
+      isDraggableType,
+    ],
   )
 
   const renderLeaf = useCallback(
-    (lProps: RenderLeafProps & {leaf: Text & {placeholder?: boolean}}) => {
-      const rendered = (
-        <Leaf
-          {...lProps}
-          schemaTypes={schemaTypes}
-          renderAnnotation={renderAnnotation}
-          renderChild={renderChild}
-          renderDecorator={renderDecorator}
-          readOnly={readOnly}
-        />
-      )
-      if (renderPlaceholder && lProps.leaf.placeholder && lProps.text.text === '') {
-        return (
-          <>
-            <span style={PLACEHOLDER_STYLE} contentEditable={false}>
-              {renderPlaceholder()}
-            </span>
-            {rendered}
-          </>
+    (
+      lProps: RenderLeafProps & {
+        leaf: Text & {placeholder?: boolean; rangeDecoration?: RangeDecoration}
+      },
+    ) => {
+      if (lProps.leaf._type === 'span') {
+        let rendered = (
+          <Leaf
+            {...lProps}
+            schemaTypes={schemaTypes}
+            renderAnnotation={renderAnnotation}
+            renderChild={renderChild}
+            renderDecorator={renderDecorator}
+            readOnly={readOnly}
+          />
         )
+        if (renderPlaceholder && lProps.leaf.placeholder && lProps.text.text === '') {
+          return (
+            <>
+              <span style={PLACEHOLDER_STYLE} contentEditable={false}>
+                {renderPlaceholder()}
+              </span>
+              {rendered}
+            </>
+          )
+        }
+        const decoration = lProps.leaf.rangeDecoration
+        if (decoration) {
+          rendered = decoration.component({children: rendered})
+        }
+        return rendered
       }
-      return rendered
+      return lProps.children
     },
     [readOnly, renderAnnotation, renderChild, renderDecorator, renderPlaceholder, schemaTypes],
   )
@@ -461,24 +496,34 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
     }
   }, [portableTextEditor, scrollSelectionIntoView])
 
-  const decorate = useCallback(() => {
-    if (isEqualToEmptyEditor(slateEditor.children, schemaTypes)) {
-      return [
-        {
-          anchor: {
-            path: [0, 0],
-            offset: 0,
+  const decorate: (entry: NodeEntry) => BaseRange[] = useCallback(
+    ([node, path]) => {
+      if (isEqualToEmptyEditor(slateEditor.children, schemaTypes)) {
+        return [
+          {
+            anchor: {
+              path: [0, 0],
+              offset: 0,
+            },
+            focus: {
+              path: [0, 0],
+              offset: 0,
+            },
+            placeholder: true,
           },
-          focus: {
-            path: [0, 0],
-            offset: 0,
-          },
-          placeholder: true,
-        },
-      ]
-    }
-    return EMPTY_DECORATORS
-  }, [schemaTypes, slateEditor])
+        ]
+      }
+      return rangeDecorations && rangeDecorations.length
+        ? getChildNodeToRangeDecorations({
+            slateEditor,
+            portableTextEditor,
+            rangeDecorations,
+            nodeEntry: [node, path],
+          })
+        : EMPTY_DECORATORS
+    },
+    [slateEditor, schemaTypes, portableTextEditor, rangeDecorations],
+  )
 
   // Set the forwarded ref to be the Slate editable DOM element
   // Also set the editable element in a state so that the MutationObserver
@@ -513,3 +558,32 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
     />
   )
 })
+
+const getChildNodeToRangeDecorations = ({
+  rangeDecorations = [],
+  nodeEntry,
+  slateEditor,
+  portableTextEditor,
+}: {
+  rangeDecorations: RangeDecoration[]
+  nodeEntry: NodeEntry
+  slateEditor: PortableTextSlateEditor
+  portableTextEditor: PortableTextEditor
+}): SlateRange[] => {
+  if (rangeDecorations.length === 0) {
+    return EMPTY_DECORATORS
+  }
+  const [, path] = nodeEntry
+  return flatten(
+    rangeDecorations.map((decoration) => {
+      const slateRange = toSlateRange(decoration.selection, slateEditor)
+      if (decoration.isRangeInvalid(portableTextEditor)) {
+        return EMPTY_DECORATORS
+      }
+      if (slateRange && SlateRange.includes(slateRange, path) && path.length > 0) {
+        return {...slateRange, rangeDecoration: decoration}
+      }
+      return EMPTY_DECORATORS
+    }),
+  )
+}

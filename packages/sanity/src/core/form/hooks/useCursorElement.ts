@@ -1,15 +1,23 @@
-import {useCallback, useEffect, useMemo, useState} from 'react'
+import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
 const EVENT_LISTENER_OPTIONS: AddEventListenerOptions = {passive: true}
 
 interface CursorElementHookOptions {
-  disabled: boolean
+  disabled:
+    | boolean
+    | 'collapsed'
+    | 'expanded'
+    | (({selectionType}: {selectionType: 'collapsed' | 'expanded'}) => boolean)
   rootElement: HTMLElement | null
 }
-
+/**
+ * Returns a HTML Element that represents the current text cursor position in the document.
+ * @internal
+ */
 export function useCursorElement(opts: CursorElementHookOptions): HTMLElement | null {
   const {disabled, rootElement} = opts
   const [cursorRect, setCursorRect] = useState<DOMRect | null>(null)
+  const rangeRef = useRef<Range | null>(null)
 
   const cursorElement = useMemo(() => {
     if (!cursorRect) {
@@ -23,16 +31,28 @@ export function useCursorElement(opts: CursorElementHookOptions): HTMLElement | 
   }, [cursorRect])
 
   const handleSelectionChange = useCallback(() => {
-    if (disabled) {
+    if (typeof disabled === 'boolean' && disabled) {
       setCursorRect(null)
       return
     }
 
     const sel = window.getSelection()
 
-    if (!sel || !sel.isCollapsed || sel.rangeCount === 0) return
+    if (!sel || sel.rangeCount === 0) {
+      setCursorRect(null)
+      return
+    }
+
+    if (
+      typeof disabled === 'function' &&
+      disabled({selectionType: sel.isCollapsed ? 'collapsed' : 'expanded'})
+    ) {
+      setCursorRect(null)
+      return
+    }
 
     const range = sel.getRangeAt(0)
+    rangeRef.current = range
     const isWithinRoot = rootElement?.contains(range.commonAncestorContainer)
 
     if (!isWithinRoot) {
@@ -52,6 +72,24 @@ export function useCursorElement(opts: CursorElementHookOptions): HTMLElement | 
       document.removeEventListener('selectionchange', handleSelectionChange)
     }
   }, [handleSelectionChange])
+
+  const handleScroll = useCallback(() => {
+    if (rangeRef.current) {
+      setCursorRect(rangeRef.current.getBoundingClientRect())
+    }
+  }, [])
+
+  useEffect(() => {
+    if (typeof disabled === 'boolean' && disabled) {
+      return undefined
+    }
+
+    rootElement?.addEventListener('scroll', handleScroll, EVENT_LISTENER_OPTIONS)
+
+    return () => {
+      rootElement?.removeEventListener('scroll', handleScroll)
+    }
+  }, [disabled, rootElement, handleScroll])
 
   return cursorElement
 }
