@@ -89,7 +89,9 @@ export const ActionMenu = memo(function ActionMenu(props: ActionMenuProps) {
         const active = activeKeys.includes(action.key)
         return (
           <CollapseMenuButton
-            aria-label={t('toolbar.portable-text.action-button-aria-label', {action: action.key})}
+            aria-label={t('toolbar.portable-text.action-button-aria-label', {
+              action: action.title || action.key,
+            })}
             data-testid={`action-button-${action.key}`}
             disabled={disabled || annotationDisabled}
             mode="bleed"
