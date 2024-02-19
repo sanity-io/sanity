@@ -63,12 +63,18 @@ export type CommentStatus = 'open' | 'resolved'
  * @beta
  * @hidden
  */
+export interface CommentsTextSelectionItem {
+  _key: string
+  text: string
+}
+
+/**
+ * @beta
+ * @hidden
+ */
 export interface CommentTextSelection {
   type: 'text'
-  value: {
-    _key: string
-    text: string
-  }[]
+  value: CommentsTextSelectionItem[]
 }
 
 type CommentPathSelection = CommentTextSelection
