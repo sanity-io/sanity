@@ -85,7 +85,7 @@ export function useSearch({
   const maxFieldDepth = useSearchMaxFieldDepth()
   const strategy = useWorkspace().search.__experimental_strategy
 
-  const searchWeighted = useMemo(
+  const search = useMemo(
     () =>
       createSearch(
         getSearchTypesWithMaxDepth(getSearchableOmnisearchTypes(schema), maxFieldDepth),
@@ -128,7 +128,7 @@ export function useSearch({
             iif(
               () => hasSearchableTerms({allowEmptyQueries, terms: request.terms}),
               // If we have a valid search, run async fetch, map results and trigger `onComplete` / `onError` callbacks
-              (searchWeighted(request.terms, request.options) as Observable<WeightedHit[]>).pipe(
+              (search(request.terms, request.options) as Observable<WeightedHit[]>).pipe(
                 map((hits) => ({hits})),
                 tap(({hits}) => onComplete?.(hits)),
                 catchError((error) => {
@@ -157,7 +157,7 @@ export function useSearch({
       )
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps -- @todo: add onComplete, onError and onStart to the deps list when it's verified that it's safe to do so
-    [allowEmptyQueries, searchWeighted],
+    [allowEmptyQueries, search],
   )
 
   const handleSearch = useCallback(
