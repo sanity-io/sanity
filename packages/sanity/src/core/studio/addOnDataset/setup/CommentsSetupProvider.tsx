@@ -1,9 +1,9 @@
 import {type SanityClient} from '@sanity/client'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 
-import {useClient} from '../../hooks'
-import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
-import {useWorkspace} from '../workspace'
+import {useClient} from '../../../hooks'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
+import {useWorkspace} from '../../workspace'
 import {CommentsSetupContext} from './CommentsSetupContext'
 import {type CommentsSetupContextValue} from './types'
 
@@ -14,7 +14,7 @@ interface CommentsSetupProviderProps {
 }
 
 /**
- * This providers sets the addon dataset client, currently called `comments` dataset.
+ * This provider sets the addon dataset client, currently called `comments` dataset.
  * It also exposes a `runSetup` function that can be used to create the addon dataset if it does not exist.
  * @beta
  * @hidden

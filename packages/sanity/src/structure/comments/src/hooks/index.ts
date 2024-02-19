@@ -1,4 +1,3 @@
-export * from '../../../../core/studio/commentsSetup/useCommentsSetup'
 export * from './use-comment-operations'
 export * from './useComments'
 export * from './useCommentsEnabled'

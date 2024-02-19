@@ -1,6 +1,6 @@
 export * from './activeWorkspaceMatcher'
+export * from './addOnDataset'
 export * from './colorScheme'
-export * from './commentsSetup'
 export * from './components'
 export * from './renderStudio'
 export * from './source'

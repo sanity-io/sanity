@@ -2,6 +2,7 @@ import {orderBy} from 'lodash'
 import {memo, type ReactNode, useCallback, useMemo, useState} from 'react'
 import {
   getPublishedId,
+  useCommentsSetup,
   useCurrentUser,
   useEditState,
   useSchema,
@@ -13,7 +14,6 @@ import {
   type CommentOperationsHookOptions,
   useCommentOperations,
   useCommentsEnabled,
-  useCommentsSetup,
 } from '../../hooks'
 import {useCommentsStore} from '../../store'
 import {
