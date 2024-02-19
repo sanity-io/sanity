@@ -55,7 +55,7 @@ const StyledText = styled(Text)`
 export const TitleTextBox = (props: TitleTextBoxProps) => {
   const {title, subtitle} = props
   return (
-    <Stack flex={1} space={1} paddingY={1}>
+    <Stack flex={1} space={1} paddingY={1} paddingLeft={1}>
       <Text size={1} textOverflow="ellipsis" weight="medium">
         {title}
       </Text>
