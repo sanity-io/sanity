@@ -23,7 +23,7 @@
     "typescript": "^5.2.2"
   },
   "dependencies": {
-    "@playwright/test": "^1.39.0",
+    "@playwright/test": "^1.41.2",
     "@sanity/client": "^6.13.3",
     "@sanity/uuid": "^3.0.1",
     "dotenv": "^16.0.3",
