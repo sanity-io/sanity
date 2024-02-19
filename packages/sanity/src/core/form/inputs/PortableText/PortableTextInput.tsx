@@ -159,7 +159,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
         focusPath[1] === 'children' && // Is a child of a block
         isKeySegment(focusPath[2]) && // Contains the key of the child
         !portableTextMemberItems.some(
-          (item) => isKeySegment(focusPath[2]) && item.key === focusPath[2]._key,
+          (item) => isKeySegment(focusPath[2]) && item.member.key === focusPath[2]._key,
         ) // Not an inline object (it would be a member in this list, where spans are not). By doing this check we avoid depending on the value.
       if (isSpanPath) {
         // Append `.text` to the focusPath
