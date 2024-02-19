@@ -3,6 +3,7 @@ import {useMemoObservable} from 'react-rx'
 import {type Observable, of} from 'rxjs'
 import {catchError, map, shareReplay, startWith} from 'rxjs/operators'
 
+import {useSource} from '../studio'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../studioClient'
 import {useClient} from './useClient'
 
@@ -28,14 +29,15 @@ function fetchFeatures({versionedClient}: {versionedClient: SanityClient}): Obse
   })
 }
 
-let cachedFeatureRequest: Observable<string[]>
+const cachedFeatureRequest = new Map<string, Observable<string[]>>()
 
 /** @internal */
 export function useFeatureEnabled(featureKey: string): Features {
   const versionedClient = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
+  const {projectId} = useSource()
 
-  if (!cachedFeatureRequest) {
-    cachedFeatureRequest = fetchFeatures({versionedClient}).pipe(
+  if (!cachedFeatureRequest.get(projectId)) {
+    const features = fetchFeatures({versionedClient}).pipe(
       shareReplay(),
       catchError((error) => {
         console.error(error)
@@ -43,11 +45,12 @@ export function useFeatureEnabled(featureKey: string): Features {
         return of([])
       }),
     )
+    cachedFeatureRequest.set(projectId, features)
   }
 
   const featureInfo = useMemoObservable(
     () =>
-      cachedFeatureRequest.pipe(
+      (cachedFeatureRequest.get(projectId) || of([])).pipe(
         map((features = []) => ({
           isLoading: false,
           enabled: Boolean(features?.includes(featureKey)),
@@ -59,7 +62,7 @@ export function useFeatureEnabled(featureKey: string): Features {
           return of({isLoading: false, enabled: true, features: []})
         }),
       ),
-    [featureKey],
+    [featureKey, projectId],
     INITIAL_LOADING_STATE,
   )
 
