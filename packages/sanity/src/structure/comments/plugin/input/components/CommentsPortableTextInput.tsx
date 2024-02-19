@@ -23,6 +23,7 @@ import {
   type CommentDocument,
   CommentInlineHighlightSpan,
   type CommentMessage,
+  type CommentsTextSelectionItem,
   type CommentUpdatePayload,
   currentSelectionIsOverlappingWithComment,
   hasCommentMessageValue,
@@ -83,7 +84,7 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
 
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
   const [isFullScreen, setIsFullScreen] = useState<boolean>(false)
-  const [addedCommentsDecorators, setAddedCommentsDecorators] =
+  const [addedCommentsDecorations, setAddedCommentsDecorations] =
     useState<RangeDecoration[]>(EMPTY_ARRAY)
 
   const stringFieldPath = useMemo(() => PathUtils.toString(props.path), [props.path])
@@ -216,7 +217,7 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
       if (!editorRef.current) return EMPTY_ARRAY
       const editorValue = PortableTextEditor.getValue(editorRef.current) || EMPTY_ARRAY
 
-      const decorators = buildRangeDecorations({
+      return buildRangeDecorations({
         comments: commentsToDecorate,
         currentHoveredCommentId,
         onDecoratorClick: handleDecoratorClick,
@@ -225,8 +226,6 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
         selectedThreadId: selectedPath?.threadId || null,
         value: editorValue,
       })
-
-      return decorators
     },
     [currentHoveredCommentId, handleDecoratorClick, selectedPath?.threadId],
   )
@@ -265,15 +264,15 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
         if (!didPatch.current) return
 
         const commentId = change.rangeDecoration.payload?.commentId as undefined | string
-        let currentBlockKey: string | undefined
-        let previousBlockKey: string | undefined
-        let newRange: {text: string; _key: string} | undefined
+        let currentBlockKey = ''
+        let previousBlockKey = ''
+        let newRange: CommentsTextSelectionItem | undefined
 
         const comment = getComment(commentId || '')
 
         if (!comment) return
 
-        const nextDecorators = handleBuildAddedRangeDecorations([comment])
+        const nextDecorations = handleBuildAddedRangeDecorations([comment])
 
         if (
           change.newRangeSelection?.focus.path[0] &&
@@ -284,8 +283,8 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
           previousBlockKey = change.rangeDecoration.selection?.focus.path[0]?._key
           currentBlockKey = change.newRangeSelection.focus.path[0]._key
 
-          const currentRange = nextDecorators.find((d) => d.payload?.commentId === commentId)
-            ?.payload?.range as {_key: string; text: string} | undefined
+          const currentRange = nextDecorations.find((d) => d.payload?.commentId === commentId)
+            ?.payload?.range as CommentsTextSelectionItem | undefined
 
           const currentRangeText = currentRange?.text || ''
 
@@ -329,7 +328,7 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
   // The range decoration for the comment input. This is used to position the
   // comment input popover on the current selection and to highlight the
   // selected text.
-  const authoringDecorator = useMemo((): RangeDecoration | null => {
+  const authoringDecoration = useMemo((): RangeDecoration | null => {
     if (!nextCommentSelection) return null
 
     return {
@@ -347,22 +346,22 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
       // Existing range decorations
       ...(props?.rangeDecorations || EMPTY_ARRAY),
       // The range decoration when adding a comment
-      ...(authoringDecorator ? [authoringDecorator] : EMPTY_ARRAY),
+      ...(authoringDecoration ? [authoringDecoration] : EMPTY_ARRAY),
       // The range decorations for existing comments
-      ...addedCommentsDecorators,
+      ...addedCommentsDecorations,
     ]
-  }, [addedCommentsDecorators, authoringDecorator, props?.rangeDecorations])
+  }, [addedCommentsDecorations, authoringDecoration, props?.rangeDecorations])
 
   const currentSelectionIsOverlapping = useMemo(() => {
-    if (!currentSelection || addedCommentsDecorators.length === 0) return false
+    if (!currentSelection || addedCommentsDecorations.length === 0) return false
 
     const overlaps = currentSelectionIsOverlappingWithComment({
       currentSelection,
-      addedCommentsSelections: addedCommentsDecorators.map((decorator) => decorator.selection),
+      addedCommentsSelections: addedCommentsDecorations.map((decorator) => decorator.selection),
     })
 
     return overlaps
-  }, [addedCommentsDecorators, currentSelection])
+  }, [addedCommentsDecorations, currentSelection])
 
   // The scroll element used to update the reference element for the
   // popover on scroll.
@@ -401,13 +400,12 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
 
   useEffect(() => {
     const parentComments = textComments.map((c) => c.parentComment)
-    const nextDecorators = handleBuildAddedRangeDecorations(parentComments)
+    const nextDecorations = handleBuildAddedRangeDecorations(parentComments)
 
-    setAddedCommentsDecorators(nextDecorators)
+    setAddedCommentsDecorations(nextDecorations)
   }, [handleBuildAddedRangeDecorations, textComments])
 
   const showFloatingButton = Boolean(currentSelection && canSubmit && selectionReferenceElement)
-
   const showFloatingInput = Boolean(nextCommentSelection && popoverAuthoringReferenceElement)
 
   return (
