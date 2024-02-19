@@ -1,7 +1,7 @@
 import {toPlainText} from '@portabletext/react'
 import {hues} from '@sanity/color'
 import {isPortableTextTextBlock} from '@sanity/types'
-import {Stack, Text} from '@sanity/ui'
+import {Stack, Text, type Theme} from '@sanity/ui'
 import {useMemo} from 'react'
 import styled, {css} from 'styled-components'
 
@@ -13,12 +13,16 @@ function truncate(str: string, length = 250) {
   return `${str.slice(0, length)}...`
 }
 
-const BlockQuoteStack = styled(Stack)(({theme}) => {
+interface BlockQuoteStackProps {
+  $hasReferencedValue: boolean
+  theme: Theme
+}
+
+const BlockQuoteStack = styled(Stack)<BlockQuoteStackProps>(({theme, $hasReferencedValue}) => {
   const isDark = theme.sanity.v2?.color._dark
 
-  const borderColor = isDark
-    ? hues[COMMENTS_HIGHLIGHT_HUE_KEY][700].hex
-    : hues[COMMENTS_HIGHLIGHT_HUE_KEY][300].hex
+  const hue = $hasReferencedValue ? COMMENTS_HIGHLIGHT_HUE_KEY : 'gray'
+  const borderColor = isDark ? hues[hue][700].hex : hues[hue][300].hex
 
   return css`
     border-left: 2px solid ${borderColor};
@@ -27,14 +31,15 @@ const BlockQuoteStack = styled(Stack)(({theme}) => {
 })
 
 interface CommentsListItemReferencedValueProps {
+  hasReferencedValue: boolean | undefined
   value: CommentDocument['contentSnapshot']
 }
 
 export function CommentsListItemReferencedValue(props: CommentsListItemReferencedValueProps) {
-  const {value} = props
+  const {hasReferencedValue, value} = props
 
   const resolvedValue = useMemo(() => {
-    if (Array.isArray(value) && value?.filter(isPortableTextTextBlock)) {
+    if (Array.isArray(value) && value?.filter(isPortableTextTextBlock).length > 0) {
       const text = value?.map(toPlainText).join(' ')
       const truncated = truncate(text)
 
@@ -51,7 +56,14 @@ export function CommentsListItemReferencedValue(props: CommentsListItemReference
   if (!resolvedValue) return null
 
   return (
-    <BlockQuoteStack flex={1} forwardedAs="blockquote" padding={1} paddingLeft={2} sizing="border">
+    <BlockQuoteStack
+      $hasReferencedValue={Boolean(hasReferencedValue)}
+      flex={1}
+      forwardedAs="blockquote"
+      padding={1}
+      paddingLeft={2}
+      sizing="border"
+    >
       {resolvedValue}
     </BlockQuoteStack>
   )

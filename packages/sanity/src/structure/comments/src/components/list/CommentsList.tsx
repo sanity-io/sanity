@@ -190,6 +190,7 @@ const CommentsListInner = forwardRef(function CommentsListInner(
                         <CommentsListItem
                           canReply={canReply}
                           currentUser={currentUser}
+                          hasReferencedValue={item.hasReferencedValue}
                           isSelected={threadIsSelected}
                           key={item.parentComment._id}
                           mentionOptions={mentionOptions}
