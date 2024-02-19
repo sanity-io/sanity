@@ -127,6 +127,8 @@ interface CommentsListItemLayoutProps {
   comment: CommentDocument
   currentUser: CurrentUser
   hasError?: boolean
+  hasReferencedValue?: boolean
+  intent?: CommentContext['intent']
   isParent?: boolean
   isRetrying?: boolean
   mentionOptions: UserListWithPermissionsHookValue
@@ -139,7 +141,6 @@ interface CommentsListItemLayoutProps {
   onReactionSelect?: (id: string, reaction: CommentReactionOption) => void
   onStatusChange?: (id: string, status: CommentStatus) => void
   readOnly?: boolean
-  intent?: CommentContext['intent']
 }
 
 const RELATIVE_TIME_OPTIONS: RelativeTimeOptions = {useTemporalPhrase: true}
@@ -151,6 +152,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
     comment,
     currentUser,
     hasError,
+    hasReferencedValue,
     intent,
     isParent,
     isRetrying,
@@ -400,7 +402,10 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
           <Flex gap={FLEX_GAP} marginBottom={3}>
             <SpacerAvatar />
 
-            <CommentsListItemReferencedValue value={comment?.contentSnapshot} />
+            <CommentsListItemReferencedValue
+              hasReferencedValue={hasReferencedValue}
+              value={comment?.contentSnapshot}
+            />
           </Flex>
         )}
 

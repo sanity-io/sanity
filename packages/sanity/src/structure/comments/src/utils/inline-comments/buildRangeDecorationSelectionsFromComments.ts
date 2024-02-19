@@ -14,7 +14,7 @@ import {
 } from '@sanity/types'
 
 import {isTextSelectionComment} from '../../helpers'
-import {type CommentDocument} from '../../types'
+import {type CommentDocument, type CommentsTextSelectionItem} from '../../types'
 
 function diffText(current: string, next: string) {
   const diff = makeDiff(current, next)
@@ -52,7 +52,7 @@ export interface BuildCommentsRangeDecorationsProps {
 export interface BuildCommentsRangeDecorationsResultItem {
   selection: RangeDecoration['selection']
   comment: CommentDocument
-  range: {_key: string; text: string}
+  range: CommentsTextSelectionItem
 }
 
 /**

@@ -77,6 +77,7 @@ const GhostButton = styled.button`
 interface CommentsListItemProps {
   canReply?: boolean
   currentUser: CurrentUser
+  hasReferencedValue?: boolean
   isSelected: boolean
   mentionOptions: UserListWithPermissionsHookValue
   mode: CommentsUIMode
@@ -98,8 +99,10 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
   const {
     canReply,
     currentUser,
+    hasReferencedValue,
     isSelected,
     mentionOptions,
+    mode,
     onCopyLink,
     onCreateRetry,
     onDelete,
@@ -112,7 +115,6 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
     parentComment,
     readOnly,
     replies = EMPTY_ARRAY,
-    mode,
   } = props
   const {t} = useTranslation(commentsLocaleNamespace)
   const [value, setValue] = useState<CommentMessage>(EMPTY_ARRAY)
@@ -300,6 +302,8 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
               comment={parentComment}
               currentUser={currentUser}
               hasError={parentComment._state?.type === 'createError'}
+              hasReferencedValue={hasReferencedValue}
+              intent={parentComment.context?.intent}
               isParent
               isRetrying={parentComment._state?.type === 'createRetrying'}
               mentionOptions={mentionOptions}
@@ -312,7 +316,6 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
               onReactionSelect={onReactionSelect}
               onStatusChange={onStatusChange}
               readOnly={readOnly}
-              intent={parentComment.context?.intent}
             />
           </Stack>
 
