@@ -58,6 +58,7 @@ export function CommentsListItemReferencedValue(props: CommentsListItemReference
   return (
     <BlockQuoteStack
       $hasReferencedValue={Boolean(hasReferencedValue)}
+      data-testid="comments-list-item-referenced-value"
       flex={1}
       forwardedAs="blockquote"
       padding={1}
