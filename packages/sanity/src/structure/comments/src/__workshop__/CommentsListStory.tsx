@@ -49,6 +49,7 @@ const BASE: CommentDocument = {
 
   target: {
     documentType: 'article',
+    documentRevisionId: '',
     path: {
       field: 'title',
     },
