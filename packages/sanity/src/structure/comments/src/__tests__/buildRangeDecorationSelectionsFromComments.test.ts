@@ -144,6 +144,7 @@ const initialComments: CommentDocument[] = [
     status: 'open',
     reactions: null,
     target: {
+      documentRevisionId: '',
       path: {
         field: '',
         selection: {

@@ -261,6 +261,7 @@ export default function CommentInlineHighlightDebugStory() {
       status: 'open',
       threadId: uuid(),
       target: {
+        documentRevisionId: '',
         documentType: 'article',
         path: {
           field: 'body',
