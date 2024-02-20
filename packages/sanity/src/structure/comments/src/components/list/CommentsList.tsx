@@ -102,6 +102,7 @@ const CommentsListInner = forwardRef(function CommentsListInner(
 
   return (
     <Flex
+      data-testid="comments-list"
       direction="column"
       flex={1}
       height="fill"

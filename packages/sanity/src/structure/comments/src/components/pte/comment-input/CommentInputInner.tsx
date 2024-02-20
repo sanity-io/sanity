@@ -126,7 +126,7 @@ export function CommentInputInner(props: CommentInputInnerProps) {
             <TooltipDelayGroupProvider>
               <Button
                 aria-label={t('compose.mention-user-aria-label')}
-                data-testid="comment-mention-button"
+                data-testid="comment-input-mention-button"
                 disabled={readOnly}
                 icon={MentionIcon}
                 mode="bleed"
@@ -138,6 +138,7 @@ export function CommentInputInner(props: CommentInputInnerProps) {
 
               <Button
                 aria-label={t('compose.send-comment-aria-label')}
+                data-testid="comment-input-send-button"
                 disabled={!canSubmit || !hasChanges || readOnly}
                 icon={SendIcon}
                 mode={hasChanges && canSubmit ? 'default' : 'bleed'}

@@ -275,87 +275,86 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
   )
 
   return (
-    <Stack space={2}>
-      <StyledThreadCard
-        data-active={isSelected ? 'true' : 'false'}
-        data-hovered={mouseOver ? 'true' : 'false'}
-        onClick={handleThreadRootClick}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
+    <StyledThreadCard
+      data-active={isSelected ? 'true' : 'false'}
+      data-hovered={mouseOver ? 'true' : 'false'}
+      data-testid="comments-list-item"
+      onClick={handleThreadRootClick}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
+      <GhostButton
+        data-ui="GhostButton"
+        aria-label={t('list-item.go-to-field-button.aria-label')}
+      />
+
+      <Stack
+        as="ul"
+        // Add some extra padding to the bottom if there is no reply input.
+        // This is to make the UI look more balanced.
+        paddingBottom={canReply ? undefined : 1}
+        space={4}
       >
-        <GhostButton
-          data-ui="GhostButton"
-          aria-label={t('list-item.go-to-field-button.aria-label')}
-        />
-
-        <Stack
-          as="ul"
-          // Add some extra padding to the bottom if there is no reply input.
-          // This is to make the UI look more balanced.
-          paddingBottom={canReply ? undefined : 1}
-          space={4}
-        >
-          <Stack as="li" {...applyCommentIdAttr(parentComment._id)}>
-            <CommentsListItemLayout
-              canDelete={parentComment.authorId === currentUser.id}
-              canEdit={parentComment.authorId === currentUser.id}
-              comment={parentComment}
-              currentUser={currentUser}
-              hasError={parentComment._state?.type === 'createError'}
-              hasReferencedValue={hasReferencedValue}
-              intent={parentComment.context?.intent}
-              isParent
-              isRetrying={parentComment._state?.type === 'createRetrying'}
-              mentionOptions={mentionOptions}
-              mode={mode}
-              onCopyLink={onCopyLink}
-              onCreateRetry={onCreateRetry}
-              onDelete={onDelete}
-              onEdit={onEdit}
-              onInputKeyDown={onKeyDown}
-              onReactionSelect={onReactionSelect}
-              onStatusChange={onStatusChange}
-              readOnly={readOnly}
-            />
-          </Stack>
-
-          {showCollapseButton && !didExpand.current && (
-            <Flex gap={1} paddingY={1} sizing="border">
-              <SpacerAvatar />
-
-              <ExpandButton
-                iconRight={ChevronDownIcon}
-                mode="bleed"
-                onClick={handleExpand}
-                text={expandButtonText}
-              />
-            </Flex>
-          )}
-
-          {renderedReplies}
-
-          {canReply && (
-            <CommentInput
-              currentUser={currentUser}
-              expandOnFocus
-              mentionOptions={mentionOptions}
-              onChange={setValue}
-              onDiscardCancel={cancelDiscard}
-              onDiscardConfirm={confirmDiscard}
-              onKeyDown={handleInputKeyDown}
-              onSubmit={handleReplySubmit}
-              placeholder={
-                mode === 'upsell'
-                  ? t('compose.reply-placeholder-upsell')
-                  : t('compose.reply-placeholder')
-              }
-              readOnly={readOnly || mode === 'upsell'}
-              ref={replyInputRef}
-              value={value}
-            />
-          )}
+        <Stack as="li" {...applyCommentIdAttr(parentComment._id)}>
+          <CommentsListItemLayout
+            canDelete={parentComment.authorId === currentUser.id}
+            canEdit={parentComment.authorId === currentUser.id}
+            comment={parentComment}
+            currentUser={currentUser}
+            hasError={parentComment._state?.type === 'createError'}
+            hasReferencedValue={hasReferencedValue}
+            intent={parentComment.context?.intent}
+            isParent
+            isRetrying={parentComment._state?.type === 'createRetrying'}
+            mentionOptions={mentionOptions}
+            mode={mode}
+            onCopyLink={onCopyLink}
+            onCreateRetry={onCreateRetry}
+            onDelete={onDelete}
+            onEdit={onEdit}
+            onInputKeyDown={onKeyDown}
+            onReactionSelect={onReactionSelect}
+            onStatusChange={onStatusChange}
+            readOnly={readOnly}
+          />
         </Stack>
-      </StyledThreadCard>
-    </Stack>
+
+        {showCollapseButton && !didExpand.current && (
+          <Flex gap={1} paddingY={1} sizing="border">
+            <SpacerAvatar />
+
+            <ExpandButton
+              iconRight={ChevronDownIcon}
+              mode="bleed"
+              onClick={handleExpand}
+              text={expandButtonText}
+            />
+          </Flex>
+        )}
+
+        {renderedReplies}
+
+        {canReply && (
+          <CommentInput
+            currentUser={currentUser}
+            expandOnFocus
+            mentionOptions={mentionOptions}
+            onChange={setValue}
+            onDiscardCancel={cancelDiscard}
+            onDiscardConfirm={confirmDiscard}
+            onKeyDown={handleInputKeyDown}
+            onSubmit={handleReplySubmit}
+            placeholder={
+              mode === 'upsell'
+                ? t('compose.reply-placeholder-upsell')
+                : t('compose.reply-placeholder')
+            }
+            readOnly={readOnly || mode === 'upsell'}
+            ref={replyInputRef}
+            value={value}
+          />
+        )}
+      </Stack>
+    </StyledThreadCard>
   )
 })
