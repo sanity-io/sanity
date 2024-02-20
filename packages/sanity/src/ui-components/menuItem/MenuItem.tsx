@@ -31,7 +31,7 @@ const SubtitleText = styled(Text)`
 /** @internal */
 export type MenuItemProps = Pick<
   UIMenuItemProps,
-  'as' | 'icon' | 'iconRight' | 'pressed' | 'selected' | 'text' | 'tone' | 'hotkeys'
+  'as' | 'icon' | 'iconRight' | 'pressed' | 'selected' | 'tone' | 'hotkeys'
 > & {
   badgeText?: string
   /**
@@ -46,6 +46,7 @@ export type MenuItemProps = Pick<
    * Optional render callback which receives menu item content.
    */
   renderMenuItem?: (menuItemContent: React.JSX.Element) => React.ReactNode
+  text?: string
   tooltipProps?: TooltipProps | null
   /**
    * Optional subtitle prop for the menu item.
