@@ -60,6 +60,7 @@ export interface PortableTextMemberItem {
  */
 export function PortableTextInput(props: PortableTextInputProps) {
   const {
+    editorRef: editorRefProp,
     elementProps,
     hotkeys,
     markers = EMPTY_ARRAY,
@@ -78,8 +79,12 @@ export function PortableTextInput(props: PortableTextInputProps) {
   } = props
 
   const {onBlur} = elementProps
+  const defaultEditorRef = useRef<PortableTextEditor | null>(null)
+  const editorRef = editorRefProp || defaultEditorRef
 
-  // Make the PTE focusable from the outside
+  // This handle will allow for natively calling .focus
+  // on the returned component and have the PortableTextEditor focused,
+  // simulating a native input element (like with an string input)
   useImperativeHandle(elementProps.ref, () => ({
     focus() {
       if (editorRef.current) {
@@ -89,7 +94,6 @@ export function PortableTextInput(props: PortableTextInputProps) {
   }))
 
   const {subscribe} = usePatches({path})
-  const editorRef = useRef<PortableTextEditor | null>(null)
   const [ignoreValidationError, setIgnoreValidationError] = useState(false)
   const [invalidValue, setInvalidValue] = useState<InvalidValue | null>(null)
   const [isFullscreen, setIsFullscreen] = useState(false)
@@ -110,17 +114,15 @@ export function PortableTextInput(props: PortableTextInputProps) {
   const innerElementRef = useRef<HTMLDivElement | null>(null)
 
   const handleToggleFullscreen = useCallback(() => {
-    if (editorRef.current) {
-      setIsFullscreen((v) => {
-        const next = !v
-        if (next) {
-          telemetry.log(PortableTextInputExpanded)
-        } else {
-          telemetry.log(PortableTextInputCollapsed)
-        }
-        return next
-      })
-    }
+    setIsFullscreen((v) => {
+      const next = !v
+      if (next) {
+        telemetry.log(PortableTextInputExpanded)
+      } else {
+        telemetry.log(PortableTextInputCollapsed)
+      }
+      return next
+    })
   }, [telemetry])
 
   // Reset invalidValue if new value is coming in from props
@@ -253,7 +255,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
         PortableTextEditor.focus(editorRef.current)
       }
     }
-  }, [isActive])
+  }, [editorRef, isActive])
 
   return (
     <Box ref={innerElementRef}>
@@ -262,10 +264,10 @@ export function PortableTextInput(props: PortableTextInputProps) {
         <PortableTextMarkersProvider markers={markers}>
           <PortableTextMemberItemsProvider memberItems={portableTextMemberItems}>
             <PortableTextEditor
-              ref={editorRef}
               patches$={patches$}
               onChange={handleEditorChange}
               maxBlocks={undefined} // TODO: from schema?
+              ref={editorRef}
               readOnly={isOffline || readOnly}
               schemaType={schemaType}
               value={value}
