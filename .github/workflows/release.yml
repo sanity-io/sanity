@@ -32,8 +32,11 @@ jobs:
           cache: 'pnpm'
           registry-url: 'https://registry.npmjs.org'
 
-      - name: Install
-        run: pnpm install
+      - name: Setup pnpm and install dependencies
+        uses: pnpm/action-setup@v3
+        with:
+          version: 8
+          run_install: true
 
       - name: Pre-flight
         run: |
