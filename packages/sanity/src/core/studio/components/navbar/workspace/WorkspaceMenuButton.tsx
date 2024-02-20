@@ -98,8 +98,8 @@ export function WorkspaceMenuButton() {
                   pressed={isSelected}
                   preview={<WorkspacePreviewIcon icon={workspace.icon} size="small" />}
                   selected={isSelected}
-                  subtitle={workspace.subtitle}
-                  space
+                  __unstable_subtitle={workspace.subtitle}
+                  __unstable_space={1}
                   text={workspace?.title || workspace.name}
                 />
               )

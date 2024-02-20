@@ -29,15 +29,11 @@ export default function MenuItemStory() {
           </Box>
           <Menu>
             <MenuItem text={`${text} (with tooltip)`} tooltipProps={{content: 'Example tooltip'}} />
-            <MenuItem text={text} subtitle="With a subtitle" />
+            <MenuItem text={text} />
             <MenuItem icon={CircleIcon} text={text} />
             <MenuItem iconRight={CheckmarkIcon} text={text} />
             <MenuItem hotkeys={HOTKEYS} text={text} />
-            <MenuItem
-              preview={<Avatar initials={AVATAR_INITIALS} size={1} />}
-              subtitle="With a subtitle"
-              text={text}
-            />
+            <MenuItem preview={<Avatar initials={AVATAR_INITIALS} size={1} />} text={text} />
             <MenuItem
               preview={<Avatar initials={AVATAR_INITIALS} size={1} />}
               text={text}
@@ -92,17 +88,21 @@ export default function MenuItemStory() {
             <MenuItem icon={CircleIcon} text={text} hotkeys={HOTKEYS} badgeText={'badge'} />
             <Box paddingX={2} paddingTop={2}>
               <Text muted size={1}>
-                Don't use everything at once
+                Subtitle and spacing is not recommended
               </Text>
             </Box>
             <MenuItem
               icon={CircleIcon}
               text={text}
-              hotkeys={HOTKEYS}
-              badgeText={'badge'}
               iconRight={CheckmarkIcon}
-              subtitle="With a subtitle"
+              __unstable_subtitle="With a subtitle"
+              __unstable_space={1}
             />
+            <Box paddingX={2} paddingTop={2}>
+              <Text muted size={1}>
+                Don't use everything at once
+              </Text>
+            </Box>
             <MenuItem
               preview={<Avatar initials={AVATAR_INITIALS} size={1} />}
               icon={CircleIcon}
@@ -110,7 +110,7 @@ export default function MenuItemStory() {
               hotkeys={HOTKEYS}
               badgeText={'badge'}
               iconRight={CheckmarkIcon}
-              subtitle="With a subtitle"
+              __unstable_subtitle="With a subtitle"
             />
           </Menu>
         </Card>

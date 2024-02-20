@@ -23,6 +23,7 @@ import {
 const FONT_SIZE = 1
 const SUBTITLE_FONT_SIZE = 0
 
+/* Using px value here to make title/subtitles align with icon */
 const SubtitleText = styled(Text)`
   margin-top: 2px;
 `
@@ -48,15 +49,14 @@ export type MenuItemProps = Pick<
   tooltipProps?: TooltipProps | null
   /**
    * Optional subtitle prop for the menu item.
-   * It is not recommended, but it is used for the workspace menu button.
+   * While not recommended, it is utilized for the workspace menu button.
    */
-  subtitle?: string
+  __unstable_subtitle?: string
   /**
-   * Optional space prop for the menu item.
-   * It is not recommended, but it is used for the workspace menu button.
-   * This is the space between the icon and the text in the preview component.
+   * An optional property to adjust spacing in the preview between the icon and the text.
+   * Not recommended, but is applied to the workspace menu button..
    */
-  space?: boolean
+  __unstable_space?: number
 }
 
 const PreviewWrapper = styled(Box)`
@@ -88,8 +88,8 @@ export const MenuItem = forwardRef(function MenuItem(
     renderMenuItem,
     text,
     tooltipProps,
-    subtitle,
-    space = false,
+    __unstable_subtitle,
+    __unstable_space,
     ...rest
   }: MenuItemProps &
     Omit<
@@ -103,7 +103,8 @@ export const MenuItem = forwardRef(function MenuItem(
       <Flex align="center" gap={2}>
         {preview && (
           <PreviewWrapper
-            style={{opacity: disabled ? 0.25 : undefined, paddingRight: space ? '4px' : '0'}}
+            style={{opacity: disabled ? 0.25 : undefined}}
+            paddingRight={__unstable_space ? 1 : 0}
           >
             <Flex align="center" height="fill" justify="center">
               {preview}
@@ -119,13 +120,17 @@ export const MenuItem = forwardRef(function MenuItem(
           </Box>
         )}
         {text && (
-          <Stack flex={1} space={subtitle ? 1 : 2} paddingLeft={subtitle ? 1 : 0}>
+          <Stack
+            flex={1}
+            space={__unstable_subtitle ? 1 : 2}
+            paddingLeft={__unstable_subtitle ? 1 : 0}
+          >
             <Text size={FONT_SIZE} textOverflow="ellipsis" weight="medium">
               {text}
             </Text>
-            {subtitle && (
+            {__unstable_subtitle && (
               <SubtitleText size={SUBTITLE_FONT_SIZE} textOverflow="ellipsis" weight="medium" muted>
-                {subtitle}
+                {__unstable_subtitle}
               </SubtitleText>
             )}
           </Stack>
@@ -150,7 +155,17 @@ export const MenuItem = forwardRef(function MenuItem(
         )}
       </Flex>
     )
-  }, [badgeText, disabled, hotkeys, icon, iconRight, preview, text, subtitle, space])
+  }, [
+    preview,
+    disabled,
+    __unstable_space,
+    icon,
+    text,
+    __unstable_subtitle,
+    badgeText,
+    hotkeys,
+    iconRight,
+  ])
 
   const renderWrapper = useCallback<ConditionalWrapperRenderWrapperCallback>(
     (children) => {
