@@ -1,6 +1,7 @@
 import {allTypes} from './allTypes'
 import author from './author'
 import book from './book'
+import {commentsCI} from './ci/comments'
 import conditionalFieldset from './ci/conditionalFieldset'
 import validationTest from './ci/validationCI'
 import actions from './debug/actions'
@@ -177,15 +178,16 @@ export const schemaTypes = [
   // Test documents for debugging
   actions,
   button,
+  collapsibleObjects,
+  commentsDebug,
   conditionalFields,
   customInputs,
   customInputsWithPatches,
   customNumber,
-  collapsibleObjects,
-  dateValidation,
   dateTimeValidation,
-  deprecatedFields,
+  dateValidation,
   deprecatedDocument,
+  deprecatedFields,
   documentActions,
   empty,
   experiment,
@@ -264,16 +266,16 @@ export const schemaTypes = [
   playlistTrack,
 
   // CI documents
-  conditionalFieldset,
-  validationTest,
-  crossDatasetReference,
-  crossDatasetSubtype,
-  circularCrossDatasetReferenceTest,
   allNativeInputComponents,
   allTypes,
+  circularCrossDatasetReferenceTest,
+  commentsCI,
+  conditionalFieldset,
+  crossDatasetReference,
+  crossDatasetSubtype,
   fieldGroupsWithFieldsets,
   ptReference,
-  commentsDebug,
+  validationTest,
 
   // Test documents for docs
   ...v3docs.types,
