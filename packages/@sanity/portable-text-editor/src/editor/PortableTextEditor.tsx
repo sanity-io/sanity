@@ -284,4 +284,12 @@ export class PortableTextEditor extends Component<PortableTextEditorProps> {
     debug(`Host getting fragment`)
     return editor.editable?.getFragment()
   }
+  static undo = (editor: PortableTextEditor): void => {
+    debug('Host undoing')
+    editor.editable?.undo()
+  }
+  static redo = (editor: PortableTextEditor): void => {
+    debug('Host redoing')
+    editor.editable?.redo()
+  }
 }
