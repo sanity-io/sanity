@@ -18,6 +18,7 @@ describe('selection adjustment', () => {
       const expectedSelectionA = {
         anchor: {path: [{_key: 'someKey'}, 'children', {_key: 'anotherKey'}], offset: 2},
         focus: {path: [{_key: 'someKey'}, 'children', {_key: 'anotherKey'}], offset: 2},
+        backward: false,
       }
       const [editorA, editorB] = await getEditors()
       await editorA.pressKey('ArrowRight', 2)
@@ -71,6 +72,7 @@ describe('selection adjustment', () => {
               },
             ],
           },
+          "backward": false,
           "focus": Object {
             "offset": 0,
             "path": Array [
@@ -114,6 +116,7 @@ describe('selection adjustment', () => {
       const expectedSelection = {
         anchor: {path: [{_key: 'someKey2'}, 'children', {_key: 'anotherKey2'}], offset: 2},
         focus: {path: [{_key: 'someKey2'}, 'children', {_key: 'anotherKey2'}], offset: 2},
+        backward: false,
       }
       const [editorA, editorB] = await getEditors()
       await editorA.setSelection(expectedSelection)
@@ -198,6 +201,7 @@ describe('selection adjustment', () => {
       const expectedSelection = {
         anchor: {path: [{_key: 'someKey5'}, 'children', {_key: 'anotherKey5'}], offset: 5},
         focus: {path: [{_key: 'someKey5'}, 'children', {_key: 'anotherKey5'}], offset: 5},
+        backward: false,
       }
       const [editorA, editorB] = await getEditors()
       await editorA.setSelection(expectedSelection)
@@ -266,6 +270,7 @@ describe('selection adjustment', () => {
       const expectedSelection = {
         anchor: {path: [{_key: 'someKey3'}, 'children', {_key: 'anotherKey3'}], offset: 0},
         focus: {path: [{_key: 'someKey3'}, 'children', {_key: 'anotherKey3'}], offset: 0},
+        backward: false,
       }
       const [editorA, editorB] = await getEditors()
       await editorA.setSelection(expectedSelection)
@@ -354,6 +359,7 @@ describe('selection adjustment', () => {
       const expectedSelection = {
         anchor: {path: [{_key: 'someKey6'}, 'children', {_key: 'anotherKey6'}], offset: 2},
         focus: {path: [{_key: 'someKey6'}, 'children', {_key: 'anotherKey6'}], offset: 2},
+        backward: false,
       }
       const [editorA, editorB] = await getEditors()
       await editorA.setSelection(expectedSelection)
@@ -410,6 +416,7 @@ describe('selection adjustment', () => {
               },
             ],
           },
+          "backward": false,
           "focus": Object {
             "offset": 0,
             "path": Array [
@@ -444,6 +451,7 @@ describe('selection adjustment', () => {
     const expectedSelectionA = {
       anchor: {path: [{_key: 'someKey'}, 'children', {_key: 'anotherKey3'}], offset: 1},
       focus: {path: [{_key: 'someKey'}, 'children', {_key: 'anotherKey3'}], offset: 1},
+      backward: false,
     }
     const [editorA, editorB] = await getEditors()
     await editorA.setSelection(expectedSelectionA)
@@ -479,6 +487,7 @@ describe('selection adjustment', () => {
     expect(await editorA.getSelection()).toEqual({
       anchor: {path: [{_key: 'someKey'}, 'children', {_key: 'anotherKey1'}], offset: 8},
       focus: {path: [{_key: 'someKey'}, 'children', {_key: 'anotherKey1'}], offset: 8},
+      backward: false,
     })
   })
 
@@ -551,10 +560,12 @@ describe('selection adjustment', () => {
     expect(await editorA.getSelection()).toEqual({
       anchor: {path: [{_key: 'someKey1'}, 'children', {_key: 'anotherKey1'}], offset: 0},
       focus: {path: [{_key: 'someKey1'}, 'children', {_key: 'anotherKey1'}], offset: 1},
+      backward: false,
     })
     expect(await editorB.getSelection()).toEqual({
       anchor: {path: [{_key: 'someKey2'}, 'children', {_key: 'anotherKey2'}], offset: 0},
       focus: {path: [{_key: 'someKey2'}, 'children', {_key: 'anotherKey2'}], offset: 1},
+      backward: false,
     })
   })
 })
