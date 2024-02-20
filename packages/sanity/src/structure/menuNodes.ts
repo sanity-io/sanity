@@ -78,6 +78,7 @@ export function resolveMenuNodes(params: {
 
         hotkey: item.shortcut,
         icon: item.icon,
+        intent: item.intent,
         onAction: () => params.actionHandler(item),
         renderAsButton: item.showAsAction ?? false,
         selected: item.selected,
@@ -92,6 +93,7 @@ export function resolveMenuNodes(params: {
 
         hotkey: item.shortcut,
         icon: item.icon,
+        intent: item.intent,
         onAction: () => params.actionHandler(item),
         renderAsButton: item.showAsAction ?? false,
         selected: item.selected,
