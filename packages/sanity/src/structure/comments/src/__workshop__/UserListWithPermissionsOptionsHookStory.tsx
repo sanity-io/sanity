@@ -1,6 +1,5 @@
 import {Card, Code} from '@sanity/ui'
-
-import {useMentionOptions} from '../hooks'
+import {useUserListWithPermissions} from 'sanity'
 
 const DOCUMENT = {
   _id: '1e1744ab-43d5-4fff-8a2a-28c58bf0434a',
@@ -11,8 +10,9 @@ const DOCUMENT = {
 }
 
 export default function MentionOptionsHookStory() {
-  const {data, loading} = useMentionOptions({
+  const {data, loading} = useUserListWithPermissions({
     documentValue: DOCUMENT,
+    permission: 'read',
   })
 
   if (loading) return <div>Loading...</div>

@@ -8,6 +8,7 @@ import {
   useDateTimeFormat,
   useDidUpdate,
   useRelativeTime,
+  type UserListWithPermissionsHookValue,
   useTranslation,
   useUser,
 } from 'sanity'
@@ -24,7 +25,6 @@ import {
   type CommentReactionOption,
   type CommentStatus,
   type CommentsUIMode,
-  type MentionOptionsHookValue,
 } from '../../types'
 import {AVATAR_HEIGHT, CommentsAvatar, SpacerAvatar} from '../avatars'
 import {FLEX_GAP} from '../constants'
@@ -128,7 +128,7 @@ interface CommentsListItemLayoutProps {
   hasError?: boolean
   isParent?: boolean
   isRetrying?: boolean
-  mentionOptions: MentionOptionsHookValue
+  mentionOptions: UserListWithPermissionsHookValue
   mode: CommentsUIMode
   onCopyLink?: (id: string) => void
   onCreateRetry?: (id: string) => void

@@ -1,9 +1,10 @@
+import {type UserListWithPermissionsHookValue} from 'sanity'
+
 import {
   type CommentDocument,
   type CommentOperations,
   type CommentStatus,
   type CommentThreadItem,
-  type MentionOptionsHookValue,
 } from '../../types'
 
 /**
@@ -35,7 +36,7 @@ export interface CommentsContextValue {
     react: CommentOperations['react']
   }
 
-  mentionOptions: MentionOptionsHookValue
+  mentionOptions: UserListWithPermissionsHookValue
 
   status: CommentStatus
   setStatus: (status: CommentStatus) => void
