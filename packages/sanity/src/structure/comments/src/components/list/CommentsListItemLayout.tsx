@@ -318,6 +318,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
   return (
     <RootStack
       data-menu-open={menuOpen ? 'true' : 'false'}
+      data-testid="comments-list-item-layout"
       onKeyDown={handleRootKeyDown}
       ref={setRootElement}
       space={4}

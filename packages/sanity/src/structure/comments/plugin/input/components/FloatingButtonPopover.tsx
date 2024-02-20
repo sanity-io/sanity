@@ -52,11 +52,12 @@ export function FloatingButtonPopover(props: FloatingButtonPopoverProps) {
   const content = (
     <ConditionalWrapper condition={disabled} wrapper={ConditionalWrapperContent}>
       <Button
+        data-testid="inline-comment-button"
         disabled={disabled}
         icon={AddCommentIcon}
-        ref={setPopoverElement}
         mode="bleed"
         onClick={onClick}
+        ref={setPopoverElement}
         text={TMP_BUTTON_COPY}
       />
     </ConditionalWrapper>
