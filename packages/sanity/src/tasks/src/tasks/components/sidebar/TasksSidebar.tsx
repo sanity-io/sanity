@@ -5,7 +5,7 @@ import {useCurrentUser} from 'sanity'
 import styled from 'styled-components'
 
 import {TasksNavigationProvider, useTasks, useTasksEnabled, useTasksNavigation} from '../../context'
-import {TaskCreate} from '../create'
+import {TasksCreateForm} from '../create/TasksCreateForm'
 import {TaskEdit} from '../edit'
 import {TaskSidebarContent} from './TasksSidebarContent'
 import {TasksSidebarHeader} from './TasksSidebarHeader'
@@ -90,7 +90,7 @@ function TasksStudioSidebarInner() {
                   )}
                 </>
               )}
-              {viewMode === 'create' && <TaskCreate onCancel={onCancel} onCreate={onTaskCreate} />}
+              {viewMode === 'create' && <TasksCreateForm />}
               {viewMode === 'edit' && (
                 <TaskEdit
                   onCancel={onCancel}
