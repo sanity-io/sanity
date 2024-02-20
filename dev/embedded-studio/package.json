@@ -1,7 +1,7 @@
 {
   "name": "embedded-studio",
   "private": true,
-  "version": "3.29.1",
+  "version": "3.30.0",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
