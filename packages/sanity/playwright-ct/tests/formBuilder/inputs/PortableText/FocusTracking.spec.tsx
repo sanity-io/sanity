@@ -3,6 +3,7 @@ import {expect, test} from '@playwright/experimental-ct-react'
 import {type Page} from '@playwright/test'
 import {type Path, type SanityDocument} from '@sanity/types'
 
+import {testHelpers} from '../../../utils/testHelpers'
 import FocusTrackingStory from './FocusTrackingStory'
 
 export type UpdateFn = () => {focusPath: Path; document: SanityDocument}
@@ -135,6 +136,24 @@ test.describe('Portable Text Input', () => {
       await expect($pteTextbox).toBeFocused()
       await expect(blockObjectInput).not.toBeVisible()
     })
+  })
+  test(`reports focus on spans with with .text prop, and everything else without`, async ({
+    mount,
+    page,
+  }) => {
+    const paths: Path[] = []
+    const pushPath = (path: Path) => paths.push(path)
+    await mount(<FocusTrackingStory document={document} onPathFocus={pushPath} />)
+    const {getFocusedPortableTextEditor} = testHelpers({page})
+    const $pte = await getFocusedPortableTextEditor('field-body')
+    await expect($pte).toBeFocused()
+    expect(paths.slice(-1)[0]).toEqual(['body', {_key: 'a'}, 'children', {_key: 'b'}, 'text'])
+    const $inlineObject = page.getByTestId('inline-preview')
+    await $inlineObject.click()
+    expect(paths.slice(-1)[0]).toEqual(['body', {_key: 'g'}, 'children', {_key: 'i'}])
+    const $blockObject = page.getByTestId('pte-block-object')
+    await $blockObject.click()
+    expect(paths.slice(-1)[0]).toEqual(['body', {_key: 'k'}])
   })
 })
 

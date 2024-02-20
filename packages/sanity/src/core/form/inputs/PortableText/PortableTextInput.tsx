@@ -146,22 +146,27 @@ export function PortableTextInput(props: PortableTextInputProps) {
     }
   }, [hasFocusWithin])
 
+  // Report focus on spans with `.text` appended to the reported focusPath.
+  // This is done to support the Presentation tool which uses this kind of paths to refer to texts.
+  // The PT-input already supports these paths the other way around.
+  // It's a bit ugly right here, but it's a rather simple way to support the Presentation tool without
+  // having to change the PTE's internals.
   const setFocusPathFromEditorSelection = useCallback(
     (focusPath: Path) => {
-      // Report focus on spans with `.text` appended to the reported focusPath.
-      // This is done to support the Presentation tool which uses this kind of paths to refer to texts.
-      // The PT-input already supports these paths the other way around.
-      // It's a bit ugly right here, but it's a rather simple way to support the Presentation tool without
-      // having to change the PTE's internals.
-      if (
-        focusPath.length === 3 &&
-        focusPath[1] === 'children' &&
-        isKeySegment(focusPath[2]) &&
+      // Test if the focusPath is pointing directly to a span
+      const isSpanPath =
+        focusPath.length === 3 && // A span path is always 3 segments long
+        focusPath[1] === 'children' && // Is a child of a block
+        isKeySegment(focusPath[2]) && // Contains the key of the child
         !portableTextMemberItems.some(
-          (item) => isKeySegment(focusPath[2]) && item.key === focusPath[2]._key,
-        ) // Not an inline object
-      ) {
+          (item) => isKeySegment(focusPath[2]) && item.member.key === focusPath[2]._key,
+        ) // Not an inline object (it would be a member in this list, where spans are not). By doing this check we avoid depending on the value.
+      if (isSpanPath) {
+        // Append `.text` to the focusPath
         onPathFocus(focusPath.concat('text'))
+      } else {
+        // Call normally
+        onPathFocus(focusPath)
       }
     },
     [onPathFocus, portableTextMemberItems],

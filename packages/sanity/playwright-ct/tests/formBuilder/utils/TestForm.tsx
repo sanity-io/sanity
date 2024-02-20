@@ -34,10 +34,12 @@ declare global {
 
 export function TestForm({
   focusPath: focusPathFromProps,
+  onPathFocus: onPathFocusFromProps,
   document: documentFromProps,
   id: idFromProps = 'root',
 }: {
   focusPath?: Path
+  onPathFocus?: (path: Path) => void
   document?: SanityDocument
   id?: string
 }) {
@@ -115,8 +117,9 @@ export function TestForm({
   const handleFocus = useCallback(
     (nextFocusPath: Path) => {
       setFocusPath(nextFocusPath)
+      onPathFocusFromProps?.(nextFocusPath)
     },
-    [setFocusPath],
+    [onPathFocusFromProps],
   )
 
   const handleBlur = useCallback(() => {
