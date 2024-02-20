@@ -98,16 +98,22 @@ describe('simpleParser', () => {
       {type: 'tagOpen', name: 'Icon', selfClosing: true},
       {type: 'text', text: ' Your search for "'},
       {type: 'tagOpen', name: 'Red'},
-      {type: 'text', text: '{{keyword}}'},
+      {type: 'interpolation', variable: 'keyword'},
       {type: 'tagClose', name: 'Red'},
       {type: 'text', text: '" took '},
       {type: 'tagOpen', name: 'Bold'},
-      {type: 'text', text: '{{time}}ms'},
+      {type: 'interpolation', variable: 'time'},
+      {type: 'text', text: 'ms'},
       {type: 'tagClose', name: 'Bold'},
     ])
   })
 })
 describe('simpleParser - errors', () => {
+  test('formatters in interpolations', () => {
+    expect(() => simpleParser('This is not allowed: {{countries, list}}')).toThrow(
+      `Interpolations with formatters are not supported when using <Translate>. Found "countries, list". Utilize "useTranslation" instead, or format the values passed to <Translate> ahead of time.`,
+    )
+  })
   test('unpaired tags', () => {
     expect(() =>
       simpleParser('<Icon/> Your search for "<Red>{{keyword}}" took <Bold>{{time}}ms</Bold>'),
