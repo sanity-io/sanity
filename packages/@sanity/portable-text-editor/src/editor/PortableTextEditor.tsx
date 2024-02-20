@@ -9,7 +9,7 @@ import {
   type PortableTextObject,
   type SpanSchemaType,
 } from '@sanity/types'
-import {Component, type PropsWithChildren} from 'react'
+import {Component, type MutableRefObject, type PropsWithChildren} from 'react'
 import {Subject} from 'rxjs'
 
 import {
@@ -80,6 +80,11 @@ export type PortableTextEditorProps = PropsWithChildren<{
    * Backward compatibility (renamed to patches$).
    */
   incomingPatches$?: PatchObservable
+
+  /**
+   * A ref to the editor instance
+   */
+  editorRef?: MutableRefObject<PortableTextEditor | null>
 }>
 
 /**
@@ -128,6 +133,9 @@ export class PortableTextEditor extends Component<PortableTextEditorProps> {
           ? this.props.schemaType
           : compileType(this.props.schemaType),
       )
+    }
+    if (this.props.editorRef !== prevProps.editorRef && this.props.editorRef) {
+      this.props.editorRef.current = this
     }
   }
 
