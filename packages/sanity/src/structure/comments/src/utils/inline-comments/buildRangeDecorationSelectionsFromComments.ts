@@ -16,31 +16,30 @@ import {
 import {isTextSelectionComment} from '../../helpers'
 import {type CommentDocument, type CommentsTextSelectionItem} from '../../types'
 
+const DMP_MARGIN = 15
+
 function diffText(current: string, next: string) {
   const diff = makeDiff(current, next)
   const diffs = cleanupSemantic(diff)
-  return makePatches(current, diffs)
+  return makePatches(current, diffs, {margin: DMP_MARGIN})
 }
 
 function diffApply(current: string, patches: Patch[]) {
-  let applied = current
-  try {
-    applied = applyPatches(patches, current, {allowExceedingIndices: true, deleteThreshold: 0.5})[0]
-  } catch (err) {
-    //
-    console.error('Failed to apply patches', err)
-  }
-  return applied
+  return applyPatches(patches, current, {
+    allowExceedingIndices: true,
+    margin: DMP_MARGIN,
+  })[0]
 }
 
-// This symbol will represent the start of a new child when matching a text across spans
-// We use the ASCII unit separator character (31) as it is a control character that is unlikely to be used in text.
-const CHILD_SYMBOL = String.fromCharCode(31)
+export const CHILD_SYMBOL = '\uF0D0'
 function toPlainTextWithChildSeparators(inputBlock: PortableTextTextBlock) {
   return inputBlock.children
     .map((child) => (isPortableTextSpan(child) ? child.text.replaceAll(CHILD_SYMBOL, ' ') : ''))
     .join(CHILD_SYMBOL)
 }
+
+export const COMMENT_INDICATORS = ['\uF000', '\uF001']
+const COMMENT_INDICATORS_REGEX = new RegExp(`[${COMMENT_INDICATORS.join('')}]`, 'g')
 
 const EMPTY_ARRAY: [] = []
 
@@ -74,13 +73,15 @@ export function buildRangeDecorationSelectionsFromComments(
       if (!matchedBlock || !isPortableTextTextBlock(matchedBlock)) {
         return
       }
-      const selectionText = selectionMember.text.replaceAll(/(<([^>]+)>)/gi, '')
+      const selectionText = selectionMember.text.replaceAll(COMMENT_INDICATORS_REGEX, '')
       const textWithChildSeparators = toPlainTextWithChildSeparators(matchedBlock)
       const patches = diffText(selectionText, selectionMember.text)
       const diffedText = diffApply(textWithChildSeparators, patches)
-      const startIndex = diffedText.indexOf('<comment>')
-      const endIndex = diffedText.replaceAll('<comment>', '').indexOf('</comment>')
-      const textWithoutCommentTags = diffedText.replaceAll(/(<([^>]+)>)/gi, '')
+      const startIndex = diffedText.indexOf(COMMENT_INDICATORS[0])
+      const endIndex = diffedText
+        .replaceAll(COMMENT_INDICATORS[0], '')
+        .indexOf(COMMENT_INDICATORS[1])
+      const textWithoutCommentTags = diffedText.replaceAll(COMMENT_INDICATORS_REGEX, '')
       const commentedText = textWithoutCommentTags.substring(startIndex, endIndex)
 
       if (startIndex !== -1 && endIndex !== -1) {
@@ -89,13 +90,13 @@ export function buildRangeDecorationSelectionsFromComments(
         let childIndexFocus = 0
         let focusOffset = 0
         for (let i = 0; i < textWithoutCommentTags.length; i++) {
-          if (diffedText[i] === CHILD_SYMBOL) {
+          if (textWithoutCommentTags[i] === CHILD_SYMBOL) {
             if (i <= startIndex) {
               anchorOffset = -1
               childIndexAnchor++
             }
-            childIndexFocus++
             focusOffset = -1
+            childIndexFocus++
           }
           if (i < startIndex) {
             anchorOffset++
