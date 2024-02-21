@@ -7,6 +7,7 @@ import {studioDependencies} from '../../studioDependencies'
 import {type CliCommandContext} from '../../types'
 import {copy} from '../../util/copy'
 import {getAndWriteJourneySchemaWorker} from '../../util/journeyConfig'
+import {resolveLatestVersions} from '../../util/resolveLatestVersions'
 import {createCliConfig} from './createCliConfig'
 import {createPackageManifest} from './createPackageManifest'
 import {createStudioConfig, type GenerateConfigOptions} from './createStudioConfig'
@@ -65,7 +66,7 @@ export async function bootstrapTemplate(
 
   // If we have a journeyProjectId, the template is assembled from the builder schema
   if (opts.journeyProjectId) {
-    debug('Fetching and write journey schema "%s"', opts.journeyProjectId)
+    debug('Fetching and writing remote schema "%s"', opts.journeyProjectId)
     await getAndWriteJourneySchemaWorker({
       schemasPath: path.join(outputPath, 'schemas'),
       useTypeScript,

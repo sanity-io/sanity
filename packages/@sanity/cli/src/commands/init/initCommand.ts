@@ -64,7 +64,7 @@ export interface InitFlags {
    * Overrides `visibility` option.
    * @beta
    */
-  config?: string
+  quickstart?: string
   bare?: boolean
   env?: boolean | string
   git?: boolean | string

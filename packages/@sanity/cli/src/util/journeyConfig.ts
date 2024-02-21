@@ -1,8 +1,9 @@
 import fs from 'fs/promises'
 import path from 'path'
+import {type DocumentDefinition, type ObjectDefinition} from 'sanity'
 import {Worker} from 'worker_threads'
-import {DocumentDefinition, ObjectDefinition} from '@sanity/types'
-import {CliApiClient} from '../types'
+
+import {type CliApiClient} from '../types'
 import {getCliWorkerPath} from './cliWorker'
 
 /**
@@ -43,7 +44,7 @@ export async function getAndWriteJourneySchema(data: JourneySchemaWorkerData): P
     const indexContent = assembeJourneyIndexContent(documents)
     await fs.writeFile(path.join(schemasPath, `index.${fileExtension}`), indexContent)
   } catch (error) {
-    throw new Error(`Failed to fetch Journey schema: ${error.message}`)
+    throw new Error(`Failed to fetch remote schema: ${error.message}`)
   }
 }
 
@@ -121,7 +122,7 @@ export async function fetchJourneyConfig(
     }
   } catch (err) {
     console.error(err)
-    throw new Error(`Failed to fetch Journey config: ${projectId}`)
+    throw new Error(`Failed to fetch remote schema config: ${projectId}`)
   }
 }
 
@@ -147,7 +148,7 @@ async function fetchJourneySchema(projectId: string): Promise<DocumentOrObject[]
     return response.default
   } catch (err) {
     console.error(err)
-    throw new Error(`Failed to fetch Journey schema: ${projectId}`)
+    throw new Error(`Failed to fetch remote schema: ${projectId}`)
   }
 }
 

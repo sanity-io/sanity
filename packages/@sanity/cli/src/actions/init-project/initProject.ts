@@ -38,11 +38,11 @@ import {getProjectDefaults, type ProjectDefaults} from '../../util/getProjectDef
 import {getUserConfig} from '../../util/getUserConfig'
 import {isCommandGroup} from '../../util/isCommandGroup'
 import {isInteractive} from '../../util/isInteractive'
+import {fetchJourneyConfig} from '../../util/journeyConfig'
 import {login, type LoginFlags} from '../login/login'
 import {createProject} from '../project/createProject'
 import {type BootstrapOptions, bootstrapTemplate} from './bootstrapTemplate'
 import {type GenerateConfigOptions} from './createStudioConfig'
-import {fetchJourneyConfig} from '../../util/journeyConfig'
 import {absolutify, validateEmptyPath} from './fsUtils'
 import {tryGitInit} from './git'
 import {promptForDatasetName} from './promptForDatasetName'
@@ -67,14 +67,17 @@ import {
 // eslint-disable-next-line no-process-env
 const isCI = process.env.CI
 
+/**
+ * @deprecated - No longer used
+ */
 export interface InitOptions {
   template: string
-  /**
-   * Used for initializing a project from a server schema that is saved in the Journey API
-   * This will override the `template` option.
-   * @beta
-   */
-  journeyProjectId?: string
+  // /**
+  //  * Used for initializing a project from a server schema that is saved in the Journey API
+  //  * This will override the `template` option.
+  //  * @beta
+  //  */
+  // journeyProjectId?: string
   outputDir: string
   name: string
   displayName: string
@@ -522,7 +525,7 @@ export default async function initSanity(
     outputPath,
     packageName: sluggedName,
     templateName,
-    journeyProjectId: cliFlags.config,
+    journeyProjectId: cliFlags.quickstart,
     useTypeScript,
     variables: {
       dataset: datasetName,
@@ -645,9 +648,10 @@ export default async function initSanity(
   }> {
     let data
 
-    if (flags.config) {
+    if (flags.quickstart) {
+      // If we're doing a quickstart, we don't need to prompt for project details
       debug('Fetching project details from Journey API')
-      data = await fetchJourneyConfig(flags.config)
+      data = await fetchJourneyConfig(apiClient, flags.quickstart)
     } else {
       // We're authenticated, now lets select or create a project
       debug('Prompting user to select or create a project')
@@ -948,9 +952,9 @@ export default async function initSanity(
   }
 
   function selectProjectTemplate() {
-    // Make sure the --config and --template are not used together
-    // Force template to clean if --config is used
-    if (flags.config) {
+    // Make sure the --quickstart and --template are not used together
+    // Force template to clean if --quickstart is used
+    if (flags.quickstart) {
       return 'clean'
     }
 
