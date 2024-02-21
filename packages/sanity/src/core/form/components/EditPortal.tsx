@@ -24,6 +24,10 @@ function onDragEnter(event: DragEvent<HTMLDivElement>) {
   return event.stopPropagation()
 }
 
+function onDrop(event: DragEvent<HTMLDivElement>) {
+  return event.stopPropagation()
+}
+
 export function EditPortal(props: Props): ReactElement {
   const {
     children,
@@ -56,6 +60,7 @@ export function EditPortal(props: Props): ReactElement {
           onClickOutside={onClose}
           onClose={onClose}
           onDragEnter={onDragEnter}
+          onDrop={onDrop}
           width={width}
           contentRef={setDocumentScrollElement}
           __unstable_autoFocus={autofocus}
