@@ -650,7 +650,12 @@ export default async function initSanity(
     // If we're doing a quickstart, we don't need to prompt for project details
     if (flags.quickstart) {
       debug('Fetching project details from Journey API')
-      return fetchJourneyConfig(apiClient, flags.quickstart)
+      const data = await fetchJourneyConfig(apiClient, flags.quickstart)
+      trace.log({
+        step: 'fetchJourneyConfig',
+        ...data,
+      })
+      return data
     }
 
     debug('Prompting user to select or create a project')
