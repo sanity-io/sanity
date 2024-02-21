@@ -1,14 +1,19 @@
 import {orderBy} from 'lodash'
 import {memo, type ReactNode, useCallback, useMemo, useState} from 'react'
-import {getPublishedId, useCurrentUser, useEditState, useSchema, useWorkspace} from 'sanity'
+import {
+  getPublishedId,
+  useCurrentUser,
+  useEditState,
+  useSchema,
+  useUserListWithPermissions,
+  useWorkspace,
+} from 'sanity'
 
 import {
   type CommentOperationsHookOptions,
-  type MentionHookOptions,
   useCommentOperations,
   useCommentsEnabled,
   useCommentsSetup,
-  useMentionOptions,
 } from '../../hooks'
 import {useCommentsStore} from '../../store'
 import {
@@ -84,8 +89,8 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
     },
     [setStatus, commentsEnabled],
   )
-  const mentionOptions = useMentionOptions(
-    useMemo((): MentionHookOptions => ({documentValue}), [documentValue]),
+  const mentionOptions = useUserListWithPermissions(
+    useMemo(() => ({documentValue, permission: 'read'}), [documentValue]),
   )
 
   const threadItemsByStatus: ThreadItemsByStatus = useMemo(() => {

@@ -1,8 +1,8 @@
 import {type CurrentUser, type PortableTextBlock} from '@sanity/types'
 import {noop} from 'lodash'
 import {useState} from 'react'
+import {type UserListWithPermissionsHookValue} from 'sanity'
 
-import {type MentionOptionsHookValue} from '../../../src/structure/comments'
 import {CommentInput} from '../../../src/structure/comments/src/components/pte/comment-input/CommentInput'
 import {TestWrapper} from '../formBuilder/utils/TestWrapper'
 
@@ -18,13 +18,13 @@ const currentUser: CurrentUser = {
 
 const SCHEMA_TYPES: [] = []
 
-const MENTION_DATA: MentionOptionsHookValue = {
+const MENTION_DATA: UserListWithPermissionsHookValue = {
   data: [
     {
       id: 'l33t',
       displayName: 'Test Person',
       email: 'test@test.com',
-      canBeMentioned: true,
+      granted: true,
     },
   ],
   loading: false,

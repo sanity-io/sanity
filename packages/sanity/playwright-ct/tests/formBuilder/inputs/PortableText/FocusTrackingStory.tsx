@@ -57,14 +57,16 @@ const SCHEMA_TYPES = [
 
 export function FocusTrackingStory({
   focusPath,
+  onPathFocus,
   document,
 }: {
   focusPath?: Path
+  onPathFocus?: (path: Path) => void
   document?: SanityDocument
 }) {
   return (
     <TestWrapper schemaTypes={SCHEMA_TYPES}>
-      <TestForm document={document} focusPath={focusPath} />
+      <TestForm document={document} focusPath={focusPath} onPathFocus={onPathFocus} />
     </TestWrapper>
   )
 }

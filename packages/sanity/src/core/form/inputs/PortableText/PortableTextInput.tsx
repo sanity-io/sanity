@@ -6,7 +6,7 @@ import {
   PortableTextEditor,
 } from '@sanity/portable-text-editor'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {type PortableTextBlock} from '@sanity/types'
+import {isKeySegment, type Path, type PortableTextBlock} from '@sanity/types'
 import {Box, useToast} from '@sanity/ui'
 import {
   type MutableRefObject,
@@ -60,10 +60,12 @@ export interface PortableTextMemberItem {
  */
 export function PortableTextInput(props: PortableTextInputProps) {
   const {
+    editorRef: editorRefProp,
     elementProps,
     hotkeys,
     markers = EMPTY_ARRAY,
     onChange,
+    onEditorChange,
     onCopy,
     onInsert,
     onItemRemove,
@@ -78,8 +80,12 @@ export function PortableTextInput(props: PortableTextInputProps) {
   } = props
 
   const {onBlur} = elementProps
+  const defaultEditorRef = useRef<PortableTextEditor | null>(null)
+  const editorRef = editorRefProp || defaultEditorRef
 
-  // Make the PTE focusable from the outside
+  // This handle will allow for natively calling .focus
+  // on the returned component and have the PortableTextEditor focused,
+  // simulating a native input element (like with an string input)
   useImperativeHandle(elementProps.ref, () => ({
     focus() {
       if (editorRef.current) {
@@ -89,7 +95,6 @@ export function PortableTextInput(props: PortableTextInputProps) {
   }))
 
   const {subscribe} = usePatches({path})
-  const editorRef = useRef<PortableTextEditor | null>(null)
   const [ignoreValidationError, setIgnoreValidationError] = useState(false)
   const [invalidValue, setInvalidValue] = useState<InvalidValue | null>(null)
   const [isFullscreen, setIsFullscreen] = useState(false)
@@ -110,17 +115,15 @@ export function PortableTextInput(props: PortableTextInputProps) {
   const innerElementRef = useRef<HTMLDivElement | null>(null)
 
   const handleToggleFullscreen = useCallback(() => {
-    if (editorRef.current) {
-      setIsFullscreen((v) => {
-        const next = !v
-        if (next) {
-          telemetry.log(PortableTextInputExpanded)
-        } else {
-          telemetry.log(PortableTextInputCollapsed)
-        }
-        return next
-      })
-    }
+    setIsFullscreen((v) => {
+      const next = !v
+      if (next) {
+        telemetry.log(PortableTextInputExpanded)
+      } else {
+        telemetry.log(PortableTextInputCollapsed)
+      }
+      return next
+    })
   }, [telemetry])
 
   // Reset invalidValue if new value is coming in from props
@@ -146,6 +149,32 @@ export function PortableTextInput(props: PortableTextInputProps) {
     }
   }, [hasFocusWithin])
 
+  // Report focus on spans with `.text` appended to the reported focusPath.
+  // This is done to support the Presentation tool which uses this kind of paths to refer to texts.
+  // The PT-input already supports these paths the other way around.
+  // It's a bit ugly right here, but it's a rather simple way to support the Presentation tool without
+  // having to change the PTE's internals.
+  const setFocusPathFromEditorSelection = useCallback(
+    (focusPath: Path) => {
+      // Test if the focusPath is pointing directly to a span
+      const isSpanPath =
+        focusPath.length === 3 && // A span path is always 3 segments long
+        focusPath[1] === 'children' && // Is a child of a block
+        isKeySegment(focusPath[2]) && // Contains the key of the child
+        !portableTextMemberItems.some(
+          (item) => isKeySegment(focusPath[2]) && item.member.key === focusPath[2]._key,
+        ) // Not an inline object (it would be a member in this list, where spans are not). By doing this check we avoid depending on the value.
+      if (isSpanPath) {
+        // Append `.text` to the focusPath
+        onPathFocus(focusPath.concat('text'))
+      } else {
+        // Call normally
+        onPathFocus(focusPath)
+      }
+    },
+    [onPathFocus, portableTextMemberItems],
+  )
+
   // Handle editor changes
   const handleEditorChange = useCallback(
     (change: EditorChange): void => {
@@ -165,7 +194,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
           // call through startTransition
           startTransition(() => {
             if (change.selection) {
-              onPathFocus(change.selection.focus.path)
+              setFocusPathFromEditorSelection(change.selection.focus.path)
             }
           })
           break
@@ -192,8 +221,11 @@ export function PortableTextInput(props: PortableTextInputProps) {
           break
         default:
       }
+      if (editorRef.current && onEditorChange) {
+        onEditorChange(change, editorRef.current)
+      }
     },
-    [onBlur, onChange, onPathFocus, toast],
+    [editorRef, onBlur, onChange, onEditorChange, setFocusPathFromEditorSelection, toast],
   )
 
   useEffect(() => {
@@ -227,7 +259,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
         PortableTextEditor.focus(editorRef.current)
       }
     }
-  }, [isActive])
+  }, [editorRef, isActive])
 
   return (
     <Box ref={innerElementRef}>
@@ -236,10 +268,10 @@ export function PortableTextInput(props: PortableTextInputProps) {
         <PortableTextMarkersProvider markers={markers}>
           <PortableTextMemberItemsProvider memberItems={portableTextMemberItems}>
             <PortableTextEditor
-              ref={editorRef}
               patches$={patches$}
               onChange={handleEditorChange}
               maxBlocks={undefined} // TODO: from schema?
+              ref={editorRef}
               readOnly={isOffline || readOnly}
               schemaType={schemaType}
               value={value}

@@ -1,39 +1,71 @@
 /* eslint-disable max-nested-callbacks */
 import {type SanityDocument} from '@sanity/client'
+import {type User} from '@sanity/types'
 import {sortBy} from 'lodash'
 import {useEffect, useMemo, useState} from 'react'
 import {concat, forkJoin, map, mergeMap, type Observable, of, switchMap} from 'rxjs'
+
 import {
-  DEFAULT_STUDIO_CLIENT_OPTIONS,
+  type DocumentValuePermission,
   grantsPermissionOn,
   type ProjectData,
-  useClient,
   useProjectStore,
   useUserStore,
-} from 'sanity'
+} from '../store'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../studioClient'
+import {useClient} from './useClient'
 
-import {type Loadable, type MentionOptionsHookValue, type MentionOptionUser} from '../types'
+type Loadable<T> = {
+  data: T | null
+  error: Error | null
+  loading: boolean
+}
 
-const INITIAL_STATE: MentionOptionsHookValue = {
+/**
+ * @beta
+ * @hidden
+ */
+export type UserListWithPermissionsHookValue = Loadable<UserWithPermission[]>
+
+/**
+ * @beta
+ * @hidden
+ */
+export interface UserWithPermission extends User {
+  granted: boolean
+}
+
+const INITIAL_STATE: UserListWithPermissionsHookValue = {
   data: [],
   error: null,
   loading: true,
 }
 
-export interface MentionHookOptions {
+/**
+ * @beta
+ */
+export interface UserListWithPermissionsOptions {
   documentValue: SanityDocument | null
+  permission: DocumentValuePermission
 }
 
 let cachedSystemGroups: [] | null = null
 
-export function useMentionOptions(opts: MentionHookOptions): MentionOptionsHookValue {
-  const {documentValue} = opts
+/**
+ * @beta
+ * Returns a list of users with the specified permission on the document.
+ * If no document is provided it will return all as `granted: true`
+ */
+export function useUserListWithPermissions(
+  opts: UserListWithPermissionsOptions,
+): UserListWithPermissionsHookValue {
+  const {documentValue, permission} = opts
 
   const projectStore = useProjectStore()
   const userStore = useUserStore()
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
 
-  const [state, setState] = useState<MentionOptionsHookValue>(INITIAL_STATE)
+  const [state, setState] = useState<UserListWithPermissionsHookValue>(INITIAL_STATE)
 
   const list$ = useMemo(() => {
     // 1. Get the project members and filter out the robot users
@@ -42,7 +74,7 @@ export function useMentionOptions(opts: MentionHookOptions): MentionOptionsHookV
       .pipe(map((res: ProjectData) => res.members?.filter((m) => !m.isRobot)))
 
     // 2. Map the members to users to get more data of the users such as displayName (used for filtering)
-    const users$: Observable<MentionOptionUser[]> = members$.pipe(
+    const users$: Observable<UserWithPermission[]> = members$.pipe(
       switchMap(async (members) => {
         const ids = members.map(({id}) => id)
         const users = await userStore.getUsers(ids)
@@ -52,7 +84,7 @@ export function useMentionOptions(opts: MentionHookOptions): MentionOptionsHookV
         res.map((user) => ({
           displayName: user.displayName,
           id: user.id,
-          canBeMentioned: false,
+          granted: false,
         })),
       ),
     )
@@ -61,8 +93,8 @@ export function useMentionOptions(opts: MentionHookOptions): MentionOptionsHookV
     const cached = cachedSystemGroups
     const systemGroup$ = cached ? of(cached) : client.observable.fetch('*[_type == "system.group"]')
 
-    // 4. Check if the user has read permission on the document and set the `canBeMentioned` property
-    const grants$: Observable<MentionOptionUser[]> = forkJoin([users$, systemGroup$]).pipe(
+    // 4. Check if the user has read permission on the document and set the `granted` property
+    const grants$: Observable<UserWithPermission[]> = forkJoin([users$, systemGroup$]).pipe(
       mergeMap(async ([users, groups]) => {
         if (!cached) {
           cachedSystemGroups = groups
@@ -81,13 +113,13 @@ export function useMentionOptions(opts: MentionHookOptions): MentionOptionsHookV
           const {granted} = await grantsPermissionOn(
             user.id,
             flattenedGrants,
-            'read',
+            permission,
             documentValue,
           )
 
           return {
             ...user,
-            canBeMentioned: granted,
+            granted: granted,
           }
         })
 
@@ -98,7 +130,7 @@ export function useMentionOptions(opts: MentionHookOptions): MentionOptionsHookV
     )
 
     // 5. Sort the users alphabetically
-    const $alphabetical: Observable<Loadable<MentionOptionUser[]>> = grants$.pipe(
+    const $alphabetical: Observable<Loadable<UserWithPermission[]>> = grants$.pipe(
       map((res) => ({
         error: null,
         loading: false,
@@ -107,13 +139,18 @@ export function useMentionOptions(opts: MentionHookOptions): MentionOptionsHookV
     )
 
     return $alphabetical
-  }, [client.observable, documentValue, projectStore, userStore])
+  }, [client.observable, documentValue, projectStore, userStore, permission])
 
   useEffect(() => {
     const initial$ = of(INITIAL_STATE)
     const state$ = concat(initial$, list$)
 
-    const sub = state$.subscribe(setState)
+    const sub = state$.subscribe({
+      next: setState,
+      error: (error) => {
+        setState({data: [], error, loading: false})
+      },
+    })
 
     return () => {
       sub.unsubscribe()

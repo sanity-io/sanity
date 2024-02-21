@@ -88,16 +88,21 @@ export default function MenuItemStory() {
             <MenuItem icon={CircleIcon} text={text} hotkeys={HOTKEYS} badgeText={'badge'} />
             <Box paddingX={2} paddingTop={2}>
               <Text muted size={1}>
-                Don't use everything at once
+                Subtitle and spacing is not recommended
               </Text>
             </Box>
             <MenuItem
               icon={CircleIcon}
               text={text}
-              hotkeys={HOTKEYS}
-              badgeText={'badge'}
               iconRight={CheckmarkIcon}
+              __unstable_subtitle="With a subtitle"
+              __unstable_space={1}
             />
+            <Box paddingX={2} paddingTop={2}>
+              <Text muted size={1}>
+                Don't use everything at once
+              </Text>
+            </Box>
             <MenuItem
               preview={<Avatar initials={AVATAR_INITIALS} size={1} />}
               icon={CircleIcon}
@@ -105,6 +110,7 @@ export default function MenuItemStory() {
               hotkeys={HOTKEYS}
               badgeText={'badge'}
               iconRight={CheckmarkIcon}
+              __unstable_subtitle="With a subtitle"
             />
           </Menu>
         </Card>

@@ -10,6 +10,10 @@ import {PaneMenuButtonItem} from './PaneMenuButtonItem'
 import {type _PaneMenuGroup, type _PaneMenuItem} from './types'
 
 function getDisabledReason(node: _PaneMenuItem) {
+  if (!node.disabled) {
+    return {disabledReason: undefined, ariaLabel: undefined, isDisabled: false}
+  }
+
   /**
    * This component supports receiving a `reason: string | react.ReactNode`.
    * We are casting it as string, to avoid the ts error, as content will be rendered into the tooltip which only accepts string, but it won't crash if it's a ReactNode.
@@ -60,7 +64,7 @@ export function PaneHeaderMenuItemActionButton(props: PaneHeaderMenuItemActionBu
 
   return (
     <StatusButton
-      disabled={Boolean(node.disabled)}
+      disabled={isDisabled}
       icon={node.icon}
       // eslint-disable-next-line react/jsx-handler-names
       onClick={node.onAction}
@@ -91,7 +95,7 @@ function PaneHeaderActionIntentButton(props: {intent: Intent; node: _PaneMenuIte
 
   return (
     <StatusButton
-      as="a"
+      forwardedAs="a"
       disabled={isDisabled}
       href={intentLink.href}
       icon={node.icon}

@@ -17,8 +17,8 @@ export default defineScope({
     },
     {
       name: 'mention-options-hook',
-      title: 'useMentionOptions',
-      component: lazy(() => import('./MentionOptionsHookStory')),
+      title: 'UserListWithPermissionsOptions',
+      component: lazy(() => import('./UserListWithPermissionsOptionsHookStory')),
     },
     {
       name: 'comments-list',

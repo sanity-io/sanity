@@ -2,10 +2,11 @@
   "//": "https://github.com/depcheck/depcheck/pull/756",
   "ignore": [
     "https:",
+    "@portabletext/react",
     "@sanity/client",
-    "@vercel/stega",
-    "@sanity/visual-editing",
+    "@sanity/preview-url-secret",
     "@sanity/react-loader",
-    "@portabletext/react"
+    "@sanity/visual-editing",
+    "@vercel/stega"
   ]
 }

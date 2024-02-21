@@ -1,16 +1,16 @@
 import {type CurrentUser} from '@sanity/types'
 import {useCallback, useMemo, useRef, useState} from 'react'
-import {EMPTY_ARRAY, Translate, useTranslation} from 'sanity'
+import {EMPTY_ARRAY, Translate, type UserListWithPermissionsHookValue, useTranslation} from 'sanity'
 
 import {commentsLocaleNamespace} from '../../../i18n'
 import {hasCommentMessageValue} from '../../helpers'
-import {type CommentMessage, type CommentsUIMode, type MentionOptionsHookValue} from '../../types'
+import {type CommentMessage, type CommentsUIMode} from '../../types'
 import {CommentInput, type CommentInputHandle, type CommentInputProps} from '../pte'
 
 interface CreateNewThreadInputProps {
   currentUser: CurrentUser
   fieldTitle: string
-  mentionOptions: MentionOptionsHookValue
+  mentionOptions: UserListWithPermissionsHookValue
   mode: CommentsUIMode
   onBlur?: CommentInputProps['onBlur']
   onFocus?: CommentInputProps['onFocus']

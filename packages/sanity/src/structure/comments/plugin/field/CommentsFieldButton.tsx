@@ -7,7 +7,13 @@ import {
   useClickOutside,
 } from '@sanity/ui'
 import {useCallback, useMemo, useRef, useState} from 'react'
-import {type CurrentUser, type PortableTextBlock, Translate, useTranslation} from 'sanity'
+import {
+  type CurrentUser,
+  type PortableTextBlock,
+  Translate,
+  type UserListWithPermissionsHookValue,
+  useTranslation,
+} from 'sanity'
 import styled from 'styled-components'
 
 import {Button, Popover, Tooltip} from '../../../../ui-components'
@@ -19,7 +25,6 @@ import {
   type CommentInputHandle,
   type CommentMessage,
   hasCommentMessageValue,
-  type MentionOptionsHookValue,
 } from '../../src'
 
 const ContentStack = styled(Stack)`
@@ -31,7 +36,7 @@ interface CommentsFieldButtonProps {
   currentUser: CurrentUser
   fieldTitle: string
   isRunningSetup: boolean
-  mentionOptions: MentionOptionsHookValue
+  mentionOptions: UserListWithPermissionsHookValue
   onChange: (value: PortableTextBlock[]) => void
   onClick?: () => void
   onCommentAdd: () => void

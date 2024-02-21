@@ -3,8 +3,8 @@ import {type CurrentUser, type PortableTextBlock} from '@sanity/types'
 import {focusFirstDescendant, focusLastDescendant, Stack} from '@sanity/ui'
 import type * as React from 'react'
 import {forwardRef, useCallback, useImperativeHandle, useMemo, useRef, useState} from 'react'
+import {type UserListWithPermissionsHookValue} from 'sanity'
 
-import {type MentionOptionsHookValue} from '../../../types'
 import {editorSchemaType} from '../config'
 import {CommentInputDiscardDialog} from './CommentInputDiscardDialog'
 import {CommentInputInner} from './CommentInputInner'
@@ -23,7 +23,7 @@ export interface CommentInputProps {
   expandOnFocus?: boolean
   focusLock?: boolean
   focusOnMount?: boolean
-  mentionOptions: MentionOptionsHookValue
+  mentionOptions: UserListWithPermissionsHookValue
   onBlur?: (e: React.FormEvent<HTMLDivElement>) => void
   onChange: (value: PortableTextBlock[]) => void
   onDiscardCancel: () => void

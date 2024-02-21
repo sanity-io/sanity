@@ -2,14 +2,19 @@ import {Box, Flex, Stack, Text} from '@sanity/ui'
 import {deburr} from 'lodash'
 import {useCallback, useImperativeHandle, useMemo, useRef, useState} from 'react'
 import * as React from 'react'
-import {CommandList, type CommandListHandle, LoadingBlock, useTranslation} from 'sanity'
+import {
+  CommandList,
+  type CommandListHandle,
+  LoadingBlock,
+  type UserWithPermission,
+  useTranslation,
+} from 'sanity'
 import styled from 'styled-components'
 
 import {commentsLocaleNamespace} from '../../../i18n'
-import {type MentionOptionUser} from '../../types'
 import {MentionsMenuItem} from './MentionsMenuItem'
 
-const EMPTY_ARRAY: MentionOptionUser[] = []
+const EMPTY_ARRAY: UserWithPermission[] = []
 
 const Root = styled(Stack)({
   maxWidth: '220px', // todo: improve
@@ -30,7 +35,7 @@ interface MentionsMenuProps {
   loading: boolean
   inputElement?: HTMLDivElement | null
   onSelect: (userId: string) => void
-  options: MentionOptionUser[] | null
+  options: UserWithPermission[] | null
 }
 
 export const MentionsMenu = React.forwardRef(function MentionsMenu(
@@ -55,7 +60,7 @@ export const MentionsMenu = React.forwardRef(function MentionsMenu(
   )
 
   const renderItem = useCallback(
-    (itemProps: MentionOptionUser) => {
+    (itemProps: UserWithPermission) => {
       return <MentionsMenuItem user={itemProps} onSelect={onSelect} />
     },
     [onSelect],
@@ -63,7 +68,7 @@ export const MentionsMenu = React.forwardRef(function MentionsMenu(
 
   const getItemDisabled = useCallback(
     (index: number) => {
-      return !options?.[index]?.canBeMentioned
+      return !options?.[index]?.granted
     },
     [options],
   )

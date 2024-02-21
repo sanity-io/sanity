@@ -1,6 +1,6 @@
 {
   "name": "@sanity/export",
-  "version": "3.29.1",
+  "version": "3.30.0",
   "description": "Export Sanity documents and assets",
   "keywords": [
     "sanity",
@@ -31,7 +31,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "@sanity/util": "3.29.1",
+    "@sanity/util": "3.30.0",
     "archiver": "^5.0.0",
     "debug": "^4.3.4",
     "get-it": "^8.4.4",

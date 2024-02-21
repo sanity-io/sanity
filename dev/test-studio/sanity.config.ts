@@ -7,6 +7,7 @@ import {nnNOLocale} from '@sanity/locale-nn-no'
 import {ptPTLocale} from '@sanity/locale-pt-pt'
 import {svSELocale} from '@sanity/locale-sv-se'
 import {SanityMonogram} from '@sanity/logos'
+import {debugSecrets} from '@sanity/preview-url-secret/sanity-plugin-debug-secrets'
 import {tsdoc} from '@sanity/tsdoc/studio'
 import {visionTool} from '@sanity/vision'
 import {defineConfig, definePlugin} from 'sanity'
@@ -284,6 +285,7 @@ export default defineConfig([
     projectId: 'ppsg7ml5',
     dataset: 'playground',
     plugins: [
+      debugSecrets(),
       presentationTool({
         previewUrl: '/preview/index.html',
       }),

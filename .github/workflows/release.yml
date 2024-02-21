@@ -29,11 +29,13 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: lts/*
-          cache: 'yarn'
           registry-url: 'https://registry.npmjs.org'
 
-      - name: Install
-        run: yarn install --frozen-lockfile
+      - name: Setup pnpm and install dependencies
+        uses: pnpm/action-setup@v3
+        with:
+          version: 8
+          run_install: true
 
       - name: Pre-flight
         run: |
@@ -82,7 +84,7 @@ jobs:
             ${{ inputs.version }}
 
       - name: Build
-        run: yarn build
+        run: pnpm build
 
       - name: Publish
         run: |
