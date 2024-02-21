@@ -41,12 +41,14 @@ interface UpdateOperationProps {
 }
 
 async function postCommentUpdate(props: UpdateOperationProps) {
-  const {client, id, comment, transactionId: transactionIdProp} = props
+  const {client, id, comment, transactionId: transactionIdProp, onUpdate} = props
 
   // Fall back to generating a new transaction id if none is provided
   const transactionId = transactionIdProp || uuid()
   const patch = client?.patch(id).set(comment)
   const transaction = client.transaction().transactionId(transactionId).patch(patch)
+
+  onUpdate?.(id, comment)
 
   // If the update contains a status, we'll update the status of all replies
   // to the comment as well.
@@ -70,7 +72,7 @@ async function postCommentUpdate(props: UpdateOperationProps) {
 }
 
 export async function updateOperation(props: UpdateOperationProps): Promise<void> {
-  const {id, comment, onUpdate, throttled: throttledProp} = props
+  const {id, comment, throttled: throttledProp} = props
 
   const hasEditedMessage = 'message' in comment
 
@@ -80,8 +82,6 @@ export async function updateOperation(props: UpdateOperationProps): Promise<void
   }
 
   const nextComment: CommentUpdatePayload = hasEditedMessage ? editedComment : comment
-
-  onUpdate?.(id, nextComment)
 
   if (!throttledProp) {
     await postCommentUpdate({
