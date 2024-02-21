@@ -1,5 +1,5 @@
 import {expect, test} from '@playwright/experimental-ct-react'
-import {type PortableTextEditor} from '@sanity/portable-text-editor'
+import {type EditorChange, type PortableTextEditor} from '@sanity/portable-text-editor'
 import {type RefObject} from 'react'
 
 import {testHelpers} from '../../../utils/testHelpers'
@@ -58,6 +58,17 @@ test.describe('Portable Text Input', () => {
       await expect($editor).toBeVisible()
       // If the ref has .schemaTypes.block, it means the editorRef was set correctly
       expect(ref?.current?.schemaTypes.block).toBeDefined()
+    })
+  })
+
+  test.describe('onEditorChange', () => {
+    test(`Supports own handler of editor changes through props`, async ({mount, page}) => {
+      const changes: EditorChange[] = []
+      const pushChange = (change: EditorChange) => changes.push(change)
+      await mount(<InputStory onEditorChange={pushChange} />)
+      const $editor = page.getByTestId('pt-input-with-editor-ref')
+      await expect($editor).toBeVisible()
+      expect(changes.slice(-1)[0].type).toEqual('ready')
     })
   })
 })

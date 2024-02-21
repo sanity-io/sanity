@@ -1,4 +1,4 @@
-import {type PortableTextEditor} from '@sanity/portable-text-editor'
+import {type EditorChange, type PortableTextEditor} from '@sanity/portable-text-editor'
 import {defineArrayMember, defineField, defineType} from '@sanity/types'
 import {createRef, type RefObject, useMemo, useState} from 'react'
 import {type InputProps, type PortableTextInputProps} from 'sanity'
@@ -8,6 +8,7 @@ import {TestWrapper} from '../../utils/TestWrapper'
 
 export function InputStory(props: {
   getRef?: (editorRef: RefObject<PortableTextEditor | null>) => void
+  onEditorChange?: (change: EditorChange) => void
 }) {
   // Use a state as ref here to be make sure we are able to call the ref callback when
   // the ref is ready
@@ -35,6 +36,7 @@ export function InputStory(props: {
               input: (inputProps: InputProps) => {
                 const editorProps = {
                   ...inputProps,
+                  onEditorChange: props.onEditorChange,
                   editorRef: createRef(),
                 } as PortableTextInputProps
                 if (editorProps.editorRef) {
@@ -51,7 +53,7 @@ export function InputStory(props: {
         ],
       }),
     ],
-    [],
+    [props.onEditorChange],
   )
 
   return (
