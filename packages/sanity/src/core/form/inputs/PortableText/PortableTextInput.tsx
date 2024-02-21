@@ -230,6 +230,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
     setIgnoreValidationError(true)
   }, [])
 
+  //telemetry på når denne blir kalt og hva grunnen er  Invalidresolutionvalue
   const respondToInvalidContent = useMemo(() => {
     if (invalidValue && invalidValue.resolution) {
       return (
