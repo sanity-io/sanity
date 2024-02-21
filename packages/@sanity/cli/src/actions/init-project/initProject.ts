@@ -270,6 +270,7 @@ export default async function initSanity(
   }
 
   const flags = await prepareFlags()
+  // We're authenticated, now lets select or create a project
   const {projectId, displayName, isFirstProject, datasetName} = await getProjectDetails()
 
   const sluggedName = deburr(displayName.toLowerCase())
@@ -646,43 +647,39 @@ export default async function initSanity(
     displayName: string
     isFirstProject: boolean
   }> {
-    let data
-
+    // If we're doing a quickstart, we don't need to prompt for project details
     if (flags.quickstart) {
-      // If we're doing a quickstart, we don't need to prompt for project details
       debug('Fetching project details from Journey API')
-      data = await fetchJourneyConfig(apiClient, flags.quickstart)
-    } else {
-      // We're authenticated, now lets select or create a project
-      debug('Prompting user to select or create a project')
-      const project = await getOrCreateProject()
-      debug(`Project with name ${project.displayName} selected`)
-
-      // Now let's pick or create a dataset
-      debug('Prompting user to select or create a dataset')
-      const dataset = await getOrCreateDataset({
-        projectId: project.projectId,
-        displayName: project.displayName,
-        dataset: flags.dataset,
-        aclMode: flags.visibility,
-        defaultConfig: flags['dataset-default'],
-      })
-      trace.log({
-        step: 'createOrSelectDataset',
-        selectedOption: dataset.userAction,
-        datasetName,
-        visibility: flags.visibility as 'private' | 'public',
-      })
-      data = {
-        projectId: project.projectId,
-        displayName: project.displayName,
-        isFirstProject: project.isFirstProject,
-        datasetName: dataset.datasetName,
-      }
-
-      debug(`Dataset with name ${dataset.datasetName} selected`)
+      return fetchJourneyConfig(apiClient, flags.quickstart)
     }
-    return data
+
+    debug('Prompting user to select or create a project')
+    const project = await getOrCreateProject()
+    debug(`Project with name ${project.displayName} selected`)
+
+    // Now let's pick or create a dataset
+    debug('Prompting user to select or create a dataset')
+    const dataset = await getOrCreateDataset({
+      projectId: project.projectId,
+      displayName: project.displayName,
+      dataset: flags.dataset,
+      aclMode: flags.visibility,
+      defaultConfig: flags['dataset-default'],
+    })
+    trace.log({
+      step: 'createOrSelectDataset',
+      selectedOption: dataset.userAction,
+      datasetName,
+      visibility: flags.visibility as 'private' | 'public',
+    })
+    debug(`Dataset with name ${dataset.datasetName} selected`)
+
+    return {
+      projectId: project.projectId,
+      displayName: project.displayName,
+      isFirstProject: project.isFirstProject,
+      datasetName: dataset.datasetName,
+    }
   }
 
   // eslint-disable-next-line complexity
