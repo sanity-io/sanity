@@ -1,9 +1,7 @@
 import {type CliCommandGroupDefinition} from '@sanity/cli'
 
 // defaultApiVersion is the backend API version used for dataset backup.
-// First version of the backup API is vX since this feature is not yet released
-// and formal API documentation is pending.
-export const defaultApiVersion = 'vX'
+export const defaultApiVersion = 'v2024-02-21'
 
 const datasetBackupGroup: CliCommandGroupDefinition = {
   name: 'backup',
