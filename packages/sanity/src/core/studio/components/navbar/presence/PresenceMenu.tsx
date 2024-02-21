@@ -53,8 +53,7 @@ export function PresenceMenu() {
         mode="bleed"
         tone={hasPresence ? 'positive' : undefined}
         tooltipProps={{
-          // @todo: rename, as its no longer an aria-label
-          content: t('presence.aria-label'),
+          content: t('presence.tooltip-content'),
         }}
       />
     )
@@ -74,6 +73,7 @@ export function PresenceMenu() {
   return (
     <MenuButton
       button={button}
+      aria-label={t('presence.aria-label')}
       id="global-presence-menu"
       menu={
         <StyledMenu>

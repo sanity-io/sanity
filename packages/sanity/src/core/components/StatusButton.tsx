@@ -1,5 +1,6 @@
 import {useTheme} from '@sanity/ui'
 import {type ForwardedRef, forwardRef, type HTMLProps, type ReactNode, useMemo} from 'react'
+import {useTranslation} from 'react-i18next'
 import styled from 'styled-components'
 
 import {Button, type ButtonProps} from '../../ui-components'
@@ -38,6 +39,7 @@ export const StatusButton = forwardRef(function StatusButton(
 ) {
   const {disabled: disabledProp, icon, label, mode = 'bleed', text, tone, ...restProps} = props
   const theme = useTheme()
+  const {t} = useTranslation()
   const toneColor = tone && theme.sanity.color.solid[tone]
   const dotStyle = useMemo(() => ({backgroundColor: toneColor?.enabled.bg}), [toneColor])
   const disabled = Boolean(disabledProp)
@@ -46,7 +48,7 @@ export const StatusButton = forwardRef(function StatusButton(
     <StyledButton
       data-ui="StatusButton"
       {...restProps}
-      aria-label={label}
+      aria-label={label || t('status-button.aria-label')}
       disabled={disabled}
       mode={mode}
       ref={ref}
