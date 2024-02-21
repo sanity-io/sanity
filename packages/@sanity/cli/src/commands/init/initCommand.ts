@@ -60,7 +60,6 @@ export interface InitFlags {
    * Overrides `project` option.
    * Overrides `dataset` option.
    * Overrides `template` option.
-   * Overrides `template` option.
    * Overrides `visibility` option.
    * @beta
    */
