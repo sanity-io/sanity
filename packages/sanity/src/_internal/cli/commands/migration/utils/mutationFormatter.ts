@@ -61,13 +61,7 @@ function formatPatchMutation(chalk: Chalk, patch: NodePatch<any>): string {
   if (op.type === 'set' || op.type === 'setIfMissing') {
     return [path, `${formattedType}(${JSON.stringify(op.value)})`].join(': ')
   }
-  if (op.type === 'assign') {
-    return [path, `${formattedType}(${JSON.stringify(op.value)})`].join(': ')
-  }
-  if (op.type === 'unassign') {
-    return [path, `${formattedType}(${JSON.stringify(op.keys)})`].join(': ')
-  }
-  if (op.type === 'insert' || op.type === 'upsert') {
+  if (op.type === 'insert') {
     return [
       path,
       `${formattedType}(${op.position}, ${encodeItemRef(op.referenceItem)}, ${JSON.stringify(
