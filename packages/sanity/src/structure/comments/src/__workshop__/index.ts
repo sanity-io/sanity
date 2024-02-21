@@ -75,5 +75,10 @@ export default defineScope({
       title: 'CommentsListItemReferencedValue',
       component: lazy(() => import('./CommentsListItemReferencedValueStory')),
     },
+    {
+      name: 'comments-list-item-layout',
+      title: 'CommentsListItemLayoutStory',
+      component: lazy(() => import('./CommentsListItemLayoutStory')),
+    },
   ],
 })
