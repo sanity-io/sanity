@@ -18,9 +18,9 @@ const VARIANTS: Variants = {
   visible: {opacity: 1, y: 0},
 }
 
-// TODO: Localize these strings
-const TMP_BUTTON_COPY = 'Add comment'
-const TMP_BUTTON_DISABLED_COPY = 'Comments cannot overlap'
+// TODO: localize
+const BUTTON_COPY = 'Add comment'
+const BUTTON_DISABLED_COPY = 'Comments cannot overlap'
 
 interface FloatingButtonPopoverProps {
   disabled: boolean
@@ -35,7 +35,7 @@ export function FloatingButtonPopover(props: FloatingButtonPopoverProps) {
 
   useClickOutside(onClickOutside, [popoverElement])
 
-  const text = disabled ? TMP_BUTTON_DISABLED_COPY : TMP_BUTTON_COPY
+  const text = disabled ? BUTTON_DISABLED_COPY : BUTTON_COPY
 
   const content = (
     <Button
