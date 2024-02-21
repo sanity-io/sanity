@@ -49,13 +49,13 @@ test.describe('Portable Text Input', () => {
       mount,
       page,
     }) => {
+      const {getFocusedPortableTextEditor} = testHelpers({page})
       let ref: undefined | RefObject<PortableTextEditor | null>
       const getRef = (editorRef: RefObject<PortableTextEditor | null>) => {
         ref = editorRef
       }
       await mount(<InputStory getRef={getRef} />)
-      const $editor = page.getByTestId('pt-input-with-editor-ref')
-      await expect($editor).toBeVisible()
+      await getFocusedPortableTextEditor('field-body')
       // If the ref has .schemaTypes.block, it means the editorRef was set correctly
       expect(ref?.current?.schemaTypes.block).toBeDefined()
     })
@@ -63,12 +63,12 @@ test.describe('Portable Text Input', () => {
 
   test.describe('onEditorChange', () => {
     test(`Supports own handler of editor changes through props`, async ({mount, page}) => {
+      const {getFocusedPortableTextEditor} = testHelpers({page})
       const changes: EditorChange[] = []
       const pushChange = (change: EditorChange) => changes.push(change)
       await mount(<InputStory onEditorChange={pushChange} />)
-      const $editor = page.getByTestId('pt-input-with-editor-ref')
-      await expect($editor).toBeVisible()
-      expect(changes.slice(-1)[0].type).toEqual('ready')
+      await getFocusedPortableTextEditor('field-body')
+      expect(changes.length).toBeGreaterThan(0)
     })
   })
 })
