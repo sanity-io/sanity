@@ -1,10 +1,11 @@
 import {AddCommentIcon} from '@sanity/icons'
-import {Box, ConditionalWrapper, Text, useClickOutside} from '@sanity/ui'
+import {useClickOutside} from '@sanity/ui'
 import {motion, type Variants} from 'framer-motion'
 import {useState} from 'react'
 import styled from 'styled-components'
 
-import {Button, Popover, type PopoverProps, Tooltip} from '../../../../../ui-components'
+import {Button, Popover, type PopoverProps} from '../../../../../ui-components'
+import {CommentDisabledIcon} from '../../../src'
 
 const MotionPopover = styled(motion(Popover))`
   user-select: none;
@@ -19,21 +20,7 @@ const VARIANTS: Variants = {
 
 // TODO: Localize these strings
 const TMP_BUTTON_COPY = 'Add comment'
-const TMP_TOOLTIP_COPY = `Overlapping comments aren't supported yet. Please choose a different segment or join the existing thread.`
-
-function ConditionalWrapperContent(content: React.ReactNode) {
-  return (
-    <Tooltip
-      content={
-        <Box style={{width: 200}} padding={1}>
-          <Text size={1}>{TMP_TOOLTIP_COPY}</Text>
-        </Box>
-      }
-    >
-      <div>{content}</div>
-    </Tooltip>
-  )
-}
+const TMP_BUTTON_DISABLED_COPY = 'Comments cannot overlap'
 
 interface FloatingButtonPopoverProps {
   disabled: boolean
@@ -44,23 +31,22 @@ interface FloatingButtonPopoverProps {
 
 export function FloatingButtonPopover(props: FloatingButtonPopoverProps) {
   const {disabled, onClick, onClickOutside, referenceElement} = props
-
   const [popoverElement, setPopoverElement] = useState<HTMLButtonElement | null>(null)
 
   useClickOutside(onClickOutside, [popoverElement])
 
+  const text = disabled ? TMP_BUTTON_DISABLED_COPY : TMP_BUTTON_COPY
+
   const content = (
-    <ConditionalWrapper condition={disabled} wrapper={ConditionalWrapperContent}>
-      <Button
-        data-testid="inline-comment-button"
-        disabled={disabled}
-        icon={AddCommentIcon}
-        mode="bleed"
-        onClick={onClick}
-        ref={setPopoverElement}
-        text={TMP_BUTTON_COPY}
-      />
-    </ConditionalWrapper>
+    <Button
+      data-testid="inline-comment-button"
+      disabled={disabled}
+      icon={disabled ? CommentDisabledIcon : AddCommentIcon}
+      mode="bleed"
+      onClick={onClick}
+      ref={setPopoverElement}
+      text={text}
+    />
   )
 
   return (
