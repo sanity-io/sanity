@@ -1,8 +1,8 @@
 import fs from 'fs/promises'
 import path from 'path'
-import {type DocumentDefinition, type ObjectDefinition} from 'sanity'
 import {Worker} from 'worker_threads'
 
+import {type DocumentDefinition, type ObjectDefinition} from '../../../types'
 import {type CliApiClient} from '../types'
 import {getCliWorkerPath} from './cliWorker'
 
