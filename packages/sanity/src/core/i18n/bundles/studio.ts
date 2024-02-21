@@ -1055,14 +1055,16 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
 
   /** Label for action to manage members of the current studio project */
   'presence.action.manage-members': 'Manage members',
-  /** Accessibility label for Avatar Stack */
-  'presence.aria-label': 'Who is here',
+  /** Accessibility label for presence menu button */
+  'presence.aria-label': 'Global presence',
   /** Message description for when no one else is currently present */
   'presence.no-one-else-description': 'Invite people to the project to see their online status.',
   /** Message title for when no one else is currently present */
   'presence.no-one-else-title': 'No one else is here',
   /** Message for when a user is not in a document (displayed in the global presence menu) */
   'presence.not-in-a-document': 'Not in a document',
+  /** Tooltip content text for presence menu button */
+  'presence.tooltip-content': 'Who is here',
 
   /** Fallback title shown when a preview does not provide a title */
   'preview.default.title-fallback': 'Untitled',
@@ -1524,6 +1526,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'search.recent-searches-label': 'Recent searches',
   /** Accessibility label for the search results section, shown when the user has typed valid terms */
   'search.search-results-aria-label': 'Search results',
+  /** Accessibility label for the navbar status button */
+  'status-button.aria-label': 'Configuration status',
 
   /** Description for error when the timeline for the given document can't be loaded */
   'timeline.error.load-document-changes-description':
