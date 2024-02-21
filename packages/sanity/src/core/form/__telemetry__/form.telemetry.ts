@@ -2,26 +2,29 @@ import {defineEvent} from '@sanity/telemetry'
 
 export const PortableTextInputExpanded = defineEvent({
   version: 1,
-  name: 'Portable Text Editor expanded',
+  name: 'Portable Text Editor Expanded',
   description: 'The portable text editor was expanded',
 })
 
 export const PortableTextInputCollapsed = defineEvent({
   version: 1,
-  name: 'Portable Text Editor collapsed',
+  name: 'Portable Text Editor Collapsed',
   description: 'The portable text editor was collapsed',
 })
 
 export const PortableTextInvalidValueIgnore = defineEvent({
   version: 1,
-  name: 'Portable Text Editor ignore invalid value ',
+  name: 'Portable Text Editor Ignored Invalid Value ',
   description:
     'The portable text got an invalid value from the form and pressed button to ignore it',
 })
 
-export const PortableTextInvalidValueResolve = defineEvent({
+export const PortableTextInvalidValueResolve = defineEvent<{
+  PTEInvalidValueId: string
+  PTEInvalidValueDescription: string
+}>({
   version: 1,
-  name: 'Portable Text Editor resolve invalid value',
+  name: 'Portable Text Editor Resolved Invalid Value',
   description:
-    'The portable text got an invalid value from the form and pressed button to resolve it',
+    'The portable text got an invalid value from the form and pressed button to resolve it.',
 })

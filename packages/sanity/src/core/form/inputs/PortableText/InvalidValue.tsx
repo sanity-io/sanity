@@ -31,11 +31,14 @@ export function InvalidValue(props: InvalidValueProps) {
   const telemetry = useTelemetry()
 
   const {t} = useTranslation()
-  //What do people do when they resolve?
+
   const handleAction = useCallback(() => {
     if (resolution) {
       onChange({type: 'mutation', patches: resolution.patches})
-      telemetry.log(PortableTextInvalidValueResolve)
+      telemetry.log(PortableTextInvalidValueResolve, {
+        PTEInvalidValueId: resolution.i18n.description,
+        PTEInvalidValueDescription: resolution.description,
+      })
     }
   }, [onChange, resolution, telemetry])
 
