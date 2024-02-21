@@ -20,6 +20,7 @@ export const ptAllTheBellsAndWhistlesType = defineType({
       type: 'string',
       name: 'title',
       title: 'Title',
+      placeholder: 'Enter a title',
     }),
     defineField({
       type: 'array',

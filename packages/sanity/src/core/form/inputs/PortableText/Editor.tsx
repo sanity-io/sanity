@@ -13,7 +13,10 @@ import {
 } from '@sanity/portable-text-editor'
 import {type Path} from '@sanity/types'
 import {BoundaryElementProvider, useBoundaryElement, useGlobalKeyDown, useLayer} from '@sanity/ui'
+// eslint-disable-next-line camelcase
+import {getTheme_v2} from '@sanity/ui/theme'
 import {useCallback, useMemo, useRef} from 'react'
+import styled, {css} from 'styled-components'
 
 import {TooltipDelayGroupProvider} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'
@@ -38,6 +41,13 @@ const noOutlineStyle = {outline: 'none'} as const
 // The <FormBuilder> id that represents the default (document pane) form layout.
 // This is used to determine whether this editor should apply document pane specific styling.
 const FORM_BUILDER_DEFAULT_ID = 'root'
+
+const PlaceholderWrapper = styled.span((props) => {
+  const {color} = getTheme_v2(props.theme)
+  return css`
+    color: ${color.input.default.enabled.placeholder};
+  `
+})
 
 interface EditorProps {
   hotkeys: HotkeyOptions
@@ -117,7 +127,9 @@ export function Editor(props: EditorProps) {
 
   const renderPlaceholder = useCallback(
     () => (
-      <span data-testid="pt-input-placeholder">{t('inputs.portable-text.empty-placeholder')}</span>
+      <PlaceholderWrapper data-testid="pt-input-placeholder">
+        {t('inputs.portable-text.empty-placeholder')}
+      </PlaceholderWrapper>
     ),
     [t],
   )
