@@ -19,12 +19,14 @@ import {
   type ClipboardEvent,
   type FocusEvent,
   type KeyboardEvent,
+  type PropsWithChildren,
   type ReactElement,
   type RefObject,
 } from 'react'
 import {type Observable, type Subject} from 'rxjs'
 import {type Descendant, type Node as SlateNode, type Operation as SlateOperation} from 'slate'
 import {type ReactEditor} from 'slate-react'
+import {type DOMNode} from 'slate-react/dist/utils/dom'
 
 import {type PortableTextEditor} from '../editor/PortableTextEditor'
 import {type Patch} from '../types/patch'
@@ -44,7 +46,7 @@ export interface EditableAPI {
   blur: () => void
   delete: (selection: EditorSelection, options?: EditableAPIDeleteOptions) => void
   findByPath: (path: Path) => [PortableTextBlock | PortableTextChild | undefined, Path | undefined]
-  findDOMNode: (element: PortableTextBlock | PortableTextChild) => Node | undefined
+  findDOMNode: (element: PortableTextBlock | PortableTextChild) => DOMNode | undefined
   focus: () => void
   focusBlock: () => PortableTextBlock | undefined
   focusChild: () => PortableTextChild | undefined
@@ -287,6 +289,16 @@ export type ErrorChange = {
 }
 
 /**
+ * If a rangeDecoration was moved (for instance by user adding characters in front of it),
+ * this event will be emitted with the new range selection and the original range decoration.
+ * @beta */
+export type RangeDecorationMovedChange = {
+  type: 'rangeDecorationMoved'
+  newRangeSelection: EditorSelection
+  rangeDecoration: RangeDecoration
+}
+
+/**
  * The editor has invalid data in the value that can be resolved by the user
  * @beta */
 export type InvalidValueResolution = {
@@ -357,6 +369,7 @@ export type EditorChange =
   | LoadingChange
   | MutationChange
   | PatchChange
+  | RangeDecorationMovedChange
   | ReadyChange
   | RedoChange
   | SelectionChange
@@ -505,6 +518,42 @@ export type ScrollSelectionIntoViewFunction = (
   editor: PortableTextEditor,
   domRange: globalThis.Range,
 ) => void
+
+/**
+ * A range decoration is a UI affordance that wraps a given selection range in the editor
+ * with a custom component. This can be used to highlight search results,
+ * mark validation errors on specific words, draw user presence and similar.
+ * @alpha */
+export interface RangeDecoration {
+  /**
+   * A component for rendering the range decoration.
+   * This component takes only children, and you could render
+   * your own component with own props by wrapping those children.
+   *
+   * @example
+   * ```ts
+   * (rangeComponentProps: PropsWithChildren) => (
+   *    <BlackListHighlighter {...location}>
+   *      {rangeComponentProps.children}
+   *    </BlackListHighlighter>
+   *  )
+   * ```
+   */
+  component: (props: PropsWithChildren) => ReactElement
+  /**
+   * A function that will can tell if the range has become invalid.
+   * The range will not be rendered when you return `true` from this function.
+   */
+  isRangeInvalid: (editor: PortableTextEditor) => boolean
+  /**
+   * The editor content selection range
+   */
+  selection: EditorSelection
+  /**
+   * The editor content selection range
+   */
+  payload?: Record<string, unknown>
+}
 
 /** @internal */
 export type PortableTextMemberSchemaTypes = {
