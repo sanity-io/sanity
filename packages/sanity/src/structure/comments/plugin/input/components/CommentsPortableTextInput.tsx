@@ -24,6 +24,7 @@ import {
   CommentInlineHighlightSpan,
   type CommentMessage,
   type CommentsTextSelectionItem,
+  type CommentUpdateOperationOptions,
   type CommentUpdatePayload,
   currentSelectionIsOverlappingWithComment,
   hasCommentMessageValue,
@@ -38,6 +39,10 @@ import {FloatingButtonPopover} from './FloatingButtonPopover'
 import {InlineCommentInputPopover} from './InlineCommentInputPopover'
 
 const EMPTY_ARRAY: [] = []
+
+const UPDATE_OPERATION_OPTIONS: CommentUpdateOperationOptions = {
+  throttled: true,
+}
 
 const AI_ASSIST_TYPE = 'sanity.assist.instruction.prompt'
 
@@ -191,7 +196,9 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
   )
 
   const handleSelectionChange = useCallback(
-    (selection: EditorSelection | null, isRangeSelected: boolean) => {
+    (selection: EditorSelection | null) => {
+      const isRangeSelected = selection?.anchor.offset !== selection?.focus.offset
+
       const fragment = getFragment()
       const isValidSelection = fragment?.every(isPortableTextTextBlock)
 
@@ -212,7 +219,7 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
     [handleSelectionChange],
   )
 
-  const handleBuildAddedRangeDecorations = useCallback(
+  const handleBuildRangeDecorations = useCallback(
     (commentsToDecorate: CommentDocument[]) => {
       if (!editorRef.current) return EMPTY_ARRAY
       const editorValue = PortableTextEditor.getValue(editorRef.current) || EMPTY_ARRAY
@@ -233,18 +240,8 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
   const onEditorChange = useCallback(
     (change: EditorChange) => {
       if (change.type === 'selection') {
-        const isRangeSelected = change.selection?.anchor.offset !== change.selection?.focus.offset
-
-        // Set the current selection to null if the selection is not a range.
-        // This will make sure that the floating button is not displayed immediately
-        // and we don't need to wait for the debounce to finish before hiding it.
-        if (!isRangeSelected && !hasValue) {
-          resetStates()
-          debounceSelectionChange.cancel()
-          return
-        }
-
-        debounceSelectionChange(change.selection, isRangeSelected)
+        resetStates()
+        debounceSelectionChange(change.selection)
       }
 
       // The `rangeDecorationMoved` event triggers when range decorations move, even if
@@ -272,8 +269,20 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
 
         if (!comment) return
 
-        const nextDecorations = handleBuildAddedRangeDecorations([comment])
+        // Build the range decorations for the comment that was moved.
+        const nextDecorations = handleBuildRangeDecorations([comment])
 
+        // Update the range decorations for the comment that was moved.
+        // We do this to get immediate feedback in the UI when the comment is moved.
+        // The actual comment update is throttled and is done below in `operation.update`.
+        setAddedCommentsDecorations((prev) => {
+          // eslint-disable-next-line max-nested-callbacks
+          const next = prev.filter((p) => p.payload?.commentId !== commentId)
+
+          return next.concat(nextDecorations)
+        })
+
+        // TODO: simpliy and add comment that explains this if statement
         if (
           change.newRangeSelection?.focus.path[0] &&
           isKeySegment(change.newRangeSelection.focus.path[0]) &&
@@ -291,7 +300,14 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
           newRange = {_key: currentBlockKey, text: currentRangeText}
         }
 
-        if (comment && newRange) {
+        if (newRange) {
+          const nextValue: CommentsTextSelectionItem[] = [
+            ...(comment.target.path.selection?.value
+              // TODO: add a comment that explains this filter
+              .filter((r) => r._key !== previousBlockKey && r._key !== currentBlockKey)
+              .concat(newRange) || EMPTY_ARRAY),
+          ]
+
           const nextComment: CommentUpdatePayload = {
             target: {
               ...comment.target,
@@ -299,30 +315,21 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
                 ...comment.target.path,
                 selection: {
                   type: 'text',
-                  value: [
-                    ...(comment.target.path.selection?.value
-                      .filter((r) => r._key !== previousBlockKey && r._key !== currentBlockKey)
-                      .concat(newRange) || EMPTY_ARRAY),
-                  ],
+                  value: nextValue,
                 },
               },
             },
           }
 
-          operation.update(comment._id, nextComment, {
-            throttled: true,
-          })
+          // Perform the actual update of the comment with the new range.
+          // The update is throttled to avoid too many updates in a short time.
+          // This is because the `rangeDecorationMoved` event can be triggered
+          // on every change in the editor.
+          operation.update(comment._id, nextComment, UPDATE_OPERATION_OPTIONS)
         }
       }
     },
-    [
-      hasValue,
-      debounceSelectionChange,
-      resetStates,
-      handleBuildAddedRangeDecorations,
-      getComment,
-      operation,
-    ],
+    [debounceSelectionChange, resetStates, handleBuildRangeDecorations, getComment, operation],
   )
 
   // The range decoration for the comment input. This is used to position the
@@ -389,6 +396,9 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
     } as HTMLElement
   }, [currentSelectionRect])
 
+  // This effect is needed to update the reference element for the popover
+  // when the current selection changes so that it is always positioned
+  // on the current selection.
   useEffect(() => {
     if (!currentSelection) return undefined
     scrollElement?.addEventListener('wheel', handleSetCurrentSelectionRect)
@@ -398,12 +408,15 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
     }
   }, [currentSelection, scrollElement, handleSetCurrentSelectionRect])
 
+  // This is effect is needed to handle remote changes to the comments.
+  // That is, when another user adds, updates or deletes a comment, we need
+  // to update the range decorations to reflect these changes in the UI.
   useEffect(() => {
     const parentComments = textComments.map((c) => c.parentComment)
-    const nextDecorations = handleBuildAddedRangeDecorations(parentComments)
+    const nextDecorations = handleBuildRangeDecorations(parentComments)
 
     setAddedCommentsDecorations(nextDecorations)
-  }, [handleBuildAddedRangeDecorations, textComments])
+  }, [handleBuildRangeDecorations, textComments])
 
   const showFloatingButton = Boolean(currentSelection && canSubmit && selectionReferenceElement)
   const showFloatingInput = Boolean(nextCommentSelection && popoverAuthoringReferenceElement)
