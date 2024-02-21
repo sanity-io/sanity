@@ -8,6 +8,7 @@ import {
 } from '@sanity/types'
 
 import {type CommentTextSelection} from '../../types'
+import {COMMENT_INDICATORS} from './buildRangeDecorationSelectionsFromComments'
 
 interface BuildSelectionFromFragmentProps {
   fragment: PortableTextBlock[]
@@ -76,7 +77,7 @@ export function buildTextSelectionFromFragment(
       }
       return {
         _key: originalBlock._key,
-        text: `${originalTextBeforeSelection}<comment>${fragmentBlockText}</comment>${originalTextAfterSelection}`,
+        text: `${originalTextBeforeSelection}${COMMENT_INDICATORS[0]}${fragmentBlockText}${COMMENT_INDICATORS[1]}${originalTextAfterSelection}`,
       }
     }),
   }
