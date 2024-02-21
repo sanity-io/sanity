@@ -1,7 +1,9 @@
 import {expect, test} from '@playwright/experimental-ct-react'
+import {type PortableTextEditor} from '@sanity/portable-text-editor'
+import {type RefObject} from 'react'
 
 import {testHelpers} from '../../../utils/testHelpers'
-import InputStory from './InputStory'
+import {InputStory} from './InputStory'
 
 test.describe('Portable Text Input', () => {
   test.describe('Activation', () => {
@@ -39,6 +41,23 @@ test.describe('Portable Text Input', () => {
       await insertPortableText('Hello there', $pte)
       // Assertion: placeholder was removed
       await expect($placeholder).not.toBeVisible()
+    })
+  })
+
+  test.describe('Editor Ref', () => {
+    test(`Editor can be controlled from outside the Input using the editorRef prop`, async ({
+      mount,
+      page,
+    }) => {
+      let ref: undefined | RefObject<PortableTextEditor | null>
+      const getRef = (editorRef: RefObject<PortableTextEditor | null>) => {
+        ref = editorRef
+      }
+      await mount(<InputStory getRef={getRef} />)
+      const $editor = page.getByTestId('pt-input-with-editor-ref')
+      await expect($editor).toBeVisible()
+      // If the ref has .schemaTypes.block, it means the editorRef was set correctly
+      expect(ref?.current?.schemaTypes.block).toBeDefined()
     })
   })
 })
