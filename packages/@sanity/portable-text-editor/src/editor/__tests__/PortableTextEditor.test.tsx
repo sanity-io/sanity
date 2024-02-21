@@ -115,6 +115,7 @@ describe('initialization', () => {
     const initialSelection: EditorSelection = {
       anchor: {path: [{_key: '123'}, 'children', {_key: '567'}], offset: 2},
       focus: {path: [{_key: '123'}, 'children', {_key: '567'}], offset: 2},
+      backward: false,
     }
     const onChange = jest.fn()
     render(
@@ -140,10 +141,12 @@ describe('initialization', () => {
     const initialSelection: EditorSelection = {
       anchor: {path: [{_key: '123'}, 'children', {_key: '567'}], offset: 0},
       focus: {path: [{_key: '123'}, 'children', {_key: '567'}], offset: 0},
+      backward: false,
     }
     const newSelection: EditorSelection = {
       anchor: {path: [{_key: '123'}, 'children', {_key: '567'}], offset: 0},
       focus: {path: [{_key: '123'}, 'children', {_key: '567'}], offset: 3},
+      backward: false,
     }
     const onChange = jest.fn()
     const {rerender} = render(

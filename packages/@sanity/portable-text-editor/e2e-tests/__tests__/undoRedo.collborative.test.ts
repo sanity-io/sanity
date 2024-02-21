@@ -264,11 +264,13 @@ describe('undo/redo', () => {
     const startSelectionA = {
       anchor: {path: [{_key: 'randomKey0'}, 'children', {_key: 'randomKey1'}], offset: 5},
       focus: {path: [{_key: 'randomKey0'}, 'children', {_key: 'randomKey1'}], offset: 5},
+      backward: false,
     }
     await editorA.setSelection(startSelectionA)
     const startSelectionB = {
       anchor: {path: [{_key: 'randomKey0'}, 'children', {_key: 'randomKey1'}], offset: 11},
       focus: {path: [{_key: 'randomKey0'}, 'children', {_key: 'randomKey1'}], offset: 11},
+      backward: false,
     }
     await editorB.setSelection(startSelectionB)
     await editorA.insertText('123')
@@ -366,11 +368,13 @@ describe('undo/redo', () => {
     const startSelectionA = {
       anchor: {path: [{_key: 'randomKey0'}, 'children', {_key: 'randomKey1'}], offset: 5},
       focus: {path: [{_key: 'randomKey0'}, 'children', {_key: 'randomKey1'}], offset: 5},
+      backward: false,
     }
     await editorA.setSelection(startSelectionA)
     const startSelectionB = {
       anchor: {path: [{_key: 'randomKey0'}, 'children', {_key: 'randomKey1'}], offset: 18},
       focus: {path: [{_key: 'randomKey0'}, 'children', {_key: 'randomKey1'}], offset: 18},
+      backward: false,
     }
     await editorB.setSelection(startSelectionB)
     await editorB.pressKey('Backspace')
@@ -448,6 +452,7 @@ describe('undo/redo', () => {
     const desiredSelectionA = {
       anchor: {path: [{_key: 'randomKey0'}, 'children', {_key: 'randomKey1'}], offset: 18},
       focus: {path: [{_key: 'randomKey0'}, 'children', {_key: 'randomKey1'}], offset: 18},
+      backward: false,
     }
     await editorA.setSelection(desiredSelectionA)
     await editorA.pressKey('Enter')
@@ -539,11 +544,13 @@ describe('undo/redo', () => {
     const startSelectionA = {
       anchor: {path: [{_key: 'randomKey0'}, 'children', {_key: 'randomKey1'}], offset: 5},
       focus: {path: [{_key: 'randomKey0'}, 'children', {_key: 'randomKey1'}], offset: 5},
+      backward: false,
     }
     await editorA.setSelection(startSelectionA)
     const startSelectionB = {
       anchor: {path: [{_key: 'randomKey0'}, 'children', {_key: 'randomKey1'}], offset: 11},
       focus: {path: [{_key: 'randomKey0'}, 'children', {_key: 'randomKey1'}], offset: 11},
+      backward: false,
     }
     await editorB.setSelection(startSelectionB)
     await editorA.insertText('123')
@@ -622,6 +629,7 @@ describe('undo/redo', () => {
             },
           ],
         },
+        "backward": false,
         "focus": Object {
           "offset": 8,
           "path": Array [
@@ -651,6 +659,7 @@ describe('undo/redo', () => {
             },
           ],
         },
+        "backward": false,
         "focus": Object {
           "offset": 14,
           "path": Array [
@@ -689,11 +698,13 @@ describe('undo/redo', () => {
     const startSelectionA = {
       anchor: {path: [{_key: 'randomKey0'}, 'children', {_key: 'randomKey1'}], offset: 5},
       focus: {path: [{_key: 'randomKey0'}, 'children', {_key: 'randomKey1'}], offset: 5},
+      backward: false,
     }
     await editorA.setSelection(startSelectionA)
     const startSelectionB = {
       anchor: {path: [{_key: 'randomKey0'}, 'children', {_key: 'randomKey1'}], offset: 11},
       focus: {path: [{_key: 'randomKey0'}, 'children', {_key: 'randomKey1'}], offset: 11},
+      backward: false,
     }
     await editorB.setSelection(startSelectionB)
     await editorA.pressKey('1')
@@ -853,11 +864,13 @@ describe('undo/redo', () => {
     const startSelectionA = {
       anchor: {path: [{_key: 'randomKey0'}, 'children', {_key: 'randomKey1'}], offset: 1},
       focus: {path: [{_key: 'randomKey0'}, 'children', {_key: 'randomKey1'}], offset: 1},
+      backward: false,
     }
     await editorA.setSelection(startSelectionA)
     const startSelectionB = {
       anchor: {path: [{_key: 'randomKey2'}, 'children', {_key: 'randomKey3'}], offset: 1},
       focus: {path: [{_key: 'randomKey2'}, 'children', {_key: 'randomKey3'}], offset: 1},
+      backward: false,
     }
     await editorB.setSelection(startSelectionB)
     await editorA.pressKey('a')
@@ -1060,6 +1073,7 @@ describe('undo/redo', () => {
       const desiredSelectionA = {
         anchor: {path: [{_key: 'blockA'}, 'children', {_key: 'spanA'}], offset: 0},
         focus: {path: [{_key: 'blockA'}, 'children', {_key: 'spanA'}], offset: 0},
+        backward: false,
       }
       const p1Prefix = 'Paragraph 1: '
       await editorA.setSelection(desiredSelectionA)
@@ -1146,6 +1160,7 @@ describe('undo/redo', () => {
       const desiredSelectionA = {
         anchor: {path: [{_key: 'blockA'}, 'children', {_key: 'spanA'}], offset: 0},
         focus: {path: [{_key: 'blockA'}, 'children', {_key: 'spanA'}], offset: 0},
+        backward: false,
       }
       const p1Prefix = 'Paragraph 1: '
       await editorA.setSelection(desiredSelectionA)
@@ -1242,6 +1257,7 @@ describe('undo/redo', () => {
       const desiredSelectionA = {
         anchor: {path: [{_key: 'blockA'}, 'children', {_key: 'spanA'}], offset: charOffset},
         focus: {path: [{_key: 'blockA'}, 'children', {_key: 'spanA'}], offset: charOffset},
+        backward: false,
       }
       await editorA.setSelection(desiredSelectionA)
       await editorA.pressKey('Backspace')
@@ -1296,6 +1312,7 @@ describe('undo/redo', () => {
       const desiredSelectionA = {
         anchor: {path: [{_key: 'blockA'}, 'children', {_key: 'spanA'}], offset: charOffset},
         focus: {path: [{_key: 'blockA'}, 'children', {_key: 'spanA'}], offset: charOffset},
+        backward: false,
       }
       await editorA.setSelection(desiredSelectionA)
       await editorA.pressKey('Backspace')
@@ -1350,6 +1367,7 @@ describe('undo/redo', () => {
       const desiredSelectionA = {
         anchor: {path: [{_key: 'blockA'}, 'children', {_key: 'spanA'}], offset: charOffset},
         focus: {path: [{_key: 'blockA'}, 'children', {_key: 'spanA'}], offset: charOffset},
+        backward: false,
       }
       await editorA.setSelection(desiredSelectionA)
       await editorA.pressKey('Backspace')

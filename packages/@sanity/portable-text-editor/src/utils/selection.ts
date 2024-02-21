@@ -59,7 +59,7 @@ export function normalizeSelection(
     newFocus = normalizePoint(focus, value)
   }
   if (newAnchor && newFocus) {
-    return {anchor: newAnchor, focus: newFocus}
+    return {anchor: newAnchor, focus: newFocus, backward: selection.backward}
   }
   return null
 }
