@@ -1,4 +1,5 @@
 import {parentPort, workerData} from 'worker_threads'
+
 import {getAndWriteJourneySchema} from '../util/journeyConfig'
 
 getAndWriteJourneySchema(workerData)
