@@ -11,11 +11,12 @@ export default function CommentsListItemReferencedValueStory() {
   const value = useMemo(() => {
     return [
       {
-        _key: 'key',
+        _key: 'abc',
         _type: 'block',
+        markDefs: [],
         children: [
           {
-            _key: 'key',
+            _key: '123',
             _type: 'span',
             marks: [],
             text,
