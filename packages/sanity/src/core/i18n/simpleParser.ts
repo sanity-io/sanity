@@ -30,13 +30,23 @@ export type TextToken = {
  * @internal
  * @hidden
  */
-export type Token = OpenTagToken | CloseTagToken | TextToken
+export type InterpolationToken = {
+  type: 'interpolation'
+  variable: string
+}
+
+/**
+ * @internal
+ * @hidden
+ */
+export type Token = OpenTagToken | CloseTagToken | TextToken | InterpolationToken
 
 const OPEN_TAG_RE = /^<(?<tag>[^\s\d<][^/?><]+)\/?>/
 const CLOSE_TAG_RE = /<\/(?<tag>[^>]+)>/
 const SELF_CLOSING_RE = /<[^>]+\/>/
 const VALID_COMPONENT_NAME_RE = /^[A-Z][A-Za-z0-9]+$/
 const VALID_HTML_TAG_NAME_RE = /^[a-z]+$/
+const TEMPLATE_RE = /{{\s*?([^}]+)\s*?}}/g
 
 /**
  * Parses a string for simple tags
@@ -58,7 +68,7 @@ export function simpleParser(input: string): Token[] {
         const tagName = match.groups!.tag
         validateTagName(tagName)
         if (text) {
-          tokens.push({type: 'text', text})
+          tokens.push(...textTokenWithInterpolation(text))
           text = ''
         }
         if (isSelfClosing(match[0])) {
@@ -88,7 +98,7 @@ export function simpleParser(input: string): Token[] {
           )
         }
         if (text) {
-          tokens.push({type: 'text', text})
+          tokens.push(...textTokenWithInterpolation(text))
           text = ''
         }
         tokens.push({type: 'tagClose', name: tagName})
@@ -111,9 +121,51 @@ export function simpleParser(input: string): Token[] {
     )
   }
   if (text) {
-    tokens.push({type: 'text', text})
+    tokens.push(...textTokenWithInterpolation(text))
   }
   return tokens
+}
+
+function textTokenWithInterpolation(text: string): Token[] {
+  const tokens: Token[] = []
+
+  const interpolations = text.matchAll(TEMPLATE_RE)
+  let lastIndex = 0
+  for (const match of interpolations) {
+    if (typeof match.index === 'undefined') {
+      continue
+    }
+
+    const pre = text.slice(lastIndex, match.index)
+    if (pre.length > 0) {
+      tokens.push({type: 'text', text: pre})
+    }
+
+    tokens.push(parseInterpolation(match[0]))
+
+    lastIndex += pre.length + match[0].length
+  }
+
+  if (lastIndex < text.length) {
+    tokens.push({type: 'text', text: text.slice(lastIndex)})
+  }
+
+  return tokens
+}
+
+function parseInterpolation(interpolation: string): InterpolationToken {
+  const variable = interpolation.replace(/^\{\{|\}\}$/g, '').trim()
+  // Disallow formatters for interpolations when using the `Translate` function:
+  // Since we do not have a _key_ to format (only a substring), we do not want i18next to look up
+  // a matching string value for the "stub" value. We could potentially change this in the future,
+  // if we feel it is a useful feature.
+  if (variable.includes(',')) {
+    throw new Error(
+      `Interpolations with formatters are not supported when using <Translate>. Found "${variable}". Utilize "useTranslation" instead, or format the values passed to <Translate> ahead of time.`,
+    )
+  }
+
+  return {type: 'interpolation', variable}
 }
 
 function isSelfClosing(tag: string) {

@@ -98,7 +98,7 @@ export function Translate(props: TranslationProps) {
    */
   const translated = props.t(props.i18nKey, {
     context: props.context,
-    replace: props.values,
+    skipInterpolation: true,
     count:
       props.values && 'count' in props.values && typeof props.values.count === 'number'
         ? props.values.count
@@ -106,20 +106,33 @@ export function Translate(props: TranslationProps) {
   })
 
   const tokens = useMemo(() => simpleParser(translated), [translated])
-
-  return <>{render(tokens, props.components || {})}</>
+  return <>{render(tokens, props.values, props.components || {})}</>
 }
 
-function render(tokens: Token[], componentMap: TranslateComponentMap): ReactNode {
+function render(
+  tokens: Token[],
+  values: TranslationProps['values'],
+  componentMap: TranslateComponentMap,
+): ReactNode {
   const [head, ...tail] = tokens
   if (!head) {
     return null
+  }
+  if (head.type === 'interpolation') {
+    return (
+      <>
+        {!values || typeof values[head.variable] === 'undefined'
+          ? `{{${head.variable}}}`
+          : values[head.variable]}
+        {render(tail, values, componentMap)}
+      </>
+    )
   }
   if (head.type === 'text') {
     return (
       <>
         {head.text}
-        {render(tail, componentMap)}
+        {render(tail, values, componentMap)}
       </>
     )
   }
@@ -132,7 +145,7 @@ function render(tokens: Token[], componentMap: TranslateComponentMap): ReactNode
     return (
       <>
         <Component />
-        {render(tail, componentMap)}
+        {render(tail, values, componentMap)}
       </>
     )
   }
@@ -158,13 +171,13 @@ function render(tokens: Token[], componentMap: TranslateComponentMap): ReactNode
 
     return Component ? (
       <>
-        <Component>{render(children, componentMap)}</Component>
-        {render(remaining, componentMap)}
+        <Component>{render(children, values, componentMap)}</Component>
+        {render(remaining, values, componentMap)}
       </>
     ) : (
       <>
-        {createElement(head.name, {}, render(children, componentMap))}
-        {render(remaining, componentMap)}
+        {createElement(head.name, {}, render(children, values, componentMap))}
+        {render(remaining, values, componentMap)}
       </>
     )
   }

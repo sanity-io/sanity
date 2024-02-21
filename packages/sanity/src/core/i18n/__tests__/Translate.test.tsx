@@ -105,4 +105,36 @@ describe('Translate component', () => {
       `Your search for "<span style="color: red;">something</span>" took <b>123ms</b>`,
     )
   })
+
+  it('it interpolates values', async () => {
+    const wrapper = await getWrapper([
+      createBundle({title: 'An <code>{{interpolated}}</code> thing'}),
+    ])
+    const {findByTestId} = render(
+      <TestComponent
+        i18nKey="title"
+        values={{interpolated: 'escaped, interpolated'}}
+        components={{}}
+      />,
+      {wrapper},
+    )
+    expect(await findByTestId('output')).toHaveTextContent('An escaped, interpolated thing')
+  })
+
+  it('it escapes HTML inside of interpolated values', async () => {
+    const wrapper = await getWrapper([
+      createBundle({title: 'An <code>{{interpolated}}</code> thing'}),
+    ])
+    const {findByTestId} = render(
+      <TestComponent
+        i18nKey="title"
+        values={{interpolated: 'escaped, <strong>interpolated</strong> thing'}}
+        components={{}}
+      />,
+      {wrapper},
+    )
+    expect(await findByTestId('output')).toHaveTextContent(
+      'An escaped, <strong>interpolated</strong> thing',
+    )
+  })
 })
