@@ -5,7 +5,7 @@ import {useCurrentUser} from 'sanity'
 import styled from 'styled-components'
 
 import {TasksNavigationProvider, useTasks, useTasksEnabled, useTasksNavigation} from '../../context'
-import {TasksCreateForm} from '../create/TasksCreateForm'
+import {TaskCreate} from '../create'
 import {TaskEdit} from '../edit'
 import {TaskSidebarContent} from './TasksSidebarContent'
 import {TasksSidebarHeader} from './TasksSidebarHeader'
@@ -33,10 +33,9 @@ const TRANSITION: Transition = {duration: 0.2}
 function TasksStudioSidebarInner() {
   const {enabled} = useTasksEnabled()
   const {activeDocument, isOpen, data, isLoading} = useTasks()
-  const {state, setViewMode, setActiveTab, editTask} = useTasksNavigation()
+  const {state, setActiveTab, editTask} = useTasksNavigation()
   const {activeTabId, viewMode, selectedTask} = state
 
-  const onCancel = useCallback(() => setViewMode({type: 'list'}), [setViewMode])
   const handleOnDelete = useCallback(() => setActiveTab('subscribed'), [setActiveTab])
   const onTaskCreate = useCallback(() => setActiveTab('subscribed'), [setActiveTab])
 
@@ -90,14 +89,10 @@ function TasksStudioSidebarInner() {
                   )}
                 </>
               )}
-              {viewMode === 'create' && <TasksCreateForm />}
-              {viewMode === 'edit' && (
-                <TaskEdit
-                  onCancel={onCancel}
-                  onDelete={handleOnDelete}
-                  selectedTask={selectedTask}
-                  key={selectedTask}
-                />
+
+              {viewMode === 'create' && <TaskCreate onCreate={onTaskCreate} />}
+              {viewMode === 'edit' && selectedTask && (
+                <TaskEdit onDelete={handleOnDelete} selectedTask={selectedTask} />
               )}
             </SidebarContent>
           </SidebarRoot>
