@@ -53,6 +53,9 @@ export function toSlateRange(selection: EditorSelection, editor: Editor): Range 
     path: createArrayedPath(selection.focus, editor),
     offset: selection.focus.offset,
   }
+  if (focus.path.length === 0 || anchor.path.length === 0) {
+    return null
+  }
   const range = anchor && focus ? {anchor, focus} : null
   return range
 }
