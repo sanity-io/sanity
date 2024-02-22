@@ -23,6 +23,11 @@
 /packages/@sanity/portable-text-editor/ @sanity-io/studio-ex
 /packages/sanity/src/core/field/types/portableText/ @sanity-io/studio-ex
 /packages/sanity/src/core/form/inputs/PortableText/ @sanity-io/studio-ex
+/packages/sanity/src/core/form/types/blockProps.ts @sanity-io/studio-ex
+/packages/@sanity/types/src/schema/definition/type/block.ts @sanity-io/studio-ex
+
+# -- Playwright Component tests --
+/packages/sanity/playwright-ct @sanity-io/studio-ex
 
 # -- Search --
 /packages/sanity/src/core/search/ @sanity-io/studio-ex
