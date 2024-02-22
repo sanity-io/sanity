@@ -63,6 +63,7 @@ export const PublishAction: DocumentActionComponent = (props) => {
   const [publishScheduled, setPublishScheduled] = useState<boolean>(false)
   const isSyncing = syncState.isSyncing
   const isValidating = validationStatus.isValidating
+  const [initialLoading, setInitialLoading] = useState(true)
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
     id,
     type,
@@ -84,6 +85,13 @@ export const PublishAction: DocumentActionComponent = (props) => {
     publish.execute()
     setPublishState('publishing')
   }, [publish])
+
+  // Handle the initial loading state to disable button while loading
+  useEffect(() => {
+    if (!isPermissionsLoading && !isValidating && !isSyncing) {
+      setInitialLoading(false)
+    }
+  }, [isPermissionsLoading, isValidating, isSyncing])
 
   useEffect(() => {
     // make sure the validation status is about the current revision and not an earlier one
@@ -176,6 +184,7 @@ export const PublishAction: DocumentActionComponent = (props) => {
 
   const disabled = Boolean(
     publishScheduled ||
+      initialLoading ||
       editState?.transactionSyncLock?.enabled ||
       publishState === 'publishing' ||
       publishState === 'published' ||
