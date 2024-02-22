@@ -1,19 +1,17 @@
 import {Autocomplete, Badge, Card, Flex, Text} from '@sanity/ui'
 import {motion} from 'framer-motion'
 import {useCallback, useMemo, useState} from 'react'
-import {UserAvatar} from 'sanity'
+import {UserAvatar, type UserListWithPermissionsHookValue, type UserWithPermission} from 'sanity'
 import styled from 'styled-components'
-
-import {type MentionOptionsHookValue, type MentionOptionUser} from '../../types'
 
 type Option = {
   value: string
   label: string
-  user: MentionOptionUser
+  user: UserWithPermission
 }
 
 interface MentionUserProps {
-  mentionOptions: MentionOptionsHookValue
+  mentionOptions: UserListWithPermissionsHookValue
   value?: string
   onChange: (value: string) => void
 }
@@ -44,7 +42,7 @@ export function MentionUser(props: MentionUserProps) {
             </Text>
           </Flex>
 
-          {!user.canBeMentioned && (
+          {!user.granted && (
             <Badge fontSize={1} mode="outline">
               Unauthorized
             </Badge>
@@ -97,7 +95,7 @@ export function MentionUser(props: MentionUserProps) {
             </Text>
           </Flex>
 
-          {!mentionedUser.canBeMentioned && (
+          {!mentionedUser.granted && (
             <Badge fontSize={1} mode="outline">
               Unauthorized
             </Badge>
@@ -113,7 +111,7 @@ export function MentionUser(props: MentionUserProps) {
       options={asOptions}
       autoFocus={showMentionOptions}
       value={value}
-      loading={mentionOptions.isLoading}
+      loading={mentionOptions.loading}
       renderOption={renderOption}
       // eslint-disable-next-line react/jsx-no-bind
       renderValue={(_value, option) => option?.label || _value}

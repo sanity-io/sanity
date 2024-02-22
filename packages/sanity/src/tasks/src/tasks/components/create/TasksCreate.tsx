@@ -1,9 +1,8 @@
 import {type PortableTextBlock} from '@sanity/types'
 import {Card, Flex, Stack, Text, TextInput, useToast} from '@sanity/ui'
 import {useCallback, useEffect, useRef, useState} from 'react'
-import {getPublishedId, useEditState, useWorkspace} from 'sanity'
+import {getPublishedId, useEditState, useUserListWithPermissions, useWorkspace} from 'sanity'
 
-import {useMentionOptions} from '../../../../../structure/comments'
 import {Button} from '../../../../../ui-components'
 import {useTasks} from '../../context'
 import {type TaskCreatePayload, type TaskDocument, type TaskTarget} from '../../types'
@@ -80,8 +79,9 @@ export const TasksCreate = (props: TasksCreateProps) => {
     values.target?.documentType || '_fake',
     'low',
   )
-  const mentionOptions = useMentionOptions({
+  const mentionOptions = useUserListWithPermissions({
     documentValue: draft || published || null,
+    permission: 'read',
   })
 
   const handleRemoved = useCallback(async () => {
@@ -189,7 +189,7 @@ export const TasksCreate = (props: TasksCreateProps) => {
         />
 
         <MentionUser
-          mentionOptions={{...mentionOptions, isLoading: mentionOptions.loading}}
+          mentionOptions={mentionOptions}
           value={values.assignedTo}
           onChange={handleAssignedToChange}
         />
