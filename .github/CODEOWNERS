@@ -47,3 +47,6 @@
 
 # Telemetry definitions
 *.telemetry.ts @sanity-io/growth
+
+# -- Tasks --
+/packages/sanity/src/tasks/ @sanity-io/studio-ex
