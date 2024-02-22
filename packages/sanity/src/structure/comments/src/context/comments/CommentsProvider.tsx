@@ -2,7 +2,7 @@ import {orderBy} from 'lodash'
 import {memo, type ReactNode, useCallback, useMemo, useState} from 'react'
 import {
   getPublishedId,
-  useCommentsSetup,
+  useAddonDataset,
   useCurrentUser,
   useEditState,
   useSchema,
@@ -59,7 +59,7 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
   const {children, documentId, documentType, isCommentsOpen, onCommentsOpen} = props
   const commentsEnabled = useCommentsEnabled()
   const [status, setStatus] = useState<CommentStatus>('open')
-  const {client, runSetup, isRunningSetup} = useCommentsSetup()
+  const {client, createAddonDataset, isRunningSetup} = useAddonDataset()
   const publishedId = getPublishedId(documentId)
   const editState = useEditState(publishedId, documentType, 'low')
   const schemaType = useSchema().get(documentType)
@@ -203,7 +203,7 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
         // This function runs when the first comment creation is executed.
         // It is used to create the addon dataset and configure a client for
         // the addon dataset.
-        runSetup,
+        createAddonDataset,
         // The following callbacks runs when the comment operation are executed.
         // They are used to update the local state of the comments immediately after
         // a comment operation has been executed. This is done to avoid waiting for
@@ -226,7 +226,7 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
         workspaceName,
         getThreadLength,
         getComment,
-        runSetup,
+        createAddonDataset,
         handleOnCreate,
         handleOnCreateError,
         handleOnEdit,

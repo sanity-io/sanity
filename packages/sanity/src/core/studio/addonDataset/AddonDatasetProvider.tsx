@@ -1,25 +1,25 @@
 import {type SanityClient} from '@sanity/client'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 
-import {useClient} from '../../../hooks'
-import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
-import {useWorkspace} from '../../workspace'
-import {CommentsSetupContext} from './CommentsSetupContext'
-import {type CommentsSetupContextValue} from './types'
+import {useClient} from '../../hooks'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
+import {useWorkspace} from '../workspace'
+import {AddonDatasetContext} from './AddonDatasetContext'
+import {type AddonDatasetContextValue} from './types'
 
 const API_VERSION = 'v2023-11-13'
 
-interface CommentsSetupProviderProps {
+interface AddonDatasetSetupProviderProps {
   children: React.ReactNode
 }
 
 /**
  * This provider sets the addon dataset client, currently called `comments` dataset.
- * It also exposes a `runSetup` function that can be used to create the addon dataset if it does not exist.
+ * It also exposes a `createAddonDataset` function that can be used to create the addon dataset if it does not exist.
  * @beta
  * @hidden
  */
-export function CommentsSetupProvider(props: CommentsSetupProviderProps) {
+export function AddonDatasetProvider(props: AddonDatasetSetupProviderProps) {
   const {children} = props
   const {dataset, projectId} = useWorkspace()
   const originalClient = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
@@ -54,7 +54,7 @@ export function CommentsSetupProvider(props: CommentsSetupProviderProps) {
     [originalClient, projectId],
   )
 
-  const handleRunSetup = useCallback(async (): Promise<SanityClient | null> => {
+  const handleCreateAddonDataset = useCallback(async (): Promise<SanityClient | null> => {
     setIsRunningSetup(true)
 
     // Before running the setup, we check if the addon dataset already exists.
@@ -118,13 +118,13 @@ export function CommentsSetupProvider(props: CommentsSetupProviderProps) {
   }, [getAddonDatasetName, handleCreateClient])
 
   const ctxValue = useMemo(
-    (): CommentsSetupContextValue => ({
+    (): AddonDatasetContextValue => ({
       client: addonDatasetClient,
-      runSetup: handleRunSetup,
+      createAddonDataset: handleCreateAddonDataset,
       isRunningSetup,
     }),
-    [addonDatasetClient, handleRunSetup, isRunningSetup],
+    [addonDatasetClient, handleCreateAddonDataset, isRunningSetup],
   )
 
-  return <CommentsSetupContext.Provider value={ctxValue}>{children}</CommentsSetupContext.Provider>
+  return <AddonDatasetContext.Provider value={ctxValue}>{children}</AddonDatasetContext.Provider>
 }

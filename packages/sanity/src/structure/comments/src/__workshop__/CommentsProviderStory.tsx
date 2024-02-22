@@ -1,7 +1,7 @@
 /* eslint-disable react/jsx-handler-names */
 import {useSelect, useString} from '@sanity/ui-workshop'
 import {useMemo} from 'react'
-import {CommentsSetupProvider, useCurrentUser} from 'sanity'
+import {AddonDatasetProvider, useCurrentUser} from 'sanity'
 
 import {ConditionalWrapper} from '../../../../ui-components/conditionalWrapper'
 import {CommentsList, CommentsUpsellPanel} from '../components'
@@ -23,7 +23,7 @@ export default function CommentsProviderStory() {
   const _mode = useSelect('_mode', MODES) || ('default' as keyof typeof MODES)
 
   return (
-    <CommentsSetupProvider>
+    <AddonDatasetProvider>
       <CommentsEnabledProvider documentType={_type} documentId={_id}>
         <CommentsProvider documentType={_type} documentId={_id}>
           <ConditionalWrapper
@@ -35,7 +35,7 @@ export default function CommentsProviderStory() {
           </ConditionalWrapper>
         </CommentsProvider>
       </CommentsEnabledProvider>
-    </CommentsSetupProvider>
+    </AddonDatasetProvider>
   )
 }
 

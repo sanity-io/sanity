@@ -4,7 +4,7 @@ import {type SanityClient} from '@sanity/client'
  * @beta
  * @hidden
  */
-export interface CommentsSetupContextValue {
+export interface AddonDatasetContextValue {
   /**
    * Addon dataset client, currently called `comments` dataset.
    */
@@ -13,5 +13,5 @@ export interface CommentsSetupContextValue {
   /**
    * Function to create the addon dataset if it does not exist.
    */
-  runSetup: () => Promise<SanityClient | null>
+  createAddonDataset: () => Promise<SanityClient | null>
 }

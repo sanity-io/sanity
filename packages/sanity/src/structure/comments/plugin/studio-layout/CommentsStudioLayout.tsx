@@ -1,4 +1,4 @@
-import {CommentsSetupProvider, type LayoutProps, useFeatureEnabled} from 'sanity'
+import {AddonDatasetProvider, type LayoutProps, useFeatureEnabled} from 'sanity'
 
 import {ConditionalWrapper} from '../../../../ui-components/conditionalWrapper'
 import {CommentsOnboardingProvider, CommentsUpsellProvider} from '../../src'
@@ -7,7 +7,7 @@ export function CommentsStudioLayout(props: LayoutProps) {
   const {enabled, isLoading} = useFeatureEnabled('studioComments')
 
   return (
-    <CommentsSetupProvider>
+    <AddonDatasetProvider>
       <CommentsOnboardingProvider>
         <ConditionalWrapper
           condition={!enabled && !isLoading}
@@ -17,6 +17,6 @@ export function CommentsStudioLayout(props: LayoutProps) {
           {props.renderDefault(props)}
         </ConditionalWrapper>
       </CommentsOnboardingProvider>
-    </CommentsSetupProvider>
+    </AddonDatasetProvider>
   )
 }
