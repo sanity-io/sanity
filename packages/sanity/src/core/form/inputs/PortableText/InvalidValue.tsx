@@ -1,4 +1,5 @@
 import {type InvalidValueResolution} from '@sanity/portable-text-editor'
+import {useTelemetry} from '@sanity/telemetry/react'
 import {
   Box,
   // eslint-disable-next-line no-restricted-imports
@@ -12,6 +13,10 @@ import {
 import {useCallback} from 'react'
 
 import {Translate, useTranslation} from '../../../i18n'
+import {
+  PortableTextInvalidValueIgnore,
+  PortableTextInvalidValueResolve,
+} from '../../__telemetry__/form.telemetry'
 import {Alert} from '../../components/Alert'
 
 interface InvalidValueProps {
@@ -23,13 +28,24 @@ interface InvalidValueProps {
 
 export function InvalidValue(props: InvalidValueProps) {
   const {onChange, onIgnore, resolution, readOnly} = props
+  const telemetry = useTelemetry()
 
   const {t} = useTranslation()
+
   const handleAction = useCallback(() => {
     if (resolution) {
       onChange({type: 'mutation', patches: resolution.patches})
+      telemetry.log(PortableTextInvalidValueResolve, {
+        PTEInvalidValueId: resolution.i18n.description,
+        PTEInvalidValueDescription: resolution.description,
+      })
     }
-  }, [onChange, resolution])
+  }, [onChange, resolution, telemetry])
+
+  const handleOnIgnore = useCallback(() => {
+    telemetry.log(PortableTextInvalidValueIgnore)
+    onIgnore()
+  }, [onIgnore, telemetry])
 
   if (!resolution) return null
 
@@ -42,7 +58,7 @@ export function InvalidValue(props: InvalidValueProps) {
             <Grid columns={[1, 2]} gap={1}>
               <Button
                 mode="ghost"
-                onClick={onIgnore}
+                onClick={handleOnIgnore}
                 text={t('inputs.portable-text.invalid-value.ignore-button.text')}
               />
               {/* @todo: use plain string */}
