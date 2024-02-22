@@ -2,7 +2,7 @@ import {Text} from '@sanity/ui'
 import {useMemo} from 'react'
 
 import {useTasks} from '../../context'
-import {TasksCreate} from '../create/TasksCreate'
+import {TasksForm} from '../form/TasksForm'
 
 interface TaskEditProps {
   onDelete: () => void
@@ -17,5 +17,5 @@ export function TaskEdit(props: TaskEditProps) {
     return <Text>Task not found</Text>
   }
 
-  return <TasksCreate onCancel={onCancel} onDelete={onDelete} mode="edit" task={task} />
+  return <TasksForm onCancel={onCancel} onDelete={onDelete} mode="edit" task={task} />
 }

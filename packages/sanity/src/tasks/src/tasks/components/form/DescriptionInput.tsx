@@ -1,14 +1,14 @@
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
-import {type PortableTextBlock, useCurrentUser} from 'sanity'
+import {type PortableTextBlock, useCurrentUser, type UserListWithPermissionsHookValue} from 'sanity'
 import styled from 'styled-components'
 
 // TODO: This is using components from structure/comments which is not ideal. But given comments is changing
 // we won't refactor this now, until comments is stable and we implement in this the `FormBuilder`
-import {CommentInput, type MentionOptionsHookValue} from '../../../../../structure/comments'
+import {CommentInput} from '../../../../../structure/comments'
 
 interface DescriptionInputProps {
-  mentionOptions: MentionOptionsHookValue
+  mentionOptions: UserListWithPermissionsHookValue
   value: PortableTextBlock[]
   onChange: (value: PortableTextBlock[]) => void
 }

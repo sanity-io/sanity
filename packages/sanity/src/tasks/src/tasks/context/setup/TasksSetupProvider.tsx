@@ -1,3 +1,6 @@
+/**
+ * TODO: Replace for `CommentsSetupProvider` once  https://github.com/sanity-io/sanity/pull/5767 is merged
+ */
 import {type SanityClient} from '@sanity/client'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS, useClient, useWorkspace} from 'sanity'
