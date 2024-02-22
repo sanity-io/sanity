@@ -104,6 +104,7 @@ export function CommentsListItemContextMenu(props: CommentsListItemContextMenuPr
                   ? t('list-item.resolved-tooltip-aria-label')
                   : t('list-item.re-open-resolved-aria-label')
               }
+              data-testid="comments-list-item-status-button"
               disabled={readOnly}
               icon={status === 'open' ? CheckmarkCircleIcon : UndoIcon}
               mode="bleed"
