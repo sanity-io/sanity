@@ -4,7 +4,7 @@ import {useCallback, useState} from 'react'
 import styled from 'styled-components'
 
 import {useTasks, useTasksEnabled} from '../../context'
-import {TasksCreate} from '../create/'
+import {TaskCreate} from '../create'
 import {TaskEdit} from '../edit'
 import {TaskSidebarContent} from './TasksSidebarContent'
 import {TasksSidebarHeader} from './TasksSidebarHeader'
@@ -31,8 +31,11 @@ const TRANSITION: Transition = {duration: 0.2}
 export function TasksStudioSidebar() {
   const {enabled} = useTasksEnabled()
   const {activeDocument, isOpen, data, isLoading} = useTasks()
+  // TODO: Move this to the router.
   const [viewMode, setViewMode] = useState<ViewMode>('list')
+  // TODO: Move this to the router.
   const [selectedTask, setSelectedTask] = useState<null | string>(null)
+  // TODO: Move this to the router.
   const [activeTabId, setActiveTabId] = useState<SidebarTabsIds>('assigned')
 
   const onCancel = useCallback(() => setViewMode('list'), [])
@@ -78,9 +81,7 @@ export function TasksStudioSidebar() {
                 )}
               </>
             )}
-            {viewMode === 'create' && (
-              <TasksCreate onCancel={onCancel} mode="create" onCreate={onTaskCreate} />
-            )}
+            {viewMode === 'create' && <TaskCreate onCancel={onCancel} onCreate={onTaskCreate} />}
             {viewMode === 'edit' && (
               <TaskEdit onCancel={onCancel} onDelete={handleOnDelete} selectedTask={selectedTask} />
             )}

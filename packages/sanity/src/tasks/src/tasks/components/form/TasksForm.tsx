@@ -6,9 +6,9 @@ import {getPublishedId, useEditState, useUserListWithPermissions, useWorkspace} 
 import {Button} from '../../../../../ui-components'
 import {useTasks} from '../../context'
 import {type TaskCreatePayload, type TaskDocument, type TaskTarget} from '../../types'
-import {MentionUser} from '../mentionUser'
-import {RemoveTask} from '../remove/RemoveTask'
 import {DescriptionInput} from './DescriptionInput'
+import {MentionUser} from './MentionUser'
+import {RemoveTask} from './RemoveTask'
 import {TargetInput} from './TargetInput'
 import {WarningText} from './WarningText'
 
@@ -22,7 +22,7 @@ type ModeProps =
       mode: 'edit'
       task: TaskDocument
     }
-type TasksCreateProps = ModeProps & {
+type TasksFormProps = ModeProps & {
   onCancel: () => void
   onCreate?: () => void
   onDelete?: () => void
@@ -31,7 +31,7 @@ type TasksCreateProps = ModeProps & {
 /**
  * @internal
  */
-export const TasksCreate = (props: TasksCreateProps) => {
+export const TasksForm = (props: TasksFormProps) => {
   const {task, mode, onCancel, onCreate, onDelete} = props
   const toast = useToast()
   const {operations, activeDocument} = useTasks()

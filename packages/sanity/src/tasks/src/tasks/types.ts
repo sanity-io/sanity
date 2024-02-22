@@ -1,4 +1,4 @@
-import {type PortableTextBlock, type User} from '@sanity/types'
+import {type PortableTextBlock} from '@sanity/types'
 
 /**
  * @beta
@@ -19,21 +19,6 @@ export interface TaskOperations {
   edit: (id: string, task: TaskEditPayload) => Promise<TaskDocument>
   remove: (id: string) => Promise<void>
   update: (id: string, task: Partial<TaskCreatePayload>) => Promise<void>
-}
-
-/**
- * @beta
- * @hidden
- */
-
-export type MentionOptionsHookValue = Loadable<MentionOptionUser[]>
-
-/**
- * @beta
- * @hidden
- */
-export interface MentionOptionUser extends User {
-  canBeMentioned: boolean
 }
 
 /**

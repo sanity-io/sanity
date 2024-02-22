@@ -35,6 +35,7 @@ export function RemoveTask(props: RemoveTaskProps) {
         <Dialog
           id="remove-task"
           header="Remove task"
+          // eslint-disable-next-line react/jsx-no-bind
           onClose={() => setShowDialog(false)}
           footer={{
             cancelButton: {
@@ -59,6 +60,7 @@ export function RemoveTask(props: RemoveTaskProps) {
         text="Remove"
         mode="bleed"
         tone="critical"
+        // eslint-disable-next-line react/jsx-no-bind
         onClick={() => setShowDialog(true)}
         disabled={removeStatus == 'loading'}
       />
