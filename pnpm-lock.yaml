@@ -650,8 +650,8 @@ importers:
         specifier: ^3.4.1
         version: 3.5.0(esbuild@0.19.11)
       get-it:
-        specifier: ^8.4.4
-        version: 8.4.6
+        specifier: ^8.4.9
+        version: 8.4.9
       golden-fleece:
         specifier: ^1.0.9
         version: 1.0.9
@@ -853,8 +853,8 @@ importers:
         specifier: ^4.3.4
         version: 4.3.4(supports-color@5.5.0)
       get-it:
-        specifier: ^8.4.4
-        version: 8.4.6
+        specifier: ^8.4.9
+        version: 8.4.9
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
@@ -899,8 +899,8 @@ importers:
         specifier: ^2.0.2
         version: 2.0.2
       get-it:
-        specifier: ^8.4.4
-        version: 8.4.6
+        specifier: ^8.4.9
+        version: 8.4.9
       get-uri:
         specifier: ^2.0.2
         version: 2.0.4
@@ -954,8 +954,8 @@ importers:
         specifier: 3.30.0
         version: link:../import
       get-it:
-        specifier: ^8.4.4
-        version: 8.4.6
+        specifier: ^8.4.9
+        version: 8.4.9
       meow:
         specifier: ^9.0.0
         version: 9.0.0
@@ -1503,8 +1503,8 @@ importers:
         specifier: ^11.0.0
         version: 11.0.5(react-dom@18.2.0)(react@18.2.0)
       get-it:
-        specifier: ^8.4.4
-        version: 8.4.6
+        specifier: ^8.4.9
+        version: 8.4.9
       get-random-values-esm:
         specifier: 1.0.0
         version: 1.0.0
@@ -5753,7 +5753,7 @@ packages:
     dependencies:
       '@sanity/eventsource': 5.0.1
       '@vercel/stega': 0.1.0
-      get-it: 8.4.6
+      get-it: 8.4.9
       rxjs: 7.8.1
     transitivePeerDependencies:
       - supports-color
@@ -11062,8 +11062,8 @@ packages:
       has-symbols: 1.0.3
       hasown: 2.0.0
 
-  /get-it@8.4.6:
-    resolution: {integrity: sha512-omefjdbyRb2rRt0tnrZlbeWx9oZJm66o88K8JlYn13xELn+0+d6mJZOQHrJAdC3vxeJ4t/NHa4wh7Wlh+nvEJA==}
+  /get-it@8.4.9:
+    resolution: {integrity: sha512-C6AC03pqD5QAHKrS1kivcMs3w7n8RyH8G1GUX1VoEUnzUnTE+FjgV5g38ghJBml4sHcUVQuWCj9vg9GnugKrBw==}
     engines: {node: '>=14.0.0'}
     dependencies:
       debug: 4.3.4(supports-color@5.5.0)
@@ -11083,7 +11083,7 @@ packages:
     resolution: {integrity: sha512-Q6IBWr/zzw57zIkJmNhI23eRTw3nZ4BWWK034meLwOYU9L3J3IpXiyM73u2pYUwN6U7ahkerCwg2T0jlxiLwsw==}
     engines: {node: '>=14.18'}
     dependencies:
-      get-it: 8.4.6
+      get-it: 8.4.9
       registry-auth-token: 5.0.2
       registry-url: 5.1.0
       semver: 7.5.4
