@@ -358,6 +358,9 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The text when a publish operation succeeded  */
   'panes.document-operation-results.operation-success_publish':
     '<Strong>{{title}}</Strong> was published',
+  /** The text when a restore operation succeeded  */
+  'panes.document-operation-results.operation-success_restore':
+    '<Strong>{{title}}</Strong> was restored',
   /** The text when an unpublish operation succeeded  */
   'panes.document-operation-results.operation-success_unpublish':
     '<Strong>{{title}}</Strong> was unpublished. A draft has been created from the latest published version.',
