@@ -72,9 +72,17 @@ export const taskSchema = defineType({
     {
       type: 'string',
       name: 'assignedTo',
+      title: 'Assigned to',
+      placeholder: 'Search username',
       components: {
         input: MentionUserFormField,
       },
+    },
+    {
+      type: 'date',
+      name: 'dueBy',
+      title: 'Deadline',
+      placeholder: 'Select date',
     },
     {
       type: 'string',
