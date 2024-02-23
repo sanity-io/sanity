@@ -1,5 +1,6 @@
 import {createWriteStream} from 'node:fs'
 import path from 'node:path'
+import {pipeline} from 'node:stream/promises'
 
 import {getIt} from 'get-it'
 import {keepAlive, promise} from 'get-it/middleware'
@@ -34,7 +35,7 @@ async function downloadAsset(
 
     debug('Received asset %s with status code %d', normalizedFileName, response?.statusCode)
 
-    response.body.pipe(createWriteStream(assetFilePath))
+    await pipeline(response.body, createWriteStream(assetFilePath))
   })
 }
 
