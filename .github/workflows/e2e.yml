@@ -38,7 +38,7 @@ jobs:
 
       - name: Cache node modules
         id: cache-node-modules
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         env:
           cache-name: cache-node-modules
         with:
@@ -60,7 +60,7 @@ jobs:
 
       - name: Cache Playwright Browsers for Playwright's Version
         id: cache-playwright-browsers
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
           key: playwright-browsers-${{ env.PLAYWRIGHT_VERSION }}
@@ -97,7 +97,7 @@ jobs:
       # Caches build from either PR or next
       - name: Cache build
         id: cache-e2e-build
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         env:
           cache-name: cache-e2e-build
         with:
@@ -143,7 +143,7 @@ jobs:
 
       - name: Cache node modules
         id: cache-node-modules
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         env:
           cache-name: cache-node-modules
         with:
@@ -165,7 +165,7 @@ jobs:
 
       - name: Cache Playwright Browsers for Playwright's Version
         id: cache-playwright-browsers
-        uses: actions/cache/restore@v3
+        uses: actions/cache/restore@v4
         with:
           path: ~/.cache/ms-playwright
           key: playwright-browsers-${{ env.PLAYWRIGHT_VERSION }}
@@ -175,7 +175,7 @@ jobs:
         run: npx playwright install --with-deps
 
       - name: Restore build cache
-        uses: actions/cache/restore@v3
+        uses: actions/cache/restore@v4
         id: restore-build
         env:
           cache-name: cache-e2e-build
@@ -246,7 +246,7 @@ jobs:
 
       - name: Cache node modules
         id: cache-node-modules
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         env:
           cache-name: cache-node-modules
         with:

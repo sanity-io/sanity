@@ -42,7 +42,7 @@ jobs:
 
       - name: Cache node modules
         id: cache-node-modules
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         env:
           cache-name: cache-node-modules
         with:
@@ -55,7 +55,7 @@ jobs:
 
       - name: Cache build
         id: cache-build
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         env:
           cache-name: cache-build
         with:
@@ -107,7 +107,7 @@ jobs:
         run: corepack enable && pnpm --version
 
       - name: Restore node_modules cache
-        uses: actions/cache/restore@v3
+        uses: actions/cache/restore@v4
         id: restore-node-modules
         env:
           cache-name: cache-node-modules
@@ -120,7 +120,7 @@ jobs:
             ${{ runner.os }}-
 
       - name: Restore build cache
-        uses: actions/cache/restore@v3
+        uses: actions/cache/restore@v4
         id: restore-build
         env:
           cache-name: cache-build
