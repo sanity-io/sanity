@@ -155,6 +155,6 @@
   "optionalDependencies": {
     "node-notifier": "^10.0.0"
   },
-  "packageManager": "pnpm@8.14.0",
+  "packageManager": "pnpm@8.15.3",
   "isSanityMonorepo": true
 }
