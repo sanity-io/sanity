@@ -1,4 +1,5 @@
 export * from './activeWorkspaceMatcher'
+export * from './addonDataset'
 export * from './colorScheme'
 export * from './components'
 export * from './renderStudio'

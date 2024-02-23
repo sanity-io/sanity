@@ -88,7 +88,7 @@ function CommentFieldInner(
   const {
     comments,
     isCommentsOpen,
-    isRunningSetup,
+    isCreatingDataset,
     mentionOptions,
     onCommentsOpen,
     operation,
@@ -262,7 +262,7 @@ function CommentFieldInner(
           count={Number(count)}
           currentUser={currentUser}
           fieldTitle={fieldTitle}
-          isRunningSetup={isRunningSetup}
+          isCreatingDataset={isCreatingDataset}
           mentionOptions={mentionOptions}
           onChange={setValue}
           onClick={handleClick}
@@ -286,7 +286,7 @@ function CommentFieldInner(
       handleDiscard,
       open,
       value,
-      isRunningSetup,
+      isCreatingDataset,
       hasComments,
     ],
   )

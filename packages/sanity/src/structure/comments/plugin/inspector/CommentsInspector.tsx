@@ -83,7 +83,7 @@ function CommentsInspectorInner(
 
   const {isDismissed, setDismissed} = useCommentsOnboarding()
 
-  const {comments, getComment, isRunningSetup, mentionOptions, setStatus, status, operation} =
+  const {comments, getComment, isCreatingDataset, mentionOptions, setStatus, status, operation} =
     useComments()
 
   const {isTopLayer} = useLayer()
@@ -401,7 +401,7 @@ function CommentsInspectorInner(
             onReactionSelect={handleReactionSelect}
             onReply={handleReply}
             onStatusChange={handleStatusChange}
-            readOnly={isRunningSetup}
+            readOnly={isCreatingDataset}
             ref={commentsListHandleRef}
             selectedPath={selectedPath}
             status={status}

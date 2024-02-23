@@ -38,7 +38,7 @@ export interface CommentOperationsHookOptions {
   onRemove?: (id: string) => void
   onUpdate?: (id: string, comment: Partial<CommentCreatePayload>) => void
   projectId: string
-  runSetup: (comment: CommentPostPayload) => Promise<void>
+  createAddonDataset: () => Promise<SanityClient | null>
   schemaType: SchemaType | undefined
   workspace: string
 }
@@ -60,7 +60,7 @@ export function useCommentOperations(
     onRemove,
     onUpdate,
     projectId,
-    runSetup,
+    createAddonDataset,
     workspace,
   } = opts
 
@@ -102,7 +102,7 @@ export function useCommentOperations(
         onCreate,
         onCreateError,
         projectId,
-        runSetup,
+        createAddonDataset,
         workspace,
       })
     },
@@ -119,7 +119,7 @@ export function useCommentOperations(
       onCreate,
       onCreateError,
       projectId,
-      runSetup,
+      createAddonDataset,
       workspace,
     ],
   )

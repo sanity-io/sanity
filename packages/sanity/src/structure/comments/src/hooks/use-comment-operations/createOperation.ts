@@ -25,7 +25,7 @@ interface CreateOperationProps {
   onCreate?: (comment: CommentPostPayload) => void
   onCreateError: (id: string, error: Error) => void
   projectId: string
-  runSetup: (comment: CommentPostPayload) => Promise<void>
+  createAddonDataset: () => Promise<SanityClient | null>
   workspace: string
 }
 
@@ -44,7 +44,7 @@ export async function createOperation(props: CreateOperationProps): Promise<void
     onCreate,
     onCreateError,
     projectId,
-    runSetup,
+    createAddonDataset,
     workspace,
   } = props
 
@@ -118,7 +118,11 @@ export async function createOperation(props: CreateOperationProps): Promise<void
   // comment to create.
   if (!client) {
     try {
-      await runSetup(nextComment)
+      const newAddonClient = await createAddonDataset()
+      if (!newAddonClient) {
+        throw new Error('Failed to create addon dataset client')
+      }
+      await newAddonClient.create(nextComment)
     } catch (err) {
       onCreateError?.(nextComment._id, err)
       throw err
