@@ -187,7 +187,7 @@ importers:
         specifier: ^7.8.1
         version: 7.8.1
       sanity:
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:packages/sanity
       semver:
         specifier: ^7.3.5
@@ -219,7 +219,7 @@ importers:
         specifier: ^18.2.0
         version: 18.2.0(react@18.2.0)
       sanity:
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../../packages/sanity
       styled-components:
         specifier: ^6.1.0
@@ -237,7 +237,7 @@ importers:
         specifier: ^18.2.0
         version: 18.2.0(react@18.2.0)
       sanity:
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../../packages/sanity
       styled-components:
         specifier: ^6.1.0
@@ -271,7 +271,7 @@ importers:
         specifier: ^18.2.0
         version: 18.2.0(react@18.2.0)
       sanity:
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../../packages/sanity
       styled-components:
         specifier: ^6.1.0
@@ -287,7 +287,7 @@ importers:
         specifier: ^18.2.0
         version: 18.2.0
       sanity:
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../../packages/sanity
       styled-components:
         specifier: ^6.1.0
@@ -302,7 +302,7 @@ importers:
         specifier: ^18.2.0
         version: 18.2.0(react@18.2.0)
       sanity:
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../../packages/sanity
       styled-components:
         specifier: ^6.1.0
@@ -332,13 +332,13 @@ importers:
         specifier: ^18.2.0
         version: 18.2.0
       sanity:
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../../packages/sanity
       sanity-plugin-mux-input:
         specifier: ^2.2.1
         version: 2.2.4(@types/react@18.2.48)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(sanity@packages+sanity)(styled-components@6.1.8)
       sanity-test-studio:
-        specifier: 3.30.0
+        specifier: workspace:*
         version: link:../test-studio
       styled-components:
         specifier: ^6.1.0
@@ -356,7 +356,7 @@ importers:
         specifier: ^18.2.0
         version: 18.2.0(react@18.2.0)
       sanity:
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../../packages/sanity
       styled-components:
         specifier: ^6.1.0
@@ -420,10 +420,10 @@ importers:
         specifier: ^2.1.2
         version: 2.1.4(@sanity/color@3.0.0)(react@18.2.0)
       '@sanity/migrate':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../../packages/@sanity/migrate
       '@sanity/portable-text-editor':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../../packages/@sanity/portable-text-editor
       '@sanity/preview-url-secret':
         specifier: ^1.6.1
@@ -435,7 +435,7 @@ importers:
         specifier: 1.0.0-alpha.42
         version: 1.0.0-alpha.42(@sanity/pkg-utils@2.4.10)(@types/node@18.19.8)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(sanity@packages+sanity)(styled-components@6.1.8)
       '@sanity/types':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../../packages/@sanity/types
       '@sanity/ui':
         specifier: ^2.0.1
@@ -444,13 +444,13 @@ importers:
         specifier: ^1.0.0
         version: 1.2.11(@sanity/icons@2.10.2)(@sanity/ui@2.0.3)(@types/node@18.19.8)(react-dom@18.2.0)(react@18.2.0)(styled-components@6.1.8)
       '@sanity/util':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../../packages/@sanity/util
       '@sanity/uuid':
         specifier: ^3.0.1
         version: 3.0.2
       '@sanity/vision':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../../packages/@sanity/vision
       '@sanity/visual-editing':
         specifier: 1.3.1
@@ -504,7 +504,7 @@ importers:
         specifier: ^7.8.0
         version: 7.8.1
       sanity:
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../../packages/sanity
       sanity-plugin-mux-input:
         specifier: ^2.2.1
@@ -532,7 +532,7 @@ importers:
         specifier: ^18.2.0
         version: 18.2.0(react@18.2.0)
       sanity:
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../../packages/sanity
       styled-components:
         specifier: ^6.1.0
@@ -547,7 +547,7 @@ importers:
         specifier: ^18.2.0
         version: 18.2.0(react@18.2.0)
       sanity:
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../../packages/sanity
       styled-components:
         specifier: ^6.1.0
@@ -571,7 +571,7 @@ importers:
         specifier: ^18.2.0
         version: 18.2.0(react@18.2.0)
       sanity:
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../../packages/sanity
       styled-components:
         specifier: ^6.1.0
@@ -589,7 +589,7 @@ importers:
         specifier: ^18.2.0
         version: 18.2.0(react@18.2.0)
       sanity:
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../../packages/sanity
       styled-components:
         specifier: ^6.1.0
@@ -1306,7 +1306,7 @@ importers:
         specifier: ^18.2.0
         version: 18.2.0
       sanity:
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../../sanity
       styled-components:
         specifier: ^6.1.6
@@ -1756,7 +1756,7 @@ importers:
         specifier: ^18.2.0
         version: 18.2.0(react@18.2.0)
       sanity:
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../../packages/sanity
       styled-components:
         specifier: ^6.1.0
@@ -9021,6 +9021,7 @@ packages:
       loose-envify: 1.4.0
       object-assign: 4.1.1
     dev: false
+    bundledDependencies: false
 
   /crelt@1.0.6:
     resolution: {integrity: sha512-VQ2MBenTq1fWZUH9DJNGti7kKv6EeAuYr3cLwxUWhIu1baTaXh4Ib5W2CqHVqib4/MqbYGJqiL3Zb8GJZr3l4g==}
