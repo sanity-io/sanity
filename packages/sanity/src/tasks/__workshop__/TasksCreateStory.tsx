@@ -1,14 +1,16 @@
-import {TasksForm, TasksProvider, TasksSetupProvider} from '../src'
+import {AddonDatasetProvider} from 'sanity'
+
+import {TasksForm, TasksProvider} from '../src'
 
 function noop() {
   return null
 }
 export default function TasksCreateStory() {
   return (
-    <TasksSetupProvider>
+    <AddonDatasetProvider>
       <TasksProvider>
         <TasksForm onCancel={noop} mode="create" />
       </TasksProvider>
-    </TasksSetupProvider>
+    </AddonDatasetProvider>
   )
 }

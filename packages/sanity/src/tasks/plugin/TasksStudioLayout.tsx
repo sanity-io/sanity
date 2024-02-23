@@ -1,13 +1,13 @@
-import {type LayoutProps} from 'sanity'
+import {AddonDatasetProvider, type LayoutProps} from 'sanity'
 
-import {TasksEnabledProvider, TasksProvider, TasksSetupProvider} from '../src'
+import {TasksEnabledProvider, TasksProvider} from '../src'
 
 export function TasksStudioLayout(props: LayoutProps) {
   return (
     <TasksEnabledProvider>
-      <TasksSetupProvider>
+      <AddonDatasetProvider>
         <TasksProvider>{props.renderDefault(props)}</TasksProvider>
-      </TasksSetupProvider>
+      </AddonDatasetProvider>
     </TasksEnabledProvider>
   )
 }
