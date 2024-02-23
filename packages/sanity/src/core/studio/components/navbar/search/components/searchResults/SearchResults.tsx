@@ -91,6 +91,7 @@ export function SearchResults({inputElement}: SearchResultsProps) {
                   <CommandList
                     activeItemDataAttr="data-hovered"
                     ariaLabel={t('search.search-results-label')}
+                    data-testid="search-results"
                     fixedHeight
                     initialIndex={lastActiveIndex}
                     inputElement={inputElement}
