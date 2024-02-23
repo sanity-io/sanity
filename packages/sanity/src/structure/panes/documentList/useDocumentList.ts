@@ -4,7 +4,6 @@ import {catchError, map, mergeMap, scan, startWith, take} from 'rxjs/operators'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS, useClient, useSchema} from 'sanity'
 import {useSearchMaxFieldDepth} from 'sanity/_internalBrowser'
 
-import {IMPLICIT_SCHEMA_TYPE_FIELDS} from '../../constants'
 import {DEFAULT_ORDERING, FULL_LIST_LIMIT, PARTIAL_PAGE_LIMIT} from './constants'
 import {getTypeNameFromSingleTypeFilter, removePublishedWithDrafts} from './helpers'
 import {listenSearchQuery} from './listenSearchQuery'
@@ -165,30 +164,6 @@ export function useDocumentList(opts: UseDocumentListOpts): DocumentListState {
         if (err instanceof ProgressEvent) {
           // todo: hack to work around issue with get-it (used by sanity/client) that propagates connection errors as ProgressEvent instances. This if-block can be removed once @sanity/client is par with a version of get-it that includes this fix: https://github.com/sanity-io/get-it/pull/127
           return throwError(() => new Error(`Request error`))
-        }
-        // if we get here, see if we have a bad sort by clause
-        const schemaType =
-          typeof typeNameFromFilter === 'string'
-            ? schema.get(typeNameFromFilter)
-            : typeNameFromFilter
-        if (schemaType && 'fields' in schemaType) {
-          let unknownField = ''
-          sort.by.forEach((item) => {
-            if (
-              !IMPLICIT_SCHEMA_TYPE_FIELDS.includes(item.field) &&
-              !schemaType.fields.find((field) => field.name === item.field)
-            ) {
-              unknownField = item.field
-            }
-          })
-          if (unknownField) {
-            return throwError(
-              () =>
-                new Error(
-                  `Nonexistent field "${unknownField}" on schema type "${schemaType.name}" specified in sort oder`,
-                ),
-            )
-          }
         }
 
         return throwError(() => err)
