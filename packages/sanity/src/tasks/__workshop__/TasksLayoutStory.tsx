@@ -1,6 +1,7 @@
 import {useState} from 'react'
+import {AddonDatasetProvider} from 'sanity'
 
-import {TasksProvider, TasksSetupProvider} from '../src/'
+import {TasksProvider} from '../src/'
 import {TaskSidebarContent} from '../src/tasks/components/sidebar/TasksSidebarContent'
 import {TasksSidebarHeader} from '../src/tasks/components/sidebar/TasksSidebarHeader'
 import {type SidebarTabsIds} from '../src/tasks/components/sidebar/types'
@@ -13,7 +14,7 @@ export default function TasksLayoutStory() {
   const [activeTabId, setActiveTabId] = useState<SidebarTabsIds>('assigned')
 
   return (
-    <TasksSetupProvider>
+    <AddonDatasetProvider>
       <TasksProvider>
         <TasksSidebarHeader viewMode="list" setViewMode={noop} />
         <TaskSidebarContent
@@ -23,6 +24,6 @@ export default function TasksLayoutStory() {
           onTaskSelect={noop}
         />
       </TasksProvider>
-    </TasksSetupProvider>
+    </AddonDatasetProvider>
   )
 }

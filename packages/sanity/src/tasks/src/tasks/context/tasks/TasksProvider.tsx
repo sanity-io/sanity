@@ -1,7 +1,7 @@
 import {useCallback, useMemo, useState} from 'react'
+import {useAddonDataset} from 'sanity'
 
 import {useTasksStore} from '../../store'
-import {useTasksSetup} from '../setup/useTasksSetup'
 import {TasksContext} from './TasksContext'
 import {type ActiveDocument, type TasksContextValue} from './types'
 import {useTaskOperations} from './useTaskOperations'
@@ -21,11 +21,11 @@ export function TasksProvider(props: TasksProviderProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [activeDocument, setActiveDocument] = useState<ActiveDocument | null>(null)
 
-  const {client, runSetup} = useTasksSetup()
+  const {client, createAddonDataset} = useAddonDataset()
   const {data = EMPTY_ARRAY, isLoading} = useTasksStore({
     client,
   })
-  const operations = useTaskOperations({client, runSetup})
+  const operations = useTaskOperations({client, createAddonDataset})
 
   const toggleOpen = useCallback(() => {
     setIsOpen((prev) => !prev)

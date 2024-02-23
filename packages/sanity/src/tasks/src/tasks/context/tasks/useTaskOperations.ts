@@ -11,11 +11,11 @@ import {
 
 interface TaskOperationsOptions {
   client: SanityClient | null
-  runSetup: () => Promise<SanityClient | null>
+  createAddonDataset: () => Promise<SanityClient | null>
 }
 
 export function useTaskOperations(opts: TaskOperationsOptions): TaskOperations {
-  const {client, runSetup} = opts
+  const {client, createAddonDataset} = opts
   const currentUser = useCurrentUser()
 
   const handleCreate = useCallback(
@@ -32,7 +32,7 @@ export function useTaskOperations(opts: TaskOperationsOptions): TaskOperations {
 
       if (!client) {
         try {
-          const newCreatedClient = await runSetup()
+          const newCreatedClient = await createAddonDataset()
           if (!newCreatedClient) throw new Error('No addon client found. Unable to create task.')
           const created = await newCreatedClient.create(task)
           return created
@@ -50,7 +50,7 @@ export function useTaskOperations(opts: TaskOperationsOptions): TaskOperations {
         throw err
       }
     },
-    [client, runSetup, currentUser],
+    [client, createAddonDataset, currentUser],
   )
 
   const handleEdit = useCallback(
