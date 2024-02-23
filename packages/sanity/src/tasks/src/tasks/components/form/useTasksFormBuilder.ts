@@ -49,6 +49,7 @@ export function useTasksFormBuilder(options: TasksFormBuilderOptions): TasksForm
     _id: documentId,
     _type: 'tasks.task',
     authorId: currentUserId,
+    status: 'open',
   }
 
   const tasksSchemaType = schema.get(documentType) as ObjectSchemaType | undefined
