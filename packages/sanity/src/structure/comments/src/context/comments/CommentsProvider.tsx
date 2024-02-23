@@ -59,7 +59,7 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
   const {children, documentId, documentType, isCommentsOpen, onCommentsOpen} = props
   const commentsEnabled = useCommentsEnabled()
   const [status, setStatus] = useState<CommentStatus>('open')
-  const {client, createAddonDataset, isRunningSetup} = useAddonDataset()
+  const {client, createAddonDataset, isCreatingDataset} = useAddonDataset()
   const publishedId = getPublishedId(documentId)
   const editState = useEditState(publishedId, documentType, 'low')
   const schemaType = useSchema().get(documentType)
@@ -237,7 +237,7 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
 
   const ctxValue = useMemo(
     (): CommentsContextValue => ({
-      isRunningSetup,
+      isCreatingDataset,
       status,
       setStatus: handleSetStatus,
       getComment,
@@ -248,7 +248,7 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
       comments: {
         data: threadItemsByStatus,
         error,
-        loading: loading || isRunningSetup,
+        loading: loading || isCreatingDataset,
       },
 
       operation: {
@@ -264,7 +264,7 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
       error,
       getComment,
       isCommentsOpen,
-      isRunningSetup,
+      isCreatingDataset,
       loading,
       mentionOptions,
       onCommentsOpen,

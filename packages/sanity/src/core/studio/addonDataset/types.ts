@@ -9,7 +9,7 @@ export interface AddonDatasetContextValue {
    * Addon dataset client, currently called `comments` dataset.
    */
   client: SanityClient | null
-  isRunningSetup: boolean
+  isCreatingDataset: boolean
   /**
    * Function to create the addon dataset if it does not exist.
    */

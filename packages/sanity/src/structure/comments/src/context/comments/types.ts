@@ -14,7 +14,7 @@ import {
 export interface CommentsContextValue {
   getComment: (id: string) => CommentDocument | undefined
 
-  isRunningSetup: boolean
+  isCreatingDataset: boolean
 
   isCommentsOpen?: boolean
   onCommentsOpen?: () => void

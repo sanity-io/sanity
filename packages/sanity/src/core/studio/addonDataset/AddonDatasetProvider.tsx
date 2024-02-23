@@ -24,7 +24,7 @@ export function AddonDatasetProvider(props: AddonDatasetSetupProviderProps) {
   const {dataset, projectId} = useWorkspace()
   const originalClient = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const [addonDatasetClient, setAddonDatasetClient] = useState<SanityClient | null>(null)
-  const [isRunningSetup, setIsRunningSetup] = useState<boolean>(false)
+  const [isCreatingDataset, setIsCreatingDataset] = useState<boolean>(false)
 
   const getAddonDatasetName = useCallback(async (): Promise<string | undefined> => {
     const res = await originalClient.withConfig({apiVersion: API_VERSION}).request({
@@ -55,7 +55,7 @@ export function AddonDatasetProvider(props: AddonDatasetSetupProviderProps) {
   )
 
   const handleCreateAddonDataset = useCallback(async (): Promise<SanityClient | null> => {
-    setIsRunningSetup(true)
+    setIsCreatingDataset(true)
 
     // Before running the setup, we check if the addon dataset already exists.
     // The addon dataset might already exist if another user has already run
@@ -67,7 +67,7 @@ export function AddonDatasetProvider(props: AddonDatasetSetupProviderProps) {
       if (addonDatasetName) {
         const client = handleCreateClient(addonDatasetName)
         setAddonDatasetClient(client)
-        setIsRunningSetup(false)
+        setIsCreatingDataset(false)
         return client
       }
     } catch (_) {
@@ -86,7 +86,7 @@ export function AddonDatasetProvider(props: AddonDatasetSetupProviderProps) {
 
       // 2. We can't continue if the addon dataset name is not returned
       if (!datasetName) {
-        setIsRunningSetup(false)
+        setIsCreatingDataset(false)
         return null
       }
 
@@ -101,7 +101,7 @@ export function AddonDatasetProvider(props: AddonDatasetSetupProviderProps) {
     } catch (err) {
       throw err
     } finally {
-      setIsRunningSetup(false)
+      setIsCreatingDataset(false)
     }
   }, [dataset, getAddonDatasetName, handleCreateClient, originalClient])
 
@@ -121,9 +121,9 @@ export function AddonDatasetProvider(props: AddonDatasetSetupProviderProps) {
     (): AddonDatasetContextValue => ({
       client: addonDatasetClient,
       createAddonDataset: handleCreateAddonDataset,
-      isRunningSetup,
+      isCreatingDataset,
     }),
-    [addonDatasetClient, handleCreateAddonDataset, isRunningSetup],
+    [addonDatasetClient, handleCreateAddonDataset, isCreatingDataset],
   )
 
   return <AddonDatasetContext.Provider value={ctxValue}>{children}</AddonDatasetContext.Provider>
