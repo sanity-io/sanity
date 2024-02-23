@@ -346,10 +346,10 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The text when an unpublish operation failed  */
   'panes.document-operation-results.operation-error_unpublish':
     'An error occurred while attempting to unpublish this document. This usually means that there are other documents that refers to it.',
-  /** The text when a generic operation succeded (fallback, generally not shown)  */
+  /** The text when a generic operation succeeded (fallback, generally not shown)  */
   'panes.document-operation-results.operation-success':
     'Successfully performed {{context}} on document',
-  /** The text when a delete operation succeded  */
+  /** The text when a delete operation succeeded  */
   'panes.document-operation-results.operation-success_delete':
     'The document was successfully deleted',
   /** The text when a discard changes operation succeeded  */
