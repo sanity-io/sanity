@@ -14,7 +14,7 @@ export const PortableTextInputCollapsed = defineEvent({
 
 export const PortableTextInvalidValueIgnore = defineEvent({
   version: 1,
-  name: 'Portable Text Editor Ignored Invalid Value ',
+  name: 'Portable Text Editor Invalid Value Resolved',
   description:
     'The portable text got an invalid value from the form and pressed button to ignore it',
 })
@@ -24,7 +24,7 @@ export const PortableTextInvalidValueResolve = defineEvent<{
   PTEInvalidValueDescription: string
 }>({
   version: 1,
-  name: 'Portable Text Editor Resolved Invalid Value',
+  name: 'Portable Text Editor Invalid Value Ignored',
   description:
     'The portable text got an invalid value from the form and pressed button to resolve it.',
 })
