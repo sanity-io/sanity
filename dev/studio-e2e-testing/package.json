@@ -21,9 +21,9 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-is": "^18.2.0",
-    "sanity": "workspace:^",
+    "sanity": "workspace:*",
     "sanity-plugin-mux-input": "^2.2.1",
-    "sanity-test-studio": "3.30.0",
+    "sanity-test-studio": "workspace:*",
     "styled-components": "^6.1.0"
   }
 }
