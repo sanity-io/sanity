@@ -96,7 +96,7 @@
     "@jest/globals": "^29.7.0",
     "@optimize-lodash/rollup-plugin": "^4.0.4",
     "@playwright/test": "^1.41.2",
-    "@sanity/client": "^6.13.3",
+    "@sanity/client": "^6.14.2",
     "@sanity/eslint-config-i18n": "^1.0.0",
     "@sanity/eslint-config-studio": "^3.0.1",
     "@sanity/pkg-utils": "^3.3.2",
@@ -146,15 +146,15 @@
     "prettier": "^3.1.0",
     "rimraf": "^3.0.2",
     "rxjs": "^7.8.1",
-    "sanity": "workspace:^",
+    "sanity": "workspace:*",
     "semver": "^7.3.5",
-    "turbo": "^1.12.2",
+    "turbo": "^1.12.4",
     "typescript": "^5.2.2",
     "yargs": "^17.3.0"
   },
   "optionalDependencies": {
     "node-notifier": "^10.0.0"
   },
-  "packageManager": "pnpm@8.14.0",
+  "packageManager": "pnpm@8.15.3",
   "isSanityMonorepo": true
 }
