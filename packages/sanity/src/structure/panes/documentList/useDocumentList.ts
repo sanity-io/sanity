@@ -165,7 +165,6 @@ export function useDocumentList(opts: UseDocumentListOpts): DocumentListState {
           // todo: hack to work around issue with get-it (used by sanity/client) that propagates connection errors as ProgressEvent instances. This if-block can be removed once @sanity/client is par with a version of get-it that includes this fix: https://github.com/sanity-io/get-it/pull/127
           return throwError(() => new Error(`Request error`))
         }
-
         return throwError(() => err)
       }),
       catchError((err, caught$) => {
