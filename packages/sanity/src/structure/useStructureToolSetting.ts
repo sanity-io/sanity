@@ -1,5 +1,6 @@
 import {useCallback, useEffect, useMemo, useState} from 'react'
-import {useSettingsStore} from 'sanity'
+import {startWith} from 'rxjs/operators'
+import {useKeyValueStore} from 'sanity'
 
 /**
  * @internal
@@ -9,36 +10,31 @@ export function useStructureToolSetting<ValueType>(
   key: string,
   defaultValue?: ValueType,
 ): [ValueType | undefined, (_value: ValueType) => void] {
-  const settingsStore = useSettingsStore()
+  const keyValueStore = useKeyValueStore()
   const [value, setValue] = useState<ValueType | undefined>(defaultValue)
 
-  const structureToolSettings = useMemo(
-    () => settingsStore.forNamespace('structure-tool'),
-    [settingsStore],
-  )
+  const keyValueStoreKey = namespace
+    ? `structure-tool::${namespace}::${key}`
+    : `structure-tool::${key}`
 
   const settings = useMemo(() => {
-    if (namespace) {
-      return structureToolSettings.forNamespace(namespace).forKey(key)
-    }
-
-    return structureToolSettings.forKey(key)
-  }, [structureToolSettings, namespace, key])
+    return keyValueStore.getKey(keyValueStoreKey)
+  }, [keyValueStore, keyValueStoreKey])
 
   useEffect(() => {
-    const sub = settings.listen(defaultValue).subscribe({
+    const sub = settings.pipe(startWith(defaultValue)).subscribe({
       next: setValue as any,
     })
 
     return () => sub?.unsubscribe()
-  }, [defaultValue, key, namespace, settings])
+  }, [defaultValue, keyValueStoreKey, settings])
 
   const set = useCallback(
     (newValue: ValueType) => {
       setValue(newValue)
-      settings.set(newValue as any)
+      keyValueStore.setKey(keyValueStoreKey, newValue as string)
     },
-    [settings],
+    [keyValueStore, keyValueStoreKey],
   )
 
   return useMemo(() => [value, set], [set, value])

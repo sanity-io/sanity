@@ -1,11 +1,11 @@
 import {type Config, type Source as SanitySource} from '../../config'
 import {type DocumentPreviewStore} from '../../preview'
+import {type KeyValueStore} from '../key-value/types'
 import {type DocumentStore} from './document'
 import {type GrantsStore} from './grants/types'
 import {type HistoryStore} from './history'
 import {type PresenceStore} from './presence'
 import {type ProjectStore} from './project'
-import {type SettingsStore} from './settings/types'
 
 export interface DatastoresContext {
   config: Config
@@ -19,5 +19,5 @@ export interface Datastores {
   historyStore: HistoryStore
   presenceStore: PresenceStore
   projectStore: ProjectStore
-  settingsStore: SettingsStore
+  keyValueStore: KeyValueStore
 }
