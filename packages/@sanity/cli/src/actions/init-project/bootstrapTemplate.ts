@@ -68,7 +68,7 @@ export async function bootstrapTemplate(
   if (opts.journeyProjectId) {
     debug('Fetching and writing remote schema "%s"', opts.journeyProjectId)
     await getAndWriteJourneySchemaWorker({
-      schemasPath: path.join(outputPath, 'schemas'),
+      schemasPath: path.join(outputPath, 'schemaTypes'),
       useTypeScript,
       projectId: opts.journeyProjectId,
     })

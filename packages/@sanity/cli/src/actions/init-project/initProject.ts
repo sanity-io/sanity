@@ -245,7 +245,11 @@ export default async function initSanity(
   }
 
   const usingBareOrEnv = cliFlags.bare || cliFlags.env
-  print(`You're setting up a new project!`)
+  print(
+    cliFlags.quickstart
+      ? "You're ejecting a remote Sanity project!"
+      : `You're setting up a new project!`,
+  )
   print(`We'll make sure you have an account with Sanity.io. ${usingBareOrEnv ? '' : `Then we'll`}`)
   if (!usingBareOrEnv) {
     print('install an open-source JS content editor that connects to')
@@ -1031,6 +1035,16 @@ export default async function initSanity(
       throw new Error(
         'You have specified both a project and an organization. To move a project to an organization please visit https://www.sanity.io/manage',
       )
+    }
+
+    if (
+      cliFlags.quickstart &&
+      (cliFlags.project || cliFlags.dataset || cliFlags.visibility || cliFlags.template)
+    ) {
+      const disallowed = ['project', 'dataset', 'visibility', 'template']
+      const usedDisallowed = disallowed.filter((flag) => cliFlags[flag as keyof InitFlags])
+      const usedDisallowedStr = usedDisallowed.map((f) => `--${f}`).join(', ')
+      throw new Error(`\`--quickstart\` cannot be combined with ${usedDisallowedStr}`)
     }
 
     if (createProjectName === true) {

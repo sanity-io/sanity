@@ -1,8 +1,14 @@
 import fs from 'fs/promises'
 import path from 'path'
+import {format} from 'prettier'
 import {Worker} from 'worker_threads'
 
-import {type DocumentDefinition, type ObjectDefinition} from '../../../types'
+import {
+  type ArrayDefinition,
+  type BaseSchemaDefinition,
+  type DocumentDefinition,
+  type ObjectDefinition,
+} from '../../../types'
 import {type CliApiClient} from '../types'
 import {getCliWorkerPath} from './cliWorker'
 
@@ -18,14 +24,15 @@ type JourneySchemaWorkerData = {
 
 type JourneySchemaWorkerResult = {type: 'success'} | {type: 'error'; error: Error}
 
-type DocumentOrObject = DocumentDefinition | ObjectDefinition
-
 type JourneyConfigResponse = {
   projectId: string
   datasetName: string
   displayName: string
   isFirstProject: boolean // Always true for now, making it compatible with the existing getOrCreateProject
 }
+
+type DocumentOrObject = DocumentDefinition | ObjectDefinition
+type SchemaObject = BaseSchemaDefinition & {type: string; fields?: SchemaObject[]}
 
 /**
  * Fetch a Journey schema from the Sanity schema club API and write it to disk
@@ -35,10 +42,11 @@ export async function getAndWriteJourneySchema(data: JourneySchemaWorkerData): P
   try {
     const documents = await fetchJourneySchema(projectId)
     const fileExtension = useTypeScript ? 'ts' : 'js'
+
     // Write a file for each schema
     for (const document of documents) {
       const filePath = path.join(schemasPath, `${document.name}.${fileExtension}`)
-      await fs.writeFile(filePath, JourneySchemaToFileContents(document))
+      await fs.writeFile(filePath, await JourneySchemaToFileContents(document))
     }
     // Write an index file that exports all the schemas
     const indexContent = assembeJourneyIndexContent(documents)
@@ -52,7 +60,6 @@ export async function getAndWriteJourneySchema(data: JourneySchemaWorkerData): P
  * Run the getAndWriteJourneySchema in a worker thread
  *
  * @param workerData - The worker data to pass to the worker thread
- * @returns
  */
 export async function getAndWriteJourneySchemaWorker(
   workerData: JourneySchemaWorkerData,
@@ -85,6 +92,10 @@ export async function getAndWriteJourneySchemaWorker(
   })
 }
 
+/**
+ * Validate a project ID
+ * Throws an error if the project ID is invalid
+ */
 function validateProjectId(projectId: string): void {
   if (!projectId) {
     throw new Error('ProjectId is required')
@@ -109,15 +120,21 @@ export async function fetchJourneyConfig(
     const response: JourneyConfigResponse = await apiClient({
       requireUser: true,
       requireProject: true,
-    }).request({
-      method: 'GET',
-      uri: `journey/projects/${projectId}`,
+      api: {
+        projectId,
+        apiHost: 'https://api.sanity.work',
+      },
     })
+      .config({apiVersion: 'v2024-02-23'})
+      .request({
+        method: 'GET',
+        uri: `/journey/projects/${projectId}`,
+      })
 
     return {
       projectId: response.projectId,
       datasetName: response.datasetName,
-      displayName: response.displayName,
+      displayName: response.displayName || 'Sanity Project', // TODO: Remove this default when the API is updated
       isFirstProject: true,
     }
   } catch (err) {
@@ -135,15 +152,10 @@ export async function fetchJourneyConfig(
 async function fetchJourneySchema(projectId: string): Promise<DocumentOrObject[]> {
   validateProjectId(projectId)
   try {
-    const response = await import(`https://api.sanity.io/vX/journey/projects/${projectId}/schema`)
-
-    // const response = await apiClient({
-    //   requireUser: true,
-    //   requireProject: true,
-    // }).request({
-    //   method: 'GET',
-    //   uri: `journey/projects/${projectId}/schema`,
-    // })
+    const response = await import('./TEST_SCHEMA')
+    // const response = await import(
+    //   `https://api.sanity.work/v2024-02-23/journey/projects/${projectId}/schema`
+    // )
 
     return response.default
   } catch (err) {
@@ -158,9 +170,12 @@ async function fetchJourneySchema(projectId: string): Promise<DocumentOrObject[]
  * @param schema - The Journey schema to wrap in a module export
  * @returns The Journey schema as a module export
  */
-function JourneySchemaToFileContents(schema: DocumentOrObject): string {
-  const prettySchema = prettyJourneySchema(schema)
-  return `export const ${schema.name} = ${prettySchema}\n`
+async function JourneySchemaToFileContents(schemaType: DocumentOrObject): Promise<string> {
+  const serialised = wrapSchemaTypeInHelpers(schemaType)
+  const imports = getImports(serialised)
+  const prettifiedSchemaType = await format(serialised, {parser: 'typescript'})
+  // Start file with import, then export the schema type as a named export
+  return `${imports}\n\nexport const ${schemaType.name} = ${prettifiedSchemaType}\n`
 }
 
 /**
@@ -177,25 +192,75 @@ function assembeJourneyIndexContent(schemas: DocumentOrObject[]): string {
 }
 
 /**
- * Pretty print a Journey schema as a string
+ * Get the import statements for a schema type
  *
- * @param schemas - The Journey schema to pretty print
- * @returns The pretty printed Journey schema
+ * @param schemaType - The schema type to get the imports for
+ * @returns The import statements for the schema type
  */
-function prettyJourneySchema(schemas: object) {
-  return JSON.stringify(
-    schemas,
-    (_, value: unknown) => {
-      // Replace functions with a string representation since they can't be serialized
-      if (typeof value === 'function') {
-        const fnString = value?.toString().replace(/\s*=>\s*/g, ' => ')
-        return `function:${fnString}`
-      }
-      return value
-    },
-    2,
-  )
-    .replace(/"([^"]+)":/g, '$1:') // Remove quotes around keys
-    .replace(/"function:([^"]+)"/g, '$1') // Remove quotes around functions (and the function: prefix)
-    .replace(/"/g, "'") // Replace double quotes with single quotes
+function getImports(schemaType: string): string {
+  const defaultImports = ['defineType', 'defineField']
+  if (schemaType.includes('defineArrayMember')) {
+    defaultImports.push('defineArrayMember')
+  }
+  return `import { ${defaultImports.join(', ')} } from 'sanity'`
+}
+
+/**
+ * Serialize a Sanity schema type into a string.
+ * Wraps the schema object in the appropriate helper function.
+ *
+ * @param schemaType - The schema type to serialize
+ * @returns The schema type as a string
+ */
+function wrapSchemaTypeInHelpers(schemaType: SchemaObject): string {
+  switch (schemaType.type) {
+    case 'document':
+    case 'object':
+      return wrapDefineType(schemaType)
+    case 'array':
+      return wrapDefineArrayMember(schemaType as ArrayDefinition)
+    default:
+      return wrapDefineField(schemaType)
+  }
+
+  function wrapDefineType(field: SchemaObject) {
+    const {fields, ...rest} = field
+    const restPart = serialize(rest)
+    const fieldsStr = fields?.map(wrapSchemaTypeInHelpers).join('')
+    const fieldsPart = fields ? `fields: [${fieldsStr}],` : ''
+    return `defineType({
+      ${restPart},
+      ${fieldsPart}
+    })`
+  }
+
+  function wrapDefineField(field: SchemaObject) {
+    const fieldPart = serialize(field)
+    return `defineField({${fieldPart}}),`
+  }
+
+  function wrapDefineArrayMember(field: ArrayDefinition) {
+    const {of, ...rest} = field
+    const restPart = serialize(rest)
+    const ofStr = of.map((f) => `defineArrayMember({${serialize(f)}})`)
+    const ofPart = of ? `of: [${ofStr.join(',')}],` : ''
+    return `defineField({
+      ${restPart},
+      ${ofPart}
+    }),`
+  }
+
+  function serialize(obj: object) {
+    return Object.entries(obj)
+      .map(([key, value]) => {
+        if (typeof value === 'string') {
+          return `${key}: "${value}"`
+        }
+        if (typeof value === 'object') {
+          return `${key}: ${JSON.stringify(value)}`
+        }
+        return `${key}: ${value}`
+      })
+      .join(',')
+  }
 }
