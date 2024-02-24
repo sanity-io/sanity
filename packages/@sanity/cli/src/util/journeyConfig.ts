@@ -117,7 +117,11 @@ export async function fetchJourneyConfig(
 ): Promise<JourneyConfigResponse> {
   validateProjectId(projectId)
   try {
-    const response: JourneyConfigResponse = await apiClient({
+    const response: {
+      projectId: string
+      dataset: string
+      displayName?: string
+    } = await apiClient({
       requireUser: true,
       requireProject: true,
       api: {
@@ -133,7 +137,7 @@ export async function fetchJourneyConfig(
 
     return {
       projectId: response.projectId,
-      datasetName: response.datasetName,
+      datasetName: response.dataset,
       displayName: response.displayName || 'Sanity Project', // TODO: Remove this default when the API is updated
       isFirstProject: true,
     }
