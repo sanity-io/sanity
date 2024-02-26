@@ -20,6 +20,7 @@ import {
 
 import {
   buildRangeDecorations,
+  buildRangeDecorationSelectionsFromComments,
   buildTextSelectionFromFragment,
   type CommentDocument,
   CommentInlineHighlightSpan,
@@ -28,7 +29,6 @@ import {
   type CommentUpdateOperationOptions,
   type CommentUpdatePayload,
   currentSelectionIsOverlappingWithComment,
-  hasCommentMessageValue,
   isTextSelectionComment,
   useComments,
   useCommentsEnabled,
@@ -236,27 +236,45 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
       if (!editorRef.current) return
       const editorValue = PortableTextEditor.getValue(editorRef.current) || EMPTY_ARRAY
 
-      const nextDecorations = buildRangeDecorations({
+      const [updatedDecoration] = buildRangeDecorationSelectionsFromComments({
         comments: [comment],
-        currentHoveredCommentId,
-        onDecorationClick: handleDecoratorClick,
-        onDecorationHoverEnd: setCurrentHoveredCommentId,
-        onDecorationHoverStart: setCurrentHoveredCommentId,
-        onDecorationMoved: handleRangeDecorationMoved,
-        selectedThreadId: selectedPath?.threadId || null,
         value: editorValue,
       })
 
       setAddedCommentsDecorations((prev) => {
         // eslint-disable-next-line max-nested-callbacks
-        const next = prev.filter((p) => p.payload?.commentId !== commentId)
-        return next.concat(nextDecorations)
+        const current = prev.find((p) => p.payload?.commentId === commentId) as RangeDecoration
+        if (!current) return prev
+
+        // eslint-disable-next-line max-nested-callbacks
+        const next = prev.map((p) => {
+          // Update existing range decoration with the new selection
+          if (p.payload?.commentId === commentId) {
+            const nextDecoration: RangeDecoration = {
+              ...current,
+              selection: updatedDecoration?.selection,
+              payload: {
+                ...current.payload,
+                range: updatedDecoration?.range,
+              },
+            }
+
+            return nextDecoration
+          }
+
+          return p
+        })
+
+        return next
       })
 
-      return
-
-      // If the origin is remote, it's not our responsibility to update the comment.
-      // if (origin === 'remote') return
+      // The `onDecorationMoved` is called whenever the range decoration is moved.
+      // However, we only want to update the comment with the new range if the
+      // change is local. That is, if the user is moving the range decoration.
+      // Therefore, we check if the change was caused by a "remote" origin
+      // (i.e. not by the current user) and  if so, we don't update the comment
+      // with the new range.
+      if (origin === 'remote') return
 
       let currentBlockKey = ''
       let previousBlockKey = ''
@@ -272,9 +290,7 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
         previousBlockKey = rangeDecoration.selection?.focus.path[0]?._key
         currentBlockKey = newSelection.focus.path[0]._key
 
-        const currentRange = nextDecorations.find((d) => d.payload?.commentId === commentId)
-          ?.payload?.range as CommentsTextSelectionItem | undefined
-
+        const currentRange = updatedDecoration?.range as CommentsTextSelectionItem | undefined
         const currentRangeText = currentRange?.text || ''
 
         newRange = {_key: currentBlockKey, text: currentRangeText}
@@ -332,7 +348,7 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
         operation.update(comment._id, nextComment, UPDATE_OPERATION_OPTIONS)
       }
     },
-    [currentHoveredCommentId, getComment, handleDecoratorClick, operation, selectedPath?.threadId],
+    [getComment, operation],
   )
 
   const handleBuildRangeDecorations = useCallback(
