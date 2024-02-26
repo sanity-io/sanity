@@ -427,7 +427,7 @@ importers:
         version: link:../../packages/@sanity/portable-text-editor
       '@sanity/preview-url-secret':
         specifier: ^1.6.1
-        version: 1.6.3(@sanity/client@6.14.4)
+        version: 1.6.4(@sanity/client@6.14.4)
       '@sanity/react-loader':
         specifier: ^1.8.3
         version: 1.8.7(@sanity/client@6.14.4)(react@18.2.0)
@@ -6041,7 +6041,7 @@ packages:
     dependencies:
       '@sanity/client': 6.14.4
       '@sanity/icons': 2.10.3(react@18.2.0)
-      '@sanity/preview-url-secret': 1.6.3(@sanity/client@6.14.4)
+      '@sanity/preview-url-secret': 1.6.4(@sanity/client@6.14.4)
       '@sanity/ui': 2.0.7(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8)
       '@sanity/uuid': 3.0.2
       '@types/lodash.isequal': 4.5.8
@@ -6059,11 +6059,11 @@ packages:
       - styled-components
     dev: false
 
-  /@sanity/preview-url-secret@1.6.3(@sanity/client@6.14.4):
-    resolution: {integrity: sha512-fHm9vYSp4qsh+wfWInjOw+cz9qQGciKGPTJI6zBSEPnFIOiWpxuwhIBXyQMMQef4W0pn7kqBIeSkMjBG7UClEg==}
+  /@sanity/preview-url-secret@1.6.4(@sanity/client@6.14.4):
+    resolution: {integrity: sha512-iOu6n5Zt7kuWoOYRliS2o/MDDBWcWkrnwwss2tglIBl744RPRkz0yi9qulnpAqMnWrZyIU8fV1yPCdg0RY+olw==}
     engines: {node: '>=18'}
     peerDependencies:
-      '@sanity/client': ^6.13.3
+      '@sanity/client': ^6.14.4
     dependencies:
       '@sanity/client': 6.14.4
       '@sanity/uuid': 3.0.2
