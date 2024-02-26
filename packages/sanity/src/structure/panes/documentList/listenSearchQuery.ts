@@ -92,6 +92,9 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Sanit
           const types = getSearchTypesWithMaxDepth(
             getSearchableTypes(schema).filter((type) => {
               if (typeNames.includes(type.name)) {
+                // make a call to getExtendedProjection in strict mode to verify that all fields are
+                // known. This method will throw an exception if there are any unknown fields specified
+                // in the sort by list
                 getExtendedProjection(type, sort.by, true)
                 return true
               }
