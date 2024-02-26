@@ -48,7 +48,7 @@ export const taskSchema = defineType({
     {
       type: 'object',
       name: 'target',
-      title: 'Target',
+      title: 'Target content',
       fields: [
         {
           name: 'document',
