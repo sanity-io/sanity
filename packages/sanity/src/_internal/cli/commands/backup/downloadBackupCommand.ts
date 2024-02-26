@@ -2,6 +2,7 @@ import {createWriteStream, existsSync, mkdirSync} from 'node:fs'
 import {mkdtemp} from 'node:fs/promises'
 import {tmpdir} from 'node:os'
 import path from 'node:path'
+import {finished} from 'node:stream/promises'
 
 import {
   type CliCommandArguments,
@@ -169,6 +170,9 @@ const downloadBackupCommand: CliCommandDefinition = {
       const {message} = parseApiErr(error)
       throw new Error(`Downloading dataset backup failed: ${message}`)
     }
+
+    docOutStream.end()
+    await finished(docOutStream)
 
     progressSpinner.set({step: `Archiving files into a tarball...`, update: true})
     try {
