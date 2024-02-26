@@ -285,6 +285,8 @@ export const DefaultInlineObjectComponent = (props: BlockProps) => {
     setPopoverOpen(false)
   }, [])
 
+  const modalWidth = schemaType?.type?.name === 'reference' ? 1 : undefined
+
   return (
     <>
       <Root
@@ -331,6 +333,7 @@ export const DefaultInlineObjectComponent = (props: BlockProps) => {
           referenceBoundary={referenceBoundary}
           referenceElement={referenceElement}
           schemaType={schemaType}
+          width={modalWidth}
         >
           {children}
         </ObjectEditModal>

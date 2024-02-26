@@ -15,6 +15,7 @@ export function ObjectEditModal(props: {
   referenceBoundary: HTMLElement | null
   referenceElement: HTMLElement | null
   schemaType: ObjectSchemaType & {i18nTitleKey?: string}
+  width?: number
 }) {
   const {
     autoFocus,
@@ -24,6 +25,7 @@ export function ObjectEditModal(props: {
     referenceBoundary,
     referenceElement,
     schemaType,
+    width,
   } = props
 
   const {t} = useTranslation()
@@ -42,7 +44,7 @@ export function ObjectEditModal(props: {
     onClose()
   }, [onClose])
 
-  const modalWidth = schemaModalOption?.width
+  const modalWidth = schemaModalOption?.width || width
 
   if (modalType === 'popover') {
     return (
