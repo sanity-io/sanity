@@ -1549,7 +1549,7 @@ importers:
         version: 2.2.0
       mendoza:
         specifier: ^3.0.0
-        version: 3.0.4
+        version: 3.0.5
       module-alias:
         specifier: ^2.2.2
         version: 2.2.3
@@ -13848,6 +13848,11 @@ packages:
 
   /mendoza@3.0.4:
     resolution: {integrity: sha512-kGlLhn1HF57oUK9DzJpqiqxHS9KJ0JcFRtNKBM8l970nepx3/GKs1uAIlBfq5mjmndk7IGa4vQ2ofcqMKMPTiA==}
+    engines: {node: '>=14.18'}
+    dev: false
+
+  /mendoza@3.0.5:
+    resolution: {integrity: sha512-kLFy+/zIZXcVZUV0YfsB9RyI/TUuk+ZjOFT6WWVW7Di4XvAOzaYE16seRY5nFV64JTcvcJAsAQSnLcErPRQgXw==}
     engines: {node: '>=14.18'}
     dev: false
 
