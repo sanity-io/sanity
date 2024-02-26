@@ -120,6 +120,8 @@ const schema = Schema.compile({
   ],
 })
 
+console.log('wut wut')
+
 export default function CommentInlineHighlightDebugStory() {
   const [value, setValue] = useState<PortableTextBlock[]>(INITIAL_VALUE)
   const [commentDocuments, setCommentDocuments] = useState<CommentDocument[]>([])
@@ -152,11 +154,44 @@ export default function CommentInlineHighlightDebugStory() {
       buildRangeDecorations({
         comments: comments.map((c) => c.parentComment),
         value,
-        onDecoratorHoverStart: setCurrentHoveredCommentId,
-        onDecoratorHoverEnd: setCurrentHoveredCommentId,
+        onDecorationHoverStart: setCurrentHoveredCommentId,
+        onDecorationHoverEnd: setCurrentHoveredCommentId,
         currentHoveredCommentId,
+        onDecorationMoved: (details) => {
+          const {rangeDecoration} = details
+          setRangeDecorations(buildRangeDecorationsCallback())
+          const commentId = rangeDecoration.payload?.commentId as undefined | string
+          const range = rangeDecoration.payload?.range as undefined | {_key: string; text: string}
+          if (commentId && range) {
+            setCommentDocuments((prev) => {
+              return prev.map((comment) => {
+                if (comment._id === commentId) {
+                  const newComment = {
+                    ...comment,
+                    target: {
+                      ...comment.target,
+                      path: {
+                        ...comment.target.path,
+                        selection: {
+                          type: 'text',
+                          value: [
+                            ...(comment.target.path.selection?.value
+                              .filter((r) => r._key !== range._key)
+                              .concat(range) || []),
+                          ],
+                        },
+                      },
+                    },
+                  } as CommentDocument
+                  return newComment
+                }
+                return comment
+              })
+            })
+          }
+        },
         selectedThreadId: null,
-        onDecoratorClick: () => {
+        onDecorationClick: () => {
           // ...
         },
       }),
@@ -171,40 +206,40 @@ export default function CommentInlineHighlightDebugStory() {
         setValue(editorStateValue || [])
       }
 
-      if (change.type === 'rangeDecorationMoved') {
-        setRangeDecorations(buildRangeDecorationsCallback())
-        const commentId = change.rangeDecoration.payload?.commentId as undefined | string
-        const range = change.rangeDecoration.payload?.range as
-          | undefined
-          | {_key: string; text: string}
-        if (commentId && range) {
-          setCommentDocuments((prev) => {
-            return prev.map((comment) => {
-              if (comment._id === commentId) {
-                const newComment = {
-                  ...comment,
-                  target: {
-                    ...comment.target,
-                    path: {
-                      ...comment.target.path,
-                      selection: {
-                        type: 'text',
-                        value: [
-                          ...(comment.target.path.selection?.value
-                            .filter((r) => r._key !== range._key)
-                            .concat(range) || []),
-                        ],
-                      },
-                    },
-                  },
-                } as CommentDocument
-                return newComment
-              }
-              return comment
-            })
-          })
-        }
-      }
+      // if (change.type === 'rangeDecorationMoved') {
+      //   setRangeDecorations(buildRangeDecorationsCallback())
+      //   const commentId = change.rangeDecoration.payload?.commentId as undefined | string
+      //   const range = change.rangeDecoration.payload?.range as
+      //     | undefined
+      //     | {_key: string; text: string}
+      //   if (commentId && range) {
+      //     setCommentDocuments((prev) => {
+      //       return prev.map((comment) => {
+      //         if (comment._id === commentId) {
+      //           const newComment = {
+      //             ...comment,
+      //             target: {
+      //               ...comment.target,
+      //               path: {
+      //                 ...comment.target.path,
+      //                 selection: {
+      //                   type: 'text',
+      //                   value: [
+      //                     ...(comment.target.path.selection?.value
+      //                       .filter((r) => r._key !== range._key)
+      //                       .concat(range) || []),
+      //                   ],
+      //                 },
+      //               },
+      //             },
+      //           } as CommentDocument
+      //           return newComment
+      //         }
+      //         return comment
+      //       })
+      //     })
+      //   }
+      // }
 
       if (change.type === 'selection') {
         const overlapping = currentSelectionIsOverlappingWithComment({
@@ -217,7 +252,7 @@ export default function CommentInlineHighlightDebugStory() {
         setCanAddComment(!overlapping && hasRange)
       }
     },
-    [buildRangeDecorationsCallback, rangeDecorations],
+    [rangeDecorations],
   )
 
   useEffect(() => {

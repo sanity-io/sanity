@@ -3,6 +3,7 @@ import {
   type EditorSelection,
   PortableTextEditor,
   type RangeDecoration,
+  type RangeDecorationOnMovedDetails,
 } from '@sanity/portable-text-editor'
 import {BoundaryElementProvider, Stack, usePortal} from '@sanity/ui'
 import * as PathUtils from '@sanity/util/paths'
@@ -34,7 +35,7 @@ import {
   useCommentsScroll,
   useCommentsSelectedPath,
 } from '../../../src'
-import {getSelectionBoundingRect, isRangeInvalid, useAuthoringReferenceElement} from '../helpers'
+import {getSelectionBoundingRect, useAuthoringReferenceElement} from '../helpers'
 import {FloatingButtonPopover} from './FloatingButtonPopover'
 import {InlineCommentInputPopover} from './InlineCommentInputPopover'
 
@@ -85,15 +86,12 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
 
   const [canSubmit, setCanSubmit] = useState<boolean>(false)
 
-  const didPatch = useRef<boolean>(false)
-
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
   const [isFullScreen, setIsFullScreen] = useState<boolean>(false)
   const [addedCommentsDecorations, setAddedCommentsDecorations] =
     useState<RangeDecoration[]>(EMPTY_ARRAY)
 
   const stringFieldPath = useMemo(() => PathUtils.toString(props.path), [props.path])
-  const hasValue = useMemo(() => hasCommentMessageValue(nextCommentValue), [nextCommentValue])
 
   const handleSetCurrentSelectionRect = useCallback(() => {
     const rect = getSelectionBoundingRect()
@@ -219,6 +217,124 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
     [handleSelectionChange],
   )
 
+  const handleRangeDecorationMoved = useCallback(
+    (details: RangeDecorationOnMovedDetails) => {
+      const {rangeDecoration, origin, newSelection} = details
+
+      const commentId = rangeDecoration.payload?.commentId as undefined | string
+      const comment = getComment(commentId || '')
+
+      // Remove the range decoration if the comment wasn't found.
+      if (!comment) {
+        setAddedCommentsDecorations((prev) =>
+          // eslint-disable-next-line max-nested-callbacks
+          prev.filter((p) => p.payload?.commentId !== commentId),
+        )
+        return
+      }
+
+      if (!editorRef.current) return
+      const editorValue = PortableTextEditor.getValue(editorRef.current) || EMPTY_ARRAY
+
+      const nextDecorations = buildRangeDecorations({
+        comments: [comment],
+        currentHoveredCommentId,
+        onDecorationClick: handleDecoratorClick,
+        onDecorationHoverEnd: setCurrentHoveredCommentId,
+        onDecorationHoverStart: setCurrentHoveredCommentId,
+        onDecorationMoved: handleRangeDecorationMoved,
+        selectedThreadId: selectedPath?.threadId || null,
+        value: editorValue,
+      })
+
+      setAddedCommentsDecorations((prev) => {
+        // eslint-disable-next-line max-nested-callbacks
+        const next = prev.filter((p) => p.payload?.commentId !== commentId)
+        return next.concat(nextDecorations)
+      })
+
+      return
+
+      // If the origin is remote, it's not our responsibility to update the comment.
+      // if (origin === 'remote') return
+
+      let currentBlockKey = ''
+      let previousBlockKey = ''
+      let newRange: CommentsTextSelectionItem | undefined
+
+      // TODO: simpliy and add comment that explains this if statement
+      if (
+        newSelection?.focus.path[0] &&
+        isKeySegment(newSelection.focus.path[0]) &&
+        rangeDecoration.selection?.focus.path[0] &&
+        isKeySegment(rangeDecoration.selection?.focus.path[0])
+      ) {
+        previousBlockKey = rangeDecoration.selection?.focus.path[0]?._key
+        currentBlockKey = newSelection.focus.path[0]._key
+
+        const currentRange = nextDecorations.find((d) => d.payload?.commentId === commentId)
+          ?.payload?.range as CommentsTextSelectionItem | undefined
+
+        const currentRangeText = currentRange?.text || ''
+
+        newRange = {_key: currentBlockKey, text: currentRangeText}
+      }
+
+      // TODO: split block needs special treatment like this:
+      // if (
+      //   newSelection?.focus.path[0] &&
+      //   isKeySegment(newSelection.focus.path[0]) &&
+      //   rangeDecoration.selection?.focus.path[0] &&
+      //   isKeySegment(rangeDecoration.selection?.focus.path[0])
+      // ) {
+      //   previousBlockKey = rangeDecoration.selection?.focus.path[0]?._key
+      //   currentBlockKey = newSelection.focus.path[0]._key
+      //   const previousBlock = editorValue.find((b) => b._key === previousBlockKey)
+
+      //   const previousBlockRange = rangeDecoration?.payload?.range as
+      //     | CommentsTextSelectionItem
+      //     | undefined
+      //   const previousBlockChildrenLength =
+      //     (previousBlock && toPlainText([previousBlock]).length) || 0
+
+      //   const currentRangeText = previousBlockRange?.text || ''
+      //   newRange = {
+      //     _key: currentBlockKey,
+      //     text: currentRangeText.substring(previousBlockChildrenLength, currentRangeText.length),
+      //   }
+      // }
+
+      if (newRange) {
+        const nextValue: CommentsTextSelectionItem[] = [
+          ...(comment.target.path.selection?.value
+            // TODO: add a comment that explains this filter
+            .filter((r) => r._key !== previousBlockKey && r._key !== currentBlockKey)
+            .concat(newRange) || EMPTY_ARRAY),
+        ]
+
+        const nextComment: CommentUpdatePayload = {
+          target: {
+            ...comment.target,
+            path: {
+              ...comment.target.path,
+              selection: {
+                type: 'text',
+                value: nextValue,
+              },
+            },
+          },
+        }
+
+        // Perform the actual update of the comment with the new range.
+        // The update is throttled to avoid too many updates in a short time.
+        // This is because the `rangeDecorationMoved` event can be triggered
+        // on every change in the editor.
+        operation.update(comment._id, nextComment, UPDATE_OPERATION_OPTIONS)
+      }
+    },
+    [currentHoveredCommentId, getComment, handleDecoratorClick, operation, selectedPath?.threadId],
+  )
+
   const handleBuildRangeDecorations = useCallback(
     (commentsToDecorate: CommentDocument[]) => {
       if (!editorRef.current) return EMPTY_ARRAY
@@ -227,14 +343,20 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
       return buildRangeDecorations({
         comments: commentsToDecorate,
         currentHoveredCommentId,
-        onDecoratorClick: handleDecoratorClick,
-        onDecoratorHoverEnd: setCurrentHoveredCommentId,
-        onDecoratorHoverStart: setCurrentHoveredCommentId,
+        onDecorationClick: handleDecoratorClick,
+        onDecorationHoverEnd: setCurrentHoveredCommentId,
+        onDecorationHoverStart: setCurrentHoveredCommentId,
+        onDecorationMoved: handleRangeDecorationMoved,
         selectedThreadId: selectedPath?.threadId || null,
         value: editorValue,
       })
     },
-    [currentHoveredCommentId, handleDecoratorClick, selectedPath?.threadId],
+    [
+      currentHoveredCommentId,
+      handleDecoratorClick,
+      handleRangeDecorationMoved,
+      selectedPath?.threadId,
+    ],
   )
 
   const onEditorChange = useCallback(
@@ -243,93 +365,8 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
         resetStates()
         debounceSelectionChange(change.selection)
       }
-
-      // The `rangeDecorationMoved` event triggers when range decorations move, even if
-      // not caused by the current user. This means edits by others that move decorations
-      // will also trigger this event. While expected, we need to ensure the comment document(s)
-      // aren't updated when another user is making changes. Updates to the comment document(s)
-      // should only happen when the current user is editing the content.
-      // To manage this, we use the `didPatch` ref to track if the event was
-      // triggered by the current user by checking the `patch` change type was triggered.
-      // The `patch` event only triggers when the current user is making changes to the content.
-      // That way, we can ensure the comment document(s) are only updated when the current user
-      // is editing the content.
-      if (change.type === 'patch') didPatch.current = true
-      if (change.type === 'mutation') didPatch.current = false
-
-      if (change.type === 'rangeDecorationMoved') {
-        if (!didPatch.current) return
-
-        const commentId = change.rangeDecoration.payload?.commentId as undefined | string
-        let currentBlockKey = ''
-        let previousBlockKey = ''
-        let newRange: CommentsTextSelectionItem | undefined
-
-        const comment = getComment(commentId || '')
-
-        if (!comment) return
-
-        // Build the range decorations for the comment that was moved.
-        const nextDecorations = handleBuildRangeDecorations([comment])
-
-        // Update the range decorations for the comment that was moved.
-        // We do this to get immediate feedback in the UI when the comment is moved.
-        // The actual comment update is throttled and is done below in `operation.update`.
-        setAddedCommentsDecorations((prev) => {
-          // eslint-disable-next-line max-nested-callbacks
-          const next = prev.filter((p) => p.payload?.commentId !== commentId)
-
-          return next.concat(nextDecorations)
-        })
-
-        // TODO: simpliy and add comment that explains this if statement
-        if (
-          change.newRangeSelection?.focus.path[0] &&
-          isKeySegment(change.newRangeSelection.focus.path[0]) &&
-          change.rangeDecoration.selection?.focus.path[0] &&
-          isKeySegment(change.rangeDecoration.selection?.focus.path[0])
-        ) {
-          previousBlockKey = change.rangeDecoration.selection?.focus.path[0]?._key
-          currentBlockKey = change.newRangeSelection.focus.path[0]._key
-
-          const currentRange = nextDecorations.find((d) => d.payload?.commentId === commentId)
-            ?.payload?.range as CommentsTextSelectionItem | undefined
-
-          const currentRangeText = currentRange?.text || ''
-
-          newRange = {_key: currentBlockKey, text: currentRangeText}
-        }
-
-        if (newRange) {
-          const nextValue: CommentsTextSelectionItem[] = [
-            ...(comment.target.path.selection?.value
-              // TODO: add a comment that explains this filter
-              .filter((r) => r._key !== previousBlockKey && r._key !== currentBlockKey)
-              .concat(newRange) || EMPTY_ARRAY),
-          ]
-
-          const nextComment: CommentUpdatePayload = {
-            target: {
-              ...comment.target,
-              path: {
-                ...comment.target.path,
-                selection: {
-                  type: 'text',
-                  value: nextValue,
-                },
-              },
-            },
-          }
-
-          // Perform the actual update of the comment with the new range.
-          // The update is throttled to avoid too many updates in a short time.
-          // This is because the `rangeDecorationMoved` event can be triggered
-          // on every change in the editor.
-          operation.update(comment._id, nextComment, UPDATE_OPERATION_OPTIONS)
-        }
-      }
     },
-    [debounceSelectionChange, resetStates, handleBuildRangeDecorations, getComment, operation],
+    [debounceSelectionChange, resetStates],
   )
 
   // The range decoration for the comment input. This is used to position the
@@ -342,7 +379,6 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
       component: ({children}) => (
         <CommentInlineHighlightSpan isAuthoring>{children}</CommentInlineHighlightSpan>
       ),
-      isRangeInvalid,
       selection: nextCommentSelection,
     }
   }, [nextCommentSelection])

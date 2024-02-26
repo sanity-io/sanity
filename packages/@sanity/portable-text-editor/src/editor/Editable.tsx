@@ -251,6 +251,13 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
       rangeDecorations.forEach((rangeDecorationItem) => {
         const slateRange = toSlateRange(rangeDecorationItem.selection, slateEditor)
         if (!SlateRange.isRange(slateRange) || !SlateRange.isExpanded(slateRange)) {
+          if (rangeDecorationItem.onMoved) {
+            rangeDecorationItem.onMoved({
+              newSelection: null,
+              rangeDecoration: rangeDecorationItem,
+              origin: IS_PROCESSING_LOCAL_CHANGES.get(slateEditor) ? 'local' : 'remote',
+            })
+          }
           return
         }
         // eslint-disable-next-line max-nested-callbacks
@@ -262,7 +269,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
           const newRange = moveRangeByOperation(slateRangeCopy, op)
           if (newRange && newRange !== slateRangeCopy) {
             const value = PortableTextEditor.getValue(portableTextEditor)
-            const newRangeSelection = toPortableTextRange(value, slateRangeCopy, schemaTypes)
+            const newRangeSelection = toPortableTextRange(value, newRange, schemaTypes)
             // rangeDecorationItem.selection = newRangeSelection
             if (rangeDecorationItem.onMoved) {
               rangeDecorationItem.onMoved({

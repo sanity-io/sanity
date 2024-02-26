@@ -63,14 +63,12 @@ export function toSlateRange(selection: EditorSelection, editor: Editor): Range 
 export function moveRangeByOperation(range: Range, operation: Operation): Range {
   const isOverlapping =
     Range.isRange(range) && 'path' in operation && Range.includes(range, operation.path)
-  if (!isOverlapping) {
-    return range
-  }
 
   // Note: important not to spread the root object here as it is a immutable object
   const rangeCopy = {anchor: {...range.anchor}, focus: {...range.focus}}
 
   if (
+    isOverlapping &&
     operation.type === 'insert_text' &&
     operation.offset + operation.text.length <= range.anchor.offset &&
     operation.offset + operation.text.length <= range.focus.offset
@@ -78,13 +76,14 @@ export function moveRangeByOperation(range: Range, operation: Operation): Range 
     rangeCopy.anchor.offset += operation.text.length
     rangeCopy.focus.offset += operation.text.length
   } else if (
+    isOverlapping &&
     operation.type === 'remove_text' &&
     operation.offset - operation.text.length <= range.anchor.offset &&
     operation.offset - operation.text.length <= range.focus.offset
   ) {
     rangeCopy.anchor.offset -= operation.text.length
     rangeCopy.focus.offset -= operation.text.length
-  } else if (operation.type === 'split_node') {
+  } else if (operation.type === 'split_node' && isOverlapping) {
     if (
       operation.path.length === 2 &&
       operation.path[0] === range.anchor.path[0] &&
