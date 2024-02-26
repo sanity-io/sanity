@@ -88,9 +88,6 @@ export function useTaskOperations(opts: TaskOperationsOptions): TaskOperations {
       create: handleCreate,
       edit: handleEdit,
       remove: handleRemove,
-      // TODO: Remove eslint-disable once implemented
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-function
-      update: async (id: string, task: Partial<TaskCreatePayload>) => {},
     }),
     [handleCreate, handleEdit, handleRemove],
   )
