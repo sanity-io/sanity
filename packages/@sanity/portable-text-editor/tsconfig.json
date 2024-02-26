@@ -7,12 +7,12 @@
     "outDir": "./lib/dts",
 
     "jsx": "react-jsx",
-    "isolatedModules": false,
+    "isolatedModules": false
   },
   "references": [
     {"path": "../block-tools/tsconfig.lib.json"},
     {"path": "../schema/tsconfig.lib.json"},
     {"path": "../types/tsconfig.lib.json"},
-    {"path": "../util/tsconfig.lib.json"},
-  ],
+    {"path": "../util/tsconfig.lib.json"}
+  ]
 }
