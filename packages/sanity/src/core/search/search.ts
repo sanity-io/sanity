@@ -14,6 +14,11 @@ import {
   type WeightedSearchOptions,
 } from './weighted/types'
 
+interface SearchHitsPage {
+  hits: SearchHit[]
+  pageIncrement: () => Observable<SearchHitsPage>
+}
+
 type SearchStrategyFactory = (
   types: SearchableType[],
   client: SanityClient,
@@ -21,7 +26,7 @@ type SearchStrategyFactory = (
 ) => (
   searchTerms: string | SearchTerms,
   searchOpts?: SearchOptions,
-) => Observable<(WeightedHit | {hit: SearchHit})[]>
+) => Observable<WeightedHit[] | SearchHitsPage>
 
 const searchStrategies: Record<SearchStrategy, SearchStrategyFactory> = {
   weighted: createWeightedSearch,

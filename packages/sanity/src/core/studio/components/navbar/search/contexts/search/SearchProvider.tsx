@@ -94,6 +94,11 @@ export function SearchProvider({children, fullscreen}: SearchProviderProps) {
           operators: operatorDefinitions,
           filters: filterDefinitions,
         },
+        pagination: {
+          pageIndex: 0,
+          cursor: null,
+          nextCursor: null,
+        },
       }),
     [
       currentUser,
@@ -106,7 +111,16 @@ export function SearchProvider({children, fullscreen}: SearchProviderProps) {
   )
   const [state, dispatch] = useReducer(searchReducer, initialState)
 
-  const {documentTypesNarrowed, filters: currentFilters, ordering, pageIndex, result, terms} = state
+  const {
+    documentTypesNarrowed,
+    filters: currentFilters,
+    ordering,
+    pageIndex,
+    cursor,
+    nextCursor,
+    result,
+    terms,
+  } = state
 
   const isMountedRef = useRef(false)
   const previousOrderingRef = useRef<SearchOrdering>(initialState.ordering)
@@ -116,6 +130,9 @@ export function SearchProvider({children, fullscreen}: SearchProviderProps) {
   const {handleSearch, searchState} = useSearch({
     initialState: {...result, terms},
     onComplete: (hits) => dispatch({hits, type: 'SEARCH_REQUEST_COMPLETE'}),
+    // TODO: Choose better param name.
+    onReceiveNextCursor: (nextCursor_) =>
+      dispatch({nextCursor: nextCursor_, type: 'RECEIVE_NEXT_CURSOR'}),
     onError: (error) => dispatch({error, type: 'SEARCH_REQUEST_ERROR'}),
     onStart: () => dispatch({type: 'SEARCH_REQUEST_START'}),
     schema,
@@ -175,6 +192,7 @@ export function SearchProvider({children, fullscreen}: SearchProviderProps) {
           offset: pageIndex * SEARCH_LIMIT,
           skipSortByScore: ordering.ignoreScore,
           sort: [ordering.sort],
+          cursor,
         },
         terms: {
           ...terms,
@@ -200,6 +218,7 @@ export function SearchProvider({children, fullscreen}: SearchProviderProps) {
     pageIndex,
     searchState.terms,
     terms,
+    cursor,
   ])
 
   /**
