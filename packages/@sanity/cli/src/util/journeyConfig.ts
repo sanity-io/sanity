@@ -16,18 +16,19 @@ import {getCliWorkerPath} from './cliWorker'
  * A Journey schema is a server schema that is saved in the Journey API
  */
 
-type JourneySchemaWorkerData = {
+interface JourneySchemaWorkerData {
   schemasPath: string
   useTypeScript: boolean
-  projectId: string
+  schemaUrl: string
 }
 
 type JourneySchemaWorkerResult = {type: 'success'} | {type: 'error'; error: Error}
 
-type JourneyConfigResponse = {
+interface JourneyConfigResponse {
   projectId: string
   datasetName: string
   displayName: string
+  schemaUrl: string
   isFirstProject: boolean // Always true for now, making it compatible with the existing getOrCreateProject
 }
 
@@ -38,18 +39,18 @@ type SchemaObject = BaseSchemaDefinition & {type: string; fields?: SchemaObject[
  * Fetch a Journey schema from the Sanity schema club API and write it to disk
  */
 export async function getAndWriteJourneySchema(data: JourneySchemaWorkerData): Promise<void> {
-  const {schemasPath, useTypeScript, projectId} = data
+  const {schemasPath, useTypeScript, schemaUrl} = data
   try {
-    const documents = await fetchJourneySchema(projectId)
+    const documentTypes = await fetchJourneySchema(schemaUrl)
     const fileExtension = useTypeScript ? 'ts' : 'js'
 
     // Write a file for each schema
-    for (const document of documents) {
-      const filePath = path.join(schemasPath, `${document.name}.${fileExtension}`)
-      await fs.writeFile(filePath, await JourneySchemaToFileContents(document))
+    for (const documentType of documentTypes) {
+      const filePath = path.join(schemasPath, `${documentType.name}.${fileExtension}`)
+      await fs.writeFile(filePath, await JourneySchemaToFileContents(documentType))
     }
     // Write an index file that exports all the schemas
-    const indexContent = assembeJourneyIndexContent(documents)
+    const indexContent = assembleJourneyIndexContent(documentTypes)
     await fs.writeFile(path.join(schemasPath, `index.${fileExtension}`), indexContent)
   } catch (error) {
     throw new Error(`Failed to fetch remote schema: ${error.message}`)
@@ -80,29 +81,20 @@ export async function getAndWriteJourneySchemaWorker(
       if (message.type === 'success') {
         resolve()
       } else {
+        message.error.message = `Import schema worker failed: ${message.error.message}`
         reject(message.error)
       }
     })
-    worker.on('error', reject)
+    worker.on('error', (error) => {
+      error.message = `Import schema worker failed: ${error.message}`
+      reject(error)
+    })
     worker.on('exit', (code) => {
       if (code !== 0) {
         reject(new Error(`Worker stopped with exit code ${code}`))
       }
     })
   })
-}
-
-/**
- * Validate a project ID
- * Throws an error if the project ID is invalid
- */
-function validateProjectId(projectId: string): void {
-  if (!projectId) {
-    throw new Error('ProjectId is required')
-  }
-  if (!/^[a-zA-Z0-9-]+$/.test(projectId)) {
-    throw new Error('Invalid projectId')
-  }
 }
 
 /**
@@ -115,19 +107,22 @@ export async function fetchJourneyConfig(
   apiClient: CliApiClient,
   projectId: string,
 ): Promise<JourneyConfigResponse> {
-  validateProjectId(projectId)
+  if (!projectId) {
+    throw new Error('ProjectId is required')
+  }
+  if (!/^[a-zA-Z0-9-]+$/.test(projectId)) {
+    throw new Error('Invalid projectId')
+  }
   try {
     const response: {
       projectId: string
       dataset: string
       displayName?: string
+      schemaUrl: string
     } = await apiClient({
       requireUser: true,
       requireProject: true,
-      api: {
-        projectId,
-        apiHost: 'https://api.sanity.work',
-      },
+      api: {projectId},
     })
       .config({apiVersion: 'v2024-02-23'})
       .request({
@@ -138,11 +133,12 @@ export async function fetchJourneyConfig(
     return {
       projectId: response.projectId,
       datasetName: response.dataset,
-      displayName: response.displayName || 'Sanity Project', // TODO: Remove this default when the API is updated
+      displayName: response.displayName || 'Sanity Project',
+      // The endpoint returns a signed URL that can be used to fetch the schema as ESM
+      schemaUrl: response.schemaUrl,
       isFirstProject: true,
     }
   } catch (err) {
-    console.error(err)
     throw new Error(`Failed to fetch remote schema config: ${projectId}`)
   }
 }
@@ -153,18 +149,13 @@ export async function fetchJourneyConfig(
  * @param projectId - The slug of the Journey schema to fetch
  * @returns The Journey schema as an array of Sanity document or object definitions
  */
-async function fetchJourneySchema(projectId: string): Promise<DocumentOrObject[]> {
-  validateProjectId(projectId)
+async function fetchJourneySchema(schemaUrl: string): Promise<DocumentOrObject[]> {
   try {
-    // TODO: Add token to the request and change to sanity.io
-    const response = await import(
-      `https://api.sanity.work/v2024-02-23/journey/projects/${projectId}/schema`
-    )
-
+    const response = await import(schemaUrl)
     return response.default
   } catch (err) {
     console.error(err)
-    throw new Error(`Failed to fetch remote schema: ${projectId}`)
+    throw new Error(`Failed to fetch remote schema: ${schemaUrl}`)
   }
 }
 
@@ -188,7 +179,7 @@ async function JourneySchemaToFileContents(schemaType: DocumentOrObject): Promis
  * @param schemas - The Journey schemas to assemble into an index file
  * @returns The index file as a string
  */
-function assembeJourneyIndexContent(schemas: DocumentOrObject[]): string {
+function assembleJourneyIndexContent(schemas: DocumentOrObject[]): string {
   schemas.sort((a, b) => (a.name > b.name ? 1 : -1)) // Sort schemas alphabetically by name
   const imports = schemas.map((schema) => `import { ${schema.name} } from './${schema.name}'`)
   const exports = schemas.map((schema) => `  ${schema.name}`).join(',\n')

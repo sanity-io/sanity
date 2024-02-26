@@ -275,7 +275,7 @@ export default async function initSanity(
 
   const flags = await prepareFlags()
   // We're authenticated, now lets select or create a project
-  const {projectId, displayName, isFirstProject, datasetName} = await getProjectDetails()
+  const {projectId, displayName, isFirstProject, datasetName, schemaUrl} = await getProjectDetails()
 
   const sluggedName = deburr(displayName.toLowerCase())
     .replace(/\s+/g, '-')
@@ -530,7 +530,7 @@ export default async function initSanity(
     outputPath,
     packageName: sluggedName,
     templateName,
-    journeyProjectId: cliFlags.quickstart,
+    schemaUrl,
     useTypeScript,
     variables: {
       dataset: datasetName,
@@ -650,6 +650,7 @@ export default async function initSanity(
     datasetName: string
     displayName: string
     isFirstProject: boolean
+    schemaUrl?: string
   }> {
     // If we're doing a quickstart, we don't need to prompt for project details
     if (flags.quickstart) {

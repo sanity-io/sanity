@@ -19,10 +19,9 @@ export interface BootstrapOptions {
   templateName: string
   /**
    * Used for initializing a project from a server schema that is saved in the Journey API
-   * This will override the `template` option.
    * @beta
    */
-  journeyProjectId?: string
+  schemaUrl?: string
   outputPath: string
   useTypeScript: boolean
   variables: GenerateConfigOptions['variables']
@@ -49,9 +48,7 @@ export async function bootstrapTemplate(
   debug('Copying files from template "%s" to "%s"', templateName, outputPath)
   let spinner = output
     .spinner(
-      opts.journeyProjectId
-        ? 'Extracting your Sanity configuration'
-        : 'Bootstrapping files from template',
+      opts.schemaUrl ? 'Extracting your Sanity configuration' : 'Bootstrapping files from template',
     )
     .start()
 
@@ -65,12 +62,12 @@ export async function bootstrapTemplate(
   }
 
   // If we have a journeyProjectId, the template is assembled from the builder schema
-  if (opts.journeyProjectId) {
-    debug('Fetching and writing remote schema "%s"', opts.journeyProjectId)
+  if (opts.schemaUrl) {
+    debug('Fetching and writing remote schema "%s"', opts.schemaUrl)
     await getAndWriteJourneySchemaWorker({
       schemasPath: path.join(outputPath, 'schemaTypes'),
       useTypeScript,
-      projectId: opts.journeyProjectId,
+      schemaUrl: opts.schemaUrl,
     })
   }
 
