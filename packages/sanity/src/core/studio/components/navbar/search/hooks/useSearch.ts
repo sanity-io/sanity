@@ -66,6 +66,7 @@ export function useSearch({
   allowEmptyQueries,
   initialState,
   onComplete,
+  onReceiveNextCursor,
   onError,
   onStart,
   schema,
@@ -73,6 +74,7 @@ export function useSearch({
   allowEmptyQueries?: boolean
   initialState: SearchState
   onComplete?: (hits: WeightedHit[]) => void
+  onReceiveNextCursor?: (nextCursor: string) => void
   onError?: (error: Error) => void
   onStart?: () => void
   schema: Schema
@@ -129,6 +131,8 @@ export function useSearch({
               () => hasSearchableTerms({allowEmptyQueries, terms: request.terms}),
               // If we have a valid search, run async fetch, map results and trigger `onComplete` / `onError` callbacks
               (search(request.terms, request.options) as Observable<WeightedHit[]>).pipe(
+                tap(({nextCursor}) => onReceiveNextCursor?.(nextCursor)),
+                switchMap(({hits}) => hits),
                 map((hits) => ({hits})),
                 tap(({hits}) => onComplete?.(hits)),
                 catchError((error) => {

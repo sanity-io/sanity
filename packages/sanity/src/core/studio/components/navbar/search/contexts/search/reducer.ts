@@ -21,7 +21,21 @@ import {
 import {isRecentSearchTerms} from '../../utils/isRecentSearchTerms'
 import {sortTypes} from '../../utils/selectors'
 
-export interface SearchReducerState {
+interface OffsetPaginationState {
+  pageIndex: number
+  // cursor: never
+}
+
+interface CursorPaginationState {
+  cursor: string | null
+  nextCursor: string | null
+  // pageIndex: never
+}
+
+// type PaginationState = OffsetPaginationState | CursorPaginationState
+type PaginationState = OffsetPaginationState & CursorPaginationState
+
+export type SearchReducerState = PaginationState & {
   currentUser: CurrentUser | null
   debug: boolean
   definitions: SearchDefinitions
@@ -32,7 +46,6 @@ export interface SearchReducerState {
   lastAddedFilter?: SearchFilter | null
   lastActiveIndex: number
   ordering: SearchOrdering
-  pageIndex: number
   recentSearches: RecentSearch[]
   result: SearchResult
   terms: RecentSearch | SearchTerms
@@ -57,6 +70,7 @@ export interface InitialSearchState {
   fullscreen?: boolean
   recentSearches?: RecentSearch[]
   definitions: SearchDefinitions
+  pagination: PaginationState
 }
 
 export function initialSearchState({
@@ -64,6 +78,7 @@ export function initialSearchState({
   fullscreen,
   recentSearches = [],
   definitions,
+  pagination,
 }: InitialSearchState): SearchReducerState {
   return {
     currentUser,
@@ -74,7 +89,7 @@ export function initialSearchState({
     fullscreen,
     lastActiveIndex: -1,
     ordering: ORDERINGS.relevance,
-    pageIndex: 0,
+    ...pagination,
     recentSearches,
     result: {
       error: null,
@@ -107,6 +122,8 @@ export type SearchRequestComplete = {
 }
 export type SearchRequestError = {type: 'SEARCH_REQUEST_ERROR'; error: Error}
 export type SearchRequestStart = {type: 'SEARCH_REQUEST_START'}
+// xxx rename `SetNextCursor`?
+export type ReceiveNextCursor = {type: 'RECEIVE_NEXT_CURSOR'; nextCursor: string}
 export type TermsFiltersAdd = {filter: SearchFilter; type: 'TERMS_FILTERS_ADD'}
 export type TermsFiltersClear = {type: 'TERMS_FILTERS_CLEAR'}
 export type TermsFiltersRemove = {filterKey: string; type: 'TERMS_FILTERS_REMOVE'}
@@ -133,6 +150,7 @@ export type SearchAction =
   | OrderingSet
   | PageIncrement
   | RecentSearchesSet
+  | ReceiveNextCursor
   | SearchClear
   | SearchRequestComplete
   | SearchRequestError
@@ -184,10 +202,23 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
         terms: stripRecent(state.terms),
       }
     case 'PAGE_INCREMENT':
+      if (!state.nextCursor) {
+        return {
+          ...state,
+          nextCursor: null,
+        }
+      }
       return {
         ...state,
         pageIndex: state.pageIndex + 1,
+        cursor: state.nextCursor,
+        nextCursor: null,
         terms: stripRecent(state.terms),
+      }
+    case 'RECEIVE_NEXT_CURSOR':
+      return {
+        ...state,
+        nextCursor: action.nextCursor,
       }
     case 'RECENT_SEARCHES_SET':
       return {
@@ -207,6 +238,7 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
     case 'SEARCH_REQUEST_COMPLETE':
       return {
         ...state,
+        cursor: null,
         result: {
           ...state.result,
           error: null,

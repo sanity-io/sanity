@@ -77,14 +77,36 @@ export interface WeightedSearchOptions {
 /**
  * @internal
  */
-export interface SearchOptions {
+export interface OffsetPaginationOptions {
+  limit?: number
+  offset?: number
+  cursor?: never
+}
+
+/**
+ * @internal
+ */
+export interface CursorPaginationOptions {
+  limit?: number
+  cursor?: string
+  offset?: never
+}
+
+/**
+ * @internal
+ */
+export type SearchPaginationOptions = OffsetPaginationOptions | CursorPaginationOptions
+
+/**
+ * @internal
+ */
+export type SearchOptions = SearchPaginationOptions & {
   __unstable_extendedProjection?: string
   comments?: string[]
   includeDrafts?: boolean
-  limit?: number
-  offset?: number
   skipSortByScore?: boolean
   sort?: SearchSort[]
+  cursor?: string
 }
 
 /**

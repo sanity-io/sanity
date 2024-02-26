@@ -1,7 +1,7 @@
 import {type SearchOptions, type SearchTerms, type WeightedSearchOptions} from '../weighted/types'
 import {type TextSearchParams} from './types'
 
-export const DEFAULT_LIMIT = 1000
+export const DEFAULT_LIMIT = 20
 
 // const pathWithMapper = ({mapWith, path}: SearchPath): string =>
 //   mapWith ? `${mapWith}(${path})` : path
@@ -42,6 +42,7 @@ export function createTextSearchQuery(
       __types: searchTerms.types.map((type) => type.name),
       ...(params || {}),
     },
+    fromCursor: searchOpts.cursor,
     limit: DEFAULT_LIMIT,
   }
 }

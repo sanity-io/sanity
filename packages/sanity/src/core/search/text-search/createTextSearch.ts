@@ -1,7 +1,7 @@
 import {type SanityClient} from '@sanity/client'
 import {type SanityDocument} from '@sanity/types'
-import {type Observable} from 'rxjs'
-import {map, tap} from 'rxjs/operators'
+import {type Observable, of} from 'rxjs'
+import {map, switchMap, tap} from 'rxjs/operators'
 
 import {removeDupes} from '../../util/draftUtils'
 import {
@@ -24,6 +24,11 @@ function getSearchTerms(searchParams: string | SearchTerms, types: SearchableTyp
   return searchParams.types.length ? searchParams : {...searchParams, types}
 }
 
+interface SearchHitsPage {
+  hits: SearchHit[]
+  pageIncrement: () => Observable<SearchHitsPage>
+}
+
 /**
  * @internal
  */
@@ -31,10 +36,9 @@ export function createTextSearch(
   types: SearchableType[],
   client: SanityClient,
   commonOpts: WeightedSearchOptions = {},
-): (
-  searchTerms: string | SearchTerms,
-  searchOpts?: SearchOptions,
-) => Observable<{hit: SearchHit}[]> {
+): (searchTerms: string | SearchTerms, searchOpts?: SearchOptions) => Observable<SearchHitsPage> {
+  // let nextCursor: string | undefined
+
   // Search currently supports both strings (reference + cross dataset reference inputs)
   // or a SearchTerms object (omnisearch).
   return function search(searchParams, searchOpts = {}) {
@@ -51,9 +55,18 @@ export function createTextSearch(
     })
 
     return searchRequest.pipe(
-      map(normalizeTextSearchResults),
-      commonOpts.unique ? map(removeDupes) : tap(),
-      map((hits: SearchHit[]) => boxTextSearchResults(hits)),
+      // tap(searchResult => setNextCursor()),
+      switchMap((textSearchResponse) => {
+        return of({
+          hits: of(textSearchResponse).pipe(
+            map(normalizeTextSearchResults),
+            commonOpts.unique ? map(removeDupes) : tap(),
+            map((hits: SearchHit[]) => boxTextSearchResults(hits)),
+          ),
+          nextCursor: textSearchResponse.nextCursor,
+          // fetchNextPage: () => search(searchParams, searchOpts), // with next cursor
+        })
+      }),
     )
   }
 }
