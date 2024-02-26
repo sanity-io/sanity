@@ -28,7 +28,6 @@ const LISTEN_OPTIONS: ListenOptions = {
 export const SORT_FIELD = '_createdAt'
 export const SORT_ORDER = 'desc'
 
-// const QUERY_FILTERS = [`_type == "tasks.task"`, `target.document._ref == $documentId`]
 const QUERY_FILTERS = [`_type == "tasks.task"`]
 
 const QUERY_PROJECTION = `{

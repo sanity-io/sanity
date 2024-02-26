@@ -18,7 +18,6 @@ export interface TaskOperations {
   create: (task: TaskCreatePayload) => Promise<TaskDocument>
   edit: (id: string, task: TaskEditPayload) => Promise<TaskDocument>
   remove: (id: string) => Promise<void>
-  update: (id: string, task: Partial<TaskCreatePayload>) => Promise<void>
 }
 
 /**
