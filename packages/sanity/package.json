@@ -215,7 +215,7 @@
     "@sanity/migrate": "3.30.0",
     "@sanity/mutator": "3.30.0",
     "@sanity/portable-text-editor": "3.30.0",
-    "@sanity/presentation": "1.11.0",
+    "@sanity/presentation": "1.11.1",
     "@sanity/schema": "3.30.0",
     "@sanity/telemetry": "^0.7.6",
     "@sanity/types": "3.30.0",
