@@ -36,6 +36,12 @@ export const customBlock = {
       name: 'strongAuthorRef',
       title: 'A strong author ref',
       to: {type: 'author'},
+      options: {
+        modal: {
+          type: 'popover',
+          width: 1,
+        },
+      },
     },
   ],
 }
