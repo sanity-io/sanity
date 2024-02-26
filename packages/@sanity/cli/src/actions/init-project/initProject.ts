@@ -658,7 +658,10 @@ export default async function initSanity(
       const data = await fetchJourneyConfig(apiClient, flags.quickstart)
       trace.log({
         step: 'fetchJourneyConfig',
-        ...data,
+        projectId: data.projectId,
+        datasetName: data.datasetName,
+        displayName: data.displayName,
+        isFirstProject: data.isFirstProject,
       })
       return data
     }
