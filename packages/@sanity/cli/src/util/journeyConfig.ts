@@ -156,10 +156,10 @@ export async function fetchJourneyConfig(
 async function fetchJourneySchema(projectId: string): Promise<DocumentOrObject[]> {
   validateProjectId(projectId)
   try {
-    const response = await import('./TEST_SCHEMA')
-    // const response = await import(
-    //   `https://api.sanity.work/v2024-02-23/journey/projects/${projectId}/schema`
-    // )
+    // TODO: Add token to the request
+    const response = await import(
+      `https://api.sanity.work/v2024-02-23/journey/projects/${projectId}/schema`
+    )
 
     return response.default
   } catch (err) {
