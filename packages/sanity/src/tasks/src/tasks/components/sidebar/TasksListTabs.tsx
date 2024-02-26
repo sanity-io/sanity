@@ -25,20 +25,26 @@ interface TasksListTab {
 export function TasksListTabs({activeTabId, onChange}: TasksListTabsProps) {
   const {activeDocument} = useTasks()
   const activeDocumentId = activeDocument?.documentId
-  const [isDisabledTab, setIsDisabledTab] = useState<boolean>(!activeDocumentId)
+  const [documentTabIsDisabled, setDocumentTabIsDisabled] = useState<boolean>(!activeDocumentId)
 
   useEffect(() => {
     let timeoutId: NodeJS.Timeout | null = null
 
-    if (!activeDocumentId && !isDisabledTab) {
+    // This effect is necessary to prevent the document tab from being disabled when the active document changes
+    // As soon as the document changes, the activeDocumentId will be changed to null, then when the form for that
+    // document is loaded, the activeDocumentId will be updated to the documentId of the document.
+    // If we only depend on the `activeDocumentId` and the user is in the document tab, the tab will be disabled automatically
+    // and then the user will have to select again the document tab to see the tasks for the document.
+    // Even though this is not ideal, it is a better user experience than having the tab disabled automatically.
+    if (!activeDocumentId && !documentTabIsDisabled) {
       timeoutId = setTimeout(() => {
-        setIsDisabledTab(true)
+        setDocumentTabIsDisabled(true)
         onChange('assigned')
       }, 1000)
     }
 
-    if (isDisabledTab && activeDocumentId) {
-      setIsDisabledTab(false)
+    if (documentTabIsDisabled && activeDocumentId) {
+      setDocumentTabIsDisabled(false)
     }
 
     return () => {
@@ -46,7 +52,7 @@ export function TasksListTabs({activeTabId, onChange}: TasksListTabsProps) {
         clearTimeout(timeoutId)
       }
     }
-  }, [activeDocumentId, isDisabledTab, onChange])
+  }, [activeDocumentId, documentTabIsDisabled, onChange])
 
   const tabs: TasksListTab[] = useMemo(
     () => [
@@ -61,10 +67,10 @@ export function TasksListTabs({activeTabId, onChange}: TasksListTabsProps) {
       {
         id: 'document',
         label: 'This document',
-        isDisabled: isDisabledTab,
+        isDisabled: documentTabIsDisabled,
       },
     ],
-    [isDisabledTab],
+    [documentTabIsDisabled],
   )
 
   const handleTabChange = useCallback(
