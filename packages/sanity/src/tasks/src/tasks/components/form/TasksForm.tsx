@@ -7,6 +7,7 @@ import {type CurrentUser, FormBuilder, LoadingBlock, useCurrentUser} from 'sanit
 import styled from 'styled-components'
 
 import {CommentsEnabledProvider} from '../../../../../structure/comments'
+import {MentionUserProvider} from '../../context/mentionUser'
 import {AddOnWorkspaceProvider} from './AddOnWorkspaceProvider'
 import {useTasksFormBuilder} from './useTasksFormBuilder'
 
@@ -55,8 +56,11 @@ export function TasksForm({documentId}: {documentId?: string}) {
   const currentUser = useCurrentUser()
   if (!currentUser) return <LoadingBlock showText title="Loading current user" />
   return (
-    <AddOnWorkspaceProvider>
-      <TasksCreateFormInner documentId={id} currentUser={currentUser} />
-    </AddOnWorkspaceProvider>
+    // This provider needs to be mounted before the AddonWorkspaceProvider.
+    <MentionUserProvider>
+      <AddOnWorkspaceProvider>
+        <TasksCreateFormInner documentId={id} currentUser={currentUser} />
+      </AddOnWorkspaceProvider>
+    </MentionUserProvider>
   )
 }
