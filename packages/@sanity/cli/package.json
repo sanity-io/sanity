@@ -122,6 +122,7 @@
     "p-filter": "^2.1.0",
     "p-timeout": "^4.0.0",
     "preferred-pm": "^3.0.3",
+    "prettier": "^3.1.0",
     "promise-props-recursive": "^2.0.2",
     "recast": "^0.22.0",
     "resolve-from": "^5.0.0",

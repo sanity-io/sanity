@@ -156,7 +156,7 @@ export async function fetchJourneyConfig(
 async function fetchJourneySchema(projectId: string): Promise<DocumentOrObject[]> {
   validateProjectId(projectId)
   try {
-    // TODO: Add token to the request
+    // TODO: Add token to the request and change to sanity.io
     const response = await import(
       `https://api.sanity.work/v2024-02-23/journey/projects/${projectId}/schema`
     )
