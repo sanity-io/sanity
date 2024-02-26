@@ -8,7 +8,7 @@
 
     "jsx": "react-jsx",
     "paths": {
-      "_self_": ["./src"],
-    },
-  },
+      "_self_": ["./src"]
+    }
+  }
 }
