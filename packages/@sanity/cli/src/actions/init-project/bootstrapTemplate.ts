@@ -61,7 +61,8 @@ export async function bootstrapTemplate(
     await fs.copyFile(path.join(sharedDir, 'tsconfig.json'), path.join(outputPath, 'tsconfig.json'))
   }
 
-  // If we have a journeyProjectId, the template is assembled from the builder schema
+  // If we have a schemaUrl, get the schema and write it to disk
+  // At this point the selected template should already have been forced to "clean"
   if (opts.schemaUrl) {
     debug('Fetching and writing remote schema "%s"', opts.schemaUrl)
     await getAndWriteJourneySchemaWorker({
