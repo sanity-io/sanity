@@ -514,6 +514,12 @@ export interface PortableTextInputProps
    */
   onEditorChange?: (change: EditorChange, editor: PortableTextEditor) => void
   /**
+   * Optional callback for when the editor goes into or out of full screen mode
+   * @hidden
+   * @beta
+   */
+  onFullScreenChange?: (isFullScreen: boolean) => void
+  /**
    * Custom copy function
    */
   onCopy?: OnCopyFn
