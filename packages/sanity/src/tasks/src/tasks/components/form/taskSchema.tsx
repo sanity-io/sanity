@@ -1,6 +1,7 @@
 import {defineType} from 'sanity'
 
-import {MentionUserFormField} from './MentionUserFormField'
+import {MentionUserFormField} from './MentionUser'
+import {TitleField} from './TitleField'
 
 export const taskSchema = defineType({
   type: 'document',
@@ -11,6 +12,10 @@ export const taskSchema = defineType({
       type: 'string',
       title: 'Title',
       name: 'title',
+      placeholder: 'Task title',
+      components: {
+        field: TitleField,
+      },
     },
     {
       type: 'array',
