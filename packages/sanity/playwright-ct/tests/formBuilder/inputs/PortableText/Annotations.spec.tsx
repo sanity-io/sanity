@@ -24,17 +24,23 @@ test.describe('Portable Text Input', () => {
       // Assertion: the annotation toolbar popover should not be visible
       await expect(page.getByTestId('annotation-toolbar-popover')).not.toBeVisible()
 
+      const $linkEditPopover = page.getByTestId('popover-edit-dialog')
+      const $linkInput = $linkEditPopover.getByLabel('Link').first()
+
       // Now we check if the edit popover shows automatically
-      await expect(page.getByLabel('Link').first()).toBeAttached({timeout: 10000})
+      await expect($linkInput).toBeAttached({timeout: 10000})
 
       // Focus the URL input
-      await page.getByLabel('Link').first().focus()
+      await $linkInput.focus()
 
       // Assertion: The URL input should be focused
-      await expect(page.getByLabel('Link').first()).toBeFocused()
+      await expect($linkInput).toBeFocused()
 
       // Type in the URL
       await page.keyboard.type('https://www.sanity.io')
+
+      // Assetion: The URL input should have the correct value
+      await expect($linkInput).toHaveValue('https://www.sanity.io')
 
       // Close the popover
       await page.keyboard.press('Escape')
