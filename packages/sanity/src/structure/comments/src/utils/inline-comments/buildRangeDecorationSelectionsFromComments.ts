@@ -84,6 +84,11 @@ export function buildRangeDecorationSelectionsFromComments(
       const textWithoutCommentTags = diffedText.replaceAll(COMMENT_INDICATORS_REGEX, '')
       const commentedText = textWithoutCommentTags.substring(startIndex, endIndex)
 
+      // If there is no text within the range, we don't need to create a decoration
+      if (startIndex + 1 === endIndex) {
+        return
+      }
+
       if (startIndex !== -1 && endIndex !== -1) {
         let childIndexAnchor = 0
         let anchorOffset = 0
@@ -107,6 +112,10 @@ export function buildRangeDecorationSelectionsFromComments(
           if (i === startIndex + commentedText.length) {
             break
           }
+        }
+        // If there is no expanded range, don't create a decoration
+        if (anchorOffset === focusOffset) {
+          return
         }
         decorators.push({
           selection: {
