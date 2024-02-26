@@ -25,7 +25,7 @@ importers:
         specifier: ^7.23.3
         version: 7.23.3(@babel/core@7.23.7)
       '@bjoerge/mutiny':
-        specifier: ^0.5.1
+        specifier: ^0.5.3
         version: 0.5.3
       '@jest/globals':
         specifier: ^29.7.0
