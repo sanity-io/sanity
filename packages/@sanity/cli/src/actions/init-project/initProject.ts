@@ -675,13 +675,14 @@ export default async function initSanity(
       aclMode: flags.visibility,
       defaultConfig: flags['dataset-default'],
     })
+    debug(`Dataset with name ${dataset.datasetName} selected`)
+
     trace.log({
       step: 'createOrSelectDataset',
       selectedOption: dataset.userAction,
-      datasetName,
+      datasetName: dataset.datasetName,
       visibility: flags.visibility as 'private' | 'public',
     })
-    debug(`Dataset with name ${dataset.datasetName} selected`)
 
     return {
       projectId: project.projectId,
