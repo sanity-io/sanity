@@ -1,6 +1,7 @@
 import {defineType} from 'sanity'
 
 import {MentionUserFormField} from './MentionUser'
+import {TargetField} from './TargetField'
 import {TitleField} from './TitleField'
 
 export const taskSchema = defineType({
@@ -49,6 +50,9 @@ export const taskSchema = defineType({
       type: 'object',
       name: 'target',
       title: 'Target content',
+      components: {
+        field: TargetField,
+      },
       fields: [
         {
           name: 'document',
@@ -58,11 +62,9 @@ export const taskSchema = defineType({
           studioUrl: ({id, type}) => `intent/edit/id=${id};type=${type}/`,
           to: [
             {
-              type: 'pt_allTheBellsAndWhistles',
+              type: 'any_document',
               preview: {
-                select: {
-                  title: 'title',
-                },
+                select: {title: 'title'},
               },
             },
           ],
