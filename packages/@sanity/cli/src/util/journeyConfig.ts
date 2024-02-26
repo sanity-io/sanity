@@ -154,7 +154,6 @@ async function fetchJourneySchema(schemaUrl: string): Promise<DocumentOrObject[]
     const response = await import(schemaUrl)
     return response.default
   } catch (err) {
-    console.error(err)
     throw new Error(`Failed to fetch remote schema: ${schemaUrl}`)
   }
 }
