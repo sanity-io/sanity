@@ -47,6 +47,13 @@ const StyledIntentLink = styled(IntentLink)(() => {
     width: 100%;
     overflow: hidden;
     cursor: pointer;
+    &:focus {
+      box-shadow: 0 0 0 1px var(--card-focus-ring-color);
+    }
+    &:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 1px var(--card-focus-ring-color);
+    }
   `
 })
 
