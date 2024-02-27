@@ -75,7 +75,7 @@ export function TitleField(props: StringFieldProps) {
     <Root>
       <TitleInput
         ref={ref}
-        autoFocus
+        autoFocus={!value}
         value={value}
         placeholder={props.inputProps.schemaType.placeholder}
         onChange={handleChange}
