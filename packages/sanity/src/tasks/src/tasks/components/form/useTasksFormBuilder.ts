@@ -106,10 +106,9 @@ export function useTasksFormBuilder(options: TasksFormBuilderOptions): TasksForm
 
   const value = editState?.draft || editState?.published || initialValue
 
-  const displayed = useMemo(() => value, [value])
   const formState = useFormState(tasksSchemaType, {
-    value: displayed,
-    comparisonValue: null,
+    value: value,
+    comparisonValue: value,
     readOnly: false,
     changesOpen: false,
     presence,
