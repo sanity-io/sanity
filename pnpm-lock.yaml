@@ -453,8 +453,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/@sanity/vision
       '@sanity/visual-editing':
-        specifier: 1.5.1
-        version: 1.5.1
+        specifier: 1.5.2
+        version: 1.5.2
       '@turf/helpers':
         specifier: ^6.0.1
         version: 6.5.0
@@ -6324,8 +6324,8 @@ packages:
       '@types/uuid': 8.3.4
       uuid: 8.3.2
 
-  /@sanity/visual-editing@1.5.1:
-    resolution: {integrity: sha512-dED5ErHWn+tqHDgHs8A7aRG5tlYJwMHTXRD01V5o5xqQ8r0jrvF5lHsuHDVaR3Mx39jOO8S3hXgkzB0KTAgTdA==}
+  /@sanity/visual-editing@1.5.2:
+    resolution: {integrity: sha512-/eV1AbbvxMxJhgif1NPHptViOKZ2FCp6YDsQRC7A6/6xKDubZ+kFAKiImu2rwF5ZMLYljsWw/xMi20FNRMstlQ==}
     engines: {node: '>=18'}
     peerDependencies:
       '@remix-run/react': '>= 2'
