@@ -1,5 +1,6 @@
 import {type CliCommandDefinition} from '@sanity/cli'
 
+import parseApiErr from '../../actions/backup/parseApiErr'
 import resolveApiClient from '../../actions/backup/resolveApiClient'
 import {defaultApiVersion} from './backupGroup'
 
@@ -39,10 +40,8 @@ const enableDatasetBackupCommand: CliCommandDefinition = {
         `${chalk.bold(`Retention policies may apply depending on your plan and agreement.\n`)}`,
       )
     } catch (error) {
-      const msg = error.statusCode
-        ? error.response.body.message
-        : error.message || error.statusMessage
-      output.print(`${chalk.red(`Enabling dataset backup failed: ${msg}`)}\n`)
+      const {message} = parseApiErr(error)
+      output.print(`${chalk.red(`Enabling dataset backup failed: ${message}`)}\n`)
     }
   },
 }
