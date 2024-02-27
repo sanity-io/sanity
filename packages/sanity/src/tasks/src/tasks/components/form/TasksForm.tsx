@@ -1,13 +1,12 @@
 import {Box, rem} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
-import {uuid} from '@sanity/uuid'
-import {useMemo} from 'react'
 import {type CurrentUser, FormBuilder, LoadingBlock, useCurrentUser} from 'sanity'
 import styled from 'styled-components'
 
 import {CommentsEnabledProvider} from '../../../../../structure/comments'
 import {MentionUserProvider} from '../../context/mentionUser'
+import {type TaskDocument} from '../../types'
 import {AddOnWorkspaceProvider} from './AddOnWorkspaceProvider'
 import {useTasksFormBuilder} from './useTasksFormBuilder'
 
@@ -24,15 +23,16 @@ const FormBuilderRoot = styled.div((props) => {
 
 const TasksCreateFormInner = ({
   documentId,
-  currentUser,
+  initialValue,
 }: {
   documentId: string
   currentUser: CurrentUser
+  initialValue?: Partial<TaskDocument>
 }) => {
   const formBuilderProps = useTasksFormBuilder({
     documentType: 'tasks.task',
     documentId,
-    currentUserId: currentUser.id,
+    initialValue,
   })
 
   return (
@@ -53,16 +53,26 @@ const TasksCreateFormInner = ({
 /**
  * @internal
  */
-export function TasksForm({documentId}: {documentId?: string}) {
-  // In create mode, we need to generate a new document ID - WIP - creation will work different, it will create the new document after click on "create"
-  const id = useMemo(() => documentId || uuid(), [documentId])
+export function TasksForm({
+  documentId,
+  initialValue,
+}: {
+  documentId: string
+  initialValue?: Partial<TaskDocument>
+}) {
   const currentUser = useCurrentUser()
+
   if (!currentUser) return <LoadingBlock showText title="Loading current user" />
+
   return (
     // This provider needs to be mounted before the AddonWorkspaceProvider.
     <MentionUserProvider>
       <AddOnWorkspaceProvider>
-        <TasksCreateFormInner documentId={id} currentUser={currentUser} />
+        <TasksCreateFormInner
+          documentId={documentId}
+          currentUser={currentUser}
+          initialValue={initialValue}
+        />
       </AddOnWorkspaceProvider>
     </MentionUserProvider>
   )
