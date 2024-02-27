@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 import {type BaseRange, type Editor, type Operation, Path, Range} from 'slate'
 
 import {
@@ -60,31 +61,44 @@ export function toSlateRange(selection: EditorSelection, editor: Editor): Range 
   return range
 }
 
-export function moveRangeByOperation(range: Range, operation: Operation): Range {
+export function moveRangeByOperation(range: Range, operation: Operation): Range | null {
   const isOverlapping =
     Range.isRange(range) && 'path' in operation && Range.includes(range, operation.path)
-  if (!isOverlapping) {
-    return range
-  }
 
   // Note: important not to spread the root object here as it is a immutable object
   const rangeCopy = {anchor: {...range.anchor}, focus: {...range.focus}}
 
-  if (
-    operation.type === 'insert_text' &&
-    operation.offset + operation.text.length <= range.anchor.offset &&
-    operation.offset + operation.text.length <= range.focus.offset
-  ) {
-    rangeCopy.anchor.offset += operation.text.length
-    rangeCopy.focus.offset += operation.text.length
-  } else if (
-    operation.type === 'remove_text' &&
-    operation.offset - operation.text.length <= range.anchor.offset &&
-    operation.offset - operation.text.length <= range.focus.offset
-  ) {
-    rangeCopy.anchor.offset -= operation.text.length
-    rangeCopy.focus.offset -= operation.text.length
-  } else if (operation.type === 'split_node') {
+  const startPoint = Range.isBackward(range) ? rangeCopy.focus : rangeCopy.anchor
+  const endPoint = Range.isBackward(range) ? rangeCopy.anchor : rangeCopy.focus
+  if (isOverlapping && operation.type === 'insert_text') {
+    const operationEndOffset = operation.offset + operation.text.length
+    const isStartAffected = operationEndOffset <= startPoint.offset
+    const isEndAffected = operationEndOffset <= endPoint.offset
+    if (isStartAffected) {
+      rangeCopy.anchor.offset += operation.text.length
+    }
+    if (isEndAffected) {
+      rangeCopy.focus.offset += operation.text.length
+    }
+  } else if (isOverlapping && operation.type === 'remove_text') {
+    const operationEndOffset = operation.offset - operation.text.length
+    const isStartAffected = operationEndOffset <= startPoint.offset
+    const isEndAffected = operationEndOffset <= endPoint.offset
+    if (isStartAffected) {
+      startPoint.offset -= operation.text.length
+    }
+    if (isEndAffected) {
+      endPoint.offset -= operation.text.length
+    }
+    if (
+      isStartAffected &&
+      isEndAffected &&
+      operation.offset - operation.text.length < startPoint.offset &&
+      operation.offset > endPoint.offset
+    ) {
+      return null
+    }
+  } else if (isOverlapping && operation.type === 'split_node') {
     if (
       operation.path.length === 2 &&
       operation.path[0] === range.anchor.path[0] &&
