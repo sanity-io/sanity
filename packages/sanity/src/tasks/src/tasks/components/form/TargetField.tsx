@@ -41,6 +41,13 @@ const EmptyReferenceRoot = styled(Card)((props) => {
   `
 })
 
+const Placeholder = styled(Text)((props) => {
+  const theme = getTheme_v2(props.theme)
+  return `
+      color: ${theme.color.input.default.enabled.placeholder};
+      margin-left: 3px;
+  `
+})
 const StyledIntentLink = styled(IntentLink)(() => {
   return css`
     text-decoration: none;
@@ -214,9 +221,7 @@ export function TargetField(props: ObjectFieldProps) {
                       <DocumentIcon />
                     </Text>
                   </Box>
-                  <Text size={1} muted>
-                    Search document
-                  </Text>
+                  <Placeholder size={1}>Search document</Placeholder>
                 </Flex>
               </EmptyReferenceRoot>
             )}
