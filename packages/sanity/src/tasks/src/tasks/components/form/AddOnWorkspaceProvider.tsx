@@ -10,7 +10,13 @@ import {
 
 import {taskSchema} from './taskSchema'
 
-export function AddOnWorkspaceProvider({children}: {children: React.ReactNode}) {
+export function AddOnWorkspaceProvider({
+  children,
+  mode,
+}: {
+  children: React.ReactNode
+  mode: 'edit' | 'create'
+}) {
   // Parent workspace source, we want to use the same project id
   const source = useSource()
   const basePath = undefined // TODO: Is basePath necessary here?
@@ -23,10 +29,10 @@ export function AddOnWorkspaceProvider({children}: {children: React.ReactNode}) 
       // TODO: Get this host from the studio config.
       apiHost: 'https://api.sanity.work',
       schema: {
-        types: [taskSchema],
+        types: [taskSchema(mode)],
       },
     }),
-    [source.projectId],
+    [source.projectId, mode],
   )
 
   const {workspaces} = useMemo(

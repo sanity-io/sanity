@@ -1,7 +1,7 @@
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
 import {type ChangeEvent, useCallback, useEffect, useRef} from 'react'
-import {set, type StringFieldProps, unset} from 'sanity'
+import {type FormPatch, type PatchEvent, type Path, set, type StringFieldProps, unset} from 'sanity'
 import styled, {css} from 'styled-components'
 
 const Root = styled.div`
@@ -51,9 +51,13 @@ const TitleInput = styled.textarea((props) => {
   `
 })
 
-export function TitleField(props: StringFieldProps) {
-  const {value, inputProps} = props
-  const {onChange} = inputProps
+export function Title(props: {
+  value: string | undefined
+  path?: Path
+  onChange: (patch: FormPatch | PatchEvent | FormPatch[]) => void
+  placeholder?: string
+}) {
+  const {value, onChange, placeholder, path} = props
   const ref = useRef<HTMLTextAreaElement | null>(null)
 
   useEffect(() => {
@@ -66,9 +70,9 @@ export function TitleField(props: StringFieldProps) {
     (event: ChangeEvent<HTMLTextAreaElement>) => {
       const inputValue = event.currentTarget.value
       if (!inputValue) onChange(unset())
-      return onChange(set(inputValue.replace(/\n/g, '')))
+      return onChange(set(inputValue.replace(/\n/g, ''), path))
     },
-    [onChange],
+    [onChange, path],
   )
 
   return (
@@ -77,10 +81,17 @@ export function TitleField(props: StringFieldProps) {
         ref={ref}
         autoFocus={!value}
         value={value}
-        placeholder={props.inputProps.schemaType.placeholder}
+        placeholder={placeholder}
         onChange={handleChange}
         rows={1}
       />
     </Root>
   )
+}
+
+export function TitleField(props: StringFieldProps) {
+  const {value, inputProps} = props
+  const {onChange, schemaType} = inputProps
+
+  return <Title value={value} onChange={onChange} placeholder={schemaType.placeholder} />
 }
