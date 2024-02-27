@@ -52,8 +52,8 @@ importers:
         specifier: 0.0.1-alpha.1
         version: 0.0.1-alpha.1
       '@sanity/tsdoc':
-        specifier: 1.0.0-alpha.42
-        version: 1.0.0-alpha.42(@sanity/pkg-utils@3.3.8)(@types/node@18.19.8)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(sanity@packages+sanity)(styled-components@5.3.11)
+        specifier: 1.0.0-alpha.44
+        version: 1.0.0-alpha.44(@sanity/pkg-utils@3.3.8)(@types/node@18.19.8)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(sanity@packages+sanity)(styled-components@5.3.11)
       '@sanity/uuid':
         specifier: ^3.0.2
         version: 3.0.2
@@ -432,8 +432,8 @@ importers:
         specifier: ^1.8.3
         version: 1.9.0(@sanity/client@6.15.0)(react@18.2.0)
       '@sanity/tsdoc':
-        specifier: 1.0.0-alpha.42
-        version: 1.0.0-alpha.42(@sanity/pkg-utils@2.4.10)(@types/node@18.19.8)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(sanity@packages+sanity)(styled-components@6.1.8)
+        specifier: 1.0.0-alpha.44
+        version: 1.0.0-alpha.44(@sanity/pkg-utils@2.4.10)(@types/node@18.19.8)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(sanity@packages+sanity)(styled-components@6.1.8)
       '@sanity/types':
         specifier: workspace:*
         version: link:../../packages/@sanity/types
@@ -1678,8 +1678,8 @@ importers:
         specifier: ^1.41.2
         version: 1.41.2
       '@sanity/tsdoc':
-        specifier: 1.0.0-alpha.42
-        version: 1.0.0-alpha.42(@sanity/pkg-utils@2.4.10)(@types/node@18.19.8)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(sanity@packages+sanity)(styled-components@6.1.8)
+        specifier: 1.0.0-alpha.44
+        version: 1.0.0-alpha.44(@sanity/pkg-utils@2.4.10)(@types/node@18.19.8)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(sanity@packages+sanity)(styled-components@6.1.8)
       '@sanity/ui-workshop':
         specifier: ^1.2.11
         version: 1.2.11(@sanity/icons@2.10.3)(@sanity/ui@2.0.7)(@types/node@18.19.8)(react-dom@18.2.0)(react@18.2.0)(styled-components@6.1.8)
@@ -6105,8 +6105,8 @@ packages:
       - supports-color
     dev: true
 
-  /@sanity/tsdoc@1.0.0-alpha.42(@sanity/pkg-utils@2.4.10)(@types/node@18.19.8)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(sanity@packages+sanity)(styled-components@6.1.8):
-    resolution: {integrity: sha512-iAEYkdWqE75JMpLn3KNIY3TfMzjmVMyLgi/KHq/zLFUjqXMrNwvljZIk9STnwKPP8C6fBGNOz7JO6Lpx9x7l1g==}
+  /@sanity/tsdoc@1.0.0-alpha.44(@sanity/pkg-utils@2.4.10)(@types/node@18.19.8)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(sanity@packages+sanity)(styled-components@6.1.8):
+    resolution: {integrity: sha512-LFVDxJ5FSaC6aZ9H/mwkEl7x1U21QcRhJGNlFbMSpt7G2dJNDKAy+alc6aXdkBjY/Gkf/flwB2jAdEwu860xKQ==}
     engines: {node: '>=14.0.0'}
     hasBin: true
     peerDependencies:
@@ -6161,8 +6161,8 @@ packages:
       - supports-color
       - terser
 
-  /@sanity/tsdoc@1.0.0-alpha.42(@sanity/pkg-utils@3.3.8)(@types/node@18.19.8)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(sanity@packages+sanity)(styled-components@5.3.11):
-    resolution: {integrity: sha512-iAEYkdWqE75JMpLn3KNIY3TfMzjmVMyLgi/KHq/zLFUjqXMrNwvljZIk9STnwKPP8C6fBGNOz7JO6Lpx9x7l1g==}
+  /@sanity/tsdoc@1.0.0-alpha.44(@sanity/pkg-utils@3.3.8)(@types/node@18.19.8)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(sanity@packages+sanity)(styled-components@5.3.11):
+    resolution: {integrity: sha512-LFVDxJ5FSaC6aZ9H/mwkEl7x1U21QcRhJGNlFbMSpt7G2dJNDKAy+alc6aXdkBjY/Gkf/flwB2jAdEwu860xKQ==}
     engines: {node: '>=14.0.0'}
     hasBin: true
     peerDependencies:
