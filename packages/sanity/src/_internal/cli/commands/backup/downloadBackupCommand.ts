@@ -33,8 +33,8 @@ import {defaultApiVersion} from './backupGroup'
 
 const debug = createDebug('sanity:backup')
 
-const DEFAULT_DOWNLOAD_CONCURRENCY = 10
-const MAX_DOWNLOAD_CONCURRENCY = 24
+const DEFAULT_DOWNLOAD_CONCURRENCY = 24
+const MAX_DOWNLOAD_CONCURRENCY = 48
 
 interface DownloadBackupOptions {
   projectId: string
