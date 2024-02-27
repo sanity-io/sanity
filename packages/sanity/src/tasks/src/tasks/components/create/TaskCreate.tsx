@@ -33,5 +33,5 @@ export function TaskCreate(props: TaskCreateProps) {
       : undefined,
   }
 
-  return <TasksForm documentId={documentId} initialValue={initialValue} />
+  return <TasksForm documentId={documentId} initialValue={initialValue} mode="create" />
 }
