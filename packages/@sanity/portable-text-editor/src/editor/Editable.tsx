@@ -20,6 +20,7 @@ import {
   type BaseRange,
   Editor,
   type NodeEntry,
+  type Operation,
   Range as SlateRange,
   type Text,
   Transforms,
@@ -52,7 +53,6 @@ import {debugWithName} from '../utils/debug'
 import {moveRangeByOperation, toPortableTextRange, toSlateRange} from '../utils/ranges'
 import {normalizeSelection} from '../utils/selection'
 import {fromSlateValue, isEqualToEmptyEditor, toSlateValue} from '../utils/values'
-import {IS_PROCESSING_LOCAL_CHANGES} from '../utils/weakMaps'
 import {Element} from './components/Element'
 import {Leaf} from './components/Leaf'
 import {useForwardedRef} from './hooks/useForwardedRef'
@@ -245,44 +245,54 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
     }
   }, [propsSelection, slateEditor, blockTypeName, change$])
 
-  const syncRangeDecorations = useCallback(() => {
-    if (rangeDecorations && rangeDecorations.length > 0) {
-      const newSlateRanges: BaseRangeWithDecoration[] = []
-      rangeDecorations.forEach((rangeDecorationItem) => {
-        const slateRange = toSlateRange(rangeDecorationItem.selection, slateEditor)
-        if (!SlateRange.isRange(slateRange) || !SlateRange.isExpanded(slateRange)) {
-          return
-        }
-        // eslint-disable-next-line max-nested-callbacks
-        const operations = slateEditor.operations.filter((op) => op.type !== 'set_selection')
-        // Note: important not to spread the root object here as it is a immutable object
-        let slateRangeCopy = {focus: slateRange.focus, anchor: slateRange.anchor}
-        // eslint-disable-next-line max-nested-callbacks
-        operations.forEach((op) => {
-          const newRange = moveRangeByOperation(slateRangeCopy, op)
-          if (newRange && newRange !== slateRangeCopy) {
-            const value = PortableTextEditor.getValue(portableTextEditor)
-            const newRangeSelection = toPortableTextRange(value, slateRangeCopy, schemaTypes)
-            // rangeDecorationItem.selection = newRangeSelection
+  const syncRangeDecorations = useCallback(
+    (operation?: Operation) => {
+      if (rangeDecorations && rangeDecorations.length > 0) {
+        const newSlateRanges: BaseRangeWithDecoration[] = []
+        rangeDecorations.forEach((rangeDecorationItem) => {
+          const slateRange = toSlateRange(rangeDecorationItem.selection, slateEditor)
+          if (!SlateRange.isRange(slateRange) || !SlateRange.isExpanded(slateRange)) {
             if (rangeDecorationItem.onMoved) {
               rangeDecorationItem.onMoved({
-                newSelection: newRangeSelection,
+                newSelection: null,
                 rangeDecoration: rangeDecorationItem,
-                origin: IS_PROCESSING_LOCAL_CHANGES.get(slateEditor) ? 'local' : 'remote',
+                origin: 'local',
               })
             }
-            slateRangeCopy = newRange
+            return
           }
+          // Note: important not to spread the root object here as it is a immutable object
+          let slateRangeCopy = {focus: {...slateRange.focus}, anchor: {...slateRange.anchor}}
+          // eslint-disable-next-line max-nested-callbacks
+          if (operation && operation.type !== 'set_selection') {
+            const newRange = moveRangeByOperation(slateRangeCopy, operation)
+            if ((newRange && newRange !== slateRangeCopy) || newRange === null) {
+              const value = PortableTextEditor.getValue(portableTextEditor)
+              const newRangeSelection = toPortableTextRange(value, newRange, schemaTypes)
+              // rangeDecorationItem.selection = newRangeSelection
+              if (rangeDecorationItem.onMoved) {
+                rangeDecorationItem.onMoved({
+                  newSelection: newRangeSelection,
+                  rangeDecoration: rangeDecorationItem,
+                  origin: 'local',
+                })
+              }
+              if (newRange) {
+                slateRangeCopy = newRange
+              }
+            }
+          }
+          newSlateRanges.push({...slateRange, rangeDecoration: rangeDecorationItem})
         })
-        newSlateRanges.push({...slateRange, rangeDecoration: rangeDecorationItem})
-      })
-      if (newSlateRanges.length > 0) {
-        setRangeDecorationsState(newSlateRanges)
-        return
+        if (newSlateRanges.length > 0) {
+          setRangeDecorationsState(newSlateRanges)
+          return
+        }
       }
-    }
-    setRangeDecorationsState(EMPTY_DECORATORS)
-  }, [portableTextEditor, rangeDecorations, schemaTypes, slateEditor])
+      setRangeDecorationsState(EMPTY_DECORATORS)
+    },
+    [portableTextEditor, rangeDecorations, schemaTypes, slateEditor],
+  )
 
   // Subscribe to change$ and restore selection from props when the editor has been initialized properly with it's value
   useEffect(() => {
@@ -314,14 +324,14 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
     }
   }, [hasInvalidValue, propsSelection, restoreSelectionFromProps])
 
-  const originalOnChange = useMemo(() => slateEditor.onChange, [slateEditor])
+  const originalApply = useMemo(() => slateEditor.apply, [slateEditor])
 
   useEffect(() => {
-    slateEditor.onChange = () => {
-      syncRangeDecorations()
-      originalOnChange()
+    slateEditor.apply = (op: Operation) => {
+      syncRangeDecorations(op)
+      originalApply(op)
     }
-  }, [originalOnChange, slateEditor, syncRangeDecorations])
+  }, [originalApply, slateEditor, syncRangeDecorations])
 
   useEffect(() => {
     if (previousRangeDecorations.current !== rangeDecorations) {
