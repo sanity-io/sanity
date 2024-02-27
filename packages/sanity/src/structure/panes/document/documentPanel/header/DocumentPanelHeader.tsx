@@ -78,11 +78,17 @@ export const DocumentPanelHeader = memo(
     // and there is more than one split pane open (aka has-siblings)
     const showSplitPaneCloseButton = showSplitPaneButton && hasGroupSiblings
 
+    // show the back button if both the feature is enabled and the current pane
+    // is not the first
+    const showBackButton = features.backButton && index > 0
+
     // show the pane group close button if the `showSplitPaneCloseButton` is
     // _not_ showing (the split pane button replaces the group close button)
     // and if the back button is not showing (the back button and the close
-    // button) do the same thing and shouldn't be shown at the same time)
-    const showPaneGroupCloseButton = !showSplitPaneCloseButton && !features.backButton
+    // button do the same thing and shouldn't be shown at the same time)
+    // and if a BackLink component was provided
+    const showPaneGroupCloseButton = !showSplitPaneCloseButton && !showBackButton && !!BackLink
+
     const {t} = useTranslation(structureLocaleNamespace)
 
     return (
@@ -95,8 +101,7 @@ export const DocumentPanelHeader = memo(
           tabs={showTabs && <DocumentHeaderTabs />}
           tabIndex={tabIndex}
           backButton={
-            features.backButton &&
-            index > 0 && (
+            showBackButton && (
               <Button
                 as={BackLink}
                 data-as="a"
