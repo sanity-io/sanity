@@ -1,17 +1,13 @@
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
-import {type PortableTextBlock, useCurrentUser, type UserListWithPermissionsHookValue} from 'sanity'
+import {useCallback} from 'react'
+import {type ArrayOfObjectsInputProps, type PortableTextBlock, set, useCurrentUser} from 'sanity'
+import {useMentionUser} from 'sanity/tasks'
 import styled from 'styled-components'
 
 // TODO: This is using components from structure/comments which is not ideal. But given comments is changing
 // we won't refactor this now, until comments is stable and we implement in this the `FormBuilder`
 import {CommentInput} from '../../../../../structure/comments'
-
-interface DescriptionInputProps {
-  mentionOptions: UserListWithPermissionsHookValue
-  value: PortableTextBlock[]
-  onChange: (value: PortableTextBlock[]) => void
-}
 
 const DescriptionInputRoot = styled.div((props) => {
   const theme = getTheme_v2(props.theme)
@@ -19,13 +15,17 @@ const DescriptionInputRoot = styled.div((props) => {
     /* select editable-wrap and change the padding */
     [data-ui="editable-wrap"] {
         padding: ${theme.space[3]}px ${theme.space[2]}px;
+        min-height: 100px;
     }
     `
 })
 
-export function DescriptionInput(props: DescriptionInputProps) {
-  const {mentionOptions, value, onChange} = props
+export function DescriptionInput(props: ArrayOfObjectsInputProps<PortableTextBlock>) {
+  const {value, onChange} = props
   const currentUser = useCurrentUser()
+  const {mentionOptions} = useMentionUser()
+
+  const handleChange = useCallback((next: PortableTextBlock[]) => onChange(set(next)), [onChange])
 
   if (!currentUser) return null
   return (
@@ -33,10 +33,10 @@ export function DescriptionInput(props: DescriptionInputProps) {
       <CommentInput
         currentUser={currentUser}
         mentionOptions={mentionOptions}
-        onChange={onChange}
-        value={value}
+        onChange={handleChange}
+        value={value ?? []}
         withAvatar={false}
-        placeholder="Task description"
+        placeholder="Optional additional description"
         // eslint-disable-next-line react/jsx-no-bind
         onDiscardConfirm={() => null}
       />

@@ -1,5 +1,6 @@
 import {defineType} from 'sanity'
 
+import {DescriptionInput} from './DescriptionInput'
 import {MentionUserFormField} from './MentionUser'
 import {TargetField} from './TargetField'
 import {TitleField} from './TitleField'
@@ -22,6 +23,9 @@ export const taskSchema = defineType({
       type: 'array',
       name: 'description',
       title: 'Description',
+      components: {
+        input: DescriptionInput,
+      },
       of: [
         {
           type: 'block',
