@@ -7,5 +7,5 @@ interface TaskEditProps {
 export function TaskEdit(props: TaskEditProps) {
   const {onDelete, selectedTask} = props
 
-  return <TasksForm documentId={selectedTask} />
+  return <TasksForm documentId={selectedTask} mode="edit" />
 }
