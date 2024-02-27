@@ -34,7 +34,11 @@ const enableDatasetBackupCommand: CliCommandDefinition = {
         },
       })
 
-      output.print(`${chalk.green(`Enabled backups for dataset ${datasetName}.\n`)}`)
+      output.print(
+        `${chalk.green(
+          `Enabled backups for dataset ${datasetName}.\nPlease note that it may take up to 24 hours before the first backup is created.\n`,
+        )}`,
+      )
 
       output.print(
         `${chalk.bold(`Retention policies may apply depending on your plan and agreement.\n`)}`,
