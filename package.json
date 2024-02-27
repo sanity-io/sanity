@@ -92,11 +92,11 @@
     "@babel/preset-env": "^7.23.7",
     "@babel/preset-react": "^7.23.3",
     "@babel/preset-typescript": "^7.23.3",
-    "@bjoerge/mutiny": "^0.5.1",
+    "@bjoerge/mutiny": "^0.5.3",
     "@jest/globals": "^29.7.0",
     "@optimize-lodash/rollup-plugin": "^4.0.4",
     "@playwright/test": "^1.41.2",
-    "@sanity/client": "^6.14.2",
+    "@sanity/client": "^6.15.0",
     "@sanity/eslint-config-i18n": "^1.0.0",
     "@sanity/eslint-config-studio": "^3.0.1",
     "@sanity/pkg-utils": "^3.3.2",
@@ -155,6 +155,6 @@
   "optionalDependencies": {
     "node-notifier": "^10.0.0"
   },
-  "packageManager": "pnpm@8.15.3",
+  "packageManager": "pnpm@8.15.4",
   "isSanityMonorepo": true
 }

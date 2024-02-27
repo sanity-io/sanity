@@ -40,6 +40,7 @@ export function PopoverEditDialog(props: PopoverEditDialogProps) {
     <RootPopover
       content={<Content {...props} />}
       constrainSize
+      data-testid="popover-edit-dialog"
       data-ui="PopoverEditDialog"
       fallbackPlacements={POPOVER_FALLBACK_PLACEMENTS}
       floatingBoundary={floatingBoundary}
