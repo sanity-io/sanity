@@ -1,5 +1,6 @@
 import {type CliCommandDefinition} from '@sanity/cli'
 
+import parseApiErr from '../../actions/backup/parseApiErr'
 import resolveApiClient from '../../actions/backup/resolveApiClient'
 import {defaultApiVersion} from './backupGroup'
 
@@ -34,10 +35,8 @@ const disableDatasetBackupCommand: CliCommandDefinition = {
       })
       output.print(`${chalk.green(`Disabled daily backups for dataset ${datasetName}\n`)}`)
     } catch (error) {
-      const msg = error.statusCode
-        ? error.response.body.message
-        : error.message || error.statusMessage
-      output.print(`${chalk.red(`Disabling dataset backup failed: ${msg}`)}\n`)
+      const {message} = parseApiErr(error)
+      output.print(`${chalk.red(`Disabling dataset backup failed: ${message}`)}\n`)
     }
   },
 }
