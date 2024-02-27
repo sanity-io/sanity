@@ -24,26 +24,29 @@ import {MenuButton, MenuItem} from '../../../../../ui-components'
 import {type TaskTarget} from '../../types'
 import {CurrentWorkspaceProvider} from './CurrentWorkspaceProvider'
 
-const PreviewRoot = styled(Card)((props) => {
+const EmptyReferenceRoot = styled(Card)((props) => {
   const theme = getTheme_v2(props.theme)
 
   return css`
+    &:focus {
+      border: 1px solid var(--card-focus-ring-color);
+    }
+    &:focus-visible {
+      outline: none;
+      border: 1px solid var(--card-focus-ring-color);
+    }
     &:hover {
-      background-color: ${theme.color.button.ghost.default.hovered.bg};
+      border-color: ${theme.color.input.default.hovered.border};
     }
   `
 })
 
-const StyledIntentLink = styled(IntentLink)((props) => {
-  const theme = getTheme_v2(props.theme)
+const StyledIntentLink = styled(IntentLink)(() => {
   return css`
     text-decoration: none;
     width: 100%;
     overflow: hidden;
     cursor: pointer;
-    :hover {
-      background-color: ${theme.color.button.ghost.default.hovered.bg};
-    }
   `
 })
 
@@ -98,7 +101,7 @@ function Preview(props: {
 
   return (
     <Flex gap={1} align={'center'} justify={'space-between'} paddingRight={1}>
-      <Card as={CardLink} radius={2}>
+      <Card as={CardLink} radius={2} data-as="button">
         <SearchResultItemPreview
           documentId={value.document._ref}
           layout={'compact'}
@@ -166,6 +169,10 @@ export function TargetField(props: ObjectFieldProps) {
     setOpen(false)
   }, [setOpen])
 
+  const handleKeyDown = useCallback((event: React.KeyboardEvent) => {
+    if (event.key === 'Enter' || event.key === ' ') setOpen(true)
+  }, [])
+
   return (
     <>
       <LayerProvider zOffset={100}>
@@ -187,7 +194,15 @@ export function TargetField(props: ObjectFieldProps) {
                 handleOpenSearch={handleOpenSearch}
               />
             ) : (
-              <PreviewRoot border radius={2} paddingX={2} paddingY={3} onClick={handleOpenSearch}>
+              <EmptyReferenceRoot
+                border
+                radius={2}
+                paddingX={2}
+                paddingY={3}
+                onClick={handleOpenSearch}
+                onKeyDown={handleKeyDown}
+                tabIndex={0}
+              >
                 <Flex gap={1} justify={'flex-start'} align={'center'}>
                   <Box paddingX={1}>
                     <Text size={1}>
@@ -198,7 +213,7 @@ export function TargetField(props: ObjectFieldProps) {
                     Search document
                   </Text>
                 </Flex>
-              </PreviewRoot>
+              </EmptyReferenceRoot>
             )}
           </Stack>
           <SearchProvider>
