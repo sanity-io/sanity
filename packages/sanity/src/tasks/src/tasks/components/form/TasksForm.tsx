@@ -6,7 +6,7 @@ import styled from 'styled-components'
 
 import {CommentsEnabledProvider} from '../../../../../structure/comments'
 import {MentionUserProvider} from '../../context/mentionUser'
-import {type TaskDocument} from '../../types'
+import {type FormMode, type TaskDocument} from '../../types'
 import {AddOnWorkspaceProvider} from './AddOnWorkspaceProvider'
 import {useTasksFormBuilder} from './useTasksFormBuilder'
 
@@ -33,7 +33,6 @@ const TasksCreateFormInner = ({
     documentType: 'tasks.task',
     documentId,
     initialValue,
-    actiob: 'create',
   })
 
   return (
@@ -57,9 +56,11 @@ const TasksCreateFormInner = ({
 export function TasksForm({
   documentId,
   initialValue,
+  mode,
 }: {
   documentId: string
   initialValue?: Partial<TaskDocument>
+  mode: FormMode
 }) {
   const currentUser = useCurrentUser()
 
@@ -68,7 +69,7 @@ export function TasksForm({
   return (
     // This provider needs to be mounted before the AddonWorkspaceProvider.
     <MentionUserProvider>
-      <AddOnWorkspaceProvider>
+      <AddOnWorkspaceProvider mode={mode}>
         <TasksCreateFormInner
           documentId={documentId}
           currentUser={currentUser}

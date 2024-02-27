@@ -39,11 +39,10 @@ interface TasksFormBuilderOptions {
   documentType: string
   documentId: string
   initialValue?: Partial<TaskDocument>
-  action: 'create' | 'edit'
 }
 
 export function useTasksFormBuilder(options: TasksFormBuilderOptions): TasksFormBuilder {
-  const {documentType = 'tasks.task', documentId, initialValue = {}, action} = options
+  const {documentType = 'tasks.task', documentId, initialValue = {}} = options
   const schema = useSchema()
 
   const tasksSchemaType = schema.get(documentType) as ObjectSchemaType | undefined
@@ -94,14 +93,8 @@ export function useTasksFormBuilder(options: TasksFormBuilderOptions): TasksForm
     patch.execute(toMutationPatches(event.patches), initialValue)
   }
 
-  const handleChange = useCallback(
-    (event: PatchEvent) => {
-      if (action === 'create') {
-        console.log('EVENT', event)
-      } else patchRef.current(event)
-    },
-    [action],
-  )
+  const handleChange = useCallback((event: PatchEvent) => patchRef.current(event), [])
+
   const connectionState = useConnectionState(documentId, documentType)
   const editState = useEditState(documentId, documentType)
 

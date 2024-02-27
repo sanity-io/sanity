@@ -127,3 +127,5 @@ export type TaskEditPayload = {
   status?: TaskStatus
   assignedTo?: string
 }
+
+export type FormMode = 'create' | 'edit'
