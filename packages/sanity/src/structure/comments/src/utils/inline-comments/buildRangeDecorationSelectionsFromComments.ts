@@ -1,6 +1,10 @@
 import {
   applyPatches,
-  cleanupSemantic,
+  cleanupEfficiency,
+  type Diff,
+  DIFF_DELETE,
+  DIFF_EQUAL,
+  DIFF_INSERT,
   makeDiff,
   makePatches,
   type Patch,
@@ -16,12 +20,16 @@ import {
 import {isTextSelectionComment} from '../../helpers'
 import {type CommentDocument, type CommentsTextSelectionItem} from '../../types'
 
+// This must be set high to avoid false positives
+// (for example, when there are multiple occurrences of the same word, and you delete the original commented word)
+// Don't set it above 15, as it will cause performance issues
 const DMP_MARGIN = 15
 
 function diffText(current: string, next: string) {
   const diff = makeDiff(current, next)
-  const diffs = cleanupSemantic(diff)
-  return makePatches(current, diffs, {margin: DMP_MARGIN})
+  const diffs = cleanupEfficiency(diff)
+  const levenshtein = diffsLevenshtein(diffs)
+  return {patches: makePatches(current, diffs, {margin: DMP_MARGIN}), levenshtein}
 }
 
 function diffApply(current: string, patches: Patch[]) {
@@ -75,14 +83,35 @@ export function buildRangeDecorationSelectionsFromComments(
       }
       const selectionText = selectionMember.text.replaceAll(COMMENT_INDICATORS_REGEX, '')
       const textWithChildSeparators = toPlainTextWithChildSeparators(matchedBlock)
-      const patches = diffText(selectionText, selectionMember.text)
+      const {patches} = diffText(selectionText, selectionMember.text)
       const diffedText = diffApply(textWithChildSeparators, patches)
       const startIndex = diffedText.indexOf(COMMENT_INDICATORS[0])
       const endIndex = diffedText
         .replaceAll(COMMENT_INDICATORS[0], '')
         .indexOf(COMMENT_INDICATORS[1])
       const textWithoutCommentTags = diffedText.replaceAll(COMMENT_INDICATORS_REGEX, '')
-      const commentedText = textWithoutCommentTags.substring(startIndex, endIndex)
+      const oldCommentedText = selectionMember.text.substring(
+        selectionMember.text.indexOf(COMMENT_INDICATORS[0]) + 1,
+        selectionMember.text.indexOf(COMMENT_INDICATORS[1]),
+      )
+      const newCommentedText = textWithoutCommentTags.substring(startIndex, endIndex)
+      const {levenshtein} = diffText(newCommentedText, oldCommentedText)
+      const threshold = Math.round(newCommentedText.length + oldCommentedText.length / 2)
+
+      let nullSelection = false
+
+      if (newCommentedText.length === 0) {
+        nullSelection = true
+      }
+
+      if (levenshtein > threshold) {
+        nullSelection = true
+      }
+
+      // If there no longer is any text within the range, we don't need to create a decoration
+      if (startIndex + 1 === endIndex) {
+        nullSelection = true
+      }
 
       if (startIndex !== -1 && endIndex !== -1) {
         let childIndexAnchor = 0
@@ -101,34 +130,40 @@ export function buildRangeDecorationSelectionsFromComments(
           if (i < startIndex) {
             anchorOffset++
           }
-          if (i < startIndex + commentedText.length) {
+          if (i < startIndex + newCommentedText.length) {
             focusOffset++
           }
-          if (i === startIndex + commentedText.length) {
+          if (i === startIndex + newCommentedText.length) {
             break
           }
         }
+        // If range is now collapsed, don't create a decoration
+        if (anchorOffset === focusOffset && childIndexFocus === childIndexAnchor) {
+          nullSelection = true
+        }
         decorators.push({
-          selection: {
-            anchor: {
-              path: [
-                {_key: matchedBlock._key},
-                'children',
-                {_key: matchedBlock.children[childIndexAnchor]._key},
-              ],
-              offset: anchorOffset,
-            },
-            focus: {
-              path: [
-                {_key: matchedBlock._key},
-                'children',
-                {_key: matchedBlock.children[childIndexFocus]._key},
-              ],
-              offset: focusOffset,
-            },
-          },
+          selection: nullSelection
+            ? null
+            : {
+                anchor: {
+                  path: [
+                    {_key: matchedBlock._key},
+                    'children',
+                    {_key: matchedBlock.children[childIndexAnchor]._key},
+                  ],
+                  offset: anchorOffset,
+                },
+                focus: {
+                  path: [
+                    {_key: matchedBlock._key},
+                    'children',
+                    {_key: matchedBlock.children[childIndexFocus]._key},
+                  ],
+                  offset: focusOffset,
+                },
+              },
           comment,
-          range: {_key: matchedBlock._key, text: diffedText},
+          range: {_key: matchedBlock._key, text: nullSelection ? '' : diffedText},
         })
       }
     })
@@ -154,4 +189,32 @@ export function validateTextSelectionComment(props: ValidateTextSelectionComment
   const selections = buildRangeDecorationSelectionsFromComments({comments: [comment], value})
 
   return selections.length > 0
+}
+
+function diffsLevenshtein(diffs: Diff[]): number {
+  let levenshtein = 0
+  let insertions = 0
+  let deletions = 0
+  for (let x = 0; x < diffs.length; x++) {
+    const op = diffs[x][0]
+    const data = diffs[x][1]
+    switch (op) {
+      case DIFF_INSERT:
+        insertions += data.length
+        break
+      case DIFF_DELETE:
+        deletions += data.length
+        break
+      case DIFF_EQUAL:
+        // A deletion and an insertion is one substitution.
+        levenshtein += Math.max(insertions, deletions)
+        insertions = 0
+        deletions = 0
+        break
+      default:
+      // Do nothing
+    }
+  }
+  levenshtein += Math.max(insertions, deletions)
+  return levenshtein
 }

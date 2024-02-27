@@ -1,4 +1,7 @@
-import {type RangeDecoration} from '@sanity/portable-text-editor'
+import {
+  type RangeDecoration,
+  type RangeDecorationOnMovedDetails,
+} from '@sanity/portable-text-editor'
 import {memo, useCallback, useEffect, useRef} from 'react'
 import {type PortableTextBlock} from 'sanity'
 
@@ -87,16 +90,13 @@ const CommentRangeDecoration = memo(function CommentRangeDecoration(
   )
 })
 
-function isRangeInvalid() {
-  return false
-}
-
 interface BuildRangeDecorationsProps {
   comments: CommentDocument[]
   currentHoveredCommentId: string | null
-  onDecoratorClick: (commentId: string) => void
-  onDecoratorHoverEnd: (commentId: null) => void
-  onDecoratorHoverStart: (commentId: string) => void
+  onDecorationClick: (commentId: string) => void
+  onDecorationHoverEnd: (commentId: null) => void
+  onDecorationHoverStart: (commentId: string) => void
+  onDecorationMoved: (details: RangeDecorationOnMovedDetails) => void
   selectedThreadId: string | null
   value: PortableTextBlock[] | undefined
 }
@@ -105,9 +105,10 @@ export function buildRangeDecorations(props: BuildRangeDecorationsProps) {
   const {
     comments,
     currentHoveredCommentId,
-    onDecoratorClick,
-    onDecoratorHoverEnd,
-    onDecoratorHoverStart,
+    onDecorationClick,
+    onDecorationHoverEnd,
+    onDecorationHoverStart,
+    onDecorationMoved,
     selectedThreadId,
     value,
   } = props
@@ -119,16 +120,16 @@ export function buildRangeDecorations(props: BuildRangeDecorationsProps) {
         <CommentRangeDecoration
           commentId={comment._id}
           currentHoveredCommentId={currentHoveredCommentId}
-          onClick={onDecoratorClick}
-          onHoverEnd={onDecoratorHoverEnd}
-          onHoverStart={onDecoratorHoverStart}
+          onClick={onDecorationClick}
+          onHoverEnd={onDecorationHoverEnd}
+          onHoverStart={onDecorationHoverStart}
           selectedThreadId={selectedThreadId}
           threadId={comment.threadId}
         >
           {children}
         </CommentRangeDecoration>
       ),
-      isRangeInvalid,
+      onMoved: onDecorationMoved,
       selection,
       payload: {
         commentId: comment._id,
