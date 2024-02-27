@@ -24,6 +24,10 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0 # Fetches all history for all branches and tags
+          # note: this token should have admin permissions or else the last step
+          # to rebase next will not succeed because of the rulesets protecting
+          # the `next` branch.
+          token: ${{ secrets.GH_TOKEN }}
 
       - name: Setup node
         uses: actions/setup-node@v4
@@ -102,3 +106,13 @@ jobs:
             --exact               \
             --yes                 \
             from-package
+
+      - name: Rebase 'next'
+        run: |
+          # Ensure branches are up to date
+          git fetch origin current:current -u
+          git fetch origin next:next -u
+
+          git checkout next
+          git rebase current
+          git push --force-with-lease --set-upstream origin next
