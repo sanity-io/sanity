@@ -1,17 +1,21 @@
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
-import {type ChangeEvent, useCallback} from 'react'
-import {set, type StringFieldProps} from 'sanity'
+import {type ChangeEvent, useCallback, useEffect, useRef} from 'react'
+import {set, type StringFieldProps, unset} from 'sanity'
 import styled, {css} from 'styled-components'
 
 const Root = styled.div`
+  display: grid;
+  grid-template-columns: 1fr;
   padding-top: 14px;
   padding-bottom: 7px;
 `
-const TitleInput = styled.input((props) => {
+const TitleInput = styled.textarea((props) => {
   const {color, font} = getTheme_v2(props.theme)
 
   return css`
+    resize: none;
+    overflow: hidden;
     appearance: none;
     background: none;
     border: 0;
@@ -28,7 +32,7 @@ const TitleInput = styled.input((props) => {
     position: relative;
     z-index: 1;
     display: block;
-
+    transition: height 500ms;
     /* NOTE: This is a hack to disable Chrome’s autofill styles */
     &:-webkit-autofill,
     &:-webkit-autofill:hover,
@@ -50,9 +54,19 @@ const TitleInput = styled.input((props) => {
 export function TitleField(props: StringFieldProps) {
   const {value, inputProps} = props
   const {onChange} = inputProps
+  const ref = useRef<HTMLTextAreaElement | null>(null)
+
+  useEffect(() => {
+    if (!ref.current) return
+    ref.current.style.height = 'auto'
+    ref.current.style.height = `${ref.current.scrollHeight}px`
+  }, [value])
+
   const handleChange = useCallback(
-    (event: ChangeEvent<HTMLInputElement>) => {
-      return onChange(set(event.currentTarget.value))
+    (event: ChangeEvent<HTMLTextAreaElement>) => {
+      const inputValue = event.currentTarget.value
+      if (!inputValue) onChange(unset())
+      return onChange(set(inputValue.replace(/\n/g, '')))
     },
     [onChange],
   )
@@ -60,10 +74,12 @@ export function TitleField(props: StringFieldProps) {
   return (
     <Root>
       <TitleInput
+        ref={ref}
         autoFocus
         value={value}
         placeholder={props.inputProps.schemaType.placeholder}
         onChange={handleChange}
+        rows={1}
       />
     </Root>
   )
