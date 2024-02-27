@@ -33,7 +33,7 @@ interface JourneyConfigResponse {
 }
 
 type DocumentOrObject = DocumentDefinition | ObjectDefinition
-type SchemaObject = BaseSchemaDefinition & {type: string; fields?: SchemaObject[]}
+type SchemaObject = BaseSchemaDefinition & {type: string; fields?: SchemaObject[]; preview?: object}
 
 /**
  * Fetch a Journey schema from the Sanity schema club API and write it to disk
@@ -218,14 +218,14 @@ function wrapSchemaTypeInHelpers(schemaType: SchemaObject): string {
   }
 
   function wrapDefineType(field: SchemaObject) {
-    const {fields, ...rest} = field
+    const {fields, preview, ...rest} = field
     const restPart = serialize(rest)
     const fieldsStr = fields?.map(wrapSchemaTypeInHelpers).join('')
     const fieldsPart = fields ? `fields: [${fieldsStr}],` : ''
-    return `defineType({
-      ${restPart},
-      ${fieldsPart}
-    })`
+    const previewPart = preview && `preview: {${serialize(preview)}}`
+
+    const joined = [restPart, fieldsPart, previewPart].filter(Boolean).join(',')
+    return `defineType({ ${joined} }),`
   }
 
   function wrapDefineField(field: SchemaObject) {
@@ -247,6 +247,9 @@ function wrapSchemaTypeInHelpers(schemaType: SchemaObject): string {
   function serialize(obj: object) {
     return Object.entries(obj)
       .map(([key, value]) => {
+        if (key === 'prepare') {
+          return `${value.toString()}`
+        }
         if (typeof value === 'string') {
           return `${key}: "${value}"`
         }
