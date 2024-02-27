@@ -37,8 +37,8 @@ importers:
         specifier: ^1.41.2
         version: 1.41.2
       '@sanity/client':
-        specifier: ^6.14.4
-        version: 6.14.4
+        specifier: ^6.15.0
+        version: 6.15.0
       '@sanity/eslint-config-i18n':
         specifier: ^1.0.0
         version: 1.0.0(eslint@8.57.0)(typescript@5.3.3)
@@ -387,8 +387,8 @@ importers:
         specifier: 3.30.0
         version: link:../../packages/@sanity/block-tools
       '@sanity/client':
-        specifier: ^6.14.4
-        version: 6.14.4
+        specifier: ^6.15.0
+        version: 6.15.0
       '@sanity/color':
         specifier: ^3.0.0
         version: 3.0.0
@@ -427,10 +427,10 @@ importers:
         version: link:../../packages/@sanity/portable-text-editor
       '@sanity/preview-url-secret':
         specifier: ^1.6.1
-        version: 1.6.4(@sanity/client@6.14.4)
+        version: 1.6.4(@sanity/client@6.15.0)
       '@sanity/react-loader':
         specifier: ^1.8.3
-        version: 1.8.8(@sanity/client@6.14.4)(react@18.2.0)
+        version: 1.8.8(@sanity/client@6.15.0)(react@18.2.0)
       '@sanity/tsdoc':
         specifier: 1.0.0-alpha.42
         version: 1.0.0-alpha.42(@sanity/pkg-utils@2.4.10)(@types/node@18.19.8)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(sanity@packages+sanity)(styled-components@6.1.8)
@@ -678,8 +678,8 @@ importers:
         specifier: ^15.2.3
         version: 15.2.3(rollup@4.12.0)
       '@sanity/client':
-        specifier: ^6.14.4
-        version: 6.14.4
+        specifier: ^6.15.0
+        version: 6.15.0
       '@sanity/eslint-config-studio':
         specifier: ^3.0.1
         version: 3.0.1(eslint@8.57.0)(typescript@5.3.3)
@@ -939,8 +939,8 @@ importers:
         specifier: ^29.7.0
         version: 29.7.0
       '@sanity/client':
-        specifier: ^6.14.4
-        version: 6.14.4
+        specifier: ^6.15.0
+        version: 6.15.0
       nock:
         specifier: ^13.2.9
         version: 13.5.0
@@ -948,8 +948,8 @@ importers:
   packages/@sanity/import-cli:
     dependencies:
       '@sanity/client':
-        specifier: ^6.14.4
-        version: 6.14.4
+        specifier: ^6.15.0
+        version: 6.15.0
       '@sanity/import':
         specifier: 3.30.0
         version: link:../import
@@ -972,8 +972,8 @@ importers:
         specifier: ^0.5.1
         version: 0.5.3
       '@sanity/client':
-        specifier: ^6.14.4
-        version: 6.14.4
+        specifier: ^6.15.0
+        version: 6.15.0
       '@sanity/types':
         specifier: 3.30.0
         version: link:../types
@@ -1192,8 +1192,8 @@ importers:
   packages/@sanity/types:
     dependencies:
       '@sanity/client':
-        specifier: ^6.14.4
-        version: 6.14.4
+        specifier: ^6.15.0
+        version: 6.15.0
       '@types/react':
         specifier: ^18.0.25
         version: 18.2.48
@@ -1208,8 +1208,8 @@ importers:
   packages/@sanity/util:
     dependencies:
       '@sanity/client':
-        specifier: ^6.14.4
-        version: 6.14.4
+        specifier: ^6.15.0
+        version: 6.15.0
       '@sanity/types':
         specifier: 3.30.0
         version: link:../types
@@ -1294,8 +1294,8 @@ importers:
         version: 4.17.21
     devDependencies:
       '@sanity/client':
-        specifier: ^6.14.4
-        version: 6.14.4
+        specifier: ^6.15.0
+        version: 6.15.0
       '@types/is-hotkey':
         specifier: ^0.1.10
         version: 0.1.10
@@ -1359,8 +1359,8 @@ importers:
         specifier: 3.30.0
         version: link:../@sanity/cli
       '@sanity/client':
-        specifier: ^6.14.4
-        version: 6.14.4
+        specifier: ^6.15.0
+        version: 6.15.0
       '@sanity/color':
         specifier: ^3.0.0
         version: 3.0.0
@@ -1402,7 +1402,7 @@ importers:
         version: link:../@sanity/portable-text-editor
       '@sanity/presentation':
         specifier: 1.11.1
-        version: 1.11.1(@sanity/client@6.14.4)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8)
+        version: 1.11.1(@sanity/client@6.15.0)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8)
       '@sanity/schema':
         specifier: 3.30.0
         version: link:../@sanity/schema
@@ -5746,8 +5746,8 @@ packages:
       rxjs: 7.8.1
     dev: false
 
-  /@sanity/client@6.14.4:
-    resolution: {integrity: sha512-z07uIXIePmdncBdSmgsg4Sdh/sRNuk0Hc6QKKy9+dXacoOwiEu9Qbqf3mVm4cQjDLHYdPdxo7e1iom9jegfmng==}
+  /@sanity/client@6.15.0:
+    resolution: {integrity: sha512-xcoWkhLk5vR/hxDvMm/fCGBYU7+H7G+6EHPySMWmwLBArgQnEnDvujverxCLubEzcYKENtK1mKSwWtlH4krP3w==}
     engines: {node: '>=14.18'}
     dependencies:
       '@sanity/eventsource': 5.0.1
@@ -5764,13 +5764,13 @@ packages:
     resolution: {integrity: sha512-JLIsloyyn0lhta/JivmYlxlcN7U3dpBNqtH7uAzM9/kPirFxWJ8LAVuF5vxK5JHwTNbgpVy6AmfIss/av7N96w==}
     engines: {node: '>=18.0.0'}
 
-  /@sanity/core-loader@1.4.6(@sanity/client@6.14.4):
+  /@sanity/core-loader@1.4.6(@sanity/client@6.15.0):
     resolution: {integrity: sha512-qNvzUCaUUGRsQKxSPRfN4qbg4LbeqZczatAk7mPLeTazM/5byp1+LH5+vGK1yC5f/xu/RXKUsIKrze7mTwSl0w==}
     engines: {node: '>=18'}
     peerDependencies:
       '@sanity/client': ^6.14.4
     dependencies:
-      '@sanity/client': 6.14.4
+      '@sanity/client': 6.15.0
       async-cache-dedupe: 2.1.0
     dev: false
 
@@ -6033,15 +6033,15 @@ packages:
       - supports-color
     dev: true
 
-  /@sanity/presentation@1.11.1(@sanity/client@6.14.4)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8):
+  /@sanity/presentation@1.11.1(@sanity/client@6.15.0)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8):
     resolution: {integrity: sha512-Z06CEZyAPowa+8oGJR4AOR/F2a2PRAI2RkORJ9Y+kej3Qs7Y1nlCSkSFBwbJA/tk97K4d65KbMgLiiShvHzbgg==}
     engines: {node: '>=16.14'}
     peerDependencies:
       '@sanity/client': ^6.14.4
     dependencies:
-      '@sanity/client': 6.14.4
+      '@sanity/client': 6.15.0
       '@sanity/icons': 2.10.3(react@18.2.0)
-      '@sanity/preview-url-secret': 1.6.4(@sanity/client@6.14.4)
+      '@sanity/preview-url-secret': 1.6.4(@sanity/client@6.15.0)
       '@sanity/ui': 2.0.7(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8)
       '@sanity/uuid': 3.0.2
       '@types/lodash.isequal': 4.5.8
@@ -6059,25 +6059,25 @@ packages:
       - styled-components
     dev: false
 
-  /@sanity/preview-url-secret@1.6.4(@sanity/client@6.14.4):
+  /@sanity/preview-url-secret@1.6.4(@sanity/client@6.15.0):
     resolution: {integrity: sha512-iOu6n5Zt7kuWoOYRliS2o/MDDBWcWkrnwwss2tglIBl744RPRkz0yi9qulnpAqMnWrZyIU8fV1yPCdg0RY+olw==}
     engines: {node: '>=18'}
     peerDependencies:
       '@sanity/client': ^6.14.4
     dependencies:
-      '@sanity/client': 6.14.4
+      '@sanity/client': 6.15.0
       '@sanity/uuid': 3.0.2
     dev: false
 
-  /@sanity/react-loader@1.8.8(@sanity/client@6.14.4)(react@18.2.0):
+  /@sanity/react-loader@1.8.8(@sanity/client@6.15.0)(react@18.2.0):
     resolution: {integrity: sha512-0QcXkzfmlcd62Ldd5eePrBcjMTVlVES0rE/Hw0WoNeoqjFKvh+LgJ9M/SYNkiSoRePSNTvAQ3vEhmQyYrW5v1g==}
     engines: {node: '>=18'}
     peerDependencies:
       '@sanity/client': ^6.14.4
       react: ^18.2.0
     dependencies:
-      '@sanity/client': 6.14.4
-      '@sanity/core-loader': 1.4.6(@sanity/client@6.14.4)
+      '@sanity/client': 6.15.0
+      '@sanity/core-loader': 1.4.6(@sanity/client@6.15.0)
       fast-deep-equal: 3.1.3
       react: 18.2.0
     dev: false
@@ -6098,7 +6098,7 @@ packages:
     hasBin: true
     dependencies:
       '@playwright/test': 1.41.2
-      '@sanity/client': 6.14.4
+      '@sanity/client': 6.15.0
       '@sanity/uuid': 3.0.2
       cac: 6.7.14
     transitivePeerDependencies:
@@ -6122,7 +6122,7 @@ packages:
       '@microsoft/tsdoc-config': 0.16.2
       '@portabletext/react': 3.0.11(react@18.2.0)
       '@portabletext/toolkit': 2.0.10
-      '@sanity/client': 6.14.4
+      '@sanity/client': 6.15.0
       '@sanity/color': 2.2.5
       '@sanity/icons': 2.10.3(react@18.2.0)
       '@sanity/pkg-utils': 2.4.10(@types/node@18.19.8)(typescript@5.3.3)
@@ -6178,7 +6178,7 @@ packages:
       '@microsoft/tsdoc-config': 0.16.2
       '@portabletext/react': 3.0.11(react@18.2.0)
       '@portabletext/toolkit': 2.0.10
-      '@sanity/client': 6.14.4
+      '@sanity/client': 6.15.0
       '@sanity/color': 2.2.5
       '@sanity/icons': 2.10.3(react@18.2.0)
       '@sanity/pkg-utils': 3.3.8(@types/node@18.19.8)(typescript@5.3.3)
