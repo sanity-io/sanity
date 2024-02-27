@@ -6,7 +6,6 @@ import {type ForwardedRef, forwardRef, useCallback, useMemo, useState} from 'rea
 import {
   ContextMenuButton,
   FormFieldHeaderText,
-  getPublishedId,
   type ObjectFieldProps,
   SearchPopover,
   SearchProvider,
@@ -23,6 +22,7 @@ import styled, {css} from 'styled-components'
 import {MenuButton, MenuItem} from '../../../../../ui-components'
 import {type TaskTarget} from '../../types'
 import {CurrentWorkspaceProvider} from './CurrentWorkspaceProvider'
+import {getTargetValue} from './utils'
 
 const EmptyReferenceRoot = styled(Card)((props) => {
   const theme = getTheme_v2(props.theme)
@@ -141,18 +141,16 @@ export function TargetField(props: ObjectFieldProps) {
 
   const handleItemSelect = useCallback(
     (item: {_id: string; _type: string}) => {
-      const getTargetValue = (documentType: string, documentId: string): TaskTarget => ({
-        documentType: documentType,
-        document: {
-          _ref: getPublishedId(documentId),
-          _type: 'crossDatasetReference',
-          _dataset: dataset,
-          _projectId: projectId,
-          _weak: true,
-        },
-      })
-
-      onChange(set(getTargetValue(item._type, item._id)))
+      onChange(
+        set(
+          getTargetValue({
+            documentId: item._id,
+            documentType: item._type,
+            dataset,
+            projectId,
+          }),
+        ),
+      )
     },
     [dataset, projectId, onChange],
   )

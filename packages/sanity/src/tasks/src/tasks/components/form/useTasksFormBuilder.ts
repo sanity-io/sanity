@@ -38,19 +38,12 @@ type TasksFormBuilder =
 interface TasksFormBuilderOptions {
   documentType: string
   documentId: string
-  currentUserId: string
+  initialValue?: Partial<TaskDocument>
 }
 
 export function useTasksFormBuilder(options: TasksFormBuilderOptions): TasksFormBuilder {
-  const {documentType = 'tasks.task', documentId, currentUserId} = options
+  const {documentType = 'tasks.task', documentId, initialValue = {}} = options
   const schema = useSchema()
-
-  const initialValue: Partial<TaskDocument> = {
-    _id: documentId,
-    _type: 'tasks.task',
-    authorId: currentUserId,
-    status: 'open',
-  }
 
   const tasksSchemaType = schema.get(documentType) as ObjectSchemaType | undefined
   if (!tasksSchemaType) {
