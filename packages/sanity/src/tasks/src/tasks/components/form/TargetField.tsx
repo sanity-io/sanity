@@ -1,10 +1,9 @@
-import {DocumentIcon, LaunchIcon, SyncIcon, TrashIcon} from '@sanity/icons'
-import {Box, Card, Flex, LayerProvider, Menu, MenuDivider, Stack, Text} from '@sanity/ui'
+import {CloseIcon, DocumentIcon} from '@sanity/icons'
+import {Box, Card, Flex, LayerProvider, Stack, Text} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
 import {type ForwardedRef, forwardRef, useCallback, useMemo, useState} from 'react'
 import {
-  ContextMenuButton,
   FormFieldHeaderText,
   type ObjectFieldProps,
   SearchPopover,
@@ -19,7 +18,7 @@ import {
 import {IntentLink} from 'sanity/router'
 import styled, {css} from 'styled-components'
 
-import {MenuButton, MenuItem} from '../../../../../ui-components'
+import {Button} from '../../../../../ui-components'
 import {type TaskTarget} from '../../types'
 import {CurrentWorkspaceProvider} from './CurrentWorkspaceProvider'
 import {getTargetValue} from './utils'
@@ -114,36 +113,27 @@ function Preview(props: {
   }
 
   return (
-    <Flex gap={1} align={'center'} justify={'space-between'} paddingRight={1}>
-      <Card as={CardLink} radius={2} data-as="button">
-        <SearchResultItemPreview
-          documentId={value.document._ref}
-          layout={'compact'}
-          presence={documentPresence}
-          schemaType={schemaType}
-          showBadge={false}
-        />
-      </Card>
-      <Box flex="none">
-        <MenuButton
-          button={<ContextMenuButton paddingY={3} />}
-          id={`reference-menuButton`}
-          menu={
-            <Menu>
-              <MenuItem
-                text={'Clear target'}
-                tone="critical"
-                icon={TrashIcon}
-                onClick={handleRemove}
-              />
-              <MenuItem text={'Replace'} icon={SyncIcon} onClick={handleOpenSearch} />
-              <MenuDivider />
-              <MenuItem as={OpenLink} data-as="a" text={'Open in new tab'} icon={LaunchIcon} />
-            </Menu>
-          }
-        />
-      </Box>
-    </Flex>
+    <Card>
+      <Flex gap={1} align={'center'} justify={'space-between'} paddingRight={1}>
+        <Card as={CardLink} radius={2} data-as="button">
+          <SearchResultItemPreview
+            documentId={value.document._ref}
+            layout={'compact'}
+            presence={documentPresence}
+            schemaType={schemaType}
+            showBadge={false}
+          />
+        </Card>
+        <Box flex="none">
+          <Button
+            icon={CloseIcon}
+            mode="bleed"
+            onClick={handleRemove}
+            tooltipProps={{content: 'Remove target content'}}
+          />
+        </Box>
+      </Flex>
+    </Card>
   )
 }
 

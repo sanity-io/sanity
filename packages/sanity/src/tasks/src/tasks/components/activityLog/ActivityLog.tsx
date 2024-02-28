@@ -50,7 +50,7 @@ function CreatedAt({createdAt, authorId}: {createdAt: string; authorId: string})
     return <Text size={1}>Unknown user created this task at {createdAt}</Text>
   }
   return (
-    <Flex align="center" wrap={'wrap'}>
+    <Flex align="center">
       <Box marginRight={3}>
         <UserAvatar
           user={user}
@@ -61,7 +61,7 @@ function CreatedAt({createdAt, authorId}: {createdAt: string; authorId: string})
         />
       </Box>
 
-      <Text size={1} style={{display: 'inline'}}>
+      <Text size={1}>
         <strong style={{fontWeight: 600}}>{user.displayName} </strong>
         created this task <DotIcon /> {dueByeDisplayValue}
       </Text>

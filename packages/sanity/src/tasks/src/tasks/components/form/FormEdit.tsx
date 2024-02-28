@@ -17,7 +17,12 @@ export function FormEdit(props: ObjectInputProps<TaskDocument>) {
   }
   return (
     <>
-      <Title onChange={props.onChange} value={props.value?.title} path={['title']} />
+      <Title
+        onChange={props.onChange}
+        value={props.value?.title}
+        path={['title']}
+        placeholder="Task title"
+      />
       <FirstRow>
         <StatusSelector
           value={props.value?.status}
