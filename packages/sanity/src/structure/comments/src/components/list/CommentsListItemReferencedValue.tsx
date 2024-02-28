@@ -23,6 +23,12 @@ interface BlockQuoteStackProps {
   theme: Theme
 }
 
+const InlineBox = styled(Box).attrs({marginLeft: 1, marginRight: 2})`
+  &:not([data-hidden]) {
+    display: inline;
+  }
+`
+
 const BlockQuoteStack = styled(Stack)<BlockQuoteStackProps>(({theme, $hasReferencedValue}) => {
   const isDark = theme.sanity.v2?.color._dark
 
@@ -48,11 +54,7 @@ export function CommentsListItemReferencedValue(props: CommentsListItemReference
       const text = value?.map(toPlainText).join(' ')
       const truncated = truncate(text)
 
-      return (
-        <Text size={1} muted>
-          {truncated}
-        </Text>
-      )
+      return truncated
     }
 
     return null
@@ -71,17 +73,17 @@ export function CommentsListItemReferencedValue(props: CommentsListItemReference
       sizing="border"
     >
       <Flex align="flex-start">
-        {!hasReferencedValue && (
-          <Box marginLeft={1} marginRight={3}>
+        <Text size={1} muted>
+          {!hasReferencedValue && (
             <Tooltip content={TMP_COPY}>
-              <Text muted size={1}>
+              <InlineBox>
                 <LinkRemovedIcon />
-              </Text>
+              </InlineBox>
             </Tooltip>
-          </Box>
-        )}
+          )}
 
-        <Box flex={1}>{resolvedValue}</Box>
+          {resolvedValue}
+        </Text>
       </Flex>
     </BlockQuoteStack>
   )
