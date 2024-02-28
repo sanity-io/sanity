@@ -178,13 +178,6 @@ Array [
                 "type": "string",
               },
             },
-            "_type": Object {
-              "type": "objectAttribute",
-              "value": Object {
-                "type": "string",
-                "value": "reference",
-              },
-            },
             "_weak": Object {
               "optional": true,
               "type": "objectAttribute",
@@ -208,13 +201,6 @@ Array [
                   "type": "objectAttribute",
                   "value": Object {
                     "type": "string",
-                  },
-                },
-                "_type": Object {
-                  "type": "objectAttribute",
-                  "value": Object {
-                    "type": "string",
-                    "value": "reference",
                   },
                 },
                 "_weak": Object {
@@ -650,13 +636,6 @@ Array [
                                     "type": "string",
                                   },
                                 },
-                                "_type": Object {
-                                  "type": "objectAttribute",
-                                  "value": Object {
-                                    "type": "string",
-                                    "value": "reference",
-                                  },
-                                },
                                 "_weak": Object {
                                   "optional": true,
                                   "type": "objectAttribute",
@@ -766,13 +745,6 @@ Array [
                                   "type": "objectAttribute",
                                   "value": Object {
                                     "type": "string",
-                                  },
-                                },
-                                "_type": Object {
-                                  "type": "objectAttribute",
-                                  "value": Object {
-                                    "type": "string",
-                                    "value": "reference",
                                   },
                                 },
                                 "_weak": Object {
@@ -911,13 +883,6 @@ Array [
                                           "type": "string",
                                         },
                                       },
-                                      "_type": Object {
-                                        "type": "objectAttribute",
-                                        "value": Object {
-                                          "type": "string",
-                                          "value": "reference",
-                                        },
-                                      },
                                       "_weak": Object {
                                         "optional": true,
                                         "type": "objectAttribute",
@@ -1016,13 +981,6 @@ Array [
                               "type": "string",
                             },
                           },
-                          "_type": Object {
-                            "type": "objectAttribute",
-                            "value": Object {
-                              "type": "string",
-                              "value": "reference",
-                            },
-                          },
                           "_weak": Object {
                             "optional": true,
                             "type": "objectAttribute",
@@ -1057,13 +1015,6 @@ Array [
                         "type": "string",
                       },
                     },
-                    "_type": Object {
-                      "type": "objectAttribute",
-                      "value": Object {
-                        "type": "string",
-                        "value": "reference",
-                      },
-                    },
                     "_weak": Object {
                       "optional": true,
                       "type": "objectAttribute",
@@ -1092,13 +1043,6 @@ Array [
                       "type": "objectAttribute",
                       "value": Object {
                         "type": "string",
-                      },
-                    },
-                    "_type": Object {
-                      "type": "objectAttribute",
-                      "value": Object {
-                        "type": "string",
-                        "value": "reference",
                       },
                     },
                     "_weak": Object {
@@ -1156,13 +1100,6 @@ Array [
                                         "type": "objectAttribute",
                                         "value": Object {
                                           "type": "string",
-                                        },
-                                      },
-                                      "_type": Object {
-                                        "type": "objectAttribute",
-                                        "value": Object {
-                                          "type": "string",
-                                          "value": "reference",
                                         },
                                       },
                                       "_weak": Object {
@@ -1736,13 +1673,6 @@ Array [
                                       "type": "string",
                                     },
                                   },
-                                  "_type": Object {
-                                    "type": "objectAttribute",
-                                    "value": Object {
-                                      "type": "string",
-                                      "value": "reference",
-                                    },
-                                  },
                                   "_weak": Object {
                                     "optional": true,
                                     "type": "objectAttribute",
@@ -1884,13 +1814,6 @@ Array [
                               "type": "string",
                             },
                           },
-                          "_type": Object {
-                            "type": "objectAttribute",
-                            "value": Object {
-                              "type": "string",
-                              "value": "reference",
-                            },
-                          },
                           "_weak": Object {
                             "optional": true,
                             "type": "objectAttribute",
@@ -1925,13 +1848,6 @@ Array [
                         "type": "string",
                       },
                     },
-                    "_type": Object {
-                      "type": "objectAttribute",
-                      "value": Object {
-                        "type": "string",
-                        "value": "reference",
-                      },
-                    },
                     "_weak": Object {
                       "optional": true,
                       "type": "objectAttribute",
@@ -1960,13 +1876,6 @@ Array [
                       "type": "objectAttribute",
                       "value": Object {
                         "type": "string",
-                      },
-                    },
-                    "_type": Object {
-                      "type": "objectAttribute",
-                      "value": Object {
-                        "type": "string",
-                        "value": "reference",
                       },
                     },
                     "_weak": Object {
@@ -2391,13 +2300,6 @@ Array [
                             "type": "objectAttribute",
                             "value": Object {
                               "type": "string",
-                            },
-                          },
-                          "_type": Object {
-                            "type": "objectAttribute",
-                            "value": Object {
-                              "type": "string",
-                              "value": "reference",
                             },
                           },
                           "_weak": Object {

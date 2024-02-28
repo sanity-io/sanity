@@ -1,0 +1,12 @@
+{
+  "extends": "../../../tsconfig.settings",
+  "include": ["./src/**/*"],
+  "compilerOptions": {
+    "composite": true,
+    "lib": ["ES2022.Error"],
+    "rootDir": ".",
+    "outDir": "./lib/dts",
+    "declarationDir": "./lib/dts",
+  },
+  "references": [{"path": "../../@sanity/types/tsconfig.lib.json"}],
+}
