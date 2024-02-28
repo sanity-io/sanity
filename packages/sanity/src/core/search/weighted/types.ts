@@ -1,4 +1,6 @@
+import {type SanityClient} from '@sanity/client'
 import {type ObjectSchemaType} from '@sanity/types'
+import {type Observable} from 'rxjs'
 
 /**
  * @internal
@@ -73,6 +75,43 @@ export interface WeightedSearchOptions {
   /* only return unique documents (e.g. not both draft and published) */
   unique?: boolean
 }
+
+/**
+ * @internal
+ */
+export interface TextSearchResultCollection {
+  strategy: 'text'
+  hits: Observable<
+    {
+      hit: SearchHit
+    }[]
+  >
+  nextCursor?: string
+}
+
+/**
+ * @internal
+ */
+export interface WeightedSearchResultCollection {
+  strategy: 'weighted'
+  hits: Observable<WeightedHit[]>
+  nextCursor?: never
+}
+
+/**
+ * @internal
+ */
+export type SearchResultCollection = TextSearchResultCollection | WeightedSearchResultCollection
+
+/**
+ * @internal
+ */
+export type SearchStrategyFactory<Result extends SearchResultCollection = SearchResultCollection> =
+  (
+    types: SearchableType[],
+    client: SanityClient,
+    commonOpts: WeightedSearchOptions,
+  ) => (searchTerms: string | SearchTerms, searchOpts?: SearchOptions) => Observable<Result>
 
 /**
  * @internal

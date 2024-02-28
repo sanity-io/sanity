@@ -1,15 +1,14 @@
-import {type SanityClient} from '@sanity/client'
 import {type SanityDocument} from '@sanity/types'
-import {type Observable, of} from 'rxjs'
+import {of} from 'rxjs'
 import {map, switchMap, tap} from 'rxjs/operators'
 
 import {removeDupes} from '../../util/draftUtils'
 import {
   type SearchableType,
   type SearchHit,
-  type SearchOptions,
+  type SearchStrategyFactory,
   type SearchTerms,
-  type WeightedSearchOptions,
+  type TextSearchResultCollection,
 } from '../weighted/types'
 import {createTextSearchQuery} from './createTextSearchQuery'
 import {type TextSearchResponse} from './types'
@@ -24,27 +23,20 @@ function getSearchTerms(searchParams: string | SearchTerms, types: SearchableTyp
   return searchParams.types.length ? searchParams : {...searchParams, types}
 }
 
-interface SearchHitsPage {
-  hits: SearchHit[]
-  nextCursor?: string
-}
-
 /**
  * @internal
  */
-export function createTextSearch(
-  types: SearchableType[],
-  client: SanityClient,
-  commonOpts: WeightedSearchOptions = {},
-): (searchTerms: string | SearchTerms, searchOpts?: SearchOptions) => Observable<SearchHitsPage> {
-  // let nextCursor: string | undefined
-
+export const createTextSearch: SearchStrategyFactory<TextSearchResultCollection> = (
+  types,
+  client,
+  commonOpts,
+) => {
   // Search currently supports both strings (reference + cross dataset reference inputs)
   // or a SearchTerms object (omnisearch).
   return function search(searchParams, searchOpts = {}) {
     const searchTerms = getSearchTerms(searchParams, types)
 
-    const searchRequest = client.observable.request({
+    const searchRequest = client.observable.request<TextSearchResponse>({
       uri: `/data/textsearch/${client.config().dataset}`,
       method: 'POST',
       json: true,
@@ -55,13 +47,13 @@ export function createTextSearch(
     })
 
     return searchRequest.pipe(
-      // tap(searchResult => setNextCursor()),
       switchMap((textSearchResponse) => {
         return of({
+          strategy: 'text' as const,
           hits: of(textSearchResponse).pipe(
             map(normalizeTextSearchResults),
             commonOpts.unique ? map(removeDupes) : tap(),
-            map((hits: SearchHit[]) => boxTextSearchResults(hits)),
+            map((hits) => boxTextSearchResults(hits)),
           ),
           nextCursor: textSearchResponse.nextCursor,
         })
