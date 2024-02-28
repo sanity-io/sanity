@@ -2,12 +2,13 @@ import {type ObjectInputProps} from 'sanity'
 import styled from 'styled-components'
 
 import {type TaskDocument} from '../../types'
+import {ActivityLog} from '../activityLog'
 import {StatusSelector} from './StatusSelector'
 import {Title} from './TitleField'
 
 const FirstRow = styled.div`
   display: flex;
-  margin-top: 7px;
+  padding-bottom: 12px;
 `
 export function FormEdit(props: ObjectInputProps<TaskDocument>) {
   const statusField = props.schemaType.fields.find((f) => f.name === 'status')
@@ -15,7 +16,7 @@ export function FormEdit(props: ObjectInputProps<TaskDocument>) {
     throw new Error('Status field not found')
   }
   return (
-    <div>
+    <>
       <Title onChange={props.onChange} value={props.value?.title} path={['title']} />
       <FirstRow>
         <StatusSelector
@@ -25,6 +26,8 @@ export function FormEdit(props: ObjectInputProps<TaskDocument>) {
           options={statusField.type.options.list}
         />
       </FirstRow>
-    </div>
+      {props.renderDefault(props)}
+      <ActivityLog />
+    </>
   )
 }
