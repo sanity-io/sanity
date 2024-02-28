@@ -1,5 +1,7 @@
 import {DocumentIcon} from '@sanity/icons'
 import {Flex, Text, TextSkeleton} from '@sanity/ui'
+// eslint-disable-next-line camelcase
+import {getTheme_v2} from '@sanity/ui/theme'
 import {forwardRef, useMemo} from 'react'
 import {useSchema} from 'sanity'
 import {IntentLink} from 'sanity/router'
@@ -7,14 +9,15 @@ import styled from 'styled-components'
 
 import {useDocumentPreviewValues} from '../../hooks/useDocumentPreviewValues'
 
-const StyledIntentLink = styled(IntentLink)`
-  text-decoration: none;
+const StyledIntentLink = styled(IntentLink)((props) => {
+  const theme = getTheme_v2(props.theme)
 
-  :hover {
-    text-decoration: underline;
-  }
+  return `
+  text-decoration: underline;
+  text-decoration-color: ${theme.color.input.default.enabled.border};
+  text-underline-offset: 2px;
 `
-
+})
 export function DocumentPreview({
   documentId,
   documentType,
@@ -49,12 +52,14 @@ export function DocumentPreview({
   }
 
   return (
-    <Flex align="center" gap={1}>
-      <DocumentIcon />
+    <Flex align="center" gap={2}>
+      <Text size={1}>
+        <DocumentIcon />
+      </Text>
       {isLoading ? (
         <TextSkeleton size={1} muted />
       ) : (
-        <Text size={1} muted as={Link}>
+        <Text size={1} as={Link} weight="medium">
           {value?.title || 'Untitled'}
         </Text>
       )}

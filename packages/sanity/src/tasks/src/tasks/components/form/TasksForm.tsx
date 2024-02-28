@@ -1,5 +1,5 @@
 import {type PortableTextBlock} from '@sanity/types'
-import {Card, Flex, Stack, Text, TextInput, useToast} from '@sanity/ui'
+import {Box, Card, Flex, Stack, Text, TextInput, useToast} from '@sanity/ui'
 import {useCallback, useEffect, useRef, useState} from 'react'
 import {getPublishedId, useEditState, useUserListWithPermissions, useWorkspace} from 'sanity'
 
@@ -193,7 +193,9 @@ export const TasksForm = (props: TasksFormProps) => {
           value={values.assignedTo}
           onChange={handleAssignedToChange}
         />
-        <TargetInput onChange={handleTargetChange} value={values.target} />
+        <Box paddingLeft={values.target ? 2 : 0}>
+          <TargetInput onChange={handleTargetChange} value={values.target} />
+        </Box>
         <Flex justify="flex-end" gap={4} marginTop={2}>
           {mode === 'edit' && (
             <div style={{marginRight: 'auto'}}>
