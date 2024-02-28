@@ -1,7 +1,7 @@
 import {type SanityClient} from '@sanity/client'
 import {sortBy} from 'lodash'
-import {type Observable} from 'rxjs'
-import {map, tap} from 'rxjs/operators'
+import {type Observable, of} from 'rxjs'
+import {map, switchMap, tap} from 'rxjs/operators'
 
 import {removeDupes} from '../../util/draftUtils'
 import {applyWeights} from './applyWeights'
@@ -32,7 +32,10 @@ export function createWeightedSearch(
   types: SearchableType[],
   client: SanityClient,
   commonOpts: WeightedSearchOptions = {},
-): (searchTerms: string | SearchTerms, searchOpts?: SearchOptions) => Observable<WeightedHit[]> {
+): (
+  searchTerms: string | SearchTerms,
+  searchOpts?: SearchOptions,
+) => Observable<{hits: Observable<WeightedHit[]>}> {
   // Search currently supports both strings (reference + cross dataset reference inputs)
   // or a SearchTerms object (omnisearch).
   return function search(searchParams, searchOpts = {}) {
@@ -51,6 +54,11 @@ export function createWeightedSearch(
       // Optionally skip client-side score sorting.
       // This can be relevant when ordering results by specific fields, especially dates.
       searchOpts?.skipSortByScore ? tap() : map((hits) => sortBy(hits, (hit) => -hit.score)),
+      switchMap((hits) =>
+        of({
+          hits: of(hits),
+        }),
+      ),
     )
   }
 }
