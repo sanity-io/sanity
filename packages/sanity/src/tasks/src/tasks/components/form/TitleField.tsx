@@ -69,7 +69,7 @@ export function Title(props: {
   const handleChange = useCallback(
     (event: ChangeEvent<HTMLTextAreaElement>) => {
       const inputValue = event.currentTarget.value
-      if (!inputValue) onChange(unset())
+      if (!inputValue) onChange(unset(path))
       return onChange(set(inputValue.replace(/\n/g, ''), path))
     },
     [onChange, path],
