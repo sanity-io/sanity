@@ -7,6 +7,7 @@ import enableBackupCommand from './backup/enableBackupCommand'
 import listBackupCommand from './backup/listBackupCommand'
 import buildCommand from './build/buildCommand'
 import checkCommand from './check/checkCommand'
+import generateCodegenCommand from './codegen/generateCodegenCommand'
 import configCheckCommand from './config/configCheckCommand'
 import addCorsOriginCommand from './cors/addCorsOriginCommand'
 import corsGroup from './cors/corsGroup'
@@ -46,9 +47,9 @@ import listMigrationsCommand from './migration/listMigrationsCommand'
 import migrationGroup from './migration/migrationGroup'
 import runMigrationCommand from './migration/runMigrationCommand'
 import previewCommand from './preview/previewCommand'
+import extractSchemaCommand from './schema/extractSchemaCommand'
 import schemaGroup from './schema/schemaGroup'
 import validateSchemaCommand from './schema/validateSchemaCommand'
-import extractSchemaCommand from './schema/extractSchemaCommand'
 import startCommand from './start/startCommand'
 import uninstallCommand from './uninstall/uninstallCommand'
 import inviteUserCommand from './users/inviteUserCommand'
@@ -97,6 +98,7 @@ const commands: (CliCommandDefinition | CliCommandGroupDefinition)[] = [
   queryDocumentsCommand,
   deleteDocumentsCommand,
   createDocumentsCommand,
+  generateCodegenCommand,
   validateDocumentsCommand,
   graphqlGroup,
   listGraphQLAPIsCommand,
