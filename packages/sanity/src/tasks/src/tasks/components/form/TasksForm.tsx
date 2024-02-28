@@ -1,12 +1,19 @@
 import {Box, rem} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
-import {type CurrentUser, FormBuilder, LoadingBlock, useCurrentUser} from 'sanity'
+import {useEffect} from 'react'
+import {
+  type CurrentUser,
+  FormBuilder,
+  LoadingBlock,
+  type SanityDocument,
+  useCurrentUser,
+} from 'sanity'
 import styled from 'styled-components'
 
 import {CommentsEnabledProvider} from '../../../../../structure/comments'
-import {MentionUserProvider} from '../../context/mentionUser'
-import {type FormMode, type TaskDocument} from '../../types'
+import {MentionUserProvider, useMentionUser} from '../../context/mentionUser'
+import {type FormMode, type TaskDocument, type TaskTarget} from '../../types'
 import {AddOnWorkspaceProvider} from './AddOnWorkspaceProvider'
 import {useTasksFormBuilder} from './useTasksFormBuilder'
 
@@ -34,6 +41,25 @@ const TasksCreateFormInner = ({
     documentId,
     initialValue,
   })
+  // Updates the selected document in the mention user context - to verify the user permissions.
+  const {setSelectedDocument} = useMentionUser()
+
+  const target = formBuilderProps.loading
+    ? undefined
+    : (formBuilderProps.value?.target as TaskTarget)
+
+  const targetId = target?.document?._ref
+  const targetType = target?.documentType
+
+  useEffect(() => {
+    const documentValue =
+      targetId && targetType
+        ? // Hack to force the SanityDocument type, we only need to send the _id and _type in this object.
+          ({_id: targetId, _type: targetType} as unknown as SanityDocument)
+        : null
+
+    setSelectedDocument(documentValue)
+  }, [targetId, targetType, setSelectedDocument])
 
   return (
     <CommentsEnabledProvider documentId="" documentType="">
