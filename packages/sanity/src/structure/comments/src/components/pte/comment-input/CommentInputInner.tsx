@@ -125,6 +125,7 @@ export function CommentInputInner(props: CommentInputInnerProps) {
       {avatar}
 
       <RootCard
+        id="comment-input-root"
         data-expand-on-focus={expandOnFocus && !canSubmit ? 'true' : 'false'}
         data-focused={focused ? 'true' : 'false'}
         flex={1}
