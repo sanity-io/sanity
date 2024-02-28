@@ -7,17 +7,20 @@ import {
   type FieldDefinition,
   type FileDefinition,
   type ImageDefinition,
+  type NumberDefinition,
   type ObjectDefinition,
   type ReferenceDefinition,
   type SchemaTypeDefinition,
+  type StringDefinition,
 } from '@sanity/types'
 import {
   type ArrayTypeNode,
+  createReferenceTypeNode,
+  type InlineTypeNode,
   type NumberTypeNode,
-  type ObjectKeyValue,
+  type ObjectAttribute,
   type ObjectTypeNode,
   type PrimitiveTypeNode,
-  type ReferenceTypeNode,
   type Schema,
   type StringTypeNode,
   type TypeNode,
@@ -25,40 +28,33 @@ import {
   type UnknownTypeNode,
 } from 'groq-js/typeEvaluator'
 
-const defaultFields = (typeName: string): Array<ObjectKeyValue> => [
-  {
-    type: 'objectKeyValue',
-    key: '_id',
+const documentDefaultFields = (typeName: string): Record<string, ObjectAttribute> => ({
+  _id: {
+    type: 'objectAttribute',
     value: {type: 'string'},
   },
-  {
-    type: 'objectKeyValue',
-    key: '_type',
+  _type: {
+    type: 'objectAttribute',
     value: {type: 'string', value: typeName},
   },
-  {
-    type: 'objectKeyValue',
-    key: '_createdAt',
+  _createdAt: {
+    type: 'objectAttribute',
     value: {type: 'string'},
   },
-  {
-    type: 'objectKeyValue',
-    key: '_updatedAt',
+  _updatedAt: {
+    type: 'objectAttribute',
     value: {type: 'string'},
   },
-  {
-    type: 'objectKeyValue',
-    key: '_rev',
+  _rev: {
+    type: 'objectAttribute',
     value: {type: 'string'},
   },
-]
+})
 const typesMap = new Map<string, TypeNode>([
-  ['string', {type: 'string'}],
   ['text', {type: 'string'}],
   ['url', {type: 'string'}],
   ['datetime', {type: 'string'}],
   ['date', {type: 'string'}],
-  ['number', {type: 'number'}],
   ['boolean', {type: 'boolean'}],
   ['email', {type: 'string'}],
 ])
@@ -67,56 +63,49 @@ export function extractSchema(schemaTypeDefinitions: SchemaTypeDefinition[]): Sc
   const schema: Schema = []
   schemaTypeDefinitions.forEach((type) => {
     if (isDocumentType(type)) {
-      const fields: ObjectKeyValue[] = [
-        ...defaultFields(type.name),
-        ...type.fields.map(
-          (field) =>
-            ({
-              type: 'objectKeyValue',
-              key: field.name,
-              optional: true,
-              value: parseField(field),
-            }) satisfies ObjectKeyValue,
-        ),
-      ]
+      const attributes = documentDefaultFields(type.name) satisfies Record<string, ObjectAttribute>
+
+      for (const field of type.fields || []) {
+        attributes[field.name] = {
+          type: 'objectAttribute',
+          optional: true,
+          value: parseField(field),
+        } satisfies ObjectAttribute
+      }
+
       schema.push({
         name: type.name,
         type: 'document',
-        fields,
+        attributes,
       })
       return
     }
 
     if (isObjectType(type)) {
-      const fields: ObjectKeyValue[] = type.fields.map(
-        (field) =>
-          ({
-            type: 'objectKeyValue',
-            key: field.name,
-            optional: true,
-            value: parseField(field),
-          }) satisfies ObjectKeyValue,
-      )
+      const attributes = type.fields.reduce<Record<string, ObjectAttribute>>((acc, field) => {
+        acc[field.name] = {
+          type: 'objectAttribute',
+          optional: true,
+          value: parseField(field),
+        } satisfies ObjectAttribute
 
-      fields.push({
-        type: 'objectKeyValue',
-        key: '_type',
+        return acc
+      }, {}) satisfies Record<string, ObjectAttribute>
+
+      attributes._type = {
+        type: 'objectAttribute',
         value: {
           type: 'string',
           value: type.name,
         },
-      } as ObjectKeyValue<StringTypeNode>)
-
-      // Add _key field, it's optional and only available when used in an array
-      // todo: add support for _key in object properly on references inside an array. Also for documents
-      fields.push(createKeyField())
+      } satisfies ObjectAttribute<StringTypeNode>
 
       schema.push({
         name: type.name,
         type: 'type',
         value: {
           type: 'object',
-          fields,
+          attributes,
         },
       })
       return
@@ -173,6 +162,22 @@ export function extractSchema(schemaTypeDefinitions: SchemaTypeDefinition[]): Sc
       return
     }
 
+    if (isStringType(type)) {
+      schema.push({
+        type: 'type',
+        name: type.name,
+        value: createStringTypeNodeDefintion(type),
+      })
+    }
+
+    if (isNumberType(type)) {
+      schema.push({
+        type: 'type',
+        name: type.name,
+        value: createNumberTypeNodeDefintion(type),
+      })
+    }
+
     if (typesMap.has(type.type)) {
       schema.push({
         type: 'type',
@@ -186,20 +191,18 @@ export function extractSchema(schemaTypeDefinitions: SchemaTypeDefinition[]): Sc
       type: 'type',
       name: type.name,
       value: {
-        type: 'reference',
-        to: type.type,
-      } satisfies ReferenceTypeNode,
+        type: 'inline',
+        name: type.type,
+      } satisfies InlineTypeNode,
     })
   })
 
   return schema
 }
 
-function createKeyField(): ObjectKeyValue<StringTypeNode> {
+function createKeyField(): ObjectAttribute<StringTypeNode> {
   return {
-    type: 'objectKeyValue',
-    key: '_key',
-    optional: true,
+    type: 'objectAttribute',
     value: {
       type: 'string',
     },
@@ -208,27 +211,25 @@ function createKeyField(): ObjectKeyValue<StringTypeNode> {
 
 function parseField(field: FieldDefinition): TypeNode {
   if (isObjectType(field)) {
-    const fields: ObjectKeyValue[] = []
+    const attributes: Record<string, ObjectAttribute> = {}
     field.fields.forEach((f) => {
-      fields.push({
-        type: 'objectKeyValue',
-        key: f.name,
+      attributes[f.name] = {
+        type: 'objectAttribute',
         value: parseField(f),
         optional: true,
-      })
+      }
     })
-    fields.push({
-      type: 'objectKeyValue',
-      key: '_type',
+    attributes._type = {
+      type: 'objectAttribute',
       value: {
         type: 'string',
         value: field.name,
       },
-    } as ObjectKeyValue<StringTypeNode>)
+    } satisfies ObjectAttribute<StringTypeNode>
 
     return {
       type: field.type,
-      fields,
+      attributes,
     }
   }
 
@@ -254,13 +255,21 @@ function parseField(field: FieldDefinition): TypeNode {
     return createCrossDatasetReferenceTypeNodeDefintion(field)
   }
 
+  if (isStringType(field)) {
+    return createStringTypeNodeDefintion(field)
+  }
+
+  if (isNumberType(field)) {
+    return createNumberTypeNodeDefintion(field)
+  }
+
   if (typesMap.has(field.type)) {
     return typesMap.get(field.type)
   }
 
   return {
-    type: 'reference',
-    to: field.type,
+    type: 'inline',
+    name: field.type,
   }
 }
 
@@ -302,114 +311,179 @@ function isImageType(n: {type: string}): n is ImageDefinition {
 function isFileType(n: {type: string}): n is FileDefinition {
   return n.type === 'file'
 }
+function isStringType(n: {type: string}): n is StringDefinition {
+  return n.type === 'string'
+}
+function isNumberType(n: {type: string}): n is NumberDefinition {
+  return n.type === 'number'
+}
 
-function createPrimitiveTypeNode(
+function createPrimitiveAttribute(
   key: string,
   type: PrimitiveTypeNode['type'],
   optional = false,
-): ObjectKeyValue<PrimitiveTypeNode> {
+): Record<string, ObjectAttribute<PrimitiveTypeNode>> {
   return {
-    type: 'objectKeyValue',
-    key,
-    value: {type},
-    optional,
+    [key]: {
+      type: 'objectAttribute',
+      value: {type},
+      optional,
+    },
+  }
+}
+
+function createStringTypeNodeDefintion(
+  stringDefinition: StringDefinition,
+): StringTypeNode | UnionTypeNode<StringTypeNode> {
+  if (stringDefinition.options?.list) {
+    return {
+      type: 'union',
+      of: stringDefinition.options.list.map((v) => ({
+        type: 'string',
+        value: typeof v === 'string' ? v : v.value,
+      })),
+    }
+  }
+  return {
+    type: 'string',
+  }
+}
+
+function createNumberTypeNodeDefintion(
+  numberDefinition: NumberDefinition,
+): NumberTypeNode | UnionTypeNode<NumberTypeNode> {
+  if (numberDefinition.options?.list) {
+    return {
+      type: 'union',
+      of: numberDefinition.options.list.map((v) => ({
+        type: 'number',
+        value: typeof v === 'number' ? v : v.value,
+      })),
+    }
+  }
+  return {
+    type: 'number',
   }
 }
 
 function createImage(imageDefinition: ImageDefinition): ObjectTypeNode {
-  const fields: ObjectKeyValue[] =
-    imageDefinition.fields?.map((field) => ({
-      type: 'objectKeyValue',
-      key: field.name,
+  const attributes: Record<string, ObjectAttribute> = {}
+  for (const field of imageDefinition.fields || []) {
+    attributes[field.name] = {
+      type: 'objectAttribute',
       value: parseField(field),
       optional: true,
-    })) || []
+    }
+  }
 
   if (imageDefinition.options?.hotspot) {
-    fields.push({
-      type: 'objectKeyValue',
-      key: 'hotspot',
+    attributes.hotspot = {
+      type: 'objectAttribute',
       value: {
         type: 'object',
-        fields: [
-          createPrimitiveTypeNode('x', 'number'),
-          createPrimitiveTypeNode('y', 'number'),
-          createPrimitiveTypeNode('height', 'number'),
-          createPrimitiveTypeNode('width', 'number'),
-        ],
+        attributes: {
+          _type: {
+            type: 'objectAttribute',
+            value: {
+              type: 'string',
+              value: 'sanity.imageHotspot',
+            },
+          },
+          ...createPrimitiveAttribute('x', 'number'),
+          ...createPrimitiveAttribute('y', 'number'),
+          ...createPrimitiveAttribute('height', 'number'),
+          ...createPrimitiveAttribute('width', 'number'),
+        },
       },
       optional: true,
-    })
-    fields.push({
-      type: 'objectKeyValue',
-      key: 'crop',
+    }
+    attributes.crop = {
+      type: 'objectAttribute',
       value: {
         type: 'object',
-        fields: [
-          createPrimitiveTypeNode('top', 'number'),
-          createPrimitiveTypeNode('bottom', 'number'),
-          createPrimitiveTypeNode('left', 'number'),
-          createPrimitiveTypeNode('right', 'number'),
-        ],
+        attributes: {
+          _type: {
+            type: 'objectAttribute',
+            value: {
+              type: 'string',
+              value: 'sanity.imageCrop',
+            },
+          },
+          ...createPrimitiveAttribute('top', 'number'),
+          ...createPrimitiveAttribute('bottom', 'number'),
+          ...createPrimitiveAttribute('left', 'number'),
+          ...createPrimitiveAttribute('right', 'number'),
+        },
       },
       optional: true,
-    })
+    }
   }
   return {
     type: 'object',
-    fields: [
-      {
-        type: 'objectKeyValue',
-        key: '_type',
+    attributes: {
+      _type: {
+        type: 'objectAttribute',
         value: {
           type: 'string',
           value: 'image',
         },
       },
-      {
-        type: 'objectKeyValue',
-        key: 'asset',
-        value: {
-          type: 'reference',
-          to: 'sanity.imageAsset',
-        },
+      asset: {
+        type: 'objectAttribute',
+        value: createReferenceTypeNode('sanity.imageAsset'),
       },
-      ...fields,
-    ],
+      ...attributes,
+    },
   }
 }
 function createFile(fileDefinition: FileDefinition): ObjectTypeNode {
-  const fields: ObjectKeyValue[] =
-    fileDefinition.fields?.map((field) => ({
-      type: 'objectKeyValue',
-      key: field.name,
+  const attributes: Record<string, ObjectAttribute> = {}
+  for (const field of fileDefinition.fields || []) {
+    attributes[field.name] = {
+      type: 'objectAttribute',
       value: parseField(field),
       optional: true,
-    })) || []
+    }
+  }
 
   return {
     type: 'object',
-    fields: [
-      {
-        type: 'objectKeyValue',
-        key: '_type',
+    attributes: {
+      _type: {
+        type: 'objectAttribute',
         value: {
           type: 'string',
           value: 'file',
         },
       },
-      ...fields,
-    ],
+      ...attributes,
+    },
   }
 }
 
 function createArray(arrayDefinition: ArrayDefinition): ArrayTypeNode {
-  const of: TypeNode[] = [
+  const of = [
     ...arrayDefinition.of.map((f) => {
       if (isFieldDefinition(f)) {
         const field = parseField(f)
+        if (field.type === 'inline') {
+          return {
+            type: 'object',
+            attributes: {
+              _key: createKeyField(),
+            },
+            rest: field,
+          } satisfies ObjectTypeNode
+        }
+
         if (field.type === 'object') {
-          field.fields.push(createKeyField())
+          field.rest = {
+            type: 'object',
+            attributes: {
+              _key: createKeyField(),
+            },
+          }
+          return field
         }
 
         return field
@@ -419,12 +493,9 @@ function createArray(arrayDefinition: ArrayDefinition): ArrayTypeNode {
         return typesMap.get(f.type)
       }
 
-      return {
-        type: 'reference',
-        to: f.type,
-      } satisfies ReferenceTypeNode
+      return createReferenceTypeNode(f.type, true)
     }),
-  ]
+  ] satisfies TypeNode[]
 
   return {
     type: 'array',
@@ -440,8 +511,7 @@ function createArray(arrayDefinition: ArrayDefinition): ArrayTypeNode {
 
 function createBlock(blockDefinition: BlockDefinition): ObjectTypeNode {
   const styleField = {
-    type: 'objectKeyValue',
-    key: 'style',
+    type: 'objectAttribute',
     optional: true,
     value: {
       type: 'union',
@@ -451,10 +521,9 @@ function createBlock(blockDefinition: BlockDefinition): ObjectTypeNode {
           value: style.value,
         })) || [],
     },
-  } satisfies ObjectKeyValue<UnionTypeNode<StringTypeNode>>
+  } satisfies ObjectAttribute<UnionTypeNode<StringTypeNode>>
   const listItemField = {
-    type: 'objectKeyValue',
-    key: 'listItem',
+    type: 'objectAttribute',
     optional: true,
     value: {
       type: 'union',
@@ -464,15 +533,14 @@ function createBlock(blockDefinition: BlockDefinition): ObjectTypeNode {
           value: list.value,
         })) || [],
     },
-  } satisfies ObjectKeyValue<UnionTypeNode<StringTypeNode>>
+  } satisfies ObjectAttribute<UnionTypeNode<StringTypeNode>>
   const levelField = {
-    type: 'objectKeyValue',
-    key: 'level',
+    type: 'objectAttribute',
     optional: true,
     value: {
       type: 'number',
     },
-  } satisfies ObjectKeyValue<NumberTypeNode>
+  } satisfies ObjectAttribute<NumberTypeNode>
   const marks: TypeNode[] = [
     {type: 'string'},
     ...(blockDefinition.marks?.decorators?.map(
@@ -483,8 +551,7 @@ function createBlock(blockDefinition: BlockDefinition): ObjectTypeNode {
     ) || []),
   ]
   const childrenField = {
-    type: 'objectKeyValue',
-    key: 'children',
+    type: 'objectAttribute',
     value: {
       type: 'array',
       of: {
@@ -492,18 +559,16 @@ function createBlock(blockDefinition: BlockDefinition): ObjectTypeNode {
         of: [
           {
             type: 'object',
-            fields: [
-              createKeyField(),
-              {
-                type: 'objectKeyValue',
-                key: 'text',
+            attributes: {
+              _key: createKeyField(),
+              text: {
+                type: 'objectAttribute',
                 value: {
                   type: 'string',
                 },
-              } satisfies ObjectKeyValue<StringTypeNode>,
-              {
-                type: 'objectKeyValue',
-                key: 'marks',
+              } satisfies ObjectAttribute<StringTypeNode>,
+              marks: {
+                type: 'objectAttribute',
                 value: {
                   type: 'array',
                   of: {
@@ -511,21 +576,16 @@ function createBlock(blockDefinition: BlockDefinition): ObjectTypeNode {
                     of: marks,
                   },
                 },
-              } satisfies ObjectKeyValue<ArrayTypeNode<UnionTypeNode>>,
-            ],
+              } satisfies ObjectAttribute<ArrayTypeNode<UnionTypeNode>>,
+            },
           } satisfies ObjectTypeNode,
         ],
       } satisfies UnionTypeNode<ObjectTypeNode>,
     },
-  } satisfies ObjectKeyValue<ArrayTypeNode<UnionTypeNode<ObjectTypeNode>>>
+  } satisfies ObjectAttribute<ArrayTypeNode<UnionTypeNode<ObjectTypeNode>>>
 
-  const markDefsField: ObjectKeyValue<
-    ArrayTypeNode<
-      UnionTypeNode<ObjectTypeNode | ReferenceTypeNode | UnionTypeNode<ReferenceTypeNode>>
-    >
-  > = {
-    type: 'objectKeyValue',
-    key: 'markDefs',
+  const markDefsField: ObjectAttribute<ArrayTypeNode> = {
+    type: 'objectAttribute',
     value: {
       type: 'array',
       of: {
@@ -538,29 +598,31 @@ function createBlock(blockDefinition: BlockDefinition): ObjectTypeNode {
   }
   return {
     type: 'object',
-    fields: [levelField, styleField, listItemField, childrenField, markDefsField, createKeyField()],
+    attributes: {
+      _key: createKeyField(),
+      level: levelField,
+      style: styleField,
+      listItem: listItemField,
+      children: childrenField,
+      markDefs: markDefsField,
+    },
   }
 }
 
-function createMarkDefField(
-  annotation: ArrayOfType<'object' | 'reference'>,
-): ObjectTypeNode | ReferenceTypeNode | UnionTypeNode<ReferenceTypeNode> {
+function createMarkDefField(annotation: ArrayOfType<'object' | 'reference'>): TypeNode {
   if (annotation.type === 'object' && 'fields' in annotation) {
-    const fields: ObjectKeyValue[] = [
-      createKeyField(),
-      ...annotation.fields.map(
-        (field): ObjectKeyValue => ({
-          type: 'objectKeyValue',
-          key: field.name,
-          optional: true,
-          value: parseField(field),
-        }),
-      ),
-    ]
+    const attributes: Record<string, ObjectAttribute> = {}
+    for (const field of annotation.fields) {
+      attributes[field.name] = {
+        type: 'objectAttribute',
+        value: parseField(field),
+        optional: true,
+      } satisfies ObjectAttribute
+    }
 
     return {
       type: 'object',
-      fields,
+      attributes,
     }
   }
 
@@ -570,26 +632,20 @@ function createMarkDefField(
 
   return {
     type: 'object',
-    fields: [],
+    attributes: {},
   }
 }
 
 function createReferenceTypeNodeDefintion(
   reference: Pick<ReferenceDefinition, 'to'>,
-): ReferenceTypeNode | UnionTypeNode<ReferenceTypeNode> {
+): ObjectTypeNode | UnionTypeNode<ObjectTypeNode> {
   if (Array.isArray(reference.to)) {
     return {
       type: 'union',
-      of: reference.to.map((t) => ({
-        type: 'reference',
-        to: t.type,
-      })),
+      of: reference.to.map((t) => createReferenceTypeNode(t.type)),
     }
   }
-  return {
-    type: 'reference',
-    to: reference.to.type,
-  } satisfies ReferenceTypeNode
+  return createReferenceTypeNode(reference.to.type)
 }
 function createCrossDatasetReferenceTypeNodeDefintion(
   _: CrossDatasetReferenceDefinition,
