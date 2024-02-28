@@ -13,6 +13,8 @@ export const taskSchema = (mode: FormMode) =>
     name: 'tasks.task',
     liveEdit: true,
     components: {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       input: mode === 'edit' ? FormEdit : undefined,
     },
     fields: [
@@ -24,6 +26,7 @@ export const taskSchema = (mode: FormMode) =>
         components: {
           field: TitleField,
         },
+        hidden: mode === 'edit',
       },
       {
         type: 'array',
