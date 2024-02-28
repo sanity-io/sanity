@@ -203,6 +203,7 @@
     "@sanity/cli": "3.31.0",
     "@sanity/client": "^6.15.1",
     "@sanity/color": "^3.0.0",
+    "@sanity/codegen": "*",
     "@sanity/diff": "3.31.0",
     "@sanity/diff-match-patch": "^3.1.1",
     "@sanity/eventsource": "^5.0.0",

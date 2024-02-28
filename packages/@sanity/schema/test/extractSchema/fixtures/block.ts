@@ -1,6 +1,7 @@
 import {ComposeIcon, DropIcon, ImageIcon} from '@sanity/icons'
+import {defineArrayMember, defineField, defineType} from 'sanity'
 
-const linkType = {
+const linkType = defineArrayMember({
   type: 'object',
   name: 'link',
   fields: [
@@ -16,9 +17,9 @@ const linkType = {
       width: 2,
     },
   },
-}
+})
 
-export default {
+export default defineType({
   name: 'blocks',
   title: 'Blocks test',
   type: 'object',
@@ -42,13 +43,13 @@ export default {
         },
       ],
     },
-    {
+    defineField({
       name: 'defaults',
       title: 'Content',
       description: 'Profound description of what belongs here',
       type: 'array',
       of: [
-        {type: 'image', title: 'Image', icon: ImageIcon},
+        defineArrayMember({type: 'image', title: 'Image', icon: ImageIcon}),
         {
           type: 'reference',
           name: 'authorReference',
@@ -61,7 +62,7 @@ export default {
           to: {type: 'book'},
           title: 'Reference to book',
         },
-        {
+        defineArrayMember({
           type: 'object',
           name: 'objectWithNestedArray',
           title: 'An object with nested array',
@@ -84,8 +85,8 @@ export default {
               ],
             },
           ],
-        },
-        {type: 'author', title: 'Embedded author'},
+        }),
+        defineArrayMember({type: 'author', title: 'Embedded author'}),
         {type: 'code', title: 'Code'},
         // {
         //   type: 'color',
@@ -99,13 +100,13 @@ export default {
           name: 'testObject',
           fields: [{name: 'field1', type: 'string'}],
         },
-        {
+        defineArrayMember({
           type: 'object',
           title: 'Other test object',
           name: 'otherTestObject',
           fields: [
             {name: 'field1', type: 'string'},
-            {
+            defineField({
               name: 'field3',
               type: 'array',
               of: [
@@ -117,9 +118,9 @@ export default {
                   ],
                 },
               ],
-            },
+            }),
           ],
-        },
+        }),
         // {
         //   type: 'block',
         //   of: [
@@ -135,7 +136,7 @@ export default {
           title: 'Spotify embed',
         },
       ],
-    },
+    }),
     {
       name: 'nestedWithDualColumnCTA',
       title: 'Nested, with dual column CTA',
@@ -511,4 +512,4 @@ export default {
       ],
     },
   ],
-}
+})

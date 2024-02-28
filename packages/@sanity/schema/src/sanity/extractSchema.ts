@@ -10,7 +10,6 @@ import {
   type NumberDefinition,
   type ObjectDefinition,
   type ReferenceDefinition,
-  type Rule,
   type SchemaTypeDefinition,
   type StringDefinition,
 } from '@sanity/types'
@@ -22,12 +21,12 @@ import {
   type ObjectAttribute,
   type ObjectTypeNode,
   type PrimitiveTypeNode,
-  type SchemaType,
+  type Schema,
   type StringTypeNode,
   type TypeNode,
   type UnionTypeNode,
   type UnknownTypeNode,
-} from 'groq-js'
+} from 'groq-js/typeEvaluator'
 
 const documentDefaultFields = (typeName: string): Record<string, ObjectAttribute> => ({
   _id: {
@@ -60,25 +59,17 @@ const typesMap = new Map<string, TypeNode>([
   ['email', {type: 'string'}],
 ])
 
-export interface ExtractSchemaOptions {
-  enforceRequiredFields?: boolean
-}
-
-export function extractSchema(
-  schemaTypeDefinitions: SchemaTypeDefinition[],
-  extractOptions: ExtractSchemaOptions = {},
-): SchemaType {
-  const schema: SchemaType = []
+export function extractSchema(schemaTypeDefinitions: SchemaTypeDefinition[]): Schema {
+  const schema: Schema = []
   schemaTypeDefinitions.forEach((type) => {
     if (isDocumentType(type)) {
       const attributes = documentDefaultFields(type.name) satisfies Record<string, ObjectAttribute>
 
       for (const field of type.fields || []) {
-        const fieldIsRequired = isFieldRequired(field)
         attributes[field.name] = {
           type: 'objectAttribute',
-          optional: extractOptions.enforceRequiredFields ? fieldIsRequired : true,
-          value: parseField(field, extractOptions),
+          optional: true,
+          value: parseField(field),
         } satisfies ObjectAttribute
       }
 
@@ -92,11 +83,10 @@ export function extractSchema(
 
     if (isObjectType(type)) {
       const attributes = type.fields.reduce<Record<string, ObjectAttribute>>((acc, field) => {
-        const fieldIsRequired = isFieldRequired(field)
         acc[field.name] = {
           type: 'objectAttribute',
-          optional: extractOptions.enforceRequiredFields ? !fieldIsRequired : true,
-          value: parseField(field, extractOptions),
+          optional: true,
+          value: parseField(field),
         } satisfies ObjectAttribute
 
         return acc
@@ -124,7 +114,7 @@ export function extractSchema(
       schema.push({
         type: 'type',
         name: type.name,
-        value: createArray(type, extractOptions),
+        value: createArray(type),
       })
       return
     }
@@ -133,7 +123,7 @@ export function extractSchema(
       schema.push({
         type: 'type',
         name: type.name,
-        value: createBlock(type, extractOptions),
+        value: createBlock(type),
       })
       return
     }
@@ -141,7 +131,7 @@ export function extractSchema(
       schema.push({
         type: 'type',
         name: type.name,
-        value: createImage(type, extractOptions),
+        value: createImage(type),
       })
       return
     }
@@ -149,7 +139,7 @@ export function extractSchema(
       schema.push({
         type: 'type',
         name: type.name,
-        value: createFile(type, extractOptions),
+        value: createFile(type),
       })
       return
     }
@@ -219,44 +209,14 @@ function createKeyField(): ObjectAttribute<StringTypeNode> {
   }
 }
 
-function isFieldRequired(field: FieldDefinition): boolean {
-  if (!field.validation) {
-    return false
-  }
-  const rules = Array.isArray(field.validation) ? field.validation : [field.validation]
-  for (const rule of rules) {
-    let required = false
-    const proxy = new Proxy(
-      {},
-      {
-        get: (target, methodName) => () => {
-          if (methodName === 'required') {
-            required = true
-          }
-          return proxy
-        },
-      },
-    ) as Rule
-    if (typeof rule === 'function') {
-      rule(proxy)
-      if (required) {
-        return true
-      }
-    }
-  }
-
-  return false
-}
-
-function parseField(field: FieldDefinition, extractOptions: ExtractSchemaOptions): TypeNode {
+function parseField(field: FieldDefinition): TypeNode {
   if (isObjectType(field)) {
     const attributes: Record<string, ObjectAttribute> = {}
     field.fields.forEach((f) => {
-      const fieldIsRequired = isFieldRequired(f)
       attributes[f.name] = {
         type: 'objectAttribute',
-        value: parseField(f, extractOptions),
-        optional: extractOptions.enforceRequiredFields ? fieldIsRequired : true,
+        value: parseField(f),
+        optional: true,
       }
     })
     attributes._type = {
@@ -274,17 +234,17 @@ function parseField(field: FieldDefinition, extractOptions: ExtractSchemaOptions
   }
 
   if (isArrayType(field)) {
-    return createArray(field, extractOptions)
+    return createArray(field)
   }
 
   if (isBlockType(field)) {
-    return createBlock(field, extractOptions)
+    return createBlock(field)
   }
   if (isImageType(field)) {
-    return createImage(field, extractOptions)
+    return createImage(field)
   }
   if (isFileType(field)) {
-    return createFile(field, extractOptions)
+    return createFile(field)
   }
 
   if (isReferenceType(field)) {
@@ -406,17 +366,13 @@ function createNumberTypeNodeDefintion(
   }
 }
 
-function createImage(
-  imageDefinition: ImageDefinition,
-  extractOptions: ExtractSchemaOptions,
-): ObjectTypeNode {
+function createImage(imageDefinition: ImageDefinition): ObjectTypeNode {
   const attributes: Record<string, ObjectAttribute> = {}
   for (const field of imageDefinition.fields || []) {
-    const fieldIsRequired = isFieldRequired(field)
     attributes[field.name] = {
       type: 'objectAttribute',
-      value: parseField(field, extractOptions),
-      optional: extractOptions.enforceRequiredFields ? fieldIsRequired : true,
+      value: parseField(field),
+      optional: true,
     }
   }
 
@@ -480,17 +436,13 @@ function createImage(
     },
   }
 }
-function createFile(
-  fileDefinition: FileDefinition,
-  extractOptions: ExtractSchemaOptions,
-): ObjectTypeNode {
+function createFile(fileDefinition: FileDefinition): ObjectTypeNode {
   const attributes: Record<string, ObjectAttribute> = {}
   for (const field of fileDefinition.fields || []) {
-    const fieldIsRequired = isFieldRequired(field)
     attributes[field.name] = {
       type: 'objectAttribute',
-      value: parseField(field, extractOptions),
-      optional: extractOptions.enforceRequiredFields ? fieldIsRequired : true,
+      value: parseField(field),
+      optional: true,
     }
   }
 
@@ -509,14 +461,11 @@ function createFile(
   }
 }
 
-function createArray(
-  arrayDefinition: ArrayDefinition,
-  extractOptions: ExtractSchemaOptions,
-): ArrayTypeNode {
+function createArray(arrayDefinition: ArrayDefinition): ArrayTypeNode {
   const of = [
     ...arrayDefinition.of.map((f) => {
       if (isFieldDefinition(f)) {
-        const field = parseField(f, extractOptions)
+        const field = parseField(f)
         if (field.type === 'inline') {
           return {
             type: 'object',
@@ -560,10 +509,7 @@ function createArray(
   }
 }
 
-function createBlock(
-  blockDefinition: BlockDefinition,
-  extractOptions: ExtractSchemaOptions,
-): ObjectTypeNode {
+function createBlock(blockDefinition: BlockDefinition): ObjectTypeNode {
   const styleField = {
     type: 'objectAttribute',
     optional: true,
@@ -645,9 +591,8 @@ function createBlock(
       of: {
         type: 'union',
         of:
-          blockDefinition.marks?.annotations?.map((annotation) =>
-            createMarkDefField(annotation, extractOptions),
-          ) || [],
+          blockDefinition.marks?.annotations?.map((annotation) => createMarkDefField(annotation)) ||
+          [],
       },
     },
   }
@@ -664,16 +609,13 @@ function createBlock(
   }
 }
 
-function createMarkDefField(
-  annotation: ArrayOfType<'object' | 'reference'>,
-  extractOptions: ExtractSchemaOptions,
-): TypeNode {
+function createMarkDefField(annotation: ArrayOfType<'object' | 'reference'>): TypeNode {
   if (annotation.type === 'object' && 'fields' in annotation) {
     const attributes: Record<string, ObjectAttribute> = {}
     for (const field of annotation.fields) {
       attributes[field.name] = {
         type: 'objectAttribute',
-        value: parseField(field, extractOptions),
+        value: parseField(field),
         optional: true,
       } satisfies ObjectAttribute
     }
