@@ -202,6 +202,7 @@ export function referenceSearch(
     strategy: searchStrategy,
   })
   return search(textTerm, {includeDrafts: true}).pipe(
+    switchMap(({hits}) => hits),
     map((results) => results.map((result) => result.hit)),
     map(collate),
     // pick the 100 best matches
