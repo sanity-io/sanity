@@ -23,7 +23,6 @@ import {
   type CommentMessage,
   type CommentsTextSelectionItem,
   type CommentUpdatePayload,
-  currentSelectionIsOverlappingWithComment,
   isTextSelectionComment,
   useComments,
   useCommentsEnabled,
@@ -362,12 +361,23 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
   const currentSelectionIsOverlapping = useMemo(() => {
     if (!currentSelection || addedCommentsDecorations.length === 0) return false
 
-    const overlaps = currentSelectionIsOverlappingWithComment({
-      currentSelection,
-      addedCommentsSelections: addedCommentsDecorations.map((decorator) => decorator.selection),
-    })
+    return addedCommentsDecorations.some((d) => {
+      if (!editorRef.current) return false
 
-    return overlaps
+      const testA = PortableTextEditor.isSelectionsOverlapping(
+        editorRef.current,
+        currentSelection,
+        d.selection,
+      )
+
+      const testB = PortableTextEditor.isSelectionsOverlapping(
+        editorRef.current,
+        d.selection,
+        currentSelection,
+      )
+
+      return testA || testB
+    })
   }, [addedCommentsDecorations, currentSelection])
 
   // The scroll element used to update the reference element for the

@@ -20,7 +20,6 @@ import {
   buildCommentThreadItems,
   buildRangeDecorations,
   buildTextSelectionFromFragment,
-  currentSelectionIsOverlappingWithComment,
 } from '../utils'
 
 const INLINE_STYLE: React.CSSProperties = {outline: 'none'}
@@ -255,9 +254,14 @@ export default function CommentInlineHighlightDebugStory() {
       // }
 
       if (change.type === 'selection') {
-        const overlapping = currentSelectionIsOverlappingWithComment({
-          currentSelection: change.selection,
-          addedCommentsSelections: rangeDecorations.map((x) => x.selection),
+        const overlapping = rangeDecorations.some((d) => {
+          if (!editorRef.current) return false
+
+          return PortableTextEditor.isSelectionsOverlapping(
+            editorRef.current,
+            change.selection,
+            d.selection,
+          )
         })
 
         const hasRange = change.selection?.anchor.offset !== change.selection?.focus.offset
