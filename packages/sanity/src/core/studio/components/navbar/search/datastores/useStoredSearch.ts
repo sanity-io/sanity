@@ -1,5 +1,5 @@
 import {useCallback, useEffect, useMemo, useState} from 'react'
-import {startWith} from 'rxjs/operators'
+import {map, startWith} from 'rxjs/operators'
 
 import {useClient} from '../../../../../hooks'
 import {useCurrentUser, useKeyValueStore} from '../../../../../store'
@@ -17,13 +17,21 @@ export function useStoredSearch(): [StoredSearch, (_value: StoredSearch) => void
   const client = useClient({apiVersion: '2023-12-01'})
   const currentUser = useCurrentUser()
   const {dataset, projectId} = client.config()
-  const userId = currentUser?.id
 
-  const keyValueStoreKey = `${STORED_SEARCHES_NAMESPACE}__${projectId}:${dataset}:${userId}`
-  const [value, setValue] = useState<StoredSearch>({
-    version: RECENT_SEARCH_VERSION,
-    recentSearches: [],
-  })
+  const keyValueStoreKey = useMemo(
+    () => `${STORED_SEARCHES_NAMESPACE}__${projectId}:${dataset}:${currentUser?.id}`,
+    [currentUser, dataset, projectId],
+  )
+
+  const defaultValue: StoredSearch = useMemo(
+    () => ({
+      version: RECENT_SEARCH_VERSION,
+      recentSearches: [],
+    }),
+    [],
+  )
+
+  const [value, setValue] = useState<StoredSearch>(defaultValue)
 
   const settings = useMemo(() => {
     return keyValueStore.getKey(keyValueStoreKey)
@@ -31,13 +39,25 @@ export function useStoredSearch(): [StoredSearch, (_value: StoredSearch) => void
 
   useEffect(() => {
     const sub = settings
-      .pipe(startWith({version: RECENT_SEARCH_VERSION, recentSearches: []}))
+      .pipe(
+        startWith(defaultValue as any),
+        map((data: StoredSearch) => {
+          // Check if the version matches RECENT_SEARCH_VERSION
+          if (data?.version !== RECENT_SEARCH_VERSION) {
+            // If not, return the default object and mutate the store (per original verifySearchVersionNumber logic)
+            keyValueStore.setKey(keyValueStoreKey, defaultValue as any)
+            return defaultValue
+          }
+          // Otherwise, return the data as is
+          return data
+        }),
+      )
       .subscribe({
-        next: setValue as any,
+        next: setValue,
       })
 
     return () => sub?.unsubscribe()
-  }, [keyValueStoreKey, settings])
+  }, [settings, defaultValue, keyValueStore, keyValueStoreKey])
 
   const set = useCallback(
     (newValue: StoredSearch) => {
@@ -46,6 +66,5 @@ export function useStoredSearch(): [StoredSearch, (_value: StoredSearch) => void
     },
     [keyValueStore, keyValueStoreKey],
   )
-
   return useMemo(() => [value, set], [set, value])
 }

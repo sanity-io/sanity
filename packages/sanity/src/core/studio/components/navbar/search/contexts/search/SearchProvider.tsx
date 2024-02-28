@@ -2,17 +2,13 @@ import isEqual from 'lodash/isEqual'
 import {type ReactNode, useCallback, useEffect, useMemo, useReducer, useRef, useState} from 'react'
 
 import {type CommandListHandle} from '../../../../../../components'
-import {useClient, useSchema} from '../../../../../../hooks'
+import {useSchema} from '../../../../../../hooks'
 import {type SearchableType, type SearchTerms} from '../../../../../../search'
 import {useCurrentUser} from '../../../../../../store'
-import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../../../studioClient'
 import {useSource} from '../../../../../source'
 import {SEARCH_LIMIT} from '../../constants'
-import {
-  createRecentSearchesStore,
-  RECENT_SEARCH_VERSION,
-  type RecentSearch,
-} from '../../datastores/recentSearches'
+import {createRecentSearchesStore, type RecentSearch} from '../../datastores/recentSearches'
+import {useStoredSearch} from '../../datastores/useStoredSearch'
 import {createFieldDefinitionDictionary, createFieldDefinitions} from '../../definitions/fields'
 import {createFilterDefinitionDictionary} from '../../definitions/filters'
 import {createOperatorDefinitionDictionary} from '../../definitions/operators'
@@ -36,14 +32,13 @@ export function SearchProvider({children, fullscreen}: SearchProviderProps) {
   const onCloseRef = useRef<(() => void) | null>(null)
   const [searchCommandList, setSearchCommandList] = useState<CommandListHandle | null>(null)
 
-  const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const schema = useSchema()
   const currentUser = useCurrentUser()
   const {
     search: {operators, filters},
   } = useSource()
 
-  const {dataset, projectId} = client.config()
+  const [storedSearch, setStoredSearch] = useStoredSearch()
 
   // Create field, filter and operator dictionaries
   const {fieldDefinitions, filterDefinitions, operatorDefinitions} = useMemo(() => {
@@ -58,23 +53,20 @@ export function SearchProvider({children, fullscreen}: SearchProviderProps) {
   const recentSearchesStore = useMemo(
     () =>
       createRecentSearchesStore({
-        dataset,
         fieldDefinitions,
         filterDefinitions,
         operatorDefinitions,
-        projectId,
         schema,
-        user: currentUser,
-        version: RECENT_SEARCH_VERSION,
+        storedSearch,
+        setStoredSearch,
       }),
     [
-      currentUser,
-      dataset,
       fieldDefinitions,
       filterDefinitions,
       operatorDefinitions,
-      projectId,
       schema,
+      storedSearch,
+      setStoredSearch,
     ],
   )
 

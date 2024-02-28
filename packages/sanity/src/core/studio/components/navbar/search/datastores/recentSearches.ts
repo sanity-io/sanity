@@ -1,8 +1,7 @@
-import {type CurrentUser, type ObjectSchemaType, type Schema} from '@sanity/types'
+import {type ObjectSchemaType, type Schema} from '@sanity/types'
 import omit from 'lodash/omit'
 
 import {type SearchTerms} from '../../../../../search'
-import {supportsLocalStorage} from '../../../../../util/supportsLocalStorage'
 import {type SearchFieldDefinitionDictionary} from '../definitions/fields'
 import {type SearchFilterDefinitionDictionary} from '../definitions/filters'
 import {type SearchOperatorDefinitionDictionary} from '../definitions/operators'
@@ -10,7 +9,6 @@ import {type SearchFilter} from '../types'
 import {validateFilter} from '../utils/filterUtils'
 import {getSearchableOmnisearchTypes} from '../utils/selectors'
 
-const RECENT_SEARCHES_KEY = 'search::recent'
 export const MAX_RECENT_SEARCHES = 5
 /**
  * Current recent search version.
@@ -51,30 +49,20 @@ interface StoredSearchItem {
 }
 
 export function createRecentSearchesStore({
-  dataset,
   fieldDefinitions,
   filterDefinitions,
   operatorDefinitions,
-  projectId,
   schema,
-  user,
-  version = RECENT_SEARCH_VERSION,
+  storedSearch,
+  setStoredSearch,
 }: {
-  dataset?: string
   fieldDefinitions: SearchFieldDefinitionDictionary
   filterDefinitions: SearchFilterDefinitionDictionary
   operatorDefinitions: SearchOperatorDefinitionDictionary
-  projectId?: string
   schema: Schema
-  user: CurrentUser | null
-  version: number
+  storedSearch: StoredSearch
+  setStoredSearch: (_value: StoredSearch) => void
 }): RecentSearchesStore | undefined {
-  if (!dataset || !projectId || !supportsLocalStorage || !user) {
-    return undefined
-  }
-
-  const lsKey = `${RECENT_SEARCHES_KEY}__${projectId}:${dataset}:${user.id}`
-
   return {
     /**
      * Write a search term to Local Storage and return updated recent searches.
@@ -111,23 +99,23 @@ export function createRecentSearchesStore({
       // When comparing search items, don't compare against the created date (which will always be different).
       const comparator = JSON.stringify(omit(newSearchItem, 'created'))
       const newRecent: StoredSearch = {
-        version,
+        version: RECENT_SEARCH_VERSION,
         recentSearches: [
           newSearchItem,
-          ...getRecentStoredSearch(lsKey, version).recentSearches.filter((r) => {
+          ...storedSearch.recentSearches.filter((r) => {
             return JSON.stringify(omit(r, 'created')) !== comparator
           }),
         ].slice(0, MAX_RECENT_SEARCHES),
       }
-      window.localStorage.setItem(lsKey, JSON.stringify(newRecent))
+      setStoredSearch(newRecent)
 
       return getRecentSearchTerms({
         fieldDefinitions,
         filterDefinitions,
-        lsKey,
         operatorDefinitions,
         schema,
-        version,
+        storedSearch,
+        setStoredSearch,
       })
     },
     /**
@@ -138,80 +126,66 @@ export function createRecentSearchesStore({
       getRecentSearchTerms({
         fieldDefinitions,
         filterDefinitions,
-        lsKey,
         operatorDefinitions,
         schema,
-        version,
+        storedSearch,
+        setStoredSearch,
       }),
     /**
      * Remove all search terms from Local Storage and return updated recent searches.
      */
     removeSearch: () => {
-      const searchTerms = getRecentStoredSearch(lsKey, version)
-
       const newRecent: StoredSearch = {
-        ...searchTerms,
+        ...storedSearch,
         recentSearches: [],
       }
 
-      window.localStorage.setItem(lsKey, JSON.stringify(newRecent))
+      setStoredSearch(newRecent)
 
       return getRecentSearchTerms({
         fieldDefinitions,
         filterDefinitions,
-        lsKey,
         operatorDefinitions,
         schema,
-        version,
+        storedSearch,
+        setStoredSearch,
       })
     },
     /**
      * Remove a search term from Local Storage and return updated recent searches.
      */
     removeSearchAtIndex: (index: number) => {
-      const searchTerms = getRecentStoredSearch(lsKey, version)
-
-      if (index < 0 || index > searchTerms.recentSearches.length) {
+      if (index < 0 || index > storedSearch.recentSearches.length) {
         return getRecentSearchTerms({
           fieldDefinitions,
           filterDefinitions,
-          lsKey,
           operatorDefinitions,
           schema,
-          version,
+          storedSearch,
+          setStoredSearch,
         })
       }
 
       const newRecent: StoredSearch = {
-        ...searchTerms,
+        ...storedSearch,
         recentSearches: [
-          ...searchTerms.recentSearches.slice(0, index),
-          ...searchTerms.recentSearches.slice(index + 1),
+          ...storedSearch.recentSearches.slice(0, index),
+          ...storedSearch.recentSearches.slice(index + 1),
         ],
       }
 
-      window.localStorage.setItem(lsKey, JSON.stringify(newRecent))
+      setStoredSearch(newRecent)
 
       return getRecentSearchTerms({
         fieldDefinitions,
         filterDefinitions,
-        lsKey,
         operatorDefinitions,
         schema,
-        version,
+        storedSearch,
+        setStoredSearch,
       })
     },
   }
-}
-
-/**
- * Get the 'raw' stored search terms from Local Storage.
- * Stored search terms are the minimal representation of saved terms and only include schema names.
- */
-function getRecentStoredSearch(lsKey: string, version: number): StoredSearch {
-  const recentString = supportsLocalStorage ? window.localStorage.getItem(lsKey) : undefined
-
-  return recentString ? (JSON.parse(recentString) as StoredSearch) : {version, recentSearches: []}
 }
 
 /**
@@ -219,33 +193,27 @@ function getRecentStoredSearch(lsKey: string, version: number): StoredSearch {
  * Recent searches contain full document schema types.
  */
 function getRecentSearchTerms({
-  lsKey,
   schema,
   fieldDefinitions,
   filterDefinitions,
   operatorDefinitions,
-  version,
+  storedSearch,
+  setStoredSearch,
 }: {
-  lsKey: string
   schema: Schema
   fieldDefinitions: SearchFieldDefinitionDictionary
   filterDefinitions: SearchFilterDefinitionDictionary
   operatorDefinitions: SearchOperatorDefinitionDictionary
-  version: number
+  storedSearch: StoredSearch
+  setStoredSearch: (_value: StoredSearch) => void
 }): RecentSearch[] {
-  const storedSearchTerms = verifySearchVersionNumber({
-    lsKey,
-    storedSearch: getRecentStoredSearch(lsKey, version),
-  })
-
   return sanitizeStoredSearch({
     studioSchema: schema,
-    storedSearch: storedSearchTerms,
-    lsKey,
     filterDefinitions,
     fieldDefinitions,
     operatorDefinitions,
-    version,
+    storedSearch,
+    setStoredSearch,
   })
     .recentSearches.filter((r) => !!r.terms)
     .map((r, index) => ({
@@ -262,34 +230,6 @@ function getRecentSearchTerms({
 }
 
 /**
- * Check if there's a mismatch between the _search_ version in Local Storage and
- * the current studio.
- *
- * If there's a mismatch, clear all recent searches and update the stored search version.
- *
- * This mutates Local Storage if a mismatch is found.
- */
-
-function verifySearchVersionNumber({
-  lsKey,
-  storedSearch,
-}: {
-  lsKey: string
-  storedSearch: StoredSearch
-}): StoredSearch {
-  if (storedSearch.version !== RECENT_SEARCH_VERSION) {
-    const newStoredSearch: StoredSearch = {
-      version: RECENT_SEARCH_VERSION,
-      recentSearches: [],
-    }
-    window.localStorage.setItem(lsKey, JSON.stringify(newStoredSearch))
-    return newStoredSearch
-  }
-
-  return storedSearch
-}
-
-/**
  * Sanitize stored search.
  *
  * Ignore searches containing:
@@ -302,19 +242,17 @@ function verifySearchVersionNumber({
 function sanitizeStoredSearch({
   fieldDefinitions,
   filterDefinitions,
-  lsKey,
   operatorDefinitions,
-  storedSearch,
   studioSchema,
-  version,
+  storedSearch,
+  setStoredSearch,
 }: {
   fieldDefinitions: SearchFieldDefinitionDictionary
   filterDefinitions: SearchFilterDefinitionDictionary
-  lsKey: string
   operatorDefinitions: SearchOperatorDefinitionDictionary
-  storedSearch: StoredSearch
   studioSchema: Schema
-  version: number
+  storedSearch: StoredSearch
+  setStoredSearch: (_value: StoredSearch) => void
 }): StoredSearch {
   // Obtain all 'searchable' type names – defined as a type that exists in
   // the current schema and also visible to omnisearch.
@@ -338,8 +276,8 @@ function sanitizeStoredSearch({
   }
 
   if (newStoredSearch.recentSearches.length < storedSearch.recentSearches.length) {
-    window.localStorage.setItem(lsKey, JSON.stringify(newStoredSearch))
+    setStoredSearch(newStoredSearch)
   }
 
-  return getRecentStoredSearch(lsKey, version)
+  return storedSearch
 }
