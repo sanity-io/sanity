@@ -1,6 +1,5 @@
-import {type SanityClient} from '@sanity/client'
 import {sortBy} from 'lodash'
-import {type Observable, of} from 'rxjs'
+import {of} from 'rxjs'
 import {map, switchMap, tap} from 'rxjs/operators'
 
 import {removeDupes} from '../../util/draftUtils'
@@ -9,10 +8,9 @@ import {createSearchQuery} from './createSearchQuery'
 import {
   type SearchableType,
   type SearchHit,
-  type SearchOptions,
+  type SearchStrategyFactory,
   type SearchTerms,
-  type WeightedHit,
-  type WeightedSearchOptions,
+  type WeightedSearchResultCollection,
 } from './types'
 
 function getSearchTerms(searchParams: string | SearchTerms, types: SearchableType[]) {
@@ -28,14 +26,11 @@ function getSearchTerms(searchParams: string | SearchTerms, types: SearchableTyp
 /**
  * @internal
  */
-export function createWeightedSearch(
-  types: SearchableType[],
-  client: SanityClient,
-  commonOpts: WeightedSearchOptions = {},
-): (
-  searchTerms: string | SearchTerms,
-  searchOpts?: SearchOptions,
-) => Observable<{hits: Observable<WeightedHit[]>}> {
+export const createWeightedSearch: SearchStrategyFactory<WeightedSearchResultCollection> = (
+  types,
+  client,
+  commonOpts,
+) => {
   // Search currently supports both strings (reference + cross dataset reference inputs)
   // or a SearchTerms object (omnisearch).
   return function search(searchParams, searchOpts = {}) {
@@ -56,6 +51,7 @@ export function createWeightedSearch(
       searchOpts?.skipSortByScore ? tap() : map((hits) => sortBy(hits, (hit) => -hit.score)),
       switchMap((hits) =>
         of({
+          strategy: 'weighted' as const,
           hits: of(hits),
         }),
       ),
