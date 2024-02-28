@@ -1,7 +1,8 @@
-import {defineType} from 'sanity'
+import {type ArrayOfObjectsInputProps, defineType, type PortableTextBlock} from 'sanity'
 
 import {type FormMode} from '../../types'
-import {DescriptionInput} from './DescriptionInput'
+import {DescriptionFieldContainer, DescriptionInput} from './DescriptionInput'
+import {FormCreate} from './FormCreate'
 import {FormEdit} from './FormEdit'
 import {MentionUserFormField} from './MentionUser'
 import {TargetField} from './TargetField'
@@ -15,7 +16,7 @@ export const taskSchema = (mode: FormMode) =>
     components: {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      input: mode === 'edit' ? FormEdit : undefined,
+      input: mode === 'edit' ? FormEdit : FormCreate,
     },
     fields: [
       {
@@ -31,9 +32,12 @@ export const taskSchema = (mode: FormMode) =>
       {
         type: 'array',
         name: 'description',
-        title: 'Description',
+        title: 'Descrption',
         components: {
-          input: DescriptionInput,
+          field: mode === 'edit' ? DescriptionFieldContainer : undefined,
+          input: (props: ArrayOfObjectsInputProps<PortableTextBlock>) => (
+            <DescriptionInput {...props} mode={mode} />
+          ),
         },
         of: [
           {
