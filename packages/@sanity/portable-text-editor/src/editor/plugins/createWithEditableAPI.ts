@@ -515,6 +515,19 @@ export function createWithEditableAPI(
       getFragment: () => {
         return fromSlateValue(editor.getFragment(), types.block.name)
       },
+      isSelectionsOverlapping: (selectionA: EditorSelection, selectionB: EditorSelection) => {
+        // Convert the selections to Slate ranges
+        const rangeA = toSlateRange(selectionA, editor)
+        const rangeB = toSlateRange(selectionB, editor)
+
+        // Make sure the ranges are valid
+        const isValidRanges = Range.isRange(rangeA) && Range.isRange(rangeB)
+
+        // Check if the ranges are overlapping
+        const isOverlapping = isValidRanges && Range.includes(rangeA, rangeB)
+
+        return isOverlapping
+      },
     })
     return editor
   }

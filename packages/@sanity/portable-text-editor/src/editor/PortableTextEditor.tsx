@@ -292,4 +292,11 @@ export class PortableTextEditor extends Component<PortableTextEditorProps> {
     debug('Host redoing')
     editor.editable?.redo()
   }
+  static isSelectionsOverlapping = (
+    editor: PortableTextEditor,
+    selectionA: EditorSelection,
+    selectionB: EditorSelection,
+  ) => {
+    return editor.editable?.isSelectionsOverlapping(selectionA, selectionB)
+  }
 }

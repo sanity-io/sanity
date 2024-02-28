@@ -59,6 +59,7 @@ export interface EditableAPI {
   isCollapsedSelection: () => boolean
   isExpandedSelection: () => boolean
   isMarkActive: (mark: string) => boolean
+  isSelectionsOverlapping: (selectionA: EditorSelection, selectionB: EditorSelection) => boolean
   isVoid: (element: PortableTextBlock | PortableTextChild) => boolean
   marks: () => string[]
   redo: () => void
