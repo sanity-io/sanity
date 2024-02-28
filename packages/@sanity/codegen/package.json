@@ -1,0 +1,93 @@
+{
+  "name": "@sanity/codegen",
+  "version": "3.30.0",
+  "description": "Tooling for generating types on Sanity.io projects",
+  "keywords": [
+    "sanity",
+    "cms",
+    "headless",
+    "realtime",
+    "content",
+    "codegen"
+  ],
+  "homepage": "https://www.sanity.io/",
+  "bugs": {
+    "url": "https://github.com/sanity-io/sanity/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sanity-io/sanity.git",
+    "directory": "packages/@sanity/codegen"
+  },
+  "license": "MIT",
+  "author": "Sanity.io <hello@sanity.io>",
+  "exports": {
+    ".": {
+      "types": "./lib/dts/src/_exports/index.d.ts",
+      "source": "./src/_exports/index.ts",
+      "require": "./lib/_exports/index.js",
+      "node": {
+        "module": "./lib/_exports/index.esm.js",
+        "import": "./lib/_exports/index.cjs.mjs"
+      },
+      "import": "./lib/_exports/index.esm.js",
+      "default": "./lib/_exports/index.esm.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "typesVersions": {
+    "*": {
+      "mutations": [
+        "./lib/dts/src/_exports/mutations.d.ts"
+      ]
+    }
+  },
+  "main": "./lib/_exports/index.js",
+  "module": "./lib/_exports/index.esm.js",
+  "source": "./src/_exports/index.ts",
+  "types": "./lib/dts/src/_exports/index.d.ts",
+  "files": [
+    "lib",
+    "src",
+    "!**/__tests__/**"
+  ],
+  "scripts": {
+    "prebuild": "run-s clean",
+    "build": "pkg-utils build --tsconfig tsconfig.lib.json",
+    "postbuild": "run-s check:package",
+    "check:package": "pkg-utils --strict --tsconfig tsconfig.lib.json",
+    "clean": "rimraf lib coverage",
+    "lint": "eslint .",
+    "watch": "pkg-utils watch --tsconfig tsconfig.lib.json",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@babel/core": "^7.23.9",
+    "@babel/generator": "^7.23.6",
+    "@babel/preset-env": "^7.23.8",
+    "@babel/preset-react": "^7.23.3",
+    "@babel/preset-typescript": "^7.23.3",
+    "@babel/register": "^7.23.7",
+    "@babel/traverse": "^7.23.5",
+    "@babel/types": "^7.23.9",
+    "debug": "^4.3.4",
+    "fast-glob": "^3.3.2",
+    "groq-js": "1.5.0-canary.1",
+    "json5": "^2.2.3",
+    "rxjs": "^7.8.1",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@jest/globals": "^29.7.0",
+    "@types/babel__core": "^7.20.5",
+    "@types/babel__generator": "^7.6.8",
+    "@types/babel__register": "^7.17.3",
+    "@types/babel__traverse": "^7.18.1",
+    "@types/debug": "^4.1.12",
+    "groq": "workspace:*",
+    "rimraf": "^3.0.2"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

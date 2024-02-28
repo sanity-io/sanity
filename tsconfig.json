@@ -13,6 +13,7 @@
     {"path": "./packages/@sanity/mutator"},
     {"path": "./packages/@sanity/portable-text-editor"},
     {"path": "./packages/@sanity/schema"},
+    {"path": "./packages/@sanity/codegen"},
     {"path": "./packages/@sanity/types"},
     {"path": "./packages/@sanity/util"},
     {"path": "./packages/@sanity/vision"},
