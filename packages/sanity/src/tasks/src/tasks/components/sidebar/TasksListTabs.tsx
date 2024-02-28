@@ -1,4 +1,4 @@
-import {TabList} from '@sanity/ui'
+import {TabList, Text} from '@sanity/ui'
 import {type Dispatch, type SetStateAction, useCallback, useEffect, useMemo, useState} from 'react'
 import {type CSSProperties} from 'styled-components'
 
@@ -6,7 +6,11 @@ import {Tab} from '../../../../../ui-components'
 import {useTasks} from '../../context'
 import {type SidebarTabsIds} from './types'
 
-const LIST_STYLES: CSSProperties = {marginLeft: '-0.5em'}
+const LIST_STYLES: CSSProperties = {
+  marginLeft: '-0.5em',
+  justifyContent: 'space-between',
+  display: 'flex',
+}
 
 interface TasksListTabsProps {
   activeTabId: string
@@ -66,7 +70,7 @@ export function TasksListTabs({activeTabId, onChange}: TasksListTabsProps) {
       },
       {
         id: 'document',
-        label: 'This document',
+        label: 'Open Document',
         isDisabled: documentTabIsDisabled,
       },
     ],
@@ -91,12 +95,15 @@ export function TasksListTabs({activeTabId, onChange}: TasksListTabsProps) {
           key={`${tab.id}-tab`}
           aria-controls={`${tab.id}-panel`}
           id={`${tab.id}-tab`}
-          label={tab.label}
           // eslint-disable-next-line react/jsx-no-bind
           onClick={() => handleTabChange(tab)}
-          selected={activeTabId === tab.id}
           disabled={tab?.isDisabled}
-        />
+          selected={tab.id === activeTabId}
+        >
+          <Text size={1} weight="medium">
+            {tab.label}
+          </Text>
+        </Tab>
       ))}
     </TabList>
   )

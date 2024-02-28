@@ -1,7 +1,8 @@
-import {CalendarIcon, UserIcon} from '@sanity/icons'
-import {Card, type CardProps, Flex, Stack, Text, TextSkeleton} from '@sanity/ui'
+/* eslint-disable no-nested-ternary */
+import {UserIcon} from '@sanity/icons'
+import {Card, type CardProps, Flex, Stack, Text} from '@sanity/ui'
 import {useMemo} from 'react'
-import {useDateTimeFormat, useUser} from 'sanity'
+import {useDateTimeFormat, UserAvatar, useUser} from 'sanity'
 import styled from 'styled-components'
 
 import {type TaskDocument} from '../../types'
@@ -15,10 +16,9 @@ interface TasksListItemProps
 }
 
 export const ThreadCard = styled(Card).attrs<CardProps>(({tone}) => ({
-  padding: 3,
-  radius: 3,
   sizing: 'border',
-  tone: tone || 'transparent',
+  borderBottom: true,
+  paddingBottom: 3,
 }))<CardProps>`
   // ...
 `
@@ -29,27 +29,55 @@ const Title = styled(Text)`
   }
 `
 
-const SKELETON_INLINE_STYLE: React.CSSProperties = {width: '50%'}
+const TaskDetailsRoot = styled(Flex)`
+  margin-left: 25px;
+`
+const UserDisplayRoot = styled.div`
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+`
 
-function AssignedToSection({userId}: {userId: string}) {
+function AssignedUser({userId}: {userId: string}) {
   const [user] = useUser(userId)
 
-  const name = user?.displayName ? (
-    <Text muted size={1} weight="medium" textOverflow="ellipsis" title={user.displayName}>
-      {user.displayName}
-    </Text>
-  ) : (
-    <TextSkeleton size={1} style={SKELETON_INLINE_STYLE} />
-  )
-
+  if (!user) {
+    return (
+      <Text size={1}>
+        <UserIcon />
+      </Text>
+    )
+  }
   return (
-    <Flex align="center" gap={1}>
-      <UserIcon />
-      {name}
-    </Flex>
+    <UserAvatar
+      user={user}
+      size={0}
+      // @ts-expect-error `color` is not a valid prop on UserAvatar but it is sent to the `avatar`
+      color={user.imageUrl ? null : undefined}
+      __unstable_hideInnerStroke
+    />
   )
 }
 
+const NoAssignedUserRoot = styled.div`
+  border-radius: 50%;
+  border: 1px dashed var(--card-border-color);
+  width: 19px;
+  height: 19px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0.6;
+`
+function NoUserAssigned() {
+  return (
+    <Text size={0} muted>
+      <NoAssignedUserRoot>
+        <UserIcon />
+      </NoAssignedUserRoot>
+    </Text>
+  )
+}
 function getTargetDocumentMeta(target?: TaskDocument['target']) {
   if (!target?.document._ref) {
     return undefined
@@ -61,6 +89,60 @@ function getTargetDocumentMeta(target?: TaskDocument['target']) {
   }
 }
 
+function isThisWeek(date: string) {
+  const now = new Date()
+  const givenDate = new Date(date)
+  const firstDayOfWeek = new Date(now.setDate(now.getDate() - now.getDay()))
+  const lastDayOfWeek = new Date(now.setDate(now.getDate() - now.getDay() + 6))
+
+  // Reset hours for accurate comparison
+  firstDayOfWeek.setHours(0, 0, 0, 0)
+  lastDayOfWeek.setHours(23, 59, 59, 999)
+  givenDate.setHours(0, 0, 0, 0)
+
+  return givenDate >= firstDayOfWeek && givenDate <= lastDayOfWeek
+}
+
+function isToday(date: string) {
+  const today = new Date()
+  const givenDate = new Date(date)
+
+  return (
+    today.getDate() === givenDate.getDate() &&
+    today.getMonth() === givenDate.getMonth() &&
+    today.getFullYear() === givenDate.getFullYear()
+  )
+}
+
+const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+function TaskDueDate({dueBy}: {dueBy: string}) {
+  const dateFormatter = useDateTimeFormat({
+    dateStyle: 'short',
+  })
+  const dueByeDisplayValue = useMemo<string | undefined>(() => {
+    const dueFormated = dateFormatter.format(new Date(dueBy))
+    const [mont, day] = dueFormated.split('/')
+    return `${mont} / ${day}`
+  }, [dateFormatter, dueBy])
+
+  const isDueByToday = useMemo(() => isToday(dueBy), [dueBy])
+  const isDueThisWeek = useMemo(() => isThisWeek(dueBy), [dueBy])
+
+  return (
+    <Card tone={isDueByToday ? 'critical' : 'transparent'} padding={1} radius={2}>
+      <Flex align="center" gap={2}>
+        <Text as="time" size={1} dateTime={dueBy} muted>
+          {isDueByToday
+            ? 'Today'
+            : isDueThisWeek
+              ? days[new Date(dueBy).getDay()]
+              : dueByeDisplayValue}
+        </Text>
+      </Flex>
+    </Card>
+  )
+}
+
 export function TasksListItem({
   assignedTo,
   title,
@@ -70,35 +152,30 @@ export function TasksListItem({
   documentId,
   status,
 }: TasksListItemProps) {
-  const dateFormatter = useDateTimeFormat({
-    dateStyle: 'medium',
-  })
-  const dueByeDisplayValue = useMemo<string | undefined>(() => {
-    return dueBy ? dateFormatter.format(new Date(dueBy)) : undefined
-  }, [dateFormatter, dueBy])
-
   const targetDocument = useMemo(() => getTargetDocumentMeta(target), [target])
 
   return (
-    <ThreadCard tone={undefined}>
-      <Stack space={2}>
-        <Flex>
+    <ThreadCard>
+      <Stack space={2} paddingY={1}>
+        <Flex align="center" paddingY={1}>
           <TasksStatus documentId={documentId} status={status} />
           <Title size={1} weight="semibold" onClick={onSelect}>
             {title || 'Untitled'}
           </Title>
+          <UserDisplayRoot>
+            {assignedTo ? <AssignedUser userId={assignedTo} /> : <NoUserAssigned />}
+          </UserDisplayRoot>
         </Flex>
-        {assignedTo && <AssignedToSection userId={assignedTo} />}
-        {dueByeDisplayValue && (
-          <Flex align="center" gap={1}>
-            <CalendarIcon />
-            <Text as="time" size={1} dateTime={dueBy} muted>
-              {dueByeDisplayValue}
-            </Text>
-          </Flex>
-        )}
-        {targetDocument && (
-          <DocumentPreview documentId={targetDocument._ref} documentType={targetDocument._type} />
+        {(dueBy || targetDocument) && (
+          <TaskDetailsRoot align="center" gap={3} paddingY={2} paddingX={1}>
+            {dueBy && <TaskDueDate dueBy={dueBy} />}
+            {targetDocument && (
+              <DocumentPreview
+                documentId={targetDocument._ref}
+                documentType={targetDocument._type}
+              />
+            )}
+          </TaskDetailsRoot>
         )}
       </Stack>
     </ThreadCard>

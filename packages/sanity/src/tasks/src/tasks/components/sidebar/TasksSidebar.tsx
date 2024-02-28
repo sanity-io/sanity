@@ -1,6 +1,7 @@
 import {Box, Card, Flex, Spinner} from '@sanity/ui'
 import {AnimatePresence, motion, type Transition, type Variants} from 'framer-motion'
-import {useCallback, useState} from 'react'
+import {useCallback, useMemo, useState} from 'react'
+import {useCurrentUser} from 'sanity'
 import styled from 'styled-components'
 
 import {useTasks, useTasksEnabled} from '../../context'
@@ -54,6 +55,28 @@ export function TasksStudioSidebar() {
     setActiveTabId('created')
   }, [])
 
+  const currentUser = useCurrentUser()
+  const filteredList = useMemo(() => {
+    return data.filter((item) => {
+      if (!item.title) {
+        return false
+      }
+
+      if (activeTabId === 'assigned') {
+        return item.assignedTo === currentUser?.id
+      }
+      if (activeTabId === 'created') {
+        return item.authorId === currentUser?.id
+      }
+      if (activeTabId === 'document') {
+        return (
+          activeDocument?.documentId && item.target?.document._ref === activeDocument.documentId
+        )
+      }
+      return false
+    })
+  }, [activeDocument?.documentId, activeTabId, data, currentUser])
+
   if (!enabled) return null
 
   return (
@@ -61,7 +84,14 @@ export function TasksStudioSidebar() {
       {isOpen && (
         <motion.div variants={VARIANTS} transition={TRANSITION} initial="hidden" animate="visible">
           <SidebarRoot borderLeft height="fill" marginLeft={1}>
-            <TasksSidebarHeader setViewMode={setViewMode} viewMode={viewMode} />
+            <TasksSidebarHeader
+              setViewMode={setViewMode}
+              viewMode={viewMode}
+              activeTabId={activeTabId}
+              items={filteredList}
+              selectedTask={selectedTask}
+              setSelectedTask={setSelectedTask}
+            />
             {viewMode === 'list' && (
               <>
                 {isLoading ? (
@@ -72,8 +102,7 @@ export function TasksStudioSidebar() {
                   </Box>
                 ) : (
                   <TaskSidebarContent
-                    items={data}
-                    activeDocumentId={activeDocument?.documentId}
+                    items={filteredList}
                     onTaskSelect={onTaskSelect}
                     setActiveTabId={setActiveTabId}
                     activeTabId={activeTabId}
@@ -83,7 +112,12 @@ export function TasksStudioSidebar() {
             )}
             {viewMode === 'create' && <TaskCreate onCancel={onCancel} onCreate={onTaskCreate} />}
             {viewMode === 'edit' && (
-              <TaskEdit onCancel={onCancel} onDelete={handleOnDelete} selectedTask={selectedTask} />
+              <TaskEdit
+                onCancel={onCancel}
+                onDelete={handleOnDelete}
+                selectedTask={selectedTask}
+                key={selectedTask}
+              />
             )}
           </SidebarRoot>
         </motion.div>

@@ -1,5 +1,7 @@
-import {Box, Flex, Label, Stack, Text} from '@sanity/ui'
+import {ChevronDownIcon} from '@sanity/icons'
+import {Box, Flex, Stack, Text} from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
+import styled from 'styled-components'
 
 import {type TaskDocument} from '../../types'
 import {TasksListItem} from './TasksListItem'
@@ -10,7 +12,7 @@ interface TasksListProps {
 }
 
 const checkboxValues = [
-  {name: 'open', label: 'To do'},
+  {name: 'open', label: 'To Do'},
   {name: 'closed', label: 'Done'},
 ]
 
@@ -18,6 +20,29 @@ const getLabelForStatus = (status: string) => {
   const statusConfig = checkboxValues.find((item) => item.name === status)
   return statusConfig?.label
 }
+
+const TasksListRoot = styled(Box)`
+  max-height: calc(100% - 140px);
+  overflow-y: auto;
+  // Hide scrollbar
+  scrollbar-width: none;
+`
+
+const Details = styled.details`
+  #summary-icon {
+    transition: transform 0.2s;
+    transform: rotate(-90deg);
+  }
+  &[open] #summary-icon {
+    transform: rotate(0);
+  }
+`
+const Summary = styled.summary`
+  list-style: none;
+  ::-webkit-details-marker {
+    display: none;
+  }
+`
 
 /**
  * @internal
@@ -45,11 +70,18 @@ export function TasksList(props: TasksListProps) {
         return null
       }
       return (
-        <Box padding={3}>
-          <Flex paddingBottom={3}>
-            <Label>{getLabelForStatus(status)}</Label>
-          </Flex>
-          <Stack space={3}>
+        <Details open={status === 'open'}>
+          <Summary>
+            <Flex align="center" gap={1} paddingY={1}>
+              <Text size={1} weight="medium" muted>
+                {getLabelForStatus(status)}
+              </Text>
+              <Text muted size={1}>
+                <ChevronDownIcon id="summary-icon" />
+              </Text>
+            </Flex>
+          </Summary>
+          <Stack space={3} marginTop={3} paddingBottom={5}>
             {tasks.map((task) => (
               <TasksListItem
                 key={task._id}
@@ -63,15 +95,15 @@ export function TasksList(props: TasksListProps) {
               />
             ))}
           </Stack>
-        </Box>
+        </Details>
       )
     },
     [onTaskSelect, tasksByStatus],
   )
 
   return (
-    <Box padding={3}>
-      <Stack space={3}>
+    <TasksListRoot paddingX={3} paddingY={4}>
+      <Stack space={4} paddingTop={2} paddingX={1}>
         {items.length === 0 && (
           <Box paddingX={2}>
             <Text as="p" size={1} muted>
@@ -82,6 +114,6 @@ export function TasksList(props: TasksListProps) {
         {renderTasksList('open')}
         {renderTasksList('closed')}
       </Stack>
-    </Box>
+    </TasksListRoot>
   )
 }
