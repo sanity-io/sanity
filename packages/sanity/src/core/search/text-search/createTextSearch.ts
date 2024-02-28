@@ -26,7 +26,7 @@ function getSearchTerms(searchParams: string | SearchTerms, types: SearchableTyp
 
 interface SearchHitsPage {
   hits: SearchHit[]
-  pageIncrement: () => Observable<SearchHitsPage>
+  nextCursor?: string
 }
 
 /**
@@ -64,7 +64,6 @@ export function createTextSearch(
             map((hits: SearchHit[]) => boxTextSearchResults(hits)),
           ),
           nextCursor: textSearchResponse.nextCursor,
-          // fetchNextPage: () => search(searchParams, searchOpts), // with next cursor
         })
       }),
     )

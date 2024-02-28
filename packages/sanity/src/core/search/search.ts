@@ -16,7 +16,7 @@ import {
 
 interface SearchHitsPage {
   hits: SearchHit[]
-  pageIncrement: () => Observable<SearchHitsPage>
+  nextCursor?: string
 }
 
 type SearchStrategyFactory = (
