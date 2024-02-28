@@ -1,12 +1,10 @@
-import test from 'node:test'
-
-import {describe, expect} from '@jest/globals'
+import {describe, expect, test} from '@jest/globals'
 
 import {type CommentDocument} from '../../types'
 import {buildRangeDecorationSelectionsFromComments, COMMENT_INDICATORS} from '../../utils'
 
 describe('comments: buildRangeDecorationSelectionsFromComments', () => {
-  test.skip('should keep the range if similar world added in front of it', () => {
+  test('should keep the range if similar world added in front of it', () => {
     const decoratorRanges = buildRangeDecorationSelectionsFromComments({
       value,
       comments,

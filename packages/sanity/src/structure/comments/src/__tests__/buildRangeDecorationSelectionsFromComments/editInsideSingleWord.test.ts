@@ -1,10 +1,10 @@
-import {describe, expect, it} from '@jest/globals'
+import {describe, expect, test} from '@jest/globals'
 
 import {type CommentDocument} from '../../types'
 import {buildRangeDecorationSelectionsFromComments, COMMENT_INDICATORS} from '../../utils'
 
 describe('comments: buildRangeDecorationSelectionsFromComments', () => {
-  it('expands the range correctly when text is added inside a single word range', () => {
+  test('expands the range correctly when text is added inside a single word range', () => {
     const decoratorRanges = buildRangeDecorationSelectionsFromComments({
       value,
       comments,

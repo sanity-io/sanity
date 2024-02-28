@@ -3,8 +3,8 @@ import {describe, expect, test} from '@jest/globals'
 import {type CommentDocument} from '../../types'
 import {buildRangeDecorationSelectionsFromComments, COMMENT_INDICATORS} from '../../utils'
 
-describe('comments: buildRangeDecorationSelectionsFromComments', () => {
-  test.skip('should not keep the range if dramatically changed', () => {
+describe.skip('comments: buildRangeDecorationSelectionsFromComments', () => {
+  test('should not keep the range if dramatically changed', () => {
     const decoratorRanges = buildRangeDecorationSelectionsFromComments({
       value,
       comments,

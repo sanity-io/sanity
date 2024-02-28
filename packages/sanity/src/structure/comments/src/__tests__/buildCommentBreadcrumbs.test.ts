@@ -1,4 +1,4 @@
-import {describe, expect, it} from '@jest/globals'
+import {describe, expect, test} from '@jest/globals'
 import {Schema} from '@sanity/schema'
 import {type CurrentUser, defineField} from '@sanity/types'
 
@@ -114,7 +114,7 @@ const schema = Schema.compile({
 })
 
 describe('comments: buildCommentBreadcrumbs', () => {
-  it('should use the title in the schema field if it exists', () => {
+  test('should use the title in the schema field if it exists', () => {
     const crumbs = buildCommentBreadcrumbs({
       currentUser: CURRENT_USER,
       documentValue: {},
@@ -125,7 +125,7 @@ describe('comments: buildCommentBreadcrumbs', () => {
     expect(crumbs).toEqual([{invalid: false, isArrayItem: false, title: 'My string title'}])
   })
 
-  it('should use the field name as title if no title exists', () => {
+  test('should use the field name as title if no title exists', () => {
     const crumbs = buildCommentBreadcrumbs({
       currentUser: CURRENT_USER,
       documentValue: {},
@@ -136,7 +136,7 @@ describe('comments: buildCommentBreadcrumbs', () => {
     expect(crumbs).toEqual([{invalid: false, isArrayItem: false, title: 'String Without Title'}])
   })
 
-  it('should build breadcrumbs for object with nested fields', () => {
+  test('should build breadcrumbs for object with nested fields', () => {
     const crumbs = buildCommentBreadcrumbs({
       currentUser: CURRENT_USER,
       documentValue: {},
@@ -150,7 +150,7 @@ describe('comments: buildCommentBreadcrumbs', () => {
     ])
   })
 
-  it('should invalidate the breadcrumb if the field is hidden', () => {
+  test('should invalidate the breadcrumb if the field is hidden', () => {
     const crumbs = buildCommentBreadcrumbs({
       currentUser: CURRENT_USER,
       documentValue: {},
@@ -163,7 +163,7 @@ describe('comments: buildCommentBreadcrumbs', () => {
     ])
   })
 
-  it('should build breadcrumbs for array of objects', () => {
+  test('should build breadcrumbs for array of objects', () => {
     const crumbs = buildCommentBreadcrumbs({
       currentUser: CURRENT_USER,
       documentValue: {
@@ -191,7 +191,7 @@ describe('comments: buildCommentBreadcrumbs', () => {
     ])
   })
 
-  it('should invalidate the breadcrumb if the array item is not found', () => {
+  test('should invalidate the breadcrumb if the array item is not found', () => {
     const crumbs = buildCommentBreadcrumbs({
       currentUser: CURRENT_USER,
       documentValue: {
@@ -219,7 +219,7 @@ describe('comments: buildCommentBreadcrumbs', () => {
     ])
   })
 
-  it('should build breadcrumbs for nested array of objects', () => {
+  test('should build breadcrumbs for nested array of objects', () => {
     const crumbs = buildCommentBreadcrumbs({
       currentUser: CURRENT_USER,
       documentValue: {
@@ -260,7 +260,7 @@ describe('comments: buildCommentBreadcrumbs', () => {
     ])
   })
 
-  it('should invalidate the breadcrumb if a nested array item is hidden', () => {
+  test('should invalidate the breadcrumb if a nested array item is hidden', () => {
     const crumbs = buildCommentBreadcrumbs({
       currentUser: CURRENT_USER,
       documentValue: {
@@ -301,7 +301,7 @@ describe('comments: buildCommentBreadcrumbs', () => {
     ])
   })
 
-  it('should build breadcrumbs for array of anonymous objects', () => {
+  test('should build breadcrumbs for array of anonymous objects', () => {
     const crumbs = buildCommentBreadcrumbs({
       currentUser: CURRENT_USER,
       documentValue: {
@@ -327,7 +327,7 @@ describe('comments: buildCommentBreadcrumbs', () => {
     ])
   })
 
-  it('should invalidate the breadcrumb if the array item is not found in an array of anonymous objects', () => {
+  test('should invalidate the breadcrumb if the array item is not found in an array of anonymous objects', () => {
     const crumbs = buildCommentBreadcrumbs({
       currentUser: CURRENT_USER,
       documentValue: {
@@ -353,7 +353,7 @@ describe('comments: buildCommentBreadcrumbs', () => {
     ])
   })
 
-  it('should invalidate the breadcrumb if the array item is hidden in an array of anonymous objects', () => {
+  test('should invalidate the breadcrumb if the array item is hidden in an array of anonymous objects', () => {
     const crumbs = buildCommentBreadcrumbs({
       currentUser: CURRENT_USER,
       documentValue: {

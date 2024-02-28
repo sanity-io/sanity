@@ -1,10 +1,10 @@
-import {describe, expect, it} from '@jest/globals'
+import {describe, expect, test} from '@jest/globals'
 
 import {type CommentDocument} from '../../types'
 import {buildRangeDecorationSelectionsFromComments, COMMENT_INDICATORS} from '../../utils'
 
 describe('comments: buildRangeDecorationSelectionsFromComments', () => {
-  it('keeps the range intact when text is bolded both outside and inside the range', () => {
+  test('keeps the range intact when text is bolded both outside and inside the range', () => {
     const decoratorRanges = buildRangeDecorationSelectionsFromComments({
       value,
       comments,

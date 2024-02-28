@@ -1,10 +1,10 @@
-import {describe, expect, it} from '@jest/globals'
+import {describe, expect, test} from '@jest/globals'
 
 import {type CommentDocument} from '../../types'
 import {buildRangeDecorationSelectionsFromComments, COMMENT_INDICATORS} from '../../utils'
 
 describe('comments: buildRangeDecorationSelectionsFromComments', () => {
-  it('works when there is an exact match between the existing range and the comment document', () => {
+  test('works when there is an exact match between the existing range and the comment document', () => {
     const decoratorRanges = buildRangeDecorationSelectionsFromComments({
       value,
       comments,
