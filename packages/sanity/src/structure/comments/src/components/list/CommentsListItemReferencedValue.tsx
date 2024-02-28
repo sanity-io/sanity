@@ -81,7 +81,7 @@ export function CommentsListItemReferencedValue(props: CommentsListItemReference
           </Box>
         )}
 
-        <Box>{resolvedValue}</Box>
+        <Box flex={1}>{resolvedValue}</Box>
       </Flex>
     </BlockQuoteStack>
   )
