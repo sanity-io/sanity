@@ -598,8 +598,8 @@ importers:
   packages/@sanity/block-tools:
     dependencies:
       get-random-values-esm:
-        specifier: 1.0.0
-        version: 1.0.0
+        specifier: 1.0.2
+        version: 1.0.2
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
@@ -1214,8 +1214,8 @@ importers:
         specifier: 3.30.1
         version: link:../types
       get-random-values-esm:
-        specifier: 1.0.0
-        version: 1.0.0
+        specifier: 1.0.2
+        version: 1.0.2
       moment:
         specifier: ^2.29.4
         version: 2.30.1
@@ -1506,8 +1506,8 @@ importers:
         specifier: ^8.4.10
         version: 8.4.10
       get-random-values-esm:
-        specifier: 1.0.0
-        version: 1.0.0
+        specifier: 1.0.2
+        version: 1.0.2
       groq-js:
         specifier: ^1.1.12
         version: 1.4.3
@@ -11110,8 +11110,8 @@ packages:
     engines: {node: '>=8'}
     dev: true
 
-  /get-random-values-esm@1.0.0:
-    resolution: {integrity: sha512-BVgZ1PZwR5NKDpHpUcPmWcAQpoIOPXaFy6Vni3UdPbOlxO7eknhxsfytxwss16f75EABfnAC+XZjzTurNlPY/g==}
+  /get-random-values-esm@1.0.2:
+    resolution: {integrity: sha512-HMSDTgj1HPFAuZG0FqxzHbYt5JeEGDUeT9r1RLXhS6RZQS8rLRjokgjZ0Pd28CN0lhXlRwfH6eviZqZEJ2kIoA==}
     dependencies:
       get-random-values: 1.2.2
     dev: false

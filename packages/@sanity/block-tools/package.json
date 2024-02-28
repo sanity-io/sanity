@@ -55,7 +55,7 @@
     "watch": "pkg-utils watch --tsconfig tsconfig.lib.json"
   },
   "dependencies": {
-    "get-random-values-esm": "1.0.0",
+    "get-random-values-esm": "1.0.2",
     "lodash": "^4.17.21"
   },
   "devDependencies": {
