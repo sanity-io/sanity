@@ -1,5 +1,5 @@
 import {type SanityClient} from '@sanity/client'
-import {type ObjectSchemaType} from '@sanity/types'
+import {type ObjectSchemaType, type SearchStrategy} from '@sanity/types'
 import {type Observable} from 'rxjs'
 
 /**
@@ -110,7 +110,9 @@ export type SearchStrategyFactory<Result extends SearchResultCollection = Search
   (
     types: SearchableType[],
     client: SanityClient,
-    commonOpts: WeightedSearchOptions,
+    commonOpts: WeightedSearchOptions & {
+      strategy: SearchStrategy
+    },
   ) => (searchTerms: string | SearchTerms, searchOpts?: SearchOptions) => Observable<Result>
 
 /**
