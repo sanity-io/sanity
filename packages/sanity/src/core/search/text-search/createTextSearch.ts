@@ -1,71 +1,86 @@
-import {type SanityDocument} from '@sanity/types'
-import {of} from 'rxjs'
-import {map, switchMap, tap} from 'rxjs/operators'
+import {type SanityDocumentLike} from '@sanity/types'
+import {map} from 'rxjs/operators'
 
 import {removeDupes} from '../../util/draftUtils'
 import {
   type SearchableType,
-  type SearchHit,
   type SearchStrategyFactory,
   type SearchTerms,
-  type TextSearchResultCollection,
-} from '../weighted/types'
-import {createTextSearchQuery} from './createTextSearchQuery'
-import {type TextSearchResponse} from './types'
+  type TextSearchParams,
+  type TextSearchResponse,
+  type TextSearchResults,
+} from '../common'
 
-function getSearchTerms(searchParams: string | SearchTerms, types: SearchableType[]) {
+const DEFAULT_LIMIT = 20
+
+function normalizeSearchTerms(searchParams: string | SearchTerms, fallbackTypes: SearchableType[]) {
   if (typeof searchParams === 'string') {
     return {
       query: searchParams,
-      types: types,
+      types: fallbackTypes,
     }
   }
-  return searchParams.types.length ? searchParams : {...searchParams, types}
+
+  return {
+    ...searchParams,
+    types: searchParams.types.length ? searchParams.types : fallbackTypes,
+  }
 }
 
 /**
  * @internal
  */
-export const createTextSearch: SearchStrategyFactory<TextSearchResultCollection> = (
-  types,
+export const createTextSearch: SearchStrategyFactory<TextSearchResults> = (
+  typesFromFactory,
   client,
-  commonOpts,
+  factoryOptions,
 ) => {
   // Search currently supports both strings (reference + cross dataset reference inputs)
   // or a SearchTerms object (omnisearch).
-  return function search(searchParams, searchOpts = {}) {
-    const searchTerms = getSearchTerms(searchParams, types)
+  return function search(searchParams, searchOptions = {}) {
+    const searchTerms = normalizeSearchTerms(searchParams, typesFromFactory)
 
-    const searchRequest = client.observable.request<TextSearchResponse>({
-      uri: `/data/textsearch/${client.config().dataset}`,
-      method: 'POST',
-      json: true,
-      body: createTextSearchQuery(searchTerms, {
-        ...commonOpts,
-        ...searchOpts,
-      }),
-    })
+    // Construct search filters used in this GROQ query
+    const filters = [
+      '_type in $__types',
+      searchOptions.includeDrafts === false && "!(_id in path('drafts.**'))",
+      factoryOptions.filter ? `(${factoryOptions.filter})` : false,
+      searchTerms.filter ? `(${searchTerms.filter})` : false,
+    ].filter((baseFilter): baseFilter is string => Boolean(baseFilter))
 
-    return searchRequest.pipe(
-      switchMap((textSearchResponse) => {
-        return of({
-          strategy: 'text' as const,
-          hits: of(textSearchResponse).pipe(
-            map(normalizeTextSearchResults),
-            commonOpts.unique ? map(removeDupes) : tap(),
-            map((hits) => boxTextSearchResults(hits)),
-          ),
-          nextCursor: textSearchResponse.nextCursor,
-        })
-      }),
-    )
+    const textSearchParams: TextSearchParams = {
+      query: {string: searchTerms.query},
+      filter: filters.join(' && '),
+      params: {
+        __types: searchTerms.types.map((type) => type.name),
+        ...factoryOptions.params,
+        ...searchTerms.params,
+      },
+      includeAttributes: ['_id', '_type'],
+      fromCursor: searchOptions.cursor,
+      limit: searchOptions.limit ?? DEFAULT_LIMIT,
+    }
+
+    return client.observable
+      .request<TextSearchResponse>({
+        uri: `/data/textsearch/${client.config().dataset}`,
+        method: 'POST',
+        json: true,
+        body: textSearchParams,
+      })
+      .pipe(
+        map((response) => {
+          let documents = response.hits.map((hit) => hit.attributes as SanityDocumentLike)
+          if (factoryOptions.unique) {
+            documents = removeDupes(documents)
+          }
+
+          return {
+            type: 'text',
+            hits: documents.map((hit) => ({hit})),
+            nextCursor: response.nextCursor,
+          }
+        }),
+      )
   }
-}
-
-function normalizeTextSearchResults(textSearchResponse: TextSearchResponse): SanityDocument[] {
-  return textSearchResponse.hits.map((hit) => hit.attributes)
-}
-
-export function boxTextSearchResults(hits: SearchHit[]): {hit: SearchHit}[] {
-  return hits.map((hit) => ({hit}))
 }

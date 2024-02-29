@@ -1,7 +1,7 @@
-import {type SanityDocument} from '@sanity/types'
+import {type SanityDocumentLike} from '@sanity/types'
 import {type SearchSort} from 'sanity'
 
-export interface DocumentListPaneItem extends SanityDocument {
+export interface DocumentListPaneItem extends SanityDocumentLike {
   hasPublished: boolean
   hasDraft: boolean
 }
@@ -14,7 +14,7 @@ export type SortOrder = {
 export interface QueryResult {
   error: {message: string} | null
   onRetry?: (event: unknown) => void
-  result: {documents: SanityDocument[]} | null
+  result: {documents: SanityDocumentLike[]} | null
 }
 
 export type LoadingVariant = 'spinner' | 'initial'

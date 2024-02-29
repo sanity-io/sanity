@@ -23,7 +23,7 @@ import {type Source} from '../../../../config'
 import {type FIXME} from '../../../../FIXME'
 import {useSchema} from '../../../../hooks'
 import {useDocumentPreviewStore} from '../../../../store'
-import {useSource, useWorkspace} from '../../../../studio'
+import {useSource} from '../../../../studio'
 import {useSearchMaxFieldDepth} from '../../../../studio/components/navbar/search/hooks/useSearchMaxFieldDepth'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
 import {isNonNullable} from '../../../../util'
@@ -95,7 +95,7 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
   const {path, schemaType} = props
   const {EditReferenceLinkComponent, onEditReference, activePath, initialValueTemplateItems} =
     useReferenceInputOptions()
-  const searchStrategy = useWorkspace().search.__experimental_strategy
+  const {unstable_enableNewSearch = false} = source.search
 
   const documentValue = useFormValue([]) as FIXME
   const documentRef = useValueRef(documentValue)
@@ -122,7 +122,7 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
               tag: 'search.reference',
               maxFieldDepth,
             },
-            searchStrategy,
+            unstable_enableNewSearch,
           ),
         ),
 
@@ -135,7 +135,15 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
         }),
       ),
 
-    [documentRef, path, searchClient, schemaType, maxFieldDepth, getClient, searchStrategy],
+    [
+      schemaType,
+      documentRef,
+      path,
+      getClient,
+      searchClient,
+      maxFieldDepth,
+      unstable_enableNewSearch,
+    ],
   )
 
   const template = props.value?._strengthenOnPublish?.template

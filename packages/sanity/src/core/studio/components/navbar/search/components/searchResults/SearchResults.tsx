@@ -6,7 +6,6 @@ import {CommandList, type CommandListRenderItemCallback} from '../../../../../..
 import {useTranslation} from '../../../../../../i18n'
 import {type WeightedHit} from '../../../../../../search'
 import {getPublishedId} from '../../../../../../util/draftUtils'
-import {useWorkspace} from '../../../../../workspace'
 import {useSearchState} from '../../contexts/search/useSearchState'
 import {NoResults} from '../NoResults'
 import {SearchError} from '../SearchError'
@@ -41,7 +40,6 @@ export function SearchResults({disableIntentLink, inputElement, onItemSelect}: S
     state: {debug, filters, fullscreen, lastActiveIndex, result, terms},
   } = useSearchState()
   const {t} = useTranslation()
-  const searchStrategy = useWorkspace().search.__experimental_strategy
 
   const hasSearchResults = !!result.hits.length
   const hasNoSearchResults = !result.hits.length && result.loaded
@@ -57,6 +55,10 @@ export function SearchResults({disableIntentLink, inputElement, onItemSelect}: S
     }
     onClose?.()
   }, [dispatch, filters, onClose, recentSearchesStore, terms])
+
+  const handleEndReached = useCallback(() => {
+    dispatch({type: 'PAGE_INCREMENT'})
+  }, [dispatch])
 
   const renderItem = useCallback<CommandListRenderItemCallback<WeightedHit>>(
     (item) => {
@@ -104,9 +106,7 @@ export function SearchResults({disableIntentLink, inputElement, onItemSelect}: S
                     itemHeight={VIRTUAL_LIST_SEARCH_RESULT_ITEM_HEIGHT}
                     items={result.hits}
                     overscan={VIRTUAL_LIST_OVERSCAN}
-                    onEndReached={() => {
-                      dispatch({type: 'PAGE_INCREMENT'})
-                    }}
+                    onEndReached={handleEndReached}
                     paddingX={2}
                     paddingY={1}
                     ref={setSearchCommandList}

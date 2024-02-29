@@ -1,7 +1,7 @@
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {concat, fromEvent, merge, of, Subject, throwError} from 'rxjs'
 import {catchError, map, mergeMap, scan, startWith, take} from 'rxjs/operators'
-import {DEFAULT_STUDIO_CLIENT_OPTIONS, useClient, useSchema} from 'sanity'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS, useClient, useSchema, useWorkspace} from 'sanity'
 import {useSearchMaxFieldDepth} from 'sanity/_internalBrowser'
 
 import {DEFAULT_ORDERING, FULL_LIST_LIMIT, PARTIAL_PAGE_LIMIT} from './constants'
@@ -50,6 +50,7 @@ export function useDocumentList(opts: UseDocumentListOpts): DocumentListState {
     ...DEFAULT_STUDIO_CLIENT_OPTIONS,
     apiVersion: apiVersion || DEFAULT_STUDIO_CLIENT_OPTIONS.apiVersion,
   })
+  const {unstable_enableNewSearch = false} = useWorkspace().search
   const schema = useSchema()
   const maxFieldDepth = useSearchMaxFieldDepth()
 
@@ -154,6 +155,7 @@ export function useDocumentList(opts: UseDocumentListOpts): DocumentListState {
       sort,
       staticTypeNames: typeNameFromFilter ? [typeNameFromFilter] : undefined,
       maxFieldDepth,
+      unstable_enableNewSearch,
     }).pipe(
       map((results) => ({
         result: {documents: results},
@@ -179,15 +181,16 @@ export function useDocumentList(opts: UseDocumentListOpts): DocumentListState {
       scan((prev, next) => ({...prev, ...next, onRetry: _onRetry})),
     )
   }, [
+    shouldFetchFullList,
+    sortOrder,
     client,
     filter,
     paramsProp,
     schema,
     searchQuery,
-    shouldFetchFullList,
-    sortOrder,
     typeNameFromFilter,
     maxFieldDepth,
+    unstable_enableNewSearch,
   ])
 
   useEffect(() => {

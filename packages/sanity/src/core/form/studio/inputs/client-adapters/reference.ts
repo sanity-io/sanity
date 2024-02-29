@@ -1,9 +1,5 @@
 import {type SanityClient} from '@sanity/client'
-import {
-  type ReferenceFilterSearchOptions,
-  type ReferenceSchemaType,
-  type SearchStrategy,
-} from '@sanity/types'
+import {type ReferenceFilterSearchOptions, type ReferenceSchemaType} from '@sanity/types'
 import {combineLatest, type Observable, of} from 'rxjs'
 import {map, mergeMap, startWith, switchMap} from 'rxjs/operators'
 
@@ -195,15 +191,14 @@ export function referenceSearch(
   textTerm: string,
   type: ReferenceSchemaType,
   options: ReferenceFilterSearchOptions,
-  searchStrategy: SearchStrategy,
+  unstable_enableNewSearch: boolean,
 ): Observable<ReferenceSearchHit[]> {
   const search = createSearch(getSearchTypesWithMaxDepth(type.to, options.maxFieldDepth), client, {
     ...options,
-    strategy: searchStrategy,
+    unstable_enableNewSearch,
   })
   return search(textTerm, {includeDrafts: true}).pipe(
-    switchMap(({hits}) => hits),
-    map((results) => results.map((result) => result.hit)),
+    map(({hits}) => hits.map(({hit}) => hit)),
     map(collate),
     // pick the 100 best matches
     map((collated) => collated.slice(0, 100)),

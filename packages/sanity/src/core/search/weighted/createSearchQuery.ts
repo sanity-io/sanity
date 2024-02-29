@@ -1,17 +1,16 @@
 import {compact, flatten, flow, toLower, trim, union, uniq, words} from 'lodash'
 
 import {joinPath} from '../../../core/util/searchUtils'
-import {tokenize} from '../common/tokenize'
-import {FINDABILITY_MVI} from '../constants'
 import {
   type SearchableType,
+  type SearchFactoryOptions,
   type SearchOptions,
   type SearchPath,
   type SearchSort,
   type SearchSpec,
   type SearchTerms,
-  type WeightedSearchOptions,
-} from './types'
+} from '../common'
+import {FINDABILITY_MVI} from '../constants'
 
 export interface SearchParams {
   __types: string[]
@@ -89,6 +88,13 @@ function createConstraints(terms: string[], specs: SearchSpec[]) {
   return constraints.map((constraint) => `(${constraint.join(' || ')})`)
 }
 
+const SPECIAL_CHARS = /([^!@#$%^&*(),\\/?";:{}|[\]+<>\s-])+/g
+const STRIP_EDGE_CHARS = /(^[.]+)|([.]+$)/
+
+export function tokenize(string: string): string[] {
+  return (string.match(SPECIAL_CHARS) || []).map((token) => token.replace(STRIP_EDGE_CHARS, ''))
+}
+
 /**
  * Convert a string into an array of tokenized terms.
  *
@@ -143,7 +149,7 @@ function toOrderClause(orderBy: SearchSort[]): string {
  */
 export function createSearchQuery(
   searchTerms: SearchTerms,
-  searchOpts: SearchOptions & WeightedSearchOptions = {},
+  searchOpts: SearchOptions & SearchFactoryOptions = {},
 ): SearchQuery {
   const {filter, params, tag} = searchOpts
 

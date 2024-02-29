@@ -30,10 +30,10 @@ import {
   initialDocumentBadges,
   initialLanguageFilter,
   newDocumentOptionsResolver,
+  newSearchEnabledReducer,
   partialIndexingEnabledReducer,
   resolveProductionUrlReducer,
   schemaTemplatesReducer,
-  searchStrategyReducer,
   toolsReducer,
 } from './configPropertyReducers'
 import {ConfigResolutionError} from './ConfigResolutionError'
@@ -570,10 +570,12 @@ function resolveSource({
           initialValue: config.search?.unstable_partialIndexing?.enabled ?? false,
         }),
       },
-      // eslint-disable-next-line camelcase
-      __experimental_strategy: searchStrategyReducer({
+      unstable_enableNewSearch: resolveConfigProperty({
         config,
-        initialValue: config.search?.__experimental_strategy ?? 'weighted',
+        context,
+        reducer: newSearchEnabledReducer,
+        propertyName: 'search.unstable_enableNewSearch',
+        initialValue: false,
       }),
       // we will use this when we add search config to PluginOptions
       /*filters: resolveConfigProperty({

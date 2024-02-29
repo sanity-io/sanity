@@ -8,7 +8,6 @@ import {
   type Schema,
   type SchemaType,
   type SchemaTypeDefinition,
-  type SearchStrategy,
 } from '@sanity/types'
 import {type i18n} from 'i18next'
 import {type ComponentType, type ReactNode} from 'react'
@@ -374,7 +373,16 @@ export interface PluginOptions {
     unstable_partialIndexing?: {
       enabled: boolean
     }
-    __experimental_strategy?: SearchStrategy
+    /**
+     * Enables the experimental new search API as an opt-in feature. This flag
+     * allows you to test and provide feedback on the new search capabilities
+     * before they become the default search mechanism. It is part of an
+     * experimental set of features that are subject to change. Users should be
+     * aware that while this feature is in use, they may encounter
+     * inconsistencies or unexpected behavior compared to the stable search
+     * functionality.
+     */
+    unstable_enableNewSearch?: boolean
   }
 }
 
@@ -709,7 +717,8 @@ export interface Source {
     unstable_partialIndexing?: {
       enabled: boolean
     }
-    __experimental_strategy?: SearchStrategy
+
+    unstable_enableNewSearch?: boolean
   }
 
   /** @internal */

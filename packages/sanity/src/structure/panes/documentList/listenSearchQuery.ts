@@ -1,4 +1,4 @@
-import {type SanityClient, type SanityDocument} from '@sanity/client'
+import {type SanityClient} from '@sanity/client'
 import {
   asyncScheduler,
   defer,
@@ -15,19 +15,12 @@ import {
   timer,
 } from 'rxjs'
 import {exhaustMapWithTrailing} from 'rxjs-exhaustmap-with-trailing'
-import {
-  createSearchQuery,
-  type Schema,
-  type SearchOptions,
-  type SearchTerms,
-  type WeightedSearchOptions,
-} from 'sanity'
-import {getSearchableTypes, getSearchTypesWithMaxDepth} from 'sanity/_internalBrowser'
+import {type SanityDocumentLike, type Schema} from 'sanity'
+import {createSearch, getSearchableTypes, getSearchTypesWithMaxDepth} from 'sanity/_internalBrowser'
 
 import {getExtendedProjection} from '../../structureBuilder/util/getExtendedProjection'
 // FIXME
 // eslint-disable-next-line boundaries/element-types
-import {type TextSearchResponse} from '../../../core/search'
 import {type SortOrder} from './types'
 
 interface ListenQueryOptions {
@@ -40,11 +33,22 @@ interface ListenQueryOptions {
   sort: SortOrder
   staticTypeNames?: string[]
   maxFieldDepth?: number
+  unstable_enableNewSearch?: boolean
 }
 
-export function listenSearchQuery(options: ListenQueryOptions): Observable<SanityDocument[]> {
-  const {client, schema, sort, limit, params, filter, searchQuery, staticTypeNames, maxFieldDepth} =
-    options
+export function listenSearchQuery(options: ListenQueryOptions): Observable<SanityDocumentLike[]> {
+  const {
+    client,
+    schema,
+    sort,
+    limit,
+    params,
+    filter,
+    searchQuery,
+    staticTypeNames,
+    maxFieldDepth,
+    unstable_enableNewSearch,
+  } = options
   const sortBy = sort.by
   const extendedProjection = sort?.extendedProjection
 
@@ -107,44 +111,33 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Sanit
             maxFieldDepth,
           )
 
-          const searchTerms: SearchTerms = {
+          const search = createSearch(types, client, {
             filter,
-            query: searchQuery || '',
-            types,
-          }
-
-          const searchOptions: SearchOptions & WeightedSearchOptions = {
-            __unstable_extendedProjection: extendedProjection,
-            comments: [`findability-source: ${searchQuery ? 'list-query' : 'list'}`],
-            limit,
             params,
-            sort: sortBy,
-          }
-
-          const {
-            query: createdQuery,
-            params: createdParams,
-            searchSpec,
-          } = createSearchQuery(searchTerms, searchOptions)
+            unstable_enableNewSearch,
+          })
 
           const doFetch = () => {
-            if (searchQuery.length === 0) {
-              return client.observable.fetch(createdQuery, createdParams)
+            const searchTerms = {
+              filter,
+              query: searchQuery || '',
+              types,
             }
 
-            return client.observable
-              .request({
-                uri: `/data/textsearch/${client.config().dataset}`,
-                method: 'POST',
-                json: true,
-                body: {
-                  query: {
-                    string: searchTerms.query,
-                  },
-                  filter: `_type in ${JSON.stringify(searchSpec.map((spec) => spec.typeName))}`,
-                },
-              })
-              .pipe(map(normalizeTextSearchResults))
+            const searchOptions = {
+              __unstable_extendedProjection: extendedProjection,
+              comments: [`findability-source: ${searchQuery ? 'list-query' : 'list'}`],
+              limit,
+              skipSortByScore: true,
+              sort: sortBy,
+            }
+
+            return search(searchTerms, searchOptions).pipe(
+              map((result) =>
+                // eslint-disable-next-line max-nested-callbacks
+                result.hits.map(({hit}) => hit),
+              ),
+            )
           }
 
           if (event.type === 'mutation' && event.visibility !== 'query') {
@@ -158,8 +151,4 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Sanit
       )
     }),
   )
-}
-
-function normalizeTextSearchResults(textSearchResponse: TextSearchResponse): SanityDocument[] {
-  return textSearchResponse.hits.map((hit) => hit.attributes)
 }

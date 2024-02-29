@@ -1,6 +1,6 @@
 import {type CurrentUser} from '@sanity/types'
 
-import {type SearchableType, type SearchTerms, type WeightedHit} from '../../../../../../search'
+import {type SearchableType, type SearchHit, type SearchTerms} from '../../../../../../search'
 import {type RecentSearch} from '../../datastores/recentSearches'
 import {type SearchFieldDefinitionDictionary} from '../../definitions/fields'
 import {type SearchFilterDefinitionDictionary} from '../../definitions/filters'
@@ -60,7 +60,7 @@ export interface SearchDefinitions {
 export interface SearchResult {
   error: Error | null
   hasMore?: boolean | null
-  hits: WeightedHit[]
+  hits: SearchHit[]
   loaded: boolean
   loading: boolean
 }
@@ -118,7 +118,7 @@ export type OrderingSet = {ordering: SearchOrdering; type: 'ORDERING_SET'}
 export type SearchClear = {type: 'SEARCH_CLEAR'}
 export type SearchRequestComplete = {
   type: 'SEARCH_REQUEST_COMPLETE'
-  hits: WeightedHit[]
+  hits: SearchHit[]
 }
 export type SearchRequestError = {type: 'SEARCH_REQUEST_ERROR'; error: Error}
 export type SearchRequestStart = {type: 'SEARCH_REQUEST_START'}

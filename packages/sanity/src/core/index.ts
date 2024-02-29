@@ -14,12 +14,11 @@ export * from './preview'
 export * from './schema'
 export type {
   SearchableType,
+  SearchFactoryOptions,
   SearchOptions,
   SearchSort,
   SearchTerms,
-  WeightedSearchOptions,
 } from './search'
-export {createSearchQuery} from './search'
 export * from './store'
 export * from './studio'
 export * from './studioClient'

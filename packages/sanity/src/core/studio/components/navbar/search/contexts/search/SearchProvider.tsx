@@ -131,8 +131,8 @@ export function SearchProvider({children, fullscreen}: SearchProviderProps) {
     initialState: {...result, terms},
     onComplete: (hits) => dispatch({hits, type: 'SEARCH_REQUEST_COMPLETE'}),
     // TODO: Choose better param name.
-    onReceiveNextCursor: (nextCursor_) =>
-      dispatch({nextCursor: nextCursor_, type: 'RECEIVE_NEXT_CURSOR'}),
+    onReceiveNextCursor: (next) =>
+      next && dispatch({nextCursor: next, type: 'RECEIVE_NEXT_CURSOR'}),
     onError: (error) => dispatch({error, type: 'SEARCH_REQUEST_ERROR'}),
     onStart: () => dispatch({type: 'SEARCH_REQUEST_START'}),
     schema,
@@ -192,7 +192,7 @@ export function SearchProvider({children, fullscreen}: SearchProviderProps) {
           offset: pageIndex * SEARCH_LIMIT,
           skipSortByScore: ordering.ignoreScore,
           sort: [ordering.sort],
-          cursor,
+          cursor: cursor || undefined,
         },
         terms: {
           ...terms,

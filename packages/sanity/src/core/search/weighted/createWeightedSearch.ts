@@ -1,17 +1,16 @@
+import {type SanityDocumentLike} from '@sanity/types'
 import {sortBy} from 'lodash'
-import {of} from 'rxjs'
-import {map, switchMap, tap} from 'rxjs/operators'
+import {map, tap} from 'rxjs/operators'
 
 import {removeDupes} from '../../util/draftUtils'
-import {applyWeights} from './applyWeights'
-import {createSearchQuery} from './createSearchQuery'
 import {
   type SearchableType,
-  type SearchHit,
   type SearchStrategyFactory,
   type SearchTerms,
-  type WeightedSearchResultCollection,
-} from './types'
+  type WeightedSearchResults,
+} from '../common'
+import {applyWeights} from './applyWeights'
+import {createSearchQuery} from './createSearchQuery'
 
 function getSearchTerms(searchParams: string | SearchTerms, types: SearchableType[]) {
   if (typeof searchParams === 'string') {
@@ -26,35 +25,30 @@ function getSearchTerms(searchParams: string | SearchTerms, types: SearchableTyp
 /**
  * @internal
  */
-export const createWeightedSearch: SearchStrategyFactory<WeightedSearchResultCollection> = (
+export const createWeightedSearch: SearchStrategyFactory<WeightedSearchResults> = (
   types,
   client,
-  commonOpts,
+  factoryOptions,
 ) => {
   // Search currently supports both strings (reference + cross dataset reference inputs)
   // or a SearchTerms object (omnisearch).
-  return function search(searchParams, searchOpts = {}) {
+  return function search(searchParams, searchOptions = {}) {
     const searchTerms = getSearchTerms(searchParams, types)
 
     const {query, params, options, searchSpec, terms} = createSearchQuery(searchTerms, {
-      ...commonOpts,
-      ...searchOpts,
+      ...factoryOptions,
+      ...searchOptions,
     })
 
-    return client.observable.fetch(query, params, options).pipe(
-      commonOpts.unique ? map(removeDupes) : tap(),
+    return client.observable.fetch<SanityDocumentLike[]>(query, params, options).pipe(
+      factoryOptions.unique ? map(removeDupes) : tap(),
       // Assign weighting and scores based on current search terms.
       // No scores will be assigned when terms are empty.
-      map((hits: SearchHit[]) => applyWeights(searchSpec, hits, terms)),
+      map((hits) => applyWeights(searchSpec, hits, terms)),
       // Optionally skip client-side score sorting.
       // This can be relevant when ordering results by specific fields, especially dates.
-      searchOpts?.skipSortByScore ? tap() : map((hits) => sortBy(hits, (hit) => -hit.score)),
-      switchMap((hits) =>
-        of({
-          strategy: 'weighted' as const,
-          hits: of(hits),
-        }),
-      ),
+      searchOptions?.skipSortByScore ? tap() : map((hits) => sortBy(hits, (hit) => -hit.score)),
+      map((hits) => ({type: 'weighted', hits})),
     )
   }
 }

@@ -17,12 +17,11 @@ import {
 import {useClient} from '../../../../../hooks'
 import {
   createSearch,
+  getSearchTypesWithMaxDepth,
   type SearchHit,
   type SearchOptions,
   type SearchTerms,
-  type WeightedHit,
 } from '../../../../../search'
-import {getSearchTypesWithMaxDepth} from '../../../../../search/weighted/getSearchTypesWithMaxDepth'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../../studioClient'
 import {useWorkspace} from '../../../../workspace'
 import {type SearchState} from '../types'
@@ -74,7 +73,7 @@ export function useSearch({
 }: {
   allowEmptyQueries?: boolean
   initialState: SearchState
-  onComplete?: (hits: (WeightedHit | {hit: SearchHit})[]) => void
+  onComplete?: (hits: SearchHit[]) => void
   onReceiveNextCursor?: (nextCursor: string | undefined) => void
   onError?: (error: Error) => void
   onStart?: () => void
@@ -86,7 +85,7 @@ export function useSearch({
   const [searchState, setSearchState] = useState(initialState)
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const maxFieldDepth = useSearchMaxFieldDepth()
-  const strategy = useWorkspace().search.__experimental_strategy ?? 'weighted'
+  const {unstable_enableNewSearch = false} = useWorkspace().search
 
   const search = useMemo(
     () =>
@@ -96,10 +95,10 @@ export function useSearch({
         {
           tag: 'search.global',
           unique: true,
-          strategy,
+          unstable_enableNewSearch,
         },
       ),
-    [client, schema, maxFieldDepth, strategy],
+    [client, schema, maxFieldDepth, unstable_enableNewSearch],
   )
 
   const handleQueryChange = useObservableCallback(
@@ -132,13 +131,11 @@ export function useSearch({
               () => hasSearchableTerms({allowEmptyQueries, terms: request.terms}),
               // If we have a valid search, run async fetch, map results and trigger `onComplete` / `onError` callbacks
               search(request.terms, request.options).pipe(
-                tap((searchResultCollection) => {
-                  if (searchResultCollection.strategy === 'text') {
-                    onReceiveNextCursor?.(searchResultCollection.nextCursor)
+                tap((result) => {
+                  if (result.type === 'text') {
+                    onReceiveNextCursor?.(result.nextCursor)
                   }
                 }),
-                switchMap(({hits}) => hits),
-                map((hits) => ({hits})),
                 tap(({hits}) => onComplete?.(hits)),
                 catchError((error) => {
                   onError?.(error)
