@@ -4,9 +4,11 @@ import {LinkRemovedIcon} from '@sanity/icons'
 import {isPortableTextTextBlock} from '@sanity/types'
 import {Box, Flex, Stack, Text, type Theme} from '@sanity/ui'
 import {useMemo} from 'react'
+import {useTranslation} from 'react-i18next'
 import styled, {css} from 'styled-components'
 
 import {Tooltip} from '../../../../../ui-components'
+import {commentsLocaleNamespace} from '../../../i18n'
 import {COMMENTS_HIGHLIGHT_HUE_KEY} from '../../constants'
 import {type CommentDocument} from '../../types'
 
@@ -14,9 +16,6 @@ function truncate(str: string, length = 250) {
   if (str.length <= length) return str
   return `${str.slice(0, length)}...`
 }
-
-// TODO: localize
-const TMP_COPY = 'The commented text has been deleted'
 
 interface BlockQuoteStackProps {
   $hasReferencedValue: boolean
@@ -49,6 +48,9 @@ interface CommentsListItemReferencedValueProps {
 export function CommentsListItemReferencedValue(props: CommentsListItemReferencedValueProps) {
   const {hasReferencedValue, value} = props
 
+  const {t} = useTranslation(commentsLocaleNamespace)
+  const tooltipText = t('list-item.missing-referenced-value-tooltip-content')
+
   const resolvedValue = useMemo(() => {
     if (Array.isArray(value) && value?.filter(isPortableTextTextBlock).length > 0) {
       const text = value?.map(toPlainText).join(' ')
@@ -75,7 +77,7 @@ export function CommentsListItemReferencedValue(props: CommentsListItemReference
       <Flex align="flex-start">
         <Text size={1} muted>
           {!hasReferencedValue && (
-            <Tooltip content={TMP_COPY}>
+            <Tooltip content={tooltipText}>
               <InlineBox>
                 <LinkRemovedIcon />
               </InlineBox>

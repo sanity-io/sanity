@@ -2,9 +2,11 @@ import {AddCommentIcon} from '@sanity/icons'
 import {useClickOutside} from '@sanity/ui'
 import {motion, type Variants} from 'framer-motion'
 import {useState} from 'react'
+import {useTranslation} from 'react-i18next'
 import styled from 'styled-components'
 
 import {Button, Popover, type PopoverProps} from '../../../../../ui-components'
+import {commentsLocaleNamespace} from '../../../i18n'
 import {CommentDisabledIcon} from '../../../src'
 
 const MotionPopover = styled(motion(Popover))`
@@ -18,10 +20,6 @@ const VARIANTS: Variants = {
   visible: {opacity: 1, y: 0},
 }
 
-// TODO: localize
-const BUTTON_COPY = 'Add comment'
-const BUTTON_DISABLED_COPY = 'Comments cannot overlap'
-
 interface FloatingButtonPopoverProps {
   disabled: boolean
   onClick: () => void
@@ -32,10 +30,13 @@ interface FloatingButtonPopoverProps {
 export function FloatingButtonPopover(props: FloatingButtonPopoverProps) {
   const {disabled, onClick, onClickOutside, referenceElement} = props
   const [popoverElement, setPopoverElement] = useState<HTMLButtonElement | null>(null)
+  const {t} = useTranslation(commentsLocaleNamespace)
 
   useClickOutside(onClickOutside, [popoverElement])
 
-  const text = disabled ? BUTTON_DISABLED_COPY : BUTTON_COPY
+  const disabledText = t('inline-add-comment-button.disabled-overlap-title')
+  const enabledText = t('inline-add-comment-button.title')
+  const text = disabled ? disabledText : enabledText
 
   const content = (
     <Button
