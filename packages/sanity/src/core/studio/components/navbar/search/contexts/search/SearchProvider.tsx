@@ -117,7 +117,6 @@ export function SearchProvider({children, fullscreen}: SearchProviderProps) {
     ordering,
     pageIndex,
     cursor,
-    nextCursor,
     result,
     terms,
   } = state
@@ -130,9 +129,8 @@ export function SearchProvider({children, fullscreen}: SearchProviderProps) {
   const {handleSearch, searchState} = useSearch({
     initialState: {...result, terms},
     onComplete: (hits) => dispatch({hits, type: 'SEARCH_REQUEST_COMPLETE'}),
-    // TODO: Choose better param name.
-    onReceiveNextCursor: (next) =>
-      next && dispatch({nextCursor: next, type: 'RECEIVE_NEXT_CURSOR'}),
+    onReceiveNextCursor: (nextCursor) =>
+      nextCursor && dispatch({nextCursor, type: 'RECEIVE_NEXT_CURSOR'}),
     onError: (error) => dispatch({error, type: 'SEARCH_REQUEST_ERROR'}),
     onStart: () => dispatch({type: 'SEARCH_REQUEST_START'}),
     schema,
