@@ -209,6 +209,7 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
       referenceBoundary={referenceBoundary}
       referenceElement={cursorElement}
       scheme={popoverScheme}
+      {...(annotationOpen ? {width: 1} : {})}
     />
   )
 }
