@@ -1,5 +1,6 @@
 import {definePlugin, type ObjectInputProps} from 'sanity'
 
+import {DocumentBadge} from './TasksBadge'
 import {TasksDocumentInputLayout} from './TasksDocumentInputLayout'
 import {TasksStudioActiveToolLayout} from './TasksStudioActiveToolLayout'
 import {TasksStudioLayout} from './TasksStudioLayout'
@@ -11,6 +12,11 @@ import {TasksStudioNavbar} from './TasksStudioNavbar'
  */
 export const tasks = definePlugin({
   name: 'sanity/tasks',
+  document: {
+    badges: (prev) => {
+      return (prev || []).concat(DocumentBadge)
+    },
+  },
   studio: {
     components: {
       layout: TasksStudioLayout,
