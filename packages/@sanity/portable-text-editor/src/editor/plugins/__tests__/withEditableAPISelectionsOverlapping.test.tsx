@@ -9,7 +9,7 @@ import {PortableTextEditor} from '../../PortableTextEditor'
 const INITIAL_VALUE: PortableTextBlock[] = [
   {
     _key: 'a',
-    _type: 'block',
+    _type: 'myTestBlockType',
     children: [
       {
         _key: 'a1',
