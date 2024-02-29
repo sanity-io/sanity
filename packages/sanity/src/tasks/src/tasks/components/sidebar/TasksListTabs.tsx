@@ -1,10 +1,9 @@
 import {TabList, Text} from '@sanity/ui'
-import {type Dispatch, type SetStateAction, useCallback, useEffect, useMemo, useState} from 'react'
+import {useCallback, useEffect, useMemo, useState} from 'react'
 import {type CSSProperties} from 'styled-components'
 
 import {Tab} from '../../../../../ui-components'
-import {useTasks} from '../../context'
-import {type SidebarTabsIds} from './types'
+import {type SidebarTabsIds, useTasks} from '../../context'
 
 const LIST_STYLES: CSSProperties = {
   marginLeft: '-0.5em',
@@ -14,7 +13,7 @@ const LIST_STYLES: CSSProperties = {
 
 interface TasksListTabsProps {
   activeTabId: string
-  onChange: Dispatch<SetStateAction<SidebarTabsIds>>
+  onChange: (id: SidebarTabsIds) => void
 }
 
 interface TasksListTab {

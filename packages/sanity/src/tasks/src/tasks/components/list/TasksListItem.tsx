@@ -1,6 +1,6 @@
 /* eslint-disable no-nested-ternary */
 import {UserIcon} from '@sanity/icons'
-import {Card, type CardProps, Flex, Stack, Text} from '@sanity/ui'
+import {Box, Card, type CardProps, Flex, Stack, Text} from '@sanity/ui'
 import {useMemo} from 'react'
 import {useDateTimeFormat, UserAvatar, useUser} from 'sanity'
 import styled from 'styled-components'
@@ -167,13 +167,15 @@ export function TasksListItem({
           </UserDisplayRoot>
         </Flex>
         {(dueBy || targetDocument) && (
-          <TaskDetailsRoot align="center" gap={3} paddingY={2} paddingX={1}>
+          <TaskDetailsRoot align="center" gap={2} paddingY={1} paddingX={0}>
             {dueBy && <TaskDueDate dueBy={dueBy} />}
             {targetDocument && (
-              <DocumentPreview
-                documentId={targetDocument._ref}
-                documentType={targetDocument._type}
-              />
+              <Box marginLeft={1}>
+                <DocumentPreview
+                  documentId={targetDocument._ref}
+                  documentType={targetDocument._type}
+                />
+              </Box>
             )}
           </TaskDetailsRoot>
         )}

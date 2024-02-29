@@ -1,15 +1,14 @@
 import {Box, Card, Flex, Spinner} from '@sanity/ui'
 import {AnimatePresence, motion, type Transition, type Variants} from 'framer-motion'
-import {useCallback, useMemo, useState} from 'react'
+import {useCallback, useMemo} from 'react'
 import {useCurrentUser} from 'sanity'
 import styled from 'styled-components'
 
-import {useTasks, useTasksEnabled} from '../../context'
+import {TasksNavigationProvider, useTasks, useTasksEnabled, useTasksNavigation} from '../../context'
 import {TaskCreate} from '../create'
 import {TaskEdit} from '../edit'
 import {TaskSidebarContent} from './TasksSidebarContent'
 import {TasksSidebarHeader} from './TasksSidebarHeader'
-import {type SidebarTabsIds, type ViewMode} from './types'
 
 const SidebarRoot = styled(Card)`
   width: 360px;
@@ -26,34 +25,30 @@ const VARIANTS: Variants = {
 
 const TRANSITION: Transition = {duration: 0.2}
 
-/**
- * @internal
- */
-export function TasksStudioSidebar() {
+function TasksStudioSidebarInner() {
   const {enabled} = useTasksEnabled()
   const {activeDocument, isOpen, data, isLoading} = useTasks()
-  // TODO: Move this to the router.
-  const [viewMode, setViewMode] = useState<ViewMode>('list')
-  // TODO: Move this to the router.
-  const [selectedTask, setSelectedTask] = useState<null | string>(null)
-  // TODO: Move this to the router.
-  const [activeTabId, setActiveTabId] = useState<SidebarTabsIds>('assigned')
+  const {viewMode, setViewMode, selectedTask, setSelectedTask, activeTabId, setActiveTabId} =
+    useTasksNavigation()
 
-  const onCancel = useCallback(() => setViewMode('list'), [])
+  const onCancel = useCallback(() => setViewMode('list'), [setViewMode])
   const handleOnDelete = useCallback(() => {
     setViewMode('list')
     setActiveTabId('created')
-  }, [])
+  }, [setActiveTabId, setViewMode])
 
-  const onTaskSelect = useCallback((id: string) => {
-    setViewMode('edit')
-    setSelectedTask(id)
-  }, [])
+  const onTaskSelect = useCallback(
+    (id: string) => {
+      setViewMode('edit')
+      setSelectedTask(id)
+    },
+    [setSelectedTask, setViewMode],
+  )
 
   const onTaskCreate = useCallback(() => {
     setViewMode('list')
     setActiveTabId('created')
-  }, [])
+  }, [setActiveTabId, setViewMode])
 
   const currentUser = useCurrentUser()
   const filteredList = useMemo(() => {
@@ -123,5 +118,16 @@ export function TasksStudioSidebar() {
         </motion.div>
       )}
     </AnimatePresence>
+  )
+}
+
+/**
+ * @internal
+ */
+export function TasksStudioSidebar() {
+  return (
+    <TasksNavigationProvider>
+      <TasksStudioSidebarInner />
+    </TasksNavigationProvider>
   )
 }
