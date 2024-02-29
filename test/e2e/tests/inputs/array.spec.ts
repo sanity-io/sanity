@@ -42,7 +42,7 @@ test(`file drop event should not propagate to dialog parent`, async ({
   // Drop the file again; this time, while the dialog is open.
   //
   // - The drop event should not propagate to the parent.
-  // - Therefore, the drop even should not cause the image to be added to the list again.
+  // - Therefore, the drop event should not cause the image to be added to the list again.
   await page.getByRole('dialog').dispatchEvent('drop', {dataTransfer})
 
   // Close the dialog.
