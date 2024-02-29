@@ -13,9 +13,8 @@ import {BetaBadge} from 'sanity'
 import styled from 'styled-components'
 
 import {Button, Tooltip, TooltipDelayGroupProvider} from '../../../../../ui-components'
-import {useTasks} from '../..'
+import {type SidebarTabsIds, useTasks, type ViewMode} from '../../context'
 import {type TaskDocument} from '../../types'
-import {type SidebarTabsIds, type ViewMode} from './types'
 
 interface TasksSidebarHeaderProps {
   viewMode: ViewMode

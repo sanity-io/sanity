@@ -1,10 +1,9 @@
 import {Card} from '@sanity/ui'
-import {type Dispatch, type SetStateAction} from 'react'
 
+import {type SidebarTabsIds} from '../../context'
 import {type TaskDocument} from '../../types'
 import {TasksList} from '../list/TasksList'
 import {TasksListTabs} from './TasksListTabs'
-import {type SidebarTabsIds} from './types'
 
 /**
  * @internal
@@ -18,7 +17,7 @@ export function TaskSidebarContent({
   items: TaskDocument[]
   onTaskSelect: (id: string) => void
   activeTabId: SidebarTabsIds
-  setActiveTabId: Dispatch<SetStateAction<SidebarTabsIds>>
+  setActiveTabId: (id: SidebarTabsIds) => void
 }) {
   return (
     <>
