@@ -32,12 +32,12 @@ test(`file drop event should not propagate to dialog parent`, async ({
   // Drop the file.
   await list.dispatchEvent('drop', {dataTransfer})
 
+  // Ensure the list contains one item.
+  expect(item).toHaveCount(1)
+
   // Open the dialog.
   await page.getByRole('button', {name: fileName}).click()
   await expect(page.getByRole('dialog')).toBeVisible()
-
-  // Ensure the list contains one item.
-  expect(item).toHaveCount(1)
 
   // Drop the file again; this time, while the dialog is open.
   //
