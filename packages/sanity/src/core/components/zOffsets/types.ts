@@ -14,6 +14,7 @@ export interface ZIndexContextValue {
   paneHeader: number | number[]
   paneFooter: number | number[]
   paneResizer: number | number[]
+  paneDialog: number | number[]
 
   /** Used by: EditItemFoldOut, Spinner, ConnectorsOverlay, tippy.css, BaseDateTimeInput */
   portal: number | number[]

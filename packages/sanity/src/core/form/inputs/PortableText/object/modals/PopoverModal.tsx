@@ -52,7 +52,6 @@ export function PopoverEditDialog(props: PopoverEditDialogProps) {
       referenceBoundary={referenceBoundary}
       referenceElement={referenceElement}
       width={width}
-      zOffset={100}
     />
   )
 }
