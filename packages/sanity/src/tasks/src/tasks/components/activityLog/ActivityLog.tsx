@@ -2,7 +2,7 @@
 import {DotIcon} from '@sanity/icons'
 import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
 import {useMemo} from 'react'
-import {useCurrentUser, useDateTimeFormat, useFormValue, UserAvatar, useUser} from 'sanity'
+import {useCurrentUser, useDateTimeFormat, UserAvatar, useUser} from 'sanity'
 
 import {Button} from '../../../../../ui-components'
 import {type TaskDocument} from '../../types'
@@ -69,9 +69,7 @@ function CreatedAt({createdAt, authorId}: {createdAt: string; authorId: string})
   )
 }
 
-export function ActivityLog() {
-  const values = useFormValue([]) as TaskDocument
-
+export function ActivityLog({value}: {value: TaskDocument}) {
   return (
     <Box marginTop={5}>
       <Card borderTop paddingTop={5}>
@@ -83,7 +81,7 @@ export function ActivityLog() {
         </Flex>
       </Card>
       <Stack marginTop={4} space={4}>
-        <CreatedAt createdAt={values._createdAt} authorId={values.authorId} />
+        {value._createdAt && <CreatedAt createdAt={value._createdAt} authorId={value.authorId} />}
         <AddComment />
       </Stack>
     </Box>
