@@ -6,6 +6,8 @@ import styled from 'styled-components'
 
 import {TasksNavigationProvider, useTasks, useTasksEnabled, useTasksNavigation} from '../../context'
 import {TaskCreate} from '../create'
+import {TaskDraft} from '../draft'
+import {TaskDuplicate} from '../duplicate'
 import {TaskEdit} from '../edit'
 import {TaskSidebarContent} from './TasksSidebarContent'
 import {TasksSidebarHeader} from './TasksSidebarHeader'
@@ -36,16 +38,12 @@ function TasksStudioSidebarInner() {
   const {state, setActiveTab, editTask} = useTasksNavigation()
   const {activeTabId, viewMode, selectedTask} = state
 
-  const handleOnDelete = useCallback(() => setActiveTab('subscribed'), [setActiveTab])
-  const onTaskCreate = useCallback(() => setActiveTab('subscribed'), [setActiveTab])
 
   const currentUser = useCurrentUser()
+
   const filteredList = useMemo(() => {
     return data.filter((item) => {
-      if (!item.title) {
-        return false
-      }
-
+      if (!item.createdByUser) return false
       if (activeTabId === 'assigned') {
         return item.assignedTo === currentUser?.id
       }
@@ -89,11 +87,12 @@ function TasksStudioSidebarInner() {
                   )}
                 </>
               )}
-
-              {viewMode === 'create' && <TaskCreate onCreate={onTaskCreate} />}
-              {viewMode === 'edit' && selectedTask && (
-                <TaskEdit onDelete={handleOnDelete} selectedTask={selectedTask} />
+              {viewMode === 'duplicate' && selectedTask && (
+                <TaskDuplicate selectedTask={selectedTask} />
               )}
+              {viewMode === 'create' && selectedTask && <TaskCreate selectedTask={selectedTask} />}
+              {viewMode === 'edit' && selectedTask && <TaskEdit selectedTask={selectedTask} />}
+              {viewMode === 'draft' && selectedTask && <TaskDraft selectedTask={selectedTask} />}
             </SidebarContent>
           </SidebarRoot>
         </motion.div>

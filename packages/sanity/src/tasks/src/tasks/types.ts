@@ -85,6 +85,10 @@ export interface TaskDocument {
   assignedTo?: string
 
   target?: TaskTarget
+  /**
+   * Date representing when the task was created by the user and not by the system. When the `create task` button was clicked.
+   */
+  createdByUser: string
 }
 
 /**
