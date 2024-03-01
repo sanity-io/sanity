@@ -39,7 +39,7 @@ export const DocumentPanelHeader = memo(
       menuItemGroups,
       schemaType,
       timelineStore,
-      ready,
+      connectionState,
       views,
       unstable_languageFilter,
     } = useDocumentPane()
@@ -96,7 +96,7 @@ export const DocumentPanelHeader = memo(
         <PaneHeader
           border
           ref={ref}
-          loading={!ready}
+          loading={connectionState === 'connecting'}
           title={<DocumentHeaderTitle />}
           tabs={showTabs && <DocumentHeaderTabs />}
           tabIndex={tabIndex}
