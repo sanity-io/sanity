@@ -12,6 +12,11 @@ interface StoredSearch {
   recentSearches: any[]
 }
 
+const defaultValue: StoredSearch = {
+  version: RECENT_SEARCH_VERSION,
+  recentSearches: [],
+}
+
 export function useStoredSearch(): [StoredSearch, (_value: StoredSearch) => void] {
   const keyValueStore = useKeyValueStore()
   const client = useClient({apiVersion: '2023-12-01'})
@@ -21,14 +26,6 @@ export function useStoredSearch(): [StoredSearch, (_value: StoredSearch) => void
   const keyValueStoreKey = useMemo(
     () => `${STORED_SEARCHES_NAMESPACE}__${projectId}:${dataset}:${currentUser?.id}`,
     [currentUser, dataset, projectId],
-  )
-
-  const defaultValue: StoredSearch = useMemo(
-    () => ({
-      version: RECENT_SEARCH_VERSION,
-      recentSearches: [],
-    }),
-    [],
   )
 
   const [value, setValue] = useState<StoredSearch>(defaultValue)
@@ -57,7 +54,7 @@ export function useStoredSearch(): [StoredSearch, (_value: StoredSearch) => void
       })
 
     return () => sub?.unsubscribe()
-  }, [settings, defaultValue, keyValueStore, keyValueStoreKey])
+  }, [settings, keyValueStore, keyValueStoreKey])
 
   const set = useCallback(
     (newValue: StoredSearch) => {
@@ -66,5 +63,6 @@ export function useStoredSearch(): [StoredSearch, (_value: StoredSearch) => void
     },
     [keyValueStore, keyValueStoreKey],
   )
+
   return useMemo(() => [value, set], [set, value])
 }

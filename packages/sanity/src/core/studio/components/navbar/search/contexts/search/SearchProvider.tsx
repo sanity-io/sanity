@@ -7,8 +7,7 @@ import {type SearchableType, type SearchTerms} from '../../../../../../search'
 import {useCurrentUser} from '../../../../../../store'
 import {useSource} from '../../../../../source'
 import {SEARCH_LIMIT} from '../../constants'
-import {createRecentSearchesStore, type RecentSearch} from '../../datastores/recentSearches'
-import {useStoredSearch} from '../../datastores/useStoredSearch'
+import {type RecentSearch, useRecentSearchesStore} from '../../datastores/recentSearches'
 import {createFieldDefinitionDictionary, createFieldDefinitions} from '../../definitions/fields'
 import {createFilterDefinitionDictionary} from '../../definitions/filters'
 import {createOperatorDefinitionDictionary} from '../../definitions/operators'
@@ -38,8 +37,6 @@ export function SearchProvider({children, fullscreen}: SearchProviderProps) {
     search: {operators, filters},
   } = useSource()
 
-  const [storedSearch, setStoredSearch] = useStoredSearch()
-
   // Create field, filter and operator dictionaries
   const {fieldDefinitions, filterDefinitions, operatorDefinitions} = useMemo(() => {
     return {
@@ -50,25 +47,12 @@ export function SearchProvider({children, fullscreen}: SearchProviderProps) {
   }, [filters, operators, schema])
 
   // Create local storage store
-  const recentSearchesStore = useMemo(
-    () =>
-      createRecentSearchesStore({
-        fieldDefinitions,
-        filterDefinitions,
-        operatorDefinitions,
-        schema,
-        storedSearch,
-        setStoredSearch,
-      }),
-    [
-      fieldDefinitions,
-      filterDefinitions,
-      operatorDefinitions,
-      schema,
-      storedSearch,
-      setStoredSearch,
-    ],
-  )
+  const recentSearchesStore = useRecentSearchesStore({
+    fieldDefinitions,
+    filterDefinitions,
+    operatorDefinitions,
+    schema,
+  })
 
   const recentSearches = useMemo(
     () => recentSearchesStore?.getRecentSearches(),

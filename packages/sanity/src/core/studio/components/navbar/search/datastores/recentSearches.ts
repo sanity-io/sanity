@@ -8,6 +8,7 @@ import {type SearchOperatorDefinitionDictionary} from '../definitions/operators'
 import {type SearchFilter} from '../types'
 import {validateFilter} from '../utils/filterUtils'
 import {getSearchableOmnisearchTypes} from '../utils/selectors'
+import {useStoredSearch} from './useStoredSearch'
 
 export const MAX_RECENT_SEARCHES = 5
 /**
@@ -48,21 +49,18 @@ interface StoredSearchItem {
   terms: Omit<SearchTerms, 'types'> & {typeNames: string[]}
 }
 
-export function createRecentSearchesStore({
+export function useRecentSearchesStore({
   fieldDefinitions,
   filterDefinitions,
   operatorDefinitions,
   schema,
-  storedSearch,
-  setStoredSearch,
 }: {
   fieldDefinitions: SearchFieldDefinitionDictionary
   filterDefinitions: SearchFilterDefinitionDictionary
   operatorDefinitions: SearchOperatorDefinitionDictionary
   schema: Schema
-  storedSearch: StoredSearch
-  setStoredSearch: (_value: StoredSearch) => void
-}): RecentSearchesStore | undefined {
+}): RecentSearchesStore {
+  const [storedSearch, setStoredSearch] = useStoredSearch()
   return {
     /**
      * Write a search term to Local Storage and return updated recent searches.
