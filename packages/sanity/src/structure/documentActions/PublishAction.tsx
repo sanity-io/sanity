@@ -176,7 +176,7 @@ export const PublishAction: DocumentActionComponent = (props) => {
 
   const disabled = Boolean(
     publishScheduled ||
-      editState.ready ||
+      !editState.ready ||
       editState?.transactionSyncLock?.enabled ||
       publishState === 'publishing' ||
       publishState === 'published' ||
