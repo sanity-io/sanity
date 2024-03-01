@@ -14,16 +14,6 @@ export interface Loadable<T> {
  * @beta
  * @hidden
  */
-export interface TaskOperations {
-  create: (task: TaskCreatePayload) => Promise<TaskDocument>
-  edit: (id: string, task: TaskEditPayload) => Promise<TaskDocument>
-  remove: (id: string) => Promise<void>
-}
-
-/**
- * @beta
- * @hidden
- */
 export type TaskMessage = PortableTextBlock[] | null
 
 /**

@@ -34,7 +34,9 @@ const DescriptionInputRoot = styled.div<{$mode: FormMode}>((props) => {
   return css`
     /* select editable-wrap and change the padding */
     [data-ui='editable-wrap'] {
-      padding: ${theme.space[3]}px ${theme.space[2]}px;
+      padding: ${props.$mode === 'edit'
+        ? `${theme.space[1]}px 0px`
+        : `${theme.space[3]}px ${theme.space[2]}px`};
       min-height: 100px;
     }
     #comment-input-root {
