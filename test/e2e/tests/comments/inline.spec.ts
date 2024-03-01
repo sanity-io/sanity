@@ -86,14 +86,14 @@ async function inlineCommentCreationTest(props: InlineCommentCreationTestProps) 
 
 // The tests will be enabled when the inline comments feature is ready to be used.
 test.describe('Inline comments:', () => {
-  test.skip('should create inline comment', async ({page, createDraftDocument, browserName}) => {
+  test('should create inline comment', async ({page, createDraftDocument, browserName}) => {
     // For now, only test in Chromium due to flakiness in Firefox and WebKit
     test.skip(browserName !== 'chromium')
 
     await inlineCommentCreationTest({page, createDraftDocument})
   })
 
-  test.skip('should resolve inline comment', async ({page, createDraftDocument, browserName}) => {
+  test('should resolve inline comment', async ({page, createDraftDocument, browserName}) => {
     // For now, only test in Chromium due to flakiness in Firefox and WebKit
     test.skip(browserName !== 'chromium')
 
