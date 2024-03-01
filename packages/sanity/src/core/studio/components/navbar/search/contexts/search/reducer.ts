@@ -1,6 +1,7 @@
 import {type CurrentUser} from '@sanity/types'
 
 import {type SearchableType, type SearchHit, type SearchTerms} from '../../../../../../search'
+import {getPublishedId} from '../../../../../../util'
 import {type RecentSearch} from '../../datastores/recentSearches'
 import {type SearchFieldDefinitionDictionary} from '../../definitions/fields'
 import {type SearchFilterDefinitionDictionary} from '../../definitions/filters'
@@ -221,8 +222,9 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
           ...state.result,
           error: null,
           hasLocal: true,
-          // TODO: Deduplicate.
-          hits: state.result.hasLocal ? [...state.result.hits, ...action.hits] : action.hits,
+          hits: state.result.hasLocal
+            ? deduplicate([...state.result.hits, ...action.hits])
+            : action.hits,
           loaded: true,
           loading: false,
         },
@@ -555,4 +557,21 @@ function stripRecent(terms: RecentSearch | SearchTerms) {
     return rest
   }
   return terms
+}
+
+/**
+ * At page boundaries, the Text Search API may sometimes produce duplicate results. This function
+ * deduplicates an array of results based on their ids.
+ */
+function deduplicate(hits: SearchHit[]): SearchHit[] {
+  const hitsById = hits.reduce((map, hit) => {
+    const id = getPublishedId(hit.hit._id)
+
+    return {
+      ...map,
+      [id]: hit,
+    }
+  }, {})
+
+  return Object.values(hitsById)
 }
