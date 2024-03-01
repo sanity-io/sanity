@@ -23,6 +23,7 @@ import {
 } from 'sanity'
 import {getSearchableTypes, getSearchTypesWithMaxDepth} from 'sanity/_internalBrowser'
 
+import {getExtendedProjection} from '../../structureBuilder/util/getExtendedProjection'
 import {type SortOrder} from './types'
 
 interface ListenQueryOptions {
@@ -90,7 +91,14 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Sanit
         mergeMap((typeNames: string[]) => {
           const types = getSearchTypesWithMaxDepth(
             getSearchableTypes(schema).filter((type) => {
-              return typeNames.includes(type.name)
+              if (typeNames.includes(type.name)) {
+                // make a call to getExtendedProjection in strict mode to verify that all fields are
+                // known. This method will throw an exception if there are any unknown fields specified
+                // in the sort by list
+                getExtendedProjection(type, sort.by, true)
+                return true
+              }
+              return false
             }),
             maxFieldDepth,
           )
