@@ -32,7 +32,7 @@ export const taskSchema = (mode: FormMode) =>
       {
         type: 'array',
         name: 'description',
-        title: 'Descrption',
+        title: 'Description',
         components: {
           field: mode === 'edit' ? DescriptionFieldContainer : undefined,
           input: (props: ArrayOfObjectsInputProps<PortableTextBlock>) => (
