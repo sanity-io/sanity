@@ -235,8 +235,6 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
     setAddedCommentsDecorations((prev) => {
       const next = prev.map((p) => {
         if (p.payload?.commentId === commentId) {
-          // console.log('handleRangeDecorationMoved', details)
-
           const nextDecoration: RangeDecoration = {
             ...rangeDecoration,
             selection: newSelection,
