@@ -1,18 +1,26 @@
-import {AddIcon, ChevronLeftIcon, ChevronRightIcon, CloseIcon} from '@sanity/icons'
+import {AddIcon, ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon, CloseIcon} from '@sanity/icons'
 import {
   Box,
   // eslint-disable-next-line no-restricted-imports
   Button as UIButton,
   Flex,
+  Menu,
+  MenuDivider,
   Text,
 } from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
-import {useCallback} from 'react'
-import {BetaBadge} from 'sanity'
+import {useCallback, useMemo} from 'react'
+import {BetaBadge, useCurrentUser} from 'sanity'
 import styled from 'styled-components'
 
-import {Button, Tooltip, TooltipDelayGroupProvider} from '../../../../../ui-components'
+import {
+  Button,
+  MenuButton,
+  MenuItem,
+  Tooltip,
+  TooltipDelayGroupProvider,
+} from '../../../../../ui-components'
 import {useTasks, useTasksNavigation} from '../../context'
 import {type TaskDocument} from '../../types'
 
@@ -29,6 +37,62 @@ const Divider = styled.div((props) => {
     background-color: ${theme.color.input.default.enabled.border};
   `
 })
+
+function DraftsMenu() {
+  const {data} = useTasks()
+  const {state, setViewMode} = useTasksNavigation()
+  const {viewMode, selectedTask} = state
+
+  const user = useCurrentUser()
+
+  const draftTasks = useMemo(() => {
+    if (!user?.id) return []
+    return data.filter((task) => {
+      const isAuthoredByUser = task.authorId === user.id
+      const isDraft = !task.createdByUser
+      const isNotTheTaskBeingCreated = viewMode === 'create' ? task._id !== selectedTask : true
+      return isAuthoredByUser && isDraft && isNotTheTaskBeingCreated
+    })
+  }, [data, selectedTask, user?.id, viewMode])
+
+  const renderMenuItem = useCallback(
+    (item: TaskDocument) => {
+      const handleSelectTask = () => {
+        setViewMode({type: 'draft', id: item._id})
+      }
+      const title = item.title || 'Untitled'
+      const text = selectedTask === item._id ? `(editing) ${title}` : title
+      // eslint-disable-next-line react/jsx-no-bind
+      return <MenuItem key={item._id} text={text} onClick={handleSelectTask} />
+    },
+    [setViewMode, selectedTask],
+  )
+  if (!draftTasks.length) return null
+  return (
+    <MenuButton
+      id="edit-task-menu"
+      button={<Button text="Drafts" mode="ghost" iconRight={ChevronDownIcon} />}
+      popover={{
+        placement: 'bottom-end',
+        portal: true,
+      }}
+      menu={
+        <Menu>
+          <Flex padding={3} gap={2} align={'flex-end'}>
+            <Text size={1} weight="semibold">
+              Drafts
+            </Text>
+            <Text size={0} muted>
+              continue working on your drafts
+            </Text>
+          </Flex>
+          <MenuDivider />
+          {draftTasks.map(renderMenuItem)}
+        </Menu>
+      }
+    />
+  )
+}
 
 /**
  * @internal
@@ -74,13 +138,14 @@ export function TasksSidebarHeader(props: TasksSidebarHeaderProps) {
               <ChevronRightIcon />
               <Box paddingX={2}>
                 <Text size={1} weight="semibold" style={{textTransform: 'capitalize'}}>
-                  {viewMode === 'create' ? 'Create' : activeTabId}
+                  {viewMode === 'create' || viewMode === 'draft' ? 'Create' : activeTabId}
                 </Text>
               </Box>
             </>
           )}
           <BetaBadge marginLeft={2} />
         </Flex>
+        {(viewMode === 'create' || viewMode === 'draft') && <DraftsMenu />}
         {viewMode === 'edit' && (
           <TooltipDelayGroupProvider>
             <Flex gap={1} align="center">

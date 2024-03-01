@@ -1,6 +1,6 @@
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
-import {useCallback} from 'react'
+import {useCallback, useEffect, useRef, useState} from 'react'
 import {
   type ArrayFieldProps,
   type ArrayOfObjectsInputProps,
@@ -8,12 +8,12 @@ import {
   set,
   useCurrentUser,
 } from 'sanity'
-import {useMentionUser} from 'sanity/tasks'
 import styled, {css} from 'styled-components'
 
 // TODO: This is using components from structure/comments which is not ideal. But given comments is changing
 // we won't refactor this now, until comments is stable and we implement in this the `FormBuilder`
 import {CommentInput} from '../../../../../structure/comments'
+import {useMentionUser} from '../../context'
 import {type FormMode} from '../../types'
 
 const RemoveTitle = styled.div`
@@ -29,15 +29,17 @@ export const DescriptionFieldContainer = (props: ArrayFieldProps) => {
   return <RemoveTitle>{props.renderDefault(props)}</RemoveTitle>
 }
 
-const DescriptionInputRoot = styled.div<{$mode: FormMode}>((props) => {
+const DescriptionInputRoot = styled.div<{$mode: FormMode; $minHeight: number}>((props) => {
   const theme = getTheme_v2(props.theme)
+  const verticalPadding = props.$mode === 'edit' ? theme.space[1] : theme.space[3]
   return css`
     /* select editable-wrap and change the padding */
     [data-ui='editable-wrap'] {
+      overflow: hidden;
       padding: ${props.$mode === 'edit'
-        ? `${theme.space[1]}px 0px`
-        : `${theme.space[3]}px ${theme.space[2]}px`};
-      min-height: 100px;
+        ? `${verticalPadding}px 0px`
+        : `${verticalPadding}px ${theme.space[2]}px`};
+      min-height: ${Math.max(props.$minHeight + verticalPadding, 100)}px;
     }
     #comment-input-root {
       box-shadow: ${props.$mode === 'edit' ? 'none' : ''};
@@ -57,9 +59,32 @@ export function DescriptionInput(
 
   const handleChange = useCallback((next: PortableTextBlock[]) => onChange(set(next)), [onChange])
 
+  const rootRef = useRef<HTMLDivElement | null>(null)
+  const [textBoxScrollHeight, setTextBoxScrollHeight] = useState<number>(0)
+  const setTextboxHeight = useCallback((ref: HTMLDivElement) => {
+    const textBox = ref.querySelector('[role="textbox"]')
+    if (!textBox) return
+    const height = textBox.scrollHeight
+    setTextBoxScrollHeight(height)
+  }, [])
+
+  const setRootRef = useCallback(
+    (ref: HTMLDivElement) => {
+      if (!ref) return
+      setTextboxHeight(ref)
+      rootRef.current = ref
+    },
+    [setTextboxHeight],
+  )
+
+  useEffect(() => {
+    if (!rootRef.current) return
+    setTextboxHeight(rootRef.current)
+  }, [value, setTextboxHeight])
+
   if (!currentUser) return null
   return (
-    <DescriptionInputRoot $mode={mode}>
+    <DescriptionInputRoot $mode={mode} ref={setRootRef} $minHeight={textBoxScrollHeight || 100}>
       <CommentInput
         currentUser={currentUser}
         mentionOptions={mentionOptions}

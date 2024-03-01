@@ -1,11 +1,12 @@
 import {CopyIcon, LinkIcon, TrashIcon} from '@sanity/icons'
 import {Box, Flex, Menu, MenuDivider} from '@sanity/ui'
+import {uuid} from '@sanity/uuid'
 import {useCallback} from 'react'
 import {ContextMenuButton, LoadingBlock, type ObjectInputProps} from 'sanity'
-import {useTasksNavigation} from 'sanity/tasks'
 import styled from 'styled-components'
 
 import {MenuButton, MenuItem} from '../../../../../ui-components'
+import {useTasksNavigation} from '../../context'
 import {useRemoveTask} from '../../hooks/useRemoveTask'
 import {type TaskDocument} from '../../types'
 import {ActivityLog} from '../activityLog'
@@ -18,13 +19,16 @@ const FirstRow = styled.div`
   padding-bottom: 12px;
 `
 
-function FormActionsMenu({id}: {id: string}) {
-  const {setViewMode, setSelectedTask} = useTasksNavigation()
+function FormActionsMenu({id, value}: {id: string; value: TaskDocument}) {
+  const {setViewMode} = useTasksNavigation()
   const onTaskRemoved = useCallback(() => {
-    setViewMode('list')
-    setSelectedTask(null)
-  }, [setViewMode, setSelectedTask])
+    setViewMode({type: 'list'})
+  }, [setViewMode])
   const removeTask = useRemoveTask({id, onRemoved: onTaskRemoved})
+
+  const duplicateTask = useCallback(() => {
+    setViewMode({type: 'duplicate', duplicateTaskValues: value})
+  }, [setViewMode, value])
 
   return (
     <>
@@ -34,11 +38,7 @@ function FormActionsMenu({id}: {id: string}) {
           button={<ContextMenuButton />}
           menu={
             <Menu>
-              <MenuItem
-                text="Duplicate task"
-                icon={CopyIcon}
-                disabled // TODO: This is not yet implemented
-              />
+              <MenuItem text="Duplicate task" icon={CopyIcon} onClick={duplicateTask} />
               <MenuItem
                 text="Copy link to task"
                 icon={LinkIcon}
@@ -79,7 +79,7 @@ export function FormEdit(props: ObjectInputProps<TaskDocument>) {
             placeholder="Task title"
           />
         </div>
-        <FormActionsMenu id={props.value?._id} />
+        <FormActionsMenu id={props.value?._id} value={props.value} />
       </Flex>
       <FirstRow>
         <StatusSelector

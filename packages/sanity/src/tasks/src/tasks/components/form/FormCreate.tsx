@@ -1,6 +1,6 @@
-import {Box, Flex, Switch, Text} from '@sanity/ui'
+import {Box, Flex, Switch, Text, useToast} from '@sanity/ui'
 import {useCallback, useState} from 'react'
-import {type ObjectInputProps} from 'sanity'
+import {type ObjectInputProps, set} from 'sanity'
 
 import {Button} from '../../../../../ui-components'
 import {useTasksNavigation} from '../../context'
@@ -8,14 +8,33 @@ import {type TaskDocument} from '../../types'
 
 export function FormCreate(props: ObjectInputProps<TaskDocument>) {
   const [createMore, setCreateMore] = useState(false)
-  const {setViewMode, setActiveTabId} = useTasksNavigation()
+  const {setViewMode, setActiveTab} = useTasksNavigation()
+  const toast = useToast()
+  const handleCreateMore = useCallback(() => setCreateMore((p) => !p), [])
+  const {onChange, value} = props
+  const title = value?.title
 
   const handleCreate = useCallback(() => {
-    setViewMode('list')
-    setActiveTabId('subscribed')
-  }, [setViewMode, setActiveTabId])
-
-  const handleCreateMore = useCallback(() => setCreateMore((p) => !p), [])
+    if (!title) {
+      toast.push({
+        closable: true,
+        status: 'error',
+        title: 'Title is required',
+      })
+      return
+    }
+    onChange(set(new Date().toISOString(), ['createdByUser']))
+    if (createMore) {
+      setViewMode({type: 'create'})
+    } else {
+      setActiveTab('subscribed')
+    }
+    toast.push({
+      closable: true,
+      status: 'success',
+      title: 'Task created',
+    })
+  }, [setViewMode, setActiveTab, onChange, createMore, toast, title])
 
   return (
     <>
