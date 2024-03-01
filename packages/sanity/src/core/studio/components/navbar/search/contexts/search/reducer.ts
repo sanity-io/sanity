@@ -21,19 +21,10 @@ import {
 import {isRecentSearchTerms} from '../../utils/isRecentSearchTerms'
 import {sortTypes} from '../../utils/selectors'
 
-interface OffsetPaginationState {
-  pageIndex: number
-  // cursor: never
-}
-
-interface CursorPaginationState {
+interface PaginationState {
   cursor: string | null
   nextCursor: string | null
-  // pageIndex: never
 }
-
-// type PaginationState = OffsetPaginationState | CursorPaginationState
-type PaginationState = OffsetPaginationState & CursorPaginationState
 
 export type SearchReducerState = PaginationState & {
   currentUser: CurrentUser | null
@@ -59,7 +50,7 @@ export interface SearchDefinitions {
 
 export interface SearchResult {
   error: Error | null
-  hasMore?: boolean | null
+  hasLocal: boolean
   hits: SearchHit[]
   loaded: boolean
   loading: boolean
@@ -93,7 +84,7 @@ export function initialSearchState({
     recentSearches,
     result: {
       error: null,
-      hasMore: null,
+      hasLocal: false,
       hits: [],
       loaded: false,
       loading: false,
@@ -119,11 +110,10 @@ export type SearchClear = {type: 'SEARCH_CLEAR'}
 export type SearchRequestComplete = {
   type: 'SEARCH_REQUEST_COMPLETE'
   hits: SearchHit[]
+  nextCursor: string | undefined
 }
 export type SearchRequestError = {type: 'SEARCH_REQUEST_ERROR'; error: Error}
 export type SearchRequestStart = {type: 'SEARCH_REQUEST_START'}
-// xxx rename `SetNextCursor`?
-export type ReceiveNextCursor = {type: 'RECEIVE_NEXT_CURSOR'; nextCursor: string}
 export type TermsFiltersAdd = {filter: SearchFilter; type: 'TERMS_FILTERS_ADD'}
 export type TermsFiltersClear = {type: 'TERMS_FILTERS_CLEAR'}
 export type TermsFiltersRemove = {filterKey: string; type: 'TERMS_FILTERS_REMOVE'}
@@ -150,7 +140,6 @@ export type SearchAction =
   | OrderingSet
   | PageIncrement
   | RecentSearchesSet
-  | ReceiveNextCursor
   | SearchClear
   | SearchRequestComplete
   | SearchRequestError
@@ -202,23 +191,11 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
         terms: stripRecent(state.terms),
       }
     case 'PAGE_INCREMENT':
-      if (!state.nextCursor) {
-        return {
-          ...state,
-          nextCursor: null,
-        }
-      }
       return {
         ...state,
-        pageIndex: state.pageIndex + 1,
-        cursor: state.nextCursor,
+        cursor: state.nextCursor ?? state.cursor,
         nextCursor: null,
         terms: stripRecent(state.terms),
-      }
-    case 'RECEIVE_NEXT_CURSOR':
-      return {
-        ...state,
-        nextCursor: action.nextCursor,
       }
     case 'RECENT_SEARCHES_SET':
       return {
@@ -228,22 +205,24 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
     case 'SEARCH_CLEAR':
       return {
         ...state,
-        pageIndex: 0,
+        cursor: null,
+        nextCursor: null,
         result: {
           ...state.result,
-          hasMore: null,
+          hasLocal: false,
           hits: [],
         },
       }
     case 'SEARCH_REQUEST_COMPLETE':
       return {
         ...state,
-        cursor: null,
+        nextCursor: action.nextCursor ?? null,
         result: {
           ...state.result,
           error: null,
-          hasMore: action.hits.length > 0,
-          hits: state.pageIndex > 0 ? [...state.result.hits, ...action.hits] : action.hits,
+          hasLocal: true,
+          // TODO: Deduplicate.
+          hits: state.result.hasLocal ? [...state.result.hits, ...action.hits] : action.hits,
           loaded: true,
           loading: false,
         },
@@ -410,10 +389,12 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
     case 'TERMS_QUERY_SET':
       return {
         ...state,
-        pageIndex: 0,
+        cursor: null,
+        nextCursor: null,
         result: {
           ...state.result,
           loaded: false,
+          hasLocal: false,
         },
         terms: stripRecent({
           ...state.terms,
@@ -436,10 +417,12 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
         }),
         filters,
         lastAddedFilter: null,
-        pageIndex: 0,
+        cursor: null,
+        nextCursor: null,
         result: {
           ...state.result,
           loaded: false,
+          hasLocal: false,
         },
         terms: {
           ...action.terms,
@@ -485,10 +468,12 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
         ...state,
         documentTypesNarrowed,
         filters,
-        pageIndex: 0,
+        cursor: null,
+        nextCursor: null,
         result: {
           ...state.result,
           loaded: false,
+          hasLocal: false,
         },
         terms: stripRecent({
           ...state.terms,
@@ -512,10 +497,12 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
           filters: state.filters,
           types,
         }),
-        pageIndex: 0,
+        cursor: null,
+        nextCursor: null,
         result: {
           ...state.result,
           loaded: false,
+          hasLocal: false,
         },
         terms: stripRecent({
           ...state.terms,
@@ -533,10 +520,12 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
           filters: state.filters,
           types,
         }),
-        pageIndex: 0,
+        cursor: null,
+        nextCursor: null,
         result: {
           ...state.result,
           loaded: false,
+          hasLocal: false,
         },
         terms: stripRecent({
           ...state.terms,

@@ -66,15 +66,13 @@ export function useSearch({
   allowEmptyQueries,
   initialState,
   onComplete,
-  onReceiveNextCursor,
   onError,
   onStart,
   schema,
 }: {
   allowEmptyQueries?: boolean
   initialState: SearchState
-  onComplete?: (hits: SearchHit[]) => void
-  onReceiveNextCursor?: (nextCursor: string | undefined) => void
+  onComplete?: (result: {hits: SearchHit[]; nextCursor: string | undefined}) => void
   onError?: (error: Error) => void
   onStart?: () => void
   schema: Schema
@@ -131,12 +129,7 @@ export function useSearch({
               () => hasSearchableTerms({allowEmptyQueries, terms: request.terms}),
               // If we have a valid search, run async fetch, map results and trigger `onComplete` / `onError` callbacks
               search(request.terms, request.options).pipe(
-                tap((result) => {
-                  if (result.type === 'text') {
-                    onReceiveNextCursor?.(result.nextCursor)
-                  }
-                }),
-                tap(({hits}) => onComplete?.(hits)),
+                tap(({hits, nextCursor}) => onComplete?.({hits, nextCursor})),
                 catchError((error) => {
                   onError?.(error)
                   return of({
@@ -149,7 +142,7 @@ export function useSearch({
                 }),
               ),
               // If there is no valid search, emit an empty observable and trigger `onComplete` event
-              of(EMPTY).pipe(tap(() => onComplete?.([]))),
+              of(EMPTY).pipe(tap(() => onComplete?.({hits: [], nextCursor: undefined}))),
             ),
             // Emit loading completed
             of({loading: false}),
