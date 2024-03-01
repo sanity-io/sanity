@@ -4,12 +4,15 @@ import {type ChangeEvent, useCallback, useEffect, useRef} from 'react'
 import {type FormPatch, type PatchEvent, type Path, set, type StringFieldProps, unset} from 'sanity'
 import styled, {css} from 'styled-components'
 
-const Root = styled.div`
-  display: grid;
-  grid-template-columns: 1fr;
-  padding-top: 14px;
-  padding-bottom: 7px;
-`
+const Root = styled.div((props) => {
+  const theme = getTheme_v2(props.theme)
+  return `
+      display: grid;
+      grid-template-columns: 1fr;
+      padding-top: ${theme.space[3]}px;
+      padding-bottom: 7px;
+    `
+})
 const TitleInput = styled.textarea((props) => {
   const {color, font} = getTheme_v2(props.theme)
 
