@@ -2,8 +2,8 @@
 import {type SanityClient} from '@sanity/client'
 import {type SanityDocument} from '@sanity/types'
 import {groupBy} from 'lodash'
-import {defer, type Observable, of as observableOf} from 'rxjs'
-import {concatMap, map, mergeMap, scan} from 'rxjs/operators'
+import {defer, type Observable, of as observableOf, of, timer} from 'rxjs'
+import {concatMap, map, mergeMap, scan, switchMap} from 'rxjs/operators'
 
 import {
   type IdPair,
@@ -90,6 +90,9 @@ export function getPairListener(
             ]),
           )
         : observableOf(event),
+    ),
+    switchMap((event) =>
+      event.type === 'reconnect' ? timer(1000).pipe(map(() => event)) : of(event),
     ),
     scan(
       (acc: {next: ListenerEvent[]; buffer: ListenerEvent[]}, msg) => {
