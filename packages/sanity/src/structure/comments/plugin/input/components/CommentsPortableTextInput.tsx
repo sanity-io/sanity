@@ -111,6 +111,7 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
     return comments.data.open
       .filter((comment) => comment.fieldPath === stringFieldPath)
       .filter((c) => isTextSelectionComment(c.parentComment))
+      .map((c) => c.parentComment)
   }, [comments.data.open, stringFieldPath])
 
   const getFragment = useCallback(() => {
@@ -216,6 +217,8 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
     setAddedCommentsDecorations((prev) => {
       const next = prev.map((p) => {
         if (p.payload?.commentId === commentId) {
+          // console.log('handleRangeDecorationMoved', details)
+
           const nextDecoration: RangeDecoration = {
             ...rangeDecoration,
             selection: newSelection,
@@ -276,12 +279,17 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
           },
         },
       }
+
       operation.update(comment._id, nextComment)
 
       // Mark the range decorations as not dirty
       setAddedCommentsDecorations((prev) => {
         const next = prev.map((p) => {
-          if (decoratorsToUpdate.includes(p)) {
+          const isDirty = decoratorsToUpdate.find(
+            (d) => d.payload?.commentId === p.payload?.commentId,
+          )?.payload?.dirty
+
+          if (isDirty) {
             const nextDecoration: RangeDecoration = {
               ...p,
               payload: {...p.payload, dirty: false},
@@ -422,9 +430,29 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
   // That is, when another user adds, updates or deletes a comment, we need
   // to update the range decorations to reflect these changes in the UI.
   useEffect(() => {
-    const parentComments = textComments.map((c) => c.parentComment)
-    const nextDecorations = handleBuildRangeDecorations(parentComments)
-    setAddedCommentsDecorations(nextDecorations)
+    const nextDecorations = handleBuildRangeDecorations(textComments)
+
+    // The `dirty` flag is used to keep track of range decorations that
+    // have been moved. When a range decoration is moved, we need to update
+    // the comment document. However, when receiving updates from the server,
+    // the `dirty` flag will be removed. Therefore, we need to make sure
+    // that the `dirty` flag is preserved so that we can update the comment.
+    setAddedCommentsDecorations((current) => {
+      return nextDecorations.map((nextDecoration) => {
+        const prevDecoration = current.find(
+          (p) => p.payload?.commentId === nextDecoration.payload?.commentId,
+        )
+
+        if (prevDecoration?.payload?.dirty) {
+          return {
+            ...nextDecoration,
+            payload: {...nextDecoration.payload, dirty: prevDecoration.payload.dirty},
+          }
+        }
+
+        return nextDecoration
+      })
+    })
   }, [handleBuildRangeDecorations, textComments])
 
   const showFloatingButton = Boolean(currentSelection && canSubmit && selectionReferenceElement)
