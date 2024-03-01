@@ -30,7 +30,6 @@ export interface CommentsContextValue {
 
   operation: {
     create: CommentOperations['create']
-    edit: CommentOperations['edit']
     remove: CommentOperations['remove']
     update: CommentOperations['update']
     react: CommentOperations['react']

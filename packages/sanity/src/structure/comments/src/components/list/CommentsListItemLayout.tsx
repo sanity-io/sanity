@@ -1,7 +1,7 @@
 import {hues} from '@sanity/color'
 import {type CurrentUser} from '@sanity/types'
 import {Box, Card, Flex, Stack, Text, TextSkeleton, useClickOutside} from '@sanity/ui'
-import {useCallback, useMemo, useRef, useState} from 'react'
+import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {
   type RelativeTimeOptions,
   Translate,
@@ -16,15 +16,15 @@ import {IntentLink} from 'sanity/router'
 import styled, {css} from 'styled-components'
 
 import {commentsLocaleNamespace} from '../../../i18n'
-import {hasCommentMessageValue, useCommentHasChanged} from '../../helpers'
+import {hasCommentMessageValue, isTextSelectionComment, useCommentHasChanged} from '../../helpers'
 import {
   type CommentContext,
   type CommentDocument,
-  type CommentEditPayload,
   type CommentMessage,
   type CommentReactionOption,
   type CommentStatus,
   type CommentsUIMode,
+  type CommentUpdatePayload,
 } from '../../types'
 import {AVATAR_HEIGHT, CommentsAvatar, SpacerAvatar} from '../avatars'
 import {FLEX_GAP} from '../constants'
@@ -32,6 +32,7 @@ import {CommentMessageSerializer} from '../pte'
 import {CommentInput, type CommentInputHandle} from '../pte/comment-input'
 import {CommentReactionsBar} from '../reactions'
 import {CommentsListItemContextMenu} from './CommentsListItemContextMenu'
+import {CommentsListItemReferencedValue} from './CommentsListItemReferencedValue'
 
 const stopPropagation = (e: React.MouseEvent<HTMLDivElement>) => e.stopPropagation()
 
@@ -126,6 +127,8 @@ interface CommentsListItemLayoutProps {
   comment: CommentDocument
   currentUser: CurrentUser
   hasError?: boolean
+  hasReferencedValue?: boolean
+  intent?: CommentContext['intent']
   isParent?: boolean
   isRetrying?: boolean
   mentionOptions: UserListWithPermissionsHookValue
@@ -133,12 +136,11 @@ interface CommentsListItemLayoutProps {
   onCopyLink?: (id: string) => void
   onCreateRetry?: (id: string) => void
   onDelete: (id: string) => void
-  onEdit: (id: string, message: CommentEditPayload) => void
+  onEdit: (id: string, message: CommentUpdatePayload) => void
   onInputKeyDown?: (event: React.KeyboardEvent<Element>) => void
   onReactionSelect?: (id: string, reaction: CommentReactionOption) => void
   onStatusChange?: (id: string, status: CommentStatus) => void
   readOnly?: boolean
-  intent?: CommentContext['intent']
 }
 
 const RELATIVE_TIME_OPTIONS: RelativeTimeOptions = {useTemporalPhrase: true}
@@ -150,6 +152,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
     comment,
     currentUser,
     hasError,
+    hasReferencedValue,
     intent,
     isParent,
     isRetrying,
@@ -174,6 +177,8 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
   const startMessage = useRef<CommentMessage>(message)
   const [menuOpen, setMenuOpen] = useState<boolean>(false)
 
+  const commentInputRef = useRef<CommentInputHandle>(null)
+
   const hasChanges = useCommentHasChanged(value)
   const hasValue = useMemo(() => hasCommentMessageValue(value), [value])
 
@@ -191,8 +196,6 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
 
   const hasReactions = Boolean(reactions?.length)
 
-  const commentInputRef = useRef<CommentInputHandle>(null)
-
   const createdDate = _createdAt ? new Date(_createdAt) : new Date()
   const editedDate = lastEditedAt ? new Date(lastEditedAt) : null
   const createdTimeAgo = useRelativeTime(createdDate, RELATIVE_TIME_OPTIONS)
@@ -200,6 +203,16 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
   const formattedCreatedAt = dateTimeFormat.format(createdDate)
   const formattedLastEditAt = editedDate ? dateTimeFormat.format(editedDate) : null
   const displayError = hasError || isRetrying
+
+  // If the message has changed we need to update the value in the state
+  // so that, when the user starts editing, the input is populated with the
+  // latest message value.
+  useEffect(() => {
+    if (isEditing) return
+
+    startMessage.current = message
+    setValue(message)
+  }, [isEditing, message])
 
   const handleMenuOpen = useCallback(() => setMenuOpen(true), [])
   const handleMenuClose = useCallback(() => setMenuOpen(false), [])
@@ -305,6 +318,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
   return (
     <RootStack
       data-menu-open={menuOpen ? 'true' : 'false'}
+      data-testid="comments-list-item-layout"
       onKeyDown={handleRootKeyDown}
       ref={setRootElement}
       space={4}
@@ -384,6 +398,17 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
             </ContextMenuBox>
           )}
         </Flex>
+
+        {isTextSelectionComment(comment) && Boolean(comment?.contentSnapshot) && (
+          <Flex gap={FLEX_GAP} marginBottom={3}>
+            <SpacerAvatar />
+
+            <CommentsListItemReferencedValue
+              hasReferencedValue={hasReferencedValue}
+              value={comment?.contentSnapshot}
+            />
+          </Flex>
+        )}
 
         {isEditing && (
           <Flex align="flex-start" gap={2}>

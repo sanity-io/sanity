@@ -1,3 +1,4 @@
+import {AddCommentIcon} from '@sanity/icons'
 import {
   // eslint-disable-next-line no-restricted-imports
   Button as SanityUIButton,
@@ -19,7 +20,6 @@ import styled from 'styled-components'
 import {Button, Popover, Tooltip} from '../../../../ui-components'
 import {commentsLocaleNamespace} from '../../i18n'
 import {
-  AddCommentIcon,
   CommentIcon,
   CommentInput,
   type CommentInputHandle,

@@ -48,6 +48,7 @@ interface CommentsListItemContextMenuProps {
   canDelete: boolean | undefined
   canEdit: boolean | undefined
   isParent: boolean | undefined
+  mode: CommentsUIMode
   onCopyLink?: () => void
   onDeleteStart?: () => void
   onEditStart?: () => void
@@ -57,7 +58,6 @@ interface CommentsListItemContextMenuProps {
   onStatusChange?: () => void
   readOnly?: boolean
   status: CommentStatus
-  mode: CommentsUIMode
 }
 
 export function CommentsListItemContextMenu(props: CommentsListItemContextMenuProps) {
@@ -65,6 +65,7 @@ export function CommentsListItemContextMenu(props: CommentsListItemContextMenuPr
     canDelete,
     canEdit,
     isParent,
+    mode,
     onCopyLink,
     onDeleteStart,
     onEditStart,
@@ -74,7 +75,6 @@ export function CommentsListItemContextMenu(props: CommentsListItemContextMenuPr
     onStatusChange,
     readOnly,
     status,
-    mode,
   } = props
 
   const showMenuButton = Boolean(onCopyLink || onDeleteStart || onEditStart)
@@ -87,8 +87,8 @@ export function CommentsListItemContextMenu(props: CommentsListItemContextMenuPr
         <FloatingCard display="flex" shadow={2} padding={1} radius={2} sizing="border">
           {onReactionSelect && (
             <CommentReactionsMenuButton
-              onMenuClose={onMenuClose}
               mode={mode}
+              onMenuClose={onMenuClose}
               onMenuOpen={onMenuOpen}
               onSelect={onReactionSelect}
               options={COMMENT_REACTION_OPTIONS}
@@ -104,6 +104,7 @@ export function CommentsListItemContextMenu(props: CommentsListItemContextMenuPr
                   ? t('list-item.resolved-tooltip-aria-label')
                   : t('list-item.re-open-resolved-aria-label')
               }
+              data-testid="comments-list-item-status-button"
               disabled={readOnly}
               icon={status === 'open' ? CheckmarkCircleIcon : UndoIcon}
               mode="bleed"
