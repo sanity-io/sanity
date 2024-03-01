@@ -115,6 +115,11 @@ export const taskSchema = (mode: FormMode) =>
       },
       {
         type: 'string',
+        name: 'createdByUser',
+        hidden: true,
+      },
+      {
+        type: 'string',
         name: 'status',
         title: 'Status',
         options: {
