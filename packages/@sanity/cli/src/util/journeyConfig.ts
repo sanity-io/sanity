@@ -225,7 +225,7 @@ function wrapSchemaTypeInHelpers(schemaType: SchemaObject): string {
     const previewPart = preview && `preview: {${serialize(preview)}}`
 
     const joined = [restPart, fieldsPart, previewPart].filter(Boolean).join(',')
-    return `defineType({ ${joined} }),`
+    return `defineType({ ${joined} })`
   }
 
   function wrapDefineField(field: SchemaObject) {
