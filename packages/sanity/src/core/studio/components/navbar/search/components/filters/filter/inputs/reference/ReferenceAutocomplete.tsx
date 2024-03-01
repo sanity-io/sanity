@@ -69,7 +69,7 @@ export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
       terms: {query: '', types},
     },
     onComplete: (result) => {
-      setHits(result.map(({hit}) => ({value: hit._id, hit})))
+      setHits(result.hits.map(({hit}) => ({value: hit._id, hit})))
     },
     schema,
   })
