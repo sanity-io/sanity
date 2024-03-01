@@ -2,12 +2,8 @@ import {type SanityClient} from '@sanity/client'
 import {useCallback, useMemo} from 'react'
 import {useCurrentUser} from 'sanity'
 
-import {
-  type TaskCreatePayload,
-  type TaskDocument,
-  type TaskEditPayload,
-  type TaskOperations,
-} from '../../types'
+import {type TaskCreatePayload, type TaskDocument, type TaskEditPayload} from '../../types'
+import {type TaskOperations} from './types'
 
 interface TaskOperationsOptions {
   client: SanityClient | null
