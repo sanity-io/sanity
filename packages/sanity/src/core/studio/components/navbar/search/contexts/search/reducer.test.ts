@@ -41,7 +41,7 @@ const initialState: SearchReducerState = {
   ...initialSearchState({
     currentUser: mockUser,
     definitions: {fields: {}, filters: {}, operators: {}},
-    pagination: {cursor: null, pageIndex: 0, nextCursor: null},
+    pagination: {cursor: null, nextCursor: null},
   }),
   terms: recentSearchTerms,
 }
