@@ -65,6 +65,7 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
   const {scrollToComment, scrollToGroup} = useCommentsScroll()
 
   const editorRef = useRef<PortableTextEditor | null>(null)
+  const mouseDownRef = useRef<boolean>(false)
 
   const [nextCommentValue, setNextCommentValue] = useState<CommentMessage | null>(null)
   const [nextCommentSelection, setNextCommentSelection] = useState<EditorSelection | null>(null)
@@ -196,7 +197,13 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
         return
       }
 
-      handleSetCurrentSelectionRect()
+      // If the mouse is not down, we want to set the current selection rect
+      // when the selection changes. Otherwise, we want to wait until the mouse
+      // is up to set the current selection rect (see `handleMouseUp`).
+      if (!mouseDownRef.current) {
+        handleSetCurrentSelectionRect()
+      }
+
       setCurrentSelection(selection)
       setCanSubmit(true)
     },
@@ -207,6 +214,17 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
     () => debounce(handleSelectionChange, 200),
     [handleSelectionChange],
   )
+
+  const handleMouseDown = useCallback(() => {
+    mouseDownRef.current = true
+  }, [])
+
+  const handleMouseUp = useCallback(() => {
+    mouseDownRef.current = false
+
+    // When the mouse is up, we want to set the current selection rect.
+    handleSetCurrentSelectionRect()
+  }, [handleSetCurrentSelectionRect])
 
   const handleRangeDecorationMoved = useCallback((details: RangeDecorationOnMovedDetails) => {
     const {rangeDecoration, newSelection} = details
@@ -281,25 +299,25 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
       }
 
       operation.update(comment._id, nextComment)
+    })
 
-      // Mark the range decorations as not dirty
-      setAddedCommentsDecorations((prev) => {
-        const next = prev.map((p) => {
-          const isDirty = decoratorsToUpdate.find(
-            (d) => d.payload?.commentId === p.payload?.commentId,
-          )?.payload?.dirty
+    // Mark the range decorations as not dirty
+    setAddedCommentsDecorations((prev) => {
+      const next = prev.map((p) => {
+        const isDirty = decoratorsToUpdate.find(
+          (d) => d.payload?.commentId === p.payload?.commentId,
+        )?.payload?.dirty
 
-          if (isDirty) {
-            const nextDecoration: RangeDecoration = {
-              ...p,
-              payload: {...p.payload, dirty: false},
-            }
-            return nextDecoration
+        if (isDirty) {
+          const nextDecoration: RangeDecoration = {
+            ...p,
+            payload: {...p.payload, dirty: false},
           }
-          return p
-        })
-        return next.filter((p) => p.selection !== null)
+          return nextDecoration
+        }
+        return p
       })
+      return next.filter((p) => p.selection !== null)
     })
   }, [addedCommentsDecorations, getComment, operation])
 
@@ -333,11 +351,10 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
         updateCommentRange()
       }
       if (change.type === 'selection') {
-        resetStates()
         debounceSelectionChange(change.selection)
       }
     },
-    [debounceSelectionChange, resetStates, updateCommentRange],
+    [debounceSelectionChange, updateCommentRange],
   )
 
   // The range decoration for the comment input. This is used to position the
@@ -455,7 +472,9 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
     })
   }, [handleBuildRangeDecorations, textComments])
 
-  const showFloatingButton = Boolean(currentSelection && canSubmit && selectionReferenceElement)
+  const showFloatingButton = Boolean(
+    currentSelection && canSubmit && selectionReferenceElement && !mouseDownRef.current,
+  )
   const showFloatingInput = Boolean(nextCommentSelection && popoverAuthoringReferenceElement)
 
   return (
@@ -486,7 +505,7 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
         </AnimatePresence>
       </BoundaryElementProvider>
 
-      <Stack ref={setRootElement}>
+      <Stack ref={setRootElement} onMouseDown={handleMouseDown} onMouseUp={handleMouseUp}>
         {props.renderDefault({
           ...props,
           onEditorChange,
