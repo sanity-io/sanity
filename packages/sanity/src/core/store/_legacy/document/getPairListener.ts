@@ -2,8 +2,8 @@
 import {type SanityClient} from '@sanity/client'
 import {type SanityDocument} from '@sanity/types'
 import {groupBy} from 'lodash'
-import {defer, type Observable, of as observableOf} from 'rxjs'
-import {concatMap, map, mergeMap, scan} from 'rxjs/operators'
+import {concat, defer, type Observable, of as observableOf, of, timer} from 'rxjs'
+import {concatMap, map, mergeMap, scan, switchMap} from 'rxjs/operators'
 
 import {
   type IdPair,
@@ -91,6 +91,13 @@ export function getPairListener(
           )
         : observableOf(event),
     ),
+    switchMap((event) => {
+      return concat(
+        of(event),
+        timer(5000).pipe(map(() => ({type: 'reconnect'}) as const)),
+        timer(2000).pipe(map(() => event)),
+      )
+    }),
     scan(
       (acc: {next: ListenerEvent[]; buffer: ListenerEvent[]}, msg) => {
         // we only care about mutation events
