@@ -8,6 +8,7 @@ const initialState: State = {
   viewMode: 'list',
   selectedTask: null,
   activeTabId: 'assigned',
+  duplicateTaskValues: null,
 }
 
 function reducer(state: State, action: Action): State {
@@ -23,6 +24,19 @@ function reducer(state: State, action: Action): State {
         ...state,
         viewMode: 'edit',
         selectedTask: action.payload.id,
+      }
+    case 'EDIT_DRAFT':
+      return {
+        ...state,
+        viewMode: 'draft',
+        selectedTask: action.payload.id,
+      }
+    case 'DUPLICATE_TASK':
+      return {
+        ...state,
+        viewMode: 'duplicate',
+        selectedTask: uuid(),
+        duplicateTaskValues: action.payload.duplicateTaskValues,
       }
     case 'SET_ACTIVE_TAB':
       return {
@@ -57,6 +71,15 @@ export const TasksNavigationProvider = ({children}: {children: ReactNode}) => {
         break
       case 'edit':
         dispatch({type: 'EDIT_TASK', payload: {id: viewMode.id}})
+        break
+      case 'duplicate':
+        dispatch({
+          type: 'DUPLICATE_TASK',
+          payload: {duplicateTaskValues: viewMode.duplicateTaskValues},
+        })
+        break
+      case 'draft':
+        dispatch({type: 'EDIT_DRAFT', payload: {id: viewMode.id}})
         break
       default:
         break

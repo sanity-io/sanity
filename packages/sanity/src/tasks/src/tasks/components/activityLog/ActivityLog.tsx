@@ -81,7 +81,9 @@ export function ActivityLog({value}: {value: TaskDocument}) {
         </Flex>
       </Card>
       <Stack marginTop={4} space={4}>
-        {value._createdAt && <CreatedAt createdAt={value._createdAt} authorId={value.authorId} />}
+        {value.createdByUser && (
+          <CreatedAt createdAt={value.createdByUser} authorId={value.authorId} />
+        )}
         <AddComment />
       </Stack>
     </Box>

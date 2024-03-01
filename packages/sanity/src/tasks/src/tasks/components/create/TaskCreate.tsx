@@ -1,25 +1,19 @@
-import {uuid} from '@sanity/uuid'
-import {useMemo} from 'react'
 import {LoadingBlock, useCurrentUser, useWorkspace} from 'sanity'
-import {useTasks} from 'sanity/tasks'
 
+import {useTasks} from '../../context'
 import {type TaskDocument} from '../../types'
 import {TasksForm} from '../form/TasksForm'
 import {getTargetValue} from '../form/utils'
 
-interface TaskCreateProps {
-  onCreate: () => void
-}
-export function TaskCreate(props: TaskCreateProps) {
-  const {onCreate} = props
+export function TaskCreate({selectedTask}: {selectedTask: string}) {
   const {activeDocument} = useTasks()
-  const documentId = useMemo(() => uuid(), [])
+
   const currentUser = useCurrentUser()
   const {dataset, projectId} = useWorkspace()
   if (!currentUser) return <LoadingBlock showText title="Loading current user" />
 
   const initialValue: Partial<TaskDocument> = {
-    _id: documentId,
+    _id: selectedTask,
     _type: 'tasks.task',
     authorId: currentUser.id,
     status: 'open',
@@ -33,5 +27,12 @@ export function TaskCreate(props: TaskCreateProps) {
       : undefined,
   }
 
-  return <TasksForm documentId={documentId} initialValue={initialValue} mode="create" />
+  return (
+    <TasksForm
+      documentId={selectedTask}
+      initialValue={initialValue}
+      mode="create"
+      key={selectedTask}
+    />
+  )
 }
