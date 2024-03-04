@@ -111,10 +111,7 @@ export type SearchOptions = {
   includeDrafts?: boolean
   skipSortByScore?: boolean
   sort?: SearchSort[]
-
   cursor?: string
-
-  offset?: number
   limit?: number
 }
 

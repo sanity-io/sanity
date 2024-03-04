@@ -15,7 +15,6 @@ import {FINDABILITY_MVI} from '../constants'
 export interface SearchParams {
   __types: string[]
   __limit: number
-  __offset: number
   [key: string]: unknown
 }
 
@@ -198,7 +197,7 @@ export function createSearchQuery(
   let query =
     `*[${filters.join(' && ')}]` +
     `| order(${sortOrder})` +
-    `[$__offset...$__limit]` +
+    `[0...$__limit]` +
     // the following would improve search quality for paths-with-numbers, but increases the size of the query by up to 50%
     // `${hasIndexedPaths ? `[${createConstraints(terms, exactSearchSpec).join(' && ')}]` : ''}` +
     `{${finalProjection}}`
@@ -212,7 +211,7 @@ export function createSearchQuery(
 
     query = [
       `*[${filters.join(' && ')}]{${firstProjection}}`,
-      `order(${sortOrder})[$__offset...$__limit]{${finalProjection}}`,
+      `order(${sortOrder})[0...$__limit]{${finalProjection}}`,
     ].join('|')
   }
 
@@ -223,8 +222,7 @@ export function createSearchQuery(
     .join('\n')
   const updatedQuery = groqComments ? `${groqComments}\n${query}` : query
 
-  const offset = searchOpts?.offset ?? 0
-  const limit = (searchOpts?.limit ?? DEFAULT_LIMIT) + offset
+  const limit = searchOpts?.limit ?? DEFAULT_LIMIT
 
   return {
     query: updatedQuery,
@@ -232,7 +230,6 @@ export function createSearchQuery(
       ...toGroqParams(terms),
       __types: exactSearchSpecs.map((spec) => spec.typeName),
       __limit: limit,
-      __offset: offset,
       ...(params || {}),
     },
     options: {tag},

@@ -32,7 +32,7 @@ describe('createSearchQuery', () => {
         `// findability-mvi:${FINDABILITY_MVI}\n` +
           '*[_type in $__types && (title match $t0)]' +
           '| order(_id asc)' +
-          '[$__offset...$__limit]' +
+          '[0...$__limit]' +
           '{_type, _id, ...select(_type == "basic-schema-test" => { "w0": title })}',
       )
 
@@ -40,7 +40,6 @@ describe('createSearchQuery', () => {
         t0: 'test*',
         __types: ['basic-schema-test'],
         __limit: DEFAULT_LIMIT,
-        __offset: 0,
       })
     })
 
@@ -103,7 +102,7 @@ describe('createSearchQuery', () => {
       const result = [
         `// findability-mvi:${FINDABILITY_MVI}\n` +
           '*[_type in $__types && (title match $t0)]{_type, _id, object{field}}',
-        '|order(_id asc)[$__offset...$__limit]',
+        '|order(_id asc)[0...$__limit]',
         '{_type, _id, ...select(_type == "basic-schema-test" => { "w0": title })}',
       ].join('')
 
@@ -124,20 +123,18 @@ describe('createSearchQuery', () => {
       expect(query).toContain("!(_id in path('drafts.**'))")
     })
 
-    it('should use provided offset and limit', () => {
+    it('should use provided limit', () => {
       const {params} = createSearchQuery(
         {
           query: 'term0',
           types: [testType],
         },
         {
-          offset: 10,
           limit: 30,
         },
       )
 
-      expect(params.__limit).toEqual(40) // provided offset + limit
-      expect(params.__offset).toEqual(10)
+      expect(params.__limit).toEqual(30)
     })
 
     it('should add configured filter and params', () => {
@@ -200,7 +197,7 @@ describe('createSearchQuery', () => {
         `// findability-mvi:${FINDABILITY_MVI}\n` +
           '*[_type in $__types && (title match $t0)]' +
           '| order(exampleField desc)' +
-          '[$__offset...$__limit]' +
+          '[0...$__limit]' +
           '{_type, _id, ...select(_type == "basic-schema-test" => { "w0": title })}',
       )
     })
@@ -234,7 +231,7 @@ describe('createSearchQuery', () => {
         `// findability-mvi:${FINDABILITY_MVI}\n`,
         '*[_type in $__types && (title match $t0)]| ',
         'order(exampleField desc,anotherExampleField asc,lower(mapWithField) asc)',
-        '[$__offset...$__limit]{_type, _id, ...select(_type == "basic-schema-test" => { "w0": title })}',
+        '[0...$__limit]{_type, _id, ...select(_type == "basic-schema-test" => { "w0": title })}',
       ].join('')
 
       expect(query).toEqual(result)
@@ -250,7 +247,7 @@ describe('createSearchQuery', () => {
         `// findability-mvi:${FINDABILITY_MVI}\n` +
           '*[_type in $__types && (title match $t0)]' +
           '| order(_id asc)' +
-          '[$__offset...$__limit]' +
+          '[0...$__limit]' +
           '{_type, _id, ...select(_type == "basic-schema-test" => { "w0": title })}',
       )
     })
@@ -334,7 +331,7 @@ describe('createSearchQuery', () => {
         `// findability-mvi:${FINDABILITY_MVI}\n` +
           '*[_type in $__types && (cover[].cards[].title match $t0) && (cover[].cards[].title match $t1)]' +
           '| order(_id asc)' +
-          '[$__offset...$__limit]' +
+          '[0...$__limit]' +
           // at this point we could refilter using cover[0].cards[0].title.
           // This solution was discarded at it would increase the size of the query payload by up to 50%
 
