@@ -201,32 +201,30 @@ function getImports(schemaType: string): string {
 }
 
 /**
- * Serialize a Sanity schema type into a string.
+ * Serialize a singleSanity schema type (signular) into a string.
  * Wraps the schema object in the appropriate helper function.
  *
  * @param schemaType - The schema type to serialize
  * @returns The schema type as a string
  */
-function wrapSchemaTypeInHelpers(schemaType: SchemaObject): string {
-  switch (schemaType.type) {
-    case 'document':
-    case 'object':
-      return wrapDefineType(schemaType)
-    case 'array':
-      return wrapDefineArrayMember(schemaType as ArrayDefinition)
-    default:
-      return wrapDefineField(schemaType)
+export function wrapSchemaTypeInHelpers(schemaType: SchemaObject, root: boolean = true): string {
+  if (root) {
+    return wrapDefineType(schemaType)
   }
+  if (schemaType.type === 'array') {
+    return wrapDefineArrayMember(schemaType as ArrayDefinition)
+  }
+  return wrapDefineField(schemaType)
 
   function wrapDefineType(field: SchemaObject) {
     const {fields, preview, ...rest} = field
     const restPart = serialize(rest)
-    const fieldsStr = fields?.map(wrapSchemaTypeInHelpers).join('')
+    const fieldsStr = fields?.map((f) => wrapSchemaTypeInHelpers(f, false)).join('')
     const fieldsPart = fields ? `fields: [${fieldsStr}],` : ''
     const previewPart = preview && `preview: {${serialize(preview)}}`
 
     const joined = [restPart, fieldsPart, previewPart].filter(Boolean).join(',')
-    return `defineType({ ${joined} })`
+    return `defineType({ ${joined} })` // No comma at the end as this is only used top-level
   }
 
   function wrapDefineField(field: SchemaObject) {
@@ -239,10 +237,9 @@ function wrapSchemaTypeInHelpers(schemaType: SchemaObject): string {
     const restPart = serialize(rest)
     const ofStr = of.map((f) => `defineArrayMember({${serialize(f)}})`)
     const ofPart = of ? `of: [${ofStr.join(',')}],` : ''
-    return `defineField({
-      ${restPart},
-      ${ofPart}
-    }),`
+
+    const joined = [restPart, ofPart].filter(Boolean).join(',')
+    return `defineField({ ${joined} }),`
   }
 
   function serialize(obj: object) {
