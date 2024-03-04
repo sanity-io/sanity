@@ -574,9 +574,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
           },
         ]
       }
-      const result = rangeDecorationState.filter(
-        (item) => path.length > 1 && SlateRange.includes(item, path),
-      )
+      const result = rangeDecorationState.filter((item) => SlateRange.includes(item, path))
       if (result.length > 0) {
         return result
       }
