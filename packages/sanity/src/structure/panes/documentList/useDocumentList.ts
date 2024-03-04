@@ -2,7 +2,7 @@ import {type ClientPerspective} from '@sanity/client'
 import {observableCallback} from 'observable-callback'
 import {useMemo, useState} from 'react'
 import {useObservable} from 'react-rx'
-import {concat, fromEvent, merge, of} from 'rxjs'
+import {concat, fromEvent, merge, of, retry, timer} from 'rxjs'
 import {
   catchError,
   filter,
@@ -138,9 +138,21 @@ export function useDocumentList(opts: UseDocumentListOpts): UseDocumentListHookV
       catchError((err: unknown, caught$) => {
         return concat(
           of({type: 'error' as const, error: safeError(err)}),
-          merge(fromEvent(window, 'online'), onRetry$).pipe(
-            take(1),
-            mergeMap(() => caught$),
+          merge(
+            fromEvent(window, 'online').pipe(
+              mergeMap(() =>
+                caught$.pipe(
+                  retry({
+                    delay: (_: unknown, attempt) => of(Math.max(30000, attempt * 1000)),
+                    count: 3,
+                  }),
+                ),
+              ),
+            ),
+            onRetry$.pipe(
+              take(1),
+              mergeMap(() => caught$),
+            ),
           ),
         )
       }),
