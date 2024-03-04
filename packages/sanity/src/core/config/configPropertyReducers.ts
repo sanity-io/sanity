@@ -315,9 +315,6 @@ export const internalTasksReducer = (opts: {
   const {config} = opts
   const flattenedConfig = flattenConfig(config, [])
 
-  // There is no concept of 'previous value' in this API. We only care about the final value.
-  // That is, if a plugin returns true, but the next plugin returns false, the result will be false.
-  // The last plugin 'wins'.
   const result = flattenedConfig.reduce(
     (acc: {footerAction: React.ReactNode} | undefined, {config: innerConfig}) => {
       const resolver = innerConfig.document?.__internal_tasks
