@@ -12,7 +12,7 @@ describe('findQueries', () => {
     `
 
       const queries = findQueriesInSource(source, 'test.ts')
-      const queryResult = queries.get('postQuery')
+      const queryResult = queries.get('postQueryResult')
 
       expect(queryResult?.result).toEqual('*[_type == "author"]')
     })
@@ -26,7 +26,7 @@ describe('findQueries', () => {
     `
 
       const queries = findQueriesInSource(source, 'test.ts')
-      const queryResult = queries.get('authorQuery')
+      const queryResult = queries.get('authorQueryResult')
 
       expect(queryResult?.result).toEqual('*[_type == "author"]')
     })
@@ -41,7 +41,7 @@ describe('findQueries', () => {
 
       const queries = findQueriesInSource(source, 'test.ts')
 
-      const queryResult = queries.get('query')
+      const queryResult = queries.get('queryResult')
 
       expect(queryResult?.result).toEqual('*[_type == "author"]')
     })
@@ -62,7 +62,7 @@ describe('findQueries', () => {
     `
 
       const queries = findQueriesInSource(source, 'test.ts')
-      const queryResult = queries.get('query')
+      const queryResult = queries.get('queryResult')
 
       expect(queryResult?.result).toEqual('*[_type == "foo" || _type == "bar"]')
     })
@@ -93,7 +93,7 @@ describe('findQueries', () => {
     `
 
       const queries = findQueriesInSource(source, 'test.ts')
-      const queryResult = queries.get('query')
+      const queryResult = queries.get('queryResult')
 
       expect(queryResult?.result).toEqual('*[_type == "author"]')
     })
@@ -119,7 +119,7 @@ describe('findQueries', () => {
     `
 
       const queries = findQueriesInSource(source, 'test.ts')
-      const queryResult = queries.get('query')
+      const queryResult = queries.get('queryResult')
 
       expect(queryResult?.result).toEqual('*[_type == "author" && _id == "id"]')
     })
@@ -140,7 +140,7 @@ describe('findQueries', () => {
     `
 
       const queries = findQueriesInSource(source, 'test.ts')
-      const queryResult = queries.get('query')
+      const queryResult = queries.get('queryResult')
 
       expect(queryResult?.result).toEqual('*[_type == "author"]')
     })
@@ -154,22 +154,33 @@ describe('findQueries', () => {
       `
 
       const queries = findQueriesInSource(source, 'test.ts')
-      const queryResult = queries.get('query')
+      const queryResult = queries.get('queryResult')
 
       expect(queryResult?.result).toEqual('*[_type == "author"]')
     })
   })
 
-  describe('should not find inline queries in source', () => {
-    test('with block comment', () => {
-      const source = `
-          import { groq } from "groq";
-          const res = sanity.fetch(groq\`*[_type == "author"]\`);
-        `
+  test('should not find inline queries in source', () => {
+    const source = `
+        import { groq } from "groq";
+        const res = sanity.fetch(groq\`*[_type == "author"]\`);
+      `
 
-      const queries = findQueriesInSource(source, 'test.ts')
+    const queries = findQueriesInSource(source, 'test.ts')
 
-      expect(queries.size).toBe(0)
-    })
+    expect(queries.size).toBe(0)
+  })
+
+  test("should name queries with 'Result' at the end", () => {
+    const source = `
+      import { groq } from "groq";
+      const postQuery = groq\`*[_type == "author"]\`
+      const res = sanity.fetch(postQueryResult);
+    `
+
+    const queries = findQueriesInSource(source, 'test.ts')
+    const queryResult = queries.get('postQueryResult')
+
+    expect(queryResult?.name).toBe('postQueryResult')
   })
 })
