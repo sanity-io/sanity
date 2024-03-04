@@ -58,6 +58,63 @@ describe('resolveInitialValue', () => {
     })
   })
 
+  test('throws on unknown prop in reference', () => {
+    expect(
+      resolveInitialValue(
+        schema,
+        {...example, value: {bestFriend: {_ref: 'grrm', name: 'GRRM'}}},
+        {},
+        mockConfigContext,
+      ),
+    ).rejects.toMatchObject({
+      message:
+        'Template "author" initial value: Disallowed property found in reference: "name" at path "bestFriend"',
+    })
+  })
+
+  test('throws on unknown props in reference', () => {
+    expect(
+      resolveInitialValue(
+        schema,
+        {...example, value: {bestFriend: {_ref: 'grrm', name: 'GRRM', age: 72}}},
+        {},
+        mockConfigContext,
+      ),
+    ).rejects.toMatchObject({
+      message:
+        'Template "author" initial value: Disallowed properties found in reference: "name", "age" at path "bestFriend"',
+    })
+  })
+
+  test('allows setting known reference properties', () => {
+    expect(
+      resolveInitialValue(
+        schema,
+        {...example, value: {bestFriend: {_ref: 'grrm', _type: 'reference', _weak: true}}},
+        {},
+        mockConfigContext,
+      ),
+    ).resolves.toMatchObject({
+      bestFriend: {_ref: 'grrm', _type: 'reference', _weak: true},
+    })
+  })
+
+  test('allows setting _dataset on cross-dataset references', () => {
+    expect(
+      resolveInitialValue(
+        schema,
+        {
+          ...example,
+          value: {bestFriend: {_ref: 'grrm', _type: 'crossDatasetReference', _dataset: 'bffs'}},
+        },
+        {},
+        mockConfigContext,
+      ),
+    ).resolves.toMatchObject({
+      bestFriend: {_ref: 'grrm', _type: 'crossDatasetReference', _dataset: 'bffs'},
+    })
+  })
+
   test('should call sync value resolvers', () => {
     expect(
       resolveInitialValue(schema, {...example, value: () => example.value}, {}, mockConfigContext),
