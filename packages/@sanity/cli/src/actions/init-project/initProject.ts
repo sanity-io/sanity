@@ -38,6 +38,7 @@ import {getProjectDefaults, type ProjectDefaults} from '../../util/getProjectDef
 import {getUserConfig} from '../../util/getUserConfig'
 import {isCommandGroup} from '../../util/isCommandGroup'
 import {isInteractive} from '../../util/isInteractive'
+import {fetchJourneyConfig} from '../../util/journeyConfig'
 import {login, type LoginFlags} from '../login/login'
 import {createProject} from '../project/createProject'
 import {type BootstrapOptions, bootstrapTemplate} from './bootstrapTemplate'
@@ -66,8 +67,17 @@ import {
 // eslint-disable-next-line no-process-env
 const isCI = process.env.CI
 
+/**
+ * @deprecated - No longer used
+ */
 export interface InitOptions {
   template: string
+  // /**
+  //  * Used for initializing a project from a server schema that is saved in the Journey API
+  //  * This will override the `template` option.
+  //  * @beta
+  //  */
+  // journeyProjectId?: string
   outputDir: string
   name: string
   displayName: string
@@ -235,7 +245,11 @@ export default async function initSanity(
   }
 
   const usingBareOrEnv = cliFlags.bare || cliFlags.env
-  print(`You're setting up a new project!`)
+  print(
+    cliFlags.quickstart
+      ? "You're ejecting a remote Sanity project!"
+      : `You're setting up a new project!`,
+  )
   print(`We'll make sure you have an account with Sanity.io. ${usingBareOrEnv ? '' : `Then we'll`}`)
   if (!usingBareOrEnv) {
     print('install an open-source JS content editor that connects to')
@@ -260,38 +274,12 @@ export default async function initSanity(
   }
 
   const flags = await prepareFlags()
-
   // We're authenticated, now lets select or create a project
-  debug('Prompting user to select or create a project')
-  const {
-    projectId,
-    displayName,
-    isFirstProject,
-    userAction: getOrCreateUserAction,
-  } = await getOrCreateProject()
-  trace.log({step: 'createOrSelectProject', projectId, selectedOption: getOrCreateUserAction})
+  const {projectId, displayName, isFirstProject, datasetName, schemaUrl} = await getProjectDetails()
+
   const sluggedName = deburr(displayName.toLowerCase())
     .replace(/\s+/g, '-')
     .replace(/[^a-z0-9-]/g, '')
-
-  debug(`Project with name ${displayName} selected`)
-
-  // Now let's pick or create a dataset
-  debug('Prompting user to select or create a dataset')
-  const {datasetName, userAction: getOrCreateDatasetUserAction} = await getOrCreateDataset({
-    projectId,
-    displayName,
-    dataset: flags.dataset,
-    aclMode: flags.visibility,
-    defaultConfig: flags['dataset-default'],
-  })
-  trace.log({
-    step: 'createOrSelectDataset',
-    selectedOption: getOrCreateDatasetUserAction,
-    datasetName,
-    visibility: flags.visibility as 'private' | 'public',
-  })
-  debug(`Dataset with name ${datasetName} selected`)
 
   // If user doesn't want to output any template code
   if (bareOutput) {
@@ -542,6 +530,7 @@ export default async function initSanity(
     outputPath,
     packageName: sluggedName,
     templateName,
+    schemaUrl,
     useTypeScript,
     variables: {
       dataset: datasetName,
@@ -654,6 +643,57 @@ export default async function initSanity(
 
     print("Good stuff, you're now authenticated. You'll need a project to keep your")
     print('datasets and collaborators safe and snug.')
+  }
+
+  async function getProjectDetails(): Promise<{
+    projectId: string
+    datasetName: string
+    displayName: string
+    isFirstProject: boolean
+    schemaUrl?: string
+  }> {
+    // If we're doing a quickstart, we don't need to prompt for project details
+    if (flags.quickstart) {
+      debug('Fetching project details from Journey API')
+      const data = await fetchJourneyConfig(apiClient, flags.quickstart)
+      trace.log({
+        step: 'fetchJourneyConfig',
+        projectId: data.projectId,
+        datasetName: data.datasetName,
+        displayName: data.displayName,
+        isFirstProject: data.isFirstProject,
+      })
+      return data
+    }
+
+    debug('Prompting user to select or create a project')
+    const project = await getOrCreateProject()
+    debug(`Project with name ${project.displayName} selected`)
+
+    // Now let's pick or create a dataset
+    debug('Prompting user to select or create a dataset')
+    const dataset = await getOrCreateDataset({
+      projectId: project.projectId,
+      displayName: project.displayName,
+      dataset: flags.dataset,
+      aclMode: flags.visibility,
+      defaultConfig: flags['dataset-default'],
+    })
+    debug(`Dataset with name ${dataset.datasetName} selected`)
+
+    trace.log({
+      step: 'createOrSelectDataset',
+      selectedOption: dataset.userAction,
+      datasetName: dataset.datasetName,
+      visibility: flags.visibility as 'private' | 'public',
+    })
+
+    return {
+      projectId: project.projectId,
+      displayName: project.displayName,
+      isFirstProject: project.isFirstProject,
+      datasetName: dataset.datasetName,
+    }
   }
 
   // eslint-disable-next-line complexity
@@ -923,6 +963,12 @@ export default async function initSanity(
   }
 
   function selectProjectTemplate() {
+    // Make sure the --quickstart and --template are not used together
+    // Force template to clean if --quickstart is used
+    if (flags.quickstart) {
+      return 'clean'
+    }
+
     const defaultTemplate = unattended || flags.template ? flags.template || 'clean' : null
     if (defaultTemplate) {
       return defaultTemplate
@@ -994,6 +1040,16 @@ export default async function initSanity(
       throw new Error(
         'You have specified both a project and an organization. To move a project to an organization please visit https://www.sanity.io/manage',
       )
+    }
+
+    if (
+      cliFlags.quickstart &&
+      (cliFlags.project || cliFlags.dataset || cliFlags.visibility || cliFlags.template)
+    ) {
+      const disallowed = ['project', 'dataset', 'visibility', 'template']
+      const usedDisallowed = disallowed.filter((flag) => cliFlags[flag as keyof InitFlags])
+      const usedDisallowedStr = usedDisallowed.map((flag) => `--${flag}`).join(', ')
+      throw new Error(`\`--quickstart\` cannot be combined with ${usedDisallowedStr}`)
     }
 
     if (createProjectName === true) {

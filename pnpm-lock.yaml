@@ -803,6 +803,9 @@ importers:
       preferred-pm:
         specifier: ^3.0.3
         version: 3.1.2
+      prettier:
+        specifier: ^3.1.0
+        version: 3.2.5
       promise-props-recursive:
         specifier: ^2.0.2
         version: 2.0.2

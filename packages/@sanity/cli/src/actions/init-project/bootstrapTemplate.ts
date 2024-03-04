@@ -6,6 +6,7 @@ import {debug} from '../../debug'
 import {studioDependencies} from '../../studioDependencies'
 import {type CliCommandContext} from '../../types'
 import {copy} from '../../util/copy'
+import {getAndWriteJourneySchemaWorker} from '../../util/journeyConfig'
 import {resolveLatestVersions} from '../../util/resolveLatestVersions'
 import {createCliConfig} from './createCliConfig'
 import {createPackageManifest} from './createPackageManifest'
@@ -16,6 +17,11 @@ import templates from './templates'
 export interface BootstrapOptions {
   packageName: string
   templateName: string
+  /**
+   * Used for initializing a project from a server schema that is saved in the Journey API
+   * @beta
+   */
+  schemaUrl?: string
   outputPath: string
   useTypeScript: boolean
   variables: GenerateConfigOptions['variables']
@@ -40,7 +46,12 @@ export async function bootstrapTemplate(
 
   // Copy template files
   debug('Copying files from template "%s" to "%s"', templateName, outputPath)
-  let spinner = output.spinner('Bootstrapping files from template').start()
+  let spinner = output
+    .spinner(
+      opts.schemaUrl ? 'Extracting your Sanity configuration' : 'Bootstrapping files from template',
+    )
+    .start()
+
   await copy(sourceDir, outputPath, {
     rename: useTypeScript ? toTypeScriptPath : undefined,
   })
@@ -48,6 +59,17 @@ export async function bootstrapTemplate(
 
   if (useTypeScript) {
     await fs.copyFile(path.join(sharedDir, 'tsconfig.json'), path.join(outputPath, 'tsconfig.json'))
+  }
+
+  // If we have a schemaUrl, get the schema and write it to disk
+  // At this point the selected template should already have been forced to "clean"
+  if (opts.schemaUrl) {
+    debug('Fetching and writing remote schema "%s"', opts.schemaUrl)
+    await getAndWriteJourneySchemaWorker({
+      schemasPath: path.join(outputPath, 'schemaTypes'),
+      useTypeScript,
+      schemaUrl: opts.schemaUrl,
+    })
   }
 
   spinner.succeed()
