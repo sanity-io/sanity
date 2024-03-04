@@ -195,7 +195,7 @@ async function assembleJourneySchemaTypeFileContent(schemaType: DocumentOrObject
  * @returns The index file as a string
  */
 function assembleJourneyIndexContent(schemas: DocumentOrObject[]): Promise<string> {
-  const sortedSchema = schemas.toSorted((a, b) => (a.name > b.name ? 1 : -1))
+  const sortedSchema = schemas.slice().sort((a, b) => (a.name > b.name ? 1 : -1))
   const imports = sortedSchema.map((schema) => `import { ${schema.name} } from './${schema.name}'`)
   const exports = sortedSchema.map((schema) => schema.name).join(',')
   const fileContents = `${imports.join('\n')}\n\nexport const schemaTypes = [${exports}]`
