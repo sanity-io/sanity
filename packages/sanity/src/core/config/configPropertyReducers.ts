@@ -317,7 +317,7 @@ export const internalTasksReducer = (opts: {
 
   const result = flattenedConfig.reduce(
     (acc: {footerAction: React.ReactNode} | undefined, {config: innerConfig}) => {
-      const resolver = innerConfig.document?.__internal_tasks
+      const resolver = innerConfig.__internal_tasks
 
       if (!resolver) return acc
       if (typeof resolver === 'object' && resolver.footerAction) return resolver

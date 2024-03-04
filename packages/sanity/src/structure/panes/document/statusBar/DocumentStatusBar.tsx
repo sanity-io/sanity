@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 import {Flex} from '@sanity/ui'
 import {type Ref, useCallback, useState} from 'react'
 import {useTimelineSelector} from 'sanity'

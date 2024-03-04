@@ -294,10 +294,6 @@ export interface DocumentPluginOptions {
   unstable_comments?: {
     enabled: boolean | ((context: DocumentCommentsEnabledContext) => boolean)
   }
-
-  __internal_tasks: {
-    footerAction: ReactNode
-  }
 }
 
 /**
@@ -361,6 +357,10 @@ export interface PluginOptions {
   document?: DocumentPluginOptions
   tools?: Tool[] | ComposableOption<Tool[], ConfigContext>
   form?: SanityFormConfig
+
+  __internal_tasks: {
+    footerAction: ReactNode
+  }
 
   studio?: {
     /**

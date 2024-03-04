@@ -1,7 +1,7 @@
 import {definePlugin, type ObjectInputProps} from 'sanity'
 
 import {TasksDocumentInputLayout} from './TasksDocumentInputLayout'
-import {TasksFooterOpenButton} from './TasksOpenButtonFooter'
+import {TasksFooterOpenTasks} from './TasksFooterOpenTasks'
 import {TasksStudioActiveToolLayout} from './TasksStudioActiveToolLayout'
 import {TasksStudioLayout} from './TasksStudioLayout'
 import {TasksStudioNavbar} from './TasksStudioNavbar'
@@ -12,11 +12,9 @@ import {TasksStudioNavbar} from './TasksStudioNavbar'
  */
 export const tasks = definePlugin({
   name: 'sanity/tasks',
-  document: {
-    // eslint-disable-next-line camelcase
-    __internal_tasks: {
-      footerAction: <TasksFooterOpenButton />,
-    },
+  // eslint-disable-next-line camelcase
+  __internal_tasks: {
+    footerAction: <TasksFooterOpenTasks />,
   },
   studio: {
     components: {

@@ -7,11 +7,11 @@ import {useTasks} from '../src'
  * Button that shows how many pending tasks are assigned to the current document.
  * Clicking it will open the task sidebar, showing the open tasks related to the document.
  *
- * TODO: just show the tasks related to the document
+ * todo: just show the tasks related to the document
  *
  * @internal
  */
-export function TasksFooterOpenButton() {
+export function TasksFooterOpenTasks() {
   const {data, activeDocument, toggleOpen} = useTasks()
 
   const pendingTasks = useMemo(
