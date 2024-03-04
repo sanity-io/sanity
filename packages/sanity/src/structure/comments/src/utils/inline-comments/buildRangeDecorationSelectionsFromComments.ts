@@ -137,31 +137,26 @@ export function buildRangeDecorationSelectionsFromComments(
             break
           }
         }
-        // If range is now collapsed, don't create a decoration
-        if (anchorOffset === focusOffset && childIndexFocus === childIndexAnchor) {
-          nullSelection = true
-        }
+
         decorators.push({
-          selection: nullSelection
-            ? null
-            : {
-                anchor: {
-                  path: [
-                    {_key: matchedBlock._key},
-                    'children',
-                    {_key: matchedBlock.children[childIndexAnchor]._key},
-                  ],
-                  offset: anchorOffset,
-                },
-                focus: {
-                  path: [
-                    {_key: matchedBlock._key},
-                    'children',
-                    {_key: matchedBlock.children[childIndexFocus]._key},
-                  ],
-                  offset: focusOffset,
-                },
-              },
+          selection: {
+            anchor: {
+              path: [
+                {_key: matchedBlock._key},
+                'children',
+                {_key: matchedBlock.children[childIndexAnchor]._key},
+              ],
+              offset: anchorOffset,
+            },
+            focus: {
+              path: [
+                {_key: matchedBlock._key},
+                'children',
+                {_key: matchedBlock.children[childIndexFocus]._key},
+              ],
+              offset: focusOffset,
+            },
+          },
           comment,
           range: {_key: matchedBlock._key, text: nullSelection ? '' : diffedText},
         })
