@@ -35,7 +35,10 @@ const SearchResultItemPreviewBox = styled(Box)`
   }
 `
 
-export default function SearchResultItemPreview({
+/**
+ * @internal
+ */
+export function SearchResultItemPreview({
   documentId,
   layout,
   presence,

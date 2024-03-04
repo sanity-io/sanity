@@ -5,7 +5,7 @@ import {useIntentLink} from 'sanity/router'
 import {type GeneralPreviewLayoutKey, PreviewCard} from '../../../../../../../components'
 import {useSchema} from '../../../../../../../hooks'
 import {useDocumentPresence} from '../../../../../../../store'
-import SearchResultItemPreview from './SearchResultItemPreview'
+import {SearchResultItemPreview} from './SearchResultItemPreview'
 
 interface SearchResultItemProps extends ResponsiveMarginProps, ResponsivePaddingProps {
   disableIntentLink?: boolean
@@ -13,6 +13,7 @@ interface SearchResultItemProps extends ResponsiveMarginProps, ResponsivePadding
   documentType: string
   layout?: GeneralPreviewLayoutKey
   onClick?: () => void
+  onItemSelect?: (item: {documentId: string; documentType: string}) => void
 }
 
 export function SearchResultItem({
@@ -21,6 +22,7 @@ export function SearchResultItem({
   documentType,
   layout,
   onClick,
+  onItemSelect,
   ...rest
 }: SearchResultItemProps) {
   const schema = useSchema()
@@ -35,12 +37,13 @@ export function SearchResultItem({
 
   const handleClick = useCallback(
     (e: MouseEvent<HTMLElement>) => {
+      onItemSelect?.({documentId, documentType})
       if (!disableIntentLink) {
         onIntentClick(e)
       }
       onClick?.()
     },
-    [disableIntentLink, onClick, onIntentClick],
+    [onItemSelect, documentId, documentType, disableIntentLink, onClick, onIntentClick],
   )
 
   if (!type) return null

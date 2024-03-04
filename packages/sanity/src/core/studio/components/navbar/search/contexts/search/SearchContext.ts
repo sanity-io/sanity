@@ -4,6 +4,9 @@ import {type CommandListHandle} from '../../../../../../components/commandList/t
 import {type RecentSearchesStore} from '../../datastores/recentSearches'
 import {type SearchAction, type SearchReducerState} from './reducer'
 
+/**
+ * @internal
+ */
 export interface SearchContextValue {
   dispatch: Dispatch<SearchAction>
   onClose: (() => void) | null
@@ -14,4 +17,7 @@ export interface SearchContextValue {
   state: SearchReducerState
 }
 
+/**
+ * @internal
+ */
 export const SearchContext = createContext<SearchContextValue | undefined>(undefined)

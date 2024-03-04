@@ -26,10 +26,12 @@ const SearchResultsInnerFlex = styled(Flex)<{$loading: boolean}>`
 `
 
 interface SearchResultsProps {
+  disableIntentLink?: boolean
   inputElement: HTMLInputElement | null
+  onItemSelect?: (item: {documentId: string; documentType: string}) => void
 }
 
-export function SearchResults({inputElement}: SearchResultsProps) {
+export function SearchResults({disableIntentLink, inputElement, onItemSelect}: SearchResultsProps) {
   const {
     dispatch,
     onClose,
@@ -59,16 +61,18 @@ export function SearchResults({inputElement}: SearchResultsProps) {
       return (
         <>
           <SearchResultItem
+            disableIntentLink={disableIntentLink}
             documentId={getPublishedId(item.hit._id) || ''}
             documentType={item.hit._type}
             onClick={handleSearchResultClick}
+            onItemSelect={onItemSelect}
             paddingY={1}
           />
           {debug && <DebugOverlay data={item} />}
         </>
       )
     },
-    [debug, handleSearchResultClick],
+    [debug, disableIntentLink, handleSearchResultClick, onItemSelect],
   )
 
   return (
