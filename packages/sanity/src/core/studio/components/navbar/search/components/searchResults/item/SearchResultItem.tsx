@@ -1,3 +1,4 @@
+import {type SanityDocumentLike} from '@sanity/types'
 import {Box, type ResponsiveMarginProps, type ResponsivePaddingProps} from '@sanity/ui'
 import {type MouseEvent, useCallback, useMemo} from 'react'
 import {useIntentLink} from 'sanity/router'
@@ -7,13 +8,15 @@ import {useSchema} from '../../../../../../../hooks'
 import {useDocumentPresence} from '../../../../../../../store'
 import {SearchResultItemPreview} from './SearchResultItemPreview'
 
+export type ItemSelectHandler = (item: Pick<SanityDocumentLike, '_id' | '_type'>) => void
+
 interface SearchResultItemProps extends ResponsiveMarginProps, ResponsivePaddingProps {
   disableIntentLink?: boolean
   documentId: string
   documentType: string
   layout?: GeneralPreviewLayoutKey
   onClick?: () => void
-  onItemSelect?: (item: {documentId: string; documentType: string}) => void
+  onItemSelect?: ItemSelectHandler
 }
 
 export function SearchResultItem({
@@ -37,7 +40,7 @@ export function SearchResultItem({
 
   const handleClick = useCallback(
     (e: MouseEvent<HTMLElement>) => {
-      onItemSelect?.({documentId, documentType})
+      onItemSelect?.({_id: documentId, _type: documentType})
       if (!disableIntentLink) {
         onIntentClick(e)
       }

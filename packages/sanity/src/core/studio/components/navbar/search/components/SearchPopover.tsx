@@ -18,6 +18,7 @@ import {SearchWrapper} from './common/SearchWrapper'
 import {Filters} from './filters/Filters'
 import {RecentSearches} from './recentSearches/RecentSearches'
 import {SearchHeader} from './SearchHeader'
+import {type ItemSelectHandler} from './searchResults/item/SearchResultItem'
 import {SearchResults} from './searchResults/SearchResults'
 
 /**
@@ -27,7 +28,7 @@ export interface SearchPopoverProps {
   disableFocusLock?: boolean
   disableIntentLink?: boolean
   onClose: () => void
-  onItemSelect?: (item: {documentId: string; documentType: string}) => void
+  onItemSelect?: ItemSelectHandler
   onOpen: () => void
   open: boolean
 }

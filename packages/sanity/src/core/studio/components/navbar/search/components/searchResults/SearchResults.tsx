@@ -11,7 +11,7 @@ import {NoResults} from '../NoResults'
 import {SearchError} from '../SearchError'
 import {SortMenu} from '../SortMenu'
 import {DebugOverlay} from './item/DebugOverlay'
-import {SearchResultItem} from './item/SearchResultItem'
+import {type ItemSelectHandler, SearchResultItem} from './item/SearchResultItem'
 
 const VIRTUAL_LIST_SEARCH_RESULT_ITEM_HEIGHT = 57 // px
 const VIRTUAL_LIST_OVERSCAN = 4
@@ -28,7 +28,7 @@ const SearchResultsInnerFlex = styled(Flex)<{$loading: boolean}>`
 interface SearchResultsProps {
   disableIntentLink?: boolean
   inputElement: HTMLInputElement | null
-  onItemSelect?: (item: {documentId: string; documentType: string}) => void
+  onItemSelect?: ItemSelectHandler
 }
 
 export function SearchResults({disableIntentLink, inputElement, onItemSelect}: SearchResultsProps) {
