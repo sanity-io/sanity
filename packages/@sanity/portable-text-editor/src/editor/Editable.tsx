@@ -249,7 +249,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
         const newSlateRanges: BaseRangeWithDecoration[] = []
         rangeDecorations.forEach((rangeDecorationItem) => {
           const slateRange = toSlateRange(rangeDecorationItem.selection, slateEditor)
-          if (!SlateRange.isRange(slateRange) || !SlateRange.isExpanded(slateRange)) {
+          if (!SlateRange.isRange(slateRange)) {
             if (rangeDecorationItem.onMoved) {
               rangeDecorationItem.onMoved({
                 newSelection: null,
