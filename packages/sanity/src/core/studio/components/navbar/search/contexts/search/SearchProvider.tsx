@@ -176,7 +176,6 @@ export function SearchProvider({children, fullscreen}: SearchProviderProps) {
             `findability-filter-count:${completeFilters.length}`,
           ],
           limit: SEARCH_LIMIT,
-          // offset: pageIndex * SEARCH_LIMIT,
           skipSortByScore: ordering.ignoreScore,
           sort: [ordering.sort],
           cursor: cursor || undefined,
