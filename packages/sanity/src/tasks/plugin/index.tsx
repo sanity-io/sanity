@@ -13,8 +13,9 @@ import {TasksStudioNavbar} from './TasksStudioNavbar'
 export const tasks = definePlugin({
   name: 'sanity/tasks',
   document: {
-    badges: (prev) => {
-      return (prev || []).concat(DocumentBadge)
+    // eslint-disable-next-line camelcase
+    __internal_tasks: {
+      footerAction: <DocumentBadge />,
     },
   },
   studio: {

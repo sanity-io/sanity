@@ -29,6 +29,7 @@ import {
   initialDocumentActions,
   initialDocumentBadges,
   initialLanguageFilter,
+  internalTasksReducer,
   newDocumentOptionsResolver,
   newSearchEnabledReducer,
   partialIndexingEnabledReducer,
@@ -532,6 +533,10 @@ function resolveSource({
           })
         },
       },
+      // eslint-disable-next-line camelcase
+      __internal_tasks: internalTasksReducer({
+        config,
+      }),
     },
     form: {
       file: {

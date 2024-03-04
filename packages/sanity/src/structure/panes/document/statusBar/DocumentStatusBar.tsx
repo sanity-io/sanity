@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import {Flex} from '@sanity/ui'
 import {type Ref, useCallback, useState} from 'react'
 import {useTimelineSelector} from 'sanity'
@@ -17,7 +18,7 @@ const CONTAINER_BREAKPOINT = 480 // px
 
 export function DocumentStatusBar(props: DocumentStatusBarProps) {
   const {actionsBoxRef} = props
-  const {editState, timelineStore} = useDocumentPane()
+  const {editState, timelineStore, __internal_tasks} = useDocumentPane()
 
   // Subscribe to external timeline state changes
   const showingRevision = useTimelineSelector(timelineStore, (state) => state.onOlderRevision)
@@ -59,6 +60,7 @@ export function DocumentStatusBar(props: DocumentStatusBarProps) {
             style={{flexShrink: 0, marginLeft: 'auto'}}
           >
             <SpacerButton size="large" />
+            {__internal_tasks && __internal_tasks.footerAction}
             {showingRevision ? <HistoryStatusBarActions /> : <DocumentStatusBarActions />}
           </Flex>
         </Flex>

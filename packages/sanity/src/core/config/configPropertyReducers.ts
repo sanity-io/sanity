@@ -1,4 +1,5 @@
 import {type AssetSource, type SchemaTypeDefinition} from '@sanity/types'
+import {type ReactNode} from 'react'
 
 import {type LocaleConfigContext, type LocaleDefinition, type LocaleResourceBundle} from '../i18n'
 import {type Template, type TemplateItem} from '../templates'
@@ -304,6 +305,34 @@ export const documentCommentsEnabledReducer = (opts: {
       )}`,
     )
   }, initialValue)
+
+  return result
+}
+
+export const internalTasksReducer = (opts: {
+  config: PluginOptions
+}): {footerAction: ReactNode} | undefined => {
+  const {config} = opts
+  const flattenedConfig = flattenConfig(config, [])
+
+  // There is no concept of 'previous value' in this API. We only care about the final value.
+  // That is, if a plugin returns true, but the next plugin returns false, the result will be false.
+  // The last plugin 'wins'.
+  const result = flattenedConfig.reduce(
+    (acc: {footerAction: React.ReactNode} | undefined, {config: innerConfig}) => {
+      const resolver = innerConfig.document?.__internal_tasks
+
+      if (!resolver) return acc
+      if (typeof resolver === 'object' && resolver.footerAction) return resolver
+
+      throw new Error(
+        `Expected \`document.unstable_comments.enabled\` to be a boolean or a function, but received ${getPrintableType(
+          resolver,
+        )}`,
+      )
+    },
+    undefined,
+  )
 
   return result
 }

@@ -294,6 +294,10 @@ export interface DocumentPluginOptions {
   unstable_comments?: {
     enabled: boolean | ((context: DocumentCommentsEnabledContext) => boolean)
   }
+
+  __internal_tasks: {
+    footerAction: ReactNode
+  }
 }
 
 /**
@@ -651,6 +655,7 @@ export interface Source {
     unstable_comments: {
       enabled: (props: DocumentCommentsEnabledContext) => boolean
     }
+    __internal_tasks?: {footerAction: ReactNode}
   }
 
   /**

@@ -19,8 +19,5 @@ export function DocumentBadge() {
   )
 
   if (pendingTasks.length === 0) return null
-  return {
-    label: ` ${pendingTasks.length} open tasks`,
-    color: 'primary' as const,
-  }
+  return <div>{`${pendingTasks.length} open tasks`}</div>
 }
