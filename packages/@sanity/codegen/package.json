@@ -84,6 +84,7 @@
     "@types/babel__register": "^7.17.3",
     "@types/babel__traverse": "^7.18.1",
     "@types/debug": "^4.1.12",
+    "groq": "^3.30.1",
     "rimraf": "^3.0.2"
   },
   "engines": {

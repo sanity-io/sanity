@@ -897,6 +897,9 @@ importers:
       '@types/debug':
         specifier: ^4.1.12
         version: 4.1.12
+      groq:
+        specifier: ^3.30.1
+        version: link:../../groq
       rimraf:
         specifier: ^3.0.2
         version: 3.0.2
