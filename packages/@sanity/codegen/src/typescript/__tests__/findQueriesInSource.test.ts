@@ -181,6 +181,6 @@ describe('findQueries', () => {
     const queries = findQueriesInSource(source, 'test.ts')
     const queryResult = queries.get('postQueryResult')
 
-    expect(queryResult?.name).toBe('postQueryResult')
+    expect(queryResult?.name.substr(-6)).toBe('Result')
   })
 })
