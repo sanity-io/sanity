@@ -11,7 +11,7 @@ import {
   type TextSearchResults,
 } from '../common'
 
-const DEFAULT_LIMIT = 20
+const DEFAULT_LIMIT = 1000
 
 function normalizeSearchTerms(searchParams: string | SearchTerms, fallbackTypes: SearchableType[]) {
   if (typeof searchParams === 'string') {
