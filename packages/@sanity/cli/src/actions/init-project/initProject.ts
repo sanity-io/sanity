@@ -1048,7 +1048,7 @@ export default async function initSanity(
     ) {
       const disallowed = ['project', 'dataset', 'visibility', 'template']
       const usedDisallowed = disallowed.filter((flag) => cliFlags[flag as keyof InitFlags])
-      const usedDisallowedStr = usedDisallowed.map((f) => `--${f}`).join(', ')
+      const usedDisallowedStr = usedDisallowed.map((flag) => `--${flag}`).join(', ')
       throw new Error(`\`--quickstart\` cannot be combined with ${usedDisallowedStr}`)
     }
 

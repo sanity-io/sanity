@@ -54,7 +54,7 @@ export async function getAndWriteJourneySchema(data: JourneySchemaWorkerData): P
       await fs.writeFile(filePath, await assembleJourneySchemaTypeFileContent(documentType))
     }
     // Write an index file that exports all the schemas
-    const indexContent = assembleJourneyIndexContent(documentTypes)
+    const indexContent = await assembleJourneyIndexContent(documentTypes)
     await fs.writeFile(path.join(schemasPath, `index.${fileExtension}`), indexContent)
   } catch (error) {
     throw new Error(`Failed to fetch remote schema: ${error.message}`)
@@ -62,9 +62,20 @@ export async function getAndWriteJourneySchema(data: JourneySchemaWorkerData): P
 }
 
 /**
- * Run the getAndWriteJourneySchema in a worker thread
+ * Executes the `getAndWriteJourneySchema` operation within a worker thread.
  *
- * @param workerData - The worker data to pass to the worker thread
+ * This method is designed to safely import network resources by leveraging the `--experimental-network-imports` flag.
+ * Due to the experimental nature of this flag, its use is not recommended in the main process. Consequently,
+ * the task is delegated to a worker thread to ensure both safety and compliance with best practices.
+ *
+ * The core functionality involves fetching schema definitions from our own trusted API and writing them to disk.
+ * This includes handling both predefined and custom schemas. For custom schemas, a process ensures
+ * that they undergo JSON parsing to remove any JavaScript code and are validated before being saved.
+ *
+ * Depending on the configuration, the schemas are saved as either TypeScript or JavaScript files, dictated by the `useTypeScript` flag within the `workerData`.
+ *
+ * @param workerData - An object containing the necessary data and flags for the worker thread, including the path to save schemas, flags indicating whether to use TypeScript, and any other relevant configuration details.
+ * @returns A promise that resolves upon successful execution of the schema fetching and writing process or rejects if an error occurs during the operation.
  */
 export async function getAndWriteJourneySchemaWorker(
   workerData: JourneySchemaWorkerData,
@@ -183,11 +194,12 @@ async function assembleJourneySchemaTypeFileContent(schemaType: DocumentOrObject
  * @param schemas - The Journey schemas to assemble into an index file
  * @returns The index file as a string
  */
-function assembleJourneyIndexContent(schemas: DocumentOrObject[]): string {
-  schemas.sort((a, b) => (a.name > b.name ? 1 : -1)) // Sort schemas alphabetically by name
-  const imports = schemas.map((schema) => `import { ${schema.name} } from './${schema.name}'`)
-  const exports = schemas.map((schema) => `  ${schema.name}`).join(',\n')
-  return `${imports.join('\n')}\n\nexport const schemaTypes = [\n${exports}\n]`
+function assembleJourneyIndexContent(schemas: DocumentOrObject[]): Promise<string> {
+  const sortedSchema = schemas.toSorted((a, b) => (a.name > b.name ? 1 : -1))
+  const imports = sortedSchema.map((schema) => `import { ${schema.name} } from './${schema.name}'`)
+  const exports = sortedSchema.map((schema) => schema.name).join(',')
+  const fileContents = `${imports.join('\n')}\n\nexport const schemaTypes = [${exports}]`
+  return format(fileContents, {parser: 'typescript'})
 }
 
 /**
