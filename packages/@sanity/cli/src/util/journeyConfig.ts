@@ -207,39 +207,56 @@ function getImports(schemaType: string): string {
  * @param schemaType - The schema type to serialize
  * @returns The schema type as a string
  */
+/**
+ * Serializes a single Sanity schema type into a string.
+ * Wraps the schema object in the appropriate helper function.
+ *
+ * @param schemaType - The schema type to serialize
+ * @param root - Whether the schemaType is the root object
+ * @returns The serialized schema type as a string
+ */
 export function wrapSchemaTypeInHelpers(schemaType: SchemaObject, root: boolean = true): string {
   if (root) {
-    return wrapDefineType(schemaType)
+    return generateTypeDefinition(schemaType)
+  } else if (schemaType.type === 'array') {
+    return generateArrayDefinition(schemaType as ArrayDefinition)
   }
-  if (schemaType.type === 'array') {
-    return wrapDefineArrayMember(schemaType as ArrayDefinition)
-  }
-  return wrapDefineField(schemaType)
+  return generateFieldDefinition(schemaType)
 
-  function wrapDefineType(field: SchemaObject) {
-    const {fields, preview, ...rest} = field
-    const restPart = serialize(rest)
-    const fieldsStr = fields?.map((f) => wrapSchemaTypeInHelpers(f, false)).join('')
-    const fieldsPart = fields ? `fields: [${fieldsStr}],` : ''
-    const previewPart = preview && `preview: {${serialize(preview)}}`
-
-    const joined = [restPart, fieldsPart, previewPart].filter(Boolean).join(',')
-    return `defineType({ ${joined} })` // No comma at the end as this is only used top-level
+  function generateTypeDefinition(field: SchemaObject): string {
+    return generateSchemaDefinition(field, 'defineType')
   }
 
-  function wrapDefineField(field: SchemaObject) {
-    const fieldPart = serialize(field)
-    return `defineField({${fieldPart}}),`
+  function generateFieldDefinition(field: SchemaObject): string {
+    return `${generateSchemaDefinition(field, 'defineField')},`
   }
 
-  function wrapDefineArrayMember(field: ArrayDefinition) {
-    const {of, ...rest} = field
-    const restPart = serialize(rest)
-    const ofStr = of.map((f) => `defineArrayMember({${serialize(f)}})`)
-    const ofPart = of ? `of: [${ofStr.join(',')}],` : ''
+  function generateArrayDefinition(field: ArrayDefinition) {
+    const {of, ...otherProperties} = field
+    const serializedProps = serialize(otherProperties)
+    const serializedOf = of.map((f) => `defineArrayMember({${serialize(f)}})`)
+    const ofDefinition = of ? `of: [${serializedOf.join(',')}],` : ''
 
-    const joined = [restPart, ofPart].filter(Boolean).join(',')
-    return `defineField({ ${joined} }),`
+    const combinedDefinitions = [serializedProps, ofDefinition].filter(Boolean).join(',')
+    return `defineField({ ${combinedDefinitions} }),`
+  }
+
+  function generateSchemaDefinition(
+    object: SchemaObject,
+    definitionType: 'defineType' | 'defineField',
+  ): string {
+    const {fields, preview, ...otherProperties} = object
+    const serializedProps = serialize(otherProperties)
+    const serializedFields = fields
+      ? fields.map((field) => wrapSchemaTypeInHelpers(field, false)).join('')
+      : ''
+    const fieldsDefinition = fields ? `fields: [${serializedFields}],` : ''
+    const previewDefinition = preview ? `preview: {${serialize(preview)}}` : ''
+    const combinedDefinitions = [serializedProps, fieldsDefinition, previewDefinition]
+      .filter(Boolean)
+      .join(',')
+
+    return `${definitionType}({ ${combinedDefinitions} })`
   }
 
   function serialize(obj: object) {
