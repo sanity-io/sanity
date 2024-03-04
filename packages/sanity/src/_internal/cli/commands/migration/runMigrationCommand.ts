@@ -117,9 +117,9 @@ const runMigrationCommand: CliCommandDefinition<CreateFlags> = {
     if (resolvedScripts.length > 1) {
       // todo: consider prompt user about which one to run? note: it's likely a mistake if multiple files resolve to the same name
       throw new Error(
-        `Found multiple migrations for "${id}" in the ${chalk.cyan(path.join(workDir, MIGRATIONS_DIRECTORY))} directory: ${candidates
+        `Found multiple migrations for "${id}" in the ${chalk.cyan(path.join(workDir, MIGRATIONS_DIRECTORY))} directory: \n - ${candidates
           .map((candidate) => path.basename(candidate.relativePath))
-          .join(', ')}`,
+          .join('\n - ')}`,
       )
     }
 
