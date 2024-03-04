@@ -533,11 +533,11 @@ function resolveSource({
           })
         },
       },
-      // eslint-disable-next-line camelcase
-      __internal_tasks: internalTasksReducer({
-        config,
-      }),
     },
+    // eslint-disable-next-line camelcase
+    __internal_tasks: internalTasksReducer({
+      config,
+    }),
     form: {
       file: {
         assetSources: resolveConfigProperty({

@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import {Flex, Hotkeys, LayerProvider, Stack, Text} from '@sanity/ui'
 import {memo, useMemo, useState} from 'react'
 import {type DocumentActionDescription, useTimelineSelector} from 'sanity'
@@ -17,6 +18,7 @@ interface DocumentStatusBarActionsInnerProps {
 
 function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsInnerProps) {
   const {disabled, showMenu, states} = props
+  const {__internal_tasks} = useDocumentPane()
   const [firstActionState, ...menuActionStates] = states
   const [buttonElement, setButtonElement] = useState<HTMLButtonElement | null>(null)
 
@@ -42,6 +44,7 @@ function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsInnerProps
 
   return (
     <Flex align="center" gap={1}>
+      {__internal_tasks && __internal_tasks.footerAction}
       {firstActionState && (
         <LayerProvider zOffset={200}>
           <Tooltip disabled={!tooltipContent} content={tooltipContent} placement="top">
@@ -72,6 +75,7 @@ function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsInnerProps
 }
 
 export const DocumentStatusBarActions = memo(function DocumentStatusBarActions() {
+  // eslint-disable-next-line camelcase
   const {actions, connectionState, documentId, editState} = useDocumentPane()
   // const [isMenuOpen, setMenuOpen] = useState(false)
   // const handleMenuOpen = useCallback(() => setMenuOpen(true), [])

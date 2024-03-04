@@ -655,8 +655,10 @@ export interface Source {
     unstable_comments: {
       enabled: (props: DocumentCommentsEnabledContext) => boolean
     }
-    __internal_tasks?: {footerAction: ReactNode}
   }
+
+  /** @internal */
+  __internal_tasks?: {footerAction: ReactNode}
 
   /**
    * Form-related functionality.

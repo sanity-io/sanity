@@ -63,13 +63,15 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const schema = useSchema()
   const templates = useTemplates()
   const {
-    actions: documentActions,
-    badges: documentBadges,
-    unstable_fieldActions: fieldActionsResolver,
-    unstable_languageFilter: languageFilterResolver,
-    inspectors: inspectorsResolver,
     __internal_tasks,
-  } = useSource().document
+    document: {
+      actions: documentActions,
+      badges: documentBadges,
+      unstable_fieldActions: fieldActionsResolver,
+      unstable_languageFilter: languageFilterResolver,
+      inspectors: inspectorsResolver,
+    },
+  } = useSource()
   const presenceStore = usePresenceStore()
   const paneRouter = usePaneRouter()
   const setPaneParams = paneRouter.setParams

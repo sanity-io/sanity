@@ -1,7 +1,7 @@
 import {definePlugin, type ObjectInputProps} from 'sanity'
 
-import {DocumentBadge} from './TasksBadge'
 import {TasksDocumentInputLayout} from './TasksDocumentInputLayout'
+import {TasksFooterOpenButton} from './TasksOpenButtonFooter'
 import {TasksStudioActiveToolLayout} from './TasksStudioActiveToolLayout'
 import {TasksStudioLayout} from './TasksStudioLayout'
 import {TasksStudioNavbar} from './TasksStudioNavbar'
@@ -15,7 +15,7 @@ export const tasks = definePlugin({
   document: {
     // eslint-disable-next-line camelcase
     __internal_tasks: {
-      footerAction: <DocumentBadge />,
+      footerAction: <TasksFooterOpenButton />,
     },
   },
   studio: {
