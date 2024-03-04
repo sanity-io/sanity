@@ -62,7 +62,7 @@ export const createTextSearch: SearchStrategyFactory<TextSearchResults> = (
     }
 
     return client.observable
-      .request<TextSearchResponse>({
+      .request<TextSearchResponse<SanityDocumentLike>>({
         uri: `/data/textsearch/${client.config().dataset}`,
         method: 'POST',
         json: true,
@@ -70,7 +70,7 @@ export const createTextSearch: SearchStrategyFactory<TextSearchResults> = (
       })
       .pipe(
         map((response) => {
-          let documents = response.hits.map((hit) => hit.attributes as SanityDocumentLike)
+          let documents = response.hits.map((hit) => hit.attributes)
           if (factoryOptions.unique) {
             documents = removeDupes(documents)
           }

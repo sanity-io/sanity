@@ -175,16 +175,16 @@ export type TextSearchParams = {
   fromCursor?: string
 }
 
-export type TextSearchResponse = {
+export type TextSearchResponse<Attributes = Record<string, unknown>> = {
   ms: number
   stats: {
     estimatedTotalCount: number
   }
-  hits: TextSearchHit[]
+  hits: TextSearchHit<Attributes>[]
   nextCursor: string
 }
 
-export type TextSearchHit = {
+export type TextSearchHit<Attributes = Record<string, unknown>> = {
   /**
    * The document ID
    */
@@ -196,7 +196,7 @@ export type TextSearchHit = {
    * The document attributes, limited to `includeAttributes` list if provided in
    * the query.
    */
-  attributes: Record<string, unknown>
+  attributes: Attributes
   /**
    * The highlights are a map of document paths to SearchResultHighlight
    * objects. This tells you which field matched the query.
