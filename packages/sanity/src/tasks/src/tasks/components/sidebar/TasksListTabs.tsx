@@ -64,8 +64,8 @@ export function TasksListTabs({activeTabId, onChange}: TasksListTabsProps) {
         label: 'Assigned',
       },
       {
-        id: 'created',
-        label: 'Created',
+        id: 'subscribed',
+        label: 'Subscribed',
       },
       {
         id: 'document',

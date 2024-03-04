@@ -19,7 +19,7 @@ export default function TasksLayoutStory() {
         <TasksSidebarHeader
           viewMode="list"
           setViewMode={noop}
-          activeTabId="created"
+          activeTabId="subscribed"
           items={[]}
           selectedTask={selectedTask}
           setSelectedTask={setSelectedTask}
@@ -28,7 +28,7 @@ export default function TasksLayoutStory() {
           items={[]}
           activeTabId={activeTabId}
           setActiveTabId={setActiveTabId}
-          onTaskSelect={noop}
+          onTaskSelect={setSelectedTask}
         />
       </TasksProvider>
     </AddonDatasetProvider>

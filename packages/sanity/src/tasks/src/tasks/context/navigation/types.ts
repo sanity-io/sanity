@@ -1,4 +1,4 @@
-export type SidebarTabsIds = 'assigned' | 'created' | 'document'
+export type SidebarTabsIds = 'assigned' | 'subscribed' | 'document'
 
 export type ViewMode = 'create' | 'edit' | 'list'
 
