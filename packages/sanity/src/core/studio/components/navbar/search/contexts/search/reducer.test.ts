@@ -222,6 +222,25 @@ it('should reset results after search term changes', () => {
     }),
   )
 
+  const [stateA] = result.current
+
+  expect(stateA.result.hits).toMatchInlineSnapshot(`
+Array [
+  Object {
+    "hit": Object {
+      "_id": "personA",
+      "_type": "person",
+    },
+  },
+  Object {
+    "hit": Object {
+      "_id": "personB",
+      "_type": "person",
+    },
+  },
+]
+`)
+
   act(() =>
     dispatch({
       type: 'TERMS_QUERY_SET',
@@ -250,9 +269,9 @@ it('should reset results after search term changes', () => {
     }),
   )
 
-  const [state] = result.current
+  const [stateB] = result.current
 
-  expect(state.result.hits).toMatchInlineSnapshot(`
+  expect(stateB.result.hits).toMatchInlineSnapshot(`
 Array [
   Object {
     "hit": Object {
