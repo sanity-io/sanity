@@ -358,7 +358,7 @@ export interface PluginOptions {
   tools?: Tool[] | ComposableOption<Tool[], ConfigContext>
   form?: SanityFormConfig
 
-  __internal_tasks: {
+  __internal_tasks?: {
     footerAction: ReactNode
   }
 
