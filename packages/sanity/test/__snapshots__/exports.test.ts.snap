@@ -225,6 +225,7 @@ exports[`exports snapshot 1`] = `
     "buildLegacyTheme": "function",
     "buildRangeDecorationSelectionsFromComments": "function",
     "buildTextSelectionFromFragment": "function",
+    "catchWithCount": "function",
     "checkoutPair": "function",
     "collate": "function",
     "createAuthStore": "function",

@@ -39,10 +39,16 @@ interface DocumentListPaneContentProps {
   error: {message: string} | null
   filterIsSimpleTypeConstraint: boolean
   hasMaxItems?: boolean
+  muted?: boolean
   hasSearchQuery: boolean
   isActive?: boolean
   isLazyLoading: boolean
   isLoading: boolean
+  isConnected?: boolean
+  autoRetry?: boolean
+  canRetry: boolean
+  retryCount?: number
+  isRetrying?: boolean
   items: DocumentListPaneItem[]
   layout?: GeneralPreviewLayoutKey
   loadingVariant?: LoadingVariant
@@ -71,12 +77,18 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
   const {
     childItemId,
     error,
+    isRetrying,
+    autoRetry,
     filterIsSimpleTypeConstraint,
     hasMaxItems,
     hasSearchQuery,
     isActive,
     isLazyLoading,
+    muted,
     isLoading,
+    isConnected,
+    retryCount,
+    canRetry,
     items,
     layout,
     loadingVariant,
@@ -199,14 +211,32 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
                   components={{Code: ({children}) => <code>{children}</code>}}
                 />
               </Text>
-              <ErrorActions error={error} eventId={null} onRetry={onRetry} />
+              <ErrorActions
+                error={error}
+                eventId={null}
+                onRetry={canRetry ? onRetry : undefined}
+                isRetrying={isRetrying}
+              />
+              {canRetry ? (
+                <Text as="p" muted size={1}>
+                  {isRetrying
+                    ? t('panes.document-list-pane.error.retrying', {count: retryCount})
+                    : autoRetry
+                      ? t('panes.document-list-pane.error.will-retry-automatically', {
+                          count: retryCount,
+                        })
+                      : t('panes.document-list-pane.error.max-retries-attempted', {
+                          count: retryCount,
+                        })}
+                </Text>
+              ) : null}
             </Stack>
           </Container>
         </Flex>
       )
     }
 
-    if (!isLoading && items.length === 0) {
+    if (isConnected && !isLoading && items.length === 0) {
       return noDocumentsContent
     }
 
@@ -226,7 +256,7 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
     const key = `${index}-${collapsed}`
 
     return (
-      <RootBox overflow="hidden" height="fill" $opacity={loadingVariant === 'subtle' ? 0.8 : 1}>
+      <RootBox overflow="hidden" height="fill" $opacity={muted ? 0.8 : 1}>
         <CommandListBox>
           <CommandList
             activeItemDataAttr="data-hovered"
@@ -248,18 +278,24 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
       </RootBox>
     )
   }, [
+    autoRetry,
+    canRetry,
     collapsed,
     error,
     handleEndReached,
     index,
+    isConnected,
     isLoading,
+    isRetrying,
     items,
     layout,
     loadingVariant,
+    muted,
     noDocumentsContent,
     onRetry,
     paneTitle,
     renderItem,
+    retryCount,
     searchInputElement,
     shouldRender,
     t,

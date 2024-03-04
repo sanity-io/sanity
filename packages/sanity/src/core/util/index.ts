@@ -1,3 +1,4 @@
+export * from './catchWithCount'
 export * from './createHookFromObservableFactory'
 export * from './draftUtils'
 export * from './empty'
