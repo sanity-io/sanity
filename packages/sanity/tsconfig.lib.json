@@ -20,7 +20,6 @@
       "sanity/desk": ["./exports/desk.ts"],
       "sanity/router": ["./exports/router.ts"],
       "sanity/structure": ["./exports/structure.ts"],
-      "sanity/tasks": ["./exports/tasks.ts"],
       "sanity": ["./exports/index.ts"]
     },
 

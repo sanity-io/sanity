@@ -13,9 +13,9 @@ import {visionTool} from '@sanity/vision'
 import {defineConfig, definePlugin} from 'sanity'
 import {presentationTool} from 'sanity/presentation'
 import {structureTool} from 'sanity/structure'
-import {tasks} from 'sanity/tasks'
 import {muxInput} from 'sanity-plugin-mux-input'
 
+import {tasks} from '../../packages/sanity/src/tasks'
 import {imageAssetSource} from './assetSources'
 import {
   Annotation,

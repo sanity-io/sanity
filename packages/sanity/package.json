@@ -110,17 +110,6 @@
       "import": "./lib/structure.esm.js",
       "default": "./lib/structure.esm.js"
     },
-    "./tasks": {
-      "types": "./lib/exports/tasks.d.ts",
-      "source": "./exports/tasks.ts",
-      "require": "./lib/tasks.js",
-      "node": {
-        "module": "./lib/tasks.esm.js",
-        "import": "./lib/tasks.cjs.mjs"
-      },
-      "import": "./lib/tasks.esm.js",
-      "default": "./lib/tasks.esm.js"
-    },
     "./migrate": {
       "types": "./lib/exports/migrate.d.ts",
       "source": "./exports/migrate.ts",
@@ -163,9 +152,6 @@
       ],
       "structure": [
         "./lib/exports/structure.d.ts"
-      ],
-      "tasks": [
-        "./lib/exports/tasks.d.ts"
       ]
     }
   },
@@ -180,7 +166,6 @@
     "lib",
     "router.js",
     "presentation.js",
-    "tasks.js",
     "src",
     "static",
     "structure.js",
