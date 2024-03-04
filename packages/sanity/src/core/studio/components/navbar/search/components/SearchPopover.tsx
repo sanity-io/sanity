@@ -18,11 +18,17 @@ import {SearchWrapper} from './common/SearchWrapper'
 import {Filters} from './filters/Filters'
 import {RecentSearches} from './recentSearches/RecentSearches'
 import {SearchHeader} from './SearchHeader'
+import {type ItemSelectHandler} from './searchResults/item/SearchResultItem'
 import {SearchResults} from './searchResults/SearchResults'
 
+/**
+ * @internal
+ */
 export interface SearchPopoverProps {
   disableFocusLock?: boolean
+  disableIntentLink?: boolean
   onClose: () => void
+  onItemSelect?: ItemSelectHandler
   onOpen: () => void
   open: boolean
 }
@@ -66,7 +72,17 @@ const SearchMotionCard = styled(motion(Card))`
   width: min(calc(100vw - ${POPOVER_INPUT_PADDING * 2}px), ${POPOVER_MAX_WIDTH}px);
 `
 
-export function SearchPopover({disableFocusLock, onClose, onOpen, open}: SearchPopoverProps) {
+/**
+ * @internal
+ */
+export function SearchPopover({
+  disableFocusLock,
+  disableIntentLink,
+  onClose,
+  onItemSelect,
+  onOpen,
+  open,
+}: SearchPopoverProps) {
   const [inputElement, setInputElement] = useState<HTMLInputElement | null>(null)
 
   const popoverElement = useRef<HTMLElement | null>(null)
@@ -134,7 +150,11 @@ export function SearchPopover({disableFocusLock, onClose, onOpen, open}: SearchP
                   </Card>
                 )}
                 {hasValidTerms ? (
-                  <SearchResults inputElement={inputElement} />
+                  <SearchResults
+                    inputElement={inputElement}
+                    onItemSelect={onItemSelect}
+                    disableIntentLink={disableIntentLink}
+                  />
                 ) : (
                   <RecentSearches inputElement={inputElement} />
                 )}
