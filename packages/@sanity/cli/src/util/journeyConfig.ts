@@ -4,7 +4,6 @@ import {format} from 'prettier'
 import {Worker} from 'worker_threads'
 
 import {
-  type ArrayDefinition,
   type BaseSchemaDefinition,
   type DocumentDefinition,
   type ObjectDefinition,
@@ -33,7 +32,12 @@ interface JourneyConfigResponse {
 }
 
 type DocumentOrObject = DocumentDefinition | ObjectDefinition
-type SchemaObject = BaseSchemaDefinition & {type: string; fields?: SchemaObject[]; preview?: object}
+type SchemaObject = BaseSchemaDefinition & {
+  type: string
+  fields?: SchemaObject[]
+  of?: SchemaObject[]
+  preview?: object
+}
 
 /**
  * Fetch a Journey schema from the Sanity schema club API and write it to disk
@@ -217,45 +221,27 @@ function getImports(schemaType: string): string {
  */
 export function wrapSchemaTypeInHelpers(schemaType: SchemaObject, root: boolean = true): string {
   if (root) {
-    return generateTypeDefinition(schemaType)
+    return generateSchemaDefinition(schemaType, 'defineType')
   } else if (schemaType.type === 'array') {
-    return generateArrayDefinition(schemaType as ArrayDefinition)
+    return `${generateSchemaDefinition(schemaType, 'defineField')},`
   }
-  return generateFieldDefinition(schemaType)
-
-  function generateTypeDefinition(field: SchemaObject): string {
-    return generateSchemaDefinition(field, 'defineType')
-  }
-
-  function generateFieldDefinition(field: SchemaObject): string {
-    return `${generateSchemaDefinition(field, 'defineField')},`
-  }
-
-  function generateArrayDefinition(field: ArrayDefinition) {
-    const {of, ...otherProperties} = field
-    const serializedProps = serialize(otherProperties)
-    const serializedOf = of.map((f) => `defineArrayMember({${serialize(f)}})`)
-    const ofDefinition = of ? `of: [${serializedOf.join(',')}],` : ''
-
-    const combinedDefinitions = [serializedProps, ofDefinition].filter(Boolean).join(',')
-    return `defineField({ ${combinedDefinitions} }),`
-  }
+  return `${generateSchemaDefinition(schemaType, 'defineField')},`
 
   function generateSchemaDefinition(
     object: SchemaObject,
     definitionType: 'defineType' | 'defineField',
   ): string {
-    const {fields, preview, ...otherProperties} = object
+    const {fields, preview, of, ...otherProperties} = object
+
     const serializedProps = serialize(otherProperties)
-    const serializedFields = fields
-      ? fields.map((field) => wrapSchemaTypeInHelpers(field, false)).join('')
-      : ''
-    const fieldsDefinition = fields ? `fields: [${serializedFields}],` : ''
-    const previewDefinition = preview ? `preview: {${serialize(preview)}}` : ''
-    const combinedDefinitions = [serializedProps, fieldsDefinition, previewDefinition]
+    const fieldsDef =
+      fields && `fields: [${fields.map((f) => wrapSchemaTypeInHelpers(f, false)).join('')}],`
+    const ofDef = of && `of: [${of.map((f) => `defineArrayMember({${serialize(f)}})`).join(',')}],`
+    const previewDef = preview && `preview: {${serialize(preview)}}`
+
+    const combinedDefinitions = [serializedProps, fieldsDef, ofDef, previewDef]
       .filter(Boolean)
       .join(',')
-
     return `${definitionType}({ ${combinedDefinitions} })`
   }
 
