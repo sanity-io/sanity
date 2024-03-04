@@ -8,6 +8,9 @@ const ListItem = styled(Flex)``
 
 const ErrorMessageRoot = styled(Box).attrs({padding: 4})``
 
+/**
+ * @internal
+ */
 export interface ErrorMessageProps {
   message: string
   stack?: string
@@ -15,6 +18,9 @@ export interface ErrorMessageProps {
   path: Array<{name: string; type: string}>
 }
 
+/**
+ * @internal
+ */
 export function ErrorMessage({error, message, path, stack}: ErrorMessageProps) {
   useEffect(() => {
     console.error(error)
