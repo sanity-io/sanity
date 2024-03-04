@@ -47,7 +47,7 @@ export async function getAndWriteJourneySchema(data: JourneySchemaWorkerData): P
     // Write a file for each schema
     for (const documentType of documentTypes) {
       const filePath = path.join(schemasPath, `${documentType.name}.${fileExtension}`)
-      await fs.writeFile(filePath, await JourneySchemaToFileContents(documentType))
+      await fs.writeFile(filePath, await assembleJourneySchemaTypeFileContent(documentType))
     }
     // Write an index file that exports all the schemas
     const indexContent = assembleJourneyIndexContent(documentTypes)
@@ -159,12 +159,13 @@ async function fetchJourneySchema(schemaUrl: string): Promise<DocumentOrObject[]
 }
 
 /**
- * Wrap a Journey schema in a module export
+ * Assemble a Journey schema type into a module export
+ * Include the necessary imports and export the schema type as a named export
  *
- * @param schema - The Journey schema to wrap in a module export
+ * @param schema - The Journey schema to export
  * @returns The Journey schema as a module export
  */
-async function JourneySchemaToFileContents(schemaType: DocumentOrObject): Promise<string> {
+async function assembleJourneySchemaTypeFileContent(schemaType: DocumentOrObject): Promise<string> {
   const serialised = wrapSchemaTypeInHelpers(schemaType)
   const imports = getImports(serialised)
   const prettifiedSchemaType = await format(serialised, {parser: 'typescript'})
