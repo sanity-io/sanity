@@ -37,6 +37,8 @@ export function DescriptionInput(props: DescriptionInputProps) {
         value={value}
         withAvatar={false}
         placeholder="Task description"
+        // eslint-disable-next-line react/jsx-no-bind
+        onDiscardConfirm={() => null}
       />
     </DescriptionInputRoot>
   )

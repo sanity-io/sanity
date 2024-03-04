@@ -27,7 +27,7 @@ export interface CommentInputProps {
   onBlur?: (e: React.FormEvent<HTMLDivElement>) => void
   onChange: (value: PortableTextBlock[]) => void
   onDiscardCancel?: () => void
-  onDiscardConfirm?: () => void
+  onDiscardConfirm: () => void
   onFocus?: (e: React.FormEvent<HTMLDivElement>) => void
   onKeyDown?: (e: React.KeyboardEvent<Element>) => void
   onMentionMenuOpenChange?: (open: boolean) => void
@@ -136,7 +136,7 @@ export const CommentInput = forwardRef<CommentInputHandle, CommentInputProps>(
     }, [onSubmit, requestFocus, resetEditorInstance, scrollToEditor])
 
     const handleDiscardConfirm = useCallback(() => {
-      onDiscardConfirm?.()
+      onDiscardConfirm()
       resetEditorInstance()
     }, [onDiscardConfirm, resetEditorInstance])
 
