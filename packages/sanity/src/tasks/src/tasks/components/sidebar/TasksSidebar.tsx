@@ -34,7 +34,7 @@ function TasksStudioSidebarInner() {
   const onCancel = useCallback(() => setViewMode('list'), [setViewMode])
   const handleOnDelete = useCallback(() => {
     setViewMode('list')
-    setActiveTabId('created')
+    setActiveTabId('subscribed')
   }, [setActiveTabId, setViewMode])
 
   const onTaskSelect = useCallback(
@@ -47,7 +47,7 @@ function TasksStudioSidebarInner() {
 
   const onTaskCreate = useCallback(() => {
     setViewMode('list')
-    setActiveTabId('created')
+    setActiveTabId('subscribed')
   }, [setActiveTabId, setViewMode])
 
   const currentUser = useCurrentUser()
@@ -60,7 +60,8 @@ function TasksStudioSidebarInner() {
       if (activeTabId === 'assigned') {
         return item.assignedTo === currentUser?.id
       }
-      if (activeTabId === 'created') {
+      if (activeTabId === 'subscribed') {
+        // TODO: Implement here the check for the subscribed tasks, right now it's returning the tasks the user created.
         return item.authorId === currentUser?.id
       }
       if (activeTabId === 'document') {
