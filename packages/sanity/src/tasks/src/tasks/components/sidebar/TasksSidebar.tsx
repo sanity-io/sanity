@@ -33,27 +33,12 @@ const TRANSITION: Transition = {duration: 0.2}
 function TasksStudioSidebarInner() {
   const {enabled} = useTasksEnabled()
   const {activeDocument, isOpen, data, isLoading} = useTasks()
-  const {viewMode, setViewMode, selectedTask, setSelectedTask, activeTabId, setActiveTabId} =
-    useTasksNavigation()
+  const {state, setViewMode, setActiveTab, editTask} = useTasksNavigation()
+  const {activeTabId, viewMode, selectedTask} = state
 
-  const onCancel = useCallback(() => setViewMode('list'), [setViewMode])
-  const handleOnDelete = useCallback(() => {
-    setViewMode('list')
-    setActiveTabId('subscribed')
-  }, [setActiveTabId, setViewMode])
-
-  const onTaskSelect = useCallback(
-    (id: string) => {
-      setViewMode('edit')
-      setSelectedTask(id)
-    },
-    [setSelectedTask, setViewMode],
-  )
-
-  const onTaskCreate = useCallback(() => {
-    setViewMode('list')
-    setActiveTabId('subscribed')
-  }, [setActiveTabId, setViewMode])
+  const onCancel = useCallback(() => setViewMode({type: 'list'}), [setViewMode])
+  const handleOnDelete = useCallback(() => setActiveTab('subscribed'), [setActiveTab])
+  const onTaskCreate = useCallback(() => setActiveTab('subscribed'), [setActiveTab])
 
   const currentUser = useCurrentUser()
   const filteredList = useMemo(() => {
@@ -85,14 +70,7 @@ function TasksStudioSidebarInner() {
       {isOpen && (
         <motion.div variants={VARIANTS} transition={TRANSITION} initial="hidden" animate="visible">
           <SidebarRoot borderLeft height="fill" marginLeft={1}>
-            <TasksSidebarHeader
-              setViewMode={setViewMode}
-              viewMode={viewMode}
-              activeTabId={activeTabId}
-              items={filteredList}
-              selectedTask={selectedTask}
-              setSelectedTask={setSelectedTask}
-            />
+            <TasksSidebarHeader items={filteredList} />
             <SidebarContent>
               {viewMode === 'list' && (
                 <>
@@ -105,8 +83,8 @@ function TasksStudioSidebarInner() {
                   ) : (
                     <TaskSidebarContent
                       items={filteredList}
-                      onTaskSelect={onTaskSelect}
-                      setActiveTabId={setActiveTabId}
+                      onTaskSelect={editTask}
+                      setActiveTabId={setActiveTab}
                       activeTabId={activeTabId}
                     />
                   )}
