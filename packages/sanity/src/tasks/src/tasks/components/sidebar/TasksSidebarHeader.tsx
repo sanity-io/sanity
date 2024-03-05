@@ -13,16 +13,11 @@ import {BetaBadge} from 'sanity'
 import styled from 'styled-components'
 
 import {Button, Tooltip, TooltipDelayGroupProvider} from '../../../../../ui-components'
-import {type SidebarTabsIds, useTasks, type ViewMode} from '../../context'
+import {useTasks, useTasksNavigation} from '../../context'
 import {type TaskDocument} from '../../types'
 
 interface TasksSidebarHeaderProps {
-  viewMode: ViewMode
-  setViewMode: (view: ViewMode) => void
-  activeTabId: SidebarTabsIds
   items: TaskDocument[]
-  selectedTask: string | null
-  setSelectedTask: (id: string) => void
 }
 
 const Divider = styled.div((props) => {
@@ -39,21 +34,27 @@ const Divider = styled.div((props) => {
  * @internal
  */
 export function TasksSidebarHeader(props: TasksSidebarHeaderProps) {
-  const {setViewMode, viewMode, activeTabId, items: allItems, selectedTask, setSelectedTask} = props
+  const {items: allItems} = props
+  const {state, editTask, setViewMode} = useTasksNavigation()
+  const {viewMode, activeTabId, selectedTask} = state
   const {toggleOpen} = useTasks()
   const items = allItems.filter((t) => t.status === 'open')
   const currentItemIndex = items.findIndex((item) => item._id === selectedTask)
 
   const goToPreviousTask = useCallback(() => {
-    setSelectedTask(
-      currentItemIndex > 0 ? items[currentItemIndex - 1]._id : items[items.length - 1]._id,
-    )
-  }, [currentItemIndex, items, setSelectedTask])
+    editTask(currentItemIndex > 0 ? items[currentItemIndex - 1]._id : items[items.length - 1]._id)
+  }, [currentItemIndex, items, editTask])
   const goToNextTask = useCallback(() => {
-    setSelectedTask(
-      currentItemIndex < items.length - 1 ? items[currentItemIndex + 1]._id : items[0]._id,
-    )
-  }, [currentItemIndex, items, setSelectedTask])
+    editTask(currentItemIndex < items.length - 1 ? items[currentItemIndex + 1]._id : items[0]._id)
+  }, [currentItemIndex, items, editTask])
+
+  const handleTaskCreate = useCallback(() => {
+    setViewMode({type: 'create'})
+  }, [setViewMode])
+
+  const handleGoBack = useCallback(() => {
+    setViewMode({type: 'list'})
+  }, [setViewMode])
 
   return (
     <Box padding={2}>
@@ -67,13 +68,7 @@ export function TasksSidebarHeader(props: TasksSidebarHeaderProps) {
             </Box>
           ) : (
             <>
-              <UIButton
-                mode="bleed"
-                space={2}
-                padding={2}
-                // eslint-disable-next-line react/jsx-no-bind
-                onClick={() => setViewMode('list')}
-              >
+              <UIButton mode="bleed" space={2} padding={2} onClick={handleGoBack}>
                 <Text size={1}>Tasks</Text>
               </UIButton>
               <ChevronRightIcon />
@@ -115,13 +110,7 @@ export function TasksSidebarHeader(props: TasksSidebarHeaderProps) {
         )}
         <Flex gap={1}>
           {viewMode === 'list' && (
-            <Button
-              icon={AddIcon}
-              // eslint-disable-next-line react/jsx-no-bind
-              onClick={() => setViewMode('create')}
-              mode="bleed"
-              text="New task"
-            />
+            <Button icon={AddIcon} onClick={handleTaskCreate} mode="bleed" text="New task" />
           )}
 
           <Button
