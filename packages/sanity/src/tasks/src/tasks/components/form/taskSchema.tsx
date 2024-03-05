@@ -14,8 +14,6 @@ export const taskSchema = (mode: FormMode) =>
     name: 'tasks.task',
     liveEdit: true,
     components: {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
       input: mode === 'edit' ? FormEdit : FormCreate,
     },
     fields: [

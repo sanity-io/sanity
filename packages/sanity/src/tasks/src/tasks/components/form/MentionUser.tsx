@@ -1,20 +1,11 @@
-import {type SanityDocument} from '@sanity/client'
 import {UserIcon} from '@sanity/icons'
 import {Autocomplete, Badge, Card, Flex, Text} from '@sanity/ui'
 import {motion} from 'framer-motion'
-import {useCallback, useEffect, useMemo, useState} from 'react'
-import {
-  set,
-  type StringInputProps,
-  unset,
-  useFormValue,
-  UserAvatar,
-  type UserWithPermission,
-} from 'sanity'
+import {useCallback, useMemo, useState} from 'react'
+import {set, type StringInputProps, unset, UserAvatar, type UserWithPermission} from 'sanity'
 import styled from 'styled-components'
 
 import {useMentionUser} from '../../context'
-import {type TaskDocument} from '../../types'
 
 type Option = {
   value: string
@@ -30,21 +21,8 @@ const FocusableCard = styled(Card)`
 export function MentionUserFormField(props: StringInputProps) {
   const {value, onChange, schemaType} = props
 
-  const formValue = useFormValue([]) as TaskDocument
-  const targetId = formValue.target?.document?._ref
-  const targetType = formValue.target?.documentType
-  const {mentionOptions, setSelectedDocument} = useMentionUser()
+  const {mentionOptions} = useMentionUser()
   const [showMentionOptions, setShowMentionOptions] = useState(false)
-
-  useEffect(() => {
-    const documentValue =
-      targetId && targetType
-        ? // Hack to force the SanityDocument type, we only need to send the _id and _type in this object.
-          ({_id: targetId, _type: targetType} as unknown as SanityDocument)
-        : null
-
-    setSelectedDocument(documentValue)
-  }, [targetId, targetType, setSelectedDocument])
 
   const mentionedUser = useMemo(
     () => mentionOptions.data?.find((u) => u.id === value),
