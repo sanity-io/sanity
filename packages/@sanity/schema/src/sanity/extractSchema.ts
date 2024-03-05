@@ -21,12 +21,12 @@ import {
   type ObjectAttribute,
   type ObjectTypeNode,
   type PrimitiveTypeNode,
-  type Schema,
+  type SchemaType,
   type StringTypeNode,
   type TypeNode,
   type UnionTypeNode,
   type UnknownTypeNode,
-} from 'groq-js/typeEvaluator'
+} from 'groq-js'
 
 const documentDefaultFields = (typeName: string): Record<string, ObjectAttribute> => ({
   _id: {
@@ -59,8 +59,8 @@ const typesMap = new Map<string, TypeNode>([
   ['email', {type: 'string'}],
 ])
 
-export function extractSchema(schemaTypeDefinitions: SchemaTypeDefinition[]): Schema {
-  const schema: Schema = []
+export function extractSchema(schemaTypeDefinitions: SchemaTypeDefinition[]): SchemaType {
+  const schema: SchemaType = []
   schemaTypeDefinitions.forEach((type) => {
     if (isDocumentType(type)) {
       const attributes = documentDefaultFields(type.name) satisfies Record<string, ObjectAttribute>

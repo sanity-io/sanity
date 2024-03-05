@@ -3,12 +3,12 @@ import path from 'node:path'
 import {describe, expect, test} from '@jest/globals'
 import {
   createReferenceTypeNode,
-  type Document,
+  type DocumentSchemaType,
   type ObjectAttribute,
   type ObjectTypeNode,
-  type Schema,
+  type SchemaType,
   type StringTypeNode,
-} from 'groq-js/typeEvaluator'
+} from 'groq-js'
 
 import {readSchema} from '../../readSchema'
 import {TypeGenerator} from '../typeGenerator'
@@ -24,7 +24,7 @@ describe('generateTypesFromSchema', () => {
   })
 
   test('should generate correct types for document schema with string fields', () => {
-    const schema: Schema = [
+    const schema: SchemaType = [
       {
         type: 'document',
         name: 'author',
@@ -54,7 +54,7 @@ describe('generateTypesFromSchema', () => {
   })
 
   test('should generate correct types for document schema with number fields', () => {
-    const schema: Schema = [
+    const schema: SchemaType = [
       {
         type: 'document',
         name: 'product',
@@ -78,7 +78,7 @@ describe('generateTypesFromSchema', () => {
   })
 
   test('should generate correct types for document schema with boolean fields', () => {
-    const schema: Schema = [
+    const schema: SchemaType = [
       {
         type: 'document',
         name: 'task',
@@ -101,7 +101,7 @@ describe('generateTypesFromSchema', () => {
   })
 
   test('should generate correct types for document schema with object fields', () => {
-    const schema: Schema = [
+    const schema: SchemaType = [
       {
         type: 'document',
         name: 'user',
@@ -140,7 +140,7 @@ describe('generateTypesFromSchema', () => {
   })
 
   test('should generate correct types for document schema with array fields', () => {
-    const schema: Schema = [
+    const schema: SchemaType = [
       {
         type: 'document',
         name: 'blogPost',
@@ -167,7 +167,7 @@ describe('generateTypesFromSchema', () => {
   })
 
   test('should generate correct types for document schema with unknown fields', () => {
-    const schema: Schema = [
+    const schema: SchemaType = [
       {
         type: 'document',
         name: 'dynamicData',
@@ -191,7 +191,7 @@ describe('generateTypesFromSchema', () => {
   })
 
   test('should generate correct types for document schema with never fields', () => {
-    const schema: Schema = [
+    const schema: SchemaType = [
       {
         type: 'document',
         name: 'impossible',
@@ -224,7 +224,7 @@ describe('generateTypesFromSchema', () => {
           value: createReferenceTypeNode('author'),
         } satisfies ObjectAttribute<ObjectTypeNode>,
       },
-    } satisfies Document
+    } satisfies DocumentSchemaType
     const author = {
       type: 'document',
       name: 'author',
@@ -234,8 +234,8 @@ describe('generateTypesFromSchema', () => {
           value: {type: 'string'},
         } satisfies ObjectAttribute<StringTypeNode>,
       },
-    } satisfies Document
-    const schema = [blogPost, author] satisfies Schema
+    } satisfies DocumentSchemaType
+    const schema = [blogPost, author] satisfies SchemaType
 
     const typeGenerator = new TypeGenerator(schema)
     const actualOutput = typeGenerator.generateTypesFromSchema()
@@ -255,7 +255,7 @@ export type Author = {
   })
 
   test('should generate correct types for document schema with union fields', () => {
-    const schema: Schema = [
+    const schema: SchemaType = [
       {
         type: 'document',
         name: 'mixedContent',
@@ -282,7 +282,7 @@ export type Author = {
   })
 
   test('should generate correct types for document schema with nullable attribute', () => {
-    const schema: Schema = [
+    const schema: SchemaType = [
       {
         type: 'document',
         name: 'optionalData',

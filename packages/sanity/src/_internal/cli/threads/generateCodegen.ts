@@ -7,7 +7,7 @@ import {
   TypeGenerator,
 } from '@sanity/codegen'
 import debug from 'debug'
-import {evaluateQueryType} from 'groq-js/typeEvaluator'
+import {parse, typeEvaluate} from 'groq-js'
 import {map} from 'rxjs/operators'
 import {isMainThread, parentPort, workerData as _workerData} from 'worker_threads'
 
@@ -83,7 +83,8 @@ async function main() {
           const result: {queryName: string; query: string; type: string}[] = []
           for (const {name: queryName, result: query} of queries) {
             try {
-              const queryTypes = evaluateQueryType(query, schema)
+              const ast = parse(query)
+              const queryTypes = typeEvaluate(ast, schema)
 
               const type = typeGenerator.generateTypeForField(queryName, queryTypes)
 
