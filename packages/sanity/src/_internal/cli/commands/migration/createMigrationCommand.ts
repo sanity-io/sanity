@@ -76,12 +76,12 @@ const createMigrationCommand: CliCommandDefinition<CreateMigrationFlags> = {
       .replace(/\s+/g, '-')
       .replace(/[^a-z0-9-]/g, '')
 
-    const destDir = path.join(MIGRATIONS_DIRECTORY, sluggedName)
+    const destDir = path.join(workDir, MIGRATIONS_DIRECTORY, sluggedName)
     if (existsSync(destDir)) {
       if (
         !(await prompt.single({
           type: 'confirm',
-          message: `Migration directory ./${destDir} already exists. Overwrite?`,
+          message: `Migration directory ${chalk.cyan(destDir)} already exists. Overwrite?`,
           default: false,
         }))
       ) {
@@ -100,14 +100,14 @@ const createMigrationCommand: CliCommandDefinition<CreateMigrationFlags> = {
 
     const definitionFile = path.join(destDir, 'index.ts')
 
-    await writeFile(path.join(workDir, definitionFile), renderedTemplate)
+    await writeFile(definitionFile, renderedTemplate)
     // To dry run it, run \`sanity migration run ${sluggedName}\``)
     output.print()
     output.print(`${chalk.green('✓')} Migration created!`)
     output.print()
     output.print('Next steps:')
     output.print(
-      `Open ./${chalk.bold(
+      `Open ${chalk.bold(
         definitionFile,
       )} in your code editor and write the code for your migration.`,
     )
