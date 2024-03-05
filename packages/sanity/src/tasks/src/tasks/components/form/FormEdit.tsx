@@ -1,14 +1,15 @@
 import {CopyIcon, LinkIcon, TrashIcon} from '@sanity/icons'
-import {Box, Flex, Menu, MenuDivider} from '@sanity/ui'
+import {Box, Flex, Menu, MenuDivider, Stack} from '@sanity/ui'
 import {useCallback} from 'react'
 import {ContextMenuButton, LoadingBlock, type ObjectInputProps} from 'sanity'
 import styled from 'styled-components'
 
+import {CommentsProvider} from '../../../../../structure/comments'
 import {MenuButton, MenuItem} from '../../../../../ui-components'
 import {useTasksNavigation} from '../../context'
 import {useRemoveTask} from '../../hooks/useRemoveTask'
 import {type TaskDocument} from '../../types'
-import {ActivityLog} from '../activityLog'
+import {TasksActivityLog} from '../activity'
 import {RemoveTaskDialog} from './RemoveTaskDialog'
 import {StatusSelector} from './StatusSelector'
 import {Title} from './TitleField'
@@ -69,19 +70,21 @@ export function FormEdit(props: ObjectInputProps) {
   if (!props.value?._id) {
     return <LoadingBlock />
   }
+
   return (
     <>
       <Flex align="flex-start" gap={3}>
-        <div style={{flex: 1}}>
+        <Box flex={1}>
           <Title
             onChange={props.onChange}
             value={props.value?.title}
             path={['title']}
             placeholder="Task title"
           />
-        </div>
+        </Box>
         <FormActionsMenu id={props.value?._id} value={value} />
       </Flex>
+
       <FirstRow>
         <StatusSelector
           value={props.value?.status}
@@ -90,8 +93,14 @@ export function FormEdit(props: ObjectInputProps) {
           options={statusField.type.options.list}
         />
       </FirstRow>
+
       {props.renderDefault(props)}
-      <ActivityLog value={value} />
+
+      <CommentsProvider documentType="tasks.task" documentId={value._id} scope="task">
+        <Stack marginTop={5} marginBottom={4}>
+          <TasksActivityLog value={value} />
+        </Stack>
+      </CommentsProvider>
     </>
   )
 }
