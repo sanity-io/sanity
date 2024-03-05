@@ -80,7 +80,7 @@ function CommentsInspectorInner(
 
   const pushToast = useToast().push
   const {isTopLayer} = useLayer()
-  const {onPathOpen, ready} = useDocumentPane()
+  const {onPathOpen, connectionState} = useDocumentPane()
 
   const {scrollToComment, scrollToField, scrollToInlineComment} = useCommentsScroll()
   const {selectedPath, setSelectedPath} = useCommentsSelectedPath()
@@ -93,12 +93,8 @@ function CommentsInspectorInner(
   const currentComments = useMemo(() => comments.data[status], [comments, status])
 
   const loading = useMemo(() => {
-    // The comments and the document are loaded separately which means that
-    // the comments might be ready before the document is ready. Since the user should
-    // be able to interact with the document from the comments inspector, we need to make sure
-    // that the document is ready before we allow the user to interact with the comments.
-    return comments.loading || !ready
-  }, [comments.loading, ready])
+    return comments.loading || connectionState === 'connecting'
+  }, [comments.loading, connectionState])
 
   useEffect(() => {
     if (mode === 'upsell') {
