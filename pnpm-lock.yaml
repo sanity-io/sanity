@@ -1264,9 +1264,6 @@ importers:
       rimraf:
         specifier: ^3.0.2
         version: 3.0.2
-      sanity:
-        specifier: workspace:^
-        version: link:../../sanity
 
   packages/@sanity/types:
     dependencies:
