@@ -1,6 +1,17 @@
 import {hues} from '@sanity/color'
 import {type CurrentUser} from '@sanity/types'
-import {Box, Card, Flex, Stack, Text, TextSkeleton, useClickOutside} from '@sanity/ui'
+import {
+  type AvatarSize,
+  Box,
+  Card,
+  Flex,
+  Stack,
+  Text,
+  TextSkeleton,
+  useClickOutside,
+} from '@sanity/ui'
+// eslint-disable-next-line camelcase
+import {getTheme_v2} from '@sanity/ui/theme'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {
   type RelativeTimeOptions,
@@ -26,7 +37,7 @@ import {
   type CommentsUIMode,
   type CommentUpdatePayload,
 } from '../../types'
-import {AVATAR_HEIGHT, CommentsAvatar, SpacerAvatar} from '../avatars'
+import {CommentsAvatar, SpacerAvatar} from '../avatars'
 import {FLEX_GAP} from '../constants'
 import {CommentMessageSerializer} from '../pte'
 import {CommentInput, type CommentInputHandle} from '../pte/comment-input'
@@ -72,9 +83,13 @@ const InnerStack = styled(Stack)`
   }
 `
 
-const ErrorFlex = styled(Flex)`
-  min-height: ${AVATAR_HEIGHT}px;
-`
+const ErrorFlex = styled(Flex)<{$size: AvatarSize}>((props) => {
+  const theme = getTheme_v2(props.theme)
+
+  return css`
+    min-height: ${theme.avatar.sizes[props.$size]?.size}px;
+  `
+})
 
 const RetryCardButton = styled(Card)`
   // Add not on hover
@@ -141,6 +156,8 @@ interface CommentsListItemLayoutProps {
   onReactionSelect?: (id: string, reaction: CommentReactionOption) => void
   onStatusChange?: (id: string, status: CommentStatus) => void
   readOnly?: boolean
+  withAvatar?: boolean
+  avatarSize?: AvatarSize
 }
 
 const RELATIVE_TIME_OPTIONS: RelativeTimeOptions = {useTemporalPhrase: true}
@@ -166,6 +183,8 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
     onReactionSelect,
     onStatusChange,
     readOnly,
+    withAvatar = true,
+    avatarSize = 1,
   } = props
   const {_createdAt, authorId, message, _id, lastEditedAt} = comment
   const [user] = useUser(authorId)
@@ -325,7 +344,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
     >
       <InnerStack space={1} data-muted={displayError}>
         <Flex align="center" gap={FLEX_GAP} flex={1}>
-          <CommentsAvatar user={user} />
+          {withAvatar && <CommentsAvatar user={user} size={avatarSize} />}
 
           <Flex direction="column" gap={2} paddingY={intent ? 2 : 0}>
             <Flex
@@ -401,7 +420,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
 
         {isTextSelectionComment(comment) && Boolean(comment?.contentSnapshot) && (
           <Flex gap={FLEX_GAP} marginBottom={3}>
-            <SpacerAvatar />
+            <SpacerAvatar size={avatarSize} show={withAvatar} />
 
             <CommentsListItemReferencedValue
               hasReferencedValue={hasReferencedValue}
@@ -412,7 +431,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
 
         {isEditing && (
           <Flex align="flex-start" gap={2}>
-            <SpacerAvatar />
+            <SpacerAvatar size={avatarSize} show={withAvatar} />
 
             <Stack flex={1}>
               <CommentInput
@@ -435,7 +454,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
 
         {!isEditing && (
           <Flex gap={FLEX_GAP}>
-            <SpacerAvatar />
+            <SpacerAvatar size={avatarSize} show={withAvatar} />
 
             <CommentMessageSerializer blocks={message} />
           </Flex>
@@ -443,7 +462,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
 
         {hasReactions && (
           <Flex gap={FLEX_GAP} marginTop={2}>
-            <SpacerAvatar />
+            <SpacerAvatar size={avatarSize} show={withAvatar} />
 
             <Box onClick={stopPropagation}>
               <CommentReactionsBar
@@ -459,8 +478,8 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
       </InnerStack>
 
       {displayError && (
-        <ErrorFlex gap={FLEX_GAP}>
-          <SpacerAvatar />
+        <ErrorFlex gap={FLEX_GAP} $size={avatarSize}>
+          <SpacerAvatar size={avatarSize} show={withAvatar} />
 
           <Flex align="center" gap={1} flex={1}>
             <Text muted size={1}>

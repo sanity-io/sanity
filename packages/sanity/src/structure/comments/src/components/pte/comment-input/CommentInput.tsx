@@ -1,6 +1,6 @@
 import {type EditorChange, keyGenerator, PortableTextEditor} from '@sanity/portable-text-editor'
 import {type CurrentUser, type PortableTextBlock} from '@sanity/types'
-import {focusFirstDescendant, focusLastDescendant, Stack} from '@sanity/ui'
+import {type AvatarSize, focusFirstDescendant, focusLastDescendant, Stack} from '@sanity/ui'
 import type * as React from 'react'
 import {forwardRef, useCallback, useImperativeHandle, useMemo, useRef, useState} from 'react'
 import {type UserListWithPermissionsHookValue} from 'sanity'
@@ -36,6 +36,7 @@ export interface CommentInputProps {
   readOnly?: boolean
   value: PortableTextBlock[] | null
   withAvatar?: boolean
+  avatarSize?: AvatarSize
 }
 
 interface CommentDiscardDialogController {
@@ -58,6 +59,7 @@ export interface CommentInputHandle {
 export const CommentInput = forwardRef<CommentInputHandle, CommentInputProps>(
   function CommentInput(props, ref) {
     const {
+      avatarSize,
       currentUser,
       expandOnFocus,
       focusLock = false,
@@ -221,6 +223,7 @@ export const CommentInput = forwardRef<CommentInputHandle, CommentInputProps>(
 
               <Stack ref={innerRef}>
                 <CommentInputInner
+                  avatarSize={avatarSize}
                   currentUser={currentUser}
                   focusLock={focusLock}
                   onBlur={onBlur}
