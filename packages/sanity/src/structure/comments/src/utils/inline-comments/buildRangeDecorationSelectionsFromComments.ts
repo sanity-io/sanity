@@ -76,7 +76,7 @@ export function buildRangeDecorationSelectionsFromComments(
   const decorators: BuildCommentsRangeDecorationsResultItem[] = []
 
   textSelections.forEach((comment) => {
-    comment.target.path.selection?.value.forEach((selectionMember) => {
+    comment.target.path?.selection?.value.forEach((selectionMember) => {
       const matchedBlock = value.find((block) => block._key === selectionMember._key)
       if (!matchedBlock || !isPortableTextTextBlock(matchedBlock)) {
         return

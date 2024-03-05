@@ -27,6 +27,7 @@ export interface CommentOperationsHookValue {
 
 export interface CommentOperationsHookOptions {
   client: SanityClient | null
+  createAddonDataset: () => Promise<SanityClient | null>
   currentUser: CurrentUser | null
   dataset: string
   documentId: string
@@ -40,7 +41,6 @@ export interface CommentOperationsHookOptions {
   onTransactionStart: (commentDocumentId: string, transactionId: string) => void
   onUpdate?: (id: string, comment: CommentUpdatePayload) => void
   projectId: string
-  createAddonDataset: () => Promise<SanityClient | null>
   schemaType: SchemaType | undefined
   workspace: string
 }

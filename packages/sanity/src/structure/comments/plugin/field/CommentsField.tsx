@@ -194,6 +194,7 @@ function CommentFieldInner(
 
       // Construct the comment payload
       const nextComment: CommentCreatePayload = {
+        scope: 'document',
         fieldPath: PathUtils.toString(props.path),
         message: value,
         parentCommentId: undefined,

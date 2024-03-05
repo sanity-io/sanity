@@ -150,7 +150,7 @@ export function CommentsListItemContextMenu(props: CommentsListItemContextMenuPr
                   tone="critical"
                 />
 
-                <MenuDivider hidden={!canDelete && !canEdit} />
+                {onCopyLink && <MenuDivider hidden={!canDelete && !canEdit} />}
 
                 <MenuItem
                   hidden={!onCopyLink}

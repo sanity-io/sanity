@@ -25,7 +25,7 @@ export default function CommentsProviderStory() {
   return (
     <AddonDatasetProvider>
       <CommentsEnabledProvider documentType={_type} documentId={_id}>
-        <CommentsProvider documentType={_type} documentId={_id}>
+        <CommentsProvider documentType={_type} documentId={_id} scope="document">
           <ConditionalWrapper
             condition={_mode === 'upsell'}
             // eslint-disable-next-line react/jsx-no-bind

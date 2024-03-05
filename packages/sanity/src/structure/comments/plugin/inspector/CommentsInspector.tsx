@@ -167,7 +167,8 @@ function CommentsInspectorInner(
       if (!comment) return
 
       operation.create({
-        fieldPath: comment.target.path.field,
+        scope: 'document',
+        fieldPath: comment.target.path?.field || '',
         id: comment._id,
         message: comment.message,
         parentCommentId: comment.parentCommentId,
@@ -211,11 +212,13 @@ function CommentsInspectorInner(
     (payload: CommentCreatePayload) => {
       operation.create(payload)
 
-      setSelectedPath({
-        fieldPath: payload.fieldPath,
-        origin: 'inspector',
-        threadId: payload.threadId,
-      })
+      if (payload.scope === 'document') {
+        setSelectedPath({
+          fieldPath: payload.fieldPath,
+          origin: 'inspector',
+          threadId: payload.threadId,
+        })
+      }
     },
     [operation, setSelectedPath],
   )
@@ -280,7 +283,7 @@ function CommentsInspectorInner(
         if (!comment) return
 
         setSelectedPath({
-          fieldPath: comment.target.path.field || null,
+          fieldPath: comment.target.path?.field || null,
           origin: 'inspector',
           threadId: comment.threadId || null,
         })
@@ -335,7 +338,7 @@ function CommentsInspectorInner(
       setStatus(commentToScrollTo.status || 'open')
 
       setSelectedPath({
-        fieldPath: commentToScrollTo.target.path.field || null,
+        fieldPath: commentToScrollTo.target.path?.field || null,
         origin: 'url',
         threadId: commentToScrollTo.threadId || null,
       })

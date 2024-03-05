@@ -185,7 +185,7 @@ const CommentsListInner = forwardRef(function CommentsListInner(
                       // selected path.
                       const threadIsSelected =
                         selectedPath?.threadId === item.parentComment.threadId &&
-                        selectedPath?.fieldPath === item.parentComment.target.path.field
+                        selectedPath?.fieldPath === item.parentComment.target.path?.field
 
                       return (
                         <CommentsListItem

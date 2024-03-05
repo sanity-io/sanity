@@ -89,6 +89,8 @@ export interface CommentPath {
   selection?: CommentPathSelection
 }
 
+export type CommentsScope = 'document' | 'task'
+
 /**
  * @beta
  * @hidden
@@ -204,17 +206,23 @@ export interface CommentDocument {
   contentSnapshot?: unknown
 
   target: {
-    path: CommentPath
+    path?: CommentPath
 
-    documentRevisionId: string
+    documentRevisionId?: string
     documentType: string
-    document: {
-      _dataset: string
-      _projectId: string
-      _ref: string
-      _type: 'crossDatasetReference'
-      _weak: boolean
-    }
+    document:
+      | {
+          _dataset: string
+          _projectId: string
+          _ref: string
+          _type: 'crossDatasetReference'
+          _weak: boolean
+        }
+      | {
+          _ref: string
+          _type: 'reference'
+          _weak: boolean
+        }
   }
 }
 
@@ -227,21 +235,45 @@ export type CommentPostPayload = Omit<CommentDocument, '_rev' | '_updatedAt' | '
 /**
  * @beta
  * @hidden
+ * The base payload for creating a comment.
  */
-export interface CommentCreatePayload {
+export interface CommentBaseCreatePayload {
+  id?: CommentDocument['_id']
+  message: CommentMessage
+  parentCommentId: CommentDocument['parentCommentId']
+  reactions: CommentDocument['reactions']
+  status: CommentDocument['status']
+  threadId: CommentDocument['threadId']
+}
+
+/**
+ * @beta
+ * @hidden
+ * The payload for creating a comment in a document.
+ */
+export interface DocumentCommentCreatePayload extends CommentBaseCreatePayload {
+  scope: 'document'
   contentSnapshot?: CommentDocument['contentSnapshot']
   /**
    * The stringified path to the field where the comment was created.
    */
   fieldPath: string
-  id?: CommentDocument['_id']
-  message: CommentDocument['message']
-  parentCommentId: CommentDocument['parentCommentId']
-  reactions: CommentDocument['reactions']
   selection?: CommentPathSelection
-  status: CommentDocument['status']
-  threadId: CommentDocument['threadId']
 }
+
+/**
+ * @beta
+ * @hidden
+ */
+export interface TaskCommentCreatePayload extends CommentBaseCreatePayload {
+  scope: 'task'
+}
+
+/**
+ * @beta
+ * @hidden
+ */
+export type CommentCreatePayload = DocumentCommentCreatePayload | TaskCommentCreatePayload
 
 /**
  * @beta

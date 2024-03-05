@@ -121,7 +121,7 @@ const RootStack = styled(Stack)(({theme}) => {
   `
 })
 
-interface CommentsListItemLayoutProps {
+export interface CommentsListItemLayoutProps {
   canDelete?: boolean
   canEdit?: boolean
   comment: CommentDocument
@@ -385,7 +385,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
                 canEdit={canEdit}
                 isParent={isParent}
                 mode={mode}
-                onCopyLink={handleCopyLink}
+                onCopyLink={onCopyLink ? handleCopyLink : undefined}
                 onDeleteStart={handleDelete}
                 onEditStart={toggleEdit}
                 onMenuClose={handleMenuClose}

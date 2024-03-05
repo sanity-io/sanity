@@ -71,7 +71,10 @@ export function CommentThreadLayout(props: CommentThreadLayoutProps) {
 
   const handleNewThreadCreate = useCallback(
     (payload: CommentMessage) => {
+      // TODO: we should ideally not set the "scope" here – it should be
+      // decided by the consumer
       const nextComment: CommentCreatePayload = {
+        scope: 'document',
         fieldPath,
         message: payload,
         parentCommentId: undefined,

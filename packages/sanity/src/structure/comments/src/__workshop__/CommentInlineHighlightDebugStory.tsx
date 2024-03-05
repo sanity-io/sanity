@@ -135,6 +135,7 @@ export default function CommentInlineHighlightDebugStory() {
     // Build comment thread items here so that we can test the validation of each comment
     // since that is done in the `buildCommentThreadItems` function.
     return buildCommentThreadItems({
+      scope: 'document',
       comments: commentDocuments,
       currentUser,
       schemaType: schema.get('article'),
@@ -186,7 +187,7 @@ export default function CommentInlineHighlightDebugStory() {
                         selection: {
                           type: 'text',
                           value: [
-                            ...(comment.target.path.selection?.value
+                            ...(comment.target.path?.selection?.value
                               .filter((r) => r._key !== range._key)
                               .concat(currentBlockKey ? {...range, _key: currentBlockKey} : [])
                               .flat() || []),

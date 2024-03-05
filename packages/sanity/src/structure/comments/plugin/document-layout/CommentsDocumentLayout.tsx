@@ -42,6 +42,7 @@ function CommentsDocumentLayoutInner(props: DocumentLayoutProps) {
       documentType={documentType}
       isCommentsOpen={inspector?.name === COMMENTS_INSPECTOR_NAME}
       onCommentsOpen={handleOpenCommentsInspector}
+      scope="document"
     >
       <CommentsSelectedPathProvider>{props.renderDefault(props)}</CommentsSelectedPathProvider>
     </CommentsProvider>

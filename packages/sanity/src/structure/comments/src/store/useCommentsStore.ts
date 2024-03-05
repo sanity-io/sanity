@@ -3,7 +3,7 @@ import {useCallback, useEffect, useMemo, useReducer, useRef, useState} from 'rea
 import {catchError, of} from 'rxjs'
 import {getPublishedId} from 'sanity'
 
-import {type CommentDocument, type Loadable} from '../types'
+import {type CommentDocument, type CommentsScope, type Loadable} from '../types'
 import {commentsReducer, type CommentsReducerAction, type CommentsReducerState} from './reducer'
 
 type DocumentId = string
@@ -13,6 +13,7 @@ export interface CommentsStoreOptions {
   client: SanityClient | null
   documentId: string
   onLatestTransactionIdReceived: (documentId: DocumentId) => void
+  scope: CommentsScope
   transactionsIdMap: Map<DocumentId, TransactionId>
 }
 
@@ -33,11 +34,13 @@ const LISTEN_OPTIONS: ListenOptions = {
 export const SORT_FIELD = '_createdAt'
 export const SORT_ORDER = 'desc'
 
-const QUERY_FILTERS = [
+const DOCUMENT_COMMENT_QUERY_FILTERS = [
   `_type == "comment"`,
   `target.document._ref == $documentId`,
   `defined(target.path)`,
 ]
+
+const TASKS_COMMENT_QUERY_FILTERS = [`_type == "comment"`, `target.document._ref == $documentId`]
 
 const QUERY_PROJECTION = `{
   _createdAt,
@@ -57,10 +60,12 @@ const QUERY_PROJECTION = `{
 // Newest comments first
 const QUERY_SORT_ORDER = `order(${SORT_FIELD} ${SORT_ORDER})`
 
-const QUERY = `*[${QUERY_FILTERS.join(' && ')}] ${QUERY_PROJECTION} | ${QUERY_SORT_ORDER}`
+const DOCUMENT_COMMENTS_QUERY = `*[${DOCUMENT_COMMENT_QUERY_FILTERS.join(' && ')}] ${QUERY_PROJECTION} | ${QUERY_SORT_ORDER}`
+
+const TASKS_COMMENTS_QUERY = `*[${TASKS_COMMENT_QUERY_FILTERS.join(' && ')}] ${QUERY_PROJECTION} | ${QUERY_SORT_ORDER}`
 
 export function useCommentsStore(opts: CommentsStoreOptions): CommentsStoreReturnType {
-  const {client, documentId, onLatestTransactionIdReceived, transactionsIdMap} = opts
+  const {client, documentId, onLatestTransactionIdReceived, scope, transactionsIdMap} = opts
 
   const [state, dispatch] = useReducer(commentsReducer, INITIAL_STATE)
   const [loading, setLoading] = useState<boolean>(client !== null)
@@ -68,6 +73,7 @@ export function useCommentsStore(opts: CommentsStoreOptions): CommentsStoreRetur
 
   const didInitialFetch = useRef<boolean>(false)
 
+  const query = scope === 'document' ? DOCUMENT_COMMENTS_QUERY : TASKS_COMMENTS_QUERY
   const params = useMemo(() => ({documentId: getPublishedId(documentId)}), [documentId])
 
   const initialFetch = useCallback(async () => {
@@ -77,13 +83,13 @@ export function useCommentsStore(opts: CommentsStoreOptions): CommentsStoreRetur
     }
 
     try {
-      const res = await client.fetch(QUERY, params)
+      const res = await client.fetch(query, params)
       dispatch({type: 'COMMENTS_SET', comments: res})
       setLoading(false)
     } catch (err) {
       setError(err)
     }
-  }, [client, params])
+  }, [client, params, query])
 
   const handleListenerEvent = useCallback(
     async (event: ListenEvent<Record<string, CommentDocument>>) => {
@@ -158,7 +164,7 @@ export function useCommentsStore(opts: CommentsStoreOptions): CommentsStoreRetur
   const listener$ = useMemo(() => {
     if (!client) return of()
 
-    const events$ = client.observable.listen(QUERY, params, LISTEN_OPTIONS).pipe(
+    const events$ = client.observable.listen(query, params, LISTEN_OPTIONS).pipe(
       catchError((err) => {
         setError(err)
         return of(err)
@@ -166,7 +172,7 @@ export function useCommentsStore(opts: CommentsStoreOptions): CommentsStoreRetur
     )
 
     return events$
-  }, [client, params])
+  }, [client, params, query])
 
   useEffect(() => {
     const sub = listener$.subscribe(handleListenerEvent)

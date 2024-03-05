@@ -352,6 +352,7 @@ export default function CommentsListStory() {
     if (!currentUser || emptyState) return []
 
     const items = buildCommentThreadItems({
+      scope: 'document',
       comments: state.filter((item) => item.status === status),
       currentUser,
       documentValue: {},

@@ -18,6 +18,7 @@ import {
 import {useCommentsStore} from '../../store'
 import {
   type CommentPostPayload,
+  type CommentsScope,
   type CommentStatus,
   type CommentThreadItem,
   type CommentUpdatePayload,
@@ -44,6 +45,7 @@ interface ThreadItemsByStatus {
  */
 export interface CommentsProviderProps {
   children: ReactNode
+  scope: CommentsScope
   documentId: string
   documentType: string
 
@@ -58,7 +60,7 @@ type TransactionId = string
  * @beta
  */
 export const CommentsProvider = memo(function CommentsProvider(props: CommentsProviderProps) {
-  const {children, documentId, documentType, isCommentsOpen, onCommentsOpen} = props
+  const {children, documentId, documentType, isCommentsOpen, onCommentsOpen, scope} = props
   const commentsEnabled = useCommentsEnabled()
   const [status, setStatus] = useState<CommentStatus>('open')
   const {client, createAddonDataset, isCreatingDataset} = useAddonDataset()
@@ -86,10 +88,11 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
     error,
     loading,
   } = useCommentsStore({
-    documentId: publishedId,
     client,
-    transactionsIdMap,
+    scope,
+    documentId: publishedId,
     onLatestTransactionIdReceived: handleOnLatestTransactionIdReceived,
+    transactionsIdMap,
   })
 
   // When a comment update is started, we store the transaction id in a map.
@@ -136,6 +139,7 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
     const sorted = orderBy(data, ['_createdAt'], ['desc'])
 
     const items = buildCommentThreadItems({
+      scope,
       comments: sorted,
       schemaType,
       currentUser,
@@ -146,7 +150,7 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
       open: items.filter((item) => item.parentComment.status === 'open'),
       resolved: items.filter((item) => item.parentComment.status === 'resolved'),
     }
-  }, [currentUser, data, documentValue, schemaType])
+  }, [scope, currentUser, data, documentValue, schemaType])
 
   const getThreadLength = useCallback(
     (threadId: string) => {
@@ -238,12 +242,12 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
       }),
       [
         client,
+        createAddonDataset,
         currentUser,
         dataset,
         documentRevisionId,
         documentType,
         getComment,
-        createAddonDataset,
         getThreadLength,
         handleOnCreate,
         handleOnCreateError,

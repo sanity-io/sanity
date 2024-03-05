@@ -132,8 +132,11 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
   const handleMouseLeave = useCallback(() => setMouseOver(false), [])
 
   const handleReplySubmit = useCallback(() => {
+    // TODO: we should ideally not set the "scope" here – it should be
+    // decided by the consumer
     const nextComment: CommentCreatePayload = {
-      fieldPath: parentComment.target.path.field,
+      scope: 'document',
+      fieldPath: parentComment.target.path?.field || '',
       message: value,
       parentCommentId: parentComment._id,
       status: parentComment?.status || 'open',
@@ -149,7 +152,7 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
     onReply,
     parentComment._id,
     parentComment?.status,
-    parentComment.target.path.field,
+    parentComment.target.path?.field,
     parentComment.threadId,
     value,
   ])
@@ -198,12 +201,12 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
       if (!isTopLayer) return
 
       onPathSelect?.({
-        fieldPath: parentComment.target.path.field,
+        fieldPath: parentComment.target.path?.field || '',
         origin: 'inspector',
         threadId: parentComment.threadId,
       })
     },
-    [isTopLayer, onPathSelect, parentComment.target.path.field, parentComment.threadId],
+    [isTopLayer, onPathSelect, parentComment.target.path?.field, parentComment.threadId],
   )
 
   const handleExpand = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
