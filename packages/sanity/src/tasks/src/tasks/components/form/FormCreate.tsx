@@ -4,9 +4,8 @@ import {type ObjectInputProps, set} from 'sanity'
 
 import {Button} from '../../../../../ui-components'
 import {useTasksNavigation} from '../../context'
-import {type TaskDocument} from '../../types'
 
-export function FormCreate(props: ObjectInputProps<TaskDocument>) {
+export function FormCreate(props: ObjectInputProps) {
   const [createMore, setCreateMore] = useState(false)
   const {setViewMode, setActiveTab} = useTasksNavigation()
   const toast = useToast()

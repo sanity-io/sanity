@@ -10,7 +10,6 @@ export function RemoveTaskDialog(props: ReturnType<typeof useRemoveTask>) {
       <Dialog
         id="remove-task"
         header="Remove task"
-        // eslint-disable-next-line react/jsx-no-bind
         onClose={handleCloseDialog}
         footer={{
           cancelButton: {

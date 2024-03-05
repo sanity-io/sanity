@@ -14,7 +14,7 @@ import styled from 'styled-components'
 import {CommentsEnabledProvider} from '../../../../../structure/comments'
 import {MentionUserProvider, useMentionUser} from '../../context/mentionUser'
 import {type FormMode, type TaskDocument, type TaskTarget} from '../../types'
-import {AddOnWorkspaceProvider} from './AddOnWorkspaceProvider'
+import {TasksAddonWorkspaceProvider} from './TasksAddOnWorkspaceProvider'
 import {useTasksFormBuilder} from './useTasksFormBuilder'
 
 const FormBuilderRoot = styled.div((props) => {
@@ -53,10 +53,7 @@ const TasksCreateFormInner = ({
 
   useEffect(() => {
     const documentValue =
-      targetId && targetType
-        ? // Hack to force the SanityDocument type, we only need to send the _id and _type in this object.
-          ({_id: targetId, _type: targetType} as unknown as SanityDocument)
-        : null
+      targetId && targetType ? ({_id: targetId, _type: targetType} as SanityDocument) : null
 
     setSelectedDocument(documentValue)
   }, [targetId, targetType, setSelectedDocument])
@@ -93,15 +90,15 @@ export function TasksForm({
   if (!currentUser) return <LoadingBlock showText title="Loading current user" />
 
   return (
-    // This provider needs to be mounted before the AddonWorkspaceProvider.
+    // This provider needs to be mounted before the TasksAddonWorkspaceProvider.
     <MentionUserProvider>
-      <AddOnWorkspaceProvider mode={mode}>
+      <TasksAddonWorkspaceProvider mode={mode}>
         <TasksCreateFormInner
           documentId={documentId}
           currentUser={currentUser}
           initialValue={initialValue}
         />
-      </AddOnWorkspaceProvider>
+      </TasksAddonWorkspaceProvider>
     </MentionUserProvider>
   )
 }
