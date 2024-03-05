@@ -53,7 +53,7 @@ export function InlineCommentInputPopover(props: InlineCommentInputPopoverProps)
 
   const handleDiscardConfirm = useCallback(() => {
     commentInputRef.current?.discardDialogController.close()
-    onDiscardConfirm()
+    onDiscardConfirm?.()
   }, [onDiscardConfirm])
 
   const handleDiscardCancel = useCallback(() => {
