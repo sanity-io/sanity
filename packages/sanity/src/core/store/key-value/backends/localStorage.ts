@@ -12,10 +12,10 @@ const tryParse = (val: string, defValue: unknown) => {
   }
 }
 
-const get = (key: string, defValue: unknown): Observable<unknown> => {
+const get = (key: string, defaultValue: unknown): Observable<unknown> => {
   const val = localStorage.getItem(key)
 
-  return observableOf(val === null ? defValue : tryParse(val, defValue))
+  return observableOf(val === null ? defaultValue : tryParse(val, defaultValue))
 }
 
 const set = (key: string, nextValue: unknown): Observable<unknown> => {

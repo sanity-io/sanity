@@ -1,12 +1,13 @@
+import {type SanityClient} from '@sanity/client'
 import {merge, type Observable, Subject} from 'rxjs'
 import {filter, map, switchMap} from 'rxjs/operators'
 
-import {resolveBackend} from './backends/resolve'
+import {serverBackend} from './backends/server'
 import {type KeyValueStore, type KeyValueStoreValue} from './types'
 
 /** @internal */
-export function createKeyValueStore(): KeyValueStore {
-  const storageBackend = resolveBackend()
+export function createKeyValueStore({client}: {client: SanityClient}): KeyValueStore {
+  const storageBackend = serverBackend({client})
 
   const setKey$ = new Subject<{key: string; value: KeyValueStoreValue}>()
 
