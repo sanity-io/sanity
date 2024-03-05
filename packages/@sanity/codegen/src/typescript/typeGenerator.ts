@@ -2,21 +2,21 @@ import {CodeGenerator} from '@babel/generator'
 import * as t from '@babel/types'
 import {
   type ArrayTypeNode,
-  type Document,
+  type DocumentSchemaType,
   type ObjectAttribute,
-  type Schema,
-  type TypeDeclaration,
+  type SchemaType,
+  type TypeDeclarationSchemaType,
   type TypeNode,
   type UnionTypeNode,
-} from 'groq-js/typeEvaluator'
+} from 'groq-js'
 
 export class TypeGenerator {
   private generatedTypeName: Set<string> = new Set()
   private typeNameMap: Map<string, string> = new Map()
 
-  private readonly schema: Schema
+  private readonly schema: SchemaType
 
-  constructor(schema: Schema) {
+  constructor(schema: SchemaType) {
     this.schema = schema
   }
 
@@ -67,7 +67,7 @@ export class TypeGenerator {
     return generatedName
   }
 
-  private getFieldType(field: TypeNode | TypeDeclaration | Document): t.TSType {
+  private getFieldType(field: TypeNode | TypeDeclarationSchemaType | DocumentSchemaType): t.TSType {
     switch (field.type) {
       case 'string': {
         if (field.value !== undefined) {
@@ -170,7 +170,7 @@ export class TypeGenerator {
   }
 
   // Helper function used to generate TS types for document fields.
-  private generateDocumentType(document: Document): t.TSType {
+  private generateDocumentType(document: DocumentSchemaType): t.TSType {
     const contentFields = Object.entries(document.attributes).map(([key, node]) =>
       this.generateObjectProperty(key, node),
     )
