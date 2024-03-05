@@ -55,6 +55,42 @@ const DATE_FORMAT_OPTIONS: UseDateTimeFormatOptions = {
   dateStyle: 'medium',
 }
 
+const TimeLineItemChildrenContainer = styled.div`
+  display: flex;
+  align-items: center;
+  flex-grow: 1;
+  min-height: 100%;
+`
+
+interface TimelineItemProps {
+  children: React.ReactNode
+  authorId: string
+}
+function TimelineItem(props: TimelineItemProps) {
+  const {authorId, children} = props
+  const [user] = useUser(authorId)
+
+  return (
+    <Flex align="flex-start" gap={3}>
+      <Flex justify="center" style={{width: 25}} paddingTop={1}>
+        {user ? (
+          <UserAvatar
+            __unstable_hideInnerStroke
+            // @ts-expect-error `color` is not a valid prop on UserAvatar but it is sent to the `avatar`
+            color={user.imageUrl ? null : undefined}
+            size={0}
+            user={user}
+          />
+        ) : (
+          <Text size={0}>Unknown user</Text>
+        )}
+      </Flex>
+
+      <TimeLineItemChildrenContainer>{children}</TimeLineItemChildrenContainer>
+    </Flex>
+  )
+}
+
 function CreatedAt(props: CreateAtProps) {
   const {createdAt, authorId} = props
   const [user] = useUser(authorId)
@@ -69,32 +105,18 @@ function CreatedAt(props: CreateAtProps) {
     return `${day}, ${hour}:${minutes}`
   }, [createdAt, dateFormatter])
 
-  if (!user) {
-    return <Text size={0}>Unknown user created this task at {createdAt}</Text>
-  }
-
   return (
-    <Flex align="center" gap={3}>
-      <Flex justify="center" style={{width: 25}}>
-        <UserAvatar
-          __unstable_hideInnerStroke
-          // @ts-expect-error `color` is not a valid prop on UserAvatar but it is sent to the `avatar`
-          color={user.imageUrl ? null : undefined}
-          size={0}
-          user={user}
-        />
-      </Flex>
-
+    <TimelineItem authorId={authorId}>
       <Inline space={2} flex={1}>
         <Text size={1} weight="medium">
-          {user.displayName}
+          {user?.displayName || user?.email || 'Unknown user'}
         </Text>
 
         <TimeText size={0}>
           created this task <DotIcon /> {dueByeDisplayValue}
         </TimeText>
       </Inline>
-    </Flex>
+    </TimelineItem>
   )
 }
 
@@ -180,7 +202,6 @@ export function TasksActivityLog({value}: {value: TaskDocument}) {
     },
     [operation],
   )
-
   return (
     <Stack space={4}>
       <Card borderTop paddingTop={5} sizing="border">
@@ -210,29 +231,41 @@ export function TasksActivityLog({value}: {value: TaskDocument}) {
               <Fragment>
                 {taskComments.map((c) => {
                   return (
-                    <CommentsListItem
-                      canReply
-                      currentUser={currentUser}
-                      isSelected={false}
-                      key={c.parentComment._id}
-                      mentionOptions={mentionOptions}
-                      mode="default" // TODO: set dynamic mode?
-                      onCreateRetry={handleCommentCreateRetry}
-                      onDelete={handleCommentRemove}
-                      onEdit={handleCommentEdit}
-                      onReactionSelect={handleCommentReact}
-                      onReply={handleCommentReply}
-                      parentComment={c.parentComment}
-                      replies={c.replies.slice().reverse()} // TODO: figure out a better way than reversing the array
-                    />
+                    <TimelineItem key={c.threadId} authorId={c.parentComment.authorId}>
+                      <div style={{minWidth: '100%'}}>
+                        <CommentsListItem
+                          canReply
+                          currentUser={currentUser}
+                          isSelected={false}
+                          key={c.parentComment._id}
+                          mentionOptions={mentionOptions}
+                          mode="default" // TODO: set dynamic mode?
+                          onCreateRetry={handleCommentCreateRetry}
+                          onDelete={handleCommentRemove}
+                          onEdit={handleCommentEdit}
+                          onReactionSelect={handleCommentReact}
+                          onReply={handleCommentReply}
+                          parentComment={c.parentComment}
+                          avatarConfig={{
+                            parentCommentAvatar: false,
+                            threadCommentsAvatar: true,
+                            replyAvatar: true,
+                            avatarSize: 0,
+                          }}
+                          replies={c.replies.slice().reverse()} // TODO: figure out a better way than reversing the array
+                        />
+                      </div>
+                    </TimelineItem>
                   )
                 })}
 
-                <TasksCommentInput
-                  currentUser={currentUser}
-                  mentionOptions={mentionOptions}
-                  onSubmit={handleCommentCreate}
-                />
+                <TimelineItem authorId={currentUser?.id}>
+                  <TasksCommentInput
+                    currentUser={currentUser}
+                    mentionOptions={mentionOptions}
+                    onSubmit={handleCommentCreate}
+                  />
+                </TimelineItem>
               </Fragment>
             )}
           </MotionStack>

@@ -117,51 +117,54 @@ export function CommentsListItemContextMenu(props: CommentsListItemContextMenuPr
               }}
             />
           )}
-
-          <MenuButton
-            id="comment-actions-menu"
-            button={
-              <ContextMenuButton
-                aria-label={t('list-item.open-menu-aria-label')}
-                disabled={readOnly}
-                hidden={!showMenuButton}
-              />
-            }
-            onOpen={onMenuOpen}
-            onClose={onMenuClose}
-            menu={
-              <Menu>
-                <MenuItem
-                  hidden={!canEdit}
-                  icon={EditIcon}
-                  onClick={onEditStart}
-                  text={t('list-item.edit-comment')}
-                  tooltipProps={
-                    mode === 'upsell' ? {content: t('list-item.edit-comment-upsell')} : undefined
-                  }
-                  disabled={mode === 'upsell'}
+          {(canDelete || canEdit || onCopyLink) && (
+            <MenuButton
+              id="comment-actions-menu"
+              button={
+                <ContextMenuButton
+                  aria-label={t('list-item.open-menu-aria-label')}
+                  disabled={readOnly}
+                  hidden={!showMenuButton}
                 />
+              }
+              onOpen={onMenuOpen}
+              onClose={onMenuClose}
+              menu={
+                <Menu>
+                  <MenuItem
+                    hidden={!canEdit}
+                    icon={EditIcon}
+                    onClick={onEditStart}
+                    text={t('list-item.edit-comment')}
+                    tooltipProps={
+                      mode === 'upsell' ? {content: t('list-item.edit-comment-upsell')} : undefined
+                    }
+                    disabled={mode === 'upsell'}
+                  />
 
-                <MenuItem
-                  hidden={!canDelete}
-                  icon={TrashIcon}
-                  onClick={onDeleteStart}
-                  text={t('list-item.delete-comment')}
-                  tone="critical"
-                />
+                  <MenuItem
+                    hidden={!canDelete}
+                    icon={TrashIcon}
+                    onClick={onDeleteStart}
+                    text={t('list-item.delete-comment')}
+                    tone="critical"
+                  />
 
-                {onCopyLink && <MenuDivider hidden={!canDelete && !canEdit} />}
+                  {onCopyLink && (canEdit || canDelete) && (
+                    <MenuDivider hidden={!canDelete && !canEdit} />
+                  )}
 
-                <MenuItem
-                  hidden={!onCopyLink}
-                  icon={LinkIcon}
-                  onClick={onCopyLink}
-                  text={t('list-item.copy-link')}
-                />
-              </Menu>
-            }
-            popover={POPOVER_PROPS}
-          />
+                  <MenuItem
+                    hidden={!onCopyLink}
+                    icon={LinkIcon}
+                    onClick={onCopyLink}
+                    text={t('list-item.copy-link')}
+                  />
+                </Menu>
+              }
+              popover={POPOVER_PROPS}
+            />
+          )}
         </FloatingCard>
       </Flex>
     </TooltipDelayGroupProvider>

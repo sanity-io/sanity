@@ -1,6 +1,6 @@
 import {ChevronDownIcon} from '@sanity/icons'
 import {type CurrentUser} from '@sanity/types'
-import {Flex, Stack, useLayer} from '@sanity/ui'
+import {type AvatarSize, Flex, Stack, useLayer} from '@sanity/ui'
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {type UserListWithPermissionsHookValue, useTranslation} from 'sanity'
 import styled, {css} from 'styled-components'
@@ -93,6 +93,12 @@ interface CommentsListItemProps {
   parentComment: CommentDocument
   readOnly?: boolean
   replies: CommentDocument[] | undefined
+  avatarConfig?: {
+    parentCommentAvatar: boolean
+    threadCommentsAvatar: boolean
+    replyAvatar: boolean
+    avatarSize: AvatarSize
+  }
 }
 
 export const CommentsListItem = React.memo(function CommentsListItem(props: CommentsListItemProps) {
@@ -115,6 +121,12 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
     parentComment,
     readOnly,
     replies = EMPTY_ARRAY,
+    avatarConfig = {
+      parentCommentAvatar: true,
+      threadCommentsAvatar: true,
+      replyAvatar: true,
+      avatarSize: 1,
+    },
   } = props
   const {t} = useTranslation(commentsLocaleNamespace)
   const [value, setValue] = useState<CommentMessage>(EMPTY_ARRAY)
@@ -242,6 +254,8 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
       splicedReplies.map((reply) => (
         <Stack as="li" key={reply._id} {...applyCommentIdAttr(reply._id)}>
           <CommentsListItemLayout
+            withAvatar={avatarConfig.threadCommentsAvatar}
+            avatarSize={avatarConfig.avatarSize}
             canDelete={reply.authorId === currentUser.id}
             canEdit={reply.authorId === currentUser.id}
             comment={reply}
@@ -262,6 +276,8 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
         </Stack>
       )),
     [
+      avatarConfig?.threadCommentsAvatar,
+      avatarConfig.avatarSize,
       currentUser,
       handleInputKeyDown,
       mentionOptions,
@@ -300,6 +316,8 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
       >
         <Stack as="li" {...applyCommentIdAttr(parentComment._id)}>
           <CommentsListItemLayout
+            withAvatar={avatarConfig?.parentCommentAvatar}
+            avatarSize={avatarConfig.avatarSize}
             canDelete={parentComment.authorId === currentUser.id}
             canEdit={parentComment.authorId === currentUser.id}
             comment={parentComment}
@@ -339,6 +357,8 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
 
         {canReply && (
           <CommentInput
+            withAvatar={avatarConfig.replyAvatar}
+            avatarSize={avatarConfig.avatarSize}
             currentUser={currentUser}
             expandOnFocus
             mentionOptions={mentionOptions}

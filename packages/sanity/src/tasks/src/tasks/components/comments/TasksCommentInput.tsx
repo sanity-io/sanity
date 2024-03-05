@@ -1,3 +1,4 @@
+import {Card} from '@sanity/ui'
 import {useCallback, useMemo, useRef, useState} from 'react'
 
 import {
@@ -58,18 +59,23 @@ export function TasksCommentInput(props: TasksCommentInputProps) {
   )
 
   return (
-    <CommentInput
-      currentUser={currentUser}
-      expandOnFocus
-      mentionOptions={mentionOptions}
-      onChange={handleChange}
-      onDiscardConfirm={handleDiscardConfirm}
-      onDiscardCancel={handleDiscardCancel}
-      onKeyDown={handleKeyDown}
-      onSubmit={handleSubmit}
-      placeholder="Add a comment..."
-      ref={editorRef}
-      value={value}
-    />
+    <div style={{width: '100%'}}>
+      <Card tone="transparent" radius={2} paddingY={1} paddingX={2}>
+        <CommentInput
+          withAvatar={false}
+          currentUser={currentUser}
+          expandOnFocus
+          mentionOptions={mentionOptions}
+          onChange={handleChange}
+          onDiscardConfirm={handleDiscardConfirm}
+          onDiscardCancel={handleDiscardCancel}
+          onKeyDown={handleKeyDown}
+          onSubmit={handleSubmit}
+          placeholder="Add a comment..."
+          ref={editorRef}
+          value={value}
+        />
+      </Card>
+    </div>
   )
 }
