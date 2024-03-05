@@ -1,6 +1,5 @@
 import {CopyIcon, LinkIcon, TrashIcon} from '@sanity/icons'
 import {Box, Flex, Menu, MenuDivider} from '@sanity/ui'
-import {uuid} from '@sanity/uuid'
 import {useCallback} from 'react'
 import {ContextMenuButton, LoadingBlock, type ObjectInputProps} from 'sanity'
 import styled from 'styled-components'
