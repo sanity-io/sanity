@@ -78,7 +78,7 @@ export function TasksSidebarHeader(props: TasksSidebarHeaderProps) {
               </UIButton>
               <ChevronRightIcon />
               <Box paddingX={2}>
-                <Text size={1} weight="semibold">
+                <Text size={1} weight="semibold" style={{textTransform: 'capitalize'}}>
                   {viewMode === 'create' ? 'Create' : activeTabId}
                 </Text>
               </Box>
