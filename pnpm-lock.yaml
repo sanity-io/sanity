@@ -867,8 +867,8 @@ importers:
         specifier: ^3.3.2
         version: 3.3.2
       groq-js:
-        specifier: '*'
-        version: 1.4.1
+        specifier: 1.5.0-canary.1
+        version: 1.5.0-canary.1
       json5:
         specifier: ^2.2.3
         version: 2.2.3
@@ -1240,8 +1240,8 @@ importers:
         specifier: ^1.0.1
         version: 1.0.1
       groq-js:
-        specifier: '*'
-        version: 1.4.1
+        specifier: 1.5.0-canary.1
+        version: 1.5.0-canary.1
       humanize-list:
         specifier: ^1.0.1
         version: 1.0.1
@@ -1258,9 +1258,15 @@ importers:
       '@jest/globals':
         specifier: ^29.7.0
         version: 29.7.0
+      '@sanity/icons':
+        specifier: ^2.8.0
+        version: 2.10.3(react@18.2.0)
       rimraf:
         specifier: ^3.0.2
         version: 3.0.2
+      sanity:
+        specifier: workspace:^
+        version: link:../../sanity
 
   packages/@sanity/types:
     dependencies:
@@ -1435,7 +1441,7 @@ importers:
         specifier: ^6.15.1
         version: 6.15.1
       '@sanity/codegen':
-        specifier: '*'
+        specifier: workspace:*
         version: link:../@sanity/codegen
       '@sanity/color':
         specifier: ^3.0.0
@@ -1585,8 +1591,8 @@ importers:
         specifier: 1.0.2
         version: 1.0.2
       groq-js:
-        specifier: ^1.1.12
-        version: 1.4.1
+        specifier: 1.5.0-canary.1
+        version: 1.5.0-canary.1
       hashlru:
         specifier: ^2.3.0
         version: 2.3.0
@@ -12751,6 +12757,15 @@ packages:
   /groq-js@1.4.1:
     resolution: {integrity: sha512-AA9n7NRxGd0smsAW/vE+dudCL3mBd73Fe21I7cMrrpDHamVFvWHNMs8LdkfvFBsnHI9XKQph8swzI4ExDWhsgg==}
     engines: {node: '>= 14'}
+
+  /groq-js@1.5.0-canary.1:
+    resolution: {integrity: sha512-p3eqvL0mYS9bzCgpQT4IGs32MCDyyWOU7ilpr7UR4k7AedXYNtd/ha9UpszP6i2VrAXCfmJ63zvvTut6JCKgSQ==}
+    engines: {node: '>= 14'}
+    dependencies:
+      debug: 4.3.4(supports-color@5.5.0)
+    transitivePeerDependencies:
+      - supports-color
+    dev: false
 
   /groq@3.25.0:
     resolution: {integrity: sha512-rfJO+qvo/vErznGqNDZXcdqEdmtGjovKqJNYIoPOdeKYbmYAQTHOGmxwvrBUuvq9teYmh4LhPazThmcUwhV1kw==}
