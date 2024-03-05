@@ -1,8 +1,11 @@
 import {useMemo} from 'react'
 import {
+  type Config,
   prepareConfig,
   ResourceCacheProvider,
   SourceProvider,
+  useAddonDataset,
+  useClient,
   useSource,
   useWorkspaceLoader,
   WorkspaceProvider,
@@ -10,29 +13,41 @@ import {
 
 import {taskSchema} from './taskSchema'
 
-export function AddOnWorkspaceProvider({
+export function TasksAddonWorkspaceProvider({
   children,
   mode,
 }: {
   children: React.ReactNode
   mode: 'edit' | 'create'
 }) {
+  const client = useClient()
+  const apiHost = client.config().apiHost
+  // TODO: Is basePath necessary here?
+  const basePath = ''
+
+  const {client: addonDatasetClient} = useAddonDataset()
+  const addonDataset = addonDatasetClient?.config().dataset
+  /**
+   * This check is added to prevent the component from rendering when the addon dataset is not available
+   * the user should not land on the tasks form without the addon dataset, the dataset will be created if it does not exist
+   * when the user clicks on the `new task` button in the tasks list
+   */
+  if (!addonDataset) throw new Error('Addon dataset not found')
+
   // Parent workspace source, we want to use the same project id
   const source = useSource()
-  const basePath = undefined // TODO: Is basePath necessary here?
-  const addonDatasetConfig = useMemo(
+  const addonDatasetConfig: Config = useMemo(
     () => ({
-      basePath: '',
-      dataset: 'playground-comments',
-      name: 'comments',
+      basePath,
+      dataset: addonDataset,
+      name: `addon-dataset-${addonDataset}`,
       projectId: source.projectId,
-      // TODO: Get this host from the studio config.
-      apiHost: 'https://api.sanity.work',
+      apiHost,
       schema: {
         types: [taskSchema(mode)],
       },
     }),
-    [source.projectId, mode],
+    [source.projectId, mode, apiHost, addonDataset, basePath],
   )
 
   const {workspaces} = useMemo(

@@ -1,6 +1,6 @@
 import {Box, Card, Flex, Spinner} from '@sanity/ui'
 import {AnimatePresence, motion, type Transition, type Variants} from 'framer-motion'
-import {useCallback, useMemo} from 'react'
+import {useMemo} from 'react'
 import {useCurrentUser} from 'sanity'
 import styled from 'styled-components'
 
@@ -36,8 +36,6 @@ function TasksStudioSidebarInner() {
   const {activeDocument, isOpen, data, isLoading} = useTasks()
   const {state, setActiveTab, editTask} = useTasksNavigation()
   const {activeTabId, viewMode, selectedTask} = state
-
-
   const currentUser = useCurrentUser()
 
   const filteredList = useMemo(() => {
