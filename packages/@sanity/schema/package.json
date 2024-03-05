@@ -86,7 +86,6 @@
   "devDependencies": {
     "@jest/globals": "^29.7.0",
     "@sanity/icons": "^2.8.0",
-    "rimraf": "^3.0.2",
-    "sanity": "workspace:^"
+    "rimraf": "^3.0.2"
   }
 }
