@@ -19,7 +19,7 @@ import {
   type CommentCreatePayload,
   type CommentInputProps,
   type CommentReactionOption,
-  CommentsListItemLayout,
+  CommentsListItem,
   type CommentUpdatePayload,
   useComments,
 } from '../../../../../structure/comments'
@@ -100,7 +100,7 @@ function CreatedAt(props: CreateAtProps) {
 
 export function TasksActivityLog({value}: {value: TaskDocument}) {
   const currentUser = useCurrentUser()
-  const {mentionOptions, operation, comments} = useComments()
+  const {mentionOptions, operation, comments, getComment} = useComments()
 
   const loading = comments.loading
 
@@ -123,6 +123,38 @@ export function TasksActivityLog({value}: {value: TaskDocument}) {
       operation.create(nextComment)
     },
     [operation],
+  )
+
+  const handleCommentReply = useCallback(
+    (nextComment: CommentCreatePayload) => {
+      operation.create({
+        scope: 'task',
+        message: nextComment.message,
+        parentCommentId: nextComment.parentCommentId,
+        reactions: EMPTY_ARRAY,
+        status: 'open',
+        threadId: nextComment.threadId,
+      })
+    },
+    [operation],
+  )
+
+  const handleCommentCreateRetry = useCallback(
+    (id: string) => {
+      const comment = getComment(id)
+      if (!comment) return
+
+      operation.create({
+        scope: 'task',
+        id: comment._id,
+        message: comment.message,
+        parentCommentId: comment.parentCommentId,
+        reactions: comment.reactions || EMPTY_ARRAY,
+        status: comment.status,
+        threadId: comment.threadId,
+      })
+    },
+    [getComment, operation],
   )
 
   const handleCommentReact = useCallback(
@@ -167,31 +199,31 @@ export function TasksActivityLog({value}: {value: TaskDocument}) {
 
       <AnimatePresence>
         {!loading && (
-          <MotionStack animate="visible" initial="hidden" space={4} variants={VARIANTS}>
+          <MotionStack animate="visible" initial="hidden" space={3} variants={VARIANTS}>
             {value.createdByUser && (
-              <CreatedAt createdAt={value.createdByUser} authorId={value.authorId} />
+              <Stack paddingBottom={1}>
+                <CreatedAt createdAt={value.createdByUser} authorId={value.authorId} />
+              </Stack>
             )}
 
             {currentUser && (
               <Fragment>
                 {taskComments.map((c) => {
-                  const canDelete = c.parentComment?.authorId === currentUser.id
-                  const canEdit = c.parentComment?.authorId === currentUser.id
-                  const hasError = c.parentComment._state?.type === 'createError'
-
                   return (
-                    <CommentsListItemLayout
-                      canDelete={canDelete}
-                      canEdit={canEdit}
-                      comment={c.parentComment}
+                    <CommentsListItem
+                      canReply
                       currentUser={currentUser}
-                      hasError={hasError}
+                      isSelected={false}
                       key={c.parentComment._id}
                       mentionOptions={mentionOptions}
                       mode="default" // TODO: set dynamic mode?
+                      onCreateRetry={handleCommentCreateRetry}
                       onDelete={handleCommentRemove}
                       onEdit={handleCommentEdit}
                       onReactionSelect={handleCommentReact}
+                      onReply={handleCommentReply}
+                      parentComment={c.parentComment}
+                      replies={c.replies.slice().reverse()} // TODO: figure out a better way than reversing the array
                     />
                   )
                 })}
