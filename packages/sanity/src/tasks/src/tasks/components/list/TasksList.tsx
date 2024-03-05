@@ -101,18 +101,23 @@ export function TasksList(props: TasksListProps) {
     [onTaskSelect, tasksByStatus],
   )
 
+  const hasOpenTasks = tasksByStatus.open?.length > 0
+  const hasClosedTasks = tasksByStatus.closed?.length > 0
   return (
     <TasksListRoot paddingX={3} paddingY={4}>
       <Stack space={4} paddingTop={2} paddingX={1}>
-        {items.length === 0 && (
+        {!hasOpenTasks && !hasClosedTasks ? (
           <Box paddingX={2}>
             <Text as="p" size={1} muted>
               No tasks
             </Text>
           </Box>
+        ) : (
+          <>
+            {renderTasksList('open')}
+            {renderTasksList('closed')}
+          </>
         )}
-        {renderTasksList('open')}
-        {renderTasksList('closed')}
       </Stack>
     </TasksListRoot>
   )

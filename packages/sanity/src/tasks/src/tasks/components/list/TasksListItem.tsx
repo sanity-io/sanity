@@ -5,6 +5,7 @@ import {useMemo} from 'react'
 import {useDateTimeFormat, UserAvatar, useUser} from 'sanity'
 import styled from 'styled-components'
 
+import {Tooltip} from '../../../../../ui-components'
 import {type TaskDocument} from '../../types'
 import {DocumentPreview} from './DocumentPreview'
 import {TasksStatus} from './TasksStatus'
@@ -79,7 +80,7 @@ function NoUserAssigned() {
   )
 }
 function getTargetDocumentMeta(target?: TaskDocument['target']) {
-  if (!target?.document._ref) {
+  if (!target?.document?._ref) {
     return undefined
   }
 
@@ -116,30 +117,30 @@ function isToday(date: string) {
 
 const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
 function TaskDueDate({dueBy}: {dueBy: string}) {
-  const dateFormatter = useDateTimeFormat({
-    dateStyle: 'short',
-  })
-  const dueByeDisplayValue = useMemo<string | undefined>(() => {
+  const dateFormatter = useDateTimeFormat({dateStyle: 'medium'})
+  const dueByeDisplayValue = useMemo(() => {
     const dueFormated = dateFormatter.format(new Date(dueBy))
-    const [mont, day] = dueFormated.split('/')
-    return `${mont} / ${day}`
+    const [monthAndDay] = dueFormated.split(',')
+    return {short: monthAndDay, full: dueFormated}
   }, [dateFormatter, dueBy])
 
   const isDueByToday = useMemo(() => isToday(dueBy), [dueBy])
   const isDueThisWeek = useMemo(() => isThisWeek(dueBy), [dueBy])
 
   return (
-    <Card tone={isDueByToday ? 'critical' : 'transparent'} padding={1} radius={2}>
-      <Flex align="center" gap={2}>
-        <Text as="time" size={1} dateTime={dueBy} muted>
-          {isDueByToday
-            ? 'Today'
-            : isDueThisWeek
-              ? days[new Date(dueBy).getDay()]
-              : dueByeDisplayValue}
-        </Text>
-      </Flex>
-    </Card>
+    <Tooltip content={dueByeDisplayValue.full}>
+      <Card tone={isDueByToday ? 'critical' : 'transparent'} padding={1} radius={2}>
+        <Flex align="center" gap={2}>
+          <Text as="time" size={1} dateTime={dueBy} muted>
+            {isDueByToday
+              ? 'Today'
+              : isDueThisWeek
+                ? days[new Date(dueBy).getDay()]
+                : dueByeDisplayValue.short}
+          </Text>
+        </Flex>
+      </Card>
+    </Tooltip>
   )
 }
 

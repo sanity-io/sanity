@@ -15,7 +15,12 @@ const SidebarRoot = styled(Card)`
   flex: 1;
   box-shadow:
     0px 6px 8px -4px rgba(134, 144, 160, 0.2),
-    0px -6px 8px -4px rgba(134, 144, 160, 0.2);
+    0px 12px 17px -1px rgba(134, 144, 160, 0.14);
+`
+
+const SidebarContent = styled.div`
+  max-height: calc(100% - 52px);
+  overflow: scroll;
 `
 
 const VARIANTS: Variants = {
@@ -88,33 +93,35 @@ function TasksStudioSidebarInner() {
               selectedTask={selectedTask}
               setSelectedTask={setSelectedTask}
             />
-            {viewMode === 'list' && (
-              <>
-                {isLoading ? (
-                  <Box padding={3}>
-                    <Flex align="center" justify="center">
-                      <Spinner />
-                    </Flex>
-                  </Box>
-                ) : (
-                  <TaskSidebarContent
-                    items={filteredList}
-                    onTaskSelect={onTaskSelect}
-                    setActiveTabId={setActiveTabId}
-                    activeTabId={activeTabId}
-                  />
-                )}
-              </>
-            )}
-            {viewMode === 'create' && <TaskCreate onCancel={onCancel} onCreate={onTaskCreate} />}
-            {viewMode === 'edit' && (
-              <TaskEdit
-                onCancel={onCancel}
-                onDelete={handleOnDelete}
-                selectedTask={selectedTask}
-                key={selectedTask}
-              />
-            )}
+            <SidebarContent>
+              {viewMode === 'list' && (
+                <>
+                  {isLoading ? (
+                    <Box padding={3}>
+                      <Flex align="center" justify="center">
+                        <Spinner />
+                      </Flex>
+                    </Box>
+                  ) : (
+                    <TaskSidebarContent
+                      items={filteredList}
+                      onTaskSelect={onTaskSelect}
+                      setActiveTabId={setActiveTabId}
+                      activeTabId={activeTabId}
+                    />
+                  )}
+                </>
+              )}
+              {viewMode === 'create' && <TaskCreate onCancel={onCancel} onCreate={onTaskCreate} />}
+              {viewMode === 'edit' && (
+                <TaskEdit
+                  onCancel={onCancel}
+                  onDelete={handleOnDelete}
+                  selectedTask={selectedTask}
+                  key={selectedTask}
+                />
+              )}
+            </SidebarContent>
           </SidebarRoot>
         </motion.div>
       )}
