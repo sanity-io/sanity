@@ -60,8 +60,10 @@ function FormActionsMenu({id, value}: {id: string; value: TaskDocument}) {
   )
 }
 
-export function FormEdit(props: ObjectInputProps<TaskDocument>) {
+export function FormEdit(props: ObjectInputProps) {
   const statusField = props.schemaType.fields.find((f) => f.name === 'status')
+  const value = props.value as TaskDocument
+
   if (!statusField) {
     throw new Error('Status field not found')
   }
@@ -79,7 +81,7 @@ export function FormEdit(props: ObjectInputProps<TaskDocument>) {
             placeholder="Task title"
           />
         </div>
-        <FormActionsMenu id={props.value?._id} value={props.value} />
+        <FormActionsMenu id={props.value?._id} value={value} />
       </Flex>
       <FirstRow>
         <StatusSelector
@@ -90,7 +92,7 @@ export function FormEdit(props: ObjectInputProps<TaskDocument>) {
         />
       </FirstRow>
       {props.renderDefault(props)}
-      <ActivityLog value={props.value} />
+      <ActivityLog value={value} />
     </>
   )
 }
