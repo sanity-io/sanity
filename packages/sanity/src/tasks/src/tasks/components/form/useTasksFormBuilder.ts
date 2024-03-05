@@ -1,5 +1,3 @@
-/* eslint-disable no-warning-comments */
-/* eslint-disable react/jsx-no-bind */
 import {type ObjectSchemaType, type Path} from '@sanity/types'
 import {useCallback, useMemo, useRef, useState} from 'react'
 import {
@@ -21,11 +19,6 @@ import {
 } from 'sanity'
 
 import {type TaskDocument} from '../../types'
-
-/**
- * TODO:
- *  - [] add presence
- */
 
 type TasksFormBuilder =
   | (FormBuilderProps & {

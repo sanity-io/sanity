@@ -222,6 +222,7 @@ export function TargetField(props: ObjectFieldProps) {
               onClose={handleCloseSearch}
               onOpen={handleOpenSearch}
               onItemSelect={handleItemSelect}
+              disableIntentLink
             />
           </SearchProvider>
         </CurrentWorkspaceProvider>
