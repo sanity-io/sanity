@@ -1,22 +1,20 @@
 import {compact, flatten, flow, toLower, trim, union, uniq, words} from 'lodash'
 
 import {joinPath} from '../../../core/util/searchUtils'
-import {tokenize} from '../common/tokenize'
-import {FINDABILITY_MVI} from '../constants'
 import {
   type SearchableType,
+  type SearchFactoryOptions,
   type SearchOptions,
   type SearchPath,
   type SearchSort,
   type SearchSpec,
   type SearchTerms,
-  type WeightedSearchOptions,
-} from './types'
+} from '../common'
+import {FINDABILITY_MVI} from '../constants'
 
 export interface SearchParams {
   __types: string[]
   __limit: number
-  __offset: number
   [key: string]: unknown
 }
 
@@ -89,6 +87,13 @@ function createConstraints(terms: string[], specs: SearchSpec[]) {
   return constraints.map((constraint) => `(${constraint.join(' || ')})`)
 }
 
+const SPECIAL_CHARS = /([^!@#$%^&*(),\\/?";:{}|[\]+<>\s-])+/g
+const STRIP_EDGE_CHARS = /(^[.]+)|([.]+$)/
+
+export function tokenize(string: string): string[] {
+  return (string.match(SPECIAL_CHARS) || []).map((token) => token.replace(STRIP_EDGE_CHARS, ''))
+}
+
 /**
  * Convert a string into an array of tokenized terms.
  *
@@ -143,7 +148,7 @@ function toOrderClause(orderBy: SearchSort[]): string {
  */
 export function createSearchQuery(
   searchTerms: SearchTerms,
-  searchOpts: SearchOptions & WeightedSearchOptions = {},
+  searchOpts: SearchOptions & SearchFactoryOptions = {},
 ): SearchQuery {
   const {filter, params, tag} = searchOpts
 
@@ -192,7 +197,7 @@ export function createSearchQuery(
   let query =
     `*[${filters.join(' && ')}]` +
     `| order(${sortOrder})` +
-    `[$__offset...$__limit]` +
+    `[0...$__limit]` +
     // the following would improve search quality for paths-with-numbers, but increases the size of the query by up to 50%
     // `${hasIndexedPaths ? `[${createConstraints(terms, exactSearchSpec).join(' && ')}]` : ''}` +
     `{${finalProjection}}`
@@ -206,7 +211,7 @@ export function createSearchQuery(
 
     query = [
       `*[${filters.join(' && ')}]{${firstProjection}}`,
-      `order(${sortOrder})[$__offset...$__limit]{${finalProjection}}`,
+      `order(${sortOrder})[0...$__limit]{${finalProjection}}`,
     ].join('|')
   }
 
@@ -217,8 +222,7 @@ export function createSearchQuery(
     .join('\n')
   const updatedQuery = groqComments ? `${groqComments}\n${query}` : query
 
-  const offset = searchOpts?.offset ?? 0
-  const limit = (searchOpts?.limit ?? DEFAULT_LIMIT) + offset
+  const limit = searchOpts?.limit ?? DEFAULT_LIMIT
 
   return {
     query: updatedQuery,
@@ -226,7 +230,6 @@ export function createSearchQuery(
       ...toGroqParams(terms),
       __types: exactSearchSpecs.map((spec) => spec.typeName),
       __limit: limit,
-      __offset: offset,
       ...(params || {}),
     },
     options: {tag},

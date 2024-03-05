@@ -16,13 +16,14 @@ import {
 
 import {useClient} from '../../../../../hooks'
 import {
-  createWeightedSearch,
+  createSearch,
+  getSearchTypesWithMaxDepth,
+  type SearchHit,
   type SearchOptions,
   type SearchTerms,
-  type WeightedHit,
 } from '../../../../../search'
-import {getSearchTypesWithMaxDepth} from '../../../../../search/weighted/getSearchTypesWithMaxDepth'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../../studioClient'
+import {useWorkspace} from '../../../../workspace'
 import {type SearchState} from '../types'
 import {hasSearchableTerms} from '../utils/hasSearchableTerms'
 import {getSearchableOmnisearchTypes} from '../utils/selectors'
@@ -71,7 +72,7 @@ export function useSearch({
 }: {
   allowEmptyQueries?: boolean
   initialState: SearchState
-  onComplete?: (hits: WeightedHit[]) => void
+  onComplete?: (result: {hits: SearchHit[]; nextCursor: string | undefined}) => void
   onError?: (error: Error) => void
   onStart?: () => void
   schema: Schema
@@ -82,18 +83,20 @@ export function useSearch({
   const [searchState, setSearchState] = useState(initialState)
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const maxFieldDepth = useSearchMaxFieldDepth()
+  const {unstable_enableNewSearch = false} = useWorkspace().search
 
-  const searchWeighted = useMemo(
+  const search = useMemo(
     () =>
-      createWeightedSearch(
+      createSearch(
         getSearchTypesWithMaxDepth(getSearchableOmnisearchTypes(schema), maxFieldDepth),
         client,
         {
           tag: 'search.global',
           unique: true,
+          unstable_enableNewSearch,
         },
       ),
-    [client, schema, maxFieldDepth],
+    [client, schema, maxFieldDepth, unstable_enableNewSearch],
   )
 
   const handleQueryChange = useObservableCallback(
@@ -125,9 +128,8 @@ export function useSearch({
             iif(
               () => hasSearchableTerms({allowEmptyQueries, terms: request.terms}),
               // If we have a valid search, run async fetch, map results and trigger `onComplete` / `onError` callbacks
-              (searchWeighted(request.terms, request.options) as Observable<WeightedHit[]>).pipe(
-                map((hits) => ({hits})),
-                tap(({hits}) => onComplete?.(hits)),
+              search(request.terms, request.options).pipe(
+                tap(({hits, nextCursor}) => onComplete?.({hits, nextCursor})),
                 catchError((error) => {
                   onError?.(error)
                   return of({
@@ -140,7 +142,7 @@ export function useSearch({
                 }),
               ),
               // If there is no valid search, emit an empty observable and trigger `onComplete` event
-              of(EMPTY).pipe(tap(() => onComplete?.([]))),
+              of(EMPTY).pipe(tap(() => onComplete?.({hits: [], nextCursor: undefined}))),
             ),
             // Emit loading completed
             of({loading: false}),
@@ -154,7 +156,7 @@ export function useSearch({
       )
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps -- @todo: add onComplete, onError and onStart to the deps list when it's verified that it's safe to do so
-    [allowEmptyQueries, searchWeighted],
+    [allowEmptyQueries, search],
   )
 
   const handleSearch = useCallback(

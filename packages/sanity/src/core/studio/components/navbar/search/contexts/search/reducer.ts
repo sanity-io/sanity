@@ -1,6 +1,7 @@
 import {type CurrentUser} from '@sanity/types'
 
-import {type SearchableType, type SearchTerms, type WeightedHit} from '../../../../../../search'
+import {type SearchableType, type SearchHit, type SearchTerms} from '../../../../../../search'
+import {getPublishedId} from '../../../../../../util'
 import {type RecentSearch} from '../../datastores/recentSearches'
 import {type SearchFieldDefinitionDictionary} from '../../definitions/fields'
 import {type SearchFilterDefinitionDictionary} from '../../definitions/filters'
@@ -21,7 +22,12 @@ import {
 import {isRecentSearchTerms} from '../../utils/isRecentSearchTerms'
 import {sortTypes} from '../../utils/selectors'
 
-export interface SearchReducerState {
+interface PaginationState {
+  cursor: string | null
+  nextCursor: string | null
+}
+
+export type SearchReducerState = PaginationState & {
   currentUser: CurrentUser | null
   debug: boolean
   definitions: SearchDefinitions
@@ -32,7 +38,6 @@ export interface SearchReducerState {
   lastAddedFilter?: SearchFilter | null
   lastActiveIndex: number
   ordering: SearchOrdering
-  pageIndex: number
   recentSearches: RecentSearch[]
   result: SearchResult
   terms: RecentSearch | SearchTerms
@@ -46,8 +51,8 @@ export interface SearchDefinitions {
 
 export interface SearchResult {
   error: Error | null
-  hasMore?: boolean | null
-  hits: WeightedHit[]
+  hasLocal: boolean
+  hits: SearchHit[]
   loaded: boolean
   loading: boolean
 }
@@ -57,6 +62,7 @@ export interface InitialSearchState {
   fullscreen?: boolean
   recentSearches?: RecentSearch[]
   definitions: SearchDefinitions
+  pagination: PaginationState
 }
 
 export function initialSearchState({
@@ -64,6 +70,7 @@ export function initialSearchState({
   fullscreen,
   recentSearches = [],
   definitions,
+  pagination,
 }: InitialSearchState): SearchReducerState {
   return {
     currentUser,
@@ -74,11 +81,11 @@ export function initialSearchState({
     fullscreen,
     lastActiveIndex: -1,
     ordering: ORDERINGS.relevance,
-    pageIndex: 0,
+    ...pagination,
     recentSearches,
     result: {
       error: null,
-      hasMore: null,
+      hasLocal: false,
       hits: [],
       loaded: false,
       loading: false,
@@ -103,7 +110,8 @@ export type OrderingSet = {ordering: SearchOrdering; type: 'ORDERING_SET'}
 export type SearchClear = {type: 'SEARCH_CLEAR'}
 export type SearchRequestComplete = {
   type: 'SEARCH_REQUEST_COMPLETE'
-  hits: WeightedHit[]
+  hits: SearchHit[]
+  nextCursor: string | undefined
 }
 export type SearchRequestError = {type: 'SEARCH_REQUEST_ERROR'; error: Error}
 export type SearchRequestStart = {type: 'SEARCH_REQUEST_START'}
@@ -186,7 +194,8 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
     case 'PAGE_INCREMENT':
       return {
         ...state,
-        pageIndex: state.pageIndex + 1,
+        cursor: state.nextCursor ?? state.cursor,
+        nextCursor: null,
         terms: stripRecent(state.terms),
       }
     case 'RECENT_SEARCHES_SET':
@@ -197,21 +206,25 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
     case 'SEARCH_CLEAR':
       return {
         ...state,
-        pageIndex: 0,
+        cursor: null,
+        nextCursor: null,
         result: {
           ...state.result,
-          hasMore: null,
+          hasLocal: false,
           hits: [],
         },
       }
     case 'SEARCH_REQUEST_COMPLETE':
       return {
         ...state,
+        nextCursor: action.nextCursor ?? null,
         result: {
           ...state.result,
           error: null,
-          hasMore: action.hits.length > 0,
-          hits: state.pageIndex > 0 ? [...state.result.hits, ...action.hits] : action.hits,
+          hasLocal: true,
+          hits: state.result.hasLocal
+            ? deduplicate([...state.result.hits, ...action.hits])
+            : action.hits,
           loaded: true,
           loading: false,
         },
@@ -378,10 +391,12 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
     case 'TERMS_QUERY_SET':
       return {
         ...state,
-        pageIndex: 0,
+        cursor: null,
+        nextCursor: null,
         result: {
           ...state.result,
           loaded: false,
+          hasLocal: false,
         },
         terms: stripRecent({
           ...state.terms,
@@ -404,10 +419,12 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
         }),
         filters,
         lastAddedFilter: null,
-        pageIndex: 0,
+        cursor: null,
+        nextCursor: null,
         result: {
           ...state.result,
           loaded: false,
+          hasLocal: false,
         },
         terms: {
           ...action.terms,
@@ -453,10 +470,12 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
         ...state,
         documentTypesNarrowed,
         filters,
-        pageIndex: 0,
+        cursor: null,
+        nextCursor: null,
         result: {
           ...state.result,
           loaded: false,
+          hasLocal: false,
         },
         terms: stripRecent({
           ...state.terms,
@@ -480,10 +499,12 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
           filters: state.filters,
           types,
         }),
-        pageIndex: 0,
+        cursor: null,
+        nextCursor: null,
         result: {
           ...state.result,
           loaded: false,
+          hasLocal: false,
         },
         terms: stripRecent({
           ...state.terms,
@@ -501,10 +522,12 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
           filters: state.filters,
           types,
         }),
-        pageIndex: 0,
+        cursor: null,
+        nextCursor: null,
         result: {
           ...state.result,
           loaded: false,
+          hasLocal: false,
         },
         terms: stripRecent({
           ...state.terms,
@@ -534,4 +557,23 @@ function stripRecent(terms: RecentSearch | SearchTerms) {
     return rest
   }
   return terms
+}
+
+/**
+ * At page boundaries, the Text Search API may sometimes produce duplicate results. This function
+ * deduplicates an array of results based on their ids.
+ *
+ * Note that should any result appear again in subsequent pages, its first instance will be removed.
+ */
+function deduplicate(hits: SearchHit[]): SearchHit[] {
+  const hitsById = hits.reduce((map, hit) => {
+    const id = getPublishedId(hit.hit._id)
+
+    return {
+      ...map,
+      [id]: hit,
+    }
+  }, {})
+
+  return Object.values(hitsById)
 }

@@ -5,7 +5,7 @@ import {
   type ObjectField,
   type ObjectFieldType,
   type ObjectSchemaType,
-  type SanityDocument,
+  type SanityDocumentLike,
   type SchemaType,
 } from '@sanity/types'
 import * as PathUtils from '@sanity/util/paths'
@@ -17,7 +17,7 @@ export function getDocumentKey(value: DocumentListPaneItem, index: number): stri
   return value._id ? getPublishedId(value._id) : `item-${index}`
 }
 
-export function removePublishedWithDrafts(documents: SanityDocument[]): DocumentListPaneItem[] {
+export function removePublishedWithDrafts(documents: SanityDocumentLike[]): DocumentListPaneItem[] {
   return collate(documents).map((entry) => {
     const doc = entry.draft || entry.published
     return {

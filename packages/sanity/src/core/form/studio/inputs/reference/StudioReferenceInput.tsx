@@ -95,6 +95,7 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
   const {path, schemaType} = props
   const {EditReferenceLinkComponent, onEditReference, activePath, initialValueTemplateItems} =
     useReferenceInputOptions()
+  const {unstable_enableNewSearch = false} = source.search
 
   const documentValue = useFormValue([]) as FIXME
   const documentRef = useValueRef(documentValue)
@@ -110,13 +111,19 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
     (searchString: string) =>
       from(resolveUserDefinedFilter(schemaType.options, documentRef.current, path, getClient)).pipe(
         mergeMap(({filter, params}) =>
-          adapter.referenceSearch(searchClient, searchString, schemaType, {
-            ...schemaType.options,
-            filter,
-            params,
-            tag: 'search.reference',
-            maxFieldDepth,
-          }),
+          adapter.referenceSearch(
+            searchClient,
+            searchString,
+            schemaType,
+            {
+              ...schemaType.options,
+              filter,
+              params,
+              tag: 'search.reference',
+              maxFieldDepth,
+            },
+            unstable_enableNewSearch,
+          ),
         ),
 
         catchError((err: SearchError) => {
@@ -128,7 +135,15 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
         }),
       ),
 
-    [documentRef, path, searchClient, schemaType, maxFieldDepth, getClient],
+    [
+      schemaType,
+      documentRef,
+      path,
+      getClient,
+      searchClient,
+      maxFieldDepth,
+      unstable_enableNewSearch,
+    ],
   )
 
   const template = props.value?._strengthenOnPublish?.template

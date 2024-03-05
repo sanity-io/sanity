@@ -7,7 +7,7 @@ import {
 import {type Observable} from 'rxjs'
 import {map} from 'rxjs/operators'
 
-import {createWeightedSearch} from '../../../../../search'
+import {createSearch} from '../../../../../search'
 import {collate} from '../../../../../util'
 
 interface SearchHit {
@@ -22,7 +22,7 @@ export function search(
   type: CrossDatasetReferenceSchemaType,
   options: ReferenceFilterSearchOptions,
 ): Observable<SearchHit[]> {
-  const searchWeighted = createWeightedSearch(
+  const searchWeighted = createSearch(
     type.to.map((crossDatasetType) => ({
       name: crossDatasetType.type,
       // eslint-disable-next-line camelcase
@@ -31,14 +31,12 @@ export function search(
         options.maxFieldDepth,
       ),
     })),
-
     client,
     options,
   )
 
   return searchWeighted(textTerm, {includeDrafts: false}).pipe(
-    // pick the 100 best matches
-    map((results) => results.map((result) => result.hit)),
+    map(({hits}) => hits.map(({hit}) => hit)),
     map(collate),
     map((collated) =>
       collated.map((entry) => ({

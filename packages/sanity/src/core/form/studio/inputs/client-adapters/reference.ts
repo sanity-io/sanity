@@ -4,7 +4,7 @@ import {combineLatest, type Observable, of} from 'rxjs'
 import {map, mergeMap, startWith, switchMap} from 'rxjs/operators'
 
 import {type DocumentPreviewStore, getPreviewPaths, prepareForPreview} from '../../../../preview'
-import {createWeightedSearch, getSearchTypesWithMaxDepth} from '../../../../search'
+import {createSearch, getSearchTypesWithMaxDepth} from '../../../../search'
 import {collate, type CollatedHit, getDraftId, getIdPair, isRecord} from '../../../../util'
 import {type ReferenceInfo, type ReferenceSearchHit} from '../../../inputs/ReferenceInput/types'
 
@@ -191,14 +191,14 @@ export function referenceSearch(
   textTerm: string,
   type: ReferenceSchemaType,
   options: ReferenceFilterSearchOptions,
+  unstable_enableNewSearch: boolean,
 ): Observable<ReferenceSearchHit[]> {
-  const searchWeighted = createWeightedSearch(
-    getSearchTypesWithMaxDepth(type.to, options.maxFieldDepth),
-    client,
-    options,
-  )
-  return searchWeighted(textTerm, {includeDrafts: true}).pipe(
-    map((results) => results.map((result) => result.hit)),
+  const search = createSearch(getSearchTypesWithMaxDepth(type.to, options.maxFieldDepth), client, {
+    ...options,
+    unstable_enableNewSearch,
+  })
+  return search(textTerm, {includeDrafts: true}).pipe(
+    map(({hits}) => hits.map(({hit}) => hit)),
     map(collate),
     // pick the 100 best matches
     map((collated) => collated.slice(0, 100)),

@@ -30,6 +30,7 @@ import {
   initialDocumentBadges,
   initialLanguageFilter,
   newDocumentOptionsResolver,
+  newSearchEnabledReducer,
   partialIndexingEnabledReducer,
   resolveProductionUrlReducer,
   schemaTemplatesReducer,
@@ -569,6 +570,13 @@ function resolveSource({
           initialValue: config.search?.unstable_partialIndexing?.enabled ?? false,
         }),
       },
+      unstable_enableNewSearch: resolveConfigProperty({
+        config,
+        context,
+        reducer: newSearchEnabledReducer,
+        propertyName: 'search.unstable_enableNewSearch',
+        initialValue: false,
+      }),
       // we will use this when we add search config to PluginOptions
       /*filters: resolveConfigProperty({
         config,

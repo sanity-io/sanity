@@ -15,7 +15,7 @@ import styled from 'styled-components'
 import {Popover} from '../../../../../../../../../../ui-components'
 import {useSchema} from '../../../../../../../../../hooks'
 import {Translate, useTranslation} from '../../../../../../../../../i18n'
-import {type SearchableType, type WeightedHit} from '../../../../../../../../../search'
+import {type SearchableType, type SearchHit} from '../../../../../../../../../search'
 import {getPublishedId} from '../../../../../../../../../util'
 import {POPOVER_RADIUS} from '../../../../../constants'
 import {useSearchState} from '../../../../../contexts/search/useSearchState'
@@ -23,10 +23,7 @@ import {useSearch} from '../../../../../hooks/useSearch'
 import {getDocumentTypesTruncated} from '../../../../../utils/documentTypesTruncated'
 import {SearchResultItem} from '../../../../searchResults/item/SearchResultItem'
 
-interface SearchHit {
-  hit: WeightedHit
-  value: string
-}
+type AutocompleteSearchHit = {value: string} & SearchHit
 
 interface PopoverContentProps {
   content: ReactElement | null
@@ -62,7 +59,7 @@ export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
 
   const autocompleteId = useId()
 
-  const [hits, setHits] = useState<SearchHit[]>([])
+  const [hits, setHits] = useState<AutocompleteSearchHit[]>([])
   const {handleSearch, searchState} = useSearch({
     allowEmptyQueries: true,
     initialState: {
@@ -71,13 +68,8 @@ export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
       error: null,
       terms: {query: '', types},
     },
-    onComplete: (weightedHits) => {
-      setHits(
-        weightedHits.map((weightedHit) => ({
-          hit: weightedHit,
-          value: weightedHit.hit._id,
-        })),
-      )
+    onComplete: (result) => {
+      setHits(result.hits.map(({hit}) => ({value: hit._id, hit})))
     },
     schema,
   })
@@ -119,7 +111,7 @@ export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
 
   const handleSelect = useCallback(
     (val: string) => {
-      const hit = hits.find((h) => h.value === val)?.hit.hit
+      const hit = hits.find((h) => h.value === val)?.hit
       if (hit) {
         onSelect?.({
           _ref: getPublishedId(hit._id),
@@ -149,13 +141,12 @@ export const ReferenceAutocomplete = forwardRef(function ReferenceAutocomplete(
     })
   }, [types, t])
 
-  const renderOption = useCallback((option: any) => {
-    const documentType = option.hit.hit._type
+  const renderOption = useCallback((option: AutocompleteSearchHit) => {
     return (
       <SearchResultItem
         disableIntentLink
         documentId={option.value}
-        documentType={documentType}
+        documentType={option.hit._type}
         layout="compact"
       />
     )

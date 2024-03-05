@@ -56,6 +56,10 @@ export function SearchResults({disableIntentLink, inputElement, onItemSelect}: S
     onClose?.()
   }, [dispatch, filters, onClose, recentSearchesStore, terms])
 
+  const handleEndReached = useCallback(() => {
+    dispatch({type: 'PAGE_INCREMENT'})
+  }, [dispatch])
+
   const renderItem = useCallback<CommandListRenderItemCallback<WeightedHit>>(
     (item) => {
       return (
@@ -102,6 +106,7 @@ export function SearchResults({disableIntentLink, inputElement, onItemSelect}: S
                     itemHeight={VIRTUAL_LIST_SEARCH_RESULT_ITEM_HEIGHT}
                     items={result.hits}
                     overscan={VIRTUAL_LIST_OVERSCAN}
+                    onEndReached={handleEndReached}
                     paddingX={2}
                     paddingY={1}
                     ref={setSearchCommandList}

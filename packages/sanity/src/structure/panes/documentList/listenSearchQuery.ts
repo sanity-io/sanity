@@ -1,7 +1,8 @@
-import {type SanityClient, type SanityDocument} from '@sanity/client'
+import {type SanityClient} from '@sanity/client'
 import {
   asyncScheduler,
   defer,
+  map,
   merge,
   mergeMap,
   type Observable,
@@ -14,16 +15,12 @@ import {
   timer,
 } from 'rxjs'
 import {exhaustMapWithTrailing} from 'rxjs-exhaustmap-with-trailing'
-import {
-  createSearchQuery,
-  type Schema,
-  type SearchOptions,
-  type SearchTerms,
-  type WeightedSearchOptions,
-} from 'sanity'
-import {getSearchableTypes, getSearchTypesWithMaxDepth} from 'sanity/_internalBrowser'
+import {type SanityDocumentLike, type Schema} from 'sanity'
+import {createSearch, getSearchableTypes, getSearchTypesWithMaxDepth} from 'sanity/_internalBrowser'
 
 import {getExtendedProjection} from '../../structureBuilder/util/getExtendedProjection'
+// FIXME
+// eslint-disable-next-line boundaries/element-types
 import {type SortOrder} from './types'
 
 interface ListenQueryOptions {
@@ -36,11 +33,22 @@ interface ListenQueryOptions {
   sort: SortOrder
   staticTypeNames?: string[]
   maxFieldDepth?: number
+  unstable_enableNewSearch?: boolean
 }
 
-export function listenSearchQuery(options: ListenQueryOptions): Observable<SanityDocument[]> {
-  const {client, schema, sort, limit, params, filter, searchQuery, staticTypeNames, maxFieldDepth} =
-    options
+export function listenSearchQuery(options: ListenQueryOptions): Observable<SanityDocumentLike[]> {
+  const {
+    client,
+    schema,
+    sort,
+    limit,
+    params,
+    filter,
+    searchQuery,
+    staticTypeNames,
+    maxFieldDepth,
+    unstable_enableNewSearch,
+  } = options
   const sortBy = sort.by
   const extendedProjection = sort?.extendedProjection
 
@@ -103,25 +111,34 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Sanit
             maxFieldDepth,
           )
 
-          const searchTerms: SearchTerms = {
+          const search = createSearch(types, client, {
             filter,
-            query: searchQuery || '',
-            types,
-          }
-
-          const searchOptions: SearchOptions & WeightedSearchOptions = {
-            __unstable_extendedProjection: extendedProjection,
-            comments: [`findability-source: ${searchQuery ? 'list-query' : 'list'}`],
-            limit,
             params,
-            sort: sortBy,
-          }
+            unstable_enableNewSearch,
+          })
 
-          const {query: createdQuery, params: createdParams} = createSearchQuery(
-            searchTerms,
-            searchOptions,
-          )
-          const doFetch = () => client.observable.fetch(createdQuery, createdParams)
+          const doFetch = () => {
+            const searchTerms = {
+              filter,
+              query: searchQuery || '',
+              types,
+            }
+
+            const searchOptions = {
+              __unstable_extendedProjection: extendedProjection,
+              comments: [`findability-source: ${searchQuery ? 'list-query' : 'list'}`],
+              limit,
+              skipSortByScore: true,
+              sort: sortBy,
+            }
+
+            return search(searchTerms, searchOptions).pipe(
+              map((result) =>
+                // eslint-disable-next-line max-nested-callbacks
+                result.hits.map(({hit}) => hit),
+              ),
+            )
+          }
 
           if (event.type === 'mutation' && event.visibility !== 'query') {
             // Even though the listener request specifies visibility=query, the events are not guaranteed to be delivered with visibility=query
