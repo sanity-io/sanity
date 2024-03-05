@@ -112,7 +112,7 @@ export function useRecentSearchesStore({
         filterDefinitions,
         operatorDefinitions,
         schema,
-        storedSearch,
+        storedSearch: newRecent,
         setStoredSearch,
       })
     },
@@ -145,7 +145,7 @@ export function useRecentSearchesStore({
         filterDefinitions,
         operatorDefinitions,
         schema,
-        storedSearch,
+        storedSearch: newRecent,
         setStoredSearch,
       })
     },
@@ -179,7 +179,7 @@ export function useRecentSearchesStore({
         filterDefinitions,
         operatorDefinitions,
         schema,
-        storedSearch,
+        storedSearch: newRecent,
         setStoredSearch,
       })
     },
@@ -277,5 +277,5 @@ function sanitizeStoredSearch({
     setStoredSearch(newStoredSearch)
   }
 
-  return storedSearch
+  return newStoredSearch
 }
