@@ -562,6 +562,8 @@ function stripRecent(terms: RecentSearch | SearchTerms) {
 /**
  * At page boundaries, the Text Search API may sometimes produce duplicate results. This function
  * deduplicates an array of results based on their ids.
+ *
+ * Note that should any result appear again in subsequent pages, its first instance will be removed.
  */
 function deduplicate(hits: SearchHit[]): SearchHit[] {
   const hitsById = hits.reduce((map, hit) => {
