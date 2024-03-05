@@ -101,7 +101,7 @@ export interface PaneRouterContextValue {
   /**
    * Curried StateLink that pops off the last pane group
    */
-  BackLink: React.ComponentType<BackLinkProps>
+  BackLink?: React.ComponentType<BackLinkProps>
 
   /**
    * A specialized `ChildLink` that takes in the needed props to open a

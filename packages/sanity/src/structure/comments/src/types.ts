@@ -15,12 +15,23 @@ export interface Loadable<T> {
  * @beta
  * @hidden
  */
+export interface CommentUpdateOperationOptions {
+  throttled: boolean
+}
+
+/**
+ * @beta
+ * @hidden
+ */
 export interface CommentOperations {
   create: (comment: CommentCreatePayload) => Promise<void>
-  edit: (id: string, comment: CommentEditPayload) => Promise<void>
   react: (id: string, reaction: CommentReactionOption) => Promise<void>
   remove: (id: string) => Promise<void>
-  update: (id: string, comment: Partial<CommentCreatePayload>) => Promise<void>
+  update: (
+    id: string,
+    comment: CommentUpdatePayload,
+    opts?: CommentUpdateOperationOptions,
+  ) => Promise<void>
 }
 
 /**
@@ -31,6 +42,7 @@ export interface CommentThreadItem {
   breadcrumbs: CommentListBreadcrumbs
   commentsCount: number
   fieldPath: string
+  hasReferencedValue: boolean
   parentComment: CommentDocument
   replies: CommentDocument[]
   threadId: string
@@ -52,8 +64,29 @@ export type CommentStatus = 'open' | 'resolved'
  * @beta
  * @hidden
  */
+export interface CommentsTextSelectionItem {
+  _key: string
+  text: string
+}
+
+/**
+ * @beta
+ * @hidden
+ */
+export interface CommentTextSelection {
+  type: 'text'
+  value: CommentsTextSelectionItem[]
+}
+
+type CommentPathSelection = CommentTextSelection
+
+/**
+ * @beta
+ * @hidden
+ */
 export interface CommentPath {
   field: string
+  selection?: CommentPathSelection
 }
 
 /**
@@ -165,8 +198,15 @@ export interface CommentDocument {
   reactions: CommentReactionItem[] | null
   context?: CommentContext
 
+  /**
+   * A snapshot value of the content that the comment is related to.
+   */
+  contentSnapshot?: unknown
+
   target: {
     path: CommentPath
+
+    documentRevisionId: string
     documentType: string
     document: {
       _dataset: string
@@ -189,23 +229,25 @@ export type CommentPostPayload = Omit<CommentDocument, '_rev' | '_updatedAt' | '
  * @hidden
  */
 export interface CommentCreatePayload {
+  contentSnapshot?: CommentDocument['contentSnapshot']
+  /**
+   * The stringified path to the field where the comment was created.
+   */
   fieldPath: string
-  id?: string
-  message: CommentMessage
-  parentCommentId: string | undefined
-  status: CommentStatus
-  threadId: string
-  reactions: CommentReactionItem[]
+  id?: CommentDocument['_id']
+  message: CommentDocument['message']
+  parentCommentId: CommentDocument['parentCommentId']
+  reactions: CommentDocument['reactions']
+  selection?: CommentPathSelection
+  status: CommentDocument['status']
+  threadId: CommentDocument['threadId']
 }
 
 /**
  * @beta
  * @hidden
  */
-export type CommentEditPayload = {
-  message: CommentMessage
-  lastEditedAt?: string
-}
+export type CommentUpdatePayload = Partial<Omit<CommentPostPayload, '_id' | '_type'>>
 
 /**
  * @beta
@@ -223,6 +265,10 @@ export interface CommentsListBreadcrumbItem {
  */
 export type CommentListBreadcrumbs = CommentsListBreadcrumbItem[]
 
+/**
+ * @beta
+ * @hidden
+ */
 export interface CommentsUpsellData {
   _createdAt: string
   _id: string
@@ -247,4 +293,8 @@ export interface CommentsUpsellData {
   }
 }
 
+/**
+ * @beta
+ * @hidden
+ */
 export type CommentsUIMode = 'default' | 'upsell'

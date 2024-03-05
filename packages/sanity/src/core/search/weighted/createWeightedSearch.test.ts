@@ -4,8 +4,7 @@ import {renderHook} from '@testing-library/react'
 import {defer, lastValueFrom, of} from 'rxjs'
 
 import {useClient} from '../../hooks'
-import {type SearchTerms} from '..'
-import {getSearchableTypes} from '../common/utils'
+import {getSearchableTypes, type SearchTerms} from '../common'
 import {createWeightedSearch} from './createWeightedSearch'
 
 // Mock client
@@ -41,8 +40,8 @@ describe('createWeightedSearch', () => {
   it('should order hits by score by default', async () => {
     const result = await lastValueFrom(search({query: 'harry', types: []} as SearchTerms))
 
-    expect(result[0].score).toEqual(10)
-    expect(result[1].score).toEqual(2.5)
+    expect(result.hits[0].score).toEqual(10)
+    expect(result.hits[1].score).toEqual(2.5)
   })
 
   it('should not order hits by score if skipSortByScore is enabled', async () => {
@@ -52,7 +51,7 @@ describe('createWeightedSearch', () => {
       }),
     )
 
-    expect(result[0].score).toEqual(2.5)
-    expect(result[1].score).toEqual(10)
+    expect(result.hits[0].score).toEqual(2.5)
+    expect(result.hits[1].score).toEqual(10)
   })
 })

@@ -23,7 +23,7 @@ interface UseDocumentTitle {
  */
 export function useDocumentTitle(): UseDocumentTitle {
   const {connectionState, schemaType, title, value: documentValue} = useDocumentPane()
-  const subscribed = Boolean(documentValue) && connectionState === 'connected'
+  const subscribed = Boolean(documentValue) && connectionState !== 'connecting'
 
   const {error, value} = useValuePreview({
     enabled: subscribed,
@@ -31,7 +31,7 @@ export function useDocumentTitle(): UseDocumentTitle {
     value: documentValue,
   })
 
-  if (connectionState !== 'connected') {
+  if (connectionState === 'connecting') {
     return {error: undefined, title: undefined}
   }
 

@@ -76,6 +76,7 @@ async function etl(options: {
   let timer = startTimer(`Extracting API documents from \`${packageName}\``)
   const {pkg, results} = await extract({
     packagePath,
+    bundledPackages: tsdocConfig.input?.bundledPackages,
   })
   timer.end()
 

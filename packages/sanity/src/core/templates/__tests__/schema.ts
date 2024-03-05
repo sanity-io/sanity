@@ -20,6 +20,11 @@ export const schema = SchemaBuilder.compile({
           name: 'role',
           type: 'string',
         },
+        {
+          name: 'bestFriend',
+          type: 'reference',
+          to: [{type: 'author'}],
+        },
       ],
       initialValue: () => ({
         role: 'Developer',

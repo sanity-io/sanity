@@ -10,7 +10,6 @@ import {
   FormBuilder,
   type FormDocumentValue,
   fromMutationPatches,
-  LoadingBlock,
   type PatchMsg,
   PresenceOverlay,
   useDocumentPresence,
@@ -48,6 +47,7 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
     ready,
     formState,
     onFocus,
+    connectionState,
     onBlur,
     onSetCollapsedPath,
     onPathOpen,
@@ -148,10 +148,6 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
   //   [documentId]
   // )
 
-  if (!ready) {
-    return <LoadingBlock showText />
-  }
-
   return (
     <Container
       hidden={hidden}
@@ -163,49 +159,7 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
     >
       <PresenceOverlay margins={margins}>
         <Box as="form" onSubmit={preventDefault} ref={setRef}>
-          {ready ? (
-            formState === null || hidden ? (
-              <Box padding={2}>
-                <Text>{t('document-view.form-view.form-hidden')}</Text>
-              </Box>
-            ) : (
-              <>
-                <FormHeader
-                  documentId={documentId}
-                  schemaType={formState.schemaType}
-                  title={title}
-                />
-                <FormBuilder
-                  __internal_fieldActions={fieldActions}
-                  __internal_patchChannel={patchChannel}
-                  collapsedFieldSets={collapsedFieldSets}
-                  collapsedPaths={collapsedPaths}
-                  focusPath={formState.focusPath}
-                  changed={formState.changed}
-                  focused={formState.focused}
-                  groups={formState.groups}
-                  id="root"
-                  members={formState.members}
-                  onChange={onChange}
-                  onFieldGroupSelect={onSetActiveFieldGroup}
-                  onPathBlur={onBlur}
-                  onPathFocus={onFocus}
-                  onPathOpen={onPathOpen}
-                  onSetFieldSetCollapsed={onSetCollapsedFieldSet}
-                  onSetPathCollapsed={onSetCollapsedPath}
-                  presence={presence}
-                  readOnly={formState.readOnly}
-                  schemaType={formState.schemaType}
-                  validation={validation}
-                  value={
-                    // note: the form state doesn't have a typed concept of a "document" value
-                    // but these should be compatible
-                    formState.value as FormDocumentValue
-                  }
-                />
-              </>
-            )
-          ) : (
+          {connectionState === 'connecting' ? (
             <Delay ms={300}>
               {/* TODO: replace with loading block */}
               <Flex align="center" direction="column" height="fill" justify="center">
@@ -217,6 +171,42 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
                 </Box>
               </Flex>
             </Delay>
+          ) : formState === null || hidden ? (
+            <Box padding={2}>
+              <Text>{t('document-view.form-view.form-hidden')}</Text>
+            </Box>
+          ) : (
+            <>
+              <FormHeader documentId={documentId} schemaType={formState.schemaType} title={title} />
+              <FormBuilder
+                __internal_fieldActions={fieldActions}
+                __internal_patchChannel={patchChannel}
+                collapsedFieldSets={collapsedFieldSets}
+                collapsedPaths={collapsedPaths}
+                focusPath={formState.focusPath}
+                changed={formState.changed}
+                focused={formState.focused}
+                groups={formState.groups}
+                id="root"
+                members={formState.members}
+                onChange={onChange}
+                onFieldGroupSelect={onSetActiveFieldGroup}
+                onPathBlur={onBlur}
+                onPathFocus={onFocus}
+                onPathOpen={onPathOpen}
+                onSetFieldSetCollapsed={onSetCollapsedFieldSet}
+                onSetPathCollapsed={onSetCollapsedPath}
+                presence={presence}
+                readOnly={connectionState === 'reconnecting' || formState.readOnly}
+                schemaType={formState.schemaType}
+                validation={validation}
+                value={
+                  // note: the form state doesn't have a typed concept of a "document" value
+                  // but these should be compatible
+                  formState.value as FormDocumentValue
+                }
+              />
+            </>
           )}
         </Box>
       </PresenceOverlay>

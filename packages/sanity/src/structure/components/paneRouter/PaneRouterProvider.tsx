@@ -149,7 +149,8 @@ export function PaneRouterProvider(props: {
       ChildLink,
 
       // Curried StateLink that pops off the last pane group
-      BackLink,
+      // Only pass if this is not the first pane
+      BackLink: flatIndex ? BackLink : undefined,
 
       // A specialized `ChildLink` that takes in the needed props to open a
       // referenced document to the right

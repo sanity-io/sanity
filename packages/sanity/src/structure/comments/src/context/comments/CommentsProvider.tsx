@@ -17,11 +17,10 @@ import {
 } from '../../hooks'
 import {useCommentsStore} from '../../store'
 import {
-  type CommentCreatePayload,
-  type CommentEditPayload,
   type CommentPostPayload,
   type CommentStatus,
   type CommentThreadItem,
+  type CommentUpdatePayload,
 } from '../../types'
 import {buildCommentThreadItems} from '../../utils/buildCommentThreadItems'
 import {CommentsContext} from './CommentsContext'
@@ -52,6 +51,9 @@ export interface CommentsProviderProps {
   onCommentsOpen?: () => void
 }
 
+type DocumentId = string
+type TransactionId = string
+
 /**
  * @beta
  */
@@ -64,7 +66,20 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
   const editState = useEditState(publishedId, documentType, 'low')
   const schemaType = useSchema().get(documentType)
   const currentUser = useCurrentUser()
+
   const {name: workspaceName, dataset, projectId} = useWorkspace()
+
+  // A map to keep track of the latest transaction ID for each comment document.
+  const transactionsIdMap = useMemo(() => new Map<DocumentId, TransactionId>(), [])
+
+  // When the latest transaction ID is received, we remove the transaction id from the map.
+  const handleOnLatestTransactionIdReceived = useCallback(
+    (commentDocumentId: string) => {
+      transactionsIdMap.delete(commentDocumentId)
+    },
+    [transactionsIdMap],
+  )
+
   const {
     dispatch,
     data = EMPTY_ARRAY,
@@ -73,11 +88,28 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
   } = useCommentsStore({
     documentId: publishedId,
     client,
+    transactionsIdMap,
+    onLatestTransactionIdReceived: handleOnLatestTransactionIdReceived,
   })
+
+  // When a comment update is started, we store the transaction id in a map.
+  // This is used to make sure that we only use the latest transaction received
+  // in the real time listener. See `useCommentsStore`.
+  // This is needed since we use optimistic updates in the UI, and we want to
+  // avoid that the UI is updated with an old transaction id when multiple
+  // transactions are started in a short time span.
+  const handleOnTransactionStart = useCallback(
+    (commentDocumentId: string, transactionId: string) => {
+      transactionsIdMap.set(commentDocumentId, transactionId)
+    },
+    [transactionsIdMap],
+  )
 
   const documentValue = useMemo(() => {
     return editState.draft || editState.published
   }, [editState.draft, editState.published])
+
+  const documentRevisionId = useMemo(() => documentValue?._rev, [documentValue])
 
   const handleSetStatus = useCallback(
     (newStatus: CommentStatus) => {
@@ -89,6 +121,7 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
     },
     [setStatus, commentsEnabled],
   )
+
   const mentionOptions = useUserListWithPermissions(
     useMemo(() => ({documentValue, permission: 'read'}), [documentValue]),
   )
@@ -143,20 +176,7 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
   )
 
   const handleOnUpdate = useCallback(
-    (id: string, payload: Partial<CommentCreatePayload>) => {
-      dispatch({
-        type: 'COMMENT_UPDATED',
-        payload: {
-          _id: id,
-          ...payload,
-        },
-      })
-    },
-    [dispatch],
-  )
-
-  const handleOnEdit = useCallback(
-    (id: string, payload: CommentEditPayload) => {
+    (id: string, payload: CommentUpdatePayload) => {
       dispatch({
         type: 'COMMENT_UPDATED',
         payload: {
@@ -194,12 +214,13 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
         currentUser,
         dataset,
         documentId: publishedId,
+        documentRevisionId,
         documentType,
+        getComment,
+        getThreadLength,
         projectId,
         schemaType,
         workspace: workspaceName,
-        getThreadLength,
-        getComment,
         // This function runs when the first comment creation is executed.
         // It is used to create the addon dataset and configure a client for
         // the addon dataset.
@@ -212,25 +233,26 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
         // event from the real time listener.
         onCreate: handleOnCreate,
         onCreateError: handleOnCreateError,
-        onEdit: handleOnEdit,
         onUpdate: handleOnUpdate,
+        onTransactionStart: handleOnTransactionStart,
       }),
       [
         client,
         currentUser,
         dataset,
-        publishedId,
+        documentRevisionId,
         documentType,
-        projectId,
-        schemaType,
-        workspaceName,
-        getThreadLength,
         getComment,
         createAddonDataset,
+        getThreadLength,
         handleOnCreate,
         handleOnCreateError,
-        handleOnEdit,
+        handleOnTransactionStart,
         handleOnUpdate,
+        projectId,
+        publishedId,
+        schemaType,
+        workspaceName,
       ],
     ),
   )
@@ -253,7 +275,6 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
 
       operation: {
         create: operation.create,
-        edit: operation.edit,
         react: operation.react,
         remove: operation.remove,
         update: operation.update,
@@ -269,7 +290,6 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
       mentionOptions,
       onCommentsOpen,
       operation.create,
-      operation.edit,
       operation.react,
       operation.remove,
       operation.update,

@@ -52,8 +52,18 @@ export interface InitFlags {
   project?: string
   dataset?: string
   template?: string
+
   visibility?: string
   typescript?: boolean
+  /**
+   * Used for initializing a project from a server schema that is saved in the Journey API
+   * Overrides `project` option.
+   * Overrides `dataset` option.
+   * Overrides `template` option.
+   * Overrides `visibility` option.
+   * @beta
+   */
+  quickstart?: string
   bare?: boolean
   env?: boolean | string
   git?: boolean | string

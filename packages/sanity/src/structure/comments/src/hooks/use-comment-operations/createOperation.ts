@@ -17,6 +17,7 @@ interface CreateOperationProps {
   currentUser: CurrentUser
   dataset: string
   documentId: string
+  documentRevisionId?: string
   documentType: string
   getComment?: (id: string) => CommentDocument | undefined
   getIntent?: CommentIntentGetter
@@ -37,6 +38,7 @@ export async function createOperation(props: CreateOperationProps): Promise<void
     currentUser,
     dataset,
     documentId,
+    documentRevisionId,
     documentType,
     getIntent,
     getNotificationValue,
@@ -95,9 +97,14 @@ export async function createOperation(props: CreateOperationProps): Promise<void
 
     reactions: [],
 
+    contentSnapshot: comment.contentSnapshot,
+
     target: {
+      documentRevisionId: documentRevisionId || '',
+
       path: {
         field: comment.fieldPath,
+        selection: comment.selection,
       },
       document: {
         _dataset: dataset,

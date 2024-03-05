@@ -65,14 +65,16 @@ export function PortableTextInput(props: PortableTextInputProps) {
     hotkeys,
     markers = EMPTY_ARRAY,
     onChange,
-    onEditorChange,
     onCopy,
+    onEditorChange,
+    onFullScreenChange,
     onInsert,
     onItemRemove,
     onPaste,
     onPathFocus,
     path,
     readOnly,
+    rangeDecorations,
     renderBlockActions,
     renderCustomMarkers,
     schemaType,
@@ -122,9 +124,11 @@ export function PortableTextInput(props: PortableTextInputProps) {
       } else {
         telemetry.log(PortableTextInputCollapsed)
       }
+
+      onFullScreenChange?.(next)
       return next
     })
-  }, [telemetry])
+  }, [onFullScreenChange, telemetry])
 
   // Reset invalidValue if new value is coming in from props
   useEffect(() => {
@@ -288,6 +292,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
                 onInsert={onInsert}
                 onPaste={onPaste}
                 onToggleFullscreen={handleToggleFullscreen}
+                rangeDecorations={rangeDecorations}
                 renderBlockActions={renderBlockActions}
                 renderCustomMarkers={renderCustomMarkers}
               />

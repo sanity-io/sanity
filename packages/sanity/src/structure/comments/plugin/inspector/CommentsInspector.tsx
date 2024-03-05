@@ -11,18 +11,19 @@ import {commentsLocaleNamespace} from '../../i18n'
 import {
   type CommentCreatePayload,
   CommentDeleteDialog,
-  type CommentEditPayload,
   type CommentReactionOption,
   CommentsList,
-  type CommentsListHandle,
   CommentsOnboardingPopover,
   type CommentsSelectedPath,
   type CommentStatus,
   type CommentsUIMode,
   CommentsUpsellPanel,
+  type CommentUpdatePayload,
+  isTextSelectionComment,
   useComments,
   useCommentsEnabled,
   useCommentsOnboarding,
+  useCommentsScroll,
   useCommentsSelectedPath,
   useCommentsUpsell,
 } from '../../src'
@@ -67,7 +68,6 @@ function CommentsInspectorInner(
   const [commentToDelete, setCommentToDelete] = useState<CommentToDelete | null>(null)
   const [deleteLoading, setDeleteLoading] = useState<boolean>(false)
   const [deleteError, setDeleteError] = useState<Error | null>(null)
-  const commentsListHandleRef = useRef<CommentsListHandle>(null)
 
   const rootRef = useRef<HTMLDivElement | null>(null)
 
@@ -79,27 +79,22 @@ function CommentsInspectorInner(
   const didScrollToCommentFromParam = useRef<boolean>(false)
 
   const pushToast = useToast().push
-  const {onPathOpen, ready} = useDocumentPane()
+  const {isTopLayer} = useLayer()
+  const {onPathOpen, connectionState} = useDocumentPane()
 
+  const {scrollToComment, scrollToField, scrollToInlineComment} = useCommentsScroll()
+  const {selectedPath, setSelectedPath} = useCommentsSelectedPath()
   const {isDismissed, setDismissed} = useCommentsOnboarding()
 
   const {comments, getComment, isCreatingDataset, mentionOptions, setStatus, status, operation} =
     useComments()
-
-  const {isTopLayer} = useLayer()
+  const {upsellData, telemetryLogs} = useCommentsUpsell()
 
   const currentComments = useMemo(() => comments.data[status], [comments, status])
 
   const loading = useMemo(() => {
-    // The comments and the document are loaded separately which means that
-    // the comments might be ready before the document is ready. Since the user should
-    // be able to interact with the document from the comments inspector, we need to make sure
-    // that the document is ready before we allow the user to interact with the comments.
-    return comments.loading || !ready
-  }, [comments.loading, ready])
-
-  const {selectedPath, setSelectedPath} = useCommentsSelectedPath()
-  const {upsellData, telemetryLogs} = useCommentsUpsell()
+    return comments.loading || connectionState === 'connecting'
+  }, [comments.loading, connectionState])
 
   useEffect(() => {
     if (mode === 'upsell') {
@@ -193,9 +188,19 @@ function CommentsInspectorInner(
       if (nextPath?.fieldPath) {
         const path = PathUtils.fromString(nextPath.fieldPath)
         onPathOpen(path)
+
+        scrollToField(nextPath.fieldPath)
+
+        const isInlineComment = comments.data.open
+          .filter((c) => c.threadId === nextPath?.threadId)
+          .some((x) => isTextSelectionComment(x.parentComment))
+
+        if (isInlineComment && nextPath.threadId) {
+          scrollToInlineComment(nextPath.threadId)
+        }
       }
     },
-    [onPathOpen, setSelectedPath],
+    [comments.data.open, onPathOpen, scrollToField, scrollToInlineComment, setSelectedPath],
   )
 
   const handleNewThreadCreate = useCallback(
@@ -219,8 +224,8 @@ function CommentsInspectorInner(
   )
 
   const handleEdit = useCallback(
-    (id: string, payload: CommentEditPayload) => {
-      operation.edit(id, payload)
+    (id: string, payload: CommentUpdatePayload) => {
+      operation.update(id, payload)
     },
     [operation],
   )
@@ -255,25 +260,6 @@ function CommentsInspectorInner(
     [closeDeleteDialog, operation],
   )
 
-  const handleScrollToComment = useCallback(
-    (id: string, origin?: CommentsSelectedPath['origin']) => {
-      const comment = getComment(id)
-
-      if (comment) {
-        setSelectedPath({
-          fieldPath: comment.target.path.field || null,
-          origin: origin || 'inspector',
-          threadId: comment.threadId || null,
-        })
-
-        setTimeout(() => {
-          commentsListHandleRef.current?.scrollToComment(id)
-        })
-      }
-    },
-    [getComment, setSelectedPath],
-  )
-
   const handleStatusChange = useCallback(
     (id: string, nextStatus: CommentStatus) => {
       operation.update(id, {
@@ -284,10 +270,21 @@ function CommentsInspectorInner(
       // and scroll to the comment
       if (nextStatus === 'open') {
         setStatus('open')
-        handleScrollToComment(id)
+
+        const comment = getComment(id)
+
+        if (!comment) return
+
+        setSelectedPath({
+          fieldPath: comment.target.path.field || null,
+          origin: 'inspector',
+          threadId: comment.threadId || null,
+        })
+
+        scrollToComment(id)
       }
     },
-    [handleScrollToComment, operation, setStatus],
+    [getComment, operation, scrollToComment, setSelectedPath, setStatus],
   )
 
   const handleReactionSelect = useCallback(
@@ -298,15 +295,32 @@ function CommentsInspectorInner(
   )
 
   const handleDeselectPath = useCallback(() => {
-    // Clear the selected path when clicking outside the comments inspector.
-    // We do this only when the comments inspector is the top layer.
+    // Clear the selected path when:
+    // - Clicking outside the inspector when it's the top layer
+    // - The target is not a slate editor string. This is needed because we do not want to
+    //   frequently deselect the selected path when clicking inside the editor.
     if (selectedPath && isTopLayer) {
       setSelectedPath(null)
     }
   }, [isTopLayer, selectedPath, setSelectedPath])
 
-  useClickOutside(handleDeselectPath, [rootRef.current])
+  const handleClickOutside = useCallback(
+    (e: MouseEvent) => {
+      // Clear the selected path when clicking outside the comments inspector.
+      // We do this only when the comments inspector is the top layer.
+      const isPTETarget =
+        e.target instanceof HTMLElement && e.target?.hasAttribute('data-slate-string')
 
+      if (!isPTETarget) {
+        handleDeselectPath()
+      }
+    },
+    [handleDeselectPath],
+  )
+
+  useClickOutside(handleClickOutside, [rootRef.current])
+
+  // Handle scroll to comment from URL param
   useEffect(() => {
     // Make sure that the comment exists before we try to scroll to it.
     // We can't solely rely on the comment id from the url since the comment might not be loaded yet.
@@ -316,13 +330,13 @@ function CommentsInspectorInner(
       // Make sure we have the correct status set before we scroll to the comment
       setStatus(commentToScrollTo.status || 'open')
 
-      // The second argument sets the select path origin to 'url' which will prevent the field in the form
-      // the comment  refers to from being selected and scrolled to. This is because, on mount, we will in
-      // some cases attempt to perform two scrolls: one to the field and one to the comment.
-      // These scroll events seems to interfere with each other and the result is that the comment is not
-      // scrolled to. Therefore, when there's a comment id in the url, we prioritize scrolling to the comment
-      // and not the field.
-      handleScrollToComment(commentToScrollTo._id, 'url')
+      setSelectedPath({
+        fieldPath: commentToScrollTo.target.path.field || null,
+        origin: 'url',
+        threadId: commentToScrollTo.threadId || null,
+      })
+
+      scrollToComment(commentToScrollTo._id)
 
       didScrollToCommentFromParam.current = true
       commentIdParamRef.current = undefined
@@ -332,7 +346,7 @@ function CommentsInspectorInner(
         comment: undefined,
       })
     }
-  }, [getComment, handleScrollToComment, loading, params, setParams, setStatus])
+  }, [getComment, loading, params, scrollToComment, setParams, setSelectedPath, setStatus])
 
   const beforeListNode = useMemo(() => {
     if (mode === 'upsell' && upsellData) {
@@ -402,7 +416,6 @@ function CommentsInspectorInner(
             onReply={handleReply}
             onStatusChange={handleStatusChange}
             readOnly={isCreatingDataset}
-            ref={commentsListHandleRef}
             selectedPath={selectedPath}
             status={status}
           />

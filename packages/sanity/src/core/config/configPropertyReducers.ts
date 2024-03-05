@@ -330,3 +330,10 @@ export const partialIndexingEnabledReducer = (opts: {
 
   return result
 }
+
+export const newSearchEnabledReducer: ConfigPropertyReducer<boolean, ConfigContext> = (
+  prev,
+  {search},
+): boolean => {
+  return prev || search?.unstable_enableNewSearch || false
+}

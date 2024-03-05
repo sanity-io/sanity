@@ -56,7 +56,7 @@ export const Dialog = forwardRef(function Dialog(
     footer,
     padding = true,
     ...props
-  }: DialogProps & Pick<React.HTMLProps<HTMLDivElement>, 'onDragEnter'>,
+  }: DialogProps & Pick<React.HTMLProps<HTMLDivElement>, 'onDragEnter' | 'onDrop'>,
   ref: React.Ref<HTMLDivElement>,
 ) {
   const {t} = useTranslation()

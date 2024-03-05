@@ -373,6 +373,16 @@ export interface PluginOptions {
     unstable_partialIndexing?: {
       enabled: boolean
     }
+    /**
+     * Enables the experimental new search API as an opt-in feature. This flag
+     * allows you to test and provide feedback on the new search capabilities
+     * before they become the default search mechanism. It is part of an
+     * experimental set of features that are subject to change. Users should be
+     * aware that while this feature is in use, they may encounter
+     * inconsistencies or unexpected behavior compared to the stable search
+     * functionality.
+     */
+    unstable_enableNewSearch?: boolean
   }
 }
 
@@ -707,6 +717,8 @@ export interface Source {
     unstable_partialIndexing?: {
       enabled: boolean
     }
+
+    unstable_enableNewSearch?: boolean
   }
 
   /** @internal */

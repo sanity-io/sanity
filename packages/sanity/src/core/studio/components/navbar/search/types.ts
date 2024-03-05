@@ -2,10 +2,10 @@ import {type ButtonTone, type CardTone} from '@sanity/ui'
 
 import {
   type SearchableType,
+  type SearchHit,
   type SearchOptions,
   type SearchSort,
   type SearchTerms,
-  type WeightedHit,
 } from '../../../../search'
 import {type SearchFieldDefinition} from './definitions/fields'
 import {type SearchFilterDefinition} from './definitions/filters'
@@ -83,7 +83,7 @@ export interface SearchOrdering {
  * @internal
  */
 export interface SearchState {
-  hits: WeightedHit[]
+  hits: SearchHit[]
   loading: boolean
   error: Error | null
   options?: SearchOptions

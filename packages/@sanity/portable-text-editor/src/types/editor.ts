@@ -19,12 +19,14 @@ import {
   type ClipboardEvent,
   type FocusEvent,
   type KeyboardEvent,
+  type PropsWithChildren,
   type ReactElement,
   type RefObject,
 } from 'react'
 import {type Observable, type Subject} from 'rxjs'
 import {type Descendant, type Node as SlateNode, type Operation as SlateOperation} from 'slate'
 import {type ReactEditor} from 'slate-react'
+import {type DOMNode} from 'slate-react/dist/utils/dom'
 
 import {type PortableTextEditor} from '../editor/PortableTextEditor'
 import {type Patch} from '../types/patch'
@@ -44,7 +46,7 @@ export interface EditableAPI {
   blur: () => void
   delete: (selection: EditorSelection, options?: EditableAPIDeleteOptions) => void
   findByPath: (path: Path) => [PortableTextBlock | PortableTextChild | undefined, Path | undefined]
-  findDOMNode: (element: PortableTextBlock | PortableTextChild) => Node | undefined
+  findDOMNode: (element: PortableTextBlock | PortableTextChild) => DOMNode | undefined
   focus: () => void
   focusBlock: () => PortableTextBlock | undefined
   focusChild: () => PortableTextChild | undefined
@@ -59,6 +61,7 @@ export interface EditableAPI {
   isCollapsedSelection: () => boolean
   isExpandedSelection: () => boolean
   isMarkActive: (mark: string) => boolean
+  isSelectionsOverlapping: (selectionA: EditorSelection, selectionB: EditorSelection) => boolean
   isVoid: (element: PortableTextBlock | PortableTextChild) => boolean
   marks: () => string[]
   redo: () => void
@@ -505,6 +508,48 @@ export type ScrollSelectionIntoViewFunction = (
   editor: PortableTextEditor,
   domRange: globalThis.Range,
 ) => void
+
+/**
+ * Parameters for the callback that will be called for a RangeDecoration's onMoved.
+ * @alpha */
+export interface RangeDecorationOnMovedDetails {
+  rangeDecoration: RangeDecoration
+  newSelection: EditorSelection
+  origin: 'remote' | 'local'
+}
+/**
+ * A range decoration is a UI affordance that wraps a given selection range in the editor
+ * with a custom component. This can be used to highlight search results,
+ * mark validation errors on specific words, draw user presence and similar.
+ * @alpha */
+export interface RangeDecoration {
+  /**
+   * A component for rendering the range decoration.
+   * The component will receive the children (text) of the range decoration as its children.
+   *
+   * @example
+   * ```ts
+   * (rangeComponentProps: PropsWithChildren) => (
+   *    <SearchResultHighlight>
+   *      {rangeComponentProps.children}
+   *    </SearchResultHighlight>
+   *  )
+   * ```
+   */
+  component: (props: PropsWithChildren) => ReactElement
+  /**
+   * The editor content selection range
+   */
+  selection: EditorSelection
+  /**
+   * A optional callback that will be called when the range decoration potentially moves according to user edits.
+   */
+  onMoved?: (details: RangeDecorationOnMovedDetails) => void
+  /**
+   * A custom payload that can be set on the range decoration
+   */
+  payload?: Record<string, unknown>
+}
 
 /** @internal */
 export type PortableTextMemberSchemaTypes = {

@@ -1,9 +1,9 @@
 import {type SchemaType, type SortOrderingItem} from '@sanity/types'
 
-const IMPLICIT_FIELDS = ['_id', '_type', '_createdAt', '_updatedAt', '_rev']
+const IMPLICIT_SCHEMA_TYPE_FIELDS = ['_id', '_type', '_createdAt', '_updatedAt', '_rev']
 
 // Takes a path array and a schema type and builds a GROQ join every time it enters a reference field
-function joinReferences(schemaType: SchemaType, path: string[]): string {
+function joinReferences(schemaType: SchemaType, path: string[], strict: boolean = false): string {
   const [head, ...tail] = path
 
   if (!('fields' in schemaType)) {
@@ -12,14 +12,14 @@ function joinReferences(schemaType: SchemaType, path: string[]): string {
 
   const schemaField = schemaType.fields.find((field) => field.name === head)
   if (!schemaField) {
-    if (!IMPLICIT_FIELDS.includes(head)) {
-      // eslint-disable-next-line no-console
-      console.warn(
-        'The current ordering config targeted the nonexistent field "%s" on schema type "%s". It should be one of %o',
-        head,
-        schemaType.name,
-        schemaType.fields.map((field) => field.name),
-      )
+    if (!IMPLICIT_SCHEMA_TYPE_FIELDS.includes(head)) {
+      const errorMessage = `The current ordering config targeted the nonexistent field "${head}" on schema type "${schemaType.name}". It should be one of ${schemaType.fields.map((field) => field.name).join(', ')}`
+      if (strict) {
+        throw new Error(errorMessage)
+      } else {
+        // eslint-disable-next-line no-console
+        console.warn(errorMessage)
+      }
     }
     return ''
   }
@@ -34,6 +34,12 @@ function joinReferences(schemaType: SchemaType, path: string[]): string {
   return tail.length > 0 ? `${head}${tailWrapper}` : head
 }
 
-export function getExtendedProjection(schemaType: SchemaType, orderBy: SortOrderingItem[]): string {
-  return orderBy.map((ordering) => joinReferences(schemaType, ordering.field.split('.'))).join(', ')
+export function getExtendedProjection(
+  schemaType: SchemaType,
+  orderBy: SortOrderingItem[],
+  strict: boolean = false,
+): string {
+  return orderBy
+    .map((ordering) => joinReferences(schemaType, ordering.field.split('.'), strict))
+    .join(', ')
 }

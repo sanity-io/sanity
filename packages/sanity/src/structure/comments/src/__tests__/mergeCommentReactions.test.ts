@@ -1,4 +1,4 @@
-import {describe, expect, it} from '@jest/globals'
+import {describe, expect, test} from '@jest/globals'
 
 import {type CommentReactionItem} from '../types'
 import {mergeCommentReactions} from '../utils/mergeCommentReactions'
@@ -54,7 +54,7 @@ const REACTIONS_B: CommentReactionItem[] = [
 ]
 
 describe('comments: mergeCommentReactions', () => {
-  it('merges reactions correctly', () => {
+  test('merges reactions correctly', () => {
     const merged = mergeCommentReactions(REACTIONS_A, REACTIONS_B)
 
     expect(merged).toEqual([

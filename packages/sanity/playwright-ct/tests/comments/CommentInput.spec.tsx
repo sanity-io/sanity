@@ -40,7 +40,7 @@ test.describe('Comments', () => {
       await mount(<CommentsInputStory />)
       const $editable = page.getByTestId('comment-input-editable')
       await $editable.waitFor({state: 'visible'})
-      const $mentionButton = page.getByTestId('comment-mention-button')
+      const $mentionButton = page.getByTestId('comment-input-mention-button')
       await $mentionButton.click()
       await expect(page.getByTestId('comments-mentions-menu')).toBeVisible()
       await expect($editable).toBeFocused()

@@ -2,6 +2,9 @@ import {useContext} from 'react'
 
 import {SearchContext, type SearchContextValue} from './SearchContext'
 
+/**
+ * @internal
+ */
 export function useSearchState(): SearchContextValue {
   const context = useContext(SearchContext)
 

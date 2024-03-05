@@ -1,6 +1,7 @@
+import {type SanityDocumentLike} from '@sanity/types'
 import {compact, intersection, keyBy, partition, toLower, union, uniq, words} from 'lodash'
 
-import {type SearchHit, type SearchSpec, type WeightedHit} from './types'
+import {type SearchSpec, type WeightedHit} from '../common'
 
 type SearchScore = [number, string]
 
@@ -28,7 +29,7 @@ const stringify = (value: unknown): string =>
  */
 export function applyWeights(
   searchSpec: SearchSpec[],
-  hits: SearchHit[],
+  hits: SanityDocumentLike[],
   terms: string[] = [],
 ): WeightedHit[] {
   const specByType = keyBy(searchSpec, (spec) => spec.typeName)

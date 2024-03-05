@@ -1,4 +1,5 @@
-import {type BaseRange, type Editor, Range} from 'slate'
+/* eslint-disable complexity */
+import {type BaseRange, type Editor, type Operation, Point, Range} from 'slate'
 
 import {
   type EditorSelection,
@@ -53,6 +54,24 @@ export function toSlateRange(selection: EditorSelection, editor: Editor): Range 
     path: createArrayedPath(selection.focus, editor),
     offset: selection.focus.offset,
   }
+  if (focus.path.length === 0 || anchor.path.length === 0) {
+    return null
+  }
   const range = anchor && focus ? {anchor, focus} : null
   return range
+}
+
+export function moveRangeByOperation(range: Range, operation: Operation): Range | null {
+  const anchor = Point.transform(range.anchor, operation)
+  const focus = Point.transform(range.focus, operation)
+
+  if (anchor === null || focus === null) {
+    return null
+  }
+
+  if (Point.equals(anchor, range.anchor) && Point.equals(focus, range.focus)) {
+    return range
+  }
+
+  return {anchor, focus}
 }

@@ -4,19 +4,22 @@ import {Stack, useBoundaryElement} from '@sanity/ui'
 import * as PathUtils from '@sanity/util/paths'
 import {uuid} from '@sanity/uuid'
 import {AnimatePresence, motion, type Variants} from 'framer-motion'
-import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {useCallback, useMemo, useRef, useState} from 'react'
 import {type FieldProps, getSchemaTypeTitle, useCurrentUser} from 'sanity'
-import scrollIntoViewIfNeeded, {type Options} from 'scroll-into-view-if-needed'
 import styled, {css} from 'styled-components'
 
 import {
+  applyCommentsFieldAttr,
   type CommentCreatePayload,
   type CommentsUIMode,
+  isTextSelectionComment,
   useComments,
   useCommentsEnabled,
+  useCommentsScroll,
   useCommentsSelectedPath,
   useCommentsUpsell,
 } from '../../src'
+import {COMMENTS_HIGHLIGHT_HUE_KEY} from '../../src/constants'
 import {CommentsFieldButton} from './CommentsFieldButton'
 
 const HIGHLIGHT_BLOCK_VARIANTS: Variants = {
@@ -41,14 +44,9 @@ export function CommentsField(props: FieldProps) {
   return <CommentFieldInner {...props} mode={mode} />
 }
 
-const SCROLL_INTO_VIEW_OPTIONS: ScrollIntoViewOptions = {
-  behavior: 'smooth',
-  block: 'start',
-}
-
 const HighlightDiv = styled(motion.div)(({theme}) => {
   const {radius, space, color} = theme.sanity
-  const bg = hues.yellow[color.dark ? 900 : 50].hex
+  const bg = hues[COMMENTS_HIGHLIGHT_HUE_KEY][color.dark ? 900 : 50].hex
 
   return css`
     mix-blend-mode: ${color.dark ? 'screen' : 'multiply'};
@@ -78,12 +76,11 @@ function CommentFieldInner(
   const {mode} = props
   const [open, setOpen] = useState<boolean>(false)
   const [value, setValue] = useState<PortableTextBlock[] | null>(null)
-  const rootElementRef = useRef<HTMLDivElement | null>(null)
-  const [threadIdToScrollTo, setThreadIdToScrollTo] = useState<string | null>(null)
-
-  const {element: boundaryElement} = useBoundaryElement()
 
   const currentUser = useCurrentUser()
+  const {element: boundaryElement} = useBoundaryElement()
+
+  const rootRef = useRef<HTMLDivElement | null>(null)
 
   const {
     comments,
@@ -97,6 +94,9 @@ function CommentFieldInner(
   } = useComments()
   const {upsellData, handleOpenDialog} = useCommentsUpsell()
   const {selectedPath, setSelectedPath} = useCommentsSelectedPath()
+  const {scrollToGroup} = useCommentsScroll({
+    boundaryElement,
+  })
 
   const fieldTitle = useMemo(() => getSchemaTypeTitle(props.schemaType), [props.schemaType])
 
@@ -106,6 +106,12 @@ function CommentFieldInner(
     if (selectedPath?.origin === 'form' || selectedPath?.origin === 'url') return false
     return selectedPath?.fieldPath === PathUtils.toString(props.path)
   }, [isCommentsOpen, props.path, selectedPath?.fieldPath, selectedPath?.origin])
+
+  const isInlineCommentThread = useMemo(() => {
+    return comments.data.open
+      .filter((c) => c.threadId === selectedPath?.threadId)
+      .some((x) => isTextSelectionComment(x.parentComment))
+  }, [comments.data.open, selectedPath?.threadId])
 
   // Total number of comments for the current field
   const count = useMemo(() => {
@@ -119,19 +125,6 @@ function CommentFieldInner(
   }, [comments.data.open, props.path])
 
   const hasComments = Boolean(count > 0)
-
-  const handleSetThreadToScrollTo = useCallback(
-    (threadId: string | null) => {
-      setSelectedPath({
-        threadId,
-        origin: 'form',
-        fieldPath: PathUtils.toString(props.path),
-      })
-
-      setThreadIdToScrollTo(threadId)
-    },
-    [props.path, setSelectedPath],
-  )
 
   const handleClick = useCallback(() => {
     // When clicking a comment button when the field has comments, we want to:
@@ -152,10 +145,17 @@ function CommentFieldInner(
         (c) => c.fieldPath === PathUtils.toString(props.path),
       )?.threadId
 
-      // 5. Set the thread ID to scroll to in a state and then scroll to it
-      // in the `useEffect` below.
+      // 5. Set the latest thread ID as the selected thread ID
+      //    and scroll to the it.
       if (scrollToThreadId) {
-        handleSetThreadToScrollTo(scrollToThreadId)
+        // handleSetThreadToScrollTo(scrollToThreadId)
+        setSelectedPath({
+          threadId: scrollToThreadId,
+          origin: 'form',
+          fieldPath: PathUtils.toString(props.path),
+        })
+
+        scrollToGroup(scrollToThreadId)
       }
 
       return
@@ -174,15 +174,16 @@ function CommentFieldInner(
     // Else, toggle the comment input open/closed
     setOpen((v) => !v)
   }, [
-    hasComments,
-    status,
-    onCommentsOpen,
     comments.data.open,
-    setStatus,
-    props.path,
-    handleSetThreadToScrollTo,
-    mode,
     handleOpenDialog,
+    hasComments,
+    mode,
+    onCommentsOpen,
+    props.path,
+    scrollToGroup,
+    setSelectedPath,
+    setStatus,
+    status,
     upsellData,
   ])
 
@@ -218,42 +219,27 @@ function CommentFieldInner(
       // Reset the value
       setValue(null)
 
-      // Set the thread ID to scroll to
-      handleSetThreadToScrollTo(newThreadId)
+      // Scroll to the thread
+      setSelectedPath({
+        threadId: newThreadId,
+        origin: 'form',
+        fieldPath: PathUtils.toString(props.path),
+      })
+
+      scrollToGroup(newThreadId)
     }
-  }, [handleSetThreadToScrollTo, onCommentsOpen, operation, props.path, setStatus, status, value])
+  }, [
+    onCommentsOpen,
+    operation,
+    props.path,
+    scrollToGroup,
+    setSelectedPath,
+    setStatus,
+    status,
+    value,
+  ])
 
   const handleDiscard = useCallback(() => setValue(null), [])
-
-  const scrollIntoViewIfNeededOpts = useMemo(
-    () =>
-      ({
-        ...SCROLL_INTO_VIEW_OPTIONS,
-        boundary: boundaryElement,
-        scrollMode: 'if-needed',
-        block: 'start',
-      }) satisfies Options,
-    [boundaryElement],
-  )
-
-  // Effect that handles scroll the field into view when it's selected
-  useEffect(() => {
-    if (isSelected && rootElementRef.current && isCommentsOpen) {
-      scrollIntoViewIfNeeded(rootElementRef.current, scrollIntoViewIfNeededOpts)
-    }
-  }, [boundaryElement, isCommentsOpen, isSelected, props.path, scrollIntoViewIfNeededOpts])
-
-  // // Effect that handles scroll the comment thread into view when it's selected
-  useEffect(() => {
-    if (isCommentsOpen && threadIdToScrollTo) {
-      const node = document.querySelector(`[data-group-id="${threadIdToScrollTo}"]`)
-
-      if (node) {
-        node.scrollIntoView(SCROLL_INTO_VIEW_OPTIONS)
-        setThreadIdToScrollTo(null)
-      }
-    }
-  }, [isCommentsOpen, threadIdToScrollTo])
 
   const internalComments: FieldProps['__internal_comments'] = useMemo(
     () => ({
@@ -292,7 +278,7 @@ function CommentFieldInner(
   )
 
   return (
-    <FieldStack ref={rootElementRef}>
+    <FieldStack {...applyCommentsFieldAttr(PathUtils.toString(props.path))} ref={rootRef}>
       {props.renderDefault({
         ...props,
         // eslint-disable-next-line camelcase
@@ -300,7 +286,7 @@ function CommentFieldInner(
       })}
 
       <AnimatePresence>
-        {isSelected && (
+        {isSelected && !isInlineCommentThread && (
           <HighlightDiv
             animate="animate"
             exit="exit"

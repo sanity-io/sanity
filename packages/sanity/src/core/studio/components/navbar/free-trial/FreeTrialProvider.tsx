@@ -42,10 +42,13 @@ export const FreeTrialProvider = ({children}: FreeTrialProviderProps) => {
     }
   }, [showDialog, data, showOnLoad, telemetry])
 
+  // This is casted to a string to make it stable across renders so it doesn't trigger multiple times the effect.
+  const searchParamsAsString = new URLSearchParams(router.state._searchParams).toString()
+
   useEffect(() => {
     // See if we have any parameters from the current route
     // to pass onto our query
-    const searchParams = new URLSearchParams(router.state._searchParams)
+    const searchParams = new URLSearchParams(searchParamsAsString)
 
     const queryParams = new URLSearchParams()
     queryParams.append('studioVersion', SANITY_VERSION)
@@ -81,7 +84,7 @@ export const FreeTrialProvider = ({children}: FreeTrialProviderProps) => {
     return () => {
       request.unsubscribe()
     }
-  }, [client, router])
+  }, [client, searchParamsAsString])
 
   const toggleShowContent = useCallback(
     (closeAndReOpen = false) => {

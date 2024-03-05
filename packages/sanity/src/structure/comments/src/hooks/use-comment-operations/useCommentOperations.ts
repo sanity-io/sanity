@@ -1,21 +1,22 @@
 import {type SanityClient} from '@sanity/client'
 import {type CurrentUser, type SchemaType} from '@sanity/types'
+import {uuid} from '@sanity/uuid'
 import {useCallback, useMemo} from 'react'
-import {useWorkspace} from 'sanity'
+import {useTools} from 'sanity'
 import {useRouterState} from 'sanity/router'
 
 import {
   type CommentCreatePayload,
   type CommentDocument,
-  type CommentEditPayload,
   type CommentOperations,
   type CommentPostPayload,
   type CommentReactionOption,
+  type CommentUpdateOperationOptions,
+  type CommentUpdatePayload,
 } from '../../types'
 import {useCommentsIntent} from '../useCommentsIntent'
 import {useNotificationTarget} from '../useNotificationTarget'
 import {createOperation} from './createOperation'
-import {editOperation} from './editOperation'
 import {reactOperation} from './reactOperation'
 import {removeOperation} from './removeOperation'
 import {updateOperation} from './updateOperation'
@@ -29,14 +30,15 @@ export interface CommentOperationsHookOptions {
   currentUser: CurrentUser | null
   dataset: string
   documentId: string
+  documentRevisionId?: string
   documentType: string
   getComment?: (id: string) => CommentDocument | undefined
   getThreadLength?: (threadId: string) => number
   onCreate?: (comment: CommentPostPayload) => void
   onCreateError: (id: string, error: Error) => void
-  onEdit?: (id: string, comment: CommentEditPayload) => void
   onRemove?: (id: string) => void
-  onUpdate?: (id: string, comment: Partial<CommentCreatePayload>) => void
+  onTransactionStart: (commentDocumentId: string, transactionId: string) => void
+  onUpdate?: (id: string, comment: CommentUpdatePayload) => void
   projectId: string
   createAddonDataset: () => Promise<SanityClient | null>
   schemaType: SchemaType | undefined
@@ -51,13 +53,14 @@ export function useCommentOperations(
     currentUser,
     dataset,
     documentId,
+    documentRevisionId,
     documentType,
     getComment,
     getThreadLength,
     onCreate,
     onCreateError,
-    onEdit,
     onRemove,
+    onTransactionStart,
     onUpdate,
     projectId,
     createAddonDataset,
@@ -72,7 +75,7 @@ export function useCommentOperations(
       [],
     ),
   )
-  const {tools} = useWorkspace()
+  const tools = useTools()
 
   const activeTool = useMemo(
     () => tools.find((tool) => tool.name === activeToolName),
@@ -95,6 +98,7 @@ export function useCommentOperations(
         currentUser,
         dataset,
         documentId,
+        documentRevisionId,
         documentType,
         getIntent,
         getNotificationValue,
@@ -112,6 +116,7 @@ export function useCommentOperations(
       currentUser,
       dataset,
       documentId,
+      documentRevisionId,
       documentType,
       getIntent,
       getNotificationValue,
@@ -137,32 +142,37 @@ export function useCommentOperations(
     [client, onRemove],
   )
 
-  const handleEdit = useCallback(
-    async (id: string, comment: CommentEditPayload) => {
-      if (!client) return
-
-      await editOperation({
-        client,
-        comment,
-        id,
-        onEdit,
-      })
-    },
-    [client, onEdit],
-  )
-
   const handleUpdate = useCallback(
-    async (id: string, comment: Partial<CommentCreatePayload>) => {
+    async (
+      id: string,
+      comment: CommentUpdatePayload,
+      updateOpts?: CommentUpdateOperationOptions,
+    ) => {
       if (!client) return
+      const {throttled} = updateOpts || {}
+
+      // Generate a new transaction ID to use for the update operation transaction
+      const nextTransactionId = uuid()
+
+      // Pass the ID of the comment document and the new transaction ID to the
+      // onTransactionStart callback. This is used by consumers to track the
+      // transaction state of the comment document. That is, when a real time
+      // listener event is received, the consumer can check if the received
+      // transaction ID is the latest for the received comment ID and determine
+      // whether the result in the real time event should be used to update the
+      // comment state or not.
+      onTransactionStart(id, nextTransactionId)
 
       await updateOperation({
         client,
-        id,
         comment,
+        throttled,
+        id,
         onUpdate,
+        transactionId: nextTransactionId,
       })
     },
-    [client, onUpdate],
+    [client, onTransactionStart, onUpdate],
   )
 
   const handleReact = useCallback(
@@ -185,12 +195,11 @@ export function useCommentOperations(
     () => ({
       operation: {
         create: handleCreate,
-        edit: handleEdit,
         react: handleReact,
         remove: handleRemove,
         update: handleUpdate,
       } satisfies CommentOperations,
     }),
-    [handleCreate, handleEdit, handleRemove, handleUpdate, handleReact],
+    [handleCreate, handleRemove, handleUpdate, handleReact],
   )
 }

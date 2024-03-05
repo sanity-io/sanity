@@ -4,6 +4,7 @@ import {
   type OnCopyFn,
   type OnPasteFn,
   type PortableTextEditor,
+  type RangeDecoration,
 } from '@sanity/portable-text-editor'
 import {
   type ArraySchemaType,
@@ -513,6 +514,12 @@ export interface PortableTextInputProps
    */
   onEditorChange?: (change: EditorChange, editor: PortableTextEditor) => void
   /**
+   * Optional callback for when the editor goes into or out of full screen mode
+   * @hidden
+   * @beta
+   */
+  onFullScreenChange?: (isFullScreen: boolean) => void
+  /**
    * Custom copy function
    */
   onCopy?: OnCopyFn
@@ -532,6 +539,10 @@ export interface PortableTextInputProps
    * Use the `renderBlock` interface instead.
    */
   renderCustomMarkers?: RenderCustomMarkers
+  /**
+   * Array of {@link RangeDecoration} that can be used to decorate the content.
+   */
+  rangeDecorations?: RangeDecoration[]
 }
 
 /**

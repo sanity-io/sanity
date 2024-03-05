@@ -1,7 +1,7 @@
 import {describe, expect, it} from '@jest/globals'
 import {Schema} from '@sanity/schema'
 
-import {getSearchableTypes} from '../common/utils'
+import {getSearchableTypes} from '../common'
 import {getSearchTypesWithMaxDepth} from './getSearchTypesWithMaxDepth'
 
 const mockSchema = Schema.compile({

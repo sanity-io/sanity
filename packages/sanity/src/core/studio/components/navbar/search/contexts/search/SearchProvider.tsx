@@ -94,6 +94,10 @@ export function SearchProvider({children, fullscreen}: SearchProviderProps) {
           operators: operatorDefinitions,
           filters: filterDefinitions,
         },
+        pagination: {
+          cursor: null,
+          nextCursor: null,
+        },
       }),
     [
       currentUser,
@@ -106,16 +110,16 @@ export function SearchProvider({children, fullscreen}: SearchProviderProps) {
   )
   const [state, dispatch] = useReducer(searchReducer, initialState)
 
-  const {documentTypesNarrowed, filters: currentFilters, ordering, pageIndex, result, terms} = state
+  const {documentTypesNarrowed, filters: currentFilters, ordering, cursor, result, terms} = state
 
   const isMountedRef = useRef(false)
   const previousOrderingRef = useRef<SearchOrdering>(initialState.ordering)
-  const previousPageIndexRef = useRef<number>(initialState.pageIndex)
+  const previousCursorRef = useRef<string | null>(initialState.cursor)
   const previousTermsRef = useRef<SearchTerms | RecentSearch>(initialState.terms)
 
   const {handleSearch, searchState} = useSearch({
     initialState: {...result, terms},
-    onComplete: (hits) => dispatch({hits, type: 'SEARCH_REQUEST_COMPLETE'}),
+    onComplete: (searchResult) => dispatch({...searchResult, type: 'SEARCH_REQUEST_COMPLETE'}),
     onError: (error) => dispatch({error, type: 'SEARCH_REQUEST_ERROR'}),
     onStart: () => dispatch({type: 'SEARCH_REQUEST_START'}),
     schema,
@@ -151,10 +155,10 @@ export function SearchProvider({children, fullscreen}: SearchProviderProps) {
    */
   useEffect(() => {
     const orderingChanged = !isEqual(ordering, previousOrderingRef.current)
-    const pageIndexChanged = pageIndex !== previousPageIndexRef.current
+    const cursorChanged = cursor !== previousCursorRef.current
     const termsChanged = !isEqual(terms, previousTermsRef.current)
 
-    if (orderingChanged || pageIndexChanged || termsChanged) {
+    if (orderingChanged || cursorChanged || termsChanged) {
       // Use a custom label if provided, otherwise return field and direction, e.g. `_updatedAt desc`
       const sortLabel =
         ordering?.customMeasurementLabel || `${ordering.sort.field} ${ordering.sort.direction}`
@@ -172,9 +176,9 @@ export function SearchProvider({children, fullscreen}: SearchProviderProps) {
             `findability-filter-count:${completeFilters.length}`,
           ],
           limit: SEARCH_LIMIT,
-          offset: pageIndex * SEARCH_LIMIT,
           skipSortByScore: ordering.ignoreScore,
           sort: [ordering.sort],
+          cursor: cursor || undefined,
         },
         terms: {
           ...terms,
@@ -183,8 +187,8 @@ export function SearchProvider({children, fullscreen}: SearchProviderProps) {
         },
       })
 
-      // Update pageIndex snapshot only on a valid search request
-      previousPageIndexRef.current = pageIndex
+      // Update previousCursorRef snapshot only on a valid search request
+      previousCursorRef.current = cursor
     }
 
     // Update snapshots, even if no search request was executed
@@ -197,9 +201,9 @@ export function SearchProvider({children, fullscreen}: SearchProviderProps) {
     handleSearch,
     hasValidTerms,
     ordering,
-    pageIndex,
     searchState.terms,
     terms,
+    cursor,
   ])
 
   /**

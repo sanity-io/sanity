@@ -10,6 +10,14 @@ interface LoginStep {
   alreadyLoggedIn?: boolean
 }
 
+interface FetchJourneyConfigStep {
+  step: 'fetchJourneyConfig'
+  projectId: string
+  datasetName: string
+  displayName: string
+  isFirstProject: boolean
+}
+
 interface CreateOrSelectProjectStep {
   step: 'createOrSelectProject'
   projectId: string
@@ -68,6 +76,7 @@ interface SelectPackageManagerStep {
 type InitStepResult =
   | StartStep
   | LoginStep
+  | FetchJourneyConfigStep
   | CreateOrSelectProjectStep
   | CreateOrSelectDatasetStep
   | UseDetectedFrameworkStep

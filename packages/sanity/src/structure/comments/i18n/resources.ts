@@ -78,6 +78,11 @@ const commentsLocaleStrings = defineLocalesResources('comments', {
   /** Text shown in popover when hovering the button above fields to add a comment, when the field currently do not have any comments */
   'field-button.title': 'Add comment',
 
+  /* The text shown in the inline comment button when the button is disabled due to overlap */
+  'inline-add-comment-button.disabled-overlap-title': 'Comments cannot overlap',
+  /** The text shown in the inline comment button */
+  'inline-add-comment-button.title': 'Add comment',
+
   /** Aria label for the breadcrumb button showing the field path. `{{field}}` is the last (most specific) field. */
   'list-item.breadcrumb-button-go-to-field-aria-label': 'Go to {{field}} field',
   /** The button tooltip content for the add reaction button */
@@ -110,9 +115,10 @@ const commentsLocaleStrings = defineLocalesResources('comments', {
   'list-item.layout-posting': 'Posting...',
   /** The text for retrying posting a comment */
   'list-item.layout-retry': 'Retry',
+  /** The text shown when the value a comment references has been deleted */
+  'list-item.missing-referenced-value-tooltip-content': 'The commented text has been deleted',
   /** The aria label for the comments menu button to open the actions menu */
   'list-item.open-menu-aria-label': 'Open comment actions menu',
-
   /** The button text to re-open a resolved comment  */
   'list-item.re-open-resolved': 'Re-open',
   /** The button aria label to re-open a comment that is resolved */

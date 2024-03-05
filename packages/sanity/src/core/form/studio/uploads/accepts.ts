@@ -28,7 +28,14 @@ export function accepts(file: FileLike, acceptedFiles: string | string[]): boole
     const validType = type.trim().toLowerCase()
 
     if (validType.charAt(0) === '.') {
-      return fileName.toLowerCase().endsWith(validType)
+      if (fileName) {
+        return fileName.toLowerCase().endsWith(validType)
+      }
+      // If we do not have a valid fileName and validType is an extension, we
+      // should fail open. This happens because when hovering a file, the browser
+      // does not pass the name of the file but it will pass the file name when the
+      // file is dropped on the file upload input
+      return true
     }
 
     if (validType.endsWith('/*')) {

@@ -1,6 +1,6 @@
 {
   "name": "@sanity/cli",
-  "version": "3.30.0",
+  "version": "3.31.0",
   "description": "Sanity CLI tool for managing Sanity installations, managing plugins, schemas and datasets",
   "keywords": [
     "sanity",
@@ -64,7 +64,7 @@
   "dependencies": {
     "@babel/traverse": "^7.23.5",
     "@sanity/telemetry": "^0.7.6",
-    "@sanity/util": "3.30.0",
+    "@sanity/util": "3.31.0",
     "chalk": "^4.1.2",
     "decompress": "^4.2.0",
     "esbuild": "^0.19.8",
@@ -80,7 +80,7 @@
     "@jest/globals": "^29.7.0",
     "@rexxars/gitconfiglocal": "^3.0.1",
     "@rollup/plugin-node-resolve": "^15.2.3",
-    "@sanity/client": "^6.14.4",
+    "@sanity/client": "^6.15.0",
     "@sanity/eslint-config-studio": "^3.0.1",
     "@sanity/generate-help-url": "^3.0.0",
     "@types/babel__traverse": "^7.18.1",
@@ -122,6 +122,7 @@
     "p-filter": "^2.1.0",
     "p-timeout": "^4.0.0",
     "preferred-pm": "^3.0.3",
+    "prettier": "^3.1.0",
     "promise-props-recursive": "^2.0.2",
     "recast": "^0.22.0",
     "resolve-from": "^5.0.0",

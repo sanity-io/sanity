@@ -9,14 +9,15 @@ import {Button} from '../../../../../ui-components'
 import {commentsLocaleNamespace} from '../../../i18n'
 import {type CommentsSelectedPath} from '../../context'
 import {commentIntentIfDiffers, hasCommentMessageValue} from '../../helpers'
+import {applyCommentIdAttr} from '../../hooks'
 import {
   type CommentCreatePayload,
   type CommentDocument,
-  type CommentEditPayload,
   type CommentMessage,
   type CommentReactionOption,
   type CommentStatus,
   type CommentsUIMode,
+  type CommentUpdatePayload,
 } from '../../types'
 import {SpacerAvatar} from '../avatars'
 import {CommentInput, type CommentInputHandle} from '../pte'
@@ -29,9 +30,7 @@ const MAX_COLLAPSED_REPLIES = 5
 
 // data-active = when the comment is selected
 // data-hovered = when the mouse is over the comment
-const StyledThreadCard = styled(ThreadCard)(({theme}) => {
-  const {hovered} = theme.sanity.color.button.bleed.default
-
+const StyledThreadCard = styled(ThreadCard)(() => {
   return css`
     position: relative;
 
@@ -42,7 +41,6 @@ const StyledThreadCard = styled(ThreadCard)(({theme}) => {
         0 0 0 2px var(--card-focus-ring-color);
     }
 
-    // When the comment is not selected, we want to apply hover styles.
     // The hover styles is managed with the [data-hovered] attribute instead of the :hover pseudo class
     // since we want to show the hover styles when hovering over the menu items in the context menu as well.
     // The context menu is rendered using a portal, so the :hover pseudo class won't work when hovering over
@@ -50,8 +48,6 @@ const StyledThreadCard = styled(ThreadCard)(({theme}) => {
     &:not([data-active='true']) {
       @media (hover: hover) {
         &[data-hovered='true'] {
-          --card-bg-color: ${hovered.bg2};
-
           [data-root-menu='true'] {
             opacity: 1;
           }
@@ -81,13 +77,14 @@ const GhostButton = styled.button`
 interface CommentsListItemProps {
   canReply?: boolean
   currentUser: CurrentUser
+  hasReferencedValue?: boolean
   isSelected: boolean
   mentionOptions: UserListWithPermissionsHookValue
   mode: CommentsUIMode
   onCopyLink?: (id: string) => void
   onCreateRetry: (id: string) => void
   onDelete: (id: string) => void
-  onEdit: (id: string, payload: CommentEditPayload) => void
+  onEdit: (id: string, payload: CommentUpdatePayload) => void
   onKeyDown?: (event: React.KeyboardEvent<Element>) => void
   onPathSelect?: (nextPath: CommentsSelectedPath) => void
   onReactionSelect?: (id: string, reaction: CommentReactionOption) => void
@@ -102,8 +99,10 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
   const {
     canReply,
     currentUser,
+    hasReferencedValue,
     isSelected,
     mentionOptions,
+    mode,
     onCopyLink,
     onCreateRetry,
     onDelete,
@@ -116,7 +115,6 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
     parentComment,
     readOnly,
     replies = EMPTY_ARRAY,
-    mode,
   } = props
   const {t} = useTranslation(commentsLocaleNamespace)
   const [value, setValue] = useState<CommentMessage>(EMPTY_ARRAY)
@@ -239,7 +237,7 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
   const renderedReplies = useMemo(
     () =>
       splicedReplies.map((reply) => (
-        <Stack as="li" key={reply._id} data-comment-id={reply._id}>
+        <Stack as="li" key={reply._id} {...applyCommentIdAttr(reply._id)}>
           <CommentsListItemLayout
             canDelete={reply.authorId === currentUser.id}
             canEdit={reply.authorId === currentUser.id}
@@ -277,87 +275,86 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
   )
 
   return (
-    <Stack space={2}>
-      <StyledThreadCard
-        data-active={isSelected ? 'true' : 'false'}
-        data-hovered={mouseOver ? 'true' : 'false'}
-        onClick={handleThreadRootClick}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
-        tone={isSelected ? 'caution' : undefined}
+    <StyledThreadCard
+      data-active={isSelected ? 'true' : 'false'}
+      data-hovered={mouseOver ? 'true' : 'false'}
+      data-testid="comments-list-item"
+      onClick={handleThreadRootClick}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
+      <GhostButton
+        data-ui="GhostButton"
+        aria-label={t('list-item.go-to-field-button.aria-label')}
+      />
+
+      <Stack
+        as="ul"
+        // Add some extra padding to the bottom if there is no reply input.
+        // This is to make the UI look more balanced.
+        paddingBottom={canReply ? undefined : 1}
+        space={4}
       >
-        <GhostButton
-          data-ui="GhostButton"
-          aria-label={t('list-item.go-to-field-button.aria-label')}
-        />
-
-        <Stack
-          as="ul"
-          // Add some extra padding to the bottom if there is no reply input.
-          // This is to make the UI look more balanced.
-          paddingBottom={canReply ? undefined : 1}
-          space={4}
-        >
-          <Stack as="li" data-comment-id={parentComment._id}>
-            <CommentsListItemLayout
-              canDelete={parentComment.authorId === currentUser.id}
-              canEdit={parentComment.authorId === currentUser.id}
-              comment={parentComment}
-              currentUser={currentUser}
-              hasError={parentComment._state?.type === 'createError'}
-              isParent
-              isRetrying={parentComment._state?.type === 'createRetrying'}
-              mentionOptions={mentionOptions}
-              mode={mode}
-              onCopyLink={onCopyLink}
-              onCreateRetry={onCreateRetry}
-              onDelete={onDelete}
-              onEdit={onEdit}
-              onInputKeyDown={onKeyDown}
-              onReactionSelect={onReactionSelect}
-              onStatusChange={onStatusChange}
-              readOnly={readOnly}
-              intent={parentComment.context?.intent}
-            />
-          </Stack>
-
-          {showCollapseButton && !didExpand.current && (
-            <Flex gap={1} paddingY={1} sizing="border">
-              <SpacerAvatar />
-
-              <ExpandButton
-                iconRight={ChevronDownIcon}
-                mode="bleed"
-                onClick={handleExpand}
-                text={expandButtonText}
-              />
-            </Flex>
-          )}
-
-          {renderedReplies}
-
-          {canReply && (
-            <CommentInput
-              currentUser={currentUser}
-              expandOnFocus
-              mentionOptions={mentionOptions}
-              onChange={setValue}
-              onDiscardCancel={cancelDiscard}
-              onDiscardConfirm={confirmDiscard}
-              onKeyDown={handleInputKeyDown}
-              onSubmit={handleReplySubmit}
-              placeholder={
-                mode === 'upsell'
-                  ? t('compose.reply-placeholder-upsell')
-                  : t('compose.reply-placeholder')
-              }
-              readOnly={readOnly || mode === 'upsell'}
-              ref={replyInputRef}
-              value={value}
-            />
-          )}
+        <Stack as="li" {...applyCommentIdAttr(parentComment._id)}>
+          <CommentsListItemLayout
+            canDelete={parentComment.authorId === currentUser.id}
+            canEdit={parentComment.authorId === currentUser.id}
+            comment={parentComment}
+            currentUser={currentUser}
+            hasError={parentComment._state?.type === 'createError'}
+            hasReferencedValue={hasReferencedValue}
+            intent={parentComment.context?.intent}
+            isParent
+            isRetrying={parentComment._state?.type === 'createRetrying'}
+            mentionOptions={mentionOptions}
+            mode={mode}
+            onCopyLink={onCopyLink}
+            onCreateRetry={onCreateRetry}
+            onDelete={onDelete}
+            onEdit={onEdit}
+            onInputKeyDown={onKeyDown}
+            onReactionSelect={onReactionSelect}
+            onStatusChange={onStatusChange}
+            readOnly={readOnly}
+          />
         </Stack>
-      </StyledThreadCard>
-    </Stack>
+
+        {showCollapseButton && !didExpand.current && (
+          <Flex gap={1} paddingY={1} sizing="border">
+            <SpacerAvatar />
+
+            <ExpandButton
+              iconRight={ChevronDownIcon}
+              mode="bleed"
+              onClick={handleExpand}
+              text={expandButtonText}
+            />
+          </Flex>
+        )}
+
+        {renderedReplies}
+
+        {canReply && (
+          <CommentInput
+            currentUser={currentUser}
+            expandOnFocus
+            mentionOptions={mentionOptions}
+            onChange={setValue}
+            onDiscardCancel={cancelDiscard}
+            onDiscardConfirm={confirmDiscard}
+            onKeyDown={handleInputKeyDown}
+            onSubmit={handleReplySubmit}
+            placeholder={
+              mode === 'upsell'
+                ? t('compose.reply-placeholder-upsell')
+                : t('compose.reply-placeholder')
+            }
+            readOnly={readOnly || mode === 'upsell'}
+            ref={replyInputRef}
+            value={value}
+          />
+        )}
+      </Stack>
+    </StyledThreadCard>
   )
 })

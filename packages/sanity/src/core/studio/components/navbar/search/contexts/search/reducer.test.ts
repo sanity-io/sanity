@@ -41,6 +41,7 @@ const initialState: SearchReducerState = {
   ...initialSearchState({
     currentUser: mockUser,
     definitions: {fields: {}, filters: {}, operators: {}},
+    pagination: {cursor: null, nextCursor: null},
   }),
   terms: recentSearchTerms,
 }
@@ -115,4 +116,175 @@ describe('searchReducer', () => {
     const [state] = result.current
     expect((state.terms as RecentSearch).__recent).toBeUndefined()
   })
+
+  it('should merge results after fetching an additional page', () => {
+    const {result} = renderHook(() => useReducer(searchReducer, initialState))
+    const [, dispatch] = result.current
+
+    act(() =>
+      dispatch({
+        type: 'SEARCH_REQUEST_COMPLETE',
+        nextCursor: 'cursorA',
+        hits: [
+          {
+            hit: {
+              _type: 'person',
+              _id: 'personA',
+            },
+          },
+          {
+            hit: {
+              _type: 'person',
+              _id: 'personB',
+            },
+          },
+        ],
+      }),
+    )
+
+    act(() =>
+      dispatch({
+        type: 'SEARCH_REQUEST_COMPLETE',
+        nextCursor: undefined,
+        hits: [
+          {
+            hit: {
+              _type: 'person',
+              _id: 'personB',
+            },
+          },
+          {
+            hit: {
+              _type: 'person',
+              _id: 'personC',
+            },
+          },
+        ],
+      }),
+    )
+
+    const [state] = result.current
+
+    expect(state.result.hits).toMatchInlineSnapshot(`
+Array [
+  Object {
+    "hit": Object {
+      "_id": "personA",
+      "_type": "person",
+    },
+  },
+  Object {
+    "hit": Object {
+      "_id": "personB",
+      "_type": "person",
+    },
+  },
+  Object {
+    "hit": Object {
+      "_id": "personC",
+      "_type": "person",
+    },
+  },
+]
+`)
+  })
+})
+
+it('should reset results after search term changes', () => {
+  const {result} = renderHook(() => useReducer(searchReducer, initialState))
+  const [, dispatch] = result.current
+
+  act(() =>
+    dispatch({
+      type: 'TERMS_QUERY_SET',
+      query: 'test query a',
+    }),
+  )
+
+  act(() =>
+    dispatch({
+      type: 'SEARCH_REQUEST_COMPLETE',
+      nextCursor: 'cursorA',
+      hits: [
+        {
+          hit: {
+            _type: 'person',
+            _id: 'personA',
+          },
+        },
+        {
+          hit: {
+            _type: 'person',
+            _id: 'personB',
+          },
+        },
+      ],
+    }),
+  )
+
+  const [stateA] = result.current
+
+  expect(stateA.result.hits).toMatchInlineSnapshot(`
+Array [
+  Object {
+    "hit": Object {
+      "_id": "personA",
+      "_type": "person",
+    },
+  },
+  Object {
+    "hit": Object {
+      "_id": "personB",
+      "_type": "person",
+    },
+  },
+]
+`)
+
+  act(() =>
+    dispatch({
+      type: 'TERMS_QUERY_SET',
+      query: 'test query b',
+    }),
+  )
+
+  act(() =>
+    dispatch({
+      type: 'SEARCH_REQUEST_COMPLETE',
+      nextCursor: undefined,
+      hits: [
+        {
+          hit: {
+            _type: 'person',
+            _id: 'personB',
+          },
+        },
+        {
+          hit: {
+            _type: 'person',
+            _id: 'personC',
+          },
+        },
+      ],
+    }),
+  )
+
+  const [stateB] = result.current
+
+  expect(stateB.result.hits).toMatchInlineSnapshot(`
+Array [
+  Object {
+    "hit": Object {
+      "_id": "personB",
+      "_type": "person",
+    },
+  },
+  Object {
+    "hit": Object {
+      "_id": "personC",
+      "_type": "person",
+    },
+  },
+]
+`)
 })

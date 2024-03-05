@@ -11,7 +11,7 @@ import {NoResults} from '../NoResults'
 import {SearchError} from '../SearchError'
 import {SortMenu} from '../SortMenu'
 import {DebugOverlay} from './item/DebugOverlay'
-import {SearchResultItem} from './item/SearchResultItem'
+import {type ItemSelectHandler, SearchResultItem} from './item/SearchResultItem'
 
 const VIRTUAL_LIST_SEARCH_RESULT_ITEM_HEIGHT = 57 // px
 const VIRTUAL_LIST_OVERSCAN = 4
@@ -26,10 +26,12 @@ const SearchResultsInnerFlex = styled(Flex)<{$loading: boolean}>`
 `
 
 interface SearchResultsProps {
+  disableIntentLink?: boolean
   inputElement: HTMLInputElement | null
+  onItemSelect?: ItemSelectHandler
 }
 
-export function SearchResults({inputElement}: SearchResultsProps) {
+export function SearchResults({disableIntentLink, inputElement, onItemSelect}: SearchResultsProps) {
   const {
     dispatch,
     onClose,
@@ -54,21 +56,27 @@ export function SearchResults({inputElement}: SearchResultsProps) {
     onClose?.()
   }, [dispatch, filters, onClose, recentSearchesStore, terms])
 
+  const handleEndReached = useCallback(() => {
+    dispatch({type: 'PAGE_INCREMENT'})
+  }, [dispatch])
+
   const renderItem = useCallback<CommandListRenderItemCallback<WeightedHit>>(
     (item) => {
       return (
         <>
           <SearchResultItem
+            disableIntentLink={disableIntentLink}
             documentId={getPublishedId(item.hit._id) || ''}
             documentType={item.hit._type}
             onClick={handleSearchResultClick}
+            onItemSelect={onItemSelect}
             paddingY={1}
           />
           {debug && <DebugOverlay data={item} />}
         </>
       )
     },
-    [debug, handleSearchResultClick],
+    [debug, disableIntentLink, handleSearchResultClick, onItemSelect],
   )
 
   return (
@@ -98,6 +106,7 @@ export function SearchResults({inputElement}: SearchResultsProps) {
                     itemHeight={VIRTUAL_LIST_SEARCH_RESULT_ITEM_HEIGHT}
                     items={result.hits}
                     overscan={VIRTUAL_LIST_OVERSCAN}
+                    onEndReached={handleEndReached}
                     paddingX={2}
                     paddingY={1}
                     ref={setSearchCommandList}
