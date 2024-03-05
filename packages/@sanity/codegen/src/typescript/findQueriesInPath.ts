@@ -30,7 +30,7 @@ export function findQueriesInPath({
   babelOptions = defaultBabelOptions,
   resolver = require.resolve,
 }: {
-  path: string
+  path: string | string[]
   babelOptions?: TransformOptions
   resolver?: NodeJS.RequireResolve
 }): Observable<FindQueriesReturnValue> {
