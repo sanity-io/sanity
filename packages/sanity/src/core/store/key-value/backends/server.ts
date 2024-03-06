@@ -20,7 +20,7 @@ export function serverBackend({client: _client}: ServerBackendOptions): Backend 
   const client = _client.withConfig({...DEFAULT_STUDIO_CLIENT_OPTIONS, apiVersion: 'vX'})
 
   const keyValueLoader = new DataLoader<string, KeyValueStoreValue | null>(async (keys) => {
-    const keyValuePairs = await client
+    const value = await client
       .request<KeyValuePair[]>({
         uri: `/users/me/keyvalue/${keys.join(',')}`,
         withCredentials: true,
@@ -30,7 +30,18 @@ export function serverBackend({client: _client}: ServerBackendOptions): Backend 
         return Array(keys.length).fill(null)
       })
 
-    return keyValuePairs.map((pair) => pair.value)
+    const keyValuePairs = value.reduce(
+      (acc, next) => {
+        if (next?.key) {
+          acc[next.key] = next.value
+        }
+        return acc
+      },
+      {} as Record<string, KeyValueStoreValue | null>,
+    )
+
+    const result = keys.map((key) => keyValuePairs[key] || null)
+    return result
   })
 
   const getKeys = (keys: string[]) => {
@@ -60,15 +71,17 @@ export function serverBackend({client: _client}: ServerBackendOptions): Backend 
     )
   }
 
+  const getKey = (key: string) => {
+    return getKeys([key]).pipe(map((values) => values[0]))
+  }
+
+  const setKey = (key: string, nextValue: unknown) => {
+    return setKeys([{key, value: nextValue as KeyValueStoreValue}]).pipe(map((values) => values[0]))
+  }
+
   return {
-    getKey: (key: string) => {
-      return getKeys([key]).pipe(map((values) => values[0]))
-    },
-    setKey: (key: string, nextValue: unknown) => {
-      return setKeys([{key, value: nextValue as KeyValueStoreValue}]).pipe(
-        map((values) => values[0]),
-      )
-    },
+    getKey,
+    setKey,
     getKeys,
     setKeys,
   }

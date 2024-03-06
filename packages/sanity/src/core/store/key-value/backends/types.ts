@@ -8,8 +8,8 @@ export interface KeyValuePair {
 }
 
 export interface Backend {
-  getKey: (key: string, defValue: unknown) => Observable<unknown>
+  getKey: (key: string) => Observable<unknown>
   setKey: (key: string, nextValue: unknown) => Observable<unknown>
-  getKeys: (keys: string[], defValues: unknown[]) => Observable<unknown[]>
+  getKeys: (keys: string[]) => Observable<unknown[]>
   setKeys: (keyValuePairs: KeyValuePair[]) => Observable<unknown[]>
 }

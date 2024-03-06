@@ -2,20 +2,20 @@ import {type Observable, of as observableOf} from 'rxjs'
 
 import {type Backend, type KeyValuePair} from './types'
 
-const tryParse = (val: string, defValue: unknown) => {
+const tryParse = (val: string) => {
   try {
     return JSON.parse(val)
   } catch (err) {
     // eslint-disable-next-line no-console
     console.warn(`Failed to parse settings: ${err.message}`)
-    return defValue
+    return null
   }
 }
 
-const getKey = (key: string, defaultValue: unknown): Observable<unknown> => {
+const getKey = (key: string): Observable<unknown> => {
   const val = localStorage.getItem(key)
 
-  return observableOf(val === null ? defaultValue : tryParse(val, defaultValue))
+  return observableOf(val === null ? null : tryParse(val))
 }
 
 const setKey = (key: string, nextValue: unknown): Observable<unknown> => {
@@ -30,10 +30,10 @@ const setKey = (key: string, nextValue: unknown): Observable<unknown> => {
   return observableOf(nextValue)
 }
 
-const getKeys = (keys: string[], defaultValues: unknown[]): Observable<unknown[]> => {
+const getKeys = (keys: string[]): Observable<unknown[]> => {
   const values = keys.map((key, i) => {
     const val = localStorage.getItem(key)
-    return val === null ? defaultValues[i] : tryParse(val, defaultValues[i])
+    return val === null ? null : tryParse(val)
   })
 
   return observableOf(values)

@@ -4,16 +4,15 @@ import {type Backend, type KeyValuePair} from './types'
 
 const DB = Object.create(null)
 
-const getKey = (key: string, defaultValue: unknown): Observable<unknown> =>
-  observableOf(key in DB ? DB[key] : defaultValue)
+const getKey = (key: string): Observable<unknown> => observableOf(key in DB ? DB[key] : null)
 
 const setKey = (key: string, nextValue: unknown): Observable<unknown> => {
   DB[key] = nextValue
   return observableOf(nextValue)
 }
 
-const getKeys = (keys: string[], defaultValues: unknown[]): Observable<unknown[]> => {
-  return observableOf(keys.map((key, i) => (key in DB ? DB[key] : defaultValues[i])))
+const getKeys = (keys: string[]): Observable<unknown[]> => {
+  return observableOf(keys.map((key, i) => (key in DB ? DB[key] : null)))
 }
 
 const setKeys = (keyValuePairs: KeyValuePair[]): Observable<unknown[]> => {
