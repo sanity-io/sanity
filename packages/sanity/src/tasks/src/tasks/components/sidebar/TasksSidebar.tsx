@@ -45,7 +45,7 @@ function TasksStudioSidebarInner() {
         return item.assignedTo === currentUser?.id
       }
       if (activeTabId === 'subscribed') {
-        return currentUser?.id && item.subscribers?.includes(currentUser?.id)
+        return currentUser?.id && item.subscribers?.includes(currentUser.id)
       }
       if (activeTabId === 'document') {
         return (
