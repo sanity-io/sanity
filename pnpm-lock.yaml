@@ -1172,6 +1172,9 @@ importers:
       arrify:
         specifier: ^1.0.1
         version: 1.0.1
+      groq-js:
+        specifier: 1.5.0-canary.1
+        version: 1.5.0-canary.1
       humanize-list:
         specifier: ^1.0.1
         version: 1.0.1
@@ -1188,6 +1191,9 @@ importers:
       '@jest/globals':
         specifier: ^29.7.0
         version: 29.7.0
+      '@sanity/icons':
+        specifier: ^2.8.0
+        version: 2.10.3(react@18.2.0)
       rimraf:
         specifier: ^3.0.2
         version: 3.0.2
@@ -11488,6 +11494,15 @@ packages:
   /groq-js@1.4.3:
     resolution: {integrity: sha512-h2vFXJ/U5VX9bzlqqZLgx/XS0ibNJza4eMxUjZTqkpe3gKafFIJSkMP0RS/XEQR18gJMjXAJNziWdY7JYYfl7w==}
     engines: {node: '>= 14'}
+
+  /groq-js@1.5.0-canary.1:
+    resolution: {integrity: sha512-p3eqvL0mYS9bzCgpQT4IGs32MCDyyWOU7ilpr7UR4k7AedXYNtd/ha9UpszP6i2VrAXCfmJ63zvvTut6JCKgSQ==}
+    engines: {node: '>= 14'}
+    dependencies:
+      debug: 4.3.4(supports-color@5.5.0)
+    transitivePeerDependencies:
+      - supports-color
+    dev: false
 
   /groq@3.31.0:
     resolution: {integrity: sha512-GKJtR3ICQJCt2V135g70HLtoizADsuP7ikb1s1CF8RS1O8uPXbSYxtMcqqWpMDSAxyxD6YA86TfV7TLf1t1cPQ==}
