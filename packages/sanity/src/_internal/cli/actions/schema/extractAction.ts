@@ -12,6 +12,7 @@ import {
 interface ExtractFlags {
   workspace?: string
   path?: string
+  'enforce-required-fields'?: boolean
 }
 
 export type SchemaValidationFormatter = (result: ExtractSchemaWorkerResult) => string
@@ -36,12 +37,19 @@ export default async function extractAction(
     'extractSchema.js',
   )
 
-  const spinner = output.spinner({prefixText: '📦', text: 'Extracting schema'}).start()
+  const spinner = output
+    .spinner({prefixText: '📦'})
+    .start(
+      flags['enforce-required-fields']
+        ? 'Extracting schema, with enforced requried fields'
+        : 'Extracting schema',
+    )
 
   const worker = new Worker(workerPath, {
     workerData: {
       workDir,
       workspaceName: flags.workspace,
+      enforceRequiredFields: flags['enforce-required-fields'],
     } satisfies ExtractSchemaWorkerData,
     // eslint-disable-next-line no-process-env
     env: process.env,

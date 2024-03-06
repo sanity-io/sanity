@@ -8,6 +8,7 @@ import {mockBrowserEnvironment} from '../util/mockBrowserEnvironment'
 export interface ExtractSchemaWorkerData {
   workDir: string
   workspaceName?: string
+  enforceRequiredFields?: boolean
 }
 
 export interface ExtractSchemaWorkerResult {
@@ -29,7 +30,9 @@ async function main() {
 
     const {types} = workspace.schema._original || {types: []}
 
-    const schema = extractSchema(types)
+    const schema = extractSchema(types, {
+      enforceRequiredFields: opts.enforceRequiredFields,
+    })
 
     parentPort?.postMessage({
       schema,

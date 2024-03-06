@@ -6,6 +6,7 @@ const helpText = `
 Options
   --workspace <name> The name of the workspace to generate a schema for
   --path Optional path to specify destination of the schema file
+  --enforce-required-fields Makes the schema generated respect required fields in the schema. This can be used when generating types if you are only querying for published documents. Defaults to false.
 
 Examples
   # Extracts schema types in a Sanity project with more than one workspace
