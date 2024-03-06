@@ -1,6 +1,6 @@
 import {AvatarStack, Flex} from '@sanity/ui'
 import {useCallback, useState} from 'react'
-import {type FormPatch, type PatchEvent, type Path, set, useCurrentUser, UserAvatar} from 'sanity'
+import {type FormPatch, type PatchEvent, type Path, set, UserAvatar} from 'sanity'
 
 import {Button} from '../../../../../ui-components'
 import {type TaskDocument} from '../../types'
@@ -9,41 +9,40 @@ interface TasksSubscriberProps {
   value: TaskDocument
   path?: Path
   onChange: (patch: FormPatch | PatchEvent | FormPatch[]) => void
+  currentUserId: string
 }
 
-export function TasksSubsribers(props: TasksSubscriberProps) {
-  const {value, onChange, path} = props
-  const user = useCurrentUser()
-  const currentUserId = user?.id
+export function TasksSubscribers(props: TasksSubscriberProps) {
+  const {value, onChange, path, currentUserId} = props
 
-  const userIsSubscribed = value.subscribers?.includes(user?.id || '')
+  const userIsSubscribed = value.subscribers?.includes(currentUserId)
 
   const [buttonText, setButtonText] = useState(userIsSubscribed ? 'Unsubscribe' : 'Subscribe')
 
   const handleToggleSubscribe = useCallback(() => {
     const subscribers = value.subscribers || []
 
-    if (currentUserId) {
-      if (!subscribers.includes(currentUserId)) {
-        onChange(set(subscribers.concat(currentUserId), path))
-        setButtonText('Unsubscribe')
-      }
-      if (subscribers.includes(currentUserId)) {
-        onChange(
-          set(
-            subscribers.filter((subscriberId) => subscriberId !== currentUserId),
-            path,
-          ),
-        )
-        setButtonText('Subscribe')
-      }
+    if (!subscribers.includes(currentUserId)) {
+      onChange(set(subscribers.concat(currentUserId), path))
+      setButtonText('Unsubscribe')
+    }
+    if (subscribers.includes(currentUserId)) {
+      onChange(
+        set(
+          subscribers.filter((subscriberId) => subscriberId !== currentUserId),
+          path,
+        ),
+      )
+      setButtonText('Subscribe')
     }
   }, [value.subscribers, currentUserId, onChange, path])
 
   return (
     <Flex gap={1} align="center">
       <Button mode="bleed" text={buttonText} onClick={handleToggleSubscribe} />
-      <TasksSubscriberAvatars subscriberIds={value.subscribers} />
+      {value.subscribers && value.subscribers?.length > 0 && (
+        <TasksSubscriberAvatars subscriberIds={value.subscribers} />
+      )}
     </Flex>
   )
 }
