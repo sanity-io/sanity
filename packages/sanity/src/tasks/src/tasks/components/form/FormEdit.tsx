@@ -95,7 +95,7 @@ export function FormEdit(props: ObjectInputProps) {
         />
       </FirstRow>
       {props.renderDefault(props)}
-      <ActivityLog value={value} />
+      <ActivityLog value={value} onChange={props.onChange} path={['subscribers']} />
     </>
   )
 }

@@ -83,6 +83,7 @@ export interface TaskDocument {
   authorId: string
   dueBy?: string
   assignedTo?: string
+  subscribers?: string[]
 
   target?: TaskTarget
   /**
