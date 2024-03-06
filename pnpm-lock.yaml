@@ -453,8 +453,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/@sanity/vision
       '@sanity/visual-editing':
-        specifier: 1.5.2
-        version: 1.5.2
+        specifier: 1.6.0
+        version: 1.6.0(@sanity/client@6.15.1)
       '@turf/helpers':
         specifier: ^6.0.1
         version: 6.5.0
@@ -6332,18 +6332,29 @@ packages:
       '@types/uuid': 8.3.4
       uuid: 8.3.2
 
-  /@sanity/visual-editing@1.5.2:
-    resolution: {integrity: sha512-/eV1AbbvxMxJhgif1NPHptViOKZ2FCp6YDsQRC7A6/6xKDubZ+kFAKiImu2rwF5ZMLYljsWw/xMi20FNRMstlQ==}
+  /@sanity/visual-editing@1.6.0(@sanity/client@6.15.1):
+    resolution: {integrity: sha512-6WGrbmwfcyVOuuz5VP2gYCtRNaL458R98G+Hd+1FjXVwZ7b/hPwU97/JQ2Qc0lmjCplPMZzHERGcPXBWyrl9SQ==}
     engines: {node: '>=18'}
     peerDependencies:
       '@remix-run/react': '>= 2'
+      '@sanity/client': ^6.15.1
+      '@sveltejs/kit': '>= 2'
       next: '>= 13'
+      svelte: '>= 4'
     peerDependenciesMeta:
       '@remix-run/react':
         optional: true
+      '@sanity/client':
+        optional: true
+      '@sveltejs/kit':
+        optional: true
       next:
         optional: true
+      svelte:
+        optional: true
     dependencies:
+      '@sanity/client': 6.15.1
+      '@sanity/preview-url-secret': 1.6.4(@sanity/client@6.15.1)
       '@vercel/stega': 0.1.0
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
