@@ -131,6 +131,17 @@ jobs:
       - name: Install project dependencies
         run: pnpm install
 
+      - name: Restore build cache
+        uses: actions/cache/restore@v4
+        id: restore-build
+        env:
+          cache-name: cache-build
+        with:
+          path: ./*
+          key: ${{ runner.os }}-build-${{ matrix.node }}-${{ env.cache-name }}-${{ github.run_id }}
+          # If the cached build from the pervious step is not available. Fail the build
+          fail-on-cache-miss: true
+
       - name: Test
         id: test
         run: |
