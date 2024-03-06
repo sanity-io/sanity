@@ -1,20 +1,46 @@
 import {Box, Flex, Switch, Text, useToast} from '@sanity/ui'
 import {useCallback, useState} from 'react'
-import {type ObjectInputProps, set} from 'sanity'
+import {isPortableTextTextBlock, type ObjectInputProps, set} from 'sanity'
 
 import {Button} from '../../../../../ui-components'
 import {useTasksNavigation} from '../../context'
+import {type TaskDocument} from '../../types'
 
+const getTaskSubscribers = (task: TaskDocument): string[] => {
+  const subscribers = task.subscribers || []
+  // find in the description if we have any mentioned user, and add him to the subscribers list.
+  task.description?.forEach((block) => {
+    if (isPortableTextTextBlock(block)) {
+      block.children.forEach((child) => {
+        if (
+          child._type === 'mention' &&
+          typeof child.userId === 'string' &&
+          !subscribers.includes(child.userId)
+        ) {
+          subscribers.push(child.userId)
+        }
+      })
+    }
+  })
+
+  // Check if the task has been assigned, add the assignee to the subscribers list.
+  if (task.assignedTo) {
+    if (!subscribers.includes(task.assignedTo)) {
+      subscribers.push(task.assignedTo)
+    }
+  }
+  return subscribers
+}
 export function FormCreate(props: ObjectInputProps) {
   const [createMore, setCreateMore] = useState(false)
   const {setViewMode, setActiveTab} = useTasksNavigation()
   const toast = useToast()
   const handleCreateMore = useCallback(() => setCreateMore((p) => !p), [])
-  const {onChange, value} = props
-  const title = value?.title
+  const {onChange} = props
+  const value = props.value as TaskDocument
 
   const handleCreate = useCallback(() => {
-    if (!title) {
+    if (!value?.title) {
       toast.push({
         closable: true,
         status: 'error',
@@ -22,6 +48,8 @@ export function FormCreate(props: ObjectInputProps) {
       })
       return
     }
+    onChange(set(getTaskSubscribers(value), ['subscribers']))
+
     onChange(set(new Date().toISOString(), ['createdByUser']))
     if (createMore) {
       setViewMode({type: 'create'})
@@ -33,7 +61,7 @@ export function FormCreate(props: ObjectInputProps) {
       status: 'success',
       title: 'Task created',
     })
-  }, [setViewMode, setActiveTab, onChange, createMore, toast, title])
+  }, [setViewMode, setActiveTab, onChange, createMore, toast, value])
 
   return (
     <>
