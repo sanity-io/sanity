@@ -1,6 +1,6 @@
-import {getPublishedId} from 'sanity'
+import {getPublishedId, isPortableTextTextBlock} from 'sanity'
 
-import {type TaskTarget} from '../../types'
+import {type TaskDocument, type TaskTarget} from '../../types'
 
 interface GetTargetValueOptions {
   documentId: string
@@ -24,4 +24,24 @@ export function getTargetValue({
       _weak: true,
     },
   }
+}
+
+export function getMentionedUsers(description?: TaskDocument['description']): string[] {
+  if (!description) return []
+  const subscribers: string[] = []
+  description?.forEach((block) => {
+    if (isPortableTextTextBlock(block)) {
+      block.children.forEach((child) => {
+        if (
+          child._type === 'mention' &&
+          typeof child.userId === 'string' &&
+          !subscribers.includes(child.userId)
+        ) {
+          subscribers.push(child.userId)
+        }
+      })
+    }
+  })
+
+  return subscribers
 }

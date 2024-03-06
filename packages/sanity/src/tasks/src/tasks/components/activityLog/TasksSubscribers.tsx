@@ -1,5 +1,5 @@
 import {AvatarStack, Flex} from '@sanity/ui'
-import {useCallback, useState} from 'react'
+import {useCallback} from 'react'
 import {type FormPatch, type PatchEvent, type Path, set, UserAvatar} from 'sanity'
 
 import {Button} from '../../../../../ui-components'
@@ -17,14 +17,13 @@ export function TasksSubscribers(props: TasksSubscriberProps) {
 
   const userIsSubscribed = value.subscribers?.includes(currentUserId)
 
-  const [buttonText, setButtonText] = useState(userIsSubscribed ? 'Unsubscribe' : 'Subscribe')
+  const buttonText = userIsSubscribed ? 'Unsubscribe' : 'Subscribe'
 
   const handleToggleSubscribe = useCallback(() => {
     const subscribers = value.subscribers || []
 
     if (!subscribers.includes(currentUserId)) {
       onChange(set(subscribers.concat(currentUserId), path))
-      setButtonText('Unsubscribe')
     }
     if (subscribers.includes(currentUserId)) {
       onChange(
@@ -33,7 +32,6 @@ export function TasksSubscribers(props: TasksSubscriberProps) {
           path,
         ),
       )
-      setButtonText('Subscribe')
     }
   }, [value.subscribers, currentUserId, onChange, path])
 
