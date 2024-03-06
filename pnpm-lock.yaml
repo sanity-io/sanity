@@ -866,6 +866,9 @@ importers:
       fast-glob:
         specifier: ^3.3.2
         version: 3.3.2
+      groq:
+        specifier: workspace:*
+        version: link:../../groq
       groq-js:
         specifier: 1.5.0-canary.1
         version: 1.5.0-canary.1
