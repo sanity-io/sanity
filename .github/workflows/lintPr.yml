@@ -18,8 +18,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install pnpm
-        run: corepack enable && pnpm --version
+      - uses: pnpm/action-setup@v2
+        name: Install pnpm
+        id: pnpm-install
+        with:
+          version: 8
+          run_install: false
+
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
 
       - name: Cache node modules
         id: cache-node-modules
@@ -27,15 +37,14 @@ jobs:
         env:
           cache-name: cache-node-modules
         with:
-          path: '**/node_modules'
-          key: ${{ runner.os }}-modules-${{ env.cache-name }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ env.cache-name }}-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
-            ${{ runner.os }}-modules-${{ env.cache-name }}-
-            ${{ runner.os }}-modules-
-            ${{ runner.os }}-
+            v1-${{ runner.os }}-pnpm-store-${{ env.cache-name }}-
+            v1-${{ runner.os }}-pnpm-store-
+            v1-${{ runner.os }}-
 
       - name: Install project dependencies
-        if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: pnpm install
 
       - name: Lint files
