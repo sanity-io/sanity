@@ -13,7 +13,7 @@ import {
 } from 'sanity'
 
 import {type TaskDocument} from '../../types'
-import {TasksSubsribers} from './TasksSubscribers'
+import {TasksSubscribers} from './TasksSubscribers'
 
 function AddComment() {
   const currentUser = useCurrentUser()
@@ -83,6 +83,7 @@ export function ActivityLog(props: {
   onChange: (patch: FormPatch | PatchEvent | FormPatch[]) => void
 }) {
   const {value, onChange, path} = props
+  const user = useCurrentUser()
 
   return (
     <Box marginTop={5}>
@@ -91,7 +92,14 @@ export function ActivityLog(props: {
           <Text size={2} weight="semibold">
             Activity
           </Text>
-          <TasksSubsribers value={value} onChange={onChange} path={path} />
+          {user?.id && (
+            <TasksSubscribers
+              currentUserId={user.id}
+              value={value}
+              onChange={onChange}
+              path={path}
+            />
+          )}
         </Flex>
       </Card>
       <Stack marginTop={4} space={4}>
