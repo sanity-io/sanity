@@ -42,6 +42,7 @@ import {pasteAction} from './fieldActions/pasteAction'
 import {resolveInitialValueTemplates} from './initialValueTemplates'
 import {customInspector} from './inspectors/custom'
 import {testStudioLocaleBundles} from './locales'
+import {documentListenerDebugTool} from './plugins/document-listener-debug'
 import {languageFilter} from './plugins/language-filter'
 import {presenceTool} from './plugins/presence'
 import {routerDebugTool} from './plugins/router-debug'
@@ -133,6 +134,7 @@ const sharedSettings = definePlugin({
     // eslint-disable-next-line camelcase
     muxInput({mp4_support: 'standard'}),
     presenceTool(),
+    documentListenerDebugTool(),
     routerDebugTool(),
     tsdoc(),
   ],
