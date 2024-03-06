@@ -14,7 +14,10 @@ export const memoizedPair: (
 ) => Observable<Pair> = memoize(
   (client: SanityClient, idPair: IdPair, _typeName: string): Observable<Pair> => {
     return new Observable<Pair>((subscriber) => {
-      subscriber.next(checkoutPair(client, idPair))
+      const pair = checkoutPair(client, idPair)
+      subscriber.next(pair)
+
+      return pair.complete
     }).pipe(publishReplay(1), refCount())
   },
   memoizeKeyGen,

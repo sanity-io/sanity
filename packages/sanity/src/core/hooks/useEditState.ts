@@ -1,6 +1,5 @@
 import {useMemoObservable} from 'react-rx'
-import {merge, timer} from 'rxjs'
-import {debounce, share, skip, take} from 'rxjs/operators'
+import {debounce, merge, share, skip, take, timer} from 'rxjs'
 
 import {type EditStateFor, useDocumentStore} from '../store'
 
@@ -13,8 +12,9 @@ export function useEditState(
   const documentStore = useDocumentStore()
 
   return useMemoObservable(() => {
-    const base = documentStore.pair.editState(publishedDocId, docTypeName).pipe(share())
     if (priority === 'low') {
+      const base = documentStore.pair.editState(publishedDocId, docTypeName).pipe(share())
+
       return merge(
         base.pipe(take(1)),
         base.pipe(
@@ -23,6 +23,7 @@ export function useEditState(
         ),
       )
     }
+
     return documentStore.pair.editState(publishedDocId, docTypeName)
   }, [documentStore.pair, publishedDocId, docTypeName, priority]) as EditStateFor
 }
