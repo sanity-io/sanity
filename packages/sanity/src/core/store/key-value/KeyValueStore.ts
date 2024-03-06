@@ -13,7 +13,7 @@ export function createKeyValueStore({client}: {client: SanityClient}): KeyValueS
 
   const updates$ = setKey$.pipe(
     switchMap((event) =>
-      storageBackend.set(event.key, event.value).pipe(
+      storageBackend.setKey(event.key, event.value).pipe(
         map((nextValue) => ({
           key: event.key,
           value: nextValue,
@@ -27,7 +27,7 @@ export function createKeyValueStore({client}: {client: SanityClient}): KeyValueS
     defaultValue: KeyValueStoreValue,
   ): Observable<KeyValueStoreValue> => {
     return merge(
-      storageBackend.get(key, defaultValue),
+      storageBackend.getKey(key, defaultValue),
       updates$.pipe(
         filter((update) => update.key === key),
         map((update) => update.value),
