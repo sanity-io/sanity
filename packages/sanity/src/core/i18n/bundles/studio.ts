@@ -1034,7 +1034,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
    */
   'new-document.create-new-document-label': 'New document…',
   /** Placeholder for the "filter" input within the new document menu */
-  'new-document.filter-placeholder': 'Filter',
+  'new-document.filter-placeholder': 'Search document types',
   /** Loading indicator text within the new document menu */
   'new-document.loading': 'Loading…',
   /** Accessibility label for the list displaying options in the new document menu */
