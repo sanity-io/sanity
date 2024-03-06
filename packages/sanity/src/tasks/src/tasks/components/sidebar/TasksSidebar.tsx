@@ -45,8 +45,7 @@ function TasksStudioSidebarInner() {
         return item.assignedTo === currentUser?.id
       }
       if (activeTabId === 'subscribed') {
-        // TODO: Implement here the check for the subscribed tasks, right now it's returning the tasks the user created.
-        return item.authorId === currentUser?.id
+        return currentUser?.id && item.subscribers?.includes(currentUser?.id)
       }
       if (activeTabId === 'document') {
         return (
