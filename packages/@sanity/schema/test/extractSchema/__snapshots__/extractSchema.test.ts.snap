@@ -1,0 +1,2767 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Extract schema test Extracts  schema general 1`] = `
+Array [
+  Object {
+    "attributes": Object {
+      "_createdAt": Object {
+        "type": "objectAttribute",
+        "value": Object {
+          "type": "string",
+        },
+      },
+      "_id": Object {
+        "type": "objectAttribute",
+        "value": Object {
+          "type": "string",
+        },
+      },
+      "_rev": Object {
+        "type": "objectAttribute",
+        "value": Object {
+          "type": "string",
+        },
+      },
+      "_type": Object {
+        "type": "objectAttribute",
+        "value": Object {
+          "type": "string",
+          "value": "validDocument",
+        },
+      },
+      "_updatedAt": Object {
+        "type": "objectAttribute",
+        "value": Object {
+          "type": "string",
+        },
+      },
+      "blocks": Object {
+        "optional": true,
+        "type": "objectAttribute",
+        "value": Object {
+          "of": Object {
+            "attributes": Object {
+              "_key": Object {
+                "type": "objectAttribute",
+                "value": Object {
+                  "type": "string",
+                },
+              },
+              "children": Object {
+                "type": "objectAttribute",
+                "value": Object {
+                  "of": Object {
+                    "of": Array [
+                      Object {
+                        "attributes": Object {
+                          "_key": Object {
+                            "type": "objectAttribute",
+                            "value": Object {
+                              "type": "string",
+                            },
+                          },
+                          "marks": Object {
+                            "type": "objectAttribute",
+                            "value": Object {
+                              "of": Object {
+                                "of": Array [
+                                  Object {
+                                    "type": "string",
+                                  },
+                                ],
+                                "type": "union",
+                              },
+                              "type": "array",
+                            },
+                          },
+                          "text": Object {
+                            "type": "objectAttribute",
+                            "value": Object {
+                              "type": "string",
+                            },
+                          },
+                        },
+                        "type": "object",
+                      },
+                    ],
+                    "type": "union",
+                  },
+                  "type": "array",
+                },
+              },
+              "level": Object {
+                "optional": true,
+                "type": "objectAttribute",
+                "value": Object {
+                  "type": "number",
+                },
+              },
+              "listItem": Object {
+                "optional": true,
+                "type": "objectAttribute",
+                "value": Object {
+                  "of": Array [],
+                  "type": "union",
+                },
+              },
+              "markDefs": Object {
+                "type": "objectAttribute",
+                "value": Object {
+                  "of": Object {
+                    "of": Array [],
+                    "type": "union",
+                  },
+                  "type": "array",
+                },
+              },
+              "style": Object {
+                "optional": true,
+                "type": "objectAttribute",
+                "value": Object {
+                  "of": Array [],
+                  "type": "union",
+                },
+              },
+            },
+            "rest": Object {
+              "attributes": Object {
+                "_key": Object {
+                  "type": "objectAttribute",
+                  "value": Object {
+                    "type": "string",
+                  },
+                },
+              },
+              "type": "object",
+            },
+            "type": "object",
+          },
+          "type": "array",
+        },
+      },
+      "list": Object {
+        "optional": true,
+        "type": "objectAttribute",
+        "value": Object {
+          "of": Array [
+            Object {
+              "type": "string",
+              "value": "a",
+            },
+            Object {
+              "type": "string",
+              "value": "b",
+            },
+            Object {
+              "type": "string",
+              "value": "c",
+            },
+          ],
+          "type": "union",
+        },
+      },
+      "number": Object {
+        "optional": true,
+        "type": "objectAttribute",
+        "value": Object {
+          "type": "number",
+        },
+      },
+      "other": Object {
+        "optional": true,
+        "type": "objectAttribute",
+        "value": Object {
+          "attributes": Object {
+            "_ref": Object {
+              "type": "objectAttribute",
+              "value": Object {
+                "type": "string",
+              },
+            },
+            "_type": Object {
+              "type": "objectAttribute",
+              "value": Object {
+                "type": "string",
+                "value": "reference",
+              },
+            },
+            "_weak": Object {
+              "optional": true,
+              "type": "objectAttribute",
+              "value": Object {
+                "type": "boolean",
+              },
+            },
+          },
+          "dereferencesTo": "otherValidDocument",
+          "type": "object",
+        },
+      },
+      "others": Object {
+        "optional": true,
+        "type": "objectAttribute",
+        "value": Object {
+          "of": Array [
+            Object {
+              "attributes": Object {
+                "_ref": Object {
+                  "type": "objectAttribute",
+                  "value": Object {
+                    "type": "string",
+                  },
+                },
+                "_type": Object {
+                  "type": "objectAttribute",
+                  "value": Object {
+                    "type": "string",
+                    "value": "reference",
+                  },
+                },
+                "_weak": Object {
+                  "optional": true,
+                  "type": "objectAttribute",
+                  "value": Object {
+                    "type": "boolean",
+                  },
+                },
+              },
+              "dereferencesTo": "otherValidDocument",
+              "type": "object",
+            },
+          ],
+          "type": "union",
+        },
+      },
+      "someInlinedObject": Object {
+        "optional": true,
+        "type": "objectAttribute",
+        "value": Object {
+          "name": "obj",
+          "type": "inline",
+        },
+      },
+      "title": Object {
+        "optional": true,
+        "type": "objectAttribute",
+        "value": Object {
+          "type": "string",
+        },
+      },
+    },
+    "name": "validDocument",
+    "type": "document",
+  },
+  Object {
+    "name": "blocks",
+    "type": "type",
+    "value": Object {
+      "attributes": Object {
+        "_type": Object {
+          "type": "objectAttribute",
+          "value": Object {
+            "type": "string",
+            "value": "blocks",
+          },
+        },
+        "arrayOfArticles": Object {
+          "optional": true,
+          "type": "objectAttribute",
+          "value": Object {
+            "of": Object {
+              "attributes": Object {
+                "_key": Object {
+                  "type": "objectAttribute",
+                  "value": Object {
+                    "type": "string",
+                  },
+                },
+              },
+              "rest": Object {
+                "name": "blocksTest",
+                "type": "inline",
+              },
+              "type": "object",
+            },
+            "type": "array",
+          },
+        },
+        "blockInBlock": Object {
+          "optional": true,
+          "type": "objectAttribute",
+          "value": Object {
+            "of": Object {
+              "attributes": Object {
+                "_key": Object {
+                  "type": "objectAttribute",
+                  "value": Object {
+                    "type": "string",
+                  },
+                },
+                "children": Object {
+                  "type": "objectAttribute",
+                  "value": Object {
+                    "of": Object {
+                      "of": Array [
+                        Object {
+                          "attributes": Object {
+                            "_key": Object {
+                              "type": "objectAttribute",
+                              "value": Object {
+                                "type": "string",
+                              },
+                            },
+                            "marks": Object {
+                              "type": "objectAttribute",
+                              "value": Object {
+                                "of": Object {
+                                  "of": Array [
+                                    Object {
+                                      "type": "string",
+                                    },
+                                  ],
+                                  "type": "union",
+                                },
+                                "type": "array",
+                              },
+                            },
+                            "text": Object {
+                              "type": "objectAttribute",
+                              "value": Object {
+                                "type": "string",
+                              },
+                            },
+                          },
+                          "type": "object",
+                        },
+                      ],
+                      "type": "union",
+                    },
+                    "type": "array",
+                  },
+                },
+                "level": Object {
+                  "optional": true,
+                  "type": "objectAttribute",
+                  "value": Object {
+                    "type": "number",
+                  },
+                },
+                "listItem": Object {
+                  "optional": true,
+                  "type": "objectAttribute",
+                  "value": Object {
+                    "of": Array [],
+                    "type": "union",
+                  },
+                },
+                "markDefs": Object {
+                  "type": "objectAttribute",
+                  "value": Object {
+                    "of": Object {
+                      "of": Array [],
+                      "type": "union",
+                    },
+                    "type": "array",
+                  },
+                },
+                "style": Object {
+                  "optional": true,
+                  "type": "objectAttribute",
+                  "value": Object {
+                    "of": Array [],
+                    "type": "union",
+                  },
+                },
+              },
+              "rest": Object {
+                "attributes": Object {
+                  "_key": Object {
+                    "type": "objectAttribute",
+                    "value": Object {
+                      "type": "string",
+                    },
+                  },
+                },
+                "type": "object",
+              },
+              "type": "object",
+            },
+            "type": "array",
+          },
+        },
+        "blockList": Object {
+          "optional": true,
+          "type": "objectAttribute",
+          "value": Object {
+            "of": Object {
+              "attributes": Object {
+                "_type": Object {
+                  "type": "objectAttribute",
+                  "value": Object {
+                    "type": "string",
+                    "value": "blockListEntry",
+                  },
+                },
+                "blocks": Object {
+                  "optional": true,
+                  "type": "objectAttribute",
+                  "value": Object {
+                    "of": Object {
+                      "attributes": Object {
+                        "_key": Object {
+                          "type": "objectAttribute",
+                          "value": Object {
+                            "type": "string",
+                          },
+                        },
+                        "children": Object {
+                          "type": "objectAttribute",
+                          "value": Object {
+                            "of": Object {
+                              "of": Array [
+                                Object {
+                                  "attributes": Object {
+                                    "_key": Object {
+                                      "type": "objectAttribute",
+                                      "value": Object {
+                                        "type": "string",
+                                      },
+                                    },
+                                    "marks": Object {
+                                      "type": "objectAttribute",
+                                      "value": Object {
+                                        "of": Object {
+                                          "of": Array [
+                                            Object {
+                                              "type": "string",
+                                            },
+                                          ],
+                                          "type": "union",
+                                        },
+                                        "type": "array",
+                                      },
+                                    },
+                                    "text": Object {
+                                      "type": "objectAttribute",
+                                      "value": Object {
+                                        "type": "string",
+                                      },
+                                    },
+                                  },
+                                  "type": "object",
+                                },
+                              ],
+                              "type": "union",
+                            },
+                            "type": "array",
+                          },
+                        },
+                        "level": Object {
+                          "optional": true,
+                          "type": "objectAttribute",
+                          "value": Object {
+                            "type": "number",
+                          },
+                        },
+                        "listItem": Object {
+                          "optional": true,
+                          "type": "objectAttribute",
+                          "value": Object {
+                            "of": Array [],
+                            "type": "union",
+                          },
+                        },
+                        "markDefs": Object {
+                          "type": "objectAttribute",
+                          "value": Object {
+                            "of": Object {
+                              "of": Array [],
+                              "type": "union",
+                            },
+                            "type": "array",
+                          },
+                        },
+                        "style": Object {
+                          "optional": true,
+                          "type": "objectAttribute",
+                          "value": Object {
+                            "of": Array [],
+                            "type": "union",
+                          },
+                        },
+                      },
+                      "rest": Object {
+                        "attributes": Object {
+                          "_key": Object {
+                            "type": "objectAttribute",
+                            "value": Object {
+                              "type": "string",
+                            },
+                          },
+                        },
+                        "type": "object",
+                      },
+                      "type": "object",
+                    },
+                    "type": "array",
+                  },
+                },
+                "title": Object {
+                  "optional": true,
+                  "type": "objectAttribute",
+                  "value": Object {
+                    "type": "string",
+                  },
+                },
+              },
+              "rest": Object {
+                "attributes": Object {
+                  "_key": Object {
+                    "type": "objectAttribute",
+                    "value": Object {
+                      "type": "string",
+                    },
+                  },
+                },
+                "type": "object",
+              },
+              "type": "object",
+            },
+            "type": "array",
+          },
+        },
+        "customized": Object {
+          "optional": true,
+          "type": "objectAttribute",
+          "value": Object {
+            "of": Object {
+              "of": Array [
+                Object {
+                  "attributes": Object {
+                    "_key": Object {
+                      "type": "objectAttribute",
+                      "value": Object {
+                        "type": "string",
+                      },
+                    },
+                  },
+                  "rest": Object {
+                    "name": "author",
+                    "type": "inline",
+                  },
+                  "type": "object",
+                },
+                Object {
+                  "attributes": Object {
+                    "_key": Object {
+                      "type": "objectAttribute",
+                      "value": Object {
+                        "type": "string",
+                      },
+                    },
+                    "children": Object {
+                      "type": "objectAttribute",
+                      "value": Object {
+                        "of": Object {
+                          "of": Array [
+                            Object {
+                              "attributes": Object {
+                                "_key": Object {
+                                  "type": "objectAttribute",
+                                  "value": Object {
+                                    "type": "string",
+                                  },
+                                },
+                                "marks": Object {
+                                  "type": "objectAttribute",
+                                  "value": Object {
+                                    "of": Object {
+                                      "of": Array [
+                                        Object {
+                                          "type": "string",
+                                        },
+                                        Object {
+                                          "type": "string",
+                                          "value": "strong",
+                                        },
+                                        Object {
+                                          "type": "string",
+                                          "value": "em",
+                                        },
+                                        Object {
+                                          "type": "string",
+                                          "value": "color",
+                                        },
+                                      ],
+                                      "type": "union",
+                                    },
+                                    "type": "array",
+                                  },
+                                },
+                                "text": Object {
+                                  "type": "objectAttribute",
+                                  "value": Object {
+                                    "type": "string",
+                                  },
+                                },
+                              },
+                              "type": "object",
+                            },
+                          ],
+                          "type": "union",
+                        },
+                        "type": "array",
+                      },
+                    },
+                    "level": Object {
+                      "optional": true,
+                      "type": "objectAttribute",
+                      "value": Object {
+                        "type": "number",
+                      },
+                    },
+                    "listItem": Object {
+                      "optional": true,
+                      "type": "objectAttribute",
+                      "value": Object {
+                        "of": Array [
+                          Object {
+                            "type": "string",
+                            "value": "bullet",
+                          },
+                          Object {
+                            "type": "string",
+                            "value": "number",
+                          },
+                        ],
+                        "type": "union",
+                      },
+                    },
+                    "markDefs": Object {
+                      "type": "objectAttribute",
+                      "value": Object {
+                        "of": Object {
+                          "of": Array [
+                            Object {
+                              "attributes": Object {
+                                "_ref": Object {
+                                  "type": "objectAttribute",
+                                  "value": Object {
+                                    "type": "string",
+                                  },
+                                },
+                                "_type": Object {
+                                  "type": "objectAttribute",
+                                  "value": Object {
+                                    "type": "string",
+                                    "value": "reference",
+                                  },
+                                },
+                                "_weak": Object {
+                                  "optional": true,
+                                  "type": "objectAttribute",
+                                  "value": Object {
+                                    "type": "boolean",
+                                  },
+                                },
+                              },
+                              "dereferencesTo": "author",
+                              "type": "object",
+                            },
+                            Object {
+                              "attributes": Object {
+                                "testString": Object {
+                                  "optional": true,
+                                  "type": "objectAttribute",
+                                  "value": Object {
+                                    "type": "string",
+                                  },
+                                },
+                              },
+                              "type": "object",
+                            },
+                          ],
+                          "type": "union",
+                        },
+                        "type": "array",
+                      },
+                    },
+                    "style": Object {
+                      "optional": true,
+                      "type": "objectAttribute",
+                      "value": Object {
+                        "of": Array [
+                          Object {
+                            "type": "string",
+                            "value": "normal",
+                          },
+                          Object {
+                            "type": "string",
+                            "value": "h1",
+                          },
+                          Object {
+                            "type": "string",
+                            "value": "h2",
+                          },
+                          Object {
+                            "type": "string",
+                            "value": "blockquote",
+                          },
+                        ],
+                        "type": "union",
+                      },
+                    },
+                  },
+                  "rest": Object {
+                    "attributes": Object {
+                      "_key": Object {
+                        "type": "objectAttribute",
+                        "value": Object {
+                          "type": "string",
+                        },
+                      },
+                    },
+                    "type": "object",
+                  },
+                  "type": "object",
+                },
+              ],
+              "type": "union",
+            },
+            "type": "array",
+          },
+        },
+        "deep": Object {
+          "optional": true,
+          "type": "objectAttribute",
+          "value": Object {
+            "attributes": Object {
+              "_type": Object {
+                "type": "objectAttribute",
+                "value": Object {
+                  "type": "string",
+                  "value": "deep",
+                },
+              },
+              "blocks": Object {
+                "optional": true,
+                "type": "objectAttribute",
+                "value": Object {
+                  "of": Object {
+                    "of": Array [
+                      Object {
+                        "attributes": Object {
+                          "_type": Object {
+                            "type": "objectAttribute",
+                            "value": Object {
+                              "type": "string",
+                              "value": "image",
+                            },
+                          },
+                          "asset": Object {
+                            "type": "objectAttribute",
+                            "value": Object {
+                              "attributes": Object {
+                                "_ref": Object {
+                                  "type": "objectAttribute",
+                                  "value": Object {
+                                    "type": "string",
+                                  },
+                                },
+                                "_type": Object {
+                                  "type": "objectAttribute",
+                                  "value": Object {
+                                    "type": "string",
+                                    "value": "reference",
+                                  },
+                                },
+                                "_weak": Object {
+                                  "optional": true,
+                                  "type": "objectAttribute",
+                                  "value": Object {
+                                    "type": "boolean",
+                                  },
+                                },
+                              },
+                              "dereferencesTo": "sanity.imageAsset",
+                              "type": "object",
+                            },
+                          },
+                        },
+                        "rest": Object {
+                          "attributes": Object {
+                            "_key": Object {
+                              "type": "objectAttribute",
+                              "value": Object {
+                                "type": "string",
+                              },
+                            },
+                          },
+                          "type": "object",
+                        },
+                        "type": "object",
+                      },
+                      Object {
+                        "attributes": Object {
+                          "_key": Object {
+                            "type": "objectAttribute",
+                            "value": Object {
+                              "type": "string",
+                            },
+                          },
+                        },
+                        "rest": Object {
+                          "name": "author",
+                          "type": "inline",
+                        },
+                        "type": "object",
+                      },
+                      Object {
+                        "attributes": Object {
+                          "_key": Object {
+                            "type": "objectAttribute",
+                            "value": Object {
+                              "type": "string",
+                            },
+                          },
+                          "children": Object {
+                            "type": "objectAttribute",
+                            "value": Object {
+                              "of": Object {
+                                "of": Array [
+                                  Object {
+                                    "attributes": Object {
+                                      "_key": Object {
+                                        "type": "objectAttribute",
+                                        "value": Object {
+                                          "type": "string",
+                                        },
+                                      },
+                                      "marks": Object {
+                                        "type": "objectAttribute",
+                                        "value": Object {
+                                          "of": Object {
+                                            "of": Array [
+                                              Object {
+                                                "type": "string",
+                                              },
+                                              Object {
+                                                "type": "string",
+                                                "value": "strong",
+                                              },
+                                              Object {
+                                                "type": "string",
+                                                "value": "em",
+                                              },
+                                            ],
+                                            "type": "union",
+                                          },
+                                          "type": "array",
+                                        },
+                                      },
+                                      "text": Object {
+                                        "type": "objectAttribute",
+                                        "value": Object {
+                                          "type": "string",
+                                        },
+                                      },
+                                    },
+                                    "type": "object",
+                                  },
+                                ],
+                                "type": "union",
+                              },
+                              "type": "array",
+                            },
+                          },
+                          "level": Object {
+                            "optional": true,
+                            "type": "objectAttribute",
+                            "value": Object {
+                              "type": "number",
+                            },
+                          },
+                          "listItem": Object {
+                            "optional": true,
+                            "type": "objectAttribute",
+                            "value": Object {
+                              "of": Array [
+                                Object {
+                                  "type": "string",
+                                  "value": "bullet",
+                                },
+                                Object {
+                                  "type": "string",
+                                  "value": "number",
+                                },
+                              ],
+                              "type": "union",
+                            },
+                          },
+                          "markDefs": Object {
+                            "type": "objectAttribute",
+                            "value": Object {
+                              "of": Object {
+                                "of": Array [
+                                  Object {
+                                    "attributes": Object {
+                                      "_ref": Object {
+                                        "type": "objectAttribute",
+                                        "value": Object {
+                                          "type": "string",
+                                        },
+                                      },
+                                      "_type": Object {
+                                        "type": "objectAttribute",
+                                        "value": Object {
+                                          "type": "string",
+                                          "value": "reference",
+                                        },
+                                      },
+                                      "_weak": Object {
+                                        "optional": true,
+                                        "type": "objectAttribute",
+                                        "value": Object {
+                                          "type": "boolean",
+                                        },
+                                      },
+                                    },
+                                    "dereferencesTo": "author",
+                                    "type": "object",
+                                  },
+                                ],
+                                "type": "union",
+                              },
+                              "type": "array",
+                            },
+                          },
+                          "style": Object {
+                            "optional": true,
+                            "type": "objectAttribute",
+                            "value": Object {
+                              "of": Array [
+                                Object {
+                                  "type": "string",
+                                  "value": "normal",
+                                },
+                                Object {
+                                  "type": "string",
+                                  "value": "h1",
+                                },
+                                Object {
+                                  "type": "string",
+                                  "value": "h2",
+                                },
+                                Object {
+                                  "type": "string",
+                                  "value": "blockquote",
+                                },
+                              ],
+                              "type": "union",
+                            },
+                          },
+                        },
+                        "rest": Object {
+                          "attributes": Object {
+                            "_key": Object {
+                              "type": "objectAttribute",
+                              "value": Object {
+                                "type": "string",
+                              },
+                            },
+                          },
+                          "type": "object",
+                        },
+                        "type": "object",
+                      },
+                    ],
+                    "type": "union",
+                  },
+                  "type": "array",
+                },
+              },
+              "something": Object {
+                "optional": true,
+                "type": "objectAttribute",
+                "value": Object {
+                  "type": "string",
+                },
+              },
+            },
+            "type": "object",
+          },
+        },
+        "defaults": Object {
+          "optional": true,
+          "type": "objectAttribute",
+          "value": Object {
+            "of": Object {
+              "of": Array [
+                Object {
+                  "attributes": Object {
+                    "_type": Object {
+                      "type": "objectAttribute",
+                      "value": Object {
+                        "type": "string",
+                        "value": "image",
+                      },
+                    },
+                    "asset": Object {
+                      "type": "objectAttribute",
+                      "value": Object {
+                        "attributes": Object {
+                          "_ref": Object {
+                            "type": "objectAttribute",
+                            "value": Object {
+                              "type": "string",
+                            },
+                          },
+                          "_type": Object {
+                            "type": "objectAttribute",
+                            "value": Object {
+                              "type": "string",
+                              "value": "reference",
+                            },
+                          },
+                          "_weak": Object {
+                            "optional": true,
+                            "type": "objectAttribute",
+                            "value": Object {
+                              "type": "boolean",
+                            },
+                          },
+                        },
+                        "dereferencesTo": "sanity.imageAsset",
+                        "type": "object",
+                      },
+                    },
+                  },
+                  "rest": Object {
+                    "attributes": Object {
+                      "_key": Object {
+                        "type": "objectAttribute",
+                        "value": Object {
+                          "type": "string",
+                        },
+                      },
+                    },
+                    "type": "object",
+                  },
+                  "type": "object",
+                },
+                Object {
+                  "attributes": Object {
+                    "_ref": Object {
+                      "type": "objectAttribute",
+                      "value": Object {
+                        "type": "string",
+                      },
+                    },
+                    "_type": Object {
+                      "type": "objectAttribute",
+                      "value": Object {
+                        "type": "string",
+                        "value": "reference",
+                      },
+                    },
+                    "_weak": Object {
+                      "optional": true,
+                      "type": "objectAttribute",
+                      "value": Object {
+                        "type": "boolean",
+                      },
+                    },
+                  },
+                  "dereferencesTo": "author",
+                  "rest": Object {
+                    "attributes": Object {
+                      "_key": Object {
+                        "type": "objectAttribute",
+                        "value": Object {
+                          "type": "string",
+                        },
+                      },
+                    },
+                    "type": "object",
+                  },
+                  "type": "object",
+                },
+                Object {
+                  "attributes": Object {
+                    "_ref": Object {
+                      "type": "objectAttribute",
+                      "value": Object {
+                        "type": "string",
+                      },
+                    },
+                    "_type": Object {
+                      "type": "objectAttribute",
+                      "value": Object {
+                        "type": "string",
+                        "value": "reference",
+                      },
+                    },
+                    "_weak": Object {
+                      "optional": true,
+                      "type": "objectAttribute",
+                      "value": Object {
+                        "type": "boolean",
+                      },
+                    },
+                  },
+                  "dereferencesTo": "book",
+                  "rest": Object {
+                    "attributes": Object {
+                      "_key": Object {
+                        "type": "objectAttribute",
+                        "value": Object {
+                          "type": "string",
+                        },
+                      },
+                    },
+                    "type": "object",
+                  },
+                  "type": "object",
+                },
+                Object {
+                  "attributes": Object {
+                    "_type": Object {
+                      "type": "objectAttribute",
+                      "value": Object {
+                        "type": "string",
+                        "value": "objectWithNestedArray",
+                      },
+                    },
+                    "array": Object {
+                      "optional": true,
+                      "type": "objectAttribute",
+                      "value": Object {
+                        "of": Object {
+                          "attributes": Object {
+                            "_type": Object {
+                              "type": "objectAttribute",
+                              "value": Object {
+                                "type": "string",
+                                "value": undefined,
+                              },
+                            },
+                            "author": Object {
+                              "optional": true,
+                              "type": "objectAttribute",
+                              "value": Object {
+                                "of": Array [
+                                  Object {
+                                    "attributes": Object {
+                                      "_ref": Object {
+                                        "type": "objectAttribute",
+                                        "value": Object {
+                                          "type": "string",
+                                        },
+                                      },
+                                      "_type": Object {
+                                        "type": "objectAttribute",
+                                        "value": Object {
+                                          "type": "string",
+                                          "value": "reference",
+                                        },
+                                      },
+                                      "_weak": Object {
+                                        "optional": true,
+                                        "type": "objectAttribute",
+                                        "value": Object {
+                                          "type": "boolean",
+                                        },
+                                      },
+                                    },
+                                    "dereferencesTo": "author",
+                                    "type": "object",
+                                  },
+                                ],
+                                "type": "union",
+                              },
+                            },
+                            "title": Object {
+                              "optional": true,
+                              "type": "objectAttribute",
+                              "value": Object {
+                                "type": "string",
+                              },
+                            },
+                          },
+                          "rest": Object {
+                            "attributes": Object {
+                              "_key": Object {
+                                "type": "objectAttribute",
+                                "value": Object {
+                                  "type": "string",
+                                },
+                              },
+                            },
+                            "type": "object",
+                          },
+                          "type": "object",
+                        },
+                        "type": "array",
+                      },
+                    },
+                    "title": Object {
+                      "optional": true,
+                      "type": "objectAttribute",
+                      "value": Object {
+                        "type": "string",
+                      },
+                    },
+                  },
+                  "rest": Object {
+                    "attributes": Object {
+                      "_key": Object {
+                        "type": "objectAttribute",
+                        "value": Object {
+                          "type": "string",
+                        },
+                      },
+                    },
+                    "type": "object",
+                  },
+                  "type": "object",
+                },
+                Object {
+                  "attributes": Object {
+                    "_key": Object {
+                      "type": "objectAttribute",
+                      "value": Object {
+                        "type": "string",
+                      },
+                    },
+                  },
+                  "rest": Object {
+                    "name": "author",
+                    "type": "inline",
+                  },
+                  "type": "object",
+                },
+                Object {
+                  "attributes": Object {
+                    "_key": Object {
+                      "type": "objectAttribute",
+                      "value": Object {
+                        "type": "string",
+                      },
+                    },
+                  },
+                  "rest": Object {
+                    "name": "code",
+                    "type": "inline",
+                  },
+                  "type": "object",
+                },
+                Object {
+                  "attributes": Object {
+                    "_type": Object {
+                      "type": "objectAttribute",
+                      "value": Object {
+                        "type": "string",
+                        "value": "testObject",
+                      },
+                    },
+                    "field1": Object {
+                      "optional": true,
+                      "type": "objectAttribute",
+                      "value": Object {
+                        "type": "string",
+                      },
+                    },
+                  },
+                  "rest": Object {
+                    "attributes": Object {
+                      "_key": Object {
+                        "type": "objectAttribute",
+                        "value": Object {
+                          "type": "string",
+                        },
+                      },
+                    },
+                    "type": "object",
+                  },
+                  "type": "object",
+                },
+                Object {
+                  "attributes": Object {
+                    "_type": Object {
+                      "type": "objectAttribute",
+                      "value": Object {
+                        "type": "string",
+                        "value": "otherTestObject",
+                      },
+                    },
+                    "field1": Object {
+                      "optional": true,
+                      "type": "objectAttribute",
+                      "value": Object {
+                        "type": "string",
+                      },
+                    },
+                    "field3": Object {
+                      "optional": true,
+                      "type": "objectAttribute",
+                      "value": Object {
+                        "of": Object {
+                          "attributes": Object {
+                            "_type": Object {
+                              "type": "objectAttribute",
+                              "value": Object {
+                                "type": "string",
+                                "value": undefined,
+                              },
+                            },
+                            "aNumber": Object {
+                              "optional": true,
+                              "type": "objectAttribute",
+                              "value": Object {
+                                "type": "number",
+                              },
+                            },
+                            "aString": Object {
+                              "optional": true,
+                              "type": "objectAttribute",
+                              "value": Object {
+                                "type": "string",
+                              },
+                            },
+                          },
+                          "rest": Object {
+                            "attributes": Object {
+                              "_key": Object {
+                                "type": "objectAttribute",
+                                "value": Object {
+                                  "type": "string",
+                                },
+                              },
+                            },
+                            "type": "object",
+                          },
+                          "type": "object",
+                        },
+                        "type": "array",
+                      },
+                    },
+                  },
+                  "rest": Object {
+                    "attributes": Object {
+                      "_key": Object {
+                        "type": "objectAttribute",
+                        "value": Object {
+                          "type": "string",
+                        },
+                      },
+                    },
+                    "type": "object",
+                  },
+                  "type": "object",
+                },
+                Object {
+                  "attributes": Object {
+                    "_key": Object {
+                      "type": "objectAttribute",
+                      "value": Object {
+                        "type": "string",
+                      },
+                    },
+                  },
+                  "rest": Object {
+                    "name": "spotifyEmbed",
+                    "type": "inline",
+                  },
+                  "type": "object",
+                },
+              ],
+              "type": "union",
+            },
+            "type": "array",
+          },
+        },
+        "first": Object {
+          "optional": true,
+          "type": "objectAttribute",
+          "value": Object {
+            "of": Object {
+              "attributes": Object {
+                "_key": Object {
+                  "type": "objectAttribute",
+                  "value": Object {
+                    "type": "string",
+                  },
+                },
+                "children": Object {
+                  "type": "objectAttribute",
+                  "value": Object {
+                    "of": Object {
+                      "of": Array [
+                        Object {
+                          "attributes": Object {
+                            "_key": Object {
+                              "type": "objectAttribute",
+                              "value": Object {
+                                "type": "string",
+                              },
+                            },
+                            "marks": Object {
+                              "type": "objectAttribute",
+                              "value": Object {
+                                "of": Object {
+                                  "of": Array [
+                                    Object {
+                                      "type": "string",
+                                    },
+                                  ],
+                                  "type": "union",
+                                },
+                                "type": "array",
+                              },
+                            },
+                            "text": Object {
+                              "type": "objectAttribute",
+                              "value": Object {
+                                "type": "string",
+                              },
+                            },
+                          },
+                          "type": "object",
+                        },
+                      ],
+                      "type": "union",
+                    },
+                    "type": "array",
+                  },
+                },
+                "level": Object {
+                  "optional": true,
+                  "type": "objectAttribute",
+                  "value": Object {
+                    "type": "number",
+                  },
+                },
+                "listItem": Object {
+                  "optional": true,
+                  "type": "objectAttribute",
+                  "value": Object {
+                    "of": Array [],
+                    "type": "union",
+                  },
+                },
+                "markDefs": Object {
+                  "type": "objectAttribute",
+                  "value": Object {
+                    "of": Object {
+                      "of": Array [
+                        Object {
+                          "attributes": Object {
+                            "href": Object {
+                              "optional": true,
+                              "type": "objectAttribute",
+                              "value": Object {
+                                "type": "string",
+                              },
+                            },
+                          },
+                          "type": "object",
+                        },
+                      ],
+                      "type": "union",
+                    },
+                    "type": "array",
+                  },
+                },
+                "style": Object {
+                  "optional": true,
+                  "type": "objectAttribute",
+                  "value": Object {
+                    "of": Array [],
+                    "type": "union",
+                  },
+                },
+              },
+              "rest": Object {
+                "attributes": Object {
+                  "_key": Object {
+                    "type": "objectAttribute",
+                    "value": Object {
+                      "type": "string",
+                    },
+                  },
+                },
+                "type": "object",
+              },
+              "type": "object",
+            },
+            "type": "array",
+          },
+        },
+        "minimal": Object {
+          "optional": true,
+          "type": "objectAttribute",
+          "value": Object {
+            "of": Object {
+              "attributes": Object {
+                "_key": Object {
+                  "type": "objectAttribute",
+                  "value": Object {
+                    "type": "string",
+                  },
+                },
+                "children": Object {
+                  "type": "objectAttribute",
+                  "value": Object {
+                    "of": Object {
+                      "of": Array [
+                        Object {
+                          "attributes": Object {
+                            "_key": Object {
+                              "type": "objectAttribute",
+                              "value": Object {
+                                "type": "string",
+                              },
+                            },
+                            "marks": Object {
+                              "type": "objectAttribute",
+                              "value": Object {
+                                "of": Object {
+                                  "of": Array [
+                                    Object {
+                                      "type": "string",
+                                    },
+                                  ],
+                                  "type": "union",
+                                },
+                                "type": "array",
+                              },
+                            },
+                            "text": Object {
+                              "type": "objectAttribute",
+                              "value": Object {
+                                "type": "string",
+                              },
+                            },
+                          },
+                          "type": "object",
+                        },
+                      ],
+                      "type": "union",
+                    },
+                    "type": "array",
+                  },
+                },
+                "level": Object {
+                  "optional": true,
+                  "type": "objectAttribute",
+                  "value": Object {
+                    "type": "number",
+                  },
+                },
+                "listItem": Object {
+                  "optional": true,
+                  "type": "objectAttribute",
+                  "value": Object {
+                    "of": Array [],
+                    "type": "union",
+                  },
+                },
+                "markDefs": Object {
+                  "type": "objectAttribute",
+                  "value": Object {
+                    "of": Object {
+                      "of": Array [],
+                      "type": "union",
+                    },
+                    "type": "array",
+                  },
+                },
+                "style": Object {
+                  "optional": true,
+                  "type": "objectAttribute",
+                  "value": Object {
+                    "of": Array [],
+                    "type": "union",
+                  },
+                },
+              },
+              "rest": Object {
+                "attributes": Object {
+                  "_key": Object {
+                    "type": "objectAttribute",
+                    "value": Object {
+                      "type": "string",
+                    },
+                  },
+                },
+                "type": "object",
+              },
+              "type": "object",
+            },
+            "type": "array",
+          },
+        },
+        "nestedWithDualColumnCTA": Object {
+          "optional": true,
+          "type": "objectAttribute",
+          "value": Object {
+            "of": Object {
+              "attributes": Object {
+                "_type": Object {
+                  "type": "objectAttribute",
+                  "value": Object {
+                    "type": "string",
+                    "value": "localeRichtext",
+                  },
+                },
+                "en": Object {
+                  "optional": true,
+                  "type": "objectAttribute",
+                  "value": Object {
+                    "of": Object {
+                      "of": Array [
+                        Object {
+                          "attributes": Object {
+                            "_key": Object {
+                              "type": "objectAttribute",
+                              "value": Object {
+                                "type": "string",
+                              },
+                            },
+                            "children": Object {
+                              "type": "objectAttribute",
+                              "value": Object {
+                                "of": Object {
+                                  "of": Array [
+                                    Object {
+                                      "attributes": Object {
+                                        "_key": Object {
+                                          "type": "objectAttribute",
+                                          "value": Object {
+                                            "type": "string",
+                                          },
+                                        },
+                                        "marks": Object {
+                                          "type": "objectAttribute",
+                                          "value": Object {
+                                            "of": Object {
+                                              "of": Array [
+                                                Object {
+                                                  "type": "string",
+                                                },
+                                              ],
+                                              "type": "union",
+                                            },
+                                            "type": "array",
+                                          },
+                                        },
+                                        "text": Object {
+                                          "type": "objectAttribute",
+                                          "value": Object {
+                                            "type": "string",
+                                          },
+                                        },
+                                      },
+                                      "type": "object",
+                                    },
+                                  ],
+                                  "type": "union",
+                                },
+                                "type": "array",
+                              },
+                            },
+                            "level": Object {
+                              "optional": true,
+                              "type": "objectAttribute",
+                              "value": Object {
+                                "type": "number",
+                              },
+                            },
+                            "listItem": Object {
+                              "optional": true,
+                              "type": "objectAttribute",
+                              "value": Object {
+                                "of": Array [],
+                                "type": "union",
+                              },
+                            },
+                            "markDefs": Object {
+                              "type": "objectAttribute",
+                              "value": Object {
+                                "of": Object {
+                                  "of": Array [],
+                                  "type": "union",
+                                },
+                                "type": "array",
+                              },
+                            },
+                            "style": Object {
+                              "optional": true,
+                              "type": "objectAttribute",
+                              "value": Object {
+                                "of": Array [],
+                                "type": "union",
+                              },
+                            },
+                          },
+                          "rest": Object {
+                            "attributes": Object {
+                              "_key": Object {
+                                "type": "objectAttribute",
+                                "value": Object {
+                                  "type": "string",
+                                },
+                              },
+                            },
+                            "type": "object",
+                          },
+                          "type": "object",
+                        },
+                        Object {
+                          "attributes": Object {
+                            "_type": Object {
+                              "type": "objectAttribute",
+                              "value": Object {
+                                "type": "string",
+                                "value": "image",
+                              },
+                            },
+                            "asset": Object {
+                              "type": "objectAttribute",
+                              "value": Object {
+                                "attributes": Object {
+                                  "_ref": Object {
+                                    "type": "objectAttribute",
+                                    "value": Object {
+                                      "type": "string",
+                                    },
+                                  },
+                                  "_type": Object {
+                                    "type": "objectAttribute",
+                                    "value": Object {
+                                      "type": "string",
+                                      "value": "reference",
+                                    },
+                                  },
+                                  "_weak": Object {
+                                    "optional": true,
+                                    "type": "objectAttribute",
+                                    "value": Object {
+                                      "type": "boolean",
+                                    },
+                                  },
+                                },
+                                "dereferencesTo": "sanity.imageAsset",
+                                "type": "object",
+                              },
+                            },
+                          },
+                          "rest": Object {
+                            "attributes": Object {
+                              "_key": Object {
+                                "type": "objectAttribute",
+                                "value": Object {
+                                  "type": "string",
+                                },
+                              },
+                            },
+                            "type": "object",
+                          },
+                          "type": "object",
+                        },
+                        Object {
+                          "attributes": Object {
+                            "_type": Object {
+                              "type": "objectAttribute",
+                              "value": Object {
+                                "type": "string",
+                                "value": "twoColCTA",
+                              },
+                            },
+                            "columnone": Object {
+                              "optional": true,
+                              "type": "objectAttribute",
+                              "value": Object {
+                                "of": Object {
+                                  "attributes": Object {
+                                    "_key": Object {
+                                      "type": "objectAttribute",
+                                      "value": Object {
+                                        "type": "string",
+                                      },
+                                    },
+                                  },
+                                  "rest": Object {
+                                    "name": "richTextObject",
+                                    "type": "inline",
+                                  },
+                                  "type": "object",
+                                },
+                                "type": "array",
+                              },
+                            },
+                            "columntwo": Object {
+                              "optional": true,
+                              "type": "objectAttribute",
+                              "value": Object {
+                                "of": Object {
+                                  "attributes": Object {
+                                    "_key": Object {
+                                      "type": "objectAttribute",
+                                      "value": Object {
+                                        "type": "string",
+                                      },
+                                    },
+                                  },
+                                  "rest": Object {
+                                    "name": "richTextObject",
+                                    "type": "inline",
+                                  },
+                                  "type": "object",
+                                },
+                                "type": "array",
+                              },
+                            },
+                          },
+                          "rest": Object {
+                            "attributes": Object {
+                              "_key": Object {
+                                "type": "objectAttribute",
+                                "value": Object {
+                                  "type": "string",
+                                },
+                              },
+                            },
+                            "type": "object",
+                          },
+                          "type": "object",
+                        },
+                      ],
+                      "type": "union",
+                    },
+                    "type": "array",
+                  },
+                },
+              },
+              "rest": Object {
+                "attributes": Object {
+                  "_key": Object {
+                    "type": "objectAttribute",
+                    "value": Object {
+                      "type": "string",
+                    },
+                  },
+                },
+                "type": "object",
+              },
+              "type": "object",
+            },
+            "type": "array",
+          },
+        },
+        "readOnlyWithDefaults": Object {
+          "optional": true,
+          "type": "objectAttribute",
+          "value": Object {
+            "of": Object {
+              "of": Array [
+                Object {
+                  "attributes": Object {
+                    "_type": Object {
+                      "type": "objectAttribute",
+                      "value": Object {
+                        "type": "string",
+                        "value": "image",
+                      },
+                    },
+                    "asset": Object {
+                      "type": "objectAttribute",
+                      "value": Object {
+                        "attributes": Object {
+                          "_ref": Object {
+                            "type": "objectAttribute",
+                            "value": Object {
+                              "type": "string",
+                            },
+                          },
+                          "_type": Object {
+                            "type": "objectAttribute",
+                            "value": Object {
+                              "type": "string",
+                              "value": "reference",
+                            },
+                          },
+                          "_weak": Object {
+                            "optional": true,
+                            "type": "objectAttribute",
+                            "value": Object {
+                              "type": "boolean",
+                            },
+                          },
+                        },
+                        "dereferencesTo": "sanity.imageAsset",
+                        "type": "object",
+                      },
+                    },
+                  },
+                  "rest": Object {
+                    "attributes": Object {
+                      "_key": Object {
+                        "type": "objectAttribute",
+                        "value": Object {
+                          "type": "string",
+                        },
+                      },
+                    },
+                    "type": "object",
+                  },
+                  "type": "object",
+                },
+                Object {
+                  "attributes": Object {
+                    "_ref": Object {
+                      "type": "objectAttribute",
+                      "value": Object {
+                        "type": "string",
+                      },
+                    },
+                    "_type": Object {
+                      "type": "objectAttribute",
+                      "value": Object {
+                        "type": "string",
+                        "value": "reference",
+                      },
+                    },
+                    "_weak": Object {
+                      "optional": true,
+                      "type": "objectAttribute",
+                      "value": Object {
+                        "type": "boolean",
+                      },
+                    },
+                  },
+                  "dereferencesTo": "author",
+                  "rest": Object {
+                    "attributes": Object {
+                      "_key": Object {
+                        "type": "objectAttribute",
+                        "value": Object {
+                          "type": "string",
+                        },
+                      },
+                    },
+                    "type": "object",
+                  },
+                  "type": "object",
+                },
+                Object {
+                  "attributes": Object {
+                    "_ref": Object {
+                      "type": "objectAttribute",
+                      "value": Object {
+                        "type": "string",
+                      },
+                    },
+                    "_type": Object {
+                      "type": "objectAttribute",
+                      "value": Object {
+                        "type": "string",
+                        "value": "reference",
+                      },
+                    },
+                    "_weak": Object {
+                      "optional": true,
+                      "type": "objectAttribute",
+                      "value": Object {
+                        "type": "boolean",
+                      },
+                    },
+                  },
+                  "dereferencesTo": "book",
+                  "rest": Object {
+                    "attributes": Object {
+                      "_key": Object {
+                        "type": "objectAttribute",
+                        "value": Object {
+                          "type": "string",
+                        },
+                      },
+                    },
+                    "type": "object",
+                  },
+                  "type": "object",
+                },
+                Object {
+                  "attributes": Object {
+                    "_key": Object {
+                      "type": "objectAttribute",
+                      "value": Object {
+                        "type": "string",
+                      },
+                    },
+                  },
+                  "rest": Object {
+                    "name": "author",
+                    "type": "inline",
+                  },
+                  "type": "object",
+                },
+                Object {
+                  "attributes": Object {
+                    "_key": Object {
+                      "type": "objectAttribute",
+                      "value": Object {
+                        "type": "string",
+                      },
+                    },
+                  },
+                  "rest": Object {
+                    "name": "code",
+                    "type": "inline",
+                  },
+                  "type": "object",
+                },
+                Object {
+                  "attributes": Object {
+                    "_type": Object {
+                      "type": "objectAttribute",
+                      "value": Object {
+                        "type": "string",
+                        "value": "testObject",
+                      },
+                    },
+                    "field1": Object {
+                      "optional": true,
+                      "type": "objectAttribute",
+                      "value": Object {
+                        "type": "string",
+                      },
+                    },
+                  },
+                  "rest": Object {
+                    "attributes": Object {
+                      "_key": Object {
+                        "type": "objectAttribute",
+                        "value": Object {
+                          "type": "string",
+                        },
+                      },
+                    },
+                    "type": "object",
+                  },
+                  "type": "object",
+                },
+                Object {
+                  "attributes": Object {
+                    "_type": Object {
+                      "type": "objectAttribute",
+                      "value": Object {
+                        "type": "string",
+                        "value": "otherTestObject",
+                      },
+                    },
+                    "field1": Object {
+                      "optional": true,
+                      "type": "objectAttribute",
+                      "value": Object {
+                        "type": "string",
+                      },
+                    },
+                    "field3": Object {
+                      "optional": true,
+                      "type": "objectAttribute",
+                      "value": Object {
+                        "of": Object {
+                          "attributes": Object {
+                            "_type": Object {
+                              "type": "objectAttribute",
+                              "value": Object {
+                                "type": "string",
+                                "value": undefined,
+                              },
+                            },
+                            "aNumber": Object {
+                              "optional": true,
+                              "type": "objectAttribute",
+                              "value": Object {
+                                "type": "number",
+                              },
+                            },
+                            "aString": Object {
+                              "optional": true,
+                              "type": "objectAttribute",
+                              "value": Object {
+                                "type": "string",
+                              },
+                            },
+                          },
+                          "rest": Object {
+                            "attributes": Object {
+                              "_key": Object {
+                                "type": "objectAttribute",
+                                "value": Object {
+                                  "type": "string",
+                                },
+                              },
+                            },
+                            "type": "object",
+                          },
+                          "type": "object",
+                        },
+                        "type": "array",
+                      },
+                    },
+                  },
+                  "rest": Object {
+                    "attributes": Object {
+                      "_key": Object {
+                        "type": "objectAttribute",
+                        "value": Object {
+                          "type": "string",
+                        },
+                      },
+                    },
+                    "type": "object",
+                  },
+                  "type": "object",
+                },
+              ],
+              "type": "union",
+            },
+            "type": "array",
+          },
+        },
+        "recursive": Object {
+          "optional": true,
+          "type": "objectAttribute",
+          "value": Object {
+            "attributes": Object {
+              "_type": Object {
+                "type": "objectAttribute",
+                "value": Object {
+                  "type": "string",
+                  "value": "recursive",
+                },
+              },
+              "blocks": Object {
+                "optional": true,
+                "type": "objectAttribute",
+                "value": Object {
+                  "of": Object {
+                    "of": Array [
+                      Object {
+                        "attributes": Object {
+                          "_key": Object {
+                            "type": "objectAttribute",
+                            "value": Object {
+                              "type": "string",
+                            },
+                          },
+                          "children": Object {
+                            "type": "objectAttribute",
+                            "value": Object {
+                              "of": Object {
+                                "of": Array [
+                                  Object {
+                                    "attributes": Object {
+                                      "_key": Object {
+                                        "type": "objectAttribute",
+                                        "value": Object {
+                                          "type": "string",
+                                        },
+                                      },
+                                      "marks": Object {
+                                        "type": "objectAttribute",
+                                        "value": Object {
+                                          "of": Object {
+                                            "of": Array [
+                                              Object {
+                                                "type": "string",
+                                              },
+                                            ],
+                                            "type": "union",
+                                          },
+                                          "type": "array",
+                                        },
+                                      },
+                                      "text": Object {
+                                        "type": "objectAttribute",
+                                        "value": Object {
+                                          "type": "string",
+                                        },
+                                      },
+                                    },
+                                    "type": "object",
+                                  },
+                                ],
+                                "type": "union",
+                              },
+                              "type": "array",
+                            },
+                          },
+                          "level": Object {
+                            "optional": true,
+                            "type": "objectAttribute",
+                            "value": Object {
+                              "type": "number",
+                            },
+                          },
+                          "listItem": Object {
+                            "optional": true,
+                            "type": "objectAttribute",
+                            "value": Object {
+                              "of": Array [],
+                              "type": "union",
+                            },
+                          },
+                          "markDefs": Object {
+                            "type": "objectAttribute",
+                            "value": Object {
+                              "of": Object {
+                                "of": Array [],
+                                "type": "union",
+                              },
+                              "type": "array",
+                            },
+                          },
+                          "style": Object {
+                            "optional": true,
+                            "type": "objectAttribute",
+                            "value": Object {
+                              "of": Array [],
+                              "type": "union",
+                            },
+                          },
+                        },
+                        "rest": Object {
+                          "attributes": Object {
+                            "_key": Object {
+                              "type": "objectAttribute",
+                              "value": Object {
+                                "type": "string",
+                              },
+                            },
+                          },
+                          "type": "object",
+                        },
+                        "type": "object",
+                      },
+                      Object {
+                        "attributes": Object {
+                          "_key": Object {
+                            "type": "objectAttribute",
+                            "value": Object {
+                              "type": "string",
+                            },
+                          },
+                        },
+                        "rest": Object {
+                          "name": "blocksTest",
+                          "type": "inline",
+                        },
+                        "type": "object",
+                      },
+                    ],
+                    "type": "union",
+                  },
+                  "type": "array",
+                },
+              },
+            },
+            "type": "object",
+          },
+        },
+        "reproCH9436": Object {
+          "optional": true,
+          "type": "objectAttribute",
+          "value": Object {
+            "of": Object {
+              "of": Array [
+                Object {
+                  "attributes": Object {
+                    "_key": Object {
+                      "type": "objectAttribute",
+                      "value": Object {
+                        "type": "string",
+                      },
+                    },
+                    "children": Object {
+                      "type": "objectAttribute",
+                      "value": Object {
+                        "of": Object {
+                          "of": Array [
+                            Object {
+                              "attributes": Object {
+                                "_key": Object {
+                                  "type": "objectAttribute",
+                                  "value": Object {
+                                    "type": "string",
+                                  },
+                                },
+                                "marks": Object {
+                                  "type": "objectAttribute",
+                                  "value": Object {
+                                    "of": Object {
+                                      "of": Array [
+                                        Object {
+                                          "type": "string",
+                                        },
+                                      ],
+                                      "type": "union",
+                                    },
+                                    "type": "array",
+                                  },
+                                },
+                                "text": Object {
+                                  "type": "objectAttribute",
+                                  "value": Object {
+                                    "type": "string",
+                                  },
+                                },
+                              },
+                              "type": "object",
+                            },
+                          ],
+                          "type": "union",
+                        },
+                        "type": "array",
+                      },
+                    },
+                    "level": Object {
+                      "optional": true,
+                      "type": "objectAttribute",
+                      "value": Object {
+                        "type": "number",
+                      },
+                    },
+                    "listItem": Object {
+                      "optional": true,
+                      "type": "objectAttribute",
+                      "value": Object {
+                        "of": Array [],
+                        "type": "union",
+                      },
+                    },
+                    "markDefs": Object {
+                      "type": "objectAttribute",
+                      "value": Object {
+                        "of": Object {
+                          "of": Array [],
+                          "type": "union",
+                        },
+                        "type": "array",
+                      },
+                    },
+                    "style": Object {
+                      "optional": true,
+                      "type": "objectAttribute",
+                      "value": Object {
+                        "of": Array [],
+                        "type": "union",
+                      },
+                    },
+                  },
+                  "rest": Object {
+                    "attributes": Object {
+                      "_key": Object {
+                        "type": "objectAttribute",
+                        "value": Object {
+                          "type": "string",
+                        },
+                      },
+                    },
+                    "type": "object",
+                  },
+                  "type": "object",
+                },
+                Object {
+                  "attributes": Object {
+                    "_type": Object {
+                      "type": "objectAttribute",
+                      "value": Object {
+                        "type": "string",
+                        "value": "image",
+                      },
+                    },
+                    "asset": Object {
+                      "type": "objectAttribute",
+                      "value": Object {
+                        "attributes": Object {
+                          "_ref": Object {
+                            "type": "objectAttribute",
+                            "value": Object {
+                              "type": "string",
+                            },
+                          },
+                          "_type": Object {
+                            "type": "objectAttribute",
+                            "value": Object {
+                              "type": "string",
+                              "value": "reference",
+                            },
+                          },
+                          "_weak": Object {
+                            "optional": true,
+                            "type": "objectAttribute",
+                            "value": Object {
+                              "type": "boolean",
+                            },
+                          },
+                        },
+                        "dereferencesTo": "sanity.imageAsset",
+                        "type": "object",
+                      },
+                    },
+                    "caption": Object {
+                      "optional": true,
+                      "type": "objectAttribute",
+                      "value": Object {
+                        "of": Object {
+                          "attributes": Object {
+                            "_key": Object {
+                              "type": "objectAttribute",
+                              "value": Object {
+                                "type": "string",
+                              },
+                            },
+                            "children": Object {
+                              "type": "objectAttribute",
+                              "value": Object {
+                                "of": Object {
+                                  "of": Array [
+                                    Object {
+                                      "attributes": Object {
+                                        "_key": Object {
+                                          "type": "objectAttribute",
+                                          "value": Object {
+                                            "type": "string",
+                                          },
+                                        },
+                                        "marks": Object {
+                                          "type": "objectAttribute",
+                                          "value": Object {
+                                            "of": Object {
+                                              "of": Array [
+                                                Object {
+                                                  "type": "string",
+                                                },
+                                                Object {
+                                                  "type": "string",
+                                                  "value": "strong",
+                                                },
+                                                Object {
+                                                  "type": "string",
+                                                  "value": "em",
+                                                },
+                                                Object {
+                                                  "type": "string",
+                                                  "value": "underline",
+                                                },
+                                                Object {
+                                                  "type": "string",
+                                                  "value": "strikethrough",
+                                                },
+                                                Object {
+                                                  "type": "string",
+                                                  "value": "superscript",
+                                                },
+                                                Object {
+                                                  "type": "string",
+                                                  "value": "subscript",
+                                                },
+                                                Object {
+                                                  "type": "string",
+                                                  "value": "alignleft",
+                                                },
+                                                Object {
+                                                  "type": "string",
+                                                  "value": "aligncenter",
+                                                },
+                                                Object {
+                                                  "type": "string",
+                                                  "value": "alignright",
+                                                },
+                                                Object {
+                                                  "type": "string",
+                                                  "value": "alignjustify",
+                                                },
+                                              ],
+                                              "type": "union",
+                                            },
+                                            "type": "array",
+                                          },
+                                        },
+                                        "text": Object {
+                                          "type": "objectAttribute",
+                                          "value": Object {
+                                            "type": "string",
+                                          },
+                                        },
+                                      },
+                                      "type": "object",
+                                    },
+                                  ],
+                                  "type": "union",
+                                },
+                                "type": "array",
+                              },
+                            },
+                            "level": Object {
+                              "optional": true,
+                              "type": "objectAttribute",
+                              "value": Object {
+                                "type": "number",
+                              },
+                            },
+                            "listItem": Object {
+                              "optional": true,
+                              "type": "objectAttribute",
+                              "value": Object {
+                                "of": Array [],
+                                "type": "union",
+                              },
+                            },
+                            "markDefs": Object {
+                              "type": "objectAttribute",
+                              "value": Object {
+                                "of": Object {
+                                  "of": Array [],
+                                  "type": "union",
+                                },
+                                "type": "array",
+                              },
+                            },
+                            "style": Object {
+                              "optional": true,
+                              "type": "objectAttribute",
+                              "value": Object {
+                                "of": Array [],
+                                "type": "union",
+                              },
+                            },
+                          },
+                          "rest": Object {
+                            "attributes": Object {
+                              "_key": Object {
+                                "type": "objectAttribute",
+                                "value": Object {
+                                  "type": "string",
+                                },
+                              },
+                            },
+                            "type": "object",
+                          },
+                          "type": "object",
+                        },
+                        "type": "array",
+                      },
+                    },
+                  },
+                  "rest": Object {
+                    "attributes": Object {
+                      "_key": Object {
+                        "type": "objectAttribute",
+                        "value": Object {
+                          "type": "string",
+                        },
+                      },
+                    },
+                    "type": "object",
+                  },
+                  "type": "object",
+                },
+              ],
+              "type": "union",
+            },
+            "type": "array",
+          },
+        },
+        "title": Object {
+          "optional": true,
+          "type": "objectAttribute",
+          "value": Object {
+            "type": "string",
+          },
+        },
+        "withGeopoint": Object {
+          "optional": true,
+          "type": "objectAttribute",
+          "value": Object {
+            "of": Object {
+              "of": Array [
+                Object {
+                  "attributes": Object {
+                    "_key": Object {
+                      "type": "objectAttribute",
+                      "value": Object {
+                        "type": "string",
+                      },
+                    },
+                    "children": Object {
+                      "type": "objectAttribute",
+                      "value": Object {
+                        "of": Object {
+                          "of": Array [
+                            Object {
+                              "attributes": Object {
+                                "_key": Object {
+                                  "type": "objectAttribute",
+                                  "value": Object {
+                                    "type": "string",
+                                  },
+                                },
+                                "marks": Object {
+                                  "type": "objectAttribute",
+                                  "value": Object {
+                                    "of": Object {
+                                      "of": Array [
+                                        Object {
+                                          "type": "string",
+                                        },
+                                      ],
+                                      "type": "union",
+                                    },
+                                    "type": "array",
+                                  },
+                                },
+                                "text": Object {
+                                  "type": "objectAttribute",
+                                  "value": Object {
+                                    "type": "string",
+                                  },
+                                },
+                              },
+                              "type": "object",
+                            },
+                          ],
+                          "type": "union",
+                        },
+                        "type": "array",
+                      },
+                    },
+                    "level": Object {
+                      "optional": true,
+                      "type": "objectAttribute",
+                      "value": Object {
+                        "type": "number",
+                      },
+                    },
+                    "listItem": Object {
+                      "optional": true,
+                      "type": "objectAttribute",
+                      "value": Object {
+                        "of": Array [],
+                        "type": "union",
+                      },
+                    },
+                    "markDefs": Object {
+                      "type": "objectAttribute",
+                      "value": Object {
+                        "of": Object {
+                          "of": Array [],
+                          "type": "union",
+                        },
+                        "type": "array",
+                      },
+                    },
+                    "style": Object {
+                      "optional": true,
+                      "type": "objectAttribute",
+                      "value": Object {
+                        "of": Array [],
+                        "type": "union",
+                      },
+                    },
+                  },
+                  "rest": Object {
+                    "attributes": Object {
+                      "_key": Object {
+                        "type": "objectAttribute",
+                        "value": Object {
+                          "type": "string",
+                        },
+                      },
+                    },
+                    "type": "object",
+                  },
+                  "type": "object",
+                },
+                Object {
+                  "attributes": Object {
+                    "_key": Object {
+                      "type": "objectAttribute",
+                      "value": Object {
+                        "type": "string",
+                      },
+                    },
+                  },
+                  "rest": Object {
+                    "name": "geopoint",
+                    "type": "inline",
+                  },
+                  "type": "object",
+                },
+              ],
+              "type": "union",
+            },
+            "type": "array",
+          },
+        },
+      },
+      "type": "object",
+    },
+  },
+  Object {
+    "attributes": Object {
+      "_createdAt": Object {
+        "type": "objectAttribute",
+        "value": Object {
+          "type": "string",
+        },
+      },
+      "_id": Object {
+        "type": "objectAttribute",
+        "value": Object {
+          "type": "string",
+        },
+      },
+      "_rev": Object {
+        "type": "objectAttribute",
+        "value": Object {
+          "type": "string",
+        },
+      },
+      "_type": Object {
+        "type": "objectAttribute",
+        "value": Object {
+          "type": "string",
+          "value": "otherValidDocument",
+        },
+      },
+      "_updatedAt": Object {
+        "type": "objectAttribute",
+        "value": Object {
+          "type": "string",
+        },
+      },
+      "title": Object {
+        "optional": true,
+        "type": "objectAttribute",
+        "value": Object {
+          "type": "string",
+        },
+      },
+    },
+    "name": "otherValidDocument",
+    "type": "document",
+  },
+  Object {
+    "name": "object",
+    "type": "type",
+    "value": Object {
+      "name": "obj",
+      "type": "inline",
+    },
+  },
+]
+`;
