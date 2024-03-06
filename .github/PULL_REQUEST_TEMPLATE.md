@@ -25,4 +25,6 @@ possible/practical for writing an automated test
 
 <!--
 A description of the change(s) that should be used in the release notes.
+If this is PR is a partial implementation of a feature and is not enabled by default, please
+call this out explicitly here so that it does not get included in the release notes.
 -->
