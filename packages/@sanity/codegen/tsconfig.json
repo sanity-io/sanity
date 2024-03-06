@@ -8,5 +8,8 @@
     "outDir": "./lib/dts",
     "declarationDir": "./lib/dts",
   },
-  "references": [{"path": "../../@sanity/types/tsconfig.lib.json"}],
+  "references": [
+    {"path": "../../@sanity/types/tsconfig.lib.json"},
+    {"path": "../../groq/tsconfig.lib.json"},
+  ],
 }
