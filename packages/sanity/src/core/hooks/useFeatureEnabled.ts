@@ -7,16 +7,20 @@ import {useSource} from '../studio'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../studioClient'
 import {useClient} from './useClient'
 
+const EMPTY_ARRAY: [] = []
+
 interface Features {
-  isLoading: boolean
   enabled: boolean
+  error: Error | null
   features: string[]
+  isLoading: boolean
 }
 
 const INITIAL_LOADING_STATE: Features = {
-  isLoading: true,
   enabled: true,
-  features: [],
+  error: null,
+  features: EMPTY_ARRAY,
+  isLoading: true,
 }
 
 /**
@@ -37,29 +41,22 @@ export function useFeatureEnabled(featureKey: string): Features {
   const {projectId} = useSource()
 
   if (!cachedFeatureRequest.get(projectId)) {
-    const features = fetchFeatures({versionedClient}).pipe(
-      shareReplay(),
-      catchError((error) => {
-        console.error(error)
-        // Return an empty list of features if the request fails
-        return of([])
-      }),
-    )
+    const features = fetchFeatures({versionedClient}).pipe(shareReplay())
     cachedFeatureRequest.set(projectId, features)
   }
 
   const featureInfo = useMemoObservable(
     () =>
-      (cachedFeatureRequest.get(projectId) || of([])).pipe(
+      (cachedFeatureRequest.get(projectId) || of(EMPTY_ARRAY)).pipe(
         map((features = []) => ({
           isLoading: false,
           enabled: Boolean(features?.includes(featureKey)),
           features,
+          error: null,
         })),
         startWith(INITIAL_LOADING_STATE),
-        catchError((err: Error) => {
-          console.error(err)
-          return of({isLoading: false, enabled: true, features: []})
+        catchError((error: Error) => {
+          return of({isLoading: false, enabled: false, features: EMPTY_ARRAY, error})
         }),
       ),
     [featureKey, projectId],
