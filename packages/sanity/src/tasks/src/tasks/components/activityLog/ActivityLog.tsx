@@ -1,21 +1,19 @@
 // This file is a WIP.
 import {DotIcon} from '@sanity/icons'
 import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
-import {useCallback, useMemo, useState} from 'react'
+import {useMemo} from 'react'
 import {
   type FormPatch,
   type PatchEvent,
   type Path,
-  set,
   useCurrentUser,
   useDateTimeFormat,
   UserAvatar,
   useUser,
 } from 'sanity'
 
-import {Button} from '../../../../../ui-components'
 import {type TaskDocument} from '../../types'
-import {TasksSubscriberAvatars} from './TasksSubscribers'
+import {TasksSubsribers} from './TasksSubscribers'
 
 function AddComment() {
   const currentUser = useCurrentUser()
@@ -85,32 +83,6 @@ export function ActivityLog(props: {
   onChange: (patch: FormPatch | PatchEvent | FormPatch[]) => void
 }) {
   const {value, onChange, path} = props
-  const user = useCurrentUser()
-  const currentUserId = user?.id
-
-  const userIsSubscribed = value.subscribers?.includes(user?.id || '')
-
-  const [buttonText, setButtonText] = useState(userIsSubscribed ? 'Unsubscribe' : 'Subscribe')
-
-  const handleToggleSubscribe = useCallback(() => {
-    const subscribers = value.subscribers || []
-
-    if (currentUserId) {
-      if (!subscribers.includes(currentUserId)) {
-        onChange(set(subscribers.concat(currentUserId), path))
-        setButtonText('Unsubscribe')
-      }
-      if (subscribers.includes(currentUserId)) {
-        onChange(
-          set(
-            subscribers.filter((subscriberId) => subscriberId !== currentUserId),
-            path,
-          ),
-        )
-        setButtonText('Subscribe')
-      }
-    }
-  }, [value.subscribers, currentUserId, onChange, path])
 
   return (
     <Box marginTop={5}>
@@ -119,10 +91,7 @@ export function ActivityLog(props: {
           <Text size={2} weight="semibold">
             Activity
           </Text>
-          <Flex gap={1} align="center">
-            <Button mode="bleed" text={buttonText} onClick={handleToggleSubscribe} />
-            <TasksSubscriberAvatars subscriberIds={value.subscribers} />
-          </Flex>
+          <TasksSubsribers value={value} onChange={onChange} path={path} />
         </Flex>
       </Card>
       <Stack marginTop={4} space={4}>
