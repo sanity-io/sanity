@@ -13,7 +13,7 @@ import {findQueriesInSource} from './findQueriesInSource'
 const $debug = debug('sanity:codegen:findQueries:debug')
 const $trace = debug('sanity:codegen:findQueries:trace')
 
-const require = createRequire(import.meta.url)
+const require = createRequire(__filename)
 
 const defaultBabelOptions = {
   extends: join(__dirname, '..', '..', 'babel.config.json'),
@@ -24,6 +24,9 @@ type FindQueriesReturnValue = {
   queries: Map<string, NamedQueryResult>
   error?: Error
 }
+
+// Holds all queries found in the source files
+const allQueries = new Set()
 
 export function findQueriesInPath({
   path,
@@ -50,13 +53,25 @@ export function findQueriesInPath({
     stream.on('end', () => subscriber.complete())
   }).pipe(
     mergeMap(async ({filename}) => {
+      let error
+
       try {
         const source = await fs.readFile(filename, 'utf8')
         const queries = findQueriesInSource(source, filename, babelOptions, resolver)
+        // Check and error on duplicate query names, because we can't generate types with the same name.
+        queries.forEach((_value, key) => {
+          if (allQueries.has(key)) {
+            error = new Error(
+              `Duplicate query name found: "${key}". Query names must be unique across all files.`,
+            )
+          }
+          allQueries.add(key)
+        })
 
         return {
           filename,
           queries,
+          error,
         }
       } catch (err) {
         return {
