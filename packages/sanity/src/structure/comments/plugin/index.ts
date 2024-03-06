@@ -20,7 +20,6 @@ export const comments = definePlugin({
   form: {
     components: {
       field: CommentsField,
-      // The `CommentsInput` will be enabled when it is ready to be used.
       input: CommentsInput,
     },
   },
