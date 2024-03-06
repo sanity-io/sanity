@@ -1,7 +1,7 @@
 import {type SanityClient} from '@sanity/client'
 import {type Mutation} from '@sanity/mutator'
 import {type SanityDocument} from '@sanity/types'
-import {EMPTY, from, merge, type Observable} from 'rxjs'
+import {EMPTY, from, merge, type Observable, Subject} from 'rxjs'
 import {filter, map, mergeMap, mergeMapTo, share, tap} from 'rxjs/operators'
 
 import {
@@ -63,6 +63,7 @@ export interface Pair {
   transactionsPendingEvents$: Observable<PendingMutationsEvent>
   published: DocumentVersion
   draft: DocumentVersion
+  complete: () => void
 }
 
 function setVersion<T>(version: 'draft' | 'published') {
@@ -105,7 +106,10 @@ function submitCommitRequest(client: SanityClient, request: CommitRequest) {
 export function checkoutPair(client: SanityClient, idPair: IdPair): Pair {
   const {publishedId, draftId} = idPair
 
-  const listenerEvents$ = getPairListener(client, idPair).pipe(share())
+  const listenerEventsConnector = new Subject<ListenerEvent>()
+  const listenerEvents$ = getPairListener(client, idPair).pipe(
+    share({connector: () => listenerEventsConnector}),
+  )
 
   const reconnect$ = listenerEvents$.pipe(
     filter((ev) => ev.type === 'reconnect'),
@@ -146,5 +150,6 @@ export function checkoutPair(client: SanityClient, idPair: IdPair): Pair {
       consistency$: published.consistency$,
       remoteSnapshot$: published.remoteSnapshot$.pipe(map(setVersion('published'))),
     },
+    complete: () => listenerEventsConnector.complete(),
   }
 }
