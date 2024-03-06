@@ -4,6 +4,7 @@ export {
   resolveSearchConfig,
   resolveSearchConfigForBaseFieldPaths,
 } from '../legacy/searchConfig/resolve'
+export {extractSchema} from '../sanity/extractSchema'
 export {groupProblems} from '../sanity/groupProblems'
 export {
   type _FIXME_ as FIXME,
