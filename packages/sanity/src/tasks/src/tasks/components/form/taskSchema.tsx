@@ -118,6 +118,12 @@ export const taskSchema = (mode: FormMode) =>
         hidden: true,
       },
       {
+        type: 'array',
+        of: [{type: 'string'}],
+        name: 'subscribers',
+        hidden: true,
+      },
+      {
         type: 'string',
         name: 'status',
         title: 'Status',
