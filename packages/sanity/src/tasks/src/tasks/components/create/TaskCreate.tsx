@@ -17,6 +17,7 @@ export function TaskCreate({selectedTask}: {selectedTask: string}) {
     _type: 'tasks.task',
     authorId: currentUser.id,
     status: 'open',
+    subscribers: [currentUser.id],
     target: activeDocument
       ? getTargetValue({
           documentId: activeDocument.documentId,
