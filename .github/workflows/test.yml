@@ -37,38 +37,6 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
 
-      - uses: pnpm/action-setup@v2
-        name: Install pnpm
-        id: pnpm-install
-        with:
-          version: 8
-          run_install: false
-
-      - name: Get pnpm store directory
-        id: pnpm-cache
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
-
-      - name: Cache node modules
-        id: cache-node-modules
-        uses: actions/cache@v4
-        env:
-          cache-name: cache-node-modules
-        with:
-          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ env.cache-name }}-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            v1-${{ runner.os }}-pnpm-store-${{ env.cache-name }}-
-            v1-${{ runner.os }}-pnpm-store-
-            v1-${{ runner.os }}-
-
-      - name: Install project dependencies
-        run: pnpm install
-
-      - name: Build CLI
-        run: pnpm build # Needed for CLI tests
-
   test:
     timeout-minutes: 60
     name: Test (${{ matrix.os }} / node ${{ matrix.node }})
@@ -128,19 +96,11 @@ jobs:
             v1-${{ runner.os }}-pnpm-store-
             v1-${{ runner.os }}-
 
-      - name: Restore build cache
-        uses: actions/cache/restore@v4
-        id: restore-build
-        env:
-          cache-name: cache-build
-        with:
-          path: ./*
-          key: ${{ runner.os }}-build-${{ matrix.node }}-${{ env.cache-name }}-${{ github.run_id }}
-          # If the cached build from the pervious step is not available. Fail the build
-          fail-on-cache-miss: true
-
       - name: Install project dependencies
         run: pnpm install
+
+      - name: Build packages
+        run: pnpm build
 
       - name: Test
         id: test
@@ -174,10 +134,3 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
-
-      # Delete the cache so it is only used once
-      - name: Delete Cache
-        run: gh cache delete ${{ runner.os }}-build-${{ matrix.node }}-${{ env.cache-name }}-${{ github.run_id }}
-        env:
-          cache-name: cache-build
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
