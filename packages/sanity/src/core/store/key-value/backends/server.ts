@@ -58,11 +58,12 @@ export function serverBackend({client: _client}: ServerBackendOptions): Backend 
       }),
     ).pipe(
       map((response) => {
-        response.forEach((pair) => {
+        return response.map((pair) => {
           keyValueLoader.clear(pair.key)
           keyValueLoader.prime(pair.key, pair.value)
+
+          return pair.value
         })
-        return response.map((pair) => pair.value)
       }),
       catchError((error) => {
         console.error('Error setting data:', error)
