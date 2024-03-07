@@ -103,7 +103,7 @@ function FormEditInner(props: ObjectInputProps) {
         </div>
         <FormActionsMenu id={props.value?._id} value={value} />
       </Flex>
-      <FirstRow paddingBottom={3} gap={2} align="flex-start" justify="flex-start">
+      <FirstRow paddingBottom={3} paddingTop={2} gap={2} align="flex-start" justify="flex-start">
         <StatusSelector
           value={props.value?.status}
           path={['status']}

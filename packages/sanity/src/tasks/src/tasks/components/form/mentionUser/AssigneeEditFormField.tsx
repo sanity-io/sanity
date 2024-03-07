@@ -45,6 +45,7 @@ export function AssigneeEditFormField(props: {
   return (
     <AssigneeSelectionMenu
       onSelect={onSelect}
+      value={value}
       menuButton={
         <StyledButton mode="ghost" padding={0}>
           <Flex align="center" gap={3}>
