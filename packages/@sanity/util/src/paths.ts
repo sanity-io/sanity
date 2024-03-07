@@ -10,7 +10,8 @@ import {
 
 const rePropName =
   /[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|$))/g
-const reKeySegment = /_key\s*==\s*['"](.*)['"]/
+const rePropNameSplit = /(?<!(?:\[[a-z|_]+=="[a-z]+))(\.)(?!(?:"]))|\[|]/gi
+const reKeySegment = /(?<!(?:\[[a-z|_]+=="[a-z]+))(\.)(?!(?:"]))|\[|(]\.?)/
 const EMPTY_PATH: Path = []
 
 export const FOCUS_TERMINATOR = '$'
@@ -228,7 +229,9 @@ export function fromString(path: string): Path {
     throw new Error('Path is not a string')
   }
 
-  const segments = path.match(rePropName)
+  // const segments = path.match(rePropName)
+  const segments = path.split(rePropNameSplit).filter(Boolean)
+  // console.log('[SEGMENTS]', {path, segments})
   if (!segments) {
     throw new Error('Invalid path string')
   }
