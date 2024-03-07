@@ -48,14 +48,17 @@ export function FormCreate(props: ObjectInputProps) {
       })
       return
     }
-    onChange(set(getTaskSubscribers(value), ['subscribers']))
+    onChange([
+      set(getTaskSubscribers(value), ['subscribers']),
+      set(new Date().toISOString(), ['createdByUser']),
+    ])
 
-    onChange(set(new Date().toISOString(), ['createdByUser']))
     if (createMore) {
       setViewMode({type: 'create'})
     } else {
       setActiveTab('subscribed')
     }
+
     toast.push({
       closable: true,
       status: 'success',
