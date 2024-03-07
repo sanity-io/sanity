@@ -8,7 +8,7 @@ import {
   TextSkeleton,
 } from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
-import {type FormPatch, type PatchEvent, type Path, set} from 'sanity'
+import {type FormPatch, type PatchEvent, type Path, set, useFormValue} from 'sanity'
 import styled from 'styled-components'
 
 import {useMentionUser} from '../../../context'
@@ -25,13 +25,22 @@ export function AssigneeEditFormField(props: {
   onChange: (patch: FormPatch | PatchEvent | FormPatch[]) => void
 }) {
   const {value, onChange, path} = props
+  const subscribers = useFormValue(['subscribers']) as string[] | undefined
   const {mentionOptions} = useMentionUser()
   const mentionedUser = useMemo(
     () => mentionOptions.data?.find((u) => u.id === value),
     [mentionOptions.data, value],
   )
 
-  const onSelect = useCallback((userId: string) => onChange(set(userId, path)), [onChange, path])
+  const onSelect = useCallback(
+    (userId: string) => {
+      onChange(set(userId, path))
+      if (subscribers && !subscribers.includes(userId)) {
+        onChange(set([...subscribers, userId], ['subscribers']))
+      }
+    },
+    [onChange, path, subscribers],
+  )
 
   const displayText = useMemo(() => {
     if (value) {
