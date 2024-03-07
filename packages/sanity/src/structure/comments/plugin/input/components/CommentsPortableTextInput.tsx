@@ -108,7 +108,7 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
     // When trying to add a comment in "upsell" mode, we want to
     // display the upsell dialog instead of the comment input popover.
     if (mode === 'upsell') {
-      handleOpenDialog('inline_comment')
+      handleOpenDialog('pte')
       return
     }
 

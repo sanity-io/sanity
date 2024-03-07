@@ -7,13 +7,7 @@ interface UpsellDialogActionsInfo {
 
 /** @internal */
 export interface UpsellDialogViewedInfo extends UpsellDialogActionsInfo {
-  source:
-    | 'field_action'
-    | 'document_toolbar'
-    | 'document_action'
-    | 'navbar'
-    | 'link'
-    | 'inline_comment'
+  source: 'field_action' | 'document_toolbar' | 'document_action' | 'navbar' | 'link' | 'pte'
 }
 
 /**
