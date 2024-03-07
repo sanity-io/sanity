@@ -1,14 +1,18 @@
 import {PanelRightIcon} from '@sanity/icons'
 
 import {Button} from '../../../../../ui-components'
-import {useTasks, useTasksEnabled} from '../../context'
+import {useTasksEnabled, useTasksNavigation} from '../../context'
 
 /**
  * @internal
  */
 export function TasksNavbarButton() {
   const {enabled} = useTasksEnabled()
-  const {toggleOpen, isOpen} = useTasks()
+  const {
+    handleCloseTasks,
+    handleOpenTasks,
+    state: {isOpen},
+  } = useTasksNavigation()
 
   if (!enabled) return null
   return (
@@ -17,7 +21,7 @@ export function TasksNavbarButton() {
       mode={'bleed'}
       selected={isOpen}
       iconRight={PanelRightIcon}
-      onClick={toggleOpen}
+      onClick={isOpen ? handleCloseTasks : handleOpenTasks}
     />
   )
 }

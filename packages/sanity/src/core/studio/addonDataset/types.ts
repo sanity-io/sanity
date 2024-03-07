@@ -14,4 +14,5 @@ export interface AddonDatasetContextValue {
    * Function to create the addon dataset if it does not exist.
    */
   createAddonDataset: () => Promise<SanityClient | null>
+  ready: boolean
 }
