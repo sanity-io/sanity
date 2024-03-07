@@ -1,13 +1,7 @@
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
 import {useCallback, useEffect, useRef, useState} from 'react'
-import {
-  type ArrayFieldProps,
-  type ArrayOfObjectsInputProps,
-  type PortableTextBlock,
-  set,
-  useCurrentUser,
-} from 'sanity'
+import {type ArrayFieldProps, type PortableTextBlock, set, useCurrentUser} from 'sanity'
 import styled, {css} from 'styled-components'
 
 // TODO: This is using components from structure/comments which is not ideal. But given comments is changing
@@ -15,19 +9,6 @@ import styled, {css} from 'styled-components'
 import {CommentInput} from '../../../../../structure/comments'
 import {useMentionUser} from '../../context'
 import {type FormMode} from '../../types'
-
-const RemoveTitle = styled.div`
-  margin-top: 12px;
-  fieldset {
-    // Tag first div of fieldset
-    & > div:first-child {
-      display: none !important;
-    }
-  }
-`
-export const DescriptionFieldContainer = (props: ArrayFieldProps) => {
-  return <RemoveTitle>{props.renderDefault(props)}</RemoveTitle>
-}
 
 const DescriptionInputRoot = styled.div<{$mode: FormMode; $minHeight: number}>((props) => {
   const theme = getTheme_v2(props.theme)
@@ -50,10 +31,14 @@ const DescriptionInputRoot = styled.div<{$mode: FormMode; $minHeight: number}>((
   `
 })
 
-export function DescriptionInput(
-  props: ArrayOfObjectsInputProps<PortableTextBlock> & {mode: FormMode},
-) {
-  const {value, onChange, mode} = props
+export function DescriptionInput(props: ArrayFieldProps & {mode: FormMode}) {
+  const {
+    value: _propValue,
+    mode,
+    inputProps: {onChange},
+  } = props
+  const value = _propValue as PortableTextBlock[] | undefined
+
   const currentUser = useCurrentUser()
   const {mentionOptions} = useMentionUser()
 

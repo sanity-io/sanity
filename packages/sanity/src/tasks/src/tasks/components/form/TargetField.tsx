@@ -19,8 +19,9 @@ import {IntentLink} from 'sanity/router'
 import styled, {css} from 'styled-components'
 
 import {Button} from '../../../../../ui-components'
-import {type TaskTarget} from '../../types'
+import {type FormMode, type TaskTarget} from '../../types'
 import {CurrentWorkspaceProvider} from './CurrentWorkspaceProvider'
+import {FieldWrapperRoot} from './FieldWrapper'
 import {getTargetValue} from './utils'
 
 const EmptyReferenceRoot = styled(Card)((props) => {
@@ -63,12 +64,8 @@ const StyledIntentLink = styled(IntentLink)(() => {
   `
 })
 
-function Preview(props: {
-  value: TaskTarget
-  handleRemove: () => void
-  handleOpenSearch: () => void
-}) {
-  const {value, handleOpenSearch, handleRemove} = props
+function Preview(props: {value: TaskTarget; handleRemove: () => void; mode: FormMode}) {
+  const {value, handleRemove, mode} = props
   const documentId = value.document._ref
   const documentType = value.documentType
   const schema = useSchema()
@@ -89,33 +86,14 @@ function Preview(props: {
       }),
     [documentId, documentType],
   )
-
-  const OpenLink = useMemo(
-    () =>
-      // eslint-disable-next-line @typescript-eslint/no-shadow
-      forwardRef(function OpenLink(restProps, _ref: ForwardedRef<HTMLAnchorElement>) {
-        return (
-          <IntentLink
-            {...restProps}
-            intent="edit"
-            params={{id: documentId, type: documentType}}
-            target="_blank"
-            rel="noopener noreferrer"
-            ref={_ref}
-          />
-        )
-      }),
-    [documentId, documentType],
-  )
-
   if (!schemaType) {
     return <Text>Schema not found</Text>
   }
 
   return (
-    <Card>
+    <Card border={mode === 'edit'} radius={2} overflow={'hidden'}>
       <Flex gap={1} align={'center'} justify={'space-between'} paddingRight={1}>
-        <Card as={CardLink} radius={2} data-as="button">
+        <Card as={CardLink} radius={mode === 'create' ? 2 : 0} data-as="button">
           <SearchResultItemPreview
             documentId={value.document._ref}
             layout={'compact'}
@@ -124,24 +102,30 @@ function Preview(props: {
             showBadge={false}
           />
         </Card>
-        <Box flex="none">
-          <Button
-            icon={CloseIcon}
-            mode="bleed"
-            onClick={handleRemove}
-            tooltipProps={{content: 'Remove target content'}}
-          />
-        </Box>
+        <Button
+          icon={CloseIcon}
+          mode="bleed"
+          onClick={handleRemove}
+          tooltipProps={{content: 'Remove target content'}}
+        />
       </Flex>
     </Card>
   )
 }
 
-export function TargetField(props: ObjectFieldProps) {
+export function TargetField(
+  props: ObjectFieldProps & {
+    mode: FormMode
+  },
+) {
   const [open, setOpen] = useState(false)
   const {dataset, projectId} = useWorkspace()
-  const {onChange} = props.inputProps
-  const value = props.value as unknown as TaskTarget | undefined
+  const {
+    mode,
+    inputProps: {onChange},
+    value: _propValue,
+  } = props
+  const value = _propValue as unknown as TaskTarget | undefined
 
   const handleItemSelect = useCallback(
     (item: {_id: string; _type: string}) => {
@@ -176,25 +160,24 @@ export function TargetField(props: ObjectFieldProps) {
   }, [])
 
   return (
-    <>
+    <FieldWrapperRoot>
       <LayerProvider zOffset={100}>
         <CurrentWorkspaceProvider>
           <Stack space={2}>
-            <Box paddingY={2}>
-              <FormFieldHeaderText
-                description={props.description}
-                inputId={props.inputId}
-                title={props.title}
-                validation={props.validation}
-                deprecated={undefined}
-              />
-            </Box>
+            {mode === 'create' && (
+              <Box data-ui="fieldHeaderContentBox">
+                <FormFieldHeaderText
+                  description={props.description}
+                  inputId={props.inputId}
+                  title={props.title}
+                  validation={props.validation}
+                  deprecated={undefined}
+                />
+              </Box>
+            )}
+
             {value ? (
-              <Preview
-                value={value}
-                handleRemove={handleRemove}
-                handleOpenSearch={handleOpenSearch}
-              />
+              <Preview value={value} handleRemove={handleRemove} mode={mode} />
             ) : (
               <EmptyReferenceRoot
                 border
@@ -227,6 +210,6 @@ export function TargetField(props: ObjectFieldProps) {
           </SearchProvider>
         </CurrentWorkspaceProvider>
       </LayerProvider>
-    </>
+    </FieldWrapperRoot>
   )
 }
