@@ -11,9 +11,11 @@ import styled, {css} from 'styled-components'
 import {
   applyCommentsFieldAttr,
   type CommentCreatePayload,
+  type CommentMessage,
   type CommentsUIMode,
   isTextSelectionComment,
   useComments,
+  useCommentsAuthoringPath,
   useCommentsEnabled,
   useCommentsScroll,
   useCommentsSelectedPath,
@@ -21,6 +23,14 @@ import {
 } from '../../src'
 import {COMMENTS_HIGHLIGHT_HUE_KEY} from '../../src/constants'
 import {CommentsFieldButton} from './CommentsFieldButton'
+
+// When the form is temporarily set to `readOnly` while reconnecting, the form
+// will be re-rendered and any comment that is being authored will be lost.
+// To avoid this, we cache the comment message in a map and restore it when the
+// field is re-rendered.
+const messageCache = new Map<string, CommentMessage>()
+
+const EMPTY_ARRAY: [] = []
 
 const HIGHLIGHT_BLOCK_VARIANTS: Variants = {
   initial: {
@@ -74,8 +84,6 @@ function CommentFieldInner(
   },
 ) {
   const {mode} = props
-  const [open, setOpen] = useState<boolean>(false)
-  const [value, setValue] = useState<PortableTextBlock[] | null>(null)
 
   const currentUser = useCurrentUser()
   const {element: boundaryElement} = useBoundaryElement()
@@ -94,18 +102,28 @@ function CommentFieldInner(
   } = useComments()
   const {upsellData, handleOpenDialog} = useCommentsUpsell()
   const {selectedPath, setSelectedPath} = useCommentsSelectedPath()
+  const {authoringPath, setAuthoringPath} = useCommentsAuthoringPath()
   const {scrollToGroup} = useCommentsScroll({
     boundaryElement,
   })
 
   const fieldTitle = useMemo(() => getSchemaTypeTitle(props.schemaType), [props.schemaType])
+  const stringPath = useMemo(() => PathUtils.toString(props.path), [props.path])
+
+  // Use the cached value if it exists as the initial value
+  const cachedValue = messageCache.get(stringPath) || null
+
+  const [value, setValue] = useState<PortableTextBlock[] | null>(cachedValue)
+
+  // If the path of the field matches the authoring path, the comment input should be open.
+  const isOpen = useMemo(() => authoringPath === stringPath, [authoringPath, stringPath])
 
   // Determine if the current field is selected
   const isSelected = useMemo(() => {
     if (!isCommentsOpen) return false
     if (selectedPath?.origin === 'form' || selectedPath?.origin === 'url') return false
-    return selectedPath?.fieldPath === PathUtils.toString(props.path)
-  }, [isCommentsOpen, props.path, selectedPath?.fieldPath, selectedPath?.origin])
+    return selectedPath?.fieldPath === stringPath
+  }, [isCommentsOpen, selectedPath?.fieldPath, selectedPath?.origin, stringPath])
 
   const isInlineCommentThread = useMemo(() => {
     return comments.data.open
@@ -115,16 +133,20 @@ function CommentFieldInner(
 
   // Total number of comments for the current field
   const count = useMemo(() => {
-    const stringPath = PathUtils.toString(props.path)
-
     const commentsCount = comments.data.open
       .map((c) => (c.fieldPath === stringPath ? c.commentsCount : 0))
       .reduce((acc, val) => acc + val, 0)
 
     return commentsCount || 0
-  }, [comments.data.open, props.path])
+  }, [comments.data.open, stringPath])
 
   const hasComments = Boolean(count > 0)
+
+  const resetMessageValue = useCallback(() => {
+    // Reset the value and remove the message from the cache
+    setValue(null)
+    messageCache.delete(stringPath)
+  }, [stringPath])
 
   const handleClick = useCallback(() => {
     // When clicking a comment button when the field has comments, we want to:
@@ -134,8 +156,9 @@ function CommentFieldInner(
         setStatus('open')
       }
 
-      // 2. Close the comment input if it's open
-      setOpen(false)
+      // 2. Ensure that the authoring path is reset when clicking
+      //    the comment button when the field has comments.
+      setAuthoringPath(null)
 
       // 3. Open the comments inspector
       onCommentsOpen?.()
@@ -171,19 +194,24 @@ function CommentFieldInner(
       return
     }
 
-    // Else, toggle the comment input open/closed
-    setOpen((v) => !v)
+    // If the field is open (i.e. the authoring path is set to the current field)
+    // we close the field by resetting the authoring path. If the field is not open,
+    // we set the authoring path to the current field so that the comment form is opened.
+    setAuthoringPath(isOpen ? null : stringPath)
   }, [
     comments.data.open,
     handleOpenDialog,
     hasComments,
+    isOpen,
     mode,
     onCommentsOpen,
     props.path,
     scrollToGroup,
+    setAuthoringPath,
     setSelectedPath,
     setStatus,
     status,
+    stringPath,
     upsellData,
   ])
 
@@ -200,7 +228,7 @@ function CommentFieldInner(
         status: 'open',
         threadId: newThreadId,
         // New comments have no reactions
-        reactions: [],
+        reactions: EMPTY_ARRAY,
       }
 
       // Execute the create mutation
@@ -216,8 +244,7 @@ function CommentFieldInner(
         setStatus('open')
       }
 
-      // Reset the value
-      setValue(null)
+      resetMessageValue()
 
       // Scroll to the thread
       setSelectedPath({
@@ -232,6 +259,7 @@ function CommentFieldInner(
     onCommentsOpen,
     operation,
     props.path,
+    resetMessageValue,
     scrollToGroup,
     setSelectedPath,
     setStatus,
@@ -239,7 +267,15 @@ function CommentFieldInner(
     value,
   ])
 
-  const handleDiscard = useCallback(() => setValue(null), [])
+  const handleClose = useCallback(() => setAuthoringPath(null), [setAuthoringPath])
+
+  const handleOnChange = useCallback(
+    (nextValue: CommentMessage) => {
+      setValue(nextValue)
+      messageCache.set(stringPath, nextValue)
+    },
+    [stringPath],
+  )
 
   const internalComments: FieldProps['__internal_comments'] = useMemo(
     () => ({
@@ -250,29 +286,31 @@ function CommentFieldInner(
           fieldTitle={fieldTitle}
           isCreatingDataset={isCreatingDataset}
           mentionOptions={mentionOptions}
-          onChange={setValue}
+          onChange={handleOnChange}
           onClick={handleClick}
+          onClose={handleClose}
           onCommentAdd={handleCommentAdd}
-          onDiscard={handleDiscard}
-          open={open}
-          setOpen={setOpen}
+          onDiscard={resetMessageValue}
+          open={isOpen}
           value={value}
         />
       ),
       hasComments,
-      isAddingComment: open,
+      isAddingComment: isOpen,
     }),
     [
       currentUser,
       count,
       fieldTitle,
-      mentionOptions,
-      handleClick,
-      handleCommentAdd,
-      handleDiscard,
-      open,
-      value,
       isCreatingDataset,
+      mentionOptions,
+      handleOnChange,
+      handleClick,
+      handleClose,
+      handleCommentAdd,
+      resetMessageValue,
+      isOpen,
+      value,
       hasComments,
     ],
   )

@@ -4,6 +4,7 @@ import {type DocumentLayoutProps} from 'sanity'
 import {useDocumentPane} from '../../..'
 import {COMMENTS_INSPECTOR_NAME} from '../../../panes/document/constants'
 import {
+  CommentsAuthoringPathProvider,
   CommentsEnabledProvider,
   CommentsProvider,
   CommentsSelectedPathProvider,
@@ -43,7 +44,9 @@ function CommentsDocumentLayoutInner(props: DocumentLayoutProps) {
       isCommentsOpen={inspector?.name === COMMENTS_INSPECTOR_NAME}
       onCommentsOpen={handleOpenCommentsInspector}
     >
-      <CommentsSelectedPathProvider>{props.renderDefault(props)}</CommentsSelectedPathProvider>
+      <CommentsSelectedPathProvider>
+        <CommentsAuthoringPathProvider>{props.renderDefault(props)}</CommentsAuthoringPathProvider>
+      </CommentsSelectedPathProvider>
     </CommentsProvider>
   )
 }
