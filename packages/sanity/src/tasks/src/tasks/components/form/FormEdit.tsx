@@ -112,7 +112,7 @@ function FormEditInner(props: ObjectInputProps) {
         />
         <AssigneeEditFormField
           value={props.value?.assignedTo}
-          onChange={props.onChange}
+          onChange={handleChangeAndSubscribe}
           path={['assignedTo']}
         />
       </FirstRow>
