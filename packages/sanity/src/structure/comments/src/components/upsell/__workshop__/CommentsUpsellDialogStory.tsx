@@ -8,11 +8,11 @@ import {useCommentsUpsell} from '../../../hooks'
 const CommentsUpsellDialogStoryInner = () => {
   const {upsellData, handleOpenDialog} = useCommentsUpsell()
   const handleOpen = useCallback(() => {
-    handleOpenDialog()
+    handleOpenDialog('field_action')
   }, [handleOpenDialog])
 
   useEffect(() => {
-    handleOpenDialog()
+    handleOpenDialog('field_action')
   }, [handleOpenDialog])
 
   if (!upsellData) return null
