@@ -34,6 +34,8 @@ export function useRemoveTask({id, onError, onRemoved}: RemoveTaskOptions): Remo
       onError?.(e.message)
       setError(e.message)
       setRemoveStatus('error')
+    } finally {
+      setRemoveStatus('idle')
     }
   }, [id, operations, onError, onRemoved])
 
