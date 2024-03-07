@@ -99,18 +99,21 @@ function DraftsMenu() {
  */
 export function TasksSidebarHeader(props: TasksSidebarHeaderProps) {
   const {items: allItems} = props
-  const {state, editTask, setViewMode} = useTasksNavigation()
+  const {state, setViewMode, handleCloseTasks} = useTasksNavigation()
   const {viewMode, activeTabId, selectedTask} = state
-  const {toggleOpen} = useTasks()
   const items = allItems.filter((t) => t.status === 'open')
   const currentItemIndex = items.findIndex((item) => item._id === selectedTask)
 
   const goToPreviousTask = useCallback(() => {
-    editTask(currentItemIndex > 0 ? items[currentItemIndex - 1]._id : items[items.length - 1]._id)
-  }, [currentItemIndex, items, editTask])
+    const prevTaskId =
+      currentItemIndex > 0 ? items[currentItemIndex - 1]._id : items[items.length - 1]._id
+    setViewMode({type: 'edit', id: prevTaskId})
+  }, [currentItemIndex, items, setViewMode])
   const goToNextTask = useCallback(() => {
-    editTask(currentItemIndex < items.length - 1 ? items[currentItemIndex + 1]._id : items[0]._id)
-  }, [currentItemIndex, items, editTask])
+    const nextTaskId =
+      currentItemIndex < items.length - 1 ? items[currentItemIndex + 1]._id : items[0]._id
+    setViewMode({type: 'edit', id: nextTaskId})
+  }, [currentItemIndex, items, setViewMode])
 
   const handleTaskCreate = useCallback(() => {
     setViewMode({type: 'create'})
@@ -184,7 +187,7 @@ export function TasksSidebarHeader(props: TasksSidebarHeaderProps) {
             }}
             iconRight={CloseIcon}
             mode="bleed"
-            onClick={toggleOpen}
+            onClick={handleCloseTasks}
           />
         </Flex>
       </Flex>

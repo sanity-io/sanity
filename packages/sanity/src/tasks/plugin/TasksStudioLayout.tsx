@@ -1,6 +1,6 @@
 import {AddonDatasetProvider, type LayoutProps} from 'sanity'
 
-import {TasksEnabledProvider, TasksProvider, useTasksEnabled} from '../src'
+import {TasksEnabledProvider, TasksNavigationProvider, TasksProvider, useTasksEnabled} from '../src'
 
 const TasksStudioLayoutInner = (props: LayoutProps) => {
   const enabled = useTasksEnabled()
@@ -9,7 +9,9 @@ const TasksStudioLayoutInner = (props: LayoutProps) => {
   }
   return (
     <AddonDatasetProvider>
-      <TasksProvider>{props.renderDefault(props)}</TasksProvider>
+      <TasksProvider>
+        <TasksNavigationProvider>{props.renderDefault(props)}</TasksNavigationProvider>
+      </TasksProvider>
     </AddonDatasetProvider>
   )
 }

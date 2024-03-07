@@ -2,16 +2,24 @@ import {PanelRightIcon, TaskIcon} from '@sanity/icons'
 import {useCallback, useMemo} from 'react'
 import {type NavbarProps} from 'sanity'
 
-import {useTasks, useTasksEnabled} from '../src'
+import {useTasksEnabled, useTasksNavigation} from '../src'
 
 const EMPTY_ARRAY: [] = []
 
 function TasksStudioNavbarInner(props: NavbarProps) {
-  const {toggleOpen, isOpen} = useTasks()
+  const {
+    handleCloseTasks,
+    handleOpenTasks,
+    state: {isOpen},
+  } = useTasksNavigation()
 
   const handleAction = useCallback(() => {
-    toggleOpen()
-  }, [toggleOpen])
+    if (isOpen) {
+      handleCloseTasks()
+    } else {
+      handleOpenTasks()
+    }
+  }, [handleCloseTasks, handleOpenTasks, isOpen])
 
   const actions = useMemo((): NavbarProps['__internal_actions'] => {
     return [
