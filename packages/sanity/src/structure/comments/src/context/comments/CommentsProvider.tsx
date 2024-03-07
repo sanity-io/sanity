@@ -4,6 +4,7 @@ import {
   getPublishedId,
   useAddonDataset,
   useCurrentUser,
+  useDocumentValuePermissions,
   useEditState,
   useSchema,
   useUserListWithPermissions,
@@ -125,6 +126,16 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
   const mentionOptions = useUserListWithPermissions(
     useMemo(() => ({documentValue, permission: 'read'}), [documentValue]),
   )
+
+  const [readPermission] = useDocumentValuePermissions({
+    document: documentValue || {_id: documentId, _type: documentType},
+    permission: 'read',
+  })
+
+  const [cretePermission] = useDocumentValuePermissions({
+    document: documentValue || {_id: documentId, _type: documentType},
+    permission: 'update',
+  })
 
   const threadItemsByStatus: ThreadItemsByStatus = useMemo(() => {
     if (!schemaType || !currentUser) return EMPTY_COMMENTS_DATA
@@ -267,6 +278,11 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
       isCommentsOpen,
       onCommentsOpen,
 
+      permissions: {
+        read: Boolean(readPermission?.granted),
+        create: Boolean(cretePermission?.granted),
+      },
+
       comments: {
         data: threadItemsByStatus,
         error,
@@ -282,20 +298,22 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
       mentionOptions,
     }),
     [
-      error,
+      isCreatingDataset,
+      status,
+      handleSetStatus,
       getComment,
       isCommentsOpen,
-      isCreatingDataset,
-      loading,
-      mentionOptions,
       onCommentsOpen,
+      readPermission?.granted,
+      cretePermission?.granted,
+      threadItemsByStatus,
+      error,
+      loading,
       operation.create,
       operation.react,
       operation.remove,
       operation.update,
-      status,
-      handleSetStatus,
-      threadItemsByStatus,
+      mentionOptions,
     ],
   )
 

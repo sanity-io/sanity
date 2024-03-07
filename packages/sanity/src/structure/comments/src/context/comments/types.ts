@@ -19,6 +19,11 @@ export interface CommentsContextValue {
   isCommentsOpen?: boolean
   onCommentsOpen?: () => void
 
+  permissions: {
+    read: boolean
+    create: boolean
+  }
+
   comments: {
     data: {
       open: CommentThreadItem[]

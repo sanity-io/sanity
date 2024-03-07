@@ -89,6 +89,7 @@ function CommentFieldInner(
     mentionOptions,
     onCommentsOpen,
     operation,
+    permissions,
     setStatus,
     status,
   } = useComments()
@@ -255,6 +256,7 @@ function CommentFieldInner(
           onCommentAdd={handleCommentAdd}
           onDiscard={handleDiscard}
           open={open}
+          permissions={permissions}
           setOpen={setOpen}
           value={value}
         />
@@ -263,17 +265,18 @@ function CommentFieldInner(
       isAddingComment: open,
     }),
     [
-      currentUser,
       count,
+      currentUser,
       fieldTitle,
-      mentionOptions,
       handleClick,
       handleCommentAdd,
       handleDiscard,
-      open,
-      value,
-      isCreatingDataset,
       hasComments,
+      isCreatingDataset,
+      mentionOptions,
+      open,
+      permissions,
+      value,
     ],
   )
 

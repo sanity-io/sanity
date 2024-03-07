@@ -26,6 +26,7 @@ import {
   type CommentMessage,
   hasCommentMessageValue,
 } from '../../src'
+import {type CommentsContextValue} from '../../src/context/comments/types'
 
 const ContentStack = styled(Stack)`
   width: 320px;
@@ -43,6 +44,7 @@ interface CommentsFieldButtonProps {
   onDiscard: () => void
   onInputKeyDown?: (event: React.KeyboardEvent<Element>) => void
   open: boolean
+  permissions: CommentsContextValue['permissions']
   setOpen: (open: boolean) => void
   value: CommentMessage
 }
@@ -60,6 +62,7 @@ export function CommentsFieldButton(props: CommentsFieldButtonProps) {
     onDiscard,
     onInputKeyDown,
     open,
+    permissions,
     setOpen,
     value,
   } = props
@@ -135,7 +138,10 @@ export function CommentsFieldButton(props: CommentsFieldButtonProps) {
 
   useClickOutside(handleClickOutside, [popoverElement])
 
-  if (!hasComments) {
+  // Allow the user to author a comment if:
+  // - There are no comments yet
+  // - The user has permission to create comments
+  if (!hasComments && permissions.create) {
     const placeholder = (
       <Translate
         t={t}
@@ -194,6 +200,10 @@ export function CommentsFieldButton(props: CommentsFieldButtonProps) {
     )
   }
 
+  // If there are no comments, and the user doesn't have permission to create comments, return null
+  if (!hasComments) return null
+
+  // If there are comments, and the user has permission to read comments, show the comments button
   return (
     <Tooltip portal placement="top" content={t('field-button.content', {count})}>
       <SanityUIButton
