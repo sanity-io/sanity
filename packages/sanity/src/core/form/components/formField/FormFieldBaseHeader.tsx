@@ -237,7 +237,12 @@ export function FormFieldBaseHeader(props: FormFieldBaseHeaderProps) {
       $floatingCardWidth={floatingCardWidth}
       $slotWidth={slotWidth}
     >
-      <ContentBox flex={1} paddingY={2} $presenceMaxWidth={calcAvatarStackWidth(MAX_AVATARS)}>
+      <ContentBox
+        data-ui="fieldHeaderContentBox"
+        flex={1}
+        paddingY={2}
+        $presenceMaxWidth={calcAvatarStackWidth(MAX_AVATARS)}
+      >
         {content}
       </ContentBox>
 

@@ -1,13 +1,78 @@
-import {type ArrayOfObjectsInputProps, defineType, type PortableTextBlock} from 'sanity'
+import {type ArrayFieldProps, defineField, defineType, type ObjectFieldProps} from 'sanity'
 
 import {type FormMode} from '../../types'
-import {DescriptionFieldContainer, DescriptionInput} from './DescriptionInput'
+import {DescriptionInput} from './DescriptionInput'
+import {FieldWrapper} from './FieldWrapper'
 import {FormCreate} from './FormCreate'
 import {FormEdit} from './FormEdit'
 import {AssigneeCreateFormField} from './mentionUser'
 import {TargetField} from './TargetField'
 import {TitleField} from './TitleField'
 
+const targetContentField = (mode: FormMode) =>
+  defineField({
+    type: 'object',
+    name: 'target',
+    title: 'Target content',
+    components: {
+      field: (props: ObjectFieldProps) => <TargetField {...props} mode={mode} />,
+    },
+    fields: [
+      {
+        name: 'document',
+        type: 'crossDatasetReference',
+        dataset: 'playground',
+        weak: true,
+        studioUrl: ({id, type}) => `intent/edit/id=${id};type=${type}/`,
+        to: [
+          {
+            type: 'any_document',
+            preview: {
+              select: {title: 'title'},
+            },
+          },
+        ],
+      },
+      {
+        name: 'documentType',
+        type: 'string',
+        title: 'Document type',
+      },
+    ],
+  })
+
+const descriptionInputField = (mode: FormMode) =>
+  defineField({
+    type: 'array',
+    name: 'description',
+    title: 'Description',
+    components: {
+      field: (props: ArrayFieldProps) => <DescriptionInput {...props} mode={mode} />,
+    },
+    of: [
+      {
+        type: 'block',
+        name: 'block',
+        of: [
+          {
+            name: 'mention',
+            type: 'object',
+            fields: [
+              {
+                name: 'userId',
+                type: 'string',
+              },
+            ],
+          },
+        ],
+        marks: {
+          annotations: [],
+        },
+        styles: [{title: 'Normal', value: 'normal'}],
+        lists: [],
+      },
+    ],
+  })
 export const taskSchema = (mode: FormMode) =>
   defineType({
     type: 'document',
@@ -27,76 +92,16 @@ export const taskSchema = (mode: FormMode) =>
         },
         hidden: mode === 'edit',
       },
-      {
-        type: 'array',
-        name: 'description',
-        title: 'Description',
-        components: {
-          field: mode === 'edit' ? DescriptionFieldContainer : undefined,
-          input: (props: ArrayOfObjectsInputProps<PortableTextBlock>) => (
-            <DescriptionInput {...props} mode={mode} />
-          ),
-        },
-        of: [
-          {
-            type: 'block',
-            name: 'block',
-            of: [
-              {
-                name: 'mention',
-                type: 'object',
-                fields: [
-                  {
-                    name: 'userId',
-                    type: 'string',
-                  },
-                ],
-              },
-            ],
-            marks: {
-              annotations: [],
-            },
-            styles: [{title: 'Normal', value: 'normal'}],
-            lists: [],
-          },
-        ],
-      },
-      {
-        type: 'object',
-        name: 'target',
-        title: 'Target content',
-        components: {
-          field: TargetField,
-        },
-        fields: [
-          {
-            name: 'document',
-            type: 'crossDatasetReference',
-            dataset: 'playground',
-            weak: true,
-            studioUrl: ({id, type}) => `intent/edit/id=${id};type=${type}/`,
-            to: [
-              {
-                type: 'any_document',
-                preview: {
-                  select: {title: 'title'},
-                },
-              },
-            ],
-          },
-          {
-            name: 'documentType',
-            type: 'string',
-            title: 'Document type',
-          },
-        ],
-      },
+      ...(mode === 'edit'
+        ? [targetContentField(mode), descriptionInputField(mode)]
+        : [descriptionInputField(mode), targetContentField(mode)]),
       {
         type: 'string',
         name: 'assignedTo',
         title: 'Assigned to',
         placeholder: 'Search username',
         components: {
+          field: FieldWrapper,
           input: AssigneeCreateFormField,
         },
         hidden: mode === 'edit',
@@ -106,6 +111,9 @@ export const taskSchema = (mode: FormMode) =>
         name: 'dueBy',
         title: 'Deadline',
         placeholder: 'Select date',
+        components: {
+          field: FieldWrapper,
+        },
       },
       {
         type: 'string',

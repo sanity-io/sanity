@@ -10,7 +10,6 @@ const Root = styled.div((props) => {
       display: grid;
       grid-template-columns: 1fr;
       padding-top: ${theme.space[3]}px;
-      padding-bottom: 7px;
     `
 })
 const TitleInput = styled.textarea((props) => {
