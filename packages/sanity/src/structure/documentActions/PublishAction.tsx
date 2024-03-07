@@ -1,15 +1,19 @@
+import {createOrReplace, delete_} from '@bjoerge/mutiny'
 import {PublishIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {isValidationErrorMarker} from '@sanity/types'
 import {useCallback, useEffect, useState} from 'react'
 import {
   type DocumentActionComponent,
+  getPublishedId,
   InsufficientPermissionsMessage,
   type TFunction,
+  useBufferedDataset,
+  useClient,
   useCurrentUser,
   useDocumentOperation,
   useDocumentPairPermissions,
-  useEditState,
+  useEditState2,
   useRelativeTime,
   useSyncState,
   useTranslation,
@@ -47,16 +51,15 @@ function AlreadyPublished({publishedAt}: {publishedAt: string}) {
 /** @internal */
 // eslint-disable-next-line complexity
 export const PublishAction: DocumentActionComponent = (props) => {
-  const {id, type, liveEdit, draft, published} = props
+  const {id, type, liveEdit} = props
   const [publishState, setPublishState] = useState<'publishing' | 'published' | null>(null)
   const {publish} = useDocumentOperation(id, type)
   const validationStatus = useValidationStatus(id, type)
   const syncState = useSyncState(id, type)
+  const {draft, published} = useEditState2(id, type)
   const {changesOpen, onHistoryOpen, documentId, documentType} = useDocumentPane()
-  const editState = useEditState(documentId, documentType)
-  const {t} = useTranslation(structureLocaleNamespace)
 
-  const revision = (editState?.draft || editState?.published || {})._rev
+  const {t} = useTranslation(structureLocaleNamespace)
 
   const hasValidationErrors = validationStatus.validation.some(isValidationErrorMarker)
   // we use this to "schedule" publish after pending tasks (e.g. validation and sync) has completed
@@ -79,35 +82,21 @@ export const PublishAction: DocumentActionComponent = (props) => {
       : ''
 
   const hasDraft = Boolean(draft)
+  const dataset = useBufferedDataset(useClient({apiVersion: 'v2024-04-07'}))
 
   const doPublish = useCallback(() => {
-    publish.execute()
-    setPublishState('publishing')
-  }, [publish])
-
-  useEffect(() => {
-    // make sure the validation status is about the current revision and not an earlier one
-    const validationComplete =
-      validationStatus.isValidating === false && validationStatus.revision !== revision
-
-    if (!publishScheduled || isSyncing || !validationComplete) {
-      return
+    if (!draft) {
+      throw new Error('Nothing to publish')
     }
-
-    if (!hasValidationErrors) {
-      doPublish()
-    }
-    setPublishScheduled(false)
-  }, [
-    isSyncing,
-    doPublish,
-    hasValidationErrors,
-    publishScheduled,
-    validationStatus.revision,
-    revision,
-    isValidating,
-    validationStatus.isValidating,
-  ])
+    dataset.mutate([
+      createOrReplace({
+        ...draft,
+        _updatedAt: new Date().toISOString(),
+        _id: getPublishedId(draft._id!),
+      }),
+      delete_(draft._id!),
+    ])
+  }, [dataset, draft])
 
   useEffect(() => {
     const didPublish = publishState === 'publishing' && !hasDraft
@@ -132,11 +121,7 @@ export const PublishAction: DocumentActionComponent = (props) => {
       publishedImmediately: !draft?._createdAt,
       previouslyPublished: Boolean(published),
     })
-    if (
-      syncState.isSyncing ||
-      validationStatus.isValidating ||
-      validationStatus.revision !== revision
-    ) {
+    if (syncState.isSyncing || validationStatus.isValidating) {
       setPublishScheduled(true)
     } else {
       doPublish()
@@ -147,8 +132,6 @@ export const PublishAction: DocumentActionComponent = (props) => {
     published,
     syncState.isSyncing,
     validationStatus.isValidating,
-    validationStatus.revision,
-    revision,
     doPublish,
   ])
 
@@ -176,11 +159,10 @@ export const PublishAction: DocumentActionComponent = (props) => {
 
   const disabled = Boolean(
     publishScheduled ||
-      editState?.transactionSyncLock?.enabled ||
       publishState === 'publishing' ||
       publishState === 'published' ||
       hasValidationErrors ||
-      publish.disabled,
+      !draft,
   )
 
   return {

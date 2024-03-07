@@ -1,3 +1,4 @@
+export * from './CommitAction'
 export * from './DeleteAction'
 export * from './DiscardChangesAction'
 export * from './DuplicateAction'

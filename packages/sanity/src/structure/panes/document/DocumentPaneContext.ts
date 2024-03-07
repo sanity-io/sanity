@@ -1,8 +1,8 @@
+import {type SanityDocumentBase} from '@bjoerge/mutiny'
 import {
   type ObjectSchemaType,
   type Path,
   type SanityDocument,
-  type SanityDocumentLike,
   type ValidationMarker,
 } from '@sanity/types'
 import {createContext} from 'react'
@@ -13,7 +13,7 @@ import {
   type DocumentFormNode,
   type DocumentInspector,
   type DocumentLanguageFilterComponent,
-  type EditStateFor,
+  type EditState,
   type PatchEvent,
   type PermissionCheckResult,
   type StateTree,
@@ -35,11 +35,11 @@ export interface DocumentPaneContextValue {
   collapsedPaths: StateTree<boolean> | undefined
   compareValue: Partial<SanityDocument> | null
   connectionState: 'connecting' | 'reconnecting' | 'connected'
-  displayed: Partial<SanityDocument> | null
+  displayed: SanityDocumentBase
   documentId: string
   documentIdRaw: string
   documentType: string
-  editState: EditStateFor | null
+  editState: EditState | null
   fieldActions: DocumentFieldAction[]
   focusPath: Path
   index: number
@@ -73,7 +73,7 @@ export interface DocumentPaneContextValue {
   timelineStore: TimelineStore
   title: string | null
   validation: ValidationMarker[]
-  value: SanityDocumentLike
+  value: SanityDocumentBase
   views: View[]
   formState: DocumentFormNode | null
   permissions?: PermissionCheckResult | null

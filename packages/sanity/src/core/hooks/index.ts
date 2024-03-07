@@ -1,3 +1,5 @@
+export * from './useBufferedDataset'
+export * from './useBufferedEditState'
 export * from './useClient'
 export * from './useConnectionState'
 export * from './useDataset'

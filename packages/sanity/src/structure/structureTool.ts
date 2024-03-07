@@ -4,6 +4,7 @@ import {definePlugin} from 'sanity'
 
 import {comments} from './comments'
 import {
+  CommitAction,
   DeleteAction,
   DiscardChangesAction,
   DuplicateAction,
@@ -20,6 +21,7 @@ import {router} from './router'
 import {type StructureToolOptions} from './types'
 
 const documentActions = [
+  CommitAction,
   PublishAction,
   UnpublishAction,
   DiscardChangesAction,
