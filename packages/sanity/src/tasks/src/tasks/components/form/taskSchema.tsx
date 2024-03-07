@@ -1,11 +1,11 @@
 import {type ArrayFieldProps, defineField, defineType, type ObjectFieldProps} from 'sanity'
 
 import {type FormMode} from '../../types'
+import {AssigneeCreateFormField} from './assignee'
 import {DescriptionInput} from './DescriptionInput'
 import {FieldWrapper} from './FieldWrapper'
 import {FormCreate} from './FormCreate'
 import {FormEdit} from './FormEdit'
-import {AssigneeCreateFormField} from './mentionUser'
 import {TargetField} from './TargetField'
 import {TitleField} from './TitleField'
 
