@@ -48,6 +48,30 @@ const Placeholder = styled(Text)((props) => {
       margin-left: 3px;
   `
 })
+
+// This allows to hide and show the remove button on hover or focus.
+const TargetRoot = styled(Card)`
+  position: relative;
+  [data-ui='show-on-hover'] {
+    opacity: 0;
+    position: absolute;
+    right: 6px;
+    top: 4px;
+    display: flex;
+  }
+  &:focus-within,
+  &:hover {
+    padding-right: 36px;
+    /* Hides the preview status dot, the button will take it's position. */
+    [data-testid='compact-preview__status'] {
+      opacity: 0;
+    }
+    [data-ui='show-on-hover'] {
+      transition: opacity 200ms;
+      opacity: 1;
+    }
+  }
+`
 const StyledIntentLink = styled(IntentLink)(() => {
   return css`
     text-decoration: none;
@@ -64,8 +88,8 @@ const StyledIntentLink = styled(IntentLink)(() => {
   `
 })
 
-function Preview(props: {value: TaskTarget; handleRemove: () => void; mode: FormMode}) {
-  const {value, handleRemove, mode} = props
+function Preview(props: {value: TaskTarget; handleRemove: () => void}) {
+  const {value, handleRemove} = props
   const documentId = value.document._ref
   const documentType = value.documentType
   const schema = useSchema()
@@ -91,9 +115,9 @@ function Preview(props: {value: TaskTarget; handleRemove: () => void; mode: Form
   }
 
   return (
-    <Card border={mode === 'edit'} radius={2} overflow={'hidden'}>
-      <Flex gap={1} align={'center'} justify={'space-between'} paddingRight={1}>
-        <Card as={CardLink} radius={mode === 'create' ? 2 : 0} data-as="button">
+    <TargetRoot border radius={2}>
+      <Flex gap={1} align={'center'} justify={'space-between'}>
+        <Card as={CardLink} radius={2} data-as="button">
           <SearchResultItemPreview
             documentId={value.document._ref}
             layout={'compact'}
@@ -102,14 +126,17 @@ function Preview(props: {value: TaskTarget; handleRemove: () => void; mode: Form
             showBadge={false}
           />
         </Card>
-        <Button
-          icon={CloseIcon}
-          mode="bleed"
-          onClick={handleRemove}
-          tooltipProps={{content: 'Remove target content'}}
-        />
+
+        <div data-ui="show-on-hover">
+          <Button
+            icon={CloseIcon}
+            mode="bleed"
+            onClick={handleRemove}
+            tooltipProps={{content: 'Remove target content'}}
+          />
+        </div>
       </Flex>
-    </Card>
+    </TargetRoot>
   )
 }
 
@@ -125,6 +152,7 @@ export function TargetField(
     inputProps: {onChange},
     value: _propValue,
   } = props
+
   const value = _propValue as unknown as TaskTarget | undefined
 
   const handleItemSelect = useCallback(
@@ -160,56 +188,58 @@ export function TargetField(
   }, [])
 
   return (
-    <FieldWrapperRoot>
-      <LayerProvider zOffset={100}>
-        <CurrentWorkspaceProvider>
-          <Stack space={2}>
-            {mode === 'create' && (
-              <Box data-ui="fieldHeaderContentBox">
-                <FormFieldHeaderText
-                  description={props.description}
-                  inputId={props.inputId}
-                  title={props.title}
-                  validation={props.validation}
-                  deprecated={undefined}
-                />
-              </Box>
-            )}
+    <Card borderBottom={mode === 'edit'} paddingBottom={mode === 'edit' ? 4 : 0}>
+      <FieldWrapperRoot>
+        <LayerProvider zOffset={100}>
+          <CurrentWorkspaceProvider>
+            <Stack space={2}>
+              {mode === 'create' && (
+                <Box data-ui="fieldHeaderContentBox">
+                  <FormFieldHeaderText
+                    description={props.description}
+                    inputId={props.inputId}
+                    title={props.title}
+                    validation={props.validation}
+                    deprecated={undefined}
+                  />
+                </Box>
+              )}
 
-            {value ? (
-              <Preview value={value} handleRemove={handleRemove} mode={mode} />
-            ) : (
-              <EmptyReferenceRoot
-                border
-                radius={2}
-                paddingX={2}
-                paddingY={3}
-                onClick={handleOpenSearch}
-                onKeyDown={handleKeyDown}
-                tabIndex={0}
-              >
-                <Flex gap={1} justify={'flex-start'} align={'center'}>
-                  <Box paddingX={1}>
-                    <Text size={1}>
-                      <DocumentIcon />
-                    </Text>
-                  </Box>
-                  <Placeholder size={1}>Search document</Placeholder>
-                </Flex>
-              </EmptyReferenceRoot>
-            )}
-          </Stack>
-          <SearchProvider>
-            <SearchPopover
-              open={open}
-              onClose={handleCloseSearch}
-              onOpen={handleOpenSearch}
-              onItemSelect={handleItemSelect}
-              disableIntentLink
-            />
-          </SearchProvider>
-        </CurrentWorkspaceProvider>
-      </LayerProvider>
-    </FieldWrapperRoot>
+              {value ? (
+                <Preview value={value} handleRemove={handleRemove} />
+              ) : (
+                <EmptyReferenceRoot
+                  border
+                  radius={2}
+                  paddingX={2}
+                  paddingY={3}
+                  onClick={handleOpenSearch}
+                  onKeyDown={handleKeyDown}
+                  tabIndex={0}
+                >
+                  <Flex gap={1} justify={'flex-start'} align={'center'}>
+                    <Box paddingX={1}>
+                      <Text size={1}>
+                        <DocumentIcon />
+                      </Text>
+                    </Box>
+                    <Placeholder size={1}>Search document</Placeholder>
+                  </Flex>
+                </EmptyReferenceRoot>
+              )}
+            </Stack>
+            <SearchProvider>
+              <SearchPopover
+                open={open}
+                onClose={handleCloseSearch}
+                onOpen={handleOpenSearch}
+                onItemSelect={handleItemSelect}
+                disableIntentLink
+              />
+            </SearchProvider>
+          </CurrentWorkspaceProvider>
+        </LayerProvider>
+      </FieldWrapperRoot>
+    </Card>
   )
 }

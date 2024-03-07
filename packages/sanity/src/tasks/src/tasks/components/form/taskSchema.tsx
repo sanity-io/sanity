@@ -114,6 +114,7 @@ export const taskSchema = (mode: FormMode) =>
         components: {
           field: FieldWrapper,
         },
+        hidden: mode === 'edit',
       },
       {
         type: 'string',
