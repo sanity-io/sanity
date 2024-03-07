@@ -1,10 +1,10 @@
 import {Box, Card, Flex, Spinner} from '@sanity/ui'
 import {AnimatePresence, motion, type Transition, type Variants} from 'framer-motion'
-import {useMemo} from 'react'
+import {useCallback, useMemo} from 'react'
 import {useCurrentUser} from 'sanity'
 import styled from 'styled-components'
 
-import {TasksNavigationProvider, useTasks, useTasksEnabled, useTasksNavigation} from '../../context'
+import {useTasks, useTasksEnabled, useTasksNavigation} from '../../context'
 import {TaskCreate} from '../create'
 import {TaskDraft} from '../draft'
 import {TaskDuplicate} from '../duplicate'
@@ -32,12 +32,16 @@ const VARIANTS: Variants = {
 
 const TRANSITION: Transition = {duration: 0.2}
 
-function TasksStudioSidebarInner() {
-  const {activeDocument, isOpen, data, isLoading} = useTasks()
-  const {state, setActiveTab, editTask} = useTasksNavigation()
-  const {activeTabId, viewMode, selectedTask} = state
+/**
+ * @internal
+ */
+export function TasksStudioSidebarInner() {
+  const {activeDocument, data, isLoading} = useTasks()
+  const {state, setActiveTab, setViewMode} = useTasksNavigation()
+  const {activeTabId, viewMode, selectedTask, isOpen} = state
   const currentUser = useCurrentUser()
 
+  const onTaskSelect = useCallback((id: string) => setViewMode({type: 'edit', id}), [setViewMode])
   const filteredList = useMemo(() => {
     return data.filter((item) => {
       if (!item.createdByUser) return false
@@ -74,7 +78,7 @@ function TasksStudioSidebarInner() {
                   ) : (
                     <TaskSidebarContent
                       items={filteredList}
-                      onTaskSelect={editTask}
+                      onTaskSelect={onTaskSelect}
                       setActiveTabId={setActiveTab}
                       activeTabId={activeTabId}
                     />
@@ -101,9 +105,5 @@ function TasksStudioSidebarInner() {
 export function TasksStudioSidebar() {
   const {enabled} = useTasksEnabled()
   if (!enabled) return null
-  return (
-    <TasksNavigationProvider>
-      <TasksStudioSidebarInner />
-    </TasksNavigationProvider>
-  )
+  return <TasksStudioSidebarInner />
 }

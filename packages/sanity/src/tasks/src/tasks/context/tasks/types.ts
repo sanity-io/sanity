@@ -16,9 +16,7 @@ export interface TasksContextValue {
   activeDocument: ActiveDocument | null
   setActiveDocument: (document: ActiveDocument | null) => void
   data: TaskDocument[]
-  isOpen: boolean
   isLoading: boolean
-  toggleOpen: () => void
   operations: TaskOperations
 }
 

@@ -1,4 +1,4 @@
-import {useCallback, useMemo, useState} from 'react'
+import {useMemo, useState} from 'react'
 import {useAddonDataset} from 'sanity'
 
 import {useTasksStore} from '../../store'
@@ -17,8 +17,6 @@ const EMPTY_ARRAY: [] = []
  */
 export function TasksProvider(props: TasksProviderProps) {
   const {children} = props
-  // TODO: Get this state into the router?
-  const [isOpen, setIsOpen] = useState(false)
   const [activeDocument, setActiveDocument] = useState<ActiveDocument | null>(null)
 
   const {client, createAddonDataset} = useAddonDataset()
@@ -27,21 +25,15 @@ export function TasksProvider(props: TasksProviderProps) {
   })
   const operations = useTaskOperations({client, createAddonDataset})
 
-  const toggleOpen = useCallback(() => {
-    setIsOpen((prev) => !prev)
-  }, [])
-
   const value: TasksContextValue = useMemo(
     () => ({
       activeDocument,
       setActiveDocument,
-      isOpen,
-      toggleOpen,
       isLoading,
       data: data ?? [],
       operations,
     }),
-    [activeDocument, data, isLoading, isOpen, operations, toggleOpen],
+    [activeDocument, data, isLoading, operations],
   )
 
   return <TasksContext.Provider value={value}>{children}</TasksContext.Provider>
