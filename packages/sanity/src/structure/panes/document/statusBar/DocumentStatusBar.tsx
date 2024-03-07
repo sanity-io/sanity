@@ -1,6 +1,6 @@
 import {Flex} from '@sanity/ui'
 import {type Ref, useCallback, useState} from 'react'
-import {useTimelineSelector} from 'sanity'
+import {useEditState, useTimelineSelector} from 'sanity'
 
 import {SpacerButton} from '../../../components/spacerButton'
 import {useDocumentPane} from '../useDocumentPane'
@@ -17,7 +17,8 @@ const CONTAINER_BREAKPOINT = 480 // px
 
 export function DocumentStatusBar(props: DocumentStatusBarProps) {
   const {actionsBoxRef} = props
-  const {editState, timelineStore} = useDocumentPane()
+  const {timelineStore, documentId, documentType} = useDocumentPane()
+  const editState = useEditState(documentId, documentType)
 
   // Subscribe to external timeline state changes
   const showingRevision = useTimelineSelector(timelineStore, (state) => state.onOlderRevision)

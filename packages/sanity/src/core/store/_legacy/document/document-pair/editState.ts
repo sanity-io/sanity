@@ -1,3 +1,4 @@
+import {type SanityDocumentBase} from '@bjoerge/mutiny'
 import {type SanityClient} from '@sanity/client'
 import {type SanityDocument, type Schema} from '@sanity/types'
 import {combineLatest, type Observable} from 'rxjs'
@@ -25,6 +26,15 @@ export interface EditStateFor {
   liveEdit: boolean
   ready: boolean
 }
+
+export type EditState = {
+  id: string
+  type: string
+  draft?: SanityDocumentBase
+  published?: SanityDocumentBase
+  readyState: 'loading' | 'syncing' | 'synced'
+}
+
 const LOCKED: TransactionSyncLockState = {enabled: true}
 const NOT_LOCKED: TransactionSyncLockState = {enabled: false}
 

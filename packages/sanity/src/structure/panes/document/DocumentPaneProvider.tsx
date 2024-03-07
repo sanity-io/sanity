@@ -1,11 +1,21 @@
 /* eslint-disable camelcase */
 import {isActionEnabled} from '@sanity/schema/_internal'
 import {
-  type ObjectSchemaType,
-  type Path,
-  type SanityDocument,
-  type SanityDocumentLike,
-} from '@sanity/types'
+  at,
+  createIfNotExists,
+  diffMatchPatch,
+  insert,
+  type KeyedPathElement,
+  type NodePatch,
+  patch,
+  type Path as MutinyPath,
+  type SanityDocumentBase,
+  set,
+  setIfMissing,
+  unset,
+} from '@bjoerge/mutiny'
+import {isActionEnabled} from '@sanity/schema/_internal'
+import {type ObjectSchemaType, type Path, type SanityDocument} from '@sanity/types'
 import {useToast} from '@sanity/ui'
 import {fromString as pathFromString, resolveKeyedPath} from '@sanity/util/paths'
 import {omit} from 'lodash'
@@ -16,17 +26,18 @@ import {
   type DocumentInspector,
   type DocumentPresence,
   EMPTY_ARRAY,
+  type FormPatch,
   getDraftId,
   getExpandOperations,
   getPublishedId,
   type PatchEvent,
   setAtPath,
   type StateTree,
-  toMutationPatches,
+  useBufferedDataset,
+  useClient,
   useConnectionState,
-  useDocumentOperation,
   useDocumentValuePermissions,
-  useEditState,
+  useEditState2,
   useFormState,
   useInitialValue,
   usePresenceStore,
@@ -54,6 +65,33 @@ import {DocumentPaneContext, type DocumentPaneContextValue} from './DocumentPane
 import {getInitialValueTemplateOpts} from './getInitialValueTemplateOpts'
 import {type DocumentPaneProviderProps} from './types'
 import {usePreviewUrl} from './usePreviewUrl'
+
+function patchEventToMutations(patches: FormPatch[]): NodePatch[] {
+  return patches.map((formPatch) => {
+    if (formPatch.type === 'unset') {
+      return at(formPatch.path as MutinyPath, unset())
+    }
+    if (formPatch.type === 'set') {
+      return at(formPatch.path as MutinyPath, set(formPatch.value))
+    }
+    if (formPatch.type === 'setIfMissing') {
+      return at(formPatch.path as MutinyPath, setIfMissing(formPatch.value))
+    }
+    if (formPatch.type === 'insert') {
+      const arrayPath = formPatch.path.slice(0, -1)
+      const itemRef = formPatch.path[formPatch.path.length - 1]
+      return at(
+        arrayPath as MutinyPath,
+        insert(formPatch.items, formPatch.position, itemRef as number | KeyedPathElement),
+      )
+    }
+    if (formPatch.type === 'diffMatchPatch') {
+      return at(formPatch.path as MutinyPath, diffMatchPatch(formPatch.value))
+    }
+    // @ts-expect-error - should be exhaustive
+    throw new Error(`Unknown patch type ${formPatch.type}`)
+  })
+}
 
 /**
  * @internal
@@ -108,12 +146,11 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     templateParams,
   })
   const initialValue = useUnique(initialValueRaw)
-  const {patch} = useDocumentOperation(documentId, documentType)
-  const editState = useEditState(documentId, documentType)
+  const editState = useEditState2(documentId, documentType)
   const {validation: validationRaw} = useValidationStatus(documentId, documentType)
   const connectionState = useConnectionState(documentId, documentType)
   const schemaType = schema.get(documentType) as ObjectSchemaType | undefined
-  const value: SanityDocumentLike = editState?.draft || editState?.published || initialValue.value
+  const value: SanityDocumentBase = editState?.draft || editState?.published || initialValue.value
   const [isDeleting, setIsDeleting] = useState(false)
 
   // Resolve document actions
@@ -245,10 +282,15 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
    * a timeline revision in this instance will display an error localized to the popover itself.
    */
   const ready =
-    connectionState === 'connected' && editState.ready && (timelineReady || !!timelineError)
+    connectionState === 'connected' &&
+    editState.readyState !== 'loading' &&
+    (timelineReady || !!timelineError)
 
-  const displayed: Partial<SanityDocument> | undefined = useMemo(
-    () => (onOlderRevision ? timelineDisplayed || {_id: value._id, _type: value._type} : value),
+  const displayed: SanityDocumentBase | undefined = useMemo(
+    () =>
+      onOlderRevision
+        ? (timelineDisplayed as SanityDocumentBase) || {_id: value._id, _type: value._type}
+        : value,
     [onOlderRevision, timelineDisplayed, value],
   )
 
@@ -286,8 +328,18 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     throw new Error('Nope')
   })
 
+  const client = useClient({apiVersion: 'v2024-03-07'})
+
+  const dataset = useBufferedDataset(client)
+
   patchRef.current = (event: PatchEvent) => {
-    patch.execute(toMutationPatches(event.patches), initialValue.value)
+    dataset.mutate([
+      createIfNotExists({...editState.published, _id: getDraftId(documentId), _type: documentType}),
+      patch(getDraftId(documentId), [
+        ...patchEventToMutations(event.patches),
+        at('_updatedAt', set(new Date().toISOString())),
+      ]),
+    ])
   }
 
   const handleChange = useCallback((event: PatchEvent) => patchRef.current(event), [])
@@ -485,7 +537,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     const updateActionDisabled = !isActionEnabled(schemaType!, 'update')
     const createActionDisabled = isNonExistent && !isActionEnabled(schemaType!, 'create')
     const reconnecting = connectionState === 'reconnecting'
-    const isLocked = editState.transactionSyncLock?.enabled
 
     return (
       !ready ||
@@ -494,13 +545,11 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       updateActionDisabled ||
       createActionDisabled ||
       reconnecting ||
-      isLocked ||
       isDeleting ||
       isDeleted
     )
   }, [
     connectionState,
-    editState.transactionSyncLock,
     isNonExistent,
     isDeleted,
     isDeleting,

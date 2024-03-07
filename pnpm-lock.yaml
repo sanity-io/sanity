@@ -1432,6 +1432,9 @@ importers:
 
   packages/sanity:
     dependencies:
+      '@bjoerge/mutiny':
+        specifier: ^0.6.0-beta.4
+        version: 0.6.0-beta.4
       '@dnd-kit/core':
         specifier: ^6.0.5
         version: 6.1.0(react-dom@18.2.0)(react@18.2.0)
@@ -3211,6 +3214,16 @@ packages:
       diff-match-patch: 1.0.5
       hotscript: 1.0.13
       nanoid: 5.0.7
+
+  /@bjoerge/mutiny@0.6.0-beta.4:
+    resolution: {integrity: sha512-Ss3M/Wbyob+3VA3OgtXgu6qr85Jo1mnX28EVuQUgpGXB4l79jE2ocq7nxX7dwTByJ8NqUHhHZH45wsN+ceWvJA==}
+    engines: {node: '>=18'}
+    dependencies:
+      '@sanity/diff-match-patch': 3.1.1
+      hotscript: 1.0.13
+      mendoza: 3.0.7
+      nanoid: 5.0.7
+    dev: false
 
   /@codemirror/autocomplete@6.16.0(@codemirror/language@6.10.1)(@codemirror/state@6.4.1)(@codemirror/view@6.26.3)(@lezer/common@1.2.1):
     resolution: {integrity: sha512-P/LeCTtZHRTCU4xQsa89vSKWecYv1ZqwzOd5topheGRf+qtacFgBeIMQi3eL8Kt/BUNvxUWkx+5qP2jlGoARrg==}
