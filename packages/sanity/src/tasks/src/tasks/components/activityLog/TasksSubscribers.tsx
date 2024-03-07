@@ -1,4 +1,5 @@
 import {AvatarStack, Flex} from '@sanity/ui'
+import {AnimatePresence, motion} from 'framer-motion'
 import {useCallback} from 'react'
 import {type FormPatch, type PatchEvent, type Path, set, UserAvatar} from 'sanity'
 
@@ -49,9 +50,25 @@ export function TasksSubscriberAvatars(props: {subscriberIds?: string[]}) {
   const {subscriberIds} = props
 
   return (
-    <AvatarStack maxLength={3} size={0}>
-      {subscriberIds &&
-        subscriberIds.map((subscriberId) => <UserAvatar key={subscriberId} user={subscriberId} />)}
-    </AvatarStack>
+    <AnimatePresence initial={false}>
+      <AvatarStack maxLength={3} size={0}>
+        {subscriberIds &&
+          subscriberIds.map((subscriberId) => (
+            <motion.div
+              key={subscriberId}
+              exit={{opacity: 0, translateX: '2px', scale: 0.9}}
+              animate={{
+                opacity: 1,
+                translateX: 0,
+                scale: 1,
+                transition: {type: 'just', duration: 0.2},
+              }}
+              initial={{opacity: 0, translateX: '2px', scale: 0.9}}
+            >
+              <UserAvatar user={subscriberId} />
+            </motion.div>
+          ))}
+      </AvatarStack>
+    </AnimatePresence>
   )
 }

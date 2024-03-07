@@ -39,7 +39,7 @@ const DescriptionInputRoot = styled.div<{$mode: FormMode; $minHeight: number}>((
       padding: ${props.$mode === 'edit'
         ? `${verticalPadding}px 0px`
         : `${verticalPadding}px ${theme.space[2]}px`};
-      min-height: ${Math.max(props.$minHeight + verticalPadding, 100)}px;
+      min-height: ${Math.max(props.$minHeight + verticalPadding, 200)}px;
     }
     #comment-input-root {
       box-shadow: ${props.$mode === 'edit' ? 'none' : ''};
@@ -84,7 +84,7 @@ export function DescriptionInput(
 
   if (!currentUser) return null
   return (
-    <DescriptionInputRoot $mode={mode} ref={setRootRef} $minHeight={textBoxScrollHeight || 100}>
+    <DescriptionInputRoot $mode={mode} ref={setRootRef} $minHeight={textBoxScrollHeight || 200}>
       <CommentInput
         currentUser={currentUser}
         mentionOptions={mentionOptions}
