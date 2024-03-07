@@ -4,6 +4,7 @@ import {isPortableTextTextBlock, type ObjectInputProps, set} from 'sanity'
 
 import {Button} from '../../../../../ui-components'
 import {useTasksNavigation} from '../../context'
+import {useRemoveTask} from '../../hooks/useRemoveTask'
 import {type TaskDocument} from '../../types'
 
 const getTaskSubscribers = (task: TaskDocument): string[] => {
@@ -33,11 +34,20 @@ const getTaskSubscribers = (task: TaskDocument): string[] => {
 }
 export function FormCreate(props: ObjectInputProps) {
   const [createMore, setCreateMore] = useState(false)
-  const {setViewMode, setActiveTab} = useTasksNavigation()
+  const {
+    setViewMode,
+    setActiveTab,
+    state: {viewMode},
+  } = useTasksNavigation()
+
   const toast = useToast()
   const handleCreateMore = useCallback(() => setCreateMore((p) => !p), [])
   const {onChange} = props
   const value = props.value as TaskDocument
+  const onRemove = useCallback(() => {
+    setViewMode({type: 'list'})
+  }, [setViewMode])
+  const {handleRemove, removeStatus} = useRemoveTask({id: value._id, onRemoved: onRemove})
 
   const handleCreate = useCallback(() => {
     if (!value?.title) {
@@ -71,12 +81,21 @@ export function FormCreate(props: ObjectInputProps) {
       {props.renderDefault(props)}
       <Box paddingTop={5}>
         <Flex justify={'flex-end'} paddingTop={1} gap={3}>
-          <Flex align={'center'} gap={2}>
+          <Flex align={'center'} gap={2} style={{flexGrow: viewMode === 'draft' ? 1 : 0}}>
             <Switch onChange={handleCreateMore} checked={createMore} />
             <Text size={1} muted>
               Create more
             </Text>
           </Flex>
+          {viewMode === 'draft' && (
+            <Button
+              text="Discard"
+              onClick={handleRemove}
+              mode="bleed"
+              disabled={removeStatus === 'loading'}
+              loading={removeStatus === 'loading'}
+            />
+          )}
           <Button text="Create Task" onClick={handleCreate} />
         </Flex>
       </Box>
