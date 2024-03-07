@@ -9,14 +9,12 @@ import {useTasksNavigation} from '../../context'
 import {useRemoveTask} from '../../hooks/useRemoveTask'
 import {type TaskDocument} from '../../types'
 import {ActivityLog} from '../activityLog'
+import {AssigneeEditFormField} from './mentionUser/AssigneeEditFormField'
 import {RemoveTaskDialog} from './RemoveTaskDialog'
 import {StatusSelector} from './StatusSelector'
 import {Title} from './TitleField'
 
-const FirstRow = styled.div`
-  display: flex;
-  padding-bottom: 12px;
-`
+const FirstRow = styled(Flex)``
 
 function FormActionsMenu({id, value}: {id: string; value: TaskDocument}) {
   const {setViewMode} = useTasksNavigation()
@@ -69,6 +67,7 @@ export function FormEdit(props: ObjectInputProps) {
   if (!props.value?._id) {
     return <LoadingBlock />
   }
+
   return (
     <>
       <Flex align="flex-start" gap={3}>
@@ -82,12 +81,17 @@ export function FormEdit(props: ObjectInputProps) {
         </div>
         <FormActionsMenu id={props.value?._id} value={value} />
       </Flex>
-      <FirstRow>
+      <FirstRow paddingBottom={3} gap={2} align="flex-start" justify="flex-start">
         <StatusSelector
           value={props.value?.status}
           path={['status']}
           onChange={props.onChange}
           options={statusField.type.options.list}
+        />
+        <AssigneeEditFormField
+          value={props.value?.assignedTo}
+          onChange={props.onChange}
+          path={['assignedTo']}
         />
       </FirstRow>
       {props.renderDefault(props)}
