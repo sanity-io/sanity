@@ -22,11 +22,16 @@ import {TasksUserAvatar} from '../../TasksUserAvatar'
 
 type SelectItemHandler = (id: string) => void
 
-function MentionUserMenuItem(props: {user: UserWithPermission; onSelect: SelectItemHandler}) {
-  const {user, onSelect} = props
+function MentionUserMenuItem(props: {
+  user: UserWithPermission
+  onSelect: SelectItemHandler
+  pressed: boolean
+}) {
+  const {user, onSelect, pressed} = props
+
   const handleSelect = useCallback(() => onSelect(user.id), [user, onSelect])
   return (
-    <MenuItem onClick={handleSelect} padding={1} disabled={!user.granted}>
+    <MenuItem onClick={handleSelect} padding={1} disabled={!user.granted} pressed={pressed}>
       <Flex align="center" gap={3}>
         <Flex align="center" gap={2} flex={1}>
           <TasksUserAvatar user={user.id ? user : undefined} size={1} />
@@ -69,7 +74,7 @@ const NO_ASSIGNEE_OPTION: UserWithPermission = {
   displayName: 'No assignee',
   granted: true,
 }
-function MentionsMenu({onSelect}: {onSelect: SelectItemHandler}) {
+function MentionsMenu({onSelect, value = ''}: {onSelect: SelectItemHandler; value?: string}) {
   const [searchTerm, setSearchTerm] = useState<string>('')
   const {mentionOptions} = useMentionUser()
   const inputRef = useRef<HTMLInputElement | null>(null)
@@ -110,9 +115,16 @@ function MentionsMenu({onSelect}: {onSelect: SelectItemHandler}) {
 
   const renderItem = useCallback(
     (user: UserWithPermission) => {
-      return <MentionUserMenuItem user={user} onSelect={onSelect} key={user.id} />
+      return (
+        <MentionUserMenuItem
+          user={user}
+          onSelect={onSelect}
+          key={user.id}
+          pressed={user.id === value}
+        />
+      )
     },
-    [onSelect],
+    [onSelect, value],
   )
   const handleKeyDown = useCallback((event: KeyboardEvent<HTMLElement>) => {
     // If target is input don't do anything
@@ -164,8 +176,9 @@ function MentionsMenu({onSelect}: {onSelect: SelectItemHandler}) {
 export function AssigneeSelectionMenu(props: {
   onSelect: (userId: string) => void
   menuButton: React.ReactElement
+  value?: string
 }) {
-  const {onSelect, menuButton} = props
+  const {onSelect, menuButton, value} = props
 
   const ref = useRef<HTMLDivElement | null>(null)
 
@@ -176,7 +189,7 @@ export function AssigneeSelectionMenu(props: {
         id="assign-user-menu"
         menu={
           <StyledMenu>
-            <MentionsMenu onSelect={onSelect} />
+            <MentionsMenu onSelect={onSelect} value={value} />
           </StyledMenu>
         }
         popover={{
