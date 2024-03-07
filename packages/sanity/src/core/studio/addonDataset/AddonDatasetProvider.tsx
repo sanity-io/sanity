@@ -25,6 +25,7 @@ export function AddonDatasetProvider(props: AddonDatasetSetupProviderProps) {
   const originalClient = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const [addonDatasetClient, setAddonDatasetClient] = useState<SanityClient | null>(null)
   const [isCreatingDataset, setIsCreatingDataset] = useState<boolean>(false)
+  const [ready, setReady] = useState<boolean>(false)
 
   const getAddonDatasetName = useCallback(async (): Promise<string | undefined> => {
     const res = await originalClient.withConfig({apiVersion: API_VERSION}).request({
@@ -114,6 +115,7 @@ export function AddonDatasetProvider(props: AddonDatasetSetupProviderProps) {
       if (!addonDatasetName) return
       const client = handleCreateClient(addonDatasetName)
       setAddonDatasetClient(client)
+      setReady(true)
     })
   }, [getAddonDatasetName, handleCreateClient])
 
@@ -122,8 +124,9 @@ export function AddonDatasetProvider(props: AddonDatasetSetupProviderProps) {
       client: addonDatasetClient,
       createAddonDataset: handleCreateAddonDataset,
       isCreatingDataset,
+      ready,
     }),
-    [addonDatasetClient, handleCreateAddonDataset, isCreatingDataset],
+    [addonDatasetClient, handleCreateAddonDataset, isCreatingDataset, ready],
   )
 
   return <AddonDatasetContext.Provider value={ctxValue}>{children}</AddonDatasetContext.Provider>

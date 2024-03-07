@@ -5,6 +5,7 @@ export type SidebarTabsIds = 'assigned' | 'subscribed' | 'document'
 export type ViewMode = 'create' | 'edit' | 'list' | 'draft' | 'duplicate'
 
 export interface State {
+  isOpen: boolean
   viewMode: ViewMode
   selectedTask: null | string
   activeTabId: SidebarTabsIds
@@ -30,6 +31,7 @@ export type ViewModeOptions =
 
 export type Action =
   | {type: 'CREATE_TASK'}
+  | {type: 'TOGGLE_TASKS_VIEW'; payload: boolean}
   | {type: 'NAVIGATE_TO_LIST'}
   | {type: 'EDIT_TASK'; payload: {id: string}}
   | {type: 'EDIT_DRAFT'; payload: {id: string}}
@@ -39,6 +41,8 @@ export type Action =
 export type TasksNavigationContextValue = {
   state: State
   setActiveTab: (id: SidebarTabsIds) => void
-  editTask: (id: string) => void
   setViewMode: (options: ViewModeOptions) => void
+  handleCloseTasks: () => void
+  handleCopyLinkToTask: () => void
+  handleOpenTasks: () => void
 }

@@ -1,10 +1,12 @@
 import {Flex} from '@sanity/ui'
 import {type ActiveToolLayoutProps} from 'sanity'
 
-import {TasksStudioSidebar, useTasks, useTasksEnabled} from '../src'
+import {TasksStudioSidebar, useTasksEnabled, useTasksNavigation} from '../src'
 
 export function TasksStudioActiveToolLayout(props: ActiveToolLayoutProps) {
-  const {isOpen} = useTasks()
+  const {
+    state: {isOpen},
+  } = useTasksNavigation()
   const {enabled} = useTasksEnabled()
   if (!enabled) return props.renderDefault(props)
 

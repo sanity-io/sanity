@@ -28,7 +28,7 @@ import {getMentionedUsers} from './utils'
 const FirstRow = styled(Flex)``
 
 function FormActionsMenu({id, value}: {id: string; value: TaskDocument}) {
-  const {setViewMode} = useTasksNavigation()
+  const {setViewMode, handleCopyLinkToTask} = useTasksNavigation()
   const onTaskRemoved = useCallback(() => {
     setViewMode({type: 'list'})
   }, [setViewMode])
@@ -47,11 +47,7 @@ function FormActionsMenu({id, value}: {id: string; value: TaskDocument}) {
           menu={
             <Menu>
               <MenuItem text="Duplicate task" icon={CopyIcon} onClick={duplicateTask} />
-              <MenuItem
-                text="Copy link to task"
-                icon={LinkIcon}
-                disabled // TODO: This is not yet implemented
-              />
+              <MenuItem text="Copy link to task" icon={LinkIcon} onClick={handleCopyLinkToTask} />
               <MenuDivider />
               <MenuItem
                 text="Delete task"

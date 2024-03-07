@@ -1,6 +1,7 @@
-import {useMemo} from 'react'
+import {useEffect, useMemo} from 'react'
 import {
   type Config,
+  LoadingBlock,
   prepareConfig,
   ResourceCacheProvider,
   SourceProvider,
@@ -11,28 +12,22 @@ import {
   WorkspaceProvider,
 } from 'sanity'
 
+import {type FormMode} from '../../types'
 import {taskSchema} from './taskSchema'
 
-export function TasksAddonWorkspaceProvider({
+function TasksAddonWorkspaceProviderInner({
   children,
   mode,
+  addonDataset,
 }: {
+  addonDataset: string
   children: React.ReactNode
-  mode: 'edit' | 'create'
+  mode: FormMode
 }) {
   const client = useClient()
   const apiHost = client.config().apiHost
   // TODO: Is basePath necessary here?
   const basePath = ''
-
-  const {client: addonDatasetClient} = useAddonDataset()
-  const addonDataset = addonDatasetClient?.config().dataset
-  /**
-   * This check is added to prevent the component from rendering when the addon dataset is not available
-   * the user should not land on the tasks form without the addon dataset, the dataset will be created if it does not exist
-   * when the user clicks on the `new task` button in the tasks list
-   */
-  if (!addonDataset) throw new Error('Addon dataset not found')
 
   // Parent workspace source, we want to use the same project id
   const source = useSource()
@@ -63,4 +58,27 @@ export function TasksAddonWorkspaceProvider({
       </SourceProvider>
     </WorkspaceProvider>
   )
+}
+
+/**
+ * Provides a workspace for the addon dataset, with the correct schema for tasks.
+ * It also, creates the addon dataset if it doesn't exist.
+ */
+export function TasksAddonWorkspaceProvider(props: {children: React.ReactNode; mode: FormMode}) {
+  const {client: addonDatasetClient, ready, createAddonDataset} = useAddonDataset()
+  const addonDataset = addonDatasetClient?.config().dataset
+
+  useEffect(() => {
+    if (!addonDataset && ready) {
+      // The user is trying to use the addon dataset form, but it hasn't been created yet.
+      // We should create it.
+      createAddonDataset()
+    }
+  }, [addonDataset, ready, createAddonDataset])
+
+  if (!addonDataset) {
+    return <LoadingBlock />
+  }
+
+  return <TasksAddonWorkspaceProviderInner {...props} addonDataset={addonDataset} />
 }
