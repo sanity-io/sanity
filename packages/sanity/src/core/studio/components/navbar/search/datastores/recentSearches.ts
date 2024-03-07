@@ -1,10 +1,23 @@
 import {type ObjectSchemaType, type Schema} from '@sanity/types'
 import omit from 'lodash/omit'
+import {useMemo} from 'react'
 
+import {useSchema} from '../../../../../hooks'
 import {type SearchTerms} from '../../../../../search'
-import {type SearchFieldDefinitionDictionary} from '../definitions/fields'
-import {type SearchFilterDefinitionDictionary} from '../definitions/filters'
-import {type SearchOperatorDefinitionDictionary} from '../definitions/operators'
+import {useSource} from '../../../../source'
+import {
+  createFieldDefinitionDictionary,
+  createFieldDefinitions,
+  type SearchFieldDefinitionDictionary,
+} from '../definitions/fields'
+import {
+  createFilterDefinitionDictionary,
+  type SearchFilterDefinitionDictionary,
+} from '../definitions/filters'
+import {
+  createOperatorDefinitionDictionary,
+  type SearchOperatorDefinitionDictionary,
+} from '../definitions/operators'
 import {type SearchFilter} from '../types'
 import {validateFilter} from '../utils/filterUtils'
 import {getSearchableOmnisearchTypes} from '../utils/selectors'
@@ -49,24 +62,28 @@ interface StoredSearchItem {
   terms: Omit<SearchTerms, 'types'> & {typeNames: string[]}
 }
 
-export function useRecentSearchesStore({
-  fieldDefinitions,
-  filterDefinitions,
-  operatorDefinitions,
-  schema,
-}: {
-  fieldDefinitions: SearchFieldDefinitionDictionary
-  filterDefinitions: SearchFilterDefinitionDictionary
-  operatorDefinitions: SearchOperatorDefinitionDictionary
-  schema: Schema
-}): RecentSearchesStore {
+export function useRecentSearchesStore(): RecentSearchesStore {
   const [storedSearch, setStoredSearch] = useStoredSearch()
+  const schema = useSchema()
+  const {
+    search: {operators, filters},
+  } = useSource()
+
+  // Create field, filter and operator dictionaries
+  const {fieldDefinitions, filterDefinitions, operatorDefinitions} = useMemo(() => {
+    return {
+      fieldDefinitions: createFieldDefinitionDictionary(createFieldDefinitions(schema, filters)),
+      filterDefinitions: createFilterDefinitionDictionary(filters),
+      operatorDefinitions: createOperatorDefinitionDictionary(operators),
+    }
+  }, [filters, operators, schema])
+
   return {
     /**
      * Write a search term to Local Storage and return updated recent searches.
      */
-    addSearch: (searchTerm: SearchTerms, filters?: SearchFilter[]): RecentSearch[] => {
-      const storedFilters = (filters || []).map(
+    addSearch: (searchTerm: SearchTerms, searchFilters?: SearchFilter[]): RecentSearch[] => {
+      const storedFilters = (searchFilters || []).map(
         (filter): SearchFilter => ({
           fieldId: filter.fieldId,
           filterName: filter.filterName,

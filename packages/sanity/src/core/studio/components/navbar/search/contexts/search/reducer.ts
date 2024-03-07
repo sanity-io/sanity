@@ -38,7 +38,6 @@ export type SearchReducerState = PaginationState & {
   lastAddedFilter?: SearchFilter | null
   lastActiveIndex: number
   ordering: SearchOrdering
-  recentSearches: RecentSearch[]
   result: SearchResult
   terms: RecentSearch | SearchTerms
 }
@@ -60,7 +59,6 @@ export interface SearchResult {
 export interface InitialSearchState {
   currentUser: CurrentUser | null
   fullscreen?: boolean
-  recentSearches?: RecentSearch[]
   definitions: SearchDefinitions
   pagination: PaginationState
 }
@@ -68,7 +66,6 @@ export interface InitialSearchState {
 export function initialSearchState({
   currentUser,
   fullscreen,
-  recentSearches = [],
   definitions,
   pagination,
 }: InitialSearchState): SearchReducerState {
@@ -82,7 +79,6 @@ export function initialSearchState({
     lastActiveIndex: -1,
     ordering: ORDERINGS.relevance,
     ...pagination,
-    recentSearches,
     result: {
       error: null,
       hasLocal: false,
@@ -101,10 +97,7 @@ export function initialSearchState({
 export type FiltersVisibleSet = {type: 'FILTERS_VISIBLE_SET'; visible: boolean}
 export type LastActiveIndexSet = {type: 'LAST_ACTIVE_INDEX_SET'; index: number}
 export type PageIncrement = {type: 'PAGE_INCREMENT'}
-export type RecentSearchesSet = {
-  recentSearches: RecentSearch[]
-  type: 'RECENT_SEARCHES_SET'
-}
+
 export type OrderingReset = {type: 'ORDERING_RESET'}
 export type OrderingSet = {ordering: SearchOrdering; type: 'ORDERING_SET'}
 export type SearchClear = {type: 'SEARCH_CLEAR'}
@@ -140,7 +133,6 @@ export type SearchAction =
   | OrderingReset
   | OrderingSet
   | PageIncrement
-  | RecentSearchesSet
   | SearchClear
   | SearchRequestComplete
   | SearchRequestError
@@ -197,11 +189,6 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
         cursor: state.nextCursor ?? state.cursor,
         nextCursor: null,
         terms: stripRecent(state.terms),
-      }
-    case 'RECENT_SEARCHES_SET':
-      return {
-        ...state,
-        recentSearches: action.recentSearches,
       }
     case 'SEARCH_CLEAR':
       return {

@@ -7,7 +7,7 @@ import {type SearchableType, type SearchTerms} from '../../../../../../search'
 import {useCurrentUser} from '../../../../../../store'
 import {useSource} from '../../../../../source'
 import {SEARCH_LIMIT} from '../../constants'
-import {type RecentSearch, useRecentSearchesStore} from '../../datastores/recentSearches'
+import {type RecentSearch} from '../../datastores/recentSearches'
 import {createFieldDefinitionDictionary, createFieldDefinitions} from '../../definitions/fields'
 import {createFilterDefinitionDictionary} from '../../definitions/filters'
 import {createOperatorDefinitionDictionary} from '../../definitions/operators'
@@ -46,25 +46,11 @@ export function SearchProvider({children, fullscreen}: SearchProviderProps) {
     }
   }, [filters, operators, schema])
 
-  // Create local storage store
-  const recentSearchesStore = useRecentSearchesStore({
-    fieldDefinitions,
-    filterDefinitions,
-    operatorDefinitions,
-    schema,
-  })
-
-  const recentSearches = useMemo(
-    () => recentSearchesStore?.getRecentSearches(),
-    [recentSearchesStore],
-  )
-
   const initialState = useMemo(
     () =>
       initialSearchState({
         currentUser,
         fullscreen,
-        recentSearches,
         definitions: {
           fields: fieldDefinitions,
           operators: operatorDefinitions,
@@ -75,14 +61,7 @@ export function SearchProvider({children, fullscreen}: SearchProviderProps) {
           nextCursor: null,
         },
       }),
-    [
-      currentUser,
-      fieldDefinitions,
-      filterDefinitions,
-      fullscreen,
-      operatorDefinitions,
-      recentSearches,
-    ],
+    [currentUser, fieldDefinitions, filterDefinitions, fullscreen, operatorDefinitions],
   )
   const [state, dispatch] = useReducer(searchReducer, initialState)
 
@@ -200,7 +179,6 @@ export function SearchProvider({children, fullscreen}: SearchProviderProps) {
       value={{
         dispatch,
         onClose: onCloseRef?.current,
-        recentSearchesStore,
         searchCommandList,
         setSearchCommandList,
         setOnClose: handleSetOnClose,

@@ -10,7 +10,7 @@ import {
 } from '../../../../../../components'
 import {useTranslation} from '../../../../../../i18n'
 import {useSearchState} from '../../contexts/search/useSearchState'
-import {type RecentSearch} from '../../datastores/recentSearches'
+import {type RecentSearch, useRecentSearchesStore} from '../../datastores/recentSearches'
 import {Instructions} from '../Instructions'
 import {RecentSearchItem} from './item/RecentSearchItem'
 
@@ -33,9 +33,14 @@ interface RecentSearchesProps {
 export function RecentSearches({inputElement}: RecentSearchesProps) {
   const {
     dispatch,
-    recentSearchesStore,
-    state: {filtersVisible, fullscreen, recentSearches},
+    state: {filtersVisible, fullscreen},
   } = useSearchState()
+  const recentSearchesStore = useRecentSearchesStore()
+  const recentSearches = useMemo(
+    () => recentSearchesStore?.getRecentSearches(),
+    [recentSearchesStore],
+  )
+
   const commandListRef = useRef<CommandListHandle | null>(null)
 
   const {t} = useTranslation()
@@ -46,11 +51,10 @@ export function RecentSearches({inputElement}: RecentSearchesProps) {
    */
   const handleClearRecentSearchesClick = useCallback(() => {
     if (recentSearchesStore) {
-      const updatedRecentSearches = recentSearchesStore.removeSearch()
-      dispatch({recentSearches: updatedRecentSearches, type: 'RECENT_SEARCHES_SET'})
+      recentSearchesStore.removeSearch()
     }
     commandListRef?.current?.focusInputElement()
-  }, [dispatch, recentSearchesStore])
+  }, [recentSearchesStore])
 
   const mediaIndex = useMediaIndex()
 
