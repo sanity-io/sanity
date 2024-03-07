@@ -23,7 +23,7 @@ export function useResolveCommentsEnabled(
   documentType: string,
 ): ResolveCommentsEnabled {
   // Check if the projects plan has the feature enabled
-  const {enabled: featureEnabled, isLoading} = useFeatureEnabled('studioComments')
+  const {enabled: featureEnabled, isLoading, error} = useFeatureEnabled('studioComments')
 
   const {enabled} = useSource().document.unstable_comments
   // Check if the feature is enabled for the current document in the config
@@ -33,7 +33,11 @@ export function useResolveCommentsEnabled(
   )
 
   const value: ResolveCommentsEnabled = useMemo(() => {
-    if (isLoading || !enabledFromConfig) {
+    // The feature is not enabled if:
+    // - the feature is loading (`isLoading` is true)
+    // - the feature is not enabled in the project (`enabledFromConfig` is false)
+    // - there's an error when fetching the list of enabled features (`error` is set)
+    if (isLoading || !enabledFromConfig || error) {
       return {enabled: false, mode: null}
     }
 
@@ -41,7 +45,7 @@ export function useResolveCommentsEnabled(
       enabled: true,
       mode: featureEnabled ? 'default' : 'upsell',
     }
-  }, [isLoading, enabledFromConfig, featureEnabled])
+  }, [isLoading, enabledFromConfig, error, featureEnabled])
 
   return value
 }
