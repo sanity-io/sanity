@@ -1,10 +1,11 @@
 import {AvatarStack, Flex} from '@sanity/ui'
 import {AnimatePresence, motion} from 'framer-motion'
 import {useCallback} from 'react'
-import {type FormPatch, type PatchEvent, type Path, set, UserAvatar} from 'sanity'
+import {type FormPatch, type PatchEvent, type Path, set} from 'sanity'
 
 import {Button} from '../../../../../ui-components'
 import {type TaskDocument} from '../../types'
+import {TasksUserAvatar} from '../TasksUserAvatar'
 
 interface TasksSubscriberProps {
   value: TaskDocument
@@ -65,7 +66,7 @@ export function TasksSubscriberAvatars(props: {subscriberIds?: string[]}) {
               }}
               initial={{opacity: 0, translateX: '2px', scale: 0.9}}
             >
-              <UserAvatar user={subscriberId} />
+              <TasksUserAvatar user={{id: subscriberId}} size={1} />
             </motion.div>
           ))}
       </AvatarStack>

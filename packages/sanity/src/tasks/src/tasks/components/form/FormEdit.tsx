@@ -1,5 +1,7 @@
 import {CopyIcon, LinkIcon, TrashIcon} from '@sanity/icons'
-import {Box, Flex, Menu, MenuDivider} from '@sanity/ui'
+import {Box, Card, Flex, Menu, MenuDivider} from '@sanity/ui'
+// eslint-disable-next-line camelcase
+import {getTheme_v2} from '@sanity/ui/theme'
 import {useCallback} from 'react'
 import {
   ContextMenuButton,
@@ -12,7 +14,7 @@ import {
   TransformPatches,
   useCurrentUser,
 } from 'sanity'
-import styled from 'styled-components'
+import styled, {css} from 'styled-components'
 
 import {MenuButton, MenuItem} from '../../../../../ui-components'
 import {useTasksNavigation} from '../../context'
@@ -20,12 +22,19 @@ import {useRemoveTask} from '../../hooks/useRemoveTask'
 import {type TaskDocument} from '../../types'
 import {ActivityLog} from '../activityLog'
 import {AssigneeEditFormField} from './assignee'
+import {DateEditFormField} from './DateEditFormField'
 import {RemoveTaskDialog} from './RemoveTaskDialog'
 import {StatusSelector} from './StatusSelector'
 import {Title} from './TitleField'
 import {getMentionedUsers} from './utils'
 
-const FirstRow = styled(Flex)``
+const FirstRow = styled(Flex)((props) => {
+  const theme = getTheme_v2(props.theme)
+  return css`
+    column-gap: ${theme.space[2]}px;
+    row-gap: ${theme.space[3]}px;
+  `
+})
 
 function FormActionsMenu({id, value}: {id: string; value: TaskDocument}) {
   const {setViewMode, handleCopyLinkToTask} = useTasksNavigation()
@@ -99,19 +108,33 @@ function FormEditInner(props: ObjectInputProps) {
         </div>
         <FormActionsMenu id={props.value?._id} value={value} />
       </Flex>
-      <FirstRow paddingY={3} gap={2} align="flex-start" justify="flex-start">
-        <StatusSelector
-          value={props.value?.status}
-          path={['status']}
-          onChange={handleChangeAndSubscribe}
-          options={statusField.type.options.list}
-        />
-        <AssigneeEditFormField
-          value={props.value?.assignedTo}
-          onChange={handleChangeAndSubscribe}
-          path={['assignedTo']}
-        />
-      </FirstRow>
+      <Card borderTop marginTop={3}>
+        <FirstRow
+          paddingBottom={3}
+          paddingTop={4}
+          align="flex-start"
+          justify="flex-start"
+          wrap="wrap"
+        >
+          <StatusSelector
+            value={props.value?.status}
+            path={['status']}
+            onChange={handleChangeAndSubscribe}
+            options={statusField.type.options.list}
+          />
+          <AssigneeEditFormField
+            value={props.value?.assignedTo}
+            onChange={handleChangeAndSubscribe}
+            path={['assignedTo']}
+          />
+          <DateEditFormField
+            value={props.value?.dueBy}
+            onChange={handleChangeAndSubscribe}
+            path={['dueBy']}
+          />
+        </FirstRow>
+      </Card>
+
       {props.renderDefault(props)}
       <ActivityLog value={value} onChange={props.onChange} path={['subscribers']} />
     </>
