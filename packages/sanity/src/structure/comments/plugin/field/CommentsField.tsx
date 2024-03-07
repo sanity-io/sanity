@@ -163,7 +163,7 @@ function CommentFieldInner(
 
     if (mode === 'upsell') {
       if (upsellData) {
-        handleOpenDialog()
+        handleOpenDialog('field_action')
       } else {
         // Open the comments inspector
         onCommentsOpen?.()
