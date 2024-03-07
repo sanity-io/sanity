@@ -4,7 +4,7 @@ import {type FormMode} from '../../types'
 import {DescriptionFieldContainer, DescriptionInput} from './DescriptionInput'
 import {FormCreate} from './FormCreate'
 import {FormEdit} from './FormEdit'
-import {MentionUserFormField} from './MentionUser'
+import {AssigneeCreateFormField} from './mentionUser'
 import {TargetField} from './TargetField'
 import {TitleField} from './TitleField'
 
@@ -97,8 +97,9 @@ export const taskSchema = (mode: FormMode) =>
         title: 'Assigned to',
         placeholder: 'Search username',
         components: {
-          input: MentionUserFormField,
+          input: AssigneeCreateFormField,
         },
+        hidden: mode === 'edit',
       },
       {
         type: 'date',
