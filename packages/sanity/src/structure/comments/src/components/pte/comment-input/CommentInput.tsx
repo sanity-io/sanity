@@ -26,12 +26,12 @@ export interface CommentInputProps {
   mentionOptions: UserListWithPermissionsHookValue
   onBlur?: (e: React.FormEvent<HTMLDivElement>) => void
   onChange: (value: PortableTextBlock[]) => void
-  onDiscardCancel: () => void
+  onDiscardCancel?: () => void
   onDiscardConfirm: () => void
   onFocus?: (e: React.FormEvent<HTMLDivElement>) => void
   onKeyDown?: (e: React.KeyboardEvent<Element>) => void
   onMentionMenuOpenChange?: (open: boolean) => void
-  onSubmit: () => void
+  onSubmit?: () => void
   placeholder?: React.ReactNode
   readOnly?: boolean
   value: PortableTextBlock[] | null
@@ -129,7 +129,7 @@ export const CommentInput = forwardRef<CommentInputHandle, CommentInputProps>(
     }, [])
 
     const handleSubmit = useCallback(() => {
-      onSubmit()
+      onSubmit?.()
       resetEditorInstance()
       requestFocus()
       scrollToEditor()
@@ -195,7 +195,7 @@ export const CommentInput = forwardRef<CommentInputHandle, CommentInputProps>(
 
     return (
       <>
-        {showDiscardDialog && (
+        {showDiscardDialog && onDiscardCancel && (
           <CommentInputDiscardDialog onClose={onDiscardCancel} onConfirm={handleDiscardConfirm} />
         )}
 
@@ -226,7 +226,7 @@ export const CommentInput = forwardRef<CommentInputHandle, CommentInputProps>(
                   onBlur={onBlur}
                   onFocus={onFocus}
                   onKeyDown={onKeyDown}
-                  onSubmit={handleSubmit}
+                  onSubmit={onSubmit && handleSubmit}
                   placeholder={placeholder}
                   withAvatar={withAvatar}
                 />

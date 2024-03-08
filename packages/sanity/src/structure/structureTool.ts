@@ -2,6 +2,7 @@ import {MasterDetailIcon} from '@sanity/icons'
 import {lazy} from 'react'
 import {definePlugin} from 'sanity'
 
+import {tasks} from '../tasks'
 import {comments} from './comments'
 import {
   DeleteAction,
@@ -101,7 +102,7 @@ export const structureTool = definePlugin<StructureToolOptions | void>((options)
       },
     },
 
-    plugins: [comments()],
+    plugins: [comments(), tasks()],
 
     tools: [
       {
