@@ -1,5 +1,5 @@
-import {Menu} from '@sanity/ui'
-import {useId} from 'react'
+import {Menu, MenuDivider} from '@sanity/ui'
+import {type ReactNode, useId} from 'react'
 import {ContextMenuButton} from 'sanity'
 
 import {MenuButton, type PopoverProps} from '../../../ui-components'
@@ -8,6 +8,7 @@ import {type _PaneMenuItem, type _PaneMenuNode} from './types'
 
 interface PaneContextMenuButtonProps {
   nodes: _PaneMenuNode[]
+  actionsNodes?: ReactNode
 }
 
 const CONTEXT_MENU_POPOVER_PROPS: PopoverProps = {
@@ -31,7 +32,7 @@ function nodesHasTone(nodes: _PaneMenuNode[], tone: NonNullable<_PaneMenuItem['t
  * @beta This API will change. DO NOT USE IN PRODUCTION.
  */
 export function PaneContextMenuButton(props: PaneContextMenuButtonProps) {
-  const {nodes} = props
+  const {nodes, actionsNodes} = props
   const id = useId()
 
   const hasCritical = nodesHasTone(nodes, 'critical')
@@ -49,9 +50,14 @@ export function PaneContextMenuButton(props: PaneContextMenuButtonProps) {
       id={id}
       menu={
         <Menu>
+          {actionsNodes && (
+            <>
+              {actionsNodes}
+              <MenuDivider />
+            </>
+          )}
           {nodes.map((node, nodeIndex) => {
             const isAfterGroup = nodes[nodeIndex - 1]?.type === 'group'
-
             return <PaneMenuButtonItem isAfterGroup={isAfterGroup} key={node.key} node={node} />
           })}
         </Menu>

@@ -1,6 +1,7 @@
 import type * as React from 'react'
 import {
   type DocumentActionDescription,
+  type DocumentActionGroup,
   type DocumentActionProps,
   GetHookCollectionState,
 } from 'sanity'
@@ -16,14 +17,20 @@ export interface RenderActionCollectionProps {
   actionProps: DocumentActionProps
   children: (props: {states: DocumentActionDescription[]}) => React.ReactNode
   onActionComplete?: () => void
+  group?: DocumentActionGroup
 }
 
 /** @internal */
 export const RenderActionCollectionState = (props: RenderActionCollectionProps) => {
-  const {actions, children, actionProps, onActionComplete} = props
+  const {actions, children, actionProps, onActionComplete, group} = props
 
   return (
-    <GetHookCollectionState onReset={onActionComplete} hooks={actions} args={actionProps}>
+    <GetHookCollectionState
+      onReset={onActionComplete}
+      hooks={actions}
+      args={actionProps}
+      group={group}
+    >
       {children}
     </GetHookCollectionState>
   )

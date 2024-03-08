@@ -118,6 +118,11 @@ export type DocumentActionDialogProps =
 /**
  * @hidden
  * @beta */
+export type DocumentActionGroup = 'default' | 'paneActions'
+
+/**
+ * @hidden
+ * @beta */
 export interface DocumentActionDescription {
   tone?: ButtonTone
   dialog?: DocumentActionDialogProps | false | null
@@ -127,4 +132,8 @@ export interface DocumentActionDescription {
   onHandle?: () => void
   shortcut?: string | null
   title?: ReactNode
+  /**
+   * @beta
+   */
+  group?: DocumentActionGroup[]
 }

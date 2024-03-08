@@ -13,13 +13,14 @@ export interface GetHookCollectionStateProps<T, K> {
   children: (props: {states: K[]}) => ReactNode
   hooks: ActionHook<T, K>[]
   onReset?: () => void
+  group?: string
 }
 
 const throttleOptions: ThrottleSettings = {trailing: true}
 
 /** @internal */
 export function GetHookCollectionState<T, K>(props: GetHookCollectionStateProps<T, K>) {
-  const {hooks, args, children, onReset} = props
+  const {hooks, args, children, group, onReset} = props
 
   const statesRef = useRef<Record<string, {value: K}>>({})
   const [tickId, setTick] = useState(0)
@@ -46,14 +47,18 @@ export function GetHookCollectionState<T, K>(props: GetHookCollectionStateProps<
     throttleOptions,
   )
 
-  const handleNext = useCallback((id: any, hookState: any) => {
-    if (hookState === null) {
-      delete statesRef.current[id]
-    } else {
-      const current = statesRef.current[id]
-      statesRef.current[id] = {...current, value: hookState}
-    }
-  }, [])
+  const handleNext = useCallback(
+    (id: any, hookState: any) => {
+      const hookGroup = hookState?.group || ['default']
+      if (hookState === null || (group && !hookGroup.includes(group))) {
+        delete statesRef.current[id]
+      } else {
+        const current = statesRef.current[id]
+        statesRef.current[id] = {...current, value: hookState}
+      }
+    },
+    [group],
+  )
 
   const handleReset = useCallback(
     (id: any) => {
@@ -67,7 +72,6 @@ export function GetHookCollectionState<T, K>(props: GetHookCollectionStateProps<
   )
 
   const hookIds = useMemo(() => hooks.map((hook) => getHookId(hook)), [hooks])
-
   const states = useMemo(
     () => hookIds.map((id) => statesRef.current[id]?.value).filter(isNonNullable),
     // eslint-disable-next-line react-hooks/exhaustive-deps -- tickId is used to refresh the memo, before it can be removed it needs to be investigated what impact it has
