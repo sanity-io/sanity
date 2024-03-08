@@ -16,11 +16,12 @@ import {
 } from 'sanity'
 import styled, {css} from 'styled-components'
 
+import {CommentsProvider} from '../../../../../structure/comments'
 import {MenuButton, MenuItem} from '../../../../../ui-components'
 import {useTasksNavigation} from '../../context'
 import {useRemoveTask} from '../../hooks/useRemoveTask'
 import {type TaskDocument} from '../../types'
-import {ActivityLog} from '../activityLog'
+import {TasksActivityLog} from '../activity'
 import {AssigneeEditFormField} from './assignee'
 import {DateEditFormField} from './DateEditFormField'
 import {RemoveTaskDialog} from './RemoveTaskDialog'
@@ -136,7 +137,17 @@ function FormEditInner(props: ObjectInputProps) {
       </Card>
 
       {props.renderDefault(props)}
-      <ActivityLog value={value} onChange={props.onChange} path={['subscribers']} />
+
+      <CommentsProvider
+        documentId={value._id}
+        documentType="tasks.task"
+        sortOrder="asc"
+        type="task"
+      >
+        <Card borderTop paddingTop={4} marginTop={4}>
+          <TasksActivityLog value={value} onChange={props.onChange} path={['subscribers']} />
+        </Card>
+      </CommentsProvider>
     </>
   )
 }
