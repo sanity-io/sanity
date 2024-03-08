@@ -18,6 +18,7 @@ const devAliases = {
   // because they will be escaped by the jest config
   '@sanity/block-tools': './packages/@sanity/block-tools/src',
   '@sanity/diff': './packages/@sanity/diff/src',
+  '@sanity/cli': './packages/@sanity/cli/src',
   '@sanity/mutator': './packages/@sanity/mutator/src',
   '@sanity/portable-text-editor': './packages/@sanity/portable-text-editor/src',
   '@sanity/schema': './packages/@sanity/schema/src/_exports',
