@@ -1,7 +1,7 @@
 import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
 import {uuid} from '@sanity/uuid'
 import {AnimatePresence, motion, type Variants} from 'framer-motion'
-import {Fragment, useCallback} from 'react'
+import {Fragment, useCallback, useMemo} from 'react'
 import {type FormPatch, LoadingBlock, type PatchEvent, type Path, useCurrentUser} from 'sanity'
 import styled from 'styled-components'
 
@@ -11,10 +11,12 @@ import {
   type CommentInputProps,
   type CommentReactionOption,
   CommentsListItem,
+  type CommentThreadItem,
   type CommentUpdatePayload,
   useComments,
 } from '../../../../../structure/comments'
 import {type TaskDocument} from '../../types'
+import {EditedAt} from './Activity'
 import {TasksActivityCommentInput} from './TasksActivityCommentInput'
 import {TasksActivityCreatedAt} from './TasksActivityCreatedAt'
 import {TasksSubscribers} from './TasksSubscribers'
@@ -33,6 +35,26 @@ interface TasksActivityLogProps {
   path?: Path
   value: TaskDocument
 }
+
+interface ActivityLogItem {
+  author: string
+  field: string
+  from: string
+  timestamp: string
+  to?: string
+}
+
+type Activity =
+  | {
+      _type: 'comment'
+      payload: CommentThreadItem
+      timestamp: string
+    }
+  | {
+      _type: 'activity'
+      payload: ActivityLogItem
+      timestamp: string
+    }
 
 export function TasksActivityLog(props: TasksActivityLogProps) {
   const {value, onChange, path} = props
@@ -117,6 +139,26 @@ export function TasksActivityLog(props: TasksActivityLogProps) {
     [operation],
   )
 
+  // TODO: Get the task real activity.
+  const activityData: ActivityLogItem[] = EMPTY_ARRAY
+
+  const activity: Activity[] = useMemo(() => {
+    const taskActivity: Activity[] = activityData.map((item) => ({
+      _type: 'activity' as const,
+      payload: item as ActivityLogItem,
+      timestamp: item.timestamp,
+    }))
+    const commentsActivity: Activity[] = taskComments.map((comment) => ({
+      _type: 'comment' as const,
+      payload: comment,
+      timestamp: comment.parentComment._createdAt,
+    }))
+
+    return taskActivity
+      .concat(commentsActivity)
+      .sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime())
+  }, [activityData, taskComments])
+
   return (
     <Stack space={5}>
       <Flex align="center">
@@ -148,17 +190,20 @@ export function TasksActivityLog(props: TasksActivityLogProps) {
             )}
 
             {currentUser && (
-              <Stack space={2} marginTop={1}>
+              <Stack space={4} marginTop={1}>
                 {taskComments.length > 0 && (
                   <Fragment>
-                    {taskComments.map((c) => {
+                    {activity.map((item) => {
+                      if (item._type === 'activity') {
+                        return <EditedAt key={item.timestamp} activity={item.payload} />
+                      }
                       return (
-                        <Stack key={c.parentComment._id}>
+                        <Stack key={item.payload.parentComment._id}>
                           <CommentsListItem
                             canReply
                             currentUser={currentUser}
                             isSelected={false}
-                            key={c.parentComment._id}
+                            key={item.payload.parentComment._id}
                             mentionOptions={mentionOptions}
                             mode="default" // TODO: set dynamic mode?
                             onCreateRetry={handleCommentCreateRetry}
@@ -166,8 +211,8 @@ export function TasksActivityLog(props: TasksActivityLogProps) {
                             onEdit={handleCommentEdit}
                             onReactionSelect={handleCommentReact}
                             onReply={handleCommentReply}
-                            parentComment={c.parentComment}
-                            replies={c.replies}
+                            parentComment={item.payload.parentComment}
+                            replies={item.payload.replies}
                           />
                         </Stack>
                       )
