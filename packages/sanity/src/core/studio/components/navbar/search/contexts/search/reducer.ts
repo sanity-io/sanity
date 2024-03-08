@@ -97,7 +97,6 @@ export function initialSearchState({
 export type FiltersVisibleSet = {type: 'FILTERS_VISIBLE_SET'; visible: boolean}
 export type LastActiveIndexSet = {type: 'LAST_ACTIVE_INDEX_SET'; index: number}
 export type PageIncrement = {type: 'PAGE_INCREMENT'}
-
 export type OrderingReset = {type: 'ORDERING_RESET'}
 export type OrderingSet = {ordering: SearchOrdering; type: 'ORDERING_SET'}
 export type SearchClear = {type: 'SEARCH_CLEAR'}

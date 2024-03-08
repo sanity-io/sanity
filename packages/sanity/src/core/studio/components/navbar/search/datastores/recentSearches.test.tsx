@@ -367,7 +367,6 @@ describe('search-store', () => {
         ])
       })
     })
-    // })
     describe('removeSearchTerms', () => {
       it('should delete all saved searches', async () => {
         const {result} = await constructRecentSearchesStore()
