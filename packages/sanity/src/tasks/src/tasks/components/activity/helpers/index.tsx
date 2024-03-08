@@ -17,23 +17,6 @@ interface KeyStringMapValue {
   link?: ReactElement
 }
 
-export interface EditAtProps {
-  activity: {
-    author: string
-    field: string
-    from?: string | null
-    to?: string | null
-    timestamp: string
-  }
-}
-
-export interface ActivityProps {
-  text: string
-  author: string
-  to?: string | null
-  updatedTimeAgo: string
-}
-
 export function UpdatedTimeAgo(timestamp: string) {
   const dateFormatter = useDateTimeFormat({
     dateStyle: 'medium',
@@ -45,7 +28,7 @@ export function UpdatedTimeAgo(timestamp: string) {
     useTemporalPhrase: true,
   })
 
-  return updatedTimeAgo
+  return {timeAgo: updatedTimeAgo, formattedDate}
 }
 
 export function getStringForKey(key: string): KeyStringMapValue | undefined {
