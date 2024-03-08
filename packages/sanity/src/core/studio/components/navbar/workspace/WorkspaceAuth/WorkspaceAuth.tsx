@@ -1,6 +1,5 @@
 import {AddIcon, ArrowLeftIcon, ChevronRightIcon} from '@sanity/icons'
 import {Box, Card, Flex, Stack} from '@sanity/ui'
-import {omit} from 'lodash'
 import {useCallback, useState} from 'react'
 
 import {Button} from '../../../../../../ui-components'
@@ -58,7 +57,14 @@ export function WorkspaceAuth() {
         >
           <Stack padding={2} paddingBottom={3} paddingTop={4}>
             <LoginComponent
-              {...omit(selectedWorkspace, ['type', '__internal'])}
+              projectId={selectedWorkspace.projectId}
+              redirectPath={
+                window.location.pathname.startsWith(selectedWorkspace.basePath)
+                  ? // NOTE: the fragment cannot be preserved because it's used
+                    // to transfer an sid to a token
+                    `${window.location.pathname}${window.location.search}`
+                  : selectedWorkspace.basePath
+              }
               key={selectedWorkspaceName}
             />
           </Stack>

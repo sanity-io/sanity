@@ -78,7 +78,16 @@ export interface AuthState {
  * @beta
  * @hidden
  */
-export interface LoginComponentProps {
-  projectId: string
-  basePath: string
-}
+export type LoginComponentProps =
+  | {
+      projectId: string
+      /** @deprecated use redirectPath instead */
+      basePath: string
+      redirectPath?: string
+    }
+  | {
+      projectId: string
+      redirectPath: string
+      /** @deprecated use redirectPath instead */
+      basePath?: string
+    }
