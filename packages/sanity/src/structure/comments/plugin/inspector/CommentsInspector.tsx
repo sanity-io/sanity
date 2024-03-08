@@ -9,7 +9,7 @@ import {EMPTY_PARAMS} from '../../../constants'
 import {useDocumentPane} from '../../../panes/document/useDocumentPane'
 import {commentsLocaleNamespace} from '../../i18n'
 import {
-  type CommentCreatePayload,
+  type CommentBaseCreatePayload,
   CommentDeleteDialog,
   type CommentReactionOption,
   CommentsList,
@@ -163,7 +163,8 @@ function CommentsInspectorInner(
       if (!comment) return
 
       operation.create({
-        fieldPath: comment.target.path.field,
+        type: 'field',
+        fieldPath: comment.target.path?.field || '',
         id: comment._id,
         message: comment.message,
         parentCommentId: comment.parentCommentId,
@@ -204,28 +205,38 @@ function CommentsInspectorInner(
   )
 
   const handleNewThreadCreate = useCallback(
-    (payload: CommentCreatePayload) => {
-      operation.create(payload)
+    (nextComment: CommentBaseCreatePayload) => {
+      const fieldPath = nextComment?.payload?.fieldPath || ''
+
+      operation.create({
+        type: 'field',
+        fieldPath,
+        ...nextComment,
+      })
 
       setSelectedPath({
-        fieldPath: payload.fieldPath,
+        fieldPath,
         origin: 'inspector',
-        threadId: payload.threadId,
+        threadId: nextComment.threadId,
       })
     },
     [operation, setSelectedPath],
   )
 
   const handleReply = useCallback(
-    (payload: CommentCreatePayload) => {
-      operation.create(payload)
+    (nextComment: CommentBaseCreatePayload) => {
+      operation.create({
+        ...nextComment,
+        type: 'field',
+        fieldPath: nextComment?.payload?.fieldPath || '',
+      })
     },
     [operation],
   )
 
   const handleEdit = useCallback(
-    (id: string, payload: CommentUpdatePayload) => {
-      operation.update(id, payload)
+    (id: string, nextComment: CommentUpdatePayload) => {
+      operation.update(id, nextComment)
     },
     [operation],
   )
@@ -276,7 +287,7 @@ function CommentsInspectorInner(
         if (!comment) return
 
         setSelectedPath({
-          fieldPath: comment.target.path.field || null,
+          fieldPath: comment.target.path?.field || null,
           origin: 'inspector',
           threadId: comment.threadId || null,
         })
@@ -331,7 +342,7 @@ function CommentsInspectorInner(
       setStatus(commentToScrollTo.status || 'open')
 
       setSelectedPath({
-        fieldPath: commentToScrollTo.target.path.field || null,
+        fieldPath: commentToScrollTo.target.path?.field || null,
         origin: 'url',
         threadId: commentToScrollTo.threadId || null,
       })

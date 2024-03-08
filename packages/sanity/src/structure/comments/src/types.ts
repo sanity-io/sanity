@@ -169,6 +169,12 @@ export interface CommentReactionItem {
 }
 
 /**
+ * @beta
+ * @hidden
+ */
+export type CommentsType = 'field' | 'task'
+
+/**
  * The state is used to track the state of the comment (e.g. if it failed to be created, etc.)
  * It is a local value and is not stored on the server.
  * When there's no state, the comment is considered to be in a "normal" state (e.g. created successfully).
@@ -204,17 +210,23 @@ export interface CommentDocument {
   contentSnapshot?: unknown
 
   target: {
-    path: CommentPath
+    path?: CommentPath
 
-    documentRevisionId: string
+    documentRevisionId?: string
     documentType: string
-    document: {
-      _dataset: string
-      _projectId: string
-      _ref: string
-      _type: 'crossDatasetReference'
-      _weak: boolean
-    }
+    document:
+      | {
+          _dataset: string
+          _projectId: string
+          _ref: string
+          _type: 'crossDatasetReference'
+          _weak: boolean
+        }
+      | {
+          _ref: string
+          _type: 'reference'
+          weak: boolean
+        }
   }
 }
 
@@ -228,20 +240,47 @@ export type CommentPostPayload = Omit<CommentDocument, '_rev' | '_updatedAt' | '
  * @beta
  * @hidden
  */
-export interface CommentCreatePayload {
+export interface CommentBaseCreatePayload {
+  id?: CommentDocument['_id']
+  message: CommentDocument['message']
+  parentCommentId: CommentDocument['parentCommentId']
+  reactions: CommentDocument['reactions']
+  status: CommentDocument['status']
+  threadId: CommentDocument['threadId']
+
+  payload?: {
+    fieldPath: string
+  }
+}
+
+/**
+ * @beta
+ * @hidden
+ */
+export interface CommentTaskCreatePayload extends CommentBaseCreatePayload {
+  // ...
+  type: 'task'
+}
+
+/**
+ * @beta
+ * @hidden
+ */
+export interface CommentFieldCreatePayload extends CommentBaseCreatePayload {
+  type: 'field'
   contentSnapshot?: CommentDocument['contentSnapshot']
   /**
    * The stringified path to the field where the comment was created.
    */
   fieldPath: string
-  id?: CommentDocument['_id']
-  message: CommentDocument['message']
-  parentCommentId: CommentDocument['parentCommentId']
-  reactions: CommentDocument['reactions']
   selection?: CommentPathSelection
-  status: CommentDocument['status']
-  threadId: CommentDocument['threadId']
 }
+
+/**
+ * @beta
+ * @hidden
+ */
+export type CommentCreatePayload = CommentTaskCreatePayload | CommentFieldCreatePayload
 
 /**
  * @beta

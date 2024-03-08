@@ -19,6 +19,7 @@ import {useCommentsStore} from '../../store'
 import {
   type CommentPostPayload,
   type CommentStatus,
+  type CommentsType,
   type CommentThreadItem,
   type CommentUpdatePayload,
 } from '../../types'
@@ -46,6 +47,8 @@ export interface CommentsProviderProps {
   children: ReactNode
   documentId: string
   documentType: string
+  type: CommentsType
+  sortOrder: 'asc' | 'desc'
 
   isCommentsOpen?: boolean
   onCommentsOpen?: () => void
@@ -58,7 +61,8 @@ type TransactionId = string
  * @beta
  */
 export const CommentsProvider = memo(function CommentsProvider(props: CommentsProviderProps) {
-  const {children, documentId, documentType, isCommentsOpen, onCommentsOpen} = props
+  const {children, documentId, documentType, isCommentsOpen, onCommentsOpen, sortOrder, type} =
+    props
   const commentsEnabled = useCommentsEnabled()
   const [status, setStatus] = useState<CommentStatus>('open')
   const {client, createAddonDataset, isCreatingDataset} = useAddonDataset()
@@ -128,25 +132,21 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
 
   const threadItemsByStatus: ThreadItemsByStatus = useMemo(() => {
     if (!schemaType || !currentUser) return EMPTY_COMMENTS_DATA
-    // Since we only make one query to get all comments using the order `_createdAt desc` – we
-    // can't know for sure that the comments added through the real time listener will be in the
-    // correct order. In order to avoid that comments are out of order, we make an additional
-    // sort here. The comments can be out of order if e.g a comment creation fails and is retried
-    // later.
-    const sorted = orderBy(data, ['_createdAt'], ['desc'])
+    const sorted = orderBy(data, ['_createdAt'], [sortOrder])
 
     const items = buildCommentThreadItems({
       comments: sorted,
-      schemaType,
       currentUser,
       documentValue,
+      schemaType,
+      type,
     })
 
     return {
       open: items.filter((item) => item.parentComment.status === 'open'),
       resolved: items.filter((item) => item.parentComment.status === 'resolved'),
     }
-  }, [currentUser, data, documentValue, schemaType])
+  }, [currentUser, data, documentValue, schemaType, sortOrder, type])
 
   const getThreadLength = useCallback(
     (threadId: string) => {

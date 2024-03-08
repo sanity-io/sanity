@@ -7,7 +7,7 @@ import {useCurrentUser, useUserListWithPermissions} from 'sanity'
 
 import {CommentsList} from '../components'
 import {
-  type CommentCreatePayload,
+  type CommentBaseCreatePayload,
   type CommentDocument,
   type CommentReactionOption,
   type CommentStatus,
@@ -196,7 +196,7 @@ export default function CommentsListStory() {
   const mentionOptions = useUserListWithPermissions(MENTION_HOOK_OPTIONS)
 
   const handleReplySubmit = useCallback(
-    (payload: CommentCreatePayload) => {
+    (payload: CommentBaseCreatePayload) => {
       const reply: CommentDocument = {
         ...BASE,
         ...payload,
@@ -235,7 +235,7 @@ export default function CommentsListStory() {
   )
 
   const handleNewThreadCreate = useCallback(
-    (payload: CommentCreatePayload) => {
+    (payload: CommentBaseCreatePayload) => {
       const comment: CommentDocument = {
         ...BASE,
         ...payload,
@@ -356,6 +356,7 @@ export default function CommentsListStory() {
       currentUser,
       documentValue: {},
       schemaType: schema.get('article'),
+      type: 'field',
     })
 
     return items

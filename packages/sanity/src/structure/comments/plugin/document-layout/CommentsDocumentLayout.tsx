@@ -43,6 +43,9 @@ function CommentsDocumentLayoutInner(props: DocumentLayoutProps) {
       documentType={documentType}
       isCommentsOpen={inspector?.name === COMMENTS_INSPECTOR_NAME}
       onCommentsOpen={handleOpenCommentsInspector}
+      // eslint-disable-next-line @sanity/i18n/no-attribute-string-literals
+      sortOrder="desc"
+      type="field"
     >
       <CommentsSelectedPathProvider>
         <CommentsAuthoringPathProvider>{props.renderDefault(props)}</CommentsAuthoringPathProvider>

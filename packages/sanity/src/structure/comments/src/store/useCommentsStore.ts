@@ -33,11 +33,7 @@ const LISTEN_OPTIONS: ListenOptions = {
 export const SORT_FIELD = '_createdAt'
 export const SORT_ORDER = 'desc'
 
-const QUERY_FILTERS = [
-  `_type == "comment"`,
-  `target.document._ref == $documentId`,
-  `defined(target.path)`,
-]
+const QUERY_FILTERS = [`_type == "comment"`, `target.document._ref == $documentId`]
 
 const QUERY_PROJECTION = `{
   _createdAt,

@@ -6,7 +6,7 @@ import {type UserListWithPermissionsHookValue} from 'sanity'
 import {type CommentsSelectedPath} from '../../context'
 import {applyCommentsGroupAttr} from '../../hooks'
 import {
-  type CommentCreatePayload,
+  type CommentBaseCreatePayload,
   type CommentReactionOption,
   type CommentStatus,
   type CommentsUIMode,
@@ -51,10 +51,10 @@ export interface CommentsListProps {
   onCreateRetry: (id: string) => void
   onDelete: (id: string) => void
   onEdit: (id: string, payload: CommentUpdatePayload) => void
-  onNewThreadCreate: (payload: CommentCreatePayload) => void
+  onNewThreadCreate: (payload: CommentBaseCreatePayload) => void
   onPathSelect?: (nextPath: CommentsSelectedPath) => void
   onReactionSelect?: (id: string, reaction: CommentReactionOption) => void
-  onReply: (payload: CommentCreatePayload) => void
+  onReply: (payload: CommentBaseCreatePayload) => void
   onStatusChange?: (id: string, status: CommentStatus) => void
   readOnly?: boolean
   selectedPath: CommentsSelectedPath | null
@@ -185,7 +185,7 @@ const CommentsListInner = forwardRef(function CommentsListInner(
                       // selected path.
                       const threadIsSelected =
                         selectedPath?.threadId === item.parentComment.threadId &&
-                        selectedPath?.fieldPath === item.parentComment.target.path.field
+                        selectedPath?.fieldPath === item.parentComment.target.path?.field
 
                       return (
                         <CommentsListItem

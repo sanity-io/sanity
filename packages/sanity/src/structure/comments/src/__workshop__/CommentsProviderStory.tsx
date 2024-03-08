@@ -25,7 +25,7 @@ export default function CommentsProviderStory() {
   return (
     <AddonDatasetProvider>
       <CommentsEnabledProvider documentType={_type} documentId={_id}>
-        <CommentsProvider documentType={_type} documentId={_id}>
+        <CommentsProvider documentType={_type} documentId={_id} type="field" sortOrder="desc">
           <ConditionalWrapper
             condition={_mode === 'upsell'}
             // eslint-disable-next-line react/jsx-no-bind
@@ -74,9 +74,15 @@ function Inner({mode}: {mode: CommentsUIMode}) {
       onCreateRetry={noop}
       onDelete={operation.remove}
       onEdit={operation.update}
-      onNewThreadCreate={operation.create}
+      // eslint-disable-next-line react/jsx-no-bind
+      onNewThreadCreate={(c) =>
+        operation.create({type: 'field', fieldPath: c.payload?.fieldPath || '', ...c})
+      }
       onReactionSelect={operation.react}
-      onReply={operation.create}
+      // eslint-disable-next-line react/jsx-no-bind
+      onReply={(c) =>
+        operation.create({type: 'field', fieldPath: c.payload?.fieldPath || '', ...c})
+      }
       selectedPath={null}
       status="open"
     />
