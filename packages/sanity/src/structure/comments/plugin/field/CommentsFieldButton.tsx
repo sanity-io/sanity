@@ -39,11 +39,11 @@ interface CommentsFieldButtonProps {
   mentionOptions: UserListWithPermissionsHookValue
   onChange: (value: PortableTextBlock[]) => void
   onClick?: () => void
+  onClose: () => void
   onCommentAdd: () => void
   onDiscard: () => void
   onInputKeyDown?: (event: React.KeyboardEvent<Element>) => void
   open: boolean
-  setOpen: (open: boolean) => void
   value: CommentMessage
 }
 
@@ -56,11 +56,11 @@ export function CommentsFieldButton(props: CommentsFieldButtonProps) {
     mentionOptions,
     onChange,
     onClick,
+    onClose,
     onCommentAdd,
     onDiscard,
     onInputKeyDown,
     open,
-    setOpen,
     value,
   } = props
   const {t} = useTranslation(commentsLocaleNamespace)
@@ -73,9 +73,9 @@ export function CommentsFieldButton(props: CommentsFieldButtonProps) {
 
   const closePopover = useCallback(() => {
     if (!open) return
-    setOpen(false)
+    onClose()
     addCommentButtonElement?.focus()
-  }, [addCommentButtonElement, open, setOpen])
+  }, [addCommentButtonElement, open, onClose])
 
   const handleSubmit = useCallback(() => {
     onCommentAdd()

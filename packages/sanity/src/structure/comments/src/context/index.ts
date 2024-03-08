@@ -1,3 +1,4 @@
+export * from './authoring-path'
 export * from './comments'
 export * from './enabled'
 export * from './intent'
