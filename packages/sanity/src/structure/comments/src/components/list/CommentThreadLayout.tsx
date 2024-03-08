@@ -14,7 +14,7 @@ import styled, {css} from 'styled-components'
 import {commentsLocaleNamespace} from '../../../i18n'
 import {type CommentsSelectedPath} from '../../context'
 import {
-  type CommentCreatePayload,
+  type CommentBaseCreatePayload,
   type CommentListBreadcrumbs,
   type CommentMessage,
   type CommentsUIMode,
@@ -47,7 +47,7 @@ interface CommentThreadLayoutProps {
   isSelected: boolean
   mentionOptions: UserListWithPermissionsHookValue
   mode: CommentsUIMode
-  onNewThreadCreate: (payload: CommentCreatePayload) => void
+  onNewThreadCreate: (payload: CommentBaseCreatePayload) => void
   onPathSelect?: (nextPath: CommentsSelectedPath) => void
   readOnly?: boolean
 }
@@ -71,8 +71,7 @@ export function CommentThreadLayout(props: CommentThreadLayoutProps) {
 
   const handleNewThreadCreate = useCallback(
     (payload: CommentMessage) => {
-      const nextComment: CommentCreatePayload = {
-        fieldPath,
+      const nextComment: CommentBaseCreatePayload = {
         message: payload,
         parentCommentId: undefined,
         status: 'open',
@@ -80,6 +79,10 @@ export function CommentThreadLayout(props: CommentThreadLayoutProps) {
         threadId: uuid(),
         // New comments have no reactions
         reactions: [],
+
+        payload: {
+          fieldPath,
+        },
       }
 
       onNewThreadCreate?.(nextComment)

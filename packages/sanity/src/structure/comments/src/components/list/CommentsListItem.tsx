@@ -11,7 +11,7 @@ import {type CommentsSelectedPath} from '../../context'
 import {commentIntentIfDiffers, hasCommentMessageValue} from '../../helpers'
 import {applyCommentIdAttr} from '../../hooks'
 import {
-  type CommentCreatePayload,
+  type CommentBaseCreatePayload,
   type CommentDocument,
   type CommentMessage,
   type CommentReactionOption,
@@ -88,7 +88,7 @@ interface CommentsListItemProps {
   onKeyDown?: (event: React.KeyboardEvent<Element>) => void
   onPathSelect?: (nextPath: CommentsSelectedPath) => void
   onReactionSelect?: (id: string, reaction: CommentReactionOption) => void
-  onReply: (payload: CommentCreatePayload) => void
+  onReply: (payload: CommentBaseCreatePayload) => void
   onStatusChange?: (id: string, status: CommentStatus) => void
   parentComment: CommentDocument
   readOnly?: boolean
@@ -132,8 +132,7 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
   const handleMouseLeave = useCallback(() => setMouseOver(false), [])
 
   const handleReplySubmit = useCallback(() => {
-    const nextComment: CommentCreatePayload = {
-      fieldPath: parentComment.target.path.field,
+    const nextComment: CommentBaseCreatePayload = {
       message: value,
       parentCommentId: parentComment._id,
       status: parentComment?.status || 'open',
@@ -141,6 +140,10 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
       threadId: parentComment.threadId,
       // A new comment will not have any reactions
       reactions: EMPTY_ARRAY,
+
+      payload: {
+        fieldPath: parentComment.target.path?.field || '',
+      },
     }
 
     onReply?.(nextComment)
@@ -149,7 +152,7 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
     onReply,
     parentComment._id,
     parentComment?.status,
-    parentComment.target.path.field,
+    parentComment.target.path?.field,
     parentComment.threadId,
     value,
   ])
@@ -198,12 +201,12 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
       if (!isTopLayer) return
 
       onPathSelect?.({
-        fieldPath: parentComment.target.path.field,
+        fieldPath: parentComment.target.path?.field || '',
         origin: 'inspector',
         threadId: parentComment.threadId,
       })
     },
-    [isTopLayer, onPathSelect, parentComment.target.path.field, parentComment.threadId],
+    [isTopLayer, onPathSelect, parentComment.target.path?.field, parentComment.threadId],
   )
 
   const handleExpand = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {

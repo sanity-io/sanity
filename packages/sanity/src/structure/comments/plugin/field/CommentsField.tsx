@@ -222,6 +222,7 @@ function CommentFieldInner(
 
       // Construct the comment payload
       const nextComment: CommentCreatePayload = {
+        type: 'field',
         fieldPath: PathUtils.toString(props.path),
         message: value,
         parentCommentId: undefined,

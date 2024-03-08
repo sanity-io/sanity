@@ -134,6 +134,7 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
     const threadId = uuid()
 
     operation.create({
+      type: 'field',
       contentSnapshot: fragment,
       fieldPath: stringFieldPath,
       message: nextCommentValue,
@@ -173,7 +174,7 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
       if (!comment) return
 
       setSelectedPath({
-        fieldPath: comment.target.path.field,
+        fieldPath: comment.target.path?.field || '',
         threadId: comment.threadId,
         origin: 'form',
       })
@@ -276,7 +277,7 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
 
       const nextValue: CommentsTextSelectionItem[] = updatedDecoration
         ? [
-            ...(comment.target.path.selection?.value
+            ...(comment.target.path?.selection?.value
               .filter((r) => r._key !== nextRange[0]?._key)
               .concat(nextRange)
               .flat() || EMPTY_ARRAY),
@@ -287,7 +288,8 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
         target: {
           ...comment.target,
           path: {
-            ...comment.target.path,
+            ...(comment.target?.path || {}),
+            field: comment.target.path?.field || '',
             selection: {
               type: 'text',
               value: nextValue,

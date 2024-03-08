@@ -54,68 +54,105 @@ export async function createOperation(props: CreateOperationProps): Promise<void
   // but the request failed. In that case, we'll reuse the id when retrying to
   // create the comment.
   const commentId = comment?.id || uuid()
-
   const authorId = currentUser.id
 
   // Get the current thread length of the thread the comment is being added to.
   // We add 1 to the length to account for the comment being added.
   const currentThreadLength = (getThreadLength?.(comment.threadId) || 0) + 1
 
-  const {
-    documentTitle = '',
-    url = '',
-    workspaceTitle = '',
-  } = getNotificationValue({commentId}) || {}
+  let nextComment: CommentPostPayload | undefined
 
-  const notification: CommentContext['notification'] = {
-    currentThreadLength,
-    documentTitle,
-    url,
-    workspaceTitle,
+  if (comment.type === 'task') {
+    nextComment = {
+      _id: commentId,
+      _type: 'comment',
+      authorId,
+      message: comment.message,
+      lastEditedAt: undefined,
+      parentCommentId: comment.parentCommentId,
+      status: comment.status,
+      threadId: comment.threadId,
+      reactions: comment.reactions,
+
+      context: {
+        payload: {
+          workspace,
+        },
+        notification: undefined, // TODO: add task notification data
+        tool: activeTool?.name || '',
+      },
+
+      target: {
+        document: {
+          _ref: documentId,
+          _type: 'reference',
+          weak: true,
+        },
+        documentType,
+      },
+    }
+
+    return
   }
 
-  const intent = getIntent?.({id: documentId, type: documentType, path: comment.fieldPath})
+  if (comment.type === 'field') {
+    const {
+      documentTitle = '',
+      url = '',
+      workspaceTitle = '',
+    } = getNotificationValue({commentId}) || {}
 
-  const nextComment: CommentPostPayload = {
-    _id: commentId,
-    _type: 'comment',
-    authorId,
-    lastEditedAt: undefined,
-    message: comment.message,
-    parentCommentId: comment.parentCommentId,
-    status: comment.status,
-    threadId: comment.threadId,
+    const notification: CommentContext['notification'] = {
+      currentThreadLength,
+      documentTitle,
+      url,
+      workspaceTitle,
+    }
 
-    context: {
-      payload: {
-        workspace,
+    const intent = getIntent?.({id: documentId, type: documentType, path: comment.fieldPath})
+
+    nextComment = {
+      _id: commentId,
+      _type: 'comment',
+      authorId,
+      message: comment.message,
+      lastEditedAt: undefined,
+      parentCommentId: comment.parentCommentId,
+      status: comment.status,
+      threadId: comment.threadId,
+      reactions: comment.reactions,
+
+      context: {
+        payload: {
+          workspace,
+        },
+        intent,
+        notification,
+        tool: activeTool?.name || '',
       },
-      intent,
-      notification,
-      tool: activeTool?.name || '',
-    },
 
-    reactions: [],
+      contentSnapshot: comment.contentSnapshot,
 
-    contentSnapshot: comment.contentSnapshot,
+      target: {
+        documentRevisionId: documentRevisionId || '',
 
-    target: {
-      documentRevisionId: documentRevisionId || '',
-
-      path: {
-        field: comment.fieldPath,
-        selection: comment.selection,
+        path: {
+          field: comment.fieldPath,
+          selection: comment.selection,
+        },
+        document: {
+          _dataset: dataset,
+          _projectId: projectId,
+          _ref: documentId,
+          _type: 'crossDatasetReference',
+          _weak: true,
+        },
+        documentType,
       },
-      document: {
-        _dataset: dataset,
-        _projectId: projectId,
-        _ref: documentId,
-        _type: 'crossDatasetReference',
-        _weak: true,
-      },
-      documentType,
-    },
+    }
   }
+
+  if (!nextComment) return
 
   onCreate?.(nextComment)
 

@@ -43,6 +43,8 @@ function CommentsDocumentLayoutInner(props: DocumentLayoutProps) {
       documentType={documentType}
       isCommentsOpen={inspector?.name === COMMENTS_INSPECTOR_NAME}
       onCommentsOpen={handleOpenCommentsInspector}
+      sortOrder="desc"
+      type="field"
     >
       <CommentsSelectedPathProvider>
         <CommentsAuthoringPathProvider>{props.renderDefault(props)}</CommentsAuthoringPathProvider>
