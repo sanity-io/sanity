@@ -211,7 +211,11 @@ function CommentsInspectorInner(
       operation.create({
         type: 'field',
         fieldPath,
-        ...nextComment,
+        message: nextComment.message,
+        parentCommentId: nextComment.parentCommentId,
+        reactions: nextComment.reactions,
+        status: nextComment.status,
+        threadId: nextComment.threadId,
       })
 
       setSelectedPath({
