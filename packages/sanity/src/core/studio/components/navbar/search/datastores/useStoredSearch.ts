@@ -2,11 +2,11 @@ import {useCallback, useEffect, useMemo, useState} from 'react'
 import {map, startWith} from 'rxjs/operators'
 
 import {useClient} from '../../../../../hooks'
-import {useCurrentUser, useKeyValueStore} from '../../../../../store'
+import {useKeyValueStore} from '../../../../../store'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../../studioClient'
 
 export const RECENT_SEARCH_VERSION = 2
-const STORED_SEARCHES_NAMESPACE = 'search::recent'
+const STORED_SEARCHES_NAMESPACE = 'studio.search.recent'
 
 interface StoredSearch {
   version: number
@@ -21,13 +21,9 @@ const defaultValue: StoredSearch = {
 export function useStoredSearch(): [StoredSearch, (_value: StoredSearch) => void] {
   const keyValueStore = useKeyValueStore()
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
-  const currentUser = useCurrentUser()
-  const {dataset, projectId} = client.config()
+  const {dataset} = client.config()
 
-  const keyValueStoreKey = useMemo(
-    () => `${STORED_SEARCHES_NAMESPACE}__${projectId}:${dataset}:${currentUser?.id}`,
-    [currentUser, dataset, projectId],
-  )
+  const keyValueStoreKey = useMemo(() => `${STORED_SEARCHES_NAMESPACE}.${dataset}`, [dataset])
 
   const [value, setValue] = useState<StoredSearch>(defaultValue)
 
