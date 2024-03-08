@@ -9,6 +9,7 @@ Options
   --workspace <name> The name of the workspace to generate a schema for
   --path Optional path to specify destination of the schema file
   --enforce-required-fields Makes the schema generated treat fields marked as required as non-optional. Defaults to false.
+  --format=[groq-type-nodes] Format the schema as GROQ type nodes. Only available format at the moment.
 
 Examples
   # Extracts schema types in a Sanity project with more than one workspace

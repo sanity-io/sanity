@@ -10,6 +10,7 @@ export interface ExtractSchemaWorkerData {
   workDir: string
   workspaceName?: string
   enforceRequiredFields?: boolean
+  format: 'groq-type-nodes' | string
 }
 
 export interface ExtractSchemaWorkerResult {
@@ -25,13 +26,15 @@ const cleanup = mockBrowserEnvironment(opts.workDir)
 
 async function main() {
   try {
+    if (opts.format !== 'groq-type-nodes') {
+      throw new Error(`Unsupported format: "${opts.format}"`)
+    }
+
     const workspaces = await getStudioWorkspaces({basePath: opts.workDir})
 
     const workspace = getWorkspace({workspaces, workspaceName: opts.workspaceName})
 
-    const {types} = workspace.schema._original || {types: []}
-
-    const schema = extractSchema(types, {
+    const schema = extractSchema(workspace.schema, {
       enforceRequiredFields: opts.enforceRequiredFields,
     })
 

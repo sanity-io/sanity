@@ -1,29 +1,27 @@
 import {
-  type ArrayDefinition,
-  type ArrayOfType,
-  type BlockDefinition,
-  type CrossDatasetReferenceDefinition,
-  type DocumentDefinition,
-  type FieldDefinition,
-  type FileDefinition,
-  type ImageDefinition,
-  type NumberDefinition,
-  type ObjectDefinition,
-  type ReferenceDefinition,
+  type ArraySchemaType,
+  type NumberSchemaType,
+  type ObjectField,
+  type ObjectFieldType,
+  type ObjectSchemaType,
+  type ReferenceSchemaType,
   type Rule,
-  type SchemaTypeDefinition,
-  type StringDefinition,
+  type Schema as SchemaDef,
+  type SchemaType as SanitySchemaType,
+  type StringSchemaType,
 } from '@sanity/types'
 import {
   type ArrayTypeNode,
   createReferenceTypeNode,
+  type DocumentSchemaType,
   type InlineTypeNode,
+  type NullTypeNode,
   type NumberTypeNode,
   type ObjectAttribute,
   type ObjectTypeNode,
-  type PrimitiveTypeNode,
   type SchemaType,
   type StringTypeNode,
+  type TypeDeclarationSchemaType,
   type TypeNode,
   type UnionTypeNode,
   type UnknownTypeNode,
@@ -65,147 +63,207 @@ export interface ExtractSchemaOptions {
 }
 
 export function extractSchema(
-  schemaTypeDefinitions: SchemaTypeDefinition[],
+  schemaDef: SchemaDef,
   extractOptions: ExtractSchemaOptions = {},
 ): SchemaType {
+  const inlineFields = new Set<SanitySchemaType>()
   const schema: SchemaType = []
-  schemaTypeDefinitions.forEach((type) => {
-    if (isDocumentType(type)) {
-      const attributes = documentDefaultFields(type.name) satisfies Record<string, ObjectAttribute>
 
-      for (const field of type.fields || []) {
-        const fieldIsRequired = isFieldRequired(field)
-        attributes[field.name] = {
-          type: 'objectAttribute',
-          optional: extractOptions.enforceRequiredFields ? fieldIsRequired : true,
-          value: parseField(field, extractOptions),
-        } satisfies ObjectAttribute
-      }
-
-      schema.push({
-        name: type.name,
-        type: 'document',
-        attributes,
-      })
+  // get a list of all the types in the schema, sorted by their dependencies. This ensures that when we check for inline/reference types, we have already processed the type
+  const sortedSchemaTypeNames = sortByDependencies(schemaDef)
+  sortedSchemaTypeNames.forEach((typeName) => {
+    const schemaType = schemaDef.get(typeName)
+    if (schemaType === undefined) {
       return
     }
+    const base = convertBaseType(schemaType)
+    if (base === null) {
+      return
+    }
+    if (base.type === 'type') {
+      inlineFields.add(schemaType)
+    }
 
-    if (isObjectType(type)) {
-      const attributes = type.fields.reduce<Record<string, ObjectAttribute>>((acc, field) => {
-        const fieldIsRequired = isFieldRequired(field)
-        acc[field.name] = {
-          type: 'objectAttribute',
-          optional: extractOptions.enforceRequiredFields ? !fieldIsRequired : true,
-          value: parseField(field, extractOptions),
-        } satisfies ObjectAttribute
+    schema.push(base)
+  })
 
-        return acc
-      }, {}) satisfies Record<string, ObjectAttribute>
+  function convertBaseType(
+    schemaType: SanitySchemaType,
+  ): DocumentSchemaType | TypeDeclarationSchemaType | null {
+    let typeName: string | undefined
+    if (schemaType.type) {
+      typeName = schemaType.type.name
+    } else if ('jsonType' in schemaType) {
+      typeName = schemaType.jsonType
+    }
 
-      attributes._type = {
-        type: 'objectAttribute',
-        value: {
-          type: 'string',
-          value: type.name,
+    if (typeName === 'document' && isObjectType(schemaType)) {
+      const defaultAttributes = documentDefaultFields(schemaType.name)
+
+      const object = createObject(schemaType)
+      if (object.type === 'unknown') {
+        return null
+      }
+
+      return {
+        name: schemaType.name,
+        type: 'document',
+        attributes: {
+          ...defaultAttributes,
+          ...object.attributes,
         },
-      } satisfies ObjectAttribute<StringTypeNode>
+      }
+    }
 
-      schema.push({
-        name: type.name,
+    const value = convertSchemaType(schemaType)
+    if (value.type === 'unknown') {
+      return null
+    }
+    if (value.type === 'object') {
+      return {
+        name: schemaType.name,
         type: 'type',
         value: {
           type: 'object',
-          attributes,
+          attributes: {
+            _type: {
+              type: 'objectAttribute',
+              value: {
+                type: 'string',
+                value: schemaType.name,
+              },
+            },
+            ...value.attributes,
+          },
         },
-      })
-      return
-    }
-    if (isArrayType(type)) {
-      schema.push({
-        type: 'type',
-        name: type.name,
-        value: createArray(type, extractOptions),
-      })
-      return
+      }
     }
 
-    if (isBlockType(type)) {
-      schema.push({
-        type: 'type',
-        name: type.name,
-        value: createBlock(type, extractOptions),
-      })
-      return
-    }
-    if (isImageType(type)) {
-      schema.push({
-        type: 'type',
-        name: type.name,
-        value: createImage(type, extractOptions),
-      })
-      return
-    }
-    if (isFileType(type)) {
-      schema.push({
-        type: 'type',
-        name: type.name,
-        value: createFile(type, extractOptions),
-      })
-      return
-    }
-
-    if (isReferenceType(type)) {
-      schema.push({
-        type: 'type',
-        name: type.name,
-        value: createReferenceTypeNodeDefintion(type),
-      })
-      return
-    }
-
-    if (isCrossDatasetReferenceType(type)) {
-      schema.push({
-        type: 'type',
-        name: type.name,
-        value: createCrossDatasetReferenceTypeNodeDefintion(type),
-      })
-      return
-    }
-
-    if (isStringType(type)) {
-      schema.push({
-        type: 'type',
-        name: type.name,
-        value: createStringTypeNodeDefintion(type),
-      })
-    }
-
-    if (isNumberType(type)) {
-      schema.push({
-        type: 'type',
-        name: type.name,
-        value: createNumberTypeNodeDefintion(type),
-      })
-    }
-
-    if (typesMap.has(type.type)) {
-      schema.push({
-        type: 'type',
-        name: type.name,
-        value: typesMap.get(type.type),
-      })
-      return
-    }
-
-    schema.push({
+    return {
+      name: schemaType.name,
       type: 'type',
-      name: type.name,
-      value: {
-        type: 'inline',
-        name: type.type,
-      } satisfies InlineTypeNode,
-    })
-  })
+      value,
+    }
+  }
+
+  function convertSchemaType(schemaType: SanitySchemaType): TypeNode {
+    if (lastType(schemaType)?.name === 'document') {
+      return createReferenceTypeNode(schemaType.name)
+    }
+
+    // if we have already seen the base type, we can just reference it
+    if (inlineFields.has(schemaType.type)) {
+      return {type: 'inline', name: schemaType.type.name} satisfies InlineTypeNode
+    }
+
+    // If we have a type that is point to a type, that is pointing to a type, we assume this is a circular reference
+    // and we return an inline type referencing it instead
+    if (schemaType.type?.type?.name === 'object') {
+      return {type: 'inline', name: schemaType.type.name} satisfies InlineTypeNode
+    }
+
+    if (isStringType(schemaType)) {
+      return createStringTypeNodeDefintion(schemaType)
+    }
+
+    if (isNumberType(schemaType)) {
+      return createNumberTypeNodeDefintion(schemaType)
+    }
+
+    // map some known types
+    if (typesMap.has(schemaType.name)) {
+      return typesMap.get(schemaType.name)
+    }
+
+    // Cross dataset references are not supported
+    if (isCrossDatasetReferenceType(schemaType)) {
+      return {type: 'unknown'} satisfies UnknownTypeNode // we don't support cross-dataset references at the moment
+    }
+
+    if (isReferenceType(schemaType)) {
+      return createReferenceTypeNodeDefintion(schemaType)
+    }
+
+    if (isArrayType(schemaType)) {
+      return createArray(schemaType)
+    }
+
+    if (isObjectType(schemaType)) {
+      return createObject(schemaType)
+    }
+
+    throw new Error(`Type "${schemaType.name}" not found`)
+  }
+
+  function createObject(
+    schemaType: ObjectSchemaType | SanitySchemaType,
+  ): ObjectTypeNode | UnknownTypeNode {
+    const attributes: Record<string, ObjectAttribute> = {}
+
+    const fields = gatherFields(schemaType)
+    for (const field of fields) {
+      const fieldIsRequired = isFieldRequired(field)
+      const value = convertSchemaType(field.type)
+      if (value === null) {
+        continue
+      }
+      attributes[field.name] = {
+        type: 'objectAttribute',
+        value,
+        optional: extractOptions.enforceRequiredFields ? fieldIsRequired : true,
+      }
+    }
+
+    if (Object.keys(attributes).length === 0) {
+      return {type: 'unknown'} satisfies UnknownTypeNode
+    }
+
+    return {
+      type: 'object',
+      attributes,
+    }
+  }
+
+  function createArray(arraySchemaType: ArraySchemaType): ArrayTypeNode | NullTypeNode {
+    const of: TypeNode[] = []
+    for (const item of arraySchemaType.of) {
+      const field = convertSchemaType(item)
+      if (field.type === 'inline') {
+        of.push({
+          type: 'object',
+          attributes: {
+            _key: createKeyField(),
+          },
+          rest: field,
+        } satisfies ObjectTypeNode)
+      } else if (field.type === 'object') {
+        field.rest = {
+          type: 'object',
+          attributes: {
+            _key: createKeyField(),
+          },
+        }
+        of.push(field)
+      } else {
+        of.push(field)
+      }
+    }
+
+    if (of.length === 0) {
+      return {type: 'null'}
+    }
+
+    return {
+      type: 'array',
+      of:
+        of.length > 1
+          ? {
+              type: 'union',
+              of,
+            }
+          : of[0],
+    }
+  }
 
   return schema
 }
@@ -219,13 +277,17 @@ function createKeyField(): ObjectAttribute<StringTypeNode> {
   }
 }
 
-function isFieldRequired(field: FieldDefinition): boolean {
-  if (!field.validation) {
+function isFieldRequired(field: ObjectField): boolean {
+  const {validation} = field.type
+  if (!validation) {
     return false
   }
-  const rules = Array.isArray(field.validation) ? field.validation : [field.validation]
+  const rules = Array.isArray(validation) ? validation : [validation]
   for (const rule of rules) {
     let required = false
+
+    // hack to check if a field is required. We create a proxy that returns itself when a method is called,
+    // if the method is "required" we set a flag
     const proxy = new Proxy(
       {},
       {
@@ -248,137 +310,31 @@ function isFieldRequired(field: FieldDefinition): boolean {
   return false
 }
 
-function parseField(field: FieldDefinition, extractOptions: ExtractSchemaOptions): TypeNode {
-  if (isObjectType(field)) {
-    const attributes: Record<string, ObjectAttribute> = {}
-    field.fields.forEach((f) => {
-      const fieldIsRequired = isFieldRequired(f)
-      attributes[f.name] = {
-        type: 'objectAttribute',
-        value: parseField(f, extractOptions),
-        optional: extractOptions.enforceRequiredFields ? fieldIsRequired : true,
-      }
-    })
-    attributes._type = {
-      type: 'objectAttribute',
-      value: {
-        type: 'string',
-        value: field.name,
-      },
-    } satisfies ObjectAttribute<StringTypeNode>
-
-    return {
-      type: field.type,
-      attributes,
-    }
-  }
-
-  if (isArrayType(field)) {
-    return createArray(field, extractOptions)
-  }
-
-  if (isBlockType(field)) {
-    return createBlock(field, extractOptions)
-  }
-  if (isImageType(field)) {
-    return createImage(field, extractOptions)
-  }
-  if (isFileType(field)) {
-    return createFile(field, extractOptions)
-  }
-
-  if (isReferenceType(field)) {
-    return createReferenceTypeNodeDefintion(field)
-  }
-
-  if (isCrossDatasetReferenceType(field)) {
-    return createCrossDatasetReferenceTypeNodeDefintion(field)
-  }
-
-  if (isStringType(field)) {
-    return createStringTypeNodeDefintion(field)
-  }
-
-  if (isNumberType(field)) {
-    return createNumberTypeNodeDefintion(field)
-  }
-
-  if (typesMap.has(field.type)) {
-    return typesMap.get(field.type)
-  }
-
-  return {
-    type: 'inline',
-    name: field.type,
-  }
+function isObjectType(typeDef: SanitySchemaType): typeDef is ObjectSchemaType {
+  return isType(typeDef, 'object') || typeDef.jsonType === 'object' || 'fields' in typeDef
 }
-
-function isDocumentType(n: SchemaTypeDefinition): n is DocumentDefinition {
-  return n.type === 'document'
+function isArrayType(typeDef: SanitySchemaType): typeDef is ArraySchemaType {
+  return isType(typeDef, 'array')
 }
-function isFieldDefinition(n: unknown): n is FieldDefinition {
-  return (
-    n !== null &&
-    typeof n === 'object' &&
-    'type' in n &&
-    (('fieldset' in n && typeof n.fieldset === 'string') ||
-      !('fieldset' in n) ||
-      typeof n.fieldset === 'undefined') &&
-    (('group' in n && (typeof n.group === 'string' || Array.isArray(n.group))) ||
-      !('group' in n) ||
-      typeof n.group === 'undefined')
-  )
+function isReferenceType(typeDef: SanitySchemaType): typeDef is ReferenceSchemaType {
+  return isType(typeDef, 'reference')
 }
-
-function isObjectType(n: {type: string}): n is ObjectDefinition {
-  return n.type === 'object'
+function isCrossDatasetReferenceType(typeDef: SanitySchemaType) {
+  return isType(typeDef, 'crossDatasetReference')
 }
-function isArrayType(n: {type: string}): n is ArrayDefinition {
-  return n.type === 'array'
+function isStringType(typeDef: SanitySchemaType): typeDef is StringSchemaType {
+  return isType(typeDef, 'string')
 }
-function isBlockType(n: {type: string}): n is BlockDefinition {
-  return n.type === 'block'
+function isNumberType(typeDef: SanitySchemaType): typeDef is NumberSchemaType {
+  return isType(typeDef, 'number')
 }
-function isReferenceType(n: {type: string}): n is ReferenceDefinition {
-  return n.type === 'reference'
-}
-function isCrossDatasetReferenceType(n: {type: string}): n is CrossDatasetReferenceDefinition {
-  return n.type === 'crossDatasetReference'
-}
-function isImageType(n: {type: string}): n is ImageDefinition {
-  return n.type === 'image'
-}
-function isFileType(n: {type: string}): n is FileDefinition {
-  return n.type === 'file'
-}
-function isStringType(n: {type: string}): n is StringDefinition {
-  return n.type === 'string'
-}
-function isNumberType(n: {type: string}): n is NumberDefinition {
-  return n.type === 'number'
-}
-
-function createPrimitiveAttribute(
-  key: string,
-  type: PrimitiveTypeNode['type'],
-  optional = false,
-): Record<string, ObjectAttribute<PrimitiveTypeNode>> {
-  return {
-    [key]: {
-      type: 'objectAttribute',
-      value: {type},
-      optional,
-    },
-  }
-}
-
 function createStringTypeNodeDefintion(
-  stringDefinition: StringDefinition,
+  stringSchemaType: StringSchemaType,
 ): StringTypeNode | UnionTypeNode<StringTypeNode> {
-  if (stringDefinition.options?.list) {
+  if (stringSchemaType.options?.list) {
     return {
       type: 'union',
-      of: stringDefinition.options.list.map((v) => ({
+      of: stringSchemaType.options.list.map((v) => ({
         type: 'string',
         value: typeof v === 'string' ? v : v.value,
       })),
@@ -390,12 +346,12 @@ function createStringTypeNodeDefintion(
 }
 
 function createNumberTypeNodeDefintion(
-  numberDefinition: NumberDefinition,
+  numberSchemaType: NumberSchemaType,
 ): NumberTypeNode | UnionTypeNode<NumberTypeNode> {
-  if (numberDefinition.options?.list) {
+  if (numberSchemaType.options?.list) {
     return {
       type: 'union',
-      of: numberDefinition.options.list.map((v) => ({
+      of: numberSchemaType.options.list.map((v) => ({
         type: 'number',
         value: typeof v === 'number' ? v : v.value,
       })),
@@ -406,307 +362,158 @@ function createNumberTypeNodeDefintion(
   }
 }
 
-function createImage(
-  imageDefinition: ImageDefinition,
-  extractOptions: ExtractSchemaOptions,
-): ObjectTypeNode {
-  const attributes: Record<string, ObjectAttribute> = {}
-  for (const field of imageDefinition.fields || []) {
-    const fieldIsRequired = isFieldRequired(field)
-    attributes[field.name] = {
-      type: 'objectAttribute',
-      value: parseField(field, extractOptions),
-      optional: extractOptions.enforceRequiredFields ? fieldIsRequired : true,
-    }
-  }
-
-  if (imageDefinition.options?.hotspot) {
-    attributes.hotspot = {
-      type: 'objectAttribute',
-      value: {
-        type: 'object',
-        attributes: {
-          _type: {
-            type: 'objectAttribute',
-            value: {
-              type: 'string',
-              value: 'sanity.imageHotspot',
-            },
-          },
-          ...createPrimitiveAttribute('x', 'number'),
-          ...createPrimitiveAttribute('y', 'number'),
-          ...createPrimitiveAttribute('height', 'number'),
-          ...createPrimitiveAttribute('width', 'number'),
-        },
-      },
-      optional: true,
-    }
-    attributes.crop = {
-      type: 'objectAttribute',
-      value: {
-        type: 'object',
-        attributes: {
-          _type: {
-            type: 'objectAttribute',
-            value: {
-              type: 'string',
-              value: 'sanity.imageCrop',
-            },
-          },
-          ...createPrimitiveAttribute('top', 'number'),
-          ...createPrimitiveAttribute('bottom', 'number'),
-          ...createPrimitiveAttribute('left', 'number'),
-          ...createPrimitiveAttribute('right', 'number'),
-        },
-      },
-      optional: true,
-    }
-  }
-  return {
-    type: 'object',
-    attributes: {
-      _type: {
-        type: 'objectAttribute',
-        value: {
-          type: 'string',
-          value: 'image',
-        },
-      },
-      asset: {
-        type: 'objectAttribute',
-        value: createReferenceTypeNode('sanity.imageAsset'),
-      },
-      ...attributes,
-    },
-  }
-}
-function createFile(
-  fileDefinition: FileDefinition,
-  extractOptions: ExtractSchemaOptions,
-): ObjectTypeNode {
-  const attributes: Record<string, ObjectAttribute> = {}
-  for (const field of fileDefinition.fields || []) {
-    const fieldIsRequired = isFieldRequired(field)
-    attributes[field.name] = {
-      type: 'objectAttribute',
-      value: parseField(field, extractOptions),
-      optional: extractOptions.enforceRequiredFields ? fieldIsRequired : true,
-    }
-  }
-
-  return {
-    type: 'object',
-    attributes: {
-      _type: {
-        type: 'objectAttribute',
-        value: {
-          type: 'string',
-          value: 'file',
-        },
-      },
-      ...attributes,
-    },
-  }
-}
-
-function createArray(
-  arrayDefinition: ArrayDefinition,
-  extractOptions: ExtractSchemaOptions,
-): ArrayTypeNode {
-  const of = [
-    ...arrayDefinition.of.map((f) => {
-      if (isFieldDefinition(f)) {
-        const field = parseField(f, extractOptions)
-        if (field.type === 'inline') {
-          return {
-            type: 'object',
-            attributes: {
-              _key: createKeyField(),
-            },
-            rest: field,
-          } satisfies ObjectTypeNode
-        }
-
-        if (field.type === 'object') {
-          field.rest = {
-            type: 'object',
-            attributes: {
-              _key: createKeyField(),
-            },
-          }
-          return field
-        }
-
-        return field
-      }
-
-      if (typesMap.has(f.type)) {
-        return typesMap.get(f.type)
-      }
-
-      return createReferenceTypeNode(f.type, true)
-    }),
-  ] satisfies TypeNode[]
-
-  return {
-    type: 'array',
-    of:
-      of.length > 1
-        ? {
-            type: 'union',
-            of,
-          }
-        : of[0],
-  }
-}
-
-function createBlock(
-  blockDefinition: BlockDefinition,
-  extractOptions: ExtractSchemaOptions,
-): ObjectTypeNode {
-  const styleField = {
-    type: 'objectAttribute',
-    optional: true,
-    value: {
-      type: 'union',
-      of:
-        blockDefinition.styles?.map((style) => ({
-          type: 'string',
-          value: style.value,
-        })) || [],
-    },
-  } satisfies ObjectAttribute<UnionTypeNode<StringTypeNode>>
-  const listItemField = {
-    type: 'objectAttribute',
-    optional: true,
-    value: {
-      type: 'union',
-      of:
-        blockDefinition.lists?.map((list) => ({
-          type: 'string',
-          value: list.value,
-        })) || [],
-    },
-  } satisfies ObjectAttribute<UnionTypeNode<StringTypeNode>>
-  const levelField = {
-    type: 'objectAttribute',
-    optional: true,
-    value: {
-      type: 'number',
-    },
-  } satisfies ObjectAttribute<NumberTypeNode>
-  const marks: TypeNode[] = [
-    {type: 'string'},
-    ...(blockDefinition.marks?.decorators?.map(
-      (mark): TypeNode => ({
-        type: 'string',
-        value: mark.value,
-      }),
-    ) || []),
-  ]
-  const childrenField = {
-    type: 'objectAttribute',
-    value: {
-      type: 'array',
-      of: {
-        type: 'union',
-        of: [
-          {
-            type: 'object',
-            attributes: {
-              _key: createKeyField(),
-              text: {
-                type: 'objectAttribute',
-                value: {
-                  type: 'string',
-                },
-              } satisfies ObjectAttribute<StringTypeNode>,
-              marks: {
-                type: 'objectAttribute',
-                value: {
-                  type: 'array',
-                  of: {
-                    type: 'union',
-                    of: marks,
-                  },
-                },
-              } satisfies ObjectAttribute<ArrayTypeNode<UnionTypeNode>>,
-            },
-          } satisfies ObjectTypeNode,
-        ],
-      } satisfies UnionTypeNode<ObjectTypeNode>,
-    },
-  } satisfies ObjectAttribute<ArrayTypeNode<UnionTypeNode<ObjectTypeNode>>>
-
-  const markDefsField: ObjectAttribute<ArrayTypeNode> = {
-    type: 'objectAttribute',
-    value: {
-      type: 'array',
-      of: {
-        type: 'union',
-        of:
-          blockDefinition.marks?.annotations?.map((annotation) =>
-            createMarkDefField(annotation, extractOptions),
-          ) || [],
-      },
-    },
-  }
-  return {
-    type: 'object',
-    attributes: {
-      _key: createKeyField(),
-      level: levelField,
-      style: styleField,
-      listItem: listItemField,
-      children: childrenField,
-      markDefs: markDefsField,
-    },
-  }
-}
-
-function createMarkDefField(
-  annotation: ArrayOfType<'object' | 'reference'>,
-  extractOptions: ExtractSchemaOptions,
-): TypeNode {
-  if (annotation.type === 'object' && 'fields' in annotation) {
-    const attributes: Record<string, ObjectAttribute> = {}
-    for (const field of annotation.fields) {
-      attributes[field.name] = {
-        type: 'objectAttribute',
-        value: parseField(field, extractOptions),
-        optional: true,
-      } satisfies ObjectAttribute
-    }
-
-    return {
-      type: 'object',
-      attributes,
-    }
-  }
-
-  if (annotation.type === 'reference' && 'to' in annotation) {
-    return createReferenceTypeNodeDefintion(annotation)
-  }
-
-  return {
-    type: 'object',
-    attributes: {},
-  }
-}
-
 function createReferenceTypeNodeDefintion(
-  reference: Pick<ReferenceDefinition, 'to'>,
+  reference: ReferenceSchemaType,
 ): ObjectTypeNode | UnionTypeNode<ObjectTypeNode> {
-  if (Array.isArray(reference.to)) {
-    return {
-      type: 'union',
-      of: reference.to.map((t) => createReferenceTypeNode(t.type)),
+  const references = gatherReferenceNames(reference)
+  if (references.length === 1) {
+    return createReferenceTypeNode(references[0])
+  }
+
+  return {
+    type: 'union',
+    of: references.map((name) => createReferenceTypeNode(name)),
+  }
+}
+
+// Traverse the reference type tree and gather all the reference names
+function gatherReferenceNames(type: ReferenceSchemaType): string[] {
+  const allReferences = gatherReferenceTypes(type)
+  // Remove duplicates
+  return [...new Set([...allReferences.map((ref) => ref.name)])]
+}
+
+function gatherReferenceTypes(type: ReferenceSchemaType): ObjectSchemaType[] {
+  const refTo = 'to' in type ? type.to : []
+  if ('type' in type && isReferenceType(type.type)) {
+    return [...gatherReferenceTypes(type.type), ...refTo]
+  }
+
+  return refTo
+}
+
+// Traverse the type tree and gather all the fields
+function gatherFields(type: SanitySchemaType | ObjectSchemaType): ObjectField[] {
+  if ('fields' in type) {
+    return type.type ? gatherFields(type.type).concat(type.fields) : type.fields
+  }
+
+  return []
+}
+
+// Traverse the type tree and check if the type or any of its subtypes are of the given type
+function isType(
+  typeDef: SanitySchemaType | ObjectField | ObjectFieldType,
+  typeName: string,
+): boolean {
+  let type: SchemaType | ObjectField | ObjectFieldType | undefined = typeDef
+  while (type) {
+    if (type.name === typeName || (type.type && type.type.name === typeName)) {
+      return true
+    }
+
+    type = type.type
+  }
+  return false
+}
+
+// Traverse the type tree and return the "last" type, ie deepest type in the tree
+function lastType(typeDef: SanitySchemaType): SanitySchemaType | undefined {
+  let type: SchemaType | ObjectField | ObjectFieldType | undefined = typeDef
+  while (type) {
+    if (!type.type) {
+      return type
+    }
+    type = type.type
+  }
+
+  return undefined
+}
+
+// Sorts the types by their dependencies by using a topological sort depth-first algorithm.
+function sortByDependencies(compiledSchema: SchemaDef): string[] {
+  const seen = new Set<SanitySchemaType>()
+
+  // Walks the dependencies of a schema type and adds them to the dependencies set
+  function walkDependencies(
+    schemaType: SanitySchemaType,
+    dependencies: Set<SanitySchemaType>,
+  ): void {
+    if (seen.has(schemaType)) {
+      return
+    }
+    seen.add(schemaType)
+
+    if ('fields' in schemaType) {
+      for (const field of gatherFields(schemaType)) {
+        let schemaTypeName: string | undefined
+        if (schemaType.type.type) {
+          schemaTypeName = field.type.type.name
+        } else if ('jsonType' in schemaType.type) {
+          schemaTypeName = field.type.jsonType
+        }
+
+        if (
+          schemaTypeName === 'document' ||
+          schemaTypeName === 'object' ||
+          schemaTypeName === 'block'
+        ) {
+          if (isReferenceType(field.type)) {
+            field.type.to.forEach((ref) => dependencies.add(ref.type))
+          } else {
+            dependencies.add(field.type)
+          }
+        }
+        walkDependencies(field.type, dependencies)
+      }
+    } else if ('of' in schemaType) {
+      for (const item of schemaType.of) {
+        walkDependencies(item, dependencies)
+      }
     }
   }
-  return createReferenceTypeNode(reference.to.type)
-}
-function createCrossDatasetReferenceTypeNodeDefintion(
-  _: CrossDatasetReferenceDefinition,
-): TypeNode {
-  return {type: 'unknown'} satisfies UnknownTypeNode
+  const dependencyMap = new Map<SanitySchemaType, Set<SanitySchemaType>>()
+  compiledSchema.getTypeNames().forEach((typeName) => {
+    const schemaType = compiledSchema.get(typeName)
+    if (schemaType === undefined || schemaType.type === null) {
+      return
+    }
+    const dependencies = new Set<SanitySchemaType>()
+
+    walkDependencies(schemaType, dependencies)
+    dependencyMap.set(schemaType, dependencies)
+  })
+
+  // Sorts the types by their dependencies
+  const typeNames: string[] = []
+  const tempMark = new Set<SanitySchemaType>()
+  const permMark = new Set<SanitySchemaType>()
+  // visit implements a depth-first search
+  function visit(type: SanitySchemaType) {
+    if (permMark.has(type)) {
+      return
+    }
+    // If we find a type that is already in the temporary mark, we have a cyclic dependency.
+    if (tempMark.has(type)) {
+      return
+    }
+    // mark this as a temporary mark, meaning it's being visited
+    tempMark.add(type)
+    const deps = dependencyMap.get(type)
+    if (deps !== undefined) {
+      deps.forEach((dep) => visit(dep))
+    }
+    tempMark.delete(type)
+    permMark.add(type)
+
+    if (!typeNames.includes(type.name)) {
+      typeNames.unshift(type.name)
+    }
+  }
+  // Visit all types in the dependency map
+  for (const [type] of dependencyMap) {
+    visit(type)
+  }
+
+  return typeNames
 }

@@ -14,6 +14,7 @@ interface ExtractFlags {
   workspace?: string
   path?: string
   'enforce-required-fields'?: boolean
+  format?: 'groq-type-nodes' | string
 }
 
 export type SchemaValidationFormatter = (result: ExtractSchemaWorkerResult) => string
@@ -23,6 +24,7 @@ export default async function extractAction(
   {workDir, output}: CliCommandContext,
 ): Promise<void> {
   const flags = args.extOptions
+  const formatFlat = flags.format || 'groq-type-nodes'
 
   const rootPkgPath = readPkgUp.sync({cwd: __dirname})?.path
   if (!rootPkgPath) {
@@ -51,6 +53,7 @@ export default async function extractAction(
       workDir,
       workspaceName: flags.workspace,
       enforceRequiredFields: flags['enforce-required-fields'],
+      format: formatFlat,
     } satisfies ExtractSchemaWorkerData,
     // eslint-disable-next-line no-process-env
     env: process.env,

@@ -19,7 +19,7 @@ const linkType = {
 }
 
 export default {
-  name: 'blocks',
+  name: 'blocksTest',
   title: 'Blocks test',
   type: 'object',
   icon: ComposeIcon,
@@ -87,18 +87,6 @@ export default {
         },
         {type: 'author', title: 'Embedded author'},
         {type: 'code', title: 'Code'},
-        // {
-        //   type: 'color',
-        //   name: 'colorBlock',
-        //   title: 'Color (block)',
-        //   icon: DropIcon,
-        // },
-        {
-          type: 'object',
-          title: 'Test object',
-          name: 'testObject',
-          fields: [{name: 'field1', type: 'string'}],
-        },
         {
           type: 'object',
           title: 'Other test object',
@@ -114,62 +102,6 @@ export default {
                   fields: [
                     {name: 'aString', type: 'string'},
                     {name: 'aNumber', type: 'number'},
-                  ],
-                },
-              ],
-            },
-          ],
-        },
-        // {
-        //   type: 'block',
-        //   of: [
-        //     {
-        //       type: 'color',
-        //       title: 'Color',
-        //     },
-        //   ],
-        // },
-        {
-          type: 'spotifyEmbed',
-          name: 'spotifyEmbed',
-          title: 'Spotify embed',
-        },
-      ],
-    },
-    {
-      name: 'nestedWithDualColumnCTA',
-      title: 'Nested, with dual column CTA',
-      type: 'array',
-      of: [
-        {
-          name: 'localeRichtext',
-          type: 'object',
-          fields: [
-            {
-              title: 'English',
-              name: 'en',
-              type: 'array',
-              of: [
-                {type: 'block'},
-                {type: 'image'},
-                {
-                  name: 'twoColCTA',
-                  type: 'object',
-                  title: 'Two Column CTA',
-                  description: 'Inserts two content blocks.',
-                  fields: [
-                    {
-                      name: 'columnone',
-                      title: 'Column One',
-                      type: 'array',
-                      of: [{type: 'richTextObject'}],
-                    },
-                    {
-                      name: 'columntwo',
-                      title: 'Column Two',
-                      type: 'array',
-                      of: [{type: 'richTextObject'}],
-                    },
                   ],
                 },
               ],
