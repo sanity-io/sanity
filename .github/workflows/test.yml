@@ -8,68 +8,6 @@ on:
     branches: [next]
 
 jobs:
-  install:
-    timeout-minutes: 60
-    name: Install (${{ matrix.os }} / node ${{ matrix.node }})
-    runs-on: ${{ matrix.os }}
-    env:
-      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
-      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
-    continue-on-error: ${{ matrix.experimental }}
-
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest]
-        node: [18, 20]
-        experimental: [false]
-        # include:
-        #   - os: windows-latest
-        #     node: 16
-        #     experimental: true
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup node
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node }}
-
-      - name: Install pnpm
-        run: corepack enable && pnpm --version
-
-      - name: Cache node modules
-        id: cache-node-modules
-        uses: actions/cache@v4
-        env:
-          cache-name: cache-node-modules
-        with:
-          path: '**/node_modules'
-          key: ${{ runner.os }}-modules-${{ env.cache-name }}-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-modules-${{ env.cache-name }}-
-            ${{ runner.os }}-modules-
-            ${{ runner.os }}-
-
-      - name: Cache build
-        id: cache-build
-        uses: actions/cache@v4
-        env:
-          cache-name: cache-build
-        with:
-          path: './*'
-          # Unique key for a workflow run. Should be invalidated in the next run
-          key: ${{ runner.os }}-build-${{ matrix.node }}-${{ env.cache-name }}-${{ github.run_id }}
-
-      - name: Install project dependencies
-        if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: pnpm install
-
-      - name: Build CLI
-        run: pnpm build # Needed for CLI tests
-
   test:
     timeout-minutes: 60
     name: Test (${{ matrix.os }} / node ${{ matrix.node }})
@@ -78,7 +16,6 @@ jobs:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
     continue-on-error: ${{ matrix.experimental }}
-    needs: [install]
 
     strategy:
       # we want to know if a test fails on a specific node version
@@ -103,35 +40,33 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
 
-      - name: Install pnpm
-        run: corepack enable && pnpm --version
+      - uses: pnpm/action-setup@v2
+        name: Install pnpm
+        id: pnpm-install
+        with:
+          version: 8
+          run_install: false
 
-      - name: Restore node_modules cache
-        uses: actions/cache/restore@v4
-        id: restore-node-modules
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+      - name: Cache node modules
+        id: cache-node-modules
+        uses: actions/cache@v4
         env:
           cache-name: cache-node-modules
         with:
-          path: '**/node_modules'
-          key: ${{ runner.os }}-modules-${{ env.cache-name }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ env.cache-name }}-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
-            ${{ runner.os }}-modules-${{ env.cache-name }}-
-            ${{ runner.os }}-modules-
-            ${{ runner.os }}-
-
-      - name: Restore build cache
-        uses: actions/cache/restore@v4
-        id: restore-build
-        env:
-          cache-name: cache-build
-        with:
-          path: ./*
-          key: ${{ runner.os }}-build-${{ matrix.node }}-${{ env.cache-name }}-${{ github.run_id }}
-          # If the cached build from the pervious step is not available. Fail the build
-          fail-on-cache-miss: true
+            v1-${{ runner.os }}-pnpm-store-${{ env.cache-name }}-
+            v1-${{ runner.os }}-pnpm-store-
+            v1-${{ runner.os }}-
 
       - name: Install project dependencies
-        if: steps.restore-node-modules.outputs.cache-hit != 'true'
         run: pnpm install
 
       - name: Test
@@ -142,34 +77,3 @@ jobs:
           pnpm test -- --silent --shard=${{ matrix.shardIndex}}/${{ matrix.shardTotal }} --ignoreProjects=@sanity/cli
         env:
           GITHUB_SHARD_IDENTIFIER: ${{ matrix.shardIndex }}-${{ matrix.shardTotal }}
-
-  cleanup:
-    timeout-minutes: 60
-    name: Cleanup (${{ matrix.os }} / node ${{ matrix.node }})
-    runs-on: ${{ matrix.os }}
-    continue-on-error: ${{ matrix.experimental }}
-    needs: [test]
-
-    strategy:
-      # we want to know if a test fails on a specific node version
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest]
-        node: [18, 20]
-        experimental: [false]
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup node
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node }}
-
-      # Delete the cache so it is only used once
-      - name: Delete Cache
-        run: gh cache delete ${{ runner.os }}-build-${{ matrix.node }}-${{ env.cache-name }}-${{ github.run_id }}
-        env:
-          cache-name: cache-build
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
