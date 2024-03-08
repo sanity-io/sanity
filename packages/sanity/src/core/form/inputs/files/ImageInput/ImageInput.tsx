@@ -444,6 +444,7 @@ export class BaseImageInput extends PureComponent<BaseImageInputProps, BaseImage
 
     return (
       <ImagePreview
+        onDoubleClick={this.handleOpenDialog}
         drag={!value?._upload && hoveringFiles.length > 0}
         isRejected={rejectedFilesCount > 0 || !directUploads}
         readOnly={readOnly}
@@ -487,7 +488,6 @@ export class BaseImageInput extends PureComponent<BaseImageInputProps, BaseImage
           data-testid="file-input-browse-button"
         />
       )
-
     if (assetSources && assetSources.length > 1) {
       browseMenuItem = assetSources.map((assetSource) => {
         return (
