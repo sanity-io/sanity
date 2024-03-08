@@ -15,7 +15,6 @@ import {presentationTool} from 'sanity/presentation'
 import {structureTool} from 'sanity/structure'
 import {muxInput} from 'sanity-plugin-mux-input'
 
-import {tasks} from '../../packages/sanity/src/tasks'
 import {imageAssetSource} from './assetSources'
 import {
   Annotation,
@@ -197,11 +196,14 @@ export default defineConfig([
     subtitle: 'Staging dataset',
     projectId: 'exx11uqh',
     dataset: 'playground',
-    plugins: [tasks(), sharedSettings()],
+    plugins: [sharedSettings()],
     basePath: '/staging',
     apiHost: 'https://api.sanity.work',
     auth: {
       loginMethod: 'token',
+    },
+    unstable_tasks: {
+      enabled: true,
     },
   },
   {
