@@ -225,7 +225,7 @@ export interface CommentDocument {
       | {
           _ref: string
           _type: 'reference'
-          weak: boolean
+          _weak: boolean
         }
   }
 }

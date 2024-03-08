@@ -86,13 +86,11 @@ export async function createOperation(props: CreateOperationProps): Promise<void
         document: {
           _ref: documentId,
           _type: 'reference',
-          weak: true,
+          _weak: true,
         },
         documentType,
       },
     }
-
-    return
   }
 
   if (comment.type === 'field') {
