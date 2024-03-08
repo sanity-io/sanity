@@ -323,7 +323,7 @@ export const internalTasksReducer = (opts: {
       if (typeof resolver === 'object' && resolver.footerAction) return resolver
 
       throw new Error(
-        `Expected \`document.unstable_comments.enabled\` to be a boolean or a function, but received ${getPrintableType(
+        `Expected \`__internal__tasks\` to be an object with footerAction, but received ${getPrintableType(
           resolver,
         )}`,
       )

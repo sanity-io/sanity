@@ -75,7 +75,6 @@ function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsInnerProps
 }
 
 export const DocumentStatusBarActions = memo(function DocumentStatusBarActions() {
-  // eslint-disable-next-line camelcase
   const {actions, connectionState, documentId, editState} = useDocumentPane()
   // const [isMenuOpen, setMenuOpen] = useState(false)
   // const handleMenuOpen = useCallback(() => setMenuOpen(true), [])
