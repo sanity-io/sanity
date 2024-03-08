@@ -195,7 +195,7 @@ export function DocumentLayout() {
         >
           <DocumentPanelHeader ref={setHeaderElement} menuItems={menuItems} />
 
-          <DialogProvider position={DIALOG_PROVIDER_POSITION} zOffset={zOffsets.portal}>
+          <DialogProvider position={DIALOG_PROVIDER_POSITION} zOffset={zOffsets.paneDialog}>
             <Flex direction="column" flex={1} height={layoutCollapsed ? undefined : 'fill'}>
               <StyledChangeConnectorRoot
                 data-testid="change-connector-root"
