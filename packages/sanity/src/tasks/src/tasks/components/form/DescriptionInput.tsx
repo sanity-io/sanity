@@ -17,7 +17,7 @@ const DescriptionInputRoot = styled.div((props) => {
   const theme = getTheme_v2(props.theme)
   return `
     /* select editable-wrap and change the padding */
-    #editable-wrap {
+    [data-ui="editable-wrap"] {
         padding: ${theme.space[3]}px ${theme.space[2]}px;
     }
     `

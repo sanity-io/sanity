@@ -29,11 +29,11 @@ const TasksListRoot = styled(Box)`
 `
 
 const Details = styled.details`
-  #summary-icon {
+  [data-ui='summary-icon'] {
     transition: transform 0.2s;
     transform: rotate(-90deg);
   }
-  &[open] #summary-icon {
+  &[open] [data-ui='summary-icon'] {
     transform: rotate(0);
   }
 `
@@ -77,7 +77,7 @@ export function TasksList(props: TasksListProps) {
                 {getLabelForStatus(status)}
               </Text>
               <Text muted size={1}>
-                <ChevronDownIcon id="summary-icon" />
+                <ChevronDownIcon data-ui="summary-icon" />
               </Text>
             </Flex>
           </Summary>

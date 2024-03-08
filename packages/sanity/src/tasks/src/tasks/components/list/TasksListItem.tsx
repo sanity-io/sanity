@@ -1,6 +1,7 @@
 /* eslint-disable no-nested-ternary */
 import {UserIcon} from '@sanity/icons'
 import {Box, Card, type CardProps, Flex, Stack, Text} from '@sanity/ui'
+import {isThisISOWeek, isToday} from 'date-fns'
 import {useMemo} from 'react'
 import {useDateTimeFormat, UserAvatar, useUser} from 'sanity'
 import styled from 'styled-components'
@@ -90,31 +91,6 @@ function getTargetDocumentMeta(target?: TaskDocument['target']) {
   }
 }
 
-function isThisWeek(date: string) {
-  const now = new Date()
-  const givenDate = new Date(date)
-  const firstDayOfWeek = new Date(now.setDate(now.getDate() - now.getDay()))
-  const lastDayOfWeek = new Date(now.setDate(now.getDate() - now.getDay() + 6))
-
-  // Reset hours for accurate comparison
-  firstDayOfWeek.setHours(0, 0, 0, 0)
-  lastDayOfWeek.setHours(23, 59, 59, 999)
-  givenDate.setHours(0, 0, 0, 0)
-
-  return givenDate >= firstDayOfWeek && givenDate <= lastDayOfWeek
-}
-
-function isToday(date: string) {
-  const today = new Date()
-  const givenDate = new Date(date)
-
-  return (
-    today.getDate() === givenDate.getDate() &&
-    today.getMonth() === givenDate.getMonth() &&
-    today.getFullYear() === givenDate.getFullYear()
-  )
-}
-
 const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
 function TaskDueDate({dueBy}: {dueBy: string}) {
   const dateFormatter = useDateTimeFormat({dateStyle: 'medium'})
@@ -124,8 +100,13 @@ function TaskDueDate({dueBy}: {dueBy: string}) {
     return {short: monthAndDay, full: dueFormated}
   }, [dateFormatter, dueBy])
 
-  const isDueByToday = useMemo(() => isToday(dueBy), [dueBy])
-  const isDueThisWeek = useMemo(() => isThisWeek(dueBy), [dueBy])
+  const {isDueByToday, isDueThisWeek} = useMemo(() => {
+    const date = new Date(dueBy)
+    return {
+      isDueByToday: isToday(date),
+      isDueThisWeek: isThisISOWeek(date),
+    }
+  }, [dueBy])
 
   return (
     <Tooltip content={dueByeDisplayValue.full}>

@@ -124,7 +124,7 @@ export function CommentInputInner(props: CommentInputInnerProps) {
         tone={readOnly ? 'transparent' : 'default'}
       >
         <Stack>
-          <EditableWrap paddingX={1} paddingY={2} sizing="border" id="editable-wrap">
+          <EditableWrap paddingX={1} paddingY={2} sizing="border" data-ui="editable-wrap">
             <Editable
               focusLock={focusLock}
               onBlur={onBlur}

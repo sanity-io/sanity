@@ -51,8 +51,8 @@ export function RemoveTask(props: RemoveTaskProps) {
           }}
         >
           <Stack space={2}>
-            <Text>Are you sure you want to remove this task?</Text>
-            <Text>It can't be restored</Text>
+            <Text as="p">Are you sure you want to remove this task?</Text>
+            <Text as="p">It can't be restored</Text>
           </Stack>
         </Dialog>
       )}
