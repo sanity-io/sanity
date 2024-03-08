@@ -8,7 +8,6 @@ import {type ComponentType, createElement, type ElementType, isValidElement} fro
 import {isValidElementType} from 'react-is'
 import {map, shareReplay} from 'rxjs/operators'
 
-import {tasks} from '../../tasks'
 import {FileSource, ImageSource} from '../form/studio/assetSource'
 import {type LocaleSource} from '../i18n'
 import {prepareI18n} from '../i18n/i18nConfig'
@@ -152,18 +151,8 @@ export function prepareConfig(
       const i18n = prepareI18n(source)
       const source$ = auth.state.pipe(
         map(({client, authenticated, currentUser}) => {
-          const {plugins} = source
-          const nextPlugins = rawWorkspace.unstable_tasks
-            ? (plugins || []).concat(tasks())
-            : plugins || []
-
-          const nextSource = {
-            ...source,
-            plugins: nextPlugins,
-          }
-
           return resolveSource({
-            config: nextSource,
+            config: source,
             client,
             currentUser,
             schema,

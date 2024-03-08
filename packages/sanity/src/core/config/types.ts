@@ -745,6 +745,8 @@ export interface Source {
      */
     i18next: i18n
   }
+  /** @beta */
+  tasks?: WorkspaceOptions['unstable_tasks']
 }
 
 /** @internal */

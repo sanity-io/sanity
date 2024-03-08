@@ -31,7 +31,6 @@ const VARIANTS: Variants = {
 const TRANSITION: Transition = {duration: 0.2}
 
 function TasksStudioSidebarInner() {
-  const {enabled} = useTasksEnabled()
   const {activeDocument, isOpen, data, isLoading} = useTasks()
   const {state, setViewMode, setActiveTab, editTask} = useTasksNavigation()
   const {activeTabId, viewMode, selectedTask} = state
@@ -62,8 +61,6 @@ function TasksStudioSidebarInner() {
       return false
     })
   }, [activeDocument?.documentId, activeTabId, data, currentUser])
-
-  if (!enabled) return null
 
   return (
     <AnimatePresence initial={false}>
@@ -111,6 +108,8 @@ function TasksStudioSidebarInner() {
  * @internal
  */
 export function TasksStudioSidebar() {
+  const {enabled} = useTasksEnabled()
+  if (!enabled) return null
   return (
     <TasksNavigationProvider>
       <TasksStudioSidebarInner />

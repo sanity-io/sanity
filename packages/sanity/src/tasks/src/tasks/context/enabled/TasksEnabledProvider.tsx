@@ -1,5 +1,5 @@
 import {useMemo} from 'react'
-import {useFeatureEnabled} from 'sanity'
+import {useFeatureEnabled, useWorkspace} from 'sanity'
 
 import {TasksEnabledContext} from './TasksEnabledContext'
 import {type TasksEnabledContextValue} from './types'
@@ -13,9 +13,10 @@ interface TaksEnabledProviderProps {
  */
 export function TasksEnabledProvider({children}: TaksEnabledProviderProps) {
   const {enabled, isLoading} = useFeatureEnabled('studioTasks')
+  const isWorkspaceEnabled = useWorkspace().tasks?.enabled
 
   const value: TasksEnabledContextValue = useMemo(() => {
-    if (!enabled || isLoading) {
+    if (!enabled || !isWorkspaceEnabled || isLoading) {
       return {
         enabled: false,
         mode: null,
@@ -26,7 +27,7 @@ export function TasksEnabledProvider({children}: TaksEnabledProviderProps) {
       enabled: true,
       mode: 'default',
     }
-  }, [enabled, isLoading])
+  }, [enabled, isLoading, isWorkspaceEnabled])
 
   return <TasksEnabledContext.Provider value={value}>{children}</TasksEnabledContext.Provider>
 }
