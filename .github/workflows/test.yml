@@ -8,35 +8,6 @@ on:
     branches: [next]
 
 jobs:
-  install:
-    timeout-minutes: 60
-    name: Install (${{ matrix.os }} / node ${{ matrix.node }})
-    runs-on: ${{ matrix.os }}
-    env:
-      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
-      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
-    continue-on-error: ${{ matrix.experimental }}
-
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest]
-        node: [18, 20]
-        experimental: [false]
-        # include:
-        #   - os: windows-latest
-        #     node: 16
-        #     experimental: true
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup node
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node }}
-
   test:
     timeout-minutes: 60
     name: Test (${{ matrix.os }} / node ${{ matrix.node }})
@@ -45,7 +16,6 @@ jobs:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ vars.TURBO_TEAM }}
     continue-on-error: ${{ matrix.experimental }}
-    needs: [install]
 
     strategy:
       # we want to know if a test fails on a specific node version
@@ -107,27 +77,3 @@ jobs:
           pnpm test -- --silent --shard=${{ matrix.shardIndex}}/${{ matrix.shardTotal }} --ignoreProjects=@sanity/cli
         env:
           GITHUB_SHARD_IDENTIFIER: ${{ matrix.shardIndex }}-${{ matrix.shardTotal }}
-
-  cleanup:
-    timeout-minutes: 60
-    name: Cleanup (${{ matrix.os }} / node ${{ matrix.node }})
-    runs-on: ${{ matrix.os }}
-    continue-on-error: ${{ matrix.experimental }}
-    needs: [test]
-
-    strategy:
-      # we want to know if a test fails on a specific node version
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest]
-        node: [18, 20]
-        experimental: [false]
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup node
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node }}
