@@ -203,10 +203,6 @@ export const Calendar = forwardRef(function Calendar(
           <Box flex={1}>
             <CalendarMonthSelect
               onChange={handleFocusedMonthChange}
-              labels={{
-                goToPreviousMonth: labels.goToPreviousMonth,
-                goToNextMonth: labels.goToNextMonth,
-              }}
               monthNames={labels.monthNames}
               value={focusedDate?.getMonth()}
             />
@@ -335,12 +331,8 @@ function CalendarMonthSelect(props: {
   onChange: (e: FormEvent<HTMLSelectElement>) => void
   value?: number
   monthNames: MonthNames
-  labels: {
-    goToPreviousMonth: string
-    goToNextMonth: string
-  }
 }) {
-  const {onChange, value, labels, monthNames} = props
+  const {onChange, value, monthNames} = props
 
   return (
     <Flex flex={1} gap={1}>
