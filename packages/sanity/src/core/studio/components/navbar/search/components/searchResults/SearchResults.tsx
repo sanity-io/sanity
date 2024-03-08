@@ -7,6 +7,7 @@ import {useTranslation} from '../../../../../../i18n'
 import {type WeightedHit} from '../../../../../../search'
 import {getPublishedId} from '../../../../../../util/draftUtils'
 import {useSearchState} from '../../contexts/search/useSearchState'
+import {useRecentSearchesStore} from '../../datastores/recentSearches'
 import {NoResults} from '../NoResults'
 import {SearchError} from '../SearchError'
 import {SortMenu} from '../SortMenu'
@@ -35,11 +36,11 @@ export function SearchResults({disableIntentLink, inputElement, onItemSelect}: S
   const {
     dispatch,
     onClose,
-    recentSearchesStore,
     setSearchCommandList,
     state: {debug, filters, fullscreen, lastActiveIndex, result, terms},
   } = useSearchState()
   const {t} = useTranslation()
+  const recentSearchesStore = useRecentSearchesStore()
 
   const hasSearchResults = !!result.hits.length
   const hasNoSearchResults = !result.hits.length && result.loaded
@@ -50,11 +51,10 @@ export function SearchResults({disableIntentLink, inputElement, onItemSelect}: S
    */
   const handleSearchResultClick = useCallback(() => {
     if (recentSearchesStore) {
-      const updatedRecentSearches = recentSearchesStore.addSearch(terms, filters)
-      dispatch({recentSearches: updatedRecentSearches, type: 'RECENT_SEARCHES_SET'})
+      recentSearchesStore.addSearch(terms, filters)
     }
     onClose?.()
-  }, [dispatch, filters, onClose, recentSearchesStore, terms])
+  }, [filters, onClose, recentSearchesStore, terms])
 
   const handleEndReached = useCallback(() => {
     dispatch({type: 'PAGE_INCREMENT'})

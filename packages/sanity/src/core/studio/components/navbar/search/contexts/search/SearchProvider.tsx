@@ -2,17 +2,12 @@ import isEqual from 'lodash/isEqual'
 import {type ReactNode, useCallback, useEffect, useMemo, useReducer, useRef, useState} from 'react'
 
 import {type CommandListHandle} from '../../../../../../components'
-import {useClient, useSchema} from '../../../../../../hooks'
+import {useSchema} from '../../../../../../hooks'
 import {type SearchableType, type SearchTerms} from '../../../../../../search'
 import {useCurrentUser} from '../../../../../../store'
-import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../../../studioClient'
 import {useSource} from '../../../../../source'
 import {SEARCH_LIMIT} from '../../constants'
-import {
-  createRecentSearchesStore,
-  RECENT_SEARCH_VERSION,
-  type RecentSearch,
-} from '../../datastores/recentSearches'
+import {type RecentSearch} from '../../datastores/recentSearches'
 import {createFieldDefinitionDictionary, createFieldDefinitions} from '../../definitions/fields'
 import {createFilterDefinitionDictionary} from '../../definitions/filters'
 import {createOperatorDefinitionDictionary} from '../../definitions/operators'
@@ -36,14 +31,11 @@ export function SearchProvider({children, fullscreen}: SearchProviderProps) {
   const onCloseRef = useRef<(() => void) | null>(null)
   const [searchCommandList, setSearchCommandList] = useState<CommandListHandle | null>(null)
 
-  const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const schema = useSchema()
   const currentUser = useCurrentUser()
   const {
     search: {operators, filters},
   } = useSource()
-
-  const {dataset, projectId} = client.config()
 
   // Create field, filter and operator dictionaries
   const {fieldDefinitions, filterDefinitions, operatorDefinitions} = useMemo(() => {
@@ -54,41 +46,11 @@ export function SearchProvider({children, fullscreen}: SearchProviderProps) {
     }
   }, [filters, operators, schema])
 
-  // Create local storage store
-  const recentSearchesStore = useMemo(
-    () =>
-      createRecentSearchesStore({
-        dataset,
-        fieldDefinitions,
-        filterDefinitions,
-        operatorDefinitions,
-        projectId,
-        schema,
-        user: currentUser,
-        version: RECENT_SEARCH_VERSION,
-      }),
-    [
-      currentUser,
-      dataset,
-      fieldDefinitions,
-      filterDefinitions,
-      operatorDefinitions,
-      projectId,
-      schema,
-    ],
-  )
-
-  const recentSearches = useMemo(
-    () => recentSearchesStore?.getRecentSearches(),
-    [recentSearchesStore],
-  )
-
   const initialState = useMemo(
     () =>
       initialSearchState({
         currentUser,
         fullscreen,
-        recentSearches,
         definitions: {
           fields: fieldDefinitions,
           operators: operatorDefinitions,
@@ -99,14 +61,7 @@ export function SearchProvider({children, fullscreen}: SearchProviderProps) {
           nextCursor: null,
         },
       }),
-    [
-      currentUser,
-      fieldDefinitions,
-      filterDefinitions,
-      fullscreen,
-      operatorDefinitions,
-      recentSearches,
-    ],
+    [currentUser, fieldDefinitions, filterDefinitions, fullscreen, operatorDefinitions],
   )
   const [state, dispatch] = useReducer(searchReducer, initialState)
 
@@ -224,7 +179,6 @@ export function SearchProvider({children, fullscreen}: SearchProviderProps) {
       value={{
         dispatch,
         onClose: onCloseRef?.current,
-        recentSearchesStore,
         searchCommandList,
         setSearchCommandList,
         setOnClose: handleSetOnClose,
