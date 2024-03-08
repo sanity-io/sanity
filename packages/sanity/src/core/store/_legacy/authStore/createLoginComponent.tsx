@@ -59,7 +59,7 @@ interface CreateLoginComponentOptions extends AuthConfig {
 }
 
 interface CreateHrefForProviderOptions {
-  basePath: string
+  redirectPath: string
   loginMethod: AuthConfig['loginMethod']
   projectId: string
   url: string
@@ -69,10 +69,10 @@ function createHrefForProvider({
   loginMethod = 'dual',
   projectId,
   url,
-  basePath,
+  redirectPath,
 }: CreateHrefForProviderOptions) {
   const params = new URLSearchParams()
-  params.set('origin', `${window.location.origin}${basePath}`)
+  params.set('origin', `${window.location.origin}${redirectPath}`)
   params.set('projectId', projectId)
 
   // Setting `type=token` will return the sid as part of the _query_, which may end up in
@@ -96,7 +96,9 @@ export function createLoginComponent({
 }: CreateLoginComponentOptions) {
   const useClient = createHookFromObservableFactory(getClient)
 
-  function LoginComponent({projectId, basePath}: LoginComponentProps) {
+  function LoginComponent({projectId, ...props}: LoginComponentProps) {
+    const redirectPath = props.redirectPath || props.basePath || '/'
+
     const [providers, setProviders] = useState<AuthProvider[] | null>(null)
     const [error, setError] = useState<unknown>(null)
     if (error) throw error
@@ -113,7 +115,7 @@ export function createLoginComponent({
 
     // only create a direct URL if `redirectOnSingle` is true and there is only
     // one provider available
-    const redirectUrl =
+    const redirectUrlForRedirectOnSingle =
       redirectOnSingle &&
       providers?.length === 1 &&
       providers?.[0] &&
@@ -121,16 +123,16 @@ export function createLoginComponent({
         loginMethod,
         projectId,
         url: providers[0].url,
-        basePath,
+        redirectPath,
       })
 
-    const loading = !providers || redirectUrl
+    const loading = !providers || redirectUrlForRedirectOnSingle
 
     useEffect(() => {
-      if (redirectUrl) {
-        window.location.href = redirectUrl
+      if (redirectUrlForRedirectOnSingle) {
+        window.location.href = redirectUrlForRedirectOnSingle
       }
-    }, [redirectUrl])
+    }, [redirectUrlForRedirectOnSingle])
 
     if (loading) {
       return <LoadingBlock showText />
@@ -153,7 +155,7 @@ export function createLoginComponent({
                 loginMethod,
                 projectId,
                 url: provider.url,
-                basePath,
+                redirectPath,
               })}
               mode="ghost"
               size="large"
