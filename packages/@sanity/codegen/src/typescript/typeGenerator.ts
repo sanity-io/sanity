@@ -4,6 +4,7 @@ import {
   type ArrayTypeNode,
   type DocumentSchemaType,
   type ObjectAttribute,
+  type ObjectTypeNode,
   type SchemaType,
   type TypeDeclarationSchemaType,
   type TypeNode,
@@ -100,7 +101,7 @@ export class TypeGenerator {
         return this.generateArrayTsType(field)
       }
       case 'object': {
-        return this.generateObjectTsType(field.attributes)
+        return this.generateObjectTsType(field)
       }
       case 'union': {
         return this.generateUnionTsType(field)
@@ -141,11 +142,39 @@ export class TypeGenerator {
   }
 
   // Helper function used to generate TS types for object fields.
-  private generateObjectTsType(attributes: Record<string, ObjectAttribute>): t.TSTypeLiteral {
+  private generateObjectTsType(field: ObjectTypeNode): t.TSType {
     const parsedFields: t.TSPropertySignature[] = []
-    Object.entries(attributes).forEach(([key, field]) => {
-      parsedFields.push(this.generateObjectProperty(key, field))
+    Object.entries(field.attributes).forEach(([key, attribute]) => {
+      parsedFields.push(this.generateObjectProperty(key, attribute))
     })
+    if (field.rest !== undefined) {
+      switch (field.rest.type) {
+        case 'unknown': {
+          return t.tsUnknownKeyword()
+        }
+        case 'object': {
+          Object.entries(field.rest.attributes).forEach(([key, attribute]) => {
+            parsedFields.push(this.generateObjectProperty(key, attribute))
+          })
+          break
+        }
+        case 'inline': {
+          return t.tsIntersectionType([
+            t.tsTypeLiteral(parsedFields),
+            t.tsTypeReference(
+              t.identifier(
+                this.typeNameMap.get(field.rest.name) ||
+                  uppercaseFirstLetter(sanitizeIdentifier(field.rest.name)),
+              ),
+            ),
+          ])
+        }
+        default: {
+          // @ts-expect-error This should never happen
+          throw new Error(`Type "${field.rest.type}" not found in schema`)
+        }
+      }
+    }
     return t.tsTypeLiteral(parsedFields)
   }
 
