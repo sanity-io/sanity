@@ -1,4 +1,4 @@
-import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
+import {Box, Flex, Stack, Text} from '@sanity/ui'
 import {uuid} from '@sanity/uuid'
 import {AnimatePresence, motion, type Variants} from 'framer-motion'
 import {Fragment, useCallback, useMemo} from 'react'
@@ -16,9 +16,10 @@ import {
   useComments,
 } from '../../../../../structure/comments'
 import {type TaskDocument} from '../../types'
-import {EditedAt} from './Activity'
+import {EditedAt} from './TaskActivityEditedAt'
 import {TasksActivityCommentInput} from './TasksActivityCommentInput'
 import {TasksActivityCreatedAt} from './TasksActivityCreatedAt'
+import {ActivityItem} from './TasksActivityItem'
 import {TasksSubscribers} from './TasksSubscribers'
 
 const EMPTY_ARRAY: [] = []
@@ -198,35 +199,44 @@ export function TasksActivityLog(props: TasksActivityLogProps) {
                         return <EditedAt key={item.timestamp} activity={item.payload} />
                       }
                       return (
-                        <Stack key={item.payload.parentComment._id}>
-                          <CommentsListItem
-                            canReply
-                            currentUser={currentUser}
-                            isSelected={false}
-                            key={item.payload.parentComment._id}
-                            mentionOptions={mentionOptions}
-                            mode="default" // TODO: set dynamic mode?
-                            onCreateRetry={handleCommentCreateRetry}
-                            onDelete={handleCommentRemove}
-                            onEdit={handleCommentEdit}
-                            onReactionSelect={handleCommentReact}
-                            onReply={handleCommentReply}
-                            parentComment={item.payload.parentComment}
-                            replies={item.payload.replies}
-                          />
-                        </Stack>
+                        <ActivityItem
+                          key={item.payload.parentComment._id}
+                          userId={item.payload.parentComment.authorId}
+                        >
+                          <Stack key={item.payload.parentComment._id}>
+                            <CommentsListItem
+                              canReply
+                              currentUser={currentUser}
+                              isSelected={false}
+                              key={item.payload.parentComment._id}
+                              mentionOptions={mentionOptions}
+                              mode="default" // TODO: set dynamic mode?
+                              onCreateRetry={handleCommentCreateRetry}
+                              onDelete={handleCommentRemove}
+                              onEdit={handleCommentEdit}
+                              onReactionSelect={handleCommentReact}
+                              onReply={handleCommentReply}
+                              parentComment={item.payload.parentComment}
+                              replies={item.payload.replies}
+                              avatarConfig={{
+                                parentCommentAvatar: false,
+                                threadCommentsAvatar: true,
+                                replyAvatar: true,
+                                avatarSize: 0,
+                              }}
+                            />
+                          </Stack>
+                        </ActivityItem>
                       )
                     })}
                   </Fragment>
                 )}
 
-                <Card tone="transparent" padding={3} radius={3}>
-                  <TasksActivityCommentInput
-                    currentUser={currentUser}
-                    mentionOptions={mentionOptions}
-                    onSubmit={handleCommentCreate}
-                  />
-                </Card>
+                <TasksActivityCommentInput
+                  currentUser={currentUser}
+                  mentionOptions={mentionOptions}
+                  onSubmit={handleCommentCreate}
+                />
               </Stack>
             )}
           </MotionStack>

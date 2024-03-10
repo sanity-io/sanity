@@ -1,3 +1,4 @@
+import {Card} from '@sanity/ui'
 import {useCallback, useMemo, useRef, useState} from 'react'
 
 import {
@@ -6,6 +7,7 @@ import {
   type CommentInputProps,
   hasCommentMessageValue,
 } from '../../../../../structure/comments'
+import {ActivityItem} from './TasksActivityItem'
 
 interface TasksCommentActivityInputProps {
   currentUser: CommentInputProps['currentUser']
@@ -58,18 +60,23 @@ export function TasksActivityCommentInput(props: TasksCommentActivityInputProps)
   )
 
   return (
-    <CommentInput
-      currentUser={currentUser}
-      expandOnFocus
-      mentionOptions={mentionOptions}
-      onChange={handleChange}
-      onDiscardConfirm={handleDiscardConfirm}
-      onDiscardCancel={handleDiscardCancel}
-      onKeyDown={handleKeyDown}
-      onSubmit={handleSubmit}
-      placeholder="Add a comment..."
-      ref={editorRef}
-      value={value}
-    />
+    <ActivityItem userId={currentUser.id}>
+      <Card tone="transparent" radius={3} paddingY={1} paddingX={2}>
+        <CommentInput
+          withAvatar={false}
+          currentUser={currentUser}
+          expandOnFocus
+          mentionOptions={mentionOptions}
+          onChange={handleChange}
+          onDiscardConfirm={handleDiscardConfirm}
+          onDiscardCancel={handleDiscardCancel}
+          onKeyDown={handleKeyDown}
+          onSubmit={handleSubmit}
+          placeholder="Add a comment..."
+          ref={editorRef}
+          value={value}
+        />
+      </Card>
+    </ActivityItem>
   )
 }
