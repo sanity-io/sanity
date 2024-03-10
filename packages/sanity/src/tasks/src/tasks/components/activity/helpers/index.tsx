@@ -1,4 +1,3 @@
-import {hues} from '@sanity/color'
 import {
   CalendarIcon,
   CheckmarkCircleIcon,
@@ -8,8 +7,12 @@ import {
   UserIcon,
 } from '@sanity/icons'
 import {type ReactElement} from 'react'
-import {useDateTimeFormat, useRelativeTime} from 'sanity'
-import styled, {css} from 'styled-components'
+import {
+  type RelativeTimeOptions,
+  useDateTimeFormat,
+  type UseDateTimeFormatOptions,
+  useRelativeTime,
+} from 'sanity'
 
 interface KeyStringMapValue {
   string: string
@@ -17,16 +20,20 @@ interface KeyStringMapValue {
   link?: ReactElement
 }
 
+const DATE_FORMAT_OPTIONS: UseDateTimeFormatOptions = {
+  dateStyle: 'medium',
+}
+
+const RELATIVE_TIME_OPTIONS: RelativeTimeOptions = {
+  minimal: true,
+  useTemporalPhrase: true,
+}
+
 export function UpdatedTimeAgo(timestamp: string) {
-  const dateFormatter = useDateTimeFormat({
-    dateStyle: 'medium',
-  })
+  const dateFormatter = useDateTimeFormat(DATE_FORMAT_OPTIONS)
   const formattedDate = dateFormatter.format(new Date(timestamp))
 
-  const updatedTimeAgo = useRelativeTime(formattedDate || '', {
-    minimal: true,
-    useTemporalPhrase: true,
-  })
+  const updatedTimeAgo = useRelativeTime(formattedDate || '', RELATIVE_TIME_OPTIONS)
 
   return {timeAgo: updatedTimeAgo, formattedDate}
 }
@@ -55,15 +62,3 @@ export function getStringForKey(key: string): KeyStringMapValue | undefined {
 
   return keyStringMap[key]
 }
-
-export const IconWrapper = styled.div(({theme}) => {
-  const dark = theme.sanity.color.dark
-  const bg = hues.green[dark ? 400 : 600].hex
-
-  return css`
-    background-color: ${bg};
-    border-radius: 50%;
-    width: 16px;
-    height: 16px;
-  `
-})
