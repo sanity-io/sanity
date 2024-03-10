@@ -1,37 +1,9 @@
 import {DotIcon} from '@sanity/icons'
-import {Box, Flex, Skeleton, Text} from '@sanity/ui'
+import {Box, Flex, Text} from '@sanity/ui'
 import {memo} from 'react'
-import {useUser} from 'sanity'
 
 import {Tooltip} from '../../../../../ui-components'
-import {TasksUserAvatar} from '../TasksUserAvatar'
 import {getStringForKey, UpdatedTimeAgo} from './helpers'
-
-export const CreatedAt = memo(
-  function CreatedAt({createdAt, authorId}: {createdAt: string; authorId: string}) {
-    const [user, loading] = useUser(authorId)
-    const {timeAgo, formattedDate} = UpdatedTimeAgo(createdAt)
-    return (
-      <Flex gap={1}>
-        <Box marginRight={3}>
-          <TasksUserAvatar user={{id: authorId}} size={0} />
-        </Box>
-        <Text size={1} muted>
-          <strong style={{fontWeight: 600}}>
-            {loading ? <Skeleton style={{width: '6ch'}} /> : user?.displayName ?? 'Unknown user'}{' '}
-          </strong>
-          created this task <DotIcon />{' '}
-          <Tooltip content={formattedDate} placement="top-end">
-            <time dateTime={createdAt}>{timeAgo}</time>
-          </Tooltip>
-        </Text>
-      </Flex>
-    )
-  },
-  (prevProps, nextProps) => {
-    return prevProps.createdAt === nextProps.createdAt
-  },
-)
 
 interface EditedAtProps {
   activity: {
