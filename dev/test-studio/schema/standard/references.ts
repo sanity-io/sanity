@@ -235,6 +235,22 @@ export default defineType({
         },
       ],
     },
+    {
+      name: 'withInitialValue',
+      type: 'reference',
+      to: [{type: 'author'}],
+      initialValue: () => ({
+        _type: 'reference',
+        _ref: 'f9a5f215-da97-47fe-960f-3452c85ed205',
+        _weak: true,
+        _strengthenOnPublish: {
+          type: 'author',
+          template: {
+            id: 'author',
+          },
+        },
+      }),
+    },
   ],
   preview: {
     select: {
