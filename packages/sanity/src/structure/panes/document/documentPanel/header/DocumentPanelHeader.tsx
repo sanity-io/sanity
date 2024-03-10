@@ -134,35 +134,36 @@ export const DocumentPanelHeader = memo(
               {menuButtonNodes.map((item) => (
                 <PaneHeaderActionButton key={item.key} node={item} />
               ))}
+              {editState && (
+                <RenderActionCollectionState
+                  actions={actions || []}
+                  actionProps={editState}
+                  group="paneActions"
+                >
+                  {({states}) => (
+                    <ActionDialogWrapper actionStates={states} referenceElement={referenceElement}>
+                      {({handleAction}) => (
+                        <div ref={setReferenceElement}>
+                          <PaneContextMenuButton
+                            nodes={contextMenuNodes}
+                            key="context-menu"
+                            actionsNodes={states?.map((actionState, actionIndex) => (
+                              <ActionMenuListItem
+                                key={actionState.label}
+                                actionState={actionState}
+                                disabled={Boolean(actionState.disabled)}
+                                index={actionIndex}
+                                onAction={handleAction}
+                              />
+                            ))}
+                          />
+                        </div>
+                      )}
+                    </ActionDialogWrapper>
+                  )}
+                </RenderActionCollectionState>
+              )}
 
-              <RenderActionCollectionState
-                actions={actions || []}
-                // @ts-expect-error TODO: fix the document actions
-                actionProps={editState}
-                group="paneActions"
-              >
-                {({states}) => (
-                  <ActionDialogWrapper actionStates={states} referenceElement={referenceElement}>
-                    {({handleAction}) => (
-                      <div ref={setReferenceElement}>
-                        <PaneContextMenuButton
-                          nodes={contextMenuNodes}
-                          key="context-menu"
-                          actionsNodes={states?.map((actionState, actionIndex) => (
-                            <ActionMenuListItem
-                              key={actionState.label}
-                              actionState={actionState}
-                              disabled={Boolean(actionState.disabled)}
-                              index={actionIndex}
-                              onAction={handleAction}
-                            />
-                          ))}
-                        />
-                      </div>
-                    )}
-                  </ActionDialogWrapper>
-                )}
-              </RenderActionCollectionState>
               {showSplitPaneButton && (
                 <Button
                   aria-label={t('buttons.split-pane-button.aria-label')}

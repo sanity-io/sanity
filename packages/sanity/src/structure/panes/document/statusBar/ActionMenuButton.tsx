@@ -1,5 +1,5 @@
 import {Menu} from '@sanity/ui'
-import {useCallback, useId, useMemo, useState} from 'react'
+import {type ReactNode, useCallback, useId, useMemo, useState} from 'react'
 import {
   ContextMenuButton,
   type DocumentActionDescription,
@@ -25,7 +25,7 @@ export function ActionDialogWrapper({
   referenceElement,
 }: {
   actionStates: DocumentActionDescription[]
-  children: ({handleAction}: {handleAction: (idx: number) => void}) => React.ReactNode
+  children: ({handleAction}: {handleAction: (idx: number) => void}) => ReactNode
   referenceElement?: HTMLElement | null
 }) {
   const [actionIndex, setActionIndex] = useState(-1)

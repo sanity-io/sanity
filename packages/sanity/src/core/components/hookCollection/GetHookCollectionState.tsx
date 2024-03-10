@@ -9,10 +9,16 @@ import {type ActionHook} from './types'
 
 /** @internal */
 export interface GetHookCollectionStateProps<T, K> {
+  /**
+   * Arguments that will be received by the action hooks, `onComplete` will be added by the HookStateContainer component.
+   */
   args: T
   children: (props: {states: K[]}) => ReactNode
-  hooks: ActionHook<T, K>[]
+  hooks: ActionHook<T & {onComplete: () => void}, K>[]
   onReset?: () => void
+  /**
+   * Name for the hook group. If provided, only hooks with the same group name will be included in the collection.
+   */
   group?: string
 }
 

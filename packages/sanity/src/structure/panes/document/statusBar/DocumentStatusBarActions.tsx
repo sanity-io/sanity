@@ -87,7 +87,6 @@ export const DocumentStatusBarActions = memo(function DocumentStatusBarActions()
       // component={}
       // onActionComplete={handleActionComplete}
       actions={actions}
-      // @ts-expect-error TODO: fix the document actions
       actionProps={editState}
       group="default"
     >

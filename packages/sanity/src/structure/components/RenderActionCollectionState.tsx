@@ -14,7 +14,7 @@ export interface Action<Args, Description> {
 /** @internal */
 export interface RenderActionCollectionProps {
   actions: Action<DocumentActionProps, DocumentActionDescription>[]
-  actionProps: DocumentActionProps
+  actionProps: Omit<DocumentActionProps, 'onComplete'>
   children: (props: {states: DocumentActionDescription[]}) => React.ReactNode
   onActionComplete?: () => void
   group?: DocumentActionGroup
