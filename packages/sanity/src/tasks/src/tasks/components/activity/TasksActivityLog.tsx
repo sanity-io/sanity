@@ -1,8 +1,16 @@
 import {Box, Flex, Stack, Text} from '@sanity/ui'
 import {uuid} from '@sanity/uuid'
 import {AnimatePresence, motion, type Variants} from 'framer-motion'
-import {Fragment, useCallback, useMemo} from 'react'
-import {type FormPatch, LoadingBlock, type PatchEvent, type Path, useCurrentUser} from 'sanity'
+import {Fragment, useCallback, useEffect, useMemo, useState} from 'react'
+import {
+  type FormPatch,
+  LoadingBlock,
+  type PatchEvent,
+  type Path,
+  useCurrentUser,
+  useClient,
+  TransactionLogEventWithEffects,
+} from 'sanity'
 import styled from 'styled-components'
 
 import {
@@ -22,6 +30,59 @@ import {TasksActivityCommentInput} from './TasksActivityCommentInput'
 import {TasksActivityCreatedAt} from './TasksActivityCreatedAt'
 import {ActivityItem} from './TasksActivityItem'
 import {TasksSubscribers} from './TasksSubscribers'
+import {getJsonStream} from '../../../../../core/store/_legacy/history/history/getJsonStream'
+import {FieldChange, trackFieldChanges} from './helpers/parseTransactions'
+
+function useActivityLog(task: TaskDocument) {
+  const [changes, setChanges] = useState<FieldChange[]>([])
+  const client = useClient()
+  const clientConfig = client.config()
+  let queryParams = `tag=sanity.studio.tasks.history&effectFormat=mendoza&excludeContent=true&includeIdentifiedDocumentsOnly=true&reverse=true`
+
+  const fetchAndParse = useCallback(
+    async (newestTaskDocument: TaskDocument) => {
+      const transactions: TransactionLogEventWithEffects[] = []
+      const transactionsUrl = client.getUrl(
+        `/data/history/${clientConfig.dataset}/transactions/${newestTaskDocument._id}?${queryParams}`,
+      )
+      const stream = await getJsonStream(transactionsUrl, clientConfig.token)
+      const reader = stream.getReader()
+      let result
+      for (;;) {
+        result = await reader.read()
+        if (result.done) {
+          break
+        }
+        if ('error' in result.value) {
+          throw new Error(result.value.error.description || result.value.error.type)
+        }
+        transactions.push(result.value)
+      }
+
+      const fieldsToTrack: (keyof Omit<TaskDocument, '_rev'>)[] = [
+        'assignedTo',
+        'status',
+        'subscribers',
+      ]
+
+      const parsedChanges = await trackFieldChanges(
+        newestTaskDocument,
+        [...transactions],
+        fieldsToTrack,
+      )
+
+      setChanges(parsedChanges)
+    },
+    [client, clientConfig, queryParams],
+  )
+
+  // TODO: Probably don't want this to fire every time the task updates
+  useEffect(() => {
+    fetchAndParse(task)
+  }, [fetchAndParse, task])
+
+  return {changes}
+}
 
 const EMPTY_ARRAY: [] = []
 
@@ -149,7 +210,7 @@ export function TasksActivityLog(props: TasksActivityLogProps) {
   )
 
   // TODO: Get the task real activity.
-  const activityData: ActivityLogItem[] = EMPTY_ARRAY
+  const activityData: ActivityLogItem[] = useActivityLog(value)
 
   const activity: Activity[] = useMemo(() => {
     const taskActivity: Activity[] = activityData.map((item) => ({
