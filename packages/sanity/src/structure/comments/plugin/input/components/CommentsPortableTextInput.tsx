@@ -22,12 +22,14 @@ import {
   CommentInlineHighlightSpan,
   type CommentMessage,
   type CommentsTextSelectionItem,
+  type CommentsUIMode,
   type CommentUpdatePayload,
   isTextSelectionComment,
   useComments,
   useCommentsEnabled,
   useCommentsScroll,
   useCommentsSelectedPath,
+  useCommentsUpsell,
 } from '../../../src'
 import {getSelectionBoundingRect, useAuthoringReferenceElement} from '../helpers'
 import {FloatingButtonPopover} from './FloatingButtonPopover'
@@ -47,22 +49,25 @@ export function CommentsPortableTextInput(props: PortableTextInputProps) {
   // Therefore we disable the comments for the AI assist type.
   const isAiAssist = props.schemaType.name === AI_ASSIST_TYPE
 
-  if (!enabled || mode === 'upsell' || isAiAssist) {
+  if (!enabled || isAiAssist) {
     return props.renderDefault(props)
   }
 
-  return <CommentsPortableTextInputInner {...props} />
+  return <CommentsPortableTextInputInner {...props} mode={mode} />
 }
 
 export const CommentsPortableTextInputInner = React.memo(function CommentsPortableTextInputInner(
-  props: PortableTextInputProps,
+  props: PortableTextInputProps & {mode: CommentsUIMode},
 ) {
+  const {mode} = props
   const currentUser = useCurrentUser()
   const portal = usePortal()
 
-  const {mentionOptions, comments, operation, onCommentsOpen, getComment} = useComments()
+  const {mentionOptions, comments, operation, onCommentsOpen, getComment, setStatus, status} =
+    useComments()
   const {setSelectedPath, selectedPath} = useCommentsSelectedPath()
   const {scrollToComment, scrollToGroup} = useCommentsScroll()
+  const {handleOpenDialog} = useCommentsUpsell()
 
   const editorRef = useRef<PortableTextEditor | null>(null)
   const mouseDownRef = useRef<boolean>(false)
@@ -100,8 +105,15 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
   // Set the next comment selection to the current selection so that we can
   // render the comment input popover on the current selection using a range decoration.
   const handleSelectCurrentSelection = useCallback(() => {
+    // When trying to add a comment in "upsell" mode, we want to
+    // display the upsell dialog instead of the comment input popover.
+    if (mode === 'upsell') {
+      handleOpenDialog('pte')
+      return
+    }
+
     setNextCommentSelection(currentSelection)
-  }, [currentSelection])
+  }, [currentSelection, handleOpenDialog, mode])
 
   // Clear the selection and close the popover when discarding the comment
   const handleCommentDiscardConfirm = useCallback(() => {
@@ -125,12 +137,15 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
 
     const fragment = getFragment() || EMPTY_ARRAY
     const editorValue = PortableTextEditor.getValue(editorRef.current)
+
     if (!editorValue) return
+
     const textSelection = buildTextSelectionFromFragment({
       fragment,
       selection: nextCommentSelection,
       value: editorValue,
     })
+
     const threadId = uuid()
 
     operation.create({
@@ -145,27 +160,37 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
       threadId,
     })
 
+    // Open the inspector when a new comment is added
     onCommentsOpen?.()
 
+    // Set the status to 'open' so that the comment is visible
+    if (status === 'resolved') {
+      setStatus('open')
+    }
+
+    // Set the selected path to the new comment
     setSelectedPath({
       fieldPath: stringFieldPath,
       threadId,
       origin: 'form',
     })
 
+    // Scroll to the comment
     scrollToGroup(threadId)
 
     resetStates()
   }, [
-    resetStates,
-    getFragment,
     nextCommentSelection,
+    getFragment,
+    operation,
+    stringFieldPath,
     nextCommentValue,
     onCommentsOpen,
-    operation,
-    scrollToGroup,
+    status,
     setSelectedPath,
-    stringFieldPath,
+    scrollToGroup,
+    resetStates,
+    setStatus,
   ])
 
   const handleDecoratorClick = useCallback(

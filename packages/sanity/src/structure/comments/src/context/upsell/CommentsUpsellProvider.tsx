@@ -8,6 +8,7 @@ import {
   UpsellDialogLearnMoreCtaClicked,
   UpsellDialogUpgradeCtaClicked,
   UpsellDialogViewed,
+  type UpsellDialogViewedInfo,
   useClient,
   useProjectId,
 } from 'sanity'
@@ -123,14 +124,18 @@ export function CommentsUpsellProvider(props: {children: React.ReactNode}) {
     }
   }, [client, projectId])
 
-  const handleOpenDialog = useCallback(() => {
-    setUpsellDialogOpen(true)
-    telemetry.log(UpsellDialogViewed, {
-      feature: FEATURE,
-      type: 'modal',
-      source: 'field_action',
-    })
-  }, [telemetry])
+  const handleOpenDialog = useCallback(
+    (source: UpsellDialogViewedInfo['source']) => {
+      setUpsellDialogOpen(true)
+
+      telemetry.log(UpsellDialogViewed, {
+        feature: FEATURE,
+        type: 'modal',
+        source,
+      })
+    },
+    [telemetry],
+  )
 
   const ctxValue = useMemo<CommentsUpsellContextValue>(
     () => ({
