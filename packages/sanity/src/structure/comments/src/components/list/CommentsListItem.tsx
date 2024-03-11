@@ -1,6 +1,6 @@
 import {ChevronDownIcon} from '@sanity/icons'
 import {type CurrentUser} from '@sanity/types'
-import {type AvatarSize, Flex, Stack, useLayer} from '@sanity/ui'
+import {type AvatarSize, Flex, Stack, type StackProps, useLayer} from '@sanity/ui'
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {type UserListWithPermissionsHookValue, useTranslation} from 'sanity'
 import styled, {css} from 'styled-components'
@@ -81,7 +81,7 @@ const GhostButton = styled.button`
   left: 0;
 `
 
-interface CommentsListItemProps {
+export interface CommentsListItemProps {
   avatarConfig?: {
     avatarSize: AvatarSize
     parentCommentAvatar: boolean
@@ -91,6 +91,7 @@ interface CommentsListItemProps {
   canReply?: boolean
   currentUser: CurrentUser
   hasReferencedValue?: boolean
+  innerPadding?: StackProps['padding']
   isSelected: boolean
   mentionOptions: UserListWithPermissionsHookValue
   mode: CommentsUIMode
@@ -114,6 +115,7 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
     canReply,
     currentUser,
     hasReferencedValue,
+    innerPadding,
     isSelected,
     mentionOptions,
     mode,
@@ -311,6 +313,7 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
 
       <Stack
         as="ul"
+        padding={innerPadding}
         // Add some extra padding to the bottom if there is no reply input.
         // This is to make the UI look more balanced.
         paddingBottom={canReply ? undefined : 1}
