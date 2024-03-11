@@ -420,7 +420,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
 
         {isTextSelectionComment(comment) && Boolean(comment?.contentSnapshot) && (
           <Flex gap={FLEX_GAP} marginBottom={3}>
-            <SpacerAvatar size={avatarSize} show={withAvatar} />
+            {withAvatar && <SpacerAvatar $size={avatarSize} />}
 
             <CommentsListItemReferencedValue
               hasReferencedValue={hasReferencedValue}
@@ -431,7 +431,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
 
         {isEditing && (
           <Flex align="flex-start" gap={2}>
-            <SpacerAvatar size={avatarSize} show={withAvatar} />
+            {withAvatar && <SpacerAvatar $size={avatarSize} />}
 
             <Stack flex={1}>
               <CommentInput
@@ -454,7 +454,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
 
         {!isEditing && (
           <Flex gap={FLEX_GAP}>
-            <SpacerAvatar size={avatarSize} show={withAvatar} />
+            {withAvatar && <SpacerAvatar $size={avatarSize} />}
 
             <CommentMessageSerializer blocks={message} />
           </Flex>
@@ -462,7 +462,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
 
         {hasReactions && (
           <Flex gap={FLEX_GAP} marginTop={2}>
-            <SpacerAvatar size={avatarSize} show={withAvatar} />
+            {withAvatar && <SpacerAvatar $size={avatarSize} />}
 
             <Box onClick={stopPropagation}>
               <CommentReactionsBar
@@ -479,7 +479,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
 
       {displayError && (
         <ErrorFlex gap={FLEX_GAP} $size={avatarSize}>
-          <SpacerAvatar size={avatarSize} show={withAvatar} />
+          {withAvatar && <SpacerAvatar $size={avatarSize} />}
 
           <Flex align="center" gap={1} flex={1}>
             <Text muted size={1}>
