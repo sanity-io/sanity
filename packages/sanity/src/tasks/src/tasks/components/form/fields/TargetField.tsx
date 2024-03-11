@@ -18,11 +18,11 @@ import {
 import {IntentLink} from 'sanity/router'
 import styled, {css} from 'styled-components'
 
-import {Button} from '../../../../../ui-components'
-import {type FormMode, type TaskTarget} from '../../types'
-import {CurrentWorkspaceProvider} from './CurrentWorkspaceProvider'
+import {Button} from '../../../../../../ui-components'
+import {type FormMode, type TaskTarget} from '../../../types'
+import {CurrentWorkspaceProvider} from '../CurrentWorkspaceProvider'
+import {getTargetValue} from '../utils'
 import {FieldWrapperRoot} from './FieldWrapper'
-import {getTargetValue} from './utils'
 
 const EmptyReferenceRoot = styled(Card)((props) => {
   const theme = getTheme_v2(props.theme)

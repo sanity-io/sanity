@@ -1,13 +1,15 @@
 import {type ArrayFieldProps, defineField, defineType, type ObjectFieldProps} from 'sanity'
 
-import {type FormMode} from '../../types'
-import {AssigneeCreateFormField} from './assignee'
-import {DescriptionInput} from './DescriptionInput'
-import {FieldWrapper} from './FieldWrapper'
-import {FormCreate} from './FormCreate'
-import {FormEdit} from './FormEdit'
-import {TargetField} from './TargetField'
-import {TitleField} from './TitleField'
+import {type FormMode} from '../../../types'
+import {
+  AssigneeCreateFormField,
+  DescriptionInput,
+  FieldWrapper,
+  TargetField,
+  TitleField,
+} from '../fields'
+import {FormCreate} from '../tasksFormBuilder/FormCreate'
+import {FormEdit} from '../tasksFormBuilder/FormEdit'
 
 const targetContentField = (mode: FormMode) =>
   defineField({

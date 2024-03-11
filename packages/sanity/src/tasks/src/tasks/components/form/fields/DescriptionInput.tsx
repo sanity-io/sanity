@@ -6,9 +6,9 @@ import styled, {css} from 'styled-components'
 
 // TODO: This is using components from structure/comments which is not ideal. But given comments is changing
 // we won't refactor this now, until comments is stable and we implement in this the `FormBuilder`
-import {CommentInput} from '../../../../../structure/comments'
-import {useMentionUser} from '../../context'
-import {type FormMode} from '../../types'
+import {CommentInput} from '../../../../../../structure/comments'
+import {useMentionUser} from '../../../context'
+import {type FormMode} from '../../../types'
 
 const DescriptionInputRoot = styled.div<{$mode: FormMode; $minHeight: number}>((props) => {
   const theme = getTheme_v2(props.theme)
@@ -20,7 +20,7 @@ const DescriptionInputRoot = styled.div<{$mode: FormMode; $minHeight: number}>((
       padding: ${props.$mode === 'edit'
         ? `${verticalPadding}px 0px`
         : `${verticalPadding}px ${theme.space[2]}px`};
-      min-height: ${Math.max(props.$minHeight + verticalPadding, 200)}px;
+      min-height: ${Math.max(props.$minHeight + verticalPadding, 200)}px !important;
     }
     #comment-input-root {
       box-shadow: ${props.$mode === 'edit' ? 'none' : ''};
@@ -45,7 +45,7 @@ export function DescriptionInput(props: ArrayFieldProps & {mode: FormMode}) {
   const handleChange = useCallback((next: PortableTextBlock[]) => onChange(set(next)), [onChange])
 
   const rootRef = useRef<HTMLDivElement | null>(null)
-  const [textBoxScrollHeight, setTextBoxScrollHeight] = useState<number>(0)
+  const [textBoxScrollHeight, setTextBoxScrollHeight] = useState<number>(200)
   const setTextboxHeight = useCallback((ref: HTMLDivElement) => {
     const textBox = ref.querySelector('[role="textbox"]')
     if (!textBox) return
@@ -71,6 +71,7 @@ export function DescriptionInput(props: ArrayFieldProps & {mode: FormMode}) {
   return (
     <DescriptionInputRoot $mode={mode} ref={setRootRef} $minHeight={textBoxScrollHeight || 200}>
       <CommentInput
+        expandOnFocus={false}
         currentUser={currentUser}
         mentionOptions={mentionOptions}
         onChange={handleChange}
