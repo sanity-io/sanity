@@ -1,7 +1,7 @@
 import {useCallback, useMemo} from 'react'
 
 import {Button} from '../../ui-components'
-import {useTasks, useTasksEnabled} from '../src'
+import {useTasks, useTasksEnabled, useTasksNavigation} from '../src'
 
 /**
  * Button that shows how many pending tasks are assigned to the current document.
@@ -11,7 +11,8 @@ import {useTasks, useTasksEnabled} from '../src'
  * @internal
  */
 export function TasksFooterOpenTasks() {
-  const {data, activeDocument, toggleOpen, isOpen} = useTasks()
+  const {data, activeDocument} = useTasks()
+  const {handleOpenTasks, setActiveTab} = useTasksNavigation()
   const {enabled} = useTasksEnabled()
 
   const pendingTasks = useMemo(
@@ -23,11 +24,9 @@ export function TasksFooterOpenTasks() {
   )
 
   const handleOnClick = useCallback(() => {
-    if (isOpen) {
-      return
-    }
-    toggleOpen()
-  }, [isOpen, toggleOpen])
+    handleOpenTasks()
+    setActiveTab('document')
+  }, [handleOpenTasks, setActiveTab])
 
   if (pendingTasks.length === 0 || !enabled) return null
 

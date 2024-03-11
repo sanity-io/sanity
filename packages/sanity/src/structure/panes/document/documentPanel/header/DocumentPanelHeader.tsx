@@ -147,15 +147,19 @@ export const DocumentPanelHeader = memo(
                           <PaneContextMenuButton
                             nodes={contextMenuNodes}
                             key="context-menu"
-                            actionsNodes={states?.map((actionState, actionIndex) => (
-                              <ActionMenuListItem
-                                key={actionState.label}
-                                actionState={actionState}
-                                disabled={Boolean(actionState.disabled)}
-                                index={actionIndex}
-                                onAction={handleAction}
-                              />
-                            ))}
+                            actionsNodes={
+                              states.length > 0
+                                ? states.map((actionState, actionIndex) => (
+                                    <ActionMenuListItem
+                                      key={actionState.label}
+                                      actionState={actionState}
+                                      disabled={Boolean(actionState.disabled)}
+                                      index={actionIndex}
+                                      onAction={handleAction}
+                                    />
+                                  ))
+                                : undefined
+                            }
                           />
                         </div>
                       )}
