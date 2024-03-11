@@ -37,8 +37,8 @@ importers:
         specifier: ^1.41.2
         version: 1.41.2
       '@sanity/client':
-        specifier: ^6.15.1
-        version: 6.15.1
+        specifier: ^6.15.3
+        version: 6.15.3
       '@sanity/eslint-config-i18n':
         specifier: ^1.0.0
         version: 1.0.0(eslint@8.57.0)(typescript@5.4.2)
@@ -387,8 +387,8 @@ importers:
         specifier: 3.32.0
         version: link:../../packages/@sanity/block-tools
       '@sanity/client':
-        specifier: ^6.15.1
-        version: 6.15.1
+        specifier: ^6.15.3
+        version: 6.15.3
       '@sanity/color':
         specifier: ^3.0.0
         version: 3.0.0
@@ -427,10 +427,10 @@ importers:
         version: link:../../packages/@sanity/portable-text-editor
       '@sanity/preview-url-secret':
         specifier: ^1.6.1
-        version: 1.6.4(@sanity/client@6.15.1)
+        version: 1.6.4(@sanity/client@6.15.3)
       '@sanity/react-loader':
         specifier: ^1.8.3
-        version: 1.9.3(@sanity/client@6.15.1)(react@18.2.0)
+        version: 1.9.3(@sanity/client@6.15.3)(react@18.2.0)
       '@sanity/tsdoc':
         specifier: 1.0.0-alpha.44
         version: 1.0.0-alpha.44(@sanity/pkg-utils@2.4.10)(@types/node@18.19.8)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(sanity@packages+sanity)(styled-components@6.1.8)
@@ -454,7 +454,7 @@ importers:
         version: link:../../packages/@sanity/vision
       '@sanity/visual-editing':
         specifier: 1.7.0
-        version: 1.7.0(@sanity/client@6.15.1)
+        version: 1.7.0(@sanity/client@6.15.3)
       '@turf/helpers':
         specifier: ^6.0.1
         version: 6.5.0
@@ -678,8 +678,8 @@ importers:
         specifier: ^15.2.3
         version: 15.2.3(rollup@4.12.1)
       '@sanity/client':
-        specifier: ^6.15.1
-        version: 6.15.1
+        specifier: ^6.15.3
+        version: 6.15.3
       '@sanity/eslint-config-studio':
         specifier: ^3.0.1
         version: 3.0.1(eslint@8.57.0)(typescript@5.4.2)
@@ -942,8 +942,8 @@ importers:
         specifier: ^29.7.0
         version: 29.7.0
       '@sanity/client':
-        specifier: ^6.15.1
-        version: 6.15.1
+        specifier: ^6.15.3
+        version: 6.15.3
       nock:
         specifier: ^13.2.9
         version: 13.5.0
@@ -951,8 +951,8 @@ importers:
   packages/@sanity/import-cli:
     dependencies:
       '@sanity/client':
-        specifier: ^6.15.1
-        version: 6.15.1
+        specifier: ^6.15.3
+        version: 6.15.3
       '@sanity/import':
         specifier: 3.32.0
         version: link:../import
@@ -975,8 +975,8 @@ importers:
         specifier: ^0.5.1
         version: 0.5.3
       '@sanity/client':
-        specifier: ^6.15.1
-        version: 6.15.1
+        specifier: ^6.15.3
+        version: 6.15.3
       '@sanity/types':
         specifier: 3.32.0
         version: link:../types
@@ -1195,8 +1195,8 @@ importers:
   packages/@sanity/types:
     dependencies:
       '@sanity/client':
-        specifier: ^6.15.1
-        version: 6.15.1
+        specifier: ^6.15.3
+        version: 6.15.3
       '@types/react':
         specifier: ^18.0.25
         version: 18.2.48
@@ -1211,8 +1211,8 @@ importers:
   packages/@sanity/util:
     dependencies:
       '@sanity/client':
-        specifier: ^6.15.1
-        version: 6.15.1
+        specifier: ^6.15.3
+        version: 6.15.3
       '@sanity/types':
         specifier: 3.32.0
         version: link:../types
@@ -1297,8 +1297,8 @@ importers:
         version: 4.17.21
     devDependencies:
       '@sanity/client':
-        specifier: ^6.15.1
-        version: 6.15.1
+        specifier: ^6.15.3
+        version: 6.15.3
       '@types/is-hotkey':
         specifier: ^0.1.10
         version: 0.1.10
@@ -1362,8 +1362,8 @@ importers:
         specifier: 3.32.0
         version: link:../@sanity/cli
       '@sanity/client':
-        specifier: ^6.15.1
-        version: 6.15.1
+        specifier: ^6.15.3
+        version: 6.15.3
       '@sanity/color':
         specifier: ^3.0.0
         version: 3.0.0
@@ -1405,7 +1405,7 @@ importers:
         version: link:../@sanity/portable-text-editor
       '@sanity/presentation':
         specifier: 1.11.4
-        version: 1.11.4(@sanity/client@6.15.1)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8)
+        version: 1.11.4(@sanity/client@6.15.3)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8)
       '@sanity/schema':
         specifier: 3.32.0
         version: link:../@sanity/schema
@@ -5754,8 +5754,8 @@ packages:
       rxjs: 7.8.1
     dev: false
 
-  /@sanity/client@6.15.1:
-    resolution: {integrity: sha512-WA85uX8FX7PbWyDyQiTsRn75OLt1GNtQPTzlHyNymAfItDgVmbP7Cwk5aH2B+7gMSkAK7wuK9Ea2YyHl7Kl2WA==}
+  /@sanity/client@6.15.3:
+    resolution: {integrity: sha512-7P6OMUeXr87aDzWHlXhP4QXYm02f9jc8f5xr736Er3RybuhSg+ZnetoxBFWhzlV6QA1F0fiC/8yGJKVJmrO+sg==}
     engines: {node: '>=14.18'}
     dependencies:
       '@sanity/eventsource': 5.0.1
@@ -5772,13 +5772,13 @@ packages:
     resolution: {integrity: sha512-JLIsloyyn0lhta/JivmYlxlcN7U3dpBNqtH7uAzM9/kPirFxWJ8LAVuF5vxK5JHwTNbgpVy6AmfIss/av7N96w==}
     engines: {node: '>=18.0.0'}
 
-  /@sanity/core-loader@1.6.1(@sanity/client@6.15.1):
+  /@sanity/core-loader@1.6.1(@sanity/client@6.15.3):
     resolution: {integrity: sha512-0qaYuSYBiw2ml2c+CLJX7PCfVipsdU+PONZhQwjerivqpT2Fq5sZAMtdeiniMlvodgj8pS6S/XlsUfmHK91DqQ==}
     engines: {node: '>=18'}
     peerDependencies:
       '@sanity/client': ^6.15.2
     dependencies:
-      '@sanity/client': 6.15.1
+      '@sanity/client': 6.15.3
       async-cache-dedupe: 2.1.0
     dev: false
 
@@ -6041,15 +6041,15 @@ packages:
       - supports-color
     dev: true
 
-  /@sanity/presentation@1.11.4(@sanity/client@6.15.1)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8):
+  /@sanity/presentation@1.11.4(@sanity/client@6.15.3)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8):
     resolution: {integrity: sha512-vd4gOceLB02TzMahkBL5ViGU1AwKZvl4Y4sdY5MXIeGoUW2CJ9ys6iPQXaaylrKGMyK4WreGHCy51eZU0GLYuw==}
     engines: {node: '>=16.14'}
     peerDependencies:
       '@sanity/client': ^6.15.2
     dependencies:
-      '@sanity/client': 6.15.1
+      '@sanity/client': 6.15.3
       '@sanity/icons': 2.10.3(react@18.2.0)
-      '@sanity/preview-url-secret': 1.6.4(@sanity/client@6.15.1)
+      '@sanity/preview-url-secret': 1.6.4(@sanity/client@6.15.3)
       '@sanity/ui': 2.0.7(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8)
       '@sanity/uuid': 3.0.2
       '@types/lodash.isequal': 4.5.8
@@ -6067,25 +6067,25 @@ packages:
       - styled-components
     dev: false
 
-  /@sanity/preview-url-secret@1.6.4(@sanity/client@6.15.1):
+  /@sanity/preview-url-secret@1.6.4(@sanity/client@6.15.3):
     resolution: {integrity: sha512-iOu6n5Zt7kuWoOYRliS2o/MDDBWcWkrnwwss2tglIBl744RPRkz0yi9qulnpAqMnWrZyIU8fV1yPCdg0RY+olw==}
     engines: {node: '>=18'}
     peerDependencies:
       '@sanity/client': ^6.14.4
     dependencies:
-      '@sanity/client': 6.15.1
+      '@sanity/client': 6.15.3
       '@sanity/uuid': 3.0.2
     dev: false
 
-  /@sanity/react-loader@1.9.3(@sanity/client@6.15.1)(react@18.2.0):
+  /@sanity/react-loader@1.9.3(@sanity/client@6.15.3)(react@18.2.0):
     resolution: {integrity: sha512-Ny4dLjKTy0Q4mpc5NthVNMZJ8XPEYGVvXwuvDr7fFJqy+KMW9WthJ+KUddTzuq129oJnmiFBvNO6HQvkBGgDMA==}
     engines: {node: '>=18'}
     peerDependencies:
       '@sanity/client': ^6.15.2
       react: ^18.2.0
     dependencies:
-      '@sanity/client': 6.15.1
-      '@sanity/core-loader': 1.6.1(@sanity/client@6.15.1)
+      '@sanity/client': 6.15.3
+      '@sanity/core-loader': 1.6.1(@sanity/client@6.15.3)
       fast-deep-equal: 3.1.3
       react: 18.2.0
     dev: false
@@ -6106,7 +6106,7 @@ packages:
     hasBin: true
     dependencies:
       '@playwright/test': 1.41.2
-      '@sanity/client': 6.15.1
+      '@sanity/client': 6.15.3
       '@sanity/uuid': 3.0.2
       cac: 6.7.14
     transitivePeerDependencies:
@@ -6130,7 +6130,7 @@ packages:
       '@microsoft/tsdoc-config': 0.16.2
       '@portabletext/react': 3.0.11(react@18.2.0)
       '@portabletext/toolkit': 2.0.10
-      '@sanity/client': 6.15.1
+      '@sanity/client': 6.15.3
       '@sanity/color': 2.2.5
       '@sanity/icons': 2.10.3(react@18.2.0)
       '@sanity/pkg-utils': 2.4.10(@types/node@18.19.8)(typescript@5.4.2)
@@ -6186,7 +6186,7 @@ packages:
       '@microsoft/tsdoc-config': 0.16.2
       '@portabletext/react': 3.0.11(react@18.2.0)
       '@portabletext/toolkit': 2.0.10
-      '@sanity/client': 6.15.1
+      '@sanity/client': 6.15.3
       '@sanity/color': 2.2.5
       '@sanity/icons': 2.10.3(react@18.2.0)
       '@sanity/pkg-utils': 3.3.8(@types/node@18.19.8)(typescript@5.4.2)
@@ -6332,7 +6332,7 @@ packages:
       '@types/uuid': 8.3.4
       uuid: 8.3.2
 
-  /@sanity/visual-editing@1.7.0(@sanity/client@6.15.1):
+  /@sanity/visual-editing@1.7.0(@sanity/client@6.15.3):
     resolution: {integrity: sha512-jQm5hKZs9+Bu/8nXDSMl3IQkyIJnu87Xjk4Ca/FHtnfJ2D3JY3TJgcHnUlaBJPKi45lwmqq1VcstcACvtLT5lw==}
     engines: {node: '>=18'}
     peerDependencies:
@@ -6353,8 +6353,8 @@ packages:
       svelte:
         optional: true
     dependencies:
-      '@sanity/client': 6.15.1
-      '@sanity/preview-url-secret': 1.6.4(@sanity/client@6.15.1)
+      '@sanity/client': 6.15.3
+      '@sanity/preview-url-secret': 1.6.4(@sanity/client@6.15.3)
       '@vercel/stega': 0.1.0
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
