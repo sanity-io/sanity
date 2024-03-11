@@ -170,8 +170,8 @@ import {type FieldDefinitionBase, type IntrinsicTypeName} from './definition'
  * @beta
  */
 export function defineType<
-  TType extends string | IntrinsicTypeName, // IntrinsicTypeName here improves autocompletion in _some_ IDEs (not VS Code atm)
-  TName extends string,
+  const TType extends string | IntrinsicTypeName, // IntrinsicTypeName here improves autocompletion in _some_ IDEs (not VS Code atm)
+  const TName extends string,
   TSelect extends Record<string, string> | undefined,
   TPrepareValue extends Record<keyof TSelect, any> | undefined,
   TAlias extends IntrinsicTypeName | undefined,
@@ -211,8 +211,8 @@ export function defineType<
  * @beta
  */
 export function defineField<
-  TType extends string | IntrinsicTypeName, // IntrinsicTypeName here improves autocompletion in _some_ IDEs (not VS Code atm)
-  TName extends string,
+  const TType extends string | IntrinsicTypeName, // IntrinsicTypeName here improves autocompletion in _some_ IDEs (not VS Code atm)
+  const TName extends string,
   TSelect extends Record<string, string> | undefined,
   TPrepareValue extends Record<keyof TSelect, any> | undefined,
   TAlias extends IntrinsicTypeName | undefined,
@@ -229,7 +229,8 @@ export function defineField<
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   defineOptions?: DefineSchemaOptions<TStrict, TAlias>,
 ): typeof schemaField & WidenValidation & WidenInitialValue {
-  return schemaField
+  // TODO: re-evaluate the need for this cast
+  return schemaField as typeof schemaField & WidenValidation & WidenInitialValue
 }
 
 /**
@@ -253,8 +254,8 @@ export function defineField<
  * @beta
  */
 export function defineArrayMember<
-  TType extends string | IntrinsicTypeName, // IntrinsicTypeName here improves autocompletion in _some_ IDEs (not VS Code atm)
-  TName extends string,
+  const TType extends string | IntrinsicTypeName, // IntrinsicTypeName here improves autocompletion in _some_ IDEs (not VS Code atm)
+  const TName extends string,
   TSelect extends Record<string, string> | undefined,
   TPrepareValue extends Record<keyof TSelect, any> | undefined,
   TAlias extends IntrinsicTypeName | undefined,
@@ -276,7 +277,8 @@ export function defineArrayMember<
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   defineOptions?: DefineSchemaOptions<TStrict, TAlias>,
 ): typeof arrayOfSchema & WidenValidation & WidenInitialValue {
-  return arrayOfSchema
+  // TODO: re-evaluate the need for this cast
+  return arrayOfSchema as typeof arrayOfSchema & WidenValidation & WidenInitialValue
 }
 
 /**
