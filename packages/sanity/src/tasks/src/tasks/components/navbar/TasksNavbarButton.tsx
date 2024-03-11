@@ -56,10 +56,13 @@ export function TasksNavbarButton({closeSidebar}: {closeSidebar?: () => void}) {
   const {enabled} = useTasksEnabled()
   const mediaIndex = useMediaIndex()
 
-  if (!enabled || mediaIndex > 3) return null
-  return closeSidebar ? (
-    <TasksNavDrawerButton closeSidebar={closeSidebar} />
-  ) : (
-    <TasksNavbarButtonInner />
-  )
+  if (!enabled) return null
+
+  if (closeSidebar) {
+    return <TasksNavDrawerButton closeSidebar={closeSidebar} />
+  }
+
+  if (mediaIndex > 3) {
+    return <TasksNavbarButtonInner />
+  }
 }
