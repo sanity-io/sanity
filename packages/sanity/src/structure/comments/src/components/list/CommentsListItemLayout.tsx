@@ -137,6 +137,7 @@ const RootStack = styled(Stack)(({theme}) => {
 })
 
 interface CommentsListItemLayoutProps {
+  avatarSize?: AvatarSize
   canDelete?: boolean
   canEdit?: boolean
   comment: CommentDocument
@@ -157,13 +158,13 @@ interface CommentsListItemLayoutProps {
   onStatusChange?: (id: string, status: CommentStatus) => void
   readOnly?: boolean
   withAvatar?: boolean
-  avatarSize?: AvatarSize
 }
 
 const RELATIVE_TIME_OPTIONS: RelativeTimeOptions = {useTemporalPhrase: true}
 
 export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
   const {
+    avatarSize = 1,
     canDelete,
     canEdit,
     comment,
@@ -184,7 +185,6 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
     onStatusChange,
     readOnly,
     withAvatar = true,
-    avatarSize = 1,
   } = props
   const {_createdAt, authorId, message, _id, lastEditedAt} = comment
   const [user] = useUser(authorId)
