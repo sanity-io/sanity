@@ -2,7 +2,7 @@
 import {stat} from 'node:fs/promises'
 import path from 'node:path'
 
-import {describe, expect, test} from '@jest/globals'
+import {describe, expect, test} from 'vitest'
 
 import {decodeText, parse} from '../../it-utils'
 import {firstValueFrom} from '../../it-utils/firstValueFrom'
