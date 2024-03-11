@@ -208,7 +208,7 @@
     "@sanity/eventsource": "^5.0.0",
     "@sanity/export": "3.32.0",
     "@sanity/generate-help-url": "^3.0.0",
-    "@sanity/icons": "^2.8.0",
+    "@sanity/icons": "^2.11.0",
     "@sanity/image-url": "^1.0.2",
     "@sanity/import": "3.32.0",
     "@sanity/logos": "^2.1.4",
