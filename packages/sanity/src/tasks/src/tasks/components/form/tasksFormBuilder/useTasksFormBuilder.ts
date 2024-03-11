@@ -18,7 +18,7 @@ import {
   useValidationStatus,
 } from 'sanity'
 
-import {type TaskDocument} from '../../types'
+import {type TaskDocument} from '../../../types'
 
 type TasksFormBuilder =
   | (FormBuilderProps & {

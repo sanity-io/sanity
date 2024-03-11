@@ -10,7 +10,7 @@ import {
   type TitledListValue,
 } from 'sanity'
 
-import {Button, MenuButton, MenuItem} from '../../../../../ui-components'
+import {Button, MenuButton, MenuItem} from '../../../../../../ui-components'
 
 // TODO: support customizing icons and options.
 const OPTION_ICONS: Record<string, ReactNode> = {

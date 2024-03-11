@@ -16,18 +16,18 @@ import {
 } from 'sanity'
 import styled, {css} from 'styled-components'
 
-import {CommentsProvider} from '../../../../../structure/comments'
-import {MenuButton, MenuItem} from '../../../../../ui-components'
-import {useTasksNavigation} from '../../context'
-import {useRemoveTask} from '../../hooks/useRemoveTask'
-import {type TaskDocument} from '../../types'
-import {TasksActivityLog} from '../activity'
-import {AssigneeEditFormField} from './assignee'
-import {DateEditFormField} from './DateEditFormField'
-import {RemoveTaskDialog} from './RemoveTaskDialog'
-import {StatusSelector} from './StatusSelector'
-import {Title} from './TitleField'
-import {getMentionedUsers} from './utils'
+import {CommentsProvider} from '../../../../../../structure/comments'
+import {MenuButton, MenuItem} from '../../../../../../ui-components'
+import {useTasksNavigation} from '../../../context'
+import {useRemoveTask} from '../../../hooks/useRemoveTask'
+import {type TaskDocument} from '../../../types'
+import {TasksActivityLog} from '../../activity'
+import {AssigneeEditFormField} from '../fields/assignee'
+import {DateEditFormField} from '../fields/DateEditFormField'
+import {StatusSelector} from '../fields/StatusSelector'
+import {Title} from '../fields/TitleField'
+import {RemoveTaskDialog} from '../RemoveTaskDialog'
+import {getMentionedUsers} from '../utils'
 
 const FirstRow = styled(Flex)((props) => {
   const theme = getTheme_v2(props.theme)
@@ -54,6 +54,10 @@ function FormActionsMenu({id, value}: {id: string; value: TaskDocument}) {
         <MenuButton
           id="edit-task-menu"
           button={<ContextMenuButton />}
+          popover={{
+            placement: 'bottom',
+            fallbackPlacements: ['bottom-end', 'bottom-start'],
+          }}
           menu={
             <Menu>
               <MenuItem text="Duplicate task" icon={CopyIcon} onClick={duplicateTask} />
