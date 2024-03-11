@@ -11,6 +11,7 @@ import {
   type CommentInputProps,
   type CommentReactionOption,
   CommentsListItem,
+  type CommentsListItemProps,
   type CommentThreadItem,
   type CommentUpdatePayload,
   useComments,
@@ -24,12 +25,19 @@ import {TasksSubscribers} from './TasksSubscribers'
 
 const EMPTY_ARRAY: [] = []
 
-const MotionStack = styled(motion(Stack))``
-
 const VARIANTS: Variants = {
   hidden: {opacity: 0, x: 0},
   visible: {opacity: 1, x: 0},
 }
+
+const COMMENTS_LIST_ITEM_AVATAR_CONFIG: CommentsListItemProps['avatarConfig'] = {
+  parentCommentAvatar: false,
+  threadCommentsAvatar: true,
+  replyAvatar: true,
+  avatarSize: 0,
+}
+
+const MotionStack = styled(motion(Stack))``
 
 interface TasksActivityLogProps {
   onChange: (patch: FormPatch | PatchEvent | FormPatch[]) => void
@@ -198,34 +206,29 @@ export function TasksActivityLog(props: TasksActivityLogProps) {
                       if (item._type === 'activity') {
                         return <EditedAt key={item.timestamp} activity={item.payload} />
                       }
+
                       return (
                         <ActivityItem
                           key={item.payload.parentComment._id}
                           userId={item.payload.parentComment.authorId}
                         >
-                          <Stack key={item.payload.parentComment._id}>
-                            <CommentsListItem
-                              canReply
-                              currentUser={currentUser}
-                              isSelected={false}
-                              key={item.payload.parentComment._id}
-                              mentionOptions={mentionOptions}
-                              mode="default" // TODO: set dynamic mode?
-                              onCreateRetry={handleCommentCreateRetry}
-                              onDelete={handleCommentRemove}
-                              onEdit={handleCommentEdit}
-                              onReactionSelect={handleCommentReact}
-                              onReply={handleCommentReply}
-                              parentComment={item.payload.parentComment}
-                              replies={item.payload.replies}
-                              avatarConfig={{
-                                parentCommentAvatar: false,
-                                threadCommentsAvatar: true,
-                                replyAvatar: true,
-                                avatarSize: 0,
-                              }}
-                            />
-                          </Stack>
+                          <CommentsListItem
+                            avatarConfig={COMMENTS_LIST_ITEM_AVATAR_CONFIG}
+                            canReply
+                            currentUser={currentUser}
+                            innerPadding={1}
+                            isSelected={false}
+                            key={item.payload.parentComment._id}
+                            mentionOptions={mentionOptions}
+                            mode="default" // TODO: set dynamic mode?
+                            onCreateRetry={handleCommentCreateRetry}
+                            onDelete={handleCommentRemove}
+                            onEdit={handleCommentEdit}
+                            onReactionSelect={handleCommentReact}
+                            onReply={handleCommentReply}
+                            parentComment={item.payload.parentComment}
+                            replies={item.payload.replies}
+                          />
                         </ActivityItem>
                       )
                     })}

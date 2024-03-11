@@ -66,7 +66,7 @@ export function TasksSubscriberAvatars(props: {subscriberIds?: string[]}) {
               }}
               initial={{opacity: 0, translateX: '2px', scale: 0.9}}
             >
-              <TasksUserAvatar user={{id: subscriberId}} size={1} />
+              <TasksUserAvatar user={{id: subscriberId}} size={0} />
             </motion.div>
           ))}
       </AvatarStack>
