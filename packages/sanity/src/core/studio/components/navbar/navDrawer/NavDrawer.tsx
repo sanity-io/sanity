@@ -18,6 +18,7 @@ import {WorkspaceMenuButton} from '../workspace'
 import {AppearanceMenu} from './ApperanceMenu'
 import {LocaleMenu} from './LocaleMenu'
 import {ManageMenu} from './ManageMenu'
+import {TasksMenu} from './TasksMenu'
 
 const ANIMATION_TRANSITION: Transition = {
   bounce: 0,
@@ -172,6 +173,7 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
                 </Card>
 
                 <Flex direction="column">
+                  <TasksMenu closeSidebar={onClose} />
                   {setScheme && <AppearanceMenu setScheme={setScheme} />}
                   <LocaleMenu />
                   <ManageMenu />

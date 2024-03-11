@@ -1,4 +1,5 @@
 import {PanelRightIcon} from '@sanity/icons'
+import {useCallback} from 'react'
 
 import {Button} from '../../../../../ui-components'
 import {useTasksEnabled, useTasksNavigation} from '../../context'
@@ -13,19 +14,50 @@ const TasksNavbarButtonInner = () => {
   return (
     <Button
       text="Tasks"
-      mode={'bleed'}
+      mode="bleed"
       selected={isOpen}
       iconRight={PanelRightIcon}
       onClick={isOpen ? handleCloseTasks : handleOpenTasks}
     />
   )
 }
+
+const TasksNavDrawerButton = ({closeSidebar}: {closeSidebar: () => void}) => {
+  const {
+    handleOpenTasks,
+    state: {isOpen},
+  } = useTasksNavigation()
+
+  const handleOnClick = useCallback(() => {
+    if (closeSidebar) {
+      closeSidebar()
+    }
+    handleOpenTasks()
+  }, [closeSidebar, handleOpenTasks])
+
+  return (
+    <Button
+      text="Tasks sidebar"
+      mode="bleed"
+      selected={isOpen}
+      icon={PanelRightIcon}
+      size="large"
+      justify="flex-start"
+      onClick={handleOnClick}
+    />
+  )
+}
+
 /**
  * @internal
  */
-export function TasksNavbarButton() {
+export function TasksNavbarButton({closeSidebar}: {closeSidebar?: () => void}) {
   const {enabled} = useTasksEnabled()
 
   if (!enabled) return null
-  return <TasksNavbarButtonInner />
+  return closeSidebar ? (
+    <TasksNavDrawerButton closeSidebar={closeSidebar} />
+  ) : (
+    <TasksNavbarButtonInner />
+  )
 }
