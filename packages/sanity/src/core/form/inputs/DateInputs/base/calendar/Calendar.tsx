@@ -202,12 +202,7 @@ export const Calendar = forwardRef(function Calendar(
         <Flex>
           <Box flex={1}>
             <CalendarMonthSelect
-              moveFocusedDate={moveFocusedDate}
               onChange={handleFocusedMonthChange}
-              labels={{
-                goToPreviousMonth: labels.goToPreviousMonth,
-                goToNextMonth: labels.goToNextMonth,
-              }}
               monthNames={labels.monthNames}
               value={focusedDate?.getMonth()}
             />
@@ -333,34 +328,14 @@ function CalendarTimePresetButton(props: {
 }
 
 function CalendarMonthSelect(props: {
-  moveFocusedDate: (by: number) => void
   onChange: (e: FormEvent<HTMLSelectElement>) => void
   value?: number
   monthNames: MonthNames
-  labels: {
-    goToPreviousMonth: string
-    goToNextMonth: string
-  }
 }) {
-  const {moveFocusedDate, onChange, value, labels, monthNames} = props
-
-  const handlePrevMonthClick = useCallback(() => moveFocusedDate(-1), [moveFocusedDate])
-
-  const handleNextMonthClick = useCallback(() => moveFocusedDate(1), [moveFocusedDate])
+  const {onChange, value, monthNames} = props
 
   return (
     <Flex flex={1} gap={1}>
-      <Button
-        aria-label={labels.goToPreviousMonth}
-        onClick={handlePrevMonthClick}
-        mode="bleed"
-        icon={ChevronLeftIcon}
-        tooltipProps={{content: 'Previous month'}}
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore - Button with specific styling requirements
-        {...CALENDAR_ICON_BUTTON_PROPS}
-      />
-
       <Box flex={1}>
         <Select fontSize={1} radius={2} value={value} onChange={onChange} padding={2}>
           {monthNames.map((monthName, i) => (
@@ -371,16 +346,6 @@ function CalendarMonthSelect(props: {
           ))}
         </Select>
       </Box>
-      <Button
-        aria-label={labels.goToNextMonth}
-        mode="bleed"
-        icon={ChevronRightIcon}
-        onClick={handleNextMonthClick}
-        tooltipProps={{content: 'Next month'}}
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore - Button with specific styling requirements
-        {...CALENDAR_ICON_BUTTON_PROPS}
-      />
     </Flex>
   )
 }
