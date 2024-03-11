@@ -381,8 +381,8 @@ importers:
         specifier: ^8.13.6
         version: 8.15.14(react-dom@18.2.0)(react@18.2.0)(three@0.157.0)
       '@sanity/assist':
-        specifier: ^1.0.8
-        version: 1.2.16(react-dom@18.2.0)(react@18.2.0)(sanity@packages+sanity)(styled-components@6.1.8)
+        specifier: ^2.0.0
+        version: 2.0.2(react-dom@18.2.0)(react@18.2.0)(sanity@packages+sanity)(styled-components@6.1.8)
       '@sanity/block-tools':
         specifier: 3.32.0
         version: link:../../packages/@sanity/block-tools
@@ -5724,18 +5724,19 @@ packages:
     engines: {node: '>=10'}
     dev: false
 
-  /@sanity/assist@1.2.16(react-dom@18.2.0)(react@18.2.0)(sanity@packages+sanity)(styled-components@6.1.8):
-    resolution: {integrity: sha512-uGQKwK6B66uMFPP44Tt/TgXaXINZFrd5qmq9iIO7WskcAqrklfZfLXIN8SnYcU05xBUlU6tb+ulbVo3QprGvoQ==}
+  /@sanity/assist@2.0.2(react-dom@18.2.0)(react@18.2.0)(sanity@packages+sanity)(styled-components@6.1.8):
+    resolution: {integrity: sha512-Xgwfk8IWJAJucgexCf9pZnWcAHzAj9cRg64RKkugKTrGvLunpWPTBdyGDPjylXtp5YH9wmb4VIzNHDerHISonA==}
     engines: {node: '>=14'}
     peerDependencies:
       react: ^18
-      sanity: ^3.16
+      sanity: ^3.26
       styled-components: ^5.2 || ^6.0.0
     dependencies:
       '@sanity/icons': 2.11.2(react@18.2.0)
       '@sanity/incompatible-plugin': 1.0.4(react-dom@18.2.0)(react@18.2.0)
       '@sanity/ui': 2.0.7(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8)
       date-fns: 2.30.0
+      lodash.get: 4.4.2
       react: 18.2.0
       react-fast-compare: 3.2.2
       react-is: 18.2.0
