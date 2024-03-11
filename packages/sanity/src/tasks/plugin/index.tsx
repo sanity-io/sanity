@@ -18,8 +18,8 @@ export const tasks = definePlugin({
     footerAction: <TasksFooterOpenTasks />,
   },
   document: {
-    actions: (prev = []) => {
-      return [TaskCreateAction, ...prev]
+    actions: (prev) => {
+      return [...prev, TaskCreateAction].filter(Boolean)
     },
   },
   studio: {
