@@ -1,6 +1,6 @@
-import {CheckmarkCircleIcon, CheckmarkIcon, CircleIcon} from '@sanity/icons'
+import {CheckmarkIcon, CircleIcon} from '@sanity/icons'
 import {Menu} from '@sanity/ui'
-import {type ForwardedRef, forwardRef, type ReactNode} from 'react'
+import {type ForwardedRef, forwardRef} from 'react'
 import {
   type FormPatch,
   isString,
@@ -11,12 +11,7 @@ import {
 } from 'sanity'
 
 import {Button, MenuButton, MenuItem} from '../../../../../../ui-components'
-
-// TODO: support customizing icons and options.
-const OPTION_ICONS: Record<string, ReactNode> = {
-  closed: <CheckmarkCircleIcon />,
-  open: <CircleIcon />,
-}
+import {TASK_STATUS} from '../../../constants/TaskStatus'
 
 export const StatusMenuButton = forwardRef(function StatusMenuButton(
   props: {value: string | undefined; options: TitledListValue<string>[]},
@@ -24,12 +19,13 @@ export const StatusMenuButton = forwardRef(function StatusMenuButton(
 ) {
   const {value, options} = props
   const selectedOption = options.find((option) => option.value === value)
+  const icon = TASK_STATUS.find((status) => status.value === value)?.icon
   return (
     <Button
       {...props}
       ref={ref}
       tooltipProps={null}
-      icon={value && OPTION_ICONS[value]}
+      icon={icon}
       text={selectedOption?.title || value}
       tone="default"
       mode="ghost"
@@ -54,12 +50,11 @@ export function StatusSelector(props: StatusSelectorProps) {
         <Menu>
           {options.map((option) => {
             const isSelected = value === option.value
+            const icon = TASK_STATUS.find((status) => status.value === option.value)?.icon
             return (
               <MenuItem
                 key={option.title}
-                icon={
-                  isString(option.value) ? OPTION_ICONS[option.value] || CircleIcon : CircleIcon
-                }
+                icon={isString(option.value) ? icon || CircleIcon : CircleIcon}
                 text={option.title || option.value}
                 pressed={isSelected}
                 iconRight={isSelected && <CheckmarkIcon />}

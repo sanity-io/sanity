@@ -1,12 +1,15 @@
 import {applyPatch} from 'mendoza'
-import {TaskDocument} from '../../../types'
-import {TransactionLogEventWithEffects} from 'sanity'
+import {type TransactionLogEventWithEffects} from 'sanity'
+
+import {type TaskDocument} from '../../../types'
+import {groupChanges} from './groupChanges'
 
 export interface FieldChange {
   field: keyof TaskDocument
   from: any
   to: any
   timestamp: string
+  author: string
 }
 
 function omitRev(document: TaskDocument) {
@@ -16,19 +19,16 @@ function omitRev(document: TaskDocument) {
 
 /**
  * Tracks changes to specified fields across document versions by applying patches in reverse.
- * @param newestDocument The latest state of the document.
- * @param transactions An array of transactions containing patches.
- * @param fieldsToTrack The fields to track for changes.
+ * @param newestDocument -  The latest state of the document.
+ * @param transactions - An array of transactions containing patches.
+ * @param fieldsToTrack - The fields to track for changes.
  * @returns An array of changes for the tracked fields.
  */
-export async function trackFieldChanges(
+export function trackFieldChanges(
   newestDocument: TaskDocument,
   transactions: TransactionLogEventWithEffects[],
   fieldsToTrack: (keyof Omit<TaskDocument, '_rev'>)[],
-): Promise<FieldChange[]> {
-  // Sort transactions by timestamp in descending order
-  // transactions.sort((a, b) => b.timestamp.localeCompare(a.timestamp));
-
+): FieldChange[] {
   let currentDocument: Omit<TaskDocument, '_rev'> = omitRev(newestDocument)
   const changes: FieldChange[] = []
   let previousDocument = currentDocument
@@ -44,14 +44,15 @@ export async function trackFieldChanges(
     previousDocument = applyPatch(currentDocument, effect.revert)
 
     // Track changes for specified fields
+    // eslint-disable-next-line no-loop-func
     fieldsToTrack.forEach((field) => {
-      // TODO: fix no-loop-func eslint error
       if (previousDocument?.[field] !== currentDocument?.[field]) {
         changes.push({
           field,
-          from: currentDocument?.[field],
-          to: previousDocument?.[field],
+          from: previousDocument?.[field],
+          to: currentDocument?.[field],
           timestamp,
+          author: transaction.author,
         })
       }
     })
@@ -60,22 +61,12 @@ export async function trackFieldChanges(
     currentDocument = previousDocument
   }
 
-  // Return changes sorted by timestamp in ascending order
-  return changes.sort((a, b) => a.timestamp.localeCompare(b.timestamp))
+  const changesSortedByTimestamp = changes.sort((a, b) => a.timestamp.localeCompare(b.timestamp))
+  // Find the moment the task was created by the user.
+  const createdByUserIndex = changesSortedByTimestamp.findIndex(
+    (change) => change.field === 'createdByUser',
+  )
+
+  // Return changes sorted by timestamp in ascending order from the moment the task was created.
+  return groupChanges(changesSortedByTimestamp.slice(createdByUserIndex + 1))
 }
-
-// Test to verify changes are correctly identified
-// describe('trackFieldChanges', () => {
-//   it('correctly identifies changes to tracked fields 2', async () => {
-//     // Example usage
-//     const newestDocument: Document = JSON.parse(original2)
-//     const transactions: Transaction[] = NdJson.parse(patches2)
-//     const fieldsToTrack: (keyof Document)[] = ['assignedTo', 'status', 'subscribers']
-
-//     const changes = await trackFieldChanges(newestDocument, [...transactions], fieldsToTrack)
-//     console.log(changes)
-//     const expectedChanges = []
-
-//     expect(changes).toEqual(expectedChanges)
-//   })
-// })
