@@ -1,27 +1,18 @@
 import {Box, Flex, Switch, Text, useToast} from '@sanity/ui'
 import {useCallback, useState} from 'react'
-import {isPortableTextTextBlock, type ObjectInputProps, set} from 'sanity'
+import {type ObjectInputProps, set} from 'sanity'
 
-import {Button} from '../../../../../ui-components'
-import {useTasksNavigation} from '../../context'
-import {useRemoveTask} from '../../hooks/useRemoveTask'
-import {type TaskDocument} from '../../types'
+import {Button} from '../../../../../../ui-components'
+import {useTasksNavigation} from '../../../context'
+import {useRemoveTask} from '../../../hooks/useRemoveTask'
+import {type TaskDocument} from '../../../types'
+import {getMentionedUsers} from '../utils'
 
 const getTaskSubscribers = (task: TaskDocument): string[] => {
   const subscribers = task.subscribers || []
-  // find in the description if we have any mentioned user, and add him to the subscribers list.
-  task.description?.forEach((block) => {
-    if (isPortableTextTextBlock(block)) {
-      block.children.forEach((child) => {
-        if (
-          child._type === 'mention' &&
-          typeof child.userId === 'string' &&
-          !subscribers.includes(child.userId)
-        ) {
-          subscribers.push(child.userId)
-        }
-      })
-    }
+
+  getMentionedUsers(task.description).forEach((user) => {
+    if (!subscribers.includes(user)) subscribers.push(user)
   })
 
   // Check if the task has been assigned, add the assignee to the subscribers list.

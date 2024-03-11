@@ -16,9 +16,9 @@ import {type ChangeEvent, type KeyboardEvent, useCallback, useMemo, useRef, useS
 import {LoadingBlock, type UserWithPermission} from 'sanity'
 import styled from 'styled-components'
 
-import {MenuButton} from '../../../../../../ui-components'
-import {useMentionUser} from '../../../context'
-import {TasksUserAvatar} from '../../TasksUserAvatar'
+import {MenuButton} from '../../../../../../../ui-components'
+import {useMentionUser} from '../../../../context'
+import {TasksUserAvatar} from '../../../TasksUserAvatar'
 
 type SelectItemHandler = (id: string) => void
 

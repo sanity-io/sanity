@@ -14,10 +14,10 @@ import {
 } from 'sanity'
 
 // TODO: Is there a better way than importing from core like this?
-import {type CalendarLabels} from '../../../../../core/form/inputs/DateInputs/base/calendar/types'
-import {DatePicker} from '../../../../../core/form/inputs/DateInputs/base/DatePicker'
-import {getCalendarLabels} from '../../../../../core/form/inputs/DateInputs/utils'
-import {Button, Popover} from '../../../../../ui-components'
+import {type CalendarLabels} from '../../../../../../core/form/inputs/DateInputs/base/calendar/types'
+import {DatePicker} from '../../../../../../core/form/inputs/DateInputs/base/DatePicker'
+import {getCalendarLabels} from '../../../../../../core/form/inputs/DateInputs/utils'
+import {Button, Popover} from '../../../../../../ui-components'
 
 const serialize = (date: Date) => format(date, DEFAULT_DATE_FORMAT)
 const deserialize = (value: string) => parse(value, DEFAULT_DATE_FORMAT)

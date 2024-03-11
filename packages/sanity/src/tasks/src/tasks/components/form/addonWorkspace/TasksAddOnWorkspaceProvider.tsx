@@ -12,7 +12,7 @@ import {
   WorkspaceProvider,
 } from 'sanity'
 
-import {type FormMode} from '../../types'
+import {type FormMode} from '../../../types'
 import {taskSchema} from './taskSchema'
 
 function TasksAddonWorkspaceProviderInner({

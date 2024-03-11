@@ -5,10 +5,7 @@ import {useCurrentUser} from 'sanity'
 import styled from 'styled-components'
 
 import {useTasks, useTasksEnabled, useTasksNavigation} from '../../context'
-import {TaskCreate} from '../create'
-import {TaskDraft} from '../draft'
-import {TaskDuplicate} from '../duplicate'
-import {TaskEdit} from '../edit'
+import {TasksFormBuilder} from '../form'
 import {TaskSidebarContent} from './TasksSidebarContent'
 import {TasksSidebarHeader} from './TasksSidebarHeader'
 
@@ -38,7 +35,7 @@ const TRANSITION: Transition = {duration: 0.2}
 export function TasksStudioSidebarInner() {
   const {activeDocument, data, isLoading} = useTasks()
   const {state, setActiveTab, setViewMode} = useTasksNavigation()
-  const {activeTabId, viewMode, selectedTask, isOpen} = state
+  const {activeTabId, viewMode, isOpen, selectedTask} = state
   const currentUser = useCurrentUser()
 
   const onTaskSelect = useCallback((id: string) => setViewMode({type: 'edit', id}), [setViewMode])
@@ -67,7 +64,7 @@ export function TasksStudioSidebarInner() {
           <SidebarRoot borderLeft height="fill" marginLeft={1}>
             <TasksSidebarHeader items={filteredList} />
             <SidebarContent>
-              {viewMode === 'list' && (
+              {viewMode === 'list' ? (
                 <>
                   {isLoading ? (
                     <Box padding={3}>
@@ -84,13 +81,9 @@ export function TasksStudioSidebarInner() {
                     />
                   )}
                 </>
+              ) : (
+                <TasksFormBuilder key={selectedTask} />
               )}
-              {viewMode === 'duplicate' && selectedTask && (
-                <TaskDuplicate selectedTask={selectedTask} />
-              )}
-              {viewMode === 'create' && selectedTask && <TaskCreate selectedTask={selectedTask} />}
-              {viewMode === 'edit' && selectedTask && <TaskEdit selectedTask={selectedTask} />}
-              {viewMode === 'draft' && selectedTask && <TaskDraft selectedTask={selectedTask} />}
             </SidebarContent>
           </SidebarRoot>
         </motion.div>

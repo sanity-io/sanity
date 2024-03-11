@@ -11,8 +11,8 @@ import {useCallback, useMemo} from 'react'
 import {type FormPatch, type PatchEvent, type Path, set, useFormValue} from 'sanity'
 import styled from 'styled-components'
 
-import {useMentionUser} from '../../../context'
-import {TasksUserAvatar} from '../../TasksUserAvatar'
+import {useMentionUser} from '../../../../context'
+import {TasksUserAvatar} from '../../../TasksUserAvatar'
 import {AssigneeSelectionMenu} from './AssigneeSelectionMenu'
 
 const StyledButton = styled(Button)`
