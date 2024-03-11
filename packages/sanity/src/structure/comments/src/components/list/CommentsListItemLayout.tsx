@@ -64,6 +64,14 @@ const TimeText = styled(Text)(({theme}) => {
   `
 })
 
+const HeaderFlex = styled(Flex)<{$size: AvatarSize}>((props) => {
+  const theme = getTheme_v2(props.theme)
+
+  return css`
+    min-height: ${theme.avatar.sizes[props.$size]?.size}px;
+  `
+})
+
 const IntentText = styled(Text)(({theme}) => {
   const isDark = theme.sanity.color.dark
   const fg = hues.gray[isDark ? 200 : 800].hex
@@ -343,7 +351,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
       space={4}
     >
       <InnerStack space={1} data-muted={displayError}>
-        <Flex align="center" gap={FLEX_GAP} flex={1}>
+        <HeaderFlex align="center" gap={FLEX_GAP} flex={1} $size={avatarSize}>
           {withAvatar && <CommentsAvatar user={user} size={avatarSize} />}
 
           <Flex direction="column" gap={2} paddingY={intent ? 2 : 0}>
@@ -416,7 +424,7 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
               />
             </ContextMenuBox>
           )}
-        </Flex>
+        </HeaderFlex>
 
         {isTextSelectionComment(comment) && Boolean(comment?.contentSnapshot) && (
           <Flex gap={FLEX_GAP} marginBottom={3}>

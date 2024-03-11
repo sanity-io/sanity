@@ -3,8 +3,6 @@ import {type AvatarSize} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
 import styled, {css} from 'styled-components'
 
-export const AVATAR_HEIGHT = 25
-
 /**
  * This component is used to as a spacer in situations where we want to align
  * components without avatars with components that have avatars.
