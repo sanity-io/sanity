@@ -1,6 +1,6 @@
 import {ChevronDownIcon} from '@sanity/icons'
 import {type CurrentUser} from '@sanity/types'
-import {Flex, Stack, useLayer} from '@sanity/ui'
+import {type AvatarSize, Flex, Stack, useLayer} from '@sanity/ui'
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {type UserListWithPermissionsHookValue, useTranslation} from 'sanity'
 import styled, {css} from 'styled-components'
@@ -27,6 +27,13 @@ import {ThreadCard} from './styles'
 const EMPTY_ARRAY: [] = []
 
 const MAX_COLLAPSED_REPLIES = 5
+
+const DEFAULT_AVATAR_CONFIG: CommentsListItemProps['avatarConfig'] = {
+  avatarSize: 1,
+  parentCommentAvatar: true,
+  replyAvatar: true,
+  threadCommentsAvatar: true,
+}
 
 // data-active = when the comment is selected
 // data-hovered = when the mouse is over the comment
@@ -75,6 +82,12 @@ const GhostButton = styled.button`
 `
 
 interface CommentsListItemProps {
+  avatarConfig?: {
+    avatarSize: AvatarSize
+    parentCommentAvatar: boolean
+    replyAvatar: boolean
+    threadCommentsAvatar: boolean
+  }
   canReply?: boolean
   currentUser: CurrentUser
   hasReferencedValue?: boolean
@@ -97,6 +110,7 @@ interface CommentsListItemProps {
 
 export const CommentsListItem = React.memo(function CommentsListItem(props: CommentsListItemProps) {
   const {
+    avatarConfig = DEFAULT_AVATAR_CONFIG,
     canReply,
     currentUser,
     hasReferencedValue,
@@ -242,12 +256,14 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
       splicedReplies.map((reply) => (
         <Stack as="li" key={reply._id} {...applyCommentIdAttr(reply._id)}>
           <CommentsListItemLayout
+            avatarSize={avatarConfig.avatarSize}
             canDelete={reply.authorId === currentUser.id}
             canEdit={reply.authorId === currentUser.id}
             comment={reply}
             currentUser={currentUser}
             hasError={reply._state?.type === 'createError'}
             isRetrying={reply._state?.type === 'createRetrying'}
+            intent={commentIntentIfDiffers(parentComment, reply)}
             mentionOptions={mentionOptions}
             mode={mode}
             onCopyLink={onCopyLink}
@@ -257,11 +273,13 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
             onInputKeyDown={handleInputKeyDown}
             onReactionSelect={onReactionSelect}
             readOnly={readOnly}
-            intent={commentIntentIfDiffers(parentComment, reply)}
+            withAvatar={avatarConfig.threadCommentsAvatar}
           />
         </Stack>
       )),
     [
+      avatarConfig.threadCommentsAvatar,
+      avatarConfig.avatarSize,
       currentUser,
       handleInputKeyDown,
       mentionOptions,
@@ -300,6 +318,7 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
       >
         <Stack as="li" {...applyCommentIdAttr(parentComment._id)}>
           <CommentsListItemLayout
+            avatarSize={avatarConfig.avatarSize}
             canDelete={parentComment.authorId === currentUser.id}
             canEdit={parentComment.authorId === currentUser.id}
             comment={parentComment}
@@ -319,6 +338,7 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
             onReactionSelect={onReactionSelect}
             onStatusChange={onStatusChange}
             readOnly={readOnly}
+            withAvatar={avatarConfig.parentCommentAvatar}
           />
         </Stack>
 
@@ -339,6 +359,7 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
 
         {canReply && (
           <CommentInput
+            avatarSize={avatarConfig.avatarSize}
             currentUser={currentUser}
             expandOnFocus
             mentionOptions={mentionOptions}
@@ -355,6 +376,7 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
             readOnly={readOnly || mode === 'upsell'}
             ref={replyInputRef}
             value={value}
+            withAvatar={avatarConfig.replyAvatar}
           />
         )}
       </Stack>

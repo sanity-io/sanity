@@ -1,5 +1,5 @@
 import {type CurrentUser} from '@sanity/types'
-import {Box, Card, Flex, MenuDivider, Stack} from '@sanity/ui'
+import {type AvatarSize, Box, Card, Flex, MenuDivider, Stack} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
 import {useCallback} from 'react'
@@ -81,7 +81,17 @@ const RootCard = styled(Card)(({theme}) => {
   `
 })
 
+const AvatarContainer = styled.div((props) => {
+  const theme = getTheme_v2(props.theme)
+  return `
+    min-height: ${theme.avatar.sizes[1]?.size}px;
+    display: flex;
+    align-items: center;
+  `
+})
+
 interface CommentInputInnerProps {
+  avatarSize?: AvatarSize
   currentUser: CurrentUser
   focusLock?: boolean
   onBlur?: (e: React.FormEvent<HTMLDivElement>) => void
@@ -93,15 +103,28 @@ interface CommentInputInnerProps {
 }
 
 export function CommentInputInner(props: CommentInputInnerProps) {
-  const {currentUser, focusLock, onBlur, onFocus, onKeyDown, onSubmit, placeholder, withAvatar} =
-    props
+  const {
+    avatarSize = 1,
+    currentUser,
+    focusLock,
+    onBlur,
+    onFocus,
+    onKeyDown,
+    onSubmit,
+    placeholder,
+    withAvatar,
+  } = props
 
   const [user] = useUser(currentUser.id)
   const {canSubmit, expandOnFocus, focused, hasChanges, insertAtChar, openMentions, readOnly} =
     useCommentInput()
 
   const {t} = useTranslation(commentsLocaleNamespace)
-  const avatar = withAvatar ? <CommentsAvatar user={user} /> : null
+  const avatar = withAvatar ? (
+    <AvatarContainer>
+      <CommentsAvatar user={user} size={avatarSize} />
+    </AvatarContainer>
+  ) : null
 
   const handleMentionButtonClicked = useCallback(
     (e: React.MouseEvent<HTMLButtonElement>) => {

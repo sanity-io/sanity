@@ -1,15 +1,16 @@
-import type * as React from 'react'
-
-export const AVATAR_HEIGHT = 25
-
-const INLINE_STYLE: React.CSSProperties = {
-  minWidth: AVATAR_HEIGHT,
-}
+import {type AvatarSize} from '@sanity/ui'
+// eslint-disable-next-line camelcase
+import {getTheme_v2} from '@sanity/ui/theme'
+import styled, {css} from 'styled-components'
 
 /**
  * This component is used to as a spacer in situations where we want to align
  * components without avatars with components that have avatars.
  */
-export function SpacerAvatar() {
-  return <div style={INLINE_STYLE} />
-}
+export const SpacerAvatar = styled.div<{$size?: AvatarSize}>((props) => {
+  const theme = getTheme_v2(props.theme)
+  const {$size = 1} = props
+  return css`
+    min-width: ${theme.avatar.sizes[$size]?.size}px;
+  `
+})
