@@ -35,6 +35,7 @@
     "@sanity/logos": "^2.1.2",
     "@sanity/migrate": "workspace:*",
     "@sanity/portable-text-editor": "workspace:*",
+    "@sanity/presentation": "1.11.4",
     "@sanity/preview-url-secret": "^1.6.1",
     "@sanity/react-loader": "^1.8.3",
     "@sanity/tsdoc": "1.0.0-alpha.44",

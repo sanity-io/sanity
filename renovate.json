@@ -9,6 +9,12 @@
       "extends": [":semanticCommitTypeAll(chore)"]
     },
     {
+      "description": "Pin Presentation in Test Studio to the version that has the agressive focus path behavior that makes race conditions easier to debug",
+      "matchFileNames": ["dev/test-studio/package.json"],
+      "matchDepNames": ["@sanity/presentation"],
+      "allowedVersions": "<=1.11.4"
+    },
+    {
       "matchDepTypes": ["dependencies"],
       "matchPackageNames": ["get-it", "@sanity/client", "@sanity/presentation"],
       "rangeStrategy": "bump",
