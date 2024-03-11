@@ -1,6 +1,7 @@
 import {useMemo} from 'react'
+import {type DocumentBadgeDescription} from 'sanity'
 
-import {useTasks} from '../src'
+import {useTasks, useTasksEnabled} from '../src'
 
 /**
  * Badge that shows how many pending tasks are assigned to the current document.
@@ -8,8 +9,10 @@ import {useTasks} from '../src'
  * discovery of the pending tasks.
  * @internal
  */
-export function DocumentBadge() {
+export function TasksBadge(): DocumentBadgeDescription | null {
   const {data, activeDocument} = useTasks()
+  const {enabled} = useTasksEnabled()
+
   const pendingTasks = useMemo(
     () =>
       data.filter((item) => {
@@ -18,7 +21,9 @@ export function DocumentBadge() {
     [activeDocument, data],
   )
 
+  if (!enabled) return null
   if (pendingTasks.length === 0) return null
+
   return {
     label: ` ${pendingTasks.length} open tasks`,
     color: 'primary' as const,

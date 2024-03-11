@@ -1,7 +1,7 @@
 import {definePlugin, type ObjectInputProps} from 'sanity'
 
 import {TaskCreateAction} from './TaskCreateAction'
-import {DocumentBadge} from './TasksBadge'
+import {TasksBadge} from './TasksBadge'
 import {TasksDocumentInputLayout} from './TasksDocumentInputLayout'
 import {TasksStudioActiveToolLayout} from './TasksStudioActiveToolLayout'
 import {TasksStudioLayout} from './TasksStudioLayout'
@@ -15,10 +15,10 @@ export const tasks = definePlugin({
   name: 'sanity/tasks',
   document: {
     badges: (prev) => {
-      return (prev || []).concat(DocumentBadge)
+      return [...prev, TasksBadge].filter(Boolean)
     },
-    actions: (prev = []) => {
-      return [TaskCreateAction, ...prev]
+    actions: (prev) => {
+      return [...prev, TaskCreateAction].filter(Boolean)
     },
   },
   studio: {
