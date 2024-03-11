@@ -1,0 +1,11 @@
+.idea
+test
+examples
+tsconfig.*
+.editorconfig
+.eslintignore
+.eslintrc.cjs
+.prettierignore
+.prettierrc
+package.config.ts
+vitest.config.ts

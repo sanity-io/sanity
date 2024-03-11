@@ -1,0 +1,9 @@
+{
+  "semi": false,
+  "printWidth": 80,
+  "arrowParens": "avoid",
+  "bracketSpacing": false,
+  "plugins": ["prettier-plugin-packagejson"],
+  "singleQuote": true,
+  "trailingComma": "all"
+}

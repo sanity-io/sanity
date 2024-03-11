@@ -1,0 +1,12 @@
+{
+  "extends": "../tsconfig.json",
+  "include": ["../src/**/*.ts", "./**/*.ts"],
+  "compilerOptions": {
+    "rootDir": "../",
+    "noEmit": true,
+    "paths": {
+      "@sanity/mutate": ["../src"],
+      "@sanity/mutate/_unstable_apply": ["../src/apply"]
+    }
+  }
+}
