@@ -90,12 +90,27 @@ describe('resolveInitialValue', () => {
     expect(
       resolveInitialValue(
         schema,
-        {...example, value: {bestFriend: {_ref: 'grrm', _type: 'reference', _weak: true}}},
+        {
+          ...example,
+          value: {
+            bestFriend: {
+              _ref: 'grrm',
+              _type: 'reference',
+              _weak: true,
+              _strengthenOnPublish: {type: 'author', template: {id: 'author'}},
+            },
+          },
+        },
         {},
         mockConfigContext,
       ),
     ).resolves.toMatchObject({
-      bestFriend: {_ref: 'grrm', _type: 'reference', _weak: true},
+      bestFriend: {
+        _ref: 'grrm',
+        _type: 'reference',
+        _weak: true,
+        _strengthenOnPublish: {type: 'author', template: {id: 'author'}},
+      },
     })
   })
 
@@ -105,13 +120,25 @@ describe('resolveInitialValue', () => {
         schema,
         {
           ...example,
-          value: {bestFriend: {_ref: 'grrm', _type: 'crossDatasetReference', _dataset: 'bffs'}},
+          value: {
+            bestFriend: {
+              _ref: 'grrm',
+              _type: 'crossDatasetReference',
+              _dataset: 'bffs',
+              _projectId: 'beep',
+            },
+          },
         },
         {},
         mockConfigContext,
       ),
     ).resolves.toMatchObject({
-      bestFriend: {_ref: 'grrm', _type: 'crossDatasetReference', _dataset: 'bffs'},
+      bestFriend: {
+        _ref: 'grrm',
+        _type: 'crossDatasetReference',
+        _dataset: 'bffs',
+        _projectId: 'beep',
+      },
     })
   })
 

@@ -5,7 +5,15 @@ import {toString as pathToString} from '@sanity/util/paths'
 import {type Template, type TemplateParameter} from './types'
 import {isRecord} from './util/isRecord'
 
-const ALLOWED_REF_PROPS = ['_dataset', '_key', '_ref', '_type', '_weak']
+const ALLOWED_REF_PROPS = [
+  '_dataset',
+  '_projectId',
+  '_strengthenOnPublish',
+  '_key',
+  '_ref',
+  '_type',
+  '_weak',
+]
 const REQUIRED_TEMPLATE_PROPS: (keyof Template)[] = ['id', 'title', 'schemaType', 'value']
 
 function templateId(template: Template, i: number) {

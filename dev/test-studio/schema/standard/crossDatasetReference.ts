@@ -188,6 +188,42 @@ export default defineType({
       name: 'crossDatasetSubtype',
       type: 'crossDatasetSubtype',
     },
+    {
+      name: 'initialValueTest',
+      type: 'crossDatasetReference',
+      dataset: 'playground',
+      studioUrl: ({id, type}) => {
+        return type
+          ? `${document.location.protocol}//${document.location.host}/playground/content/${type};${id}`
+          : null
+      },
+      to: [
+        {
+          type: 'book',
+          icon: BookIcon,
+          preview: {
+            select: {
+              title: 'title',
+              subtitle: 'descriptionMd',
+              media: 'coverImage',
+            },
+            prepare(val) {
+              return {
+                title: val.title,
+                subtitle: val.subtitle,
+                media: val.coverImage,
+              }
+            },
+          },
+        },
+      ],
+      initialValue: () => ({
+        _type: 'crossDatasetReference',
+        _ref: '4203c6bd-98c2-418e-9558-3ed56ebaf1d8',
+        _dataset: 'playground',
+        _projectId: 'ppsg7ml5',
+      }),
+    },
   ],
   preview: {
     select: {
