@@ -200,7 +200,7 @@ describe('using secondary stream', () => {
     await expect(() =>
       lastValueFrom(parse(decodeText(streamToAsyncIterator(createReader())))),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"Cannot create new buffered readers on aborted stream"`,
+      `[Error: Cannot create new buffered readers on aborted stream]`,
     )
   })
 })
