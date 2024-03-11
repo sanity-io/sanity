@@ -1,4 +1,4 @@
-import {expect, test} from '@jest/globals'
+import {expect, test} from 'vitest'
 
 import {at, create, createIfNotExists, createOrReplace, del, patch} from '../creators'
 import {inc, insert, set, setIfMissing, unset} from '../operations/creators'

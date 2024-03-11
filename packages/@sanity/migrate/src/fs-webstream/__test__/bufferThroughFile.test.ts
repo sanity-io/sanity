@@ -2,7 +2,7 @@
 import {stat} from 'node:fs/promises'
 import path from 'node:path'
 
-import {describe, expect, test} from '@jest/globals'
+import {describe, expect, test} from 'vitest'
 
 import {decodeText, parse} from '../../it-utils'
 import {firstValueFrom} from '../../it-utils/firstValueFrom'
@@ -200,7 +200,7 @@ describe('using secondary stream', () => {
     await expect(() =>
       lastValueFrom(parse(decodeText(streamToAsyncIterator(createReader())))),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"Cannot create new buffered readers on aborted stream"`,
+      `[Error: Cannot create new buffered readers on aborted stream]`,
     )
   })
 })

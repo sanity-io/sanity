@@ -76,7 +76,9 @@
     "release:rc": "pnpm build && lerna publish --force-publish --dist-tag=dev-preview --preid=rc --exact",
     "release:tag": "RELEASE_TAG=\"${RELEASE_TAG:-canary}\"; pnpm build && lerna publish --canary --force-publish --no-git-tag-version --dist-tag=$RELEASE_TAG --preid=$RELEASE_TAG --exact",
     "start": "run-s dev",
-    "test": "jest --forceExit",
+    "test": "run-p test:jest test:vitest",
+    "test:jest": "jest --forceExit",
+    "test:vitest": "vitest --run",
     "test:e2e": "playwright test",
     "tsdoc:dev": "sanity-tsdoc dev",
     "updated": "lerna updated",
@@ -150,6 +152,7 @@
     "semver": "^7.3.5",
     "turbo": "^1.12.4",
     "typescript": "^5.2.2",
+    "vitest": "^1.3.1",
     "yargs": "^17.3.0"
   },
   "optionalDependencies": {
