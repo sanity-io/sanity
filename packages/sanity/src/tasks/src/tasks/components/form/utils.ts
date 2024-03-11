@@ -26,6 +26,9 @@ export function getTargetValue({
   }
 }
 
+/**
+ * Finds in the description if there are any mentioned user.
+ */
 export function getMentionedUsers(description?: TaskDocument['description']): string[] {
   if (!description) return []
   const subscribers: string[] = []

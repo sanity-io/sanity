@@ -5,8 +5,8 @@ import {useCallback, useMemo} from 'react'
 import {set, type StringInputProps} from 'sanity'
 import styled, {css} from 'styled-components'
 
-import {useMentionUser} from '../../../context'
-import {TasksUserAvatar} from '../../TasksUserAvatar'
+import {useMentionUser} from '../../../../context'
+import {TasksUserAvatar} from '../../../TasksUserAvatar'
 import {AssigneeSelectionMenu} from './AssigneeSelectionMenu'
 
 const FocusableCard = styled(Card)((props) => {
