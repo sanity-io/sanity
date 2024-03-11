@@ -1,4 +1,4 @@
-import {defineConfig} from '@playwright/test'
+import {defineConfig, type PlaywrightTestConfig} from '@playwright/test'
 import {createPlaywrightConfig} from '@sanity/test'
 
 import {loadEnvFiles} from './scripts/utils/loadEnvFiles'
@@ -8,12 +8,24 @@ loadEnvFiles()
 
 const CI = readBoolEnv('CI', false)
 
+/**
+ * Excludes the GitHub reporter until https://github.com/microsoft/playwright/issues/19817 is resolved, since it creates a lot of noise in our PRs.
+ * @param reporters - The reporters config to exclude the github reporter from
+ */
+function excludeGithub(reporters: PlaywrightTestConfig['reporter']) {
+  if (Array.isArray(reporters)) {
+    return reporters.filter((reporterDescription) => reporterDescription[0] !== 'github')
+  }
+  return reporters === 'github' ? undefined : reporters
+}
+
 const playwrightConfig = createPlaywrightConfig({
   projectId: readEnv('SANITY_E2E_PROJECT_ID'),
   token: readEnv('SANITY_E2E_SESSION_TOKEN'),
   playwrightOptions(config) {
     return {
       ...config,
+      reporter: excludeGithub(config.reporter),
       use: {
         ...config.use,
         baseURL: 'http://localhost:3339',
