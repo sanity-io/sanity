@@ -1,4 +1,5 @@
 import {PanelRightIcon} from '@sanity/icons'
+import {useMediaIndex} from '@sanity/ui'
 import {useCallback} from 'react'
 
 import {Button} from '../../../../../ui-components'
@@ -53,8 +54,9 @@ const TasksNavDrawerButton = ({closeSidebar}: {closeSidebar: () => void}) => {
  */
 export function TasksNavbarButton({closeSidebar}: {closeSidebar?: () => void}) {
   const {enabled} = useTasksEnabled()
+  const mediaIndex = useMediaIndex()
 
-  if (!enabled) return null
+  if (!enabled || mediaIndex > 3) return null
   return closeSidebar ? (
     <TasksNavDrawerButton closeSidebar={closeSidebar} />
   ) : (
