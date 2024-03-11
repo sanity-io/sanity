@@ -453,8 +453,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/@sanity/vision
       '@sanity/visual-editing':
-        specifier: 1.6.0
-        version: 1.6.0(@sanity/client@6.15.1)
+        specifier: 1.7.0
+        version: 1.7.0(@sanity/client@6.15.1)
       '@turf/helpers':
         specifier: ^6.0.1
         version: 6.5.0
@@ -6332,12 +6332,12 @@ packages:
       '@types/uuid': 8.3.4
       uuid: 8.3.2
 
-  /@sanity/visual-editing@1.6.0(@sanity/client@6.15.1):
-    resolution: {integrity: sha512-6WGrbmwfcyVOuuz5VP2gYCtRNaL458R98G+Hd+1FjXVwZ7b/hPwU97/JQ2Qc0lmjCplPMZzHERGcPXBWyrl9SQ==}
+  /@sanity/visual-editing@1.7.0(@sanity/client@6.15.1):
+    resolution: {integrity: sha512-jQm5hKZs9+Bu/8nXDSMl3IQkyIJnu87Xjk4Ca/FHtnfJ2D3JY3TJgcHnUlaBJPKi45lwmqq1VcstcACvtLT5lw==}
     engines: {node: '>=18'}
     peerDependencies:
       '@remix-run/react': '>= 2'
-      '@sanity/client': ^6.15.1
+      '@sanity/client': ^6.15.2
       '@sveltejs/kit': '>= 2'
       next: '>= 13'
       svelte: '>= 4'
@@ -6360,7 +6360,7 @@ packages:
       react-dom: 18.2.0(react@18.2.0)
       react-is: 18.2.0
       scroll-into-view-if-needed: 3.1.0
-      valibot: 0.29.0
+      valibot: 0.30.0
     dev: false
 
   /@sideway/address@4.1.4:
@@ -18147,8 +18147,8 @@ packages:
     resolution: {integrity: sha512-LdabyT4OffkyXFCe9UT+uMkxNBs5rcTVuZClvxQr08D5TUgo1OFKkoT65qYRCsiKBl/usHjpXvP4hHMzzDRj3A==}
     dev: false
 
-  /valibot@0.29.0:
-    resolution: {integrity: sha512-JhZn08lwZPhAamOCfBwBkv/btQt4KeQhekULPH8crH053zUCLSOGEF2zKExu3bFf245tsj6J1dY0ysd/jUiMIQ==}
+  /valibot@0.30.0:
+    resolution: {integrity: sha512-5POBdbSkM+3nvJ6ZlyQHsggisfRtyT4tVTo1EIIShs6qCdXJnyWU5TJ68vr8iTg5zpOLjXLRiBqNx+9zwZz/rA==}
     dev: false
 
   /validate-npm-package-license@3.0.4:
