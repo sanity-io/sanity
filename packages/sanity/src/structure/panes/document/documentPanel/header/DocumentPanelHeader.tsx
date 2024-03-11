@@ -1,7 +1,7 @@
 import {ArrowLeftIcon, CloseIcon, SplitVerticalIcon} from '@sanity/icons'
 import {Flex} from '@sanity/ui'
 import type * as React from 'react'
-import {createElement, forwardRef, memo, useMemo} from 'react'
+import {createElement, forwardRef, memo, useMemo, useState} from 'react'
 import {useFieldActions, useTimelineSelector, useTranslation} from 'sanity'
 
 import {Button, TooltipDelayGroupProvider} from '../../../../../ui-components'
@@ -9,6 +9,7 @@ import {
   PaneContextMenuButton,
   PaneHeader,
   PaneHeaderActionButton,
+  RenderActionCollectionState,
   usePane,
   usePaneRouter,
 } from '../../../../components'
@@ -16,6 +17,7 @@ import {structureLocaleNamespace} from '../../../../i18n'
 import {isMenuNodeButton, isNotMenuNodeButton, resolveMenuNodes} from '../../../../menuNodes'
 import {type PaneMenuItem} from '../../../../types'
 import {useStructureTool} from '../../../../useStructureTool'
+import {ActionDialogWrapper, ActionMenuListItem} from '../../statusBar/ActionMenuButton'
 import {TimelineMenu} from '../../timeline'
 import {useDocumentPane} from '../../useDocumentPane'
 import {DocumentHeaderTabs} from './DocumentHeaderTabs'
@@ -33,6 +35,8 @@ export const DocumentPanelHeader = memo(
   ) {
     const {menuItems} = _props
     const {
+      actions,
+      editState,
       onMenuAction,
       onPaneClose,
       onPaneSplit,
@@ -46,6 +50,7 @@ export const DocumentPanelHeader = memo(
     const {features} = useStructureTool()
     const {index, BackLink, hasGroupSiblings} = usePaneRouter()
     const {actions: fieldActions} = useFieldActions()
+    const [referenceElement, setReferenceElement] = useState<HTMLElement | null>(null)
 
     const menuNodes = useMemo(
       () =>
@@ -129,8 +134,35 @@ export const DocumentPanelHeader = memo(
               {menuButtonNodes.map((item) => (
                 <PaneHeaderActionButton key={item.key} node={item} />
               ))}
-
-              <PaneContextMenuButton nodes={contextMenuNodes} key="context-menu" />
+              {editState && (
+                <RenderActionCollectionState
+                  actions={actions || []}
+                  actionProps={editState}
+                  group="paneActions"
+                >
+                  {({states}) => (
+                    <ActionDialogWrapper actionStates={states} referenceElement={referenceElement}>
+                      {({handleAction}) => (
+                        <div ref={setReferenceElement}>
+                          <PaneContextMenuButton
+                            nodes={contextMenuNodes}
+                            key="context-menu"
+                            actionsNodes={states?.map((actionState, actionIndex) => (
+                              <ActionMenuListItem
+                                key={actionState.label}
+                                actionState={actionState}
+                                disabled={Boolean(actionState.disabled)}
+                                index={actionIndex}
+                                onAction={handleAction}
+                              />
+                            ))}
+                          />
+                        </div>
+                      )}
+                    </ActionDialogWrapper>
+                  )}
+                </RenderActionCollectionState>
+              )}
 
               {showSplitPaneButton && (
                 <Button

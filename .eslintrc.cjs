@@ -73,7 +73,17 @@ const config = {
       {
         ignores: {
           componentPatterns: ['motion$'],
-          attributes: ['animate', 'closed', 'exit', 'fill', 'full', 'initial', 'size', 'sortOrder'],
+          attributes: [
+            'animate',
+            'closed',
+            'exit',
+            'fill',
+            'full',
+            'initial',
+            'size',
+            'sortOrder',
+            'group',
+          ],
         },
       },
     ],

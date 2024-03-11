@@ -87,8 +87,8 @@ export const DocumentStatusBarActions = memo(function DocumentStatusBarActions()
       // component={}
       // onActionComplete={handleActionComplete}
       actions={actions}
-      // @ts-expect-error TODO: fix the document actions
       actionProps={editState}
+      group="default"
     >
       {({states}) => (
         <DocumentStatusBarActionsInner
@@ -118,7 +118,11 @@ export const HistoryStatusBarActions = memo(function HistoryStatusBarActions() {
   const historyActions = useMemo(() => [HistoryRestoreAction], [])
 
   return (
-    <RenderActionCollectionState actions={historyActions} actionProps={actionProps as any}>
+    <RenderActionCollectionState
+      actions={historyActions}
+      actionProps={actionProps as any}
+      group="default"
+    >
       {({states}) => (
         <DocumentStatusBarActionsInner
           disabled={connectionState !== 'connected' || Boolean(disabled)}
