@@ -20,7 +20,7 @@
     "@types/node": "^18.15.3",
     "esbuild": "^0.19.8",
     "ts-node": "^10.9.1",
-    "typescript": "^5.2.2"
+    "typescript": "^5.4.2"
   },
   "dependencies": {
     "@playwright/test": "^1.41.2",

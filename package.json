@@ -149,7 +149,7 @@
     "sanity": "workspace:*",
     "semver": "^7.3.5",
     "turbo": "^1.12.4",
-    "typescript": "^5.2.2",
+    "typescript": "^5.4.2",
     "yargs": "^17.3.0"
   },
   "optionalDependencies": {

@@ -1,4 +1,5 @@
 import {describe, it} from '@jest/globals'
+
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * Some of these tests have no expect statement;
@@ -94,7 +95,6 @@ describe('alias type test', () => {
   })
 
   it('should support alias with preview', () => {
-    //@ts-expect-error {error: any} has no properties in common with PreviewValue
     defineType({
       type: 'custom-object',
       name: 'redefined',
@@ -105,7 +105,6 @@ describe('alias type test', () => {
       },
     })
 
-    //@ts-expect-error {error: any} has no properties in common with PreviewValue
     defineField({
       type: 'custom-object',
       name: 'redefined',
@@ -116,7 +115,6 @@ describe('alias type test', () => {
       },
     })
 
-    //@ts-expect-error {error: any} has no properties in common with PreviewValue
     defineArrayMember({
       type: 'custom-object',
       name: 'redefined',
