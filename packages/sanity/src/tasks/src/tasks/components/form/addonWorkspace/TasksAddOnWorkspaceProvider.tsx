@@ -12,6 +12,7 @@ import {
   WorkspaceProvider,
 } from 'sanity'
 
+import {API_VERSION} from '../../../constants/API_VERSION'
 import {type FormMode} from '../../../types'
 import {taskSchema} from './taskSchema'
 
@@ -24,7 +25,7 @@ function TasksAddonWorkspaceProviderInner({
   children: React.ReactNode
   mode: FormMode
 }) {
-  const client = useClient()
+  const client = useClient({apiVersion: API_VERSION})
   const apiHost = client.config().apiHost
   // TODO: Is basePath necessary here?
   const basePath = ''

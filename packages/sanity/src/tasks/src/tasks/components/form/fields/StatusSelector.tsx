@@ -17,12 +17,12 @@ export const StatusMenuButton = forwardRef(function StatusMenuButton(
   props: {value: string | undefined; options: TitledListValue<string>[]},
   ref: ForwardedRef<HTMLButtonElement>,
 ) {
-  const {value, options} = props
+  const {value, options, ...rest} = props
   const selectedOption = options.find((option) => option.value === value)
   const icon = TASK_STATUS.find((status) => status.value === value)?.icon
   return (
     <Button
-      {...props}
+      {...rest}
       ref={ref}
       tooltipProps={null}
       icon={icon}
