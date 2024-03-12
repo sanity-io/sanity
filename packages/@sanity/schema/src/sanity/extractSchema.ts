@@ -497,25 +497,29 @@ function sortByDependencies(compiledSchema: SchemaDef): string[] {
 
   // Sorts the types by their dependencies
   const typeNames: string[] = []
-  const tempMark = new Set<SanitySchemaType>()
-  const permMark = new Set<SanitySchemaType>()
+  // holds a temporary mark for types that are currently being visited, to detect cyclic dependencies
+  const currentlyVisiting = new Set<SanitySchemaType>()
+
+  // holds a permanent mark for types that have been already visited
+  const visited = new Set<SanitySchemaType>()
+
   // visit implements a depth-first search
   function visit(type: SanitySchemaType) {
-    if (permMark.has(type)) {
+    if (visited.has(type)) {
       return
     }
     // If we find a type that is already in the temporary mark, we have a cyclic dependency.
-    if (tempMark.has(type)) {
+    if (currentlyVisiting.has(type)) {
       return
     }
     // mark this as a temporary mark, meaning it's being visited
-    tempMark.add(type)
+    currentlyVisiting.add(type)
     const deps = dependencyMap.get(type)
     if (deps !== undefined) {
       deps.forEach((dep) => visit(dep))
     }
-    tempMark.delete(type)
-    permMark.add(type)
+    currentlyVisiting.delete(type)
+    visited.add(type)
 
     if (!typeNames.includes(type.name)) {
       typeNames.unshift(type.name)

@@ -371,9 +371,9 @@ describe('Extract schema test', () => {
       expect(extracted.length).toBeGreaterThan(0) // we don't really care about the exact number, just that it passes :+1:
     })
 
-    // const skips = cases.filter((v): v is {schemaName: string; schema: null} => v.schema === null)
-    // test.skip.each(skips)('extracts schema $schemaName', () => {
-    //   // Add a test for the skipped cases so we can track them in the test report
-    // })
+    const skips = cases.filter((v): v is {schemaName: string; schema: null} => v.schema === null)
+    test.skip.each(skips)('extracts schema $schemaName', () => {
+      // Add a test for the skipped cases so we can track them in the test report
+    })
   })
 })

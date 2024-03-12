@@ -132,11 +132,6 @@ export default {
         },
         {type: 'author', title: 'Embedded author'},
         {type: 'code', title: 'Code'},
-        // {
-        //   type: 'color',
-        //   name: 'colorBlock',
-        //   title: 'Color (block)',
-        // },
         {
           type: 'object',
           title: 'Test object',
@@ -164,15 +159,6 @@ export default {
             },
           ],
         },
-        // {
-        //   type: 'block',
-        //   of: [
-        //     {
-        //       type: 'color',
-        //       title: 'Color',
-        //     },
-        //   ],
-        // },
       ],
     },
     {
