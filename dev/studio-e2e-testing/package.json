@@ -17,7 +17,7 @@
     "@sanity/google-maps-input": "^3.0.1",
     "@sanity/icons": "^2.11.0",
     "@sanity/ui": "^2.0.10",
-    "@sanity/vision": "3.32.0",
+    "@sanity/vision": "workspace:*",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-is": "^18.2.0",
