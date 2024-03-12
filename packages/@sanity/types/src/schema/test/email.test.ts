@@ -1,4 +1,5 @@
 import {describe, it} from '@jest/globals'
+
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import {type BooleanDefinition, type EmailDefinition} from '../definition'
 import {defineType} from '../types'

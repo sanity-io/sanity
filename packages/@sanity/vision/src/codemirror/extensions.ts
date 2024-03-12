@@ -8,7 +8,7 @@ import {
   syntaxHighlighting,
 } from '@codemirror/language'
 import {highlightSelectionMatches} from '@codemirror/search'
-import {Extension} from '@codemirror/state'
+import {type Extension} from '@codemirror/state'
 import {
   drawSelection,
   highlightActiveLine,
