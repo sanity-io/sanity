@@ -172,6 +172,10 @@ export const NavDrawer = memo(function NavDrawer(props: NavDrawerProps) {
                 </Card>
 
                 <Flex direction="column">
+                  <Card flex="none" padding={2}>
+                    <Stack space={1}>{actionNodes}</Stack>
+                  </Card>
+
                   {setScheme && <AppearanceMenu setScheme={setScheme} />}
                   <LocaleMenu />
                   <ManageMenu />
