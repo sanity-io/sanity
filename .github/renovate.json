@@ -16,7 +16,7 @@
     },
     {
       "matchDepTypes": ["dependencies"],
-      "matchPackageNames": ["get-it", "@sanity/client", "@sanity/presentation"],
+      "matchPackageNames": ["get-it", "@sanity/client", "@sanity/presentation", "@sanity/ui"],
       "rangeStrategy": "bump",
       "semanticCommitType": "fix"
     }
