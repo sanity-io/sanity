@@ -46,4 +46,4 @@ jobs:
         run: pnpm install
 
       - name: Run format check
-        run: pnpm turbo run check:format
+        run: pnpm check:format
