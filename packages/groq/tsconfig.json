@@ -1,9 +1,7 @@
 {
-  "extends": "../../tsconfig.settings",
-  "include": ["./src", "./test"],
+  "extends": "@repo/tsconfig/base.json",
+  "include": ["./src", "./test", "./package.json"],
   "compilerOptions": {
-    "composite": true,
-    "rootDir": ".",
-    "outDir": "./lib/dts"
+    "rootDir": "."
   }
 }

@@ -1,3 +1,4 @@
+import baseConfig from '@repo/package.config'
 import {createClient} from '@sanity/client'
 import {_loadConfig, extract, load, type SanityTSDocConfigOptions, transform} from '@sanity/tsdoc'
 import cac from 'cac'
@@ -75,8 +76,14 @@ async function etl(options: {
 
   let timer = startTimer(`Extracting API documents from \`${packageName}\``)
   const {pkg, results} = await extract({
+    customTags: tsdocConfig?.extract?.customTags,
     packagePath,
-    bundledPackages: tsdocConfig.input?.bundledPackages,
+    rules: tsdocConfig?.extract?.rules,
+    // @TODO change to `strict: true` once `sanity` can run `pkg-utils build --strict`
+    strict: false,
+    tsconfig: tsdocConfig?.input?.tsconfig ?? (baseConfig.tsconfig || 'tsconfig.json'),
+    bundledPackages: tsdocConfig?.input?.bundledPackages,
+    legacyExports: tsdocConfig?.legacyExports ?? baseConfig.legacyExports ?? true,
   })
   timer.end()
 

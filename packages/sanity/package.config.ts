@@ -1,50 +1,47 @@
+import baseConfig from '@repo/package.config'
 import {defineConfig} from '@sanity/pkg-utils'
-
-import baseConfig from '../../package.config'
 
 export default defineConfig({
   ...baseConfig,
 
-  exports: (prevExports) => ({
-    ...prevExports,
-
-    // Build unexposed bundles for scripts that need to be spawned/used in workers
-    './_internal/cli/threads/esbuild': {
+  // Build unexposed bundles for scripts that need to be spawned/used in workers
+  bundles: [
+    {
       source: './src/_internal/cli/threads/esbuild.ts',
       require: './lib/_internal/cli/threads/esbuild.js',
-      default: './lib/_internal/cli/threads/esbuild.js',
+      runtime: 'node',
     },
-    './_internal/cli/threads/registerBrowserEnv': {
+    {
       source: './src/_internal/cli/threads/registerBrowserEnv.ts',
       require: './lib/_internal/cli/threads/registerBrowserEnv.js',
-      default: './lib/_internal/cli/threads/registerBrowserEnv.js',
+      runtime: 'node',
     },
-    './_internal/cli/threads/configClient': {
+    {
       source: './src/_internal/cli/threads/configClient.ts',
       require: './lib/_internal/cli/threads/configClient.js',
-      default: './lib/_internal/cli/threads/configClient.js',
+      runtime: 'node',
     },
-    './_internal/cli/threads/getGraphQLAPIs': {
+    {
       source: './src/_internal/cli/threads/getGraphQLAPIs.ts',
       require: './lib/_internal/cli/threads/getGraphQLAPIs.js',
-      default: './lib/_internal/cli/threads/getGraphQLAPIs.js',
+      runtime: 'node',
     },
-    './_internal/cli/threads/validateDocuments': {
+    {
       source: './src/_internal/cli/threads/validateDocuments.ts',
       require: './lib/_internal/cli/threads/validateDocuments.js',
-      default: './lib/_internal/cli/threads/validateDocuments.js',
+      runtime: 'node',
     },
-    './_internal/cli/threads/validateSchema': {
+    {
       source: './src/_internal/cli/threads/validateSchema.ts',
       require: './lib/_internal/cli/threads/validateSchema.js',
-      default: './lib/_internal/cli/threads/validateSchema.js',
+      runtime: 'node',
     },
-    './_internal/cli/threads/extractSchema': {
+    {
       source: './src/_internal/cli/threads/extractSchema.ts',
       require: './lib/_internal/cli/threads/extractSchema.js',
-      default: './lib/_internal/cli/threads/extractSchema.js',
+      runtime: 'node',
     },
-  }),
+  ],
 
   extract: {
     ...baseConfig.extract,

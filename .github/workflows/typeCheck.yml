@@ -5,6 +5,9 @@ jobs:
   typeCheck:
     timeout-minutes: 15
     runs-on: ubuntu-latest
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -41,9 +44,17 @@ jobs:
         run: pnpm install
 
       - name: Check type system
-        # If TypeScript project references is set up properly, `tsc --build` should work right after dependencies
-        # has been installed, no extra build/compile step required
+        # Turbo will run type checks on all files in the project
+        # and ensure that dependencies are built with @sanity/pkg-utils to output dts
+        # used by other packages as they are type checked
         id: typeCheckModules
-        run: pnpm check:types
+        run: pnpm check:types --output-logs=full --log-order=grouped
+        env:
+          NODE_OPTIONS: --max_old_space_size=8192
+
+      - name: Check package.json with @sanity/pkg-utils
+        # Turbo will ensure `build` is run before each package, as pkg-utils requires
+        # as it will check if files declared in package.json `main`, `exports`, `types` and more exists
+        run: pnpm check:package --output-logs=full --log-order=grouped
         env:
           NODE_OPTIONS: --max_old_space_size=8192

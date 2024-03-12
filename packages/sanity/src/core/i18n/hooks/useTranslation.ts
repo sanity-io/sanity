@@ -1,5 +1,6 @@
 import {type FlatNamespace, type KeyPrefix, type Namespace, type TFunction} from 'i18next'
 import {type FallbackNs, useTranslation as useOriginalTranslation} from 'react-i18next'
+// @ts-expect-error types are missing
 import {type $Tuple} from 'react-i18next/helpers'
 
 import {maybeWrapT} from '../debug'
@@ -51,6 +52,7 @@ export function useTranslation<
   options?: UseTranslationOptions<KPrefix>,
 ): UseTranslationResponse<FallbackNs<Ns>, KPrefix> {
   const {t} = useOriginalTranslation(
+    // @ts-expect-error type check is failing after using `module: preserve` in tsconfig, which uses `moduleResolution: bundler` internally
     ns,
     options
       ? {keyPrefix: options.keyPrefix, lng: options.lng, ...translationOptionOverrides}

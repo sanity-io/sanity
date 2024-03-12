@@ -21,142 +21,102 @@
   },
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
+  "sideEffects": false,
   "exports": {
     ".": {
-      "types": "./lib/exports/index.d.ts",
-      "source": "./exports/index.ts",
+      "source": "./src/_exports/index.ts",
+      "import": "./lib/index.mjs",
       "require": "./lib/index.js",
-      "node": {
-        "module": "./lib/index.esm.js",
-        "import": "./lib/index.cjs.mjs"
-      },
-      "import": "./lib/index.esm.js",
-      "default": "./lib/index.esm.js"
+      "default": "./lib/index.js"
     },
     "./fs": {
-      "types": "./lib/exports/fs.d.ts",
-      "source": "./exports/fs.ts",
+      "source": "./src/_exports/fs.ts",
+      "import": "./lib/fs.mjs",
       "require": "./lib/fs.js",
-      "node": {
-        "module": "./lib/fs.esm.js",
-        "import": "./lib/fs.cjs.mjs"
-      },
-      "import": "./lib/fs.esm.js",
-      "default": "./lib/fs.esm.js"
+      "default": "./lib/fs.js"
     },
     "./client": {
-      "types": "./lib/exports/client.d.ts",
-      "source": "./exports/client.ts",
+      "source": "./src/_exports/client.ts",
+      "import": "./lib/client.mjs",
       "require": "./lib/client.js",
-      "node": {
-        "module": "./lib/client.esm.js",
-        "import": "./lib/client.cjs.mjs"
-      },
-      "import": "./lib/client.esm.js",
-      "default": "./lib/client.esm.js"
+      "default": "./lib/client.js"
     },
     "./concurrency-limiter": {
-      "types": "./lib/exports/concurrency-limiter.d.ts",
-      "source": "./exports/concurrency-limiter.ts",
+      "source": "./src/_exports/concurrency-limiter.ts",
+      "import": "./lib/concurrency-limiter.mjs",
       "require": "./lib/concurrency-limiter.js",
-      "node": {
-        "module": "./lib/concurrency-limiter.esm.js",
-        "import": "./lib/concurrency-limiter.cjs.mjs"
-      },
-      "import": "./lib/concurrency-limiter.esm.js",
-      "default": "./lib/concurrency-limiter.esm.js"
+      "default": "./lib/concurrency-limiter.js"
     },
     "./content": {
-      "types": "./lib/exports/content.d.ts",
-      "source": "./exports/content.ts",
+      "source": "./src/_exports/content.ts",
+      "import": "./lib/content.mjs",
       "require": "./lib/content.js",
-      "node": {
-        "module": "./lib/content.esm.js",
-        "import": "./lib/content.cjs.mjs"
-      },
-      "import": "./lib/content.esm.js",
-      "default": "./lib/content.esm.js"
+      "default": "./lib/content.js"
     },
     "./createSafeJsonParser": {
-      "types": "./lib/exports/createSafeJsonParser.d.ts",
-      "source": "./exports/createSafeJsonParser.ts",
+      "source": "./src/_exports/createSafeJsonParser.ts",
+      "import": "./lib/createSafeJsonParser.mjs",
       "require": "./lib/createSafeJsonParser.js",
-      "node": {
-        "module": "./lib/createSafeJsonParser.esm.js",
-        "import": "./lib/createSafeJsonParser.cjs.mjs"
-      },
-      "import": "./lib/createSafeJsonParser.esm.js",
-      "default": "./lib/createSafeJsonParser.esm.js"
+      "default": "./lib/createSafeJsonParser.js"
     },
     "./legacyDateFormat": {
-      "types": "./lib/exports/legacyDateFormat.d.ts",
-      "source": "./exports/legacyDateFormat.ts",
+      "source": "./src/_exports/legacyDateFormat.ts",
+      "import": "./lib/legacyDateFormat.mjs",
       "require": "./lib/legacyDateFormat.js",
-      "node": {
-        "module": "./lib/legacyDateFormat.esm.js",
-        "import": "./lib/legacyDateFormat.cjs.mjs"
-      },
-      "import": "./lib/legacyDateFormat.esm.js",
-      "default": "./lib/legacyDateFormat.esm.js"
+      "default": "./lib/legacyDateFormat.js"
     },
     "./paths": {
-      "types": "./lib/exports/paths.d.ts",
-      "source": "./exports/paths.ts",
+      "source": "./src/_exports/paths.ts",
+      "import": "./lib/paths.mjs",
       "require": "./lib/paths.js",
-      "node": {
-        "module": "./lib/paths.esm.js",
-        "import": "./lib/paths.cjs.mjs"
-      },
-      "import": "./lib/paths.esm.js",
-      "default": "./lib/paths.esm.js"
+      "default": "./lib/paths.js"
     },
     "./package.json": "./package.json"
   },
   "main": "./lib/index.js",
   "module": "./lib/index.esm.js",
-  "source": "./exports/index.ts",
-  "types": "./lib/exports/index.d.ts",
+  "source": "./src/_exports/index.ts",
+  "types": "./lib/index.d.ts",
   "typesVersions": {
     "*": {
       "fs": [
-        "./lib/exports/fs.d.ts"
+        "./lib/fs.d.ts"
       ],
       "client": [
-        "./lib/exports/client.d.ts"
+        "./lib/client.d.ts"
       ],
       "concurrency-limiter": [
-        "./lib/exports/concurrency-limiter.d.ts"
+        "./lib/concurrency-limiter.d.ts"
       ],
       "content": [
-        "./lib/exports/content.d.ts"
+        "./lib/content.d.ts"
       ],
       "createSafeJsonParser": [
-        "./lib/exports/createSafeJsonParser.d.ts"
+        "./lib/createSafeJsonParser.d.ts"
       ],
       "legacyDateFormat": [
-        "./lib/exports/legacyDateFormat.d.ts"
+        "./lib/legacyDateFormat.d.ts"
       ],
       "paths": [
-        "./lib/exports/paths.d.ts"
+        "./lib/paths.d.ts"
       ]
     }
   },
   "files": [
+    "lib",
+    "src",
     "client.js",
     "concurrency-limiter.js",
     "content.js",
     "createSafeJsonParser.js",
     "fs.js",
     "legacyDateFormat.js",
-    "lib",
-    "paths.js",
-    "src"
+    "paths.js"
   ],
   "scripts": {
-    "prebuild": "run-s clean",
-    "build": "pkg-utils build --tsconfig tsconfig.lib.json",
-    "postbuild": "run-s check:package",
-    "check:package": "pkg-utils --tsconfig tsconfig.lib.json",
+    "build": "run-s clean && pkg-utils build --tsconfig tsconfig.lib.json --strict",
+    "check:package": "pkg-utils --tsconfig tsconfig.lib.json --strict",
+    "check:types": "tsc",
     "clean": "rimraf client.js concurrency-limiter.js content.js createSafeJsonParser.js fs.js legacyDateFormat.js lib paths.js",
     "test": "jest",
     "watch": "pkg-utils watch --tsconfig tsconfig.lib.json"
@@ -170,6 +130,7 @@
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",
+    "@repo/package.config": "workspace:*",
     "@types/moment": "^2.13.0",
     "rimraf": "^3.0.2"
   },

@@ -22,24 +22,20 @@
   },
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
+  "sideEffects": false,
   "exports": {
     ".": {
-      "types": "./lib/dts/src/index.d.ts",
       "source": "./src/index.ts",
+      "import": "./lib/index.mjs",
       "require": "./lib/index.js",
-      "node": {
-        "module": "./lib/index.esm.js",
-        "import": "./lib/index.cjs.mjs"
-      },
-      "import": "./lib/index.esm.js",
-      "default": "./lib/index.esm.js"
+      "default": "./lib/index.js"
     },
     "./package.json": "./package.json"
   },
   "main": "./lib/index.js",
   "module": "./lib/index.esm.js",
   "source": "./src/index.ts",
-  "types": "./lib/dts/src/index.d.ts",
+  "types": "./lib/index.d.ts",
   "bin": {
     "sanity": "./bin/sanity"
   },
@@ -51,10 +47,9 @@
     "templates"
   ],
   "scripts": {
-    "prebuild": "run-s clean",
-    "build": "pkg-utils build --tsconfig tsconfig.lib.json",
-    "postbuild": "run-s check:package",
+    "build": "run-s clean && pkg-utils build --tsconfig tsconfig.lib.json --strict",
     "check:package": "pkg-utils --strict --tsconfig tsconfig.lib.json",
+    "check:types": "tsc",
     "clean": "rimraf lib",
     "lint": "eslint .",
     "test": "jest",
@@ -63,10 +58,12 @@
   },
   "dependencies": {
     "@babel/traverse": "^7.23.5",
+    "@sanity/client": "^6.15.11",
     "@sanity/codegen": "3.36.4",
     "@sanity/telemetry": "^0.7.6",
     "@sanity/util": "3.36.4",
     "chalk": "^4.1.2",
+    "debug": "^4.3.4",
     "decompress": "^4.2.0",
     "esbuild": "^0.20.0",
     "esbuild-register": "^3.4.1",
@@ -80,11 +77,12 @@
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",
+    "@repo/package.config": "workspace:*",
     "@rexxars/gitconfiglocal": "^3.0.1",
     "@rollup/plugin-node-resolve": "^15.2.3",
-    "@sanity/client": "^6.15.11",
     "@sanity/eslint-config-studio": "^3.0.1",
     "@sanity/generate-help-url": "^3.0.0",
+    "@sanity/types": "workspace:*",
     "@types/babel__traverse": "^7.20.5",
     "@types/configstore": "^5.0.1",
     "@types/cpx": "^1.5.2",
@@ -106,7 +104,6 @@
     "clean-stack": "^3.0.0",
     "configstore": "^5.0.1",
     "cpx": "^1.5.0",
-    "debug": "^4.3.4",
     "deep-sort-object": "^1.0.1",
     "dotenv": "^16.0.3",
     "dotenv-expand": "^9.0.0",

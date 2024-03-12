@@ -20,6 +20,7 @@
 /packages/*/lib
 /packages/*/node_modules
 
+/packages/@repo/*/node_modules
 /packages/@sanity/*/coverage
 /packages/@sanity/*/lib
 /packages/@sanity/*/node_modules
@@ -31,6 +32,7 @@
 /test/v2-studio/dist
 /turbo.json
 /packages/*/turbo.json
+/packages/@repo/*/turbo.json
 /packages/@sanity/*/turbo.json
 /pnpm-lock.yaml
 

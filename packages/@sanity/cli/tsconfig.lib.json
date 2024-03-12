@@ -1,5 +1,5 @@
 {
-  "extends": "../../../tsconfig.settings",
+  "extends": "@repo/tsconfig/build.json",
   "include": ["./src", "./typings", "./package.json"],
   "exclude": [
     "./src/**/__fixtures__",
@@ -9,18 +9,7 @@
     "./src/**/*.test.tsx"
   ],
   "compilerOptions": {
-    "composite": true,
     "rootDir": ".",
-    "outDir": "./lib/dts",
-
-    "checkJs": false,
-    "allowJs": true,
-    "jsx": "react-jsx",
-    "resolveJsonModule": true
-  },
-  "references": [
-    {"path": "../codegen/tsconfig.lib.json"},
-    {"path": "../types/tsconfig.lib.json"},
-    {"path": "../util/tsconfig.lib.json"}
-  ]
+    "outDir": "./lib"
+  }
 }

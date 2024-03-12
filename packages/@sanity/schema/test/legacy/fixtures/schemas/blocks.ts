@@ -139,7 +139,7 @@ export default {
       ],
 
       options: {
-        preview: (value) => {
+        preview: (value: any) => {
           return {
             title: value ? value.caption : '',
           }

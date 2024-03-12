@@ -531,7 +531,7 @@ describe('Extract schema test', () => {
 
   describe('Can extract sample fixtures', () => {
     const cases = Object.keys(schemaFixtures).map((schemaName) => {
-      const schema = createSchema(schemaFixtures[schemaName])
+      const schema = createSchema((schemaFixtures as any)[schemaName])
       if (schema._original.types.length === 0) {
         return {schemaName, schema: null}
       }

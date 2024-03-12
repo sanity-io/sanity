@@ -1,13 +1,13 @@
+import {
+  type BaseSchemaDefinition,
+  type DocumentDefinition,
+  type ObjectDefinition,
+} from '@sanity/types'
 import fs from 'fs/promises'
 import path from 'path'
 import {format} from 'prettier'
 import {Worker} from 'worker_threads'
 
-import {
-  type BaseSchemaDefinition,
-  type DocumentDefinition,
-  type ObjectDefinition,
-} from '../../../types'
 import {type CliApiClient} from '../types'
 import {getCliWorkerPath} from './cliWorker'
 

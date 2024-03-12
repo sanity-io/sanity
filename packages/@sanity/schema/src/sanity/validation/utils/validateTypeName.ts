@@ -1,4 +1,3 @@
-// @ts-expect-error - add typings for humanize-list
 import humanize from 'humanize-list'
 import leven from 'leven'
 

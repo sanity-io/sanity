@@ -1,47 +1,47 @@
 {
-  "extends": "../../tsconfig.settings",
+  "extends": "@repo/tsconfig/base.json",
   "include": [
-    "./exports",
     "./package.json",
     "./playwright-ct",
     "./scripts",
     "./src",
     "./test",
-    "./typings"
+    "./typings",
+    "./node_modules/@sanity/block-tools/src",
+    "./node_modules/@sanity/diff/src",
+    "./node_modules/@sanity/cli/src",
+    "./node_modules/@sanity/cli/typings/deepSortObject.d.ts",
+    "./node_modules/@sanity/codegen/src",
+    "./node_modules/@sanity/mutator/src",
+    "./node_modules/@sanity/portable-text-editor/src",
+    "./node_modules/@sanity/schema/src",
+    "./node_modules/@sanity/schema/typings",
+    "./node_modules/@sanity/migrate/src",
+    "./node_modules/@sanity/types/src",
+    "./node_modules/@sanity/util/src",
+    "./node_modules/groq/src"
   ],
+  "exclude": ["./node_modules/@sanity/codegen/src/typescript/__tests__"],
   "compilerOptions": {
-    "composite": true,
     "rootDir": ".",
-    "outDir": "./lib",
-
     "paths": {
-      "sanity/_internal": ["./exports/_internal.ts"],
-      "sanity/_internalBrowser": ["./exports/_internalBrowser.ts"],
-      "sanity/cli": ["./exports/cli.ts"],
-      "sanity/desk": ["./exports/desk.ts"],
-      "sanity/router": ["./exports/router.ts"],
-      "sanity/structure": ["./exports/structure.ts"],
-      "sanity": ["./exports/index.ts"]
+      "@sanity/block-tools": ["./node_modules/@sanity/block-tools/src/index.ts"],
+      "@sanity/diff": ["./node_modules/@sanity/diff/src/index.ts"],
+      "@sanity/cli": ["./node_modules/@sanity/cli/src/index.ts"],
+      "@sanity/codegen": ["./node_modules/@sanity/codegen/src/_exports/index.ts"],
+      "@sanity/mutator": ["./node_modules/@sanity/mutator/src/index.ts"],
+      "@sanity/portable-text-editor": ["./node_modules/@sanity/portable-text-editor/src/index.ts"],
+      "@sanity/schema/*": ["./node_modules/@sanity/schema/src/_exports/*"],
+      "@sanity/schema": ["./node_modules/@sanity/schema/src/_exports/index.ts"],
+      "@sanity/migrate": ["./node_modules/@sanity/migrate/src/_exports/index.ts"],
+      "@sanity/types": ["./node_modules/@sanity/types/src/index.ts"],
+      "@sanity/util/*": ["./node_modules/@sanity/util/src/_exports/*"],
+      "@sanity/util": ["./node_modules/@sanity/util/src/_exports/index.ts"],
+      "groq": ["./node_modules/groq/src/groq.ts"],
+      "sanity/*": ["./src/_exports/*"],
+      "sanity": ["./src/_exports/index.ts"]
     },
-
-    "emitDeclarationOnly": true,
-    "jsx": "react-jsx",
-
-    // For package.json import and scripts
-    "resolveJsonModule": true,
-
     // For import.meta.env/import.meta.hot definition and similar
     "types": ["vite/client"]
-  },
-  "references": [
-    {"path": "../@sanity/cli/tsconfig.lib.json"},
-    {"path": "../@sanity/diff/tsconfig.lib.json"},
-    {"path": "../@sanity/mutator/tsconfig.lib.json"},
-    {"path": "../@sanity/portable-text-editor/tsconfig.lib.json"},
-    {"path": "../@sanity/schema/tsconfig.lib.json"},
-    {"path": "../@sanity/types/tsconfig.lib.json"},
-    {"path": "../@sanity/cli/tsconfig.lib.json"},
-    {"path": "../@sanity/util/tsconfig.lib.json"},
-    {"path": "../@sanity/migrate/tsconfig.lib.json"}
-  ]
+  }
 }

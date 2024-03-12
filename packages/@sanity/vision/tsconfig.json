@@ -1,12 +1,42 @@
 {
-  "extends": "../../../tsconfig.settings",
-  "include": ["./src"],
+  "extends": "@repo/tsconfig/base.json",
+  "include": [
+    "./src",
+    "./node_modules/@sanity/block-tools/src",
+    "./node_modules/@sanity/diff/src",
+    "./node_modules/@sanity/cli/src",
+    "./node_modules/@sanity/cli/typings/*.d.ts",
+    "./node_modules/@sanity/codegen/src",
+    "./node_modules/@sanity/mutator/src",
+    "./node_modules/@sanity/portable-text-editor/src",
+    "./node_modules/@sanity/schema/src",
+    "./node_modules/@sanity/schema/typings",
+    "./node_modules/@sanity/migrate/src",
+    "./node_modules/@sanity/types/src",
+    "./node_modules/@sanity/util/src",
+    "./node_modules/groq/src",
+    "./node_modules/sanity/src",
+    "./node_modules/sanity/typings/*.d.ts"
+  ],
+  "exclude": ["./node_modules/@sanity/codegen/src/typescript/__tests__"],
   "compilerOptions": {
-    "composite": true,
     "rootDir": ".",
-    "outDir": "./lib/dts",
-
-    "jsx": "react-jsx"
-  },
-  "references": [{"path": "../types/tsconfig.lib.json"}, {"path": "../../sanity/tsconfig.lib.json"}]
+    "paths": {
+      "@sanity/block-tools": ["./node_modules/@sanity/block-tools/src/index.ts"],
+      "@sanity/diff": ["./node_modules/@sanity/diff/src/index.ts"],
+      "@sanity/cli": ["./node_modules/@sanity/cli/src/index.ts"],
+      "@sanity/codegen": ["./node_modules/@sanity/codegen/src/_exports/index.ts"],
+      "@sanity/mutator": ["./node_modules/@sanity/mutator/src/index.ts"],
+      "@sanity/portable-text-editor": ["./node_modules/@sanity/portable-text-editor/src/index.ts"],
+      "@sanity/schema/*": ["./node_modules/@sanity/schema/src/_exports/*"],
+      "@sanity/schema": ["./node_modules/@sanity/schema/src/_exports/index.ts"],
+      "@sanity/migrate": ["./node_modules/@sanity/migrate/src/_exports/index.ts"],
+      "@sanity/types": ["./node_modules/@sanity/types/src/index.ts"],
+      "@sanity/util/*": ["./node_modules/@sanity/util/src/_exports/*"],
+      "@sanity/util": ["./node_modules/@sanity/util/src/_exports/index.ts"],
+      "groq": ["./node_modules/groq/src/groq.ts"],
+      "sanity/*": ["./node_modules/sanity/src/_exports/*"],
+      "sanity": ["./node_modules/sanity/src/_exports/index.ts"]
+    }
+  }
 }

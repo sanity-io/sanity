@@ -21,24 +21,20 @@
   },
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
+  "sideEffects": false,
   "exports": {
     ".": {
-      "types": "./lib/dts/src/_exports/index.d.ts",
       "source": "./src/_exports/index.ts",
-      "require": "./lib/_exports/index.js",
-      "node": {
-        "module": "./lib/_exports/index.esm.js",
-        "import": "./lib/_exports/index.cjs.mjs"
-      },
-      "import": "./lib/_exports/index.esm.js",
-      "default": "./lib/_exports/index.esm.js"
+      "import": "./lib/index.mjs",
+      "require": "./lib/index.js",
+      "default": "./lib/index.js"
     },
     "./package.json": "./package.json"
   },
-  "main": "./lib/_exports/index.js",
-  "module": "./lib/_exports/index.esm.js",
+  "main": "./lib/index.js",
+  "module": "./lib/index.esm.js",
   "source": "./src/_exports/index.ts",
-  "types": "./lib/dts/src/_exports/index.d.ts",
+  "types": "./lib/index.d.ts",
   "files": [
     "lib",
     "src",
@@ -46,10 +42,9 @@
     "babel.config.json"
   ],
   "scripts": {
-    "prebuild": "run-s clean",
-    "build": "pkg-utils build --tsconfig tsconfig.lib.json",
-    "postbuild": "run-s check:package",
+    "build": "run-s clean && pkg-utils build --tsconfig tsconfig.lib.json --strict",
     "check:package": "pkg-utils --strict --tsconfig tsconfig.lib.json",
+    "check:types": "tsc",
     "clean": "rimraf lib coverage",
     "lint": "eslint .",
     "test": "jest",
@@ -66,6 +61,7 @@
     "@babel/types": "^7.23.9",
     "debug": "^4.3.4",
     "globby": "^10.0.0",
+    "groq": "workspace:*",
     "groq-js": "^1.7.0",
     "json5": "^2.2.3",
     "tsconfig-paths": "^4.2.0",
@@ -73,12 +69,12 @@
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",
+    "@repo/package.config": "workspace:*",
     "@types/babel__core": "^7.20.5",
     "@types/babel__generator": "^7.6.8",
     "@types/babel__register": "^7.17.3",
     "@types/babel__traverse": "^7.20.5",
     "@types/debug": "^4.1.12",
-    "groq": "workspace:*",
     "rimraf": "^3.0.2"
   },
   "engines": {

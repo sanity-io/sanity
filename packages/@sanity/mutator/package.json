@@ -21,33 +21,28 @@
   },
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
+  "sideEffects": false,
   "exports": {
     ".": {
-      "types": "./lib/dts/src/index.d.ts",
       "source": "./src/index.ts",
+      "import": "./lib/index.mjs",
       "require": "./lib/index.js",
-      "node": {
-        "module": "./lib/index.esm.js",
-        "import": "./lib/index.cjs.mjs"
-      },
-      "import": "./lib/index.esm.js",
-      "default": "./lib/index.esm.js"
+      "default": "./lib/index.js"
     },
     "./package.json": "./package.json"
   },
   "main": "./lib/index.js",
   "module": "./lib/index.esm.js",
   "source": "./src/index.ts",
-  "types": "./lib/dts/src/index.d.ts",
+  "types": "./lib/index.d.ts",
   "files": [
     "lib",
     "src"
   ],
   "scripts": {
-    "prebuild": "run-s clean",
-    "build": "pkg-utils build --tsconfig tsconfig.lib.json",
-    "postbuild": "run-s check:package",
+    "build": "run-s clean && pkg-utils build --tsconfig tsconfig.lib.json --strict",
     "check:package": "pkg-utils --strict --tsconfig tsconfig.lib.json",
+    "check:types": "tsc",
     "clean": "rimraf lib",
     "lint": "eslint .",
     "perf": "node ./perf/run.js",
@@ -62,6 +57,7 @@
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",
+    "@repo/package.config": "workspace:*",
     "@sanity/types": "3.36.4",
     "@types/debug": "^4.1.5",
     "@types/lodash": "^4.14.149",

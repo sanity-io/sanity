@@ -1,3 +1,17 @@
 {
-  "ignores": ["@sanity/pkg-utils"]
+  "ignores": [
+    "@repo/tsconfig",
+    "@sanity/pkg-utils",
+    "@sanity/cli",
+    "@sanity/migrate",
+    "@sanity/types",
+    "@sanity/util",
+    "@sanity/codegen",
+    "@sanity/mutator",
+    "@sanity/diff",
+    "@sanity/portable-text-editor",
+    "@sanity/codegen",
+    "@sanity/schema",
+    "@sanity/block-tools"
+  ]
 }

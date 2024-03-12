@@ -67,7 +67,7 @@ jobs:
         run: pnpm install
 
       - name: Build CLI
-        run: pnpm build # Needed for CLI tests
+        run: pnpm build --output-logs=full --log-order=grouped # Needed for CLI tests
 
       - name: Test
         id: test

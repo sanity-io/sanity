@@ -23,135 +23,87 @@
   "sideEffects": false,
   "exports": {
     ".": {
-      "types": "./lib/exports/index.d.ts",
-      "source": "./exports/index.ts",
+      "source": "./src/_exports/index.ts",
+      "import": "./lib/index.mjs",
       "require": "./lib/index.js",
-      "node": {
-        "module": "./lib/index.esm.js",
-        "import": "./lib/index.cjs.mjs"
-      },
-      "import": "./lib/index.esm.js",
-      "default": "./lib/index.esm.js"
+      "default": "./lib/index.js"
     },
     "./_internal": {
-      "types": "./lib/exports/_internal.d.ts",
-      "source": "./exports/_internal.ts",
+      "source": "./src/_exports/_internal.ts",
       "require": "./lib/_internal.js",
-      "node": {
-        "module": "./lib/_internal.esm.js",
-        "import": "./lib/_internal.cjs.mjs"
-      },
-      "import": "./lib/_internal.esm.js",
-      "default": "./lib/_internal.esm.js"
+      "default": "./lib/_internal.js"
     },
     "./_internalBrowser": {
-      "types": "./lib/exports/_internalBrowser.d.ts",
-      "source": "./exports/_internalBrowser.ts",
+      "source": "./src/_exports/_internalBrowser.ts",
+      "import": "./lib/_internalBrowser.mjs",
       "require": "./lib/_internalBrowser.js",
-      "node": {
-        "module": "./lib/_internalBrowser.esm.js",
-        "import": "./lib/_internalBrowser.cjs.mjs"
-      },
-      "import": "./lib/_internalBrowser.esm.js",
-      "default": "./lib/_internalBrowser.esm.js"
+      "default": "./lib/_internalBrowser.js"
     },
     "./cli": {
-      "types": "./lib/exports/cli.d.ts",
-      "source": "./exports/cli.ts",
+      "source": "./src/_exports/cli.ts",
       "require": "./lib/cli.js",
-      "node": {
-        "module": "./lib/cli.esm.js",
-        "import": "./lib/cli.cjs.mjs"
-      },
-      "import": "./lib/cli.esm.js",
-      "default": "./lib/cli.esm.js"
+      "default": "./lib/cli.js"
     },
     "./desk": {
-      "types": "./lib/exports/desk.d.ts",
-      "source": "./exports/desk.ts",
+      "source": "./src/_exports/desk.ts",
+      "import": "./lib/desk.mjs",
       "require": "./lib/desk.js",
-      "node": {
-        "module": "./lib/desk.esm.js",
-        "import": "./lib/desk.cjs.mjs"
-      },
-      "import": "./lib/desk.esm.js",
-      "default": "./lib/desk.esm.js"
+      "default": "./lib/desk.js"
     },
     "./presentation": {
-      "types": "./lib/exports/presentation.d.ts",
-      "source": "./exports/presentation.ts",
+      "source": "./src/_exports/presentation.ts",
+      "import": "./lib/presentation.mjs",
       "require": "./lib/presentation.js",
-      "node": {
-        "module": "./lib/presentation.esm.js",
-        "import": "./lib/presentation.cjs.mjs"
-      },
-      "import": "./lib/presentation.esm.js",
-      "default": "./lib/presentation.esm.js"
+      "default": "./lib/presentation.js"
     },
     "./router": {
-      "types": "./lib/exports/router.d.ts",
-      "source": "./exports/router.ts",
+      "source": "./src/_exports/router.ts",
+      "import": "./lib/router.mjs",
       "require": "./lib/router.js",
-      "node": {
-        "module": "./lib/router.esm.js",
-        "import": "./lib/router.cjs.mjs"
-      },
-      "import": "./lib/router.esm.js",
-      "default": "./lib/router.esm.js"
+      "default": "./lib/router.js"
     },
     "./structure": {
-      "types": "./lib/exports/structure.d.ts",
-      "source": "./exports/structure.ts",
+      "source": "./src/_exports/structure.ts",
+      "import": "./lib/structure.mjs",
       "require": "./lib/structure.js",
-      "node": {
-        "module": "./lib/structure.esm.js",
-        "import": "./lib/structure.cjs.mjs"
-      },
-      "import": "./lib/structure.esm.js",
-      "default": "./lib/structure.esm.js"
+      "default": "./lib/structure.js"
     },
     "./migrate": {
-      "types": "./lib/exports/migrate.d.ts",
-      "source": "./exports/migrate.ts",
+      "source": "./src/_exports/migrate.ts",
       "require": "./lib/migrate.js",
-      "node": {
-        "module": "./lib/migrate.esm.js",
-        "import": "./lib/migrate.cjs.mjs"
-      },
-      "import": "./lib/migrate.esm.js",
-      "default": "./lib/migrate.esm.js"
+      "default": "./lib/migrate.js"
     },
     "./package.json": "./package.json"
   },
   "main": "./lib/index.js",
   "module": "./lib/index.esm.js",
-  "source": "./exports/index.ts",
-  "types": "./lib/exports/index.d.ts",
+  "source": "./src/_exports/index.ts",
+  "types": "./lib/index.d.ts",
   "typesVersions": {
     "*": {
       "_internal": [
-        "./lib/exports/_internal.d.ts"
+        "./lib/_internal.d.ts"
+      ],
+      "_internalBrowser": [
+        "./lib/_internalBrowser.d.ts"
       ],
       "cli": [
-        "./lib/exports/cli.d.ts"
+        "./lib/cli.d.ts"
       ],
       "desk": [
-        "./lib/exports/desk.d.ts"
-      ],
-      "presentation": [
-        "./lib/exports/presentation.d.ts"
+        "./lib/desk.d.ts"
       ],
       "migrate": [
-        "./lib/exports/migrate.d.ts"
+        "./lib/migrate.d.ts"
       ],
-      "migrate/mutations": [
-        "./lib/exports/migrate-mutations.d.ts"
+      "presentation": [
+        "./lib/presentation.d.ts"
       ],
       "router": [
-        "./lib/exports/router.d.ts"
+        "./lib/router.d.ts"
       ],
       "structure": [
-        "./lib/exports/structure.d.ts"
+        "./lib/structure.d.ts"
       ]
     }
   },
@@ -159,26 +111,27 @@
     "sanity": "./bin/sanity"
   },
   "files": [
-    "_internal.js",
     "bin",
-    "cli.js",
-    "desk.js",
     "lib",
-    "router.js",
-    "presentation.js",
     "src",
     "static",
-    "structure.js",
     "!**/__test__/**",
     "!**/__tests__/**",
-    "!**/__workshop__/**"
+    "!**/__workshop__/**",
+    "_internal.js",
+    "_internalBrowser.js",
+    "cli.js",
+    "desk.js",
+    "migrate.js",
+    "presentation.js",
+    "router.js",
+    "structure.js"
   ],
   "scripts": {
-    "prebuild": "run-s clean",
-    "build": "pkg-utils build --tsconfig tsconfig.lib.json",
-    "postbuild": "run-s check:package",
+    "build": "run-s clean && pkg-utils build --tsconfig tsconfig.lib.json",
     "check:package": "pkg-utils --tsconfig tsconfig.lib.json",
-    "clean": "rimraf _internal.js cli.js desk.js lib presentation.js router.js",
+    "check:types": "tsc",
+    "clean": "rimraf _internal.js _internalBrowser.js cli.js desk.js migrate.js presentation.js router.js structure.js lib",
     "coverage": "jest --coverage",
     "lint": "eslint .",
     "test": "pkg-utils --strict && jest",
@@ -305,7 +258,10 @@
     "@jest/globals": "^29.7.0",
     "@playwright/experimental-ct-react": "1.41.2",
     "@playwright/test": "1.41.2",
-    "@sanity/tsdoc": "1.0.0-alpha.44",
+    "@repo/package.config": "workspace:*",
+    "@sanity/codegen": "3.36.4",
+    "@sanity/pkg-utils": "5.1.8",
+    "@sanity/tsdoc": "1.0.7",
     "@sanity/ui-workshop": "^1.2.11",
     "@testing-library/jest-dom": "^6.2.0",
     "@testing-library/react": "^13.4.0",
@@ -319,6 +275,7 @@
     "@types/log-symbols": "^2.0.0",
     "@types/node": "^18.19.8",
     "@types/raf": "^3.4.0",
+    "@types/react": "^18.2.74",
     "@types/react-dom": "^18.2.23",
     "@types/refractor": "^3.0.0",
     "@types/resolve-from": "^4.0.0",
