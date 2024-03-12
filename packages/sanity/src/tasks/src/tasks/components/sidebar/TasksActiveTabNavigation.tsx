@@ -46,6 +46,7 @@ export function TasksActiveTabNavigation(props: TasksActiveTabNavigationProps) {
     setViewMode({type: 'edit', id: nextTaskId})
   }, [currentItemIndex, items, setViewMode])
 
+  if (!items.length) return null
   return (
     <TooltipDelayGroupProvider>
       <Flex gap={1} align="center">

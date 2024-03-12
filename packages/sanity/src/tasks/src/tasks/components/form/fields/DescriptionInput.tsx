@@ -4,8 +4,6 @@ import {useCallback, useEffect, useRef, useState} from 'react'
 import {type ArrayFieldProps, type PortableTextBlock, set, useCurrentUser} from 'sanity'
 import styled, {css} from 'styled-components'
 
-// TODO: This is using components from structure/comments which is not ideal. But given comments is changing
-// we won't refactor this now, until comments is stable and we implement in this the `FormBuilder`
 import {CommentInput} from '../../../../../../structure/comments'
 import {useMentionUser} from '../../../context'
 import {type FormMode} from '../../../types'
