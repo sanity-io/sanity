@@ -35,7 +35,6 @@ export function TasksFooterOpenTasks() {
 
   return (
     <Button
-      data-as="a"
       mode="bleed"
       tooltipProps={{content: `Open ${pluralizedTask}`}}
       text={`${pendingTasks.length} open ${pluralizedTask}`}
