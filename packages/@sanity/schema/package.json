@@ -75,7 +75,7 @@
   },
   "dependencies": {
     "@sanity/generate-help-url": "^3.0.0",
-    "@sanity/types": "3.33.0",
+    "@sanity/types": "workspace:*",
     "arrify": "^1.0.1",
     "groq-js": "^1.5.0-canary.1",
     "humanize-list": "^1.0.1",

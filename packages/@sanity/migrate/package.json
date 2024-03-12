@@ -65,8 +65,8 @@
   "dependencies": {
     "@bjoerge/mutiny": "^0.5.1",
     "@sanity/client": "^6.15.4",
-    "@sanity/types": "3.33.0",
-    "@sanity/util": "3.33.0",
+    "@sanity/types": "workspace:*",
+    "@sanity/util": "workspace:*",
     "arrify": "^2.0.1",
     "debug": "^4.3.4",
     "fast-fifo": "^1.3.2",
