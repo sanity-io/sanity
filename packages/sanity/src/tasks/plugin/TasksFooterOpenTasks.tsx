@@ -31,12 +31,14 @@ export function TasksFooterOpenTasks() {
 
   if (pendingTasks.length === 0 || !enabled) return null
 
+  const pluralizedTask = `task${pendingTasks.length > 1 ? 's' : ''}`
+
   return (
     <Button
       data-as="a"
       mode="bleed"
-      tooltipProps={{content: 'Open tasks'}}
-      text={`${pendingTasks.length} open tasks`}
+      tooltipProps={{content: `Open ${pluralizedTask}`}}
+      text={`${pendingTasks.length} open ${pluralizedTask}`}
       onClick={handleOnClick}
     />
   )
