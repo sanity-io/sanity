@@ -1,5 +1,5 @@
-import {test} from '@sanity/test'
 import {expect} from '@playwright/test'
+import {test} from '@sanity/test'
 
 test(`date input shows validation on selecting date from datepicker`, async ({
   page,

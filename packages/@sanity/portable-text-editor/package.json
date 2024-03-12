@@ -64,10 +64,10 @@
     "watch": "pkg-utils watch --tsconfig tsconfig.lib.json"
   },
   "dependencies": {
-    "@sanity/block-tools": "3.32.0",
-    "@sanity/schema": "3.32.0",
-    "@sanity/types": "3.32.0",
-    "@sanity/util": "3.32.0",
+    "@sanity/block-tools": "workspace:*",
+    "@sanity/schema": "workspace:*",
+    "@sanity/types": "workspace:*",
+    "@sanity/util": "workspace:*",
     "debug": "^3.2.7",
     "is-hotkey": "^0.2.0",
     "lodash": "^4.17.21",
