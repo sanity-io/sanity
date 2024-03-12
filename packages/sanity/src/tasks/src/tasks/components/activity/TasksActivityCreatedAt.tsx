@@ -1,4 +1,3 @@
-import {DotIcon} from '@sanity/icons'
 import {Flex, Text, TextSkeleton} from '@sanity/ui'
 import {memo} from 'react'
 import {useUser} from 'sanity'
@@ -31,7 +30,7 @@ export const TasksActivityCreatedAt = memo(
             <strong style={{fontWeight: 600}}>
               {loading ? <UserSkeleton /> : user?.displayName ?? 'Unknown user'}{' '}
             </strong>
-            created this task <DotIcon />{' '}
+            created this task •{' '}
             <Tooltip content={formattedDate} placement="top-end">
               <time dateTime={createdAt}>{timeAgo}</time>
             </Tooltip>

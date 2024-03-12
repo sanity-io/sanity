@@ -1,10 +1,20 @@
 import {Box, Flex, Stack, Text} from '@sanity/ui'
 import {uuid} from '@sanity/uuid'
 import {AnimatePresence, motion, type Variants} from 'framer-motion'
-import {Fragment, useCallback, useMemo} from 'react'
-import {type FormPatch, LoadingBlock, type PatchEvent, type Path, useCurrentUser} from 'sanity'
+import {useCallback, useEffect, useMemo, useState} from 'react'
+import {
+  type FormPatch,
+  getPublishedId,
+  LoadingBlock,
+  type PatchEvent,
+  type Path,
+  type TransactionLogEventWithEffects,
+  useClient,
+  useCurrentUser,
+} from 'sanity'
 import styled from 'styled-components'
 
+import {getJsonStream} from '../../../../../core/store/_legacy/history/history/getJsonStream'
 import {
   type CommentBaseCreatePayload,
   type CommentCreatePayload,
@@ -16,12 +26,76 @@ import {
   type CommentUpdatePayload,
   useComments,
 } from '../../../../../structure/comments'
+import {API_VERSION} from '../../constants/API_VERSION'
 import {type TaskDocument} from '../../types'
+import {CurrentWorkspaceProvider} from '../form/CurrentWorkspaceProvider'
+import {type FieldChange, trackFieldChanges} from './helpers/parseTransactions'
 import {EditedAt} from './TaskActivityEditedAt'
 import {TasksActivityCommentInput} from './TasksActivityCommentInput'
 import {TasksActivityCreatedAt} from './TasksActivityCreatedAt'
 import {ActivityItem} from './TasksActivityItem'
 import {TasksSubscribers} from './TasksSubscribers'
+
+function useActivityLog(task: TaskDocument) {
+  const [changes, setChanges] = useState<FieldChange[]>([])
+  const client = useClient({apiVersion: API_VERSION})
+  const {dataset, token} = client.config()
+
+  const queryParams = `tag=sanity.studio.tasks.history&effectFormat=mendoza&excludeContent=true&includeIdentifiedDocumentsOnly=true&reverse=true`
+  const transactionsUrl = client.getUrl(
+    `/data/history/${dataset}/transactions/${getPublishedId(task._id)}?${queryParams}`,
+  )
+
+  const fetchAndParse = useCallback(
+    async (newestTaskDocument: TaskDocument) => {
+      try {
+        const transactions: TransactionLogEventWithEffects[] = []
+
+        const stream = await getJsonStream(transactionsUrl, token)
+        const reader = stream.getReader()
+        let result
+        for (;;) {
+          result = await reader.read()
+          if (result.done) {
+            break
+          }
+          if ('error' in result.value) {
+            throw new Error(result.value.error.description || result.value.error.type)
+          }
+          transactions.push(result.value)
+        }
+
+        const fieldsToTrack: (keyof Omit<TaskDocument, '_rev'>)[] = [
+          'createdByUser',
+          'title',
+          'description',
+          'dueBy',
+          'assignedTo',
+          'status',
+          'target',
+        ]
+
+        const parsedChanges = await trackFieldChanges(
+          newestTaskDocument,
+          [...transactions],
+          fieldsToTrack,
+        )
+
+        setChanges(parsedChanges)
+      } catch (error) {
+        console.error('Failed to fetch and parse activity log', error)
+      }
+    },
+    [transactionsUrl, token],
+  )
+
+  useEffect(() => {
+    fetchAndParse(task)
+    // Task is updated on every change, wait until the revision changes to update the activity log.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fetchAndParse, task._rev])
+  return {changes}
+}
 
 const EMPTY_ARRAY: [] = []
 
@@ -45,14 +119,6 @@ interface TasksActivityLogProps {
   value: TaskDocument
 }
 
-interface ActivityLogItem {
-  author: string
-  field: string
-  from: string
-  timestamp: string
-  to?: string
-}
-
 type Activity =
   | {
       _type: 'comment'
@@ -61,7 +127,7 @@ type Activity =
     }
   | {
       _type: 'activity'
-      payload: ActivityLogItem
+      payload: FieldChange
       timestamp: string
     }
 
@@ -148,13 +214,12 @@ export function TasksActivityLog(props: TasksActivityLogProps) {
     [operation],
   )
 
-  // TODO: Get the task real activity.
-  const activityData: ActivityLogItem[] = EMPTY_ARRAY
+  const activityData = useActivityLog(value).changes
 
   const activity: Activity[] = useMemo(() => {
     const taskActivity: Activity[] = activityData.map((item) => ({
       _type: 'activity' as const,
-      payload: item as ActivityLogItem,
+      payload: item,
       timestamp: item.timestamp,
     }))
     const commentsActivity: Activity[] = taskComments.map((comment) => ({
@@ -199,48 +264,45 @@ export function TasksActivityLog(props: TasksActivityLogProps) {
             )}
 
             {currentUser && (
-              <Stack space={4} marginTop={1}>
-                {taskComments.length > 0 && (
-                  <Fragment>
-                    {activity.map((item) => {
-                      if (item._type === 'activity') {
-                        return <EditedAt key={item.timestamp} activity={item.payload} />
-                      }
-
-                      return (
-                        <ActivityItem
+              <CurrentWorkspaceProvider>
+                <Stack space={4} marginTop={1}>
+                  {activity.map((item) => {
+                    if (item._type === 'activity') {
+                      return <EditedAt key={item.timestamp} activity={item.payload} />
+                    }
+                    return (
+                      <ActivityItem
+                        key={item.payload.parentComment._id}
+                        userId={item.payload.parentComment.authorId}
+                      >
+                        <CommentsListItem
+                          avatarConfig={COMMENTS_LIST_ITEM_AVATAR_CONFIG}
+                          canReply
+                          currentUser={currentUser}
+                          innerPadding={1}
+                          isSelected={false}
                           key={item.payload.parentComment._id}
-                          userId={item.payload.parentComment.authorId}
-                        >
-                          <CommentsListItem
-                            avatarConfig={COMMENTS_LIST_ITEM_AVATAR_CONFIG}
-                            canReply
-                            currentUser={currentUser}
-                            innerPadding={1}
-                            isSelected={false}
-                            key={item.payload.parentComment._id}
-                            mentionOptions={mentionOptions}
-                            mode="default" // TODO: set dynamic mode?
-                            onCreateRetry={handleCommentCreateRetry}
-                            onDelete={handleCommentRemove}
-                            onEdit={handleCommentEdit}
-                            onReactionSelect={handleCommentReact}
-                            onReply={handleCommentReply}
-                            parentComment={item.payload.parentComment}
-                            replies={item.payload.replies}
-                          />
-                        </ActivityItem>
-                      )
-                    })}
-                  </Fragment>
-                )}
+                          mentionOptions={mentionOptions}
+                          mode="default" // TODO: set dynamic mode?
+                          onCreateRetry={handleCommentCreateRetry}
+                          onDelete={handleCommentRemove}
+                          onEdit={handleCommentEdit}
+                          onReactionSelect={handleCommentReact}
+                          onReply={handleCommentReply}
+                          parentComment={item.payload.parentComment}
+                          replies={item.payload.replies}
+                        />
+                      </ActivityItem>
+                    )
+                  })}
 
-                <TasksActivityCommentInput
-                  currentUser={currentUser}
-                  mentionOptions={mentionOptions}
-                  onSubmit={handleCommentCreate}
-                />
-              </Stack>
+                  <TasksActivityCommentInput
+                    currentUser={currentUser}
+                    mentionOptions={mentionOptions}
+                    onSubmit={handleCommentCreate}
+                  />
+                </Stack>
+              </CurrentWorkspaceProvider>
             )}
           </MotionStack>
         )}

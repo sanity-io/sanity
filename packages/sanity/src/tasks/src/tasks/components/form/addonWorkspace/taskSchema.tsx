@@ -1,5 +1,6 @@
 import {type ArrayFieldProps, defineField, defineType, type ObjectFieldProps} from 'sanity'
 
+import {TASK_STATUS} from '../../../constants/TaskStatus'
 import {type FormMode} from '../../../types'
 import {
   AssigneeCreateFormField,
@@ -139,10 +140,7 @@ export const taskSchema = (mode: FormMode) =>
         name: 'status',
         title: 'Status',
         options: {
-          list: [
-            {value: 'open', title: 'To Do'},
-            {value: 'closed', title: 'Done'},
-          ],
+          list: TASK_STATUS.map((s) => ({value: s.value, title: s.title})),
         },
         hidden: true,
       },
