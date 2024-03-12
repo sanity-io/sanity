@@ -1,18 +1,18 @@
-import {useMemo} from 'react'
+import {useCallback, useMemo} from 'react'
 
 import {Button} from '../../ui-components'
-import {useTasks} from '../src'
+import {useTasks, useTasksEnabled} from '../src'
 
 /**
  * Button that shows how many pending tasks are assigned to the current document.
  * Clicking it will open the task sidebar, showing the open tasks related to the document.
  *
- * todo: just show the tasks related to the document
- *
+ * todo: just show the tab with tasks related to the document
  * @internal
  */
 export function TasksFooterOpenTasks() {
-  const {data, activeDocument, toggleOpen} = useTasks()
+  const {data, activeDocument, toggleOpen, isOpen} = useTasks()
+  const {enabled} = useTasksEnabled()
 
   const pendingTasks = useMemo(
     () =>
@@ -22,7 +22,14 @@ export function TasksFooterOpenTasks() {
     [activeDocument, data],
   )
 
-  if (pendingTasks.length === 0) return null
+  const handleOnClick = useCallback(() => {
+    if (isOpen) {
+      return
+    }
+    toggleOpen()
+  }, [isOpen, toggleOpen])
+
+  if (pendingTasks.length === 0 || !enabled) return null
 
   return (
     <Button
@@ -30,7 +37,7 @@ export function TasksFooterOpenTasks() {
       mode="bleed"
       tooltipProps={{content: 'Open tasks'}}
       text={`${pendingTasks.length} open tasks`}
-      onClick={toggleOpen}
+      onClick={handleOnClick}
     />
   )
 }
