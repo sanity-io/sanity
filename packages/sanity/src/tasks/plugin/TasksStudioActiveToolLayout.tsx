@@ -1,6 +1,6 @@
 import {Box, Flex, Layer, useMediaIndex} from '@sanity/ui'
 import {AnimatePresence, motion, type Transition, type Variants} from 'framer-motion'
-import {type ActiveToolLayoutProps, LegacyLayerProvider} from 'sanity'
+import {type ActiveToolLayoutProps} from 'sanity'
 import styled, {css} from 'styled-components'
 
 import {TasksStudioSidebar, useTasksEnabled, useTasksNavigation} from '../src'
@@ -78,21 +78,19 @@ export function TasksStudioActiveToolLayout(props: ActiveToolLayoutProps) {
         {props.renderDefault(props)}
       </Box>
 
-      <LegacyLayerProvider zOffset="drawer">
-        <AnimatePresence initial={false}>
-          {isOpen && (
-            <SidebarMotionLayer
-              animate="visible"
-              height="fill"
-              initial="hidden"
-              transition={TRANSITION}
-              variants={VARIANTS}
-            >
-              <TasksStudioSidebar />
-            </SidebarMotionLayer>
-          )}
-        </AnimatePresence>
-      </LegacyLayerProvider>
+      <AnimatePresence initial={false}>
+        {isOpen && (
+          <SidebarMotionLayer
+            animate="visible"
+            height="fill"
+            initial="hidden"
+            transition={TRANSITION}
+            variants={VARIANTS}
+          >
+            <TasksStudioSidebar />
+          </SidebarMotionLayer>
+        )}
+      </AnimatePresence>
     </RootFlex>
   )
 }
