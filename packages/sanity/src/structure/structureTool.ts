@@ -17,6 +17,7 @@ import {getIntentState} from './getIntentState'
 import {structureUsEnglishLocaleBundle} from './i18n'
 import {changesInspector} from './panes/document/inspectors/changes'
 import {validationInspector} from './panes/document/inspectors/validation'
+import {addonDataset} from './plugins/addon-dataset'
 import {router} from './router'
 import {type StructureToolOptions} from './types'
 
@@ -102,7 +103,14 @@ export const structureTool = definePlugin<StructureToolOptions | void>((options)
       },
     },
 
-    plugins: [comments(), tasks()],
+    plugins: [
+      // NOTE: it is important that the `addonDataset` plugin is
+      // included before the `tasks` and `comments` plugins to ensure
+      // that the addon dataset provider is available for these plugins.
+      addonDataset(),
+      tasks({withAddonDatasetProvider: false}),
+      comments({withAddonDatasetProvider: false}),
+    ],
 
     tools: [
       {

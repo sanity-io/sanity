@@ -6,32 +6,42 @@ import {TasksStudioActiveToolLayout} from './TasksStudioActiveToolLayout'
 import {TasksStudioLayout} from './TasksStudioLayout'
 import {TasksStudioNavbar} from './TasksStudioNavbar'
 
+interface TasksPluginOptions {
+  withAddonDatasetProvider?: boolean
+}
+
 /**
  * @internal
  * @beta
  */
-export const tasks = definePlugin({
-  name: 'sanity/tasks',
-  // eslint-disable-next-line camelcase
-  __internal_tasks: {
-    footerAction: <TasksFooterOpenTasks />,
-  },
-  studio: {
-    components: {
-      layout: TasksStudioLayout,
-      navbar: TasksStudioNavbar,
-      activeToolLayout: TasksStudioActiveToolLayout,
-    },
-  },
-  form: {
-    components: {
-      input: (props) => {
-        if (props.id === 'root' && props.schemaType.type?.name === 'document') {
-          return <TasksDocumentInputLayout {...(props as ObjectInputProps)} />
-        }
+export const tasks = definePlugin<TasksPluginOptions | void>((opts) => {
+  const {withAddonDatasetProvider = true} = opts || {}
 
-        return props.renderDefault(props)
+  return {
+    name: 'sanity/tasks',
+    // eslint-disable-next-line camelcase
+    __internal_tasks: {
+      footerAction: <TasksFooterOpenTasks />,
+    },
+    studio: {
+      components: {
+        layout: (props) => (
+          <TasksStudioLayout {...props} withAddonDatasetProvider={withAddonDatasetProvider} />
+        ),
+        navbar: TasksStudioNavbar,
+        activeToolLayout: TasksStudioActiveToolLayout,
       },
     },
-  },
+    form: {
+      components: {
+        input: (props) => {
+          if (props.id === 'root' && props.schemaType.type?.name === 'document') {
+            return <TasksDocumentInputLayout {...(props as ObjectInputProps)} />
+          }
+
+          return props.renderDefault(props)
+        },
+      },
+    },
+  }
 })
