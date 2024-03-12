@@ -77,7 +77,7 @@
     "@sanity/generate-help-url": "^3.0.0",
     "@sanity/types": "3.32.0",
     "arrify": "^1.0.1",
-    "groq-js": "1.5.0-canary.1",
+    "groq-js": "^1.5.0-canary.1",
     "humanize-list": "^1.0.1",
     "leven": "^3.1.0",
     "lodash": "^4.17.21",

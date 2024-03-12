@@ -1176,7 +1176,7 @@ importers:
         specifier: ^1.0.1
         version: 1.0.1
       groq-js:
-        specifier: 1.5.0-canary.1
+        specifier: ^1.5.0-canary.1
         version: 1.5.0-canary.1
       humanize-list:
         specifier: ^1.0.1
