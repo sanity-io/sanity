@@ -69,7 +69,7 @@
     "decompress": "^4.2.0",
     "esbuild": "^0.19.8",
     "esbuild-register": "^3.4.1",
-    "get-it": "^8.4.10",
+    "get-it": "^8.4.11",
     "golden-fleece": "^1.0.9",
     "node-machine-id": "^1.1.12",
     "pkg-dir": "^5.0.0",
