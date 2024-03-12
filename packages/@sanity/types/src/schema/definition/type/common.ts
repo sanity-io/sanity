@@ -69,3 +69,24 @@ export interface EnumListProps<V = unknown> {
   layout?: 'radio' | 'dropdown'
   direction?: 'horizontal' | 'vertical'
 }
+
+/** @public */
+export interface SearchConfiguration {
+  search?: {
+    /**
+     * Defines a search weight for this field to prioritize its importance
+     * during search operations in the Studio. This setting allows the specified
+     * field to be ranked higher in search results compared to other fields.
+     *
+     * By default, all fields are assigned a weight of 1. However, if a field is
+     * chosen as the `title` in the preview configuration's `select` option, it
+     * will automatically receive a default weight of 10. Similarly, if selected
+     * as the `subtitle`, the default weight is 5. Fields marked as
+     * `hidden: true` (no function) are assigned a weight of 0 by default.
+     *
+     * Note: Search weight configuration is currently supported only for fields
+     * of type string or portable text arrays.
+     */
+    weight?: number
+  }
+}

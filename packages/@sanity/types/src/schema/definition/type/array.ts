@@ -6,10 +6,10 @@ import {
   type IntrinsicTypeName,
   type TypeAliasDefinition,
 } from '../schemaDefinition'
-import {type BaseSchemaDefinition, type TitledListValue} from './common'
+import {type BaseSchemaDefinition, type SearchConfiguration, type TitledListValue} from './common'
 
 /** @public */
-export interface ArrayOptions<V = unknown> {
+export interface ArrayOptions<V = unknown> extends SearchConfiguration {
   list?: TitledListValue<V>[] | V[]
   /**
    * layout: 'tags' only works for string array

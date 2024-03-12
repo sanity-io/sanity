@@ -1,24 +1,15 @@
 import {type SanityClient} from '@sanity/client'
-import {type ObjectSchemaType, type SanityDocumentLike} from '@sanity/types'
+import {type CrossDatasetType, type SanityDocumentLike, type SchemaType} from '@sanity/types'
 import {type Observable} from 'rxjs'
 
 /**
  * @internal
  */
-export interface SearchTerms {
+export interface SearchTerms<Type extends SchemaType | CrossDatasetType = SchemaType> {
   filter?: string
   params?: Record<string, unknown>
   query: string
-  types: SearchableType[]
-}
-
-/**
- * @internal
- */
-export interface SearchableType {
-  name: string
-  title?: string
-  __experimental_search: ObjectSchemaType['__experimental_search']
+  types: Type[]
 }
 
 /**
@@ -35,7 +26,7 @@ export interface SearchPath {
  */
 export interface SearchSpec {
   typeName: string
-  paths?: SearchPath[]
+  paths: SearchPath[]
 }
 
 /**
@@ -67,6 +58,7 @@ export interface WeightedHit extends SearchHit {
  * @internal
  */
 export interface SearchFactoryOptions {
+  maxDepth?: number
   filter?: string
   params?: Record<string, unknown>
   tag?: string
@@ -97,7 +89,7 @@ export interface WeightedSearchResults {
  * @internal
  */
 export type SearchStrategyFactory<TResult extends TextSearchResults | WeightedSearchResults> = (
-  types: SearchableType[],
+  types: (SchemaType | CrossDatasetType)[],
   client: SanityClient,
   commonOpts: SearchFactoryOptions,
 ) => (searchTerms: string | SearchTerms, searchOpts?: SearchOptions) => Observable<TResult>
@@ -107,12 +99,14 @@ export type SearchStrategyFactory<TResult extends TextSearchResults | WeightedSe
  */
 export type SearchOptions = {
   __unstable_extendedProjection?: string
+  maxDepth?: number
   comments?: string[]
   includeDrafts?: boolean
   skipSortByScore?: boolean
   sort?: SearchSort[]
   cursor?: string
   limit?: number
+  isCrossDataset?: boolean
 }
 
 /**
@@ -128,6 +122,18 @@ export type SearchSort = {
   field: string
   mapWith?: string
 }
+
+/**
+ * @internal
+ */
+export interface TextSearchDocumentTypeConfiguration {
+  weights?: Record<string, number>
+}
+
+/**
+ * @internal
+ */
+export type TextSearchSort = Record<string, {order: SortDirection}>
 
 export type TextSearchParams = {
   query: {
@@ -170,6 +176,14 @@ export type TextSearchParams = {
    * parameter to paginate, keeping the query the same, but changing the cursor.
    */
   fromCursor?: string
+  /**
+   * Configuration for individual document types.
+   */
+  types?: Record<string, TextSearchDocumentTypeConfiguration>
+  /**
+   * Result sorting.
+   */
+  sort?: TextSearchSort[]
 }
 
 export type TextSearchResponse<Attributes = Record<string, unknown>> = {

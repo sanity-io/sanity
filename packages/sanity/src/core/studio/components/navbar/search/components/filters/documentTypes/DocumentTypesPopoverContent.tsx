@@ -1,4 +1,4 @@
-import {type Schema} from '@sanity/types'
+import {type Schema, type SchemaType} from '@sanity/types'
 import {Box, Flex, MenuDivider, Stack, Text} from '@sanity/ui'
 import {partition} from 'lodash'
 import {type KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
@@ -13,7 +13,6 @@ import {
 } from '../../../../../../../components'
 import {useSchema} from '../../../../../../../hooks'
 import {useTranslation} from '../../../../../../../i18n'
-import {type SearchableType} from '../../../../../../../search'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import {type DocumentTypeMenuItem} from '../../../types'
 import {getSelectableOmnisearchTypes} from '../../../utils/selectors'
@@ -173,13 +172,7 @@ export function DocumentTypesPopoverContent() {
   )
 }
 
-function ClearButton({
-  onClick,
-  selectedTypes,
-}: {
-  onClick: () => void
-  selectedTypes: SearchableType[]
-}) {
+function ClearButton({onClick, selectedTypes}: {onClick: () => void; selectedTypes: SchemaType[]}) {
   const {t} = useTranslation()
 
   return (
@@ -201,8 +194,8 @@ function ClearButton({
 
 function useGetDocumentTypeItems(
   schema: Schema,
-  selectedTypes: SearchableType[],
-  selectedTypesSnapshot: SearchableType[],
+  selectedTypes: SchemaType[],
+  selectedTypesSnapshot: SchemaType[],
   typeFilter: string,
 ) {
   return useMemo(() => {

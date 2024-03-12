@@ -1,9 +1,8 @@
 import {describe, expect, it} from '@jest/globals'
-import {type CurrentUser} from '@sanity/types'
+import {type CurrentUser, type SchemaType} from '@sanity/types'
 import {act, renderHook} from '@testing-library/react'
 import {useReducer} from 'react'
 
-import {type SearchableType} from '../../../../../../search'
 import {type RecentSearch} from '../../datastores/recentSearches'
 import {type SearchOrdering} from '../../types'
 import {initialSearchState, searchReducer, type SearchReducerState} from './reducer'
@@ -21,12 +20,10 @@ const mockOrdering: SearchOrdering = {
   titleKey: 'search.ordering.created-descending-label',
 }
 
-const mockSearchableType: SearchableType = {
-  // eslint-disable-next-line camelcase
-  __experimental_search: [],
+const mockSearchableType = {
   name: 'book',
   title: 'Book',
-}
+} as unknown as SchemaType
 
 const recentSearchTerms = {
   __recent: {

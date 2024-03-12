@@ -1,19 +1,28 @@
-import {type SanityDocumentLike} from '@sanity/types'
+import {DEFAULT_MAX_FIELD_DEPTH} from '@sanity/schema/_internal'
+import {type CrossDatasetType, type SanityDocumentLike, type SchemaType} from '@sanity/types'
 import {map} from 'rxjs/operators'
 
 import {removeDupes} from '../../util/draftUtils'
 import {
-  type SearchableType,
+  deriveSearchWeightsFromType,
+  type SearchOptions,
+  type SearchPath,
+  type SearchSort,
   type SearchStrategyFactory,
   type SearchTerms,
+  type TextSearchDocumentTypeConfiguration,
   type TextSearchParams,
   type TextSearchResponse,
   type TextSearchResults,
+  type TextSearchSort,
 } from '../common'
 
 const DEFAULT_LIMIT = 1000
 
-function normalizeSearchTerms(searchParams: string | SearchTerms, fallbackTypes: SearchableType[]) {
+function normalizeSearchTerms(
+  searchParams: string | SearchTerms,
+  fallbackTypes: (SchemaType | CrossDatasetType)[],
+) {
   if (typeof searchParams === 'string') {
     return {
       query: searchParams,
@@ -25,6 +34,54 @@ function normalizeSearchTerms(searchParams: string | SearchTerms, fallbackTypes:
     ...searchParams,
     types: searchParams.types.length ? searchParams.types : fallbackTypes,
   }
+}
+
+function optimizeSearchWeights(paths: SearchPath[]): SearchPath[] {
+  return paths.filter((path) => path.weight !== 1)
+}
+
+function getDocumentTypeConfiguration(
+  searchOptions: SearchOptions,
+  searchTerms: ReturnType<typeof normalizeSearchTerms>,
+): Record<string, TextSearchDocumentTypeConfiguration> {
+  const specs = searchTerms.types
+    .map((schemaType) =>
+      deriveSearchWeightsFromType({
+        schemaType,
+        maxDepth: searchOptions.maxDepth || DEFAULT_MAX_FIELD_DEPTH,
+        processPaths: optimizeSearchWeights,
+      }),
+    )
+    .filter(({paths}) => paths.length)
+
+  return specs.reduce<Record<string, TextSearchDocumentTypeConfiguration>>((nextTypes, spec) => {
+    return {
+      ...nextTypes,
+      [spec.typeName]: spec.paths.reduce<TextSearchDocumentTypeConfiguration>(
+        (nextType, {path, weight}) => {
+          return {
+            ...nextType,
+            weights: {
+              ...nextType.weights,
+              [path]: weight,
+            },
+          }
+        },
+        {},
+      ),
+    }
+  }, {})
+}
+
+function getSort(sort: SearchSort[] = []): TextSearchSort[] {
+  return sort.map<TextSearchSort>(
+    ({field, direction}) => ({
+      [field]: {
+        order: direction,
+      },
+    }),
+    {},
+  )
 }
 
 /**
@@ -52,10 +109,13 @@ export const createTextSearch: SearchStrategyFactory<TextSearchResults> = (
       query: {string: searchTerms.query},
       filter: filters.join(' && '),
       params: {
-        __types: searchTerms.types.map((type) => type.name),
+        __types: searchTerms.types.map((type) => ('name' in type ? type.name : type.type)),
         ...factoryOptions.params,
         ...searchTerms.params,
       },
+      types: getDocumentTypeConfiguration(searchOptions, searchTerms),
+      // TODO: `sort` is not supported by the Text Search API yet.
+      // sort: getSort(searchOptions.sort),
       includeAttributes: ['_id', '_type'],
       fromCursor: searchOptions.cursor,
       limit: searchOptions.limit ?? DEFAULT_LIMIT,

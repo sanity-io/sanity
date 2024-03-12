@@ -1,13 +1,13 @@
+import {type SchemaType} from '@sanity/types'
 import {Card, Text} from '@sanity/ui'
 import {useMemo} from 'react'
 
 import {useTranslation} from '../../../../../../i18n'
-import {type SearchableType} from '../../../../../../search'
 import {documentTypesTruncated} from '../../utils/documentTypesTruncated'
 
 interface TypePillsProps {
   availableCharacters?: number
-  types: SearchableType[]
+  types: SchemaType[]
 }
 
 export function DocumentTypesPill({availableCharacters, types}: TypePillsProps) {

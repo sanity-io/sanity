@@ -1,8 +1,9 @@
+import {DEFAULT_MAX_FIELD_DEPTH} from '@sanity/schema/_internal'
+import {type CrossDatasetType, type SchemaType} from '@sanity/types'
 import {compact, flatten, flow, toLower, trim, union, uniq, words} from 'lodash'
 
-import {joinPath} from '../../../core/util/searchUtils'
 import {
-  type SearchableType,
+  deriveSearchWeightsFromType,
   type SearchFactoryOptions,
   type SearchOptions,
   type SearchPath,
@@ -29,44 +30,6 @@ export interface SearchQuery {
 export const DEFAULT_LIMIT = 1000
 
 const combinePaths: (paths: string[][]) => string[] = flow([flatten, union, compact])
-
-/**
- * Create an object containing all available document types and weighted paths, used to construct a GROQ query for search.
- * System fields `_id` and `_type` are included by default.
- *
- * If `optimizeIndexPaths` is true, this will will convert all `__experimental_search` paths containing numbers
- * into array syntax. E.g. ['cover', 0, 'cards', 0, 'title'] =\> "cover[].cards[].title"
- *
- * This optimization will yield more search results than may be intended, but offers better performance over arrays with indices.
- * (which are currently unoptimizable by Content Lake)
- */
-function createSearchSpecs(types: SearchableType[], optimizeIndexedPaths: boolean) {
-  let hasIndexedPaths = false
-
-  const specs = types.map((type) => ({
-    typeName: type.name,
-    paths: type.__experimental_search.map((config) => {
-      const path = config.path.map((p) => {
-        if (typeof p === 'number') {
-          hasIndexedPaths = true
-          if (optimizeIndexedPaths) {
-            return [] as []
-          }
-        }
-        return p
-      })
-      return {
-        weight: config.weight,
-        path: joinPath(path),
-        mapWith: config.mapWith,
-      }
-    }),
-  }))
-  return {
-    specs,
-    hasIndexedPaths,
-  }
-}
 
 const pathWithMapper = ({mapWith, path}: SearchPath): string =>
   mapWith ? `${mapWith}(${path})` : path
@@ -147,41 +110,34 @@ function toOrderClause(orderBy: SearchSort[]): string {
  * @internal
  */
 export function createSearchQuery(
-  searchTerms: SearchTerms,
+  searchTerms: SearchTerms<SchemaType | CrossDatasetType>,
   searchOpts: SearchOptions & SearchFactoryOptions = {},
 ): SearchQuery {
   const {filter, params, tag} = searchOpts
 
-  /**
-   * First pass: create initial search specs and determine if this subset of types contains
-   * any indexed paths in `__experimental_search`.
-   * e.g. "authors.0.title" or ["authors", 0, "title"]
-   */
-  const {specs: exactSearchSpecs, hasIndexedPaths} = createSearchSpecs(searchTerms.types, false)
+  const specs = searchTerms.types
+    .map((schemaType) =>
+      deriveSearchWeightsFromType({
+        schemaType,
+        maxDepth: searchOpts.maxDepth || DEFAULT_MAX_FIELD_DEPTH,
+        isCrossDataset: searchOpts.isCrossDataset,
+      }),
+    )
+    .filter(({paths}) => paths.length)
 
   // Extract search terms from string query, factoring in phrases wrapped in quotes
   const terms = extractTermsFromQuery(searchTerms.query)
-
-  /**
-   * Second pass: create an optimized spec (with array indices removed), but only if types with any
-   * indexed paths have been previously found. Otherwise, passthrough original search specs.
-   *
-   * These optimized specs are only used when building constraints in this search query.
-   */
-  const optimizedSpecs = hasIndexedPaths
-    ? createSearchSpecs(searchTerms.types, true).specs
-    : exactSearchSpecs
 
   // Construct search filters used in this GROQ query
   const filters = [
     '_type in $__types',
     searchOpts.includeDrafts === false && `!(_id in path('drafts.**'))`,
-    ...createConstraints(terms, optimizedSpecs),
+    ...createConstraints(terms, specs),
     filter ? `(${filter})` : '',
     searchTerms.filter ? `(${searchTerms.filter})` : '',
   ].filter(Boolean)
 
-  const selections = exactSearchSpecs.map((spec) => {
+  const selections = specs.map((spec) => {
     const constraint = `_type == "${spec.typeName}" => `
     const selection = `{ ${spec.paths.map((cfg, i) => `"w${i}": ${pathWithMapper(cfg)}`)} }`
     return `${constraint}${selection}`
@@ -198,8 +154,6 @@ export function createSearchQuery(
     `*[${filters.join(' && ')}]` +
     `| order(${sortOrder})` +
     `[0...$__limit]` +
-    // the following would improve search quality for paths-with-numbers, but increases the size of the query by up to 50%
-    // `${hasIndexedPaths ? `[${createConstraints(terms, exactSearchSpec).join(' && ')}]` : ''}` +
     `{${finalProjection}}`
 
   // Optionally prepend our query with an 'extended' projection.
@@ -228,12 +182,12 @@ export function createSearchQuery(
     query: updatedQuery,
     params: {
       ...toGroqParams(terms),
-      __types: exactSearchSpecs.map((spec) => spec.typeName),
+      __types: specs.map((spec) => spec.typeName),
       __limit: limit,
       ...(params || {}),
     },
     options: {tag},
-    searchSpec: exactSearchSpecs,
+    searchSpec: specs,
     terms,
   }
 }

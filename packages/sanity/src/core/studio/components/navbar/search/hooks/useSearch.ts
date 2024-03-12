@@ -17,7 +17,6 @@ import {
 import {useClient} from '../../../../../hooks'
 import {
   createSearch,
-  getSearchTypesWithMaxDepth,
   type SearchHit,
   type SearchOptions,
   type SearchTerms,
@@ -87,16 +86,13 @@ export function useSearch({
 
   const search = useMemo(
     () =>
-      createSearch(
-        getSearchTypesWithMaxDepth(getSearchableOmnisearchTypes(schema), maxFieldDepth),
-        client,
-        {
-          tag: 'search.global',
-          unique: true,
-          unstable_enableNewSearch,
-        },
-      ),
-    [client, schema, maxFieldDepth, unstable_enableNewSearch],
+      createSearch(getSearchableOmnisearchTypes(schema), client, {
+        tag: 'search.global',
+        unique: true,
+        unstable_enableNewSearch,
+        maxDepth: maxFieldDepth,
+      }),
+    [client, maxFieldDepth, schema, unstable_enableNewSearch],
   )
 
   const handleQueryChange = useObservableCallback(

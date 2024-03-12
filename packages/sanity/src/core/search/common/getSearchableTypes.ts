@@ -16,5 +16,5 @@ export const getSearchableTypes = (schema: Schema): ObjectSchemaType[] =>
     .getTypeNames()
     .map((typeName) => schema.get(typeName))
     .filter(isNonNullable)
-    .filter((schemaType) => isDocumentType(schemaType))
-    .filter((type) => !isIgnoredType(type)) as ObjectSchemaType[]
+    .filter(isDocumentType)
+    .filter((type) => !isIgnoredType(type))

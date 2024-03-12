@@ -1,7 +1,7 @@
+import {type SchemaType} from '@sanity/types'
 import {type ButtonTone, type CardTone} from '@sanity/ui'
 
 import {
-  type SearchableType,
   type SearchHit,
   type SearchOptions,
   type SearchSort,
@@ -17,7 +17,7 @@ export type DocumentTypeMenuItem =
 
 interface DocumentTypeMenuItemType {
   selected: boolean
-  item: SearchableType
+  item: SchemaType
   type: 'item'
 }
 
