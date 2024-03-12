@@ -872,9 +872,15 @@ importers:
       groq-js:
         specifier: 1.5.0-canary.1
         version: 1.5.0-canary.1
+      json5:
+        specifier: ^2.2.3
+        version: 2.2.3
       tsconfig-paths:
         specifier: ^4.2.0
         version: 4.2.0
+      zod:
+        specifier: ^3.22.4
+        version: 3.22.4
     devDependencies:
       '@jest/globals':
         specifier: ^29.7.0
@@ -1437,6 +1443,9 @@ importers:
       '@sanity/client':
         specifier: ^6.15.5
         version: 6.15.5
+      '@sanity/codegen':
+        specifier: workspace:*
+        version: link:../@sanity/codegen
       '@sanity/color':
         specifier: ^3.0.0
         version: 3.0.0
@@ -1585,8 +1594,8 @@ importers:
         specifier: 1.0.2
         version: 1.0.2
       groq-js:
-        specifier: ^1.1.12
-        version: 1.4.3
+        specifier: 1.5.0-canary.1
+        version: 1.5.0-canary.1
       hashlru:
         specifier: ^2.3.0
         version: 2.3.0
