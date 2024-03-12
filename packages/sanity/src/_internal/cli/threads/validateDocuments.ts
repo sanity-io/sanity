@@ -31,6 +31,7 @@ interface AvailabilityResponse {
   omitted: {id: string; reason: 'existence' | 'permission'}[]
 }
 
+/** @internal */
 export interface ValidateDocumentsWorkerData {
   workDir: string
   configPath?: string
@@ -43,6 +44,7 @@ export interface ValidateDocumentsWorkerData {
   maxCustomValidationConcurrency?: number
 }
 
+/** @internal */
 export type ValidationWorkerChannel = WorkerChannel<{
   loadedWorkspace: WorkerChannelEvent<{
     name: string

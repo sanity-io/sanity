@@ -31,5 +31,4 @@ export default defineConfig({
   rollup: {
     plugins: [optimizeLodashImports()],
   },
-  tsconfig: 'tsconfig.dist.json',
 })

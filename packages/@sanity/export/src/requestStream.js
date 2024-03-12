@@ -1,4 +1,7 @@
 const {getIt} = require('get-it')
+// This linter rule isn't needed for get-it as it ships excellent CJS support
+// https://publint.dev/get-it@8.4.16
+// eslint-disable-next-line import/extensions
 const {keepAlive, promise} = require('get-it/middleware')
 const debug = require('./debug')
 

@@ -24,24 +24,21 @@
   },
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
+  "sideEffects": false,
+  "type": "commonjs",
   "exports": {
     ".": {
-      "types": "./lib/dts/src/index.d.ts",
       "source": "./src/index.ts",
+      "import": "./lib/index.mjs",
       "require": "./lib/index.js",
-      "node": {
-        "module": "./lib/index.esm.js",
-        "import": "./lib/index.cjs.mjs"
-      },
-      "import": "./lib/index.esm.js",
-      "default": "./lib/index.esm.js"
+      "default": "./lib/index.js"
     },
     "./package.json": "./package.json"
   },
   "main": "./lib/index.js",
   "module": "./lib/index.esm.js",
   "source": "./src/index.ts",
-  "types": "./lib/dts/src/index.d.ts",
+  "types": "./lib/index.d.ts",
   "files": [
     "lib",
     "src"
@@ -51,6 +48,7 @@
     "build": "pkg-utils build --tsconfig tsconfig.lib.json",
     "postbuild": "run-s check:package",
     "check:package": "pkg-utils --strict --tsconfig tsconfig.lib.json",
+    "check:types": "tsc",
     "clean": "rimraf lib",
     "watch": "pkg-utils watch --tsconfig tsconfig.lib.json"
   },
@@ -64,6 +62,7 @@
     "@codemirror/view": "^6.1.1",
     "@juggle/resize-observer": "^3.3.1",
     "@lezer/highlight": "^1.0.0",
+    "@repo/package.config": "workspace:*",
     "@rexxars/react-json-inspector": "^8.0.1",
     "@rexxars/react-split-pane": "^0.1.93",
     "@sanity/color": "^3.0.0",

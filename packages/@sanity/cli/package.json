@@ -22,24 +22,20 @@
   },
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
+  "type": "commonjs",
   "exports": {
     ".": {
-      "types": "./lib/dts/src/index.d.ts",
       "source": "./src/index.ts",
+      "import": "./lib/index.mjs",
       "require": "./lib/index.js",
-      "node": {
-        "module": "./lib/index.esm.js",
-        "import": "./lib/index.cjs.mjs"
-      },
-      "import": "./lib/index.esm.js",
-      "default": "./lib/index.esm.js"
+      "default": "./lib/index.js"
     },
     "./package.json": "./package.json"
   },
   "main": "./lib/index.js",
   "module": "./lib/index.esm.js",
   "source": "./src/index.ts",
-  "types": "./lib/dts/src/index.d.ts",
+  "types": "./lib/index.d.ts",
   "bin": {
     "sanity": "./bin/sanity"
   },
@@ -55,6 +51,7 @@
     "build": "pkg-utils build --tsconfig tsconfig.lib.json",
     "postbuild": "run-s check:package",
     "check:package": "pkg-utils --strict --tsconfig tsconfig.lib.json",
+    "check:types": "tsc",
     "clean": "rimraf lib",
     "lint": "eslint .",
     "test": "jest",
@@ -63,7 +60,7 @@
   },
   "dependencies": {
     "@babel/traverse": "^7.23.5",
-    "@sanity/codegen": "3.35.2",
+    "@sanity/codegen": "workspace:*",
     "@sanity/telemetry": "^0.7.6",
     "@sanity/util": "3.35.2",
     "chalk": "^4.1.2",
@@ -80,6 +77,7 @@
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",
+    "@repo/package.config": "workspace:*",
     "@rexxars/gitconfiglocal": "^3.0.1",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@sanity/client": "^6.15.7",

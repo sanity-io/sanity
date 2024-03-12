@@ -1,0 +1,123 @@
+{
+	"executionStatus": {
+		"/Users/cody/Developer/GitHub/sanity/dev/depcheck-test": {
+			"status": "passed",
+			"duration": 328.342125
+		},
+		"/Users/cody/Developer/GitHub/sanity/packages/@repo/package.config": {
+			"status": "passed",
+			"duration": 345.985667
+		},
+		"/Users/cody/Developer/GitHub/sanity/packages/@repo/tsconfig": {
+			"status": "passed",
+			"duration": 330.673792
+		},
+		"/Users/cody/Developer/GitHub/sanity/packages/@sanity/diff": {
+			"status": "passed",
+			"duration": 412.759208
+		},
+		"/Users/cody/Developer/GitHub/sanity/packages/@sanity/types": {
+			"status": "failure",
+			"duration": 523.964625,
+			"error": {
+				"shortMessage": "Command failed with exit code 255: depcheck",
+				"command": "depcheck",
+				"escapedCommand": "depcheck",
+				"exitCode": 255,
+				"failed": true,
+				"timedOut": false,
+				"isCanceled": false,
+				"killed": false,
+				"code": "ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL",
+				"prefix": "/Users/cody/Developer/GitHub/sanity/packages/@sanity/types"
+			},
+			"message": "Command failed with exit code 255: depcheck",
+			"prefix": "/Users/cody/Developer/GitHub/sanity/packages/@sanity/types"
+		},
+		"/Users/cody/Developer/GitHub/sanity/packages/groq": {
+			"status": "passed",
+			"duration": 360.464625
+		},
+		"/Users/cody/Developer/GitHub/sanity/packages/@sanity/codegen": {
+			"status": "queued"
+		},
+		"/Users/cody/Developer/GitHub/sanity/packages/@sanity/mutator": {
+			"status": "queued"
+		},
+		"/Users/cody/Developer/GitHub/sanity/packages/@sanity/schema": {
+			"status": "queued"
+		},
+		"/Users/cody/Developer/GitHub/sanity/packages/@sanity/util": {
+			"status": "queued"
+		},
+		"/Users/cody/Developer/GitHub/sanity/packages/@sanity/block-tools": {
+			"status": "queued"
+		},
+		"/Users/cody/Developer/GitHub/sanity/packages/@sanity/cli": {
+			"status": "queued"
+		},
+		"/Users/cody/Developer/GitHub/sanity/packages/@sanity/export": {
+			"status": "queued"
+		},
+		"/Users/cody/Developer/GitHub/sanity/packages/@sanity/import": {
+			"status": "queued"
+		},
+		"/Users/cody/Developer/GitHub/sanity/packages/@sanity/migrate": {
+			"status": "queued"
+		},
+		"/Users/cody/Developer/GitHub/sanity/packages/@sanity/import-cli": {
+			"status": "queued"
+		},
+		"/Users/cody/Developer/GitHub/sanity/packages/@sanity/portable-text-editor": {
+			"status": "queued"
+		},
+		"/Users/cody/Developer/GitHub/sanity/packages/create-sanity": {
+			"status": "queued"
+		},
+		"/Users/cody/Developer/GitHub/sanity/packages/sanity": {
+			"status": "queued"
+		},
+		"/Users/cody/Developer/GitHub/sanity/dev/design-studio": {
+			"status": "queued"
+		},
+		"/Users/cody/Developer/GitHub/sanity/dev/embedded-studio": {
+			"status": "queued"
+		},
+		"/Users/cody/Developer/GitHub/sanity/dev/starter-next-studio": {
+			"status": "queued"
+		},
+		"/Users/cody/Developer/GitHub/sanity/dev/starter-studio": {
+			"status": "queued"
+		},
+		"/Users/cody/Developer/GitHub/sanity/dev/strict-studio": {
+			"status": "queued"
+		},
+		"/Users/cody/Developer/GitHub/sanity/dev/test-next-studio": {
+			"status": "queued"
+		},
+		"/Users/cody/Developer/GitHub/sanity/examples/blog-studio": {
+			"status": "queued"
+		},
+		"/Users/cody/Developer/GitHub/sanity/examples/clean-studio": {
+			"status": "queued"
+		},
+		"/Users/cody/Developer/GitHub/sanity/examples/ecommerce-studio": {
+			"status": "queued"
+		},
+		"/Users/cody/Developer/GitHub/sanity/examples/movies-studio": {
+			"status": "queued"
+		},
+		"/Users/cody/Developer/GitHub/sanity/packages/@sanity/vision": {
+			"status": "queued"
+		},
+		"/Users/cody/Developer/GitHub/sanity/perf/studio": {
+			"status": "queued"
+		},
+		"/Users/cody/Developer/GitHub/sanity/dev/test-studio": {
+			"status": "queued"
+		},
+		"/Users/cody/Developer/GitHub/sanity/dev/studio-e2e-testing": {
+			"status": "queued"
+		}
+	}
+}

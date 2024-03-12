@@ -1,5 +1,6 @@
 {
   "ignores": [
+    "@repo/tsconfig",
     "@sanity/pkg-utils",
     "sanity",
     "@sanity/icons",

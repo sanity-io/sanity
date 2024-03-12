@@ -1,13 +1,11 @@
 {
-  "extends": "../../../tsconfig.settings",
+  "extends": "@repo/tsconfig/base.json",
   "include": ["./example", "./src"],
   "compilerOptions": {
-    "composite": true,
     "rootDir": ".",
-    "outDir": "./lib/dts",
+    "outDir": "./node_modules/.sanity-monorepo/dts",
 
     "noUnusedLocals": false,
     "strict": false
-  },
-  "references": [{"path": "../types/tsconfig.lib.json"}]
+  }
 }

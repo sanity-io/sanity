@@ -22,6 +22,7 @@
   },
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
+  "type": "commonjs",
   "main": "./src/export.js",
   "files": [
     "src"

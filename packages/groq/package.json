@@ -25,27 +25,23 @@
   },
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
+  "sideEffects": false,
+  "type": "commonjs",
   "exports": {
     ".": {
-      "types": "./lib/dts/src/groq.d.ts",
       "source": "./src/groq.ts",
+      "import": "./lib/groq.mjs",
       "require": "./lib/groq.js",
-      "node": {
-        "module": "./lib/groq.esm.js",
-        "import": "./lib/groq.cjs.mjs"
-      },
-      "import": "./lib/groq.esm.js",
-      "default": "./lib/groq.esm.js"
+      "default": "./lib/groq.js"
     },
     "./package.json": "./package.json"
   },
   "main": "./lib/groq.js",
   "module": "./lib/groq.esm.js",
   "source": "./src/groq.ts",
-  "types": "./lib/dts/src/groq.d.ts",
+  "types": "./lib/groq.d.ts",
   "files": [
     "lib",
-    "node",
     "src"
   ],
   "scripts": {
@@ -53,14 +49,17 @@
     "build": "pkg-utils build --tsconfig tsconfig.lib.json",
     "postbuild": "run-s check:package",
     "check:package": "pkg-utils --strict --tsconfig tsconfig.lib.json",
+    "check:types": "tsc",
     "clean": "rimraf lib",
     "lint": "eslint .",
     "pretest": "run-s build",
     "test": "node test/groq.test.cjs && node test/groq.test.mjs ",
     "watch": "pkg-utils watch --tsconfig tsconfig.lib.json"
   },
+  "devDependencies": {
+    "@repo/package.config": "workspace:*"
+  },
   "engines": {
     "node": ">=18"
-  },
-  "gitHead": "a7b7dad6bdfde05883a61f78e998b2571dfbe0e2"
+  }
 }

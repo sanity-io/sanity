@@ -23,6 +23,7 @@
   },
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
+  "type": "commonjs",
   "main": "./package.json",
   "bin": {
     "sanity-import": "./src/sanity-import.js"
@@ -30,6 +31,9 @@
   "files": [
     "src"
   ],
+  "scripts": {
+    "lint": "eslint ."
+  },
   "dependencies": {
     "@sanity/client": "^6.15.7",
     "@sanity/import": "3.35.2",
@@ -40,8 +44,5 @@
   },
   "engines": {
     "node": ">=18"
-  },
-  "scripts": {
-    "lint": "eslint ."
   }
 }
