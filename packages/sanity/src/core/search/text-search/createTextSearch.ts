@@ -40,7 +40,7 @@ function optimizeSearchWeights(paths: SearchPath[]): SearchPath[] {
   return paths.filter((path) => path.weight !== 1)
 }
 
-function getDocumentTypeConfiguration(
+export function getDocumentTypeConfiguration(
   searchOptions: SearchOptions,
   searchTerms: ReturnType<typeof normalizeSearchTerms>,
 ): Record<string, TextSearchDocumentTypeConfiguration> {
@@ -73,7 +73,7 @@ function getDocumentTypeConfiguration(
   }, {})
 }
 
-function getSort(sort: SearchSort[] = []): TextSearchSort[] {
+export function getSort(sort: SearchSort[] = []): TextSearchSort[] {
   return sort.map<TextSearchSort>(
     ({field, direction}) => ({
       [field]: {
