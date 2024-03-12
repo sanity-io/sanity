@@ -39,7 +39,7 @@ const shopifyTemplate: ProjectTemplate = {
   typescriptOnly: true,
   dependencies: {
     '@portabletext/toolkit': '^2.0.1',
-    '@sanity/icons': '^2.6.0',
+    '@sanity/icons': '^2.11.0',
     '@sanity/ui': '^2.0.0',
     '@types/lodash.get': '^4.4.7',
     'lodash.get': '^4.4.2',
