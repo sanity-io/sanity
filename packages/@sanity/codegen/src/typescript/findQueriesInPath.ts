@@ -25,6 +25,7 @@ type ResultQueries = {
 type ResultError = {
   type: 'error'
   error: Error
+  filename: string
 }
 
 /**
@@ -75,7 +76,7 @@ export async function* findQueriesInPath({
       yield {type: 'queries', filename, queries}
     } catch (error) {
       debug(`Error in file "${filename}"`, error)
-      yield {type: 'error', error}
+      yield {type: 'error', error, filename}
     }
   }
 }

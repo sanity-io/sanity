@@ -7,6 +7,7 @@ import enableBackupCommand from './backup/enableBackupCommand'
 import listBackupCommand from './backup/listBackupCommand'
 import buildCommand from './build/buildCommand'
 import checkCommand from './check/checkCommand'
+import generateTypesCodegenCommand from './codegen/generateTypesCommand'
 import configCheckCommand from './config/configCheckCommand'
 import addCorsOriginCommand from './cors/addCorsOriginCommand'
 import corsGroup from './cors/corsGroup'
@@ -97,6 +98,7 @@ const commands: (CliCommandDefinition | CliCommandGroupDefinition)[] = [
   queryDocumentsCommand,
   deleteDocumentsCommand,
   createDocumentsCommand,
+  generateTypesCodegenCommand,
   validateDocumentsCommand,
   graphqlGroup,
   listGraphQLAPIsCommand,
