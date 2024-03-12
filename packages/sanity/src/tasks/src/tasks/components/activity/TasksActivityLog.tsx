@@ -4,6 +4,7 @@ import {AnimatePresence, motion, type Variants} from 'framer-motion'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {
   type FormPatch,
+  getPublishedId,
   LoadingBlock,
   type PatchEvent,
   type Path,
@@ -25,6 +26,7 @@ import {
   type CommentUpdatePayload,
   useComments,
 } from '../../../../../structure/comments'
+import {API_VERSION} from '../../constants/API_VERSION'
 import {type TaskDocument} from '../../types'
 import {CurrentWorkspaceProvider} from '../form/CurrentWorkspaceProvider'
 import {type FieldChange, trackFieldChanges} from './helpers/parseTransactions'
@@ -36,49 +38,53 @@ import {TasksSubscribers} from './TasksSubscribers'
 
 function useActivityLog(task: TaskDocument) {
   const [changes, setChanges] = useState<FieldChange[]>([])
-  const client = useClient()
+  const client = useClient({apiVersion: API_VERSION})
   const {dataset, token} = client.config()
 
   const queryParams = `tag=sanity.studio.tasks.history&effectFormat=mendoza&excludeContent=true&includeIdentifiedDocumentsOnly=true&reverse=true`
   const transactionsUrl = client.getUrl(
-    `/data/history/${dataset}/transactions/${task._id}?${queryParams}`,
+    `/data/history/${dataset}/transactions/${getPublishedId(task._id)}?${queryParams}`,
   )
 
   const fetchAndParse = useCallback(
     async (newestTaskDocument: TaskDocument) => {
-      const transactions: TransactionLogEventWithEffects[] = []
+      try {
+        const transactions: TransactionLogEventWithEffects[] = []
 
-      const stream = await getJsonStream(transactionsUrl, token)
-      const reader = stream.getReader()
-      let result
-      for (;;) {
-        result = await reader.read()
-        if (result.done) {
-          break
+        const stream = await getJsonStream(transactionsUrl, token)
+        const reader = stream.getReader()
+        let result
+        for (;;) {
+          result = await reader.read()
+          if (result.done) {
+            break
+          }
+          if ('error' in result.value) {
+            throw new Error(result.value.error.description || result.value.error.type)
+          }
+          transactions.push(result.value)
         }
-        if ('error' in result.value) {
-          throw new Error(result.value.error.description || result.value.error.type)
-        }
-        transactions.push(result.value)
+
+        const fieldsToTrack: (keyof Omit<TaskDocument, '_rev'>)[] = [
+          'createdByUser',
+          'title',
+          'description',
+          'dueBy',
+          'assignedTo',
+          'status',
+          'target',
+        ]
+
+        const parsedChanges = await trackFieldChanges(
+          newestTaskDocument,
+          [...transactions],
+          fieldsToTrack,
+        )
+
+        setChanges(parsedChanges)
+      } catch (error) {
+        console.error('Failed to fetch and parse activity log', error)
       }
-
-      const fieldsToTrack: (keyof Omit<TaskDocument, '_rev'>)[] = [
-        'createdByUser',
-        'title',
-        'description',
-        'dueBy',
-        'assignedTo',
-        'status',
-        'target',
-      ]
-
-      const parsedChanges = await trackFieldChanges(
-        newestTaskDocument,
-        [...transactions],
-        fieldsToTrack,
-      )
-
-      setChanges(parsedChanges)
     },
     [transactionsUrl, token],
   )
