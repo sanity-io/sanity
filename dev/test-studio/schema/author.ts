@@ -1,5 +1,5 @@
 import {UserIcon as icon} from '@sanity/icons'
-import {type Rule} from 'sanity'
+import {defineField, defineType, type Rule} from 'sanity'
 
 const AUTHOR_ROLES = [
   {value: 'developer', title: 'Developer'},
@@ -7,14 +7,12 @@ const AUTHOR_ROLES = [
   {value: 'ops', title: 'Operations'},
 ]
 
-export default {
+export default defineType({
   name: 'author',
   type: 'document',
   title: 'Author',
   icon,
   description: 'This represents an author',
-  // eslint-disable-next-line camelcase
-  __experimental_search: [{path: 'name', weight: 10}],
   preview: {
     select: {
       title: 'name',
@@ -36,12 +34,15 @@ export default {
     },
   },
   fields: [
-    {
+    defineField({
       name: 'name',
       title: 'Name',
       type: 'string',
+      options: {
+        search: {weight: 100},
+      },
       validation: (rule: Rule) => rule.required(),
-    },
+    }),
     {
       name: 'bestFriend',
       title: 'Best friend',
@@ -125,4 +126,4 @@ export default {
       },
     },
   }),
-}
+})
