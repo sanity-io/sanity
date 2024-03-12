@@ -8,14 +8,14 @@ const STRUCTURE_TOOL_NAMESPACE = 'studio.structure-tool'
  * @internal
  */
 export function useStructureToolSetting<ValueType>(
-  namespace: string | null,
+  namespace: string,
   key: string | null,
   defaultValue?: ValueType,
 ): [ValueType | undefined, (_value: ValueType) => void] {
   const keyValueStore = useKeyValueStore()
   const [value, setValue] = useState<ValueType | undefined>(defaultValue)
 
-  const keyValueStoreKey = `${STRUCTURE_TOOL_NAMESPACE}.${namespace}.${key}`
+  const keyValueStoreKey = [STRUCTURE_TOOL_NAMESPACE, namespace, key].filter(Boolean).join('.')
 
   const settings = useMemo(() => {
     return keyValueStore.getKey(keyValueStoreKey)
