@@ -214,8 +214,19 @@ export function extractSchema(
       }
     }
 
+    // Ignore empty objects
     if (Object.keys(attributes).length === 0) {
       return {type: 'unknown'} satisfies UnknownTypeNode
+    }
+
+    if (schemaType.type?.name !== 'document') {
+      attributes._type = {
+        type: 'objectAttribute',
+        value: {
+          type: 'string',
+          value: schemaType.name,
+        },
+      }
     }
 
     return {

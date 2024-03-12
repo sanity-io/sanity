@@ -287,7 +287,18 @@ describe('Extract schema test', () => {
       'listItem',
       'markDefs',
       'level',
+      '_type',
     ])
+
+    expect(validDocument.attributes.blocks.value.of.attributes.children.value.type).toEqual('array')
+    assert(validDocument.attributes.blocks.value.of.attributes.children.value.type === 'array') // this is a workaround for TS
+    expect(validDocument.attributes.blocks.value.of.attributes.children.value.of.type).toEqual(
+      'object',
+    )
+    assert(validDocument.attributes.blocks.value.of.attributes.children.value.of.type === 'object') // this is a workaround for TS
+    expect(
+      Object.keys(validDocument.attributes.blocks.value.of.attributes.children.value.of.attributes),
+    ).toStrictEqual(['marks', 'text', '_type'])
 
     expect(extracted).toMatchSnapshot()
   })

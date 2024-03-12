@@ -428,6 +428,13 @@ Array [
           "value": Object {
             "of": Object {
               "attributes": Object {
+                "_type": Object {
+                  "type": "objectAttribute",
+                  "value": Object {
+                    "type": "string",
+                    "value": "block",
+                  },
+                },
                 "children": Object {
                   "optional": true,
                   "type": "objectAttribute",
@@ -436,6 +443,13 @@ Array [
                       "of": Array [
                         Object {
                           "attributes": Object {
+                            "_type": Object {
+                              "type": "objectAttribute",
+                              "value": Object {
+                                "type": "string",
+                                "value": "span",
+                              },
+                            },
                             "marks": Object {
                               "optional": true,
                               "type": "objectAttribute",
@@ -469,18 +483,39 @@ Array [
                         },
                         Object {
                           "attributes": Object {
+                            "_type": Object {
+                              "type": "objectAttribute",
+                              "value": Object {
+                                "type": "string",
+                                "value": "footnote",
+                              },
+                            },
                             "footnote": Object {
                               "optional": true,
                               "type": "objectAttribute",
                               "value": Object {
                                 "of": Object {
                                   "attributes": Object {
+                                    "_type": Object {
+                                      "type": "objectAttribute",
+                                      "value": Object {
+                                        "type": "string",
+                                        "value": "block",
+                                      },
+                                    },
                                     "children": Object {
                                       "optional": true,
                                       "type": "objectAttribute",
                                       "value": Object {
                                         "of": Object {
                                           "attributes": Object {
+                                            "_type": Object {
+                                              "type": "objectAttribute",
+                                              "value": Object {
+                                                "type": "string",
+                                                "value": "span",
+                                              },
+                                            },
                                             "marks": Object {
                                               "optional": true,
                                               "type": "objectAttribute",
@@ -617,6 +652,13 @@ Array [
                   "value": Object {
                     "of": Object {
                       "attributes": Object {
+                        "_type": Object {
+                          "type": "objectAttribute",
+                          "value": Object {
+                            "type": "string",
+                            "value": "link",
+                          },
+                        },
                         "href": Object {
                           "optional": true,
                           "type": "objectAttribute",
@@ -705,18 +747,39 @@ Array [
           "value": Object {
             "of": Object {
               "attributes": Object {
+                "_type": Object {
+                  "type": "objectAttribute",
+                  "value": Object {
+                    "type": "string",
+                    "value": "blockListEntry",
+                  },
+                },
                 "blocks": Object {
                   "optional": true,
                   "type": "objectAttribute",
                   "value": Object {
                     "of": Object {
                       "attributes": Object {
+                        "_type": Object {
+                          "type": "objectAttribute",
+                          "value": Object {
+                            "type": "string",
+                            "value": "block",
+                          },
+                        },
                         "children": Object {
                           "optional": true,
                           "type": "objectAttribute",
                           "value": Object {
                             "of": Object {
                               "attributes": Object {
+                                "_type": Object {
+                                  "type": "objectAttribute",
+                                  "value": Object {
+                                    "type": "string",
+                                    "value": "span",
+                                  },
+                                },
                                 "marks": Object {
                                   "optional": true,
                                   "type": "objectAttribute",
@@ -781,6 +844,13 @@ Array [
                           "value": Object {
                             "of": Object {
                               "attributes": Object {
+                                "_type": Object {
+                                  "type": "objectAttribute",
+                                  "value": Object {
+                                    "type": "string",
+                                    "value": "link",
+                                  },
+                                },
                                 "href": Object {
                                   "optional": true,
                                   "type": "objectAttribute",
@@ -932,6 +1002,13 @@ Array [
                 },
                 Object {
                   "attributes": Object {
+                    "_type": Object {
+                      "type": "objectAttribute",
+                      "value": Object {
+                        "type": "string",
+                        "value": "block",
+                      },
+                    },
                     "children": Object {
                       "optional": true,
                       "type": "objectAttribute",
@@ -940,6 +1017,13 @@ Array [
                           "of": Array [
                             Object {
                               "attributes": Object {
+                                "_type": Object {
+                                  "type": "objectAttribute",
+                                  "value": Object {
+                                    "type": "string",
+                                    "value": "span",
+                                  },
+                                },
                                 "marks": Object {
                                   "optional": true,
                                   "type": "objectAttribute",
@@ -973,6 +1057,13 @@ Array [
                             },
                             Object {
                               "attributes": Object {
+                                "_type": Object {
+                                  "type": "objectAttribute",
+                                  "value": Object {
+                                    "type": "string",
+                                    "value": "image",
+                                  },
+                                },
                                 "asset": Object {
                                   "optional": true,
                                   "type": "objectAttribute",
@@ -1159,6 +1250,13 @@ Array [
                             },
                             Object {
                               "attributes": Object {
+                                "_type": Object {
+                                  "type": "objectAttribute",
+                                  "value": Object {
+                                    "type": "string",
+                                    "value": "test",
+                                  },
+                                },
                                 "testString": Object {
                                   "optional": true,
                                   "type": "objectAttribute",
@@ -1236,6 +1334,13 @@ Array [
           "type": "objectAttribute",
           "value": Object {
             "attributes": Object {
+              "_type": Object {
+                "type": "objectAttribute",
+                "value": Object {
+                  "type": "string",
+                  "value": "object",
+                },
+              },
               "blocks": Object {
                 "optional": true,
                 "type": "objectAttribute",
@@ -1244,6 +1349,13 @@ Array [
                     "of": Array [
                       Object {
                         "attributes": Object {
+                          "_type": Object {
+                            "type": "objectAttribute",
+                            "value": Object {
+                              "type": "string",
+                              "value": "image",
+                            },
+                          },
                           "asset": Object {
                             "optional": true,
                             "type": "objectAttribute",
@@ -1343,12 +1455,26 @@ Array [
                       },
                       Object {
                         "attributes": Object {
+                          "_type": Object {
+                            "type": "objectAttribute",
+                            "value": Object {
+                              "type": "string",
+                              "value": "block",
+                            },
+                          },
                           "children": Object {
                             "optional": true,
                             "type": "objectAttribute",
                             "value": Object {
                               "of": Object {
                                 "attributes": Object {
+                                  "_type": Object {
+                                    "type": "objectAttribute",
+                                    "value": Object {
+                                      "type": "string",
+                                      "value": "span",
+                                    },
+                                  },
                                   "marks": Object {
                                     "optional": true,
                                     "type": "objectAttribute",
@@ -1515,6 +1641,13 @@ Array [
               "of": Array [
                 Object {
                   "attributes": Object {
+                    "_type": Object {
+                      "type": "objectAttribute",
+                      "value": Object {
+                        "type": "string",
+                        "value": "image",
+                      },
+                    },
                     "asset": Object {
                       "optional": true,
                       "type": "objectAttribute",
@@ -1651,12 +1784,26 @@ Array [
                 },
                 Object {
                   "attributes": Object {
+                    "_type": Object {
+                      "type": "objectAttribute",
+                      "value": Object {
+                        "type": "string",
+                        "value": "objectWithNestedArray",
+                      },
+                    },
                     "array": Object {
                       "optional": true,
                       "type": "objectAttribute",
                       "value": Object {
                         "of": Object {
                           "attributes": Object {
+                            "_type": Object {
+                              "type": "objectAttribute",
+                              "value": Object {
+                                "type": "string",
+                                "value": "object",
+                              },
+                            },
                             "author": Object {
                               "optional": true,
                               "type": "objectAttribute",
@@ -1786,6 +1933,13 @@ Array [
                 },
                 Object {
                   "attributes": Object {
+                    "_type": Object {
+                      "type": "objectAttribute",
+                      "value": Object {
+                        "type": "string",
+                        "value": "otherTestObject",
+                      },
+                    },
                     "field1": Object {
                       "optional": true,
                       "type": "objectAttribute",
@@ -1799,6 +1953,13 @@ Array [
                       "value": Object {
                         "of": Object {
                           "attributes": Object {
+                            "_type": Object {
+                              "type": "objectAttribute",
+                              "value": Object {
+                                "type": "string",
+                                "value": "object",
+                              },
+                            },
                             "aNumber": Object {
                               "optional": true,
                               "type": "objectAttribute",
@@ -1856,12 +2017,26 @@ Array [
           "value": Object {
             "of": Object {
               "attributes": Object {
+                "_type": Object {
+                  "type": "objectAttribute",
+                  "value": Object {
+                    "type": "string",
+                    "value": "block",
+                  },
+                },
                 "children": Object {
                   "optional": true,
                   "type": "objectAttribute",
                   "value": Object {
                     "of": Object {
                       "attributes": Object {
+                        "_type": Object {
+                          "type": "objectAttribute",
+                          "value": Object {
+                            "type": "string",
+                            "value": "span",
+                          },
+                        },
                         "marks": Object {
                           "optional": true,
                           "type": "objectAttribute",
@@ -1926,6 +2101,13 @@ Array [
                   "value": Object {
                     "of": Object {
                       "attributes": Object {
+                        "_type": Object {
+                          "type": "objectAttribute",
+                          "value": Object {
+                            "type": "string",
+                            "value": "link",
+                          },
+                        },
                         "href": Object {
                           "optional": true,
                           "type": "objectAttribute",
@@ -2014,12 +2196,26 @@ Array [
           "value": Object {
             "of": Object {
               "attributes": Object {
+                "_type": Object {
+                  "type": "objectAttribute",
+                  "value": Object {
+                    "type": "string",
+                    "value": "block",
+                  },
+                },
                 "children": Object {
                   "optional": true,
                   "type": "objectAttribute",
                   "value": Object {
                     "of": Object {
                       "attributes": Object {
+                        "_type": Object {
+                          "type": "objectAttribute",
+                          "value": Object {
+                            "type": "string",
+                            "value": "span",
+                          },
+                        },
                         "marks": Object {
                           "optional": true,
                           "type": "objectAttribute",
@@ -2114,6 +2310,13 @@ Array [
               "of": Array [
                 Object {
                   "attributes": Object {
+                    "_type": Object {
+                      "type": "objectAttribute",
+                      "value": Object {
+                        "type": "string",
+                        "value": "image",
+                      },
+                    },
                     "asset": Object {
                       "optional": true,
                       "type": "objectAttribute",
@@ -2302,6 +2505,13 @@ Array [
                 },
                 Object {
                   "attributes": Object {
+                    "_type": Object {
+                      "type": "objectAttribute",
+                      "value": Object {
+                        "type": "string",
+                        "value": "testObject",
+                      },
+                    },
                     "field1": Object {
                       "optional": true,
                       "type": "objectAttribute",
@@ -2325,6 +2535,13 @@ Array [
                 },
                 Object {
                   "attributes": Object {
+                    "_type": Object {
+                      "type": "objectAttribute",
+                      "value": Object {
+                        "type": "string",
+                        "value": "otherTestObject",
+                      },
+                    },
                     "field1": Object {
                       "optional": true,
                       "type": "objectAttribute",
@@ -2338,6 +2555,13 @@ Array [
                       "value": Object {
                         "of": Object {
                           "attributes": Object {
+                            "_type": Object {
+                              "type": "objectAttribute",
+                              "value": Object {
+                                "type": "string",
+                                "value": "object",
+                              },
+                            },
                             "aNumber": Object {
                               "optional": true,
                               "type": "objectAttribute",
@@ -2394,6 +2618,13 @@ Array [
           "type": "objectAttribute",
           "value": Object {
             "attributes": Object {
+              "_type": Object {
+                "type": "objectAttribute",
+                "value": Object {
+                  "type": "string",
+                  "value": "object",
+                },
+              },
               "blocks": Object {
                 "optional": true,
                 "type": "objectAttribute",
@@ -2402,12 +2633,26 @@ Array [
                     "of": Array [
                       Object {
                         "attributes": Object {
+                          "_type": Object {
+                            "type": "objectAttribute",
+                            "value": Object {
+                              "type": "string",
+                              "value": "block",
+                            },
+                          },
                           "children": Object {
                             "optional": true,
                             "type": "objectAttribute",
                             "value": Object {
                               "of": Object {
                                 "attributes": Object {
+                                  "_type": Object {
+                                    "type": "objectAttribute",
+                                    "value": Object {
+                                      "type": "string",
+                                      "value": "span",
+                                    },
+                                  },
                                   "marks": Object {
                                     "optional": true,
                                     "type": "objectAttribute",
@@ -2524,12 +2769,26 @@ Array [
               "of": Array [
                 Object {
                   "attributes": Object {
+                    "_type": Object {
+                      "type": "objectAttribute",
+                      "value": Object {
+                        "type": "string",
+                        "value": "block",
+                      },
+                    },
                     "children": Object {
                       "optional": true,
                       "type": "objectAttribute",
                       "value": Object {
                         "of": Object {
                           "attributes": Object {
+                            "_type": Object {
+                              "type": "objectAttribute",
+                              "value": Object {
+                                "type": "string",
+                                "value": "span",
+                              },
+                            },
                             "marks": Object {
                               "optional": true,
                               "type": "objectAttribute",
@@ -2594,6 +2853,13 @@ Array [
                       "value": Object {
                         "of": Object {
                           "attributes": Object {
+                            "_type": Object {
+                              "type": "objectAttribute",
+                              "value": Object {
+                                "type": "string",
+                                "value": "link",
+                              },
+                            },
                             "href": Object {
                               "optional": true,
                               "type": "objectAttribute",
@@ -2675,6 +2941,13 @@ Array [
                 },
                 Object {
                   "attributes": Object {
+                    "_type": Object {
+                      "type": "objectAttribute",
+                      "value": Object {
+                        "type": "string",
+                        "value": "imageWithPortableTextCaption",
+                      },
+                    },
                     "asset": Object {
                       "optional": true,
                       "type": "objectAttribute",
@@ -2711,12 +2984,26 @@ Array [
                       "value": Object {
                         "of": Object {
                           "attributes": Object {
+                            "_type": Object {
+                              "type": "objectAttribute",
+                              "value": Object {
+                                "type": "string",
+                                "value": "block",
+                              },
+                            },
                             "children": Object {
                               "optional": true,
                               "type": "objectAttribute",
                               "value": Object {
                                 "of": Object {
                                   "attributes": Object {
+                                    "_type": Object {
+                                      "type": "objectAttribute",
+                                      "value": Object {
+                                        "type": "string",
+                                        "value": "span",
+                                      },
+                                    },
                                     "marks": Object {
                                       "optional": true,
                                       "type": "objectAttribute",
@@ -2781,6 +3068,13 @@ Array [
                               "value": Object {
                                 "of": Object {
                                   "attributes": Object {
+                                    "_type": Object {
+                                      "type": "objectAttribute",
+                                      "value": Object {
+                                        "type": "string",
+                                        "value": "link",
+                                      },
+                                    },
                                     "href": Object {
                                       "optional": true,
                                       "type": "objectAttribute",
@@ -2914,12 +3208,26 @@ Array [
               "of": Array [
                 Object {
                   "attributes": Object {
+                    "_type": Object {
+                      "type": "objectAttribute",
+                      "value": Object {
+                        "type": "string",
+                        "value": "block",
+                      },
+                    },
                     "children": Object {
                       "optional": true,
                       "type": "objectAttribute",
                       "value": Object {
                         "of": Object {
                           "attributes": Object {
+                            "_type": Object {
+                              "type": "objectAttribute",
+                              "value": Object {
+                                "type": "string",
+                                "value": "span",
+                              },
+                            },
                             "marks": Object {
                               "optional": true,
                               "type": "objectAttribute",
@@ -2984,6 +3292,13 @@ Array [
                       "value": Object {
                         "of": Object {
                           "attributes": Object {
+                            "_type": Object {
+                              "type": "objectAttribute",
+                              "value": Object {
+                                "type": "string",
+                                "value": "link",
+                              },
+                            },
                             "href": Object {
                               "optional": true,
                               "type": "objectAttribute",
@@ -3177,6 +3492,13 @@ Array [
         "type": "objectAttribute",
         "value": Object {
           "attributes": Object {
+            "_type": Object {
+              "type": "objectAttribute",
+              "value": Object {
+                "type": "string",
+                "value": "image",
+              },
+            },
             "asset": Object {
               "optional": true,
               "type": "objectAttribute",
@@ -3621,12 +3943,26 @@ Array [
         "value": Object {
           "of": Object {
             "attributes": Object {
+              "_type": Object {
+                "type": "objectAttribute",
+                "value": Object {
+                  "type": "string",
+                  "value": "block",
+                },
+              },
               "children": Object {
                 "optional": true,
                 "type": "objectAttribute",
                 "value": Object {
                   "of": Object {
                     "attributes": Object {
+                      "_type": Object {
+                        "type": "objectAttribute",
+                        "value": Object {
+                          "type": "string",
+                          "value": "span",
+                        },
+                      },
                       "marks": Object {
                         "optional": true,
                         "type": "objectAttribute",
@@ -3691,6 +4027,13 @@ Array [
                 "value": Object {
                   "of": Object {
                     "attributes": Object {
+                      "_type": Object {
+                        "type": "objectAttribute",
+                        "value": Object {
+                          "type": "string",
+                          "value": "link",
+                        },
+                      },
                       "href": Object {
                         "optional": true,
                         "type": "objectAttribute",
@@ -3807,6 +4150,13 @@ Array [
         "type": "objectAttribute",
         "value": Object {
           "attributes": Object {
+            "_type": Object {
+              "type": "objectAttribute",
+              "value": Object {
+                "type": "string",
+                "value": "manuscript",
+              },
+            },
             "asset": Object {
               "optional": true,
               "type": "objectAttribute",
