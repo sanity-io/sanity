@@ -118,6 +118,10 @@ export default defineType({
         {
           type: 'image',
           name: 'image',
+          options: {
+            hotspot: true,
+          },
+          fields: [{type: 'string', name: 'alt'}],
         },
         {
           type: 'object',
