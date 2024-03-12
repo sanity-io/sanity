@@ -1,8 +1,8 @@
+import {TaskIcon} from '@sanity/icons'
 import {useCallback} from 'react'
 import {type DocumentActionDescription} from 'sanity'
 
 import {useTasksEnabled, useTasksNavigation} from '../src'
-import {TaskIcon} from '../src/tasks/components/TaskIcon'
 
 export function TaskCreateAction(): DocumentActionDescription | null {
   const {handleOpenTasks, setViewMode} = useTasksNavigation()
