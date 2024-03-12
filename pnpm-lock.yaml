@@ -1195,7 +1195,7 @@ importers:
         specifier: ^29.7.0
         version: 29.7.0
       '@sanity/icons':
-        specifier: ^2.8.0
+        specifier: ^2.11.2
         version: 2.11.2(react@18.2.0)
       rimraf:
         specifier: ^3.0.2
