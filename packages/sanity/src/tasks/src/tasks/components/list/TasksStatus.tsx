@@ -37,16 +37,14 @@ export function TasksStatus(props: TasksStatusProps) {
   )
 
   return (
-    <div>
-      <Flex paddingRight={2}>
-        {isLoading ? (
-          <div style={{height: '17px', width: '17px'}}>
-            <Spinner style={{marginLeft: '3.5px', marginRight: '3.5px', marginTop: '3.5px'}} />
-          </div>
-        ) : (
-          <Checkbox onChange={handleCheckboxChange} checked={checkboxValue} disabled={isLoading} />
-        )}
-      </Flex>
-    </div>
+    <Flex>
+      {isLoading ? (
+        <div style={{height: '17px', width: '17px'}}>
+          <Spinner style={{marginLeft: '3.5px', marginRight: '3.5px', marginTop: '3.5px'}} />
+        </div>
+      ) : (
+        <Checkbox onChange={handleCheckboxChange} checked={checkboxValue} disabled={isLoading} />
+      )}
+    </Flex>
   )
 }

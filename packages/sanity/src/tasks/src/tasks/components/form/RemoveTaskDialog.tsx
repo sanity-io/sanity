@@ -25,8 +25,8 @@ export function RemoveTaskDialog(props: ReturnType<typeof useRemoveTask>) {
         }}
       >
         <Stack space={3}>
-          <Text as="p">Are you sure you want to remove this task?</Text>
-          <Text as="p">It can't be restored</Text>
+          <Text as="p">Are you sure you want to delete this task?</Text>
+          <Text as="p">Once deleted, it cannot be restored.</Text>
         </Stack>
       </Dialog>
     )
