@@ -162,7 +162,7 @@
     "watch": "pkg-utils watch --tsconfig tsconfig.lib.json"
   },
   "dependencies": {
-    "@sanity/client": "^6.15.3",
+    "@sanity/client": "^6.15.4",
     "@sanity/types": "3.32.0",
     "get-random-values-esm": "1.0.2",
     "moment": "^2.29.4",
