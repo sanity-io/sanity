@@ -6,5 +6,6 @@
     "rootDir": ".",
     "outDir": "./lib/dts",
     "declarationDir": "./lib/dts"
-  }
+  },
+  "references": [{"path": "../types/tsconfig.lib.json"}]
 }
