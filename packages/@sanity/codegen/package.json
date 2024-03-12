@@ -59,6 +59,7 @@
   },
   "dependencies": {
     "@babel/core": "^7.23.9",
+    "@babel/generator": "^7.23.6",
     "@babel/preset-env": "^7.23.8",
     "@babel/preset-react": "^7.23.3",
     "@babel/preset-typescript": "^7.23.3",
@@ -66,11 +67,14 @@
     "@babel/traverse": "^7.23.5",
     "@babel/types": "^7.23.9",
     "debug": "^4.3.4",
+    "globby": "^10.0.0",
+    "groq-js": "1.5.0-canary.1",
     "tsconfig-paths": "^4.2.0"
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",
     "@types/babel__core": "^7.20.5",
+    "@types/babel__generator": "^7.6.8",
     "@types/babel__register": "^7.17.3",
     "@types/babel__traverse": "^7.18.1",
     "@types/debug": "^4.1.12",

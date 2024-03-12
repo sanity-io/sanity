@@ -842,6 +842,9 @@ importers:
       '@babel/core':
         specifier: ^7.23.9
         version: 7.24.0
+      '@babel/generator':
+        specifier: ^7.23.6
+        version: 7.23.6
       '@babel/preset-env':
         specifier: ^7.23.8
         version: 7.24.0(@babel/core@7.24.0)
@@ -863,6 +866,12 @@ importers:
       debug:
         specifier: ^4.3.4
         version: 4.3.4(supports-color@5.5.0)
+      globby:
+        specifier: ^10.0.0
+        version: 10.0.2
+      groq-js:
+        specifier: 1.5.0-canary.1
+        version: 1.5.0-canary.1
       tsconfig-paths:
         specifier: ^4.2.0
         version: 4.2.0
@@ -873,6 +882,9 @@ importers:
       '@types/babel__core':
         specifier: ^7.20.5
         version: 7.20.5
+      '@types/babel__generator':
+        specifier: ^7.6.8
+        version: 7.6.8
       '@types/babel__register':
         specifier: ^7.17.3
         version: 7.17.3
