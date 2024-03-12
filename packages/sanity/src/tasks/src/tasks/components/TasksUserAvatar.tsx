@@ -1,5 +1,5 @@
 import {UserIcon} from '@sanity/icons'
-import {type AvatarSize, Text} from '@sanity/ui'
+import {type AvatarSize, Text, TextSkeleton} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
 import {type User, UserAvatar, useUser} from 'sanity'
@@ -23,8 +23,15 @@ const AvatarRoot = styled.div<{$size: AvatarSize; $border?: boolean; $removeBg?:
 
 export function TasksUserAvatar(props: {user?: User; size?: AvatarSize; border?: boolean}) {
   const {user, size = 0, border = true} = props
-  const [loadedUser] = useUser(user?.id || '')
+  const [loadedUser, loading] = useUser(user?.id || '')
 
+  if (loading) {
+    return (
+      <AvatarRoot $size={size} $border={border}>
+        <TextSkeleton style={{width: '1ch', borderRadius: '50%'}} animated />
+      </AvatarRoot>
+    )
+  }
   if (!user || !loadedUser) {
     return (
       <AvatarRoot $size={size} $border={border}>
