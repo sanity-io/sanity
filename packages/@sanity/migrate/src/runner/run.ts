@@ -56,13 +56,13 @@ export async function* toFetchOptionsIterable(
   }
 }
 
-export async function run(config: MigrationRunnerConfig, migration: Migration) {
+export async function* run(config: MigrationRunnerConfig, migration: Migration) {
   const stats: MigrationProgress = {
     documents: 0,
     mutations: 0,
     pending: 0,
     queuedBatches: 0,
-    completedTransactions: [],
+    completedTransactionsLength: 0,
     currentTransactions: [],
   }
 
@@ -141,10 +141,11 @@ export async function run(config: MigrationRunnerConfig, migration: Migration) {
   )
 
   for await (const result of commits) {
-    stats.completedTransactions.push(result)
+    stats.completedTransactionsLength++
     config.onProgress?.({
       ...stats,
     })
+    yield result
   }
   config.onProgress?.({
     ...stats,
