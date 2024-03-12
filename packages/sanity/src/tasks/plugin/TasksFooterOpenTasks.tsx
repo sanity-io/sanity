@@ -18,7 +18,11 @@ export function TasksFooterOpenTasks() {
   const pendingTasks = useMemo(
     () =>
       data.filter((item) => {
-        return item.target?.document._ref === activeDocument?.documentId && item.status === 'open'
+        return (
+          item.target?.document._ref === activeDocument?.documentId &&
+          item.status === 'open' &&
+          item.createdByUser
+        )
       }),
     [activeDocument, data],
   )

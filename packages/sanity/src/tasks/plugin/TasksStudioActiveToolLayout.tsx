@@ -57,21 +57,14 @@ const SidebarMotionLayer = styled(motion(Layer))(({theme}) => {
   `
 })
 
-export function TasksStudioActiveToolLayout(props: ActiveToolLayoutProps) {
+function TasksStudioActiveToolLayoutInner(props: ActiveToolLayoutProps) {
   const mediaIndex = useMediaIndex()
-
-  const {enabled} = useTasksEnabled()
   const {
     state: {isOpen},
   } = useTasksNavigation()
 
-  if (!enabled) {
-    return props.renderDefault(props)
-  }
-
   // Lock the scroll when the sidebar is open in fullscreen mode
   const scrollLock = mediaIndex <= FULLSCREEN_MEDIA_INDEX && isOpen
-
   return (
     <RootFlex sizing="border" height="fill">
       <Box flex={1} height="fill" overflow={scrollLock ? 'hidden' : 'auto'}>
@@ -95,4 +88,13 @@ export function TasksStudioActiveToolLayout(props: ActiveToolLayoutProps) {
       </LegacyLayerProvider>
     </RootFlex>
   )
+}
+
+export function TasksStudioActiveToolLayout(props: ActiveToolLayoutProps) {
+  const {enabled} = useTasksEnabled()
+  if (!enabled) {
+    return props.renderDefault(props)
+  }
+
+  return <TasksStudioActiveToolLayoutInner {...props} />
 }

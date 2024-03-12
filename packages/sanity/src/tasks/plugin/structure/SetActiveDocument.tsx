@@ -2,9 +2,9 @@ import {useEffect} from 'react'
 import {getPublishedId} from 'sanity'
 
 import {usePane} from '../../../structure/components'
-import {type ActiveDocument, useTasks} from '../../src/tasks/context'
+import {type ActiveDocument, useTasks, useTasksEnabled} from '../../src/tasks/context'
 
-export function SetActiveDocument(document: ActiveDocument) {
+function SetActiveDocumentInner(document: ActiveDocument) {
   const {documentId, documentType} = document
   const {isLast} = usePane()
   const {setActiveDocument} = useTasks()
@@ -25,4 +25,10 @@ export function SetActiveDocument(document: ActiveDocument) {
   }, [documentId, documentType, isLast, setActiveDocument])
 
   return null
+}
+
+export function SetActiveDocument(document: ActiveDocument) {
+  const {enabled} = useTasksEnabled()
+  if (!enabled) return null
+  return <SetActiveDocumentInner {...document} />
 }

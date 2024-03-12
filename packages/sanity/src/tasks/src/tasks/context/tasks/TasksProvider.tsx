@@ -1,10 +1,8 @@
 import {useMemo, useState} from 'react'
-import {useAddonDataset} from 'sanity'
 
 import {useTasksStore} from '../../store'
 import {TasksContext} from './TasksContext'
 import {type ActiveDocument, type TasksContextValue} from './types'
-import {useTaskOperations} from './useTaskOperations'
 
 interface TasksProviderProps {
   children: React.ReactNode
@@ -19,11 +17,7 @@ export function TasksProvider(props: TasksProviderProps) {
   const {children} = props
   const [activeDocument, setActiveDocument] = useState<ActiveDocument | null>(null)
 
-  const {client, createAddonDataset} = useAddonDataset()
-  const {data = EMPTY_ARRAY, isLoading} = useTasksStore({
-    client,
-  })
-  const operations = useTaskOperations({client, createAddonDataset})
+  const {data = EMPTY_ARRAY, isLoading} = useTasksStore({})
 
   const value: TasksContextValue = useMemo(
     () => ({
@@ -31,9 +25,8 @@ export function TasksProvider(props: TasksProviderProps) {
       setActiveDocument,
       isLoading,
       data: data ?? [],
-      operations,
     }),
-    [activeDocument, data, isLoading, operations],
+    [activeDocument, data, isLoading],
   )
 
   return <TasksContext.Provider value={value}>{children}</TasksContext.Provider>

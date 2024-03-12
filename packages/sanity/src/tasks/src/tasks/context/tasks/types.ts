@@ -1,4 +1,4 @@
-import {type TaskCreatePayload, type TaskDocument, type TaskEditPayload} from '../../types'
+import {type TaskDocument} from '../../types'
 
 /**
  * @beta
@@ -17,15 +17,4 @@ export interface TasksContextValue {
   setActiveDocument: (document: ActiveDocument | null) => void
   data: TaskDocument[]
   isLoading: boolean
-  operations: TaskOperations
-}
-
-/**
- * @beta
- * @hidden
- */
-export interface TaskOperations {
-  create: (task: TaskCreatePayload) => Promise<TaskDocument>
-  edit: (id: string, task: TaskEditPayload) => Promise<TaskDocument>
-  remove: (id: string) => Promise<void>
 }

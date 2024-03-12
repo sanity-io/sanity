@@ -1,6 +1,6 @@
 import {useCallback, useState} from 'react'
 
-import {useTasks} from '../context'
+import {useTaskOperations} from './useTaskOperations'
 
 interface RemoveTaskOptions {
   id: string
@@ -21,7 +21,8 @@ export function useRemoveTask({id, onError, onRemoved}: RemoveTaskOptions): Remo
   const [removeStatus, setRemoveStatus] = useState<'idle' | 'loading' | 'error'>('idle')
   const [showDialog, setShowDialog] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const {operations} = useTasks()
+  const operations = useTaskOperations()
+
   const handleRemove = useCallback(async () => {
     try {
       setRemoveStatus('loading')

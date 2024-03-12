@@ -1,14 +1,13 @@
-import {type ListenEvent, type ListenOptions, type SanityClient} from '@sanity/client'
+import {type ListenEvent, type ListenOptions} from '@sanity/client'
 import {useCallback, useEffect, useMemo, useReducer, useState} from 'react'
 import {catchError, of} from 'rxjs'
-import {getPublishedId} from 'sanity'
+import {getPublishedId, useAddonDataset} from 'sanity'
 
 import {type Loadable, type TaskDocument} from '../types'
 import {tasksReducer, type TasksReducerAction, type TasksReducerState} from './reducer'
 
 export interface TasksStoreOptions {
   documentId?: string
-  client: SanityClient | null
 }
 
 interface TasksStoreReturnType extends Loadable<TaskDocument[]> {
@@ -40,7 +39,8 @@ const QUERY_SORT_ORDER = `order(${SORT_FIELD} ${SORT_ORDER})`
 const QUERY = `*[${QUERY_FILTERS.join(' && ')}] ${QUERY_PROJECTION} | ${QUERY_SORT_ORDER}`
 
 export function useTasksStore(opts: TasksStoreOptions): TasksStoreReturnType {
-  const {client, documentId} = opts
+  const {client} = useAddonDataset()
+  const {documentId} = opts
 
   const [state, dispatch] = useReducer(tasksReducer, INITIAL_STATE)
   const [isLoading, setIsLoading] = useState<boolean>(client !== null)

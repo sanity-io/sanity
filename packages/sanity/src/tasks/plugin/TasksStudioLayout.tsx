@@ -3,7 +3,7 @@ import {AddonDatasetProvider, type LayoutProps} from 'sanity'
 import {TasksEnabledProvider, TasksNavigationProvider, TasksProvider, useTasksEnabled} from '../src'
 
 const TasksStudioLayoutInner = (props: LayoutProps) => {
-  const enabled = useTasksEnabled()
+  const {enabled} = useTasksEnabled()
   if (!enabled) {
     return props.renderDefault(props)
   }

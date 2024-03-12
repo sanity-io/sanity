@@ -1,7 +1,7 @@
 import {Checkbox, Flex, Spinner} from '@sanity/ui'
 import {useCallback, useState} from 'react'
 
-import {useTasks} from '../../context'
+import {useTaskOperations} from '../../hooks/useTaskOperations'
 
 interface TasksStatusProps {
   documentId: string
@@ -9,7 +9,7 @@ interface TasksStatusProps {
 }
 
 export function TasksStatus(props: TasksStatusProps) {
-  const {operations} = useTasks()
+  const operations = useTaskOperations()
   const {documentId, status} = props
 
   const [checkboxValue, setCheckboxValue] = useState(status === 'closed')

@@ -7,7 +7,22 @@ export function useTasksNavigation(): TasksNavigationContextValue {
   const context = useContext(TasksNavigationContext)
 
   if (!context) {
-    throw new Error('useTasksNavigation must be used within a TasksNavigationProvider')
+    // Providers are not mounted when tasks enabled is disabled, but we still need to provide a
+    // default value for the context to avoid runtime errors in `TasksFooterAction` and `TaskCreateAction`
+    return {
+      state: {
+        activeTabId: 'assigned',
+        viewMode: 'list',
+        selectedTask: null,
+        isOpen: false,
+        duplicateTaskValues: null,
+      },
+      setActiveTab: () => null,
+      setViewMode: () => null,
+      handleCloseTasks: () => null,
+      handleCopyLinkToTask: () => null,
+      handleOpenTasks: () => null,
+    }
   }
 
   return context
