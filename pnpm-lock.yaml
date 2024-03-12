@@ -837,6 +837,12 @@ importers:
         specifier: ^4.0.0
         version: 4.0.0
 
+  packages/@sanity/codegen:
+    devDependencies:
+      rimraf:
+        specifier: ^3.0.2
+        version: 3.0.2
+
   packages/@sanity/diff:
     dependencies:
       '@sanity/diff-match-patch':

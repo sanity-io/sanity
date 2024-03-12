@@ -1,0 +1,67 @@
+{
+  "name": "@sanity/codegen",
+  "version": "3.33.0",
+  "description": "Codegen toolkit for Sanity.io",
+  "keywords": [
+    "sanity",
+    "cms",
+    "headless",
+    "realtime",
+    "content",
+    "codegen"
+  ],
+  "homepage": "https://www.sanity.io/",
+  "bugs": {
+    "url": "https://github.com/sanity-io/sanity/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sanity-io/sanity.git",
+    "directory": "packages/@sanity/codegen"
+  },
+  "license": "MIT",
+  "author": "Sanity.io <hello@sanity.io>",
+  "exports": {
+    ".": {
+      "types": "./lib/dts/src/_exports/index.d.ts",
+      "source": "./src/_exports/index.ts",
+      "require": "./lib/_exports/index.js",
+      "node": {
+        "module": "./lib/_exports/index.esm.js",
+        "import": "./lib/_exports/index.cjs.mjs"
+      },
+      "import": "./lib/_exports/index.esm.js",
+      "default": "./lib/_exports/index.esm.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "main": "./lib/_exports/index.js",
+  "module": "./lib/_exports/index.esm.js",
+  "source": "./src/_exports/index.ts",
+  "types": "./lib/dts/src/_exports/index.d.ts",
+  "files": [
+    "lib",
+    "src",
+    "!**/__tests__/**"
+  ],
+  "scripts": {
+    "prebuild": "run-s clean",
+    "build": "pkg-utils build --tsconfig tsconfig.lib.json",
+    "postbuild": "run-s check:package",
+    "check:package": "pkg-utils --strict --tsconfig tsconfig.lib.json",
+    "clean": "rimraf lib coverage",
+    "lint": "eslint .",
+    "watch": "pkg-utils watch --tsconfig tsconfig.lib.json",
+    "test": "jest"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "rimraf": "^3.0.2"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
