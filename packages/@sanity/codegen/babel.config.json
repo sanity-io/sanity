@@ -1,0 +1,12 @@
+{
+  "presets": [
+    ["@babel/preset-env", {"targets": "maintained node versions"}],
+    [
+      "@babel/preset-react",
+      {
+        "runtime": "automatic"
+      }
+    ],
+    "@babel/preset-typescript"
+  ]
+}
