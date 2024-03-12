@@ -1,13 +1,20 @@
-/* eslint-disable no-nested-ternary */
-import {UserIcon} from '@sanity/icons'
-import {Box, Card, type CardProps, Flex, Stack, Text} from '@sanity/ui'
+import {
+  Box,
+  // eslint-disable-next-line no-restricted-imports
+  Button as UIButton,
+  Card,
+  Flex,
+  Stack,
+  Text,
+} from '@sanity/ui'
 import {isThisISOWeek, isToday} from 'date-fns'
 import {useMemo} from 'react'
-import {useDateTimeFormat, UserAvatar, useUser} from 'sanity'
+import {useDateTimeFormat} from 'sanity'
 import styled from 'styled-components'
 
 import {Tooltip} from '../../../../../ui-components'
 import {type TaskDocument} from '../../types'
+import {TasksUserAvatar} from '../TasksUserAvatar'
 import {DocumentPreview} from './DocumentPreview'
 import {TasksStatus} from './TasksStatus'
 
@@ -17,22 +24,16 @@ interface TasksListItemProps
   onSelect: () => void
 }
 
-export const ThreadCard = styled(Card).attrs<CardProps>(({tone}) => ({
-  sizing: 'border',
-  borderBottom: true,
-  paddingBottom: 3,
-}))<CardProps>`
-  // ...
-`
-
-const Title = styled(Text)`
+const TitleButton = styled(UIButton)`
   &:hover {
     text-decoration: underline;
+    background-color: transparent;
   }
 `
 
 const TaskDetailsRoot = styled(Flex)`
-  margin-left: 25px;
+  /* Checkbox width is 17px and first row gap is 12px. */
+  margin-left: 29px;
 `
 const UserDisplayRoot = styled.div`
   margin-left: auto;
@@ -40,46 +41,6 @@ const UserDisplayRoot = styled.div`
   align-items: center;
 `
 
-function AssignedUser({userId}: {userId: string}) {
-  const [user] = useUser(userId)
-
-  if (!user) {
-    return (
-      <Text size={1}>
-        <UserIcon />
-      </Text>
-    )
-  }
-  return (
-    <UserAvatar
-      user={user}
-      size={0}
-      // @ts-expect-error `color` is not a valid prop on UserAvatar but it is sent to the `avatar`
-      color={user.imageUrl ? null : undefined}
-      __unstable_hideInnerStroke
-    />
-  )
-}
-
-const NoAssignedUserRoot = styled.div`
-  border-radius: 50%;
-  border: 1px dashed var(--card-border-color);
-  width: 19px;
-  height: 19px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  opacity: 0.6;
-`
-function NoUserAssigned() {
-  return (
-    <Text size={0} muted>
-      <NoAssignedUserRoot>
-        <UserIcon />
-      </NoAssignedUserRoot>
-    </Text>
-  )
-}
 function getTargetDocumentMeta(target?: TaskDocument['target']) {
   if (!target?.document?._ref) {
     return undefined
@@ -91,33 +52,32 @@ function getTargetDocumentMeta(target?: TaskDocument['target']) {
   }
 }
 
-const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
 function TaskDueDate({dueBy}: {dueBy: string}) {
-  const dateFormatter = useDateTimeFormat({dateStyle: 'medium'})
-  const dueByeDisplayValue = useMemo(() => {
-    const dueFormated = dateFormatter.format(new Date(dueBy))
-    const [monthAndDay] = dueFormated.split(',')
-    return {short: monthAndDay, full: dueFormated}
-  }, [dateFormatter, dueBy])
+  const fullDateFormatter = useDateTimeFormat({dateStyle: 'medium'})
+  const monthAndDayFormatter = useDateTimeFormat({month: 'short', day: 'numeric'})
+  const dayFormatter = useDateTimeFormat({weekday: 'long'})
 
-  const {isDueByToday, isDueThisWeek} = useMemo(() => {
+  const dateOptions = useMemo(() => {
     const date = new Date(dueBy)
     return {
+      fullDate: fullDateFormatter.format(date),
+      monthAndDay: monthAndDayFormatter.format(date),
+      day: dayFormatter.format(date),
       isDueByToday: isToday(date),
       isDueThisWeek: isThisISOWeek(date),
     }
-  }, [dueBy])
+  }, [dayFormatter, dueBy, fullDateFormatter, monthAndDayFormatter])
+  const {fullDate, monthAndDay, day, isDueByToday, isDueThisWeek} = dateOptions
 
   return (
-    <Tooltip content={dueByeDisplayValue.full}>
+    <Tooltip content={fullDate}>
       <Card tone={isDueByToday ? 'critical' : 'transparent'} padding={1} radius={2}>
         <Flex align="center" gap={2}>
           <Text as="time" size={1} dateTime={dueBy} muted>
-            {isDueByToday
-              ? 'Today'
-              : isDueThisWeek
-                ? days[new Date(dueBy).getDay()]
-                : dueByeDisplayValue.short}
+            {
+              // eslint-disable-next-line no-nested-ternary
+              isDueByToday ? 'Today' : isDueThisWeek ? day : monthAndDay
+            }
           </Text>
         </Flex>
       </Card>
@@ -137,15 +97,17 @@ export function TasksListItem({
   const targetDocument = useMemo(() => getTargetDocumentMeta(target), [target])
 
   return (
-    <ThreadCard>
+    <Card sizing={'border'} paddingBottom={3} borderBottom>
       <Stack space={2} paddingY={1}>
-        <Flex align="center" paddingY={1}>
+        <Flex align="center" paddingY={1} gap={3}>
           <TasksStatus documentId={documentId} status={status} />
-          <Title size={1} weight="semibold" onClick={onSelect}>
-            {title || 'Untitled'}
-          </Title>
+          <TitleButton mode="bleed" padding={0} onClick={onSelect}>
+            <Text size={1} weight="semibold">
+              {title || 'Untitled'}
+            </Text>
+          </TitleButton>
           <UserDisplayRoot>
-            {assignedTo ? <AssignedUser userId={assignedTo} /> : <NoUserAssigned />}
+            <TasksUserAvatar user={assignedTo ? {id: assignedTo} : undefined} />
           </UserDisplayRoot>
         </Flex>
         {(dueBy || targetDocument) && (
@@ -162,6 +124,6 @@ export function TasksListItem({
           </TaskDetailsRoot>
         )}
       </Stack>
-    </ThreadCard>
+    </Card>
   )
 }

@@ -1,7 +1,7 @@
 import {Checkbox, Flex, Spinner} from '@sanity/ui'
 import {useCallback, useState} from 'react'
 
-import {useTasks} from '../../context'
+import {useTaskOperations} from '../../hooks/useTaskOperations'
 
 interface TasksStatusProps {
   documentId: string
@@ -9,7 +9,7 @@ interface TasksStatusProps {
 }
 
 export function TasksStatus(props: TasksStatusProps) {
-  const {operations} = useTasks()
+  const operations = useTaskOperations()
   const {documentId, status} = props
 
   const [checkboxValue, setCheckboxValue] = useState(status === 'closed')
@@ -37,16 +37,14 @@ export function TasksStatus(props: TasksStatusProps) {
   )
 
   return (
-    <div>
-      <Flex paddingRight={2}>
-        {isLoading ? (
-          <div style={{height: '17px', width: '17px'}}>
-            <Spinner style={{marginLeft: '3.5px', marginRight: '3.5px', marginTop: '3.5px'}} />
-          </div>
-        ) : (
-          <Checkbox onChange={handleCheckboxChange} checked={checkboxValue} disabled={isLoading} />
-        )}
-      </Flex>
-    </div>
+    <Flex>
+      {isLoading ? (
+        <div style={{height: '17px', width: '17px'}}>
+          <Spinner style={{marginLeft: '3.5px', marginRight: '3.5px', marginTop: '3.5px'}} />
+        </div>
+      ) : (
+        <Checkbox onChange={handleCheckboxChange} checked={checkboxValue} disabled={isLoading} />
+      )}
+    </Flex>
   )
 }

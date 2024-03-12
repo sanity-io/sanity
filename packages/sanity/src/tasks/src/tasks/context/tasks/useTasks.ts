@@ -9,7 +9,15 @@ import {type TasksContextValue} from './types'
 export function useTasks(): TasksContextValue {
   const context = useContext(TasksContext)
   if (!context) {
-    throw new Error('useTasks must be used within a TasksProvider')
+    // Providers are not mounted when tasks enabled is disabled, but we still need to provide a
+    // default value for the context to avoid runtime errors in `TasksFooterAction` and `TaskCreateAction`
+    return {
+      activeDocument: null,
+      setActiveDocument: () => null,
+      data: [],
+      isLoading: false,
+    }
   }
+
   return context
 }

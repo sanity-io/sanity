@@ -14,16 +14,6 @@ export interface Loadable<T> {
  * @beta
  * @hidden
  */
-export interface TaskOperations {
-  create: (task: TaskCreatePayload) => Promise<TaskDocument>
-  edit: (id: string, task: TaskEditPayload) => Promise<TaskDocument>
-  remove: (id: string) => Promise<void>
-}
-
-/**
- * @beta
- * @hidden
- */
 export type TaskMessage = PortableTextBlock[] | null
 
 /**
@@ -93,8 +83,13 @@ export interface TaskDocument {
   authorId: string
   dueBy?: string
   assignedTo?: string
+  subscribers?: string[]
 
   target?: TaskTarget
+  /**
+   * Date representing when the task was created by the user and not by the system. When the `create task` button was clicked.
+   */
+  createdByUser?: string
 }
 
 /**
@@ -110,7 +105,7 @@ export type TaskPostPayload = Omit<TaskDocument, '_rev' | '_updatedAt' | '_creat
 export interface TaskCreatePayload {
   id?: string
   title: string
-  description?: TaskMessage
+  description: TaskMessage
   status: TaskStatus
   assignedTo?: string
   target?: TaskTarget
@@ -127,3 +122,5 @@ export type TaskEditPayload = {
   status?: TaskStatus
   assignedTo?: string
 }
+
+export type FormMode = 'create' | 'edit'

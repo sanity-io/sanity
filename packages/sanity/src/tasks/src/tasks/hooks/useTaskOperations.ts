@@ -1,21 +1,24 @@
-import {type SanityClient} from '@sanity/client'
 import {useCallback, useMemo} from 'react'
-import {useCurrentUser} from 'sanity'
+import {useAddonDataset, useCurrentUser} from 'sanity'
 
-import {
-  type TaskCreatePayload,
-  type TaskDocument,
-  type TaskEditPayload,
-  type TaskOperations,
-} from '../../types'
+import {type TaskCreatePayload, type TaskDocument, type TaskEditPayload} from '../types'
 
-interface TaskOperationsOptions {
-  client: SanityClient | null
-  createAddonDataset: () => Promise<SanityClient | null>
+/**
+ * @beta
+ * @hidden
+ */
+export interface TaskOperations {
+  create: (task: TaskCreatePayload) => Promise<TaskDocument>
+  edit: (id: string, task: TaskEditPayload) => Promise<TaskDocument>
+  remove: (id: string) => Promise<void>
 }
 
-export function useTaskOperations(opts: TaskOperationsOptions): TaskOperations {
-  const {client, createAddonDataset} = opts
+/**
+ * @beta
+ * @hidden
+ */
+export function useTaskOperations(): TaskOperations {
+  const {client, createAddonDataset} = useAddonDataset()
   const currentUser = useCurrentUser()
 
   const handleCreate = useCallback(

@@ -1,5 +1,6 @@
 import {definePlugin, type ObjectInputProps} from 'sanity'
 
+import {TaskCreateAction} from './TaskCreateAction'
 import {TasksDocumentInputLayout} from './TasksDocumentInputLayout'
 import {TasksFooterOpenTasks} from './TasksFooterOpenTasks'
 import {TasksStudioActiveToolLayout} from './TasksStudioActiveToolLayout'
@@ -15,6 +16,11 @@ export const tasks = definePlugin({
   // eslint-disable-next-line camelcase
   __internal_tasks: {
     footerAction: <TasksFooterOpenTasks />,
+  },
+  document: {
+    actions: (prev) => {
+      return [...prev, TaskCreateAction].filter(Boolean)
+    },
   },
   studio: {
     components: {

@@ -21,6 +21,7 @@ interface SearchResultItemPreviewProps {
   layout?: GeneralPreviewLayoutKey
   presence?: DocumentPresence[]
   schemaType: SchemaType
+  showBadge?: boolean
 }
 
 /**
@@ -43,6 +44,7 @@ export function SearchResultItemPreview({
   layout,
   presence,
   schemaType,
+  showBadge = true,
 }: SearchResultItemPreviewProps) {
   const documentPreviewStore = useDocumentPreviewStore()
 
@@ -65,11 +67,11 @@ export function SearchResultItemPreview({
     return (
       <Flex align="center" gap={3}>
         {presence && presence.length > 0 && <DocumentPreviewPresence presence={presence} />}
-        <Badge>{schemaType.title}</Badge>
+        {showBadge && <Badge>{schemaType.title}</Badge>}
         <DocumentStatusIndicator draft={draft} published={published} />
       </Flex>
     )
-  }, [draft, isLoading, presence, published, schemaType.title])
+  }, [draft, isLoading, presence, published, schemaType.title, showBadge])
 
   const tooltip = <DocumentStatus draft={draft} published={published} />
 

@@ -35,7 +35,10 @@ const RootCard = styled(Card)(({theme}) => {
     border-radius: ${radii}px;
     box-shadow: var(--input-box-shadow);
 
-    --input-box-shadow: inset 0 0 0 ${input.border.width}px ${color.input.default.enabled.border};
+    --input-box-shadow: ${focusRingBorderStyle({
+      color: color.input.default.enabled.border,
+      width: input.border.width,
+    })};
 
     &:not([data-expand-on-focus='false'], :focus-within) {
       background: transparent;
@@ -46,7 +49,12 @@ const RootCard = styled(Card)(({theme}) => {
       ${EditableWrap} {
         min-height: 1em;
       }
-      --input-box-shadow: inset 0 0 0 ${input.border.width}px var(--card-focus-ring-color);
+
+      /* box-shadow: inset 0 0 0 1px var(--card-focus-ring-color); */
+      --input-box-shadow: ${focusRingBorderStyle({
+        color: 'var(--card-focus-ring-color)',
+        width: input.border.width,
+      })};
     }
 
     &:focus-within {
@@ -140,6 +148,7 @@ export function CommentInputInner(props: CommentInputInnerProps) {
       {avatar}
 
       <RootCard
+        id="comment-input-root"
         data-expand-on-focus={expandOnFocus && !canSubmit ? 'true' : 'false'}
         data-focused={focused ? 'true' : 'false'}
         flex={1}

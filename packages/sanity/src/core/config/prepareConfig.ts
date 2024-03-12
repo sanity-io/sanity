@@ -196,7 +196,7 @@ export function prepareConfig(
       __internal: {
         sources: resolvedSources,
       },
-      tasks: rawWorkspace.unstable_tasks,
+      tasks: rawWorkspace.unstable_tasks ?? {enabled: true},
     }
     preparedWorkspaces.set(rawWorkspace, workspaceSummary)
     return workspaceSummary
