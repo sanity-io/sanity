@@ -1,5 +1,4 @@
 import {type SanityClient} from '@sanity/client'
-import {resolveSearchConfigForBaseFieldPaths} from '@sanity/schema/_internal'
 import {
   type CrossDatasetReferenceSchemaType,
   type ReferenceFilterSearchOptions,
@@ -22,20 +21,15 @@ export function search(
   type: CrossDatasetReferenceSchemaType,
   options: ReferenceFilterSearchOptions,
 ): Observable<SearchHit[]> {
-  const searchWeighted = createSearch(
-    type.to.map((crossDatasetType) => ({
-      name: crossDatasetType.type,
-      // eslint-disable-next-line camelcase
-      __experimental_search: resolveSearchConfigForBaseFieldPaths(
-        crossDatasetType,
-        options.maxFieldDepth,
-      ),
-    })),
-    client,
-    options,
-  )
+  const searchStrategy = createSearch(type.to, client, {
+    ...options,
+    maxDepth: options.maxFieldDepth,
+  })
 
-  return searchWeighted(textTerm, {includeDrafts: false}).pipe(
+  return searchStrategy(textTerm, {
+    includeDrafts: false,
+    isCrossDataset: true,
+  }).pipe(
     map(({hits}) => hits.map(({hit}) => hit)),
     map(collate),
     map((collated) =>

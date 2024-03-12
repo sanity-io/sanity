@@ -12,13 +12,7 @@ export * from './i18n'
 export * from './presence'
 export * from './preview'
 export * from './schema'
-export type {
-  SearchableType,
-  SearchFactoryOptions,
-  SearchOptions,
-  SearchSort,
-  SearchTerms,
-} from './search'
+export type {SearchFactoryOptions, SearchOptions, SearchSort, SearchTerms} from './search'
 export * from './store'
 export * from './studio'
 export * from './studioClient'

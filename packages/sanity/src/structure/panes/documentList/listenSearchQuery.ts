@@ -16,7 +16,7 @@ import {
 } from 'rxjs'
 import {exhaustMapWithTrailing} from 'rxjs-exhaustmap-with-trailing'
 import {type SanityDocumentLike, type Schema} from 'sanity'
-import {createSearch, getSearchableTypes, getSearchTypesWithMaxDepth} from 'sanity/_internalBrowser'
+import {createSearch, getSearchableTypes} from 'sanity/_internalBrowser'
 
 import {getExtendedProjection} from '../../structureBuilder/util/getExtendedProjection'
 // FIXME
@@ -97,24 +97,22 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Sanit
       // Use the type names to create a search query and fetch the documents that match the query.
       return typeNames$.pipe(
         mergeMap((typeNames: string[]) => {
-          const types = getSearchTypesWithMaxDepth(
-            getSearchableTypes(schema).filter((type) => {
-              if (typeNames.includes(type.name)) {
-                // make a call to getExtendedProjection in strict mode to verify that all fields are
-                // known. This method will throw an exception if there are any unknown fields specified
-                // in the sort by list
-                getExtendedProjection(type, sort.by, true)
-                return true
-              }
-              return false
-            }),
-            maxFieldDepth,
-          )
+          const types = getSearchableTypes(schema).filter((type) => {
+            if (typeNames.includes(type.name)) {
+              // make a call to getExtendedProjection in strict mode to verify that all fields are
+              // known. This method will throw an exception if there are any unknown fields specified
+              // in the sort by list
+              getExtendedProjection(type, sort.by, true)
+              return true
+            }
+            return false
+          })
 
           const search = createSearch(types, client, {
             filter,
             params,
             unstable_enableNewSearch,
+            maxDepth: maxFieldDepth,
           })
 
           const doFetch = () => {

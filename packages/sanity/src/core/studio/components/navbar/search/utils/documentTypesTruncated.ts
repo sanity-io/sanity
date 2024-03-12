@@ -1,5 +1,6 @@
+import {type SchemaType} from '@sanity/types'
+
 import {type TFunction} from '../../../../../i18n'
-import {type SearchableType} from '../../../../../search'
 
 const DEFAULT_AVAILABLE_CHARS = 40 // excluding "+x more" suffix
 
@@ -20,7 +21,7 @@ export function getDocumentTypesTruncated({
   types,
 }: {
   availableCharacters?: number
-  types: SearchableType[]
+  types: SchemaType[]
 }): {types: string[]; remainingCount: number} {
   if (types.length === 0) {
     return {remainingCount: 0, types: []}
@@ -30,7 +31,7 @@ export function getDocumentTypesTruncated({
    * Get the total number of visible document types whose titles fit within `availableCharacters` count.
    * The first document is always included, regardless of whether it fits within `availableCharacters` or not.
    */
-  const visibleTypes = types.reduce<SearchableType[]>(
+  const visibleTypes = types.reduce<SchemaType[]>(
     (function () {
       let remaining = availableCharacters
       return function (acc, val, index) {
@@ -71,7 +72,7 @@ export function documentTypesTruncated({
   types,
 }: {
   availableCharacters?: number
-  types: SearchableType[]
+  types: SchemaType[]
   t: TFunction<'studio', undefined>
 }): string {
   if (types.length === 0) {
@@ -94,6 +95,6 @@ export function documentTypesTruncated({
   })
 }
 
-function typeTitle(schemaType: SearchableType) {
+function typeTitle(schemaType: SchemaType) {
   return schemaType.title ?? schemaType.name
 }

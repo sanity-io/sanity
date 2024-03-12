@@ -1,7 +1,7 @@
+import {type SchemaType} from '@sanity/types'
 import intersection from 'lodash/intersection'
 import isEmpty from 'lodash/isEmpty'
 
-import {type SearchableType} from '../../../../../search'
 import {isNonNullable} from '../../../../../util'
 import {
   type SearchFieldDefinition,
@@ -82,7 +82,7 @@ export function narrowDocumentTypes({
 }: {
   fieldDefinitions: SearchFieldDefinitionDictionary
   filters: SearchFilter[]
-  types: SearchableType[]
+  types: SchemaType[]
 }): string[] {
   // Get all 'manually' selected document types
   const selectedDocumentTypes = types.map((type) => type.name)

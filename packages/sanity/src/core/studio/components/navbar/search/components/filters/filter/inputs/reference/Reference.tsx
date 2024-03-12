@@ -1,11 +1,15 @@
-import {isArraySchemaType, isReferenceSchemaType, type ReferenceValue} from '@sanity/types'
+import {
+  isArraySchemaType,
+  isReferenceSchemaType,
+  type ReferenceValue,
+  type SchemaType,
+} from '@sanity/types'
 import {Box, Card, Stack} from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
 
 import {Button} from '../../../../../../../../../../ui-components'
 import {useSchema} from '../../../../../../../../../hooks'
 import {useTranslation} from '../../../../../../../../../i18n'
-import {type SearchableType} from '../../../../../../../../../search'
 import {useSearchState} from '../../../../../contexts/search/useSearchState'
 import {type OperatorInputComponentProps} from '../../../../../definitions/operators/operatorTypes'
 import {getSchemaField} from '../../../../../utils/getSchemaField'
@@ -50,9 +54,9 @@ export function SearchFilterReferenceInput({
         }
         return []
       })
-      .reduce<SearchableType[]>((acc, val) => {
+      .reduce<SchemaType[]>((acc, val) => {
         if (acc.findIndex((v) => v.name === val?.name) < 0) {
-          acc.push(val as SearchableType)
+          acc.push(val as SchemaType)
         }
         return acc
       }, [])

@@ -3,7 +3,7 @@ import {type ReactNode, useCallback, useEffect, useMemo, useReducer, useRef, use
 
 import {type CommandListHandle} from '../../../../../../components'
 import {useSchema} from '../../../../../../hooks'
-import {type SearchableType, type SearchTerms} from '../../../../../../search'
+import {type SearchTerms} from '../../../../../../search'
 import {useCurrentUser} from '../../../../../../store'
 import {useSource} from '../../../../../source'
 import {SEARCH_LIMIT} from '../../constants'
@@ -83,9 +83,7 @@ export function SearchProvider({children, fullscreen}: SearchProviderProps) {
   const hasValidTerms = hasSearchableTerms({terms})
 
   // Get a narrowed list of document types to search on based on any current active filters.
-  const documentTypes = documentTypesNarrowed.map(
-    (documentType) => schema.get(documentType) as SearchableType,
-  )
+  const documentTypes = documentTypesNarrowed.map((documentType) => schema.get(documentType)!)
 
   // Get a list of 'complete' filters (filters that return valid values)
   const completeFilters = currentFilters.filter((filter) =>

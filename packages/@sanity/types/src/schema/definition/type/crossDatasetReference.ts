@@ -15,7 +15,7 @@ export interface CrossDatasetReferenceDefinition extends BaseSchemaDefinition {
     preview?: PreviewConfig
 
     /**
-     * @deprecated Configuring search is no longer supported
+     * @deprecated Unused. Configuring search is no longer supported.
      */
     __experimental_search?: {path: string | string[]; weight?: number; mapWith?: string}[]
   }[]

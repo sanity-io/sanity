@@ -1,10 +1,11 @@
 import {type SanityClient} from '@sanity/client'
+import {DEFAULT_MAX_FIELD_DEPTH} from '@sanity/schema/_internal'
 import {type ReferenceFilterSearchOptions, type ReferenceSchemaType} from '@sanity/types'
 import {combineLatest, type Observable, of} from 'rxjs'
 import {map, mergeMap, startWith, switchMap} from 'rxjs/operators'
 
 import {type DocumentPreviewStore, getPreviewPaths, prepareForPreview} from '../../../../preview'
-import {createSearch, getSearchTypesWithMaxDepth} from '../../../../search'
+import {createSearch} from '../../../../search'
 import {collate, type CollatedHit, getDraftId, getIdPair, isRecord} from '../../../../util'
 import {type ReferenceInfo, type ReferenceSearchHit} from '../../../inputs/ReferenceInput/types'
 
@@ -193,9 +194,10 @@ export function referenceSearch(
   options: ReferenceFilterSearchOptions,
   unstable_enableNewSearch: boolean,
 ): Observable<ReferenceSearchHit[]> {
-  const search = createSearch(getSearchTypesWithMaxDepth(type.to, options.maxFieldDepth), client, {
+  const search = createSearch(type.to, client, {
     ...options,
     unstable_enableNewSearch,
+    maxDepth: options.maxFieldDepth || DEFAULT_MAX_FIELD_DEPTH,
   })
   return search(textTerm, {includeDrafts: true}).pipe(
     map(({hits}) => hits.map(({hit}) => hit)),

@@ -1,6 +1,6 @@
-import {type CurrentUser} from '@sanity/types'
+import {type CurrentUser, type SchemaType} from '@sanity/types'
 
-import {type SearchableType, type SearchHit, type SearchTerms} from '../../../../../../search'
+import {type SearchHit, type SearchTerms} from '../../../../../../search'
 import {getPublishedId} from '../../../../../../util'
 import {type RecentSearch} from '../../datastores/recentSearches'
 import {type SearchFieldDefinitionDictionary} from '../../definitions/fields'
@@ -122,8 +122,8 @@ export type TermsFiltersSetValue = {
 }
 export type TermsQuerySet = {type: 'TERMS_QUERY_SET'; query: string}
 export type TermsSet = {type: 'TERMS_SET'; filters?: SearchFilter[]; terms: SearchTerms}
-export type TermsTypeAdd = {type: 'TERMS_TYPE_ADD'; schemaType: SearchableType}
-export type TermsTypeRemove = {type: 'TERMS_TYPE_REMOVE'; schemaType: SearchableType}
+export type TermsTypeAdd = {type: 'TERMS_TYPE_ADD'; schemaType: SchemaType}
+export type TermsTypeRemove = {type: 'TERMS_TYPE_REMOVE'; schemaType: SchemaType}
 export type TermsTypesClear = {type: 'TERMS_TYPES_CLEAR'}
 
 export type SearchAction =
@@ -499,7 +499,7 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
       }
     }
     case 'TERMS_TYPES_CLEAR': {
-      const types: SearchableType[] = []
+      const types: SchemaType[] = []
 
       return {
         ...state,

@@ -1,4 +1,4 @@
-import {type ReferenceValue} from '@sanity/types'
+import {type ReferenceValue, type SchemaType} from '@sanity/types'
 import {Autocomplete, Box, Flex, Text} from '@sanity/ui'
 import {
   type ForwardedRef,
@@ -15,7 +15,7 @@ import styled from 'styled-components'
 import {Popover} from '../../../../../../../../../../ui-components'
 import {useSchema} from '../../../../../../../../../hooks'
 import {Translate, useTranslation} from '../../../../../../../../../i18n'
-import {type SearchableType, type SearchHit} from '../../../../../../../../../search'
+import {type SearchHit} from '../../../../../../../../../search'
 import {getPublishedId} from '../../../../../../../../../util'
 import {POPOVER_RADIUS} from '../../../../../constants'
 import {useSearchState} from '../../../../../contexts/search/useSearchState'
@@ -34,7 +34,7 @@ interface PopoverContentProps {
 
 interface ReferenceAutocompleteProps {
   onSelect?: (reference: ReferenceValue | null) => void
-  types?: SearchableType[]
+  types?: SchemaType[]
   value?: ReferenceValue | null
 }
 

@@ -1,9 +1,8 @@
-import {type Schema} from '@sanity/types'
+import {type Schema, type SchemaType} from '@sanity/types'
 import {type ButtonTone} from '@sanity/ui'
 import {difference, startCase} from 'lodash'
 
 import {type TFunction} from '../../../../../../../i18n'
-import {type SearchableType} from '../../../../../../../search'
 import {isNonNullable} from '../../../../../../../util'
 import {
   type SearchFieldDefinition,
@@ -40,7 +39,7 @@ export function createFilterMenuItems({
   filterDefinitions: SearchFilterDefinitionDictionary
   schema: Schema
   titleFilter: string
-  types: SearchableType[]
+  types: SchemaType[]
   t: TFunction<'studio', undefined>
 }): FilterMenuItem[] {
   // Construct field filters based on available definitions and current title fitler
@@ -148,7 +147,7 @@ function buildFieldMenuItemsNarrowed({
   filterDefinitions: SearchFilterDefinitionDictionary
   filters: SearchFilter[]
   schema: Schema
-  types: SearchableType[]
+  types: SchemaType[]
   t: TFunction<'studio', undefined>
 }) {
   const sharedFilters = filters.filter((filter) => {

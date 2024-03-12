@@ -1,18 +1,16 @@
-import {type SanityDocumentLike} from '@sanity/types'
+import {type CrossDatasetType, type SanityDocumentLike, type SchemaType} from '@sanity/types'
 import {sortBy} from 'lodash'
 import {map, tap} from 'rxjs/operators'
 
 import {removeDupes} from '../../util/draftUtils'
-import {
-  type SearchableType,
-  type SearchStrategyFactory,
-  type SearchTerms,
-  type WeightedSearchResults,
-} from '../common'
+import {type SearchStrategyFactory, type SearchTerms, type WeightedSearchResults} from '../common'
 import {applyWeights} from './applyWeights'
 import {createSearchQuery} from './createSearchQuery'
 
-function getSearchTerms(searchParams: string | SearchTerms, types: SearchableType[]) {
+function getSearchTerms(
+  searchParams: string | SearchTerms,
+  types: (SchemaType | CrossDatasetType)[],
+) {
   if (typeof searchParams === 'string') {
     return {
       query: searchParams,
