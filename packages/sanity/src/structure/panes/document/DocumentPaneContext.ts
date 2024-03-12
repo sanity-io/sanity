@@ -81,6 +81,9 @@ export interface DocumentPaneContextValue {
   isDeleted: boolean
   isPermissionsLoading: boolean
   unstable_languageFilter: DocumentLanguageFilterComponent[]
+  __internal_tasks?: {
+    footerAction: React.ReactNode
+  }
 }
 
 /** @internal */

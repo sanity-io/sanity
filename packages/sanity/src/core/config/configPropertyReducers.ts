@@ -1,4 +1,5 @@
 import {type AssetSource, type SchemaTypeDefinition} from '@sanity/types'
+import {type ReactNode} from 'react'
 
 import {type LocaleConfigContext, type LocaleDefinition, type LocaleResourceBundle} from '../i18n'
 import {type Template, type TemplateItem} from '../templates'
@@ -304,6 +305,31 @@ export const documentCommentsEnabledReducer = (opts: {
       )}`,
     )
   }, initialValue)
+
+  return result
+}
+
+export const internalTasksReducer = (opts: {
+  config: PluginOptions
+}): {footerAction: ReactNode} | undefined => {
+  const {config} = opts
+  const flattenedConfig = flattenConfig(config, [])
+
+  const result = flattenedConfig.reduce(
+    (acc: {footerAction: ReactNode} | undefined, {config: innerConfig}) => {
+      const resolver = innerConfig.__internal_tasks
+
+      if (!resolver) return acc
+      if (typeof resolver === 'object' && resolver.footerAction) return resolver
+
+      throw new Error(
+        `Expected \`__internal__tasks\` to be an object with footerAction, but received ${getPrintableType(
+          resolver,
+        )}`,
+      )
+    },
+    undefined,
+  )
 
   return result
 }

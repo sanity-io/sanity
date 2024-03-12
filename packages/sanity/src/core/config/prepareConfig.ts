@@ -29,6 +29,7 @@ import {
   initialDocumentActions,
   initialDocumentBadges,
   initialLanguageFilter,
+  internalTasksReducer,
   newDocumentOptionsResolver,
   newSearchEnabledReducer,
   partialIndexingEnabledReducer,
@@ -472,6 +473,10 @@ function resolveSource({
     templates,
     auth,
     i18n: i18n.source,
+    // eslint-disable-next-line camelcase
+    __internal_tasks: internalTasksReducer({
+      config,
+    }),
     document: {
       actions: (partialContext) =>
         resolveConfigProperty({
@@ -533,6 +538,7 @@ function resolveSource({
         },
       },
     },
+
     form: {
       file: {
         assetSources: resolveConfigProperty({

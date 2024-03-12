@@ -358,6 +358,10 @@ export interface PluginOptions {
   tools?: Tool[] | ComposableOption<Tool[], ConfigContext>
   form?: SanityFormConfig
 
+  __internal_tasks?: {
+    footerAction: ReactNode
+  }
+
   studio?: {
     /**
      * Components for the studio.
@@ -652,6 +656,9 @@ export interface Source {
       enabled: (props: DocumentCommentsEnabledContext) => boolean
     }
   }
+
+  /** @internal */
+  __internal_tasks?: {footerAction: ReactNode}
 
   /**
    * Form-related functionality.

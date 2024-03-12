@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import {isActionEnabled} from '@sanity/schema/_internal'
 import {
   type ObjectSchemaType,
@@ -62,12 +63,15 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const schema = useSchema()
   const templates = useTemplates()
   const {
-    actions: documentActions,
-    badges: documentBadges,
-    unstable_fieldActions: fieldActionsResolver,
-    unstable_languageFilter: languageFilterResolver,
-    inspectors: inspectorsResolver,
-  } = useSource().document
+    __internal_tasks,
+    document: {
+      actions: documentActions,
+      badges: documentBadges,
+      unstable_fieldActions: fieldActionsResolver,
+      unstable_languageFilter: languageFilterResolver,
+      inspectors: inspectorsResolver,
+    },
+  } = useSource()
   const presenceStore = usePresenceStore()
   const paneRouter = usePaneRouter()
   const setPaneParams = paneRouter.setParams
@@ -583,6 +587,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       focusPath,
       inspector: currentInspector || null,
       inspectors,
+      __internal_tasks,
       onBlur: handleBlur,
       onChange: handleChange,
       onFocus: handleFocus,
@@ -622,6 +627,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       unstable_languageFilter: languageFilter,
     }),
     [
+      __internal_tasks,
       actions,
       activeViewId,
       badges,
