@@ -35,6 +35,8 @@ import {SearchProvider} from './search/contexts/search/SearchProvider'
 import {UserMenu} from './userMenu'
 import {WorkspaceMenuButton} from './workspace'
 
+const EMPTY_ARRAY: [] = []
+
 const RootLayer = styled(Layer)`
   min-height: auto;
   position: relative;
@@ -60,8 +62,11 @@ const NavGrid = styled(Grid)`
  * @hidden
  * @beta */
 export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
-  // eslint-disable-next-line camelcase
-  const {__internal_rightSectionNode = null} = props
+  const {
+    // eslint-disable-next-line camelcase
+    __internal_actions: actions = EMPTY_ARRAY,
+  } = props
+
   const {name, tools} = useWorkspace()
   const routerState = useRouterState()
   const mediaIndex = useMediaIndex()
@@ -153,6 +158,25 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
     setDrawerOpen(true)
   }, [])
 
+  const actionNodes = useMemo(() => {
+    if (!shouldRender.tools) return null
+
+    return actions
+      ?.filter((v) => v.location === 'topbar')
+      ?.map((action) => {
+        return (
+          <Button
+            iconRight={action?.icon}
+            key={action.name}
+            mode="bleed"
+            onClick={action?.onAction}
+            selected={action.selected}
+            text={action.title}
+          />
+        )
+      })
+  }, [actions, shouldRender.tools])
+
   return (
     <FreeTrialProvider>
       <RootLayer zOffset={100} data-search-open={searchFullscreenOpen}>
@@ -236,10 +260,13 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
                       </BoundaryElementProvider>
                     </SearchProvider>
                   </LayerProvider>
+
                   {shouldRender.tools && <FreeTrial type="topbar" />}
                   {shouldRender.configIssues && <ConfigIssuesButton />}
                   {shouldRender.resources && <ResourcesButton />}
+
                   <PresenceMenu />
+
                   {/* Search button (mobile) */}
                   {shouldRender.searchFullscreen && (
                     <SearchButton
@@ -248,11 +275,9 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
                     />
                   )}
 
-                  {
-                    // eslint-disable-next-line camelcase
-                    __internal_rightSectionNode
-                  }
+                  {actionNodes}
                 </Flex>
+
                 {shouldRender.tools && (
                   <Box flex="none" marginLeft={1}>
                     <UserMenu />
@@ -265,6 +290,7 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
 
         {!shouldRender.tools && (
           <NavDrawer
+            __internal_actions={actions}
             activeToolName={activeToolName}
             isOpen={drawerOpen}
             onClose={handleCloseDrawer}
