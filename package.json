@@ -11,7 +11,7 @@
     "build:dts": "tsc --build tsconfig.lib.json",
     "build:e2e": "pnpm e2e:build",
     "build:performance-studio": "pnpm perf:studio:build",
-    "build:test-studio": "run-s build:cli && pnpm run --filter=sanity-test-studio build",
+    "build:test-studio": "run-s build:dts build:cli && pnpm run --filter=sanity-test-studio build",
     "check": "npm-run-all build --parallel check:*",
     "check:deps": "pnpm --recursive --parallel exec depcheck",
     "check:format": "prettier . --check",
