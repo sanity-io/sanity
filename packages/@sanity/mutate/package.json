@@ -1,18 +1,24 @@
 {
   "name": "@sanity/mutate",
-  "version": "3.32.0",
+  "version": "3.33.0",
+  "private": true,
   "description": "Tiny toolkit for working with Sanity mutations in JavaScript & TypeScript",
   "keywords": [
     "sanity",
     "mutations",
     "patch"
   ],
+  "homepage": "https://www.sanity.io/",
+  "bugs": {
+    "url": "https://github.com/sanity-io/sanity/issues"
+  },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bjoerge/mutiny.git"
+    "url": "git+https://github.com/sanity-io/sanity.git",
+    "directory": "packages/@sanity/migrate"
   },
   "license": "MIT",
-  "author": "Bjørge Næss <bjoerge@gmail.com>",
+  "author": "Sanity.io <hello@sanity.io>",
   "sideEffects": false,
   "type": "module",
   "exports": {
@@ -90,7 +96,6 @@
     "nanoid": "^5.0.5"
   },
   "devDependencies": {
-    "@sanity/pkg-utils": "^4.2.2",
     "@types/diff-match-patch": "^1.0.36",
     "@types/lodash": "^4.14.202",
     "@typescript-eslint/eslint-plugin": "^7.0.1",

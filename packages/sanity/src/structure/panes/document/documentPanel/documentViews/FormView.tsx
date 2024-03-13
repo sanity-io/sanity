@@ -63,13 +63,12 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
   // - Used by `withDocument` to reset value.
   const patchChannel = useMemo(() => createPatchChannel(), [])
 
-  const isLocked = editState?.transactionSyncLock?.enabled
   const {t} = useTranslation(structureLocaleNamespace)
 
   useConditionalToast({
     id: `sync-lock-${documentId}`,
     status: 'warning',
-    enabled: isLocked,
+    enabled: false, // @todo remove
     title: t('document-view.form-view.sync-lock-toast.title'),
     description: t('document-view.form-view.sync-lock-toast.description'),
   })
