@@ -203,9 +203,6 @@ export default defineConfig([
     auth: {
       loginMethod: 'token',
     },
-    unstable_tasks: {
-      enabled: true,
-    },
   },
   {
     name: 'custom-components',

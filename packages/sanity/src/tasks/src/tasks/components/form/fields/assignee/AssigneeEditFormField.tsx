@@ -31,7 +31,6 @@ export function AssigneeEditFormField(props: {
     () => mentionOptions.data?.find((u) => u.id === value),
     [mentionOptions.data, value],
   )
-
   const onSelect = useCallback(
     (userId: string) => {
       onChange(set(userId, path))

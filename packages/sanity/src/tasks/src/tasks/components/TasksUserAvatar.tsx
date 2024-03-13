@@ -31,22 +31,26 @@ const AvatarSkeleton = styled(Skeleton)<{$size: AvatarSize}>((props) => {
   `
 })
 
-export function TasksUserAvatar(props: {user?: User; size?: AvatarSize; border?: boolean}) {
-  const {user, size = 0, border = true} = props
-  const [loadedUser, loading] = useUser(user?.id || '')
+function NoUserAvatar(props: {size: AvatarSize; border: boolean}) {
+  const {size, border} = props
+  return (
+    <AvatarRoot $size={size} $border={border}>
+      <Text size={size}>
+        <UserIcon />
+      </Text>
+    </AvatarRoot>
+  )
+}
+
+function Avatar(props: {userId: string; size: AvatarSize; border: boolean}) {
+  const {userId, size, border} = props
+  const [loadedUser, loading] = useUser(userId)
 
   if (loading) {
     return <AvatarSkeleton $size={size} animated />
   }
-
-  if (!user || !loadedUser) {
-    return (
-      <AvatarRoot $size={size} $border={border}>
-        <Text size={size}>
-          <UserIcon />
-        </Text>
-      </AvatarRoot>
-    )
+  if (!loadedUser) {
+    return <NoUserAvatar size={size} border={border} />
   }
 
   return (
@@ -58,4 +62,13 @@ export function TasksUserAvatar(props: {user?: User; size?: AvatarSize; border?:
       />
     </AvatarRoot>
   )
+}
+
+export function TasksUserAvatar(props: {user?: User; size?: AvatarSize; border?: boolean}) {
+  const {user, size = 0, border = true} = props
+
+  if (!user?.id) {
+    return <NoUserAvatar size={size} border={border} />
+  }
+  return <Avatar userId={user.id} size={size} border={border} />
 }
