@@ -1,4 +1,5 @@
 import {expect, test} from '@jest/globals'
+
 /* eslint-disable max-nested-callbacks, @typescript-eslint/ban-ts-comment */
 import {fromString, get, resolveKeyedPath, toString} from '../src/paths'
 
@@ -102,6 +103,14 @@ test('toString: handles deep prop segments', () => {
   expect(toString(['foo', 'bar'])).toEqual('foo.bar')
   expect(toString(['bar', 'foo'])).toEqual('bar.foo')
   expect(toString(['bar', 'foo', 'baz'])).toEqual('bar.foo.baz')
+})
+
+test('toString: handles deep prop segments named as GROQ data types', () => {
+  expect(toString(['foo', 'true'])).toEqual('foo["true"]')
+  expect(toString(['bar', 'false'])).toEqual('bar["false"]')
+  expect(toString(['bat', 'null'])).toEqual('bat["null"]')
+  expect(toString(['true', 'true'])).toEqual('true["true"]')
+  expect(toString(['true', 'false', 'null'])).toEqual('true["false"]["null"]')
 })
 
 test('toString: handles deep array index segments', () => {
