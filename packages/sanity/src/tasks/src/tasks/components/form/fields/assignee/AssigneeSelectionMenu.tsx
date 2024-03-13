@@ -1,87 +1,56 @@
 import {UserIcon} from '@sanity/icons'
-import {
-  Badge,
-  Box,
-  Container,
-  Flex,
-  Menu,
-  // eslint-disable-next-line no-restricted-imports
-  MenuItem,
-  Text,
-  TextInput,
-} from '@sanity/ui'
-import {motion} from 'framer-motion'
+import {Menu, Stack, TextInput, useClickOutside} from '@sanity/ui'
 import {deburr} from 'lodash'
-import {type ChangeEvent, type KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
-import {LoadingBlock, type UserWithPermission} from 'sanity'
+import {
+  type ChangeEvent,
+  cloneElement,
+  type KeyboardEvent,
+  useCallback,
+  useMemo,
+  useState,
+} from 'react'
 import styled from 'styled-components'
 
-import {MenuButton} from '../../../../../../../ui-components'
+import {
+  MentionsMenu as CommentsMentionsMenu,
+  type MentionsMenuUser,
+} from '../../../../../../../structure/comments/src/components/mentions'
+import {Popover} from '../../../../../../../ui-components'
 import {useMentionUser} from '../../../../context'
-import {TasksUserAvatar} from '../../../TasksUserAvatar'
 
-type SelectItemHandler = (id: string) => void
+const EMPTY_ARRAY: [] = []
 
-function MentionUserMenuItem(props: {
-  user: UserWithPermission
-  onSelect: SelectItemHandler
-  pressed: boolean
-}) {
-  const {user, onSelect, pressed} = props
-
-  const handleSelect = useCallback(() => onSelect(user.id), [user, onSelect])
-  return (
-    <MenuItem onClick={handleSelect} padding={1} disabled={!user.granted} pressed={pressed}>
-      <Flex align="center" gap={3}>
-        <Flex align="center" gap={2} flex={1}>
-          <TasksUserAvatar user={user.id ? user : undefined} size={1} />
-          <Text size={1} textOverflow="ellipsis" title={user.displayName}>
-            {user.displayName}
-          </Text>
-        </Flex>
-
-        {!user.granted && (
-          <Badge fontSize={1} mode="outline">
-            Unauthorized
-          </Badge>
-        )}
-      </Flex>
-    </MenuItem>
-  )
-}
-
-const StyledMenu = styled(Menu)`
-  width: 308px;
-  border-radius: 3px;
-`
-
-const IGNORED_KEYS = [
-  'Control',
-  'Shift',
-  'Alt',
-  'Enter',
-  'Home',
-  'End',
-  'PageUp',
-  'PageDown',
-  'Meta',
-  'Tab',
-  'CapsLock',
-]
-
-const NO_ASSIGNEE_OPTION: UserWithPermission = {
+const NO_ASSIGNEE_OPTION: MentionsMenuUser = {
   id: '',
   displayName: 'No assignee',
   granted: true,
+  type: 'reset',
 }
-function MentionsMenu({onSelect, value = ''}: {onSelect: SelectItemHandler; value?: string}) {
-  const [searchTerm, setSearchTerm] = useState<string>('')
+
+const MenuStack = styled(Stack)`
+  width: 320px;
+`
+
+interface AssigneeSelectionMenuProps {
+  menuButton: React.ReactElement
+  onSelect: (userId: string) => void
+}
+
+export function AssigneeSelectionMenu(props: AssigneeSelectionMenuProps) {
+  const {onSelect, menuButton} = props
   const {mentionOptions} = useMentionUser()
-  const inputRef = useRef<HTMLInputElement | null>(null)
-  const options = [NO_ASSIGNEE_OPTION].concat(mentionOptions.data || [])
-  const handleSearchChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(event.currentTarget.value)
-  }, [])
+
+  const [searchTerm, setSearchTerm] = useState<string>('')
+  const [open, setOpen] = useState(false)
+
+  const [inputElement, setInputElement] = useState<HTMLInputElement | null>(null)
+  const [buttonElement, setButtonElement] = useState<HTMLButtonElement | null>(null)
+  const [popoverElement, setPopoverElement] = useState<HTMLDivElement | null>(null)
+
+  const options = useMemo(
+    () => [NO_ASSIGNEE_OPTION].concat(mentionOptions.data || EMPTY_ARRAY),
+    [mentionOptions.data],
+  )
 
   const filteredOptions = useMemo(() => {
     if (!searchTerm) return options || []
@@ -113,90 +82,73 @@ function MentionsMenu({onSelect, value = ''}: {onSelect: SelectItemHandler; valu
     return filtered || []
   }, [options, searchTerm])
 
-  const renderItem = useCallback(
-    (user: UserWithPermission) => {
-      return (
-        <MentionUserMenuItem
-          user={user}
-          onSelect={onSelect}
-          key={user.id}
-          pressed={user.id === value}
-        />
-      )
+  const handleSelect = useCallback(
+    (userId: string) => {
+      onSelect(userId)
+      setOpen(false)
+      buttonElement?.focus()
     },
-    [onSelect, value],
+    [buttonElement, onSelect],
   )
-  const handleKeyDown = useCallback((event: KeyboardEvent<HTMLElement>) => {
-    // If target is input don't do anything
-    if (event.target === inputRef.current) {
-      return
-    }
 
-    if (!IGNORED_KEYS.includes(event.key)) {
-      inputRef.current?.focus()
-    }
+  const handleSearchChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(event.currentTarget.value)
   }, [])
 
-  if (mentionOptions.loading) {
-    return (
-      <Container width={0}>
-        <LoadingBlock showText />
-      </Container>
-    )
-  }
+  const handleKeyDown = useCallback(
+    (event: KeyboardEvent<HTMLElement>) => {
+      const shouldClose =
+        event.key === 'Escape' || event.key === 'Tab' || (event.key === 'Tab' && event.shiftKey)
 
-  return (
-    <div onKeyDown={handleKeyDown}>
-      <TextInput
-        placeholder="Search username"
-        autoFocus
-        border={false}
-        onChange={handleSearchChange}
-        value={searchTerm}
-        fontSize={1}
-        icon={UserIcon}
-        ref={inputRef}
-      />
-
-      <div style={{maxHeight: '320px', overflowY: 'scroll', paddingTop: '8px'}}>
-        {filteredOptions.length === 0 ? (
-          <Box padding={3}>
-            <Text align="center" size={1} muted>
-              No users found
-            </Text>
-          </Box>
-        ) : (
-          filteredOptions.map(renderItem)
-        )}
-      </div>
-    </div>
+      if (shouldClose) {
+        setOpen(false)
+        buttonElement?.focus()
+      }
+    },
+    [buttonElement],
   )
-}
 
-export function AssigneeSelectionMenu(props: {
-  onSelect: (userId: string) => void
-  menuButton: React.ReactElement
-  value?: string
-}) {
-  const {onSelect, menuButton, value} = props
+  const button = useMemo(() => {
+    return cloneElement(menuButton, {
+      ref: setButtonElement,
+      onClick: () => setOpen((v) => !v),
+    })
+  }, [menuButton])
 
-  const ref = useRef<HTMLDivElement | null>(null)
+  useClickOutside(() => setOpen(false), [popoverElement, buttonElement])
 
   return (
-    <motion.div initial={{opacity: 0}} animate={{opacity: 1}} ref={ref}>
-      <MenuButton
-        button={menuButton}
-        id="assign-user-menu"
-        menu={
-          <StyledMenu>
-            <MentionsMenu onSelect={onSelect} value={value} />
-          </StyledMenu>
-        }
-        popover={{
-          placement: 'bottom',
-          portal: true,
-        }}
-      />
-    </motion.div>
+    <Popover
+      open={open}
+      placement="bottom"
+      portal
+      ref={setPopoverElement}
+      onKeyDown={handleKeyDown}
+      content={
+        <Menu>
+          <MenuStack space={1}>
+            <TextInput
+              autoFocus
+              border={false}
+              fontSize={1}
+              icon={UserIcon}
+              onChange={handleSearchChange}
+              placeholder="Search user name"
+              ref={setInputElement}
+              value={searchTerm}
+            />
+
+            <CommentsMentionsMenu
+              inputElement={inputElement}
+              loading={mentionOptions.loading}
+              onSelect={handleSelect}
+              options={filteredOptions}
+            />
+          </MenuStack>
+        </Menu>
+      }
+    >
+      {button}
+    </Popover>
   )
 }

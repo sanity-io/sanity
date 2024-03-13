@@ -31,11 +31,16 @@ const FlexWrap = styled(Flex)({
 export interface MentionsMenuHandle {
   setSearchTerm: (term: string) => void
 }
+
+export interface MentionsMenuUser extends UserWithPermission {
+  type?: 'reset'
+}
+
 interface MentionsMenuProps {
   loading: boolean
   inputElement?: HTMLDivElement | null
   onSelect: (userId: string) => void
-  options: UserWithPermission[] | null
+  options: MentionsMenuUser[] | null
 }
 
 export const MentionsMenu = React.forwardRef(function MentionsMenu(
@@ -60,7 +65,7 @@ export const MentionsMenu = React.forwardRef(function MentionsMenu(
   )
 
   const renderItem = useCallback(
-    (itemProps: UserWithPermission) => {
+    (itemProps: MentionsMenuUser) => {
       return <MentionsMenuItem user={itemProps} onSelect={onSelect} />
     },
     [onSelect],

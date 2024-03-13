@@ -1,5 +1,5 @@
 import {type SanityDocument} from '@sanity/client'
-import {useMemo, useState} from 'react'
+import {useCallback, useMemo, useState} from 'react'
 import {useUserListWithPermissions} from 'sanity'
 
 import {MentionUserContext} from './MentionUserContext'
@@ -14,13 +14,17 @@ export function MentionUserProvider(props: {children: React.ReactNode}) {
     permission: 'read',
   })
 
+  const handleSetSelectedDocument = useCallback((document: SanityDocument | null) => {
+    setSelectedDocument(document)
+  }, [])
+
   const value = useMemo(
     () => ({
       mentionOptions,
       selectedDocument,
-      setSelectedDocument,
+      setSelectedDocument: handleSetSelectedDocument,
     }),
-    [mentionOptions, selectedDocument, setSelectedDocument],
+    [handleSetSelectedDocument, mentionOptions, selectedDocument],
   )
 
   return <MentionUserContext.Provider value={value}>{props.children}</MentionUserContext.Provider>

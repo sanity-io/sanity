@@ -44,7 +44,6 @@ export function AssigneeCreateFormField(props: StringInputProps) {
   return (
     <AssigneeSelectionMenu
       onSelect={onSelect}
-      value={value}
       menuButton={
         <FocusableCard data-as="button" padding={1} radius={2} tabIndex={0}>
           <Flex align="center" gap={3}>
