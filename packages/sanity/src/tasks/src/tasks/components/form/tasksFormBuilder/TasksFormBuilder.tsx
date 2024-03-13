@@ -63,7 +63,7 @@ const TasksFormBuilderInner = ({
 
   return (
     <CommentsEnabledProvider documentId="" documentType="">
-      <Box paddingX={4}>
+      <Box>
         {formBuilderProps.loading ? (
           <LoadingBlock showText />
         ) : (

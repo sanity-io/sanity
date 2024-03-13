@@ -1,34 +1,24 @@
 import {ChevronDownIcon} from '@sanity/icons'
-import {Box, Flex, Stack, Text} from '@sanity/ui'
-import {useCallback, useMemo} from 'react'
+import {Box, Flex, MenuDivider, Stack, Text} from '@sanity/ui'
+import {Fragment, useMemo} from 'react'
 import styled from 'styled-components'
 
 import {type TaskDocument} from '../../types'
 import {TasksListItem} from './TasksListItem'
 
-interface TasksListProps {
-  onTaskSelect: (id: string) => void
-  items: TaskDocument[]
-}
+const EMPTY_ARRAY: [] = []
 
-const checkboxValues = [
+const CHECKBOX_VALUES = [
   {name: 'open', label: 'To Do'},
   {name: 'closed', label: 'Done'},
 ]
 
 const getLabelForStatus = (status: string) => {
-  const statusConfig = checkboxValues.find((item) => item.name === status)
+  const statusConfig = CHECKBOX_VALUES.find((item) => item.name === status)
   return statusConfig?.label
 }
 
-const TasksListRoot = styled(Box)`
-  max-height: calc(100% - 140px);
-  overflow-y: auto;
-  // Hide scrollbar
-  scrollbar-width: none;
-`
-
-const Details = styled.details`
+const DetailsFlex = styled(Flex)`
   [data-ui='summary-icon'] {
     transition: transform 0.2s;
     transform: rotate(-90deg);
@@ -40,85 +30,91 @@ const Details = styled.details`
     display: none;
   }
 `
-const Summary = styled.summary`
+const SummaryBox = styled(Box)`
   list-style: none;
 `
 
-/**
- * @internal
- */
-export function TasksList(props: TasksListProps) {
-  const {items, onTaskSelect} = props
+interface TaskListProps {
+  status: string
+  tasks: TaskDocument[]
+  onTaskSelect: (id: string) => void
+}
 
-  // Filter tasks by status to render them in separate lists
-  const tasksByStatus = useMemo(
-    () =>
-      items.reduce((acc: Record<string, TaskDocument[]>, task) => {
-        if (!acc[task.status]) {
-          acc[task.status] = []
-        }
-        acc[task.status].push(task)
-        return acc
-      }, {}),
-    [items],
-  )
+function TaskList(props: TaskListProps) {
+  const {status, tasks, onTaskSelect} = props
 
-  const renderTasksList = useCallback(
-    (status: string) => {
-      const tasks = tasksByStatus[status] || []
-      if (tasks.length === 0) {
-        return null
-      }
-      return (
-        <Details open={status === 'open'}>
-          <Summary>
-            <Flex align="center" gap={1} paddingY={1}>
-              <Text size={1} weight="medium" muted>
-                {getLabelForStatus(status)}
-              </Text>
-              <Text muted size={1}>
-                <ChevronDownIcon data-ui="summary-icon" />
-              </Text>
-            </Flex>
-          </Summary>
-          <Stack space={3} marginTop={3} paddingBottom={5}>
-            {tasks.map((task) => (
+  return (
+    <DetailsFlex forwardedAs="details" direction="column" open={status === 'open'}>
+      <SummaryBox forwardedAs="summary">
+        <Flex align="center" gap={1} paddingY={1}>
+          <Text size={1} weight="medium" muted>
+            {getLabelForStatus(status)}
+          </Text>
+
+          <Text muted size={1}>
+            <ChevronDownIcon data-ui="summary-icon" />
+          </Text>
+        </Flex>
+      </SummaryBox>
+
+      <Stack space={4} marginTop={4} paddingBottom={5}>
+        {tasks.map((task, index) => {
+          const showDivider = index < tasks.length - 1
+
+          return (
+            <Fragment key={task._id}>
               <TasksListItem
-                key={task._id}
                 documentId={task._id}
                 title={task.title}
                 dueBy={task.dueBy}
                 assignedTo={task.assignedTo}
                 target={task.target}
+                // eslint-disable-next-line react/jsx-no-bind
                 onSelect={() => onTaskSelect(task._id)}
                 status={task.status}
               />
-            ))}
-          </Stack>
-        </Details>
-      )
-    },
-    [onTaskSelect, tasksByStatus],
-  )
 
-  const hasOpenTasks = tasksByStatus.open?.length > 0
-  const hasClosedTasks = tasksByStatus.closed?.length > 0
-  return (
-    <TasksListRoot paddingX={3} paddingY={4}>
-      <Stack space={4} paddingTop={2} paddingX={1}>
-        {!hasOpenTasks && !hasClosedTasks ? (
-          <Box paddingX={2}>
-            <Text as="p" size={1} muted>
-              No tasks
-            </Text>
-          </Box>
-        ) : (
-          <>
-            {renderTasksList('open')}
-            {renderTasksList('closed')}
-          </>
-        )}
+              {showDivider && <MenuDivider />}
+            </Fragment>
+          )
+        })}
       </Stack>
-    </TasksListRoot>
+    </DetailsFlex>
+  )
+}
+
+interface TasksListProps {
+  onTaskSelect: (id: string) => void
+  items: TaskDocument[]
+}
+
+/**
+ * @internal
+ */
+export function TasksList(props: TasksListProps) {
+  const {items = EMPTY_ARRAY, onTaskSelect} = props
+
+  const openTasks = useMemo(() => items.filter((task) => task.status === 'open'), [items])
+  const closedTasks = useMemo(() => items.filter((task) => task.status === 'closed'), [items])
+
+  const hasOpenTasks = openTasks?.length > 0
+  const hasClosedTasks = closedTasks?.length > 0
+
+  return (
+    <Stack space={4}>
+      {!hasOpenTasks && !hasClosedTasks ? (
+        <Text as="p" size={1} muted>
+          No tasks
+        </Text>
+      ) : (
+        <>
+          {hasOpenTasks && <TaskList status="open" tasks={openTasks} onTaskSelect={onTaskSelect} />}
+
+          {hasClosedTasks && (
+            <TaskList status="closed" tasks={closedTasks} onTaskSelect={onTaskSelect} />
+          )}
+        </>
+      )}
+    </Stack>
   )
 }

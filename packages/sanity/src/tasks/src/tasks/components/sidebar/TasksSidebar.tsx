@@ -1,20 +1,26 @@
-import {Box, Card, Flex, Spinner} from '@sanity/ui'
+import {Card, Flex, Spinner, Stack} from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
 import {useCurrentUser} from 'sanity'
 import styled from 'styled-components'
 
 import {useTasks, useTasksEnabled, useTasksNavigation} from '../../context'
 import {TasksFormBuilder} from '../form'
-import {TaskSidebarContent} from './TasksSidebarContent'
+import {TasksList} from '../list/TasksList'
+import {TasksListTabs} from './TasksListTabs'
 import {TasksSidebarHeader} from './TasksSidebarHeader'
 
-const SidebarRoot = styled(Card)`
+const RootCard = styled(Card)`
   flex: 1;
+  flex-direction: column;
 `
 
-const SidebarContent = styled.div`
-  max-height: calc(100% - 52px);
-  overflow: scroll;
+const HeaderStack = styled(Stack)`
+  border-bottom: 1px solid var(--card-border-color);
+`
+
+const ContentFlex = styled(Flex)`
+  overflow-y: scroll;
+  overflow-x: hidden;
 `
 
 /**
@@ -27,6 +33,7 @@ export function TasksStudioSidebarInner() {
   const currentUser = useCurrentUser()
 
   const onTaskSelect = useCallback((id: string) => setViewMode({type: 'edit', id}), [setViewMode])
+
   const filteredList = useMemo(() => {
     return data.filter((item) => {
       if (!item.createdByUser) return false
@@ -45,33 +52,44 @@ export function TasksStudioSidebarInner() {
     })
   }, [activeDocument?.documentId, activeTabId, data, currentUser])
 
-  return (
-    <SidebarRoot height="fill" flex={1}>
-      <TasksSidebarHeader items={filteredList} />
+  const content = useMemo(() => {
+    if (viewMode !== 'list') {
+      return <TasksFormBuilder key={selectedTask} />
+    }
 
-      <SidebarContent>
-        {viewMode === 'list' ? (
-          <>
-            {isLoading ? (
-              <Box padding={3}>
-                <Flex align="center" justify="center">
-                  <Spinner />
-                </Flex>
-              </Box>
-            ) : (
-              <TaskSidebarContent
-                items={filteredList}
-                onTaskSelect={onTaskSelect}
-                setActiveTabId={setActiveTab}
-                activeTabId={activeTabId}
-              />
-            )}
-          </>
-        ) : (
-          <TasksFormBuilder key={selectedTask} />
+    if (isLoading) {
+      return (
+        <Flex align="center" justify="center">
+          <Spinner />
+        </Flex>
+      )
+    }
+
+    return <TasksList items={filteredList} onTaskSelect={onTaskSelect} />
+  }, [filteredList, isLoading, onTaskSelect, selectedTask, viewMode])
+
+  return (
+    <RootCard display="flex" height="fill" flex={1} overflow="hidden">
+      <HeaderStack space={3} padding={3} sizing="border">
+        <TasksSidebarHeader items={filteredList} />
+
+        {viewMode === 'list' && !isLoading && (
+          <TasksListTabs activeTabId={activeTabId} onChange={setActiveTab} />
         )}
-      </SidebarContent>
-    </SidebarRoot>
+      </HeaderStack>
+
+      <ContentFlex
+        direction="column"
+        flex={1}
+        overflow="auto"
+        padding={3}
+        paddingTop={4}
+        paddingX={4}
+        sizing="border"
+      >
+        {content}
+      </ContentFlex>
+    </RootCard>
   )
 }
 
@@ -80,6 +98,10 @@ export function TasksStudioSidebarInner() {
  */
 export function TasksStudioSidebar() {
   const {enabled} = useTasksEnabled()
-  if (!enabled) return null
+
+  if (!enabled) {
+    return null
+  }
+
   return <TasksStudioSidebarInner />
 }

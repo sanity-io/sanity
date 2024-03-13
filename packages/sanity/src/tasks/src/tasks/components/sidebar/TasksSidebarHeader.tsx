@@ -37,47 +37,45 @@ export function TasksSidebarHeader(props: TasksSidebarHeaderProps) {
   }, [setViewMode])
 
   return (
-    <Box padding={2}>
-      <Flex padding={1} justify="space-between" align="center" gap={1}>
-        <Flex align="center" flex={1}>
-          {viewMode === 'list' ? (
-            <Box padding={2}>
-              <Text size={2} weight="semibold">
-                Tasks
+    <Flex justify="space-between" align="center" gap={1}>
+      <Flex align="center" flex={1}>
+        {viewMode === 'list' ? (
+          <Box padding={2}>
+            <Text size={2} weight="semibold">
+              Tasks
+            </Text>
+          </Box>
+        ) : (
+          <>
+            <UIButton mode="bleed" space={2} padding={2} onClick={handleGoBack}>
+              <Text size={1}>Tasks</Text>
+            </UIButton>
+            <ChevronRightIcon />
+            <Box paddingX={2}>
+              <Text size={1} weight="semibold" style={{textTransform: 'capitalize'}}>
+                {viewMode === 'create' || viewMode === 'draft' ? 'Create' : activeTabId}
               </Text>
             </Box>
-          ) : (
-            <>
-              <UIButton mode="bleed" space={2} padding={2} onClick={handleGoBack}>
-                <Text size={1}>Tasks</Text>
-              </UIButton>
-              <ChevronRightIcon />
-              <Box paddingX={2}>
-                <Text size={1} weight="semibold" style={{textTransform: 'capitalize'}}>
-                  {viewMode === 'create' || viewMode === 'draft' ? 'Create' : activeTabId}
-                </Text>
-              </Box>
-            </>
-          )}
-          <BetaBadge marginLeft={2} />
-        </Flex>
-        {(viewMode === 'create' || viewMode === 'draft') && <DraftsMenu />}
-        {viewMode === 'edit' && <TasksActiveTabNavigation items={allItems} />}
-        <Flex gap={1}>
-          {viewMode === 'list' && (
-            <Button icon={AddIcon} onClick={handleTaskCreate} mode="bleed" text="New task" />
-          )}
-
-          <Button
-            tooltipProps={{
-              content: 'Close sidebar',
-            }}
-            iconRight={CloseIcon}
-            mode="bleed"
-            onClick={handleCloseTasks}
-          />
-        </Flex>
+          </>
+        )}
+        <BetaBadge marginLeft={2} />
       </Flex>
-    </Box>
+      {(viewMode === 'create' || viewMode === 'draft') && <DraftsMenu />}
+      {viewMode === 'edit' && <TasksActiveTabNavigation items={allItems} />}
+      <Flex gap={1}>
+        {viewMode === 'list' && (
+          <Button icon={AddIcon} onClick={handleTaskCreate} mode="bleed" text="New task" />
+        )}
+
+        <Button
+          tooltipProps={{
+            content: 'Close sidebar',
+          }}
+          iconRight={CloseIcon}
+          mode="bleed"
+          onClick={handleCloseTasks}
+        />
+      </Flex>
+    </Flex>
   )
 }
