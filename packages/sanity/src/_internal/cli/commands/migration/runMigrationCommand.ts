@@ -1,3 +1,5 @@
+import path from 'node:path'
+
 import {type CliCommandDefinition} from '@sanity/cli'
 import {
   DEFAULT_MUTATION_CONCURRENCY,
@@ -13,6 +15,7 @@ import {hideBin} from 'yargs/helpers'
 import yargs from 'yargs/yargs'
 
 import {debug} from '../../debug'
+import {MIGRATIONS_DIRECTORY} from './constants'
 import {resolveMigrations} from './listMigrationsCommand'
 import {prettyFormat} from './prettyMutationFormatter'
 import {isLoadableMigrationScript, resolveMigrationScript} from './utils/resolveMigrationScript'
@@ -70,6 +73,7 @@ const runMigrationCommand: CliCommandDefinition<CreateFlags> = {
   action: async (args, context) => {
     const {apiClient, output, prompt, chalk, workDir} = context
     const [id] = args.argsWithoutOptions
+    const migrationsDirectoryPath = path.join(workDir, MIGRATIONS_DIRECTORY)
 
     const flags = await parseCliFlags(args)
 
@@ -114,18 +118,18 @@ const runMigrationCommand: CliCommandDefinition<CreateFlags> = {
     if (resolvedScripts.length > 1) {
       // todo: consider prompt user about which one to run? note: it's likely a mistake if multiple files resolve to the same name
       throw new Error(
-        `Found multiple migrations for "${id}" in current directory ${candidates
-          .map((candidate) => candidate!.relativePath)
-          .join(', ')}`,
+        `Found multiple migrations for "${id}" in ${chalk.cyan(migrationsDirectoryPath)}: \n - ${candidates
+          .map((candidate) => path.relative(migrationsDirectoryPath, candidate.absolutePath))
+          .join('\n - ')}`,
       )
     }
 
     const script = resolvedScripts[0]
     if (!script) {
       throw new Error(
-        `No migration found for "${id}" in current directory. Make sure that the migration file exists and exports a valid migration as its default export.\n
+        `No migration found for "${id}" in ${chalk.cyan(chalk.cyan(migrationsDirectoryPath))}. Make sure that the migration file exists and exports a valid migration as its default export.\n
  Tried the following files:\n - ${candidates
-   .map((candidate) => candidate.relativePath)
+   .map((candidate) => path.relative(migrationsDirectoryPath, candidate.absolutePath))
    .join('\n - ')}`,
       )
     }
