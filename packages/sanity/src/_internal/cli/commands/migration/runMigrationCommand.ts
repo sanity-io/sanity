@@ -118,7 +118,7 @@ const runMigrationCommand: CliCommandDefinition<CreateFlags> = {
     if (resolvedScripts.length > 1) {
       // todo: consider prompt user about which one to run? note: it's likely a mistake if multiple files resolve to the same name
       throw new Error(
-        `Found multiple migrations for "${id}" in the ${chalk.cyan(migrationsDirectoryPath)} directory: \n - ${candidates
+        `Found multiple migrations for "${id}" in ${chalk.cyan(migrationsDirectoryPath)}: \n - ${candidates
           .map((candidate) => path.relative(migrationsDirectoryPath, candidate.absolutePath))
           .join('\n - ')}`,
       )
@@ -127,7 +127,7 @@ const runMigrationCommand: CliCommandDefinition<CreateFlags> = {
     const script = resolvedScripts[0]
     if (!script) {
       throw new Error(
-        `No migration found for "${id}" in the ${chalk.cyan(chalk.cyan(migrationsDirectoryPath))} directory. Make sure that the migration file exists and exports a valid migration as its default export.\n
+        `No migration found for "${id}" in ${chalk.cyan(chalk.cyan(migrationsDirectoryPath))}. Make sure that the migration file exists and exports a valid migration as its default export.\n
  Tried the following files:\n - ${candidates
    .map((candidate) => path.relative(migrationsDirectoryPath, candidate.absolutePath))
    .join('\n - ')}`,
