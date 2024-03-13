@@ -10,5 +10,5 @@ import {type SourceClientOptions} from './config'
  * @internal
  */
 export const DEFAULT_STUDIO_CLIENT_OPTIONS: SourceClientOptions = {
-  apiVersion: '2023-11-13',
+  apiVersion: '2024-03-12',
 }

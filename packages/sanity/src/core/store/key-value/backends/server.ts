@@ -17,7 +17,7 @@ export interface ServerBackendOptions {
  * @internal
  */
 export function serverBackend({client: _client}: ServerBackendOptions): Backend {
-  const client = _client.withConfig({...DEFAULT_STUDIO_CLIENT_OPTIONS, apiVersion: 'vX'})
+  const client = _client.withConfig(DEFAULT_STUDIO_CLIENT_OPTIONS)
 
   const keyValueLoader = new DataLoader<string, KeyValueStoreValue | null>(async (keys) => {
     const value = await client
