@@ -88,7 +88,15 @@ export const structureTool = definePlugin<StructureToolOptions | void>((options)
       actions: (prevActions) => {
         // NOTE: since it's possible to have several structure tools in one Studio,
         // we need to check whether the document actions already exist in the Studio config
-        return Array.from(new Set([...prevActions, ...documentActions]))
+        const actions = Array.from(new Set([...prevActions, ...documentActions]))
+
+        // Find `TaskCreateAction` and push it to the end of the actions list, users are inserting into the actions array at specific positions.
+        const taskCreateAction = actions.find((action) => action.name === 'TaskCreateAction')
+        if (taskCreateAction) {
+          actions.splice(actions.indexOf(taskCreateAction), 1)
+          actions.push(taskCreateAction)
+        }
+        return actions
       },
       badges: (prevBadges) => {
         // NOTE: since it's possible to have several structure tools in one Studio,
