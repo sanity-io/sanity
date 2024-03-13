@@ -250,18 +250,22 @@ function setPatch(editor: PortableTextSlateEditor, patch: SetPatch) {
   } else if (Element.isElement(block) && patch.path.length === 1 && blockPath) {
     debug('Setting block property')
     const {children, ...nextRest} = value as unknown as PortableTextBlock
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars, unused-imports/no-unused-vars
     const {children: prevChildren, ...prevRest} = block || {children: undefined}
+    // Set any block properties
     editor.apply({
       type: 'set_node',
       path: blockPath,
       properties: {...prevRest},
       newProperties: nextRest,
     })
+    // Replace the children in the block
+    // Note that children must be explicitly inserted, and can't be set with set_node
+    debug('Setting children')
     block.children.forEach((c, cIndex) => {
       editor.apply({
         type: 'remove_node',
-        path: blockPath.concat(cIndex),
+        path: blockPath.concat(block.children.length - 1 - cIndex),
         node: c,
       })
     })
@@ -306,6 +310,7 @@ function unsetPatch(editor: PortableTextSlateEditor, patch: UnsetPatch, previous
     return true
   }
   const {block, blockPath, child, childPath} = findBlockAndChildFromPath(editor, patch.path)
+
   // Single blocks
   if (patch.path.length === 1) {
     if (!block || !blockPath) {
@@ -327,11 +332,10 @@ function unsetPatch(editor: PortableTextSlateEditor, patch: UnsetPatch, previous
       debug('Child not found')
       return false
     }
-    const childIndex = childPath[1]
     debug(`Unsetting child at path ${JSON.stringify(childPath)}`)
     debugState(editor, 'before')
     if (debugVerbose) {
-      debug(`Removing child at path ${JSON.stringify([childPath, childIndex])}`)
+      debug(`Removing child at path ${JSON.stringify(childPath)}`)
     }
     Transforms.removeNodes(editor, {at: childPath})
     debugState(editor, 'after')
