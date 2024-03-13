@@ -144,5 +144,34 @@ export const taskSchema = (mode: FormMode) =>
         },
         hidden: true,
       },
+      {
+        type: 'object',
+        name: 'context',
+        hidden: true,
+        fields: [
+          {
+            type: 'object',
+            name: 'notification',
+            fields: [
+              {
+                type: 'string',
+                name: 'url',
+              },
+              {
+                type: 'string',
+                name: 'workspaceTitle',
+              },
+              {
+                type: 'string',
+                name: 'targetContentImageUrl',
+              },
+              {
+                type: 'string',
+                name: 'targetContentTitle',
+              },
+            ],
+          },
+        ],
+      },
     ],
   })

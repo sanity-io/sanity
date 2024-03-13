@@ -7,6 +7,7 @@ import {useTasksNavigation} from '../../../context'
 import {useRemoveTask} from '../../../hooks/useRemoveTask'
 import {type TaskDocument} from '../../../types'
 import {getMentionedUsers} from '../utils'
+import {TasksNotificationTarget} from './TasksNotificationTarget'
 
 const getTaskSubscribers = (task: TaskDocument): string[] => {
   const subscribers = task.subscribers || []
@@ -35,6 +36,7 @@ export function FormCreate(props: ObjectInputProps) {
   const handleCreateMore = useCallback(() => setCreateMore((p) => !p), [])
   const {onChange} = props
   const value = props.value as TaskDocument
+
   const onRemove = useCallback(() => {
     setViewMode({type: 'list'})
   }, [setViewMode])
@@ -88,6 +90,7 @@ export function FormCreate(props: ObjectInputProps) {
             />
           )}
           <Button text="Create Task" onClick={handleCreate} />
+          <TasksNotificationTarget onChange={props.onChange} />
         </Flex>
       </Box>
     </>

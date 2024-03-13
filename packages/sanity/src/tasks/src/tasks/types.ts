@@ -30,9 +30,10 @@ export interface TaskContext {
   tool?: string
   payload?: Record<string, unknown>
   notification?: {
-    documentTitle: string
     url: string
     workspaceTitle: string
+    targetContentTitle: string | null
+    targetContentImageUrl: string | null
   }
 }
 
