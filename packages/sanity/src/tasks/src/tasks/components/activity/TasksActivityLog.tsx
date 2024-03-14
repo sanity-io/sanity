@@ -144,11 +144,12 @@ export function TasksActivityLog(props: TasksActivityLogProps) {
   const taskComments = comments.data.open
 
   const handleGetNotificationValue = useCallback(
-    (message: CommentInputProps['value']) => {
+    (message: CommentInputProps['value'], commentId: string) => {
       const studioUrl = new URL(`${window.location.origin}${basePath}/`)
       studioUrl.searchParams.set('sidebar', 'tasks')
       studioUrl.searchParams.set('selectedTask', value?._id)
       studioUrl.searchParams.set('viewMode', 'edit')
+      studioUrl.searchParams.set('commentId', commentId)
 
       // We need to update the subscribers list in the task, any user mentioned in the comment should be added
       // as a subscriber.
@@ -168,7 +169,9 @@ export function TasksActivityLog(props: TasksActivityLogProps) {
 
   const handleCommentCreate = useCallback(
     (message: CommentInputProps['value']) => {
+      const commentId = uuid()
       const nextComment: CommentCreatePayload = {
+        id: commentId,
         type: 'task',
         message,
         parentCommentId: undefined,
@@ -176,7 +179,7 @@ export function TasksActivityLog(props: TasksActivityLogProps) {
         status: 'open',
         threadId: uuid(),
         context: {
-          notification: handleGetNotificationValue(message),
+          notification: handleGetNotificationValue(message, commentId),
         },
       }
 
@@ -187,7 +190,10 @@ export function TasksActivityLog(props: TasksActivityLogProps) {
 
   const handleCommentReply = useCallback(
     (nextComment: CommentBaseCreatePayload) => {
+      const commentId = uuid()
+
       operation.create({
+        id: commentId,
         type: 'task',
         message: nextComment.message,
         parentCommentId: nextComment.parentCommentId,
@@ -195,7 +201,7 @@ export function TasksActivityLog(props: TasksActivityLogProps) {
         status: 'open',
         threadId: nextComment.threadId,
         context: {
-          notification: handleGetNotificationValue(nextComment.message),
+          notification: handleGetNotificationValue(nextComment.message, commentId),
         },
       })
     },
@@ -218,7 +224,7 @@ export function TasksActivityLog(props: TasksActivityLogProps) {
         status: comment.status,
         threadId: comment.threadId,
         context: {
-          notification: handleGetNotificationValue(comment.message),
+          notification: handleGetNotificationValue(comment.message, comment._id),
         },
       })
     },
