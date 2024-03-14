@@ -2,7 +2,7 @@ import {describe, expect, it} from '@jest/globals'
 import {Schema} from '@sanity/schema'
 import {defineField, defineType} from '@sanity/types'
 
-import {getDocumentTypeConfiguration, getSort} from './createTextSearch'
+import {getDocumentTypeConfiguration, getOrder} from './createTextSearch'
 
 const testType = Schema.compile({
   types: [
@@ -201,7 +201,7 @@ describe('getDocumentTypeConfiguration', () => {
 describe('getSort', () => {
   it('transforms Studio sort options to valid Text Search sort options', () => {
     expect(
-      getSort([
+      getOrder([
         {
           field: 'title',
           direction: 'desc',
@@ -213,14 +213,12 @@ describe('getSort', () => {
       ]),
     ).toEqual([
       {
-        title: {
-          order: 'desc',
-        },
+        attribute: 'title',
+        direction: 'desc',
       },
       {
-        _createdAt: {
-          order: 'asc',
-        },
+        attribute: '_createdAt',
+        direction: 'asc',
       },
     ])
   })
