@@ -233,13 +233,14 @@ export function useProjectStore(): ProjectStore {
 export function useKeyValueStore(): KeyValueStore {
   const resourceCache = useResourceCache()
   const workspace = useWorkspace()
+  const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
 
   return useMemo(() => {
     const keyValueStore =
       resourceCache.get<KeyValueStore>({
         dependencies: [workspace],
         namespace: 'KeyValueStore',
-      }) || createKeyValueStore()
+      }) || createKeyValueStore({client})
 
     resourceCache.set({
       dependencies: [workspace],
@@ -248,5 +249,5 @@ export function useKeyValueStore(): KeyValueStore {
     })
 
     return keyValueStore
-  }, [resourceCache, workspace])
+  }, [client, resourceCache, workspace])
 }

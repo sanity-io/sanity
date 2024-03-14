@@ -27,8 +27,8 @@ export function InspectDialog(props: InspectDialogProps) {
   where the inspect dialog lives.
   This also means that when a page is loaded, the state of the tabs remains and doesn't revert to the pane tab */
   const [viewModeId, onViewModeChange] = useStructureToolSetting(
-    'structure-tool',
-    `inspect-view-preferred-view-mode-${paneKey}`,
+    'inspect-view-mode',
+    null,
     'parsed',
   )
 

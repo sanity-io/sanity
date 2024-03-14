@@ -1,20 +1,26 @@
 import {type Observable, of as observableOf} from 'rxjs'
 
-import {type Backend} from './types'
+import {type Backend, type KeyValuePair} from './types'
 
 const DB = Object.create(null)
 
-const get = (key: string, defValue: unknown): Observable<unknown> =>
-  observableOf(key in DB ? DB[key] : defValue)
+const getKey = (key: string): Observable<unknown> => observableOf(key in DB ? DB[key] : null)
 
-const set = (key: string, nextValue: unknown): Observable<unknown> => {
-  if (typeof nextValue === 'undefined' || nextValue === null) {
-    delete DB[key]
-  } else {
-    DB[key] = nextValue
-  }
-
+const setKey = (key: string, nextValue: unknown): Observable<unknown> => {
+  DB[key] = nextValue
   return observableOf(nextValue)
 }
 
-export const memoryBackend: Backend = {get, set}
+const getKeys = (keys: string[]): Observable<unknown[]> => {
+  return observableOf(keys.map((key, i) => (key in DB ? DB[key] : null)))
+}
+
+const setKeys = (keyValuePairs: KeyValuePair[]): Observable<unknown[]> => {
+  keyValuePairs.forEach((pair) => {
+    DB[pair.key] = pair.value
+  })
+
+  return observableOf(keyValuePairs.map((pair) => pair.value))
+}
+
+export const memoryBackend: Backend = {getKey, setKey, getKeys, setKeys}
