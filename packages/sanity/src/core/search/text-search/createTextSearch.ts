@@ -127,6 +127,7 @@ export const createTextSearch: SearchStrategyFactory<TextSearchResults> = (
         method: 'POST',
         json: true,
         body: textSearchParams,
+        tag: factoryOptions.tag,
       })
       .pipe(
         map((response) => {
