@@ -1413,8 +1413,8 @@ importers:
         specifier: 3.33.0
         version: link:../@sanity/portable-text-editor
       '@sanity/presentation':
-        specifier: 1.11.5
-        version: 1.11.5(@sanity/client@6.15.4)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8)
+        specifier: 1.11.6
+        version: 1.11.6(@sanity/client@6.15.4)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8)
       '@sanity/schema':
         specifier: 3.33.0
         version: link:../@sanity/schema
@@ -6098,11 +6098,11 @@ packages:
       - styled-components
     dev: false
 
-  /@sanity/presentation@1.11.5(@sanity/client@6.15.4)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8):
-    resolution: {integrity: sha512-MmTwae7N6VmwlDiJ0vVEj9+WeaVHzWG1ff5TBhEWjroHZxNKwDJM/uIW6mA3FBu4lZ4RyE2LIwr0JjZwuzkh6g==}
+  /@sanity/presentation@1.11.6(@sanity/client@6.15.4)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8):
+    resolution: {integrity: sha512-vZ/vy4Lpbyqot2ZIN5PAjq5tM7/hcBo8VFqAXQZUv6xE/93Es3a3AEXqeUMYmNvqhgLKMsoD7es+XnuI2vZGeg==}
     engines: {node: '>=16.14'}
     peerDependencies:
-      '@sanity/client': ^6.15.3
+      '@sanity/client': ^6.15.4
     dependencies:
       '@sanity/client': 6.15.4
       '@sanity/icons': 2.11.2(react@18.2.0)
@@ -13342,6 +13342,7 @@ packages:
 
   /json-schema-traverse@0.4.1:
     resolution: {integrity: sha512-xbbCH5dCYU5T8LcEhhuh7HJ88HXuW3qsI3Y0zOZFKfZEHcpWiHU/Jxzk629Brsab/mMiHQti9wMP+845RPe3Vg==}
+    requiresBuild: true
 
   /json-stable-stringify-without-jsonify@1.0.1:
     resolution: {integrity: sha512-Bdboy+l7tA3OGW6FjyFHWkP5LuByj1Tk33Ljyq0axyzdk9//JSi2u3fP1QSmd1KNwq6VOKYGlAu87CisVir6Pw==}
@@ -18211,6 +18212,7 @@ packages:
 
   /uri-js@4.4.1:
     resolution: {integrity: sha512-7rKUyy33Q1yc98pQ1DAmLtwX109F7TIfWlW1Ydo8Wl1ii1SeHieeh0HHfPeL2fMXK6z0s8ecKs9frCuLJvndBg==}
+    requiresBuild: true
     dependencies:
       punycode: 2.3.1
 
