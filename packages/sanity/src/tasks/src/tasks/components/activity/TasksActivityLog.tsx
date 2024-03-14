@@ -151,11 +151,8 @@ export function TasksActivityLog(props: TasksActivityLogProps) {
       studioUrl.searchParams.set('viewMode', 'edit')
       studioUrl.searchParams.set('commentId', commentId)
 
-      // We need to update the subscribers list in the task, any user mentioned in the comment should be added
-      // as a subscriber.
       const mentionedUsers = getMentionedUsers(message)
       const subscribers = Array.from(new Set([...(value.subscribers || []), ...mentionedUsers]))
-      onChange(set(subscribers, ['subscribers']))
 
       return {
         documentTitle: value.title || 'Sanity task',
@@ -164,12 +161,14 @@ export function TasksActivityLog(props: TasksActivityLogProps) {
         subscribers: subscribers,
       }
     },
-    [basePath, value?._id, value.title, workspaceTitle, value.subscribers, onChange],
+    [basePath, value?._id, value.title, workspaceTitle, value.subscribers],
   )
 
   const handleCommentCreate = useCallback(
     (message: CommentInputProps['value']) => {
       const commentId = uuid()
+      const notification = handleGetNotificationValue(message, commentId)
+
       const nextComment: CommentCreatePayload = {
         id: commentId,
         type: 'task',
@@ -179,18 +178,24 @@ export function TasksActivityLog(props: TasksActivityLogProps) {
         status: 'open',
         threadId: uuid(),
         context: {
-          notification: handleGetNotificationValue(message, commentId),
+          notification,
         },
       }
 
+      onChange(set(notification.subscribers, ['subscribers']))
+
       operation.create(nextComment)
     },
-    [operation, handleGetNotificationValue],
+    [operation, handleGetNotificationValue, onChange],
   )
 
   const handleCommentReply = useCallback(
     (nextComment: CommentBaseCreatePayload) => {
       const commentId = uuid()
+
+      const notification = handleGetNotificationValue(nextComment.message, commentId)
+
+      onChange(set(notification.subscribers, ['subscribers']))
 
       operation.create({
         id: commentId,
@@ -201,11 +206,11 @@ export function TasksActivityLog(props: TasksActivityLogProps) {
         status: 'open',
         threadId: nextComment.threadId,
         context: {
-          notification: handleGetNotificationValue(nextComment.message, commentId),
+          notification,
         },
       })
     },
-    [operation, handleGetNotificationValue],
+    [operation, handleGetNotificationValue, onChange],
   )
 
   const handleCommentCreateRetry = useCallback(
@@ -214,6 +219,10 @@ export function TasksActivityLog(props: TasksActivityLogProps) {
       // when retrying the creation.
       const comment = getComment(id)
       if (!comment) return
+
+      const notification = handleGetNotificationValue(comment.message, comment._id)
+
+      onChange(set(notification.subscribers, ['subscribers']))
 
       operation.create({
         type: 'task',
@@ -224,11 +233,11 @@ export function TasksActivityLog(props: TasksActivityLogProps) {
         status: comment.status,
         threadId: comment.threadId,
         context: {
-          notification: handleGetNotificationValue(comment.message, comment._id),
+          notification,
         },
       })
     },
-    [getComment, operation, handleGetNotificationValue],
+    [getComment, operation, handleGetNotificationValue, onChange],
   )
 
   const handleCommentReact = useCallback(
