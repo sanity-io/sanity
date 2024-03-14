@@ -101,6 +101,8 @@ export interface CommentContext {
     url: string
     workspaceTitle: string
     currentThreadLength?: number
+    // Used in task comments, list of users that are subscribed to the task.
+    subscribers?: string[]
   }
   intent?: {
     title: string
@@ -260,6 +262,9 @@ export interface CommentBaseCreatePayload {
 export interface CommentTaskCreatePayload extends CommentBaseCreatePayload {
   // ...
   type: 'task'
+  context: {
+    notification: CommentContext['notification']
+  }
 }
 
 /**

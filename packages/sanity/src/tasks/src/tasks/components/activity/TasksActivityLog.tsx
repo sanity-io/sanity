@@ -8,9 +8,11 @@ import {
   LoadingBlock,
   type PatchEvent,
   type Path,
+  set,
   type TransactionLogEventWithEffects,
   useClient,
   useCurrentUser,
+  useWorkspace,
 } from 'sanity'
 import styled from 'styled-components'
 
@@ -29,6 +31,7 @@ import {
 import {API_VERSION} from '../../constants/API_VERSION'
 import {type TaskDocument} from '../../types'
 import {CurrentWorkspaceProvider} from '../form/CurrentWorkspaceProvider'
+import {getMentionedUsers} from '../form/utils'
 import {type FieldChange, trackFieldChanges} from './helpers/parseTransactions'
 import {EditedAt} from './TaskActivityEditedAt'
 import {TasksActivityCommentInput} from './TasksActivityCommentInput'
@@ -134,10 +137,34 @@ type Activity =
 export function TasksActivityLog(props: TasksActivityLogProps) {
   const {value, onChange, path} = props
   const currentUser = useCurrentUser()
+  const {title: workspaceTitle, basePath} = useWorkspace()
 
   const {comments, mentionOptions, operation, getComment} = useComments()
   const loading = comments.loading
   const taskComments = comments.data.open
+
+  const handleGetNotificationValue = useCallback(
+    (message: CommentInputProps['value']) => {
+      const studioUrl = new URL(`${window.location.origin}${basePath}/`)
+      studioUrl.searchParams.set('sidebar', 'tasks')
+      studioUrl.searchParams.set('selectedTask', value?._id)
+      studioUrl.searchParams.set('viewMode', 'edit')
+
+      // We need to update the subscribers list in the task, any user mentioned in the comment should be added
+      // as a subscriber.
+      const mentionedUsers = getMentionedUsers(message)
+      const subscribers = Array.from(new Set([...(value.subscribers || []), ...mentionedUsers]))
+      onChange(set(subscribers, ['subscribers']))
+
+      return {
+        documentTitle: value.title || 'Sanity task',
+        url: studioUrl.toString(),
+        workspaceTitle: workspaceTitle,
+        subscribers: subscribers,
+      }
+    },
+    [basePath, value?._id, value.title, workspaceTitle, value.subscribers, onChange],
+  )
 
   const handleCommentCreate = useCallback(
     (message: CommentInputProps['value']) => {
@@ -148,11 +175,14 @@ export function TasksActivityLog(props: TasksActivityLogProps) {
         reactions: EMPTY_ARRAY,
         status: 'open',
         threadId: uuid(),
+        context: {
+          notification: handleGetNotificationValue(message),
+        },
       }
 
       operation.create(nextComment)
     },
-    [operation],
+    [operation, handleGetNotificationValue],
   )
 
   const handleCommentReply = useCallback(
@@ -164,9 +194,12 @@ export function TasksActivityLog(props: TasksActivityLogProps) {
         reactions: EMPTY_ARRAY,
         status: 'open',
         threadId: nextComment.threadId,
+        context: {
+          notification: handleGetNotificationValue(nextComment.message),
+        },
       })
     },
-    [operation],
+    [operation, handleGetNotificationValue],
   )
 
   const handleCommentCreateRetry = useCallback(
@@ -184,9 +217,12 @@ export function TasksActivityLog(props: TasksActivityLogProps) {
         reactions: comment.reactions || EMPTY_ARRAY,
         status: comment.status,
         threadId: comment.threadId,
+        context: {
+          notification: handleGetNotificationValue(comment.message),
+        },
       })
     },
-    [getComment, operation],
+    [getComment, operation, handleGetNotificationValue],
   )
 
   const handleCommentReact = useCallback(
