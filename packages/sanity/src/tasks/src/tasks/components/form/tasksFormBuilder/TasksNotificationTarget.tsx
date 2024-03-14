@@ -51,7 +51,7 @@ function TasksNotificationTargetInner(props: ObjectFieldProps<TaskDocument>) {
       targetContentImageUrl: imageUrl,
       targetContentTitle: targetContentTitle,
     }
-    if (deepEquals(notificationTarget, context)) return
+    if (deepEquals(notificationTarget, context?.notification)) return
 
     onChange(set(notificationTarget, ['notification']))
   }, [
