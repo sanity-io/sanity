@@ -11,6 +11,7 @@ import {
 } from '../fields'
 import {FormCreate} from '../tasksFormBuilder/FormCreate'
 import {FormEdit} from '../tasksFormBuilder/FormEdit'
+import {TasksNotificationTarget} from '../tasksFormBuilder/TasksNotificationTarget'
 
 const targetContentField = (mode: FormMode) =>
   defineField({
@@ -147,7 +148,9 @@ export const taskSchema = (mode: FormMode) =>
       {
         type: 'object',
         name: 'context',
-        hidden: true,
+        components: {
+          field: TasksNotificationTarget,
+        },
         fields: [
           {
             type: 'object',

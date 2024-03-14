@@ -4,8 +4,7 @@ import {useEffect, useMemo} from 'react'
 import deepEquals from 'react-fast-compare'
 import {
   DEFAULT_STUDIO_CLIENT_OPTIONS,
-  type FormPatch,
-  type PatchEvent,
+  type ObjectFieldProps,
   set,
   useClient,
   useFormValue,
@@ -16,17 +15,13 @@ import {useDocumentPreviewValues} from '../../../hooks/useDocumentPreviewValues'
 import {type TaskContext, type TaskDocument} from '../../../types'
 import {CurrentWorkspaceProvider} from '../CurrentWorkspaceProvider'
 
-interface TasksNotificationTargetProps {
-  onChange: (patch: FormPatch | PatchEvent | FormPatch[]) => void
-}
-
-function TasksNotificationTargetInner(props: TasksNotificationTargetProps) {
-  const {onChange} = props
+function TasksNotificationTargetInner(props: ObjectFieldProps<TaskDocument>) {
+  const {inputProps} = props
+  const {onChange} = inputProps
   const {target, _id, context} = useFormValue([]) as TaskDocument
   const {title: workspaceTitle, basePath} = useWorkspace()
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const imageBuilder = useMemo(() => imageUrlBuilder(client), [client])
-
   const documentId = target?.document?._ref ?? ''
   const documentType = target?.documentType ?? ''
 
@@ -58,7 +53,7 @@ function TasksNotificationTargetInner(props: TasksNotificationTargetProps) {
     }
     if (deepEquals(notificationTarget, context)) return
 
-    onChange(set(notificationTarget, ['context', 'notification']))
+    onChange(set(notificationTarget, ['notification']))
   }, [
     _id,
     basePath,
@@ -76,7 +71,7 @@ function TasksNotificationTargetInner(props: TasksNotificationTargetProps) {
 }
 
 // This component is listening to the changes to the form value and will update the notification target in the task document.
-export function TasksNotificationTarget(props: TasksNotificationTargetProps) {
+export function TasksNotificationTarget(props: ObjectFieldProps<TaskDocument>) {
   return (
     <CurrentWorkspaceProvider>
       <TasksNotificationTargetInner {...props} />

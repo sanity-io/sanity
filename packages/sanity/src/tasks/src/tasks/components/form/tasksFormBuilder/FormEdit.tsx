@@ -28,7 +28,6 @@ import {StatusSelector} from '../fields/StatusSelector'
 import {Title} from '../fields/TitleField'
 import {RemoveTaskDialog} from '../RemoveTaskDialog'
 import {getMentionedUsers} from '../utils'
-import {TasksNotificationTarget} from './TasksNotificationTarget'
 
 const FirstRow = styled(Flex)((props) => {
   const theme = getTheme_v2(props.theme)
@@ -83,7 +82,6 @@ function FormEditInner(props: ObjectInputProps) {
   const statusField = props.schemaType.fields.find((f) => f.name === 'status')
   const value = props.value as TaskDocument
   const currentUser = useCurrentUser()
-
   const handleChangeAndSubscribe = useCallback(
     (patch: FormPatch | PatchEvent | FormPatch[]) => {
       const subscribers = value.subscribers || []
@@ -143,7 +141,6 @@ function FormEditInner(props: ObjectInputProps) {
       </Card>
 
       {props.renderDefault(props)}
-      <TasksNotificationTarget onChange={props.onChange} />
 
       <CommentsProvider
         documentId={value._id}
