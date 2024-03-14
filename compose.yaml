@@ -1,0 +1,5 @@
+services:
+  web:
+    build: .
+    ports:
+      - '3333:3333'

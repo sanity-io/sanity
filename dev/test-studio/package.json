@@ -10,7 +10,7 @@
     "dev": "run-p workshop:dev sanity:dev",
     "lint": "eslint .",
     "sanity:build": "../.bin/sanity build --source-maps",
-    "sanity:dev": "../.bin/sanity dev",
+    "sanity:dev": "../.bin/sanity dev --host=0.0.0.0",
     "start": "../.bin/sanity start",
     "workshop:build": "node -r esbuild-register scripts/workshop/build.ts",
     "workshop:dev": "node -r esbuild-register scripts/workshop/dev.ts"
