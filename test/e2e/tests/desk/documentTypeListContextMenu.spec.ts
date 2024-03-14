@@ -9,7 +9,7 @@ test('clicking sort order and direction sets value in storage', async ({page, sa
   await page.goto('/test/content/author')
   await page.getByTestId('pane').getByTestId('pane-context-menu-button').click()
   await page.getByRole('menuitem', {name: 'Sort by Name'}).click()
-  const nameResult = await sanityClient.request({
+  const nameResult = await sanityClient.withConfig({apiVersion: '2024-03-12'}).request({
     uri: `/users/me/keyvalue/${SORT_KEY}`,
     withCredentials: true,
   })
@@ -23,7 +23,7 @@ test('clicking sort order and direction sets value in storage', async ({page, sa
 
   await page.getByTestId('pane').getByTestId('pane-context-menu-button').click()
   await page.getByRole('menuitem', {name: 'Sort by Last Edited'}).click()
-  const lastEditedResult = await sanityClient.request({
+  const lastEditedResult = await sanityClient.withConfig({apiVersion: '2024-03-12'}).request({
     uri: `/users/me/keyvalue/${SORT_KEY}`,
     withCredentials: true,
   })
@@ -41,7 +41,7 @@ test('clicking list view sets value in storage', async ({page, sanityClient}) =>
   await page.goto('/test/content/author')
   await page.getByTestId('pane').getByTestId('pane-context-menu-button').click()
   await page.getByRole('menuitem', {name: 'Detailed view'}).click()
-  const detailResult = await sanityClient.request({
+  const detailResult = await sanityClient.withConfig({apiVersion: '2024-03-12'}).request({
     uri: `/users/me/keyvalue/${LAYOUT_KEY}`,
     withCredentials: true,
   })
@@ -52,7 +52,7 @@ test('clicking list view sets value in storage', async ({page, sanityClient}) =>
 
   await page.getByTestId('pane').getByTestId('pane-context-menu-button').click()
   await page.getByRole('menuitem', {name: 'Compact view'}).click()
-  const compactResult = await sanityClient.request({
+  const compactResult = await sanityClient.withConfig({apiVersion: '2024-03-12'}).request({
     uri: `/users/me/keyvalue/${LAYOUT_KEY}`,
     withCredentials: true,
   })

@@ -13,7 +13,7 @@ test('clicking inspect mode sets value in storage', async ({
   await page.getByRole('menuitem', {name: 'Inspect Ctrl Alt I'}).click()
 
   await page.getByRole('tab', {name: 'Raw JSON'}).click()
-  const rawResult = await sanityClient.request({
+  const rawResult = await sanityClient.withConfig({apiVersion: '2024-03-12'}).request({
     uri: `/users/me/keyvalue/${INSPECT_KEY}`,
     withCredentials: true,
   })
@@ -23,7 +23,7 @@ test('clicking inspect mode sets value in storage', async ({
   })
 
   await page.getByRole('tab', {name: 'Parsed'}).click()
-  const parsedResult = await sanityClient.request({
+  const parsedResult = await sanityClient.withConfig({apiVersion: '2024-03-12'}).request({
     uri: `/users/me/keyvalue/${INSPECT_KEY}`,
     withCredentials: true,
   })
