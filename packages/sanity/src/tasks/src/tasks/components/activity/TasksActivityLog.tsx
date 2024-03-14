@@ -8,9 +8,11 @@ import {
   LoadingBlock,
   type PatchEvent,
   type Path,
+  set,
   type TransactionLogEventWithEffects,
   useClient,
   useCurrentUser,
+  useWorkspace,
 } from 'sanity'
 import styled from 'styled-components'
 
@@ -29,6 +31,7 @@ import {
 import {API_VERSION} from '../../constants/API_VERSION'
 import {type TaskDocument} from '../../types'
 import {CurrentWorkspaceProvider} from '../form/CurrentWorkspaceProvider'
+import {getMentionedUsers} from '../form/utils'
 import {type FieldChange, trackFieldChanges} from './helpers/parseTransactions'
 import {EditedAt} from './TaskActivityEditedAt'
 import {TasksActivityCommentInput} from './TasksActivityCommentInput'
@@ -134,39 +137,80 @@ type Activity =
 export function TasksActivityLog(props: TasksActivityLogProps) {
   const {value, onChange, path} = props
   const currentUser = useCurrentUser()
+  const {title: workspaceTitle, basePath} = useWorkspace()
 
   const {comments, mentionOptions, operation, getComment} = useComments()
   const loading = comments.loading
   const taskComments = comments.data.open
 
+  const handleGetNotificationValue = useCallback(
+    (message: CommentInputProps['value'], commentId: string) => {
+      const studioUrl = new URL(`${window.location.origin}${basePath}/`)
+      studioUrl.searchParams.set('sidebar', 'tasks')
+      studioUrl.searchParams.set('selectedTask', value?._id)
+      studioUrl.searchParams.set('viewMode', 'edit')
+      studioUrl.searchParams.set('commentId', commentId)
+
+      const mentionedUsers = getMentionedUsers(message)
+      const subscribers = Array.from(new Set([...(value.subscribers || []), ...mentionedUsers]))
+
+      return {
+        documentTitle: value.title || 'Sanity task',
+        url: studioUrl.toString(),
+        workspaceTitle: workspaceTitle,
+        subscribers: subscribers,
+      }
+    },
+    [basePath, value?._id, value.title, workspaceTitle, value.subscribers],
+  )
+
   const handleCommentCreate = useCallback(
     (message: CommentInputProps['value']) => {
+      const commentId = uuid()
+      const notification = handleGetNotificationValue(message, commentId)
+
       const nextComment: CommentCreatePayload = {
+        id: commentId,
         type: 'task',
         message,
         parentCommentId: undefined,
         reactions: EMPTY_ARRAY,
         status: 'open',
         threadId: uuid(),
+        context: {
+          notification,
+        },
       }
+
+      onChange(set(notification.subscribers, ['subscribers']))
 
       operation.create(nextComment)
     },
-    [operation],
+    [operation, handleGetNotificationValue, onChange],
   )
 
   const handleCommentReply = useCallback(
     (nextComment: CommentBaseCreatePayload) => {
+      const commentId = uuid()
+
+      const notification = handleGetNotificationValue(nextComment.message, commentId)
+
+      onChange(set(notification.subscribers, ['subscribers']))
+
       operation.create({
+        id: commentId,
         type: 'task',
         message: nextComment.message,
         parentCommentId: nextComment.parentCommentId,
         reactions: EMPTY_ARRAY,
         status: 'open',
         threadId: nextComment.threadId,
+        context: {
+          notification,
+        },
       })
     },
-    [operation],
+    [operation, handleGetNotificationValue, onChange],
   )
 
   const handleCommentCreateRetry = useCallback(
@@ -176,6 +220,10 @@ export function TasksActivityLog(props: TasksActivityLogProps) {
       const comment = getComment(id)
       if (!comment) return
 
+      const notification = handleGetNotificationValue(comment.message, comment._id)
+
+      onChange(set(notification.subscribers, ['subscribers']))
+
       operation.create({
         type: 'task',
         id: comment._id,
@@ -184,9 +232,12 @@ export function TasksActivityLog(props: TasksActivityLogProps) {
         reactions: comment.reactions || EMPTY_ARRAY,
         status: comment.status,
         threadId: comment.threadId,
+        context: {
+          notification,
+        },
       })
     },
-    [getComment, operation],
+    [getComment, operation, handleGetNotificationValue, onChange],
   )
 
   const handleCommentReact = useCallback(

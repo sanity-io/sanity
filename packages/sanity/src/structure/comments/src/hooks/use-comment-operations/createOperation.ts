@@ -78,7 +78,7 @@ export async function createOperation(props: CreateOperationProps): Promise<void
         payload: {
           workspace,
         },
-        notification: undefined, // TODO: add task notification data
+        notification: comment.context.notification,
         tool: activeTool?.name || '',
       },
 

@@ -11,6 +11,7 @@ import {
 } from '../fields'
 import {FormCreate} from '../tasksFormBuilder/FormCreate'
 import {FormEdit} from '../tasksFormBuilder/FormEdit'
+import {TasksNotificationTarget} from '../tasksFormBuilder/TasksNotificationTarget'
 
 const targetContentField = (mode: FormMode) =>
   defineField({
@@ -143,6 +144,37 @@ export const taskSchema = (mode: FormMode) =>
           list: TASK_STATUS.map((s) => ({value: s.value, title: s.title})),
         },
         hidden: true,
+      },
+      {
+        type: 'object',
+        name: 'context',
+        components: {
+          field: TasksNotificationTarget,
+        },
+        fields: [
+          {
+            type: 'object',
+            name: 'notification',
+            fields: [
+              {
+                type: 'string',
+                name: 'url',
+              },
+              {
+                type: 'string',
+                name: 'workspaceTitle',
+              },
+              {
+                type: 'string',
+                name: 'targetContentImageUrl',
+              },
+              {
+                type: 'string',
+                name: 'targetContentTitle',
+              },
+            ],
+          },
+        ],
       },
     ],
   })
