@@ -74,6 +74,8 @@ export function createUserStore({client: _client, currentUser}: UserStoreOptions
 
   return {
     getUser: async (userId) => {
+      if (!userId) return Promise.resolve(null)
+
       try {
         return await userLoader.load(userId)
       } catch (err) {
