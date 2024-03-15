@@ -11,6 +11,8 @@ import {
   type UnionTypeNode,
 } from 'groq-js'
 
+const REFERENCE_SYMBOL_NAME = 'internalGroqTypeReferenceTo'
+
 /**
  * A class used to generate TypeScript types from a given schema
  * @internal
@@ -69,6 +71,18 @@ export class TypeGenerator {
     )
 
     return new CodeGenerator(t.exportNamedDeclaration(typeAlias)).generate().code
+  }
+
+  static generateKnownTypes(): string {
+    const typeOperator = t.tsTypeOperator(t.tsSymbolKeyword())
+    typeOperator.operator = 'unique'
+
+    const identifier = t.identifier(REFERENCE_SYMBOL_NAME)
+    identifier.typeAnnotation = t.tsTypeAnnotation(typeOperator)
+
+    const decleration = t.variableDeclaration('const', [t.variableDeclarator(identifier)])
+    decleration.declare = true
+    return new CodeGenerator(t.exportNamedDeclaration(decleration)).generate().code
   }
 
   /**
@@ -203,6 +217,15 @@ export class TypeGenerator {
           throw new Error(`Type "${typeNode.rest.type}" not found in schema`)
         }
       }
+    }
+    if (typeNode.dereferencesTo !== undefined) {
+      const derefType = t.tsPropertySignature(
+        t.identifier(REFERENCE_SYMBOL_NAME),
+        t.tsTypeAnnotation(t.tsLiteralType(t.stringLiteral(typeNode.dereferencesTo))),
+      )
+      derefType.computed = true
+      derefType.optional = true
+      props.push(derefType)
     }
     return t.tsTypeLiteral(props)
   }

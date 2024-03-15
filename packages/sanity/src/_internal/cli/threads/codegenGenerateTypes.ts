@@ -58,7 +58,10 @@ async function main() {
   const schema = await readSchema(opts.schemaPath)
 
   const typeGenerator = new TypeGenerator(schema)
-  const schemaTypes = typeGenerator.generateSchemaTypes()
+  const schemaTypes = [
+    typeGenerator.generateSchemaTypes(),
+    TypeGenerator.generateKnownTypes(),
+  ].join('\n')
   const resolver = getResolver()
 
   parentPort?.postMessage({
