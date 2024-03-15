@@ -1,8 +1,9 @@
 import {Box, Flex, Switch, Text, useToast} from '@sanity/ui'
 import {useCallback, useState} from 'react'
-import {type ObjectInputProps, set} from 'sanity'
+import {type ObjectInputProps, set, useTranslation} from 'sanity'
 
 import {Button} from '../../../../../../ui-components'
+import {tasksLocaleNamespace} from '../../../../../i18n'
 import {useTasksNavigation} from '../../../context'
 import {useRemoveTask} from '../../../hooks/useRemoveTask'
 import {type TaskDocument} from '../../../types'
@@ -39,13 +40,13 @@ export function FormCreate(props: ObjectInputProps) {
     setViewMode({type: 'list'})
   }, [setViewMode])
   const {handleRemove, removeStatus} = useRemoveTask({id: value._id, onRemoved: onRemove})
-
+  const {t} = useTranslation(tasksLocaleNamespace)
   const handleCreate = useCallback(() => {
     if (!value?.title) {
       toast.push({
         closable: true,
         status: 'error',
-        title: 'Title is required',
+        title: t('tasks.form.status.error.title-required'),
       })
       return
     }
@@ -63,9 +64,9 @@ export function FormCreate(props: ObjectInputProps) {
     toast.push({
       closable: true,
       status: 'success',
-      title: 'Task created',
+      title: t('tasks.form.status.success'),
     })
-  }, [setViewMode, setActiveTab, onChange, createMore, toast, value])
+  }, [setViewMode, setActiveTab, onChange, createMore, toast, value, t])
 
   return (
     <>
@@ -76,20 +77,20 @@ export function FormCreate(props: ObjectInputProps) {
           <Flex align="center" gap={2} style={{flexGrow: viewMode === 'draft' ? 1 : 0}}>
             <Switch onChange={handleCreateMore} checked={createMore} />
             <Text size={1} muted>
-              Create more
+              {t('tasks.form.input.create-more.text')}
             </Text>
           </Flex>
 
           {viewMode === 'draft' && (
             <Button
-              text="Discard"
+              text={t('tasks.buttons.discard.text')}
               onClick={handleRemove}
               mode="bleed"
               disabled={removeStatus === 'loading'}
               loading={removeStatus === 'loading'}
             />
           )}
-          <Button text="Create Task" onClick={handleCreate} />
+          <Button text={t('tasks.buttons.create.text')} onClick={handleCreate} />
         </Flex>
       </Box>
     </>

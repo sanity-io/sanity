@@ -1,7 +1,8 @@
 import {PanelRightIcon, TaskIcon} from '@sanity/icons'
 import {useCallback, useMemo} from 'react'
-import {type NavbarProps} from 'sanity'
+import {type NavbarProps, useTranslation} from 'sanity'
 
+import {tasksLocaleNamespace} from '../i18n'
 import {useTasksEnabled, useTasksNavigation} from '../src'
 
 const EMPTY_ARRAY: [] = []
@@ -21,6 +22,8 @@ function TasksStudioNavbarInner(props: NavbarProps) {
     }
   }, [handleCloseTasks, handleOpenTasks, isOpen])
 
+  const {t} = useTranslation(tasksLocaleNamespace)
+
   const actions = useMemo((): NavbarProps['__internal_actions'] => {
     return [
       ...(props?.__internal_actions || EMPTY_ARRAY),
@@ -30,7 +33,7 @@ function TasksStudioNavbarInner(props: NavbarProps) {
         name: 'tasks-topbar',
         onAction: handleAction,
         selected: isOpen,
-        title: 'Tasks',
+        title: t('tasks.actions.open.text'),
       },
       {
         icon: TaskIcon,
@@ -38,10 +41,10 @@ function TasksStudioNavbarInner(props: NavbarProps) {
         name: 'tasks-sidebar',
         onAction: handleAction,
         selected: isOpen,
-        title: 'Tasks',
+        title: t('tasks.actions.open.text'),
       },
     ]
-  }, [handleAction, isOpen, props?.__internal_actions])
+  }, [handleAction, isOpen, props?.__internal_actions, t])
 
   return props.renderDefault({
     ...props,

@@ -3,9 +3,11 @@ import {Box, Flex, Text} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
 import {useCallback} from 'react'
+import {useTranslation} from 'sanity'
 import styled from 'styled-components'
 
 import {Button, Tooltip, TooltipDelayGroupProvider} from '../../../../../ui-components'
+import {tasksLocaleNamespace} from '../../../../i18n'
 import {useTasksNavigation} from '../../context'
 import {type TaskDocument} from '../../types'
 
@@ -46,17 +48,19 @@ export function TasksActiveTabNavigation(props: TasksActiveTabNavigationProps) {
     setViewMode({type: 'edit', id: nextTaskId})
   }, [currentItemIndex, items, setViewMode])
 
+  const {t} = useTranslation(tasksLocaleNamespace)
+
   if (!items.length) return null
   return (
     <TooltipDelayGroupProvider>
       <Flex gap={1} align="center">
         <Button
-          tooltipProps={{content: 'Go to previous task'}}
+          tooltipProps={{content: t('tasks.buttons.previous.tooltip')}}
           mode="bleed"
           icon={ChevronLeftIcon}
           onClick={goToPreviousTask}
         />
-        <Tooltip content={'Open tasks'}>
+        <Tooltip content={t('tasks.panel.navigation.tooltip')}>
           <Box paddingY={2}>
             <Text size={1}>
               {currentItemIndex + 1} / {items.length}
@@ -64,7 +68,7 @@ export function TasksActiveTabNavigation(props: TasksActiveTabNavigationProps) {
           </Box>
         </Tooltip>
         <Button
-          tooltipProps={{content: 'Go to next task'}}
+          tooltipProps={{content: t('tasks.buttons.previous.tooltip')}}
           mode="bleed"
           icon={ChevronRightIcon}
           onClick={goToNextTask}

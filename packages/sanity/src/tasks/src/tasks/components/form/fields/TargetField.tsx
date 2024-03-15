@@ -13,12 +13,14 @@ import {
   unset,
   useDocumentPresence,
   useSchema,
+  useTranslation,
   useWorkspace,
 } from 'sanity'
 import {IntentLink} from 'sanity/router'
 import styled, {css} from 'styled-components'
 
 import {Button} from '../../../../../../ui-components'
+import {tasksLocaleNamespace} from '../../../../../i18n'
 import {type FormMode, type TaskTarget} from '../../../types'
 import {CurrentWorkspaceProvider} from '../CurrentWorkspaceProvider'
 import {getTargetValue} from '../utils'
@@ -95,7 +97,7 @@ function Preview(props: {value: TaskTarget; handleRemove: () => void}) {
   const schema = useSchema()
   const schemaType = schema.get(value.documentType)
   const documentPresence = useDocumentPresence(documentId)
-
+  const {t} = useTranslation(tasksLocaleNamespace)
   const CardLink = useMemo(
     () =>
       forwardRef(function LinkComponent(linkProps, ref: ForwardedRef<HTMLAnchorElement>) {
@@ -111,7 +113,7 @@ function Preview(props: {value: TaskTarget; handleRemove: () => void}) {
     [documentId, documentType],
   )
   if (!schemaType) {
-    return <Text>Schema not found</Text>
+    return <Text>{t('tasks.form.input.target.error.schema-not-found')}</Text>
   }
 
   return (
@@ -132,7 +134,7 @@ function Preview(props: {value: TaskTarget; handleRemove: () => void}) {
             icon={CloseIcon}
             mode="bleed"
             onClick={handleRemove}
-            tooltipProps={{content: 'Remove target content'}}
+            tooltipProps={{content: t('tasks.form.input.target.buttons.remove.text')}}
           />
         </div>
       </Flex>
@@ -187,6 +189,8 @@ export function TargetField(
     if (event.key === 'Enter' || event.key === ' ') setOpen(true)
   }, [])
 
+  const {t} = useTranslation(tasksLocaleNamespace)
+
   return (
     <Card borderBottom={mode === 'edit'} paddingBottom={mode === 'edit' ? 4 : 0}>
       <FieldWrapperRoot>
@@ -223,7 +227,9 @@ export function TargetField(
                         <DocumentIcon />
                       </Text>
                     </Box>
-                    <Placeholder size={1}>Search document</Placeholder>
+                    <Placeholder size={1}>
+                      {t('tasks.form.input.target.search.placeholder')}
+                    </Placeholder>
                   </Flex>
                 </EmptyReferenceRoot>
               )}

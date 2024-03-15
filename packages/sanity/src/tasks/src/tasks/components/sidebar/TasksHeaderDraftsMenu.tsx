@@ -1,12 +1,13 @@
 import {CheckmarkIcon, ChevronDownIcon} from '@sanity/icons'
 import {Box, Menu, MenuDivider, Text} from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
-import {useCurrentUser} from 'sanity'
+import {useCurrentUser, useTranslation} from 'sanity'
 import styled from 'styled-components'
 
 import {Button, MenuButton, type MenuButtonProps, MenuItem} from '../../../../../ui-components'
 import {useTasks, useTasksNavigation} from '../../context'
 import {type TaskDocument} from '../../types'
+import {tasksLocaleNamespace} from '../../../../i18n'
 
 const MENU_BUTTON_POPOVER_PROPS: MenuButtonProps['popover'] = {
   constrainSize: true,
@@ -72,6 +73,8 @@ export function TasksHeaderDraftsMenu() {
     [setViewMode],
   )
 
+  const {t} = useTranslation(tasksLocaleNamespace)
+
   if (!draftTasks.length) return null
 
   return (
@@ -82,7 +85,7 @@ export function TasksHeaderDraftsMenu() {
         <StyledMenu>
           <Box padding={3}>
             <Text size={1} weight="semibold">
-              Drafts
+              {t('tasks.panel.drafts.title')}
             </Text>
           </Box>
 

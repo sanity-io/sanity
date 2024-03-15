@@ -76,6 +76,7 @@ const config = {
           attributes: [
             'animate',
             'closed',
+            'documentType',
             'exit',
             'fill',
             'full',
@@ -274,15 +275,6 @@ const config = {
     // Files to disable i18n literals,
     {
       files: ['./**/*/__workshop__/**/*', './dev/**/*', './examples/**/*', '**/*/debug/**/*'],
-      rules: {
-        'i18next/no-literal-string': 'off',
-        '@sanity/i18n/no-attribute-string-literals': 'off',
-        '@sanity/i18n/no-attribute-template-literals': 'off',
-      },
-    },
-    // Ignore i18n in Tasks files for now. This will need to be removed before task is completed.
-    {
-      files: ['**/*/Tasks*.{js,ts,tsx}', '**/*/tasks/**/*'],
       rules: {
         'i18next/no-literal-string': 'off',
         '@sanity/i18n/no-attribute-string-literals': 'off',

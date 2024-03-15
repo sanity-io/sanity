@@ -2,9 +2,10 @@ import {Badge, Card, Flex, Text, TextSkeleton} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
 import {useCallback, useMemo} from 'react'
-import {set, type StringInputProps} from 'sanity'
+import {set, type StringInputProps, useTranslation} from 'sanity'
 import styled, {css} from 'styled-components'
 
+import {tasksLocaleNamespace} from '../../../../../../i18n'
 import {useMentionUser} from '../../../../context'
 import {TasksUserAvatar} from '../../../TasksUserAvatar'
 import {AssigneeSelectionMenu} from './AssigneeSelectionMenu'
@@ -31,15 +32,15 @@ export function AssigneeCreateFormField(props: StringInputProps) {
   )
 
   const onSelect = useCallback((userId: string) => onChange(set(userId)), [onChange])
-
+  const {t} = useTranslation(tasksLocaleNamespace)
   const displayText = useMemo(() => {
     if (value) {
       if (mentionOptions.loading) return <TextSkeleton animated style={{width: '10ch'}} />
       if (mentionedUser) return mentionedUser.displayName || mentionedUser.email
-      if (!mentionedUser) return 'User not found'
+      if (!mentionedUser) return t('tasks.form.input.assignee.user-not-found.text')
     }
-    return 'Search username'
-  }, [mentionOptions.loading, mentionedUser, value])
+    return t('tasks.form.input.assignee.search.placeholder')
+  }, [mentionOptions.loading, mentionedUser, value, t])
 
   return (
     <AssigneeSelectionMenu
@@ -57,7 +58,7 @@ export function AssigneeCreateFormField(props: StringInputProps) {
 
             {value && mentionedUser && !mentionedUser.granted && (
               <Badge fontSize={1} mode="outline">
-                Unauthorized
+                {t('tasks.form.input.assignee.unauthorized.text')}
               </Badge>
             )}
           </Flex>

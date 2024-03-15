@@ -13,11 +13,13 @@ import {
   set,
   TransformPatches,
   useCurrentUser,
+  useTranslation,
 } from 'sanity'
 import styled, {css} from 'styled-components'
 
 import {CommentsProvider} from '../../../../../../structure/comments'
 import {MenuButton, MenuItem} from '../../../../../../ui-components'
+import {tasksLocaleNamespace} from '../../../../../i18n'
 import {useTasksNavigation} from '../../../context'
 import {useRemoveTask} from '../../../hooks/useRemoveTask'
 import {type TaskDocument} from '../../../types'
@@ -48,6 +50,8 @@ function FormActionsMenu({id, value}: {id: string; value: TaskDocument}) {
     setViewMode({type: 'duplicate', duplicateTaskValues: value})
   }, [setViewMode, value])
 
+  const {t} = useTranslation(tasksLocaleNamespace)
+
   return (
     <>
       <Box paddingTop={3}>
@@ -60,11 +64,19 @@ function FormActionsMenu({id, value}: {id: string; value: TaskDocument}) {
           }}
           menu={
             <Menu>
-              <MenuItem text="Duplicate task" icon={CopyIcon} onClick={duplicateTask} />
-              <MenuItem text="Copy link to task" icon={LinkIcon} onClick={handleCopyLinkToTask} />
+              <MenuItem
+                text={t('tasks.menuitem.duplicate.text')}
+                icon={CopyIcon}
+                onClick={duplicateTask}
+              />
+              <MenuItem
+                text={t('tasks.menuitem.copylink.text')}
+                icon={LinkIcon}
+                onClick={handleCopyLinkToTask}
+              />
               <MenuDivider />
               <MenuItem
-                text="Delete task"
+                text={t('tasks.menuitem.delete.text')}
                 icon={TrashIcon}
                 onClick={removeTask.handleOpenDialog}
                 tone="critical"
@@ -82,6 +94,7 @@ function FormEditInner(props: ObjectInputProps) {
   const statusField = props.schemaType.fields.find((f) => f.name === 'status')
   const value = props.value as TaskDocument
   const currentUser = useCurrentUser()
+  const {t} = useTranslation(tasksLocaleNamespace)
   const handleChangeAndSubscribe = useCallback(
     (patch: FormPatch | PatchEvent | FormPatch[]) => {
       const subscribers = value.subscribers || []
@@ -108,7 +121,7 @@ function FormEditInner(props: ObjectInputProps) {
             onChange={handleChangeAndSubscribe}
             value={props.value?.title}
             path={['title']}
-            placeholder="Task title"
+            placeholder={t('tasks.form.input.title.placeholder')}
           />
         </Stack>
         <FormActionsMenu id={props.value?._id} value={value} />

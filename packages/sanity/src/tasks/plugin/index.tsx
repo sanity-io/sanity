@@ -1,12 +1,12 @@
 import {definePlugin, type ObjectInputProps} from 'sanity'
 
+import {tasksUsEnglishLocaleBundle} from '../i18n'
 import {TaskCreateAction} from './TaskCreateAction'
 import {TasksDocumentInputLayout} from './TasksDocumentInputLayout'
 import {TasksFooterOpenTasks} from './TasksFooterOpenTasks'
 import {TasksStudioActiveToolLayout} from './TasksStudioActiveToolLayout'
 import {TasksStudioLayout} from './TasksStudioLayout'
 import {TasksStudioNavbar} from './TasksStudioNavbar'
-
 /**
  * @internal
  * @beta
@@ -39,5 +39,8 @@ export const tasks = definePlugin({
         return props.renderDefault(props)
       },
     },
+  },
+  i18n: {
+    bundles: [tasksUsEnglishLocaleBundle],
   },
 })

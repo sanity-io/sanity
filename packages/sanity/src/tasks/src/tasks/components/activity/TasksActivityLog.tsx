@@ -12,6 +12,7 @@ import {
   type TransactionLogEventWithEffects,
   useClient,
   useCurrentUser,
+  useTranslation,
   useWorkspace,
 } from 'sanity'
 import styled from 'styled-components'
@@ -27,6 +28,7 @@ import {
   type CommentUpdatePayload,
   useComments,
 } from '../../../../../structure/comments'
+import {tasksLocaleNamespace} from '../../../../i18n'
 import {API_VERSION} from '../../constants/API_VERSION'
 import {type TaskDocument} from '../../types'
 import {CurrentWorkspaceProvider} from '../form/CurrentWorkspaceProvider'
@@ -287,6 +289,7 @@ export function TasksActivityLog(props: TasksActivityLogProps) {
       .concat(commentsActivity)
       .sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime())
   }, [activityData, taskComments])
+  const {t} = useTranslation(tasksLocaleNamespace)
 
   const commentToDeleteIsParent = useMemo(() => {
     const parent = taskComments.find((c) => c.parentComment?._id === commentToDeleteId)
@@ -312,7 +315,7 @@ export function TasksActivityLog(props: TasksActivityLogProps) {
         <Flex align="center">
           <Box flex={1}>
             <Text size={2} weight="semibold">
-              Activity
+              {t('tasks.panel.activity.title')}
             </Text>
           </Box>
 

@@ -13,10 +13,11 @@ import {
 import {motion} from 'framer-motion'
 import {deburr} from 'lodash'
 import {type ChangeEvent, type KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
-import {LoadingBlock, type UserWithPermission} from 'sanity'
+import {LoadingBlock, type UserWithPermission, useTranslation} from 'sanity'
 import styled from 'styled-components'
 
 import {MenuButton} from '../../../../../../../ui-components'
+import {tasksLocaleNamespace} from '../../../../../../i18n'
 import {useMentionUser} from '../../../../context'
 import {TasksUserAvatar} from '../../../TasksUserAvatar'
 
@@ -28,7 +29,7 @@ function MentionUserMenuItem(props: {
   pressed: boolean
 }) {
   const {user, onSelect, pressed} = props
-
+  const {t} = useTranslation(tasksLocaleNamespace)
   const handleSelect = useCallback(() => onSelect(user.id), [user, onSelect])
   return (
     <MenuItem onClick={handleSelect} padding={1} disabled={!user.granted} pressed={pressed}>
@@ -42,7 +43,7 @@ function MentionUserMenuItem(props: {
 
         {!user.granted && (
           <Badge fontSize={1} mode="outline">
-            Unauthorized
+            {t('tasks.form.input.assignee.unauthorized.text')}
           </Badge>
         )}
       </Flex>
@@ -137,6 +138,8 @@ function MentionsMenu({onSelect, value = ''}: {onSelect: SelectItemHandler; valu
     }
   }, [])
 
+  const {t} = useTranslation(tasksLocaleNamespace)
+
   if (mentionOptions.loading) {
     return (
       <Container width={0}>
@@ -148,7 +151,7 @@ function MentionsMenu({onSelect, value = ''}: {onSelect: SelectItemHandler; valu
   return (
     <div onKeyDown={handleKeyDown}>
       <TextInput
-        placeholder="Search username"
+        placeholder={t('tasks.form.input.assignee.search.placeholder')}
         autoFocus
         border={false}
         onChange={handleSearchChange}
@@ -162,7 +165,7 @@ function MentionsMenu({onSelect, value = ''}: {onSelect: SelectItemHandler; valu
         {filteredOptions.length === 0 ? (
           <Box padding={3}>
             <Text align="center" size={1} muted>
-              No users found
+              {t('tasks.form.input.assignee.search.no-users.text')}
             </Text>
           </Box>
         ) : (

@@ -1,7 +1,8 @@
 import {TaskIcon} from '@sanity/icons'
 import {useCallback} from 'react'
-import {type DocumentActionDescription} from 'sanity'
+import {type DocumentActionDescription, useTranslation} from 'sanity'
 
+import {tasksLocaleNamespace} from '../i18n'
 import {useTasksEnabled, useTasksNavigation} from '../src'
 
 export function TaskCreateAction(): DocumentActionDescription | null {
@@ -13,12 +14,14 @@ export function TaskCreateAction(): DocumentActionDescription | null {
     setViewMode({type: 'create'})
   }, [handleOpenTasks, setViewMode])
 
+  const {t} = useTranslation(tasksLocaleNamespace)
+
   if (!enabled) return null
 
   return {
     icon: TaskIcon,
-    label: 'Create new task',
-    title: 'Create new task',
+    label: t('tasks.actions.create.text'),
+    title: t('tasks.actions.create.text'),
     group: ['paneActions'],
     onHandle: handleCreateTaskFromDocument,
   }

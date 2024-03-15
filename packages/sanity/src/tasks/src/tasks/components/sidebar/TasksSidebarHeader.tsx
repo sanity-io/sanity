@@ -8,9 +8,10 @@ import {
 } from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {useCallback} from 'react'
-import {BetaBadge} from 'sanity'
+import {BetaBadge, useTranslation} from 'sanity'
 
 import {Button} from '../../../../../ui-components'
+import {tasksLocaleNamespace} from '../../../../i18n'
 import {useTasksNavigation} from '../../context'
 import {type TaskDocument} from '../../types'
 import {TasksActiveTabNavigation} from './TasksActiveTabNavigation'
@@ -36,19 +37,21 @@ export function TasksSidebarHeader(props: TasksSidebarHeaderProps) {
     setViewMode({type: 'list'})
   }, [setViewMode])
 
+  const {t} = useTranslation(tasksLocaleNamespace)
+
   return (
     <Flex justify="space-between" align="center" gap={1}>
       <Flex align="center" flex={1}>
         {viewMode === 'list' ? (
           <Box padding={2}>
             <Text size={2} weight="semibold">
-              Tasks
+              {t('tasks.panel.title')}
             </Text>
           </Box>
         ) : (
           <>
             <UIButton mode="bleed" space={2} padding={2} onClick={handleGoBack}>
-              <Text size={1}>Tasks</Text>
+              <Text size={1}>{t('tasks.panel.title')}</Text>
             </UIButton>
             <ChevronRightIcon />
             <Box paddingX={2}>

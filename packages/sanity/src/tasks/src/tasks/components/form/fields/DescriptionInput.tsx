@@ -1,10 +1,17 @@
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
 import {useCallback, useEffect, useRef, useState} from 'react'
-import {type ArrayFieldProps, type PortableTextBlock, set, useCurrentUser} from 'sanity'
+import {
+  type ArrayFieldProps,
+  type PortableTextBlock,
+  set,
+  useCurrentUser,
+  useTranslation,
+} from 'sanity'
 import styled, {css} from 'styled-components'
 
 import {CommentInput} from '../../../../../../structure/comments'
+import {tasksLocaleNamespace} from '../../../../../i18n'
 import {useMentionUser} from '../../../context'
 import {type FormMode} from '../../../types'
 
@@ -59,6 +66,7 @@ export function DescriptionInput(props: ArrayFieldProps & {mode: FormMode}) {
     },
     [setTextboxHeight],
   )
+  const {t} = useTranslation(tasksLocaleNamespace)
 
   useEffect(() => {
     if (!rootRef.current) return
@@ -75,7 +83,7 @@ export function DescriptionInput(props: ArrayFieldProps & {mode: FormMode}) {
         onChange={handleChange}
         value={value ?? []}
         withAvatar={false}
-        placeholder="Optional additional description"
+        placeholder={t('tasks.form.input.description.placeholder')}
         // eslint-disable-next-line react/jsx-no-bind
         onDiscardConfirm={() => null}
       />
