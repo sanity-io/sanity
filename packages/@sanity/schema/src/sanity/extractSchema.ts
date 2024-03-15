@@ -219,7 +219,7 @@ export function extractSchema(
       return {type: 'unknown'} satisfies UnknownTypeNode
     }
 
-    if (schemaType.type?.name !== 'document') {
+    if (schemaType.type?.name !== 'document' && schemaType.name !== 'object') {
       attributes._type = {
         type: 'objectAttribute',
         value: {
