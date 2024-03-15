@@ -24,6 +24,12 @@ describe('generateSchemaTypes', () => {
     expect(typeDeclarations).toMatchSnapshot()
   })
 
+  test('can generate well known types', async () => {
+    const typeDeclarations = TypeGenerator.generateKnownTypes()
+
+    expect(typeDeclarations).toMatchSnapshot()
+  })
+
   test('should generate correct types for document schema with string fields', () => {
     const schema: SchemaType = [
       {
@@ -247,6 +253,7 @@ describe('generateSchemaTypes', () => {
     _ref: string;
     _type: \\"reference\\";
     _weak?: boolean;
+    [internalGroqTypeReferenceTo]?: \\"author\\";
   };
 };
 

@@ -1,5 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`generateSchemaTypes can generate well known types 1`] = `"export declare const internalGroqTypeReferenceTo: unique symbol;"`;
+
 exports[`generateSchemaTypes generateTypeNodeTypes should be able to generate types for type nodes: boolean 1`] = `"export type test_2 = boolean;"`;
 
 exports[`generateSchemaTypes generateTypeNodeTypes should be able to generate types for type nodes: null 1`] = `"export type test_5 = null;"`;
@@ -30,9 +32,11 @@ export type Post = {
   author?: {
     _ref: string;
     _weak?: boolean;
+    [internalGroqTypeReferenceTo]?: \\"author\\";
   } | {
     _ref: string;
     _weak?: boolean;
+    [internalGroqTypeReferenceTo]?: \\"ghost\\";
   };
   slug?: Slug;
   excerpt?: string;
@@ -41,6 +45,7 @@ export type Post = {
     asset: {
       _ref: string;
       _weak?: boolean;
+      [internalGroqTypeReferenceTo]?: \\"sanity.imageAsset\\";
     };
     caption?: string;
     attribution?: string;
