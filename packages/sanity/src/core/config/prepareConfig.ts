@@ -22,12 +22,14 @@ import {
   documentActionsReducer,
   documentBadgesReducer,
   documentCommentsEnabledReducer,
+  documentFiltersReducer,
   documentInspectorsReducer,
   documentLanguageFilterReducer,
   fileAssetSourceResolver,
   imageAssetSourceResolver,
   initialDocumentActions,
   initialDocumentBadges,
+  initialDocumentFilters,
   initialLanguageFilter,
   internalTasksReducer,
   newDocumentOptionsResolver,
@@ -501,6 +503,14 @@ function resolveSource({
           initialValue: initialDocumentFieldActions,
           propertyName: 'document.unstable_fieldActions',
           reducer: documentFieldActionsReducer,
+        }),
+      unstable_filters: (partialContext) =>
+        resolveConfigProperty({
+          config,
+          context: {...context, ...partialContext},
+          initialValue: initialDocumentFilters,
+          propertyName: 'document.unstable_filters',
+          reducer: documentFiltersReducer,
         }),
       inspectors: (partialContext) =>
         resolveConfigProperty({

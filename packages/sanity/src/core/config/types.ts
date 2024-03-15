@@ -272,6 +272,13 @@ export interface DocumentPluginOptions {
 
   /** @internal */
   unstable_fieldActions?: DocumentFieldAction[] | DocumentFieldActionsResolver
+
+  /**
+   * @hidden
+   * @beta
+   */
+  unstable_filters?: string[] | DocumentFiltersResolver
+
   /** @hidden @beta */
   inspectors?: DocumentInspector[] | DocumentInspectorsResolver
   /**
@@ -340,6 +347,12 @@ export type DocumentBadgesResolver = ComposableOption<
   DocumentBadgeComponent[],
   DocumentBadgesContext
 >
+
+/**
+ * @hidden
+ * @beta
+ */
+export type DocumentFiltersResolver = ComposableOption<string[], DocumentFiltersContext>
 
 /** @hidden @beta */
 export type DocumentInspectorsResolver = ComposableOption<
@@ -511,6 +524,12 @@ export interface DocumentBadgesContext extends ConfigContext {
   schemaType: string
 }
 
+/**
+ * @hidden
+ * @beta
+ */
+export interface DocumentFiltersContext extends ConfigContext {}
+
 /** @hidden @beta */
 export interface DocumentInspectorContext extends ConfigContext {
   documentId?: string
@@ -623,6 +642,12 @@ export interface Source {
     unstable_fieldActions: (
       props: PartialContext<DocumentFieldActionsResolverContext>,
     ) => DocumentFieldAction[]
+
+    /**
+     * @hidden
+     * @beta
+     */
+    unstable_filters: (props: PartialContext<DocumentFiltersContext>) => string[]
 
     /**
      * Resolves the production URL for the document.

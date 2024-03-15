@@ -83,6 +83,9 @@ export function useSearch({
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const maxFieldDepth = useSearchMaxFieldDepth()
   const {unstable_enableNewSearch = false} = useWorkspace().search
+  const {unstable_filters} = useWorkspace().document
+
+  const filters = useMemo(() => unstable_filters({}), [unstable_filters])
 
   const search = useMemo(
     () =>
@@ -91,8 +94,9 @@ export function useSearch({
         unique: true,
         unstable_enableNewSearch,
         maxDepth: maxFieldDepth,
+        filter: filters.filter(Boolean).join(' && '),
       }),
-    [client, maxFieldDepth, schema, unstable_enableNewSearch],
+    [client, filters, maxFieldDepth, schema, unstable_enableNewSearch],
   )
 
   const handleQueryChange = useObservableCallback(

@@ -17,6 +17,7 @@ import {
   type DocumentActionsContext,
   type DocumentBadgesContext,
   type DocumentCommentsEnabledContext,
+  type DocumentFiltersContext,
   type DocumentInspectorContext,
   type DocumentLanguageFilterComponent,
   type DocumentLanguageFilterContext,
@@ -29,6 +30,8 @@ import {
 export const initialDocumentBadges: DocumentBadgeComponent[] = []
 
 export const initialDocumentActions: DocumentActionComponent[] = []
+
+export const initialDocumentFilters: string[] = []
 
 export const initialLanguageFilter: DocumentLanguageFilterComponent[] = []
 
@@ -182,6 +185,24 @@ export const documentActionsReducer: ConfigPropertyReducer<
   throw new Error(
     `Expected \`document.actions\` to be an array or a function, but received ${getPrintableType(
       documentActions,
+    )}`,
+  )
+}
+
+export const documentFiltersReducer: ConfigPropertyReducer<string[], DocumentFiltersContext> = (
+  prev,
+  {document},
+  context,
+) => {
+  const documentFilters = document?.unstable_filters
+  if (!documentFilters) return prev
+
+  if (typeof documentFilters === 'function') return documentFilters(prev, context)
+  if (Array.isArray(documentFilters)) return [...prev, ...documentFilters]
+
+  throw new Error(
+    `Expected \`document.filters\` to be an array or a function, but received ${getPrintableType(
+      documentFilters,
     )}`,
   )
 }

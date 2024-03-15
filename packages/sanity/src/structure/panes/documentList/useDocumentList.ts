@@ -51,6 +51,7 @@ export function useDocumentList(opts: UseDocumentListOpts): DocumentListState {
     apiVersion: apiVersion || DEFAULT_STUDIO_CLIENT_OPTIONS.apiVersion,
   })
   const {unstable_enableNewSearch = false} = useWorkspace().search
+  const {unstable_filters} = useWorkspace().document
   const schema = useSchema()
   const maxFieldDepth = useSearchMaxFieldDepth()
 
@@ -58,6 +59,8 @@ export function useDocumentList(opts: UseDocumentListOpts): DocumentListState {
   const {onRetry, error, result} = resultState
 
   const documents = result?.documents
+
+  const filters = useMemo(() => unstable_filters({}), [unstable_filters])
 
   // Filter out published documents that have drafts to avoid duplicates in the list.
   const items = useMemo(
@@ -147,7 +150,7 @@ export function useDocumentList(opts: UseDocumentListOpts): DocumentListState {
 
     return listenSearchQuery({
       client,
-      filter,
+      filter: [filter, ...filters].filter(Boolean).join(' && '),
       limit,
       params: paramsProp,
       schema,
@@ -185,6 +188,7 @@ export function useDocumentList(opts: UseDocumentListOpts): DocumentListState {
     sortOrder,
     client,
     filter,
+    filters,
     paramsProp,
     schema,
     searchQuery,
