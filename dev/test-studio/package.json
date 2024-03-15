@@ -45,7 +45,7 @@
     "@sanity/util": "workspace:*",
     "@sanity/uuid": "^3.0.1",
     "@sanity/vision": "workspace:*",
-    "@sanity/visual-editing": "1.7.1",
+    "@sanity/visual-editing": "1.8.0",
     "@turf/helpers": "^6.0.1",
     "@turf/points-within-polygon": "^5.1.5",
     "@types/three": "^0.150.0",
