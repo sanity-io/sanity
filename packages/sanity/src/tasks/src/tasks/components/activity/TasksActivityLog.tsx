@@ -20,6 +20,7 @@ import {getJsonStream} from '../../../../../core/store/_legacy/history/history/g
 import {
   type CommentBaseCreatePayload,
   type CommentCreatePayload,
+  CommentDeleteDialog,
   type CommentInputProps,
   type CommentReactionOption,
   CommentsListItem,
@@ -140,6 +141,10 @@ export function TasksActivityLog(props: TasksActivityLogProps) {
   const {title: workspaceTitle, basePath} = useWorkspace()
 
   const {comments, mentionOptions, operation, getComment} = useComments()
+  const [commentToDeleteId, setCommentToDeleteId] = useState<string | null>(null)
+  const [commentDeleteError, setCommentDeleteError] = useState<Error | null>(null)
+  const [commentDeleteLoading, setCommentDeleteLoading] = useState(false)
+
   const loading = comments.loading
   const taskComments = comments.data.open
 
@@ -247,13 +252,21 @@ export function TasksActivityLog(props: TasksActivityLogProps) {
     [operation],
   )
 
-  const handleCommentRemove = useCallback(
-    (id: string) => {
-      // TODO:
-      // The remove operation is not optimistic. We should display a
-      // dialog to confirm the removal and wait for the server to respond
-      // before removing the comment from the UI. (See `CommentsDocumentInspector`)
-      operation.remove(id)
+  const handleDeleteCommentStart = useCallback((id: string) => setCommentToDeleteId(id), [])
+  const handleDeleteCommentCancel = useCallback(() => setCommentToDeleteId(null), [])
+
+  const handleDeleteCommentConfirm = useCallback(
+    async (id: string) => {
+      try {
+        setCommentDeleteLoading(true)
+        setCommentDeleteError(null)
+        await operation.remove(id)
+        setCommentToDeleteId(null)
+      } catch (err) {
+        setCommentDeleteError(err)
+      } finally {
+        setCommentDeleteLoading(false)
+      }
     },
     [operation],
   )
@@ -284,80 +297,103 @@ export function TasksActivityLog(props: TasksActivityLogProps) {
       .sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime())
   }, [activityData, taskComments])
 
+  const commentToDeleteIsParent = useMemo(() => {
+    const parent = taskComments.find((c) => c.parentComment?._id === commentToDeleteId)
+    const isParent = Boolean(parent && parent?.replies?.length > 0)
+
+    return isParent
+  }, [commentToDeleteId, taskComments])
+
   return (
-    <Stack space={5}>
-      <Flex align="center">
-        <Box flex={1}>
-          <Text size={2} weight="semibold">
-            Activity
-          </Text>
-        </Box>
+    <>
+      {commentToDeleteId && (
+        <CommentDeleteDialog
+          commentId={commentToDeleteId}
+          error={commentDeleteError}
+          isParent={commentToDeleteIsParent}
+          loading={commentDeleteLoading}
+          onClose={handleDeleteCommentCancel}
+          onConfirm={handleDeleteCommentConfirm}
+        />
+      )}
 
-        {currentUser?.id && (
-          <TasksSubscribers
-            currentUserId={currentUser.id}
-            value={value}
-            onChange={onChange}
-            path={path}
-          />
-        )}
-      </Flex>
+      <Stack space={5}>
+        <Flex align="center">
+          <Box flex={1}>
+            <Text size={2} weight="semibold">
+              Activity
+            </Text>
+          </Box>
 
-      {loading && <LoadingBlock showText title="Loading activity" />}
+          {currentUser?.id && (
+            <TasksSubscribers
+              currentUserId={currentUser.id}
+              value={value}
+              onChange={onChange}
+              path={path}
+            />
+          )}
+        </Flex>
 
-      <AnimatePresence>
-        {!loading && (
-          <MotionStack animate="visible" initial="hidden" space={3} variants={VARIANTS}>
-            {value.createdByUser && (
-              <Stack paddingBottom={1}>
-                <TasksActivityCreatedAt createdAt={value.createdByUser} authorId={value.authorId} />
-              </Stack>
-            )}
+        {loading && <LoadingBlock showText title="Loading activity" />}
 
-            {currentUser && (
-              <CurrentWorkspaceProvider>
-                <Stack space={4} marginTop={1}>
-                  {activity.map((item) => {
-                    if (item._type === 'activity') {
-                      return <EditedAt key={item.timestamp} activity={item.payload} />
-                    }
-                    return (
-                      <ActivityItem
-                        key={item.payload.parentComment._id}
-                        userId={item.payload.parentComment.authorId}
-                      >
-                        <CommentsListItem
-                          avatarConfig={COMMENTS_LIST_ITEM_AVATAR_CONFIG}
-                          canReply
-                          currentUser={currentUser}
-                          innerPadding={1}
-                          isSelected={false}
-                          key={item.payload.parentComment._id}
-                          mentionOptions={mentionOptions}
-                          mode="default" // TODO: set dynamic mode?
-                          onCreateRetry={handleCommentCreateRetry}
-                          onDelete={handleCommentRemove}
-                          onEdit={handleCommentEdit}
-                          onReactionSelect={handleCommentReact}
-                          onReply={handleCommentReply}
-                          parentComment={item.payload.parentComment}
-                          replies={item.payload.replies}
-                        />
-                      </ActivityItem>
-                    )
-                  })}
-
-                  <TasksActivityCommentInput
-                    currentUser={currentUser}
-                    mentionOptions={mentionOptions}
-                    onSubmit={handleCommentCreate}
+        <AnimatePresence>
+          {!loading && (
+            <MotionStack animate="visible" initial="hidden" space={3} variants={VARIANTS}>
+              {value.createdByUser && (
+                <Stack paddingBottom={1}>
+                  <TasksActivityCreatedAt
+                    createdAt={value.createdByUser}
+                    authorId={value.authorId}
                   />
                 </Stack>
-              </CurrentWorkspaceProvider>
-            )}
-          </MotionStack>
-        )}
-      </AnimatePresence>
-    </Stack>
+              )}
+
+              {currentUser && (
+                <CurrentWorkspaceProvider>
+                  <Stack space={4} marginTop={1}>
+                    {activity.map((item) => {
+                      if (item._type === 'activity') {
+                        return <EditedAt key={item.timestamp} activity={item.payload} />
+                      }
+                      return (
+                        <ActivityItem
+                          key={item.payload.parentComment._id}
+                          userId={item.payload.parentComment.authorId}
+                        >
+                          <CommentsListItem
+                            avatarConfig={COMMENTS_LIST_ITEM_AVATAR_CONFIG}
+                            canReply
+                            currentUser={currentUser}
+                            innerPadding={1}
+                            isSelected={false}
+                            key={item.payload.parentComment._id}
+                            mentionOptions={mentionOptions}
+                            mode="default" // TODO: set dynamic mode?
+                            onCreateRetry={handleCommentCreateRetry}
+                            onDelete={handleDeleteCommentStart}
+                            onEdit={handleCommentEdit}
+                            onReactionSelect={handleCommentReact}
+                            onReply={handleCommentReply}
+                            parentComment={item.payload.parentComment}
+                            replies={item.payload.replies}
+                          />
+                        </ActivityItem>
+                      )
+                    })}
+
+                    <TasksActivityCommentInput
+                      currentUser={currentUser}
+                      mentionOptions={mentionOptions}
+                      onSubmit={handleCommentCreate}
+                    />
+                  </Stack>
+                </CurrentWorkspaceProvider>
+              )}
+            </MotionStack>
+          )}
+        </AnimatePresence>
+      </Stack>
+    </>
   )
 }
