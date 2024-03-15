@@ -38,10 +38,12 @@ export function useStructureToolSetting<ValueType>(
 
   const set = useCallback(
     (newValue: ValueType) => {
-      setValue(newValue)
-      keyValueStore.setKey(keyValueStoreKey, newValue as string)
+      if (newValue !== value) {
+        setValue(newValue)
+        keyValueStore.setKey(keyValueStoreKey, newValue as string)
+      }
     },
-    [keyValueStore, keyValueStoreKey],
+    [keyValueStore, keyValueStoreKey, value],
   )
 
   return useMemo(() => [value, set], [set, value])
