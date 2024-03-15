@@ -653,8 +653,8 @@ importers:
         specifier: ^3.4.1
         version: 3.5.0(esbuild@0.19.12)
       get-it:
-        specifier: ^8.4.11
-        version: 8.4.11
+        specifier: ^8.4.13
+        version: 8.4.13
       golden-fleece:
         specifier: ^1.0.9
         version: 1.0.9
@@ -859,8 +859,8 @@ importers:
         specifier: ^4.3.4
         version: 4.3.4(supports-color@5.5.0)
       get-it:
-        specifier: ^8.4.11
-        version: 8.4.11
+        specifier: ^8.4.13
+        version: 8.4.13
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
@@ -905,8 +905,8 @@ importers:
         specifier: ^2.0.2
         version: 2.0.2
       get-it:
-        specifier: ^8.4.11
-        version: 8.4.11
+        specifier: ^8.4.13
+        version: 8.4.13
       get-uri:
         specifier: ^2.0.2
         version: 2.0.4
@@ -960,8 +960,8 @@ importers:
         specifier: 3.34.0
         version: link:../import
       get-it:
-        specifier: ^8.4.11
-        version: 8.4.11
+        specifier: ^8.4.13
+        version: 8.4.13
       meow:
         specifier: ^9.0.0
         version: 9.0.0
@@ -1515,8 +1515,8 @@ importers:
         specifier: ^11.0.0
         version: 11.0.12(react-dom@18.2.0)(react@18.2.0)
       get-it:
-        specifier: ^8.4.11
-        version: 8.4.11
+        specifier: ^8.4.13
+        version: 8.4.13
       get-random-values-esm:
         specifier: 1.0.2
         version: 1.0.2
@@ -5770,7 +5770,7 @@ packages:
     dependencies:
       '@sanity/eventsource': 5.0.1
       '@vercel/stega': 0.1.0
-      get-it: 8.4.11
+      get-it: 8.4.13
       rxjs: 7.8.1
     transitivePeerDependencies:
       - supports-color
@@ -8032,7 +8032,7 @@ packages:
   /axios@1.6.5(debug@3.2.7):
     resolution: {integrity: sha512-Ii012v05KEVuUoFWmMW/UQv9aRIc3ZwkWDcM+h5Il8izZCtRVpDUfwpoFf7eOtajT3QiGR4yDUx7lPqHJULgbg==}
     dependencies:
-      follow-redirects: 1.15.5(debug@3.2.7)
+      follow-redirects: 1.15.6(debug@3.2.7)
       form-data: 4.0.0
       proxy-from-env: 1.1.0
     transitivePeerDependencies:
@@ -10968,8 +10968,8 @@ packages:
       tslib: 2.6.2
     dev: false
 
-  /follow-redirects@1.15.5(debug@3.2.7):
-    resolution: {integrity: sha512-vSFWUON1B+yAw1VN4xMfxgn5fTUiaOzAJCKBwIIgT/+7CuGy9+r+5gITvP62j3RmaD5Ph65UaERdOSRGUzZtgw==}
+  /follow-redirects@1.15.6(debug@3.2.7):
+    resolution: {integrity: sha512-wWN62YITEaOpSK584EZXJafH1AGpO8RVgElfkuXbTOrPX4fIfOyEpW/CsiNd8JdYrAoOvafRTOEnvsO++qCqFA==}
     engines: {node: '>=4.0'}
     peerDependencies:
       debug: '*'
@@ -10980,8 +10980,8 @@ packages:
       debug: 3.2.7
     dev: true
 
-  /follow-redirects@1.15.5(debug@4.3.4):
-    resolution: {integrity: sha512-vSFWUON1B+yAw1VN4xMfxgn5fTUiaOzAJCKBwIIgT/+7CuGy9+r+5gITvP62j3RmaD5Ph65UaERdOSRGUzZtgw==}
+  /follow-redirects@1.15.6(debug@4.3.4):
+    resolution: {integrity: sha512-wWN62YITEaOpSK584EZXJafH1AGpO8RVgElfkuXbTOrPX4fIfOyEpW/CsiNd8JdYrAoOvafRTOEnvsO++qCqFA==}
     engines: {node: '>=4.0'}
     peerDependencies:
       debug: '*'
@@ -11221,13 +11221,13 @@ packages:
       has-symbols: 1.0.3
       hasown: 2.0.0
 
-  /get-it@8.4.11:
-    resolution: {integrity: sha512-Df2JuuYVldgAxHTGYLysz1q+FFVYMRElcOMLaFalH1O3SvRpuGTRccB0kmVY0MIdumc4rzinXN694mMhytkbdw==}
+  /get-it@8.4.13:
+    resolution: {integrity: sha512-uY9sMQmiG3RCXqzfpIwt7uI6FuL0XNHgO1U8DhWbpxWgOZ8cCNJOAwr+xkLZxpYRcQ6jFEwdr6oTG55l8u415g==}
     engines: {node: '>=14.0.0'}
     dependencies:
       debug: 4.3.4(supports-color@5.5.0)
       decompress-response: 7.0.0
-      follow-redirects: 1.15.5(debug@4.3.4)
+      follow-redirects: 1.15.6(debug@4.3.4)
       into-stream: 6.0.0
       is-plain-object: 5.0.0
       is-retry-allowed: 2.2.0
@@ -11242,7 +11242,7 @@ packages:
     resolution: {integrity: sha512-Q6IBWr/zzw57zIkJmNhI23eRTw3nZ4BWWK034meLwOYU9L3J3IpXiyM73u2pYUwN6U7ahkerCwg2T0jlxiLwsw==}
     engines: {node: '>=14.18'}
     dependencies:
-      get-it: 8.4.11
+      get-it: 8.4.13
       registry-auth-token: 5.0.2
       registry-url: 5.1.0
       semver: 7.5.4

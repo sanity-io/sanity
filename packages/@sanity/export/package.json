@@ -34,7 +34,7 @@
     "@sanity/util": "3.34.0",
     "archiver": "^7.0.0",
     "debug": "^4.3.4",
-    "get-it": "^8.4.11",
+    "get-it": "^8.4.13",
     "lodash": "^4.17.21",
     "mississippi": "^4.0.0",
     "p-queue": "^2.3.0",
