@@ -2,7 +2,7 @@ import {describe, expect, it} from '@jest/globals'
 import {Schema} from '@sanity/schema'
 import {defineField, defineType} from '@sanity/types'
 
-import {getDocumentTypeConfiguration, getOrder} from './createTextSearch'
+import {getDocumentTypeConfiguration, getOrder, getQueryString} from './createTextSearch'
 
 const testType = Schema.compile({
   types: [
@@ -221,5 +221,19 @@ describe('getSort', () => {
         direction: 'asc',
       },
     ])
+  })
+})
+
+describe('getQueryString', () => {
+  it('appends a wildcard to search query when `queryType` is `prefixLast`', () => {
+    expect(getQueryString('test', {queryType: 'prefixLast'})).toEqual('test*')
+  })
+
+  it('appends no wildcard to empty search query when `queryType` is `prefixLast`', () => {
+    expect(getQueryString('', {queryType: 'prefixLast'})).toEqual('')
+  })
+
+  it('appends no wildcard to search query when `queryType` is `prefixNone`', () => {
+    expect(getQueryString('test', {queryType: 'prefixNone'})).toEqual('test')
   })
 })

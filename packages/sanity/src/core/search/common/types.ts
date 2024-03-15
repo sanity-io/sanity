@@ -107,6 +107,7 @@ export type SearchOptions = {
   cursor?: string
   limit?: number
   isCrossDataset?: boolean
+  queryType?: 'prefixLast' | 'prefixNone'
 }
 
 /**
