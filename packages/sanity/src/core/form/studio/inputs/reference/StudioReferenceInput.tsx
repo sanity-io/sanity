@@ -23,7 +23,7 @@ import {type Source} from '../../../../config'
 import {type FIXME} from '../../../../FIXME'
 import {useSchema} from '../../../../hooks'
 import {useDocumentPreviewStore} from '../../../../store'
-import {useSource} from '../../../../studio'
+import {useSource, useWorkspace} from '../../../../studio'
 import {useSearchMaxFieldDepth} from '../../../../studio/components/navbar/search/hooks/useSearchMaxFieldDepth'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
 import {isNonNullable} from '../../../../util'
@@ -97,6 +97,9 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
     useReferenceInputOptions()
   const {unstable_enableNewSearch = false} = source.search
 
+  const {unstable_filters} = useWorkspace().document
+  const filters = useMemo(() => unstable_filters({}), [unstable_filters])
+
   const documentValue = useFormValue([]) as FIXME
   const documentRef = useValueRef(documentValue)
   const documentTypeName = documentRef.current?._type
@@ -117,7 +120,7 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
             schemaType,
             {
               ...schemaType.options,
-              filter,
+              filter: [filter, ...filters].filter(Boolean).join(' && '),
               params,
               tag: 'search.reference',
               maxFieldDepth,
@@ -138,6 +141,7 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
     [
       schemaType,
       documentRef,
+      filters,
       path,
       getClient,
       searchClient,

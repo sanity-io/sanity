@@ -100,6 +100,11 @@ export interface DocumentFieldActionsResolverContext extends ConfigContext {
 /**
  * @hidden
  * @beta */
+export interface DocumentFiltersResolverContext extends ConfigContext {}
+
+/**
+ * @hidden
+ * @beta */
 export type DocumentFieldActionsResolver = ComposableOption<
   DocumentFieldAction[],
   DocumentFieldActionsResolverContext
