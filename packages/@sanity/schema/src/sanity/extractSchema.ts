@@ -171,8 +171,8 @@ export function extractSchema(
     }
 
     // map some known types
-    if (typesMap.has(schemaType.name)) {
-      return typesMap.get(schemaType.name)
+    if (schemaType.type && typesMap.has(schemaType.type.name)) {
+      return typesMap.get(schemaType.type.name)
     }
 
     // Cross dataset references are not supported
@@ -495,6 +495,7 @@ function sortByDependencies(compiledSchema: SchemaDef): string[] {
 
     walkDependencies(schemaType, dependencies)
     dependencyMap.set(schemaType, dependencies)
+    seen.clear() // Clear the seen set for the next type
   })
 
   // Sorts the types by their dependencies

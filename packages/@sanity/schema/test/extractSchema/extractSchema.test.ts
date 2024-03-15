@@ -90,6 +90,11 @@ describe('Extract schema test', () => {
               type: 'manuscript',
             },
             {
+              title: 'Some text',
+              name: 'someTextType',
+              type: 'someTextType',
+            },
+            {
               title: 'customStringType',
               name: 'customStringType',
               type: 'customStringType',
@@ -225,6 +230,10 @@ describe('Extract schema test', () => {
             },
           ],
         },
+        defineType({
+          name: 'someTextType',
+          type: 'text',
+        }),
       ],
     })
 
@@ -235,6 +244,7 @@ describe('Extract schema test', () => {
       'sanity.imageDimensions',
       'geopoint',
       'slug',
+      'someTextType',
       'sanity.fileAsset',
       'code',
       'customStringType',
@@ -269,6 +279,7 @@ describe('Extract schema test', () => {
       'number',
       'someInlinedObject',
       'manuscript',
+      'someTextType',
       'customStringType',
       'blocks',
       'other',
