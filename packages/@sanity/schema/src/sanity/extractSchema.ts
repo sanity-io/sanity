@@ -457,6 +457,12 @@ function sortByDependencies(compiledSchema: SchemaDef): string[] {
 
     if ('fields' in schemaType) {
       for (const field of gatherFields(schemaType)) {
+        const last = lastType(field.type)
+        if (last.name === 'document') {
+          dependencies.add(last)
+          continue
+        }
+
         let schemaTypeName: string | undefined
         if (schemaType.type.type) {
           schemaTypeName = field.type.type.name
@@ -464,11 +470,7 @@ function sortByDependencies(compiledSchema: SchemaDef): string[] {
           schemaTypeName = field.type.jsonType
         }
 
-        if (
-          schemaTypeName === 'document' ||
-          schemaTypeName === 'object' ||
-          schemaTypeName === 'block'
-        ) {
+        if (schemaTypeName === 'object' || schemaTypeName === 'block') {
           if (isReferenceType(field.type)) {
             field.type.to.forEach((ref) => dependencies.add(ref.type))
           } else {
