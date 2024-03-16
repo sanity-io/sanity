@@ -810,7 +810,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'inputs.portable-text.invalid-value.orphaned-marks.action': 'Remove disallowed marks',
   /** Text explaining that the Portable Text field value is invalid, when block with key `{{key}}` contains marks (`{{orphanedMarks}}`) that are not supported by the current schema */
   'inputs.portable-text.invalid-value.orphaned-marks.description':
-    'Text block with key <code>{{key}}</code> contains marks <code>({{orphanedMarks, list}})</code> that are not allowed by the schema.',
+    'Text block with key <code>{{key}}</code> contains marks <code>({{orphanedMarks}})</code> that are not allowed by the schema.',
   /** Title for the alert indicating that the Portable Text field has an invalid value */
   'inputs.portable-text.invalid-value.title': 'Invalid Portable Text value',
   /** Title of "bulleted" list type */

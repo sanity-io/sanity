@@ -260,7 +260,7 @@ export function validateValue(
               i18n: {
                 description: 'inputs.portable-text.invalid-value.orphaned-marks.description',
                 action: 'inputs.portable-text.invalid-value.orphaned-marks.action',
-                values: {key: blk._key, orphanedMarks},
+                values: {key: blk._key, orphanedMarks: orphaned},
               },
             }
             return true

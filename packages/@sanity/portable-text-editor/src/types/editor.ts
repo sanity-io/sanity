@@ -308,7 +308,7 @@ export type InvalidValueResolution = {
   i18n: {
     description: `inputs.portable-text.invalid-value.${Lowercase<string>}.description`
     action: `inputs.portable-text.invalid-value.${Lowercase<string>}.action`
-    values?: Record<string, string | number | string[]>
+    values?: Record<string, string | number>
   }
 }
 

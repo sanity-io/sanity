@@ -348,7 +348,7 @@ describe('initialization', () => {
               description: 'inputs.portable-text.invalid-value.orphaned-marks.description',
               values: {
                 key: 'abc',
-                orphanedMarks: ['invalid'],
+                orphanedMarks: 'invalid',
               },
             },
           },
