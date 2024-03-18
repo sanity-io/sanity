@@ -1334,13 +1334,6 @@ Array [
           "type": "objectAttribute",
           "value": Object {
             "attributes": Object {
-              "_type": Object {
-                "type": "objectAttribute",
-                "value": Object {
-                  "type": "string",
-                  "value": "object",
-                },
-              },
               "blocks": Object {
                 "optional": true,
                 "type": "objectAttribute",
@@ -1797,13 +1790,6 @@ Array [
                       "value": Object {
                         "of": Object {
                           "attributes": Object {
-                            "_type": Object {
-                              "type": "objectAttribute",
-                              "value": Object {
-                                "type": "string",
-                                "value": "object",
-                              },
-                            },
                             "author": Object {
                               "optional": true,
                               "type": "objectAttribute",
@@ -1953,13 +1939,6 @@ Array [
                       "value": Object {
                         "of": Object {
                           "attributes": Object {
-                            "_type": Object {
-                              "type": "objectAttribute",
-                              "value": Object {
-                                "type": "string",
-                                "value": "object",
-                              },
-                            },
                             "aNumber": Object {
                               "optional": true,
                               "type": "objectAttribute",
@@ -2555,13 +2534,6 @@ Array [
                       "value": Object {
                         "of": Object {
                           "attributes": Object {
-                            "_type": Object {
-                              "type": "objectAttribute",
-                              "value": Object {
-                                "type": "string",
-                                "value": "object",
-                              },
-                            },
                             "aNumber": Object {
                               "optional": true,
                               "type": "objectAttribute",
@@ -2618,13 +2590,6 @@ Array [
           "type": "objectAttribute",
           "value": Object {
             "attributes": Object {
-              "_type": Object {
-                "type": "objectAttribute",
-                "value": Object {
-                  "type": "string",
-                  "value": "object",
-                },
-              },
               "blocks": Object {
                 "optional": true,
                 "type": "objectAttribute",
