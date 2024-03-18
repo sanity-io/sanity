@@ -148,7 +148,7 @@ export function createLoginComponent({
         .then(setProviders)
         .catch(setError)
 
-      getGlobalUserData().then(setMe).catch(setError)
+      getGlobalUserData().then(setMe)
     }, [client])
 
     // only create a direct URL if `redirectOnSingle` is true and there is only
