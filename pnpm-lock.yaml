@@ -109,8 +109,8 @@ importers:
         specifier: ^9.1.0
         version: 9.1.0(eslint@8.57.0)
       eslint-config-sanity:
-        specifier: ^7.1.1
-        version: 7.1.1(@typescript-eslint/eslint-plugin@6.21.0)(@typescript-eslint/parser@6.21.0)(eslint-plugin-import@2.29.1)(eslint-plugin-react-hooks@4.6.0)(eslint-plugin-react@7.34.1)(eslint@8.57.0)
+        specifier: ^7.1.2
+        version: 7.1.2(@typescript-eslint/eslint-plugin@6.21.0)(@typescript-eslint/parser@6.21.0)(eslint-plugin-import@2.29.1)(eslint-plugin-react-hooks@4.6.0)(eslint-plugin-react@7.34.1)(eslint@8.57.0)
       eslint-import-resolver-typescript:
         specifier: ^3.6.1
         version: 3.6.1(@typescript-eslint/parser@6.21.0)(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1)(eslint@8.57.0)
@@ -130,8 +130,8 @@ importers:
         specifier: ^4.6.0
         version: 4.6.0(eslint@8.57.0)
       eslint-plugin-simple-import-sort:
-        specifier: ^11.0.0
-        version: 11.0.0(eslint@8.57.0)
+        specifier: ^12.0.0
+        version: 12.0.0(eslint@8.57.0)
       eslint-plugin-tsdoc:
         specifier: ^0.2.17
         version: 0.2.17
@@ -10145,8 +10145,8 @@ packages:
       eslint: 8.57.0
     dev: true
 
-  /eslint-config-sanity@7.1.1(@typescript-eslint/eslint-plugin@6.21.0)(@typescript-eslint/parser@6.21.0)(eslint-plugin-import@2.29.1)(eslint-plugin-react-hooks@4.6.0)(eslint-plugin-react@7.34.1)(eslint@8.57.0):
-    resolution: {integrity: sha512-3BHtac03+CNQvM81OAyAH9QThxYe501Xm8c6AFwjCpcgCMntL1ud1STss/e0zJhQSSqYd3eh7oYpb84TMBqItg==}
+  /eslint-config-sanity@7.1.2(@typescript-eslint/eslint-plugin@6.21.0)(@typescript-eslint/parser@6.21.0)(eslint-plugin-import@2.29.1)(eslint-plugin-react-hooks@4.6.0)(eslint-plugin-react@7.34.1)(eslint@8.57.0):
+    resolution: {integrity: sha512-7Na1kh3OiteeFmeQkUqtIjThsKWIIiK/TLNUby0pOkGHhWV3AKYFsMEIhH7VuOIEOeTE53Ix/04Z6XWyvsHcuQ==}
     engines: {node: '>=14.0.0'}
     peerDependencies:
       '@typescript-eslint/eslint-plugin': ^6.7.5 || ^7.0.0
@@ -10381,15 +10381,6 @@ packages:
       resolve: 2.0.0-next.5
       semver: 6.3.1
       string.prototype.matchall: 4.0.10
-    dev: true
-
-  /eslint-plugin-simple-import-sort@11.0.0(eslint@8.57.0):
-    resolution: {integrity: sha512-3zxeF/0piwHA7/JlbpOmMJ1/1tc1dSRiir4DwpEnP747alKwZbj5xX+ZxroShMBU6LNDkpquo7FsXHCBc0HgCA==}
-    deprecated: Partially broken release, please use 12.0.0 or later.
-    peerDependencies:
-      eslint: '>=5.0.0'
-    dependencies:
-      eslint: 8.57.0
     dev: true
 
   /eslint-plugin-simple-import-sort@12.0.0(eslint@8.57.0):
