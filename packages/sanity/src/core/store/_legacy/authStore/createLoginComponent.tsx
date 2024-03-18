@@ -64,10 +64,7 @@ async function getProviders({
     .concat(customProviders)
 }
 
-/**
- * Gets login data from the /me endpoint
- */
-function getGlobalLoginData(): Promise<Me | null> {
+function getGlobalUserData(): Promise<Me | null> {
   return fetch('https://api.sanity.io/v2021-10-21/users/me', {
     method: 'GET',
     headers: {
@@ -151,7 +148,7 @@ export function createLoginComponent({
         .then(setProviders)
         .catch(setError)
 
-      getGlobalLoginData().then(setMe).catch(setError)
+      getGlobalUserData().then(setMe).catch(setError)
     }, [client])
 
     // only create a direct URL if `redirectOnSingle` is true and there is only
