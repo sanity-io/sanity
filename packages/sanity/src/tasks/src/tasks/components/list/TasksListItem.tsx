@@ -25,6 +25,9 @@ interface TasksListItemProps
 }
 
 const TitleButton = styled(UIButton)`
+  width: 100%;
+  max-width: 100%;
+
   &:hover {
     text-decoration: underline;
     background-color: transparent;
@@ -99,23 +102,14 @@ export function TasksListItem({
         </Box>
 
         <Flex flex={1}>
-          <TitleButton
-            onClick={onSelect}
-            mode="bleed"
-            style={{width: '100%', maxWidth: '100%'}}
-            padding={2}
-          >
-            <Box>
-              <Text size={1} weight="semibold" textOverflow="ellipsis">
-                {title || 'Untitled'}
-              </Text>
-            </Box>
+          <TitleButton onClick={onSelect} mode="bleed" padding={2}>
+            <Text size={1} weight="semibold" textOverflow="ellipsis">
+              {title || 'Untitled'}
+            </Text>
           </TitleButton>
         </Flex>
 
-        <Box>
-          <TasksUserAvatar user={assignedTo ? {id: assignedTo} : undefined} />
-        </Box>
+        <TasksUserAvatar user={assignedTo ? {id: assignedTo} : undefined} />
       </Flex>
 
       {(dueBy || targetDocument) && (
