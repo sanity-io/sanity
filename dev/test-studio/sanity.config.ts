@@ -148,7 +148,10 @@ const sharedDocumentFiltersSettings = definePlugin<{locale: string}>(({locale}) 
     types: documentFiltersSchemaTypes,
   },
   document: {
-    unstable_filters: (filters) => [...filters, `language == "${locale}"`],
+    unstable_filters: ({filters, params}) => ({
+      filters: [...filters, 'language == $locale'],
+      params: {...params, locale},
+    }),
   },
   plugins: [
     structureTool({
@@ -361,7 +364,7 @@ export default defineConfig<Config>([
     dataset: 'document-filters',
     plugins: [sharedDocumentFiltersSettings({locale: 'en-US'})],
     document: {
-      unstable_filters: (filters) => [...filters, 'isFlowering'],
+      unstable_filters: ['isFlowering'],
     },
   },
 ]) as WorkspaceOptions[]
