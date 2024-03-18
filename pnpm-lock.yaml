@@ -256,7 +256,7 @@ importers:
         specifier: ^5.4.2
         version: 5.4.2
       vite:
-        specifier: ^4.5.1
+        specifier: ^4.5.2
         version: 4.5.2(@types/node@18.19.8)
 
   dev/starter-next-studio:
@@ -523,7 +523,7 @@ importers:
         version: 2.29.4(three@0.157.0)
     devDependencies:
       vite:
-        specifier: ^4.5.1
+        specifier: ^4.5.2
         version: 4.5.2(@types/node@18.19.8)
 
   examples/blog-studio:
@@ -828,7 +828,7 @@ importers:
         specifier: ^6.1.11
         version: 6.2.0
       vite:
-        specifier: ^4.5.1
+        specifier: ^4.5.2
         version: 4.5.2(@types/node@18.19.8)
       which:
         specifier: ^2.0.2
@@ -1161,7 +1161,7 @@ importers:
         specifier: ^6.1.6
         version: 6.1.8(react-dom@18.2.0)(react@18.2.0)
       vite:
-        specifier: ^4.5.1
+        specifier: ^4.5.2
         version: 4.5.2(@types/node@18.19.8)
 
   packages/@sanity/schema:
