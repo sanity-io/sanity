@@ -1158,7 +1158,7 @@ importers:
         specifier: ^7.8.1
         version: 7.8.1
       styled-components:
-        specifier: ^6.1.6
+        specifier: ^6.1.8
         version: 6.1.8(react-dom@18.2.0)(react@18.2.0)
       vite:
         specifier: ^4.5.2
@@ -1321,7 +1321,7 @@ importers:
         specifier: workspace:*
         version: link:../../sanity
       styled-components:
-        specifier: ^6.1.6
+        specifier: ^6.1.8
         version: 6.1.8(react-dom@18.2.0)(react@18.2.0)
 
   packages/create-sanity:
@@ -1756,7 +1756,7 @@ importers:
         specifier: ^18.2.0
         version: 18.2.0(react@18.2.0)
       styled-components:
-        specifier: ^6.1.6
+        specifier: ^6.1.8
         version: 6.1.8(react-dom@18.2.0)(react@18.2.0)
 
   perf/studio:
