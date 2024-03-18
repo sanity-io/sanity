@@ -89,6 +89,10 @@ const tasksLocaleStrings = defineLocalesResources('tasks', {
   'panel.create.title': 'Create',
   /** The help text used in the draft menu*/
   'panel.drafts.helptext': 'continue working on your drafts',
+  /** The title of a draft task in the draft pulldown */
+  'panel.drafts.item.title': '{{title}}',
+  /** The title of a draft task in the draft pulldown that is currrently being edited */
+  'panel.drafts.item.title_editing': '(editing) {{title}}',
   /** The default title of a draft task */
   'panel.drafts.item.untitled': 'Untitled',
   /** The title used in the drafts pulldown */
