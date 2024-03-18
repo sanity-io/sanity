@@ -94,7 +94,8 @@ export function useSearch({
         unique: true,
         unstable_enableNewSearch,
         maxDepth: maxFieldDepth,
-        filter: filters.filter(Boolean).join(' && '),
+        filter: filters.filters.filter(Boolean).join(' && '),
+        params: filters.params,
       }),
     [client, filters, maxFieldDepth, schema, unstable_enableNewSearch],
   )

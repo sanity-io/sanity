@@ -28,6 +28,7 @@ import {
   type DocumentFieldAction,
   type DocumentFieldActionsResolver,
   type DocumentFieldActionsResolverContext,
+  type DocumentFilters,
   type DocumentInspector,
 } from './document'
 import {type FormComponents} from './form'
@@ -277,7 +278,7 @@ export interface DocumentPluginOptions {
    * @hidden
    * @beta
    */
-  unstable_filters?: string[] | DocumentFiltersResolver
+  unstable_filters?: string[] | DocumentFilters | DocumentFiltersResolver
 
   /** @hidden @beta */
   inspectors?: DocumentInspector[] | DocumentInspectorsResolver
@@ -352,7 +353,7 @@ export type DocumentBadgesResolver = ComposableOption<
  * @hidden
  * @beta
  */
-export type DocumentFiltersResolver = ComposableOption<string[], DocumentFiltersContext>
+export type DocumentFiltersResolver = ComposableOption<DocumentFilters, DocumentFiltersContext>
 
 /** @hidden @beta */
 export type DocumentInspectorsResolver = ComposableOption<
@@ -655,7 +656,7 @@ export interface Source {
      * @hidden
      * @beta
      */
-    unstable_filters: (props: PartialContext<DocumentFiltersContext>) => string[]
+    unstable_filters: (props: PartialContext<DocumentFiltersContext>) => DocumentFilters
 
     /**
      * Resolves the production URL for the document.

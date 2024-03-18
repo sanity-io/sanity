@@ -7,6 +7,7 @@ import {getPrintableType} from '../util/getPrintableType'
 import {
   type DocumentActionComponent,
   type DocumentBadgeComponent,
+  type DocumentFilters,
   type DocumentInspector,
 } from './document'
 import {flattenConfig} from './flattenConfig'
@@ -31,7 +32,10 @@ export const initialDocumentBadges: DocumentBadgeComponent[] = []
 
 export const initialDocumentActions: DocumentActionComponent[] = []
 
-export const initialDocumentFilters: string[] = []
+export const initialDocumentFilters: DocumentFilters = {
+  filters: [],
+  params: {},
+}
 
 export const initialLanguageFilter: DocumentLanguageFilterComponent[] = []
 
@@ -189,16 +193,21 @@ export const documentActionsReducer: ConfigPropertyReducer<
   )
 }
 
-export const documentFiltersReducer: ConfigPropertyReducer<string[], DocumentFiltersContext> = (
-  prev,
-  {document},
-  context,
-) => {
+export const documentFiltersReducer: ConfigPropertyReducer<
+  DocumentFilters,
+  DocumentFiltersContext
+> = (prev, {document}, context) => {
   const documentFilters = document?.unstable_filters
   if (!documentFilters) return prev
 
   if (typeof documentFilters === 'function') return documentFilters(prev, context)
-  if (Array.isArray(documentFilters)) return [...prev, ...documentFilters]
+
+  if (Array.isArray(documentFilters)) {
+    return {
+      ...prev,
+      filters: [...prev.filters, ...documentFilters],
+    }
+  }
 
   throw new Error(
     `Expected \`document.filters\` to be an array or a function, but received ${getPrintableType(

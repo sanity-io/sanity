@@ -150,9 +150,9 @@ export function useDocumentList(opts: UseDocumentListOpts): DocumentListState {
 
     return listenSearchQuery({
       client,
-      filter: [filter, ...filters].filter(Boolean).join(' && '),
+      filter: [filter, ...filters.filters].filter(Boolean).join(' && '),
       limit,
-      params: paramsProp,
+      params: {...paramsProp, ...filters.params},
       schema,
       searchQuery: searchQuery || '',
       sort,
