@@ -120,8 +120,8 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
             schemaType,
             {
               ...schemaType.options,
-              filter: [filter, ...filters].filter(Boolean).join(' && '),
-              params,
+              filter: [filter, ...filters.filters].filter(Boolean).join(' && '),
+              params: {...params, ...filters.params},
               tag: 'search.reference',
               maxFieldDepth,
             },
