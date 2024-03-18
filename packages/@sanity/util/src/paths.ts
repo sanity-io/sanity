@@ -15,6 +15,10 @@ const EMPTY_PATH: Path = []
 
 export const FOCUS_TERMINATOR = '$'
 
+// Fields named as GROQ data types cannot be accessed using dot notation. These fields must instead
+// be serialized using square bracket notation.
+const GROQ_DATA_TYPE_VALUES = ['true', 'false', 'null']
+
 export function get<R>(obj: unknown, path: Path | string): R | undefined
 export function get<R>(obj: unknown, path: Path | string, defaultValue: R): R
 export function get(obj: unknown, path: Path | string, defaultVal?: unknown): unknown {
@@ -164,14 +168,22 @@ export function toString(path: Path): string {
   }
 
   return path.reduce<string>((target, segment, i) => {
-    const segmentType = typeof segment
-    if (segmentType === 'number') {
+    const isHead = i === 0
+
+    if (typeof segment === 'number') {
       return `${target}[${segment}]`
     }
 
-    if (segmentType === 'string') {
-      const separator = i === 0 ? '' : '.'
-      return `${target}${separator}${segment}`
+    if (typeof segment === 'string') {
+      if (isHead) {
+        return segment
+      }
+
+      if (GROQ_DATA_TYPE_VALUES.includes(segment)) {
+        return `${target}["${segment}"]`
+      }
+
+      return `${target}.${segment}`
     }
 
     if (isKeySegment(segment) && segment._key) {
