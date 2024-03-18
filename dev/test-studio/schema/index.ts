@@ -1,3 +1,5 @@
+import {defineField, defineType} from 'sanity'
+
 import {allTypes} from './allTypes'
 import author from './author'
 import book from './book'
@@ -282,4 +284,39 @@ export const schemaTypes = [
 
   // Demo documents for 3d experiments
   ...demos3d.types,
+]
+
+export const documentFiltersSchemaTypes = [
+  defineType({
+    name: 'plant',
+    title: 'Plant',
+    type: 'document',
+    fields: [
+      defineField({
+        name: 'language',
+        title: 'Language',
+        type: 'string',
+      }),
+      defineField({
+        name: 'name',
+        title: 'Name',
+        type: 'string',
+      }),
+      defineField({
+        name: 'similarPlant',
+        title: 'Similar Plant',
+        type: 'reference',
+        to: [
+          {
+            type: 'plant',
+          },
+        ],
+      }),
+      defineField({
+        name: 'isFlowering',
+        title: 'Flowering',
+        type: 'boolean',
+      }),
+    ],
+  }),
 ]

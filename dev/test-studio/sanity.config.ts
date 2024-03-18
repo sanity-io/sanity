@@ -11,7 +11,7 @@ import {presentationTool as pinnedPresentationTool} from '@sanity/presentation'
 import {debugSecrets} from '@sanity/preview-url-secret/sanity-plugin-debug-secrets'
 import {tsdoc} from '@sanity/tsdoc/studio'
 import {visionTool} from '@sanity/vision'
-import {defineConfig, definePlugin, type WorkspaceOptions} from 'sanity'
+import {type Config, defineConfig, definePlugin, type WorkspaceOptions} from 'sanity'
 import {presentationTool} from 'sanity/presentation'
 import {structureTool} from 'sanity/structure'
 import {muxInput} from 'sanity-plugin-mux-input'
@@ -47,7 +47,7 @@ import {languageFilter} from './plugins/language-filter'
 import {presenceTool} from './plugins/presence'
 import {routerDebugTool} from './plugins/router-debug'
 import {theme as tailwindTheme} from './sanity.theme.mjs'
-import {schemaTypes} from './schema'
+import {documentFiltersSchemaTypes, schemaTypes} from './schema'
 import {StegaDebugger} from './schema/debug/components/DebugStega'
 import {defaultDocumentNode, newDocumentOptions, structure} from './structure'
 import {googleTheme} from './themes/google'
@@ -142,7 +142,25 @@ const sharedSettings = definePlugin({
   ],
 })
 
-export default defineConfig([
+const sharedDocumentFiltersSettings = definePlugin<{locale: string}>(({locale}) => ({
+  name: 'sharedDocumentFiltersSettings',
+  schema: {
+    types: documentFiltersSchemaTypes,
+  },
+  document: {
+    unstable_filters: (filters) => [...filters, `language == "${locale}"`],
+  },
+  plugins: [
+    structureTool({
+      structure: (S) => S.documentTypeList('plant'),
+    }),
+    visionTool({
+      defaultApiVersion: '2022-08-08',
+    }),
+  ],
+}))
+
+export default defineConfig<Config>([
   {
     name: 'default',
     title: 'Test Studio',
@@ -310,5 +328,40 @@ export default defineConfig([
       sharedSettings(),
     ],
     basePath: '/presentation',
+  },
+  {
+    name: 'document-filters-en-us',
+    title: 'Document Filters (en-US)',
+    basePath: '/document-filters-en-us',
+    projectId: 'ppsg7ml5',
+    dataset: 'document-filters',
+    plugins: [sharedDocumentFiltersSettings({locale: 'en-US'})],
+  },
+  {
+    name: 'document-filters-nb',
+    title: 'Document Filters (nb)',
+    basePath: '/document-filters-nb',
+    projectId: 'ppsg7ml5',
+    dataset: 'document-filters',
+    plugins: [sharedDocumentFiltersSettings({locale: 'nb'})],
+  },
+  {
+    name: 'document-filters-ja',
+    title: 'Document Filters (ja)',
+    basePath: '/document-filters-ja',
+    projectId: 'ppsg7ml5',
+    dataset: 'document-filters',
+    plugins: [sharedDocumentFiltersSettings({locale: 'ja'})],
+  },
+  {
+    name: 'document-filters-flowering-plants-en-us',
+    title: 'Document Filters (flowering plants) (en-US)',
+    basePath: '/document-filters-flowering-plants-en-us',
+    projectId: 'ppsg7ml5',
+    dataset: 'document-filters',
+    plugins: [sharedDocumentFiltersSettings({locale: 'en-US'})],
+    document: {
+      unstable_filters: (filters) => [...filters, 'isFlowering'],
+    },
   },
 ]) as WorkspaceOptions[]
