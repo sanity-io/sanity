@@ -1,8 +1,14 @@
 /* eslint-disable i18next/no-literal-string */
-import {type AuthProvider, type AuthProviderResponse, type SanityClient} from '@sanity/client'
-import {Heading, Stack} from '@sanity/ui'
+import {
+  type AuthProvider,
+  type AuthProviderResponse,
+  type CurrentSanityUser,
+  type SanityClient,
+} from '@sanity/client'
+import {Badge, Flex, Heading, Stack} from '@sanity/ui'
 import {useEffect, useState} from 'react'
 import {type Observable} from 'rxjs'
+import styled from 'styled-components'
 
 import {Button} from '../../../../ui-components'
 import {LoadingBlock} from '../../../components/loadingBlock'
@@ -13,6 +19,10 @@ import {type LoginComponentProps} from './types'
 
 interface GetProvidersOptions extends AuthConfig {
   client: SanityClient
+}
+
+interface Me extends CurrentSanityUser {
+  provider: string
 }
 
 async function getProviders({
@@ -54,6 +64,28 @@ async function getProviders({
     .concat(customProviders)
 }
 
+/**
+ * Gets login data from the /me endpoint
+ */
+function getGlobalLoginData(): Promise<Me | null> {
+  return fetch('https://api.sanity.io/v2021-10-21/users/me', {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include',
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error('Failed to fetch user data')
+      }
+      return response.json()
+    })
+    .catch(() => {
+      return null
+    })
+}
+
 interface CreateLoginComponentOptions extends AuthConfig {
   getClient: () => Observable<SanityClient>
 }
@@ -88,6 +120,12 @@ function createHrefForProvider({
   return `${url}?${params}`
 }
 
+const PreviouslyUsedBadge = styled(Badge)`
+  span {
+    font-size: 0.9em;
+  }
+`
+
 export function createLoginComponent({
   getClient,
   loginMethod,
@@ -100,6 +138,7 @@ export function createLoginComponent({
     const redirectPath = props.redirectPath || props.basePath || '/'
 
     const [providers, setProviders] = useState<AuthProvider[] | null>(null)
+    const [me, setMe] = useState<Me | null>(null)
     const [error, setError] = useState<unknown>(null)
     if (error) throw error
 
@@ -111,6 +150,8 @@ export function createLoginComponent({
       getProviders({client, ...providerOptions})
         .then(setProviders)
         .catch(setError)
+
+      getGlobalLoginData().then(setMe).catch(setError)
     }, [client])
 
     // only create a direct URL if `redirectOnSingle` is true and there is only
@@ -159,7 +200,15 @@ export function createLoginComponent({
               })}
               mode="ghost"
               size="large"
-              text={provider.title}
+              width="fill"
+              text={
+                <Flex align="center" gap={1}>
+                  {provider.title}
+                  {provider.name === me?.provider && (
+                    <PreviouslyUsedBadge tone="primary">Last login</PreviouslyUsedBadge>
+                  )}
+                </Flex>
+              }
             />
           ))}
         </Stack>
