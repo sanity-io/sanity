@@ -84,6 +84,22 @@ export function getSort(sort: SearchSort[] = []): TextSearchSort[] {
   )
 }
 
+export function getQueryString(
+  query: string,
+  {queryType = 'prefixLast'}: Pick<SearchOptions, 'queryType'>,
+): string {
+  // Empty wildcard search queries ("*") yield no results. However, Studio uses empty search
+  // queries to list documents (e.g. for document lists). Therefore, do not append a wildcard to
+  // any empty search string.
+  const shouldPrefixLast = queryType === 'prefixLast' && query.length !== 0
+
+  if (shouldPrefixLast) {
+    return `${query}*`
+  }
+
+  return query
+}
+
 /**
  * @internal
  */
@@ -106,7 +122,9 @@ export const createTextSearch: SearchStrategyFactory<TextSearchResults> = (
     ].filter((baseFilter): baseFilter is string => Boolean(baseFilter))
 
     const textSearchParams: TextSearchParams = {
-      query: {string: searchTerms.query},
+      query: {
+        string: getQueryString(searchTerms.query, searchOptions),
+      },
       filter: filters.join(' && '),
       params: {
         __types: searchTerms.types.map((type) => ('name' in type ? type.name : type.type)),
