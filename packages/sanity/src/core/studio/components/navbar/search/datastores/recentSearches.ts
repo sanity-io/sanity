@@ -1,5 +1,5 @@
 import {type ObjectSchemaType, type Schema} from '@sanity/types'
-import omit from 'lodash/omit'
+import {isEqual, omit} from 'lodash'
 import {useMemo} from 'react'
 
 import {useSchema} from '../../../../../hooks'
@@ -112,13 +112,12 @@ export function useRecentSearchesStore(): RecentSearchesStore {
       }
       // Add new search item, remove previous duplicates (if any) and truncate array.
       // When comparing search items, don't compare against the created date (which will always be different).
-      const comparator = JSON.stringify(omit(newSearchItem, 'created'))
       const newRecent: StoredSearch = {
         version: RECENT_SEARCH_VERSION,
         recentSearches: [
           newSearchItem,
           ...storedSearch.recentSearches.filter((r) => {
-            return JSON.stringify(omit(r, 'created')) !== comparator
+            return !isEqual(omit(r, 'created'), omit(newSearchItem, 'created'))
           }),
         ].slice(0, MAX_RECENT_SEARCHES),
       }
