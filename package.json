@@ -99,7 +99,7 @@
     "@sanity/client": "^6.15.5",
     "@sanity/eslint-config-i18n": "^1.0.0",
     "@sanity/eslint-config-studio": "^3.0.1",
-    "@sanity/pkg-utils": "^3.3.8",
+    "@sanity/pkg-utils": "^4.4.2",
     "@sanity/test": "0.0.1-alpha.1",
     "@sanity/tsdoc": "1.0.0-alpha.44",
     "@sanity/uuid": "^3.0.2",

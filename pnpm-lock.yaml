@@ -46,14 +46,14 @@ importers:
         specifier: ^3.0.1
         version: 3.0.1(eslint@8.57.0)(typescript@5.3.3)
       '@sanity/pkg-utils':
-        specifier: ^3.3.8
-        version: 3.3.8(@types/node@18.19.8)(typescript@5.3.3)
+        specifier: ^4.4.2
+        version: 4.4.2(@types/node@18.19.8)(typescript@5.3.3)
       '@sanity/test':
         specifier: 0.0.1-alpha.1
         version: 0.0.1-alpha.1
       '@sanity/tsdoc':
         specifier: 1.0.0-alpha.44
-        version: 1.0.0-alpha.44(@sanity/pkg-utils@3.3.8)(@types/node@18.19.8)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(sanity@packages+sanity)(styled-components@5.3.11)
+        version: 1.0.0-alpha.44(@sanity/pkg-utils@4.4.2)(@types/node@18.19.8)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(sanity@packages+sanity)(styled-components@5.3.11)
       '@sanity/uuid':
         specifier: ^3.0.2
         version: 3.0.2
@@ -5948,6 +5948,10 @@ packages:
       rxjs: 7.8.1
     dev: false
 
+  /@sanity/browserslist-config@1.0.3:
+    resolution: {integrity: sha512-UkJuiTyROgPcxbvpHYyXwr+T88Np4eLzu3h05gMgeZ2hv3EM7g/4VMyng5HuA1JdPQPEdq8bmmfQDR+u4KC+TA==}
+    dev: true
+
   /@sanity/client@6.15.5:
     resolution: {integrity: sha512-IGJPfk0bHRASPxSWEq5jY4MxECLbMVPqT3Nz0dfyZp2Pw9sIeYp528I9BQXI4dlEVWE/fEHbyvluagHn/HFqWQ==}
     engines: {node: '>=14.18'}
@@ -6203,15 +6207,14 @@ packages:
       - '@types/node'
       - supports-color
 
-  /@sanity/pkg-utils@3.3.8(@types/node@18.19.8)(typescript@5.3.3):
-    resolution: {integrity: sha512-PKQVdY6yvmLFzJzM3ukSHGpa044zIcBWxD2P4Rs/MPfKrxwxQfwewuCDXrLd6X9udqduiiUTYAr/gCZ3XEMjYQ==}
+  /@sanity/pkg-utils@4.4.2(@types/node@18.19.8)(typescript@5.3.3):
+    resolution: {integrity: sha512-eebmMCe45viN4TrIr+0jSSu8zcyDEC4zAeB0ZjMZauL6CV1f8iI7GpWXbVODnSwpL29DZrp9704zsxSxnwsoDQ==}
     engines: {node: '>=16.0.0'}
     hasBin: true
     peerDependencies:
       typescript: ^4.7 || ^5
     dependencies:
       '@babel/core': 7.24.0
-      '@babel/preset-env': 7.24.0(@babel/core@7.24.0)
       '@babel/types': 7.24.0
       '@microsoft/api-extractor': 7.42.3(@types/node@18.19.8)
       '@microsoft/tsdoc-config': 0.16.2
@@ -6222,12 +6225,13 @@ packages:
       '@rollup/plugin-node-resolve': 15.2.3(rollup@4.13.0)
       '@rollup/plugin-replace': 5.0.5(rollup@4.13.0)
       '@rollup/plugin-terser': 0.4.4(rollup@4.13.0)
+      '@sanity/browserslist-config': 1.0.3
       browserslist: 4.23.0
       cac: 6.7.14
       chalk: 4.1.2
       chokidar: 3.6.0
-      esbuild: 0.19.12
-      esbuild-register: 3.5.0(esbuild@0.19.12)
+      esbuild: 0.20.2
+      esbuild-register: 3.5.0(esbuild@0.20.2)
       find-config: 1.0.0
       get-latest-version: 5.1.0
       git-url-parse: 14.0.0
@@ -6243,7 +6247,7 @@ packages:
       prompts: 2.4.2
       rimraf: 4.4.1
       rollup: 4.13.0
-      rollup-plugin-esbuild: 6.1.1(esbuild@0.19.12)(rollup@4.13.0)
+      rollup-plugin-esbuild: 6.1.1(esbuild@0.20.2)(rollup@4.13.0)
       rxjs: 7.8.1
       treeify: 1.1.0
       typescript: 5.3.3
@@ -6410,7 +6414,7 @@ packages:
       - supports-color
       - terser
 
-  /@sanity/tsdoc@1.0.0-alpha.44(@sanity/pkg-utils@3.3.8)(@types/node@18.19.8)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(sanity@packages+sanity)(styled-components@5.3.11):
+  /@sanity/tsdoc@1.0.0-alpha.44(@sanity/pkg-utils@4.4.2)(@types/node@18.19.8)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(sanity@packages+sanity)(styled-components@5.3.11):
     resolution: {integrity: sha512-LFVDxJ5FSaC6aZ9H/mwkEl7x1U21QcRhJGNlFbMSpt7G2dJNDKAy+alc6aXdkBjY/Gkf/flwB2jAdEwu860xKQ==}
     engines: {node: '>=14.0.0'}
     hasBin: true
@@ -6430,7 +6434,7 @@ packages:
       '@sanity/client': 6.15.5
       '@sanity/color': 2.2.5
       '@sanity/icons': 2.11.2(react@18.2.0)
-      '@sanity/pkg-utils': 3.3.8(@types/node@18.19.8)(typescript@5.3.3)
+      '@sanity/pkg-utils': 4.4.2(@types/node@18.19.8)(typescript@5.3.3)
       '@sanity/ui': 1.9.3(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@5.3.11)
       '@types/cpx': 1.5.5
       '@vitejs/plugin-react': 4.2.1(vite@4.5.2)
@@ -16761,7 +16765,7 @@ packages:
     transitivePeerDependencies:
       - supports-color
 
-  /rollup-plugin-esbuild@6.1.1(esbuild@0.19.12)(rollup@4.13.0):
+  /rollup-plugin-esbuild@6.1.1(esbuild@0.20.2)(rollup@4.13.0):
     resolution: {integrity: sha512-CehMY9FAqJD5OUaE/Mi1r5z0kNeYxItmRO2zG4Qnv2qWKF09J2lTy5GUzjJR354ZPrLkCj4fiBN41lo8PzBUhw==}
     engines: {node: '>=14.18.0'}
     peerDependencies:
@@ -16771,7 +16775,7 @@ packages:
       '@rollup/pluginutils': 5.1.0(rollup@4.13.0)
       debug: 4.3.4(supports-color@5.5.0)
       es-module-lexer: 1.4.1
-      esbuild: 0.19.12
+      esbuild: 0.20.2
       get-tsconfig: 4.7.2
       rollup: 4.13.0
     transitivePeerDependencies:
