@@ -85,7 +85,7 @@ export function useSearch({
   const {unstable_enableNewSearch = false} = useWorkspace().search
   const {unstable_filters} = useWorkspace().document
 
-  const filters = useMemo(() => unstable_filters({}), [unstable_filters])
+  const filters = useMemo(() => unstable_filters({listType: 'globalSearch'}), [unstable_filters])
 
   const search = useMemo(
     () =>

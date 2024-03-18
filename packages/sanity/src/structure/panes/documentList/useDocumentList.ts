@@ -60,7 +60,7 @@ export function useDocumentList(opts: UseDocumentListOpts): DocumentListState {
 
   const documents = result?.documents
 
-  const filters = useMemo(() => unstable_filters({}), [unstable_filters])
+  const filters = useMemo(() => unstable_filters({listType: 'documentList'}), [unstable_filters])
 
   // Filter out published documents that have drafts to avoid duplicates in the list.
   const items = useMemo(

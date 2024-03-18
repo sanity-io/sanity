@@ -98,7 +98,7 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
   const {unstable_enableNewSearch = false} = source.search
 
   const {unstable_filters} = useWorkspace().document
-  const filters = useMemo(() => unstable_filters({}), [unstable_filters])
+  const filters = useMemo(() => unstable_filters({listType: 'referenceField'}), [unstable_filters])
 
   const documentValue = useFormValue([]) as FIXME
   const documentRef = useValueRef(documentValue)

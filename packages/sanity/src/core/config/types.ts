@@ -537,7 +537,9 @@ export interface DocumentBadgesContext extends ConfigContext {
  * @hidden
  * @beta
  */
-export interface DocumentFiltersContext extends ConfigContext {}
+export interface DocumentFiltersContext extends ConfigContext {
+  listType: 'globalSearch' | 'documentList' | 'referenceField'
+}
 
 /** @hidden @beta */
 export interface DocumentInspectorContext extends ConfigContext {
