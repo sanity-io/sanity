@@ -223,6 +223,13 @@ Array [
     },
   },
   Object {
+    "name": "someTextType",
+    "type": "type",
+    "value": Object {
+      "type": "string",
+    },
+  },
+  Object {
     "attributes": Object {
       "_createdAt": Object {
         "type": "objectAttribute",
@@ -4265,6 +4272,14 @@ Array [
         "type": "objectAttribute",
         "value": Object {
           "name": "obj",
+          "type": "inline",
+        },
+      },
+      "someTextType": Object {
+        "optional": true,
+        "type": "objectAttribute",
+        "value": Object {
+          "name": "someTextType",
           "type": "inline",
         },
       },
