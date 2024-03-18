@@ -83,7 +83,7 @@ export function DescriptionInput(props: ArrayFieldProps & {mode: FormMode}) {
         onChange={handleChange}
         value={value ?? []}
         withAvatar={false}
-        placeholder={t('tasks.form.input.description.placeholder')}
+        placeholder={t('form.input.description.placeholder')}
         // eslint-disable-next-line react/jsx-no-bind
         onDiscardConfirm={() => null}
       />

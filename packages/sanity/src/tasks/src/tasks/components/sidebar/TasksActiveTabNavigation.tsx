@@ -55,12 +55,12 @@ export function TasksActiveTabNavigation(props: TasksActiveTabNavigationProps) {
     <TooltipDelayGroupProvider>
       <Flex gap={1} align="center">
         <Button
-          tooltipProps={{content: t('tasks.buttons.previous.tooltip')}}
+          tooltipProps={{content: t('buttons.previous.tooltip')}}
           mode="bleed"
           icon={ChevronLeftIcon}
           onClick={goToPreviousTask}
         />
-        <Tooltip content={t('tasks.panel.navigation.tooltip')}>
+        <Tooltip content={t('panel.navigation.tooltip')}>
           <Box paddingY={2}>
             <Text size={1}>
               {currentItemIndex + 1} / {items.length}
@@ -68,7 +68,7 @@ export function TasksActiveTabNavigation(props: TasksActiveTabNavigationProps) {
           </Box>
         </Tooltip>
         <Button
-          tooltipProps={{content: t('tasks.buttons.previous.tooltip')}}
+          tooltipProps={{content: t('buttons.previous.tooltip')}}
           mode="bleed"
           icon={ChevronRightIcon}
           onClick={goToNextTask}

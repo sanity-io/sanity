@@ -43,7 +43,7 @@ function MentionUserMenuItem(props: {
 
         {!user.granted && (
           <Badge fontSize={1} mode="outline">
-            {t('tasks.form.input.assignee.unauthorized.text')}
+            {t('form.input.assignee.unauthorized.text')}
           </Badge>
         )}
       </Flex>
@@ -151,7 +151,7 @@ function MentionsMenu({onSelect, value = ''}: {onSelect: SelectItemHandler; valu
   return (
     <div onKeyDown={handleKeyDown}>
       <TextInput
-        placeholder={t('tasks.form.input.assignee.search.placeholder')}
+        placeholder={t('form.input.assignee.search.placeholder')}
         autoFocus
         border={false}
         onChange={handleSearchChange}
@@ -165,7 +165,7 @@ function MentionsMenu({onSelect, value = ''}: {onSelect: SelectItemHandler; valu
         {filteredOptions.length === 0 ? (
           <Box padding={3}>
             <Text align="center" size={1} muted>
-              {t('tasks.form.input.assignee.search.no-users.text')}
+              {t('form.input.assignee.search.no-users.text')}
             </Text>
           </Box>
         ) : (

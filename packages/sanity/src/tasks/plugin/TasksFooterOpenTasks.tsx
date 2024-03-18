@@ -59,7 +59,7 @@ export function TasksFooterOpenTasks() {
           size={'large'}
           onClick={handleOnClick}
           tooltipProps={{
-            content: t('tasks.document.footer.open-tasks.placeholder', {
+            content: t('document.footer.open-tasks.placeholder', {
               count: pendingTasks.length,
             }),
           }}
@@ -74,11 +74,11 @@ export function TasksFooterOpenTasks() {
     <Button
       mode="bleed"
       tooltipProps={{
-        content: t('tasks.document.footer.open-tasks.placeholder', {
+        content: t('document.footer.open-tasks.placeholder', {
           count: pendingTasks.length,
         }),
       }}
-      text={t('tasks.document.footer.open-tasks.text', {count: pendingTasks.length})}
+      text={t('document.footer.open-tasks.text', {count: pendingTasks.length})}
       onClick={handleOnClick}
     />
   )

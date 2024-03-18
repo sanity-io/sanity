@@ -56,7 +56,7 @@ export function TasksSidebarHeader(props: TasksSidebarHeaderProps) {
             <ChevronRightIcon />
             <Box paddingX={2}>
               <Text size={1} weight="semibold" style={{textTransform: 'capitalize'}}>
-                {viewMode === 'create' || viewMode === 'draft' ? 'Create' : activeTabId}
+                {viewMode === 'create' || viewMode === 'draft' ? t('panel.create.title') : activeTabId}
               </Text>
             </Box>
           </>
@@ -67,12 +67,12 @@ export function TasksSidebarHeader(props: TasksSidebarHeaderProps) {
       {viewMode === 'edit' && <TasksActiveTabNavigation items={allItems} />}
       <Flex gap={1}>
         {viewMode === 'list' && (
-          <Button icon={AddIcon} onClick={handleTaskCreate} mode="bleed" text="New task" />
+          <Button icon={AddIcon} onClick={handleTaskCreate} mode="bleed" text={t('buttons.new.text')} />
         )}
 
         <Button
           tooltipProps={{
-            content: 'Close sidebar',
+            content: t('panel.close.tooltip'),
           }}
           iconRight={CloseIcon}
           mode="bleed"

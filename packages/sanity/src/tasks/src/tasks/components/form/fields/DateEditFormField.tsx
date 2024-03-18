@@ -91,7 +91,7 @@ export function DateEditFormField(props: {
               <Flex justify={'flex-start'} padding={3} paddingTop={0}>
                 <Button
                   mode="bleed"
-                  text={t('tasks.form.input.date.buttons.remove.text')}
+                  text={t('form.input.date.buttons.remove.text')}
                   onClick={() => handleChange(null)}
                   tone="critical"
                 />

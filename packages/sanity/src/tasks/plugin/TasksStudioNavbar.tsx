@@ -33,7 +33,7 @@ function TasksStudioNavbarInner(props: NavbarProps) {
         name: 'tasks-topbar',
         onAction: handleAction,
         selected: isOpen,
-        title: t('tasks.actions.open.text'),
+        title: t('actions.open.text'),
       },
       {
         icon: TaskIcon,
@@ -41,7 +41,7 @@ function TasksStudioNavbarInner(props: NavbarProps) {
         name: 'tasks-sidebar',
         onAction: handleAction,
         selected: isOpen,
-        title: t('tasks.actions.open.text'),
+        title: t('actions.open.text'),
       },
     ]
   }, [handleAction, isOpen, props?.__internal_actions, t])

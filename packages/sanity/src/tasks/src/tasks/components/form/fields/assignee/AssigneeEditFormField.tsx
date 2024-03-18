@@ -47,9 +47,9 @@ export function AssigneeEditFormField(props: {
     if (value) {
       if (mentionOptions.loading) return <TextSkeleton animated style={{width: '10ch'}} />
       if (mentionedUser) return mentionedUser.displayName || mentionedUser.email
-      if (!mentionedUser) return t('tasks.form.input.assignee.user-not-found.text')
+      if (!mentionedUser) return t('form.input.assignee.user-not-found.text')
     }
-    return t('tasks.form.input.assignee.no-user-assigned.text')
+    return t('form.input.assignee.no-user-assigned.text')
   }, [mentionOptions.loading, mentionedUser, value, t])
 
   return (
@@ -70,7 +70,7 @@ export function AssigneeEditFormField(props: {
 
             {value && mentionedUser && !mentionedUser.granted && (
               <Badge fontSize={1} mode="outline">
-                {t('tasks.form.input.assignee.unauthorized.text')}
+                {t('form.input.assignee.unauthorized.text')}
               </Badge>
             )}
           </Flex>

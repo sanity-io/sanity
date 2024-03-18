@@ -46,7 +46,7 @@ export function FormCreate(props: ObjectInputProps) {
       toast.push({
         closable: true,
         status: 'error',
-        title: t('tasks.form.status.error.title-required'),
+        title: t('form.status.error.title-required'),
       })
       return
     }
@@ -64,7 +64,7 @@ export function FormCreate(props: ObjectInputProps) {
     toast.push({
       closable: true,
       status: 'success',
-      title: t('tasks.form.status.success'),
+      title: t('form.status.success'),
     })
   }, [setViewMode, setActiveTab, onChange, createMore, toast, value, t])
 
@@ -77,20 +77,20 @@ export function FormCreate(props: ObjectInputProps) {
           <Flex align="center" gap={2} style={{flexGrow: viewMode === 'draft' ? 1 : 0}}>
             <Switch onChange={handleCreateMore} checked={createMore} />
             <Text size={1} muted>
-              {t('tasks.form.input.create-more.text')}
+              {t('form.input.create-more.text')}
             </Text>
           </Flex>
 
           {viewMode === 'draft' && (
             <Button
-              text={t('tasks.buttons.discard.text')}
+              text={t('buttons.discard.text')}
               onClick={handleRemove}
               mode="bleed"
               disabled={removeStatus === 'loading'}
               loading={removeStatus === 'loading'}
             />
           )}
-          <Button text={t('tasks.buttons.create.text')} onClick={handleCreate} />
+          <Button text={t('buttons.create.text')} onClick={handleCreate} />
         </Flex>
       </Box>
     </>

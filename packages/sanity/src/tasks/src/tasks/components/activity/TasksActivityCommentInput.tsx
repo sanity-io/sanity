@@ -75,7 +75,7 @@ export function TasksActivityCommentInput(props: TasksCommentActivityInputProps)
           onDiscardCancel={handleDiscardCancel}
           onKeyDown={handleKeyDown}
           onSubmit={handleSubmit}
-          placeholder={t('tasks.panel.comment.placeholder')}
+          placeholder={t('panel.comment.placeholder')}
           ref={editorRef}
           value={value}
         />

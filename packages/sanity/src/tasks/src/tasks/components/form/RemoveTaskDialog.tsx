@@ -12,15 +12,15 @@ export function RemoveTaskDialog(props: ReturnType<typeof useRemoveTask>) {
     return (
       <Dialog
         id="remove-task"
-        header={t('tasks.dialog.remove-task.title')}
+        header={t('dialog.remove-task.title')}
         onClose={handleCloseDialog}
         footer={{
           cancelButton: {
-            text: t('tasks.dialog.remove-task.buttons.cancel.text'),
+            text: t('dialog.remove-task.buttons.cancel.text'),
             onClick: handleCloseDialog,
           },
           confirmButton: {
-            text: t('tasks.dialog.remove-task.buttons.confirm.text'),
+            text: t('dialog.remove-task.buttons.confirm.text'),
             tone: 'critical',
             onClick: handleRemove,
             loading: removeStatus === 'loading',
@@ -28,8 +28,8 @@ export function RemoveTaskDialog(props: ReturnType<typeof useRemoveTask>) {
         }}
       >
         <Stack space={3}>
-          <Text as="p">{t('tasks.dialog.remove-task.body')}</Text>
-          <Text as="p">{t('tasks.dialog.remove-task.body2')}</Text>
+          <Text as="p">{t('dialog.remove-task.body')}</Text>
+          <Text as="p">{t('dialog.remove-task.body2')}</Text>
         </Stack>
       </Dialog>
     )

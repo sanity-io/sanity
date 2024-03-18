@@ -20,8 +20,8 @@ export function TaskCreateAction(): DocumentActionDescription | null {
 
   return {
     icon: TaskIcon,
-    label: t('tasks.actions.create.text'),
-    title: t('tasks.actions.create.text'),
+    label: t('actions.create.text'),
+    title: t('actions.create.text'),
     group: ['paneActions'],
     onHandle: handleCreateTaskFromDocument,
   }

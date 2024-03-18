@@ -65,18 +65,18 @@ function FormActionsMenu({id, value}: {id: string; value: TaskDocument}) {
           menu={
             <Menu>
               <MenuItem
-                text={t('tasks.menuitem.duplicate.text')}
+                text={t('menuitem.duplicate.text')}
                 icon={CopyIcon}
                 onClick={duplicateTask}
               />
               <MenuItem
-                text={t('tasks.menuitem.copylink.text')}
+                text={t('menuitem.copylink.text')}
                 icon={LinkIcon}
                 onClick={handleCopyLinkToTask}
               />
               <MenuDivider />
               <MenuItem
-                text={t('tasks.menuitem.delete.text')}
+                text={t('menuitem.delete.text')}
                 icon={TrashIcon}
                 onClick={removeTask.handleOpenDialog}
                 tone="critical"
@@ -121,7 +121,7 @@ function FormEditInner(props: ObjectInputProps) {
             onChange={handleChangeAndSubscribe}
             value={props.value?.title}
             path={['title']}
-            placeholder={t('tasks.form.input.title.placeholder')}
+            placeholder={t('form.input.title.placeholder')}
           />
         </Stack>
         <FormActionsMenu id={props.value?._id} value={value} />

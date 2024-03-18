@@ -85,7 +85,7 @@ export function TasksHeaderDraftsMenu() {
         <StyledMenu>
           <Box padding={3}>
             <Text size={1} weight="semibold">
-              {t('tasks.panel.drafts.title')}
+              {t('panel.drafts.title')}
             </Text>
           </Box>
 
