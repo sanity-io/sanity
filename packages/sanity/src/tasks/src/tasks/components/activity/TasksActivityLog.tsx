@@ -23,8 +23,6 @@ import {
   CommentDeleteDialog,
   type CommentInputProps,
   type CommentReactionOption,
-  CommentsListItem,
-  type CommentsListItemProps,
   type CommentThreadItem,
   type CommentUpdatePayload,
   useComments,
@@ -36,8 +34,8 @@ import {getMentionedUsers} from '../form/utils'
 import {type FieldChange, trackFieldChanges} from './helpers/parseTransactions'
 import {EditedAt} from './TaskActivityEditedAt'
 import {TasksActivityCommentInput} from './TasksActivityCommentInput'
+import {TasksActivityCommentItem} from './TasksActivityCommentItem'
 import {TasksActivityCreatedAt} from './TasksActivityCreatedAt'
-import {ActivityItem} from './TasksActivityItem'
 import {TasksSubscribers} from './TasksSubscribers'
 
 function useActivityLog(task: TaskDocument) {
@@ -106,13 +104,6 @@ const EMPTY_ARRAY: [] = []
 const VARIANTS: Variants = {
   hidden: {opacity: 0, x: 0},
   visible: {opacity: 1, x: 0},
-}
-
-const COMMENTS_LIST_ITEM_AVATAR_CONFIG: CommentsListItemProps['avatarConfig'] = {
-  parentCommentAvatar: false,
-  threadCommentsAvatar: true,
-  replyAvatar: true,
-  avatarSize: 0,
 }
 
 const MotionStack = styled(motion(Stack))``
@@ -356,29 +347,20 @@ export function TasksActivityLog(props: TasksActivityLogProps) {
                       if (item._type === 'activity') {
                         return <EditedAt key={item.timestamp} activity={item.payload} />
                       }
+
                       return (
-                        <ActivityItem
+                        <TasksActivityCommentItem
+                          currentUser={currentUser}
                           key={item.payload.parentComment._id}
-                          userId={item.payload.parentComment.authorId}
-                        >
-                          <CommentsListItem
-                            avatarConfig={COMMENTS_LIST_ITEM_AVATAR_CONFIG}
-                            canReply
-                            currentUser={currentUser}
-                            innerPadding={1}
-                            isSelected={false}
-                            key={item.payload.parentComment._id}
-                            mentionOptions={mentionOptions}
-                            mode="default" // TODO: set dynamic mode?
-                            onCreateRetry={handleCommentCreateRetry}
-                            onDelete={handleDeleteCommentStart}
-                            onEdit={handleCommentEdit}
-                            onReactionSelect={handleCommentReact}
-                            onReply={handleCommentReply}
-                            parentComment={item.payload.parentComment}
-                            replies={item.payload.replies}
-                          />
-                        </ActivityItem>
+                          mentionOptions={mentionOptions}
+                          onCreateRetry={handleCommentCreateRetry}
+                          onDelete={handleDeleteCommentStart}
+                          onEdit={handleCommentEdit}
+                          onReactionSelect={handleCommentReact}
+                          onReply={handleCommentReply}
+                          parentComment={item.payload.parentComment}
+                          replies={item.payload.replies}
+                        />
                       )
                     })}
 
