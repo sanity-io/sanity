@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 import {hues} from '@sanity/color'
 import {type CurrentUser} from '@sanity/types'
 import {
@@ -412,13 +413,13 @@ export function CommentsListItemLayout(props: CommentsListItemLayoutProps) {
                 canEdit={canEdit}
                 isParent={isParent}
                 mode={mode}
-                onCopyLink={handleCopyLink}
+                onCopyLink={onCopyLink ? handleCopyLink : undefined}
                 onDeleteStart={handleDelete}
                 onEditStart={toggleEdit}
                 onMenuClose={handleMenuClose}
                 onMenuOpen={handleMenuOpen}
                 onReactionSelect={handleReactionSelect}
-                onStatusChange={handleOpenStatusChange}
+                onStatusChange={onStatusChange ? handleOpenStatusChange : undefined}
                 readOnly={readOnly}
                 status={comment.status}
               />
