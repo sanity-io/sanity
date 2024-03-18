@@ -197,7 +197,6 @@ export function createLoginComponent({
               })}
               mode="ghost"
               size="large"
-              width="fill"
               text={
                 <Flex align="center" gap={1}>
                   {provider.title}
