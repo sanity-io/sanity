@@ -1083,8 +1083,8 @@ importers:
         specifier: ^1.41.2
         version: 1.41.2
       '@portabletext/toolkit':
-        specifier: ^2.0.11
-        version: 2.0.11
+        specifier: ^2.0.12
+        version: 2.0.12
       '@sanity/diff-match-patch':
         specifier: ^3.1.1
         version: 3.1.1
@@ -4924,18 +4924,18 @@ packages:
     peerDependencies:
       react: ^17 || ^18
     dependencies:
-      '@portabletext/toolkit': 2.0.11
-      '@portabletext/types': 2.0.9
+      '@portabletext/toolkit': 2.0.12
+      '@portabletext/types': 2.0.10
       react: 18.2.0
 
-  /@portabletext/toolkit@2.0.11:
-    resolution: {integrity: sha512-4xdn1jZUZzihTvtJJbtZDsuaHNw9aaf/WZqKriP9306SlSuLFYC8Lw1MzW+Xmh3ZSurIjs+L0M+lTflB2NfYSA==}
+  /@portabletext/toolkit@2.0.12:
+    resolution: {integrity: sha512-uSA8bDAuRht3uuFRXxVmDD3OkoqNYhT/R0JaCuoiaxr5WwEbFW/Rgngai/QInH9VxlDvfOpVCyt+DIIAm2W/uA==}
     engines: {node: ^14.13.1 || >=16.0.0}
     dependencies:
-      '@portabletext/types': 2.0.9
+      '@portabletext/types': 2.0.10
 
-  /@portabletext/types@2.0.9:
-    resolution: {integrity: sha512-1naiVZBrDTUSExPgaUPY8Ip1v9mboLBIsPHSAzvQraVsdj2dyHi6n9qwiXykY4W1JmpJAKz7jYp2rShCnKQ9JA==}
+  /@portabletext/types@2.0.10:
+    resolution: {integrity: sha512-pyyT3w8bV2v0LjOiSMHMEqzUhUO9FD54xU4tdLDt9WKBShrvP9NTQO5BO4bUljp1l5I5yyai0Y/OTKI8VAE9BQ==}
     engines: {node: ^14.13.1 || >=16.0.0 || >=18.0.0}
 
   /@radix-ui/primitive@1.0.1:
@@ -6374,7 +6374,7 @@ packages:
       '@microsoft/tsdoc': 0.14.2
       '@microsoft/tsdoc-config': 0.16.2
       '@portabletext/react': 3.0.12(react@18.2.0)
-      '@portabletext/toolkit': 2.0.11
+      '@portabletext/toolkit': 2.0.12
       '@sanity/client': 6.15.5
       '@sanity/color': 2.2.5
       '@sanity/icons': 2.11.2(react@18.2.0)
@@ -6430,7 +6430,7 @@ packages:
       '@microsoft/tsdoc': 0.14.2
       '@microsoft/tsdoc-config': 0.16.2
       '@portabletext/react': 3.0.12(react@18.2.0)
-      '@portabletext/toolkit': 2.0.11
+      '@portabletext/toolkit': 2.0.12
       '@sanity/client': 6.15.5
       '@sanity/color': 2.2.5
       '@sanity/icons': 2.11.2(react@18.2.0)
