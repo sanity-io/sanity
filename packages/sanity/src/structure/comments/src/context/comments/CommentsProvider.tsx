@@ -4,6 +4,7 @@ import {
   getPublishedId,
   useAddonDataset,
   useCurrentUser,
+  useDocumentValuePermissions,
   useEditState,
   useSchema,
   useUserListWithPermissions,
@@ -73,8 +74,22 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
 
   const {name: workspaceName, dataset, projectId} = useWorkspace()
 
+  const documentValue = useMemo(() => {
+    return editState.draft || editState.published
+  }, [editState.draft, editState.published])
+
+  const documentRevisionId = useMemo(() => documentValue?._rev, [documentValue])
+
   // A map to keep track of the latest transaction ID for each comment document.
   const transactionsIdMap = useMemo(() => new Map<DocumentId, TransactionId>(), [])
+
+  // We only need to check for read permission on the document since users with
+  // read permission on the document can both read and write comments.
+  // This is how permission work for the comments add-on dataset.
+  const [readPermission] = useDocumentValuePermissions({
+    document: documentValue || {_type: documentType, _id: publishedId},
+    permission: 'read',
+  })
 
   // When the latest transaction ID is received, we remove the transaction id from the map.
   const handleOnLatestTransactionIdReceived = useCallback(
@@ -108,12 +123,6 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
     },
     [transactionsIdMap],
   )
-
-  const documentValue = useMemo(() => {
-    return editState.draft || editState.published
-  }, [editState.draft, editState.published])
-
-  const documentRevisionId = useMemo(() => documentValue?._rev, [documentValue])
 
   const handleSetStatus = useCallback(
     (newStatus: CommentStatus) => {
@@ -267,6 +276,8 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
       isCommentsOpen,
       onCommentsOpen,
 
+      hasPermission: Boolean(readPermission?.granted),
+
       comments: {
         data: threadItemsByStatus,
         error,
@@ -282,20 +293,21 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
       mentionOptions,
     }),
     [
-      error,
+      isCreatingDataset,
+      status,
+      handleSetStatus,
       getComment,
       isCommentsOpen,
-      isCreatingDataset,
-      loading,
-      mentionOptions,
       onCommentsOpen,
+      readPermission?.granted,
+      threadItemsByStatus,
+      error,
+      loading,
       operation.create,
       operation.react,
       operation.remove,
       operation.update,
-      status,
-      handleSetStatus,
-      threadItemsByStatus,
+      mentionOptions,
     ],
   )
 
