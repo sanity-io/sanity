@@ -415,7 +415,7 @@ importers:
         version: 1.0.2(sanity@packages+sanity)
       '@sanity/locale-sv-se':
         specifier: ^1.0.1
-        version: 1.1.2(sanity@packages+sanity)
+        version: 1.2.3(sanity@packages+sanity)
       '@sanity/logos':
         specifier: ^2.1.2
         version: 2.1.7(@sanity/color@3.0.0)(react@18.2.0)
@@ -6214,8 +6214,8 @@ packages:
       sanity: link:packages/sanity
     dev: false
 
-  /@sanity/locale-sv-se@1.1.2(sanity@packages+sanity):
-    resolution: {integrity: sha512-zbyPDff62FZR+Be9RLSf6eg23rzXFy94TtaM0OQBT8OpUVtyu+0M549kPGs7fSUgZbcRlq8rsQhwJC8bBG1ZaQ==}
+  /@sanity/locale-sv-se@1.2.3(sanity@packages+sanity):
+    resolution: {integrity: sha512-uKKX81MSztXread6xc+c2na3pRbVLSigkU5jpABI0xjcB7R9+SQW4NOyM4JPaXRy6HVEbPP/rtBRHXzO2gUsYA==}
     peerDependencies:
       sanity: ^3.22.0
     dependencies:
