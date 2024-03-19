@@ -412,7 +412,7 @@ importers:
         version: 1.1.5(sanity@packages+sanity)
       '@sanity/locale-pt-pt':
         specifier: ^1.0.1
-        version: 1.0.2(sanity@packages+sanity)
+        version: 1.1.2(sanity@packages+sanity)
       '@sanity/locale-sv-se':
         specifier: ^1.0.1
         version: 1.1.2(sanity@packages+sanity)
@@ -6206,8 +6206,8 @@ packages:
       sanity: link:packages/sanity
     dev: false
 
-  /@sanity/locale-pt-pt@1.0.2(sanity@packages+sanity):
-    resolution: {integrity: sha512-K1NOt/avlr12rIjeuQlTREoaP3UzkVh2l9RmW2XPHR3ICE9740q+6Ri9xdlo64xs2dUcVqJVcJuF66ediZjjCQ==}
+  /@sanity/locale-pt-pt@1.1.2(sanity@packages+sanity):
+    resolution: {integrity: sha512-JeH7Q71wSgvJIBf2rdqdRZ+Vi+7rKHzubo92blpiaHuOv2zn1mDUm8jDS+0JdUZZjsVW0ihi2ClLJFp1DB6+7w==}
     peerDependencies:
       sanity: ^3.22.0
     dependencies:
