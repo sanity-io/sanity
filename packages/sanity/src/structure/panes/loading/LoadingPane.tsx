@@ -61,12 +61,12 @@ export const LoadingPane = memo((props: LoadingPaneProps) => {
 
   const [currentMessage, setCurrentMessage] = useState<string | null>(() => {
     if (typeof resolvedMessage === 'string') return resolvedMessage
-    return DEFAULT_MESSAGE_KEY
+    return t(DEFAULT_MESSAGE_KEY)
   })
 
   useEffect(() => {
     if (typeof resolvedMessage !== 'object') return undefined
-    if (typeof resolvedMessage.subscribe === 'function') return undefined
+    if (typeof resolvedMessage.subscribe !== 'function') return undefined
 
     const sub = resolvedMessage.subscribe((message) => {
       setCurrentMessage('messageKey' in message ? t(message.messageKey) : message.message)

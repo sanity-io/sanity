@@ -15,5 +15,10 @@ export default defineScope({
       title: 'Document state',
       component: lazy(() => import('./DocumentStateStory')),
     },
+    {
+      name: 'loading-pane',
+      title: 'Loading pane',
+      component: lazy(() => import('./LoadingPaneStory')),
+    },
   ],
 })
