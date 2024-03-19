@@ -418,7 +418,7 @@ importers:
         version: 1.1.2(sanity@packages+sanity)
       '@sanity/logos':
         specifier: ^2.1.2
-        version: 2.1.6(@sanity/color@3.0.0)(react@18.2.0)
+        version: 2.1.7(@sanity/color@3.0.0)(react@18.2.0)
       '@sanity/migrate':
         specifier: workspace:*
         version: link:../../packages/@sanity/migrate
@@ -1402,7 +1402,7 @@ importers:
         version: link:../@sanity/import
       '@sanity/logos':
         specifier: ^2.1.4
-        version: 2.1.6(@sanity/color@3.0.0)(react@18.2.0)
+        version: 2.1.7(@sanity/color@3.0.0)(react@18.2.0)
       '@sanity/migrate':
         specifier: 3.34.0
         version: link:../@sanity/migrate
@@ -6144,8 +6144,8 @@ packages:
       sanity: link:packages/sanity
     dev: false
 
-  /@sanity/logos@2.1.6(@sanity/color@3.0.0)(react@18.2.0):
-    resolution: {integrity: sha512-RWhMSj4vpyMgiPbwtuxZqjfnDAA2kAwYSYTi17ChdeqzCOnNfm0CPKrRRjt/zQHdBAyPgjUCdw2GJu3qgR8PeA==}
+  /@sanity/logos@2.1.7(@sanity/color@3.0.0)(react@18.2.0):
+    resolution: {integrity: sha512-qW3zs+2UQhlq4sd3TkstWQjqcl8hOEs1Q5moJifNsE+PFNH5kNkUvEsdR8O6UmovRyPrlmGznIXgoSah8fFPZQ==}
     engines: {node: '>=14.0.0'}
     peerDependencies:
       '@sanity/color': ^2.0 || ^3.0 || ^3.0.0-beta
