@@ -870,8 +870,8 @@ importers:
         specifier: ^10.0.0
         version: 10.0.2
       groq-js:
-        specifier: 1.5.0-canary.1
-        version: 1.5.0-canary.1
+        specifier: ^1.5.0
+        version: 1.5.0
       json5:
         specifier: ^2.2.3
         version: 2.2.3
@@ -1246,8 +1246,8 @@ importers:
         specifier: ^1.0.1
         version: 1.0.1
       groq-js:
-        specifier: ^1.5.0-canary.1
-        version: 1.5.0-canary.1
+        specifier: ^1.5.0
+        version: 1.5.0
       humanize-list:
         specifier: ^1.0.1
         version: 1.0.1
@@ -1594,8 +1594,8 @@ importers:
         specifier: 1.0.2
         version: 1.0.2
       groq-js:
-        specifier: 1.5.0-canary.1
-        version: 1.5.0-canary.1
+        specifier: ^1.5.0
+        version: 1.5.0
       hashlru:
         specifier: ^2.3.0
         version: 2.3.0
@@ -6524,7 +6524,7 @@ packages:
       express: 4.18.2
       globby: 11.1.0
       groq: 3.34.0
-      groq-js: 1.4.3
+      groq-js: 1.5.0
       history: 5.3.0
       jsonc-parser: 3.2.1
       mkdirp: 1.0.4
@@ -12078,14 +12078,13 @@ packages:
     resolution: {integrity: sha512-h2vFXJ/U5VX9bzlqqZLgx/XS0ibNJza4eMxUjZTqkpe3gKafFIJSkMP0RS/XEQR18gJMjXAJNziWdY7JYYfl7w==}
     engines: {node: '>= 14'}
 
-  /groq-js@1.5.0-canary.1:
-    resolution: {integrity: sha512-p3eqvL0mYS9bzCgpQT4IGs32MCDyyWOU7ilpr7UR4k7AedXYNtd/ha9UpszP6i2VrAXCfmJ63zvvTut6JCKgSQ==}
+  /groq-js@1.5.0:
+    resolution: {integrity: sha512-wqfbPow5y6qjbVDZkwnBhVZd+TgbqGs9mWIHdB8cdXnqzo5ftqWHJhlr4MVaWDjoUo7hF4YW9m5lF8o5WlNQ2w==}
     engines: {node: '>= 14'}
     dependencies:
       debug: 4.3.4(supports-color@5.5.0)
     transitivePeerDependencies:
       - supports-color
-    dev: false
 
   /groq@3.34.0:
     resolution: {integrity: sha512-Toi6xfpVo1GtL1u56B73MgciTTNERLMYMVREdyv0aGJGjuDSvs4KgKd90xRF+U/QxHhusbhHT3PII9GLRsQBBw==}

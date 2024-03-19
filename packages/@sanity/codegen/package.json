@@ -69,7 +69,7 @@
     "debug": "^4.3.4",
     "globby": "^10.0.0",
     "json5": "^2.2.3",
-    "groq-js": "1.5.0-canary.1",
+    "groq-js": "^1.5.0",
     "tsconfig-paths": "^4.2.0",
     "zod": "^3.22.4"
   },
