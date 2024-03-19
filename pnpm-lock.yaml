@@ -406,7 +406,7 @@ importers:
         version: 1.0.3(sanity@packages+sanity)
       '@sanity/locale-nb-no':
         specifier: ^1.0.1
-        version: 1.0.3(sanity@packages+sanity)
+        version: 1.1.4(sanity@packages+sanity)
       '@sanity/locale-nn-no':
         specifier: ^1.0.1
         version: 1.1.5(sanity@packages+sanity)
@@ -6190,8 +6190,8 @@ packages:
       sanity: link:packages/sanity
     dev: false
 
-  /@sanity/locale-nb-no@1.0.3(sanity@packages+sanity):
-    resolution: {integrity: sha512-gBefyz7dudGLr8QmZ2CexAH/QqtoJeQrA0A/84qQvDj0J4JLdfYByw07szXI4PvELSDbBXSQF6/3pDUbVNYtfg==}
+  /@sanity/locale-nb-no@1.1.4(sanity@packages+sanity):
+    resolution: {integrity: sha512-/0BFpSwgTXjhztUMGuvc85yQlnCvaO4dH+OG6jLmdVhs6l2vqpBn+N370aQROP9jwkBhmD3Qew6VkvhuUkfJeQ==}
     peerDependencies:
       sanity: ^3.22.0
     dependencies:
