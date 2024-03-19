@@ -67,7 +67,7 @@ jobs:
         env:
           NODE_OPTIONS: --max_old_space_size=8192
       - name: Get Current Job Log URL
-        uses: Tiryoh/gha-jobid-action@7528cee9716384209bafcbd000d6689e851c5dda # v1
+        uses: Tiryoh/gha-jobid-action@c1d1cf7334b70c29374ae382b91053674c8049a2 # v1
         id: job_html_url
         if: always()
         with:
