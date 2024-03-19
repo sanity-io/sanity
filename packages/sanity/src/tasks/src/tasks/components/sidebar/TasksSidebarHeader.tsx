@@ -14,7 +14,7 @@ import {Button} from '../../../../../ui-components'
 import {useTasksNavigation} from '../../context'
 import {type TaskDocument} from '../../types'
 import {TasksActiveTabNavigation} from './TasksActiveTabNavigation'
-import {DraftsMenu} from './TasksHeaderDraftsMenu'
+import {TasksHeaderDraftsMenu} from './TasksHeaderDraftsMenu'
 
 interface TasksSidebarHeaderProps {
   items: TaskDocument[]
@@ -60,7 +60,7 @@ export function TasksSidebarHeader(props: TasksSidebarHeaderProps) {
         )}
         <BetaBadge marginLeft={2} />
       </Flex>
-      {(viewMode === 'create' || viewMode === 'draft') && <DraftsMenu />}
+      {(viewMode === 'create' || viewMode === 'draft') && <TasksHeaderDraftsMenu />}
       {viewMode === 'edit' && <TasksActiveTabNavigation items={allItems} />}
       <Flex gap={1}>
         {viewMode === 'list' && (
