@@ -403,7 +403,7 @@ importers:
         version: 1.0.2
       '@sanity/locale-ko-kr':
         specifier: ^1.0.1
-        version: 1.0.3(sanity@packages+sanity)
+        version: 1.1.3(sanity@packages+sanity)
       '@sanity/locale-nb-no':
         specifier: ^1.0.1
         version: 1.0.3(sanity@packages+sanity)
@@ -6182,8 +6182,8 @@ packages:
       react-dom: 18.2.0(react@18.2.0)
     dev: false
 
-  /@sanity/locale-ko-kr@1.0.3(sanity@packages+sanity):
-    resolution: {integrity: sha512-CEIo5H10WCfmR+ZtA83xqAAuqT3khZef1pWuVLvt0IHdkPOnYCwpItOU6VMKSUq/JkGqeFGsIMsV+bq9vjxD1w==}
+  /@sanity/locale-ko-kr@1.1.3(sanity@packages+sanity):
+    resolution: {integrity: sha512-9Xbx5kHLnsSJKWjTcM8RCuU0yO6ZuYnMlul8LtR9PQmIEK3zd7zkl2K/8QsuVgEJm54ZA6QCBOlk1Vot0yhBuQ==}
     peerDependencies:
       sanity: ^3.22.0
     dependencies:
