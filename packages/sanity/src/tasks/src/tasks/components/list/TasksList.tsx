@@ -4,11 +4,10 @@ import {Fragment, useMemo} from 'react'
 import {useTranslation} from 'sanity'
 import styled from 'styled-components'
 
+import {tasksLocaleNamespace} from '../../../../i18n'
 import {TASK_STATUS} from '../../constants/TaskStatus'
 import {type TaskDocument} from '../../types'
 import {TasksListItem} from './TasksListItem'
-import {tasksLocaleNamespace} from '../../../../i18n'
-
 
 const EMPTY_ARRAY: [] = []
 

@@ -83,6 +83,7 @@ const config = {
             'initial',
             'size',
             'sortOrder',
+            'status',
             'group',
           ],
         },
