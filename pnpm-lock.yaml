@@ -46,14 +46,14 @@ importers:
         specifier: ^3.0.1
         version: 3.0.1(eslint@8.57.0)(typescript@5.3.3)
       '@sanity/pkg-utils':
-        specifier: ^4.4.2
-        version: 4.4.2(@types/node@18.19.8)(typescript@5.3.3)
+        specifier: ^4.4.3
+        version: 4.4.3(@types/node@18.19.8)(typescript@5.3.3)
       '@sanity/test':
         specifier: 0.0.1-alpha.1
         version: 0.0.1-alpha.1
       '@sanity/tsdoc':
         specifier: 1.0.0-alpha.44
-        version: 1.0.0-alpha.44(@sanity/pkg-utils@4.4.2)(@types/node@18.19.8)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(sanity@packages+sanity)(styled-components@5.3.11)
+        version: 1.0.0-alpha.44(@sanity/pkg-utils@4.4.3)(@types/node@18.19.8)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(sanity@packages+sanity)(styled-components@5.3.11)
       '@sanity/uuid':
         specifier: ^3.0.2
         version: 3.0.2
@@ -6207,8 +6207,8 @@ packages:
       - '@types/node'
       - supports-color
 
-  /@sanity/pkg-utils@4.4.2(@types/node@18.19.8)(typescript@5.3.3):
-    resolution: {integrity: sha512-eebmMCe45viN4TrIr+0jSSu8zcyDEC4zAeB0ZjMZauL6CV1f8iI7GpWXbVODnSwpL29DZrp9704zsxSxnwsoDQ==}
+  /@sanity/pkg-utils@4.4.3(@types/node@18.19.8)(typescript@5.3.3):
+    resolution: {integrity: sha512-egzpgyiwjags+tP1oW/oQnaxzUI5C8GSNplcPYqUtfvlCHCrVjKxdo/SqldaOPAaofPQVY1TH0PH7solf/7ChQ==}
     engines: {node: '>=16.0.0'}
     hasBin: true
     peerDependencies:
@@ -6414,7 +6414,7 @@ packages:
       - supports-color
       - terser
 
-  /@sanity/tsdoc@1.0.0-alpha.44(@sanity/pkg-utils@4.4.2)(@types/node@18.19.8)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(sanity@packages+sanity)(styled-components@5.3.11):
+  /@sanity/tsdoc@1.0.0-alpha.44(@sanity/pkg-utils@4.4.3)(@types/node@18.19.8)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(sanity@packages+sanity)(styled-components@5.3.11):
     resolution: {integrity: sha512-LFVDxJ5FSaC6aZ9H/mwkEl7x1U21QcRhJGNlFbMSpt7G2dJNDKAy+alc6aXdkBjY/Gkf/flwB2jAdEwu860xKQ==}
     engines: {node: '>=14.0.0'}
     hasBin: true
@@ -6434,7 +6434,7 @@ packages:
       '@sanity/client': 6.15.5
       '@sanity/color': 2.2.5
       '@sanity/icons': 2.11.2(react@18.2.0)
-      '@sanity/pkg-utils': 4.4.2(@types/node@18.19.8)(typescript@5.3.3)
+      '@sanity/pkg-utils': 4.4.3(@types/node@18.19.8)(typescript@5.3.3)
       '@sanity/ui': 1.9.3(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@5.3.11)
       '@types/cpx': 1.5.5
       '@vitejs/plugin-react': 4.2.1(vite@4.5.2)
