@@ -11,10 +11,10 @@ import {
   type SearchStrategyFactory,
   type SearchTerms,
   type TextSearchDocumentTypeConfiguration,
+  type TextSearchOrder,
   type TextSearchParams,
   type TextSearchResponse,
   type TextSearchResults,
-  type TextSearchSort,
 } from '../common'
 
 const DEFAULT_LIMIT = 1000
@@ -73,12 +73,11 @@ export function getDocumentTypeConfiguration(
   }, {})
 }
 
-export function getSort(sort: SearchSort[] = []): TextSearchSort[] {
-  return sort.map<TextSearchSort>(
+export function getOrder(sort: SearchSort[] = []): TextSearchOrder[] {
+  return sort.map<TextSearchOrder>(
     ({field, direction}) => ({
-      [field]: {
-        order: direction,
-      },
+      attribute: field,
+      direction,
     }),
     {},
   )
@@ -114,8 +113,7 @@ export const createTextSearch: SearchStrategyFactory<TextSearchResults> = (
         ...searchTerms.params,
       },
       types: getDocumentTypeConfiguration(searchOptions, searchTerms),
-      // TODO: `sort` is not supported by the Text Search API yet.
-      // sort: getSort(searchOptions.sort),
+      order: getOrder(searchOptions.sort),
       includeAttributes: ['_id', '_type'],
       fromCursor: searchOptions.cursor,
       limit: searchOptions.limit ?? DEFAULT_LIMIT,

@@ -285,3 +285,108 @@ Array [
 ]
 `)
 })
+
+it('should reset results after ordering changes', () => {
+  const {result} = renderHook(() => useReducer(searchReducer, initialState))
+  const [, dispatch] = result.current
+
+  act(() =>
+    dispatch({
+      type: 'TERMS_QUERY_SET',
+      query: 'test query a',
+    }),
+  )
+
+  act(() =>
+    dispatch({
+      type: 'SEARCH_REQUEST_COMPLETE',
+      nextCursor: 'cursorA',
+      hits: [
+        {
+          hit: {
+            _type: 'person',
+            _id: 'personA',
+          },
+        },
+        {
+          hit: {
+            _type: 'person',
+            _id: 'personB',
+          },
+        },
+      ],
+    }),
+  )
+
+  const [stateA] = result.current
+
+  expect(stateA.result.hits).toMatchInlineSnapshot(`
+Array [
+  Object {
+    "hit": Object {
+      "_id": "personA",
+      "_type": "person",
+    },
+  },
+  Object {
+    "hit": Object {
+      "_id": "personB",
+      "_type": "person",
+    },
+  },
+]
+`)
+
+  act(() =>
+    dispatch({
+      type: 'ORDERING_SET',
+      ordering: {
+        titleKey: 'search.ordering.test-label',
+        sort: {
+          field: '_createdAt',
+          direction: 'desc',
+        },
+      },
+    }),
+  )
+
+  act(() =>
+    dispatch({
+      type: 'SEARCH_REQUEST_COMPLETE',
+      nextCursor: undefined,
+      hits: [
+        {
+          hit: {
+            _type: 'person',
+            _id: 'personB',
+          },
+        },
+        {
+          hit: {
+            _type: 'person',
+            _id: 'personC',
+          },
+        },
+      ],
+    }),
+  )
+
+  const [stateB] = result.current
+
+  expect(stateB.result.hits).toMatchInlineSnapshot(`
+Array [
+  Object {
+    "hit": Object {
+      "_id": "personB",
+      "_type": "person",
+    },
+  },
+  Object {
+    "hit": Object {
+      "_id": "personC",
+      "_type": "person",
+    },
+  },
+]
+`)
+})

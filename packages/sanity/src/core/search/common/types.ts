@@ -133,7 +133,10 @@ export interface TextSearchDocumentTypeConfiguration {
 /**
  * @internal
  */
-export type TextSearchSort = Record<string, {order: SortDirection}>
+export interface TextSearchOrder {
+  attribute: string
+  direction: SortDirection
+}
 
 export type TextSearchParams = {
   query: {
@@ -181,9 +184,9 @@ export type TextSearchParams = {
    */
   types?: Record<string, TextSearchDocumentTypeConfiguration>
   /**
-   * Result sorting.
+   * Result ordering.
    */
-  sort?: TextSearchSort[]
+  order?: TextSearchOrder[]
 }
 
 export type TextSearchResponse<Attributes = Record<string, unknown>> = {

@@ -181,6 +181,10 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
         ...state,
         ordering: action.ordering,
         terms: stripRecent(state.terms),
+        result: {
+          ...state.result,
+          hasLocal: false,
+        },
       }
     case 'PAGE_INCREMENT':
       return {
