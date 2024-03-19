@@ -28,7 +28,7 @@ const generatedFileWarning = `/**
  * For more information on how to use Sanity TypeGen, visit the official documentation:
  * https://www.sanity.io/docs/sanity-typegen
  * ---------------------------------------------------------------------------------
- */\n`
+ */\n\n`
 
 export default async function typegenGenerateAction(
   args: CliCommandArguments<TypegenGenerateTypesCommandFlags>,
