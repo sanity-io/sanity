@@ -3,19 +3,15 @@ import {Box, Flex, MenuDivider, Stack, Text} from '@sanity/ui'
 import {Fragment, useMemo} from 'react'
 import styled from 'styled-components'
 
+import {TASK_STATUS} from '../../constants/TaskStatus'
 import {type TaskDocument} from '../../types'
 import {TasksListItem} from './TasksListItem'
 
 const EMPTY_ARRAY: [] = []
 
-const CHECKBOX_VALUES = [
-  {name: 'open', label: 'To Do'},
-  {name: 'closed', label: 'Done'},
-]
-
 const getLabelForStatus = (status: string) => {
-  const statusConfig = CHECKBOX_VALUES.find((item) => item.name === status)
-  return statusConfig?.label
+  const statusConfig = TASK_STATUS.find((item) => item.value === status)
+  return statusConfig?.title
 }
 
 const DetailsFlex = styled(Flex)`
@@ -94,11 +90,20 @@ interface TasksListProps {
 export function TasksList(props: TasksListProps) {
   const {items = EMPTY_ARRAY, onTaskSelect} = props
 
-  const openTasks = useMemo(() => items.filter((task) => task.status === 'open'), [items])
-  const closedTasks = useMemo(() => items.filter((task) => task.status === 'closed'), [items])
+  const tasksByStatus = useMemo(
+    () =>
+      items.reduce((acc: Record<string, TaskDocument[]>, task) => {
+        if (!acc[task.status]) {
+          acc[task.status] = []
+        }
+        acc[task.status].push(task)
+        return acc
+      }, {}),
+    [items],
+  )
 
-  const hasOpenTasks = openTasks?.length > 0
-  const hasClosedTasks = closedTasks?.length > 0
+  const hasOpenTasks = tasksByStatus.open?.length > 0
+  const hasClosedTasks = tasksByStatus.closed?.length > 0
 
   return (
     <Stack space={4}>
@@ -108,10 +113,12 @@ export function TasksList(props: TasksListProps) {
         </Text>
       ) : (
         <>
-          {hasOpenTasks && <TaskList status="open" tasks={openTasks} onTaskSelect={onTaskSelect} />}
+          {hasOpenTasks && (
+            <TaskList status="open" tasks={tasksByStatus.open} onTaskSelect={onTaskSelect} />
+          )}
 
           {hasClosedTasks && (
-            <TaskList status="closed" tasks={closedTasks} onTaskSelect={onTaskSelect} />
+            <TaskList status="closed" tasks={tasksByStatus.closed} onTaskSelect={onTaskSelect} />
           )}
         </>
       )}
