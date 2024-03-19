@@ -37,6 +37,7 @@ const SidebarMotionLayer = styled(motion(Layer))(({theme}) => {
     width: 360px;
     border-left: 1px solid var(--card-border-color);
     box-sizing: border-box;
+    overflow: hidden;
 
     box-shadow:
       0px 6px 8px -4px var(--card-shadow-umbra-color),

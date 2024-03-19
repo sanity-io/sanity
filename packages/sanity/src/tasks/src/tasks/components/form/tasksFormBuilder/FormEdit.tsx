@@ -1,5 +1,5 @@
 import {CopyIcon, LinkIcon, TrashIcon} from '@sanity/icons'
-import {Box, Card, Flex, Menu, MenuDivider} from '@sanity/ui'
+import {Box, Card, Flex, Menu, MenuDivider, Stack} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
 import {useCallback} from 'react'
@@ -103,16 +103,17 @@ function FormEditInner(props: ObjectInputProps) {
   return (
     <>
       <Flex align="flex-start" gap={3}>
-        <div style={{flex: 1}}>
+        <Stack flex={1}>
           <Title
             onChange={handleChangeAndSubscribe}
             value={props.value?.title}
             path={['title']}
             placeholder="Task title"
           />
-        </div>
+        </Stack>
         <FormActionsMenu id={props.value?._id} value={value} />
       </Flex>
+
       <Card borderTop marginTop={3}>
         <FirstRow
           paddingBottom={3}
@@ -148,7 +149,7 @@ function FormEditInner(props: ObjectInputProps) {
         sortOrder="asc"
         type="task"
       >
-        <Card borderTop paddingTop={4} marginTop={4}>
+        <Card borderTop paddingTop={4} marginTop={4} paddingBottom={6}>
           <TasksActivityLog value={value} onChange={props.onChange} path={['subscribers']} />
         </Card>
       </CommentsProvider>

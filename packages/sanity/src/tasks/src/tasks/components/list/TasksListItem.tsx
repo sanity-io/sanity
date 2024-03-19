@@ -25,6 +25,9 @@ interface TasksListItemProps
 }
 
 const TitleButton = styled(UIButton)`
+  width: 100%;
+  max-width: 100%;
+
   &:hover {
     text-decoration: underline;
     background-color: transparent;
@@ -34,11 +37,6 @@ const TitleButton = styled(UIButton)`
 const TaskDetailsRoot = styled(Flex)`
   /* Checkbox width is 17px and first row gap is 12px. */
   margin-left: 29px;
-`
-const UserDisplayRoot = styled.div`
-  margin-left: auto;
-  display: flex;
-  align-items: center;
 `
 
 function getTargetDocumentMeta(target?: TaskDocument['target']) {
@@ -97,33 +95,37 @@ export function TasksListItem({
   const targetDocument = useMemo(() => getTargetDocumentMeta(target), [target])
 
   return (
-    <Card sizing={'border'} paddingBottom={3} borderBottom>
-      <Stack space={2} paddingY={1}>
-        <Flex align="center" paddingY={1} gap={3}>
+    <Stack space={3}>
+      <Flex align="center" gap={1}>
+        <Box>
           <TasksStatus documentId={documentId} status={status} />
-          <TitleButton mode="bleed" padding={0} onClick={onSelect}>
-            <Text size={1} weight="semibold">
+        </Box>
+
+        <Flex flex={1}>
+          <TitleButton onClick={onSelect} mode="bleed" padding={2}>
+            <Text size={1} weight="semibold" textOverflow="ellipsis">
               {title || 'Untitled'}
             </Text>
           </TitleButton>
-          <UserDisplayRoot>
-            <TasksUserAvatar user={assignedTo ? {id: assignedTo} : undefined} />
-          </UserDisplayRoot>
         </Flex>
-        {(dueBy || targetDocument) && (
-          <TaskDetailsRoot align="center" gap={2} paddingY={1} paddingX={0}>
-            {dueBy && <TaskDueDate dueBy={dueBy} />}
-            {targetDocument && (
-              <Box marginLeft={1}>
-                <DocumentPreview
-                  documentId={targetDocument._ref}
-                  documentType={targetDocument._type}
-                />
-              </Box>
-            )}
-          </TaskDetailsRoot>
-        )}
-      </Stack>
-    </Card>
+
+        <TasksUserAvatar user={assignedTo ? {id: assignedTo} : undefined} />
+      </Flex>
+
+      {(dueBy || targetDocument) && (
+        <TaskDetailsRoot align="center" gap={2} paddingX={0}>
+          {dueBy && <TaskDueDate dueBy={dueBy} />}
+
+          {targetDocument && (
+            <Box marginLeft={1}>
+              <DocumentPreview
+                documentId={targetDocument._ref}
+                documentType={targetDocument._type}
+              />
+            </Box>
+          )}
+        </TaskDetailsRoot>
+      )}
+    </Stack>
   )
 }
