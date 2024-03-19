@@ -77,7 +77,7 @@
   "devDependencies": {
     "@jest/globals": "^29.7.0",
     "@playwright/test": "^1.41.2",
-    "@portabletext/toolkit": "^2.0.11",
+    "@portabletext/toolkit": "^2.0.12",
     "@sanity/diff-match-patch": "^3.1.1",
     "@sanity/ui": "^2.0.10",
     "@testing-library/react": "^13.4.0",
