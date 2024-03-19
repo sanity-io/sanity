@@ -66,9 +66,9 @@ export interface BaseFieldProps {
 /**
  * @hidden
  * @public */
-export interface ObjectFieldProps<T = Record<string, any>> extends BaseFieldProps {
+export interface ObjectFieldProps<T = Record<string, unknown>> extends BaseFieldProps {
   schemaType: ObjectSchemaType
-  value: {[field in string]: unknown} | undefined
+  value: T | undefined
   collapsed?: boolean
   collapsible?: boolean
   onCollapse: () => void
