@@ -7,13 +7,13 @@ import {
 } from '@sanity/ui'
 import isHotkey from 'is-hotkey'
 import {useCallback, useMemo, useState} from 'react'
-import {useTranslation} from 'react-i18next'
 import {
   ChangeConnectorRoot,
   type DocumentFieldActionNode,
   type DocumentInspectorMenuItem,
   FieldActionsProvider,
   FieldActionsResolver,
+  useTranslation,
   useZIndex,
 } from 'sanity'
 import {type Path} from 'sanity-diff-patch'

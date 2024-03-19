@@ -40,8 +40,8 @@ importers:
         specifier: ^6.15.6
         version: 6.15.6
       '@sanity/eslint-config-i18n':
-        specifier: ^1.0.0
-        version: 1.0.0(eslint@8.57.0)(typescript@5.3.3)
+        specifier: ^1.1.0
+        version: 1.1.0(eslint@8.57.0)(typescript@5.3.3)
       '@sanity/eslint-config-studio':
         specifier: ^3.0.1
         version: 3.0.1(eslint@8.57.0)(typescript@5.3.3)
@@ -5984,11 +5984,11 @@ packages:
     resolution: {integrity: sha512-dSZqGeYjHKGIkqAzGqLcG92LZyJGX+nYbs/FWawhBbTBDWi21kvQ0hsL3DJThuFVWtZMWTQijN3z6Cnd44Pf2g==}
     engines: {node: '>=14.18'}
 
-  /@sanity/eslint-config-i18n@1.0.0(eslint@8.57.0)(typescript@5.3.3):
-    resolution: {integrity: sha512-BIeD9IVT7O5I6vDyDaICoidN02qeImdXDRAW062iHY9gV4JrGScWBFio2HQLso7C+Z6SrQB8jOft6SzeYqDhdQ==}
+  /@sanity/eslint-config-i18n@1.1.0(eslint@8.57.0)(typescript@5.3.3):
+    resolution: {integrity: sha512-mMD0CB1R3n9vN+wWpmjIge1EW2yVYlNIO/N4LJd1kNZUs5FhyT4ZeFoJT79wj3lmr9K+yoHjqjTQ5HuZkRCSXw==}
     dependencies:
       '@rushstack/eslint-patch': 1.7.0
-      '@sanity/eslint-plugin-i18n': 1.0.0
+      '@sanity/eslint-plugin-i18n': 1.1.0
       '@typescript-eslint/parser': 6.21.0(eslint@8.57.0)(typescript@5.3.3)
       eslint-plugin-i18next: 6.0.3
     transitivePeerDependencies:
@@ -6037,8 +6037,8 @@ packages:
       - typescript
     dev: true
 
-  /@sanity/eslint-plugin-i18n@1.0.0:
-    resolution: {integrity: sha512-ibPaZttafAWLRz2SXAk8LOBr+nykU4BoMUYjdQVIx/N3D2deZdJp0s1c0lmljkrE2B3LmB0B7oTzF9CUrw3Kyg==}
+  /@sanity/eslint-plugin-i18n@1.1.0:
+    resolution: {integrity: sha512-EpoqPVqaP2NSmG8vGa4zsD6BuyBTVHwmD3VigOya7roHB8GZXuJjDg6+SXzhb+cTVuZtWaAjt8NMYVYx4uWCIQ==}
     dev: true
 
   /@sanity/eventsource@5.0.1:
