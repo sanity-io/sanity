@@ -15,6 +15,8 @@ const tasksLocaleStrings = defineLocalesResources('tasks', {
   'buttons.create.text': 'Create Task',
   /** The label for the button to discard changes */
   'buttons.discard.text': 'Discard',
+  /** The label for the button to open the draft */
+  'buttons.draft.text': 'Draft',
   /** The label for the button to create a new task */
   'buttons.new.text': 'New task',
   /** The label for the button that will navigate to the next task */
@@ -87,14 +89,6 @@ const tasksLocaleStrings = defineLocalesResources('tasks', {
   'panel.comment.placeholder': 'Add a comment...',
   /** The title used in the task panel when showing the create task form */
   'panel.create.title': 'Create',
-  /** The help text used in the draft menu*/
-  'panel.drafts.helptext': 'continue working on your drafts',
-  /** The title of a draft task in the draft pulldown */
-  'panel.drafts.item.title': '{{title}}',
-  /** The title of a draft task in the draft pulldown that is currrently being edited */
-  'panel.drafts.item.title_editing': '(editing) {{title}}',
-  /** The default title of a draft task */
-  'panel.drafts.item.untitled': 'Untitled',
   /** The title used in the drafts pulldown */
   'panel.drafts.title': 'Drafts',
   /** The tooltip for the task navigation component */

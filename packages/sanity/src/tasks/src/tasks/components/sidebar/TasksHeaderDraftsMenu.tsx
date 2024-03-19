@@ -5,9 +5,9 @@ import {useCurrentUser, useTranslation} from 'sanity'
 import styled from 'styled-components'
 
 import {Button, MenuButton, type MenuButtonProps, MenuItem} from '../../../../../ui-components'
+import {tasksLocaleNamespace} from '../../../../i18n'
 import {useTasks, useTasksNavigation} from '../../context'
 import {type TaskDocument} from '../../types'
-import {tasksLocaleNamespace} from '../../../../i18n'
 
 const MENU_BUTTON_POPOVER_PROPS: MenuButtonProps['popover'] = {
   constrainSize: true,
@@ -79,7 +79,7 @@ export function TasksHeaderDraftsMenu() {
 
   return (
     <MenuButton
-      button={<Button text="Drafts" mode="ghost" iconRight={ChevronDownIcon} />}
+      button={<Button text={t('buttons.draft.text')} mode="ghost" iconRight={ChevronDownIcon} />}
       id="edit-task-menu"
       menu={
         <StyledMenu>

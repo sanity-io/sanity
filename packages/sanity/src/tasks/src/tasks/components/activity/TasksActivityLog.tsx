@@ -315,7 +315,7 @@ export function TasksActivityLog(props: TasksActivityLogProps) {
         <Flex align="center">
           <Box flex={1}>
             <Text size={2} weight="semibold">
-              {t('tasks.panel.activity.title')}
+              {t('panel.activity.title')}
             </Text>
           </Box>
 

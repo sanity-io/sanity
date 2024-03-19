@@ -45,18 +45,20 @@ export function TasksSidebarHeader(props: TasksSidebarHeaderProps) {
         {viewMode === 'list' ? (
           <Box padding={2}>
             <Text size={2} weight="semibold">
-              {t('tasks.panel.title')}
+              {t('panel.title')}
             </Text>
           </Box>
         ) : (
           <>
             <UIButton mode="bleed" space={2} padding={2} onClick={handleGoBack}>
-              <Text size={1}>{t('tasks.panel.title')}</Text>
+              <Text size={1}>{t('panel.title')}</Text>
             </UIButton>
             <ChevronRightIcon />
             <Box paddingX={2}>
               <Text size={1} weight="semibold" style={{textTransform: 'capitalize'}}>
-                {viewMode === 'create' || viewMode === 'draft' ? t('panel.create.title') : activeTabId}
+                {viewMode === 'create' || viewMode === 'draft'
+                  ? t('panel.create.title')
+                  : activeTabId}
               </Text>
             </Box>
           </>
@@ -67,7 +69,12 @@ export function TasksSidebarHeader(props: TasksSidebarHeaderProps) {
       {viewMode === 'edit' && <TasksActiveTabNavigation items={allItems} />}
       <Flex gap={1}>
         {viewMode === 'list' && (
-          <Button icon={AddIcon} onClick={handleTaskCreate} mode="bleed" text={t('buttons.new.text')} />
+          <Button
+            icon={AddIcon}
+            onClick={handleTaskCreate}
+            mode="bleed"
+            text={t('buttons.new.text')}
+          />
         )}
 
         <Button

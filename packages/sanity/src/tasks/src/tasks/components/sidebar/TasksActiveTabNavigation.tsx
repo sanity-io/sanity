@@ -68,7 +68,7 @@ export function TasksActiveTabNavigation(props: TasksActiveTabNavigationProps) {
           </Box>
         </Tooltip>
         <Button
-          tooltipProps={{content: t('buttons.previous.tooltip')}}
+          tooltipProps={{content: t('buttons.next.tooltip')}}
           mode="bleed"
           icon={ChevronRightIcon}
           onClick={goToNextTask}
