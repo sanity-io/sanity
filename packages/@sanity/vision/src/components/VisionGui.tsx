@@ -22,9 +22,10 @@ import {
   type ToastContextValue,
   Tooltip,
 } from '@sanity/ui'
+import {parse, type SchemaType, typeEvaluate, type TypeNode} from 'groq-js'
 import {isHotkey} from 'is-hotkey-esm'
 import {type ChangeEvent, createRef, PureComponent, type RefObject} from 'react'
-import {type TFunction, Translate} from 'sanity'
+import {type TFunction, Translate, type Workspace} from 'sanity'
 
 import {API_VERSIONS, DEFAULT_API_VERSION} from '../apiVersions'
 import {VisionCodeMirror} from '../codemirror/VisionCodeMirror'
@@ -42,6 +43,7 @@ import {DelayedSpinner} from './DelayedSpinner'
 import {ParamsEditor, type ParamsEditorChangeEvent} from './ParamsEditor'
 import {PerspectivePopover} from './PerspectivePopover'
 import {QueryErrorDialog} from './QueryErrorDialog'
+import {QueryTypesContainer} from './QueryTypesContainer'
 import {ResultView} from './ResultView'
 import {SaveCsvButton, SaveJsonButton} from './SaveResultButtons'
 import {
@@ -88,7 +90,7 @@ interface PaneSizeOptions {
 }
 
 function narrowBreakpoint(): boolean {
-  return typeof window !== 'undefined' && window.innerWidth > 600
+  return typeof window !== 'undefined' && window.innerWidth > 1024
 }
 
 function calculatePaneSizeOptions(rootHeight: number): PaneSizeOptions {
@@ -108,7 +110,9 @@ interface Subscription {
 interface VisionGuiProps extends VisionProps {
   toast: ToastContextValue
   datasets: string[]
+  schema: SchemaType
   t: TFunction<'vision', undefined>
+  workspace: Workspace
 }
 
 interface VisionGuiState {
@@ -135,6 +139,7 @@ interface VisionGuiState {
 
   // Query/listen result
   queryResult?: unknown | undefined
+  queryTypeNode?: TypeNode
   listenMutations: MutationEvent[]
   error?: Error | undefined
 
@@ -591,6 +596,17 @@ export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
 
     const queryStart = Date.now()
 
+    let queryTypeNode: TypeNode | undefined
+    if (this._client.config().dataset === this.props.workspace.dataset) {
+      try {
+        const ast = parse(query)
+        queryTypeNode = typeEvaluate(ast, this.props.schema)
+      } catch (err) {
+        // just log the error, this is probably because an invalid query, which will be caught by the query endpoint
+        console.warn('Error while trying to parse query: ', err.message) // eslint-disable-line no-console
+      }
+    }
+
     this._querySubscription = this._client.observable
       .fetch(query, params, {filterResponse: false, tag: 'vision'})
       .subscribe({
@@ -599,6 +615,7 @@ export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
             queryTime: res.ms,
             e2eTime: Date.now() - queryStart,
             queryResult: res.result,
+            queryTypeNode,
             queryInProgress: false,
             error: undefined,
           }),
@@ -651,7 +668,7 @@ export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
   }
 
   render() {
-    const {datasets, t} = this.props
+    const {datasets, t, schema} = this.props
     const {
       apiVersion,
       customApiVersion,
@@ -668,6 +685,7 @@ export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
       query,
       queryInProgress,
       queryResult,
+      queryTypeNode,
       queryTime,
       rawParams,
       url,
@@ -929,10 +947,11 @@ export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
                 <ResultContainer
                   flex={1}
                   overflow="hidden"
+                  display={'flex'}
                   tone={error ? 'critical' : 'default'}
                   $isInvalid={Boolean(error)}
                 >
-                  <Result overflow="auto">
+                  <Result overflow="auto" flex={1}>
                     <InputBackgroundContainer>
                       <Box marginLeft={3}>
                         <StyledLabel muted>{t('result.label')}</StyledLabel>
@@ -951,6 +970,11 @@ export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
                       )}
                     </Box>
                   </Result>
+                  <QueryTypesContainer
+                    t={t}
+                    typeNode={queryTypeNode}
+                    localStorage={this._localStorage}
+                  />
                 </ResultContainer>
               </ResultInnerContainer>
               {/* Execution time */}

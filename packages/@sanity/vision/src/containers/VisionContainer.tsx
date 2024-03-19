@@ -1,5 +1,7 @@
+import {extractSchema} from '@sanity/schema'
 import {useToast} from '@sanity/ui'
-import {useTranslation} from 'sanity'
+import {useMemo} from 'react'
+import {useTranslation, useWorkspace} from 'sanity'
 
 import {DelayedSpinner} from '../components/DelayedSpinner'
 import {VisionGui} from '../components/VisionGui'
@@ -10,6 +12,8 @@ import {type VisionProps} from '../types'
 export function VisionContainer(props: VisionProps) {
   const toast = useToast()
   const loadedDatasets = useDatasets(props.client)
+  const workspace = useWorkspace()
+  const extractedSchema = useMemo(() => extractSchema(workspace.schema, {}), [workspace.schema])
   const {t} = useTranslation(visionLocaleNamespace)
 
   if (!loadedDatasets) {
@@ -23,5 +27,14 @@ export function VisionContainer(props: VisionProps) {
       : // Otherwise use the loaded list, obviously
         loadedDatasets
 
-  return <VisionGui {...props} datasets={datasets} toast={toast} t={t} />
+  return (
+    <VisionGui
+      {...props}
+      datasets={datasets}
+      toast={toast}
+      t={t}
+      workspace={workspace}
+      schema={extractedSchema}
+    />
+  )
 }
