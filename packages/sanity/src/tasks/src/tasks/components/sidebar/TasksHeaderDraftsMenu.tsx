@@ -16,11 +16,13 @@ export function DraftsMenu() {
 
   const draftTasks = useMemo(() => {
     if (!user?.id) return []
+
     return data.filter((task) => {
       const isAuthoredByUser = task.authorId === user.id
       const isDraft = !task.createdByUser
+      const hasEdits = task._updatedAt !== task._createdAt
       const isNotTheTaskBeingCreated = viewMode === 'create' ? task._id !== selectedTask : true
-      return isAuthoredByUser && isDraft && isNotTheTaskBeingCreated
+      return isAuthoredByUser && isDraft && isNotTheTaskBeingCreated && hasEdits
     })
   }, [data, selectedTask, user?.id, viewMode])
 
