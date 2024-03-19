@@ -13,6 +13,7 @@ const templates: Record<string, ProjectTemplate | undefined> = {
   moviedb,
   shopify,
   'shopify-online-storefront': shopifyOnline,
+  quickstart: clean, // empty project that dynamically imports its own schema
 }
 
 export default templates
