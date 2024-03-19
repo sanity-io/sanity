@@ -1,6 +1,6 @@
 import {type CliCommandDefinition} from '@sanity/cli'
 
-const description = 'Generates codegen'
+const description = 'Generates types'
 
 const helpText = `
 **Note**: This command is experimental and subject to change.
@@ -11,10 +11,10 @@ Options
 
 Examples
   # Generate types from a schema, generate schema with "sanity schema extract" first.
-  sanity codegen generate-types
+  sanity typegen generate
 
 Configuration
-The codegen command uses the following configuration properties from sanity-codegen.json:
+The command uses the following configuration properties from sanity-typegen.json:
 {
   "path": "'./src/**/*.{ts,tsx,js,jsx}'" // glob pattern to your typescript files
   "schema": "schema.json", // path to your schema file, generated with 'sanity schema extract' command
@@ -24,18 +24,18 @@ The codegen command uses the following configuration properties from sanity-code
 The listed properties are the default values, and can be overridden in the configuration file.
 `
 
-const generateTypesCodegenCommand: CliCommandDefinition = {
-  name: 'generate-types',
-  group: 'codegen',
+const generateTypegenCommand: CliCommandDefinition = {
+  name: 'generate',
+  group: 'typegen',
   signature: '',
   description,
   helpText,
   hideFromHelp: true,
   action: async (args, context) => {
-    const mod = await import('../../actions/codegen/generateTypesAction')
+    const mod = await import('../../actions/typegen/generateAction')
 
     return mod.default(args, context)
   },
 } satisfies CliCommandDefinition
 
-export default generateTypesCodegenCommand
+export default generateTypegenCommand

@@ -11,14 +11,14 @@ import {isMainThread, parentPort, workerData as _workerData} from 'worker_thread
 
 const $info = createDebug('sanity:codegen:generate:info')
 
-export interface CodegenGenerateTypesWorkerData {
+export interface TypegenGenerateTypesWorkerData {
   workDir: string
   workspaceName?: string
   schemaPath: string
   searchPath: string | string[]
 }
 
-export type CodegenGenerateTypesWorkerMessage =
+export type TypegenGenerateTypesWorkerMessage =
   | {
       type: 'error'
       error: Error
@@ -50,7 +50,7 @@ if (isMainThread || !parentPort) {
   throw new Error('This module must be run as a worker thread')
 }
 
-const opts = _workerData as CodegenGenerateTypesWorkerData
+const opts = _workerData as TypegenGenerateTypesWorkerData
 
 registerBabel()
 
@@ -69,7 +69,7 @@ async function main() {
     schema: schemaTypes,
     filename: 'schema.json',
     length: schema.length,
-  } satisfies CodegenGenerateTypesWorkerMessage)
+  } satisfies TypegenGenerateTypesWorkerMessage)
 
   const queries = findQueriesInPath({
     path: opts.searchPath,
@@ -83,7 +83,7 @@ async function main() {
         error: result.error,
         fatal: false,
         filename: result.filename,
-      } satisfies CodegenGenerateTypesWorkerMessage)
+      } satisfies TypegenGenerateTypesWorkerMessage)
       continue
     }
     $info(`Processing ${result.queries.length} queries in "${result.filename}"...`)
@@ -112,7 +112,7 @@ async function main() {
           ),
           fatal: false,
           query,
-        } satisfies CodegenGenerateTypesWorkerMessage)
+        } satisfies TypegenGenerateTypesWorkerMessage)
       }
     }
 
@@ -122,13 +122,13 @@ async function main() {
         type: 'types',
         types: fileQueryTypes,
         filename: result.filename,
-      } satisfies CodegenGenerateTypesWorkerMessage)
+      } satisfies TypegenGenerateTypesWorkerMessage)
     }
   }
 
   parentPort?.postMessage({
     type: 'complete',
-  } satisfies CodegenGenerateTypesWorkerMessage)
+  } satisfies TypegenGenerateTypesWorkerMessage)
 }
 
 function countUnknownTypes(typeNode: TypeNode): number {
