@@ -1,9 +1,11 @@
 import {TaskIcon} from '@sanity/icons'
 import {Badge, useMediaIndex} from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
+import {useTranslation} from 'sanity'
 import styled from 'styled-components'
 
 import {Button} from '../../ui-components'
+import {tasksLocaleNamespace} from '../i18n'
 import {useTasks, useTasksEnabled, useTasksNavigation} from '../src'
 
 const ButtonContainer = styled.div`
@@ -44,9 +46,10 @@ export function TasksFooterOpenTasks() {
     setActiveTab('document')
   }, [handleOpenTasks, setActiveTab])
 
+  const {t} = useTranslation(tasksLocaleNamespace)
+
   if (pendingTasks.length === 0 || !enabled) return null
 
-  const pluralizedTask = `task${pendingTasks.length > 1 ? 's' : ''}`
   if (mediaIndex < 3) {
     return (
       <ButtonContainer>
@@ -56,7 +59,9 @@ export function TasksFooterOpenTasks() {
           size={'large'}
           onClick={handleOnClick}
           tooltipProps={{
-            content: `Open ${pluralizedTask}`,
+            content: t('document.footer.open-tasks.placeholder', {
+              count: pendingTasks.length,
+            }),
           }}
         />
         <Badge tone="primary" fontSize={0}>
@@ -68,8 +73,12 @@ export function TasksFooterOpenTasks() {
   return (
     <Button
       mode="bleed"
-      tooltipProps={{content: `Open ${pluralizedTask}`}}
-      text={`${pendingTasks.length} open ${pluralizedTask}`}
+      tooltipProps={{
+        content: t('document.footer.open-tasks.placeholder', {
+          count: pendingTasks.length,
+        }),
+      }}
+      text={t('document.footer.open-tasks.text', {count: pendingTasks.length})}
       onClick={handleOnClick}
     />
   )

@@ -1,5 +1,6 @@
 import {Card} from '@sanity/ui'
 import {useCallback, useMemo, useRef, useState} from 'react'
+import {useTranslation} from 'sanity'
 
 import {
   CommentInput,
@@ -7,6 +8,7 @@ import {
   type CommentInputProps,
   hasCommentMessageValue,
 } from '../../../../../structure/comments'
+import {tasksLocaleNamespace} from '../../../../i18n'
 import {ActivityItem} from './TasksActivityItem'
 
 interface TasksCommentActivityInputProps {
@@ -58,6 +60,7 @@ export function TasksActivityCommentInput(props: TasksCommentActivityInputProps)
     },
     [hasValue],
   )
+  const {t} = useTranslation(tasksLocaleNamespace)
 
   return (
     <ActivityItem userId={currentUser.id}>
@@ -72,7 +75,7 @@ export function TasksActivityCommentInput(props: TasksCommentActivityInputProps)
           onDiscardCancel={handleDiscardCancel}
           onKeyDown={handleKeyDown}
           onSubmit={handleSubmit}
-          placeholder="Add a comment..."
+          placeholder={t('panel.comment.placeholder')}
           ref={editorRef}
           value={value}
         />

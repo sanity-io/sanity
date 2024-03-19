@@ -18,6 +18,7 @@ import {type CalendarLabels} from '../../../../../../core/form/inputs/DateInputs
 import {DatePicker} from '../../../../../../core/form/inputs/DateInputs/base/DatePicker'
 import {getCalendarLabels} from '../../../../../../core/form/inputs/DateInputs/utils'
 import {Button, Popover} from '../../../../../../ui-components'
+import {tasksLocaleNamespace} from '../../../../../i18n'
 
 const serialize = (date: Date) => format(date, DEFAULT_DATE_FORMAT)
 const deserialize = (value: string) => parse(value, DEFAULT_DATE_FORMAT)
@@ -28,7 +29,9 @@ export function DateEditFormField(props: {
   path: Path
 }) {
   const {value, onChange, path} = props
-  const {t} = useTranslation()
+  const {t: coreT} = useTranslation()
+  const {t} = useTranslation(tasksLocaleNamespace)
+
   const [pickerOpen, setPickerOpen] = useState(false)
   const [popoverRef, setPopoverRef] = useState<HTMLElement | null>(null)
   const buttonRef = useRef<HTMLButtonElement | null>(null)
@@ -48,7 +51,7 @@ export function DateEditFormField(props: {
     }
   }, [])
   const handleClick = useCallback(() => setPickerOpen((p) => !p), [])
-  const calendarLabels: CalendarLabels = useMemo(() => getCalendarLabels(t), [t])
+  const calendarLabels: CalendarLabels = useMemo(() => getCalendarLabels(coreT), [coreT])
   const handleChange = useCallback(
     (nextDate: Date | null) => {
       if (nextDate) {
@@ -88,7 +91,7 @@ export function DateEditFormField(props: {
               <Flex justify={'flex-start'} padding={3} paddingTop={0}>
                 <Button
                   mode="bleed"
-                  text="Remove"
+                  text={t('form.input.date.buttons.remove.text')}
                   onClick={() => handleChange(null)}
                   tone="critical"
                 />

@@ -1,10 +1,11 @@
 import {CheckmarkIcon, ChevronDownIcon} from '@sanity/icons'
 import {Box, Menu, MenuDivider, Text} from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
-import {useCurrentUser} from 'sanity'
+import {useCurrentUser, useTranslation} from 'sanity'
 import styled from 'styled-components'
 
 import {Button, MenuButton, type MenuButtonProps, MenuItem} from '../../../../../ui-components'
+import {tasksLocaleNamespace} from '../../../../i18n'
 import {useTasks, useTasksNavigation} from '../../context'
 import {type TaskDocument} from '../../types'
 
@@ -72,17 +73,19 @@ export function TasksHeaderDraftsMenu() {
     [setViewMode],
   )
 
+  const {t} = useTranslation(tasksLocaleNamespace)
+
   if (!draftTasks.length) return null
 
   return (
     <MenuButton
-      button={<Button text="Drafts" mode="ghost" iconRight={ChevronDownIcon} />}
+      button={<Button text={t('buttons.draft.text')} mode="ghost" iconRight={ChevronDownIcon} />}
       id="edit-task-menu"
       menu={
         <StyledMenu>
           <Box padding={3}>
             <Text size={1} weight="semibold">
-              Drafts
+              {t('panel.drafts.title')}
             </Text>
           </Box>
 

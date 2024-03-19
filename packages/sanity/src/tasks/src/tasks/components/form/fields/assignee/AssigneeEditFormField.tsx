@@ -8,9 +8,10 @@ import {
   TextSkeleton,
 } from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
-import {type FormPatch, type PatchEvent, type Path, set, useFormValue} from 'sanity'
+import {type FormPatch, type PatchEvent, type Path, set, useFormValue, useTranslation} from 'sanity'
 import styled from 'styled-components'
 
+import {tasksLocaleNamespace} from '../../../../../../i18n'
 import {useMentionUser} from '../../../../context'
 import {TasksUserAvatar} from '../../../TasksUserAvatar'
 import {AssigneeSelectionMenu} from './AssigneeSelectionMenu'
@@ -31,7 +32,7 @@ export function AssigneeEditFormField(props: {
     () => mentionOptions.data?.find((u) => u.id === value),
     [mentionOptions.data, value],
   )
-
+  const {t} = useTranslation(tasksLocaleNamespace)
   const onSelect = useCallback(
     (userId: string) => {
       onChange(set(userId, path))
@@ -46,10 +47,10 @@ export function AssigneeEditFormField(props: {
     if (value) {
       if (mentionOptions.loading) return <TextSkeleton animated style={{width: '10ch'}} />
       if (mentionedUser) return mentionedUser.displayName || mentionedUser.email
-      if (!mentionedUser) return 'User not found'
+      if (!mentionedUser) return t('form.input.assignee.user-not-found.text')
     }
-    return 'Not assigned'
-  }, [mentionOptions.loading, mentionedUser, value])
+    return t('form.input.assignee.no-user-assigned.text')
+  }, [mentionOptions.loading, mentionedUser, value, t])
 
   return (
     <AssigneeSelectionMenu
@@ -69,7 +70,7 @@ export function AssigneeEditFormField(props: {
 
             {value && mentionedUser && !mentionedUser.granted && (
               <Badge fontSize={1} mode="outline">
-                Unauthorized
+                {t('form.input.assignee.unauthorized.text')}
               </Badge>
             )}
           </Flex>

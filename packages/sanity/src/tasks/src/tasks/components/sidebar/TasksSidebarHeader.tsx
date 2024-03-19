@@ -8,9 +8,10 @@ import {
 } from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {useCallback} from 'react'
-import {BetaBadge} from 'sanity'
+import {BetaBadge, useTranslation} from 'sanity'
 
 import {Button} from '../../../../../ui-components'
+import {tasksLocaleNamespace} from '../../../../i18n'
 import {useTasksNavigation} from '../../context'
 import {type TaskDocument} from '../../types'
 import {TasksActiveTabNavigation} from './TasksActiveTabNavigation'
@@ -36,24 +37,28 @@ export function TasksSidebarHeader(props: TasksSidebarHeaderProps) {
     setViewMode({type: 'list'})
   }, [setViewMode])
 
+  const {t} = useTranslation(tasksLocaleNamespace)
+
   return (
     <Flex justify="space-between" align="center" gap={1}>
       <Flex align="center" flex={1}>
         {viewMode === 'list' ? (
           <Box padding={2}>
             <Text size={2} weight="semibold">
-              Tasks
+              {t('panel.title')}
             </Text>
           </Box>
         ) : (
           <>
             <UIButton mode="bleed" space={2} padding={2} onClick={handleGoBack}>
-              <Text size={1}>Tasks</Text>
+              <Text size={1}>{t('panel.title')}</Text>
             </UIButton>
             <ChevronRightIcon />
             <Box paddingX={2}>
               <Text size={1} weight="semibold" style={{textTransform: 'capitalize'}}>
-                {viewMode === 'create' || viewMode === 'draft' ? 'Create' : activeTabId}
+                {viewMode === 'create' || viewMode === 'draft'
+                  ? t('panel.create.title')
+                  : activeTabId}
               </Text>
             </Box>
           </>
@@ -64,12 +69,17 @@ export function TasksSidebarHeader(props: TasksSidebarHeaderProps) {
       {viewMode === 'edit' && <TasksActiveTabNavigation items={allItems} />}
       <Flex gap={1}>
         {viewMode === 'list' && (
-          <Button icon={AddIcon} onClick={handleTaskCreate} mode="bleed" text="New task" />
+          <Button
+            icon={AddIcon}
+            onClick={handleTaskCreate}
+            mode="bleed"
+            text={t('buttons.new.text')}
+          />
         )}
 
         <Button
           tooltipProps={{
-            content: 'Close sidebar',
+            content: t('panel.close.tooltip'),
           }}
           iconRight={CloseIcon}
           mode="bleed"

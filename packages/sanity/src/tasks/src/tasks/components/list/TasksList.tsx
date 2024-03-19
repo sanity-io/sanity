@@ -1,8 +1,10 @@
 import {ChevronDownIcon} from '@sanity/icons'
 import {Box, Flex, MenuDivider, Stack, Text} from '@sanity/ui'
 import {Fragment, useMemo} from 'react'
+import {useTranslation} from 'sanity'
 import styled from 'styled-components'
 
+import {tasksLocaleNamespace} from '../../../../i18n'
 import {TASK_STATUS} from '../../constants/TaskStatus'
 import {type TaskDocument} from '../../types'
 import {TasksListItem} from './TasksListItem'
@@ -104,12 +106,13 @@ export function TasksList(props: TasksListProps) {
 
   const hasOpenTasks = tasksByStatus.open?.length > 0
   const hasClosedTasks = tasksByStatus.closed?.length > 0
+  const {t} = useTranslation(tasksLocaleNamespace)
 
   return (
     <Stack space={4}>
       {!hasOpenTasks && !hasClosedTasks ? (
         <Text as="p" size={1} muted>
-          No tasks
+          {t('list.empty.text')}
         </Text>
       ) : (
         <>
