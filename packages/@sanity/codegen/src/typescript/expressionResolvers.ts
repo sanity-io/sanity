@@ -12,13 +12,23 @@ const debug = createDebug('sanity:codegen:findQueries:debug')
 
 type resolveExpressionReturnType = string
 
+/**
+ * NamedQueryResult is a result of a named query
+ */
 export interface NamedQueryResult {
+  /** name is the name of the query */
   name: string
+  /** result is a groq query */
   result: resolveExpressionReturnType
 }
 
 const TAGGED_TEMPLATE_ALLOW_LIST = ['groq']
 
+/**
+ * resolveExpression takes a node and returns the resolved value of the expression.
+ * @beta
+ * @internal
+ */
 export function resolveExpression({
   node,
   file,

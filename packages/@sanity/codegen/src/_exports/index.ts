@@ -1,3 +1,6 @@
+export {readSchema} from '../readSchema'
+export {findQueriesInPath} from '../typescript/findQueriesInPath'
 export {findQueriesInSource} from '../typescript/findQueriesInSource'
 export {getResolver} from '../typescript/moduleResolver'
 export {registerBabel} from '../typescript/registerBabel'
+export {TypeGenerator} from '../typescript/typeGenerator'
