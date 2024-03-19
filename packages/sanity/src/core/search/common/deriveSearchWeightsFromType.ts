@@ -1,4 +1,5 @@
 import {type CrossDatasetType, type SchemaType, type SearchConfiguration} from '@sanity/types'
+import {toString as pathToString} from '@sanity/util/paths'
 
 import {isRecord} from '../../util'
 import {type SearchPath, type SearchSpec} from './types'
@@ -19,7 +20,6 @@ const BASE_WEIGHTS: Record<string, Omit<SearchWeightEntry, 'path'>> = {
   _id: {weight: 1, type: 'string'},
   _type: {weight: 1, type: 'string'},
 }
-const GROQ_RESERVED_KEYWORDS = ['true', 'false', 'null']
 const builtInObjectTypes = ['reference', 'crossDatasetReference']
 
 const getTypeChain = (type: SchemaType | undefined): SchemaType[] =>
@@ -37,22 +37,6 @@ const isSearchConfiguration = (options: unknown): options is SearchConfiguration
 
 function isSchemaType(input: SchemaType | CrossDatasetType | undefined): input is SchemaType {
   return typeof input !== 'undefined' && 'name' in input
-}
-
-/**
- * Serialize field path for GROQ query.
- *
- * Reserved keywords, such as `null`, cannot be accessed using dot notation. These fields will
- * instead be serialized using square bracket notation.
- */
-function pathToString(...path: string[]): string {
-  const cleanPath = path.filter(Boolean)
-  return cleanPath.slice(1).reduce((nextPath, segment) => {
-    if (GROQ_RESERVED_KEYWORDS.includes(segment)) {
-      return `${nextPath}['${segment}']`
-    }
-    return `${nextPath}.${segment}`
-  }, cleanPath[0])
 }
 
 function getLeafWeights(
@@ -84,7 +68,7 @@ function getLeafWeights(
     )
     for (const objectType of objectTypes) {
       for (const field of objectType.fields) {
-        const nextPath = pathToString(path, field.name)
+        const nextPath = pathToString([path, field.name].filter(Boolean))
         results.push(...traverse(field.type, nextPath, depth + 1))
       }
     }

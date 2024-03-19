@@ -6,8 +6,8 @@ import {Tooltip} from '../../../../../../ui-components'
 import {CommentsAvatar} from '../../avatars'
 
 const Span = styled.span(({theme}) => {
-  const {regular} = theme.sanity.fonts?.text.weights
-  const {hovered} = theme.sanity.color?.card
+  const {regular} = theme.sanity.fonts?.text.weights || {}
+  const {hovered} = theme.sanity.color?.card || {}
   const {bg} = theme.sanity.color.selectable?.caution.pressed || {}
 
   return css`

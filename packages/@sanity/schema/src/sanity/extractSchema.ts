@@ -171,8 +171,8 @@ export function extractSchema(
     }
 
     // map some known types
-    if (typesMap.has(schemaType.name)) {
-      return typesMap.get(schemaType.name)
+    if (schemaType.type && typesMap.has(schemaType.type.name)) {
+      return typesMap.get(schemaType.type.name)
     }
 
     // Cross dataset references are not supported
@@ -219,7 +219,7 @@ export function extractSchema(
       return {type: 'unknown'} satisfies UnknownTypeNode
     }
 
-    if (schemaType.type?.name !== 'document') {
+    if (schemaType.type?.name !== 'document' && schemaType.name !== 'object') {
       attributes._type = {
         type: 'objectAttribute',
         value: {
@@ -457,6 +457,12 @@ function sortByDependencies(compiledSchema: SchemaDef): string[] {
 
     if ('fields' in schemaType) {
       for (const field of gatherFields(schemaType)) {
+        const last = lastType(field.type)
+        if (last.name === 'document') {
+          dependencies.add(last)
+          continue
+        }
+
         let schemaTypeName: string | undefined
         if (schemaType.type.type) {
           schemaTypeName = field.type.type.name
@@ -464,11 +470,7 @@ function sortByDependencies(compiledSchema: SchemaDef): string[] {
           schemaTypeName = field.type.jsonType
         }
 
-        if (
-          schemaTypeName === 'document' ||
-          schemaTypeName === 'object' ||
-          schemaTypeName === 'block'
-        ) {
+        if (schemaTypeName === 'object' || schemaTypeName === 'block') {
           if (isReferenceType(field.type)) {
             field.type.to.forEach((ref) => dependencies.add(ref.type))
           } else {
@@ -493,6 +495,7 @@ function sortByDependencies(compiledSchema: SchemaDef): string[] {
 
     walkDependencies(schemaType, dependencies)
     dependencyMap.set(schemaType, dependencies)
+    seen.clear() // Clear the seen set for the next type
   })
 
   // Sorts the types by their dependencies

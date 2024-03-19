@@ -175,6 +175,8 @@ const config = {
     'no-dupe-class-members': 'off', // doesn't work with TS overrides
     'no-shadow': 'off',
     'no-unused-vars': 'off',
+    'no-useless-catch': 'warn',
+    'no-async-promise-executor': 'warn',
   },
   settings: {
     'import/extensions': extensions,

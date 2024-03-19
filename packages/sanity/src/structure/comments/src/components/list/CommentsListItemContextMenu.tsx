@@ -110,6 +110,7 @@ export function CommentsListItemContextMenu(props: CommentsListItemContextMenuPr
               icon={status === 'open' ? CheckmarkCircleIcon : UndoIcon}
               mode="bleed"
               onClick={onStatusChange}
+              hidden={!onStatusChange}
               tooltipProps={{
                 content:
                   status === 'open'
@@ -118,6 +119,7 @@ export function CommentsListItemContextMenu(props: CommentsListItemContextMenuPr
               }}
             />
           )}
+
           {hasContextMenuOptions && (
             <MenuButton
               id="comment-actions-menu"
@@ -151,7 +153,7 @@ export function CommentsListItemContextMenu(props: CommentsListItemContextMenuPr
                     tone="critical"
                   />
 
-                  <MenuDivider hidden={!canDelete && !canEdit} />
+                  {onCopyLink && <MenuDivider hidden={!canDelete && !canEdit} />}
 
                   <MenuItem
                     hidden={!onCopyLink}
