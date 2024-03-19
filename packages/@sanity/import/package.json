@@ -53,7 +53,7 @@
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",
-    "@sanity/client": "^6.15.5",
+    "@sanity/client": "^6.15.6",
     "nock": "^13.2.9"
   },
   "engines": {
