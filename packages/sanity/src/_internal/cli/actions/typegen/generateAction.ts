@@ -25,8 +25,8 @@ const generatedFileWarning = `/**
  * the TypeScript definitions are generated. Please make changes to the Sanity
  * schema definitions and/or GROQ queries if you need to update these types.
  *
- * For more information on how to use and customize Sanity schema types with
- * TypeScript, visit the official Sanity documentation.
+ * For more information on how to use Sanity TypeGen, visit the official documentation:
+ * https://www.sanity.io/docs/sanity-typegen
  * ---------------------------------------------------------------------------------
  */\n`
 
