@@ -36,12 +36,12 @@ const Details = styled.details`
   &[open] [data-ui='summary-icon'] {
     transform: rotate(0);
   }
+  > summary::-webkit-details-marker {
+    display: none;
+  }
 `
 const Summary = styled.summary`
   list-style: none;
-  ::-webkit-details-marker {
-    display: none;
-  }
 `
 
 /**
