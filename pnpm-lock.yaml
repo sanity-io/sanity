@@ -433,7 +433,7 @@ importers:
         version: 1.6.4(@sanity/client@6.15.5)
       '@sanity/react-loader':
         specifier: ^1.8.3
-        version: 1.9.3(@sanity/client@6.15.5)(react@18.2.0)
+        version: 1.9.4(@sanity/client@6.15.5)(react@18.2.0)
       '@sanity/tsdoc':
         specifier: 1.0.0-alpha.44
         version: 1.0.0-alpha.44(@sanity/pkg-utils@2.4.10)(@types/node@18.19.8)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(sanity@packages+sanity)(styled-components@6.1.8)
@@ -6322,11 +6322,11 @@ packages:
       '@sanity/uuid': 3.0.2
     dev: false
 
-  /@sanity/react-loader@1.9.3(@sanity/client@6.15.5)(react@18.2.0):
-    resolution: {integrity: sha512-Ny4dLjKTy0Q4mpc5NthVNMZJ8XPEYGVvXwuvDr7fFJqy+KMW9WthJ+KUddTzuq129oJnmiFBvNO6HQvkBGgDMA==}
+  /@sanity/react-loader@1.9.4(@sanity/client@6.15.5)(react@18.2.0):
+    resolution: {integrity: sha512-vqK9I+h5iydoxtsK6E1tFi+MI8nzSO+V1660WHpUxp2L9D/t08kmHNHOIH2Fb/+XkioIZ5sIjmGG+bpprFSyow==}
     engines: {node: '>=18'}
     peerDependencies:
-      '@sanity/client': ^6.15.2
+      '@sanity/client': ^6.15.5
       react: ^18.2.0
     dependencies:
       '@sanity/client': 6.15.5
