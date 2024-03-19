@@ -1,7 +1,8 @@
 import {CheckmarkIcon, ChevronDownIcon} from '@sanity/icons'
-import {Flex, Menu, MenuDivider, Text} from '@sanity/ui'
+import {Box, Menu, MenuDivider, Text} from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
 import {useCurrentUser} from 'sanity'
+import styled from 'styled-components'
 
 import {Button, MenuButton, type MenuButtonProps, MenuItem} from '../../../../../ui-components'
 import {useTasks, useTasksNavigation} from '../../context'
@@ -13,6 +14,10 @@ const MENU_BUTTON_POPOVER_PROPS: MenuButtonProps['popover'] = {
   placement: 'bottom-end',
   portal: true,
 }
+
+const StyledMenu = styled(Menu)`
+  width: 220px;
+`
 
 interface TasksDraftsMenuItemProps {
   isSelected: boolean
@@ -74,16 +79,12 @@ export function TasksHeaderDraftsMenu() {
       button={<Button text="Drafts" mode="ghost" iconRight={ChevronDownIcon} />}
       id="edit-task-menu"
       menu={
-        <Menu>
-          <Flex align="center" padding={3} gap={2}>
+        <StyledMenu>
+          <Box padding={3}>
             <Text size={1} weight="semibold">
               Drafts
             </Text>
-
-            <Text size={0} muted>
-              continue working on your drafts
-            </Text>
-          </Flex>
+          </Box>
 
           <MenuDivider />
 
@@ -97,7 +98,7 @@ export function TasksHeaderDraftsMenu() {
               />
             )
           })}
-        </Menu>
+        </StyledMenu>
       }
       popover={MENU_BUTTON_POPOVER_PROPS}
     />
