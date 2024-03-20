@@ -111,12 +111,15 @@ export function AddonDatasetProvider(props: AddonDatasetSetupProviderProps) {
     // a client for it and set it in the context value so that the consumers can use
     // it to execute comment operations and set up the real time listener for the addon
     // dataset.
-    getAddonDatasetName().then((addonDatasetName) => {
-      if (!addonDatasetName) return
-      const client = handleCreateClient(addonDatasetName)
-      setAddonDatasetClient(client)
-      setReady(true)
-    })
+    getAddonDatasetName()
+      .then((addonDatasetName) => {
+        if (!addonDatasetName) return
+        const client = handleCreateClient(addonDatasetName)
+        setAddonDatasetClient(client)
+      })
+      .finally(() => {
+        setReady(true)
+      })
   }, [getAddonDatasetName, handleCreateClient])
 
   const ctxValue = useMemo(
