@@ -17,7 +17,7 @@ const targetContentField = (mode: FormMode) =>
   defineField({
     type: 'object',
     name: 'target',
-    title: 'Target content',
+    title: 'Target',
     components: {
       field: (props: ObjectFieldProps) => <TargetField {...props} mode={mode} />,
     },
@@ -102,8 +102,8 @@ export const taskSchema = (mode: FormMode) =>
       {
         type: 'string',
         name: 'assignedTo',
-        title: 'Assigned to',
-        placeholder: 'Search username',
+        title: 'Assign to',
+        placeholder: 'Select username',
         components: {
           field: FieldWrapper,
           input: AssigneeCreateFormField,
