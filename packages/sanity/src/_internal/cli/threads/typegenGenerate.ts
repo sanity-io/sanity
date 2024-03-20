@@ -95,10 +95,10 @@ async function main() {
         const ast = parse(query)
         const queryTypes = typeEvaluate(ast, schema)
 
-        const type = typeGenerator.generateTypeNodeTypes(queryName, queryTypes)
+        const type = typeGenerator.generateTypeNodeTypes(`${queryName}Result`, queryTypes)
 
         fileQueryTypes.push({
-          queryName: queryName,
+          queryName,
           query,
           type,
           unknownTypes: countUnknownTypes(queryTypes),
