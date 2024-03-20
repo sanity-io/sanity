@@ -2,7 +2,7 @@ import {AddCommentIcon} from '@sanity/icons'
 import {useClickOutside} from '@sanity/ui'
 import {motion, type Variants} from 'framer-motion'
 import {useState} from 'react'
-import {useTranslation} from 'react-i18next'
+import {useTranslation} from 'sanity'
 import styled from 'styled-components'
 
 import {Button, Popover, type PopoverProps} from '../../../../../ui-components'

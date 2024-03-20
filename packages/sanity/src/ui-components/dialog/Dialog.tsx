@@ -9,7 +9,8 @@ import {
 } from '@sanity/ui'
 import type * as React from 'react'
 import {type ComponentProps, forwardRef} from 'react'
-import {useTranslation} from 'react-i18next'
+
+import {useTranslation} from '../../core/i18n'
 
 /** @internal */
 export type DialogProps = Pick<
