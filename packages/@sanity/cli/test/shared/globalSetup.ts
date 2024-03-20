@@ -200,21 +200,19 @@ async function packCli(): Promise<string> {
   // Run `npm pack` so we can create a fully isolated install, replicating what a user would get
   await mkdir(packPath, {recursive: true})
   const cwd = path.join(__dirname, '..', '..')
-  const pack = await exec(pnpmPath, ['pack', '--json'], {cwd})
+  const pack = await exec(pnpmPath, ['pack'], {cwd})
   if (pack.code !== 0) {
     throw new Error(pack.stderr)
   }
 
   // `--json` returns an array - we only need the first entry to tell us where the tarball is
-  const [packResult] = JSON.parse(pack.stdout) || []
-  if (!packResult || !packResult.id) {
+  const packFileName = pack.stdout.trim()
+  if (!packFileName) {
     throw new Error('Unexpected `npm pack` result')
   }
 
-  // Ironically, the filename returned isn't actually correct for scoped modules 🙄
-  const packedFileName = packResult.filename.replace(/^@/, '').replace(/\//, '-')
-  const packedFilePath = path.join(cwd, packedFileName)
-  const destinationPath = path.join(packPath, packedFileName)
+  const packedFilePath = path.join(cwd, packFileName)
+  const destinationPath = path.join(packPath, packFileName)
   await stat(packedFilePath)
 
   // Move it to the pack folder (`--pack-destination` is not available on older node/npm versions)
