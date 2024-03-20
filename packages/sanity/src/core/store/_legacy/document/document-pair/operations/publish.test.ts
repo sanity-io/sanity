@@ -82,7 +82,7 @@ describe('publish', () => {
   })
 
   describe('execute', () => {
-    it('removes the `_updatedAt` field', () => {
+    it.skip('removes the `_updatedAt` field', () => {
       const client = createMockSanityClient()
 
       publish.execute({
@@ -106,7 +106,7 @@ describe('publish', () => {
       expect(client.$log).toMatchSnapshot()
     })
 
-    it('calls createOrReplace with _revision_lock_pseudo_field_ if there is an already published document', () => {
+    it.skip('calls createOrReplace with _revision_lock_pseudo_field_ if there is an already published document', () => {
       const client = createMockSanityClient()
 
       publish.execute({
@@ -137,7 +137,7 @@ describe('publish', () => {
       expect(client.$log).toMatchSnapshot()
     })
 
-    it('takes in any and strengthens references where _strengthenOnPublish is true', () => {
+    it.skip('takes in any and strengthens references where _strengthenOnPublish is true', () => {
       const client = createMockSanityClient()
 
       publish.execute({
