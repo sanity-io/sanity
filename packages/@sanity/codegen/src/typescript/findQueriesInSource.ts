@@ -46,7 +46,7 @@ export function findQueriesInSource(
         babelTypes.isIdentifier(node.id) &&
         init.tag.name === groqTagName
       ) {
-        const queryName = `${node.id.name}Result`
+        const queryName = `${node.id.name}`
         const queryResult = resolveExpression({
           node: init,
           file,

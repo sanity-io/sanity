@@ -74,19 +74,6 @@ describe('findQueries', () => {
     expect(queries.length).toBe(0)
   })
 
-  test("should name queries with 'Result' at the end", () => {
-    const source = `
-      import { groq } from "groq";
-      const postQuery = groq\`*[_type == "author"]\`
-      const res = sanity.fetch(postQueryResult);
-    `
-
-    const queries = findQueriesInSource(source, 'test.ts')
-    const queryResult = queries[0]
-
-    expect(queryResult?.name.substr(-6)).toBe('Result')
-  })
-
   test('should import', () => {
     const source = `
       import { groq } from "groq";
@@ -106,8 +93,7 @@ describe('findQueries', () => {
     }
 
     const queries = findQueriesInSource(source, 'test.ts', undefined, resolver)
-    const queryResult = queries[0]
-
-    expect(queryResult?.name.substr(-6)).toBe('Result')
+    expect(queries.length).toBe(1)
+    expect(queries[0].result).toBe('*[_type == "foo"]')
   })
 })
