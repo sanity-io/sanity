@@ -399,7 +399,7 @@ export type Author = {
     const objectNodeOut = typeGenerator.generateTypeNodeTypes('myObject', objectNode)
     expect(objectNodeOut).toMatchSnapshot()
 
-    const someOtherTypeOut = typeGenerator.generateTypeNodeTypes('someOtherType', {
+    const someOtherTypeOut = typeGenerator.generateTypeNodeTypes('SomeOtherType', {
       type: 'inline',
       name: 'myObject',
     })

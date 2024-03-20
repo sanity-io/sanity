@@ -41,7 +41,7 @@ export class TypeGenerator {
       const typeLiteral = this.getTypeNodeType(schema)
 
       const typeAlias = t.tsTypeAliasDeclaration(
-        t.identifier(this.getTypeName(schema.name, true)),
+        t.identifier(this.getTypeName(schema.name)),
         null,
         typeLiteral,
       )
@@ -65,7 +65,7 @@ export class TypeGenerator {
     const type = this.getTypeNodeType(typeNode)
 
     const typeAlias = t.tsTypeAliasDeclaration(
-      t.identifier(this.getTypeName(identifierName, false)),
+      t.identifier(this.getTypeName(identifierName)),
       null,
       type,
     )
@@ -90,10 +90,8 @@ export class TypeGenerator {
    * types would be sanityized into MuxVideo. To avoid this we keep track of the generated type names and add a index to the name.
    * When we reference a type we also keep track of the original name so we can reference the correct type later.
    */
-  private getTypeName(name: string, shouldUppercaseFirstLetter: boolean): string {
-    const desiredName = shouldUppercaseFirstLetter
-      ? uppercaseFirstLetter(sanitizeIdentifier(name))
-      : sanitizeIdentifier(name)
+  private getTypeName(name: string): string {
+    const desiredName = uppercaseFirstLetter(sanitizeIdentifier(name))
 
     let generatedName = desiredName
     let i = 2

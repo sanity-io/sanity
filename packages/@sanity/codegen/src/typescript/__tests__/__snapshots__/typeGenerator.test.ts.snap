@@ -2,15 +2,15 @@
 
 exports[`generateSchemaTypes can generate well known types 1`] = `"export declare const internalGroqTypeReferenceTo: unique symbol;"`;
 
-exports[`generateSchemaTypes generateTypeNodeTypes should be able to generate types for type nodes: boolean 1`] = `"export type test_2 = boolean;"`;
+exports[`generateSchemaTypes generateTypeNodeTypes should be able to generate types for type nodes: boolean 1`] = `"export type Test_2 = boolean;"`;
 
-exports[`generateSchemaTypes generateTypeNodeTypes should be able to generate types for type nodes: null 1`] = `"export type test_5 = null;"`;
+exports[`generateSchemaTypes generateTypeNodeTypes should be able to generate types for type nodes: null 1`] = `"export type Test_5 = null;"`;
 
-exports[`generateSchemaTypes generateTypeNodeTypes should be able to generate types for type nodes: number 1`] = `"export type test_3 = number;"`;
+exports[`generateSchemaTypes generateTypeNodeTypes should be able to generate types for type nodes: number 1`] = `"export type Test_3 = number;"`;
 
-exports[`generateSchemaTypes generateTypeNodeTypes should be able to generate types for type nodes: string 1`] = `"export type test = string;"`;
+exports[`generateSchemaTypes generateTypeNodeTypes should be able to generate types for type nodes: string 1`] = `"export type Test = string;"`;
 
-exports[`generateSchemaTypes generateTypeNodeTypes should be able to generate types for type nodes: unknown 1`] = `"export type test_4 = unknown;"`;
+exports[`generateSchemaTypes generateTypeNodeTypes should be able to generate types for type nodes: unknown 1`] = `"export type Test_4 = unknown;"`;
 
 exports[`generateSchemaTypes should generate TypeScript type declarations for a schema 1`] = `
 "export type Author = {
@@ -212,7 +212,7 @@ export type SanityImagePaletteSwatch = {
 `;
 
 exports[`generateSchemaTypes should generate correct types for document schema with inline fields 1`] = `
-"export type myObject = {
+"export type MyObject = {
   inlineField: {
     test: string;
   } & Test;
@@ -224,4 +224,4 @@ exports[`generateSchemaTypes should generate correct types for document schema w
 };"
 `;
 
-exports[`generateSchemaTypes should generate correct types for document schema with inline fields 2`] = `"export type someOtherType = MyObject;"`;
+exports[`generateSchemaTypes should generate correct types for document schema with inline fields 2`] = `"export type SomeOtherType = MyObject;"`;
