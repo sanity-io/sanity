@@ -98,7 +98,7 @@ export function CommentsListItemContextMenu(props: CommentsListItemContextMenuPr
             />
           )}
 
-          {isParent && (
+          {isParent && onStatusChange && (
             <Button
               aria-label={
                 status === 'open'
@@ -110,7 +110,6 @@ export function CommentsListItemContextMenu(props: CommentsListItemContextMenuPr
               icon={status === 'open' ? CheckmarkCircleIcon : UndoIcon}
               mode="bleed"
               onClick={onStatusChange}
-              hidden={!onStatusChange}
               tooltipProps={{
                 content:
                   status === 'open'
