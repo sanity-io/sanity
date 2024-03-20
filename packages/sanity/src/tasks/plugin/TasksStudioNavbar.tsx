@@ -1,5 +1,5 @@
 import {PanelRightIcon, TaskIcon} from '@sanity/icons'
-import {useCallback, useMemo} from 'react'
+import {useMemo} from 'react'
 import {type NavbarProps, useTranslation} from 'sanity'
 
 import {tasksLocaleNamespace} from '../i18n'
@@ -9,18 +9,9 @@ const EMPTY_ARRAY: [] = []
 
 function TasksStudioNavbarInner(props: NavbarProps) {
   const {
-    handleCloseTasks,
     handleOpenTasks,
     state: {isOpen},
   } = useTasksNavigation()
-
-  const handleAction = useCallback(() => {
-    if (isOpen) {
-      handleCloseTasks()
-    } else {
-      handleOpenTasks()
-    }
-  }, [handleCloseTasks, handleOpenTasks, isOpen])
 
   const {t} = useTranslation(tasksLocaleNamespace)
 
@@ -31,7 +22,7 @@ function TasksStudioNavbarInner(props: NavbarProps) {
         icon: PanelRightIcon,
         location: 'topbar',
         name: 'tasks-topbar',
-        onAction: handleAction,
+        onAction: handleOpenTasks,
         selected: isOpen,
         title: t('actions.open.text'),
       },
@@ -39,12 +30,12 @@ function TasksStudioNavbarInner(props: NavbarProps) {
         icon: TaskIcon,
         location: 'sidebar',
         name: 'tasks-sidebar',
-        onAction: handleAction,
+        onAction: handleOpenTasks,
         selected: isOpen,
         title: t('actions.open.text'),
       },
     ]
-  }, [handleAction, isOpen, props?.__internal_actions, t])
+  }, [handleOpenTasks, isOpen, props?.__internal_actions, t])
 
   return props.renderDefault({
     ...props,

@@ -64,7 +64,7 @@ export function TasksActivityCommentInput(props: TasksCommentActivityInputProps)
 
   return (
     <ActivityItem userId={currentUser.id}>
-      <Card tone="transparent" radius={3} paddingY={1} paddingX={2}>
+      <Card tone="transparent" radius={3} padding={2}>
         <CommentInput
           withAvatar={false}
           currentUser={currentUser}
