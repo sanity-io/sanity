@@ -181,13 +181,12 @@
     "clean": "rimraf _internal.js cli.js desk.js lib presentation.js router.js",
     "coverage": "jest --coverage",
     "lint": "eslint .",
-    "prepublishOnly": "run-s write:version write:ui-version",
+    "prepublishOnly": "run-s write:ui-version",
     "test": "pkg-utils --strict && jest",
     "test:ct": "playwright test -c playwright-ct.config.ts",
     "watch": "pkg-utils watch --tsconfig tsconfig.lib.json",
     "write:playwright-report-as-pr-comment": "node -r esbuild-register playwright-ct/scripts/parsePlaywrightReportJson.ts",
-    "write:ui-version": "node -r esbuild-register scripts/writeRequiredUIVersion.ts",
-    "write:version": "node -r esbuild-register scripts/writeVersion.ts"
+    "write:ui-version": "node -r esbuild-register scripts/writeRequiredUIVersion.ts"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.0.5",
