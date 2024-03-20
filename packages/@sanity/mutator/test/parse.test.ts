@@ -183,6 +183,10 @@ const cases = {
       },
     ],
   },
+  trueOrFalseField: {
+    type: 'attribute',
+    name: 'trueOrFalseField',
+  },
 }
 
 Object.keys(cases).forEach((path) => {
