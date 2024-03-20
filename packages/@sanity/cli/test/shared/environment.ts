@@ -25,6 +25,7 @@ export const sanityEnv = {...envLessEnv, XDG_CONFIG_HOME: path.join(baseTestPath
 export const cliConfigPath = path.join(sanityEnv.XDG_CONFIG_HOME, 'sanity-staging', 'config.json')
 export const nodeMajorVersion = process.version.split('.')[0]
 export const npmPath = which.sync('npm')
+export const pnpmPath = which.sync('pnpm')
 export const nodePath = process.execPath
 
 // We don't need a super precise timestamp, but enough to include hours (for dangling cleanup)

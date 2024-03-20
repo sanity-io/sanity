@@ -22,6 +22,7 @@ import {
   nodePath,
   npmPath,
   packPath,
+  pnpmPath,
   studiosPath,
   studioVersions,
   testIdPath,
@@ -199,7 +200,7 @@ async function packCli(): Promise<string> {
   // Run `npm pack` so we can create a fully isolated install, replicating what a user would get
   await mkdir(packPath, {recursive: true})
   const cwd = path.join(__dirname, '..', '..')
-  const pack = await exec(npmPath, ['pack', '--json'], {cwd})
+  const pack = await exec(pnpmPath, ['pack', '--json'], {cwd})
   if (pack.code !== 0) {
     throw new Error(pack.stderr)
   }
