@@ -21,9 +21,11 @@ import {CommentsProvider} from '../../../../../../structure/comments'
 import {MenuButton, MenuItem} from '../../../../../../ui-components'
 import {tasksLocaleNamespace} from '../../../../../i18n'
 import {useTasksNavigation} from '../../../context'
+import {useActivityLog} from '../../../hooks/useActivityLog'
 import {useRemoveTask} from '../../../hooks/useRemoveTask'
 import {type TaskDocument} from '../../../types'
 import {TasksActivityLog} from '../../activity'
+import {CurrentWorkspaceProvider} from '../CurrentWorkspaceProvider'
 import {AssigneeEditFormField} from '../fields/assignee'
 import {DateEditFormField} from '../fields/DateEditFormField'
 import {StatusSelector} from '../fields/StatusSelector'
@@ -95,6 +97,7 @@ function FormEditInner(props: ObjectInputProps) {
   const value = props.value as TaskDocument
   const currentUser = useCurrentUser()
   const {t} = useTranslation(tasksLocaleNamespace)
+  const activityData = useActivityLog(value).changes
   const handleChangeAndSubscribe = useCallback(
     (patch: FormPatch | PatchEvent | FormPatch[]) => {
       const subscribers = value.subscribers || []
@@ -155,16 +158,22 @@ function FormEditInner(props: ObjectInputProps) {
       </Card>
 
       {props.renderDefault(props)}
-
       <CommentsProvider
         documentId={value._id}
         documentType="tasks.task"
         sortOrder="asc"
         type="task"
       >
-        <Card borderTop paddingTop={4} marginTop={4} paddingBottom={6}>
-          <TasksActivityLog value={value} onChange={props.onChange} path={['subscribers']} />
-        </Card>
+        <CurrentWorkspaceProvider>
+          <Card borderTop paddingTop={4} marginTop={4} paddingBottom={6}>
+            <TasksActivityLog
+              value={value}
+              onChange={props.onChange}
+              path={['subscribers']}
+              activityData={activityData}
+            />
+          </Card>
+        </CurrentWorkspaceProvider>
       </CommentsProvider>
     </>
   )
