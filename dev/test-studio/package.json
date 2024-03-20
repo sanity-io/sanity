@@ -21,7 +21,7 @@
     "@react-three/drei": "^9.80.1",
     "@react-three/fiber": "^8.13.6",
     "@sanity/assist": "^2.0.0",
-    "@sanity/block-tools": "3.35.0",
+    "@sanity/block-tools": "workspace:*",
     "@sanity/client": "^6.15.6",
     "@sanity/color": "^3.0.0",
     "@sanity/google-maps-input": "^3.0.1",
