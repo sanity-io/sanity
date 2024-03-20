@@ -15,8 +15,6 @@ const defaultBabelOptions = {
   extends: join(__dirname, '..', '..', 'babel.config.json'),
 }
 
-const queryNames = new Set()
-
 type ResultQueries = {
   type: 'queries'
   filename: string
@@ -46,11 +44,12 @@ export async function* findQueriesInPath({
   babelOptions?: TransformOptions
   resolver?: NodeJS.RequireResolve
 }): AsyncGenerator<ResultQueries | ResultError> {
+  const queryNames = new Set()
   // Holds all query names found in the source files
   debug(`Globing ${path}`)
 
   const stream = glob.stream(path, {
-    absolute: true,
+    absolute: false,
     ignore: ['**/node_modules/**'], // we never want to look in node_modules
     onlyFiles: true,
   })
