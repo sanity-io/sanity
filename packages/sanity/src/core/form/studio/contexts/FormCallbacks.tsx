@@ -39,8 +39,8 @@ export const FormCallbacksProvider = memo(function FormCallbacksProvider(
     ref.current.onChange(patchEvent)
   }, [])
 
-  const onPathFocus = useCallback((path: Path) => {
-    ref.current.onPathFocus(path)
+  const onPathFocus = useCallback((path: Path, payload?: Record<string, unknown>) => {
+    ref.current.onPathFocus(path, payload)
   }, [])
   const onPathBlur = useCallback((path: Path) => {
     ref.current.onPathBlur(path)

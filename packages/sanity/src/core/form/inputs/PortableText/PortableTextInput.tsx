@@ -1,12 +1,14 @@
 import {
   type EditorChange,
+  type EditorSelection,
   type InvalidValue,
   type Patch as EditorPatch,
   type Patch,
   PortableTextEditor,
+  type RangeDecoration,
 } from '@sanity/portable-text-editor'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {isKeySegment, type Path, type PortableTextBlock} from '@sanity/types'
+import {isKeySegment, type PortableTextBlock} from '@sanity/types'
 import {Box, useToast} from '@sanity/ui'
 import {
   type MutableRefObject,
@@ -34,6 +36,7 @@ import {PortableTextMarkersProvider} from './contexts/PortableTextMarkers'
 import {PortableTextMemberItemsProvider} from './contexts/PortableTextMembers'
 import {usePortableTextMemberItemsFromProps} from './hooks/usePortableTextMembers'
 import {InvalidValue as RespondToInvalidContent} from './InvalidValue'
+import {usePresenceCursorDecorations} from './presence-cursors'
 import {usePatches} from './usePatches'
 
 /** @internal */
@@ -74,7 +77,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
     onPathFocus,
     path,
     readOnly,
-    rangeDecorations,
+    rangeDecorations: rangeDecorationsProp,
     renderBlockActions,
     renderCustomMarkers,
     schemaType,
@@ -84,6 +87,10 @@ export function PortableTextInput(props: PortableTextInputProps) {
   const {onBlur} = elementProps
   const defaultEditorRef = useRef<PortableTextEditor | null>(null)
   const editorRef = editorRefProp || defaultEditorRef
+
+  const presenceCursorDecorations = usePresenceCursorDecorations({
+    path: props.path,
+  })
 
   // This handle will allow for natively calling .focus
   // on the returned component and have the PortableTextEditor focused,
@@ -159,7 +166,11 @@ export function PortableTextInput(props: PortableTextInputProps) {
   // It's a bit ugly right here, but it's a rather simple way to support the Presentation tool without
   // having to change the PTE's internals.
   const setFocusPathFromEditorSelection = useCallback(
-    (focusPath: Path) => {
+    (selection: EditorSelection) => {
+      const focusPath = selection?.focus.path
+
+      if (!focusPath) return
+
       // Test if the focusPath is pointing directly to a span
       const isSpanPath =
         focusPath.length === 3 && // A span path is always 3 segments long
@@ -167,14 +178,13 @@ export function PortableTextInput(props: PortableTextInputProps) {
         isKeySegment(focusPath[2]) && // Contains the key of the child
         !portableTextMemberItems.some(
           (item) => isKeySegment(focusPath[2]) && item.member.key === focusPath[2]._key,
-        ) // Not an inline object (it would be a member in this list, where spans are not). By doing this check we avoid depending on the value.
-      if (isSpanPath) {
-        // Append `.text` to the focusPath
-        onPathFocus(focusPath.concat('text'))
-      } else {
-        // Call normally
-        onPathFocus(focusPath)
-      }
+        )
+
+      const nextFocusPath = isSpanPath ? focusPath.concat(['text']) : focusPath
+
+      onPathFocus(nextFocusPath, {
+        selection,
+      })
     },
     [onPathFocus, portableTextMemberItems],
   )
@@ -198,7 +208,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
           // call through startTransition
           startTransition(() => {
             if (change.selection) {
-              setFocusPathFromEditorSelection(change.selection.focus.path)
+              setFocusPathFromEditorSelection(change.selection)
             }
           })
           break
@@ -264,6 +274,10 @@ export function PortableTextInput(props: PortableTextInputProps) {
       }
     }
   }, [editorRef, isActive])
+
+  const rangeDecorations = useMemo((): RangeDecoration[] => {
+    return [...(rangeDecorationsProp || EMPTY_ARRAY), ...presenceCursorDecorations]
+  }, [presenceCursorDecorations, rangeDecorationsProp])
 
   return (
     <Box ref={innerElementRef}>

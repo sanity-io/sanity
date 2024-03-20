@@ -309,6 +309,7 @@ export function __tmp_wrap_presenceStore(context: {
                 lastActiveAt: userAndSession.session.lastActiveAt,
                 path: location.path || [],
                 sessionId: userAndSession.session.sessionId,
+                selection: location?.selection,
               })),
           ),
           toArray(),
