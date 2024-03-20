@@ -32,7 +32,7 @@
   ],
   "dependencies": {
     "@sanity/client": "^6.15.6",
-    "@sanity/import": "3.35.0",
+    "@sanity/import": "workspace:*",
     "get-it": "^8.4.14",
     "meow": "^9.0.0",
     "ora": "^5.4.1",

@@ -31,7 +31,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "@sanity/util": "3.35.0",
+    "@sanity/util": "workspace:*",
     "archiver": "^7.0.0",
     "debug": "^4.3.4",
     "get-it": "^8.4.14",
