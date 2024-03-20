@@ -75,7 +75,7 @@ export const FormHeader = ({documentId, schemaType, title}: DocumentHeaderProps)
         </Text>
       )}
 
-      <Heading as="h2" data-heading muted={!title}>
+      <Heading as="h2" data-heading muted={!title} data-testid="document-panel-document-title">
         {title ?? t('document-view.form-view.form-title-fallback')}
       </Heading>
     </TitleContainer>
