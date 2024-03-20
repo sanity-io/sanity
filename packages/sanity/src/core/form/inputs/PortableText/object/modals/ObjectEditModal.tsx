@@ -42,7 +42,7 @@ export function ObjectEditModal(props: {
     onClose()
   }, [onClose])
 
-  const modalWidth = schemaModalOption?.width || 1
+  const modalWidth = schemaModalOption?.width
 
   if (modalType === 'popover') {
     return (

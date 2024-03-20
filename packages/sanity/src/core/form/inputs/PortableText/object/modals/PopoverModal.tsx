@@ -25,7 +25,7 @@ interface PopoverEditDialogProps {
 const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['top', 'bottom']
 
 export function PopoverEditDialog(props: PopoverEditDialogProps) {
-  const {floatingBoundary, referenceBoundary, referenceElement, width = 0} = props
+  const {floatingBoundary, referenceBoundary, referenceElement, width = 1} = props
   const [open, setOpen] = useState(false)
 
   // This hook is here to set open after the initial render.
