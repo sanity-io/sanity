@@ -1,6 +1,6 @@
 import {AvatarStack, Flex} from '@sanity/ui'
 import {AnimatePresence, motion} from 'framer-motion'
-import {useCallback} from 'react'
+import {useCallback, useMemo} from 'react'
 import {type FormPatch, type PatchEvent, type Path, set} from 'sanity'
 
 import {Button} from '../../../../../ui-components'
@@ -47,28 +47,38 @@ export function TasksSubscribers(props: TasksSubscriberProps) {
   )
 }
 
-export function TasksSubscriberAvatars(props: {subscriberIds?: string[]}) {
-  const {subscriberIds} = props
+const EMPTY_ARRAY: [] = []
+
+interface TasksSubscriberAvatarsProps {
+  subscriberIds?: string[]
+}
+
+export function TasksSubscriberAvatars(props: TasksSubscriberAvatarsProps) {
+  const {subscriberIds: subscriberIdsProp} = props
+
+  const subscriberIds = useMemo(() => {
+    // Make sure we have valid subscriber IDs
+    return subscriberIdsProp?.filter(Boolean) || EMPTY_ARRAY
+  }, [subscriberIdsProp])
 
   return (
     <AnimatePresence initial={false}>
       <AvatarStack maxLength={3} size={0}>
-        {subscriberIds &&
-          subscriberIds.map((subscriberId) => (
-            <motion.div
-              key={subscriberId}
-              exit={{opacity: 0, translateX: '2px', scale: 0.9}}
-              animate={{
-                opacity: 1,
-                translateX: 0,
-                scale: 1,
-                transition: {type: 'just', duration: 0.2},
-              }}
-              initial={{opacity: 0, translateX: '2px', scale: 0.9}}
-            >
-              <TasksUserAvatar user={{id: subscriberId}} size={0} />
-            </motion.div>
-          ))}
+        {subscriberIds.map((subscriberId) => (
+          <motion.div
+            key={subscriberId}
+            exit={{opacity: 0, translateX: '2px', scale: 0.9}}
+            animate={{
+              opacity: 1,
+              translateX: 0,
+              scale: 1,
+              transition: {type: 'just', duration: 0.2},
+            }}
+            initial={{opacity: 0, translateX: '2px', scale: 0.9}}
+          >
+            <TasksUserAvatar user={{id: subscriberId}} size={0} />
+          </motion.div>
+        ))}
       </AvatarStack>
     </AnimatePresence>
   )

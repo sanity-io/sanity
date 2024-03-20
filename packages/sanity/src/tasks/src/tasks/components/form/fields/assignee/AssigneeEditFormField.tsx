@@ -20,11 +20,13 @@ const StyledButton = styled(Button)`
   padding: 3px 6px;
 `
 
-export function AssigneeEditFormField(props: {
+interface AssigneeEditFormFieldProps {
   value: string | undefined
   path: Path
   onChange: (patch: FormPatch | PatchEvent | FormPatch[]) => void
-}) {
+}
+
+export function AssigneeEditFormField(props: AssigneeEditFormFieldProps) {
   const {value, onChange, path} = props
   const subscribers = useFormValue(['subscribers']) as string[] | undefined
   const {mentionOptions} = useMentionUser()
@@ -33,10 +35,11 @@ export function AssigneeEditFormField(props: {
     [mentionOptions.data, value],
   )
   const {t} = useTranslation(tasksLocaleNamespace)
+
   const onSelect = useCallback(
     (userId: string) => {
       onChange(set(userId, path))
-      if (subscribers && !subscribers.includes(userId)) {
+      if (subscribers && !subscribers.includes(userId) && userId) {
         onChange(set([...subscribers, userId], ['subscribers']))
       }
     },

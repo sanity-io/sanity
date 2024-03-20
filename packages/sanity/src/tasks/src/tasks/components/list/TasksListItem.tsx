@@ -27,11 +27,6 @@ interface TasksListItemProps
 const TitleButton = styled(UIButton)`
   width: 100%;
   max-width: 100%;
-
-  &:hover {
-    text-decoration: underline;
-    background-color: transparent;
-  }
 `
 
 const TaskDetailsRoot = styled(Flex)`
@@ -83,15 +78,8 @@ function TaskDueDate({dueBy}: {dueBy: string}) {
   )
 }
 
-export function TasksListItem({
-  assignedTo,
-  title,
-  dueBy,
-  target,
-  onSelect,
-  documentId,
-  status,
-}: TasksListItemProps) {
+export function TasksListItem(props: TasksListItemProps) {
+  const {assignedTo, title, dueBy, target, onSelect, documentId, status} = props
   const targetDocument = useMemo(() => getTargetDocumentMeta(target), [target])
 
   return (
@@ -103,7 +91,7 @@ export function TasksListItem({
 
         <Flex flex={1}>
           <TitleButton onClick={onSelect} mode="bleed" padding={2}>
-            <Text size={1} weight="semibold" textOverflow="ellipsis">
+            <Text size={1} textOverflow="ellipsis" weight="semibold">
               {title || 'Untitled'}
             </Text>
           </TitleButton>
