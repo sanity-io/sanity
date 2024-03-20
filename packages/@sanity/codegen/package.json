@@ -45,7 +45,8 @@
   "files": [
     "lib",
     "src",
-    "!**/__tests__/**"
+    "!**/__tests__/**",
+    "babel.config.json"
   ],
   "scripts": {
     "prebuild": "run-s clean",
