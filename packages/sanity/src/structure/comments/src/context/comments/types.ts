@@ -19,6 +19,8 @@ export interface CommentsContextValue {
   isCommentsOpen?: boolean
   onCommentsOpen?: () => void
 
+  hasPermission: boolean
+
   comments: {
     data: {
       open: CommentThreadItem[]

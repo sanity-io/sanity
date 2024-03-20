@@ -63,8 +63,16 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
   const currentUser = useCurrentUser()
   const portal = usePortal()
 
-  const {mentionOptions, comments, operation, onCommentsOpen, getComment, setStatus, status} =
-    useComments()
+  const {
+    comments,
+    getComment,
+    hasPermission,
+    mentionOptions,
+    onCommentsOpen,
+    operation,
+    setStatus,
+    status,
+  } = useComments()
   const {setSelectedPath, selectedPath} = useCommentsSelectedPath()
   const {scrollToComment, scrollToGroup} = useCommentsScroll()
   const {handleOpenDialog} = useCommentsUpsell()
@@ -501,6 +509,11 @@ export const CommentsPortableTextInputInner = React.memo(function CommentsPortab
     currentSelection && canSubmit && selectionReferenceElement && !mouseDownRef.current,
   )
   const showFloatingInput = Boolean(nextCommentSelection && popoverAuthoringReferenceElement)
+
+  // Render the default input if the user doesn't have permission
+  if (!hasPermission) {
+    return props.renderDefault(props)
+  }
 
   return (
     <>
