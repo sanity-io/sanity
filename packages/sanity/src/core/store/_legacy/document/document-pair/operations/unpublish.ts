@@ -1,5 +1,3 @@
-import {omit} from 'lodash'
-
 import {isLiveEditEnabled} from '../utils/isLiveEditEnabled'
 import {type OperationImpl} from './types'
 
@@ -12,24 +10,25 @@ export const unpublish: OperationImpl<[], DisabledReason> = {
     }
     return snapshots.published ? false : 'NOT_PUBLISHED'
   },
-  execute: ({client, idPair, snapshots}) => {
-    let tx = client.observable.transaction().delete(idPair.publishedId)
+  execute: ({client: globalClient, idPair}) => {
+    const vXClient = globalClient.withConfig({apiVersion: 'X'})
+    const {dataset} = globalClient.config()
 
-    if (snapshots.published) {
-      tx = tx.createIfNotExists({
-        ...omit(snapshots.published, '_updatedAt'),
-        _id: idPair.draftId,
-        _type: snapshots.published._type,
-      })
-    }
-
-    return tx.commit({
+    return vXClient.observable.request({
+      url: `/data/actions/${dataset}`,
+      method: 'post',
+      //@todo awaiting backend support for this
+      // query: {skipCrossDatasetReferenceValidation: 'true'},
       tag: 'document.unpublish',
-      visibility: 'async',
-      // this disables referential integrity for cross-dataset references. we
-      // have this set because we warn against unpublishes in the `ConfirmDeleteDialog`
-      // UI. This operation is run when "unpublish anyway" is clicked
-      skipCrossDatasetReferenceValidation: true,
+      body: {
+        actions: [
+          {
+            actionType: 'sanity.action.document.unpublish',
+            draftId: idPair.draftId,
+            publishedId: idPair.publishedId,
+          },
+        ],
+      },
     })
   },
 }
