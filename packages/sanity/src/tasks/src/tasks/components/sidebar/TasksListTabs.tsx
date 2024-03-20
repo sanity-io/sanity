@@ -1,8 +1,10 @@
 import {TabList, Text} from '@sanity/ui'
 import {useCallback, useEffect, useMemo, useState} from 'react'
+import {useTranslation} from 'sanity'
 import {type CSSProperties} from 'styled-components'
 
 import {Tab} from '../../../../../ui-components'
+import {tasksLocaleNamespace} from '../../../../i18n'
 import {type SidebarTabsIds, useTasks} from '../../context'
 
 const LIST_STYLES: CSSProperties = {
@@ -57,23 +59,25 @@ export function TasksListTabs({activeTabId, onChange}: TasksListTabsProps) {
     }
   }, [activeDocumentId, documentTabIsDisabled, onChange])
 
+  const {t} = useTranslation(tasksLocaleNamespace)
+
   const tabs: TasksListTab[] = useMemo(
     () => [
       {
         id: 'assigned',
-        label: 'Assigned',
+        label: t('tab.assigned.label'),
       },
       {
         id: 'subscribed',
-        label: 'Subscribed',
+        label: t('tab.subscribed.label'),
       },
       {
         id: 'document',
-        label: 'Open Document',
+        label: t('tab.document.label'),
         isDisabled: documentTabIsDisabled,
       },
     ],
-    [documentTabIsDisabled],
+    [documentTabIsDisabled, t],
   )
 
   const handleTabChange = useCallback(

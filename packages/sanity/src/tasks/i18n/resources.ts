@@ -46,7 +46,7 @@ const tasksLocaleStrings = defineLocalesResources('tasks', {
   /** Text used in the assignee input when searching and no users are found */
   'form.input.assignee.search.no-users.text': 'No users found',
   /** Placeholder text used in the search box in the assignee input */
-  'form.input.assignee.search.placeholder': 'Search username',
+  'form.input.assignee.search.placeholder': 'Select username',
   /** Text used in the assignee input when user is not authorized */
   'form.input.assignee.unauthorized.text': 'Unauthorized',
   /** Text used in the assignee input when user is not found */
@@ -56,13 +56,13 @@ const tasksLocaleStrings = defineLocalesResources('tasks', {
   /** The label used in the date input to remove the current value */
   'form.input.date.buttons.remove.text': 'Remove',
   /** Placeholder text used in the description input */
-  'form.input.description.placeholder': 'Optional additional description',
+  'form.input.description.placeholder': 'Add description',
   /** The label used in the target input to remove the current value */
   'form.input.target.buttons.remove.text': 'Remove target content',
   /** The text used in the target input when encountering a schema error */
   'form.input.target.error.schema-not-found': 'Schema not found',
   /** The placeholder text used in the target input for the search component */
-  'form.input.target.search.placeholder': 'Search document',
+  'form.input.target.search.placeholder': 'Select document',
   /** The placeholder text for the title input */
   'form.input.title.placeholder': 'Task title',
   /** The status error message presented when the user does not supply a title */
@@ -95,6 +95,12 @@ const tasksLocaleStrings = defineLocalesResources('tasks', {
   'panel.navigation.tooltip': 'Open tasks',
   /** Title of the Tasks panel   */
   'panel.title': 'Tasks',
+  /** Label for the Assigned Tab */
+  'tab.assigned.label': 'Assigned',
+  /** Label for the Active Document Tab */
+  'tab.document.label': 'Active Document',
+  /** Label for the Subscribed Tab */
+  'tab.subscribed.label': 'Subscribed',
 })
 
 /**
