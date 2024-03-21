@@ -33,7 +33,8 @@ export type TypegenGenerateTypesWorkerMessage =
         queryName: string
         query: string
         type: string
-        unknownTypes: number
+        unknownTypeNodesGenerated: number
+        typeNodesGenerated: number
       }[]
     }
   | {
@@ -88,8 +89,13 @@ async function main() {
     }
     $info(`Processing ${result.queries.length} queries in "${result.filename}"...`)
 
-    const fileQueryTypes: {queryName: string; query: string; type: string; unknownTypes: number}[] =
-      []
+    const fileQueryTypes: {
+      queryName: string
+      query: string
+      type: string
+      unknownTypeNodesGenerated: number
+      typeNodesGenerated: number
+    }[] = []
     for (const {name: queryName, result: query} of result.queries) {
       try {
         const ast = parse(query)
@@ -97,11 +103,13 @@ async function main() {
 
         const type = typeGenerator.generateTypeNodeTypes(`${queryName}Result`, queryTypes)
 
+        const queryTypeStats = walkAndCountQueryTypeNodeStats(queryTypes)
         fileQueryTypes.push({
           queryName,
           query,
           type,
-          unknownTypes: countUnknownTypes(queryTypes),
+          unknownTypeNodesGenerated: queryTypeStats.unknownTypes,
+          typeNodesGenerated: queryTypeStats.allTypes,
         })
       } catch (err) {
         parentPort?.postMessage({
@@ -131,29 +139,46 @@ async function main() {
   } satisfies TypegenGenerateTypesWorkerMessage)
 }
 
-function countUnknownTypes(typeNode: TypeNode): number {
+function walkAndCountQueryTypeNodeStats(typeNode: TypeNode): {
+  allTypes: number
+  unknownTypes: number
+} {
   switch (typeNode.type) {
-    case 'unknown':
-      return 1
-    case 'array':
-      return countUnknownTypes(typeNode.of)
-    case 'object':
+    case 'unknown': {
+      return {allTypes: 1, unknownTypes: 1}
+    }
+    case 'array': {
+      const acc = walkAndCountQueryTypeNodeStats(typeNode.of)
+      acc.allTypes += 1 // count the array type itself
+      return acc
+    }
+    case 'object': {
       // if the rest is unknown, we count it as one unknown type
       if (typeNode.rest && typeNode.rest.type === 'unknown') {
-        return 1
+        return {allTypes: 2, unknownTypes: 1} // count the object type itself as well
       }
 
-      return (
-        Object.values(typeNode.attributes).reduce(
-          (acc, attribute) => acc + countUnknownTypes(attribute.value),
-          0,
-        ) + (typeNode.rest ? countUnknownTypes(typeNode.rest) : 0)
-      )
-    case 'union':
-      return typeNode.of.reduce((acc, type) => acc + countUnknownTypes(type), 0)
+      const restStats = typeNode.rest
+        ? walkAndCountQueryTypeNodeStats(typeNode.rest)
+        : {allTypes: 1, unknownTypes: 0} // count the object type itself
 
-    default:
-      return 0
+      return Object.values(typeNode.attributes).reduce((acc, attribute) => {
+        const {allTypes, unknownTypes} = walkAndCountQueryTypeNodeStats(attribute.value)
+        return {allTypes: acc.allTypes + allTypes, unknownTypes: acc.unknownTypes + unknownTypes}
+      }, restStats)
+    }
+    case 'union': {
+      return typeNode.of.reduce(
+        (acc, type) => {
+          const {allTypes, unknownTypes} = walkAndCountQueryTypeNodeStats(type)
+          return {allTypes: acc.allTypes + allTypes, unknownTypes: acc.unknownTypes + unknownTypes}
+        },
+        {allTypes: 1, unknownTypes: 0}, // count the union type itself
+      )
+    }
+    default: {
+      return {allTypes: 1, unknownTypes: 0}
+    }
   }
 }
 

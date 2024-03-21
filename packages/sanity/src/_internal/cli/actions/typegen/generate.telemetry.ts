@@ -2,11 +2,12 @@ import {defineTrace} from '@sanity/telemetry'
 
 interface TypesGeneratedTraceAttrubutes {
   outputSize: number
-  queryTypes: number
-  schemaTypes: number
-  files: number
+  queriesCount: number
+  schemaTypesCount: number
+  queryFilesCount: number
   filesWithErrors: number
-  unknownTypes: number
+  typeNodesGenerated: number
+  unknownTypeNodesGenerated: number
 }
 
 export const TypesGeneratedTrace = defineTrace<TypesGeneratedTraceAttrubutes>({

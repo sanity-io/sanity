@@ -77,11 +77,12 @@ export default async function typegenGenerateAction(
   typeFile.write(generatedFileWarning)
 
   const stats = {
-    files: 0,
+    queryFilesCount: 0,
     errors: 0,
-    queries: 0,
-    schemas: 0,
-    unknownTypes: 0,
+    queriesCount: 0,
+    schemaTypesCount: 0,
+    unknownTypeNodesGenerated: 0,
+    typeNodesGenerated: 0,
     size: 0,
   }
 
@@ -108,19 +109,26 @@ export default async function typegenGenerateAction(
       let fileTypeString = `// Source: ${msg.filename}\n`
 
       if (msg.type === 'schema') {
-        stats.schemas += msg.length
+        stats.schemaTypesCount += msg.length
         fileTypeString += `${msg.schema}\n\n`
         typeFile.write(fileTypeString)
         return
       }
 
-      stats.files++
-      for (const {queryName, query, type, unknownTypes} of msg.types) {
+      stats.queryFilesCount++
+      for (const {
+        queryName,
+        query,
+        type,
+        typeNodesGenerated,
+        unknownTypeNodesGenerated,
+      } of msg.types) {
         fileTypeString += `// Variable: ${queryName}\n`
         fileTypeString += `// Query: ${query.replace(/(\r\n|\n|\r)/gm, '')}\n`
         fileTypeString += `${type}\n`
-        stats.queries++
-        stats.unknownTypes += unknownTypes
+        stats.queriesCount++
+        stats.typeNodesGenerated += typeNodesGenerated
+        stats.unknownTypeNodesGenerated += unknownTypeNodesGenerated
       }
       typeFile.write(`${fileTypeString}\n`)
       stats.size += Buffer.byteLength(fileTypeString)
@@ -132,11 +140,12 @@ export default async function typegenGenerateAction(
 
   trace.log({
     outputSize: stats.size,
-    queryTypes: stats.queries,
-    schemaTypes: stats.schemas,
-    files: stats.files,
+    queriesCount: stats.queriesCount,
+    schemaTypesCount: stats.schemaTypesCount,
+    queryFilesCount: stats.queryFilesCount,
     filesWithErrors: stats.errors,
-    unknownTypes: stats.unknownTypes,
+    typeNodesGenerated: stats.typeNodesGenerated,
+    unknownTypeNodesGenerated: stats.unknownTypeNodesGenerated,
   })
 
   trace.complete()
@@ -145,6 +154,6 @@ export default async function typegenGenerateAction(
   }
 
   spinner.succeed(
-    `Generated TypeScript types for ${stats.schemas} schema types and ${stats.queries} GROQ queries in ${stats.files} files into: ${codegenConfig.generates}`,
+    `Generated TypeScript types for ${stats.schemaTypesCount} schema types and ${stats.queriesCount} GROQ queries in ${stats.queryFilesCount} files into: ${codegenConfig.generates}`,
   )
 }
