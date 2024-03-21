@@ -211,7 +211,7 @@ importers:
         version: 2.11.4(react@18.2.0)
       '@sanity/ui':
         specifier: ^2.0.10
-        version: 2.0.10(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8)
+        version: 2.0.12(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8)
       react:
         specifier: ^18.2.0
         version: 18.2.0
@@ -229,7 +229,7 @@ importers:
     dependencies:
       '@sanity/ui':
         specifier: ^2.0.10
-        version: 2.0.10(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8)
+        version: 2.0.12(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8)
       react:
         specifier: ^18.2.0
         version: 18.2.0
@@ -318,7 +318,7 @@ importers:
         version: 2.11.4(react@18.2.0)
       '@sanity/ui':
         specifier: ^2.0.10
-        version: 2.0.10(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8)
+        version: 2.0.12(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8)
       '@sanity/vision':
         specifier: 3.35.2
         version: link:../../packages/@sanity/vision
@@ -430,7 +430,7 @@ importers:
         version: 1.11.4(@sanity/client@6.15.6)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8)
       '@sanity/preview-url-secret':
         specifier: ^1.6.1
-        version: 1.6.4(@sanity/client@6.15.6)
+        version: 1.6.5(@sanity/client@6.15.6)
       '@sanity/react-loader':
         specifier: ^1.8.3
         version: 1.9.4(@sanity/client@6.15.6)(react@18.2.0)
@@ -442,10 +442,10 @@ importers:
         version: link:../../packages/@sanity/types
       '@sanity/ui':
         specifier: ^2.0.10
-        version: 2.0.10(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8)
+        version: 2.0.12(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8)
       '@sanity/ui-workshop':
         specifier: ^1.0.0
-        version: 1.2.11(@sanity/icons@2.11.4)(@sanity/ui@2.0.10)(@types/node@18.19.8)(react-dom@18.2.0)(react@18.2.0)(styled-components@6.1.8)
+        version: 1.2.11(@sanity/icons@2.11.4)(@sanity/ui@2.0.12)(@types/node@18.19.8)(react-dom@18.2.0)(react@18.2.0)(styled-components@6.1.8)
       '@sanity/util':
         specifier: workspace:*
         version: link:../../packages/@sanity/util
@@ -563,7 +563,7 @@ importers:
         version: link:../../packages/@sanity/cli
       '@sanity/ui':
         specifier: ^2.0.10
-        version: 2.0.10(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8)
+        version: 2.0.12(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8)
       react:
         specifier: ^18.2.0
         version: 18.2.0
@@ -1160,7 +1160,7 @@ importers:
         version: 3.1.1
       '@sanity/ui':
         specifier: ^2.0.10
-        version: 2.0.10(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8)
+        version: 2.0.12(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8)
       '@testing-library/react':
         specifier: ^13.4.0
         version: 13.4.0(react-dom@18.2.0)(react@18.2.0)
@@ -1358,7 +1358,7 @@ importers:
         version: 2.11.4(react@18.2.0)
       '@sanity/ui':
         specifier: ^2.0.10
-        version: 2.0.10(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8)
+        version: 2.0.12(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8)
       '@uiw/react-codemirror':
         specifier: ^4.11.4
         version: 4.21.21(@babel/runtime@7.24.1)(@codemirror/autocomplete@6.15.0)(@codemirror/language@6.10.1)(@codemirror/lint@6.5.0)(@codemirror/search@6.5.6)(@codemirror/state@6.4.1)(@codemirror/theme-one-dark@6.1.2)(@codemirror/view@6.26.0)(codemirror@6.0.1)(react-dom@18.2.0)(react@18.2.0)
@@ -1486,8 +1486,8 @@ importers:
         specifier: 3.35.2
         version: link:../@sanity/portable-text-editor
       '@sanity/presentation':
-        specifier: 1.11.8
-        version: 1.11.8(@sanity/client@6.15.6)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8)
+        specifier: 1.12.1
+        version: 1.12.1(@sanity/client@6.15.6)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8)
       '@sanity/schema':
         specifier: 3.35.2
         version: link:../@sanity/schema
@@ -1499,7 +1499,7 @@ importers:
         version: link:../@sanity/types
       '@sanity/ui':
         specifier: ^2.0.10
-        version: 2.0.10(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8)
+        version: 2.0.12(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8)
       '@sanity/util':
         specifier: 3.35.2
         version: link:../@sanity/util
@@ -1767,7 +1767,7 @@ importers:
         version: 1.0.0-alpha.44(@sanity/pkg-utils@2.4.10)(@types/node@18.19.8)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(sanity@packages+sanity)(styled-components@6.1.8)
       '@sanity/ui-workshop':
         specifier: ^1.2.11
-        version: 1.2.11(@sanity/icons@2.11.4)(@sanity/ui@2.0.10)(@types/node@18.19.8)(react-dom@18.2.0)(react@18.2.0)(styled-components@6.1.8)
+        version: 1.2.11(@sanity/icons@2.11.4)(@sanity/ui@2.0.12)(@types/node@18.19.8)(react-dom@18.2.0)(react@18.2.0)(styled-components@6.1.8)
       '@testing-library/jest-dom':
         specifier: ^6.2.0
         version: 6.2.0(@jest/globals@29.7.0)(jest@29.7.0)
@@ -6005,7 +6005,7 @@ packages:
     dependencies:
       '@sanity/icons': 2.11.4(react@18.2.0)
       '@sanity/incompatible-plugin': 1.0.4(react-dom@18.2.0)(react@18.2.0)
-      '@sanity/ui': 2.0.10(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8)
+      '@sanity/ui': 2.0.12(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8)
       date-fns: 2.30.0
       lodash.get: 4.4.2
       react: 18.2.0
@@ -6345,8 +6345,8 @@ packages:
     dependencies:
       '@sanity/client': 6.15.6
       '@sanity/icons': 2.11.4(react@18.2.0)
-      '@sanity/preview-url-secret': 1.6.4(@sanity/client@6.15.6)
-      '@sanity/ui': 2.0.10(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8)
+      '@sanity/preview-url-secret': 1.6.5(@sanity/client@6.15.6)
+      '@sanity/ui': 2.0.12(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8)
       '@sanity/uuid': 3.0.2
       '@types/lodash.isequal': 4.5.8
       fast-deep-equal: 3.1.3
@@ -6364,16 +6364,16 @@ packages:
       - styled-components
     dev: false
 
-  /@sanity/presentation@1.11.8(@sanity/client@6.15.6)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8):
-    resolution: {integrity: sha512-kRoeNePV5zeltBC1ComTbdLSuDA6oLN3hqKY6GxBuJ+6kx1pC0BrggdQ7qMKql7UmTFvPQXrP24Gy5n1loN9FA==}
+  /@sanity/presentation@1.12.1(@sanity/client@6.15.6)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8):
+    resolution: {integrity: sha512-SpCt1Z4dCEfnFj+7fNZQUCWE3zucYQmKguKkLm36GoSdc4mEwMV0UPUSmgiW1oi/IcmdalDETCUqQBMQ2s3GEg==}
     engines: {node: '>=16.14'}
     peerDependencies:
-      '@sanity/client': ^6.15.5
+      '@sanity/client': ^6.15.7
     dependencies:
       '@sanity/client': 6.15.6
       '@sanity/icons': 2.11.4(react@18.2.0)
-      '@sanity/preview-url-secret': 1.6.4(@sanity/client@6.15.6)
-      '@sanity/ui': 2.0.10(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8)
+      '@sanity/preview-url-secret': 1.6.5(@sanity/client@6.15.6)
+      '@sanity/ui': 2.0.12(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8)
       '@sanity/uuid': 3.0.2
       '@types/lodash.isequal': 4.5.8
       fast-deep-equal: 3.1.3
@@ -6390,11 +6390,11 @@ packages:
       - styled-components
     dev: false
 
-  /@sanity/preview-url-secret@1.6.4(@sanity/client@6.15.6):
-    resolution: {integrity: sha512-iOu6n5Zt7kuWoOYRliS2o/MDDBWcWkrnwwss2tglIBl744RPRkz0yi9qulnpAqMnWrZyIU8fV1yPCdg0RY+olw==}
+  /@sanity/preview-url-secret@1.6.5(@sanity/client@6.15.6):
+    resolution: {integrity: sha512-zY57ZSKHIgiI/naW18Y7XvLwR1cPra2VIrcZQn2nBuL294fRpZkwBF+M62j6oroU5nKXGQt5P82VM1sXdqXdmw==}
     engines: {node: '>=18'}
     peerDependencies:
-      '@sanity/client': ^6.14.4
+      '@sanity/client': ^6.15.7
     dependencies:
       '@sanity/client': 6.15.6
       '@sanity/uuid': 3.0.2
@@ -6549,7 +6549,7 @@ packages:
       - terser
     dev: true
 
-  /@sanity/ui-workshop@1.2.11(@sanity/icons@2.11.4)(@sanity/ui@2.0.10)(@types/node@18.19.8)(react-dom@18.2.0)(react@18.2.0)(styled-components@6.1.8):
+  /@sanity/ui-workshop@1.2.11(@sanity/icons@2.11.4)(@sanity/ui@2.0.12)(@types/node@18.19.8)(react-dom@18.2.0)(react@18.2.0)(styled-components@6.1.8):
     resolution: {integrity: sha512-vzj7upIF7wq2W1HEA0D5VSkR8axaH4Rt07yNTAaas7CLgjSE9r2d+Gnkrq4FIbIuN1GYhhCD+D3/s60GaZrpQw==}
     hasBin: true
     peerDependencies:
@@ -6560,7 +6560,7 @@ packages:
       styled-components: ^5.2 || ^6
     dependencies:
       '@sanity/icons': 2.11.4(react@18.2.0)
-      '@sanity/ui': 2.0.10(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8)
+      '@sanity/ui': 2.0.12(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8)
       '@vitejs/plugin-react': 4.2.1(vite@4.5.2)
       axe-core: 4.8.3
       cac: 6.7.14
@@ -6629,8 +6629,8 @@ packages:
       react-refractor: 2.1.7(react@18.2.0)
       styled-components: 6.1.8(react-dom@18.2.0)(react@18.2.0)
 
-  /@sanity/ui@2.0.10(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8):
-    resolution: {integrity: sha512-7z8QglF7DJlP/GaGL2y5NqUpKpD9raEsSc4sDgLq4hiqAsXMBemtN8ENPFsoXUT2eOMly7CrUsQ84smcjneHtw==}
+  /@sanity/ui@2.0.12(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8):
+    resolution: {integrity: sha512-/9TNsl3c/DL5KLc1VcNkkp9PJRDrXvhLnVjiJozqWcdQdApMOovoM8cSeDd8U1jlnVmdyIVhT8T7EnAkU7scFw==}
     engines: {node: '>=14.0.0'}
     peerDependencies:
       react: ^18
@@ -6677,7 +6677,7 @@ packages:
         optional: true
     dependencies:
       '@sanity/client': 6.15.6
-      '@sanity/preview-url-secret': 1.6.4(@sanity/client@6.15.6)
+      '@sanity/preview-url-secret': 1.6.5(@sanity/client@6.15.6)
       '@vercel/stega': 0.1.0
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
