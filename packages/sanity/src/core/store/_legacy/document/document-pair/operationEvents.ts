@@ -36,6 +36,7 @@ import {del as serverDel} from './serverOperations/delete'
 import {discardChanges as serverDiscardChanges} from './serverOperations/discardChanges'
 import {patch as serverPatch} from './serverOperations/patch'
 import {publish as serverPublish} from './serverOperations/publish'
+import {restore as serverRestore} from './serverOperations/restore'
 import {unpublish as serverUnpublish} from './serverOperations/unpublish'
 
 interface ExecuteArgs {
@@ -62,6 +63,7 @@ const operationImpls = {
 } as const
 
 //as we add server operations one by one, we can add them here
+// Note: Any changes must also be made to `createOperationsAPI`, which is defined in `packages/sanity/src/core/store/_legacy/document/document-pair/operations/helpers.ts`.
 const serverOperationImpls = {
   ...operationImpls,
   del: serverDel,
@@ -70,6 +72,7 @@ const serverOperationImpls = {
   patch: serverPatch,
   publish: serverPublish,
   unpublish: serverUnpublish,
+  restore: serverRestore,
 }
 
 const execute = (
