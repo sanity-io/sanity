@@ -179,6 +179,14 @@ const runMigrationCommand: CliCommandDefinition<CreateFlags> = {
       return
     }
 
+    output.print(
+      `\n${chalk.yellow(
+        chalk.bold(
+          'Note: If configued, migrations will trigger webhooks. You can disable webhooks on https://manage.sanity.io',
+        ),
+      )}\n`,
+    )
+
     const response =
       flags.confirm &&
       (await prompt.single<boolean>({
