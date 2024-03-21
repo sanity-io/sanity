@@ -210,7 +210,7 @@ importers:
         specifier: ^2.11.0
         version: 2.11.4(react@18.2.0)
       '@sanity/ui':
-        specifier: ^2.0.10
+        specifier: ^2.0.12
         version: 2.0.12(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8)
       react:
         specifier: ^18.2.0
@@ -228,7 +228,7 @@ importers:
   dev/embedded-studio:
     dependencies:
       '@sanity/ui':
-        specifier: ^2.0.10
+        specifier: ^2.0.12
         version: 2.0.12(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8)
       react:
         specifier: ^18.2.0
@@ -317,7 +317,7 @@ importers:
         specifier: ^2.11.0
         version: 2.11.4(react@18.2.0)
       '@sanity/ui':
-        specifier: ^2.0.10
+        specifier: ^2.0.12
         version: 2.0.12(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8)
       '@sanity/vision':
         specifier: 3.35.2
@@ -441,7 +441,7 @@ importers:
         specifier: workspace:*
         version: link:../../packages/@sanity/types
       '@sanity/ui':
-        specifier: ^2.0.10
+        specifier: ^2.0.12
         version: 2.0.12(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8)
       '@sanity/ui-workshop':
         specifier: ^1.0.0
@@ -562,7 +562,7 @@ importers:
         specifier: 3.35.2
         version: link:../../packages/@sanity/cli
       '@sanity/ui':
-        specifier: ^2.0.10
+        specifier: ^2.0.12
         version: 2.0.12(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8)
       react:
         specifier: ^18.2.0
@@ -1159,7 +1159,7 @@ importers:
         specifier: ^3.1.1
         version: 3.1.1
       '@sanity/ui':
-        specifier: ^2.0.10
+        specifier: ^2.0.12
         version: 2.0.12(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8)
       '@testing-library/react':
         specifier: ^13.4.0
@@ -1357,7 +1357,7 @@ importers:
         specifier: ^2.11.0
         version: 2.11.4(react@18.2.0)
       '@sanity/ui':
-        specifier: ^2.0.10
+        specifier: ^2.0.12
         version: 2.0.12(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8)
       '@uiw/react-codemirror':
         specifier: ^4.11.4
@@ -1498,7 +1498,7 @@ importers:
         specifier: 3.35.2
         version: link:../@sanity/types
       '@sanity/ui':
-        specifier: ^2.0.10
+        specifier: ^2.0.12
         version: 2.0.12(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8)
       '@sanity/util':
         specifier: 3.35.2
