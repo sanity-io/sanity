@@ -52,7 +52,6 @@ export default defineConfig({
   }),
 
   extract: {
-    bundledPackages: ['@sanity/types'],
     ...baseConfig.extract,
     rules: {
       ...baseConfig.extract?.rules,

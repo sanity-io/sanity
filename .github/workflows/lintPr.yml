@@ -49,3 +49,6 @@ jobs:
 
       - name: Lint files
         run: pnpm lint
+
+      - name: Build
+        run: pnpm build

@@ -6515,10 +6515,10 @@ packages:
       '@microsoft/tsdoc': 0.14.2
       '@microsoft/tsdoc-config': 0.16.2
       '@portabletext/react': 3.0.13(react@18.2.0)
-      '@portabletext/toolkit': 2.0.13
+      '@portabletext/toolkit': 2.0.12
       '@sanity/client': 6.15.7
       '@sanity/color': 2.2.5
-      '@sanity/icons': 2.11.4(react@18.2.0)
+      '@sanity/icons': 2.11.2(react@18.2.0)
       '@sanity/pkg-utils': 4.4.3(@types/node@18.19.8)(typescript@5.4.3)
       '@sanity/ui': 1.9.3(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@5.3.11)
       '@types/cpx': 1.5.5
