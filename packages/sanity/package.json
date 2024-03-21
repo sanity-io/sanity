@@ -198,7 +198,7 @@
     "@sanity/bifur-client": "^0.3.1",
     "@sanity/block-tools": "3.35.2",
     "@sanity/cli": "3.35.2",
-    "@sanity/client": "^6.15.6",
+    "@sanity/client": "^6.15.7",
     "@sanity/codegen": "workspace:*",
     "@sanity/color": "^3.0.0",
     "@sanity/diff": "3.35.2",
