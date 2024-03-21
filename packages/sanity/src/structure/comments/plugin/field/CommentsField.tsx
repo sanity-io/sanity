@@ -92,7 +92,6 @@ function CommentFieldInner(
 
   const {
     comments,
-    hasPermission,
     isCommentsOpen,
     isCreatingDataset,
     mentionOptions,
@@ -316,11 +315,6 @@ function CommentFieldInner(
       hasComments,
     ],
   )
-
-  // Render the default field component if the user doesn't have permission
-  if (!hasPermission) {
-    return props.renderDefault(props)
-  }
 
   return (
     <FieldStack {...applyCommentsFieldAttr(PathUtils.toString(props.path))} ref={rootRef}>
