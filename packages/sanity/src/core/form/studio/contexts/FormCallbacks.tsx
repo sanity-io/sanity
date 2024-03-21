@@ -8,7 +8,7 @@ import {type FormPatch, type PatchEvent} from '../../patch'
 export interface FormCallbacksValue {
   transformPatches?: (patches: FormPatch[]) => FormPatch[]
   onChange: (patchEvent: PatchEvent) => void
-  onPathFocus: (path: Path) => void
+  onPathFocus: (path: Path, payload?: Record<string, unknown>) => void
   onPathBlur: (path: Path) => void
   onPathOpen: (path: Path) => void
   onSetPathCollapsed: (path: Path, collapsed: boolean) => void
