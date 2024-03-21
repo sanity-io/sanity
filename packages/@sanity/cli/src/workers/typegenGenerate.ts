@@ -1,3 +1,5 @@
+import {isMainThread, parentPort, workerData as _workerData} from 'node:worker_threads'
+
 import {
   findQueriesInPath,
   getResolver,
@@ -7,7 +9,6 @@ import {
 } from '@sanity/codegen'
 import createDebug from 'debug'
 import {parse, typeEvaluate, type TypeNode} from 'groq-js'
-import {isMainThread, parentPort, workerData as _workerData} from 'worker_threads'
 
 const $info = createDebug('sanity:codegen:generate:info')
 

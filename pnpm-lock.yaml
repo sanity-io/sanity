@@ -634,6 +634,9 @@ importers:
       '@babel/traverse':
         specifier: ^7.23.5
         version: 7.24.1(supports-color@5.5.0)
+      '@sanity/codegen':
+        specifier: 3.35.2
+        version: link:../codegen
       '@sanity/telemetry':
         specifier: ^0.7.6
         version: 0.7.7
@@ -658,6 +661,9 @@ importers:
       golden-fleece:
         specifier: ^1.0.9
         version: 1.0.9
+      groq-js:
+        specifier: ^1.5.0
+        version: 1.5.0
       node-machine-id:
         specifier: ^1.1.12
         version: 1.1.12
@@ -1443,9 +1449,6 @@ importers:
       '@sanity/client':
         specifier: ^6.15.7
         version: 6.15.7
-      '@sanity/codegen':
-        specifier: workspace:*
-        version: link:../@sanity/codegen
       '@sanity/color':
         specifier: ^3.0.0
         version: 3.0.2

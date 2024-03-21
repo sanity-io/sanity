@@ -63,6 +63,7 @@
   },
   "dependencies": {
     "@babel/traverse": "^7.23.5",
+    "@sanity/codegen": "3.35.2",
     "@sanity/telemetry": "^0.7.6",
     "@sanity/util": "3.35.2",
     "chalk": "^4.1.2",
@@ -71,6 +72,7 @@
     "esbuild-register": "^3.4.1",
     "get-it": "^8.4.16",
     "golden-fleece": "^1.0.9",
+    "groq-js": "^1.5.0",
     "node-machine-id": "^1.1.12",
     "pkg-dir": "^5.0.0",
     "semver": "^7.3.5",
