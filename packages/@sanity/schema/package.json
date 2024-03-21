@@ -85,7 +85,7 @@
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",
-    "@sanity/icons": "^2.11.2",
+    "@sanity/icons": "^2.11.4",
     "rimraf": "^3.0.2"
   }
 }
