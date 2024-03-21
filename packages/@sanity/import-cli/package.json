@@ -33,7 +33,7 @@
   "dependencies": {
     "@sanity/client": "^6.15.6",
     "@sanity/import": "3.35.1",
-    "get-it": "^8.4.14",
+    "get-it": "^8.4.16",
     "meow": "^9.0.0",
     "ora": "^5.4.1",
     "pretty-ms": "^7.0.1"

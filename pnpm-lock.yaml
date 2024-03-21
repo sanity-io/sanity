@@ -653,8 +653,8 @@ importers:
         specifier: ^3.4.1
         version: 3.5.0(esbuild@0.20.2)
       get-it:
-        specifier: ^8.4.14
-        version: 8.4.14
+        specifier: ^8.4.16
+        version: 8.4.16
       golden-fleece:
         specifier: ^1.0.9
         version: 1.0.9
@@ -929,8 +929,8 @@ importers:
         specifier: ^4.3.4
         version: 4.3.4(supports-color@5.5.0)
       get-it:
-        specifier: ^8.4.14
-        version: 8.4.14
+        specifier: ^8.4.16
+        version: 8.4.16
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
@@ -975,8 +975,8 @@ importers:
         specifier: ^2.0.2
         version: 2.0.2
       get-it:
-        specifier: ^8.4.14
-        version: 8.4.14
+        specifier: ^8.4.16
+        version: 8.4.16
       get-uri:
         specifier: ^2.0.2
         version: 2.0.4
@@ -1030,8 +1030,8 @@ importers:
         specifier: 3.35.1
         version: link:../import
       get-it:
-        specifier: ^8.4.14
-        version: 8.4.14
+        specifier: ^8.4.16
+        version: 8.4.16
       meow:
         specifier: ^9.0.0
         version: 9.0.0
@@ -1588,8 +1588,8 @@ importers:
         specifier: ^11.0.0
         version: 11.0.12(react-dom@18.2.0)(react@18.2.0)
       get-it:
-        specifier: ^8.4.14
-        version: 8.4.14
+        specifier: ^8.4.16
+        version: 8.4.16
       get-random-values-esm:
         specifier: 1.0.2
         version: 1.0.2
@@ -6036,7 +6036,7 @@ packages:
     dependencies:
       '@sanity/eventsource': 5.0.1
       '@vercel/stega': 0.1.0
-      get-it: 8.4.14
+      get-it: 8.4.16
       rxjs: 7.8.1
     transitivePeerDependencies:
       - supports-color
@@ -11622,8 +11622,8 @@ packages:
       has-symbols: 1.0.3
       hasown: 2.0.2
 
-  /get-it@8.4.14:
-    resolution: {integrity: sha512-dhiRE7Xk8/mg/RhKr9u01KY3nQzVPZfN3shKkEWj1TsuACkZtEeVAuQ5tF5np0qIcSayWowKOcQ5dxCnZBM+hg==}
+  /get-it@8.4.16:
+    resolution: {integrity: sha512-NrdV3P0bI4Zh/R0GXIsY3da5mJUd1lT8hGcfwb3KU9E/ewnJ1e8YAWQycAtj3mxrjesBf8ZBq3TDKqyM8AJkJg==}
     engines: {node: '>=14.0.0'}
     dependencies:
       debug: 4.3.4(supports-color@5.5.0)
@@ -11643,7 +11643,7 @@ packages:
     resolution: {integrity: sha512-Q6IBWr/zzw57zIkJmNhI23eRTw3nZ4BWWK034meLwOYU9L3J3IpXiyM73u2pYUwN6U7ahkerCwg2T0jlxiLwsw==}
     engines: {node: '>=14.18'}
     dependencies:
-      get-it: 8.4.14
+      get-it: 8.4.16
       registry-auth-token: 5.0.2
       registry-url: 5.1.0
       semver: 7.5.4

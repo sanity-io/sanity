@@ -38,7 +38,7 @@
     "@sanity/uuid": "^3.0.1",
     "debug": "^4.3.4",
     "file-url": "^2.0.2",
-    "get-it": "^8.4.14",
+    "get-it": "^8.4.16",
     "get-uri": "^2.0.2",
     "globby": "^10.0.0",
     "gunzip-maybe": "^1.4.1",
