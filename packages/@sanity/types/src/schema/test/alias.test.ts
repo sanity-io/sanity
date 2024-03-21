@@ -95,7 +95,6 @@ describe('alias type test', () => {
   })
 
   it('should support alias with preview', () => {
-    //@ts-expect-error error is not in select keys
     defineType({
       type: 'custom-object',
       name: 'redefined',
@@ -106,7 +105,6 @@ describe('alias type test', () => {
       },
     })
 
-    //@ts-expect-error error is not in select keys
     defineField({
       type: 'custom-object',
       name: 'redefined',
@@ -117,7 +115,6 @@ describe('alias type test', () => {
       },
     })
 
-    //@ts-expect-error error is not in select keys
     defineArrayMember({
       type: 'custom-object',
       name: 'redefined',

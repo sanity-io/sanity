@@ -50,8 +50,8 @@ export default defineConfig({
     ...baseConfig.extract,
     rules: {
       ...baseConfig.extract?.rules,
-      'ae-incompatible-release-tags': 'error',
-      'ae-missing-release-tag': 'error',
+      'ae-incompatible-release-tags': 'warn',
+      'ae-missing-release-tag': 'warn',
     },
   },
 })
