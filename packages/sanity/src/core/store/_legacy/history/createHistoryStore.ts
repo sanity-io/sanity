@@ -6,6 +6,7 @@ import {
   type TransactionLogEventWithMutations,
 } from '@sanity/types'
 import {reduce as jsonReduce} from 'json-reduce'
+import {omit} from 'lodash'
 import {from, type Observable} from 'rxjs'
 import {map, mergeMap} from 'rxjs/operators'
 
@@ -196,9 +197,10 @@ function restore(client: SanityClient, documentId: string, targetDocumentId: str
         .pipe(map((existingIds) => removeMissingReferences(documentAtRevision, existingIds)))
     }),
     map((documentAtRevision) => {
-      // Remove _updatedAt and create a new draft from the document at given revision
-      const {_updatedAt, ...document} = documentAtRevision
-      return {...document, _id: targetDocumentId}
+      return {
+        ...omit(documentAtRevision, '_updatedAt'),
+        _id: targetDocumentId,
+      }
     }),
     mergeMap((restoredDraft) =>
       vXClient.observable.request({
