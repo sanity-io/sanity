@@ -5,6 +5,7 @@ import {del as serverDel} from '../serverOperations/delete'
 import {discardChanges as serverDiscardChanges} from '../serverOperations/discardChanges'
 import {patch as serverPatch} from '../serverOperations/patch'
 import {publish as serverPublish} from '../serverOperations/publish'
+import {restore as serverRestore} from '../serverOperations/restore'
 import {unpublish as serverUnpublish} from '../serverOperations/unpublish'
 import {commit} from './commit'
 import {del} from './delete'
@@ -69,6 +70,7 @@ export function createOperationsAPI(args: OperationArgs): OperationsAPI {
   }
 
   //as we add server operations one by one, we can add them here
+  // Note: Any changes must also be made to `serverOperationImpls`, which is defined in `packages/sanity/src/core/store/_legacy/document/document-pair/operationEvents.ts`.
   if (args.serverActionsEnabled) {
     return {
       ...operationsAPI,
@@ -78,6 +80,7 @@ export function createOperationsAPI(args: OperationArgs): OperationsAPI {
       patch: wrap('patch', serverPatch, args),
       publish: wrap('publish', serverPublish, args),
       unpublish: wrap('unpublish', serverUnpublish, args),
+      restore: wrap('restore', serverRestore, args),
     }
   }
   return operationsAPI
