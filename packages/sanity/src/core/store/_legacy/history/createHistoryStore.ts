@@ -178,6 +178,9 @@ export const removeMissingReferences = (
   })
 
 function restore(client: SanityClient, documentId: string, targetDocumentId: string, rev: string) {
+  const vXClient = client.withConfig({apiVersion: 'X'})
+  const {dataset} = client.config()
+
   return from(getDocumentAtRevision(client, documentId, rev)).pipe(
     mergeMap((documentAtRevision) => {
       if (!documentAtRevision) {
@@ -198,7 +201,21 @@ function restore(client: SanityClient, documentId: string, targetDocumentId: str
       return {...document, _id: targetDocumentId}
     }),
     mergeMap((restoredDraft) =>
-      client.observable.createOrReplace(restoredDraft, {visibility: 'async'}),
+      vXClient.observable.request({
+        url: `/data/actions/${dataset}`,
+        method: 'post',
+        body: {
+          actions: [
+            {
+              actionType: 'sanity.action.document.create',
+              draftId: targetDocumentId,
+              publishedId: documentId,
+              attributes: restoredDraft,
+              ifExists: 'replace',
+            },
+          ],
+        },
+      }),
     ),
   )
 }
