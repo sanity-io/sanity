@@ -44,11 +44,6 @@ export default defineConfig({
       require: './lib/_internal/cli/threads/extractSchema.js',
       default: './lib/_internal/cli/threads/extractSchema.js',
     },
-    './_internal/cli/threads/typegenGenerate': {
-      source: './src/_internal/cli/threads/typegenGenerate.ts',
-      require: './lib/_internal/cli/threads/typegenGenerate.js',
-      default: './lib/_internal/cli/threads/typegenGenerate.js',
-    },
   }),
 
   extract: {

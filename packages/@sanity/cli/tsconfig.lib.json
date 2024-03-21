@@ -18,5 +18,9 @@
     "jsx": "react-jsx",
     "resolveJsonModule": true
   },
-  "references": [{"path": "../types/tsconfig.lib.json"}, {"path": "../util/tsconfig.lib.json"}]
+  "references": [
+    {"path": "../codegen/tsconfig.lib.json"},
+    {"path": "../types/tsconfig.lib.json"},
+    {"path": "../util/tsconfig.lib.json"}
+  ]
 }

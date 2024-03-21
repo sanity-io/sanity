@@ -1,15 +1,15 @@
 import {constants, open} from 'node:fs/promises'
-import {dirname, join} from 'node:path'
+import {join} from 'node:path'
 
-import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
 import {readConfig} from '@sanity/codegen'
-import readPkgUp from 'read-pkg-up'
 import {Worker} from 'worker_threads'
 
+import {type CliCommandArguments, type CliCommandContext} from '../../types'
+import {getCliWorkerPath} from '../../util/cliWorker'
 import {
   type TypegenGenerateTypesWorkerData,
   type TypegenGenerateTypesWorkerMessage,
-} from '../../threads/typegenGenerate'
+} from '../../workers/typegenGenerate'
 import {TypesGeneratedTrace} from './generate.telemetry'
 
 export interface TypegenGenerateTypesCommandFlags {
@@ -42,19 +42,7 @@ export default async function typegenGenerateAction(
 
   const codegenConfig = await readConfig(flags.configPath || 'sanity-typegen.json')
 
-  const rootPkgPath = readPkgUp.sync({cwd: __dirname})?.path
-  if (!rootPkgPath) {
-    throw new Error('Could not find the root directory for the `sanity` package')
-  }
-
-  const workerPath = join(
-    dirname(rootPkgPath),
-    'lib',
-    '_internal',
-    'cli',
-    'threads',
-    'typegenGenerate.js',
-  )
+  const workerPath = await getCliWorkerPath('typegenGenerate')
 
   const spinner = output.spinner({}).start('Generating types')
 
