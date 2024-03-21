@@ -210,7 +210,7 @@ export const documentFiltersReducer: ConfigPropertyReducer<
   }
 
   throw new Error(
-    `Expected \`document.filters\` to be an array or a function, but received ${getPrintableType(
+    `Expected \`document.unstable_filters\` to be an array or a function, but received ${getPrintableType(
       documentFilters,
     )}`,
   )
