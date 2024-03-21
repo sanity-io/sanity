@@ -430,7 +430,7 @@ importers:
         version: 1.11.4(@sanity/client@6.15.6)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8)
       '@sanity/preview-url-secret':
         specifier: ^1.6.1
-        version: 1.6.4(@sanity/client@6.15.6)
+        version: 1.6.5(@sanity/client@6.15.6)
       '@sanity/react-loader':
         specifier: ^1.8.3
         version: 1.9.4(@sanity/client@6.15.6)(react@18.2.0)
@@ -6345,7 +6345,7 @@ packages:
     dependencies:
       '@sanity/client': 6.15.6
       '@sanity/icons': 2.11.4(react@18.2.0)
-      '@sanity/preview-url-secret': 1.6.4(@sanity/client@6.15.6)
+      '@sanity/preview-url-secret': 1.6.5(@sanity/client@6.15.6)
       '@sanity/ui': 2.0.10(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8)
       '@sanity/uuid': 3.0.2
       '@types/lodash.isequal': 4.5.8
@@ -6372,7 +6372,7 @@ packages:
     dependencies:
       '@sanity/client': 6.15.6
       '@sanity/icons': 2.11.4(react@18.2.0)
-      '@sanity/preview-url-secret': 1.6.4(@sanity/client@6.15.6)
+      '@sanity/preview-url-secret': 1.6.5(@sanity/client@6.15.6)
       '@sanity/ui': 2.0.10(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8)
       '@sanity/uuid': 3.0.2
       '@types/lodash.isequal': 4.5.8
@@ -6390,11 +6390,11 @@ packages:
       - styled-components
     dev: false
 
-  /@sanity/preview-url-secret@1.6.4(@sanity/client@6.15.6):
-    resolution: {integrity: sha512-iOu6n5Zt7kuWoOYRliS2o/MDDBWcWkrnwwss2tglIBl744RPRkz0yi9qulnpAqMnWrZyIU8fV1yPCdg0RY+olw==}
+  /@sanity/preview-url-secret@1.6.5(@sanity/client@6.15.6):
+    resolution: {integrity: sha512-zY57ZSKHIgiI/naW18Y7XvLwR1cPra2VIrcZQn2nBuL294fRpZkwBF+M62j6oroU5nKXGQt5P82VM1sXdqXdmw==}
     engines: {node: '>=18'}
     peerDependencies:
-      '@sanity/client': ^6.14.4
+      '@sanity/client': ^6.15.7
     dependencies:
       '@sanity/client': 6.15.6
       '@sanity/uuid': 3.0.2
@@ -6467,7 +6467,7 @@ packages:
       dotenv-flow: 3.3.0
       express: 4.18.3
       globby: 11.1.0
-      groq: 3.35.1
+      groq: 3.35.2
       groq-js: 1.5.0
       history: 5.3.0
       jsonc-parser: 3.2.1
@@ -6523,7 +6523,7 @@ packages:
       dotenv-flow: 3.3.0
       express: 4.18.3
       globby: 11.1.0
-      groq: 3.35.1
+      groq: 3.35.2
       groq-js: 1.5.0
       history: 5.3.0
       jsonc-parser: 3.2.1
@@ -6677,7 +6677,7 @@ packages:
         optional: true
     dependencies:
       '@sanity/client': 6.15.6
-      '@sanity/preview-url-secret': 1.6.4(@sanity/client@6.15.6)
+      '@sanity/preview-url-secret': 1.6.5(@sanity/client@6.15.6)
       '@vercel/stega': 0.1.0
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
@@ -12082,8 +12082,8 @@ packages:
     transitivePeerDependencies:
       - supports-color
 
-  /groq@3.35.1:
-    resolution: {integrity: sha512-tLloxqk7HjZ5E3gId5IBYHkkydnTMoUI5XJyjbJ9RmaPYbzpT0OPyj29CLRL35oftMGbCM+MPw7uRbcGPNq3ZQ==}
+  /groq@3.35.2:
+    resolution: {integrity: sha512-lh35TLq6KVYg7Sm7wE0UsZs/7BnlcUksx4wX+bdOU7vOl7WymMkrFqxyK1FhZWyxLvxsnItGGHjD5k9WooCy8Q==}
     engines: {node: '>=18'}
 
   /growly@1.3.0:
