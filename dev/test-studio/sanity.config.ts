@@ -146,7 +146,7 @@ export default defineConfig([
   {
     name: 'default',
     title: 'Test Studio',
-    projectId: 'ppsg7ml5',
+    projectId: 'exx11uqh',
     dataset: 'test',
     plugins: [sharedSettings()],
     basePath: '/test',
@@ -155,7 +155,7 @@ export default defineConfig([
   {
     name: 'partialIndexing',
     title: 'Partial Indexing',
-    projectId: 'ppsg7ml5',
+    projectId: 'exx11uqh',
     dataset: 'partial-indexing-2',
     plugins: [sharedSettings()],
     basePath: '/partial-indexing',
@@ -168,7 +168,7 @@ export default defineConfig([
   {
     name: 'tsdoc',
     title: 'tsdoc',
-    projectId: 'ppsg7ml5',
+    projectId: 'exx11uqh',
     dataset: 'tsdoc-2',
     plugins: [sharedSettings()],
     basePath: '/tsdoc',
@@ -177,7 +177,7 @@ export default defineConfig([
     name: 'playground',
     title: 'Test Studio (playground)',
     subtitle: 'Playground dataset',
-    projectId: 'ppsg7ml5',
+    projectId: 'exx11uqh',
     dataset: 'playground',
     plugins: [sharedSettings()],
     basePath: '/playground',
@@ -186,7 +186,7 @@ export default defineConfig([
     name: 'playground-partial-indexing',
     title: 'Test Studio (playground-partial-indexing)',
     subtitle: 'Playground dataset',
-    projectId: 'ppsg7ml5',
+    projectId: 'exx11uqh',
     dataset: 'playground-partial-indexing',
     plugins: [sharedSettings()],
     basePath: '/playground-partial-indexing',
@@ -211,7 +211,7 @@ export default defineConfig([
     name: 'custom-components',
     title: 'Test Studio',
     subtitle: 'Components API playground',
-    projectId: 'ppsg7ml5',
+    projectId: 'exx11uqh',
     dataset: 'test',
     plugins: [sharedSettings(), studioComponentsPlugin(), formComponentsPlugin()],
     basePath: '/custom-components',
@@ -238,7 +238,7 @@ export default defineConfig([
   {
     name: 'google-theme',
     title: 'Google Colors',
-    projectId: 'ppsg7ml5',
+    projectId: 'exx11uqh',
     dataset: 'test',
     plugins: [sharedSettings()],
     basePath: '/google',
@@ -248,7 +248,7 @@ export default defineConfig([
   {
     name: 'vercel-theme',
     title: 'Vercel Colors',
-    projectId: 'ppsg7ml5',
+    projectId: 'exx11uqh',
     dataset: 'test',
     plugins: [sharedSettings()],
     basePath: '/vercel',
@@ -258,7 +258,7 @@ export default defineConfig([
   {
     name: 'tailwind-theme',
     title: 'Tailwind Colors',
-    projectId: 'ppsg7ml5',
+    projectId: 'exx11uqh',
     dataset: 'test',
     plugins: [sharedSettings()],
     basePath: '/tailwind',
@@ -268,7 +268,7 @@ export default defineConfig([
   {
     name: 'ai-assist',
     title: 'Sanity AI Assist',
-    projectId: 'ppsg7ml5',
+    projectId: 'exx11uqh',
     dataset: 'test',
     plugins: [sharedSettings(), assist()],
     basePath: '/ai-assist',
@@ -276,7 +276,7 @@ export default defineConfig([
   {
     name: 'stega',
     title: 'Debug Stega Studio',
-    projectId: 'ppsg7ml5',
+    projectId: 'exx11uqh',
     dataset: 'test',
     plugins: [sharedSettings()],
     basePath: '/stega',
@@ -289,7 +289,7 @@ export default defineConfig([
   {
     name: 'presentation',
     title: 'Presentation Studio',
-    projectId: 'ppsg7ml5',
+    projectId: 'exx11uqh',
     dataset: 'playground',
     plugins: [
       debugSecrets(),
