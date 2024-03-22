@@ -1,9 +1,10 @@
 /* eslint-disable max-nested-callbacks */
 import {type SanityClient} from '@sanity/client'
 import {type Schema} from '@sanity/types'
-import {asyncScheduler, defer, EMPTY, merge, type Observable, of, Subject} from 'rxjs'
+import {asyncScheduler, defer, EMPTY, merge, type Observable, of, Subject, timer} from 'rxjs'
 import {
   catchError,
+  concatMap,
   filter,
   groupBy,
   last,
@@ -158,6 +159,9 @@ export const operationEvents = memoize(
     const autoCommit$ = result$.pipe(
       filter((result) => result.type === 'success' && result.args.operationName === 'patch'),
       throttleTime(AUTOCOMMIT_INTERVAL, asyncScheduler, {leading: true, trailing: true}),
+      concatMap((result) =>
+        (window as any).SLOW ? timer(10000).pipe(map(() => result)) : of(result),
+      ),
       tap((result) => {
         emitOperation('commit', result.args.idPair, result.args.typeName, [])
       }),
