@@ -1,4 +1,4 @@
-import {type SanityDocumentBase} from '@bjoerge/mutiny'
+import {type SanityDocumentBase} from '@sanity/mutate'
 import {
   type ObjectSchemaType,
   type Path,

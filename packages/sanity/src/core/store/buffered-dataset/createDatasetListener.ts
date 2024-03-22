@@ -1,10 +1,10 @@
-import {type SanityDocumentBase} from '@bjoerge/mutiny'
 import {
   type ListenerMutationEvent,
   type ListenerSyncEvent,
   type SanityMutation,
 } from '@bjoerge/mutiny/_unstable_store'
 import {type MutationEvent, type SanityClient, type WelcomeEvent} from '@sanity/client'
+import {type SanityDocumentBase} from '@sanity/mutate'
 import {type SanityDocumentLike} from '@sanity/types'
 import {
   defer,

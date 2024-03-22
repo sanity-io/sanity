@@ -3,7 +3,7 @@
 import {afterEach, describe, expect, it, vitest} from 'vitest'
 /* eslint-enable simple-import-sort/imports */
 
-import {SanityEncoder} from '@bjoerge/mutiny'
+import {SanityEncoder} from '@sanity/mutate'
 
 import {type Mutation, type Transaction} from '../../../mutations'
 import {toSanityMutations, type TransactionPayload} from '../toSanityMutations'

@@ -1,5 +1,5 @@
-import {SanityEncoder} from '@bjoerge/mutiny'
 import {type Mutation as SanityMutation} from '@sanity/client'
+import {SanityEncoder} from '@sanity/mutate'
 import arrify from 'arrify'
 
 import {type Mutation, type Transaction} from '../../mutations'

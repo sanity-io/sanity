@@ -1,5 +1,5 @@
-import {SanityEncoder} from '@bjoerge/mutiny'
 import {type Mutation as RawMutation} from '@sanity/client'
+import {SanityEncoder} from '@sanity/mutate'
 import {type Path, type SanityDocument} from '@sanity/types'
 import arrify from 'arrify'
 

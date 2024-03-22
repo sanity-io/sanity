@@ -1,5 +1,5 @@
-import {type SanityDocumentBase} from '@bjoerge/mutiny'
 import {type SanityClient} from '@sanity/client'
+import {type SanityDocumentBase} from '@sanity/mutate'
 import {type SanityDocument, type Schema} from '@sanity/types'
 import {combineLatest, type Observable} from 'rxjs'
 import {map, publishReplay, refCount, startWith, switchMap} from 'rxjs/operators'

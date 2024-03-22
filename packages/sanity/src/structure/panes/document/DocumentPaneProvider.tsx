@@ -1,5 +1,4 @@
 /* eslint-disable camelcase */
-import {isActionEnabled} from '@sanity/schema/_internal'
 import {
   at,
   createIfNotExists,
@@ -13,7 +12,7 @@ import {
   set,
   setIfMissing,
   unset,
-} from '@bjoerge/mutiny'
+} from '@sanity/mutate'
 import {isActionEnabled} from '@sanity/schema/_internal'
 import {type ObjectSchemaType, type Path, type SanityDocument} from '@sanity/types'
 import {useToast} from '@sanity/ui'

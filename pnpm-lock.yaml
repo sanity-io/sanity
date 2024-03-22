@@ -52,9 +52,12 @@ importers:
       '@sanity/eslint-config-studio':
         specifier: ^4.0.0
         version: 4.0.0(eslint@8.57.0)(typescript@5.4.5)
+      '@sanity/mutate':
+        specifier: workspace:*
+        version: link:packages/@sanity/mutate
       '@sanity/pkg-utils':
-        specifier: 6.8.1
-        version: 6.8.1(@types/node@18.19.31)(typescript@5.4.5)
+        specifier: 6.8.0
+        version: 6.8.0(@types/node@18.19.31)(typescript@5.4.5)
       '@sanity/prettier-config':
         specifier: ^1.0.2
         version: 1.0.2(prettier@3.2.5)
@@ -1577,6 +1580,9 @@ importers:
       '@sanity/migrate':
         specifier: 3.38.0
         version: link:../@sanity/migrate
+      '@sanity/mutate':
+        specifier: workspace:*
+        version: link:../@sanity/mutate
       '@sanity/mutator':
         specifier: 3.38.0
         version: link:../@sanity/mutator
@@ -6330,116 +6336,6 @@ packages:
       - supports-color
     dev: false
 
-  /@sanity/pkg-utils@6.6.6(@types/node@18.19.31)(debug@4.3.4)(typescript@5.4.5):
-    resolution: {integrity: sha512-pkpWy1qDlV/CN+boNk5iNIyI9G3HcSa9TqYVVI9e1kdaTBR1RQ/97NzU8XMefkJmIhW19XtsBiGFbdf71EvnKQ==}
-    engines: {node: '>=18.17.0'}
-    hasBin: true
-    peerDependencies:
-      typescript: 5.4.x
-    dependencies:
-      '@babel/core': 7.24.4
-      '@babel/types': 7.24.0
-      '@microsoft/api-extractor': 7.43.1(@types/node@18.19.31)
-      '@microsoft/tsdoc-config': 0.16.2
-      '@optimize-lodash/rollup-plugin': 4.0.4(rollup@4.14.3)
-      '@rollup/plugin-alias': 5.1.0(rollup@4.14.3)
-      '@rollup/plugin-babel': 6.0.4(@babel/core@7.24.4)(rollup@4.14.3)
-      '@rollup/plugin-commonjs': 25.0.7(rollup@4.14.3)
-      '@rollup/plugin-json': 6.1.0(rollup@4.14.3)
-      '@rollup/plugin-node-resolve': 15.2.3(rollup@4.14.3)
-      '@rollup/plugin-replace': 5.0.5(rollup@4.14.3)
-      '@rollup/plugin-terser': 0.4.4(rollup@4.14.3)
-      '@sanity/browserslist-config': 1.0.3
-      browserslist: 4.23.0
-      cac: 6.7.14
-      chalk: 4.1.2
-      chokidar: 3.6.0
-      esbuild: 0.20.2
-      esbuild-register: 3.5.0(esbuild@0.20.2)
-      find-config: 1.0.0
-      get-latest-version: 5.1.0(debug@4.3.4)
-      git-url-parse: 14.0.0
-      globby: 11.1.0
-      jsonc-parser: 3.2.1
-      mkdirp: 3.0.1
-      outdent: 0.8.0
-      parse-git-config: 3.0.0
-      pkg-up: 3.1.0
-      prettier: 3.2.5
-      prettier-plugin-packagejson: 2.5.0(prettier@3.2.5)
-      pretty-bytes: 5.6.0
-      prompts: 2.4.2
-      rimraf: 4.4.1
-      rollup: 4.14.3
-      rollup-plugin-esbuild: 6.1.1(esbuild@0.20.2)(rollup@4.14.3)
-      rxjs: 7.8.1
-      treeify: 1.1.0
-      typescript: 5.4.5
-      uuid: 9.0.1
-      zod: 3.22.4
-      zod-validation-error: 3.1.0(zod@3.22.4)
-    transitivePeerDependencies:
-      - '@types/babel__core'
-      - '@types/node'
-      - debug
-      - supports-color
-    dev: true
-
-  /@sanity/pkg-utils@6.6.6(@types/node@18.19.31)(typescript@5.4.5):
-    resolution: {integrity: sha512-pkpWy1qDlV/CN+boNk5iNIyI9G3HcSa9TqYVVI9e1kdaTBR1RQ/97NzU8XMefkJmIhW19XtsBiGFbdf71EvnKQ==}
-    engines: {node: '>=18.17.0'}
-    hasBin: true
-    peerDependencies:
-      typescript: 5.4.x
-    dependencies:
-      '@babel/core': 7.24.4
-      '@babel/types': 7.24.0
-      '@microsoft/api-extractor': 7.43.1(@types/node@18.19.31)
-      '@microsoft/tsdoc-config': 0.16.2
-      '@optimize-lodash/rollup-plugin': 4.0.4(rollup@4.14.3)
-      '@rollup/plugin-alias': 5.1.0(rollup@4.14.3)
-      '@rollup/plugin-babel': 6.0.4(@babel/core@7.24.4)(rollup@4.14.3)
-      '@rollup/plugin-commonjs': 25.0.7(rollup@4.14.3)
-      '@rollup/plugin-json': 6.1.0(rollup@4.14.3)
-      '@rollup/plugin-node-resolve': 15.2.3(rollup@4.14.3)
-      '@rollup/plugin-replace': 5.0.5(rollup@4.14.3)
-      '@rollup/plugin-terser': 0.4.4(rollup@4.14.3)
-      '@sanity/browserslist-config': 1.0.3
-      browserslist: 4.23.0
-      cac: 6.7.14
-      chalk: 4.1.2
-      chokidar: 3.6.0
-      esbuild: 0.20.2
-      esbuild-register: 3.5.0(esbuild@0.20.2)
-      find-config: 1.0.0
-      get-latest-version: 5.1.0
-      git-url-parse: 14.0.0
-      globby: 11.1.0
-      jsonc-parser: 3.2.1
-      mkdirp: 3.0.1
-      outdent: 0.8.0
-      parse-git-config: 3.0.0
-      pkg-up: 3.1.0
-      prettier: 3.2.5
-      prettier-plugin-packagejson: 2.5.0(prettier@3.2.5)
-      pretty-bytes: 5.6.0
-      prompts: 2.4.2
-      rimraf: 4.4.1
-      rollup: 4.14.3
-      rollup-plugin-esbuild: 6.1.1(esbuild@0.20.2)(rollup@4.14.3)
-      rxjs: 7.8.1
-      treeify: 1.1.0
-      typescript: 5.4.5
-      uuid: 9.0.1
-      zod: 3.22.4
-      zod-validation-error: 3.1.0(zod@3.22.4)
-    transitivePeerDependencies:
-      - '@types/babel__core'
-      - '@types/node'
-      - debug
-      - supports-color
-    dev: true
-
   /@sanity/pkg-utils@6.7.0(@types/node@18.19.31)(debug@4.3.4)(typescript@5.4.5):
     resolution: {integrity: sha512-E21TIPwmUyTlu8sjJWEFUzdEmDeTp2liv/Z7nawtaH/zBE6HL9bcMzEY7VTnPUZYqaxkUyZuHTaRO3fHY3JmqQ==}
     engines: {node: '>=18.17.0'}
@@ -6549,6 +6445,60 @@ packages:
       - debug
       - supports-color
 
+  /@sanity/pkg-utils@6.8.0(@types/node@18.19.31)(typescript@5.4.5):
+    resolution: {integrity: sha512-3isoIkI2IjGyKBrHgLdmOwYXSO3zB9z08bHQ8nvY1cokXpT+D2D0P/MS9pwwZIoOn2RVbMD77kPmHpFWUf353Q==}
+    engines: {node: '>=18.17.0'}
+    hasBin: true
+    peerDependencies:
+      typescript: 5.4.x
+    dependencies:
+      '@babel/core': 7.24.4
+      '@babel/types': 7.24.0
+      '@microsoft/api-extractor': 7.43.1(@types/node@18.19.31)
+      '@microsoft/tsdoc-config': 0.16.2
+      '@optimize-lodash/rollup-plugin': 4.0.4(rollup@4.14.3)
+      '@rollup/plugin-alias': 5.1.0(rollup@4.14.3)
+      '@rollup/plugin-babel': 6.0.4(@babel/core@7.24.4)(rollup@4.14.3)
+      '@rollup/plugin-commonjs': 25.0.7(rollup@4.14.3)
+      '@rollup/plugin-json': 6.1.0(rollup@4.14.3)
+      '@rollup/plugin-node-resolve': 15.2.3(rollup@4.14.3)
+      '@rollup/plugin-replace': 5.0.5(rollup@4.14.3)
+      '@rollup/plugin-terser': 0.4.4(rollup@4.14.3)
+      '@sanity/browserslist-config': 1.0.3
+      browserslist: 4.23.0
+      cac: 6.7.14
+      chalk: 4.1.2
+      chokidar: 3.6.0
+      esbuild: 0.20.2
+      esbuild-register: 3.5.0(esbuild@0.20.2)
+      find-config: 1.0.0
+      get-latest-version: 5.1.0
+      git-url-parse: 14.0.0
+      globby: 11.1.0
+      jsonc-parser: 3.2.1
+      mkdirp: 3.0.1
+      outdent: 0.8.0
+      parse-git-config: 3.0.0
+      pkg-up: 3.1.0
+      prettier: 3.2.5
+      pretty-bytes: 5.6.0
+      prompts: 2.4.2
+      rimraf: 4.4.1
+      rollup: 4.14.3
+      rollup-plugin-esbuild: 6.1.1(esbuild@0.20.2)(rollup@4.14.3)
+      rxjs: 7.8.1
+      treeify: 1.1.0
+      typescript: 5.4.5
+      uuid: 9.0.1
+      zod: 3.22.4
+      zod-validation-error: 3.1.0(zod@3.22.4)
+    transitivePeerDependencies:
+      - '@types/babel__core'
+      - '@types/node'
+      - debug
+      - supports-color
+    dev: true
+
   /@sanity/pkg-utils@6.8.1(@types/node@18.19.31)(debug@4.3.4)(typescript@5.4.5):
     resolution: {integrity: sha512-3BG2Rulks3HrG2KxgguoAdV3yCRHQ/0PmZfI3me6WBr9ElcNCNHM0kjtU6UtOVsPBfZ4lTyAFbzJWZSYZu1kbA==}
     engines: {node: '>=18.17.0'}
@@ -6577,60 +6527,6 @@ packages:
       esbuild-register: 3.5.0(esbuild@0.20.2)
       find-config: 1.0.0
       get-latest-version: 5.1.0(debug@4.3.4)
-      git-url-parse: 14.0.0
-      globby: 11.1.0
-      jsonc-parser: 3.2.1
-      mkdirp: 3.0.1
-      outdent: 0.8.0
-      parse-git-config: 3.0.0
-      pkg-up: 3.1.0
-      prettier: 3.2.5
-      pretty-bytes: 5.6.0
-      prompts: 2.4.2
-      rimraf: 4.4.1
-      rollup: 4.14.3
-      rollup-plugin-esbuild: 6.1.1(esbuild@0.20.2)(rollup@4.14.3)
-      rxjs: 7.8.1
-      treeify: 1.1.0
-      typescript: 5.4.5
-      uuid: 9.0.1
-      zod: 3.22.5
-      zod-validation-error: 3.1.0(zod@3.22.5)
-    transitivePeerDependencies:
-      - '@types/babel__core'
-      - '@types/node'
-      - debug
-      - supports-color
-    dev: true
-
-  /@sanity/pkg-utils@6.8.1(@types/node@18.19.31)(typescript@5.4.5):
-    resolution: {integrity: sha512-3BG2Rulks3HrG2KxgguoAdV3yCRHQ/0PmZfI3me6WBr9ElcNCNHM0kjtU6UtOVsPBfZ4lTyAFbzJWZSYZu1kbA==}
-    engines: {node: '>=18.17.0'}
-    hasBin: true
-    peerDependencies:
-      typescript: 5.4.x
-    dependencies:
-      '@babel/core': 7.24.4
-      '@babel/types': 7.24.0
-      '@microsoft/api-extractor': 7.43.1(@types/node@18.19.31)
-      '@microsoft/tsdoc-config': 0.16.2
-      '@optimize-lodash/rollup-plugin': 4.0.4(rollup@4.14.3)
-      '@rollup/plugin-alias': 5.1.0(rollup@4.14.3)
-      '@rollup/plugin-babel': 6.0.4(@babel/core@7.24.4)(rollup@4.14.3)
-      '@rollup/plugin-commonjs': 25.0.7(rollup@4.14.3)
-      '@rollup/plugin-json': 6.1.0(rollup@4.14.3)
-      '@rollup/plugin-node-resolve': 15.2.3(rollup@4.14.3)
-      '@rollup/plugin-replace': 5.0.5(rollup@4.14.3)
-      '@rollup/plugin-terser': 0.4.4(rollup@4.14.3)
-      '@sanity/browserslist-config': 1.0.3
-      browserslist: 4.23.0
-      cac: 6.7.14
-      chalk: 4.1.2
-      chokidar: 3.6.0
-      esbuild: 0.20.2
-      esbuild-register: 3.5.0(esbuild@0.20.2)
-      find-config: 1.0.0
-      get-latest-version: 5.1.0
       git-url-parse: 14.0.0
       globby: 11.1.0
       jsonc-parser: 3.2.1
@@ -8617,16 +8513,6 @@ packages:
   /arrify@2.0.1:
     resolution: {integrity: sha512-3duEwti880xqi4eAMN8AyR4a0ByT90zoYdLlevfrvU43vb0YZwZVfxOgxWrLXXXpyugL0hNZc9G6BiB5B3nUug==}
     engines: {node: '>=8'}
-
-  /assert@2.1.0:
-    resolution: {integrity: sha512-eLHpSK/Y4nhMJ07gDaAzoX/XAKS8PSaojml3M0DM4JpV1LAi5JOJ/p6H/XWrl8L+DzVEvVCW1z3vWAaB9oTsQw==}
-    dependencies:
-      call-bind: 1.0.7
-      is-nan: 1.3.2
-      object-is: 1.1.6
-      object.assign: 4.1.5
-      util: 0.12.5
-    dev: true
 
   /assertion-error@1.1.0:
     resolution: {integrity: sha512-jgsaNduz+ndvGyFt3uSuWqvy4lCnIJiovtouQN5JZHOKCS2QuhEdbcQHFhVksz2N2U9hXJo8odG7ETyWlEeuDw==}

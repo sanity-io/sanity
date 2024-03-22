@@ -10,7 +10,7 @@ import {
   set,
   setIfMissing,
   upsert,
-} from '@bjoerge/mutiny'
+} from '@sanity/mutate'
 import {filter, map, mergeMap, of, tap} from 'rxjs'
 import ts, {type JSDoc, type JSDocComment, SyntaxKind} from 'typescript'
 

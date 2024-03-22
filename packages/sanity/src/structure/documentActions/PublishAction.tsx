@@ -1,5 +1,5 @@
-import {createOrReplace, delete_} from '@bjoerge/mutiny'
 import {PublishIcon} from '@sanity/icons'
+import {createOrReplace, delete_} from '@sanity/mutate'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {isValidationErrorMarker} from '@sanity/types'
 import {useCallback, useEffect, useState} from 'react'
