@@ -153,6 +153,9 @@ const sharedDocumentFiltersSettings = definePlugin<{locale: string}>(({locale}) 
       params: {...params, locale},
     }),
   },
+  search: {
+    unstable_enableNewSearch: true,
+  },
   plugins: [
     structureTool({
       structure: (S) => S.documentTypeList('plant'),
