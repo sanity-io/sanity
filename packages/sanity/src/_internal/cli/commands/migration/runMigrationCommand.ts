@@ -181,11 +181,13 @@ const runMigrationCommand: CliCommandDefinition<CreateFlags> = {
 
     output.print(
       `\n${chalk.yellow(
-        chalk.bold(
-          'Note: If configued, migrations will trigger webhooks. You can disable webhooks on https://manage.sanity.io',
-        ),
-      )}\n`,
+        chalk.bold('Note: If your dataset has active webhooks, migrations will trigger them.'),
+      )}`,
     )
+    output.print(
+      `Run ${chalk.cyan('sanity manage')} to open the management interface in your web browser, then go to the API section to turn off webhooks.`,
+    )
+    output.print(`You can safely turn them back on after completing the migration.\n`)
 
     const response =
       flags.confirm &&
