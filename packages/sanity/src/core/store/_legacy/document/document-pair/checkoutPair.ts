@@ -2,7 +2,7 @@ import {type SanityClient} from '@sanity/client'
 import {type Mutation} from '@sanity/mutator'
 import {type SanityDocument} from '@sanity/types'
 import {EMPTY, from, merge, type Observable, Subject} from 'rxjs'
-import {filter, map, mergeMap, mergeMapTo, share, tap} from 'rxjs/operators'
+import {filter, map, mergeMap, share, tap} from 'rxjs/operators'
 
 import {
   type BufferedDocumentEvent,
@@ -70,20 +70,54 @@ function setVersion<T>(version: 'draft' | 'published') {
   return (ev: T): T & {version: 'draft' | 'published'} => ({...ev, version})
 }
 
-function commitMutations(client: SanityClient, mutationParams: Mutation['params']) {
-  const {resultRev, ...mutation} = mutationParams
-  return client.dataRequest('mutate', mutation, {
-    visibility: 'async',
-    returnDocuments: false,
-    tag: 'document.commit',
-    // This makes sure the studio doesn't crash when a draft is crated
-    // because someone deleted a referenced document in the target dataset
-    skipCrossDatasetReferenceValidation: true,
+function toActions(idPair: IdPair, mutationParams: Mutation['params']) {
+  // @todo: add transactionId to the action (pending backend support)
+  const transactionId = mutationParams.transactionId
+  return mutationParams.mutations.flatMap((mutations) => {
+    if (Object.keys(mutations).length > 1) {
+      // todo: this might be a bit too strict, but I'm trying to see if this is a fair assumption
+      throw new Error('Did not expect multiple mutations in the same payload')
+    }
+    if (mutations.delete) {
+      return {
+        actionType: 'sanity.action.document.delete',
+        publishedId: idPair.publishedId,
+        draftId: idPair.draftId,
+      }
+    }
+    if (mutations.patch) {
+      return {
+        actionType: 'sanity.action.document.edit',
+        draftId: idPair.draftId,
+        publishedId: idPair.publishedId,
+        patch: mutations.patch,
+      }
+    }
+    return []
   })
 }
 
-function submitCommitRequest(client: SanityClient, request: CommitRequest) {
-  return from(commitMutations(client, request.mutation.params)).pipe(
+function commitMutations(
+  defaultClient: SanityClient,
+  idPair: IdPair,
+  mutationParams: Mutation['params'],
+) {
+  const vXClient = defaultClient.withConfig({apiVersion: 'X'})
+
+  const {dataset} = defaultClient.config()
+
+  return vXClient.observable.request({
+    url: `/data/actions/${dataset}`,
+    method: 'post',
+    tag: 'document.commit',
+    body: {
+      actions: toActions(idPair, mutationParams),
+    },
+  })
+}
+
+function submitCommitRequest(client: SanityClient, idPair: IdPair, request: CommitRequest) {
+  return from(commitMutations(client, idPair, request.mutation.params)).pipe(
     tap({
       error: (error) => {
         const isBadRequest =
@@ -131,8 +165,8 @@ export function checkoutPair(client: SanityClient, idPair: IdPair): Pair {
   )
 
   const commits$ = merge(draft.commitRequest$, published.commitRequest$).pipe(
-    mergeMap((commitRequest) => submitCommitRequest(client, commitRequest)),
-    mergeMapTo(EMPTY),
+    mergeMap((commitRequest) => submitCommitRequest(client, idPair, commitRequest)),
+    mergeMap(() => EMPTY),
     share(),
   )
 
