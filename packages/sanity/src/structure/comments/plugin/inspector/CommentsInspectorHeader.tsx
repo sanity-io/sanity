@@ -1,4 +1,4 @@
-import {CheckmarkIcon, ChevronDownIcon, DoubleChevronRightIcon} from '@sanity/icons'
+import {CheckmarkIcon, ChevronDownIcon, CloseIcon} from '@sanity/icons'
 import {Card, Flex, Menu, Text} from '@sanity/ui'
 import {forwardRef, useCallback} from 'react'
 import {BetaBadge, useTranslation} from 'sanity'
@@ -81,7 +81,7 @@ export const CommentsInspectorHeader = forwardRef(function CommentsInspectorHead
 
           <Button
             aria-label={t('close-pane-button-text-aria-label')}
-            icon={DoubleChevronRightIcon}
+            icon={CloseIcon}
             mode="bleed"
             onClick={onClose}
             tooltipProps={{content: t('close-pane-button-text')}}
