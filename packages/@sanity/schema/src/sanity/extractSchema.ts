@@ -207,10 +207,15 @@ export function extractSchema(
       if (value === null) {
         continue
       }
+
+      // if we extract with enforceRequiredFields, we will mark the field as optional only if it is not a required field,
+      // else we will always mark it as optional
+      const optional = extractOptions.enforceRequiredFields ? fieldIsRequired === false : true
+
       attributes[field.name] = {
         type: 'objectAttribute',
         value,
-        optional: extractOptions.enforceRequiredFields ? fieldIsRequired : true,
+        optional,
       }
     }
 

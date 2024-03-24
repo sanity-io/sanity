@@ -1,7 +1,7 @@
 import assert from 'node:assert'
 
 import {describe, expect, test} from '@jest/globals'
-import {defineType} from '@sanity/types'
+import {defineField, defineType} from '@sanity/types'
 
 import {Schema} from '../../src/legacy/Schema'
 import {extractSchema} from '../../src/sanity/extractSchema'
@@ -365,6 +365,76 @@ describe('Extract schema test', () => {
       'book',
       'author',
     ])
+  })
+
+  test('all fields are marked as optional without "enforceRequiredFields"', () => {
+    const schema1 = createSchema({
+      name: 'test',
+      types: [
+        {
+          title: 'Book',
+          name: 'book',
+          type: 'document',
+          fields: [
+            {
+              title: 'Title',
+              name: 'title',
+              type: 'string',
+            },
+            defineField({
+              title: 'Subtitle',
+              name: 'subtitle',
+              type: 'string',
+              validation: (Rule) => Rule.required(),
+            }),
+          ],
+        },
+      ],
+    })
+
+    const extracted = extractSchema(schema1, {enforceRequiredFields: false})
+
+    const book = extracted.find((type) => type.name === 'book')
+    expect(book).toBeDefined()
+    assert(book !== undefined) // this is a workaround for TS, but leave the expect above for clarity in case of failure
+    assert(book.type === 'document') // this is a workaround for TS, but leave the expect above for clarity in case of failure
+    expect(book.attributes.title.optional).toBe(true)
+    expect(book.attributes.subtitle.optional).toBe(true)
+  })
+
+  test('can extract with enforceRequiredFields', () => {
+    const schema1 = createSchema({
+      name: 'test',
+      types: [
+        {
+          title: 'Book',
+          name: 'book',
+          type: 'document',
+          fields: [
+            {
+              title: 'Title',
+              name: 'title',
+              type: 'string',
+            },
+            defineField({
+              title: 'Subtitle',
+              name: 'subtitle',
+              type: 'string',
+              validation: (Rule) => Rule.required(),
+            }),
+          ],
+        },
+      ],
+    })
+
+    const extracted = extractSchema(schema1, {enforceRequiredFields: true})
+
+    const book = extracted.find((type) => type.name === 'book')
+    expect(book).toBeDefined()
+    assert(book !== undefined) // this is a workaround for TS, but leave the expect above for clarity in case of failure
+    assert(book.type === 'document') // this is a workaround for TS, but leave the expect above for clarity in case of failure
+    expect(book.attributes.title.optional).toBe(true)
+    expect(book.attributes.subtitle.optional).toBe(false)
   })
 
   describe('Can extract sample fixtures', () => {
