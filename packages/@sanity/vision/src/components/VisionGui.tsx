@@ -939,9 +939,9 @@ export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
                         </Box>
                       )}
                       {error && <QueryErrorDialog error={error} />}
-                      {hasResult && <ResultView data={queryResult} />}
+                      {hasResult && <ResultView data={queryResult} datasetName={dataset} />}
                       {listenInProgress && listenMutations.length > 0 && (
-                        <ResultView data={listenMutations} />
+                        <ResultView data={listenMutations} datasetName={dataset} />
                       )}
                     </Box>
                   </Result>
