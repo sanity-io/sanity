@@ -42,7 +42,6 @@ const generateTypegenCommand: CliCommandDefinition = {
   signature: '',
   description,
   helpText,
-  hideFromHelp: true,
   action: async (args, context) => {
     const mod = await import('../../actions/typegen/generateAction')
 
