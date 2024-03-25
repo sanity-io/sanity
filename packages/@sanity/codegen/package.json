@@ -14,9 +14,6 @@
   "bugs": {
     "url": "https://github.com/sanity-io/sanity/issues"
   },
-  "publishConfig": {
-    "access": "public"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sanity-io/sanity.git",
@@ -24,24 +21,20 @@
   },
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
+  "type": "commonjs",
   "exports": {
     ".": {
-      "types": "./lib/dts/src/_exports/index.d.ts",
       "source": "./src/_exports/index.ts",
-      "require": "./lib/_exports/index.js",
-      "node": {
-        "module": "./lib/_exports/index.esm.js",
-        "import": "./lib/_exports/index.cjs.mjs"
-      },
-      "import": "./lib/_exports/index.esm.js",
-      "default": "./lib/_exports/index.esm.js"
+      "import": "./lib/index.mjs",
+      "require": "./lib/index.js",
+      "default": "./lib/index.js"
     },
     "./package.json": "./package.json"
   },
-  "main": "./lib/_exports/index.js",
-  "module": "./lib/_exports/index.esm.js",
+  "main": "./lib/index.js",
+  "module": "./lib/index.esm.js",
   "source": "./src/_exports/index.ts",
-  "types": "./lib/dts/src/_exports/index.d.ts",
+  "types": "./lib/index.d.ts",
   "files": [
     "lib",
     "src",
@@ -53,10 +46,11 @@
     "build": "pkg-utils build --tsconfig tsconfig.lib.json",
     "postbuild": "run-s check:package",
     "check:package": "pkg-utils --strict --tsconfig tsconfig.lib.json",
+    "check:types": "tsc",
     "clean": "rimraf lib coverage",
     "lint": "eslint .",
-    "watch": "pkg-utils watch --tsconfig tsconfig.lib.json",
-    "test": "jest"
+    "test": "jest",
+    "watch": "pkg-utils watch --tsconfig tsconfig.lib.json"
   },
   "dependencies": {
     "@babel/core": "^7.23.9",
@@ -76,6 +70,7 @@
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",
+    "@repo/package.config": "workspace:*",
     "@types/babel__core": "^7.20.5",
     "@types/babel__generator": "^7.6.8",
     "@types/babel__register": "^7.17.3",
@@ -86,5 +81,8 @@
   },
   "engines": {
     "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

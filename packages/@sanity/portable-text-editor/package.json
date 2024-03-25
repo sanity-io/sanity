@@ -27,24 +27,20 @@
   },
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
+  "type": "commonjs",
   "exports": {
     ".": {
-      "types": "./lib/dts/src/index.d.ts",
       "source": "./src/index.ts",
+      "import": "./lib/index.mjs",
       "require": "./lib/index.js",
-      "node": {
-        "module": "./lib/index.esm.js",
-        "import": "./lib/index.cjs.mjs"
-      },
-      "import": "./lib/index.esm.js",
-      "default": "./lib/index.esm.js"
+      "default": "./lib/index.js"
     },
     "./package.json": "./package.json"
   },
   "main": "./lib/index.js",
   "module": "./lib/index.esm.js",
   "source": "./src/index.ts",
-  "types": "./lib/dts/src/index.d.ts",
+  "types": "./lib/index.d.ts",
   "files": [
     "lib",
     "src"
@@ -54,10 +50,11 @@
     "build": "pkg-utils build --tsconfig tsconfig.lib.json",
     "postbuild": "run-s check:package",
     "check:package": "pkg-utils --strict --tsconfig tsconfig.lib.json",
+    "check:types": "tsc",
     "clean": "rimraf lib",
+    "dev": "cd ./e2e-tests/ && ts-node serve",
     "lint": "eslint .",
     "prettier": "prettier --write './**/*.{ts,tsx,js,css,html}'",
-    "dev": "cd ./e2e-tests/ && ts-node serve",
     "test": "jest",
     "test:e2e": "jest --config=e2e-tests/e2e.config.cjs",
     "test:watch": "jest --watch",
@@ -78,6 +75,7 @@
     "@jest/globals": "^29.7.0",
     "@playwright/test": "^1.41.2",
     "@portabletext/toolkit": "^2.0.13",
+    "@repo/package.config": "workspace:*",
     "@sanity/diff-match-patch": "^3.1.1",
     "@sanity/ui": "^2.0.12",
     "@testing-library/react": "^13.4.0",

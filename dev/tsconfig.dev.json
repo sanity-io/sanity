@@ -1,5 +1,5 @@
 {
-  "extends": "../tsconfig.settings",
+  "extends": "@repo/tsconfig/base.json",
   "include": ["../packages/@sanity/util/src"],
   "compilerOptions": {
     "rootDir": "..",
@@ -9,11 +9,10 @@
     "paths": {
       // Alias to paths required for Sanity CLI to run in dev-mode
       "@sanity/mutator": ["./packages/@sanity/mutator/src"],
-      "@sanity/util/fs": ["./packages/@sanity/util/exports/fs.ts"],
-      "sanity/_internal": ["./packages/sanity/exports/_internal.ts"],
-      "sanity/migrate": ["./packages/sanity/exports/migrate.ts"],
-      "sanity/migrate/mutations": ["./packages/sanity/exports/migrate-mutations.ts"],
-      "sanity/cli": ["./packages/sanity/exports/cli.ts"]
+      "@sanity/util/fs": ["./packages/@sanity/util/src/_exports/fs.ts"],
+      "sanity/_internal": ["./packages/sanity/src/_exports/_internal.ts"],
+      "sanity/migrate": ["./packages/sanity/src/_exports/migrate.ts"],
+      "sanity/cli": ["./packages/sanity/src/_exports/cli.ts"]
     }
   }
 }

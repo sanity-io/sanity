@@ -21,6 +21,7 @@
   },
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
+  "type": "commonjs",
   "bin": "./index.js",
   "files": [
     "index.js"

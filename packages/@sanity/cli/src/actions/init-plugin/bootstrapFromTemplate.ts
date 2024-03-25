@@ -2,6 +2,9 @@ import {absolutify, pathIsEmpty} from '@sanity/util/fs'
 import decompress from 'decompress'
 import fs from 'fs/promises'
 import {getIt} from 'get-it'
+// This linter rule isn't needed for get-it as it ships excellent CJS support
+// https://publint.dev/get-it@8.4.16
+// eslint-disable-next-line import/extensions
 import {promise} from 'get-it/middleware'
 import path from 'path'
 import resolveFrom from 'resolve-from'

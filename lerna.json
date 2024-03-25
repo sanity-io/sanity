@@ -6,6 +6,7 @@
     "perf/tests",
     "perf/studio",
     "examples/*",
+    "packages/@repo/*",
     "packages/@sanity/*",
     "packages/create-sanity",
     "packages/groq",

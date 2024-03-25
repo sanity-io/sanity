@@ -1,4 +1,7 @@
 const {createClient, requester: defaultRequester} = require('@sanity/client')
+// This linter rule isn't needed for get-it as it ships excellent CJS support
+// https://publint.dev/get-it@8.4.16
+// eslint-disable-next-line import/extensions
 const {injectResponse} = require('get-it/middleware')
 const noop = require('lodash/noop')
 

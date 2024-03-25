@@ -1,13 +1,9 @@
 {
-  "extends": "../../../tsconfig.settings",
+  "extends": "@repo/tsconfig/base.json",
   "include": ["./src"],
   "compilerOptions": {
-    "composite": true,
     "rootDir": ".",
-    "outDir": "./lib/dts",
-    "declarationDir": "./lib/dts",
-    "jsx": "react-jsx",
-
+    "outDir": "./lib",
     // todo: we need to disable noImplicitAny in a transition phase and should be removed eventually
     "noImplicitAny": false
   }

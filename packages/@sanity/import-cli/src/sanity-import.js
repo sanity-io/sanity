@@ -6,6 +6,9 @@ const path = require('path')
 const {createClient} = require('@sanity/client')
 const sanityImport = require('@sanity/import')
 const {getIt} = require('get-it')
+// This linter rule isn't needed for get-it as it ships excellent CJS support
+// https://publint.dev/get-it@8.4.16
+// eslint-disable-next-line import/extensions
 const {promise} = require('get-it/middleware')
 const meow = require('meow')
 const ora = require('ora')

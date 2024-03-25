@@ -57,6 +57,7 @@ const config = {
     'import/no-named-as-default': 'off',
     'import/no-named-as-default-member': 'off',
     'import/no-unresolved': 'off',
+    'import/default': 'off',
     'prettier/prettier': 'error',
     'tsdoc/syntax': 'error',
     'react-hooks/rules-of-hooks': 'error',
@@ -191,16 +192,17 @@ const config = {
         project: [
           'dev/*/tsconfig.json',
           'examples/*/tsconfig.json',
+          'packages/@repo/*/tsconfig.json',
           'packages/@sanity/*/tsconfig.json',
           'packages/*/tsconfig.json',
         ],
       },
     },
-    'boundaries/include': ['packages/sanity/exports/*.*', 'packages/sanity/src/**/*.*'],
+    'boundaries/include': ['packages/sanity/src/**/*.*'],
     'boundaries/elements': [
       {
         type: 'sanity',
-        pattern: ['packages/sanity/exports/index.ts'],
+        pattern: ['packages/sanity/src/_exports/index.ts'],
         mode: 'full',
       },
       {
@@ -210,7 +212,7 @@ const config = {
       },
       {
         type: 'sanity/_internal',
-        pattern: ['packages/sanity/exports/_internal.ts'],
+        pattern: ['packages/sanity/src/_exports/_internal.ts'],
         mode: 'full',
       },
       {
@@ -220,7 +222,7 @@ const config = {
       },
       {
         type: 'sanity/cli',
-        pattern: ['packages/sanity/exports/cli.ts'],
+        pattern: ['packages/sanity/src/_exports/cli.ts'],
         mode: 'full',
       },
       {
@@ -230,7 +232,7 @@ const config = {
       },
       {
         type: 'sanity/desk',
-        pattern: ['packages/sanity/exports/desk.ts'],
+        pattern: ['packages/sanity/src/_exports/desk.ts'],
         mode: 'file',
       },
       {
@@ -240,7 +242,7 @@ const config = {
       },
       {
         type: 'sanity/router',
-        pattern: ['packages/sanity/exports/router.ts'],
+        pattern: ['packages/sanity/src/_exports/router.ts'],
         mode: 'full',
       },
       {
@@ -250,7 +252,7 @@ const config = {
       },
       {
         type: 'sanity/structure',
-        pattern: ['packages/sanity/exports/structure.ts'],
+        pattern: ['packages/sanity/src/_exports/structure.ts'],
         mode: 'file',
       },
       {

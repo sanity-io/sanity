@@ -6,12 +6,14 @@ import {isMainThread, parentPort, workerData as _workerData} from 'worker_thread
 import {getStudioConfig} from '../util/getStudioWorkspaces'
 import {mockBrowserEnvironment} from '../util/mockBrowserEnvironment'
 
+/** @internal */
 export interface ValidateSchemaWorkerData {
   workDir: string
   workspace?: string
   level?: SchemaValidationProblem['severity']
 }
 
+/** @internal */
 export interface ValidateSchemaWorkerResult {
   validation: SchemaValidationProblemGroup[]
 }

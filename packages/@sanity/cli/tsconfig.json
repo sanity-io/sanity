@@ -1,20 +1,12 @@
 {
-  "extends": "../../../tsconfig.settings",
+  "extends": "@repo/tsconfig/base.json",
   "include": ["./src", "./test", "./typings", "./package.json"],
   "exclude": ["./test/**/__fixtures__"],
   "compilerOptions": {
-    "composite": true,
     "rootDir": ".",
-    "outDir": "./lib/dts",
+    "outDir": "./node_modules/.sanity-monorepo/dts",
 
     "checkJs": false,
-    "allowJs": true,
-    "jsx": "react-jsx",
-    "resolveJsonModule": true
-  },
-  "references": [
-    {"path": "../codegen/tsconfig.lib.json"},
-    {"path": "../types/tsconfig.lib.json"},
-    {"path": "../util/tsconfig.lib.json"}
-  ]
+    "allowJs": true
+  }
 }

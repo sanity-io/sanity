@@ -2,6 +2,7 @@
 /* eslint-disable @sanity/i18n/no-attribute-string-literals */
 import {Card, Code, Container, ErrorBoundary, Heading, Stack} from '@sanity/ui'
 import {type ReactNode, useCallback, useState} from 'react'
+// @ts-expect-error https://github.com/rexxars/use-hot-module-reload/pull/1
 import {useHotModuleReload} from 'use-hot-module-reload'
 
 import {Button} from '../../ui-components'
@@ -24,7 +25,7 @@ export function StudioErrorBoundary({
   const message = isRecord(error) && typeof error.message === 'string' && error.message
   const stack = isRecord(error) && typeof error.stack === 'string' && error.stack
 
-  const handleResetError = useCallback(() => setError({error: null}), [setError])
+  const handleResetError = useCallback(() => setError({error: null}), [])
 
   useHotModuleReload(handleResetError)
 

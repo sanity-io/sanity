@@ -6,6 +6,7 @@ import {type Workspace} from 'sanity'
 import {getStudioWorkspaces} from '../util/getStudioWorkspaces'
 import {mockBrowserEnvironment} from '../util/mockBrowserEnvironment'
 
+/** @internal */
 export interface ExtractSchemaWorkerData {
   workDir: string
   workspaceName?: string
@@ -13,6 +14,7 @@ export interface ExtractSchemaWorkerData {
   format: 'groq-type-nodes' | string
 }
 
+/** @internal */
 export interface ExtractSchemaWorkerResult {
   schema: ReturnType<typeof extractSchema>
 }

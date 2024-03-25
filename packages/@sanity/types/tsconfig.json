@@ -1,12 +1,11 @@
 {
-  "extends": "../../../tsconfig.settings",
+  "extends": "@repo/tsconfig/base.json",
   "include": ["./src"],
   "compilerOptions": {
-    "composite": true,
+    "resolvePackageJsonExports": false,
     "rootDir": ".",
-    "outDir": "./lib/dts",
+    "outDir": "./node_modules/.sanity-monorepo/dts",
 
-    "jsx": "react-jsx",
     "paths": {
       "_self_": ["./src"]
     }

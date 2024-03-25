@@ -4,18 +4,21 @@
   "globalEnv": ["OS", "RUNNER_OS", "PKG_FILE_PATH", "PKG_FORMAT", "PKG_RUNTIME", "PKG_VERSION"],
   // These root workspace files are reused in workspaces and may affect their build output
   "globalDependencies": [
-    ".babelrc",
-    "babel.config.cjs",
-    "lerna.json", // some tools, like babel, reads from this file to identify other roots
-    "package.config.ts",
-    "tsconfig.json",
-    "tsconfig.lib.json",
-    "tsconfig.settings.json"
+    ".eslintrc.cjs",
+    ".prettierrc",
+    "lerna.json" // some tools, like babel, reads from this file to identify other roots
   ],
   "pipeline": {
     "build": {
-      "outputs": ["lib/**", "index.js"],
+      "outputs": ["lib/**", "*.js"],
       "dependsOn": ["^build"]
+    },
+    "check:types": {
+      "dependsOn": ["^build"],
+      // Generated types used for checking isn't stored by default as the output can be quite large
+      // Uncomment the line below if you need to inspect the generated code and debug
+      // "outputs": ["node_modules/.sanity-monorepo/dts/**"]
+      "outputs": []
     },
     "lint": {},
     "//#check:format": {}

@@ -1,10 +1,8 @@
 {
-  "extends": "../../../tsconfig.settings",
-  "include": ["./exports", "./src", "./test", "./typings"],
+  "extends": "@repo/tsconfig/base.json",
+  "include": ["./src", "./test"],
   "compilerOptions": {
-    "composite": true,
     "rootDir": ".",
-    "outDir": "./lib"
-  },
-  "references": [{"path": "../types/tsconfig.lib.json"}]
+    "outDir": "./node_modules/.sanity-monorepo/dts"
+  }
 }
