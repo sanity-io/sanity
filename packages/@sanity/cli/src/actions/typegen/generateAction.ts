@@ -134,6 +134,7 @@ export default async function typegenGenerateAction(
     filesWithErrors: stats.errors,
     typeNodesGenerated: stats.typeNodesGenerated,
     unknownTypeNodesGenerated: stats.unknownTypeNodesGenerated,
+    unknownTypeNodesRatio: stats.unknownTypeNodesGenerated / stats.typeNodesGenerated,
   })
 
   trace.complete()
