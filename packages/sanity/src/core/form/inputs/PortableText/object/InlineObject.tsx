@@ -211,7 +211,8 @@ export const InlineObject = (props: InlineObjectProps) => {
         <Tooltip
           placement="bottom"
           portal="editor"
-          disabled={!tooltipEnabled}
+          // If the object modal is open, disable the tooltip to avoid it rerendering the inner items when the validation changes.
+          disabled={isOpen ? true : !tooltipEnabled}
           content={toolTipContent}
         >
           {/* This relative span must be here for the ToolTip to properly show */}
@@ -221,7 +222,14 @@ export const InlineObject = (props: InlineObjectProps) => {
         </Tooltip>
       </span>
     ),
-    [componentProps, memberItem?.elementRef, renderInlineBlock, toolTipContent, tooltipEnabled],
+    [
+      componentProps,
+      memberItem?.elementRef,
+      renderInlineBlock,
+      toolTipContent,
+      tooltipEnabled,
+      isOpen,
+    ],
   )
 }
 
