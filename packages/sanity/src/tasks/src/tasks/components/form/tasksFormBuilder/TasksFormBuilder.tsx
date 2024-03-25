@@ -1,6 +1,7 @@
 import {Box, rem} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
+import {motion, type Variants} from 'framer-motion'
 import {useEffect, useMemo} from 'react'
 import {
   type CurrentUser,
@@ -20,7 +21,15 @@ import {TasksAddonWorkspaceProvider} from '../addonWorkspace/TasksAddOnWorkspace
 import {getTargetValue} from '../utils'
 import {useTasksFormBuilder} from './useTasksFormBuilder'
 
-const FormBuilderRoot = styled.div((props) => {
+const VARIANTS: Variants = {
+  hidden: {opacity: 0},
+  visible: {
+    opacity: 1,
+    transition: {duration: 0.2, delay: 0.2},
+  },
+}
+
+const FormBuilderRoot = styled(motion.div)((props) => {
   const theme = getTheme_v2(props.theme)
 
   return `
@@ -67,7 +76,7 @@ const TasksFormBuilderInner = ({
         {formBuilderProps.loading ? (
           <LoadingBlock showText />
         ) : (
-          <FormBuilderRoot id="wrapper">
+          <FormBuilderRoot id="wrapper" initial="hidden" animate="visible" variants={VARIANTS}>
             <FormBuilder {...formBuilderProps} />
           </FormBuilderRoot>
         )}
