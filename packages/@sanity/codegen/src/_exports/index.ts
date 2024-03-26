@@ -1,5 +1,6 @@
 export {type CodegenConfig, readConfig} from '../readConfig'
 export {readSchema} from '../readSchema'
+export {safeParseQuery} from '../safeParseQuery'
 export {findQueriesInPath} from '../typescript/findQueriesInPath'
 export {findQueriesInSource} from '../typescript/findQueriesInSource'
 export {getResolver} from '../typescript/moduleResolver'

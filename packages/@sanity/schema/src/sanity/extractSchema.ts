@@ -207,10 +207,15 @@ export function extractSchema(
       if (value === null) {
         continue
       }
+
+      // if we extract with enforceRequiredFields, we will mark the field as optional only if it is not a required field,
+      // else we will always mark it as optional
+      const optional = extractOptions.enforceRequiredFields ? fieldIsRequired === false : true
+
       attributes[field.name] = {
         type: 'objectAttribute',
         value,
-        optional: extractOptions.enforceRequiredFields ? fieldIsRequired : true,
+        optional,
       }
     }
 
@@ -342,10 +347,11 @@ function isNumberType(typeDef: SanitySchemaType): typeDef is NumberSchemaType {
 function createStringTypeNodeDefintion(
   stringSchemaType: StringSchemaType,
 ): StringTypeNode | UnionTypeNode<StringTypeNode> {
-  if (stringSchemaType.options?.list) {
+  const listOptions = stringSchemaType.options?.list
+  if (listOptions && Array.isArray(listOptions)) {
     return {
       type: 'union',
-      of: stringSchemaType.options.list.map((v) => ({
+      of: listOptions.map((v) => ({
         type: 'string',
         value: typeof v === 'string' ? v : v.value,
       })),
@@ -359,10 +365,11 @@ function createStringTypeNodeDefintion(
 function createNumberTypeNodeDefintion(
   numberSchemaType: NumberSchemaType,
 ): NumberTypeNode | UnionTypeNode<NumberTypeNode> {
-  if (numberSchemaType.options?.list) {
+  const listOptions = numberSchemaType.options?.list
+  if (listOptions && Array.isArray(listOptions)) {
     return {
       type: 'union',
-      of: numberSchemaType.options.list.map((v) => ({
+      of: listOptions.map((v) => ({
         type: 'number',
         value: typeof v === 'number' ? v : v.value,
       })),

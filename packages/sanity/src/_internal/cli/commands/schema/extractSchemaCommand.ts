@@ -22,7 +22,6 @@ const extractSchemaCommand: CliCommandDefinition = {
   signature: '',
   description,
   helpText,
-  hideFromHelp: true,
   action: async (args, context) => {
     const mod = await import('../../actions/schema/extractAction')
 

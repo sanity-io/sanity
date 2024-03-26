@@ -8,6 +8,7 @@ interface TypesGeneratedTraceAttrubutes {
   filesWithErrors: number
   typeNodesGenerated: number
   unknownTypeNodesGenerated: number
+  unknownTypeNodesRatio: number
 }
 
 export const TypesGeneratedTrace = defineTrace<TypesGeneratedTraceAttrubutes>({

@@ -1,3 +1,4 @@
+import {type RenderBlockFunction} from '@sanity/portable-text-editor'
 import {type CurrentUser} from '@sanity/types'
 import {type AvatarSize, Box, Card, Flex, MenuDivider, Stack} from '@sanity/ui'
 // eslint-disable-next-line camelcase
@@ -107,6 +108,7 @@ interface CommentInputInnerProps {
   onKeyDown?: (e: React.KeyboardEvent<Element>) => void
   onSubmit?: () => void
   placeholder?: React.ReactNode
+  renderBlock: RenderBlockFunction
   withAvatar?: boolean
 }
 
@@ -120,6 +122,7 @@ export function CommentInputInner(props: CommentInputInnerProps) {
     onKeyDown,
     onSubmit,
     placeholder,
+    renderBlock,
     withAvatar,
   } = props
 
@@ -164,6 +167,7 @@ export function CommentInputInner(props: CommentInputInnerProps) {
               onKeyDown={onKeyDown}
               onSubmit={onSubmit}
               placeholder={placeholder}
+              renderBlock={renderBlock}
             />
           </EditableWrap>
 

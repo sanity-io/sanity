@@ -1,4 +1,5 @@
 import {getIt} from 'get-it'
+// eslint-disable-next-line import/extensions
 import {promise} from 'get-it/middleware'
 
 const request = getIt([promise()])

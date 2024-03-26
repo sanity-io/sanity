@@ -88,11 +88,36 @@ export const ptAllTheBellsAndWhistlesType = defineType({
                     type: 'string',
                     name: 'color',
                     title: 'Color',
+                    validation: (rule: Rule) => rule.required(),
                   },
                 ],
               },
             ],
           },
+          of: [
+            defineField({
+              type: 'object',
+              name: 'inlineImage',
+              preview: {
+                select: {
+                  media: 'asset',
+                },
+              },
+              fields: [
+                defineField({
+                  name: 'inlineImage',
+                  type: 'image',
+                  title: 'Inline image',
+                }),
+                defineField({
+                  name: 'caption',
+                  type: 'string',
+                  title: 'Caption',
+                  validation: (rule) => rule.required(),
+                }),
+              ],
+            }),
+          ],
         }),
 
         defineField({
@@ -106,7 +131,6 @@ export const ptAllTheBellsAndWhistlesType = defineType({
           preview: {
             select: {
               media: 'asset',
-              title: 'caption',
             },
           },
           fields: [
@@ -114,6 +138,7 @@ export const ptAllTheBellsAndWhistlesType = defineType({
               title: 'Caption',
               name: 'caption',
               type: 'string',
+              validation: (rule) => rule.required(),
             }),
             {
               name: 'alt',
