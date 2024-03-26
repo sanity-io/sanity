@@ -41,6 +41,29 @@ const tasksLocaleStrings = defineLocalesResources('tasks', {
   'document.footer.open-tasks.text_one': '{{count}} open task',
   /** The label used in the button in the footer action in a document with multiple tasks */
   'document.footer.open-tasks.text_other': '{{count}} open tasks',
+
+  'empty-state.list.assigned.heading': "You haven't been assigned any tasks",
+  'empty-state.list.assigned.text': "Once you're assigned tasks they'll show up here",
+  'empty-state.list.create-new': 'Create new task',
+  'empty-state.list.document.heading': "This document doesn't have any tasks yet",
+  'empty-state.list.document.text': 'Once a document has connected tasks, they will be shown here.',
+  'empty-state.list.subscribed.heading': "You haven't subscribed to any tasks",
+  'empty-state.list.subscribed.text':
+    'When you create, modify, or comment on a task you will be subscribed automatically',
+
+  'empty-state.status.list.closed.assigned.heading': 'No completed tasks',
+  'empty-state.status.list.closed.assigned.text': 'Your tasks marked done will show up here',
+  'empty-state.status.list.closed.document.heading': 'No completed tasks',
+  'empty-state.status.list.closed.subscribed.heading': 'No completed tasks',
+  'empty-state.status.list.closed.subscribed.text':
+    'Tasks you subscribe to marked done will show up here',
+
+  'empty-state.status.list.open.assigned.heading': "You're all caught up",
+  'empty-state.status.list.open.assigned.text': 'New tasks assigned to you will show up here',
+  'empty-state.status.list.open.document.heading': 'No tasks on this document',
+  'empty-state.status.list.open.subscribed.heading': 'No subscribed tasks',
+  'empty-state.status.list.open.subscribed.text': 'Tasks you subscribe to will show up here',
+
   /** Text used in the assignee input when there is no user assigned */
   'form.input.assignee.no-user-assigned.text': 'Not assigned',
   /** Text used in the assignee input when searching and no users are found */
