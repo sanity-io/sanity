@@ -437,6 +437,17 @@ describe('Extract schema test', () => {
     expect(book.attributes.subtitle.optional).toBe(false)
   })
 
+  describe('can handle `list` option that is not an array', () => {
+    const schema = createSchema(schemaFixtures.listObjectOption)
+    const extracted = extractSchema(schema)
+
+    const post = extracted.find((type) => type.name === 'post')
+    assert(post !== undefined) // this is a workaround for TS, but leave the expect above for clarity in case of failure
+    assert(post.type === 'document') // this is a workaround for TS, but leave the expect above for clarity in case of failure
+
+    expect(post.attributes.align.value.type).toBe('string')
+  })
+
   describe('Can extract sample fixtures', () => {
     const cases = Object.keys(schemaFixtures).map((schemaName) => {
       const schema = createSchema(schemaFixtures[schemaName])

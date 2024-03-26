@@ -2,6 +2,7 @@ import {absolutify, pathIsEmpty} from '@sanity/util/fs'
 import decompress from 'decompress'
 import fs from 'fs/promises'
 import {getIt} from 'get-it'
+// eslint-disable-next-line import/extensions
 import {promise} from 'get-it/middleware'
 import path from 'path'
 import resolveFrom from 'resolve-from'
