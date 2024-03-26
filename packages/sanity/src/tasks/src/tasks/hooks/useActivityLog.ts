@@ -14,13 +14,15 @@ export function useActivityLog(task: TaskDocument): {
   const {dataset, token} = client.config()
 
   const queryParams = `tag=sanity.studio.tasks.history&effectFormat=mendoza&excludeContent=true&includeIdentifiedDocumentsOnly=true&reverse=true`
+  const publishedId = getPublishedId(task?._id ?? '')
   const transactionsUrl = client.getUrl(
-    `/data/history/${dataset}/transactions/${getPublishedId(task._id)}?${queryParams}`,
+    `/data/history/${dataset}/transactions/${publishedId}?${queryParams}`,
   )
 
   const fetchAndParse = useCallback(
     async (newestTaskDocument: TaskDocument) => {
       try {
+        if (!publishedId) return
         const transactions: TransactionLogEventWithEffects[] = []
 
         const stream = await getJsonStream(transactionsUrl, token)
@@ -58,7 +60,7 @@ export function useActivityLog(task: TaskDocument): {
         console.error('Failed to fetch and parse activity log', error)
       }
     },
-    [transactionsUrl, token],
+    [transactionsUrl, token, publishedId],
   )
 
   useEffect(() => {
