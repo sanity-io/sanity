@@ -1,6 +1,6 @@
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
-import {useCallback, useEffect, useRef, useState} from 'react'
+import {startTransition, useCallback, useEffect, useState} from 'react'
 import {
   type ArrayFieldProps,
   type PortableTextBlock,
@@ -10,10 +10,11 @@ import {
 } from 'sanity'
 import styled, {css} from 'styled-components'
 
-import {CommentInput} from '../../../../../../structure/comments'
-import {tasksLocaleNamespace} from '../../../../../i18n'
-import {useMentionUser} from '../../../context'
-import {type FormMode} from '../../../types'
+import {CommentInput} from '../../../../../../../structure/comments'
+import {tasksLocaleNamespace} from '../../../../../../i18n'
+import {useMentionUser} from '../../../../context'
+import {type FormMode} from '../../../../types'
+import {renderBlock} from './render'
 
 const DescriptionInputRoot = styled.div<{$mode: FormMode; $minHeight: number}>((props) => {
   const theme = getTheme_v2(props.theme)
@@ -43,39 +44,42 @@ export function DescriptionInput(props: ArrayFieldProps & {mode: FormMode}) {
     inputProps: {onChange},
   } = props
   const value = _propValue as PortableTextBlock[] | undefined
-
   const currentUser = useCurrentUser()
   const {mentionOptions} = useMentionUser()
 
   const handleChange = useCallback((next: PortableTextBlock[]) => onChange(set(next)), [onChange])
 
-  const rootRef = useRef<HTMLDivElement | null>(null)
+  const [rootRef, setRootRef] = useState<HTMLDivElement | null>(null)
   const [textBoxScrollHeight, setTextBoxScrollHeight] = useState<number>(200)
   const setTextboxHeight = useCallback((ref: HTMLDivElement) => {
     const textBox = ref.querySelector('[role="textbox"]')
     if (!textBox) return
+
     const height = textBox.scrollHeight
     setTextBoxScrollHeight(height)
   }, [])
 
-  const setRootRef = useCallback(
-    (ref: HTMLDivElement) => {
-      if (!ref) return
-      setTextboxHeight(ref)
-      rootRef.current = ref
-    },
-    [setTextboxHeight],
-  )
+  const handleSetRootRef = useCallback((ref: HTMLDivElement) => {
+    if (!ref) return
+    startTransition(() => {
+      setRootRef(ref)
+    })
+  }, [])
+
   const {t} = useTranslation(tasksLocaleNamespace)
 
   useEffect(() => {
-    if (!rootRef.current) return
-    setTextboxHeight(rootRef.current)
-  }, [value, setTextboxHeight])
+    if (!rootRef) return
+    setTextboxHeight(rootRef)
+  }, [value, setTextboxHeight, rootRef])
 
   if (!currentUser) return null
   return (
-    <DescriptionInputRoot $mode={mode} ref={setRootRef} $minHeight={textBoxScrollHeight || 200}>
+    <DescriptionInputRoot
+      $mode={mode}
+      ref={handleSetRootRef}
+      $minHeight={textBoxScrollHeight || 200}
+    >
       <CommentInput
         expandOnFocus={false}
         currentUser={currentUser}
@@ -86,6 +90,7 @@ export function DescriptionInput(props: ArrayFieldProps & {mode: FormMode}) {
         placeholder={t('form.input.description.placeholder')}
         // eslint-disable-next-line react/jsx-no-bind
         onDiscardConfirm={() => null}
+        renderBlock={renderBlock}
       />
     </DescriptionInputRoot>
   )
