@@ -17,7 +17,16 @@ export const flattenConfig = (
     flattenConfig(plugin, [...path, currentConfig.name]),
   )
 
-  const resolved = [...allPlugins, rootConfig]
+  // We need to check if the task plugin was added, it could be inserted more than once, in that case we only want to add it once.
+  const tasksPlugin = allPlugins.find((plugin) => plugin.config.name === 'sanity/tasks')
 
+  const resolved = [
+    ...allPlugins.filter((plugin) => plugin.config.name !== 'sanity/tasks'),
+    rootConfig,
+  ]
+
+  if (tasksPlugin) {
+    resolved.push(tasksPlugin)
+  }
   return resolved
 }
