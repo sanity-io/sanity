@@ -8,5 +8,9 @@
 
     "jsx": "react-jsx"
   },
-  "references": [{"path": "../types/tsconfig.lib.json"}, {"path": "../../sanity/tsconfig.lib.json"}]
+  "references": [
+    {"path": "../schema/tsconfig.lib.json"},
+    {"path": "../types/tsconfig.lib.json"},
+    {"path": "../../sanity/tsconfig.lib.json"}
+  ]
 }
