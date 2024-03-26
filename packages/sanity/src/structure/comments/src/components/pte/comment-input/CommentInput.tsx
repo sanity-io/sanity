@@ -11,7 +11,7 @@ import {forwardRef, useCallback, useImperativeHandle, useMemo, useRef, useState}
 import {type UserListWithPermissionsHookValue} from 'sanity'
 
 import {editorSchemaType} from '../config'
-import {renderBlock as renderNormalBlock} from '../render'
+import {renderBlock as defaultRenderBlock} from '../render'
 import {CommentInputDiscardDialog} from './CommentInputDiscardDialog'
 import {CommentInputInner} from './CommentInputInner'
 import {CommentInputProvider} from './CommentInputProvider'
@@ -82,7 +82,7 @@ export const CommentInput = forwardRef<CommentInputHandle, CommentInputProps>(
       onSubmit,
       placeholder,
       readOnly,
-      renderBlock = renderNormalBlock,
+      renderBlock = defaultRenderBlock,
       value = EMPTY_ARRAY,
       withAvatar = true,
     } = props
