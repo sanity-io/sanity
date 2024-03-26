@@ -50,3 +50,10 @@
 
 # -- Tasks --
 /packages/sanity/src/tasks/ @sanity-io/studio-ex
+
+
+# Code and typegeneration
+/packages/@sanity/codegen/ @sanity-io/content-lake-dx
+/packages/@sanity/cli/src/actions/typegen @sanity-io/content-lake-dx
+/packages/@sanity/cli/src/commands/typegen @sanity-io/content-lake-dx
+/packages/@sanity/cli/src/workers/typegenGenerate.ts @sanity-io/content-lake-dx
