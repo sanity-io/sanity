@@ -1,4 +1,5 @@
 const {getIt} = require('get-it')
+// eslint-disable-next-line import/extensions
 const {keepAlive, promise} = require('get-it/middleware')
 const debug = require('./debug')
 
