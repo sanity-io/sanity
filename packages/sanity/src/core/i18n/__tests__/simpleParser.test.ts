@@ -107,11 +107,18 @@ describe('simpleParser', () => {
       {type: 'tagClose', name: 'Bold'},
     ])
   })
+  test('interpolations with allowed formatters', () => {
+    expect(simpleParser('{{count}} people signed up: {{people, list}}')).toMatchObject([
+      {type: 'interpolation', variable: 'count'},
+      {type: 'text', text: ' people signed up: '},
+      {type: 'interpolation', variable: 'people', formatters: ['list']},
+    ])
+  })
 })
 describe('simpleParser - errors', () => {
-  test('formatters in interpolations', () => {
-    expect(() => simpleParser('This is not allowed: {{countries, list}}')).toThrow(
-      `Interpolations with formatters are not supported when using <Translate>. Found "countries, list". Utilize "useTranslation" instead, or format the values passed to <Translate> ahead of time.`,
+  test('other formatters in interpolations', () => {
+    expect(() => simpleParser('This is not allowed: {{count, number}}')).toThrow(
+      `Interpolations with formatters are not supported when using <Translate>. Found "{{count, number}}". Utilize "useTranslation" instead, or format the values passed to <Translate> ahead of time.`,
     )
   })
   test('unpaired tags', () => {
