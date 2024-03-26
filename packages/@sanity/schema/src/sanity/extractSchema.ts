@@ -347,10 +347,11 @@ function isNumberType(typeDef: SanitySchemaType): typeDef is NumberSchemaType {
 function createStringTypeNodeDefintion(
   stringSchemaType: StringSchemaType,
 ): StringTypeNode | UnionTypeNode<StringTypeNode> {
-  if (stringSchemaType.options?.list) {
+  const listOptions = stringSchemaType.options?.list
+  if (listOptions && Array.isArray(listOptions)) {
     return {
       type: 'union',
-      of: stringSchemaType.options.list.map((v) => ({
+      of: listOptions.map((v) => ({
         type: 'string',
         value: typeof v === 'string' ? v : v.value,
       })),
@@ -364,10 +365,11 @@ function createStringTypeNodeDefintion(
 function createNumberTypeNodeDefintion(
   numberSchemaType: NumberSchemaType,
 ): NumberTypeNode | UnionTypeNode<NumberTypeNode> {
-  if (numberSchemaType.options?.list) {
+  const listOptions = numberSchemaType.options?.list
+  if (listOptions && Array.isArray(listOptions)) {
     return {
       type: 'union',
-      of: numberSchemaType.options.list.map((v) => ({
+      of: listOptions.map((v) => ({
         type: 'number',
         value: typeof v === 'number' ? v : v.value,
       })),
