@@ -111,7 +111,7 @@ export function Translate(props: TranslationProps) {
   const tokens = useMemo(() => simpleParser(translated), [translated])
   const listFormat = useListFormat()
   const formatters: FormatterFns = {
-    list: (listValues: Iterable<string>) => listFormat.format(listValues),
+    list: (listValues) => listFormat.format(listValues),
   }
   return <>{render(tokens, props.values, props.components || {}, formatters)}</>
 }
