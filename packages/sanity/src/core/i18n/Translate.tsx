@@ -1,6 +1,7 @@
 import {type TFunction} from 'i18next'
 import {type ComponentType, createElement, type ReactNode, useMemo} from 'react'
 
+import {useListFormat} from '../hooks/useListFormat'
 import {type CloseTagToken, simpleParser, type TextToken, type Token} from './simpleParser'
 
 const COMPONENT_NAME_RE = /^[A-Z]/
@@ -19,6 +20,8 @@ const RECOGNIZED_HTML_TAGS = [
   'sub',
   'sup',
 ]
+
+type FormatterFns = {list: (value: Iterable<string>) => string}
 
 /**
  * A map of component names to React components. The component names are the names used within the
@@ -106,25 +109,35 @@ export function Translate(props: TranslationProps) {
   })
 
   const tokens = useMemo(() => simpleParser(translated), [translated])
-  return <>{render(tokens, props.values, props.components || {})}</>
+  const listFormat = useListFormat()
+  const formatters: FormatterFns = {
+    list: (listValues) => listFormat.format(listValues),
+  }
+  return <>{render(tokens, props.values, props.components || {}, formatters)}</>
 }
 
 function render(
   tokens: Token[],
   values: TranslationProps['values'],
   componentMap: TranslateComponentMap,
+  formatters: FormatterFns,
 ): ReactNode {
   const [head, ...tail] = tokens
   if (!head) {
     return null
   }
   if (head.type === 'interpolation') {
+    const value = values ? values[head.variable] : undefined
+    if (typeof value === 'undefined') {
+      return `{{${head.variable}}}`
+    }
+
+    const formattedValue = applyFormatters(value, head.formatters || [], formatters)
+
     return (
       <>
-        {!values || typeof values[head.variable] === 'undefined'
-          ? `{{${head.variable}}}`
-          : values[head.variable]}
-        {render(tail, values, componentMap)}
+        {formattedValue}
+        {render(tail, values, componentMap, formatters)}
       </>
     )
   }
@@ -132,7 +145,7 @@ function render(
     return (
       <>
         {head.text}
-        {render(tail, values, componentMap)}
+        {render(tail, values, componentMap, formatters)}
       </>
     )
   }
@@ -145,7 +158,7 @@ function render(
     return (
       <>
         <Component />
-        {render(tail, values, componentMap)}
+        {render(tail, values, componentMap, formatters)}
       </>
     )
   }
@@ -171,15 +184,33 @@ function render(
 
     return Component ? (
       <>
-        <Component>{render(children, values, componentMap)}</Component>
-        {render(remaining, values, componentMap)}
+        <Component>{render(children, values, componentMap, formatters)}</Component>
+        {render(remaining, values, componentMap, formatters)}
       </>
     ) : (
       <>
-        {createElement(head.name, {}, render(children, values, componentMap))}
-        {render(remaining, values, componentMap)}
+        {createElement(head.name, {}, render(children, values, componentMap, formatters))}
+        {render(remaining, values, componentMap, formatters)}
       </>
     )
   }
   return null
+}
+
+function applyFormatters(
+  value: Required<TranslationProps>['values'][string],
+  formatters: string[],
+  formatterFns: FormatterFns,
+): string {
+  let formattedValue = value
+  for (const formatter of formatters) {
+    if (formatter === 'list') {
+      if (Array.isArray(value)) {
+        formattedValue = formatterFns.list(value)
+      } else {
+        throw new Error('List formatter used on non-array value')
+      }
+    }
+  }
+  return `${formattedValue}`
 }

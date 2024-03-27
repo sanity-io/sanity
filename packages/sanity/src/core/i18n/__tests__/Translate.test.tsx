@@ -137,4 +137,18 @@ describe('Translate component', () => {
       'An escaped, <strong>interpolated</strong> thing',
     )
   })
+
+  it('it allows using list formatter for interpolated values', async () => {
+    const wrapper = await getWrapper([
+      createBundle({peopleSignedUp: '{{count}} people signed up: {{people, list}}'}),
+    ])
+    const people = ['Bjørge', 'Rita', 'Espen']
+    const {findByTestId} = render(
+      <TestComponent i18nKey="peopleSignedUp" values={{count: people.length, people}} />,
+      {wrapper},
+    )
+    expect(await findByTestId('output')).toHaveTextContent(
+      '3 people signed up: Bjørge, Rita, and Espen',
+    )
+  })
 })
