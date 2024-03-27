@@ -1,3 +1,4 @@
+import {TrashIcon} from '@sanity/icons'
 import {Box, Flex, Switch, Text, useToast} from '@sanity/ui'
 import {useCallback, useState} from 'react'
 import {type ObjectInputProps, set, useTranslation} from 'sanity'
@@ -73,23 +74,27 @@ export function FormCreate(props: ObjectInputProps) {
       {props.renderDefault(props)}
 
       <Box paddingY={5}>
-        <Flex justify="flex-end" paddingTop={1} gap={4}>
-          <Flex align="center" gap={2} style={{flexGrow: viewMode === 'draft' ? 1 : 0}}>
+        <Flex paddingTop={1} gap={4}>
+          {value._rev && (
+            <Button
+              onClick={handleRemove}
+              mode="bleed"
+              icon={TrashIcon}
+              tooltipProps={{
+                content: t('buttons.discard.text'),
+              }}
+              disabled={removeStatus === 'loading'}
+              loading={removeStatus === 'loading'}
+            />
+          )}
+
+          <Flex align="center" gap={2} justify={'flex-end'} flex={1}>
             <Switch onChange={handleCreateMore} checked={createMore} />
             <Text size={1} muted>
               {t('form.input.create-more.text')}
             </Text>
           </Flex>
 
-          {viewMode === 'draft' && (
-            <Button
-              text={t('buttons.discard.text')}
-              onClick={handleRemove}
-              mode="bleed"
-              disabled={removeStatus === 'loading'}
-              loading={removeStatus === 'loading'}
-            />
-          )}
           <Button text={t('buttons.create.text')} onClick={handleCreate} />
         </Flex>
       </Box>

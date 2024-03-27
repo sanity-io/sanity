@@ -18,7 +18,7 @@ import {CurrentWorkspaceProvider} from '../CurrentWorkspaceProvider'
 function TasksNotificationTargetInner(props: ObjectFieldProps<TaskDocument>) {
   const {inputProps} = props
   const {onChange} = inputProps
-  const {target, _id, context} = useFormValue([]) as TaskDocument
+  const {target, _id, context, _rev} = useFormValue([]) as TaskDocument
   const {title: workspaceTitle, basePath} = useWorkspace()
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const imageBuilder = useMemo(() => imageUrlBuilder(client), [client])
@@ -51,11 +51,15 @@ function TasksNotificationTargetInner(props: ObjectFieldProps<TaskDocument>) {
       targetContentImageUrl: imageUrl,
       targetContentTitle: targetContentTitle,
     }
-    if (deepEquals(notificationTarget, context?.notification)) return
+    // If the task doesn't have a _rev it means it's not created yet, don't add the notification target yet.
+    if (deepEquals(notificationTarget, context?.notification) || !_rev) {
+      return
+    }
 
     onChange(set(notificationTarget, ['notification']))
   }, [
     _id,
+    _rev,
     basePath,
     workspaceTitle,
     documentId,
