@@ -73,7 +73,7 @@ export function FormCreate(props: ObjectInputProps) {
       {props.renderDefault(props)}
 
       <Box paddingY={5}>
-        <Flex justify="flex-end" paddingTop={1} gap={3}>
+        <Flex justify="flex-end" paddingTop={1} gap={4}>
           <Flex align="center" gap={2} style={{flexGrow: viewMode === 'draft' ? 1 : 0}}>
             <Switch onChange={handleCreateMore} checked={createMore} />
             <Text size={1} muted>
