@@ -40,26 +40,47 @@ const tasksLocaleStrings = defineLocalesResources('tasks', {
   /** The label used in the button in the footer action in a document with multiple tasks */
   'document.footer.open-tasks.text_other': '{{count}} open tasks',
 
+  /** The heading in the tasks sidebar, in the assigned tab, when the user hasn't been assigned to any task*/
   'empty-state.list.assigned.heading': "You haven't been assigned any tasks",
+  /** The text in the tasks sidebar, in the assigned tab, when the user hasn't been assigned to any task*/
   'empty-state.list.assigned.text': "Once you're assigned tasks they'll show up here",
+  /** The text in the tasks sidebar button any of the empty states is rendered*/
   'empty-state.list.create-new': 'Create new task',
+  /** The heading in the tasks sidebar, in the document tab, when the document doesn't have any task*/
   'empty-state.list.document.heading': "This document doesn't have any tasks yet",
+  /** The text in the tasks sidebar, in the document tab, when the document doesn't have any task*/
   'empty-state.list.document.text': 'Once a document has connected tasks, they will be shown here.',
+  /** The heading in the tasks sidebar, when viewing the document tab, but there is not an active document*/
+  'empty-state.list.no-active-document.heading': "Open a document to see it's task",
+  /** The text in the tasks sidebar, when viewing the document tab, but there is not an active document*/
+  'empty-state.list.no-active-document.text': 'Tasks on your active document will be shown here.',
+  /** The heading in the tasks sidebar, in the subscriber tab, when the user is not subscribed to any task*/
   'empty-state.list.subscribed.heading': "You haven't subscribed to any tasks",
+  /** The text in the tasks sidebar, in the subscriber tab, when the user is not subscribed to any task*/
   'empty-state.list.subscribed.text':
     'When you create, modify, or comment on a task you will be subscribed automatically',
 
+  /** The heading in the tasks sidebar, in the assigned tab, under the closed details, when it's empty.*/
   'empty-state.status.list.closed.assigned.heading': 'No completed tasks',
+  /** The text in the tasks sidebar, in the assigned tab, under the closed details, when it's empty.*/
   'empty-state.status.list.closed.assigned.text': 'Your tasks marked done will show up here',
+  /** The heading in the tasks sidebar, in the document tab, under the closed details, when it's empty.*/
   'empty-state.status.list.closed.document.heading': 'No completed tasks',
+  /** The heading in the tasks sidebar, in the subscribed tab, under the closed details, when it's empty.*/
   'empty-state.status.list.closed.subscribed.heading': 'No completed tasks',
+  /** The text in the tasks sidebar, in the subscribed tab, under the closed details, when it's empty.*/
   'empty-state.status.list.closed.subscribed.text':
     'Tasks you subscribe to marked done will show up here',
 
+  /** The heading in the tasks sidebar, in the assigned tab, under the open details, when it's empty.*/
   'empty-state.status.list.open.assigned.heading': "You're all caught up",
+  /** The text in the tasks sidebar, in the assigned tab, under the open details, when it's empty.*/
   'empty-state.status.list.open.assigned.text': 'New tasks assigned to you will show up here',
+  /** The heading in the tasks sidebar, in the document tab, under the open details, when it's empty.*/
   'empty-state.status.list.open.document.heading': 'No tasks on this document',
+  /** The heading in the tasks sidebar, in the subscribed tab, under the open details, when it's empty.*/
   'empty-state.status.list.open.subscribed.heading': 'No subscribed tasks',
+  /** The text in the tasks sidebar, in the subscribed tab, under the open details, when it's empty.*/
   'empty-state.status.list.open.subscribed.text': 'Tasks you subscribe to will show up here',
 
   /** Text used in the assignee input when there is no user assigned */
