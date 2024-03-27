@@ -15,6 +15,7 @@ import enableTelemetryCommand from './telemetry/enableTelemetryCommand'
 import telemetryGroup from './telemetry/telemetryGroup'
 import telemetryStatusCommand from './telemetry/telemetryStatusCommand'
 import generateTypegenCommand from './typegen/generateTypesCommand'
+import typegenGroup from './typegen/typegenGroup'
 import upgradeCommand from './upgrade/upgradeCommand'
 import versionsCommand from './versions/versionsCommand'
 
@@ -37,4 +38,5 @@ export const baseCommands: (CliCommandDefinition | CliCommandGroupDefinition)[] 
   enableTelemetryCommand,
   telemetryStatusCommand,
   generateTypegenCommand,
+  typegenGroup,
 ]
