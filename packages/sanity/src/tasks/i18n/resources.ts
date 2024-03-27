@@ -24,15 +24,13 @@ const tasksLocaleStrings = defineLocalesResources('tasks', {
   /** The label for the button that will previous to the next task */
   'buttons.previous.tooltip': 'Go to previous task',
   /** Text for the remove task dialog asking for confirmation of deletion */
-  'dialog.remove-task.body': 'Are you sure you want to delete this task?',
-  /** Text for the remove task dialog clarifying that deletion is permanent */
-  'dialog.remove-task.body2': 'Once deleted, it cannot be restored.',
+  'dialog.remove-task.body': 'Once deleted, a task cannot be recovered.',
   /** The label for the cancel button on the remove task dialog */
   'dialog.remove-task.buttons.cancel.text': 'Cancel',
   /** The label for the confirmation button on the remove task dialog */
-  'dialog.remove-task.buttons.confirm.text': 'Remove',
+  'dialog.remove-task.buttons.confirm.text': 'Delete',
   /** The title for the remove task dialog */
-  'dialog.remove-task.title': 'Remove task',
+  'dialog.remove-task.title': 'Delete this task?',
   /** The text used as a placeholder for the footer action in a document with a single task */
   'document.footer.open-tasks.placeholder_one': 'Open task',
   /** The text used as a placeholder for the footer action in a document with multiple tasks */

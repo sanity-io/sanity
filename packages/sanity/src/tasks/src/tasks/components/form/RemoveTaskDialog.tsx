@@ -29,7 +29,6 @@ export function RemoveTaskDialog(props: ReturnType<typeof useRemoveTask>) {
       >
         <Stack space={3}>
           <Text as="p">{t('dialog.remove-task.body')}</Text>
-          <Text as="p">{t('dialog.remove-task.body2')}</Text>
         </Stack>
       </Dialog>
     )
