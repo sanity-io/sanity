@@ -1,7 +1,14 @@
 import {type TaskDocument} from '../../../types'
 import {type FieldChange} from './parseTransactions'
 
-const FIELDS_TO_GROUP: (keyof TaskDocument)[] = ['title', 'description', 'target']
+const FIELDS_TO_GROUP: (keyof TaskDocument)[] = [
+  'title',
+  'status',
+  'assignedTo',
+  'dueBy',
+  'target',
+  'description',
+]
 const GROUP_TIME = 2 * 60 * 1000 // 2 minutes
 export function groupChanges(changes: FieldChange[]): FieldChange[] {
   // If we have two or more changes done by the same user in a similar timestamp +- X time, in any of the fields specified  we group them together.

@@ -1,6 +1,7 @@
 import {
   type EditorSelection,
   PortableTextEditable,
+  type RenderBlockFunction,
   usePortableTextEditorSelection,
 } from '@sanity/portable-text-editor'
 import {isPortableTextSpan, isPortableTextTextBlock} from '@sanity/types'
@@ -15,7 +16,7 @@ import styled, {css} from 'styled-components'
 import {Popover, type PopoverProps} from '../../../../../../ui-components'
 import {commentsLocaleNamespace} from '../../../../i18n'
 import {MentionsMenu, type MentionsMenuHandle} from '../../mentions'
-import {renderBlock, renderChild} from '../render'
+import {renderChild} from '../render'
 import {useCommentInput} from './useCommentInput'
 import {useCursorElement} from './useCursorElement'
 
@@ -65,6 +66,7 @@ interface EditableProps {
   onKeyDown?: (e: React.KeyboardEvent<Element>) => void
   onSubmit?: () => void
   placeholder?: React.ReactNode
+  renderBlock: RenderBlockFunction
 }
 
 export interface EditableHandle {
@@ -75,11 +77,12 @@ export function Editable(props: EditableProps) {
   const {t} = useTranslation(commentsLocaleNamespace)
   const {
     focusLock,
-    placeholder = t('compose.create-comment-placeholder'),
     onFocus,
     onBlur,
     onKeyDown,
     onSubmit,
+    placeholder = t('compose.create-comment-placeholder'),
+    renderBlock,
   } = props
   const [popoverElement, setPopoverElement] = useState<HTMLDivElement | null>(null)
   const rootElementRef = useRef<HTMLDivElement | null>(null)
@@ -126,19 +129,21 @@ export function Editable(props: EditableProps) {
           if (event.shiftKey) {
             break
           }
-          // Enter is being used both to select something from the mentionsMenu
-          // or to submit the comment. Prevent the default behavior.
-          event.preventDefault()
-          event.stopPropagation()
 
           // If the mention menu is open close it, but don't submit.
           if (mentionsMenuOpen) {
+            // Enter is being used both to select something from the mentionsMenu, prevent the default behavior.
+            event.preventDefault()
+            event.stopPropagation()
             closeMentions()
             break
           }
 
           // Submit the comment if eligible for submission
           if (onSubmit && canSubmit) {
+            // Enter is being used to submit the comment, prevent the default behavior.
+            event.preventDefault()
+            event.stopPropagation()
             onSubmit()
           }
           break

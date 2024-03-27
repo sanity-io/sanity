@@ -1,4 +1,9 @@
-import {type EditorChange, keyGenerator, PortableTextEditor} from '@sanity/portable-text-editor'
+import {
+  type EditorChange,
+  keyGenerator,
+  PortableTextEditor,
+  type RenderBlockFunction,
+} from '@sanity/portable-text-editor'
 import {type CurrentUser, type PortableTextBlock} from '@sanity/types'
 import {type AvatarSize, focusFirstDescendant, focusLastDescendant, Stack} from '@sanity/ui'
 import type * as React from 'react'
@@ -6,6 +11,7 @@ import {forwardRef, useCallback, useImperativeHandle, useMemo, useRef, useState}
 import {type UserListWithPermissionsHookValue} from 'sanity'
 
 import {editorSchemaType} from '../config'
+import {renderBlock as defaultRenderBlock} from '../render'
 import {CommentInputDiscardDialog} from './CommentInputDiscardDialog'
 import {CommentInputInner} from './CommentInputInner'
 import {CommentInputProvider} from './CommentInputProvider'
@@ -34,6 +40,7 @@ export interface CommentInputProps {
   onSubmit?: () => void
   placeholder?: React.ReactNode
   readOnly?: boolean
+  renderBlock?: RenderBlockFunction
   value: PortableTextBlock[] | null
   withAvatar?: boolean
   avatarSize?: AvatarSize
@@ -75,6 +82,7 @@ export const CommentInput = forwardRef<CommentInputHandle, CommentInputProps>(
       onSubmit,
       placeholder,
       readOnly,
+      renderBlock = defaultRenderBlock,
       value = EMPTY_ARRAY,
       withAvatar = true,
     } = props
@@ -231,6 +239,7 @@ export const CommentInput = forwardRef<CommentInputHandle, CommentInputProps>(
                   onKeyDown={onKeyDown}
                   onSubmit={onSubmit && handleSubmit}
                   placeholder={placeholder}
+                  renderBlock={renderBlock}
                   withAvatar={withAvatar}
                 />
               </Stack>

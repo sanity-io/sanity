@@ -6,6 +6,7 @@ const path = require('path')
 const {createClient} = require('@sanity/client')
 const sanityImport = require('@sanity/import')
 const {getIt} = require('get-it')
+// eslint-disable-next-line import/extensions
 const {promise} = require('get-it/middleware')
 const meow = require('meow')
 const ora = require('ora')

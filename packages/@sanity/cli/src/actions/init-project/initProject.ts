@@ -964,9 +964,8 @@ export default async function initSanity(
 
   function selectProjectTemplate() {
     // Make sure the --quickstart and --template are not used together
-    // Force template to clean if --quickstart is used
     if (flags.quickstart) {
-      return 'clean'
+      return 'quickstart'
     }
 
     const defaultTemplate = unattended || flags.template ? flags.template || 'clean' : null

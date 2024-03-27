@@ -3,6 +3,7 @@ import sanityImport from '@sanity/import'
 import {createReadStream} from 'fs'
 import fs from 'fs/promises'
 import {getIt} from 'get-it'
+// eslint-disable-next-line import/extensions
 import {promise} from 'get-it/middleware'
 import padStart from 'lodash/padStart'
 import path from 'path'
