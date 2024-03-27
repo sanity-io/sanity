@@ -65,11 +65,11 @@ const tasksLocaleStrings = defineLocalesResources('tasks', {
   'empty-state.status.list.open.subscribed.text': 'Tasks you subscribe to will show up here',
 
   /** Text used in the assignee input when there is no user assigned */
-  'form.input.assignee.no-user-assigned.text': 'Not assigned',
+  'form.input.assignee.no-user-assigned.text': 'Unassigned',
   /** Text used in the assignee input when searching and no users are found */
   'form.input.assignee.search.no-users.text': 'No users found',
   /** Placeholder text used in the search box in the assignee input */
-  'form.input.assignee.search.placeholder': 'Select username',
+  'form.input.assignee.search.placeholder': 'Select assignee',
   /** Text used in the assignee input when user is not authorized */
   'form.input.assignee.unauthorized.text': 'Unauthorized',
   /** Text used in the assignee input when user is not found */
@@ -85,7 +85,7 @@ const tasksLocaleStrings = defineLocalesResources('tasks', {
   /** The text used in the target input when encountering a schema error */
   'form.input.target.error.schema-not-found': 'Schema not found',
   /** The placeholder text used in the target input for the search component */
-  'form.input.target.search.placeholder': 'Select document',
+  'form.input.target.search.placeholder': 'Select target document',
   /** The placeholder text for the title input */
   'form.input.title.placeholder': 'Task title',
   /** The status error message presented when the user does not supply a title */
