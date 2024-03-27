@@ -31,7 +31,7 @@ export function TasksActivityCommentItem(props: TasksActivityCommentItemProps) {
   const {parentComment} = props
 
   return (
-    <ActivityItem userId={parentComment.authorId}>
+    <ActivityItem userId={parentComment.authorId} avatarPaddingTop={3}>
       <CommentListItemRoot>
         <CommentsListItem
           {...props}

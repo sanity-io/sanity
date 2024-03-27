@@ -13,11 +13,12 @@ const ActivityItemChildrenContainer = styled.div`
 interface ActivityItemProps {
   userId: string
   children: React.ReactNode
+  avatarPaddingTop?: number
 }
-export function ActivityItem({userId, children}: ActivityItemProps) {
+export function ActivityItem({avatarPaddingTop = 1, userId, children}: ActivityItemProps) {
   return (
     <Flex>
-      <Box marginRight={3} paddingTop={1}>
+      <Box marginRight={3} paddingTop={avatarPaddingTop}>
         <TasksUserAvatar user={{id: userId}} size={0} />
       </Box>
       <ActivityChildrenRoot align="center" flex={1}>
