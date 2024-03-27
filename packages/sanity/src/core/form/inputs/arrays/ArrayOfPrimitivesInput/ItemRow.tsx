@@ -67,7 +67,7 @@ export const ItemRow = forwardRef(function ItemRow(
 
   const menu = (
     <MenuButton
-      button={<ContextMenuButton paddingY={3} />}
+      button={<ContextMenuButton />}
       id={`${inputId}-menuButton`}
       popover={MENU_BUTTON_POPOVER_PROPS}
       menu={

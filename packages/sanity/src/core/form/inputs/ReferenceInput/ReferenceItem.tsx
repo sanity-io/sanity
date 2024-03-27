@@ -190,7 +190,7 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
     () =>
       readOnly ? null : (
         <MenuButton
-          button={<ContextMenuButton paddingY={3} />}
+          button={<ContextMenuButton />}
           id={`${inputId}-menuButton`}
           menu={
             <Menu ref={menuRef}>

@@ -122,7 +122,7 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
     () =>
       readOnly ? null : (
         <MenuButton
-          button={<ContextMenuButton paddingY={3} />}
+          button={<ContextMenuButton />}
           id={`${props.inputId}-menuButton`}
           menu={
             <Menu>
