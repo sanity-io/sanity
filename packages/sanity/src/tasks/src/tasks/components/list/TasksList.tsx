@@ -1,12 +1,11 @@
 import {ChevronDownIcon} from '@sanity/icons'
 import {Box, Flex, MenuDivider, Stack, Text} from '@sanity/ui'
 import {Fragment, useMemo} from 'react'
-import {useTranslation} from 'sanity'
 import styled from 'styled-components'
 
-import {tasksLocaleNamespace} from '../../../../i18n'
 import {TASK_STATUS} from '../../constants/TaskStatus'
-import {type TaskDocument} from '../../types'
+import {type TaskDocument, type TaskStatus} from '../../types'
+import {EmptyStatusListState, EmptyTasksListState} from './EmptyStates'
 import {TasksListItem} from './TasksListItem'
 
 const EMPTY_ARRAY: [] = []
@@ -33,7 +32,7 @@ const SummaryBox = styled(Box)`
 `
 
 interface TaskListProps {
-  status: string
+  status: TaskStatus
   tasks: TaskDocument[]
   onTaskSelect: (id: string) => void
 }
@@ -56,26 +55,30 @@ function TaskList(props: TaskListProps) {
       </SummaryBox>
 
       <Stack space={4} marginTop={4} paddingBottom={5}>
-        {tasks.map((task, index) => {
-          const showDivider = index < tasks.length - 1
+        {tasks?.length > 0 ? (
+          tasks.map((task, index) => {
+            const showDivider = index < tasks.length - 1
 
-          return (
-            <Fragment key={task._id}>
-              <TasksListItem
-                documentId={task._id}
-                title={task.title}
-                dueBy={task.dueBy}
-                assignedTo={task.assignedTo}
-                target={task.target}
-                // eslint-disable-next-line react/jsx-no-bind
-                onSelect={() => onTaskSelect(task._id)}
-                status={task.status}
-              />
+            return (
+              <Fragment key={task._id}>
+                <TasksListItem
+                  documentId={task._id}
+                  title={task.title}
+                  dueBy={task.dueBy}
+                  assignedTo={task.assignedTo}
+                  target={task.target}
+                  // eslint-disable-next-line react/jsx-no-bind
+                  onSelect={() => onTaskSelect(task._id)}
+                  status={task.status}
+                />
 
-              {showDivider && <MenuDivider />}
-            </Fragment>
-          )
-        })}
+                {showDivider && <MenuDivider />}
+              </Fragment>
+            )
+          })
+        ) : (
+          <EmptyStatusListState status={status} />
+        )}
       </Stack>
     </DetailsFlex>
   )
@@ -106,23 +109,16 @@ export function TasksList(props: TasksListProps) {
 
   const hasOpenTasks = tasksByStatus.open?.length > 0
   const hasClosedTasks = tasksByStatus.closed?.length > 0
-  const {t} = useTranslation(tasksLocaleNamespace)
 
   return (
-    <Stack space={4}>
+    <Stack space={4} flex={1}>
       {!hasOpenTasks && !hasClosedTasks ? (
-        <Text as="p" size={1} muted>
-          {t('list.empty.text')}
-        </Text>
+        <EmptyTasksListState />
       ) : (
         <>
-          {hasOpenTasks && (
-            <TaskList status="open" tasks={tasksByStatus.open} onTaskSelect={onTaskSelect} />
-          )}
+          <TaskList status="open" tasks={tasksByStatus.open} onTaskSelect={onTaskSelect} />
 
-          {hasClosedTasks && (
-            <TaskList status="closed" tasks={tasksByStatus.closed} onTaskSelect={onTaskSelect} />
-          )}
+          <TaskList status="closed" tasks={tasksByStatus.closed} onTaskSelect={onTaskSelect} />
         </>
       )}
     </Stack>

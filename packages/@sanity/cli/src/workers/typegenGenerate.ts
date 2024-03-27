@@ -5,10 +5,11 @@ import {
   getResolver,
   readSchema,
   registerBabel,
+  safeParseQuery,
   TypeGenerator,
 } from '@sanity/codegen'
 import createDebug from 'debug'
-import {parse, typeEvaluate, type TypeNode} from 'groq-js'
+import {typeEvaluate, type TypeNode} from 'groq-js'
 
 const $info = createDebug('sanity:codegen:generate:info')
 
@@ -99,7 +100,7 @@ async function main() {
     }[] = []
     for (const {name: queryName, result: query} of result.queries) {
       try {
-        const ast = parse(query)
+        const ast = safeParseQuery(query)
         const queryTypes = typeEvaluate(ast, schema)
 
         const type = typeGenerator.generateTypeNodeTypes(`${queryName}Result`, queryTypes)
