@@ -2,7 +2,7 @@
 import {type SanityClient} from '@sanity/client'
 import {type SanityDocument} from '@sanity/types'
 import {groupBy} from 'lodash'
-import {defer, type Observable, of as observableOf} from 'rxjs'
+import {defer, type Observable, of as observableOf, of, timer} from 'rxjs'
 import {concatMap, map, mergeMap, scan} from 'rxjs/operators'
 
 import {
@@ -124,6 +124,9 @@ export function getPairListener(
     ),
     // note: this flattens the array, and in the case of an empty array, no event will be pushed downstream
     mergeMap((v) => v.next),
+    concatMap((result) =>
+      (window as any).SLOW ? timer(10000).pipe(map(() => result)) : of(result),
+    ),
   )
 
   function fetchInitialDocumentSnapshots(): Observable<Snapshots> {
