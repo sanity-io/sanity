@@ -170,33 +170,35 @@ function renderDocumentFromWorkerData() {
   // Require hook #2
   // Use `esbuild` to allow JSX/TypeScript and modern JS features
   debug('Registering esbuild for node %s', process.version)
-  const {unregister} = __DEV__
-    ? {unregister: () => undefined}
-    : require('esbuild-register/dist/node').register({
-        target: `node${process.version.slice(1)}`,
-        jsx: 'automatic',
-        extensions: ['.jsx', '.ts', '.tsx', '.mjs'],
-      })
+  let esbuild = {unregister: () => undefined}
+  if (!__DEV__) {
+    esbuild = require('esbuild-register/dist/node').register({
+      target: `node${process.version.slice(1)}`,
+      jsx: 'automatic',
+      extensions: ['.jsx', '.ts', '.tsx', '.mjs'],
+    })
+  }
 
   // Require hook #3
   // Same as above, but we don't want to enforce a .jsx extension for anything with JSX
   debug('Registering esbuild for .js files using jsx loader')
-  const {unregister: unregisterJs} = __DEV__
-    ? () => ({unregister: () => undefined})
-    : require('esbuild-register/dist/node').register({
-        target: `node${process.version.slice(1)}`,
-        extensions: ['.js'],
-        jsx: 'automatic',
-        loader: 'jsx',
-      })
+  let esbuildJsx = {unregister: () => undefined}
+  if (!__DEV__) {
+    esbuildJsx = require('esbuild-register/dist/node').register({
+      target: `node${process.version.slice(1)}`,
+      extensions: ['.js'],
+      jsx: 'automatic',
+      loader: 'jsx',
+    })
+  }
 
   const html = getDocumentHtml(studioRootPath, props)
 
   parentPort.postMessage({type: 'result', html})
 
   // Be polite and clean up after esbuild-register
-  unregister()
-  unregisterJs()
+  esbuild.unregister()
+  esbuildJsx.unregister()
 }
 
 function getDocumentHtml(studioRootPath: string, props?: DocumentProps): string {
