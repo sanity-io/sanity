@@ -10,7 +10,6 @@ import {
   Text,
   TextInput,
 } from '@sanity/ui'
-import {motion} from 'framer-motion'
 import {deburr} from 'lodash'
 import {type ChangeEvent, type KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
 import {LoadingBlock, type UserWithPermission, useTranslation} from 'sanity'
@@ -93,17 +92,17 @@ function MentionsMenu({onSelect, value = ''}: {onSelect: SelectItemHandler; valu
 
     const deburredOptions = options?.map((option) => ({
       ...option,
-      displayName: deburr(option.displayName || '').toLocaleLowerCase(),
+      searchName: deburr(option.displayName || '').toLocaleLowerCase(),
     }))
 
     const filtered = deburredOptions
       ?.filter((option) => {
-        return option?.displayName?.includes(deburredSearchTerm)
+        return option?.searchName.includes(deburredSearchTerm)
       })
       // Sort by whether the displayName starts with the search term to get more relevant results first
       ?.sort((a, b) => {
-        const matchA = a.displayName?.startsWith(deburredSearchTerm)
-        const matchB = b.displayName?.startsWith(deburredSearchTerm)
+        const matchA = a.searchName.startsWith(deburredSearchTerm)
+        const matchB = b.searchName.startsWith(deburredSearchTerm)
 
         if (matchA && !matchB) return -1
         if (!matchA && matchB) return 1
@@ -183,23 +182,19 @@ export function AssigneeSelectionMenu(props: {
 }) {
   const {onSelect, menuButton, value} = props
 
-  const ref = useRef<HTMLDivElement | null>(null)
-
   return (
-    <motion.div initial={{opacity: 0}} animate={{opacity: 1}} ref={ref}>
-      <MenuButton
-        button={menuButton}
-        id="assign-user-menu"
-        menu={
-          <StyledMenu>
-            <MentionsMenu onSelect={onSelect} value={value} />
-          </StyledMenu>
-        }
-        popover={{
-          placement: 'bottom',
-          portal: true,
-        }}
-      />
-    </motion.div>
+    <MenuButton
+      button={menuButton}
+      id="assign-user-menu"
+      menu={
+        <StyledMenu>
+          <MentionsMenu onSelect={onSelect} value={value} />
+        </StyledMenu>
+      }
+      popover={{
+        placement: 'bottom',
+        portal: true,
+      }}
+    />
   )
 }
