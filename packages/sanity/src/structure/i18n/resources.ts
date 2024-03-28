@@ -38,6 +38,8 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   'action.duplicate.label': 'Duplicate',
   /** Label for the "Duplicate" document action while the document is being duplicated */
   'action.duplicate.running.label': 'Duplicating…',
+  /** Tooltip text when publish button is disabled because the document is already published and published time was 'yesterday'.*/
+  'action.publish.already-published-yesterday.tooltip': 'Published yesterday',
   /** Tooltip when publish button is disabled because the document is already published, and published time is unavailable.*/
   'action.publish.already-published.no-time-ago.tooltip': 'Already published',
   /** Tooltip when publish button is disabled because the document is already published.*/
