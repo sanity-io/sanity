@@ -1,6 +1,7 @@
 import {type TFunction} from 'i18next'
 import {type ComponentType, createElement, type ReactNode, useMemo} from 'react'
 
+import {useListFormat} from '../hooks/useListFormat'
 import {type CloseTagToken, simpleParser, type TextToken, type Token} from './simpleParser'
 
 const COMPONENT_NAME_RE = /^[A-Z]/
@@ -108,13 +109,7 @@ export function Translate(props: TranslationProps) {
   })
 
   const tokens = useMemo(() => simpleParser(translated), [translated])
-
-  /*
-   * defaulting to en-US for now, since invoking useListFormat (which would be aware of locale)
-   * in certain contexts will throw an error. In the future, we can consider passing the locale
-   * or changing the provider order to allow for this.
-   */
-  const listFormat = new Intl.ListFormat('en-US', {style: 'narrow'})
+  const listFormat = useListFormat()
   const formatters: FormatterFns = {
     list: (listValues) => listFormat.format(listValues),
   }

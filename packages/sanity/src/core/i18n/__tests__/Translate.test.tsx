@@ -148,7 +148,7 @@ describe('Translate component', () => {
       {wrapper},
     )
     expect(await findByTestId('output')).toHaveTextContent(
-      '3 people signed up: Bjørge, Rita, Espen',
+      '3 people signed up: Bjørge, Rita, and Espen',
     )
   })
 })
