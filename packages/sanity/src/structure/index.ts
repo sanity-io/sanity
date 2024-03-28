@@ -1,4 +1,4 @@
-export {type CommentIntentGetter, CommentsIntentProvider} from '../comments'
+export {type CommentIntentGetter, CommentsIntentProvider} from '../core/comments'
 export type {
   BackLinkProps,
   ChildLinkProps,

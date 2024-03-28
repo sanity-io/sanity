@@ -26,11 +26,12 @@ test.describe('Comments', () => {
       const $editable = page.getByTestId('comment-input-editable')
       await $editable.waitFor({state: 'visible'})
       await page.keyboard.type('@')
-      await expect(page.getByTestId('comments-mentions-menu')).toBeVisible()
+      const $mentionsMenu = page.getByTestId('comments-mentions-menu')
+      await $mentionsMenu.waitFor({state: 'visible'})
       await page.keyboard.press('Enter')
-      await expect(page.getByTestId('comments-mentions-menu')).not.toBeVisible()
+      await $mentionsMenu.waitFor({state: 'detached'})
       // TODO: find a way to mock `useUser`!
-      await expect(page.getByTestId('comment-mentions-loading-skeleton')).toBeVisible()
+      await page.getByTestId('comment-mentions-loading-skeleton').waitFor({state: 'visible'})
     })
 
     test('Should bring up mentions menu when pressing the @ button, whilst retaining focus on PTE', async ({
@@ -41,27 +42,28 @@ test.describe('Comments', () => {
       const $editable = page.getByTestId('comment-input-editable')
       await $editable.waitFor({state: 'visible'})
       const $mentionButton = page.getByTestId('comment-input-mention-button')
+      await $mentionButton.waitFor({state: 'visible'})
       await $mentionButton.click()
-      await expect(page.getByTestId('comments-mentions-menu')).toBeVisible()
+      await page.getByTestId('comments-mentions-menu').waitFor({state: 'visible'})
       await expect($editable).toBeFocused()
     })
 
     test('Should be able to submit', async ({mount, page}) => {
       const {insertPortableText} = testHelpers({page})
-      let submitted = false
-      const onSubmit = () => {
-        submitted = true
-      }
-      await mount(<CommentsInputStory onSubmit={onSubmit} />)
+      let resolve!: () => void
+      const submitted = Object.assign(new Promise<void>((r) => (resolve = r)), {resolve})
+
+      // eslint-disable-next-line react/jsx-handler-names
+      await mount(<CommentsInputStory onSubmit={submitted.resolve} />)
       const $editable = page.getByTestId('comment-input-editable')
+      $editable.waitFor({state: 'visible'})
       await expect($editable).toBeEditable()
       // Test that blank comments can't be submitted
       await page.keyboard.press('Enter')
-      expect(submitted).toBe(false)
       await insertPortableText('This is a comment!', $editable)
       await expect($editable).toHaveText('This is a comment!')
       await page.keyboard.press('Enter')
-      expect(submitted).toBe(true)
+      await submitted
     })
   })
 })
