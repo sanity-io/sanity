@@ -10,11 +10,5 @@ import {type CommentsEnabledContextValue} from '../context/enabled/types'
  * if comments is enabled for the current document in the config API.
  */
 export function useCommentsEnabled(): CommentsEnabledContextValue {
-  const ctx = useContext(CommentsEnabledContext)
-
-  if (ctx === null) {
-    throw new Error('useCommentsEnabled: missing context value')
-  }
-
-  return ctx
+  return useContext(CommentsEnabledContext)
 }
