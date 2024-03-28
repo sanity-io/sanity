@@ -3,7 +3,8 @@ import {AnimatePresence, motion, type Transition, type Variants} from 'framer-mo
 import {type ActiveToolLayoutProps} from 'sanity'
 import {css, styled} from 'styled-components'
 
-import {TasksStudioSidebar, useTasksEnabled, useTasksNavigation} from '../src'
+import {TasksStudioSidebar} from '../components'
+import {useTasksEnabled, useTasksNavigation} from '../context'
 
 const VARIANTS: Variants = {
   hidden: {opacity: 0},

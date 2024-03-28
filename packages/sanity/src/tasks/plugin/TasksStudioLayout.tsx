@@ -1,8 +1,13 @@
 import {AddonDatasetProvider, type LayoutProps} from 'sanity'
 
-import {ConditionalWrapper} from '../../ui-components/conditionalWrapper'
-import {TasksEnabledProvider, TasksNavigationProvider, TasksProvider, useTasksEnabled} from '../src'
-import {TasksUpsellProvider} from '../src/tasks/context/upsell'
+import {ConditionalWrapper} from '../../ui-components'
+import {
+  TasksEnabledProvider,
+  TasksNavigationProvider,
+  TasksProvider,
+  TasksUpsellProvider,
+  useTasksEnabled,
+} from '../context'
 
 const TasksStudioLayoutInner = (props: LayoutProps) => {
   const {enabled, mode} = useTasksEnabled()

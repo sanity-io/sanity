@@ -5,8 +5,8 @@ import {useTranslation} from 'sanity'
 import {styled} from 'styled-components'
 
 import {Button} from '../../ui-components'
+import {useTasks, useTasksEnabled, useTasksNavigation} from '../context'
 import {tasksLocaleNamespace} from '../i18n'
-import {useTasks, useTasksEnabled, useTasksNavigation} from '../src'
 
 const ButtonContainer = styled.div`
   position: relative;
