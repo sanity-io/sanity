@@ -3,7 +3,7 @@ import {noop} from 'lodash'
 import {useState} from 'react'
 import {type UserListWithPermissionsHookValue} from 'sanity'
 
-import {CommentInput} from '../../../src/comments/components/pte/comment-input/CommentInput'
+import {CommentInput} from '../../../src/core/comments/components/pte/comment-input/CommentInput'
 import {TestWrapper} from '../formBuilder/utils/TestWrapper'
 
 const currentUser: CurrentUser = {
