@@ -63,7 +63,7 @@ export function TasksActivityCommentInput(props: TasksCommentActivityInputProps)
   const {t} = useTranslation(tasksLocaleNamespace)
 
   return (
-    <ActivityItem userId={currentUser.id}>
+    <ActivityItem userId={currentUser.id} avatarPaddingTop={3}>
       <Card tone="transparent" radius={3} padding={2}>
         <CommentInput
           withAvatar={false}

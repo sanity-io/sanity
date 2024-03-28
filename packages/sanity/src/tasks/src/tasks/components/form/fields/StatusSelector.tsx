@@ -8,15 +8,18 @@ import {
   type Path,
   set,
   type TitledListValue,
+  useTranslation,
 } from 'sanity'
 
 import {Button, MenuButton, MenuItem} from '../../../../../../ui-components'
+import {tasksLocaleNamespace} from '../../../../../i18n'
 import {TASK_STATUS} from '../../../constants/TaskStatus'
 
 export const StatusMenuButton = forwardRef(function StatusMenuButton(
   props: {value: string | undefined; options: TitledListValue<string>[]},
   ref: ForwardedRef<HTMLButtonElement>,
 ) {
+  const {t} = useTranslation(tasksLocaleNamespace)
   const {value, options, ...rest} = props
   const selectedOption = options.find((option) => option.value === value)
   const icon = TASK_STATUS.find((status) => status.value === value)?.icon
@@ -24,7 +27,7 @@ export const StatusMenuButton = forwardRef(function StatusMenuButton(
     <Button
       {...rest}
       ref={ref}
-      tooltipProps={null}
+      tooltipProps={{content: t('form.input.status.button.tooltip')}}
       icon={icon}
       text={selectedOption?.title || value}
       tone="default"

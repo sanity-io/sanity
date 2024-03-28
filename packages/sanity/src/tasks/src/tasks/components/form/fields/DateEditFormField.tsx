@@ -110,6 +110,11 @@ export function DateEditFormField(props: {
         text={dueDateIsThisYear ? dueByeDisplayValue.short : dueByeDisplayValue.full}
         onClick={handleClick}
         ref={buttonRef}
+        tooltipProps={{
+          content: value
+            ? t('form.input.date.buttons.tooltip')
+            : t('form.input.date.buttons.empty.tooltip'),
+        }}
       />
     </Popover>
   )

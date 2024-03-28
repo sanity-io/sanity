@@ -2,7 +2,7 @@ import {Box, Flex, Text} from '@sanity/ui'
 import {memo} from 'react'
 
 import {Tooltip} from '../../../../../ui-components'
-import {getChangeDetails, UpdatedTimeAgo, UserName} from './helpers'
+import {getChangeDetails, NoWrap, UpdatedTimeAgo, UserName} from './helpers'
 import {type FieldChange} from './helpers/parseTransactions'
 
 interface EditedAtProps {
@@ -25,7 +25,9 @@ export const EditedAt = memo(
         <Text muted size={1}>
           <UserName userId={activity.author} /> {text} {changeTo} •{' '}
           <Tooltip content={formattedDate} placement="top-end">
-            <time dateTime={formattedDate}>{timeAgo}</time>
+            <NoWrap>
+              <time dateTime={formattedDate}>{timeAgo}</time>
+            </NoWrap>
           </Tooltip>
         </Text>
       </Flex>
