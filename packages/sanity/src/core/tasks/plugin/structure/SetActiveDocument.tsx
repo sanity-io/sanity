@@ -1,7 +1,7 @@
 import {useEffect} from 'react'
-import {getPublishedId} from 'sanity'
 
-import {usePane} from '../../../structure/components'
+import {usePane} from '../../../../structure/components'
+import {getPublishedId} from '../../../util/draftUtils'
 import {type ActiveDocument, useTasks, useTasksEnabled} from '../../context'
 
 function SetActiveDocumentInner(document: ActiveDocument) {

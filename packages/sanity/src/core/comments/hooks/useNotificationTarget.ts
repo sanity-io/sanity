@@ -2,8 +2,8 @@ import {useCallback} from 'react'
 import {useMemoObservable} from 'react-rx'
 import {of} from 'rxjs'
 import {getPreviewStateObservable, useDocumentPreviewStore, useSchema, useWorkspace} from 'sanity'
+import {usePaneRouter} from 'sanity/structure'
 
-import {usePaneRouter} from '../../../structure/components'
 import {COMMENTS_INSPECTOR_NAME} from '../constants'
 import {type CommentContext} from '../types'
 

@@ -1,12 +1,13 @@
 import {Flex, Layer, useClickOutside, useLayer, useToast} from '@sanity/ui'
 import * as PathUtils from '@sanity/util/paths'
 import {Fragment, useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {type DocumentInspectorProps, useCurrentUser, useTranslation, useUnique} from 'sanity'
+import {useDocumentPane, usePaneRouter} from 'sanity/structure'
 import styled from 'styled-components'
 
-import {usePaneRouter} from '../../../../structure/components'
-import {EMPTY_PARAMS} from '../../../../structure/constants'
-import {useDocumentPane} from '../../../../structure/panes/document/useDocumentPane'
+import {type DocumentInspectorProps} from '../../../config/document/inspector'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {useCurrentUser} from '../../../store/user/hooks'
+import {useUnique} from '../../../util/useUnique'
 import {
   type CommentBaseCreatePayload,
   CommentDeleteDialog,
@@ -29,6 +30,8 @@ import {
 import {commentsLocaleNamespace} from '../../i18n'
 import {CommentsInspectorFeedbackFooter} from './CommentsInspectorFeedbackFooter'
 import {CommentsInspectorHeader} from './CommentsInspectorHeader'
+
+const EMPTY_PARAMS = {}
 
 interface CommentToDelete {
   commentId: string
