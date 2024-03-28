@@ -1,6 +1,7 @@
 import {Flex, Stack} from '@sanity/ui'
 import styled from 'styled-components'
 
+// @todo remove import/dependency on structure
 import {DOCUMENT_INSPECTOR_MAX_WIDTH} from '../../../../structure/panes/document/constants'
 import {CommentsUpsellProvider} from '../../../context'
 import {useCommentsUpsell} from '../../../hooks'

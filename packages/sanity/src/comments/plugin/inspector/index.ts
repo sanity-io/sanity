@@ -1,8 +1,8 @@
 import {CommentIcon} from '@sanity/icons'
 import {defineDocumentInspector, type DocumentInspectorMenuItem, useTranslation} from 'sanity'
 
-import {COMMENTS_INSPECTOR_NAME} from '../../../structure/panes/document/constants'
 import {useCommentsEnabled} from '../..'
+import {COMMENTS_INSPECTOR_NAME} from '../../constants'
 import {commentsLocaleNamespace} from '../../i18n'
 import {CommentsInspector} from './CommentsInspector'
 

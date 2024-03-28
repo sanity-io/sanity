@@ -2,7 +2,6 @@ import {useCallback} from 'react'
 import {type DocumentLayoutProps} from 'sanity'
 
 import {useDocumentPane} from '../../../structure'
-import {COMMENTS_INSPECTOR_NAME} from '../../../structure/panes/document/constants'
 import {
   CommentsAuthoringPathProvider,
   CommentsEnabledProvider,
@@ -10,6 +9,7 @@ import {
   CommentsSelectedPathProvider,
   useCommentsEnabled,
 } from '../..'
+import {COMMENTS_INSPECTOR_NAME} from '../../constants'
 
 export function CommentsDocumentLayout(props: DocumentLayoutProps) {
   const {documentId, documentType} = props

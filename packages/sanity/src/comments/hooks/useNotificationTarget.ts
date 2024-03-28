@@ -4,7 +4,7 @@ import {of} from 'rxjs'
 import {getPreviewStateObservable, useDocumentPreviewStore, useSchema, useWorkspace} from 'sanity'
 
 import {usePaneRouter} from '../../structure/components'
-import {COMMENTS_INSPECTOR_NAME} from '../../structure/panes/document/constants'
+import {COMMENTS_INSPECTOR_NAME} from '../constants'
 import {type CommentContext} from '../types'
 
 interface NotificationTargetHookOptions {
