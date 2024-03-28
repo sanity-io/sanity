@@ -102,7 +102,12 @@ export function ArrayOfObjectsField(props: {
       // blur, not when a child element receives blur, but React has decided
       // to let focus events bubble, so this workaround is needed
       // Background: https://github.com/facebook/react/issues/6410#issuecomment-671915381
-      if (event.currentTarget === event.target && event.currentTarget === focusRef.current) {
+      if (
+        event.currentTarget === event.target &&
+        (event.currentTarget === focusRef.current ||
+          // PortableTextInput forwarded ref is a custom handle, i.e. not an HTMLElement
+          !(focusRef.current instanceof HTMLElement))
+      ) {
         onPathBlur(member.field.path)
       }
     },
