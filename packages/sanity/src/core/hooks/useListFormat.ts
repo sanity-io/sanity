@@ -34,6 +34,15 @@ export interface UseListFormatOptions {
  * @public
  */
 export function useListFormat(options: UseListFormatOptions = {}): Intl.ListFormat {
-  const currentLocale = useCurrentLocale().id
-  return intlCache.listFormat(currentLocale, options)
+  /*
+   * Certain components using this hook (such as the <Translate/> in toasts)
+   * may not have access to the LocaleProvider that lets us use useCurrentLocale.
+   * In that case, we fall back to a default, unobstrusive list format.
+   */
+  try {
+    const currentLocale = useCurrentLocale().id
+    return intlCache.listFormat(currentLocale, options)
+  } catch {
+    return intlCache.listFormat('en-US', {...options, style: 'narrow'})
+  }
 }
