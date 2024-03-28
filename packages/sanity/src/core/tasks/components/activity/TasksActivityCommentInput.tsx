@@ -7,7 +7,7 @@ import {
   type CommentInputHandle,
   type CommentInputProps,
   hasCommentMessageValue,
-} from '../../../comments'
+} from '../../../core/comments'
 import {tasksLocaleNamespace} from '../../i18n'
 import {ActivityItem} from './TasksActivityItem'
 
