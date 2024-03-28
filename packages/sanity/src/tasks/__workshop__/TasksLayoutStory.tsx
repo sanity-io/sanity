@@ -1,9 +1,9 @@
 import {useState} from 'react'
 import {AddonDatasetProvider} from 'sanity'
 
-import {type SidebarTabsIds, TasksNavigationProvider, TasksProvider} from '../src/'
-import {TaskSidebarContent} from '../src/tasks/components/sidebar/TasksSidebarContent'
-import {TasksSidebarHeader} from '../src/tasks/components/sidebar/TasksSidebarHeader'
+import {TaskSidebarContent} from '../components/sidebar/TasksSidebarContent'
+import {TasksSidebarHeader} from '../components/sidebar/TasksSidebarHeader'
+import {type SidebarTabsIds, TasksNavigationProvider, TasksProvider} from '../context'
 
 function noop(id: string) {
   return null

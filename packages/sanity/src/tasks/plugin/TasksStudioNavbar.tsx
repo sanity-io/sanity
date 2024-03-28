@@ -2,8 +2,8 @@ import {PanelRightIcon, TaskIcon} from '@sanity/icons'
 import {useMemo} from 'react'
 import {type NavbarProps, useTranslation} from 'sanity'
 
+import {useTasksEnabled, useTasksNavigation} from '../context'
 import {tasksLocaleNamespace} from '../i18n'
-import {useTasksEnabled, useTasksNavigation} from '../src'
 
 const EMPTY_ARRAY: [] = []
 
