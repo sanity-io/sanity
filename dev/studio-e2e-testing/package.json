@@ -1,7 +1,7 @@
 {
   "name": "studio-e2e-testing",
   "private": true,
-  "version": "3.36.1",
+  "version": "3.36.2",
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
   "scripts": {
@@ -17,7 +17,7 @@
     "@sanity/google-maps-input": "^3.0.1",
     "@sanity/icons": "^2.11.0",
     "@sanity/ui": "^2.0.12",
-    "@sanity/vision": "3.36.1",
+    "@sanity/vision": "3.36.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-is": "^18.2.0",
