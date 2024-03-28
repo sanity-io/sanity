@@ -1,4 +1,24 @@
-export {type CommentIntentGetter, CommentsIntentProvider} from '../core/comments'
+/**
+ * These are provided from `sanity/structure` for backwards compatibility;
+ * `@sanity/presentation` depends/depended on them from `sanity/structure` originially.
+ *
+ * Do not remove until next major version at the earliest (eg v4)
+ */
+import {
+  type CommentIntentGetter as _CommentIntentGetter,
+  CommentsIntentProvider as _CommentsIntentProvider,
+} from 'sanity'
+
+/**
+ * @deprecated Import from `sanity` instead of `sanity/structure`
+ */
+export type CommentIntentGetter = _CommentIntentGetter
+
+/**
+ * @deprecated Import from `sanity` instead of `sanity/structure`
+ */
+export const CommentsIntentProvider = _CommentsIntentProvider
+
 export type {
   BackLinkProps,
   ChildLinkProps,
