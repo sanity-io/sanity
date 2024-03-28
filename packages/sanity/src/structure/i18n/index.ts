@@ -1,4 +1,4 @@
-import {defineLocaleResourceBundle} from 'sanity'
+import {type LocaleResourceBundle} from 'sanity'
 
 /**
  * The locale namespace for the structure tool
@@ -12,11 +12,11 @@ export const structureLocaleNamespace = 'structure' as const
  *
  * @internal
  */
-export const structureUsEnglishLocaleBundle = defineLocaleResourceBundle({
+export const structureUsEnglishLocaleBundle: LocaleResourceBundle = {
   locale: 'en-US',
   namespace: structureLocaleNamespace,
   resources: () => import('./resources'),
-})
+}
 
 /**
  * The locale resource keys for the structure tool.

@@ -1,4 +1,4 @@
-import {defineLocaleResourceBundle} from 'sanity'
+import {type LocaleResourceBundle} from 'sanity'
 
 /**
  * The locale namespace for the comments plugin
@@ -12,11 +12,11 @@ export const commentsLocaleNamespace = 'comments' as const
  *
  * @internal
  */
-export const commentsUsEnglishLocaleBundle = defineLocaleResourceBundle({
+export const commentsUsEnglishLocaleBundle: LocaleResourceBundle = {
   locale: 'en-US',
   namespace: commentsLocaleNamespace,
   resources: () => import('./resources'),
-})
+}
 
 /**
  * The locale resource keys for the comments plugin.

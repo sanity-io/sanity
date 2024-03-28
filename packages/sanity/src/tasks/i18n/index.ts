@@ -1,4 +1,4 @@
-import {defineLocaleResourceBundle} from 'sanity'
+import {type LocaleResourceBundle} from 'sanity'
 
 /**
  * The locale namespace for the task tool
@@ -12,11 +12,11 @@ export const tasksLocaleNamespace = 'tasks' as const
  *
  * @internal
  */
-export const tasksUsEnglishLocaleBundle = defineLocaleResourceBundle({
+export const tasksUsEnglishLocaleBundle: LocaleResourceBundle = {
   locale: 'en-US',
   namespace: tasksLocaleNamespace,
   resources: () => import('./resources'),
-})
+}
 
 /**
  * The locale resource keys for the task tool.
