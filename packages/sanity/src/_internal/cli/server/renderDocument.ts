@@ -139,7 +139,7 @@ if (!isMainThread && parentPort) {
   renderDocumentFromWorkerData()
 }
 
-function renderDocumentFromWorkerData() {
+async function renderDocumentFromWorkerData() {
   if (!parentPort || !workerData) {
     throw new Error('Must be used as a Worker with a valid options object in worker data')
   }
@@ -192,7 +192,7 @@ function renderDocumentFromWorkerData() {
     })
   }
 
-  const html = getDocumentHtml(studioRootPath, props)
+  const html = await getDocumentHtml(studioRootPath, props)
 
   parentPort.postMessage({type: 'result', html})
 
@@ -201,8 +201,8 @@ function renderDocumentFromWorkerData() {
   esbuildJsx.unregister()
 }
 
-function getDocumentHtml(studioRootPath: string, props?: DocumentProps): string {
-  const Document = getDocumentComponent(studioRootPath)
+async function getDocumentHtml(studioRootPath: string, props?: DocumentProps): Promise<string> {
+  const Document = await getDocumentComponent(studioRootPath)
 
   // NOTE: Validate the list of CSS paths so implementers of `_document.tsx` don't have to
   // - If the path is not a full URL, check if it starts with `/`
@@ -221,9 +221,9 @@ function getDocumentHtml(studioRootPath: string, props?: DocumentProps): string 
   return `<!DOCTYPE html>${result}`
 }
 
-function getDocumentComponent(studioRootPath: string) {
+async function getDocumentComponent(studioRootPath: string) {
   debug('Loading default document component from `sanity` module')
-  const {DefaultDocument} = require('sanity')
+  const {DefaultDocument} = await import('sanity')
 
   debug('Attempting to load user-defined document component from %s', studioRootPath)
   const userDefined = tryLoadDocumentComponent(studioRootPath)
