@@ -191,6 +191,11 @@ export function FormEdit(props: ObjectInputProps) {
       if (patches.some((patch) => patch.path[0] === 'subscribers')) {
         return patches
       }
+      if (
+        patches.some((patch) => patch.path[0] === 'context' && patch.path[1] === 'notification')
+      ) {
+        return patches
+      }
 
       const subscribers = value.subscribers || []
       const newSubscribers = [...subscribers]
