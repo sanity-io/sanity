@@ -3,23 +3,20 @@ import {Box, Card, Flex, LayerProvider, Stack, Text} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
 import {type ForwardedRef, forwardRef, useCallback, useMemo, useState} from 'react'
-import {
-  FormFieldHeaderText,
-  type ObjectFieldProps,
-  SearchPopover,
-  SearchProvider,
-  SearchResultItemPreview,
-  set,
-  unset,
-  useDocumentPresence,
-  useSchema,
-  useTranslation,
-  useWorkspace,
-} from 'sanity'
 import {IntentLink} from 'sanity/router'
 import styled, {css} from 'styled-components'
 
-import {Button} from '../../../../ui-components'
+import {Button} from '../../../../../ui-components'
+import {FormFieldHeaderText, type ObjectFieldProps, set, unset} from '../../../../form'
+import {useSchema} from '../../../../hooks'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {useDocumentPresence} from '../../../../store'
+import {
+  SearchPopover,
+  SearchProvider,
+  SearchResultItemPreview,
+  useWorkspace,
+} from '../../../../studio'
 import {tasksLocaleNamespace} from '../../../i18n'
 import {type FormMode, type TaskTarget} from '../../../types'
 import {CurrentWorkspaceProvider} from '../CurrentWorkspaceProvider'

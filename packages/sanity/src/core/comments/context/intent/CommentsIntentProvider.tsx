@@ -3,7 +3,11 @@ import {memo, type ReactNode} from 'react'
 import {type CommentIntentGetter} from '../../types'
 import {CommentsIntentContext} from './CommentsIntentContext'
 
-interface CommentsIntentProviderProps {
+/**
+ * @beta
+ * @hidden
+ */
+export interface CommentsIntentProviderProps {
   children: ReactNode
   getIntent: CommentIntentGetter
 }

@@ -1,3 +1,4 @@
+import {type Path} from '@sanity/types'
 import {
   Badge,
   Box,
@@ -8,9 +9,10 @@ import {
   TextSkeleton,
 } from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
-import {type FormPatch, type PatchEvent, type Path, set, useFormValue, useTranslation} from 'sanity'
 import styled from 'styled-components'
 
+import {type FormPatch, type PatchEvent, set, useFormValue} from '../../../../../form'
+import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
 import {useMentionUser} from '../../../../context'
 import {tasksLocaleNamespace} from '../../../../i18n'
 import {TasksUserAvatar} from '../../../TasksUserAvatar'

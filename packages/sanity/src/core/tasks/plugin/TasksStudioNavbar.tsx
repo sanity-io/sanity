@@ -1,7 +1,8 @@
 import {PanelRightIcon, TaskIcon} from '@sanity/icons'
 import {useMemo} from 'react'
-import {type NavbarProps, useTranslation} from 'sanity'
 
+import {type NavbarProps} from '../../config/studio/types'
+import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {useTasksEnabled, useTasksNavigation} from '../context'
 import {tasksLocaleNamespace} from '../i18n'
 

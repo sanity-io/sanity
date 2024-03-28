@@ -1,9 +1,9 @@
 import {TabList, Text} from '@sanity/ui'
 import {useCallback, useEffect, useMemo, useState} from 'react'
-import {useTranslation} from 'sanity'
 import {type CSSProperties} from 'styled-components'
 
-import {Tab} from '../../../ui-components'
+import {Tab} from '../../../../ui-components'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {type SidebarTabsIds, useTasks} from '../../context'
 import {tasksLocaleNamespace} from '../../i18n'
 

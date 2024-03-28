@@ -1,6 +1,6 @@
 import {useState} from 'react'
-import {AddonDatasetProvider} from 'sanity'
 
+import {AddonDatasetProvider} from '../../studio/addonDataset'
 import {TaskSidebarContent} from '../components/sidebar/TasksSidebarContent'
 import {TasksSidebarHeader} from '../components/sidebar/TasksSidebarHeader'
 import {type SidebarTabsIds, TasksNavigationProvider, TasksProvider} from '../context'

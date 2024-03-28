@@ -2,15 +2,11 @@ import {isImageSource} from '@sanity/asset-utils'
 import imageUrlBuilder from '@sanity/image-url'
 import {useEffect, useMemo} from 'react'
 import deepEquals from 'react-fast-compare'
-import {
-  DEFAULT_STUDIO_CLIENT_OPTIONS,
-  type ObjectFieldProps,
-  set,
-  useClient,
-  useFormValue,
-  useWorkspace,
-} from 'sanity'
 
+import {type ObjectFieldProps, set, useFormValue} from '../../../../form'
+import {useClient} from '../../../../hooks'
+import {useWorkspace} from '../../../../studio'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
 import {useDocumentPreviewValues} from '../../../hooks/useDocumentPreviewValues'
 import {type TaskContext, type TaskDocument} from '../../../types'
 import {CurrentWorkspaceProvider} from '../CurrentWorkspaceProvider'

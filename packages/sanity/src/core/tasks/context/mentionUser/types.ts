@@ -1,5 +1,6 @@
 import {type SanityDocument} from '@sanity/client'
-import {type UserListWithPermissionsHookValue} from 'sanity'
+
+import {type UserListWithPermissionsHookValue} from '../../../hooks/useUserListWithPermissions'
 
 /**
  * @internal

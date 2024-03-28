@@ -1,16 +1,10 @@
 import {CheckmarkIcon, CircleIcon} from '@sanity/icons'
+import {type Path, type TitledListValue} from '@sanity/types'
 import {Menu} from '@sanity/ui'
 import {type ForwardedRef, forwardRef} from 'react'
-import {
-  type FormPatch,
-  isString,
-  type PatchEvent,
-  type Path,
-  set,
-  type TitledListValue,
-} from 'sanity'
 
-import {Button, MenuButton, MenuItem} from '../../../../ui-components'
+import {Button, MenuButton, MenuItem} from '../../../../../ui-components'
+import {type FormPatch, type PatchEvent, set} from '../../../../form/patch'
 import {TASK_STATUS} from '../../../constants/TaskStatus'
 
 export const StatusMenuButton = forwardRef(function StatusMenuButton(
@@ -54,7 +48,7 @@ export function StatusSelector(props: StatusSelectorProps) {
             return (
               <MenuItem
                 key={option.title}
-                icon={isString(option.value) ? icon || CircleIcon : CircleIcon}
+                icon={typeof option.value === 'string' ? icon || CircleIcon : CircleIcon}
                 text={option.title || option.value}
                 pressed={isSelected}
                 iconRight={isSelected && <CheckmarkIcon />}

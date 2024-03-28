@@ -1,9 +1,10 @@
+import {type Path} from '@sanity/types'
 import {AvatarStack, Flex} from '@sanity/ui'
 import {AnimatePresence, motion} from 'framer-motion'
 import {useCallback, useMemo} from 'react'
-import {type FormPatch, type PatchEvent, type Path, set} from 'sanity'
 
-import {Button} from '../../../ui-components'
+import {Button} from '../../../../ui-components'
+import {type FormPatch, type PatchEvent, set} from '../../../form/patch'
 import {type TaskDocument} from '../../types'
 import {TasksUserAvatar} from '../TasksUserAvatar'
 

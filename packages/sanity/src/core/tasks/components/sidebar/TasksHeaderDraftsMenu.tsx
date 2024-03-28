@@ -1,10 +1,11 @@
 import {CheckmarkIcon, ChevronDownIcon} from '@sanity/icons'
 import {Box, Menu, MenuDivider, Text} from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
-import {useCurrentUser, useTranslation} from 'sanity'
 import styled from 'styled-components'
 
-import {Button, MenuButton, type MenuButtonProps, MenuItem} from '../../../ui-components'
+import {Button, MenuButton, type MenuButtonProps, MenuItem} from '../../../../ui-components'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {useCurrentUser} from '../../../store/user/hooks'
 import {useTasks, useTasksNavigation} from '../../context'
 import {tasksLocaleNamespace} from '../../i18n'
 import {type TaskDocument} from '../../types'

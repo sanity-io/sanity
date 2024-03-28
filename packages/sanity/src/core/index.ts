@@ -1,4 +1,9 @@
 export * from './changeIndicators'
+export {
+  type CommentIntentGetter,
+  CommentsIntentProvider,
+  type CommentsIntentProviderProps,
+} from './comments'
 export * from './components'
 export * from './components/collapseMenu'
 export * from './components/scroll'

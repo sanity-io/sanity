@@ -1,23 +1,17 @@
 import {CalendarIcon} from '@sanity/icons'
+import {type Path} from '@sanity/types'
 import {Box, Flex, useClickOutside} from '@sanity/ui'
 import {DEFAULT_DATE_FORMAT, format, parse} from '@sanity/util/legacyDateFormat'
 import {type KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
 import ReactFocusLock from 'react-focus-lock'
-import {
-  type FormPatch,
-  type PatchEvent,
-  type Path,
-  set,
-  unset,
-  useDateTimeFormat,
-  useTranslation,
-} from 'sanity'
 
-// TODO: Is there a better way than importing from core like this?
-import {type CalendarLabels} from '../../../../core/form/inputs/DateInputs/base/calendar/types'
-import {DatePicker} from '../../../../core/form/inputs/DateInputs/base/DatePicker'
-import {getCalendarLabels} from '../../../../core/form/inputs/DateInputs/utils'
-import {Button, Popover} from '../../../../ui-components'
+import {Button, Popover} from '../../../../../ui-components'
+import {type CalendarLabels} from '../../../../form/inputs/DateInputs/base/calendar/types'
+import {DatePicker} from '../../../../form/inputs/DateInputs/base/DatePicker'
+import {getCalendarLabels} from '../../../../form/inputs/DateInputs/utils'
+import {type FormPatch, type PatchEvent, set, unset} from '../../../../form/patch'
+import {useDateTimeFormat} from '../../../../hooks'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {tasksLocaleNamespace} from '../../../i18n'
 
 const serialize = (date: Date) => format(date, DEFAULT_DATE_FORMAT)

@@ -1,5 +1,6 @@
-import {type ArrayFieldProps, defineField, defineType, type ObjectFieldProps} from 'sanity'
+import {defineField, defineType} from '@sanity/types'
 
+import {type ArrayFieldProps, type ObjectFieldProps} from '../../../../form'
 import {TASK_STATUS} from '../../../constants/TaskStatus'
 import {type FormMode} from '../../../types'
 import {

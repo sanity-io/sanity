@@ -1,5 +1,5 @@
+import {type TransactionLogEventWithEffects} from '@sanity/types'
 import {applyPatch} from 'mendoza'
-import {type TransactionLogEventWithEffects} from 'sanity'
 
 import {type TaskDocument} from '../../../types'
 import {groupChanges} from './groupChanges'

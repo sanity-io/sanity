@@ -1,24 +1,24 @@
 import {CopyIcon, LinkIcon, TrashIcon} from '@sanity/icons'
+import {type PortableTextBlock} from '@sanity/types'
 import {Box, Card, Flex, Menu, MenuDivider, Stack} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
 import {useCallback} from 'react'
-import {
-  ContextMenuButton,
-  type FormPatch,
-  LoadingBlock,
-  type ObjectInputProps,
-  type PatchEvent,
-  type PortableTextBlock,
-  set,
-  TransformPatches,
-  useCurrentUser,
-  useTranslation,
-} from 'sanity'
 import styled, {css} from 'styled-components'
 
-import {CommentsProvider} from '../../../../core/comments'
-import {MenuButton, MenuItem} from '../../../../ui-components'
+import {MenuButton, MenuItem} from '../../../../../ui-components'
+import {CommentsProvider} from '../../../../comments'
+import {ContextMenuButton} from '../../../../components/contextMenuButton'
+import {LoadingBlock} from '../../../../components/loadingBlock'
+import {
+  type FormPatch,
+  type ObjectInputProps,
+  type PatchEvent,
+  set,
+  TransformPatches,
+} from '../../../../form'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {useCurrentUser} from '../../../../store/user/hooks'
 import {useTasksNavigation} from '../../../context'
 import {useActivityLog} from '../../../hooks/useActivityLog'
 import {useRemoveTask} from '../../../hooks/useRemoveTask'

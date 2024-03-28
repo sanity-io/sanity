@@ -1,16 +1,14 @@
+import {type PortableTextBlock} from '@sanity/types'
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
 import {startTransition, useCallback, useEffect, useState} from 'react'
-import {
-  type ArrayFieldProps,
-  type PortableTextBlock,
-  set,
-  useCurrentUser,
-  useTranslation,
-} from 'sanity'
 import styled, {css} from 'styled-components'
 
-import {CommentInput} from '../../../../../core/comments'
+import {CommentInput} from '../../../../../comments'
+import {set} from '../../../../../form/patch'
+import {type ArrayFieldProps} from '../../../../../form/types'
+import {useTranslation} from '../../../../../i18n'
+import {useCurrentUser} from '../../../../../store/user/hooks'
 import {useMentionUser} from '../../../../context'
 import {tasksLocaleNamespace} from '../../../../i18n'
 import {type FormMode} from '../../../../types'

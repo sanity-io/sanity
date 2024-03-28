@@ -1,5 +1,4 @@
-import {AddonDatasetProvider} from 'sanity'
-
+import {AddonDatasetProvider} from '../../studio/addonDataset'
 import {TasksFormBuilder} from '../components'
 import {TasksNavigationContext, TasksProvider} from '../context'
 

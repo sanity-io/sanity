@@ -9,10 +9,10 @@ import {
 } from '@sanity/ui'
 import {isThisISOWeek, isToday} from 'date-fns'
 import {useMemo} from 'react'
-import {useDateTimeFormat} from 'sanity'
 import styled from 'styled-components'
 
-import {Tooltip} from '../../../ui-components'
+import {Tooltip} from '../../../../ui-components'
+import {useDateTimeFormat} from '../../../hooks/useDateTimeFormat'
 import {type TaskDocument} from '../../types'
 import {TasksUserAvatar} from '../TasksUserAvatar'
 import {DocumentPreview} from './DocumentPreview'

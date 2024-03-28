@@ -1,7 +1,8 @@
 import {TaskIcon} from '@sanity/icons'
 import {useCallback} from 'react'
-import {type DocumentActionDescription, useTranslation} from 'sanity'
 
+import {type DocumentActionDescription} from '../../config/document/actions'
+import {useTranslation} from '../../i18n/hooks/useTranslation'
 import {useTasksEnabled, useTasksNavigation} from '../context'
 import {tasksLocaleNamespace} from '../i18n'
 

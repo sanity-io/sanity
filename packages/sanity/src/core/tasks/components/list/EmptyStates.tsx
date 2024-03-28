@@ -4,7 +4,7 @@ import {useCallback} from 'react'
 import {useTranslation} from 'react-i18next'
 import styled from 'styled-components'
 
-import {Button} from '../../../ui-components'
+import {Button} from '../../../../ui-components'
 import {type SidebarTabsIds, useTasksNavigation} from '../../context'
 import {tasksLocaleNamespace} from '../../i18n'
 import {type TaskStatus} from '../../types'

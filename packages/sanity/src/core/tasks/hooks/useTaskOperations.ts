@@ -1,6 +1,7 @@
 import {useCallback, useMemo} from 'react'
-import {useAddonDataset, useCurrentUser} from 'sanity'
 
+import {useCurrentUser} from '../../store/user/hooks'
+import {useAddonDataset} from '../../studio/addonDataset/useAddonDataset'
 import {type TaskCreatePayload, type TaskDocument, type TaskEditPayload} from '../types'
 
 /**

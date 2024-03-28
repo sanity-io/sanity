@@ -1,13 +1,13 @@
 import {Card} from '@sanity/ui'
 import {useCallback, useMemo, useRef, useState} from 'react'
-import {useTranslation} from 'sanity'
 
 import {
   CommentInput,
   type CommentInputHandle,
   type CommentInputProps,
   hasCommentMessageValue,
-} from '../../../core/comments'
+} from '../../../comments'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {tasksLocaleNamespace} from '../../i18n'
 import {ActivityItem} from './TasksActivityItem'
 

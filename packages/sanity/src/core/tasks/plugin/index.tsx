@@ -1,5 +1,5 @@
-import {definePlugin, type ObjectInputProps} from 'sanity'
-
+import {definePlugin} from '../../config/definePlugin'
+import {type ObjectInputProps} from '../../form/types'
 import {tasksUsEnglishLocaleBundle} from '../i18n'
 import {TaskCreateAction} from './TaskCreateAction'
 import {TasksDocumentInputLayout} from './TasksDocumentInputLayout'

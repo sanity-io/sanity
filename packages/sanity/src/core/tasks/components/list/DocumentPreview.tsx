@@ -3,10 +3,10 @@ import {Flex, Text, TextSkeleton} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
 import {forwardRef, useMemo} from 'react'
-import {useSchema} from 'sanity'
 import {IntentLink} from 'sanity/router'
 import styled from 'styled-components'
 
+import {useSchema} from '../../../hooks/useSchema'
 import {useDocumentPreviewValues} from '../../hooks/useDocumentPreviewValues'
 
 const StyledIntentLink = styled(IntentLink)((props) => {

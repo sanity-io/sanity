@@ -1,5 +1,5 @@
-import {AddonDatasetProvider, type LayoutProps} from 'sanity'
-
+import {type LayoutProps} from '../../config/studio/types'
+import {AddonDatasetProvider} from '../../studio/addonDataset'
 import {
   TasksEnabledProvider,
   TasksNavigationProvider,

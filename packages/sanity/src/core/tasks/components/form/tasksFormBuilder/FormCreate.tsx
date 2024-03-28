@@ -1,8 +1,9 @@
 import {Box, Flex, Switch, Text, useToast} from '@sanity/ui'
 import {useCallback, useState} from 'react'
-import {type ObjectInputProps, set, useTranslation} from 'sanity'
 
-import {Button} from '../../../../ui-components'
+import {Button} from '../../../../../ui-components'
+import {type ObjectInputProps, set} from '../../../../form'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {useTasksNavigation} from '../../../context'
 import {useRemoveTask} from '../../../hooks/useRemoveTask'
 import {tasksLocaleNamespace} from '../../../i18n'

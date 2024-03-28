@@ -1,17 +1,13 @@
 import {CalendarIcon, CircleIcon, EditIcon, LinkIcon, UserIcon} from '@sanity/icons'
 import {TextSkeleton} from '@sanity/ui'
 import {type ReactElement} from 'react'
-import {
-  type RelativeTimeOptions,
-  useDateTimeFormat,
-  type UseDateTimeFormatOptions,
-  useRelativeTime,
-  useSchema,
-  useUser,
-} from 'sanity'
 import {IntentLink} from 'sanity/router'
 import styled from 'styled-components'
 
+import {useDateTimeFormat, type UseDateTimeFormatOptions} from '../../../../hooks/useDateTimeFormat'
+import {type RelativeTimeOptions, useRelativeTime} from '../../../../hooks/useRelativeTime'
+import {useSchema} from '../../../../hooks/useSchema'
+import {useUser} from '../../../../store/user/hooks'
 import {TASK_STATUS} from '../../../constants/TaskStatus'
 import {useDocumentPreviewValues} from '../../../hooks/useDocumentPreviewValues'
 import {type TaskTarget} from '../../../types'

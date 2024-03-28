@@ -1,9 +1,10 @@
 import {Flex, Text, TextSkeleton} from '@sanity/ui'
 import {memo} from 'react'
-import {useTranslation, useUser} from 'sanity'
 import styled from 'styled-components'
 
-import {Tooltip} from '../../../ui-components'
+import {Tooltip} from '../../../../ui-components'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {useUser} from '../../../store/user/hooks'
 import {tasksLocaleNamespace} from '../../i18n'
 import {UpdatedTimeAgo} from './helpers'
 import {ActivityItem} from './TasksActivityItem'

@@ -1,17 +1,16 @@
 import {useEffect, useMemo} from 'react'
+
+import {LoadingBlock} from '../../../../components/loadingBlock'
+import {type Config, prepareConfig} from '../../../../config'
+import {useClient} from '../../../../hooks/useClient'
+import {ResourceCacheProvider} from '../../../../store'
 import {
-  type Config,
-  LoadingBlock,
-  prepareConfig,
-  ResourceCacheProvider,
   SourceProvider,
   useAddonDataset,
-  useClient,
   useSource,
   useWorkspaceLoader,
   WorkspaceProvider,
-} from 'sanity'
-
+} from '../../../../studio'
 import {API_VERSION} from '../../../constants/API_VERSION'
 import {type FormMode} from '../../../types'
 import {taskSchema} from './taskSchema'

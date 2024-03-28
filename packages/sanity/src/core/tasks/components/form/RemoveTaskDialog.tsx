@@ -1,7 +1,7 @@
 import {Stack, Text} from '@sanity/ui'
-import {useTranslation} from 'sanity'
 
-import {Dialog} from '../../../ui-components'
+import {Dialog} from '../../../../ui-components'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {type useRemoveTask} from '../../hooks/useRemoveTask'
 import {tasksLocaleNamespace} from '../../i18n'
 

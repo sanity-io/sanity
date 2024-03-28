@@ -1,8 +1,9 @@
 import {type ListenEvent, type ListenOptions} from '@sanity/client'
 import {useCallback, useEffect, useMemo, useReducer, useState} from 'react'
 import {catchError, of} from 'rxjs'
-import {getPublishedId, useAddonDataset} from 'sanity'
 
+import {useAddonDataset} from '../../studio/addonDataset'
+import {getPublishedId} from '../../util/draftUtils'
 import {type Loadable, type TaskDocument} from '../types'
 import {tasksReducer, type TasksReducerAction, type TasksReducerState} from './reducer'
 

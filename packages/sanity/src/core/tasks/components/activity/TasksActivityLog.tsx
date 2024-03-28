@@ -1,17 +1,8 @@
+import {type Path} from '@sanity/types'
 import {Box, Flex, Stack, Text} from '@sanity/ui'
 import {uuid} from '@sanity/uuid'
 import {AnimatePresence, motion, type Variants} from 'framer-motion'
 import {useCallback, useMemo, useState} from 'react'
-import {
-  type FormPatch,
-  LoadingBlock,
-  type PatchEvent,
-  type Path,
-  set,
-  useCurrentUser,
-  useTranslation,
-  useWorkspace,
-} from 'sanity'
 import styled from 'styled-components'
 
 import {
@@ -23,7 +14,12 @@ import {
   type CommentThreadItem,
   type CommentUpdatePayload,
   useComments,
-} from '../../../core/comments'
+} from '../../../comments'
+import {LoadingBlock} from '../../../components/loadingBlock'
+import {type FormPatch, type PatchEvent, set} from '../../../form/patch'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {useCurrentUser} from '../../../store/user/hooks'
+import {useWorkspace} from '../../../studio/workspace'
 import {tasksLocaleNamespace} from '../../i18n'
 import {type TaskDocument} from '../../types'
 import {getMentionedUsers} from '../form/utils'

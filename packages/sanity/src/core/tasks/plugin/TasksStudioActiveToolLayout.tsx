@@ -1,8 +1,8 @@
 import {Box, Flex, Layer, useMediaIndex} from '@sanity/ui'
 import {AnimatePresence, motion, type Transition, type Variants} from 'framer-motion'
-import {type ActiveToolLayoutProps} from 'sanity'
 import styled, {css} from 'styled-components'
 
+import {type ActiveToolLayoutProps} from '../../config/studio/types'
 import {TasksStudioSidebar} from '../components'
 import {useTasksEnabled, useTasksNavigation} from '../context'
 

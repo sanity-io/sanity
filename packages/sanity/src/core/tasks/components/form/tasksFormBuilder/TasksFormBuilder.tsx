@@ -1,19 +1,16 @@
+import {type CurrentUser, type SanityDocument} from '@sanity/types'
 import {Box, rem} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
 import {motion, type Variants} from 'framer-motion'
 import {useEffect, useMemo} from 'react'
-import {
-  type CurrentUser,
-  FormBuilder,
-  LoadingBlock,
-  type SanityDocument,
-  useCurrentUser,
-  useWorkspace,
-} from 'sanity'
 import styled from 'styled-components'
 
-import {CommentsEnabledProvider} from '../../../../core/comments'
+import {CommentsEnabledProvider} from '../../../../comments'
+import {LoadingBlock} from '../../../../components/loadingBlock'
+import {FormBuilder} from '../../../../form/studio'
+import {useCurrentUser} from '../../../../store/user/hooks'
+import {useWorkspace} from '../../../../studio'
 import {useTasks, useTasksNavigation} from '../../../context'
 import {MentionUserProvider, useMentionUser} from '../../../context/mentionUser'
 import {type TaskDocument, type TaskTarget} from '../../../types'

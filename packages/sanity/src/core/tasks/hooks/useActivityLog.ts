@@ -1,7 +1,9 @@
+import {type TransactionLogEventWithEffects} from '@sanity/types'
 import {useCallback, useEffect, useState} from 'react'
-import {getPublishedId, type TransactionLogEventWithEffects, useClient} from 'sanity'
 
-import {getJsonStream} from '../../core/store/_legacy/history/history/getJsonStream'
+import {useClient} from '../../hooks/useClient'
+import {getJsonStream} from '../../store/_legacy/history/history/getJsonStream'
+import {getPublishedId} from '../../util/draftUtils'
 import {type FieldChange, trackFieldChanges} from '../components/activity/helpers/parseTransactions'
 import {API_VERSION} from '../constants/API_VERSION'
 import {type TaskDocument} from '../types'
