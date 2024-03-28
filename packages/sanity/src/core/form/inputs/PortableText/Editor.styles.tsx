@@ -8,7 +8,7 @@ import {ScrollContainer} from '../../../components/scroll'
 import {createListName, TEXT_LEVELS} from './text'
 
 export const Root = styled(Card)<{$fullscreen: boolean}>`
-  height: ${({$fullscreen}) => ($fullscreen ? '100%' : '300px')};
+  height: ${({$fullscreen}) => ($fullscreen ? '100%' : '19em')};
 
   &:not([hidden]) {
     display: flex;
