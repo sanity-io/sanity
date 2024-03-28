@@ -10,7 +10,7 @@ import {
 } from 'sanity'
 import styled, {css} from 'styled-components'
 
-import {CommentInput} from '../../../../../structure/comments'
+import {CommentInput} from '../../../../../comments'
 import {useMentionUser} from '../../../../context'
 import {tasksLocaleNamespace} from '../../../../i18n'
 import {type FormMode} from '../../../../types'
