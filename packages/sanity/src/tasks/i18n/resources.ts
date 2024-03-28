@@ -121,6 +121,7 @@ const tasksLocaleStrings = defineLocalesResources('tasks', {
   'form.status.error.title-required': 'Title is required',
   /** The status message upon successful creation of a task */
   'form.status.success': 'Task created',
+  'form.subscribers.menu.input.placeholder': 'Add subscribers',
   /** The text displayed when no tasks are found */
   'list.empty.text': 'No tasks',
   /** The label for the copy link menu item */
