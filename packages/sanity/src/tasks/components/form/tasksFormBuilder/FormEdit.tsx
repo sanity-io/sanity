@@ -18,7 +18,7 @@ import {
 } from 'sanity'
 import {css, styled} from 'styled-components'
 
-import {CommentsProvider} from '../../../../structure/comments'
+import {CommentsProvider} from '../../../../comments'
 import {MenuButton, MenuItem, TooltipDelayGroupProvider} from '../../../../ui-components'
 import {TaskDuplicated, TaskRemoved} from '../../../__telemetry__/tasks.telemetry'
 import {useTasksEnabled, useTasksNavigation} from '../../../context'

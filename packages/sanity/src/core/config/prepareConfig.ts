@@ -8,7 +8,7 @@ import {type ComponentType, createElement, type ElementType, isValidElement} fro
 import {isValidElementType} from 'react-is'
 import {map, shareReplay} from 'rxjs/operators'
 
-import {comments} from '../../structure/comments'
+import {comments} from '../../comments'
 import {tasks} from '../../tasks'
 import {FileSource, ImageSource} from '../form/studio/assetSource'
 import {type LocaleSource} from '../i18n'

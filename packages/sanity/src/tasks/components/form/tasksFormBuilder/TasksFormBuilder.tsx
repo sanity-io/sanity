@@ -13,7 +13,7 @@ import {
 } from 'sanity'
 import {styled} from 'styled-components'
 
-import {CommentsEnabledProvider} from '../../../../structure/comments'
+import {CommentsEnabledProvider} from '../../../../comments'
 import {useTasks, useTasksNavigation} from '../../../context'
 import {MentionUserProvider, useMentionUser} from '../../../context/mentionUser'
 import {type TaskDocument, type TaskTarget} from '../../../types'
