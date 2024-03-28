@@ -81,6 +81,9 @@ function TasksSubscribers({onSelect, value = []}: {onSelect: SelectItemHandler; 
   const [searchTerm, setSearchTerm] = useState<string>('')
   const {mentionOptions} = useMentionUser()
   const inputRef = useRef<HTMLInputElement | null>(null)
+  // This list will keep a local state of users who are initially subscribed and later added or removed.
+  // To always render them at the top
+  const [subscribersList, setSubscribersList] = useState(value)
 
   const handleSearchChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.currentTarget.value)
@@ -89,22 +92,31 @@ function TasksSubscribers({onSelect, value = []}: {onSelect: SelectItemHandler; 
   const filteredOptions = useFilteredOptions({options: mentionOptions.data || [], searchTerm})
 
   const selectedUsers = useMemo(
-    () => filteredOptions.filter((user) => value.includes(user.id)),
-    [filteredOptions, value],
+    () => filteredOptions.filter((user) => subscribersList.includes(user.id)),
+    [filteredOptions, subscribersList],
   )
 
+  const handleSelect = useCallback(
+    (id: string) => {
+      if (!subscribersList.includes(id)) {
+        setSubscribersList([...subscribersList, id])
+      }
+      onSelect(id)
+    },
+    [subscribersList, onSelect],
+  )
   const renderItem = useCallback(
     (user: UserWithPermission) => {
       return (
         <MentionUserMenuItem
           user={user}
-          onSelect={onSelect}
+          onSelect={handleSelect}
           key={user.id}
           selected={value.includes(user.id)}
         />
       )
     },
-    [onSelect, value],
+    [handleSelect, value],
   )
   const handleKeyDown = useCallback((event: KeyboardEvent<HTMLElement>) => {
     // If target is input don't do anything
