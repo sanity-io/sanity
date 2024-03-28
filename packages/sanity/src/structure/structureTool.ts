@@ -102,8 +102,6 @@ export const structureTool = definePlugin<StructureToolOptions | void>((options)
       },
     },
 
-    plugins: [comments(), tasks()],
-
     tools: [
       {
         name: options?.name || 'structure',
