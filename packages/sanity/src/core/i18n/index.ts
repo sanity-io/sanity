@@ -1,3 +1,4 @@
+export type {StudioLocaleResourceKeys} from './bundles/studio'
 export * from './components/LocaleProvider'
 export {
   defineLocale,
@@ -25,7 +26,5 @@ export type {
   LocaleSource,
   LocaleWeekInfo,
   StaticLocaleResourceBundle,
-  StudioLocaleResourceKeys,
   TFunction,
-  ValidationLocaleResourceKeys,
 } from './types'
