@@ -1,6 +1,7 @@
 import {AddonDatasetProvider} from 'sanity'
 
-import {TasksFormBuilder, TasksNavigationContext, TasksProvider} from '../src'
+import {TasksFormBuilder} from '../components'
+import {TasksNavigationContext, TasksProvider} from '../context'
 
 export default function TasksCreateStory() {
   return (

@@ -2,7 +2,7 @@ import {useEffect} from 'react'
 import {getPublishedId} from 'sanity'
 
 import {usePane} from '../../../structure/components'
-import {type ActiveDocument, useTasks, useTasksEnabled} from '../../src/tasks/context'
+import {type ActiveDocument, useTasks, useTasksEnabled} from '../../context'
 
 function SetActiveDocumentInner(document: ActiveDocument) {
   const {documentId, documentType} = document
