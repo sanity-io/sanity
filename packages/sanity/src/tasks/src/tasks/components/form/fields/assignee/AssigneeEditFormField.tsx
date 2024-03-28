@@ -11,6 +11,7 @@ import {useCallback, useMemo} from 'react'
 import {type FormPatch, type PatchEvent, type Path, set, useFormValue, useTranslation} from 'sanity'
 import styled from 'styled-components'
 
+import {Tooltip} from '../../../../../../../ui-components'
 import {tasksLocaleNamespace} from '../../../../../../i18n'
 import {useMentionUser} from '../../../../context'
 import {TasksUserAvatar} from '../../../TasksUserAvatar'
@@ -61,22 +62,30 @@ export function AssigneeEditFormField(props: AssigneeEditFormFieldProps) {
       value={value}
       menuButton={
         <StyledButton mode="ghost" padding={0}>
-          <Flex align="center" gap={3}>
-            <Flex align="center" gap={2} flex={1}>
-              <TasksUserAvatar user={mentionedUser} size={0} />
-              <Box>
-                <Text size={1} textOverflow="ellipsis">
-                  {displayText}
-                </Text>
-              </Box>
-            </Flex>
+          <Tooltip
+            content={
+              value
+                ? t('form.input.assignee.user-assigned.tooltip')
+                : t('form.input.assignee.no-user-assigned.tooltip')
+            }
+          >
+            <Flex align="center" gap={3}>
+              <Flex align="center" gap={2} flex={1}>
+                <TasksUserAvatar user={mentionedUser} size={0} />
+                <Box>
+                  <Text size={1} textOverflow="ellipsis">
+                    {displayText}
+                  </Text>
+                </Box>
+              </Flex>
 
-            {value && mentionedUser && !mentionedUser.granted && (
-              <Badge fontSize={1} mode="outline">
-                {t('form.input.assignee.unauthorized.text')}
-              </Badge>
-            )}
-          </Flex>
+              {value && mentionedUser && !mentionedUser.granted && (
+                <Badge fontSize={1} mode="outline">
+                  {t('form.input.assignee.unauthorized.text')}
+                </Badge>
+              )}
+            </Flex>
+          </Tooltip>
         </StyledButton>
       }
     />

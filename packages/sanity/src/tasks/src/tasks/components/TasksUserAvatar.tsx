@@ -5,6 +5,8 @@ import {getTheme_v2} from '@sanity/ui/theme'
 import {type User, UserAvatar, useUser} from 'sanity'
 import styled, {css} from 'styled-components'
 
+import {Tooltip} from '../../../../ui-components'
+
 const AvatarRoot = styled.div<{$size: AvatarSize; $border?: boolean; $removeBg?: boolean}>(
   (props) => {
     const theme = getTheme_v2(props.theme)
@@ -31,7 +33,12 @@ const AvatarSkeleton = styled(Skeleton)<{$size: AvatarSize}>((props) => {
   `
 })
 
-export function TasksUserAvatar(props: {user?: User; size?: AvatarSize; border?: boolean}) {
+export function TasksUserAvatar(props: {
+  user?: User
+  size?: AvatarSize
+  border?: boolean
+  withTooltip?: boolean
+}) {
   const {user, size = 0, border = true} = props
   const [loadedUser, loading] = useUser(user?.id || '')
 
@@ -50,12 +57,21 @@ export function TasksUserAvatar(props: {user?: User; size?: AvatarSize; border?:
   }
 
   return (
-    <AvatarRoot $size={size} $removeBg={!!loadedUser?.imageUrl}>
-      <UserAvatar
-        user={loadedUser}
-        size={size}
-        {...(loadedUser?.imageUrl ? {color: undefined} : {})}
-      />
-    </AvatarRoot>
+    <Tooltip
+      content={loadedUser.displayName}
+      disabled={!props.withTooltip}
+      portal
+      fallbackPlacements={['top', 'top-start']}
+      placement="top-end"
+    >
+      <AvatarRoot $size={size} $removeBg={!!loadedUser?.imageUrl}>
+        <UserAvatar
+          user={loadedUser}
+          size={size}
+          {...(loadedUser?.imageUrl ? {color: undefined} : {})}
+          {...(props.withTooltip ? {title: null} : {})}
+        />
+      </AvatarRoot>
+    </Tooltip>
   )
 }

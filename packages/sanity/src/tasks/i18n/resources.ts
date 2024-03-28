@@ -85,20 +85,30 @@ const tasksLocaleStrings = defineLocalesResources('tasks', {
 
   /** Text used in the assignee input when there is no user assigned */
   'form.input.assignee.no-user-assigned.text': 'Unassigned',
+  /** Text used in the assignee input tooltip when there is no user assigned */
+  'form.input.assignee.no-user-assigned.tooltip': ' Set assignee',
   /** Text used in the assignee input when searching and no users are found */
   'form.input.assignee.search.no-users.text': 'No users found',
   /** Placeholder text used in the search box in the assignee input */
   'form.input.assignee.search.placeholder': 'Select assignee',
   /** Text used in the assignee input when user is not authorized */
   'form.input.assignee.unauthorized.text': 'Unauthorized',
+  /** Text used in the assignee input tooltip when there is no user assigned */
+  'form.input.assignee.user-assigned.tooltip': ' Change assignee',
   /** Text used in the assignee input when user is not found */
   'form.input.assignee.user-not-found.text': 'User not found',
   /** The label used in the create more toggle */
   'form.input.create-more.text': 'Create more',
+  /** The label used in the date input button tooltip when it's empty */
+  'form.input.date.buttons.empty.tooltip': 'Set due date',
   /** The label used in the date input to remove the current value */
   'form.input.date.buttons.remove.text': 'Remove',
+  /** The label used in the date input button tooltip when it has value */
+  'form.input.date.buttons.tooltip': 'Change due date',
   /** Placeholder text used in the description input */
   'form.input.description.placeholder': 'Add description',
+  /**  Text used in the tooltip in the status change button  */
+  'form.input.status.button.tooltip': 'Change status',
   /** The label used in the target input to remove the current value */
   'form.input.target.buttons.remove.text': 'Remove target content',
   /** The text used in the target input when encountering a schema error */

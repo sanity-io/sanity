@@ -18,7 +18,7 @@ import {
 import styled, {css} from 'styled-components'
 
 import {CommentsProvider} from '../../../../../../structure/comments'
-import {MenuButton, MenuItem} from '../../../../../../ui-components'
+import {MenuButton, MenuItem, TooltipDelayGroupProvider} from '../../../../../../ui-components'
 import {tasksLocaleNamespace} from '../../../../../i18n'
 import {useTasksNavigation} from '../../../context'
 import {useActivityLog} from '../../../hooks/useActivityLog'
@@ -138,22 +138,24 @@ function FormEditInner(props: ObjectInputProps) {
           justify="flex-start"
           wrap="wrap"
         >
-          <StatusSelector
-            value={props.value?.status}
-            path={['status']}
-            onChange={handleChangeAndSubscribe}
-            options={statusField.type.options.list}
-          />
-          <AssigneeEditFormField
-            value={props.value?.assignedTo}
-            onChange={handleChangeAndSubscribe}
-            path={['assignedTo']}
-          />
-          <DateEditFormField
-            value={props.value?.dueBy}
-            onChange={handleChangeAndSubscribe}
-            path={['dueBy']}
-          />
+          <TooltipDelayGroupProvider>
+            <StatusSelector
+              value={props.value?.status}
+              path={['status']}
+              onChange={handleChangeAndSubscribe}
+              options={statusField.type.options.list}
+            />
+            <AssigneeEditFormField
+              value={props.value?.assignedTo}
+              onChange={handleChangeAndSubscribe}
+              path={['assignedTo']}
+            />
+            <DateEditFormField
+              value={props.value?.dueBy}
+              onChange={handleChangeAndSubscribe}
+              path={['dueBy']}
+            />
+          </TooltipDelayGroupProvider>
         </FirstRow>
       </Card>
 
