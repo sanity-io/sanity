@@ -43,6 +43,6 @@ export function useListFormat(options: UseListFormatOptions = {}): Intl.ListForm
     const currentLocale = useCurrentLocale().id
     return intlCache.listFormat(currentLocale, options)
   } catch {
-    return new Intl.ListFormat('en-US', {...options, style: 'narrow'})
+    return intlCache.listFormat('en-US', {...options, style: 'narrow'})
   }
 }
