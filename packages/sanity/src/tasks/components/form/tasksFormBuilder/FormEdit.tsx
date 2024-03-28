@@ -17,7 +17,7 @@ import {
 } from 'sanity'
 import styled, {css} from 'styled-components'
 
-import {CommentsProvider} from '../../../../structure/comments'
+import {CommentsProvider} from '../../../../comments'
 import {MenuButton, MenuItem} from '../../../../ui-components'
 import {useTasksNavigation} from '../../../context'
 import {useActivityLog} from '../../../hooks/useActivityLog'

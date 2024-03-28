@@ -23,7 +23,7 @@ import {
   type CommentThreadItem,
   type CommentUpdatePayload,
   useComments,
-} from '../../../structure/comments'
+} from '../../../comments'
 import {tasksLocaleNamespace} from '../../i18n'
 import {type TaskDocument} from '../../types'
 import {getMentionedUsers} from '../form/utils'
