@@ -8,6 +8,8 @@ import {type ComponentType, createElement, type ElementType, isValidElement} fro
 import {isValidElementType} from 'react-is'
 import {map, shareReplay} from 'rxjs/operators'
 
+import {comments} from '../../structure/comments'
+import {tasks} from '../../tasks'
 import {FileSource, ImageSource} from '../form/studio/assetSource'
 import {type LocaleSource} from '../i18n'
 import {prepareI18n} from '../i18n/i18nConfig'
@@ -55,6 +57,8 @@ import {
   type WorkspaceOptions,
   type WorkspaceSummary,
 } from './types'
+
+const defaultPlugins = [comments(), tasks()]
 
 type InternalSource = WorkspaceSummary['__internal']['sources'][number]
 
@@ -114,7 +118,9 @@ export function prepareConfig(
       return preparedWorkspaces.get(rawWorkspace)!
     }
     const {unstable_sources: nestedSources = [], ...rootSource} = rawWorkspace
-    const sources = [rootSource as SourceOptions, ...nestedSources]
+    const sources = [rootSource as SourceOptions, ...nestedSources].map(({plugins, ...source}) => {
+      return {...source, plugins: [...(plugins ?? []), ...defaultPlugins]}
+    })
 
     const resolvedSources = sources.map((source): InternalSource => {
       const {projectId, dataset} = source
