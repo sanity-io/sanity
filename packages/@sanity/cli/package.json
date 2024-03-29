@@ -71,11 +71,11 @@
     "esbuild": "^0.20.0",
     "esbuild-register": "^3.4.1",
     "get-it": "^8.4.18",
-    "golden-fleece": "^1.0.9",
     "groq-js": "^1.7.0",
     "node-machine-id": "^1.1.12",
     "pkg-dir": "^5.0.0",
     "semver": "^7.3.5",
+    "silver-fleece": "^1.1.0",
     "validate-npm-package-name": "^3.0.0"
   },
   "devDependencies": {
