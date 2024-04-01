@@ -179,6 +179,7 @@ const config = {
     'no-unused-vars': 'off',
     'no-useless-catch': 'warn',
     'no-async-promise-executor': 'warn',
+    'import/no-cycle': 'error',
   },
   settings: {
     'import/extensions': extensions,

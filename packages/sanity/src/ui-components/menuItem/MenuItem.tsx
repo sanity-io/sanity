@@ -14,11 +14,11 @@ import {createElement, forwardRef, isValidElement, useCallback, useMemo} from 'r
 import {isValidElementType} from 'react-is'
 import styled from 'styled-components'
 
-import {Tooltip, type TooltipProps} from '..'
 import {
   ConditionalWrapper,
   type ConditionalWrapperRenderWrapperCallback,
 } from '../conditionalWrapper'
+import {Tooltip, type TooltipProps} from '../tooltip'
 
 const FONT_SIZE = 1
 const SUBTITLE_FONT_SIZE = 0
