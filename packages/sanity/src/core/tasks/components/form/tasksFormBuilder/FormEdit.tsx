@@ -19,7 +19,7 @@ import {
 } from '../../../../form'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {useCurrentUser} from '../../../../store/user/hooks'
-import {useTasksNavigation} from '../../../context'
+import {useTasksNavigation} from '../../../context/navigation/useTasksNavigation'
 import {useActivityLog} from '../../../hooks/useActivityLog'
 import {useRemoveTask} from '../../../hooks/useRemoveTask'
 import {tasksLocaleNamespace} from '../../../i18n'

@@ -7,7 +7,7 @@ import styled from 'styled-components'
 
 import {Button, Tooltip, TooltipDelayGroupProvider} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
-import {useTasksNavigation} from '../../context'
+import {useTasksNavigation} from '../../context/navigation/useTasksNavigation'
 import {tasksLocaleNamespace} from '../../i18n'
 import {type TaskDocument} from '../../types'
 

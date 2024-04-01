@@ -3,7 +3,8 @@ import {useMemo} from 'react'
 
 import {type NavbarProps} from '../../config/studio/types'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
-import {useTasksEnabled, useTasksNavigation} from '../context'
+import {useTasksEnabled} from '../context/enabled/useTasksEnabled'
+import {useTasksNavigation} from '../context/navigation/useTasksNavigation'
 import {tasksLocaleNamespace} from '../i18n'
 
 const EMPTY_ARRAY: [] = []

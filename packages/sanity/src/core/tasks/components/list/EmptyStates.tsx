@@ -5,7 +5,8 @@ import {useTranslation} from 'react-i18next'
 import styled from 'styled-components'
 
 import {Button} from '../../../../ui-components'
-import {type SidebarTabsIds, useTasksNavigation} from '../../context'
+import {type SidebarTabsIds} from '../../context/navigation/types'
+import {useTasksNavigation} from '../../context/navigation/useTasksNavigation'
 import {tasksLocaleNamespace} from '../../i18n'
 import {type TaskStatus} from '../../types'
 

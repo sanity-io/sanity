@@ -1,11 +1,9 @@
 import {type LayoutProps} from '../../config/studio/types'
 import {AddonDatasetProvider} from '../../studio/addonDataset'
-import {
-  TasksEnabledProvider,
-  TasksNavigationProvider,
-  TasksProvider,
-  useTasksEnabled,
-} from '../context'
+import {TasksEnabledProvider} from '../context/enabled/TasksEnabledProvider'
+import {useTasksEnabled} from '../context/enabled/useTasksEnabled'
+import {TasksNavigationProvider} from '../context/navigation/TasksNavigationProvider'
+import {TasksProvider} from '../context/tasks/TasksProvider'
 
 const TasksStudioLayoutInner = (props: LayoutProps) => {
   const {enabled} = useTasksEnabled()

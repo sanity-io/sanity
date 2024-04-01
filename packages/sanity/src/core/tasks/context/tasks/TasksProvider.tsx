@@ -1,6 +1,6 @@
 import {useMemo, useState} from 'react'
 
-import {useTasksStore} from '../../store'
+import {useTasksStore} from '../../store/useTasksStore'
 import {TasksContext} from './TasksContext'
 import {type ActiveDocument, type TasksContextValue} from './types'
 

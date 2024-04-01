@@ -4,7 +4,8 @@ import styled, {css} from 'styled-components'
 
 import {type ActiveToolLayoutProps} from '../../config/studio/types'
 import {TasksStudioSidebar} from '../components'
-import {useTasksEnabled, useTasksNavigation} from '../context'
+import {useTasksEnabled} from '../context/enabled/useTasksEnabled'
+import {useTasksNavigation} from '../context/navigation/useTasksNavigation'
 
 const VARIANTS: Variants = {
   hidden: {opacity: 0},

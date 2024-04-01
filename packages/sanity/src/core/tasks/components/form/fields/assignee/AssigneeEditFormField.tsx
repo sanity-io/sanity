@@ -13,7 +13,7 @@ import styled from 'styled-components'
 
 import {type FormPatch, type PatchEvent, set, useFormValue} from '../../../../../form'
 import {useTranslation} from '../../../../../i18n/hooks/useTranslation'
-import {useMentionUser} from '../../../../context'
+import {useMentionUser} from '../../../../context/mentionUser/useMentionUser'
 import {tasksLocaleNamespace} from '../../../../i18n'
 import {TasksUserAvatar} from '../../../TasksUserAvatar'
 import {AssigneeSelectionMenu} from './AssigneeSelectionMenu'

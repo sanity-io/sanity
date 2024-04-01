@@ -2,7 +2,9 @@ import {useEffect} from 'react'
 
 import {usePane} from '../../../../structure/components'
 import {getPublishedId} from '../../../util/draftUtils'
-import {type ActiveDocument, useTasks, useTasksEnabled} from '../../context'
+import {useTasksEnabled} from '../../context/enabled/useTasksEnabled'
+import {type ActiveDocument} from '../../context/tasks/types'
+import {useTasks} from '../../context/tasks/useTasks'
 
 function SetActiveDocumentInner(document: ActiveDocument) {
   const {documentId, documentType} = document

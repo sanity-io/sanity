@@ -5,7 +5,9 @@ import styled from 'styled-components'
 
 import {Button} from '../../../ui-components'
 import {useTranslation} from '../../i18n/hooks/useTranslation'
-import {useTasks, useTasksEnabled, useTasksNavigation} from '../context'
+import {useTasksEnabled} from '../context/enabled/useTasksEnabled'
+import {useTasksNavigation} from '../context/navigation/useTasksNavigation'
+import {useTasks} from '../context/tasks/useTasks'
 import {tasksLocaleNamespace} from '../i18n'
 
 const ButtonContainer = styled.div`

@@ -1,6 +1,7 @@
 import {AddonDatasetProvider} from '../../studio/addonDataset'
 import {TasksFormBuilder} from '../components'
-import {TasksNavigationContext, TasksProvider} from '../context'
+import {TasksNavigationContext} from '../context/navigation/TasksNavigationContext'
+import {TasksProvider} from '../context/tasks/TasksProvider'
 
 export default function TasksCreateStory() {
   return (

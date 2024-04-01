@@ -18,7 +18,7 @@ import {MenuButton} from '../../../../../../ui-components'
 import {LoadingBlock} from '../../../../../components/loadingBlock'
 import {type UserWithPermission} from '../../../../../hooks/useUserListWithPermissions'
 import {useTranslation} from '../../../../../i18n'
-import {useMentionUser} from '../../../../context'
+import {useMentionUser} from '../../../../context/mentionUser/useMentionUser'
 import {tasksLocaleNamespace} from '../../../../i18n'
 import {TasksUserAvatar} from '../../../TasksUserAvatar'
 

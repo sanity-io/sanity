@@ -2,7 +2,7 @@ import {type ListenEvent, type ListenOptions} from '@sanity/client'
 import {useCallback, useEffect, useMemo, useReducer, useState} from 'react'
 import {catchError, of} from 'rxjs'
 
-import {useAddonDataset} from '../../studio/addonDataset'
+import {useAddonDataset} from '../../studio/addonDataset/useAddonDataset'
 import {getPublishedId} from '../../util/draftUtils'
 import {type Loadable, type TaskDocument} from '../types'
 import {tasksReducer, type TasksReducerAction, type TasksReducerState} from './reducer'

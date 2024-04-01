@@ -4,7 +4,8 @@ import {type CSSProperties} from 'styled-components'
 
 import {Tab} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
-import {type SidebarTabsIds, useTasks} from '../../context'
+import {type SidebarTabsIds} from '../../context/navigation/types'
+import {useTasks} from '../../context/tasks/useTasks'
 import {tasksLocaleNamespace} from '../../i18n'
 
 const LIST_STYLES: CSSProperties = {
