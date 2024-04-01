@@ -1,5 +1,5 @@
 import {AddonDatasetProvider} from '../../studio/addonDataset'
-import {TasksFormBuilder} from '../components'
+import {TasksFormBuilder} from '../components/form/tasksFormBuilder/TasksFormBuilder'
 import {TasksNavigationContext} from '../context/navigation/TasksNavigationContext'
 import {TasksProvider} from '../context/tasks/TasksProvider'
 

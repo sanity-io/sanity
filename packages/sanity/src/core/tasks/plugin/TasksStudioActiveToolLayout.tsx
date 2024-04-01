@@ -3,7 +3,7 @@ import {AnimatePresence, motion, type Transition, type Variants} from 'framer-mo
 import styled, {css} from 'styled-components'
 
 import {type ActiveToolLayoutProps} from '../../config/studio/types'
-import {TasksStudioSidebar} from '../components'
+import {TasksStudioSidebar} from '../components/sidebar/TasksSidebar'
 import {useTasksEnabled} from '../context/enabled/useTasksEnabled'
 import {useTasksNavigation} from '../context/navigation/useTasksNavigation'
 
