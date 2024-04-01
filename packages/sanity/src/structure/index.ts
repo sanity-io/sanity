@@ -11,11 +11,13 @@ import {
 
 /**
  * @deprecated Import from `sanity` instead of `sanity/structure`
+ * @internal
  */
 export type CommentIntentGetter = _CommentIntentGetter
 
 /**
  * @deprecated Import from `sanity` instead of `sanity/structure`
+ * @internal
  */
 export const CommentsIntentProvider = _CommentsIntentProvider
 

@@ -33,12 +33,6 @@
       "require": "./lib/_internal.js",
       "default": "./lib/_internal.js"
     },
-    "./_internalBrowser": {
-      "source": "./src/_exports/_internalBrowser.ts",
-      "import": "./lib/_internalBrowser.mjs",
-      "require": "./lib/_internalBrowser.js",
-      "default": "./lib/_internalBrowser.js"
-    },
     "./cli": {
       "source": "./src/_exports/cli.ts",
       "require": "./lib/cli.js",

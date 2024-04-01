@@ -1,6 +1,7 @@
 /* eslint sort-keys: "error" */
 import {defineLocalesResources} from '../helpers'
 import {validationLocaleNamespace} from '../localeNamespaces'
+import {type LocaleResourceBundle} from '../types'
 
 /**
  * The string resources for validation.

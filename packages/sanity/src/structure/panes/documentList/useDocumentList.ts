@@ -1,8 +1,13 @@
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {concat, fromEvent, merge, of, Subject, throwError} from 'rxjs'
 import {catchError, map, mergeMap, scan, startWith, take} from 'rxjs/operators'
-import {DEFAULT_STUDIO_CLIENT_OPTIONS, useClient, useSchema, useWorkspace} from 'sanity'
-import {useSearchMaxFieldDepth} from 'sanity/_internalBrowser'
+import {
+  DEFAULT_STUDIO_CLIENT_OPTIONS,
+  useClient,
+  useSchema,
+  useSearchMaxFieldDepth,
+  useWorkspace,
+} from 'sanity'
 
 import {DEFAULT_ORDERING, FULL_LIST_LIMIT, PARTIAL_PAGE_LIMIT} from './constants'
 import {getTypeNameFromSingleTypeFilter, removePublishedWithDrafts} from './helpers'
