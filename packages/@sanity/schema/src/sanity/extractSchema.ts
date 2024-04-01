@@ -315,9 +315,16 @@ function isFieldRequired(field: ObjectField): boolean {
         },
       },
     ) as Rule
+
     if (typeof rule === 'function') {
       rule(proxy)
       if (required) {
+        return true
+      }
+    }
+
+    if (typeof rule === 'object' && rule !== null && '_required' in rule) {
+      if (rule._required === 'required') {
         return true
       }
     }

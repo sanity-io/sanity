@@ -387,6 +387,12 @@ describe('Extract schema test', () => {
               type: 'string',
               validation: (Rule) => Rule.required(),
             }),
+            {
+              title: 'Another Title',
+              name: 'anotherTitle',
+              type: 'string',
+              validation: {_required: 'required'},
+            },
           ],
         },
       ],
@@ -400,6 +406,7 @@ describe('Extract schema test', () => {
     assert(book.type === 'document') // this is a workaround for TS, but leave the expect above for clarity in case of failure
     expect(book.attributes.title.optional).toBe(true)
     expect(book.attributes.subtitle.optional).toBe(true)
+    expect(book.attributes.anotherTitle.optional).toBe(true)
   })
 
   test('can extract with enforceRequiredFields', () => {
@@ -422,6 +429,18 @@ describe('Extract schema test', () => {
               type: 'string',
               validation: (Rule) => Rule.required(),
             }),
+            {
+              title: 'Another Title',
+              name: 'anotherTitle',
+              type: 'string',
+              validation: {_required: 'required'},
+            },
+            {
+              title: 'Optional Title',
+              name: 'optionalTitle',
+              type: 'string',
+              validation: {_required: 'optional'},
+            },
           ],
         },
       ],
@@ -435,6 +454,8 @@ describe('Extract schema test', () => {
     assert(book.type === 'document') // this is a workaround for TS, but leave the expect above for clarity in case of failure
     expect(book.attributes.title.optional).toBe(true)
     expect(book.attributes.subtitle.optional).toBe(false)
+    expect(book.attributes.anotherTitle.optional).toBe(false)
+    expect(book.attributes.optionalTitle.optional).toBe(true)
   })
 
   describe('can handle `list` option that is not an array', () => {
