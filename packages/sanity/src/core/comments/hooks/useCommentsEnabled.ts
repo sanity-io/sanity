@@ -1,6 +1,6 @@
 import {useContext} from 'react'
 
-import {CommentsEnabledContext} from '../context/enabled'
+import {CommentsEnabledContext} from '../context/enabled/CommentsEnabledContext'
 import {type CommentsEnabledContextValue} from '../context/enabled/types'
 
 /**

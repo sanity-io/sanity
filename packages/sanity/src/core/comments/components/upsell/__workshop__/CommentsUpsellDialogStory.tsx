@@ -2,7 +2,7 @@ import {CommentIcon} from '@sanity/icons'
 import {useCallback, useEffect} from 'react'
 
 import {Button} from '../../../../../ui-components'
-import {CommentsUpsellProvider} from '../../../context'
+import {CommentsUpsellProvider} from '../../../context/upsell/CommentsUpsellProvider'
 import {useCommentsUpsell} from '../../../hooks'
 
 const CommentsUpsellDialogStoryInner = () => {

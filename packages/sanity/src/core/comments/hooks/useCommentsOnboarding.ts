@@ -1,6 +1,6 @@
 import {useContext} from 'react'
 
-import {CommentsOnboardingContext} from '../context/onboarding'
+import {CommentsOnboardingContext} from '../context/onboarding/CommentsOnboardingContext'
 import {type CommentsOnboardingContextValue} from '../context/onboarding/types'
 
 export function useCommentsOnboarding(): CommentsOnboardingContextValue {

@@ -1,6 +1,7 @@
 import {useContext} from 'react'
 
-import {CommentsAuthoringPathContext, type CommentsAuthoringPathContextValue} from '../context'
+import {CommentsAuthoringPathContext} from '../context/authoring-path/CommentsAuthoringPathContext'
+import {type CommentsAuthoringPathContextValue} from '../context/authoring-path/types'
 
 /**
  * @beta

@@ -6,7 +6,7 @@ import {motion, type Variants} from 'framer-motion'
 import {useEffect, useMemo} from 'react'
 import styled from 'styled-components'
 
-import {CommentsEnabledProvider} from '../../../../comments'
+import {CommentsEnabledProvider} from '../../../../comments/context/enabled/CommentsEnabledProvider'
 import {LoadingBlock} from '../../../../components/loadingBlock'
 import {FormBuilder} from '../../../../form/studio'
 import {useCurrentUser} from '../../../../store/user/hooks'

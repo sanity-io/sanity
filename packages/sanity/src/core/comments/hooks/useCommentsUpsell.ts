@@ -1,6 +1,6 @@
 import {useContext} from 'react'
 
-import {CommentsUpsellContext} from '../context'
+import {CommentsUpsellContext} from '../context/upsell/CommentsUpsellContext'
 import {type CommentsUpsellContextValue} from '../context/upsell/types'
 
 /**

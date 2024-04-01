@@ -7,7 +7,7 @@ import {useCallback} from 'react'
 import styled, {css} from 'styled-components'
 
 import {MenuButton, MenuItem} from '../../../../../ui-components'
-import {CommentsProvider} from '../../../../comments'
+import {CommentsProvider} from '../../../../comments/context/comments/CommentsProvider'
 import {ContextMenuButton} from '../../../../components/contextMenuButton'
 import {LoadingBlock} from '../../../../components/loadingBlock'
 import {

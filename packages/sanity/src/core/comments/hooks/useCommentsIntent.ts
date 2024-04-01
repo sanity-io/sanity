@@ -1,6 +1,6 @@
 import {useContext} from 'react'
 
-import {CommentsIntentContext} from '../context'
+import {CommentsIntentContext} from '../context/intent/CommentsIntentContext'
 import {type CommentIntentGetter} from '../types'
 
 /**
