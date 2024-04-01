@@ -10,7 +10,8 @@ import {CommentsUpsellPanel} from '../components/upsell/CommentsUpsellPanel'
 import {CommentsProvider} from '../context/comments/CommentsProvider'
 import {CommentsEnabledProvider} from '../context/enabled/CommentsEnabledProvider'
 import {CommentsUpsellProvider} from '../context/upsell/CommentsUpsellProvider'
-import {useComments, useCommentsUpsell} from '../hooks'
+import {useComments} from '../hooks/useComments'
+import {useCommentsUpsell} from '../hooks/useCommentsUpsell'
 import {type CommentsUIMode} from '../types'
 
 const noop = () => {

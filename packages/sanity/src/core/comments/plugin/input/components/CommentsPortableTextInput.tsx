@@ -26,13 +26,13 @@ import {
   type CommentsUIMode,
   type CommentUpdatePayload,
   isTextSelectionComment,
-  useComments,
-  useCommentsEnabled,
-  useCommentsScroll,
-  useCommentsSelectedPath,
-  useCommentsUpsell,
 } from '../../..'
 import {CommentInlineHighlightSpan} from '../../../components/pte/CommentInlineHighlightSpan'
+import {useComments} from '../../../hooks/useComments'
+import {useCommentsEnabled} from '../../../hooks/useCommentsEnabled'
+import {useCommentsScroll} from '../../../hooks/useCommentsScroll'
+import {useCommentsSelectedPath} from '../../../hooks/useCommentsSelectedPath'
+import {useCommentsUpsell} from '../../../hooks/useCommentsUpsell'
 import {getSelectionBoundingRect, useAuthoringReferenceElement} from '../helpers'
 import {FloatingButtonPopover} from './FloatingButtonPopover'
 import {InlineCommentInputPopover} from './InlineCommentInputPopover'

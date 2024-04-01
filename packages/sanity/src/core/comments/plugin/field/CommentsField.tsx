@@ -11,19 +11,18 @@ import {type FieldProps} from '../../../form/types'
 import {getSchemaTypeTitle} from '../../../schema/helpers'
 import {useCurrentUser} from '../../../store/user/hooks'
 import {
-  applyCommentsFieldAttr,
   type CommentCreatePayload,
   type CommentMessage,
   type CommentsUIMode,
   isTextSelectionComment,
-  useComments,
-  useCommentsAuthoringPath,
-  useCommentsEnabled,
-  useCommentsScroll,
-  useCommentsSelectedPath,
-  useCommentsUpsell,
 } from '../..'
 import {COMMENTS_HIGHLIGHT_HUE_KEY} from '../../constants'
+import {useComments} from '../../hooks/useComments'
+import {useCommentsAuthoringPath} from '../../hooks/useCommentsAuthoringPath'
+import {useCommentsEnabled} from '../../hooks/useCommentsEnabled'
+import {applyCommentsFieldAttr, useCommentsScroll} from '../../hooks/useCommentsScroll'
+import {useCommentsSelectedPath} from '../../hooks/useCommentsSelectedPath'
+import {useCommentsUpsell} from '../../hooks/useCommentsUpsell'
 import {CommentsFieldButton} from './CommentsFieldButton'
 
 // When the form is temporarily set to `readOnly` while reconnecting, the form

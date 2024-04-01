@@ -6,7 +6,7 @@ import {type PortableTextBlock} from '@sanity/types'
 import {memo, useCallback, useEffect, useRef} from 'react'
 
 import {CommentInlineHighlightSpan} from '../../components/pte/CommentInlineHighlightSpan'
-import {applyInlineCommentIdAttr} from '../../hooks'
+import {applyInlineCommentIdAttr} from '../../hooks/useCommentsScroll'
 import {type CommentDocument} from '../../types'
 import {buildRangeDecorationSelectionsFromComments} from './buildRangeDecorationSelectionsFromComments'
 

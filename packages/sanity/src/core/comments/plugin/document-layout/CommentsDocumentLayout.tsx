@@ -2,12 +2,12 @@ import {useCallback} from 'react'
 import {useDocumentPane} from 'sanity/structure'
 
 import {type DocumentLayoutProps} from '../../../config/types'
-import {useCommentsEnabled} from '../..'
 import {COMMENTS_INSPECTOR_NAME} from '../../constants'
 import {CommentsAuthoringPathProvider} from '../../context/authoring-path/CommentsAuthoringPathProvider'
 import {CommentsProvider} from '../../context/comments/CommentsProvider'
 import {CommentsEnabledProvider} from '../../context/enabled/CommentsEnabledProvider'
 import {CommentsSelectedPathProvider} from '../../context/selected-path/CommentsSelectedPathProvider'
+import {useCommentsEnabled} from '../../hooks/useCommentsEnabled'
 
 export function CommentsDocumentLayout(props: DocumentLayoutProps) {
   const {documentId, documentType} = props

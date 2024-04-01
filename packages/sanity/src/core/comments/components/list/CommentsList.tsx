@@ -4,7 +4,7 @@ import {forwardRef, memo, useMemo, useState} from 'react'
 
 import {type UserListWithPermissionsHookValue} from '../../../hooks/useUserListWithPermissions'
 import {type CommentsSelectedPath} from '../../context/selected-path/types'
-import {applyCommentsGroupAttr} from '../../hooks'
+import {applyCommentsGroupAttr} from '../../hooks/useCommentsScroll'
 import {
   type CommentBaseCreatePayload,
   type CommentReactionOption,

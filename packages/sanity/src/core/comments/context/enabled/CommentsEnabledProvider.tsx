@@ -1,6 +1,6 @@
 import * as React from 'react'
 
-import {useResolveCommentsEnabled} from '../../hooks'
+import {useResolveCommentsEnabled} from '../../hooks/useResolveCommentsEnabled'
 import {CommentsEnabledContext} from './CommentsEnabledContext'
 
 interface CommentsEnabledProviderProps {
