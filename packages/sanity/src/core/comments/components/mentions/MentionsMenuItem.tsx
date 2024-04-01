@@ -6,7 +6,7 @@ import {type UserWithPermission} from '../../../hooks/useUserListWithPermissions
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {useUser} from '../../../store/user/hooks'
 import {commentsLocaleNamespace} from '../../i18n'
-import {CommentsAvatar} from '../avatars'
+import {CommentsAvatar} from '../avatars/CommentsAvatar'
 
 const InnerFlex = styled(Flex)``
 

@@ -14,14 +14,14 @@ import styled from 'styled-components'
 import {Button, Popover, Tooltip} from '../../../../ui-components'
 import {type UserListWithPermissionsHookValue} from '../../../hooks/useUserListWithPermissions'
 import {Translate, useTranslation} from '../../../i18n'
+import {CommentIcon} from '../../components/icons/CommentIcon'
 import {
-  CommentIcon,
   CommentInput,
   type CommentInputHandle,
-  type CommentMessage,
-  hasCommentMessageValue,
-} from '../..'
+} from '../../components/pte/comment-input/CommentInput'
+import {hasCommentMessageValue} from '../../helpers'
 import {commentsLocaleNamespace} from '../../i18n'
+import {type CommentMessage} from '../../types'
 
 const ContentStack = styled(Stack)`
   width: 320px;

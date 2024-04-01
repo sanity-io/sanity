@@ -4,7 +4,7 @@ import {getTheme_v2} from '@sanity/ui/theme'
 import {startTransition, useCallback, useEffect, useState} from 'react'
 import styled, {css} from 'styled-components'
 
-import {CommentInput} from '../../../../../comments'
+import {CommentInput} from '../../../../../comments/components/pte/comment-input/CommentInput'
 import {set} from '../../../../../form/patch'
 import {type ArrayFieldProps} from '../../../../../form/types'
 import {useTranslation} from '../../../../../i18n'

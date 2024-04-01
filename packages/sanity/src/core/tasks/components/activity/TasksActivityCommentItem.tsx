@@ -1,4 +1,7 @@
-import {CommentsListItem, type CommentsListItemProps} from '../../../comments'
+import {
+  CommentsListItem,
+  type CommentsListItemProps,
+} from '../../../comments/components/list/CommentsListItem'
 import {ActivityItem} from './TasksActivityItem'
 
 const COMMENTS_LIST_ITEM_AVATAR_CONFIG: CommentsListItemProps['avatarConfig'] = {

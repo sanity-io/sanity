@@ -6,7 +6,7 @@ import {useTranslation} from 'react-i18next'
 import styled from 'styled-components'
 
 import {Button, Popover, type PopoverProps} from '../../../../../ui-components'
-import {CommentDisabledIcon} from '../../..'
+import {CommentDisabledIcon} from '../../../components/icons/CommentDisabledIcon'
 import {commentsLocaleNamespace} from '../../../i18n'
 
 const MotionPopover = styled(motion(Popover))`

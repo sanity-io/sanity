@@ -3,7 +3,8 @@ import {useTelemetry} from '@sanity/telemetry/react'
 import {template} from 'lodash'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 
-import {useClient, useProjectId} from '../../../hooks'
+import {useClient} from '../../../hooks/useClient'
+import {useProjectId} from '../../../hooks/useProjectId'
 import {
   UpsellDialogDismissed,
   UpsellDialogLearnMoreCtaClicked,
@@ -11,7 +12,7 @@ import {
   UpsellDialogViewed,
   type UpsellDialogViewedInfo,
 } from '../../../studio/upsell'
-import {CommentsUpsellDialog} from '../../components'
+import {CommentsUpsellDialog} from '../../components/upsell/CommentsUpsellDialog'
 import {type CommentsUpsellData} from '../../types'
 import {CommentsUpsellContext} from './CommentsUpsellContext'
 import {type CommentsUpsellContextValue} from './types'

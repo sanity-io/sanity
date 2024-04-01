@@ -3,7 +3,8 @@ import {Stack} from '@sanity/ui'
 import styled, {css} from 'styled-components'
 
 import {type CommentMessage} from '../../types'
-import {MentionInlineBlock, NormalBlock} from './blocks'
+import {MentionInlineBlock} from './blocks/MentionInlineBlock'
+import {NormalBlock} from './blocks/NormalBlock'
 
 const PortableTextWrap = styled(Stack)(() => {
   return css`

@@ -9,7 +9,7 @@ import {type UserListWithPermissionsHookValue} from '../../../hooks/useUserListW
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {type CommentsSelectedPath} from '../../context'
 import {commentIntentIfDiffers, hasCommentMessageValue} from '../../helpers'
-import {applyCommentIdAttr} from '../../hooks'
+import {applyCommentIdAttr} from '../../hooks/useCommentsScroll'
 import {commentsLocaleNamespace} from '../../i18n'
 import {
   type CommentBaseCreatePayload,
@@ -20,8 +20,8 @@ import {
   type CommentsUIMode,
   type CommentUpdatePayload,
 } from '../../types'
-import {SpacerAvatar} from '../avatars'
-import {CommentInput, type CommentInputHandle} from '../pte'
+import {SpacerAvatar} from '../avatars/SpacerAvatar'
+import {CommentInput, type CommentInputHandle} from '../pte/comment-input/CommentInput'
 import {CommentsListItemLayout} from './CommentsListItemLayout'
 import {ThreadCard} from './styles'
 

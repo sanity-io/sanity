@@ -1,6 +1,6 @@
 import {type BlockChildRenderProps, type RenderChildFunction} from '@sanity/portable-text-editor'
 
-import {MentionInlineBlock} from '../blocks'
+import {MentionInlineBlock} from '../blocks/MentionInlineBlock'
 
 export const renderChild: RenderChildFunction = (childProps: BlockChildRenderProps) => {
   const {children, value, selected} = childProps

@@ -6,7 +6,7 @@ import {useCallback, useMemo, useState} from 'react'
 
 import {useUserListWithPermissions} from '../../hooks/useUserListWithPermissions'
 import {useCurrentUser} from '../../store/user/hooks'
-import {CommentsList} from '../components'
+import {CommentsList} from '../components/list/CommentsList'
 import {
   type CommentBaseCreatePayload,
   type CommentDocument,

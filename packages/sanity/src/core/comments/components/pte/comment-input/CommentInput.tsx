@@ -11,7 +11,7 @@ import {forwardRef, useCallback, useImperativeHandle, useMemo, useRef, useState}
 
 import {type UserListWithPermissionsHookValue} from '../../../../hooks/useUserListWithPermissions'
 import {editorSchemaType} from '../config'
-import {renderBlock as defaultRenderBlock} from '../render'
+import {renderBlock as defaultRenderBlock} from '../render/renderBlock'
 import {CommentInputDiscardDialog} from './CommentInputDiscardDialog'
 import {CommentInputInner} from './CommentInputInner'
 import {CommentInputProvider} from './CommentInputProvider'

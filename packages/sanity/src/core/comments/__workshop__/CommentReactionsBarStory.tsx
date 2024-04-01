@@ -3,7 +3,7 @@ import {uuid} from '@sanity/uuid'
 import {useCallback, useState} from 'react'
 
 import {useCurrentUser} from '../../store/user/hooks'
-import {CommentReactionsBar} from '../components'
+import {CommentReactionsBar} from '../components/reactions/CommentReactionsBar'
 import {type CommentReactionItem, type CommentReactionOption} from '../types'
 
 const INITIAL_REACTIONS: CommentReactionItem[] = [

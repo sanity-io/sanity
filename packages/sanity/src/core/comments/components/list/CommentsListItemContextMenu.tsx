@@ -14,8 +14,8 @@ import {type TFunction, useTranslation} from '../../../i18n'
 import {COMMENT_REACTION_OPTIONS} from '../../constants'
 import {commentsLocaleNamespace} from '../../i18n'
 import {type CommentReactionOption, type CommentStatus, type CommentsUIMode} from '../../types'
-import {ReactionIcon} from '../icons'
-import {CommentReactionsMenuButton} from '../reactions'
+import {ReactionIcon} from '../icons/ReactionIcon'
+import {CommentReactionsMenuButton} from '../reactions/CommentReactionsMenuButton'
 
 const renderMenuButton = ({
   open,

@@ -9,8 +9,8 @@ import {
   CommentInput,
   type CommentInputHandle,
   type CommentInputProps,
-  hasCommentMessageValue,
-} from '../../..'
+} from '../../../components/pte/comment-input/CommentInput'
+import {hasCommentMessageValue} from '../../../helpers'
 
 const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['bottom', 'top']
 

@@ -8,13 +8,13 @@ import styled from 'styled-components'
 import {
   type CommentBaseCreatePayload,
   type CommentCreatePayload,
-  CommentDeleteDialog,
-  type CommentInputProps,
   type CommentReactionOption,
   type CommentThreadItem,
   type CommentUpdatePayload,
   useComments,
 } from '../../../comments'
+import {CommentDeleteDialog} from '../../../comments/components/CommentDeleteDialog'
+import {type CommentInputProps} from '../../../comments/components/pte/comment-input/CommentInput'
 import {LoadingBlock} from '../../../components/loadingBlock'
 import {type FormPatch, type PatchEvent, set} from '../../../form/patch'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'

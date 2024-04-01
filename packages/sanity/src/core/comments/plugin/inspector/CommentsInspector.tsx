@@ -10,14 +10,10 @@ import {useCurrentUser} from '../../../store/user/hooks'
 import {useUnique} from '../../../util/useUnique'
 import {
   type CommentBaseCreatePayload,
-  CommentDeleteDialog,
   type CommentReactionOption,
-  CommentsList,
-  CommentsOnboardingPopover,
   type CommentsSelectedPath,
   type CommentStatus,
   type CommentsUIMode,
-  CommentsUpsellPanel,
   type CommentUpdatePayload,
   isTextSelectionComment,
   useComments,
@@ -27,6 +23,10 @@ import {
   useCommentsSelectedPath,
   useCommentsUpsell,
 } from '../..'
+import {CommentDeleteDialog} from '../../components/CommentDeleteDialog'
+import {CommentsList} from '../../components/list/CommentsList'
+import {CommentsOnboardingPopover} from '../../components/onboarding/CommentsOnboardingPopover'
+import {CommentsUpsellPanel} from '../../components/upsell/CommentsUpsellPanel'
 import {commentsLocaleNamespace} from '../../i18n'
 import {CommentsInspectorFeedbackFooter} from './CommentsInspectorFeedbackFooter'
 import {CommentsInspectorHeader} from './CommentsInspectorHeader'

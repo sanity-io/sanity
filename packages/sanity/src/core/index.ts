@@ -5,10 +5,10 @@ export * from './changeIndicators/ConnectorContext'
 export * from './changeIndicators/overlay/ChangeConnectorRoot'
 export * from './changeIndicators/tracker'
 export {
-  type CommentIntentGetter,
   CommentsIntentProvider,
   type CommentsIntentProviderProps,
-} from './comments'
+} from './comments/context/intent/CommentsIntentProvider'
+export {type CommentIntentGetter} from './comments/types'
 export * from './components'
 export * from './components/collapseMenu'
 export * from './components/scroll'

@@ -21,7 +21,6 @@ import {
   buildRangeDecorationSelectionsFromComments,
   buildTextSelectionFromFragment,
   type CommentDocument,
-  CommentInlineHighlightSpan,
   type CommentMessage,
   type CommentsTextSelectionItem,
   type CommentsUIMode,
@@ -33,6 +32,7 @@ import {
   useCommentsSelectedPath,
   useCommentsUpsell,
 } from '../../..'
+import {CommentInlineHighlightSpan} from '../../../components/pte/CommentInlineHighlightSpan'
 import {getSelectionBoundingRect, useAuthoringReferenceElement} from '../helpers'
 import {FloatingButtonPopover} from './FloatingButtonPopover'
 import {InlineCommentInputPopover} from './InlineCommentInputPopover'
