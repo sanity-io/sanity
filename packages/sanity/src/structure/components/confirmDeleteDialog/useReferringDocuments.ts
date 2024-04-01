@@ -1,23 +1,25 @@
 import {type ClientError, type SanityClient} from '@sanity/client'
 import {useMemo} from 'react'
-import {EMPTY, fromEvent, type Observable, of, timer} from 'rxjs'
+import {useMemoObservable} from 'react-rx'
+import {concat, EMPTY, fromEvent, type Observable, of, timer} from 'rxjs'
 import {
   catchError,
   distinctUntilChanged,
   map,
+  scan,
   shareReplay,
   startWith,
   switchMap,
 } from 'rxjs/operators'
 import {
   type AvailabilityResponse,
-  createHookFromObservableFactory,
   DEFAULT_STUDIO_CLIENT_OPTIONS,
   type DocumentStore,
   getDraftId,
   getPublishedId,
   useClient,
   useDocumentStore,
+  useUnique,
 } from 'sanity'
 
 // this is used in place of `instanceof` so the matching can be more robust and
@@ -238,5 +240,68 @@ export function useReferringDocuments(documentId: string): ReferringDocuments {
     internalReferences,
     crossDatasetReferences,
     isLoading: isInternalReferencesLoading || isCrossDatasetReferencesLoading,
+  }
+}
+
+/**
+ * The following is an inlined copy of `createHookFromObservableFactory` from core.
+ * It is unclear to me why we're seeing build issues when importing it from `sanity`,
+ * but for now this is considered an acceptable workaround. Revisit when we have time.
+ *
+ * Note: We also have a `useReferringDocuments` in core - not sure if this is duplicated
+ * for the same reason.
+ */
+type LoadingTuple<T> = [T, boolean]
+
+type ReactHook<TArgs, TResult> = (args: TArgs) => TResult
+
+function createHookFromObservableFactory<T, TArg = void>(
+  observableFactory: (arg: TArg) => Observable<T>,
+  initialValue: T,
+): ReactHook<TArg, LoadingTuple<T>>
+
+function createHookFromObservableFactory<T, TArg = void>(
+  observableFactory: (arg: TArg) => Observable<T>,
+  initialValue?: T,
+): ReactHook<TArg, LoadingTuple<T | undefined>>
+
+function createHookFromObservableFactory<T, TArg = void>(
+  observableFactory: (arg: TArg) => Observable<T>,
+  initialValue?: T,
+): ReactHook<TArg, LoadingTuple<T | undefined>> {
+  const initialLoadingTuple: LoadingTuple<T | undefined> = [initialValue, true]
+  const initialResult = {type: 'tuple', tuple: initialLoadingTuple} as const
+
+  return function useLoadableFromCreateLoadable(_arg: TArg) {
+    // @todo refactor callsites to make use of useMemo so that this hook can be removed
+    const memoArg = useUnique(_arg)
+    const result = useMemoObservable(
+      () =>
+        of(memoArg).pipe(
+          switchMap((arg) =>
+            concat(
+              of({type: 'loading'} as const),
+              observableFactory(arg).pipe(map((value) => ({type: 'value', value}) as const)),
+            ),
+          ),
+          scan(([prevValue], next): LoadingTuple<T | undefined> => {
+            if (next.type === 'loading') return [prevValue, true]
+            return [next.value, false]
+          }, initialLoadingTuple),
+          distinctUntilChanged(([prevValue, prevIsLoading], [nextValue, nextIsLoading]) => {
+            if (prevValue !== nextValue) return false
+            if (prevIsLoading !== nextIsLoading) return false
+            return true
+          }),
+          map((tuple) => ({type: 'tuple', tuple}) as const),
+          catchError((error) => of({type: 'error', error} as const)),
+        ),
+      [memoArg],
+      initialResult,
+    )
+
+    if (result.type === 'error') throw result.error
+
+    return result.tuple
   }
 }

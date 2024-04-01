@@ -16,7 +16,6 @@
 
     "paths": {
       "sanity/_internal": ["./exports/_internal.ts"],
-      "sanity/_internalBrowser": ["./exports/_internalBrowser.ts"],
       "sanity/cli": ["./exports/cli.ts"],
       "sanity/desk": ["./exports/desk.ts"],
       "sanity/router": ["./exports/router.ts"],
