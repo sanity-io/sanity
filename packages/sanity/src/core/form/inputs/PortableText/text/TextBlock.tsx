@@ -295,7 +295,7 @@ export function TextBlock(props: TextBlockProps) {
               </Tooltip>
             </Box>
 
-            <BlockExtrasContainer contentEditable={false}>
+            <BlockExtrasContainer contentEditable={'plaintext-only'}>
               <BlockActionsOuter marginRight={1}>
                 <BlockActionsInner>
                   {renderBlockActions && focused && !readOnly && (
