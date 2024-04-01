@@ -18,7 +18,7 @@ import {
 import {IntentLink} from 'sanity/router'
 
 import {MenuButton, MenuItem} from '../../../../ui-components'
-import {ChangeIndicator} from '../../../changeIndicators'
+import {ChangeIndicator} from '../../../changeIndicators/ChangeIndicator'
 import {ContextMenuButton} from '../../../components/contextMenuButton'
 import {LoadingBlock} from '../../../components/loadingBlock'
 import {useTranslation} from '../../../i18n'

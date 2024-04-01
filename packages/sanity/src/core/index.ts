@@ -1,4 +1,9 @@
-export * from './changeIndicators'
+export * from './changeIndicators/ChangeFieldWrapper'
+export * from './changeIndicators/ChangeIndicator'
+export * from './changeIndicators/ChangeIndicatorContext'
+export * from './changeIndicators/ConnectorContext'
+export * from './changeIndicators/overlay/ChangeConnectorRoot'
+export * from './changeIndicators/tracker'
 export {
   type CommentIntentGetter,
   CommentsIntentProvider,

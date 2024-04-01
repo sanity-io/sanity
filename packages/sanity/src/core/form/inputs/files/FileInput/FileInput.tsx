@@ -18,7 +18,7 @@ import {PureComponent, type ReactNode} from 'react'
 import {type Observable, type Subscription} from 'rxjs'
 
 import {Button, MenuButton, MenuItem} from '../../../../../ui-components'
-import {ChangeIndicator} from '../../../../changeIndicators'
+import {ChangeIndicator} from '../../../../changeIndicators/ChangeIndicator'
 import {ImperativeToast} from '../../../../components'
 import {MemberField, MemberFieldError, MemberFieldSet} from '../../../members'
 import {PatchEvent, setIfMissing, unset} from '../../../patch'

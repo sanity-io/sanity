@@ -1,7 +1,7 @@
 import {isKeySegment, type Path} from '@sanity/types'
 import {type HTMLProps, type SyntheticEvent, useCallback, useContext, useMemo} from 'react'
 
-import {ConnectorContext} from '../../../../../changeIndicators'
+import {ConnectorContext} from '../../../../../changeIndicators/ConnectorContext'
 import {useTranslation} from '../../../../../i18n'
 import {DiffCard, DiffContext} from '../../../../diff'
 import {type ObjectDiff, type StringDiff, type StringDiffSegment} from '../../../../types'

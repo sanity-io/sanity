@@ -7,7 +7,7 @@ import {
 } from '@sanity/types'
 import {type ComponentType, useState} from 'react'
 
-import {ChangeIndicator} from '../../../changeIndicators'
+import {ChangeIndicator} from '../../../changeIndicators/ChangeIndicator'
 import {type DocumentFieldActionNode} from '../../../config'
 import {FormField, FormFieldSet} from '../../components'
 import {usePublishedId} from '../../contexts/DocumentIdProvider'

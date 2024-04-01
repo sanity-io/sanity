@@ -14,7 +14,8 @@ import {
 import styled from 'styled-components'
 
 import {Popover} from '../../../../../../ui-components'
-import {ConnectorContext, useReportedValues} from '../../../../../changeIndicators'
+import {ConnectorContext} from '../../../../../changeIndicators/ConnectorContext'
+import {useReportedValues} from '../../../../../changeIndicators/tracker'
 import {useTranslation} from '../../../../../i18n'
 import {ChangeList, DiffContext, DiffTooltip, useDiffAnnotationColor} from '../../../../diff'
 import {type ObjectDiff} from '../../../../types'

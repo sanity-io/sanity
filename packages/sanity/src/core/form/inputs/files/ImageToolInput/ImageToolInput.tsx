@@ -3,7 +3,7 @@ import {Box, Card, Flex, Grid, Heading, Text} from '@sanity/ui'
 import {type ReactNode, useCallback, useEffect, useState} from 'react'
 import styled from 'styled-components'
 
-import {ChangeIndicator} from '../../../../changeIndicators'
+import {ChangeIndicator} from '../../../../changeIndicators/ChangeIndicator'
 import {LoadingBlock} from '../../../../components/loadingBlock'
 import {useTranslation} from '../../../../i18n'
 import {EMPTY_ARRAY} from '../../../../util'

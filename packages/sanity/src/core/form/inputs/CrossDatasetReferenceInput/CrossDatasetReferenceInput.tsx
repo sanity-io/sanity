@@ -17,7 +17,7 @@ import {concat, type Observable, of} from 'rxjs'
 import {catchError, distinctUntilChanged, filter, map, scan, switchMap, tap} from 'rxjs/operators'
 
 import {MenuButton, MenuItem} from '../../../../ui-components'
-import {ChangeIndicator} from '../../../changeIndicators'
+import {ChangeIndicator} from '../../../changeIndicators/ChangeIndicator'
 import {PreviewCard} from '../../../components'
 import {ContextMenuButton} from '../../../components/contextMenuButton'
 import {type FIXME} from '../../../FIXME'

@@ -2,7 +2,7 @@ import {Card, Stack} from '@sanity/ui'
 import {get} from 'lodash'
 import {PureComponent} from 'react'
 
-import {ChangeIndicator} from '../../../../changeIndicators'
+import {ChangeIndicator} from '../../../../changeIndicators/ChangeIndicator'
 import {ArrayOfPrimitivesItem} from '../../../members'
 import {type ArrayOfPrimitivesInputProps} from '../../../types'
 import {type PrimitiveItemProps} from '../../../types/itemProps'

@@ -13,7 +13,7 @@ import {type Path, type PortableTextBlock, type PortableTextTextBlock} from '@sa
 import {Box, Portal, PortalProvider, useBoundaryElement, usePortal} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
 
-import {ChangeIndicator} from '../../../changeIndicators'
+import {ChangeIndicator} from '../../../changeIndicators/ChangeIndicator'
 import {EMPTY_ARRAY} from '../../../util'
 import {ActivateOnFocus} from '../../components/ActivateOnFocus/ActivateOnFocus'
 import {type ArrayOfObjectsInputProps, type RenderCustomMarkers} from '../../types'

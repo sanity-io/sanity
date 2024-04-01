@@ -6,7 +6,7 @@ import {omit} from 'lodash'
 import {useCallback, useMemo, useState} from 'react'
 
 import {Button} from '../../../../ui-components'
-import {ChangeFieldWrapper} from '../../../changeIndicators'
+import {ChangeFieldWrapper} from '../../../changeIndicators/ChangeFieldWrapper'
 import {
   ChangeList,
   type Chunk,

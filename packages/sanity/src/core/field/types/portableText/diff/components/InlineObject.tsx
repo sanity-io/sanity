@@ -12,7 +12,8 @@ import {type MouseEvent, useCallback, useContext, useEffect, useMemo, useState} 
 import styled from 'styled-components'
 
 import {Popover} from '../../../../../../ui-components'
-import {ConnectorContext, useReportedValues} from '../../../../../changeIndicators'
+import {ConnectorContext} from '../../../../../changeIndicators/ConnectorContext'
+import {useReportedValues} from '../../../../../changeIndicators/tracker'
 import {useTranslation} from '../../../../../i18n'
 import {Preview} from '../../../../../preview/components/Preview'
 import {ChangeList, DiffContext, DiffTooltip, useDiffAnnotationColor} from '../../../../diff'

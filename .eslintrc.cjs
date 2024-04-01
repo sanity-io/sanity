@@ -33,6 +33,7 @@ const config = {
     'prettier',
     'react',
     'tsdoc',
+    'canonical',
   ],
   ignorePatterns: [
     '**/etc/*',
@@ -179,6 +180,7 @@ const config = {
     'no-unused-vars': 'off',
     'no-useless-catch': 'warn',
     'no-async-promise-executor': 'warn',
+    // 'canonical/no-barrel-import': 'error',
     'import/no-cycle': 'error',
   },
   settings: {
@@ -322,6 +324,12 @@ const config = {
         ],
       },
     },
+    // {
+    //   files: ['packages/sanity/src/core/**'],
+    //   rules: {
+    //     'import/no-cycle': 'error',
+    //   },
+    // },
   ],
 }
 

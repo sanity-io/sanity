@@ -5,7 +5,7 @@ import {useCallback, useMemo, useRef} from 'react'
 import styled from 'styled-components'
 
 import {MenuButton, MenuItem} from '../../../../../../ui-components'
-import {ChangeIndicator} from '../../../../../changeIndicators'
+import {ChangeIndicator} from '../../../../../changeIndicators/ChangeIndicator'
 import {ContextMenuButton} from '../../../../../components/contextMenuButton'
 import {LoadingBlock} from '../../../../../components/loadingBlock'
 import {type FIXME} from '../../../../../FIXME'

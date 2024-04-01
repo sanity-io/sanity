@@ -25,7 +25,7 @@ import {
   type MenuButtonProps,
   MenuItem,
 } from '../../../../../ui-components'
-import {ChangeIndicator} from '../../../../changeIndicators'
+import {ChangeIndicator} from '../../../../changeIndicators/ChangeIndicator'
 import {ImperativeToast} from '../../../../components'
 import {type FIXME} from '../../../../FIXME'
 import {PresenceOverlay} from '../../../../presence'
@@ -47,7 +47,7 @@ import {FileTarget} from '../common/styles'
 import {UploadPlaceholder} from '../common/UploadPlaceholder'
 import {UploadProgress} from '../common/UploadProgress'
 import {UploadWarning} from '../common/UploadWarning'
-import {ImageToolInput} from '../ImageToolInput'
+import {ImageToolInput} from '../ImageToolInput/ImageToolInput'
 import {type ImageUrlBuilder} from '../types'
 import {ImageActionsMenu} from './ImageActionsMenu'
 import {ImagePreview} from './ImagePreview'

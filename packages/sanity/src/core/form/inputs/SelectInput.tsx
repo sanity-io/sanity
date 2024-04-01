@@ -11,7 +11,7 @@ import {
   useMemo,
 } from 'react'
 
-import {ChangeIndicator} from '../../changeIndicators'
+import {ChangeIndicator} from '../../changeIndicators/ChangeIndicator'
 import {PatchEvent, set, unset} from '../patch'
 import {type StringInputProps} from '../types'
 
