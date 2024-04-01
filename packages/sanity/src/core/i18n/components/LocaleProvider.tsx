@@ -3,7 +3,7 @@ import {type PropsWithChildren, Suspense, useCallback, useMemo, useSyncExternalS
 import {I18nextProvider} from 'react-i18next'
 
 import {LoadingBlock} from '../../components/loadingBlock'
-import {useSource} from '../../studio'
+import {useSource} from '../../studio/source'
 import {LocaleContext, type LocaleContextValue} from '../LocaleContext'
 import {defaultLocale} from '../locales'
 import {storePreferredLocale} from '../localeStore'
