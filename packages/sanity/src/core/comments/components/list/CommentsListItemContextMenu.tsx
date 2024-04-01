@@ -1,6 +1,5 @@
 import {CheckmarkCircleIcon, EditIcon, LinkIcon, TrashIcon, UndoIcon} from '@sanity/icons'
 import {Card, Flex, Menu, MenuDivider} from '@sanity/ui'
-import {ContextMenuButton, type TFunction, useTranslation} from 'sanity'
 import styled from 'styled-components'
 
 import {
@@ -10,6 +9,8 @@ import {
   MenuItem,
   TooltipDelayGroupProvider,
 } from '../../../../ui-components'
+import {ContextMenuButton} from '../../../components/contextMenuButton'
+import {type TFunction, useTranslation} from '../../../i18n'
 import {COMMENT_REACTION_OPTIONS} from '../../constants'
 import {commentsLocaleNamespace} from '../../i18n'
 import {type CommentReactionOption, type CommentStatus, type CommentsUIMode} from '../../types'

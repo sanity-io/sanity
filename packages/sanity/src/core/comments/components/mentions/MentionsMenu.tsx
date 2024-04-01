@@ -2,15 +2,12 @@ import {Box, Flex, Stack, Text} from '@sanity/ui'
 import {deburr} from 'lodash'
 import {useCallback, useImperativeHandle, useMemo, useRef, useState} from 'react'
 import * as React from 'react'
-import {
-  CommandList,
-  type CommandListHandle,
-  LoadingBlock,
-  type UserWithPermission,
-  useTranslation,
-} from 'sanity'
 import styled from 'styled-components'
 
+import {CommandList, type CommandListHandle} from '../../../components/commandList'
+import {LoadingBlock} from '../../../components/loadingBlock'
+import {type UserWithPermission} from '../../../hooks/useUserListWithPermissions'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {commentsLocaleNamespace} from '../../i18n'
 import {MentionsMenuItem} from './MentionsMenuItem'
 

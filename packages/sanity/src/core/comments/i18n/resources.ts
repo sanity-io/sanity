@@ -1,5 +1,5 @@
 /* eslint sort-keys: "error" */
-import {defineLocalesResources} from 'sanity'
+import {defineLocalesResources} from '../../i18n'
 
 /**
  * Defined locale strings for the comments feature, in US English.

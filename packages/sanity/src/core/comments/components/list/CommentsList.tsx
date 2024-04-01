@@ -1,8 +1,8 @@
 import {type CurrentUser} from '@sanity/types'
 import {BoundaryElementProvider, Flex, Stack} from '@sanity/ui'
 import {forwardRef, memo, useMemo, useState} from 'react'
-import {type UserListWithPermissionsHookValue} from 'sanity'
 
+import {type UserListWithPermissionsHookValue} from '../../../hooks/useUserListWithPermissions'
 import {type CommentsSelectedPath} from '../../context'
 import {applyCommentsGroupAttr} from '../../hooks'
 import {

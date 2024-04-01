@@ -1,4 +1,5 @@
 import {AddCommentIcon} from '@sanity/icons'
+import {type CurrentUser, type PortableTextBlock} from '@sanity/types'
 import {
   // eslint-disable-next-line no-restricted-imports
   Button as SanityUIButton,
@@ -8,16 +9,11 @@ import {
   useClickOutside,
 } from '@sanity/ui'
 import {useCallback, useMemo, useRef, useState} from 'react'
-import {
-  type CurrentUser,
-  type PortableTextBlock,
-  Translate,
-  type UserListWithPermissionsHookValue,
-  useTranslation,
-} from 'sanity'
 import styled from 'styled-components'
 
 import {Button, Popover, Tooltip} from '../../../../ui-components'
+import {type UserListWithPermissionsHookValue} from '../../../hooks/useUserListWithPermissions'
+import {Translate, useTranslation} from '../../../i18n'
 import {
   CommentIcon,
   CommentInput,

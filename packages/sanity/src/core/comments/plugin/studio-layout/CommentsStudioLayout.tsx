@@ -1,6 +1,7 @@
-import {AddonDatasetProvider, type LayoutProps, useFeatureEnabled} from 'sanity'
-
 import {ConditionalWrapper} from '../../../../ui-components/conditionalWrapper'
+import {type LayoutProps} from '../../../config/studio/types'
+import {useFeatureEnabled} from '../../../hooks/useFeatureEnabled'
+import {AddonDatasetProvider} from '../../../studio/addonDataset'
 import {CommentsOnboardingProvider, CommentsUpsellProvider} from '../..'
 
 export function CommentsStudioLayout(props: LayoutProps) {

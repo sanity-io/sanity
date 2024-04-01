@@ -1,8 +1,8 @@
 import {Box, Flex, Stack, Text} from '@sanity/ui'
-import {useTranslation} from 'sanity'
 import styled, {keyframes} from 'styled-components'
 
 import {Button, Popover, type PopoverProps} from '../../../../ui-components'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {commentsLocaleNamespace} from '../../i18n'
 
 const Root = styled(Box)`

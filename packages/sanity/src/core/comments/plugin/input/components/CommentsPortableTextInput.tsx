@@ -6,14 +6,16 @@ import {
   type RangeDecoration,
   type RangeDecorationOnMovedDetails,
 } from '@sanity/portable-text-editor'
+import {isPortableTextTextBlock} from '@sanity/types'
 import {BoundaryElementProvider, Stack, usePortal} from '@sanity/ui'
 import * as PathUtils from '@sanity/util/paths'
 import {uuid} from '@sanity/uuid'
 import {AnimatePresence} from 'framer-motion'
 import {debounce} from 'lodash'
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {isPortableTextTextBlock, type PortableTextInputProps, useCurrentUser} from 'sanity'
 
+import {type PortableTextInputProps} from '../../../../form/types'
+import {useCurrentUser} from '../../../../store/user/hooks'
 import {
   buildRangeDecorations,
   buildRangeDecorationSelectionsFromComments,

@@ -13,8 +13,8 @@ import {Box, Button, Card, Code, Container, Flex, Label, Stack, Text} from '@san
 import {uuid} from '@sanity/uuid'
 import {isEqual} from 'lodash'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {useCurrentUser} from 'sanity'
 
+import {useCurrentUser} from '../../store/user/hooks'
 import {type CommentDocument} from '../types'
 import {
   buildCommentThreadItems,

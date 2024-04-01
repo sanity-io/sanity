@@ -1,5 +1,6 @@
-import {type InputProps, isArrayOfBlocksSchemaType, type PortableTextInputProps} from 'sanity'
+import {isArrayOfBlocksSchemaType} from '@sanity/types'
 
+import {type InputProps, type PortableTextInputProps} from '../../../form/types'
 import {CommentsPortableTextInput} from './components/CommentsPortableTextInput'
 
 function isPortableTextInputProps(

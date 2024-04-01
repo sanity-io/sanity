@@ -1,15 +1,11 @@
 import {orderBy} from 'lodash'
 import {memo, type ReactNode, useCallback, useMemo, useState} from 'react'
-import {
-  getPublishedId,
-  useAddonDataset,
-  useCurrentUser,
-  useEditState,
-  useSchema,
-  useUserListWithPermissions,
-  useWorkspace,
-} from 'sanity'
 
+import {useEditState, useSchema, useUserListWithPermissions} from '../../../hooks'
+import {useCurrentUser} from '../../../store/user/hooks'
+import {useAddonDataset} from '../../../studio/addonDataset'
+import {useWorkspace} from '../../../studio/workspace'
+import {getPublishedId} from '../../../util/draftUtils'
 import {
   type CommentOperationsHookOptions,
   useCommentOperations,

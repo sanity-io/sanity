@@ -1,11 +1,14 @@
-import {type CurrentUser} from '@sanity/types'
+import {type CurrentUser, type PortableTextBlock} from '@sanity/types'
 import {useCallback, useMemo, useRef, useState} from 'react'
-import {EMPTY_ARRAY, Translate, type UserListWithPermissionsHookValue, useTranslation} from 'sanity'
 
+import {type UserListWithPermissionsHookValue} from '../../../hooks/useUserListWithPermissions'
+import {Translate, useTranslation} from '../../../i18n'
 import {hasCommentMessageValue} from '../../helpers'
 import {commentsLocaleNamespace} from '../../i18n'
 import {type CommentMessage, type CommentsUIMode} from '../../types'
 import {CommentInput, type CommentInputHandle, type CommentInputProps} from '../pte'
+
+const EMPTY_PT_ARRAY: PortableTextBlock[] = []
 
 interface CreateNewThreadInputProps {
   currentUser: CurrentUser
@@ -33,12 +36,12 @@ export function CreateNewThreadInput(props: CreateNewThreadInputProps) {
   } = props
   const {t} = useTranslation(commentsLocaleNamespace)
 
-  const [value, setValue] = useState<CommentMessage>(EMPTY_ARRAY)
+  const [value, setValue] = useState<CommentMessage>(EMPTY_PT_ARRAY)
   const commentInputHandle = useRef<CommentInputHandle | null>(null)
 
   const handleSubmit = useCallback(() => {
     onNewThreadCreate?.(value)
-    setValue(EMPTY_ARRAY)
+    setValue(EMPTY_PT_ARRAY)
   }, [onNewThreadCreate, value])
 
   const hasValue = useMemo(() => hasCommentMessageValue(value), [value])
@@ -69,7 +72,7 @@ export function CreateNewThreadInput(props: CreateNewThreadInputProps) {
   )
 
   const confirmDiscard = useCallback(() => {
-    setValue(EMPTY_ARRAY)
+    setValue(EMPTY_PT_ARRAY)
     commentInputHandle.current?.discardDialogController.close()
     commentInputHandle.current?.focus()
   }, [])

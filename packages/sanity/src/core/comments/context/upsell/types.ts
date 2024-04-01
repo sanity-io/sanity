@@ -1,5 +1,4 @@
-import {type UpsellDialogViewedInfo} from 'sanity'
-
+import {type UpsellDialogViewedInfo} from '../../../studio/upsell'
 import {type CommentsUpsellData} from '../../types'
 
 export interface CommentsUpsellContextValue {

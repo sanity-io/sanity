@@ -14,19 +14,15 @@ import {
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {
-  type RelativeTimeOptions,
-  Translate,
-  useDateTimeFormat,
-  useDidUpdate,
-  useRelativeTime,
-  type UserListWithPermissionsHookValue,
-  useTranslation,
-  useUser,
-} from 'sanity'
 import {IntentLink} from 'sanity/router'
 import styled, {css} from 'styled-components'
 
+import {useDidUpdate} from '../../../form/hooks/useDidUpdate'
+import {useDateTimeFormat} from '../../../hooks/useDateTimeFormat'
+import {type RelativeTimeOptions, useRelativeTime} from '../../../hooks/useRelativeTime'
+import {type UserListWithPermissionsHookValue} from '../../../hooks/useUserListWithPermissions'
+import {Translate, useTranslation} from '../../../i18n'
+import {useUser} from '../../../store/user/hooks'
 import {hasCommentMessageValue, isTextSelectionComment, useCommentHasChanged} from '../../helpers'
 import {commentsLocaleNamespace} from '../../i18n'
 import {

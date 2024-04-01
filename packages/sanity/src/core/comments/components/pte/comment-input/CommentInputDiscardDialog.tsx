@@ -1,9 +1,8 @@
 import {DialogProvider, Text, ThemeColorProvider} from '@sanity/ui'
-import type * as React from 'react'
-import {useCallback} from 'react'
-import {useTranslation} from 'sanity'
+import {type MouseEvent, useCallback} from 'react'
 
 import {Dialog} from '../../../../../ui-components'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {commentsLocaleNamespace} from '../../../i18n'
 
 const Z_OFFSET = 9999999 // Change to appropriate z-offset
@@ -26,7 +25,7 @@ export function CommentInputDiscardDialog(props: CommentInputDiscardDialogProps)
   const {onClose, onConfirm} = props
 
   const handleCancelClick = useCallback(
-    (e: React.MouseEvent<HTMLButtonElement>) => {
+    (e: MouseEvent<HTMLButtonElement>) => {
       e.stopPropagation()
       onClose()
     },
@@ -34,7 +33,7 @@ export function CommentInputDiscardDialog(props: CommentInputDiscardDialogProps)
   )
 
   const handleConfirmClick = useCallback(
-    (e: React.MouseEvent<HTMLButtonElement>) => {
+    (e: MouseEvent<HTMLButtonElement>) => {
       e.stopPropagation()
       onConfirm()
     },

@@ -2,9 +2,9 @@ import {type SanityClient} from '@sanity/client'
 import {type CurrentUser, type SchemaType} from '@sanity/types'
 import {uuid} from '@sanity/uuid'
 import {useCallback, useMemo} from 'react'
-import {useTools} from 'sanity'
 import {useRouterState} from 'sanity/router'
 
+import {useTools} from '../../../hooks/useTools'
 import {
   type CommentCreatePayload,
   type CommentDocument,

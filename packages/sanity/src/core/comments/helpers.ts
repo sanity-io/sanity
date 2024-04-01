@@ -1,6 +1,6 @@
+import {isPortableTextSpan, isPortableTextTextBlock} from '@sanity/types'
 import {isEqual} from 'lodash'
 import {useMemo, useRef} from 'react'
-import {isPortableTextSpan, isPortableTextTextBlock} from 'sanity'
 
 import {type CommentContext, type CommentDocument, type CommentMessage} from './types'
 

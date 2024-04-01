@@ -1,8 +1,8 @@
 import {Container, Flex} from '@sanity/ui'
 import {useBoolean, useSelect} from '@sanity/ui-workshop'
 import {useMemo} from 'react'
-import {useCurrentUser} from 'sanity'
 
+import {useCurrentUser} from '../../store/user/hooks'
 import {CommentsListItemLayout} from '../components/list/CommentsListItemLayout'
 import {type CommentDocument, type CommentsUIMode} from '../types'
 

@@ -5,9 +5,11 @@ import * as PathUtils from '@sanity/util/paths'
 import {uuid} from '@sanity/uuid'
 import {AnimatePresence, motion, type Variants} from 'framer-motion'
 import {useCallback, useMemo, useRef, useState} from 'react'
-import {type FieldProps, getSchemaTypeTitle, useCurrentUser} from 'sanity'
 import styled, {css} from 'styled-components'
 
+import {type FieldProps} from '../../../form/types'
+import {getSchemaTypeTitle} from '../../../schema/helpers'
+import {useCurrentUser} from '../../../store/user/hooks'
 import {
   applyCommentsFieldAttr,
   type CommentCreatePayload,

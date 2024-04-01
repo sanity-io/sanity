@@ -1,8 +1,8 @@
 import {Flex, Text, TextSkeleton} from '@sanity/ui'
-import {useCurrentUser, useUser} from 'sanity'
 import styled, {css} from 'styled-components'
 
 import {Tooltip} from '../../../../../ui-components'
+import {useCurrentUser, useUser} from '../../../../store/user/hooks'
 import {CommentsAvatar} from '../../avatars'
 
 const Span = styled.span(({theme}) => {

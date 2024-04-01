@@ -1,9 +1,9 @@
 import {LaunchIcon} from '@sanity/icons'
 import {Box, Card, Container, Flex, Stack} from '@sanity/ui'
-import {UpsellDescriptionSerializer} from 'sanity'
 import styled from 'styled-components'
 
 import {Button} from '../../../../ui-components'
+import {UpsellDescriptionSerializer} from '../../../studio/upsell/upsellDescriptionSerializer'
 import {type CommentsUpsellData} from '../../types'
 
 const Image = styled.img`

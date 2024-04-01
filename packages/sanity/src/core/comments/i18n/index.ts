@@ -1,4 +1,4 @@
-import {type LocaleResourceBundle} from 'sanity'
+import {type LocaleResourceBundle} from '../../i18n'
 
 /**
  * The locale namespace for the comments plugin

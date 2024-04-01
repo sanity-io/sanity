@@ -4,10 +4,11 @@ import {type AvatarSize, Box, Card, Flex, MenuDivider, Stack} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
 import {useCallback} from 'react'
-import {useTranslation, useUser} from 'sanity'
 import styled, {css} from 'styled-components'
 
 import {Button, TooltipDelayGroupProvider} from '../../../../../ui-components'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {useUser} from '../../../../store/user/hooks'
 import {commentsLocaleNamespace} from '../../../i18n'
 import {CommentsAvatar} from '../../avatars/CommentsAvatar'
 import {MentionIcon, SendIcon} from '../../icons'

@@ -1,8 +1,8 @@
 import {Card, useClickOutside} from '@sanity/ui'
 import {cloneElement, useCallback, useMemo, useState} from 'react'
-import {type TFunction, useTranslation} from 'sanity'
 
 import {Popover, type PopoverProps} from '../../../../ui-components'
+import {type TFunction, useTranslation} from '../../../i18n'
 import {commentsLocaleNamespace} from '../../i18n'
 import {type CommentReactionOption, type CommentsUIMode} from '../../types'
 import {CommentReactionsMenu} from './CommentReactionsMenu'

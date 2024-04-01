@@ -1,9 +1,12 @@
+import {type CurrentUser} from '@sanity/types'
 import {Box, Flex, Stack, Text} from '@sanity/ui'
 import {useCallback} from 'react'
-import {type CurrentUser, Translate, useListFormat, useTranslation, useUser} from 'sanity'
 import styled from 'styled-components'
 
 import {Tooltip} from '../../../../ui-components'
+import {useListFormat} from '../../../hooks/useListFormat'
+import {Translate, useTranslation} from '../../../i18n'
+import {useUser} from '../../../store/user/hooks'
 import {COMMENT_REACTION_EMOJIS} from '../../constants'
 import {commentsLocaleNamespace} from '../../i18n'
 import {type CommentReactionShortNames} from '../../types'

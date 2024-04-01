@@ -1,8 +1,8 @@
 import {Card, Flex} from '@sanity/ui'
 import {useNumber, useSelect} from '@sanity/ui-workshop'
 import {useMemo} from 'react'
-import {useCurrentUser} from 'sanity'
 
+import {useCurrentUser} from '../../store/user/hooks'
 import {CommentReactionsUsersTooltipContent} from '../components'
 
 const USER_IDS = [

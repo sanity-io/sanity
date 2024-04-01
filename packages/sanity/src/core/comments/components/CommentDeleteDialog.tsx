@@ -1,8 +1,9 @@
 import {Stack, Text} from '@sanity/ui'
 import {useCallback} from 'react'
-import {TextWithTone, type TFunction, useTranslation} from 'sanity'
 
 import {Dialog} from '../../../ui-components'
+import {TextWithTone} from '../../components/textWithTone'
+import {type TFunction, useTranslation} from '../../i18n'
 import {commentsLocaleNamespace} from '../i18n'
 
 function getDialogCopy(

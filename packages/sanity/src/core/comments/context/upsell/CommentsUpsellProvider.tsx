@@ -2,24 +2,26 @@ import {type ClientConfig} from '@sanity/client'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {template} from 'lodash'
 import {useCallback, useEffect, useMemo, useState} from 'react'
+
+import {useClient, useProjectId} from '../../../hooks'
 import {
-  DEFAULT_STUDIO_CLIENT_OPTIONS,
   UpsellDialogDismissed,
   UpsellDialogLearnMoreCtaClicked,
   UpsellDialogUpgradeCtaClicked,
   UpsellDialogViewed,
   type UpsellDialogViewedInfo,
-  useClient,
-  useProjectId,
-} from 'sanity'
-
+} from '../../../studio/upsell'
 import {CommentsUpsellDialog} from '../../components'
 import {type CommentsUpsellData} from '../../types'
 import {CommentsUpsellContext} from './CommentsUpsellContext'
 import {type CommentsUpsellContextValue} from './types'
 
-const UPSELL_CLIENT_OPTIONS: Partial<ClientConfig> = {
+const UPSELL_CLIENT_BASE_OPTIONS = {
   apiVersion: '2023-12-11',
+}
+
+const UPSELL_CLIENT_OPTIONS: Partial<ClientConfig> = {
+  ...UPSELL_CLIENT_BASE_OPTIONS,
   useProjectHostname: false,
   withCredentials: false,
   useCdn: true,
@@ -38,7 +40,7 @@ export function CommentsUpsellProvider(props: {children: React.ReactNode}) {
   const [upsellData, setUpsellData] = useState<CommentsUpsellData | null>(null)
   const projectId = useProjectId()
   const telemetry = useTelemetry()
-  const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
+  const client = useClient(UPSELL_CLIENT_BASE_OPTIONS)
 
   const telemetryLogs = useMemo(
     (): CommentsUpsellContextValue['telemetryLogs'] => ({

@@ -2,8 +2,8 @@ import {
   type RangeDecoration,
   type RangeDecorationOnMovedDetails,
 } from '@sanity/portable-text-editor'
+import {type PortableTextBlock} from '@sanity/types'
 import {memo, useCallback, useEffect, useRef} from 'react'
-import {type PortableTextBlock} from 'sanity'
 
 import {CommentInlineHighlightSpan} from '../../components'
 import {applyInlineCommentIdAttr} from '../../hooks'

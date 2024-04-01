@@ -1,7 +1,7 @@
 import {useCallback} from 'react'
-import {type DocumentLayoutProps} from 'sanity'
+import {useDocumentPane} from 'sanity/structure'
 
-import {useDocumentPane} from '../../../../structure'
+import {type DocumentLayoutProps} from '../../../config/types'
 import {
   CommentsAuthoringPathProvider,
   CommentsEnabledProvider,

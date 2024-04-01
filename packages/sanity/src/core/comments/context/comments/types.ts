@@ -1,5 +1,4 @@
-import {type UserListWithPermissionsHookValue} from 'sanity'
-
+import {type UserListWithPermissionsHookValue} from '../../../hooks/useUserListWithPermissions'
 import {
   type CommentDocument,
   type CommentOperations,
