@@ -16,20 +16,20 @@ import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
 import {type PortableTextInputProps} from '../../../../form/types'
 import {useCurrentUser} from '../../../../store/user/hooks'
+import {CommentInlineHighlightSpan} from '../../../components/pte/CommentInlineHighlightSpan'
+import {isTextSelectionComment} from '../../../helpers'
+import {useComments} from '../../../hooks/useComments'
+import {useCommentsEnabled} from '../../../hooks/useCommentsEnabled'
+import {useCommentsScroll} from '../../../hooks/useCommentsScroll'
+import {useCommentsSelectedPath} from '../../../hooks/useCommentsSelectedPath'
+import {useCommentsUpsell} from '../../../hooks/useCommentsUpsell'
 import {
   type CommentDocument,
   type CommentMessage,
   type CommentsTextSelectionItem,
   type CommentsUIMode,
   type CommentUpdatePayload,
-  isTextSelectionComment,
-} from '../../..'
-import {CommentInlineHighlightSpan} from '../../../components/pte/CommentInlineHighlightSpan'
-import {useComments} from '../../../hooks/useComments'
-import {useCommentsEnabled} from '../../../hooks/useCommentsEnabled'
-import {useCommentsScroll} from '../../../hooks/useCommentsScroll'
-import {useCommentsSelectedPath} from '../../../hooks/useCommentsSelectedPath'
-import {useCommentsUpsell} from '../../../hooks/useCommentsUpsell'
+} from '../../../types'
 import {buildRangeDecorations} from '../../../utils/inline-comments/buildRangeDecorations'
 import {buildRangeDecorationSelectionsFromComments} from '../../../utils/inline-comments/buildRangeDecorationSelectionsFromComments'
 import {buildTextSelectionFromFragment} from '../../../utils/inline-comments/buildTextSelectionFromFragment'

@@ -8,19 +8,12 @@ import {type DocumentInspectorProps} from '../../../config/document/inspector'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {useCurrentUser} from '../../../store/user/hooks'
 import {useUnique} from '../../../util/useUnique'
-import {
-  type CommentBaseCreatePayload,
-  type CommentReactionOption,
-  type CommentStatus,
-  type CommentsUIMode,
-  type CommentUpdatePayload,
-  isTextSelectionComment,
-} from '../..'
 import {CommentDeleteDialog} from '../../components/CommentDeleteDialog'
 import {CommentsList} from '../../components/list/CommentsList'
 import {CommentsOnboardingPopover} from '../../components/onboarding/CommentsOnboardingPopover'
 import {CommentsUpsellPanel} from '../../components/upsell/CommentsUpsellPanel'
 import {type CommentsSelectedPath} from '../../context/selected-path/types'
+import {isTextSelectionComment} from '../../helpers'
 import {useComments} from '../../hooks/useComments'
 import {useCommentsEnabled} from '../../hooks/useCommentsEnabled'
 import {useCommentsOnboarding} from '../../hooks/useCommentsOnboarding'
@@ -28,6 +21,13 @@ import {useCommentsScroll} from '../../hooks/useCommentsScroll'
 import {useCommentsSelectedPath} from '../../hooks/useCommentsSelectedPath'
 import {useCommentsUpsell} from '../../hooks/useCommentsUpsell'
 import {commentsLocaleNamespace} from '../../i18n'
+import {
+  type CommentBaseCreatePayload,
+  type CommentReactionOption,
+  type CommentStatus,
+  type CommentsUIMode,
+  type CommentUpdatePayload,
+} from '../../types'
 import {CommentsInspectorFeedbackFooter} from './CommentsInspectorFeedbackFooter'
 import {CommentsInspectorHeader} from './CommentsInspectorHeader'
 
