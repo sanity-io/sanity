@@ -11,7 +11,7 @@ import {
   useCommentOperations,
 } from '../../hooks/use-comment-operations/useCommentOperations'
 import {useCommentsEnabled} from '../../hooks/useCommentsEnabled'
-import {useCommentsStore} from '../../store'
+import {useCommentsStore} from '../../store/useCommentsStore'
 import {
   type CommentPostPayload,
   type CommentStatus,
