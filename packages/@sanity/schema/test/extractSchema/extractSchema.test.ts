@@ -435,6 +435,12 @@ describe('Extract schema test', () => {
               type: 'string',
               validation: {_required: 'required'},
             },
+            {
+              title: 'Optional Title',
+              name: 'optionalTitle',
+              type: 'string',
+              validation: {_required: 'optional'},
+            },
           ],
         },
       ],
@@ -449,6 +455,7 @@ describe('Extract schema test', () => {
     expect(book.attributes.title.optional).toBe(true)
     expect(book.attributes.subtitle.optional).toBe(false)
     expect(book.attributes.anotherTitle.optional).toBe(false)
+    expect(book.attributes.optionalTitle.optional).toBe(true)
   })
 
   describe('can handle `list` option that is not an array', () => {
