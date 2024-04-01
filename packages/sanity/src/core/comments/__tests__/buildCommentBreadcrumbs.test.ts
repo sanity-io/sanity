@@ -2,7 +2,7 @@ import {describe, expect, test} from '@jest/globals'
 import {Schema} from '@sanity/schema'
 import {type CurrentUser, defineField} from '@sanity/types'
 
-import {buildCommentBreadcrumbs} from '../utils'
+import {buildCommentBreadcrumbs} from '../utils/buildCommentBreadcrumbs'
 
 const CURRENT_USER: CurrentUser = {
   email: '',

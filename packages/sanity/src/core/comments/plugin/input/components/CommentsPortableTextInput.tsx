@@ -17,9 +17,6 @@ import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {type PortableTextInputProps} from '../../../../form/types'
 import {useCurrentUser} from '../../../../store/user/hooks'
 import {
-  buildRangeDecorations,
-  buildRangeDecorationSelectionsFromComments,
-  buildTextSelectionFromFragment,
   type CommentDocument,
   type CommentMessage,
   type CommentsTextSelectionItem,
@@ -33,6 +30,9 @@ import {useCommentsEnabled} from '../../../hooks/useCommentsEnabled'
 import {useCommentsScroll} from '../../../hooks/useCommentsScroll'
 import {useCommentsSelectedPath} from '../../../hooks/useCommentsSelectedPath'
 import {useCommentsUpsell} from '../../../hooks/useCommentsUpsell'
+import {buildRangeDecorations} from '../../../utils/inline-comments/buildRangeDecorations'
+import {buildRangeDecorationSelectionsFromComments} from '../../../utils/inline-comments/buildRangeDecorationSelectionsFromComments'
+import {buildTextSelectionFromFragment} from '../../../utils/inline-comments/buildTextSelectionFromFragment'
 import {getSelectionBoundingRect, useAuthoringReferenceElement} from '../helpers'
 import {FloatingButtonPopover} from './FloatingButtonPopover'
 import {InlineCommentInputPopover} from './InlineCommentInputPopover'
