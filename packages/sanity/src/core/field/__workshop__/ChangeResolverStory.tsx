@@ -2,7 +2,7 @@ import {type ObjectSchemaType} from '@sanity/types'
 import {Box, Card} from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
 
-import {useSchema} from '../../hooks'
+import {useSchema} from '../../hooks/useSchema'
 import {ChangeResolver, DocumentChangeContext, type DocumentChangeContextInstance} from '../diff'
 import {type FieldChangeNode, type ObjectDiff, type StringDiff} from '../types'
 

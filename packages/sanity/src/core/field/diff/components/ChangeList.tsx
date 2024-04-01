@@ -5,7 +5,7 @@ import {Box, Card, Flex, Stack, Text, useClickOutside} from '@sanity/ui'
 import {type ReactElement, useCallback, useContext, useMemo, useState} from 'react'
 
 import {Button, Popover} from '../../../../ui-components'
-import {useDocumentOperation} from '../../../hooks'
+import {useDocumentOperation} from '../../../hooks/useDocumentOperation'
 import {useTranslation} from '../../../i18n'
 import {useDocumentPairPermissions} from '../../../store'
 import {unstable_useConditionalProperty as useConditionalProperty} from '../../conditional-property'

@@ -13,9 +13,11 @@ import {
   DocumentChangeContext,
   type DocumentChangeContextInstance,
 } from '../../../field'
-import {useConnectionState, useEditState, useSchema} from '../../../hooks'
 import {useInitialValue} from '../document'
 import {useTimelineSelector, useTimelineStore} from '../history'
+import {useConnectionState} from '../../../hooks/useConnectionState'
+import {useSchema} from '../../../hooks/useSchema'
+import {useEditState} from '../../../hooks/useEditState'
 
 export default function HistoryTimelineStory() {
   const schema = useSchema()

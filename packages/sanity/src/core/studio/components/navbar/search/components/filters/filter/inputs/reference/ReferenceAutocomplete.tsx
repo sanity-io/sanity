@@ -13,7 +13,7 @@ import {
 import styled from 'styled-components'
 
 import {Popover} from '../../../../../../../../../../ui-components'
-import {useSchema} from '../../../../../../../../../hooks'
+import {useSchema} from '../../../../../../../../../hooks/useSchema'
 import {Translate, useTranslation} from '../../../../../../../../../i18n'
 import {type SearchHit} from '../../../../../../../../../search'
 import {getPublishedId} from '../../../../../../../../../util'

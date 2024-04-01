@@ -6,7 +6,7 @@ import ReactFocusLock from 'react-focus-lock'
 
 import {Button, type ButtonProps, Tooltip, type TooltipProps} from '../../../../../ui-components'
 import {InsufficientPermissionsMessage} from '../../../../components'
-import {useSchema} from '../../../../hooks'
+import {useSchema} from '../../../../hooks/useSchema'
 import {useGetI18nText, useTranslation} from '../../../../i18n'
 import {useCurrentUser} from '../../../../store'
 import {useColorScheme} from '../../../colorScheme'

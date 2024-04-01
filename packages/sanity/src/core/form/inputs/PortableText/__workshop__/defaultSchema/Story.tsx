@@ -6,7 +6,7 @@ import {useCallback, useMemo, useRef, useState} from 'react'
 
 import {createMockSanityClient} from '../../../../../../../test/mocks/mockSanityClient'
 import {defineConfig} from '../../../../../config'
-import {useSchema} from '../../../../../hooks'
+import {useSchema} from '../../../../../hooks/useSchema'
 import {StudioProvider} from '../../../../../studio'
 import {type FormPatch, PatchEvent} from '../../../../patch'
 import {applyAll} from '../../../../patch/applyPatch'

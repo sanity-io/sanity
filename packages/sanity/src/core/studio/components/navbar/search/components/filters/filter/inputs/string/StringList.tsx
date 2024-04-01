@@ -5,7 +5,7 @@ import {capitalize, uniq} from 'lodash'
 import {useCallback, useId, useMemo} from 'react'
 
 import {Button, MenuButton, MenuItem} from '../../../../../../../../../../ui-components'
-import {useSchema} from '../../../../../../../../../hooks'
+import {useSchema} from '../../../../../../../../../hooks/useSchema'
 import {useTranslation} from '../../../../../../../../../i18n'
 import {isNonNullable} from '../../../../../../../../../util'
 import {useSearchState} from '../../../../../contexts/search/useSearchState'

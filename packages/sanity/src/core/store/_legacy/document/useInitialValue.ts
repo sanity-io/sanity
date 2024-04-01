@@ -1,10 +1,12 @@
 import {type InitialValueResolverContext, type SanityDocumentLike} from '@sanity/types'
 import {useEffect, useMemo, useState} from 'react'
 
-import {useDataset, useProjectId, useSchema} from '../../../hooks'
-import {useSource} from '../../../studio'
+import {useDataset} from '../../../hooks/useDataset'
+import {useProjectId} from '../../../hooks/useProjectId'
+import {useSchema} from '../../../hooks/useSchema'
+import {useSource} from '../../../studio/source'
 import {useUnique} from '../../../util'
-import {useCurrentUser} from '../../user'
+import {useCurrentUser} from '../../user/hooks'
 import {useDocumentStore} from '../datastores'
 import {type InitialValueState} from './initialValue/types'
 

@@ -18,7 +18,7 @@ import {
   type TimelineController,
   useHistoryStore,
 } from '../../..'
-import {useClient} from '../../../hooks'
+import {useClient} from '../../../hooks/useClient'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
 import {remoteSnapshots, type RemoteSnapshotVersionEvent} from '../document'
 

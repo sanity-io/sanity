@@ -4,7 +4,7 @@ import {type MouseEvent, useCallback, useMemo} from 'react'
 import {useIntentLink} from 'sanity/router'
 
 import {type GeneralPreviewLayoutKey, PreviewCard} from '../../../../../../../components'
-import {useSchema} from '../../../../../../../hooks'
+import {useSchema} from '../../../../../../../hooks/useSchema'
 import {useDocumentPresence} from '../../../../../../../store'
 import {SearchResultItemPreview} from './SearchResultItemPreview'
 

@@ -8,7 +8,7 @@ import {Box, Card, Stack} from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
 
 import {Button} from '../../../../../../../../../../ui-components'
-import {useSchema} from '../../../../../../../../../hooks'
+import {useSchema} from '../../../../../../../../../hooks/useSchema'
 import {useTranslation} from '../../../../../../../../../i18n'
 import {useSearchState} from '../../../../../contexts/search/useSearchState'
 import {type OperatorInputComponentProps} from '../../../../../definitions/operators/operatorTypes'

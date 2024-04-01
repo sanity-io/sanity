@@ -6,7 +6,7 @@ import {Box, Card, Flex, Text} from '@sanity/ui'
 import {type ReactElement, type SyntheticEvent, useMemo, useState} from 'react'
 import styled from 'styled-components'
 
-import {useClient} from '../../../../hooks'
+import {useClient} from '../../../../hooks/useClient'
 import {useTranslation} from '../../../../i18n'
 import {useDocumentValues} from '../../../../store'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'

@@ -1,4 +1,4 @@
-import {useSource} from '../studio'
+import {useSource} from '../studio/source'
 import {type Template} from '../templates'
 
 /**

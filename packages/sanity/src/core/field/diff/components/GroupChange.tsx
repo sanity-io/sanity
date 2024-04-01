@@ -9,7 +9,7 @@ import {
 } from 'react'
 
 import {Button, Popover} from '../../../../ui-components'
-import {useDocumentOperation} from '../../../hooks'
+import {useDocumentOperation} from '../../../hooks/useDocumentOperation'
 import {useTranslation} from '../../../i18n'
 import {useDocumentPairPermissions} from '../../../store'
 import {pathsAreEqual} from '../../paths'

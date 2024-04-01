@@ -1,6 +1,6 @@
 import {useMemo} from 'react'
 
-import {useClient} from '../../../../../hooks'
+import {useClient} from '../../../../../hooks/useClient'
 import {useCurrentLocale} from '../../../../../i18n/hooks/useLocale'
 import {type LoadableState, useLoadable} from '../../../../../util'
 import {getHelpResources} from './helpResources'

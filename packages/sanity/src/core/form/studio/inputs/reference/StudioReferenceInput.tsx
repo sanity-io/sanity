@@ -21,7 +21,7 @@ import {catchError, mergeMap} from 'rxjs/operators'
 
 import {type Source} from '../../../../config'
 import {type FIXME} from '../../../../FIXME'
-import {useSchema} from '../../../../hooks'
+import {useSchema} from '../../../../hooks/useSchema'
 import {useDocumentPreviewStore} from '../../../../store'
 import {useSource} from '../../../../studio'
 import {useSearchMaxFieldDepth} from '../../../../studio/components/navbar/search/hooks/useSearchMaxFieldDepth'

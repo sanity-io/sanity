@@ -4,7 +4,7 @@ import {useEffect, useMemo} from 'react'
 import deepEquals from 'react-fast-compare'
 
 import {type ObjectFieldProps, set, useFormValue} from '../../../../form'
-import {useClient} from '../../../../hooks'
+import {useClient} from '../../../../hooks/useClient'
 import {useWorkspace} from '../../../../studio'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
 import {useDocumentPreviewValues} from '../../../hooks/useDocumentPreviewValues'

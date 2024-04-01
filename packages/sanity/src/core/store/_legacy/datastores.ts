@@ -2,7 +2,9 @@
 
 import {useMemo} from 'react'
 
-import {useClient, useSchema, useTemplates} from '../../hooks'
+import {useClient} from '../../hooks/useClient'
+import {useSchema} from '../../hooks/useSchema'
+import {useTemplates} from '../../hooks/useTemplates'
 import {createDocumentPreviewStore, type DocumentPreviewStore} from '../../preview'
 import {useSource, useWorkspace} from '../../studio'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'

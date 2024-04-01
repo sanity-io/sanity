@@ -5,7 +5,7 @@ import {type ComponentType, Fragment, type ReactNode} from 'react'
 
 import {Tooltip} from '../../../../ui-components'
 import {type PreviewLayoutKey, TextWithTone} from '../../../components'
-import {useListFormat} from '../../../hooks'
+import {useListFormat} from '../../../hooks/useListFormat'
 import {Translate, useTranslation} from '../../../i18n'
 import {SanityDefaultPreview} from '../../../preview'
 import {type RenderPreviewCallback} from '../../types'

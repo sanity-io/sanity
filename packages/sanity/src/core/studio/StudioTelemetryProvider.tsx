@@ -4,7 +4,7 @@ import arrify from 'arrify'
 import {type ReactNode, useEffect, useMemo} from 'react'
 
 import {type Config} from '../config'
-import {useClient} from '../hooks'
+import {useClient} from '../hooks/useClient'
 import {SANITY_VERSION} from '../version'
 
 const sessionId = createSessionId()

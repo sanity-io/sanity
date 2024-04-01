@@ -3,7 +3,7 @@ import {Box, Flex, Stack, Text, useClickOutside} from '@sanity/ui'
 import {Fragment, type HTMLAttributes, useCallback, useMemo, useState} from 'react'
 
 import {Button, Popover} from '../../../../ui-components'
-import {useDocumentOperation} from '../../../hooks'
+import {useDocumentOperation} from '../../../hooks/useDocumentOperation'
 import {useTranslation} from '../../../i18n'
 import {useDocumentPairPermissions} from '../../../store'
 import {type FieldChangeNode, type FieldOperationsAPI} from '../../types'

@@ -1,7 +1,7 @@
 import {type SchemaType} from '@sanity/types'
 import {useCallback, useMemo} from 'react'
 
-import {useClient} from '../../../hooks'
+import {useClient} from '../../../hooks/useClient'
 import {useTranslation} from '../../../i18n'
 import {useDocumentPreviewStore} from '../../../store'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'

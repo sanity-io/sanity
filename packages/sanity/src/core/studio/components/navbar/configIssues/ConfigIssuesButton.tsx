@@ -5,7 +5,7 @@ import {useCallback, useId, useState} from 'react'
 
 import {Dialog} from '../../../../../ui-components'
 import {StatusButton} from '../../../../components'
-import {useSchema} from '../../../../hooks'
+import {useSchema} from '../../../../hooks/useSchema'
 import {useTranslation} from '../../../../i18n'
 import {useColorScheme} from '../../../colorScheme'
 import {SchemaProblemGroups} from '../../../screens/schemaErrors/SchemaProblemGroups'

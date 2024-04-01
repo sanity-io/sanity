@@ -3,7 +3,7 @@ import {useMemoObservable} from 'react-rx'
 import {of} from 'rxjs'
 import {usePaneRouter} from 'sanity/structure'
 
-import {useSchema} from '../../hooks'
+import {useSchema} from '../../hooks/useSchema'
 import {getPreviewStateObservable} from '../../preview'
 import {useDocumentPreviewStore} from '../../store'
 import {useWorkspace} from '../../studio/workspace'

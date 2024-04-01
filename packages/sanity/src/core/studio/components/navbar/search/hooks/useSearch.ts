@@ -14,7 +14,7 @@ import {
   tap,
 } from 'rxjs/operators'
 
-import {useClient} from '../../../../../hooks'
+import {useClient} from '../../../../../hooks/useClient'
 import {
   createSearch,
   type SearchHit,

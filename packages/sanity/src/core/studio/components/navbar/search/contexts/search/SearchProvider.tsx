@@ -2,7 +2,7 @@ import isEqual from 'lodash/isEqual'
 import {type ReactNode, useCallback, useEffect, useMemo, useReducer, useRef, useState} from 'react'
 
 import {type CommandListHandle} from '../../../../../../components'
-import {useSchema} from '../../../../../../hooks'
+import {useSchema} from '../../../../../../hooks/useSchema'
 import {type SearchTerms} from '../../../../../../search'
 import {useCurrentUser} from '../../../../../../store'
 import {useSource} from '../../../../../source'

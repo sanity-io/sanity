@@ -2,7 +2,7 @@ import {type ObjectSchemaType, type Schema} from '@sanity/types'
 import {isEqual, omit} from 'lodash'
 import {useMemo} from 'react'
 
-import {useSchema} from '../../../../../hooks'
+import {useSchema} from '../../../../../hooks/useSchema'
 import {type SearchTerms} from '../../../../../search'
 import {useSource} from '../../../../source'
 import {

@@ -4,7 +4,7 @@ import {type ReactElement, useMemo} from 'react'
 
 import {Tooltip} from '../../../../../../../../../ui-components'
 import {TextWithTone} from '../../../../../../../../components'
-import {useSchema} from '../../../../../../../../hooks'
+import {useSchema} from '../../../../../../../../hooks/useSchema'
 import {useTranslation} from '../../../../../../../../i18n'
 import {isNonNullable, truncateString} from '../../../../../../../../util'
 import {useSearchState} from '../../../../contexts/search/useSearchState'

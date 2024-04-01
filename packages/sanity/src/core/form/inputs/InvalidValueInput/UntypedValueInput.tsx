@@ -3,7 +3,7 @@ import {useCallback, useMemo} from 'react'
 
 import {Button} from '../../../../ui-components'
 import {isDev} from '../../../environment'
-import {useSchema} from '../../../hooks'
+import {useSchema} from '../../../hooks/useSchema'
 import {Translate, useTranslation} from '../../../i18n'
 import {Alert} from '../../components/Alert'
 import {Details} from '../../components/Details'

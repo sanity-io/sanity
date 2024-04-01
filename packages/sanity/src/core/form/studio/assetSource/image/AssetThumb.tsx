@@ -10,7 +10,7 @@ import {type Subscription} from 'rxjs'
 import styled from 'styled-components'
 
 import {LoadingBlock} from '../../../../components/loadingBlock'
-import {useClient} from '../../../../hooks'
+import {useClient} from '../../../../hooks/useClient'
 import {useTranslation} from '../../../../i18n'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
 import {AssetDeleteDialog} from '../shared/AssetDeleteDialog'

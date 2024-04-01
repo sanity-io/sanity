@@ -12,7 +12,7 @@ import {type Subscription} from 'rxjs'
 import {filter, map, tap} from 'rxjs/operators'
 
 import {type FIXME} from '../../../../FIXME'
-import {useClient} from '../../../../hooks'
+import {useClient} from '../../../../hooks/useClient'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
 import {type PrimitiveValue} from '../../../inputs/arrays/ArrayOfPrimitivesInput/types'

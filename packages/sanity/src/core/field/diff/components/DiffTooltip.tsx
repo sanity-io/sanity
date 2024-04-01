@@ -4,7 +4,7 @@ import {type ReactElement, type ReactNode} from 'react'
 
 import {Tooltip, type TooltipProps} from '../../../../ui-components'
 import {LegacyLayerProvider, UserAvatar} from '../../../components'
-import {useRelativeTime} from '../../../hooks'
+import {useRelativeTime} from '../../../hooks/useRelativeTime'
 import {useTranslation} from '../../../i18n'
 import {useUser} from '../../../store'
 import {type AnnotationDetails, type Diff} from '../../types'

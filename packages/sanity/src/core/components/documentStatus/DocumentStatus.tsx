@@ -2,7 +2,8 @@ import {type PreviewValue, type SanityDocument} from '@sanity/types'
 import {Flex, Text} from '@sanity/ui'
 import styled from 'styled-components'
 
-import {useDateTimeFormat, useRelativeTime} from '../../hooks'
+import {useDateTimeFormat} from '../../hooks/useDateTimeFormat'
+import {useRelativeTime} from '../../hooks/useRelativeTime'
 import {useTranslation} from '../../i18n'
 
 interface DocumentStatusProps {

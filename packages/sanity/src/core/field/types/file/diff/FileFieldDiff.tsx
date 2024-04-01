@@ -3,7 +3,7 @@ import {Box, Card, Flex, Text} from '@sanity/ui'
 import {useMemo} from 'react'
 import styled from 'styled-components'
 
-import {useUnitFormatter} from '../../../../hooks'
+import {useUnitFormatter} from '../../../../hooks/useUnitFormatter'
 import {useTranslation} from '../../../../i18n'
 import {ChangeList, DiffCard, DiffTooltip, FromTo, MetaInfo} from '../../../diff'
 import {useRefValue} from '../../../diff/hooks'

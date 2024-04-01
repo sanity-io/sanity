@@ -10,7 +10,7 @@ import {type CalendarLabels} from '../../../../form/inputs/DateInputs/base/calen
 import {DatePicker} from '../../../../form/inputs/DateInputs/base/DatePicker'
 import {getCalendarLabels} from '../../../../form/inputs/DateInputs/utils'
 import {type FormPatch, type PatchEvent, set, unset} from '../../../../form/patch'
-import {useDateTimeFormat} from '../../../../hooks'
+import {useDateTimeFormat} from '../../../../hooks/useDateTimeFormat'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {tasksLocaleNamespace} from '../../../i18n'
 

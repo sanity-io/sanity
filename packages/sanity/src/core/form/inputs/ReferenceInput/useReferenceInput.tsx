@@ -10,7 +10,7 @@ import {
 } from 'react'
 
 import {type FIXME} from '../../../FIXME'
-import {useSchema} from '../../../hooks'
+import {useSchema} from '../../../hooks/useSchema'
 import {useDocumentPreviewStore} from '../../../store'
 import {isNonNullable} from '../../../util'
 import {useFormValue} from '../../contexts/FormValue'

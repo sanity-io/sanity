@@ -2,7 +2,8 @@ import {type InitialValueResolverContext, type Schema} from '@sanity/types'
 import {combineLatest, from, type Observable, of} from 'rxjs'
 import {map, switchMap} from 'rxjs/operators'
 
-import {useSchema, useTemplates} from '../../../hooks'
+import {useSchema} from '../../../hooks/useSchema'
+import {useTemplates} from '../../../hooks/useTemplates'
 import {type InitialValueTemplateItem, resolveInitialValue, type Template} from '../../../templates'
 import {
   createHookFromObservableFactory,

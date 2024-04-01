@@ -4,7 +4,7 @@ import {type FocusEvent, useCallback, useEffect, useMemo, useRef} from 'react'
 import {type Subscription} from 'rxjs'
 import {map, tap} from 'rxjs/operators'
 
-import {useClient} from '../../../../hooks'
+import {useClient} from '../../../../hooks/useClient'
 import {useResolveInitialValueForType} from '../../../../store'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
 import {useDidUpdate} from '../../../hooks/useDidUpdate'

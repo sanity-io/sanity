@@ -4,7 +4,8 @@ import {useMemo} from 'react'
 import {combineLatest, type Observable, of} from 'rxjs'
 import {map, switchMap} from 'rxjs/operators'
 
-import {useClient, useSchema} from '../../../hooks'
+import {useClient} from '../../../hooks/useClient'
+import {useSchema} from '../../../hooks/useSchema'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
 import {
   createHookFromObservableFactory,

@@ -1,7 +1,9 @@
 import {orderBy} from 'lodash'
 import {memo, type ReactNode, useCallback, useMemo, useState} from 'react'
 
-import {useEditState, useSchema, useUserListWithPermissions} from '../../../hooks'
+import {useEditState} from '../../../hooks/useEditState'
+import {useSchema} from '../../../hooks/useSchema'
+import {useUserListWithPermissions} from '../../../hooks/useUserListWithPermissions'
 import {useCurrentUser} from '../../../store/user/hooks'
 import {useAddonDataset} from '../../../studio/addonDataset'
 import {useWorkspace} from '../../../studio/workspace'

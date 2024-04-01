@@ -3,7 +3,7 @@ import {Card, Flex, Text} from '@sanity/ui'
 import {type HTMLProps, useCallback} from 'react'
 import {IntentLink} from 'sanity/router'
 
-import {useSchema} from '../../../../hooks'
+import {useSchema} from '../../../../hooks/useSchema'
 import {Translate, useTranslation} from '../../../../i18n'
 import {Preview} from '../../../../preview/components/Preview'
 

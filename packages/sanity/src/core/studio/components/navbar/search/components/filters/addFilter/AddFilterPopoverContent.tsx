@@ -6,7 +6,7 @@ import {
   type CommandListGetItemDisabledCallback,
   type CommandListRenderItemCallback,
 } from '../../../../../../../components'
-import {useSchema} from '../../../../../../../hooks'
+import {useSchema} from '../../../../../../../hooks/useSchema'
 import {useTranslation} from '../../../../../../../i18n'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import {type FilterMenuItem} from '../../../types'

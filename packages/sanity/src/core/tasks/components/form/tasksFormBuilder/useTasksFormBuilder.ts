@@ -11,13 +11,11 @@ import {
   toMutationPatches,
   useFormState,
 } from '../../../../form'
-import {
-  useConnectionState,
-  useDocumentOperation,
-  useEditState,
-  useSchema,
-  useValidationStatus,
-} from '../../../../hooks'
+import {useConnectionState} from '../../../../hooks/useConnectionState'
+import {useDocumentOperation} from '../../../../hooks/useDocumentOperation'
+import {useEditState} from '../../../../hooks/useEditState'
+import {useSchema} from '../../../../hooks/useSchema'
+import {useValidationStatus} from '../../../../hooks/useValidationStatus'
 import {type DocumentPresence} from '../../../../store'
 import {useUnique} from '../../../../util/useUnique'
 import {type TaskDocument} from '../../../types'

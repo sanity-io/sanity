@@ -3,7 +3,7 @@ import {Schema} from '@sanity/schema'
 import {renderHook} from '@testing-library/react'
 import {defer, lastValueFrom, of} from 'rxjs'
 
-import {useClient} from '../../hooks'
+import {useClient} from '../../hooks/useClient'
 import {getSearchableTypes, type SearchTerms} from '../common'
 import {createWeightedSearch} from './createWeightedSearch'
 

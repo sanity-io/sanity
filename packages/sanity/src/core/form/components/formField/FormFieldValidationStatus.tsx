@@ -4,7 +4,7 @@ import {Box, Flex, type Placement, Stack, Text} from '@sanity/ui'
 import styled from 'styled-components'
 
 import {Tooltip} from '../../../../ui-components'
-import {useListFormat} from '../../../hooks'
+import {useListFormat} from '../../../hooks/useListFormat'
 import {useTranslation} from '../../../i18n'
 
 /** @internal */
