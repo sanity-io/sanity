@@ -106,7 +106,12 @@ export function useAuthoringReferenceElement(
 
 export function getSelectionBoundingRect(): DOMRect | null {
   const selection = window.getSelection()
-  const range = selection?.getRangeAt(0)
+  let range = null
+  try {
+    range = selection?.getRangeAt(0)
+  } catch (error) {
+    console.error('Error getting range from portable text', error)
+  }
   const rect = range?.getBoundingClientRect()
 
   return rect || null
