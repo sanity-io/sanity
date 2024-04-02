@@ -36,6 +36,10 @@
     },
     "./package.json": "./package.json"
   },
+  "main": "./lib/_exports/index.js",
+  "module": "./lib/_exports/index.esm.js",
+  "source": "./src/_exports/index.ts",
+  "types": "./lib/dts/src/_exports/index.d.ts",
   "typesVersions": {
     "*": {
       "mutations": [
@@ -43,10 +47,6 @@
       ]
     }
   },
-  "main": "./lib/_exports/index.js",
-  "module": "./lib/_exports/index.esm.js",
-  "source": "./src/_exports/index.ts",
-  "types": "./lib/dts/src/_exports/index.d.ts",
   "files": [
     "lib",
     "src",
@@ -59,8 +59,8 @@
     "check:package": "pkg-utils --strict --tsconfig tsconfig.lib.json",
     "clean": "rimraf lib coverage",
     "lint": "eslint .",
-    "watch": "pkg-utils watch --tsconfig tsconfig.lib.json",
-    "test": "jest"
+    "test": "jest",
+    "watch": "pkg-utils watch --tsconfig tsconfig.lib.json"
   },
   "dependencies": {
     "@bjoerge/mutiny": "^0.5.1",
