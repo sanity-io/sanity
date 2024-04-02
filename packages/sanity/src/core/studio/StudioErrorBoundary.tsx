@@ -6,7 +6,7 @@ import {useHotModuleReload} from 'use-hot-module-reload'
 
 import {Button} from '../../ui-components'
 import {SchemaError} from '../config'
-import {CorsOriginError} from '../store'
+import {CorsOriginError} from '../store/_legacy/cors/CorsOriginError'
 import {isRecord} from '../util'
 import {CorsOriginErrorScreen, SchemaErrorsScreen} from './screens'
 

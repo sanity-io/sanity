@@ -8,7 +8,7 @@ import {defer} from 'rxjs'
 import {distinctUntilChanged, map, shareReplay, startWith, switchMap} from 'rxjs/operators'
 
 import {type AuthConfig} from '../../../config'
-import {CorsOriginError} from '../cors'
+import {CorsOriginError} from '../cors/CorsOriginError'
 import {createBroadcastChannel} from './createBroadcastChannel'
 import {createLoginComponent} from './createLoginComponent'
 import {getSessionId} from './sessionId'

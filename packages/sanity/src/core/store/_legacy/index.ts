@@ -1,5 +1,4 @@
 export * from './connection-status'
-export * from './cors'
 export * from './datastores'
 export * from './document'
 export * from './history'
