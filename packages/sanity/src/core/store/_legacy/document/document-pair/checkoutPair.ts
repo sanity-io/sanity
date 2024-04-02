@@ -71,8 +71,6 @@ function setVersion<T>(version: 'draft' | 'published') {
 }
 
 function toActions(idPair: IdPair, mutationParams: Mutation['params']) {
-  // @todo: add transactionId to the action (pending backend support)
-  const transactionId = mutationParams.transactionId
   return mutationParams.mutations.flatMap((mutations) => {
     if (Object.keys(mutations).length > 1) {
       // todo: this might be a bit too strict, but I'm trying to see if this is a fair assumption
@@ -111,6 +109,7 @@ function commitMutations(
     method: 'post',
     tag: 'document.commit',
     body: {
+      transactionId: mutationParams.transactionId,
       actions: toActions(idPair, mutationParams),
     },
   })
