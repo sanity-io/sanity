@@ -236,7 +236,6 @@ export function TargetField(
               <SearchPopover
                 open={open}
                 onClose={handleCloseSearch}
-                onOpen={handleOpenSearch}
                 onItemSelect={handleItemSelect}
                 disableIntentLink
               />

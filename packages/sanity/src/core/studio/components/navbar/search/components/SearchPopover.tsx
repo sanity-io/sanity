@@ -29,7 +29,10 @@ export interface SearchPopoverProps {
   disableIntentLink?: boolean
   onClose: () => void
   onItemSelect?: ItemSelectHandler
-  onOpen: () => void
+  /**
+   * If provided, will trigger to open the search popover when user types hotkey + k
+   */
+  onOpen?: () => void
   open: boolean
 }
 
