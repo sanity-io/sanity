@@ -86,7 +86,7 @@ const tasksLocaleStrings = defineLocalesResources('tasks', {
   /** Text used in the assignee input when there is no user assigned */
   'form.input.assignee.no-user-assigned.text': 'Unassigned',
   /** Text used in the assignee input tooltip when there is no user assigned */
-  'form.input.assignee.no-user-assigned.tooltip': ' Set assignee',
+  'form.input.assignee.no-user-assigned.tooltip': 'Set assignee',
   /** Text used in the assignee input when searching and no users are found */
   'form.input.assignee.search.no-users.text': 'No users found',
   /** Placeholder text used in the search box in the assignee input */
@@ -94,7 +94,7 @@ const tasksLocaleStrings = defineLocalesResources('tasks', {
   /** Text used in the assignee input when user is not authorized */
   'form.input.assignee.unauthorized.text': 'Unauthorized',
   /** Text used in the assignee input tooltip when there is no user assigned */
-  'form.input.assignee.user-assigned.tooltip': ' Change assignee',
+  'form.input.assignee.user-assigned.tooltip': 'Change assignee',
   /** Text used in the assignee input when user is not found */
   'form.input.assignee.user-not-found.text': 'User not found',
   /** The label used in the create more toggle */

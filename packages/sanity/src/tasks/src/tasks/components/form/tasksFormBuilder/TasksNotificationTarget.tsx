@@ -1,9 +1,10 @@
 import {isImageSource} from '@sanity/asset-utils'
 import imageUrlBuilder from '@sanity/image-url'
 import {useEffect, useMemo} from 'react'
-import isEqual from 'react-fast-compare'
+import deepEquals from 'react-fast-compare'
 import {
   DEFAULT_STUDIO_CLIENT_OPTIONS,
+  isDev,
   type ObjectFieldProps,
   set,
   useClient,
@@ -38,10 +39,8 @@ function TasksNotificationTargetInner(props: ObjectFieldProps<TaskDocument>) {
     const currentUrl = new URL(`${window.location.origin}${basePath}/`)
 
     const studioUrl =
-      contextUrl.hostname !== 'localhost' && currentUrl.hostname === 'localhost'
-        ? // If the context URL is not localhost, we should use the context URL, to avoid persist the deployed URL
-          contextUrl
-        : currentUrl
+      // Avoid updating the contextURL in dev mode if it already exists, persist the deployed one.
+      contextUrl && isDev ? contextUrl : currentUrl
 
     studioUrl.searchParams.set('sidebar', 'tasks')
     studioUrl.searchParams.set('selectedTask', _id)
@@ -66,7 +65,7 @@ function TasksNotificationTargetInner(props: ObjectFieldProps<TaskDocument>) {
       return
     }
 
-    if (isEqual(context?.notification, notificationTarget)) {
+    if (deepEquals(context?.notification, notificationTarget)) {
       return
     }
     // Something changed, update the notification target
