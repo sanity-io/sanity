@@ -16,7 +16,8 @@ import {
   createConnectionStatusStore,
 } from './connection-status/connection-status-store'
 import {createDocumentStore, type DocumentStore} from './document'
-import {createGrantsStore, type GrantsStore} from './grants'
+import {createGrantsStore} from './grants/grantsStore'
+import {type GrantsStore} from './grants/types'
 import {createHistoryStore, type HistoryStore} from './history'
 import {__tmp_wrap_presenceStore, type PresenceStore} from './presence/presence-store'
 import {createProjectStore, type ProjectStore} from './project'

@@ -7,7 +7,7 @@ import {type ReactElement, useCallback, useContext, useMemo, useState} from 'rea
 import {Button, Popover} from '../../../../ui-components'
 import {useDocumentOperation} from '../../../hooks/useDocumentOperation'
 import {useTranslation} from '../../../i18n'
-import {useDocumentPairPermissions} from '../../../store'
+import {useDocumentPairPermissions} from '../../../store/_legacy/grants/documentPairPermissions'
 import {unstable_useConditionalProperty as useConditionalProperty} from '../../conditional-property'
 import {type ChangeNode, type FieldOperationsAPI, type ObjectDiff} from '../../types'
 import {buildObjectChangeList} from '../changes/buildChangeList'

@@ -11,7 +11,7 @@ import {
 import {Button, Popover} from '../../../../ui-components'
 import {useDocumentOperation} from '../../../hooks/useDocumentOperation'
 import {useTranslation} from '../../../i18n'
-import {useDocumentPairPermissions} from '../../../store'
+import {useDocumentPairPermissions} from '../../../store/_legacy/grants/documentPairPermissions'
 import {pathsAreEqual} from '../../paths'
 import {type FieldOperationsAPI, type GroupChangeNode} from '../../types'
 import {isPTSchemaType} from '../../types/portableText/diff'

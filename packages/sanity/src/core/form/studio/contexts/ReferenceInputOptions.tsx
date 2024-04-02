@@ -8,7 +8,7 @@ import {
   useMemo,
 } from 'react'
 
-import {type TemplatePermissionsResult} from '../../../store'
+import {type TemplatePermissionsResult} from '../../../store/_legacy/grants/templatePermissions'
 
 const Context = createContext<ReferenceInputOptions>({})
 
