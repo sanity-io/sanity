@@ -9,6 +9,10 @@ import {defineLocalesResources} from 'sanity'
 const visionLocaleStrings = defineLocalesResources('vision', {
   /** Label for action "Copy to clipboard", tied to the "Query URL" field. Also used for accessibility purposes on button */
   'action.copy-url-to-clipboard': 'Copy to clipboard',
+  /** Label for downloading the query result as CSV */
+  'action.download-result-as-csv': 'CSV',
+  /** Label for downloading the query result as JSON */
+  'action.download-result-as-json': 'JSON',
   /** Label for stopping an ongoing listen operation */
   'action.listen-cancel': 'Stop',
   /** Label for setting up a listener */
@@ -44,6 +48,8 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'result.execution-time-label': 'Execution',
   /** Label for "Result" explorer/view */
   'result.label': 'Result',
+  /** Label for "Save result as" result action */
+  'result.save-result-as': 'Save result as',
   /**
    * "Not applicable" message for when there is no Execution time or End to End time information
    * available for the query (eg when the query has not been executed, or errored)

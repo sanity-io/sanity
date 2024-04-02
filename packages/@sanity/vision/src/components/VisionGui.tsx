@@ -6,7 +6,14 @@ import {
   type MutationEvent,
   type SanityClient,
 } from '@sanity/client'
-import {CopyIcon, ErrorOutlineIcon, PlayIcon, StopIcon} from '@sanity/icons'
+import {
+  CopyIcon,
+  DocumentSheetIcon,
+  ErrorOutlineIcon,
+  JsonIcon,
+  PlayIcon,
+  StopIcon,
+} from '@sanity/icons'
 import {
   Box,
   Button,
@@ -31,6 +38,7 @@ import {VisionCodeMirror} from '../codemirror/VisionCodeMirror'
 import {DEFAULT_PERSPECTIVE, isPerspective, PERSPECTIVES} from '../perspectives'
 import {type VisionProps} from '../types'
 import {encodeQueryString} from '../util/encodeQueryString'
+import {jsonToCsv} from '../util/jsonToCsv'
 import {getLocalStorage, type LocalStorageish} from '../util/localStorage'
 import {parseApiQueryString, type ParsedApiQueryString} from '../util/parseApiQueryString'
 import {prefixApiVersion} from '../util/prefixApiVersion'
@@ -44,6 +52,8 @@ import {QueryErrorDialog} from './QueryErrorDialog'
 import {ResultView} from './ResultView'
 import {
   ControlsContainer,
+  DownloadsCard,
+  DownloadsContainer,
   Header,
   InputBackgroundContainer,
   InputBackgroundContainerLeft,
@@ -51,13 +61,13 @@ import {
   QueryCopyLink,
   Result,
   ResultContainer,
+  ResultFooter,
   ResultInnerContainer,
   ResultOuterContainer,
   Root,
   SplitpaneContainer,
   StyledLabel,
   TimingsCard,
-  TimingsFooter,
   TimingsTextContainer,
 } from './VisionGui.styled'
 
@@ -948,7 +958,7 @@ export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
                 </ResultContainer>
               </ResultInnerContainer>
               {/* Execution time */}
-              <TimingsFooter>
+              <ResultFooter justify="space-between" direction={['column', 'column', 'row']}>
                 <TimingsCard paddingX={4} paddingY={3} sizing="border">
                   <TimingsTextContainer align="center">
                     <Box>
@@ -969,7 +979,37 @@ export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
                     </Box>
                   </TimingsTextContainer>
                 </TimingsCard>
-              </TimingsFooter>
+
+                {!!queryResult && (
+                  <DownloadsCard paddingX={4} paddingY={3} sizing="border">
+                    <DownloadsContainer gap={3} align="center">
+                      <Text muted>{t('result.save-result-as')}</Text>
+                      <Button
+                        as="a"
+                        download="query-result.json"
+                        href={`data:application/json;charset=utf-8,${encodeURIComponent(
+                          JSON.stringify(queryResult, null, 2),
+                        )}`}
+                        text={t('action.download-result-as-json')}
+                        tone="default"
+                        mode="ghost"
+                        icon={JsonIcon}
+                      />
+                      <Button
+                        as="a"
+                        download="query-result.csv"
+                        href={`data:application/csv;charset=utf-8,${encodeURIComponent(
+                          jsonToCsv(queryResult),
+                        )}`}
+                        text={t('action.download-result-as-csv')}
+                        tone="default"
+                        mode="ghost"
+                        icon={DocumentSheetIcon}
+                      />
+                    </DownloadsContainer>
+                  </DownloadsCard>
+                )}
+              </ResultFooter>
             </ResultOuterContainer>
           </SplitPane>
         </SplitpaneContainer>

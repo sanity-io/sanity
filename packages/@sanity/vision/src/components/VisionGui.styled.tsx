@@ -127,7 +127,7 @@ export const Result = styled(Box)`
   z-index: 20;
 `
 
-export const TimingsFooter = styled(Box)`
+export const ResultFooter = styled(Flex)`
   border-top: 1px solid var(--card-border-color);
 `
 
@@ -149,6 +149,15 @@ export const TimingsTextContainer = styled(Flex)`
         theme.sanity.fonts.text.sizes[2].ascenderHeight -
         theme.sanity.fonts.text.sizes[2].descenderHeight,
     )};
+`
+
+export const DownloadsCard = styled(Card)`
+  position: relative;
+`
+
+export const DownloadsContainer = styled(Flex)`
+  width: 100%;
+  height: 100%;
 `
 
 export const ControlsContainer = styled(Box)`
