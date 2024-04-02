@@ -6,7 +6,7 @@ import {Tooltip, type TooltipProps} from '../../../../ui-components'
 import {LegacyLayerProvider, UserAvatar} from '../../../components'
 import {useRelativeTime} from '../../../hooks/useRelativeTime'
 import {useTranslation} from '../../../i18n'
-import {useUser} from '../../../store'
+import {useUser} from '../../../store/user/hooks'
 import {type AnnotationDetails, type Diff} from '../../types'
 import {getAnnotationAtPath, useAnnotationColor} from '../annotations'
 

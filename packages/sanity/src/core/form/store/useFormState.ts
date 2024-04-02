@@ -5,7 +5,7 @@ import {pathFor} from '@sanity/util/paths'
 import {useLayoutEffect, useMemo, useRef} from 'react'
 
 import {type FormNodePresence} from '../../presence'
-import {useCurrentUser} from '../../store'
+import {useCurrentUser} from '../../store/user/hooks'
 import {type FIXME_SanityDocument, prepareFormState} from './formState'
 import {type ObjectFormNode, type StateTree} from './types'
 import {type DocumentFormNode} from './types/nodes'

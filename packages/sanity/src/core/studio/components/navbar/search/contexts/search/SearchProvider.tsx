@@ -4,7 +4,7 @@ import {type ReactNode, useCallback, useEffect, useMemo, useReducer, useRef, use
 import {type CommandListHandle} from '../../../../../../components'
 import {useSchema} from '../../../../../../hooks/useSchema'
 import {type SearchTerms} from '../../../../../../search'
-import {useCurrentUser} from '../../../../../../store'
+import {useCurrentUser} from '../../../../../../store/user/hooks'
 import {useSource} from '../../../../../source'
 import {SEARCH_LIMIT} from '../../constants'
 import {type RecentSearch} from '../../datastores/recentSearches'

@@ -11,7 +11,7 @@ import {
 } from '../../../../ui-components'
 import {InsufficientPermissionsMessage} from '../../../components'
 import {useGetI18nText, useTranslation} from '../../../i18n'
-import {useCurrentUser} from '../../../store'
+import {useCurrentUser} from '../../../store/user/hooks'
 import {type CreateReferenceOption} from './types'
 
 interface Props

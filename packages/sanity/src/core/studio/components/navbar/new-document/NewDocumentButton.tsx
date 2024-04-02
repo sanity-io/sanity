@@ -8,7 +8,7 @@ import {Button, type ButtonProps, Tooltip, type TooltipProps} from '../../../../
 import {InsufficientPermissionsMessage} from '../../../../components'
 import {useSchema} from '../../../../hooks/useSchema'
 import {useGetI18nText, useTranslation} from '../../../../i18n'
-import {useCurrentUser} from '../../../../store'
+import {useCurrentUser} from '../../../../store/user/hooks'
 import {useColorScheme} from '../../../colorScheme'
 import {filterOptions} from './filter'
 import {

@@ -9,7 +9,7 @@ import {createDocumentPreviewStore, type DocumentPreviewStore} from '../../previ
 import {useSource, useWorkspace} from '../../studio'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {createKeyValueStore, type KeyValueStore} from '../key-value'
-import {useCurrentUser} from '../user'
+import {useCurrentUser} from '../user/hooks'
 import {
   type ConnectionStatusStore,
   createConnectionStatusStore,
