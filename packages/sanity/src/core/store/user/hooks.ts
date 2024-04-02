@@ -3,7 +3,10 @@ import {useMemo} from 'react'
 import {from} from 'rxjs'
 
 import {useSource} from '../../studio/source'
-import {createHookFromObservableFactory, type LoadingTuple} from '../../util'
+import {
+  createHookFromObservableFactory,
+  type LoadingTuple,
+} from '../../util/createHookFromObservableFactory'
 import {useUserStore} from '../_legacy/datastores'
 import {type UserStore} from '../_legacy/user/userStore'
 

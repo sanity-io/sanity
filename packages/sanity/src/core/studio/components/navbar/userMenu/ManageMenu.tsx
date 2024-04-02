@@ -3,7 +3,7 @@ import {MenuDivider} from '@sanity/ui'
 
 import {MenuItem} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
-import {userHasRole} from '../../../../util'
+import {userHasRole} from '../../../../util/userHasRole'
 import {useWorkspace} from '../../../workspace'
 
 export function ManageMenu() {

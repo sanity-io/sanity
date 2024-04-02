@@ -1,7 +1,8 @@
 import {type ThrottleSettings} from 'lodash'
 import {type ReactNode, useCallback, useMemo, useRef, useState} from 'react'
 
-import {isNonNullable, useThrottledCallback} from '../../util'
+import {isNonNullable} from '../../util/isNonNullable'
+import {useThrottledCallback} from '../../util/useThrottledCallback'
 import {getHookId} from './actionId'
 import {HookStateContainer} from './HookStateContainer'
 import {cancelIdleCallback, requestIdleCallback} from './requestIdleCallback'

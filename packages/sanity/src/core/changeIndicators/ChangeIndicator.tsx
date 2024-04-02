@@ -12,7 +12,7 @@ import {
 } from 'react'
 import deepCompare from 'react-fast-compare'
 
-import {EMPTY_ARRAY} from '../util'
+import {EMPTY_ARRAY} from '../util/empty'
 import {ElementWithChangeBar} from './ElementWithChangeBar'
 import {useReporter} from './tracker'
 

@@ -12,7 +12,7 @@ import {
 import {type FIXME} from '../../../FIXME'
 import {useSchema} from '../../../hooks/useSchema'
 import {useDocumentPreviewStore} from '../../../store/_legacy/datastores'
-import {isNonNullable} from '../../../util'
+import {isNonNullable} from '../../../util/isNonNullable'
 import {useFormValue} from '../../contexts/FormValue'
 import {useReferenceInputOptions} from '../../studio'
 import * as adapter from '../../studio/inputs/client-adapters/reference'

@@ -5,12 +5,9 @@ import {map, switchMap} from 'rxjs/operators'
 import {useSchema} from '../../../hooks/useSchema'
 import {useTemplates} from '../../../hooks/useTemplates'
 import {type InitialValueTemplateItem, resolveInitialValue, type Template} from '../../../templates'
-import {
-  createHookFromObservableFactory,
-  getDraftId,
-  getPublishedId,
-  type PartialExcept,
-} from '../../../util'
+import {createHookFromObservableFactory} from '../../../util/createHookFromObservableFactory'
+import {getDraftId, getPublishedId} from '../../../util/draftUtils'
+import {type PartialExcept} from '../../../util/PartialExcept'
 import {useGrantsStore} from '../datastores'
 import {useInitialValueResolverContext} from '../document/useInitialValue'
 import {getDocumentValuePermissions} from './documentValuePermissions'

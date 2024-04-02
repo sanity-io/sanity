@@ -1,7 +1,7 @@
 import {type ConditionalProperty, type SanityDocument} from '@sanity/types'
 
 import {useCurrentUser} from '../../store/user/hooks'
-import {useUnique} from '../../util'
+import {useUnique} from '../../util/useUnique'
 import {useCheckCondition} from './utils'
 
 /**

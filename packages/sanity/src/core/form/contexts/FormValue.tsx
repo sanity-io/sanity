@@ -2,7 +2,7 @@ import {type Path} from '@sanity/types'
 import {pathFor} from '@sanity/util/paths'
 import {createContext, type ReactNode, useContext, useMemo} from 'react'
 
-import {getValueAtPath} from '../../field'
+import {getValueAtPath} from '../../field/paths/helpers'
 import {type FormDocumentValue} from '../types'
 
 /**

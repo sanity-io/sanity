@@ -1,6 +1,6 @@
 import {createContext, type ReactNode, useContext, useMemo} from 'react'
 
-import {getDraftId, getPublishedId} from '../../util'
+import {getDraftId, getPublishedId} from '../../util/draftUtils'
 
 export interface DocumentIdContextValue {
   id: string

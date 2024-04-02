@@ -15,7 +15,7 @@ import {useCallback, useEffect, useMemo, useState} from 'react'
 import {Tooltip} from '../../../../../ui-components'
 import {pathToString} from '../../../../field/paths'
 import {useTranslation} from '../../../../i18n'
-import {EMPTY_ARRAY} from '../../../../util'
+import {EMPTY_ARRAY} from '../../../../util/empty'
 import {useChildPresence} from '../../../studio/contexts/Presence'
 import {
   type BlockProps,

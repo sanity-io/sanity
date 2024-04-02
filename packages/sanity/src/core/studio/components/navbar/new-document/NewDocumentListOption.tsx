@@ -4,7 +4,7 @@ import {type MouseEvent, useCallback, useMemo} from 'react'
 import {useIntentLink} from 'sanity/router'
 
 import {Tooltip} from '../../../../../ui-components'
-import {InsufficientPermissionsMessage} from '../../../../components'
+import {InsufficientPermissionsMessage} from '../../../../components/InsufficientPermissionsMessage'
 import {useI18nText} from '../../../../i18n'
 import {type NewDocumentOption, type PreviewLayout} from './types'
 

@@ -21,7 +21,8 @@ import {filterDefinitions} from '../studio/components/navbar/search/definitions/
 import {operatorDefinitions} from '../studio/components/navbar/search/definitions/operators/defaultOperators'
 import {tasks} from '../tasks/plugin'
 import {type InitialValueTemplateItem, type Template, type TemplateItem} from '../templates'
-import {EMPTY_ARRAY, isNonNullable} from '../util'
+import {EMPTY_ARRAY} from '../util/empty'
+import {isNonNullable} from '../util/isNonNullable'
 import {
   documentActionsReducer,
   documentBadgesReducer,

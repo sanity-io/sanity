@@ -3,7 +3,8 @@ import {type SanityDocument} from '@sanity/types'
 import {combineLatest, type Observable, of} from 'rxjs'
 import {map, switchMap} from 'rxjs/operators'
 
-import {getIdPair, isRecord} from '../util'
+import {getIdPair} from '../util/draftUtils'
+import {isRecord} from '../util/isRecord'
 import {create_preview_availability} from './availability'
 import {type DraftsModelDocument, type ObservePathsFn, type PreviewPath} from './types'
 

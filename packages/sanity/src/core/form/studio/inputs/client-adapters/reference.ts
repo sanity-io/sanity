@@ -8,7 +8,8 @@ import {type DocumentPreviewStore} from '../../../../preview/documentPreviewStor
 import {getPreviewPaths} from '../../../../preview/utils/getPreviewPaths'
 import {prepareForPreview} from '../../../../preview/utils/prepareForPreview'
 import {createSearch} from '../../../../search'
-import {collate, type CollatedHit, getDraftId, getIdPair, isRecord} from '../../../../util'
+import {collate, type CollatedHit, getDraftId, getIdPair} from '../../../../util/draftUtils'
+import {isRecord} from '../../../../util/isRecord'
 import {type ReferenceInfo, type ReferenceSearchHit} from '../../../inputs/ReferenceInput/types'
 
 const READABLE = {

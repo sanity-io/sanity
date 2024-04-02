@@ -4,9 +4,9 @@ import {isEqual} from '@sanity/util/paths'
 import {type ComponentType, type ReactElement, useCallback, useMemo, useState} from 'react'
 
 import {Tooltip} from '../../../../../ui-components'
-import {pathToString} from '../../../../field'
+import {pathToString} from '../../../../field/paths/helpers'
 import {useTranslation} from '../../../../i18n'
-import {EMPTY_ARRAY} from '../../../../util'
+import {EMPTY_ARRAY} from '../../../../util/empty'
 import {useChildPresence} from '../../../studio/contexts/Presence'
 import {
   type BlockAnnotationProps,

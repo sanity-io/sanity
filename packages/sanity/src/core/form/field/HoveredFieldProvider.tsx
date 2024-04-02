@@ -1,7 +1,7 @@
 import {type Path} from '@sanity/types'
 import {type PropsWithChildren, useCallback, useMemo, useState} from 'react'
 
-import {pathToString} from '../../field'
+import {pathToString} from '../../field/paths/helpers'
 import {HoveredFieldContext, type HoveredFieldContextValue} from './HoveredFieldContext'
 
 /** @internal */

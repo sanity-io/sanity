@@ -9,8 +9,8 @@ import {isEqual} from '@sanity/util/paths'
 import {type ReactNode, type RefObject, useCallback, useMemo, useState} from 'react'
 
 import {Tooltip} from '../../../../../ui-components'
-import {pathToString} from '../../../../field'
-import {EMPTY_ARRAY} from '../../../../util'
+import {pathToString} from '../../../../field/paths/helpers'
+import {EMPTY_ARRAY} from '../../../../util/empty'
 import {useFormCallbacks} from '../../../studio'
 import {useChildPresence} from '../../../studio/contexts/Presence'
 import {

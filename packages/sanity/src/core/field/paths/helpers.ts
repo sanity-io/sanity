@@ -9,7 +9,7 @@ import {
   type PathSegment,
 } from '@sanity/types'
 
-import {isRecord} from '../../util'
+import {isRecord} from '../../util/isRecord'
 
 const rePropName =
   /[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|$))/g

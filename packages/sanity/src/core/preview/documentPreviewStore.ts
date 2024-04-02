@@ -3,7 +3,7 @@ import {type PrepareViewOptions, type SanityDocument} from '@sanity/types'
 import {type Observable} from 'rxjs'
 import {distinctUntilChanged, map} from 'rxjs/operators'
 
-import {isRecord} from '../util'
+import {isRecord} from '../util/isRecord'
 import {create_preview_availability} from './availability'
 import {createPathObserver} from './createPathObserver'
 import {createPreviewObserver} from './createPreviewObserver'

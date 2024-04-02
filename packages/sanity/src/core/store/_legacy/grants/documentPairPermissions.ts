@@ -7,12 +7,9 @@ import {map, switchMap} from 'rxjs/operators'
 import {useClient} from '../../../hooks/useClient'
 import {useSchema} from '../../../hooks/useSchema'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
-import {
-  createHookFromObservableFactory,
-  getDraftId,
-  getPublishedId,
-  type PartialExcept,
-} from '../../../util'
+import {createHookFromObservableFactory} from '../../../util/createHookFromObservableFactory'
+import {getDraftId, getPublishedId} from '../../../util/draftUtils'
+import {type PartialExcept} from '../../../util/PartialExcept'
 import {useGrantsStore} from '../datastores'
 import {snapshotPair} from '../document/document-pair/snapshotPair'
 import {type GrantsStore, type PermissionCheckResult} from './types'

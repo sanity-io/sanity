@@ -6,7 +6,7 @@ import {useDocumentOperation} from '../../hooks/useDocumentOperation'
 import {useEditState} from '../../hooks/useEditState'
 import {useSchema} from '../../hooks/useSchema'
 import {useValidationStatus} from '../../hooks/useValidationStatus'
-import {useUnique} from '../../util'
+import {useUnique} from '../../util/useUnique'
 import {createPatchChannel} from '../patch/PatchChannel'
 
 export default function FormBuilderStory() {

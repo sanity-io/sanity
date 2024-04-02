@@ -14,7 +14,7 @@ import {Box, Portal, PortalProvider, useBoundaryElement, usePortal} from '@sanit
 import {useCallback, useMemo, useState} from 'react'
 
 import {ChangeIndicator} from '../../../changeIndicators/ChangeIndicator'
-import {EMPTY_ARRAY} from '../../../util'
+import {EMPTY_ARRAY} from '../../../util/empty'
 import {ActivateOnFocus} from '../../components/ActivateOnFocus/ActivateOnFocus'
 import {type ArrayOfObjectsInputProps, type RenderCustomMarkers} from '../../types'
 import {type RenderBlockActionsCallback} from '../../types/_transitional'

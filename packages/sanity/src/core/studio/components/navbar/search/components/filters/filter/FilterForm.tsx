@@ -4,7 +4,7 @@ import {type ErrorInfo, useCallback, useState} from 'react'
 import FocusLock from 'react-focus-lock'
 
 import {Button} from '../../../../../../../../ui-components'
-import {supportsTouch} from '../../../../../../../util'
+import {supportsTouch} from '../../../../../../../util/supportsTouch'
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import {getFilterDefinition} from '../../../definitions/filters'
 import {getOperatorDefinition} from '../../../definitions/operators'

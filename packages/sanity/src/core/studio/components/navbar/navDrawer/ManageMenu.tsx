@@ -3,7 +3,7 @@ import {Card, Stack} from '@sanity/ui'
 
 import {Button} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
-import {userHasRole} from '../../../../util'
+import {userHasRole} from '../../../../util/userHasRole'
 import {useWorkspace} from '../../../workspace'
 import {FreeTrial} from '../free-trial'
 

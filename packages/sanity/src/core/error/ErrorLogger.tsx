@@ -1,9 +1,10 @@
 import {useToast} from '@sanity/ui'
 import {useEffect} from 'react'
 
-import {ConfigResolutionError, SchemaError} from '../config'
+import {ConfigResolutionError} from '../config/ConfigResolutionError'
+import {SchemaError} from '../config/SchemaError'
 import {CorsOriginError} from '../store/_legacy/cors/CorsOriginError'
-import {globalScope} from '../util'
+import {globalScope} from '../util/globalScope'
 
 const errorChannel = globalScope.__sanityErrorChannel
 

@@ -1,6 +1,7 @@
 import {type Observable} from 'rxjs'
 
-import {createHookFromObservableFactory, type PartialExcept} from '../../../util'
+import {createHookFromObservableFactory} from '../../../util/createHookFromObservableFactory'
+import {type PartialExcept} from '../../../util/PartialExcept'
 import {useGrantsStore} from '../datastores'
 import {type DocumentValuePermission, type GrantsStore, type PermissionCheckResult} from './types'
 

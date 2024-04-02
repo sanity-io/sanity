@@ -9,7 +9,7 @@ import {type DocumentPreviewStore} from '../../../../../preview/documentPreviewS
 import {type DocumentAvailability, type Previewable} from '../../../../../preview/types'
 import {getPreviewPaths} from '../../../../../preview/utils/getPreviewPaths'
 import {prepareForPreview} from '../../../../../preview/utils/prepareForPreview'
-import {isRecord} from '../../../../../util'
+import {isRecord} from '../../../../../util/isRecord'
 import {type CrossDatasetReferenceInfo} from '../../../../inputs/CrossDatasetReferenceInput/types'
 
 const REQUEST_TAG_BASE = 'cross-dataset-refs'

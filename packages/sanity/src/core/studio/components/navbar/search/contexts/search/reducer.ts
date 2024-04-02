@@ -1,7 +1,7 @@
 import {type CurrentUser, type SchemaType} from '@sanity/types'
 
 import {type SearchHit, type SearchTerms} from '../../../../../../search'
-import {getPublishedId} from '../../../../../../util'
+import {getPublishedId} from '../../../../../../util/draftUtils'
 import {type RecentSearch} from '../../datastores/recentSearches'
 import {type SearchFieldDefinitionDictionary} from '../../definitions/fields'
 import {type SearchFilterDefinitionDictionary} from '../../definitions/filters'

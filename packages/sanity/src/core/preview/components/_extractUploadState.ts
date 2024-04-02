@@ -1,6 +1,7 @@
 import {type UploadState} from '@sanity/types'
 
-import {isRecord, isString} from '../../util'
+import {isRecord} from '../../util/isRecord'
+import {isString} from '../../util/isString'
 
 export function _extractUploadState(value: any): UploadState | undefined {
   return _resolveUploadValue(value?._upload)

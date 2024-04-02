@@ -2,7 +2,7 @@ import {type SchemaType} from '@sanity/types'
 import intersection from 'lodash/intersection'
 import isEmpty from 'lodash/isEmpty'
 
-import {isNonNullable} from '../../../../../util'
+import {isNonNullable} from '../../../../../util/isNonNullable'
 import {
   type SearchFieldDefinition,
   type SearchFieldDefinitionDictionary,

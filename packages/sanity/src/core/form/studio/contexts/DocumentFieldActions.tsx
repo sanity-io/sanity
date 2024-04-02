@@ -1,7 +1,7 @@
 import {createContext, type ReactNode, useContext, useMemo} from 'react'
 
 import {type DocumentFieldAction} from '../../../config'
-import {EMPTY_ARRAY} from '../../../util'
+import {EMPTY_ARRAY} from '../../../util/empty'
 
 export interface DocumentFieldActionsContextValue {
   actions: DocumentFieldAction[]

@@ -3,7 +3,7 @@ import {type PropsWithChildren, useCallback, useMemo} from 'react'
 
 import {type DocumentFieldActionNode} from '../../../config'
 import {pathToString} from '../../../field'
-import {supportsTouch} from '../../../util'
+import {supportsTouch} from '../../../util/supportsTouch'
 import {useHoveredField} from '../useHoveredField'
 import {FieldActionsContext, type FieldActionsContextValue} from './FieldActionsContext'
 

@@ -26,7 +26,7 @@ import {useDocumentPreviewStore} from '../../../../store/_legacy/datastores'
 import {useSource} from '../../../../studio'
 import {useSearchMaxFieldDepth} from '../../../../studio/components/navbar/search/hooks/useSearchMaxFieldDepth'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
-import {isNonNullable} from '../../../../util'
+import {isNonNullable} from '../../../../util/isNonNullable'
 import {useFormValue} from '../../../contexts/FormValue'
 import {ReferenceInput} from '../../../inputs/ReferenceInput/ReferenceInput'
 import {

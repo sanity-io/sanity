@@ -6,9 +6,9 @@ import {useMemo} from 'react'
 import styled, {css} from 'styled-components'
 
 import {Tooltip, type TooltipProps} from '../../ui-components'
-import {UserAvatar} from '../components'
+import {UserAvatar} from '../components/userAvatar/UserAvatar'
 import {type DocumentPresence} from '../store/_legacy/presence/types'
-import {isNonNullable} from '../util'
+import {isNonNullable} from '../util/isNonNullable'
 
 /** @internal */
 export interface DocumentPreviewPresenceProps {

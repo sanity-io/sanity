@@ -4,7 +4,7 @@ import {useCallback, useMemo, useState} from 'react'
 
 import {type Reported} from '../../components/react-track-elements'
 import {ScrollMonitor} from '../../components/scroll'
-import {isNonNullable} from '../../util'
+import {isNonNullable} from '../../util/isNonNullable'
 import {DEBUG_LAYER_BOUNDS} from '../constants'
 import {findMostSpecificTarget} from '../helpers/findMostSpecificTarget'
 import {getOffsetsTo} from '../helpers/getOffsetsTo'

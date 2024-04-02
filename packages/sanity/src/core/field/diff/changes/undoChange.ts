@@ -14,7 +14,7 @@ import {
   type UnsetPatch,
 } from 'sanity-diff-patch'
 
-import {isRecord} from '../../../util'
+import {isRecord} from '../../../util/isRecord'
 import {
   findIndex,
   getItemKeySegment,

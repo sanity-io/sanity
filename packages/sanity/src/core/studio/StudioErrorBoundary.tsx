@@ -7,7 +7,7 @@ import {useHotModuleReload} from 'use-hot-module-reload'
 import {Button} from '../../ui-components'
 import {SchemaError} from '../config'
 import {CorsOriginError} from '../store/_legacy/cors/CorsOriginError'
-import {isRecord} from '../util'
+import {isRecord} from '../util/isRecord'
 import {CorsOriginErrorScreen, SchemaErrorsScreen} from './screens'
 
 interface StudioErrorBoundaryProps {

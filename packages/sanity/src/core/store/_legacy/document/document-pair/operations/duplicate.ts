@@ -1,6 +1,6 @@
 import {omit} from 'lodash'
 
-import {getDraftId} from '../../../../../util'
+import {getDraftId} from '../../../../../util/draftUtils'
 import {isLiveEditEnabled} from '../utils/isLiveEditEnabled'
 import {type OperationImpl} from './types'
 

@@ -21,7 +21,7 @@ import {
 } from 'react'
 import {Subject} from 'rxjs'
 
-import {EMPTY_ARRAY} from '../../../util'
+import {EMPTY_ARRAY} from '../../../util/empty'
 import {
   PortableTextInputCollapsed,
   PortableTextInputExpanded,

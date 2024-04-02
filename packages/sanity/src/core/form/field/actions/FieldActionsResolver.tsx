@@ -2,7 +2,7 @@ import {type Path, type SchemaType} from '@sanity/types'
 import {memo, useCallback, useEffect, useRef, useState} from 'react'
 
 import {type DocumentFieldAction, type DocumentFieldActionNode} from '../../../config'
-import {useUnique} from '../../../util'
+import {useUnique} from '../../../util/useUnique'
 import {filterActions} from './helpers'
 
 /** @internal */

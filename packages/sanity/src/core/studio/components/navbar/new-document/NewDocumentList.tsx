@@ -3,10 +3,10 @@ import {Flex, Text} from '@sanity/ui'
 import {useCallback} from 'react'
 import styled from 'styled-components'
 
-import {CommandList} from '../../../../components'
+import {CommandList} from '../../../../components/commandList/CommandList'
 import {LoadingBlock} from '../../../../components/loadingBlock'
 import {Translate, useTranslation} from '../../../../i18n'
-import {supportsTouch} from '../../../../util'
+import {supportsTouch} from '../../../../util/supportsTouch'
 import {INLINE_PREVIEW_HEIGHT, NewDocumentListOption} from './NewDocumentListOption'
 import {type NewDocumentOption, type PreviewLayout} from './types'
 

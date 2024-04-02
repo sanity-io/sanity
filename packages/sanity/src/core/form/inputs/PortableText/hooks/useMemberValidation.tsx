@@ -1,7 +1,7 @@
 import {type FormNodeValidation} from '@sanity/types'
 import {useMemo, useRef} from 'react'
 
-import {EMPTY_ARRAY} from '../../../../util'
+import {EMPTY_ARRAY} from '../../../../util/empty'
 import {type BaseFormNode} from '../../../store'
 import {immutableReconcile} from '../../../store/utils/immutableReconcile'
 import {useChildValidation} from '../../../studio/contexts/Validation'
