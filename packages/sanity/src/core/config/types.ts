@@ -444,6 +444,14 @@ export interface WorkspaceOptions extends SourceOptions {
   unstable_tasks?: {
     enabled: boolean
   }
+
+  /**
+   * @hidden
+   * @beta
+   */
+  unstable_serverActions?: {
+    enabled: boolean
+  }
 }
 
 /**
@@ -754,6 +762,7 @@ export interface Source {
   }
   /** @beta */
   tasks?: WorkspaceOptions['unstable_tasks']
+  serverActions?: WorkspaceOptions['unstable_serverActions']
 }
 
 /** @internal */
@@ -793,6 +802,7 @@ export interface WorkspaceSummary {
     }>
   }
   tasks: WorkspaceOptions['unstable_tasks']
+  serverActions: WorkspaceOptions['unstable_serverActions']
 }
 
 /**
