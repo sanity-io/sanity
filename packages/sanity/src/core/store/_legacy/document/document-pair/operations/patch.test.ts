@@ -12,9 +12,9 @@ import {type OperationArgs} from './types'
  */
 const serverStatuses = [
   //the published or draft version is not there when we expected it to be
+  //current implementation is not particularly concerned by this, since it always createsIfNotExists
   'TARGET_DELETED',
   //the published or draft revision does not match our local
-  //current implementation is not particularly concerned by this, since it always createsIfNotExists
   'MISMATCHED_REVISION',
 ] as const
 
@@ -119,6 +119,3 @@ describe('patch', () => {
     })
   })
 })
-
-//delete both draft and published doc
-//try to patch it
