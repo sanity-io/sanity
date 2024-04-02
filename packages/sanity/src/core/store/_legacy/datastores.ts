@@ -23,7 +23,7 @@ import {__tmp_wrap_presenceStore, type PresenceStore} from './presence/presence-
 import {createProjectStore} from './project/projectStore'
 import {type ProjectStore} from './project/types'
 import {useResourceCache} from './ResourceCacheProvider'
-import {createUserStore, type UserStore} from './user'
+import {createUserStore, type UserStore} from './user/userStore'
 
 /**
  * @hidden

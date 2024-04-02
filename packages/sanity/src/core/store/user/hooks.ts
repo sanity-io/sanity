@@ -4,7 +4,8 @@ import {from} from 'rxjs'
 
 import {useSource} from '../../studio/source'
 import {createHookFromObservableFactory, type LoadingTuple} from '../../util'
-import {type UserStore, useUserStore} from '../_legacy'
+import {useUserStore} from '../_legacy/datastores'
+import {type UserStore} from '../_legacy/user/userStore'
 
 const useUserViaUserStore = createHookFromObservableFactory(
   ([userStore, userId]: [UserStore, string]) => {
