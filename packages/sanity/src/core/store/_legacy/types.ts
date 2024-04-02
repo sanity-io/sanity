@@ -5,7 +5,7 @@ import {type DocumentStore} from './document'
 import {type GrantsStore} from './grants/types'
 import {type HistoryStore} from './history'
 import {type PresenceStore} from './presence'
-import {type ProjectStore} from './project'
+import {type ProjectStore} from './project/types'
 
 export interface DatastoresContext {
   config: Config
