@@ -1,4 +1,8 @@
 // Currency code (ISO 4217) to use when displaying prices in the studio
+
+import ShopifyIcon from "./components/icons/Shopify"
+import { ColorWheelIcon, ComposeIcon, SearchIcon } from '@sanity/icons'
+
 // https://en.wikipedia.org/wiki/ISO_4217
 export const DEFAULT_CURRENCY_CODE = 'USD'
 
@@ -29,3 +33,28 @@ export const SANITY_API_VERSION = '2022-10-25'
 // This is your unique store URL (e.g. 'my-store-name.myshopify.com').
 // Set this to enable helper links in document status banners and shortcut links on products and collections.
 export const SHOPIFY_STORE_ID = ''
+
+// Field groups used through schema types
+export const GROUPS = [
+  {
+    name: 'theme',
+    title: 'Theme',
+    icon: ColorWheelIcon,
+  },
+  {
+    default: true,
+    name: 'editorial',
+    title: 'Editorial',
+    icon: ComposeIcon
+  },
+  {
+    name: 'shopifySync',
+    title: 'Shopify sync',
+    icon: ShopifyIcon,
+  },
+  {
+    name: 'seo',
+    title: 'SEO',
+    icon: SearchIcon
+  },
+]
