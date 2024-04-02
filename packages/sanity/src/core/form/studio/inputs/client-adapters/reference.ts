@@ -4,7 +4,9 @@ import {type ReferenceFilterSearchOptions, type ReferenceSchemaType} from '@sani
 import {combineLatest, type Observable, of} from 'rxjs'
 import {map, mergeMap, startWith, switchMap} from 'rxjs/operators'
 
-import {type DocumentPreviewStore, getPreviewPaths, prepareForPreview} from '../../../../preview'
+import {type DocumentPreviewStore} from '../../../../preview/documentPreviewStore'
+import {getPreviewPaths} from '../../../../preview/utils/getPreviewPaths'
+import {prepareForPreview} from '../../../../preview/utils/prepareForPreview'
 import {createSearch} from '../../../../search'
 import {collate, type CollatedHit, getDraftId, getIdPair, isRecord} from '../../../../util'
 import {type ReferenceInfo, type ReferenceSearchHit} from '../../../inputs/ReferenceInput/types'

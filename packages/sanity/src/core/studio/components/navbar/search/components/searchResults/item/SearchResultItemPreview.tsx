@@ -9,11 +9,9 @@ import {type GeneralPreviewLayoutKey} from '../../../../../../../components'
 import {DocumentStatus} from '../../../../../../../components/documentStatus'
 import {DocumentStatusIndicator} from '../../../../../../../components/documentStatusIndicator'
 import {DocumentPreviewPresence} from '../../../../../../../presence/DocumentPreviewPresence'
-import {
-  getPreviewStateObservable,
-  getPreviewValueWithFallback,
-  SanityDefaultPreview,
-} from '../../../../../../../preview'
+import {SanityDefaultPreview} from '../../../../../../../preview/components/SanityDefaultPreview'
+import {getPreviewStateObservable} from '../../../../../../../preview/utils/getPreviewStateObservable'
+import {getPreviewValueWithFallback} from '../../../../../../../preview/utils/getPreviewValueWithFallback'
 import {useDocumentPreviewStore} from '../../../../../../../store/_legacy/datastores'
 import {type DocumentPresence} from '../../../../../../../store/_legacy/presence/types'
 

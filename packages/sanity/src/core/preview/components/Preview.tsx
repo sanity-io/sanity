@@ -1,6 +1,6 @@
 import {usePreviewComponent} from '../../form/form-components-hooks'
 import {type RenderPreviewCallbackProps} from '../../form/types'
-import {PreviewLoader} from '../index'
+import {PreviewLoader} from './PreviewLoader'
 
 /**
  * @internal

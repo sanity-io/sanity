@@ -30,7 +30,7 @@ import shallowEquals from 'shallow-equals'
 
 import {type SourceClientOptions} from '../../../../config'
 import {type LocaleSource} from '../../../../i18n'
-import {type DraftsModelDocumentAvailability} from '../../../../preview'
+import {type DraftsModelDocumentAvailability} from '../../../../preview/types'
 import {validateDocumentObservable, type ValidationContext} from '../../../../validation'
 import {type IdPair} from '../types'
 import {memoize} from '../utils/createMemoizer'

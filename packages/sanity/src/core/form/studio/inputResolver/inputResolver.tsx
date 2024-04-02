@@ -9,7 +9,7 @@ import {type ComponentType} from 'react'
 
 import {type PreviewProps} from '../../../components'
 import {type FIXME} from '../../../FIXME'
-import {SanityDefaultPreview} from '../../../preview'
+import {SanityDefaultPreview} from '../../../preview/components/SanityDefaultPreview'
 import {type InputProps} from '../../types'
 import * as is from '../../utils/is'
 import {StudioReferenceInput} from '../inputs/reference/StudioReferenceInput'

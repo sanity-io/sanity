@@ -8,7 +8,7 @@ import {
 import {type ComponentType, type ReactNode} from 'react'
 import {type Observable} from 'rxjs'
 
-import {type DocumentAvailability} from '../../../preview'
+import {type DocumentAvailability} from '../../../preview/types'
 import {type ObjectInputProps} from '../../types'
 
 export interface ReferenceInfo {

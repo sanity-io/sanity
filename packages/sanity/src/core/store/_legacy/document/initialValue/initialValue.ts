@@ -11,7 +11,7 @@ import {
   switchMap,
 } from 'rxjs/operators'
 
-import {type DocumentPreviewStore} from '../../../../preview'
+import {type DocumentPreviewStore} from '../../../../preview/documentPreviewStore'
 import {resolveInitialValue, type Template} from '../../../../templates'
 import {getDraftId, getPublishedId} from '../../../../util'
 import {

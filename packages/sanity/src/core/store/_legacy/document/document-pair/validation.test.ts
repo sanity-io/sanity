@@ -15,7 +15,10 @@ import {buffer, publish, takeWhile} from 'rxjs/operators'
 
 import {createMockSanityClient} from '../../../../../../test/mocks/mockSanityClient'
 import {getFallbackLocaleSource} from '../../../../i18n/fallback'
-import {type DocumentAvailability, type DraftsModelDocumentAvailability} from '../../../../preview'
+import {
+  type DocumentAvailability,
+  type DraftsModelDocumentAvailability,
+} from '../../../../preview/types'
 import {createSchema} from '../../../../schema'
 import {editState, type EditStateFor} from './editState'
 import {validation} from './validation'

@@ -9,7 +9,7 @@ import {Tooltip} from '../../../../ui-components'
 import {DefaultPreview, type PreviewMediaDimensions, TextWithTone} from '../../../components'
 import {type FIXME} from '../../../FIXME'
 import {useTranslation} from '../../../i18n'
-import {type DocumentAvailability} from '../../../preview'
+import {type DocumentAvailability} from '../../../preview/types'
 import {StyledPreviewFlex} from './CrossDatasetReferencePreview.styled'
 
 /**

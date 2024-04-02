@@ -1,5 +1,5 @@
 import {type Config, type Source as SanitySource} from '../../config'
-import {type DocumentPreviewStore} from '../../preview'
+import {type DocumentPreviewStore} from '../../preview/documentPreviewStore'
 import {type KeyValueStore} from '../key-value/types'
 import {type DocumentStore} from './document/document-store'
 import {type GrantsStore} from './grants/types'

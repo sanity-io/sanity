@@ -4,7 +4,10 @@ import {useMemo} from 'react'
 import {useClient} from '../../hooks/useClient'
 import {useSchema} from '../../hooks/useSchema'
 import {useTemplates} from '../../hooks/useTemplates'
-import {createDocumentPreviewStore, type DocumentPreviewStore} from '../../preview'
+import {
+  createDocumentPreviewStore,
+  type DocumentPreviewStore,
+} from '../../preview/documentPreviewStore'
 import {useSource, useWorkspace} from '../../studio'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {createKeyValueStore} from '../key-value/KeyValueStore'

@@ -5,7 +5,7 @@ import {filter, map} from 'rxjs/operators'
 
 import {type SourceClientOptions} from '../../../config'
 import {type LocaleSource} from '../../../i18n'
-import {type DocumentPreviewStore} from '../../../preview'
+import {type DocumentPreviewStore} from '../../../preview/documentPreviewStore'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
 import {type Template} from '../../../templates'
 import {getDraftId, isDraftId} from '../../../util'

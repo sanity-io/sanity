@@ -6,7 +6,7 @@ import {useCallback, useRef} from 'react'
 
 import {type DocumentFieldAction} from '../../config'
 import {type FormNodePresence} from '../../presence'
-import {PreviewLoader} from '../../preview'
+import {PreviewLoader} from '../../preview/components/PreviewLoader'
 import {EMPTY_ARRAY} from '../../util'
 import {FormValueProvider} from '../contexts/FormValue'
 import {GetFormValueProvider} from '../contexts/GetFormValue'
