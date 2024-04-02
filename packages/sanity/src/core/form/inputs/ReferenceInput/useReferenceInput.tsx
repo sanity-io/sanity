@@ -11,7 +11,7 @@ import {
 
 import {type FIXME} from '../../../FIXME'
 import {useSchema} from '../../../hooks/useSchema'
-import {useDocumentPreviewStore} from '../../../store'
+import {useDocumentPreviewStore} from '../../../store/_legacy/datastores'
 import {isNonNullable} from '../../../util'
 import {useFormValue} from '../../contexts/FormValue'
 import {useReferenceInputOptions} from '../../studio'

@@ -1,7 +1,8 @@
 import {useMemoObservable} from 'react-rx'
 import {debounce, merge, share, skip, take, timer} from 'rxjs'
 
-import {type EditStateFor, useDocumentStore} from '../store'
+import {useDocumentStore} from '../store/_legacy/datastores'
+import {type EditStateFor} from '../store/_legacy/document/document-pair/editState'
 
 /** @internal */
 export function useEditState(

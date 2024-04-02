@@ -5,7 +5,7 @@ import {sortBy} from 'lodash'
 import {useEffect, useMemo, useState} from 'react'
 import {concat, forkJoin, map, mergeMap, type Observable, of, switchMap} from 'rxjs'
 
-import {useProjectStore, useUserStore} from '../store'
+import {useProjectStore, useUserStore} from '../store/_legacy/datastores'
 import {grantsPermissionOn} from '../store/_legacy/grants/grantsStore'
 import {type DocumentValuePermission} from '../store/_legacy/grants/types'
 import {type ProjectData} from '../store/_legacy/project/types'

@@ -3,7 +3,7 @@ import {useMemoObservable} from 'react-rx'
 import {of} from 'rxjs'
 import {catchError, map} from 'rxjs/operators'
 
-import {useDocumentPreviewStore} from '../store'
+import {useDocumentPreviewStore} from '../store/_legacy/datastores'
 import {type Previewable} from './types'
 
 export {useDocumentPreview as unstable_useValuePreview}

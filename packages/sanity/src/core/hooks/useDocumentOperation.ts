@@ -1,6 +1,7 @@
 import {useMemoObservable} from 'react-rx'
 
-import {type OperationsAPI, useDocumentStore} from '../store'
+import {useDocumentStore} from '../store/_legacy/datastores'
+import {type OperationsAPI} from '../store/_legacy/document/document-pair/operations/types'
 
 /** @internal */
 export function useDocumentOperation(publishedDocId: string, docTypeName: string): OperationsAPI {

@@ -2,7 +2,7 @@ import {type SanityDocument} from '@sanity/types'
 import {type ReactElement} from 'react'
 
 import {useReferringDocuments} from '../hooks/useReferringDocuments'
-import {type DocumentStore} from '../store'
+import {type DocumentStore} from '../store/_legacy/document/document-store'
 
 /**
  * @internal

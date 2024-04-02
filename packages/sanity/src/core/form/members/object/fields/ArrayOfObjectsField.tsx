@@ -5,7 +5,7 @@ import {type Subscription} from 'rxjs'
 import {map, tap} from 'rxjs/operators'
 
 import {useClient} from '../../../../hooks/useClient'
-import {useResolveInitialValueForType} from '../../../../store'
+import {useResolveInitialValueForType} from '../../../../store/_legacy/document/useResolveInitialValueForType'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
 import {createProtoArrayValue} from '../../../inputs/arrays/ArrayOfObjectsInput/createProtoArrayValue'

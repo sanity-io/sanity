@@ -12,7 +12,7 @@ import {
   type PartialExcept,
 } from '../../../util'
 import {useGrantsStore} from '../datastores'
-import {useInitialValueResolverContext} from '../document'
+import {useInitialValueResolverContext} from '../document/useInitialValue'
 import {getDocumentValuePermissions} from './documentValuePermissions'
 import {type GrantsStore, type PermissionCheckResult} from './types'
 

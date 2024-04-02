@@ -16,7 +16,7 @@ import {
 import {useConnectionState} from '../../../hooks/useConnectionState'
 import {useEditState} from '../../../hooks/useEditState'
 import {useSchema} from '../../../hooks/useSchema'
-import {useInitialValue} from '../document'
+import {useInitialValue} from '../document/useInitialValue'
 import {useTimelineSelector} from '../history/useTimelineSelector'
 import {useTimelineStore} from '../history/useTimelineStore'
 

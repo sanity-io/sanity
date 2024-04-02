@@ -14,7 +14,7 @@ import {
   type PartialExcept,
 } from '../../../util'
 import {useGrantsStore} from '../datastores'
-import {snapshotPair} from '../document'
+import {snapshotPair} from '../document/document-pair/snapshotPair'
 import {type GrantsStore, type PermissionCheckResult} from './types'
 
 function getSchemaType(schema: Schema, typeName: string): SchemaType {

@@ -2,7 +2,7 @@ import {useCallback, useEffect, useMemo, useState} from 'react'
 import {map, startWith} from 'rxjs/operators'
 
 import {useClient} from '../../../../../hooks/useClient'
-import {useKeyValueStore} from '../../../../../store'
+import {useKeyValueStore} from '../../../../../store/_legacy/datastores'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../../studioClient'
 
 export const RECENT_SEARCH_VERSION = 2

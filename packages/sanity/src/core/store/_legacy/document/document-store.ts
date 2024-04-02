@@ -20,9 +20,10 @@ import {
   operationEvents,
   type OperationSuccess,
 } from './document-pair/operationEvents'
-import {type OperationsAPI} from './document-pair/operations'
+import {type OperationsAPI} from './document-pair/operations/types'
 import {validation, type ValidationStatus} from './document-pair/validation'
-import {getInitialValueStream, type InitialValueMsg, type InitialValueOptions} from './initialValue'
+import {getInitialValueStream, type InitialValueOptions} from './initialValue/initialValue'
+import {type InitialValueMsg} from './initialValue/types'
 import {listenQuery, type ListenQueryOptions} from './listenQuery'
 import {resolveTypeForDocument} from './resolveTypeForDocument'
 import {type IdPair} from './types'

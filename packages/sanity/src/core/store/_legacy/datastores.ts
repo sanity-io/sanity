@@ -1,5 +1,4 @@
 /* eslint-disable camelcase */
-
 import {useMemo} from 'react'
 
 import {useClient} from '../../hooks/useClient'
@@ -15,7 +14,7 @@ import {
   type ConnectionStatusStore,
   createConnectionStatusStore,
 } from './connection-status/connection-status-store'
-import {createDocumentStore, type DocumentStore} from './document'
+import {createDocumentStore, type DocumentStore} from './document/document-store'
 import {createGrantsStore} from './grants/grantsStore'
 import {type GrantsStore} from './grants/types'
 import {createHistoryStore, type HistoryStore} from './history/createHistoryStore'

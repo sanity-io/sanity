@@ -3,7 +3,7 @@ import {useCallback, useMemo} from 'react'
 
 import {useClient} from '../../../hooks/useClient'
 import {useTranslation} from '../../../i18n'
-import {useDocumentPreviewStore} from '../../../store'
+import {useDocumentPreviewStore} from '../../../store/_legacy/datastores'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
 import {BaseFileInput, type BaseFileInputProps} from '../../inputs/files/FileInput'
 import {useFormBuilder} from '../../useFormBuilder'

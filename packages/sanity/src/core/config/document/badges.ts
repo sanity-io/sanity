@@ -1,6 +1,6 @@
 import {type ComponentType, type ReactNode} from 'react'
 
-import {type EditStateFor} from '../../store'
+import {type EditStateFor} from '../../store/_legacy/document/document-pair/editState'
 
 /**
  * @hidden

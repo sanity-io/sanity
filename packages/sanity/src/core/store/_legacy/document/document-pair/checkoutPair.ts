@@ -6,11 +6,10 @@ import {filter, map, mergeMap, mergeMapTo, share, tap} from 'rxjs/operators'
 
 import {
   type BufferedDocumentEvent,
-  type CommitRequest,
   createBufferedDocument,
-  type MutationPayload,
-  type RemoteSnapshotEvent,
-} from '../buffered-doc'
+} from '../buffered-doc/createBufferedDocument'
+import {type CommitRequest} from '../buffered-doc/createObservableBufferedDocument'
+import {type MutationPayload, type RemoteSnapshotEvent} from '../buffered-doc/types'
 import {getPairListener, type ListenerEvent} from '../getPairListener'
 import {type IdPair, type PendingMutationsEvent, type ReconnectEvent} from '../types'
 

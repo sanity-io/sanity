@@ -4,7 +4,7 @@ import {useCallback, useMemo, useRef} from 'react'
 import {tap} from 'rxjs/operators'
 
 import {useTranslation} from '../../../../i18n'
-import {useResolveInitialValueForType} from '../../../../store'
+import {useResolveInitialValueForType} from '../../../../store/_legacy/document/useResolveInitialValueForType'
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
 import {insert, type PatchArg, PatchEvent, setIfMissing, unset} from '../../../patch'
 import {type ArrayOfObjectsItemMember} from '../../../store'

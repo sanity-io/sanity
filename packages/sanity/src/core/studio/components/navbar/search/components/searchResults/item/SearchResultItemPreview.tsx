@@ -14,7 +14,7 @@ import {
   getPreviewValueWithFallback,
   SanityDefaultPreview,
 } from '../../../../../../../preview'
-import {useDocumentPreviewStore} from '../../../../../../../store'
+import {useDocumentPreviewStore} from '../../../../../../../store/_legacy/datastores'
 import {type DocumentPresence} from '../../../../../../../store/_legacy/presence/types'
 
 interface SearchResultItemPreviewProps {

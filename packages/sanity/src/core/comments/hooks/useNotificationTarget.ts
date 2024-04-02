@@ -5,7 +5,7 @@ import {usePaneRouter} from 'sanity/structure'
 
 import {useSchema} from '../../hooks/useSchema'
 import {getPreviewStateObservable} from '../../preview'
-import {useDocumentPreviewStore} from '../../store'
+import {useDocumentPreviewStore} from '../../store/_legacy/datastores'
 import {useWorkspace} from '../../studio/workspace'
 import {COMMENTS_INSPECTOR_NAME} from '../constants'
 import {type CommentContext} from '../types'

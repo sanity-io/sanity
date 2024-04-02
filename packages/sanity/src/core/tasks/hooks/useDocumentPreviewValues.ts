@@ -5,7 +5,7 @@ import {of} from 'rxjs'
 
 import {useSchema} from '../../hooks/useSchema'
 import {getPreviewStateObservable} from '../../preview/utils/getPreviewStateObservable'
-import {useDocumentPreviewStore} from '../../store'
+import {useDocumentPreviewStore} from '../../store/_legacy/datastores'
 
 interface PreviewHookOptions {
   documentId: string

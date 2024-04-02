@@ -8,7 +8,7 @@ import styled from 'styled-components'
 
 import {useClient} from '../../../../hooks/useClient'
 import {useTranslation} from '../../../../i18n'
-import {useDocumentValues} from '../../../../store'
+import {useDocumentValues} from '../../../../store/_legacy/document/hooks/useDocumentValues'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
 import {MetaInfo} from '../../../diff'
 import {getDeviceDpr, simpleHash} from './helpers'

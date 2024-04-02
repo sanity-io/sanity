@@ -13,7 +13,7 @@ import {catchError, mergeMap} from 'rxjs/operators'
 
 import {type Source} from '../../../../config'
 import {type FIXME} from '../../../../FIXME'
-import {useDocumentPreviewStore} from '../../../../store'
+import {useDocumentPreviewStore} from '../../../../store/_legacy/datastores'
 import {useSource} from '../../../../studio'
 import {useSearchMaxFieldDepth} from '../../../../studio/components/navbar/search/hooks/useSearchMaxFieldDepth'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'

@@ -1,6 +1,6 @@
 import {useMemoObservable} from 'react-rx'
 
-import {useDocumentStore} from '../store'
+import {useDocumentStore} from '../store/_legacy/datastores'
 
 /** @internal */
 export function useDocumentOperationEvent(publishedDocId: string, docTypeName: string) {

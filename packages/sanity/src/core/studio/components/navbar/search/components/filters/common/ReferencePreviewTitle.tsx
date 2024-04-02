@@ -4,7 +4,7 @@ import {useMemo} from 'react'
 import {useMemoObservable} from 'react-rx'
 
 import {getPreviewStateObservable, getPreviewValueWithFallback} from '../../../../../../../preview'
-import {useDocumentPreviewStore} from '../../../../../../../store'
+import {useDocumentPreviewStore} from '../../../../../../../store/_legacy/datastores'
 
 export function ReferencePreviewTitle({
   documentId,
