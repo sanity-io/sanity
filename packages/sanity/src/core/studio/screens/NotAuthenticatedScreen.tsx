@@ -4,7 +4,7 @@ import {Card, Stack, Text} from '@sanity/ui'
 import {useCallback, useEffect, useState} from 'react'
 
 import {Dialog} from '../../../ui-components'
-import {getProviderTitle} from '../../store'
+import {getProviderTitle} from '../../store/_legacy/authStore/providerTitle'
 import {useActiveWorkspace} from '../activeWorkspaceMatcher'
 
 export function NotAuthenticatedScreen() {

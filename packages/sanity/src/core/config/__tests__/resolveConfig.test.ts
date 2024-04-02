@@ -3,7 +3,7 @@ import {createClient} from '@sanity/client'
 import {firstValueFrom, lastValueFrom, of} from 'rxjs'
 import {bufferTime} from 'rxjs/operators'
 
-import {createMockAuthStore} from '../../store'
+import {createMockAuthStore} from '../../store/_legacy/authStore/createMockAuthStore'
 import {createSourceFromConfig, createWorkspaceFromConfig, resolveConfig} from '../resolveConfig'
 
 describe('resolveConfig', () => {

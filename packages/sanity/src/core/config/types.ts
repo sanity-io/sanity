@@ -16,7 +16,7 @@ import {type Router, type RouterState} from 'sanity/router'
 
 import {type FormBuilderCustomMarkersComponent, type FormBuilderMarkersComponent} from '../form'
 import {type LocalePluginOptions, type LocaleSource} from '../i18n/types'
-import {type AuthStore} from '../store'
+import {type AuthStore} from '../store/_legacy/authStore/types'
 import {type SearchFilterDefinition} from '../studio/components/navbar/search/definitions/filters'
 import {type SearchOperatorDefinition} from '../studio/components/navbar/search/definitions/operators'
 import {type InitialValueTemplateItem, type Template, type TemplateItem} from '../templates'

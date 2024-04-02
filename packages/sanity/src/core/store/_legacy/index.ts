@@ -1,4 +1,3 @@
-export * from './authStore'
 export * from './connection-status'
 export * from './cors'
 export * from './datastores'
