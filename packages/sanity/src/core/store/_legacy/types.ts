@@ -3,7 +3,7 @@ import {type DocumentPreviewStore} from '../../preview'
 import {type KeyValueStore} from '../key-value/types'
 import {type DocumentStore} from './document'
 import {type GrantsStore} from './grants/types'
-import {type HistoryStore} from './history'
+import {type HistoryStore} from './history/createHistoryStore'
 import {type PresenceStore} from './presence/presence-store'
 import {type ProjectStore} from './project/types'
 

@@ -17,7 +17,8 @@ import {useConnectionState} from '../../../hooks/useConnectionState'
 import {useEditState} from '../../../hooks/useEditState'
 import {useSchema} from '../../../hooks/useSchema'
 import {useInitialValue} from '../document'
-import {useTimelineSelector, useTimelineStore} from '../history'
+import {useTimelineSelector} from '../history/useTimelineSelector'
+import {useTimelineStore} from '../history/useTimelineStore'
 
 export default function HistoryTimelineStory() {
   const schema = useSchema()

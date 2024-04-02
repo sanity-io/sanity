@@ -5,7 +5,7 @@ import {type Schema} from '@sanity/types'
 import {combineLatest, type Observable} from 'rxjs'
 import {map, publishReplay, refCount, switchMap} from 'rxjs/operators'
 
-import {type HistoryStore} from '../../history'
+import {type HistoryStore} from '../../history/createHistoryStore'
 import {type IdPair} from '../types'
 import {memoize} from '../utils/createMemoizer'
 import {type OperationArgs} from './operations'

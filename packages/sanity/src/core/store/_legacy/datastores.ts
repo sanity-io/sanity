@@ -18,7 +18,7 @@ import {
 import {createDocumentStore, type DocumentStore} from './document'
 import {createGrantsStore} from './grants/grantsStore'
 import {type GrantsStore} from './grants/types'
-import {createHistoryStore, type HistoryStore} from './history'
+import {createHistoryStore, type HistoryStore} from './history/createHistoryStore'
 import {__tmp_wrap_presenceStore, type PresenceStore} from './presence/presence-store'
 import {createProjectStore} from './project/projectStore'
 import {type ProjectStore} from './project/types'

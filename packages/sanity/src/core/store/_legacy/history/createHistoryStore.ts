@@ -11,7 +11,8 @@ import {map, mergeMap} from 'rxjs/operators'
 
 import {isDev} from '../../../environment'
 import {getDraftId, getPublishedId, isRecord} from '../../../util'
-import {Timeline, TimelineController} from './history'
+import {Timeline} from './history/Timeline'
+import {TimelineController} from './history/TimelineController'
 
 /**
  * @hidden
