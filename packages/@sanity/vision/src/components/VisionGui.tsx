@@ -983,7 +983,7 @@ export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
                 {!!queryResult && (
                   <DownloadsCard paddingX={4} paddingY={3} sizing="border">
                     <DownloadsContainer gap={3} align="center">
-                      <Text muted>{t('result.save-result-as')}</Text>
+                      <Text muted>{t('result.download-result-as')}</Text>
                       <Button
                         as="a"
                         download="query-result.json"

@@ -42,14 +42,14 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   /** Label for the "Query URL" field, shown after executing a query, and allows for copying */
   'query.url': 'Query URL',
 
+  /** Label for "Save result as" result action */
+  'result.download-result-as': 'Save result as',
   /** Label for "End to End time" information of the fetched query */
   'result.end-to-end-time-label': 'End-to-end',
   /** Label for "Execution time" information of the fetched query */
   'result.execution-time-label': 'Execution',
   /** Label for "Result" explorer/view */
   'result.label': 'Result',
-  /** Label for "Save result as" result action */
-  'result.save-result-as': 'Save result as',
   /**
    * "Not applicable" message for when there is no Execution time or End to End time information
    * available for the query (eg when the query has not been executed, or errored)
