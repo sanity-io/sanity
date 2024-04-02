@@ -72,7 +72,7 @@
     "esbuild-register": "^3.4.1",
     "get-it": "^8.4.16",
     "golden-fleece": "^1.0.9",
-    "groq-js": "^1.5.0",
+    "groq-js": "^1.7.0",
     "node-machine-id": "^1.1.12",
     "pkg-dir": "^5.0.0",
     "semver": "^7.3.5",
