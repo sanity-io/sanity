@@ -3,7 +3,7 @@ import {type DragEvent, type ReactElement, type ReactNode, useRef, useState} fro
 
 import {Dialog} from '../../../ui-components'
 import {PopoverDialog} from '../../components'
-import {PresenceOverlay} from '../../presence'
+import {PresenceOverlay} from '../../presence/overlay/PresenceOverlay'
 import {VirtualizerScrollInstanceProvider} from '../inputs/arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
 
 const PRESENCE_MARGINS: [number, number, number, number] = [0, 0, 1, 0]

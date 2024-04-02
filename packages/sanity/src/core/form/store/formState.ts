@@ -20,7 +20,7 @@ import {isEqual, pathFor, startsWith, toString, trimChildPath} from '@sanity/uti
 import {castArray, isEqual as _isEqual, pick} from 'lodash'
 
 import {type FIXME} from '../../FIXME'
-import {type FormNodePresence} from '../../presence'
+import {type FormNodePresence} from '../../presence/types'
 import {EMPTY_ARRAY, isRecord} from '../../util'
 import {getFieldLevel} from '../studio/inputResolver/helpers'
 import {resolveConditionalProperty} from './conditional-property'

@@ -4,7 +4,7 @@ import {type ObjectSchemaType, type Path, type ValidationMarker} from '@sanity/t
 import {pathFor} from '@sanity/util/paths'
 import {useLayoutEffect, useMemo, useRef} from 'react'
 
-import {type FormNodePresence} from '../../presence'
+import {type FormNodePresence} from '../../presence/types'
 import {useCurrentUser} from '../../store/user/hooks'
 import {type FIXME_SanityDocument, prepareFormState} from './formState'
 import {type ObjectFormNode, type StateTree} from './types'

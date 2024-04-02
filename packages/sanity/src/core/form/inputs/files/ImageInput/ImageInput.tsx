@@ -28,7 +28,7 @@ import {
 import {ChangeIndicator} from '../../../../changeIndicators/ChangeIndicator'
 import {ImperativeToast} from '../../../../components'
 import {type FIXME} from '../../../../FIXME'
-import {PresenceOverlay} from '../../../../presence'
+import {PresenceOverlay} from '../../../../presence/overlay/PresenceOverlay'
 import {FormInput} from '../../../components'
 import {MemberField, MemberFieldError, MemberFieldSet} from '../../../members'
 import {type PatchEvent, setIfMissing, unset} from '../../../patch'

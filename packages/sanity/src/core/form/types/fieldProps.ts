@@ -17,7 +17,7 @@ import {
 import {type ReactElement, type ReactNode} from 'react'
 
 import {type DocumentFieldAction} from '../../config'
-import {type FormNodePresence} from '../../presence'
+import {type FormNodePresence} from '../../presence/types'
 import {
   type ArrayOfObjectsInputProps,
   type ArrayOfPrimitivesInputProps,

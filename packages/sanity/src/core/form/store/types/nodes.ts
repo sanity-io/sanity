@@ -9,7 +9,7 @@ import {
   type StringSchemaType,
 } from '@sanity/types'
 
-import {type FormNodePresence} from '../../../presence'
+import {type FormNodePresence} from '../../../presence/types'
 import {type ObjectItem} from '../../types'
 import {type FormFieldGroup} from './fieldGroup'
 import {type ArrayOfObjectsMember, type ArrayOfPrimitivesMember, type ObjectMember} from './members'

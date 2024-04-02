@@ -3,7 +3,7 @@ import {Stack} from '@sanity/ui'
 import {type HTMLProps, memo, type ReactNode} from 'react'
 
 import {type DocumentFieldActionNode} from '../../../config'
-import {type FormNodePresence} from '../../../presence'
+import {type FormNodePresence} from '../../../presence/types'
 import {useFieldActions} from '../../field'
 import {type FieldCommentsProps} from '../../types'
 import {FormFieldBaseHeader} from './FormFieldBaseHeader'

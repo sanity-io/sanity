@@ -4,7 +4,7 @@ import {type ObjectSchemaType, type Path, type ValidationMarker} from '@sanity/t
 import {type ReactNode, useMemo} from 'react'
 
 import {type DocumentFieldAction, type Source} from '../config'
-import {type FormNodePresence} from '../presence'
+import {type FormNodePresence} from '../presence/types'
 import {EMPTY_ARRAY} from '../util'
 import {DocumentIdProvider} from './contexts/DocumentIdProvider'
 import {HoveredFieldProvider} from './field'

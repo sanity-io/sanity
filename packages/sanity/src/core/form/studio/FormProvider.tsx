@@ -2,7 +2,7 @@ import {type ObjectSchemaType, type Path, type ValidationMarker} from '@sanity/t
 import {type ReactNode, useCallback} from 'react'
 
 import {type DocumentFieldAction} from '../../config'
-import {type FormNodePresence} from '../../presence'
+import {type FormNodePresence} from '../../presence/types'
 import {PreviewLoader} from '../../preview/components/PreviewLoader'
 import {useSource} from '../../studio'
 import {
