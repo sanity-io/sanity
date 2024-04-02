@@ -8,7 +8,8 @@ import {useTemplates} from '../../hooks/useTemplates'
 import {createDocumentPreviewStore, type DocumentPreviewStore} from '../../preview'
 import {useSource, useWorkspace} from '../../studio'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
-import {createKeyValueStore, type KeyValueStore} from '../key-value'
+import {createKeyValueStore} from '../key-value/KeyValueStore'
+import {type KeyValueStore} from '../key-value/types'
 import {useCurrentUser} from '../user/hooks'
 import {
   type ConnectionStatusStore,
