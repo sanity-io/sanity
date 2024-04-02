@@ -208,6 +208,12 @@ export function extractSchema(
         continue
       }
 
+      // if the field sets assetRequired() we will mark the asset attribute as required
+      // also guard against the case where the field is not an object, though type validation should catch this
+      if (hasAssetRequired(field) && value.type === 'object') {
+        value.attributes.asset.optional = false
+      }
+
       // if we extract with enforceRequiredFields, we will mark the field as optional only if it is not a required field,
       // else we will always mark it as optional
       const optional = extractOptions.enforceRequiredFields ? fieldIsRequired === false : true
@@ -325,6 +331,51 @@ function isFieldRequired(field: ObjectField): boolean {
 
     if (typeof rule === 'object' && rule !== null && '_required' in rule) {
       if (rule._required === 'required') {
+        return true
+      }
+    }
+  }
+
+  return false
+}
+
+function hasAssetRequired(field: ObjectField): boolean {
+  const {validation} = field.type
+  if (!validation) {
+    return false
+  }
+  const rules = Array.isArray(validation) ? validation : [validation]
+  for (const rule of rules) {
+    let assetRequired = false
+
+    // hack to check if a field is required. We create a proxy that returns itself when a method is called,
+    // if the method is "required" we set a flag
+    const proxy = new Proxy(
+      {},
+      {
+        get: (target, methodName) => () => {
+          if (methodName === 'assetRequired') {
+            assetRequired = true
+          }
+          return proxy
+        },
+      },
+    ) as Rule
+
+    if (typeof rule === 'function') {
+      rule(proxy)
+      if (assetRequired) {
+        return true
+      }
+    }
+
+    if (
+      typeof rule === 'object' &&
+      rule !== null &&
+      '_rules' in rule &&
+      Array.isArray(rule._rules)
+    ) {
+      if (rule._rules.some((r) => r.flag === 'assetRequired')) {
         return true
       }
     }
