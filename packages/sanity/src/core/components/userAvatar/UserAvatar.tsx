@@ -10,7 +10,7 @@ import {type ForwardedRef, forwardRef, useState} from 'react'
 
 import {Tooltip} from '../../../ui-components'
 import {useUser} from '../../store/user/hooks'
-import {useUserColor} from '../../user-color'
+import {useUserColor} from '../../user-color/hooks'
 import {isRecord} from '../../util'
 
 /**

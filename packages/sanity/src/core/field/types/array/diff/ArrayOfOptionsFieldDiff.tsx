@@ -3,7 +3,7 @@ import {Box, Flex} from '@sanity/ui'
 
 import {useTranslation} from '../../../../i18n'
 import {Preview} from '../../../../preview/components/Preview'
-import {useUserColorManager} from '../../../../user-color'
+import {useUserColorManager} from '../../../../user-color/hooks'
 import {DiffTooltip, FromToArrow, getAnnotationColor} from '../../../diff'
 import {
   type Annotation,

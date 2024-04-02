@@ -1,4 +1,4 @@
-import {type UserColor} from '../../../../user-color'
+import {type UserColor} from '../../../../user-color/types'
 import {type FieldPreviewComponent} from '../../../preview'
 
 type BooleanProps = {

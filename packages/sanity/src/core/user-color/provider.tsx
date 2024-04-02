@@ -1,6 +1,6 @@
 import {type ReactElement, type ReactNode, useMemo} from 'react'
 
-import {useColorScheme} from '../studio'
+import {useColorScheme} from '../studio/colorScheme'
 import {UserColorManagerContext} from './context'
 import {createUserColorManager} from './manager'
 import {type UserColorManager} from './types'
