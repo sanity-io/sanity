@@ -86,10 +86,18 @@ export default async function extractAction(
 
     trace.complete()
 
-    spinner.succeed('Extracted schema')
+    spinner.succeed(
+      enforceRequiredFields
+        ? 'Extracted schema, with enforced required fields'
+        : 'Extracted schema',
+    )
   } catch (err) {
     trace.error(err)
-    spinner.fail('Failed to extract schema')
+    spinner.fail(
+      enforceRequiredFields
+        ? 'Failed to extract schema, with enforced required fields'
+        : 'Failed to extract schema',
+    )
     throw err
   }
 }
