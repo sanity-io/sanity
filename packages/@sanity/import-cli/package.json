@@ -30,6 +30,9 @@
   "files": [
     "src"
   ],
+  "scripts": {
+    "lint": "eslint ."
+  },
   "dependencies": {
     "@sanity/client": "^6.15.7",
     "@sanity/import": "3.36.2",
@@ -40,8 +43,5 @@
   },
   "engines": {
     "node": ">=18"
-  },
-  "scripts": {
-    "lint": "eslint ."
   }
 }

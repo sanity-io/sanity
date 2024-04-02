@@ -1,7 +1,10 @@
 {
   "name": "studio-e2e-testing",
-  "private": true,
   "version": "3.36.2",
+  "private": true,
+  "keywords": [
+    "sanity"
+  ],
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
   "scripts": {
@@ -10,9 +13,6 @@
     "lint": "eslint .",
     "start": "sanity start --port 3339"
   },
-  "keywords": [
-    "sanity"
-  ],
   "dependencies": {
     "@sanity/google-maps-input": "^3.0.1",
     "@sanity/icons": "^2.11.0",

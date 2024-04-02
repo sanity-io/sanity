@@ -1,10 +1,10 @@
 {
   "name": "embedded-studio",
-  "private": true,
   "version": "3.36.2",
+  "private": true,
   "scripts": {
-    "dev": "vite",
     "build": "tsc && vite build",
+    "dev": "vite",
     "preview": "vite preview"
   },
   "dependencies": {

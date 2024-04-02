@@ -7,20 +7,12 @@
   "author": "Sanity.io <hello@sanity.io>",
   "scripts": {
     "build": "pnpm build:cli && (cd studio && pnpm build)",
+    "lint": "eslint .",
     "perf:codegen": "ts-node --files -r dotenv/config codegen",
     "perf:test": "ts-node --files cli",
     "perf:test:ci": "ts-node --files cli",
-    "lint": "eslint .",
     "studio": "cd perf/studio && (pnpm build && pnpm start)",
     "studio:dev": "cd perf/studio && SANITY_STUDIO_DATASET=dev pnpm dev"
-  },
-  "devDependencies": {
-    "@jest/globals": "^29.7.0",
-    "@types/lodash": "^4.14.149",
-    "@types/node": "^18.15.3",
-    "esbuild": "^0.20.2",
-    "ts-node": "^10.9.1",
-    "typescript": "^5.4.2"
   },
   "dependencies": {
     "@playwright/test": "^1.41.2",
@@ -32,5 +24,13 @@
     "lodash": "^4.17.21",
     "rxjs": "^7.8.0",
     "sanity": "workspace:*"
+  },
+  "devDependencies": {
+    "@jest/globals": "^29.7.0",
+    "@types/lodash": "^4.14.149",
+    "@types/node": "^18.15.3",
+    "esbuild": "^0.20.2",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.4.2"
   }
 }
