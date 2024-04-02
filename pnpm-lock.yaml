@@ -665,8 +665,8 @@ importers:
         specifier: ^1.0.9
         version: 1.0.9
       groq-js:
-        specifier: ^1.5.0
-        version: 1.5.0
+        specifier: ^1.7.0
+        version: 1.7.0
       node-machine-id:
         specifier: ^1.1.12
         version: 1.1.12
@@ -879,8 +879,8 @@ importers:
         specifier: ^10.0.0
         version: 10.0.2
       groq-js:
-        specifier: ^1.5.0
-        version: 1.5.0
+        specifier: ^1.7.0
+        version: 1.7.0
       json5:
         specifier: ^2.2.3
         version: 2.2.3
@@ -1075,8 +1075,8 @@ importers:
         specifier: ^1.3.2
         version: 1.3.2
       groq-js:
-        specifier: ^1.5.0
-        version: 1.5.0
+        specifier: ^1.7.0
+        version: 1.7.0
       p-map:
         specifier: ^7.0.1
         version: 7.0.1
@@ -1255,8 +1255,8 @@ importers:
         specifier: ^1.0.1
         version: 1.0.1
       groq-js:
-        specifier: ^1.5.0
-        version: 1.5.0
+        specifier: ^1.7.0
+        version: 1.7.0
       humanize-list:
         specifier: ^1.0.1
         version: 1.0.1
@@ -1600,8 +1600,8 @@ importers:
         specifier: 1.0.2
         version: 1.0.2
       groq-js:
-        specifier: ^1.5.0
-        version: 1.5.0
+        specifier: ^1.7.0
+        version: 1.7.0
       hashlru:
         specifier: ^2.3.0
         version: 2.3.0
@@ -6546,7 +6546,7 @@ packages:
       express: 4.18.3
       globby: 11.1.0
       groq: 3.36.2
-      groq-js: 1.5.0
+      groq-js: 1.7.0
       history: 5.3.0
       jsonc-parser: 3.2.1
       mkdirp: 1.0.4
@@ -12098,6 +12098,14 @@ packages:
 
   /groq-js@1.5.0:
     resolution: {integrity: sha512-wqfbPow5y6qjbVDZkwnBhVZd+TgbqGs9mWIHdB8cdXnqzo5ftqWHJhlr4MVaWDjoUo7hF4YW9m5lF8o5WlNQ2w==}
+    engines: {node: '>= 14'}
+    dependencies:
+      debug: 4.3.4(supports-color@5.5.0)
+    transitivePeerDependencies:
+      - supports-color
+
+  /groq-js@1.7.0:
+    resolution: {integrity: sha512-K+yhiPIBW7gkPYKCdqGB6xnC7qkxf4Kuweh/tDNlOgP2fzLEtSI/XWqLDDGfHRUutdYCFXuOUgbIwDbtyyLACg==}
     engines: {node: '>= 14'}
     dependencies:
       debug: 4.3.4(supports-color@5.5.0)
