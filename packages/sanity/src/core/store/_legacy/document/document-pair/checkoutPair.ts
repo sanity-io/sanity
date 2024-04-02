@@ -13,6 +13,7 @@ import {
 } from '../buffered-doc'
 import {getPairListener, type ListenerEvent} from '../getPairListener'
 import {type IdPair, type PendingMutationsEvent, type ReconnectEvent} from '../types'
+import {type HttpAction} from './actionTypes'
 
 const isMutationEventForDocId =
   (id: string) =>
@@ -71,9 +72,9 @@ function setVersion<T>(version: 'draft' | 'published') {
 }
 
 function toActions(idPair: IdPair, mutationParams: Mutation['params']) {
-  return mutationParams.mutations.flatMap((mutations) => {
+  return mutationParams.mutations.map((mutations): HttpAction => {
     if (Object.keys(mutations).length > 1) {
-      // todo: this might be a bit too strict, but I'm trying to see if this is a fair assumption
+      // todo: this might be a bit too strict, but I'm (lazily) trying to check if we ever get more than one mutation in a payload
       throw new Error('Did not expect multiple mutations in the same payload')
     }
     if (mutations.delete) {
@@ -81,6 +82,17 @@ function toActions(idPair: IdPair, mutationParams: Mutation['params']) {
         actionType: 'sanity.action.document.delete',
         publishedId: idPair.publishedId,
         draftId: idPair.draftId,
+      }
+    }
+    if (mutations.createIfNotExists) {
+      return {
+        actionType: 'sanity.action.document.create',
+        publishedId: idPair.publishedId,
+        attributes: {
+          ...mutations.createIfNotExists,
+          _id: idPair.draftId,
+        },
+        ifExists: 'ignore',
       }
     }
     if (mutations.patch) {
@@ -91,7 +103,7 @@ function toActions(idPair: IdPair, mutationParams: Mutation['params']) {
         patch: mutations.patch,
       }
     }
-    return []
+    throw new Error('Todo: implement')
   })
 }
 
