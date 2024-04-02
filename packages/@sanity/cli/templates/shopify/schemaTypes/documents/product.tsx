@@ -1,29 +1,12 @@
 import {TagIcon} from '@sanity/icons'
 import pluralize from 'pluralize-esm'
-import ShopifyIcon from '../../components/icons/Shopify'
 import ProductHiddenInput from '../../components/inputs/ProductHidden'
 import ShopifyDocumentStatus from '../../components/media/ShopifyDocumentStatus'
 import {defineField, defineType} from 'sanity'
 import {getPriceRange} from '../../utils/getPriceRange'
+import { GROUPS } from '../../constants'
 
-const GROUPS = [
-  {
-    name: 'editorial',
-    title: 'Editorial',
-    default: true,
-  },
-  {
-    name: 'shopifySync',
-    title: 'Shopify sync',
-    icon: ShopifyIcon,
-  },
-  {
-    name: 'seo',
-    title: 'SEO',
-  },
-]
-
-export default defineType({
+export const productType = defineType({
   name: 'product',
   title: 'Product',
   type: 'document',
@@ -43,37 +26,31 @@ export default defineType({
         return !parent?.store || (isActive && !isDeleted)
       },
     }),
-    // Title (proxy)
     defineField({
       name: 'titleProxy',
       title: 'Title',
       type: 'proxyString',
       options: {field: 'store.title'},
     }),
-    // Slug (proxy)
     defineField({
       name: 'slugProxy',
       title: 'Slug',
       type: 'proxyString',
       options: {field: 'store.slug.current'},
     }),
-    // Color theme
     defineField({
       name: 'colorTheme',
-      title: 'Color theme',
       type: 'reference',
       to: [{type: 'colorTheme'}],
       group: 'editorial',
     }),
     defineField({
       name: 'body',
-      title: 'Body',
-      type: 'body',
+      type: 'portableText',
       group: 'editorial',
     }),
     defineField({
       name: 'store',
-      title: 'Shopify',
       type: 'shopifyProduct',
       description: 'Product data from Shopify (read-only)',
       group: 'shopifySync',
@@ -81,7 +58,7 @@ export default defineType({
     defineField({
       name: 'seo',
       title: 'SEO',
-      type: 'seo.shopify',
+      type: 'seo',
       group: 'seo',
     }),
   ],
