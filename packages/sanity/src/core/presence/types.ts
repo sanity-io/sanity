@@ -1,6 +1,6 @@
 import {type Path, type User} from '@sanity/types'
 
-import {type Session, type Status} from '../store/_legacy'
+import {type Session, type Status} from '../store/_legacy/presence/types'
 
 /** @internal */
 export type Position = 'top' | 'bottom' | 'inside' | null

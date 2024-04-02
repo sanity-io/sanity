@@ -10,7 +10,7 @@ import {Button} from '../../../../../ui-components'
 import {FormFieldHeaderText, type ObjectFieldProps, set, unset} from '../../../../form'
 import {useSchema} from '../../../../hooks/useSchema'
 import {useTranslation} from '../../../../i18n/hooks/useTranslation'
-import {useDocumentPresence} from '../../../../store'
+import {useDocumentPresence} from '../../../../store/_legacy/presence/useDocumentPresence'
 import {
   SearchPopover,
   SearchProvider,

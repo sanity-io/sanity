@@ -8,13 +8,14 @@ import styled from 'styled-components'
 import {type GeneralPreviewLayoutKey} from '../../../../../../../components'
 import {DocumentStatus} from '../../../../../../../components/documentStatus'
 import {DocumentStatusIndicator} from '../../../../../../../components/documentStatusIndicator'
-import {DocumentPreviewPresence} from '../../../../../../../presence'
+import {DocumentPreviewPresence} from '../../../../../../../presence/DocumentPreviewPresence'
 import {
   getPreviewStateObservable,
   getPreviewValueWithFallback,
   SanityDefaultPreview,
 } from '../../../../../../../preview'
-import {type DocumentPresence, useDocumentPreviewStore} from '../../../../../../../store'
+import {useDocumentPreviewStore} from '../../../../../../../store'
+import {type DocumentPresence} from '../../../../../../../store/_legacy/presence/types'
 
 interface SearchResultItemPreviewProps {
   documentId: string

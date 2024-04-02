@@ -6,7 +6,7 @@ import {type PreviewLayoutKey} from '../../../components'
 import {DocumentStatus} from '../../../components/documentStatus'
 import {DocumentStatusIndicator} from '../../../components/documentStatusIndicator'
 import {DocumentPreviewPresence} from '../../../presence'
-import {useDocumentPresence} from '../../../store'
+import {useDocumentPresence} from '../../../store/_legacy/presence/useDocumentPresence'
 import {type RenderPreviewCallback} from '../../types'
 import {type ReferenceInfo} from './types'
 

@@ -7,7 +7,7 @@ import styled, {css} from 'styled-components'
 
 import {Tooltip, type TooltipProps} from '../../ui-components'
 import {UserAvatar} from '../components'
-import {type DocumentPresence} from '../store'
+import {type DocumentPresence} from '../store/_legacy/presence/types'
 import {isNonNullable} from '../util'
 
 /** @internal */

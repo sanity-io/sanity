@@ -34,7 +34,7 @@ import {
 } from 'rxjs/operators'
 
 import {type ConnectionStatusStore} from '../connection-status/connection-status-store'
-import {debugParams$} from '../debugParams'
+import {debugParams$} from '../debugParams/debugParams'
 import {type UserStore} from '../user/userStore'
 import {createBifurTransport} from './message-transports/bifurTransport'
 import {

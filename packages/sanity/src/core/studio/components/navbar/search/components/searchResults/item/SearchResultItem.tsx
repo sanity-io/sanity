@@ -5,7 +5,7 @@ import {useIntentLink} from 'sanity/router'
 
 import {type GeneralPreviewLayoutKey, PreviewCard} from '../../../../../../../components'
 import {useSchema} from '../../../../../../../hooks/useSchema'
-import {useDocumentPresence} from '../../../../../../../store'
+import {useDocumentPresence} from '../../../../../../../store/_legacy/presence/useDocumentPresence'
 import {SearchResultItemPreview} from './SearchResultItemPreview'
 
 export type ItemSelectHandler = (item: Pick<SanityDocumentLike, '_id' | '_type'>) => void
