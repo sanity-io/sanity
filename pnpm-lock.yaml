@@ -46,7 +46,7 @@ importers:
         specifier: ^3.0.1
         version: 3.0.1(eslint@8.57.0)(typescript@5.3.3)
       '@sanity/pkg-utils':
-        specifier: ^4.4.3
+        specifier: ^4.4.4
         version: 4.4.4(@types/node@18.19.29)(typescript@5.3.3)
       '@sanity/test':
         specifier: 0.0.1-alpha.1
