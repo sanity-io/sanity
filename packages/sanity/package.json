@@ -198,7 +198,7 @@
     "@sanity/bifur-client": "^0.3.1",
     "@sanity/block-tools": "3.36.4",
     "@sanity/cli": "3.36.4",
-    "@sanity/client": "^6.15.7",
+    "@sanity/client": "^6.15.9",
     "@sanity/color": "^3.0.0",
     "@sanity/diff": "3.36.4",
     "@sanity/diff-match-patch": "^3.1.1",
