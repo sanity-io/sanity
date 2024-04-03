@@ -15,6 +15,7 @@ import {
   type DocumentInspector,
   type DocumentPresence,
   EMPTY_ARRAY,
+  FormPathCallbacksProvider,
   getDraftId,
   getExpandOperations,
   getPublishedId,
@@ -727,7 +728,9 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   }, [params, documentId, onFocusPath, setOpenPath, ready, paneRouter])
 
   return (
-    <DocumentPaneContext.Provider value={documentPane}>{children}</DocumentPaneContext.Provider>
+    <FormPathCallbacksProvider onPathFocus={handleFocus} onPathOpen={setOpenPath}>
+      <DocumentPaneContext.Provider value={documentPane}>{children}</DocumentPaneContext.Provider>
+    </FormPathCallbacksProvider>
   )
 })
 

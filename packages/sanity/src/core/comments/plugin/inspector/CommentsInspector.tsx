@@ -1,10 +1,12 @@
 import {Flex, Layer, useClickOutside, useLayer, useToast} from '@sanity/ui'
 import * as PathUtils from '@sanity/util/paths'
 import {Fragment, useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {useDocumentPane, usePaneRouter} from 'sanity/structure'
+import {usePaneRouter} from 'sanity/structure'
 import styled from 'styled-components'
 
 import {type DocumentInspectorProps} from '../../../config/document/inspector'
+import {useFormPathCallbacks} from '../../../form'
+import {useConnectionState} from '../../../hooks'
 import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {useCurrentUser} from '../../../store/user/hooks'
 import {useUnique} from '../../../util/useUnique'
@@ -66,7 +68,7 @@ function CommentsInspectorInner(
   },
 ) {
   const {t} = useTranslation(commentsLocaleNamespace)
-  const {onClose, mode} = props
+  const {onClose, mode, documentId, documentType} = props
   const [showDeleteDialog, setShowDeleteDialog] = useState<boolean>(false)
   const [commentToDelete, setCommentToDelete] = useState<CommentToDelete | null>(null)
   const [deleteLoading, setDeleteLoading] = useState<boolean>(false)
@@ -83,7 +85,9 @@ function CommentsInspectorInner(
 
   const pushToast = useToast().push
   const {isTopLayer} = useLayer()
-  const {onPathOpen, connectionState} = useDocumentPane()
+  const {onPathOpen} = useFormPathCallbacks()
+
+  const connectionState = useConnectionState(documentId, documentType)
 
   const {scrollToComment, scrollToField, scrollToInlineComment} = useCommentsScroll()
   const {selectedPath, setSelectedPath} = useCommentsSelectedPath()
