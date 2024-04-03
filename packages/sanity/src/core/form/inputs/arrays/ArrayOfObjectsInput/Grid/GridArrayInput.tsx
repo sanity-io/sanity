@@ -90,6 +90,7 @@ export function GridArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
                 items={memberKeys}
                 onItemMove={onItemMove}
                 sortable={sortable}
+                readOnly={readOnly}
               >
                 {members.map((member) => (
                   <Item key={member.key} sortable={sortable} id={member.key} flex={1}>

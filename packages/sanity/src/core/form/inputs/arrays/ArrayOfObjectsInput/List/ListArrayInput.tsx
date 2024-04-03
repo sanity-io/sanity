@@ -228,6 +228,7 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
                 onItemMoveStart={handleItemMoveStart}
                 onItemMoveEnd={handleItemMoveEnd}
                 sortable={sortable}
+                readOnly={readOnly}
                 style={{
                   // This is not memoized since it changes on scroll so it will change anyways making memo useless
                   position: 'absolute',

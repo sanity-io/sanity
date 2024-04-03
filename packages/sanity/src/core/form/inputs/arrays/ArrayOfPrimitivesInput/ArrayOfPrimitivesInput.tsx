@@ -188,6 +188,7 @@ export class ArrayOfPrimitivesInput extends PureComponent<ArrayOfPrimitivesInput
                   items={membersWithSortIds.map((m) => m.id)}
                   sortable={isSortable}
                   gap={1}
+                  readOnly={readOnly}
                 >
                   {membersWithSortIds.map(({member, id}, index) => {
                     return (

@@ -166,10 +166,11 @@ interface ListProps extends ComponentProps<typeof Grid> {
   onItemMoveStart?: (event: DragStartEvent) => void
   onItemMoveEnd?: () => void
   children?: ReactNode
+  readOnly?: boolean
 }
 
 export function List(props: ListProps) {
-  const {onItemMove, onItemMoveEnd, onItemMoveStart, sortable, ...rest} = props
+  const {onItemMove, onItemMoveEnd, onItemMoveStart, sortable, readOnly, ...rest} = props
 
   // Note: this is here to make SortableList API compatible with onItemMove
   const handleSortEnd = useCallback(
@@ -181,6 +182,8 @@ export function List(props: ListProps) {
 
   return sortable ? (
     <SortableList
+      // Change the key to force a remount of the dnd context.
+      key={readOnly ? 'readonly' : 'sortable'}
       onItemMove={handleSortEnd}
       onItemMoveStart={onItemMoveStart}
       onItemMoveEnd={onItemMoveEnd}
