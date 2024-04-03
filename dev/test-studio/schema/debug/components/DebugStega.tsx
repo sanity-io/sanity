@@ -7,7 +7,7 @@ import {vercelStegaDecodeAll} from '@vercel/stega'
 import {useMemo} from 'react'
 import {type InputProps, isDocumentSchemaType} from 'sanity'
 import {useDocumentPane, usePaneRouter} from 'sanity/structure'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 export function StegaDebugger(props: InputProps) {
   if (isDocumentSchemaType(props.schemaType)) {

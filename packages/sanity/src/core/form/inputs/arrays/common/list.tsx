@@ -29,7 +29,7 @@ import {
   useCallback,
   useMemo,
 } from 'react'
-import styled, {css} from 'styled-components'
+import {css, styled} from 'styled-components'
 
 import {restrictToParentElementWithMargins} from './dndkit-modifier/restrictToParentElementWithMargins'
 import {SortableItemIdContext} from './DragHandle'

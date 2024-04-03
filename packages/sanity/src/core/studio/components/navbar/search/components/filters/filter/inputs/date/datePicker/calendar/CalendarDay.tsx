@@ -1,7 +1,7 @@
 import {Card, Text, type Theme} from '@sanity/ui'
 import {isAfter, isBefore, isSameDay, isSameMonth} from 'date-fns'
 import {useCallback} from 'react'
-import styled, {css} from 'styled-components'
+import {css, styled} from 'styled-components'
 
 import {useCalendar} from './contexts/useDatePicker'
 

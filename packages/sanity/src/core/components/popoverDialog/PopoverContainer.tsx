@@ -7,7 +7,7 @@ import {
   useArrayProp,
 } from '@sanity/ui'
 import {forwardRef, type ReactNode, type Ref} from 'react'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 // This is a workaround to make sure that the Container gets the correct width when used inside a popover.
 // The default Container uses `maxWidth` which doesn't work well with popovers because the popover

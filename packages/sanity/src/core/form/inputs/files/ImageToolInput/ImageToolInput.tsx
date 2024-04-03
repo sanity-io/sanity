@@ -1,7 +1,7 @@
 import {type Image, type ImageSchemaType} from '@sanity/types'
 import {Box, Card, Flex, Grid, Heading, Text} from '@sanity/ui'
 import {type ReactNode, useCallback, useEffect, useState} from 'react'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {ChangeIndicator} from '../../../../changeIndicators'
 import {LoadingBlock} from '../../../../components/loadingBlock'

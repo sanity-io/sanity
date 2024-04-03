@@ -2,7 +2,7 @@ import {Card, Portal, useClickOutside, useLayer} from '@sanity/ui'
 import {AnimatePresence, motion, type Transition, type Variants} from 'framer-motion'
 import {useCallback, useRef, useState} from 'react'
 import FocusLock from 'react-focus-lock'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {useTranslation} from '../../../../../i18n'
 import {supportsTouch} from '../../../../../util'

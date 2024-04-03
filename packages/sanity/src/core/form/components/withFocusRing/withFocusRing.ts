@@ -3,7 +3,7 @@
 import {rem, type Theme} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {type ComponentType} from 'react'
-import styled, {css} from 'styled-components'
+import {css, styled} from 'styled-components'
 
 import {focusRingBorderStyle, focusRingStyle} from './helpers'
 

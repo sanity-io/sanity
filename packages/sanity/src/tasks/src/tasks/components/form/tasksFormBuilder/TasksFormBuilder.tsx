@@ -11,7 +11,7 @@ import {
   useCurrentUser,
   useWorkspace,
 } from 'sanity'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {CommentsEnabledProvider} from '../../../../../../structure/comments'
 import {useTasks, useTasksNavigation} from '../../../context'

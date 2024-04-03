@@ -3,7 +3,7 @@ import {type CurrentUser} from '@sanity/types'
 import {type AvatarSize, Flex, Stack, type StackProps, useLayer} from '@sanity/ui'
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {type UserListWithPermissionsHookValue, useTranslation} from 'sanity'
-import styled, {css} from 'styled-components'
+import {css, styled} from 'styled-components'
 
 import {Button} from '../../../../../ui-components'
 import {commentsLocaleNamespace} from '../../../i18n'

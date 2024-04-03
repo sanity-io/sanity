@@ -10,7 +10,7 @@ import {
 import {isThisISOWeek, isToday} from 'date-fns'
 import {useMemo} from 'react'
 import {useDateTimeFormat} from 'sanity'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {Tooltip} from '../../../../../ui-components'
 import {type TaskDocument} from '../../types'

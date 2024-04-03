@@ -15,7 +15,7 @@ import {
   useCurrentUser,
   useTranslation,
 } from 'sanity'
-import styled, {css} from 'styled-components'
+import {css, styled} from 'styled-components'
 
 import {CommentsProvider} from '../../../../../../structure/comments'
 import {MenuButton, MenuItem} from '../../../../../../ui-components'
