@@ -254,13 +254,13 @@ importers:
         version: 18.2.18
       '@vitejs/plugin-react':
         specifier: ^4.2.1
-        version: 4.2.1(vite@4.5.2)
+        version: 4.2.1(vite@4.5.3)
       typescript:
         specifier: ^5.4.2
         version: 5.4.3
       vite:
-        specifier: ^4.5.2
-        version: 4.5.2(@types/node@18.19.8)
+        specifier: ^4.5.3
+        version: 4.5.3(@types/node@18.19.8)
 
   dev/starter-next-studio:
     dependencies:
@@ -526,8 +526,8 @@ importers:
         version: 2.29.4(three@0.157.0)
     devDependencies:
       vite:
-        specifier: ^4.5.2
-        version: 4.5.2(@types/node@18.19.8)
+        specifier: ^4.5.3
+        version: 4.5.3(@types/node@18.19.8)
 
   examples/blog-studio:
     dependencies:
@@ -837,8 +837,8 @@ importers:
         specifier: ^6.1.11
         version: 6.2.0
       vite:
-        specifier: ^4.5.2
-        version: 4.5.2(@types/node@18.19.8)
+        specifier: ^4.5.3
+        version: 4.5.3(@types/node@18.19.8)
       which:
         specifier: ^2.0.2
         version: 2.0.2
@@ -1205,7 +1205,7 @@ importers:
         version: 8.5.10
       '@vitejs/plugin-react':
         specifier: ^4.2.1
-        version: 4.2.1(vite@4.5.2)
+        version: 4.2.1(vite@4.5.3)
       express:
         specifier: ^4.18.3
         version: 4.18.3
@@ -1240,8 +1240,8 @@ importers:
         specifier: ^6.1.8
         version: 6.1.8(react-dom@18.2.0)(react@18.2.0)
       vite:
-        specifier: ^4.5.2
-        version: 4.5.2(@types/node@18.19.8)
+        specifier: ^4.5.3
+        version: 4.5.3(@types/node@18.19.8)
 
   packages/@sanity/schema:
     dependencies:
@@ -1538,7 +1538,7 @@ importers:
         version: 0.0.6
       '@vitejs/plugin-react':
         specifier: ^4.2.1
-        version: 4.2.1(vite@4.5.2)
+        version: 4.2.1(vite@4.5.3)
       archiver:
         specifier: ^7.0.0
         version: 7.0.0
@@ -1751,7 +1751,7 @@ importers:
         version: 1.2.0(react@18.2.0)
       vite:
         specifier: ^4.5.1
-        version: 4.5.2(@types/node@18.19.8)
+        version: 4.5.3(@types/node@18.19.8)
       yargs:
         specifier: ^17.3.0
         version: 17.7.2
@@ -1764,7 +1764,7 @@ importers:
         version: 29.7.0
       '@playwright/experimental-ct-react':
         specifier: ^1.41.2
-        version: 1.41.2(@types/node@18.19.8)(vite@4.5.2)
+        version: 1.41.2(@types/node@18.19.8)(vite@4.5.3)
       '@playwright/test':
         specifier: ^1.41.2
         version: 1.41.2
@@ -4938,7 +4938,7 @@ packages:
     dependencies:
       playwright: 1.41.2
       playwright-core: 1.41.2
-      vite: 4.5.2(@types/node@18.19.8)
+      vite: 4.5.3(@types/node@18.19.8)
     transitivePeerDependencies:
       - '@types/node'
       - less
@@ -4949,13 +4949,13 @@ packages:
       - terser
     dev: true
 
-  /@playwright/experimental-ct-react@1.41.2(@types/node@18.19.8)(vite@4.5.2):
+  /@playwright/experimental-ct-react@1.41.2(@types/node@18.19.8)(vite@4.5.3):
     resolution: {integrity: sha512-BMcxh2DM3t8nMgUJKWMWAXGIzcYY/4w1ibckGP48edHU/cmZCbI5W7mUXfxMhYCt4mQJ1NuYcFIg5Jt+QVIuRQ==}
     engines: {node: '>=16'}
     hasBin: true
     dependencies:
       '@playwright/experimental-ct-core': 1.41.2(@types/node@18.19.8)
-      '@vitejs/plugin-react': 4.2.1(vite@4.5.2)
+      '@vitejs/plugin-react': 4.2.1(vite@4.5.3)
     transitivePeerDependencies:
       - '@types/node'
       - less
@@ -6481,7 +6481,7 @@ packages:
       '@sanity/pkg-utils': 2.4.10(@types/node@18.19.8)(typescript@5.4.3)
       '@sanity/ui': 1.9.3(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8)
       '@types/cpx': 1.5.5
-      '@vitejs/plugin-react': 4.2.1(vite@4.5.2)
+      '@vitejs/plugin-react': 4.2.1(vite@4.5.3)
       cac: 6.7.14
       chalk: 4.1.2
       chokidar: 3.6.0
@@ -6502,7 +6502,7 @@ packages:
       slugify: 1.6.6
       styled-components: 6.1.8(react-dom@18.2.0)(react@18.2.0)
       tmp: 0.2.1
-      vite: 4.5.2(@types/node@18.19.8)
+      vite: 4.5.3(@types/node@18.19.8)
     transitivePeerDependencies:
       - '@types/node'
       - less
@@ -6537,7 +6537,7 @@ packages:
       '@sanity/pkg-utils': 4.4.3(@types/node@18.19.8)(typescript@5.3.3)
       '@sanity/ui': 1.9.3(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@5.3.11)
       '@types/cpx': 1.5.5
-      '@vitejs/plugin-react': 4.2.1(vite@4.5.2)
+      '@vitejs/plugin-react': 4.2.1(vite@4.5.3)
       cac: 6.7.14
       chalk: 4.1.2
       chokidar: 3.6.0
@@ -6558,7 +6558,7 @@ packages:
       slugify: 1.6.6
       styled-components: 5.3.11(@babel/core@7.24.3)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)
       tmp: 0.2.1
-      vite: 4.5.2(@types/node@18.19.8)
+      vite: 4.5.3(@types/node@18.19.8)
     transitivePeerDependencies:
       - '@types/node'
       - less
@@ -6583,7 +6583,7 @@ packages:
     dependencies:
       '@sanity/icons': 2.11.4(react@18.2.0)
       '@sanity/ui': 2.0.12(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8)
-      '@vitejs/plugin-react': 4.2.1(vite@4.5.2)
+      '@vitejs/plugin-react': 4.2.1(vite@4.5.3)
       axe-core: 4.8.3
       cac: 6.7.14
       chokidar: 3.6.0
@@ -6599,7 +6599,7 @@ packages:
       react-dom: 18.2.0(react@18.2.0)
       segmented-property: 3.0.3
       styled-components: 6.1.8(react-dom@18.2.0)(react@18.2.0)
-      vite: 4.5.2(@types/node@18.19.8)
+      vite: 4.5.3(@types/node@18.19.8)
     transitivePeerDependencies:
       - '@types/node'
       - less
@@ -7800,7 +7800,7 @@ packages:
   /@vercel/stega@0.1.0:
     resolution: {integrity: sha512-5b0PkOJsFBX5alChuIO3qpkt5vIZBevzLPhUQ1UP8UzVjL3F1VllnZxp/thfD8R5ol7D7WHkgZHIjdUBX4tDpQ==}
 
-  /@vitejs/plugin-react@4.2.1(vite@4.5.2):
+  /@vitejs/plugin-react@4.2.1(vite@4.5.3):
     resolution: {integrity: sha512-oojO9IDc4nCUUi8qIR11KoQm0XFFLIwsRBwHRR4d/88IWghn1y6ckz/bJ8GHDCsYEJee8mDzqtJxh15/cisJNQ==}
     engines: {node: ^14.18.0 || >=16.0.0}
     peerDependencies:
@@ -7811,7 +7811,7 @@ packages:
       '@babel/plugin-transform-react-jsx-source': 7.23.3(@babel/core@7.24.3)
       '@types/babel__core': 7.20.5
       react-refresh: 0.14.0
-      vite: 4.5.2(@types/node@18.19.8)
+      vite: 4.5.3(@types/node@18.19.8)
     transitivePeerDependencies:
       - supports-color
 
@@ -18848,8 +18848,8 @@ packages:
     resolution: {integrity: sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg==}
     engines: {node: '>= 0.8'}
 
-  /vite@4.5.2(@types/node@18.19.8):
-    resolution: {integrity: sha512-tBCZBNSBbHQkaGyhGCDUGqeo2ph8Fstyp6FMSvTtsXeZSPpSMGlviAOav2hxVTqFcx8Hj/twtWKsMJXNY0xI8w==}
+  /vite@4.5.3(@types/node@18.19.8):
+    resolution: {integrity: sha512-kQL23kMeX92v3ph7IauVkXkikdDRsYMGTVl5KY2E9OY4ONLvkHf04MDTbnfo6NKxZiDLWzVpP5oTa8hQD8U3dg==}
     engines: {node: ^14.18.0 || >=16.0.0}
     hasBin: true
     peerDependencies:
