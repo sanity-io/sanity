@@ -149,7 +149,7 @@
     "rxjs": "^7.8.1",
     "sanity": "workspace:*",
     "semver": "^7.3.5",
-    "turbo": "^1.13.0",
+    "turbo": "^1.13.2",
     "typescript": "5.3.3",
     "yargs": "^17.3.0"
   },
