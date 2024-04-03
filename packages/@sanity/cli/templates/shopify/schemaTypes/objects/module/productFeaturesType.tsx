@@ -37,7 +37,7 @@ export const productFeaturesType = defineField({
   ],
   preview: {
     select: {
-      products: 'modules',
+      products: 'products',
     },
     prepare({products}) {
       return {
