@@ -659,7 +659,7 @@ importers:
         specifier: ^3.4.1
         version: 3.5.0(esbuild@0.20.2)
       get-it:
-        specifier: ^8.4.16
+        specifier: ^8.4.17
         version: 8.4.17
       golden-fleece:
         specifier: ^1.0.9
@@ -938,7 +938,7 @@ importers:
         specifier: ^4.3.4
         version: 4.3.4(supports-color@5.5.0)
       get-it:
-        specifier: ^8.4.16
+        specifier: ^8.4.17
         version: 8.4.17
       lodash:
         specifier: ^4.17.21
@@ -984,7 +984,7 @@ importers:
         specifier: ^2.0.2
         version: 2.0.2
       get-it:
-        specifier: ^8.4.16
+        specifier: ^8.4.17
         version: 8.4.17
       get-uri:
         specifier: ^2.0.2
@@ -1039,7 +1039,7 @@ importers:
         specifier: 3.36.3
         version: link:../import
       get-it:
-        specifier: ^8.4.16
+        specifier: ^8.4.17
         version: 8.4.17
       meow:
         specifier: ^9.0.0
@@ -1594,7 +1594,7 @@ importers:
         specifier: ^11.0.0
         version: 11.0.24(react-dom@18.2.0)(react@18.2.0)
       get-it:
-        specifier: ^8.4.16
+        specifier: ^8.4.17
         version: 8.4.17
       get-random-values-esm:
         specifier: 1.0.2
