@@ -109,8 +109,8 @@
     "@types/react": "^18.2.74",
     "@types/semver": "^7.5.6",
     "@types/yargs": "^17.0.7",
-    "@typescript-eslint/eslint-plugin": "^6.21.0",
-    "@typescript-eslint/parser": "^6.21.0",
+    "@typescript-eslint/eslint-plugin": "^7.5.0",
+    "@typescript-eslint/parser": "^7.5.0",
     "cac": "^6.7.12",
     "chalk": "^4.1.2",
     "depcheck": "^1.4.7",
@@ -157,5 +157,11 @@
     "node-notifier": "^10.0.0"
   },
   "packageManager": "pnpm@8.15.6",
+  "pnpm": {
+    "overrides": {
+      "@typescript-eslint/eslint-plugin": "$@typescript-eslint/eslint-plugin",
+      "@typescript-eslint/parser": "$@typescript-eslint/parser"
+    }
+  },
   "isSanityMonorepo": true
 }
