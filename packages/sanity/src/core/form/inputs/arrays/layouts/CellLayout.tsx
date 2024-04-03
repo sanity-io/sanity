@@ -66,7 +66,18 @@ const Root = styled(Card)`
  * Use this to get the layout for grid items
  */
 export function CellLayout(props: RowLayoutProps & ComponentProps<typeof Root>) {
-  const {validation, selected, tone, presence, children, dragHandle, menu, footer, ...rest} = props
+  const {
+    validation,
+    selected,
+    tone,
+    presence,
+    children,
+    dragHandle,
+    menu,
+    footer,
+    readOnly,
+    ...rest
+  } = props
 
   return (
     <Root
@@ -89,7 +100,7 @@ export function CellLayout(props: RowLayoutProps & ComponentProps<typeof Root>) 
           tone="inherit"
           data-ui="DragHandleCard"
         >
-          <DragHandle $grid mode="ghost" />
+          <DragHandle $grid mode="ghost" readOnly={!!readOnly} />
         </DragHandleCard>
       )}
 

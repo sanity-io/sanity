@@ -65,7 +65,7 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
   } = props
   const {t} = useTranslation()
 
-  const sortable = !readOnly && parentSchemaType.options?.sortable !== false
+  const sortable = parentSchemaType.options?.sortable !== false
   const insertableTypes = parentSchemaType.of
 
   const previewCardRef = useRef<HTMLDivElement | null>(null)
@@ -156,6 +156,7 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
       focused={focused}
       dragHandle={sortable}
       selected={open}
+      readOnly={!!readOnly}
     >
       <Card
         as="button"

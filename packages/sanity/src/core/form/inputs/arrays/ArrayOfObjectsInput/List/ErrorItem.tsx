@@ -15,8 +15,9 @@ export function ErrorItem(props: {
   member: ArrayItemError
   sortable?: boolean
   onRemove: () => void
+  readOnly?: boolean
 }) {
-  const {member, sortable, onRemove} = props
+  const {member, sortable, onRemove, readOnly} = props
   const id = useId()
 
   const {t} = useTranslation()
@@ -25,6 +26,7 @@ export function ErrorItem(props: {
     <Box paddingX={1}>
       <RowLayout
         dragHandle={sortable}
+        readOnly={!!readOnly}
         tone="caution"
         menu={
           <MenuButton

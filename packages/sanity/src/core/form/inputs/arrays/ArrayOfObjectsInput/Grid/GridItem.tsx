@@ -175,6 +175,7 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
       border
       dragHandle={sortable}
       selected={open}
+      readOnly={readOnly}
     >
       <PreviewCard
         tone="inherit"
