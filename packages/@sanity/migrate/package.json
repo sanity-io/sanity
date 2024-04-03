@@ -65,8 +65,13 @@
   "dependencies": {
     "@bjoerge/mutiny": "^0.5.1",
     "@sanity/client": "^6.15.9",
+<<<<<<< HEAD
     "@sanity/types": "3.36.4",
     "@sanity/util": "3.36.4",
+=======
+    "@sanity/types": "3.36.3",
+    "@sanity/util": "3.36.3",
+>>>>>>> a3a8b5bbf2 (fix(deps): update dependency @sanity/client to ^6.15.9 (#6177))
     "arrify": "^2.0.1",
     "debug": "^4.3.4",
     "fast-fifo": "^1.3.2",

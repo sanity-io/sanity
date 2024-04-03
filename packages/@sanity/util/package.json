@@ -163,7 +163,11 @@
   },
   "dependencies": {
     "@sanity/client": "^6.15.9",
+<<<<<<< HEAD
     "@sanity/types": "3.36.4",
+=======
+    "@sanity/types": "3.36.3",
+>>>>>>> a3a8b5bbf2 (fix(deps): update dependency @sanity/client to ^6.15.9 (#6177))
     "get-random-values-esm": "1.0.2",
     "moment": "^2.29.4",
     "rxjs": "^7.8.1"

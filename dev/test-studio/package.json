@@ -21,7 +21,11 @@
     "@react-three/drei": "^9.80.1",
     "@react-three/fiber": "^8.13.6",
     "@sanity/assist": "^2.0.0",
+<<<<<<< HEAD
     "@sanity/block-tools": "3.36.4",
+=======
+    "@sanity/block-tools": "3.36.3",
+>>>>>>> a3a8b5bbf2 (fix(deps): update dependency @sanity/client to ^6.15.9 (#6177))
     "@sanity/client": "^6.15.9",
     "@sanity/color": "^3.0.0",
     "@sanity/google-maps-input": "^3.0.1",
