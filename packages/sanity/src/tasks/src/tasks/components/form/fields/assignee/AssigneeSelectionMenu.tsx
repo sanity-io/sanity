@@ -13,7 +13,7 @@ import {
 import {deburr} from 'lodash'
 import {type ChangeEvent, type KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
 import {LoadingBlock, type UserWithPermission, useTranslation} from 'sanity'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {MenuButton} from '../../../../../../../ui-components'
 import {tasksLocaleNamespace} from '../../../../../../i18n'

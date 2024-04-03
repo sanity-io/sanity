@@ -1,7 +1,7 @@
 import {hues} from '@sanity/color'
 import {type Theme} from '@sanity/ui'
 import {forwardRef} from 'react'
-import styled, {css} from 'styled-components'
+import {css, styled} from 'styled-components'
 
 import {COMMENTS_HIGHLIGHT_HUE_KEY} from '../../constants'
 

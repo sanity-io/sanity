@@ -5,7 +5,7 @@ import {type AvatarSize, Box, Card, Flex, MenuDivider, Stack} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {useCallback} from 'react'
 import {useTranslation, useUser} from 'sanity'
-import styled, {css} from 'styled-components'
+import {css, styled} from 'styled-components'
 
 import {Button, TooltipDelayGroupProvider} from '../../../../../../ui-components'
 import {commentsLocaleNamespace} from '../../../../i18n'

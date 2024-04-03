@@ -1,7 +1,7 @@
 import {BoundaryElementProvider, Box, Flex, PortalProvider, usePortal} from '@sanity/ui'
 import {createElement, useEffect, useMemo, useRef, useState} from 'react'
 import {ScrollContainer, useTimelineSelector, VirtualizerScrollInstanceProvider} from 'sanity'
-import styled, {css} from 'styled-components'
+import {css, styled} from 'styled-components'
 
 import {PaneContent, usePane, usePaneLayout} from '../../../components'
 import {useStructureTool} from '../../../useStructureTool'

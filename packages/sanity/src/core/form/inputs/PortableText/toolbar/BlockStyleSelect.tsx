@@ -7,7 +7,7 @@ import {
   Text,
 } from '@sanity/ui'
 import {memo, type MouseEvent, type ReactNode, useCallback, useMemo} from 'react'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {Button, MenuButton, type MenuButtonProps} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'

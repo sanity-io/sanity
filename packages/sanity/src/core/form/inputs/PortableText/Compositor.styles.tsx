@@ -2,7 +2,7 @@
 
 import {Layer} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
-import styled, {css} from 'styled-components'
+import {css, styled} from 'styled-components'
 
 import {focusRingBorderStyle, focusRingStyle} from '../../components/withFocusRing/helpers'
 

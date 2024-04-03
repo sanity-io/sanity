@@ -2,7 +2,7 @@
 
 import {Card, Container, rem} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
-import styled, {css} from 'styled-components'
+import {css, styled} from 'styled-components'
 
 import {ScrollContainer} from '../../../components/scroll'
 import {createListName, TEXT_LEVELS} from './text'

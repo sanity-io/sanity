@@ -8,7 +8,7 @@ import {
   useCurrentUser,
   useTranslation,
 } from 'sanity'
-import styled, {css} from 'styled-components'
+import {css, styled} from 'styled-components'
 
 import {CommentInput} from '../../../../../../../structure/comments'
 import {tasksLocaleNamespace} from '../../../../../../i18n'

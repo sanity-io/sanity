@@ -1,6 +1,6 @@
 import {Card, type CardProps} from '@sanity/ui'
 import {createContext, type ForwardedRef, forwardRef, type HTMLProps, useContext} from 'react'
-import styled, {css} from 'styled-components'
+import {css, styled} from 'styled-components'
 
 /** @internal */
 const StyledCard = styled(Card)(() => {

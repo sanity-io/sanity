@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {ClampedRect} from './ClampedRect'
 

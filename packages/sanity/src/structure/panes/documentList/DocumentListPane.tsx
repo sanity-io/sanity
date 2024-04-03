@@ -14,7 +14,7 @@ import {
   useUnique,
 } from 'sanity'
 import shallowEquals from 'shallow-equals'
-import styled, {keyframes} from 'styled-components'
+import {keyframes, styled} from 'styled-components'
 
 import {Pane} from '../../components/pane'
 import {_DEBUG} from '../../constants'

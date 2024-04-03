@@ -1,6 +1,6 @@
 import {Box, Flex, Stack, Text} from '@sanity/ui'
 import {useTranslation} from 'sanity'
-import styled, {keyframes} from 'styled-components'
+import {keyframes, styled} from 'styled-components'
 
 import {Button, Popover, type PopoverProps} from '../../../../../ui-components'
 import {commentsLocaleNamespace} from '../../../i18n'

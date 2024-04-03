@@ -1,7 +1,7 @@
 import {Box, Card, Portal} from '@sanity/ui'
 import {useState} from 'react'
 import FocusLock from 'react-focus-lock'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {useTranslation} from '../../../../i18n'
 import {supportsTouch} from '../../../../util'

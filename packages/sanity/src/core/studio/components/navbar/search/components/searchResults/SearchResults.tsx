@@ -1,6 +1,6 @@
 import {Card, Flex} from '@sanity/ui'
 import {useCallback} from 'react'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {CommandList, type CommandListRenderItemCallback} from '../../../../../../components'
 import {useTranslation} from '../../../../../../i18n'

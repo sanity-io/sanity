@@ -2,7 +2,7 @@ import {BulbOutlineIcon, UnknownIcon} from '@sanity/icons'
 import {Box, Card, Code, Stack, Text, type Theme, useClickOutside} from '@sanity/ui'
 import {resolveTypeName} from '@sanity/util/content'
 import {type FocusEvent, useCallback, useState} from 'react'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {Popover} from '../../../../../../ui-components'
 import {Translate, useTranslation} from '../../../../../i18n'

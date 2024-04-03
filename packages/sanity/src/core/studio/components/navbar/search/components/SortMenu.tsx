@@ -2,7 +2,7 @@ import {SortIcon} from '@sanity/icons'
 import {Card, Flex, Menu, MenuDivider} from '@sanity/ui'
 import isEqual from 'lodash/isEqual'
 import {useCallback, useId, useMemo} from 'react'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {Button, MenuButton, MenuItem} from '../../../../../../ui-components'
 import {useTranslation} from '../../../../../i18n'

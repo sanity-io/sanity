@@ -12,7 +12,7 @@ import {
   useTranslation,
   useWorkspace,
 } from 'sanity'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {
   type CommentBaseCreatePayload,

@@ -3,7 +3,7 @@ import {Card, Flex} from '@sanity/ui'
 import {startCase} from 'lodash'
 import {createContext, Suspense, useCallback, useEffect, useMemo, useState} from 'react'
 import {RouteScope, useRouter, useRouterState} from 'sanity/router'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {LoadingBlock} from '../components/loadingBlock'
 import {NoToolsScreen} from './screens/NoToolsScreen'

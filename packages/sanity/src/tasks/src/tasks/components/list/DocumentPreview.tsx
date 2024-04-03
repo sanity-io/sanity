@@ -5,7 +5,7 @@ import {getTheme_v2} from '@sanity/ui/theme'
 import {forwardRef, useMemo} from 'react'
 import {useSchema} from 'sanity'
 import {IntentLink} from 'sanity/router'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {useDocumentPreviewValues} from '../../hooks/useDocumentPreviewValues'
 

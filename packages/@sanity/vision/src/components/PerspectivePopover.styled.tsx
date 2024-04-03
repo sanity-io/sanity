@@ -1,5 +1,5 @@
 import {Box} from '@sanity/ui'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 export const PerspectivePopoverContent = styled(Box)`
   /* This limits the width of the popover content */

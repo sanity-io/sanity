@@ -8,7 +8,7 @@ import {
 import {type ObjectSchemaType, type Path, type SchemaType} from '@sanity/types'
 import {Box, Flex, useElementRect, useToast} from '@sanity/ui'
 import {memo, type MouseEvent, useCallback, useMemo, useState} from 'react'
-import styled, {css} from 'styled-components'
+import {css, styled} from 'styled-components'
 
 import {Button} from '../../../../../ui-components'
 import {useRovingFocus} from '../../../../components'
