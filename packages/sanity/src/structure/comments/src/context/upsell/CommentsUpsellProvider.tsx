@@ -1,4 +1,3 @@
-import {type ClientConfig} from '@sanity/client'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {template} from 'lodash'
 import {useCallback, useEffect, useMemo, useState} from 'react'
@@ -17,13 +16,6 @@ import {CommentsUpsellDialog} from '../../components'
 import {type CommentsUpsellData} from '../../types'
 import {CommentsUpsellContext} from './CommentsUpsellContext'
 import {type CommentsUpsellContextValue} from './types'
-
-const UPSELL_CLIENT_OPTIONS: Partial<ClientConfig> = {
-  apiVersion: '2023-12-11',
-  useProjectHostname: false,
-  withCredentials: false,
-  useCdn: true,
-}
 
 const FEATURE = 'comments'
 const TEMPLATE_OPTIONS = {interpolate: /{{([\s\S]+?)}}/g}
@@ -94,11 +86,9 @@ export function CommentsUpsellProvider(props: {children: React.ReactNode}) {
   }, [telemetry])
 
   useEffect(() => {
-    const data$ = client
-      .withConfig(UPSELL_CLIENT_OPTIONS)
-      .observable.request<CommentsUpsellData | null>({
-        uri: '/journey/comments',
-      })
+    const data$ = client.observable.request<CommentsUpsellData | null>({
+      uri: '/journey/comments',
+    })
 
     const sub = data$.subscribe({
       next: (data) => {
