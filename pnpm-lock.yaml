@@ -436,7 +436,7 @@ importers:
         version: 1.6.5(@sanity/client@6.15.9)
       '@sanity/react-loader':
         specifier: ^1.8.3
-        version: 1.9.5(@sanity/client@6.15.9)(react@18.2.0)
+        version: 1.9.6(@sanity/client@6.15.9)(react@18.2.0)
       '@sanity/tsdoc':
         specifier: 1.0.0-alpha.44
         version: 1.0.0-alpha.44(@sanity/pkg-utils@2.4.10)(@types/node@18.19.29)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(sanity@packages+sanity)(styled-components@6.1.8)
@@ -6077,11 +6077,11 @@ packages:
     resolution: {integrity: sha512-kPlUmTdMbMOuYtx+eC+pAWtEjwIKR8MwnqMf+Hzy51/npIZr6PywSRTt+PA+9aWov39/N5ZjEPayCFjdeUuHJA==}
     engines: {node: '>=18.0.0'}
 
-  /@sanity/core-loader@1.6.2(@sanity/client@6.15.9):
-    resolution: {integrity: sha512-YWOaK0ffyrPdNcmF3S6tflvcbNirNMxQbTOuZFgV/Rw0Uc7lgtG3o/LgBPMLnWZH/hHbgTRoOPA6tfJf7+1Tvw==}
+  /@sanity/core-loader@1.6.3(@sanity/client@6.15.9):
+    resolution: {integrity: sha512-xE1V5DXLs36J3C3Hg4T62xsgDW6NRhd8TTIAkYFftB9311aOT541khrI+XA8WleAv3WshD35HfWnDJynPGubgA==}
     engines: {node: '>=18'}
     peerDependencies:
-      '@sanity/client': ^6.15.7
+      '@sanity/client': ^6.15.9
     dependencies:
       '@sanity/client': 6.15.9
       async-cache-dedupe: 2.1.0
@@ -6428,15 +6428,15 @@ packages:
       '@sanity/uuid': 3.0.2
     dev: false
 
-  /@sanity/react-loader@1.9.5(@sanity/client@6.15.9)(react@18.2.0):
-    resolution: {integrity: sha512-PUe5/1omT/XovgtuB034X0ocrxXS+xT0RZ3ZpclEjgKCXxFEuHAkQeWKm9qlxWa2KrxPooFqO6v0fcEBTH8+cg==}
+  /@sanity/react-loader@1.9.6(@sanity/client@6.15.9)(react@18.2.0):
+    resolution: {integrity: sha512-zCiWhFcjdhijy6rO4C6OOr0+HqLNawHXOFe4zAp0UxqJZLGnVM1g2ImoihLMxjk/MrxsYWuiBu6XyvSN3dpzHg==}
     engines: {node: '>=18'}
     peerDependencies:
-      '@sanity/client': ^6.15.7
+      '@sanity/client': ^6.15.9
       react: ^18.2.0
     dependencies:
       '@sanity/client': 6.15.9
-      '@sanity/core-loader': 1.6.2(@sanity/client@6.15.9)
+      '@sanity/core-loader': 1.6.3(@sanity/client@6.15.9)
       fast-deep-equal: 3.1.3
       react: 18.2.0
     dev: false
