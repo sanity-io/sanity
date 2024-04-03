@@ -29,11 +29,7 @@
     "start": "sanity dev --port 3337"
   },
   "dependencies": {
-<<<<<<< HEAD
     "@sanity/cli": "3.36.4",
-=======
-    "@sanity/cli": "3.36.3",
->>>>>>> e9e7864d73 (fix(deps): update dependency @sanity/ui to ^2.0.13 (#6178))
     "@sanity/ui": "^2.0.13",
     "react": "^18.2.0",
     "react-barcode": "^1.4.1",
