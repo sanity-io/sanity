@@ -304,7 +304,7 @@
   "devDependencies": {
     "@jest/expect": "^29.7.0",
     "@jest/globals": "^29.7.0",
-    "@playwright/experimental-ct-react": "^1.41.2",
+    "@playwright/experimental-ct-react": "1.41.2",
     "@playwright/test": "1.41.2",
     "@sanity/tsdoc": "1.0.0-alpha.44",
     "@sanity/ui-workshop": "^1.2.11",
