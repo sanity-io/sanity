@@ -106,7 +106,7 @@
     "@types/glob": "^7.2.0",
     "@types/lodash": "^4.14.149",
     "@types/node": "^18.19.8",
-    "@types/react": "^18.2.37",
+    "@types/react": "^18.2.74",
     "@types/semver": "^7.5.6",
     "@types/yargs": "^17.0.7",
     "@typescript-eslint/eslint-plugin": "^6.21.0",

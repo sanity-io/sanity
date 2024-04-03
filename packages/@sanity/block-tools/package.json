@@ -64,7 +64,7 @@
     "@sanity/types": "3.36.3",
     "@types/jsdom": "^20.0.0",
     "@types/lodash": "^4.14.149",
-    "@types/react": "^18.2.37",
+    "@types/react": "^18.2.74",
     "jsdom": "^23.0.1"
   },
   "publishConfig": {
