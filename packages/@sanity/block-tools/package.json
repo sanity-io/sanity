@@ -1,6 +1,6 @@
 {
   "name": "@sanity/block-tools",
-  "version": "3.36.3",
+  "version": "3.36.4",
   "description": "Can format HTML, Slate JSON or Sanity block array into any other format.",
   "keywords": [
     "sanity",
@@ -60,8 +60,8 @@
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",
-    "@sanity/schema": "3.36.3",
-    "@sanity/types": "3.36.3",
+    "@sanity/schema": "3.36.4",
+    "@sanity/types": "3.36.4",
     "@types/jsdom": "^20.0.0",
     "@types/lodash": "^4.14.149",
     "@types/react": "^18.2.37",

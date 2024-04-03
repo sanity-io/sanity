@@ -1,6 +1,6 @@
 {
   "name": "@sanity/schema",
-  "version": "3.36.3",
+  "version": "3.36.4",
   "description": "",
   "keywords": [
     "sanity",
@@ -75,7 +75,7 @@
   },
   "dependencies": {
     "@sanity/generate-help-url": "^3.0.0",
-    "@sanity/types": "3.36.3",
+    "@sanity/types": "3.36.4",
     "arrify": "^1.0.1",
     "groq-js": "^1.7.0",
     "humanize-list": "^1.0.1",
