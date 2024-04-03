@@ -183,6 +183,7 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
             </Box>
             <Button
               aria-label={t('inputs.portable-text.action.edit-annotation-aria-label')}
+              data-testid="edit-annotation-button"
               icon={EditIcon}
               mode="bleed"
               onClick={handleEditButtonClicked}
@@ -191,6 +192,7 @@ export function AnnotationToolbarPopover(props: AnnotationToolbarPopoverProps) {
             />
             <Button
               aria-label={t('inputs.portable-text.action.remove-annotation-aria-label')}
+              data-testid="remove-annotation-button"
               icon={TrashIcon}
               mode="bleed"
               onClick={handleRemoveButtonClicked}
