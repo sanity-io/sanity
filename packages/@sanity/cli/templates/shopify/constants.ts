@@ -30,7 +30,8 @@ export const PAGE_REFERENCES = [
 export const SANITY_API_VERSION = '2022-10-25'
 
 // Your Shopify store ID.
-// This is your unique store URL (e.g. 'my-store-name.myshopify.com').
+// This is the ID in your Shopify admin URL (e.g. 'my-store-name' in https://admin.shopify.com/store/my-store-name).
+// You only need to provide the ID, not the full URL.
 // Set this to enable helper links in document status banners and shortcut links on products and collections.
 export const SHOPIFY_STORE_ID = ''
 

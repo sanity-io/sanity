@@ -2,7 +2,7 @@ import {CopyIcon as DuplicateIcon, TrashIcon} from '@sanity/icons'
 import {type SchemaType} from '@sanity/types'
 import {Box, Card, type CardTone, Menu} from '@sanity/ui'
 import {useCallback, useMemo, useRef} from 'react'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {MenuButton, MenuItem} from '../../../../../../ui-components'
 import {ChangeIndicator} from '../../../../../changeIndicators'

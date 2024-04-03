@@ -1,5 +1,5 @@
 import {Card} from '@sanity/ui'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {type SearchFilter} from '../../types'
 import {FilterLabel} from './FilterLabel'

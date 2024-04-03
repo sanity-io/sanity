@@ -1,7 +1,7 @@
 import {useSortable} from '@dnd-kit/sortable'
 import {DragHandleIcon} from '@sanity/icons'
 import {createContext, useContext} from 'react'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {Button, type ButtonProps} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'

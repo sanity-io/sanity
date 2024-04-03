@@ -12,7 +12,7 @@ import {
 import type * as React from 'react'
 import {createElement, forwardRef, isValidElement, useCallback, useMemo} from 'react'
 import {isValidElementType} from 'react-is'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {Tooltip, type TooltipProps} from '..'
 import {

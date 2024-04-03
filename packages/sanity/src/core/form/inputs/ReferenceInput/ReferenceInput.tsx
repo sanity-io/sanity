@@ -12,7 +12,7 @@ import {
 import {useObservableCallback} from 'react-rx'
 import {concat, type Observable, of} from 'rxjs'
 import {catchError, filter, map, scan, switchMap, tap} from 'rxjs/operators'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {Button} from '../../../../ui-components'
 import {PreviewCard} from '../../../components'

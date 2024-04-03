@@ -1,6 +1,6 @@
 {
   "name": "studio-e2e-testing",
-  "version": "3.36.2",
+  "version": "3.36.3",
   "private": true,
   "keywords": [
     "sanity"
@@ -16,8 +16,8 @@
   "dependencies": {
     "@sanity/google-maps-input": "^3.0.1",
     "@sanity/icons": "^2.11.0",
-    "@sanity/ui": "^2.0.12",
-    "@sanity/vision": "3.36.2",
+    "@sanity/ui": "^2.0.13",
+    "@sanity/vision": "3.36.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-is": "^18.2.0",

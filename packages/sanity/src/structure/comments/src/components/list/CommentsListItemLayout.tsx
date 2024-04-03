@@ -25,7 +25,7 @@ import {
   useUser,
 } from 'sanity'
 import {IntentLink} from 'sanity/router'
-import styled, {css} from 'styled-components'
+import {css, styled} from 'styled-components'
 
 import {commentsLocaleNamespace} from '../../../i18n'
 import {hasCommentMessageValue, isTextSelectionComment, useCommentHasChanged} from '../../helpers'

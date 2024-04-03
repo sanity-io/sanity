@@ -13,7 +13,7 @@ import {
   useSchema,
   useTranslation,
 } from 'sanity'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {Button} from '../../../ui-components'
 import {Delay, PaneContent, PaneItem, usePane, usePaneLayout} from '../../components'

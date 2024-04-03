@@ -1,6 +1,6 @@
 import {hues} from '@sanity/color'
 import {Box, type Theme, type ThemeColorToneKey} from '@sanity/ui'
-import styled, {css} from 'styled-components'
+import {css, styled} from 'styled-components'
 
 export const Root = styled.span<{$toneKey?: Exclude<ThemeColorToneKey, 'transparent'>}>(
   (props: {$toneKey?: Exclude<ThemeColorToneKey, 'transparent'>; theme: Theme}) => {

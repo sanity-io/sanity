@@ -6,7 +6,7 @@ import {
   type GeneralPreviewLayoutKey,
   useGetI18nText,
 } from 'sanity'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {PaneContent, PaneItem, usePaneLayout} from '../../components'
 import {type PaneListItem, type PaneListItemDivider} from '../../types'

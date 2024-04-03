@@ -16,7 +16,7 @@ import {
   useTimelineSelector,
   useTranslation,
 } from 'sanity'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {DocumentInspectorHeader} from '../../documentInspector'
 import {TimelineMenu} from '../../timeline'

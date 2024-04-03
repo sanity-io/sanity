@@ -1,7 +1,7 @@
 import {Box, Flex, Stack, Text} from '@sanity/ui'
 import {useCallback} from 'react'
 import {type CurrentUser, Translate, useListFormat, useTranslation, useUser} from 'sanity'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {Tooltip} from '../../../../../ui-components'
 import {commentsLocaleNamespace} from '../../../i18n'

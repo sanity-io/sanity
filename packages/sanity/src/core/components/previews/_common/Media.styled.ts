@@ -1,5 +1,5 @@
 import {rem} from '@sanity/ui'
-import styled, {css} from 'styled-components'
+import {css, styled} from 'styled-components'
 
 import {PREVIEW_SIZES} from '../constants'
 import {type PreviewLayoutKey, type PreviewMediaDimensions} from '../types'

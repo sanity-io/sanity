@@ -5,7 +5,7 @@ import {isPortableTextTextBlock} from '@sanity/types'
 import {Box, Flex, Stack, Text, type Theme} from '@sanity/ui'
 import {useMemo} from 'react'
 import {useTranslation} from 'react-i18next'
-import styled, {css} from 'styled-components'
+import {css, styled} from 'styled-components'
 
 import {Tooltip} from '../../../../../ui-components'
 import {commentsLocaleNamespace} from '../../../i18n'

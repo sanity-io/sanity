@@ -1,6 +1,6 @@
 /* eslint-disable i18next/no-literal-string,@sanity/i18n/no-attribute-string-literals */
 import {Card, type CardTone, Code, Inline, Stack} from '@sanity/ui'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {Tooltip} from '../../../../../../../../ui-components'
 import {type WeightedHit} from '../../../../../../../search'

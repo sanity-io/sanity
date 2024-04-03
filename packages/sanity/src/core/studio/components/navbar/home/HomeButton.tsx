@@ -1,6 +1,6 @@
 import {Box, Card, Flex, rem, Text} from '@sanity/ui'
 import {useStateLink} from 'sanity/router'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {focusRingStyle} from '../../../../form/components/withFocusRing/helpers'
 import {useActiveWorkspace} from '../../../activeWorkspaceMatcher'

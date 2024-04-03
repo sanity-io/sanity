@@ -13,7 +13,7 @@ import {
   useMemo,
   useState,
 } from 'react'
-import styled, {css} from 'styled-components'
+import {css, styled} from 'styled-components'
 
 import {type MenuButtonProps, Tooltip} from '../../../ui-components'
 import {ContextMenuButton} from '../contextMenuButton'

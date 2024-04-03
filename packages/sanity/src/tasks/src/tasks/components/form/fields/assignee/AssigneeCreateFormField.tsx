@@ -3,7 +3,7 @@ import {Badge, Card, Flex, Text, TextSkeleton} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {useCallback, useMemo} from 'react'
 import {set, type StringInputProps, useTranslation} from 'sanity'
-import styled, {css} from 'styled-components'
+import {css, styled} from 'styled-components'
 
 import {tasksLocaleNamespace} from '../../../../../../i18n'
 import {useMentionUser} from '../../../../context'

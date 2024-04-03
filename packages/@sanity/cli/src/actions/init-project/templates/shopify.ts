@@ -12,6 +12,7 @@ import {colorInput} from '@sanity/color-input'
 import {imageHotspotArrayPlugin} from 'sanity-plugin-hotspot-array'
 import {media, mediaAssetSource} from 'sanity-plugin-media'
 import {customDocumentActions} from './plugins/customDocumentActions'
+import Navbar from './components/studio/Navbar'
 
 const devOnlyPlugins = [visionTool()]
 
@@ -45,6 +46,12 @@ export default defineConfig({
       assetSources: (previousAssetSources) => {
         return previousAssetSources.filter((assetSource) => assetSource === mediaAssetSource)
       },
+    },
+  },
+
+  studio: {
+    components: {
+      navbar: Navbar,
     },
   },
 })`

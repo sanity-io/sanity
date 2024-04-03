@@ -1,6 +1,6 @@
 import {Card, Stack, Text, TextArea} from '@sanity/ui'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import styled, {createGlobalStyle} from 'styled-components'
+import {createGlobalStyle, styled} from 'styled-components'
 
 import {Button} from '../../../../ui-components'
 import {runTest} from './typer'

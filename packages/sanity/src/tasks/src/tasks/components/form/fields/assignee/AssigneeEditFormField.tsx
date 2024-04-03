@@ -9,7 +9,7 @@ import {
 } from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
 import {type FormPatch, type PatchEvent, type Path, set, useFormValue, useTranslation} from 'sanity'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {tasksLocaleNamespace} from '../../../../../../i18n'
 import {useMentionUser} from '../../../../context'

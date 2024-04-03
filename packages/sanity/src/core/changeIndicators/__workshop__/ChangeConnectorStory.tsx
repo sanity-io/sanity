@@ -1,7 +1,7 @@
 import {type Path} from '@sanity/types'
 import {Card, Container, Flex, LayerProvider, Stack, Text} from '@sanity/ui'
 import {type ReactNode, useCallback, useState} from 'react'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {ScrollContainer} from '../../components/scroll'
 import {ChangeFieldWrapper} from '../ChangeFieldWrapper'

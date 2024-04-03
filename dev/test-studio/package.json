@@ -1,6 +1,6 @@
 {
   "name": "sanity-test-studio",
-  "version": "3.36.2",
+  "version": "3.36.3",
   "private": true,
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
@@ -21,8 +21,8 @@
     "@react-three/drei": "^9.80.1",
     "@react-three/fiber": "^8.13.6",
     "@sanity/assist": "^2.0.0",
-    "@sanity/block-tools": "3.36.2",
-    "@sanity/client": "^6.15.7",
+    "@sanity/block-tools": "3.36.3",
+    "@sanity/client": "^6.15.9",
     "@sanity/color": "^3.0.0",
     "@sanity/google-maps-input": "^3.0.1",
     "@sanity/icons": "^2.11.0",
@@ -40,7 +40,7 @@
     "@sanity/react-loader": "^1.8.3",
     "@sanity/tsdoc": "1.0.0-alpha.44",
     "@sanity/types": "workspace:*",
-    "@sanity/ui": "^2.0.12",
+    "@sanity/ui": "^2.0.13",
     "@sanity/ui-workshop": "^1.0.0",
     "@sanity/util": "workspace:*",
     "@sanity/uuid": "^3.0.1",
@@ -70,6 +70,6 @@
   },
   "devDependencies": {
     "chokidar": "^3.5.3",
-    "vite": "^4.5.2"
+    "vite": "^4.5.3"
   }
 }
