@@ -220,9 +220,15 @@
     "@sanity/presentation": "1.12.1",
     "@sanity/schema": "3.36.4",
     "@sanity/telemetry": "^0.7.6",
+<<<<<<< HEAD
     "@sanity/types": "3.36.4",
     "@sanity/ui": "^2.0.13",
     "@sanity/util": "3.36.4",
+=======
+    "@sanity/types": "3.36.3",
+    "@sanity/ui": "^2.0.13",
+    "@sanity/util": "3.36.3",
+>>>>>>> e9e7864d73 (fix(deps): update dependency @sanity/ui to ^2.0.13 (#6178))
     "@sanity/uuid": "^3.0.1",
     "@tanstack/react-virtual": "3.0.0-beta.54",
     "@types/is-hotkey": "^0.1.7",
