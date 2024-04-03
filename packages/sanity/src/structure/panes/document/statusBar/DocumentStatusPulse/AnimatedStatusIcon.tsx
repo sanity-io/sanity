@@ -7,7 +7,7 @@ const StyledMotionPath = styled(motion.path)`
 `
 
 type MotionCircleProps = Omit<ComponentProps<typeof motion.circle>, 'd'>
-type MotionPathProps = Omit<ComponentProps<typeof motion.path>, 'd'>
+type MotionPathProps = Omit<ComponentProps<typeof motion.path>, 'd' | 'ref'>
 
 const Circle = (props: MotionCircleProps) => (
   <motion.circle fill="none" r="8" cx="12.5" cy="12.5" strokeWidth="1.2" {...props} />
