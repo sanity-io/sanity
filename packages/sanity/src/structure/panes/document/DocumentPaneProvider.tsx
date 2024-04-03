@@ -557,7 +557,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       }
 
       setFocusPath(EMPTY_ARRAY)
-      setOpenPath(blurredPath)
 
       if (focusPathRef.current !== EMPTY_ARRAY) {
         focusPathRef.current = EMPTY_ARRAY
@@ -567,9 +566,8 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       // note: we're deliberately not syncing presence here since it would make the user avatar disappear when a
       // user clicks outside a field without focusing another one
     },
-    [onFocusPath, setOpenPath, setFocusPath],
+    [onFocusPath, setFocusPath],
   )
-
   const documentPane: DocumentPaneContextValue = useMemo(
     () => ({
       actions,
