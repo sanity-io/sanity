@@ -325,6 +325,12 @@ const config = {
                 importNames: ['default'],
                 message: 'Please use `import {styled} from "styled-components"` instead.',
               },
+              {
+                name: 'react',
+                importNames: ['default'],
+                message:
+                  'Please use named imports, e.g. `import {useEffect, useMemo, type ComponentType} from "react"` instead.',
+              },
             ],
           },
         ],
