@@ -95,7 +95,7 @@
     "@bjoerge/mutiny": "^0.5.3",
     "@jest/globals": "^29.7.0",
     "@optimize-lodash/rollup-plugin": "^4.0.4",
-    "@playwright/test": "^1.41.2",
+    "@playwright/test": "1.41.2",
     "@sanity/client": "^6.15.9",
     "@sanity/eslint-config-i18n": "1.0.0",
     "@sanity/eslint-config-studio": "^3.0.1",
