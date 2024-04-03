@@ -9,7 +9,7 @@ import {
   useCallback,
   useState,
 } from 'react'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {type FIXME} from '../../../../../FIXME'
 import {useTranslation} from '../../../../../i18n'

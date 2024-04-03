@@ -11,7 +11,7 @@ import {getTheme_v2} from '@sanity/ui/theme'
 import {isEqual} from 'lodash'
 import {type KeyboardEvent, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {useTranslation} from 'sanity'
-import styled, {css} from 'styled-components'
+import {css, styled} from 'styled-components'
 
 import {Popover, type PopoverProps} from '../../../../../../ui-components'
 import {commentsLocaleNamespace} from '../../../../i18n'

@@ -2,7 +2,7 @@ import {Flex, Layer, useClickOutside, useLayer, useToast} from '@sanity/ui'
 import * as PathUtils from '@sanity/util/paths'
 import {Fragment, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {type DocumentInspectorProps, useCurrentUser, useTranslation, useUnique} from 'sanity'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {usePaneRouter} from '../../../components'
 import {EMPTY_PARAMS} from '../../../constants'

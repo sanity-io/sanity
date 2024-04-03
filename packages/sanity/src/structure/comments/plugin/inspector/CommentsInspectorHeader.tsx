@@ -2,7 +2,7 @@ import {CheckmarkIcon, ChevronDownIcon, CloseIcon} from '@sanity/icons'
 import {Card, Flex, Menu, Text} from '@sanity/ui'
 import {forwardRef, useCallback} from 'react'
 import {BetaBadge, useTranslation} from 'sanity'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {Button, MenuButton, MenuItem} from '../../../../ui-components'
 import {commentsLocaleNamespace} from '../../i18n'

@@ -17,7 +17,7 @@ import {
   useState,
 } from 'react'
 import {LegacyLayerProvider} from 'sanity'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {PANE_COLLAPSED_WIDTH, PANE_DEBUG, PANE_DEFAULT_MIN_WIDTH} from './constants'
 import {PaneContext} from './PaneContext'

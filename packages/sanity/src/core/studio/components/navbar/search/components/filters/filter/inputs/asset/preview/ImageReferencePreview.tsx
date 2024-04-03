@@ -1,7 +1,7 @@
 import {type ImageAsset, type ReferenceValue} from '@sanity/types'
 import {Card} from '@sanity/ui'
 import {useCallback, useState} from 'react'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {LoadingBlock} from '../../../../../../../../../../components/loadingBlock'
 import {observeImageAsset} from '../../../../../../../../../../form/studio/inputs/client-adapters/assets'

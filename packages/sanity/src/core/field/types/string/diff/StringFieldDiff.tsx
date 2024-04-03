@@ -1,4 +1,4 @@
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {DiffFromTo, DiffString} from '../../../diff'
 import {type DiffComponent, type StringDiff} from '../../../types'

@@ -2,7 +2,7 @@ import {AddIcon} from '@sanity/icons'
 import {Box, Flex, Stack, Text} from '@sanity/ui'
 import {useCallback} from 'react'
 import {useTranslation} from 'react-i18next'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {Button} from '../../../../../ui-components'
 import {tasksLocaleNamespace} from '../../../../i18n'

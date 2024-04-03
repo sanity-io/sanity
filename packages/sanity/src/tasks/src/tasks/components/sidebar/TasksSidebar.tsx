@@ -1,7 +1,7 @@
 import {Card, Flex, Spinner, Stack} from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
 import {useCurrentUser} from 'sanity'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {useTasks, useTasksEnabled, useTasksNavigation} from '../../context'
 import {TasksFormBuilder} from '../form'

@@ -1,6 +1,6 @@
 import {motion} from 'framer-motion'
 import {type ComponentProps} from 'react'
-import styled, {keyframes} from 'styled-components'
+import {keyframes, styled} from 'styled-components'
 
 const StyledMotionPath = styled(motion.path)`
   transform-origin: center;

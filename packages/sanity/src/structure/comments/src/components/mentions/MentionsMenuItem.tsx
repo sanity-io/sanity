@@ -2,7 +2,7 @@ import {Badge, Box, Card, Flex, Text, TextSkeleton} from '@sanity/ui'
 import type * as React from 'react'
 import {useCallback} from 'react'
 import {type UserWithPermission, useTranslation, useUser} from 'sanity'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {commentsLocaleNamespace} from '../../../i18n'
 import {CommentsAvatar} from '../avatars'

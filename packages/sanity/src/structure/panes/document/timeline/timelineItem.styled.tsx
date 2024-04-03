@@ -5,7 +5,7 @@ import {
   Flex,
   rem,
 } from '@sanity/ui'
-import styled, {css} from 'styled-components'
+import {css, styled} from 'styled-components'
 
 export const IconWrapper = styled(Flex)(({theme}) => {
   const borderColor = theme.sanity.color.base.skeleton?.from

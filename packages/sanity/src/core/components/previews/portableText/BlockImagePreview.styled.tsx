@@ -1,5 +1,5 @@
 import {Box, Card, Flex, rem} from '@sanity/ui'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {PREVIEW_SIZES} from '../constants'
 

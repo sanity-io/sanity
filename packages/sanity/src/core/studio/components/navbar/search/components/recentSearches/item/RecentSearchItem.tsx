@@ -11,7 +11,7 @@ import {
   Text,
 } from '@sanity/ui'
 import {type MouseEvent, useCallback} from 'react'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {useSearchState} from '../../../contexts/search/useSearchState'
 import {type RecentSearch, useRecentSearchesStore} from '../../../datastores/recentSearches'

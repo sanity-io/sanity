@@ -13,7 +13,7 @@ import {
   useRef,
   useState,
 } from 'react'
-import styled, {css} from 'styled-components'
+import {css, styled} from 'styled-components'
 
 import {focusRingStyle} from '../../form/components/formField/styles'
 import {type CommandListElementType, type CommandListHandle, type CommandListProps} from './types'

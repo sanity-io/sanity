@@ -13,7 +13,7 @@ import {
   useRef,
   useState,
 } from 'react'
-import styled, {css, type CSSObject} from 'styled-components'
+import {css, type CSSObject, styled} from 'styled-components'
 
 import {Button} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'

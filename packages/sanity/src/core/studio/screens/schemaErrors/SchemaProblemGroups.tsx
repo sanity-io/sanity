@@ -5,7 +5,7 @@ import {type SchemaValidationProblemGroup} from '@sanity/types'
 import {Box, Breadcrumbs, Card, Flex, Stack, Text, type ThemeColorToneKey} from '@sanity/ui'
 import {capitalize} from 'lodash'
 import {useMemo} from 'react'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {useTranslation} from '../../../i18n'
 
