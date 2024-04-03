@@ -1,6 +1,6 @@
 import {Box, Card, Code, Flex} from '@sanity/ui'
 import {memo, useCallback, useEffect, useMemo, useState} from 'react'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {PANE_COLLAPSED_WIDTH, PANE_DEFAULT_MIN_WIDTH} from '../constants'
 import {PaneDivider} from '../PaneDivider'

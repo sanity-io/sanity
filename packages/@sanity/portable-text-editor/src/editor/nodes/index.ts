@@ -1,4 +1,4 @@
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 export const DefaultBlockObject = styled.div<{selected: boolean}>`
   user-select: none;

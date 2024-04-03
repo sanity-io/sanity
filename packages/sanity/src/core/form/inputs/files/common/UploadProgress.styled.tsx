@@ -1,5 +1,5 @@
 import {Card, Code, Flex, Stack} from '@sanity/ui'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 export const CardWrapper = styled(Card)`
   min-height: 82px;

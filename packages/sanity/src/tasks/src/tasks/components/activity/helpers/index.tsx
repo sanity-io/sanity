@@ -10,7 +10,7 @@ import {
   useUser,
 } from 'sanity'
 import {IntentLink} from 'sanity/router'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {TASK_STATUS} from '../../../constants/TaskStatus'
 import {useDocumentPreviewValues} from '../../../hooks/useDocumentPreviewValues'

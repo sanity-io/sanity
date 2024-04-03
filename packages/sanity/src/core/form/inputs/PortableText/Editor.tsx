@@ -17,7 +17,7 @@ import {BoundaryElementProvider, useBoundaryElement, useGlobalKeyDown, useLayer}
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
 import {useCallback, useMemo, useRef} from 'react'
-import styled, {css} from 'styled-components'
+import {css, styled} from 'styled-components'
 
 import {TooltipDelayGroupProvider} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'

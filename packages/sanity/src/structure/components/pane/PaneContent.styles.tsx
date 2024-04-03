@@ -1,5 +1,5 @@
 import {Card} from '@sanity/ui'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 export const Root = styled(Card)`
   position: relative;

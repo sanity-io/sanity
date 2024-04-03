@@ -1,5 +1,5 @@
 import {Card} from '@sanity/ui'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 /**
  * Returns a styled `<Card>` without a background.

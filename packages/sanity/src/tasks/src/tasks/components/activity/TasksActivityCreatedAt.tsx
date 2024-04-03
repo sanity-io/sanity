@@ -1,7 +1,7 @@
 import {Flex, Text, TextSkeleton} from '@sanity/ui'
 import {memo} from 'react'
 import {useTranslation, useUser} from 'sanity'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {Tooltip} from '../../../../../ui-components'
 import {tasksLocaleNamespace} from '../../../../i18n'

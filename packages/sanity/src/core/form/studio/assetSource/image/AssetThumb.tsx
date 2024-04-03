@@ -7,7 +7,7 @@ import {
 } from '@sanity/ui'
 import {memo, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {type Subscription} from 'rxjs'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {LoadingBlock} from '../../../../components/loadingBlock'
 import {useClient} from '../../../../hooks'

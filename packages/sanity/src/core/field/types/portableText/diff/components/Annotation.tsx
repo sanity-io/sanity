@@ -11,7 +11,7 @@ import {
   useMemo,
   useState,
 } from 'react'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {Popover} from '../../../../../../ui-components'
 import {ConnectorContext, useReportedValues} from '../../../../../changeIndicators'

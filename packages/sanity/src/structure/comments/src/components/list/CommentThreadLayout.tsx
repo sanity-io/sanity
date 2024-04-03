@@ -9,7 +9,7 @@ import {uuid} from '@sanity/uuid'
 import type * as React from 'react'
 import {useCallback, useMemo} from 'react'
 import {type UserListWithPermissionsHookValue, useTranslation} from 'sanity'
-import styled, {css} from 'styled-components'
+import {css, styled} from 'styled-components'
 
 import {commentsLocaleNamespace} from '../../../i18n'
 import {type CommentsSelectedPath} from '../../context'

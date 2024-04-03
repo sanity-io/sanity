@@ -12,7 +12,7 @@ import {
 } from '@sanity/ui'
 import {useCallback, useContext, useEffect, useMemo, useRef, useState} from 'react'
 import {type RouterState, useRouterState} from 'sanity/router'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {Button, TooltipDelayGroupProvider} from '../../../../ui-components'
 import {type NavbarProps} from '../../../config/studio/types'

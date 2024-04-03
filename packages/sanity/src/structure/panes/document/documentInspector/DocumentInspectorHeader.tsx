@@ -2,7 +2,7 @@ import {CloseIcon} from '@sanity/icons'
 import {Box, Card, type CardProps, Flex, Text} from '@sanity/ui'
 import {type HTMLProps, type ReactNode} from 'react'
 import {useTranslation} from 'sanity'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {Button} from '../../../../ui-components'
 import {structureLocaleNamespace} from '../../../i18n'

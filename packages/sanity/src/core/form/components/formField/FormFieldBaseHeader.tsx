@@ -1,6 +1,6 @@
 import {Box, Card, Flex} from '@sanity/ui'
 import {type ReactNode, useCallback, useEffect, useMemo, useState} from 'react'
-import styled, {css} from 'styled-components'
+import {css, styled} from 'styled-components'
 
 import {TooltipDelayGroupProvider} from '../../../../ui-components'
 import {type DocumentFieldActionNode} from '../../../config'

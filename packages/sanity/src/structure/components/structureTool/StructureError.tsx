@@ -3,7 +3,7 @@ import {SyncIcon} from '@sanity/icons'
 import {Box, Card, Code, Container, Heading, Stack, Text} from '@sanity/ui'
 import {useCallback} from 'react'
 import {useTranslation} from 'sanity'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {Button} from '../../../ui-components'
 import {structureLocaleNamespace} from '../../i18n'
