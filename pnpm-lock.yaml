@@ -1591,8 +1591,8 @@ importers:
         specifier: ^1.0.1
         version: 1.0.1
       framer-motion:
-        specifier: ^11.0.0
-        version: 11.0.24(react-dom@18.2.0)(react@18.2.0)
+        specifier: 11.0.8
+        version: 11.0.8(react-dom@18.2.0)(react@18.2.0)
       get-it:
         specifier: ^8.4.17
         version: 8.4.17
