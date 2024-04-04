@@ -1,4 +1,4 @@
-import {constants, open} from 'node:fs/promises'
+import {constants, open, stat} from 'node:fs/promises'
 import {join} from 'node:path'
 
 import {readConfig} from '@sanity/codegen'
@@ -13,7 +13,7 @@ import {
 import {TypesGeneratedTrace} from './generate.telemetry'
 
 export interface TypegenGenerateTypesCommandFlags {
-  configPath?: string
+  'config-path'?: string
 }
 
 const generatedFileWarning = `/**
@@ -40,8 +40,22 @@ export default async function typegenGenerateAction(
   const trace = telemetry.trace(TypesGeneratedTrace)
   trace.start()
 
-  const codegenConfig = await readConfig(flags.configPath || 'sanity-typegen.json')
+  const codegenConfig = await readConfig(flags['config-path'] || 'sanity-typegen.json')
 
+  try {
+    const schemaStats = await stat(codegenConfig.schema)
+    if (!schemaStats.isFile()) {
+      throw new Error(`Schema path is not a file: ${codegenConfig.schema}`)
+    }
+  } catch (err) {
+    if (err.code === 'ENOENT') {
+      // If the user has not provided a specific schema path (eg we're using the default), give some help
+      const hint =
+        codegenConfig.schema === './schema.json' ? ` - did you run "sanity schema extract"?` : ''
+      throw new Error(`Schema file not found: ${codegenConfig.schema}${hint}`)
+    }
+    throw err
+  }
   const workerPath = await getCliWorkerPath('typegenGenerate')
 
   const spinner = output.spinner({}).start('Generating types')
