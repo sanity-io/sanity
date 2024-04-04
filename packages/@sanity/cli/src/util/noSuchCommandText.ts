@@ -26,6 +26,10 @@ const coreCommands = [
   'users',
 ]
 
+// These are disabled in v3, but still present because of v2.
+// We don't want to suggest them anymore, though.
+const discouragedCommands = ['upgrade', 'check', 'configcheck', 'uninstall']
+
 const helpText = `
 Run the command again within a Sanity project directory, where "sanity"
 is installed as a dependency.`
@@ -54,6 +58,7 @@ function suggestCommand(
 ) {
   // Try to find something similar
   const closest = group
+    .filter((command) => !discouragedCommands.includes(command.name))
     .map((command) => leven(command.name, cmdName))
     .reduce(
       (current: {index: number; distance: number}, distance: number, index: number) =>
