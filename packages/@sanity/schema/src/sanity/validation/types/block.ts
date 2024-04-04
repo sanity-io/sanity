@@ -1,3 +1,4 @@
+// @ts-expect-error - add typings for humanize-list
 import humanizeList from 'humanize-list'
 import {isPlainObject, omit} from 'lodash'
 
@@ -5,8 +6,8 @@ import {coreTypeNames} from '../../coreTypes'
 import {error, HELP_IDS, warning} from '../createValidationResult'
 import {isJSONTypeOf} from '../utils/isJSONTypeOf'
 
-const getTypeOf = (thing) => (Array.isArray(thing) ? 'array' : typeof thing)
-const quote = (str) => `"${str}"`
+const getTypeOf = (thing: any) => (Array.isArray(thing) ? 'array' : typeof thing)
+const quote = (str: any) => `"${str}"`
 const allowedKeys = [
   'components',
   'lists',
@@ -25,7 +26,7 @@ const allowedDecoratorKeys = ['blockEditor', 'title', 'value', 'icon', 'componen
 const allowedListKeys = ['title', 'value', 'icon', 'component']
 const supportedBuiltInObjectTypes = ['file', 'image', 'object', 'reference']
 
-export default function validateBlockType(typeDef, visitorContext) {
+export default function validateBlockType(typeDef: any, visitorContext: any) {
   const problems = []
   let styles = typeDef.styles
   let lists = typeDef.lists
@@ -71,7 +72,7 @@ export default function validateBlockType(typeDef, visitorContext) {
   }
 }
 
-function validateMarks(marks, visitorContext, problems) {
+function validateMarks(marks: any, visitorContext: any, problems: any) {
   let decorators = marks.decorators
   let annotations = marks.annotations
 
@@ -100,8 +101,8 @@ function validateMarks(marks, visitorContext, problems) {
     )
   } else if (decorators) {
     decorators
-      .filter((dec) => !!dec.blockEditor)
-      .forEach((dec) => {
+      .filter((dec: any) => !!dec.blockEditor)
+      .forEach((dec: any) => {
         dec.icon = dec.blockEditor.icon
         dec.component = dec.blockEditor.render
       })
@@ -119,7 +120,7 @@ function validateMarks(marks, visitorContext, problems) {
   return {...marks, decorators, annotations}
 }
 
-function validateLists(lists, visitorContext, problems) {
+function validateLists(lists: any, visitorContext: any, problems: any) {
   if (!Array.isArray(lists)) {
     problems.push(error(`"lists" declaration should be an array, got ${getTypeOf(lists)}`))
     return problems
@@ -161,7 +162,7 @@ function validateLists(lists, visitorContext, problems) {
   return lists
 }
 
-function validateStyles(styles, visitorContext, problems) {
+function validateStyles(styles: any, visitorContext: any, problems: any) {
   if (!Array.isArray(styles)) {
     problems.push(error(`"styles" declaration should be an array, got ${getTypeOf(styles)}`))
     return problems
@@ -213,8 +214,8 @@ function validateStyles(styles, visitorContext, problems) {
   return styles
 }
 
-function validateDecorators(decorators, visitorContext, problems) {
-  decorators.forEach((decorator, index) => {
+function validateDecorators(decorators: any, visitorContext: any, problems: any) {
+  decorators.forEach((decorator: any, index: any) => {
     if (!isPlainObject(decorator)) {
       problems.push(error(`Annotation must be an object, got ${getTypeOf(decorator)}`))
       return
@@ -263,8 +264,8 @@ function validateDecorators(decorators, visitorContext, problems) {
   return decorators
 }
 
-function validateAnnotations(annotations, visitorContext, problems) {
-  return annotations.map((annotation) => {
+function validateAnnotations(annotations: any, visitorContext: any, problems: any) {
+  return annotations.map((annotation: any) => {
     if (!isPlainObject(annotation)) {
       return {
         ...annotation,
@@ -302,7 +303,7 @@ function validateAnnotations(annotations, visitorContext, problems) {
   })
 }
 
-function validateMembers(members, visitorContext, problems) {
+function validateMembers(members: any, visitorContext: any, problems: any) {
   if (!Array.isArray(members)) {
     problems.push(error(`"of" declaration should be an array, got ${getTypeOf(members)}`))
     return undefined

@@ -5,16 +5,16 @@ const CANDIDATES = ['title', 'name', 'label', 'heading', 'header', 'caption', 'd
 
 const PRIMITIVES = ['string', 'boolean', 'number']
 
-const isPrimitive = (field) => PRIMITIVES.includes(field.type)
+const isPrimitive = (field: any) => PRIMITIVES.includes(field.type)
 
-export default function guessOrderingConfig(objectTypeDef): SortOrdering[] {
+export default function guessOrderingConfig(objectTypeDef: any): SortOrdering[] {
   let candidates = CANDIDATES.filter((candidate) =>
-    objectTypeDef.fields.some((field) => isPrimitive(field) && field.name === candidate),
+    objectTypeDef.fields.some((field: any) => isPrimitive(field) && field.name === candidate),
   )
 
   // None of the candidates were found, fallback to all fields
   if (candidates.length === 0) {
-    candidates = objectTypeDef.fields.filter(isPrimitive).map((field) => field.name)
+    candidates = objectTypeDef.fields.filter(isPrimitive).map((field: any) => field.name)
   }
 
   return candidates.map(

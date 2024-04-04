@@ -28,7 +28,7 @@ const REFERENCE_CORE = {
   jsonType: 'object',
 }
 
-function humanize(arr, conjunction) {
+function humanize(arr: any, conjunction: any) {
   const len = arr.length
   if (len === 1) {
     return arr[0]
@@ -38,12 +38,12 @@ function humanize(arr, conjunction) {
   return `${first.join(', ')} ${conjunction} ${last}`
 }
 
-function buildTitle(type) {
+function buildTitle(type: any) {
   if (!type.to || type.to.length === 0) {
     return 'Reference'
   }
   return `Reference to ${humanize(
-    arrify(type.to).map((toType) => toType.title),
+    arrify(type.to).map((toType: any) => toType.title),
     'or',
   ).toLowerCase()}`
 }
@@ -52,7 +52,7 @@ export const ReferenceType = {
   get() {
     return REFERENCE_CORE
   },
-  extend(subTypeDef, createMemberType) {
+  extend(subTypeDef: any, createMemberType: any) {
     if (!subTypeDef.to) {
       throw new Error(
         `Missing "to" field in reference definition. Check the type ${subTypeDef.name}`,
@@ -77,19 +77,19 @@ export const ReferenceType = {
     })
 
     lazyGetter(parsed, 'to', () => {
-      return arrify(subTypeDef.to).map((toType) => createMemberType(toType))
+      return arrify(subTypeDef.to).map((toType: any) => createMemberType(toType))
     })
 
     lazyGetter(parsed, 'title', () => subTypeDef.title || buildTitle(parsed))
 
     return subtype(parsed)
 
-    function subtype(parent) {
+    function subtype(parent: any) {
       return {
         get() {
           return parent
         },
-        extend: (extensionDef) => {
+        extend: (extensionDef: any) => {
           if (extensionDef.of) {
             throw new Error('Cannot override `of` of subtypes of "reference"')
           }

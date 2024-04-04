@@ -4,14 +4,14 @@ import {type SchemaValidationResult} from '../../typedefs'
 import {error, HELP_IDS} from '../createValidationResult'
 import {getDupes} from '../utils/getDupes'
 
-function normalizeToProp(typeDef) {
+function normalizeToProp(typeDef: any) {
   if (Array.isArray(typeDef.to)) {
     return typeDef.to
   }
   return typeDef.to ? [typeDef.to] : typeDef.to
 }
 
-export default (typeDef, visitorContext) => {
+export default (typeDef: any, visitorContext: any) => {
   const isValidTo = Array.isArray(typeDef.to) || isPlainObject(typeDef.to)
   const normalizedTo = normalizeToProp(typeDef)
 

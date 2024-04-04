@@ -14,10 +14,10 @@ export const AnyType = {
   get() {
     return ANY_CORE
   },
-  extend(subTypeDef, extendMember) {
+  extend(subTypeDef: any, extendMember: any) {
     const parsed = Object.assign(pick(ANY_CORE, OVERRIDABLE_FIELDS), subTypeDef, {
       type: ANY_CORE,
-      of: subTypeDef.of.map((fieldDef) => {
+      of: subTypeDef.of.map((fieldDef: any) => {
         return {
           name: fieldDef.name,
           type: extendMember(omit(fieldDef, 'name')),
@@ -27,12 +27,12 @@ export const AnyType = {
 
     return subtype(parsed)
 
-    function subtype(parent) {
+    function subtype(parent: any) {
       return {
         get() {
           return parent
         },
-        extend: (extensionDef) => {
+        extend: (extensionDef: any) => {
           if (extensionDef.of) {
             throw new Error('Cannot override `of` property of subtypes of "array"')
           }
