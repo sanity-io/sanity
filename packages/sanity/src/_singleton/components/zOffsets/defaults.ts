@@ -3,7 +3,7 @@ import {type ZIndexContextValue} from './types'
 /**
  * @internal
  */
-export const defaults: ZIndexContextValue = {
+export const zIndexContextDefaults: ZIndexContextValue = {
   navbar: 200,
   navbarPopover: 500000,
   navbarDialog: 500001,

@@ -1,6 +1,6 @@
 import {createContext} from 'react'
 
-import {defaults} from './defaults'
+import {zIndexContextDefaults} from './defaults'
 import {type ZIndexContextValue} from './types'
 
 /**
@@ -8,4 +8,4 @@ import {type ZIndexContextValue} from './types'
  *
  * @internal
  */
-export const ZIndexContext = createContext<ZIndexContextValue>(defaults)
+export const ZIndexContext = createContext<ZIndexContextValue>(zIndexContextDefaults)

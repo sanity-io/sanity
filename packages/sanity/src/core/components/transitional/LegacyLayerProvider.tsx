@@ -1,7 +1,7 @@
 import {LayerProvider} from '@sanity/ui'
 import {type ReactNode} from 'react'
+import {type ZIndexContextValue} from 'sanity/_singleton'
 
-import {type ZIndexContextValue} from '../zOffsets/types'
 import {useZIndex} from '../zOffsets/useZIndex'
 
 /** @internal */
