@@ -10,10 +10,10 @@ import {
   useCallback,
   useMemo,
 } from 'react'
+import {type DocumentFieldActionNode} from 'sanity/_singleton'
 import {css, styled} from 'styled-components'
 
 import {TextWithTone} from '../../../components'
-import {type DocumentFieldActionNode} from '../../../config'
 import {useTranslation} from '../../../i18n'
 import {type FormNodePresence} from '../../../presence'
 import {useFieldActions} from '../../field'

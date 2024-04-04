@@ -1,4 +1,4 @@
-import {type DocumentFieldActionNode} from '../../../config'
+import {type DocumentFieldActionNode} from 'sanity/_singleton'
 
 export function filterActions(actions: DocumentFieldActionNode[]): DocumentFieldActionNode[] {
   return actions

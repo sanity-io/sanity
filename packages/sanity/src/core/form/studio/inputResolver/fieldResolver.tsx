@@ -6,9 +6,9 @@ import {
   type SchemaType,
 } from '@sanity/types'
 import {type ComponentType, useState} from 'react'
+import {type DocumentFieldActionNode} from 'sanity/_singleton'
 
 import {ChangeIndicator} from '../../../changeIndicators'
-import {type DocumentFieldActionNode} from '../../../config'
 import {FormField, FormFieldSet} from '../../components'
 import {usePublishedId} from '../../contexts/DocumentIdProvider'
 import {FieldActionsProvider, FieldActionsResolver} from '../../field'

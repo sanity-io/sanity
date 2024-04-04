@@ -1,7 +1,7 @@
 import {Box, Text} from '@sanity/ui'
+import {type DocumentFieldActionGroup} from 'sanity/_singleton'
 
 import {MenuGroup, type MenuGroupProps} from '../../../../ui-components'
-import {type DocumentFieldActionGroup} from '../../../config'
 import {useI18nText} from '../../../i18n'
 import {FieldActionMenuNode} from './FieldActionMenuNode'
 

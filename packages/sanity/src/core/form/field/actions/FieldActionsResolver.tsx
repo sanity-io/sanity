@@ -1,7 +1,8 @@
 import {type Path, type SchemaType} from '@sanity/types'
 import {memo, useCallback, useEffect, useRef, useState} from 'react'
+import {type DocumentFieldActionNode} from 'sanity/_singleton'
 
-import {type DocumentFieldAction, type DocumentFieldActionNode} from '../../../config'
+import {type DocumentFieldAction} from '../../../config'
 import {useUnique} from '../../../util'
 import {filterActions} from './helpers'
 

@@ -1,11 +1,14 @@
 import {type Path} from '@sanity/types'
 import {type PropsWithChildren, useCallback, useMemo} from 'react'
+import {
+  type DocumentFieldActionNode,
+  FieldActionsContext,
+  type FieldActionsContextValue,
+} from 'sanity/_singleton'
 
-import {type DocumentFieldActionNode} from '../../../config'
 import {pathToString} from '../../../field'
 import {supportsTouch} from '../../../util'
 import {useHoveredField} from '../useHoveredField'
-import {FieldActionsContext, type FieldActionsContextValue} from './FieldActionsContext'
 
 type FieldActionsProviderProps = PropsWithChildren<{
   actions: DocumentFieldActionNode[]

@@ -1,6 +1,6 @@
 import {createContext} from 'react'
 
-import {type DocumentFieldActionNode} from '../../../config'
+import {type DocumentFieldActionNode} from '../../../config/document/fieldActions/types'
 
 /** @internal */
 export interface FieldActionsContextValue {

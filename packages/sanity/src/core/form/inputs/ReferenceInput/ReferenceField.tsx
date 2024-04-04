@@ -10,11 +10,11 @@ import {
   useRef,
   useState,
 } from 'react'
+import {type DocumentFieldActionNode} from 'sanity/_singleton'
 import {IntentLink} from 'sanity/router'
 
 import {MenuButton, MenuItem, TooltipDelayGroupProvider} from '../../../../ui-components'
 import {ContextMenuButton} from '../../../components/contextMenuButton'
-import {type DocumentFieldActionNode} from '../../../config'
 import {useTranslation} from '../../../i18n'
 import {FormField} from '../../components'
 import {usePublishedId} from '../../contexts/DocumentIdProvider'
