@@ -58,10 +58,14 @@ interface SnapshotPair {
   published: DocumentVersionSnapshots
 }
 
-/** @internal */
 export const snapshotPair = memoize(
-  (client: SanityClient, idPair: IdPair, typeName: string) => {
-    return memoizedPair(client, idPair, typeName).pipe(
+  (
+    client: SanityClient,
+    idPair: IdPair,
+    typeName: string,
+    serverActionsEnabled: boolean,
+  ): Observable<SnapshotPair> => {
+    return memoizedPair(client, idPair, typeName, serverActionsEnabled).pipe(
       map(({published, draft, transactionsPendingEvents$}): SnapshotPair => {
         return {
           transactionsPendingEvents$,
@@ -73,9 +77,14 @@ export const snapshotPair = memoize(
       refCount(),
     )
   },
-  (client, idPair, typeName) => {
+  (
+    client: SanityClient,
+    idPair: IdPair,
+    typeName: string,
+    serverActionsEnabled: boolean,
+  ): string => {
     const config = client.config()
 
-    return `${config.dataset ?? ''}-${config.projectId ?? ''}-${idPair.publishedId}-${typeName}`
+    return `${config.dataset ?? ''}-${config.projectId ?? ''}-${idPair.publishedId}-${typeName}-${serverActionsEnabled}`
   },
 )

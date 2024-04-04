@@ -17,11 +17,12 @@ export const operationArgs = memoize(
       client: SanityClient
       historyStore: HistoryStore
       schema: Schema
+      serverActionsEnabled?: boolean
     },
     idPair: IdPair,
     typeName: string,
   ): Observable<OperationArgs> => {
-    return snapshotPair(ctx.client, idPair, typeName).pipe(
+    return snapshotPair(ctx.client, idPair, typeName, !!ctx.serverActionsEnabled).pipe(
       switchMap((versions) =>
         combineLatest([versions.draft.snapshots$, versions.published.snapshots$]).pipe(
           map(

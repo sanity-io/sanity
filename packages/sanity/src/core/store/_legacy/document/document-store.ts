@@ -113,8 +113,7 @@ export function createDocumentStore({
   return {
     // Public API
     checkoutPair(idPair) {
-      // console.log('checkoutPair', serverActionsEnabled)
-      return checkoutPair(client, idPair)
+      return checkoutPair(client, idPair, serverActionsEnabled)
     },
     initialValue(opts, context) {
       return getInitialValueStream(
@@ -133,7 +132,12 @@ export function createDocumentStore({
     },
     pair: {
       consistencyStatus(publishedId, type) {
-        return consistencyStatus(ctx.client, getIdPairFromPublished(publishedId), type)
+        return consistencyStatus(
+          ctx.client,
+          getIdPairFromPublished(publishedId),
+          type,
+          serverActionsEnabled,
+        )
       },
       documentEvents(publishedId, type) {
         return documentEvents(ctx.client, getIdPairFromPublished(publishedId), type)
