@@ -43,11 +43,11 @@
     "src"
   ],
   "scripts": {
-    "build": "run-s clean && pkg-utils build --tsconfig tsconfig.lib.json --strict",
-    "check:package": "pkg-utils --strict --tsconfig tsconfig.lib.json",
+    "build": "run-s clean && pkg-utils build --strict",
+    "check:package": "pkg-utils --strict",
     "check:types": "tsc",
     "clean": "rimraf lib",
-    "watch": "pkg-utils watch --tsconfig tsconfig.lib.json"
+    "watch": "pkg-utils watch"
   },
   "dependencies": {
     "@codemirror/autocomplete": "^6.1.0",
@@ -59,7 +59,6 @@
     "@codemirror/view": "^6.1.1",
     "@juggle/resize-observer": "^3.3.1",
     "@lezer/highlight": "^1.0.0",
-    "@repo/package.config": "workspace:*",
     "@rexxars/react-json-inspector": "^8.0.1",
     "@rexxars/react-split-pane": "^0.1.93",
     "@sanity/color": "^3.0.0",
@@ -72,6 +71,7 @@
     "lodash": "^4.17.21"
   },
   "devDependencies": {
+    "@repo/package.config": "workspace:*",
     "@sanity/block-tools": "workspace:*",
     "@sanity/cli": "workspace:*",
     "@sanity/client": "^6.15.11",

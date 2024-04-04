@@ -128,15 +128,15 @@
     "structure.js"
   ],
   "scripts": {
-    "build": "run-s clean && pkg-utils build --tsconfig tsconfig.lib.json",
-    "check:package": "pkg-utils --tsconfig tsconfig.lib.json",
+    "build": "run-s clean && pkg-utils build",
+    "check:package": "pkg-utils",
     "check:types": "tsc",
     "clean": "rimraf _internal.js _internalBrowser.js cli.js desk.js migrate.js presentation.js router.js structure.js lib",
     "coverage": "jest --coverage",
     "lint": "eslint .",
     "test": "pkg-utils --strict && jest",
     "test:ct": "playwright test -c playwright-ct.config.ts",
-    "watch": "pkg-utils watch --tsconfig tsconfig.lib.json",
+    "watch": "pkg-utils watch",
     "write:playwright-report-as-pr-comment": "node -r esbuild-register playwright-ct/scripts/parsePlaywrightReportJson.ts"
   },
   "dependencies": {

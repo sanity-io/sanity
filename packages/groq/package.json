@@ -44,14 +44,14 @@
     "src"
   ],
   "scripts": {
-    "build": "run-s clean && pkg-utils build --tsconfig tsconfig.lib.json --strict",
-    "check:package": "pkg-utils --strict --tsconfig tsconfig.lib.json",
+    "build": "run-s clean && pkg-utils build --strict",
+    "check:package": "pkg-utils --strict",
     "check:types": "tsc",
     "clean": "rimraf lib",
     "lint": "eslint .",
     "pretest": "run-s build",
     "test": "node test/groq.test.cjs && node test/groq.test.mjs ",
-    "watch": "pkg-utils watch --tsconfig tsconfig.lib.json"
+    "watch": "pkg-utils watch"
   },
   "devDependencies": {
     "@repo/package.config": "workspace:*"

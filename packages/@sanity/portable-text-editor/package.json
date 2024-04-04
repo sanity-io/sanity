@@ -46,8 +46,8 @@
     "src"
   ],
   "scripts": {
-    "build": "run-s clean && pkg-utils build --tsconfig tsconfig.lib.json --strict",
-    "check:package": "pkg-utils --strict --tsconfig tsconfig.lib.json",
+    "build": "run-s clean && pkg-utils build --strict",
+    "check:package": "pkg-utils --strict",
     "check:types": "tsc",
     "clean": "rimraf lib",
     "dev": "cd ./e2e-tests/ && ts-node serve",
@@ -56,7 +56,7 @@
     "test": "jest",
     "test:e2e": "jest --config=e2e-tests/e2e.config.cjs",
     "test:watch": "jest --watch",
-    "watch": "pkg-utils watch --tsconfig tsconfig.lib.json"
+    "watch": "pkg-utils watch"
   },
   "dependencies": {
     "@sanity/block-tools": "3.36.4",

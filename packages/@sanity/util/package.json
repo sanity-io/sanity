@@ -114,12 +114,12 @@
     "paths.js"
   ],
   "scripts": {
-    "build": "run-s clean && pkg-utils build --tsconfig tsconfig.lib.json --strict",
-    "check:package": "pkg-utils --tsconfig tsconfig.lib.json --strict",
+    "build": "run-s clean && pkg-utils build --strict",
+    "check:package": "pkg-utils --strict",
     "check:types": "tsc",
     "clean": "rimraf client.js concurrency-limiter.js content.js createSafeJsonParser.js fs.js legacyDateFormat.js lib paths.js",
     "test": "jest",
-    "watch": "pkg-utils watch --tsconfig tsconfig.lib.json"
+    "watch": "pkg-utils watch"
   },
   "dependencies": {
     "@sanity/client": "^6.15.11",

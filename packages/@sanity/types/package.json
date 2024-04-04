@@ -41,13 +41,13 @@
     "src"
   ],
   "scripts": {
-    "build": "run-s clean && pkg-utils build --tsconfig tsconfig.lib.json --strict",
-    "check:package": "pkg-utils --strict --tsconfig tsconfig.lib.json",
+    "build": "run-s clean && pkg-utils build --strict",
+    "check:package": "pkg-utils --strict",
     "check:types": "tsc",
     "clean": "rimraf lib",
     "test": "jest",
     "test:watch": "jest --watchAll",
-    "watch": "pkg-utils watch --tsconfig tsconfig.lib.json"
+    "watch": "pkg-utils watch"
   },
   "dependencies": {
     "@sanity/client": "^6.15.11",

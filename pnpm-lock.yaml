@@ -1406,9 +1406,6 @@ importers:
       '@lezer/highlight':
         specifier: ^1.0.0
         version: 1.2.0
-      '@repo/package.config':
-        specifier: workspace:*
-        version: link:../../@repo/package.config
       '@rexxars/react-json-inspector':
         specifier: ^8.0.1
         version: 8.0.1(react@18.2.0)
@@ -1440,6 +1437,9 @@ importers:
         specifier: ^4.17.21
         version: 4.17.21
     devDependencies:
+      '@repo/package.config':
+        specifier: workspace:*
+        version: link:../../@repo/package.config
       '@sanity/block-tools':
         specifier: workspace:*
         version: link:../block-tools
