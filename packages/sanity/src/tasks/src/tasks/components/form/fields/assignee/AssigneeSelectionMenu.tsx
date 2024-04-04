@@ -158,6 +158,8 @@ function MentionsMenu({onSelect, value = ''}: {onSelect: SelectItemHandler; valu
         fontSize={1}
         icon={UserIcon}
         ref={inputRef}
+        name="assigneeSearch"
+        autoComplete="off"
       />
 
       <div style={{maxHeight: '320px', overflowY: 'scroll', paddingTop: '8px'}}>
