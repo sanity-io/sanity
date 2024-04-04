@@ -1,6 +1,5 @@
 import {describe, jest, test} from '@jest/globals'
-
-import {type PortableTextMarker} from '../../../../types'
+import {type PortableTextMarker} from 'sanity/_singleton'
 // import {renderInput} from '../../../../test/renderInput'
 // import {PortableTextInput, PortableTextInputProps} from '../../PortableTextInput'
 // import {portableTextType} from './schema'

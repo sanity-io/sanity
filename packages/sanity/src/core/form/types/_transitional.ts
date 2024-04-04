@@ -3,10 +3,10 @@ import {
   type FormNodeValidation,
   type ObjectField,
   type ObjectSchemaType,
-  type Path,
   type PortableTextBlock,
 } from '@sanity/types'
 import {type ComponentType, type ReactNode} from 'react'
+import {type PortableTextMarker} from 'sanity/_singleton'
 
 import {type PreviewProps} from '../../components'
 import {type PatchEvent} from '../patch'
@@ -46,22 +46,6 @@ export interface RenderBlockActionsProps {
  * @deprecated use `renderBlock`, `renderInlineBlock`, `renderAnnotation` interfaces instead
  */
 export type RenderBlockActionsCallback = (props: RenderBlockActionsProps) => ReactNode
-
-/**
- * A generic marker for attaching metadata to specific nodes of the Portable Text input.
- *
- * @public
- * @hidden
- * @deprecated use `renderBlock`, `renderInlineBlock`, `renderAnnotation` interfaces instead
- * @param type - a type name for this marker
- * @param data - some data connected to this marker
- * @param path - the path to the Portable Text content connected to this marker
- */
-export interface PortableTextMarker {
-  type: string
-  data?: unknown
-  path: Path
-}
 
 /**
  * Component for rendering custom block markers

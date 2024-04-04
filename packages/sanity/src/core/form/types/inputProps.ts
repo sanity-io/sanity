@@ -29,6 +29,7 @@ import {
   type MutableRefObject,
   type ReactElement,
 } from 'react'
+import {type PortableTextMarker} from 'sanity/_singleton'
 
 import {type FormPatch, type PatchEvent} from '../patch'
 import {type FormFieldGroup} from '../store'
@@ -42,11 +43,7 @@ import {
 } from '../store/types/nodes'
 import {type UploaderResolver} from '../studio'
 import {type RenderBlockActionsCallback} from '../types'
-import {
-  type ArrayInputFunctionsProps,
-  type PortableTextMarker,
-  type RenderCustomMarkers,
-} from './_transitional'
+import {type ArrayInputFunctionsProps, type RenderCustomMarkers} from './_transitional'
 import {type ArrayInputInsertEvent, type ArrayInputMoveItemEvent, type UploadEvent} from './event'
 import {
   type RenderAnnotationCallback,
