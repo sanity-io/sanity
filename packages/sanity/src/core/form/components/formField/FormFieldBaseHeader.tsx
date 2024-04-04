@@ -1,10 +1,10 @@
 import {Box, Card, Flex} from '@sanity/ui'
 import {type ReactNode, useCallback, useEffect, useMemo, useState} from 'react'
-import {type DocumentFieldActionNode} from 'sanity/_singleton'
+import {type DocumentFieldActionNode, type FormNodePresence} from 'sanity/_singleton'
 import {css, styled} from 'styled-components'
 
 import {TooltipDelayGroupProvider} from '../../../../ui-components'
-import {FieldPresence, type FormNodePresence} from '../../../presence'
+import {FieldPresence} from '../../../presence'
 import {calcAvatarStackWidth} from '../../../presence/utils'
 import {FieldActionMenu} from '../../field'
 import {type FieldCommentsProps} from '../../types'

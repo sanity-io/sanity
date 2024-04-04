@@ -1,14 +1,11 @@
 /* eslint-disable react/jsx-handler-names */
 import {Card, Stack, Text} from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
+import {type ObjectItem} from 'sanity/_singleton'
 
 import {useTranslation} from '../../../../../i18n'
 import {ArrayOfObjectsItem} from '../../../../members'
-import {
-  type ArrayOfObjectsInputProps,
-  type ObjectItem,
-  type ObjectItemProps,
-} from '../../../../types'
+import {type ArrayOfObjectsInputProps, type ObjectItemProps} from '../../../../types'
 import {Item, List} from '../../common/list'
 import {UploadTargetCard} from '../../common/UploadTargetCard'
 import {ArrayOfObjectsFunctions} from '../ArrayOfObjectsFunctions'

@@ -1,11 +1,11 @@
 import {isIndexSegment, isKeySegment, type Path} from '@sanity/types'
 import {isEqual, startsWith, trimLeft} from '@sanity/util/paths'
 import {memo, type ReactNode, useCallback, useMemo} from 'react'
+import {type FieldMember} from 'sanity/_singleton'
 
 import {pathToString} from '../../field'
 import {Translate, useTranslation} from '../../i18n'
 import {ArrayOfObjectsItem, MemberField, MemberItemError} from '../members'
-import {type FieldMember} from '../store'
 import {
   type ArrayOfObjectsInputProps,
   type ObjectInputProps,

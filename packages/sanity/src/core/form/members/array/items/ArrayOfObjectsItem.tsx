@@ -2,18 +2,17 @@ import {type Path} from '@sanity/types'
 import {useToast} from '@sanity/ui'
 import {useCallback, useMemo, useRef} from 'react'
 import {tap} from 'rxjs/operators'
+import {type ArrayOfObjectsItemMember, type ObjectItem} from 'sanity/_singleton'
 
 import {useTranslation} from '../../../../i18n'
 import {useResolveInitialValueForType} from '../../../../store'
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
 import {insert, type PatchArg, PatchEvent, setIfMissing, unset} from '../../../patch'
-import {type ArrayOfObjectsItemMember} from '../../../store'
 import {isEmptyItem} from '../../../store/utils/isEmptyItem'
 import {FormCallbacksProvider, useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
 import {
   type ArrayInputInsertEvent,
   type ObjectInputProps,
-  type ObjectItem,
   type ObjectItemProps,
   type RenderAnnotationCallback,
   type RenderArrayOfObjectsItemCallback,

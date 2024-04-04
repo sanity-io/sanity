@@ -12,6 +12,7 @@ import {
   type ReferenceValue,
   type SlugValue,
 } from '@sanity/types'
+import {type ObjectItem} from 'sanity/_singleton'
 
 import {type PreviewProps} from '../../components'
 import {type CrossDatasetReferenceInputProps, type ReferenceInputProps} from '../studio'
@@ -53,7 +54,7 @@ import {
   type ObjectInputProps,
   type StringInputProps,
 } from './inputProps'
-import {type ObjectItem, type ObjectItemProps, type PrimitiveItemProps} from './itemProps'
+import {type ObjectItemProps, type PrimitiveItemProps} from './itemProps'
 
 describe('definitionExtensions', () => {
   describe('array-like types', () => {

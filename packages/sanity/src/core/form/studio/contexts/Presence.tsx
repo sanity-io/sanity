@@ -3,8 +3,8 @@
 import {type Path} from '@sanity/types'
 import {isEqual, startsWith} from '@sanity/util/paths'
 import {createContext, type ReactNode, useContext, useRef} from 'react'
+import {type FormNodePresence} from 'sanity/_singleton'
 
-import {type FormNodePresence} from '../../../presence'
 import {immutableReconcile} from '../../store/utils/immutableReconcile'
 
 const PresenceContext = createContext<FormNodePresence[]>([])

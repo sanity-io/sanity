@@ -12,9 +12,8 @@ import {
   type SchemaType,
 } from '@sanity/types'
 import {type ReactElement, type ReactNode} from 'react'
-import {type PortableTextMarker} from 'sanity/_singleton'
+import {type FormNodePresence, type PortableTextMarker} from 'sanity/_singleton'
 
-import {type FormNodePresence} from '../../presence'
 import {
   type RenderAnnotationCallback,
   type RenderArrayOfObjectsItemCallback,

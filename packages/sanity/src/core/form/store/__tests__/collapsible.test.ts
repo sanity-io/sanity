@@ -1,10 +1,10 @@
 import {describe, expect, it, test} from '@jest/globals'
 import {Schema} from '@sanity/schema'
 import {type ObjectSchemaType, type Path} from '@sanity/types'
+import {type FieldMember, type ObjectFormNode} from 'sanity/_singleton'
 
 import {pathToString} from '../../../field'
 import {prepareFormState} from '../formState'
-import {type FieldMember, type ObjectFormNode} from '../types'
 import {isObjectFormNode} from '../types/asserters'
 import {DEFAULT_PROPS} from './shared'
 

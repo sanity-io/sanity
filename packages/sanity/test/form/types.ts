@@ -1,6 +1,5 @@
 import {type Path, type ValidationMarker} from '@sanity/types'
-
-import {type FormNodePresence} from '../../src/core'
+import {type FormNodePresence} from 'sanity/_singleton'
 
 export interface TestRenderProps {
   documentValue?: Record<string, unknown>

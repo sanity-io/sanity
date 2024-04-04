@@ -1,8 +1,9 @@
 import {type AssetSource, type ObjectSchemaType, type Path} from '@sanity/types'
 import {createContext} from 'react'
+import {type FormFieldGroup} from 'sanity/_singleton'
 
 import {type PatchChannel} from './patch'
-import {type FormFieldGroup, type StateTree} from './store'
+import {type StateTree} from './store'
 import {
   type FormBuilderCustomMarkersComponent,
   type FormBuilderFilterFieldFn,

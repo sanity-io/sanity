@@ -2,6 +2,7 @@ import {AddIcon} from '@sanity/icons'
 import {type ArraySchemaType, isReferenceSchemaType} from '@sanity/types'
 import {Grid, Menu} from '@sanity/ui'
 import {useCallback, useId} from 'react'
+import {type ObjectItem} from 'sanity/_singleton'
 
 import {
   Button,
@@ -11,7 +12,7 @@ import {
   Tooltip,
 } from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
-import {type ArrayInputFunctionsProps, type ObjectItem} from '../../../types'
+import {type ArrayInputFunctionsProps} from '../../../types'
 
 const POPOVER_PROPS: MenuButtonProps['popover'] = {
   constrainSize: true,

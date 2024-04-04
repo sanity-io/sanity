@@ -1,16 +1,19 @@
 import {pathFor} from '@sanity/util/paths'
 import {createRef, type MutableRefObject, type ReactNode, useContext, useRef} from 'react'
+import {
+  type ArrayOfObjectsItemMember,
+  type ObjectFormNode,
+  type PortableTextEditorElement,
+  type PortableTextMemberItem,
+  PortableTextMemberItemsContext,
+} from 'sanity/_singleton'
 
 import {pathToString} from '../../../../field'
 import {type FIXME} from '../../../../FIXME'
 import {FormInput} from '../../../components'
 import {isMemberArrayOfObjects} from '../../../members/object/fields/asserters'
-import {type ArrayOfObjectsItemMember, type ObjectFormNode} from '../../../store'
 import {type PortableTextInputProps} from '../../../types'
 import {isArrayOfObjectsFieldMember, isBlockType} from '../_helpers'
-import {type PortableTextEditorElement} from '../Compositor'
-import {PortableTextMemberItemsContext} from '../contexts/PortableTextMembers'
-import {type PortableTextMemberItem} from '../PortableTextInput'
 
 export function usePortableTextMemberItem(key: string): PortableTextMemberItem | undefined {
   const ctx = useContext(PortableTextMemberItemsContext)

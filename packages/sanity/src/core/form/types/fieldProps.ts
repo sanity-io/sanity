@@ -15,9 +15,9 @@ import {
   type StringSchemaType,
 } from '@sanity/types'
 import {type ReactElement, type ReactNode} from 'react'
+import {type FormNodePresence} from 'sanity/_singleton'
 
 import {type DocumentFieldAction} from '../../config'
-import {type FormNodePresence} from '../../presence'
 import {
   type ArrayOfObjectsInputProps,
   type ArrayOfPrimitivesInputProps,

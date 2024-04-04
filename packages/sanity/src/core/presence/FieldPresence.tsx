@@ -1,6 +1,7 @@
 import {AvatarCounter, type AvatarPosition} from '@sanity/ui'
 import {sortBy, uniqBy} from 'lodash'
 import {memo, useContext, useId, useMemo, useRef} from 'react'
+import {type FormNodePresence} from 'sanity/_singleton'
 
 import {UserAvatar} from '../components/userAvatar'
 import {
@@ -13,7 +14,6 @@ import {FormFieldPresenceContext} from './context'
 import {FlexWrapper, InnerBox} from './FieldPresence.styled'
 import {useReporter} from './overlay/tracker'
 import {PresenceTooltip} from './PresenceTooltip'
-import {type FormNodePresence} from './types'
 import {splitRight} from './utils'
 
 /** @internal */

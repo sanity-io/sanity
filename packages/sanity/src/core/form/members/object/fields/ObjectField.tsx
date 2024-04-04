@@ -1,11 +1,11 @@
 import {type Path} from '@sanity/types'
 import {isShallowEmptyObject} from '@sanity/util/content'
 import {useCallback, useEffect, useMemo, useRef} from 'react'
+import {type FieldMember, type ObjectFormNode} from 'sanity/_singleton'
 
 import {useDidUpdate} from '../../../hooks/useDidUpdate'
 import {type PatchArg, PatchEvent, setIfMissing, unset} from '../../../patch'
 import {applyAll} from '../../../patch/applyPatch'
-import {type FieldMember, type ObjectFormNode} from '../../../store'
 import {useDocumentFieldActions} from '../../../studio/contexts/DocumentFieldActions'
 import {FormCallbacksProvider, useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
 import {

@@ -1,6 +1,7 @@
 import {jest} from '@jest/globals'
 import {type FieldDefinition, type ObjectSchemaType} from '@sanity/types'
 import type * as React from 'react'
+import {type FieldMember, type ObjectFormNode} from 'sanity/_singleton'
 
 import {
   type ComplexElementProps,
@@ -11,8 +12,6 @@ import {
   defaultRenderInput,
   defaultRenderItem,
   defaultRenderPreview,
-  type FieldMember,
-  type ObjectFormNode,
   type ObjectInputProps,
 } from '../../src/core'
 import {renderInput, type TestRenderInputContext, type TestRenderInputProps} from './renderInput'

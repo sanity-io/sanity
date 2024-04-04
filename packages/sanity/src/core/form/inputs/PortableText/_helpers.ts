@@ -1,6 +1,7 @@
 import {type SchemaType} from '@sanity/types'
+import {type FieldMember, type ObjectMember} from 'sanity/_singleton'
 
-import {type ArrayOfObjectsFormNode, type FieldMember, type ObjectMember} from '../../store'
+import {type ArrayOfObjectsFormNode} from '../../store'
 
 /**
  * @internal

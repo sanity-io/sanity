@@ -18,33 +18,25 @@ import {
 import {resolveTypeName} from '@sanity/util/content'
 import {isEqual, pathFor, startsWith, toString, trimChildPath} from '@sanity/util/paths'
 import {castArray, isEqual as _isEqual, pick} from 'lodash'
+import {
+  type FieldError,
+  type FieldMember,
+  type FieldSetMember,
+  type FormFieldGroup,
+  type FormNodePresence,
+  type ObjectArrayFormNode,
+  type ObjectFormNode,
+  type ObjectMember,
+} from 'sanity/_singleton'
 
 import {type FIXME} from '../../FIXME'
-import {type FormNodePresence} from '../../presence'
 import {EMPTY_ARRAY, isRecord} from '../../util'
 import {getFieldLevel} from '../studio/inputResolver/helpers'
 import {resolveConditionalProperty} from './conditional-property'
 import {ALL_FIELDS_GROUP, MAX_FIELD_DEPTH} from './constants'
-import {
-  type FieldSetMember,
-  type HiddenField,
-  type ObjectArrayFormNode,
-  type PrimitiveFormNode,
-  type StateTree,
-} from './types'
-import {type FormFieldGroup} from './types/fieldGroup'
-import {type FieldError} from './types/memberErrors'
-import {
-  type ArrayOfObjectsMember,
-  type ArrayOfPrimitivesMember,
-  type FieldMember,
-  type ObjectMember,
-} from './types/members'
-import {
-  type ArrayOfObjectsFormNode,
-  type ArrayOfPrimitivesFormNode,
-  type ObjectFormNode,
-} from './types/nodes'
+import {type HiddenField, type PrimitiveFormNode, type StateTree} from './types'
+import {type ArrayOfObjectsMember, type ArrayOfPrimitivesMember} from './types/members'
+import {type ArrayOfObjectsFormNode, type ArrayOfPrimitivesFormNode} from './types/nodes'
 import {getCollapsedWithDefaults} from './utils/getCollapsibleOptions'
 import {getItemType, getPrimitiveItemType} from './utils/getItemType'
 

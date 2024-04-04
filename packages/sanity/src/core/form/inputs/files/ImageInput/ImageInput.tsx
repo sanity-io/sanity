@@ -17,6 +17,7 @@ import {Box, Card, Menu, Stack, type ToastParams} from '@sanity/ui'
 import {get, startCase} from 'lodash'
 import {type FocusEvent, PureComponent, type ReactNode} from 'react'
 import {type Observable, type Subscription} from 'rxjs'
+import {type FieldMember} from 'sanity/_singleton'
 
 import {
   Button,
@@ -32,7 +33,6 @@ import {PresenceOverlay} from '../../../../presence'
 import {FormInput} from '../../../components'
 import {MemberField, MemberFieldError, MemberFieldSet} from '../../../members'
 import {type PatchEvent, setIfMissing, unset} from '../../../patch'
-import {type FieldMember} from '../../../store'
 import {
   type ResolvedUploader,
   type Uploader,

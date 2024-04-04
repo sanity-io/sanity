@@ -1,7 +1,7 @@
 import {isObjectSchemaType, type SchemaType} from '@sanity/types'
 import {randomKey} from '@sanity/util/content'
+import {type ObjectItem} from 'sanity/_singleton'
 
-import {type ObjectItem} from '../../../types'
 import {createProtoValue} from '../../../utils/createProtoValue'
 
 export function createProtoArrayValue<Item extends ObjectItem>(type: SchemaType): Item {

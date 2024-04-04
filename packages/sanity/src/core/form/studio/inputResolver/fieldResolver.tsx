@@ -6,14 +6,13 @@ import {
   type SchemaType,
 } from '@sanity/types'
 import {type ComponentType, useState} from 'react'
-import {type DocumentFieldActionNode} from 'sanity/_singleton'
+import {type DocumentFieldActionNode, type FieldMember} from 'sanity/_singleton'
 
 import {ChangeIndicator} from '../../../changeIndicators'
 import {FormField, FormFieldSet} from '../../components'
 import {usePublishedId} from '../../contexts/DocumentIdProvider'
 import {FieldActionsProvider, FieldActionsResolver} from '../../field'
 import {ReferenceField} from '../../inputs/ReferenceInput/ReferenceField'
-import {type FieldMember} from '../../store'
 import {type ArrayFieldProps, type FieldProps, type ObjectFieldProps} from '../../types'
 import {getTypeChain} from './helpers'
 

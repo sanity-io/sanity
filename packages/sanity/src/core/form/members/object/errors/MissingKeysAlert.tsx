@@ -1,6 +1,7 @@
 import {Stack, Text} from '@sanity/ui'
 import {randomKey} from '@sanity/util/content'
 import {useCallback} from 'react'
+import {type MissingKeysError} from 'sanity/_singleton'
 
 import {Button} from '../../../../../ui-components'
 import {isDev} from '../../../../environment'
@@ -9,7 +10,6 @@ import {Alert} from '../../../components/Alert'
 import {Details} from '../../../components/Details'
 import {FormField} from '../../../components/formField'
 import {PatchEvent, setIfMissing} from '../../../patch'
-import {type MissingKeysError} from '../../../store/types/memberErrors'
 
 interface Props {
   error: MissingKeysError

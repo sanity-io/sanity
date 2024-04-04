@@ -1,10 +1,10 @@
 import {Box} from '@sanity/ui'
 import {useCallback} from 'react'
+import {type FieldError} from 'sanity/_singleton'
 
 import {useTranslation} from '../../../i18n'
 import {InvalidValueInput} from '../../inputs/InvalidValueInput'
 import {PatchEvent} from '../../patch'
-import {type FieldError} from '../../store/types/memberErrors'
 import {useFormCallbacks} from '../../studio/contexts/FormCallbacks'
 import {DuplicateKeysAlert} from './errors/DuplicateKeysAlert'
 import {MissingKeysAlert} from './errors/MissingKeysAlert'

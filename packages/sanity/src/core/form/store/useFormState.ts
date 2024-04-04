@@ -3,11 +3,11 @@
 import {type ObjectSchemaType, type Path, type ValidationMarker} from '@sanity/types'
 import {pathFor} from '@sanity/util/paths'
 import {useLayoutEffect, useMemo, useRef} from 'react'
+import {type FormNodePresence, type ObjectFormNode} from 'sanity/_singleton'
 
-import {type FormNodePresence} from '../../presence'
 import {useCurrentUser} from '../../store'
 import {type FIXME_SanityDocument, prepareFormState} from './formState'
-import {type ObjectFormNode, type StateTree} from './types'
+import {type StateTree} from './types'
 import {type DocumentFormNode} from './types/nodes'
 import {immutableReconcile} from './utils/immutableReconcile'
 

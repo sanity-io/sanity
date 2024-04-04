@@ -3,6 +3,7 @@ import {useToast} from '@sanity/ui'
 import {type FocusEvent, useCallback, useEffect, useMemo, useRef} from 'react'
 import {type Subscription} from 'rxjs'
 import {map, tap} from 'rxjs/operators'
+import {type FieldMember, type ObjectItem} from 'sanity/_singleton'
 
 import {useClient} from '../../../../hooks'
 import {useResolveInitialValueForType} from '../../../../store'
@@ -11,7 +12,7 @@ import {useDidUpdate} from '../../../hooks/useDidUpdate'
 import {createProtoArrayValue} from '../../../inputs/arrays/ArrayOfObjectsInput/createProtoArrayValue'
 import {insert, type PatchArg, PatchEvent, setIfMissing, unset} from '../../../patch'
 import {applyAll} from '../../../patch/applyPatch'
-import {type ArrayOfObjectsFormNode, type FieldMember} from '../../../store'
+import {type ArrayOfObjectsFormNode} from '../../../store'
 import {useDocumentFieldActions} from '../../../studio/contexts/DocumentFieldActions'
 import {FormCallbacksProvider, useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
 import {resolveUploader as defaultResolveUploader} from '../../../studio/uploads/resolveUploader'
@@ -21,7 +22,6 @@ import {
   type ArrayInputInsertEvent,
   type ArrayInputMoveItemEvent,
   type ArrayOfObjectsInputProps,
-  type ObjectItem,
   type RenderAnnotationCallback,
   type RenderArrayOfObjectsItemCallback,
   type RenderBlockCallback,

@@ -9,11 +9,12 @@ import {
   type VirtualizerOptions,
 } from '@tanstack/react-virtual'
 import {useCallback, useMemo, useRef, useState} from 'react'
+import {type ObjectItem} from 'sanity/_singleton'
 import shallowEquals from 'shallow-equals'
 
 import {useTranslation} from '../../../../../i18n'
 import {ArrayOfObjectsItem} from '../../../../members'
-import {type ArrayOfObjectsInputProps, type ObjectItem} from '../../../../types'
+import {type ArrayOfObjectsInputProps} from '../../../../types'
 import {Item, List} from '../../common/list'
 import {UploadTargetCard} from '../../common/UploadTargetCard'
 import {ArrayOfObjectsFunctions} from '../ArrayOfObjectsFunctions'

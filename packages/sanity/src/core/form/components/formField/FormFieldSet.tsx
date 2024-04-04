@@ -10,12 +10,11 @@ import {
   useCallback,
   useMemo,
 } from 'react'
-import {type DocumentFieldActionNode} from 'sanity/_singleton'
+import {type DocumentFieldActionNode, type FormNodePresence} from 'sanity/_singleton'
 import {css, styled} from 'styled-components'
 
 import {TextWithTone} from '../../../components'
 import {useTranslation} from '../../../i18n'
-import {type FormNodePresence} from '../../../presence'
 import {useFieldActions} from '../../field'
 import {createDescriptionId} from '../../members/common/createDescriptionId'
 import {type FieldCommentsProps} from '../../types'

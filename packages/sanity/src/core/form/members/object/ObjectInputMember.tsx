@@ -1,6 +1,6 @@
 import {memo} from 'react'
+import {type ObjectMember} from 'sanity/_singleton'
 
-import {type ObjectMember} from '../../store'
 import {
   type RenderAnnotationCallback,
   type RenderArrayOfObjectsItemCallback,

@@ -1,8 +1,8 @@
 import {isBooleanSchemaType, isNumberSchemaType} from '@sanity/types'
 import {type ChangeEvent, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {type FieldMember} from 'sanity/_singleton'
 
 import {type FormPatch, PatchEvent, set, unset} from '../../../patch'
-import {type FieldMember} from '../../../store'
 import {useDocumentFieldActions} from '../../../studio/contexts/DocumentFieldActions'
 import {useFormCallbacks} from '../../../studio/contexts/FormCallbacks'
 import {

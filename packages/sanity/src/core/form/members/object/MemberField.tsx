@@ -1,7 +1,7 @@
 import {memo} from 'react'
+import {type FieldMember} from 'sanity/_singleton'
 
 import {type FIXME} from '../../../FIXME'
-import {type FieldMember} from '../../store'
 import {
   type RenderAnnotationCallback,
   type RenderArrayOfObjectsItemCallback,

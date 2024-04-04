@@ -29,16 +29,14 @@ import {
   type MutableRefObject,
   type ReactElement,
 } from 'react'
-import {type PortableTextMarker} from 'sanity/_singleton'
+import {type FormFieldGroup, type ObjectFormNode, type PortableTextMarker} from 'sanity/_singleton'
 
 import {type FormPatch, type PatchEvent} from '../patch'
-import {type FormFieldGroup} from '../store'
 import {
   type ArrayOfObjectsFormNode,
   type ArrayOfPrimitivesFormNode,
   type BooleanFormNode,
   type NumberFormNode,
-  type ObjectFormNode,
   type StringFormNode,
 } from '../store/types/nodes'
 import {type UploaderResolver} from '../studio'

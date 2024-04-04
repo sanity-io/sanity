@@ -3,10 +3,9 @@
 
 import {type ObjectSchemaType, type Path, type ValidationMarker} from '@sanity/types'
 import {useCallback, useRef} from 'react'
-import {type FormDocumentValue} from 'sanity/_singleton'
+import {type FormDocumentValue, type FormNodePresence, type ObjectFormNode} from 'sanity/_singleton'
 
 import {type DocumentFieldAction} from '../../config'
-import {type FormNodePresence} from '../../presence'
 import {PreviewLoader} from '../../preview'
 import {EMPTY_ARRAY} from '../../util'
 import {FormValueProvider} from '../contexts/FormValue'
@@ -22,7 +21,6 @@ import {
 } from '../form-components-hooks'
 import {type FormPatch, type PatchChannel, PatchEvent} from '../patch'
 import {type StateTree} from '../store'
-import {type ObjectFormNode} from '../store/types/nodes'
 import {
   type BlockAnnotationProps,
   type BlockProps,

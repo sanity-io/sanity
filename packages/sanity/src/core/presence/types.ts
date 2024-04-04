@@ -1,4 +1,5 @@
 import {type Path, type User} from '@sanity/types'
+import {type FormNodePresence} from 'sanity/_singleton'
 
 import {type Session, type Status} from '../store/_legacy'
 
@@ -37,16 +38,6 @@ export type PresentUser = {
 export interface Location {
   documentId: string
   path: Path
-}
-
-/**
- * @hidden
- * @public */
-export interface FormNodePresence {
-  user: User
-  path: Path
-  sessionId: string
-  lastActiveAt: string
 }
 
 /** @internal */

@@ -1,8 +1,8 @@
 import {capitalize} from 'lodash'
 import {memo, useCallback} from 'react'
+import {type FieldSetMember} from 'sanity/_singleton'
 
 import {FormFieldSet} from '../../components/formField'
-import {type FieldSetMember} from '../../store'
 import {useFormCallbacks} from '../../studio/contexts/FormCallbacks'
 import {
   type RenderAnnotationCallback,

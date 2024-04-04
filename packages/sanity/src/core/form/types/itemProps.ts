@@ -15,16 +15,10 @@ import {
   type StringSchemaType,
 } from '@sanity/types'
 import {type FocusEvent, type ReactElement, type ReactNode} from 'react'
+import {type FormNodePresence, type ObjectItem} from 'sanity/_singleton'
 
-import {type FormNodePresence} from '../../presence'
 import {type ArrayInputInsertEvent} from './event'
 import {type ObjectInputProps} from './inputProps'
-
-/** @public */
-export type ObjectItem = {
-  _type?: string
-  _key: string
-}
 
 /**
  * Props for the base item component.

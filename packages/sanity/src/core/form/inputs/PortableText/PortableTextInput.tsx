@@ -9,8 +9,6 @@ import {useTelemetry} from '@sanity/telemetry/react'
 import {isKeySegment, type Path, type PortableTextBlock} from '@sanity/types'
 import {Box, useToast} from '@sanity/ui'
 import {
-  type MutableRefObject,
-  type ReactNode,
   startTransition,
   useCallback,
   useEffect,
@@ -27,24 +25,13 @@ import {
   PortableTextInputExpanded,
 } from '../../__telemetry__/form.telemetry'
 import {SANITY_PATCH_TYPE} from '../../patch'
-import {type ArrayOfObjectsItemMember, type ObjectFormNode} from '../../store'
 import {type PortableTextInputProps} from '../../types'
-import {Compositor, type PortableTextEditorElement} from './Compositor'
+import {Compositor} from './Compositor'
 import {PortableTextMarkersProvider} from './contexts/PortableTextMarkers'
 import {PortableTextMemberItemsProvider} from './contexts/PortableTextMembers'
 import {usePortableTextMemberItemsFromProps} from './hooks/usePortableTextMembers'
 import {InvalidValue as RespondToInvalidContent} from './InvalidValue'
 import {usePatches} from './usePatches'
-
-/** @internal */
-export interface PortableTextMemberItem {
-  kind: 'annotation' | 'textBlock' | 'objectBlock' | 'inlineObject'
-  key: string
-  member: ArrayOfObjectsItemMember
-  node: ObjectFormNode
-  elementRef?: MutableRefObject<PortableTextEditorElement | null>
-  input?: ReactNode
-}
 
 /**
  * Input component for editing block content

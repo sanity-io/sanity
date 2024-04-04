@@ -11,12 +11,11 @@ import {
 import {render} from '@testing-library/react'
 import type * as React from 'react'
 import {type FocusEvent} from 'react'
+import {type FieldMember, type FormNodePresence} from 'sanity/_singleton'
 
 import {
   createPatchChannel,
   EMPTY_ARRAY,
-  type FieldMember,
-  type FormNodePresence,
   FormProvider,
   type FormState,
   type PatchArg,

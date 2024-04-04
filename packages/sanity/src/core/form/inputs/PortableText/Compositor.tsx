@@ -43,9 +43,6 @@ interface InputProps extends ArrayOfObjectsInputProps<PortableTextBlock> {
 }
 
 /** @internal */
-export type PortableTextEditorElement = HTMLDivElement | HTMLSpanElement
-
-/** @internal */
 export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunctions'>) {
   const {
     changed,

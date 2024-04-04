@@ -15,6 +15,7 @@ import {
   useMemo,
   useRef,
 } from 'react'
+import {type ObjectItem} from 'sanity/_singleton'
 import {IntentLink} from 'sanity/router'
 
 import {MenuButton, MenuItem} from '../../../../ui-components'
@@ -27,7 +28,7 @@ import {FormFieldSet, FormFieldValidationStatus} from '../../components/formFiel
 import {useDidUpdate} from '../../hooks/useDidUpdate'
 import {useScrollIntoViewOnFocusWithin} from '../../hooks/useScrollIntoViewOnFocusWithin'
 import {set, unset} from '../../patch'
-import {type ObjectItem, type ObjectItemProps} from '../../types'
+import {type ObjectItemProps} from '../../types'
 import {randomKey} from '../../utils/randomKey'
 import {createProtoArrayValue} from '../arrays/ArrayOfObjectsInput/createProtoArrayValue'
 import {InsertMenu} from '../arrays/ArrayOfObjectsInput/InsertMenu'

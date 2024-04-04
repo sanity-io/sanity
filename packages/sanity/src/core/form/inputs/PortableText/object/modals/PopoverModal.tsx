@@ -3,11 +3,11 @@
 import {CloseIcon} from '@sanity/icons'
 import {Box, Flex, Text, useClickOutside, useGlobalKeyDown} from '@sanity/ui'
 import {type ReactNode, useCallback, useEffect, useRef, useState} from 'react'
+import {type PortableTextEditorElement} from 'sanity/_singleton'
 
 import {Button, type PopoverProps} from '../../../../../../ui-components'
 import {PresenceOverlay} from '../../../../../presence'
 import {VirtualizerScrollInstanceProvider} from '../../../arrays/ArrayOfObjectsInput/List/VirtualizerScrollInstanceProvider'
-import {type PortableTextEditorElement} from '../../Compositor'
 import {ContentHeaderBox, ContentScrollerBox, RootPopover} from './PopoverModal.styles'
 import {type ModalWidth} from './types'
 

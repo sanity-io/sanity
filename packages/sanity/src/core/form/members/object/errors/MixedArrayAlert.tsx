@@ -1,5 +1,6 @@
 import {Stack, Text} from '@sanity/ui'
 import {isPlainObject} from 'lodash'
+import {type MixedArrayError} from 'sanity/_singleton'
 
 import {Button} from '../../../../../ui-components'
 import {isDev} from '../../../../environment'
@@ -8,7 +9,6 @@ import {Alert} from '../../../components/Alert'
 import {Details} from '../../../components/Details'
 import {FormField} from '../../../components/formField'
 import {PatchEvent, unset} from '../../../patch'
-import {type MixedArrayError} from '../../../store'
 
 interface Props {
   error: MixedArrayError
