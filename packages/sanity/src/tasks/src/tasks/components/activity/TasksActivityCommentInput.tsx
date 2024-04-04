@@ -9,6 +9,7 @@ import {
   hasCommentMessageValue,
 } from '../../../../../structure/comments'
 import {tasksLocaleNamespace} from '../../../../i18n'
+import {useTasksEnabled} from '../../context'
 import {ActivityItem} from './TasksActivityItem'
 
 interface TasksCommentActivityInputProps {
@@ -19,6 +20,7 @@ interface TasksCommentActivityInputProps {
 
 export function TasksActivityCommentInput(props: TasksCommentActivityInputProps) {
   const {mentionOptions, currentUser, onSubmit} = props
+  const {mode} = useTasksEnabled()
   const [value, setValue] = useState<CommentInputProps['value']>(null)
   const editorRef = useRef<CommentInputHandle>(null)
 
@@ -75,7 +77,12 @@ export function TasksActivityCommentInput(props: TasksCommentActivityInputProps)
           onDiscardCancel={handleDiscardCancel}
           onKeyDown={handleKeyDown}
           onSubmit={handleSubmit}
-          placeholder={t('panel.comment.placeholder')}
+          readOnly={mode === 'upsell'}
+          placeholder={
+            mode === 'upsell'
+              ? t('panel.comment.placeholder.upsell')
+              : t('panel.comment.placeholder')
+          }
           ref={editorRef}
           value={value}
         />

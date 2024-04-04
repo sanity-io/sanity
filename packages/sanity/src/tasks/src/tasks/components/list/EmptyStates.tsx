@@ -1,12 +1,12 @@
 import {AddIcon} from '@sanity/icons'
 import {Box, Flex, Stack, Text} from '@sanity/ui'
 import {useCallback} from 'react'
-import {useTranslation} from 'react-i18next'
+import {useTranslation} from 'sanity'
 import {styled} from 'styled-components'
 
 import {Button} from '../../../../../ui-components'
 import {tasksLocaleNamespace} from '../../../../i18n'
-import {type SidebarTabsIds, useTasks, useTasksNavigation} from '../../context'
+import {type SidebarTabsIds, useTasks, useTasksEnabled, useTasksNavigation} from '../../context'
 import {type TaskStatus} from '../../types'
 
 const HEADING_BY_STATUS: Record<
@@ -105,6 +105,7 @@ const AnimatedText = styled(Text)`
 
 export function EmptyTasksListState() {
   const {activeDocument} = useTasks()
+  const {mode} = useTasksEnabled()
   const {
     state: {activeTabId},
     setViewMode,
@@ -129,8 +130,13 @@ export function EmptyTasksListState() {
             {t(text)}
           </AnimatedText>
         </Box>
-
-        <Button icon={AddIcon} text={t('empty-state.list.create-new')} onClick={handleTaskCreate} />
+        {mode !== 'upsell' && (
+          <Button
+            icon={AddIcon}
+            text={t('empty-state.list.create-new')}
+            onClick={handleTaskCreate}
+          />
+        )}
       </Flex>
     </Root>
   )

@@ -4,7 +4,7 @@ import {UpsellDescriptionSerializer} from 'sanity'
 import {styled} from 'styled-components'
 
 import {Button} from '../../../../../ui-components'
-import {type CommentsUpsellData} from '../../types'
+import {type UpsellData} from '../../types'
 
 const Image = styled.img`
   object-fit: cover;
@@ -14,7 +14,7 @@ const Image = styled.img`
 `
 
 interface CommentsUpsellPanelProps {
-  data: CommentsUpsellData
+  data: UpsellData
   onPrimaryClick: () => void
   onSecondaryClick: () => void
 }

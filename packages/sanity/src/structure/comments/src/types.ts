@@ -313,7 +313,7 @@ export type CommentListBreadcrumbs = CommentsListBreadcrumbItem[]
  * @beta
  * @hidden
  */
-export interface CommentsUpsellData {
+export interface UpsellData {
   _createdAt: string
   _id: string
   _rev: string

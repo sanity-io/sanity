@@ -12,7 +12,7 @@ import {BetaBadge, useTranslation} from 'sanity'
 
 import {Button} from '../../../../../ui-components'
 import {tasksLocaleNamespace} from '../../../../i18n'
-import {useTasksNavigation} from '../../context'
+import {useTasksEnabled, useTasksNavigation} from '../../context'
 import {type TaskDocument} from '../../types'
 import {TasksActiveTabNavigation} from './TasksActiveTabNavigation'
 import {TasksHeaderDraftsMenu} from './TasksHeaderDraftsMenu'
@@ -26,6 +26,7 @@ interface TasksSidebarHeaderProps {
  */
 export function TasksSidebarHeader(props: TasksSidebarHeaderProps) {
   const {items: allItems} = props
+  const {mode} = useTasksEnabled()
   const {state, setViewMode, handleCloseTasks} = useTasksNavigation()
   const {viewMode, activeTabId} = state
 
@@ -74,6 +75,14 @@ export function TasksSidebarHeader(props: TasksSidebarHeaderProps) {
             onClick={handleTaskCreate}
             mode="bleed"
             text={t('buttons.new.text')}
+            disabled={mode === 'upsell'}
+            tooltipProps={
+              mode === 'upsell'
+                ? {
+                    content: 'Upgrade to create tasks',
+                  }
+                : undefined
+            }
           />
         )}
 

@@ -3,6 +3,7 @@ import {getTheme_v2} from '@sanity/ui/theme'
 import {css, styled} from 'styled-components'
 
 import {CommentsListItem, type CommentsListItemProps} from '../../../../../structure/comments'
+import {useTasksEnabled} from '../../context'
 import {ActivityItem} from './TasksActivityItem'
 
 const COMMENTS_LIST_ITEM_AVATAR_CONFIG: CommentsListItemProps['avatarConfig'] = {
@@ -29,6 +30,7 @@ const CommentListItemRoot = styled.div((props) => {
 })
 export function TasksActivityCommentItem(props: TasksActivityCommentItemProps) {
   const {parentComment} = props
+  const {mode} = useTasksEnabled()
 
   return (
     <ActivityItem userId={parentComment.authorId} avatarPaddingTop={3}>
@@ -38,7 +40,7 @@ export function TasksActivityCommentItem(props: TasksActivityCommentItemProps) {
           avatarConfig={COMMENTS_LIST_ITEM_AVATAR_CONFIG}
           canReply
           isSelected={false}
-          mode="default"
+          mode={mode ?? 'default'}
         />
       </CommentListItemRoot>
     </ActivityItem>

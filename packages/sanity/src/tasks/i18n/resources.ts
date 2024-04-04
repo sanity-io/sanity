@@ -139,6 +139,8 @@ const tasksLocaleStrings = defineLocalesResources('tasks', {
   'panel.close.tooltip': 'Close sidebar',
   /** The placeholder text for the comment text box */
   'panel.comment.placeholder': 'Add a comment...',
+  /** The placeholder text for the comment text box */
+  'panel.comment.placeholder.upsell': 'Upgrade to comment on tasks',
   /** The title used in the task panel when showing the create task form */
   'panel.create.title': 'Create',
   /** The title used in the drafts pulldown */
