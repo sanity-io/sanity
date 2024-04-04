@@ -24,16 +24,16 @@ const typeVisitors = {
   crossDatasetReference: crossDatasetReference,
 }
 
-const getNoopVisitor = (visitorContext) => (schemaDef) => ({
+const getNoopVisitor = (visitorContext: any) => (schemaDef: any) => ({
   name: `<unnamed_type_@_index_${visitorContext.index}>`,
   ...schemaDef,
   _problems: [],
 })
 
-function combine(...visitors) {
-  return (schemaType, visitorContext) => {
+function combine(...visitors: any) {
+  return (schemaType: any, visitorContext: any) => {
     return visitors.reduce(
-      (result, visitor) => {
+      (result: any, visitor: any) => {
         const res = visitor(result, visitorContext)
         return {
           ...res,
@@ -51,7 +51,7 @@ function combine(...visitors) {
 export function validateSchema(schemaTypes: _FIXME_) {
   return traverseSanitySchema(schemaTypes, (schemaDef, visitorContext) => {
     const typeVisitor =
-      (schemaDef && schemaDef.type && typeVisitors[schemaDef.type]) ||
+      (schemaDef && schemaDef.type && (typeVisitors as any)[schemaDef.type]) ||
       getNoopVisitor(visitorContext)
 
     if (visitorContext.isRoot) {

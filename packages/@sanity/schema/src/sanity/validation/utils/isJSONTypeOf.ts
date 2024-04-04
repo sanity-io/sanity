@@ -1,4 +1,4 @@
-export function isJSONTypeOf(type, jsonType, visitorContext) {
+export function isJSONTypeOf(type: any, jsonType: any, visitorContext: any) {
   if ('jsonType' in type) {
     return type.jsonType === jsonType
   }

@@ -18,7 +18,7 @@ interface PreviewConfig {
   prepare?: Function
 }
 
-function validateFieldName(name): Array<any> {
+function validateFieldName(name: any): Array<any> {
   if (typeof name !== 'string') {
     return [
       error(
@@ -58,7 +58,7 @@ function validateFieldName(name): Array<any> {
   return []
 }
 
-export function validateField(field, _visitorContext) {
+export function validateField(field: any, _visitorContext: any) {
   if (!isPlainObject(field)) {
     return [
       error(
@@ -78,7 +78,7 @@ export function validateField(field, _visitorContext) {
   return problems
 }
 
-function getDuplicateFields(array: Array<Field>): Array<Array<Field>> {
+function getDuplicateFields(array: Array<Field>): Array<Array<Field> | null> {
   const dupes: {[name: string]: Array<Field>} = {}
   array.forEach((field) => {
     if (!dupes[field.name]) {
@@ -108,7 +108,7 @@ export function validateFields(fields: any, options = {allowEmpty: false}) {
   getDuplicateFields(fieldsWithNames).forEach((dupes) => {
     problems.push(
       error(
-        `Found ${dupes.length} fields with name "${dupes[0].name}" in object`,
+        `Found ${dupes!.length} fields with name "${dupes![0].name}" in object`,
         HELP_IDS.OBJECT_FIELD_NOT_UNIQUE,
       ),
     )
@@ -160,26 +160,26 @@ export function validatePreview(preview: PreviewConfig) {
     ]
   }
 
-  return Object.keys(preview.select).reduce((errs, key) => {
-    return typeof preview.select[key] === 'string'
+  return Object.keys(preview.select).reduce((errs: any, key) => {
+    return typeof preview.select![key] === 'string'
       ? errs
       : errs.concat(
           error(
             `The key "${key}" of "preview.select" must be a string, instead saw "${typeof preview
-              .select[key]}"`,
+              .select![key]}"`,
           ),
         )
   }, [])
 }
 
-export default (typeDef, visitorContext) => {
+export default (typeDef: any, visitorContext: any) => {
   let problems = validateFields(typeDef.fields)
 
   let preview = typeDef.preview
   if (preview) {
     const previewErrors = validatePreview(typeDef.preview)
     problems = problems.concat(previewErrors)
-    preview = previewErrors.some((err) => err.severity === 'error') ? {} : preview
+    preview = previewErrors.some((err: any) => err.severity === 'error') ? {} : preview
   }
 
   if (
@@ -195,7 +195,7 @@ export default (typeDef, visitorContext) => {
   return {
     ...typeDef,
     preview,
-    fields: (Array.isArray(typeDef.fields) ? typeDef.fields : []).map((field, index) => {
+    fields: (Array.isArray(typeDef.fields) ? typeDef.fields : []).map((field: any, index: any) => {
       const {name, ...fieldTypeDef} = field
       const {_problems, ...fieldType} = visitorContext.visit(fieldTypeDef, index)
       return {

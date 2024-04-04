@@ -1,6 +1,6 @@
 import {pick} from 'lodash'
 
-function isEmpty(object) {
+function isEmpty(object: any) {
   for (const key in object) {
     if (object.hasOwnProperty(key)) {
       return false
@@ -9,7 +9,7 @@ function isEmpty(object) {
   return true
 }
 
-function _stringify(value, options, depth) {
+function _stringify(value: any, options: any, depth: any): any {
   if (depth > options.maxDepth) {
     return '...'
   }
@@ -18,7 +18,7 @@ function _stringify(value, options, depth) {
       return '[empty]'
     }
     const capLength = Math.max(value.length - options.maxBreadth)
-    const asString = value
+    const asString: any = value
       .slice(0, options.maxBreadth)
       .map((item, index) => _stringify(item, options, depth + 1))
       .concat(capLength > 0 ? `…+${capLength}` : [])
@@ -47,7 +47,7 @@ function _stringify(value, options, depth) {
 }
 
 export default function stringify(
-  value,
+  value: any,
   options: {maxDepth?: number; maxBreadth?: number; ignoreKeys?: string[]} = {},
 ) {
   const opts = {

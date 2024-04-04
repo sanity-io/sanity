@@ -152,8 +152,8 @@ export function extractSchema(
     }
 
     // if we have already seen the base type, we can just reference it
-    if (inlineFields.has(schemaType.type)) {
-      return {type: 'inline', name: schemaType.type.name} satisfies InlineTypeNode
+    if (inlineFields.has(schemaType.type!)) {
+      return {type: 'inline', name: schemaType.type!.name} satisfies InlineTypeNode
     }
 
     // If we have a type that is point to a type, that is pointing to a type, we assume this is a circular reference
@@ -172,7 +172,7 @@ export function extractSchema(
 
     // map some known types
     if (schemaType.type && typesMap.has(schemaType.type.name)) {
-      return typesMap.get(schemaType.type.name)
+      return typesMap.get(schemaType.type.name)!
     }
 
     // Cross dataset references are not supported
@@ -461,7 +461,7 @@ function gatherReferenceNames(type: ReferenceSchemaType): string[] {
 
 function gatherReferenceTypes(type: ReferenceSchemaType): ObjectSchemaType[] {
   const refTo = 'to' in type ? type.to : []
-  if ('type' in type && isReferenceType(type.type)) {
+  if ('type' in type && isReferenceType(type.type!)) {
     return [...gatherReferenceTypes(type.type), ...refTo]
   }
 
@@ -523,21 +523,21 @@ function sortByDependencies(compiledSchema: SchemaDef): string[] {
     if ('fields' in schemaType) {
       for (const field of gatherFields(schemaType)) {
         const last = lastType(field.type)
-        if (last.name === 'document') {
-          dependencies.add(last)
+        if (last!.name === 'document') {
+          dependencies.add(last!)
           continue
         }
 
         let schemaTypeName: string | undefined
-        if (schemaType.type.type) {
-          schemaTypeName = field.type.type.name
-        } else if ('jsonType' in schemaType.type) {
+        if (schemaType.type!.type) {
+          schemaTypeName = field.type.type!.name
+        } else if ('jsonType' in schemaType.type!) {
           schemaTypeName = field.type.jsonType
         }
 
         if (schemaTypeName === 'object' || schemaTypeName === 'block') {
           if (isReferenceType(field.type)) {
-            field.type.to.forEach((ref) => dependencies.add(ref.type))
+            field.type.to.forEach((ref) => dependencies.add(ref.type!))
           } else {
             dependencies.add(field.type)
           }

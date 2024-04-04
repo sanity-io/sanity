@@ -1267,7 +1267,7 @@ importers:
         specifier: ^4.17.21
         version: 4.17.21
       object-inspect:
-        specifier: ^1.6.0
+        specifier: ^1.13.1
         version: 1.13.1
     devDependencies:
       '@jest/globals':
@@ -1276,6 +1276,12 @@ importers:
       '@sanity/icons':
         specifier: ^2.11.6
         version: 2.11.6(react@18.2.0)
+      '@types/arrify':
+        specifier: ^1.0.1
+        version: 1.0.4
+      '@types/object-inspect':
+        specifier: ^1.13.0
+        version: 1.13.0
       rimraf:
         specifier: ^3.0.2
         version: 3.0.2
@@ -7256,6 +7262,10 @@ packages:
 
   /@types/normalize-package-data@2.4.4:
     resolution: {integrity: sha512-37i+OaWTh9qeK4LSHPsyRC7NahnGotNuZvjLSgcPzblpHB3rrCJxAOgI5gCdKm7coonsaX1Of0ILiTcnZjbfxA==}
+
+  /@types/object-inspect@1.13.0:
+    resolution: {integrity: sha512-lwGTVESDDV+XsQ1pH4UifpJ1f7OtXzQ6QBOX2Afq2bM/T3oOt8hF6exJMjjIjtEWeAN2YAo25J7HxWh97CCz9w==}
+    dev: true
 
   /@types/offscreencanvas@2019.7.3:
     resolution: {integrity: sha512-ieXiYmgSRXUDeOntE1InxjWyvEelZGP63M+cGuquuRLuIKKT1osnkXjxev9B7d1nXSug5vpunx+gNlbVxMlC9A==}
