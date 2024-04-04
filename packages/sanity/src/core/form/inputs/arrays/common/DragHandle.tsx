@@ -1,6 +1,7 @@
 import {useSortable} from '@dnd-kit/sortable'
 import {DragHandleIcon} from '@sanity/icons'
-import {createContext, useContext} from 'react'
+import {useContext} from 'react'
+import {SortableItemIdContext} from 'sanity/_singleton'
 import {styled} from 'styled-components'
 
 import {Button, type ButtonProps} from '../../../../../ui-components'
@@ -9,8 +10,6 @@ import {useTranslation} from '../../../../i18n'
 const DragHandleButton = styled(Button)<{$grid?: boolean}>`
   cursor: ${(props) => (props.$grid ? 'move' : 'ns-resize')};
 `
-
-export const SortableItemIdContext = createContext<string | null>(null)
 
 interface DragHandleProps {
   $grid?: boolean
