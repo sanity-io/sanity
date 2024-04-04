@@ -57,6 +57,7 @@ export default async function typegenGenerateAction(
         codegenConfig.schema === './schema.json' ? ` - did you run "sanity schema extract"?` : ''
       throw new Error(`Schema file not found: ${codegenConfig.schema}${hint}`)
     }
+    throw err
   }
   const workerPath = await getCliWorkerPath('typegenGenerate')
 
