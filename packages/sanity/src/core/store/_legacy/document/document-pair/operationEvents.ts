@@ -32,6 +32,7 @@ import {patch} from './operations/patch'
 import {publish} from './operations/publish'
 import {restore} from './operations/restore'
 import {unpublish} from './operations/unpublish'
+import {patch as serverPatch} from './serverOperations/patch'
 
 interface ExecuteArgs {
   operationName: keyof OperationsAPI
@@ -59,6 +60,7 @@ const operationImpls = {
 //as we add server operations one by one, we can add them here
 const serverOperationImpls = {
   ...operationImpls,
+  patch: serverPatch,
 }
 
 const execute = (

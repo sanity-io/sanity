@@ -1,6 +1,7 @@
 import {type IdPair} from '../../types'
 import {emitOperation} from '../operationEvents'
 import {publish} from '../operations/publish'
+import {patch as serverPatch} from '../serverOperations/patch'
 import {commit} from './commit'
 import {del} from './delete'
 import {discardChanges} from './discardChanges'
@@ -67,6 +68,7 @@ export function createOperationsAPI(args: OperationArgs): OperationsAPI {
   if (args.serverActionsEnabled) {
     return {
       ...operationsAPI,
+      patch: wrap('patch', serverPatch, args),
     }
   }
   return operationsAPI
