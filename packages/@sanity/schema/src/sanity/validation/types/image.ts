@@ -3,7 +3,7 @@ import {validateField, validateFields} from './object'
 
 const autoMeta = ['dimensions', 'hasAlpha', 'isOpaque']
 
-export default (typeDef, visitorContext) => {
+export default (typeDef: any, visitorContext: any) => {
   const problems = []
   const fields = typeDef.fields
 
@@ -38,7 +38,7 @@ export default (typeDef, visitorContext) => {
         )}`,
       ),
     )
-    options = {...options, metadata: metadata.filter((meta) => !autoMeta.includes(meta))}
+    options = {...options, metadata: metadata!.filter((meta) => !autoMeta.includes(meta))}
   } else if (fieldsWithInvalidName.length > 0) {
     problems.push(
       error(

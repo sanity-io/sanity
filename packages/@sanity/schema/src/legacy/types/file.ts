@@ -28,7 +28,7 @@ export const FileType = {
   get() {
     return FILE_CORE
   },
-  extend(rawSubTypeDef, createMemberType) {
+  extend(rawSubTypeDef: any, createMemberType: any) {
     const options = {...(rawSubTypeDef.options || DEFAULT_OPTIONS)}
 
     const fields = [ASSET_FIELD, ...(rawSubTypeDef.fields || [])]
@@ -39,7 +39,7 @@ export const FileType = {
       type: FILE_CORE,
       title: subTypeDef.title || (subTypeDef.name ? startCase(subTypeDef.name) : ''),
       options: options,
-      fields: subTypeDef.fields.map((fieldDef) => {
+      fields: subTypeDef.fields.map((fieldDef: any) => {
         const {name, fieldset, ...rest} = fieldDef
 
         const compiledField = {
@@ -65,12 +65,12 @@ export const FileType = {
 
     return subtype(parsed)
 
-    function subtype(parent) {
+    function subtype(parent: any) {
       return {
         get() {
           return parent
         },
-        extend: (extensionDef) => {
+        extend: (extensionDef: any) => {
           if (extensionDef.fields) {
             throw new Error('Cannot override `fields` of subtypes of "file"')
           }

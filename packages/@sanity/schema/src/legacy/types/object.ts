@@ -32,7 +32,7 @@ export const ObjectType = {
       jsonType: 'object',
     }
   },
-  extend(rawSubTypeDef, createMemberType) {
+  extend(rawSubTypeDef: any, createMemberType: any) {
     const subTypeDef = {fields: [], ...rawSubTypeDef}
 
     const options = {...(subTypeDef.options || {})}
@@ -41,7 +41,7 @@ export const ObjectType = {
       title: subTypeDef.title || (subTypeDef.name ? startCase(subTypeDef.name) : ''),
       options: options,
       orderings: subTypeDef.orderings || guessOrderingConfig(subTypeDef),
-      fields: subTypeDef.fields.map((fieldDef) => {
+      fields: subTypeDef.fields.map((fieldDef: any) => {
         const {name, fieldset, group, ...rest} = fieldDef
 
         const compiledField = {
@@ -91,12 +91,12 @@ export const ObjectType = {
 
     return subtype(parsed)
 
-    function subtype(parent) {
+    function subtype(parent: any) {
       return {
         get() {
           return parent
         },
-        extend: (extensionDef) => {
+        extend: (extensionDef: any) => {
           if (extensionDef.fields) {
             throw new Error('Cannot override `fields` of subtypes of "object"')
           }

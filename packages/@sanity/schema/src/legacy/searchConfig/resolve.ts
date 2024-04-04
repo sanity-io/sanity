@@ -2,7 +2,7 @@ import {isFinite, uniqBy} from 'lodash'
 
 export const DEFAULT_MAX_FIELD_DEPTH = 5
 
-const stringFieldsSymbols = {}
+const stringFieldsSymbols = {} as Record<number, symbol>
 
 const getStringFieldSymbol = (maxDepth: number) => {
   if (!stringFieldsSymbols[maxDepth]) {
@@ -12,15 +12,15 @@ const getStringFieldSymbol = (maxDepth: number) => {
   return stringFieldsSymbols[maxDepth]
 }
 
-const isReference = (type) => type.type && type.type.name === 'reference'
+const isReference = (type: any) => type.type && type.type.name === 'reference'
 
 const portableTextFields = ['style', 'list']
-const isPortableTextBlock = (type) =>
+const isPortableTextBlock: any = (type: any) =>
   type.name === 'block' || (type.type && isPortableTextBlock(type.type))
-const isPortableTextArray = (type) =>
+const isPortableTextArray = (type: any) =>
   type.jsonType === 'array' && Array.isArray(type.of) && type.of.some(isPortableTextBlock)
 
-function reduceType(type, reducer, acc, path = [], maxDepth) {
+function reduceType(type: any, reducer: any, acc: any, path = [], maxDepth: any) {
   if (maxDepth < 0) {
     return acc
   }
@@ -37,16 +37,16 @@ function reduceType(type, reducer, acc, path = [], maxDepth) {
   return accumulator
 }
 
-function reduceArray(arrayType, reducer, accumulator, path, maxDepth) {
+function reduceArray(arrayType: any, reducer: any, accumulator: any, path: any, maxDepth: any) {
   return arrayType.of.reduce(
-    (acc, ofType) => reduceType(ofType, reducer, acc, path, maxDepth - 1),
+    (acc: any, ofType: any) => reduceType(ofType, reducer, acc, path, maxDepth - 1),
     accumulator,
   )
 }
 
-function reduceObject(objectType, reducer, accumulator, path, maxDepth) {
+function reduceObject(objectType: any, reducer: any, accumulator: any, path: any, maxDepth: any) {
   const isPtBlock = isPortableTextBlock(objectType)
-  return objectType.fields.reduce((acc, field) => {
+  return objectType.fields.reduce((acc: any, field: any) => {
     // Don't include styles and list types as searchable paths for portable text blocks
     if (isPtBlock && portableTextFields.includes(field.name)) {
       return acc
@@ -97,7 +97,7 @@ export function deriveFromPreview(
     }
 
     fields.push({
-      weight: PREVIEW_FIELD_WEIGHT_MAP[fieldName],
+      weight: (PREVIEW_FIELD_WEIGHT_MAP as any)[fieldName],
       path,
     })
   }
@@ -105,15 +105,15 @@ export function deriveFromPreview(
   return fields
 }
 
-function getCachedStringFieldPaths(type, maxDepth: number) {
+function getCachedStringFieldPaths(type: any, maxDepth: number) {
   const symbol = getStringFieldSymbol(maxDepth)
   if (!type[symbol]) {
     type[symbol] = uniqBy(
       [
         ...BASE_WEIGHTS,
         ...deriveFromPreview(type, maxDepth),
-        ...getStringFieldPaths(type, maxDepth).map((path) => ({weight: 1, path})),
-        ...getPortableTextFieldPaths(type, maxDepth).map((path) => ({
+        ...getStringFieldPaths(type, maxDepth).map((path: any) => ({weight: 1, path})),
+        ...getPortableTextFieldPaths(type, maxDepth).map((path: any) => ({
           weight: 1,
           path,
           mapWith: 'pt::text',
@@ -125,7 +125,7 @@ function getCachedStringFieldPaths(type, maxDepth: number) {
   return type[symbol]
 }
 
-function getCachedBaseFieldPaths(type, maxDepth: number) {
+function getCachedBaseFieldPaths(type: any, maxDepth: number) {
   const symbol = getStringFieldSymbol(maxDepth)
   if (!type[symbol]) {
     type[symbol] = uniqBy([...BASE_WEIGHTS, ...deriveFromPreview(type, maxDepth)], (spec) =>
@@ -135,28 +135,28 @@ function getCachedBaseFieldPaths(type, maxDepth: number) {
   return type[symbol]
 }
 
-function getStringFieldPaths(type, maxDepth: number) {
-  const reducer = (accumulator, childType, path) =>
+function getStringFieldPaths(type: any, maxDepth: number) {
+  const reducer = (accumulator: any, childType: any, path: any) =>
     childType.jsonType === 'string' ? [...accumulator, path] : accumulator
 
   return reduceType(type, reducer, [], [], maxDepth)
 }
 
-function getPortableTextFieldPaths(type, maxDepth) {
-  const reducer = (accumulator, childType, path) =>
+function getPortableTextFieldPaths(type: any, maxDepth: any) {
+  const reducer = (accumulator: any, childType: any, path: any) =>
     isPortableTextArray(childType) ? [...accumulator, path] : accumulator
 
   return reduceType(type, reducer, [], [], maxDepth)
 }
 
-export function resolveSearchConfigForBaseFieldPaths(type, maxDepth?: number) {
+export function resolveSearchConfigForBaseFieldPaths(type: any, maxDepth?: number) {
   return getCachedBaseFieldPaths(type, normalizeMaxDepth(maxDepth))
 }
 
 /**
  * @internal
  */
-export function resolveSearchConfig(type, maxDepth?: number) {
+export function resolveSearchConfig(type: any, maxDepth?: number) {
   return getCachedStringFieldPaths(type, normalizeMaxDepth(maxDepth))
 }
 
@@ -167,9 +167,9 @@ export function resolveSearchConfig(type, maxDepth?: number) {
  * @internal
  */
 function normalizeMaxDepth(maxDepth?: number) {
-  if (!isFinite(maxDepth) || maxDepth < 1 || maxDepth > DEFAULT_MAX_FIELD_DEPTH) {
+  if (!isFinite(maxDepth) || maxDepth! < 1 || maxDepth! > DEFAULT_MAX_FIELD_DEPTH) {
     return DEFAULT_MAX_FIELD_DEPTH - 1
   }
 
-  return maxDepth - 1
+  return maxDepth! - 1
 }

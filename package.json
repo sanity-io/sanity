@@ -99,7 +99,7 @@
     "@sanity/client": "^6.15.9",
     "@sanity/eslint-config-i18n": "1.0.0",
     "@sanity/eslint-config-studio": "^3.0.1",
-    "@sanity/pkg-utils": "^4.4.3",
+    "@sanity/pkg-utils": "^4.4.4",
     "@sanity/test": "0.0.1-alpha.1",
     "@sanity/tsdoc": "1.0.0-alpha.44",
     "@sanity/uuid": "^3.0.2",
@@ -109,8 +109,8 @@
     "@types/react": "^18.2.74",
     "@types/semver": "^7.5.6",
     "@types/yargs": "^17.0.7",
-    "@typescript-eslint/eslint-plugin": "^6.21.0",
-    "@typescript-eslint/parser": "^6.21.0",
+    "@typescript-eslint/eslint-plugin": "^7.5.0",
+    "@typescript-eslint/parser": "^7.5.0",
     "cac": "^6.7.12",
     "chalk": "^4.1.2",
     "depcheck": "^1.4.7",
@@ -157,5 +157,11 @@
     "node-notifier": "^10.0.0"
   },
   "packageManager": "pnpm@8.15.6",
+  "pnpm": {
+    "overrides": {
+      "@typescript-eslint/eslint-plugin": "$@typescript-eslint/eslint-plugin",
+      "@typescript-eslint/parser": "$@typescript-eslint/parser"
+    }
+  },
   "isSanityMonorepo": true
 }

@@ -9,6 +9,7 @@ import {
   type CommentIntentGetter,
   type CommentPostPayload,
 } from '../../types'
+import {weakenReferencesInContentSnapshot} from '../../utils'
 
 interface CreateOperationProps {
   activeTool: Tool | undefined
@@ -109,6 +110,12 @@ export async function createOperation(props: CreateOperationProps): Promise<void
 
     const intent = getIntent?.({id: documentId, type: documentType, path: comment.fieldPath})
 
+    // If the content snapshot contains a reference, we need to weaken it.
+    // This prevents Content Lake from validating the references, which could,
+    // for example, prevent the deletion of the document that the reference
+    // in the content snapshot points to.
+    const contentSnapshot = weakenReferencesInContentSnapshot(comment.contentSnapshot)
+
     nextComment = {
       _id: commentId,
       _type: 'comment',
@@ -129,7 +136,7 @@ export async function createOperation(props: CreateOperationProps): Promise<void
         tool: activeTool?.name || '',
       },
 
-      contentSnapshot: comment.contentSnapshot,
+      contentSnapshot,
 
       target: {
         documentRevisionId: documentRevisionId || '',
