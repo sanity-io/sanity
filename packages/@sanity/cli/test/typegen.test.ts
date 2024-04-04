@@ -23,6 +23,17 @@ describeCliTest('CLI: `sanity typegen`', () => {
     expect(err.stderr).toContain('custom-schema.json')
   })
 
+  test('sanity typegen generate: typegen config is not a file', async () => {
+    const err = await runSanityCmdCommand('v3', [
+      'typegen',
+      'generate',
+      '--config-path',
+      'folder-typegen.json',
+    ]).catch((error) => error)
+    expect(err.code).toBe(1)
+    expect(err.stderr).toContain('Schema path is not a file')
+  })
+
   test('sanity typegen generate: working schema', async () => {
     const result = await runSanityCmdCommand('v3', [
       'typegen',

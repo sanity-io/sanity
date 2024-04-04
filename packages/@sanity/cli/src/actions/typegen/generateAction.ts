@@ -43,8 +43,8 @@ export default async function typegenGenerateAction(
   const codegenConfig = await readConfig(flags['config-path'] || 'sanity-typegen.json')
 
   try {
-    const {isFile} = await stat(codegenConfig.schema)
-    if (!isFile) {
+    const schemaStats = await stat(codegenConfig.schema)
+    if (!schemaStats.isFile()) {
       throw new Error(`Schema path is not a file: ${codegenConfig.schema}`)
     }
   } catch (err) {
