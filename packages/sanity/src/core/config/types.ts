@@ -9,6 +9,7 @@ import {
   type SchemaType,
   type SchemaTypeDefinition,
 } from '@sanity/types'
+//eslint-disable-next-line @sanity/i18n/no-i18next-import -- we don't export this type
 import {type i18n} from 'i18next'
 import {type ComponentType, type ReactNode} from 'react'
 import {type Observable} from 'rxjs'

@@ -2,6 +2,7 @@ import {fromUrl} from '@sanity/bifur-client'
 import {createClient, type SanityClient} from '@sanity/client'
 import {type CurrentUser, type Schema, type SchemaValidationProblem} from '@sanity/types'
 import {studioTheme} from '@sanity/ui'
+//eslint-disable-next-line @sanity/i18n/no-i18next-import -- we don't export this type
 import {type i18n} from 'i18next'
 import {startCase} from 'lodash'
 import {type ComponentType, createElement, type ElementType, isValidElement} from 'react'
