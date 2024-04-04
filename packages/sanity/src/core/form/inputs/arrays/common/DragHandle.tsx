@@ -36,6 +36,7 @@ export const DragHandle = function DragHandle(props: DragHandleProps) {
       tooltipProps={{
         content: t('inputs.array.action.drag.tooltip'),
         delay: {open: 1000},
+        disabled: !!readOnly,
       }}
       mode={mode}
       data-ui="DragHandleButton"
