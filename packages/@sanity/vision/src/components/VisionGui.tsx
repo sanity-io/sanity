@@ -999,7 +999,7 @@ export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
                         as="a"
                         download="query-result.csv"
                         href={`data:application/csv;charset=utf-8,${encodeURIComponent(
-                          json2csv(queryResult as object[]),
+                          json2csv(Array.isArray(queryResult) ? queryResult : [queryResult]),
                         )}`}
                         text={t('action.download-result-as-csv')}
                         tone="default"
