@@ -1,25 +1,18 @@
-import React from 'react'
+
 import { CopyIcon } from '@sanity/icons'
 import {defineField, defineType} from 'sanity'
 
-import ShopifyIcon from '../../components/icons/Shopify'
 import ProductVariantHiddenInput from '../../components/inputs/ProductVariantHidden'
 import ShopifyDocumentStatus from '../../components/media/ShopifyDocumentStatus'
+import { GROUPS } from '../../constants'
 
-export default defineType({
+export const productVariantType = defineType({
   name: 'productVariant',
   title: 'Product variant',
   type: 'document',
   icon: CopyIcon,
-  groups: [
-    {
-      name: 'shopifySync',
-      title: 'Shopify sync',
-      icon: ShopifyIcon,
-    },
-  ],
+  groups: GROUPS,
   fields: [
-    // Product variant hidden status
     defineField({
       name: 'hidden',
       type: 'string',
@@ -32,14 +25,12 @@ export default defineType({
         return !isDeleted
       },
     }),
-    // Title (proxy)
     defineField({
       title: 'Title',
       name: 'titleProxy',
       type: 'proxyString',
       options: {field: 'store.title'},
     }),
-    // Shopify product variant
     defineField({
       name: 'store',
       title: 'Shopify',
