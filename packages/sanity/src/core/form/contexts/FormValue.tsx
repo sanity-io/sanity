@@ -1,19 +1,9 @@
 import {type Path} from '@sanity/types'
 import {pathFor} from '@sanity/util/paths'
-import {createContext, type ReactNode, useContext, useMemo} from 'react'
+import {type ReactNode, useContext, useMemo} from 'react'
+import {type FormDocumentValue, FormValueContext} from 'sanity/_singleton'
 
 import {getValueAtPath} from '../../field'
-import {type FormDocumentValue} from '../types'
-
-/**
- * @internal
- * @hidden
- */
-export interface FormValueContextValue {
-  value: FormDocumentValue | undefined
-}
-
-const FormValueContext = createContext<FormValueContextValue | null>(null)
 
 /**
  *
