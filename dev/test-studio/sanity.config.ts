@@ -11,7 +11,7 @@ import {presentationTool as pinnedPresentationTool} from '@sanity/presentation'
 import {debugSecrets} from '@sanity/preview-url-secret/sanity-plugin-debug-secrets'
 import {tsdoc} from '@sanity/tsdoc/studio'
 import {visionTool} from '@sanity/vision'
-import {defineConfig, definePlugin} from 'sanity'
+import {defineConfig, definePlugin, type WorkspaceOptions} from 'sanity'
 import {presentationTool} from 'sanity/presentation'
 import {structureTool} from 'sanity/structure'
 import {muxInput} from 'sanity-plugin-mux-input'
@@ -96,6 +96,7 @@ const sharedSettings = definePlugin({
     unstable_comments: {
       enabled: true,
     },
+
     badges: (prev, context) => (context.schemaType === 'author' ? [CustomBadge, ...prev] : prev),
   },
   plugins: [
@@ -151,6 +152,9 @@ export default defineConfig([
     plugins: [sharedSettings()],
     basePath: '/test',
     icon: SanityMonogram,
+    // unstable_serverActions: {
+    //   enabled: true,
+    // },
   },
   {
     name: 'partialIndexing',
@@ -308,4 +312,4 @@ export default defineConfig([
     ],
     basePath: '/presentation',
   },
-])
+]) as WorkspaceOptions[]

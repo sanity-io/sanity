@@ -1,11 +1,11 @@
 import {type IdPair} from '../../types'
 import {emitOperation} from '../operationEvents'
+import {publish} from '../operations/publish'
 import {commit} from './commit'
 import {del} from './delete'
 import {discardChanges} from './discardChanges'
 import {duplicate} from './duplicate'
 import {patch} from './patch'
-import {publish} from './publish'
 import {restore} from './restore'
 import {type Operation, type OperationArgs, type OperationImpl, type OperationsAPI} from './types'
 import {unpublish} from './unpublish'
@@ -51,7 +51,7 @@ function wrap<ExtraArgs extends any[], DisabledReason extends string>(
 }
 
 export function createOperationsAPI(args: OperationArgs): OperationsAPI {
-  return {
+  const operationsAPI = {
     commit: wrap('commit', commit, args),
     delete: wrap('delete', del, args),
     del: wrap('delete', del, args),
@@ -62,4 +62,12 @@ export function createOperationsAPI(args: OperationArgs): OperationsAPI {
     duplicate: wrap('duplicate', duplicate, args),
     restore: wrap('restore', restore, args),
   }
+
+  //as we add server operations one by one, we can add them here
+  if (args.serverActionsEnabled) {
+    return {
+      ...operationsAPI,
+    }
+  }
+  return operationsAPI
 }

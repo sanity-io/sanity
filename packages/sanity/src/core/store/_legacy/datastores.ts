@@ -129,12 +129,13 @@ export function useDocumentStore(): DocumentStore {
   const resourceCache = useResourceCache()
   const historyStore = useHistoryStore()
   const documentPreviewStore = useDocumentPreviewStore()
+  const workspace = useWorkspace()
 
   return useMemo(() => {
     const documentStore =
       resourceCache.get<DocumentStore>({
         namespace: 'documentStore',
-        dependencies: [getClient, documentPreviewStore, historyStore, schema, i18n],
+        dependencies: [getClient, documentPreviewStore, historyStore, schema, i18n, workspace],
       }) ||
       createDocumentStore({
         getClient,
@@ -143,6 +144,7 @@ export function useDocumentStore(): DocumentStore {
         initialValueTemplates: templates,
         schema,
         i18n,
+        serverActionsEnabled: workspace.serverActions?.enabled,
       })
 
     resourceCache.set({
@@ -152,7 +154,16 @@ export function useDocumentStore(): DocumentStore {
     })
 
     return documentStore
-  }, [getClient, documentPreviewStore, historyStore, resourceCache, schema, templates, i18n])
+  }, [
+    getClient,
+    documentPreviewStore,
+    historyStore,
+    resourceCache,
+    schema,
+    templates,
+    i18n,
+    workspace,
+  ])
 }
 
 /** @internal */
