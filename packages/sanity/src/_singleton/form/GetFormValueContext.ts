@@ -7,4 +7,8 @@ import {createContext} from 'react'
  */
 export type GetFormValueContextValue = (path: Path) => unknown
 
+/**
+ * @internal
+ * @hidden
+ */
 export const GetFormValueContext = createContext<GetFormValueContextValue | null>(null)
