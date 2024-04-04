@@ -1,9 +1,5 @@
 import {type ReactNode} from 'react'
-
-import {
-  type VirtualizerScrollInstance,
-  VirtualizerScrollInstanceContext,
-} from './useVirtualizerScrollInstance'
+import {type VirtualizerScrollInstance, VirtualizerScrollInstanceContext} from 'sanity/_singleton'
 
 /**
  * @internal
