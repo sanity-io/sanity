@@ -171,6 +171,15 @@ const config = {
             from: 'sanity/structure__contents',
             allow: ['sanity', 'sanity/structure__contents', 'sanity/router', 'sanity/_singleton'],
           },
+          {
+            // export
+            from: 'sanity/_singleton',
+            allow: ['sanity/_singleton__contents'],
+          },
+          {
+            from: 'sanity/_singleton__contents',
+            allow: ['sanity/_singleton__contents'],
+          },
         ],
       },
     ],
