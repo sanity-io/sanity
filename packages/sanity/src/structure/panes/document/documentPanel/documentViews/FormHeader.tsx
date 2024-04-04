@@ -1,6 +1,6 @@
 import {type ObjectSchemaType} from '@sanity/types'
 import {Heading, Stack, Text} from '@sanity/ui'
-import {useTranslation} from 'react-i18next'
+import {useTranslation} from 'sanity'
 import {css, styled} from 'styled-components'
 
 import {structureLocaleNamespace} from '../../../../i18n'

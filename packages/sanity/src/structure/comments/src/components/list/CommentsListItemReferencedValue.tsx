@@ -4,6 +4,8 @@ import {LinkRemovedIcon} from '@sanity/icons'
 import {isPortableTextTextBlock} from '@sanity/types'
 import {Box, Flex, Stack, Text, type Theme} from '@sanity/ui'
 import {useMemo} from 'react'
+//when comments are moved into core, we should change this to a local import
+//eslint-disable-next-line @sanity/i18n/no-i18next-import
 import {useTranslation} from 'react-i18next'
 import {css, styled} from 'styled-components'
 

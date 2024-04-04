@@ -1,6 +1,8 @@
 import {AddIcon} from '@sanity/icons'
 import {Box, Flex, Stack, Text} from '@sanity/ui'
 import {useCallback} from 'react'
+//when comments are moved into core, we should change this to a local import
+//eslint-disable-next-line @sanity/i18n/no-i18next-import
 import {useTranslation} from 'react-i18next'
 import {styled} from 'styled-components'
 

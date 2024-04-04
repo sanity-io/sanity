@@ -2,6 +2,8 @@ import {AddCommentIcon} from '@sanity/icons'
 import {useClickOutside} from '@sanity/ui'
 import {motion, type Variants} from 'framer-motion'
 import {useState} from 'react'
+//when comments are moved into core, we should change this to a local import
+//eslint-disable-next-line @sanity/i18n/no-i18next-import
 import {useTranslation} from 'react-i18next'
 import {styled} from 'styled-components'
 

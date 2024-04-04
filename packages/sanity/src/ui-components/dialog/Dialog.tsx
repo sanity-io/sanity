@@ -9,6 +9,7 @@ import {
 } from '@sanity/ui'
 import type * as React from 'react'
 import {type ComponentProps, forwardRef} from 'react'
+//eslint-disable-next-line @sanity/i18n/no-i18next-import -- avoiding a circular import
 import {useTranslation} from 'react-i18next'
 
 /** @internal */
