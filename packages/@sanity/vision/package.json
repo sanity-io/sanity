@@ -72,6 +72,7 @@
     "@uiw/react-codemirror": "^4.11.4",
     "hashlru": "^2.3.0",
     "is-hotkey": "^0.2.0",
+    "json-2-csv": "^5.5.1",
     "json5": "^2.2.3",
     "lodash": "^4.17.21"
   },

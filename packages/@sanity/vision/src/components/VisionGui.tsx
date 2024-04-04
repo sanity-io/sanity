@@ -30,6 +30,7 @@ import {
   Tooltip,
 } from '@sanity/ui'
 import isHotkey from 'is-hotkey'
+import {json2csv} from 'json-2-csv'
 import {type ChangeEvent, createRef, PureComponent, type RefObject} from 'react'
 import {type TFunction} from 'sanity'
 
@@ -38,7 +39,6 @@ import {VisionCodeMirror} from '../codemirror/VisionCodeMirror'
 import {DEFAULT_PERSPECTIVE, isPerspective, PERSPECTIVES} from '../perspectives'
 import {type VisionProps} from '../types'
 import {encodeQueryString} from '../util/encodeQueryString'
-import {jsonToCsv} from '../util/jsonToCsv'
 import {getLocalStorage, type LocalStorageish} from '../util/localStorage'
 import {parseApiQueryString, type ParsedApiQueryString} from '../util/parseApiQueryString'
 import {prefixApiVersion} from '../util/prefixApiVersion'
@@ -999,7 +999,7 @@ export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
                         as="a"
                         download="query-result.csv"
                         href={`data:application/csv;charset=utf-8,${encodeURIComponent(
-                          jsonToCsv(queryResult),
+                          json2csv(queryResult as object[]),
                         )}`}
                         text={t('action.download-result-as-csv')}
                         tone="default"
