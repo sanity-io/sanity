@@ -11,10 +11,11 @@ import {
   useMemo,
   useState,
 } from 'react'
+import {ConnectorContext} from 'sanity/_singleton'
 import {styled} from 'styled-components'
 
 import {Popover} from '../../../../../../ui-components'
-import {ConnectorContext, useReportedValues} from '../../../../../changeIndicators'
+import {useReportedValues} from '../../../../../changeIndicators'
 import {useTranslation} from '../../../../../i18n'
 import {ChangeList, DiffContext, DiffTooltip, useDiffAnnotationColor} from '../../../../diff'
 import {type ObjectDiff} from '../../../../types'

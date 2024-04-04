@@ -1,6 +1,4 @@
 export * from './ChangeFieldWrapper'
 export * from './ChangeIndicator'
-export * from './ChangeIndicatorContext'
-export * from './ConnectorContext'
 export * from './overlay/ChangeConnectorRoot'
 export * from './tracker'

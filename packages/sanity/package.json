@@ -55,6 +55,17 @@
       "import": "./lib/_internalBrowser.esm.js",
       "default": "./lib/_internalBrowser.esm.js"
     },
+    "./_singleton": {
+      "types": "./lib/exports/_singleton.d.ts",
+      "source": "./exports/_singleton.ts",
+      "require": "./lib/_singleton.js",
+      "node": {
+        "module": "./lib/_singleton.esm.js",
+        "import": "./lib/_singleton.cjs.mjs"
+      },
+      "import": "./lib/_singleton.esm.js",
+      "default": "./lib/_singleton.esm.js"
+    },
     "./cli": {
       "types": "./lib/exports/cli.d.ts",
       "source": "./exports/cli.ts",

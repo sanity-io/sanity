@@ -134,7 +134,7 @@ const config = {
           },
           {
             from: 'sanity__contents',
-            allow: ['sanity__contents', 'sanity/router'],
+            allow: ['sanity__contents', 'sanity/router', 'sanity/_singleton'],
           },
           {
             // export (deprecated, aliases structure)
@@ -150,6 +150,7 @@ const config = {
               'sanity/_internal',
               'sanity/structure',
               'sanity/structure__contents',
+              'sanity/_singleton',
             ],
           },
           {
@@ -168,7 +169,7 @@ const config = {
           },
           {
             from: 'sanity/structure__contents',
-            allow: ['sanity', 'sanity/structure__contents', 'sanity/router'],
+            allow: ['sanity', 'sanity/structure__contents', 'sanity/router', 'sanity/_singleton'],
           },
         ],
       },
@@ -257,6 +258,16 @@ const config = {
         type: 'sanity/structure__contents',
         pattern: ['packages/sanity/src/structure/**/*.*'],
         mode: 'file',
+      },
+      {
+        type: 'sanity/_singleton',
+        pattern: ['packages/sanity/exports/_singleton.ts'],
+        mode: 'full',
+      },
+      {
+        type: 'sanity/_singleton__contents',
+        pattern: ['packages/sanity/src/_singleton/**/*.*'],
+        mode: 'full',
       },
     ],
     react: {version: '18.0.0'},
