@@ -11,6 +11,8 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'action.copy-url-to-clipboard': 'Copy to clipboard',
   /** Label for downloading the query result as CSV */
   'action.download-result-as-csv': 'CSV',
+  /** Tooltip text shown when the query result is not encodable as CSV */
+  'action.download-result-as-csv.not-csv-encodable': 'Result cannot be encoded as CSV',
   /** Label for downloading the query result as JSON */
   'action.download-result-as-json': 'JSON',
   /** Label for stopping an ongoing listen operation */

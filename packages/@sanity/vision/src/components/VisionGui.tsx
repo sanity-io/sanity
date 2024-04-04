@@ -6,14 +6,7 @@ import {
   type MutationEvent,
   type SanityClient,
 } from '@sanity/client'
-import {
-  CopyIcon,
-  DocumentSheetIcon,
-  ErrorOutlineIcon,
-  JsonIcon,
-  PlayIcon,
-  StopIcon,
-} from '@sanity/icons'
+import {CopyIcon, ErrorOutlineIcon, JsonIcon, PlayIcon, StopIcon} from '@sanity/icons'
 import {
   Box,
   Button,
@@ -30,7 +23,6 @@ import {
   Tooltip,
 } from '@sanity/ui'
 import isHotkey from 'is-hotkey'
-import {json2csv} from 'json-2-csv'
 import {type ChangeEvent, createRef, PureComponent, type RefObject} from 'react'
 import {type TFunction} from 'sanity'
 
@@ -39,6 +31,7 @@ import {VisionCodeMirror} from '../codemirror/VisionCodeMirror'
 import {DEFAULT_PERSPECTIVE, isPerspective, PERSPECTIVES} from '../perspectives'
 import {type VisionProps} from '../types'
 import {encodeQueryString} from '../util/encodeQueryString'
+import {getCsvBlobUrl, getJsonBlobUrl} from '../util/getBlobUrl'
 import {getLocalStorage, type LocalStorageish} from '../util/localStorage'
 import {parseApiQueryString, type ParsedApiQueryString} from '../util/parseApiQueryString'
 import {prefixApiVersion} from '../util/prefixApiVersion'
@@ -46,6 +39,7 @@ import {ResizeObserver} from '../util/resizeObserver'
 import {tryParseParams} from '../util/tryParseParams'
 import {validateApiVersion} from '../util/validateApiVersion'
 import {DelayedSpinner} from './DelayedSpinner'
+import {DownloadCsvButton} from './DownloadCsvButton'
 import {ParamsEditor, type ParamsEditorChangeEvent} from './ParamsEditor'
 import {PerspectivePopover} from './PerspectivePopover'
 import {QueryErrorDialog} from './QueryErrorDialog'
@@ -679,6 +673,8 @@ export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
       url,
     } = this.state
     const hasResult = !error && !queryInProgress && typeof queryResult !== 'undefined'
+    const jsonUrl = hasResult ? getJsonBlobUrl(queryResult) : ''
+    const csvUrl = hasResult ? getCsvBlobUrl(queryResult) : ''
 
     return (
       <Root
@@ -980,32 +976,21 @@ export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
                   </TimingsTextContainer>
                 </TimingsCard>
 
-                {!!queryResult && (
+                {hasResult && (
                   <DownloadsCard paddingX={4} paddingY={3} sizing="border">
                     <DownloadsContainer gap={3} align="center">
                       <Text muted>{t('result.download-result-as')}</Text>
                       <Button
                         as="a"
                         download="query-result.json"
-                        href={`data:application/json;charset=utf-8,${encodeURIComponent(
-                          JSON.stringify(queryResult, null, 2),
-                        )}`}
+                        href={jsonUrl}
                         text={t('action.download-result-as-json')}
                         tone="default"
                         mode="ghost"
                         icon={JsonIcon}
                       />
-                      <Button
-                        as="a"
-                        download="query-result.csv"
-                        href={`data:application/csv;charset=utf-8,${encodeURIComponent(
-                          json2csv(Array.isArray(queryResult) ? queryResult : [queryResult]),
-                        )}`}
-                        text={t('action.download-result-as-csv')}
-                        tone="default"
-                        mode="ghost"
-                        icon={DocumentSheetIcon}
-                      />
+
+                      <DownloadCsvButton csvUrl={csvUrl} />
                     </DownloadsContainer>
                   </DownloadsCard>
                 )}
