@@ -4,15 +4,15 @@ import {Box, Card, Code, Flex, Inline, Stack, Text} from '@sanity/ui'
 import {format} from 'date-fns'
 import {omit} from 'lodash'
 import {useCallback, useMemo, useState} from 'react'
-
-import {Button} from '../../../../ui-components'
-import {ChangeFieldWrapper} from '../../../changeIndicators'
 import {
-  ChangeList,
   type Chunk,
   DocumentChangeContext,
   type DocumentChangeContextInstance,
-} from '../../../field'
+} from 'sanity/_singleton'
+
+import {Button} from '../../../../ui-components'
+import {ChangeFieldWrapper} from '../../../changeIndicators'
+import {ChangeList} from '../../../field'
 import {useConnectionState, useEditState, useSchema} from '../../../hooks'
 import {useInitialValue} from '../document'
 import {useTimelineSelector, useTimelineStore} from '../history'

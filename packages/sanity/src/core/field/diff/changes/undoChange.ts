@@ -6,6 +6,7 @@ import {
   type PatchOperations,
   type Path,
 } from '@sanity/types'
+import {type ObjectDiff} from 'sanity/_singleton'
 import {
   diffItem,
   type DiffOptions,
@@ -28,7 +29,6 @@ import {
   type Diff,
   type FieldOperationsAPI,
   type ItemDiff,
-  type ObjectDiff,
 } from '../../types'
 import {flattenChangeNode, isAddedAction, isSubpathOf, pathSegmentOfCorrectType} from './helpers'
 

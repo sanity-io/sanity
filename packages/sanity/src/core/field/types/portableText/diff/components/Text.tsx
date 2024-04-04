@@ -1,10 +1,10 @@
 import {isKeySegment, type Path} from '@sanity/types'
 import {type HTMLProps, type SyntheticEvent, useCallback, useContext, useMemo} from 'react'
-import {ConnectorContext, DiffContext} from 'sanity/_singleton'
+import {ConnectorContext, DiffContext, type ObjectDiff} from 'sanity/_singleton'
 
 import {useTranslation} from '../../../../../i18n'
 import {DiffCard} from '../../../../diff'
-import {type ObjectDiff, type StringDiff, type StringDiffSegment} from '../../../../types'
+import {type StringDiff, type StringDiffSegment} from '../../../../types'
 import {InlineBox} from './styledComponents'
 
 interface TextProps {

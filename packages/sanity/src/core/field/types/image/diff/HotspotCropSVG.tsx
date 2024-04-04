@@ -1,9 +1,9 @@
 import {type Image, type ImageCrop, type ImageHotspot} from '@sanity/types'
 import {type SVGProps} from 'react'
+import {type ObjectDiff} from 'sanity/_singleton'
 
 import {useTranslation} from '../../../../i18n'
 import {DiffTooltip, useDiffAnnotationColor} from '../../../diff'
-import {type ObjectDiff} from '../../../types'
 import {hexToRgba} from './helpers'
 
 interface HotspotCropSVGProps {

@@ -6,6 +6,7 @@ import {
   type Path,
   type SchemaType,
 } from '@sanity/types'
+import {type ObjectDiff} from 'sanity/_singleton'
 
 import {getItemKeySegment, pathsAreEqual, pathToString} from '../../paths'
 import {getArrayDiffItemType} from '../../schema/helpers'
@@ -17,7 +18,6 @@ import {
   type DiffComponent,
   type FieldChangeNode,
   type ItemDiff,
-  type ObjectDiff,
 } from '../../types'
 import {hasPTMemberType} from '../../types/portableText/diff/helpers'
 import {getValueError} from '../../validation'

@@ -5,15 +5,14 @@ import {
   type KeyedSegment,
   type Path,
 } from '@sanity/types'
+import {type Annotation, type ObjectDiff} from 'sanity/_singleton'
 
 import {type UserColor, type UserColorManager} from '../../../user-color'
 import {pathToString, stringToPath} from '../../paths/helpers'
 import {
-  type Annotation,
   type ArrayDiff,
   type Diff,
   type ItemDiff,
-  type ObjectDiff,
   type StringDiff,
   type StringDiffSegment,
 } from '../../types'

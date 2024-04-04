@@ -10,14 +10,9 @@ import {
   type Subscription,
   tap,
 } from 'rxjs'
+import {type Annotation, type Chunk} from 'sanity/_singleton'
 
-import {
-  type Annotation,
-  type Chunk,
-  type SelectionState,
-  type TimelineController,
-  useHistoryStore,
-} from '../../..'
+import {type SelectionState, type TimelineController, useHistoryStore} from '../../..'
 import {useClient} from '../../../hooks'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
 import {remoteSnapshots, type RemoteSnapshotVersionEvent} from '../document'

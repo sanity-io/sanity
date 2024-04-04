@@ -1,13 +1,14 @@
 import {type Path} from '@sanity/types'
 import {Flex, Inline, Stack, Text} from '@sanity/ui'
 import {type ReactElement, type ReactNode} from 'react'
+import {type AnnotationDetails} from 'sanity/_singleton'
 
 import {Tooltip, type TooltipProps} from '../../../../ui-components'
 import {LegacyLayerProvider, UserAvatar} from '../../../components'
 import {useRelativeTime} from '../../../hooks'
 import {useTranslation} from '../../../i18n'
 import {useUser} from '../../../store'
-import {type AnnotationDetails, type Diff} from '../../types'
+import {type Diff} from '../../types'
 import {getAnnotationAtPath, useAnnotationColor} from '../annotations'
 
 /** @internal */

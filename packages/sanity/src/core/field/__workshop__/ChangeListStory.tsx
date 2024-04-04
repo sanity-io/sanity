@@ -1,10 +1,15 @@
 import {type ObjectSchemaType} from '@sanity/types'
 import {Card, Container} from '@sanity/ui'
 import {useCallback, useMemo} from 'react'
+import {
+  DocumentChangeContext,
+  type DocumentChangeContextInstance,
+  type ObjectDiff,
+} from 'sanity/_singleton'
 
 import {useSchema} from '../../hooks'
-import {ChangeList, DocumentChangeContext, type DocumentChangeContextInstance} from '../diff'
-import {type ObjectDiff, type StringDiff} from '../types'
+import {ChangeList} from '../diff'
+import {type StringDiff} from '../types'
 
 export default function ChangeListStory() {
   const documentId = 'test'

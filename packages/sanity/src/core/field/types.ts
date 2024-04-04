@@ -4,7 +4,6 @@ import {
   type ItemDiff as AgnosticItemDiff,
   type NullDiff as AgnosticNullDiff,
   type NumberDiff as AgnosticNumberDiff,
-  type ObjectDiff as AgnosticObjectDiff,
   type StringDiff as AgnosticStringDiff,
   type StringSegmentChanged as AgnosticStringSegmentChanged,
   type StringSegmentUnchanged as AgnosticStringSegmentUnchanged,
@@ -24,60 +23,9 @@ import {
   type StringSchemaType,
 } from '@sanity/types'
 import {type ComponentType} from 'react'
+import {type Annotation, type ObjectDiff} from 'sanity/_singleton'
 
 import {type FieldValueError} from './validation'
-
-/**
- * History timeline / chunking
- *
- *
- * @hidden
- * @beta
- */
-export type ChunkType =
-  | 'initial'
-  | 'create'
-  | 'editDraft'
-  | 'delete'
-  | 'publish'
-  | 'unpublish'
-  | 'discardDraft'
-  | 'editLive'
-
-/**
- * @hidden
- * @beta */
-export type Chunk = {
-  index: number
-
-  id: string
-  type: ChunkType
-  start: number
-  end: number
-  startTimestamp: string
-  endTimestamp: string
-  authors: Set<string>
-  draftState: 'present' | 'missing' | 'unknown'
-  publishedState: 'present' | 'missing' | 'unknown'
-}
-
-/**
- * Annotation connected to a change
- *
- *
- * @hidden
- * @beta
- */
-export type AnnotationDetails = {
-  chunk: Chunk
-  timestamp: string
-  author: string
-}
-
-/**
- * @hidden
- * @beta */
-export type Annotation = AnnotationDetails | null
 
 // Diff types with annotation type set automatically
 
@@ -92,9 +40,6 @@ export type NullDiff = AgnosticNullDiff<Annotation>
 
 /** @internal */
 export type NumberDiff = AgnosticNumberDiff<Annotation>
-
-/** @internal */
-export type ObjectDiff<T extends object = Record<string, any>> = AgnosticObjectDiff<Annotation, T>
 
 /** @internal */
 export type StringDiff = AgnosticStringDiff<Annotation>

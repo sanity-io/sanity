@@ -1,10 +1,11 @@
 import {type Image} from '@sanity/types'
 import {Box, Card, Text} from '@sanity/ui'
+import {type ObjectDiff} from 'sanity/_singleton'
 
 import {type TFunction, useTranslation} from '../../../../i18n'
 import {ChangeList, DiffCard, DiffTooltip, getAnnotationAtPath} from '../../../diff'
 import {FromTo} from '../../../diff/components'
-import {type DiffComponent, type ObjectDiff} from '../../../types'
+import {type DiffComponent} from '../../../types'
 import {ImagePreview, NoImagePreview} from './ImagePreview'
 
 const IMAGE_META_FIELDS = ['crop', 'hotspot']

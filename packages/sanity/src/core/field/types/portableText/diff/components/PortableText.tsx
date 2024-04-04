@@ -7,15 +7,11 @@ import {
 } from '@sanity/types'
 import {uniq, xor} from 'lodash'
 import {createElement, type ReactElement, type ReactNode, useCallback, useMemo} from 'react'
+import {type ObjectDiff} from 'sanity/_singleton'
 
 import {type TFunction, useTranslation} from '../../../../../i18n'
 import {DiffCard} from '../../../../diff'
-import {
-  type ArrayDiff,
-  type ObjectDiff,
-  type StringDiff,
-  type StringDiffSegment,
-} from '../../../../types'
+import {type ArrayDiff, type StringDiff, type StringDiffSegment} from '../../../../types'
 import {
   escapeRegExp,
   findAnnotationDiff,

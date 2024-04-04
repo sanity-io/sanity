@@ -1,17 +1,12 @@
 import {type ArraySchemaType, isKeyedObject, type SchemaType, type TypedObject} from '@sanity/types'
 import {Box, Flex} from '@sanity/ui'
+import {type Annotation} from 'sanity/_singleton'
 
 import {useTranslation} from '../../../../i18n'
 import {Preview} from '../../../../preview/components/Preview'
 import {useUserColorManager} from '../../../../user-color'
 import {DiffTooltip, FromToArrow, getAnnotationColor} from '../../../diff'
-import {
-  type Annotation,
-  type ArrayDiff,
-  type Diff,
-  type DiffComponent,
-  type ItemDiff,
-} from '../../../types'
+import {type ArrayDiff, type Diff, type DiffComponent, type ItemDiff} from '../../../types'
 import {Checkbox} from '../../boolean/preview'
 import {isEqual} from '../util/arrayUtils'
 

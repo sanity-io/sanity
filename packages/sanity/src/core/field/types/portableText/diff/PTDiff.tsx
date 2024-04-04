@@ -1,6 +1,7 @@
 import {useMemo} from 'react'
+import {type ObjectDiff} from 'sanity/_singleton'
 
-import {type DiffComponent, type ObjectDiff} from '../../../types'
+import {type DiffComponent} from '../../../types'
 import {PortableText} from './components/PortableText'
 import {createPortableTextDiff} from './helpers'
 

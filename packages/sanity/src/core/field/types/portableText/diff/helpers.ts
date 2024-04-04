@@ -19,12 +19,12 @@ import {
   type SpanSchemaType,
 } from '@sanity/types'
 import {flatten, isEqual, orderBy} from 'lodash'
+import {type ObjectDiff} from 'sanity/_singleton'
 
 import {
   type ArrayDiff,
   type DiffComponent,
   type DiffComponentOptions,
-  type ObjectDiff,
   type StringDiffSegment,
 } from '../../../types'
 import * as TextSymbols from './symbols'

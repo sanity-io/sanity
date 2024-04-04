@@ -1,5 +1,7 @@
+import {type ObjectDiff} from 'sanity/_singleton'
+
 import {DiffFromTo} from '../../../diff'
-import {type DiffComponent, type ObjectDiff} from '../../../types'
+import {type DiffComponent} from '../../../types'
 import {SlugPreview} from '../preview'
 
 interface Slug {

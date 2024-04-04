@@ -11,14 +11,13 @@ import {
   useMemo,
   useState,
 } from 'react'
-import {ConnectorContext, DiffContext} from 'sanity/_singleton'
+import {ConnectorContext, DiffContext, type ObjectDiff} from 'sanity/_singleton'
 import {styled} from 'styled-components'
 
 import {Popover} from '../../../../../../ui-components'
 import {useReportedValues} from '../../../../../changeIndicators'
 import {useTranslation} from '../../../../../i18n'
 import {ChangeList, DiffTooltip, useDiffAnnotationColor} from '../../../../diff'
-import {type ObjectDiff} from '../../../../types'
 import {isEmptyObject} from '../helpers'
 import {InlineBox, InlineText, PopoverContainer, PreviewContainer} from './styledComponents'
 

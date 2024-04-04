@@ -1,8 +1,9 @@
 import {type Path} from '@sanity/types'
 import {useMemo} from 'react'
+import {type Annotation} from 'sanity/_singleton'
 
 import {type UserColor, useUserColorManager} from '../../../user-color'
-import {type Annotation, type Diff} from '../../types'
+import {type Diff} from '../../types'
 import {getAnnotationAtPath, getAnnotationColor} from './helpers'
 
 /** @internal */

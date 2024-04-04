@@ -1,9 +1,10 @@
 import {type Path} from '@sanity/types'
 import {Card, rem} from '@sanity/ui'
 import {type ElementType, forwardRef, type HTMLProps, type ReactNode, useMemo} from 'react'
+import {type Annotation} from 'sanity/_singleton'
 import {styled} from 'styled-components'
 
-import {type Annotation, type Diff} from '../../types'
+import {type Diff} from '../../types'
 import {getAnnotationAtPath, useAnnotationColor} from '../annotations'
 import {DiffTooltip} from './DiffTooltip'
 
