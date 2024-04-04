@@ -44,8 +44,8 @@ importers:
         specifier: ^6.15.9
         version: 6.15.9
       '@sanity/eslint-config-i18n':
-        specifier: 1.0.0
-        version: 1.0.0(eslint@8.57.0)(typescript@5.3.3)
+        specifier: 1.1.0
+        version: 1.1.0(eslint@8.57.0)(typescript@5.3.3)
       '@sanity/eslint-config-studio':
         specifier: ^3.0.1
         version: 3.0.1(eslint@8.57.0)(typescript@5.3.3)
@@ -6097,8 +6097,8 @@ packages:
     resolution: {integrity: sha512-dSZqGeYjHKGIkqAzGqLcG92LZyJGX+nYbs/FWawhBbTBDWi21kvQ0hsL3DJThuFVWtZMWTQijN3z6Cnd44Pf2g==}
     engines: {node: '>=14.18'}
 
-  /@sanity/eslint-config-i18n@1.0.0(eslint@8.57.0)(typescript@5.3.3):
-    resolution: {integrity: sha512-BIeD9IVT7O5I6vDyDaICoidN02qeImdXDRAW062iHY9gV4JrGScWBFio2HQLso7C+Z6SrQB8jOft6SzeYqDhdQ==}
+  /@sanity/eslint-config-i18n@1.1.0(eslint@8.57.0)(typescript@5.3.3):
+    resolution: {integrity: sha512-mMD0CB1R3n9vN+wWpmjIge1EW2yVYlNIO/N4LJd1kNZUs5FhyT4ZeFoJT79wj3lmr9K+yoHjqjTQ5HuZkRCSXw==}
     dependencies:
       '@rushstack/eslint-patch': 1.10.1
       '@sanity/eslint-plugin-i18n': 1.1.0
