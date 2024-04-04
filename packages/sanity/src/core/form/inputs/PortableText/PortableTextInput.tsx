@@ -14,7 +14,6 @@ import {
   startTransition,
   useCallback,
   useEffect,
-  useImperativeHandle,
   useMemo,
   useRef,
   useState,
@@ -85,17 +84,6 @@ export function PortableTextInput(props: PortableTextInputProps) {
   const defaultEditorRef = useRef<PortableTextEditor | null>(null)
   const editorRef = editorRefProp || defaultEditorRef
 
-  // This handle will allow for natively calling .focus
-  // on the returned component and have the PortableTextEditor focused,
-  // simulating a native input element (like with an string input)
-  useImperativeHandle(elementProps.ref, () => ({
-    focus() {
-      if (editorRef.current) {
-        PortableTextEditor.focus(editorRef.current)
-      }
-    },
-  }))
-
   const {subscribe} = usePatches({path})
   const [ignoreValidationError, setIgnoreValidationError] = useState(false)
   const [invalidValue, setInvalidValue] = useState<InvalidValue | null>(null)
@@ -113,8 +101,6 @@ export function PortableTextInput(props: PortableTextInputProps) {
     snapshot: PortableTextBlock[] | undefined
   }> = useMemo(() => new Subject(), [])
   const patches$ = useMemo(() => patchSubject.asObservable(), [patchSubject])
-
-  const innerElementRef = useRef<HTMLDivElement | null>(null)
 
   const handleToggleFullscreen = useCallback(() => {
     setIsFullscreen((v) => {
@@ -266,7 +252,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
   }, [editorRef, isActive])
 
   return (
-    <Box ref={innerElementRef}>
+    <Box ref={elementProps.ref}>
       {!ignoreValidationError && respondToInvalidContent}
       {(!invalidValue || ignoreValidationError) && (
         <PortableTextMarkersProvider markers={markers}>
