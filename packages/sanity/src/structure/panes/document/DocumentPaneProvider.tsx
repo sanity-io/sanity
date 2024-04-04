@@ -262,27 +262,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     [params, setPaneParams],
   )
 
-  const handleFocus = useCallback(
-    (nextFocusPath: Path) => {
-      setFocusPath(nextFocusPath)
-
-      if (focusPathRef.current !== nextFocusPath) {
-        focusPathRef.current = nextFocusPath
-        onFocusPath?.(nextFocusPath)
-      }
-
-      presenceStore.setLocation([
-        {
-          type: 'document',
-          documentId,
-          path: nextFocusPath,
-          lastActiveAt: new Date().toISOString(),
-        },
-      ])
-    },
-    [documentId, onFocusPath, presenceStore, setFocusPath],
-  )
-
   const handleBlur = useCallback(
     (blurredPath: Path) => {
       if (disableBlurRef.current) {
@@ -565,6 +544,27 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       onSetOpenPath(path)
     },
     [formStateRef],
+  )
+
+  const handleFocus = useCallback(
+    (nextFocusPath: Path) => {
+      setFocusPath(nextFocusPath)
+      setOpenPath(nextFocusPath.slice(0, -1))
+      if (focusPathRef.current !== nextFocusPath) {
+        focusPathRef.current = nextFocusPath
+        onFocusPath?.(nextFocusPath)
+      }
+
+      presenceStore.setLocation([
+        {
+          type: 'document',
+          documentId,
+          path: nextFocusPath,
+          lastActiveAt: new Date().toISOString(),
+        },
+      ])
+    },
+    [documentId, onFocusPath, presenceStore, setOpenPath],
   )
 
   const documentPane: DocumentPaneContextValue = useMemo(
