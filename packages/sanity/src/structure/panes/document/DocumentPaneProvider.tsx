@@ -10,7 +10,6 @@ import {useToast} from '@sanity/ui'
 import {fromString as pathFromString, resolveKeyedPath} from '@sanity/util/paths'
 import {omit} from 'lodash'
 import {memo, useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import deepEquals from 'react-fast-compare'
 import {
   type DocumentFieldAction,
   type DocumentInspector,
@@ -141,7 +140,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     params.path ? pathFromString(params.path) : EMPTY_ARRAY,
   )
   const focusPathRef = useRef(focusPath)
-  const openPathRef = useRef<Path>([])
   const activeViewId = params.view || (views[0] && views[0].id) || null
   const [timelineMode, setTimelineMode] = useState<'since' | 'rev' | 'closed'>('closed')
 
@@ -262,6 +260,46 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       })
     },
     [params, setPaneParams],
+  )
+
+  const handleFocus = useCallback(
+    (nextFocusPath: Path) => {
+      setFocusPath(nextFocusPath)
+
+      if (focusPathRef.current !== nextFocusPath) {
+        focusPathRef.current = nextFocusPath
+        onFocusPath?.(nextFocusPath)
+      }
+
+      presenceStore.setLocation([
+        {
+          type: 'document',
+          documentId,
+          path: nextFocusPath,
+          lastActiveAt: new Date().toISOString(),
+        },
+      ])
+    },
+    [documentId, onFocusPath, presenceStore, setFocusPath],
+  )
+
+  const handleBlur = useCallback(
+    (blurredPath: Path) => {
+      if (disableBlurRef.current) {
+        return
+      }
+
+      setFocusPath(EMPTY_ARRAY)
+
+      if (focusPathRef.current !== EMPTY_ARRAY) {
+        focusPathRef.current = EMPTY_ARRAY
+        onFocusPath?.(EMPTY_ARRAY)
+      }
+
+      // note: we're deliberately not syncing presence here since it would make the user avatar disappear when a
+      // user clicks outside a field without focusing another one
+    },
+    [onFocusPath, setFocusPath],
   )
 
   const patchRef = useRef<(event: PatchEvent) => void>(() => {
@@ -529,45 +567,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     [formStateRef],
   )
 
-  const handleFocus = useCallback(
-    (nextFocusPath: Path) => {
-      if (!deepEquals(focusPathRef.current, nextFocusPath)) {
-        setFocusPath(nextFocusPath)
-        focusPathRef.current = nextFocusPath
-        openPathRef.current = nextFocusPath
-        onFocusPath?.(nextFocusPath)
-      }
-
-      presenceStore.setLocation([
-        {
-          type: 'document',
-          documentId,
-          path: nextFocusPath,
-          lastActiveAt: new Date().toISOString(),
-        },
-      ])
-    },
-    [documentId, onFocusPath, presenceStore, setFocusPath],
-  )
-
-  const handleBlur = useCallback(
-    (blurredPath: Path) => {
-      if (disableBlurRef.current) {
-        return
-      }
-
-      setFocusPath(EMPTY_ARRAY)
-
-      if (focusPathRef.current !== EMPTY_ARRAY) {
-        focusPathRef.current = EMPTY_ARRAY
-        onFocusPath?.(EMPTY_ARRAY)
-      }
-
-      // note: we're deliberately not syncing presence here since it would make the user avatar disappear when a
-      // user clicks outside a field without focusing another one
-    },
-    [onFocusPath, setFocusPath],
-  )
   const documentPane: DocumentPaneContextValue = useMemo(
     () => ({
       actions,
@@ -707,13 +706,9 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
 
       // Reset focus path when url params path changes
       setFocusPath(pathFromUrl)
+      setOpenPath(pathFromUrl)
 
-      if (!deepEquals(openPathRef.current, pathFromUrl)) {
-        openPathRef.current = pathFromUrl
-        setOpenPath(pathFromUrl)
-      }
-
-      if (!deepEquals(focusPathRef.current, pathFromUrl)) {
+      if (focusPathRef.current !== pathFromUrl) {
         focusPathRef.current = pathFromUrl
         onFocusPath?.(pathFromUrl)
       }
