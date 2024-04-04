@@ -58,6 +58,7 @@ interface SnapshotPair {
   published: DocumentVersionSnapshots
 }
 
+/** @internal */
 export const snapshotPair = memoize(
   (
     client: SanityClient,

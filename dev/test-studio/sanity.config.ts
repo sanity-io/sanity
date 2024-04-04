@@ -96,7 +96,6 @@ const sharedSettings = definePlugin({
     unstable_comments: {
       enabled: true,
     },
-
     badges: (prev, context) => (context.schemaType === 'author' ? [CustomBadge, ...prev] : prev),
   },
   plugins: [
@@ -152,9 +151,9 @@ export default defineConfig([
     plugins: [sharedSettings()],
     basePath: '/test',
     icon: SanityMonogram,
-    unstable_serverActions: {
-      enabled: true,
-    },
+    // unstable_serverActions: {
+    //   enabled: true,
+    // },
   },
   {
     name: 'partialIndexing',

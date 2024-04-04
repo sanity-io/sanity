@@ -176,7 +176,6 @@ export function checkoutPair(
   serverActionsEnabled?: boolean,
 ): Pair {
   const {publishedId, draftId} = idPair
-  // console.log('checkoutPair', serverActionsEnabled)
 
   const listenerEventsConnector = new Subject<ListenerEvent>()
   const listenerEvents$ = getPairListener(client, idPair).pipe(
