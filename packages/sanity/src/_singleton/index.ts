@@ -1,4 +1,5 @@
 export * from './ChangeIndicatorContext'
 export * from './ConnectorContext'
+export * from './DiffContext'
 export * from './PreviewCardContext'
 export * from './scrollContext'
