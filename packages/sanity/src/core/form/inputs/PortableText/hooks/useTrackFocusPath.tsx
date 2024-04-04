@@ -33,6 +33,14 @@ export function useTrackFocusPath(props: Props): void {
     const openItem = portableTextMemberItems.find((m) => m.member.open)
 
     if (openItem && openItem.elementRef?.current) {
+      // Don't do anything if the selection focus path is already equal to the focusPath
+      if (
+        selection?.focus.path &&
+        isEqual(selection.focus.path, focusPath.slice(0, selection.focus.path.length))
+      ) {
+        return
+      }
+
       if (boundaryElement) {
         // Scroll the boundary element into view (the scrollable element itself)
         scrollIntoView(boundaryElement, {
@@ -47,14 +55,6 @@ export function useTrackFocusPath(props: Props): void {
           block: 'start',
           inline: 'start',
         })
-      }
-
-      // Don't do anything if the selection focus path is already equal to the focusPath
-      if (
-        selection?.focus.path &&
-        isEqual(selection.focus.path, focusPath.slice(0, selection.focus.path.length))
-      ) {
-        return
       }
 
       const isTextBlock = openItem.kind === 'textBlock'
