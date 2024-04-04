@@ -1,5 +1,6 @@
 import {Card, type CardProps} from '@sanity/ui'
-import {createContext, type ForwardedRef, forwardRef, type HTMLProps, useContext} from 'react'
+import {type ForwardedRef, forwardRef, type HTMLProps, useContext} from 'react'
+import {PreviewCardContext, type PreviewCardContextValue} from 'sanity/_singleton'
 import {css, styled} from 'styled-components'
 
 /** @internal */
@@ -16,13 +17,6 @@ const StyledCard = styled(Card)(() => {
     }
   `
 })
-
-/** @internal */
-export interface PreviewCardContextValue {
-  selected?: boolean
-}
-
-const PreviewCardContext = createContext<PreviewCardContextValue>({selected: false})
 
 /** @internal */
 export function usePreviewCard(): PreviewCardContextValue {
