@@ -44,7 +44,6 @@ export const DragHandle = function DragHandle(props: DragHandleProps) {
       {...attributes}
       {...listeners}
       disabled={readOnly}
-      // {...(readOnly ? {disabled: true} : {...attributes, ...listeners})}
     />
   )
 }
