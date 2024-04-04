@@ -13,7 +13,6 @@ import {
 import {TypesGeneratedTrace} from './generate.telemetry'
 
 export interface TypegenGenerateTypesCommandFlags {
-  configPath?: string
   'config-path'?: string
 }
 
@@ -41,9 +40,7 @@ export default async function typegenGenerateAction(
   const trace = telemetry.trace(TypesGeneratedTrace)
   trace.start()
 
-  const codegenConfig = await readConfig(
-    flags.configPath || flags['config-path'] || 'sanity-typegen.json',
-  )
+  const codegenConfig = await readConfig(flags['config-path'] || 'sanity-typegen.json')
 
   try {
     const {isFile} = await stat(codegenConfig.schema)
