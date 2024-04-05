@@ -2,12 +2,11 @@
 
 import {type Path} from '@sanity/types'
 import {isEqual, startsWith} from '@sanity/util/paths'
-import {createContext, type ReactNode, useContext, useRef} from 'react'
+import {type ReactNode, useContext, useRef} from 'react'
+import {PresenceContext} from 'sanity/_singletons'
 
 import {type FormNodePresence} from '../../../presence'
 import {immutableReconcile} from '../../store/utils/immutableReconcile'
-
-const PresenceContext = createContext<FormNodePresence[]>([])
 
 export function PresenceProvider(props: {presence: FormNodePresence[]; children: ReactNode}) {
   return (
