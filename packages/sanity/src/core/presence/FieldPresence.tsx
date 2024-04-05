@@ -1,6 +1,7 @@
 import {AvatarCounter, type AvatarPosition} from '@sanity/ui'
 import {sortBy, uniqBy} from 'lodash'
 import {memo, useContext, useId, useMemo, useRef} from 'react'
+import {FormFieldPresenceContext} from 'sanity/_singletons'
 
 import {UserAvatar} from '../components/userAvatar'
 import {
@@ -9,7 +10,6 @@ import {
   DEFAULT_MAX_AVATARS_FIELDS,
   DISABLE_OVERLAY,
 } from './constants'
-import {FormFieldPresenceContext} from './context'
 import {FlexWrapper, InnerBox} from './FieldPresence.styled'
 import {useReporter} from './overlay/tracker'
 import {PresenceTooltip} from './PresenceTooltip'
