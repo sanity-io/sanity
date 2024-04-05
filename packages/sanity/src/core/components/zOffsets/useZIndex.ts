@@ -1,7 +1,7 @@
 import {useContext} from 'react'
+import {ZIndexContext} from 'sanity/_singletons'
 
 import {type ZIndexContextValue} from './types'
-import {ZIndexContext} from './ZIndexContext'
 
 /**
  * TODO: Rename to `useZOffsets`
