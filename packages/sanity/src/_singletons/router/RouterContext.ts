@@ -1,6 +1,5 @@
 import {createContext} from 'react'
-
-import {type RouterContextValue} from './types'
+import type {RouterContextValue} from 'sanity/router'
 
 /**
  * @internal
