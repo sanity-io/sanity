@@ -106,6 +106,93 @@ const config = {
     'sort-imports': 'off', // handled by simple-import-sort
     'simple-import-sort/imports': 'error',
     'simple-import-sort/exports': 'error',
+<<<<<<< HEAD
+=======
+    'boundaries/element-types': [
+      'error',
+      {
+        default: 'disallow',
+        rules: [
+          {
+            // export
+            from: 'sanity/_internal',
+            allow: ['sanity/_internal__contents'],
+          },
+          {
+            from: 'sanity/_internal__contents',
+            allow: ['sanity', 'sanity/_internal__contents'],
+          },
+          {
+            // export
+            from: 'sanity/cli',
+            allow: ['sanity/cli__contents'],
+          },
+          {
+            from: 'sanity/cli__contents',
+            allow: ['sanity/cli__contents'],
+          },
+          {
+            // export
+            from: 'sanity',
+            allow: ['sanity__contents'],
+          },
+          {
+            from: 'sanity__contents',
+            allow: ['sanity__contents', 'sanity/router', 'sanity/_singletons'],
+          },
+          {
+            // export (deprecated, aliases structure)
+            from: 'sanity/desk',
+            allow: ['sanity/desk__contents', 'sanity/structure', 'sanity/structure__contents'],
+          },
+          {
+            from: 'sanity/desk__contents',
+            allow: [
+              'sanity',
+              'sanity/desk__contents',
+              'sanity/router',
+              'sanity/_internal',
+              'sanity/structure',
+              'sanity/structure__contents',
+              'sanity/_singletons',
+            ],
+          },
+          {
+            // export
+            from: 'sanity/router',
+            allow: ['sanity/router__contents'],
+          },
+          {
+            from: 'sanity/router__contents',
+            allow: ['sanity/router__contents'],
+          },
+          {
+            // export
+            from: 'sanity/structure',
+            allow: ['sanity/structure__contents'],
+          },
+          {
+            from: 'sanity/structure__contents',
+            allow: ['sanity', 'sanity/structure__contents', 'sanity/router', 'sanity/_singletons'],
+          },
+          {
+            // export
+            from: 'sanity/_singletons',
+            allow: ['sanity/_singletons__contents'],
+          },
+          {
+            from: 'sanity/_singletons__contents',
+            allow: ['sanity/_singletons__contents'],
+          },
+          {
+            from: 'sanity/_singletons__contents',
+            allow: ['sanity'],
+            importKind: 'type',
+          },
+        ],
+      },
+    ],
+>>>>>>> d55e72f356 (refactor(core): move DocumentChangeContext to singletons)
     'no-undef': 'off',
     'no-dupe-class-members': 'off', // doesn't work with TS overrides
     'no-shadow': 'off',
