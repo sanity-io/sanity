@@ -153,6 +153,7 @@ const config = {
               'sanity/_internal',
               'sanity/structure',
               'sanity/structure__contents',
+              'sanity/_singletons',
             ],
           },
           {
@@ -171,7 +172,7 @@ const config = {
           },
           {
             from: 'sanity/structure__contents',
-            allow: ['sanity', 'sanity/structure__contents', 'sanity/router'],
+            allow: ['sanity', 'sanity/structure__contents', 'sanity/router', 'sanity/_singletons'],
           },
           {
             // export

@@ -1,5 +1,5 @@
 import {type Path, type SanityDocument, type SchemaType} from '@sanity/types'
-import {type ComponentType, createContext, type ReactNode} from 'react'
+import {type ComponentType, type ReactNode} from 'react'
 
 import {type ObjectDiff} from '../../types'
 
@@ -12,6 +12,3 @@ export type DocumentChangeContextInstance = {
   FieldWrapper: ComponentType<{path: Path; children: ReactNode; hasHover: boolean}>
   value: Partial<SanityDocument>
 }
-
-/** @internal */
-export const DocumentChangeContext = createContext<DocumentChangeContextInstance | null>(null)
