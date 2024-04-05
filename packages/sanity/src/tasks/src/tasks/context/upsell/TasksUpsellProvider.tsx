@@ -1,5 +1,6 @@
 import {useTelemetry} from '@sanity/telemetry/react'
-import {useCallback, useMemo, useState} from 'react'
+import {template} from 'lodash'
+import {useCallback, useEffect, useMemo, useState} from 'react'
 import {
   DEFAULT_STUDIO_CLIENT_OPTIONS,
   UpsellDialogDismissed,
@@ -12,7 +13,6 @@ import {
 } from 'sanity'
 
 import {CommentsUpsellDialog, type UpsellData} from '../../../../../structure/comments'
-import {TASKS_UPSELL_MOCK} from './__MOCK__'
 import {TasksUpsellContext} from './TasksUpsellContext'
 import {type TasksUpsellContextValue} from './types'
 
@@ -26,8 +26,7 @@ const BASE_URL = 'www.sanity.io'
  */
 export function TasksUpsellProvider(props: {children: React.ReactNode}) {
   const [upsellDialogOpen, setUpsellDialogOpen] = useState(false)
-  // TODO: Change for real data once the endpoint is ready
-  const [upsellData, setUpsellData] = useState<UpsellData | null>(TASKS_UPSELL_MOCK)
+  const [upsellData, setUpsellData] = useState<UpsellData | null>(null)
   const projectId = useProjectId()
   const telemetry = useTelemetry()
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
@@ -85,36 +84,35 @@ export function TasksUpsellProvider(props: {children: React.ReactNode}) {
     })
   }, [telemetry])
 
-  // TODO: Uncomment when the endpoint is ready
-  // useEffect(() => {
-  //   const data$ = client
-  //     .observable.request<TasksUpsellData | null>({
-  //       uri: '/journey/tasks',
-  //     })
+  useEffect(() => {
+    const data$ = client.observable.request<UpsellData[] | null>({
+      uri: '/journey/tasks',
+    })
 
-  //   const sub = data$.subscribe({
-  //     next: (data) => {
-  //       if (!data) return
-  //       try {
-  //         const ctaUrl = template(data.ctaButton.url, TEMPLATE_OPTIONS)
-  //         data.ctaButton.url = ctaUrl({baseUrl: BASE_URL, projectId})
+    const sub = data$.subscribe({
+      next: (response) => {
+        const data = response?.[0]
+        if (!data) return
+        try {
+          const ctaUrl = template(data.ctaButton.url, TEMPLATE_OPTIONS)
+          data.ctaButton.url = ctaUrl({baseUrl: BASE_URL, projectId})
 
-  //         const secondaryUrl = template(data.secondaryButton.url, TEMPLATE_OPTIONS)
-  //         data.secondaryButton.url = secondaryUrl({baseUrl: BASE_URL, projectId})
-  //         setUpsellData(data)
-  //       } catch (e) {
-  //         // silently fail
-  //       }
-  //     },
-  //     error: () => {
-  //       // silently fail
-  //     },
-  //   })
+          const secondaryUrl = template(data.secondaryButton.url, TEMPLATE_OPTIONS)
+          data.secondaryButton.url = secondaryUrl({baseUrl: BASE_URL, projectId})
+          setUpsellData(data)
+        } catch (e) {
+          // silently fail
+        }
+      },
+      error: () => {
+        // silently fail
+      },
+    })
 
-  //   return () => {
-  //     sub.unsubscribe()
-  //   }
-  // }, [client, projectId])
+    return () => {
+      sub.unsubscribe()
+    }
+  }, [client, projectId])
 
   const handleOpenDialog = useCallback(
     (source: UpsellDialogViewedInfo['source']) => {
