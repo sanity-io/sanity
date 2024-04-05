@@ -1,8 +1,7 @@
 import {type Path} from '@sanity/types'
 import * as PathUtils from '@sanity/util/paths'
 import {type ReactNode, useContext, useMemo} from 'react'
-
-import {FormFieldPresenceContext} from './context'
+import {FormFieldPresenceContext} from 'sanity/_singletons'
 
 const EMPTY_ARRAY: never[] = []
 
