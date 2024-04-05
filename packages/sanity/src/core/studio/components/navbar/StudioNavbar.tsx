@@ -11,6 +11,7 @@ import {
   useMediaIndex,
 } from '@sanity/ui'
 import {useCallback, useContext, useEffect, useMemo, useRef, useState} from 'react'
+import {NavbarContext} from 'sanity/_singletons'
 import {type RouterState, useRouterState} from 'sanity/router'
 import {styled} from 'styled-components'
 
@@ -19,7 +20,6 @@ import {type NavbarProps} from '../../../config/studio/types'
 import {isDev} from '../../../environment'
 import {useTranslation} from '../../../i18n'
 import {useToolMenuComponent} from '../../studio-components-hooks'
-import {NavbarContext} from '../../StudioLayout'
 import {useWorkspace} from '../../workspace'
 import {ConfigIssuesButton} from './configIssues/ConfigIssuesButton'
 import {FreeTrial} from './free-trial'
