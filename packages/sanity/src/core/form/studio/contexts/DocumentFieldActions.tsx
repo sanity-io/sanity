@@ -1,13 +1,8 @@
-import {createContext, type ReactNode, useContext, useMemo} from 'react'
+import {type ReactNode, useContext, useMemo} from 'react'
+import {DocumentFieldActionsContext} from 'sanity/_singletons'
 
 import {type DocumentFieldAction} from '../../../config'
 import {EMPTY_ARRAY} from '../../../util'
-
-export interface DocumentFieldActionsContextValue {
-  actions: DocumentFieldAction[]
-}
-
-const DocumentFieldActionsContext = createContext<DocumentFieldActionsContextValue | null>(null)
 
 export function DocumentFieldActionsProvider(props: {
   actions: DocumentFieldAction[] | undefined
