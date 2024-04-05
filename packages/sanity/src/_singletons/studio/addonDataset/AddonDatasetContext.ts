@@ -1,6 +1,5 @@
 import {createContext} from 'react'
-
-import {type AddonDatasetContextValue} from './types'
+import type {AddonDatasetContextValue} from 'sanity'
 
 /**
  * @beta
