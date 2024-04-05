@@ -60,13 +60,13 @@ jobs:
           path: .eslintcache
           key: eslint-v1-${{ hashFiles('.eslintrc.cjs') }}
       - run: "pnpm lint:fix -- --rule 'prettier/prettier: [off]'"
-      - uses: tibdex/github-app-token@3beb63f4bd073e61482598c45c71c1019b59b73a # v2
+      - uses: actions/create-github-app-token@v1
         # Run even if `pnpm lint:fix` fails
         if: always()
-        id: generate-token
+        id: app-token
         with:
-          app_id: ${{ secrets.ECOSPARK_APP_ID }}
-          private_key: ${{ secrets.ECOSPARK_APP_PRIVATE_KEY }}
+          app-id: ${{ secrets.ECOSPARK_APP_ID }}
+          private-key: ${{ secrets.ECOSPARK_APP_PRIVATE_KEY }}
       - uses: peter-evans/create-pull-request@70a41aba780001da0a30141984ae2a0c95d8704e # v6
         # Run even if `lint:fix` fails
         if: always()
@@ -76,4 +76,4 @@ jobs:
           commit-message: 'chore(lint): fix linter issues 🤖 ✨'
           labels: 🤖 bot
           title: 'chore(lint): fix linter issues 🤖 ✨'
-          token: ${{ steps.generate-token.outputs.token }}
+          token: ${{ steps.app-token.outputs.token }}
