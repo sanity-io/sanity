@@ -185,7 +185,7 @@ const config = {
           },
           {
             from: 'sanity/_singletons__contents',
-            allow: ['sanity'],
+            allow: ['sanity', 'sanity__contents'],
             importKind: 'type',
           },
         ],
