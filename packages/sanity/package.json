@@ -33,6 +33,12 @@
       "require": "./lib/_internal.js",
       "default": "./lib/_internal.js"
     },
+    "./_singletons": {
+      "source": "./src/_exports/_singletons.ts",
+      "require": "./lib/_singletons.js",
+      "import": "./lib/_singletons.mjs",
+      "default": "./lib/_singletons.js"
+    },
     "./cli": {
       "source": "./src/_exports/cli.ts",
       "require": "./lib/cli.js",
