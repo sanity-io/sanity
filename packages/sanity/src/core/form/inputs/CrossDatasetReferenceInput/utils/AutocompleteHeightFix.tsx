@@ -1,4 +1,4 @@
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 export const AutocompleteHeightFix = styled.div`
   // workaround for an issue that caused the autocomplete to not be the same height as the New button

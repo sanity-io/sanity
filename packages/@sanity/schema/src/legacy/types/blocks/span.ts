@@ -40,7 +40,7 @@ export const SpanType = {
   get() {
     return SPAN_CORE
   },
-  extend(subTypeDef, extendMember) {
+  extend(subTypeDef: any, extendMember: any) {
     const options = {...(subTypeDef.options || DEFAULT_OPTIONS)}
 
     const {annotations = [], marks = []} = subTypeDef
@@ -70,12 +70,12 @@ export const SpanType = {
 
     return subtype(parsed)
 
-    function subtype(parent) {
+    function subtype(parent: any) {
       return {
         get() {
           return parent
         },
-        extend: (extensionDef) => {
+        extend: (extensionDef: any) => {
           if (extensionDef.fields) {
             throw new Error('Cannot override `fields` of subtypes of "span"')
           }

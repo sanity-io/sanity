@@ -3,7 +3,7 @@ import {type PortableTextBlock} from '@sanity/types'
 import {Box, Card, Code, Text} from '@sanity/ui'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {type Subject} from 'rxjs'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {
   type BlockDecoratorRenderProps,

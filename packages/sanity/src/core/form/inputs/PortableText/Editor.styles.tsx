@@ -2,13 +2,13 @@
 
 import {Card, Container, rem} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
-import styled, {css} from 'styled-components'
+import {css, styled} from 'styled-components'
 
 import {ScrollContainer} from '../../../components/scroll'
 import {createListName, TEXT_LEVELS} from './text'
 
 export const Root = styled(Card)<{$fullscreen: boolean}>`
-  height: ${({$fullscreen}) => ($fullscreen ? '100%' : '15em')};
+  height: ${({$fullscreen}) => ($fullscreen ? '100%' : '19em')};
 
   &:not([hidden]) {
     display: flex;

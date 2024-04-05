@@ -1,6 +1,6 @@
 {
   "name": "@sanity/portable-text-editor",
-  "version": "3.36.1",
+  "version": "3.36.4",
   "description": "Portable Text Editor made in React",
   "keywords": [
     "sanity",
@@ -55,19 +55,19 @@
     "postbuild": "run-s check:package",
     "check:package": "pkg-utils --strict --tsconfig tsconfig.lib.json",
     "clean": "rimraf lib",
+    "dev": "cd ./e2e-tests/ && ts-node serve",
     "lint": "eslint .",
     "prettier": "prettier --write './**/*.{ts,tsx,js,css,html}'",
-    "dev": "cd ./e2e-tests/ && ts-node serve",
     "test": "jest",
     "test:e2e": "jest --config=e2e-tests/e2e.config.cjs",
     "test:watch": "jest --watch",
     "watch": "pkg-utils watch --tsconfig tsconfig.lib.json"
   },
   "dependencies": {
-    "@sanity/block-tools": "3.36.1",
-    "@sanity/schema": "3.36.1",
-    "@sanity/types": "3.36.1",
-    "@sanity/util": "3.36.1",
+    "@sanity/block-tools": "3.36.4",
+    "@sanity/schema": "3.36.4",
+    "@sanity/types": "3.36.4",
+    "@sanity/util": "3.36.4",
     "debug": "^3.2.7",
     "is-hotkey": "^0.2.0",
     "lodash": "^4.17.21",
@@ -76,10 +76,10 @@
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",
-    "@playwright/test": "^1.41.2",
+    "@playwright/test": "1.41.2",
     "@portabletext/toolkit": "^2.0.13",
     "@sanity/diff-match-patch": "^3.1.1",
-    "@sanity/ui": "^2.0.12",
+    "@sanity/ui": "^2.0.14",
     "@testing-library/react": "^13.4.0",
     "@types/debug": "^4.1.5",
     "@types/express": "^4.17.21",
@@ -88,8 +88,8 @@
     "@types/lodash": "^4.14.149",
     "@types/node": "^18.19.8",
     "@types/node-ipc": "^9.2.0",
-    "@types/react": "^18.2.37",
-    "@types/react-dom": "^18.2.15",
+    "@types/react": "^18.2.74",
+    "@types/react-dom": "^18.2.23",
     "@types/ws": "~8.5.3",
     "@vitejs/plugin-react": "^4.2.1",
     "express": "^4.18.3",
@@ -103,7 +103,7 @@
     "rimraf": "^3.0.2",
     "rxjs": "^7.8.1",
     "styled-components": "^6.1.8",
-    "vite": "^4.5.2"
+    "vite": "^4.5.3"
   },
   "peerDependencies": {
     "react": "^16.9 || ^17 || ^18",

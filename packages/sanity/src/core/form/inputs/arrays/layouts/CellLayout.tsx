@@ -1,6 +1,6 @@
 import {Box, Card, type CardTone, Flex} from '@sanity/ui'
 import {type ComponentProps, type ReactNode} from 'react'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {DragHandle} from '../common/DragHandle'
 import {MOVING_ITEM_CLASS_NAME} from '../common/list'

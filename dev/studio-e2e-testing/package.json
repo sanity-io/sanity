@@ -1,7 +1,10 @@
 {
   "name": "studio-e2e-testing",
+  "version": "3.36.4",
   "private": true,
-  "version": "3.36.1",
+  "keywords": [
+    "sanity"
+  ],
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
   "scripts": {
@@ -10,14 +13,11 @@
     "lint": "eslint .",
     "start": "sanity start --port 3339"
   },
-  "keywords": [
-    "sanity"
-  ],
   "dependencies": {
     "@sanity/google-maps-input": "^3.0.1",
     "@sanity/icons": "^2.11.0",
-    "@sanity/ui": "^2.0.12",
-    "@sanity/vision": "3.36.1",
+    "@sanity/ui": "^2.0.14",
+    "@sanity/vision": "3.36.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-is": "^18.2.0",

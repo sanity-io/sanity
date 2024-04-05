@@ -1,6 +1,6 @@
 # Sanity Studio for Shopify Projects
 
-<p><img src="https://user-images.githubusercontent.com/209129/173606241-ae6694f7-57f0-4ed7-9d05-60c563c4233b.png" width="800" /></p>
+<img width="1072" alt="Sanity Studio with Shopify products" src="https://github.com/sanity-io/learn/assets/9684022/13aed6ff-a028-4c3f-bc4b-15bf9ba4c6ff">
 
 ## About
 
@@ -8,11 +8,11 @@ This Sanity Studio is configured for headless Shopify projects that use the offi
 
 It contains examples of customizing your [structure][docs-structure], [document actions][docs-document-actions] and [input components][docs-input-components].
 
-This studio can be used with our [Hydrogen starter][hydrogen-demo], your frontend, or anywhere else you want your e-commerce content to go.
+This studio can be used with any front end, or anywhere else you want your e-commerce content to go.
 
 ## Features
 
-This studio comes preconfigured with Shopify-friendly content schema types and a whole host of customizations to make managing Shopify data in your Sanity studio easier.
+This studio comes configured with Shopify-friendly content schema types and a whole host of customizations to make managing Shopify data in your Sanity studio easier.
 
 It also comes with several convenient layout modules which can be re-used across various pages.
 

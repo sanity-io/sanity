@@ -4,10 +4,7 @@
   "compilerOptions": {
     "composite": true,
     "rootDir": ".",
-    "outDir": "./lib/dts",
-
-    "noUnusedLocals": false,
-    "strict": false
+    "outDir": "./lib/dts"
   },
   "references": [{"path": "../types/tsconfig.lib.json"}]
 }

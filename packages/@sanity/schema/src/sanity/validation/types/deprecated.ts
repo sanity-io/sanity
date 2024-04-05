@@ -1,7 +1,7 @@
 import {type SchemaValidationResult} from '../../typedefs'
 import {warning} from '../createValidationResult'
 
-export function validateDeprecatedProperties(type): SchemaValidationResult[] {
+export function validateDeprecatedProperties(type: any): SchemaValidationResult[] {
   const warnings = []
 
   if (type?.inputComponent) {

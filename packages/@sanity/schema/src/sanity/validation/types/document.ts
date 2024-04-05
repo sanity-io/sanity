@@ -3,7 +3,7 @@ import {isPlainObject} from 'lodash'
 import {error} from '../createValidationResult'
 import object from './object'
 
-export default (typeDefinition, visitorContext) => {
+export default (typeDefinition: any, visitorContext: any) => {
   const typeDef = object(typeDefinition, visitorContext)
   const {initialValue, initialValues} = typeDef
 

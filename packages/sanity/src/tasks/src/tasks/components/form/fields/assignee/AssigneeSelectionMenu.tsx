@@ -13,7 +13,7 @@ import {
 import {deburr} from 'lodash'
 import {type ChangeEvent, type KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
 import {LoadingBlock, type UserWithPermission, useTranslation} from 'sanity'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {MenuButton} from '../../../../../../../ui-components'
 import {tasksLocaleNamespace} from '../../../../../../i18n'
@@ -158,6 +158,8 @@ function MentionsMenu({onSelect, value = ''}: {onSelect: SelectItemHandler; valu
         fontSize={1}
         icon={UserIcon}
         ref={inputRef}
+        name="assigneeSearch"
+        autoComplete="off"
       />
 
       <div style={{maxHeight: '320px', overflowY: 'scroll', paddingTop: '8px'}}>

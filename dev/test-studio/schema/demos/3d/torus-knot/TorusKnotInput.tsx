@@ -1,6 +1,6 @@
 import {Skeleton, Stack} from '@sanity/ui'
 import {lazy, Suspense} from 'react'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 const TorusKnotInputPreview = lazy(() => import('./TorusKnotInputPreview'))
 

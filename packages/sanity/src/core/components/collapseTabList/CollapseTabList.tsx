@@ -10,7 +10,7 @@ import {
   useMemo,
   useState,
 } from 'react'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {type MenuButtonProps} from '../../../ui-components'
 import {CollapseOverflowMenu} from '../collapseMenu/CollapseOverflowMenu'

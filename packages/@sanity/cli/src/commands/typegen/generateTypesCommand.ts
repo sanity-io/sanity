@@ -10,6 +10,10 @@ Usage
   sanity typegen generate [options]
 
 Options:
+  --config-path <path>
+    Specifies the path to the typegen configuration file. This file should be a JSON file that contains settings for the type generation process.
+    Default: "sanity-typegen.json"
+
   --help, -h
     Displays this help message, providing information on command usage and options.
 

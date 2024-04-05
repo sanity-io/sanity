@@ -36,7 +36,7 @@ export const BlockType = {
   get() {
     return BLOCK_CORE
   },
-  extend(subTypeDef, extendMember) {
+  extend(subTypeDef: any, extendMember: any) {
     const options = {...(subTypeDef.options || DEFAULT_OPTIONS)}
 
     const {marks, styles, lists, of, ...rest} = subTypeDef
@@ -83,12 +83,12 @@ export const BlockType = {
 
     return subtype(parsed)
 
-    function subtype(parent) {
+    function subtype(parent: any) {
       return {
         get() {
           return parent
         },
-        extend: (extensionDef) => {
+        extend: (extensionDef: any) => {
           if (extensionDef.fields) {
             throw new Error('Cannot override `fields` of subtypes of "block"')
           }
@@ -102,13 +102,13 @@ export const BlockType = {
   },
 }
 
-function ensureNormalStyle(styles) {
-  return styles.some((style) => style.value === 'normal')
+function ensureNormalStyle(styles: any) {
+  return styles.some((style: any) => style.value === 'normal')
     ? styles
     : [BLOCK_STYLES.normal, ...styles]
 }
 
-function createStyleField(styles) {
+function createStyleField(styles: any) {
   return {
     name: 'style',
     title: 'Style',
@@ -119,7 +119,7 @@ function createStyleField(styles) {
   }
 }
 
-function createListItemField(lists) {
+function createListItemField(lists: any) {
   return {
     name: 'listItem',
     title: 'List type',
@@ -132,7 +132,7 @@ function createListItemField(lists) {
 
 const DEFAULT_ANNOTATIONS = [DEFAULT_LINK_ANNOTATION]
 
-function createChildrenField(marks, of = []) {
+function createChildrenField(marks: any, of = []) {
   return {
     name: 'children',
     title: 'Content',
@@ -144,7 +144,7 @@ function createChildrenField(marks, of = []) {
         annotations: marks && marks.annotations ? marks.annotations : DEFAULT_ANNOTATIONS,
         decorators: marks && marks.decorators ? marks.decorators : DEFAULT_DECORATORS,
       },
-      ...of.filter((memberType) => memberType.type !== 'span'),
+      ...of.filter((memberType: any) => memberType.type !== 'span'),
     ],
   }
 }

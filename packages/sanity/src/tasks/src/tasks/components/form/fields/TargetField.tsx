@@ -17,7 +17,7 @@ import {
   useWorkspace,
 } from 'sanity'
 import {IntentLink} from 'sanity/router'
-import styled, {css} from 'styled-components'
+import {css, styled} from 'styled-components'
 
 import {Button} from '../../../../../../ui-components'
 import {tasksLocaleNamespace} from '../../../../../i18n'
@@ -236,7 +236,6 @@ export function TargetField(
               <SearchPopover
                 open={open}
                 onClose={handleCloseSearch}
-                onOpen={handleOpenSearch}
                 onItemSelect={handleItemSelect}
                 disableIntentLink
               />

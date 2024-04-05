@@ -1,6 +1,6 @@
 import {PortableText, type PortableTextComponents} from '@portabletext/react'
 import {Stack} from '@sanity/ui'
-import styled, {css} from 'styled-components'
+import {css, styled} from 'styled-components'
 
 import {type CommentMessage} from '../../types'
 import {MentionInlineBlock, NormalBlock} from './blocks'

@@ -15,7 +15,7 @@ import {
   type UserListWithPermissionsHookValue,
   useTranslation,
 } from 'sanity'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {Button, Popover, Tooltip} from '../../../../ui-components'
 import {commentsLocaleNamespace} from '../../i18n'

@@ -21,7 +21,7 @@ export const ImageType = {
   get() {
     return IMAGE_CORE
   },
-  extend(rawSubTypeDef, createMemberType) {
+  extend(rawSubTypeDef: any, createMemberType: any) {
     const options = {...(rawSubTypeDef.options || DEFAULT_OPTIONS)}
 
     let hotspotFields = [HOTSPOT_FIELD, CROP_FIELD]
@@ -36,7 +36,7 @@ export const ImageType = {
       type: IMAGE_CORE,
       title: subTypeDef.title || (subTypeDef.name ? startCase(subTypeDef.name) : ''),
       options: options,
-      fields: subTypeDef.fields.map((fieldDef) => {
+      fields: subTypeDef.fields.map((fieldDef: any) => {
         const {name, fieldset, ...rest} = fieldDef
 
         const compiledField = {
@@ -62,12 +62,12 @@ export const ImageType = {
 
     return subtype(parsed)
 
-    function subtype(parent) {
+    function subtype(parent: any) {
       return {
         get() {
           return parent
         },
-        extend: (extensionDef) => {
+        extend: (extensionDef: any) => {
           if (extensionDef.fields) {
             throw new Error('Cannot override `fields` of subtypes of "image"')
           }

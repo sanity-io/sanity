@@ -1,7 +1,7 @@
 import {LaunchIcon} from '@sanity/icons'
 import {Box, Card, Container, Flex, Stack} from '@sanity/ui'
 import {UpsellDescriptionSerializer} from 'sanity'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {Button} from '../../../../../ui-components'
 import {type CommentsUpsellData} from '../../types'

@@ -1,7 +1,7 @@
 import {DocumentIcon} from '@sanity/icons'
 import {Box, Card, Flex, Text} from '@sanity/ui'
 import {useMemo} from 'react'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {useUnitFormatter} from '../../../../hooks'
 import {useTranslation} from '../../../../i18n'

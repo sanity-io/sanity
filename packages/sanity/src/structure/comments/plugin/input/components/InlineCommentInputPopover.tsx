@@ -2,7 +2,7 @@ import {type CurrentUser} from '@sanity/types'
 import {Stack, useClickOutside} from '@sanity/ui'
 import {motion, type Variants} from 'framer-motion'
 import {useCallback, useRef, useState} from 'react'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {Popover, type PopoverProps} from '../../../../../ui-components'
 import {

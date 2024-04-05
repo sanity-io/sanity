@@ -152,8 +152,8 @@ export function extractSchema(
     }
 
     // if we have already seen the base type, we can just reference it
-    if (inlineFields.has(schemaType.type)) {
-      return {type: 'inline', name: schemaType.type.name} satisfies InlineTypeNode
+    if (inlineFields.has(schemaType.type!)) {
+      return {type: 'inline', name: schemaType.type!.name} satisfies InlineTypeNode
     }
 
     // If we have a type that is point to a type, that is pointing to a type, we assume this is a circular reference
@@ -172,7 +172,7 @@ export function extractSchema(
 
     // map some known types
     if (schemaType.type && typesMap.has(schemaType.type.name)) {
-      return typesMap.get(schemaType.type.name)
+      return typesMap.get(schemaType.type.name)!
     }
 
     // Cross dataset references are not supported
@@ -206,6 +206,12 @@ export function extractSchema(
       const value = convertSchemaType(field.type)
       if (value === null) {
         continue
+      }
+
+      // if the field sets assetRequired() we will mark the asset attribute as required
+      // also guard against the case where the field is not an object, though type validation should catch this
+      if (hasAssetRequired(field) && value.type === 'object') {
+        value.attributes.asset.optional = false
       }
 
       // if we extract with enforceRequiredFields, we will mark the field as optional only if it is not a required field,
@@ -315,9 +321,61 @@ function isFieldRequired(field: ObjectField): boolean {
         },
       },
     ) as Rule
+
     if (typeof rule === 'function') {
       rule(proxy)
       if (required) {
+        return true
+      }
+    }
+
+    if (typeof rule === 'object' && rule !== null && '_required' in rule) {
+      if (rule._required === 'required') {
+        return true
+      }
+    }
+  }
+
+  return false
+}
+
+function hasAssetRequired(field: ObjectField): boolean {
+  const {validation} = field.type
+  if (!validation) {
+    return false
+  }
+  const rules = Array.isArray(validation) ? validation : [validation]
+  for (const rule of rules) {
+    let assetRequired = false
+
+    // hack to check if a field is required. We create a proxy that returns itself when a method is called,
+    // if the method is "required" we set a flag
+    const proxy = new Proxy(
+      {},
+      {
+        get: (target, methodName) => () => {
+          if (methodName === 'assetRequired') {
+            assetRequired = true
+          }
+          return proxy
+        },
+      },
+    ) as Rule
+
+    if (typeof rule === 'function') {
+      rule(proxy)
+      if (assetRequired) {
+        return true
+      }
+    }
+
+    if (
+      typeof rule === 'object' &&
+      rule !== null &&
+      '_rules' in rule &&
+      Array.isArray(rule._rules)
+    ) {
+      if (rule._rules.some((r) => r.flag === 'assetRequired')) {
         return true
       }
     }
@@ -403,7 +461,7 @@ function gatherReferenceNames(type: ReferenceSchemaType): string[] {
 
 function gatherReferenceTypes(type: ReferenceSchemaType): ObjectSchemaType[] {
   const refTo = 'to' in type ? type.to : []
-  if ('type' in type && isReferenceType(type.type)) {
+  if ('type' in type && isReferenceType(type.type!)) {
     return [...gatherReferenceTypes(type.type), ...refTo]
   }
 
@@ -465,21 +523,21 @@ function sortByDependencies(compiledSchema: SchemaDef): string[] {
     if ('fields' in schemaType) {
       for (const field of gatherFields(schemaType)) {
         const last = lastType(field.type)
-        if (last.name === 'document') {
-          dependencies.add(last)
+        if (last!.name === 'document') {
+          dependencies.add(last!)
           continue
         }
 
         let schemaTypeName: string | undefined
-        if (schemaType.type.type) {
-          schemaTypeName = field.type.type.name
-        } else if ('jsonType' in schemaType.type) {
+        if (schemaType.type!.type) {
+          schemaTypeName = field.type.type!.name
+        } else if ('jsonType' in schemaType.type!) {
           schemaTypeName = field.type.jsonType
         }
 
         if (schemaTypeName === 'object' || schemaTypeName === 'block') {
           if (isReferenceType(field.type)) {
-            field.type.to.forEach((ref) => dependencies.add(ref.type))
+            field.type.to.forEach((ref) => dependencies.add(ref.type!))
           } else {
             dependencies.add(field.type)
           }

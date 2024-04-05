@@ -387,6 +387,12 @@ describe('Extract schema test', () => {
               type: 'string',
               validation: (Rule) => Rule.required(),
             }),
+            {
+              title: 'Another Title',
+              name: 'anotherTitle',
+              type: 'string',
+              validation: {_required: 'required'},
+            },
           ],
         },
       ],
@@ -400,6 +406,7 @@ describe('Extract schema test', () => {
     assert(book.type === 'document') // this is a workaround for TS, but leave the expect above for clarity in case of failure
     expect(book.attributes.title.optional).toBe(true)
     expect(book.attributes.subtitle.optional).toBe(true)
+    expect(book.attributes.anotherTitle.optional).toBe(true)
   })
 
   test('can extract with enforceRequiredFields', () => {
@@ -422,6 +429,18 @@ describe('Extract schema test', () => {
               type: 'string',
               validation: (Rule) => Rule.required(),
             }),
+            {
+              title: 'Another Title',
+              name: 'anotherTitle',
+              type: 'string',
+              validation: {_required: 'required'},
+            },
+            {
+              title: 'Optional Title',
+              name: 'optionalTitle',
+              type: 'string',
+              validation: {_required: 'optional'},
+            },
           ],
         },
       ],
@@ -435,6 +454,68 @@ describe('Extract schema test', () => {
     assert(book.type === 'document') // this is a workaround for TS, but leave the expect above for clarity in case of failure
     expect(book.attributes.title.optional).toBe(true)
     expect(book.attributes.subtitle.optional).toBe(false)
+    expect(book.attributes.anotherTitle.optional).toBe(false)
+    expect(book.attributes.optionalTitle.optional).toBe(true)
+  })
+
+  test('enforceRequiredFields handles `assetRequired`', () => {
+    const schema1 = createSchema({
+      name: 'test',
+      types: [
+        {
+          title: 'Book',
+          name: 'book',
+          type: 'document',
+          fields: [
+            {
+              title: 'Title',
+              name: 'title',
+              type: 'string',
+            },
+            defineField({
+              title: 'Required Image',
+              name: 'requiredImage',
+              type: 'image',
+              validation: (Rule) => Rule.required(),
+            }),
+            defineField({
+              title: 'Asset Required Image',
+              name: 'assetRequiredImage',
+              type: 'image',
+              validation: (Rule) => Rule.required().assetRequired(),
+            }),
+            {
+              title: 'Asset Required File Rule Spec',
+              name: 'assetRequiredFileRuleSpec',
+              type: 'file',
+              validation: {
+                _required: 'required',
+                _rules: [{flag: 'assetRequired', constraint: {assetType: 'file'}}],
+              },
+            },
+          ],
+        },
+      ],
+    })
+
+    const extracted = extractSchema(schema1, {enforceRequiredFields: true})
+    const book = extracted.find((type) => type.name === 'book')
+    expect(book).toBeDefined()
+    assert(book !== undefined) // this is a workaround for TS, but leave the expect above for clarity in case of failure
+    assert(book.type === 'document') // this is a workaround for TS, but leave the expect above for clarity in case of failure
+    expect(book.attributes.title.optional).toBe(true)
+
+    expect(book.attributes.requiredImage.optional).toBe(false)
+    assert(book.attributes.requiredImage.value.type === 'object') // this is a workaround for TS, but leave the expect above for clarity in case of failure
+    expect(book.attributes.requiredImage.value.attributes.asset.optional).toBe(true) // we dont set assetRequired(), so it should be optional
+
+    expect(book.attributes.assetRequiredImage.optional).toBe(false)
+    assert(book.attributes.assetRequiredImage.value.type === 'object') // this is a workaround for TS, but leave the expect above for clarity in case of failure
+    expect(book.attributes.assetRequiredImage.value.attributes.asset.optional).toBe(false) // with assetRequired(), it should be required
+
+    expect(book.attributes.assetRequiredFileRuleSpec.optional).toBe(false)
+    assert(book.attributes.assetRequiredFileRuleSpec.value.type === 'object') // this is a workaround for TS, but leave the expect above for clarity in case of failure
+    expect(book.attributes.assetRequiredFileRuleSpec.value.attributes.asset.optional).toBe(false) // with assetRequired defined in _rules, it should be required
   })
 
   describe('can handle `list` option that is not an array', () => {

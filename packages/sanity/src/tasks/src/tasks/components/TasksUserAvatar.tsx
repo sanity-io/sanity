@@ -3,7 +3,7 @@ import {type AvatarSize, Skeleton, Text} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
 import {type User, UserAvatar, useUser} from 'sanity'
-import styled, {css} from 'styled-components'
+import {css, styled} from 'styled-components'
 
 import {Tooltip} from '../../../../ui-components'
 

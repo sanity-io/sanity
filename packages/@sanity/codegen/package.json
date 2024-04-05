@@ -1,6 +1,6 @@
 {
   "name": "@sanity/codegen",
-  "version": "3.36.1",
+  "version": "3.36.4",
   "description": "Codegen toolkit for Sanity.io",
   "keywords": [
     "sanity",
@@ -13,9 +13,6 @@
   "homepage": "https://www.sanity.io/",
   "bugs": {
     "url": "https://github.com/sanity-io/sanity/issues"
-  },
-  "publishConfig": {
-    "access": "public"
   },
   "repository": {
     "type": "git",
@@ -55,8 +52,8 @@
     "check:package": "pkg-utils --strict --tsconfig tsconfig.lib.json",
     "clean": "rimraf lib coverage",
     "lint": "eslint .",
-    "watch": "pkg-utils watch --tsconfig tsconfig.lib.json",
-    "test": "jest"
+    "test": "jest",
+    "watch": "pkg-utils watch --tsconfig tsconfig.lib.json"
   },
   "dependencies": {
     "@babel/core": "^7.23.9",
@@ -69,7 +66,7 @@
     "@babel/types": "^7.23.9",
     "debug": "^4.3.4",
     "globby": "^10.0.0",
-    "groq-js": "^1.5.0",
+    "groq-js": "^1.7.0",
     "json5": "^2.2.3",
     "tsconfig-paths": "^4.2.0",
     "zod": "^3.22.4"
@@ -79,12 +76,15 @@
     "@types/babel__core": "^7.20.5",
     "@types/babel__generator": "^7.6.8",
     "@types/babel__register": "^7.17.3",
-    "@types/babel__traverse": "^7.18.1",
+    "@types/babel__traverse": "^7.20.5",
     "@types/debug": "^4.1.12",
     "groq": "workspace:*",
     "rimraf": "^3.0.2"
   },
   "engines": {
     "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

@@ -1,6 +1,6 @@
 import {Flex, Text, TextSkeleton} from '@sanity/ui'
 import {useCurrentUser, useUser} from 'sanity'
-import styled, {css} from 'styled-components'
+import {css, styled} from 'styled-components'
 
 import {Tooltip} from '../../../../../../ui-components'
 import {CommentsAvatar} from '../../avatars'

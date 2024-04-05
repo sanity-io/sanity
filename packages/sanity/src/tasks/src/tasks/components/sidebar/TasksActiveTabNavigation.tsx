@@ -4,7 +4,7 @@ import {Box, Flex, Text} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {useCallback} from 'react'
 import {useTranslation} from 'sanity'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {Button, Tooltip, TooltipDelayGroupProvider} from '../../../../../ui-components'
 import {tasksLocaleNamespace} from '../../../../i18n'

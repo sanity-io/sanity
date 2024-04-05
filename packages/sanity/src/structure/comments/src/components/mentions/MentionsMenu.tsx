@@ -9,7 +9,7 @@ import {
   type UserWithPermission,
   useTranslation,
 } from 'sanity'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {commentsLocaleNamespace} from '../../../i18n'
 import {MentionsMenuItem} from './MentionsMenuItem'

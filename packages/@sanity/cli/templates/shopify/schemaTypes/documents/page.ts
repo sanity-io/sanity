@@ -2,94 +2,67 @@ import {DocumentIcon} from '@sanity/icons'
 import {defineField} from 'sanity'
 
 import {validateSlug} from '../../utils/validateSlug'
+import { GROUPS } from '../../constants'
 
-export default defineField({
+export const pageType = defineField({
   name: 'page',
   title: 'Page',
   type: 'document',
   icon: DocumentIcon,
-  groups: [
-    {
-      name: 'theme',
-      title: 'Theme',
-    },
-    {
-      default: true,
-      name: 'editorial',
-      title: 'Editorial',
-    },
-    {
-      name: 'seo',
-      title: 'SEO',
-    },
-  ],
+  groups: GROUPS,
   fields: [
-    // Title
     defineField({
       name: 'title',
-      title: 'Title',
+      group: 'editorial',
       type: 'string',
       validation: (Rule) => Rule.required(),
     }),
-    // Slug
     defineField({
       name: 'slug',
+      group: 'editorial',
       type: 'slug',
       options: {source: 'title'},
-      // @ts-ignore - TODO - fix this TS error
       validation: validateSlug,
     }),
-    // Color theme
     defineField({
       name: 'colorTheme',
-      title: 'Color theme',
       type: 'reference',
       to: [{type: 'colorTheme'}],
       group: 'theme',
     }),
-    // Show hero
     defineField({
       name: 'showHero',
-      title: 'Show hero',
       type: 'boolean',
       description: 'If disabled, page title will be displayed instead',
       initialValue: false,
       group: 'editorial',
     }),
-    // Hero
     defineField({
       name: 'hero',
-      title: 'Hero',
-      type: 'hero.page',
+      type: 'hero',
       hidden: ({document}) => !document?.showHero,
       group: 'editorial',
     }),
-    // Body
     defineField({
       name: 'body',
-      title: 'Body',
-      type: 'body',
+      type: 'portableText',
       group: 'editorial',
     }),
-    // SEO
     defineField({
       name: 'seo',
       title: 'SEO',
-      type: 'seo.page',
+      type: 'seo',
       group: 'seo',
     }),
   ],
   preview: {
     select: {
-      active: 'active',
       seoImage: 'seo.image',
       title: 'title',
     },
-    prepare(selection) {
-      const {seoImage, title} = selection
-
+    prepare({seoImage, title}) {
       return {
-        media: seoImage,
+        media: seoImage ?? DocumentIcon,
         title,
       }
     },

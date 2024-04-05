@@ -1,6 +1,6 @@
 import {Box, type BoxProps, Card, Code, Stack, Text} from '@sanity/ui'
 import {type ReactElement, type ReactNode, useCallback, useEffect, useRef, useState} from 'react'
-import styled, {type ExecutionProps} from 'styled-components'
+import {type ExecutionProps, styled} from 'styled-components'
 
 import {useTranslation} from '../../../i18n'
 import {pathToString} from '../../paths'

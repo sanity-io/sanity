@@ -316,6 +316,11 @@ const config = {
                 message:
                   'Please use the (more opinionated) exported components in sanity/src/ui-components instead.',
               },
+              {
+                name: 'styled-components',
+                importNames: ['default'],
+                message: 'Please use `import {styled} from "styled-components"` instead.',
+              },
             ],
           },
         ],

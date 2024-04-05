@@ -1,41 +1,19 @@
-import React from 'react'
-import {defineField, defineType} from 'sanity'
+
+import {defineArrayMember, defineField, defineType} from 'sanity'
 import {PackageIcon} from '@sanity/icons'
 import {getExtension} from '@sanity/asset-utils'
 import pluralize from 'pluralize-esm'
 import CollectionHiddenInput from '../../components/inputs/CollectionHidden'
-import ShopifyIcon from '../../components/icons/Shopify'
 import ShopifyDocumentStatus from '../../components/media/ShopifyDocumentStatus'
+import { GROUPS } from '../../constants'
 
-const GROUPS = [
-  {
-    name: 'theme',
-    title: 'Theme',
-  },
-  {
-    default: true,
-    name: 'editorial',
-    title: 'Editorial',
-  },
-  {
-    name: 'shopifySync',
-    title: 'Shopify sync',
-    icon: ShopifyIcon,
-  },
-  {
-    name: 'seo',
-    title: 'SEO',
-  },
-]
-
-export default defineType({
+export const collectionType = defineType({
   name: 'collection',
   title: 'Collection',
   type: 'document',
   icon: PackageIcon,
   groups: GROUPS,
   fields: [
-    // Product hidden status
     defineField({
       name: 'hidden',
       type: 'string',
@@ -47,29 +25,24 @@ export default defineType({
         return !isDeleted
       },
     }),
-    // Title (proxy)
     defineField({
       name: 'titleProxy',
       title: 'Title',
       type: 'proxyString',
       options: {field: 'store.title'},
     }),
-    // Slug (proxy)
     defineField({
       name: 'slugProxy',
       title: 'Slug',
       type: 'proxyString',
       options: {field: 'store.slug.current'},
     }),
-    // Color theme
     defineField({
       name: 'colorTheme',
-      title: 'Color theme',
       type: 'reference',
       to: [{type: 'colorTheme'}],
       group: 'theme',
     }),
-    // Vector
     defineField({
       name: 'vector',
       title: 'Vector artwork',
@@ -93,37 +66,30 @@ export default defineType({
           return true
         }),
     }),
-    // Show hero
     defineField({
       name: 'showHero',
-      title: 'Show hero',
       type: 'boolean',
       description: 'If disabled, page title will be displayed instead',
       group: 'editorial',
     }),
-    // Hero
     defineField({
       name: 'hero',
-      title: 'Hero',
-      type: 'hero.collection',
+      type: 'hero',
       hidden: ({document}) => !document?.showHero,
       group: 'editorial',
     }),
-    // Modules
     defineField({
       name: 'modules',
-      title: 'Modules',
       type: 'array',
       description: 'Editorial modules to associate with this collection',
       of: [
-        {type: 'module.callout'},
-        {type: 'module.callToAction'},
-        {type: 'module.image'},
-        {type: 'module.instagram'},
+        defineArrayMember({type: 'callout'}),
+        defineArrayMember({type: 'callToAction'}),
+        defineArrayMember({type: 'image'}),
+        defineArrayMember({type: 'instagram'}),
       ],
       group: 'editorial',
     }),
-    // Shopify collection
     defineField({
       name: 'store',
       title: 'Shopify',
@@ -131,11 +97,10 @@ export default defineType({
       description: 'Collection data from Shopify (read-only)',
       group: 'shopifySync',
     }),
-    // SEO
     defineField({
       name: 'seo',
       title: 'SEO',
-      type: 'seo.shopify',
+      type: 'seo',
       group: 'seo',
     }),
   ],
@@ -158,8 +123,7 @@ export default defineType({
       rules: 'store.rules',
       title: 'store.title',
     },
-    prepare(selection) {
-      const {imageUrl, isDeleted, rules, title} = selection
+    prepare({imageUrl, isDeleted, rules, title}) {
       const ruleCount = rules?.length || 0
 
       return {

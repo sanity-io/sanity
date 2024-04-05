@@ -1,7 +1,7 @@
 import {error, HELP_IDS} from '../createValidationResult'
 import {validateField, validateFields} from './object'
 
-export default (typeDef, visitorContext) => {
+export default (typeDef: any, visitorContext: any) => {
   const problems = []
   const fields = typeDef.fields
 

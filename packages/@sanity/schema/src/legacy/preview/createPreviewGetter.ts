@@ -3,14 +3,14 @@ import {pick} from 'lodash'
 import {warnIfPreviewHasFields, warnIfPreviewOnOptions} from './deprecationUtils'
 import guessPreviewConfig from './guessPreviewConfig'
 
-function parseSelection(selection) {
-  return selection.reduce((acc, field) => {
+function parseSelection(selection: any) {
+  return selection.reduce((acc: any, field: any) => {
     acc[field] = field
     return acc
   }, {})
 }
 
-function parsePreview(preview) {
+function parsePreview(preview: any) {
   if (!preview) {
     return preview
   }
@@ -27,7 +27,7 @@ function parsePreview(preview) {
   }
 }
 
-export default function createPreviewGetter(objectTypeDef) {
+export default function createPreviewGetter(objectTypeDef: any) {
   return function previewGetter() {
     warnIfPreviewOnOptions(objectTypeDef)
     warnIfPreviewHasFields(objectTypeDef)
