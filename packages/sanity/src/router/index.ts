@@ -1,7 +1,6 @@
 export * from './IntentLink'
 export * from './Link'
 export * from './route'
-export * from './RouterContext'
 export * from './RouterProvider'
 export * from './RouteScope'
 export * from './StateLink'
