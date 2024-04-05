@@ -71,7 +71,7 @@
     "@sanity/ui": "^2.0.14",
     "@uiw/react-codemirror": "^4.11.4",
     "hashlru": "^2.3.0",
-    "is-hotkey": "^0.2.0",
+    "is-hotkey-esm": "^1.0.0",
     "json5": "^2.2.3",
     "lodash": "^4.17.21"
   },

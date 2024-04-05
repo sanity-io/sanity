@@ -1142,9 +1142,9 @@ importers:
       debug:
         specifier: ^3.2.7
         version: 3.2.7
-      is-hotkey:
-        specifier: ^0.2.0
-        version: 0.2.0
+      is-hotkey-esm:
+        specifier: ^1.0.0
+        version: 1.0.0
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
@@ -1380,9 +1380,9 @@ importers:
       hashlru:
         specifier: ^2.3.0
         version: 2.3.0
-      is-hotkey:
-        specifier: ^0.2.0
-        version: 0.2.0
+      is-hotkey-esm:
+        specifier: ^1.0.0
+        version: 1.0.0
       json5:
         specifier: ^2.2.3
         version: 2.2.3
@@ -1620,9 +1620,9 @@ importers:
       import-fresh:
         specifier: ^3.3.0
         version: 3.3.0
-      is-hotkey:
-        specifier: ^0.2.0
-        version: 0.2.0
+      is-hotkey-esm:
+        specifier: ^1.0.0
+        version: 1.0.0
       jsdom:
         specifier: ^23.0.1
         version: 23.2.0
@@ -12858,6 +12858,10 @@ packages:
 
   /is-hexadecimal@1.0.4:
     resolution: {integrity: sha512-gyPJuv83bHMpocVYoqof5VDiZveEoGoFL8m3BXNb2VW8Xs+rz9kqO8LOQ5DH6EsuvilT1ApazU0pyl+ytbPtlw==}
+
+  /is-hotkey-esm@1.0.0:
+    resolution: {integrity: sha512-eTXNmLCPXpKEZUERK6rmFsqmL66+5iNB998JMO+/61fSxBZFuUR1qHyFyx7ocBl5Vs8qjFzRAJLACpYfhS5g5w==}
+    dev: false
 
   /is-hotkey@0.2.0:
     resolution: {integrity: sha512-UknnZK4RakDmTgz4PI1wIph5yxSs/mvChWs9ifnlXsKuXgWmOkY/hAE0H/k2MIqH0RlRye0i1oC07MCRSD28Mw==}
