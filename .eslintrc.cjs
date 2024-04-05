@@ -173,6 +173,20 @@ const config = {
             from: 'sanity/structure__contents',
             allow: ['sanity', 'sanity/structure__contents', 'sanity/router'],
           },
+          {
+            // export
+            from: 'sanity/_singletons',
+            allow: ['sanity/_singletons__contents'],
+          },
+          {
+            from: 'sanity/_singletons__contents',
+            allow: ['sanity/_singletons__contents'],
+          },
+          {
+            from: 'sanity/_singletons__contents',
+            allow: ['sanity'],
+            importKind: 'type',
+          },
         ],
       },
     ],
@@ -262,6 +276,16 @@ const config = {
         pattern: ['packages/sanity/src/structure/**/*.*'],
         mode: 'file',
       },
+      {
+        type: 'sanity/_singletons',
+        pattern: ['packages/sanity/exports/_singletons.ts'],
+        mode: 'full',
+      },
+      {
+        type: 'sanity/_singletons__contents',
+        pattern: ['packages/sanity/src/_singletons/**/*.*'],
+        mode: 'full',
+      },
     ],
     react: {version: '18.0.0'},
   },
@@ -328,6 +352,14 @@ const config = {
             ],
           },
         ],
+      },
+    },
+
+    // Prefer top-level type imports in singletons because boundaries plugin doesn't support named typed imports
+    {
+      files: ['packages/sanity/src/_singletons/**'],
+      rules: {
+        'import/consistent-type-specifier-style': ['error', 'prefer-top-level'],
       },
     },
   ],
