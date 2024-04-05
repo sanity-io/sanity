@@ -1,6 +1,6 @@
 import {useContext} from 'react'
+import {StructureToolContext} from 'sanity/_singletons'
 
-import {StructureToolContext} from './StructureToolContext'
 import {type StructureToolContextValue} from './types'
 
 /** @internal */
