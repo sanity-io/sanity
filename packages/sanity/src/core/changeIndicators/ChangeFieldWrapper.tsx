@@ -2,8 +2,8 @@ import {type Path} from '@sanity/types'
 import * as PathUtils from '@sanity/util/paths'
 import {type ReactNode, type SyntheticEvent, useCallback, useContext, useRef, useState} from 'react'
 import deepCompare from 'react-fast-compare'
+import {ConnectorContext} from 'sanity/_singletons'
 
-import {ConnectorContext} from './ConnectorContext'
 import {useReporter} from './tracker'
 
 /**

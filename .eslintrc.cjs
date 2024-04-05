@@ -137,7 +137,7 @@ const config = {
           },
           {
             from: 'sanity__contents',
-            allow: ['sanity__contents', 'sanity/router'],
+            allow: ['sanity__contents', 'sanity/router', 'sanity/_singletons'],
           },
           {
             // export (deprecated, aliases structure)

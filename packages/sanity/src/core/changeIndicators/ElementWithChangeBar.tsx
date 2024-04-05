@@ -1,9 +1,9 @@
 import {useLayer} from '@sanity/ui'
 import {type ReactNode, useContext, useMemo} from 'react'
+import {ConnectorContext} from 'sanity/_singletons'
 
 import {Tooltip} from '../../ui-components'
 import {useTranslation} from '../i18n/hooks/useTranslation'
-import {ConnectorContext} from './ConnectorContext'
 import {
   ChangeBar,
   ChangeBarButton,
