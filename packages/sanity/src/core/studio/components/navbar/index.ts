@@ -1,3 +1,4 @@
+export type {FreeTrialContextProps} from './free-trial'
 export * from './search'
 export * from './StudioLogo'
 export * from './StudioNavbar'
