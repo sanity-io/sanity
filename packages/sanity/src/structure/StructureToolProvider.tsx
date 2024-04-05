@@ -1,8 +1,8 @@
 import {type ReactElement, type ReactNode, useMemo, useState} from 'react'
 import {useConfigContextFromSource, useDocumentStore, useSource} from 'sanity'
+import {StructureToolContext} from 'sanity/_singletons'
 
 import {createStructureBuilder, type DefaultDocumentNodeResolver} from './structureBuilder'
-import {StructureToolContext} from './StructureToolContext'
 import {
   type StructureResolver,
   type StructureToolContextValue,
