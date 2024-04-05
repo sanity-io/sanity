@@ -1,10 +1,10 @@
 import {type SanityClient} from '@sanity/client'
 import {useCallback, useEffect, useMemo, useState} from 'react'
+import {AddonDatasetContext} from 'sanity/_singletons'
 
 import {useClient} from '../../hooks'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../studioClient'
 import {useWorkspace} from '../workspace'
-import {AddonDatasetContext} from './AddonDatasetContext'
 import {type AddonDatasetContextValue} from './types'
 
 const API_VERSION = 'v2023-11-13'
