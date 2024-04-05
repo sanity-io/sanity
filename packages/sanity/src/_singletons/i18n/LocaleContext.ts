@@ -1,13 +1,6 @@
-import {type i18n} from 'i18next'
+import type {i18n} from 'i18next'
 import {createContext} from 'react'
-
-import {type Locale} from './types'
-
-/**
- * @internal
- * @hidden
- */
-export const LocaleContext = createContext<LocaleContextValue | undefined>(undefined)
+import type {Locale} from 'sanity'
 
 /**
  * @internal
@@ -19,3 +12,9 @@ export interface LocaleContextValue {
   __internal: {i18next: i18n}
   changeLocale: (newLocale: string) => Promise<void>
 }
+
+/**
+ * @internal
+ * @hidden
+ */
+export const LocaleContext = createContext<LocaleContextValue | undefined>(undefined)
