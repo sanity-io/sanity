@@ -70,7 +70,7 @@
     "decompress": "^4.2.0",
     "esbuild": "^0.20.0",
     "esbuild-register": "^3.4.1",
-    "get-it": "^8.4.17",
+    "get-it": "^8.4.18",
     "golden-fleece": "^1.0.9",
     "groq-js": "^1.7.0",
     "node-machine-id": "^1.1.12",
