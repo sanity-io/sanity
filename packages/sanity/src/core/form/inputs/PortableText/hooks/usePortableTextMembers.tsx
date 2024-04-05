@@ -1,5 +1,6 @@
 import {pathFor} from '@sanity/util/paths'
 import {createRef, type MutableRefObject, type ReactNode, useContext, useRef} from 'react'
+import {PortableTextMemberItemsContext} from 'sanity/_singletons'
 
 import {pathToString} from '../../../../field'
 import {type FIXME} from '../../../../FIXME'
@@ -9,7 +10,6 @@ import {type ArrayOfObjectsItemMember, type ObjectFormNode} from '../../../store
 import {type PortableTextInputProps} from '../../../types'
 import {isArrayOfObjectsFieldMember, isBlockType} from '../_helpers'
 import {type PortableTextEditorElement} from '../Compositor'
-import {PortableTextMemberItemsContext} from '../contexts/PortableTextMembers'
 import {type PortableTextMemberItem} from '../PortableTextInput'
 
 export function usePortableTextMemberItem(key: string): PortableTextMemberItem | undefined {

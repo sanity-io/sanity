@@ -1,8 +1,7 @@
-import {createContext, type ReactNode} from 'react'
+import {type ReactNode} from 'react'
+import {PortableTextMemberItemsContext} from 'sanity/_singletons'
 
 import {type PortableTextMemberItem} from '../PortableTextInput'
-
-export const PortableTextMemberItemsContext = createContext<PortableTextMemberItem[]>([])
 
 export function PortableTextMemberItemsProvider(props: {
   memberItems: PortableTextMemberItem[]
