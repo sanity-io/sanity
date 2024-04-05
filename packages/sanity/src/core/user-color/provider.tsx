@@ -1,7 +1,7 @@
 import {type ReactElement, type ReactNode, useMemo} from 'react'
+import {UserColorManagerContext} from 'sanity/_singletons'
 
 import {useColorScheme} from '../studio'
-import {UserColorManagerContext} from './context'
 import {createUserColorManager} from './manager'
 import {type UserColorManager} from './types'
 
