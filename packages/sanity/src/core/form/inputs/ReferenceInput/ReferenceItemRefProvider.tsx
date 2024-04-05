@@ -1,6 +1,5 @@
 import {type ReactNode} from 'react'
-
-import {type ReferenceItemRef, ReferenceItemRefContext} from './useReferenceItemRef'
+import {type ReferenceItemRef, ReferenceItemRefContext} from 'sanity/_singletons'
 
 /**
  * @internal
