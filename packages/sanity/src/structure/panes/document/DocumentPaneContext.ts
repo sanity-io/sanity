@@ -5,7 +5,6 @@ import {
   type SanityDocumentLike,
   type ValidationMarker,
 } from '@sanity/types'
-import {createContext} from 'react'
 import {
   type DocumentActionComponent,
   type DocumentBadgeComponent,
@@ -85,6 +84,3 @@ export interface DocumentPaneContextValue {
     footerAction: React.ReactNode
   }
 }
-
-/** @internal */
-export const DocumentPaneContext = createContext<DocumentPaneContextValue | null>(null)
