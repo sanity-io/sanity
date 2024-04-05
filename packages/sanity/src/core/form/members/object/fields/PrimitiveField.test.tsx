@@ -4,10 +4,11 @@ import {LayerProvider, studioTheme, ThemeProvider} from '@sanity/ui'
 import {render} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {type PropsWithChildren} from 'react'
+import {FormBuilderContext} from 'sanity/_singletons'
 
 import {type FIXME} from '../../../../FIXME'
 import {DocumentIdProvider} from '../../../contexts/DocumentIdProvider'
-import {FormBuilderContext, type FormBuilderContextValue} from '../../../FormBuilderContext'
+import {type FormBuilderContextValue} from '../../../FormBuilderContext'
 import {PatchEvent, set} from '../../../patch'
 import {type FieldMember} from '../../../store'
 import {
