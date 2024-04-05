@@ -15,3 +15,4 @@ export * from './form/inputs/arrays/ArrayOfObjectsInput/List/VirtualizerScrollIn
 export * from './form/inputs/arrays/common/SortableItemIdContext'
 export * from './form/inputs/PortableText/PortableTextMarkersContext'
 export * from './form/inputs/PortableText/PortableTextMemberItemsContext'
+export * from './form/inputs/ReferenceInput/ReferenceItemRefContext'
