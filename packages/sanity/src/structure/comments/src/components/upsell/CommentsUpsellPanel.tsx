@@ -31,19 +31,21 @@ export function CommentsUpsellPanel(props: CommentsUpsellPanelProps) {
               <UpsellDescriptionSerializer blocks={data.descriptionText} />
             </Stack>
             <Flex gap={2} justify={'flex-end'} marginTop={5}>
-              <Button
-                mode="bleed"
-                text={data.secondaryButton.text}
-                tone="primary"
-                iconRight={LaunchIcon}
-                {...(data.secondaryButton.url && {
-                  target: '_blank',
-                  rel: 'noopener noreferrer',
-                  as: 'a',
-                  href: data.secondaryButton.url,
-                })}
-                onClick={onSecondaryClick}
-              />
+              {data.secondaryButton.text && (
+                <Button
+                  mode="bleed"
+                  text={data.secondaryButton.text}
+                  tone="primary"
+                  iconRight={LaunchIcon}
+                  {...(data.secondaryButton.url && {
+                    target: '_blank',
+                    rel: 'noopener noreferrer',
+                    as: 'a',
+                    href: data.secondaryButton.url,
+                  })}
+                  onClick={onSecondaryClick}
+                />
+              )}
               <Button
                 text={data.ctaButton.text}
                 tone="primary"
