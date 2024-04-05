@@ -1,4 +1,5 @@
-import {createContext, type ReactNode, useContext, useMemo} from 'react'
+import {type ReactNode, useContext, useMemo} from 'react'
+import {ResourceCacheContext} from 'sanity/_singletons'
 
 import {createMultiKeyWeakMap, type MultiKeyWeakMap} from './createMultiKeyWeakMap'
 
@@ -7,8 +8,6 @@ export interface ResourceCache {
   get<T = unknown>(options: {namespace: string; dependencies: (object | null)[]}): T | undefined
   set(options: {namespace: string; dependencies: (object | null)[]; value: unknown}): void
 }
-
-const ResourceCacheContext = createContext<ResourceCache | null>(null)
 
 /** @internal */
 export interface ResourceCacheProviderProps {
