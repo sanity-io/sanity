@@ -35,7 +35,7 @@ function TasksNotificationTargetInner(props: ObjectFieldProps<TaskDocument>) {
     ? imageBuilder.image(value.media).width(96).height(96).url()
     : null
   const notificationTarget: TaskContext['notification'] = useMemo(() => {
-    const contextUrl = new URL(context?.notification?.url || '')
+    const contextUrl = context?.notification?.url ? new URL(context?.notification?.url) : ''
     const currentUrl = new URL(`${window.location.origin}${basePath}/`)
 
     const studioUrl =
