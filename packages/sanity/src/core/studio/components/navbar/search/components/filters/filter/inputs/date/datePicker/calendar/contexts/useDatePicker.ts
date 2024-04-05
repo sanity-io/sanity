@@ -1,6 +1,5 @@
 import {useContext} from 'react'
-
-import {CalendarContext, type CalendarContextValue} from './CalendarContext'
+import {CalendarContext, type CalendarContextValue} from 'sanity/_singletons'
 
 export function useCalendar(): CalendarContextValue {
   const context = useContext(CalendarContext)
