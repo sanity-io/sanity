@@ -10,7 +10,6 @@ export const studioDependencies = {
     // Non-Sanity dependencies
     react: '^18.2.0',
     'react-dom': '^18.2.0',
-    'react-is': '^18.2.0', // Peer dependency of styled-components
     'styled-components': '^6.0.7',
   },
 

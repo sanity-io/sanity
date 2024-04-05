@@ -20,6 +20,8 @@ interface PackageInfo {
 const PACKAGES = [
   {name: 'react', supported: ['^18'], deprecatedBelow: null},
   {name: 'react-dom', supported: ['^18'], deprecatedBelow: null},
+  {name: 'styled-components', supported: ['^6'], deprecatedBelow: null},
+  {name: '@sanity/ui', supported: ['^2'], deprecatedBelow: null},
 ]
 
 export function checkStudioDependencyVersions(workDir: string): void {
