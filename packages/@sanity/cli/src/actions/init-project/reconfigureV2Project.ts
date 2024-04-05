@@ -1,5 +1,5 @@
 import {type DatasetAclMode} from '@sanity/client'
-import noop from 'lodash/noop'
+import {noop} from 'lodash'
 import path from 'path'
 
 import {type InitFlags} from '../../commands/init/initCommand'

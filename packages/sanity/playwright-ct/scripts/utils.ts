@@ -1,6 +1,6 @@
 import {addMinutes, format} from 'date-fns'
 import fs from 'fs'
-import _ from 'lodash'
+import {chain, filter, flatMap, forEach, groupBy, sumBy} from 'lodash'
 
 import {
   type GroupedSpec,
@@ -28,7 +28,7 @@ export function readJsonFile(filePath: string): JSONReportCustom | null {
  * Flatten the reporting suites structure
  */
 export function flattenSuites(suites: Suite[]): Spec[] {
-  return _.flatMap(suites, (suite) => (suite.suites ? flattenSuites(suite.suites) : suite.specs))
+  return flatMap(suites, (suite) => (suite.suites ? flattenSuites(suite.suites) : suite.specs))
 }
 
 /**
@@ -37,23 +37,23 @@ export function flattenSuites(suites: Suite[]): Spec[] {
 export function groupTests(report: JSONReportCustom): GroupedTests {
   const flatSpecs = flattenSuites(report.suites)
 
-  return _.chain(flatSpecs)
+  return chain(flatSpecs)
     .groupBy('file')
     .mapValues((suiteSpecs) =>
-      _.chain(suiteSpecs)
+      chain(suiteSpecs)
         .groupBy('title')
         .mapValues((specs) => {
-          const tests = _.flatMap(specs, 'tests')
+          const tests = flatMap(specs, 'tests')
           const summary = {
-            totalDuration: _.sumBy(tests, 'results.0.duration'),
-            totalSkipped: _.filter(tests, (test) => test.results[0].status === 'skipped').length,
-            totalFailed: _.filter(tests, (test) => test.results[0].status === 'failed').length,
-            totalPassed: _.filter(tests, (test) => test.results[0].status === 'passed').length,
+            totalDuration: sumBy(tests, 'results.0.duration'),
+            totalSkipped: filter(tests, (test) => test.results[0].status === 'skipped').length,
+            totalFailed: filter(tests, (test) => test.results[0].status === 'failed').length,
+            totalPassed: filter(tests, (test) => test.results[0].status === 'passed').length,
             totalTests: tests.length,
           }
           return {
             summary,
-            projects: _.groupBy(tests, 'projectName'),
+            projects: groupBy(tests, 'projectName'),
           }
         })
         .value(),
@@ -90,7 +90,7 @@ export function formatDuration(ms: number): string {
 export function calculateSuiteTotals(specs: Record<string, GroupedSpec>) {
   let suiteTotals = {totalDuration: 0, totalPassed: 0, totalSkipped: 0, totalFailed: 0}
 
-  _.forEach(specs, ({summary}) => {
+  forEach(specs, ({summary}) => {
     suiteTotals = {
       totalDuration: suiteTotals.totalDuration + summary.totalDuration,
       totalPassed: suiteTotals.totalPassed + summary.totalPassed,
@@ -154,7 +154,7 @@ export function generateOutput(groupedTests: GroupedTests, workflowLink: string)
   const rows: SummaryRow[] = []
 
   // Loop through each test group and summarize the results
-  _.forEach(groupedTests, (specs, suite) => {
+  forEach(groupedTests, (specs, suite) => {
     rows.push(getSuiteSummaryRow(calculateSuiteTotals(specs), suite, workflowLink))
   })
 

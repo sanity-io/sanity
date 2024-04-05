@@ -5,7 +5,7 @@ import {
   type SchemaTypeDefinition,
   type StringDefinition,
 } from '@sanity/types'
-import startCase from 'lodash/startCase'
+import {startCase} from 'lodash'
 
 import {sanitizeFieldValue} from '../utils/sanitizeField'
 import {getSearchableOmnisearchTypes} from '../utils/selectors'

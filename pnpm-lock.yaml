@@ -6146,13 +6146,13 @@ packages:
       '@babel/types': 7.24.0
       '@microsoft/api-extractor': 7.43.0(@types/node@18.19.29)
       '@microsoft/tsdoc-config': 0.16.2
-      '@rollup/plugin-alias': 5.1.0(rollup@4.14.0)
-      '@rollup/plugin-babel': 6.0.4(@babel/core@7.24.4)(rollup@4.14.0)
-      '@rollup/plugin-commonjs': 25.0.7(rollup@4.14.0)
-      '@rollup/plugin-json': 6.1.0(rollup@4.14.0)
-      '@rollup/plugin-node-resolve': 15.2.3(rollup@4.14.0)
-      '@rollup/plugin-replace': 5.0.5(rollup@4.14.0)
-      '@rollup/plugin-terser': 0.4.4(rollup@4.14.0)
+      '@rollup/plugin-alias': 5.1.0(rollup@4.14.1)
+      '@rollup/plugin-babel': 6.0.4(@babel/core@7.24.4)(rollup@4.14.1)
+      '@rollup/plugin-commonjs': 25.0.7(rollup@4.14.1)
+      '@rollup/plugin-json': 6.1.0(rollup@4.14.1)
+      '@rollup/plugin-node-resolve': 15.2.3(rollup@4.14.1)
+      '@rollup/plugin-replace': 5.0.5(rollup@4.14.1)
+      '@rollup/plugin-terser': 0.4.4(rollup@4.14.1)
       '@sanity/browserslist-config': 1.0.3
       browserslist: 4.23.0
       cac: 6.7.14
@@ -6174,8 +6174,8 @@ packages:
       pretty-bytes: 5.6.0
       prompts: 2.4.2
       rimraf: 4.4.1
-      rollup: 4.14.0
-      rollup-plugin-esbuild: 6.1.1(esbuild@0.20.2)(rollup@4.14.0)
+      rollup: 4.14.1
+      rollup-plugin-esbuild: 6.1.1(esbuild@0.20.2)(rollup@4.14.1)
       rxjs: 7.8.1
       treeify: 1.1.0
       typescript: 5.4.2

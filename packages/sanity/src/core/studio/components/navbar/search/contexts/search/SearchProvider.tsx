@@ -1,4 +1,4 @@
-import isEqual from 'lodash/isEqual'
+import {isEqual} from 'lodash'
 import {type ReactNode, useCallback, useEffect, useMemo, useReducer, useRef, useState} from 'react'
 
 import {type CommandListHandle} from '../../../../../../components'
