@@ -20,7 +20,7 @@ importers:
         specifier: ^7.18.6
         version: 7.18.6(@babel/core@7.24.4)
       '@babel/preset-env':
-        specifier: ^7.24.3
+        specifier: ^7.24.4
         version: 7.24.4(@babel/core@7.24.4)
       '@babel/preset-react':
         specifier: ^7.24.1
