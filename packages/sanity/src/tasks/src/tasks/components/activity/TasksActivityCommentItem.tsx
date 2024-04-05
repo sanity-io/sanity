@@ -1,6 +1,6 @@
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
-import styled, {css} from 'styled-components'
+import {css, styled} from 'styled-components'
 
 import {CommentsListItem, type CommentsListItemProps} from '../../../../../structure/comments'
 import {ActivityItem} from './TasksActivityItem'
