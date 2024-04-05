@@ -1750,8 +1750,8 @@ importers:
         specifier: ^1.1.0
         version: 1.1.2(react@18.2.0)
       use-hot-module-reload:
-        specifier: ^1.0.1
-        version: 1.0.3(react@18.2.0)
+        specifier: ^2.0.0
+        version: 2.0.0(react@18.2.0)
       use-sync-external-store:
         specifier: ^1.2.0
         version: 1.2.0(react@18.2.0)
@@ -18836,8 +18836,8 @@ packages:
       react-dom: 18.2.0(react@18.2.0)
     dev: false
 
-  /use-hot-module-reload@1.0.3(react@18.2.0):
-    resolution: {integrity: sha512-Wk/sjFhOF+a6PkovJvDAT3c8yE1DluZsSB3L+gTS8pM4ht2yg/LqBj4YLwnYJSdPnFqGWvu93CMdso8bcKw36A==}
+  /use-hot-module-reload@2.0.0(react@18.2.0):
+    resolution: {integrity: sha512-RbL/OY1HjHNf5BYSFV3yDtQhIGKjCx9ntEjnUBYsOGc9fTo94nyFTcjtD42/twJkPgMljWpszUIpTGD3LuwHSg==}
     peerDependencies:
       react: '>=17.0.0'
     dependencies:
