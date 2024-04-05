@@ -29,10 +29,10 @@ import {
   useCallback,
   useMemo,
 } from 'react'
+import {SortableItemIdContext} from 'sanity/_singletons'
 import {css, styled} from 'styled-components'
 
 import {restrictToParentElementWithMargins} from './dndkit-modifier/restrictToParentElementWithMargins'
-import {SortableItemIdContext} from './DragHandle'
 
 export const MOVING_ITEM_CLASS_NAME = 'moving'
 
