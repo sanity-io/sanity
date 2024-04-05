@@ -1,8 +1,8 @@
 import {useContext} from 'react'
 import {useMemoObservable} from 'react-rx'
 import {empty} from 'rxjs'
+import {UserColorManagerContext} from 'sanity/_singletons'
 
-import {UserColorManagerContext} from './context'
 import {type UserColor, type UserColorManager} from './types'
 
 /** @internal */
