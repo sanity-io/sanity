@@ -1,17 +1,8 @@
 import {createContext} from 'react'
 
-export interface CalendarContextValue {
-  date?: Date
-  endDate?: Date
-  focusedDate: Date
-  selectRange?: boolean
-  selectTime?: boolean
+import type {CalendarContextValue} from '../../../../../../../../../../../../core/studio/components/navbar/search/components/filters/filter/inputs/date/datePicker/calendar/contexts/CalendarContext'
 
-  /**
-   * An integer indicating the first day of the week.
-   * Can be either 1 (Monday) or 7 (Sunday).
-   */
-  firstWeekDay: 1 | 7
-}
-
+/**
+ * @internal
+ */
 export const CalendarContext = createContext<CalendarContextValue | undefined>(undefined)
