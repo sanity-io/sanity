@@ -1,4 +1,1 @@
-/**
- * @internal
- */
-export const hello = 'world'
+export * from './changeIndicators/ConnectorContext'
