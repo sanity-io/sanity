@@ -39,6 +39,7 @@ import {
   useUnique,
   useValidationStatus,
 } from 'sanity'
+import {DocumentPaneContext} from 'sanity/_singletons'
 
 import {usePaneRouter} from '../../components'
 import {structureLocaleNamespace} from '../../i18n'
@@ -50,7 +51,7 @@ import {
   HISTORY_INSPECTOR_NAME,
   INSPECT_ACTION_PREFIX,
 } from './constants'
-import {DocumentPaneContext, type DocumentPaneContextValue} from './DocumentPaneContext'
+import {type DocumentPaneContextValue} from './DocumentPaneContext'
 import {getInitialValueTemplateOpts} from './getInitialValueTemplateOpts'
 import {type DocumentPaneProviderProps} from './types'
 import {usePreviewUrl} from './usePreviewUrl'
