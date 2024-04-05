@@ -5,7 +5,6 @@ import {
   ChangeFieldWrapper,
   ChangeList,
   DiffTooltip,
-  DocumentChangeContext,
   type DocumentChangeContextInstance,
   type DocumentInspectorProps,
   LoadingBlock,
@@ -16,6 +15,7 @@ import {
   useTimelineSelector,
   useTranslation,
 } from 'sanity'
+import {DocumentChangeContext} from 'sanity/_singletons'
 import {styled} from 'styled-components'
 
 import {DocumentInspectorHeader} from '../../documentInspector'
