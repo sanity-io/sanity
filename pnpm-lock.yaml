@@ -394,7 +394,7 @@ importers:
         version: 6.15.10
       '@sanity/color':
         specifier: ^3.0.0
-        version: 3.0.4
+        version: 3.0.5
       '@sanity/google-maps-input':
         specifier: ^3.0.1
         version: 3.0.2(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(sanity@packages+sanity)(styled-components@6.1.8)
@@ -421,7 +421,7 @@ importers:
         version: 1.2.3(sanity@packages+sanity)
       '@sanity/logos':
         specifier: ^2.1.2
-        version: 2.1.8(@sanity/color@3.0.4)(react@18.2.0)
+        version: 2.1.8(@sanity/color@3.0.5)(react@18.2.0)
       '@sanity/migrate':
         specifier: workspace:*
         version: link:../../packages/@sanity/migrate
@@ -1364,7 +1364,7 @@ importers:
         version: 0.1.93(react-dom@18.2.0)(react@18.2.0)
       '@sanity/color':
         specifier: ^3.0.0
-        version: 3.0.4
+        version: 3.0.5
       '@sanity/icons':
         specifier: ^2.11.0
         version: 2.11.7(react@18.2.0)
@@ -1454,7 +1454,7 @@ importers:
         version: 6.15.10
       '@sanity/color':
         specifier: ^3.0.0
-        version: 3.0.4
+        version: 3.0.5
       '@sanity/diff':
         specifier: 3.36.4
         version: link:../@sanity/diff
@@ -1481,7 +1481,7 @@ importers:
         version: link:../@sanity/import
       '@sanity/logos':
         specifier: ^2.1.4
-        version: 2.1.8(@sanity/color@3.0.4)(react@18.2.0)
+        version: 2.1.8(@sanity/color@3.0.5)(react@18.2.0)
       '@sanity/migrate':
         specifier: 3.36.4
         version: link:../@sanity/migrate
@@ -6081,8 +6081,8 @@ packages:
   /@sanity/color@2.2.5:
     resolution: {integrity: sha512-tTi22KoKuER3sldXYl4c1Dq2zU7tMLDkljFiaUKVkBbu4PBvRGCFw75kXZnD2b4Bsp6vin+7sI+AKdCKRhfRuw==}
 
-  /@sanity/color@3.0.4:
-    resolution: {integrity: sha512-kPlUmTdMbMOuYtx+eC+pAWtEjwIKR8MwnqMf+Hzy51/npIZr6PywSRTt+PA+9aWov39/N5ZjEPayCFjdeUuHJA==}
+  /@sanity/color@3.0.5:
+    resolution: {integrity: sha512-jwXekw8WGkpuTIjcTh3f5LSoSG+0sFrWPkcFlUIyQ2kwk9EDsQmFVf2X9Ewr1GAbRmqUEMhuCrr0O5z+KAqLmA==}
     engines: {node: '>=18.0.0'}
 
   /@sanity/core-loader@1.6.3(@sanity/client@6.15.10):
@@ -6259,14 +6259,14 @@ packages:
       sanity: link:packages/sanity
     dev: false
 
-  /@sanity/logos@2.1.8(@sanity/color@3.0.4)(react@18.2.0):
+  /@sanity/logos@2.1.8(@sanity/color@3.0.5)(react@18.2.0):
     resolution: {integrity: sha512-XqhxshTAebzN+aIfL99c992WbWjbEM049z+qsWDgD//+hm0rzHSvGmDNuKj3rO5vkzwCQEHgq1YCrsLvfCtBSQ==}
     engines: {node: '>=14.0.0'}
     peerDependencies:
       '@sanity/color': ^2.0 || ^3.0 || ^3.0.0-beta
       react: ^18
     dependencies:
-      '@sanity/color': 3.0.4
+      '@sanity/color': 3.0.5
       react: 18.2.0
     dev: false
 
@@ -6675,7 +6675,7 @@ packages:
       styled-components: ^5.2 || ^6
     dependencies:
       '@floating-ui/react-dom': 2.0.8(react-dom@18.2.0)(react@18.2.0)
-      '@sanity/color': 3.0.4
+      '@sanity/color': 3.0.5
       '@sanity/icons': 2.11.7(react@18.2.0)
       csstype: 3.1.3
       framer-motion: 11.0.8(react-dom@18.2.0)(react@18.2.0)
