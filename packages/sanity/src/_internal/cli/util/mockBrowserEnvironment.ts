@@ -120,17 +120,19 @@ function tryGetAceGlobal(basePath: string) {
 
 function getFileExtensions() {
   return [
+    '.css',
+    '.eot',
+    '.gif',
     '.jpeg',
     '.jpg',
+    '.otf',
     '.png',
-    '.gif',
+    '.sass',
+    '.scss',
     '.svg',
+    '.ttf',
     '.webp',
     '.woff',
     '.woff2',
-    '.ttf',
-    '.eot',
-    '.otf',
-    '.css',
   ]
 }
