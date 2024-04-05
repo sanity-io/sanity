@@ -7,7 +7,7 @@
   ],
   "ignorePresets": ["github>sanity-io/renovate-config:group-non-major"],
   "packageRules": [
-     {
+    {
       "description": "Slate upgrades are handled manually as they require extensive manual testing to verify it's safe to upgrade",
       "matchPackageNames": ["slate", "slate-react"],
       "enabled": false
