@@ -5,7 +5,7 @@ import {
   PortalProvider,
   useElementRect,
 } from '@sanity/ui'
-import isHotkey from 'is-hotkey'
+import {isHotkey} from 'is-hotkey-esm'
 import {useCallback, useMemo, useState} from 'react'
 import {useTranslation} from 'react-i18next'
 import {

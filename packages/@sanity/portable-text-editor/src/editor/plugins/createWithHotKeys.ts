@@ -1,7 +1,7 @@
 /* eslint-disable max-statements */
 /* eslint-disable complexity */
 import {isPortableTextSpan, isPortableTextTextBlock} from '@sanity/types'
-import isHotkey from 'is-hotkey'
+import {isHotkey} from 'is-hotkey-esm'
 import {type KeyboardEvent} from 'react'
 import {Editor, Node, Path, Range, Transforms} from 'slate'
 import {type ReactEditor} from 'slate-react'

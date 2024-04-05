@@ -1182,9 +1182,6 @@ importers:
       '@types/express-ws':
         specifier: ^3.0.1
         version: 3.0.4
-      '@types/is-hotkey':
-        specifier: ^0.1.10
-        version: 0.1.10
       '@types/lodash':
         specifier: ^4.14.149
         version: 4.17.0
@@ -1393,9 +1390,6 @@ importers:
       '@sanity/client':
         specifier: ^6.15.9
         version: 6.15.9
-      '@types/is-hotkey':
-        specifier: ^0.1.10
-        version: 0.1.10
       '@types/lodash':
         specifier: ^4.14.149
         version: 4.17.0
@@ -1521,9 +1515,6 @@ importers:
       '@tanstack/react-virtual':
         specifier: 3.0.0-beta.54
         version: 3.0.0-beta.54(react@18.2.0)
-      '@types/is-hotkey':
-        specifier: ^0.1.7
-        version: 0.1.10
       '@types/react-copy-to-clipboard':
         specifier: ^5.0.2
         version: 5.0.7
@@ -7178,6 +7169,7 @@ packages:
 
   /@types/is-hotkey@0.1.10:
     resolution: {integrity: sha512-RvC8KMw5BCac1NvRRyaHgMMEtBaZ6wh0pyPTBu7izn4Sj/AX9Y4aXU5c7rX8PnM/knsuUpC1IeoBkANtxBypsQ==}
+    dev: false
 
   /@types/istanbul-lib-coverage@2.0.6:
     resolution: {integrity: sha512-2QF/t/auWm0lsy8XtKVPG19v3sSOQlJe/YHZgfjb/KBBHOGSV+J2q/S671rcq9uTBrLAXmZpqJiaQbMT+zNU1w==}
