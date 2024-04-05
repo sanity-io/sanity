@@ -106,7 +106,6 @@ const config = {
     'sort-imports': 'off', // handled by simple-import-sort
     'simple-import-sort/imports': 'error',
     'simple-import-sort/exports': 'error',
-
     'no-undef': 'off',
     'no-dupe-class-members': 'off', // doesn't work with TS overrides
     'no-shadow': 'off',
@@ -215,6 +214,14 @@ const config = {
             ],
           },
         ],
+      },
+    },
+
+    // Prefer top-level type imports in singletons because boundaries plugin doesn't support named typed imports
+    {
+      files: ['packages/sanity/src/_singletons/**'],
+      rules: {
+        'import/consistent-type-specifier-style': ['error', 'prefer-top-level'],
       },
     },
   ],
