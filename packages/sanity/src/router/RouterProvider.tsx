@@ -1,6 +1,6 @@
 import {type ReactElement, type ReactNode, useCallback, useMemo} from 'react'
+import {RouterContext} from 'sanity/_singletons'
 
-import {RouterContext} from './RouterContext'
 import {
   type IntentParameters,
   type NavigateOptions,
