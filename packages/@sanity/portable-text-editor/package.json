@@ -71,8 +71,8 @@
     "debug": "^3.2.7",
     "is-hotkey-esm": "^1.0.0",
     "lodash": "^4.17.21",
-    "slate": "0.100.0",
-    "slate-react": "0.101.0"
+    "slate": "0.102.0",
+    "slate-react": "0.102.0"
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",
