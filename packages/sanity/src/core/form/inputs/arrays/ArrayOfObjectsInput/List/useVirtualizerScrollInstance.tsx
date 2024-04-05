@@ -1,4 +1,5 @@
-import {createContext, type MutableRefObject, useContext} from 'react'
+import {type MutableRefObject, useContext} from 'react'
+import {VirtualizerScrollInstanceContext} from 'sanity/_singletons'
 
 /**
  * @internal
@@ -13,14 +14,6 @@ export interface VirtualizerScrollInstance {
    */
   containerElement: MutableRefObject<HTMLElement | null>
 }
-
-/**
- * This is used to store the reference to the scroll element for virtualizer
- * @internal
- */
-export const VirtualizerScrollInstanceContext = createContext<VirtualizerScrollInstance | null>(
-  null,
-)
 
 /**
  * @internal
