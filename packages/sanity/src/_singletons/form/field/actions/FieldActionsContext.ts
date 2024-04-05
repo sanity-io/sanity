@@ -1,6 +1,5 @@
 import {createContext} from 'react'
-
-import {type DocumentFieldActionNode} from '../../../config'
+import type {DocumentFieldActionNode} from 'sanity'
 
 /** @internal */
 export interface FieldActionsContextValue {
