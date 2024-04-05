@@ -39,6 +39,17 @@
       "require": "./lib/_internalBrowser.js",
       "default": "./lib/_internalBrowser.js"
     },
+    "./_singletons": {
+      "types": "./lib/exports/_singletons.d.ts",
+      "source": "./exports/_singletons.ts",
+      "require": "./lib/_singletons.js",
+      "node": {
+        "module": "./lib/_singletons.esm.js",
+        "import": "./lib/_singletons.cjs.mjs"
+      },
+      "import": "./lib/_singletons.esm.js",
+      "default": "./lib/_singletons.esm.js"
+    },
     "./cli": {
       "source": "./src/_exports/cli.ts",
       "require": "./lib/cli.js",
