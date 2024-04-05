@@ -2,9 +2,8 @@
 
 import {type FormNodeValidation, type Path, type ValidationMarker} from '@sanity/types'
 import {isEqual, startsWith} from '@sanity/util/paths'
-import {createContext, type ReactNode, useContext, useMemo} from 'react'
-
-const ValidationContext = createContext<ValidationMarker[]>([])
+import {type ReactNode, useContext, useMemo} from 'react'
+import {ValidationContext} from 'sanity/_singletons'
 
 export function ValidationProvider(props: {validation: ValidationMarker[]; children: ReactNode}) {
   return (
