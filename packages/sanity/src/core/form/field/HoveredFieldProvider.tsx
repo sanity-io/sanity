@@ -1,8 +1,8 @@
 import {type Path} from '@sanity/types'
 import {type PropsWithChildren, useCallback, useMemo, useState} from 'react'
+import {HoveredFieldContext, type HoveredFieldContextValue} from 'sanity/_singletons'
 
 import {pathToString} from '../../field'
-import {HoveredFieldContext, type HoveredFieldContextValue} from './HoveredFieldContext'
 
 /** @internal */
 export function HoveredFieldProvider(props: PropsWithChildren) {
