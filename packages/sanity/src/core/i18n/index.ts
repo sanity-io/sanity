@@ -13,6 +13,7 @@ export * from './locales'
 export * from './Translate'
 export type {
   ImplicitLocaleResourceBundle,
+  Locale,
   LocaleConfigContext,
   LocaleDefinition,
   LocaleNestedResource,
