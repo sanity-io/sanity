@@ -56,8 +56,8 @@ importers:
         specifier: ^3.0.1
         version: 3.0.1(eslint@8.57.0)(typescript@5.4.2)
       '@sanity/pkg-utils':
-        specifier: 5.1.8
-        version: 5.1.8(@types/node@18.19.29)(typescript@5.4.2)
+        specifier: 5.1.11
+        version: 5.1.11(@types/node@18.19.29)(typescript@5.4.2)
       '@sanity/test':
         specifier: 0.0.1-alpha.1
         version: 0.0.1-alpha.1
@@ -1859,8 +1859,8 @@ importers:
         specifier: 3.36.4
         version: link:../@sanity/codegen
       '@sanity/pkg-utils':
-        specifier: 5.1.8
-        version: 5.1.8(@types/node@18.19.29)(typescript@5.4.2)
+        specifier: 5.1.11
+        version: 5.1.11(@types/node@18.19.29)(typescript@5.4.2)
       '@sanity/tsdoc':
         specifier: 1.0.7
         version: 1.0.7(@types/node@18.19.29)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(sanity@packages+sanity)(styled-components@6.1.8)
@@ -6134,6 +6134,58 @@ packages:
       '@sanity/color': 3.0.5
       react: 18.2.0
     dev: false
+
+  /@sanity/pkg-utils@5.1.11(@types/node@18.19.29)(typescript@5.4.2):
+    resolution: {integrity: sha512-zLLtIECEcjGFmyP4GFpPWVpAVqwMkGHdY+NnL0oXdrzmHAO+VGftCo8YDdq2BZZ6UIXuZyMoRo0AOJxnzyV9qQ==}
+    engines: {node: '>=16.0.0'}
+    hasBin: true
+    peerDependencies:
+      typescript: 5.4.2
+    dependencies:
+      '@babel/core': 7.24.4
+      '@babel/types': 7.24.0
+      '@microsoft/api-extractor': 7.43.0(@types/node@18.19.29)
+      '@microsoft/tsdoc-config': 0.16.2
+      '@rollup/plugin-alias': 5.1.0(rollup@4.14.0)
+      '@rollup/plugin-babel': 6.0.4(@babel/core@7.24.4)(rollup@4.14.0)
+      '@rollup/plugin-commonjs': 25.0.7(rollup@4.14.0)
+      '@rollup/plugin-json': 6.1.0(rollup@4.14.0)
+      '@rollup/plugin-node-resolve': 15.2.3(rollup@4.14.0)
+      '@rollup/plugin-replace': 5.0.5(rollup@4.14.0)
+      '@rollup/plugin-terser': 0.4.4(rollup@4.14.0)
+      '@sanity/browserslist-config': 1.0.3
+      browserslist: 4.23.0
+      cac: 6.7.14
+      chalk: 4.1.2
+      chokidar: 3.6.0
+      esbuild: 0.20.2
+      esbuild-register: 3.5.0(esbuild@0.20.2)
+      find-config: 1.0.0
+      get-latest-version: 5.1.0
+      git-url-parse: 14.0.0
+      globby: 11.1.0
+      jsonc-parser: 3.2.1
+      mkdirp: 3.0.1
+      outdent: 0.8.0
+      parse-git-config: 3.0.0
+      pkg-up: 3.1.0
+      prettier: 3.2.5
+      prettier-plugin-packagejson: 2.4.14(prettier@3.2.5)
+      pretty-bytes: 5.6.0
+      prompts: 2.4.2
+      rimraf: 4.4.1
+      rollup: 4.14.0
+      rollup-plugin-esbuild: 6.1.1(esbuild@0.20.2)(rollup@4.14.0)
+      rxjs: 7.8.1
+      treeify: 1.1.0
+      typescript: 5.4.2
+      uuid: 9.0.1
+      zod: 3.22.4
+    transitivePeerDependencies:
+      - '@types/babel__core'
+      - '@types/node'
+      - supports-color
+    dev: true
 
   /@sanity/pkg-utils@5.1.8(@types/node@18.19.29)(typescript@5.4.2):
     resolution: {integrity: sha512-emaireu4HWlp3oN34HSAs4Nre7fEyYSIf8yWS7iqzeSIhfReJfGsrpruP4GaGKvcO6n6+07UOF5wE4koUkBESA==}

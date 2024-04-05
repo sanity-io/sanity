@@ -1,7 +1,7 @@
 import {optimizeLodashImports} from '@optimize-lodash/rollup-plugin'
-import {type PkgConfigOptions} from '@sanity/pkg-utils'
+import {defineConfig} from '@sanity/pkg-utils'
 
-const config = {
+export default defineConfig({
   define: {
     __DEV__: false,
   },
@@ -32,6 +32,4 @@ const config = {
     plugins: [optimizeLodashImports()],
   },
   tsconfig: 'tsconfig.lib.json',
-} satisfies PkgConfigOptions
-
-export default config
+})

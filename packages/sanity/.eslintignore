@@ -1,10 +1,7 @@
 # legacy package exports
-_internal.js
-cli.js
 desk.js
 form.js
 presentation.js
 router.js
 structure.js
-migrate.js
 /migrate/*
