@@ -25,9 +25,7 @@ export function TasksEnabledProvider({children}: TaksEnabledProviderProps) {
     }
     return {
       enabled: true,
-      // TODO: restore.
-      _mode: enabled ? 'default' : 'upsell',
-      mode: 'upsell',
+      mode: enabled ? 'default' : 'upsell',
     }
   }, [enabled, isLoading, isWorkspaceEnabled])
 

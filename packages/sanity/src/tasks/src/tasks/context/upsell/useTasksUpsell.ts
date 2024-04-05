@@ -11,8 +11,20 @@ export function useTasksUpsell(): TasksUpsellContextValue {
   const value = useContext(TasksUpsellContext)
 
   if (!value) {
-    throw new Error('useTasksUpsell must be used within a TasksUpsellProvider')
+    // Instead of throwing, we return a dummy value to avoid breaking the tasks create action implementation, given the context is optional.
+    return {
+      upsellData: null,
+      handleOpenDialog: () => null,
+      upsellDialogOpen: false,
+      telemetryLogs: {
+        dialogSecondaryClicked: () => null,
+        dialogPrimaryClicked: () => null,
+        panelViewed: () => null,
+        panelDismissed: () => null,
+        panelPrimaryClicked: () => null,
+        panelSecondaryClicked: () => null,
+      },
+    }
   }
-
   return value
 }

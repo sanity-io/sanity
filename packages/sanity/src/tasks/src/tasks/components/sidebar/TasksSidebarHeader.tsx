@@ -79,7 +79,7 @@ export function TasksSidebarHeader(props: TasksSidebarHeaderProps) {
             tooltipProps={
               mode === 'upsell'
                 ? {
-                    content: 'Upgrade to create tasks',
+                    content: t('buttons.new.upsell-tooltip'),
                   }
                 : undefined
             }

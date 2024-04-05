@@ -72,7 +72,7 @@ function FormActionsMenu({id, value}: {id: string; value: TaskDocument}) {
                 icon={CopyIcon}
                 onClick={duplicateTask}
                 tooltipProps={
-                  mode === 'upsell' ? {content: 'Upgrade to duplicate tasks'} : undefined
+                  mode === 'upsell' ? {content: t('menuitem.duplicate.upsell-tooltip')} : undefined
                 }
                 disabled={mode === 'upsell'}
               />
