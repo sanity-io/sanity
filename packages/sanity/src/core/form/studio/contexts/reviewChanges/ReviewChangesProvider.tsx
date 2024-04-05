@@ -1,6 +1,6 @@
 import {type ReactElement, type ReactNode, useMemo} from 'react'
+import {ReviewChangesContext} from 'sanity/_singletons'
 
-import {ReviewChangesContext} from './ReviewChangesContext'
 import {type ReviewChangesContextValue} from './types'
 
 /**
