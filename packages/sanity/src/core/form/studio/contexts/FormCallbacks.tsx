@@ -1,6 +1,7 @@
 /* eslint-disable react/no-unused-prop-types */
 import {type Path} from '@sanity/types'
-import {createContext, memo, type ReactNode, useCallback, useContext, useMemo, useRef} from 'react'
+import {memo, type ReactNode, useCallback, useContext, useMemo, useRef} from 'react'
+import {FormCallbacksContext} from 'sanity/_singletons'
 
 import {type FormPatch, type PatchEvent} from '../../patch'
 
@@ -15,11 +16,6 @@ export interface FormCallbacksValue {
   onSetFieldSetCollapsed: (path: Path, collapsed: boolean) => void
   onFieldGroupSelect: (path: Path, fieldGroupName: string) => void
 }
-
-/**
- * @internal
- */
-export const FormCallbacksContext = createContext<FormCallbacksValue | null>(null)
 
 /** @internal */
 export const FormCallbacksProvider = memo(function FormCallbacksProvider(
