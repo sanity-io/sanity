@@ -215,7 +215,7 @@ importers:
     dependencies:
       '@sanity/icons':
         specifier: ^2.11.0
-        version: 2.11.6(react@18.2.0)
+        version: 2.11.7(react@18.2.0)
       '@sanity/ui':
         specifier: ^2.0.14
         version: 2.0.14(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8)
@@ -318,7 +318,7 @@ importers:
         version: 3.0.2(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(sanity@packages+sanity)(styled-components@6.1.8)
       '@sanity/icons':
         specifier: ^2.11.0
-        version: 2.11.6(react@18.2.0)
+        version: 2.11.7(react@18.2.0)
       '@sanity/ui':
         specifier: ^2.0.14
         version: 2.0.14(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8)
@@ -400,7 +400,7 @@ importers:
         version: 3.0.2(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(sanity@packages+sanity)(styled-components@6.1.8)
       '@sanity/icons':
         specifier: ^2.11.0
-        version: 2.11.6(react@18.2.0)
+        version: 2.11.7(react@18.2.0)
       '@sanity/image-url':
         specifier: ^1.0.2
         version: 1.0.2
@@ -448,7 +448,7 @@ importers:
         version: 2.0.14(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8)
       '@sanity/ui-workshop':
         specifier: ^1.0.0
-        version: 1.2.11(@sanity/icons@2.11.6)(@sanity/ui@2.0.14)(@types/node@18.19.29)(react-dom@18.2.0)(react@18.2.0)(styled-components@6.1.8)
+        version: 1.2.11(@sanity/icons@2.11.7)(@sanity/ui@2.0.14)(@types/node@18.19.29)(react-dom@18.2.0)(react@18.2.0)(styled-components@6.1.8)
       '@sanity/util':
         specifier: workspace:*
         version: link:../../packages/@sanity/util
@@ -1272,7 +1272,7 @@ importers:
         version: 29.7.0
       '@sanity/icons':
         specifier: ^2.11.6
-        version: 2.11.6(react@18.2.0)
+        version: 2.11.7(react@18.2.0)
       '@types/arrify':
         specifier: ^1.0.4
         version: 1.0.4
@@ -1367,7 +1367,7 @@ importers:
         version: 3.0.4
       '@sanity/icons':
         specifier: ^2.11.0
-        version: 2.11.6(react@18.2.0)
+        version: 2.11.7(react@18.2.0)
       '@sanity/ui':
         specifier: ^2.0.14
         version: 2.0.14(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8)
@@ -1472,7 +1472,7 @@ importers:
         version: 3.0.0
       '@sanity/icons':
         specifier: ^2.11.0
-        version: 2.11.6(react@18.2.0)
+        version: 2.11.7(react@18.2.0)
       '@sanity/image-url':
         specifier: ^1.0.2
         version: 1.0.2
@@ -1770,7 +1770,7 @@ importers:
         version: 1.0.0-alpha.44(@sanity/pkg-utils@2.4.10)(@types/node@18.19.29)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(sanity@packages+sanity)(styled-components@6.1.8)
       '@sanity/ui-workshop':
         specifier: ^1.2.11
-        version: 1.2.11(@sanity/icons@2.11.6)(@sanity/ui@2.0.14)(@types/node@18.19.29)(react-dom@18.2.0)(react@18.2.0)(styled-components@6.1.8)
+        version: 1.2.11(@sanity/icons@2.11.7)(@sanity/ui@2.0.14)(@types/node@18.19.29)(react-dom@18.2.0)(react@18.2.0)(styled-components@6.1.8)
       '@testing-library/jest-dom':
         specifier: ^6.2.0
         version: 6.4.2(@jest/globals@29.7.0)(jest@29.7.0)
@@ -6040,7 +6040,7 @@ packages:
       sanity: ^3.26
       styled-components: ^5.2 || ^6.0.0
     dependencies:
-      '@sanity/icons': 2.11.6(react@18.2.0)
+      '@sanity/icons': 2.11.7(react@18.2.0)
       '@sanity/incompatible-plugin': 1.0.4(react-dom@18.2.0)(react@18.2.0)
       '@sanity/ui': 2.0.14(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8)
       date-fns: 2.30.0
@@ -6174,7 +6174,7 @@ packages:
       react: ^18
       sanity: ^3.14
     dependencies:
-      '@sanity/icons': 2.11.6(react@18.2.0)
+      '@sanity/icons': 2.11.7(react@18.2.0)
       '@sanity/incompatible-plugin': 1.0.4(react-dom@18.2.0)(react@18.2.0)
       '@sanity/ui': 1.9.3(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8)
       lodash: 4.17.21
@@ -6194,8 +6194,8 @@ packages:
       react: 18.2.0
     dev: false
 
-  /@sanity/icons@2.11.6(react@18.2.0):
-    resolution: {integrity: sha512-5Su3YQEVZI2F98oYuo1wDXY3X2cAovfutewFHNN8e4LI9StJx+MiojpxG2Lg6qJSTr+YUMlOcHEqyzVOe/QpSA==}
+  /@sanity/icons@2.11.7(react@18.2.0):
+    resolution: {integrity: sha512-F0GkmYfzZFJZmhRRZFyzAVtqU4D+kiXMJCr5MeM9uGgGvFNKUW2amGCiN1528Z60v73hlqHTD9Eb6WEkwhWsiA==}
     engines: {node: '>=14.0.0'}
     peerDependencies:
       react: ^18
@@ -6381,7 +6381,7 @@ packages:
       '@sanity/client': ^6.15.2
     dependencies:
       '@sanity/client': 6.15.10
-      '@sanity/icons': 2.11.6(react@18.2.0)
+      '@sanity/icons': 2.11.7(react@18.2.0)
       '@sanity/preview-url-secret': 1.6.5(@sanity/client@6.15.10)
       '@sanity/ui': 2.0.14(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8)
       '@sanity/uuid': 3.0.2
@@ -6407,7 +6407,7 @@ packages:
       '@sanity/client': ^6.15.7
     dependencies:
       '@sanity/client': 6.15.10
-      '@sanity/icons': 2.11.6(react@18.2.0)
+      '@sanity/icons': 2.11.7(react@18.2.0)
       '@sanity/preview-url-secret': 1.6.5(@sanity/client@6.15.10)
       '@sanity/ui': 2.0.14(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8)
       '@sanity/uuid': 3.0.2
@@ -6491,7 +6491,7 @@ packages:
       '@portabletext/toolkit': 2.0.14
       '@sanity/client': 6.15.10
       '@sanity/color': 2.2.5
-      '@sanity/icons': 2.11.6(react@18.2.0)
+      '@sanity/icons': 2.11.7(react@18.2.0)
       '@sanity/pkg-utils': 2.4.10(@types/node@18.19.29)(typescript@5.4.4)
       '@sanity/ui': 1.9.3(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8)
       '@types/cpx': 1.5.5
@@ -6547,7 +6547,7 @@ packages:
       '@portabletext/toolkit': 2.0.14
       '@sanity/client': 6.15.10
       '@sanity/color': 2.2.5
-      '@sanity/icons': 2.11.6(react@18.2.0)
+      '@sanity/icons': 2.11.7(react@18.2.0)
       '@sanity/pkg-utils': 4.4.4(@types/node@18.19.29)(typescript@5.3.3)
       '@sanity/ui': 1.9.3(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@5.3.11)
       '@types/cpx': 1.5.5
@@ -6585,7 +6585,7 @@ packages:
       - terser
     dev: true
 
-  /@sanity/ui-workshop@1.2.11(@sanity/icons@2.11.6)(@sanity/ui@2.0.14)(@types/node@18.19.29)(react-dom@18.2.0)(react@18.2.0)(styled-components@6.1.8):
+  /@sanity/ui-workshop@1.2.11(@sanity/icons@2.11.7)(@sanity/ui@2.0.14)(@types/node@18.19.29)(react-dom@18.2.0)(react@18.2.0)(styled-components@6.1.8):
     resolution: {integrity: sha512-vzj7upIF7wq2W1HEA0D5VSkR8axaH4Rt07yNTAaas7CLgjSE9r2d+Gnkrq4FIbIuN1GYhhCD+D3/s60GaZrpQw==}
     hasBin: true
     peerDependencies:
@@ -6595,7 +6595,7 @@ packages:
       react-dom: ^18
       styled-components: ^5.2 || ^6
     dependencies:
-      '@sanity/icons': 2.11.6(react@18.2.0)
+      '@sanity/icons': 2.11.7(react@18.2.0)
       '@sanity/ui': 2.0.14(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8)
       '@vitejs/plugin-react': 4.2.1(vite@4.5.3)
       axe-core: 4.9.0
@@ -6635,7 +6635,7 @@ packages:
     dependencies:
       '@floating-ui/react-dom': 2.0.0(react-dom@18.2.0)(react@18.2.0)
       '@sanity/color': 2.2.5
-      '@sanity/icons': 2.11.6(react@18.2.0)
+      '@sanity/icons': 2.11.7(react@18.2.0)
       csstype: 3.1.3
       framer-motion: 10.18.0(react-dom@18.2.0)(react@18.2.0)
       react: 18.2.0
@@ -6656,7 +6656,7 @@ packages:
     dependencies:
       '@floating-ui/react-dom': 2.0.0(react-dom@18.2.0)(react@18.2.0)
       '@sanity/color': 2.2.5
-      '@sanity/icons': 2.11.6(react@18.2.0)
+      '@sanity/icons': 2.11.7(react@18.2.0)
       csstype: 3.1.3
       framer-motion: 10.18.0(react-dom@18.2.0)(react@18.2.0)
       react: 18.2.0
@@ -6676,7 +6676,7 @@ packages:
     dependencies:
       '@floating-ui/react-dom': 2.0.8(react-dom@18.2.0)(react@18.2.0)
       '@sanity/color': 3.0.4
-      '@sanity/icons': 2.11.6(react@18.2.0)
+      '@sanity/icons': 2.11.7(react@18.2.0)
       csstype: 3.1.3
       framer-motion: 11.0.8(react-dom@18.2.0)(react@18.2.0)
       react: 18.2.0
@@ -17144,7 +17144,7 @@ packages:
     dependencies:
       '@mux/mux-player-react': 1.15.0(@types/react@18.2.74)(react-dom@18.2.0)(react@18.2.0)
       '@mux/upchunk': 3.3.2
-      '@sanity/icons': 2.11.6(react@18.2.0)
+      '@sanity/icons': 2.11.7(react@18.2.0)
       '@sanity/incompatible-plugin': 1.0.4(react-dom@18.2.0)(react@18.2.0)
       '@sanity/ui': 1.9.3(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8)
       '@sanity/uuid': 3.0.2
