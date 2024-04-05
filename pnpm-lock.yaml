@@ -1271,7 +1271,7 @@ importers:
         specifier: ^29.7.0
         version: 29.7.0
       '@sanity/icons':
-        specifier: ^2.11.6
+        specifier: ^2.11.7
         version: 2.11.7(react@18.2.0)
       '@types/arrify':
         specifier: ^1.0.4
