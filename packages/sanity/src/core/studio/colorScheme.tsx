@@ -9,15 +9,10 @@ import {
   useMemo,
   useSyncExternalStore,
 } from 'react'
+import {ColorSchemeValueContext} from 'sanity/_singletons'
 
 import {type TFunction} from '../i18n'
 import {type StudioThemeColorSchemeKey} from '../theme/types'
-
-/**
- * Used to keep track of the internal value, which can be "system" in addition to "light" and "dark"
- * @internal
- */
-export const ColorSchemeValueContext = createContext<StudioThemeColorSchemeKey | null>(null)
 
 /**
  * The setter for ColorSchemeValueContext, in a separate context to avoid unnecessary re-renders
