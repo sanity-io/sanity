@@ -1,4 +1,4 @@
-import isHotkey from 'is-hotkey'
+import {isHotkey} from 'is-hotkey-esm'
 import * as React from 'react'
 import {createElement, type ElementType, useCallback, useMemo, useState} from 'react'
 import {type DocumentActionDescription, type DocumentActionProps, LegacyLayerProvider} from 'sanity'

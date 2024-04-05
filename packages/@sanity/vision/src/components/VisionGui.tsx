@@ -22,7 +22,7 @@ import {
   type ToastContextValue,
   Tooltip,
 } from '@sanity/ui'
-import isHotkey from 'is-hotkey'
+import {isHotkey} from 'is-hotkey-esm'
 import {type ChangeEvent, createRef, PureComponent, type RefObject} from 'react'
 import {type TFunction} from 'sanity'
 

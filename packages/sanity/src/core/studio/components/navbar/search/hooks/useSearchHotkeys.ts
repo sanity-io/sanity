@@ -1,5 +1,5 @@
 import {useGlobalKeyDown, useLayer} from '@sanity/ui'
-import isHotkey from 'is-hotkey'
+import {isHotkey} from 'is-hotkey-esm'
 import {useCallback} from 'react'
 
 import {GLOBAL_SEARCH_KEY} from '../constants'
