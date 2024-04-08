@@ -102,7 +102,7 @@
     "@sanity/eslint-config-studio": "^3.0.1",
     "@sanity/pkg-utils": "5.1.12",
     "@sanity/test": "0.0.1-alpha.1",
-    "@sanity/tsdoc": "1.0.7",
+    "@sanity/tsdoc": "1.0.13",
     "@sanity/uuid": "^3.0.2",
     "@types/glob": "^7.2.0",
     "@types/lodash": "^4.14.149",

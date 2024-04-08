@@ -259,7 +259,7 @@
     "@repo/package.config": "workspace:*",
     "@sanity/codegen": "3.36.4",
     "@sanity/pkg-utils": "5.1.12",
-    "@sanity/tsdoc": "1.0.7",
+    "@sanity/tsdoc": "1.0.13",
     "@sanity/ui-workshop": "^1.2.11",
     "@testing-library/jest-dom": "^6.2.0",
     "@testing-library/react": "^13.4.0",
