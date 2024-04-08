@@ -195,7 +195,9 @@ export function AssigneeSelectionMenu(props: {
       }
       popover={{
         placement: 'bottom',
+        fallbackPlacements: ['bottom'],
         portal: true,
+        constrainSize: true,
       }}
     />
   )

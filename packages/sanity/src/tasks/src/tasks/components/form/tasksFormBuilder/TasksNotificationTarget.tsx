@@ -4,6 +4,7 @@ import {useEffect, useMemo} from 'react'
 import deepEquals from 'react-fast-compare'
 import {
   DEFAULT_STUDIO_CLIENT_OPTIONS,
+  isDev,
   type ObjectFieldProps,
   set,
   useClient,
@@ -18,7 +19,7 @@ import {CurrentWorkspaceProvider} from '../CurrentWorkspaceProvider'
 function TasksNotificationTargetInner(props: ObjectFieldProps<TaskDocument>) {
   const {inputProps} = props
   const {onChange} = inputProps
-  const {target, _id, context} = useFormValue([]) as TaskDocument
+  const {target, _id, context, _rev} = useFormValue([]) as TaskDocument
   const {title: workspaceTitle, basePath} = useWorkspace()
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const imageBuilder = useMemo(() => imageUrlBuilder(client), [client])
@@ -33,6 +34,25 @@ function TasksNotificationTargetInner(props: ObjectFieldProps<TaskDocument>) {
   const imageUrl = isImageSource(value?.media)
     ? imageBuilder.image(value.media).width(96).height(96).url()
     : null
+  const notificationTarget: TaskContext['notification'] = useMemo(() => {
+    const contextUrl = context?.notification?.url ? new URL(context?.notification?.url) : ''
+    const currentUrl = new URL(`${window.location.origin}${basePath}/`)
+
+    const studioUrl =
+      // Avoid updating the contextURL in dev mode if it already exists, persist the deployed one.
+      contextUrl && isDev ? contextUrl : currentUrl
+
+    studioUrl.searchParams.set('sidebar', 'tasks')
+    studioUrl.searchParams.set('selectedTask', _id)
+    studioUrl.searchParams.set('viewMode', 'edit')
+
+    return {
+      url: studioUrl.toString(),
+      workspaceTitle,
+      targetContentImageUrl: imageUrl,
+      targetContentTitle: targetContentTitle,
+    }
+  }, [_id, basePath, imageUrl, targetContentTitle, workspaceTitle, context])
 
   useEffect(() => {
     if (documentId && documentType && previewValuesLoading) {
@@ -40,32 +60,17 @@ function TasksNotificationTargetInner(props: ObjectFieldProps<TaskDocument>) {
       return
     }
 
-    const studioUrl = new URL(`${window.location.origin}${basePath}/`)
-    studioUrl.searchParams.set('sidebar', 'tasks')
-    studioUrl.searchParams.set('selectedTask', _id)
-    studioUrl.searchParams.set('viewMode', 'edit')
-
-    const notificationTarget: TaskContext['notification'] = {
-      url: studioUrl.toString(),
-      workspaceTitle,
-      targetContentImageUrl: imageUrl,
-      targetContentTitle: targetContentTitle,
+    // If the task doesn't have a _rev it means it's not created, don't add the notification target yet.
+    if (!_rev) {
+      return
     }
-    if (deepEquals(notificationTarget, context?.notification)) return
 
+    if (deepEquals(context?.notification, notificationTarget)) {
+      return
+    }
+    // Something changed, update the notification target
     onChange(set(notificationTarget, ['notification']))
-  }, [
-    _id,
-    basePath,
-    workspaceTitle,
-    documentId,
-    documentType,
-    previewValuesLoading,
-    targetContentTitle,
-    imageUrl,
-    onChange,
-    context,
-  ])
+  }, [_rev, context, documentId, documentType, notificationTarget, previewValuesLoading, onChange])
 
   return null
 }

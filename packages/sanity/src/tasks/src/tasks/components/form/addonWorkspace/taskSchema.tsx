@@ -103,7 +103,7 @@ export const taskSchema = (mode: FormMode) =>
         type: 'string',
         name: 'assignedTo',
         title: 'Assign to',
-        placeholder: 'Select username',
+        placeholder: 'Select assignee',
         components: {
           field: FieldWrapper,
           input: AssigneeCreateFormField,
@@ -114,7 +114,7 @@ export const taskSchema = (mode: FormMode) =>
         type: 'date',
         name: 'dueBy',
         title: 'Deadline',
-        placeholder: 'Select date',
+        placeholder: 'yyyy-mm-dd',
         components: {
           field: FieldWrapper,
         },

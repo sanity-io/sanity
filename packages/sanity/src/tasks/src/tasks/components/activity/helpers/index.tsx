@@ -33,6 +33,9 @@ const RELATIVE_TIME_OPTIONS: RelativeTimeOptions = {
 const Strong = styled.strong`
   font-weight: 600;
 `
+export const NoWrap = styled.span`
+  white-space: nowrap;
+`
 
 export function UpdatedTimeAgo(timestamp: string) {
   const date = new Date(timestamp)
@@ -58,7 +61,11 @@ function DueByChange({date}: {date: string}) {
   const dueBy = new Date(date)
   const dateFormatter = useDateTimeFormat(DUE_BY_DATE_OPTIONS)
   const formattedDate = dateFormatter.format(dueBy)
-  return <Strong>{formattedDate}</Strong>
+  return (
+    <Strong>
+      <NoWrap>{formattedDate}</NoWrap>
+    </Strong>
+  )
 }
 
 const LinkWrapper = styled.span`

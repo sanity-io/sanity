@@ -302,6 +302,7 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
       data-active={isSelected ? 'true' : 'false'}
       data-hovered={mouseOver ? 'true' : 'false'}
       data-testid="comments-list-item"
+      data-ui="comments-list-item"
       onClick={handleThreadRootClick}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}

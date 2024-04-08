@@ -19,6 +19,7 @@ import {renderBlock} from './render'
 const DescriptionInputRoot = styled.div<{$mode: FormMode; $minHeight: number}>((props) => {
   const theme = getTheme_v2(props.theme)
   const verticalPadding = props.$mode === 'edit' ? theme.space[1] : theme.space[3]
+  const minHeight = props.$mode === 'edit' ? 120 : 200
   return css`
     /* select editable-wrap and change the padding */
     [data-ui='editable-wrap'] {
@@ -26,7 +27,7 @@ const DescriptionInputRoot = styled.div<{$mode: FormMode; $minHeight: number}>((
       padding: ${props.$mode === 'edit'
         ? `${verticalPadding}px 0px`
         : `${verticalPadding}px ${theme.space[2]}px`};
-      min-height: ${Math.max(props.$minHeight + verticalPadding, 200)}px !important;
+      min-height: ${Math.max(props.$minHeight + verticalPadding, minHeight)}px !important;
     }
     #comment-input-root {
       box-shadow: ${props.$mode === 'edit' ? 'none' : ''};
@@ -75,11 +76,7 @@ export function DescriptionInput(props: ArrayFieldProps & {mode: FormMode}) {
 
   if (!currentUser) return null
   return (
-    <DescriptionInputRoot
-      $mode={mode}
-      ref={handleSetRootRef}
-      $minHeight={textBoxScrollHeight || 200}
-    >
+    <DescriptionInputRoot $mode={mode} ref={handleSetRootRef} $minHeight={textBoxScrollHeight}>
       <CommentInput
         expandOnFocus={false}
         currentUser={currentUser}

@@ -5,7 +5,7 @@ import {styled} from 'styled-components'
 
 import {Tooltip} from '../../../../../ui-components'
 import {tasksLocaleNamespace} from '../../../../i18n'
-import {UpdatedTimeAgo} from './helpers'
+import {NoWrap, UpdatedTimeAgo} from './helpers'
 import {ActivityItem} from './TasksActivityItem'
 
 const UserSkeleton = styled(TextSkeleton)`
@@ -33,7 +33,9 @@ export const TasksActivityCreatedAt = memo(
             </strong>
             {t('panel.activity.created-fragment')} •{' '}
             <Tooltip content={formattedDate} placement="top-end">
-              <time dateTime={createdAt}>{timeAgo}</time>
+              <NoWrap>
+                <time dateTime={createdAt}>{timeAgo}</time>
+              </NoWrap>
             </Tooltip>
           </Text>
         </Flex>

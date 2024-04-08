@@ -3,16 +3,27 @@ import {styled} from 'styled-components'
 
 import {TasksUserAvatar} from '../TasksUserAvatar'
 
+const ActivityChildrenRoot = styled(Flex)`
+  height: 100%;
+`
 const ActivityItemChildrenContainer = styled.div`
   width: 100%;
 `
-export function ActivityItem({userId, children}: {userId: string; children: React.ReactNode}) {
+
+interface ActivityItemProps {
+  userId: string
+  children: React.ReactNode
+  avatarPaddingTop?: number
+}
+export function ActivityItem({avatarPaddingTop = 1, userId, children}: ActivityItemProps) {
   return (
-    <Flex gap={1}>
-      <Box marginRight={3} paddingTop={1}>
+    <Flex>
+      <Box marginRight={3} paddingTop={avatarPaddingTop}>
         <TasksUserAvatar user={{id: userId}} size={0} />
       </Box>
-      <ActivityItemChildrenContainer>{children}</ActivityItemChildrenContainer>
+      <ActivityChildrenRoot align="center" flex={1}>
+        <ActivityItemChildrenContainer>{children}</ActivityItemChildrenContainer>
+      </ActivityChildrenRoot>
     </Flex>
   )
 }

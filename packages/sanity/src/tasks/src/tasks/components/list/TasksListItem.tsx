@@ -97,7 +97,7 @@ export function TasksListItem(props: TasksListItemProps) {
           </TitleButton>
         </Flex>
 
-        <TasksUserAvatar user={assignedTo ? {id: assignedTo} : undefined} />
+        <TasksUserAvatar user={assignedTo ? {id: assignedTo} : undefined} withTooltip />
       </Flex>
 
       {(dueBy || targetDocument) && (
