@@ -373,7 +373,7 @@ importers:
     dependencies:
       '@portabletext/react':
         specifier: ^3.0.0
-        version: 3.0.15(react@18.2.0)
+        version: 3.0.17(react@18.2.0)
       '@react-three/cannon':
         specifier: ^6.5.2
         version: 6.6.0(@react-three/fiber@8.16.1)(react@18.2.0)(three@0.157.0)(typescript@5.4.4)
@@ -1433,7 +1433,7 @@ importers:
         version: 3.4.0
       '@portabletext/react':
         specifier: ^3.0.0
-        version: 3.0.15(react@18.2.0)
+        version: 3.0.17(react@18.2.0)
       '@rexxars/react-json-inspector':
         specifier: ^8.0.1
         version: 8.0.1(react@18.2.0)
@@ -5018,8 +5018,8 @@ packages:
       '@pnpm/network.ca-file': 1.0.2
       config-chain: 1.1.13
 
-  /@portabletext/react@3.0.15(react@18.2.0):
-    resolution: {integrity: sha512-M4Yag/C+1k9jnBs9n+ciDz2sP3vuvohxlX4CL3VFIlnDOsjzFmkPhWjOO4HUhOl+YE1VABJv/q8MW7PYaKS7SQ==}
+  /@portabletext/react@3.0.17(react@18.2.0):
+    resolution: {integrity: sha512-a5z2CoEG6vtRNnMZ95hH1IRYMpY2Zhmeri839p0Os2CRlQX7PldL7B91NIhwuJd0D+9ESMNAMf4Or/XsVQWZew==}
     engines: {node: ^14.13.1 || >=16.0.0}
     peerDependencies:
       react: ^17 || ^18
@@ -6487,7 +6487,7 @@ packages:
       '@microsoft/api-extractor-model': 7.27.0(@types/node@18.19.29)
       '@microsoft/tsdoc': 0.14.2
       '@microsoft/tsdoc-config': 0.16.2
-      '@portabletext/react': 3.0.15(react@18.2.0)
+      '@portabletext/react': 3.0.17(react@18.2.0)
       '@portabletext/toolkit': 2.0.14
       '@sanity/client': 6.15.11
       '@sanity/color': 2.2.5
@@ -6543,7 +6543,7 @@ packages:
       '@microsoft/api-extractor-model': 7.27.0(@types/node@18.19.29)
       '@microsoft/tsdoc': 0.14.2
       '@microsoft/tsdoc-config': 0.16.2
-      '@portabletext/react': 3.0.15(react@18.2.0)
+      '@portabletext/react': 3.0.17(react@18.2.0)
       '@portabletext/toolkit': 2.0.14
       '@sanity/client': 6.15.11
       '@sanity/color': 2.2.5
