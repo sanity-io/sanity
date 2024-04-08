@@ -1607,7 +1607,7 @@ importers:
         version: 5.3.0
       i18next:
         specifier: ^23.2.7
-        version: 23.10.1
+        version: 23.11.0
       import-fresh:
         specifier: ^3.3.0
         version: 3.3.0
@@ -1685,7 +1685,7 @@ importers:
         version: 2.11.2(@types/react@18.2.74)(react@18.2.0)
       react-i18next:
         specifier: ^13.0.1
-        version: 13.5.0(i18next@23.10.1)(react-dom@18.2.0)(react@18.2.0)
+        version: 13.5.0(i18next@23.11.0)(react-dom@18.2.0)(react@18.2.0)
       react-is:
         specifier: ^18.2.0
         version: 18.2.0
@@ -12453,8 +12453,8 @@ packages:
     hasBin: true
     dev: true
 
-  /i18next@23.10.1:
-    resolution: {integrity: sha512-NDiIzFbcs3O9PXpfhkjyf7WdqFn5Vq6mhzhtkXzj51aOcNuPNcTwuYNuXCpHsanZGHlHKL35G7huoFeVic1hng==}
+  /i18next@23.11.0:
+    resolution: {integrity: sha512-VwFtlgy2LDbY0Qs6VfekIm6mv5/JmSJrtBf4aszl7Vby8+GcBlri0/7dkMZXmzTfiBMPUPBOmYCdQK7K4emkGQ==}
     dependencies:
       '@babel/runtime': 7.24.4
     dev: false
@@ -16447,7 +16447,7 @@ packages:
       use-sidecar: 1.1.2(@types/react@18.2.74)(react@18.2.0)
     dev: false
 
-  /react-i18next@13.5.0(i18next@23.10.1)(react-dom@18.2.0)(react@18.2.0):
+  /react-i18next@13.5.0(i18next@23.11.0)(react-dom@18.2.0)(react@18.2.0):
     resolution: {integrity: sha512-CFJ5NDGJ2MUyBohEHxljOq/39NQ972rh1ajnadG9BjTk+UXbHLq4z5DKEbEQBDoIhUmmbuS/fIMJKo6VOax1HA==}
     peerDependencies:
       i18next: '>= 23.2.3'
@@ -16462,7 +16462,7 @@ packages:
     dependencies:
       '@babel/runtime': 7.24.4
       html-parse-stringify: 3.0.1
-      i18next: 23.10.1
+      i18next: 23.11.0
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
     dev: false
