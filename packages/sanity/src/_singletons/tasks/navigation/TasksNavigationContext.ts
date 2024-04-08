@@ -1,6 +1,5 @@
 import {createContext} from 'react'
-
-import {type TasksNavigationContextValue} from './types'
+import {TasksNavigationContextValue} from '../../../core/tasks/context/navigation/types'
 
 /**
  * @internal
