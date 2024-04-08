@@ -339,7 +339,7 @@ importers:
         version: link:../../packages/sanity
       sanity-plugin-mux-input:
         specifier: ^2.2.1
-        version: 2.3.0(@types/react@18.2.74)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(sanity@packages+sanity)(styled-components@6.1.8)
+        version: 2.3.1(@types/react@18.2.74)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(sanity@packages+sanity)(styled-components@6.1.8)
       sanity-test-studio:
         specifier: workspace:*
         version: link:../test-studio
@@ -514,7 +514,7 @@ importers:
         version: link:../../packages/sanity
       sanity-plugin-mux-input:
         specifier: ^2.2.1
-        version: 2.3.0(@types/react@18.2.74)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(sanity@packages+sanity)(styled-components@6.1.8)
+        version: 2.3.1(@types/react@18.2.74)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(sanity@packages+sanity)(styled-components@6.1.8)
       styled-components:
         specifier: ^6.1.0
         version: 6.1.8(react-dom@18.2.0)(react@18.2.0)
@@ -17132,8 +17132,8 @@ packages:
       '@sanity/diff-match-patch': 3.1.1
     dev: false
 
-  /sanity-plugin-mux-input@2.3.0(@types/react@18.2.74)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(sanity@packages+sanity)(styled-components@6.1.8):
-    resolution: {integrity: sha512-Z3VoHKtX+5Z2J6WApBkjavjx6/s6zxe7mGzSU85PibjyIsFwMN0XS+dp0s37Mru4baz6pioIW0Kot8Ov9ObEUg==}
+  /sanity-plugin-mux-input@2.3.1(@types/react@18.2.74)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(sanity@packages+sanity)(styled-components@6.1.8):
+    resolution: {integrity: sha512-IynQ758OyMcpdG7bOGvfjl4MD1xRCca+6cQhm2IBw8/MPftXszrkmBLXjeuS36ihKO1fH9yzXE/L/tjjL8ucIA==}
     engines: {node: '>=14'}
     peerDependencies:
       react: ^18
