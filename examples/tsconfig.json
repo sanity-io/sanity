@@ -1,0 +1,26 @@
+{
+  "extends": "@repo/tsconfig/base.json",
+  "include": ["**/*.ts", "**/*.tsx"],
+  "compilerOptions": {
+    "rootDir": "..",
+    "baseUrl": "..",
+    "paths": {
+      "@sanity/block-tools": ["./packages/@sanity/block-tools/src/index.ts"],
+      "@sanity/diff": ["./packages/@sanity/diff/src/index.ts"],
+      "@sanity/cli": ["./packages/@sanity/cli/src/index.ts"],
+      "@sanity/codegen": ["./packages/@sanity/codegen/src/_exports/index.ts"],
+      "@sanity/mutator": ["./packages/@sanity/mutator/src/index.ts"],
+      "@sanity/portable-text-editor": ["./packages/@sanity/portable-text-editor/src/index.ts"],
+      "@sanity/schema/*": ["./packages/@sanity/schema/src/_exports/*"],
+      "@sanity/schema": ["./packages/@sanity/schema/src/_exports/index.ts"],
+      "@sanity/migrate": ["./packages/@sanity/migrate/src/_exports/index.ts"],
+      "@sanity/types": ["./packages/@sanity/types/src/index.ts"],
+      "@sanity/util/*": ["./packages/@sanity/util/src/_exports/*"],
+      "@sanity/util": ["./packages/@sanity/util/src/_exports/index.ts"],
+      "@sanity/vision": ["./packages/@sanity/vision/src/index.ts"],
+      "groq": ["./packages/groq/src/groq.ts"],
+      "sanity/*": ["./packages/sanity/src/_exports/*"],
+      "sanity": ["./packages/sanity/src/_exports/index.ts"]
+    }
+  }
+}
