@@ -14,7 +14,7 @@
     "start": "sanity start --port 3339"
   },
   "dependencies": {
-    "@sanity/google-maps-input": "^3.0.1",
+    "@sanity/google-maps-input": "^4.0.0",
     "@sanity/icons": "^2.11.0",
     "@sanity/ui": "^2.1.0",
     "@sanity/vision": "3.36.4",
