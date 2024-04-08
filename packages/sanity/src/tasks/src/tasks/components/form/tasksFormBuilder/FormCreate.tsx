@@ -1,9 +1,11 @@
 import {TrashIcon} from '@sanity/icons'
+import {useTelemetry} from '@sanity/telemetry/react'
 import {Box, Flex, Switch, Text, useToast} from '@sanity/ui'
 import {useCallback, useState} from 'react'
 import {type ObjectInputProps, set, useTranslation} from 'sanity'
 
 import {Button} from '../../../../../../ui-components'
+import {TaskCreated} from '../../../../../__telemetry__/tasks.telemetry'
 import {tasksLocaleNamespace} from '../../../../../i18n'
 import {useTasksNavigation} from '../../../context'
 import {useRemoveTask} from '../../../hooks/useRemoveTask'
@@ -26,16 +28,18 @@ const getTaskSubscribers = (task: TaskDocument): string[] => {
   return subscribers
 }
 export function FormCreate(props: ObjectInputProps) {
-  const [createMore, setCreateMore] = useState(false)
+  const {onChange} = props
   const {
     setViewMode,
     setActiveTab,
     state: {viewMode},
   } = useTasksNavigation()
-
   const toast = useToast()
+  const telemetry = useTelemetry()
+
+  const [createMore, setCreateMore] = useState(false)
   const handleCreateMore = useCallback(() => setCreateMore((p) => !p), [])
-  const {onChange} = props
+
   const value = props.value as TaskDocument
   const onRemove = useCallback(() => {
     setViewMode({type: 'list'})
@@ -62,12 +66,14 @@ export function FormCreate(props: ObjectInputProps) {
       setActiveTab('subscribed')
     }
 
+    telemetry.log(TaskCreated)
+
     toast.push({
       closable: true,
       status: 'success',
       title: t('form.status.success'),
     })
-  }, [setViewMode, setActiveTab, onChange, createMore, toast, value, t])
+  }, [value, onChange, createMore, telemetry, toast, t, setViewMode, setActiveTab])
 
   return (
     <>

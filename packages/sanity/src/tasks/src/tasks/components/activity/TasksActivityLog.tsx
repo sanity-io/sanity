@@ -1,3 +1,4 @@
+import {useTelemetry} from '@sanity/telemetry/react'
 import {Box, Flex, Stack, Text} from '@sanity/ui'
 import {uuid} from '@sanity/uuid'
 import {AnimatePresence, motion, type Variants} from 'framer-motion'
@@ -24,6 +25,7 @@ import {
   type CommentUpdatePayload,
   useComments,
 } from '../../../../../structure/comments'
+import {TaskCommentAdded, TaskCommentReplyAdded} from '../../../../__telemetry__/tasks.telemetry'
 import {tasksLocaleNamespace} from '../../../../i18n'
 import {type TaskDocument} from '../../types'
 import {getMentionedUsers} from '../form/utils'
@@ -65,7 +67,7 @@ type Activity =
 export function TasksActivityLog(props: TasksActivityLogProps) {
   const {value, onChange, path, activityData = []} = props
   const currentUser = useCurrentUser()
-
+  const telemetry = useTelemetry()
   const {title: workspaceTitle, basePath} = useWorkspace()
   const {comments, mentionOptions, operation, getComment} = useComments()
   const [commentToDeleteId, setCommentToDeleteId] = useState<string | null>(null)
@@ -116,9 +118,11 @@ export function TasksActivityLog(props: TasksActivityLogProps) {
 
       onChange(set(notification.subscribers, ['subscribers']))
 
-      operation.create(nextComment)
+      operation.create(nextComment).then(() => {
+        telemetry.log(TaskCommentAdded)
+      })
     },
-    [operation, handleGetNotificationValue, onChange],
+    [handleGetNotificationValue, onChange, operation, telemetry],
   )
 
   const handleCommentReply = useCallback(
@@ -129,20 +133,24 @@ export function TasksActivityLog(props: TasksActivityLogProps) {
 
       onChange(set(notification.subscribers, ['subscribers']))
 
-      operation.create({
-        id: commentId,
-        type: 'task',
-        message: nextComment.message,
-        parentCommentId: nextComment.parentCommentId,
-        reactions: EMPTY_ARRAY,
-        status: 'open',
-        threadId: nextComment.threadId,
-        context: {
-          notification,
-        },
-      })
+      operation
+        .create({
+          id: commentId,
+          type: 'task',
+          message: nextComment.message,
+          parentCommentId: nextComment.parentCommentId,
+          reactions: EMPTY_ARRAY,
+          status: 'open',
+          threadId: nextComment.threadId,
+          context: {
+            notification,
+          },
+        })
+        .then(() => {
+          telemetry.log(TaskCommentReplyAdded)
+        })
     },
-    [operation, handleGetNotificationValue, onChange],
+    [handleGetNotificationValue, onChange, operation, telemetry],
   )
 
   const handleCommentCreateRetry = useCallback(
@@ -156,20 +164,24 @@ export function TasksActivityLog(props: TasksActivityLogProps) {
 
       onChange(set(notification.subscribers, ['subscribers']))
 
-      operation.create({
-        type: 'task',
-        id: comment._id,
-        message: comment.message,
-        parentCommentId: comment.parentCommentId,
-        reactions: comment.reactions || EMPTY_ARRAY,
-        status: comment.status,
-        threadId: comment.threadId,
-        context: {
-          notification,
-        },
-      })
+      operation
+        .create({
+          type: 'task',
+          id: comment._id,
+          message: comment.message,
+          parentCommentId: comment.parentCommentId,
+          reactions: comment.reactions || EMPTY_ARRAY,
+          status: comment.status,
+          threadId: comment.threadId,
+          context: {
+            notification,
+          },
+        })
+        .then(() => {
+          telemetry.log(TaskCommentReplyAdded)
+        })
     },
-    [getComment, operation, handleGetNotificationValue, onChange],
+    [getComment, handleGetNotificationValue, onChange, operation, telemetry],
   )
 
   const handleCommentReact = useCallback(

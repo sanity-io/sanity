@@ -1,8 +1,10 @@
+import {useTelemetry} from '@sanity/telemetry/react'
 import {useToast} from '@sanity/ui'
 import {uuid} from '@sanity/uuid'
 import {type ReactNode, useCallback, useEffect, useReducer} from 'react'
 import {useRouter} from 'sanity/router'
 
+import {TaskLinkCopied, TaskLinkOpened} from '../../../../__telemetry__/tasks.telemetry'
 import {TasksNavigationContext} from './TasksNavigationContext'
 import {type Action, type SidebarTabsIds, type State, type ViewModeOptions} from './types'
 
@@ -73,6 +75,7 @@ export const TasksNavigationProvider = ({children}: {children: ReactNode}) => {
   const [state, dispatch] = useReducer(reducer, initialState)
   const router = useRouter()
   const toast = useToast()
+  const telemetry = useTelemetry()
 
   const setViewMode = useCallback((viewMode: ViewModeOptions) => {
     switch (viewMode.type) {
@@ -126,6 +129,7 @@ export const TasksNavigationProvider = ({children}: {children: ReactNode}) => {
           status: 'info',
           title: 'Copied link to clipboard',
         })
+        telemetry.log(TaskLinkCopied)
       })
       .catch(() => {
         toast.push({
@@ -134,7 +138,7 @@ export const TasksNavigationProvider = ({children}: {children: ReactNode}) => {
           title: 'Failed to copy link to clipboard',
         })
       })
-  }, [state.selectedTask, state.viewMode, toast])
+  }, [state.selectedTask, state.viewMode, telemetry, toast])
 
   // This is casted to a string to make it stable across renders so it doesn't trigger multiple times the effect.
   const searchParamsAsString = new URLSearchParams(router.state._searchParams).toString()
@@ -152,9 +156,10 @@ export const TasksNavigationProvider = ({children}: {children: ReactNode}) => {
       const selectedTask = searchParams.get('selectedTask')
       if (viewMode === 'edit' && selectedTask) {
         dispatch({type: 'EDIT_TASK', payload: {id: selectedTask}})
+        telemetry.log(TaskLinkOpened)
       }
     }
-  }, [searchParamsAsString])
+  }, [searchParamsAsString, telemetry])
 
   return (
     <TasksNavigationContext.Provider
