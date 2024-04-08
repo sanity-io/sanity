@@ -1,7 +1,7 @@
 import {useMemo} from 'react'
 import {useFeatureEnabled, useWorkspace} from 'sanity'
+import {TasksEnabledContext} from 'sanity/_singletons'
 
-import {TasksEnabledContext} from './TasksEnabledContext'
 import {type TasksEnabledContextValue} from './types'
 
 interface TaksEnabledProviderProps {
