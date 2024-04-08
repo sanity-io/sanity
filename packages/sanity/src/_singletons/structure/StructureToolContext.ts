@@ -1,5 +1,6 @@
 import {createContext} from 'react'
-import type {StructureToolContextValue} from 'sanity/structure'
+
+import type {StructureToolContextValue} from '../../structure/types'
 
 /**
  * @internal
