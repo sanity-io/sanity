@@ -1,9 +1,7 @@
 import {createContext} from 'react'
-
-import {type CommentsUpsellContextValue} from './types'
+import {CommentsUpsellContextValue} from '../../../../core/comments/context/upsell/types'
 
 /**
- * @beta
- * @hidden
+ * @internal
  */
 export const CommentsUpsellContext = createContext<CommentsUpsellContextValue | null>(null)

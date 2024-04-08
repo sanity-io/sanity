@@ -1,7 +1,9 @@
 import {createContext} from 'react'
+import {CommentsSelectedPathContextValue} from '../../../../core/comments/context/selected-path/types'
 
-import {type CommentsSelectedPathContextValue} from './types'
-
+/**
+ * @internal
+ */
 export const CommentsSelectedPathContext = createContext<CommentsSelectedPathContextValue | null>(
   null,
 )
