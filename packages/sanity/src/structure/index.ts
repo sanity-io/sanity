@@ -30,14 +30,7 @@ export type {
   ParameterizedLinkProps,
   ReferenceChildLinkProps,
 } from './components'
-export {
-  ConfirmDeleteDialog,
-  Pane,
-  PaneContent,
-  PaneLayout,
-  PaneRouterContext,
-  usePaneRouter,
-} from './components'
+export {ConfirmDeleteDialog, Pane, PaneContent, PaneLayout, usePaneRouter} from './components'
 export {structureLocaleNamespace, type StructureLocaleResourceKeys} from './i18n'
 export * from './panes/document'
 export {DocumentInspectorHeader} from './panes/document/documentInspector'
