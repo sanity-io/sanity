@@ -73,7 +73,7 @@
     "release:current-branch": "RELEASE_TAG=`git rev-parse --abbrev-ref HEAD | sed 's/\\//\\_/g'` pnpm release:tag",
     "release:notes": "node -r esbuild-register scripts/printReleaseNotesTemplate",
     "release:rc": "pnpm build && lerna publish --force-publish --dist-tag=dev-preview --preid=rc --exact",
-    "release:tag": "RELEASE_TAG=\"${RELEASE_TAG:-canary}\"; pnpm build && lerna publish --canary --force-publish --no-git-tag-version --dist-tag=$RELEASE_TAG --preid=$RELEASE_TAG --exact",
+    "release:tag": "RELEASE_TAG=\"${RELEASE_TAG:-canary}\"; PKG_VERSION=\"0.0.0-${RELEASE_TAG}\"; pnpm build && lerna publish --canary --force-publish --no-git-tag-version --dist-tag=$RELEASE_TAG --preid=$RELEASE_TAG --exact",
     "start": "run-s dev",
     "test": "jest --forceExit",
     "test:e2e": "playwright test",
