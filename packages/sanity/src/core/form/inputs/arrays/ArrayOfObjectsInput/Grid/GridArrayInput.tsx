@@ -105,7 +105,9 @@ export function GridArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
                         renderPreview={renderPreview}
                       />
                     )}
-                    {member.kind === 'error' && <ErrorItem sortable={sortable} member={member} />}
+                    {member.kind === 'error' && (
+                      <ErrorItem sortable={sortable} member={member} readOnly={readOnly} />
+                    )}
                   </Item>
                 ))}
               </List>

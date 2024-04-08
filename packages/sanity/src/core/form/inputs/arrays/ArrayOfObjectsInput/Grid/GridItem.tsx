@@ -82,7 +82,7 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
   } = props
   const {t} = useTranslation()
 
-  const sortable = !readOnly && parentSchemaType.options?.sortable !== false
+  const sortable = parentSchemaType.options?.sortable !== false
   const insertableTypes = parentSchemaType.of
 
   const previewCardRef = useRef<FIXME | null>(null)
@@ -175,6 +175,7 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
       border
       dragHandle={sortable}
       selected={open}
+      readOnly={readOnly}
     >
       <PreviewCard
         tone="inherit"
