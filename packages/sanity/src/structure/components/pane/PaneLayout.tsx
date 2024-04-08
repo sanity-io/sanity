@@ -1,8 +1,8 @@
 import {type CardProps, useElementRect} from '@sanity/ui'
 import {type HTMLProps, useEffect, useMemo, useState} from 'react'
+import {PaneLayoutContext} from 'sanity/_singletons'
 
 import {Root} from './PaneLayout.styles'
-import {PaneLayoutContext} from './PaneLayoutContext'
 import {createPaneLayoutController, type PaneLayoutState} from './paneLayoutController'
 import {type PaneLayoutContextValue} from './types'
 
