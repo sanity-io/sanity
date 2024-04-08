@@ -139,7 +139,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const [focusPath, setFocusPath] = useState<Path>(() =>
     params.path ? pathFromString(params.path) : EMPTY_ARRAY,
   )
-  const focusPathRef = useRef(focusPath)
+  const focusPathRef = useRef<Path>([])
   const activeViewId = params.view || (views[0] && views[0].id) || null
   const [timelineMode, setTimelineMode] = useState<'since' | 'rev' | 'closed'>('closed')
 
