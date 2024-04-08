@@ -193,6 +193,8 @@ export function PortableTextInput(props: PortableTextInputProps) {
           setHasFocusWithin(true)
           break
         case 'blur':
+          change.event.target = elementProps.ref.current
+          change.event.currentTarget = elementProps.ref.current
           onBlur(change.event)
           setHasFocusWithin(false)
           break
@@ -215,7 +217,15 @@ export function PortableTextInput(props: PortableTextInputProps) {
         onEditorChange(change, editorRef.current)
       }
     },
-    [editorRef, onBlur, onChange, onEditorChange, setFocusPathFromEditorSelection, toast],
+    [
+      editorRef,
+      elementProps.ref,
+      onBlur,
+      onChange,
+      onEditorChange,
+      setFocusPathFromEditorSelection,
+      toast,
+    ],
   )
 
   useEffect(() => {
