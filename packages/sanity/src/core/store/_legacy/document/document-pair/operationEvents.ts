@@ -32,6 +32,7 @@ import {patch} from './operations/patch'
 import {publish} from './operations/publish'
 import {restore} from './operations/restore'
 import {unpublish} from './operations/unpublish'
+import {del as serverDel} from './serverOperations/delete'
 import {patch as serverPatch} from './serverOperations/patch'
 import {publish as serverPublish} from './serverOperations/publish'
 import {unpublish as serverUnpublish} from './serverOperations/unpublish'
@@ -62,6 +63,8 @@ const operationImpls = {
 //as we add server operations one by one, we can add them here
 const serverOperationImpls = {
   ...operationImpls,
+  del: serverDel,
+  delete: serverDel,
   patch: serverPatch,
   publish: serverPublish,
   unpublish: serverUnpublish,
