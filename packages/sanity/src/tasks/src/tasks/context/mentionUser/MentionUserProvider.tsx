@@ -1,8 +1,7 @@
 import {type SanityDocument} from '@sanity/client'
 import {useMemo, useState} from 'react'
 import {useUserListWithPermissions} from 'sanity'
-
-import {MentionUserContext} from './MentionUserContext'
+import {MentionUserContext} from 'sanity/_singletons'
 
 /**
  * @internal
