@@ -11,10 +11,10 @@ import {
   useClient,
   useProjectId,
 } from 'sanity'
+import {CommentsUpsellContext} from 'sanity/_singletons'
 
 import {CommentsUpsellDialog} from '../../components'
 import {type UpsellData} from '../../types'
-import {CommentsUpsellContext} from './CommentsUpsellContext'
 import {type CommentsUpsellContextValue} from './types'
 
 const FEATURE = 'comments'
