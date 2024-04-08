@@ -3,6 +3,7 @@ import {emitOperation} from '../operationEvents'
 import {publish} from '../operations/publish'
 import {patch as serverPatch} from '../serverOperations/patch'
 import {publish as serverPublish} from '../serverOperations/publish'
+import {unpublish as serverUnpublish} from '../serverOperations/unpublish'
 import {commit} from './commit'
 import {del} from './delete'
 import {discardChanges} from './discardChanges'
@@ -71,6 +72,7 @@ export function createOperationsAPI(args: OperationArgs): OperationsAPI {
       ...operationsAPI,
       patch: wrap('patch', serverPatch, args),
       publish: wrap('publish', serverPublish, args),
+      unpublish: wrap('unpublish', serverUnpublish, args),
     }
   }
   return operationsAPI
