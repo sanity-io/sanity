@@ -51,6 +51,7 @@
     "example:clean-studio": "cd examples/blog-studio && pnpm start",
     "example:ecommerce-studio": "cd examples/blog-studio && pnpm start",
     "example:example-studio": "cd examples/blog-studio && pnpm start",
+    "prepublishOnly": "pnpm build",
     "example:movies-studio": "cd examples/blog-studio && pnpm start",
     "install:deps": "pnpm install",
     "lint": "run-s check:lint",
