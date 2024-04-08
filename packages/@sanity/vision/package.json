@@ -47,6 +47,7 @@
     "check:package": "pkg-utils --strict",
     "check:types": "tsc",
     "clean": "rimraf lib",
+    "prepublishOnly": "turbo run build",
     "watch": "pkg-utils watch"
   },
   "dependencies": {

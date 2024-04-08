@@ -56,8 +56,8 @@ importers:
         specifier: ^3.0.1
         version: 3.0.1(eslint@8.57.0)(typescript@5.4.2)
       '@sanity/pkg-utils':
-        specifier: 5.1.11
-        version: 5.1.11(@types/node@18.19.29)(typescript@5.4.2)
+        specifier: 5.1.12
+        version: 5.1.12(@types/node@18.19.29)(typescript@5.4.2)
       '@sanity/test':
         specifier: 0.0.1-alpha.1
         version: 0.0.1-alpha.1
@@ -1859,8 +1859,8 @@ importers:
         specifier: 3.36.4
         version: link:../@sanity/codegen
       '@sanity/pkg-utils':
-        specifier: 5.1.11
-        version: 5.1.11(@types/node@18.19.29)(typescript@5.4.2)
+        specifier: 5.1.12
+        version: 5.1.12(@types/node@18.19.29)(typescript@5.4.2)
       '@sanity/tsdoc':
         specifier: 1.0.7
         version: 1.0.7(@types/node@18.19.29)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(sanity@packages+sanity)(styled-components@6.1.8)
@@ -6135,8 +6135,8 @@ packages:
       react: 18.2.0
     dev: false
 
-  /@sanity/pkg-utils@5.1.11(@types/node@18.19.29)(typescript@5.4.2):
-    resolution: {integrity: sha512-zLLtIECEcjGFmyP4GFpPWVpAVqwMkGHdY+NnL0oXdrzmHAO+VGftCo8YDdq2BZZ6UIXuZyMoRo0AOJxnzyV9qQ==}
+  /@sanity/pkg-utils@5.1.12(@types/node@18.19.29)(typescript@5.4.2):
+    resolution: {integrity: sha512-rrMsmgKhJfymWwcudcFIG96GCj/lFHQduew6A9yvmv1Z3/ng1FMg/AkHoiFwF36WqnPh3di+2Dmgq1se/T+k6w==}
     engines: {node: '>=16.0.0'}
     hasBin: true
     peerDependencies:

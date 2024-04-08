@@ -52,6 +52,7 @@
     "clean": "rimraf lib",
     "dev": "cd ./e2e-tests/ && ts-node serve",
     "lint": "eslint .",
+    "prepublishOnly": "turbo run build",
     "prettier": "prettier --write './**/*.{ts,tsx,js,css,html}'",
     "test": "jest",
     "test:e2e": "jest --config=e2e-tests/e2e.config.cjs",

@@ -46,6 +46,7 @@
     "clean": "rimraf lib",
     "coverage": "NODE_ENV=test jest --coverage",
     "lint": "eslint .",
+    "prepublishOnly": "turbo run build",
     "test": "NODE_ENV=test jest",
     "watch": "pkg-utils watch"
   },

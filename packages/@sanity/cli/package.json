@@ -52,6 +52,7 @@
     "check:types": "tsc",
     "clean": "rimraf lib",
     "lint": "eslint .",
+    "prepublishOnly": "turbo run build",
     "test": "jest",
     "ts": "node -r esbuild-register",
     "watch": "pkg-utils watch"

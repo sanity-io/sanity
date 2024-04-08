@@ -49,6 +49,7 @@
     "check:types": "tsc",
     "clean": "rimraf lib",
     "lint": "eslint .",
+    "prepublishOnly": "turbo run build",
     "pretest": "run-s build",
     "test": "node test/groq.test.cjs && node test/groq.test.mjs ",
     "watch": "pkg-utils watch"

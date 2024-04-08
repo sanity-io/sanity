@@ -47,6 +47,7 @@
     "check:types": "tsc",
     "clean": "rimraf lib coverage",
     "lint": "eslint .",
+    "prepublishOnly": "turbo run build",
     "test": "jest",
     "watch": "pkg-utils watch"
   },

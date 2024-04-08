@@ -59,6 +59,7 @@
     "check:types": "tsc",
     "clean": "rimraf _internal.js lib",
     "lint": "eslint .",
+    "prepublishOnly": "turbo run build",
     "test": "jest",
     "test:watch": "jest --watchAll",
     "watch": "pkg-utils watch"

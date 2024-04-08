@@ -46,6 +46,7 @@
     "clean": "rimraf lib",
     "lint": "eslint .",
     "perf": "node ./perf/run.js",
+    "prepublishOnly": "turbo run build",
     "test": "jest",
     "watch": "pkg-utils watch"
   },

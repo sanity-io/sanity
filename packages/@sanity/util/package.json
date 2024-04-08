@@ -118,6 +118,7 @@
     "check:package": "pkg-utils --strict",
     "check:types": "tsc",
     "clean": "rimraf client.js concurrency-limiter.js content.js createSafeJsonParser.js fs.js legacyDateFormat.js lib paths.js",
+    "prepublishOnly": "turbo run build",
     "test": "jest",
     "watch": "pkg-utils watch"
   },

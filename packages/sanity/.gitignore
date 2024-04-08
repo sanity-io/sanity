@@ -22,3 +22,8 @@
 /playwright-ct/report
 /playwright-ct/results
 /playwright-ct/template/.cache/
+
+# Deleted legacy exports
+/migrate.js
+/_internal.js
+/cli.js

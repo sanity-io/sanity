@@ -45,6 +45,7 @@
     "check:types": "tsc",
     "clean": "rimraf lib coverage",
     "lint": "eslint .",
+    "prepublishOnly": "turbo run build",
     "watch": "pkg-utils watch"
   },
   "dependencies": {

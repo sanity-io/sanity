@@ -45,6 +45,7 @@
     "check:package": "pkg-utils --strict",
     "check:types": "tsc",
     "clean": "rimraf lib",
+    "prepublishOnly": "turbo run build",
     "test": "jest",
     "test:watch": "jest --watchAll",
     "watch": "pkg-utils watch"
