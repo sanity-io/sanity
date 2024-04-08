@@ -9,6 +9,7 @@ import {
   useUserListWithPermissions,
   useWorkspace,
 } from 'sanity'
+import {CommentsContext} from 'sanity/_singletons'
 
 import {
   type CommentOperationsHookOptions,
@@ -24,7 +25,6 @@ import {
   type CommentUpdatePayload,
 } from '../../types'
 import {buildCommentThreadItems} from '../../utils/buildCommentThreadItems'
-import {CommentsContext} from './CommentsContext'
 import {type CommentsContextValue} from './types'
 
 const EMPTY_ARRAY: [] = []
