@@ -17,15 +17,6 @@ export const TaskStatusChanged = defineEvent<{
   description: 'Task status changed',
 })
 
-// A comment is added in a task
-export const TaskCommentAdded = defineEvent<{
-  is_reply: boolean
-}>({
-  name: 'Task Comment Added',
-  version: 1,
-  description: 'A comment was added in a task',
-})
-
 // A task is duplicated
 export const TaskDuplicated = defineEvent({
   name: 'Task Duplicated',
