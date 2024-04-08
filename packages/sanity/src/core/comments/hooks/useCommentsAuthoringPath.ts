@@ -1,6 +1,7 @@
 import {useContext} from 'react'
+import {CommentsAuthoringPathContext} from 'sanity/_singletons'
 
-import {CommentsAuthoringPathContext, type CommentsAuthoringPathContextValue} from '../context'
+import {type CommentsAuthoringPathContextValue} from '../context'
 
 /**
  * @beta
