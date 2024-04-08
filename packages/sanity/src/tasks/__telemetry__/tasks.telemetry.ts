@@ -18,43 +18,38 @@ export const TaskStatusChanged = defineEvent<{
 })
 
 // A comment is added in a task
-export const TaskCommentAdded = defineEvent({
-  name: 'Task comment added',
+export const TaskCommentAdded = defineEvent<{
+  is_reply: boolean
+}>({
+  name: 'Task Comment Added',
   version: 1,
   description: 'A comment was added in a task',
 })
 
-// A reply is added
-export const TaskCommentReplyAdded = defineEvent({
-  name: 'Task comment reply added',
-  version: 1,
-  description: 'A reply was added to a comment in a task',
-})
-
 // A task is duplicated
 export const TaskDuplicated = defineEvent({
-  name: 'Task duplicated',
+  name: 'Task Duplicated',
   version: 1,
   description: 'A task is duplicated',
 })
 
 // A task is removed
 export const TaskRemoved = defineEvent({
-  name: 'Task removed',
+  name: 'Task Removed',
   version: 1,
   description: 'A task is removed',
 })
 
 // The link to a task is copied
 export const TaskLinkCopied = defineEvent({
-  name: 'Task link copied',
+  name: 'Task Link Copied',
   version: 1,
   description: 'The link to a task is copied',
 })
 
 // User visited the studio through a link with a task
 export const TaskLinkOpened = defineEvent({
-  name: 'Task link opened',
+  name: 'Task Link Opened',
   version: 1,
   description: 'User visited the studio through a link with a task',
 })

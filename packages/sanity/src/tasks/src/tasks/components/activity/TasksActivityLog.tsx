@@ -25,7 +25,7 @@ import {
   type CommentUpdatePayload,
   useComments,
 } from '../../../../../structure/comments'
-import {TaskCommentAdded, TaskCommentReplyAdded} from '../../../../__telemetry__/tasks.telemetry'
+import {TaskCommentAdded} from '../../../../__telemetry__/tasks.telemetry'
 import {tasksLocaleNamespace} from '../../../../i18n'
 import {type TaskDocument} from '../../types'
 import {getMentionedUsers} from '../form/utils'
@@ -119,7 +119,8 @@ export function TasksActivityLog(props: TasksActivityLogProps) {
       onChange(set(notification.subscribers, ['subscribers']))
 
       operation.create(nextComment).then(() => {
-        telemetry.log(TaskCommentAdded)
+        // eslint-disable-next-line camelcase
+        telemetry.log(TaskCommentAdded, {is_reply: false})
       })
     },
     [handleGetNotificationValue, onChange, operation, telemetry],
@@ -147,7 +148,8 @@ export function TasksActivityLog(props: TasksActivityLogProps) {
           },
         })
         .then(() => {
-          telemetry.log(TaskCommentReplyAdded)
+          // eslint-disable-next-line camelcase
+          telemetry.log(TaskCommentAdded, {is_reply: true})
         })
     },
     [handleGetNotificationValue, onChange, operation, telemetry],
@@ -178,7 +180,8 @@ export function TasksActivityLog(props: TasksActivityLogProps) {
           },
         })
         .then(() => {
-          telemetry.log(TaskCommentReplyAdded)
+          // eslint-disable-next-line camelcase
+          telemetry.log(TaskCommentAdded, {is_reply: !!comment.parentCommentId})
         })
     },
     [getComment, handleGetNotificationValue, onChange, operation, telemetry],
