@@ -17,7 +17,7 @@
       "@sanity/types": ["./packages/@sanity/types/src/index.ts"],
       "@sanity/util/*": ["./packages/@sanity/util/src/_exports/*"],
       "@sanity/util": ["./packages/@sanity/util/src/_exports/index.ts"],
-      "@sanity/vision": ["./packages/@sanity/vision/src/_exports/index.ts"],
+      "@sanity/vision": ["./packages/@sanity/vision/src/index.ts"],
       "groq": ["./packages/groq/src/groq.ts"],
       "sanity/*": ["./packages/sanity/src/_exports/*"],
       "sanity": ["./packages/sanity/src/_exports/index.ts"]
