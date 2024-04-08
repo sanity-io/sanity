@@ -10,6 +10,7 @@ import {useToast} from '@sanity/ui'
 import {fromString as pathFromString, resolveKeyedPath} from '@sanity/util/paths'
 import {omit} from 'lodash'
 import {memo, useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import deepEquals from 'react-fast-compare'
 import {
   type DocumentFieldAction,
   type DocumentInspector,
@@ -549,8 +550,8 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const handleFocus = useCallback(
     (nextFocusPath: Path) => {
       setFocusPath(nextFocusPath)
-      setOpenPath(nextFocusPath.slice(0, -1))
-      if (focusPathRef.current !== nextFocusPath) {
+      if (!deepEquals(focusPathRef.current, nextFocusPath)) {
+        setOpenPath(nextFocusPath.slice(0, -1))
         focusPathRef.current = nextFocusPath
         onFocusPath?.(nextFocusPath)
       }
@@ -705,10 +706,9 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       disableBlurRef.current = true
 
       // Reset focus path when url params path changes
-      setFocusPath(pathFromUrl)
-      setOpenPath(pathFromUrl)
-
-      if (focusPathRef.current !== pathFromUrl) {
+      if (!deepEquals(focusPathRef.current, pathFromUrl)) {
+        setFocusPath(pathFromUrl)
+        setOpenPath(pathFromUrl)
         focusPathRef.current = pathFromUrl
         onFocusPath?.(pathFromUrl)
       }
