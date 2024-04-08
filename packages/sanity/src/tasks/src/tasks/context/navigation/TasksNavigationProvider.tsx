@@ -2,10 +2,10 @@ import {useTelemetry} from '@sanity/telemetry/react'
 import {useToast} from '@sanity/ui'
 import {uuid} from '@sanity/uuid'
 import {type ReactNode, useCallback, useEffect, useReducer} from 'react'
+import {TasksNavigationContext} from 'sanity/_singletons'
 import {useRouter} from 'sanity/router'
 
 import {TaskLinkCopied, TaskLinkOpened} from '../../../../__telemetry__/tasks.telemetry'
-import {TasksNavigationContext} from './TasksNavigationContext'
 import {type Action, type SidebarTabsIds, type State, type ViewModeOptions} from './types'
 
 const initialState: State = {
