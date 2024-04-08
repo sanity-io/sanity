@@ -1,6 +1,6 @@
 import {createContext} from 'react'
 
-import {type PaneLayoutContextValue} from './types'
+import type {PaneLayoutContextValue} from '../../../../structure/components/pane/types'
 
 /**
  * @internal
