@@ -1,7 +1,7 @@
 import {memo, type ReactNode} from 'react'
+import {CommentsIntentContext} from 'sanity/_singletons'
 
 import {type CommentIntentGetter} from '../../types'
-import {CommentsIntentContext} from './CommentsIntentContext'
 
 interface CommentsIntentProviderProps {
   children: ReactNode

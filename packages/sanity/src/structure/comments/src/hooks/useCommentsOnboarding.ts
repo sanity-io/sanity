@@ -1,6 +1,6 @@
 import {useContext} from 'react'
+import {CommentsOnboardingContext} from 'sanity/_singletons'
 
-import {CommentsOnboardingContext} from '../context/onboarding'
 import {type CommentsOnboardingContextValue} from '../context/onboarding/types'
 
 export function useCommentsOnboarding(): CommentsOnboardingContextValue {
