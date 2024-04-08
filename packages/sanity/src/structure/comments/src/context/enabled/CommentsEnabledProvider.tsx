@@ -1,7 +1,7 @@
 import {memo, type ReactNode} from 'react'
+import {CommentsEnabledContext} from 'sanity/_singletons'
 
 import {useResolveCommentsEnabled} from '../../hooks'
-import {CommentsEnabledContext} from './CommentsEnabledContext'
 
 interface CommentsEnabledProviderProps {
   children: ReactNode
