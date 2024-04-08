@@ -1,7 +1,7 @@
 import {isEqual} from 'lodash'
 import {memo, useCallback, useMemo, useState} from 'react'
+import {CommentsSelectedPathContext} from 'sanity/_singletons'
 
-import {CommentsSelectedPathContext} from './CommentsSelectedPathContext'
 import {type CommentsSelectedPath, type CommentsSelectedPathContextValue} from './types'
 
 interface CommentsSelectedPathProviderProps {
