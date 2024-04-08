@@ -5,6 +5,7 @@ import {combineLatest, type Observable, of} from 'rxjs'
 import {map, switchMap} from 'rxjs/operators'
 
 import {useClient, useSchema} from '../../../hooks'
+import {useWorkspace} from '../../../studio'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
 import {
   createHookFromObservableFactory,
@@ -167,6 +168,7 @@ export interface DocumentPairPermissionsOptions {
   id: string
   type: string
   permission: DocumentPermission
+  serverActionsEnabled: boolean
 }
 
 /**
@@ -183,6 +185,7 @@ export function getDocumentPairPermissions({
   id,
   permission,
   type,
+  serverActionsEnabled,
 }: DocumentPairPermissionsOptions): Observable<PermissionCheckResult> {
   // this case was added to fix a crash that would occur if the `schemaType` was
   // omitted from `S.documentList()`
@@ -199,6 +202,7 @@ export function getDocumentPairPermissions({
     client,
     {draftId: getDraftId(id), publishedId: getPublishedId(id)},
     type,
+    serverActionsEnabled,
   ).pipe(
     switchMap((pair) =>
       combineLatest([pair.draft.snapshots$, pair.published.snapshots$]).pipe(
@@ -284,6 +288,7 @@ export function useDocumentPairPermissions({
   const defaultClient = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const defaultSchema = useSchema()
   const defaultGrantsStore = useGrantsStore()
+  const workspace = useWorkspace()
 
   const client = useMemo(() => overrideClient || defaultClient, [defaultClient, overrideClient])
   const schema = useMemo(() => overrideSchema || defaultSchema, [defaultSchema, overrideSchema])
@@ -291,11 +296,12 @@ export function useDocumentPairPermissions({
     () => overrideGrantsStore || defaultGrantsStore,
     [defaultGrantsStore, overrideGrantsStore],
   )
+  const serverActionsEnabled = useMemo(() => !!workspace.serverActions?.enabled, [workspace])
 
   return useDocumentPairPermissionsFromHookFactory(
     useMemo(
-      () => ({client, schema, grantsStore, id, permission, type}),
-      [client, grantsStore, id, permission, schema, type],
+      () => ({client, schema, grantsStore, id, permission, type, serverActionsEnabled}),
+      [client, grantsStore, id, permission, schema, type, serverActionsEnabled],
     ),
   )
 }

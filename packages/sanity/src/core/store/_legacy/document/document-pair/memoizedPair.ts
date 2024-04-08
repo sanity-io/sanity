@@ -11,10 +11,16 @@ export const memoizedPair: (
   client: SanityClient,
   idPair: IdPair,
   typeName: string,
+  serverActionsEnabled?: boolean,
 ) => Observable<Pair> = memoize(
-  (client: SanityClient, idPair: IdPair, _typeName: string): Observable<Pair> => {
+  (
+    client: SanityClient,
+    idPair: IdPair,
+    _typeName: string,
+    serverActionsEnabled?: boolean,
+  ): Observable<Pair> => {
     return new Observable<Pair>((subscriber) => {
-      const pair = checkoutPair(client, idPair)
+      const pair = checkoutPair(client, idPair, serverActionsEnabled)
       subscriber.next(pair)
 
       return pair.complete

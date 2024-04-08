@@ -197,6 +197,7 @@ export function prepareConfig(
         sources: resolvedSources,
       },
       tasks: rawWorkspace.unstable_tasks ?? {enabled: true},
+      serverActions: rawWorkspace.unstable_serverActions ?? {enabled: false},
     }
     preparedWorkspaces.set(rawWorkspace, workspaceSummary)
     return workspaceSummary

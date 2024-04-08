@@ -17,6 +17,7 @@ import {
   type SelectionState,
   type TimelineController,
   useHistoryStore,
+  useWorkspace,
 } from '../../..'
 import {useClient} from '../../../hooks'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
@@ -100,6 +101,9 @@ export function useTimelineStore({
   const snapshotsSubscriptionRef = useRef<Subscription | null>(null)
   const timelineStateRef = useRef<TimelineState>(INITIAL_TIMELINE_STATE)
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
+  const workspace = useWorkspace()
+
+  const serverActionsEnabled = useMemo(() => !!workspace.serverActions?.enabled, [workspace])
 
   /**
    * The mutable TimelineController, used internally
@@ -166,6 +170,7 @@ export function useTimelineStore({
         client,
         {draftId: `drafts.${documentId}`, publishedId: documentId},
         documentType,
+        serverActionsEnabled,
       ).subscribe((ev: RemoteSnapshotVersionEvent) => {
         controller.handleRemoteMutation(ev)
       })
@@ -176,7 +181,7 @@ export function useTimelineStore({
         snapshotsSubscriptionRef.current = null
       }
     }
-  }, [client, controller, documentId, documentType])
+  }, [client, controller, documentId, documentType, serverActionsEnabled])
 
   const timelineStore = useMemo(() => {
     return {

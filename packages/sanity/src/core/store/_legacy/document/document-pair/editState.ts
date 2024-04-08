@@ -34,12 +34,14 @@ export const editState = memoize(
     ctx: {
       client: SanityClient
       schema: Schema
+      serverActionsEnabled?: boolean
     },
     idPair: IdPair,
     typeName: string,
+    serverActionsEnabled?: boolean,
   ): Observable<EditStateFor> => {
     const liveEdit = isLiveEditEnabled(ctx.schema, typeName)
-    return snapshotPair(ctx.client, idPair, typeName).pipe(
+    return snapshotPair(ctx.client, idPair, typeName, !!ctx.serverActionsEnabled).pipe(
       switchMap((versions) =>
         combineLatest([
           versions.draft.snapshots$,
