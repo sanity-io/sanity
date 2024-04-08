@@ -1,6 +1,6 @@
 import {useContext} from 'react'
+import {CommentsEnabledContext} from 'sanity/_singletons'
 
-import {CommentsEnabledContext} from '../context/enabled'
 import {type CommentsEnabledContextValue} from '../context/enabled/types'
 
 /**
