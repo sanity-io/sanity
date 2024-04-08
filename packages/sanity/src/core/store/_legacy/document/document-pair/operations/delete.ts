@@ -14,8 +14,7 @@ export const del: OperationImpl<[], 'NOTHING_TO_DELETE'> = {
       // this disables referential integrity for cross-dataset references. we
       // have this set because we warn against deletes in the `ConfirmDeleteDialog`
       // UI. This operation is run when "delete anyway" is clicked
-      //@todo awaiting backend support for this
-      // query: {skipCrossDatasetReferenceValidation: 'true'},
+      query: {skipCrossDatasetReferenceValidation: 'true'},
       body: {
         actions: [
           {
