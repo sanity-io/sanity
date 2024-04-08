@@ -1,6 +1,6 @@
 import {createContext} from 'react'
 
-import {type MentionUserContextValue} from './types'
+import {MentionUserContextValue} from '../../../core/tasks/context/mentionUser/types'
 
 /**
  * @internal
