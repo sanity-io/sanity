@@ -145,7 +145,6 @@ function submitCommitRequest(
   request: CommitRequest,
   serverActionsEnabled?: boolean,
 ) {
-  // console.log('submitCommitRequest', serverActionsEnabled)
   return from(
     serverActionsEnabled
       ? serverCommitMutations(client, idPair, request.mutation.params)
