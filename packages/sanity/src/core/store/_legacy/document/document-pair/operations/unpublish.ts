@@ -17,8 +17,7 @@ export const unpublish: OperationImpl<[], DisabledReason> = {
     return vXClient.observable.request({
       url: `/data/actions/${dataset}`,
       method: 'post',
-      //@todo awaiting backend support for this
-      // query: {skipCrossDatasetReferenceValidation: 'true'},
+      query: {skipCrossDatasetReferenceValidation: 'true'},
       tag: 'document.unpublish',
       body: {
         actions: [
