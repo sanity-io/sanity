@@ -387,8 +387,8 @@ importers:
         specifier: ^8.13.6
         version: 8.16.1(react-dom@18.2.0)(react@18.2.0)(three@0.157.0)
       '@sanity/assist':
-        specifier: ^2.0.0
-        version: 2.0.5(react-dom@18.2.0)(react@18.2.0)(sanity@packages+sanity)(styled-components@6.1.8)
+        specifier: ^3.0.0
+        version: 3.0.1(@sanity/mutator@packages+@sanity+mutator)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(sanity@packages+sanity)(styled-components@6.1.8)
       '@sanity/block-tools':
         specifier: 3.37.1
         version: link:../../packages/@sanity/block-tools
@@ -5974,28 +5974,30 @@ packages:
     engines: {node: '>=10'}
     dev: false
 
-  /@sanity/assist@2.0.5(react-dom@18.2.0)(react@18.2.0)(sanity@packages+sanity)(styled-components@6.1.8):
-    resolution: {integrity: sha512-o8DStwz+3fBACmnYDtV5hGSMzWhA+l+PbtHprLyAurrmHs0mU7jexWioqN0+N7fXNxPzK2WpWuqiJcYqqkGrvA==}
+  /@sanity/assist@3.0.1(@sanity/mutator@packages+@sanity+mutator)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(sanity@packages+sanity)(styled-components@6.1.8):
+    resolution: {integrity: sha512-7CRpFUFNXNTX1oZgpjovg0s1RTDaQT1YUhOA627/4f+pmWXIrVH6LJK9bFFtlclHZqoR1cDBdEla2Wfar0lYnw==}
     engines: {node: '>=14'}
     peerDependencies:
+      '@sanity/mutator': ^3.36.4
       react: ^18
-      sanity: ^3.26
-      styled-components: ^5.2 || ^6.0.0
+      sanity: ^3.36.4
+      styled-components: ^6.1
     dependencies:
       '@sanity/icons': 2.11.7(react@18.2.0)
       '@sanity/incompatible-plugin': 1.0.4(react-dom@18.2.0)(react@18.2.0)
+      '@sanity/mutator': link:packages/@sanity/mutator
       '@sanity/ui': 2.1.1(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8)
-      date-fns: 2.30.0
-      lodash.get: 4.4.2
+      date-fns: 3.6.0
+      lodash: 4.17.21
       react: 18.2.0
       react-fast-compare: 3.2.2
-      react-is: 18.2.0
       rxjs: 7.8.1
       rxjs-exhaustmap-with-trailing: 2.1.1(rxjs@7.8.1)
       sanity: link:packages/sanity
       styled-components: 6.1.8(react-dom@18.2.0)(react@18.2.0)
     transitivePeerDependencies:
       - react-dom
+      - react-is
     dev: false
 
   /@sanity/bifur-client@0.3.1:
@@ -9331,6 +9333,10 @@ packages:
     engines: {node: '>=0.11'}
     dependencies:
       '@babel/runtime': 7.24.4
+    dev: false
+
+  /date-fns@3.6.0:
+    resolution: {integrity: sha512-fRHTG8g/Gif+kSh50gaGEdToemgfj74aRX3swtiouboip5JDLAyDE9F11nHMIcvOaXeOC6D7SpNhi7uFyB7Uww==}
     dev: false
 
   /date-now@1.0.1:
