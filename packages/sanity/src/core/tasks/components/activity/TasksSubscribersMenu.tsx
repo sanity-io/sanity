@@ -1,37 +1,29 @@
-import {UserIcon} from '@sanity/icons'
 import {
+  AvatarStack,
   Box,
+  // eslint-disable-next-line no-restricted-imports
+  Button as UIButton,
   Checkbox,
-  Container,
   Flex,
   Menu,
-  MenuDivider,
   // eslint-disable-next-line no-restricted-imports
   MenuItem,
   Text,
-  TextInput,
 } from '@sanity/ui'
-import {
-  type ChangeEvent,
-  type KeyboardEvent,
-  type MouseEvent,
-  useCallback,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
-import {LoadingBlock, type UserWithPermission, useTranslation} from 'sanity'
+import {AnimatePresence, motion} from 'framer-motion'
+import {type MouseEvent, useCallback, useMemo, useState} from 'react'
+import {type UserWithPermission, useTranslation} from 'sanity'
 import {styled} from 'styled-components'
 
-import {MenuButton} from '../../../../../ui-components'
-import {tasksLocaleNamespace} from '../../../../i18n'
+import {MenuButton} from '../../../../ui-components'
 import {useMentionUser} from '../../context'
-import {useFilteredOptions} from '../form/fields/assignee/useFilteredOptions'
+import {tasksLocaleNamespace} from '../../i18n'
+import {SearchUsersMenu} from '../form/fields/assignee/SearchUsersMenu'
 import {TasksUserAvatar} from '../TasksUserAvatar'
 
 type SelectItemHandler = (id: string) => void
 
-function MentionUserMenuItem(props: {
+function SubscriberUserMenuItem(props: {
   user: UserWithPermission
   onSelect: SelectItemHandler
   selected: boolean
@@ -41,6 +33,7 @@ function MentionUserMenuItem(props: {
 
   const handleCheckboxClick = useCallback(
     (e: MouseEvent<HTMLDivElement>) => {
+      // Stops propagation to avoid closing the menu. When clicking the checkbox we want to keep the menu open.
       e.stopPropagation()
       handleSelect()
     },
@@ -68,53 +61,40 @@ const StyledMenu = styled(Menu)`
   width: 308px;
   border-radius: 3px;
 `
+interface TasksSubscriberMenuProps {
+  value?: string[]
+  handleUserSubscriptionChange: (userId: string) => void
+}
 
-const IGNORED_KEYS = [
-  'Control',
-  'Shift',
-  'Alt',
-  'Enter',
-  'Home',
-  'End',
-  'PageUp',
-  'PageDown',
-  'Meta',
-  'Tab',
-  'CapsLock',
-]
+export function TasksSubscribersMenu(props: TasksSubscriberMenuProps) {
+  const {value = [], handleUserSubscriptionChange} = props
 
-function TasksSubscribers({onSelect, value = []}: {onSelect: SelectItemHandler; value?: string[]}) {
-  const [searchTerm, setSearchTerm] = useState<string>('')
-  const {mentionOptions} = useMentionUser()
-  const inputRef = useRef<HTMLInputElement | null>(null)
-  // This list will keep a local state of users who are initially subscribed and later added or removed.
-  // To always render them at the top
-  const [subscribersList, setSubscribersList] = useState(value)
-
-  const handleSearchChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(event.currentTarget.value)
-  }, [])
-
-  const filteredOptions = useFilteredOptions({options: mentionOptions.data || [], searchTerm})
-
-  const selectedUsers = useMemo(
-    () => filteredOptions.filter((user) => subscribersList.includes(user.id)),
-    [filteredOptions, subscribersList],
+  const onSelect = useCallback(
+    (userId: string) => handleUserSubscriptionChange(userId),
+    [handleUserSubscriptionChange],
   )
+
+  const {t} = useTranslation(tasksLocaleNamespace)
+  const {mentionOptions} = useMentionUser()
+  // This list will keep a local state of users who are initially subscribed and later added or removed.
+  // rendering them always at the top.
+  const [subscribersList, setSubscribersList] = useState(value)
 
   const handleSelect = useCallback(
     (id: string) => {
       if (!subscribersList.includes(id)) {
+        // Persist user id in local subscribers list state.
         setSubscribersList([...subscribersList, id])
       }
       onSelect(id)
     },
     [subscribersList, onSelect],
   )
+
   const renderItem = useCallback(
     (user: UserWithPermission) => {
       return (
-        <MentionUserMenuItem
+        <SubscriberUserMenuItem
           user={user}
           onSelect={handleSelect}
           key={user.id}
@@ -124,79 +104,52 @@ function TasksSubscribers({onSelect, value = []}: {onSelect: SelectItemHandler; 
     },
     [handleSelect, value],
   )
-  const handleKeyDown = useCallback((event: KeyboardEvent<HTMLElement>) => {
-    // If target is input don't do anything
-    if (event.target === inputRef.current) {
-      return
-    }
 
-    if (!IGNORED_KEYS.includes(event.key)) {
-      inputRef.current?.focus()
-    }
-  }, [])
-
-  const {t} = useTranslation(tasksLocaleNamespace)
-
-  if (mentionOptions.loading) {
-    return (
-      <Container width={0}>
-        <LoadingBlock showText />
-      </Container>
-    )
-  }
-
-  return (
-    <div onKeyDown={handleKeyDown} style={{maxHeight: '360px', width: '100%'}}>
-      <Box paddingBottom={2}>
-        <TextInput
-          placeholder={t('form.subscribers.menu.input.placeholder')}
-          autoFocus
-          border={false}
-          onChange={handleSearchChange}
-          value={searchTerm}
-          fontSize={1}
-          icon={UserIcon}
-          ref={inputRef}
-        />
-      </Box>
-
-      {filteredOptions.length === 0 ? (
-        <Box padding={3}>
-          <Text align="center" size={1} muted>
-            {t('form.input.assignee.search.no-users.text')}
-          </Text>
-        </Box>
-      ) : (
-        <>
-          {!searchTerm && selectedUsers.length > 0 && (
-            <>
-              {selectedUsers.map(renderItem)}
-              <Box paddingY={2}>
-                <MenuDivider />
-              </Box>
-            </>
-          )}
-          {filteredOptions.map(renderItem)}
-        </>
-      )}
-    </div>
+  const selectedUsers = useMemo(
+    () => mentionOptions.data?.filter((user) => subscribersList.includes(user.id)),
+    [mentionOptions, subscribersList],
   )
-}
-
-export function TasksSubscribersMenu(props: {
-  onSelect: (userId: string) => void
-  menuButton: React.ReactElement
-  value?: string[]
-}) {
-  const {onSelect, menuButton, value} = props
 
   return (
     <MenuButton
-      button={menuButton}
+      button={
+        <UIButton type="button" mode="bleed" padding={1}>
+          {value.length > 0 ? (
+            <AnimatePresence initial={false}>
+              <AvatarStack maxLength={3} size={0}>
+                {value.map((subscriberId) => (
+                  <motion.div
+                    key={subscriberId}
+                    exit={{opacity: 0, translateX: '2px', scale: 0.9}}
+                    animate={{
+                      opacity: 1,
+                      translateX: 0,
+                      scale: 1,
+                      transition: {type: 'just', duration: 0.2},
+                    }}
+                    initial={{opacity: 0, translateX: '2px', scale: 0.9}}
+                  >
+                    <TasksUserAvatar user={{id: subscriberId}} size={0} />
+                  </motion.div>
+                ))}
+              </AvatarStack>
+            </AnimatePresence>
+          ) : (
+            <TasksUserAvatar size={0} />
+          )}
+        </UIButton>
+      }
       id="assign-user-menu"
       menu={
         <StyledMenu>
-          <TasksSubscribers onSelect={onSelect} value={value} />
+          <SearchUsersMenu
+            renderItem={renderItem}
+            selectedUsers={selectedUsers}
+            loading={mentionOptions.loading}
+            options={mentionOptions.data || []}
+            name="subscribersSearch"
+            placeholder={t('form.subscribers.menu.input.placeholder')}
+          />
         </StyledMenu>
       }
       popover={{

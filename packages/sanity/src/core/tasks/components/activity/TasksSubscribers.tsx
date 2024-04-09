@@ -1,17 +1,10 @@
 import {type Path} from '@sanity/types'
-import {
-  AvatarStack,
-  // eslint-disable-next-line no-restricted-imports
-  Button as UIButton,
-  Flex,
-} from '@sanity/ui'
-import {AnimatePresence, motion} from 'framer-motion'
-import {useCallback, useMemo} from 'react'
+import {Flex} from '@sanity/ui'
+import {useCallback} from 'react'
 
 import {Button} from '../../../../ui-components'
 import {type FormPatch, type PatchEvent, set} from '../../../form/patch'
 import {type TaskDocument} from '../../types'
-import {TasksUserAvatar} from '../TasksUserAvatar'
 import {TasksSubscribersMenu} from './TasksSubscribersMenu'
 
 interface TasksSubscriberProps {
@@ -20,6 +13,8 @@ interface TasksSubscriberProps {
   onChange: (patch: FormPatch | PatchEvent | FormPatch[]) => void
   currentUserId: string
 }
+
+const EMPTY_ARRAY: [] = []
 
 export function TasksSubscribers(props: TasksSubscriberProps) {
   const {value, onChange, path, currentUserId} = props
@@ -54,66 +49,10 @@ export function TasksSubscribers(props: TasksSubscriberProps) {
   return (
     <Flex gap={1} align="center">
       <Button mode="bleed" text={buttonText} onClick={handleToggleSubscribe} />
-
-      <TasksSubscriberAvatars
-        subscriberIds={value.subscribers}
+      <TasksSubscribersMenu
+        value={value.subscribers?.filter(Boolean) || EMPTY_ARRAY}
         handleUserSubscriptionChange={handleUserSubscriptionChange}
       />
     </Flex>
-  )
-}
-
-const EMPTY_ARRAY: [] = []
-
-interface TasksSubscriberAvatarsProps {
-  subscriberIds?: string[]
-  handleUserSubscriptionChange: (userId: string) => void
-}
-
-export function TasksSubscriberAvatars(props: TasksSubscriberAvatarsProps) {
-  const {subscriberIds: subscriberIdsProp, handleUserSubscriptionChange} = props
-
-  const subscriberIds = useMemo(() => {
-    // Make sure we have valid subscriber IDs
-    return subscriberIdsProp?.filter(Boolean) || EMPTY_ARRAY
-  }, [subscriberIdsProp])
-
-  const onSelect = useCallback(
-    (userId: string) => handleUserSubscriptionChange(userId),
-    [handleUserSubscriptionChange],
-  )
-
-  return (
-    <TasksSubscribersMenu
-      menuButton={
-        <UIButton type="button" mode="bleed" padding={1}>
-          {subscriberIds.length > 0 ? (
-            <AnimatePresence initial={false}>
-              <AvatarStack maxLength={3} size={0}>
-                {subscriberIds.map((subscriberId) => (
-                  <motion.div
-                    key={subscriberId}
-                    exit={{opacity: 0, translateX: '2px', scale: 0.9}}
-                    animate={{
-                      opacity: 1,
-                      translateX: 0,
-                      scale: 1,
-                      transition: {type: 'just', duration: 0.2},
-                    }}
-                    initial={{opacity: 0, translateX: '2px', scale: 0.9}}
-                  >
-                    <TasksUserAvatar user={{id: subscriberId}} size={0} />
-                  </motion.div>
-                ))}
-              </AvatarStack>
-            </AnimatePresence>
-          ) : (
-            <TasksUserAvatar size={0} />
-          )}
-        </UIButton>
-      }
-      value={subscriberIds}
-      onSelect={onSelect}
-    />
   )
 }
