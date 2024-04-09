@@ -151,9 +151,9 @@ export default defineConfig([
     plugins: [sharedSettings()],
     basePath: '/test',
     icon: SanityMonogram,
-    // unstable_serverActions: {
-    //   enabled: true,
-    // },
+    unstable_serverActions: {
+      enabled: true,
+    },
   },
   {
     name: 'partialIndexing',

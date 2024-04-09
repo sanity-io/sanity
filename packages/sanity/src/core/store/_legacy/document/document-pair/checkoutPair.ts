@@ -143,7 +143,7 @@ function submitCommitRequest(
   client: SanityClient,
   idPair: IdPair,
   request: CommitRequest,
-  serverActionsEnabled?: boolean,
+  serverActionsEnabled: boolean,
 ) {
   return from(
     serverActionsEnabled
@@ -172,7 +172,7 @@ function submitCommitRequest(
 export function checkoutPair(
   client: SanityClient,
   idPair: IdPair,
-  serverActionsEnabled?: boolean,
+  serverActionsEnabled: boolean,
 ): Pair {
   const {publishedId, draftId} = idPair
 
