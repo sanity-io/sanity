@@ -11,9 +11,17 @@ import {
   Text,
   TextInput,
 } from '@sanity/ui'
-import {type ChangeEvent, type KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
+import {
+  type ChangeEvent,
+  type KeyboardEvent,
+  type MouseEvent,
+  useCallback,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import {LoadingBlock, type UserWithPermission, useTranslation} from 'sanity'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {MenuButton} from '../../../../../ui-components'
 import {tasksLocaleNamespace} from '../../../../i18n'
@@ -31,6 +39,14 @@ function MentionUserMenuItem(props: {
   const {user, onSelect, selected} = props
   const handleSelect = useCallback(() => onSelect(user.id), [user, onSelect])
 
+  const handleCheckboxClick = useCallback(
+    (e: MouseEvent<HTMLDivElement>) => {
+      e.stopPropagation()
+      handleSelect()
+    },
+    [handleSelect],
+  )
+
   return (
     <MenuItem onClick={handleSelect} padding={1}>
       <Flex align="center" gap={3}>
@@ -41,17 +57,7 @@ function MentionUserMenuItem(props: {
           </Text>
         </Flex>
         <Box paddingX={2}>
-          <Checkbox
-            onClick={(e) => {
-              e.stopPropagation()
-              handleSelect()
-            }}
-            onChange={(e) => {
-              e.stopPropagation()
-              handleSelect()
-            }}
-            checked={selected}
-          />
+          <Checkbox onClick={handleCheckboxClick} checked={selected} />
         </Box>
       </Flex>
     </MenuItem>
@@ -81,6 +87,9 @@ function TasksSubscribers({onSelect, value = []}: {onSelect: SelectItemHandler; 
   const [searchTerm, setSearchTerm] = useState<string>('')
   const {mentionOptions} = useMentionUser()
   const inputRef = useRef<HTMLInputElement | null>(null)
+  // This list will keep a local state of users who are initially subscribed and later added or removed.
+  // To always render them at the top
+  const [subscribersList, setSubscribersList] = useState(value)
 
   const handleSearchChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.currentTarget.value)
@@ -89,22 +98,31 @@ function TasksSubscribers({onSelect, value = []}: {onSelect: SelectItemHandler; 
   const filteredOptions = useFilteredOptions({options: mentionOptions.data || [], searchTerm})
 
   const selectedUsers = useMemo(
-    () => filteredOptions.filter((user) => value.includes(user.id)),
-    [filteredOptions, value],
+    () => filteredOptions.filter((user) => subscribersList.includes(user.id)),
+    [filteredOptions, subscribersList],
   )
 
+  const handleSelect = useCallback(
+    (id: string) => {
+      if (!subscribersList.includes(id)) {
+        setSubscribersList([...subscribersList, id])
+      }
+      onSelect(id)
+    },
+    [subscribersList, onSelect],
+  )
   const renderItem = useCallback(
     (user: UserWithPermission) => {
       return (
         <MentionUserMenuItem
           user={user}
-          onSelect={onSelect}
+          onSelect={handleSelect}
           key={user.id}
           selected={value.includes(user.id)}
         />
       )
     },
-    [onSelect, value],
+    [handleSelect, value],
   )
   const handleKeyDown = useCallback((event: KeyboardEvent<HTMLElement>) => {
     // If target is input don't do anything

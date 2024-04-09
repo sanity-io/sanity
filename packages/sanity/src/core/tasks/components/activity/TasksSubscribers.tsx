@@ -1,11 +1,9 @@
 import {type Path} from '@sanity/types'
 import {
   AvatarStack,
-  Box,
   // eslint-disable-next-line no-restricted-imports
   Button as UIButton,
   Flex,
-  Text,
 } from '@sanity/ui'
 import {AnimatePresence, motion} from 'framer-motion'
 import {useCallback, useMemo} from 'react'
@@ -110,11 +108,7 @@ export function TasksSubscriberAvatars(props: TasksSubscriberAvatarsProps) {
               </AvatarStack>
             </AnimatePresence>
           ) : (
-            <Box paddingX={2} paddingY={1}>
-              <Text size={1} muted>
-                0
-              </Text>
-            </Box>
+            <TasksUserAvatar size={0} />
           )}
         </UIButton>
       }
