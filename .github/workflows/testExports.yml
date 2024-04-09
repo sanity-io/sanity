@@ -2,7 +2,7 @@ name: Test exports works in native node ESM and CJS
 on:
   push:
 jobs:
-  typeCheck:
+  testExports:
     timeout-minutes: 15
     runs-on: ubuntu-latest
     env:
