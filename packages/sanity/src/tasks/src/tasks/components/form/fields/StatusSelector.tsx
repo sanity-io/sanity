@@ -1,6 +1,7 @@
 import {CheckmarkIcon, CircleIcon} from '@sanity/icons'
+import {useTelemetry} from '@sanity/telemetry/react'
 import {Menu} from '@sanity/ui'
-import {type ForwardedRef, forwardRef} from 'react'
+import {type ForwardedRef, forwardRef, useCallback} from 'react'
 import {
   type FormPatch,
   isString,
@@ -12,6 +13,7 @@ import {
 } from 'sanity'
 
 import {Button, MenuButton, MenuItem} from '../../../../../../ui-components'
+import {TaskStatusChanged} from '../../../../../__telemetry__/tasks.telemetry'
 import {tasksLocaleNamespace} from '../../../../../i18n'
 import {TASK_STATUS} from '../../../constants/TaskStatus'
 
@@ -45,6 +47,16 @@ interface StatusSelectorProps {
 
 export function StatusSelector(props: StatusSelectorProps) {
   const {value, onChange, options, path} = props
+  const telemetry = useTelemetry()
+
+  const handleStatusChange = useCallback(
+    (next?: string) => {
+      onChange(set(next, path))
+      telemetry.log(TaskStatusChanged, {from: value, to: next})
+    },
+    [onChange, path, telemetry, value],
+  )
+
   return (
     <MenuButton
       button={<StatusMenuButton value={value} options={options} />}
@@ -62,7 +74,7 @@ export function StatusSelector(props: StatusSelectorProps) {
                 pressed={isSelected}
                 iconRight={isSelected && <CheckmarkIcon />}
                 // eslint-disable-next-line react/jsx-no-bind
-                onClick={() => onChange(set(option.value, path))}
+                onClick={() => handleStatusChange(option.value)}
               />
             )
           })}

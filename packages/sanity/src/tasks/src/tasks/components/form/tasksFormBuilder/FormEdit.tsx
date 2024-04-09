@@ -1,4 +1,5 @@
 import {CopyIcon, LinkIcon, TrashIcon} from '@sanity/icons'
+import {useTelemetry} from '@sanity/telemetry/react'
 import {Box, Card, Flex, Menu, MenuDivider, Stack} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
@@ -19,6 +20,7 @@ import {css, styled} from 'styled-components'
 
 import {CommentsProvider} from '../../../../../../structure/comments'
 import {MenuButton, MenuItem, TooltipDelayGroupProvider} from '../../../../../../ui-components'
+import {TaskDuplicated, TaskRemoved} from '../../../../../__telemetry__/tasks.telemetry'
 import {tasksLocaleNamespace} from '../../../../../i18n'
 import {useTasksEnabled, useTasksNavigation} from '../../../context'
 import {useActivityLog} from '../../../hooks/useActivityLog'
@@ -44,14 +46,18 @@ const FirstRow = styled(Flex)((props) => {
 function FormActionsMenu({id, value}: {id: string; value: TaskDocument}) {
   const {setViewMode, handleCopyLinkToTask} = useTasksNavigation()
   const {mode} = useTasksEnabled()
+  const telemetry = useTelemetry()
+
   const onTaskRemoved = useCallback(() => {
     setViewMode({type: 'list'})
-  }, [setViewMode])
+    telemetry.log(TaskRemoved)
+  }, [setViewMode, telemetry])
   const removeTask = useRemoveTask({id, onRemoved: onTaskRemoved})
 
   const duplicateTask = useCallback(() => {
     setViewMode({type: 'duplicate', duplicateTaskValues: value})
-  }, [setViewMode, value])
+    telemetry.log(TaskDuplicated)
+  }, [setViewMode, telemetry, value])
 
   const {t} = useTranslation(tasksLocaleNamespace)
 
