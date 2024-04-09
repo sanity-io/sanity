@@ -20,7 +20,7 @@ import {css, styled} from 'styled-components'
 import {CommentsProvider} from '../../../../../../structure/comments'
 import {MenuButton, MenuItem, TooltipDelayGroupProvider} from '../../../../../../ui-components'
 import {tasksLocaleNamespace} from '../../../../../i18n'
-import {useTasksNavigation} from '../../../context'
+import {useTasksEnabled, useTasksNavigation} from '../../../context'
 import {useActivityLog} from '../../../hooks/useActivityLog'
 import {useRemoveTask} from '../../../hooks/useRemoveTask'
 import {type TaskDocument} from '../../../types'
@@ -43,6 +43,7 @@ const FirstRow = styled(Flex)((props) => {
 
 function FormActionsMenu({id, value}: {id: string; value: TaskDocument}) {
   const {setViewMode, handleCopyLinkToTask} = useTasksNavigation()
+  const {mode} = useTasksEnabled()
   const onTaskRemoved = useCallback(() => {
     setViewMode({type: 'list'})
   }, [setViewMode])
@@ -70,6 +71,10 @@ function FormActionsMenu({id, value}: {id: string; value: TaskDocument}) {
                 text={t('menuitem.duplicate.text')}
                 icon={CopyIcon}
                 onClick={duplicateTask}
+                tooltipProps={
+                  mode === 'upsell' ? {content: t('menuitem.duplicate.upsell-tooltip')} : undefined
+                }
+                disabled={mode === 'upsell'}
               />
               <MenuItem
                 text={t('menuitem.copylink.text')}

@@ -19,6 +19,8 @@ const tasksLocaleStrings = defineLocalesResources('tasks', {
   'buttons.draft.text': 'Draft',
   /** The label for the button to create a new task */
   'buttons.new.text': 'New task',
+  /** The text for tooltip in the create a new task button when mode is upsell */
+  'buttons.new.upsell-tooltip': 'Upgrade to create tasks',
   /** The label for the button that will navigate to the next task */
   'buttons.next.tooltip': 'Go to next task',
   /** The label for the button that will previous to the next task */
@@ -129,6 +131,8 @@ const tasksLocaleStrings = defineLocalesResources('tasks', {
   'menuitem.delete.text': 'Delete task',
   /** The label for the duplicate task menu item */
   'menuitem.duplicate.text': 'Duplicate task',
+  /** The text for the duplicate task menu item tooltip when mode is upsell */
+  'menuitem.duplicate.upsell-tooltip': 'Upgrade to duplicate tasks',
   /** Fragment used to construct the first entry in the activity log */
   'panel.activity.created-fragment': 'created this task',
   /** The title of the activity section of the task */
@@ -139,6 +143,8 @@ const tasksLocaleStrings = defineLocalesResources('tasks', {
   'panel.close.tooltip': 'Close sidebar',
   /** The placeholder text for the comment text box */
   'panel.comment.placeholder': 'Add a comment...',
+  /** The placeholder text for the comment text box when mode is upsell */
+  'panel.comment.placeholder.upsell': 'Upgrade to comment on tasks',
   /** The title used in the task panel when showing the create task form */
   'panel.create.title': 'Create',
   /** The title used in the drafts pulldown */

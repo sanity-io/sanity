@@ -4,7 +4,7 @@ import {UpsellDescriptionSerializer} from 'sanity'
 import {styled} from 'styled-components'
 
 import {Button} from '../../../../../ui-components'
-import {type CommentsUpsellData} from '../../types'
+import {type UpsellData} from '../../types'
 
 const Image = styled.img`
   object-fit: cover;
@@ -14,7 +14,7 @@ const Image = styled.img`
 `
 
 interface CommentsUpsellPanelProps {
-  data: CommentsUpsellData
+  data: UpsellData
   onPrimaryClick: () => void
   onSecondaryClick: () => void
 }
@@ -31,19 +31,21 @@ export function CommentsUpsellPanel(props: CommentsUpsellPanelProps) {
               <UpsellDescriptionSerializer blocks={data.descriptionText} />
             </Stack>
             <Flex gap={2} justify={'flex-end'} marginTop={5}>
-              <Button
-                mode="bleed"
-                text={data.secondaryButton.text}
-                tone="primary"
-                iconRight={LaunchIcon}
-                {...(data.secondaryButton.url && {
-                  target: '_blank',
-                  rel: 'noopener noreferrer',
-                  as: 'a',
-                  href: data.secondaryButton.url,
-                })}
-                onClick={onSecondaryClick}
-              />
+              {data.secondaryButton.text && (
+                <Button
+                  mode="bleed"
+                  text={data.secondaryButton.text}
+                  tone="primary"
+                  iconRight={LaunchIcon}
+                  {...(data.secondaryButton.url && {
+                    target: '_blank',
+                    rel: 'noopener noreferrer',
+                    as: 'a',
+                    href: data.secondaryButton.url,
+                  })}
+                  onClick={onSecondaryClick}
+                />
+              )}
               <Button
                 text={data.ctaButton.text}
                 tone="primary"

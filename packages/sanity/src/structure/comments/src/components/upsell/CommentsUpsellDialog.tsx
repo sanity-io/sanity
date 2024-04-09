@@ -7,7 +7,7 @@ import {UpsellDescriptionSerializer} from 'sanity'
 import {styled} from 'styled-components'
 
 import {Button, Dialog} from '../../../../../ui-components'
-import {type CommentsUpsellData} from '../../types'
+import {type UpsellData} from '../../types'
 
 /**
  * Absolute positioned button to close the dialog.
@@ -38,7 +38,7 @@ const Image = styled.img`
 `
 
 interface CommentsUpsellDialogProps {
-  data: CommentsUpsellData
+  data: UpsellData
   onClose: () => void
   onPrimaryClick: () => void
   onSecondaryClick: () => void

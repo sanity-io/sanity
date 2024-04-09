@@ -14,31 +14,20 @@ interface TaksEnabledProviderProps {
 export function TasksEnabledProvider({children}: TaksEnabledProviderProps) {
   const {enabled, isLoading} = useFeatureEnabled('sanityTasks')
 
-  // Staging flag - keeping here until the new flag is added to staging.
-  const {enabled: stagingIsEnabled, isLoading: stagingIsLoading} = useFeatureEnabled('studioTasks')
-
   const isWorkspaceEnabled = useWorkspace().tasks?.enabled
 
   const value: TasksEnabledContextValue = useMemo(() => {
-    if (!isWorkspaceEnabled || isLoading || stagingIsLoading) {
+    if (!isWorkspaceEnabled || isLoading) {
       return {
         enabled: false,
         mode: null,
       }
     }
-    // The staging check will be removed when the sanityTasks flag is added to staging.
-    if (stagingIsEnabled || enabled) {
-      return {
-        enabled: true,
-        mode: 'default',
-      }
-    }
-
     return {
-      enabled: false,
-      mode: null,
+      enabled: true,
+      mode: enabled ? 'default' : 'upsell',
     }
-  }, [enabled, isLoading, isWorkspaceEnabled, stagingIsEnabled, stagingIsLoading])
+  }, [enabled, isLoading, isWorkspaceEnabled])
 
   return <TasksEnabledContext.Provider value={value}>{children}</TasksEnabledContext.Provider>
 }

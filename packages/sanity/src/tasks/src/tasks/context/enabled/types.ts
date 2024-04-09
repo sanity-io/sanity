@@ -8,5 +8,5 @@ export type TasksEnabledContextValue =
     }
   | {
       enabled: true
-      mode: 'default' | null // Prepare to support upsell or different modes in a future
+      mode: 'default' | 'upsell'
     }

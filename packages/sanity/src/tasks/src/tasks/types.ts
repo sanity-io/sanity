@@ -125,3 +125,9 @@ export type TaskEditPayload = {
 }
 
 export type FormMode = 'create' | 'edit'
+
+/**
+ * @beta
+ * @hidden
+ */
+export type TasksUIMode = 'default' | 'upsell'

@@ -12,12 +12,11 @@ import {
   useProjectId,
 } from 'sanity'
 
-import {CommentsUpsellDialog} from '../../components'
-import {type UpsellData} from '../../types'
-import {CommentsUpsellContext} from './CommentsUpsellContext'
-import {type CommentsUpsellContextValue} from './types'
+import {CommentsUpsellDialog, type UpsellData} from '../../../../../structure/comments'
+import {TasksUpsellContext} from './TasksUpsellContext'
+import {type TasksUpsellContextValue} from './types'
 
-const FEATURE = 'comments'
+const FEATURE = 'tasks'
 const TEMPLATE_OPTIONS = {interpolate: /{{([\s\S]+?)}}/g}
 const BASE_URL = 'www.sanity.io'
 
@@ -25,7 +24,7 @@ const BASE_URL = 'www.sanity.io'
  * @beta
  * @hidden
  */
-export function CommentsUpsellProvider(props: {children: React.ReactNode}) {
+export function TasksUpsellProvider(props: {children: React.ReactNode}) {
   const [upsellDialogOpen, setUpsellDialogOpen] = useState(false)
   const [upsellData, setUpsellData] = useState<UpsellData | null>(null)
   const projectId = useProjectId()
@@ -33,7 +32,7 @@ export function CommentsUpsellProvider(props: {children: React.ReactNode}) {
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
 
   const telemetryLogs = useMemo(
-    (): CommentsUpsellContextValue['telemetryLogs'] => ({
+    (): TasksUpsellContextValue['telemetryLogs'] => ({
       dialogSecondaryClicked: () =>
         telemetry.log(UpsellDialogLearnMoreCtaClicked, {
           feature: FEATURE,
@@ -86,12 +85,13 @@ export function CommentsUpsellProvider(props: {children: React.ReactNode}) {
   }, [telemetry])
 
   useEffect(() => {
-    const data$ = client.observable.request<UpsellData | null>({
-      uri: '/journey/comments',
+    const data$ = client.observable.request<UpsellData[] | null>({
+      uri: '/journey/tasks',
     })
 
     const sub = data$.subscribe({
-      next: (data) => {
+      next: (response) => {
+        const data = response?.[0]
         if (!data) return
         try {
           const ctaUrl = template(data.ctaButton.url, TEMPLATE_OPTIONS)
@@ -127,7 +127,7 @@ export function CommentsUpsellProvider(props: {children: React.ReactNode}) {
     [telemetry],
   )
 
-  const ctxValue = useMemo<CommentsUpsellContextValue>(
+  const ctxValue = useMemo<TasksUpsellContextValue>(
     () => ({
       upsellDialogOpen,
       handleOpenDialog,
@@ -138,7 +138,7 @@ export function CommentsUpsellProvider(props: {children: React.ReactNode}) {
   )
 
   return (
-    <CommentsUpsellContext.Provider value={ctxValue}>
+    <TasksUpsellContext.Provider value={ctxValue}>
       {props.children}
       {upsellData && upsellDialogOpen && (
         <CommentsUpsellDialog
@@ -148,6 +148,6 @@ export function CommentsUpsellProvider(props: {children: React.ReactNode}) {
           onSecondaryClick={handleSecondaryButtonClick}
         />
       )}
-    </CommentsUpsellContext.Provider>
+    </TasksUpsellContext.Provider>
   )
 }

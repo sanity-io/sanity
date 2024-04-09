@@ -6,6 +6,7 @@ import {styled} from 'styled-components'
 import {useTasks, useTasksEnabled, useTasksNavigation} from '../../context'
 import {TasksFormBuilder} from '../form'
 import {TasksList} from '../list/TasksList'
+import {TasksUpsellPanel} from '../upsell/TasksUpsellPanel'
 import {TasksListTabs} from './TasksListTabs'
 import {TasksSidebarHeader} from './TasksSidebarHeader'
 
@@ -27,6 +28,7 @@ const ContentFlex = styled(Flex)`
  * @internal
  */
 export function TasksStudioSidebarInner() {
+  const {mode} = useTasksEnabled()
   const {activeDocument, data, isLoading} = useTasks()
   const {state, setActiveTab, setViewMode} = useTasksNavigation()
   const {activeTabId, viewMode, selectedTask} = state
@@ -65,8 +67,13 @@ export function TasksStudioSidebarInner() {
       )
     }
 
-    return <TasksList items={filteredList} onTaskSelect={onTaskSelect} />
-  }, [filteredList, isLoading, onTaskSelect, selectedTask, viewMode])
+    return (
+      <>
+        {mode === 'upsell' && <TasksUpsellPanel />}
+        <TasksList items={filteredList} onTaskSelect={onTaskSelect} />
+      </>
+    )
+  }, [filteredList, isLoading, onTaskSelect, selectedTask, viewMode, mode])
 
   return (
     <RootCard display="flex" height="fill" flex={1} overflow="hidden">
