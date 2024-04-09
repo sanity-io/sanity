@@ -45,4 +45,4 @@ jobs:
 
       - name: Check export conditions in native node ESM and CJS
         # Adds the github reporter on the CI to highlight in diffs failling tests
-        run: pnpm test:exports -- --test-reporter node-test-github-reporter
+        run: pnpm test:exports -- --test-reporter spec --test-reporter-destination stdout --test-reporter node-test-github-reporter --test-reporter-destination stdout

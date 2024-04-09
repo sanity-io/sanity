@@ -3,12 +3,12 @@
 
 const {strict: assert} = require('node:assert')
 
-const groq = require('../src')
+const groq = require('groq')
 
 assert.equal(typeof groq, 'function')
 
 // Ensure it's possible to check what version of groq is being used
-const pkg = require('../groq/package.json')
+const pkg = require('groq/package.json')
 
 assert.equal(typeof pkg.version, 'string')
 

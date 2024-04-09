@@ -51,7 +51,7 @@
     "lint": "eslint .",
     "prepublishOnly": "turbo run build",
     "pretest": "run-s build",
-    "test": "node test/groq.test.cjs && node test/groq.test.mjs ",
+    "test": "node --test",
     "watch": "pkg-utils watch"
   },
   "devDependencies": {
