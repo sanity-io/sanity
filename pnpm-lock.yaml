@@ -1848,9 +1848,6 @@ importers:
       rxjs:
         specifier: ^7.8.0
         version: 7.8.1
-      rxjs-etc:
-        specifier: ^10.6.0
-        version: 10.6.2(rxjs@7.8.1)
       rxjs-exhaustmap-with-trailing:
         specifier: ^2.1.1
         version: 2.1.1(rxjs@7.8.1)
@@ -1981,6 +1978,9 @@ importers:
       react-dom:
         specifier: ^18.2.0
         version: 18.2.0(react@18.2.0)
+      rxjs-etc:
+        specifier: ^10.6.2
+        version: 10.6.2(rxjs@7.8.1)
       styled-components:
         specifier: ^6.1.8
         version: 6.1.8(react-dom@18.2.0)(react@18.2.0)
@@ -14182,7 +14182,7 @@ packages:
 
   /memoize-resolver@1.0.0:
     resolution: {integrity: sha512-mXfNXte0RSWl0rEIsQhXutfM2R2Oa7UyKDD7XoZMEbKeucTRms04y5y41U8gLqPzRx7ViN/QyYnTR2TX/5tawA==}
-    dev: false
+    dev: true
 
   /memorystream@0.3.1:
     resolution: {integrity: sha512-S3UwM3yj5mtUSEfP41UZmt/0SCoVYUcU1rkXv+BQ5Ig8ndL4sPoJNBUJERafdPb5jjHJGuMgytgKvKIf58XNBw==}
@@ -16726,7 +16726,7 @@ packages:
     dependencies:
       memoize-resolver: 1.0.0
       rxjs: 7.8.1
-    dev: false
+    dev: true
 
   /rxjs-exhaustmap-with-trailing@2.1.1(rxjs@7.8.1):
     resolution: {integrity: sha512-gK7nsKyPFsbjDeJ0NYTcZYGW5TbTFjT3iACa28Pwp3fIf9wT/JUR8vdlKYCjUOZKXYnXEk8eRZ4zcQyEURosIA==}

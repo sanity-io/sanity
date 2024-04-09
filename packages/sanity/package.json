@@ -236,7 +236,6 @@
     "resolve-from": "^5.0.0",
     "rimraf": "^3.0.2",
     "rxjs": "^7.8.0",
-    "rxjs-etc": "^10.6.0",
     "rxjs-exhaustmap-with-trailing": "^2.1.1",
     "sanity-diff-patch": "^3.0.2",
     "scroll-into-view-if-needed": "^3.0.3",
@@ -283,6 +282,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "rimraf": "^3.0.2",
+    "rxjs-etc": "^10.6.2",
     "styled-components": "^6.1.8"
   },
   "peerDependencies": {
