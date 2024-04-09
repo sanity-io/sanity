@@ -125,10 +125,8 @@ const tasksLocaleStrings = defineLocalesResources('tasks', {
   'form.status.success': 'Task created',
   /** The text displayed when no tasks are found */
   'list.empty.text': 'No tasks',
-  /** The text for the link displayed at the bottom of the tasks list inviting users provide feedback */
-  'list.feedback.link': 'share feedback on Tasks',
   /** The text displayed at the bottom of the tasks list inviting users provide feedback */
-  'list.feedback.text': 'Help us improve, ',
+  'list.feedback.text': 'Help us improve, <Link>share feedback on Tasks</Link> ',
   /** The label for the copy link menu item */
   'menuitem.copylink.text': 'Copy link to task',
   /** The label for the delete task menu item */

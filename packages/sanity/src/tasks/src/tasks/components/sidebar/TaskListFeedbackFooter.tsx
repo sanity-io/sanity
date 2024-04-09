@@ -1,6 +1,6 @@
 import {LaunchIcon} from '@sanity/icons'
 import {Box, Text} from '@sanity/ui'
-import {useTranslation} from 'sanity'
+import {Translate, useTranslation} from 'sanity'
 import {styled} from 'styled-components'
 
 import {tasksLocaleNamespace} from '../../../../i18n'
@@ -18,15 +18,20 @@ const Link = styled.a`
   }
 `
 
+function LinkComponent(props: {children?: React.ReactNode}) {
+  return (
+    <Link href={FEEDBACK_FORM_LINK} target="_blank" rel="noreferrer">
+      <Span>{props.children}</Span> <LaunchIcon />
+    </Link>
+  )
+}
+
 export function TasksListFeedbackFooter() {
   const {t} = useTranslation(tasksLocaleNamespace)
   return (
     <Box padding={4}>
       <Text muted size={1}>
-        {t('list.feedback.text')}{' '}
-        <Link href={FEEDBACK_FORM_LINK} target="_blank" rel="noreferrer">
-          <Span>{t('list.feedback.link')} </Span> <LaunchIcon />
-        </Link>
+        <Translate i18nKey="list.feedback.text" t={t} components={{Link: LinkComponent}} />
       </Text>
     </Box>
   )
