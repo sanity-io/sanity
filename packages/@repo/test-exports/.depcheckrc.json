@@ -1,0 +1,22 @@
+{
+  "ignores": [
+    "@repo/test-exports",
+    "@sanity/block-tools",
+    "@sanity/cli",
+    "@sanity/codegen",
+    "@sanity/diff",
+    "@sanity/export",
+    "@sanity/import",
+    "@sanity/import-cli",
+    "@sanity/migrate",
+    "@sanity/mutator",
+    "@sanity/portable-text-editor",
+    "@sanity/schema",
+    "@sanity/types",
+    "@sanity/util",
+    "@sanity/vision",
+    "groq",
+    "sanity",
+    "node-test-github-reporter"
+  ]
+}
