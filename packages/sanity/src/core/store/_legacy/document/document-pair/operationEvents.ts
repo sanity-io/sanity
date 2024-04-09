@@ -147,7 +147,7 @@ export const operationEvents = memoize(
           // E.g. if the user types `publish` which is async and then starts patching (sync) then the publish
           // should be cancelled
           switchMap((args) =>
-            operationArgs(ctx, args.idPair, args.typeName).pipe(
+            operationArgs({...ctx, serverActionsEnabled: false}, args.idPair, args.typeName).pipe(
               take(1),
               switchMap((operationArguments) => {
                 const requiresConsistency = REQUIRES_CONSISTENCY.includes(args.operationName)
@@ -159,6 +159,7 @@ export const operationEvents = memoize(
                   ctx.client,
                   args.idPair,
                   args.typeName,
+                  ctx.serverActionsEnabled,
                 ).pipe(filter(Boolean))
                 const ready$ = requiresConsistency ? isConsistent$.pipe(take(1)) : of(true)
                 return ready$.pipe(
@@ -201,6 +202,6 @@ export const operationEvents = memoize(
   (ctx) => {
     const config = ctx.client.config()
     // we only want one of these per dataset+projectid
-    return `${config.dataset ?? ''}-${config.projectId ?? ''}`
+    return `${config.dataset ?? ''}-${config.projectId ?? ''}-${ctx.serverActionsEnabled}`
   },
 )

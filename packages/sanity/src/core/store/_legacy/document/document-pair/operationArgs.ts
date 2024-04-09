@@ -8,6 +8,7 @@ import {map, publishReplay, refCount, switchMap} from 'rxjs/operators'
 import {type HistoryStore} from '../../history'
 import {type IdPair} from '../types'
 import {memoize} from '../utils/createMemoizer'
+import {memoizeKeyGen} from './memoizeKeyGen'
 import {type OperationArgs} from './operations'
 import {snapshotPair} from './snapshotPair'
 
@@ -42,8 +43,6 @@ export const operationArgs = memoize(
     )
   },
   (ctx, idPair, typeName) => {
-    const config = ctx.client.config()
-
-    return `${config.dataset ?? ''}-${config.projectId ?? ''}-${idPair.publishedId}-${typeName}`
+    return memoizeKeyGen(ctx.client, idPair, typeName, ctx.serverActionsEnabled)
   },
 )
