@@ -1,5 +1,5 @@
-import {constants, open, stat} from 'node:fs/promises'
-import {join} from 'node:path'
+import {constants, mkdir, open, stat} from 'node:fs/promises'
+import {dirname, join} from 'node:path'
 
 import {readConfig} from '@sanity/codegen'
 import {Worker} from 'worker_threads'
@@ -70,8 +70,12 @@ export default async function typegenGenerateAction(
     env: process.env,
   })
 
+  const outputPath = join(process.cwd(), codegenConfig.generates)
+  const outputDir = dirname(outputPath)
+  await mkdir(outputDir, {recursive: true})
+
   const typeFile = await open(
-    join(process.cwd(), codegenConfig.generates),
+    outputPath,
     // eslint-disable-next-line no-bitwise
     constants.O_TRUNC | constants.O_CREAT | constants.O_WRONLY,
   )
