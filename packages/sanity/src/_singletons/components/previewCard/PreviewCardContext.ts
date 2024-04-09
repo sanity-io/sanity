@@ -1,5 +1,6 @@
 import {createContext} from 'react'
-import type {PreviewCardContextValue} from 'sanity'
+
+import type {PreviewCardContextValue} from '../../../core/components/previewCard/PreviewCard'
 
 /**
  * @internal

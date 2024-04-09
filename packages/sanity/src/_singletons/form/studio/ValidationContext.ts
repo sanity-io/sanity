@@ -1,5 +1,5 @@
+import type {ValidationMarker} from '@sanity/types'
 import {createContext} from 'react'
-import type {ValidationMarker} from 'sanity'
 
 /**
  * @internal

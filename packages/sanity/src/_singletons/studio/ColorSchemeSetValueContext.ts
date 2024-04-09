@@ -1,5 +1,6 @@
 import {createContext} from 'react'
-import type {StudioThemeColorSchemeKey} from 'sanity'
+
+import type {StudioThemeColorSchemeKey} from '../../core/theme/types'
 
 /**
  * The setter for ColorSchemeValueContext, in a separate context to avoid unnecessary re-renders
