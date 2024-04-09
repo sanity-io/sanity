@@ -326,7 +326,7 @@ importers:
         specifier: ^2.1.2
         version: 2.1.2(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8)
       '@sanity/vision':
-        specifier: 3.37.1
+        specifier: 3.37.2
         version: link:../../packages/@sanity/vision
       react:
         specifier: ^18.2.0
@@ -390,7 +390,7 @@ importers:
         specifier: ^3.0.0
         version: 3.0.1(@sanity/mutator@packages+@sanity+mutator)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(sanity@packages+sanity)(styled-components@6.1.8)
       '@sanity/block-tools':
-        specifier: 3.37.1
+        specifier: 3.37.2
         version: link:../../packages/@sanity/block-tools
       '@sanity/client':
         specifier: ^6.15.11
@@ -565,7 +565,7 @@ importers:
   examples/ecommerce-studio:
     dependencies:
       '@sanity/cli':
-        specifier: 3.37.1
+        specifier: 3.37.2
         version: link:../../packages/@sanity/cli
       '@sanity/ui':
         specifier: ^2.1.2
@@ -682,10 +682,10 @@ importers:
         specifier: workspace:*
         version: link:../../@repo/package.config
       '@sanity/schema':
-        specifier: 3.37.1
+        specifier: 3.37.2
         version: link:../schema
       '@sanity/types':
-        specifier: 3.37.1
+        specifier: 3.37.2
         version: link:../types
       '@types/jsdom':
         specifier: ^20.0.0
@@ -709,13 +709,13 @@ importers:
         specifier: ^6.15.11
         version: 6.15.11
       '@sanity/codegen':
-        specifier: 3.37.1
+        specifier: 3.37.2
         version: link:../codegen
       '@sanity/telemetry':
         specifier: ^0.7.6
         version: 0.7.7
       '@sanity/util':
-        specifier: 3.37.1
+        specifier: 3.37.2
         version: link:../util
       chalk:
         specifier: ^4.1.2
@@ -1009,7 +1009,7 @@ importers:
   packages/@sanity/export:
     dependencies:
       '@sanity/util':
-        specifier: 3.37.1
+        specifier: 3.37.2
         version: link:../util
       archiver:
         specifier: ^7.0.0
@@ -1052,7 +1052,7 @@ importers:
         specifier: ^3.0.0
         version: 3.0.0
       '@sanity/mutator':
-        specifier: 3.37.1
+        specifier: 3.37.2
         version: link:../mutator
       '@sanity/uuid':
         specifier: ^3.0.1
@@ -1116,7 +1116,7 @@ importers:
         specifier: ^6.15.11
         version: 6.15.11
       '@sanity/import':
-        specifier: 3.37.1
+        specifier: 3.37.2
         version: link:../import
       get-it:
         specifier: ^8.4.18
@@ -1140,10 +1140,10 @@ importers:
         specifier: ^6.15.11
         version: 6.15.11
       '@sanity/types':
-        specifier: 3.37.1
+        specifier: 3.37.2
         version: link:../types
       '@sanity/util':
-        specifier: 3.37.1
+        specifier: 3.37.2
         version: link:../util
       arrify:
         specifier: ^2.0.1
@@ -1199,7 +1199,7 @@ importers:
         specifier: workspace:*
         version: link:../../@repo/package.config
       '@sanity/types':
-        specifier: 3.37.1
+        specifier: 3.37.2
         version: link:../types
       '@types/debug':
         specifier: ^4.1.5
@@ -1214,16 +1214,16 @@ importers:
   packages/@sanity/portable-text-editor:
     dependencies:
       '@sanity/block-tools':
-        specifier: 3.37.1
+        specifier: 3.37.2
         version: link:../block-tools
       '@sanity/schema':
-        specifier: 3.37.1
+        specifier: 3.37.2
         version: link:../schema
       '@sanity/types':
-        specifier: 3.37.1
+        specifier: 3.37.2
         version: link:../types
       '@sanity/util':
-        specifier: 3.37.1
+        specifier: 3.37.2
         version: link:../util
       debug:
         specifier: ^3.2.7
@@ -1335,7 +1335,7 @@ importers:
         specifier: ^3.0.0
         version: 3.0.0
       '@sanity/types':
-        specifier: 3.37.1
+        specifier: 3.37.2
         version: link:../types
       arrify:
         specifier: ^1.0.1
@@ -1403,7 +1403,7 @@ importers:
         specifier: ^6.15.11
         version: 6.15.11
       '@sanity/types':
-        specifier: 3.37.1
+        specifier: 3.37.2
         version: link:../types
       get-random-values-esm:
         specifier: 1.0.2
@@ -1540,7 +1540,7 @@ importers:
   packages/create-sanity:
     dependencies:
       '@sanity/cli':
-        specifier: 3.37.1
+        specifier: 3.37.2
         version: link:../@sanity/cli
       resolve-pkg:
         specifier: ^2.0.0
@@ -1582,10 +1582,10 @@ importers:
         specifier: ^0.3.1
         version: 0.3.1
       '@sanity/block-tools':
-        specifier: 3.37.1
+        specifier: 3.37.2
         version: link:../@sanity/block-tools
       '@sanity/cli':
-        specifier: 3.37.1
+        specifier: 3.37.2
         version: link:../@sanity/cli
       '@sanity/client':
         specifier: ^6.15.11
@@ -1594,7 +1594,7 @@ importers:
         specifier: ^3.0.0
         version: 3.0.6
       '@sanity/diff':
-        specifier: 3.37.1
+        specifier: 3.37.2
         version: link:../@sanity/diff
       '@sanity/diff-match-patch':
         specifier: ^3.1.1
@@ -1603,7 +1603,7 @@ importers:
         specifier: ^5.0.0
         version: 5.0.1
       '@sanity/export':
-        specifier: 3.37.1
+        specifier: 3.37.2
         version: link:../@sanity/export
       '@sanity/icons':
         specifier: ^2.11.0
@@ -1612,37 +1612,37 @@ importers:
         specifier: ^1.0.2
         version: 1.0.2
       '@sanity/import':
-        specifier: 3.37.1
+        specifier: 3.37.2
         version: link:../@sanity/import
       '@sanity/logos':
         specifier: ^2.1.4
         version: 2.1.10(@sanity/color@3.0.6)(react@18.2.0)
       '@sanity/migrate':
-        specifier: 3.37.1
+        specifier: 3.37.2
         version: link:../@sanity/migrate
       '@sanity/mutator':
-        specifier: 3.37.1
+        specifier: 3.37.2
         version: link:../@sanity/mutator
       '@sanity/portable-text-editor':
-        specifier: 3.37.1
+        specifier: 3.37.2
         version: link:../@sanity/portable-text-editor
       '@sanity/presentation':
         specifier: 1.12.3
         version: 1.12.3(@sanity/client@6.15.11)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8)
       '@sanity/schema':
-        specifier: 3.37.1
+        specifier: 3.37.2
         version: link:../@sanity/schema
       '@sanity/telemetry':
         specifier: ^0.7.6
         version: 0.7.7
       '@sanity/types':
-        specifier: 3.37.1
+        specifier: 3.37.2
         version: link:../@sanity/types
       '@sanity/ui':
         specifier: ^2.1.2
         version: 2.1.2(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8)
       '@sanity/util':
-        specifier: 3.37.1
+        specifier: 3.37.2
         version: link:../@sanity/util
       '@sanity/uuid':
         specifier: ^3.0.1
@@ -1901,7 +1901,7 @@ importers:
         specifier: workspace:*
         version: link:../@repo/package.config
       '@sanity/codegen':
-        specifier: 3.37.1
+        specifier: 3.37.2
         version: link:../@sanity/codegen
       '@sanity/generate-help-url':
         specifier: ^3.0.0
