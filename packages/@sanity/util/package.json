@@ -135,5 +135,8 @@
   },
   "engines": {
     "node": ">=18"
+  },
+  "esm.sh": {
+    "bundle": false
   }
 }

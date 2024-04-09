@@ -56,5 +56,8 @@
     "@jest/globals": "^29.7.0",
     "@repo/package.config": "workspace:*",
     "rimraf": "^3.0.2"
+  },
+  "esm.sh": {
+    "bundle": false
   }
 }
