@@ -35,8 +35,8 @@
     },
     "./_singletons": {
       "source": "./src/_exports/_singletons.ts",
-      "require": "./lib/_singletons.js",
       "import": "./lib/_singletons.mjs",
+      "require": "./lib/_singletons.js",
       "default": "./lib/_singletons.js"
     },
     "./cli": {
@@ -122,7 +122,7 @@
   "scripts": {
     "build": "pkg-utils build --strict --check --clean",
     "check:types": "tsc --project tsconfig.lib.json",
-    "clean": "rimraf _internal.js cli.js desk.js migrate.js presentation.js router.js structure.js lib",
+    "clean": "rimraf _internal.js _singletons.js cli.js desk.js migrate.js presentation.js router.js structure.js lib",
     "coverage": "jest --coverage",
     "lint": "eslint .",
     "prepublishOnly": "turbo run build",

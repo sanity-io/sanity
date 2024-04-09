@@ -1,5 +1,6 @@
 import {createContext} from 'react'
-import type {FormNodePresence} from 'sanity'
+
+import type {FormNodePresence} from '../../../core/presence/types'
 
 /**
  * @internal
