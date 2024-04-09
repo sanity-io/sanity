@@ -77,7 +77,7 @@
   "devDependencies": {
     "@jest/globals": "^29.7.0",
     "@repo/package.config": "workspace:*",
-    "@sanity/icons": "^2.11.7",
+    "@sanity/icons": "^2.11.8",
     "@types/arrify": "^1.0.4",
     "@types/object-inspect": "^1.13.0",
     "@types/react": "^18.2.75",
