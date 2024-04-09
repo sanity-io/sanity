@@ -11,16 +11,13 @@ module.exports = (condition) => {
   for (const workspace of Object.keys(dependencies)) {
     // eslint-disable-next-line import/no-dynamic-require
     const pkg = require(`${workspace}/package.json`)
+    workspaces[workspace] = []
     if (pkg.exports) {
-      workspaces[workspace] = []
       for (const [key, value] of Object.entries(pkg.exports)) {
         if (typeof value === 'object' && condition in value) {
           workspaces[workspace].push(path.join(workspace, key))
         }
       }
-    } else {
-      // @TODO all packages should declare `exports`
-      console.warn('No exports found in:', workspace)
     }
   }
 
