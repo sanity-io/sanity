@@ -427,7 +427,7 @@ importers:
         version: 1.2.3(sanity@packages+sanity)
       '@sanity/logos':
         specifier: ^2.1.2
-        version: 2.1.8(@sanity/color@3.0.5)(react@18.2.0)
+        version: 2.1.9(@sanity/color@3.0.5)(react@18.2.0)
       '@sanity/migrate':
         specifier: workspace:*
         version: link:../../packages/@sanity/migrate
@@ -1381,7 +1381,7 @@ importers:
     dependencies:
       '@codemirror/autocomplete':
         specifier: ^6.1.0
-        version: 6.15.0(@codemirror/language@6.10.1)(@codemirror/state@6.4.1)(@codemirror/view@6.26.1)(@lezer/common@1.2.1)
+        version: 6.15.0(@codemirror/language@6.10.1)(@codemirror/state@6.4.1)(@codemirror/view@6.26.2)(@lezer/common@1.2.1)
       '@codemirror/commands':
         specifier: ^6.0.1
         version: 6.3.3
@@ -1399,7 +1399,7 @@ importers:
         version: 6.4.1
       '@codemirror/view':
         specifier: ^6.1.1
-        version: 6.26.1
+        version: 6.26.2
       '@juggle/resize-observer':
         specifier: ^3.3.1
         version: 3.4.0
@@ -1423,7 +1423,7 @@ importers:
         version: 2.1.0(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8)
       '@uiw/react-codemirror':
         specifier: ^4.11.4
-        version: 4.21.25(@babel/runtime@7.24.1)(@codemirror/autocomplete@6.15.0)(@codemirror/language@6.10.1)(@codemirror/lint@6.5.0)(@codemirror/search@6.5.6)(@codemirror/state@6.4.1)(@codemirror/theme-one-dark@6.1.2)(@codemirror/view@6.26.1)(codemirror@6.0.1)(react-dom@18.2.0)(react@18.2.0)
+        version: 4.21.25(@babel/runtime@7.24.4)(@codemirror/autocomplete@6.15.0)(@codemirror/language@6.10.1)(@codemirror/lint@6.5.0)(@codemirror/search@6.5.6)(@codemirror/state@6.4.1)(@codemirror/theme-one-dark@6.1.2)(@codemirror/view@6.26.2)(codemirror@6.0.1)(react-dom@18.2.0)(react@18.2.0)
       hashlru:
         specifier: ^2.3.0
         version: 2.3.0
@@ -1568,7 +1568,7 @@ importers:
         version: link:../@sanity/import
       '@sanity/logos':
         specifier: ^2.1.4
-        version: 2.1.8(@sanity/color@3.0.5)(react@18.2.0)
+        version: 2.1.9(@sanity/color@3.0.5)(react@18.2.0)
       '@sanity/migrate':
         specifier: 3.37.0
         version: link:../@sanity/migrate
@@ -1875,7 +1875,7 @@ importers:
         version: 13.4.0(react-dom@18.2.0)(react@18.2.0)
       '@testing-library/user-event':
         specifier: ^13.0.16
-        version: 13.5.0(@testing-library/dom@9.3.4)
+        version: 13.5.0(@testing-library/dom@10.0.0)
       '@types/archiver':
         specifier: ^6.0.2
         version: 6.0.2
@@ -3169,8 +3169,8 @@ packages:
   /@babel/regjsgen@0.8.0:
     resolution: {integrity: sha512-x/rqGMdzj+fWZvCOYForTghzbtqPDZ5gPwaoNGHdgDfF2QA/XZbCBp4Moo5scrkAMPhB7z26XM/AaHuIJdgauA==}
 
-  /@babel/runtime@7.24.1:
-    resolution: {integrity: sha512-+BIznRzyqBf+2wCTxcKE3wDjfGeCoVE61KSHGpkzqrLi8qxqFwBeUFyId2cxkTmm55fzDGnm0+yCxaxygrLUnQ==}
+  /@babel/runtime@7.24.4:
+    resolution: {integrity: sha512-dkxf7+hn8mFBwKjs9bvBlArzLVxVbS8usaPUDd5p2a9JCL9tB8OaOVN1isD4+Xyk4ns89/xeOmbQvgdK7IIVdA==}
     engines: {node: '>=6.9.0'}
     dependencies:
       regenerator-runtime: 0.14.1
@@ -3220,7 +3220,7 @@ packages:
       hotscript: 1.0.13
       nanoid: 5.0.6
 
-  /@codemirror/autocomplete@6.15.0(@codemirror/language@6.10.1)(@codemirror/state@6.4.1)(@codemirror/view@6.26.1)(@lezer/common@1.2.1):
+  /@codemirror/autocomplete@6.15.0(@codemirror/language@6.10.1)(@codemirror/state@6.4.1)(@codemirror/view@6.26.2)(@lezer/common@1.2.1):
     resolution: {integrity: sha512-G2Zm0mXznxz97JhaaOdoEG2cVupn4JjPaS4AcNvZzhOsnnG9YVN68VzfoUw6dYTsIxT6a/cmoFEN47KAWhXaOg==}
     peerDependencies:
       '@codemirror/language': ^6.0.0
@@ -3230,7 +3230,7 @@ packages:
     dependencies:
       '@codemirror/language': 6.10.1
       '@codemirror/state': 6.4.1
-      '@codemirror/view': 6.26.1
+      '@codemirror/view': 6.26.2
       '@lezer/common': 1.2.1
     dev: false
 
@@ -3239,18 +3239,18 @@ packages:
     dependencies:
       '@codemirror/language': 6.10.1
       '@codemirror/state': 6.4.1
-      '@codemirror/view': 6.26.1
+      '@codemirror/view': 6.26.2
       '@lezer/common': 1.2.1
     dev: false
 
   /@codemirror/lang-javascript@6.2.2:
     resolution: {integrity: sha512-VGQfY+FCc285AhWuwjYxQyUQcYurWlxdKYT4bqwr3Twnd5wP5WSeu52t4tvvuWmljT4EmgEgZCqSieokhtY8hg==}
     dependencies:
-      '@codemirror/autocomplete': 6.15.0(@codemirror/language@6.10.1)(@codemirror/state@6.4.1)(@codemirror/view@6.26.1)(@lezer/common@1.2.1)
+      '@codemirror/autocomplete': 6.15.0(@codemirror/language@6.10.1)(@codemirror/state@6.4.1)(@codemirror/view@6.26.2)(@lezer/common@1.2.1)
       '@codemirror/language': 6.10.1
       '@codemirror/lint': 6.5.0
       '@codemirror/state': 6.4.1
-      '@codemirror/view': 6.26.1
+      '@codemirror/view': 6.26.2
       '@lezer/common': 1.2.1
       '@lezer/javascript': 1.4.14
     dev: false
@@ -3259,7 +3259,7 @@ packages:
     resolution: {integrity: sha512-5GrXzrhq6k+gL5fjkAwt90nYDmjlzTIJV8THnxNFtNKWotMIlzzN+CpqxqwXOECnUdOndmSeWntVrVcv5axWRQ==}
     dependencies:
       '@codemirror/state': 6.4.1
-      '@codemirror/view': 6.26.1
+      '@codemirror/view': 6.26.2
       '@lezer/common': 1.2.1
       '@lezer/highlight': 1.2.0
       '@lezer/lr': 1.4.0
@@ -3270,7 +3270,7 @@ packages:
     resolution: {integrity: sha512-+5YyicIaaAZKU8K43IQi8TBy6mF6giGeWAH7N96Z5LC30Wm5JMjqxOYIE9mxwMG1NbhT2mA3l9hA4uuKUM3E5g==}
     dependencies:
       '@codemirror/state': 6.4.1
-      '@codemirror/view': 6.26.1
+      '@codemirror/view': 6.26.2
       crelt: 1.0.6
     dev: false
 
@@ -3278,7 +3278,7 @@ packages:
     resolution: {integrity: sha512-rpMgcsh7o0GuCDUXKPvww+muLA1pDJaFrpq/CCHtpQJYz8xopu4D1hPcKRoDD0YlF8gZaqTNIRa4VRBWyhyy7Q==}
     dependencies:
       '@codemirror/state': 6.4.1
-      '@codemirror/view': 6.26.1
+      '@codemirror/view': 6.26.2
       crelt: 1.0.6
     dev: false
 
@@ -3291,12 +3291,12 @@ packages:
     dependencies:
       '@codemirror/language': 6.10.1
       '@codemirror/state': 6.4.1
-      '@codemirror/view': 6.26.1
+      '@codemirror/view': 6.26.2
       '@lezer/highlight': 1.2.0
     dev: false
 
-  /@codemirror/view@6.26.1:
-    resolution: {integrity: sha512-wLw0t3R9AwOSQThdZ5Onw8QQtem5asE7+bPlnzc57eubPqiuJKIzwjMZ+C42vQett+iva+J8VgFV4RYWDBh5FA==}
+  /@codemirror/view@6.26.2:
+    resolution: {integrity: sha512-j6V48PlFC/O7ERAR5vRW5QKDdchzmyyfojDdt+zPsB0YXoWgcjlC1IWjmlYfx08aQZ3HN5BtALcgGgtSKGMe7A==}
     dependencies:
       '@codemirror/state': 6.4.1
       style-mod: 4.1.2
@@ -5098,7 +5098,7 @@ packages:
   /@radix-ui/primitive@1.0.1:
     resolution: {integrity: sha512-yQ8oGX2GVsEYMWGxcovu1uGWPCxV5BFfeeYxqPmuAzUyLT9qmaMXSAhXpb0WrspIeqYzdJpkh2vHModJPgRIaw==}
     dependencies:
-      '@babel/runtime': 7.24.1
+      '@babel/runtime': 7.24.4
     dev: false
 
   /@radix-ui/react-arrow@1.0.3(@types/react@18.2.74)(react-dom@18.2.0)(react@18.2.0):
@@ -5114,7 +5114,7 @@ packages:
       '@types/react-dom':
         optional: true
     dependencies:
-      '@babel/runtime': 7.24.1
+      '@babel/runtime': 7.24.4
       '@radix-ui/react-primitive': 1.0.3(@types/react@18.2.74)(react-dom@18.2.0)(react@18.2.0)
       '@types/react': 18.2.74
       react: 18.2.0
@@ -5130,7 +5130,7 @@ packages:
       '@types/react':
         optional: true
     dependencies:
-      '@babel/runtime': 7.24.1
+      '@babel/runtime': 7.24.4
       '@types/react': 18.2.74
       react: 18.2.0
     dev: false
@@ -5144,7 +5144,7 @@ packages:
       '@types/react':
         optional: true
     dependencies:
-      '@babel/runtime': 7.24.1
+      '@babel/runtime': 7.24.4
       '@types/react': 18.2.74
       react: 18.2.0
     dev: false
@@ -5162,7 +5162,7 @@ packages:
       '@types/react-dom':
         optional: true
     dependencies:
-      '@babel/runtime': 7.24.1
+      '@babel/runtime': 7.24.4
       '@radix-ui/primitive': 1.0.1
       '@radix-ui/react-compose-refs': 1.0.1(@types/react@18.2.74)(react@18.2.0)
       '@radix-ui/react-primitive': 1.0.3(@types/react@18.2.74)(react-dom@18.2.0)(react@18.2.0)
@@ -5182,7 +5182,7 @@ packages:
       '@types/react':
         optional: true
     dependencies:
-      '@babel/runtime': 7.24.1
+      '@babel/runtime': 7.24.4
       '@radix-ui/react-use-layout-effect': 1.0.1(@types/react@18.2.74)(react@18.2.0)
       '@types/react': 18.2.74
       react: 18.2.0
@@ -5201,7 +5201,7 @@ packages:
       '@types/react-dom':
         optional: true
     dependencies:
-      '@babel/runtime': 7.24.1
+      '@babel/runtime': 7.24.4
       '@floating-ui/react-dom': 2.0.8(react-dom@18.2.0)(react@18.2.0)
       '@radix-ui/react-arrow': 1.0.3(@types/react@18.2.74)(react-dom@18.2.0)(react@18.2.0)
       '@radix-ui/react-compose-refs': 1.0.1(@types/react@18.2.74)(react@18.2.0)
@@ -5230,7 +5230,7 @@ packages:
       '@types/react-dom':
         optional: true
     dependencies:
-      '@babel/runtime': 7.24.1
+      '@babel/runtime': 7.24.4
       '@radix-ui/react-primitive': 1.0.3(@types/react@18.2.74)(react-dom@18.2.0)(react@18.2.0)
       '@types/react': 18.2.74
       react: 18.2.0
@@ -5250,7 +5250,7 @@ packages:
       '@types/react-dom':
         optional: true
     dependencies:
-      '@babel/runtime': 7.24.1
+      '@babel/runtime': 7.24.4
       '@radix-ui/react-compose-refs': 1.0.1(@types/react@18.2.74)(react@18.2.0)
       '@radix-ui/react-use-layout-effect': 1.0.1(@types/react@18.2.74)(react@18.2.0)
       '@types/react': 18.2.74
@@ -5271,7 +5271,7 @@ packages:
       '@types/react-dom':
         optional: true
     dependencies:
-      '@babel/runtime': 7.24.1
+      '@babel/runtime': 7.24.4
       '@radix-ui/react-slot': 1.0.2(@types/react@18.2.74)(react@18.2.0)
       '@types/react': 18.2.74
       react: 18.2.0
@@ -5287,7 +5287,7 @@ packages:
       '@types/react':
         optional: true
     dependencies:
-      '@babel/runtime': 7.24.1
+      '@babel/runtime': 7.24.4
       '@radix-ui/react-compose-refs': 1.0.1(@types/react@18.2.74)(react@18.2.0)
       '@types/react': 18.2.74
       react: 18.2.0
@@ -5306,7 +5306,7 @@ packages:
       '@types/react-dom':
         optional: true
     dependencies:
-      '@babel/runtime': 7.24.1
+      '@babel/runtime': 7.24.4
       '@radix-ui/primitive': 1.0.1
       '@radix-ui/react-compose-refs': 1.0.1(@types/react@18.2.74)(react@18.2.0)
       '@radix-ui/react-context': 1.0.1(@types/react@18.2.74)(react@18.2.0)
@@ -5333,7 +5333,7 @@ packages:
       '@types/react':
         optional: true
     dependencies:
-      '@babel/runtime': 7.24.1
+      '@babel/runtime': 7.24.4
       '@types/react': 18.2.74
       react: 18.2.0
     dev: false
@@ -5347,7 +5347,7 @@ packages:
       '@types/react':
         optional: true
     dependencies:
-      '@babel/runtime': 7.24.1
+      '@babel/runtime': 7.24.4
       '@radix-ui/react-use-callback-ref': 1.0.1(@types/react@18.2.74)(react@18.2.0)
       '@types/react': 18.2.74
       react: 18.2.0
@@ -5362,7 +5362,7 @@ packages:
       '@types/react':
         optional: true
     dependencies:
-      '@babel/runtime': 7.24.1
+      '@babel/runtime': 7.24.4
       '@radix-ui/react-use-callback-ref': 1.0.1(@types/react@18.2.74)(react@18.2.0)
       '@types/react': 18.2.74
       react: 18.2.0
@@ -5377,7 +5377,7 @@ packages:
       '@types/react':
         optional: true
     dependencies:
-      '@babel/runtime': 7.24.1
+      '@babel/runtime': 7.24.4
       '@types/react': 18.2.74
       react: 18.2.0
     dev: false
@@ -5391,7 +5391,7 @@ packages:
       '@types/react':
         optional: true
     dependencies:
-      '@babel/runtime': 7.24.1
+      '@babel/runtime': 7.24.4
       '@radix-ui/rect': 1.0.1
       '@types/react': 18.2.74
       react: 18.2.0
@@ -5406,7 +5406,7 @@ packages:
       '@types/react':
         optional: true
     dependencies:
-      '@babel/runtime': 7.24.1
+      '@babel/runtime': 7.24.4
       '@radix-ui/react-use-layout-effect': 1.0.1(@types/react@18.2.74)(react@18.2.0)
       '@types/react': 18.2.74
       react: 18.2.0
@@ -5425,7 +5425,7 @@ packages:
       '@types/react-dom':
         optional: true
     dependencies:
-      '@babel/runtime': 7.24.1
+      '@babel/runtime': 7.24.4
       '@radix-ui/react-primitive': 1.0.3(@types/react@18.2.74)(react-dom@18.2.0)(react@18.2.0)
       '@types/react': 18.2.74
       react: 18.2.0
@@ -5435,7 +5435,7 @@ packages:
   /@radix-ui/rect@1.0.1:
     resolution: {integrity: sha512-fyrgCaedtvMg9NK3en0pnOYJdtfwxUcNolezkNPUsoX57X8oQk+NkqcvzHXD2uKNij6GXmWU9NDru2IWjrO4BQ==}
     dependencies:
-      '@babel/runtime': 7.24.1
+      '@babel/runtime': 7.24.4
     dev: false
 
   /@react-spring/animated@9.6.1(react@18.2.0):
@@ -5522,7 +5522,7 @@ packages:
       react-dom:
         optional: true
     dependencies:
-      '@babel/runtime': 7.24.1
+      '@babel/runtime': 7.24.4
       '@mediapipe/tasks-vision': 0.10.8
       '@monogrid/gainmap-js': 3.0.4(three@0.157.0)
       '@react-spring/three': 9.6.1(@react-three/fiber@8.16.1)(react@18.2.0)(three@0.157.0)
@@ -5580,7 +5580,7 @@ packages:
       react-native:
         optional: true
     dependencies:
-      '@babel/runtime': 7.24.1
+      '@babel/runtime': 7.24.4
       '@types/react-reconciler': 0.26.7
       '@types/webxr': 0.5.14
       base64-js: 1.5.1
@@ -6124,8 +6124,8 @@ packages:
       sanity: link:packages/sanity
     dev: false
 
-  /@sanity/logos@2.1.8(@sanity/color@3.0.5)(react@18.2.0):
-    resolution: {integrity: sha512-XqhxshTAebzN+aIfL99c992WbWjbEM049z+qsWDgD//+hm0rzHSvGmDNuKj3rO5vkzwCQEHgq1YCrsLvfCtBSQ==}
+  /@sanity/logos@2.1.9(@sanity/color@3.0.5)(react@18.2.0):
+    resolution: {integrity: sha512-E8dG8Cgz5+8lIIiRtzip2JIyy2Q6xZw4rVON42ib9uVYaMCrSjGbQ6HNVl4CBX3ZR4CIDcm1JTE8jhaLEU1v2g==}
     engines: {node: '>=14.0.0'}
     peerDependencies:
       '@sanity/color': ^2.0 || ^3.0 || ^3.0.0-beta
@@ -6316,7 +6316,7 @@ packages:
       esbuild-register: 3.5.0(esbuild@0.20.2)
       express: 4.19.2
       globby: 11.1.0
-      groq: 3.36.4
+      groq: 3.37.0
       groq-js: 1.7.0
       history: 5.3.0
       jsonc-parser: 3.2.1
@@ -6598,26 +6598,26 @@ packages:
     resolution: {integrity: sha512-jtkwqdP2rY2iCCDVAFuaNBH3fiEi29aTn2RhtIoky8DTTiCdc48plpHHreLwmv1PICJ4AJUUESaq3xa8fZH8+g==}
     dev: false
 
-  /@testing-library/dom@8.20.1:
-    resolution: {integrity: sha512-/DiOQ5xBxgdYRC8LNk7U+RWat0S3qRLeIw3ZIkMQ9kkVlRmwD/Eg8k8CqIpD6GW7u20JIUOfMKbxtiLutpjQ4g==}
-    engines: {node: '>=12'}
+  /@testing-library/dom@10.0.0:
+    resolution: {integrity: sha512-PmJPnogldqoVFf+EwbHvbBJ98MmqASV8kLrBYgsDNxQcFMeIS7JFL48sfyXvuMtgmWO/wMhh25odr+8VhDmn4g==}
+    engines: {node: '>=18'}
     dependencies:
       '@babel/code-frame': 7.24.2
-      '@babel/runtime': 7.24.1
+      '@babel/runtime': 7.24.4
       '@types/aria-query': 5.0.4
-      aria-query: 5.1.3
+      aria-query: 5.3.0
       chalk: 4.1.2
       dom-accessibility-api: 0.5.16
       lz-string: 1.5.0
       pretty-format: 27.5.1
     dev: true
 
-  /@testing-library/dom@9.3.4:
-    resolution: {integrity: sha512-FlS4ZWlp97iiNWig0Muq8p+3rVDjRiYE+YKGbAqXOu9nwJFFOdL00kFpz42M+4huzYi86vAK1sOOfyOG45muIQ==}
-    engines: {node: '>=14'}
+  /@testing-library/dom@8.20.1:
+    resolution: {integrity: sha512-/DiOQ5xBxgdYRC8LNk7U+RWat0S3qRLeIw3ZIkMQ9kkVlRmwD/Eg8k8CqIpD6GW7u20JIUOfMKbxtiLutpjQ4g==}
+    engines: {node: '>=12'}
     dependencies:
       '@babel/code-frame': 7.24.2
-      '@babel/runtime': 7.24.1
+      '@babel/runtime': 7.24.4
       '@types/aria-query': 5.0.4
       aria-query: 5.1.3
       chalk: 4.1.2
@@ -6648,7 +6648,7 @@ packages:
         optional: true
     dependencies:
       '@adobe/css-tools': 4.3.3
-      '@babel/runtime': 7.24.1
+      '@babel/runtime': 7.24.4
       '@jest/globals': 29.7.0
       aria-query: 5.3.0
       chalk: 3.0.0
@@ -6666,21 +6666,21 @@ packages:
       react: ^18.0.0
       react-dom: ^18.0.0
     dependencies:
-      '@babel/runtime': 7.24.1
+      '@babel/runtime': 7.24.4
       '@testing-library/dom': 8.20.1
       '@types/react-dom': 18.2.23
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
     dev: true
 
-  /@testing-library/user-event@13.5.0(@testing-library/dom@9.3.4):
+  /@testing-library/user-event@13.5.0(@testing-library/dom@10.0.0):
     resolution: {integrity: sha512-5Kwtbo3Y/NowpkbRuSepbyMFkZmHgD+vPzYB/RJ4oxt5Gj/avFFBYjhw27cqSVPVw/3a67NK1PbiIr9k4Gwmdg==}
     engines: {node: '>=10', npm: '>=6'}
     peerDependencies:
       '@testing-library/dom': '>=7.21.4'
     dependencies:
-      '@babel/runtime': 7.24.1
-      '@testing-library/dom': 9.3.4
+      '@babel/runtime': 7.24.4
+      '@testing-library/dom': 10.0.0
     dev: true
 
   /@tootallnate/once@2.0.0:
@@ -7361,7 +7361,7 @@ packages:
       eslint-visitor-keys: 3.4.3
     dev: true
 
-  /@uiw/codemirror-extensions-basic-setup@4.21.25(@codemirror/autocomplete@6.15.0)(@codemirror/commands@6.3.3)(@codemirror/language@6.10.1)(@codemirror/lint@6.5.0)(@codemirror/search@6.5.6)(@codemirror/state@6.4.1)(@codemirror/view@6.26.1):
+  /@uiw/codemirror-extensions-basic-setup@4.21.25(@codemirror/autocomplete@6.15.0)(@codemirror/commands@6.3.3)(@codemirror/language@6.10.1)(@codemirror/lint@6.5.0)(@codemirror/search@6.5.6)(@codemirror/state@6.4.1)(@codemirror/view@6.26.2):
     resolution: {integrity: sha512-eeUKlmEE8aSoSgelS8OR2elcPGntpRo669XinAqPCLa0eKorT2B0d3ts+AE+njAeGk744tiyAEbHb2n+6OQmJw==}
     peerDependencies:
       '@codemirror/autocomplete': '>=6.0.0'
@@ -7372,16 +7372,16 @@ packages:
       '@codemirror/state': '>=6.0.0'
       '@codemirror/view': '>=6.0.0'
     dependencies:
-      '@codemirror/autocomplete': 6.15.0(@codemirror/language@6.10.1)(@codemirror/state@6.4.1)(@codemirror/view@6.26.1)(@lezer/common@1.2.1)
+      '@codemirror/autocomplete': 6.15.0(@codemirror/language@6.10.1)(@codemirror/state@6.4.1)(@codemirror/view@6.26.2)(@lezer/common@1.2.1)
       '@codemirror/commands': 6.3.3
       '@codemirror/language': 6.10.1
       '@codemirror/lint': 6.5.0
       '@codemirror/search': 6.5.6
       '@codemirror/state': 6.4.1
-      '@codemirror/view': 6.26.1
+      '@codemirror/view': 6.26.2
     dev: false
 
-  /@uiw/react-codemirror@4.21.25(@babel/runtime@7.24.1)(@codemirror/autocomplete@6.15.0)(@codemirror/language@6.10.1)(@codemirror/lint@6.5.0)(@codemirror/search@6.5.6)(@codemirror/state@6.4.1)(@codemirror/theme-one-dark@6.1.2)(@codemirror/view@6.26.1)(codemirror@6.0.1)(react-dom@18.2.0)(react@18.2.0):
+  /@uiw/react-codemirror@4.21.25(@babel/runtime@7.24.4)(@codemirror/autocomplete@6.15.0)(@codemirror/language@6.10.1)(@codemirror/lint@6.5.0)(@codemirror/search@6.5.6)(@codemirror/state@6.4.1)(@codemirror/theme-one-dark@6.1.2)(@codemirror/view@6.26.2)(codemirror@6.0.1)(react-dom@18.2.0)(react@18.2.0):
     resolution: {integrity: sha512-mBrCoiffQ+hbTqV1JoixFEcH7BHXkS3PjTyNH7dE8Gzf3GSBRazhtSM5HrAFIiQ5FIRGFs8Gznc4UAdhtevMmw==}
     peerDependencies:
       '@babel/runtime': '>=7.11.0'
@@ -7392,12 +7392,12 @@ packages:
       react: '>=16.8.0'
       react-dom: '>=16.8.0'
     dependencies:
-      '@babel/runtime': 7.24.1
+      '@babel/runtime': 7.24.4
       '@codemirror/commands': 6.3.3
       '@codemirror/state': 6.4.1
       '@codemirror/theme-one-dark': 6.1.2
-      '@codemirror/view': 6.26.1
-      '@uiw/codemirror-extensions-basic-setup': 4.21.25(@codemirror/autocomplete@6.15.0)(@codemirror/commands@6.3.3)(@codemirror/language@6.10.1)(@codemirror/lint@6.5.0)(@codemirror/search@6.5.6)(@codemirror/state@6.4.1)(@codemirror/view@6.26.1)
+      '@codemirror/view': 6.26.2
+      '@uiw/codemirror-extensions-basic-setup': 4.21.25(@codemirror/autocomplete@6.15.0)(@codemirror/commands@6.3.3)(@codemirror/language@6.10.1)(@codemirror/lint@6.5.0)(@codemirror/search@6.5.6)(@codemirror/state@6.4.1)(@codemirror/view@6.26.2)
       codemirror: 6.0.1(@lezer/common@1.2.1)
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
@@ -8753,13 +8753,13 @@ packages:
   /codemirror@6.0.1(@lezer/common@1.2.1):
     resolution: {integrity: sha512-J8j+nZ+CdWmIeFIGXEFbFPtpiYacFMDR8GlHK3IyHQJMCaVRfGx9NT+Hxivv1ckLWPvNdZqndbr/7lVhrf/Svg==}
     dependencies:
-      '@codemirror/autocomplete': 6.15.0(@codemirror/language@6.10.1)(@codemirror/state@6.4.1)(@codemirror/view@6.26.1)(@lezer/common@1.2.1)
+      '@codemirror/autocomplete': 6.15.0(@codemirror/language@6.10.1)(@codemirror/state@6.4.1)(@codemirror/view@6.26.2)(@lezer/common@1.2.1)
       '@codemirror/commands': 6.3.3
       '@codemirror/language': 6.10.1
       '@codemirror/lint': 6.5.0
       '@codemirror/search': 6.5.6
       '@codemirror/state': 6.4.1
-      '@codemirror/view': 6.26.1
+      '@codemirror/view': 6.26.2
     transitivePeerDependencies:
       - '@lezer/common'
     dev: false
@@ -9294,7 +9294,7 @@ packages:
     resolution: {integrity: sha512-fnULvOpxnC5/Vg3NCiWelDsLiUc9bRwAPs/+LfTLNvetFCtCTN+yQz15C/fs4AwX1R9K5GLtLfn8QW+dWisaAw==}
     engines: {node: '>=0.11'}
     dependencies:
-      '@babel/runtime': 7.24.1
+      '@babel/runtime': 7.24.4
     dev: false
 
   /date-now@1.0.1:
@@ -10323,7 +10323,7 @@ packages:
     peerDependencies:
       eslint: ^3 || ^4 || ^5 || ^6 || ^7 || ^8
     dependencies:
-      '@babel/runtime': 7.24.1
+      '@babel/runtime': 7.24.4
       aria-query: 5.3.0
       array-includes: 3.1.8
       array.prototype.flatmap: 1.3.2
@@ -11775,8 +11775,8 @@ packages:
     transitivePeerDependencies:
       - supports-color
 
-  /groq@3.36.4:
-    resolution: {integrity: sha512-cIADS9riAJbW0II42klP/UckowwZqRuEae3klWrkr/xkkHMBep6pFEq6KjsHoRnrTSZfN/P3T5YARZJtHvO/Zg==}
+  /groq@3.37.0:
+    resolution: {integrity: sha512-NFPppE5XrQoKW/L0roItGI498V5fyZQ0EB3qSRw26T9bxs1+7z9viZjilzn1ZGOu3gL5YvlWt8hQsptfzTKGgQ==}
     engines: {node: '>=18'}
 
   /growly@1.3.0:
@@ -11904,7 +11904,7 @@ packages:
   /history@5.3.0:
     resolution: {integrity: sha512-ZqaKwjjrAYUYfLG+htGaIIZ4nioX2L70ZUMIFysS3xvBsSG4x/n1V6TXV3N8ZYNuFGlDirFg32T7B6WOUPDYcQ==}
     dependencies:
-      '@babel/runtime': 7.24.1
+      '@babel/runtime': 7.24.4
 
   /hls.js@1.3.5:
     resolution: {integrity: sha512-uybAvKS6uDe0MnWNEPnO0krWVr+8m2R0hJ/viql8H3MVK+itq8gGQuIYoFHL3rECkIpNH98Lw8YuuWMKZxp3Ew==}
@@ -12054,7 +12054,7 @@ packages:
   /i18next@23.10.1:
     resolution: {integrity: sha512-NDiIzFbcs3O9PXpfhkjyf7WdqFn5Vq6mhzhtkXzj51aOcNuPNcTwuYNuXCpHsanZGHlHKL35G7huoFeVic1hng==}
     dependencies:
-      '@babel/runtime': 7.24.1
+      '@babel/runtime': 7.24.4
     dev: false
 
   /iconv-lite@0.4.24:
@@ -15642,7 +15642,7 @@ packages:
     resolution: {integrity: sha512-OBatVyC/N7SCW/FaDHrSd+vn0o5cS855TOmYi4OkdWUMSJCET/xip//ch8xGUvtr3i44X9LVyWwQlRMTN3pwSA==}
     engines: {node: '>=10'}
     dependencies:
-      '@babel/runtime': 7.24.1
+      '@babel/runtime': 7.24.4
     dev: false
 
   /posix-character-classes@0.1.1:
@@ -15969,7 +15969,7 @@ packages:
     peerDependencies:
       react: ^15.3.0 || ^16.0.0 || ^17.0.0 || ^18.0.0
     dependencies:
-      '@babel/runtime': 7.24.1
+      '@babel/runtime': 7.24.4
       react: 18.2.0
     dev: false
 
@@ -16036,7 +16036,7 @@ packages:
       '@types/react':
         optional: true
     dependencies:
-      '@babel/runtime': 7.24.1
+      '@babel/runtime': 7.24.4
       '@types/react': 18.2.74
       focus-lock: 1.3.4
       prop-types: 15.8.1
@@ -16059,7 +16059,7 @@ packages:
       react-native:
         optional: true
     dependencies:
-      '@babel/runtime': 7.24.1
+      '@babel/runtime': 7.24.4
       html-parse-stringify: 3.0.1
       i18next: 23.10.1
       react: 18.2.0
@@ -16350,7 +16350,7 @@ packages:
   /regenerator-transform@0.15.2:
     resolution: {integrity: sha512-hfMp2BoF0qOk3uc5V20ALGDS2ddjQaLrdl7xrGXvAIow7qeWRM2VA2HuCHkUKk9slq3VwEwLNK3DFBqDfPGYtg==}
     dependencies:
-      '@babel/runtime': 7.24.1
+      '@babel/runtime': 7.24.4
 
   /regex-cache@0.4.4:
     resolution: {integrity: sha512-nVIZwtCjkC9YgvWkpM55B5rBhBYRZhAaJbgcFYXXsHnbZ9UZI9nnVWYZpBlCqv9ho2eZryPnWrZGsOdPwVWXWQ==}
