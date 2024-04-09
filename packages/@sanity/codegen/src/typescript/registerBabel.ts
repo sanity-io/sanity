@@ -12,5 +12,5 @@ import {getBabelConfig} from '../getBabelConfig'
 export function registerBabel(babelOptions?: TransformOptions): void {
   const options = babelOptions || getBabelConfig()
 
-  register({...options, extensions: ['.ts', '.tsx', '.js', '.jsx', '.mjs']})
+  register({...options, extensions: ['.ts', '.tsx', '.js', '.jsx', '.mjs', '.cjs']})
 }
