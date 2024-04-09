@@ -4,6 +4,7 @@ const path = require('path')
 
 require('esbuild-register/dist/node').register({
   target: `node${process.version.slice(1)}`,
+  jsx: 'automatic',
 })
 
 // Define the global `__DEV__` flag which is used to

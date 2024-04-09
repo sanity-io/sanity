@@ -1,11 +1,12 @@
 {
-  "extends": "../../../tsconfig.settings",
-  "include": ["./src/**/*"],
+  "extends": "@repo/tsconfig/base.json",
+  "include": ["./src", "./node_modules/@sanity/types/src", "./node_modules/@sanity/util/src"],
   "compilerOptions": {
-    "composite": true,
     "rootDir": ".",
-    "outDir": "./lib/dts",
-    "declarationDir": "./lib/dts"
-  },
-  "references": [{"path": "../@sanity/types/tsconfig.lib.json"}]
+    "paths": {
+      "@sanity/types": ["./node_modules/@sanity/types/src"],
+      "@sanity/util/*": ["./node_modules/@sanity/util/src/_exports/*"],
+      "@sanity/util": ["./node_modules/@sanity/util/src/_exports/index.ts"]
+    }
+  }
 }

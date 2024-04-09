@@ -61,7 +61,7 @@ jobs:
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
       - name: Build packages
-        run: pnpm build
+        run: pnpm build --output-logs=full --log-order=grouped
       - name: Run end-to-end tests
         run: pnpm --filter sanity test:ct
         env:

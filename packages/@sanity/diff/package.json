@@ -21,41 +21,38 @@
   },
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
+  "sideEffects": false,
   "exports": {
     ".": {
-      "types": "./lib/dts/src/index.d.ts",
       "source": "./src/index.ts",
+      "import": "./lib/index.mjs",
       "require": "./lib/index.js",
-      "node": {
-        "module": "./lib/index.esm.js",
-        "import": "./lib/index.cjs.mjs"
-      },
-      "import": "./lib/index.esm.js",
-      "default": "./lib/index.esm.js"
+      "default": "./lib/index.js"
     },
     "./package.json": "./package.json"
   },
   "main": "./lib/index.js",
   "module": "./lib/index.esm.js",
   "source": "./src/index.ts",
-  "types": "./lib/dts/src/index.d.ts",
+  "types": "./lib/index.d.ts",
   "files": [
     "lib",
     "src"
   ],
   "scripts": {
-    "prebuild": "run-s clean",
-    "build": "pkg-utils build --tsconfig tsconfig.lib.json",
-    "postbuild": "run-s check:package",
-    "check:package": "pkg-utils --strict --tsconfig tsconfig.lib.json",
+    "build": "run-s clean && pkg-utils build --strict",
+    "check:package": "pkg-utils --strict",
+    "check:types": "tsc",
     "clean": "rimraf lib coverage",
     "lint": "eslint .",
-    "watch": "pkg-utils watch --tsconfig tsconfig.lib.json"
+    "prepublishOnly": "turbo run build",
+    "watch": "pkg-utils watch"
   },
   "dependencies": {
     "@sanity/diff-match-patch": "^3.1.1"
   },
   "devDependencies": {
+    "@repo/package.config": "workspace:*",
     "rimraf": "^3.0.2"
   },
   "engines": {

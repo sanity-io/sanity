@@ -1,0 +1,24 @@
+{
+  "extends": "@repo/tsconfig/build.json",
+  "include": ["./package.json", "./src", "./typings"],
+  "exclude": [
+    "./src/**/__fixtures__",
+    "./src/**/__mocks__",
+    "./src/**/__workshop__",
+    "./src/**/*.test.ts",
+    "./src/**/*.test.tsx"
+  ],
+  "compilerOptions": {
+    "rootDir": ".",
+    "outDir": "./lib",
+    "noImplicitAny": false,
+    // For import.meta.env/import.meta.hot definition and similar
+    "types": ["vite/client"],
+
+    // Needed until `@microsoft/api-extractor`, as used by `@sanity/tsdoc`, supports `module: "Preserve"`
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "esModuleInterop": true,
+    "resolveJsonModule": true
+  }
+}

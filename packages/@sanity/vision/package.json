@@ -24,35 +24,31 @@
   },
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
+  "sideEffects": false,
   "exports": {
     ".": {
-      "types": "./lib/dts/src/index.d.ts",
       "source": "./src/index.ts",
+      "import": "./lib/index.mjs",
       "require": "./lib/index.js",
-      "node": {
-        "module": "./lib/index.esm.js",
-        "import": "./lib/index.cjs.mjs"
-      },
-      "import": "./lib/index.esm.js",
-      "default": "./lib/index.esm.js"
+      "default": "./lib/index.js"
     },
     "./package.json": "./package.json"
   },
   "main": "./lib/index.js",
   "module": "./lib/index.esm.js",
   "source": "./src/index.ts",
-  "types": "./lib/dts/src/index.d.ts",
+  "types": "./lib/index.d.ts",
   "files": [
     "lib",
     "src"
   ],
   "scripts": {
-    "prebuild": "npm run clean",
-    "build": "pkg-utils build --tsconfig tsconfig.lib.json",
-    "postbuild": "run-s check:package",
-    "check:package": "pkg-utils --strict --tsconfig tsconfig.lib.json",
+    "build": "run-s clean && pkg-utils build --strict",
+    "check:package": "pkg-utils --strict",
+    "check:types": "tsc",
     "clean": "rimraf lib",
-    "watch": "pkg-utils watch --tsconfig tsconfig.lib.json"
+    "prepublishOnly": "turbo run build",
+    "watch": "pkg-utils watch"
   },
   "dependencies": {
     "@codemirror/autocomplete": "^6.1.0",
@@ -76,7 +72,18 @@
     "lodash": "^4.17.21"
   },
   "devDependencies": {
+    "@repo/package.config": "workspace:*",
+    "@sanity/block-tools": "workspace:*",
+    "@sanity/cli": "workspace:*",
     "@sanity/client": "^6.15.11",
+    "@sanity/codegen": "workspace:*",
+    "@sanity/diff": "workspace:*",
+    "@sanity/migrate": "workspace:*",
+    "@sanity/mutator": "workspace:*",
+    "@sanity/portable-text-editor": "workspace:*",
+    "@sanity/schema": "workspace:*",
+    "@sanity/types": "workspace:*",
+    "@sanity/util": "workspace:*",
     "@types/lodash": "^4.14.149",
     "react": "^18.2.0",
     "sanity": "workspace:*",

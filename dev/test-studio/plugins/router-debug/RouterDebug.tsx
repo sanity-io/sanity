@@ -40,7 +40,6 @@ export function RouterDebug() {
           <IntentLink
             intent="router-debug-please"
             params={{
-              //@ts-expect-error - todo: we should probably allow arbitrary params
               favorite: 'capybara',
             }}
           >

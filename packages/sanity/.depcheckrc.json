@@ -1,3 +1,10 @@
 {
-  "ignores": ["@sanity/pkg-utils", "globby", "sanity"]
+  "ignores": [
+    "@repo/tsconfig",
+    "@sanity/pkg-utils",
+    "globby",
+    "sanity",
+    "@sanity/codegen",
+    "@types/react"
+  ]
 }

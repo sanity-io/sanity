@@ -21,39 +21,30 @@
   },
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
+  "sideEffects": false,
   "exports": {
     ".": {
-      "types": "./lib/dts/src/_exports/index.d.ts",
       "source": "./src/_exports/index.ts",
-      "require": "./lib/_exports/index.js",
-      "node": {
-        "module": "./lib/_exports/index.esm.js",
-        "import": "./lib/_exports/index.cjs.mjs"
-      },
-      "import": "./lib/_exports/index.esm.js",
-      "default": "./lib/_exports/index.esm.js"
+      "import": "./lib/index.mjs",
+      "require": "./lib/index.js",
+      "default": "./lib/index.js"
     },
     "./_internal": {
-      "types": "./lib/dts/src/_exports/_internal.d.ts",
       "source": "./src/_exports/_internal.ts",
-      "require": "./lib/_exports/_internal.js",
-      "node": {
-        "module": "./lib/_exports/_internal.esm.js",
-        "import": "./lib/_exports/_internal.cjs.mjs"
-      },
-      "import": "./lib/_exports/_internal.esm.js",
-      "default": "./lib/_exports/_internal.esm.js"
+      "import": "./lib/_internal.mjs",
+      "require": "./lib/_internal.js",
+      "default": "./lib/_internal.js"
     },
     "./package.json": "./package.json"
   },
-  "main": "./lib/_exports/index.js",
-  "module": "./lib/_exports/index.esm.js",
+  "main": "./lib/index.js",
+  "module": "./lib/index.esm.js",
   "source": "./src/_exports/index.ts",
-  "types": "./lib/dts/src/_exports/index.d.ts",
+  "types": "./lib/index.d.ts",
   "typesVersions": {
     "*": {
       "_internal": [
-        "./lib/dts/src/_exports/_internal.d.ts"
+        "./lib/_internal.d.ts"
       ]
     }
   },
@@ -63,15 +54,15 @@
     "src"
   ],
   "scripts": {
-    "prebuild": "run-s clean",
-    "build": "pkg-utils build --tsconfig tsconfig.lib.json",
-    "postbuild": "run-s check:package",
-    "check:package": "pkg-utils --tsconfig tsconfig.lib.json",
+    "build": "run-s clean && pkg-utils build --strict",
+    "check:package": "pkg-utils --strict",
+    "check:types": "tsc",
     "clean": "rimraf _internal.js lib",
     "lint": "eslint .",
+    "prepublishOnly": "turbo run build",
     "test": "jest",
     "test:watch": "jest --watchAll",
-    "watch": "pkg-utils watch --tsconfig tsconfig.lib.json"
+    "watch": "pkg-utils watch"
   },
   "dependencies": {
     "@sanity/generate-help-url": "^3.0.0",
@@ -85,9 +76,11 @@
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",
+    "@repo/package.config": "workspace:*",
     "@sanity/icons": "^2.11.7",
     "@types/arrify": "^1.0.4",
     "@types/object-inspect": "^1.13.0",
+    "@types/react": "^18.2.74",
     "rimraf": "^3.0.2"
   }
 }

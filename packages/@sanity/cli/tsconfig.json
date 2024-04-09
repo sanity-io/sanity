@@ -1,20 +1,22 @@
 {
-  "extends": "../../../tsconfig.settings",
-  "include": ["./src", "./test", "./typings", "./package.json"],
-  "exclude": ["./test/**/__fixtures__"],
+  "extends": "@repo/tsconfig/base.json",
+  "include": [
+    "./src",
+    "./test",
+    "./typings",
+    "./package.json",
+    "./node_modules/@sanity/types/src",
+    "./node_modules/@sanity/util/src",
+    "./node_modules/@sanity/codegen/src"
+  ],
+  "exclude": ["./test/**/__fixtures__", "./node_modules/@sanity/codegen/src/typescript/__tests__"],
   "compilerOptions": {
-    "composite": true,
     "rootDir": ".",
-    "outDir": "./lib/dts",
-
-    "checkJs": false,
-    "allowJs": true,
-    "jsx": "react-jsx",
-    "resolveJsonModule": true
-  },
-  "references": [
-    {"path": "../codegen/tsconfig.lib.json"},
-    {"path": "../types/tsconfig.lib.json"},
-    {"path": "../util/tsconfig.lib.json"}
-  ]
+    "paths": {
+      "@sanity/codegen": ["./node_modules/@sanity/codegen/src/_exports/index.ts"],
+      "@sanity/types": ["./node_modules/@sanity/types/src"],
+      "@sanity/util/*": ["./node_modules/@sanity/util/src/_exports/*"],
+      "@sanity/util": ["./node_modules/@sanity/util/src/_exports/index.ts"]
+    }
+  }
 }

@@ -1,14 +1,9 @@
 {
-  "extends": "../../../tsconfig.settings",
+  "extends": "@repo/tsconfig/build.json",
   "include": ["./src"],
+  "exclude": ["./src/schema/test"],
   "compilerOptions": {
-    "composite": true,
     "rootDir": ".",
-    "outDir": "./lib/dts",
-
-    "jsx": "react-jsx",
-    "paths": {
-      "_self_": ["./src"]
-    }
+    "outDir": "./lib"
   }
 }

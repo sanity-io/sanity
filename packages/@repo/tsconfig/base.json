@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "description": "Shared TS config that are used for builds, dts generation, etl extract, and vscode/intellisense",
+  "compilerOptions": {
+    // Everything needs to use the same lib settings for `paths` to work consistently throughout the monorepo
+    "lib": ["dom", "es2020", "ES2022.Error"],
+
+    // Output settings
+    "target": "ESNext",
+    "module": "Preserve",
+    "moduleDetection": "force",
+    "allowSyntheticDefaultImports": true,
+    "jsx": "preserve",
+    // If a package that emits code forgets to specify the outDir then the default behavior of tsc is to colocate .d.ts files,
+    // that's incredibly problematic and can be time-consuming to clean up. This default value acts as a failsafe against that
+    "outDir": "./node_modules/.sanity-monorepo/dts",
+
+    // Don't emit anything by default, emit is done by `@sanity/pkg-utils` during build
+    "noEmit": true,
+
+    // Settings
+    "preserveConstEnums": true,
+    "useUnknownInCatchVariables": false,
+    "isolatedModules": true,
+    "forceConsistentCasingInFileNames": true,
+    "allowJs": true,
+    "checkJs": false,
+
+    // Strict type-checking
+    "strict": true,
+    // "noImplicitAny": true,
+    // "strictNullChecks": true,
+    // "strictFunctionTypes": true,
+    // "strictPropertyInitialization": true,
+    // "noImplicitThis": true,
+    // "alwaysStrict": true,
+
+    // Additional checks
+    // "noUnusedLocals": true,
+    // "noUnusedParameters": true,
+    // "noImplicitReturns": true,
+    // "noFallthroughCasesInSwitch": true,
+    "skipLibCheck": true
+  }
+}

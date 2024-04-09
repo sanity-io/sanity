@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "description": "The shared configuration used by @sanity/pkg-utils to build workspaces and generate dts files",
+  "extends": "./base.json",
+  "compilerOptions": {
+    // emitDeclarationOnly: true requires noEmit: false since base.json sets it
+    "noEmit": false,
+    // @sanity/pkg-utils only uses the TypeScript compiler to generate dts files
+    "emitDeclarationOnly": true,
+    "declaration": true,
+    // @TODO test if also generating source maps for dts files improves error messages when type checks fail
+    // "declarationMap": false
+    // every package must declare this, by setting this here we ensure that accidents will write to ./node_modules/.sanity-monorepo/dts instead of generating .d.ts files that are colocated if `outDir` is accidentally missing
+    "outDir": "./node_modules/.sanity-monorepo/dts"
+  }
+}

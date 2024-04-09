@@ -24,7 +24,7 @@ export function StudioErrorBoundary({
   const message = isRecord(error) && typeof error.message === 'string' && error.message
   const stack = isRecord(error) && typeof error.stack === 'string' && error.stack
 
-  const handleResetError = useCallback(() => setError({error: null}), [setError])
+  const handleResetError = useCallback(() => setError({error: null}), [])
 
   useHotModuleReload(handleResetError)
 

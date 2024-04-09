@@ -1,22 +1,9 @@
 {
-  "extends": "./tsconfig.settings",
-  "include": ["**/*/package.config.ts", "./dev/aliases.cjs", "./scripts", "./test"],
+  // Until what's in dev/, scripts. and test/ is in workspaces it's necessary to type check them from the root
+  "extends": "@repo/tsconfig/base.json",
+  "include": ["./dev/aliases.cjs", "./scripts", "./test"],
+  "files": [],
   "compilerOptions": {
-    "emitDeclarationOnly": true,
-    "outDir": "./node_modules/.sanity-monorepo/dts",
-    "allowJs": true
-  },
-  "references": [
-    {"path": "./packages/@sanity/block-tools"},
-    {"path": "./packages/@sanity/cli"},
-    {"path": "./packages/@sanity/diff"},
-    {"path": "./packages/@sanity/mutator"},
-    {"path": "./packages/@sanity/portable-text-editor"},
-    {"path": "./packages/@sanity/schema"},
-    {"path": "./packages/@sanity/codegen"},
-    {"path": "./packages/@sanity/types"},
-    {"path": "./packages/@sanity/util"},
-    {"path": "./packages/@sanity/vision"},
-    {"path": "./packages/sanity"}
-  ]
+    "rootDir": "."
+  }
 }

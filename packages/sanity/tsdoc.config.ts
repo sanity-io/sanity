@@ -4,6 +4,7 @@ import packageConfig from './package.config'
 
 export default defineConfig({
   extract: packageConfig.extract,
+  legacyExports: packageConfig.legacyExports,
   output: {
     sanity: {
       projectId: process.env.EXTRACT_SANITY_PROJECT_ID,
@@ -14,5 +15,6 @@ export default defineConfig({
   input: {
     type: 'fs',
     bundledPackages: ['@sanity/types', '@sanity/migrate'],
+    tsconfig: 'tsconfig.tsdoc.json',
   },
 })

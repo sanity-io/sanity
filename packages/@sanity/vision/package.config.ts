@@ -1,5 +1,4 @@
+import baseConfig from '@repo/package.config'
 import {defineConfig} from '@sanity/pkg-utils'
 
-import baseConfig from '../../../package.config'
-
-export default defineConfig({...baseConfig, external: (external) => [...external, 'sanity']})
+export default defineConfig({...baseConfig, external: ['sanity']})

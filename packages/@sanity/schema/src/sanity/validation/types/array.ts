@@ -1,4 +1,3 @@
-// @ts-expect-error - add typings for humanize-list
 import humanizeList from 'humanize-list'
 import {flatten, partition} from 'lodash'
 

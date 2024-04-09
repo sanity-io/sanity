@@ -1,4 +1,4 @@
-import {useSyncExternalStoreWithSelector} from 'use-sync-external-store/with-selector'
+import {useSyncExternalStoreWithSelector} from 'use-sync-external-store/with-selector.js'
 
 import {type TimelineState, type TimelineStore} from './useTimelineStore'
 

@@ -21,38 +21,34 @@
   },
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
+  "sideEffects": false,
   "exports": {
     ".": {
-      "types": "./lib/dts/src/index.d.ts",
       "source": "./src/index.ts",
+      "import": "./lib/index.mjs",
       "require": "./lib/index.js",
-      "node": {
-        "module": "./lib/index.esm.js",
-        "import": "./lib/index.cjs.mjs"
-      },
-      "import": "./lib/index.esm.js",
-      "default": "./lib/index.esm.js"
+      "default": "./lib/index.js"
     },
     "./package.json": "./package.json"
   },
   "main": "./lib/index.js",
   "module": "./lib/index.esm.js",
   "source": "./src/index.ts",
-  "types": "./lib/dts/src/index.d.ts",
+  "types": "./lib/index.d.ts",
   "files": [
     "lib",
     "src"
   ],
   "scripts": {
-    "prebuild": "run-s clean",
-    "build": "pkg-utils build --tsconfig tsconfig.lib.json",
-    "postbuild": "run-s check:package",
-    "check:package": "pkg-utils --strict --tsconfig tsconfig.lib.json",
+    "build": "run-s clean && pkg-utils build --strict",
+    "check:package": "pkg-utils --strict",
+    "check:types": "tsc",
     "clean": "rimraf lib",
     "coverage": "NODE_ENV=test jest --coverage",
     "lint": "eslint .",
+    "prepublishOnly": "turbo run build",
     "test": "NODE_ENV=test jest",
-    "watch": "pkg-utils watch --tsconfig tsconfig.lib.json"
+    "watch": "pkg-utils watch"
   },
   "dependencies": {
     "get-random-values-esm": "1.0.2",
@@ -60,6 +56,7 @@
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",
+    "@repo/package.config": "workspace:*",
     "@sanity/schema": "3.36.4",
     "@sanity/types": "3.36.4",
     "@types/jsdom": "^20.0.0",

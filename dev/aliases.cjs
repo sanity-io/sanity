@@ -24,11 +24,9 @@ const devAliases = {
   '@sanity/schema': './packages/@sanity/schema/src/_exports',
   '@sanity/migrate': './packages/@sanity/migrate/src/_exports',
   '@sanity/types': './packages/@sanity/types/src',
-  '@sanity/types/parts': './packages/@sanity/types/parts',
-  '@sanity/util/fs': './packages/@sanity/util/src/fsTools.ts',
-  '@sanity/util': './packages/@sanity/util/src',
+  '@sanity/util': './packages/@sanity/util/src/_exports',
   '@sanity/vision': './packages/@sanity/vision/src',
-  sanity: './packages/sanity/exports',
+  sanity: './packages/sanity/src/_exports',
 }
 
 module.exports = devAliases

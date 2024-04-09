@@ -8,7 +8,7 @@ import {
   useRef,
 } from 'react'
 import {type Router, RouterProvider, type RouterState} from 'sanity/router'
-import {useSyncExternalStoreWithSelector} from 'use-sync-external-store/with-selector'
+import {useSyncExternalStoreWithSelector} from 'use-sync-external-store/with-selector.js'
 
 import {type Tool, type Workspace} from '../../config'
 import {createRouter, type RouterHistory, type RouterStateEvent} from '../router'

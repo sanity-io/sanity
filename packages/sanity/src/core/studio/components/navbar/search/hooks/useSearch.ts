@@ -1,5 +1,5 @@
 import {type Schema} from '@sanity/types'
-import isEqual from 'lodash/isEqual'
+import {isEqual} from 'lodash'
 import {useCallback, useMemo, useState} from 'react'
 import {useObservableCallback} from 'react-rx'
 import {concat, EMPTY, iif, type Observable, of, timer} from 'rxjs'

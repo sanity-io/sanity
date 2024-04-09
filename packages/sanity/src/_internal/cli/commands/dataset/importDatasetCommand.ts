@@ -5,7 +5,7 @@ import fs from 'fs/promises'
 import {getIt} from 'get-it'
 // eslint-disable-next-line import/extensions
 import {promise} from 'get-it/middleware'
-import padStart from 'lodash/padStart'
+import {padStart} from 'lodash'
 import path from 'path'
 import prettyMs from 'pretty-ms'
 

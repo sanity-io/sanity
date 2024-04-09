@@ -105,7 +105,7 @@ jobs:
             ${{ inputs.version }}
 
       - name: Build
-        run: pnpm build
+        run: pnpm build --output-logs=full --log-order=grouped
 
       - name: Publish
         run: |
