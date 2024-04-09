@@ -43,6 +43,8 @@ describeCliTest('CLI: `sanity typegen`', () => {
     ])
 
     expect(result.code).toBe(0)
-    expect(result.stderr).toContain('Generated TypeScript types for 2 schema types')
+    expect(result.stderr).toContain(
+      'Generated TypeScript types for 2 schema types and 1 GROQ queries in 1 file',
+    )
   })
 })
