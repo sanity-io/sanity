@@ -53,8 +53,8 @@ importers:
         specifier: 1.0.0
         version: 1.0.0(eslint@8.57.0)(typescript@5.4.2)
       '@sanity/eslint-config-studio':
-        specifier: ^3.0.1
-        version: 3.0.1(eslint@8.57.0)(typescript@5.4.2)
+        specifier: ^4.0.0
+        version: 4.0.0(eslint@8.57.0)(typescript@5.4.2)
       '@sanity/pkg-utils':
         specifier: 5.1.12
         version: 5.1.12(@types/node@18.19.29)(typescript@5.4.2)
@@ -716,8 +716,8 @@ importers:
         specifier: ^15.2.3
         version: 15.2.3(rollup@4.14.1)
       '@sanity/eslint-config-studio':
-        specifier: ^3.0.1
-        version: 3.0.1(eslint@8.57.0)(typescript@5.4.2)
+        specifier: ^4.0.0
+        version: 4.0.0(eslint@8.57.0)(typescript@5.4.2)
       '@sanity/generate-help-url':
         specifier: ^3.0.0
         version: 3.0.0
@@ -5980,8 +5980,8 @@ packages:
       - typescript
     dev: true
 
-  /@sanity/eslint-config-studio@3.0.1(eslint@8.57.0)(typescript@5.4.2):
-    resolution: {integrity: sha512-N7IFd/VZuL0UyJ2T5t5WWWf9DrhgY6lt0bnnScwwyX4ijA7WMFtxR5rgL2EDGdhI2eYyxOeleeBaK9QEXgiA1A==}
+  /@sanity/eslint-config-studio@4.0.0(eslint@8.57.0)(typescript@5.4.2):
+    resolution: {integrity: sha512-7NLgYv94NofaMV1yPmzjEcMUWgAcOaXOrcrED8Pno1DXDda4y3ux55cIi+Q/0fw5PbWOjsM8AY9lSIm5Oq+w/A==}
     dependencies:
       '@babel/core': 7.24.4
       '@babel/eslint-parser': 7.24.1(@babel/core@7.24.4)(eslint@8.57.0)
