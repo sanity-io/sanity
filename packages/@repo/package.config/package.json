@@ -7,8 +7,5 @@
   "types": "./src/package.config.ts",
   "scripts": {
     "check:types": "tsc --noEmit --skipLibCheck src/package.config.ts"
-  },
-  "dependencies": {
-    "@optimize-lodash/rollup-plugin": "^4.0.4"
   }
 }
