@@ -1,19 +1,15 @@
 import {createRequire} from 'node:module'
-import {join} from 'node:path'
 
 import {type TransformOptions, traverse} from '@babel/core'
 import * as babelTypes from '@babel/types'
 
+import {getBabelConfig} from '../getBabelConfig'
 import {type NamedQueryResult, resolveExpression} from './expressionResolvers'
 import {parseSourceFile} from './parseSource'
 
 const require = createRequire(__filename)
 
 const groqTagName = 'groq'
-
-const defaultBabelOptions = {
-  extends: join(__dirname, '..', '..', 'babel.config.json'),
-}
 
 /**
  * findQueriesInSource takes a source string and returns all GROQ queries in it.
@@ -28,7 +24,7 @@ const defaultBabelOptions = {
 export function findQueriesInSource(
   source: string,
   filename: string,
-  babelConfig: TransformOptions = defaultBabelOptions,
+  babelConfig: TransformOptions = getBabelConfig(),
   resolver: NodeJS.RequireResolve = require.resolve,
 ): NamedQueryResult[] {
   const queries: NamedQueryResult[] = []

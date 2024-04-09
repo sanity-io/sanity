@@ -1,17 +1,16 @@
-import {join} from 'node:path'
-
 import {type TransformOptions} from '@babel/core'
 import register from '@babel/register'
 
-const defaultBabelOptions = {
-  extends: join(__dirname, '..', '..', 'babel.config.json'),
-}
+import {getBabelConfig} from '../getBabelConfig'
 
 /**
  * Register Babel with the given options
+ *
  * @param babelOptions - The options to use when registering Babel
  * @beta
  */
-export function registerBabel(babelOptions: TransformOptions = defaultBabelOptions): void {
-  register({...babelOptions, extensions: ['.ts', '.tsx', '.js', '.jsx']})
+export function registerBabel(babelOptions?: TransformOptions): void {
+  const options = babelOptions || getBabelConfig()
+
+  register({...options, extensions: ['.ts', '.tsx', '.js', '.jsx', '.mjs']})
 }
