@@ -117,7 +117,6 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Sanit
 
           const doFetch = () => {
             const searchTerms = {
-              filter,
               query: searchQuery || '',
               types,
             }
