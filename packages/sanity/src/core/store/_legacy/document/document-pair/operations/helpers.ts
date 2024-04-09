@@ -1,7 +1,10 @@
 import {type IdPair} from '../../types'
 import {emitOperation} from '../operationEvents'
 import {publish} from '../operations/publish'
+import {del as serverDel} from '../serverOperations/delete'
 import {patch as serverPatch} from '../serverOperations/patch'
+import {publish as serverPublish} from '../serverOperations/publish'
+import {unpublish as serverUnpublish} from '../serverOperations/unpublish'
 import {commit} from './commit'
 import {del} from './delete'
 import {discardChanges} from './discardChanges'
@@ -68,7 +71,11 @@ export function createOperationsAPI(args: OperationArgs): OperationsAPI {
   if (args.serverActionsEnabled) {
     return {
       ...operationsAPI,
+      delete: wrap('delete', serverDel, args),
+      del: wrap('delete', serverDel, args),
       patch: wrap('patch', serverPatch, args),
+      publish: wrap('publish', serverPublish, args),
+      unpublish: wrap('unpublish', serverUnpublish, args),
     }
   }
   return operationsAPI
