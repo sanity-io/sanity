@@ -391,7 +391,7 @@ importers:
         version: 8.16.1(react-dom@18.2.0)(react@18.2.0)(three@0.157.0)
       '@sanity/assist':
         specifier: ^2.0.0
-        version: 2.0.4(react-dom@18.2.0)(react@18.2.0)(sanity@packages+sanity)(styled-components@6.1.8)
+        version: 2.0.5(react-dom@18.2.0)(react@18.2.0)(sanity@packages+sanity)(styled-components@6.1.8)
       '@sanity/block-tools':
         specifier: 3.37.0
         version: link:../../packages/@sanity/block-tools
@@ -5904,8 +5904,8 @@ packages:
     engines: {node: '>=10'}
     dev: false
 
-  /@sanity/assist@2.0.4(react-dom@18.2.0)(react@18.2.0)(sanity@packages+sanity)(styled-components@6.1.8):
-    resolution: {integrity: sha512-0Xy9ecFXl9+1xveTvmUYEnbXNDTcFe447NH+0GqbM0BV2HkALWqzRIWv7nW827Oqm3nxoqYSBCzIqN0hKQSyKw==}
+  /@sanity/assist@2.0.5(react-dom@18.2.0)(react@18.2.0)(sanity@packages+sanity)(styled-components@6.1.8):
+    resolution: {integrity: sha512-o8DStwz+3fBACmnYDtV5hGSMzWhA+l+PbtHprLyAurrmHs0mU7jexWioqN0+N7fXNxPzK2WpWuqiJcYqqkGrvA==}
     engines: {node: '>=14'}
     peerDependencies:
       react: ^18
