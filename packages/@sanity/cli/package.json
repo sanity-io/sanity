@@ -81,7 +81,7 @@
     "@repo/package.config": "workspace:*",
     "@rexxars/gitconfiglocal": "^3.0.1",
     "@rollup/plugin-node-resolve": "^15.2.3",
-    "@sanity/eslint-config-studio": "^3.0.1",
+    "@sanity/eslint-config-studio": "^4.0.0",
     "@sanity/generate-help-url": "^3.0.0",
     "@sanity/types": "workspace:*",
     "@types/babel__traverse": "^7.20.5",
