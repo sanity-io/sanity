@@ -6,7 +6,7 @@ export function memoizeKeyGen(
   client: SanityClient,
   idPair: IdPair,
   typeName: string,
-  serverActionsEnabled?: boolean,
+  serverActionsEnabled: boolean,
 ) {
   const config = client.config()
   return `${config.dataset ?? ''}-${config.projectId ?? ''}-${idPair.publishedId}-${typeName}${serverActionsEnabled ? '-serverActionsEnabled' : ''}`

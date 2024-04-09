@@ -74,7 +74,7 @@ const execute = (
   operationName: keyof typeof operationImpls,
   operationArguments: OperationArgs,
   extraArgs: any[],
-  serverActionsEnabled?: boolean,
+  serverActionsEnabled: boolean,
 ): Observable<any> => {
   const operation = serverActionsEnabled
     ? serverOperationImpls[operationName]
@@ -137,7 +137,7 @@ export const operationEvents = memoize(
     client: SanityClient
     historyStore: HistoryStore
     schema: Schema
-    serverActionsEnabled?: boolean
+    serverActionsEnabled: boolean
   }) => {
     const result$: Observable<IntermediarySuccess | IntermediaryError> = operationCalls$.pipe(
       groupBy((op) => op.idPair.publishedId),
@@ -147,7 +147,7 @@ export const operationEvents = memoize(
           // E.g. if the user types `publish` which is async and then starts patching (sync) then the publish
           // should be cancelled
           switchMap((args) =>
-            operationArgs({...ctx, serverActionsEnabled: false}, args.idPair, args.typeName).pipe(
+            operationArgs(ctx, args.idPair, args.typeName).pipe(
               take(1),
               switchMap((operationArguments) => {
                 const requiresConsistency = REQUIRES_CONSISTENCY.includes(args.operationName)
@@ -202,6 +202,6 @@ export const operationEvents = memoize(
   (ctx) => {
     const config = ctx.client.config()
     // we only want one of these per dataset+projectid
-    return `${config.dataset ?? ''}-${config.projectId ?? ''}-${ctx.serverActionsEnabled}`
+    return `${config.dataset ?? ''}-${config.projectId ?? ''}${ctx.serverActionsEnabled ? '-serverActionsEnabled' : ''}`
   },
 )

@@ -144,7 +144,7 @@ export function useDocumentStore(): DocumentStore {
         initialValueTemplates: templates,
         schema,
         i18n,
-        serverActionsEnabled: workspace.serverActions?.enabled,
+        serverActionsEnabled: !!workspace.serverActions?.enabled,
       })
 
     resourceCache.set({

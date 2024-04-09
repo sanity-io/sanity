@@ -148,7 +148,7 @@ function submitCommitRequest(
   return from(
     serverActionsEnabled
       ? serverCommitMutations(client, idPair, request.mutation.params)
-      : serverCommitMutations(client, idPair, request.mutation.params),
+      : commitMutations(client, request.mutation.params),
   ).pipe(
     tap({
       error: (error) => {
