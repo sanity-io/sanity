@@ -17,6 +17,7 @@
 /presentation.js
 /router.js
 /structure.js
+/_singletons.js
 
 # Playwright-ct artifacts
 /playwright-ct/report

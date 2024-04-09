@@ -1,5 +1,6 @@
 import {createContext} from 'react'
-import type {ReferenceInputOptions} from 'sanity'
+
+import type {ReferenceInputOptions} from '../../../core/form/studio/contexts/ReferenceInputOptions'
 
 /**
  * @internal

@@ -40,15 +40,10 @@
       "default": "./lib/_internalBrowser.js"
     },
     "./_singletons": {
-      "types": "./lib/exports/_singletons.d.ts",
-      "source": "./exports/_singletons.ts",
+      "source": "./src/_exports/_singletons.ts",
+      "import": "./lib/_singletons.mjs",
       "require": "./lib/_singletons.js",
-      "node": {
-        "module": "./lib/_singletons.esm.js",
-        "import": "./lib/_singletons.cjs.mjs"
-      },
-      "import": "./lib/_singletons.esm.js",
-      "default": "./lib/_singletons.esm.js"
+      "default": "./lib/_singletons.js"
     },
     "./cli": {
       "source": "./src/_exports/cli.ts",
@@ -137,7 +132,7 @@
   "scripts": {
     "build": "pkg-utils build --check --clean",
     "check:types": "tsc",
-    "clean": "rimraf _internal.js _internalBrowser.js cli.js desk.js migrate.js presentation.js router.js structure.js lib",
+    "clean": "rimraf _internal.js _internalBrowser.js cli.js desk.js migrate.js presentation.js router.js structure.js _singletons.js lib",
     "coverage": "jest --coverage",
     "lint": "eslint .",
     "prepublishOnly": "turbo run build",
