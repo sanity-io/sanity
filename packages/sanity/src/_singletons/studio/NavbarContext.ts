@@ -1,5 +1,6 @@
 import {createContext} from 'react'
-import type {NavbarContextValue} from 'sanity'
+
+import type {NavbarContextValue} from '../../core/studio/StudioLayout'
 
 /** @internal */
 export const NavbarContext = createContext<NavbarContextValue>({
