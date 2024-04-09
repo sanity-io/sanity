@@ -1605,9 +1605,6 @@ importers:
       '@sanity/export':
         specifier: 3.37.0
         version: link:../@sanity/export
-      '@sanity/generate-help-url':
-        specifier: ^3.0.0
-        version: 3.0.0
       '@sanity/icons':
         specifier: ^2.11.0
         version: 2.11.7(react@18.2.0)
@@ -1906,6 +1903,9 @@ importers:
       '@sanity/codegen':
         specifier: 3.37.0
         version: link:../@sanity/codegen
+      '@sanity/generate-help-url':
+        specifier: ^3.0.0
+        version: 3.0.0
       '@sanity/pkg-utils':
         specifier: 6.1.0
         version: 6.1.0(@types/node@18.19.29)(typescript@5.4.2)
