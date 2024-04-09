@@ -78,6 +78,7 @@
     "start": "run-s dev",
     "test": "jest --forceExit",
     "test:e2e": "playwright test",
+    "test:exports": "turbo run test --filter=@repo/test-exports",
     "tsdoc:dev": "sanity-tsdoc dev",
     "updated": "lerna updated",
     "watch": "lerna run --parallel --stream --scope '{@sanity/*,sanity}' watch"

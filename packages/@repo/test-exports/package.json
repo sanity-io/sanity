@@ -1,0 +1,34 @@
+{
+  "name": "@repo/test-exports",
+  "version": "3.37.0",
+  "private": true,
+  "description": "Ensures that all the monorepo packages that are published works in native node ESM and CJS runtimes",
+  "exports": {
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "test": "node --test"
+  },
+  "dependencies": {
+    "@sanity/block-tools": "workspace:*",
+    "@sanity/cli": "workspace:*",
+    "@sanity/codegen": "workspace:*",
+    "@sanity/diff": "workspace:*",
+    "@sanity/export": "workspace:*",
+    "@sanity/import": "workspace:*",
+    "@sanity/import-cli": "workspace:*",
+    "@sanity/migrate": "workspace:*",
+    "@sanity/mutator": "workspace:*",
+    "@sanity/portable-text-editor": "workspace:*",
+    "@sanity/schema": "workspace:*",
+    "@sanity/types": "workspace:*",
+    "@sanity/util": "workspace:*",
+    "@sanity/vision": "workspace:*",
+    "groq": "workspace:*",
+    "sanity": "workspace:*"
+  },
+  "devDependencies": {
+    "@repo/tsconfig": "workspace:*",
+    "node-test-github-reporter": "^1.2.0"
+  }
+}
