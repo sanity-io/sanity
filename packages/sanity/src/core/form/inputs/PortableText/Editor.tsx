@@ -14,7 +14,13 @@ import {
   type RenderStyleFunction,
 } from '@sanity/portable-text-editor'
 import {type Path} from '@sanity/types'
-import {BoundaryElementProvider, useBoundaryElement, useGlobalKeyDown, useLayer} from '@sanity/ui'
+import {
+  BoundaryElementProvider,
+  Box,
+  useBoundaryElement,
+  useGlobalKeyDown,
+  useLayer,
+} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
 import {omit} from 'lodash'
@@ -25,14 +31,7 @@ import {TooltipDelayGroupProvider} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'
 import {type PortableTextInputProps} from '../../types/inputProps'
 import {useFormBuilder} from '../../useFormBuilder'
-import {
-  EditableCard,
-  EditableContainer,
-  EditableWrapper,
-  Root,
-  Scroller,
-  ToolbarCard,
-} from './Editor.styles'
+import {EditableCard, EditableWrapper, Root, Scroller, ToolbarCard} from './Editor.styles'
 import {useScrollSelectionIntoView} from './hooks/useScrollSelectionIntoView'
 import {useSpellCheck} from './hooks/useSpellCheck'
 import {Decorator} from './text'
@@ -221,7 +220,7 @@ export function Editor(props: EditorProps): ReactNode {
 
       <EditableCard flex={1} tone={readOnly ? 'transparent' : 'default'}>
         <Scroller ref={setScrollElement}>
-          <EditableContainer padding={isFullscreen ? 2 : 0} sizing="border" width={1}>
+          <Box>
             <EditableWrapper
               $isFullscreen={isFullscreen}
               tone={readOnly ? 'transparent' : 'default'}
@@ -230,7 +229,7 @@ export function Editor(props: EditorProps): ReactNode {
                 {editable}
               </BoundaryElementProvider>
             </EditableWrapper>
-          </EditableContainer>
+          </Box>
         </Scroller>
 
         <div data-portal="" ref={setPortalElement} />
