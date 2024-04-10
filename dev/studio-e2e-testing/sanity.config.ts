@@ -95,4 +95,7 @@ export default defineConfig({
 
   plugins: [sharedSettings()],
   basePath: '/test',
+  unstable_serverActions: {
+    enabled: true,
+  },
 })
