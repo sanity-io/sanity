@@ -74,7 +74,7 @@ const execute = (
   operationName: keyof typeof operationImpls,
   operationArguments: OperationArgs,
   extraArgs: any[],
-  serverActionsEnabled?: boolean,
+  serverActionsEnabled: boolean,
 ): Observable<any> => {
   const operation = serverActionsEnabled
     ? serverOperationImpls[operationName]
@@ -137,7 +137,7 @@ export const operationEvents = memoize(
     client: SanityClient
     historyStore: HistoryStore
     schema: Schema
-    serverActionsEnabled?: boolean
+    serverActionsEnabled: boolean
   }) => {
     const result$: Observable<IntermediarySuccess | IntermediaryError> = operationCalls$.pipe(
       groupBy((op) => op.idPair.publishedId),
@@ -159,6 +159,7 @@ export const operationEvents = memoize(
                   ctx.client,
                   args.idPair,
                   args.typeName,
+                  ctx.serverActionsEnabled,
                 ).pipe(filter(Boolean))
                 const ready$ = requiresConsistency ? isConsistent$.pipe(take(1)) : of(true)
                 return ready$.pipe(
@@ -201,6 +202,6 @@ export const operationEvents = memoize(
   (ctx) => {
     const config = ctx.client.config()
     // we only want one of these per dataset+projectid
-    return `${config.dataset ?? ''}-${config.projectId ?? ''}`
+    return `${config.dataset ?? ''}-${config.projectId ?? ''}${ctx.serverActionsEnabled ? '-serverActionsEnabled' : ''}`
   },
 )

@@ -18,7 +18,7 @@ export const editOperations = memoize(
       client: SanityClient
       historyStore: HistoryStore
       schema: Schema
-      serverActionsEnabled?: boolean
+      serverActionsEnabled: boolean
     },
     idPair: IdPair,
     typeName: string,
@@ -34,5 +34,5 @@ export const editOperations = memoize(
       merge(operationEvents$.pipe(mergeMap(() => EMPTY)), operations$),
     ).pipe(shareReplay({refCount: true, bufferSize: 1}))
   },
-  (ctx, idPair, typeName) => memoizeKeyGen(ctx.client, idPair, typeName),
+  (ctx, idPair, typeName) => memoizeKeyGen(ctx.client, idPair, typeName, ctx.serverActionsEnabled),
 )

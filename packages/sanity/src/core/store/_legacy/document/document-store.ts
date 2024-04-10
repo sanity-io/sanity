@@ -80,7 +80,7 @@ export interface DocumentStoreOptions {
   schema: Schema
   initialValueTemplates: Template[]
   i18n: LocaleSource
-  serverActionsEnabled?: boolean
+  serverActionsEnabled: boolean
 }
 
 /** @internal */
@@ -140,7 +140,12 @@ export function createDocumentStore({
         )
       },
       documentEvents(publishedId, type) {
-        return documentEvents(ctx.client, getIdPairFromPublished(publishedId), type)
+        return documentEvents(
+          ctx.client,
+          getIdPairFromPublished(publishedId),
+          type,
+          serverActionsEnabled,
+        )
       },
       editOperations(publishedId, type) {
         return editOperations(ctx, getIdPairFromPublished(publishedId), type)
