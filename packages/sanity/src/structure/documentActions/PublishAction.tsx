@@ -40,7 +40,7 @@ function getDisabledReason(
 
 function AlreadyPublished({publishedAt}: {publishedAt: string}) {
   const {t} = useTranslation(structureLocaleNamespace)
-  const timeSincePublished = useRelativeTime(publishedAt)
+  const timeSincePublished = useRelativeTime(publishedAt, {useTemporalPhrase: true})
   return <span>{t('action.publish.already-published.tooltip', {timeSincePublished})}</span>
 }
 

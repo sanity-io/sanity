@@ -41,7 +41,7 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** Tooltip when publish button is disabled because the document is already published, and published time is unavailable.*/
   'action.publish.already-published.no-time-ago.tooltip': 'Already published',
   /** Tooltip when publish button is disabled because the document is already published.*/
-  'action.publish.already-published.tooltip': 'Published {{timeSincePublished}} ago',
+  'action.publish.already-published.tooltip': 'Published {{timeSincePublished}}',
 
   /** Tooltip when action is disabled because the studio is not ready.*/
   'action.publish.disabled.not-ready': 'Operation not ready',
