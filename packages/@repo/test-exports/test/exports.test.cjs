@@ -11,7 +11,7 @@ for (const [workspace, paths] of Object.entries(workspaces)) {
       return
     }
     for (const path of paths) {
-      await t.test(path, () => {
+      await t.test(`require('${path}')`, () => {
         // eslint-disable-next-line import/no-dynamic-require
         require(path)
       })

@@ -12,7 +12,7 @@ for (const [workspace, paths] of Object.entries(workspaces)) {
     }
     for (const path of paths) {
       // eslint-disable-next-line @typescript-eslint/no-shadow, @typescript-eslint/no-unused-vars
-      await t.test(path, async (t) => {
+      await t.test(`await import('${path}')`, async (t) => {
         try {
           await import(path)
         } catch (error) {
