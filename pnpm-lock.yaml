@@ -387,8 +387,8 @@ importers:
         specifier: ^8.13.6
         version: 8.16.1(react-dom@18.2.0)(react@18.2.0)(three@0.157.0)
       '@sanity/assist':
-        specifier: ^3.0.0
-        version: 3.0.1(@sanity/mutator@packages+@sanity+mutator)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(sanity@packages+sanity)(styled-components@6.1.8)
+        specifier: ^3.0.2
+        version: 3.0.2(@sanity/mutator@packages+@sanity+mutator)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(sanity@packages+sanity)(styled-components@6.1.8)
       '@sanity/block-tools':
         specifier: 3.37.2
         version: link:../../packages/@sanity/block-tools
@@ -5974,8 +5974,8 @@ packages:
     engines: {node: '>=10'}
     dev: false
 
-  /@sanity/assist@3.0.1(@sanity/mutator@packages+@sanity+mutator)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(sanity@packages+sanity)(styled-components@6.1.8):
-    resolution: {integrity: sha512-7CRpFUFNXNTX1oZgpjovg0s1RTDaQT1YUhOA627/4f+pmWXIrVH6LJK9bFFtlclHZqoR1cDBdEla2Wfar0lYnw==}
+  /@sanity/assist@3.0.2(@sanity/mutator@packages+@sanity+mutator)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(sanity@packages+sanity)(styled-components@6.1.8):
+    resolution: {integrity: sha512-mxiYKlcVfijl401QXzzpcRhDt9p12B95/kiiW01uszstFO1UZ2jBGJllxX8oyHYu07jlaFanSIj0xQqgs+Ad7g==}
     engines: {node: '>=14'}
     peerDependencies:
       '@sanity/mutator': ^3.36.4
@@ -5989,6 +5989,7 @@ packages:
       '@sanity/ui': 2.1.2(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8)
       date-fns: 3.6.0
       lodash: 4.17.21
+      lodash-es: 4.17.21
       react: 18.2.0
       react-fast-compare: 3.2.2
       rxjs: 7.8.1
@@ -13911,6 +13912,10 @@ packages:
     engines: {node: '>=10'}
     dependencies:
       p-locate: 5.0.0
+
+  /lodash-es@4.17.21:
+    resolution: {integrity: sha512-mKnC+QJ9pWVzv+C4/U3rRsHapFfHvQFoFB92e52xeyGMcX6/OlIl78je1u8vePzYZSkkogMPJ2yjxxsb89cxyw==}
+    dev: false
 
   /lodash.debounce@4.0.8:
     resolution: {integrity: sha512-FT1yDzDYEoYWhnSGnpE/4Kj1fLZkDFyqRb7fNt6FdYOSxlUWAtp42Eh6Wb0rGIv/m9Bgo7x4GhQbm5Ys4SG5ow==}
