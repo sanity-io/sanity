@@ -270,12 +270,13 @@ export function TextBlock(props: TextBlockProps) {
     () => (
       <Box
         data-testid="text-block"
+        data-text-block=""
         {...outerPaddingProps}
         style={debugRender()}
         ref={memberItem?.elementRef as RefObject<HTMLDivElement>}
       >
         <TextBlockFlexWrapper data-testid="text-block__wrapper">
-          <Flex flex={1} {...innerPaddingProps}>
+          <Flex data-text-block-inner="" flex={1} {...innerPaddingProps}>
             <Box flex={1}>
               <Tooltip
                 content={toolTipContent}
