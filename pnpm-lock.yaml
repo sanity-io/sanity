@@ -388,7 +388,7 @@ importers:
         version: 8.16.1(react-dom@18.2.0)(react@18.2.0)(three@0.157.0)
       '@sanity/assist':
         specifier: ^3.0.2
-        version: 3.0.2(@sanity/mutator@packages+@sanity+mutator)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(sanity@packages+sanity)(styled-components@6.1.8)
+        version: 3.0.3(@sanity/mutator@packages+@sanity+mutator)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(sanity@packages+sanity)(styled-components@6.1.8)
       '@sanity/block-tools':
         specifier: 3.37.2
         version: link:../../packages/@sanity/block-tools
@@ -5934,8 +5934,8 @@ packages:
     engines: {node: '>=10'}
     dev: false
 
-  /@sanity/assist@3.0.2(@sanity/mutator@packages+@sanity+mutator)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(sanity@packages+sanity)(styled-components@6.1.8):
-    resolution: {integrity: sha512-mxiYKlcVfijl401QXzzpcRhDt9p12B95/kiiW01uszstFO1UZ2jBGJllxX8oyHYu07jlaFanSIj0xQqgs+Ad7g==}
+  /@sanity/assist@3.0.3(@sanity/mutator@packages+@sanity+mutator)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(sanity@packages+sanity)(styled-components@6.1.8):
+    resolution: {integrity: sha512-pI84Rn2d0SdxUv6Tfc0nyXdcllse05Dtk+5YlfTwXChDuruPTAwDRkizlpVRwYxtMCZbM1p/Tr31Xjlr+vCGuw==}
     engines: {node: '>=14'}
     peerDependencies:
       '@sanity/mutator': ^3.36.4
@@ -6351,7 +6351,7 @@ packages:
       esbuild-register: 3.5.0(esbuild@0.20.2)
       express: 4.19.2
       globby: 11.1.0
-      groq: 3.37.1
+      groq: 3.37.2
       groq-js: 1.7.0
       history: 5.3.0
       jsonc-parser: 3.2.1
@@ -11805,8 +11805,8 @@ packages:
     transitivePeerDependencies:
       - supports-color
 
-  /groq@3.37.1:
-    resolution: {integrity: sha512-SSGwF6i3sEgjXlv5kPXYub+XKseABT40VSpiquY3Fbjibnlqy2bm3d3es0oenntbYOYTf7wQe6m2wozoY6SPdw==}
+  /groq@3.37.2:
+    resolution: {integrity: sha512-0cVdTrpLMncdjWACKJGest5TtXdzEydeOhVakVywErj7emZPJKKo8T27rIvqrh/rrqDFukxDDuDXmzdOvhJ9mg==}
     engines: {node: '>=18'}
 
   /growly@1.3.0:
