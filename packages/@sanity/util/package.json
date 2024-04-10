@@ -75,7 +75,6 @@
   },
   "main": "./lib/index.js",
   "module": "./lib/index.esm.js",
-  "source": "./src/_exports/index.ts",
   "types": "./lib/index.d.ts",
   "typesVersions": {
     "*": {
@@ -114,8 +113,7 @@
     "paths.js"
   ],
   "scripts": {
-    "build": "run-s clean && pkg-utils build --strict",
-    "check:package": "pkg-utils --strict",
+    "build": "pkg-utils build --strict --check --clean",
     "check:types": "tsc",
     "clean": "rimraf client.js concurrency-limiter.js content.js createSafeJsonParser.js fs.js legacyDateFormat.js lib paths.js",
     "prepublishOnly": "turbo run build",

@@ -39,7 +39,6 @@
   },
   "main": "./lib/index.js",
   "module": "./lib/index.esm.js",
-  "source": "./src/_exports/index.ts",
   "types": "./lib/index.d.ts",
   "typesVersions": {
     "*": {
@@ -54,8 +53,7 @@
     "src"
   ],
   "scripts": {
-    "build": "run-s clean && pkg-utils build --strict",
-    "check:package": "pkg-utils --strict",
+    "build": "pkg-utils build --strict --check --clean",
     "check:types": "tsc",
     "clean": "rimraf _internal.js lib",
     "lint": "eslint .",

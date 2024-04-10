@@ -14,10 +14,6 @@
       "dependsOn": ["^build"],
       "outputMode": "new-only"
     },
-    "check:package": {
-      "dependsOn": ["build"],
-      "outputMode": "errors-only"
-    },
     "check:types": {
       "outputs": [],
       "outputMode": "errors-only"

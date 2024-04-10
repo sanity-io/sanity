@@ -51,10 +51,3 @@ jobs:
         run: pnpm check:types --output-logs=full --log-order=grouped
         env:
           NODE_OPTIONS: --max_old_space_size=8192
-
-      - name: Check package.json with @sanity/pkg-utils
-        # Turbo will ensure `build` is run before each package, as pkg-utils requires
-        # as it will check if files declared in package.json `main`, `exports`, `types` and more exists
-        run: pnpm check:package --output-logs=full --log-order=grouped
-        env:
-          NODE_OPTIONS: --max_old_space_size=8192
