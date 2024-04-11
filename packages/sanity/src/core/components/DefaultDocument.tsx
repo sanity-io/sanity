@@ -111,6 +111,7 @@ export interface DefaultDocumentProps {
   entryPath: string
   css?: string[]
   basePath?: string
+  addImportMap?: boolean
 }
 
 const EMPTY_ARRAY: never[] = []
@@ -119,7 +120,8 @@ const EMPTY_ARRAY: never[] = []
  * @hidden
  * @beta */
 export function DefaultDocument(props: DefaultDocumentProps): ReactElement {
-  const {entryPath, css = EMPTY_ARRAY, basePath = '/'} = props
+  // TODO: make it false by default and configurable by flag from config
+  const {entryPath, css = EMPTY_ARRAY, basePath = '/', addImportMap = true} = props
   return (
     <html lang="en">
       <head>
@@ -142,6 +144,23 @@ export function DefaultDocument(props: DefaultDocumentProps): ReactElement {
         ))}
         {/* eslint-disable-next-line react/no-danger */}
         <style dangerouslySetInnerHTML={{__html: globalStyles}} />
+        {addImportMap && (
+          <script
+            type="importmap"
+            // eslint-disable-next-line react/no-danger
+            dangerouslySetInnerHTML={{
+              __html: `{
+              "imports": {
+                "react": "https://esm.sh/react@18",
+                "react/": "https://esm.sh/react@18/",
+                "sanity": "https://esm.sh/sanity@3.37.1-canary.73",
+                "sanity/": "https://esm.sh/sanity@3.37.1-canary.73/",
+                "styled-components": "https://esm.sh/styled-components@6"
+              }
+            }`,
+            }}
+          />
+        )}
       </head>
       <body>
         <div id="sanity" />
