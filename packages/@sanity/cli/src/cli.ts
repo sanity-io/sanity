@@ -88,7 +88,7 @@ export async function runCli(cliRoot: string, {cliVersion}: {cliVersion: string}
     runtimeVersion: process.version,
     runtime: detectRuntime(),
     cliVersion: pkg.version,
-    platform: process.platform,
+    machinePlatform: process.platform,
     cpuArchitecture: process.arch,
     projectId: cliConfig?.config?.api?.projectId,
     dataset: cliConfig?.config?.api?.dataset,
