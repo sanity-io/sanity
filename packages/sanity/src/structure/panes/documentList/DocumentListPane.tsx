@@ -110,7 +110,7 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
   const showIcons = displayOptions?.showIcons !== false
   const [layout, setLayout] = useStructureToolSetting<GeneralPreviewLayoutKey>(
     'layout',
-    typeName,
+    typeName ?? pane.id, //pane.id for anything that is not documentTypeList
     defaultLayout,
   )
 
@@ -133,7 +133,7 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
 
   const [sortOrderRaw, setSortOrder] = useStructureToolSetting<SortOrder>(
     'sort-order',
-    typeName,
+    typeName ?? pane.id, //pane.id for anything that is not documentTypeList
     defaultSortOrder,
   )
 
