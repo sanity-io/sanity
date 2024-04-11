@@ -153,8 +153,8 @@ export function DefaultDocument(props: DefaultDocumentProps): ReactElement {
               "imports": {
                 "react": "https://esm.sh/react@18",
                 "react/": "https://esm.sh/react@18/",
-                "sanity": "https://esm.sh/sanity@3.37.1-canary.73",
-                "sanity/": "https://esm.sh/sanity@3.37.1-canary.73/",
+                "sanity": "https://esm.sh/sanity@3.37.2-canary.92",
+                "sanity/": "https://esm.sh/sanity@3.37.2-canary.92/",
                 "styled-components": "https://esm.sh/styled-components@6"
               }
             }`,
