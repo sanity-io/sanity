@@ -285,8 +285,8 @@ export function ArrayOfObjectsField(props: {
   )
 
   const handleFocusChildPath = useCallback(
-    (path: Path) => {
-      onPathFocus(member.field.path.concat(path))
+    (path: Path, payload?: Record<string, unknown>) => {
+      onPathFocus(member.field.path.concat(path), payload)
     },
     [member.field.path, onPathFocus],
   )

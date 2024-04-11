@@ -36,6 +36,7 @@ interface InputProps extends ArrayOfObjectsInputProps<PortableTextBlock> {
   onActivate: () => void
   onCopy?: OnCopyFn
   onPaste?: OnPasteFn
+  onPortalElementChange?: (el: HTMLDivElement | null) => void
   onToggleFullscreen: () => void
   path: Path
   rangeDecorations?: RangeDecoration[]
@@ -64,10 +65,11 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
     onItemRemove,
     onPaste,
     onPathFocus,
+    onPortalElementChange,
     onToggleFullscreen,
     path,
-    readOnly,
     rangeDecorations,
+    readOnly,
     renderAnnotation,
     renderBlock,
     renderBlockActions,
@@ -386,6 +388,15 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []) // Only at mount time!
 
+  const handleSetPortalElement = useCallback(
+    (el: HTMLDivElement | null) => {
+      setPortalElement(el)
+
+      onPortalElementChange?.(el)
+    },
+    [onPortalElementChange],
+  )
+
   const editorNode = useMemo(
     () => (
       <Editor
@@ -405,7 +416,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
         renderAnnotation={editorRenderAnnotation}
         renderBlock={editorRenderBlock}
         renderChild={editorRenderChild}
-        setPortalElement={setPortalElement}
+        setPortalElement={handleSetPortalElement}
         scrollElement={scrollElement}
         setScrollElement={setScrollElement}
       />
@@ -429,6 +440,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       editorRenderAnnotation,
       editorRenderBlock,
       editorRenderChild,
+      handleSetPortalElement,
       scrollElement,
     ],
   )
