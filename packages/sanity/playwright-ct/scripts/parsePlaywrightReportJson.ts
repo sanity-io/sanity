@@ -1,8 +1,8 @@
 #!/usr/bin/env node -r esbuild-register
 
-import {writeFileSync} from 'fs'
-import path from 'path'
-import {inspect} from 'util'
+import {writeFileSync} from 'node:fs'
+import path from 'node:path'
+import {inspect} from 'node:util'
 
 import {generateOutput, groupTests, readJsonFile} from './utils'
 

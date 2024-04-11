@@ -1,11 +1,13 @@
-import path from 'path'
-import {promisify} from 'util'
+import path from 'node:path'
+import {promisify} from 'node:util'
+
 import chalk from 'chalk'
 import {noopLogger} from '@sanity/telemetry'
 import rimrafCallback from 'rimraf'
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore This may not yet be built.
 import type {CliCommandArguments, CliCommandContext} from '@sanity/cli'
+
 import {buildStaticFiles, ChunkModule, ChunkStats} from '../../server'
 import {checkStudioDependencyVersions} from '../../util/checkStudioDependencyVersions'
 import {checkRequiredDependencies} from '../../util/checkRequiredDependencies'

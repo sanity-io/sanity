@@ -1,4 +1,5 @@
-import path from 'path'
+import path from 'node:path'
+
 import {defineCliConfig} from 'sanity/cli'
 import {type UserConfig} from 'vite'
 

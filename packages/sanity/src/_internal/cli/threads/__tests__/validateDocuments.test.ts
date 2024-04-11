@@ -1,9 +1,10 @@
+import {createServer, type Server} from 'node:http'
+import path from 'node:path'
+import {Worker} from 'node:worker_threads'
+
 import {afterAll, beforeAll, describe, expect, it, jest} from '@jest/globals'
 import {type SanityDocument, type SanityProject} from '@sanity/client'
 import {evaluate, parse} from 'groq-js'
-import {createServer, type Server} from 'http'
-import path from 'path'
-import {Worker} from 'worker_threads'
 
 import {getAliases} from '../../server/aliases'
 import {createReceiver, type WorkerChannelReceiver} from '../../util/workerChannels'

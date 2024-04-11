@@ -1,8 +1,9 @@
+import path from 'node:path'
+import {isMainThread, Worker} from 'node:worker_threads'
+
 import {type CliCommandContext, type CliV3CommandContext} from '@sanity/cli'
-import path from 'path'
 import readPkgUp from 'read-pkg-up'
 import {createSchema} from 'sanity'
-import {isMainThread, Worker} from 'worker_threads'
 
 import {
   type ResolvedGraphQLAPI,

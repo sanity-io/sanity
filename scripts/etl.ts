@@ -1,10 +1,11 @@
+import path from 'node:path'
+
 import baseConfig from '@repo/package.config'
 import {createClient} from '@sanity/client'
 import {_loadConfig, extract, load, type SanityTSDocConfigOptions, transform} from '@sanity/tsdoc'
 import cac from 'cac'
 import chalk from 'chalk'
 import ora from 'ora'
-import path from 'path'
 
 const cli = cac('pnpm etl')
 

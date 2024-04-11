@@ -1,4 +1,4 @@
-import {type MessagePort, type Worker} from 'worker_threads'
+import {type MessagePort, type Worker} from 'node:worker_threads'
 
 type StreamReporter<TPayload = unknown> = {emit: (payload: TPayload) => void; end: () => void}
 type EventReporter<TPayload = unknown> = (payload: TPayload) => void
