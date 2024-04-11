@@ -147,7 +147,7 @@
     "@sanity/bifur-client": "^0.3.1",
     "@sanity/block-tools": "3.37.2",
     "@sanity/cli": "3.37.2",
-    "@sanity/client": "^6.15.11",
+    "@sanity/client": "^6.15.13",
     "@sanity/color": "^3.0.0",
     "@sanity/diff": "3.37.2",
     "@sanity/diff-match-patch": "^3.1.1",

@@ -34,7 +34,7 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "@sanity/client": "^6.15.11",
+    "@sanity/client": "^6.15.13",
     "@sanity/import": "3.37.2",
     "get-it": "^8.4.19",
     "meow": "^9.0.0",
