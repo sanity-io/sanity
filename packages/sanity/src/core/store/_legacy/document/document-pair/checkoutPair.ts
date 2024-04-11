@@ -72,7 +72,7 @@ function setVersion<T>(version: 'draft' | 'published') {
 }
 
 function toActions(idPair: IdPair, mutationParams: Mutation['params']) {
-  return mutationParams.mutations.map((mutations): HttpAction => {
+  return mutationParams.mutations.flatMap<HttpAction>((mutations) => {
     if (Object.keys(mutations).length > 1) {
       // todo: this might be a bit too strict, but I'm (lazily) trying to check if we ever get more than one mutation in a payload
       throw new Error('Did not expect multiple mutations in the same payload')

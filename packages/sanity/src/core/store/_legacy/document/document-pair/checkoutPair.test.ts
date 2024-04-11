@@ -1,20 +1,12 @@
-import {beforeEach} from 'node:test'
-
-import {test} from '@jest/globals'
-import {of} from 'rxjs'
+import {expect, jest, test} from '@jest/globals'
+import {type SanityClient} from '@sanity/client'
+import {merge, of} from 'rxjs'
 import {delay} from 'rxjs/operators'
 
-import {checkoutPair, type DocumentVersionEvent} from './checkoutPair'
-
-const draftEventsLog: DocumentVersionEvent[] = []
-const publishedEventsLog: DocumentVersionEvent[] = []
-
-beforeEach(() => {
-  draftEventsLog.length = 0
-  publishedEventsLog.length = 0
-})
+import {checkoutPair} from './checkoutPair'
 
 test('patch', async () => {
+  const dataRequest = jest.fn(() => of({}))
   const client = {
     observable: {
       // request: jest.fn(),
@@ -26,20 +18,30 @@ test('patch', async () => {
           {_id: ids[1], _type: 'any', _rev: 'any'},
         ]),
     },
-    // dataRequest: jest.fn()
+    dataRequest,
   }
   const idPair = {publishedId: 'publishedId', draftId: 'draftId'}
-  const submitRequest = () => {
-    // console.log('submitRequest')
-  }
 
-  const {draft, published} = checkoutPair(client as any, idPair, false, submitRequest as any)
-  draft.events.subscribe((ev) => draftEventsLog.push(ev))
-  published.events.subscribe((ev) => publishedEventsLog.push(ev))
+  const {draft, published} = checkoutPair(client as any as SanityClient, idPair, false)
+  const combined = merge(draft.events, published.events)
+  const sub = combined.subscribe()
+  await new Promise((resolve) => setTimeout(resolve, 0))
 
-  await new Promise((resolve) => setTimeout(resolve, 1000))
-  const patchObj = {set: {title: 'new title'}}
-  draft.patch([patchObj])
+  draft.mutate(draft.patch([{set: {title: 'new title'}}]))
   draft.commit()
-  // console.log(draftEventsLog)
+
+  expect(dataRequest).toHaveBeenCalledWith(
+    'mutate',
+    {
+      mutations: [{patch: {id: 'draftId', set: {title: 'new title'}}}],
+      transactionId: expect.any(String),
+    },
+    {
+      returnDocuments: false,
+      skipCrossDatasetReferenceValidation: true,
+      tag: 'document.commit',
+      visibility: 'async',
+    },
+  )
+  sub.unsubscribe()
 })
