@@ -2,6 +2,10 @@ import {type ColorHueKey} from '@sanity/color'
 
 import {type CommentReactionOption, type CommentReactionShortNames} from './types'
 
+/**
+ * @internal
+ * @hidden
+ */
 export const COMMENTS_INSPECTOR_NAME = 'sanity/comments'
 
 export const COMMENTS_HIGHLIGHT_HUE_KEY: ColorHueKey = 'yellow'

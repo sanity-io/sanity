@@ -1,7 +1,6 @@
 import {useCallback} from 'react'
 import {useMemoObservable} from 'react-rx'
 import {of} from 'rxjs'
-import {usePaneRouter} from 'sanity/structure'
 
 import {useSchema} from '../../hooks'
 import {getPreviewStateObservable} from '../../preview'
@@ -12,6 +11,7 @@ import {type CommentContext} from '../types'
 interface NotificationTargetHookOptions {
   documentId: string
   documentType: string
+  getCommentLink?: (commentId: string) => string
 }
 
 interface NotificationTargetHookValue {
@@ -31,10 +31,9 @@ interface NotificationTargetHookValue {
 export function useNotificationTarget(
   opts: NotificationTargetHookOptions,
 ): NotificationTargetHookValue {
-  const {documentId, documentType} = opts || {}
+  const {documentId, documentType, getCommentLink} = opts || {}
   const schemaType = useSchema().get(documentType)
   const {title: workspaceTitle} = useWorkspace()
-  const {createPathWithParams, params} = usePaneRouter()
 
   const documentPreviewStore = useDocumentPreviewStore()
 
@@ -47,21 +46,12 @@ export function useNotificationTarget(
   const documentTitle = (draft?.title || published?.title || 'Sanity document') as string
 
   const handleGetNotificationValue = useCallback(
-    ({commentId}: {commentId: string}) => {
-      // Generate a path based on the current pane params.
-      // We force a value for `inspect` to ensure that this is included in URLs when comments
-      // are created outside of the inspector context (i.e. directly on the field)
-      // @todo: consider filtering pane router params and culling all non-active RHS panes prior to generating this link
-      const path = createPathWithParams({
-        ...params,
-        comment: commentId,
-        inspect: COMMENTS_INSPECTOR_NAME,
-      })
-      const url = `${window.location.origin}${path}`
-
-      return {documentTitle, url, workspaceTitle}
-    },
-    [createPathWithParams, documentTitle, params, workspaceTitle],
+    ({commentId}: {commentId: string}) => ({
+      documentTitle,
+      url: getCommentLink?.(commentId),
+      workspaceTitle,
+    }),
+    [documentTitle, getCommentLink, workspaceTitle],
   )
 
   return {

@@ -1,3 +1,4 @@
+import {type Path} from '@sanity/types'
 import {orderBy} from 'lodash'
 import {memo, type ReactNode, useCallback, useMemo, useState} from 'react'
 
@@ -47,6 +48,14 @@ export interface CommentsProviderProps {
 
   isCommentsOpen?: boolean
   onCommentsOpen?: () => void
+  getCommentLink?: (id: string) => string
+
+  selectedCommentId?: string | undefined
+  onClearSelectedComment?: () => void
+
+  onPathOpen?: (path: Path) => void
+
+  isConnecting?: boolean
 }
 
 type DocumentId = string
@@ -56,8 +65,20 @@ type TransactionId = string
  * @beta
  */
 export const CommentsProvider = memo(function CommentsProvider(props: CommentsProviderProps) {
-  const {children, documentId, documentType, isCommentsOpen, onCommentsOpen, sortOrder, type} =
-    props
+  const {
+    children,
+    documentId,
+    documentType,
+    isCommentsOpen,
+    onCommentsOpen,
+    sortOrder,
+    type,
+    getCommentLink,
+    onClearSelectedComment,
+    selectedCommentId,
+    isConnecting,
+    onPathOpen,
+  } = props
   const commentsEnabled = useCommentsEnabled()
   const [status, setStatus] = useState<CommentStatus>('open')
   const {client, createAddonDataset, isCreatingDataset} = useAddonDataset()
@@ -230,42 +251,54 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
         onCreateError: handleOnCreateError,
         onUpdate: handleOnUpdate,
         onTransactionStart: handleOnTransactionStart,
+        getCommentLink,
       }),
       [
         client,
         currentUser,
         dataset,
+        publishedId,
         documentRevisionId,
         documentType,
         getComment,
-        createAddonDataset,
         getThreadLength,
-        handleOnCreate,
-        handleOnCreateError,
-        handleOnTransactionStart,
-        handleOnUpdate,
         projectId,
-        publishedId,
         schemaType,
         workspaceName,
+        createAddonDataset,
+        handleOnCreate,
+        handleOnCreateError,
+        handleOnUpdate,
+        handleOnTransactionStart,
+        getCommentLink,
       ],
     ),
   )
 
   const ctxValue = useMemo(
     (): CommentsContextValue => ({
+      documentId,
+      documentType,
+
       isCreatingDataset,
       status,
       setStatus: handleSetStatus,
       getComment,
+      getCommentLink,
+      onClearSelectedComment,
+      selectedCommentId,
 
       isCommentsOpen,
       onCommentsOpen,
 
+      isConnecting,
+
+      onPathOpen,
+
       comments: {
         data: threadItemsByStatus,
         error,
-        loading: loading || isCreatingDataset,
+        loading: loading || isCreatingDataset || isConnecting || false,
       },
 
       operation: {
@@ -277,12 +310,19 @@ export const CommentsProvider = memo(function CommentsProvider(props: CommentsPr
       mentionOptions,
     }),
     [
+      documentId,
+      documentType,
       isCreatingDataset,
       status,
       handleSetStatus,
       getComment,
+      getCommentLink,
+      onClearSelectedComment,
+      selectedCommentId,
       isCommentsOpen,
       onCommentsOpen,
+      isConnecting,
+      onPathOpen,
       threadItemsByStatus,
       error,
       loading,

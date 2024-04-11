@@ -43,6 +43,7 @@ export interface CommentOperationsHookOptions {
   createAddonDataset: () => Promise<SanityClient | null>
   schemaType: SchemaType | undefined
   workspace: string
+  getCommentLink?: (commentId: string) => string
 }
 
 export function useCommentOperations(
@@ -65,6 +66,7 @@ export function useCommentOperations(
     projectId,
     createAddonDataset,
     workspace,
+    getCommentLink,
   } = opts
 
   const getIntent = useCommentsIntent()
@@ -81,7 +83,7 @@ export function useCommentOperations(
     () => tools.find((tool) => tool.name === activeToolName),
     [activeToolName, tools],
   )
-  const {getNotificationValue} = useNotificationTarget({documentId, documentType})
+  const {getNotificationValue} = useNotificationTarget({documentId, documentType, getCommentLink})
 
   const handleCreate = useCallback(
     async (comment: CommentCreatePayload) => {

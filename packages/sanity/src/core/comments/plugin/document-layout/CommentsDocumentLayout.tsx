@@ -1,12 +1,7 @@
-import {useCallback} from 'react'
-import {useDocumentPane} from 'sanity/structure'
-
 import {type DocumentLayoutProps} from '../../../config'
-import {COMMENTS_INSPECTOR_NAME} from '../../constants'
 import {
   CommentsAuthoringPathProvider,
   CommentsEnabledProvider,
-  CommentsProvider,
   CommentsSelectedPathProvider,
 } from '../../context'
 import {useCommentsEnabled} from '../../hooks'
@@ -22,15 +17,7 @@ export function CommentsDocumentLayout(props: DocumentLayoutProps) {
 }
 
 function CommentsDocumentLayoutInner(props: DocumentLayoutProps) {
-  const {documentId, documentType} = props
   const commentsEnabled = useCommentsEnabled()
-  const {openInspector, inspector} = useDocumentPane()
-
-  const handleOpenCommentsInspector = useCallback(() => {
-    if (inspector?.name === COMMENTS_INSPECTOR_NAME) return
-
-    openInspector(COMMENTS_INSPECTOR_NAME)
-  }, [inspector?.name, openInspector])
 
   // If comments are not enabled, render the default document layout
   if (!commentsEnabled.enabled) {
@@ -38,17 +25,8 @@ function CommentsDocumentLayoutInner(props: DocumentLayoutProps) {
   }
 
   return (
-    <CommentsProvider
-      documentId={documentId}
-      documentType={documentType}
-      isCommentsOpen={inspector?.name === COMMENTS_INSPECTOR_NAME}
-      onCommentsOpen={handleOpenCommentsInspector}
-      sortOrder="desc"
-      type="field"
-    >
-      <CommentsSelectedPathProvider>
-        <CommentsAuthoringPathProvider>{props.renderDefault(props)}</CommentsAuthoringPathProvider>
-      </CommentsSelectedPathProvider>
-    </CommentsProvider>
+    <CommentsSelectedPathProvider>
+      <CommentsAuthoringPathProvider>{props.renderDefault(props)}</CommentsAuthoringPathProvider>
+    </CommentsSelectedPathProvider>
   )
 }

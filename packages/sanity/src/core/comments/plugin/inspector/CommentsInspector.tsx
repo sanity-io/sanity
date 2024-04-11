@@ -1,13 +1,11 @@
 import {Flex, Layer, useClickOutside, useLayer, useToast} from '@sanity/ui'
 import * as PathUtils from '@sanity/util/paths'
 import {Fragment, useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {useDocumentPane, usePaneRouter} from 'sanity/structure'
 import {styled} from 'styled-components'
 
 import {type DocumentInspectorProps} from '../../../config'
 import {useTranslation} from '../../../i18n'
 import {useCurrentUser} from '../../../store'
-import {useUnique} from '../../../util'
 import {
   CommentDeleteDialog,
   CommentsList,
@@ -34,8 +32,6 @@ import {
 } from '../../types'
 import {CommentsInspectorFeedbackFooter} from './CommentsInspectorFeedbackFooter'
 import {CommentsInspectorHeader} from './CommentsInspectorHeader'
-
-const EMPTY_PARAMS = {}
 
 interface CommentToDelete {
   commentId: string
@@ -79,29 +75,35 @@ function CommentsInspectorInner(
   const rootRef = useRef<HTMLDivElement | null>(null)
 
   const currentUser = useCurrentUser()
-  const {params, createPathWithParams, setParams} = usePaneRouter()
-  const uniqueParams = useUnique(params) || (EMPTY_PARAMS as Partial<{comment?: string}>)
-  const commentIdParamRef = useRef<string | undefined>(uniqueParams?.comment)
+  const {
+    comments,
+    getComment,
+    isCreatingDataset,
+    mentionOptions,
+    setStatus,
+    status,
+    operation,
+    selectedCommentId,
+    getCommentLink,
+    onClearSelectedComment,
+    onPathOpen,
+  } = useComments()
+  const commentIdParamRef = useRef<string | undefined>(selectedCommentId)
 
   const didScrollToCommentFromParam = useRef<boolean>(false)
 
   const pushToast = useToast().push
   const {isTopLayer} = useLayer()
-  const {onPathOpen, connectionState} = useDocumentPane()
 
   const {scrollToComment, scrollToField, scrollToInlineComment} = useCommentsScroll()
   const {selectedPath, setSelectedPath} = useCommentsSelectedPath()
   const {isDismissed, setDismissed} = useCommentsOnboarding()
 
-  const {comments, getComment, isCreatingDataset, mentionOptions, setStatus, status, operation} =
-    useComments()
   const {upsellData, telemetryLogs} = useCommentsUpsell()
 
   const currentComments = useMemo(() => comments.data[status], [comments, status])
 
-  const loading = useMemo(() => {
-    return comments.loading || connectionState === 'connecting'
-  }, [comments.loading, connectionState])
+  const {loading} = comments
 
   useEffect(() => {
     if (mode === 'upsell') {
@@ -135,17 +137,12 @@ function CommentsInspectorInner(
     setSelectedPath(null)
   }, [onClose, setSelectedPath])
 
-  const handleCopyLink = useCallback(
-    (id: string) => {
-      const path = createPathWithParams({
-        ...params,
-        comment: id,
-      })
+  const handleCopyLink = useMemo(() => {
+    if (!getCommentLink) return undefined
 
-      const url = `${window.location.origin}${path}`
-
+    const copyLink = (id: string) => {
       navigator.clipboard
-        .writeText(url)
+        .writeText(getCommentLink(id))
         .then(() => {
           pushToast({
             closable: true,
@@ -160,9 +157,10 @@ function CommentsInspectorInner(
             title: t('copy-link-error-message'),
           })
         })
-    },
-    [createPathWithParams, params, pushToast, t],
-  )
+    }
+
+    return copyLink
+  }, [getCommentLink, pushToast, t])
 
   const handleCreateRetry = useCallback(
     (id: string) => {
@@ -195,7 +193,7 @@ function CommentsInspectorInner(
 
       if (nextPath?.fieldPath) {
         const path = PathUtils.fromString(nextPath.fieldPath)
-        onPathOpen(path)
+        onPathOpen?.(path)
 
         scrollToField(nextPath.fieldPath)
 
@@ -363,12 +361,9 @@ function CommentsInspectorInner(
       didScrollToCommentFromParam.current = true
       commentIdParamRef.current = undefined
 
-      setParams({
-        ...params,
-        comment: undefined,
-      })
+      onClearSelectedComment?.()
     }
-  }, [getComment, loading, params, scrollToComment, setParams, setSelectedPath, setStatus])
+  }, [getComment, loading, onClearSelectedComment, scrollToComment, setSelectedPath, setStatus])
 
   const beforeListNode = useMemo(() => {
     if (mode === 'upsell' && upsellData) {

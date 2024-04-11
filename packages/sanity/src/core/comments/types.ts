@@ -98,7 +98,7 @@ export interface CommentContext {
   payload?: Record<string, unknown>
   notification?: {
     documentTitle: string
-    url: string
+    url?: string
     workspaceTitle: string
     currentThreadLength?: number
     // Used in task comments, list of users that are subscribed to the task.

@@ -6,7 +6,6 @@ import {motion, type Variants} from 'framer-motion'
 import {useEffect, useMemo} from 'react'
 import {styled} from 'styled-components'
 
-import {CommentsEnabledProvider} from '../../../../comments'
 import {LoadingBlock} from '../../../../components'
 import {FormBuilder} from '../../../../form'
 import {useCurrentUser} from '../../../../store'
@@ -67,17 +66,15 @@ const TasksFormBuilderInner = ({
   }, [targetId, targetType, setSelectedDocument])
 
   return (
-    <CommentsEnabledProvider documentId="" documentType="">
-      <Box>
-        {formBuilderProps.loading ? (
-          <LoadingBlock showText />
-        ) : (
-          <FormBuilderRoot id="wrapper" initial="hidden" animate="visible" variants={VARIANTS}>
-            <FormBuilder {...formBuilderProps} />
-          </FormBuilderRoot>
-        )}
-      </Box>
-    </CommentsEnabledProvider>
+    <Box>
+      {formBuilderProps.loading ? (
+        <LoadingBlock showText />
+      ) : (
+        <FormBuilderRoot id="wrapper" initial="hidden" animate="visible" variants={VARIANTS}>
+          <FormBuilder {...formBuilderProps} />
+        </FormBuilderRoot>
+      )}
+    </Box>
   )
 }
 

@@ -1,8 +1,10 @@
 export * from './changeIndicators'
 export {
   type CommentIntentGetter,
+  COMMENTS_INSPECTOR_NAME,
   CommentsIntentProvider,
   type CommentsIntentProviderProps,
+  CommentsProvider,
 } from './comments'
 export * from './components'
 export * from './components/collapseMenu'
@@ -21,7 +23,6 @@ export type {SearchFactoryOptions, SearchOptions, SearchSort, SearchTerms} from 
 export {createSearch, getSearchableTypes} from './search'
 export * from './store'
 export * from './studio'
-export {useSearchMaxFieldDepth} from './studio/components/navbar/search/hooks/useSearchMaxFieldDepth'
 export * from './studioClient'
 export * from './templates'
 export * from './theme'
