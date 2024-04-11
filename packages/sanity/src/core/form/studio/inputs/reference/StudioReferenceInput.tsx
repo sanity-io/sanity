@@ -21,9 +21,9 @@ import {catchError, mergeMap} from 'rxjs/operators'
 
 import {type Source} from '../../../../config'
 import {type FIXME} from '../../../../FIXME'
-import {useSchema} from '../../../../hooks'
+import {useDocumentFilters, useSchema} from '../../../../hooks'
 import {useDocumentPreviewStore} from '../../../../store'
-import {useSource, useWorkspace} from '../../../../studio'
+import {useSource} from '../../../../studio'
 import {useSearchMaxFieldDepth} from '../../../../studio/components/navbar/search/hooks/useSearchMaxFieldDepth'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
 import {isNonNullable} from '../../../../util'
@@ -96,9 +96,7 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
   const {EditReferenceLinkComponent, onEditReference, activePath, initialValueTemplateItems} =
     useReferenceInputOptions()
   const {unstable_enableNewSearch = false} = source.search
-
-  const {unstable_filters} = useWorkspace().document
-  const filters = useMemo(() => unstable_filters({listType: 'referenceField'}), [unstable_filters])
+  const {combineFilters} = useDocumentFilters({listType: 'referenceField'})
 
   const documentValue = useFormValue([]) as FIXME
   const documentRef = useValueRef(documentValue)
@@ -120,8 +118,10 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
             schemaType,
             {
               ...schemaType.options,
-              filter: [filter, ...filters.filters].filter(Boolean).join(' && '),
-              params: {...params, ...filters.params},
+              ...combineFilters({
+                filters: [filter],
+                params,
+              }),
               tag: 'search.reference',
               maxFieldDepth,
             },
@@ -141,7 +141,7 @@ export function StudioReferenceInput(props: StudioReferenceInputProps) {
     [
       schemaType,
       documentRef,
-      filters,
+      combineFilters,
       path,
       getClient,
       searchClient,

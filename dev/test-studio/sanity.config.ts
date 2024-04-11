@@ -148,10 +148,10 @@ const sharedDocumentFiltersSettings = definePlugin<{locale: string}>(({locale}) 
     types: documentFiltersSchemaTypes,
   },
   document: {
-    unstable_filters: ({filters, params}) => ({
-      filters: [...filters, 'language == $locale'],
-      params: {...params, locale},
-    }),
+    unstable_filters: {
+      filters: ['language == $locale'],
+      params: {locale},
+    },
   },
   search: {
     unstable_enableNewSearch: true,

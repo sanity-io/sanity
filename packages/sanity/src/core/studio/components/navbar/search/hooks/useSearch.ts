@@ -14,7 +14,7 @@ import {
   tap,
 } from 'rxjs/operators'
 
-import {useClient} from '../../../../../hooks'
+import {useClient, useDocumentFilters} from '../../../../../hooks'
 import {
   createSearch,
   type SearchHit,
@@ -83,9 +83,7 @@ export function useSearch({
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const maxFieldDepth = useSearchMaxFieldDepth()
   const {unstable_enableNewSearch = false} = useWorkspace().search
-  const {unstable_filters} = useWorkspace().document
-
-  const filters = useMemo(() => unstable_filters({listType: 'globalSearch'}), [unstable_filters])
+  const documentFilters = useDocumentFilters({listType: 'globalSearch'})
 
   const search = useMemo(
     () =>
@@ -94,10 +92,9 @@ export function useSearch({
         unique: true,
         unstable_enableNewSearch,
         maxDepth: maxFieldDepth,
-        filter: filters.filters.filter(Boolean).join(' && '),
-        params: filters.params,
+        ...documentFilters.filter,
       }),
-    [client, filters, maxFieldDepth, schema, unstable_enableNewSearch],
+    [client, documentFilters.filter, maxFieldDepth, schema, unstable_enableNewSearch],
   )
 
   const handleQueryChange = useObservableCallback(

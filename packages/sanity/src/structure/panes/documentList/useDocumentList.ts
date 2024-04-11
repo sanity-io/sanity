@@ -1,7 +1,13 @@
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {concat, fromEvent, merge, of, Subject, throwError} from 'rxjs'
 import {catchError, map, mergeMap, scan, startWith, take} from 'rxjs/operators'
-import {DEFAULT_STUDIO_CLIENT_OPTIONS, useClient, useSchema, useWorkspace} from 'sanity'
+import {
+  DEFAULT_STUDIO_CLIENT_OPTIONS,
+  useClient,
+  useDocumentFilters,
+  useSchema,
+  useWorkspace,
+} from 'sanity'
 import {useSearchMaxFieldDepth} from 'sanity/_internalBrowser'
 
 import {DEFAULT_ORDERING, FULL_LIST_LIMIT, PARTIAL_PAGE_LIMIT} from './constants'
@@ -51,7 +57,6 @@ export function useDocumentList(opts: UseDocumentListOpts): DocumentListState {
     apiVersion: apiVersion || DEFAULT_STUDIO_CLIENT_OPTIONS.apiVersion,
   })
   const {unstable_enableNewSearch = false} = useWorkspace().search
-  const {unstable_filters} = useWorkspace().document
   const schema = useSchema()
   const maxFieldDepth = useSearchMaxFieldDepth()
 
@@ -59,8 +64,7 @@ export function useDocumentList(opts: UseDocumentListOpts): DocumentListState {
   const {onRetry, error, result} = resultState
 
   const documents = result?.documents
-
-  const filters = useMemo(() => unstable_filters({listType: 'documentList'}), [unstable_filters])
+  const {combineFilters} = useDocumentFilters({listType: 'documentList'})
 
   // Filter out published documents that have drafts to avoid duplicates in the list.
   const items = useMemo(
@@ -150,9 +154,11 @@ export function useDocumentList(opts: UseDocumentListOpts): DocumentListState {
 
     return listenSearchQuery({
       client,
-      filter: [filter, ...filters.filters].filter(Boolean).join(' && '),
       limit,
-      params: {...paramsProp, ...filters.params},
+      ...combineFilters({
+        filters: [filter],
+        params: paramsProp,
+      }),
       schema,
       searchQuery: searchQuery || '',
       sort,
@@ -188,7 +194,7 @@ export function useDocumentList(opts: UseDocumentListOpts): DocumentListState {
     sortOrder,
     client,
     filter,
-    filters,
+    combineFilters,
     paramsProp,
     schema,
     searchQuery,

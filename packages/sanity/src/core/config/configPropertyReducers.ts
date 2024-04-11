@@ -203,10 +203,15 @@ export const documentFiltersReducer: ConfigPropertyReducer<
   if (typeof documentFilters === 'function') return documentFilters(prev, context)
 
   if (Array.isArray(documentFilters)) {
-    return {
-      ...prev,
-      filters: [...prev.filters, ...documentFilters],
-    }
+    return combineFilters(prev, {
+      params: {},
+      filters: documentFilters,
+    })
+  }
+
+  // isDocumentFilter(documentFilter)
+  if ('filters' in documentFilters || 'params' in documentFilters) {
+    return combineFilters(prev, documentFilters)
   }
 
   throw new Error(
@@ -392,4 +397,21 @@ export const newSearchEnabledReducer: ConfigPropertyReducer<boolean, ConfigConte
   {search},
 ): boolean => {
   return prev || search?.unstable_enableNewSearch || false
+}
+
+// TODO: Move me
+function combineFilters(...filters: DocumentFilters[]): DocumentFilters {
+  return filters.reduce<DocumentFilters>(
+    (combinedFilters, filter) => ({
+      filters: combinedFilters.filters.concat(filter.filters),
+      params: {
+        ...combinedFilters.params,
+        ...filter.params,
+      },
+    }),
+    {
+      filters: [],
+      params: {},
+    },
+  )
 }
