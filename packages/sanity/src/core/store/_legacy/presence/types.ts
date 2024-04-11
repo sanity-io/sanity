@@ -1,3 +1,4 @@
+import {type EditorSelection} from '@sanity/portable-text-editor'
 import {type Path, type User} from '@sanity/types'
 
 /** @internal */
@@ -19,6 +20,7 @@ export interface PresenceLocation {
   documentId: string
   lastActiveAt: string // iso date
   path: Path
+  selection?: EditorSelection
 }
 
 /** @internal */
