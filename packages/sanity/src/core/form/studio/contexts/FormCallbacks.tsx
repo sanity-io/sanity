@@ -8,7 +8,7 @@ import {type FormPatch, type PatchEvent} from '../../patch'
 export interface FormCallbacksValue {
   transformPatches?: (patches: FormPatch[]) => FormPatch[]
   onChange: (patchEvent: PatchEvent) => void
-  onPathFocus: (path: Path) => void
+  onPathFocus: (path: Path, payload?: Record<string, unknown>) => void
   onPathBlur: (path: Path) => void
   onPathOpen: (path: Path) => void
   onSetPathCollapsed: (path: Path, collapsed: boolean) => void
@@ -39,8 +39,8 @@ export const FormCallbacksProvider = memo(function FormCallbacksProvider(
     ref.current.onChange(patchEvent)
   }, [])
 
-  const onPathFocus = useCallback((path: Path) => {
-    ref.current.onPathFocus(path)
+  const onPathFocus = useCallback((path: Path, payload?: Record<string, unknown>) => {
+    ref.current.onPathFocus(path, payload)
   }, [])
   const onPathBlur = useCallback((path: Path) => {
     ref.current.onPathBlur(path)

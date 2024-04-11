@@ -226,7 +226,7 @@ export interface ArrayOfObjectsInputProps<
   /**
    * @hidden
    * @beta */
-  onPathFocus: (path: Path) => void
+  onPathFocus: (path: Path, payload?: Record<string, unknown>) => void
 
   /**
    * for array inputs using expand/collapse semantics for items
