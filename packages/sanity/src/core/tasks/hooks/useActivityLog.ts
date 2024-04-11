@@ -1,11 +1,11 @@
 import {type TransactionLogEventWithEffects} from '@sanity/types'
 import {useCallback, useEffect, useState} from 'react'
 
-import {useClient} from '../../hooks/useClient'
+import {useClient} from '../../hooks'
 import {getJsonStream} from '../../store/_legacy/history/history/getJsonStream'
-import {getPublishedId} from '../../util/draftUtils'
+import {getPublishedId} from '../../util'
 import {type FieldChange, trackFieldChanges} from '../components/activity/helpers/parseTransactions'
-import {API_VERSION} from '../constants/API_VERSION'
+import {API_VERSION} from '../constants'
 import {type TaskDocument} from '../types'
 
 export function useActivityLog(task: TaskDocument): {

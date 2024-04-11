@@ -1,8 +1,8 @@
 import {useEffect, useMemo} from 'react'
 
-import {LoadingBlock} from '../../../../components/loadingBlock'
+import {LoadingBlock} from '../../../../components'
 import {type Config, prepareConfig} from '../../../../config'
-import {useClient} from '../../../../hooks/useClient'
+import {useClient} from '../../../../hooks'
 import {ResourceCacheProvider} from '../../../../store'
 import {
   SourceProvider,
@@ -11,7 +11,7 @@ import {
   useWorkspaceLoader,
   WorkspaceProvider,
 } from '../../../../studio'
-import {API_VERSION} from '../../../constants/API_VERSION'
+import {API_VERSION} from '../../../constants'
 import {type FormMode} from '../../../types'
 import {taskSchema} from './taskSchema'
 

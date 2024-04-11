@@ -1,4 +1,4 @@
-import {AddCommentIcon} from '@sanity/icons'
+import {AddCommentIcon, CommentIcon} from '@sanity/icons'
 import {type CurrentUser, type PortableTextBlock} from '@sanity/types'
 import {
   // eslint-disable-next-line no-restricted-imports
@@ -14,14 +14,10 @@ import {styled} from 'styled-components'
 import {Button, Popover, Tooltip} from '../../../../ui-components'
 import {type UserListWithPermissionsHookValue} from '../../../hooks'
 import {Translate, useTranslation} from '../../../i18n'
-import {
-  CommentIcon,
-  CommentInput,
-  type CommentInputHandle,
-  type CommentMessage,
-  hasCommentMessageValue,
-} from '../..'
+import {CommentInput, type CommentInputHandle} from '../../components'
+import {hasCommentMessageValue} from '../../helpers'
 import {commentsLocaleNamespace} from '../../i18n'
+import {type CommentMessage} from '../../types'
 
 const ContentStack = styled(Stack)`
   width: 320px;

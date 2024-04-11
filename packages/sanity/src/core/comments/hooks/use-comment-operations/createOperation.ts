@@ -2,7 +2,7 @@ import {type SanityClient} from '@sanity/client'
 import {type CurrentUser} from '@sanity/types'
 import {uuid} from '@sanity/uuid'
 
-import {type Tool} from '../../../config/types'
+import {type Tool} from '../../../config'
 import {
   type CommentContext,
   type CommentCreatePayload,

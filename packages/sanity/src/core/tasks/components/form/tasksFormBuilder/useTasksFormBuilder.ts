@@ -19,7 +19,7 @@ import {
   useValidationStatus,
 } from '../../../../hooks'
 import {type DocumentPresence} from '../../../../store'
-import {useUnique} from '../../../../util/useUnique'
+import {useUnique} from '../../../../util'
 import {type TaskDocument} from '../../../types'
 
 type TasksFormBuilder =

@@ -9,7 +9,7 @@ import {css, styled} from 'styled-components'
 import {Button} from '../../../../../ui-components'
 import {FormFieldHeaderText, type ObjectFieldProps, set, unset} from '../../../../form'
 import {useSchema} from '../../../../hooks'
-import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {useTranslation} from '../../../../i18n'
 import {useDocumentPresence} from '../../../../store'
 import {
   SearchPopover,

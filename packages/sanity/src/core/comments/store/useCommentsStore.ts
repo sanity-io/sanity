@@ -2,7 +2,7 @@ import {type ListenEvent, type ListenOptions, type SanityClient} from '@sanity/c
 import {useCallback, useEffect, useMemo, useReducer, useRef, useState} from 'react'
 import {catchError, of} from 'rxjs'
 
-import {getPublishedId} from '../../util/draftUtils'
+import {getPublishedId} from '../../util'
 import {type CommentDocument, type Loadable} from '../types'
 import {commentsReducer, type CommentsReducerAction, type CommentsReducerState} from './reducer'
 

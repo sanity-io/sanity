@@ -1,4 +1,4 @@
-import {LoadingBlock} from '../../../components/loadingBlock'
+import {LoadingBlock} from '../../../components'
 import {WorkspaceLoader} from '../../../studio'
 
 function ConfigErrorsScreen() {

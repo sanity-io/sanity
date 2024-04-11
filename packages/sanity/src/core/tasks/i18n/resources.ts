@@ -1,5 +1,5 @@
 /* eslint sort-keys: "error" */
-import {defineLocalesResources} from '../../i18n/helpers'
+import {defineLocalesResources} from '../../i18n'
 
 /**
  * Defined locale strings for the task tool, in US English.

@@ -4,7 +4,7 @@ import {uuid} from '@sanity/uuid'
 import {useCallback, useMemo} from 'react'
 import {useRouterState} from 'sanity/router'
 
-import {useTools} from '../../../hooks/useTools'
+import {useTools} from '../../../hooks'
 import {
   type CommentCreatePayload,
   type CommentDocument,

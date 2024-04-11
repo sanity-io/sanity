@@ -8,7 +8,7 @@ import {type ObjectFieldProps, set, useFormValue} from '../../../../form'
 import {useClient} from '../../../../hooks'
 import {useWorkspace} from '../../../../studio'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../../studioClient'
-import {useDocumentPreviewValues} from '../../../hooks/useDocumentPreviewValues'
+import {useDocumentPreviewValues} from '../../../hooks'
 import {type TaskContext, type TaskDocument} from '../../../types'
 import {CurrentWorkspaceProvider} from '../CurrentWorkspaceProvider'
 

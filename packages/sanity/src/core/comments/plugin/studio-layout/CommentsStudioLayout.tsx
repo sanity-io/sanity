@@ -1,8 +1,8 @@
-import {ConditionalWrapper} from '../../../../ui-components/conditionalWrapper'
-import {type LayoutProps} from '../../../config/studio/types'
-import {useFeatureEnabled} from '../../../hooks/useFeatureEnabled'
-import {AddonDatasetProvider} from '../../../studio/addonDataset'
-import {CommentsOnboardingProvider, CommentsUpsellProvider} from '../..'
+import {ConditionalWrapper} from '../../../../ui-components'
+import {type LayoutProps} from '../../../config'
+import {useFeatureEnabled} from '../../../hooks'
+import {AddonDatasetProvider} from '../../../studio'
+import {CommentsOnboardingProvider, CommentsUpsellProvider} from '../../context'
 
 export function CommentsStudioLayout(props: LayoutProps) {
   const {enabled, isLoading} = useFeatureEnabled('studioComments')

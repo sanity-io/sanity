@@ -3,7 +3,7 @@ import {Box, Card, Container, Flex, Stack} from '@sanity/ui'
 import {styled} from 'styled-components'
 
 import {Button} from '../../../../ui-components'
-import {UpsellDescriptionSerializer} from '../../../studio/upsell/upsellDescriptionSerializer'
+import {UpsellDescriptionSerializer} from '../../../studio'
 import {type UpsellData} from '../../types'
 
 const Image = styled.img`

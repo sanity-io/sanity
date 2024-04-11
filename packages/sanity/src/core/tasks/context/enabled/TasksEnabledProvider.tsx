@@ -1,6 +1,6 @@
 import {useMemo} from 'react'
 
-import {useFeatureEnabled} from '../../../hooks/useFeatureEnabled'
+import {useFeatureEnabled} from '../../../hooks'
 import {useWorkspace} from '../../../studio'
 import {TasksEnabledContext} from './TasksEnabledContext'
 import {type TasksEnabledContextValue} from './types'

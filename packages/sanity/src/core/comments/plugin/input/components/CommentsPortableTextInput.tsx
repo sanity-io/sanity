@@ -14,25 +14,29 @@ import {AnimatePresence} from 'framer-motion'
 import {debounce} from 'lodash'
 import {memo, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 
-import {type PortableTextInputProps} from '../../../../form/types'
-import {useCurrentUser} from '../../../../store/user/hooks'
+import {type PortableTextInputProps} from '../../../../form'
+import {useCurrentUser} from '../../../../store'
+import {CommentInlineHighlightSpan} from '../../../components'
+import {isTextSelectionComment} from '../../../helpers'
 import {
-  buildRangeDecorations,
-  buildRangeDecorationSelectionsFromComments,
-  buildTextSelectionFromFragment,
-  type CommentDocument,
-  CommentInlineHighlightSpan,
-  type CommentMessage,
-  type CommentsTextSelectionItem,
-  type CommentsUIMode,
-  type CommentUpdatePayload,
-  isTextSelectionComment,
   useComments,
   useCommentsEnabled,
   useCommentsScroll,
   useCommentsSelectedPath,
   useCommentsUpsell,
-} from '../../..'
+} from '../../../hooks'
+import {
+  type CommentDocument,
+  type CommentMessage,
+  type CommentsTextSelectionItem,
+  type CommentsUIMode,
+  type CommentUpdatePayload,
+} from '../../../types'
+import {
+  buildRangeDecorations,
+  buildRangeDecorationSelectionsFromComments,
+  buildTextSelectionFromFragment,
+} from '../../../utils'
 import {getSelectionBoundingRect, useAuthoringReferenceElement} from '../helpers'
 import {FloatingButtonPopover} from './FloatingButtonPopover'
 import {InlineCommentInputPopover} from './InlineCommentInputPopover'

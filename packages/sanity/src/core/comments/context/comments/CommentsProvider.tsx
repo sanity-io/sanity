@@ -2,10 +2,9 @@ import {orderBy} from 'lodash'
 import {memo, type ReactNode, useCallback, useMemo, useState} from 'react'
 
 import {useEditState, useSchema, useUserListWithPermissions} from '../../../hooks'
-import {useCurrentUser} from '../../../store/user/hooks'
-import {useAddonDataset} from '../../../studio/addonDataset'
-import {useWorkspace} from '../../../studio/workspace'
-import {getPublishedId} from '../../../util/draftUtils'
+import {useCurrentUser} from '../../../store'
+import {useAddonDataset, useWorkspace} from '../../../studio'
+import {getPublishedId} from '../../../util'
 import {
   type CommentOperationsHookOptions,
   useCommentOperations,
@@ -19,7 +18,7 @@ import {
   type CommentThreadItem,
   type CommentUpdatePayload,
 } from '../../types'
-import {buildCommentThreadItems} from '../../utils/buildCommentThreadItems'
+import {buildCommentThreadItems} from '../../utils'
 import {CommentsContext} from './CommentsContext'
 import {type CommentsContextValue} from './types'
 

@@ -6,9 +6,20 @@ import {
 } from '@sanity/portable-text-editor'
 import {type CurrentUser, type PortableTextBlock} from '@sanity/types'
 import {type AvatarSize, focusFirstDescendant, focusLastDescendant, Stack} from '@sanity/ui'
-import {forwardRef, useCallback, useImperativeHandle, useMemo, useRef, useState} from 'react'
+import {
+  type FocusEvent,
+  type FormEvent,
+  forwardRef,
+  type KeyboardEvent,
+  type ReactNode,
+  useCallback,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 
-import {type UserListWithPermissionsHookValue} from '../../../../hooks/useUserListWithPermissions'
+import {type UserListWithPermissionsHookValue} from '../../../../hooks'
 import {editorSchemaType} from '../config'
 import {renderBlock as defaultRenderBlock} from '../render'
 import {CommentInputDiscardDialog} from './CommentInputDiscardDialog'

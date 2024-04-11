@@ -3,8 +3,8 @@ import {type ElementType, type ReactNode} from 'react'
 import {useMemoObservable} from 'react-rx'
 import {of} from 'rxjs'
 
-import {useSchema} from '../../hooks/useSchema'
-import {getPreviewStateObservable} from '../../preview/utils/getPreviewStateObservable'
+import {useSchema} from '../../hooks'
+import {getPreviewStateObservable} from '../../preview'
 import {useDocumentPreviewStore} from '../../store'
 
 interface PreviewHookOptions {

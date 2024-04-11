@@ -1,6 +1,5 @@
-import {type UpsellDialogViewedInfo} from 'sanity'
-
-import {type UpsellData} from '../../../../../structure/comments'
+import {type UpsellData} from '../../../comments'
+import {type UpsellDialogViewedInfo} from '../../../studio'
 
 export interface TasksUpsellContextValue {
   upsellDialogOpen: boolean

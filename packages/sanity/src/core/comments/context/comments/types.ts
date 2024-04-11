@@ -1,4 +1,4 @@
-import {type UserListWithPermissionsHookValue} from '../../../hooks/useUserListWithPermissions'
+import {type UserListWithPermissionsHookValue} from '../../../hooks'
 import {
   type CommentDocument,
   type CommentOperations,

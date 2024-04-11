@@ -2,7 +2,7 @@ import {TaskIcon} from '@sanity/icons'
 import {useCallback} from 'react'
 
 import {type DocumentActionDescription} from '../../config'
-import {useTranslation} from '../../i18n/hooks/useTranslation'
+import {useTranslation} from '../../i18n'
 import {useTasksEnabled, useTasksNavigation, useTasksUpsell} from '../context'
 import {tasksLocaleNamespace} from '../i18n'
 

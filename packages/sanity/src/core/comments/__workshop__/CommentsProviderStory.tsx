@@ -2,9 +2,9 @@
 import {useSelect, useString} from '@sanity/ui-workshop'
 import {useMemo} from 'react'
 
-import {ConditionalWrapper} from '../../../ui-components/conditionalWrapper'
-import {useCurrentUser} from '../../store/user/hooks'
-import {AddonDatasetProvider} from '../../studio/addonDataset'
+import {ConditionalWrapper} from '../../../ui-components'
+import {useCurrentUser} from '../../store'
+import {AddonDatasetProvider} from '../../studio'
 import {CommentsList, CommentsUpsellPanel} from '../components'
 import {CommentsEnabledProvider, CommentsProvider, CommentsUpsellProvider} from '../context'
 import {useComments, useCommentsUpsell} from '../hooks'

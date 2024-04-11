@@ -4,30 +4,34 @@ import {Fragment, useCallback, useEffect, useMemo, useRef, useState} from 'react
 import {useDocumentPane, usePaneRouter} from 'sanity/structure'
 import {styled} from 'styled-components'
 
-import {type DocumentInspectorProps} from '../../../config/document/inspector'
-import {useTranslation} from '../../../i18n/hooks/useTranslation'
-import {useCurrentUser} from '../../../store/user/hooks'
-import {useUnique} from '../../../util/useUnique'
+import {type DocumentInspectorProps} from '../../../config'
+import {useTranslation} from '../../../i18n'
+import {useCurrentUser} from '../../../store'
+import {useUnique} from '../../../util'
 import {
-  type CommentBaseCreatePayload,
   CommentDeleteDialog,
-  type CommentReactionOption,
   CommentsList,
   CommentsOnboardingPopover,
-  type CommentsSelectedPath,
-  type CommentStatus,
-  type CommentsUIMode,
   CommentsUpsellPanel,
-  type CommentUpdatePayload,
-  isTextSelectionComment,
+} from '../../components'
+import {type CommentsSelectedPath} from '../../context'
+import {isTextSelectionComment} from '../../helpers'
+import {
   useComments,
   useCommentsEnabled,
   useCommentsOnboarding,
   useCommentsScroll,
   useCommentsSelectedPath,
   useCommentsUpsell,
-} from '../..'
+} from '../../hooks'
 import {commentsLocaleNamespace} from '../../i18n'
+import {
+  type CommentBaseCreatePayload,
+  type CommentReactionOption,
+  type CommentStatus,
+  type CommentsUIMode,
+  type CommentUpdatePayload,
+} from '../../types'
 import {CommentsInspectorFeedbackFooter} from './CommentsInspectorFeedbackFooter'
 import {CommentsInspectorHeader} from './CommentsInspectorHeader'
 

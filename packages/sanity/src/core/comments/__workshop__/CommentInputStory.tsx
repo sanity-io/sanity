@@ -3,7 +3,7 @@ import {Card, Container, Flex} from '@sanity/ui'
 import {useBoolean} from '@sanity/ui-workshop'
 import {useState} from 'react'
 
-import {useCurrentUser} from '../../store/user/hooks'
+import {useCurrentUser} from '../../store'
 import {CommentInput} from '../components'
 import {CommentMessageSerializer} from '../components/pte'
 

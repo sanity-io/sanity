@@ -10,8 +10,8 @@ import {
 import {useCallback} from 'react'
 
 import {Button} from '../../../../ui-components'
-import {BetaBadge} from '../../../components/BetaBadge'
-import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {BetaBadge} from '../../../components'
+import {useTranslation} from '../../../i18n'
 import {useTasksEnabled, useTasksNavigation} from '../../context'
 import {tasksLocaleNamespace} from '../../i18n'
 import {type TaskDocument} from '../../types'

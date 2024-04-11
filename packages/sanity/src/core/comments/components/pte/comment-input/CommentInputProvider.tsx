@@ -6,8 +6,8 @@ import {
 import {isPortableTextSpan, type Path} from '@sanity/types'
 import {createContext, type ReactNode, useCallback, useMemo, useState} from 'react'
 
-import {useDidUpdate} from '../../../../form/hooks/useDidUpdate'
-import {type UserListWithPermissionsHookValue} from '../../../../hooks/useUserListWithPermissions'
+import {useDidUpdate} from '../../../../form'
+import {type UserListWithPermissionsHookValue} from '../../../../hooks'
 import {hasCommentMessageValue, useCommentHasChanged} from '../../../helpers'
 import {type CommentMessage} from '../../../types'
 

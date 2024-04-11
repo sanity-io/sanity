@@ -12,7 +12,7 @@ import {useMemo} from 'react'
 import {styled} from 'styled-components'
 
 import {Tooltip} from '../../../../ui-components'
-import {useDateTimeFormat} from '../../../hooks/useDateTimeFormat'
+import {useDateTimeFormat} from '../../../hooks'
 import {type TaskDocument} from '../../types'
 import {TasksUserAvatar} from '../TasksUserAvatar'
 import {DocumentPreview} from './DocumentPreview'

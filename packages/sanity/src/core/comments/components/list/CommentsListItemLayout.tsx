@@ -17,12 +17,15 @@ import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {IntentLink} from 'sanity/router'
 import {css, styled} from 'styled-components'
 
-import {useDidUpdate} from '../../../form/hooks/useDidUpdate'
-import {useDateTimeFormat} from '../../../hooks/useDateTimeFormat'
-import {type RelativeTimeOptions, useRelativeTime} from '../../../hooks/useRelativeTime'
-import {type UserListWithPermissionsHookValue} from '../../../hooks/useUserListWithPermissions'
+import {useDidUpdate} from '../../../form'
+import {
+  type RelativeTimeOptions,
+  useDateTimeFormat,
+  useRelativeTime,
+  type UserListWithPermissionsHookValue,
+} from '../../../hooks'
 import {Translate, useTranslation} from '../../../i18n'
-import {useUser} from '../../../store/user/hooks'
+import {useUser} from '../../../store'
 import {hasCommentMessageValue, isTextSelectionComment, useCommentHasChanged} from '../../helpers'
 import {commentsLocaleNamespace} from '../../i18n'
 import {

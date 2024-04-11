@@ -4,12 +4,16 @@ import {type ReactElement} from 'react'
 import {IntentLink} from 'sanity/router'
 import {styled} from 'styled-components'
 
-import {useDateTimeFormat, type UseDateTimeFormatOptions} from '../../../../hooks/useDateTimeFormat'
-import {type RelativeTimeOptions, useRelativeTime} from '../../../../hooks/useRelativeTime'
-import {useSchema} from '../../../../hooks/useSchema'
-import {useUser} from '../../../../store/user/hooks'
-import {TASK_STATUS} from '../../../constants/TaskStatus'
-import {useDocumentPreviewValues} from '../../../hooks/useDocumentPreviewValues'
+import {
+  type RelativeTimeOptions,
+  useDateTimeFormat,
+  type UseDateTimeFormatOptions,
+  useRelativeTime,
+  useSchema,
+} from '../../../../hooks'
+import {useUser} from '../../../../store'
+import {TASK_STATUS} from '../../../constants'
+import {useDocumentPreviewValues} from '../../../hooks'
 import {type TaskTarget} from '../../../types'
 import {type FieldChange} from './parseTransactions'
 
