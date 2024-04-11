@@ -84,6 +84,8 @@ function toActions(idPair: IdPair, mutationParams: Mutation['params']) {
         draftId: idPair.draftId,
       }
     }
+    // This action is not always interoperable with the equivalent mutation. It will fail if the
+    // published version of the document already exists.
     if (mutations.createIfNotExists) {
       return {
         actionType: 'sanity.action.document.create',
