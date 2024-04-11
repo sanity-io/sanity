@@ -44,7 +44,7 @@ export function useTrackFocusPath(props: Props): void {
         scrollIntoView(openItem.elementRef.current, {
           scrollMode: 'if-needed',
           boundary: boundaryElement,
-          block: 'start',
+          block: 'nearest',
           inline: 'start',
         })
       }
