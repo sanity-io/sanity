@@ -12,20 +12,22 @@ export function ObserveElement(props: ObserveElementProps) {
   const [el, setEl] = useState<HTMLDivElement | null>(null)
 
   useEffect(() => {
-    if (!el) return undefined
+    const target = el?.closest('[data-ui="Flex"]')
+    if (!target) return undefined
 
     const io = new IntersectionObserver(onIntersectionChange, options)
-    io.observe(el)
+    io.observe(target)
 
     return () => {
-      io.unobserve(el)
+      io.unobserve(target)
       io.disconnect()
     }
   }, [el, onIntersectionChange, options])
 
   return (
-    <Flex ref={setEl} {...rest}>
+    <Flex {...rest}>
       {children}
+      <div hidden ref={setEl} />
     </Flex>
   )
 }
