@@ -9,7 +9,7 @@ interface ObserveElementProps {
 
 export function ObserveElement(props: ObserveElementProps) {
   const {onIntersectionChange, children, options, ...rest} = props
-  const [el, setEl] = useState<HTMLDivElement | null>(null)
+  const [el, setEl] = useState<HTMLSpanElement | null>(null)
 
   useEffect(() => {
     const target = el?.closest('[data-ui="Flex"]')
@@ -27,7 +27,7 @@ export function ObserveElement(props: ObserveElementProps) {
   return (
     <Flex {...rest}>
       {children}
-      <div hidden ref={setEl} />
+      <span hidden ref={setEl} />
     </Flex>
   )
 }
