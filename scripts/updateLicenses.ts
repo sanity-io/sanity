@@ -1,8 +1,8 @@
 /**
  * Copies the ./LICENSE-file to each package folder (warning - will overwrite every license file in all monorepo packages packages)
  */
-import {promises as fs} from 'fs'
-import path from 'path'
+import {promises as fs} from 'node:fs'
+import path from 'node:path'
 
 import readPackages from './utils/readPackages'
 

@@ -1,9 +1,10 @@
+import {promises as fs} from 'node:fs'
+import path from 'node:path'
+import zlib from 'node:zlib'
+
 import {type CliCommandArguments, type CliCommandContext} from '@sanity/cli'
 import {type SanityClient} from '@sanity/client'
-import {promises as fs} from 'fs'
-import path from 'path'
 import tar from 'tar-fs'
-import zlib from 'zlib'
 
 import buildSanityStudio, {type BuildSanityStudioCommandFlags} from '../build/buildAction'
 

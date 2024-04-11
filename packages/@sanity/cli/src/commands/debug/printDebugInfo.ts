@@ -1,9 +1,10 @@
+import os from 'node:os'
+import path from 'node:path'
+import util from 'node:util'
+
 import {type SanityProject, type SanityProjectMember} from '@sanity/client'
 import {omit, pick} from 'lodash'
-import os from 'os'
-import path from 'path'
 import promiseProps from 'promise-props-recursive'
-import util from 'util'
 import xdgBasedir from 'xdg-basedir'
 
 import {

@@ -1,8 +1,8 @@
 import {constants, mkdir, open, stat} from 'node:fs/promises'
 import {dirname, join} from 'node:path'
+import {Worker} from 'node:worker_threads'
 
 import {readConfig} from '@sanity/codegen'
-import {Worker} from 'worker_threads'
 
 import {type CliCommandArguments, type CliCommandContext} from '../../types'
 import {getCliWorkerPath} from '../../util/cliWorker'

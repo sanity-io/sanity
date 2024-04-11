@@ -6,13 +6,14 @@
  * Then renders using ReactDOM to a string, which is sent back to the parent
  * process over the worker `postMessage` channel.
  */
+import fs from 'node:fs'
+import path from 'node:path'
+import {isMainThread, parentPort, Worker, workerData} from 'node:worker_threads'
+
 import chalk from 'chalk'
-import fs from 'fs'
 import importFresh from 'import-fresh'
-import path from 'path'
 import {createElement} from 'react'
 import {renderToStaticMarkup} from 'react-dom/server'
-import {isMainThread, parentPort, Worker, workerData} from 'worker_threads'
 
 import {getAliases} from './aliases'
 import {debug as serverDebug} from './debug'

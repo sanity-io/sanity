@@ -1,4 +1,4 @@
-import os from 'os'
+import os from 'node:os'
 
 export function getDeviceInfo() {
   const [avg1m, avg5m, avg10m] = os.loadavg()

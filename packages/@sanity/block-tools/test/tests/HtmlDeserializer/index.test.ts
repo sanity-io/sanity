@@ -1,8 +1,9 @@
+import * as fs from 'node:fs'
+import * as path from 'node:path'
+
 import {describe, it} from '@jest/globals'
 import * as assert from 'assert'
-import * as fs from 'fs'
 import {JSDOM} from 'jsdom'
-import * as path from 'path'
 
 import * as blockTools from '../../../src'
 import {type BlockTestFn} from './types'

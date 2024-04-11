@@ -1,4 +1,4 @@
-import os from 'os'
+import os from 'node:os'
 
 export function canLaunchBrowser(): boolean {
   const isWindowsOrMac = ['win32', 'darwin'].includes(os.platform())

@@ -1,4 +1,4 @@
-import {rm} from 'fs/promises'
+import {rm} from 'node:fs/promises'
 
 import {cleanupDangling} from './cleanupDangling'
 import {

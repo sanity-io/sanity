@@ -1,5 +1,6 @@
+import path from 'node:path'
+
 import getLatestVersion from 'get-latest-version'
-import path from 'path'
 import promiseProps from 'promise-props-recursive'
 import semver from 'semver'
 import semverCompare from 'semver-compare'

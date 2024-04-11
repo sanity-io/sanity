@@ -1,5 +1,6 @@
+import path from 'node:path'
+
 import {describe, expect} from '@jest/globals'
-import path from 'path'
 
 import {describeCliTest, testConcurrent} from './shared/describe'
 import {testServerCommand} from './shared/devServer'
