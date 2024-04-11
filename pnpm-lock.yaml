@@ -1208,8 +1208,8 @@ importers:
         specifier: 1.41.2
         version: 1.41.2
       '@portabletext/toolkit':
-        specifier: ^2.0.14
-        version: 2.0.14
+        specifier: ^2.0.15
+        version: 2.0.15
       '@repo/package.config':
         specifier: workspace:*
         version: link:../../@repo/package.config
@@ -5099,18 +5099,18 @@ packages:
     peerDependencies:
       react: ^17 || ^18
     dependencies:
-      '@portabletext/toolkit': 2.0.14
-      '@portabletext/types': 2.0.12
+      '@portabletext/toolkit': 2.0.15
+      '@portabletext/types': 2.0.13
       react: 18.2.0
 
-  /@portabletext/toolkit@2.0.14:
-    resolution: {integrity: sha512-SIg7bnfJ3nUA5N8JF6jcLE20CCrguqZDJkopHiUYBJ3y/OHIFdkBL5roLlMAY8VQOHK0CYKr9CnJ2BK/ihuuOw==}
+  /@portabletext/toolkit@2.0.15:
+    resolution: {integrity: sha512-KRNEUAd6eOxE9y591qC0sE24ZG2q27OHXe0dsPclj4IoEzf8aEuDcHR64wfFtB0aHq9Wdx3pIinmhZZcl35/vg==}
     engines: {node: ^14.13.1 || >=16.0.0}
     dependencies:
-      '@portabletext/types': 2.0.12
+      '@portabletext/types': 2.0.13
 
-  /@portabletext/types@2.0.12:
-    resolution: {integrity: sha512-dk8CcVDg7Y3DCXhuCdEJeV1GYzIfjCdEgZhrODhIiz+Zd7iXQYsdoRJXoz5lsT5w0UFxYkG+1KhQpIXSlKvyhA==}
+  /@portabletext/types@2.0.13:
+    resolution: {integrity: sha512-5xk5MSyQU9CrDho3Rsguj38jhijhD36Mk8S6mZo3huv6PM+t4M/5kJN2KFIxgvt4ONpvOEs1pVIZAV0cL0Vi+Q==}
     engines: {node: ^14.13.1 || >=16.0.0 || >=18.0.0}
 
   /@radix-ui/primitive@1.0.1:
@@ -6334,7 +6334,7 @@ packages:
       '@microsoft/tsdoc': 0.14.2
       '@microsoft/tsdoc-config': 0.16.2
       '@portabletext/react': 3.0.17(react@18.2.0)
-      '@portabletext/toolkit': 2.0.14
+      '@portabletext/toolkit': 2.0.15
       '@sanity/client': 6.15.11
       '@sanity/color': 3.0.6
       '@sanity/icons': 2.11.8(react@18.2.0)
