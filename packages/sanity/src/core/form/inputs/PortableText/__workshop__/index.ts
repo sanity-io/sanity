@@ -28,5 +28,10 @@ export default defineScope({
       title: 'Text blocks',
       component: lazy(() => import('./textBlocks')),
     },
+    {
+      name: 'user-presence-cursor',
+      title: 'User presence cursor',
+      component: lazy(() => import('./UserPresenceCursorStory')),
+    },
   ],
 })
