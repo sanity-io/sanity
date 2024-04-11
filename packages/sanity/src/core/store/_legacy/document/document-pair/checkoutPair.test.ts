@@ -33,7 +33,7 @@ test('patch', async () => {
     // console.log('submitRequest')
   }
 
-  const {draft, published} = checkoutPair(client as any, idPair, submitRequest as any)
+  const {draft, published} = checkoutPair(client as any, idPair, false, submitRequest as any)
   draft.events.subscribe((ev) => draftEventsLog.push(ev))
   published.events.subscribe((ev) => publishedEventsLog.push(ev))
 
