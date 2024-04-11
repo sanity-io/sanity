@@ -59,8 +59,8 @@ importers:
         specifier: 0.0.1-alpha.1
         version: 0.0.1-alpha.1
       '@sanity/tsdoc':
-        specifier: 1.0.22
-        version: 1.0.22(@types/node@18.19.29)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(sanity@packages+sanity)(styled-components@6.1.8)
+        specifier: 1.0.23
+        version: 1.0.23(@types/node@18.19.29)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(sanity@packages+sanity)(styled-components@6.1.8)
       '@sanity/uuid':
         specifier: ^3.0.2
         version: 3.0.2
@@ -376,7 +376,7 @@ importers:
     dependencies:
       '@portabletext/react':
         specifier: ^3.0.0
-        version: 3.0.17(react@18.2.0)
+        version: 3.0.18(react@18.2.0)
       '@react-three/cannon':
         specifier: ^6.5.2
         version: 6.6.0(@react-three/fiber@8.16.1)(react@18.2.0)(three@0.157.0)(typescript@5.4.5)
@@ -441,8 +441,8 @@ importers:
         specifier: ^1.8.3
         version: 1.9.9(@sanity/client@6.15.11)(react@18.2.0)
       '@sanity/tsdoc':
-        specifier: 1.0.22
-        version: 1.0.22(@types/node@18.19.29)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(sanity@packages+sanity)(styled-components@6.1.8)
+        specifier: 1.0.23
+        version: 1.0.23(@types/node@18.19.29)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(sanity@packages+sanity)(styled-components@6.1.8)
       '@sanity/types':
         specifier: workspace:*
         version: link:../../packages/@sanity/types
@@ -1531,7 +1531,7 @@ importers:
         version: 3.4.0
       '@portabletext/react':
         specifier: ^3.0.0
-        version: 3.0.17(react@18.2.0)
+        version: 3.0.18(react@18.2.0)
       '@rexxars/react-json-inspector':
         specifier: ^8.0.1
         version: 8.0.1(react@18.2.0)
@@ -1870,8 +1870,8 @@ importers:
         specifier: 6.4.1
         version: 6.4.1(@types/node@18.19.29)(typescript@5.4.5)
       '@sanity/tsdoc':
-        specifier: 1.0.22
-        version: 1.0.22(@types/node@18.19.29)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(sanity@packages+sanity)(styled-components@6.1.8)
+        specifier: 1.0.23
+        version: 1.0.23(@types/node@18.19.29)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(sanity@packages+sanity)(styled-components@6.1.8)
       '@sanity/ui-workshop':
         specifier: ^1.2.11
         version: 1.2.11(@sanity/icons@2.11.8)(@sanity/ui@2.1.2)(@types/node@18.19.29)(react-dom@18.2.0)(react@18.2.0)(styled-components@6.1.8)
@@ -5093,8 +5093,8 @@ packages:
       '@pnpm/network.ca-file': 1.0.2
       config-chain: 1.1.13
 
-  /@portabletext/react@3.0.17(react@18.2.0):
-    resolution: {integrity: sha512-a5z2CoEG6vtRNnMZ95hH1IRYMpY2Zhmeri839p0Os2CRlQX7PldL7B91NIhwuJd0D+9ESMNAMf4Or/XsVQWZew==}
+  /@portabletext/react@3.0.18(react@18.2.0):
+    resolution: {integrity: sha512-AsWiZin7GpA8RTTl9kmR5wiMj72Ynotjjw0bBgbmL0vOYp0jc8nNslJyPPMSMngSLzLa8+rPAg47+d9KtrzLVw==}
     engines: {node: ^14.13.1 || >=16.0.0}
     peerDependencies:
       react: ^17 || ^18
@@ -6319,8 +6319,8 @@ packages:
       - supports-color
     dev: true
 
-  /@sanity/tsdoc@1.0.22(@types/node@18.19.29)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(sanity@packages+sanity)(styled-components@6.1.8):
-    resolution: {integrity: sha512-8NBFJgYle9hXGE9bt6QYg/ZbmXOX4XP2nrMyt4f0ejmS0eevv1Xc/Ldk3Vloh5tua+M5In9a0iu/WUsjrswdhg==}
+  /@sanity/tsdoc@1.0.23(@types/node@18.19.29)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(sanity@packages+sanity)(styled-components@6.1.8):
+    resolution: {integrity: sha512-U1Yn8FyGfuSNlORMZzdGzgWk76SL1A3Smq9jBHrXp/Ymr3vxNCUUc6JZp4Amuv1TRZGhtLcxiQJ3bd1r7u/fRw==}
     engines: {node: '>=14.0.0'}
     hasBin: true
     peerDependencies:
@@ -6333,7 +6333,7 @@ packages:
       '@microsoft/api-extractor-model': 7.28.14(@types/node@18.19.29)
       '@microsoft/tsdoc': 0.14.2
       '@microsoft/tsdoc-config': 0.16.2
-      '@portabletext/react': 3.0.17(react@18.2.0)
+      '@portabletext/react': 3.0.18(react@18.2.0)
       '@portabletext/toolkit': 2.0.15
       '@sanity/client': 6.15.11
       '@sanity/color': 3.0.6

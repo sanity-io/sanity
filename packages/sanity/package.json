@@ -256,7 +256,7 @@
     "@sanity/codegen": "3.37.2",
     "@sanity/generate-help-url": "^3.0.0",
     "@sanity/pkg-utils": "6.4.1",
-    "@sanity/tsdoc": "1.0.22",
+    "@sanity/tsdoc": "1.0.23",
     "@sanity/ui-workshop": "^1.2.11",
     "@testing-library/jest-dom": "^6.2.0",
     "@testing-library/react": "^13.4.0",
