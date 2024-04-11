@@ -193,7 +193,7 @@
     "execa": "^2.0.0",
     "exif-component": "^1.0.1",
     "framer-motion": "11.0.8",
-    "get-it": "^8.4.18",
+    "get-it": "^8.4.19",
     "get-random-values-esm": "1.0.2",
     "groq-js": "^1.7.0",
     "hashlru": "^2.3.0",
