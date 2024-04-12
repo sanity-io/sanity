@@ -1,8 +1,8 @@
-import * as fs from 'node:fs'
-import * as path from 'node:path'
+import assert from 'node:assert'
+import fs from 'node:fs'
+import path from 'node:path'
 
 import {describe, it} from '@jest/globals'
-import * as assert from 'assert'
 import {JSDOM} from 'jsdom'
 
 import * as blockTools from '../../../src'
