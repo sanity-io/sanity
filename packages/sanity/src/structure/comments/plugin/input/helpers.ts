@@ -110,7 +110,7 @@ export function getSelectionBoundingRect(): DOMRect | null {
   try {
     range = selection?.getRangeAt(0)
   } catch (error) {
-    console.error('Error getting range from portable text', error)
+    console.error('Unable to get selection rect for portable text comment input', error)
   }
   const rect = range?.getBoundingClientRect()
 
