@@ -465,8 +465,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/@sanity/vision
       '@sanity/visual-editing':
-        specifier: 1.8.7
-        version: 1.8.7(@sanity/client@6.15.13)
+        specifier: 1.8.8
+        version: 1.8.8(@sanity/client@6.15.13)
       '@turf/helpers':
         specifier: ^6.0.1
         version: 6.5.0
@@ -6411,14 +6411,14 @@ packages:
       '@types/uuid': 8.3.4
       uuid: 8.3.2
 
-  /@sanity/visual-editing@1.8.7(@sanity/client@6.15.13):
-    resolution: {integrity: sha512-jUWa11VYvg7Ws/mCRXwBz0X/CmqPFG2dAfvSahqQ3x5LzIcXFaJ3BU0b+9xcEXr0wIEO+/l+eMsEQVAtBhezPw==}
+  /@sanity/visual-editing@1.8.8(@sanity/client@6.15.13):
+    resolution: {integrity: sha512-CN7HfUHWpLUDgD+a4o3x7SWW2yn63Ni3Qj4V9ZXe8njRMJ4Tv/1IW0KBtQ9tNIXgS/D1QqaIeCbM7aZ2VrY6bA==}
     engines: {node: '>=18'}
     peerDependencies:
       '@remix-run/react': '>= 2'
       '@sanity/client': ^6.15.11
       '@sveltejs/kit': '>= 2'
-      next: '>= 13'
+      next: '>= 13 || >=14.2.0-canary.0 <14.2.0'
       svelte: '>= 4'
     peerDependenciesMeta:
       '@remix-run/react':
