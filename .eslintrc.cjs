@@ -217,6 +217,26 @@ const config = {
       },
     },
 
+    // Prefer createContext in _singletons
+    {
+      files: ['packages/sanity/src/**'],
+      excludedFiles: ['**/__workshop__/**', 'packages/sanity/src/_singletons/**'],
+      rules: {
+        'no-restricted-imports': [
+          'error',
+          {
+            paths: [
+              {
+                name: 'react',
+                importNames: ['createContext'],
+                message: 'Please place context in _singletons',
+              },
+            ],
+          },
+        ],
+      },
+    },
+
     // Prefer top-level type imports in singletons because boundaries plugin doesn't support named typed imports
     {
       files: ['packages/sanity/src/_singletons/**'],
