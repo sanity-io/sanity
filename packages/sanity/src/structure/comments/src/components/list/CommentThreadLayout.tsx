@@ -6,8 +6,7 @@ import {
   Stack,
 } from '@sanity/ui'
 import {uuid} from '@sanity/uuid'
-import type * as React from 'react'
-import {useCallback, useMemo} from 'react'
+import {type MouseEvent, type ReactNode, useCallback, useMemo} from 'react'
 import {type UserListWithPermissionsHookValue, useTranslation} from 'sanity'
 import {css, styled} from 'styled-components'
 
@@ -41,7 +40,7 @@ const BreadcrumbsButton = styled(Button)(({theme}) => {
 interface CommentThreadLayoutProps {
   breadcrumbs?: CommentListBreadcrumbs
   canCreateNewThread: boolean
-  children: React.ReactNode
+  children: ReactNode
   currentUser: CurrentUser
   fieldPath: string
   isSelected: boolean
@@ -91,7 +90,7 @@ export function CommentThreadLayout(props: CommentThreadLayoutProps) {
   )
 
   const handleBreadcrumbsClick = useCallback(
-    (e: React.MouseEvent<HTMLButtonElement>) => {
+    (e: MouseEvent<HTMLButtonElement>) => {
       e.stopPropagation()
 
       onPathSelect?.({
@@ -104,7 +103,7 @@ export function CommentThreadLayout(props: CommentThreadLayoutProps) {
   )
 
   const handleNewThreadClick = useCallback(
-    (e: React.MouseEvent<HTMLDivElement>) => {
+    (e: MouseEvent<HTMLDivElement>) => {
       e.stopPropagation()
       // Skip if the click was triggered from "Enter" keydown.
       // This because we don't want to trigger `onPathSelect` when

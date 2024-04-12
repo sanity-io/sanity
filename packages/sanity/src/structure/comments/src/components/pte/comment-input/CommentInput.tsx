@@ -6,8 +6,18 @@ import {
 } from '@sanity/portable-text-editor'
 import {type CurrentUser, type PortableTextBlock} from '@sanity/types'
 import {type AvatarSize, focusFirstDescendant, focusLastDescendant, Stack} from '@sanity/ui'
-import type * as React from 'react'
-import {forwardRef, useCallback, useImperativeHandle, useMemo, useRef, useState} from 'react'
+import {
+  type FocusEvent,
+  type FormEvent,
+  forwardRef,
+  type KeyboardEvent,
+  type ReactNode,
+  useCallback,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import {type UserListWithPermissionsHookValue} from 'sanity'
 
 import {editorSchemaType} from '../config'
@@ -30,15 +40,15 @@ export interface CommentInputProps {
   focusLock?: boolean
   focusOnMount?: boolean
   mentionOptions: UserListWithPermissionsHookValue
-  onBlur?: (e: React.FormEvent<HTMLDivElement>) => void
+  onBlur?: (e: FormEvent<HTMLDivElement>) => void
   onChange: (value: PortableTextBlock[]) => void
   onDiscardCancel?: () => void
   onDiscardConfirm: () => void
-  onFocus?: (e: React.FormEvent<HTMLDivElement>) => void
-  onKeyDown?: (e: React.KeyboardEvent<Element>) => void
+  onFocus?: (e: FormEvent<HTMLDivElement>) => void
+  onKeyDown?: (e: KeyboardEvent<Element>) => void
   onMentionMenuOpenChange?: (open: boolean) => void
   onSubmit?: () => void
-  placeholder?: React.ReactNode
+  placeholder?: ReactNode
   readOnly?: boolean
   renderBlock?: RenderBlockFunction
   value: PortableTextBlock[] | null
@@ -185,7 +195,7 @@ export const CommentInput = forwardRef<CommentInputHandle, CommentInputProps>(
     )
 
     const handleFocus = useCallback(
-      (event: React.FocusEvent<HTMLDivElement>) => {
+      (event: FocusEvent<HTMLDivElement>) => {
         if (!focusLock) return
 
         const target = event.target

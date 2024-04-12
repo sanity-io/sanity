@@ -1,7 +1,6 @@
 /* eslint-disable no-restricted-imports */
 import {Popover as UIPopover, type PopoverProps as UIPopoverProps} from '@sanity/ui'
-import type * as React from 'react'
-import {forwardRef} from 'react'
+import {type ForwardedRef, forwardRef, type HTMLProps} from 'react'
 
 /** @internal */
 export type PopoverProps = Omit<UIPopoverProps, 'animate'>
@@ -14,9 +13,8 @@ export type PopoverProps = Omit<UIPopoverProps, 'animate'>
  * @internal
  */
 export const Popover = forwardRef(function Popover(
-  props: PopoverProps &
-    Omit<React.HTMLProps<HTMLDivElement>, 'as' | 'children' | 'content' | 'width'>,
-  ref: React.ForwardedRef<HTMLDivElement>,
+  props: PopoverProps & Omit<HTMLProps<HTMLDivElement>, 'as' | 'children' | 'content' | 'width'>,
+  ref: ForwardedRef<HTMLDivElement>,
 ) {
   return <UIPopover {...props} animate ref={ref} />
 })

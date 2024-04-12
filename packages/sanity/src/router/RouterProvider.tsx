@@ -1,5 +1,4 @@
-import type * as React from 'react'
-import {useCallback, useMemo} from 'react'
+import {type ReactElement, type ReactNode, useCallback, useMemo} from 'react'
 
 import {RouterContext} from './RouterContext'
 import {
@@ -32,7 +31,7 @@ export interface RouterProviderProps {
   /**
    * The child elements to render.
    */
-  children: React.ReactNode
+  children: ReactNode
 }
 
 /**
@@ -77,7 +76,7 @@ export interface RouterProviderProps {
  *
  * @public
  */
-export function RouterProvider(props: RouterProviderProps): React.ReactElement {
+export function RouterProvider(props: RouterProviderProps): ReactElement {
   const {onNavigate, router: routerProp, state} = props
 
   const resolveIntentLink = useCallback(

@@ -1,5 +1,4 @@
-import type * as React from 'react'
-import {useMemo, useState} from 'react'
+import {type ReactElement, type ReactNode, useMemo, useState} from 'react'
 import {useConfigContextFromSource, useDocumentStore, useSource} from 'sanity'
 
 import {createStructureBuilder, type DefaultDocumentNodeResolver} from './structureBuilder'
@@ -14,7 +13,7 @@ import {
 export interface StructureToolProviderProps {
   structure?: StructureResolver
   defaultDocumentNode?: DefaultDocumentNodeResolver
-  children: React.ReactNode
+  children: ReactNode
 }
 
 /** @internal */
@@ -22,7 +21,7 @@ export function StructureToolProvider({
   defaultDocumentNode,
   structure: resolveStructure,
   children,
-}: StructureToolProviderProps): React.ReactElement {
+}: StructureToolProviderProps): ReactElement {
   const [layoutCollapsed, setLayoutCollapsed] = useState(false)
   const source = useSource()
   const configContext = useConfigContextFromSource(source)

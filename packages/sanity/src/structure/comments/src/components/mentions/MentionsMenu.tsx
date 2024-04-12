@@ -1,7 +1,14 @@
 import {Box, Flex, Stack, Text} from '@sanity/ui'
 import {deburr} from 'lodash'
-import {useCallback, useImperativeHandle, useMemo, useRef, useState} from 'react'
-import * as React from 'react'
+import {
+  forwardRef,
+  type Ref,
+  useCallback,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import {
   CommandList,
   type CommandListHandle,
@@ -38,9 +45,9 @@ interface MentionsMenuProps {
   options: UserWithPermission[] | null
 }
 
-export const MentionsMenu = React.forwardRef(function MentionsMenu(
+export const MentionsMenu = forwardRef(function MentionsMenu(
   props: MentionsMenuProps,
-  ref: React.Ref<MentionsMenuHandle>,
+  ref: Ref<MentionsMenuHandle>,
 ) {
   const {t} = useTranslation(commentsLocaleNamespace)
   const {loading, onSelect, options = [], inputElement} = props
