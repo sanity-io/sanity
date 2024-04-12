@@ -117,7 +117,7 @@ function Preview(props: {value: TaskTarget; handleRemove: () => void}) {
   }
 
   return (
-    <TargetRoot border radius={2}>
+    <TargetRoot border radius={2} data-testid="task-target-field">
       <Flex gap={1} align={'center'} justify={'space-between'}>
         <Card as={CardLink} radius={2} data-as="button">
           <SearchResultItemPreview

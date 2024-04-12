@@ -48,7 +48,7 @@ export function TasksUserAvatar(props: {
 
   if (!user || !loadedUser) {
     return (
-      <AvatarRoot $size={size} $border={border}>
+      <AvatarRoot $size={size} $border={border} data-testid="no-user-avatar">
         <Text size={size}>
           <UserIcon />
         </Text>
@@ -64,7 +64,7 @@ export function TasksUserAvatar(props: {
       fallbackPlacements={['top', 'top-start']}
       placement="top-end"
     >
-      <AvatarRoot $size={size} $removeBg={!!loadedUser?.imageUrl}>
+      <AvatarRoot $size={size} $removeBg={!!loadedUser?.imageUrl} data-testid="user-avatar">
         <UserAvatar
           user={loadedUser}
           size={size}

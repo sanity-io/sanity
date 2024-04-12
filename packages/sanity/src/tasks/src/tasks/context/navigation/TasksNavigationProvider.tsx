@@ -33,6 +33,7 @@ function reducer(state: State, action: Action): State {
     case 'CREATE_TASK':
       return {
         ...state,
+        duplicateTaskValues: null,
         viewMode: 'create',
         selectedTask: uuid(),
       }
@@ -40,12 +41,14 @@ function reducer(state: State, action: Action): State {
       return {
         ...state,
         viewMode: 'edit',
+        duplicateTaskValues: null,
         selectedTask: action.payload.id,
       }
     case 'EDIT_DRAFT':
       return {
         ...state,
         viewMode: 'draft',
+        duplicateTaskValues: null,
         selectedTask: action.payload.id,
       }
     case 'DUPLICATE_TASK':
@@ -59,11 +62,15 @@ function reducer(state: State, action: Action): State {
       return {
         ...state,
         viewMode: 'list',
+        selectedTask: null,
+        duplicateTaskValues: null,
         activeTabId: action.payload,
       }
     case 'NAVIGATE_TO_LIST':
       return {
         ...state,
+        duplicateTaskValues: null,
+        selectedTask: null,
         viewMode: 'list',
       }
     default:
@@ -115,6 +122,10 @@ export const TasksNavigationProvider = ({children}: {children: ReactNode}) => {
   }, [])
 
   const handleCopyLinkToTask = useCallback(() => {
+    if (!state.selectedTask) {
+      console.error('No task selected')
+      return
+    }
     const url = new URL(window.location.href)
     url.searchParams.set('sidebar', 'tasks')
     url.searchParams.set('viewMode', state.viewMode)
@@ -142,6 +153,7 @@ export const TasksNavigationProvider = ({children}: {children: ReactNode}) => {
 
   // This is casted to a string to make it stable across renders so it doesn't trigger multiple times the effect.
   const searchParamsAsString = new URLSearchParams(router.state._searchParams).toString()
+
   useEffect(() => {
     // listen to the URL to open the tasks view if the sidebar is set to task.
     if (searchParamsAsString) {
@@ -159,7 +171,8 @@ export const TasksNavigationProvider = ({children}: {children: ReactNode}) => {
         telemetry.log(TaskLinkOpened)
       }
     }
-  }, [searchParamsAsString, telemetry])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParamsAsString])
 
   return (
     <TasksNavigationContext.Provider

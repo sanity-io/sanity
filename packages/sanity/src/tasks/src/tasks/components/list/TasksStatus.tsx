@@ -12,15 +12,12 @@ export function TasksStatus(props: TasksStatusProps) {
   const operations = useTaskOperations()
   const {documentId, status} = props
 
-  const [checkboxValue, setCheckboxValue] = useState(status === 'closed')
   const [isLoading, setIsLoading] = useState(false)
 
   const handleCheckboxChange = useCallback(
     async (event: React.ChangeEvent<HTMLInputElement>) => {
       const isChecked = event.target.checked
-      setCheckboxValue(isChecked)
       setIsLoading(true)
-
       try {
         if (isChecked) {
           await operations.edit(documentId, {status: 'closed'})
@@ -43,7 +40,11 @@ export function TasksStatus(props: TasksStatusProps) {
           <Spinner style={{marginLeft: '3.5px', marginRight: '3.5px', marginTop: '3.5px'}} />
         </div>
       ) : (
-        <Checkbox onChange={handleCheckboxChange} checked={checkboxValue} disabled={isLoading} />
+        <Checkbox
+          onChange={handleCheckboxChange}
+          checked={status === 'closed'}
+          disabled={isLoading}
+        />
       )}
     </Flex>
   )

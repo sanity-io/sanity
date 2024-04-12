@@ -81,6 +81,7 @@ export function Title(props: {
   return (
     <Root>
       <TitleInput
+        data-testid="title-input"
         ref={ref}
         autoFocus={!value}
         value={value}

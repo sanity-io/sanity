@@ -72,6 +72,7 @@ export function TasksFooterOpenTasks() {
   }
   return (
     <Button
+      data-testid="tasks-footer-open-tasks"
       mode="bleed"
       tooltipProps={{
         content: t('document.footer.open-tasks.placeholder', {

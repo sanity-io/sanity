@@ -54,7 +54,7 @@ function TaskList(props: TaskListProps) {
         </Flex>
       </SummaryBox>
 
-      <Stack space={4} marginTop={4} paddingBottom={5}>
+      <Stack space={4} marginTop={4} paddingBottom={5} data-testid={`${status}-tasks-list`}>
         {tasks?.length > 0 ? (
           tasks.map((task, index) => {
             const showDivider = index < tasks.length - 1

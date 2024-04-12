@@ -51,7 +51,12 @@ export function AssigneeCreateFormField(props: StringInputProps) {
           <Flex align="center" gap={3}>
             <Flex align="center" gap={1} flex={1}>
               <TasksUserAvatar user={mentionedUser} size={1} border={false} />
-              <Text size={1} textOverflow="ellipsis" muted={!mentionedUser}>
+              <Text
+                size={1}
+                textOverflow="ellipsis"
+                muted={!mentionedUser}
+                data-testid="assigned-user"
+              >
                 {displayText}
               </Text>
             </Flex>

@@ -41,7 +41,7 @@ export function TasksSidebarHeader(props: TasksSidebarHeaderProps) {
   const {t} = useTranslation(tasksLocaleNamespace)
 
   return (
-    <Flex justify="space-between" align="center" gap={1}>
+    <Flex justify="space-between" align="center" gap={1} data-testid="tasks-sidebar-header">
       <Flex align="center" flex={1}>
         {viewMode === 'list' ? (
           <Box padding={2}>
@@ -72,6 +72,7 @@ export function TasksSidebarHeader(props: TasksSidebarHeaderProps) {
         {viewMode === 'list' && (
           <Button
             icon={AddIcon}
+            data-testid="create-task-button"
             onClick={handleTaskCreate}
             mode="bleed"
             text={t('buttons.new.text')}
