@@ -1,16 +1,11 @@
+// Named imports to "shake away" unnecessary props
+import {name as pkgName, version as pkgVersion} from '../../../mutator/package.json'
 import {type Endpoint} from './endpoints'
 import {type FetchOptions} from './fetchStream'
 
 function getUserAgent() {
-  if (typeof window === 'undefined') {
-    // only set UA if we're in a non-browser environment
-    try {
-      const pkg = require('../../package.json')
-      return `${pkg.name}@${pkg.version}`
-      // eslint-disable-next-line no-empty
-    } catch (err) {}
-  }
-  return null
+  // only set UA if we're in a non-browser environment
+  return typeof window === 'undefined' ? `${pkgName}@${pkgVersion}` : null
 }
 
 interface SanityRequestOptions {
