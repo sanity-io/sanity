@@ -11,9 +11,9 @@ import {
   useClient,
   useProjectId,
 } from 'sanity'
+import {TasksUpsellContext} from 'sanity/_singletons'
 
 import {CommentsUpsellDialog, type UpsellData} from '../../../../../structure/comments'
-import {TasksUpsellContext} from './TasksUpsellContext'
 import {type TasksUpsellContextValue} from './types'
 
 const FEATURE = 'tasks'

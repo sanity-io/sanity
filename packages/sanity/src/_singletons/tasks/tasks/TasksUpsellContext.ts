@@ -1,6 +1,6 @@
 import {createContext} from 'react'
 
-import {type TasksUpsellContextValue} from './types'
+import type {TasksUpsellContextValue} from '../../../tasks/src/tasks/context/upsell/types'
 
 /**
  * @beta
