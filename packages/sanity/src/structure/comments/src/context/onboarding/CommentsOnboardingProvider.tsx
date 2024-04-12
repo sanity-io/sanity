@@ -1,5 +1,4 @@
-import type * as React from 'react'
-import {useCallback, useMemo, useState} from 'react'
+import {type ReactNode, useCallback, useMemo, useState} from 'react'
 
 import {CommentsOnboardingContext} from './CommentsOnboardingContext'
 import {type CommentsOnboardingContextValue} from './types'
@@ -25,7 +24,7 @@ const getLocalStorage = (): boolean => {
 }
 
 interface CommentsOnboardingProviderProps {
-  children: React.ReactNode
+  children: ReactNode
 }
 
 export function CommentsOnboardingProvider(props: CommentsOnboardingProviderProps) {

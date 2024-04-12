@@ -1,4 +1,4 @@
-import type * as React from 'react'
+import {type ReactNode} from 'react'
 import {
   type DocumentActionDescription,
   type DocumentActionGroup,
@@ -15,7 +15,7 @@ export interface Action<Args, Description> {
 export interface RenderActionCollectionProps {
   actions: Action<DocumentActionProps, DocumentActionDescription>[]
   actionProps: Omit<DocumentActionProps, 'onComplete'>
-  children: (props: {states: DocumentActionDescription[]}) => React.ReactNode
+  children: (props: {states: DocumentActionDescription[]}) => ReactNode
   onActionComplete?: () => void
   group?: DocumentActionGroup
 }

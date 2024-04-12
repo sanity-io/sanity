@@ -1,5 +1,4 @@
-import type * as React from 'react'
-import {useMemo} from 'react'
+import {type MouseEventHandler, useMemo} from 'react'
 
 import {useLink} from './useLink'
 import {useRouter} from './useRouter'
@@ -13,7 +12,7 @@ export interface UseStateLinkOptions {
   /**
    * The click event handler for the link.
    */
-  onClick?: React.MouseEventHandler<HTMLElement>
+  onClick?: MouseEventHandler<HTMLElement>
   /**
    * Whether to replace the current history entry instead of adding a new one.
    */
@@ -46,7 +45,7 @@ export interface UseStateLinkOptions {
  * ```
  */
 export function useStateLink(options: UseStateLinkOptions): {
-  onClick: React.MouseEventHandler<HTMLElement>
+  onClick: MouseEventHandler<HTMLElement>
   href: string
 } {
   const {onClick: onClickProp, replace, state, target, toIndex = false} = options

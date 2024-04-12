@@ -1,4 +1,4 @@
-import type * as React from 'react'
+import {type ReactNode} from 'react'
 import {
   type DocumentBadgeDescription,
   type DocumentBadgeProps,
@@ -15,7 +15,7 @@ export interface Badge<Args, Description> {
 export interface RenderBadgeCollectionProps {
   badges: Badge<DocumentBadgeProps, DocumentBadgeDescription>[]
   badgeProps: EditStateFor
-  children: (props: {states: DocumentBadgeDescription[]}) => React.ReactNode
+  children: (props: {states: DocumentBadgeDescription[]}) => ReactNode
   onActionComplete?: () => void
 }
 
