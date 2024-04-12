@@ -59,8 +59,8 @@ importers:
         specifier: 0.0.1-alpha.1
         version: 0.0.1-alpha.1
       '@sanity/tsdoc':
-        specifier: 1.0.23
-        version: 1.0.23(@types/node@18.19.29)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(sanity@packages+sanity)(styled-components@6.1.8)
+        specifier: 1.0.26
+        version: 1.0.26(@types/node@18.19.29)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(sanity@packages+sanity)(styled-components@6.1.8)
       '@sanity/uuid':
         specifier: ^3.0.2
         version: 3.0.2
@@ -444,8 +444,8 @@ importers:
         specifier: ^1.8.3
         version: 1.9.9(@sanity/client@6.15.13)(react@18.2.0)
       '@sanity/tsdoc':
-        specifier: 1.0.23
-        version: 1.0.23(@types/node@18.19.29)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(sanity@packages+sanity)(styled-components@6.1.8)
+        specifier: 1.0.26
+        version: 1.0.26(@types/node@18.19.29)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(sanity@packages+sanity)(styled-components@6.1.8)
       '@sanity/types':
         specifier: workspace:*
         version: link:../../packages/@sanity/types
@@ -1779,8 +1779,8 @@ importers:
         specifier: 6.6.1
         version: 6.6.1(@types/node@18.19.29)(typescript@5.4.5)
       '@sanity/tsdoc':
-        specifier: 1.0.23
-        version: 1.0.23(@types/node@18.19.29)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(sanity@packages+sanity)(styled-components@6.1.8)
+        specifier: 1.0.26
+        version: 1.0.26(@types/node@18.19.29)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(sanity@packages+sanity)(styled-components@6.1.8)
       '@sanity/ui-workshop':
         specifier: ^1.2.11
         version: 1.2.11(@sanity/icons@2.11.8)(@sanity/ui@2.1.3)(@types/node@18.19.29)(react-dom@18.2.0)(react@18.2.0)(styled-components@6.1.8)
@@ -6115,58 +6115,6 @@ packages:
       - supports-color
     dev: false
 
-  /@sanity/pkg-utils@6.4.1(@types/node@18.19.29)(typescript@5.4.5):
-    resolution: {integrity: sha512-X66IgwDLcv7gVwmxqx0ZMD9BXQeskVivRvhBqAnsbU0zVjSgvLplg5AGdzNdHX9kbeY4DYQEgjZhUyYSJASTFA==}
-    engines: {node: '>=18.17.0'}
-    hasBin: true
-    peerDependencies:
-      typescript: 5.4.x
-    dependencies:
-      '@babel/core': 7.24.4
-      '@babel/types': 7.24.0
-      '@microsoft/api-extractor': 7.43.1(@types/node@18.19.29)
-      '@microsoft/tsdoc-config': 0.16.2
-      '@optimize-lodash/rollup-plugin': 4.0.4(rollup@4.14.1)
-      '@rollup/plugin-alias': 5.1.0(rollup@4.14.1)
-      '@rollup/plugin-babel': 6.0.4(@babel/core@7.24.4)(rollup@4.14.1)
-      '@rollup/plugin-commonjs': 25.0.7(rollup@4.14.1)
-      '@rollup/plugin-json': 6.1.0(rollup@4.14.1)
-      '@rollup/plugin-node-resolve': 15.2.3(rollup@4.14.1)
-      '@rollup/plugin-replace': 5.0.5(rollup@4.14.1)
-      '@rollup/plugin-terser': 0.4.4(rollup@4.14.1)
-      '@sanity/browserslist-config': 1.0.3
-      browserslist: 4.23.0
-      cac: 6.7.14
-      chalk: 4.1.2
-      chokidar: 3.6.0
-      esbuild: 0.20.2
-      esbuild-register: 3.5.0(esbuild@0.20.2)
-      find-config: 1.0.0
-      get-latest-version: 5.1.0
-      git-url-parse: 14.0.0
-      globby: 11.1.0
-      jsonc-parser: 3.2.1
-      mkdirp: 3.0.1
-      outdent: 0.8.0
-      parse-git-config: 3.0.0
-      pkg-up: 3.1.0
-      prettier: 3.2.5
-      prettier-plugin-packagejson: 2.5.0(prettier@3.2.5)
-      pretty-bytes: 5.6.0
-      prompts: 2.4.2
-      rimraf: 4.4.1
-      rollup: 4.14.1
-      rollup-plugin-esbuild: 6.1.1(esbuild@0.20.2)(rollup@4.14.1)
-      rxjs: 7.8.1
-      treeify: 1.1.0
-      typescript: 5.4.5
-      uuid: 9.0.1
-      zod: 3.22.4
-    transitivePeerDependencies:
-      - '@types/babel__core'
-      - '@types/node'
-      - supports-color
-
   /@sanity/pkg-utils@6.6.1(@types/node@18.19.29)(typescript@5.4.5):
     resolution: {integrity: sha512-23IPa4dr5IiVr/6SuQz3/OH4XhVUyPQHat5c3ZXpFYaPmWGNSGcQ8iOIJKDSDqxq9oM+kv/3oZg18uyYu2y8kg==}
     engines: {node: '>=18.17.0'}
@@ -6219,7 +6167,6 @@ packages:
       - '@types/babel__core'
       - '@types/node'
       - supports-color
-    dev: true
 
   /@sanity/presentation@1.11.4(@sanity/client@6.15.13)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8):
     resolution: {integrity: sha512-vd4gOceLB02TzMahkBL5ViGU1AwKZvl4Y4sdY5MXIeGoUW2CJ9ys6iPQXaaylrKGMyK4WreGHCy51eZU0GLYuw==}
@@ -6319,8 +6266,8 @@ packages:
       - supports-color
     dev: true
 
-  /@sanity/tsdoc@1.0.23(@types/node@18.19.29)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(sanity@packages+sanity)(styled-components@6.1.8):
-    resolution: {integrity: sha512-U1Yn8FyGfuSNlORMZzdGzgWk76SL1A3Smq9jBHrXp/Ymr3vxNCUUc6JZp4Amuv1TRZGhtLcxiQJ3bd1r7u/fRw==}
+  /@sanity/tsdoc@1.0.26(@types/node@18.19.29)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(sanity@packages+sanity)(styled-components@6.1.8):
+    resolution: {integrity: sha512-LFuT4FcOVUdExjKD3jv9f4BfrFZv5fBamnbs63WU8zxB0QemWn6TmEYxpavTBQ8iSHqGooSGxwpUF0I6VI7z8Q==}
     engines: {node: '>=14.0.0'}
     hasBin: true
     peerDependencies:
@@ -6338,7 +6285,7 @@ packages:
       '@sanity/client': 6.15.13
       '@sanity/color': 3.0.6
       '@sanity/icons': 2.11.8(react@18.2.0)
-      '@sanity/pkg-utils': 6.4.1(@types/node@18.19.29)(typescript@5.4.5)
+      '@sanity/pkg-utils': 6.6.1(@types/node@18.19.29)(typescript@5.4.5)
       '@sanity/ui': 2.1.3(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8)
       '@types/cpx': 1.5.5
       '@vitejs/plugin-react': 4.2.1(vite@5.2.8)
@@ -19028,7 +18975,6 @@ packages:
       zod: ^3.18.0
     dependencies:
       zod: 3.22.4
-    dev: true
 
   /zod@3.22.4:
     resolution: {integrity: sha512-iC+8Io04lddc+mVqQ9AZ7OQ2MrUKGN+oIQyq1vemgt46jwCwLfhq7/pwnBnNXXXZb8VTVLKwp9EDkx+ryxIWmg==}
