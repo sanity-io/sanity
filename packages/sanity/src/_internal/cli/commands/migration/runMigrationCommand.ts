@@ -179,6 +179,13 @@ const runMigrationCommand: CliCommandDefinition<CreateFlags> = {
       return
     }
 
+    output.print(
+      `\n${chalk.yellow(chalk.bold('Note: During migrations, your webhooks stay active.'))}`,
+    )
+    output.print(
+      `To adjust them, launch the management interface with ${chalk.cyan('sanity manage')}, navigate to the API settings, and toggle the webhooks before and after the migration as needed.\n`,
+    )
+
     const response =
       flags.confirm &&
       (await prompt.single<boolean>({
