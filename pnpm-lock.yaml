@@ -1472,8 +1472,8 @@ importers:
         specifier: ^5.0.0
         version: 5.0.1
       '@sanity/export':
-        specifier: 3.37.2
-        version: 3.37.2
+        specifier: 3.37.3
+        version: 3.37.3
       '@sanity/icons':
         specifier: ^2.11.0
         version: 2.11.8(react@18.2.0)
@@ -5954,8 +5954,8 @@ packages:
       event-source-polyfill: 1.0.31
       eventsource: 2.0.2
 
-  /@sanity/export@3.37.2:
-    resolution: {integrity: sha512-bHMPrNyPx4f64VQYGq+KRRlp/gCxkdF3NNQei8+LQNJ+Ge23znIiItIdHNHZVftG6ilIqfMrzGXIpKEP5ytkxw==}
+  /@sanity/export@3.37.3:
+    resolution: {integrity: sha512-GlrLmRqIk9nZZGOw50AJ+emZmnsmnagVHK3YUn3EwozX19pk0UJnF2KOC8BWVYedVwUlkoTe5hyhWkaRrCAi1w==}
     engines: {node: '>=18'}
     dependencies:
       '@sanity/util': 3.37.2
