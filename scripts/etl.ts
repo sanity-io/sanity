@@ -80,8 +80,7 @@ async function etl(options: {
     customTags: tsdocConfig?.extract?.customTags,
     packagePath,
     rules: tsdocConfig?.extract?.rules,
-    // @TODO change to `strict: true` once `sanity` can run `pkg-utils build --strict`
-    strict: false,
+    strict: true,
     tsconfig: tsdocConfig?.input?.tsconfig ?? (baseConfig.tsconfig || 'tsconfig.json'),
     bundledPackages: tsdocConfig?.input?.bundledPackages,
     legacyExports: tsdocConfig?.legacyExports ?? baseConfig.legacyExports ?? true,

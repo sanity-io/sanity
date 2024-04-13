@@ -1,5 +1,5 @@
 {
-  "extends": "@repo/tsconfig/build.json",
+  "extends": "./tsconfig.settings.json",
   "include": ["./package.json", "./src", "./typings"],
   "exclude": [
     "./src/**/__fixtures__",
@@ -7,12 +7,5 @@
     "./src/**/__workshop__",
     "./src/**/*.test.ts",
     "./src/**/*.test.tsx"
-  ],
-  "compilerOptions": {
-    "rootDir": ".",
-    "outDir": "./lib",
-    "noImplicitAny": false,
-    // For import.meta.env/import.meta.hot definition and similar
-    "types": ["vite/client"]
-  }
+  ]
 }

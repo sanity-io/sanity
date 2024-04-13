@@ -28,7 +28,7 @@
 
     // Strict type-checking
     "strict": true,
-    // "noImplicitAny": true,
+    "noImplicitAny": true,
     // "strictNullChecks": true,
     // "strictFunctionTypes": true,
     // "strictPropertyInitialization": true,

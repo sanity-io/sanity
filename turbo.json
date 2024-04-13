@@ -16,6 +16,7 @@
     },
     "check:types": {
       "outputs": [],
+      "dependsOn": ["^build"],
       "outputMode": "errors-only"
     },
     "lint": {
