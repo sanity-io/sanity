@@ -38,7 +38,7 @@
     "@sanity/presentation": "1.11.4",
     "@sanity/preview-url-secret": "^1.6.1",
     "@sanity/react-loader": "^1.8.3",
-    "@sanity/tsdoc": "1.0.26",
+    "@sanity/tsdoc": "1.0.29",
     "@sanity/types": "workspace:*",
     "@sanity/ui": "^2.1.3",
     "@sanity/ui-workshop": "^1.0.0",
