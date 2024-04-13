@@ -727,8 +727,8 @@ importers:
         specifier: ^3.4.1
         version: 3.5.0(esbuild@0.20.2)
       get-it:
-        specifier: ^8.4.21
-        version: 8.4.21
+        specifier: ^8.4.23
+        version: 8.4.23
       groq-js:
         specifier: ^1.7.0
         version: 1.7.0
@@ -1595,8 +1595,8 @@ importers:
         specifier: 11.0.8
         version: 11.0.8(react-dom@18.2.0)(react@18.2.0)
       get-it:
-        specifier: ^8.4.21
-        version: 8.4.21
+        specifier: ^8.4.23
+        version: 8.4.23
       get-random-values-esm:
         specifier: 1.0.2
         version: 1.0.2
@@ -5886,7 +5886,7 @@ packages:
     dependencies:
       '@sanity/eventsource': 5.0.1
       '@vercel/stega': 0.1.0
-      get-it: 8.4.21
+      get-it: 8.4.23
       rxjs: 7.8.1
     transitivePeerDependencies:
       - supports-color
@@ -5961,7 +5961,7 @@ packages:
       '@sanity/util': 3.37.2
       archiver: 7.0.1
       debug: 4.3.4(supports-color@9.4.0)
-      get-it: 8.4.21
+      get-it: 8.4.23
       lodash: 4.17.21
       mississippi: 4.0.0
       p-queue: 2.4.2
@@ -6025,7 +6025,7 @@ packages:
       '@sanity/uuid': 3.0.2
       debug: 4.3.4(supports-color@9.4.0)
       file-url: 2.0.2
-      get-it: 8.4.21
+      get-it: 8.4.23
       get-uri: 2.0.4
       globby: 10.0.2
       gunzip-maybe: 1.4.2
@@ -11299,15 +11299,14 @@ packages:
       has-symbols: 1.0.3
       hasown: 2.0.2
 
-  /get-it@8.4.21:
-    resolution: {integrity: sha512-QKMQ0k3PLR/jEOm9ZEaQZaFNahewbYLV2U4WMRqyAriJn+rPfw4K0VMjYGse8L6rgosA2kw+gGxHmhPqKAxKSQ==}
+  /get-it@8.4.23:
+    resolution: {integrity: sha512-dmjxAuUmGC09pYc/tpaueuxg8SP7Z0HYeBspaWsnmHBaBNxWdPATrD+q9LIbQ04IYLmbqp7ORaKODoprOz+uBA==}
     engines: {node: '>=14.0.0'}
     dependencies:
       debug: 4.3.4(supports-color@9.4.0)
       decompress-response: 7.0.0
       follow-redirects: 1.15.6(debug@4.3.4)
       into-stream: 6.0.0
-      is-plain-object: 5.0.0
       is-retry-allowed: 2.2.0
       is-stream: 2.0.1
       parse-headers: 2.0.5
@@ -11320,7 +11319,7 @@ packages:
     resolution: {integrity: sha512-Q6IBWr/zzw57zIkJmNhI23eRTw3nZ4BWWK034meLwOYU9L3J3IpXiyM73u2pYUwN6U7ahkerCwg2T0jlxiLwsw==}
     engines: {node: '>=14.18'}
     dependencies:
-      get-it: 8.4.21
+      get-it: 8.4.23
       registry-auth-token: 5.0.2
       registry-url: 5.1.0
       semver: 7.6.0
