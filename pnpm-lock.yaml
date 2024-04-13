@@ -188,7 +188,7 @@ importers:
         specifier: ^3.2.5
         version: 3.2.5
       prettier-plugin-packagejson:
-        specifier: ^2.4.14
+        specifier: ^2.5.0
         version: 2.5.0(prettier@3.2.5)
       rimraf:
         specifier: ^3.0.2
