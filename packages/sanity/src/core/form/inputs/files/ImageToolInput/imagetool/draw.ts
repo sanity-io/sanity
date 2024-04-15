@@ -1,5 +1,6 @@
 import {Rect} from './2d/shapes'
 import * as utils2d from './2d/utils'
+import {type Coordinate} from './types'
 
 /** @internal */
 export function paintBackground({
@@ -175,4 +176,26 @@ export function paintHotspot({
     context.stroke()
     context.closePath()
   }
+}
+
+/** @internal */
+export function paintPointerPosition({
+  context,
+  pointerPosition,
+  scale,
+}: {
+  context: CanvasRenderingContext2D
+  pointerPosition: Coordinate | null
+  scale: number
+}): void {
+  if (!pointerPosition) {
+    return
+  }
+
+  const {x, y} = pointerPosition
+  context.beginPath()
+  context.arc(x, y, 14 * scale, 0, 2 * Math.PI, false)
+  context.fillStyle = 'lightblue'
+  context.fill()
+  context.restore()
 }

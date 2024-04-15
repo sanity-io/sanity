@@ -6,7 +6,7 @@ import * as utils2d from './2d/utils'
 import {DEFAULT_CROP, DEFAULT_HOTSPOT} from './constants'
 import * as cursors from './cursors'
 import {DragAwareCanvas} from './DragAwareCanvas'
-import {paintBackground, paintHotspot} from './draw'
+import {paintBackground, paintHotspot, paintPointerPosition} from './draw'
 import {RootContainer} from './ToolCanvas.styles'
 import {
   type Coordinate,
@@ -374,13 +374,13 @@ class ToolCanvasLegacy extends PureComponent<
   }
 
   paint(context: CanvasRenderingContext2D) {
-    const {readOnly, image, scale, clampedValue} = this.props
+    const {readOnly, image, scale, clampedValue, ratio} = this.props
+    const {pointerPosition} = this.state
     context.save()
 
-    const pxratio = this.props.ratio
-    context.scale(pxratio, pxratio)
+    context.scale(ratio, ratio)
 
-    const opacity = !readOnly && this.state.pointerPosition ? 0.8 : 0.2
+    const opacity = !readOnly && pointerPosition ? 0.8 : 0.2
 
     paintBackground({context, image, MARGIN_PX, scale})
     paintHotspot({
@@ -400,23 +400,8 @@ class ToolCanvasLegacy extends PureComponent<
       this.highlightCropHandles({context, opacity})
     }
 
-    // if (this.state.pointerPosition) {
-    //   this.paintPointerPosition({context})
-    // }
+    paintPointerPosition({context, pointerPosition, scale})
 
-    context.restore()
-  }
-
-  paintPointerPosition({context}: {context: CanvasRenderingContext2D}) {
-    if (!this.state.pointerPosition) {
-      return
-    }
-
-    const {x, y} = this.state.pointerPosition
-    context.beginPath()
-    context.arc(x, y, 14 * this.props.scale, 0, 2 * Math.PI, false)
-    context.fillStyle = 'lightblue'
-    context.fill()
     context.restore()
   }
 
