@@ -1,5 +1,5 @@
-import {memoize} from 'lodash'
-import {type PointerEvent, PureComponent} from 'react'
+import {memo, type PointerEvent, PureComponent} from 'react'
+import {useDevicePixelRatio} from 'use-device-pixel-ratio'
 
 import {Rect} from './2d/shapes'
 import * as utils2d from './2d/utils'
@@ -102,10 +102,6 @@ function getCropCursorForHandle(handle: keyof CropHandles | boolean) {
   }
 }
 
-const getDevicePixelRatio = memoize(() => {
-  return window.devicePixelRatio || 1
-})
-
 const cropHandleKeys: (keyof CropHandles)[] = [
   'left',
   'right',
@@ -117,7 +113,25 @@ const cropHandleKeys: (keyof CropHandles)[] = [
   'bottomRight',
 ]
 
-export class ToolCanvas extends PureComponent<ToolCanvasProps, ToolCanvasState> {
+function ToolCanvasComponent(props: ToolCanvasProps) {
+  const {image, readOnly, onChange, onChangeEnd, value} = props
+
+  const ratio = useDevicePixelRatio()
+
+  return (
+    <ToolCanvasLegacy
+      image={image}
+      onChange={onChange}
+      onChangeEnd={onChangeEnd}
+      ratio={ratio}
+      readOnly={readOnly}
+      value={value}
+    />
+  )
+}
+export const ToolCanvas = memo(ToolCanvasComponent)
+
+class ToolCanvasLegacy extends PureComponent<ToolCanvasProps & {ratio: number}, ToolCanvasState> {
   state: ToolCanvasState = {
     cropping: false,
     cropMoving: false,
@@ -506,7 +520,7 @@ export class ToolCanvas extends PureComponent<ToolCanvasProps, ToolCanvasState> 
     const {readOnly} = this.props
     context.save()
 
-    const pxratio = getDevicePixelRatio()
+    const pxratio = this.props.ratio
     context.scale(pxratio, pxratio)
 
     const opacity = !readOnly && this.state.pointerPosition ? 0.8 : 0.2
@@ -724,8 +738,7 @@ export class ToolCanvas extends PureComponent<ToolCanvasProps, ToolCanvasState> 
   }
 
   render() {
-    const {image, readOnly} = this.props
-    const ratio = getDevicePixelRatio()
+    const {image, readOnly, ratio} = this.props
     return (
       <RootContainer>
         <DragAwareCanvas
