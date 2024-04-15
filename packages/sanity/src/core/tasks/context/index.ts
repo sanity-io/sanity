@@ -1,4 +1,5 @@
 export * from './enabled'
+export * from './isLastPane'
 export * from './mentionUser'
 export * from './navigation'
 export * from './tasks'

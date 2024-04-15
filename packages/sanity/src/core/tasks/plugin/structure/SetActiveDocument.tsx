@@ -1,12 +1,11 @@
 import {useEffect} from 'react'
 
-import {usePane} from '../../../../structure/components'
 import {getPublishedId} from '../../../util'
-import {type ActiveDocument, useTasks, useTasksEnabled} from '../../context'
+import {type ActiveDocument, useIsLastPane, useTasks, useTasksEnabled} from '../../context'
 
 function SetActiveDocumentInner(document: ActiveDocument) {
   const {documentId, documentType} = document
-  const {isLast} = usePane()
+  const isLast = useIsLastPane()
   const {setActiveDocument} = useTasks()
 
   useEffect(() => {
