@@ -45,6 +45,18 @@ function ToolCanvasComponent(props: ToolCanvasProps) {
     [canvasClientHeight, canvasClientWidth],
   )
   const scale = useMemo(() => image.width / actualSize.width, [actualSize.width, image.width])
+  const clampedValue = useMemo(() => {
+    console.count('clampedValue')
+    const crop = Rect.fromEdges(value.crop || DEFAULT_CROP).clamp(new Rect(0, 0, 1, 1))
+
+    const hotspot = value.hotspot || DEFAULT_HOTSPOT
+    const hotspotRect = new Rect(0, 0, 1, 1)
+      .setSize(hotspot.width, hotspot.height)
+      .setCenter(hotspot.x, hotspot.y)
+      .clamp(crop)
+
+    return {crop: crop, hotspot: hotspotRect}
+  }, [value.crop, value.hotspot])
 
   const [cropping, setCropping] = useState<keyof CropHandles | false>(false)
   const [cropMoving, setCropMoving] = useState(false)
@@ -247,22 +259,11 @@ function ToolCanvasComponent(props: ToolCanvasProps) {
     },
     [scale, image.height, image.width, onChange, value],
   )
-  const getClampedValue = useCallback(() => {
-    const crop = Rect.fromEdges(value.crop || DEFAULT_CROP).clamp(new Rect(0, 0, 1, 1))
-
-    const hotspot = value.hotspot || DEFAULT_HOTSPOT
-    const hotspotRect = new Rect(0, 0, 1, 1)
-      .setSize(hotspot.width, hotspot.height)
-      .setCenter(hotspot.x, hotspot.y)
-      .clamp(crop)
-
-    return {crop: crop, hotspot: hotspotRect}
-  }, [value.crop, value.hotspot])
   const paintHotspot = useCallback(
     (context: CanvasRenderingContext2D, opacity: number) => {
       const imageRect = new Rect().setSize(image.width, image.height)
 
-      const {hotspot, crop} = getClampedValue()
+      const {hotspot, crop} = clampedValue
 
       const margin = MARGIN_PX * scale
 
@@ -390,7 +391,7 @@ function ToolCanvasComponent(props: ToolCanvasProps) {
         context.closePath()
       }
     },
-    [getClampedValue, scale, image, readOnly],
+    [image, clampedValue, scale, readOnly],
   )
   const getDragHandleCoords = useCallback(() => {
     const bbox = getHotspotRect()
@@ -479,9 +480,7 @@ function ToolCanvasComponent(props: ToolCanvasProps) {
       const opacity = !readOnly && pointerPosition ? 0.8 : 0.2
 
       paintBackground(context)
-      //return context.restore();
       paintHotspot(context, opacity)
-      // paintDragHandle(context);
       debug(context)
       paintCropBorder(context)
 
@@ -590,6 +589,7 @@ function ToolCanvasComponent(props: ToolCanvasProps) {
   )
   const handleDrag = useCallback(
     (pos: Coordinate) => {
+      console.log('handleDrag changes too much')
       if (cropping) {
         emitCrop(cropping, pos)
       } else if (cropMoving) {
@@ -603,11 +603,12 @@ function ToolCanvasComponent(props: ToolCanvasProps) {
     [cropMoving, cropping, emitCrop, emitCropMove, emitMove, emitResize, moving, resizing],
   )
   const handleDragEnd = useCallback(() => {
+    console.log('handleDragEnd changes too much')
     setMoving(false)
     setResizing(false)
     setCropping(false)
     setCropMoving(false)
-    const {hotspot, crop: rawCrop} = getClampedValue()
+    const {hotspot, crop: rawCrop} = clampedValue
 
     const crop = normalizeRect(rawCrop)
 
@@ -629,7 +630,7 @@ function ToolCanvasComponent(props: ToolCanvasProps) {
     if (onChangeEnd) {
       onChangeEnd(finalValue)
     }
-  }, [getClampedValue, onChange, onChangeEnd])
+  }, [clampedValue, onChange, onChangeEnd])
   const handlePointerOut = useCallback(() => {
     setPointerPosition(null)
   }, [])
@@ -658,12 +659,35 @@ function ToolCanvasComponent(props: ToolCanvasProps) {
         onPointerOut={handlePointerOut}
         height={image.height * ratio}
         width={image.width * ratio}
+        // @TODO tracking deps that change too often
+        cropMoving={cropMoving}
+        cropping={cropping}
+        emitCrop={emitCrop}
+        emitCropMove={emitCropMove}
+        emitMove={emitMove}
+        emitResize={emitResize}
+        moving={moving}
+        resizing={resizing}
+        getActiveCropHandleFor={getActiveCropHandleFor}
+        getCropRect={getCropRect}
+        getDragHandleCoords={getDragHandleCoords}
+        getHotspotRect={getHotspotRect}
+        scale={scale}
       />
     </RootContainer>
   )
 }
 
-export const ToolCanvas = memo(ToolCanvasComponent)
+export const ToolCanvas = memo(ToolCanvasComponent, function arePropsEqual(oldProps, newProps) {
+  const keys = new Set([...Object.keys(oldProps), ...Object.keys(newProps)])
+  for (const key of keys) {
+    if (!Object.is(oldProps[key], newProps[key])) {
+      console.count(`ToolCanvas ${key} changed`)
+      return false
+    }
+  }
+  return true
+})
 
 function normalizeRect(rect: Rect) {
   const flippedY = rect.top > rect.bottom
