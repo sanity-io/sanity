@@ -1,6 +1,6 @@
 import {Rect} from './2d/shapes'
 import * as utils2d from './2d/utils'
-import {type Coordinate} from './types'
+import {type Coordinate, type CropHandles} from './types'
 
 /** @internal */
 export function paintBackground({
@@ -279,3 +279,47 @@ export function paintCropBorder({
   context.closePath()
   context.restore()
 }
+
+/** @internal */
+export function highlightCropHandles({
+  context,
+  cropHandles,
+  cropping,
+  opacity,
+}: {
+  context: CanvasRenderingContext2D
+  cropHandles: CropHandles
+  cropping: keyof CropHandles | false
+  opacity: number
+}): void {
+  context.save()
+
+  //context.globalCompositeOperation = "difference";
+
+  cropHandleKeys.forEach((handle) => {
+    context.fillStyle =
+      cropping === handle
+        ? `rgba(202, 54, 53, ${opacity})`
+        : `rgba(230, 230, 230, ${opacity + 0.4})`
+    const {left, top, height, width} = cropHandles[handle]
+    context.fillRect(left, top, width, height)
+    context.beginPath()
+    context.fillStyle = `rgba(66, 66, 66, ${opacity})`
+    context.rect(left, top, width, height)
+    context.closePath()
+    context.stroke()
+  })
+  context.restore()
+}
+
+/** @internal */
+export const cropHandleKeys: (keyof CropHandles)[] = [
+  'left',
+  'right',
+  'top',
+  'topLeft',
+  'topRight',
+  'bottom',
+  'bottomLeft',
+  'bottomRight',
+]

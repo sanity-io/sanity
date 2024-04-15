@@ -7,6 +7,8 @@ import {DEFAULT_CROP, DEFAULT_HOTSPOT} from './constants'
 import * as cursors from './cursors'
 import {DragAwareCanvas} from './DragAwareCanvas'
 import {
+  cropHandleKeys,
+  highlightCropHandles,
   paintBackground,
   paintCropBorder,
   paintHotspot,
@@ -109,17 +111,6 @@ function getCropCursorForHandle(handle: keyof CropHandles | boolean) {
       return null
   }
 }
-
-const cropHandleKeys: (keyof CropHandles)[] = [
-  'left',
-  'right',
-  'top',
-  'topLeft',
-  'topRight',
-  'bottom',
-  'bottomLeft',
-  'bottomRight',
-]
 
 function ToolCanvasComponent(props: ToolCanvasProps) {
   const {image, readOnly, onChange, onChangeEnd, value} = props
@@ -327,8 +318,9 @@ class ToolCanvasLegacy extends PureComponent<
   }
 
   paint(context: CanvasRenderingContext2D) {
-    const {readOnly, image, scale, clampedValue, ratio, hotspotRect, cropRect} = this.props
-    const {pointerPosition} = this.state
+    const {readOnly, image, scale, clampedValue, ratio, hotspotRect, cropRect, cropHandles} =
+      this.props
+    const {cropping, pointerPosition} = this.state
     context.save()
 
     context.scale(ratio, ratio)
@@ -350,33 +342,11 @@ class ToolCanvasLegacy extends PureComponent<
     paintCropBorder({context, cropRect})
 
     if (!readOnly) {
-      this.highlightCropHandles({context, opacity})
+      highlightCropHandles({context, cropHandles, cropping, opacity})
     }
 
     paintPointerPosition({context, pointerPosition, scale})
 
-    context.restore()
-  }
-
-  highlightCropHandles({context, opacity}: {context: CanvasRenderingContext2D; opacity: number}) {
-    context.save()
-    const cropHandles = this.props.cropHandles
-
-    //context.globalCompositeOperation = "difference";
-
-    cropHandleKeys.forEach((handle) => {
-      context.fillStyle =
-        this.state.cropping === handle
-          ? `rgba(202, 54, 53, ${opacity})`
-          : `rgba(230, 230, 230, ${opacity + 0.4})`
-      const {left, top, height, width} = cropHandles[handle]
-      context.fillRect(left, top, width, height)
-      context.beginPath()
-      context.fillStyle = `rgba(66, 66, 66, ${opacity})`
-      context.rect(left, top, width, height)
-      context.closePath()
-      context.stroke()
-    })
     context.restore()
   }
 
