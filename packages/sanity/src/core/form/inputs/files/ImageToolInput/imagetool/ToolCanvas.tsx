@@ -6,7 +6,7 @@ import * as utils2d from './2d/utils'
 import {DEFAULT_CROP, DEFAULT_HOTSPOT} from './constants'
 import * as cursors from './cursors'
 import {DragAwareCanvas} from './DragAwareCanvas'
-import {paintBackground} from './draw'
+import {paintBackground, paintHotspot} from './draw'
 import {RootContainer} from './ToolCanvas.styles'
 import {
   type Coordinate,
@@ -181,6 +181,18 @@ function ToolCanvasComponent(props: ToolCanvasProps) {
       ),
     }
   }, [cropRect, scale])
+  const clampedValue = useMemo(() => {
+    const crop = Rect.fromEdges(value.crop || DEFAULT_CROP).clamp(new Rect(0, 0, 1, 1))
+
+    const hotspot = value.hotspot || DEFAULT_HOTSPOT
+    // eslint-disable-next-line @typescript-eslint/no-shadow
+    const hotspotRect = new Rect(0, 0, 1, 1)
+      .setSize(hotspot.width, hotspot.height)
+      .setCenter(hotspot.x, hotspot.y)
+      .clamp(crop)
+
+    return {crop: crop, hotspot: hotspotRect}
+  }, [value.crop, value.hotspot])
 
   return (
     <ToolCanvasLegacy
@@ -188,6 +200,7 @@ function ToolCanvasComponent(props: ToolCanvasProps) {
       hotspotRect={hotspotRect}
       cropRect={cropRect}
       cropHandles={cropHandles}
+      clampedValue={clampedValue}
       image={image}
       onChange={onChange}
       onChangeEnd={onChangeEnd}
@@ -210,6 +223,7 @@ class ToolCanvasLegacy extends PureComponent<
     hotspotRect: Rect
     cropRect: Rect
     cropHandles: CropHandles
+    clampedValue: {crop: Rect; hotspot: Rect}
   },
   ToolCanvasState
 > {
@@ -296,155 +310,6 @@ class ToolCanvasLegacy extends PureComponent<
     onChange(applyHotspotResizeBy(value, {height: delta.y, width: delta.x}))
   }
 
-  getClampedValue() {
-    const value = this.props.value
-
-    const crop = Rect.fromEdges(value.crop || DEFAULT_CROP).clamp(new Rect(0, 0, 1, 1))
-
-    const hotspot = value.hotspot || DEFAULT_HOTSPOT
-    const hotspotRect = new Rect(0, 0, 1, 1)
-      .setSize(hotspot.width, hotspot.height)
-      .setCenter(hotspot.x, hotspot.y)
-      .clamp(crop)
-
-    return {crop: crop, hotspot: hotspotRect}
-  }
-
-  paintHotspot({context, opacity}: {context: CanvasRenderingContext2D; opacity: number}) {
-    const {image, readOnly} = this.props
-
-    const imageRect = new Rect().setSize(image.width, image.height)
-
-    const {hotspot, crop} = this.getClampedValue()
-
-    const scale = this.props.scale
-    const margin = MARGIN_PX * scale
-
-    context.save()
-    drawBackdrop()
-    drawEllipse()
-    context.clip()
-    drawHole()
-    context.restore()
-    if (!readOnly) {
-      drawDragHandle(Math.PI * 1.25)
-    }
-
-    function drawEllipse() {
-      context.save()
-
-      const dest = imageRect.shrink(margin).multiply(hotspot)
-
-      const scaleY = dest.height / dest.width
-
-      context.scale(1, scaleY)
-      context.beginPath()
-      context.globalAlpha = opacity
-      context.arc(
-        dest.center.x,
-        dest.center.y / scaleY,
-        Math.abs(dest.width / 2),
-        0,
-        2 * Math.PI,
-        false,
-      )
-      context.strokeStyle = 'white'
-      context.lineWidth = 1.5 * scale
-      context.stroke()
-      context.closePath()
-
-      context.restore()
-    }
-
-    // eslint-disable-next-line max-params
-    function drawImage(
-      srcLeft: number,
-      srcTop: number,
-      srcWidth: number,
-      srcHeight: number,
-      destLeft: number,
-      destTop: number,
-      destWidth: number,
-      destHeight: number,
-    ) {
-      context.save()
-      context.drawImage(
-        image,
-        srcLeft,
-        srcTop,
-        srcWidth,
-        srcHeight,
-        destLeft,
-        destTop,
-        destWidth,
-        destHeight,
-      )
-      context.restore()
-    }
-
-    function drawHole() {
-      const src = imageRect.multiply(hotspot)
-
-      const dest = imageRect.shrink(margin).multiply(hotspot)
-
-      drawImage(
-        src.left,
-        src.top,
-        src.width,
-        src.height,
-        dest.left,
-        dest.top,
-        dest.width,
-        dest.height,
-      )
-    }
-
-    function drawBackdrop() {
-      const src = imageRect.cropRelative(crop)
-
-      const dest = imageRect.shrink(margin).cropRelative(crop)
-
-      context.save()
-      drawImage(
-        src.left,
-        src.top,
-        src.width,
-        src.height,
-        dest.left,
-        dest.top,
-        dest.width,
-        dest.height,
-      )
-      context.globalAlpha = 0.5
-      context.fillStyle = 'black'
-      context.fillRect(dest.left, dest.top, dest.width, dest.height)
-      context.restore()
-    }
-
-    function drawDragHandle(radians: number) {
-      context.save()
-
-      const radius = HOTSPOT_HANDLE_SIZE * scale
-      const dest = imageRect.shrink(margin).multiply(hotspot)
-
-      const point = utils2d.getPointAtCircumference(radians, dest)
-
-      context.beginPath()
-      context.arc(point.x, point.y, radius, 0, 2 * Math.PI, false)
-      context.fillStyle = 'rgb(255,255,255)'
-      context.fill()
-      context.closePath()
-      context.restore()
-
-      context.beginPath()
-      context.arc(point.x, point.y, radius, 0, 2 * Math.PI, false)
-      context.strokeStyle = 'rgb(0, 0, 0)'
-      context.lineWidth = 0.5 * scale
-      context.stroke()
-      context.closePath()
-    }
-  }
-
   getDragHandleCoords() {
     const bbox = this.props.hotspotRect
     const point = utils2d.getPointAtCircumference(Math.PI * 1.25, bbox)
@@ -509,7 +374,7 @@ class ToolCanvasLegacy extends PureComponent<
   }
 
   paint(context: CanvasRenderingContext2D) {
-    const {readOnly, image, scale} = this.props
+    const {readOnly, image, scale, clampedValue} = this.props
     context.save()
 
     const pxratio = this.props.ratio
@@ -518,7 +383,16 @@ class ToolCanvasLegacy extends PureComponent<
     const opacity = !readOnly && this.state.pointerPosition ? 0.8 : 0.2
 
     paintBackground({context, image, MARGIN_PX, scale})
-    this.paintHotspot({context, opacity})
+    paintHotspot({
+      clampedValue,
+      context,
+      HOTSPOT_HANDLE_SIZE,
+      image,
+      MARGIN_PX,
+      opacity,
+      readOnly,
+      scale,
+    })
     this.debug({context})
     this.paintCropBorder({context})
 
@@ -679,7 +553,7 @@ class ToolCanvasLegacy extends PureComponent<
   handleDragEnd = () => {
     const {onChange, onChangeEnd} = this.props
     this.setState({moving: false, resizing: false, cropping: false, cropMoving: false})
-    const {hotspot, crop: rawCrop} = this.getClampedValue()
+    const {hotspot, crop: rawCrop} = this.props.clampedValue
 
     const crop = normalizeRect(rawCrop)
 
