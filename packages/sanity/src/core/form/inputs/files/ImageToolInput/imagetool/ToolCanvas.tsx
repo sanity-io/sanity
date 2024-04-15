@@ -5,8 +5,9 @@ import {Rect} from './2d/shapes'
 import * as utils2d from './2d/utils'
 import {DEFAULT_CROP, DEFAULT_HOTSPOT} from './constants'
 import * as cursors from './cursors'
+import {DragAwareCanvas} from './DragAwareCanvas'
 import {getBackingStoreRatio} from './getBackingStoreRatio'
-import {CanvasContainer, RootContainer} from './ToolCanvas.styles'
+import {RootContainer} from './ToolCanvas.styles'
 import {
   type Coordinate,
   type Crop,
@@ -713,8 +714,10 @@ export class ToolCanvas extends PureComponent<ToolCanvasProps, ToolCanvasState> 
     })
   }
 
-  setCanvas = (node: {domNode: HTMLCanvasElement}) => {
-    this.canvas = node
+  setCanvas = (node: HTMLCanvasElement | null) => {
+    if (node) {
+      this.canvas = {domNode: node}
+    }
   }
 
   render() {
@@ -722,9 +725,9 @@ export class ToolCanvas extends PureComponent<ToolCanvasProps, ToolCanvasState> 
     const ratio = getDevicePixelRatio()
     return (
       <RootContainer>
-        <CanvasContainer
+        <DragAwareCanvas
           readOnly={readOnly}
-          ref={this.setCanvas as any}
+          ref={this.setCanvas}
           onDrag={this.handleDrag}
           onDragStart={this.handleDragStart}
           onDragEnd={this.handleDragEnd}
