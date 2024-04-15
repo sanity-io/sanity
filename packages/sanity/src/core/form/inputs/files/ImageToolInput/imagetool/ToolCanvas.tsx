@@ -35,7 +35,15 @@ const CROP_HANDLE_SIZE = 12
 const HOTSPOT_HANDLE_SIZE = 10
 
 function ToolCanvasComponent(props: ToolCanvasProps) {
-  const {image, readOnly, onChange, onChangeEnd, value} = props
+  const {
+    image: imageProp,
+    readOnly,
+    onChange: onChangeProp,
+    onChangeEnd: onChangeEndProp,
+    value: valueProp,
+  } = props
+  const image = useEffectRef(props.image)
+  const onChange = useEffectRef(props.onChange)
 
   const canvas = useRef<HTMLCanvasElement | null>(null)
   const [canvasClientHeight, setCanvasClientHeight] = useState(0)
@@ -44,25 +52,33 @@ function ToolCanvasComponent(props: ToolCanvasProps) {
     () => ({height: canvasClientHeight, width: canvasClientWidth}),
     [canvasClientHeight, canvasClientWidth],
   )
-  const scale = useMemo(() => image.width / actualSize.width, [actualSize.width, image.width])
+  const imageSize = useMemo(
+    () => ({height: props.image.height, width: props.image.width}),
+    [props.image.height, props.image.width],
+  )
+  const scaleMemo = useMemo(
+    () => imageSize.width / actualSize.width,
+    [actualSize.width, imageSize.width],
+  )
+  const scale = useEffectRef(scaleMemo)
   const clampedValue = useMemo(() => {
     console.count('clampedValue')
-    const crop = Rect.fromEdges(value.crop || DEFAULT_CROP).clamp(new Rect(0, 0, 1, 1))
+    const crop = Rect.fromEdges(valueProp.crop || DEFAULT_CROP).clamp(new Rect(0, 0, 1, 1))
 
-    const hotspot = value.hotspot || DEFAULT_HOTSPOT
+    const hotspot = valueProp.hotspot || DEFAULT_HOTSPOT
     const hotspotRect = new Rect(0, 0, 1, 1)
       .setSize(hotspot.width, hotspot.height)
       .setCenter(hotspot.x, hotspot.y)
       .clamp(crop)
 
     return {crop: crop, hotspot: hotspotRect}
-  }, [value.crop, value.hotspot])
+  }, [valueProp.crop, valueProp.hotspot])
 
-  const [cropping, setCropping] = useState<keyof CropHandles | false>(false)
-  const [cropMoving, setCropMoving] = useState(false)
-  const [moving, setMoving] = useState(false)
-  const [resizing, setResizing] = useState(false)
-  const [pointerPosition, setPointerPosition] = useState<Coordinate | null>(null)
+  const [croppingState, setCropping] = useState<keyof CropHandles | false>(false)
+  const [cropMovingState, setCropMoving] = useState(false)
+  const [movingState, setMoving] = useState(false)
+  const [resizingState, setResizing] = useState(false)
+  const pointerPosition = useRef<Coordinate | null>(null)
 
   useEffect(() => {
     const node = canvas.current
@@ -85,142 +101,30 @@ function ToolCanvasComponent(props: ToolCanvasProps) {
     }
   }, [])
 
-  const getHotspotRect = useCallback(() => {
-    const hotspot: Hotspot = value.hotspot || DEFAULT_HOTSPOT
-    const hotspotRect = new Rect()
-      .setSize(hotspot.width, hotspot.height)
-      .setCenter(hotspot.x, hotspot.y)
-
-    return new Rect()
-      .setSize(image.width, image.height)
-      .shrink(MARGIN_PX * scale)
-      .multiply(hotspotRect)
-  }, [image.height, image.width, scale, value.hotspot])
-  const getCropRect = useCallback(() => {
-    return new Rect()
-      .setSize(image.width, image.height)
-      .shrink(MARGIN_PX * scale)
-      .cropRelative(Rect.fromEdges(value.crop || DEFAULT_CROP).clamp(new Rect(0, 0, 1, 1)))
-  }, [scale, image.height, image.width, value.crop])
-  const getCropHandles = useCallback<() => CropHandles>(() => {
-    const inner = getCropRect()
-
-    const handleSize = CROP_HANDLE_SIZE * scale
-
-    const halfCropHandleSize = handleSize / 2
-
-    const cropHandle = new Rect(0, 0, handleSize, handleSize)
-    return {
-      left: cropHandle.setTopLeft(
-        inner.left - halfCropHandleSize,
-        inner.center.y - halfCropHandleSize,
-      ),
-      right: cropHandle.setTopLeft(
-        inner.right - halfCropHandleSize,
-        inner.center.y - halfCropHandleSize,
-      ),
-
-      top: cropHandle.setTopLeft(
-        inner.center.x - halfCropHandleSize,
-        inner.top - halfCropHandleSize,
-      ),
-      topLeft: cropHandle.setTopLeft(
-        inner.left - halfCropHandleSize,
-        inner.top - halfCropHandleSize,
-      ),
-      topRight: cropHandle.setTopLeft(
-        inner.right - halfCropHandleSize,
-        inner.top - halfCropHandleSize,
-      ),
-
-      bottom: cropHandle.setTopLeft(
-        inner.center.x - halfCropHandleSize,
-        inner.bottom - halfCropHandleSize,
-      ),
-      bottomLeft: cropHandle.setTopLeft(
-        inner.left - halfCropHandleSize,
-        inner.bottom - halfCropHandleSize,
-      ),
-      bottomRight: cropHandle.setTopLeft(
-        inner.right - halfCropHandleSize,
-        inner.bottom - halfCropHandleSize,
-      ),
-    }
-  }, [getCropRect, scale])
-  const getActiveCropHandleFor = useCallback(
-    ({x, y}: Coordinate) => {
-      const cropHandles = getCropHandles()
-      for (const position of cropHandleKeys) {
-        if (utils2d.isPointInRect({x, y}, cropHandles[position])) {
-          return position
-        }
-      }
-      return false
-    },
-    [getCropHandles],
-  )
   const emitMove = useCallback(
     (pos: Coordinate) => {
       const delta = {
-        x: (pos.x * scale) / image.width,
-        y: (pos.y * scale) / image.height,
+        x: (pos.x * scaleMemo) / imageProp.width,
+        y: (pos.y * scaleMemo) / imageProp.height,
       }
 
-      onChange(applyHotspotMoveBy(value, delta))
+      onChange.current(applyHotspotMoveBy(valueProp, delta))
     },
-    [scale, image.height, image.width, onChange, value],
+    [scaleMemo, imageProp.height, imageProp.width, valueProp, onChange],
   )
   const emitCropMove = useCallback(
     (pos: Coordinate) => {
-      const left = (pos.x * scale) / image.width
-      const right = (-pos.x * scale) / image.width
-      const top = (pos.y * scale) / image.height
-      const bottom = (-pos.y * scale) / image.height
+      const left = (pos.x * scaleMemo) / imageProp.width
+      const right = (-pos.x * scaleMemo) / imageProp.width
+      const top = (pos.y * scaleMemo) / imageProp.height
+      const bottom = (-pos.y * scaleMemo) / imageProp.height
       const delta = {left, right, top, bottom}
 
-      if (checkCropBoundaries(value, delta)) {
-        onChange(applyCropMoveBy(value, delta))
+      if (checkCropBoundaries(valueProp, delta)) {
+        onChange.current(applyCropMoveBy(valueProp, delta))
       }
     },
-    [scale, image.height, image.width, onChange, value],
-  )
-  const highlightCropHandles = useCallback(
-    (context: CanvasRenderingContext2D, opacity: number) => {
-      context.save()
-      const cropHandles = getCropHandles()
-
-      //context.globalCompositeOperation = "difference";
-
-      cropHandleKeys.forEach((handle) => {
-        context.fillStyle =
-          cropping === handle
-            ? `rgba(202, 54, 53, ${opacity})`
-            : `rgba(230, 230, 230, ${opacity + 0.4})`
-        const {left, top, height, width} = cropHandles[handle]
-        context.fillRect(left, top, width, height)
-        context.beginPath()
-        context.fillStyle = `rgba(66, 66, 66, ${opacity})`
-        context.rect(left, top, width, height)
-        context.closePath()
-        context.stroke()
-      })
-      context.restore()
-    },
-    [cropping, getCropHandles],
-  )
-  const paintCropBorder = useCallback(
-    (context: CanvasRenderingContext2D) => {
-      const cropRect = getCropRect()
-      context.save()
-      context.beginPath()
-      context.fillStyle = 'rgba(66, 66, 66, 0.9)'
-      context.lineWidth = 1
-      context.rect(cropRect.left, cropRect.top, cropRect.width, cropRect.height)
-      context.stroke()
-      context.closePath()
-      context.restore()
-    },
-    [getCropRect],
+    [scaleMemo, imageProp.height, imageProp.width, onChange, valueProp],
   )
   const emitCrop = useCallback(
     (side: string | boolean, pos: Coordinate) => {
@@ -230,350 +134,103 @@ function ToolCanvasComponent(props: ToolCanvasProps) {
       let bottom = 0
 
       if (side == 'left' || side === 'topLeft' || side === 'bottomLeft') {
-        left = (pos.x * scale) / image.width
+        left = (pos.x * scaleMemo) / imageProp.width
       } else if (side == 'right' || side === 'topRight' || side === 'bottomRight') {
-        right = (-pos.x * scale) / image.width
+        right = (-pos.x * scaleMemo) / imageProp.width
       }
 
       if (side == 'top' || side === 'topLeft' || side === 'topRight') {
-        top = (pos.y * scale) / image.height
+        top = (pos.y * scaleMemo) / imageProp.height
       } else if (side == 'bottom' || side === 'bottomLeft' || side === 'bottomRight') {
-        bottom = (-pos.y * scale) / image.height
+        bottom = (-pos.y * scaleMemo) / imageProp.height
       }
 
       const delta = {left, right, top, bottom}
-      const newValue = limitToBoundaries(value, delta).value
-      const newDelta = limitToBoundaries(value, delta).delta
+      const newValue = limitToBoundaries(valueProp, delta).value
+      const newDelta = limitToBoundaries(valueProp, delta).delta
 
-      onChange(applyCropMoveBy(newValue, newDelta))
+      onChangeProp(applyCropMoveBy(newValue, newDelta))
     },
-    [scale, image.height, image.width, onChange, value],
+    [scaleMemo, imageProp.height, imageProp.width, onChangeProp, valueProp],
   )
   const emitResize = useCallback(
     (pos: Coordinate) => {
       const delta = {
-        x: (pos.x * scale * 2) / image.width,
-        y: (pos.y * scale * 2) / image.height,
+        x: (pos.x * scaleMemo * 2) / imageProp.width,
+        y: (pos.y * scaleMemo * 2) / imageProp.height,
       }
-      onChange(applyHotspotResizeBy(value, {height: delta.y, width: delta.x}))
+      onChangeProp(applyHotspotResizeBy(valueProp, {height: delta.y, width: delta.x}))
     },
-    [scale, image.height, image.width, onChange, value],
+    [scaleMemo, imageProp.height, imageProp.width, onChangeProp, valueProp],
   )
-  const paintHotspot = useCallback(
-    (context: CanvasRenderingContext2D, opacity: number) => {
-      const imageRect = new Rect().setSize(image.width, image.height)
-
-      const {hotspot, crop} = clampedValue
-
-      const margin = MARGIN_PX * scale
-
-      context.save()
-      drawBackdrop()
-      drawEllipse()
-      context.clip()
-      drawHole()
-      context.restore()
-      if (!readOnly) {
-        drawDragHandle(Math.PI * 1.25)
-      }
-
-      function drawEllipse() {
-        context.save()
-
-        const dest = imageRect.shrink(margin).multiply(hotspot)
-
-        const scaleY = dest.height / dest.width
-
-        context.scale(1, scaleY)
-        context.beginPath()
-        context.globalAlpha = opacity
-        context.arc(
-          dest.center.x,
-          dest.center.y / scaleY,
-          Math.abs(dest.width / 2),
-          0,
-          2 * Math.PI,
-          false,
-        )
-        context.strokeStyle = 'white'
-        context.lineWidth = 1.5 * scale
-        context.stroke()
-        context.closePath()
-
-        context.restore()
-      }
-
-      // eslint-disable-next-line max-params
-      function drawImage(
-        srcLeft: number,
-        srcTop: number,
-        srcWidth: number,
-        srcHeight: number,
-        destLeft: number,
-        destTop: number,
-        destWidth: number,
-        destHeight: number,
-      ) {
-        context.save()
-        context.drawImage(
-          image,
-          srcLeft,
-          srcTop,
-          srcWidth,
-          srcHeight,
-          destLeft,
-          destTop,
-          destWidth,
-          destHeight,
-        )
-        context.restore()
-      }
-
-      function drawHole() {
-        const src = imageRect.multiply(hotspot)
-
-        const dest = imageRect.shrink(margin).multiply(hotspot)
-
-        drawImage(
-          src.left,
-          src.top,
-          src.width,
-          src.height,
-          dest.left,
-          dest.top,
-          dest.width,
-          dest.height,
-        )
-      }
-
-      function drawBackdrop() {
-        const src = imageRect.cropRelative(crop)
-
-        const dest = imageRect.shrink(margin).cropRelative(crop)
-
-        context.save()
-        drawImage(
-          src.left,
-          src.top,
-          src.width,
-          src.height,
-          dest.left,
-          dest.top,
-          dest.width,
-          dest.height,
-        )
-        context.globalAlpha = 0.5
-        context.fillStyle = 'black'
-        context.fillRect(dest.left, dest.top, dest.width, dest.height)
-        context.restore()
-      }
-
-      function drawDragHandle(radians: number) {
-        context.save()
-
-        const radius = HOTSPOT_HANDLE_SIZE * scale
-        const dest = imageRect.shrink(margin).multiply(hotspot)
-
-        const point = utils2d.getPointAtCircumference(radians, dest)
-
-        context.beginPath()
-        context.arc(point.x, point.y, radius, 0, 2 * Math.PI, false)
-        context.fillStyle = 'rgb(255,255,255)'
-        context.fill()
-        context.closePath()
-        context.restore()
-
-        context.beginPath()
-        context.arc(point.x, point.y, radius, 0, 2 * Math.PI, false)
-        context.strokeStyle = 'rgb(0, 0, 0)'
-        context.lineWidth = 0.5 * scale
-        context.stroke()
-        context.closePath()
-      }
-    },
-    [image, clampedValue, scale, readOnly],
-  )
-  const getDragHandleCoords = useCallback(() => {
-    const bbox = getHotspotRect()
-    const point = utils2d.getPointAtCircumference(Math.PI * 1.25, bbox)
-    return {
-      x: point.x,
-      y: point.y,
-      radius: 8 * scale,
-    }
-  }, [getHotspotRect, scale])
-  const debug = useCallback(
-    (context: CanvasRenderingContext2D) => {
-      context.save()
-
-      const bbox = getHotspotRect()
-      const margin = MARGIN_PX * scale
-
-      // IE 10 doesn't support context.setLineDash
-      if (context.setLineDash) {
-        context.setLineDash([2 * scale, 2 * scale])
-      }
-      context.lineWidth = 0.5 * scale
-
-      context.strokeStyle = 'rgba(200, 200, 200, 0.5)'
-
-      // --- center line x
-      vline(bbox.center.x)
-      // --- center line y
-      hline(bbox.center.y)
-
-      context.strokeStyle = 'rgba(150, 150, 150, 0.5)'
-      // --- line top
-      hline(bbox.top)
-
-      // --- line bottom
-      hline(bbox.bottom)
-
-      // --- line left
-      vline(bbox.left)
-      // --- line right
-      vline(bbox.right)
-
-      context.restore()
-
-      function vline(x: number) {
-        line(x, margin, x, image.height - margin)
-      }
-
-      function hline(y: number) {
-        line(margin, y, image.width - margin, y)
-      }
-
-      function line(x1: number, y1: number, x2: number, y2: number) {
-        context.beginPath()
-        context.moveTo(x1, y1)
-        context.lineTo(x2, y2)
-        context.stroke()
-        context.closePath()
-      }
-    },
-    [getHotspotRect, scale, image.height, image.width],
-  )
-  const paintBackground = useCallback(
-    (context: CanvasRenderingContext2D) => {
-      const inner = new Rect().setSize(image.width, image.height).shrink(MARGIN_PX * scale)
-
-      context.save()
-      context.fillStyle = 'white'
-      context.clearRect(0, 0, image.width, image.height)
-
-      context.globalAlpha = 0.3
-      //context.globalCompositeOperation = 'lighten';
-
-      context.drawImage(image, inner.left, inner.top, inner.width, inner.height)
-      context.restore()
-    },
-    [scale, image],
-  )
-  const paint = useCallback(
-    (context: CanvasRenderingContext2D) => {
-      context.save()
-
-      const pxratio = getDevicePixelRatioLegacy()
-      context.scale(pxratio, pxratio)
-
-      const opacity = !readOnly && pointerPosition ? 0.8 : 0.2
-
-      paintBackground(context)
-      paintHotspot(context, opacity)
-      debug(context)
-      paintCropBorder(context)
-
-      if (!readOnly) {
-        highlightCropHandles(context, opacity)
-      }
-
-      context.restore()
-    },
-    [
-      debug,
-      highlightCropHandles,
-      paintBackground,
-      paintCropBorder,
-      paintHotspot,
-      pointerPosition,
-      readOnly,
-    ],
-  )
-  const getCursor = useCallback(() => {
-    if (!pointerPosition || readOnly) {
-      return 'auto'
-    }
-
-    const activeCropArea = cropping || getActiveCropHandleFor(pointerPosition)
-    if (activeCropArea) {
-      return getCropCursorForHandle(activeCropArea) || 'auto'
-    }
-
-    const pointerOverDragHandle = utils2d.isPointInCircle(pointerPosition, getDragHandleCoords())
-
-    if (resizing || pointerOverDragHandle) {
-      return 'move'
-    }
-
-    if (moving || cropMoving) {
-      return `url(${cursors.CLOSE_HAND}), move`
-    }
-
-    const pointerOverHotspot = utils2d.isPointInEllipse(pointerPosition, getHotspotRect())
-    const pointerOverCropRect = utils2d.isPointInRect(pointerPosition, getCropRect())
-    if (pointerOverHotspot || pointerOverCropRect) {
-      return `url(${cursors.OPEN_HAND}), move`
-    }
-
-    return 'auto'
-  }, [
-    cropMoving,
-    cropping,
-    getActiveCropHandleFor,
-    getCropRect,
-    getDragHandleCoords,
-    getHotspotRect,
-    moving,
-    pointerPosition,
-    readOnly,
-    resizing,
-  ])
-  const draw = useCallback(() => {
-    if (!canvas.current) {
-      return
-    }
-
-    const domNode = canvas.current
-    const context = domNode.getContext('2d')
-    if (!context) {
-      return
-    }
-
-    paint(context)
-    const currentCursor = domNode.style.cursor
-    const newCursor = getCursor()
-    if (currentCursor !== newCursor) {
-      domNode.style.cursor = newCursor
-    }
-  }, [getCursor, paint])
 
   useEffect(() => {
-    draw()
-  }, [draw])
+    // @TODO add checks for wether dragging is happening or not, and other events
+    if (canvas.current) {
+      draw({
+        canvas: canvas.current,
+        clampedValue,
+        crop: valueProp.crop,
+        cropMoving: cropMovingState,
+        cropping: croppingState,
+        hotspot: valueProp.hotspot,
+        image: imageProp,
+        imageSize,
+        moving: movingState,
+        pointerPosition: pointerPosition.current,
+        readOnly: readOnly,
+        resizing: resizingState,
+        scale: scaleMemo,
+      })
+    }
+  }, [
+    clampedValue,
+    cropMovingState,
+    croppingState,
+    imageProp,
+    imageSize,
+    movingState,
+    readOnly,
+    resizingState,
+    scaleMemo,
+    valueProp.crop,
+    valueProp.hotspot,
+  ])
 
   const handleDragStart = useCallback(
     ({x, y}: Coordinate) => {
       // eslint-disable-next-line @typescript-eslint/no-shadow
-      const pointerPosition = {x: x * scale, y: y * scale}
+      const pointerPosition = {x: x * scaleMemo, y: y * scaleMemo}
 
-      const inHotspot = utils2d.isPointInEllipse(pointerPosition, getHotspotRect())
+      const inHotspot = utils2d.isPointInEllipse(
+        pointerPosition,
+        getHotspotRect({hotspot: valueProp.hotspot, imageSize, scale: scaleMemo}),
+      )
 
-      const inDragHandle = utils2d.isPointInCircle(pointerPosition, getDragHandleCoords())
+      const inDragHandle = utils2d.isPointInCircle(
+        pointerPosition,
+        getDragHandleCoords({
+          hotspot: valueProp.hotspot,
+          imageSize,
+          scale: scaleMemo,
+        }),
+      )
 
-      const activeCropHandle = getActiveCropHandleFor(pointerPosition)
+      const activeCropHandle = getActiveCropHandleFor({
+        crop: valueProp.crop,
+        imageSize,
+        pointerPosition,
+        scale: scaleMemo,
+      })
 
-      const inCropRect = utils2d.isPointInRect(pointerPosition, getCropRect())
+      const inCropRect = utils2d.isPointInRect(
+        pointerPosition,
+        getCropRect({
+          crop: valueProp.crop,
+          imageSize,
+          scale: scaleMemo,
+        }),
+      )
 
       if (activeCropHandle) {
         setCropping(activeCropHandle)
@@ -585,23 +242,31 @@ function ToolCanvasComponent(props: ToolCanvasProps) {
         setCropMoving(true)
       }
     },
-    [getActiveCropHandleFor, getCropRect, getDragHandleCoords, getHotspotRect, scale],
+    [imageSize, scaleMemo, valueProp.crop, valueProp.hotspot],
   )
-  const handleDrag = useCallback(
-    (pos: Coordinate) => {
-      console.log('handleDrag changes too much')
-      if (cropping) {
-        emitCrop(cropping, pos)
-      } else if (cropMoving) {
+  const handleDrag = useMemo(() => {
+    console.count('handleDrag changed')
+    return (pos: Coordinate) => {
+      if (croppingState) {
+        emitCrop(croppingState, pos)
+      } else if (cropMovingState) {
         emitCropMove(pos)
-      } else if (moving) {
+      } else if (movingState) {
         emitMove(pos)
-      } else if (resizing) {
+      } else if (resizingState) {
         emitResize(pos)
       }
-    },
-    [cropMoving, cropping, emitCrop, emitCropMove, emitMove, emitResize, moving, resizing],
-  )
+    }
+  }, [
+    cropMovingState,
+    croppingState,
+    emitCrop,
+    emitCropMove,
+    emitMove,
+    emitResize,
+    movingState,
+    resizingState,
+  ])
   const handleDragEnd = useCallback(() => {
     console.log('handleDragEnd changes too much')
     setMoving(false)
@@ -626,23 +291,23 @@ function ToolCanvasComponent(props: ToolCanvasProps) {
         width: Math.abs(hotspot.width),
       },
     }
-    onChange(finalValue)
-    if (onChangeEnd) {
-      onChangeEnd(finalValue)
+    onChangeProp(finalValue)
+    if (onChangeEndProp) {
+      onChangeEndProp(finalValue)
     }
-  }, [clampedValue, onChange, onChangeEnd])
+  }, [clampedValue, onChangeProp, onChangeEndProp])
   const handlePointerOut = useCallback(() => {
-    setPointerPosition(null)
+    pointerPosition.current = null
   }, [])
   const handlePointerMove = useCallback(
     (event: PointerEvent<HTMLCanvasElement>) => {
       const clientRect = event.currentTarget.getBoundingClientRect()
-      setPointerPosition({
-        x: (event.clientX - clientRect.left) * scale,
-        y: (event.clientY - clientRect.top) * scale,
-      })
+      pointerPosition.current = {
+        x: (event.clientX - clientRect.left) * scaleMemo,
+        y: (event.clientY - clientRect.top) * scaleMemo,
+      }
     },
-    [scale],
+    [scaleMemo],
   )
 
   const ratio = useDevicePixelRatio()
@@ -657,25 +322,36 @@ function ToolCanvasComponent(props: ToolCanvasProps) {
         onDragEnd={handleDragEnd}
         onPointerMove={handlePointerMove}
         onPointerOut={handlePointerOut}
-        height={image.height * ratio}
-        width={image.width * ratio}
+        height={imageProp.height * ratio}
+        width={imageProp.width * ratio}
         // @TODO tracking deps that change too often
-        cropMoving={cropMoving}
-        cropping={cropping}
+        clampedValue={clampedValue}
+        cropMoving={cropMovingState}
+        cropping={croppingState}
         emitCrop={emitCrop}
         emitCropMove={emitCropMove}
         emitMove={emitMove}
         emitResize={emitResize}
-        moving={moving}
-        resizing={resizing}
+        moving={movingState}
+        resizing={resizingState}
         getActiveCropHandleFor={getActiveCropHandleFor}
         getCropRect={getCropRect}
         getDragHandleCoords={getDragHandleCoords}
         getHotspotRect={getHotspotRect}
-        scale={scale}
+        scale={scaleMemo}
+        onChange={onChangeProp}
+        onChangeEnd={onChangeEndProp}
       />
     </RootContainer>
   )
+}
+
+function useEffectRef<const T>(value: T) {
+  const ref = useRef<T>(value)
+  useEffect(() => {
+    ref.current = value
+  }, [value])
+  return ref
 }
 
 export const ToolCanvas = memo(ToolCanvasComponent, function arePropsEqual(oldProps, newProps) {
@@ -689,6 +365,446 @@ export const ToolCanvas = memo(ToolCanvasComponent, function arePropsEqual(oldPr
   return true
 })
 
+/**
+ * Hot path, tries to render 60fps
+ */
+function draw({
+  canvas,
+  readOnly,
+  pointerPosition,
+  cropping,
+  crop,
+  imageSize,
+  scale,
+  cropMoving,
+  hotspot,
+  resizing,
+  moving,
+  image,
+  clampedValue,
+}: {
+  canvas: HTMLCanvasElement
+  readOnly: boolean
+  pointerPosition: Coordinate | null
+  cropping: keyof CropHandles | false
+  crop: Crop | undefined
+  imageSize: Dimensions
+  scale: number
+  cropMoving: boolean
+  hotspot: Hotspot | undefined
+  resizing: boolean
+  moving: boolean
+  image: HTMLCanvasElement
+  clampedValue: {
+    crop: Rect
+    hotspot: Rect
+  }
+}) {
+  const context = canvas.getContext('2d')
+  if (!context) {
+    return
+  }
+
+  context.save()
+
+  const pxratio = getDevicePixelRatioLegacy()
+  context.scale(pxratio, pxratio)
+
+  const opacity = !readOnly && pointerPosition ? 0.8 : 0.2
+
+  paintBackground({context, image, imageSize, scale})
+  paintHotspot({context, opacity, clampedValue, image, imageSize, scale, readOnly})
+  debug({context, hotspot, imageSize, scale})
+  paintCropBorder({context, crop, imageSize, scale})
+
+  if (!readOnly) {
+    highlightCropHandles({
+      context,
+      opacity,
+      cropping,
+      crop,
+      imageSize,
+      scale,
+    })
+  }
+
+  context.restore()
+
+  // @TODO reading the `.style.cursor` on every tick is potentially slow
+  const currentCursor = canvas.style.cursor
+  const newCursor = getCursor({
+    crop,
+    cropMoving,
+    cropping,
+    hotspot,
+    imageSize,
+    moving,
+    pointerPosition,
+    readOnly,
+    resizing,
+    scale,
+  })
+  if (currentCursor !== newCursor) {
+    canvas.style.cursor = newCursor
+  }
+}
+function paintCropBorder({
+  context,
+  crop,
+  imageSize,
+  scale,
+}: {
+  context: CanvasRenderingContext2D
+  crop: Crop | undefined
+  imageSize: Dimensions
+  scale: number
+}) {
+  const cropRect = getCropRect({crop, imageSize, scale})
+  context.save()
+  context.beginPath()
+  context.fillStyle = 'rgba(66, 66, 66, 0.9)'
+  context.lineWidth = 1
+  context.rect(cropRect.left, cropRect.top, cropRect.width, cropRect.height)
+  context.stroke()
+  context.closePath()
+  context.restore()
+}
+function debug({
+  context,
+  scale,
+  hotspot,
+  imageSize,
+}: {
+  context: CanvasRenderingContext2D
+  scale: number
+  hotspot: Hotspot | undefined
+  imageSize: Dimensions
+}) {
+  context.save()
+
+  const bbox = getHotspotRect({
+    hotspot,
+    imageSize,
+    scale,
+  })
+  const margin = MARGIN_PX * scale
+
+  // IE 10 doesn't support context.setLineDash
+  if (context.setLineDash) {
+    context.setLineDash([2 * scale, 2 * scale])
+  }
+  context.lineWidth = 0.5 * scale
+
+  context.strokeStyle = 'rgba(200, 200, 200, 0.5)'
+
+  // --- center line x
+  vline(bbox.center.x)
+  // --- center line y
+  hline(bbox.center.y)
+
+  context.strokeStyle = 'rgba(150, 150, 150, 0.5)'
+  // --- line top
+  hline(bbox.top)
+
+  // --- line bottom
+  hline(bbox.bottom)
+
+  // --- line left
+  vline(bbox.left)
+  // --- line right
+  vline(bbox.right)
+
+  context.restore()
+
+  function vline(x: number) {
+    line(x, margin, x, imageSize.height - margin)
+  }
+
+  function hline(y: number) {
+    line(margin, y, imageSize.width - margin, y)
+  }
+
+  function line(x1: number, y1: number, x2: number, y2: number) {
+    context.beginPath()
+    context.moveTo(x1, y1)
+    context.lineTo(x2, y2)
+    context.stroke()
+    context.closePath()
+  }
+}
+function paintHotspot({
+  context,
+  imageSize,
+  opacity,
+  clampedValue,
+  scale,
+  readOnly,
+  image,
+}: {
+  context: CanvasRenderingContext2D
+  imageSize: Dimensions
+  opacity: number
+  clampedValue: {
+    crop: Rect
+    hotspot: Rect
+  }
+  scale: number
+  readOnly: boolean
+  image: HTMLCanvasElement
+}) {
+  const imageRect = new Rect().setSize(imageSize.width, imageSize.height)
+
+  const {hotspot, crop} = clampedValue
+
+  const margin = MARGIN_PX * scale
+
+  context.save()
+  drawBackdrop()
+  drawEllipse()
+  context.clip()
+  drawHole()
+  context.restore()
+  if (!readOnly) {
+    drawDragHandle(Math.PI * 1.25)
+  }
+
+  function drawEllipse() {
+    context.save()
+
+    const dest = imageRect.shrink(margin).multiply(hotspot)
+
+    const scaleY = dest.height / dest.width
+
+    context.scale(1, scaleY)
+    context.beginPath()
+    context.globalAlpha = opacity
+    context.arc(
+      dest.center.x,
+      dest.center.y / scaleY,
+      Math.abs(dest.width / 2),
+      0,
+      2 * Math.PI,
+      false,
+    )
+    context.strokeStyle = 'white'
+    context.lineWidth = 1.5 * scale
+    context.stroke()
+    context.closePath()
+
+    context.restore()
+  }
+
+  // eslint-disable-next-line max-params
+  function drawImage(
+    srcLeft: number,
+    srcTop: number,
+    srcWidth: number,
+    srcHeight: number,
+    destLeft: number,
+    destTop: number,
+    destWidth: number,
+    destHeight: number,
+  ) {
+    context.save()
+    context.drawImage(
+      image,
+      srcLeft,
+      srcTop,
+      srcWidth,
+      srcHeight,
+      destLeft,
+      destTop,
+      destWidth,
+      destHeight,
+    )
+    context.restore()
+  }
+
+  function drawHole() {
+    const src = imageRect.multiply(hotspot)
+
+    const dest = imageRect.shrink(margin).multiply(hotspot)
+
+    drawImage(
+      src.left,
+      src.top,
+      src.width,
+      src.height,
+      dest.left,
+      dest.top,
+      dest.width,
+      dest.height,
+    )
+  }
+
+  function drawBackdrop() {
+    const src = imageRect.cropRelative(crop)
+
+    const dest = imageRect.shrink(margin).cropRelative(crop)
+
+    context.save()
+    drawImage(
+      src.left,
+      src.top,
+      src.width,
+      src.height,
+      dest.left,
+      dest.top,
+      dest.width,
+      dest.height,
+    )
+    context.globalAlpha = 0.5
+    context.fillStyle = 'black'
+    context.fillRect(dest.left, dest.top, dest.width, dest.height)
+    context.restore()
+  }
+
+  function drawDragHandle(radians: number) {
+    context.save()
+
+    const radius = HOTSPOT_HANDLE_SIZE * scale
+    const dest = imageRect.shrink(margin).multiply(hotspot)
+
+    const point = utils2d.getPointAtCircumference(radians, dest)
+
+    context.beginPath()
+    context.arc(point.x, point.y, radius, 0, 2 * Math.PI, false)
+    context.fillStyle = 'rgb(255,255,255)'
+    context.fill()
+    context.closePath()
+    context.restore()
+
+    context.beginPath()
+    context.arc(point.x, point.y, radius, 0, 2 * Math.PI, false)
+    context.strokeStyle = 'rgb(0, 0, 0)'
+    context.lineWidth = 0.5 * scale
+    context.stroke()
+    context.closePath()
+  }
+}
+function paintBackground({
+  context,
+  imageSize,
+  scale,
+  image,
+}: {
+  context: CanvasRenderingContext2D
+  imageSize: Dimensions
+  scale: number
+  image: HTMLCanvasElement
+}) {
+  const inner = new Rect().setSize(imageSize.width, imageSize.height).shrink(MARGIN_PX * scale)
+
+  context.save()
+  context.fillStyle = 'white'
+  context.clearRect(0, 0, imageSize.width, imageSize.height)
+
+  context.globalAlpha = 0.3
+  //context.globalCompositeOperation = 'lighten';
+
+  context.drawImage(image, inner.left, inner.top, inner.width, inner.height)
+  context.restore()
+}
+function getCursor({
+  pointerPosition,
+  readOnly,
+  cropping,
+  resizing,
+  moving,
+  cropMoving,
+  crop,
+  hotspot,
+  imageSize,
+  scale,
+}: {
+  pointerPosition: Coordinate | null
+  readOnly: boolean
+  cropping: keyof CropHandles | false
+  resizing: boolean
+  moving: boolean
+  cropMoving: boolean
+  crop: Crop | undefined
+  hotspot: Hotspot | undefined
+  imageSize: Dimensions
+  scale: number
+}) {
+  if (!pointerPosition || readOnly) {
+    return 'auto'
+  }
+
+  const activeCropArea =
+    cropping ||
+    getActiveCropHandleFor({
+      pointerPosition,
+      crop,
+      imageSize,
+      scale,
+    })
+  if (activeCropArea) {
+    return getCropCursorForHandle(activeCropArea) || 'auto'
+  }
+
+  const pointerOverDragHandle = utils2d.isPointInCircle(
+    pointerPosition,
+    getDragHandleCoords({
+      hotspot,
+      imageSize,
+      scale,
+    }),
+  )
+
+  if (resizing || pointerOverDragHandle) {
+    return 'move'
+  }
+
+  if (moving || cropMoving) {
+    return `url(${cursors.CLOSE_HAND}), move`
+  }
+
+  const pointerOverHotspot = utils2d.isPointInEllipse(
+    pointerPosition,
+    getHotspotRect({
+      hotspot,
+      imageSize,
+      scale,
+    }),
+  )
+  const pointerOverCropRect = utils2d.isPointInRect(
+    pointerPosition,
+    getCropRect({
+      crop,
+      imageSize,
+      scale,
+    }),
+  )
+  if (pointerOverHotspot || pointerOverCropRect) {
+    return `url(${cursors.OPEN_HAND}), move`
+  }
+
+  return 'auto'
+}
+function getDragHandleCoords({
+  hotspot,
+  imageSize,
+  scale,
+}: {
+  hotspot: Hotspot | undefined
+  imageSize: Dimensions
+  scale: number
+}) {
+  const bbox = getHotspotRect({
+    hotspot,
+    imageSize,
+    scale,
+  })
+  const point = utils2d.getPointAtCircumference(Math.PI * 1.25, bbox)
+  return {
+    x: point.x,
+    y: point.y,
+    radius: 8 * scale,
+  }
+}
+
 function normalizeRect(rect: Rect) {
   const flippedY = rect.top > rect.bottom
   const flippedX = rect.left > rect.right
@@ -698,6 +814,149 @@ function normalizeRect(rect: Rect) {
     left: flippedX ? rect.right : rect.left,
     right: flippedX ? rect.left : rect.right,
   }
+}
+
+/**
+ * hotspot = this.props.value.hotspot || DEFAULT_HOTSPOT
+ */
+function getHotspotRect({
+  hotspot = DEFAULT_HOTSPOT,
+  imageSize,
+  scale,
+}: {
+  hotspot: Hotspot | undefined
+  imageSize: Dimensions
+  scale: number
+}) {
+  const hotspotRect = new Rect()
+    .setSize(hotspot.width, hotspot.height)
+    .setCenter(hotspot.x, hotspot.y)
+
+  return new Rect()
+    .setSize(imageSize.width, imageSize.height)
+    .shrink(MARGIN_PX * scale)
+    .multiply(hotspotRect)
+}
+function getCropRect({
+  crop = DEFAULT_CROP,
+  imageSize,
+  scale,
+}: {
+  crop: Crop | undefined
+  imageSize: Dimensions
+  scale: number
+}) {
+  return new Rect()
+    .setSize(imageSize.width, imageSize.height)
+    .shrink(MARGIN_PX * scale)
+    .cropRelative(Rect.fromEdges(crop).clamp(new Rect(0, 0, 1, 1)))
+}
+function getCropHandles({
+  crop,
+  imageSize,
+  scale,
+}: {
+  crop: Crop | undefined
+  imageSize: Dimensions
+  scale: number
+}) {
+  const inner = getCropRect({
+    crop,
+    imageSize,
+    scale,
+  })
+
+  const handleSize = CROP_HANDLE_SIZE * scale
+
+  const halfCropHandleSize = handleSize / 2
+
+  const cropHandle = new Rect(0, 0, handleSize, handleSize)
+  return {
+    left: cropHandle.setTopLeft(
+      inner.left - halfCropHandleSize,
+      inner.center.y - halfCropHandleSize,
+    ),
+    right: cropHandle.setTopLeft(
+      inner.right - halfCropHandleSize,
+      inner.center.y - halfCropHandleSize,
+    ),
+
+    top: cropHandle.setTopLeft(inner.center.x - halfCropHandleSize, inner.top - halfCropHandleSize),
+    topLeft: cropHandle.setTopLeft(inner.left - halfCropHandleSize, inner.top - halfCropHandleSize),
+    topRight: cropHandle.setTopLeft(
+      inner.right - halfCropHandleSize,
+      inner.top - halfCropHandleSize,
+    ),
+
+    bottom: cropHandle.setTopLeft(
+      inner.center.x - halfCropHandleSize,
+      inner.bottom - halfCropHandleSize,
+    ),
+    bottomLeft: cropHandle.setTopLeft(
+      inner.left - halfCropHandleSize,
+      inner.bottom - halfCropHandleSize,
+    ),
+    bottomRight: cropHandle.setTopLeft(
+      inner.right - halfCropHandleSize,
+      inner.bottom - halfCropHandleSize,
+    ),
+  }
+}
+function getActiveCropHandleFor({
+  crop,
+  imageSize,
+  scale,
+  pointerPosition,
+}: {
+  crop: Crop | undefined
+  imageSize: Dimensions
+  scale: number
+  pointerPosition: Coordinate
+}) {
+  const {x, y} = pointerPosition
+  const cropHandles = getCropHandles({crop, imageSize, scale})
+  for (const position of cropHandleKeys) {
+    if (utils2d.isPointInRect({x, y}, cropHandles[position])) {
+      return position
+    }
+  }
+  return false
+}
+
+function highlightCropHandles({
+  context,
+  opacity,
+  cropping,
+  crop,
+  imageSize,
+  scale,
+}: {
+  context: CanvasRenderingContext2D
+  opacity: number
+  cropping: keyof CropHandles | false
+  crop: Crop | undefined
+  imageSize: Dimensions
+  scale: number
+}) {
+  context.save()
+  const cropHandles = getCropHandles({crop, imageSize, scale})
+
+  //context.globalCompositeOperation = "difference";
+
+  cropHandleKeys.forEach((handle) => {
+    context.fillStyle =
+      cropping === handle
+        ? `rgba(202, 54, 53, ${opacity})`
+        : `rgba(230, 230, 230, ${opacity + 0.4})`
+    const {left, top, height, width} = cropHandles[handle]
+    context.fillRect(left, top, width, height)
+    context.beginPath()
+    context.fillStyle = `rgba(66, 66, 66, ${opacity})`
+    context.rect(left, top, width, height)
+    context.closePath()
+    context.stroke()
+  })
+  context.restore()
 }
 
 function checkCropBoundaries(value: Partial<CropAndHotspot>, delta: Offsets) {
