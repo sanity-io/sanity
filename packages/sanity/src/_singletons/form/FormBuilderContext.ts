@@ -1,5 +1,6 @@
 import {createContext} from 'react'
-import type {FormBuilderContextValue} from 'sanity'
+
+import type {FormBuilderContextValue} from '../../core/form/FormBuilderContext'
 
 /**
  * @internal

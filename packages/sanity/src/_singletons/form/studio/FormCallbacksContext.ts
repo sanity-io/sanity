@@ -1,5 +1,6 @@
 import {createContext} from 'react'
-import type {FormCallbacksValue} from 'sanity'
+
+import type {FormCallbacksValue} from '../../../core/form/studio/contexts/FormCallbacks'
 
 /**
  * @internal

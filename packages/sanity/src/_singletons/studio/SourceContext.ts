@@ -1,5 +1,6 @@
 import {createContext} from 'react'
-import type {Source} from 'sanity'
+
+import type {Source} from '../../core/config/types'
 
 /**
  * @internal

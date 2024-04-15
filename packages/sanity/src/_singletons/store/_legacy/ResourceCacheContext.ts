@@ -1,5 +1,6 @@
 import {createContext} from 'react'
-import type {ResourceCache} from 'sanity'
+
+import type {ResourceCache} from '../../../core/store/_legacy/ResourceCacheProvider'
 
 /**
  * @internal

@@ -1,5 +1,6 @@
 import {createContext} from 'react'
-import type {UserColorManager} from 'sanity'
+
+import type {UserColorManager} from '../../core/user-color/types'
 
 /**
  * @internal

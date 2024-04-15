@@ -1,5 +1,6 @@
 import {createContext} from 'react'
-import type {SearchContextValue} from 'sanity'
+
+import type {SearchContextValue} from '../../../../../core/studio/components/navbar/search/contexts/search/SearchContext'
 
 /**
  * @internal
