@@ -151,7 +151,7 @@ function sortModulesBySize(chunks: ChunkStats[]): ChunkModule[] {
 }
 
 function formatModuleSizes(modules: ChunkModule[]): string {
-  const lines = []
+  const lines: string[] = []
   for (const mod of modules) {
     lines.push(` - ${formatModuleName(mod.name)} (${formatSize(mod.renderedLength)})`)
   }

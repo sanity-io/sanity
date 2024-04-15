@@ -1,9 +1,11 @@
 {
   "extends": "@repo/tsconfig/build.json",
   "include": ["./src"],
-  "exclude": ["./src/schema/test"],
   "compilerOptions": {
     "rootDir": ".",
-    "outDir": "./lib"
+    "outDir": "./lib",
+    "paths": {
+      "@sanity/types": ["./src/index.ts"]
+    }
   }
 }
