@@ -5,6 +5,7 @@
     "globby",
     "sanity",
     "@sanity/codegen",
-    "@types/react"
+    "@types/react",
+    "eslint-plugin-boundaries"
   ]
 }
