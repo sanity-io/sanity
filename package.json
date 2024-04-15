@@ -97,7 +97,7 @@
     "@playwright/test": "1.41.2",
     "@repo/package.config": "workspace:*",
     "@repo/tsconfig": "workspace:*",
-    "@sanity/client": "^6.15.13",
+    "@sanity/client": "^6.15.14",
     "@sanity/eslint-config-i18n": "1.0.0",
     "@sanity/eslint-config-studio": "^4.0.0",
     "@sanity/pkg-utils": "6.6.5",
