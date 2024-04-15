@@ -120,16 +120,26 @@ function ToolCanvasComponent(props: ToolCanvasProps) {
   const ratio = useDevicePixelRatio()
   const [actualSize, setCanvasObserver] = useActualCanvasSizeObserver()
   const scale = useMemo(() => image.width / actualSize.width, [actualSize.width, image.width])
+  const hotspotRect = useMemo(() => {
+    const hotspot: Hotspot = value.hotspot || DEFAULT_HOTSPOT
+    const rect = new Rect().setSize(hotspot.width, hotspot.height).setCenter(hotspot.x, hotspot.y)
+
+    return new Rect()
+      .setSize(image.width, image.height)
+      .shrink(MARGIN_PX * scale)
+      .multiply(rect)
+  }, [image.height, image.width, scale, value.hotspot])
 
   return (
     <ToolCanvasLegacy
       actualSize={actualSize}
-      scale={scale}
+      hotspotRect={hotspotRect}
       image={image}
       onChange={onChange}
       onChangeEnd={onChangeEnd}
       ratio={ratio}
       readOnly={readOnly}
+      scale={scale}
       setCanvasObserver={setCanvasObserver}
       value={value}
     />
@@ -143,6 +153,7 @@ class ToolCanvasLegacy extends PureComponent<
     actualSize: Dimensions
     scale: number
     setCanvasObserver: React.Dispatch<React.SetStateAction<HTMLCanvasElement | null>>
+    hotspotRect: Rect
   },
   ToolCanvasState
 > {
@@ -155,20 +166,6 @@ class ToolCanvasLegacy extends PureComponent<
   }
 
   canvas?: HTMLCanvasElement
-
-  getHotspotRect() {
-    const {value, image} = this.props
-
-    const hotspot: Hotspot = value.hotspot || DEFAULT_HOTSPOT
-    const hotspotRect = new Rect()
-      .setSize(hotspot.width, hotspot.height)
-      .setCenter(hotspot.x, hotspot.y)
-
-    return new Rect()
-      .setSize(image.width, image.height)
-      .shrink(MARGIN_PX * this.props.scale)
-      .multiply(hotspotRect)
-  }
 
   getCropRect() {
     const {value, image} = this.props
@@ -312,7 +309,7 @@ class ToolCanvasLegacy extends PureComponent<
     return {crop: crop, hotspot: hotspotRect}
   }
 
-  paintHotspot(context: CanvasRenderingContext2D, opacity: number) {
+  paintHotspot({context, opacity}: {context: CanvasRenderingContext2D; opacity: number}) {
     const {image, readOnly} = this.props
 
     const imageRect = new Rect().setSize(image.width, image.height)
@@ -448,7 +445,7 @@ class ToolCanvasLegacy extends PureComponent<
   }
 
   getDragHandleCoords() {
-    const bbox = this.getHotspotRect()
+    const bbox = this.props.hotspotRect
     const point = utils2d.getPointAtCircumference(Math.PI * 1.25, bbox)
     return {
       x: point.x,
@@ -457,12 +454,12 @@ class ToolCanvasLegacy extends PureComponent<
     }
   }
 
-  debug(context: CanvasRenderingContext2D) {
+  debug({context}: {context: CanvasRenderingContext2D}) {
     context.save()
 
     const {image} = this.props
 
-    const bbox = this.getHotspotRect()
+    const bbox = this.props.hotspotRect
     const scale = this.props.scale
     const margin = MARGIN_PX * scale
 
@@ -510,7 +507,7 @@ class ToolCanvasLegacy extends PureComponent<
     }
   }
 
-  paintBackground(context: CanvasRenderingContext2D) {
+  paintBackground({context}: {context: CanvasRenderingContext2D}) {
     const {image} = this.props
     const inner = new Rect().setSize(image.width, image.height).shrink(MARGIN_PX * this.props.scale)
 
@@ -534,23 +531,23 @@ class ToolCanvasLegacy extends PureComponent<
 
     const opacity = !readOnly && this.state.pointerPosition ? 0.8 : 0.2
 
-    this.paintBackground(context)
-    this.paintHotspot(context, opacity)
-    this.debug(context)
-    this.paintCropBorder(context)
+    this.paintBackground({context})
+    this.paintHotspot({context, opacity})
+    this.debug({context})
+    this.paintCropBorder({context})
 
     if (!readOnly) {
-      this.highlightCropHandles(context, opacity)
+      this.highlightCropHandles({context, opacity})
     }
 
     // if (this.state.pointerPosition) {
-    //   this.paintPointerPosition(context)
+    //   this.paintPointerPosition({context})
     // }
 
     context.restore()
   }
 
-  paintPointerPosition(context: CanvasRenderingContext2D) {
+  paintPointerPosition({context}: {context: CanvasRenderingContext2D}) {
     if (!this.state.pointerPosition) {
       return
     }
@@ -563,7 +560,7 @@ class ToolCanvasLegacy extends PureComponent<
     context.restore()
   }
 
-  paintCropBorder(context: CanvasRenderingContext2D) {
+  paintCropBorder({context}: {context: CanvasRenderingContext2D}) {
     const cropRect = this.getCropRect()
     context.save()
     context.beginPath()
@@ -575,7 +572,7 @@ class ToolCanvasLegacy extends PureComponent<
     context.restore()
   }
 
-  highlightCropHandles(context: CanvasRenderingContext2D, opacity: number) {
+  highlightCropHandles({context, opacity}: {context: CanvasRenderingContext2D; opacity: number}) {
     context.save()
     const cropHandles = this.getCropHandles()
 
@@ -622,7 +619,7 @@ class ToolCanvasLegacy extends PureComponent<
       return `url(${cursors.CLOSE_HAND}), move`
     }
 
-    const pointerOverHotspot = utils2d.isPointInEllipse(pointerPosition, this.getHotspotRect())
+    const pointerOverHotspot = utils2d.isPointInEllipse(pointerPosition, this.props.hotspotRect)
     const pointerOverCropRect = utils2d.isPointInRect(pointerPosition, this.getCropRect())
     if (pointerOverHotspot || pointerOverCropRect) {
       return `url(${cursors.OPEN_HAND}), move`
@@ -661,7 +658,7 @@ class ToolCanvasLegacy extends PureComponent<
   handleDragStart = ({x, y}: Coordinate) => {
     const pointerPosition = {x: x * this.props.scale, y: y * this.props.scale}
 
-    const inHotspot = utils2d.isPointInEllipse(pointerPosition, this.getHotspotRect())
+    const inHotspot = utils2d.isPointInEllipse(pointerPosition, this.props.hotspotRect)
 
     const inDragHandle = utils2d.isPointInCircle(pointerPosition, this.getDragHandleCoords())
 
