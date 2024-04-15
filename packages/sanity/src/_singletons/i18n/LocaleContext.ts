@@ -1,6 +1,7 @@
 import type {i18n} from 'i18next'
 import {createContext} from 'react'
-import type {Locale} from 'sanity'
+
+import type {Locale} from '../../core/i18n/types'
 
 /**
  * @internal

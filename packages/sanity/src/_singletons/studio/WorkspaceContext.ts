@@ -1,5 +1,6 @@
 import {createContext} from 'react'
-import type {Workspace} from 'sanity'
+
+import type {Workspace} from '../../core/config/types'
 
 /**
  * @internal

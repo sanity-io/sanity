@@ -1,5 +1,6 @@
 import {createContext} from 'react'
-import type {DocumentFieldAction} from 'sanity'
+
+import type {DocumentFieldAction} from '../../../core/config/document/fieldActions/types'
 
 /**
  * @internal

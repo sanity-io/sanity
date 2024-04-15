@@ -1,5 +1,6 @@
 import {createContext} from 'react'
-import type {ReviewChangesContextValue} from 'sanity'
+
+import type {ReviewChangesContextValue} from '../../../../core/form/studio/contexts/reviewChanges/types'
 
 /**
  * @internal

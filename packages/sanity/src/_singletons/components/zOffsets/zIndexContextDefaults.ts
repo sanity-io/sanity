@@ -1,4 +1,4 @@
-import type {ZIndexContextValue} from 'sanity'
+import type {ZIndexContextValue} from '../../../core/components/zOffsets/types'
 
 /**
  * @internal
