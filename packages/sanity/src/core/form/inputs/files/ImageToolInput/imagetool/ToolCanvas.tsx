@@ -6,7 +6,13 @@ import * as utils2d from './2d/utils'
 import {DEFAULT_CROP, DEFAULT_HOTSPOT} from './constants'
 import * as cursors from './cursors'
 import {DragAwareCanvas} from './DragAwareCanvas'
-import {paintBackground, paintHotspot, paintPointerPosition, printGuidelines} from './draw'
+import {
+  paintBackground,
+  paintCropBorder,
+  paintHotspot,
+  paintPointerPosition,
+  printGuidelines,
+} from './draw'
 import {RootContainer} from './ToolCanvas.styles'
 import {
   type Coordinate,
@@ -321,7 +327,7 @@ class ToolCanvasLegacy extends PureComponent<
   }
 
   paint(context: CanvasRenderingContext2D) {
-    const {readOnly, image, scale, clampedValue, ratio, hotspotRect} = this.props
+    const {readOnly, image, scale, clampedValue, ratio, hotspotRect, cropRect} = this.props
     const {pointerPosition} = this.state
     context.save()
 
@@ -341,7 +347,7 @@ class ToolCanvasLegacy extends PureComponent<
       scale,
     })
     printGuidelines({context, hotspotRect, image, MARGIN_PX, scale})
-    this.paintCropBorder({context})
+    paintCropBorder({context, cropRect})
 
     if (!readOnly) {
       this.highlightCropHandles({context, opacity})
@@ -349,18 +355,6 @@ class ToolCanvasLegacy extends PureComponent<
 
     paintPointerPosition({context, pointerPosition, scale})
 
-    context.restore()
-  }
-
-  paintCropBorder({context}: {context: CanvasRenderingContext2D}) {
-    const cropRect = this.props.cropRect
-    context.save()
-    context.beginPath()
-    context.fillStyle = 'rgba(66, 66, 66, 0.9)'
-    context.lineWidth = 1
-    context.rect(cropRect.left, cropRect.top, cropRect.width, cropRect.height)
-    context.stroke()
-    context.closePath()
     context.restore()
   }
 

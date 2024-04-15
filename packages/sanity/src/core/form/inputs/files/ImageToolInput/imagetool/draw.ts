@@ -261,3 +261,21 @@ export function printGuidelines({
     context.closePath()
   }
 }
+
+/** @internal */
+export function paintCropBorder({
+  context,
+  cropRect,
+}: {
+  context: CanvasRenderingContext2D
+  cropRect: Rect
+}): void {
+  context.save()
+  context.beginPath()
+  context.fillStyle = 'rgba(66, 66, 66, 0.9)'
+  context.lineWidth = 1
+  context.rect(cropRect.left, cropRect.top, cropRect.width, cropRect.height)
+  context.stroke()
+  context.closePath()
+  context.restore()
+}
