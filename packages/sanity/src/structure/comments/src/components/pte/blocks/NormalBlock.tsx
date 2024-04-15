@@ -1,5 +1,5 @@
 import {Flex, Text} from '@sanity/ui'
-import type * as React from 'react'
+import {type ReactNode} from 'react'
 import {styled} from 'styled-components'
 
 const NormalText = styled(Text)`
@@ -7,7 +7,7 @@ const NormalText = styled(Text)`
 `
 
 interface NormalBlockProps {
-  children: React.ReactNode
+  children: ReactNode
 }
 
 export function NormalBlock(props: NormalBlockProps) {

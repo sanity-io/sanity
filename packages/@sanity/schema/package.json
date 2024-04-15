@@ -39,7 +39,6 @@
   },
   "main": "./lib/index.js",
   "module": "./lib/index.esm.js",
-  "source": "./src/_exports/index.ts",
   "types": "./lib/index.d.ts",
   "typesVersions": {
     "*": {
@@ -54,9 +53,8 @@
     "src"
   ],
   "scripts": {
-    "build": "run-s clean && pkg-utils build --strict",
-    "check:package": "pkg-utils --strict",
-    "check:types": "tsc",
+    "build": "pkg-utils build --strict --check --clean",
+    "check:types": "tsc --project tsconfig.lib.json",
     "clean": "rimraf _internal.js lib",
     "lint": "eslint .",
     "prepublishOnly": "turbo run build",
@@ -80,7 +78,7 @@
     "@sanity/icons": "^2.11.8",
     "@types/arrify": "^1.0.4",
     "@types/object-inspect": "^1.13.0",
-    "@types/react": "^18.2.75",
+    "@types/react": "^18.2.78",
     "rimraf": "^3.0.2"
   }
 }

@@ -31,7 +31,7 @@ export function ErrorItem(props: {member: ArrayItemError; sortable?: boolean; re
       style={{height: '100%'}}
       menu={
         <MenuButton
-          button={<ContextMenuButton paddingY={3} />}
+          button={<ContextMenuButton />}
           id={`${id}-menuButton`}
           menu={
             <Menu>

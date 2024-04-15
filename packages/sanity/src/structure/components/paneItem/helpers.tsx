@@ -1,7 +1,7 @@
 import {WarningOutlineIcon} from '@sanity/icons'
 import {type PreviewValue, type SanityDocument, type SchemaType} from '@sanity/types'
 import {assignWith} from 'lodash'
-import type * as React from 'react'
+import {type ReactNode} from 'react'
 import {combineLatest, type Observable, of} from 'rxjs'
 import {map, startWith} from 'rxjs/operators'
 import {type DocumentPreviewStore, getDraftId, getPublishedId} from 'sanity'
@@ -40,7 +40,7 @@ export function getPreviewStateObservable(
   documentPreviewStore: DocumentPreviewStore,
   schemaType: SchemaType,
   documentId: string,
-  title: React.ReactNode,
+  title: ReactNode,
 ): Observable<PaneItemPreviewState> {
   const draft$ = isLiveEditEnabled(schemaType)
     ? of({snapshot: null})

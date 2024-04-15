@@ -33,16 +33,14 @@
   },
   "main": "./lib/index.js",
   "module": "./lib/index.esm.js",
-  "source": "./src/index.ts",
   "types": "./lib/index.d.ts",
   "files": [
     "lib",
     "src"
   ],
   "scripts": {
-    "build": "run-s clean && pkg-utils build --strict",
-    "check:package": "pkg-utils --strict",
-    "check:types": "tsc",
+    "build": "pkg-utils build --strict --check --clean",
+    "check:types": "tsc --project tsconfig.lib.json",
     "clean": "rimraf lib",
     "coverage": "NODE_ENV=test jest --coverage",
     "lint": "eslint .",
@@ -61,7 +59,7 @@
     "@sanity/types": "3.37.2",
     "@types/jsdom": "^20.0.0",
     "@types/lodash": "^4.14.149",
-    "@types/react": "^18.2.75",
+    "@types/react": "^18.2.78",
     "jsdom": "^23.0.1"
   },
   "publishConfig": {

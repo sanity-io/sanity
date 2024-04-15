@@ -1,15 +1,15 @@
-import * as React from 'react'
+import {memo, type ReactNode} from 'react'
 
 import {useResolveCommentsEnabled} from '../../hooks'
 import {CommentsEnabledContext} from './CommentsEnabledContext'
 
 interface CommentsEnabledProviderProps {
-  children: React.ReactNode
+  children: ReactNode
   documentId: string
   documentType: string
 }
 
-export const CommentsEnabledProvider = React.memo(function CommentsEnabledProvider(
+export const CommentsEnabledProvider = memo(function CommentsEnabledProvider(
   props: CommentsEnabledProviderProps,
 ) {
   const {children, documentId, documentType} = props

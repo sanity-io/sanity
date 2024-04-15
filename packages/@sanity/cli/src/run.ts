@@ -1,4 +1,4 @@
-import path from 'path'
+import path from 'node:path'
 
 import {runCli} from './cli'
 import {getCliVersion} from './util/getCliVersion'

@@ -1,6 +1,5 @@
 import {ArrowLeftIcon} from '@sanity/icons'
-import type * as React from 'react'
-import {memo, useMemo} from 'react'
+import {memo, type ReactNode, useMemo} from 'react'
 import {type GeneralPreviewLayoutKey, type InitialValueTemplateItem} from 'sanity'
 
 import {Button, TooltipDelayGroupProvider} from '../../../ui-components'
@@ -14,7 +13,7 @@ import {useStructureTool} from '../../useStructureTool'
 import {type SortOrder} from './types'
 
 interface DocumentListPaneHeaderProps {
-  contentAfter?: React.ReactNode
+  contentAfter?: ReactNode
   index: number
   initialValueTemplates?: InitialValueTemplateItem[]
   menuItemGroups?: PaneMenuItemGroup[]

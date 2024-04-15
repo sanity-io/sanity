@@ -1,6 +1,5 @@
 import {Badge, Box, Card, Flex, Text, TextSkeleton} from '@sanity/ui'
-import type * as React from 'react'
-import {useCallback} from 'react'
+import {type CSSProperties, useCallback} from 'react'
 import {type UserWithPermission, useTranslation, useUser} from 'sanity'
 import {styled} from 'styled-components'
 
@@ -9,7 +8,7 @@ import {CommentsAvatar} from '../avatars'
 
 const InnerFlex = styled(Flex)``
 
-const SKELETON_INLINE_STYLE: React.CSSProperties = {width: '50%'}
+const SKELETON_INLINE_STYLE: CSSProperties = {width: '50%'}
 
 interface MentionsItemProps {
   user: UserWithPermission

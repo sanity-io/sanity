@@ -8,6 +8,7 @@ import {map, publishReplay, refCount, switchMap} from 'rxjs/operators'
 import {type HistoryStore} from '../../history'
 import {type IdPair} from '../types'
 import {memoize} from '../utils/createMemoizer'
+import {memoizeKeyGen} from './memoizeKeyGen'
 import {type OperationArgs} from './operations'
 import {snapshotPair} from './snapshotPair'
 
@@ -17,12 +18,12 @@ export const operationArgs = memoize(
       client: SanityClient
       historyStore: HistoryStore
       schema: Schema
-      serverActionsEnabled?: boolean
+      serverActionsEnabled: boolean
     },
     idPair: IdPair,
     typeName: string,
   ): Observable<OperationArgs> => {
-    return snapshotPair(ctx.client, idPair, typeName, !!ctx.serverActionsEnabled).pipe(
+    return snapshotPair(ctx.client, idPair, typeName, ctx.serverActionsEnabled).pipe(
       switchMap((versions) =>
         combineLatest([versions.draft.snapshots$, versions.published.snapshots$]).pipe(
           map(
@@ -42,8 +43,6 @@ export const operationArgs = memoize(
     )
   },
   (ctx, idPair, typeName) => {
-    const config = ctx.client.config()
-
-    return `${config.dataset ?? ''}-${config.projectId ?? ''}-${idPair.publishedId}-${typeName}`
+    return memoizeKeyGen(ctx.client, idPair, typeName, ctx.serverActionsEnabled)
   },
 )

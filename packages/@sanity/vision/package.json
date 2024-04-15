@@ -36,16 +36,14 @@
   },
   "main": "./lib/index.js",
   "module": "./lib/index.esm.js",
-  "source": "./src/index.ts",
   "types": "./lib/index.d.ts",
   "files": [
     "lib",
     "src"
   ],
   "scripts": {
-    "build": "run-s clean && pkg-utils build --strict",
-    "check:package": "pkg-utils --strict",
-    "check:types": "tsc",
+    "build": "pkg-utils build --strict --check --clean",
+    "check:types": "tsc --project tsconfig.lib.json",
     "clean": "rimraf lib",
     "prepublishOnly": "turbo run build",
     "watch": "pkg-utils watch"
@@ -64,7 +62,7 @@
     "@rexxars/react-split-pane": "^0.1.93",
     "@sanity/color": "^3.0.0",
     "@sanity/icons": "^2.11.0",
-    "@sanity/ui": "^2.1.2",
+    "@sanity/ui": "^2.1.3",
     "@uiw/react-codemirror": "^4.11.4",
     "hashlru": "^2.3.0",
     "is-hotkey-esm": "^1.0.0",
@@ -75,7 +73,7 @@
     "@repo/package.config": "workspace:*",
     "@sanity/block-tools": "workspace:*",
     "@sanity/cli": "workspace:*",
-    "@sanity/client": "^6.15.11",
+    "@sanity/client": "^6.15.14",
     "@sanity/codegen": "workspace:*",
     "@sanity/diff": "workspace:*",
     "@sanity/migrate": "workspace:*",

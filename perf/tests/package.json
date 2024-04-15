@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@playwright/test": "1.41.2",
-    "@sanity/client": "^6.15.11",
+    "@sanity/client": "^6.15.14",
     "@sanity/uuid": "^3.0.1",
     "dotenv": "^16.0.3",
     "execa": "^2.0.0",
@@ -31,6 +31,6 @@
     "@types/node": "^18.15.3",
     "esbuild": "^0.20.2",
     "ts-node": "^10.9.1",
-    "typescript": "5.4.2"
+    "typescript": "5.4.5"
   }
 }

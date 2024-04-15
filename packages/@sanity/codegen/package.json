@@ -33,7 +33,6 @@
   },
   "main": "./lib/index.js",
   "module": "./lib/index.esm.js",
-  "source": "./src/_exports/index.ts",
   "types": "./lib/index.d.ts",
   "files": [
     "lib",
@@ -42,9 +41,8 @@
     "babel.config.json"
   ],
   "scripts": {
-    "build": "run-s clean && pkg-utils build --strict",
-    "check:package": "pkg-utils --strict",
-    "check:types": "tsc",
+    "build": "pkg-utils build --strict --check --clean",
+    "check:types": "tsc --project tsconfig.lib.json",
     "clean": "rimraf lib coverage",
     "lint": "eslint .",
     "prepublishOnly": "turbo run build",

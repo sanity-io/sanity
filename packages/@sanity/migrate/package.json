@@ -34,7 +34,6 @@
   },
   "main": "./lib/index.js",
   "module": "./lib/index.esm.js",
-  "source": "./src/_exports/index.ts",
   "types": "./lib/index.d.ts",
   "files": [
     "lib",
@@ -42,9 +41,8 @@
     "!**/__tests__/**"
   ],
   "scripts": {
-    "build": "run-s clean && pkg-utils build --strict",
-    "check:package": "pkg-utils --strict",
-    "check:types": "tsc",
+    "build": "pkg-utils build --strict --check --clean",
+    "check:types": "tsc --project tsconfig.lib.json",
     "clean": "rimraf lib coverage",
     "lint": "eslint .",
     "prepublishOnly": "turbo run build",
@@ -53,7 +51,7 @@
   },
   "dependencies": {
     "@bjoerge/mutiny": "^0.5.1",
-    "@sanity/client": "^6.15.11",
+    "@sanity/client": "^6.15.14",
     "@sanity/types": "3.37.2",
     "@sanity/util": "3.37.2",
     "arrify": "^2.0.1",

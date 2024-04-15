@@ -1,4 +1,5 @@
-import {readFile} from 'fs/promises'
+import {readFile} from 'node:fs/promises'
+
 import * as json5 from 'json5'
 import * as z from 'zod'
 

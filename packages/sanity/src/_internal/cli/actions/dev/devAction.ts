@@ -1,10 +1,11 @@
+import path from 'node:path'
+
 import {
   type CliCommandArguments,
   type CliCommandContext,
   type CliConfig,
   type CliOutputter,
 } from '@sanity/cli'
-import path from 'path'
 
 import {type DevServerOptions, startDevServer} from '../../server/devServer'
 import {checkRequiredDependencies} from '../../util/checkRequiredDependencies'

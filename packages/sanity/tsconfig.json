@@ -1,5 +1,5 @@
 {
-  "extends": "@repo/tsconfig/base.json",
+  "extends": "./tsconfig.settings.json",
   "include": [
     "./package.json",
     "./playwright-ct",
@@ -23,7 +23,6 @@
   ],
   "exclude": ["./node_modules/@sanity/codegen/src/typescript/__tests__"],
   "compilerOptions": {
-    "rootDir": ".",
     "paths": {
       "@sanity/block-tools": ["./node_modules/@sanity/block-tools/src/index.ts"],
       "@sanity/diff": ["./node_modules/@sanity/diff/src/index.ts"],
@@ -40,8 +39,6 @@
       "groq": ["./node_modules/groq/src/groq.ts"],
       "sanity/*": ["./src/_exports/*"],
       "sanity": ["./src/_exports/index.ts"]
-    },
-    // For import.meta.env/import.meta.hot definition and similar
-    "types": ["vite/client"]
+    }
   }
 }

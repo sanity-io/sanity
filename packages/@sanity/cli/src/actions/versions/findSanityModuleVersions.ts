@@ -1,11 +1,12 @@
+import {readFileSync} from 'node:fs'
+import {join as joinPath} from 'node:path'
+
 import getLatestVersion from 'get-latest-version'
-import path from 'path'
 import promiseProps from 'promise-props-recursive'
 import semver from 'semver'
 import semverCompare from 'semver-compare'
 
 import {type CliCommandContext, type PackageJson} from '../../types'
-import {dynamicRequire} from '../../util/dynamicRequire'
 import {getCliVersion} from '../../util/getCliVersion'
 import {getLocalVersion} from '../../util/getLocalVersion'
 
@@ -91,7 +92,8 @@ export async function findSanityModuleVersions(
 
 function getLocalManifest(workDir: string): Partial<PackageJson> {
   try {
-    return dynamicRequire(path.join(workDir, 'package.json'))
+    const fileContent = readFileSync(joinPath(workDir, 'package.json'), 'utf8')
+    return JSON.parse(fileContent)
   } catch (err) {
     return {}
   }

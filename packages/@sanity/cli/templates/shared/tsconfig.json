@@ -6,7 +6,6 @@
     "skipLibCheck": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
-    "noEmit": true,
     "module": "Preserve",
     "moduleDetection": "force",
     "isolatedModules": true,

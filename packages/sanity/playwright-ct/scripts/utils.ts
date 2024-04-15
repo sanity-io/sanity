@@ -1,5 +1,6 @@
+import fs from 'node:fs'
+
 import {addMinutes, format} from 'date-fns'
-import fs from 'fs'
 import {chain, filter, flatMap, forEach, groupBy, sumBy} from 'lodash'
 
 import {

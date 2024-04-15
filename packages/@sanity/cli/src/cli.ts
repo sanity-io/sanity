@@ -1,10 +1,11 @@
 /* eslint-disable no-console, no-process-exit, no-sync */
+import {existsSync} from 'node:fs'
+import os from 'node:os'
+import path from 'node:path'
+
 import chalk from 'chalk'
 import dotenv from 'dotenv'
-import {existsSync} from 'fs'
 import {machineId} from 'node-machine-id'
-import os from 'os'
-import path from 'path'
 import resolveFrom from 'resolve-from'
 
 import {CliCommand} from './__telemetry__/cli.telemetry'
@@ -88,7 +89,7 @@ export async function runCli(cliRoot: string, {cliVersion}: {cliVersion: string}
     runtimeVersion: process.version,
     runtime: detectRuntime(),
     cliVersion: pkg.version,
-    platform: process.platform,
+    machinePlatform: process.platform,
     cpuArchitecture: process.arch,
     projectId: cliConfig?.config?.api?.projectId,
     dataset: cliConfig?.config?.api?.dataset,

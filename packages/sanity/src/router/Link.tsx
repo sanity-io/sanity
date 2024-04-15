@@ -1,5 +1,4 @@
-import type * as React from 'react'
-import {forwardRef} from 'react'
+import {type ForwardedRef, forwardRef, type HTMLProps} from 'react'
 
 import {useLink} from './useLink'
 
@@ -35,8 +34,8 @@ export interface LinkProps {
  * ```
  */
 export const Link = forwardRef(function Link(
-  props: LinkProps & React.HTMLProps<HTMLAnchorElement>,
-  ref: React.ForwardedRef<HTMLAnchorElement>,
+  props: LinkProps & HTMLProps<HTMLAnchorElement>,
+  ref: ForwardedRef<HTMLAnchorElement>,
 ) {
   const {onClick: onClickProp, href, target, replace, ...restProps} = props
   const {onClick} = useLink({onClick: onClickProp, href, target, replace})

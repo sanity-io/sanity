@@ -4,8 +4,7 @@ import {
   type MenuButtonProps as UIMenuButtonProps,
   type PopoverProps,
 } from '@sanity/ui'
-import type * as React from 'react'
-import {forwardRef} from 'react'
+import {type ForwardedRef, forwardRef} from 'react'
 
 /** @internal */
 export type MenuButtonProps = Omit<UIMenuButtonProps, 'popover'> & {
@@ -19,7 +18,7 @@ export type MenuButtonProps = Omit<UIMenuButtonProps, 'popover'> & {
  */
 export const MenuButton = forwardRef(function MenuButton(
   props: MenuButtonProps,
-  ref: React.ForwardedRef<HTMLButtonElement>,
+  ref: ForwardedRef<HTMLButtonElement>,
 ) {
   return (
     <UIMenuButton

@@ -49,5 +49,5 @@ export interface OperationArgs {
   snapshots: {draft: null | SanityDocument; published: null | SanityDocument}
   draft: DocumentVersionSnapshots
   published: DocumentVersionSnapshots
-  serverActionsEnabled?: boolean
+  serverActionsEnabled: boolean
 }

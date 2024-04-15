@@ -1,6 +1,5 @@
 import {PortalProvider, Text, usePortal} from '@sanity/ui'
-import type * as React from 'react'
-import {useId} from 'react'
+import {type ReactNode, useId} from 'react'
 import {type DocumentActionDialogProps} from 'sanity'
 
 import {Dialog} from '../../../../ui-components'
@@ -16,7 +15,7 @@ export interface ActionStateDialogProps {
 
 // A portal provider that uses the document panel portal element if it exists
 // as the portal element so that dialogs are scoped to the document panel
-function DocumentActionPortalProvider(props: {children: React.ReactNode}) {
+function DocumentActionPortalProvider(props: {children: ReactNode}) {
   const {children} = props
   const {element, elements} = usePortal()
   const portalElement = elements?.[DOCUMENT_PANEL_PORTAL_ELEMENT] || element

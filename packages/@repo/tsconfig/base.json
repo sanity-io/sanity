@@ -28,7 +28,7 @@
 
     // Strict type-checking
     "strict": true,
-    // "noImplicitAny": true,
+    "noImplicitAny": true,
     // "strictNullChecks": true,
     // "strictFunctionTypes": true,
     // "strictPropertyInitialization": true,
@@ -40,6 +40,11 @@
     // "noUnusedParameters": true,
     // "noImplicitReturns": true,
     // "noFallthroughCasesInSwitch": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+
+    // These options are already set by "module": "Preserve" but if someone loads the monorepo in an older TS version you'll get confusing errors and so we set them here as a fallback
+    "moduleResolution": "Bundler",
+    "esModuleInterop": true,
+    "resolveJsonModule": true
   }
 }

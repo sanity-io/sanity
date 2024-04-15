@@ -37,16 +37,14 @@
   },
   "main": "./lib/groq.js",
   "module": "./lib/groq.esm.js",
-  "source": "./src/groq.ts",
   "types": "./lib/groq.d.ts",
   "files": [
     "lib",
     "src"
   ],
   "scripts": {
-    "build": "run-s clean && pkg-utils build --strict",
-    "check:package": "pkg-utils --strict",
-    "check:types": "tsc",
+    "build": "pkg-utils build --strict --check --clean",
+    "check:types": "tsc --project tsconfig.lib.json",
     "clean": "rimraf lib",
     "lint": "eslint .",
     "prepublishOnly": "turbo run build",

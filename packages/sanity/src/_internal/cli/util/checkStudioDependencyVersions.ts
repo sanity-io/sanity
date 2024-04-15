@@ -1,7 +1,8 @@
+import fs from 'node:fs'
+import path from 'node:path'
+
 import {type PackageJson} from '@sanity/cli'
 import {generateHelpUrl} from '@sanity/generate-help-url'
-import fs from 'fs'
-import path from 'path'
 import resolveFrom from 'resolve-from'
 import semver, {type SemVer} from 'semver'
 

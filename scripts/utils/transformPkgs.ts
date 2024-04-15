@@ -1,5 +1,5 @@
 /* eslint-disable no-sync */
-import fs from 'fs'
+import fs from 'node:fs'
 
 import {type PackageManifest} from '../types'
 import readPackages from './readPackages'

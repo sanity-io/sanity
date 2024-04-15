@@ -1,7 +1,8 @@
+import path from 'node:path'
+
 import {type UserViteConfig} from '@sanity/cli'
 import viteReact from '@vitejs/plugin-react'
 import debug from 'debug'
-import path from 'path'
 import readPkgUp from 'read-pkg-up'
 import {type ConfigEnv, type InlineConfig, mergeConfig} from 'vite'
 

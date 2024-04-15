@@ -1,8 +1,7 @@
 import {type SanityDocument, type SchemaType} from '@sanity/types'
 import {Flex} from '@sanity/ui'
 import {isNumber, isString} from 'lodash'
-import type * as React from 'react'
-import {isValidElement} from 'react'
+import {type ComponentType, isValidElement} from 'react'
 import {useMemoObservable} from 'react-rx'
 import {
   type DocumentPresence,
@@ -22,7 +21,7 @@ import {type PaneItemPreviewState} from './types'
 
 export interface PaneItemPreviewProps {
   documentPreviewStore: DocumentPreviewStore
-  icon: React.ComponentType | false
+  icon: ComponentType | false
   layout: GeneralPreviewLayoutKey
   presence?: DocumentPresence[]
   schemaType: SchemaType

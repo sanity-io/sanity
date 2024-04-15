@@ -1,7 +1,6 @@
 import {toString as pathToString} from '@sanity/util/paths'
 import {omit} from 'lodash'
-import type * as React from 'react'
-import {useCallback, useMemo} from 'react'
+import {type ReactNode, useCallback, useMemo} from 'react'
 import {useRouter, useRouterState} from 'sanity/router'
 
 import {type RouterPaneGroup, type RouterPanes, type RouterPaneSibling} from '../../types'
@@ -19,7 +18,7 @@ const emptyArray: never[] = []
  * @internal
  */
 export function PaneRouterProvider(props: {
-  children: React.ReactNode
+  children: ReactNode
   flatIndex: number
   index: number
   params: Record<string, string | undefined>

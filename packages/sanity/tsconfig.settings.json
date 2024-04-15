@@ -1,0 +1,13 @@
+{
+  "extends": "@repo/tsconfig/base.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "outDir": "./lib",
+    "paths": {
+      "sanity/*": ["./src/_exports/*"],
+      "sanity": ["./src/_exports/index.ts"]
+    },
+    // For import.meta.env/import.meta.hot definition and similar
+    "types": ["vite/client"]
+  }
+}

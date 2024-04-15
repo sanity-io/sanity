@@ -1,7 +1,8 @@
+import {constants as fsConstants} from 'node:fs'
+import fs from 'node:fs/promises'
+import path from 'node:path'
+
 import {type UserViteConfig} from '@sanity/cli'
-import {constants as fsConstants} from 'fs'
-import fs from 'fs/promises'
-import path from 'path'
 import readPkgUp from 'read-pkg-up'
 import {build} from 'vite'
 

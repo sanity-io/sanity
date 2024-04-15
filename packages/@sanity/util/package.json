@@ -75,7 +75,6 @@
   },
   "main": "./lib/index.js",
   "module": "./lib/index.esm.js",
-  "source": "./src/_exports/index.ts",
   "types": "./lib/index.d.ts",
   "typesVersions": {
     "*": {
@@ -114,16 +113,15 @@
     "paths.js"
   ],
   "scripts": {
-    "build": "run-s clean && pkg-utils build --strict",
-    "check:package": "pkg-utils --strict",
-    "check:types": "tsc",
+    "build": "pkg-utils build --strict --check --clean",
+    "check:types": "tsc --project tsconfig.lib.json",
     "clean": "rimraf client.js concurrency-limiter.js content.js createSafeJsonParser.js fs.js legacyDateFormat.js lib paths.js",
     "prepublishOnly": "turbo run build",
     "test": "jest",
     "watch": "pkg-utils watch"
   },
   "dependencies": {
-    "@sanity/client": "^6.15.11",
+    "@sanity/client": "^6.15.14",
     "@sanity/types": "3.37.2",
     "get-random-values-esm": "1.0.2",
     "moment": "^2.29.4",
