@@ -129,11 +129,18 @@ function ToolCanvasComponent(props: ToolCanvasProps) {
       .shrink(MARGIN_PX * scale)
       .multiply(rect)
   }, [image.height, image.width, scale, value.hotspot])
+  const cropRect = useMemo(() => {
+    return new Rect()
+      .setSize(image.width, image.height)
+      .shrink(MARGIN_PX * scale)
+      .cropRelative(Rect.fromEdges(value.crop || DEFAULT_CROP).clamp(new Rect(0, 0, 1, 1)))
+  }, [image.height, image.width, scale, value.crop])
 
   return (
     <ToolCanvasLegacy
       actualSize={actualSize}
       hotspotRect={hotspotRect}
+      cropRect={cropRect}
       image={image}
       onChange={onChange}
       onChangeEnd={onChangeEnd}
@@ -154,6 +161,7 @@ class ToolCanvasLegacy extends PureComponent<
     scale: number
     setCanvasObserver: React.Dispatch<React.SetStateAction<HTMLCanvasElement | null>>
     hotspotRect: Rect
+    cropRect: Rect
   },
   ToolCanvasState
 > {
@@ -167,17 +175,8 @@ class ToolCanvasLegacy extends PureComponent<
 
   canvas?: HTMLCanvasElement
 
-  getCropRect() {
-    const {value, image} = this.props
-
-    return new Rect()
-      .setSize(image.width, image.height)
-      .shrink(MARGIN_PX * this.props.scale)
-      .cropRelative(Rect.fromEdges(value.crop || DEFAULT_CROP).clamp(new Rect(0, 0, 1, 1)))
-  }
-
   getCropHandles(): CropHandles {
-    const inner = this.getCropRect()
+    const inner = this.props.cropRect
 
     const handleSize = CROP_HANDLE_SIZE * this.props.scale
 
@@ -561,7 +560,7 @@ class ToolCanvasLegacy extends PureComponent<
   }
 
   paintCropBorder({context}: {context: CanvasRenderingContext2D}) {
-    const cropRect = this.getCropRect()
+    const cropRect = this.props.cropRect
     context.save()
     context.beginPath()
     context.fillStyle = 'rgba(66, 66, 66, 0.9)'
@@ -620,7 +619,7 @@ class ToolCanvasLegacy extends PureComponent<
     }
 
     const pointerOverHotspot = utils2d.isPointInEllipse(pointerPosition, this.props.hotspotRect)
-    const pointerOverCropRect = utils2d.isPointInRect(pointerPosition, this.getCropRect())
+    const pointerOverCropRect = utils2d.isPointInRect(pointerPosition, this.props.cropRect)
     if (pointerOverHotspot || pointerOverCropRect) {
       return `url(${cursors.OPEN_HAND}), move`
     }
@@ -664,7 +663,7 @@ class ToolCanvasLegacy extends PureComponent<
 
     const activeCropHandle = this.getActiveCropHandleFor(pointerPosition)
 
-    const inCropRect = utils2d.isPointInRect(pointerPosition, this.getCropRect())
+    const inCropRect = utils2d.isPointInRect(pointerPosition, this.props.cropRect)
 
     if (activeCropHandle) {
       this.setState({cropping: activeCropHandle})
