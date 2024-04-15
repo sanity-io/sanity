@@ -629,29 +629,30 @@ class ToolCanvasLegacy extends PureComponent<
   }
 
   componentDidMount() {
-    this.draw()
+    const {canvas} = this
+    if (canvas) {
+      this.draw({canvas})
+    }
   }
 
   componentDidUpdate() {
-    this.draw()
+    const {canvas} = this
+    if (canvas) {
+      this.draw({canvas})
+    }
   }
 
-  draw() {
-    if (!this.canvas) {
-      return
-    }
-
-    const domNode = this.canvas
-    const context = domNode.getContext('2d')
+  draw({canvas}: {canvas: HTMLCanvasElement}) {
+    const context = canvas.getContext('2d')
     if (!context) {
       return
     }
 
     this.paint(context)
-    const currentCursor = domNode.style.cursor
+    const currentCursor = canvas.style.cursor
     const newCursor = this.getCursor()
     if (currentCursor !== newCursor) {
-      domNode.style.cursor = newCursor
+      canvas.style.cursor = newCursor
     }
   }
 
