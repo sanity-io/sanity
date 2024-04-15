@@ -57,7 +57,7 @@ export interface PortableTextMemberItem {
  * @public
  * @param props - {@link PortableTextInputProps} component props.
  */
-export function PortableTextInput(props: PortableTextInputProps) {
+export function PortableTextInput(props: PortableTextInputProps): ReactNode {
   const {
     editorRef: editorRefProp,
     elementProps,
@@ -80,7 +80,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
     value,
   } = props
 
-  const {onBlur} = elementProps
+  const {onBlur, onFocus, ref: elementRef} = elementProps
   const defaultEditorRef = useRef<PortableTextEditor | null>(null)
   const editorRef = editorRefProp || defaultEditorRef
 
@@ -268,6 +268,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
             >
               <Compositor
                 {...props}
+                elementRef={elementRef}
                 hasFocusWithin={hasFocusWithin}
                 hotkeys={hotkeys}
                 isActive={isActive}

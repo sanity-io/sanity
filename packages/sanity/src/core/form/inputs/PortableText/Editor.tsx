@@ -16,7 +16,7 @@ import {type Path} from '@sanity/types'
 import {BoundaryElementProvider, useBoundaryElement, useGlobalKeyDown, useLayer} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
-import {useCallback, useMemo, useRef} from 'react'
+import {type ReactNode, useCallback, useMemo} from 'react'
 import {css, styled} from 'styled-components'
 
 import {TooltipDelayGroupProvider} from '../../../../ui-components'
@@ -51,6 +51,7 @@ const PlaceholderWrapper = styled.span((props) => {
 })
 
 interface EditorProps {
+  elementRef: React.RefObject<HTMLDivElement>
   hotkeys: HotkeyOptions
   initialSelection?: EditorSelection
   isActive: boolean
@@ -85,8 +86,9 @@ const renderListItem: RenderListItemFunction = (props) => {
 /**
  * @internal
  */
-export function Editor(props: EditorProps) {
+export function Editor(props: EditorProps): ReactNode {
   const {
+    elementRef,
     hotkeys,
     initialSelection,
     isActive,
@@ -109,7 +111,6 @@ export function Editor(props: EditorProps) {
   const {id} = useFormBuilder()
   const {t} = useTranslation()
   const {isTopLayer} = useLayer()
-  const editableRef = useRef<HTMLDivElement | null>(null)
 
   const {element: boundaryElement} = useBoundaryElement()
 
@@ -147,7 +148,7 @@ export function Editor(props: EditorProps) {
         hotkeys={hotkeys}
         onCopy={onCopy}
         onPaste={onPaste}
-        ref={editableRef}
+        ref={elementRef}
         rangeDecorations={rangeDecorations}
         renderAnnotation={renderAnnotation}
         renderBlock={renderBlock}
@@ -164,6 +165,7 @@ export function Editor(props: EditorProps) {
     ),
     [
       ariaDescribedBy,
+      elementRef,
       hotkeys,
       initialSelection,
       onCopy,

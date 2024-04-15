@@ -11,7 +11,7 @@ import {
 } from '@sanity/portable-text-editor'
 import {type Path, type PortableTextBlock, type PortableTextTextBlock} from '@sanity/types'
 import {Box, Portal, PortalProvider, useBoundaryElement, usePortal} from '@sanity/ui'
-import {useCallback, useMemo, useState} from 'react'
+import {type ReactNode, useCallback, useMemo, useState} from 'react'
 
 import {ChangeIndicator} from '../../../changeIndicators'
 import {EMPTY_ARRAY} from '../../../util'
@@ -28,6 +28,7 @@ import {InlineObject} from './object/InlineObject'
 import {TextBlock} from './text'
 
 interface InputProps extends ArrayOfObjectsInputProps<PortableTextBlock> {
+  elementRef: React.RefObject<HTMLDivElement>
   hasFocusWithin: boolean
   hotkeys?: HotkeyOptions
   isActive: boolean
@@ -46,9 +47,10 @@ interface InputProps extends ArrayOfObjectsInputProps<PortableTextBlock> {
 export type PortableTextEditorElement = HTMLDivElement | HTMLSpanElement
 
 /** @internal */
-export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunctions'>) {
+export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunctions'>): ReactNode {
   const {
     changed,
+    elementRef,
     focused,
     focusPath = EMPTY_ARRAY,
     hasFocusWithin,
@@ -388,6 +390,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
     () => (
       <Editor
         ariaDescribedBy={ariaDescribedBy}
+        elementRef={elementRef}
         initialSelection={initialSelection}
         hotkeys={editorHotkeys}
         isActive={isActive}
@@ -411,6 +414,8 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
     // Keep only stable ones here!
     [
       ariaDescribedBy,
+      elementRef,
+      initialSelection,
       editorHotkeys,
       isActive,
       isFullscreen,
@@ -424,7 +429,6 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       editorRenderAnnotation,
       editorRenderBlock,
       editorRenderChild,
-      initialSelection,
       scrollElement,
     ],
   )
