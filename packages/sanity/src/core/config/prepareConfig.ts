@@ -583,7 +583,7 @@ function resolveSource({
         context,
         reducer: newSearchEnabledReducer,
         propertyName: 'search.unstable_enableNewSearch',
-        initialValue: false,
+        initialValue: true,
       }),
       // we will use this when we add search config to PluginOptions
       /*filters: resolveConfigProperty({
