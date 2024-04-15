@@ -4,7 +4,7 @@ import {
   usePortableTextEditor,
 } from '@sanity/portable-text-editor'
 import {isPortableTextSpan, type Path} from '@sanity/types'
-import React, {useCallback, useMemo, useState} from 'react'
+import {createContext, type ReactNode, useCallback, useMemo, useState} from 'react'
 import {useDidUpdate, type UserListWithPermissionsHookValue} from 'sanity'
 
 import {hasCommentMessageValue, useCommentHasChanged} from '../../../helpers'
@@ -30,10 +30,10 @@ export interface CommentInputContextValue {
   value: CommentMessage
 }
 
-export const CommentInputContext = React.createContext<CommentInputContextValue | null>(null)
+export const CommentInputContext = createContext<CommentInputContextValue | null>(null)
 
 interface CommentInputProviderProps {
-  children: React.ReactNode
+  children: ReactNode
   expandOnFocus?: boolean
   focused: boolean
   focusOnMount?: boolean

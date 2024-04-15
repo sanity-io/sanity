@@ -1,8 +1,7 @@
 /* eslint-disable react/no-array-index-key */
 
 import {Box, Card, Code, Flex, Radio, Stack, Text} from '@sanity/ui'
-import type * as React from 'react'
-import {useCallback, useState} from 'react'
+import {type ChangeEvent, useCallback, useState} from 'react'
 
 import {LOADING_PANE} from '../constants'
 import {useResolvedPanes} from '../structureResolvers'
@@ -32,7 +31,7 @@ function ResolvePanesStory() {
   const {paneDataItems, resolvedPanes, routerPanes} = useResolvedPanes()
   const [testKey, setTestKey] = useState('0')
 
-  const handleChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
     const inputValue = event.currentTarget.value
 
     setTestKey(inputValue)

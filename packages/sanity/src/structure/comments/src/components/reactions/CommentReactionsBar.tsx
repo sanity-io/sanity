@@ -5,7 +5,7 @@ import {
   Flex,
   Text,
 } from '@sanity/ui'
-import React, {useCallback, useMemo, useRef} from 'react'
+import {memo, useCallback, useMemo, useRef} from 'react'
 
 import {Tooltip, TooltipDelayGroupProvider} from '../../../../../ui-components'
 import {COMMENT_REACTION_EMOJIS, COMMENT_REACTION_OPTIONS} from '../../constants'
@@ -82,7 +82,7 @@ interface CommentReactionsBarProps {
   mode: CommentsUIMode
 }
 
-export const CommentReactionsBar = React.memo(function CommentReactionsBar(
+export const CommentReactionsBar = memo(function CommentReactionsBar(
   props: CommentReactionsBarProps,
 ) {
   const {currentUser, onSelect, reactions, readOnly, mode} = props
