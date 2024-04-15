@@ -6,7 +6,6 @@ import * as utils2d from './2d/utils'
 import {DEFAULT_CROP, DEFAULT_HOTSPOT} from './constants'
 import * as cursors from './cursors'
 import {DragAwareCanvas} from './DragAwareCanvas'
-import {getBackingStoreRatio} from './getBackingStoreRatio'
 import {RootContainer} from './ToolCanvas.styles'
 import {
   type Coordinate,
@@ -104,10 +103,7 @@ function getCropCursorForHandle(handle: keyof CropHandles | boolean) {
 }
 
 const getDevicePixelRatio = memoize(() => {
-  const devicePixelRatio = window.devicePixelRatio || 1
-  const ctx = document.createElement('canvas').getContext('2d')
-  const backingStoreRatio = (ctx && getBackingStoreRatio(ctx)) || 1
-  return devicePixelRatio / backingStoreRatio
+  return window.devicePixelRatio || 1
 })
 
 const cropHandleKeys: (keyof CropHandles)[] = [
