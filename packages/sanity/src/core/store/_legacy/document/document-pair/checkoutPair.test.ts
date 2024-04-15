@@ -1,27 +1,41 @@
-import {expect, jest, test} from '@jest/globals'
+import {beforeEach, expect, jest, test} from '@jest/globals'
 import {type SanityClient} from '@sanity/client'
 import {merge, of} from 'rxjs'
 import {delay} from 'rxjs/operators'
 
 import {checkoutPair} from './checkoutPair'
 
-test('patch', async () => {
-  const dataRequest = jest.fn(() => of({}))
-  const client = {
-    observable: {
-      // request: jest.fn(),
-      //TODO: make some listener events and some logic (when do we hit "welcome", ec)
-      listen: () => of({type: 'welcome'}).pipe(delay(0)),
-      getDocuments: (ids: string[]) =>
-        of([
-          {_id: ids[0], _type: 'any', _rev: 'any'},
-          {_id: ids[1], _type: 'any', _rev: 'any'},
-        ]),
-    },
-    dataRequest,
-  }
-  const idPair = {publishedId: 'publishedId', draftId: 'draftId'}
+const mockedDataRequest = jest.fn(() => of({}))
+const mockedObservableRequest = jest.fn((obj) => of(obj))
 
+const client = {
+  observable: {
+    listen: () => of({type: 'welcome'}).pipe(delay(0)),
+    getDocuments: (ids: string[]) =>
+      of([
+        {_id: ids[0], _type: 'any', _rev: 'any'},
+        {_id: ids[1], _type: 'any', _rev: 'any'},
+      ]),
+  },
+  dataRequest: mockedDataRequest,
+}
+
+const clientWithConfig = {
+  ...client,
+  withConfig: () => ({
+    ...client,
+    observable: {...client.observable, request: mockedObservableRequest},
+  }),
+  config: () => ({dataset: 'production'}),
+}
+
+const idPair = {publishedId: 'publishedId', draftId: 'draftId'}
+
+beforeEach(() => {
+  jest.clearAllMocks()
+})
+
+test('patch  -- local actions', async () => {
   const {draft, published} = checkoutPair(client as any as SanityClient, idPair, false)
   const combined = merge(draft.events, published.events)
   const sub = combined.subscribe()
@@ -30,7 +44,7 @@ test('patch', async () => {
   draft.mutate(draft.patch([{set: {title: 'new title'}}]))
   draft.commit()
 
-  expect(dataRequest).toHaveBeenCalledWith(
+  expect(mockedDataRequest).toHaveBeenCalledWith(
     'mutate',
     {
       mutations: [{patch: {id: 'draftId', set: {title: 'new title'}}}],
@@ -43,5 +57,261 @@ test('patch', async () => {
       visibility: 'async',
     },
   )
+  sub.unsubscribe()
+})
+
+test('patch -- server actions', async () => {
+  const {draft, published} = checkoutPair(clientWithConfig as any as SanityClient, idPair, true)
+  const combined = merge(draft.events, published.events)
+  const sub = combined.subscribe()
+  await new Promise((resolve) => setTimeout(resolve, 0))
+
+  draft.mutate(draft.patch([{set: {title: 'new title'}}]))
+  draft.commit()
+
+  expect(mockedObservableRequest).toHaveBeenCalledWith({
+    url: '/data/actions/production',
+    method: 'post',
+    tag: 'document.commit',
+    body: {
+      transactionId: expect.any(String),
+      actions: [
+        {
+          actionType: 'sanity.action.document.edit',
+          draftId: 'draftId',
+          publishedId: 'publishedId',
+          patch: {
+            id: 'draftId',
+            set: {
+              title: 'new title',
+            },
+          },
+        },
+      ],
+    },
+  })
+
+  sub.unsubscribe()
+})
+
+test('createIfNotExists -- local actions', async () => {
+  const {draft, published} = checkoutPair(client as any as SanityClient, idPair, false)
+  const combined = merge(draft.events, published.events)
+  const sub = combined.subscribe()
+  await new Promise((resolve) => setTimeout(resolve, 0))
+
+  draft.mutate([
+    draft.createIfNotExists({
+      _id: 'draftId',
+      _type: 'any',
+      _createdAt: 'now',
+      _updatedAt: 'now',
+      _rev: 'any',
+    }),
+  ])
+  draft.commit()
+
+  expect(mockedDataRequest).toHaveBeenCalledWith(
+    'mutate',
+    {
+      mutations: [
+        {
+          createIfNotExists: {
+            _id: 'draftId',
+            _type: 'any',
+            _createdAt: 'now',
+          },
+        },
+      ],
+      transactionId: expect.any(String),
+    },
+    {
+      returnDocuments: false,
+      skipCrossDatasetReferenceValidation: true,
+      tag: 'document.commit',
+      visibility: 'async',
+    },
+  )
+
+  sub.unsubscribe()
+})
+
+test('createIfNotExists -- server actions', async () => {
+  const {draft, published} = checkoutPair(clientWithConfig as any as SanityClient, idPair, true)
+  const combined = merge(draft.events, published.events)
+  const sub = combined.subscribe()
+  await new Promise((resolve) => setTimeout(resolve, 0))
+
+  draft.mutate([
+    draft.createIfNotExists({
+      _id: 'draftId',
+      _type: 'any',
+      _createdAt: 'now',
+      _updatedAt: 'now',
+      _rev: 'any',
+    }),
+  ])
+  draft.commit()
+
+  expect(mockedObservableRequest).toHaveBeenCalledWith({
+    url: '/data/actions/production',
+    method: 'post',
+    tag: 'document.commit',
+    body: {
+      transactionId: expect.any(String),
+      actions: [
+        {
+          actionType: 'sanity.action.document.create',
+          publishedId: 'publishedId',
+          attributes: {
+            _id: 'draftId',
+            _type: 'any',
+            _createdAt: 'now',
+          },
+          ifExists: 'ignore',
+        },
+      ],
+    },
+  })
+
+  sub.unsubscribe()
+})
+
+test('create -- local actions', async () => {
+  const {draft, published} = checkoutPair(client as any as SanityClient, idPair, false)
+  const combined = merge(draft.events, published.events)
+  const sub = combined.subscribe()
+  await new Promise((resolve) => setTimeout(resolve, 0))
+
+  draft.mutate([
+    draft.create({_id: 'draftId', _type: 'any', _createdAt: 'now', _updatedAt: 'now', _rev: 'any'}),
+  ])
+  draft.commit()
+
+  expect(mockedDataRequest).toHaveBeenCalledWith(
+    'mutate',
+    {
+      mutations: [
+        {
+          create: {
+            _id: 'draftId',
+            _type: 'any',
+            _createdAt: 'now',
+          },
+        },
+      ],
+      transactionId: expect.any(String),
+    },
+    {
+      returnDocuments: false,
+      skipCrossDatasetReferenceValidation: true,
+      tag: 'document.commit',
+      visibility: 'async',
+    },
+  )
+
+  sub.unsubscribe()
+})
+
+test('createOrReplace -- local actions', async () => {
+  const {draft, published} = checkoutPair(client as any as SanityClient, idPair, false)
+  const combined = merge(draft.events, published.events)
+  const sub = combined.subscribe()
+  await new Promise((resolve) => setTimeout(resolve, 0))
+
+  draft.mutate([
+    draft.createOrReplace({
+      _id: 'draftId',
+      _type: 'any',
+      _createdAt: 'now',
+      _updatedAt: 'now',
+      _rev: 'any',
+    }),
+  ])
+  draft.commit()
+
+  expect(mockedDataRequest).toHaveBeenCalledWith(
+    'mutate',
+    {
+      mutations: [
+        {
+          createOrReplace: {
+            _id: 'draftId',
+            _type: 'any',
+            _rev: expect.any(String),
+            _createdAt: 'now',
+          },
+        },
+      ],
+      transactionId: expect.any(String),
+    },
+    {
+      returnDocuments: false,
+      skipCrossDatasetReferenceValidation: true,
+      tag: 'document.commit',
+      visibility: 'async',
+    },
+  )
+
+  sub.unsubscribe()
+})
+
+test('delete -- local actions', async () => {
+  const {draft, published} = checkoutPair(client as any as SanityClient, idPair, false)
+  const combined = merge(draft.events, published.events)
+  const sub = combined.subscribe()
+  await new Promise((resolve) => setTimeout(resolve, 0))
+
+  draft.mutate([draft.delete()])
+  draft.commit()
+
+  expect(mockedDataRequest).toHaveBeenCalledWith(
+    'mutate',
+    {
+      mutations: [
+        {
+          delete: {
+            id: 'draftId',
+          },
+        },
+      ],
+      transactionId: expect.any(String),
+    },
+    {
+      returnDocuments: false,
+      skipCrossDatasetReferenceValidation: true,
+      tag: 'document.commit',
+      visibility: 'async',
+    },
+  )
+
+  sub.unsubscribe()
+})
+
+test('delete -- server actions', async () => {
+  const {draft, published} = checkoutPair(clientWithConfig as any as SanityClient, idPair, true)
+  const combined = merge(draft.events, published.events)
+  const sub = combined.subscribe()
+  await new Promise((resolve) => setTimeout(resolve, 0))
+
+  draft.mutate([draft.delete()])
+  draft.commit()
+
+  expect(mockedObservableRequest).toHaveBeenCalledWith({
+    url: '/data/actions/production',
+    method: 'post',
+    tag: 'document.commit',
+    body: {
+      transactionId: expect.any(String),
+      actions: [
+        {
+          actionType: 'sanity.action.document.delete',
+          draftId: 'draftId',
+          publishedId: 'publishedId',
+        },
+      ],
+    },
+  })
+
   sub.unsubscribe()
 })

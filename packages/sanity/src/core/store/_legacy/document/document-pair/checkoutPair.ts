@@ -1,7 +1,7 @@
 import {type SanityClient} from '@sanity/client'
 import {type Mutation} from '@sanity/mutator'
 import {type SanityDocument} from '@sanity/types'
-import {EMPTY, from, merge, type Observable, type ObservableInput, Subject} from 'rxjs'
+import {EMPTY, from, merge, type Observable, Subject} from 'rxjs'
 import {filter, map, mergeMap, share, tap} from 'rxjs/operators'
 
 import {
@@ -72,7 +72,7 @@ function setVersion<T>(version: 'draft' | 'published') {
 }
 
 function toActions(idPair: IdPair, mutationParams: Mutation['params']) {
-  return mutationParams.mutations.flatMap<HttpAction>((mutations) => {
+  return mutationParams.mutations.map((mutations): HttpAction => {
     if (Object.keys(mutations).length > 1) {
       // todo: this might be a bit too strict, but I'm (lazily) trying to check if we ever get more than one mutation in a payload
       throw new Error('Did not expect multiple mutations in the same payload')
@@ -173,7 +173,6 @@ export function checkoutPair(
   client: SanityClient,
   idPair: IdPair,
   serverActionsEnabled: boolean,
-  customSubmitRequest?: () => ObservableInput<any>,
 ): Pair {
   const {publishedId, draftId} = idPair
 
@@ -203,9 +202,7 @@ export function checkoutPair(
 
   const commits$ = merge(draft.commitRequest$, published.commitRequest$).pipe(
     mergeMap((commitRequest) =>
-      customSubmitRequest
-        ? customSubmitRequest()
-        : submitCommitRequest(client, idPair, commitRequest, serverActionsEnabled),
+      submitCommitRequest(client, idPair, commitRequest, serverActionsEnabled),
     ),
     mergeMap(() => EMPTY),
     share(),
