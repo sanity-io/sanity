@@ -1,4 +1,4 @@
-import {memo, type PointerEvent, PureComponent} from 'react'
+import {memo, type PointerEvent, PureComponent, useMemo} from 'react'
 import {useDevicePixelRatio} from 'use-device-pixel-ratio'
 
 import {Rect} from './2d/shapes'
@@ -119,10 +119,12 @@ function ToolCanvasComponent(props: ToolCanvasProps) {
 
   const ratio = useDevicePixelRatio()
   const [actualSize, setCanvasObserver] = useActualCanvasSizeObserver()
+  const scale = useMemo(() => image.width / actualSize.width, [actualSize.width, image.width])
 
   return (
     <ToolCanvasLegacy
       actualSize={actualSize}
+      scale={scale}
       image={image}
       onChange={onChange}
       onChangeEnd={onChangeEnd}
@@ -139,6 +141,7 @@ class ToolCanvasLegacy extends PureComponent<
   ToolCanvasProps & {
     ratio: number
     actualSize: Dimensions
+    scale: number
     setCanvasObserver: React.Dispatch<React.SetStateAction<HTMLCanvasElement | null>>
   },
   ToolCanvasState
@@ -163,7 +166,7 @@ class ToolCanvasLegacy extends PureComponent<
 
     return new Rect()
       .setSize(image.width, image.height)
-      .shrink(MARGIN_PX * this.getScale())
+      .shrink(MARGIN_PX * this.props.scale)
       .multiply(hotspotRect)
   }
 
@@ -172,14 +175,14 @@ class ToolCanvasLegacy extends PureComponent<
 
     return new Rect()
       .setSize(image.width, image.height)
-      .shrink(MARGIN_PX * this.getScale())
+      .shrink(MARGIN_PX * this.props.scale)
       .cropRelative(Rect.fromEdges(value.crop || DEFAULT_CROP).clamp(new Rect(0, 0, 1, 1)))
   }
 
   getCropHandles(): CropHandles {
     const inner = this.getCropRect()
 
-    const handleSize = CROP_HANDLE_SIZE * this.getScale()
+    const handleSize = CROP_HANDLE_SIZE * this.props.scale
 
     const halfCropHandleSize = handleSize / 2
 
@@ -234,7 +237,7 @@ class ToolCanvasLegacy extends PureComponent<
 
   emitMove(pos: Coordinate) {
     const {image, value, onChange} = this.props
-    const scale = this.getScale()
+    const scale = this.props.scale
     const delta = {
       x: (pos.x * scale) / image.width,
       y: (pos.y * scale) / image.height,
@@ -245,7 +248,7 @@ class ToolCanvasLegacy extends PureComponent<
 
   emitCropMove(pos: Coordinate) {
     const {image, onChange, value} = this.props
-    const scale = this.getScale()
+    const scale = this.props.scale
     const left = (pos.x * scale) / image.width
     const right = (-pos.x * scale) / image.width
     const top = (pos.y * scale) / image.height
@@ -259,7 +262,7 @@ class ToolCanvasLegacy extends PureComponent<
 
   emitCrop(side: string | boolean, pos: Coordinate) {
     const {image, onChange, value} = this.props
-    const scale = this.getScale()
+    const scale = this.props.scale
     let left = 0
     let right = 0
     let top = 0
@@ -286,7 +289,7 @@ class ToolCanvasLegacy extends PureComponent<
 
   emitResize(pos: Coordinate) {
     const {image, onChange, value} = this.props
-    const scale = this.getScale()
+    const scale = this.props.scale
 
     const delta = {
       x: (pos.x * scale * 2) / image.width,
@@ -316,7 +319,7 @@ class ToolCanvasLegacy extends PureComponent<
 
     const {hotspot, crop} = this.getClampedValue()
 
-    const scale = this.getScale()
+    const scale = this.props.scale
     const margin = MARGIN_PX * scale
 
     context.save()
@@ -450,7 +453,7 @@ class ToolCanvasLegacy extends PureComponent<
     return {
       x: point.x,
       y: point.y,
-      radius: 8 * this.getScale(),
+      radius: 8 * this.props.scale,
     }
   }
 
@@ -460,7 +463,7 @@ class ToolCanvasLegacy extends PureComponent<
     const {image} = this.props
 
     const bbox = this.getHotspotRect()
-    const scale = this.getScale()
+    const scale = this.props.scale
     const margin = MARGIN_PX * scale
 
     // IE 10 doesn't support context.setLineDash
@@ -509,7 +512,7 @@ class ToolCanvasLegacy extends PureComponent<
 
   paintBackground(context: CanvasRenderingContext2D) {
     const {image} = this.props
-    const inner = new Rect().setSize(image.width, image.height).shrink(MARGIN_PX * this.getScale())
+    const inner = new Rect().setSize(image.width, image.height).shrink(MARGIN_PX * this.props.scale)
 
     context.save()
     context.fillStyle = 'white'
@@ -554,7 +557,7 @@ class ToolCanvasLegacy extends PureComponent<
 
     const {x, y} = this.state.pointerPosition
     context.beginPath()
-    context.arc(x, y, 14 * this.getScale(), 0, 2 * Math.PI, false)
+    context.arc(x, y, 14 * this.props.scale, 0, 2 * Math.PI, false)
     context.fillStyle = 'lightblue'
     context.fill()
     context.restore()
@@ -592,11 +595,6 @@ class ToolCanvasLegacy extends PureComponent<
       context.stroke()
     })
     context.restore()
-  }
-
-  /** @deprecated - move to parent prop that uses `useMemo` to reduce lookups on `image.width` */
-  getScale() {
-    return this.props.image.width / this.props.actualSize.width
   }
 
   getCursor() {
@@ -661,7 +659,7 @@ class ToolCanvasLegacy extends PureComponent<
   }
 
   handleDragStart = ({x, y}: Coordinate) => {
-    const pointerPosition = {x: x * this.getScale(), y: y * this.getScale()}
+    const pointerPosition = {x: x * this.props.scale, y: y * this.props.scale}
 
     const inHotspot = utils2d.isPointInEllipse(pointerPosition, this.getHotspotRect())
 
@@ -729,8 +727,8 @@ class ToolCanvasLegacy extends PureComponent<
     const clientRect = event.currentTarget.getBoundingClientRect()
     this.setState({
       pointerPosition: {
-        x: (event.clientX - clientRect.left) * this.getScale(),
-        y: (event.clientY - clientRect.top) * this.getScale(),
+        x: (event.clientX - clientRect.left) * this.props.scale,
+        y: (event.clientY - clientRect.top) * this.props.scale,
       },
     })
   }
