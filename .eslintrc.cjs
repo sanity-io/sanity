@@ -12,7 +12,6 @@ const config = {
     browser: true,
   },
   extends: [
-    'plugin:boundaries/recommended',
     'sanity',
     'sanity/react',
     'sanity/import',
@@ -25,7 +24,6 @@ const config = {
   ],
   parser: '@typescript-eslint/parser',
   plugins: [
-    'boundaries',
     'import',
     'simple-import-sort',
     'unused-imports',
@@ -107,75 +105,7 @@ const config = {
     'sort-imports': 'off', // handled by simple-import-sort
     'simple-import-sort/imports': 'error',
     'simple-import-sort/exports': 'error',
-    'boundaries/element-types': [
-      'error',
-      {
-        default: 'disallow',
-        rules: [
-          {
-            // export
-            from: 'sanity/_internal',
-            allow: ['sanity/_internal__contents'],
-          },
-          {
-            from: 'sanity/_internal__contents',
-            allow: ['sanity', 'sanity/_internal__contents'],
-          },
-          {
-            // export
-            from: 'sanity/cli',
-            allow: ['sanity/cli__contents'],
-          },
-          {
-            from: 'sanity/cli__contents',
-            allow: ['sanity/cli__contents'],
-          },
-          {
-            // export
-            from: 'sanity',
-            allow: ['sanity__contents'],
-          },
-          {
-            from: 'sanity__contents',
-            allow: ['sanity__contents', 'sanity/router'],
-          },
-          {
-            // export (deprecated, aliases structure)
-            from: 'sanity/desk',
-            allow: ['sanity/desk__contents', 'sanity/structure', 'sanity/structure__contents'],
-          },
-          {
-            from: 'sanity/desk__contents',
-            allow: [
-              'sanity',
-              'sanity/desk__contents',
-              'sanity/router',
-              'sanity/_internal',
-              'sanity/structure',
-              'sanity/structure__contents',
-            ],
-          },
-          {
-            // export
-            from: 'sanity/router',
-            allow: ['sanity/router__contents'],
-          },
-          {
-            from: 'sanity/router__contents',
-            allow: ['sanity/router__contents'],
-          },
-          {
-            // export
-            from: 'sanity/structure',
-            allow: ['sanity/structure__contents'],
-          },
-          {
-            from: 'sanity/structure__contents',
-            allow: ['sanity', 'sanity/structure__contents', 'sanity/router'],
-          },
-        ],
-      },
-    ],
+
     'no-undef': 'off',
     'no-dupe-class-members': 'off', // doesn't work with TS overrides
     'no-shadow': 'off',
@@ -200,69 +130,6 @@ const config = {
         ],
       },
     },
-    'boundaries/include': ['packages/sanity/src/**/*.*'],
-    'boundaries/elements': [
-      {
-        type: 'sanity',
-        pattern: ['packages/sanity/src/_exports/index.ts'],
-        mode: 'full',
-      },
-      {
-        type: 'sanity__contents',
-        pattern: ['packages/sanity/src/core/**/*.*'],
-        mode: 'full',
-      },
-      {
-        type: 'sanity/_internal',
-        pattern: ['packages/sanity/src/_exports/_internal.ts'],
-        mode: 'full',
-      },
-      {
-        type: 'sanity/_internal__contents',
-        pattern: ['packages/sanity/src/_internal/**/*.*'],
-        mode: 'full',
-      },
-      {
-        type: 'sanity/cli',
-        pattern: ['packages/sanity/src/_exports/cli.ts'],
-        mode: 'full',
-      },
-      {
-        type: 'sanity/cli__contents',
-        pattern: ['packages/sanity/src/cli/**/*.*'],
-        mode: 'full',
-      },
-      {
-        type: 'sanity/desk',
-        pattern: ['packages/sanity/src/_exports/desk.ts'],
-        mode: 'file',
-      },
-      {
-        type: 'sanity/desk__contents',
-        pattern: ['packages/sanity/src/desk/**/*.*'],
-        mode: 'file',
-      },
-      {
-        type: 'sanity/router',
-        pattern: ['packages/sanity/src/_exports/router.ts'],
-        mode: 'full',
-      },
-      {
-        type: 'sanity/router__contents',
-        pattern: ['packages/sanity/src/router/**/*.*'],
-        mode: 'full',
-      },
-      {
-        type: 'sanity/structure',
-        pattern: ['packages/sanity/src/_exports/structure.ts'],
-        mode: 'file',
-      },
-      {
-        type: 'sanity/structure__contents',
-        pattern: ['packages/sanity/src/structure/**/*.*'],
-        mode: 'file',
-      },
-    ],
     react: {version: '18.0.0'},
   },
   overrides: [
