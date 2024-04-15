@@ -135,50 +135,10 @@ function ToolCanvasComponent(props: ToolCanvasProps) {
       .shrink(MARGIN_PX * scale)
       .cropRelative(Rect.fromEdges(value.crop || DEFAULT_CROP).clamp(new Rect(0, 0, 1, 1)))
   }, [image.height, image.width, scale, value.crop])
+  const cropHandles = useMemo(() => {
+    const inner = cropRect
 
-  return (
-    <ToolCanvasLegacy
-      actualSize={actualSize}
-      hotspotRect={hotspotRect}
-      cropRect={cropRect}
-      image={image}
-      onChange={onChange}
-      onChangeEnd={onChangeEnd}
-      ratio={ratio}
-      readOnly={readOnly}
-      scale={scale}
-      setCanvasObserver={setCanvasObserver}
-      value={value}
-    />
-  )
-}
-export const ToolCanvas = memo(ToolCanvasComponent)
-
-class ToolCanvasLegacy extends PureComponent<
-  ToolCanvasProps & {
-    ratio: number
-    actualSize: Dimensions
-    scale: number
-    setCanvasObserver: React.Dispatch<React.SetStateAction<HTMLCanvasElement | null>>
-    hotspotRect: Rect
-    cropRect: Rect
-  },
-  ToolCanvasState
-> {
-  state: ToolCanvasState = {
-    cropping: false,
-    cropMoving: false,
-    moving: false,
-    resizing: false,
-    pointerPosition: null,
-  }
-
-  canvas?: HTMLCanvasElement
-
-  getCropHandles(): CropHandles {
-    const inner = this.props.cropRect
-
-    const handleSize = CROP_HANDLE_SIZE * this.props.scale
+    const handleSize = CROP_HANDLE_SIZE * scale
 
     const halfCropHandleSize = handleSize / 2
 
@@ -219,10 +179,51 @@ class ToolCanvasLegacy extends PureComponent<
         inner.bottom - halfCropHandleSize,
       ),
     }
+  }, [cropRect, scale])
+
+  return (
+    <ToolCanvasLegacy
+      actualSize={actualSize}
+      hotspotRect={hotspotRect}
+      cropRect={cropRect}
+      cropHandles={cropHandles}
+      image={image}
+      onChange={onChange}
+      onChangeEnd={onChangeEnd}
+      ratio={ratio}
+      readOnly={readOnly}
+      scale={scale}
+      setCanvasObserver={setCanvasObserver}
+      value={value}
+    />
+  )
+}
+export const ToolCanvas = memo(ToolCanvasComponent)
+
+class ToolCanvasLegacy extends PureComponent<
+  ToolCanvasProps & {
+    ratio: number
+    actualSize: Dimensions
+    scale: number
+    setCanvasObserver: React.Dispatch<React.SetStateAction<HTMLCanvasElement | null>>
+    hotspotRect: Rect
+    cropRect: Rect
+    cropHandles: CropHandles
+  },
+  ToolCanvasState
+> {
+  state: ToolCanvasState = {
+    cropping: false,
+    cropMoving: false,
+    moving: false,
+    resizing: false,
+    pointerPosition: null,
   }
 
+  canvas?: HTMLCanvasElement
+
   getActiveCropHandleFor({x, y}: Coordinate) {
-    const cropHandles = this.getCropHandles()
+    const cropHandles = this.props.cropHandles
     for (const position of cropHandleKeys) {
       if (utils2d.isPointInRect({x, y}, cropHandles[position])) {
         return position
@@ -573,7 +574,7 @@ class ToolCanvasLegacy extends PureComponent<
 
   highlightCropHandles({context, opacity}: {context: CanvasRenderingContext2D; opacity: number}) {
     context.save()
-    const cropHandles = this.getCropHandles()
+    const cropHandles = this.props.cropHandles
 
     //context.globalCompositeOperation = "difference";
 
