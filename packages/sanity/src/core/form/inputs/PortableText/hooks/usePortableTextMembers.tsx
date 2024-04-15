@@ -80,7 +80,8 @@ const reconcilePortableTextMembers = ({
           member.item.changed ||
           member.item.presence?.length ||
           member.open ||
-          member.item.focusPath.length
+          member.item.focusPath.length ||
+          member.item.focused
         ) {
           result.push({kind: 'textBlock', member, node: member.item})
         }

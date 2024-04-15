@@ -93,12 +93,13 @@ export function Annotation(props: AnnotationProps) {
 
   const onOpen = useCallback(() => {
     if (memberItem) {
-      // Take focus away from the editor so that it doesn't propagate a new focusPath and interfere here.
+      // Take focus away from the editor so it doesn't accidentally propagate a new focusPath
+      // for the text node that the annotation is attached to.
       PortableTextEditor.blur(editor)
-      onPathFocus(memberItem.node.focusPath) // Set the focus path to be the markDef here as we currently have focus on the text node
+      // Open the annotation item (markDef object)
       onItemOpen(memberItem.node.path)
     }
-  }, [editor, memberItem, onItemOpen, onPathFocus])
+  }, [editor, memberItem, onItemOpen])
 
   const onClose = useCallback(() => {
     onItemClose()
