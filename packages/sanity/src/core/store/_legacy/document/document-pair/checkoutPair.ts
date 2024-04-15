@@ -71,6 +71,14 @@ function setVersion<T>(version: 'draft' | 'published') {
   return (ev: T): T & {version: 'draft' | 'published'} => ({...ev, version})
 }
 
+function requireId<T extends {_id?: string; _type: string}>(
+  value: T,
+): asserts value is T & {_id: string} {
+  if (!value._id) {
+    throw new Error('Expected document to have an _id')
+  }
+}
+
 function toActions(idPair: IdPair, mutationParams: Mutation['params']) {
   return mutationParams.mutations.flatMap<HttpAction>((mutations) => {
     if (Object.keys(mutations).length > 1) {
@@ -91,6 +99,8 @@ function toActions(idPair: IdPair, mutationParams: Mutation['params']) {
       return []
     }
     if (mutations.create) {
+      // the actions API requires attributes._id to be set, while it's optional in the mutation API
+      requireId(mutations.create)
       return {
         actionType: 'sanity.action.document.create',
         publishedId: idPair.publishedId,
