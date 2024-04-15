@@ -91,15 +91,13 @@ export function PortableTextInput(props: PortableTextInputProps) {
   const defaultEditorRef = useRef<PortableTextEditor | null>(null)
   const editorRef = editorRefProp || defaultEditorRef
   const innerElementRef = useRef<HTMLDivElement | null>(null)
-  const [currentPortalElement, setCurrentPortalElement] = useState<HTMLElement | null>(null)
 
   const presenceCursorDecorations = usePresenceCursorDecorations(
     useMemo(
       (): PresenceCursorDecorationsHookProps => ({
-        boundaryElement: currentPortalElement || innerElementRef.current,
         path: props.path,
       }),
-      [currentPortalElement, props.path],
+      [props.path],
     ),
   )
 
@@ -314,7 +312,6 @@ export function PortableTextInput(props: PortableTextInputProps) {
                 onInsert={onInsert}
                 onItemRemove={onItemRemove}
                 onPaste={onPaste}
-                onPortalElementChange={setCurrentPortalElement}
                 onToggleFullscreen={handleToggleFullscreen}
                 rangeDecorations={rangeDecorations}
                 renderBlockActions={renderBlockActions}
