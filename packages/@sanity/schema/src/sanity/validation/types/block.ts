@@ -20,7 +20,7 @@ const allowedKeys = [
   'validation',
 ]
 const allowedMarkKeys = ['decorators', 'annotations']
-const allowedStyleKeys = ['blockEditor', 'title', 'value', 'icon', 'component']
+const allowedStyleKeys = ['blockEditor', 'title', 'value', 'icon', 'component', 'hidden']
 const allowedDecoratorKeys = ['blockEditor', 'title', 'value', 'icon', 'component']
 const allowedListKeys = ['title', 'value', 'icon', 'component']
 const supportedBuiltInObjectTypes = ['file', 'image', 'object', 'reference']
