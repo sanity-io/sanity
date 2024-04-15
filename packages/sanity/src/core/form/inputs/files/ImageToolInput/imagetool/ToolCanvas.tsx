@@ -17,6 +17,7 @@ import {
   type Offsets,
   type ToolCanvasProps,
 } from './types'
+import {useActualCanvasSizeObserver} from './useActualCanvasSizeObserver'
 
 interface ToolCanvasState {
   cropping: keyof CropHandles | false
@@ -117,21 +118,31 @@ function ToolCanvasComponent(props: ToolCanvasProps) {
   const {image, readOnly, onChange, onChangeEnd, value} = props
 
   const ratio = useDevicePixelRatio()
+  const [actualSize, setCanvasObserver] = useActualCanvasSizeObserver()
 
   return (
     <ToolCanvasLegacy
+      actualSize={actualSize}
       image={image}
       onChange={onChange}
       onChangeEnd={onChangeEnd}
       ratio={ratio}
       readOnly={readOnly}
+      setCanvasObserver={setCanvasObserver}
       value={value}
     />
   )
 }
 export const ToolCanvas = memo(ToolCanvasComponent)
 
-class ToolCanvasLegacy extends PureComponent<ToolCanvasProps & {ratio: number}, ToolCanvasState> {
+class ToolCanvasLegacy extends PureComponent<
+  ToolCanvasProps & {
+    ratio: number
+    actualSize: Dimensions
+    setCanvasObserver: React.Dispatch<React.SetStateAction<HTMLCanvasElement | null>>
+  },
+  ToolCanvasState
+> {
   state: ToolCanvasState = {
     cropping: false,
     cropMoving: false,
@@ -433,11 +444,6 @@ class ToolCanvasLegacy extends PureComponent<ToolCanvasProps & {ratio: number}, 
     }
   }
 
-  getActualSize() {
-    const node = this.canvas
-    return node ? {height: node.clientHeight, width: node.clientWidth} : {height: 0, width: 0}
-  }
-
   getDragHandleCoords() {
     const bbox = this.getHotspotRect()
     const point = utils2d.getPointAtCircumference(Math.PI * 1.25, bbox)
@@ -526,9 +532,7 @@ class ToolCanvasLegacy extends PureComponent<ToolCanvasProps & {ratio: number}, 
     const opacity = !readOnly && this.state.pointerPosition ? 0.8 : 0.2
 
     this.paintBackground(context)
-    //return context.restore();
     this.paintHotspot(context, opacity)
-    //this.paintDragHandle(context);
     this.debug(context)
     this.paintCropBorder(context)
 
@@ -536,9 +540,9 @@ class ToolCanvasLegacy extends PureComponent<ToolCanvasProps & {ratio: number}, 
       this.highlightCropHandles(context, opacity)
     }
 
-    if (this.state.pointerPosition) {
-      // this.paintPointerPosition(context)
-    }
+    // if (this.state.pointerPosition) {
+    //   this.paintPointerPosition(context)
+    // }
 
     context.restore()
   }
@@ -590,9 +594,9 @@ class ToolCanvasLegacy extends PureComponent<ToolCanvasProps & {ratio: number}, 
     context.restore()
   }
 
+  /** @deprecated - move to parent prop that uses `useMemo` to reduce lookups on `image.width` */
   getScale() {
-    const actualSize = this.getActualSize()
-    return this.props.image.width / actualSize.width
+    return this.props.image.width / this.props.actualSize.width
   }
 
   getCursor() {
@@ -735,6 +739,7 @@ class ToolCanvasLegacy extends PureComponent<ToolCanvasProps & {ratio: number}, 
     if (node) {
       this.canvas = node
     }
+    this.props.setCanvasObserver(node)
   }
 
   render() {

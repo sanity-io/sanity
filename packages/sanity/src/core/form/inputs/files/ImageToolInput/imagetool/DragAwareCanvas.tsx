@@ -130,6 +130,7 @@ const DragAwareCanvasComponent = forwardRef<HTMLCanvasElement, DragAwareCanvasPr
 )
 export const DragAwareCanvas = memo(
   DragAwareCanvasComponent,
+  /*
   function arePropsEqual(oldProps, newProps) {
     const keys = new Set([...Object.keys(oldProps), ...Object.keys(newProps)])
     for (const key of keys) {
@@ -140,6 +141,7 @@ export const DragAwareCanvas = memo(
     }
     return true
   },
+  // */
 )
 
 type PositionableEvent = globalThis.PointerEvent | React.PointerEvent<HTMLElement>
