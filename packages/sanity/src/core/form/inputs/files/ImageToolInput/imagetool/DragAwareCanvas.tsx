@@ -1,5 +1,5 @@
 import Debug from 'debug'
-import {forwardRef, useCallback, useEffect, useRef} from 'react'
+import {forwardRef, memo, useCallback, useEffect, useRef} from 'react'
 import {styled} from 'styled-components'
 
 import {type Coordinate} from './types'
@@ -15,10 +15,14 @@ export interface DragAwareCanvasProps {
   onDrag: (pos: {x: number; y: number}) => void
   onDragEnd: (pos: {x: number; y: number}) => void
   readOnly?: boolean
-  [key: string]: unknown | undefined
+  onPointerDown?: never
+  onPointerMove?: React.PointerEventHandler<HTMLCanvasElement>
+  onPointerOut?: React.PointerEventHandler<HTMLCanvasElement>
+  height?: string | number | undefined
+  width?: string | number | undefined
 }
 
-export const DragAwareCanvas = forwardRef<HTMLCanvasElement, DragAwareCanvasProps>(
+const DragAwareCanvasComponent = forwardRef<HTMLCanvasElement, DragAwareCanvasProps>(
   function DragAwareCanvas(props, ref): JSX.Element {
     const {readOnly, onDragStart, onDragEnd, onDrag, ...rest} = props
 
@@ -120,13 +124,21 @@ export const DragAwareCanvas = forwardRef<HTMLCanvasElement, DragAwareCanvasProp
     )
 
     return (
-      <StyledCanvas
-        ref={setRef}
-        onPointerDown={readOnly ? undefined : handleDragStart}
-        onPointerMove={readOnly ? undefined : handleDrag}
-        {...rest}
-      />
+      <StyledCanvas ref={setRef} onPointerDown={readOnly ? undefined : handleDragStart} {...rest} />
     )
+  },
+)
+export const DragAwareCanvas = memo(
+  DragAwareCanvasComponent,
+  function arePropsEqual(oldProps, newProps) {
+    const keys = new Set([...Object.keys(oldProps), ...Object.keys(newProps)])
+    for (const key of keys) {
+      if (!Object.is(oldProps[key], newProps[key])) {
+        console.count(`DragAwareCanvas ${key} changed`)
+        return false
+      }
+    }
+    return true
   },
 )
 

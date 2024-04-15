@@ -17,8 +17,15 @@ import {
   type Hotspot,
   type Offsets,
   type ToolCanvasProps,
-  type ToolCanvasState,
 } from './types'
+
+interface ToolCanvasState {
+  cropping: keyof CropHandles | false
+  resizing: boolean
+  moving: boolean
+  cropMoving: boolean
+  pointerPosition: Coordinate | null
+}
 
 // The margin available in all directions for drawing the crop tool
 const MARGIN_PX = 8
@@ -123,7 +130,7 @@ export class ToolCanvas extends PureComponent<ToolCanvasProps, ToolCanvasState> 
     pointerPosition: null,
   }
 
-  canvas?: {domNode: HTMLCanvasElement}
+  canvas?: HTMLCanvasElement
 
   getHotspotRect() {
     const {value, image} = this.props
@@ -417,7 +424,7 @@ export class ToolCanvas extends PureComponent<ToolCanvasProps, ToolCanvasState> 
   }
 
   getActualSize() {
-    const node = this.canvas?.domNode
+    const node = this.canvas
     return node ? {height: node.clientHeight, width: node.clientWidth} : {height: 0, width: 0}
   }
 
@@ -625,7 +632,7 @@ export class ToolCanvas extends PureComponent<ToolCanvasProps, ToolCanvasState> 
       return
     }
 
-    const domNode = this.canvas.domNode
+    const domNode = this.canvas
     const context = domNode.getContext('2d')
     if (!context) {
       return
@@ -716,7 +723,7 @@ export class ToolCanvas extends PureComponent<ToolCanvasProps, ToolCanvasState> 
 
   setCanvas = (node: HTMLCanvasElement | null) => {
     if (node) {
-      this.canvas = {domNode: node}
+      this.canvas = node
     }
   }
 
