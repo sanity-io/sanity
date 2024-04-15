@@ -6,6 +6,7 @@ import * as utils2d from './2d/utils'
 import {DEFAULT_CROP, DEFAULT_HOTSPOT} from './constants'
 import * as cursors from './cursors'
 import {DragAwareCanvas} from './DragAwareCanvas'
+import {paintBackground} from './draw'
 import {RootContainer} from './ToolCanvas.styles'
 import {
   type Coordinate,
@@ -507,23 +508,8 @@ class ToolCanvasLegacy extends PureComponent<
     }
   }
 
-  paintBackground({context}: {context: CanvasRenderingContext2D}) {
-    const {image} = this.props
-    const inner = new Rect().setSize(image.width, image.height).shrink(MARGIN_PX * this.props.scale)
-
-    context.save()
-    context.fillStyle = 'white'
-    context.clearRect(0, 0, image.width, image.height)
-
-    context.globalAlpha = 0.3
-    //context.globalCompositeOperation = 'lighten';
-
-    context.drawImage(image, inner.left, inner.top, inner.width, inner.height)
-    context.restore()
-  }
-
   paint(context: CanvasRenderingContext2D) {
-    const {readOnly} = this.props
+    const {readOnly, image, scale} = this.props
     context.save()
 
     const pxratio = this.props.ratio
@@ -531,7 +517,7 @@ class ToolCanvasLegacy extends PureComponent<
 
     const opacity = !readOnly && this.state.pointerPosition ? 0.8 : 0.2
 
-    this.paintBackground({context})
+    paintBackground({context, image, MARGIN_PX, scale})
     this.paintHotspot({context, opacity})
     this.debug({context})
     this.paintCropBorder({context})
