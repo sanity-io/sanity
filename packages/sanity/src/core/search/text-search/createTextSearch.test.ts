@@ -227,13 +227,11 @@ describe('getSort', () => {
 describe('getQueryString', () => {
   it('appends a wildcard to search query when `queryType` is `prefixLast`', () => {
     expect(getQueryString('test', {queryType: 'prefixLast'})).toEqual('test*')
-  })
-
-  it('appends no wildcard to empty search query when `queryType` is `prefixLast`', () => {
-    expect(getQueryString('', {queryType: 'prefixLast'})).toEqual('')
+    expect(getQueryString('', {queryType: 'prefixLast'})).toEqual('*')
   })
 
   it('appends no wildcard to search query when `queryType` is `prefixNone`', () => {
     expect(getQueryString('test', {queryType: 'prefixNone'})).toEqual('test')
+    expect(getQueryString('', {queryType: 'prefixNone'})).toEqual('')
   })
 })

@@ -87,12 +87,7 @@ export function getQueryString(
   query: string,
   {queryType = 'prefixLast'}: Pick<SearchOptions, 'queryType'>,
 ): string {
-  // Empty wildcard search queries ("*") yield no results. However, Studio uses empty search
-  // queries to list documents (e.g. for document lists). Therefore, do not append a wildcard to
-  // any empty search string.
-  const shouldPrefixLast = queryType === 'prefixLast' && query.length !== 0
-
-  if (shouldPrefixLast) {
+  if (queryType === 'prefixLast') {
     return `${query}*`
   }
 
