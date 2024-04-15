@@ -92,6 +92,9 @@
       "_internalBrowser": [
         "./lib/_internalBrowser.d.ts"
       ],
+      "_singletons": [
+        "./lib/_singletons.d.ts"
+      ],
       "cli": [
         "./lib/cli.d.ts"
       ],
@@ -124,6 +127,7 @@
     "!**/__tests__/**",
     "!**/__workshop__/**",
     "_internalBrowser.js",
+    "_singletons.js",
     "desk.js",
     "presentation.js",
     "router.js",
@@ -132,7 +136,7 @@
   "scripts": {
     "build": "pkg-utils build --check --clean",
     "check:types": "tsc",
-    "clean": "rimraf _internal.js _internalBrowser.js cli.js desk.js migrate.js presentation.js router.js structure.js _singletons.js lib",
+    "clean": "rimraf _internal.js _internalBrowser.js _singletons.js cli.js desk.js migrate.js presentation.js router.js structure.js lib",
     "coverage": "jest --coverage",
     "lint": "eslint .",
     "prepublishOnly": "turbo run build",
