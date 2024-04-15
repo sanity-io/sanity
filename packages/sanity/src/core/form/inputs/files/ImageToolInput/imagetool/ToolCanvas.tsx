@@ -6,15 +6,7 @@ import * as utils2d from './2d/utils'
 import {DEFAULT_CROP, DEFAULT_HOTSPOT} from './constants'
 import * as cursors from './cursors'
 import {DragAwareCanvas} from './DragAwareCanvas'
-import {
-  cropHandleKeys,
-  highlightCropHandles,
-  paintBackground,
-  paintCropBorder,
-  paintHotspot,
-  paintPointerPosition,
-  printGuidelines,
-} from './draw'
+import {cropHandleKeys, paint} from './draw'
 import {RootContainer} from './ToolCanvas.styles'
 import {
   type Coordinate,
@@ -317,39 +309,6 @@ class ToolCanvasLegacy extends PureComponent<
     }
   }
 
-  paint(context: CanvasRenderingContext2D) {
-    const {readOnly, image, scale, clampedValue, ratio, hotspotRect, cropRect, cropHandles} =
-      this.props
-    const {cropping, pointerPosition} = this.state
-    context.save()
-
-    context.scale(ratio, ratio)
-
-    const opacity = !readOnly && pointerPosition ? 0.8 : 0.2
-
-    paintBackground({context, image, MARGIN_PX, scale})
-    paintHotspot({
-      clampedValue,
-      context,
-      HOTSPOT_HANDLE_SIZE,
-      image,
-      MARGIN_PX,
-      opacity,
-      readOnly,
-      scale,
-    })
-    printGuidelines({context, hotspotRect, image, MARGIN_PX, scale})
-    paintCropBorder({context, cropRect})
-
-    if (!readOnly) {
-      highlightCropHandles({context, cropHandles, cropping, opacity})
-    }
-
-    paintPointerPosition({context, pointerPosition, scale})
-
-    context.restore()
-  }
-
   getCursor() {
     const {pointerPosition} = this.state
     const {readOnly} = this.props
@@ -404,7 +363,24 @@ class ToolCanvasLegacy extends PureComponent<
       return
     }
 
-    this.paint(context)
+    const {clampedValue, cropHandles, cropRect, hotspotRect, image, ratio, readOnly, scale} =
+      this.props
+    const {cropping, pointerPosition} = this.state
+    paint({
+      clampedValue,
+      context,
+      cropHandles,
+      cropping,
+      cropRect,
+      HOTSPOT_HANDLE_SIZE,
+      hotspotRect,
+      image,
+      MARGIN_PX,
+      pointerPosition,
+      ratio,
+      readOnly,
+      scale,
+    })
     const currentCursor = canvas.style.cursor
     const newCursor = this.getCursor()
     if (currentCursor !== newCursor) {

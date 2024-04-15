@@ -2,8 +2,7 @@ import {Rect} from './2d/shapes'
 import * as utils2d from './2d/utils'
 import {type Coordinate, type CropHandles} from './types'
 
-/** @internal */
-export function paintBackground({
+function paintBackground({
   context,
   image,
   MARGIN_PX,
@@ -27,8 +26,7 @@ export function paintBackground({
   context.restore()
 }
 
-/** @internal */
-export function paintHotspot({
+function paintHotspot({
   clampedValue,
   context,
   HOTSPOT_HANDLE_SIZE,
@@ -178,8 +176,8 @@ export function paintHotspot({
   }
 }
 
-/** @internal */
-export function paintPointerPosition({
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function paintPointerPosition({
   context,
   pointerPosition,
   scale,
@@ -200,8 +198,7 @@ export function paintPointerPosition({
   context.restore()
 }
 
-/** @internal */
-export function printGuidelines({
+function printGuidelines({
   context,
   hotspotRect,
   image,
@@ -262,8 +259,7 @@ export function printGuidelines({
   }
 }
 
-/** @internal */
-export function paintCropBorder({
+function paintCropBorder({
   context,
   cropRect,
 }: {
@@ -280,8 +276,7 @@ export function paintCropBorder({
   context.restore()
 }
 
-/** @internal */
-export function highlightCropHandles({
+function highlightCropHandles({
   context,
   cropHandles,
   cropping,
@@ -323,3 +318,62 @@ export const cropHandleKeys: (keyof CropHandles)[] = [
   'bottomLeft',
   'bottomRight',
 ]
+
+/** @internal */
+export function paint({
+  clampedValue,
+  context,
+  cropHandles,
+  cropping,
+  cropRect,
+  HOTSPOT_HANDLE_SIZE,
+  hotspotRect,
+  image,
+  MARGIN_PX,
+  pointerPosition,
+  ratio,
+  readOnly,
+  scale,
+}: {
+  clampedValue: {crop: Rect; hotspot: Rect}
+  context: CanvasRenderingContext2D
+  cropHandles: CropHandles
+  cropping: keyof CropHandles | false
+  cropRect: Rect
+  HOTSPOT_HANDLE_SIZE: number
+  hotspotRect: Rect
+  image: HTMLCanvasElement
+  MARGIN_PX: number
+  pointerPosition: Coordinate | null
+  ratio: number
+  readOnly: boolean
+  scale: number
+}): void {
+  context.save()
+
+  context.scale(ratio, ratio)
+
+  const opacity = !readOnly && pointerPosition ? 0.8 : 0.2
+
+  paintBackground({context, image, MARGIN_PX, scale})
+  paintHotspot({
+    clampedValue,
+    context,
+    HOTSPOT_HANDLE_SIZE,
+    image,
+    MARGIN_PX,
+    opacity,
+    readOnly,
+    scale,
+  })
+  printGuidelines({context, hotspotRect, image, MARGIN_PX, scale})
+  paintCropBorder({context, cropRect})
+
+  if (!readOnly) {
+    highlightCropHandles({context, cropHandles, cropping, opacity})
+  }
+
+  // paintPointerPosition({context, pointerPosition, scale})
+
+  context.restore()
+}
