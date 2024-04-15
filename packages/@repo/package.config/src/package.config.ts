@@ -31,4 +31,8 @@ export default defineConfig({
     optimizeLodash: true,
   },
   tsconfig: 'tsconfig.lib.json',
+  strictOptions: {
+    noImplicitBrowsersList: 'off',
+    noImplicitSideEffects: 'error',
+  },
 })

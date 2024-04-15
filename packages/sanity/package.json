@@ -124,8 +124,8 @@
     "structure.js"
   ],
   "scripts": {
-    "build": "pkg-utils build --check --clean",
-    "check:types": "tsc",
+    "build": "pkg-utils build --strict --check --clean",
+    "check:types": "tsc --project tsconfig.lib.json",
     "clean": "rimraf _internal.js _internalBrowser.js cli.js desk.js migrate.js presentation.js router.js structure.js lib",
     "coverage": "jest --coverage",
     "lint": "eslint .",
@@ -255,7 +255,7 @@
     "@repo/package.config": "workspace:*",
     "@sanity/codegen": "3.37.2",
     "@sanity/generate-help-url": "^3.0.0",
-    "@sanity/pkg-utils": "6.6.3",
+    "@sanity/pkg-utils": "6.6.5",
     "@sanity/tsdoc": "1.0.30",
     "@sanity/ui-workshop": "^1.2.11",
     "@testing-library/jest-dom": "^6.2.0",

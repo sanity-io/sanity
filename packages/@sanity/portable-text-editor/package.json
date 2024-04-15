@@ -46,7 +46,7 @@
   ],
   "scripts": {
     "build": "pkg-utils build --strict --check --clean",
-    "check:types": "tsc",
+    "check:types": "tsc --project tsconfig.lib.json",
     "clean": "rimraf lib",
     "dev": "cd ./e2e-tests/ && ts-node serve",
     "lint": "eslint .",
