@@ -6057,7 +6057,7 @@ packages:
       '@sanity/uuid': 3.0.2
       debug: 4.3.4(supports-color@9.4.0)
       file-url: 2.0.2
-      get-it: 8.4.21
+      get-it: 8.4.23
       get-uri: 2.0.4
       globby: 10.0.2
       gunzip-maybe: 1.4.2
