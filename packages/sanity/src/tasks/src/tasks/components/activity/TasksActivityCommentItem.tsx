@@ -20,11 +20,13 @@ interface TasksActivityCommentItemProps extends Omit<CommentsListItemProps, 'mod
 const CommentListItemRoot = styled.div((props) => {
   const theme = getTheme_v2(props.theme)
   return css`
-    [data-ui='comments-list-item'] {
+    [data-ui='CommentsListItem'] {
       padding-right: ${theme.space[2]}px;
-      &:focus-within {
-        padding-bottom: ${theme.space[2]}px;
-      }
+    }
+
+    // Increase the padding when the comment input is focused
+    [data-ui='CommentInputEditableWrap']:focus-within {
+      padding-bottom: ${theme.space[2]}px;
     }
   `
 })
