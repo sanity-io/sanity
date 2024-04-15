@@ -14,7 +14,7 @@
     "check": "npm-run-all build --parallel check:*",
     "check:deps": "pnpm --recursive --parallel exec depcheck",
     "check:format": "prettier . --check",
-    "check:lint": "turbo run lint -- --quiet",
+    "check:lint": "turbo run lint --continue -- --quiet",
     "check:react-exhaustive-deps": "run-s check:lint -- --quiet --rule 'react-hooks/exhaustive-deps: [error, {additionalHooks: \"(useAsync|useMemoObservable|useObservableCallback)\"}]'",
     "check:test": "run-s test -- --silent",
     "check:types": "tsc && turbo run check:types --filter='./packages/*' --filter='./packages/@sanity/*'",
