@@ -186,13 +186,7 @@ const config = {
           },
           {
             from: 'sanity/_singletons__contents',
-            allow: [
-              'sanity',
-              'sanity__contents',
-              'sanity/router',
-              'sanity/structure',
-              'sanity/structure__contents',
-            ],
+            allow: ['sanity__contents', 'sanity/router__contents', 'sanity/structure__contents'],
             importKind: 'type',
           },
         ],
