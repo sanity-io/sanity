@@ -6,7 +6,7 @@ import * as utils2d from './2d/utils'
 import {DEFAULT_CROP, DEFAULT_HOTSPOT} from './constants'
 import * as cursors from './cursors'
 import {DragAwareCanvas} from './DragAwareCanvas'
-import {paintBackground, paintHotspot, paintPointerPosition} from './draw'
+import {paintBackground, paintHotspot, paintPointerPosition, printGuidelines} from './draw'
 import {RootContainer} from './ToolCanvas.styles'
 import {
   type Coordinate,
@@ -320,61 +320,8 @@ class ToolCanvasLegacy extends PureComponent<
     }
   }
 
-  debug({context}: {context: CanvasRenderingContext2D}) {
-    context.save()
-
-    const {image} = this.props
-
-    const bbox = this.props.hotspotRect
-    const scale = this.props.scale
-    const margin = MARGIN_PX * scale
-
-    // IE 10 doesn't support context.setLineDash
-    if (context.setLineDash) {
-      context.setLineDash([2 * scale, 2 * scale])
-    }
-    context.lineWidth = 0.5 * scale
-
-    context.strokeStyle = 'rgba(200, 200, 200, 0.5)'
-
-    // --- center line x
-    vline(bbox.center.x)
-    // --- center line y
-    hline(bbox.center.y)
-
-    context.strokeStyle = 'rgba(150, 150, 150, 0.5)'
-    // --- line top
-    hline(bbox.top)
-
-    // --- line bottom
-    hline(bbox.bottom)
-
-    // --- line left
-    vline(bbox.left)
-    // --- line right
-    vline(bbox.right)
-
-    context.restore()
-
-    function vline(x: number) {
-      line(x, margin, x, image.height - margin)
-    }
-
-    function hline(y: number) {
-      line(margin, y, image.width - margin, y)
-    }
-
-    function line(x1: number, y1: number, x2: number, y2: number) {
-      context.beginPath()
-      context.moveTo(x1, y1)
-      context.lineTo(x2, y2)
-      context.stroke()
-      context.closePath()
-    }
-  }
-
   paint(context: CanvasRenderingContext2D) {
-    const {readOnly, image, scale, clampedValue, ratio} = this.props
+    const {readOnly, image, scale, clampedValue, ratio, hotspotRect} = this.props
     const {pointerPosition} = this.state
     context.save()
 
@@ -393,7 +340,7 @@ class ToolCanvasLegacy extends PureComponent<
       readOnly,
       scale,
     })
-    this.debug({context})
+    printGuidelines({context, hotspotRect, image, MARGIN_PX, scale})
     this.paintCropBorder({context})
 
     if (!readOnly) {

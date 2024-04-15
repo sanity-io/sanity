@@ -199,3 +199,65 @@ export function paintPointerPosition({
   context.fill()
   context.restore()
 }
+
+/** @internal */
+export function printGuidelines({
+  context,
+  hotspotRect,
+  image,
+  MARGIN_PX,
+  scale,
+}: {
+  context: CanvasRenderingContext2D
+  hotspotRect: Rect
+  image: HTMLCanvasElement
+  MARGIN_PX: number
+  scale: number
+}): void {
+  context.save()
+
+  const margin = MARGIN_PX * scale
+
+  // IE 10 doesn't support context.setLineDash
+  if (context.setLineDash) {
+    context.setLineDash([2 * scale, 2 * scale])
+  }
+  context.lineWidth = 0.5 * scale
+
+  context.strokeStyle = 'rgba(200, 200, 200, 0.5)'
+
+  // --- center line x
+  vline(hotspotRect.center.x)
+  // --- center line y
+  hline(hotspotRect.center.y)
+
+  context.strokeStyle = 'rgba(150, 150, 150, 0.5)'
+  // --- line top
+  hline(hotspotRect.top)
+
+  // --- line bottom
+  hline(hotspotRect.bottom)
+
+  // --- line left
+  vline(hotspotRect.left)
+  // --- line right
+  vline(hotspotRect.right)
+
+  context.restore()
+
+  function vline(x: number) {
+    line(x, margin, x, image.height - margin)
+  }
+
+  function hline(y: number) {
+    line(margin, y, image.width - margin, y)
+  }
+
+  function line(x1: number, y1: number, x2: number, y2: number) {
+    context.beginPath()
+    context.moveTo(x1, y1)
+    context.lineTo(x2, y2)
+    context.stroke()
+    context.closePath()
+  }
+}
