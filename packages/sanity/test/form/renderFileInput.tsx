@@ -4,7 +4,7 @@ import {
   type FileSchemaType,
   type SchemaTypeDefinition,
 } from '@sanity/types'
-import type * as React from 'react'
+import {type ReactElement} from 'react'
 import {EMPTY} from 'rxjs'
 
 import {type ObjectInputProps} from '../../src/core'
@@ -27,7 +27,7 @@ const STUB_RESOLVE_UPLOADER = () => ({
 export type TestRenderFileInputCallback = (
   inputProps: BaseFileInputProps,
   context: TestRenderInputContext,
-) => React.ReactElement
+) => ReactElement
 
 export async function renderFileInput(options: {
   assetSources?: BaseFileInputProps['assetSources']
