@@ -117,7 +117,7 @@ describe('validateDocuments', () => {
           .filter((key) => key.startsWith('$'))
           .reduce<Record<string, string | string[]>>((acc, key) => {
             const values = searchParams.getAll(key)
-            acc[key.substring(1)] = values.length === 1 ? values[0] : values
+            acc[key.slice(1)] = values.length === 1 ? values[0] : values
             return acc
           }, {})
 

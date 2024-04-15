@@ -9,6 +9,7 @@ export class CorsOriginError extends Error {
 
   constructor({projectId}: CorsOriginErrorOptions) {
     super('CorsOriginError')
+    this.name = 'CorsOriginError'
     this.projectId = projectId
   }
 }

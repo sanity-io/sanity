@@ -23,7 +23,7 @@ export function App() {
   const {editorId, testId} = useMemo(() => {
     const params = new URLSearchParams(document.location.search)
     return {
-      editorId: params.get('editorId') || (Math.random() + 1).toString(36).substring(7),
+      editorId: params.get('editorId') || (Math.random() + 1).toString(36).slice(7),
       testId: params.get('testId') || 'noTestIdGiven',
     }
   }, [])

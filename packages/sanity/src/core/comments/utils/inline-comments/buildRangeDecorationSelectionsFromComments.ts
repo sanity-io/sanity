@@ -90,11 +90,11 @@ export function buildRangeDecorationSelectionsFromComments(
         .replaceAll(COMMENT_INDICATORS[0], '')
         .indexOf(COMMENT_INDICATORS[1])
       const textWithoutCommentTags = diffedText.replaceAll(COMMENT_INDICATORS_REGEX, '')
-      const oldCommentedText = selectionMember.text.substring(
+      const oldCommentedText = selectionMember.text.slice(
         selectionMember.text.indexOf(COMMENT_INDICATORS[0]) + 1,
         selectionMember.text.indexOf(COMMENT_INDICATORS[1]),
       )
-      const newCommentedText = textWithoutCommentTags.substring(startIndex, endIndex)
+      const newCommentedText = textWithoutCommentTags.slice(startIndex, endIndex)
       const {levenshtein} = diffText(newCommentedText, oldCommentedText)
       const threshold = Math.round(newCommentedText.length + oldCommentedText.length / 2)
 

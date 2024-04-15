@@ -26,6 +26,7 @@ export class ConfigResolutionError extends Error {
         .join('\n')}\n\n`,
     )
 
+    // eslint-disable-next-line unicorn/custom-error-definition
     this.name = name
     this.causes = causes
     this.type = type
