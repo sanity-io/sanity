@@ -1,5 +1,6 @@
 import {
   type EditorChange,
+  type EditorSelection,
   type HotkeyOptions,
   type OnCopyFn,
   type OnPasteFn,
@@ -57,6 +58,13 @@ import {
   type RenderInputCallback,
   type RenderPreviewCallback,
 } from './renderCallback'
+
+/**
+ * @hidden
+ * @beta */
+export interface OnPathFocusPayload {
+  selection?: EditorSelection
+}
 
 /**
  * @hidden
@@ -226,7 +234,7 @@ export interface ArrayOfObjectsInputProps<
   /**
    * @hidden
    * @beta */
-  onPathFocus: (path: Path, payload?: Record<string, unknown>) => void
+  onPathFocus: (path: Path, payload?: OnPathFocusPayload) => void
 
   /**
    * for array inputs using expand/collapse semantics for items

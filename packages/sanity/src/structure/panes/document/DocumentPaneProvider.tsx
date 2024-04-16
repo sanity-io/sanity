@@ -1,5 +1,4 @@
 /* eslint-disable camelcase */
-import {type EditorSelection} from '@sanity/portable-text-editor'
 import {isActionEnabled} from '@sanity/schema/_internal'
 import {
   type ObjectSchemaType,
@@ -20,6 +19,7 @@ import {
   getDraftId,
   getExpandOperations,
   getPublishedId,
+  type OnPathFocusPayload,
   type PatchEvent,
   setAtPath,
   type StateTree,
@@ -549,7 +549,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   )
 
   const handleFocus = useCallback(
-    (nextFocusPath: Path, payload?: Record<string, unknown>) => {
+    (nextFocusPath: Path, payload?: OnPathFocusPayload) => {
       if (!deepEquals(focusPathRef.current, nextFocusPath)) {
         setOpenPath(nextFocusPath.slice(0, -1))
         focusPathRef.current = nextFocusPath
@@ -562,7 +562,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
           documentId,
           path: nextFocusPath,
           lastActiveAt: new Date().toISOString(),
-          selection: payload?.selection as EditorSelection | undefined,
+          selection: payload?.selection,
         },
       ])
     },
