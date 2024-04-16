@@ -30,8 +30,8 @@ import {
   initialDocumentBadges,
   initialLanguageFilter,
   internalTasksReducer,
+  legacySearchEnabledReducer,
   newDocumentOptionsResolver,
-  newSearchEnabledReducer,
   partialIndexingEnabledReducer,
   resolveProductionUrlReducer,
   schemaTemplatesReducer,
@@ -581,7 +581,7 @@ function resolveSource({
       enableLegacySearch: resolveConfigProperty({
         config,
         context,
-        reducer: newSearchEnabledReducer,
+        reducer: legacySearchEnabledReducer,
         propertyName: 'enableLegacySearch',
         initialValue: false,
       }),
