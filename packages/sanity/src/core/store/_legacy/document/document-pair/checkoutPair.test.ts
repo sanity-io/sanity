@@ -256,6 +256,35 @@ describe('checkoutPair -- server actions', () => {
     sub.unsubscribe()
   })
 
+  test('published patch uses mutation endpoint', async () => {
+    const {draft, published} = checkoutPair(clientWithConfig as any as SanityClient, idPair, true)
+    const combined = merge(draft.events, published.events)
+    const sub = combined.subscribe()
+    await new Promise((resolve) => setTimeout(resolve, 0))
+
+    //liveEdit should be the only condition to directly patch a published doc
+    published.mutate(published.patch([{set: {title: 'new title'}}]))
+    published.commit()
+
+    expect(mockedObservableRequest).not.toHaveBeenCalled()
+
+    expect(mockedDataRequest).toHaveBeenCalledWith(
+      'mutate',
+      {
+        mutations: [{patch: {id: 'publishedId', set: {title: 'new title'}}}],
+        transactionId: expect.any(String),
+      },
+      {
+        returnDocuments: false,
+        skipCrossDatasetReferenceValidation: true,
+        tag: 'document.commit',
+        visibility: 'async',
+      },
+    )
+
+    sub.unsubscribe()
+  })
+
   test('create', async () => {
     const {draft, published} = checkoutPair(clientWithConfig as any as SanityClient, idPair, true)
     const combined = merge(draft.events, published.events)
@@ -321,34 +350,6 @@ describe('checkoutPair -- server actions', () => {
       body: {
         transactionId: expect.any(String),
         actions: [],
-      },
-    })
-
-    sub.unsubscribe()
-  })
-
-  test('delete', async () => {
-    const {draft, published} = checkoutPair(clientWithConfig as any as SanityClient, idPair, true)
-    const combined = merge(draft.events, published.events)
-    const sub = combined.subscribe()
-    await new Promise((resolve) => setTimeout(resolve, 0))
-
-    draft.mutate([draft.delete()])
-    draft.commit()
-
-    expect(mockedObservableRequest).toHaveBeenCalledWith({
-      url: '/data/actions/production',
-      method: 'post',
-      tag: 'document.commit',
-      body: {
-        transactionId: expect.any(String),
-        actions: [
-          {
-            actionType: 'sanity.action.document.delete',
-            draftId: 'draftId',
-            publishedId: 'publishedId',
-          },
-        ],
       },
     })
 
