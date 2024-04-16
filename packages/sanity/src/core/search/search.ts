@@ -12,6 +12,6 @@ export const createSearch: SearchStrategyFactory<TextSearchResults | WeightedSea
   client,
   options,
 ) => {
-  const factory = options.unstable_enableNewSearch ? createTextSearch : createWeightedSearch
+  const factory = options.enableLegacySearch ? createWeightedSearch : createTextSearch
   return factory(searchableTypes, client, options)
 }

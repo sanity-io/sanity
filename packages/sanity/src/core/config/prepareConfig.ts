@@ -30,8 +30,8 @@ import {
   initialDocumentBadges,
   initialLanguageFilter,
   internalTasksReducer,
+  legacySearchEnabledReducer,
   newDocumentOptionsResolver,
-  newSearchEnabledReducer,
   partialIndexingEnabledReducer,
   resolveProductionUrlReducer,
   schemaTemplatesReducer,
@@ -578,11 +578,11 @@ function resolveSource({
           initialValue: config.search?.unstable_partialIndexing?.enabled ?? false,
         }),
       },
-      unstable_enableNewSearch: resolveConfigProperty({
+      enableLegacySearch: resolveConfigProperty({
         config,
         context,
-        reducer: newSearchEnabledReducer,
-        propertyName: 'search.unstable_enableNewSearch',
+        reducer: legacySearchEnabledReducer,
+        propertyName: 'enableLegacySearch',
         initialValue: false,
       }),
       // we will use this when we add search config to PluginOptions

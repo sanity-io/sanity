@@ -50,7 +50,7 @@ export function useDocumentList(opts: UseDocumentListOpts): DocumentListState {
     ...DEFAULT_STUDIO_CLIENT_OPTIONS,
     apiVersion: apiVersion || DEFAULT_STUDIO_CLIENT_OPTIONS.apiVersion,
   })
-  const {unstable_enableNewSearch = false} = useWorkspace().search
+  const {enableLegacySearch = false} = useWorkspace().search
   const schema = useSchema()
   const maxFieldDepth = useSearchMaxFieldDepth()
 
@@ -155,7 +155,7 @@ export function useDocumentList(opts: UseDocumentListOpts): DocumentListState {
       sort,
       staticTypeNames: typeNameFromFilter ? [typeNameFromFilter] : undefined,
       maxFieldDepth,
-      unstable_enableNewSearch,
+      enableLegacySearch,
     }).pipe(
       map((results) => ({
         result: {documents: results},
@@ -190,7 +190,7 @@ export function useDocumentList(opts: UseDocumentListOpts): DocumentListState {
     searchQuery,
     typeNameFromFilter,
     maxFieldDepth,
-    unstable_enableNewSearch,
+    enableLegacySearch,
   ])
 
   useEffect(() => {

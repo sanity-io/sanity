@@ -357,9 +357,13 @@ export const partialIndexingEnabledReducer = (opts: {
   return result
 }
 
-export const newSearchEnabledReducer: ConfigPropertyReducer<boolean, ConfigContext> = (
+export const legacySearchEnabledReducer: ConfigPropertyReducer<boolean, ConfigContext> = (
   prev,
   {search},
 ): boolean => {
-  return prev || search?.unstable_enableNewSearch || false
+  if (typeof search?.enableLegacySearch !== 'undefined') {
+    return search.enableLegacySearch
+  }
+
+  return prev
 }
