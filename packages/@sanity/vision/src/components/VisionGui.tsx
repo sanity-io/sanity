@@ -26,14 +26,12 @@ import {isHotkey} from 'is-hotkey-esm'
 import {type ChangeEvent, createRef, PureComponent, type RefObject} from 'react'
 import {type TFunction} from 'sanity'
 
-import {API_VERSIONS, DEFAULT_API_VERSION} from '../apiVersions'
+import {API_VERSIONS} from '../apiVersions'
 import {VisionCodeMirror} from '../codemirror/VisionCodeMirror'
-import {DEFAULT_PERSPECTIVE, isPerspective, PERSPECTIVES} from '../perspectives'
+import {isPerspective, PERSPECTIVES} from '../perspectives'
 import {type VisionProps} from '../types'
 import {encodeQueryString} from '../util/encodeQueryString'
-import {getLocalStorage, type LocalStorageish} from '../util/localStorage'
 import {parseApiQueryString, type ParsedApiQueryString} from '../util/parseApiQueryString'
-import {prefixApiVersion} from '../util/prefixApiVersion'
 import {ResizeObserver} from '../util/resizeObserver'
 import {tryParseParams} from '../util/tryParseParams'
 import {validateApiVersion} from '../util/validateApiVersion'
@@ -105,6 +103,12 @@ interface VisionGuiProps extends VisionProps {
   toast: ToastContextValue
   datasets: string[]
   t: TFunction<'vision', undefined>
+  setPersistedState: (key: string, value: string) => void
+  dataset: string
+  apiVersion: string
+  perspective: ClientPerspective
+  query: string
+  params: string
 }
 
 interface VisionGuiState {
@@ -156,36 +160,14 @@ export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
   _querySubscription: Subscription | undefined
   _listenSubscription: Subscription | undefined
   _client: SanityClient
-  _localStorage: LocalStorageish
 
   constructor(props: VisionGuiProps) {
     super(props)
 
-    const {client, datasets, config} = props
-    this._localStorage = getLocalStorage(client.config().projectId || 'default')
+    const {perspective, dataset, apiVersion} = props
+    let {query: lastQuery, params: lastParams} = props
 
-    const defaultDataset = config.defaultDataset || client.config().dataset || datasets[0]
-    const defaultApiVersion = prefixApiVersion(`${config.defaultApiVersion}`)
-    const defaultPerspective = DEFAULT_PERSPECTIVE
-
-    let dataset = this._localStorage.get('dataset', defaultDataset)
-    let apiVersion = this._localStorage.get('apiVersion', defaultApiVersion)
-    let lastQuery = this._localStorage.get('query', '')
-    let lastParams = this._localStorage.get('params', '{\n  \n}')
     const customApiVersion = API_VERSIONS.includes(apiVersion) ? false : apiVersion
-    let perspective = this._localStorage.get('perspective', defaultPerspective)
-
-    if (!datasets.includes(dataset)) {
-      dataset = datasets.includes(defaultDataset) ? defaultDataset : datasets[0]
-    }
-
-    if (!API_VERSIONS.includes(apiVersion)) {
-      apiVersion = DEFAULT_API_VERSION
-    }
-
-    if (!PERSPECTIVES.includes(perspective)) {
-      perspective = DEFAULT_PERSPECTIVE
-    }
 
     if (typeof lastQuery !== 'string') {
       lastQuery = ''
@@ -349,13 +331,11 @@ export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
         perspective: typeof perspective === 'undefined' ? prevState.perspective : perspective,
       }),
       () => {
-        this._localStorage.merge({
-          query: this.state.query,
-          params: this.state.rawParams,
-          dataset: this.state.dataset,
-          apiVersion: customApiVersion || apiVersion,
-          perspective: this.state.perspective,
-        })
+        this.props.setPersistedState('query', this.state.query)
+        this.props.setPersistedState('params', this.state.rawParams)
+        this.props.setPersistedState('dataset', this.state.dataset)
+        this.props.setPersistedState('apiVersion', customApiVersion || apiVersion!)
+        this.props.setPersistedState('perspective', this.state.perspective)
         this._client.config({
           dataset: this.state.dataset,
           apiVersion: customApiVersion || apiVersion,
@@ -396,7 +376,7 @@ export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
 
   handleChangeDataset(evt: ChangeEvent<HTMLSelectElement>) {
     const dataset = evt.target.value
-    this._localStorage.set('dataset', dataset)
+    this.props.setPersistedState('dataset', dataset)
     this.setState({dataset})
     this._client.config({dataset})
     this.handleQueryExecution()
@@ -412,7 +392,7 @@ export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
     }
 
     this.setState({apiVersion, customApiVersion: false}, () => {
-      this._localStorage.set('apiVersion', this.state.apiVersion)
+      this.props.setPersistedState('apiVersion', this.state.apiVersion)
       this._client.config({
         apiVersion: this.state.apiVersion,
       })
@@ -435,7 +415,7 @@ export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
           return
         }
 
-        this._localStorage.set('apiVersion', this.state.customApiVersion)
+        this.props.setPersistedState('apiVersion', this.state.customApiVersion)
         this._client.config({apiVersion: this.state.customApiVersion})
       },
     )
@@ -448,7 +428,7 @@ export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
     }
 
     this.setState({perspective}, () => {
-      this._localStorage.set('perspective', this.state.perspective)
+      this.props.setPersistedState('perspective', this.state.perspective)
       this._client.config({
         perspective: this.state.perspective,
       })
@@ -510,8 +490,8 @@ export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
 
     const shouldExecute = !paramsError && query.trim().length > 0
 
-    this._localStorage.set('query', query)
-    this._localStorage.set('params', rawParams)
+    this.props.setPersistedState('query', query)
+    this.props.setPersistedState('params', rawParams)
 
     this.cancelQuery()
 
@@ -554,8 +534,8 @@ export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
     }
 
     const paramsError = params instanceof Error && params
-    this._localStorage.set('query', query)
-    this._localStorage.set('params', rawParams)
+    this.props.setPersistedState('query', query)
+    this.props.setPersistedState('params', rawParams)
 
     this.cancelListener()
 
@@ -621,7 +601,7 @@ export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
         hasValidParams: valid,
         paramsError: error,
       },
-      () => this._localStorage.set('params', raw),
+      () => this.props.setPersistedState('params', raw),
     )
   }
 

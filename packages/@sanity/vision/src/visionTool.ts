@@ -17,7 +17,8 @@ export const visionTool = definePlugin<VisionToolConfig | void>((options) => {
         icon: icon || EyeOpenIcon,
         component: lazy(() => import('./SanityVision')),
         options: config,
-        router: route.create('/*'),
+        // eslint-disable-next-line camelcase
+        router: route.create('/*', {__unsafe_disableScopedSearchParams: true}),
       },
     ],
     i18n: {
