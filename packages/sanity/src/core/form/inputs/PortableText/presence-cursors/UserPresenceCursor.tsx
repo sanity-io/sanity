@@ -7,7 +7,11 @@ import {
   Popover,
   Text,
 } from '@sanity/ui'
-import {type Theme} from '@sanity/ui/theme'
+import {
+  // eslint-disable-next-line camelcase
+  getTheme_v2,
+  type Theme,
+} from '@sanity/ui/theme'
 import {AnimatePresence, motion, type Transition, type Variants} from 'framer-motion'
 import {useCallback, useState} from 'react'
 import {css, styled} from 'styled-components'
@@ -46,6 +50,7 @@ const CONTENT_TEXT_TRANSITION: Transition = {
 }
 
 const getTint = (isDark: boolean) => (isDark ? DARK_SCHEME_TINT : LIGHT_SCHEME_TINT)
+const getIsDarkScheme = (theme: Theme) => getTheme_v2(theme)?.color._dark
 
 interface StyledProps {
   theme: Theme
@@ -57,7 +62,7 @@ interface StyledProps {
 // in a portal. This is essential as it won't be rendered inside the editor,
 // thus preventing any interference with the text nodes.
 const DotPopover = styled(Popover)<StyledProps>(({theme, $tints}) => {
-  const isDark = theme.sanity.color.dark
+  const isDark = getIsDarkScheme(theme)
   const bg = $tints[getTint(isDark)].hex
 
   return css`
@@ -75,7 +80,7 @@ const DotPopover = styled(Popover)<StyledProps>(({theme, $tints}) => {
 })
 
 const PopoverContentFlex = styled(Flex)<StyledProps>(({theme, $tints}) => {
-  const isDark = theme.sanity.color.dark
+  const isDark = getIsDarkScheme(theme)
   const bg = $tints[getTint(isDark)].hex
   const fg = $tints[isDark ? 950 : 50].hex
 
@@ -101,7 +106,7 @@ const PopoverContentFlex = styled(Flex)<StyledProps>(({theme, $tints}) => {
 })
 
 const CursorLine = styled.span<StyledProps>(({theme, $tints}) => {
-  const isDark = theme.sanity.color.dark
+  const isDark = getIsDarkScheme(theme)
   const bg = $tints[getTint(isDark)].hex
 
   return css`
@@ -123,7 +128,7 @@ const CursorDot = styled.div`
 `
 
 const UserBox = styled(motion(Box))(({theme}) => {
-  const radius = theme.sanity.radius[4]
+  const radius = getTheme_v2(theme)?.radius[4]
 
   return css`
     position: absolute;
