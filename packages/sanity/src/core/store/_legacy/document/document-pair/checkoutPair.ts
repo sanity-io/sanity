@@ -71,8 +71,16 @@ function setVersion<T>(version: 'draft' | 'published') {
   return (ev: T): T & {version: 'draft' | 'published'} => ({...ev, version})
 }
 
+function requireId<T extends {_id?: string; _type: string}>(
+  value: T,
+): asserts value is T & {_id: string} {
+  if (!value._id) {
+    throw new Error('Expected document to have an _id')
+  }
+}
+
 function toActions(idPair: IdPair, mutationParams: Mutation['params']) {
-  return mutationParams.mutations.map((mutations): HttpAction => {
+  return mutationParams.mutations.flatMap<HttpAction>((mutations) => {
     if (Object.keys(mutations).length > 1) {
       // todo: this might be a bit too strict, but I'm (lazily) trying to check if we ever get more than one mutation in a payload
       throw new Error('Did not expect multiple mutations in the same payload')
@@ -84,15 +92,20 @@ function toActions(idPair: IdPair, mutationParams: Mutation['params']) {
         draftId: idPair.draftId,
       }
     }
+    // This action is not always interoperable with the equivalent mutation. It will fail if the
+    // published version of the document already exists.
     if (mutations.createIfNotExists) {
+      // ignore all createIfNotExists, as these should be covered by the actions api and only be done locally
+      return []
+    }
+    if (mutations.create) {
+      // the actions API requires attributes._id to be set, while it's optional in the mutation API
+      requireId(mutations.create)
       return {
         actionType: 'sanity.action.document.create',
         publishedId: idPair.publishedId,
-        attributes: {
-          ...mutations.createIfNotExists,
-          _id: idPair.draftId,
-        },
-        ifExists: 'ignore',
+        attributes: mutations.create,
+        ifExists: 'fail',
       }
     }
     if (mutations.patch) {

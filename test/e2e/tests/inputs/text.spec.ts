@@ -70,4 +70,28 @@ test.describe('inputs: text', () => {
     expect(await field.inputValue()).toBe(currentExpectedValue)
     expect(await getRemoteValue()).toBe(currentExpectedValue)
   })
+
+  test(`value can be changed after the document has been published`, async ({
+    page,
+    createDraftDocument,
+  }) => {
+    await createDraftDocument('/test/content/book')
+
+    const titleInput = page.getByTestId('field-title').getByTestId('string-input')
+    const paneFooter = page.getByTestId('pane-footer')
+    const publishButton = page.getByTestId('action-Publish')
+
+    await titleInput.fill('Title A')
+
+    // Wait for the document to be published.
+    publishButton.click()
+    await expect(paneFooter).toContainText('Published just now')
+
+    // Change the title.
+    await titleInput.fill('Title B')
+
+    // Wait for the document to be published.
+    publishButton.click()
+    await expect(paneFooter).toContainText('Published just now')
+  })
 })
