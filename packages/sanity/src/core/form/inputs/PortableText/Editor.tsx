@@ -191,7 +191,7 @@ export function Editor(props: EditorProps): ReactNode {
   const collapsibleToolbar = id === FORM_BUILDER_DEFAULT_ID
 
   return (
-    <Root $fullscreen={isFullscreen} data-testid="pt-editor">
+    <Root data-fullscreen={isFullscreen} data-testid="pt-editor">
       {isActive && (
         <TooltipDelayGroupProvider>
           <ToolbarCard data-testid="pt-editor__toolbar-card" shadow={1}>
