@@ -3,7 +3,7 @@
   "extends": ["//"],
   "pipeline": {
     "build": {
-      "outputs": ["lib/**", "desk.js", "presentation.js", "router.js", "structure.js"]
+      "outputs": ["lib/**", "_singletons.js", "desk.js", "presentation.js", "router.js", "structure.js"]
     }
   }
 }

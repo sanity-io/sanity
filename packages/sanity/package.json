@@ -83,6 +83,9 @@
       "_internal": [
         "./lib/_internal.d.ts"
       ],
+      "_singletons": [
+        "./lib/_singletons.d.ts"
+      ],
       "cli": [
         "./lib/cli.d.ts"
       ],
@@ -117,7 +120,8 @@
     "desk.js",
     "presentation.js",
     "router.js",
-    "structure.js"
+    "structure.js",
+    "_singletons.js"
   ],
   "scripts": {
     "build": "pkg-utils build --strict --check --clean",
