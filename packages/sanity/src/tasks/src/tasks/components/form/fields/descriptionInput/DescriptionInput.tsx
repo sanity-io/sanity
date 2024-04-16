@@ -21,8 +21,8 @@ const DescriptionInputRoot = styled.div<{$mode: FormMode; $minHeight: number}>((
   const verticalPadding = props.$mode === 'edit' ? theme.space[1] : theme.space[3]
   const minHeight = props.$mode === 'edit' ? 120 : 200
   return css`
-    /* select editable-wrap and change the padding */
-    [data-ui='editable-wrap'] {
+    /* select CommentInputEditableWrap and change the padding */
+    [data-ui='CommentInputEditableWrap'] {
       overflow: hidden;
       padding: ${props.$mode === 'edit'
         ? `${verticalPadding}px 0px`
