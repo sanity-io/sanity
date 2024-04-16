@@ -4,7 +4,7 @@
   </a>
   <h1 align="center">Sanity</h1>
   <h4 align="center">
-    <a href="https://www.sanity.io/get-started?ref=gh">Get Started</a> |
+    <a href="https://www.sanity.io/get-started?ref=gh">Get Started - 123</a> |
     <a href="https://www.sanity.io/docs">Docs</a> |
     <a href="https://www.sanity.io">Website</a>
   </h4>
