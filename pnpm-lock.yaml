@@ -439,7 +439,7 @@ importers:
         version: 1.11.4(@sanity/client@6.15.14)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8)
       '@sanity/preview-url-secret':
         specifier: ^1.6.1
-        version: 1.6.7(@sanity/client@6.15.14)
+        version: 1.6.8(@sanity/client@6.15.14)
       '@sanity/react-loader':
         specifier: ^1.8.3
         version: 1.9.9(@sanity/client@6.15.14)(react@18.2.0)
@@ -465,8 +465,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/@sanity/vision
       '@sanity/visual-editing':
-        specifier: 1.8.8
-        version: 1.8.8(@sanity/client@6.15.14)
+        specifier: 1.8.10
+        version: 1.8.10(@sanity/client@6.15.14)
       '@turf/helpers':
         specifier: ^6.0.1
         version: 6.5.0
@@ -6272,7 +6272,7 @@ packages:
     dependencies:
       '@sanity/client': 6.15.14
       '@sanity/icons': 2.11.8(react@18.2.0)
-      '@sanity/preview-url-secret': 1.6.7(@sanity/client@6.15.14)
+      '@sanity/preview-url-secret': 1.6.8(@sanity/client@6.15.14)
       '@sanity/ui': 2.1.3(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8)
       '@sanity/uuid': 3.0.2
       '@types/lodash.isequal': 4.5.8
@@ -6298,7 +6298,7 @@ packages:
     dependencies:
       '@sanity/client': 6.15.14
       '@sanity/icons': 2.11.8(react@18.2.0)
-      '@sanity/preview-url-secret': 1.6.7(@sanity/client@6.15.14)
+      '@sanity/preview-url-secret': 1.6.8(@sanity/client@6.15.14)
       '@sanity/ui': 2.1.3(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8)
       '@sanity/uuid': 3.0.2
       '@types/lodash.isequal': 4.5.8
@@ -6316,11 +6316,11 @@ packages:
       - styled-components
     dev: false
 
-  /@sanity/preview-url-secret@1.6.7(@sanity/client@6.15.14):
-    resolution: {integrity: sha512-vlBz8iGdiR9CtXAdV+sdTrE8bIDhJvn/cHITY9ISY33kleOKY+QY0SGm4v3w9Plt0BZCLWpqlW90jsFC6IO4PA==}
+  /@sanity/preview-url-secret@1.6.8(@sanity/client@6.15.14):
+    resolution: {integrity: sha512-h6HyF607NDn+mQ9Db1WDWO3IWiZ+E4mPSX7nQWRcXuMvKb6J8q1/QNf+7q9+vSIvgqr709tJeIx1/EiHjIIkiw==}
     engines: {node: '>=18'}
     peerDependencies:
-      '@sanity/client': ^6.15.11
+      '@sanity/client': ^6.15.14
     dependencies:
       '@sanity/client': 6.15.14
       '@sanity/uuid': 3.0.2
@@ -6508,14 +6508,14 @@ packages:
       '@types/uuid': 8.3.4
       uuid: 8.3.2
 
-  /@sanity/visual-editing@1.8.8(@sanity/client@6.15.14):
-    resolution: {integrity: sha512-CN7HfUHWpLUDgD+a4o3x7SWW2yn63Ni3Qj4V9ZXe8njRMJ4Tv/1IW0KBtQ9tNIXgS/D1QqaIeCbM7aZ2VrY6bA==}
+  /@sanity/visual-editing@1.8.10(@sanity/client@6.15.14):
+    resolution: {integrity: sha512-81jehcCInI+e3MkLz405jgcd2axxeo9ZToHlDfLdEYGCW895a1vugKgwor6+/d/U42Ao9g9ci/Ra5pbAkqTEmA==}
     engines: {node: '>=18'}
     peerDependencies:
       '@remix-run/react': '>= 2'
-      '@sanity/client': ^6.15.11
+      '@sanity/client': ^6.15.14
       '@sveltejs/kit': '>= 2'
-      next: '>= 13 || >=14.2.0-canary.0 <14.2.0'
+      next: '>= 13 || >=14.3.0-canary.0 <14.3.0'
       svelte: '>= 4'
     peerDependenciesMeta:
       '@remix-run/react':
@@ -6530,7 +6530,7 @@ packages:
         optional: true
     dependencies:
       '@sanity/client': 6.15.14
-      '@sanity/preview-url-secret': 1.6.7(@sanity/client@6.15.14)
+      '@sanity/preview-url-secret': 1.6.8(@sanity/client@6.15.14)
       '@vercel/stega': 0.1.0
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
