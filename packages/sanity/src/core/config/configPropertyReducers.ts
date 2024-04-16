@@ -361,8 +361,8 @@ export const newSearchEnabledReducer: ConfigPropertyReducer<boolean, ConfigConte
   prev,
   {search},
 ): boolean => {
-  if (typeof search?.unstable_enableNewSearch !== 'undefined') {
-    return search.unstable_enableNewSearch
+  if (typeof search?.enableLegacySearch !== 'undefined') {
+    return search.enableLegacySearch
   }
 
   return prev

@@ -27,7 +27,7 @@ export type ReferenceFilterSearchOptions = {
   params?: Record<string, unknown>
   tag?: string
   maxFieldDepth?: number
-  unstable_enableNewSearch?: boolean
+  enableLegacySearch?: boolean
 }
 
 /** @public */
