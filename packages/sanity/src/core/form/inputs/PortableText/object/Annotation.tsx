@@ -1,7 +1,14 @@
 import {PortableTextEditor, usePortableTextEditor} from '@sanity/portable-text-editor'
 import {type ObjectSchemaType, type Path, type PortableTextObject} from '@sanity/types'
 import {isEqual} from '@sanity/util/paths'
-import {type ComponentType, type ReactElement, useCallback, useMemo, useState} from 'react'
+import {
+  type ComponentType,
+  type ReactElement,
+  type ReactNode,
+  useCallback,
+  useMemo,
+  useState,
+} from 'react'
 
 import {Tooltip} from '../../../../../ui-components'
 import {pathToString} from '../../../../field'
@@ -53,7 +60,7 @@ interface AnnotationProps {
   value: PortableTextObject
 }
 
-export function Annotation(props: AnnotationProps) {
+export function Annotation(props: AnnotationProps): ReactNode {
   const {
     children,
     editorNodeFocused,
@@ -84,7 +91,6 @@ export function Annotation(props: AnnotationProps) {
     [path, value._key],
   )
   const [spanElement, setSpanElement] = useState<HTMLSpanElement | null>(null)
-  const spanPath: Path = useMemo(() => path.slice(path.length - 3, path.length), [path])
   const memberItem = usePortableTextMemberItem(pathToString(markDefPath))
   const {validation} = useMemberValidation(memberItem?.node)
   const markers = usePortableTextMarkers(path)
@@ -105,19 +111,9 @@ export function Annotation(props: AnnotationProps) {
     onItemClose()
     if (isEmptyItem(value)) {
       PortableTextEditor.removeAnnotation(editor, schemaType)
-    } else {
-      // Keep track of any previous offsets on the spanNode before we select it.
-      const sel = PortableTextEditor.getSelection(editor)
-      const focusOffset = sel?.focus.path && isEqual(sel.focus.path, spanPath) && sel.focus.offset
-      const anchorOffset =
-        sel?.anchor.path && isEqual(sel.anchor.path, spanPath) && sel.anchor.offset
-      PortableTextEditor.select(editor, {
-        anchor: {path: spanPath, offset: anchorOffset || 0},
-        focus: {path: spanPath, offset: focusOffset || 0},
-      })
     }
     PortableTextEditor.focus(editor)
-  }, [editor, spanPath, onItemClose, schemaType, value])
+  }, [editor, onItemClose, schemaType, value])
 
   const onRemove = useCallback(() => {
     PortableTextEditor.removeAnnotation(editor, schemaType)
