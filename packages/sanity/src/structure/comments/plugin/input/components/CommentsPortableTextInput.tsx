@@ -11,7 +11,7 @@ import * as PathUtils from '@sanity/util/paths'
 import {uuid} from '@sanity/uuid'
 import {AnimatePresence} from 'framer-motion'
 import {debounce} from 'lodash'
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {memo, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {isPortableTextTextBlock, type PortableTextInputProps, useCurrentUser} from 'sanity'
 
 import {
@@ -56,7 +56,7 @@ export function CommentsPortableTextInput(props: PortableTextInputProps) {
   return <CommentsPortableTextInputInner {...props} mode={mode} />
 }
 
-export const CommentsPortableTextInputInner = React.memo(function CommentsPortableTextInputInner(
+export const CommentsPortableTextInputInner = memo(function CommentsPortableTextInputInner(
   props: PortableTextInputProps & {mode: CommentsUIMode},
 ) {
   const {mode} = props

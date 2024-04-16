@@ -1,7 +1,16 @@
 import {ChevronDownIcon} from '@sanity/icons'
 import {type CurrentUser} from '@sanity/types'
 import {type AvatarSize, Flex, Stack, type StackProps, useLayer} from '@sanity/ui'
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
+import {
+  type KeyboardEvent,
+  memo,
+  type MouseEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import {type UserListWithPermissionsHookValue, useTranslation} from 'sanity'
 import {css, styled} from 'styled-components'
 
@@ -99,7 +108,7 @@ export interface CommentsListItemProps {
   onCreateRetry: (id: string) => void
   onDelete: (id: string) => void
   onEdit: (id: string, payload: CommentUpdatePayload) => void
-  onKeyDown?: (event: React.KeyboardEvent<Element>) => void
+  onKeyDown?: (event: KeyboardEvent<Element>) => void
   onPathSelect?: (nextPath: CommentsSelectedPath) => void
   onReactionSelect?: (id: string, reaction: CommentReactionOption) => void
   onReply: (payload: CommentBaseCreatePayload) => void
@@ -109,7 +118,7 @@ export interface CommentsListItemProps {
   replies: CommentDocument[] | undefined
 }
 
-export const CommentsListItem = React.memo(function CommentsListItem(props: CommentsListItemProps) {
+export const CommentsListItem = memo(function CommentsListItem(props: CommentsListItemProps) {
   const {
     avatarConfig = DEFAULT_AVATAR_CONFIG,
     canReply,
@@ -183,7 +192,7 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
   }, [hasValue])
 
   const handleInputKeyDown = useCallback(
-    (event: React.KeyboardEvent<Element>) => {
+    (event: KeyboardEvent<Element>) => {
       // Don't act if the input already prevented this event
       if (event.isDefaultPrevented()) {
         return
@@ -209,7 +218,7 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
   }, [])
 
   const handleThreadRootClick = useCallback(
-    (e: React.MouseEvent<HTMLDivElement>) => {
+    (e: MouseEvent<HTMLDivElement>) => {
       e.stopPropagation()
 
       // Don't act if the click was caused by clicking
@@ -225,7 +234,7 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
     [isTopLayer, onPathSelect, parentComment.target.path?.field, parentComment.threadId],
   )
 
-  const handleExpand = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleExpand = useCallback((e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation()
     setCollapsed(false)
     didExpand.current = true
@@ -302,7 +311,7 @@ export const CommentsListItem = React.memo(function CommentsListItem(props: Comm
       data-active={isSelected ? 'true' : 'false'}
       data-hovered={mouseOver ? 'true' : 'false'}
       data-testid="comments-list-item"
-      data-ui="comments-list-item"
+      data-ui="CommentsListItem"
       onClick={handleThreadRootClick}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}

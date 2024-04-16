@@ -14,7 +14,6 @@ import {
   startTransition,
   useCallback,
   useEffect,
-  useImperativeHandle,
   useMemo,
   useRef,
   useState,
@@ -58,7 +57,7 @@ export interface PortableTextMemberItem {
  * @public
  * @param props - {@link PortableTextInputProps} component props.
  */
-export function PortableTextInput(props: PortableTextInputProps) {
+export function PortableTextInput(props: PortableTextInputProps): ReactNode {
   const {
     editorRef: editorRefProp,
     elementProps,
@@ -81,20 +80,9 @@ export function PortableTextInput(props: PortableTextInputProps) {
     value,
   } = props
 
-  const {onBlur} = elementProps
+  const {onBlur, onFocus, ref: elementRef} = elementProps
   const defaultEditorRef = useRef<PortableTextEditor | null>(null)
   const editorRef = editorRefProp || defaultEditorRef
-
-  // This handle will allow for natively calling .focus
-  // on the returned component and have the PortableTextEditor focused,
-  // simulating a native input element (like with an string input)
-  useImperativeHandle(elementProps.ref, () => ({
-    focus() {
-      if (editorRef.current) {
-        PortableTextEditor.focus(editorRef.current)
-      }
-    },
-  }))
 
   const {subscribe} = usePatches({path})
   const [ignoreValidationError, setIgnoreValidationError] = useState(false)
@@ -113,8 +101,6 @@ export function PortableTextInput(props: PortableTextInputProps) {
     snapshot: PortableTextBlock[] | undefined
   }> = useMemo(() => new Subject(), [])
   const patches$ = useMemo(() => patchSubject.asObservable(), [patchSubject])
-
-  const innerElementRef = useRef<HTMLDivElement | null>(null)
 
   const handleToggleFullscreen = useCallback(() => {
     setIsFullscreen((v) => {
@@ -266,7 +252,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
   }, [editorRef, isActive])
 
   return (
-    <Box ref={innerElementRef}>
+    <Box ref={elementProps.ref}>
       {!ignoreValidationError && respondToInvalidContent}
       {(!invalidValue || ignoreValidationError) && (
         <PortableTextMarkersProvider markers={markers}>
@@ -282,6 +268,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
             >
               <Compositor
                 {...props}
+                elementRef={elementRef}
                 hasFocusWithin={hasFocusWithin}
                 hotkeys={hotkeys}
                 isActive={isActive}

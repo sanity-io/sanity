@@ -7,6 +7,7 @@ import {Tooltip} from '../../../../../ui-components'
 import {pathToString} from '../../../../field'
 import {useTranslation} from '../../../../i18n'
 import {EMPTY_ARRAY} from '../../../../util'
+import {isEmptyItem} from '../../../store/utils/isEmptyItem'
 import {useChildPresence} from '../../../studio/contexts/Presence'
 import {
   type BlockAnnotationProps,
@@ -92,25 +93,31 @@ export function Annotation(props: AnnotationProps) {
 
   const onOpen = useCallback(() => {
     if (memberItem) {
-      // Take focus away from the editor so that it doesn't propagate a new focusPath and interfere here.
+      // Take focus away from the editor so it doesn't accidentally propagate a new focusPath
+      // for the text node that the annotation is attached to.
       PortableTextEditor.blur(editor)
-      onPathFocus(memberItem.node.focusPath) // Set the focus path to be the markDef here as we currently have focus on the text node
+      // Open the annotation item (markDef object)
       onItemOpen(memberItem.node.path)
     }
-  }, [editor, memberItem, onItemOpen, onPathFocus])
+  }, [editor, memberItem, onItemOpen])
 
   const onClose = useCallback(() => {
     onItemClose()
-    // Keep track of any previous offsets on the spanNode before we select it.
-    const sel = PortableTextEditor.getSelection(editor)
-    const focusOffset = sel?.focus.path && isEqual(sel.focus.path, spanPath) && sel.focus.offset
-    const anchorOffset = sel?.anchor.path && isEqual(sel.anchor.path, spanPath) && sel.anchor.offset
-    PortableTextEditor.select(editor, {
-      anchor: {path: spanPath, offset: anchorOffset || 0},
-      focus: {path: spanPath, offset: focusOffset || 0},
-    })
+    if (isEmptyItem(value)) {
+      PortableTextEditor.removeAnnotation(editor, schemaType)
+    } else {
+      // Keep track of any previous offsets on the spanNode before we select it.
+      const sel = PortableTextEditor.getSelection(editor)
+      const focusOffset = sel?.focus.path && isEqual(sel.focus.path, spanPath) && sel.focus.offset
+      const anchorOffset =
+        sel?.anchor.path && isEqual(sel.anchor.path, spanPath) && sel.anchor.offset
+      PortableTextEditor.select(editor, {
+        anchor: {path: spanPath, offset: anchorOffset || 0},
+        focus: {path: spanPath, offset: focusOffset || 0},
+      })
+    }
     PortableTextEditor.focus(editor)
-  }, [editor, spanPath, onItemClose])
+  }, [editor, spanPath, onItemClose, schemaType, value])
 
   const onRemove = useCallback(() => {
     PortableTextEditor.removeAnnotation(editor, schemaType)

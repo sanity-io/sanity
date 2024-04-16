@@ -1,6 +1,6 @@
 import {jest} from '@jest/globals'
 import {type ArraySchemaType, type FieldDefinition} from '@sanity/types'
-import type * as React from 'react'
+import {type ReactElement} from 'react'
 
 import {
   type ArrayOfObjectsFormNode,
@@ -22,7 +22,7 @@ const noopRenderDefault = () => <></>
 
 export type TestRenderArrayOfObjectInputCallback = (
   inputProps: ArrayOfObjectsInputProps,
-) => React.ReactElement
+) => ReactElement
 
 export async function renderArrayOfObjectsInput(options: {
   fieldDefinition: FieldDefinition<'array'>
