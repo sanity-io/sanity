@@ -20,31 +20,26 @@
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
   "sideEffects": false,
-  "type": "module",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
       "source": "./src/index.ts",
       "import": "./dist/index.js",
       "require": "./dist/index.cjs",
       "default": "./dist/index.js"
     },
     "./path": {
-      "types": "./dist/_path.d.ts",
       "source": "./src/_path.ts",
       "import": "./dist/_path.js",
       "require": "./dist/_path.cjs",
       "default": "./dist/_path.js"
     },
     "./_unstable_store": {
-      "types": "./dist/_unstable_store.d.ts",
       "source": "./src/_unstable_store.ts",
       "import": "./dist/_unstable_store.js",
       "require": "./dist/_unstable_store.cjs",
       "default": "./dist/_unstable_store.js"
     },
     "./_unstable_apply": {
-      "types": "./dist/_unstable_apply.d.ts",
       "source": "./src/_unstable_apply.ts",
       "import": "./dist/_unstable_apply.js",
       "require": "./dist/_unstable_apply.cjs",
@@ -56,19 +51,7 @@
   "module": "./dist/index.js",
   "source": "./src/index.ts",
   "types": "./dist/index.d.ts",
-  "typesVersions": {
-    "*": {
-      "path": [
-        "./dist/_path.d.ts"
-      ],
-      "_unstable_apply": [
-        "./dist/_unstable_apply.d.ts"
-      ],
-      "_unstable_store": [
-        "./dist/_unstable_store.d.ts"
-      ]
-    }
-  },
+
   "scripts": {
     "build": "run-s clean pkg:build pkg:check",
     "clean": "rimraf dist",

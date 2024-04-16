@@ -1011,12 +1011,12 @@ importers:
 
   packages/@sanity/migrate:
     dependencies:
-      '@bjoerge/mutiny':
-        specifier: ^0.5.1
-        version: 0.5.3
       '@sanity/client':
-        specifier: ^6.15.19
+        specifier: ^6.15.14
         version: 6.15.19(debug@4.3.4)
+      '@sanity/mutate':
+        specifier: workspace:*
+        version: link:../mutate
       '@sanity/types':
         specifier: 3.38.0
         version: link:../types
@@ -3296,6 +3296,7 @@ packages:
       diff-match-patch: 1.0.5
       hotscript: 1.0.13
       nanoid: 5.0.7
+    dev: true
 
   /@bjoerge/mutiny@0.6.0-beta.4:
     resolution: {integrity: sha512-Ss3M/Wbyob+3VA3OgtXgu6qr85Jo1mnX28EVuQUgpGXB4l79jE2ocq7nxX7dwTByJ8NqUHhHZH45wsN+ceWvJA==}
@@ -10220,6 +10221,7 @@ packages:
 
   /diff-match-patch@1.0.5:
     resolution: {integrity: sha512-IayShXAgj/QMXgB0IWmKx+rOPuGMhqm5w6jvFxmVenXKIzRqTAAsbBPT3kWQeGANj3jGgvcvv4yK6SxqYmikgw==}
+    dev: true
 
   /diff-sequences@29.6.3:
     resolution: {integrity: sha512-EjePK1srD3P08o2j4f0ExnylqRs5B9tJjcp9t1krH2qRi8CCdsYfwe9JgSLurFBWwq4uOlipzfk5fHNvwFKr8Q==}

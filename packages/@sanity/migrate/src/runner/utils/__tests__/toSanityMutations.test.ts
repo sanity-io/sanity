@@ -8,9 +8,9 @@ import {SanityEncoder} from '@sanity/mutate'
 import {type Mutation, type Transaction} from '../../../mutations'
 import {toSanityMutations, type TransactionPayload} from '../toSanityMutations'
 
-vitest.mock('@bjoerge/mutiny', async () => {
+vitest.mock('@sanity/mutate', async () => {
   // eslint-disable-next-line @typescript-eslint/consistent-type-imports
-  const actual = await vitest.importActual<typeof import('@bjoerge/mutiny')>('@bjoerge/mutiny')
+  const actual = await vitest.importActual<typeof import('@sanity/mutate')>('@sanity/mutate')
   return {
     ...actual,
     SanityEncoder: {

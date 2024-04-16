@@ -1,12 +1,8 @@
 {
-  "extends": "./tsconfig.settings",
-  "include": [
-    "**.ts",
-    "./src/**/**.ts",
-    "./test/**/*.ts"
-  ],
+  "extends": "@repo/tsconfig/base.json",
+  "include": ["./src"],
   "compilerOptions": {
     "rootDir": ".",
-    "noEmit": true
+    "paths": {}
   }
 }
