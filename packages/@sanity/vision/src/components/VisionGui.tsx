@@ -6,7 +6,7 @@ import {
   type MutationEvent,
   type SanityClient,
 } from '@sanity/client'
-import {CopyIcon, ErrorOutlineIcon, JsonIcon, PlayIcon, StopIcon} from '@sanity/icons'
+import {CopyIcon, ErrorOutlineIcon, PlayIcon, StopIcon} from '@sanity/icons'
 import {
   Box,
   Button,
@@ -24,7 +24,7 @@ import {
 } from '@sanity/ui'
 import {isHotkey} from 'is-hotkey-esm'
 import {type ChangeEvent, createRef, PureComponent, type RefObject} from 'react'
-import {type TFunction} from 'sanity'
+import {type TFunction, Translate} from 'sanity'
 
 import {API_VERSIONS, DEFAULT_API_VERSION} from '../apiVersions'
 import {VisionCodeMirror} from '../codemirror/VisionCodeMirror'
@@ -39,15 +39,14 @@ import {ResizeObserver} from '../util/resizeObserver'
 import {tryParseParams} from '../util/tryParseParams'
 import {validateApiVersion} from '../util/validateApiVersion'
 import {DelayedSpinner} from './DelayedSpinner'
-import {DownloadCsvButton} from './DownloadCsvButton'
 import {ParamsEditor, type ParamsEditorChangeEvent} from './ParamsEditor'
 import {PerspectivePopover} from './PerspectivePopover'
 import {QueryErrorDialog} from './QueryErrorDialog'
 import {ResultView} from './ResultView'
+import {SaveCsvButton, SaveJsonButton} from './SaveResultButtons'
 import {
   ControlsContainer,
   DownloadsCard,
-  DownloadsContainer,
   Header,
   InputBackgroundContainer,
   InputBackgroundContainerLeft,
@@ -59,6 +58,7 @@ import {
   ResultInnerContainer,
   ResultOuterContainer,
   Root,
+  SaveResultLabel,
   SplitpaneContainer,
   StyledLabel,
   TimingsCard,
@@ -978,20 +978,20 @@ export class VisionGui extends PureComponent<VisionGuiProps, VisionGuiState> {
 
                 {hasResult && (
                   <DownloadsCard paddingX={4} paddingY={3} sizing="border">
-                    <DownloadsContainer gap={3} align="center">
-                      <Text muted>{t('result.download-result-as')}</Text>
-                      <Button
-                        as="a"
-                        download="query-result.json"
-                        href={jsonUrl}
-                        text={t('action.download-result-as-json')}
-                        tone="default"
-                        mode="ghost"
-                        icon={JsonIcon}
+                    <SaveResultLabel muted>
+                      <Translate
+                        components={{
+                          SaveResultButtons: () => (
+                            <>
+                              <SaveJsonButton blobUrl={jsonUrl} />
+                              <SaveCsvButton blobUrl={csvUrl} />
+                            </>
+                          ),
+                        }}
+                        i18nKey="result.save-result-as-format"
+                        t={t}
                       />
-
-                      <DownloadCsvButton csvUrl={csvUrl} />
-                    </DownloadsContainer>
+                    </SaveResultLabel>
                   </DownloadsCard>
                 )}
               </ResultFooter>

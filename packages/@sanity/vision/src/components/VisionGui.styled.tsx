@@ -1,4 +1,4 @@
-import {Box, Card, Flex, Label, rem} from '@sanity/ui'
+import {Box, Card, Flex, Label, rem, Text} from '@sanity/ui'
 import {css, styled} from 'styled-components'
 
 export const Root = styled(Flex)`
@@ -155,9 +155,17 @@ export const DownloadsCard = styled(Card)`
   position: relative;
 `
 
-export const DownloadsContainer = styled(Flex)`
-  width: 100%;
-  height: 100%;
+export const SaveResultLabel = styled(Text)`
+  transform: initial;
+  &:before,
+  &:after {
+    content: none;
+  }
+  > span {
+    display: flex !important;
+    gap: ${({theme}) => rem(theme.sanity.space[3])};
+    align-items: center;
+  }
 `
 
 export const ControlsContainer = styled(Box)`
