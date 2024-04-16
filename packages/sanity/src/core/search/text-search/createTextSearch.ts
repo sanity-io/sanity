@@ -83,6 +83,17 @@ export function getOrder(sort: SearchSort[] = []): TextSearchOrder[] {
   )
 }
 
+export function getQueryString(
+  query: string,
+  {queryType = 'prefixLast'}: Pick<SearchOptions, 'queryType'>,
+): string {
+  if (queryType === 'prefixLast') {
+    return `${query}*`
+  }
+
+  return query
+}
+
 /**
  * @internal
  */
@@ -105,7 +116,9 @@ export const createTextSearch: SearchStrategyFactory<TextSearchResults> = (
     ].filter((baseFilter): baseFilter is string => Boolean(baseFilter))
 
     const textSearchParams: TextSearchParams = {
-      query: {string: searchTerms.query},
+      query: {
+        string: getQueryString(searchTerms.query, searchOptions),
+      },
       filter: filters.join(' && '),
       params: {
         __types: searchTerms.types.map((type) => ('name' in type ? type.name : type.type)),
