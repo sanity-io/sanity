@@ -256,14 +256,14 @@ describe('checkoutPair -- server actions', () => {
     sub.unsubscribe()
   })
 
-  test('createIfNotExists', async () => {
+  test('create', async () => {
     const {draft, published} = checkoutPair(clientWithConfig as any as SanityClient, idPair, true)
     const combined = merge(draft.events, published.events)
     const sub = combined.subscribe()
     await new Promise((resolve) => setTimeout(resolve, 0))
 
     draft.mutate([
-      draft.createIfNotExists({
+      draft.create({
         _id: 'draftId',
         _type: 'any',
         _createdAt: 'now',
@@ -288,9 +288,39 @@ describe('checkoutPair -- server actions', () => {
               _type: 'any',
               _createdAt: 'now',
             },
-            ifExists: 'ignore',
+            ifExists: 'fail',
           },
         ],
+      },
+    })
+
+    sub.unsubscribe()
+  })
+
+  test('createIfNotExists', async () => {
+    const {draft, published} = checkoutPair(clientWithConfig as any as SanityClient, idPair, true)
+    const combined = merge(draft.events, published.events)
+    const sub = combined.subscribe()
+    await new Promise((resolve) => setTimeout(resolve, 0))
+
+    draft.mutate([
+      draft.createIfNotExists({
+        _id: 'draftId',
+        _type: 'any',
+        _createdAt: 'now',
+        _updatedAt: 'now',
+        _rev: 'any',
+      }),
+    ])
+    draft.commit()
+
+    expect(mockedObservableRequest).toHaveBeenCalledWith({
+      url: '/data/actions/production',
+      method: 'post',
+      tag: 'document.commit',
+      body: {
+        transactionId: expect.any(String),
+        actions: [],
       },
     })
 
