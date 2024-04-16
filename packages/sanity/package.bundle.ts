@@ -11,12 +11,14 @@ export default defineConfig({
     emptyOutDir: true,
     lib: {
       entry: {
-        index: './src/_exports/index.ts',
-        structure: './src/_exports/structure.ts',
         _singletons: './src/_exports/_singletons.ts',
-        router: './src/_exports/router.ts',
+        index: './src/_exports/index.ts',
+        desk: './src/_exports/desk.ts',
+        presentation: './src/_exports/presentation.ts',
         react: './node_modules/react/cjs/react.production.min.js',
+        router: './src/_exports/router.ts',
         'styled-components': './node_modules/styled-components/dist/styled-components.esm.js',
+        structure: './src/_exports/structure.ts',
       },
       formats: ['es'],
     },

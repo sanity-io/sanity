@@ -151,12 +151,14 @@ export function DefaultDocument(props: DefaultDocumentProps): ReactElement {
             dangerouslySetInnerHTML={{
               __html: `{
               "imports": {
-                "react": "https://unpkg.com/sanity@3.37.3-canary.143/dist/react.mjs",
-                "sanity": "https://unpkg.com/sanity@3.37.3-canary.143/dist/index.mjs",
-                "sanity/_singletons": "https://unpkg.com/sanity@3.37.3-canary.143/dist/_singletons.mjs",
-                "sanity/structure": "https://unpkg.com/sanity@3.37.3-canary.143/dist/structure.mjs",
-                "sanity/router": "https://unpkg.com/sanity@3.37.3-canary.143/dist/router.mjs",
-                "styled-components": "https://unpkg.com/sanity@3.37.3-canary.143/dist/styled-components.mjs"
+                "react": "https://unpkg.com/sanity@3.37.3-canary.144/dist/react.mjs",
+                "sanity": "https://unpkg.com/sanity@3.37.3-canary.144/dist/index.mjs",
+                "sanity/presentation": "https://unpkg.com/sanity@3.37.3-canary.144/dist/presentation.mjs",
+                "sanity/desk": "https://unpkg.com/sanity@3.37.3-canary.144/dist/desk.mjs",
+                "sanity/router": "https://unpkg.com/sanity@3.37.3-canary.144/dist/router.mjs",
+                "sanity/_singletons": "https://unpkg.com/sanity@3.37.3-canary.144/dist/_singletons.mjs",
+                "sanity/structure": "https://unpkg.com/sanity@3.37.3-canary.144/dist/structure.mjs",
+                "styled-components": "https://unpkg.com/sanity@3.37.3-canary.144/dist/styled-components.mjs"
               }
             }`,
             }}
