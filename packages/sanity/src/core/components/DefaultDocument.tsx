@@ -120,6 +120,7 @@ const EMPTY_ARRAY: never[] = []
  * @beta */
 export function DefaultDocument(props: DefaultDocumentProps): ReactElement {
   const {entryPath, css = EMPTY_ARRAY, basePath = '/'} = props
+  const addImportMap = true
   return (
     <html lang="en">
       <head>
@@ -142,6 +143,22 @@ export function DefaultDocument(props: DefaultDocumentProps): ReactElement {
         ))}
         {/* eslint-disable-next-line react/no-danger */}
         <style dangerouslySetInnerHTML={{__html: globalStyles}} />
+
+        {addImportMap && (
+          <script
+            type="importmap"
+            // eslint-disable-next-line react/no-danger
+            dangerouslySetInnerHTML={{
+              __html: `{
+              "imports": {
+                "sanity": "https://esm.sh/sanity@3.37.2-canary.92",
+                "sanity/structure": "https://esm.sh/sanity@3.37.2-canary.92/",
+                "sanity/router": "https://esm.sh/sanity@3.37.2-canary.92/",
+              }
+            }`,
+            }}
+          />
+        )}
       </head>
       <body>
         <div id="sanity" />
