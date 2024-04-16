@@ -1,6 +1,6 @@
 {
   "name": "sanity-test-studio",
-  "version": "3.37.2",
+  "version": "3.38.0",
   "private": true,
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
@@ -21,7 +21,7 @@
     "@react-three/drei": "^9.80.1",
     "@react-three/fiber": "^8.13.6",
     "@sanity/assist": "^3.0.2",
-    "@sanity/block-tools": "3.37.2",
+    "@sanity/block-tools": "3.38.0",
     "@sanity/client": "^6.15.14",
     "@sanity/color": "^3.0.0",
     "@sanity/google-maps-input": "^4.0.0",
