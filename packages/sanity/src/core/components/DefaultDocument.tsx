@@ -151,9 +151,12 @@ export function DefaultDocument(props: DefaultDocumentProps): ReactElement {
             dangerouslySetInnerHTML={{
               __html: `{
               "imports": {
-                "sanity": "https://esm.sh/sanity@3.37.2-canary.92",
-                "sanity/structure": "https://esm.sh/sanity@3.37.2-canary.92/",
-                "sanity/router": "https://esm.sh/sanity@3.37.2-canary.92/",
+                "react": "https://unpkg.com/sanity@3.37.3-canary.140/dist/react.mjs",
+                "sanity": "https://unpkg.com/sanity@3.37.3-canary.140/dist/index.mjs",
+                "sanity/_singletons": "https://unpkg.com/sanity@3.37.3-canary.140/dist/_singletons.mjs",
+                "sanity/structure": "https://unpkg.com/sanity@3.37.3-canary.140/dist/structure.mjs",
+                "sanity/router": "https://unpkg.com/sanity@3.37.3-canary.140/dist/router.mjs",
+                "styled-components": "https://unpkg.com/sanity@3.37.3-canary.140/dist/styled-components.mjs"
               }
             }`,
             }}
