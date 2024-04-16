@@ -2,13 +2,14 @@
 import {type Path} from '@sanity/types'
 import {createContext, memo, type ReactNode, useCallback, useContext, useMemo, useRef} from 'react'
 
+import {type OnPathFocusPayload} from '../..'
 import {type FormPatch, type PatchEvent} from '../../patch'
 
 /** @internal */
 export interface FormCallbacksValue {
   transformPatches?: (patches: FormPatch[]) => FormPatch[]
   onChange: (patchEvent: PatchEvent) => void
-  onPathFocus: (path: Path, payload?: Record<string, unknown>) => void
+  onPathFocus: (path: Path, payload?: OnPathFocusPayload) => void
   onPathBlur: (path: Path) => void
   onPathOpen: (path: Path) => void
   onSetPathCollapsed: (path: Path, collapsed: boolean) => void
@@ -39,7 +40,7 @@ export const FormCallbacksProvider = memo(function FormCallbacksProvider(
     ref.current.onChange(patchEvent)
   }, [])
 
-  const onPathFocus = useCallback((path: Path, payload?: Record<string, unknown>) => {
+  const onPathFocus = useCallback((path: Path, payload?: OnPathFocusPayload) => {
     ref.current.onPathFocus(path, payload)
   }, [])
   const onPathBlur = useCallback((path: Path) => {

@@ -22,6 +22,7 @@ import {
   type ArrayInputMoveItemEvent,
   type ArrayOfObjectsInputProps,
   type ObjectItem,
+  type OnPathFocusPayload,
   type RenderAnnotationCallback,
   type RenderArrayOfObjectsItemCallback,
   type RenderBlockCallback,
@@ -285,7 +286,7 @@ export function ArrayOfObjectsField(props: {
   )
 
   const handleFocusChildPath = useCallback(
-    (path: Path, payload?: Record<string, unknown>) => {
+    (path: Path, payload?: OnPathFocusPayload) => {
       onPathFocus(member.field.path.concat(path), payload)
     },
     [member.field.path, onPathFocus],
