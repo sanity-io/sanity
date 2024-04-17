@@ -107,9 +107,9 @@ export function prefixLast(query: string): string {
     return tokens.join(' ')
   }
 
-  return tokens
-    .toSpliced(finalNonNegationTokenIndex, 1, `${finalNonNegationToken}${WILDCARD_TOKEN}`)
-    .join(' ')
+  const prefixedTokens = [...tokens]
+  prefixedTokens.splice(finalNonNegationTokenIndex, 1, `${finalNonNegationToken}${WILDCARD_TOKEN}`)
+  return prefixedTokens.join(' ')
 }
 
 export function getQueryString(
