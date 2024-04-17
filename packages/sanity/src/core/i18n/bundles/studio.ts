@@ -1,6 +1,7 @@
 /* eslint sort-keys: "error" */
-import {defineLocaleResourceBundle, defineLocalesResources} from '../helpers'
+import {defineLocalesResources} from '../helpers'
 import {studioLocaleNamespace} from '../localeNamespaces'
+import {type LocaleResourceBundle} from '../types'
 
 /**
  * The string resources for the studio core.
@@ -1672,8 +1673,8 @@ export type StudioLocaleResourceKeys = keyof typeof studioLocaleStrings
  * @beta
  * @hidden
  */
-export const studioDefaultLocaleResources = defineLocaleResourceBundle({
+export const studioDefaultLocaleResources: LocaleResourceBundle = {
   locale: 'en-US',
   namespace: studioLocaleNamespace,
   resources: studioLocaleStrings,
-})
+}

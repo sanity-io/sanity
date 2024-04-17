@@ -33,12 +33,6 @@
       "require": "./lib/_internal.js",
       "default": "./lib/_internal.js"
     },
-    "./_internalBrowser": {
-      "source": "./src/_exports/_internalBrowser.ts",
-      "import": "./lib/_internalBrowser.mjs",
-      "require": "./lib/_internalBrowser.js",
-      "default": "./lib/_internalBrowser.js"
-    },
     "./cli": {
       "source": "./src/_exports/cli.ts",
       "require": "./lib/cli.js",
@@ -117,7 +111,6 @@
     "!**/__test__/**",
     "!**/__tests__/**",
     "!**/__workshop__/**",
-    "_internalBrowser.js",
     "desk.js",
     "presentation.js",
     "router.js",
@@ -126,7 +119,7 @@
   "scripts": {
     "build": "pkg-utils build --strict --check --clean",
     "check:types": "tsc --project tsconfig.lib.json",
-    "clean": "rimraf _internal.js _internalBrowser.js cli.js desk.js migrate.js presentation.js router.js structure.js lib",
+    "clean": "rimraf _internal.js cli.js desk.js migrate.js presentation.js router.js structure.js lib",
     "coverage": "jest --coverage",
     "lint": "eslint .",
     "prepublishOnly": "turbo run build",

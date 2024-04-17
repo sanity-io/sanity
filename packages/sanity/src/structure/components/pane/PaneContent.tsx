@@ -12,9 +12,8 @@ interface PaneContentProps {
 }
 
 /**
- *
  * @hidden
- * @beta This API will change. DO NOT USE IN PRODUCTION.
+ * @internal
  */
 export const PaneContent = forwardRef(function PaneContent(
   props: PaneContentProps & Omit<HTMLProps<HTMLDivElement>, 'as' | 'height' | 'ref'>,
