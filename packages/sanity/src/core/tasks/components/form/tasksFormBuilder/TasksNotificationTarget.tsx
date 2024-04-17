@@ -1,7 +1,8 @@
 import {isImageSource} from '@sanity/asset-utils'
 import imageUrlBuilder from '@sanity/image-url'
-import {useEffect, useMemo} from 'react'
+import {useCallback, useEffect, useMemo} from 'react'
 import deepEquals from 'react-fast-compare'
+import {useRouterState} from 'sanity/router'
 
 import {isDev} from '../../../../environment'
 import {type ObjectFieldProps, set, useFormValue} from '../../../../form'
@@ -12,9 +13,28 @@ import {useDocumentPreviewValues} from '../../../hooks'
 import {type TaskContext, type TaskDocument} from '../../../types'
 import {CurrentWorkspaceProvider} from '../CurrentWorkspaceProvider'
 
+export function getTaskURL(taskId: string, basePath?: string, toolName: string = ''): string {
+  let path = window.location.origin
+  if (basePath) path += basePath
+  if (toolName) path += `/${toolName}`
+
+  const currentUrl = new URL(`${path}/`)
+
+  currentUrl.searchParams.set('sidebar', 'tasks')
+  currentUrl.searchParams.set('selectedTask', taskId)
+  currentUrl.searchParams.set('viewMode', 'edit')
+  return currentUrl.toString()
+}
+
 function TasksNotificationTargetInner(props: ObjectFieldProps<TaskDocument>) {
   const {inputProps} = props
   const {onChange} = inputProps
+  const activeToolName = useRouterState(
+    useCallback(
+      (routerState) => (typeof routerState.tool === 'string' ? routerState.tool : undefined),
+      [],
+    ),
+  )
   const {target, _id, context, _rev} = useFormValue([]) as TaskDocument
   const {title: workspaceTitle, basePath} = useWorkspace()
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
@@ -30,25 +50,28 @@ function TasksNotificationTargetInner(props: ObjectFieldProps<TaskDocument>) {
   const imageUrl = isImageSource(value?.media)
     ? imageBuilder.image(value.media).width(96).height(96).url()
     : null
-  const notificationTarget: TaskContext['notification'] = useMemo(() => {
-    const contextUrl = context?.notification?.url ? new URL(context?.notification?.url) : ''
-    const currentUrl = new URL(`${window.location.origin}${basePath}/`)
 
+  const notificationTarget: TaskContext['notification'] = useMemo(() => {
+    const contextUrl = context?.notification?.url
     const studioUrl =
       // Avoid updating the contextURL in dev mode if it already exists, persist the deployed one.
-      contextUrl && isDev ? contextUrl : currentUrl
-
-    studioUrl.searchParams.set('sidebar', 'tasks')
-    studioUrl.searchParams.set('selectedTask', _id)
-    studioUrl.searchParams.set('viewMode', 'edit')
+      contextUrl && isDev ? contextUrl : getTaskURL(_id, basePath, activeToolName)
 
     return {
-      url: studioUrl.toString(),
+      url: studioUrl,
       workspaceTitle,
       targetContentImageUrl: imageUrl,
       targetContentTitle: targetContentTitle,
     }
-  }, [_id, basePath, imageUrl, targetContentTitle, workspaceTitle, context])
+  }, [
+    context?.notification?.url,
+    _id,
+    basePath,
+    activeToolName,
+    workspaceTitle,
+    imageUrl,
+    targetContentTitle,
+  ])
 
   useEffect(() => {
     if (documentId && documentType && previewValuesLoading) {
