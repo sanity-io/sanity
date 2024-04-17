@@ -246,6 +246,7 @@ describe('getQueryString', () => {
 describe('isNegationToken', () => {
   it('identifies negation tokens', () => {
     expect(isNegationToken('-test')).toBe(true)
+    expect(isNegationToken('--')).toBe(true)
     expect(isNegationToken('test')).toBe(false)
     expect(isNegationToken('test-')).toBe(false)
     expect(isNegationToken(undefined)).toBe(false)
@@ -268,6 +269,7 @@ describe('prefixLast', () => {
     expect(prefixLast('a -b')).toBe('a* -b')
     expect(prefixLast('a "bc" d')).toBe('a "bc" d*')
     expect(prefixLast('ab "cd"')).toBe('ab "cd"*')
+    expect(prefixLast('a --')).toBe('a* --')
   })
 
   it('does not transform the final non-negation token if it is already a wildcard prefix', () => {
@@ -277,6 +279,7 @@ describe('prefixLast', () => {
 
   it('does not transform any tokens if only negation tokens are present', () => {
     expect(prefixLast('-a -b')).toBe('-a -b')
+    expect(prefixLast('--')).toBe('--')
   })
 
   it('trims tokens', () => {
