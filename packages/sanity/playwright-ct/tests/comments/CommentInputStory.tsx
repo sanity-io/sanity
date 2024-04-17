@@ -1,8 +1,8 @@
 import {type CurrentUser, type PortableTextBlock} from '@sanity/types'
 import {noop} from 'lodash'
 import {useState} from 'react'
+import {CommentInput} from 'sanity'
 
-import {CommentInput} from '../../../src/core/comments/components/pte/comment-input/CommentInput'
 import {type UserListWithPermissionsHookValue} from '../../../src/core/hooks/useUserListWithPermissions'
 import {TestWrapper} from '../formBuilder/utils/TestWrapper'
 

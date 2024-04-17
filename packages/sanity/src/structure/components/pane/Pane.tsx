@@ -44,9 +44,8 @@ const Root = styled(Card)`
 `
 
 /**
- *
  * @hidden
- * @beta This API will change. DO NOT USE IN PRODUCTION.
+ * @internal
  */
 // eslint-disable-next-line complexity
 export const Pane = forwardRef(function Pane(

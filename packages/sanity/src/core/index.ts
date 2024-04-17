@@ -1,5 +1,6 @@
 export * from './changeIndicators'
 export {
+  CommentInput,
   type CommentIntentGetter,
   COMMENTS_INSPECTOR_NAME,
   CommentsIntentProvider,

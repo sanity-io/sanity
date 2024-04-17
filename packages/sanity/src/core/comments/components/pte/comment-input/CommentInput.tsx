@@ -70,7 +70,7 @@ export interface CommentInputHandle {
 }
 
 /**
- * @beta
+ * @internal
  * @hidden
  */
 export const CommentInput = forwardRef<CommentInputHandle, CommentInputProps>(

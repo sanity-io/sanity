@@ -1,13 +1,15 @@
 import {type SanityClient} from '@sanity/client'
-import {type SchemaTypeDefinition} from '@sanity/types'
 import {Card, LayerProvider, studioTheme, ThemeProvider, ToastProvider} from '@sanity/ui'
 import {type ReactNode, Suspense, useEffect, useState} from 'react'
+import {
+  ResourceCacheProvider,
+  type SchemaTypeDefinition,
+  SourceProvider,
+  type Workspace,
+  WorkspaceProvider,
+} from 'sanity'
+import {Pane, PaneContent, PaneLayout} from 'sanity/structure'
 
-import {type Workspace} from '../../../../src/core/config/types'
-import {ResourceCacheProvider} from '../../../../src/core/store/_legacy/ResourceCacheProvider'
-import {SourceProvider} from '../../../../src/core/studio/source'
-import {WorkspaceProvider} from '../../../../src/core/studio/workspace'
-import {Pane, PaneContent, PaneLayout} from '../../../../src/structure/components'
 import {createMockSanityClient} from '../../../../test/mocks/mockSanityClient'
 import {getMockWorkspace} from '../../../../test/testUtils/getMockWorkspaceFromConfig'
 
