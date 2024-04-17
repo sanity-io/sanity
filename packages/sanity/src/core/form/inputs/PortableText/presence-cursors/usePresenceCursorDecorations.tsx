@@ -1,6 +1,6 @@
 import {type RangeDecoration} from '@sanity/portable-text-editor'
 import {type Path} from '@sanity/types'
-import {isEqual} from 'lodash'
+import {isEqual, uniqWith} from 'lodash'
 import {useMemo} from 'react'
 
 import {useChildPresence} from '../../../studio/contexts/Presence'
@@ -18,22 +18,22 @@ export function usePresenceCursorDecorations(
   const childPresence = useChildPresence(path)
 
   return useMemo((): RangeDecoration[] => {
-    const decorations: RangeDecoration[] = childPresence
-      .filter((presence) => Boolean(presence?.selection))
-      .map((presence) => {
-        // If the selection is a range, we don't want to render a cursor.
-        // This is because this might end up with multiple cursors for the same user.
-        const isRange = !isEqual(presence?.selection?.anchor, presence?.selection?.focus)
-
-        if (isRange) return null
-
-        return {
-          component: () => (
-            <UserPresenceCursor boundaryElement={boundaryElement} user={presence.user} />
-          ),
-          selection: presence?.selection,
-        }
-      }) as RangeDecoration[]
+    const decorations: RangeDecoration[] = uniqWith(
+      childPresence.filter((presence) => Boolean(presence?.selection)),
+      isEqual,
+    ).map((presence) => {
+      if (!presence.selection) {
+        return null
+      }
+      // Create a cursor point at the current selection focus
+      const cursorPoint = {focus: presence.selection.focus, anchor: presence.selection.focus}
+      return {
+        component: () => (
+          <UserPresenceCursor boundaryElement={boundaryElement} user={presence.user} />
+        ),
+        selection: cursorPoint,
+      }
+    }) as RangeDecoration[]
 
     return decorations.filter(Boolean)
   }, [boundaryElement, childPresence])
