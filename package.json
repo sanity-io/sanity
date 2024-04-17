@@ -157,7 +157,7 @@
   "optionalDependencies": {
     "node-notifier": "^10.0.0"
   },
-  "packageManager": "pnpm@8.15.7",
+  "packageManager": "pnpm@9.0.1",
   "pnpm": {
     "overrides": {
       "@typescript-eslint/eslint-plugin": "$@typescript-eslint/eslint-plugin",
