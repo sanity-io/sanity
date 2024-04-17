@@ -28,9 +28,6 @@ importers:
       '@babel/preset-typescript':
         specifier: ^7.24.1
         version: 7.24.1(@babel/core@7.24.4)
-      '@bjoerge/mutiny':
-        specifier: ^0.5.3
-        version: 0.5.3
       '@jest/globals':
         specifier: ^29.7.0
         version: 29.7.0
@@ -1511,9 +1508,6 @@ importers:
 
   packages/sanity:
     dependencies:
-      '@bjoerge/mutiny':
-        specifier: ^0.6.0-beta.4
-        version: 0.6.0-beta.4
       '@dnd-kit/core':
         specifier: ^6.0.5
         version: 6.1.0(react-dom@18.2.0)(react@18.2.0)
@@ -3288,25 +3282,6 @@ packages:
   /@bcoe/v8-coverage@0.2.3:
     resolution: {integrity: sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==}
     dev: true
-
-  /@bjoerge/mutiny@0.5.3:
-    resolution: {integrity: sha512-QBEeUmc5K6kzut0uurwBtJhJW2fc/KEdKhST2/71Ln6V3j4b4qzK1/OeDsUHAt/RM2Dxe5TjWNn82r6WzmrAIQ==}
-    engines: {node: '>=18'}
-    dependencies:
-      diff-match-patch: 1.0.5
-      hotscript: 1.0.13
-      nanoid: 5.0.7
-    dev: true
-
-  /@bjoerge/mutiny@0.6.0-beta.4:
-    resolution: {integrity: sha512-Ss3M/Wbyob+3VA3OgtXgu6qr85Jo1mnX28EVuQUgpGXB4l79jE2ocq7nxX7dwTByJ8NqUHhHZH45wsN+ceWvJA==}
-    engines: {node: '>=18'}
-    dependencies:
-      '@sanity/diff-match-patch': 3.1.1
-      hotscript: 1.0.13
-      mendoza: 3.0.7
-      nanoid: 5.0.7
-    dev: false
 
   /@codemirror/autocomplete@6.16.0(@codemirror/language@6.10.1)(@codemirror/state@6.4.1)(@codemirror/view@6.26.3)(@lezer/common@1.2.1):
     resolution: {integrity: sha512-P/LeCTtZHRTCU4xQsa89vSKWecYv1ZqwzOd5topheGRf+qtacFgBeIMQi3eL8Kt/BUNvxUWkx+5qP2jlGoARrg==}
@@ -10219,10 +10194,6 @@ packages:
     resolution: {integrity: sha512-ypdmJU/TbBby2Dxibuv7ZLW3Bs1QEmM7nHjEANfohJLvE0XVujisn1qPJcZxg+qDucsr+bP6fLD1rPS3AhJ7EQ==}
     dev: false
 
-  /diff-match-patch@1.0.5:
-    resolution: {integrity: sha512-IayShXAgj/QMXgB0IWmKx+rOPuGMhqm5w6jvFxmVenXKIzRqTAAsbBPT3kWQeGANj3jGgvcvv4yK6SxqYmikgw==}
-    dev: true
-
   /diff-sequences@29.6.3:
     resolution: {integrity: sha512-EjePK1srD3P08o2j4f0ExnylqRs5B9tJjcp9t1krH2qRi8CCdsYfwe9JgSLurFBWwq4uOlipzfk5fHNvwFKr8Q==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
@@ -12594,6 +12565,7 @@ packages:
 
   /hotscript@1.0.13:
     resolution: {integrity: sha512-C++tTF1GqkGYecL+2S1wJTfoH6APGAsbb7PAWQ3iVIwgG/EFseAfEVOKFgAFq4yK3+6j1EjUD4UQ9dRJHX/sSQ==}
+    dev: false
 
   /html-encoding-sniffer@3.0.0:
     resolution: {integrity: sha512-oWv4T4yJ52iKrufjnyZPkrN0CH3QnrUqdB6In1g5Fe1mia8GmF36gnfNySxoZtxD5+NmYw1EElVXiBk93UeskA==}
@@ -15249,6 +15221,7 @@ packages:
     resolution: {integrity: sha512-oLxFY2gd2IqnjcYyOXD8XGCftpGtZP2AbHbOkthDkvRywH5ayNtPVy9YlOPcHckXzbLTCHpkb7FB+yuxKV13pQ==}
     engines: {node: ^18 || >=20}
     hasBin: true
+    dev: false
 
   /nanomatch@1.2.13:
     resolution: {integrity: sha512-fpoe2T0RbHwBTBUOftAfBPaDEi06ufaUai0mE6Yn1kacc3SnTErfb/h+X94VXzI64rKFHYImXSvdwGGCmwOqCA==}

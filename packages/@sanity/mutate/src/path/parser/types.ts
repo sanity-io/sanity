@@ -176,3 +176,8 @@ export type Unwrap<R extends Result<any, any>> = R extends [infer E, infer V]
 export type StringToPath<S extends string> = Unwrap<
   ParseAllProps<SplitAll<Trim<S>, '.'>>
 >
+
+type ExcludeError<S extends StringToPath<string> | ParseError<string>> =
+  S extends ParseError<string> ? never : S
+
+export type SafePath<S extends string> = ExcludeError<StringToPath<S>>

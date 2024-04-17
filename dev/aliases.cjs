@@ -23,6 +23,7 @@ const devAliases = {
   '@sanity/portable-text-editor': './packages/@sanity/portable-text-editor/src',
   '@sanity/schema': './packages/@sanity/schema/src/_exports',
   '@sanity/migrate': './packages/@sanity/migrate/src/_exports',
+  '@sanity/mutate': './packages/@sanity/mutate/src',
   '@sanity/types': './packages/@sanity/types/src',
   '@sanity/util': './packages/@sanity/util/src/_exports',
   '@sanity/vision': './packages/@sanity/vision/src',

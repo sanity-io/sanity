@@ -1,6 +1,6 @@
-import {type ContentLakeStore, createContentLakeStore} from '@bjoerge/mutiny/_unstable_store'
 import {type SanityClient} from '@sanity/client'
 import {SanityEncoder} from '@sanity/mutate'
+import {type ContentLakeStore, createContentLakeStore} from '@sanity/mutate/_unstable_store'
 import {from} from 'rxjs'
 import {concatMap} from 'rxjs/operators'
 

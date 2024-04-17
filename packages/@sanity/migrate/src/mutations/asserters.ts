@@ -1,6 +1,4 @@
-import {type Operation} from './operations/types'
-import {type Transaction} from './transaction'
-import {type Mutation, type NodePatch} from './types'
+import {type Mutation, type NodePatch, type Operation, type Transaction} from '@sanity/mutate'
 
 export function isMutation(mutation: unknown): mutation is Mutation {
   return (

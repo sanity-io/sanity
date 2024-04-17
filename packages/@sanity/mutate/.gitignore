@@ -1,6 +1,5 @@
-dist
+lib
 node_modules
-tsconfig.vitest-temp.json
 coverage
 
 # legacy exports

@@ -1,7 +1,7 @@
+import {createIfNotExists} from '@sanity/mutate'
 import {type SanityDocument} from '@sanity/types'
 import {describe, expect, it, vitest} from 'vitest'
 
-import {createIfNotExists} from '../../mutations'
 import {type Migration, type MigrationContext, type NodeMigration} from '../../types'
 import {
   createAsyncIterableMutation,

@@ -1,6 +1,6 @@
-# **mu**_tiny_
+# @sanity/mutate
 
-Tiny toolkit for working with [Sanity](https://sanity.io) mutations in JavaScript & TypeScript
+Toolkit for working with [Sanity](https://sanity.io) mutations in JavaScript & TypeScript
 
 Disclaimer: This is work in progress, use at own risk!
 

@@ -39,7 +39,7 @@ export interface StoreBackend {
    * Sets up a subscription to a document
    * The first event should either be a sync event or an error event.
    * After that, it should emit mutation events, error events or sync events
-   * @param id
+   * @param id - The document id
    */
   observe: (id: string) => Observable<RemoteListenerEvent>
   submit: (mutationGroups: Transaction[]) => Observable<SubmitResult>
@@ -118,9 +118,8 @@ export function createContentLakeStore(
             effects: event.effects,
             mutations: decodeAll(event.mutations as SanityMutation[]),
           })
-        } else {
-          throw new Error(`Unknown event type: ${event.type}`)
         }
+        throw new Error(`Unknown event type: ${event.type}`)
       }),
       tap(event => {
         local.set(event.id, event.after.local)
@@ -228,8 +227,8 @@ export function createContentLakeStore(
 function toTransactions(groups: MutationGroup[]): Transaction[] {
   return groups.map(group => {
     if (group.transaction && group.id !== undefined) {
-      return {id: group.id!, mutations: group.mutations}
+      return {type: 'transaction', id: group.id!, mutations: group.mutations}
     }
-    return {mutations: group.mutations}
+    return {type: 'transaction', mutations: group.mutations}
   })
 }

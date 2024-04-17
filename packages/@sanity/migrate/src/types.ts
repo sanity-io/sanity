@@ -1,12 +1,19 @@
-import {type MultipleMutationResult, type Mutation as RawMutation} from '@sanity/client'
-import {type Path, type SanityDocument} from '@sanity/types'
+import {type MultipleMutationResult} from '@sanity/client'
+import {
+  type Mutation,
+  type NodePatch,
+  type Operation,
+  type Path,
+  type Transaction,
+} from '@sanity/mutate'
+import {type SanityMutation} from '@sanity/mutate/_unstable_store'
+import {type SanityDocument} from '@sanity/types'
 
 import {type JsonArray, type JsonObject, type JsonValue} from './json'
-import {type Mutation, type NodePatch, type Operation, type Transaction} from './mutations'
 import {type RestrictedClient} from './runner/utils/createContextClient'
 
-export type {Path}
 export type * from './json'
+export type {KeyedPathElement, Path, PathElement} from '@sanity/mutate'
 
 export type AsyncIterableMigration = (
   documents: () => AsyncIterableIterator<SanityDocument>,
@@ -120,8 +127,8 @@ export type DocumentMigrationReturnValue =
   | Mutation[]
   | NodePatch
   | NodePatch[]
-  | RawMutation
-  | RawMutation[]
+  | SanityMutation
+  | SanityMutation[]
 
 /**
  * @public

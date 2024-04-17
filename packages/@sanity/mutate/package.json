@@ -23,38 +23,41 @@
   "exports": {
     ".": {
       "source": "./src/index.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs",
-      "default": "./dist/index.js"
+      "import": "./lib/index.mjs",
+      "require": "./lib/index.js",
+      "default": "./lib/index.js"
     },
     "./path": {
       "source": "./src/_path.ts",
-      "import": "./dist/_path.js",
-      "require": "./dist/_path.cjs",
-      "default": "./dist/_path.js"
+      "import": "./lib/_path.mjs",
+      "require": "./lib/_path.js",
+      "default": "./lib/_path.js"
     },
     "./_unstable_store": {
       "source": "./src/_unstable_store.ts",
-      "import": "./dist/_unstable_store.js",
-      "require": "./dist/_unstable_store.cjs",
-      "default": "./dist/_unstable_store.js"
+      "import": "./lib/_unstable_store.mjs",
+      "require": "./lib/_unstable_store.js",
+      "default": "./lib/_unstable_store.js"
     },
     "./_unstable_apply": {
       "source": "./src/_unstable_apply.ts",
-      "import": "./dist/_unstable_apply.js",
-      "require": "./dist/_unstable_apply.cjs",
-      "default": "./dist/_unstable_apply.js"
+      "import": "./lib/_unstable_apply.mjs",
+      "require": "./lib/_unstable_apply.js",
+      "default": "./lib/_unstable_apply.js"
     },
     "./package.json": "./package.json"
   },
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.js",
-  "source": "./src/index.ts",
-  "types": "./dist/index.d.ts",
-
+  "main": "./lib/index.js",
+  "module": "./lib/index.esm.js",
+  "types": "./lib/index.d.ts",
+  "files": [
+    "lib",
+    "src",
+    "!**/__tests__/**"
+  ],
   "scripts": {
     "build": "run-s clean pkg:build pkg:check",
-    "clean": "rimraf dist",
+    "clean": "rimraf lib",
     "format": "prettier --write --cache --ignore-unknown .",
     "pkg:build": "pkg build --strict",
     "pkg:check": "pkg check --strict",

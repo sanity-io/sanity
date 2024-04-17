@@ -1,4 +1,4 @@
-import {type Path, type PathSegment} from '@sanity/types'
+import {type Path, type PathElement} from '@sanity/mutate/path'
 
 import {type JsonArray, type JsonObject, type JsonValue} from '../../json'
 import {getValueType} from './getValueType'
@@ -15,7 +15,7 @@ function getPathWithKey(
   item: unknown,
   index: number | string,
   container: JsonArray | JsonObject,
-): PathSegment {
+): PathElement {
   if (
     item &&
     Array.isArray(container) &&

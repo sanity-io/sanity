@@ -63,6 +63,7 @@ export type PatchOptions = {
 }
 
 export interface Transaction {
+  type: 'transaction'
   id?: string
   mutations: Mutation[]
 }

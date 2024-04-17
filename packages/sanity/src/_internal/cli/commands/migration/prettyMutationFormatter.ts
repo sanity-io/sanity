@@ -1,7 +1,12 @@
 import {isatty} from 'node:tty'
 
-import {type Migration, type Mutation, type NodePatch, type Transaction} from '@sanity/migrate'
-import {type KeyedSegment} from '@sanity/types'
+import {
+  type KeyedPathElement,
+  type Migration,
+  type Mutation,
+  type NodePatch,
+  type Transaction,
+} from '@sanity/migrate'
 import {type Chalk} from 'chalk'
 
 import {convertToTree, formatTree, maxKeyLength} from '../../util/tree'
@@ -55,7 +60,7 @@ export function prettyFormat({
     .join('\n\n')
 }
 
-function encodeItemRef(ref: number | KeyedSegment): ItemRef {
+function encodeItemRef(ref: number | KeyedPathElement): ItemRef {
   return typeof ref === 'number' ? ref : ref._key
 }
 
@@ -183,6 +188,11 @@ function formatPatchMutation(chalk: Chalk, patch: NodePatch): string {
       op.referenceItem,
     )}, ${JSON.stringify(op.items)})`
   }
+  if (op.type === 'upsert') {
+    return `${chalk.green(formattedType)}(${op.position}, ${encodeItemRef(
+      op.referenceItem,
+    )}, ${JSON.stringify(op.items)})`
+  }
   if (op.type === 'replace') {
     return `${chalk.yellow(formattedType)}(${encodeItemRef(op.referenceItem)}, ${JSON.stringify(
       op.items,
@@ -190,6 +200,12 @@ function formatPatchMutation(chalk: Chalk, patch: NodePatch): string {
   }
   if (op.type === 'truncate') {
     return `${chalk.red(formattedType)}(${op.startIndex}, ${op.endIndex})`
+  }
+  if (op.type === 'assign') {
+    return `${chalk.red(formattedType)}(${JSON.stringify(op.value)})`
+  }
+  if (op.type === 'unassign') {
+    return `${chalk.red(formattedType)}(${op.keys.join(', ')})`
   }
   // @ts-expect-error all cases are covered
   throw new Error(`Invalid operation type: ${op.type}`)

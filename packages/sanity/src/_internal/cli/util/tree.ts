@@ -1,37 +1,8 @@
-import {isIndexSegment, isIndexTuple, isKeySegment, type Path} from '@sanity/types'
-
-// FIXME: de-dupe this
-// copy/paste of `pathToString` from 'sanity' to prevent circular imports
-function pathToString(path: Path): string {
-  if (!Array.isArray(path)) {
-    throw new Error('Path is not an array')
-  }
-
-  return path.reduce<string>((target, segment, i) => {
-    if (isIndexSegment(segment)) {
-      return `${target}[${segment}]`
-    }
-
-    if (isKeySegment(segment) && segment._key) {
-      return `${target}[_key=="${segment._key}"]`
-    }
-
-    if (isIndexTuple(segment)) {
-      const [from, to] = segment
-      return `${target}[${from}:${to}]`
-    }
-
-    if (typeof segment === 'string') {
-      const separator = i === 0 ? '' : '.'
-      return `${target}${separator}${segment}`
-    }
-
-    throw new Error(`Unsupported path segment \`${JSON.stringify(segment)}\``)
-  }, '')
-}
+import {type Path} from '@sanity/mutate'
+import {type Path as LegacyPath, pathToString} from 'sanity'
 
 interface BaseNode {
-  path: Path
+  path: Path | LegacyPath
 }
 
 export interface Tree<Node extends BaseNode> {

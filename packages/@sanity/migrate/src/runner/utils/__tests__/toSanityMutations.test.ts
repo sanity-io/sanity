@@ -3,9 +3,8 @@
 import {afterEach, describe, expect, it, vitest} from 'vitest'
 /* eslint-enable simple-import-sort/imports */
 
-import {SanityEncoder} from '@sanity/mutate'
+import {type Mutation, type Transaction, SanityEncoder} from '@sanity/mutate'
 
-import {type Mutation, type Transaction} from '../../../mutations'
 import {toSanityMutations, type TransactionPayload} from '../toSanityMutations'
 
 vitest.mock('@sanity/mutate', async () => {
@@ -112,7 +111,7 @@ describe('#toSanityMutations', () => {
 
     const expected: TransactionPayload = {
       transactionId: mockTransaction.id,
-      mutations: SanityEncoder.encode(mockTransaction.mutations as any),
+      mutations: SanityEncoder.encodeAll(mockTransaction.mutations),
     }
 
     expect(result).toEqual([expected])

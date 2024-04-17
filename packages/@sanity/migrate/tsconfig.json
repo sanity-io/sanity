@@ -6,7 +6,8 @@
     "paths": {
       "@sanity/types": ["./node_modules/@sanity/types/src"],
       "@sanity/util/*": ["./node_modules/@sanity/util/src/_exports/*"],
-      "@sanity/mutate": ["./node_modules/@sanity/mutate/src/"]
+      "@sanity/mutate": ["./node_modules/@sanity/mutate/src"],
+      "@sanity/mutate/*": ["./node_modules/@sanity/mutate/src/*"]
     }
   }
 }

@@ -95,7 +95,6 @@
     "@babel/preset-env": "^7.24.4",
     "@babel/preset-react": "^7.24.1",
     "@babel/preset-typescript": "^7.24.1",
-    "@bjoerge/mutiny": "^0.5.3",
     "@jest/globals": "^29.7.0",
     "@playwright/test": "1.41.2",
     "@repo/package.config": "workspace:*",

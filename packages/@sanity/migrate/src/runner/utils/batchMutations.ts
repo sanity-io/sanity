@@ -1,4 +1,4 @@
-import {type Mutation as SanityMutation} from '@sanity/client'
+import {type SanityMutation} from '@sanity/mutate/_unstable_store'
 import arrify from 'arrify'
 
 import {type TransactionPayload} from './toSanityMutations'
