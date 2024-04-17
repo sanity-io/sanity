@@ -1,4 +1,5 @@
 import {htmlToBlocks, normalizeBlock} from '@sanity/block-tools'
+import {vercelStegaCleanAll} from '@sanity/client/stega'
 import {type PortableTextBlock, type PortableTextChild} from '@sanity/types'
 import {isEqual, uniq} from 'lodash'
 import {type Descendant, Editor, type Node, Range, Transforms} from 'slate'
@@ -167,7 +168,7 @@ export function createWithInsertData(
         return false
       }
       change$.next({type: 'loading', isLoading: true}) // This could potentially take some time
-      const html = data.getData('text/html')
+      const html = vercelStegaCleanAll(data.getData('text/html')) // vercelStegaCleanAll will make sure that no invisible unicode characters will bog down PTE
       const text = data.getData('text/plain')
       if (html || text) {
         debug('Inserting data', data)
