@@ -82,6 +82,7 @@ import playlistTrack from './playlistTrack'
 import code from './plugins/code'
 import color from './plugins/color'
 import geopoint from './plugins/geopoint'
+import {hotspot, hotspotArrayTest} from './plugins/hotspotArray'
 import species from './species'
 import arrays, {topLevelArrayType, topLevelPrimitiveArrayType} from './standard/arrays'
 import booleans from './standard/booleans'
@@ -253,6 +254,8 @@ export const schemaTypes = [
   codeInputType,
   color,
   geopoint,
+  hotspot,
+  hotspotArrayTest,
 
   // Test documents with 3rd party plugin inputs
   markdown,

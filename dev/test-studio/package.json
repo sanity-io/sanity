@@ -63,6 +63,7 @@
     "refractor": "^3.6.0",
     "rxjs": "^7.8.0",
     "sanity": "workspace:*",
+    "sanity-plugin-hotspot-array": "^2.0.0",
     "sanity-plugin-mux-input": "^2.2.1",
     "styled-components": "^6.1.0",
     "three": "^0.157.0",

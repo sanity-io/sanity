@@ -14,6 +14,7 @@ import {visionTool} from '@sanity/vision'
 import {defineConfig, definePlugin, type WorkspaceOptions} from 'sanity'
 import {presentationTool} from 'sanity/presentation'
 import {structureTool} from 'sanity/structure'
+import {imageHotspotArrayPlugin} from 'sanity-plugin-hotspot-array'
 import {muxInput} from 'sanity-plugin-mux-input'
 
 import {imageAssetSource} from './assetSources'
@@ -133,6 +134,7 @@ const sharedSettings = definePlugin({
     }),
     // eslint-disable-next-line camelcase
     muxInput({mp4_support: 'standard'}),
+    imageHotspotArrayPlugin(),
     presenceTool(),
     routerDebugTool(),
     tsdoc(),
