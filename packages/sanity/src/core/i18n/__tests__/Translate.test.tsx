@@ -4,7 +4,6 @@ import {render} from '@testing-library/react'
 import {type ComponentProps, type ReactNode} from 'react'
 
 import {LocaleProviderBase} from '../components/LocaleProvider'
-import {defineLocaleResourceBundle} from '../helpers'
 import {useTranslation} from '../hooks/useTranslation'
 import {prepareI18n} from '../i18nConfig'
 import {Translate} from '../Translate'
@@ -13,11 +12,12 @@ import {type LocaleResourceBundle, type LocaleResourceRecord} from '../types'
 type TestComponentProps = Omit<ComponentProps<typeof Translate>, 't'>
 
 function createBundle(resources: LocaleResourceRecord) {
-  return defineLocaleResourceBundle({
+  const resourceBundle: LocaleResourceBundle = {
     locale: 'en-US',
     namespace: 'testNs',
     resources,
-  })
+  }
+  return resourceBundle
 }
 
 async function getWrapper(bundles: LocaleResourceBundle[]) {

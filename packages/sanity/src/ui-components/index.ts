@@ -1,4 +1,5 @@
 export * from './button'
+export * from './conditionalWrapper'
 export * from './dialog'
 export * from './menuButton'
 export * from './menuGroup'

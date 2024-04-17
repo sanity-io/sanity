@@ -1,4 +1,12 @@
 export * from './changeIndicators'
+export {
+  CommentInput,
+  type CommentIntentGetter,
+  COMMENTS_INSPECTOR_NAME,
+  CommentsIntentProvider,
+  type CommentsIntentProviderProps,
+  CommentsProvider,
+} from './comments'
 export * from './components'
 export * from './components/collapseMenu'
 export * from './components/scroll'
@@ -13,9 +21,11 @@ export * from './presence'
 export * from './preview'
 export * from './schema'
 export type {SearchFactoryOptions, SearchOptions, SearchSort, SearchTerms} from './search'
+export {createSearch, getSearchableTypes} from './search'
 export * from './store'
 export * from './studio'
 export * from './studioClient'
+export {IsLastPaneProvider} from './tasks'
 export * from './templates'
 export * from './theme'
 export * from './user-color'

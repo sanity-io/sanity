@@ -13,6 +13,10 @@ import {useWorkspace} from '../../../../workspace'
 /** By default the API will return 0 = all fields */
 const DEFAULT_API_FIELD_DEPTH = 0
 
+/**
+ * @internal
+ * @hidden
+ */
 export interface PartialIndexSettings {
   partialIndexSettings: {
     maxFieldDepth: number
@@ -46,7 +50,10 @@ function fetchMaxDepth({client}: {client: SanityClient}): Observable<PartialInde
 
 const cachedSettings: Map<string, Observable<PartialIndexSettings>> = new Map()
 
-/** @internal */
+/**
+ * @internal
+ * @hidden
+ */
 export function useSearchMaxFieldDepth(overrideClient?: SanityClient): number {
   const isEnabled = useWorkspace().search?.unstable_partialIndexing?.enabled
   const workspaceClient = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)

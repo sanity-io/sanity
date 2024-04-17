@@ -15,8 +15,7 @@ import {
   timer,
 } from 'rxjs'
 import {exhaustMapWithTrailing} from 'rxjs-exhaustmap-with-trailing'
-import {type SanityDocumentLike, type Schema} from 'sanity'
-import {createSearch, getSearchableTypes} from 'sanity/_internalBrowser'
+import {createSearch, getSearchableTypes, type SanityDocumentLike, type Schema} from 'sanity'
 
 import {getExtendedProjection} from '../../structureBuilder/util/getExtendedProjection'
 // FIXME
