@@ -1,8 +1,14 @@
 import {type OperationImpl} from '../operations/types'
+import {isLiveEditEnabled} from '../utils/isLiveEditEnabled'
 
 export const del: OperationImpl<[], 'NOTHING_TO_DELETE'> = {
   disabled: ({snapshots}) => (snapshots.draft || snapshots.published ? false : 'NOTHING_TO_DELETE'),
   execute: ({client: globalClient, schema, idPair, typeName}) => {
+    if (isLiveEditEnabled(schema, typeName)) {
+      const tx = globalClient.observable.transaction().delete(idPair.publishedId)
+      return tx.commit({tag: 'document.delete'})
+    }
+
     const vXClient = globalClient.withConfig({apiVersion: 'X'})
 
     const {dataset} = globalClient.config()
