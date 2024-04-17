@@ -4,6 +4,7 @@
   "globalEnv": ["OS", "RUNNER_OS", "PKG_FILE_PATH", "PKG_FORMAT", "PKG_RUNTIME", "PKG_VERSION"],
   // These root workspace files are reused in workspaces and may affect their build output
   "globalDependencies": [
+    ".npmrc",
     ".eslintrc.cjs",
     ".prettierrc",
     "lerna.json" // some tools, like babel, reads from this file to identify other roots

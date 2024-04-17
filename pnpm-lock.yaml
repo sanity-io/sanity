@@ -13963,7 +13963,7 @@ snapshots:
     dependencies:
       '@sanity/client': 6.15.17
       '@sanity/icons': 2.11.8(react@18.2.0)
-      '@sanity/preview-url-secret': 1.6.8(@sanity/client@6.15.17)
+      '@sanity/preview-url-secret': 1.6.9(@sanity/client@6.15.17)
       '@sanity/ui': 2.1.4(react-dom@18.2.0(react@18.2.0))(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))
       '@sanity/uuid': 3.0.2
       '@types/lodash.isequal': 4.5.8
