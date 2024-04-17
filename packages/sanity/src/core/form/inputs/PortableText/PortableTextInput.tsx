@@ -273,7 +273,8 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
   }, [editorRef, isActive])
 
   const rangeDecorations = useMemo((): RangeDecoration[] => {
-    return [...(rangeDecorationsProp || EMPTY_ARRAY), ...presenceCursorDecorations]
+    const result = [...(rangeDecorationsProp || []), ...presenceCursorDecorations]
+    return result.length === 0 ? EMPTY_ARRAY : result
   }, [presenceCursorDecorations, rangeDecorationsProp])
 
   return (
