@@ -1,5 +1,6 @@
 import {createContext} from 'react'
-import {CommentsOnboardingContextValue} from '../../../../core/comments/context/onboarding/types'
+
+import type {CommentsOnboardingContextValue} from '../../../../core/comments/context/onboarding/types'
 
 /**
  * @internal

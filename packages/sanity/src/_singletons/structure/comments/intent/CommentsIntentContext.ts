@@ -1,6 +1,6 @@
 import {createContext} from 'react'
 
-import {CommentsIntentContextValue} from '../../../../core/comments/context/intent/types'
+import type {CommentsIntentContextValue} from '../../../../core/comments/context/intent/types'
 
 /**
  * @internal
