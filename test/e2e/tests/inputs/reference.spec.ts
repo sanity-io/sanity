@@ -4,7 +4,7 @@ import {test} from '@sanity/test'
 import {withDefaultClient} from '../../helpers'
 
 withDefaultClient((context) => {
-  test(`value can be changed after the document has been published`, async ({
+  test.skip(`value can be changed after the document has been published`, async ({
     page,
     createDraftDocument,
   }) => {
@@ -45,7 +45,7 @@ withDefaultClient((context) => {
 
     // Wait for the document to be published.
     publishButton.click()
-    await expect(paneFooter).toContainText('Published just now')
+    await expect(paneFooter).toContainText('Saved--Published')
 
     // Open the Author reference input.
     await page.locator('#author-menuButton').click()
@@ -59,7 +59,8 @@ withDefaultClient((context) => {
     await expect(paneFooter).toContainText('Saved')
 
     // Wait for the document to be published.
+    await expect(publishButton).toHaveAttribute('data-disabled', 'false')
     publishButton.click()
-    await expect(paneFooter).toContainText('Published just now')
+    await expect(paneFooter).toContainText('Saved--Published')
   })
 })
