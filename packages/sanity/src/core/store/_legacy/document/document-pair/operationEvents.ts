@@ -36,7 +36,6 @@ import {del as serverDel} from './serverOperations/delete'
 import {patch as serverPatch} from './serverOperations/patch'
 import {publish as serverPublish} from './serverOperations/publish'
 import {unpublish as serverUnpublish} from './serverOperations/unpublish'
-import {featureToggleRequest} from './utils/featureToggleRequest'
 
 interface ExecuteArgs {
   operationName: keyof OperationsAPI
@@ -140,47 +139,43 @@ export const operationEvents = memoize(
     schema: Schema
     serverActionsEnabled: boolean
   }) => {
-    const serverActionFeatureToggle$ = featureToggleRequest(ctx.client, ctx.serverActionsEnabled)
-
     const result$: Observable<IntermediarySuccess | IntermediaryError> = operationCalls$.pipe(
       groupBy((op) => op.idPair.publishedId),
       mergeMap((groups$) =>
         groups$.pipe(
+          // although it might look like a bug, dropping pending async operations here is actually a feature
+          // E.g. if the user types `publish` which is async and then starts patching (sync) then the publish
+          // should be cancelled
           switchMap((args) =>
-            serverActionFeatureToggle$.pipe(
+            operationArgs(ctx, args.idPair, args.typeName).pipe(
               take(1),
-              switchMap((canUseServerActions) =>
-                operationArgs(ctx, args.idPair, args.typeName).pipe(
-                  take(1),
-                  switchMap((operationArguments) => {
-                    const requiresConsistency = REQUIRES_CONSISTENCY.includes(args.operationName)
-                    if (requiresConsistency) {
-                      operationArguments.published.commit()
-                      operationArguments.draft.commit()
-                    }
-                    const isConsistent$ = consistencyStatus(
-                      ctx.client,
-                      args.idPair,
-                      args.typeName,
-                      canUseServerActions,
-                    ).pipe(filter(Boolean))
-                    const ready$ = requiresConsistency ? isConsistent$.pipe(take(1)) : of(true)
-                    return ready$.pipe(
-                      switchMap(() =>
-                        execute(
-                          args.operationName,
-                          operationArguments,
-                          args.extraArgs,
-                          canUseServerActions,
-                        ),
-                      ),
-                    )
-                  }),
-                  map((): IntermediarySuccess => ({type: 'success', args})),
-                  catchError(
-                    (err): Observable<IntermediaryError> => of({type: 'error', args, error: err}),
+              switchMap((operationArguments) => {
+                const requiresConsistency = REQUIRES_CONSISTENCY.includes(args.operationName)
+                if (requiresConsistency) {
+                  operationArguments.published.commit()
+                  operationArguments.draft.commit()
+                }
+                const isConsistent$ = consistencyStatus(
+                  ctx.client,
+                  args.idPair,
+                  args.typeName,
+                  ctx.serverActionsEnabled,
+                ).pipe(filter(Boolean))
+                const ready$ = requiresConsistency ? isConsistent$.pipe(take(1)) : of(true)
+                return ready$.pipe(
+                  switchMap(() =>
+                    execute(
+                      args.operationName,
+                      operationArguments,
+                      args.extraArgs,
+                      ctx.serverActionsEnabled,
+                    ),
                   ),
-                ),
+                )
+              }),
+              map((): IntermediarySuccess => ({type: 'success', args})),
+              catchError(
+                (err): Observable<IntermediaryError> => of({type: 'error', args, error: err}),
               ),
             ),
           ),
