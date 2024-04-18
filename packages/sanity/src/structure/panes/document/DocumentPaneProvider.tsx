@@ -550,6 +550,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
 
   const handleFocus = useCallback(
     (nextFocusPath: Path, payload?: OnPathFocusPayload) => {
+      setFocusPath(nextFocusPath)
       if (!deepEquals(focusPathRef.current, nextFocusPath)) {
         setOpenPath(nextFocusPath.slice(0, -1))
         focusPathRef.current = nextFocusPath
