@@ -13,7 +13,6 @@ import {Box, useToast} from '@sanity/ui'
 import {
   type MutableRefObject,
   type ReactNode,
-  startTransition,
   useCallback,
   useEffect,
   useMemo,
@@ -189,12 +188,22 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
     })
   }, [onPathFocus, props.path])
 
+  const nextSelectionRef = useRef<EditorSelection | null>(null)
+  const hasPendingPatchRef = useRef<boolean>(false)
+
   // Handle editor changes
   const handleEditorChange = useCallback(
     (change: EditorChange): void => {
       switch (change.type) {
         case 'mutation':
           onChange(toFormPatches(change.patches))
+
+          if (nextSelectionRef.current) {
+            setFocusPathFromEditorSelection(nextSelectionRef.current)
+          }
+
+          hasPendingPatchRef.current = false
+
           break
         case 'connection':
           if (change.value === 'offline') {
@@ -203,14 +212,18 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
             setIsOffline(false)
           }
           break
+
+        case 'patch':
+          hasPendingPatchRef.current = true
+          break
         case 'selection':
-          // This doesn't need to be immediate,
-          // call through startTransition
-          startTransition(() => {
-            if (change.selection) {
-              setFocusPathFromEditorSelection(change.selection)
-            }
-          })
+          if (!hasPendingPatchRef.current) {
+            setFocusPathFromEditorSelection(change.selection)
+            return
+          }
+
+          nextSelectionRef.current = change.selection
+
           break
         case 'focus':
           setIsActive(true)
