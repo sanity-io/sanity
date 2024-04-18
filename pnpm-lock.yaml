@@ -44,7 +44,7 @@ importers:
         specifier: workspace:*
         version: link:packages/@repo/tsconfig
       '@sanity/client':
-        specifier: ^6.15.14
+        specifier: ^6.15.17
         version: 6.15.17
       '@sanity/eslint-config-i18n':
         specifier: 1.0.0
@@ -396,7 +396,7 @@ importers:
         specifier: 3.38.0
         version: link:../../packages/@sanity/block-tools
       '@sanity/client':
-        specifier: ^6.15.14
+        specifier: ^6.15.17
         version: 6.15.17
       '@sanity/color':
         specifier: ^3.0.0
@@ -700,7 +700,7 @@ importers:
         specifier: ^7.23.5
         version: 7.24.1
       '@sanity/client':
-        specifier: ^6.15.14
+        specifier: ^6.15.17
         version: 6.15.17(debug@4.3.4)
       '@sanity/codegen':
         specifier: 3.38.0
@@ -1006,7 +1006,7 @@ importers:
         specifier: ^0.5.1
         version: 0.5.3
       '@sanity/client':
-        specifier: ^6.15.14
+        specifier: ^6.15.17
         version: 6.15.17(debug@4.3.4)
       '@sanity/types':
         specifier: 3.38.0
@@ -1250,7 +1250,7 @@ importers:
   packages/@sanity/types:
     dependencies:
       '@sanity/client':
-        specifier: ^6.15.14
+        specifier: ^6.15.17
         version: 6.15.17
       '@types/react':
         specifier: ^18.0.25
@@ -1269,7 +1269,7 @@ importers:
   packages/@sanity/util:
     dependencies:
       '@sanity/client':
-        specifier: ^6.15.14
+        specifier: ^6.15.17
         version: 6.15.17
       '@sanity/types':
         specifier: 3.38.0
@@ -1367,7 +1367,7 @@ importers:
         specifier: workspace:*
         version: link:../cli
       '@sanity/client':
-        specifier: ^6.15.14
+        specifier: ^6.15.17
         version: 6.15.17
       '@sanity/codegen':
         specifier: workspace:*
@@ -1457,7 +1457,7 @@ importers:
         specifier: 3.38.0
         version: link:../@sanity/cli
       '@sanity/client':
-        specifier: ^6.15.14
+        specifier: ^6.15.17
         version: 6.15.17(debug@4.3.4)
       '@sanity/color':
         specifier: ^3.0.0

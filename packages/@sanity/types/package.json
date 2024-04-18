@@ -49,7 +49,7 @@
     "watch": "pkg-utils watch"
   },
   "dependencies": {
-    "@sanity/client": "^6.15.14",
+    "@sanity/client": "^6.15.17",
     "@types/react": "^18.0.25"
   },
   "devDependencies": {
