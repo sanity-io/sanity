@@ -10,9 +10,6 @@
 # -- CLI --
 /packages/@sanity/cli/ @sanity-io/studio-dx
 
-# -- Comments --
-/packages/sanity/src/structure/comments/ @sanity-io/studio-ex
-
 # -- Form --
 /packages/sanity/src/core/form/ @sanity-io/studio-dx
 
@@ -48,9 +45,13 @@
 # Telemetry definitions
 *.telemetry.ts @sanity-io/growth
 
-# -- Tasks --
-/packages/sanity/src/tasks/ @sanity-io/studio-ex
+# -- Plugins --
 
+# -- Tasks --
+/packages/sanity/src/core/tasks/ @sanity-io/studio-ex
+
+# -- Comments --
+/packages/sanity/src/core/comments/ @sanity-io/studio-ex
 
 # Code and typegeneration
 /packages/@sanity/codegen/ @sanity-io/content-lake-dx
