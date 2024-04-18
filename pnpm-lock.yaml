@@ -727,7 +727,7 @@ importers:
         specifier: ^3.4.1
         version: 3.5.0(esbuild@0.20.2)
       get-it:
-        specifier: ^8.4.23
+        specifier: ^8.4.26
         version: 8.4.26(debug@4.3.4)
       groq-js:
         specifier: ^1.7.0
@@ -1595,7 +1595,7 @@ importers:
         specifier: 11.0.8
         version: 11.0.8(react-dom@18.2.0)(react@18.2.0)
       get-it:
-        specifier: ^8.4.23
+        specifier: ^8.4.26
         version: 8.4.26(debug@4.3.4)
       get-random-values-esm:
         specifier: 1.0.2
