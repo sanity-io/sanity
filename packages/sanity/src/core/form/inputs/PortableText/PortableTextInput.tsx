@@ -219,11 +219,9 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
         case 'selection':
           if (!hasPendingPatchRef.current) {
             setFocusPathFromEditorSelection(change.selection)
-            return
+            break
           }
-
           nextSelectionRef.current = change.selection
-
           break
         case 'focus':
           setIsActive(true)
