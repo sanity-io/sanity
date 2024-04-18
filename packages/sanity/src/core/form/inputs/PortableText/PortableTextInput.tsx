@@ -305,7 +305,7 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
   }, [presenceCursorDecorations, rangeDecorationsProp])
 
   return (
-    <Box ref={elementProps.ref}>
+    <Box>
       {!ignoreValidationError && respondToInvalidContent}
       {(!invalidValue || ignoreValidationError) && (
         <PortableTextMarkersProvider markers={markers}>
