@@ -1,6 +1,10 @@
 import {type BadgeTone} from '@sanity/ui'
 
-import {type PluginOptions, type ScheduleAction, type ScheduleState} from './types'
+import {
+  type ScheduleAction,
+  type ScheduledPublishingPluginOptions,
+  type ScheduleState,
+} from './types'
 
 export const LOCAL_STORAGE_TZ_KEY = 'scheduled-publishing::time-zone'
 
@@ -77,10 +81,12 @@ export const DATE_FORMAT = {
   LARGE: `iiii',' d MMMM yyyy',' p`,
 }
 
-export const DEFAULT_PLUGIN_OPTIONS: Required<PluginOptions> = {
-  // 25/12/2022 22:00
-  inputDateTimeFormat: 'dd/MM/yyyy HH:mm',
-}
+export const DEFAULT_SCHEDULED_PUBLISH_PLUGIN_OPTIONS: Required<ScheduledPublishingPluginOptions> =
+  {
+    enabled: true,
+    // 25/12/2022 22:00
+    inputDateTimeFormat: 'dd/MM/yyyy HH:mm',
+  }
 
 export const TOOL_NAME = 'schedules'
 

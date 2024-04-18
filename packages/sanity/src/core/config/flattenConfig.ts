@@ -1,8 +1,6 @@
 import {type PluginOptions} from './types'
 
-const filteredPlugins = [
-  // Tasks is added by default, we are filtering to avoid duplicates
-  'sanity/tasks',
+const DEPRECATED_PLUGINS = [
   // Scheduled publishing is added by default, we are filtering to avoid duplicates
   'scheduled-publishing',
 ]
@@ -23,16 +21,10 @@ export const flattenConfig = (
     flattenConfig(plugin, [...path, currentConfig.name]),
   )
 
-  // We need to check if the task plugin was added, it could be inserted more than once, in that case we only want to add it once.
-  const tasksPlugin = allPlugins.find((plugin) => plugin.config.name === 'sanity/tasks')
-
   const resolved = [
-    ...allPlugins.filter((plugin) => !filteredPlugins.includes(plugin.config.name)),
+    ...allPlugins.filter((plugin) => !DEPRECATED_PLUGINS.includes(plugin.config.name)),
     rootConfig,
   ]
 
-  if (tasksPlugin) {
-    resolved.push(tasksPlugin)
-  }
   return resolved
 }

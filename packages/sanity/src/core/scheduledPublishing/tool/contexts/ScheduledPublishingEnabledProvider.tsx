@@ -1,5 +1,5 @@
 import {createContext, useContext, useMemo} from 'react'
-import {useFeatureEnabled} from 'sanity'
+import {useFeatureEnabled, useWorkspace} from 'sanity'
 
 /**
  * @internal
@@ -27,12 +27,13 @@ interface TaksEnabledProviderProps {
 /**
  * @internal
  */
-export function ScheduledPublishingEnabledProvider({children}: TaksEnabledProviderProps) {
-  // TODO: Restore enabled
-  const {isLoading} = useFeatureEnabled('sanityTasks')
 
-  // TODO: Use from config
-  const isWorkspaceEnabled = true // useWorkspace().scheduledPublishing?.enabled
+export function ScheduledPublishingEnabledProvider({children}: TaksEnabledProviderProps) {
+  const {enabled, isLoading} = useFeatureEnabled('sanityTasks')
+  const {scheduledPublishing} = useWorkspace()
+
+  const isWorkspaceEnabled = scheduledPublishing.enabled
+
   const value: ScheduledPublishingEnabledContextValue = useMemo(() => {
     if (!isWorkspaceEnabled || isLoading) {
       return {
@@ -43,9 +44,10 @@ export function ScheduledPublishingEnabledProvider({children}: TaksEnabledProvid
     return {
       enabled: true,
       mode: 'upsell',
-      // mode: enabled ? 'default' : 'upsell',
+      // TODO: Restore this check.
+      _mode: enabled ? 'default' : 'upsell',
     }
-  }, [isLoading, isWorkspaceEnabled])
+  }, [enabled, isLoading, isWorkspaceEnabled])
 
   return (
     <ScheduledPublishingEnabledContext.Provider value={value}>

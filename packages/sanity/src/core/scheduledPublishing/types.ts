@@ -13,7 +13,11 @@ export interface NormalizedTimeZone {
 /**
  * @public
  */
-export interface PluginOptions {
+export interface ScheduledPublishingPluginOptions {
+  /**
+   * Whether scheduled publishing is enabled for this workspace.
+   */
+  enabled: boolean
   /**
    * Date format to use for input fields. This must be a valid `date-fns` {@link https://date-fns.org/docs/format | formatted string}.
    * @defaultValue 'dd/MM/yyyy HH:mm'

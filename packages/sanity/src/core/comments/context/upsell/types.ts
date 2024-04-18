@@ -1,5 +1,5 @@
 import {type UpsellDialogViewedInfo} from '../../../studio'
-import {type UpsellData} from '../../types'
+import {type UpsellData} from '../../../studio/upsell/types'
 
 export interface CommentsUpsellContextValue {
   upsellDialogOpen: boolean

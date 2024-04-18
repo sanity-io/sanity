@@ -16,6 +16,7 @@ import {type Router, type RouterState} from 'sanity/router'
 
 import {type FormBuilderCustomMarkersComponent, type FormBuilderMarkersComponent} from '../form'
 import {type LocalePluginOptions, type LocaleSource} from '../i18n/types'
+import {type ScheduledPublishingPluginOptions} from '../scheduledPublishing/types'
 import {type AuthStore} from '../store'
 import {type SearchFilterDefinition} from '../studio/components/navbar/search/definitions/filters'
 import {type SearchOperatorDefinition} from '../studio/components/navbar/search/definitions/operators'
@@ -446,6 +447,8 @@ export interface WorkspaceOptions extends SourceOptions {
   unstable_serverActions?: {
     enabled: boolean
   }
+
+  scheduledPublishing?: ScheduledPublishingPluginOptions
 }
 
 /**
@@ -797,6 +800,7 @@ export interface WorkspaceSummary {
     }>
   }
   tasks: WorkspaceOptions['unstable_tasks']
+  scheduledPublishing: ScheduledPublishingPluginOptions
   serverActions: WorkspaceOptions['unstable_serverActions']
 }
 
@@ -824,6 +828,7 @@ export interface Workspace extends Omit<Source, 'type'> {
    * @beta
    */
   unstable_sources: Source[]
+  scheduledPublishing: ScheduledPublishingPluginOptions
 }
 
 /**

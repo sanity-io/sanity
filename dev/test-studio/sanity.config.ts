@@ -153,6 +153,10 @@ export default defineConfig([
     unstable_serverActions: {
       enabled: true,
     },
+    scheduledPublishing: {
+      enabled: true,
+      inputDateTimeFormat: 'MM/dd/yy h:mm a',
+    },
   },
   {
     name: 'partialIndexing',

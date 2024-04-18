@@ -13,6 +13,7 @@ import {FileSource, ImageSource} from '../form/studio/assetSource'
 import {type LocaleSource} from '../i18n'
 import {prepareI18n} from '../i18n/i18nConfig'
 import {scheduledPublishing} from '../scheduledPublishing'
+import {DEFAULT_SCHEDULED_PUBLISH_PLUGIN_OPTIONS} from '../scheduledPublishing/constants'
 import {createSchema} from '../schema'
 import {type AuthStore, createAuthStore, isAuthStore} from '../store/_legacy'
 import {validateWorkspaces} from '../studio'
@@ -205,6 +206,10 @@ export function prepareConfig(
       },
       tasks: rawWorkspace.unstable_tasks ?? {enabled: true},
       serverActions: rawWorkspace.unstable_serverActions ?? {enabled: false},
+      scheduledPublishing: {
+        ...DEFAULT_SCHEDULED_PUBLISH_PLUGIN_OPTIONS,
+        ...rawWorkspace.scheduledPublishing,
+      },
     }
     preparedWorkspaces.set(rawWorkspace, workspaceSummary)
     return workspaceSummary
