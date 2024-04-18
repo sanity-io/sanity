@@ -37,7 +37,13 @@
       "@sanity/util/*": ["./node_modules/@sanity/util/src/_exports/*"],
       "@sanity/util": ["./node_modules/@sanity/util/src/_exports/index.ts"],
       "groq": ["./node_modules/groq/src/groq.ts"],
-      "sanity/*": ["./src/_exports/*"],
+      "sanity/_internal": ["./src/_exports/_internal.ts"],
+      "sanity/cli": ["./src/_exports/cli.ts"],
+      "sanity/desk": ["./src/_exports/desk.ts"],
+      "sanity/migrate": ["./src/_exports/migrate.ts"],
+      "sanity/presentation": ["./src/_exports/presentation.ts"],
+      "sanity/router": ["./src/_exports/router.ts"],
+      "sanity/structure": ["./src/_exports/structure.ts"],
       "sanity": ["./src/_exports/index.ts"]
     }
   }
