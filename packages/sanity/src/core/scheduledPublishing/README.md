@@ -62,14 +62,14 @@ This feature is included by default in your studio.
 To change the date formatting used when creating and editing schedules, pass a [valid `date-fns` formatted token](https://date-fns.org/docs/format) as an option.
 
 ```js
-  defineConfig({
-    ...yourConfig,
-    scheduledPublishing: {
-      enabled: true,
-      // E.g. 12/25/2000 6:30 AM
-      inputDateTimeFormat: 'MM/dd/yyyy h:mm a',
-    }
-  })
+defineConfig({
+  ...yourConfig,
+  scheduledPublishing: {
+    enabled: true,
+    // E.g. 12/25/2000 6:30 AM, make sure to specify minutes and hours if you are specifying a custom format.
+    inputDateTimeFormat: 'MM/dd/yyyy h:mm a',
+  },
+})
 ```
 
 If left unspecified, this plugin will default to `dd/MM/yyyy HH:mm`.

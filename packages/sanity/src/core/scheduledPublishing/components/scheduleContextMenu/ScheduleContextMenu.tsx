@@ -1,8 +1,8 @@
 import {type SchemaType} from '@sanity/types'
 import {Menu} from '@sanity/ui'
-import {ContextMenuButton} from 'sanity/index'
 
 import {MenuButton} from '../../../../ui-components'
+import {ContextMenuButton} from '../../../components/contextMenuButton'
 import {type Schedule} from '../../types'
 import ContextMenuItems from './ContextMenuItems'
 

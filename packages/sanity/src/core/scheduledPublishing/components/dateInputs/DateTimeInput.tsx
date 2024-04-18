@@ -1,8 +1,8 @@
 import {getMinutes, isValid, parse, parseISO, setMinutes} from 'date-fns'
 import {formatInTimeZone} from 'date-fns-tz'
 import {type ForwardedRef, forwardRef, useCallback} from 'react'
-import {useWorkspace} from 'sanity/index'
 
+import {useWorkspace} from '../../../studio/workspace'
 import useTimeZone from '../../hooks/useTimeZone'
 import {CommonDateTimeInput} from './CommonDateTimeInput'
 import {type CommonProps, type ParseResult} from './types'

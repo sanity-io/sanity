@@ -20,7 +20,7 @@ export interface ScheduledPublishingPluginOptions {
   enabled: boolean
   /**
    * Date format to use for input fields. This must be a valid `date-fns` {@link https://date-fns.org/docs/format | formatted string}.
-   * @defaultValue 'dd/MM/yyyy HH:mm'
+   * @defaultValue 'dd/MM/yyyy HH:mm' make sure to specify minutes and hours if you are specifying a custom format
    */
   inputDateTimeFormat?: string
 }
