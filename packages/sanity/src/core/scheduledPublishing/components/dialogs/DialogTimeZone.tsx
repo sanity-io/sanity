@@ -1,22 +1,11 @@
 import {SearchIcon} from '@sanity/icons'
-import {
-  Autocomplete,
-  Box,
-  Card,
-  // eslint-disable-next-line no-restricted-imports
-  Dialog,
-  Flex,
-  Inline,
-  Stack,
-  Text,
-  type Theme,
-} from '@sanity/ui'
+import {Autocomplete, Card, Flex, Inline, Stack, Text, type Theme} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
 import {css, styled} from 'styled-components'
 
+import {Dialog} from '../../../../ui-components'
 import useTimeZone, {allTimeZones, getLocalTimeZone} from '../../hooks/useTimeZone'
 import {type NormalizedTimeZone} from '../../types'
-import DialogFooter from './DialogFooter'
 
 export interface DialogTimeZoneProps {
   onClose?: () => void
@@ -83,17 +72,14 @@ const DialogTimeZone = (props: DialogTimeZoneProps) => {
 
   return (
     <Dialog
-      footer={
-        <Box paddingX={4} paddingY={3}>
-          <DialogFooter
-            buttonText="Update time zone"
-            disabled={!isDirty || !selectedTz}
-            onAction={handleTimeZoneUpdate}
-            onComplete={onClose}
-            tone="primary"
-          />
-        </Box>
-      }
+      footer={{
+        confirmButton: {
+          text: 'Update time zone',
+          disabled: !isDirty || !selectedTz,
+          onClick: handleTimeZoneUpdate,
+          tone: 'primary',
+        },
+      }}
       header="Select time zone"
       id="time-zone"
       onClose={onClose}

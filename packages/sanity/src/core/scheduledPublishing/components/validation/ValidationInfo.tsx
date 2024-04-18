@@ -6,7 +6,6 @@ import {
   type ValidationMarker,
 } from '@sanity/types'
 import {type CardTone, Container, Menu, Stack} from '@sanity/ui'
-// eslint-disable-next-line no-restricted-imports
 import * as PathUtils from '@sanity/util/paths'
 import {type ReactNode, useCallback, useId} from 'react'
 import {useRouter} from 'sanity/router'

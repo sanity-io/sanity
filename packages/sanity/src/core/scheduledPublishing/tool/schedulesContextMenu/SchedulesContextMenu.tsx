@@ -1,7 +1,8 @@
-import {CheckmarkIcon, EllipsisVerticalIcon, SortIcon} from '@sanity/icons'
+import {CheckmarkIcon, SortIcon} from '@sanity/icons'
 import {Menu} from '@sanity/ui'
+import {ContextMenuButton} from 'sanity/index'
 
-import {Button, MenuItem} from '../../../../ui-components'
+import {MenuItem} from '../../../../ui-components'
 import {MenuButton} from '../../../../ui-components/menuButton'
 import {useSchedules} from '../contexts/schedules'
 
@@ -14,16 +15,7 @@ const SchedulesContextMenu = () => {
 
   return (
     <MenuButton
-      button={
-        <Button
-          icon={EllipsisVerticalIcon}
-          mode="bleed"
-          tone="default"
-          tooltipProps={{
-            content: 'Sort',
-          }}
-        />
-      }
+      button={<ContextMenuButton />}
       id="sort"
       menu={
         <Menu style={{minWidth: '250px'}}>

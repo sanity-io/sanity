@@ -1,15 +1,10 @@
-import {
-  Box,
-  // eslint-disable-next-line no-restricted-imports
-  Dialog,
-} from '@sanity/ui'
 import {useCallback} from 'react'
 
+import {Dialog} from '../../../../ui-components'
 import useScheduleForm from '../../hooks/useScheduleForm'
 import useScheduleOperation from '../../hooks/useScheduleOperation'
 import {type Schedule} from '../../types'
 import {EditScheduleForm} from '../editScheduleForm/EditScheduleForm'
-import DialogFooter from './DialogFooter'
 import DialogHeader from './DialogHeader'
 
 export interface DialogScheduleEditProps {
@@ -37,25 +32,19 @@ const DialogScheduleEdit = (props: DialogScheduleEditProps) => {
 
   return (
     <Dialog
-      footer={
-        <Box paddingX={4} paddingY={3}>
-          <DialogFooter
-            buttonText="Update"
-            disabled={!isDirty}
-            onAction={handleScheduleUpdate}
-            onComplete={onClose}
-            tone="primary"
-          />
-        </Box>
-      }
+      footer={{
+        confirmButton: {
+          text: 'Update',
+          disabled: !isDirty,
+          onClick: handleScheduleUpdate,
+        },
+      }}
       header={<DialogHeader title="Edit schedule" />}
       id="time-zone"
       onClose={onClose}
       width={1}
     >
-      <Box padding={4}>
-        <EditScheduleForm onChange={onFormChange} value={formData} />
-      </Box>
+      <EditScheduleForm onChange={onFormChange} value={formData} />
     </Dialog>
   )
 }

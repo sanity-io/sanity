@@ -1,12 +1,5 @@
 import {ChevronLeftIcon, ChevronRightIcon} from '@sanity/icons'
-import {
-  Box,
-  // eslint-disable-next-line no-restricted-imports
-  Button,
-  Flex,
-  Text,
-  useForwardedRef,
-} from '@sanity/ui'
+import {Box, Flex, Text, useForwardedRef} from '@sanity/ui'
 import {addDays, addMonths, setHours, setMinutes} from 'date-fns'
 import {
   type ComponentProps,
@@ -17,6 +10,7 @@ import {
   useEffect,
 } from 'react'
 
+import {Button, TooltipDelayGroupProvider} from '../../../../ui-components'
 import {TOOL_HEADER_HEIGHT} from '../../constants'
 import useTimeZone from '../../hooks/useTimeZone'
 import {CalendarMonth} from './CalendarMonth'
@@ -152,24 +146,24 @@ export const Calendar = forwardRef(function Calendar(
         }}
       >
         <Flex align="center" flex={1} justify="space-between">
-          <Text weight="medium">
+          <Text weight="medium" size={1}>
             {MONTH_NAMES[focusedDate?.getMonth()]} {focusedDate?.getFullYear()}
           </Text>
-          <Flex>
-            <Button
-              icon={ChevronLeftIcon}
-              mode="bleed"
-              onClick={handlePrevMonthClick}
-              radius={0}
-              style={{height: '55px', width: '50px'}}
-            />
-            <Button
-              icon={ChevronRightIcon}
-              mode="bleed"
-              onClick={handleNextMonthClick}
-              radius={0}
-              style={{height: '55px', width: '50px'}}
-            />
+          <Flex paddingRight={3} gap={2}>
+            <TooltipDelayGroupProvider>
+              <Button
+                icon={ChevronLeftIcon}
+                mode="bleed"
+                onClick={handlePrevMonthClick}
+                tooltipProps={{content: 'Previous month'}}
+              />
+              <Button
+                icon={ChevronRightIcon}
+                mode="bleed"
+                onClick={handleNextMonthClick}
+                tooltipProps={{content: 'Next month'}}
+              />
+            </TooltipDelayGroupProvider>
           </Flex>
         </Flex>
       </Flex>
@@ -197,15 +191,7 @@ export const Calendar = forwardRef(function Calendar(
 
       {/* Today button */}
       <Box flex={1} style={{borderBottom: '1px solid var(--card-border-color)'}}>
-        <Button
-          fontSize={1}
-          mode="bleed"
-          onClick={handleNowClick}
-          padding={4}
-          radius={0}
-          style={{width: '100%'}}
-          text="Today"
-        />
+        <Button mode="bleed" onClick={handleNowClick} width="fill" text="Today" />
       </Box>
     </Box>
   )

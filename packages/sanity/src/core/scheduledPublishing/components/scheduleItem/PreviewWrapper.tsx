@@ -196,7 +196,11 @@ const PreviewWrapper = (props: Props) => {
         )}
 
         {/* Context menu */}
-        {contextMenu && <Box style={{flexShrink: 0}}>{contextMenu}</Box>}
+        {contextMenu && (
+          <Box style={{flexShrink: 0}} paddingRight={2}>
+            {contextMenu}
+          </Box>
+        )}
       </Flex>
     </Card>
   )

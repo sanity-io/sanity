@@ -1,9 +1,8 @@
-// eslint-disable-next-line no-restricted-imports
 import {type CurrentUser} from '@sanity/types'
-// eslint-disable-next-line no-restricted-imports
-import {Box, MenuItem, type SelectableTone, Tooltip} from '@sanity/ui'
+import {Box, type SelectableTone} from '@sanity/ui'
 import {type ComponentType, type ReactNode} from 'react'
 
+import {MenuItem, Tooltip} from '../../../../ui-components'
 import {
   InsufficientPermissionsMessage,
   type InsufficientPermissionsMessageProps,

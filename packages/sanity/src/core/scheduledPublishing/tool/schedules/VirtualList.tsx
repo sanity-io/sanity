@@ -38,6 +38,7 @@ const VirtualList = () => {
   return (
     <Box
       paddingBottom={6}
+      paddingTop={1}
       paddingX={4}
       ref={containerRef}
       style={{

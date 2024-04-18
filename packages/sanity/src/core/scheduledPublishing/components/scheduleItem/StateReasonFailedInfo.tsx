@@ -1,8 +1,8 @@
 import {red} from '@sanity/color'
 import {ErrorOutlineIcon} from '@sanity/icons'
-// eslint-disable-next-line no-restricted-imports
-import {Button, type CardTone, Container, Flex, Menu, MenuButton, Text} from '@sanity/ui'
+import {type CardTone, Container, Flex, Menu, Text} from '@sanity/ui'
 
+import {Button, MenuButton} from '../../../../ui-components'
 import {SCHEDULE_FAILED_TEXT} from '../../constants'
 
 interface Props {
@@ -25,7 +25,7 @@ const StateReasonFailedInfo = (props: Props) => {
       id="stateReason"
       button={
         <Button
-          title="Schedule failed"
+          tooltipProps={{content: 'Schedule failed'}}
           mode="bleed"
           data-testid="schedule-validation-list-button"
           icon={ErrorOutlineIcon}
@@ -47,7 +47,6 @@ const StateReasonFailedInfo = (props: Props) => {
           </Container>
         </Menu>
       }
-      placement="bottom-end"
       popover={POPOVER_PROPS}
     />
   )

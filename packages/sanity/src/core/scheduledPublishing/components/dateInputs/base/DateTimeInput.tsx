@@ -4,8 +4,6 @@ import {
   // eslint-disable-next-line no-restricted-imports
   Button,
   LayerProvider,
-  // eslint-disable-next-line no-restricted-imports
-  Popover,
   useClickOutside,
   useForwardedRef,
   usePortal,
@@ -21,6 +19,7 @@ import {
 } from 'react'
 import FocusLock from 'react-focus-lock'
 
+import {Popover} from '../../../../../ui-components'
 import {DatePicker} from './DatePicker'
 import {LazyTextInput} from './LazyTextInput'
 

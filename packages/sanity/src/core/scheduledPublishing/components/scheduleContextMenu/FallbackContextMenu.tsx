@@ -1,7 +1,8 @@
-import {EllipsisVerticalIcon, TrashIcon} from '@sanity/icons'
-// eslint-disable-next-line no-restricted-imports
-import {Button, Menu, MenuButton, MenuItem} from '@sanity/ui'
+import {TrashIcon} from '@sanity/icons'
+import {Menu} from '@sanity/ui'
+import {ContextMenuButton} from 'sanity/index'
 
+import {MenuButton, MenuItem} from '../../../../ui-components'
 import useScheduleOperation from '../../hooks/useScheduleOperation'
 import {type Schedule} from '../../types'
 
@@ -24,9 +25,7 @@ export const FallbackContextMenu = (props: Props) => {
 
   return (
     <MenuButton
-      button={
-        <Button icon={EllipsisVerticalIcon} mode="bleed" paddingX={2} paddingY={3} tone="default" />
-      }
+      button={<ContextMenuButton />}
       id="contextMenu"
       menu={
         <Menu>
