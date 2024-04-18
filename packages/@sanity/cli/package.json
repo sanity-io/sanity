@@ -57,7 +57,7 @@
   },
   "dependencies": {
     "@babel/traverse": "^7.23.5",
-    "@sanity/client": "^6.15.14",
+    "@sanity/client": "^6.15.17",
     "@sanity/codegen": "3.38.0",
     "@sanity/telemetry": "^0.7.6",
     "@sanity/util": "3.38.0",
@@ -66,7 +66,7 @@
     "decompress": "^4.2.0",
     "esbuild": "^0.20.0",
     "esbuild-register": "^3.4.1",
-    "get-it": "^8.4.23",
+    "get-it": "^8.4.26",
     "groq-js": "^1.7.0",
     "node-machine-id": "^1.1.12",
     "pkg-dir": "^5.0.0",
