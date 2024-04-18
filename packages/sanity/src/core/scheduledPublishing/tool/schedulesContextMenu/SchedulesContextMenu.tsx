@@ -1,5 +1,5 @@
 import {CheckmarkIcon, EllipsisVerticalIcon, SortIcon} from '@sanity/icons'
-import {Box, Label, Menu} from '@sanity/ui'
+import {Menu} from '@sanity/ui'
 
 import {Button, MenuItem} from '../../../../ui-components'
 import {MenuButton} from '../../../../ui-components/menuButton'
@@ -27,11 +27,6 @@ const SchedulesContextMenu = () => {
       id="sort"
       menu={
         <Menu style={{minWidth: '250px'}}>
-          <Box paddingX={3} paddingY={2}>
-            <Label muted size={1}>
-              Sort
-            </Label>
-          </Box>
           <MenuItem
             icon={SortIcon}
             iconRight={sortBy === 'createdAt' ? CheckmarkIcon : undefined}

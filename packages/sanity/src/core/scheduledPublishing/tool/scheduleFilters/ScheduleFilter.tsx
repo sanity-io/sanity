@@ -1,7 +1,7 @@
 import {
   // eslint-disable-next-line no-restricted-imports
   Button,
-  Inline,
+  Flex,
   Text,
 } from '@sanity/ui'
 import {useStateLink} from 'sanity/router'
@@ -37,13 +37,14 @@ const ScheduleFilter = (props: Props) => {
       onClick={onClick}
       selected={selected}
       tone={critical ? 'critical' : 'default'}
+      padding={2}
     >
-      <Inline space={2}>
-        <Text size={2} weight="medium">
+      <Flex gap={2} align={'center'}>
+        <Text size={1} weight="medium">
           {SCHEDULE_STATE_DICTIONARY[state].title}
         </Text>
-        {hasItems && <Text size={1}>{count}</Text>}
-      </Inline>
+        {hasItems && <Text size={0}>{count}</Text>}
+      </Flex>
     </Button>
   )
 }

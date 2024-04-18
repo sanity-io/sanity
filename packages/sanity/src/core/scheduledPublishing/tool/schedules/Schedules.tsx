@@ -22,7 +22,7 @@ export const Schedules = () => {
   return (
     <Box style={{height: '100%'}}>
       {mode === 'upsell' && upsellData && (
-        <Panel width={1} padding={4}>
+        <Panel width={1} padding={4} paddingBottom={0}>
           <UpsellPanel
             data={upsellData}
             onPrimaryClick={telemetryLogs.panelPrimaryClicked}
@@ -31,7 +31,7 @@ export const Schedules = () => {
         </Panel>
       )}
       {activeSchedules.length === 0 ? (
-        <Panel width={1} padding={4} paddingTop={0}>
+        <Panel width={1} padding={4} paddingTop={4}>
           <EmptySchedules scheduleState={scheduleState} selectedDate={selectedDate} />
         </Panel>
       ) : (

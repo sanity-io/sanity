@@ -1,5 +1,5 @@
 import {CheckmarkIcon, CloseIcon, SelectIcon} from '@sanity/icons'
-import {Box, Flex, Label, Menu} from '@sanity/ui'
+import {Box, Flex, Menu} from '@sanity/ui'
 import {format} from 'date-fns'
 import {useRouter} from 'sanity/router'
 
@@ -53,11 +53,6 @@ export const ScheduleFilters = (props: ScheduleFiltersProps) => {
             id="state"
             menu={
               <Menu style={{minWidth: '175px'}}>
-                <Box paddingX={3} paddingY={2}>
-                  <Label muted size={1}>
-                    Scheduled state
-                  </Label>
-                </Box>
                 {SCHEDULE_FILTERS.map((filter) => (
                   <MenuItem
                     iconRight={filter === scheduleState ? CheckmarkIcon : undefined}

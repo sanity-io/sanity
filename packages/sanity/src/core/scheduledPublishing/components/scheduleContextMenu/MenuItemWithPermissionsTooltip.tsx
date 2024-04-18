@@ -17,10 +17,20 @@ interface Props {
   permissionsOperationLabel: InsufficientPermissionsMessageProps['context']
   title: string
   tone?: SelectableTone
+  disabled?: boolean
 }
 
 const MenuItemWithPermissionsTooltip = (props: Props) => {
-  const {currentUser, hasPermission, icon, onClick, permissionsOperationLabel, title, tone} = props
+  const {
+    currentUser,
+    hasPermission,
+    icon,
+    onClick,
+    permissionsOperationLabel,
+    title,
+    tone,
+    disabled,
+  } = props
   return (
     <Tooltip
       content={
@@ -38,7 +48,7 @@ const MenuItemWithPermissionsTooltip = (props: Props) => {
       {/* Wrapper element to allow disabled menu items to trigger tooltips */}
       <div>
         <MenuItem
-          disabled={!hasPermission}
+          disabled={!hasPermission || disabled}
           icon={icon}
           onClick={onClick}
           text={title}

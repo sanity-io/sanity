@@ -1,6 +1,7 @@
 import {type SchemaType} from '@sanity/types'
 import {Badge, Box, Card, Flex, Stack, Text} from '@sanity/ui'
 import {type ElementType, type ReactNode, useState} from 'react'
+import {styled} from 'styled-components'
 
 import {Tooltip} from '../../../../ui-components/tooltip'
 import {DocumentStatus} from '../../../components/documentStatus'
@@ -23,6 +24,9 @@ import DateWithTooltip from './dateWithTooltip/DateWithTooltip'
 import StateReasonFailedInfo from './StateReasonFailedInfo'
 import User from './User'
 
+const StatusDotPlaceholder = styled(Box)`
+  width: 9px;
+`
 interface Props {
   children?: ReactNode
   contextMenu?: ReactNode
@@ -72,6 +76,7 @@ const PreviewWrapper = (props: Props) => {
           content={
             <DocumentStatus draft={previewState?.draft} published={previewState?.published} />
           }
+          disabled={!previewState?.draft && !previewState?.published}
         >
           <Card
             __unstable_focusRing
@@ -145,10 +150,14 @@ const PreviewWrapper = (props: Props) => {
 
                 {/* Document status */}
                 <Box display={['none', 'block']} marginX={[2, 2, 3]} style={{flexShrink: 0}}>
-                  <DocumentStatusIndicator
-                    draft={previewState?.draft}
-                    published={previewState?.published}
-                  />
+                  {previewState?.draft || previewState?.published ? (
+                    <DocumentStatusIndicator
+                      draft={previewState?.draft}
+                      published={previewState?.published}
+                    />
+                  ) : (
+                    <StatusDotPlaceholder />
+                  )}
                 </Box>
               </Flex>
             </Flex>

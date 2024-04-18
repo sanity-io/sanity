@@ -55,7 +55,7 @@ const ContextMenuItems = (props: Props) => {
 
   return (
     <>
-      {actions?.edit && mode !== 'upsell' && (
+      {actions?.edit && (
         <MenuItemWithPermissionsTooltip
           currentUser={currentUser}
           hasPermission={!insufficientPermissions}
@@ -63,6 +63,7 @@ const ContextMenuItems = (props: Props) => {
           onClick={handleEdit}
           permissionsOperationLabel="edit-schedules"
           title="Edit schedule"
+          disabled={mode === 'upsell'}
         />
       )}
       {actions?.execute && (
@@ -73,6 +74,7 @@ const ContextMenuItems = (props: Props) => {
           onClick={handleExecute}
           permissionsOperationLabel="execute-schedules"
           title="Publish now"
+          disabled={mode === 'upsell'}
         />
       )}
       {actions?.delete && (
@@ -84,6 +86,7 @@ const ContextMenuItems = (props: Props) => {
           permissionsOperationLabel="delete-schedules"
           title="Delete schedule"
           tone="critical"
+          disabled={mode === 'upsell'}
         />
       )}
       {actions?.clear && (
@@ -94,6 +97,7 @@ const ContextMenuItems = (props: Props) => {
           onClick={handleDelete}
           permissionsOperationLabel="delete-schedules"
           title="Clear completed schedule"
+          disabled={mode === 'upsell'}
         />
       )}
     </>
