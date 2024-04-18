@@ -183,6 +183,12 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
     [onPathFocus, portableTextMemberItems],
   )
 
+  const resetSelectionPresence = useCallback(() => {
+    onPathFocus(props.path, {
+      selection: null,
+    })
+  }, [onPathFocus, props.path])
+
   // Handle editor changes
   const handleEditorChange = useCallback(
     (change: EditorChange): void => {
@@ -213,6 +219,11 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
         case 'blur':
           onBlur(change.event)
           setHasFocusWithin(false)
+
+          // When the editor blurs, we reset the presence selection
+          // in order to remove the presence cursor for the current user
+          // since they no longer have an active selection in the editor.
+          resetSelectionPresence()
           break
         case 'undo':
         case 'redo':
@@ -233,7 +244,15 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
         onEditorChange(change, editorRef.current)
       }
     },
-    [editorRef, onBlur, onChange, onEditorChange, setFocusPathFromEditorSelection, toast],
+    [
+      editorRef,
+      onBlur,
+      onChange,
+      onEditorChange,
+      resetSelectionPresence,
+      setFocusPathFromEditorSelection,
+      toast,
+    ],
   )
 
   useEffect(() => {
