@@ -4,51 +4,19 @@ import {Card, Container, Flex, Heading, Stack, Text} from '@sanity/ui'
 import {HighlightSpan} from '../../../../../structure/comments'
 import {UserPresenceCursor} from '../presence-cursors/UserPresenceCursor'
 
-const user1 = (
-  <UserPresenceCursor
-    boundaryElement={null}
-    user={{id: 'p8xDvUMxC', displayName: 'Pedro Bonamin'}}
-  />
-)
+const user1 = <UserPresenceCursor user={{id: 'p8xDvUMxC', displayName: 'Pedro Bonamin'}} />
 
-const user2 = (
-  <UserPresenceCursor
-    boundaryElement={null}
-    user={{id: 'p8U8TipFc', displayName: 'Herman Wikner'}}
-  />
-)
+const user2 = <UserPresenceCursor user={{id: 'p8U8TipFc', displayName: 'Herman Wikner'}} />
 
-const user3 = (
-  <UserPresenceCursor
-    boundaryElement={null}
-    user={{id: 'pJnhH8iJq', displayName: 'Kayla Callfas'}}
-  />
-)
+const user3 = <UserPresenceCursor user={{id: 'pJnhH8iJq', displayName: 'Kayla Callfas'}} />
 
-const user4 = (
-  <UserPresenceCursor
-    boundaryElement={null}
-    user={{id: 'pJHJAZp6o', displayName: 'Nina Andal Aarvik'}}
-  />
-)
+const user4 = <UserPresenceCursor user={{id: 'pJHJAZp6o', displayName: 'Nina Andal Aarvik'}} />
 
-const user5 = (
-  <UserPresenceCursor
-    boundaryElement={null}
-    user={{id: 'pZyoPHKUs', displayName: 'Per-Kristian Nordnes'}}
-  />
-)
+const user5 = <UserPresenceCursor user={{id: 'pZyoPHKUs', displayName: 'Per-Kristian Nordnes'}} />
 
-const user6 = (
-  <UserPresenceCursor
-    boundaryElement={null}
-    user={{id: 'ppHbfjdoZr', displayName: 'Fred Carlsen'}}
-  />
-)
+const user6 = <UserPresenceCursor user={{id: 'ppHbfjdoZr', displayName: 'Fred Carlsen'}} />
 
-const user7 = (
-  <UserPresenceCursor boundaryElement={null} user={{id: 'peiHzOCZb', displayName: 'Tommy Petty'}} />
-)
+const user7 = <UserPresenceCursor user={{id: 'peiHzOCZb', displayName: 'Tommy Petty'}} />
 
 function Editor() {
   return (
@@ -56,7 +24,7 @@ function Editor() {
       <Heading size={3}>Introducing: User Presence C{user4}ursors</Heading>
 
       <Text>
-        We are introducing a new feature tha{user2}t allows you to see where other users are
+        We are introducing a new feature t{user2}ha{user2}t allows you to see where other users are
         currently editing in the document. This is a great way to avoid conflicts and collaborat
         {user5}e in real-time.
       </Text>
