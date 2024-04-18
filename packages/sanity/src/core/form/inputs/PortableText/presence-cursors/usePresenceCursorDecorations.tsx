@@ -7,14 +7,13 @@ import {useChildPresence} from '../../../studio/contexts/Presence'
 import {UserPresenceCursor} from './UserPresenceCursor'
 
 export interface PresenceCursorDecorationsHookProps {
-  boundaryElement: HTMLElement | null
   path: Path
 }
 
 export function usePresenceCursorDecorations(
   props: PresenceCursorDecorationsHookProps,
 ): RangeDecoration[] {
-  const {boundaryElement, path} = props
+  const {path} = props
   const childPresence = useChildPresence(path)
 
   return useMemo((): RangeDecoration[] => {
@@ -28,13 +27,11 @@ export function usePresenceCursorDecorations(
       // Create a cursor point at the current selection focus
       const cursorPoint = {focus: presence.selection.focus, anchor: presence.selection.focus}
       return {
-        component: () => (
-          <UserPresenceCursor boundaryElement={boundaryElement} user={presence.user} />
-        ),
+        component: () => <UserPresenceCursor user={presence.user} />,
         selection: cursorPoint,
       }
     }) as RangeDecoration[]
 
     return decorations.filter(Boolean)
-  }, [boundaryElement, childPresence])
+  }, [childPresence])
 }

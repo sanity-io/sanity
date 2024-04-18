@@ -86,19 +86,16 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
     value,
   } = props
 
-  const {onBlur, onFocus, ref: elementRef} = elementProps
+  const {onBlur, ref: elementRef} = elementProps
   const defaultEditorRef = useRef<PortableTextEditor | null>(null)
   const editorRef = editorRefProp || defaultEditorRef
-  const innerElementRef = useRef<HTMLDivElement | null>(null)
-  const [currentPortalElement, setCurrentPortalElement] = useState<HTMLElement | null>(null)
 
   const presenceCursorDecorations = usePresenceCursorDecorations(
     useMemo(
       (): PresenceCursorDecorationsHookProps => ({
-        boundaryElement: currentPortalElement || innerElementRef.current,
         path: props.path,
       }),
-      [currentPortalElement, props.path],
+      [props.path],
     ),
   )
 
@@ -304,7 +301,6 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
                 onInsert={onInsert}
                 onItemRemove={onItemRemove}
                 onPaste={onPaste}
-                onPortalElementChange={setCurrentPortalElement}
                 onToggleFullscreen={handleToggleFullscreen}
                 rangeDecorations={rangeDecorations}
                 renderBlockActions={renderBlockActions}
