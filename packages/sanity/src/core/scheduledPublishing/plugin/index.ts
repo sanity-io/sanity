@@ -1,19 +1,17 @@
 import {CalendarIcon} from '@sanity/icons'
 import {route} from 'sanity/router'
 
-import {definePlugin} from '../config'
-import {TOOL_NAME, TOOL_TITLE} from './constants'
-import resolveDocumentActions from './documentActions'
-import resolveDocumentBadges from './documentBadges'
+import {definePlugin} from '../../config'
+import {TOOL_NAME, TOOL_TITLE} from '../constants'
+import Tool from '../tool/Tool'
+import resolveDocumentActions from './documentActions/schedule'
+import resolveDocumentBadges from './documentBadges/scheduled'
 import {DocumentBannerInput} from './inputResolver'
 import {SchedulePublishingStudioLayout} from './SchedulePublishingStudioLayout'
-import Tool from './tool/Tool'
 
-export {EditScheduleForm} from './components/editScheduleForm/EditScheduleForm'
-export {ScheduleAction} from './documentActions/schedule'
-export {ScheduledBadge} from './documentBadges/scheduled'
+export {EditScheduleForm} from '../components/editScheduleForm/EditScheduleForm'
 export {resolveDocumentActions, resolveDocumentBadges}
-export {type Schedule} from './types'
+export {type Schedule} from '../types'
 
 export const scheduledPublishing = definePlugin({
   // Renamed from 'scheduled-publishing' to 'sanity/scheduled-publishing' to avoid duplicates, see packages/sanity/src/core/config/flattenConfig.ts - DEPRECATED_PLUGINS.

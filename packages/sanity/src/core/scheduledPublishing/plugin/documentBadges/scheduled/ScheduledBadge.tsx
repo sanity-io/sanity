@@ -1,9 +1,9 @@
 import {format} from 'date-fns'
 
-import {type DocumentBadgeComponent} from '../../../config/document/badges'
-import {DATE_FORMAT, SCHEDULE_ACTION_DICTIONARY} from '../../constants'
-import usePollSchedules from '../../hooks/usePollSchedules'
-import {debugWithName} from '../../utils/debug'
+import {type DocumentBadgeComponent} from '../../../../config/document/badges'
+import {DATE_FORMAT, SCHEDULE_ACTION_DICTIONARY} from '../../../constants'
+import usePollSchedules from '../../../hooks/usePollSchedules'
+import {debugWithName} from '../../../utils/debug'
 
 const debug = debugWithName('ScheduledBadge')
 

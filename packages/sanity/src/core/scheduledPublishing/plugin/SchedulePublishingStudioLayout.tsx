@@ -1,10 +1,10 @@
-import {ConditionalWrapper} from '../../ui-components/conditionalWrapper'
-import {type LayoutProps} from '../config/studio/types'
+import {ConditionalWrapper} from '../../../ui-components/conditionalWrapper'
+import {type LayoutProps} from '../../config/studio/types'
 import {
   ScheduledPublishingEnabledProvider,
   useScheduledPublishingEnabled,
-} from './tool/contexts/ScheduledPublishingEnabledProvider'
-import {SchedulePublishingUpsellProvider} from './tool/contexts/SchedulePublishingUpsellProvider'
+} from '../tool/contexts/ScheduledPublishingEnabledProvider'
+import {SchedulePublishingUpsellProvider} from '../tool/contexts/SchedulePublishingUpsellProvider'
 
 function SchedulePublishingStudioLayoutInner(props: LayoutProps) {
   const {enabled, mode} = useScheduledPublishingEnabled()

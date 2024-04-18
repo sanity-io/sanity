@@ -1,11 +1,11 @@
 import {Card, Flex, Stack, Text} from '@sanity/ui'
 
-import {useValidationStatus} from '../../../hooks/useValidationStatus'
-import {ValidationInfo} from '../../components/validation/ValidationInfo'
-import {DOCUMENT_HAS_ERRORS_TEXT} from '../../constants'
-import {usePublishedId} from '../../hooks/usePublishedId'
-import {useSchemaType} from '../../hooks/useSchemaType'
-import {useValidationState} from '../../utils/validationUtils'
+import {useValidationStatus} from '../../../../hooks/useValidationStatus'
+import {ValidationInfo} from '../../../components/validation/ValidationInfo'
+import {DOCUMENT_HAS_ERRORS_TEXT} from '../../../constants'
+import {usePublishedId} from '../../../hooks/usePublishedId'
+import {useSchemaType} from '../../../hooks/useSchemaType'
+import {useValidationState} from '../../../utils/validationUtils'
 
 interface Props {
   id: string
