@@ -1,7 +1,6 @@
 import {Card, Container, Flex, Heading, Stack, Text} from '@sanity/ui'
 
-// eslint-disable-next-line boundaries/element-types
-import {HighlightSpan} from '../../../../../structure/comments'
+import {HighlightSpan} from '../../../../comments'
 import {UserPresenceCursor} from '../presence-cursors/UserPresenceCursor'
 
 const user1 = <UserPresenceCursor user={{id: 'p8xDvUMxC', displayName: 'Pedro Bonamin'}} />
