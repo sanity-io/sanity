@@ -1,6 +1,6 @@
 import {createContext} from 'react'
 
-import type {CommentInputContextValue} from '../../../../../../structure/comments'
+import type {CommentInputContextValue} from '../../../../../../core/comments/components/pte/comment-input/CommentInputProvider'
 
 /**
  * @internal
