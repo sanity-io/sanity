@@ -29,6 +29,7 @@ export const PLUGIN_INPUT_TYPES = [
   'codeTest',
   'colorTest',
   'geopointTest',
+  'hotspotArrayTest',
   //'orderableCategory',
   //'orderableTag',
 ]
