@@ -121,7 +121,7 @@
     "watch": "pkg-utils watch"
   },
   "dependencies": {
-    "@sanity/client": "^6.15.14",
+    "@sanity/client": "^6.15.17",
     "@sanity/types": "3.38.0",
     "get-random-values-esm": "1.0.2",
     "moment": "^2.29.4",
