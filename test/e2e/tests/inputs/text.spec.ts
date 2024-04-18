@@ -27,8 +27,8 @@ test.describe('inputs: text', () => {
     await page.waitForSelector('data-testid=field-simple', {timeout: 30000})
     const field = page.getByTestId('field-simple').getByRole('textbox')
 
-    // Enter initial text and wait for the mutate call to be sent
-    const response = page.waitForResponse(/mutate/)
+    // Enter initial text and wait for the actions call to be sent
+    const response = page.waitForResponse(/actions/)
     await field.fill(kanji)
     await response
 
