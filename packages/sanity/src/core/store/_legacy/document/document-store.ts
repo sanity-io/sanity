@@ -14,7 +14,7 @@ import {checkoutPair, type DocumentVersionEvent, type Pair} from './document-pai
 import {consistencyStatus} from './document-pair/consistencyStatus'
 import {documentEvents} from './document-pair/documentEvents'
 import {editOperations} from './document-pair/editOperations'
-import {editState, type EditStateFor} from './document-pair/editState'
+import {type EditState, editState} from './document-pair/editState'
 import {
   type OperationError,
   operationEvents,
@@ -63,7 +63,7 @@ export interface DocumentStore {
     documentEvents: (publishedId: string, type: string) => Observable<DocumentVersionEvent>
     /** @internal */
     editOperations: (publishedId: string, type: string) => Observable<OperationsAPI>
-    editState: (publishedId: string, type: string) => Observable<EditStateFor>
+    editState: (publishedId: string, type: string) => Observable<EditState>
     operationEvents: (
       publishedId: string,
       type: string,

@@ -8,6 +8,9 @@ import {createDatasetListener} from '../store/buffered-dataset/createDatasetList
 
 const cache = new Map<string, ContentLakeStore>()
 
+/**
+ * @hidden
+ * @beta */
 export function useBufferedDataset(client: SanityClient) {
   const {projectId, dataset} = client.config()
   const key = `${projectId}/${dataset}`

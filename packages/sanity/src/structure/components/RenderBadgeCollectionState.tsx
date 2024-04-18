@@ -2,7 +2,7 @@ import {type ReactNode} from 'react'
 import {
   type DocumentBadgeDescription,
   type DocumentBadgeProps,
-  type EditStateFor,
+  type EditState,
   GetHookCollectionState,
 } from 'sanity'
 
@@ -14,7 +14,7 @@ export interface Badge<Args, Description> {
 /** @internal */
 export interface RenderBadgeCollectionProps {
   badges: Badge<DocumentBadgeProps, DocumentBadgeDescription>[]
-  badgeProps: EditStateFor
+  badgeProps: EditState
   children: (props: {states: DocumentBadgeDescription[]}) => ReactNode
   onActionComplete?: () => void
 }

@@ -1,5 +1,5 @@
 import {type SanityClient} from '@sanity/client'
-import {type CurrentUser, type SanityDocument} from '@sanity/types'
+import {type CurrentUser, type SanityDocumentBase} from '@sanity/types'
 import {evaluate, parse} from 'groq-js'
 import {defer, of} from 'rxjs'
 import {distinctUntilChanged, publishReplay, switchMap} from 'rxjs/operators'
@@ -41,7 +41,7 @@ function getParams(userId: string | null): EvaluationParams {
 }
 
 const PARSED_FILTERS_MEMO = new Map()
-async function matchesFilter(userId: string | null, filter: string, document: SanityDocument) {
+async function matchesFilter(userId: string | null, filter: string, document: SanityDocumentBase) {
   if (!PARSED_FILTERS_MEMO.has(filter)) {
     // note: it might be tempting to also memoize the result of the evaluation here,
     // Currently these filters are typically evaluated whenever a document change, which means they will be evaluated
@@ -96,7 +96,7 @@ export function createGrantsStore(opts: GrantsStoreOptions): GrantsStore {
   )
 
   return {
-    checkDocumentPermission(permission: DocumentValuePermission, document: SanityDocument) {
+    checkDocumentPermission(permission: DocumentValuePermission, document: SanityDocumentBase) {
       return currentUserDatasetGrants.pipe(
         switchMap((grants) => grantsPermissionOn(userId, grants, permission, document)),
         distinctUntilChanged(shallowEquals),
@@ -114,7 +114,7 @@ export async function grantsPermissionOn(
   userId: string | null,
   grants: Grant[],
   permission: DocumentValuePermission,
-  document: SanityDocument | null,
+  document: SanityDocumentBase | null,
 ): Promise<PermissionCheckResult> {
   if (!document) {
     // we say it's granted if null due to initial states

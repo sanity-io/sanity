@@ -1,6 +1,6 @@
 import {type ComponentType, type ReactNode} from 'react'
 
-import {type EditStateFor} from '../../store'
+import {type EditState} from '../../store'
 
 /**
  * @hidden
@@ -16,7 +16,7 @@ export interface DocumentBadgeDescription {
  * @hidden
  * @beta */
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface DocumentBadgeProps extends EditStateFor {}
+export interface DocumentBadgeProps extends EditState {}
 
 /**
  * @hidden

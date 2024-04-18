@@ -4,7 +4,7 @@ import {
   type AssetSource,
   type CurrentUser,
   type ObjectSchemaType,
-  type SanityDocumentLike,
+  type SanityDocumentBase,
   type Schema,
   type SchemaType,
   type SchemaTypeDefinition,
@@ -492,7 +492,7 @@ export interface SourceOptions extends PluginOptions {
  * @beta
  */
 export interface ResolveProductionUrlContext extends ConfigContext {
-  document: SanityDocumentLike
+  document: SanityDocumentBase
 }
 
 /**

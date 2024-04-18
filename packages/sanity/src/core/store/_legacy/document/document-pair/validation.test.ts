@@ -17,7 +17,7 @@ import {createMockSanityClient} from '../../../../../../test/mocks/mockSanityCli
 import {getFallbackLocaleSource} from '../../../../i18n/fallback'
 import {type DocumentAvailability, type DraftsModelDocumentAvailability} from '../../../../preview'
 import {createSchema} from '../../../../schema'
-import {editState, type EditStateFor} from './editState'
+import {type EditState, editState} from './editState'
 import {validation} from './validation'
 
 // Mock `./editState`
@@ -97,7 +97,7 @@ describe('validation', () => {
 
   it('runs `editState` through `validateDocument` to create a stream of validation statuses', async () => {
     const client = getMockClient()
-    const mockEditStateSubject = new Subject<EditStateFor>()
+    const mockEditStateSubject = new Subject<EditState>()
 
     mockEditState.mockImplementation(() => mockEditStateSubject.asObservable())
 
@@ -148,7 +148,7 @@ describe('validation', () => {
 
   it.skip('re-runs validation when the edit state changes', async () => {
     const client = getMockClient()
-    const mockEditStateSubject = new Subject<EditStateFor>()
+    const mockEditStateSubject = new Subject<EditState>()
 
     mockEditState.mockImplementation(() => mockEditStateSubject.asObservable())
 
@@ -217,7 +217,7 @@ describe('validation', () => {
     const subject = new Subject<DraftsModelDocumentAvailability>()
 
     // Mock `editState`
-    const mockEditStateSubject = new Subject<EditStateFor>()
+    const mockEditStateSubject = new Subject<EditState>()
     mockEditState.mockImplementation(() => mockEditStateSubject.asObservable())
 
     const observeDocumentPairAvailability = (
@@ -288,7 +288,7 @@ describe('validation', () => {
     const client = getMockClient()
 
     // Mock `editState`
-    const mockEditStateSubject = new Subject<EditStateFor>()
+    const mockEditStateSubject = new Subject<EditState>()
     mockEditState.mockImplementation(() => mockEditStateSubject.asObservable())
 
     const subscription = lastValueFrom(
@@ -367,7 +367,7 @@ describe('validation', () => {
     const client = getMockClient()
 
     // Mock `editState`
-    const mockEditStateSubject = new Subject<EditStateFor>()
+    const mockEditStateSubject = new Subject<EditState>()
     mockEditState.mockImplementation(() => mockEditStateSubject.asObservable())
 
     const {subscription, closeSubscription, doneValidating} = createSubscription(

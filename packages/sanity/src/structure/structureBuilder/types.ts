@@ -1,4 +1,4 @@
-import {type SanityDocument, type SchemaType, type SortOrdering} from '@sanity/types'
+import {type SanityDocumentBase, type SchemaType, type SortOrdering} from '@sanity/types'
 import {type ConfigContext, type InitialValueTemplateItem, type Source} from 'sanity'
 
 import {type ComponentBuilder, type ComponentInput} from './Component'
@@ -28,10 +28,10 @@ export type View = FormView | ComponentView
  * @public */
 export type UserViewComponent<TOptions = Record<string, any>> = React.ComponentType<{
   document: {
-    draft: SanityDocument | null
-    displayed: Partial<SanityDocument>
-    historical: Partial<SanityDocument> | null
-    published: SanityDocument | null
+    draft: SanityDocumentBase | null
+    displayed: Partial<SanityDocumentBase>
+    historical: Partial<SanityDocumentBase> | null
+    published: SanityDocumentBase | null
   }
   documentId: string
   options: TOptions

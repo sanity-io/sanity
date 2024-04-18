@@ -12,9 +12,13 @@ export function useEditState2(publishedDocId: string, docTypeName: string): Edit
   const client = useClient({apiVersion: 'v2024-03-07'})
   const bufferedDataset = useBufferedDataset(client)
   const [state, setState] = useState<EditState>({
-    readyState: 'loading',
+    ready: false,
     id: publishedDocId,
     type: docTypeName,
+    transactionSyncLock: null,
+    liveEdit: false,
+    published: null,
+    draft: null,
   })
 
   // bufferedDataset.mutate()
@@ -27,15 +31,19 @@ export function useEditState2(publishedDocId: string, docTypeName: string): Edit
       tap(([published, draft]) =>
         setState((current) => ({
           ...current,
-          readyState: 'synced',
-          published,
-          draft,
+          type: docTypeName,
+          id: publishedDocId,
+          ready: true,
+          transactionSyncLock: null,
+          liveEdit: false,
+          published: published || null,
+          draft: draft || null,
         })),
       ),
     )
     const sub = published$.subscribe()
     return () => sub.unsubscribe()
-  }, [bufferedDataset, publishedDocId])
+  }, [bufferedDataset, docTypeName, publishedDocId])
 
   return state
 }

@@ -42,7 +42,7 @@ const defaultIsUnique: SlugIsUniqueValidator = (slug, context) => {
   }
 
   const disableArrayWarning = schemaOptions?.disableArrayWarning || false
-  const {published, draft} = getDocumentIds(document._id)
+  const {published, draft} = getDocumentIds(document._id!)
   const docType = document._type
   const atPath = serializePath(path.concat('current'))
 

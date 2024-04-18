@@ -10,7 +10,7 @@ import {
   type DocumentActionComponent,
   type DocumentActionDescription,
   type DocumentActionProps,
-  type EditStateFor,
+  type EditState,
   useConnectionState,
   useEditState,
   useInitialValue,
@@ -134,7 +134,7 @@ function Debug(props: {documentId: string; documentType: string}) {
   )
 }
 
-function useDocumentActions(documentId: string, schemaType: string, editState: EditStateFor) {
+function useDocumentActions(documentId: string, schemaType: string, editState: EditState) {
   const {document} = useSource()
   const actions = useMemo(
     () => document.actions({schemaType, documentId}),
@@ -157,7 +157,7 @@ function useDocumentActions(documentId: string, schemaType: string, editState: E
 
 function DocumentActionResolver(props: {
   actionHooks: DocumentActionComponent[]
-  editState: EditStateFor
+  editState: EditState
   onUpdate: (descs: Array<DocumentActionDescription | null>) => void
 }) {
   const {actionHooks, editState, onUpdate} = props
@@ -195,7 +195,7 @@ function DocumentActionResolver(props: {
 
 function DocumentActionHook(props: {
   actionHook: DocumentActionComponent
-  editState: EditStateFor
+  editState: EditState
   index: number
   onUpdate: (desc: DocumentActionDescription | null, idx: number) => void
 }) {

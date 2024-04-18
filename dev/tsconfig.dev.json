@@ -14,6 +14,8 @@
       "@sanity/schema/*": ["./packages/@sanity/schema/src/_exports/*"],
       "@sanity/schema": ["./packages/@sanity/schema/src/_exports/index.ts"],
       "@sanity/migrate": ["./packages/@sanity/migrate/src/_exports/index.ts"],
+      "@sanity/mutate/*": ["./packages/@sanity/mutate/src/*"],
+      "@sanity/mutate": ["./packages/@sanity/mutate/src/index.ts"],
       "@sanity/types": ["./packages/@sanity/types/src/index.ts"],
       "@sanity/util/*": ["./packages/@sanity/util/src/_exports/*"],
       "@sanity/util": ["./packages/@sanity/util/src/_exports/index.ts"],

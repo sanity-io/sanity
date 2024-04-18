@@ -4,7 +4,7 @@ import {
 } from '@sanity/ui'
 import {type ComponentType, type ReactNode} from 'react'
 
-import {type EditStateFor} from '../../store/_legacy'
+import {type EditState} from '../../store'
 
 /**
  * @hidden
@@ -16,7 +16,7 @@ export interface ActionComponent<ActionProps> {
 /**
  * @hidden
  * @beta */
-export interface DocumentActionProps extends EditStateFor {
+export interface DocumentActionProps extends EditState {
   revision?: string
   onComplete: () => void
 }

@@ -1,14 +1,14 @@
 import {useMemoObservable} from 'react-rx'
 import {debounce, merge, share, skip, take, timer} from 'rxjs'
 
-import {type EditStateFor, useDocumentStore} from '../store'
+import {type EditState, useDocumentStore} from '../store'
 
 /** @internal */
 export function useEditState(
   publishedDocId: string,
   docTypeName: string,
   priority: 'default' | 'low' = 'default',
-): EditStateFor {
+): EditState {
   const documentStore = useDocumentStore()
 
   return useMemoObservable(() => {
@@ -25,5 +25,5 @@ export function useEditState(
     }
 
     return documentStore.pair.editState(publishedDocId, docTypeName)
-  }, [documentStore.pair, publishedDocId, docTypeName, priority]) as EditStateFor
+  }, [documentStore.pair, publishedDocId, docTypeName, priority]) as EditState
 }

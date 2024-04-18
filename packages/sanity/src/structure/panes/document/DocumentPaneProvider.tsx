@@ -1,4 +1,5 @@
 /* eslint-disable camelcase */
+
 import {
   at,
   createIfNotExists,
@@ -8,13 +9,12 @@ import {
   type NodePatch,
   patch,
   type Path as MutinyPath,
-  type SanityDocumentBase,
   set,
   setIfMissing,
   unset,
 } from '@sanity/mutate'
 import {isActionEnabled} from '@sanity/schema/_internal'
-import {type ObjectSchemaType, type Path, type SanityDocument} from '@sanity/types'
+import {type ObjectSchemaType, type Path, type SanityDocumentBase} from '@sanity/types'
 import {useToast} from '@sanity/ui'
 import {fromString as pathFromString, resolveKeyedPath} from '@sanity/util/paths'
 import {omit} from 'lodash'
@@ -259,7 +259,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
   const {t} = useTranslation(structureLocaleNamespace)
 
   const inspectOpen = params.inspect === 'on'
-  const compareValue: Partial<SanityDocument> | null = changesOpen
+  const compareValue: Partial<SanityDocumentBase> | null = changesOpen
     ? sinceAttributes
     : editState?.published || null
 
@@ -281,9 +281,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
    * a timeline revision in this instance will display an error localized to the popover itself.
    */
   const ready =
-    connectionState === 'connected' &&
-    editState.readyState !== 'loading' &&
-    (timelineReady || !!timelineError)
+    connectionState === 'connected' && editState.ready && (timelineReady || !!timelineError)
 
   const displayed: SanityDocumentBase | undefined = useMemo(
     () =>

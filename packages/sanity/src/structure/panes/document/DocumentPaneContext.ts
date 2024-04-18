@@ -1,8 +1,7 @@
-import {type SanityDocumentBase} from '@sanity/mutate'
 import {
   type ObjectSchemaType,
   type Path,
-  type SanityDocument,
+  type SanityDocumentBase,
   type ValidationMarker,
 } from '@sanity/types'
 import {createContext} from 'react'
@@ -33,7 +32,7 @@ export interface DocumentPaneContextValue {
   closeInspector: (inspectorName?: string) => void
   collapsedFieldSets: StateTree<boolean> | undefined
   collapsedPaths: StateTree<boolean> | undefined
-  compareValue: Partial<SanityDocument> | null
+  compareValue: Partial<SanityDocumentBase> | null
   connectionState: 'connecting' | 'reconnecting' | 'connected'
   displayed: SanityDocumentBase
   documentId: string

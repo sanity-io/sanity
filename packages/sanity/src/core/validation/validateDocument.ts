@@ -4,6 +4,7 @@ import {
   isTypedObject,
   type Rule,
   type SanityDocument,
+  type SanityDocumentBase,
   type Schema,
   type SchemaType,
   type ValidationMarker,
@@ -144,7 +145,7 @@ export function validateDocument({
 export interface ValidateDocumentObservableOptions
   extends Pick<ValidationContext, 'getDocumentExists' | 'i18n'> {
   getClient: (options: {apiVersion: string}) => SanityClient
-  document: SanityDocument
+  document: SanityDocumentBase
   schema: Schema
   environment: 'cli' | 'studio'
   maxCustomValidationConcurrency?: number

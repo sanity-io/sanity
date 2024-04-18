@@ -1,6 +1,5 @@
 /* eslint-disable max-nested-callbacks */
-import {type SanityDocument} from '@sanity/client'
-import {type User} from '@sanity/types'
+import {type SanityDocumentBase, type User} from '@sanity/types'
 import {sortBy} from 'lodash'
 import {useEffect, useMemo, useState} from 'react'
 import {concat, forkJoin, map, mergeMap, type Observable, of, switchMap} from 'rxjs'
@@ -45,7 +44,7 @@ const INITIAL_STATE: UserListWithPermissionsHookValue = {
  * @beta
  */
 export interface UserListWithPermissionsOptions {
-  documentValue: SanityDocument | null
+  documentValue: SanityDocumentBase | null
   permission: DocumentValuePermission
 }
 

@@ -1,6 +1,5 @@
 import {type SanityClient} from '@sanity/client'
-import {type SanityDocumentBase} from '@sanity/mutate'
-import {type SanityDocument, type Schema} from '@sanity/types'
+import {type SanityDocumentBase, type Schema} from '@sanity/types'
 import {combineLatest, type Observable} from 'rxjs'
 import {map, publishReplay, refCount, startWith, switchMap} from 'rxjs/operators'
 
@@ -21,19 +20,16 @@ export interface EditStateFor {
   id: string
   type: string
   transactionSyncLock: TransactionSyncLockState | null
-  draft: SanityDocument | null
-  published: SanityDocument | null
+  draft: SanityDocumentBase | null
+  published: SanityDocumentBase | null
   liveEdit: boolean
   ready: boolean
 }
 
-export type EditState = {
-  id: string
-  type: string
-  draft?: SanityDocumentBase
-  published?: SanityDocumentBase
-  readyState: 'loading' | 'syncing' | 'synced'
-}
+/**
+ * @hidden
+ * @beta */
+export type EditState = EditStateFor
 
 const LOCKED: TransactionSyncLockState = {enabled: true}
 const NOT_LOCKED: TransactionSyncLockState = {enabled: false}
@@ -48,7 +44,7 @@ export const editState = memoize(
     },
     idPair: IdPair,
     typeName: string,
-  ): Observable<EditStateFor> => {
+  ): Observable<EditState> => {
     const liveEdit = isLiveEditEnabled(ctx.schema, typeName)
     return snapshotPair(ctx.client, idPair, typeName, ctx.serverActionsEnabled).pipe(
       switchMap((versions) =>

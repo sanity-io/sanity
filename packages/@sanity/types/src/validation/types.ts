@@ -1,6 +1,6 @@
 import {type SanityClient} from '@sanity/client'
 
-import {type SanityDocument} from '../documents'
+import {type SanityDocumentBase} from '../documents'
 import {type ValidationMarker} from '../markers'
 import {type Path} from '../paths'
 import {
@@ -271,7 +271,7 @@ export interface ValidationContext {
   schema: Schema
   parent?: unknown
   type?: SchemaType
-  document?: SanityDocument
+  document?: SanityDocumentBase
   path?: Path
   getDocumentExists?: (options: {id: string}) => Promise<boolean>
   environment: 'cli' | 'studio'

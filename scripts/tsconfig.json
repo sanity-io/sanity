@@ -1,11 +1,7 @@
 {
-  "include": ["./**/*.ts", "./**/*.tsx", "./**/*.js", "./**/*.jsx", "./**/*.json", "../node_modules/@sanity/mutate/src"],
-  "extends": "@repo/tsconfig/base.json",
+  "include": ["./**/*.ts", "./**/*.tsx", "./**/*.js", "./**/*.jsx", "./**/*.json"],
+  "extends": "../tsconfig.json",
   "compilerOptions": {
-    "rootDir": ".",
-    "paths": {
-      "@sanity/mutate": ["../node_modules/@sanity/mutate/src"],
-      "@sanity/mutate/*": ["../node_modules/@sanity/mutate/src"]
-    }
+    "rootDir": "."
   }
 }
