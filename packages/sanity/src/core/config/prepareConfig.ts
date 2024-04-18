@@ -8,6 +8,7 @@ import {type ComponentType, createElement, type ElementType, isValidElement} fro
 import {isValidElementType} from 'react-is'
 import {map, shareReplay} from 'rxjs/operators'
 
+import {comments} from '../comments/plugin'
 import {FileSource, ImageSource} from '../form/studio/assetSource'
 import {type LocaleSource} from '../i18n'
 import {prepareI18n} from '../i18n/i18nConfig'
@@ -16,6 +17,7 @@ import {type AuthStore, createAuthStore, isAuthStore} from '../store/_legacy'
 import {validateWorkspaces} from '../studio'
 import {filterDefinitions} from '../studio/components/navbar/search/definitions/defaultFilters'
 import {operatorDefinitions} from '../studio/components/navbar/search/definitions/operators/defaultOperators'
+import {tasks} from '../tasks/plugin'
 import {type InitialValueTemplateItem, type Template, type TemplateItem} from '../templates'
 import {EMPTY_ARRAY, isNonNullable} from '../util'
 import {
@@ -30,8 +32,8 @@ import {
   initialDocumentBadges,
   initialLanguageFilter,
   internalTasksReducer,
+  legacySearchEnabledReducer,
   newDocumentOptionsResolver,
-  newSearchEnabledReducer,
   partialIndexingEnabledReducer,
   resolveProductionUrlReducer,
   schemaTemplatesReducer,
@@ -55,6 +57,8 @@ import {
   type WorkspaceOptions,
   type WorkspaceSummary,
 } from './types'
+
+const defaultPlugins = [comments(), tasks()]
 
 type InternalSource = WorkspaceSummary['__internal']['sources'][number]
 
@@ -114,7 +118,9 @@ export function prepareConfig(
       return preparedWorkspaces.get(rawWorkspace)!
     }
     const {unstable_sources: nestedSources = [], ...rootSource} = rawWorkspace
-    const sources = [rootSource as SourceOptions, ...nestedSources]
+    const sources = [rootSource as SourceOptions, ...nestedSources].map(({plugins, ...source}) => {
+      return {...source, plugins: [...(plugins ?? []), ...defaultPlugins]}
+    })
 
     const resolvedSources = sources.map((source): InternalSource => {
       const {projectId, dataset} = source
@@ -578,11 +584,11 @@ function resolveSource({
           initialValue: config.search?.unstable_partialIndexing?.enabled ?? false,
         }),
       },
-      unstable_enableNewSearch: resolveConfigProperty({
+      enableLegacySearch: resolveConfigProperty({
         config,
         context,
-        reducer: newSearchEnabledReducer,
-        propertyName: 'search.unstable_enableNewSearch',
+        reducer: legacySearchEnabledReducer,
+        propertyName: 'enableLegacySearch',
         initialValue: false,
       }),
       // we will use this when we add search config to PluginOptions

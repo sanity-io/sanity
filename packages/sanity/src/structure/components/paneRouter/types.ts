@@ -1,5 +1,5 @@
 import {type Path} from '@sanity/types'
-import type React from 'react'
+import {type ComponentType, type ReactNode} from 'react'
 
 import {type RouterPanes, type RouterPaneSibling} from '../../types'
 
@@ -10,14 +10,14 @@ export interface ChildLinkProps {
   childId: string
   childParameters?: Record<string, string>
   childPayload?: unknown
-  children?: React.ReactNode
+  children?: ReactNode
 }
 
 /**
  * @hidden
  * @beta */
 export interface BackLinkProps {
-  children?: React.ReactNode
+  children?: ReactNode
 }
 
 /**
@@ -28,7 +28,7 @@ export interface ReferenceChildLinkProps {
   documentType: string
   parentRefPath: Path
   template?: {id: string; params?: Record<string, string | number | boolean>}
-  children: React.ReactNode
+  children: ReactNode
 }
 
 /**
@@ -96,18 +96,18 @@ export interface PaneRouterContextValue {
   /**
    * Curried StateLink that passes the correct state automatically
    */
-  ChildLink: React.ComponentType<ChildLinkProps>
+  ChildLink: ComponentType<ChildLinkProps>
 
   /**
    * Curried StateLink that pops off the last pane group
    */
-  BackLink?: React.ComponentType<BackLinkProps>
+  BackLink?: ComponentType<BackLinkProps>
 
   /**
    * A specialized `ChildLink` that takes in the needed props to open a
    * referenced document to the right
    */
-  ReferenceChildLink: React.ComponentType<ReferenceChildLinkProps>
+  ReferenceChildLink: ComponentType<ReferenceChildLinkProps>
 
   /**
    * Similar to `ReferenceChildLink` expect without the wrapping component
@@ -117,7 +117,7 @@ export interface PaneRouterContextValue {
   /**
    * Curried StateLink that passed the correct state, but merges params/payload
    */
-  ParameterizedLink: React.ComponentType<ParameterizedLinkProps>
+  ParameterizedLink: ComponentType<ParameterizedLinkProps>
 
   /**
    * Replaces the current pane with a new one

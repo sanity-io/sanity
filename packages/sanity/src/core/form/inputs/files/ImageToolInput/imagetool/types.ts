@@ -63,11 +63,3 @@ export interface ToolCanvasProps {
   onChangeEnd: (value: {hotspot: Hotspot} | {crop: Crop}) => void
   readOnly: boolean
 }
-
-export interface ToolCanvasState {
-  cropping: keyof CropHandles | false
-  resizing: boolean
-  moving: boolean
-  cropMoving: boolean
-  pointerPosition: Coordinate | null
-}

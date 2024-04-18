@@ -5,7 +5,12 @@ import {useReducer} from 'react'
 
 import {type RecentSearch} from '../../datastores/recentSearches'
 import {type SearchOrdering} from '../../types'
-import {initialSearchState, searchReducer, type SearchReducerState} from './reducer'
+import {
+  initialSearchState,
+  type SearchAction,
+  searchReducer,
+  type SearchReducerState,
+} from './reducer'
 
 const mockUser: CurrentUser = {
   id: 'mock-user',
@@ -187,168 +192,109 @@ Array [
   })
 })
 
-it('should reset results after search term changes', () => {
-  const {result} = renderHook(() => useReducer(searchReducer, initialState))
-  const [, dispatch] = result.current
-
-  act(() =>
-    dispatch({
-      type: 'TERMS_QUERY_SET',
-      query: 'test query a',
-    }),
-  )
-
-  act(() =>
-    dispatch({
-      type: 'SEARCH_REQUEST_COMPLETE',
-      nextCursor: 'cursorA',
-      hits: [
-        {
-          hit: {
-            _type: 'person',
-            _id: 'personA',
-          },
-        },
-        {
-          hit: {
-            _type: 'person',
-            _id: 'personB',
-          },
-        },
-      ],
-    }),
-  )
-
-  const [stateA] = result.current
-
-  expect(stateA.result.hits).toMatchInlineSnapshot(`
-Array [
-  Object {
-    "hit": Object {
-      "_id": "personA",
-      "_type": "person",
+it.each<SearchAction>([
+  {
+    type: 'SEARCH_CLEAR',
+  },
+  {
+    type: 'TERMS_QUERY_SET',
+    query: 'test query b',
+  },
+  {
+    type: 'TERMS_SET',
+    terms: {
+      query: 'test',
+      types: [],
     },
   },
-  Object {
-    "hit": Object {
-      "_id": "personB",
-      "_type": "person",
-    },
-  },
-]
-`)
-
-  act(() =>
-    dispatch({
-      type: 'TERMS_QUERY_SET',
-      query: 'test query b',
-    }),
-  )
-
-  act(() =>
-    dispatch({
-      type: 'SEARCH_REQUEST_COMPLETE',
-      nextCursor: undefined,
-      hits: [
-        {
-          hit: {
-            _type: 'person',
-            _id: 'personB',
-          },
-        },
-        {
-          hit: {
-            _type: 'person',
-            _id: 'personC',
-          },
-        },
-      ],
-    }),
-  )
-
-  const [stateB] = result.current
-
-  expect(stateB.result.hits).toMatchInlineSnapshot(`
-Array [
-  Object {
-    "hit": Object {
-      "_id": "personB",
-      "_type": "person",
-    },
-  },
-  Object {
-    "hit": Object {
-      "_id": "personC",
-      "_type": "person",
-    },
-  },
-]
-`)
-})
-
-it('should reset results after ordering changes', () => {
-  const {result} = renderHook(() => useReducer(searchReducer, initialState))
-  const [, dispatch] = result.current
-
-  act(() =>
-    dispatch({
-      type: 'TERMS_QUERY_SET',
-      query: 'test query a',
-    }),
-  )
-
-  act(() =>
-    dispatch({
-      type: 'SEARCH_REQUEST_COMPLETE',
-      nextCursor: 'cursorA',
-      hits: [
-        {
-          hit: {
-            _type: 'person',
-            _id: 'personA',
-          },
-        },
-        {
-          hit: {
-            _type: 'person',
-            _id: 'personB',
-          },
-        },
-      ],
-    }),
-  )
-
-  const [stateA] = result.current
-
-  expect(stateA.result.hits).toMatchInlineSnapshot(`
-Array [
-  Object {
-    "hit": Object {
-      "_id": "personA",
-      "_type": "person",
-    },
-  },
-  Object {
-    "hit": Object {
-      "_id": "personB",
-      "_type": "person",
-    },
-  },
-]
-`)
-
-  act(() =>
-    dispatch({
-      type: 'ORDERING_SET',
-      ordering: {
-        titleKey: 'search.ordering.test-label',
-        sort: {
-          field: '_createdAt',
-          direction: 'desc',
-        },
+  {
+    type: 'ORDERING_SET',
+    ordering: {
+      titleKey: 'search.ordering.test-label',
+      sort: {
+        field: '_createdAt',
+        direction: 'desc',
       },
+    },
+  },
+  {
+    type: 'ORDERING_RESET',
+  },
+  {
+    type: 'TERMS_FILTERS_ADD',
+    filter: {
+      filterName: 'test',
+      operatorType: 'test',
+    },
+  },
+  {
+    type: 'TERMS_FILTERS_REMOVE',
+    filterKey: 'test',
+  },
+  {
+    type: 'TERMS_FILTERS_SET_OPERATOR',
+    filterKey: 'test',
+    operatorType: 'test',
+  },
+  {
+    type: 'TERMS_FILTERS_SET_VALUE',
+    filterKey: 'test',
+  },
+  {
+    type: 'TERMS_FILTERS_CLEAR',
+  },
+])('should reset results when SEARCH_REQUEST_COMPLETE occurs after $type', async (action) => {
+  const {result} = renderHook(() => useReducer(searchReducer, initialState))
+  const [, dispatch] = result.current
+
+  act(() =>
+    dispatch({
+      type: 'TERMS_QUERY_SET',
+      query: 'test query a',
     }),
   )
+
+  act(() =>
+    dispatch({
+      type: 'SEARCH_REQUEST_COMPLETE',
+      nextCursor: 'cursorA',
+      hits: [
+        {
+          hit: {
+            _type: 'person',
+            _id: 'personA',
+          },
+        },
+        {
+          hit: {
+            _type: 'person',
+            _id: 'personB',
+          },
+        },
+      ],
+    }),
+  )
+
+  const [stateA] = result.current
+
+  expect(stateA.result.hits).toMatchInlineSnapshot(`
+Array [
+  Object {
+    "hit": Object {
+      "_id": "personA",
+      "_type": "person",
+    },
+  },
+  Object {
+    "hit": Object {
+      "_id": "personB",
+      "_type": "person",
+    },
+  },
+]
+`)
+
+  act(() => dispatch(action))
 
   act(() =>
     dispatch({

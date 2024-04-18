@@ -9,8 +9,7 @@ import {
   type SchemaType,
 } from '@sanity/types'
 import {render} from '@testing-library/react'
-import type * as React from 'react'
-import {type FocusEvent} from 'react'
+import {type FocusEvent, type ReactElement, type RefObject} from 'react'
 
 import {
   createPatchChannel,
@@ -55,11 +54,11 @@ export interface TestRenderInputProps<ElementProps> {
 export type TestRenderInputCallback<ElementProps> = (
   inputProps: TestRenderInputProps<ElementProps>,
   context: TestRenderInputContext,
-) => React.ReactElement
+) => ReactElement
 
 export type RenderInputResult = {
   container: Element
-  focusRef: React.RefObject<HTMLElement>
+  focusRef: RefObject<HTMLElement>
   onBlur: jest.Mock<(event: FocusEvent) => void>
   onFocus: jest.Mock<(event: FocusEvent) => void>
   onChange: jest.Mock<(path: PatchArg | PatchEvent) => void>

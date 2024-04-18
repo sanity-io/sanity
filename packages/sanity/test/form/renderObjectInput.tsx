@@ -1,6 +1,6 @@
 import {jest} from '@jest/globals'
 import {type FieldDefinition, type ObjectSchemaType} from '@sanity/types'
-import type * as React from 'react'
+import {type ReactElement} from 'react'
 
 import {
   type ComplexElementProps,
@@ -23,7 +23,7 @@ const noopRenderDefault = () => <></>
 export type TestRenderObjectInputCallback = (
   inputProps: ObjectInputProps,
   context: TestRenderInputContext,
-) => React.ReactElement
+) => ReactElement
 
 export async function renderObjectInput(options: {
   fieldDefinition: FieldDefinition<'object'>

@@ -222,7 +222,9 @@ function getDocumentHtml(studioRootPath: string, props?: DocumentProps): string 
 
 function getDocumentComponent(studioRootPath: string) {
   debug('Loading default document component from `sanity` module')
-  const {DefaultDocument} = require('sanity')
+  const {DefaultDocument} = __DEV__
+    ? require('../../../core/components/DefaultDocument')
+    : require('sanity')
 
   debug('Attempting to load user-defined document component from %s', studioRootPath)
   const userDefined = tryLoadDocumentComponent(studioRootPath)

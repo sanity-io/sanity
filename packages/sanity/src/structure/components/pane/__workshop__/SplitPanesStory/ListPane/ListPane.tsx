@@ -1,7 +1,6 @@
 import {ArrowLeftIcon, ChevronRightIcon} from '@sanity/icons'
 import {Box, Card, Flex, Stack, Text} from '@sanity/ui'
-import type * as React from 'react'
-import {useCallback} from 'react'
+import {type Dispatch, type SetStateAction, useCallback} from 'react'
 import {ContextMenuButton} from 'sanity'
 
 import {Button} from '../../../../../../ui-components'
@@ -16,7 +15,7 @@ export function ListPane(props: {
   childId?: string
   index: number
   node: ListPaneNode
-  setPath: React.Dispatch<React.SetStateAction<string[]>>
+  setPath: Dispatch<SetStateAction<string[]>>
 }) {
   const {active, childId, index, node, setPath} = props
   const {collapsed: layoutCollapsed} = usePaneLayout()

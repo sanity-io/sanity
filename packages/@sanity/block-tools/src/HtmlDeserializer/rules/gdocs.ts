@@ -37,9 +37,10 @@ function isUnderline(el: Node): boolean {
 }
 
 // text-decoration seems like the most important rule for strike-through in their html
+// allows for line-through regex to be more lineient to allow for other text-decoration before or after
 function isStrikethrough(el: Node): boolean {
   const style = isElement(el) && el.getAttribute('style')
-  return /text-decoration\s*:\s*line-through/.test(style || '')
+  return /text-decoration\s*:\s*(?:.*line-through.*;)/.test(style || '')
 }
 
 // Check for attribute given by the gdocs preprocessor

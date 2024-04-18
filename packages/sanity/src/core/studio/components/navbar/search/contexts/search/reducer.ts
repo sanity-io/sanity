@@ -175,6 +175,10 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
         ...state,
         ordering: ORDERINGS.relevance,
         terms: stripRecent(state.terms),
+        result: {
+          ...state.result,
+          hasLocal: false,
+        },
       }
     case 'ORDERING_SET':
       return {
@@ -263,6 +267,10 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
             operatorDefinitions: state.definitions.operators,
           }),
         },
+        result: {
+          ...state.result,
+          hasLocal: false,
+        },
       }
     }
     case 'TERMS_FILTERS_CLEAR': {
@@ -284,6 +292,10 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
             filters,
             operatorDefinitions: state.definitions.operators,
           }),
+        },
+        result: {
+          ...state.result,
+          hasLocal: false,
         },
       }
     }
@@ -311,6 +323,10 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
             filters,
             operatorDefinitions: state.definitions.operators,
           }),
+        },
+        result: {
+          ...state.result,
+          hasLocal: false,
         },
       }
     }
@@ -351,6 +367,10 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
             operatorDefinitions: state.definitions.operators,
           }),
         },
+        result: {
+          ...state.result,
+          hasLocal: false,
+        },
       }
     }
     case 'TERMS_FILTERS_SET_VALUE': {
@@ -375,6 +395,10 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
             filters,
             operatorDefinitions: state.definitions.operators,
           }),
+        },
+        result: {
+          ...state.result,
+          hasLocal: false,
         },
       }
     }

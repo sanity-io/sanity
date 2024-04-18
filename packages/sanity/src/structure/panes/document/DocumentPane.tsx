@@ -1,8 +1,10 @@
 import {type Path} from '@sanity/types'
 import {Stack, Text} from '@sanity/ui'
 import {fromString as pathFromString} from '@sanity/util/paths'
-import {memo, useMemo} from 'react'
+import {memo, useCallback, useLayoutEffect, useMemo, useRef} from 'react'
 import {
+  COMMENTS_INSPECTOR_NAME,
+  CommentsProvider,
   ReferenceInputOptionsProvider,
   SourceProvider,
   Translate,
@@ -21,6 +23,7 @@ import {LoadingPane} from '../loading'
 import {useDocumentLayoutComponent} from './document-layout'
 import {DocumentPaneProvider} from './DocumentPaneProvider'
 import {type DocumentPaneProviderProps} from './types'
+import {useDocumentPane} from './useDocumentPane'
 
 type DocumentPaneOptions = DocumentPaneNode['options']
 
@@ -137,9 +140,67 @@ function DocumentPaneInner(props: DocumentPaneProviderProps) {
         initialValueTemplateItems={templatePermissions}
         activePath={activePath}
       >
-        <DocumentLayout documentId={options.id} documentType={options.type} />
+        <CommentsProviderWrapper>
+          <DocumentLayout documentId={options.id} documentType={options.type} />
+        </CommentsProviderWrapper>
       </ReferenceInputOptionsProvider>
     </DocumentPaneProvider>
+  )
+}
+
+function CommentsProviderWrapper({children}: {children: React.ReactNode}) {
+  const {documentId, documentType, connectionState, onPathOpen, inspector, openInspector} =
+    useDocumentPane()
+  const {params, setParams, createPathWithParams} = usePaneRouter()
+
+  const selectedCommentId = params?.comment
+  const paramsRef = useRef(params)
+  useLayoutEffect(() => {
+    paramsRef.current = params
+  }, [params])
+
+  const getCommentLink = useCallback(
+    (commentId: string) => {
+      // Generate a path based on the current pane params.
+      // We force a value for `inspect` to ensure that this is included in URLs when comments
+      // are created outside of the inspector context (i.e. directly on the field)
+      // @todo: consider filtering pane router params and culling all non-active RHS panes prior to generating this link
+      const path = createPathWithParams({
+        ...paramsRef.current,
+        comment: commentId,
+        inspect: COMMENTS_INSPECTOR_NAME,
+      })
+      return `${window.location.origin}${path}`
+    },
+    [createPathWithParams],
+  )
+
+  const handleClearSelectedComment = useCallback(() => {
+    setParams({...paramsRef.current, comment: undefined})
+  }, [setParams])
+
+  const handleOpenCommentsInspector = useCallback(() => {
+    if (inspector?.name === COMMENTS_INSPECTOR_NAME) return
+
+    openInspector(COMMENTS_INSPECTOR_NAME)
+  }, [inspector?.name, openInspector])
+
+  return (
+    <CommentsProvider
+      documentId={documentId}
+      documentType={documentType}
+      getCommentLink={getCommentLink}
+      isConnecting={connectionState === 'connecting'}
+      onClearSelectedComment={handleClearSelectedComment}
+      onPathOpen={onPathOpen}
+      selectedCommentId={selectedCommentId}
+      isCommentsOpen={inspector?.name === COMMENTS_INSPECTOR_NAME}
+      onCommentsOpen={handleOpenCommentsInspector}
+      sortOrder="desc"
+      type="field"
+    >
+      {children}
+    </CommentsProvider>
   )
 }
 

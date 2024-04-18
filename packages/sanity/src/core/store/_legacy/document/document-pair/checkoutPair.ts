@@ -71,28 +71,49 @@ function setVersion<T>(version: 'draft' | 'published') {
   return (ev: T): T & {version: 'draft' | 'published'} => ({...ev, version})
 }
 
+function requireId<T extends {_id?: string; _type: string}>(
+  value: T,
+): asserts value is T & {_id: string} {
+  if (!value._id) {
+    throw new Error('Expected document to have an _id')
+  }
+}
+
+//if we're patching a published document directly
+//then we're live editing and we should use raw mutations
+//rather than actions
+function isLiveEditMutation(mutationParams: Mutation['params'], publishedId: string) {
+  const {resultRev, ...mutation} = mutationParams
+  const patchTargets: string[] = mutation.mutations.flatMap((mut) => {
+    const mutationPayloads = Object.values(mut)
+    if (mutationPayloads.length > 1) {
+      throw new Error('Did not expect multiple mutations in the same payload')
+    }
+    return mutationPayloads[0].id || mutationPayloads[0]._id
+  })
+  return patchTargets.every((target) => target === publishedId)
+}
+
 function toActions(idPair: IdPair, mutationParams: Mutation['params']) {
-  return mutationParams.mutations.map((mutations): HttpAction => {
+  return mutationParams.mutations.flatMap<HttpAction>((mutations) => {
     if (Object.keys(mutations).length > 1) {
       // todo: this might be a bit too strict, but I'm (lazily) trying to check if we ever get more than one mutation in a payload
       throw new Error('Did not expect multiple mutations in the same payload')
     }
-    if (mutations.delete) {
-      return {
-        actionType: 'sanity.action.document.delete',
-        publishedId: idPair.publishedId,
-        draftId: idPair.draftId,
-      }
-    }
+    // This action is not always interoperable with the equivalent mutation. It will fail if the
+    // published version of the document already exists.
     if (mutations.createIfNotExists) {
+      // ignore all createIfNotExists, as these should be covered by the actions api and only be done locally
+      return []
+    }
+    if (mutations.create) {
+      // the actions API requires attributes._id to be set, while it's optional in the mutation API
+      requireId(mutations.create)
       return {
         actionType: 'sanity.action.document.create',
         publishedId: idPair.publishedId,
-        attributes: {
-          ...mutations.createIfNotExists,
-          _id: idPair.draftId,
-        },
-        ifExists: 'ignore',
+        attributes: mutations.create,
+        ifExists: 'fail',
       }
     }
     if (mutations.patch) {
@@ -107,13 +128,16 @@ function toActions(idPair: IdPair, mutationParams: Mutation['params']) {
   })
 }
 
-function serverCommitMutations(
+function commitActions(
   defaultClient: SanityClient,
   idPair: IdPair,
   mutationParams: Mutation['params'],
 ) {
-  const vXClient = defaultClient.withConfig({apiVersion: 'X'})
+  if (isLiveEditMutation(mutationParams, idPair.publishedId)) {
+    return commitMutations(defaultClient, mutationParams)
+  }
 
+  const vXClient = defaultClient.withConfig({apiVersion: 'X'})
   const {dataset} = defaultClient.config()
 
   return vXClient.observable.request({
@@ -147,7 +171,7 @@ function submitCommitRequest(
 ) {
   return from(
     serverActionsEnabled
-      ? serverCommitMutations(client, idPair, request.mutation.params)
+      ? commitActions(client, idPair, request.mutation.params)
       : commitMutations(client, request.mutation.params),
   ).pipe(
     tap({
