@@ -28,10 +28,10 @@ for (const type of allTypes) {
 
     await page.waitForSelector(`data-testid=deprecated-badge-${type}`)
 
-    const deprecatedBadge = await page.getByTestId(`deprecated-badge-${type}`)
-    const deprecatedMessage = await page.getByTestId(`deprecated-message-${type}`)
+    const deprecatedBadge = page.getByTestId(`deprecated-badge-${type}`)
+    const deprecatedMessage = page.getByTestId(`deprecated-message-${type}`)
 
-    expect(deprecatedBadge).toHaveText('deprecated')
-    expect(deprecatedMessage).toBeVisible()
+    await expect(deprecatedMessage).toBeVisible()
+    await expect(deprecatedBadge).toHaveText('deprecated')
   })
 }
