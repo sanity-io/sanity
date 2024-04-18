@@ -1,6 +1,5 @@
 import {useContext} from 'react'
-
-import {IsLastPaneContext} from './IsLastPaneContext'
+import {IsLastPaneContext} from 'sanity/_singletons'
 
 /**
  * @internal
