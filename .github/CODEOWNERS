@@ -53,6 +53,10 @@
 # -- Comments --
 /packages/sanity/src/core/comments/ @sanity-io/studio-ex
 
+# -- Scheduled Publishing --
+/packages/sanity/src/core/scheduledPublishing/ @sanity-io/studio-ex
+
+
 # Code and typegeneration
 /packages/@sanity/codegen/ @sanity-io/content-lake-dx
 /packages/@sanity/cli/src/actions/typegen @sanity-io/content-lake-dx
