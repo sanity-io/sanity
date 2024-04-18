@@ -12,4 +12,7 @@ import {createContext} from 'react'
  * plugin authors access to what the `usePane`, `usePaneRouter`, and
  * `useDocumentPane` provides without exposing specifics from the structure tool
  */
+/**
+ * @internal
+ */
 export const IsLastPaneContext = createContext<boolean>(false)
