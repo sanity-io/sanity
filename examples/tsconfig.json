@@ -19,7 +19,13 @@
       "@sanity/util": ["./packages/@sanity/util/src/_exports/index.ts"],
       "@sanity/vision": ["./packages/@sanity/vision/src/index.ts"],
       "groq": ["./packages/groq/src/groq.ts"],
-      "sanity/*": ["./packages/sanity/src/_exports/*"],
+      "sanity/_internal": ["./packages/sanity/src/_exports/_internal.ts"],
+      "sanity/cli": ["./packages/sanity/src/_exports/cli.ts"],
+      "sanity/desk": ["./packages/sanity/src/_exports/desk.ts"],
+      "sanity/migrate": ["./packages/sanity/src/_exports/migrate.ts"],
+      "sanity/presentation": ["./packages/sanity/src/_exports/presentation.ts"],
+      "sanity/router": ["./packages/sanity/src/_exports/router.ts"],
+      "sanity/structure": ["./packages/sanity/src/_exports/structure.ts"],
       "sanity": ["./packages/sanity/src/_exports/index.ts"]
     }
   }
