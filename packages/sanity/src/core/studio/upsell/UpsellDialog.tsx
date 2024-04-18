@@ -5,9 +5,9 @@ import {Box, Stack} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {styled} from 'styled-components'
 
-import {Button, Dialog} from '../../../../ui-components'
-import {UpsellDescriptionSerializer} from '../../../studio'
-import {type UpsellData} from '../../types'
+import {Button, Dialog} from '../../../ui-components'
+import {type UpsellData} from './types'
+import {UpsellDescriptionSerializer} from './upsellDescriptionSerializer'
 
 /**
  * Absolute positioned button to close the dialog.
@@ -37,19 +37,19 @@ const Image = styled.img`
   height: 200px;
 `
 
-interface CommentsUpsellDialogProps {
+interface UpsellDialogProps {
   data: UpsellData
   onClose: () => void
   onPrimaryClick: () => void
   onSecondaryClick: () => void
 }
 
-export function CommentsUpsellDialog(props: CommentsUpsellDialogProps) {
+export function UpsellDialog(props: UpsellDialogProps) {
   const {data, onClose, onPrimaryClick, onSecondaryClick} = props
 
   return (
     <Dialog
-      id="comments-upsell"
+      id="upsell-dialog"
       onClose={onClose}
       onClickOutside={onClose}
       __unstable_hideCloseButton

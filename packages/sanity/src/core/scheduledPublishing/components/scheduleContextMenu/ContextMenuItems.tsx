@@ -3,6 +3,7 @@ import {type SchemaType} from '@sanity/types'
 
 import {useCurrentUser, useDocumentPairPermissions} from '../../../store'
 import useScheduleOperation from '../../hooks/useScheduleOperation'
+import {useScheduledPublishingEnabled} from '../../tool/contexts/ScheduledPublishingEnabledProvider'
 import {type Schedule} from '../../types'
 import {getScheduledDocument} from '../../utils/paneItemHelpers'
 import MenuItemWithPermissionsTooltip from './MenuItemWithPermissionsTooltip'
@@ -22,7 +23,7 @@ interface Props {
 
 const ContextMenuItems = (props: Props) => {
   const {actions, onDelete, onEdit, schedule, schemaType} = props
-
+  const {mode} = useScheduledPublishingEnabled()
   const firstDocument = getScheduledDocument(schedule)
 
   const currentUser = useCurrentUser()
@@ -54,7 +55,7 @@ const ContextMenuItems = (props: Props) => {
 
   return (
     <>
-      {actions?.edit && (
+      {actions?.edit && mode !== 'upsell' && (
         <MenuItemWithPermissionsTooltip
           currentUser={currentUser}
           hasPermission={!insufficientPermissions}

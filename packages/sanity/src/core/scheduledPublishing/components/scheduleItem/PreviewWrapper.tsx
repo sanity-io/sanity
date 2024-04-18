@@ -9,6 +9,7 @@ import {
   SCHEDULE_ACTION_DICTIONARY,
 } from '../../constants'
 import useTimeZone from '../../hooks/useTimeZone'
+import {useScheduledPublishingEnabled} from '../../tool/contexts/ScheduledPublishingEnabledProvider'
 import {type Schedule} from '../../types'
 import {type PaneItemPreviewState} from '../../utils/paneItemHelpers'
 import {getLastExecuteDate} from '../../utils/scheduleUtils'
@@ -46,7 +47,7 @@ const PreviewWrapper = (props: Props) => {
     schemaType,
     useElementQueries,
   } = props
-
+  const {mode} = useScheduledPublishingEnabled()
   const [validationStatus, setValidationStatus] = useState(EMPTY_VALIDATION_STATUS)
   const {validation} = validationStatus
   const {hasError, validationTone} = useValidationState(validation)
@@ -56,7 +57,13 @@ const PreviewWrapper = (props: Props) => {
   const scheduleDate = executeDate ? new Date(executeDate) : null
 
   return (
-    <Card padding={1} radius={2} shadow={1} tone={validationTone}>
+    <Card
+      padding={1}
+      radius={2}
+      shadow={1}
+      tone={validationTone}
+      style={mode === 'upsell' && schedule.state === 'scheduled' ? {opacity: 0.7} : undefined}
+    >
       <Flex align="center" gap={1} justify="space-between">
         <Card
           __unstable_focusRing

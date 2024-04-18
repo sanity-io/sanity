@@ -1,5 +1,5 @@
 import {CalendarIcon, ClockIcon} from '@sanity/icons'
-import {Box, Text} from '@sanity/ui'
+import {Box} from '@sanity/ui'
 import {useCallback, useState} from 'react'
 
 import {InsufficientPermissionsMessage} from '../../../components/InsufficientPermissionsMessage'
@@ -13,12 +13,12 @@ import DialogFooter from '../../components/dialogs/DialogFooter'
 import DialogHeader from '../../components/dialogs/DialogHeader'
 import {EditScheduleForm} from '../../components/editScheduleForm'
 import ErrorCallout from '../../components/errorCallout/ErrorCallout'
-import {FEATURE_NOT_SUPPORTED_TEXT} from '../../constants'
 import {DocumentActionPropsProvider} from '../../contexts/documentActionProps'
-import useCheckFeature from '../../hooks/useCheckFeature'
 import usePollSchedules from '../../hooks/usePollSchedules'
 import useScheduleForm from '../../hooks/useScheduleForm'
 import useScheduleOperation from '../../hooks/useScheduleOperation'
+import {useScheduledPublishingEnabled} from '../../tool/contexts/ScheduledPublishingEnabledProvider'
+import {useSchedulePublishingUpsell} from '../../tool/contexts/SchedulePublishingUpsellProvider'
 import {debugWithName} from '../../utils/debug'
 import {NewScheduleInfo} from './NewScheduleInfo'
 import Schedules from './Schedules'
@@ -40,7 +40,7 @@ const debug = debugWithName('ScheduleAction')
  * empty dependency arrays.
  */
 
-export const ScheduleAction = (props: DocumentActionProps): DocumentActionDescription => {
+export const ScheduleAction = (props: DocumentActionProps): DocumentActionDescription | null => {
   const {draft, id, liveEdit, onComplete, published, type} = props
 
   const currentUser = useCurrentUser()
@@ -51,9 +51,9 @@ export const ScheduleAction = (props: DocumentActionProps): DocumentActionDescri
     permission: 'publish',
   })
   const {createSchedule} = useScheduleOperation()
-
+  const {enabled, mode} = useScheduledPublishingEnabled()
+  const {handleOpenDialog} = useSchedulePublishingUpsell()
   // Check if the current project supports Scheduled Publishing
-  const hasFeature = useCheckFeature()
 
   const [dialogOpen, setDialogOpen] = useState(false)
   const {formData, onFormChange} = useScheduleForm()
@@ -81,8 +81,12 @@ export const ScheduleAction = (props: DocumentActionProps): DocumentActionDescri
 
   // Callbacks
   const handleDialogOpen = useCallback(() => {
-    setDialogOpen(true)
-  }, [])
+    if (mode === 'upsell') {
+      handleOpenDialog('document_action')
+    } else {
+      setDialogOpen(true)
+    }
+  }, [mode, handleOpenDialog])
 
   const handleScheduleCreate = useCallback(() => {
     if (!formData?.date) {
@@ -116,48 +120,39 @@ export const ScheduleAction = (props: DocumentActionProps): DocumentActionDescri
       'Live Edit is enabled for this content type and publishing happens automatically as you make changes'
   }
 
-  let dialog: DocumentActionDialogProps
-  if (hasFeature === false) {
-    dialog = {
-      content: <Text size={1}>{FEATURE_NOT_SUPPORTED_TEXT}</Text>,
-      header: 'Feature not available',
-      onClose: onComplete,
-      type: 'dialog',
-    }
-  } else {
-    dialog = {
-      content: fetchError ? (
-        <ErrorCallout
-          description="More information in the developer console."
-          title="Something went wrong, unable to retrieve schedules."
-        />
-      ) : (
-        <DocumentActionPropsProvider value={props}>
-          {hasExistingSchedules ? (
-            <Schedules schedules={schedules} />
-          ) : (
-            <EditScheduleForm onChange={onFormChange} value={formData}>
-              <NewScheduleInfo id={id} schemaType={type} />
-            </EditScheduleForm>
-          )}
-        </DocumentActionPropsProvider>
-      ),
-      footer: !hasExistingSchedules && (
-        <DialogFooter
-          buttonText="Schedule"
-          disabled={!formData?.date}
-          icon={ClockIcon}
-          onAction={handleScheduleCreate}
-          onComplete={onComplete}
-          tone="primary"
-        />
-      ),
-      header: <DialogHeader title={title} />,
-      onClose: onComplete,
-      type: 'dialog',
-    }
+  const dialog: DocumentActionDialogProps = {
+    content: fetchError ? (
+      <ErrorCallout
+        description="More information in the developer console."
+        title="Something went wrong, unable to retrieve schedules."
+      />
+    ) : (
+      <DocumentActionPropsProvider value={props}>
+        {hasExistingSchedules ? (
+          <Schedules schedules={schedules} />
+        ) : (
+          <EditScheduleForm onChange={onFormChange} value={formData}>
+            <NewScheduleInfo id={id} schemaType={type} />
+          </EditScheduleForm>
+        )}
+      </DocumentActionPropsProvider>
+    ),
+    footer: !hasExistingSchedules && (
+      <DialogFooter
+        buttonText="Schedule"
+        disabled={!formData?.date}
+        icon={ClockIcon}
+        onAction={handleScheduleCreate}
+        onComplete={onComplete}
+        tone="primary"
+      />
+    ),
+    header: <DialogHeader title={title} />,
+    onClose: onComplete,
+    type: 'dialog',
   }
 
+  if (!enabled) return null
   return {
     dialog: dialogOpen && dialog,
     disabled: isInitialLoading || !documentExists || liveEdit,

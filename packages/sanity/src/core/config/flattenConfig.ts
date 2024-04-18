@@ -1,5 +1,11 @@
 import {type PluginOptions} from './types'
 
+const filteredPlugins = [
+  // Tasks is added by default, we are filtering to avoid duplicates
+  'sanity/tasks',
+  // Scheduled publishing is added by default, we are filtering to avoid duplicates
+  'scheduled-publishing',
+]
 /**
  * @internal
  *
@@ -21,7 +27,7 @@ export const flattenConfig = (
   const tasksPlugin = allPlugins.find((plugin) => plugin.config.name === 'sanity/tasks')
 
   const resolved = [
-    ...allPlugins.filter((plugin) => plugin.config.name !== 'sanity/tasks'),
+    ...allPlugins.filter((plugin) => !filteredPlugins.includes(plugin.config.name)),
     rootConfig,
   ]
 

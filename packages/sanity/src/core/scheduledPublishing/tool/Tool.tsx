@@ -12,7 +12,6 @@ import usePollSchedules from '../hooks/usePollSchedules'
 import useTimeZone from '../hooks/useTimeZone'
 import {type Schedule, type ScheduleState} from '../types'
 import {SchedulesProvider} from './contexts/schedules'
-import FeatureBanner from './featureBanner/FeatureBanner'
 import {ScheduleFilters} from './scheduleFilters'
 import {Schedules} from './schedules'
 import SchedulesContextMenu from './schedulesContextMenu/SchedulesContextMenu'
@@ -78,8 +77,6 @@ export default function Tool() {
   return (
     <SchedulesProvider value={schedulesContext}>
       <Flex direction="column" height="fill" flex={1} overflow="hidden">
-        <FeatureBanner />
-
         <Flex flex={1} height="fill">
           {/* LHS Column */}
           <Column

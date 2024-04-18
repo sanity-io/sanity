@@ -1,39 +1,69 @@
 import {useTelemetry} from '@sanity/telemetry/react'
 import {template} from 'lodash'
-import {useCallback, useEffect, useMemo, useState} from 'react'
-
-import {useClient, useProjectId} from '../../../hooks'
+import {createContext, useCallback, useContext, useEffect, useMemo, useState} from 'react'
 import {
+  DEFAULT_STUDIO_CLIENT_OPTIONS,
   UpsellDialogDismissed,
   UpsellDialogLearnMoreCtaClicked,
   UpsellDialogUpgradeCtaClicked,
   UpsellDialogViewed,
   type UpsellDialogViewedInfo,
-} from '../../../studio'
+  useClient,
+  useProjectId,
+} from 'sanity'
+
 import {type UpsellData} from '../../../studio/upsell/types'
 import {UpsellDialog} from '../../../studio/upsell/UpsellDialog'
-import {TasksUpsellContext} from './TasksUpsellContext'
-import {type TasksUpsellContextValue} from './types'
 
-const FEATURE = 'tasks'
-const TEMPLATE_OPTIONS = {interpolate: /{{([\s\S]+?)}}/g}
-const BASE_URL = 'www.sanity.io'
-// Date when the change from array to object in the data returned was introduced.
-const API_VERSION = '2024-04-19'
+export interface SchedulePublishUpsellContextValue {
+  upsellDialogOpen: boolean
+  handleOpenDialog: (source: UpsellDialogViewedInfo['source']) => void
+  upsellData: UpsellData | null
+  telemetryLogs: {
+    dialogSecondaryClicked: () => void
+    dialogPrimaryClicked: () => void
+    panelViewed: (source: UpsellDialogViewedInfo['source']) => void
+    panelDismissed: () => void
+    panelPrimaryClicked: () => void
+    panelSecondaryClicked: () => void
+  }
+}
 
 /**
  * @beta
  * @hidden
  */
-export function TasksUpsellProvider(props: {children: React.ReactNode}) {
+export const SchedulePublishUpsellContext = createContext<SchedulePublishUpsellContextValue>({
+  upsellData: null,
+  handleOpenDialog: () => null,
+  upsellDialogOpen: false,
+  telemetryLogs: {
+    dialogSecondaryClicked: () => null,
+    dialogPrimaryClicked: () => null,
+    panelViewed: () => null,
+    panelDismissed: () => null,
+    panelPrimaryClicked: () => null,
+    panelSecondaryClicked: () => null,
+  },
+})
+
+const FEATURE = 'scheduled_publishing' as const
+const TEMPLATE_OPTIONS = {interpolate: /{{([\s\S]+?)}}/g}
+const BASE_URL = 'www.sanity.io'
+
+/**
+ * @beta
+ * @hidden
+ */
+export function SchedulePublishingUpsellProvider(props: {children: React.ReactNode}) {
   const [upsellDialogOpen, setUpsellDialogOpen] = useState(false)
   const [upsellData, setUpsellData] = useState<UpsellData | null>(null)
   const projectId = useProjectId()
   const telemetry = useTelemetry()
-  const client = useClient({apiVersion: API_VERSION})
+  const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
 
   const telemetryLogs = useMemo(
-    (): TasksUpsellContextValue['telemetryLogs'] => ({
+    (): SchedulePublishUpsellContextValue['telemetryLogs'] => ({
       dialogSecondaryClicked: () =>
         telemetry.log(UpsellDialogLearnMoreCtaClicked, {
           feature: FEATURE,
@@ -86,12 +116,13 @@ export function TasksUpsellProvider(props: {children: React.ReactNode}) {
   }, [telemetry])
 
   useEffect(() => {
-    const data$ = client.observable.request<UpsellData | null>({
+    const data$ = client.observable.request<UpsellData[] | null>({
       uri: '/journey/tasks',
     })
 
     const sub = data$.subscribe({
-      next: (data) => {
+      next: (response) => {
+        const data = response?.[0]
         if (!data) return
         try {
           const ctaUrl = template(data.ctaButton.url, TEMPLATE_OPTIONS)
@@ -127,7 +158,7 @@ export function TasksUpsellProvider(props: {children: React.ReactNode}) {
     [telemetry],
   )
 
-  const ctxValue = useMemo<TasksUpsellContextValue>(
+  const ctxValue = useMemo<SchedulePublishUpsellContextValue>(
     () => ({
       upsellDialogOpen,
       handleOpenDialog,
@@ -138,7 +169,7 @@ export function TasksUpsellProvider(props: {children: React.ReactNode}) {
   )
 
   return (
-    <TasksUpsellContext.Provider value={ctxValue}>
+    <SchedulePublishUpsellContext.Provider value={ctxValue}>
       {props.children}
       {upsellData && upsellDialogOpen && (
         <UpsellDialog
@@ -148,6 +179,11 @@ export function TasksUpsellProvider(props: {children: React.ReactNode}) {
           onSecondaryClick={handleSecondaryButtonClick}
         />
       )}
-    </TasksUpsellContext.Provider>
+    </SchedulePublishUpsellContext.Provider>
   )
+}
+
+export function useSchedulePublishingUpsell(): SchedulePublishUpsellContextValue {
+  const context = useContext(SchedulePublishUpsellContext)
+  return context
 }

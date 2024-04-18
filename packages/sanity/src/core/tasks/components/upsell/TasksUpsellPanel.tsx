@@ -1,4 +1,6 @@
-import {CommentsUpsellPanel} from '../../../comments'
+import {Box, Container} from '@sanity/ui'
+
+import {UpsellPanel} from '../../../studio/upsell/UpsellPanel'
 import {useTasksUpsell} from '../../context'
 
 export function TasksUpsellPanel() {
@@ -9,10 +11,14 @@ export function TasksUpsellPanel() {
 
   if (!data) return null
   return (
-    <CommentsUpsellPanel
-      data={data}
-      onPrimaryClick={onPrimaryClick}
-      onSecondaryClick={onSecondaryClick}
-    />
+    <Container width={1}>
+      <Box marginBottom={6}>
+        <UpsellPanel
+          data={data}
+          onPrimaryClick={onPrimaryClick}
+          onSecondaryClick={onSecondaryClick}
+        />
+      </Box>
+    </Container>
   )
 }

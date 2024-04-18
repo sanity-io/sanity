@@ -39,7 +39,6 @@ const VirtualList = () => {
     <Box
       paddingBottom={6}
       paddingX={4}
-      paddingTop={4}
       ref={containerRef}
       style={{
         position: 'relative',
