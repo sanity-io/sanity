@@ -1,8 +1,5 @@
 # Scheduled Publishing plugin for Sanity.io
 
-> This is a **Sanity Studio v3** plugin.
-> For the v2 version, please refer to the [v2-branch](https://github.com/sanity-io/sanity-plugin-scheduled-publishing/tree/studio-v2).
-
 ## What is it?
 
 Schedule your content for future publication and organise upcoming releases – no custom tasks or serverless functions required!
@@ -50,28 +47,9 @@ Schedule your content for future publication and organise upcoming releases – 
 
 ## Installation
 
-```
-npm install --save @sanity/scheduled-publishing
-```
-
-or
-
-```
-yarn add @sanity/scheduled-publishing
-```
+This feature is included by default in your studio.
 
 ## Usage
-
-Add it as a plugin in sanity.config.ts (or .js):
-
-```js
-import {scheduledPublishing} from '@sanity/scheduled-publishing'
-
-export default defineConfig({
-  // ...
-  plugins: [scheduledPublishing()],
-})
-```
 
 **This will automatically:**
 
@@ -84,13 +62,14 @@ export default defineConfig({
 To change the date formatting used when creating and editing schedules, pass a [valid `date-fns` formatted token](https://date-fns.org/docs/format) as an option.
 
 ```js
-  plugins: [
-    // Make sure to specify a time component if you're specifying a custom format!
-    scheduledPublishing({
+  defineConfig({
+    ...yourConfig,
+    scheduledPublishing: {
+      enabled: true,
       // E.g. 12/25/2000 6:30 AM
       inputDateTimeFormat: 'MM/dd/yyyy h:mm a',
-    })
-  ],
+    }
+  })
 ```
 
 If left unspecified, this plugin will default to `dd/MM/yyyy HH:mm`.
@@ -174,16 +153,6 @@ More information can be found on the [Scheduling API][scheduling-api] page.
 <summary>Where is time zone data pulled from?</summary>
 
 - Time zones and their corresponding cities, regions and daylight savings offsets are directly sourced from the [@vvo/dztb][@vvo/dztb] library, which is automatically updated with data from [geonames.org](https://www.geonames.org/).
-- Latest time zone + region data from [@vvo/dztb][@vvo/dztb] is pulled in when first installing this plugin.
-- In the event you need to bring in upstream time zone and region data, run:
-
-  ```sh
-  # Yarn
-  yarn upgrade @sanity/scheduled-publishing
-
-  # NPM
-  npm update @vvo/tzdb --legacy-peer-deps
-  ```
 
 </details>
 
@@ -193,36 +162,3 @@ More information can be found on the [Scheduling API][scheduling-api] page.
 - **Yes.** Documents scheduled to publish in future will do so, even if they contain validation errors. This also applies to scheduled documents that you manually opt to publish immediately via the tool.
 
 </details>
-
-### Changes from Sanity Studio v2 version
-
-The Studio V3 version differs from the v2 versions in a few ways:
-
-- Actions and badges now auto-compose with other document actions by default. This is the _opposite_ of how the v2 version behaves:
-  It is no longer necessary to compose actions and badges manually when there are other plugins that add those to studio.
-- This means that you now have to _remove_ the Schedule Action from types that _should not_ have it, as opposed to _add_ it for those that should like in v2.
-
-## Develop & test
-
-This plugin uses [@sanity/plugin-kit](https://github.com/sanity-io/plugin-kit)
-with default configuration for build & watch scripts.
-
-See [Testing a plugin in Sanity Studio](https://github.com/sanity-io/plugin-kit#testing-a-plugin-in-sanity-studio)
-on how to run this plugin with hot-reload in the studio.
-
-### Release new version
-
-Run the [CI & Release workflow](https://github.com/sanity-io/sanity-plugin-scheduled-publishing/actions/workflows/main.yml).
-Make sure to select the main branch and check "Release new version".
-
-Semantic release will only release on configured branches, so it is safe to run release on any branch.
-
-[document-actions]: https://www.sanity.io/docs/document-actions
-[document-badges]: https://www.sanity.io/docs/custom-document-badges
-[scheduling-api]: https://www.sanity.io/docs/scheduling-api
-[@vvo/dztb]: https://github.com/vvo/tzdb
-[pricing]: https://www.sanity.io/pricing
-
-## License
-
-This repository is published under the [MIT](LICENSE) license.
