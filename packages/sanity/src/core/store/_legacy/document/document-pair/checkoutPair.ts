@@ -2,7 +2,7 @@ import {type SanityClient} from '@sanity/client'
 import {type Mutation} from '@sanity/mutator'
 import {type SanityDocument} from '@sanity/types'
 import {EMPTY, from, merge, type Observable, Subject} from 'rxjs'
-import {filter, map, mergeMap, share, tap} from 'rxjs/operators'
+import {filter, map, mergeMap, share, take, tap} from 'rxjs/operators'
 
 import {
   type BufferedDocumentEvent,
@@ -14,6 +14,7 @@ import {
 import {getPairListener, type ListenerEvent} from '../getPairListener'
 import {type IdPair, type PendingMutationsEvent, type ReconnectEvent} from '../types'
 import {type HttpAction} from './actionTypes'
+import {featureToggleRequest} from './utils/featureToggleRequest'
 
 const isMutationEventForDocId =
   (id: string) =>
@@ -224,9 +225,16 @@ export function checkoutPair(
     filter((ev): ev is PendingMutationsEvent => ev.type === 'pending'),
   )
 
+  const serverActionFeatureToggle$ = featureToggleRequest(client, serverActionsEnabled)
+
   const commits$ = merge(draft.commitRequest$, published.commitRequest$).pipe(
     mergeMap((commitRequest) =>
-      submitCommitRequest(client, idPair, commitRequest, serverActionsEnabled),
+      serverActionFeatureToggle$.pipe(
+        take(1),
+        mergeMap((canUseServerActions) =>
+          submitCommitRequest(client, idPair, commitRequest, canUseServerActions),
+        ),
+      ),
     ),
     mergeMap(() => EMPTY),
     share(),
