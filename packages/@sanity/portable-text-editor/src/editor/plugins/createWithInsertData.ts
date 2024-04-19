@@ -12,6 +12,7 @@ import {
 import {debugWithName} from '../../utils/debug'
 import {validateValue} from '../../utils/validateValue'
 import {fromSlateValue, isEqualToEmptyEditor, toSlateValue} from '../../utils/values'
+import {vercelStegaCleanAll} from '../../utils/vercelStegaCleanAll'
 
 const debug = debugWithName('plugin:withInsertData')
 
@@ -167,8 +168,9 @@ export function createWithInsertData(
         return false
       }
       change$.next({type: 'loading', isLoading: true}) // This could potentially take some time
-      const html = data.getData('text/html')
-      const text = data.getData('text/plain')
+      // vercelStegaCleanAll will make sure that no invisible unicode characters will bog down PTE
+      const html = vercelStegaCleanAll(data.getData('text/html'))
+      const text = vercelStegaCleanAll(data.getData('text/plain'))
       if (html || text) {
         debug('Inserting data', data)
         let portableText: PortableTextBlock[]
