@@ -14,7 +14,7 @@ import {
 import {getPairListener, type ListenerEvent} from '../getPairListener'
 import {type IdPair, type PendingMutationsEvent, type ReconnectEvent} from '../types'
 import {type HttpAction} from './actionTypes'
-import {featureToggleRequest} from './utils/featureToggleRequest'
+import {fetchFeatureToggle} from './utils/fetchFeatureToggle'
 
 const isMutationEventForDocId =
   (id: string) =>
@@ -225,7 +225,7 @@ export function checkoutPair(
     filter((ev): ev is PendingMutationsEvent => ev.type === 'pending'),
   )
 
-  const serverActionFeatureToggle$ = featureToggleRequest(client, serverActionsEnabled).pipe(
+  const serverActionFeatureToggle$ = fetchFeatureToggle(client, serverActionsEnabled).pipe(
     shareReplay(1),
   )
 

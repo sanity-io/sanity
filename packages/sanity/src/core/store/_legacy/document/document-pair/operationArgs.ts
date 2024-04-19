@@ -12,7 +12,7 @@ import {memoize} from '../utils/createMemoizer'
 import {memoizeKeyGen} from './memoizeKeyGen'
 import {type OperationArgs} from './operations'
 import {snapshotPair} from './snapshotPair'
-import {featureToggleRequest} from './utils/featureToggleRequest'
+import {fetchFeatureToggle} from './utils/fetchFeatureToggle'
 
 export const operationArgs = memoize(
   (
@@ -25,7 +25,7 @@ export const operationArgs = memoize(
     idPair: IdPair,
     typeName: string,
   ): Observable<OperationArgs> => {
-    return featureToggleRequest(ctx.client, ctx.serverActionsEnabled).pipe(
+    return fetchFeatureToggle(ctx.client, ctx.serverActionsEnabled).pipe(
       shareReplay(1),
       take(1),
       switchMap((canUseServerActions) =>
