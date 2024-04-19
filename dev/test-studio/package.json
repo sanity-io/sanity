@@ -41,7 +41,7 @@
     "@sanity/tsdoc": "1.0.34",
     "@sanity/types": "workspace:*",
     "@sanity/ui": "^2.1.4",
-    "@sanity/ui-workshop": "^1.0.0",
+    "@sanity/ui-workshop": "^2.0.0",
     "@sanity/util": "workspace:*",
     "@sanity/uuid": "^3.0.1",
     "@sanity/vision": "workspace:*",

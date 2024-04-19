@@ -250,7 +250,7 @@
     "@sanity/generate-help-url": "^3.0.0",
     "@sanity/pkg-utils": "6.8.1",
     "@sanity/tsdoc": "1.0.34",
-    "@sanity/ui-workshop": "^1.2.11",
+    "@sanity/ui-workshop": "^2.0.12",
     "@testing-library/jest-dom": "^6.2.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.0.16",
