@@ -116,13 +116,12 @@ export function SchedulePublishingUpsellProvider(props: {children: React.ReactNo
   }, [telemetry])
 
   useEffect(() => {
-    const data$ = client.observable.request<UpsellData[] | null>({
-      uri: '/journey/tasks',
+    const data$ = client.observable.request<UpsellData | null>({
+      uri: '/journey/scheduled-publishing',
     })
 
     const sub = data$.subscribe({
-      next: (response) => {
-        const data = response?.[0]
+      next: (data) => {
         if (!data) return
         try {
           const ctaUrl = template(data.ctaButton.url, TEMPLATE_OPTIONS)

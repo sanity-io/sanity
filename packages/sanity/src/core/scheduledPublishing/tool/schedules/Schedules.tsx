@@ -22,8 +22,9 @@ export const Schedules = () => {
   return (
     <Box style={{height: '100%'}}>
       {mode === 'upsell' && upsellData && (
-        <Panel width={1} padding={4} paddingBottom={0}>
+        <Panel width={1} padding={4} paddingBottom={1}>
           <UpsellPanel
+            layout="horizontal"
             data={upsellData}
             onPrimaryClick={telemetryLogs.panelPrimaryClicked}
             onSecondaryClick={telemetryLogs.panelSecondaryClicked}
@@ -37,14 +38,14 @@ export const Schedules = () => {
       ) : (
         <>
           {showWarning && (
-            <Card margin={4} padding={3} tone="caution" radius={3} shadow={1}>
+            <Card margin={4} marginBottom={2} padding={3} tone="caution" radius={3} shadow={1}>
               <Flex gap={3} align={'center'}>
                 <Text size={1}>
                   <WarningOutlineIcon />
                 </Text>
                 <Text size={1}>
-                  Schedule publishing is not available on your current plan and the events won't be
-                  executed, but you can still view your schedules. Upgrade to unlock.
+                  Your scheduled documents won't be published automatically unless you upgrade your
+                  plan. You can still publish them manually.
                 </Text>
               </Flex>
             </Card>
