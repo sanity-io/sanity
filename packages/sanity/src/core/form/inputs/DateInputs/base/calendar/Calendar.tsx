@@ -312,11 +312,11 @@ export const Calendar = forwardRef(function Calendar(
 })
 
 function CalendarTimePresetButton(props: {
-  hours: number
-  minutes: number
-  onTimeChange: (hours: number, minutes: number) => void
+  'hours': number
+  'minutes': number
+  'onTimeChange': (hours: number, minutes: number) => void
   'aria-label': string
-  text: string
+  'text': string
 }) {
   const {hours, minutes, text, onTimeChange} = props
 

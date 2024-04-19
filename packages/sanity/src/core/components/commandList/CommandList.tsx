@@ -626,9 +626,9 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
                     'aria-posinset': activeIndex + 1,
                     ...(ariaMultiselectable ? {'aria-selected': selected.toString()} : {}),
                     'aria-setsize': activeItemCount,
-                    id: getChildDescendantId(activeIndex),
-                    role: 'option',
-                    onMouseEnter: handleChildMouseEnter(activeIndex),
+                    'id': getChildDescendantId(activeIndex),
+                    'role': 'option',
+                    'onMouseEnter': handleChildMouseEnter(activeIndex),
                   }
                 : {}
 

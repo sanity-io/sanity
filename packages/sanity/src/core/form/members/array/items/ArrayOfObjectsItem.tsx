@@ -246,10 +246,10 @@ export function ArrayOfObjectsItem(props: MemberItemProps) {
 
   const elementProps = useMemo(
     (): ObjectInputProps['elementProps'] => ({
-      onBlur: handleBlur,
-      onFocus: handleFocus,
-      id: member.item.id,
-      ref: focusRef,
+      'onBlur': handleBlur,
+      'onFocus': handleFocus,
+      'id': member.item.id,
+      'ref': focusRef,
       'aria-describedby': createDescriptionId(member.item.id, member.item.schemaType.description),
     }),
     [handleBlur, handleFocus, member.item.id, member.item.schemaType.description],

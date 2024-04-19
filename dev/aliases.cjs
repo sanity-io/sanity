@@ -26,7 +26,7 @@ const devAliases = {
   '@sanity/types': './packages/@sanity/types/src',
   '@sanity/util': './packages/@sanity/util/src/_exports',
   '@sanity/vision': './packages/@sanity/vision/src',
-  sanity: './packages/sanity/src/_exports',
+  'sanity': './packages/sanity/src/_exports',
 }
 
 module.exports = devAliases

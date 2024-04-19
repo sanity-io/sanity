@@ -25,9 +25,9 @@ Use npm-check-updates or similar (https://www.npmjs.com/package/npm-check-update
 `.trim()
 
 export interface UpgradeCommandFlags {
-  range?: string
-  tag?: string
-  offline?: boolean
+  'range'?: string
+  'tag'?: string
+  'offline'?: boolean
   'save-exact'?: boolean
 }
 

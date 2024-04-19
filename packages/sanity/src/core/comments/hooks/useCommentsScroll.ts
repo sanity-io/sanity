@@ -28,9 +28,9 @@ const SCROLL_TO_COMMENT_OPTIONS: StandardBehaviorOptions = {
 }
 
 const SCROLL_OPTIONS_BY_TYPE: Record<ScrollTargetTypes, StandardBehaviorOptions> = {
-  comment: SCROLL_TO_COMMENT_OPTIONS,
-  field: SCROLL_TO_FIELD_OPTIONS,
-  group: GROUP_SCROLL_OPTIONS,
+  'comment': SCROLL_TO_COMMENT_OPTIONS,
+  'field': SCROLL_TO_FIELD_OPTIONS,
+  'group': GROUP_SCROLL_OPTIONS,
   'inline-comment': INLINE_COMMENT_SCROLL_OPTIONS,
 }
 

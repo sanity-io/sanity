@@ -12,10 +12,10 @@ import {
 import {SchemaExtractedTrace} from './extractSchema.telemetry'
 
 interface ExtractFlags {
-  workspace?: string
-  path?: string
+  'workspace'?: string
+  'path'?: string
   'enforce-required-fields'?: boolean
-  format?: 'groq-type-nodes' | string
+  'format'?: 'groq-type-nodes' | string
 }
 
 export type SchemaValidationFormatter = (result: ExtractSchemaWorkerResult) => string
