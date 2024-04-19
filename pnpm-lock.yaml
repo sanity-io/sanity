@@ -1097,6 +1097,9 @@ importers:
       '@sanity/util':
         specifier: 3.38.0
         version: link:../util
+      '@vercel/stega':
+        specifier: 0.1.0
+        version: 0.1.0
       debug:
         specifier: ^3.2.7
         version: 3.2.7
