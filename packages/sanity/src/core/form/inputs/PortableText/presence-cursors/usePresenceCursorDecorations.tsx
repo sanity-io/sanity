@@ -21,7 +21,10 @@ export function usePresenceCursorDecorations(
   const previousCurrentPresence = useRef<FormNodePresence[]>([])
 
   const currentPresence = useMemo(
-    () => fieldPresence.filter((p) => startsWith(path, p.path) && !isEqual(path, p.path)),
+    () =>
+      fieldPresence
+        .filter((p) => startsWith(path, p.path) && !isEqual(path, p.path))
+        .map((p) => ({...p, lastActiveAt: ''})),
     [fieldPresence, path],
   )
   const reconciled = immutableReconcile(previousCurrentPresence.current, currentPresence)
