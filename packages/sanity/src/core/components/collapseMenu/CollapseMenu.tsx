@@ -293,7 +293,7 @@ export const AutoCollapseMenu = forwardRef(function AutoCollapseMenu(
                   <Tooltip portal disabled={!tooltipText} content={tooltipText} {...tooltipProps}>
                     <Flex>
                       {cloneElement(optionElement, {
-                        disabled: optionElement.props.disabled || hidden,
+                        'disabled': optionElement.props.disabled || hidden,
                         'aria-hidden': hidden,
                       })}
                     </Flex>
@@ -356,7 +356,7 @@ const RenderHidden = memo(function RenderHidden(props: {
             >
               <Flex>
                 {cloneElement(element, {
-                  disabled: true,
+                  'disabled': true,
                   'aria-hidden': true,
                 })}
               </Flex>

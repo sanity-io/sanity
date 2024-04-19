@@ -105,14 +105,14 @@ export function ArrayOfPrimitivesItem(props: PrimitiveMemberItemProps) {
 
   const elementProps = useMemo(
     (): PrimitiveInputProps['elementProps'] => ({
-      onBlur: handleBlur,
-      onFocus: handleFocus,
-      id: member.item.id,
-      ref: focusRef,
-      onChange: handleNativeChange,
-      value: resolveNativeInputValue(member.item.schemaType, member.item.value, localValue),
-      readOnly: Boolean(member.item.readOnly),
-      placeholder: member.item.schemaType.placeholder,
+      'onBlur': handleBlur,
+      'onFocus': handleFocus,
+      'id': member.item.id,
+      'ref': focusRef,
+      'onChange': handleNativeChange,
+      'value': resolveNativeInputValue(member.item.schemaType, member.item.value, localValue),
+      'readOnly': Boolean(member.item.readOnly),
+      'placeholder': member.item.schemaType.placeholder,
       'aria-describedby': createDescriptionId(member.item.id, member.item.schemaType.description),
     }),
     [

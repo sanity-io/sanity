@@ -12,14 +12,14 @@ import {reporters} from './reporters'
 import {validateDocuments} from './validateDocuments'
 
 interface ValidateFlags {
-  workspace?: string
-  format?: string
-  dataset?: string
-  file?: string
-  level?: 'error' | 'warning' | 'info'
+  'workspace'?: string
+  'format'?: string
+  'dataset'?: string
+  'file'?: string
+  'level'?: 'error' | 'warning' | 'info'
   'max-custom-validation-concurrency'?: number
-  yes?: boolean
-  y?: boolean
+  'yes'?: boolean
+  'y'?: boolean
 }
 
 export type BuiltInValidationReporter = (options: {

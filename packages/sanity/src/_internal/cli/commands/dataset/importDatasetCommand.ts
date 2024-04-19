@@ -52,8 +52,8 @@ interface ImportFlags {
   'replace-assets'?: boolean
   'skip-cross-dataset-references'?: boolean
   'allow-system-documents'?: boolean
-  replace?: boolean
-  missing?: boolean
+  'replace'?: boolean
+  'missing'?: boolean
 }
 
 interface ParsedImportFlags {

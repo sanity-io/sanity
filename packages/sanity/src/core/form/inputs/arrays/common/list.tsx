@@ -192,13 +192,13 @@ export function List(props: ListProps) {
 }
 
 interface ItemProps {
-  id: string
+  'id': string
 
   // false positive:
   // eslint-disable-next-line react/no-unused-prop-types
-  sortable?: boolean
-  disableTransition?: boolean
-  children?: ReactNode
+  'sortable'?: boolean
+  'disableTransition'?: boolean
+  'children'?: ReactNode
   'data-index'?: number
 }
 

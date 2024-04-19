@@ -53,8 +53,11 @@ importers:
         specifier: ^4.0.0
         version: 4.0.0(eslint@8.57.0)(typescript@5.4.5)
       '@sanity/pkg-utils':
-        specifier: 6.7.1
-        version: 6.7.1(@types/node@18.19.31)(typescript@5.4.5)
+        specifier: 6.8.0
+        version: 6.8.0(@types/node@18.19.31)(typescript@5.4.5)
+      '@sanity/prettier-config':
+        specifier: ^1.0.2
+        version: 1.0.2(prettier@3.2.5)
       '@sanity/test':
         specifier: 0.0.1-alpha.1
         version: 0.0.1-alpha.1
@@ -187,9 +190,6 @@ importers:
       prettier:
         specifier: ^3.2.5
         version: 3.2.5
-      prettier-plugin-packagejson:
-        specifier: ^2.5.0
-        version: 2.5.0(prettier@3.2.5)
       rimraf:
         specifier: ^3.0.2
         version: 3.0.2
@@ -518,6 +518,9 @@ importers:
       sanity:
         specifier: workspace:*
         version: link:../../packages/sanity
+      sanity-plugin-hotspot-array:
+        specifier: ^2.0.0
+        version: 2.0.0(@sanity/ui@2.1.4)(react-dom@18.2.0)(react@18.2.0)(sanity@packages+sanity)(styled-components@6.1.8)
       sanity-plugin-mux-input:
         specifier: ^2.2.1
         version: 2.3.4(@types/react@18.2.78)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(sanity@packages+sanity)(styled-components@6.1.8)
@@ -1776,8 +1779,8 @@ importers:
         specifier: ^3.0.0
         version: 3.0.0
       '@sanity/pkg-utils':
-        specifier: 6.7.1
-        version: 6.7.1(@types/node@18.19.31)(debug@4.3.4)(typescript@5.4.5)
+        specifier: 6.8.0
+        version: 6.8.0(@types/node@18.19.31)(debug@4.3.4)(typescript@5.4.5)
       '@sanity/tsdoc':
         specifier: 1.0.34
         version: 1.0.34(@types/node@18.19.31)(debug@4.3.4)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(sanity@packages+sanity)(styled-components@6.1.8)
@@ -6274,8 +6277,8 @@ packages:
       - debug
       - supports-color
 
-  /@sanity/pkg-utils@6.7.1(@types/node@18.19.31)(debug@4.3.4)(typescript@5.4.5):
-    resolution: {integrity: sha512-sEx3fwjge8sD3kvuJPqz51Dv4hWyC+RiRsaYWVpMY4K1FPPGMYwjbEWZqa1fNBV1suOBfrna2Y822sTmWsrYvg==}
+  /@sanity/pkg-utils@6.8.0(@types/node@18.19.31)(debug@4.3.4)(typescript@5.4.5):
+    resolution: {integrity: sha512-3isoIkI2IjGyKBrHgLdmOwYXSO3zB9z08bHQ8nvY1cokXpT+D2D0P/MS9pwwZIoOn2RVbMD77kPmHpFWUf353Q==}
     engines: {node: '>=18.17.0'}
     hasBin: true
     peerDependencies:
@@ -6310,7 +6313,6 @@ packages:
       parse-git-config: 3.0.0
       pkg-up: 3.1.0
       prettier: 3.2.5
-      prettier-plugin-packagejson: 2.5.0(prettier@3.2.5)
       pretty-bytes: 5.6.0
       prompts: 2.4.2
       rimraf: 4.4.1
@@ -6329,8 +6331,8 @@ packages:
       - supports-color
     dev: true
 
-  /@sanity/pkg-utils@6.7.1(@types/node@18.19.31)(typescript@5.4.5):
-    resolution: {integrity: sha512-sEx3fwjge8sD3kvuJPqz51Dv4hWyC+RiRsaYWVpMY4K1FPPGMYwjbEWZqa1fNBV1suOBfrna2Y822sTmWsrYvg==}
+  /@sanity/pkg-utils@6.8.0(@types/node@18.19.31)(typescript@5.4.5):
+    resolution: {integrity: sha512-3isoIkI2IjGyKBrHgLdmOwYXSO3zB9z08bHQ8nvY1cokXpT+D2D0P/MS9pwwZIoOn2RVbMD77kPmHpFWUf353Q==}
     engines: {node: '>=18.17.0'}
     hasBin: true
     peerDependencies:
@@ -6365,7 +6367,6 @@ packages:
       parse-git-config: 3.0.0
       pkg-up: 3.1.0
       prettier: 3.2.5
-      prettier-plugin-packagejson: 2.5.0(prettier@3.2.5)
       pretty-bytes: 5.6.0
       prompts: 2.4.2
       rimraf: 4.4.1
@@ -6435,6 +6436,15 @@ packages:
       - react-is
       - styled-components
     dev: false
+
+  /@sanity/prettier-config@1.0.2(prettier@3.2.5):
+    resolution: {integrity: sha512-V4HinfhMYxQoyXefJ2B8zJnwlf7A8mVzAzKk24B/iCg4pkVlMGc8bj0buu9Uieh4bNeHvEAHOIQv+Xd7tiLuNA==}
+    peerDependencies:
+      prettier: ^3.2.5
+    dependencies:
+      prettier: 3.2.5
+      prettier-plugin-packagejson: 2.5.0(prettier@3.2.5)
+    dev: true
 
   /@sanity/preview-url-secret@1.6.9(@sanity/client@6.15.17):
     resolution: {integrity: sha512-tJsjpRqqedbxTg8H56pfy4K9vmpTDd88VrXJZy7rpR14lgSCwVcoWvkMLV0jOPc+j4D2CGoJkYsgXFkG81sSUg==}
@@ -6611,6 +6621,15 @@ packages:
       - debug
     dev: false
 
+  /@sanity/types@3.38.0:
+    resolution: {integrity: sha512-eBMnX21GJ2+aUAFC4Ddg+RhsyBjRGQXs/DfiDp50FctHn9MngCFoPQjExFet3TkoBg4jy6PJfjFzsUat0/Dyng==}
+    dependencies:
+      '@sanity/client': 6.15.17
+      '@types/react': 18.2.78
+    transitivePeerDependencies:
+      - debug
+    dev: false
+
   /@sanity/ui-workshop@1.2.11(@sanity/icons@2.11.8)(@sanity/ui@2.1.4)(@types/node@18.19.31)(react-dom@18.2.0)(react@18.2.0)(styled-components@6.1.8):
     resolution: {integrity: sha512-vzj7upIF7wq2W1HEA0D5VSkR8axaH4Rt07yNTAaas7CLgjSE9r2d+Gnkrq4FIbIuN1GYhhCD+D3/s60GaZrpQw==}
     hasBin: true
@@ -6676,6 +6695,19 @@ packages:
     dependencies:
       '@sanity/client': 6.15.17(debug@4.3.4)
       '@sanity/types': 3.37.2(debug@4.3.4)
+      get-random-values-esm: 1.0.2
+      moment: 2.30.1
+      rxjs: 7.8.1
+    transitivePeerDependencies:
+      - debug
+    dev: false
+
+  /@sanity/util@3.38.0:
+    resolution: {integrity: sha512-9LeZWNtpgdWBu5MWzeNtLNtf/EU04+Cno5/DOaxxSLlP76f9iRGCmCPdEViU1GupIuDRRC3itJstjvCWFIs7Vg==}
+    engines: {node: '>=18'}
+    dependencies:
+      '@sanity/client': 6.15.17
+      '@sanity/types': 3.38.0
       get-random-values-esm: 1.0.2
       moment: 2.30.1
       rxjs: 7.8.1
@@ -7216,6 +7248,12 @@ packages:
   /@types/json5@0.0.29:
     resolution: {integrity: sha512-dRLjCWHYg4oaA77cxO64oO+7JwCwnIzkZPdrrC71jQmQtlhM556pwKo5bUzqvZndkVbeFLIIi+9TC40JNF5hNQ==}
     dev: true
+
+  /@types/lodash-es@4.17.12:
+    resolution: {integrity: sha512-0NgftHUcV4v34VhXm8QBSftKVXtbkBG3ViCjs6+eJ5a6y6Mi/jiFGPc1sC7QK+9BFhWrURE3EOggmWaSxL9OzQ==}
+    dependencies:
+      '@types/lodash': 4.17.0
+    dev: false
 
   /@types/lodash.isequal@4.5.8:
     resolution: {integrity: sha512-uput6pg4E/tj2LGxCZo9+y27JNyB2OZuuI/T5F+ylVDYuqICLG2/ktjxx0v6GvVntAf8TvEzeQLcV0ffRirXuA==}
@@ -16982,6 +17020,31 @@ packages:
     engines: {node: '>=14.18'}
     dependencies:
       '@sanity/diff-match-patch': 3.1.1
+    dev: false
+
+  /sanity-plugin-hotspot-array@2.0.0(@sanity/ui@2.1.4)(react-dom@18.2.0)(react@18.2.0)(sanity@packages+sanity)(styled-components@6.1.8):
+    resolution: {integrity: sha512-y+FP4JgRaIKO17cBMyzCCVcxwl3fh7DXEp99QlvZSWUFi3NJJg2ZXFIXc2Om66HNkprfH2ORzEmEZMuDShtlTg==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      '@sanity/ui': ^2.0.0
+      react: ^18
+      sanity: ^3.0.0
+      styled-components: ^6.1
+    dependencies:
+      '@sanity/asset-utils': 1.3.0
+      '@sanity/image-url': 1.0.2
+      '@sanity/incompatible-plugin': 1.0.4(react-dom@18.2.0)(react@18.2.0)
+      '@sanity/ui': 2.1.4(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8)
+      '@sanity/util': 3.38.0
+      '@types/lodash-es': 4.17.12
+      framer-motion: 11.0.8(react-dom@18.2.0)(react@18.2.0)
+      lodash-es: 4.17.21
+      react: 18.2.0
+      sanity: link:packages/sanity
+      styled-components: 6.1.8(react-dom@18.2.0)(react@18.2.0)
+    transitivePeerDependencies:
+      - debug
+      - react-dom
     dev: false
 
   /sanity-plugin-mux-input@2.3.4(@types/react@18.2.78)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(sanity@packages+sanity)(styled-components@6.1.8):

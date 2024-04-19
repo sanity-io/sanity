@@ -34,7 +34,7 @@ export default defineCliConfig({
             // NOTE: this is required to build static files for the workshop frame
             'workshop/frame': path.resolve(__dirname, 'workshop/frame/index.html'),
             // NOTE: this is required to build static files for the presentation preview iframe
-            preview: path.resolve(__dirname, 'preview/index.html'),
+            'preview': path.resolve(__dirname, 'preview/index.html'),
           },
         },
       },

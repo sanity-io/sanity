@@ -190,11 +190,11 @@ const annotationIcons: Record<string, ComponentType> = {
 }
 
 const formatIcons: Record<string, ComponentType> = {
-  strong: BoldIcon,
-  em: ItalicIcon,
+  'strong': BoldIcon,
+  'em': ItalicIcon,
   'strike-through': StrikethroughIcon,
-  underline: UnderlineIcon,
-  code: CodeIcon,
+  'underline': UnderlineIcon,
+  'code': CodeIcon,
 }
 
 const listStyleIcons: Record<string, ComponentType> = {

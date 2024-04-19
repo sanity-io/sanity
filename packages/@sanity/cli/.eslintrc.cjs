@@ -10,7 +10,7 @@ module.exports = {
     node: true,
   },
   rules: {
-    complexity: [1, 18],
+    'complexity': [1, 18],
     'import/no-extraneous-dependencies': ['error', {packageDir: [ROOT_PATH, __dirname]}],
   },
 }

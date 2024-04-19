@@ -17,10 +17,10 @@ import {BuildTrace} from './build.telemetry'
 const rimraf = promisify(rimrafCallback)
 
 export interface BuildSanityStudioCommandFlags {
-  yes?: boolean
-  y?: boolean
-  minify?: boolean
-  stats?: boolean
+  'yes'?: boolean
+  'y'?: boolean
+  'minify'?: boolean
+  'stats'?: boolean
   'source-maps'?: boolean
 }
 
@@ -32,8 +32,8 @@ export default async function buildSanityStudio(
   const timer = getTimer()
   const {output, prompt, workDir, cliConfig, telemetry = noopLogger} = context
   const flags: BuildSanityStudioCommandFlags = {
-    minify: true,
-    stats: false,
+    'minify': true,
+    'stats': false,
     'source-maps': false,
     ...args.extOptions,
   }

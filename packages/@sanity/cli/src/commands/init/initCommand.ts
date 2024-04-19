@@ -47,14 +47,14 @@ Examples
 `
 
 export interface InitFlags {
-  y?: boolean
-  yes?: boolean
-  project?: string
-  dataset?: string
-  template?: string
+  'y'?: boolean
+  'yes'?: boolean
+  'project'?: string
+  'dataset'?: string
+  'template'?: string
 
-  visibility?: string
-  typescript?: boolean
+  'visibility'?: string
+  'typescript'?: boolean
   /**
    * Used for initializing a project from a server schema that is saved in the Journey API
    * Overrides `project` option.
@@ -63,23 +63,23 @@ export interface InitFlags {
    * Overrides `visibility` option.
    * @beta
    */
-  quickstart?: string
-  bare?: boolean
-  env?: boolean | string
-  git?: boolean | string
+  'quickstart'?: string
+  'bare'?: boolean
+  'env'?: boolean | string
+  'git'?: boolean | string
 
   'output-path'?: string
   'project-plan'?: string
   'create-project'?: boolean | string
   'dataset-default'?: boolean
 
-  coupon?: string
+  'coupon'?: string
   /**
    * @deprecated `--reconfigure` is deprecated - manual configuration is now required
    */
-  reconfigure?: boolean
+  'reconfigure'?: boolean
 
-  organization?: string
+  'organization'?: string
 }
 
 export const initCommand: CliCommandDefinition<InitFlags> = {
