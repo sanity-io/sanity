@@ -34,16 +34,24 @@ async function main() {
 
     const workspaces = await getStudioWorkspaces({basePath: opts.workDir})
 
-    const workspace = getWorkspace({workspaces, workspaceName: opts.workspaceName})
+    const postSchema = (workspace: Workspace): void => {
+      parentPort?.postMessage({
+        schema: extractSchema(workspace.schema, {
+          enforceRequiredFields: opts.enforceRequiredFields,
+        }),
+      } satisfies ExtractSchemaWorkerResult)
+    }
 
-    const schema = extractSchema(workspace.schema, {
-      enforceRequiredFields: opts.enforceRequiredFields,
-    })
-
-    parentPort?.postMessage({
-      schema,
-    } satisfies ExtractSchemaWorkerResult)
+    if (opts.workspaceName) {
+      const workspace = getWorkspace({workspaces, workspaceName: opts.workspaceName})
+      postSchema(workspace)
+    } else {
+      for (const workspace of workspaces) {
+        postSchema(workspace)
+      }
+    }
   } finally {
+    parentPort?.close()
     cleanup()
   }
 }
@@ -65,11 +73,6 @@ function getWorkspace({
     return workspaces[0]
   }
 
-  if (workspaceName === undefined) {
-    throw new Error(
-      `Multiple workspaces found. Please specify which workspace to use with '--workspace'.`,
-    )
-  }
   const workspace = workspaces.find((w) => w.name === workspaceName)
   if (!workspace) {
     throw new Error(`Could not find workspace "${workspaceName}"`)
