@@ -225,7 +225,7 @@ export function checkoutPair(
     filter((ev): ev is PendingMutationsEvent => ev.type === 'pending'),
   )
 
-  const serverActionFeatureToggle$ = featureToggleRequest(client, serverActionsEnabled)
+  const serverActionFeatureToggle$ = featureToggleRequest(client, idPair, serverActionsEnabled)
 
   const commits$ = merge(draft.commitRequest$, published.commitRequest$).pipe(
     mergeMap((commitRequest) =>
