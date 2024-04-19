@@ -48,6 +48,7 @@ export function ConfigIssuesButton() {
         ref={setButtonElement}
         selected={isDialogOpen}
         tone="caution"
+        aria-label={t('configuration-issues.button.label')}
         tooltipProps={{scheme, content: t('configuration-issues.button.tooltip')}}
       />
 
