@@ -79,7 +79,7 @@
     "@sanity/diff-match-patch": "^3.1.1",
     "hotscript": "^1.0.13",
     "mendoza": "^3.0.4",
-    "nanoid": "^5.0.5"
+    "nanoid": "^3.1.30"
   },
   "devDependencies": {
     "@types/diff-match-patch": "^1.0.36",
