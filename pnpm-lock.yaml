@@ -439,7 +439,7 @@ importers:
         version: 1.11.4(@sanity/client@6.15.19)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8)
       '@sanity/preview-url-secret':
         specifier: ^1.6.1
-        version: 1.6.9(@sanity/client@6.15.19)
+        version: 1.6.10(@sanity/client@6.15.19)
       '@sanity/react-loader':
         specifier: ^1.8.3
         version: 1.9.13(@sanity/client@6.15.19)(react@18.2.0)
@@ -6393,7 +6393,7 @@ packages:
     dependencies:
       '@sanity/client': 6.15.19
       '@sanity/icons': 2.11.8(react@18.2.0)
-      '@sanity/preview-url-secret': 1.6.9(@sanity/client@6.15.19)
+      '@sanity/preview-url-secret': 1.6.10(@sanity/client@6.15.19)
       '@sanity/ui': 2.1.4(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8)
       '@sanity/uuid': 3.0.2
       '@types/lodash.isequal': 4.5.8
@@ -6419,7 +6419,7 @@ packages:
     dependencies:
       '@sanity/client': 6.15.19(debug@4.3.4)
       '@sanity/icons': 2.11.8(react@18.2.0)
-      '@sanity/preview-url-secret': 1.6.9(@sanity/client@6.15.19)
+      '@sanity/preview-url-secret': 1.6.10(@sanity/client@6.15.19)
       '@sanity/ui': 2.1.4(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8)
       '@sanity/uuid': 3.0.2
       '@types/lodash.isequal': 4.5.8
@@ -6446,11 +6446,11 @@ packages:
       prettier-plugin-packagejson: 2.5.0(prettier@3.2.5)
     dev: true
 
-  /@sanity/preview-url-secret@1.6.9(@sanity/client@6.15.19):
-    resolution: {integrity: sha512-tJsjpRqqedbxTg8H56pfy4K9vmpTDd88VrXJZy7rpR14lgSCwVcoWvkMLV0jOPc+j4D2CGoJkYsgXFkG81sSUg==}
+  /@sanity/preview-url-secret@1.6.10(@sanity/client@6.15.19):
+    resolution: {integrity: sha512-ZQO+B+QCKpwOP3VEBIW7HpKaLxNjr8zCd3ue66l5Y0HZz6owd3lTp1SkCKW+qATdktNeNd1hgalGTMDKvS8CGw==}
     engines: {node: '>=18'}
     peerDependencies:
-      '@sanity/client': ^6.15.17
+      '@sanity/client': ^6.15.19
     dependencies:
       '@sanity/client': 6.15.19
       '@sanity/uuid': 3.0.2
@@ -6743,7 +6743,7 @@ packages:
         optional: true
     dependencies:
       '@sanity/client': 6.15.19
-      '@sanity/preview-url-secret': 1.6.9(@sanity/client@6.15.19)
+      '@sanity/preview-url-secret': 1.6.10(@sanity/client@6.15.19)
       '@vercel/stega': 0.1.0
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
