@@ -4,7 +4,7 @@ import {type SanityClient} from '@sanity/client'
 import {map, type Observable, of} from 'rxjs'
 
 //in the "real" code, this would be observable.request, to a URI
-export const featureToggleRequest = (
+export const fetchFeatureToggle = (
   client: SanityClient,
   serverActionsEnabled: boolean,
 ): Observable<boolean> => {

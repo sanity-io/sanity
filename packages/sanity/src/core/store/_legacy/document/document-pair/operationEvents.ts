@@ -37,7 +37,7 @@ import {del as serverDel} from './serverOperations/delete'
 import {patch as serverPatch} from './serverOperations/patch'
 import {publish as serverPublish} from './serverOperations/publish'
 import {unpublish as serverUnpublish} from './serverOperations/unpublish'
-import {featureToggleRequest} from './utils/featureToggleRequest'
+import {fetchFeatureToggle} from './utils/fetchFeatureToggle'
 
 interface ExecuteArgs {
   operationName: keyof OperationsAPI
@@ -141,7 +141,7 @@ export const operationEvents = memoize(
     schema: Schema
     serverActionsEnabled: boolean
   }) => {
-    const serverActionFeatureToggle$ = featureToggleRequest(
+    const serverActionFeatureToggle$ = fetchFeatureToggle(
       ctx.client,
       ctx.serverActionsEnabled,
     ).pipe(shareReplay(1))
