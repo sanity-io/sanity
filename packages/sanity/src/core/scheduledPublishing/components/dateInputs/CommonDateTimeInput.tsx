@@ -10,8 +10,8 @@ import {
   useMemo,
   useState,
 } from 'react'
-import {FormField} from 'sanity'
 
+import {FormField} from '../../../form/components/formField'
 import useTimeZone from '../../hooks/useTimeZone'
 import {DateTimeInput} from './base/DateTimeInput'
 import {type CommonProps, type ParseResult} from './types'

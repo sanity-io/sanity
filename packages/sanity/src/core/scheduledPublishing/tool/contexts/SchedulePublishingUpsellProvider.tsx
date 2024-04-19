@@ -1,19 +1,19 @@
 import {useTelemetry} from '@sanity/telemetry/react'
 import {template} from 'lodash'
 import {createContext, useCallback, useContext, useEffect, useMemo, useState} from 'react'
+
+import {useClient} from '../../../hooks/useClient'
+import {useProjectId} from '../../../hooks/useProjectId'
 import {
-  DEFAULT_STUDIO_CLIENT_OPTIONS,
   UpsellDialogDismissed,
   UpsellDialogLearnMoreCtaClicked,
   UpsellDialogUpgradeCtaClicked,
   UpsellDialogViewed,
   type UpsellDialogViewedInfo,
-  useClient,
-  useProjectId,
-} from 'sanity'
-
+} from '../../../studio/upsell'
 import {type UpsellData} from '../../../studio/upsell/types'
 import {UpsellDialog} from '../../../studio/upsell/UpsellDialog'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
 
 export interface SchedulePublishUpsellContextValue {
   upsellDialogOpen: boolean

@@ -1,5 +1,7 @@
 import {createContext, useContext, useMemo} from 'react'
-import {useFeatureEnabled, useWorkspace} from 'sanity'
+
+import {useFeatureEnabled} from '../../../hooks/useFeatureEnabled'
+import {useWorkspace} from '../../../studio/workspace'
 
 /**
  * @internal
@@ -43,9 +45,7 @@ export function ScheduledPublishingEnabledProvider({children}: TaksEnabledProvid
     }
     return {
       enabled: true,
-      mode: 'upsell',
-      // TODO: Restore this check.
-      _mode: enabled ? 'default' : 'upsell',
+      mode: enabled ? 'default' : 'upsell',
     }
   }, [enabled, isLoading, isWorkspaceEnabled])
 
