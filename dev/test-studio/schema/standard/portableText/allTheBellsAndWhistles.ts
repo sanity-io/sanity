@@ -206,39 +206,6 @@ export const ptAllTheBellsAndWhistlesType = defineType({
             },
           },
         }),
-
-        defineArrayMember({
-          type: 'object',
-          name: 'imagesWithCaption',
-          title: 'Image slideshow',
-          fields: [
-            {
-              type: 'array',
-              name: 'images',
-              of: [
-                {
-                  type: 'object',
-                  name: 'imageWithCaption',
-                  fields: [
-                    {
-                      type: 'image',
-                      name: 'image',
-                      options: {
-                        hotspot: true,
-                      },
-                      fields: [{type: 'string', name: 'alt'}],
-                    },
-                    {
-                      type: 'array',
-                      name: 'caption',
-                      of: [{type: 'block'}],
-                    },
-                  ],
-                },
-              ],
-            },
-          ],
-        }),
       ],
     }),
 
@@ -285,6 +252,48 @@ export const ptAllTheBellsAndWhistlesType = defineType({
           options: {
             unstable_whitespaceOnPasteMode: 'normalize',
           },
+        }),
+      ],
+    }),
+    defineField({
+      name: 'body',
+      title: 'Body',
+      type: 'array',
+      of: [
+        defineArrayMember({
+          type: 'block',
+        }),
+        defineArrayMember({
+          type: 'object',
+          name: 'imagesWithCaption',
+          title: 'Image slideshow',
+          fields: [
+            {
+              type: 'array',
+              name: 'images',
+              of: [
+                {
+                  type: 'object',
+                  name: 'imageWithCaption',
+                  fields: [
+                    {
+                      type: 'image',
+                      name: 'image',
+                      options: {
+                        hotspot: true,
+                      },
+                      fields: [{type: 'string', name: 'alt'}],
+                    },
+                    {
+                      type: 'array',
+                      name: 'caption',
+                      of: [{type: 'block'}],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
         }),
       ],
     }),
