@@ -9,7 +9,7 @@ import {
   useForwardedRef,
 } from '@sanity/ui'
 import {addDays, addMonths, setDate, setHours, setMinutes, setMonth, setYear} from 'date-fns'
-import range from 'lodash/range'
+import {range} from 'lodash'
 import {
   type ComponentProps,
   type FormEvent,
