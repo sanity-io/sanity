@@ -2,7 +2,7 @@ import {type HtmlPreprocessorOptions} from '../../types'
 import {normalizeWhitespace, removeAllWhitespace, tagName} from '../helpers'
 import {_XPathResult} from './xpathResult'
 
-export default (html: string, doc: Document, options: HtmlPreprocessorOptions): Document => {
+export default (_html: string, doc: Document, options: HtmlPreprocessorOptions): Document => {
   const whitespaceOnPasteMode = options?.unstable_whitespaceOnPasteMode || 'preserve'
   let gDocsRootOrSiblingNode = doc
     .evaluate(

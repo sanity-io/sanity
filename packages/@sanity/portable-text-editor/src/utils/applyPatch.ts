@@ -287,14 +287,14 @@ function setPatch(editor: PortableTextSlateEditor, patch: SetPatch) {
   return true
 }
 
-function unsetPatch(editor: PortableTextSlateEditor, patch: UnsetPatch, previousPatch?: Patch) {
+function unsetPatch(editor: PortableTextSlateEditor, patch: UnsetPatch, _previousPatch?: Patch) {
   // Value
   if (patch.path.length === 0) {
     debug('Removing everything')
     debugState(editor, 'before')
     const previousSelection = editor.selection
     Transforms.deselect(editor)
-    editor.children.forEach((c, i) => {
+    editor.children.forEach((_c, i) => {
       Transforms.removeNodes(editor, {at: [i]})
     })
     Transforms.insertNodes(editor, editor.createPlaceholderBlock())

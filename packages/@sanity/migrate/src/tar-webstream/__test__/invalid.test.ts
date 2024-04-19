@@ -14,7 +14,7 @@ async function* extract(file: string) {
 test('untar an empty tar file', async () => {
   await expect(async () => {
     for await (const [, body] of extract(`${__dirname}/fixtures/empty.tar`)) {
-      for await (const chunk of body) {
+      for await (const _chunk of body) {
         // should throw before reaching here
       }
     }
@@ -26,7 +26,7 @@ test('untar an empty tar file', async () => {
 test('untar an invalid tar file of > 512b', async () => {
   await expect(async () => {
     for await (const [, body] of extract(`${__dirname}/fixtures/invalid.tar`)) {
-      for await (const chunk of body) {
+      for await (const _chunk of body) {
         // should throw before reaching here
       }
     }
@@ -38,7 +38,7 @@ test('untar an invalid tar file of > 512b', async () => {
 test('untar a corrupted tar file', async () => {
   await expect(async () => {
     for await (const [, body] of extract(`${__dirname}/fixtures/corrupted.tar`)) {
-      for await (const chunk of body) {
+      for await (const _chunk of body) {
         // should throw before reaching here
       }
     }

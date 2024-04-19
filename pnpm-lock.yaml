@@ -661,7 +661,11 @@ importers:
         specifier: ^1.2.0
         version: 1.2.0
 
-  packages/@repo/tsconfig: {}
+  packages/@repo/tsconfig:
+    devDependencies:
+      '@sanity/pkg-utils':
+        specifier: 6.8.0
+        version: 6.8.0(@types/node@18.19.31)(typescript@5.4.5)
 
   packages/@sanity/block-tools:
     dependencies:

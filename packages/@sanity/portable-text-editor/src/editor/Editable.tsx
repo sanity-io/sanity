@@ -552,7 +552,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
       return noop
     }
     // Translate PortableTextEditor prop fn to Slate plugin fn
-    return (editor: ReactEditor, domRange: Range) => {
+    return (_editor: ReactEditor, domRange: Range) => {
       scrollSelectionIntoView(portableTextEditor, domRange)
     }
   }, [portableTextEditor, scrollSelectionIntoView])

@@ -25,7 +25,6 @@ export function* extractSliceParams(query: string): Generator<string> {
   if (!matches) {
     return
   }
-  const params = new Set<string>()
   for (const match of matches) {
     const start = match[1] === `$${match[2]}` ? match[2] : null
     if (start !== null) {

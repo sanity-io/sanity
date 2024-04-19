@@ -254,7 +254,7 @@ export class PortableTextEditor extends Component<PortableTextEditorProps> {
   static isVoid = (editor: PortableTextEditor, element: PortableTextBlock | PortableTextChild) => {
     return editor.editable?.isVoid(element)
   }
-  static isObjectPath = (editor: PortableTextEditor, path: Path): boolean => {
+  static isObjectPath = (_editor: PortableTextEditor, path: Path): boolean => {
     if (!path || !Array.isArray(path)) return false
     const isChildObjectEditPath = path.length > 3 && path[1] === 'children'
     const isBlockObjectEditPath = path.length > 1 && path[1] !== 'children'

@@ -1,5 +1,8 @@
 {
   "name": "@repo/tsconfig",
   "version": "3.38.0",
-  "private": true
+  "private": true,
+  "devDependencies": {
+    "@sanity/pkg-utils": "6.8.0"
+  }
 }

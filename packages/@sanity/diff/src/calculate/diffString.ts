@@ -12,7 +12,7 @@ import {type DiffOptions, type StringDiff, type StringDiffSegment, type StringIn
 export function diffString<A>(
   fromInput: StringInput<A>,
   toInput: StringInput<A>,
-  options: DiffOptions,
+  _options: DiffOptions,
 ): StringDiff<A> {
   const fromValue = fromInput.value
   const toValue = toInput.value
@@ -94,7 +94,7 @@ function buildSegments<A>(
 export function removedString<A>(
   input: StringInput<A>,
   toValue: null | undefined,
-  options: DiffOptions,
+  _options: DiffOptions,
 ): StringDiff<A> & {action: 'removed'} {
   return {
     type: 'string',
@@ -117,7 +117,7 @@ export function removedString<A>(
 export function addedString<A>(
   input: StringInput<A>,
   fromValue: null | undefined,
-  options: DiffOptions,
+  _options: DiffOptions,
 ): StringDiff<A> & {action: 'added'} {
   return {
     type: 'string',

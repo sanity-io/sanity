@@ -1,5 +1,4 @@
 import {find} from 'lodash'
-import semver from 'semver'
 
 import {
   type CliCommandDefinition,
@@ -19,16 +18,16 @@ export interface MergeOptions {
 export async function mergeCommands(
   baseCommands: (CliCommandDefinition | CliCommandGroupDefinition)[],
   corePath: string | undefined,
-  options: MergeOptions,
+  _options: MergeOptions,
 ): Promise<(CliCommandDefinition | CliCommandGroupDefinition)[]> {
   if (!corePath) {
     return baseCommands
   }
 
-  const {cwd, workDir, cliVersion} = options
+  // const {cwd, workDir, cliVersion} = options
   const coreImport = dynamicRequire<SanityCore | SanityModuleInternal>(corePath)
-  const coercedCliVersion = semver.coerce(cliVersion) || ''
-  const moduleName = /@sanity[/\\]core/.test(corePath) ? '@sanity/core' : 'sanity'
+  // const coercedCliVersion = semver.coerce(cliVersion) || ''
+  // const moduleName = /@sanity[/\\]core/.test(corePath) ? '@sanity/core' : 'sanity'
   const core = 'cliProjectCommands' in coreImport ? coreImport.cliProjectCommands : coreImport
 
   // @todo the resolving of `sanity`/`@sanity/core` here might find global installs,

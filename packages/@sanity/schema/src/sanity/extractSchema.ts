@@ -313,7 +313,7 @@ function isFieldRequired(field: ObjectField): boolean {
     const proxy = new Proxy(
       {},
       {
-        get: (target, methodName) => () => {
+        get: (_target, methodName) => () => {
           if (methodName === 'required') {
             required = true
           }
@@ -353,7 +353,7 @@ function hasAssetRequired(field: ObjectField): boolean {
     const proxy = new Proxy(
       {},
       {
-        get: (target, methodName) => () => {
+        get: (_target, methodName) => () => {
           if (methodName === 'assetRequired') {
             assetRequired = true
           }

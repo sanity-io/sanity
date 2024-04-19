@@ -1,6 +1,10 @@
 import {type ArraySchemaType} from '@sanity/types'
 
-import {DEFAULT_SPAN, HTML_BLOCK_TAGS, HTML_HEADER_TAGS} from '../../constants'
+import {
+  DEFAULT_SPAN,
+  // HTML_BLOCK_TAGS,
+  // HTML_HEADER_TAGS
+} from '../../constants'
 import {type DeserializerRule} from '../../types'
 import {isElement, tagName} from '../helpers'
 
@@ -27,10 +31,10 @@ function isNotion(el: Node): boolean {
   return isElement(el) && Boolean(el.getAttribute('data-is-notion'))
 }
 
-const blocks: Record<string, {style: string} | undefined> = {
-  ...HTML_BLOCK_TAGS,
-  ...HTML_HEADER_TAGS,
-}
+// const blocks: Record<string, {style: string} | undefined> = {
+//   ...HTML_BLOCK_TAGS,
+//   ...HTML_HEADER_TAGS,
+// }
 
 export default function createNotionRules(_blockContentType: ArraySchemaType): DeserializerRule[] {
   return [

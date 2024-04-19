@@ -20,7 +20,7 @@ export function isValidDatasetName(name: string): string | true {
   )
 }
 
-export default (typeDef: any, visitorContext: any) => {
+export default (typeDef: any, _visitorContext: any) => {
   const isValidTo = Array.isArray(typeDef.to) || isPlainObject(typeDef.to)
   const normalizedTo = normalizeToProp(typeDef)
 

@@ -2,7 +2,7 @@ import {type PortableTextSpan, type PortableTextTextBlock} from '@sanity/types'
 import {type BaseEditor, type Descendant} from 'slate'
 import {type ReactEditor} from 'slate-react'
 
-import {type PortableTextSlateEditor} from '..'
+import {type PortableTextSlateEditor} from './editor'
 
 export interface VoidElement {
   _type: string

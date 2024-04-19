@@ -55,8 +55,6 @@ const mutReducerFn = (acc: Mut[], mut: Mutation): Mut[] => acc.concat(mut.mutati
  * @internal
  */
 export class BufferedDocument {
-  private mutations: Mutation[]
-
   /**
    * The Document we are wrapping
    */
@@ -121,7 +119,6 @@ export class BufferedDocument {
       this.handleDocRebase(edge, remoteMutations, localMutations)
     this.document.onConsistencyChanged = (msg) => this.handleDocConsistencyChanged(msg)
     this.LOCAL = doc
-    this.mutations = []
     this.commits = []
   }
 
@@ -270,7 +267,11 @@ export class BufferedDocument {
     }
   }
 
-  handleDocRebase(edge: Doc | null, remoteMutations: Mutation[], localMutations: Mutation[]): void {
+  handleDocRebase(
+    _edge: Doc | null,
+    remoteMutations: Mutation[],
+    localMutations: Mutation[],
+  ): void {
     this.rebase(remoteMutations, localMutations)
   }
 
@@ -284,7 +285,6 @@ export class BufferedDocument {
     }
 
     this.commits = []
-    this.mutations = []
   }
 
   handleDocMutation(msg: {mutation: Mutation; document: Doc | null; remote: boolean}): void {

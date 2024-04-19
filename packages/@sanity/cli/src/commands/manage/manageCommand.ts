@@ -7,7 +7,7 @@ const manageCommand: CliCommandDefinition = {
   signature: 'manage',
   helpText: '',
   description: 'Opens project management interface in your web browser',
-  async action(args, context) {
+  async action(_args, context) {
     const {output, cliConfig} = context
     const {print} = output
     const projectId = cliConfig?.api?.projectId

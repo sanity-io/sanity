@@ -119,7 +119,7 @@ function validateMarks(marks: any, visitorContext: any, problems: any) {
   return {...marks, decorators, annotations}
 }
 
-function validateLists(lists: any, visitorContext: any, problems: any) {
+function validateLists(lists: any, _visitorContext: any, problems: any) {
   if (!Array.isArray(lists)) {
     problems.push(error(`"lists" declaration should be an array, got ${getTypeOf(lists)}`))
     return problems
@@ -161,7 +161,7 @@ function validateLists(lists: any, visitorContext: any, problems: any) {
   return lists
 }
 
-function validateStyles(styles: any, visitorContext: any, problems: any) {
+function validateStyles(styles: any, _visitorContext: any, problems: any) {
   if (!Array.isArray(styles)) {
     problems.push(error(`"styles" declaration should be an array, got ${getTypeOf(styles)}`))
     return problems
@@ -213,7 +213,7 @@ function validateStyles(styles: any, visitorContext: any, problems: any) {
   return styles
 }
 
-function validateDecorators(decorators: any, visitorContext: any, problems: any) {
+function validateDecorators(decorators: any, _visitorContext: any, problems: any) {
   decorators.forEach((decorator: any, index: any) => {
     if (!isPlainObject(decorator)) {
       problems.push(error(`Annotation must be an object, got ${getTypeOf(decorator)}`))

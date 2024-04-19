@@ -7,7 +7,7 @@ const docsCommand: CliCommandDefinition = {
   helpText: '',
   signature: 'docs',
   description: 'Opens Sanity Studio documentation in your web browser',
-  async action(args, context) {
+  async action(_args, context) {
     const {output} = context
     const {print} = output
     const url = 'https://www.sanity.io/docs'

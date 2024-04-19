@@ -1,8 +1,12 @@
 import {test} from '@sanity/test'
 
-const SEARCH_KEY = 'studio.search.recent'
-test('searching creates saved searches', async ({page, createDraftDocument, sanityClient}) => {
-  const {dataset} = sanityClient.config()
+// const SEARCH_KEY = 'studio.search.recent'
+test('searching creates saved searches', async ({
+  page,
+  createDraftDocument,
+  // sanityClient,
+}) => {
+  // const {dataset} = sanityClient.config()
   await createDraftDocument('/test/content/book')
 
   await page.getByTestId('field-title').getByTestId('string-input').fill('A searchable title')

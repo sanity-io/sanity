@@ -185,7 +185,7 @@ export function defineType<
     MaybeAllowUnknownProps<TStrict>,
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  defineOptions?: DefineSchemaOptions<TStrict, TAlias>,
+  _defineOptions?: DefineSchemaOptions<TStrict, TAlias>,
 ): typeof schemaDefinition {
   return schemaDefinition
 }
@@ -227,7 +227,7 @@ export function defineField<
     FieldDefinitionBase,
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  defineOptions?: DefineSchemaOptions<TStrict, TAlias>,
+  _defineOptions?: DefineSchemaOptions<TStrict, TAlias>,
 ): typeof schemaField & WidenValidation & WidenInitialValue {
   // TODO: re-evaluate the need for this cast
   return schemaField as typeof schemaField & WidenValidation & WidenInitialValue
@@ -275,7 +275,7 @@ export function defineArrayMember<
     MaybeAllowUnknownProps<TStrict>,
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  defineOptions?: DefineSchemaOptions<TStrict, TAlias>,
+  _defineOptions?: DefineSchemaOptions<TStrict, TAlias>,
 ): typeof arrayOfSchema & WidenValidation & WidenInitialValue {
   // TODO: re-evaluate the need for this cast
   return arrayOfSchema as typeof arrayOfSchema & WidenValidation & WidenInitialValue

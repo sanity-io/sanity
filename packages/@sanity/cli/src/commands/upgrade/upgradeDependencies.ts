@@ -8,13 +8,12 @@ import resolveFrom from 'resolve-from'
 import rimrafCb from 'rimraf'
 import semver from 'semver'
 
-import {type CliCommandContext} from '../..'
 import {
   findSanityModuleVersions,
   type ModuleVersionResult,
 } from '../../actions/versions/findSanityModuleVersions'
 import {debug} from '../../debug'
-import {type CliCommandAction, type PackageJson} from '../../types'
+import {type CliCommandAction, type CliCommandContext, type PackageJson} from '../../types'
 import {getFormatters} from '../versions/printVersionResult'
 
 const rimraf = util.promisify(rimrafCb)

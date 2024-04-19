@@ -1,10 +1,10 @@
 import {test} from '@sanity/test'
 
-const INSPECT_KEY = 'studio.structure-tool.inspect-view-mode'
+// const INSPECT_KEY = 'studio.structure-tool.inspect-view-mode'
 
 test('clicking inspect mode sets value in storage', async ({
   page,
-  sanityClient,
+  // sanityClient,
   createDraftDocument,
 }) => {
   await createDraftDocument('/test/content/book')

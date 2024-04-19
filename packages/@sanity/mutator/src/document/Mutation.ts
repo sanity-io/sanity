@@ -216,7 +216,7 @@ export class Mutation {
   // any metadata like transactionId is ignored and must be submitted by the client. It is assumed
   // that all mutations are on the same document.
   // TOOO: Optimize mutations, eliminating mutations that overwrite themselves!
-  static squash(document: Doc | null, mutations: Mutation[]): Mutation {
+  static squash(_document: Doc | null, mutations: Mutation[]): Mutation {
     const squashed = mutations.reduce(
       (result, mutation) => result.concat(...mutation.mutations),
       [] as Mut[],

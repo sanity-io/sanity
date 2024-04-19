@@ -7,7 +7,7 @@ import {
 } from '../../actions/versions/findSanityModuleVersions'
 import {type CliCommandAction} from '../../types'
 
-const printVersionResultCommand: CliCommandAction = async (args, context) => {
+const printVersionResultCommand: CliCommandAction = async (_args, context) => {
   const versions = await findSanityModuleVersions(context, {target: 'latest'})
   printResult(versions, context.output.print)
 }

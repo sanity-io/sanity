@@ -3,7 +3,7 @@ import {type SanityDocument} from '@sanity/types'
 import {type Migration, type MigrationContext} from '../types'
 import {normalizeMigrateDefinition} from './normalizeMigrateDefinition'
 
-async function* empty() {}
+// async function* empty() {}
 
 function wrapDocumentsIteratorProducer(factory: () => AsyncIterableIterator<SanityDocument>) {
   function documents() {

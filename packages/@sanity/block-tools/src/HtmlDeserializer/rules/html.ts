@@ -29,7 +29,7 @@ export function resolveListItem(
 }
 
 export default function createHTMLRules(
-  blockContentType: ArraySchemaType,
+  _blockContentType: ArraySchemaType,
   options: BlockEnabledFeatures,
 ): DeserializerRule[] {
   return [

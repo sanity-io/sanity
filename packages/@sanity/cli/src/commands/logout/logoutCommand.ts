@@ -15,7 +15,7 @@ const logoutCommand: CliCommandDefinition = {
   helpText,
   signature: 'logout',
   description: 'Logs out the CLI from the current user session',
-  async action(args, {output, apiClient}) {
+  async action(_args, {output, apiClient}) {
     const cfg = getUserConfig()
 
     const token = cfg.get('authToken')

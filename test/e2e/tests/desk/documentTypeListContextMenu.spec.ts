@@ -1,10 +1,13 @@
 import {test} from '@sanity/test'
 
-const SORT_KEY = 'studio.structure-tool.sort-order.author'
-const LAYOUT_KEY = 'studio.structure-tool.layout.author'
+// const SORT_KEY = 'studio.structure-tool.sort-order.author'
+// const LAYOUT_KEY = 'studio.structure-tool.layout.author'
 
 //we should also check for custom sort orders
-test('clicking sort order and direction sets value in storage', async ({page, sanityClient}) => {
+test('clicking sort order and direction sets value in storage', async ({
+  page,
+  // sanityClient
+}) => {
   await page.goto('/test/content/author')
   await page.getByTestId('pane').getByTestId('pane-context-menu-button').click()
   await page.getByRole('menuitem', {name: 'Sort by Name'}).click()
@@ -44,7 +47,10 @@ test('clicking sort order and direction sets value in storage', async ({page, sa
   // })
 })
 
-test('clicking list view sets value in storage', async ({page, sanityClient}) => {
+test('clicking list view sets value in storage', async ({
+  page,
+  // sanityClient
+}) => {
   await page.goto('/test/content/author')
   await page.getByTestId('pane').getByTestId('pane-context-menu-button').click()
   await page.getByRole('menuitem', {name: 'Detailed view'}).click()

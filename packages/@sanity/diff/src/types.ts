@@ -205,7 +205,7 @@ export interface ChangedDiff<A, V> {
  * @typeParam V - Value. The type of the destination (eg `after`) value.
  * @public
  */
-export interface UnchangedDiff<A, V> {
+export interface UnchangedDiff<_A, V> {
   action: 'unchanged'
   isChanged: false
   fromValue: V

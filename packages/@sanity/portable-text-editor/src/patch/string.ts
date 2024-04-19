@@ -2,16 +2,16 @@ import {applyPatches, parsePatch} from '@sanity/diff-match-patch'
 
 type fn = (oldVal: any, newVal: any) => any
 const OPERATIONS: Record<string, fn> = {
-  replace(currentValue: any, nextValue: any) {
+  replace(_currentValue: any, nextValue: any) {
     return nextValue
   },
-  set(currentValue: any, nextValue: any) {
+  set(_currentValue: any, nextValue: any) {
     return nextValue
   },
   setIfMissing(currentValue: undefined, nextValue: any) {
     return currentValue === undefined ? nextValue : currentValue
   },
-  unset(currentValue: any, nextValue: any) {
+  unset(_currentValue: any, _nextValue: any) {
     return undefined
   },
   diffMatchPatch(currentValue: string, nextValue: string): string {
