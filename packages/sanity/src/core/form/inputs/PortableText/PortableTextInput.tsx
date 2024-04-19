@@ -10,9 +10,11 @@ import {
 import {useTelemetry} from '@sanity/telemetry/react'
 import {isKeySegment, type PortableTextBlock} from '@sanity/types'
 import {Box, useToast} from '@sanity/ui'
+import {throttle} from 'lodash'
 import {
   type MutableRefObject,
   type ReactNode,
+  startTransition,
   useCallback,
   useEffect,
   useMemo,
@@ -28,6 +30,7 @@ import {
 } from '../../__telemetry__/form.telemetry'
 import {SANITY_PATCH_TYPE} from '../../patch'
 import {type ArrayOfObjectsItemMember, type ObjectFormNode} from '../../store'
+import {immutableReconcile} from '../../store/utils/immutableReconcile'
 import {type PortableTextInputProps} from '../../types'
 import {Compositor, type PortableTextEditorElement} from './Compositor'
 import {PortableTextMarkersProvider} from './contexts/PortableTextMarkers'
@@ -153,18 +156,16 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
     }
   }, [hasFocusWithin])
 
-  // Report focus on spans with `.text` appended to the reported focusPath.
-  // This is done to support the Presentation tool which uses this kind of paths to refer to texts.
-  // The PT-input already supports these paths the other way around.
-  // It's a bit ugly right here, but it's a rather simple way to support the Presentation tool without
-  // having to change the PTE's internals.
   const setFocusPathFromEditorSelection = useCallback(
     (selection: EditorSelection) => {
       const focusPath = selection?.focus.path
-
       if (!focusPath) return
 
-      // Test if the focusPath is pointing directly to a span
+      // Report focus on spans with `.text` appended to the reported focusPath.
+      // This is done to support the Presentation tool which uses this kind of paths to refer to texts.
+      // The PT-input already supports these paths the other way around.
+      // It's a bit ugly right here, but it's a rather simple way to support the Presentation tool without
+      // having to change the PTE's internals.
       const isSpanPath =
         focusPath.length === 3 && // A span path is always 3 segments long
         focusPath[1] === 'children' && // Is a child of a block
@@ -172,11 +173,14 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
         !portableTextMemberItems.some(
           (item) => isKeySegment(focusPath[2]) && item.member.key === focusPath[2]._key,
         )
-
       const nextFocusPath = isSpanPath ? focusPath.concat(['text']) : focusPath
 
-      onPathFocus(nextFocusPath, {
-        selection,
+      // Must called in a transition useTrackFocusPath hook
+      // will try to effectuate a focusPath that is different from what currently is the editor focusPath
+      startTransition(() => {
+        onPathFocus(nextFocusPath, {
+          selection,
+        })
       })
     },
     [onPathFocus, portableTextMemberItems],
@@ -191,19 +195,26 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
   const nextSelectionRef = useRef<EditorSelection | null>(null)
   const hasPendingPatchRef = useRef<boolean>(false)
 
+  const setFocusPathFromEditorSelectionThrottled = useMemo(
+    () =>
+      throttle(() => {
+        if (nextSelectionRef.current) {
+          setFocusPathFromEditorSelection(nextSelectionRef.current)
+        }
+      }, 1000),
+    [setFocusPathFromEditorSelection],
+  )
+
   // Handle editor changes
   const handleEditorChange = useCallback(
     (change: EditorChange): void => {
       switch (change.type) {
         case 'mutation':
           onChange(toFormPatches(change.patches))
-
           if (nextSelectionRef.current) {
             setFocusPathFromEditorSelection(nextSelectionRef.current)
           }
-
           hasPendingPatchRef.current = false
-
           break
         case 'connection':
           if (change.value === 'offline') {
@@ -217,11 +228,10 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
           hasPendingPatchRef.current = true
           break
         case 'selection':
-          if (!hasPendingPatchRef.current) {
-            setFocusPathFromEditorSelection(change.selection)
-            break
-          }
           nextSelectionRef.current = change.selection
+          if (!hasPendingPatchRef.current) {
+            setFocusPathFromEditorSelectionThrottled()
+          }
           break
         case 'focus':
           setIsActive(true)
@@ -257,12 +267,13 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
     },
     [
       editorRef,
-      onBlur,
-      onChange,
       onEditorChange,
+      onChange,
+      onBlur,
       resetSelectionPresence,
-      setFocusPathFromEditorSelection,
       toast,
+      setFocusPathFromEditorSelection,
+      setFocusPathFromEditorSelectionThrottled,
     ],
   )
 
@@ -299,9 +310,13 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
     }
   }, [editorRef, isActive])
 
+  const previousRangeDecorations = useRef<RangeDecoration[]>([])
+
   const rangeDecorations = useMemo((): RangeDecoration[] => {
     const result = [...(rangeDecorationsProp || []), ...presenceCursorDecorations]
-    return result.length === 0 ? EMPTY_ARRAY : result
+    const reconciled = immutableReconcile(previousRangeDecorations.current, result)
+    previousRangeDecorations.current = reconciled
+    return reconciled
   }, [presenceCursorDecorations, rangeDecorationsProp])
 
   return (
