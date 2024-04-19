@@ -43,6 +43,8 @@ export function useTasksStore(opts: TasksStoreOptions): TasksStoreReturnType {
   const {documentId} = opts
 
   const [state, dispatch] = useReducer(tasksReducer, INITIAL_STATE)
+
+  const [isReady, setIsReady] = useState<boolean>(client !== null)
   const [isLoading, setIsLoading] = useState<boolean>(client !== null)
   const [error, setError] = useState<Error | null>(null)
 
@@ -130,6 +132,13 @@ export function useTasksStore(opts: TasksStoreOptions): TasksStoreReturnType {
   }, [client, params])
 
   useEffect(() => {
+    if (!isReady) {
+      console.log('setting isReady to', !!client)
+      setIsReady(!!client)
+    }
+  }, [client, isReady])
+
+  useEffect(() => {
     const sub = listener$.subscribe(handleListenerEvent)
 
     return () => {
@@ -145,5 +154,6 @@ export function useTasksStore(opts: TasksStoreOptions): TasksStoreReturnType {
     dispatch,
     error,
     isLoading,
+    isReady,
   }
 }

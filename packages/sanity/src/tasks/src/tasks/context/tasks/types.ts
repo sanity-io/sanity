@@ -17,4 +17,5 @@ export interface TasksContextValue {
   setActiveDocument: (document: ActiveDocument | null) => void
   data: TaskDocument[]
   isLoading: boolean
+  isReady?: boolean
 }

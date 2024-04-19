@@ -2,13 +2,18 @@ import {useTelemetry} from '@sanity/telemetry/react'
 import {useToast} from '@sanity/ui'
 import {uuid} from '@sanity/uuid'
 import {type ReactNode, useCallback, useEffect, useReducer} from 'react'
+import {type SanityClient, useAddonDataset} from 'sanity/index'
 import {useRouter} from 'sanity/router'
 
 import {TaskLinkCopied, TaskLinkOpened} from '../../../../__telemetry__/tasks.telemetry'
+import {
+  getTasksVisibleLocalStorageState,
+  setTasksVisibleLocalStorageState,
+} from '../../TasksVisibleState'
 import {TasksNavigationContext} from './TasksNavigationContext'
 import {type Action, type SidebarTabsIds, type State, type ViewModeOptions} from './types'
 
-const initialState: State = {
+const defaultState: State = {
   viewMode: 'list',
   selectedTask: null,
   activeTabId: 'assigned',
@@ -16,12 +21,26 @@ const initialState: State = {
   isOpen: false,
 }
 
+const getInitialState = (client: SanityClient): State => {
+  const activeTabId = getTasksVisibleLocalStorageState()
+
+  if (activeTabId) {
+    return {
+      ...defaultState,
+      activeTabId,
+      isOpen: true,
+    }
+  }
+
+  return defaultState
+}
+
 function reducer(state: State, action: Action): State {
   switch (action.type) {
     case 'TOGGLE_TASKS_VIEW': {
       if (action.payload === false) {
         return {
-          ...initialState,
+          ...defaultState,
           isOpen: action.payload,
         }
       }
@@ -72,10 +91,17 @@ function reducer(state: State, action: Action): State {
 }
 
 export const TasksNavigationProvider = ({children}: {children: ReactNode}) => {
-  const [state, dispatch] = useReducer(reducer, initialState)
+  const {client} = useAddonDataset()
+
+  const [state, dispatch] = useReducer(reducer, getInitialState(client))
   const router = useRouter()
   const toast = useToast()
   const telemetry = useTelemetry()
+
+  useEffect(() => {
+    if (!!client && !state.isOpen) {
+    }
+  },[])
 
   const setViewMode = useCallback((viewMode: ViewModeOptions) => {
     switch (viewMode.type) {
@@ -104,15 +130,18 @@ export const TasksNavigationProvider = ({children}: {children: ReactNode}) => {
 
   const setActiveTab = useCallback((tabId: SidebarTabsIds) => {
     dispatch({type: 'SET_ACTIVE_TAB', payload: tabId})
+    setTasksVisibleLocalStorageState(tabId)
   }, [])
 
   const handleCloseTasks = useCallback(() => {
     dispatch({type: 'TOGGLE_TASKS_VIEW', payload: false})
+    setTasksVisibleLocalStorageState(null)
   }, [])
 
   const handleOpenTasks = useCallback(() => {
     dispatch({type: 'TOGGLE_TASKS_VIEW', payload: true})
-  }, [])
+    setTasksVisibleLocalStorageState(state.activeTabId)
+  }, [state.activeTabId])
 
   const handleCopyLinkToTask = useCallback(() => {
     const url = new URL(window.location.href)

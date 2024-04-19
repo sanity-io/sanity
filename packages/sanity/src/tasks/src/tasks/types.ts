@@ -8,6 +8,7 @@ export interface Loadable<T> {
   data: T | null
   error: Error | null
   isLoading: boolean
+  isReady?: boolean
 }
 
 /**

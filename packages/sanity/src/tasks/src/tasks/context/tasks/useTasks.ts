@@ -16,6 +16,7 @@ export function useTasks(): TasksContextValue {
       setActiveDocument: () => null,
       data: [],
       isLoading: false,
+      isReady: false,
     }
   }
 

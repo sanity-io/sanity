@@ -17,7 +17,7 @@ const EMPTY_ARRAY: [] = []
 export function TasksProvider(props: TasksProviderProps) {
   const {children} = props
   const [activeDocument, setActiveDocument] = useState<ActiveDocument | null>(null)
-  const {data = EMPTY_ARRAY, isLoading} = useTasksStore({})
+  const {data = EMPTY_ARRAY, isLoading, isReady} = useTasksStore({})
 
   // This change is debounced to wait until the next document loads if we are switching between documents.
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -28,9 +28,10 @@ export function TasksProvider(props: TasksProviderProps) {
       activeDocument,
       setActiveDocument: debouncedSetActiveDocument,
       isLoading,
+      isReady,
       data: data ?? [],
     }),
-    [activeDocument, data, isLoading, debouncedSetActiveDocument],
+    [activeDocument, debouncedSetActiveDocument, isLoading, isReady, data],
   )
 
   return <TasksContext.Provider value={value}>{children}</TasksContext.Provider>

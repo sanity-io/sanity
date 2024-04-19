@@ -73,13 +73,14 @@ export function useActiveActionKeys({
 }): string[] {
   const editor = usePortableTextEditor()
   const selection = usePortableTextEditorSelection()
-
+  // console.log({selection})
   return useUnique(
     useMemo(
       () => {
         const activeAnnotationKeys = PortableTextEditor.activeAnnotations(editor).map(
           (a) => a._type,
         )
+        // console.log({actions})
 
         return actions
           .filter((a) => {

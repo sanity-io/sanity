@@ -278,6 +278,7 @@ export class PortableTextEditor extends Component<PortableTextEditorProps> {
   }
   static toggleMark = (editor: PortableTextEditor, mark: string): void => {
     debug(`Host toggling mark`, mark)
+    console.log('here', mark)
     editor.editable?.toggleMark(mark)
   }
   static getFragment = (editor: PortableTextEditor): PortableTextBlock[] | undefined => {

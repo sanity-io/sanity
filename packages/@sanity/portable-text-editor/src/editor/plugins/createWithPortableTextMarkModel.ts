@@ -5,6 +5,7 @@
  *
  */
 
+import {type PortableTextSpan} from '@sanity/types'
 import {flatten, isEqual, uniq} from 'lodash'
 import {type Subject} from 'rxjs'
 import {
@@ -345,19 +346,27 @@ export function createWithPortableTextMarkModel(
       if (!editor.selection) {
         return false
       }
-      let existingMarks =
+
+      const isNodeWithMark = (n: NodeEntry<PortableTextSpan>) => {
+        const [node] = n as NodeEntry<Text>
+
+        return node.marks?.includes(mark)
+      }
+      const selectedNodes = Array.from(
+        Editor.nodes(editor, {match: Text.isText, at: editor.selection}),
+      )
+
+      // console.log({isExpanded: Range.isExpanded(editor.selection)})
+      if (Range.isExpanded(editor.selection)) {
+        // console.log({selectedNodes})
+        return selectedNodes.every(isNodeWithMark)
+      }
+
+      return (
         {
           ...(Editor.marks(editor) || {}),
         }.marks || []
-      if (Range.isExpanded(editor.selection)) {
-        Array.from(Editor.nodes(editor, {match: Text.isText, at: editor.selection})).forEach(
-          (n) => {
-            const [node] = n as NodeEntry<Text>
-            existingMarks = uniq([...existingMarks, ...((node.marks as string[]) || [])])
-          },
-        )
-      }
-      return existingMarks.includes(mark)
+      ).includes(mark)
     }
 
     // Custom editor function to toggle a mark

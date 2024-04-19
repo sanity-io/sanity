@@ -30,7 +30,7 @@ const ContentFlex = styled(Flex)`
  */
 export function TasksStudioSidebarInner() {
   const {mode} = useTasksEnabled()
-  const {activeDocument, data, isLoading} = useTasks()
+  const {activeDocument, data, isLoading, isReady} = useTasks()
   const {state, setActiveTab, setViewMode} = useTasksNavigation()
   const {activeTabId, viewMode, selectedTask} = state
   const currentUser = useCurrentUser()
@@ -60,7 +60,8 @@ export function TasksStudioSidebarInner() {
       return <TasksFormBuilder key={selectedTask} />
     }
 
-    if (isLoading) {
+    console.log({isReady})
+    if (isLoading || !isReady) {
       return (
         <Flex align="center" justify="center">
           <Spinner />
@@ -74,7 +75,7 @@ export function TasksStudioSidebarInner() {
         <TasksList items={filteredList} onTaskSelect={onTaskSelect} />
       </>
     )
-  }, [filteredList, isLoading, onTaskSelect, selectedTask, viewMode, mode])
+  }, [viewMode, isLoading, isReady, mode, filteredList, onTaskSelect, selectedTask])
 
   return (
     <RootCard display="flex" height="fill" flex={1} overflow="hidden">
