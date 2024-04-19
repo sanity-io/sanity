@@ -62,6 +62,7 @@
     "@sanity/schema": "3.38.0",
     "@sanity/types": "3.38.0",
     "@sanity/util": "3.38.0",
+    "@vercel/stega": "0.1.0",
     "debug": "^3.2.7",
     "is-hotkey-esm": "^1.0.0",
     "lodash": "^4.17.21",
