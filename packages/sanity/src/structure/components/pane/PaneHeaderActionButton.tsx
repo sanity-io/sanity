@@ -83,7 +83,7 @@ export function PaneHeaderMenuItemActionButton(props: PaneHeaderMenuItemActionBu
 function PaneHeaderActionIntentButton(props: {intent: Intent; node: _PaneMenuItem}) {
   const {intent, node} = props
   const intentLink = useIntentLink({intent: intent.type, params: intent.params})
-  const {t} = useTranslation
+  const {t} = useTranslation()
 
   const handleClick = useCallback(
     (event: MouseEvent<HTMLButtonElement>) => {

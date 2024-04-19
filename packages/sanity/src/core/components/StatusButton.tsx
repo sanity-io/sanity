@@ -38,7 +38,7 @@ export const StatusButton = forwardRef(function StatusButton(
   ref: ForwardedRef<HTMLButtonElement>,
 ) {
   const {
-    disabled: disabledProp,
+    'disabled': disabledProp,
     icon,
     'aria-label': label,
     mode = 'bleed',
