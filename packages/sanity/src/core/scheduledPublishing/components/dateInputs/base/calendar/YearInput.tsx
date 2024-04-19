@@ -1,9 +1,8 @@
-import {type TextInput} from '@sanity/ui'
 import {type ChangeEvent, type ComponentProps, type FocusEvent, useCallback} from 'react'
 
-import {LazyTextInput} from '../LazyTextInput'
+import {LazyTextInput} from '../../../../../form/inputs/DateInputs/base/LazyTextInput'
 
-type Props = Omit<ComponentProps<typeof TextInput>, 'onChange' | 'value'> & {
+type Props = Omit<ComponentProps<typeof LazyTextInput>, 'onChange' | 'value'> & {
   value?: number
   onChange: (year: number) => void
 }

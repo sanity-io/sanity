@@ -20,8 +20,8 @@ import {
 import FocusLock from 'react-focus-lock'
 
 import {Popover} from '../../../../../ui-components'
+import {LazyTextInput} from '../../../../form/inputs/DateInputs/base/LazyTextInput'
 import {DatePicker} from './DatePicker'
-import {LazyTextInput} from './LazyTextInput'
 
 type Props = {
   value?: Date
