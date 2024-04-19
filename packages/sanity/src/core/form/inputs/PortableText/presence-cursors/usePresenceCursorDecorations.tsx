@@ -2,8 +2,10 @@ import {type RangeDecoration} from '@sanity/portable-text-editor'
 import {type Path} from '@sanity/types'
 import {startsWith} from '@sanity/util/paths'
 import {isEqual} from 'lodash'
-import {useMemo} from 'react'
+import {useMemo, useRef} from 'react'
+import {type FormNodePresence} from 'sanity/index'
 
+import {immutableReconcile} from '../../../store/utils/immutableReconcile'
 import {useFormFieldPresence} from '../../../studio/contexts/Presence'
 import {UserPresenceCursor} from './UserPresenceCursor'
 
@@ -16,14 +18,17 @@ export function usePresenceCursorDecorations(
 ): RangeDecoration[] {
   const {path} = props
   const fieldPresence = useFormFieldPresence()
+  const previousCurrentPresence = useRef<FormNodePresence[]>([])
 
   const currentPresence = useMemo(
     () => fieldPresence.filter((p) => startsWith(path, p.path) && !isEqual(path, p.path)),
-    [path, fieldPresence],
+    [fieldPresence, path],
   )
+  const reconciled = immutableReconcile(previousCurrentPresence.current, currentPresence)
+  previousCurrentPresence.current = reconciled
 
   return useMemo((): RangeDecoration[] => {
-    const decorations: RangeDecoration[] = currentPresence.map((presence) => {
+    const decorations: RangeDecoration[] = reconciled.map((presence) => {
       if (!presence.selection) {
         return null
       }
@@ -36,5 +41,5 @@ export function usePresenceCursorDecorations(
     }) as RangeDecoration[]
 
     return decorations.filter(Boolean)
-  }, [currentPresence])
+  }, [reconciled])
 }
