@@ -13,9 +13,17 @@ export {EditScheduleForm} from '../components/editScheduleForm/EditScheduleForm'
 export {resolveDocumentActions, resolveDocumentBadges}
 export {type Schedule} from '../types'
 
+/**
+ * @internal
+ */
+export const SCHEDULED_PUBLISHING_NAME = 'sanity/scheduled-publishing'
+
+/**
+ * @internal
+ */
 export const scheduledPublishing = definePlugin({
   // Renamed from 'scheduled-publishing' to 'sanity/scheduled-publishing' to avoid duplicates, see packages/sanity/src/core/config/flattenConfig.ts - DEPRECATED_PLUGINS.
-  name: 'sanity/scheduled-publishing',
+  name: SCHEDULED_PUBLISHING_NAME,
 
   document: {
     actions: (prev) => resolveDocumentActions(prev),

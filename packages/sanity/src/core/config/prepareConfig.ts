@@ -8,18 +8,14 @@ import {type ComponentType, createElement, type ElementType, isValidElement} fro
 import {isValidElementType} from 'react-is'
 import {map, shareReplay} from 'rxjs/operators'
 
-import {comments} from '../comments/plugin'
 import {FileSource, ImageSource} from '../form/studio/assetSource'
 import {type LocaleSource} from '../i18n'
 import {prepareI18n} from '../i18n/i18nConfig'
-import {DEFAULT_SCHEDULED_PUBLISH_PLUGIN_OPTIONS} from '../scheduledPublishing/constants'
-import {scheduledPublishing} from '../scheduledPublishing/plugin'
 import {createSchema} from '../schema'
 import {type AuthStore, createAuthStore, isAuthStore} from '../store/_legacy'
 import {validateWorkspaces} from '../studio'
 import {filterDefinitions} from '../studio/components/navbar/search/definitions/defaultFilters'
 import {operatorDefinitions} from '../studio/components/navbar/search/definitions/operators/defaultOperators'
-import {tasks} from '../tasks/plugin'
 import {type InitialValueTemplateItem, type Template, type TemplateItem} from '../templates'
 import {EMPTY_ARRAY, isNonNullable} from '../util'
 import {
@@ -45,6 +41,7 @@ import {ConfigResolutionError} from './ConfigResolutionError'
 import {createDefaultIcon} from './createDefaultIcon'
 import {documentFieldActionsReducer, initialDocumentFieldActions} from './document'
 import {resolveConfigProperty} from './resolveConfigProperty'
+import {getDefaultPlugins, getDefaultPluginsOptions} from './resolveDefaultPlugins'
 import {resolveSchemaTypes} from './resolveSchemaTypes'
 import {SchemaError} from './SchemaError'
 import {
@@ -59,8 +56,6 @@ import {
   type WorkspaceOptions,
   type WorkspaceSummary,
 } from './types'
-
-const defaultPlugins = [comments(), tasks(), scheduledPublishing()]
 
 type InternalSource = WorkspaceSummary['__internal']['sources'][number]
 
@@ -119,9 +114,11 @@ export function prepareConfig(
     if (preparedWorkspaces.has(rawWorkspace)) {
       return preparedWorkspaces.get(rawWorkspace)!
     }
+    const defaultPluginsOptions = getDefaultPluginsOptions(rawWorkspace)
+
     const {unstable_sources: nestedSources = [], ...rootSource} = rawWorkspace
     const sources = [rootSource as SourceOptions, ...nestedSources].map(({plugins, ...source}) => {
-      return {...source, plugins: [...(plugins ?? []), ...defaultPlugins]}
+      return {...source, plugins: [...(plugins ?? []), ...getDefaultPlugins(defaultPluginsOptions)]}
     })
 
     const resolvedSources = sources.map((source): InternalSource => {
@@ -204,12 +201,8 @@ export function prepareConfig(
       __internal: {
         sources: resolvedSources,
       },
-      tasks: rawWorkspace.unstable_tasks ?? {enabled: true},
       serverActions: rawWorkspace.unstable_serverActions ?? {enabled: false},
-      scheduledPublishing: {
-        ...DEFAULT_SCHEDULED_PUBLISH_PLUGIN_OPTIONS,
-        ...rawWorkspace.scheduledPublishing,
-      },
+      ...defaultPluginsOptions,
     }
     preparedWorkspaces.set(rawWorkspace, workspaceSummary)
     return workspaceSummary

@@ -157,6 +157,9 @@ export default defineConfig([
       enabled: true,
       inputDateTimeFormat: 'MM/dd/yy h:mm a',
     },
+    unstable_tasks: {
+      enabled: true,
+    },
   },
   {
     name: 'partialIndexing',
@@ -169,6 +172,12 @@ export default defineConfig([
       unstable_partialIndexing: {
         enabled: true,
       },
+    },
+    scheduledPublishing: {
+      enabled: false,
+    },
+    unstable_tasks: {
+      enabled: false,
     },
   },
   {

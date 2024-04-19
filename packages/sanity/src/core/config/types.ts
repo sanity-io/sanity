@@ -436,9 +436,7 @@ export interface WorkspaceOptions extends SourceOptions {
    * @hidden
    * @beta
    */
-  unstable_tasks?: {
-    enabled: boolean
-  }
+  unstable_tasks?: DefaultPluginsWorkspaceOptions['tasks']
 
   /**
    * @hidden
@@ -448,7 +446,7 @@ export interface WorkspaceOptions extends SourceOptions {
     enabled: boolean
   }
 
-  scheduledPublishing?: ScheduledPublishingPluginOptions
+  scheduledPublishing?: DefaultPluginsWorkspaceOptions['scheduledPublishing']
 }
 
 /**
@@ -764,7 +762,7 @@ export interface Source {
 }
 
 /** @internal */
-export interface WorkspaceSummary {
+export interface WorkspaceSummary extends DefaultPluginsWorkspaceOptions {
   type: 'workspace-summary'
   name: string
   title: string
@@ -799,8 +797,6 @@ export interface WorkspaceSummary {
       source: Observable<Source>
     }>
   }
-  tasks: WorkspaceOptions['unstable_tasks']
-  scheduledPublishing: ScheduledPublishingPluginOptions
   serverActions: WorkspaceOptions['unstable_serverActions']
 }
 
@@ -869,3 +865,9 @@ export type {
   CookielessCompatibleLoginMethod,
   LoginMethod,
 } from './auth/types'
+
+/** @beta */
+export type DefaultPluginsWorkspaceOptions = {
+  tasks: {enabled: boolean}
+  scheduledPublishing: ScheduledPublishingPluginOptions
+}
