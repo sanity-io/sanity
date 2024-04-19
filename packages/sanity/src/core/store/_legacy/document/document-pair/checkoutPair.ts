@@ -2,7 +2,7 @@ import {type SanityClient} from '@sanity/client'
 import {type Mutation} from '@sanity/mutator'
 import {type SanityDocument} from '@sanity/types'
 import {EMPTY, from, merge, type Observable, Subject} from 'rxjs'
-import {filter, map, mergeMap, share, take, tap} from 'rxjs/operators'
+import {filter, map, mergeMap, share, shareReplay, take, tap} from 'rxjs/operators'
 
 import {
   type BufferedDocumentEvent,
@@ -225,7 +225,9 @@ export function checkoutPair(
     filter((ev): ev is PendingMutationsEvent => ev.type === 'pending'),
   )
 
-  const serverActionFeatureToggle$ = featureToggleRequest(client, idPair, serverActionsEnabled)
+  const serverActionFeatureToggle$ = featureToggleRequest(client, serverActionsEnabled).pipe(
+    shareReplay(1),
+  )
 
   const commits$ = merge(draft.commitRequest$, published.commitRequest$).pipe(
     mergeMap((commitRequest) =>
