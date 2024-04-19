@@ -53,8 +53,8 @@ importers:
         specifier: ^4.0.0
         version: 4.0.0(eslint@8.57.0)(typescript@5.4.5)
       '@sanity/pkg-utils':
-        specifier: 6.7.1
-        version: 6.7.1(@types/node@18.19.31)(typescript@5.4.5)
+        specifier: 6.8.0
+        version: 6.8.0(@types/node@18.19.31)(typescript@5.4.5)
       '@sanity/test':
         specifier: 0.0.1-alpha.1
         version: 0.0.1-alpha.1
@@ -1779,8 +1779,8 @@ importers:
         specifier: ^3.0.0
         version: 3.0.0
       '@sanity/pkg-utils':
-        specifier: 6.7.1
-        version: 6.7.1(@types/node@18.19.31)(debug@4.3.4)(typescript@5.4.5)
+        specifier: 6.8.0
+        version: 6.8.0(@types/node@18.19.31)(debug@4.3.4)(typescript@5.4.5)
       '@sanity/tsdoc':
         specifier: 1.0.34
         version: 1.0.34(@types/node@18.19.31)(debug@4.3.4)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(sanity@packages+sanity)(styled-components@6.1.8)
@@ -6277,8 +6277,8 @@ packages:
       - debug
       - supports-color
 
-  /@sanity/pkg-utils@6.7.1(@types/node@18.19.31)(debug@4.3.4)(typescript@5.4.5):
-    resolution: {integrity: sha512-sEx3fwjge8sD3kvuJPqz51Dv4hWyC+RiRsaYWVpMY4K1FPPGMYwjbEWZqa1fNBV1suOBfrna2Y822sTmWsrYvg==}
+  /@sanity/pkg-utils@6.8.0(@types/node@18.19.31)(debug@4.3.4)(typescript@5.4.5):
+    resolution: {integrity: sha512-3isoIkI2IjGyKBrHgLdmOwYXSO3zB9z08bHQ8nvY1cokXpT+D2D0P/MS9pwwZIoOn2RVbMD77kPmHpFWUf353Q==}
     engines: {node: '>=18.17.0'}
     hasBin: true
     peerDependencies:
@@ -6313,7 +6313,6 @@ packages:
       parse-git-config: 3.0.0
       pkg-up: 3.1.0
       prettier: 3.2.5
-      prettier-plugin-packagejson: 2.5.0(prettier@3.2.5)
       pretty-bytes: 5.6.0
       prompts: 2.4.2
       rimraf: 4.4.1
@@ -6332,8 +6331,8 @@ packages:
       - supports-color
     dev: true
 
-  /@sanity/pkg-utils@6.7.1(@types/node@18.19.31)(typescript@5.4.5):
-    resolution: {integrity: sha512-sEx3fwjge8sD3kvuJPqz51Dv4hWyC+RiRsaYWVpMY4K1FPPGMYwjbEWZqa1fNBV1suOBfrna2Y822sTmWsrYvg==}
+  /@sanity/pkg-utils@6.8.0(@types/node@18.19.31)(typescript@5.4.5):
+    resolution: {integrity: sha512-3isoIkI2IjGyKBrHgLdmOwYXSO3zB9z08bHQ8nvY1cokXpT+D2D0P/MS9pwwZIoOn2RVbMD77kPmHpFWUf353Q==}
     engines: {node: '>=18.17.0'}
     hasBin: true
     peerDependencies:
@@ -6368,7 +6367,6 @@ packages:
       parse-git-config: 3.0.0
       pkg-up: 3.1.0
       prettier: 3.2.5
-      prettier-plugin-packagejson: 2.5.0(prettier@3.2.5)
       pretty-bytes: 5.6.0
       prompts: 2.4.2
       rimraf: 4.4.1
