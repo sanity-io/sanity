@@ -24,6 +24,10 @@ import {type PreviewConfig} from './preview'
 
 export {defineArrayMember, defineField, defineType, typed} from './define'
 
+// Necessary since this is the only way to include all string literals and all other strings
+// eslint-disable-next-line @typescript-eslint/ban-types
+export type AllowOtherStrings = string & {}
+
 /**
  * Note: you probably want `SchemaTypeDefinition` instead
  * @see SchemaTypeDefinition

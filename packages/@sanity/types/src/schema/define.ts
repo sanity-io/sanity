@@ -9,6 +9,7 @@ import {
   type WidenValidation,
 } from './defineTypes'
 import {type FieldDefinitionBase, type IntrinsicTypeName} from './definition'
+import {type AllowOtherStrings} from './types'
 
 /**
  * Helper function for defining a Sanity type definition. This function does not do anything on its own;
@@ -170,7 +171,7 @@ import {type FieldDefinitionBase, type IntrinsicTypeName} from './definition'
  * @beta
  */
 export function defineType<
-  const TType extends string | IntrinsicTypeName, // IntrinsicTypeName here improves autocompletion in _some_ IDEs (not VS Code atm)
+  const TType extends IntrinsicTypeName | AllowOtherStrings,
   const TName extends string,
   TSelect extends Record<string, string> | undefined,
   TPrepareValue extends Record<keyof TSelect, any> | undefined,
