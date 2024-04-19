@@ -1,7 +1,7 @@
 import {createContext, useContext, useMemo} from 'react'
 
-import {useFeatureEnabled} from '../../../hooks/useFeatureEnabled'
-import {useWorkspace} from '../../../studio/workspace'
+import {useFeatureEnabled} from '../../../hooks'
+import {useWorkspace} from '../../../studio'
 
 /**
  * @internal
