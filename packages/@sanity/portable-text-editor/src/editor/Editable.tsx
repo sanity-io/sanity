@@ -20,6 +20,7 @@ import {
   Editor,
   type NodeEntry,
   type Operation,
+  Path,
   Range as SlateRange,
   type Text,
   Transforms,
@@ -574,7 +575,12 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
           },
         ]
       }
-      const result = rangeDecorationState.filter((item) => SlateRange.includes(item, path))
+      const result = rangeDecorationState.filter((item) => {
+        if (SlateRange.isCollapsed(item)) {
+          return Path.equals(item.focus.path, path) && Path.equals(item.anchor.path, path)
+        }
+        return SlateRange.includes(item, path)
+      })
       if (result.length > 0) {
         return result
       }
