@@ -29,7 +29,7 @@ export const operationArgs = memoize(
       shareReplay(1),
       take(1),
       switchMap((canUseServerActions) =>
-        snapshotPair(ctx.client, idPair, typeName, canUseServerActions).pipe(
+        snapshotPair(ctx.client, idPair, typeName, ctx.serverActionsEnabled).pipe(
           switchMap((versions) =>
             combineLatest([versions.draft.snapshots$, versions.published.snapshots$]).pipe(
               map(
