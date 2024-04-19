@@ -24,7 +24,7 @@ export const CLEANED_UNICODE_INPUT_SNAPSHOT = [
       {_key: '2bd5e9165a261', _type: 'span', marks: ['strong'], text: 'bold text'},
       {_key: '2bd5e9165a262', _type: 'span', marks: [], text: ', '},
       {_key: '2bd5e9165a263', _type: 'span', marks: ['em'], text: 'italic text'},
-      {_key: '2bd5e9165a264', _type: 'span', marks: [], text: ',~~strikethrough~~,'},
+      {_key: '2bd5e9165a264', _type: 'span', marks: [], text: ', ~~strikethrough~~, '},
       {_key: '2bd5e9165a265', _type: 'span', marks: ['code'], text: 'code'},
       {
         _key: '2bd5e9165a266',
