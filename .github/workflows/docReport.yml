@@ -81,5 +81,5 @@ jobs:
         uses: thollander/actions-comment-pull-request@fabd468d3a1a0b97feee5f6b9e499eab0dd903f6 # v2
         if: ${{ github.event_name == 'pull_request' }}
         with:
-          comment_tag: 'docs-report'
+          comment_tag: "docs-report"
           filePath: ${{ github.workspace }}/scripts/docs-report.md

@@ -130,7 +130,7 @@ const config = {
         ],
       },
     },
-    react: {version: '18.0.0'},
+    'react': {version: '18.0.0'},
   },
   overrides: [
     // Test files

@@ -4,13 +4,13 @@ import {Tab} from '../../../../../ui-components'
 
 interface GroupType {
   'aria-controls': string
-  autoFocus?: boolean
-  disabled?: boolean
-  icon?: ComponentType
-  name: string
-  onClick?: (value: string) => void
-  selected: boolean
-  title: string
+  'autoFocus'?: boolean
+  'disabled'?: boolean
+  'icon'?: ComponentType
+  'name': string
+  'onClick'?: (value: string) => void
+  'selected': boolean
+  'title': string
 }
 
 export const GroupTab = forwardRef(function GroupTab(

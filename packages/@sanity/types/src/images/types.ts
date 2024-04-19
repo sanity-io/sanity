@@ -7,34 +7,34 @@
  * @internal
  */
 export interface ImageUrlParams {
-  bg?: string
-  dpr?: number | string
-  w?: number | string
-  h?: number | string
-  q?: number | string
-  dl?: string
-  dlRaw?: string
+  'bg'?: string
+  'dpr'?: number | string
+  'w'?: number | string
+  'h'?: number | string
+  'q'?: number | string
+  'dl'?: string
+  'dlRaw'?: string
   'fp-x'?: number | string
   'fp-y'?: number | string
   'max-w'?: number | string
   'max-h'?: number | string
   'min-w'?: number | string
   'min-h'?: number | string
-  blur?: number | string
-  sharp?: number | string
-  rect?: string // <x>,<y>,<w>,<h>
-  fm?: ImageUrlFormat
-  or?: ImageUrlOrientation
-  fit?: ImageUrlFitMode
-  crop?: ImageUrlCropMode
-  auto?: ImageUrlAutoMode
-  invert?: 'true' | 'false'
-  quality?: number | string
-  flip?: 'h' | 'v' | 'hv'
-  sat?: number | string
-  pad?: number | string
-  colorquant?: number | string
-  border?: string // <width>,<color>
+  'blur'?: number | string
+  'sharp'?: number | string
+  'rect'?: string // <x>,<y>,<w>,<h>
+  'fm'?: ImageUrlFormat
+  'or'?: ImageUrlOrientation
+  'fit'?: ImageUrlFitMode
+  'crop'?: ImageUrlCropMode
+  'auto'?: ImageUrlAutoMode
+  'invert'?: 'true' | 'false'
+  'quality'?: number | string
+  'flip'?: 'h' | 'v' | 'hv'
+  'sat'?: number | string
+  'pad'?: number | string
+  'colorquant'?: number | string
+  'border'?: string // <width>,<color>
 }
 
 /** @internal */

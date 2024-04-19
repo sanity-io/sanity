@@ -401,14 +401,14 @@ export interface ArrayOfPrimitivesInputProps<
  * @hidden
  * @public */
 export interface PrimitiveInputElementProps {
-  value?: string
-  id: string
-  readOnly: boolean
-  placeholder?: string
-  onChange: FormEventHandler
-  onFocus: FocusEventHandler
-  onBlur: FocusEventHandler
-  ref: MutableRefObject<any>
+  'value'?: string
+  'id': string
+  'readOnly': boolean
+  'placeholder'?: string
+  'onChange': FormEventHandler
+  'onFocus': FocusEventHandler
+  'onBlur': FocusEventHandler
+  'ref': MutableRefObject<any>
   'aria-describedby': string | undefined
 }
 
@@ -416,10 +416,10 @@ export interface PrimitiveInputElementProps {
  * @hidden
  * @beta */
 export interface ComplexElementProps {
-  id: string
-  onFocus: FocusEventHandler
-  onBlur: FocusEventHandler
-  ref: MutableRefObject<any>
+  'id': string
+  'onFocus': FocusEventHandler
+  'onBlur': FocusEventHandler
+  'ref': MutableRefObject<any>
   'aria-describedby': string | undefined
 }
 

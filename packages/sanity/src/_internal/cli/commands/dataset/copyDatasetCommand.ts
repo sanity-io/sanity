@@ -38,11 +38,11 @@ interface CopyProgressStreamEvent {
 }
 
 interface CopyDatasetFlags {
-  list?: boolean
-  attach?: string
-  detach?: boolean
-  offset?: number
-  limit?: number
+  'list'?: boolean
+  'attach'?: string
+  'detach'?: boolean
+  'offset'?: number
+  'limit'?: number
   'skip-history'?: boolean
 }
 

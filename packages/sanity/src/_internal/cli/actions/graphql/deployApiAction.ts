@@ -48,11 +48,11 @@ export default async function deployGraphQLApiAction(
   const {
     force,
     dryRun,
-    api: onlyApis,
-    dataset: datasetFlag,
-    tag: tagFlag,
-    playground: playgroundFlag,
-    generation: generationFlag,
+    'api': onlyApis,
+    'dataset': datasetFlag,
+    'tag': tagFlag,
+    'playground': playgroundFlag,
+    'generation': generationFlag,
     'non-null-document-fields': nonNullDocumentFieldsFlag,
     withUnionCache,
   } = flags
