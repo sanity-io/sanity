@@ -1,4 +1,4 @@
-name: 'Cleanup: PR Merge/Closed'
+name: "Cleanup: PR Merge/Closed"
 
 on:
   # Build on closed or merged PRs

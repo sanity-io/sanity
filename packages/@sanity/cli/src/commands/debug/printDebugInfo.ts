@@ -47,7 +47,7 @@ export const printDebugInfo: CliCommandAction = async (args, context) => {
     context.output.print('Project:')
     printKeyValue(
       {
-        ID: project.id,
+        'ID': project.id,
         'Display name': project.displayName,
         'Studio URL': project.studioHostname,
       },

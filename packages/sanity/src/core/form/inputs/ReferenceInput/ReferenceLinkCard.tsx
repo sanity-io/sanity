@@ -39,9 +39,9 @@ export const ReferenceLinkCard = forwardRef(function ReferenceLinkCard(
       // this will make @sanity/ui style it as a link
       'data-as': 'a',
       // this determines the actual tag inserted into the DOM (either a HTML element or a component)
-      forwardedAs: as,
-      documentId: documentId,
-      documentType: documentType,
+      'forwardedAs': as,
+      'documentId': documentId,
+      'documentType': documentType,
     }
 
   return (

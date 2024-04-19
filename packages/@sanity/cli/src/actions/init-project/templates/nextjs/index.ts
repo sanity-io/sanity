@@ -181,7 +181,7 @@ export const sanityFolder = (
         ? blogSchemaJS
         : schemaJS,
     'env.': useTypeScript ? envTS : envJS,
-    lib: {
+    'lib': {
       'client.': client,
       'image.': useTypeScript ? imageTS : imageJS,
     },

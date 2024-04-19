@@ -29,12 +29,12 @@ Examples
 `
 
 interface ExportFlags {
-  raw?: boolean
-  assets?: boolean
-  drafts?: boolean
-  compress?: boolean
-  overwrite?: boolean
-  types?: string
+  'raw'?: boolean
+  'assets'?: boolean
+  'drafts'?: boolean
+  'compress'?: boolean
+  'overwrite'?: boolean
+  'types'?: string
   'asset-concurrency'?: string
 }
 

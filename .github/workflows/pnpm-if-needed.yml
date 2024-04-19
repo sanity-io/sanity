@@ -5,7 +5,7 @@ on:
   push:
     branches: [next]
     paths:
-      - 'pnpm-lock.yaml'
+      - "pnpm-lock.yaml"
   workflow_dispatch:
 
 concurrency:
@@ -67,7 +67,7 @@ jobs:
         with:
           body: I ran `pnpm dedupe` 🧑‍💻
           branch: actions/dedupe-if-needed
-          commit-message: 'chore(deps): dedupe pnpm-lock.yaml'
+          commit-message: "chore(deps): dedupe pnpm-lock.yaml"
           labels: 🤖 bot
-          title: 'chore(deps): dedupe pnpm-lock.yaml'
+          title: "chore(deps): dedupe pnpm-lock.yaml"
           token: ${{ steps.app-token.outputs.token }}
