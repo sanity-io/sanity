@@ -11,13 +11,14 @@ import {
   UpsellDialogViewed,
   type UpsellDialogViewedInfo,
 } from '../../../studio'
-import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
 import {TasksUpsellContext} from './TasksUpsellContext'
 import {type TasksUpsellContextValue} from './types'
 
 const FEATURE = 'tasks'
 const TEMPLATE_OPTIONS = {interpolate: /{{([\s\S]+?)}}/g}
 const BASE_URL = 'www.sanity.io'
+// Date when the change from array to object in the data returned was introduced.
+const API_VERSION = '2024-04-19'
 
 /**
  * @beta
@@ -28,7 +29,7 @@ export function TasksUpsellProvider(props: {children: React.ReactNode}) {
   const [upsellData, setUpsellData] = useState<UpsellData | null>(null)
   const projectId = useProjectId()
   const telemetry = useTelemetry()
-  const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
+  const client = useClient({apiVersion: API_VERSION})
 
   const telemetryLogs = useMemo(
     (): TasksUpsellContextValue['telemetryLogs'] => ({
@@ -84,13 +85,12 @@ export function TasksUpsellProvider(props: {children: React.ReactNode}) {
   }, [telemetry])
 
   useEffect(() => {
-    const data$ = client.observable.request<UpsellData[] | null>({
+    const data$ = client.observable.request<UpsellData | null>({
       uri: '/journey/tasks',
     })
 
     const sub = data$.subscribe({
-      next: (response) => {
-        const data = response?.[0]
+      next: (data) => {
         if (!data) return
         try {
           const ctaUrl = template(data.ctaButton.url, TEMPLATE_OPTIONS)
