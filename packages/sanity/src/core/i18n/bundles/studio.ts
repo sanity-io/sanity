@@ -316,6 +316,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
 
   /** --- Configuration issues --- */
 
+  'configuration-issues.button.label': 'Configuration issues',
   /** Tooltip displayed on configuration issues button */
   'configuration-issues.button.tooltip': 'Found configuration issues',
 
