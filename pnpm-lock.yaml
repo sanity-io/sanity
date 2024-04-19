@@ -730,8 +730,8 @@ importers:
         specifier: ^3.4.1
         version: 3.5.0(esbuild@0.20.2)
       get-it:
-        specifier: ^8.4.26
-        version: 8.4.26(debug@4.3.4)
+        specifier: ^8.4.27
+        version: 8.4.27(debug@4.3.4)
       groq-js:
         specifier: ^1.7.0
         version: 1.7.0
@@ -1598,8 +1598,8 @@ importers:
         specifier: 11.0.8
         version: 11.0.8(react-dom@18.2.0)(react@18.2.0)
       get-it:
-        specifier: ^8.4.26
-        version: 8.4.26(debug@4.3.4)
+        specifier: ^8.4.27
+        version: 8.4.27(debug@4.3.4)
       get-random-values-esm:
         specifier: 1.0.2
         version: 1.0.2
@@ -5899,7 +5899,7 @@ packages:
     engines: {node: '>=14.18'}
     dependencies:
       '@sanity/eventsource': 5.0.1
-      get-it: 8.4.26
+      get-it: 8.4.27
       rxjs: 7.8.1
     transitivePeerDependencies:
       - debug
@@ -5909,7 +5909,7 @@ packages:
     engines: {node: '>=14.18'}
     dependencies:
       '@sanity/eventsource': 5.0.1
-      get-it: 8.4.26(debug@4.3.4)
+      get-it: 8.4.27(debug@4.3.4)
       rxjs: 7.8.1
     transitivePeerDependencies:
       - debug
@@ -5983,7 +5983,7 @@ packages:
       '@sanity/util': 3.37.2(debug@4.3.4)
       archiver: 7.0.1
       debug: 4.3.4(supports-color@9.4.0)
-      get-it: 8.4.26(debug@4.3.4)
+      get-it: 8.4.27(debug@4.3.4)
       lodash: 4.17.21
       mississippi: 4.0.0
       p-queue: 2.4.2
@@ -6047,7 +6047,7 @@ packages:
       '@sanity/uuid': 3.0.2
       debug: 4.3.4(supports-color@9.4.0)
       file-url: 2.0.2
-      get-it: 8.4.26(debug@4.3.4)
+      get-it: 8.4.27(debug@4.3.4)
       get-uri: 2.0.4
       globby: 10.0.2
       gunzip-maybe: 1.4.2
@@ -6075,7 +6075,7 @@ packages:
       '@sanity/uuid': 3.0.2
       debug: 4.3.4(supports-color@9.4.0)
       file-url: 2.0.2
-      get-it: 8.4.26(debug@4.3.4)
+      get-it: 8.4.27(debug@4.3.4)
       get-uri: 2.0.4
       globby: 10.0.2
       gunzip-maybe: 1.4.2
@@ -11592,8 +11592,8 @@ packages:
       has-symbols: 1.0.3
       hasown: 2.0.2
 
-  /get-it@8.4.26:
-    resolution: {integrity: sha512-cl5R5+auJcBw7Qm9eZ+mVRRhU3e5H65pqkBqlaJmU85HI8C91F9CE/rmj4U23+Fz3GLD2uT0W+312rbH/T8IJA==}
+  /get-it@8.4.27:
+    resolution: {integrity: sha512-3ferjw17+sUrDws9Q5JOvC2ecaEjXQlBTarRNe7JLtKhzsnc7AILYzgn0TD0NZNuaeb7rEcGLX7tGHsDISJyAg==}
     engines: {node: '>=14.0.0'}
     dependencies:
       decompress-response: 7.0.0
@@ -11606,8 +11606,8 @@ packages:
     transitivePeerDependencies:
       - debug
 
-  /get-it@8.4.26(debug@4.3.4):
-    resolution: {integrity: sha512-cl5R5+auJcBw7Qm9eZ+mVRRhU3e5H65pqkBqlaJmU85HI8C91F9CE/rmj4U23+Fz3GLD2uT0W+312rbH/T8IJA==}
+  /get-it@8.4.27(debug@4.3.4):
+    resolution: {integrity: sha512-3ferjw17+sUrDws9Q5JOvC2ecaEjXQlBTarRNe7JLtKhzsnc7AILYzgn0TD0NZNuaeb7rEcGLX7tGHsDISJyAg==}
     engines: {node: '>=14.0.0'}
     dependencies:
       decompress-response: 7.0.0
@@ -11624,7 +11624,7 @@ packages:
     resolution: {integrity: sha512-Q6IBWr/zzw57zIkJmNhI23eRTw3nZ4BWWK034meLwOYU9L3J3IpXiyM73u2pYUwN6U7ahkerCwg2T0jlxiLwsw==}
     engines: {node: '>=14.18'}
     dependencies:
-      get-it: 8.4.26
+      get-it: 8.4.27
       registry-auth-token: 5.0.2
       registry-url: 5.1.0
       semver: 7.6.0
@@ -11635,7 +11635,7 @@ packages:
     resolution: {integrity: sha512-Q6IBWr/zzw57zIkJmNhI23eRTw3nZ4BWWK034meLwOYU9L3J3IpXiyM73u2pYUwN6U7ahkerCwg2T0jlxiLwsw==}
     engines: {node: '>=14.18'}
     dependencies:
-      get-it: 8.4.26(debug@4.3.4)
+      get-it: 8.4.27(debug@4.3.4)
       registry-auth-token: 5.0.2
       registry-url: 5.1.0
       semver: 7.6.0
