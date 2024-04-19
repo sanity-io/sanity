@@ -122,7 +122,7 @@
     "preferred-pm": "^3.0.3",
     "prettier": "^3.2.5",
     "promise-props-recursive": "^2.0.2",
-    "recast": "^0.22.0",
+    "recast": "^0.23.6",
     "resolve-from": "^5.0.0",
     "rimraf": "^3.0.2",
     "semver": "^7.3.5",
