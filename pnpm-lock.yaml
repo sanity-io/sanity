@@ -1821,9 +1821,6 @@ importers:
       yargs:
         specifier: ^17.3.0
         version: 17.7.2
-      zod:
-        specifier: ^3.22.4
-        version: 3.23.8
     devDependencies:
       '@jest/expect':
         specifier: ^29.7.0
