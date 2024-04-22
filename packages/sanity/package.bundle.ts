@@ -1,12 +1,13 @@
 import react from '@vitejs/plugin-react'
 import {defineConfig} from 'vite'
+import tsconfigPaths from 'vite-tsconfig-paths'
 
 export default defineConfig({
   define: {
     'process.env.NODE_ENV': '"production"',
     'process.env': {},
   },
-  plugins: [react()],
+  plugins: [react(), tsconfigPaths()],
   build: {
     emptyOutDir: true,
     lib: {

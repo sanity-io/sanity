@@ -14,6 +14,11 @@
       "dependsOn": ["^build"],
       "outputMode": "new-only"
     },
+    "build:bundle": {
+      "outputs": ["dist/**"],
+      "dependsOn": ["build"],
+      "outputMode": "new-only"
+    },
     "check:types": {
       "outputs": [],
       "dependsOn": ["^build"],

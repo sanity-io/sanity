@@ -43,6 +43,7 @@
   ],
   "scripts": {
     "build": "pkg-utils build --strict --check --clean",
+    "build:bundle": "vite build --config package.bundle.ts",
     "check:types": "tsc --project tsconfig.lib.json",
     "clean": "rimraf lib",
     "prepublishOnly": "turbo run build",
@@ -85,7 +86,8 @@
     "@types/lodash": "^4.14.149",
     "react": "^18.3.1",
     "sanity": "workspace:*",
-    "styled-components": "^6.1.8"
+    "styled-components": "^6.1.8",
+    "vite": "^4.5.1"
   },
   "peerDependencies": {
     "react": "^18",

@@ -5,12 +5,16 @@
     "build": {
       "outputs": [
         "lib/**",
-        "dist/**",
         "_singletons.js",
         "desk.js",
         "presentation.js",
         "router.js",
         "structure.js"
+      ]
+    },
+    "build:bundle": {
+      "outputs": [
+        "dist/**"
       ]
     }
   }
