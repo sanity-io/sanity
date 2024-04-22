@@ -3,6 +3,7 @@ import {
   isPortableTextTextBlock,
   type PortableTextTextBlock,
 } from '@sanity/types'
+import {vercelStegaSplit} from '@vercel/stega'
 import {isEqual} from 'lodash'
 
 import {DEFAULT_BLOCK} from '../constants'
@@ -61,9 +62,10 @@ export function preprocess(
   parseHtml: HtmlParser,
   options: HtmlPreprocessorOptions,
 ): Document {
-  const doc = parseHtml(normalizeHtmlBeforePreprocess(html))
+  const cleanHTML = cleanStegaUnicode(html)
+  const doc = parseHtml(normalizeHtmlBeforePreprocess(cleanHTML))
   preprocessors.forEach((processor) => {
-    processor(html, doc, options)
+    processor(cleanHTML, doc, options)
   })
   return doc
 }
@@ -339,26 +341,21 @@ export function removeAllWhitespace(rootNode: Node) {
 }
 
 /**
- * Remove all steganographic and invisible Unicode characters from a result JSON
+ * This is a duplicate code from `@sanity/client/stega`
+ * Unfortunately, as it stands, the e2e process is pulling in the node version of `@sanity/client` and so we don't have access to the utility as it stands
+ * @todo remove once this utility is available in `@vercel/stega`
  *
- * @param result - The result string to clean
- * @returns The cleaned result string
- *
+ * Can take a `result` JSON from a `const {result} = client.fetch(query, params, {filterResponse: false})`
+ * and remove all stega-encoded data from it.
  * @alpha
+ * @hidden
  */
 export function cleanStegaUnicode(result: string): string {
   try {
     return JSON.parse(
       JSON.stringify(result, (key, value) => {
         if (typeof value !== 'string') return value
-        // Regular expression to match steganographic and invisible Unicode characters
-        // eslint-disable-next-line no-control-regex
-        const regex = /[\u200B-\u200F\u202A-\u202E\u2060-\u2064\u2066-\u206F]/g
-
-        // Replace steganographic and invisible characters with an empty string
-        const cleanedString = value.replace(regex, '')
-
-        return cleanedString
+        return vercelStegaSplit(value).cleaned
       }),
     )
   } catch {
