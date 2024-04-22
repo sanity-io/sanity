@@ -91,6 +91,9 @@ importers:
       '@typescript-eslint/parser':
         specifier: ^7.5.0
         version: 7.6.0(eslint@8.57.0)(typescript@5.4.5)
+      '@vitejs/plugin-react':
+        specifier: ^4.2.1
+        version: 4.2.1(vite@4.5.3)
       cac:
         specifier: ^6.7.12
         version: 6.7.14
@@ -211,6 +214,12 @@ importers:
       typescript:
         specifier: 5.4.5
         version: 5.4.5
+      vite:
+        specifier: ^4.5.1
+        version: 4.5.3(@types/node@18.19.31)
+      vite-tsconfig-paths:
+        specifier: ^4.3.2
+        version: 4.3.2(typescript@5.4.5)(vite@4.5.3)
       yargs:
         specifier: ^17.3.0
         version: 17.7.2
@@ -614,6 +623,8 @@ importers:
       styled-components:
         specifier: ^6.1.0
         version: 6.1.8(react-dom@18.3.1)(react@18.3.1)
+
+  packages/@repo/package.bundle: {}
 
   packages/@repo/package.config: {}
 
@@ -1416,9 +1427,6 @@ importers:
       styled-components:
         specifier: ^6.1.8
         version: 6.1.8(react-dom@18.3.1)(react@18.3.1)
-      vite:
-        specifier: ^4.5.1
-        version: 4.5.3(@types/node@18.19.31)
 
   packages/create-sanity:
     dependencies:
