@@ -584,8 +584,16 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
         ]
       }
       const result = rangeDecorationState.filter((item) => {
-        if (SlateRange.isCollapsed(item)) {
-          return Path.equals(item.focus.path, path) && Path.equals(item.anchor.path, path)
+        // Only children are supported for now
+        if (path.length !== 2) {
+          return false
+        }
+        if (
+          SlateRange.isCollapsed(item) &&
+          Path.equals(item.focus.path, path) &&
+          Path.equals(item.anchor.path, path)
+        ) {
+          return true
         }
         return SlateRange.includes(item, path)
       })
