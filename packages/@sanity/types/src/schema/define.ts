@@ -9,7 +9,7 @@ import {
   type WidenValidation,
 } from './defineTypes'
 import {type FieldDefinitionBase, type IntrinsicTypeName} from './definition'
-import {type AllowOtherStrings} from './types'
+import {type AutocompleteString} from './types'
 
 /**
  * Helper function for defining a Sanity type definition. This function does not do anything on its own;
@@ -171,7 +171,7 @@ import {type AllowOtherStrings} from './types'
  * @beta
  */
 export function defineType<
-  const TType extends IntrinsicTypeName | AllowOtherStrings,
+  const TType extends IntrinsicTypeName | AutocompleteString,
   const TName extends string,
   TSelect extends Record<string, string> | undefined,
   TPrepareValue extends Record<keyof TSelect, any> | undefined,
@@ -212,7 +212,7 @@ export function defineType<
  * @beta
  */
 export function defineField<
-  const TType extends string | IntrinsicTypeName, // IntrinsicTypeName here improves autocompletion in _some_ IDEs (not VS Code atm)
+  const TType extends IntrinsicTypeName | AutocompleteString,
   const TName extends string,
   TSelect extends Record<string, string> | undefined,
   TPrepareValue extends Record<keyof TSelect, any> | undefined,
@@ -255,7 +255,7 @@ export function defineField<
  * @beta
  */
 export function defineArrayMember<
-  const TType extends string | IntrinsicTypeName, // IntrinsicTypeName here improves autocompletion in _some_ IDEs (not VS Code atm)
+  const TType extends IntrinsicTypeName | AutocompleteString,
   const TName extends string,
   TSelect extends Record<string, string> | undefined,
   TPrepareValue extends Record<keyof TSelect, any> | undefined,

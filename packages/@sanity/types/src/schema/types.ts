@@ -24,9 +24,20 @@ import {type PreviewConfig} from './preview'
 
 export {defineArrayMember, defineField, defineType, typed} from './define'
 
-// Necessary since this is the only way to include all string literals and all other strings
+/**
+ * Enhances VSCode autocomplete by using a distinct type for strings.
+ *
+ * `AllowOtherStrings` is defined as `string & {}`, an intersection that behaves
+ * like `string` but is treated differently by TypeScript's type system for
+ * internal processing. This helps in improving the specificity and relevance of
+ * autocomplete suggestions by potentially prioritizing `IntrinsicTypeName`
+ * over general string inputs, addressing issues where `string` type suggestions
+ * might overshadow more useful specific literals.
+ *
+ * @beta
+ */
 // eslint-disable-next-line @typescript-eslint/ban-types
-export type AllowOtherStrings = string & {}
+export type AutocompleteString = string & {}
 
 /**
  * Note: you probably want `SchemaTypeDefinition` instead
