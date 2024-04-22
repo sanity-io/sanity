@@ -23,7 +23,7 @@ const RangeDecorationTestComponent = ({children}: {children?: ReactNode}) => {
 }
 
 describe('RangeDecorations', () => {
-  it.only('only render range decorations as necessary', async () => {
+  it('reconciles range decorations', async () => {
     const editorRef: RefObject<PortableTextEditor> = createRef()
     const onChange = jest.fn()
     const value = [helloBlock]
