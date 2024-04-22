@@ -247,8 +247,14 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
     }
   }, [propsSelection, slateEditor, blockTypeName, change$])
 
+  const previousRangeDecorations = useRef(rangeDecorations)
+
   const syncRangeDecorations = useCallback(
     (operation?: Operation) => {
+      if (isEqual(previousRangeDecorations.current, rangeDecorations)) {
+        previousRangeDecorations.current = rangeDecorations
+        return
+      }
       if (rangeDecorations && rangeDecorations.length > 0) {
         const newSlateRanges: BaseRangeWithDecoration[] = []
         rangeDecorations.forEach((rangeDecorationItem) => {
@@ -286,6 +292,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
         })
         if (newSlateRanges.length > 0) {
           setRangeDecorationsState(newSlateRanges)
+          previousRangeDecorations.current = rangeDecorations
           return
         }
       }
