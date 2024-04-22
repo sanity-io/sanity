@@ -141,6 +141,8 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
   const [rangeDecorationState, setRangeDecorationsState] =
     useState<BaseRangeWithDecoration[]>(EMPTY_DECORATIONS_STATE)
 
+  const rangeDecorationsRef = useRef(rangeDecorations)
+
   const {change$, schemaTypes} = portableTextEditor
   const slateEditor = useSlate()
 
@@ -330,7 +332,6 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []) // Empty here! We only want to run this once at mount
 
-  const rangeDecorationsRef = useRef(rangeDecorations)
   useEffect(() => {
     if (!isEqual(rangeDecorations, rangeDecorationsRef.current)) {
       syncRangeDecorations()
