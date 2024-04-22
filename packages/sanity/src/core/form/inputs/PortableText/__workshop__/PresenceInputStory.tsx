@@ -4,6 +4,7 @@ import {
   PortableTextEditable,
   PortableTextEditor,
   type RenderBlockFunction,
+  type RenderDecoratorFunction,
 } from '@sanity/portable-text-editor'
 import {Schema} from '@sanity/schema/index'
 import {type PortableTextBlock} from '@sanity/types'
@@ -20,6 +21,8 @@ const renderBlock: RenderBlockFunction = (p) => (
     <Text>{p.children}</Text>
   </div>
 )
+
+const renderDecorator: RenderDecoratorFunction = (p) => <b>{p.children}</b>
 
 const EditorCard = styled(Card)(({theme}) => {
   const color = theme.sanity.v2?.color.focusRing
@@ -169,20 +172,33 @@ function Input(props: InputProps) {
   const {onChange, onSelectionChange, value} = props
   const editorRef = useRef<PortableTextEditor | null>(null)
 
+  const nextSelectionRef = useRef<EditorSelection | null>(null)
+  const hasPendingPatchesRef = useRef<boolean>(false)
+
   const decorations = usePresenceCursorDecorations({
     path: ['body'],
   })
 
   const handleChange = useCallback(
     (e: EditorChange) => {
+      if (e.type === 'mutation' && hasPendingPatchesRef.current) {
+        onSelectionChange(nextSelectionRef.current)
+        hasPendingPatchesRef.current = false
+      }
+
       if (e.type === 'patch' && editorRef.current) {
         const nextValue = PortableTextEditor.getValue(editorRef.current)
 
         onChange(nextValue || [])
+        hasPendingPatchesRef.current = true
       }
 
       if (e.type === 'selection') {
-        onSelectionChange(e.selection)
+        if (hasPendingPatchesRef.current) {
+          nextSelectionRef.current = e.selection
+        } else {
+          onSelectionChange(e.selection)
+        }
       }
     },
     [onChange, onSelectionChange],
@@ -199,6 +215,7 @@ function Input(props: InputProps) {
         <PortableTextEditable
           rangeDecorations={decorations}
           renderBlock={renderBlock}
+          renderDecorator={renderDecorator}
           spellCheck={false}
           style={INLINE_STYLE}
           tabIndex={0}

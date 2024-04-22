@@ -98,6 +98,7 @@ const UserBox = styled(motion(Box))(({theme}) => {
     background-color: var(--presence-cursor-bg);
     z-index: 1;
     mix-blend-mode: unset;
+    user-select: none;
   `
 })
 

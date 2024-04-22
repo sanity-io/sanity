@@ -245,12 +245,14 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
     }
   }, [propsSelection, slateEditor, blockTypeName, change$])
 
-  const syncRangeDecorations = useCallback(
-    (operation?: Operation) => {
-      if (rangeDecorations && rangeDecorations.length > 0) {
-        const newSlateRanges: BaseRangeWithDecoration[] = []
-        rangeDecorations.forEach((rangeDecorationItem) => {
+  const getSyncedRangeDecorations = useCallback(
+    (currentDecorations: RangeDecoration[], operation?: Operation) => {
+      const newSlateRanges: BaseRangeWithDecoration[] = []
+
+      if (currentDecorations && currentDecorations.length > 0) {
+        currentDecorations.forEach((rangeDecorationItem) => {
           const slateRange = toSlateRange(rangeDecorationItem.selection, slateEditor)
+
           if (!SlateRange.isRange(slateRange)) {
             if (rangeDecorationItem.onMoved) {
               rangeDecorationItem.onMoved({
@@ -261,7 +263,9 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
             }
             return
           }
+
           let newRange: BaseRange | null | undefined
+
           if (operation) {
             newRange = moveRangeByOperation(slateRange, operation)
             if ((newRange && newRange !== slateRange) || (newRange === null && slateRange)) {
@@ -276,20 +280,22 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
               }
             }
           }
+
           // If the newRange is null, it means that the range is not valid anymore and should be removed
           // If it's undefined, it means that the slateRange is still valid and should be kept
           if (newRange !== null) {
             newSlateRanges.push({...(newRange || slateRange), rangeDecoration: rangeDecorationItem})
           }
         })
+
         if (newSlateRanges.length > 0) {
-          setRangeDecorationsState(newSlateRanges)
-          return
+          return newSlateRanges
         }
       }
-      setRangeDecorationsState(EMPTY_DECORATIONS_STATE)
+
+      return EMPTY_DECORATIONS_STATE
     },
-    [portableTextEditor, rangeDecorations, schemaTypes, slateEditor],
+    [portableTextEditor, schemaTypes, slateEditor],
   )
 
   // Subscribe to change$ and restore selection from props when the editor has been initialized properly with it's value
@@ -313,7 +319,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
       // debug('Unsubscribing to changes$')
       sub.unsubscribe()
     }
-  }, [change$, restoreSelectionFromProps, syncRangeDecorations])
+  }, [change$, restoreSelectionFromProps])
 
   // Restore selection from props when it changes
   useEffect(() => {
@@ -326,30 +332,37 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
   const originalApply = useMemo(() => slateEditor.apply, [slateEditor])
 
   useEffect(() => {
-    syncRangeDecorations()
+    const next = getSyncedRangeDecorations([])
+    setRangeDecorationsState(next)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []) // Empty here! We only want to run this once at mount
 
   const rangeDecorationsRef = useRef(rangeDecorations)
+
   useEffect(() => {
-    if (!isEqual(rangeDecorations, rangeDecorationsRef.current)) {
-      syncRangeDecorations()
+    const next = getSyncedRangeDecorations(rangeDecorations || [])
+
+    if (!isEqual(next, rangeDecorationsRef.current)) {
+      setRangeDecorationsState(next)
     }
+
     rangeDecorationsRef.current = rangeDecorations
-  }, [rangeDecorations, syncRangeDecorations])
+  }, [getSyncedRangeDecorations, rangeDecorations])
 
   // Sync range decorations after an operation is applied
   useEffect(() => {
     slateEditor.apply = (op: Operation) => {
       originalApply(op)
-      if (op.type !== 'set_selection') {
-        syncRangeDecorations(op)
+      if (op.type !== 'set_selection' && rangeDecorationsRef.current) {
+        const next = getSyncedRangeDecorations(rangeDecorationsRef.current, op)
+
+        setRangeDecorationsState(next)
       }
     }
     return () => {
       slateEditor.apply = originalApply
     }
-  }, [originalApply, slateEditor, syncRangeDecorations])
+  }, [getSyncedRangeDecorations, originalApply, slateEditor])
 
   // Handle from props onCopy function
   const handleCopy = useCallback(
