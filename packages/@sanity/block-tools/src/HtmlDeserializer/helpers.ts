@@ -338,6 +338,34 @@ export function removeAllWhitespace(rootNode: Node) {
   nodesToRemove.forEach((node) => node.parentElement?.removeChild(node))
 }
 
+/**
+ * Remove all steganographic and invisible Unicode characters from a result JSON
+ *
+ * @param result - The result string to clean
+ * @returns The cleaned result string
+ *
+ * @alpha
+ */
+export function cleanStegaUnicode(result: string): string {
+  try {
+    return JSON.parse(
+      JSON.stringify(result, (key, value) => {
+        if (typeof value !== 'string') return value
+        // Regular expression to match steganographic and invisible Unicode characters
+        // eslint-disable-next-line no-control-regex
+        const regex = /[\u200B-\u200F\u202A-\u202E\u2060-\u2064\u2066-\u206F]/g
+
+        // Replace steganographic and invisible characters with an empty string
+        const cleanedString = value.replace(regex, '')
+
+        return cleanedString
+      }),
+    )
+  } catch {
+    return result
+  }
+}
+
 function isWhitespaceBlock(elm: HTMLElement): boolean {
   return ['p', 'br'].includes(tagName(elm) || '') && !elm.textContent?.trim()
 }

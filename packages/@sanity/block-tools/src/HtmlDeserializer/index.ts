@@ -17,6 +17,7 @@ import {
 import {findBlockType} from '../util/findBlockType'
 import {resolveJsType} from '../util/resolveJsType'
 import {
+  cleanStegaUnicode,
   createRuleOptions,
   defaultParseHtml,
   ensureRootIsBlocks,
@@ -72,7 +73,7 @@ export default class HtmlDeserializer {
   deserialize = (html: string): TypedObject[] => {
     this._markDefs = []
     const {parseHtml} = this
-    const fragment = parseHtml(html)
+    const fragment = parseHtml(cleanStegaUnicode(html))
     const children = Array.from(fragment.childNodes) as HTMLElement[]
     // Ensure that there are no blocks within blocks, and trim whitespace
     const blocks = trimWhitespace(
