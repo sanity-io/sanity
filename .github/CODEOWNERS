@@ -98,3 +98,7 @@ packages/sanity/src/core/studio/upsell/ @sanity-io/studio-ex
 /packages/sanity/src/structure/panes/documentList/PaneContainer.tsx @sanity-io/ecosystem @sanity-io/studio-dx
 /packages/sanity/src/structure/StructureToolProvider.tsx @sanity-io/ecosystem @sanity-io/studio-dx
 /packages/sanity/src/structure/types.ts @sanity-io/ecosystem @sanity-io/studio-dx
+
+# -- Manifest --
+/packages/@sanity/manifest @sanity-io/studio-dx
+

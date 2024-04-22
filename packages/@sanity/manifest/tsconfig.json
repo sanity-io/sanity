@@ -1,0 +1,10 @@
+{
+  "extends": "@repo/tsconfig/base.json",
+  "include": ["./example", "./src", "./test", "./typings", "./node_modules/@sanity/types/src"],
+  "compilerOptions": {
+    "rootDir": ".",
+    "paths": {
+      "@sanity/types": ["./node_modules/@sanity/types/src"]
+    }
+  }
+}
