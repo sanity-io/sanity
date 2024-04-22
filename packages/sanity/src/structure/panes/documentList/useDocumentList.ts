@@ -10,7 +10,7 @@ import {
 } from 'sanity'
 
 import {DEFAULT_ORDERING, FULL_LIST_LIMIT, PARTIAL_PAGE_LIMIT} from './constants'
-import {getTypeNameFromSingleTypeFilter, removePublishedWithDrafts} from './helpers'
+import {findStaticTypesInFilter, removePublishedWithDrafts} from './helpers'
 import {listenSearchQuery} from './listenSearchQuery'
 import {type DocumentListPaneItem, type QueryResult, type SortOrder} from './types'
 
@@ -82,7 +82,7 @@ export function useDocumentList(opts: UseDocumentListOpts): DocumentListState {
 
   // Get the type name from the filter, if it is a simple type filter.
   const typeNameFromFilter = useMemo(
-    () => getTypeNameFromSingleTypeFilter(filter, paramsProp),
+    () => findStaticTypesInFilter(filter, paramsProp),
     [filter, paramsProp],
   )
 
@@ -158,7 +158,7 @@ export function useDocumentList(opts: UseDocumentListOpts): DocumentListState {
       schema,
       searchQuery: searchQuery || '',
       sort,
-      staticTypeNames: typeNameFromFilter ? [typeNameFromFilter] : undefined,
+      staticTypeNames: typeNameFromFilter,
       maxFieldDepth,
       enableLegacySearch,
     }).pipe(

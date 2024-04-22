@@ -25,11 +25,7 @@ import {type BaseStructureToolPaneProps} from '../types'
 import {DEFAULT_ORDERING, EMPTY_RECORD} from './constants'
 import {DocumentListPaneContent} from './DocumentListPaneContent'
 import {DocumentListPaneHeader} from './DocumentListPaneHeader'
-import {
-  applyOrderingFunctions,
-  getTypeNameFromSingleTypeFilter,
-  isSimpleTypeFilter,
-} from './helpers'
+import {applyOrderingFunctions, findStaticTypesInFilter} from './helpers'
 import {type LoadingVariant, type SortOrder} from './types'
 import {useDocumentList} from './useDocumentList'
 
@@ -106,7 +102,12 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
   const {apiVersion, defaultOrdering = EMPTY_ARRAY, filter} = options
   const params = useShallowUnique(options.params || EMPTY_RECORD)
   const sourceName = pane.source
-  const typeName = useMemo(() => getTypeNameFromSingleTypeFilter(filter, params), [filter, params])
+  const typeName = useMemo(() => {
+    const staticTypes = findStaticTypesInFilter(filter, params)
+    if (staticTypes?.length === 1) return staticTypes[0]
+    return null
+  }, [filter, params])
+
   const showIcons = displayOptions?.showIcons !== false
   const [layout, setLayout] = useStructureToolSetting<GeneralPreviewLayoutKey>(
     'layout',
@@ -143,7 +144,6 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
       : sortOrderRaw
 
   const sortOrder = useUnique(sortWithOrderingFn)
-  const filterIsSimpleTypeConstraint = isSimpleTypeFilter(filter)
 
   const {
     error,
@@ -276,7 +276,7 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
         <DocumentListPaneContent
           childItemId={childItemId}
           error={error}
-          filterIsSimpleTypeConstraint={filterIsSimpleTypeConstraint}
+          filterIsSimpleTypeConstraint={!!typeName}
           hasMaxItems={hasMaxItems}
           hasSearchQuery={Boolean(searchQuery)}
           isActive={isActive}
