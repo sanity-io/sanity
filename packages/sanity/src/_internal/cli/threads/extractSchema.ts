@@ -15,7 +15,7 @@ export interface ExtractSchemaWorkerData {
 }
 
 /** @internal */
-export interface ExtractSchemaWorkerResult {
+export interface ExtractSchemaWorkerResult extends Pick<Workspace, 'name' | 'dataset'> {
   schema: ReturnType<typeof extractSchema>
 }
 
@@ -34,8 +34,10 @@ async function main() {
 
     const workspaces = await getStudioWorkspaces({basePath: opts.workDir})
 
-    const postSchema = (workspace: Workspace): void => {
+    const postWorkspace = (workspace: Workspace): void => {
       parentPort?.postMessage({
+        name: workspace.name,
+        dataset: workspace.dataset,
         schema: extractSchema(workspace.schema, {
           enforceRequiredFields: opts.enforceRequiredFields,
         }),
@@ -44,10 +46,10 @@ async function main() {
 
     if (opts.workspaceName) {
       const workspace = getWorkspace({workspaces, workspaceName: opts.workspaceName})
-      postSchema(workspace)
+      postWorkspace(workspace)
     } else {
       for (const workspace of workspaces) {
-        postSchema(workspace)
+        postWorkspace(workspace)
       }
     }
   } finally {
