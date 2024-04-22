@@ -5,6 +5,7 @@
     "@sanity/cli",
     "@sanity/codegen",
     "@sanity/diff",
+    "@sanity/manifest",
     "@sanity/migrate",
     "@sanity/mutator",
     "@sanity/portable-text-editor",

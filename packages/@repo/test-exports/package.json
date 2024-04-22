@@ -14,6 +14,7 @@
     "@sanity/cli": "workspace:*",
     "@sanity/codegen": "workspace:*",
     "@sanity/diff": "workspace:*",
+    "@sanity/manifest": "workspace:*",
     "@sanity/migrate": "workspace:*",
     "@sanity/mutator": "workspace:*",
     "@sanity/portable-text-editor": "workspace:*",
