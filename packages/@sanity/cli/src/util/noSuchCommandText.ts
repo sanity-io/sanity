@@ -17,6 +17,7 @@ const coreCommands = [
   'exec',
   'graphql',
   'hook',
+  'manifest',
   'migration',
   'preview',
   'schema',
