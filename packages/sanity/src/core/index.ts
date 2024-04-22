@@ -3,9 +3,11 @@ export {
   CommentInput,
   type CommentIntentGetter,
   COMMENTS_INSPECTOR_NAME,
+  CommentsEnabledProvider,
   CommentsIntentProvider,
   type CommentsIntentProviderProps,
   CommentsProvider,
+  useCommentsEnabled,
 } from './comments'
 export * from './components'
 export * from './components/collapseMenu'

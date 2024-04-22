@@ -9,6 +9,10 @@ interface CommentsEnabledProviderProps {
   documentType: string
 }
 
+/**
+ * @beta
+ * @hidden
+ */
 export const CommentsEnabledProvider = memo(function CommentsEnabledProvider(
   props: CommentsEnabledProviderProps,
 ) {
