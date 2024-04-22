@@ -77,7 +77,7 @@ interface BaseRangeWithDecoration extends BaseRange {
   rangeDecoration: RangeDecoration
 }
 
-const EMPTY_DECORATORS: BaseRangeWithDecoration[] = []
+const EMPTY_DECORATIONS_STATE: BaseRangeWithDecoration[] = []
 
 /**
  * @public
@@ -139,7 +139,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
   const [editableElement, setEditableElement] = useState<HTMLDivElement | null>(null)
   const [hasInvalidValue, setHasInvalidValue] = useState(false)
   const [rangeDecorationState, setRangeDecorationsState] =
-    useState<BaseRangeWithDecoration[]>(EMPTY_DECORATORS)
+    useState<BaseRangeWithDecoration[]>(EMPTY_DECORATIONS_STATE)
 
   const {change$, schemaTypes} = portableTextEditor
   const slateEditor = useSlate()
@@ -245,14 +245,8 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
     }
   }, [propsSelection, slateEditor, blockTypeName, change$])
 
-  const previousRangeDecorations = useRef(rangeDecorations)
-
   const syncRangeDecorations = useCallback(
     (operation?: Operation) => {
-      if (isEqual(previousRangeDecorations.current, rangeDecorations)) {
-        previousRangeDecorations.current = rangeDecorations
-        return
-      }
       if (rangeDecorations && rangeDecorations.length > 0) {
         const newSlateRanges: BaseRangeWithDecoration[] = []
         rangeDecorations.forEach((rangeDecorationItem) => {
@@ -280,8 +274,6 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
                   origin: 'local',
                 })
               }
-              // Temporarily set the range decoration to the new range (it will however be overwritten by props at any moment)
-              rangeDecorationItem.selection = newRangeSelection
             }
           }
           // If the newRange is null, it means that the range is not valid anymore and should be removed
@@ -292,11 +284,10 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
         })
         if (newSlateRanges.length > 0) {
           setRangeDecorationsState(newSlateRanges)
-          previousRangeDecorations.current = rangeDecorations
           return
         }
       }
-      setRangeDecorationsState(EMPTY_DECORATORS)
+      setRangeDecorationsState(EMPTY_DECORATIONS_STATE)
     },
     [portableTextEditor, rangeDecorations, schemaTypes, slateEditor],
   )
@@ -336,9 +327,18 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
 
   useEffect(() => {
     syncRangeDecorations()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []) // Empty here! We only want to run this once at mount
+
+  const rangeDecorationsRef = useRef(rangeDecorations)
+  useEffect(() => {
+    if (!isEqual(rangeDecorations, rangeDecorationsRef.current)) {
+      syncRangeDecorations()
+    }
+    rangeDecorationsRef.current = rangeDecorations
   }, [rangeDecorations, syncRangeDecorations])
 
-  // Sync range decorations before an operation is applied
+  // Sync range decorations after an operation is applied
   useEffect(() => {
     slateEditor.apply = (op: Operation) => {
       originalApply(op)
@@ -592,7 +592,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
       if (result.length > 0) {
         return result
       }
-      return EMPTY_DECORATORS
+      return EMPTY_DECORATIONS_STATE
     },
     [slateEditor, schemaTypes, rangeDecorationState],
   )
