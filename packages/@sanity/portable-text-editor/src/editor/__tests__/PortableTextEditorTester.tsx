@@ -1,7 +1,7 @@
 import {jest} from '@jest/globals'
 import {Schema} from '@sanity/schema'
 import {defineArrayMember, defineField} from '@sanity/types'
-import {type ForwardedRef, forwardRef, useCallback, useEffect} from 'react'
+import {type ForwardedRef, forwardRef, useCallback, useEffect, useMemo} from 'react'
 
 import {
   PortableTextEditable,
@@ -87,15 +87,16 @@ export const PortableTextEditorTester = forwardRef(function PortableTextEditorTe
 ) {
   useEffect(() => {
     key = 0
-  })
+  }, [])
   const _keyGenerator = useCallback(() => {
     key++
     return `${key}`
   }, [])
+  const onChange = useMemo(() => props.onChange || jest.fn(), [props.onChange])
   return (
     <PortableTextEditor
       schemaType={props.schemaType}
-      onChange={props.onChange || jest.fn()}
+      onChange={onChange}
       value={props.value || undefined}
       keyGenerator={_keyGenerator}
       ref={ref}
