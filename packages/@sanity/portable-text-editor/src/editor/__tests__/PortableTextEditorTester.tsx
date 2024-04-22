@@ -76,11 +76,12 @@ let key = 0
 
 export const PortableTextEditorTester = forwardRef(function PortableTextEditorTester(
   props: Partial<Omit<PortableTextEditorProps, 'type' | 'onChange' | 'value'>> & {
-    schemaType: PortableTextEditorProps['schemaType']
-    value?: PortableTextEditorProps['value']
     onChange?: PortableTextEditorProps['onChange']
-    selection?: PortableTextEditableProps['selection']
+    rangeDecorations?: PortableTextEditableProps['rangeDecorations']
     renderPlaceholder?: PortableTextEditableProps['renderPlaceholder']
+    schemaType: PortableTextEditorProps['schemaType']
+    selection?: PortableTextEditableProps['selection']
+    value?: PortableTextEditorProps['value']
   },
   ref: ForwardedRef<PortableTextEditor>,
 ) {
@@ -101,6 +102,7 @@ export const PortableTextEditorTester = forwardRef(function PortableTextEditorTe
     >
       <PortableTextEditable
         selection={props.selection || undefined}
+        rangeDecorations={props.rangeDecorations}
         renderPlaceholder={props.renderPlaceholder}
         aria-describedby="desc_foo"
       />
