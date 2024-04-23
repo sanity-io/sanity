@@ -223,7 +223,10 @@ Array [
 exports[`Extract schema test Extracts  schema general 1`] = `
 Array [
   Object {
+    "deprecated": undefined,
+    "description": undefined,
     "name": "sanity.imagePaletteSwatch",
+    "title": "Image palette swatch",
     "type": "type",
     "value": Object {
       "attributes": Object {
@@ -267,7 +270,10 @@ Array [
     },
   },
   Object {
+    "deprecated": undefined,
+    "description": undefined,
     "name": "sanity.imagePalette",
+    "title": "Image palette",
     "type": "type",
     "value": Object {
       "attributes": Object {
@@ -339,7 +345,10 @@ Array [
     },
   },
   Object {
+    "deprecated": undefined,
+    "description": undefined,
     "name": "sanity.imageDimensions",
+    "title": "Image dimensions",
     "type": "type",
     "value": Object {
       "attributes": Object {
@@ -376,7 +385,10 @@ Array [
     },
   },
   Object {
+    "deprecated": undefined,
+    "description": undefined,
     "name": "geopoint",
+    "title": "Geographical Point",
     "type": "type",
     "value": Object {
       "attributes": Object {
@@ -413,7 +425,10 @@ Array [
     },
   },
   Object {
+    "deprecated": undefined,
+    "description": undefined,
     "name": "slug",
+    "title": "Slug",
     "type": "type",
     "value": Object {
       "attributes": Object {
@@ -443,7 +458,10 @@ Array [
     },
   },
   Object {
+    "deprecated": undefined,
+    "description": undefined,
     "name": "someTextType",
+    "title": "Text",
     "type": "type",
     "value": Object {
       "type": "string",
@@ -582,11 +600,17 @@ Array [
         },
       },
     },
+    "deprecated": undefined,
+    "description": undefined,
     "name": "sanity.fileAsset",
+    "title": "File",
     "type": "document",
   },
   Object {
+    "deprecated": undefined,
+    "description": undefined,
     "name": "code",
+    "title": "Code",
     "type": "type",
     "value": Object {
       "attributes": Object {
@@ -609,14 +633,20 @@ Array [
     },
   },
   Object {
+    "deprecated": undefined,
+    "description": undefined,
     "name": "customStringType",
+    "title": "My custom string type",
     "type": "type",
     "value": Object {
       "type": "string",
     },
   },
   Object {
+    "deprecated": undefined,
+    "description": undefined,
     "name": "blocksTest",
+    "title": "Blocks test",
     "type": "type",
     "value": Object {
       "attributes": Object {
@@ -3981,7 +4011,10 @@ Array [
         },
       },
     },
+    "deprecated": undefined,
+    "description": undefined,
     "name": "book",
+    "title": "Book",
     "type": "document",
   },
   Object {
@@ -4101,11 +4134,17 @@ Array [
         },
       },
     },
+    "deprecated": undefined,
+    "description": undefined,
     "name": "author",
+    "title": "Author",
     "type": "document",
   },
   Object {
+    "deprecated": undefined,
+    "description": undefined,
     "name": "sanity.imageCrop",
+    "title": "Image crop",
     "type": "type",
     "value": Object {
       "attributes": Object {
@@ -4149,7 +4188,10 @@ Array [
     },
   },
   Object {
+    "deprecated": undefined,
+    "description": undefined,
     "name": "sanity.imageHotspot",
+    "title": "Image hotspot",
     "type": "type",
     "value": Object {
       "attributes": Object {
@@ -4333,11 +4375,17 @@ Array [
         },
       },
     },
+    "deprecated": undefined,
+    "description": undefined,
     "name": "sanity.imageAsset",
+    "title": "Image",
     "type": "document",
   },
   Object {
+    "deprecated": undefined,
+    "description": undefined,
     "name": "sanity.assetSourceData",
+    "title": "Asset Source Data",
     "type": "type",
     "value": Object {
       "attributes": Object {
@@ -4374,7 +4422,10 @@ Array [
     },
   },
   Object {
+    "deprecated": undefined,
+    "description": undefined,
     "name": "sanity.imageMetadata",
+    "title": "Image metadata",
     "type": "type",
     "value": Object {
       "attributes": Object {
@@ -4856,7 +4907,10 @@ Array [
         },
       },
     },
+    "deprecated": undefined,
+    "description": undefined,
     "name": "validDocument",
+    "title": "Valid document",
     "type": "document",
   },
   Object {
@@ -4900,11 +4954,17 @@ Array [
         },
       },
     },
+    "deprecated": undefined,
+    "description": undefined,
     "name": "otherValidDocument",
+    "title": "Other valid document",
     "type": "document",
   },
   Object {
+    "deprecated": undefined,
+    "description": undefined,
     "name": "manuscript",
+    "title": "Manuscript",
     "type": "type",
     "value": Object {
       "attributes": Object {
@@ -4987,7 +5047,10 @@ Array [
     },
   },
   Object {
+    "deprecated": undefined,
+    "description": undefined,
     "name": "obj",
+    "title": "Obj",
     "type": "type",
     "value": Object {
       "attributes": Object {
