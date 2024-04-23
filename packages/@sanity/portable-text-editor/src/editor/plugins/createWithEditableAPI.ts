@@ -261,35 +261,80 @@ export function createWithEditableAPI(
         }
         return node
       },
-      activeAnnotations: (): PortableTextObject[] => {
+      activeAnnotations: (): PortableTextObject['_type'][] => {
         if (!editor.selection || editor.selection.focus.path.length < 2) {
           return []
         }
         try {
-          const activeAnnotations: PortableTextObject[] = []
+          const activeAnnotations: PortableTextObject['_type'][] = []
           const spans = Editor.nodes(editor, {
             at: editor.selection,
-            match: (node) =>
-              Text.isText(node) &&
-              node.marks !== undefined &&
-              Array.isArray(node.marks) &&
-              node.marks.length > 0,
+            // mode: 'lowest',
+            match: (node) => Text.isText(node),
           })
-          for (const [span, path] of spans) {
+          // const allSpans = Editor.nodes(editor, {
+          //   at: editor.selection,
+          // })
+          // for (const [span, path] of allSpans) {
+          //   console.log({span, path})
+          // }
+          // &&
+          //     node.marks !== undefined &&
+          //     Array.isArray(node.marks) &&
+          //     node.marks.length > 0,
+
+          const spansArr = [...spans]
+
+          if (spansArr.some(([span]) => !span.marks?.length)) return activeAnnotations
+
+          const t = spansArr.reduce((acc, [, path]) => {
             const [block] = Editor.node(editor, path, {depth: 1})
             if (editor.isTextBlock(block)) {
               block.markDefs?.forEach((def) => {
-                if (
-                  Text.isText(span) &&
-                  span.marks &&
-                  Array.isArray(span.marks) &&
-                  span.marks.includes(def._key)
-                ) {
-                  activeAnnotations.push(def)
-                }
+                acc[def._type] = (acc[def._type] || 0) + 1 || 1
               })
             }
-          }
+            return acc
+          }, {})
+
+          Object.entries(t).forEach((def) => {
+            const [mark, count] = def as [string, number]
+
+            if (count >= spansArr.length) {
+              activeAnnotations.push(mark)
+            }
+          })
+
+          // for (const [span, path] of spans) {
+          //   console.log({span, path})
+
+          //   if (failFast) return []
+
+          //   if (!span.marks?.length) {
+          //     failFast = true
+          //   }
+
+          //   const [block] = Editor.node(editor, path, {depth: 1})
+          //   if (editor.isTextBlock(block)) {
+          //     trackingMarks.push(block.markDefs)
+          //     // block.markDefs?.forEach((def) => trackingMarks.push(def._type))
+          //   }
+          // }
+
+          //     console.log(block.markDefs)
+          //     block.markDefs?.forEach((def) => {
+          //       if (
+          //         Text.isText(span) &&
+          //         span.marks &&
+          //         Array.isArray(span.marks) &&
+          //         span.marks.includes(def._key)
+          //       ) {
+          //         console.log(def._key, def._type)
+          //         activeAnnotations.push(def)
+          //       }
+          //     })
+          //   }
+          // }
           return activeAnnotations
         } catch (err) {
           return []

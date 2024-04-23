@@ -178,7 +178,7 @@ export class PortableTextEditor extends Component<PortableTextEditorProps> {
   }
 
   // Static API methods
-  static activeAnnotations = (editor: PortableTextEditor): PortableTextObject[] => {
+  static activeAnnotations = (editor: PortableTextEditor): PortableTextObject['_type'][] => {
     return editor && editor.editable ? editor.editable.activeAnnotations() : []
   }
   static addAnnotation = (
@@ -278,6 +278,7 @@ export class PortableTextEditor extends Component<PortableTextEditorProps> {
   }
   static toggleMark = (editor: PortableTextEditor, mark: string): void => {
     debug(`Host toggling mark`, mark)
+    console.log('here', mark)
     editor.editable?.toggleMark(mark)
   }
   static getFragment = (editor: PortableTextEditor): PortableTextBlock[] | undefined => {
