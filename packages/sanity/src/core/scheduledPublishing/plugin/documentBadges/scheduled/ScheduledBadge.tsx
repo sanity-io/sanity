@@ -7,6 +7,9 @@ import {debugWithName} from '../../../utils/debug'
 
 const debug = debugWithName('ScheduledBadge')
 
+/**
+ * @beta
+ */
 export const ScheduledBadge: DocumentBadgeComponent = (props) => {
   // Poll for document schedules
   const {schedules} = usePollSchedules({documentId: props.id, state: 'scheduled'})

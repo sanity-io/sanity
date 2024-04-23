@@ -40,11 +40,13 @@ const debug = debugWithName('ScheduleAction')
  * empty dependency arrays.
  */
 
+/**
+ * @beta
+ */
 export const ScheduleAction = (props: DocumentActionProps): DocumentActionDescription | null => {
   const {draft, id, liveEdit, onComplete, published, type} = props
 
   const currentUser = useCurrentUser()
-  //
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
     id,
     type,
