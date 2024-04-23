@@ -139,12 +139,16 @@ function DocumentNodePathBreadcrumbs(props: {
 }) {
   const {path, schemaType, value} = props
 
-  const pathTitles = useMemo(
-    () => getPathTitles({path, schemaType, value}),
-    [path, schemaType, value],
-  )
+  const pathTitles = useMemo(() => {
+    try {
+      return getPathTitles({path, schemaType, value})
+    } catch (e) {
+      console.error(e)
+    }
+    return null
+  }, [path, schemaType, value])
 
-  if (!pathTitles.length) return null
+  if (!pathTitles?.length) return null
 
   return (
     <Text size={1}>

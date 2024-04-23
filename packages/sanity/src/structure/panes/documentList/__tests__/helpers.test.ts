@@ -2,7 +2,7 @@ import {describe, expect, test} from '@jest/globals'
 import {Schema} from '@sanity/schema'
 import {type ObjectSchemaType} from '@sanity/types'
 
-import {applyOrderingFunctions, fieldExtendsType} from '../helpers'
+import {applyOrderingFunctions, fieldExtendsType, findStaticTypesInFilter} from '../helpers'
 
 const mockSchema = Schema.compile({
   name: 'default',
@@ -168,4 +168,30 @@ describe('fieldExtendsType()', () => {
     expect(fieldExtendsType(field, 'number')).toBe(false)
   })
   /* eslint-enable @typescript-eslint/no-non-null-assertion */
+})
+
+describe('findStaticTypesInFilter()', () => {
+  test('returns the types from a simple filter clause', () => {
+    expect(findStaticTypesInFilter('_type == "a"')).toEqual(['a'])
+  })
+
+  test('returns multiple types from a simple filter clause', () => {
+    expect(findStaticTypesInFilter('_type == "a" || "b" == _type')).toEqual(['a', 'b'])
+  })
+
+  test('returns multiple types from `in` expressions', () => {
+    expect(findStaticTypesInFilter('_type in ["a", "b"]')).toEqual(['a', 'b'])
+  })
+
+  test('returns the types in `&&` expressions', () => {
+    expect(findStaticTypesInFilter('_type in ["a", "b"] && isActive')).toEqual(['a', 'b'])
+  })
+
+  test('returns null if the types cannot be statically determined', () => {
+    expect(findStaticTypesInFilter('_type == "a" || isActive')).toEqual(null)
+  })
+
+  test('works with parameters', () => {
+    expect(findStaticTypesInFilter('_type in ["a", $b]', {b: 'b'})).toEqual(['a', 'b'])
+  })
 })

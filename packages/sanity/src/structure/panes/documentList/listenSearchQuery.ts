@@ -30,7 +30,7 @@ interface ListenQueryOptions {
   schema: Schema
   searchQuery: string
   sort: SortOrder
-  staticTypeNames?: string[]
+  staticTypeNames?: string[] | null
   maxFieldDepth?: number
   enableLegacySearch?: boolean
 }
