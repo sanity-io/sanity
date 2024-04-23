@@ -5,7 +5,7 @@ import {
 } from '@sanity/portable-text-editor'
 import {isKeyedObject, type KeyedObject, type Path} from '@sanity/types'
 import {isEqual} from '@sanity/util/paths'
-import {useLayoutEffect, useRef} from 'react'
+import {useLayoutEffect} from 'react'
 import scrollIntoView from 'scroll-into-view-if-needed'
 
 import {usePortableTextMemberItems} from './usePortableTextMembers'
@@ -18,9 +18,8 @@ interface Props {
 
 // This hook will track the form focusPath and make sure editor content is visible (opened), scrolled to, and (potentially) focused accordingly.
 export function useTrackFocusPath(props: Props): void {
-  const prevFocusPath = useRef(props.focusPath)
-
   const {focusPath, boundaryElement, onItemClose} = props
+
   const portableTextMemberItems = usePortableTextMemberItems()
   const editor = usePortableTextEditor()
   const selection = usePortableTextEditorSelection()
@@ -30,12 +29,6 @@ export function useTrackFocusPath(props: Props): void {
     if (focusPath.length === 0) {
       return
     }
-
-    // Don't do anything if the focusPath was already tracked
-    if (isEqual(prevFocusPath.current, focusPath)) {
-      return
-    }
-    prevFocusPath.current = focusPath
 
     // Don't do anything if the editor selection focus path is already equal to the focusPath
     if (
