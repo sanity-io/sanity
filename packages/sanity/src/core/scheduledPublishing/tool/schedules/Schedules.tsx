@@ -24,7 +24,7 @@ export const Schedules = () => {
       {mode === 'upsell' && upsellData && (
         <Panel width={1} padding={4} paddingBottom={1}>
           <UpsellPanel
-            layout="horizontal"
+            layout="vertical"
             data={upsellData}
             onPrimaryClick={telemetryLogs.panelPrimaryClicked}
             onSecondaryClick={telemetryLogs.panelSecondaryClicked}
