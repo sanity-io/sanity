@@ -329,7 +329,7 @@ importers:
         specifier: ^2.1.4
         version: 2.1.4(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8)
       '@sanity/vision':
-        specifier: 3.38.0
+        specifier: 3.39.0
         version: link:../../packages/@sanity/vision
       react:
         specifier: ^18.2.0
@@ -393,7 +393,7 @@ importers:
         specifier: ^3.0.2
         version: 3.0.3(@sanity/mutator@packages+@sanity+mutator)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(sanity@packages+sanity)(styled-components@6.1.8)
       '@sanity/block-tools':
-        specifier: 3.38.0
+        specifier: 3.39.0
         version: link:../../packages/@sanity/block-tools
       '@sanity/client':
         specifier: ^6.15.20
@@ -571,7 +571,7 @@ importers:
   examples/ecommerce-studio:
     dependencies:
       '@sanity/cli':
-        specifier: 3.38.0
+        specifier: 3.39.0
         version: link:../../packages/@sanity/cli
       '@sanity/ui':
         specifier: ^2.1.4
@@ -679,10 +679,10 @@ importers:
         specifier: workspace:*
         version: link:../../@repo/package.config
       '@sanity/schema':
-        specifier: 3.38.0
+        specifier: 3.39.0
         version: link:../schema
       '@sanity/types':
-        specifier: 3.38.0
+        specifier: 3.39.0
         version: link:../types
       '@types/jsdom':
         specifier: ^20.0.0
@@ -706,13 +706,13 @@ importers:
         specifier: ^6.15.20
         version: 6.15.20(debug@4.3.4)
       '@sanity/codegen':
-        specifier: 3.38.0
+        specifier: 3.39.0
         version: link:../codegen
       '@sanity/telemetry':
         specifier: ^0.7.6
         version: 0.7.7
       '@sanity/util':
-        specifier: 3.38.0
+        specifier: 3.39.0
         version: link:../util
       chalk:
         specifier: ^4.1.2
@@ -1012,10 +1012,10 @@ importers:
         specifier: ^6.15.20
         version: 6.15.20(debug@4.3.4)
       '@sanity/types':
-        specifier: 3.38.0
+        specifier: 3.39.0
         version: link:../types
       '@sanity/util':
-        specifier: 3.38.0
+        specifier: 3.39.0
         version: link:../util
       arrify:
         specifier: ^2.0.1
@@ -1071,7 +1071,7 @@ importers:
         specifier: workspace:*
         version: link:../../@repo/package.config
       '@sanity/types':
-        specifier: 3.38.0
+        specifier: 3.39.0
         version: link:../types
       '@types/debug':
         specifier: ^4.1.5
@@ -1086,16 +1086,16 @@ importers:
   packages/@sanity/portable-text-editor:
     dependencies:
       '@sanity/block-tools':
-        specifier: 3.38.0
+        specifier: 3.39.0
         version: link:../block-tools
       '@sanity/schema':
-        specifier: 3.38.0
+        specifier: 3.39.0
         version: link:../schema
       '@sanity/types':
-        specifier: 3.38.0
+        specifier: 3.39.0
         version: link:../types
       '@sanity/util':
-        specifier: 3.38.0
+        specifier: 3.39.0
         version: link:../util
       debug:
         specifier: ^3.2.7
@@ -1207,7 +1207,7 @@ importers:
         specifier: ^3.0.0
         version: 3.0.0
       '@sanity/types':
-        specifier: 3.38.0
+        specifier: 3.39.0
         version: link:../types
       arrify:
         specifier: ^1.0.1
@@ -1275,7 +1275,7 @@ importers:
         specifier: ^6.15.20
         version: 6.15.20
       '@sanity/types':
-        specifier: 3.38.0
+        specifier: 3.39.0
         version: link:../types
       get-random-values-esm:
         specifier: 1.0.2
@@ -1412,7 +1412,7 @@ importers:
   packages/create-sanity:
     dependencies:
       '@sanity/cli':
-        specifier: 3.38.0
+        specifier: 3.39.0
         version: link:../@sanity/cli
       resolve-pkg:
         specifier: ^2.0.0
@@ -1454,10 +1454,10 @@ importers:
         specifier: ^0.3.1
         version: 0.3.1
       '@sanity/block-tools':
-        specifier: 3.38.0
+        specifier: 3.39.0
         version: link:../@sanity/block-tools
       '@sanity/cli':
-        specifier: 3.38.0
+        specifier: 3.39.0
         version: link:../@sanity/cli
       '@sanity/client':
         specifier: ^6.15.20
@@ -1466,7 +1466,7 @@ importers:
         specifier: ^3.0.0
         version: 3.0.6
       '@sanity/diff':
-        specifier: 3.38.0
+        specifier: 3.39.0
         version: link:../@sanity/diff
       '@sanity/diff-match-patch':
         specifier: ^3.1.1
@@ -1490,31 +1490,31 @@ importers:
         specifier: ^2.1.4
         version: 2.1.10(@sanity/color@3.0.6)(react@18.2.0)
       '@sanity/migrate':
-        specifier: 3.38.0
+        specifier: 3.39.0
         version: link:../@sanity/migrate
       '@sanity/mutator':
-        specifier: 3.38.0
+        specifier: 3.39.0
         version: link:../@sanity/mutator
       '@sanity/portable-text-editor':
-        specifier: 3.38.0
+        specifier: 3.39.0
         version: link:../@sanity/portable-text-editor
       '@sanity/presentation':
         specifier: 1.12.7
         version: 1.12.7(@sanity/client@6.15.20)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8)
       '@sanity/schema':
-        specifier: 3.38.0
+        specifier: 3.39.0
         version: link:../@sanity/schema
       '@sanity/telemetry':
         specifier: ^0.7.6
         version: 0.7.7
       '@sanity/types':
-        specifier: 3.38.0
+        specifier: 3.39.0
         version: link:../@sanity/types
       '@sanity/ui':
         specifier: ^2.1.4
         version: 2.1.4(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8)
       '@sanity/util':
-        specifier: 3.38.0
+        specifier: 3.39.0
         version: link:../@sanity/util
       '@sanity/uuid':
         specifier: ^3.0.1
@@ -1782,7 +1782,7 @@ importers:
         specifier: workspace:*
         version: link:../@repo/package.config
       '@sanity/codegen':
-        specifier: 3.38.0
+        specifier: 3.39.0
         version: link:../@sanity/codegen
       '@sanity/generate-help-url':
         specifier: ^3.0.0
@@ -7546,7 +7546,7 @@ packages:
     resolution: {integrity: sha512-gKmTNwZnblUdnTIJu3e9kmeRRzV2j1a/LUO27KNNAnIC5zjy1aSvXSRp4rVNlmAoHlQ7HzX42NbKpcSr4jF80A==}
     engines: {node: ^18.18.0 || >=20.0.0}
     peerDependencies:
-      '@typescript-eslint/parser': ^7.0.0
+      '@typescript-eslint/parser': ^7.5.0
       eslint: ^8.56.0
       typescript: '*'
     peerDependenciesMeta:
@@ -10457,8 +10457,8 @@ packages:
     resolution: {integrity: sha512-7Na1kh3OiteeFmeQkUqtIjThsKWIIiK/TLNUby0pOkGHhWV3AKYFsMEIhH7VuOIEOeTE53Ix/04Z6XWyvsHcuQ==}
     engines: {node: '>=14.0.0'}
     peerDependencies:
-      '@typescript-eslint/eslint-plugin': ^6.7.5 || ^7.0.0
-      '@typescript-eslint/parser': ^6.7.5 || ^7.0.0
+      '@typescript-eslint/eslint-plugin': ^7.5.0
+      '@typescript-eslint/parser': ^7.5.0
       eslint: ^8.51.0
       eslint-plugin-import: ^2.28.1
       eslint-plugin-react: ^7.33.2
@@ -10740,7 +10740,7 @@ packages:
     resolution: {integrity: sha512-9l1YFCzXKkw1qtAru1RWUtG2EVDZY0a0eChKXcL+EZ5jitG7qxdctu4RnvhOJHv4xfmUf7h+JJPINlVpGhZMrw==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
     peerDependencies:
-      '@typescript-eslint/eslint-plugin': 6 - 7
+      '@typescript-eslint/eslint-plugin': ^7.5.0
       eslint: '8'
     peerDependenciesMeta:
       '@typescript-eslint/eslint-plugin':
