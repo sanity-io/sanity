@@ -2,7 +2,14 @@
   "name": "@sanity/manifest",
   "version": "3.39.1",
   "description": "",
-  "keywords": ["sanity", "cms", "headless", "realtime", "content", "schema"],
+  "keywords": [
+    "sanity",
+    "cms",
+    "headless",
+    "realtime",
+    "content",
+    "schema"
+  ],
   "homepage": "https://www.sanity.io/",
   "bugs": {
     "url": "https://github.com/sanity-io/sanity/issues"
@@ -27,7 +34,10 @@
   "main": "./lib/index.js",
   "module": "./lib/index.esm.js",
   "types": "./lib/index.d.ts",
-  "files": ["lib", "src"],
+  "files": [
+    "lib",
+    "src"
+  ],
   "scripts": {
     "build": "pkg-utils build --strict --check --clean",
     "check:types": "tsc --project tsconfig.lib.json",
