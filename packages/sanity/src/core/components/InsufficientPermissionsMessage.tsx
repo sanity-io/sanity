@@ -19,8 +19,11 @@ export interface InsufficientPermissionsMessageProps {
     | 'create-any-document'
     | 'create-document'
     | 'delete-document'
+    | 'delete-schedules'
     | 'discard-changes'
     | 'duplicate-document'
+    | 'edit-schedules'
+    | 'execute-schedules'
     | 'publish-document'
     | 'unpublish-document'
 }

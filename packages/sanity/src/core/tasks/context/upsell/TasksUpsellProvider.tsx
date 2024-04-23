@@ -2,7 +2,6 @@ import {useTelemetry} from '@sanity/telemetry/react'
 import {template} from 'lodash'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 
-import {CommentsUpsellDialog, type UpsellData} from '../../../comments'
 import {useClient, useProjectId} from '../../../hooks'
 import {
   UpsellDialogDismissed,
@@ -11,6 +10,8 @@ import {
   UpsellDialogViewed,
   type UpsellDialogViewedInfo,
 } from '../../../studio'
+import {type UpsellData} from '../../../studio/upsell/types'
+import {UpsellDialog} from '../../../studio/upsell/UpsellDialog'
 import {TasksUpsellContext} from './TasksUpsellContext'
 import {type TasksUpsellContextValue} from './types'
 
@@ -140,7 +141,7 @@ export function TasksUpsellProvider(props: {children: React.ReactNode}) {
     <TasksUpsellContext.Provider value={ctxValue}>
       {props.children}
       {upsellData && upsellDialogOpen && (
-        <CommentsUpsellDialog
+        <UpsellDialog
           data={upsellData}
           onClose={handleClose}
           onPrimaryClick={handlePrimaryButtonClick}
