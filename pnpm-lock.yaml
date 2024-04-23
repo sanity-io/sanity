@@ -53,8 +53,8 @@ importers:
         specifier: ^4.0.0
         version: 4.0.0(eslint@8.57.0)(typescript@5.4.5)
       '@sanity/pkg-utils':
-        specifier: 6.8.7
-        version: 6.8.7(@types/node@18.19.31)(typescript@5.4.5)
+        specifier: 6.8.4
+        version: 6.8.4(@types/node@18.19.31)(typescript@5.4.5)
       '@sanity/prettier-config':
         specifier: ^1.0.2
         version: 1.0.2(prettier@3.2.5)
@@ -968,7 +968,7 @@ importers:
         version: 4.2.0
       zod:
         specifier: ^3.22.4
-        version: 3.23.4
+        version: 3.23.3
     devDependencies:
       '@jest/globals':
         specifier: ^29.7.0
@@ -1793,8 +1793,8 @@ importers:
         specifier: ^3.0.0
         version: 3.0.0
       '@sanity/pkg-utils':
-        specifier: 6.8.7
-        version: 6.8.7(@types/node@18.19.31)(debug@4.3.4)(typescript@5.4.5)
+        specifier: 6.8.4
+        version: 6.8.4(@types/node@18.19.31)(debug@4.3.4)(typescript@5.4.5)
       '@sanity/tsdoc':
         specifier: 1.0.40
         version: 1.0.40(@types/node@18.19.31)(debug@4.3.4)(react-dom@18.3.0)(react-is@18.3.0)(react@18.3.0)(sanity@packages+sanity)(styled-components@6.1.8)
@@ -6240,8 +6240,8 @@ packages:
       - supports-color
     dev: false
 
-  /@sanity/pkg-utils@6.8.6(@types/node@18.19.31)(debug@4.3.4)(typescript@5.4.5):
-    resolution: {integrity: sha512-9rj5lWvYQ8pptcsb5186Mlw/MZ7jdQAO1ntLS4llXh1S7zVPOp8k9Z0pTBdbWcFdQlP8DW0KlsHYrNNjWwAjng==}
+  /@sanity/pkg-utils@6.8.2(@types/node@18.19.31)(debug@4.3.4)(typescript@5.4.5):
+    resolution: {integrity: sha512-R7MqCaaSKJMZDemVMI2/vjnnXuh9Nd9xzPvDmhypGptLKs2Xl6/PfMcqvuyWR2rhKxT5rhXIaGKzgoAfFg7pDQ==}
     engines: {node: '>=18.17.0'}
     hasBin: true
     peerDependencies:
@@ -6349,8 +6349,8 @@ packages:
       - debug
       - supports-color
 
-  /@sanity/pkg-utils@6.8.7(@types/node@18.19.31)(debug@4.3.4)(typescript@5.4.5):
-    resolution: {integrity: sha512-hqvRmG+2x4vpi9utHjP3+L/FOBFuQcI+chvHDH5VYpFeI7g6cQfTPmFuTNfukk4Gq/x5d4BLP5UJ5mHB4PaOwQ==}
+  /@sanity/pkg-utils@6.8.4(@types/node@18.19.31)(debug@4.3.4)(typescript@5.4.5):
+    resolution: {integrity: sha512-NkioyI2t5wEBBJ+bafmFfsHEG8YYE0cewwkrSTBLPXB0I1F5xqL9SxXabBmc7NO8tLSVRgMY4YPz+aT3IDqW9Q==}
     engines: {node: '>=18.17.0'}
     hasBin: true
     peerDependencies:
@@ -6395,8 +6395,8 @@ packages:
       treeify: 1.1.0
       typescript: 5.4.5
       uuid: 9.0.1
-      zod: 3.23.4
-      zod-validation-error: 3.2.0(zod@3.23.4)
+      zod: 3.23.3
+      zod-validation-error: 3.2.0(zod@3.23.3)
     transitivePeerDependencies:
       - '@types/babel__core'
       - '@types/node'
@@ -6404,8 +6404,8 @@ packages:
       - supports-color
     dev: true
 
-  /@sanity/pkg-utils@6.8.7(@types/node@18.19.31)(typescript@5.4.5):
-    resolution: {integrity: sha512-hqvRmG+2x4vpi9utHjP3+L/FOBFuQcI+chvHDH5VYpFeI7g6cQfTPmFuTNfukk4Gq/x5d4BLP5UJ5mHB4PaOwQ==}
+  /@sanity/pkg-utils@6.8.4(@types/node@18.19.31)(typescript@5.4.5):
+    resolution: {integrity: sha512-NkioyI2t5wEBBJ+bafmFfsHEG8YYE0cewwkrSTBLPXB0I1F5xqL9SxXabBmc7NO8tLSVRgMY4YPz+aT3IDqW9Q==}
     engines: {node: '>=18.17.0'}
     hasBin: true
     peerDependencies:
@@ -6450,8 +6450,8 @@ packages:
       treeify: 1.1.0
       typescript: 5.4.5
       uuid: 9.0.1
-      zod: 3.23.4
-      zod-validation-error: 3.2.0(zod@3.23.4)
+      zod: 3.23.3
+      zod-validation-error: 3.2.0(zod@3.23.3)
     transitivePeerDependencies:
       - '@types/babel__core'
       - '@types/node'
@@ -6459,7 +6459,7 @@ packages:
       - supports-color
     dev: true
 
-  /@sanity/presentation@1.11.4(@sanity/client@6.15.20)(react-dom@18.3.0)(react-is@18.3.0)(react@18.3.0)(styled-components@6.1.8):
+  /@sanity/presentation@1.11.4(@sanity/client@6.15.20)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8):
     resolution: {integrity: sha512-vd4gOceLB02TzMahkBL5ViGU1AwKZvl4Y4sdY5MXIeGoUW2CJ9ys6iPQXaaylrKGMyK4WreGHCy51eZU0GLYuw==}
     engines: {node: '>=16.14'}
     peerDependencies:
@@ -19433,6 +19433,14 @@ packages:
       readable-stream: 4.5.2
     dev: false
 
+  /zod-validation-error@3.1.0(zod@3.23.0):
+    resolution: {integrity: sha512-zujS6HqJjMZCsvjfbnRs7WI3PXN39ovTcY1n8a+KTm4kOH0ZXYsNiJkH1odZf4xZKMkBDL7M2rmQ913FCS1p9w==}
+    engines: {node: '>=18.0.0'}
+    peerDependencies:
+      zod: ^3.18.0
+    dependencies:
+      zod: 3.23.0
+
   /zod-validation-error@3.2.0(zod@3.23.3):
     resolution: {integrity: sha512-cYlPR6zuyrgmu2wRTdumEAJGuwI7eHVHGT+VyneAQxmRAKtGRL1/7pjz4wfLhz4J05f5qoSZc3rGacswgyTjjw==}
     engines: {node: '>=18.0.0'}
@@ -19440,23 +19448,15 @@ packages:
       zod: ^3.18.0
     dependencies:
       zod: 3.23.3
-
-  /zod-validation-error@3.2.0(zod@3.23.4):
-    resolution: {integrity: sha512-cYlPR6zuyrgmu2wRTdumEAJGuwI7eHVHGT+VyneAQxmRAKtGRL1/7pjz4wfLhz4J05f5qoSZc3rGacswgyTjjw==}
-    engines: {node: '>=18.0.0'}
-    peerDependencies:
-      zod: ^3.18.0
-    dependencies:
-      zod: 3.23.4
     dev: true
 
   /zod@3.23.3:
     resolution: {integrity: sha512-tPvq1B/2Yu/dh2uAIH2/BhUlUeLIUvAjr6dpL/75I0pCYefHgjhXk1o1Kob3kTU8C7yU1j396jFHlsVWFi9ogg==}
 
-  /zod@3.23.4:
-    resolution: {integrity: sha512-/AtWOKbBgjzEYYQRNfoGKHObgfAZag6qUJX1VbHo2PRBgS+wfWagEY2mizjfyAPcGesrJOcx/wcl0L9WnVrHFw==}
+  /zod@3.23.3:
+    resolution: {integrity: sha512-tPvq1B/2Yu/dh2uAIH2/BhUlUeLIUvAjr6dpL/75I0pCYefHgjhXk1o1Kob3kTU8C7yU1j396jFHlsVWFi9ogg==}
 
-  /zustand@3.7.2(react@18.3.0):
+  /zustand@3.7.2(react@18.2.0):
     resolution: {integrity: sha512-PIJDIZKtokhof+9+60cpockVOq05sJzHCriyvaLBmEJixseQ1a5Kdov6fWZfWOu5SK9c+FhH1jU0tntLxRJYMA==}
     engines: {node: '>=12.7.0'}
     peerDependencies:
