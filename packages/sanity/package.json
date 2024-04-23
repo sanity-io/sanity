@@ -77,9 +77,6 @@
       "_internal": [
         "./lib/_internal.d.ts"
       ],
-      "_internalBrowser": [
-        "./lib/_internalBrowser.d.ts"
-      ],
       "cli": [
         "./lib/cli.d.ts"
       ],
