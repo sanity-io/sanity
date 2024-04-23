@@ -4,11 +4,14 @@ import {Menu} from '@sanity/ui'
 import {MenuItem} from '../../../../ui-components'
 import {MenuButton} from '../../../../ui-components/menuButton'
 import {ContextMenuButton} from '../../../components/contextMenuButton'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {scheduledPublishingNamespace} from '../../i18n'
 import {useSchedules} from '../contexts/schedules'
 
 const SchedulesContextMenu = () => {
   const {setSortBy, sortBy} = useSchedules()
 
+  const {t} = useTranslation(scheduledPublishingNamespace)
   // Callbacks
   const handleSortByCreateAt = () => setSortBy('createdAt')
   const handleSortByExecuteAt = () => setSortBy('executeAt')
@@ -23,13 +26,13 @@ const SchedulesContextMenu = () => {
             icon={SortIcon}
             iconRight={sortBy === 'createdAt' ? CheckmarkIcon : undefined}
             onClick={handleSortByCreateAt}
-            text="Sort by time added"
+            text={t('actions.sort.by-added')}
           />
           <MenuItem
             icon={SortIcon}
             iconRight={sortBy === 'executeAt' ? CheckmarkIcon : undefined}
             onClick={handleSortByExecuteAt}
-            text="Sort by time scheduled"
+            text={t('actions.sort.by-scheduled')}
           />
         </Menu>
       }

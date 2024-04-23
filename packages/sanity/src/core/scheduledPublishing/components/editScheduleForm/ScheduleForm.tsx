@@ -1,7 +1,9 @@
 import {Card, Stack} from '@sanity/ui'
 import {useState} from 'react'
 
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import useTimeZone from '../../hooks/useTimeZone'
+import {scheduledPublishingNamespace} from '../../i18n'
 import {type ScheduleFormData} from '../../types'
 import {DateTimeInput} from '../dateInputs'
 
@@ -12,6 +14,7 @@ interface Props {
 
 const ScheduleForm = (props: Props) => {
   const {onChange, value} = props
+  const {t} = useTranslation(scheduledPublishingNamespace)
 
   const {getCurrentZoneDate} = useTimeZone()
 
@@ -44,9 +47,9 @@ const ScheduleForm = (props: Props) => {
             name: 'date',
             options: {
               customValidation: handleCustomValidation,
-              customValidationMessage: 'Date cannot be in the past.',
+              customValidationMessage: t('schedule-form.past-date-warning'),
             },
-            title: 'Date and time',
+            title: t('schedule-form.title'),
           }}
           value={inputValue === undefined ? value?.date : inputValue}
         />

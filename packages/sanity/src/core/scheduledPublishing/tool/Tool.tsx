@@ -4,12 +4,14 @@ import {useEffect, useMemo, useRef} from 'react'
 import {type RouterContextValue, useRouter} from 'sanity/router'
 import {styled} from 'styled-components'
 
+import {useTranslation} from '../../i18n/hooks/useTranslation'
 import ErrorCallout from '../components/errorCallout/ErrorCallout'
 import ButtonTimeZone from '../components/timeZoneButton/TimeZoneButton'
 import ButtonTimeZoneElementQuery from '../components/timeZoneButton/TimeZoneButtonElementQuery'
 import {SCHEDULE_FILTERS, TOOL_HEADER_HEIGHT} from '../constants'
 import usePollSchedules from '../hooks/usePollSchedules'
 import useTimeZone from '../hooks/useTimeZone'
+import {scheduledPublishingNamespace} from '../i18n'
 import {type Schedule, type ScheduleState} from '../types'
 import {SchedulesProvider} from './contexts/schedules'
 import {ScheduleFilters} from './scheduleFilters'
@@ -29,6 +31,7 @@ const DATE_SLUG_FORMAT = 'yyyy-MM-dd' // date-fns format
 
 export default function Tool() {
   const router = useRouter()
+  const {t} = useTranslation(scheduledPublishingNamespace)
 
   const {sanity: theme} = useTheme()
   const {error, isInitialLoading, schedules = NO_SCHEDULE} = usePollSchedules()
@@ -126,8 +129,8 @@ export default function Tool() {
               {error && (
                 <Box paddingTop={4} paddingX={4}>
                   <ErrorCallout
-                    description="More information in the developer console."
-                    title="Something went wrong, unable to retrieve schedules."
+                    description={t('schedule-action.fetch-error.description')}
+                    title={t('schedule-action.fetch-error.title')}
                   />
                 </Box>
               )}

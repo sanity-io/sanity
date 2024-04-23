@@ -11,6 +11,7 @@ import {
 } from 'react'
 
 import {Button, TooltipDelayGroupProvider} from '../../../../ui-components'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {TOOL_HEADER_HEIGHT} from '../../constants'
 import useTimeZone from '../../hooks/useTimeZone'
 import {CalendarMonth} from './CalendarMonth'
@@ -42,6 +43,7 @@ export const Calendar = forwardRef(function Calendar(
   props: CalendarProps,
   forwardedRef: ForwardedRef<HTMLDivElement>,
 ) {
+  const {t} = useTranslation()
   const {focusedDate, onFocusedDateChange, onSelect, selectedDate, ...restProps} = props
 
   const {zoneDateToUtc} = useTimeZone()
@@ -191,7 +193,12 @@ export const Calendar = forwardRef(function Calendar(
 
       {/* Today button */}
       <Box flex={1} style={{borderBottom: '1px solid var(--card-border-color)'}}>
-        <Button mode="bleed" onClick={handleNowClick} width="fill" text="Today" />
+        <Button
+          mode="bleed"
+          onClick={handleNowClick}
+          width="fill"
+          text={t('calendar.action.go-to-today')}
+        />
       </Box>
     </Box>
   )

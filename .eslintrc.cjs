@@ -148,15 +148,6 @@ const config = {
         '@sanity/i18n/no-attribute-template-literals': 'off',
       },
     },
-    // Ignore i18n in ScheduledPublishing files.
-    {
-      files: ['**/*/scheduledPublishing/**/*'],
-      rules: {
-        'i18next/no-literal-string': 'off',
-        '@sanity/i18n/no-attribute-string-literals': 'off',
-        '@sanity/i18n/no-attribute-template-literals': 'off',
-      },
-    },
 
     // Files to disable i18n literals,
     {

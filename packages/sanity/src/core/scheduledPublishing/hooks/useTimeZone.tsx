@@ -3,8 +3,10 @@ import {getTimeZones} from '@vvo/tzdb'
 import {formatInTimeZone, utcToZonedTime, zonedTimeToUtc} from 'date-fns-tz'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 
+import {useTranslation} from '../../i18n/hooks/useTranslation'
 import ToastDescription from '../components/toastDescription/ToastDescription'
 import {DATE_FORMAT, LOCAL_STORAGE_TZ_KEY} from '../constants'
+import {scheduledPublishingNamespace} from '../i18n'
 import {type NormalizedTimeZone} from '../types'
 import {debugWithName} from '../utils/debug'
 import getErrorMessage from '../utils/getErrorMessage'
@@ -55,6 +57,7 @@ function getStoredTimeZone(): NormalizedTimeZone {
 }
 
 const useTimeZone = () => {
+  const {t} = useTranslation(scheduledPublishingNamespace)
   const initialTimeZone = useMemo(() => getStoredTimeZone(), [])
   const [timeZone, setTimeZone] = useState<NormalizedTimeZone>(initialTimeZone)
   const toast = useToast()
@@ -120,7 +123,7 @@ const useTimeZone = () => {
             description: (
               <ToastDescription
                 body={`${tz.alternativeName} (${tz.namePretty})`}
-                title="Time zone updated"
+                title={t('use-time-zone.update.success')}
               />
             ),
             duration: 15000, // 15s
@@ -132,7 +135,10 @@ const useTimeZone = () => {
           toast.push({
             closable: true,
             description: (
-              <ToastDescription body={getErrorMessage(err)} title="Unable to update time zone" />
+              <ToastDescription
+                body={getErrorMessage(err)}
+                title={t('use-time-zone.update.error')}
+              />
             ),
             status: 'error',
           })
@@ -141,7 +147,7 @@ const useTimeZone = () => {
         return tz
       })
     },
-    [toast],
+    [toast, t],
   )
 
   const utcToCurrentZoneDate = useCallback(

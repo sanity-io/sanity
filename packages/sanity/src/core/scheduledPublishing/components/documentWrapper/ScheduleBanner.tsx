@@ -2,10 +2,14 @@ import {CalendarIcon, WarningOutlineIcon} from '@sanity/icons'
 import {type ValidationMarker} from '@sanity/types'
 import {Badge, Box, Card, Flex, Inline, Stack, Text} from '@sanity/ui'
 import {format} from 'date-fns'
+import {styled} from 'styled-components'
 
-import {DATE_FORMAT, DOCUMENT_HAS_ERRORS_TEXT} from '../../constants'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {Translate} from '../../../i18n/Translate'
+import {DATE_FORMAT} from '../../constants'
 import usePollSchedules from '../../hooks/usePollSchedules'
 import {usePublishedId} from '../../hooks/usePublishedId'
+import {scheduledPublishingNamespace} from '../../i18n'
 import {useScheduledPublishingEnabled} from '../../tool/contexts/ScheduledPublishingEnabledProvider'
 import {useValidationState} from '../../utils/validationUtils'
 
@@ -14,8 +18,13 @@ interface Props {
   markers: ValidationMarker[]
 }
 
+const Strong = styled.span`
+  font-weight: 600;
+`
+
 export function ScheduleBanner(props: Props) {
   const {id, markers} = props
+  const {t} = useTranslation(scheduledPublishingNamespace)
   const publishedId = usePublishedId(id)
   const {hasError} = useValidationState(markers)
   const {schedules} = usePollSchedules({documentId: publishedId, state: 'scheduled'})
@@ -35,7 +44,7 @@ export function ScheduleBanner(props: Props) {
               <WarningOutlineIcon />
             </Text>
             <Text muted size={1} weight="medium">
-              Scheduled publishing is not available on your current plan
+              {t('document-banner.not-enabled')}
             </Text>
           </Flex>
         </Card>
@@ -53,7 +62,7 @@ export function ScheduleBanner(props: Props) {
               <CalendarIcon />
             </Text>
             <Text muted size={1}>
-              <span style={{fontWeight: 600}}>Upcoming schedule</span> (local time)
+              <Translate i18nKey="document-banner.upcoming" t={t} components={{Strong: Strong}} />
             </Text>
           </Flex>
 
@@ -82,7 +91,7 @@ export function ScheduleBanner(props: Props) {
           {hasError && (
             <Box marginTop={3}>
               <Text muted size={1} weight="regular">
-                {DOCUMENT_HAS_ERRORS_TEXT}
+                {t('schedule-preview.warnings')}
               </Text>
             </Box>
           )}

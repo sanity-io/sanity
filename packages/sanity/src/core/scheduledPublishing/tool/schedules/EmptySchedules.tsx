@@ -1,6 +1,8 @@
 import {Card, Flex, Heading, Stack, Text} from '@sanity/ui'
 import {format} from 'date-fns'
 
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {scheduledPublishingNamespace} from '../../i18n'
 import {type ScheduleState} from '../../types'
 import BigIconComingSoon from './BigIconComingSoon'
 import BigIconScreen from './BigIconScreen'
@@ -13,29 +15,27 @@ interface Props {
 
 const EmptySchedules = (props: Props) => {
   const {scheduleState, selectedDate} = props
-
+  const {t} = useTranslation(scheduledPublishingNamespace)
   let BigIcon
   let description
   let heading
   switch (scheduleState) {
     case 'succeeded': {
-      description =
-        'When a scheduled document is successfully published it moves to this list view.'
-      heading = 'No completed scheduled publications ... yet'
+      description = t('empty-schedules.succeeded.description')
+      heading = t('empty-schedules.succeeded.title')
       BigIcon = BigIconComingSoon
       break
     }
     case 'cancelled': {
-      description =
-        'Schedules can fail for several reasons, for example when their documents are deleted. When they do, they show up here.'
-      heading = 'No failed scheduled publications'
+      description = t('empty-schedules.canceled.description')
+
+      heading = t('empty-schedules.canceled.title')
       BigIcon = BigIconSuccess
       break
     }
     case 'scheduled': {
-      description =
-        'When editing a document, create a new scheduled publication from the menu next to the Publish button.'
-      heading = 'No upcoming scheduled publications'
+      description = t('empty-schedules.scheduled.description')
+      heading = t('empty-schedules.scheduled.title')
       BigIcon = BigIconScreen
       break
     }

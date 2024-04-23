@@ -4,8 +4,10 @@ import {format} from 'date-fns'
 import {useRouter} from 'sanity/router'
 
 import {Button, MenuButton, MenuItem} from '../../../../ui-components'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {SCHEDULE_FILTERS, SCHEDULE_STATE_DICTIONARY} from '../../constants'
 import {useFilteredSchedules} from '../../hooks/useFilteredSchedules'
+import {scheduledPublishingNamespace} from '../../i18n'
 import {useSchedules} from '../contexts/schedules'
 import ScheduleFilter from './ScheduleFilter'
 
@@ -18,7 +20,7 @@ export const ScheduleFilters = (props: ScheduleFiltersProps) => {
   const {onClearDate, selectedDate} = props
   const {navigate} = useRouter()
   const {schedules, scheduleState} = useSchedules()
-
+  const {t} = useTranslation(scheduledPublishingNamespace)
   const handleMenuClick = (state: Record<string, unknown>) => {
     navigate(state)
   }
@@ -44,7 +46,7 @@ export const ScheduleFilters = (props: ScheduleFiltersProps) => {
               <Button
                 iconRight={SelectIcon}
                 mode="ghost"
-                text={`${SCHEDULE_STATE_DICTIONARY[scheduleState].title} (${
+                text={`${t(SCHEDULE_STATE_DICTIONARY[scheduleState].title)} (${
                   currentSchedules?.length || 0
                 })`}
                 tone="default"
@@ -58,7 +60,7 @@ export const ScheduleFilters = (props: ScheduleFiltersProps) => {
                     iconRight={filter === scheduleState ? CheckmarkIcon : undefined}
                     key={filter}
                     onClick={handleMenuClick.bind(undefined, {state: filter})}
-                    text={SCHEDULE_STATE_DICTIONARY[filter].title}
+                    text={t(SCHEDULE_STATE_DICTIONARY[filter].title)}
                   />
                 ))}
               </Menu>

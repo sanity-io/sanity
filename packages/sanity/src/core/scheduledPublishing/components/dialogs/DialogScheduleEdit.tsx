@@ -1,8 +1,10 @@
 import {useCallback} from 'react'
 
 import {Dialog} from '../../../../ui-components'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import useScheduleForm from '../../hooks/useScheduleForm'
 import useScheduleOperation from '../../hooks/useScheduleOperation'
+import {scheduledPublishingNamespace} from '../../i18n'
 import {type Schedule} from '../../types'
 import {EditScheduleForm} from '../editScheduleForm/EditScheduleForm'
 import DialogHeader from './DialogHeader'
@@ -13,6 +15,7 @@ export interface DialogScheduleEditProps {
 }
 
 const DialogScheduleEdit = (props: DialogScheduleEditProps) => {
+  const {t} = useTranslation(scheduledPublishingNamespace)
   const {onClose, schedule} = props
 
   const {updateSchedule} = useScheduleOperation()
@@ -34,7 +37,7 @@ const DialogScheduleEdit = (props: DialogScheduleEditProps) => {
     <Dialog
       footer={{
         confirmButton: {
-          text: 'Update',
+          text: t('dialog.scheduled-edit.confirm'),
           disabled: !isDirty,
           onClick: handleScheduleUpdate,
         },

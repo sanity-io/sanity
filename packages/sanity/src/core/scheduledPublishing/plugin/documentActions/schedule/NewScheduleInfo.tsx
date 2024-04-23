@@ -1,10 +1,12 @@
 import {Card, Flex, Stack, Text} from '@sanity/ui'
 
 import {useValidationStatus} from '../../../../hooks/useValidationStatus'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
+import {Translate} from '../../../../i18n/Translate'
 import {ValidationInfo} from '../../../components/validation/ValidationInfo'
-import {DOCUMENT_HAS_ERRORS_TEXT} from '../../../constants'
 import {usePublishedId} from '../../../hooks/usePublishedId'
 import {useSchemaType} from '../../../hooks/useSchemaType'
+import {scheduledPublishingNamespace} from '../../../i18n'
 import {useValidationState} from '../../../utils/validationUtils'
 
 interface Props {
@@ -13,20 +15,26 @@ interface Props {
 }
 
 export function NewScheduleInfo({id, schemaType}: Props) {
+  const {t} = useTranslation(scheduledPublishingNamespace)
   return (
     <Stack space={4}>
       <Text size={1}>
-        Schedule this document to be published at any time in the future.
-        <br />
-        Any edits in the meantime will be added to the scheduled document.
+        <Translate
+          t={t}
+          i18nKey="schedule-action.new-schedule.body-1"
+          components={{
+            Break: () => <br />,
+          }}
+        />
       </Text>
-      <Text size={1}>Visit the Schedules page to get an overview of all schedules.</Text>
+      <Text size={1}>{t('schedule-action.new-schedule.body-2')}</Text>
       <ValidationWarning id={id} type={schemaType} />
     </Stack>
   )
 }
 
 function ValidationWarning({id, type}: {id: string; type: string}) {
+  const {t} = useTranslation(scheduledPublishingNamespace)
   const publishedId = usePublishedId(id)
   const schema = useSchemaType(type)
   const validationStatus = useValidationStatus(publishedId, type)
@@ -44,7 +52,7 @@ function ValidationWarning({id, type}: {id: string; type: string}) {
           type={schema}
           documentId={publishedId}
         />
-        <Text size={1}>{DOCUMENT_HAS_ERRORS_TEXT}</Text>
+        <Text size={1}>{t('schedule-preview.warnings')}</Text>
       </Flex>
     </Card>
   )

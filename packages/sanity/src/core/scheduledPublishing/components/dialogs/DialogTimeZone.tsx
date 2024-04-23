@@ -4,7 +4,9 @@ import {useCallback, useMemo, useState} from 'react'
 import {css, styled} from 'styled-components'
 
 import {Dialog} from '../../../../ui-components'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import useTimeZone, {allTimeZones, getLocalTimeZone} from '../../hooks/useTimeZone'
+import {scheduledPublishingNamespace} from '../../i18n'
 import {type NormalizedTimeZone} from '../../types'
 
 export interface DialogTimeZoneProps {
@@ -28,6 +30,7 @@ const TimeZoneMainCitiesSpan = styled.span(({theme}: {theme: Theme}) => {
 
 const DialogTimeZone = (props: DialogTimeZoneProps) => {
   const {onClose} = props
+  const {t} = useTranslation(scheduledPublishingNamespace)
 
   const {setTimeZone, timeZone} = useTimeZone()
   const [selectedTz, setSelectedTz] = useState<NormalizedTimeZone | undefined>(timeZone)
@@ -80,32 +83,30 @@ const DialogTimeZone = (props: DialogTimeZoneProps) => {
           tone: 'primary',
         },
       }}
-      header="Select time zone"
+      header={t('dialog.time-zone.header')}
       id="time-zone"
       onClose={onClose}
       width={1}
     >
-      <Stack padding={4} space={5}>
-        <Text size={1}>
-          The selected time zone will change how dates are represented in schedules.
-        </Text>
+      <Stack space={5}>
+        <Text size={1}>{t('dialog.time-zone.explanation')}</Text>
 
         <Stack space={3}>
           <Flex align="center" justify="space-between">
             <Inline space={2}>
               <Text size={1} weight="semibold">
-                Time zone
+                {t('dialog.time-zone.input.label')}
               </Text>
               {isLocalTzSelected && (
                 <Text muted size={1}>
-                  local time
+                  {t('dialog.time-zone.input.is-local-time')}
                 </Text>
               )}
             </Inline>
             {!isLocalTzSelected && (
               <Text size={1} weight="medium">
                 <a onClick={handleTimeZoneSelectLocal} style={{cursor: 'pointer'}}>
-                  Select local time zone
+                  {t('dialog.time-zone.select-time-action')}
                 </a>
               </Text>
             )}
@@ -119,7 +120,7 @@ const DialogTimeZone = (props: DialogTimeZoneProps) => {
             openButton
             options={allTimeZones}
             padding={4}
-            placeholder="Search for a city or time zone"
+            placeholder={t('dialog.time-zone.input.placeholder')}
             popover={{
               boundaryElement: document.querySelector('body'),
               constrainSize: true,

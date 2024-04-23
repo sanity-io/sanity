@@ -13,31 +13,19 @@ interface Props {
   hasPermission?: boolean
   icon: ComponentType | ReactNode
   onClick: () => void
-  permissionsOperationLabel: InsufficientPermissionsMessageProps['context']
+  context: InsufficientPermissionsMessageProps['context']
   title: string
   tone?: SelectableTone
   disabled?: boolean
 }
 
 const MenuItemWithPermissionsTooltip = (props: Props) => {
-  const {
-    currentUser,
-    hasPermission,
-    icon,
-    onClick,
-    permissionsOperationLabel,
-    title,
-    tone,
-    disabled,
-  } = props
+  const {currentUser, hasPermission, icon, onClick, context, title, tone, disabled} = props
   return (
     <Tooltip
       content={
         <Box paddingX={2} paddingY={1}>
-          <InsufficientPermissionsMessage
-            currentUser={currentUser}
-            context={permissionsOperationLabel}
-          />
+          <InsufficientPermissionsMessage currentUser={currentUser} context={context} />
         </Box>
       }
       disabled={hasPermission}

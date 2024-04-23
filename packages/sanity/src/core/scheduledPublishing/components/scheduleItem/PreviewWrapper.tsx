@@ -6,13 +6,12 @@ import {styled} from 'styled-components'
 import {Tooltip} from '../../../../ui-components/tooltip'
 import {DocumentStatus} from '../../../components/documentStatus'
 import {DocumentStatusIndicator} from '../../../components/documentStatusIndicator'
+import {UserAvatar} from '../../../components/userAvatar'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {SanityDefaultPreview} from '../../../preview/components/SanityDefaultPreview'
-import {
-  DOCUMENT_HAS_ERRORS_TEXT,
-  DOCUMENT_HAS_WARNINGS_TEXT,
-  SCHEDULE_ACTION_DICTIONARY,
-} from '../../constants'
+import {SCHEDULE_ACTION_DICTIONARY} from '../../constants'
 import useTimeZone from '../../hooks/useTimeZone'
+import {scheduledPublishingNamespace} from '../../i18n'
 import {useScheduledPublishingEnabled} from '../../tool/contexts/ScheduledPublishingEnabledProvider'
 import {type Schedule} from '../../types'
 import {type PaneItemPreviewState} from '../../utils/paneItemHelpers'
@@ -22,7 +21,6 @@ import {ValidateScheduleDoc} from '../validation/SchedulesValidation'
 import {ValidationInfo} from '../validation/ValidationInfo'
 import DateWithTooltip from './dateWithTooltip/DateWithTooltip'
 import StateReasonFailedInfo from './StateReasonFailedInfo'
-import User from './User'
 
 const StatusDotPlaceholder = styled(Box)`
   width: 9px;
@@ -52,6 +50,8 @@ const PreviewWrapper = (props: Props) => {
     schemaType,
     useElementQueries,
   } = props
+  const {t} = useTranslation(scheduledPublishingNamespace)
+
   const {mode} = useScheduledPublishingEnabled()
   const [validationStatus, setValidationStatus] = useState(EMPTY_VALIDATION_STATUS)
   const {validation} = validationStatus
@@ -117,7 +117,7 @@ const PreviewWrapper = (props: Props) => {
                     </>
                   ) : (
                     <Text muted size={1}>
-                      <em>No date specified</em>
+                      <em>{t('schedule-preview.no-date')}</em>
                     </Text>
                   )}
                 </Stack>
@@ -130,7 +130,7 @@ const PreviewWrapper = (props: Props) => {
                   <DateWithTooltip date={scheduleDate} useElementQueries={useElementQueries} />
                 ) : (
                   <Text muted size={1}>
-                    <em>No date specified</em>
+                    <em>{t('schedule-preview.no-date')}</em>
                   </Text>
                 )}
               </Box>
@@ -145,7 +145,7 @@ const PreviewWrapper = (props: Props) => {
               <Flex align="center" style={{flexShrink: 0, marginLeft: 'auto'}}>
                 {/* Avatar */}
                 <Box display={['none', 'none', 'block']} marginX={3} style={{flexShrink: 0}}>
-                  <User id={schedule?.author} />
+                  <UserAvatar user={schedule?.author} withTooltip />
                 </Box>
 
                 {/* Document status */}
@@ -176,7 +176,7 @@ const PreviewWrapper = (props: Props) => {
                 menuHeader={
                   <Box padding={2}>
                     <Text size={1}>
-                      {hasError ? DOCUMENT_HAS_ERRORS_TEXT : DOCUMENT_HAS_WARNINGS_TEXT}
+                      {hasError ? t('schedule-preview.warnings') : t('schedule-preview.warnings')}
                     </Text>
                   </Box>
                 }

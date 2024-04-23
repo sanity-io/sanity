@@ -4,7 +4,9 @@ import {useVirtualizer} from '@tanstack/react-virtual'
 import {useEffect, useMemo, useRef} from 'react'
 
 import {Button} from '../../../../ui-components'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import useScheduleOperation from '../../hooks/useScheduleOperation'
+import {scheduledPublishingNamespace} from '../../i18n'
 import {type Schedule, type ScheduleSort} from '../../types'
 import {getLastExecuteDate} from '../../utils/scheduleUtils'
 import {useSchedules} from '../contexts/schedules'
@@ -18,6 +20,8 @@ function getLocalizedDate(date: string) {
 }
 
 const VirtualList = () => {
+  const {t} = useTranslation(scheduledPublishingNamespace)
+
   const {activeSchedules, scheduleState, sortBy} = useSchedules()
   const {measureElement, virtualList, totalSize, containerRef} = useVirtualizedSchedules(
     activeSchedules,
@@ -67,7 +71,7 @@ const VirtualList = () => {
             icon={CheckmarkCircleIcon}
             mode="ghost"
             onClick={handleClearSchedules}
-            text="Clear all completed schedules"
+            text={t('virtual-list.clear-all')}
           />
         </Flex>
       )}

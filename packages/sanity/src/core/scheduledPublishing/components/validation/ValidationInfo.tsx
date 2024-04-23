@@ -11,7 +11,9 @@ import {type ReactNode, useCallback, useId} from 'react'
 import {useRouter} from 'sanity/router'
 
 import {Button, MenuButton} from '../../../../ui-components'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {usePublishedId} from '../../hooks/usePublishedId'
+import {scheduledPublishingNamespace} from '../../i18n'
 import {useValidationState} from '../../utils/validationUtils'
 import {ValidationList} from './ValidationList'
 
@@ -33,6 +35,7 @@ const POPOVER_PROPS = {
 
 export function ValidationInfo(props: ValidationProps) {
   const {type, markers, menuHeader, documentId} = props
+  const {t} = useTranslation(scheduledPublishingNamespace)
   const router = useRouter()
   const {hasError, hasWarning} = useValidationState(markers)
   // use visibility so we can occupy the space equally for all states
@@ -58,7 +61,7 @@ export function ValidationInfo(props: ValidationProps) {
       id={id || ''}
       button={
         <Button
-          tooltipProps={{content: 'Show validation issues'}}
+          tooltipProps={{content: t('validation-info.tooltip')}}
           mode="bleed"
           data-testid="schedule-validation-list-button"
           icon={hasError ? ErrorOutlineIcon : WarningOutlineIcon}

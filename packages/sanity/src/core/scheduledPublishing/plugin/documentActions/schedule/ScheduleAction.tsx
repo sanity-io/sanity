@@ -8,6 +8,7 @@ import {
   type DocumentActionDialogProps,
   type DocumentActionProps,
 } from '../../../../config/document/actions'
+import {useTranslation} from '../../../../i18n/hooks/useTranslation'
 import {useCurrentUser, useDocumentPairPermissions} from '../../../../store'
 import DialogFooter from '../../../components/dialogs/DialogFooter'
 import DialogHeader from '../../../components/dialogs/DialogHeader'
@@ -17,11 +18,12 @@ import {DocumentActionPropsProvider} from '../../../contexts/documentActionProps
 import usePollSchedules from '../../../hooks/usePollSchedules'
 import useScheduleForm from '../../../hooks/useScheduleForm'
 import useScheduleOperation from '../../../hooks/useScheduleOperation'
+import {scheduledPublishingNamespace} from '../../../i18n'
 import {useScheduledPublishingEnabled} from '../../../tool/contexts/ScheduledPublishingEnabledProvider'
 import {useSchedulePublishingUpsell} from '../../../tool/contexts/SchedulePublishingUpsellProvider'
 import {debugWithName} from '../../../utils/debug'
 import {NewScheduleInfo} from './NewScheduleInfo'
-import Schedules from './Schedules'
+import {Schedules} from './Schedules'
 
 const debug = debugWithName('ScheduleAction')
 
@@ -45,6 +47,7 @@ const debug = debugWithName('ScheduleAction')
  */
 export const ScheduleAction = (props: DocumentActionProps): DocumentActionDescription | null => {
   const {draft, id, liveEdit, onComplete, published, type} = props
+  const {t} = useTranslation(scheduledPublishingNamespace)
 
   const currentUser = useCurrentUser()
   const [permissions, isPermissionsLoading] = useDocumentPairPermissions({
@@ -125,8 +128,8 @@ export const ScheduleAction = (props: DocumentActionProps): DocumentActionDescri
   const dialog: DocumentActionDialogProps = {
     content: fetchError ? (
       <ErrorCallout
-        description="More information in the developer console."
-        title="Something went wrong, unable to retrieve schedules."
+        description={t('schedule-action.fetch-error.description')}
+        title={t('schedule-action.fetch-error.title')}
       />
     ) : (
       <DocumentActionPropsProvider value={props}>

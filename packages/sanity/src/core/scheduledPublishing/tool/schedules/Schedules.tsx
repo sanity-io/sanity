@@ -3,7 +3,9 @@ import {WarningOutlineIcon} from '@sanity/icons'
 import {Box, Card, Container, Flex, Text} from '@sanity/ui'
 import {styled} from 'styled-components'
 
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {UpsellPanel} from '../../../studio/upsell/UpsellPanel'
+import {scheduledPublishingNamespace} from '../../i18n'
 import {useScheduledPublishingEnabled} from '../contexts/ScheduledPublishingEnabledProvider'
 import {useSchedulePublishingUpsell} from '../contexts/SchedulePublishingUpsellProvider'
 import {useSchedules} from '../contexts/schedules'
@@ -16,6 +18,7 @@ const Panel = styled(Container)`
 
 export const Schedules = () => {
   const {activeSchedules, selectedDate, scheduleState} = useSchedules()
+  const {t} = useTranslation(scheduledPublishingNamespace)
   const {upsellData, telemetryLogs} = useSchedulePublishingUpsell()
   const {mode} = useScheduledPublishingEnabled()
   const showWarning = mode === 'upsell' && scheduleState === 'scheduled'
@@ -43,10 +46,7 @@ export const Schedules = () => {
                 <Text size={1}>
                   <WarningOutlineIcon />
                 </Text>
-                <Text size={1}>
-                  Your scheduled documents won't be published automatically unless you upgrade your
-                  plan. You can still publish them manually.
-                </Text>
+                <Text size={1}>{t('upsell-warning.not-available')}</Text>
               </Flex>
             </Card>
           )}
