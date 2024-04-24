@@ -293,14 +293,15 @@ export const documentCommentsEnabledReducer = (opts: {
   // That is, if a plugin returns true, but the next plugin returns false, the result will be false.
   // The last plugin 'wins'.
   const result = flattenedConfig.reduce((acc, {config: innerConfig}) => {
-    const resolver = innerConfig.document?.unstable_comments?.enabled
+    const resolver =
+      innerConfig.document?.comments?.enabled ?? innerConfig.document?.unstable_comments?.enabled
 
     if (!resolver && typeof resolver !== 'boolean') return acc
     if (typeof resolver === 'function') return resolver(context)
     if (typeof resolver === 'boolean') return resolver
 
     throw new Error(
-      `Expected \`document.unstable_comments.enabled\` to be a boolean or a function, but received ${getPrintableType(
+      `Expected \`document.comments.enabled\` to be a boolean or a function, but received ${getPrintableType(
         resolver,
       )}`,
     )

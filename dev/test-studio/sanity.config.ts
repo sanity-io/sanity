@@ -90,7 +90,9 @@ const sharedSettings = definePlugin({
       return prev
     },
     newDocumentOptions,
-
+    comments: {
+      enabled: true,
+    },
     unstable_comments: {
       enabled: true,
     },
@@ -157,7 +159,7 @@ export default defineConfig([
       enabled: true,
       inputDateTimeFormat: 'MM/dd/yy h:mm a',
     },
-    unstable_tasks: {
+    tasks: {
       enabled: true,
     },
   },
