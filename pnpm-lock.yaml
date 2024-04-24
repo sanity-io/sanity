@@ -6540,7 +6540,7 @@ packages:
       express: 4.19.2
       globby: 11.1.0
       groq: 3.39.0
-      groq-js: 1.7.0
+      groq-js: 1.8.0
       history: 5.3.0
       jsonc-parser: 3.2.1
       mkdirp: 1.0.4
@@ -6601,7 +6601,7 @@ packages:
       express: 4.19.2
       globby: 11.1.0
       groq: 3.39.0
-      groq-js: 1.7.0
+      groq-js: 1.8.0
       history: 5.3.0
       jsonc-parser: 3.2.1
       mkdirp: 1.0.4
@@ -12137,15 +12137,6 @@ packages:
       debug: 4.3.4(supports-color@9.4.0)
     transitivePeerDependencies:
       - supports-color
-
-  /groq-js@1.8.0:
-    resolution: {integrity: sha512-XJGmq+4qVDqboH778pRVwpn2KKl/IHHNZnxiJO9HLDsK6OaF4yiY9NOFlfVCWCHt/NC8bfAxjACi/SDe/3TOJQ==}
-    engines: {node: '>= 14'}
-    dependencies:
-      debug: 4.3.4(supports-color@9.4.0)
-    transitivePeerDependencies:
-      - supports-color
-    dev: false
 
   /groq@3.39.0:
     resolution: {integrity: sha512-b3VUixTuNYF51zGPQRUU5qzQVNy98igjJsVq7jm7cHtLX7n8JviZ3OoAnP1NgXqbbu7JJOj4WxZuPxsQkvGQiA==}
