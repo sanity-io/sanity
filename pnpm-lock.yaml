@@ -450,7 +450,7 @@ importers:
         version: 1.6.11(@sanity/client@6.15.20)
       '@sanity/react-loader':
         specifier: ^1.8.3
-        version: 1.9.15(@sanity/client@6.15.20)(react@18.3.1)
+        version: 1.9.14(@sanity/client@6.15.20)(react@18.2.0)
       '@sanity/tsdoc':
         specifier: 1.0.39
         version: 1.0.39(@types/node@18.19.31)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(sanity@packages+sanity)(styled-components@6.1.8)
@@ -6042,8 +6042,8 @@ packages:
     resolution: {integrity: sha512-2TjYEvOftD0v7ukx3Csdh9QIu44P2z7NDJtlC3qITJRYV36J7R6Vfd3trVhFnN77/7CZrGjqngrtohv8VqO5nw==}
     engines: {node: '>=18.0.0'}
 
-  /@sanity/core-loader@1.6.10(@sanity/client@6.15.20):
-    resolution: {integrity: sha512-0LXO7QzsNAWxu+A+Ukam57jnwS+CsKGtalONvcO/ShtcxNr51fxS0i2+r50Ah5fV5cBv/6S+/0AtaHus22QG1Q==}
+  /@sanity/core-loader@1.6.9(@sanity/client@6.15.20):
+    resolution: {integrity: sha512-7S9l9/EM3eHWCtVOjpZ7hjSo4skHnr8X684s33igEnS1t1pz/msoiyL/FKgqwKBPBhVLoOfL84qsghdbLciNQQ==}
     engines: {node: '>=18'}
     peerDependencies:
       '@sanity/client': ^6.15.20
@@ -6472,16 +6472,16 @@ packages:
       '@sanity/uuid': 3.0.2
     dev: false
 
-  /@sanity/react-loader@1.9.15(@sanity/client@6.15.20)(react@18.3.1):
-    resolution: {integrity: sha512-d7T+Xqg58/MNHCWBT97F/WqE9TfDhpl91fZOfsIeT3ct1ojG8mVsuOfI6TTROiIIhgOjEumUQdv40+4bQIcC9g==}
+  /@sanity/react-loader@1.9.14(@sanity/client@6.15.20)(react@18.2.0):
+    resolution: {integrity: sha512-dSPQr9XCJczxARTsuHQ8am/tIXt+xiVcK86tt3HE44bjC/yoRlg/4W1cyigqOKxL+2dycmUR+GCvat2mX3kecQ==}
     engines: {node: '>=18'}
     peerDependencies:
       '@sanity/client': ^6.15.20
       react: ^18.2.0
     dependencies:
       '@sanity/client': 6.15.20
-      '@sanity/core-loader': 1.6.10(@sanity/client@6.15.20)
-      react: 18.3.1
+      '@sanity/core-loader': 1.6.9(@sanity/client@6.15.20)
+      react: 18.2.0
     dev: false
 
   /@sanity/telemetry@0.7.7:
