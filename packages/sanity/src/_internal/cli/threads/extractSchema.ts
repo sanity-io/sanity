@@ -1,47 +1,63 @@
 import {isMainThread, parentPort, workerData as _workerData} from 'node:worker_threads'
 
 import {extractSchema} from '@sanity/schema/_internal'
-import {type Workspace} from 'sanity'
+import {type SchemaType} from 'groq-js'
+import {type SchemaTypeDefinition, type Workspace} from 'sanity'
 
 import {getStudioWorkspaces} from '../util/getStudioWorkspaces'
 import {mockBrowserEnvironment} from '../util/mockBrowserEnvironment'
+
+const formats = ['direct', 'groq-type-nodes'] as const
+type Format = (typeof formats)[number]
 
 /** @internal */
 export interface ExtractSchemaWorkerData {
   workDir: string
   workspaceName?: string
   enforceRequiredFields?: boolean
-  format: 'groq-type-nodes' | string
+  format: Format | string
+}
+
+type WorkspaceTransformer = (workspace: Workspace) => ExtractSchemaWorkerResult
+
+const workspaceTransformers: Record<Format, WorkspaceTransformer> = {
+  'direct': (workspace) => ({
+    name: workspace.name,
+    dataset: workspace.dataset,
+    schema: JSON.parse(JSON.stringify(workspace.schema._original?.types)),
+  }),
+  'groq-type-nodes': (workspace) => ({
+    schema: extractSchema(workspace.schema, {
+      enforceRequiredFields: opts.enforceRequiredFields,
+    }),
+  }),
 }
 
 /** @internal */
-export interface ExtractSchemaWorkerResult extends Pick<Workspace, 'name' | 'dataset'> {
-  schema: ReturnType<typeof extractSchema>
-}
+export type ExtractSchemaWorkerResult<TargetFormat extends Format = Format> = {
+  'direct': Pick<Workspace, 'name' | 'dataset'> & {schema: SchemaTypeDefinition[]}
+  'groq-type-nodes': {schema: SchemaType}
+}[TargetFormat]
 
 if (isMainThread || !parentPort) {
   throw new Error('This module must be run as a worker thread')
 }
 
 const opts = _workerData as ExtractSchemaWorkerData
+const {format} = opts
 const cleanup = mockBrowserEnvironment(opts.workDir)
 
 async function main() {
   try {
-    if (opts.format !== 'groq-type-nodes') {
-      throw new Error(`Unsupported format: "${opts.format}"`)
+    if (!isFormat(format)) {
+      throw new Error(`Unsupported format: "${format}"`)
     }
 
     const workspaces = await getStudioWorkspaces({basePath: opts.workDir})
 
     const postWorkspace = (workspace: Workspace): void => {
-      parentPort?.postMessage({
-        name: workspace.name,
-        dataset: workspace.dataset,
-        schema: extractSchema(workspace.schema, {
-          enforceRequiredFields: opts.enforceRequiredFields,
-        }),
-      } satisfies ExtractSchemaWorkerResult)
+      const transformer = workspaceTransformers[format]
+      parentPort?.postMessage(transformer(workspace))
     }
 
     if (opts.workspaceName) {
@@ -80,4 +96,8 @@ function getWorkspace({
     throw new Error(`Could not find workspace "${workspaceName}"`)
   }
   return workspace
+}
+
+function isFormat(maybeFormat: string): maybeFormat is Format {
+  return formats.includes(maybeFormat as Format)
 }
