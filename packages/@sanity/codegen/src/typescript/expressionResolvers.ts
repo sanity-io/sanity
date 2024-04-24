@@ -323,12 +323,14 @@ function resolveImportSpecifier({
     throw new Error(`Could not find import declaration for ${node.local.name}`)
   }
 
-  const importName = node.local.name
-  const importFileName = importDeclaration.source.value
-  // const importPath = path.resolve(path.dirname(filename), importFileName);
-  const importPath = importName.startsWith('./')
-    ? path.resolve(path.dirname(filename), importFileName)
-    : importFileName
+  const importName = node.local.name // the name of the variable to import
+  const importFileName = importDeclaration.source.value // the file to import from
+
+  const importPath =
+    importFileName.startsWith('./') || importFileName.startsWith('../')
+      ? path.resolve(path.dirname(filename), importFileName)
+      : importFileName
+
   const resolvedFile = resolver(importPath)
   const source = fs.readFileSync(resolvedFile)
   const tree = parseSourceFile(source.toString(), resolvedFile, babelConfig)

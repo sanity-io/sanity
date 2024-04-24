@@ -1,5 +1,3 @@
-import path from 'node:path'
-
 import {describe, expect, test} from '@jest/globals'
 
 import {findQueriesInSource} from '../findQueriesInSource'
@@ -81,18 +79,19 @@ describe('findQueries', () => {
       const postQuery = groq\`*[_type == "\${foo}"]\`
       const res = sanity.fetch(postQueryResult);
     `
+    const queries = findQueriesInSource(source, __filename, undefined)
+    expect(queries.length).toBe(1)
+    expect(queries[0].result).toBe('*[_type == "foo"]')
+  })
 
-    const resolver: NodeJS.RequireResolve = (id) => {
-      if (id === 'foo') {
-        return path.resolve(__dirname, 'fixtures', 'exportVar')
-      }
-      return require.resolve(id)
-    }
-    resolver.paths = (request: string): string[] | null => {
-      return require.resolve.paths(request)
-    }
-
-    const queries = findQueriesInSource(source, 'test.ts', undefined, resolver)
+  test('should import, subdirectory', () => {
+    const source = `
+      import { groq } from "groq";
+      import {foo}  from "../__tests__/fixtures/exportVar";
+      const postQuery = groq\`*[_type == "\${foo}"]\`
+      const res = sanity.fetch(postQueryResult);
+    `
+    const queries = findQueriesInSource(source, __filename, undefined)
     expect(queries.length).toBe(1)
     expect(queries[0].result).toBe('*[_type == "foo"]')
   })
