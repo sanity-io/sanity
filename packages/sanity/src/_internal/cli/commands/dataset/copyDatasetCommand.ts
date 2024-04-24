@@ -1,6 +1,6 @@
 import {type CliCommandDefinition, type CliOutputter} from '@sanity/cli'
 import {type SanityClient} from '@sanity/client'
-import EventSource from '@sanity/eventsource'
+import {EventSource} from '@sanity/eventsource'
 import {Observable} from 'rxjs'
 import {hideBin} from 'yargs/helpers'
 import yargs from 'yargs/yargs'

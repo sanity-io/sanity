@@ -44,8 +44,8 @@ importers:
         specifier: workspace:*
         version: link:packages/@repo/tsconfig
       '@sanity/client':
-        specifier: ^6.15.20
-        version: 6.15.20
+        specifier: 6.15.20-canary.2
+        version: 6.15.20-canary.2
       '@sanity/eslint-config-i18n':
         specifier: 1.0.0
         version: 1.0.0(eslint@8.57.0)(typescript@5.4.5)
@@ -396,8 +396,8 @@ importers:
         specifier: 3.39.0
         version: link:../../packages/@sanity/block-tools
       '@sanity/client':
-        specifier: ^6.15.20
-        version: 6.15.20
+        specifier: 6.15.20-canary.2
+        version: 6.15.20-canary.2
       '@sanity/color':
         specifier: ^3.0.0
         version: 3.0.6
@@ -436,13 +436,13 @@ importers:
         version: link:../../packages/@sanity/portable-text-editor
       '@sanity/presentation':
         specifier: 1.11.4
-        version: 1.11.4(@sanity/client@6.15.20)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8)
+        version: 1.11.4(@sanity/client@6.15.20-canary.2)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8)
       '@sanity/preview-url-secret':
         specifier: ^1.6.1
-        version: 1.6.11(@sanity/client@6.15.20)
+        version: 1.6.11(@sanity/client@6.15.20-canary.2)
       '@sanity/react-loader':
         specifier: ^1.8.3
-        version: 1.9.14(@sanity/client@6.15.20)(react@18.2.0)
+        version: 1.9.14(@sanity/client@6.15.20-canary.2)(react@18.2.0)
       '@sanity/tsdoc':
         specifier: 1.0.39
         version: 1.0.39(@types/node@18.19.31)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(sanity@packages+sanity)(styled-components@6.1.8)
@@ -466,7 +466,7 @@ importers:
         version: link:../../packages/@sanity/vision
       '@sanity/visual-editing':
         specifier: 1.8.15
-        version: 1.8.15(@sanity/client@6.15.20)
+        version: 1.8.15(@sanity/client@6.15.20-canary.2)
       '@turf/helpers':
         specifier: ^6.0.1
         version: 6.5.0
@@ -703,8 +703,8 @@ importers:
         specifier: ^7.23.5
         version: 7.24.1
       '@sanity/client':
-        specifier: ^6.15.20
-        version: 6.15.20(debug@4.3.4)
+        specifier: 6.15.20-canary.2
+        version: 6.15.20-canary.2(debug@4.3.4)
       '@sanity/codegen':
         specifier: 3.39.0
         version: link:../codegen
@@ -1009,8 +1009,8 @@ importers:
         specifier: ^0.5.1
         version: 0.5.3
       '@sanity/client':
-        specifier: ^6.15.20
-        version: 6.15.20(debug@4.3.4)
+        specifier: 6.15.20-canary.2
+        version: 6.15.20-canary.2(debug@4.3.4)
       '@sanity/types':
         specifier: 3.39.0
         version: link:../types
@@ -1253,8 +1253,8 @@ importers:
   packages/@sanity/types:
     dependencies:
       '@sanity/client':
-        specifier: ^6.15.20
-        version: 6.15.20
+        specifier: 6.15.20-canary.2
+        version: 6.15.20-canary.2
       '@types/react':
         specifier: ^18.0.25
         version: 18.2.78
@@ -1272,8 +1272,8 @@ importers:
   packages/@sanity/util:
     dependencies:
       '@sanity/client':
-        specifier: ^6.15.20
-        version: 6.15.20
+        specifier: 6.15.20-canary.2
+        version: 6.15.20-canary.2
       '@sanity/types':
         specifier: 3.39.0
         version: link:../types
@@ -1370,8 +1370,8 @@ importers:
         specifier: workspace:*
         version: link:../cli
       '@sanity/client':
-        specifier: ^6.15.20
-        version: 6.15.20
+        specifier: 6.15.20-canary.2
+        version: 6.15.20-canary.2
       '@sanity/codegen':
         specifier: workspace:*
         version: link:../codegen
@@ -1460,8 +1460,8 @@ importers:
         specifier: 3.39.0
         version: link:../@sanity/cli
       '@sanity/client':
-        specifier: ^6.15.20
-        version: 6.15.20(debug@4.3.4)
+        specifier: 6.15.20-canary.2
+        version: 6.15.20-canary.2(debug@4.3.4)
       '@sanity/color':
         specifier: ^3.0.0
         version: 3.0.6
@@ -1472,8 +1472,8 @@ importers:
         specifier: ^3.1.1
         version: 3.1.1
       '@sanity/eventsource':
-        specifier: ^5.0.0
-        version: 5.0.2
+        specifier: 6.0.0-canary.2
+        version: 6.0.0-canary.2
       '@sanity/export':
         specifier: ^3.37.4
         version: 3.37.4
@@ -1500,7 +1500,7 @@ importers:
         version: link:../@sanity/portable-text-editor
       '@sanity/presentation':
         specifier: 1.12.7
-        version: 1.12.7(@sanity/client@6.15.20)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8)
+        version: 1.12.7(@sanity/client@6.15.20-canary.2)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8)
       '@sanity/schema':
         specifier: 3.39.0
         version: link:../@sanity/schema
@@ -1887,8 +1887,8 @@ importers:
         specifier: 1.41.2
         version: 1.41.2
       '@sanity/client':
-        specifier: ^6.15.20
-        version: 6.15.20
+        specifier: 6.15.20-canary.2
+        version: 6.15.20-canary.2
       '@sanity/uuid':
         specifier: ^3.0.1
         version: 3.0.2
@@ -5987,17 +5987,38 @@ packages:
     transitivePeerDependencies:
       - debug
 
+  /@sanity/client@6.15.20-canary.2:
+    resolution: {integrity: sha512-nmiZXlVC6CNxegiPEQfbdDqSl8K/sxFIuX0wf9ssEJFXIh+/6xX0iTQL8Mirvm5PKyfCxrWf5qQXQf8zcJsTeQ==}
+    engines: {node: '>=14.18'}
+    dependencies:
+      '@sanity/eventsource': 6.0.0-canary.2
+      get-it: 8.4.27
+      rxjs: 7.8.1
+    transitivePeerDependencies:
+      - debug
+
+  /@sanity/client@6.15.20-canary.2(debug@4.3.4):
+    resolution: {integrity: sha512-nmiZXlVC6CNxegiPEQfbdDqSl8K/sxFIuX0wf9ssEJFXIh+/6xX0iTQL8Mirvm5PKyfCxrWf5qQXQf8zcJsTeQ==}
+    engines: {node: '>=14.18'}
+    dependencies:
+      '@sanity/eventsource': 6.0.0-canary.2
+      get-it: 8.4.27(debug@4.3.4)
+      rxjs: 7.8.1
+    transitivePeerDependencies:
+      - debug
+    dev: false
+
   /@sanity/color@3.0.6:
     resolution: {integrity: sha512-2TjYEvOftD0v7ukx3Csdh9QIu44P2z7NDJtlC3qITJRYV36J7R6Vfd3trVhFnN77/7CZrGjqngrtohv8VqO5nw==}
     engines: {node: '>=18.0.0'}
 
-  /@sanity/core-loader@1.6.9(@sanity/client@6.15.20):
+  /@sanity/core-loader@1.6.9(@sanity/client@6.15.20-canary.2):
     resolution: {integrity: sha512-7S9l9/EM3eHWCtVOjpZ7hjSo4skHnr8X684s33igEnS1t1pz/msoiyL/FKgqwKBPBhVLoOfL84qsghdbLciNQQ==}
     engines: {node: '>=18'}
     peerDependencies:
       '@sanity/client': ^6.15.20
     dependencies:
-      '@sanity/client': 6.15.20
+      '@sanity/client': 6.15.20-canary.2
     dev: false
 
   /@sanity/diff-match-patch@3.1.1:
@@ -6047,6 +6068,12 @@ packages:
       '@types/event-source-polyfill': 1.0.5
       '@types/eventsource': 1.1.15
       event-source-polyfill: 1.0.31
+      eventsource: 2.0.2
+
+  /@sanity/eventsource@6.0.0-canary.2:
+    resolution: {integrity: sha512-gXEwZJHagXM0XXh8Qb6p1CEAtUBoVo/mc/+Oice3i0BSDCn0nZanPX58JRVigjHR/9X9HWBzfz2mQmSLJoIKOw==}
+    dependencies:
+      '@types/eventsource': 1.1.15
       eventsource: 2.0.2
 
   /@sanity/export@3.37.4:
@@ -6350,15 +6377,15 @@ packages:
       - debug
       - supports-color
 
-  /@sanity/presentation@1.11.4(@sanity/client@6.15.20)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8):
+  /@sanity/presentation@1.11.4(@sanity/client@6.15.20-canary.2)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8):
     resolution: {integrity: sha512-vd4gOceLB02TzMahkBL5ViGU1AwKZvl4Y4sdY5MXIeGoUW2CJ9ys6iPQXaaylrKGMyK4WreGHCy51eZU0GLYuw==}
     engines: {node: '>=16.14'}
     peerDependencies:
       '@sanity/client': ^6.15.2
     dependencies:
-      '@sanity/client': 6.15.20
+      '@sanity/client': 6.15.20-canary.2
       '@sanity/icons': 2.11.8(react@18.2.0)
-      '@sanity/preview-url-secret': 1.6.11(@sanity/client@6.15.20)
+      '@sanity/preview-url-secret': 1.6.11(@sanity/client@6.15.20-canary.2)
       '@sanity/ui': 2.1.4(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8)
       '@sanity/uuid': 3.0.2
       '@types/lodash.isequal': 4.5.8
@@ -6376,15 +6403,15 @@ packages:
       - styled-components
     dev: false
 
-  /@sanity/presentation@1.12.7(@sanity/client@6.15.20)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8):
+  /@sanity/presentation@1.12.7(@sanity/client@6.15.20-canary.2)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8):
     resolution: {integrity: sha512-qFISwEZkgQjuHtqio1TSgbCXapbVvZLiq+R9Y4ldngdrso6tAg/8SeI1DtSDEUCIV6ZK1ep8/5SzlUcz0Q9jIQ==}
     engines: {node: '>=16.14'}
     peerDependencies:
       '@sanity/client': ^6.15.20
     dependencies:
-      '@sanity/client': 6.15.20(debug@4.3.4)
+      '@sanity/client': 6.15.20-canary.2(debug@4.3.4)
       '@sanity/icons': 2.11.8(react@18.2.0)
-      '@sanity/preview-url-secret': 1.6.11(@sanity/client@6.15.20)
+      '@sanity/preview-url-secret': 1.6.11(@sanity/client@6.15.20-canary.2)
       '@sanity/ui': 2.1.4(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8)
       '@sanity/uuid': 3.0.2
       '@types/lodash.isequal': 4.5.8
@@ -6411,25 +6438,25 @@ packages:
       prettier-plugin-packagejson: 2.5.0(prettier@3.2.5)
     dev: true
 
-  /@sanity/preview-url-secret@1.6.11(@sanity/client@6.15.20):
+  /@sanity/preview-url-secret@1.6.11(@sanity/client@6.15.20-canary.2):
     resolution: {integrity: sha512-MNgDxznespH8I+gkG46IJk+KsTJFNb3BzstWsbJwKURywpcv11vzr8CR2g4B8HNkYcy3EhLN3TRFHTjQNKo2Xw==}
     engines: {node: '>=18'}
     peerDependencies:
       '@sanity/client': ^6.15.20
     dependencies:
-      '@sanity/client': 6.15.20
+      '@sanity/client': 6.15.20-canary.2
       '@sanity/uuid': 3.0.2
     dev: false
 
-  /@sanity/react-loader@1.9.14(@sanity/client@6.15.20)(react@18.2.0):
+  /@sanity/react-loader@1.9.14(@sanity/client@6.15.20-canary.2)(react@18.2.0):
     resolution: {integrity: sha512-dSPQr9XCJczxARTsuHQ8am/tIXt+xiVcK86tt3HE44bjC/yoRlg/4W1cyigqOKxL+2dycmUR+GCvat2mX3kecQ==}
     engines: {node: '>=18'}
     peerDependencies:
       '@sanity/client': ^6.15.20
       react: ^18.2.0
     dependencies:
-      '@sanity/client': 6.15.20
-      '@sanity/core-loader': 1.6.9(@sanity/client@6.15.20)
+      '@sanity/client': 6.15.20-canary.2
+      '@sanity/core-loader': 1.6.9(@sanity/client@6.15.20-canary.2)
       react: 18.2.0
     dev: false
 
@@ -6686,7 +6713,7 @@ packages:
       '@types/uuid': 8.3.4
       uuid: 8.3.2
 
-  /@sanity/visual-editing@1.8.15(@sanity/client@6.15.20):
+  /@sanity/visual-editing@1.8.15(@sanity/client@6.15.20-canary.2):
     resolution: {integrity: sha512-kbkd4MiJ+oC/0/P/du9lJYlh/3CKNg1OqaQQ+dpovam/qde6M/gwOyoHUwBCPWGC9D9jFotSS/ierBFbJGnTUA==}
     engines: {node: '>=18'}
     peerDependencies:
@@ -6707,8 +6734,8 @@ packages:
       svelte:
         optional: true
     dependencies:
-      '@sanity/client': 6.15.20
-      '@sanity/preview-url-secret': 1.6.11(@sanity/client@6.15.20)
+      '@sanity/client': 6.15.20-canary.2
+      '@sanity/preview-url-secret': 1.6.11(@sanity/client@6.15.20-canary.2)
       '@vercel/stega': 0.1.0
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
