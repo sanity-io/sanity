@@ -50,10 +50,10 @@ function nameToInitials(fullName: string) {
  * @hidden
  * @beta */
 export function UserAvatar(props: UserAvatarProps) {
-  const {user, ...restProps} = props
+  const {user, withTooltip, ...restProps} = props
 
   if (isRecord(user)) {
-    if (restProps.withTooltip) {
+    if (withTooltip) {
       return <TooltipUserAvatar {...restProps} user={user as User} />
     }
 

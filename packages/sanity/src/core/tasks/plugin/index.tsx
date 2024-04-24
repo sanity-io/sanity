@@ -10,6 +10,11 @@ import {TasksStudioNavbar} from './TasksStudioNavbar'
 
 /**
  * @internal
+ */
+export const TASKS_NAME = 'sanity/tasks'
+
+/**
+ * @internal
  * @beta
  */
 export const tasks = definePlugin({

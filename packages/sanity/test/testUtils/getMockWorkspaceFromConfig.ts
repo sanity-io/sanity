@@ -40,6 +40,7 @@ const defaultMockConfig: SingleWorkspace = {
   projectId: 'mock-project-id',
   dataset: 'mock-data-set',
   schema: defaultMockSchema,
+  scheduledPublishing: {enabled: false},
 }
 
 export interface MockWorkspaceOptions {

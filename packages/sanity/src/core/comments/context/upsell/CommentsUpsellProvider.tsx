@@ -10,9 +10,9 @@ import {
   UpsellDialogViewed,
   type UpsellDialogViewedInfo,
 } from '../../../studio'
+import {type UpsellData} from '../../../studio/upsell/types'
+import {UpsellDialog} from '../../../studio/upsell/UpsellDialog'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
-import {CommentsUpsellDialog} from '../../components'
-import {type UpsellData} from '../../types'
 import {CommentsUpsellContext} from './CommentsUpsellContext'
 import {type CommentsUpsellContextValue} from './types'
 
@@ -140,7 +140,7 @@ export function CommentsUpsellProvider(props: {children: React.ReactNode}) {
     <CommentsUpsellContext.Provider value={ctxValue}>
       {props.children}
       {upsellData && upsellDialogOpen && (
-        <CommentsUpsellDialog
+        <UpsellDialog
           data={upsellData}
           onClose={handleClose}
           onPrimaryClick={handlePrimaryButtonClick}

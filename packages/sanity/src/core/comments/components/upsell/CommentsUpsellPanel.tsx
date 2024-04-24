@@ -1,17 +1,7 @@
-import {LaunchIcon} from '@sanity/icons'
-import {Box, Card, Container, Flex, Stack} from '@sanity/ui'
-import {styled} from 'styled-components'
+import {Box, Container} from '@sanity/ui'
 
-import {Button} from '../../../../ui-components'
-import {UpsellDescriptionSerializer} from '../../../studio'
-import {type UpsellData} from '../../types'
-
-const Image = styled.img`
-  object-fit: cover;
-  width: 100%;
-  height: 100%;
-  height: 180px;
-`
+import {type UpsellData} from '../../../studio/upsell/types'
+import {UpsellPanel} from '../../../studio/upsell/UpsellPanel'
 
 interface CommentsUpsellPanelProps {
   data: UpsellData
@@ -24,42 +14,11 @@ export function CommentsUpsellPanel(props: CommentsUpsellPanelProps) {
   return (
     <Container width={1}>
       <Box marginBottom={6}>
-        <Card radius={3} overflow={'hidden'} border>
-          {data.image && <Image src={data.image.asset.url} alt={data.image.asset.altText ?? ''} />}
-          <Box padding={3} marginTop={2}>
-            <Stack space={4}>
-              <UpsellDescriptionSerializer blocks={data.descriptionText} />
-            </Stack>
-            <Flex gap={2} justify={'flex-end'} marginTop={5}>
-              {data.secondaryButton.text && (
-                <Button
-                  mode="bleed"
-                  text={data.secondaryButton.text}
-                  tone="primary"
-                  iconRight={LaunchIcon}
-                  {...(data.secondaryButton.url && {
-                    target: '_blank',
-                    rel: 'noopener noreferrer',
-                    as: 'a',
-                    href: data.secondaryButton.url,
-                  })}
-                  onClick={onSecondaryClick}
-                />
-              )}
-              <Button
-                text={data.ctaButton.text}
-                tone="primary"
-                {...(data.ctaButton.url && {
-                  target: '_blank',
-                  rel: 'noopener noreferrer',
-                  as: 'a',
-                  href: data.ctaButton.url,
-                })}
-                onClick={onPrimaryClick}
-              />
-            </Flex>
-          </Box>
-        </Card>
+        <UpsellPanel
+          data={data}
+          onPrimaryClick={onPrimaryClick}
+          onSecondaryClick={onSecondaryClick}
+        />
       </Box>
     </Container>
   )
