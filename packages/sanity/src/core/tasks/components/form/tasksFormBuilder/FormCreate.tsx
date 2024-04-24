@@ -70,7 +70,7 @@ export function FormCreate(props: ObjectInputProps) {
 
   useEffect(() => {
     // If after 10 seconds the task is still in the "creating" state, show an error and reset the creating state.
-    let timeoutId: NodeJS.Timeout | null = null
+    let timeoutId: ReturnType<typeof setTimeout> | null = null
     if (creating) {
       timeoutId = setTimeout(() => {
         setCreating(false)
