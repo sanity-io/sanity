@@ -1,4 +1,5 @@
-import {createContext, useContext, useMemo} from 'react'
+import {useContext, useMemo} from 'react'
+import {ScheduledPublishingEnabledContext} from 'sanity/_singletons'
 
 import {useFeatureEnabled} from '../../../hooks'
 import {useWorkspace} from '../../../studio'
@@ -15,12 +16,6 @@ export type ScheduledPublishingEnabledContextValue =
       enabled: true
       mode: 'default' | 'upsell'
     }
-
-/**
- * @internal
- */
-export const ScheduledPublishingEnabledContext =
-  createContext<ScheduledPublishingEnabledContextValue | null>(null)
 
 interface TaksEnabledProviderProps {
   children: React.ReactNode
