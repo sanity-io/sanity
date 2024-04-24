@@ -10,6 +10,7 @@
 
 # Compiled code
 /lib
+/dist
 
 # Legacy exports
 /_internal.js
