@@ -1,7 +1,9 @@
+import {readFile, writeFile} from 'node:fs/promises'
+
 import {expect, test} from '@jest/globals'
 
 import {describeCliTest} from './shared/describe'
-import {runSanityCmdCommand} from './shared/environment'
+import {runSanityCmdCommand, studiosPath} from './shared/environment'
 
 describeCliTest('CLI: `sanity typegen`', () => {
   test('sanity typegen generate: missing schema, default path', async () => {
@@ -46,5 +48,25 @@ describeCliTest('CLI: `sanity typegen`', () => {
     expect(result.stderr).toContain(
       'Generated TypeScript types for 2 schema types and 1 GROQ queries in 1 file',
     )
+  })
+
+  test('sanity typegen generate: formats code', async () => {
+    // Write a prettier config to the output folder, with single quotes. The defeault is double quotes.
+    await writeFile(`${studiosPath}/v3/out/.prettierrc`, '{\n  "singleQuote": true\n}\n')
+    const result = await runSanityCmdCommand('v3', [
+      'typegen',
+      'generate',
+      '--config-path',
+      'working-typegen.json',
+    ])
+
+    expect(result.code).toBe(0)
+    expect(result.stderr).toContain(
+      'Generated TypeScript types for 2 schema types and 1 GROQ queries in 1 file',
+    )
+
+    const types = await readFile(`${studiosPath}/v3/out/types.ts`)
+    expect(types.toString()).toContain(`'person'`)
+    expect(types.toString()).toMatchSnapshot()
   })
 })

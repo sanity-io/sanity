@@ -10,14 +10,17 @@ import {
 } from '@sanity/codegen'
 import createDebug from 'debug'
 import {typeEvaluate, type TypeNode} from 'groq-js'
+import {format as prettierFormat, type Options as PrettierOptions} from 'prettier'
 
 const $info = createDebug('sanity:codegen:generate:info')
+const $warn = createDebug('sanity:codegen:generate:warn')
 
 export interface TypegenGenerateTypesWorkerData {
   workDir: string
   workspaceName?: string
   schemaPath: string
   searchPath: string | string[]
+  prettierConfig: PrettierOptions | null
 }
 
 export type TypegenGenerateTypesWorkerMessage =
@@ -57,14 +60,30 @@ const opts = _workerData as TypegenGenerateTypesWorkerData
 
 registerBabel()
 
+function maybeFormatCode(code: string, prettierConfig: PrettierOptions | null): Promise<string> {
+  if (!prettierConfig) {
+    return Promise.resolve(code)
+  }
+
+  try {
+    return prettierFormat(code, {
+      ...prettierConfig,
+      parser: 'typescript' as const,
+    })
+  } catch (err) {
+    $warn(`Error formatting: ${err.message}`)
+  }
+  return Promise.resolve(code)
+}
+
 async function main() {
   const schema = await readSchema(opts.schemaPath)
 
   const typeGenerator = new TypeGenerator(schema)
-  const schemaTypes = [
-    typeGenerator.generateSchemaTypes(),
-    TypeGenerator.generateKnownTypes(),
-  ].join('\n')
+  const schemaTypes = await maybeFormatCode(
+    [typeGenerator.generateSchemaTypes(), TypeGenerator.generateKnownTypes()].join('\n'),
+    opts.prettierConfig,
+  )
   const resolver = getResolver()
 
   parentPort?.postMessage({
@@ -103,7 +122,10 @@ async function main() {
         const ast = safeParseQuery(query)
         const queryTypes = typeEvaluate(ast, schema)
 
-        const type = typeGenerator.generateTypeNodeTypes(`${queryName}Result`, queryTypes)
+        const type = await maybeFormatCode(
+          typeGenerator.generateTypeNodeTypes(`${queryName}Result`, queryTypes),
+          opts.prettierConfig,
+        )
 
         const queryTypeStats = walkAndCountQueryTypeNodeStats(queryTypes)
         fileQueryTypes.push({

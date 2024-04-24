@@ -70,6 +70,7 @@
     "groq-js": "^1.7.0",
     "node-machine-id": "^1.1.12",
     "pkg-dir": "^5.0.0",
+    "prettier": "^3.2.5",
     "semver": "^7.3.5",
     "silver-fleece": "1.1.0",
     "validate-npm-package-name": "^3.0.0"
@@ -120,7 +121,6 @@
     "p-filter": "^2.1.0",
     "p-timeout": "^4.0.0",
     "preferred-pm": "^3.0.3",
-    "prettier": "^3.2.5",
     "promise-props-recursive": "^2.0.2",
     "recast": "^0.23.6",
     "resolve-from": "^5.0.0",
