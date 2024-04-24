@@ -46,19 +46,21 @@ const extractManifests: CliCommandAction = async (_args, context) => {
     workerData: {
       workDir,
       enforceRequiredFields: false,
-      format: 'groq-type-nodes',
+      format: 'direct',
     } satisfies ExtractSchemaWorkerData,
     // eslint-disable-next-line no-process-env
     env: process.env,
   })
 
   try {
-    const schemas = await new Promise<ExtractSchemaWorkerResult[]>((resolveSchemas, reject) => {
-      const schemaBuffer: ExtractSchemaWorkerResult[] = []
-      worker.addListener('message', (message) => schemaBuffer.push(message))
-      worker.addListener('exit', () => resolveSchemas(schemaBuffer))
-      worker.addListener('error', reject)
-    })
+    const schemas = await new Promise<ExtractSchemaWorkerResult<'direct'>[]>(
+      (resolveSchemas, reject) => {
+        const schemaBuffer: ExtractSchemaWorkerResult<'direct'>[] = []
+        worker.addListener('message', (message) => schemaBuffer.push(message))
+        worker.addListener('exit', () => resolveSchemas(schemaBuffer))
+        worker.addListener('error', reject)
+      },
+    )
 
     spinner.text = `Writing manifest to ${chalk.cyan(path)}`
 
@@ -100,7 +102,7 @@ const extractManifests: CliCommandAction = async (_args, context) => {
 export default extractManifests
 
 function externalizeSchemas(
-  schemas: ExtractSchemaWorkerResult[],
+  schemas: ExtractSchemaWorkerResult<'direct'>[],
   staticPath: string,
 ): Promise<ManifestV1Workspace[]> {
   const output = schemas.reduce<Promise<ManifestV1Workspace>[]>((workspaces, workspace) => {
@@ -111,7 +113,7 @@ function externalizeSchemas(
 }
 
 async function externalizeSchema(
-  workspace: ExtractSchemaWorkerResult,
+  workspace: ExtractSchemaWorkerResult<'direct'>,
   staticPath: string,
 ): Promise<ManifestV1Workspace> {
   const encoder = new TextEncoder()
