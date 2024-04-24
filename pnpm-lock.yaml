@@ -1884,9 +1884,6 @@ importers:
       styled-components:
         specifier: ^6.1.8
         version: 6.1.8(react-dom@18.3.1)(react@18.3.1)
-      vite-tsconfig-paths:
-        specifier: ^4.3.2
-        version: 4.3.2(typescript@5.4.5)(vite@4.5.3)
 
   perf/studio:
     dependencies:
