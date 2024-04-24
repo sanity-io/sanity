@@ -1,10 +1,7 @@
-import {createContext, type ReactNode, useContext} from 'react'
+import {type ReactNode, useContext} from 'react'
+import {DocumentActionPropsContext} from 'sanity/_singletons'
 
 import {type DocumentActionProps} from '../../config/document/actions'
-
-type State = DocumentActionProps
-
-const DocumentActionPropsContext = createContext<State | undefined>(undefined)
 
 function DocumentActionPropsProvider({
   children,
