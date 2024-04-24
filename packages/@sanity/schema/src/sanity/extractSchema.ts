@@ -27,9 +27,6 @@ import {
   type UnknownTypeNode,
 } from 'groq-js'
 
-type Metadata<Type = unknown> = Type &
-  Pick<SanitySchemaType, 'title' | 'description' | 'deprecated'>
-
 const documentDefaultFields = (typeName: string): Record<string, ObjectAttribute> => ({
   _id: {
     type: 'objectAttribute',
@@ -92,18 +89,12 @@ export function extractSchema(
 
   function convertBaseType(
     schemaType: SanitySchemaType,
-  ): Metadata<DocumentSchemaType | TypeDeclarationSchemaType> | null {
+  ): DocumentSchemaType | TypeDeclarationSchemaType | null {
     let typeName: string | undefined
     if (schemaType.type) {
       typeName = schemaType.type.name
     } else if ('jsonType' in schemaType) {
       typeName = schemaType.jsonType
-    }
-
-    const metadata: Metadata = {
-      title: schemaType.title,
-      description: schemaType.description,
-      deprecated: schemaType.deprecated,
     }
 
     if (typeName === 'document' && isObjectType(schemaType)) {
@@ -115,7 +106,6 @@ export function extractSchema(
       }
 
       return {
-        ...metadata,
         name: schemaType.name,
         type: 'document',
         attributes: {
@@ -131,7 +121,6 @@ export function extractSchema(
     }
     if (value.type === 'object') {
       return {
-        ...metadata,
         name: schemaType.name,
         type: 'type',
         value: {
@@ -151,7 +140,6 @@ export function extractSchema(
     }
 
     return {
-      ...metadata,
       name: schemaType.name,
       type: 'type',
       value,
