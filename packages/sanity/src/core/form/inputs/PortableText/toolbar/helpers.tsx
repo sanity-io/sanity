@@ -51,6 +51,7 @@ function getPTEFormatActions(
       icon: decorator?.icon,
       key: decorator.value,
       handle: (): void => {
+        console.log('toggleMark', decorator.value)
         PortableTextEditor.toggleMark(editor, decorator.value)
         PortableTextEditor.focus(editor)
       },

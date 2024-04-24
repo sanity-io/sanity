@@ -88,7 +88,7 @@ export const ActionMenu = memo(function ActionMenu(props: ActionMenuProps) {
 
         const active = activeKeys.includes(action.key)
 
-        // if (action.title === 'Bulleted list') {
+        // if (action.title === 'Strong') {
         //   console.log({active, activeKeys, action: action.title})
         // }
         return (
