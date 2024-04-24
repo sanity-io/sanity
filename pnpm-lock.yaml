@@ -1935,6 +1935,55 @@ importers:
         specifier: 5.4.5
         version: 5.4.5
 
+  perf/tests:
+    dependencies:
+      '@playwright/test':
+        specifier: 1.41.2
+        version: 1.41.2
+      '@sanity/client':
+        specifier: ^6.15.19
+        version: 6.15.19
+      '@sanity/uuid':
+        specifier: ^3.0.1
+        version: 3.0.2
+      dotenv:
+        specifier: ^16.0.3
+        version: 16.4.5
+      execa:
+        specifier: ^2.0.0
+        version: 2.1.0
+      globby:
+        specifier: ^10.0.0
+        version: 10.0.2
+      lodash:
+        specifier: ^4.17.21
+        version: 4.17.21
+      rxjs:
+        specifier: ^7.8.0
+        version: 7.8.1
+      sanity:
+        specifier: workspace:*
+        version: link:../../packages/sanity
+    devDependencies:
+      '@jest/globals':
+        specifier: ^29.7.0
+        version: 29.7.0
+      '@types/lodash':
+        specifier: ^4.14.149
+        version: 4.17.0
+      '@types/node':
+        specifier: ^18.15.3
+        version: 18.19.31
+      esbuild:
+        specifier: ^0.20.2
+        version: 0.20.2
+      ts-node:
+        specifier: ^10.9.1
+        version: 10.9.2(@types/node@18.19.31)(typescript@5.4.5)
+      typescript:
+        specifier: 5.4.5
+        version: 5.4.5
+
 packages:
 
   /@aashutoshrathi/word-wrap@1.2.6:
@@ -3310,7 +3359,7 @@ packages:
       '@jridgewell/trace-mapping': 0.3.9
     dev: true
 
-  /@dnd-kit/accessibility@3.1.0(react@18.3.0):
+  /@dnd-kit/accessibility@3.1.0(react@18.2.0):
     resolution: {integrity: sha512-ea7IkhKvlJUv9iSHJOnxinBcoOI3ppGnnL+VDJ75O45Nss6HtZd8IdN8touXPDtASfeI2T2LImb8VOZcL47wjQ==}
     peerDependencies:
       react: '>=16.8.0'
