@@ -628,6 +628,18 @@ importers:
 
   packages/@repo/package.config: {}
 
+  packages/@repo/shared-modules.bundle:
+    dependencies:
+      react:
+        specifier: ^18.2.0
+        version: 18.2.0
+      react-dom:
+        specifier: ^18.2.0
+        version: 18.2.0(react@18.2.0)
+      styled-components:
+        specifier: ^6.1.8
+        version: 6.1.8(react-dom@18.2.0)(react@18.2.0)
+
   packages/@repo/test-exports:
     dependencies:
       '@sanity/block-tools':

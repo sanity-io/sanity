@@ -5,7 +5,7 @@
   "scripts": {
     "bootstrap": "pnpm install && pnpm build:cli",
     "build": "turbo run build --filter='./packages/*' --filter='./packages/@sanity/*'",
-    "build:bundle": "turbo run build:bundle --filter='./packages/*' --filter='./packages/@sanity/*'",
+    "build:bundle": "turbo run build:bundle --filter='./packages/*' --filter='./packages/@sanity/*' --filter='./packages/@repo/shared-modules.bundle'",
     "build:clean": "lerna run clean",
     "build:cli": "turbo run build --filter=@sanity/cli --filter=sanity",
     "build:cli-only": "turbo run --filter=@sanity/cli build",
