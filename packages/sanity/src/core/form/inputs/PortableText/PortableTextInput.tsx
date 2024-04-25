@@ -91,11 +91,13 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
   const {onBlur, ref: elementRef} = elementProps
   const defaultEditorRef = useRef<PortableTextEditor | null>(null)
   const editorRef = editorRefProp || defaultEditorRef
+  const isPatching = useRef(false)
 
   const presenceCursorDecorations = usePresenceCursorDecorations(
     useMemo(
       (): PresenceCursorDecorationsHookProps => ({
         path: props.path,
+        isPatchingRef: isPatching,
       }),
       [props.path],
     ),
