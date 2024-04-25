@@ -21,16 +21,6 @@ export default defineConfig(() => {
           'structure': './src/_exports/structure.ts',
         },
       },
-      rollupOptions: {
-        external: [
-          '@sanity/block-tools',
-          '@sanity/diff',
-          '@sanity/mutator',
-          '@sanity/portable-text-editor',
-          '@sanity/schema',
-          '@sanity/util',
-        ],
-      },
     },
   })
 })
