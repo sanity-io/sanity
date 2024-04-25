@@ -48,6 +48,14 @@ export function EditPortal(props: Props): ReactElement {
     </PresenceOverlay>
   )
 
+  // return (
+  //   <Box marginLeft={3} padding={4}>
+  //     <Card borderLeft paddingLeft={4}>
+  //       {contents}
+  //     </Card>
+  //   </Box>
+  // )
+
   if (type === 'dialog') {
     return (
       <VirtualizerScrollInstanceProvider
