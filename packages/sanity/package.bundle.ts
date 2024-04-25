@@ -11,6 +11,7 @@ export default defineConfig(() => {
           sanity: './src/_exports/index.ts',
           desk: './src/_exports/desk.ts',
           presentation: './src/_exports/presentation.ts',
+          router: './src/_exports/router.ts',
           structure: './src/_exports/structure.ts',
         },
       },
