@@ -31,6 +31,7 @@ export default defineType({
       title: 'Location',
       type: 'geopoint',
       description: 'Where will the screening take place?',
+      hidden: true,
     }),
     defineField({
       name: 'beginAt',
