@@ -291,7 +291,7 @@ export interface DocumentPluginOptions {
    */
   newDocumentOptions?: NewDocumentOptionsResolver
 
-  /** @deprecated - use `comments`instead */
+  /** @deprecated Use `comments` instead */
   unstable_comments?: {
     enabled: boolean | ((context: DocumentCommentsEnabledContext) => boolean)
   }
@@ -662,7 +662,7 @@ export interface Source {
      */
     inspectors: (props: PartialContext<DocumentInspectorContext>) => DocumentInspector[]
 
-    /** @deprecated - use `comments`instead */
+    /** @deprecated  Use `comments` instead */
     unstable_comments: {
       enabled: (props: DocumentCommentsEnabledContext) => boolean
     }
