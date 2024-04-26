@@ -3,6 +3,7 @@ import {dirname, join} from 'node:path'
 import {Worker} from 'node:worker_threads'
 
 import {readConfig} from '@sanity/codegen'
+import prettier from 'prettier'
 
 import {type CliCommandArguments, type CliCommandContext} from '../../types'
 import {getCliWorkerPath} from '../../util/cliWorker'
@@ -56,6 +57,15 @@ export default async function typegenGenerateAction(
     }
     throw err
   }
+
+  const outputPath = join(process.cwd(), codegenConfig.generates)
+  const outputDir = dirname(outputPath)
+  await mkdir(outputDir, {recursive: true})
+
+  const prettierConfig = await prettier.resolveConfig(outputPath).catch((err) => {
+    output.warn(`Failed to load prettier config: ${err.message}`)
+    return null
+  })
   const workerPath = await getCliWorkerPath('typegenGenerate')
 
   const spinner = output.spinner({}).start('Generating types')
@@ -65,14 +75,11 @@ export default async function typegenGenerateAction(
       workDir,
       schemaPath: codegenConfig.schema,
       searchPath: codegenConfig.path,
+      prettierConfig,
     } satisfies TypegenGenerateTypesWorkerData,
     // eslint-disable-next-line no-process-env
     env: process.env,
   })
-
-  const outputPath = join(process.cwd(), codegenConfig.generates)
-  const outputDir = dirname(outputPath)
-  await mkdir(outputDir, {recursive: true})
 
   const typeFile = await open(
     outputPath,
