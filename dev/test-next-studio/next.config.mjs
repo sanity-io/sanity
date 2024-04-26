@@ -2,6 +2,45 @@ function requireResolve(id) {
   return import.meta.resolve(id).replace('file://', '')
 }
 
+const monorepoAliases = {
+  '@sanity/block-tools': requireResolve('../../packages/@sanity/block-tools/src/index.ts'),
+  '@sanity/diff': requireResolve('../../packages/@sanity/diff/src/index.ts'),
+  '@sanity/cli': requireResolve('../../packages/@sanity/cli/src/index.ts'),
+  '@sanity/mutator': requireResolve('../../packages/@sanity/mutator/src/index.ts'),
+  '@sanity/portable-text-editor': requireResolve(
+    '../../packages/@sanity/portable-text-editor/src/index.ts',
+  ),
+  '@sanity/schema/_internal': requireResolve(
+    '../../packages/@sanity/schema/src/_exports/_internal.ts',
+  ),
+  '@sanity/schema': requireResolve('../../packages/@sanity/schema/src/_exports/index.ts'),
+  '@sanity/migrate': requireResolve('../../packages/@sanity/migrate/src/_exports/index.ts'),
+  '@sanity/types': requireResolve('../../packages/@sanity/types/src/index.ts'),
+  '@sanity/util/fs': requireResolve('../../packages/@sanity/util/src/_exports/fs.ts'),
+  '@sanity/util/client': requireResolve('../../packages/@sanity/util/src/_exports/client.ts'),
+  '@sanity/util/concurrency-limiter': requireResolve(
+    '../../packages/@sanity/util/src/_exports/concurrency-limiter.ts',
+  ),
+  '@sanity/util/content': requireResolve('../../packages/@sanity/util/src/_exports/content.ts'),
+  '@sanity/util/createSafeJsonParser': requireResolve(
+    '../../packages/@sanity/util/src/_exports/createSafeJsonParser.ts',
+  ),
+  '@sanity/util/legacyDateFormat': requireResolve(
+    '../../packages/@sanity/util/src/_exports/legacyDateFormat.ts',
+  ),
+  '@sanity/util/paths': requireResolve('../../packages/@sanity/util/src/_exports/paths.ts'),
+  '@sanity/util': requireResolve('../../packages/@sanity/util/src/_exports/index.ts'),
+  '@sanity/vision': requireResolve('../../packages/@sanity/vision/src/index.ts'),
+  'sanity/_internal': requireResolve('../../packages/sanity/src/_exports/_internal.ts'),
+  'sanity/cli': requireResolve('../../packages/sanity/src/_exports/cli.ts'),
+  'sanity/desk': requireResolve('../../packages/sanity/src/_exports/desk.ts'),
+  'sanity/presentation': requireResolve('../../packages/sanity/src/_exports/presentation.ts'),
+  'sanity/router': requireResolve('../../packages/sanity/src/_exports/router.ts'),
+  'sanity/structure': requireResolve('../../packages/sanity/src/_exports/structure.ts'),
+  'sanity/migrate': requireResolve('../../packages/sanity/src/_exports/migrate.ts'),
+  'sanity': requireResolve('../../packages/sanity/src/_exports/index.ts'),
+}
+
 // eslint-disable-next-line tsdoc/syntax
 /** @type {import('next').NextConfig} */
 const config = {
@@ -70,6 +109,38 @@ const config = {
       'sanity': requireResolve('../../packages/sanity/src/_exports/index.ts'),
     }
     return config
+  },
+  experimental: {
+    turbo: {
+      resolveAlias: {
+        '@sanity/block-tools': '@sanity/block-tools/src/index.ts',
+        '@sanity/diff': '@sanity/diff/src/index.ts',
+        '@sanity/cli': '@sanity/cli/src/index.ts',
+        '@sanity/mutator': '@sanity/mutator/src/index.ts',
+        '@sanity/portable-text-editor': '@sanity/portable-text-editor/src/index.ts',
+        '@sanity/schema/_internal': '@sanity/schema/src/_exports/_internal.ts',
+        '@sanity/schema': '@sanity/schema/src/_exports/index.ts',
+        '@sanity/migrate': '@sanity/migrate/src/_exports/index.ts',
+        '@sanity/types': '@sanity/types/src/index.ts',
+        '@sanity/util/fs': '@sanity/util/src/_exports/fs.ts',
+        '@sanity/util/client': '@sanity/util/src/_exports/client.ts',
+        '@sanity/util/concurrency-limiter': '@sanity/util/src/_exports/concurrency-limiter.ts',
+        '@sanity/util/content': '@sanity/util/src/_exports/content.ts',
+        '@sanity/util/createSafeJsonParser': '@sanity/util/src/_exports/createSafeJsonParser.ts',
+        '@sanity/util/legacyDateFormat': '@sanity/util/src/_exports/legacyDateFormat.ts',
+        '@sanity/util/paths': '@sanity/util/src/_exports/paths.ts',
+        '@sanity/util': '@sanity/util/src/_exports/index.ts',
+        '@sanity/vision': '@sanity/vision/src/index.ts',
+        'sanity/_internal': 'sanity/src/_exports/_internal.ts',
+        'sanity/cli': 'sanity/src/_exports/cli.ts',
+        'sanity/desk': 'sanity/src/_exports/desk.ts',
+        'sanity/presentation': 'sanity/src/_exports/presentation.ts',
+        'sanity/router': 'sanity/src/_exports/router.ts',
+        'sanity/structure': 'sanity/src/_exports/structure.ts',
+        'sanity/migrate': 'sanity/src/_exports/migrate.ts',
+        'sanity': 'sanity/src/_exports/index.ts',
+      },
+    },
   },
   async headers() {
     return [

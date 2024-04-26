@@ -6,7 +6,6 @@
   "author": "Sanity.io <hello@sanity.io>",
   "scripts": {
     "build": "next build",
-    "predev": "turbo run build --filter=...sanity-test-studio",
     "dev": "next dev -p 3333",
     "lint": "eslint .",
     "start": "next start"
