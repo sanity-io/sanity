@@ -18,9 +18,10 @@ import {describe, expect, it, jest} from '@jest/globals'
  * c) https://styled-components.com/docs/advanced#server-side-rendering
  */
 import {type SanityClient} from '@sanity/client'
+// @ts-expect-error - @react/types is not up to date. Remove this once it is.
+import {unstable_act} from 'react'
 import {hydrateRoot} from 'react-dom/client'
 import {renderToStaticMarkup, renderToString} from 'react-dom/server'
-import {act} from 'react-dom/test-utils'
 import {ServerStyleSheet} from 'styled-components'
 
 import {createMockSanityClient} from '../../../test/mocks/mockSanityClient'
@@ -86,7 +87,7 @@ describe('Studio', () => {
       )
       document.head.innerHTML += sheet.getStyleTags()
 
-      act(() => hydrateRoot(node, <Studio config={config} />))
+      unstable_act(() => hydrateRoot(node, <Studio config={config} />))
     } finally {
       sheet.seal()
     }
