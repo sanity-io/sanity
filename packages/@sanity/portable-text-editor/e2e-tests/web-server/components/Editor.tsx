@@ -71,7 +71,7 @@ export const Editor = ({
   const [selectionValue, setSelectionValue] = useState<EditorSelection | null>(selection)
   const selectionString = useMemo(() => JSON.stringify(selectionValue), [selectionValue])
   const editor = useRef<PortableTextEditor>(null)
-  const keyGenFn = useMemo(() => createKeyGenerator(editorId.substring(0, 1)), [editorId])
+  const keyGenFn = useMemo(() => createKeyGenerator(editorId.slice(0, 1)), [editorId])
   const [isOffline, setIsOffline] = useState(!window.navigator.onLine)
   const [readOnly, setReadOnly] = useState(false)
 

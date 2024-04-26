@@ -161,18 +161,18 @@ export function trimWhitespace(blocks: TypedObject[]): TypedObject[] {
         child.text = child.text.replace(/[^\S\n]+$/g, '')
       }
       if (
-        /\s/.test(child.text.substring(child.text.length - 1)) &&
+        /\s/.test(child.text.slice(Math.max(0, child.text.length - 1))) &&
         nextChild &&
         isMinimalSpan(nextChild) &&
-        /\s/.test(nextChild.text.substring(0, 1))
+        /\s/.test(nextChild.text.slice(0, 1))
       ) {
         child.text = child.text.replace(/[^\S\n]+$/g, '')
       }
       if (
-        /\s/.test(child.text.substring(0, 1)) &&
+        /\s/.test(child.text.slice(0, 1)) &&
         prevChild &&
         isMinimalSpan(prevChild) &&
-        /\s/.test(prevChild.text.substring(prevChild.text.length - 1))
+        /\s/.test(prevChild.text.slice(Math.max(0, prevChild.text.length - 1)))
       ) {
         child.text = child.text.replace(/^[^\S\n]+/g, '')
       }

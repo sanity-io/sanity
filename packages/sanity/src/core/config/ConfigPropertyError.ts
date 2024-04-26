@@ -21,6 +21,7 @@ export class ConfigPropertyError extends Error {
       `An error occurred while resolving \`${propertyName}\` from ${path.join(' > ')}${message}`,
     )
 
+    this.name = 'ConfigPropertyError'
     this.propertyName = propertyName
     this.cause = cause
     this.path = path

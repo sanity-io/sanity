@@ -97,10 +97,11 @@ export function CommentInputProvider(props: CommentInputProviderProps) {
       const isDeleteText = event.inputType === 'deleteContentBackward'
       const isInsertingAtChar = isInsertText && event.data === '@'
 
-      const lastIndexOfAt = focusSpan?.text.substring(0, cursorOffset).lastIndexOf('@') || 0
+      const lastIndexOfAt =
+        focusSpan?.text.slice(0, Math.max(0, cursorOffset)).lastIndexOf('@') || 0
 
       const isWhitespaceCharBeforeCursorPosition =
-        focusSpan?.text.substring(cursorOffset - 1, cursorOffset) === ' '
+        focusSpan?.text.slice(cursorOffset - 1, cursorOffset) === ' '
 
       const filterStartsWithSpaceChar = isInsertText && event.data === ' ' && !mentionsSearchTerm
 
@@ -126,14 +127,14 @@ export function CommentInputProvider(props: CommentInputProviderProps) {
       // Update the search term
       if (isPortableTextSpan(focusChild)) {
         // Term starts with the @ char in the value until the cursor offset
-        let term = focusChild.text.substring(lastIndexOfAt + 1, cursorOffset)
+        let term = focusChild.text.slice(lastIndexOfAt + 1, cursorOffset)
         // Add the char to the mentions search term
         if (isInsertText) {
           term += event.data
         }
         // Exclude the char from the mentions search term
         if (isDeleteText) {
-          term = term.substring(0, term.length - 1)
+          term = term.slice(0, Math.max(0, term.length - 1))
         }
         // Set the updated mentions search term
         setMentionsSearchTerm(term)

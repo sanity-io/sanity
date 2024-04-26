@@ -15,7 +15,7 @@ const getByteHexTable = (() => {
     }
     table = []
     for (let i = 0; i < 256; ++i) {
-      table[i] = (i + 0x100).toString(16).substring(1)
+      table[i] = (i + 0x100).toString(16).slice(1)
     }
     return table
   }

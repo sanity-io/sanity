@@ -12,6 +12,7 @@ export class SerializeError extends Error {
     hint?: string,
   ) {
     super(message)
+    this.name = 'SerializeError'
     const segment = typeof pathSegment === 'undefined' ? '<unknown>' : `${pathSegment}`
     this.path = (parentPath || []).concat(hint ? `${segment} (${hint})` : segment)
   }
