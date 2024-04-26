@@ -5,7 +5,7 @@ import {
   PortableTextEditor,
   type RenderBlockFunction,
 } from '@sanity/portable-text-editor'
-import {Schema} from '@sanity/schema'
+import {Schema} from '@sanity/schema/index'
 import {type PortableTextBlock} from '@sanity/types'
 import {Card, Container, Flex, Stack, Text} from '@sanity/ui'
 import {useCallback, useMemo, useRef, useState} from 'react'
