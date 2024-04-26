@@ -1,12 +1,14 @@
 import {
   type EditorChange,
+  type EditorSelection,
   type InvalidValue,
   type Patch as EditorPatch,
   type Patch,
   PortableTextEditor,
+  type RangeDecoration,
 } from '@sanity/portable-text-editor'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {isKeySegment, type Path, type PortableTextBlock} from '@sanity/types'
+import {isKeySegment, type PortableTextBlock} from '@sanity/types'
 import {Box, useToast} from '@sanity/ui'
 import {
   type MutableRefObject,
@@ -27,12 +29,17 @@ import {
 } from '../../__telemetry__/form.telemetry'
 import {SANITY_PATCH_TYPE} from '../../patch'
 import {type ArrayOfObjectsItemMember, type ObjectFormNode} from '../../store'
+import {immutableReconcile} from '../../store/utils/immutableReconcile'
 import {type PortableTextInputProps} from '../../types'
 import {Compositor, type PortableTextEditorElement} from './Compositor'
 import {PortableTextMarkersProvider} from './contexts/PortableTextMarkers'
 import {PortableTextMemberItemsProvider} from './contexts/PortableTextMembers'
 import {usePortableTextMemberItemsFromProps} from './hooks/usePortableTextMembers'
 import {InvalidValue as RespondToInvalidContent} from './InvalidValue'
+import {
+  type PresenceCursorDecorationsHookProps,
+  usePresenceCursorDecorations,
+} from './presence-cursors'
 import {usePatches} from './usePatches'
 
 /** @internal */
@@ -73,16 +80,25 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
     onPathFocus,
     path,
     readOnly,
-    rangeDecorations,
+    rangeDecorations: rangeDecorationsProp,
     renderBlockActions,
     renderCustomMarkers,
     schemaType,
     value,
   } = props
 
-  const {onBlur, onFocus, ref: elementRef} = elementProps
+  const {onBlur, ref: elementRef} = elementProps
   const defaultEditorRef = useRef<PortableTextEditor | null>(null)
   const editorRef = editorRefProp || defaultEditorRef
+
+  const presenceCursorDecorations = usePresenceCursorDecorations(
+    useMemo(
+      (): PresenceCursorDecorationsHookProps => ({
+        path: props.path,
+      }),
+      [props.path],
+    ),
+  )
 
   const {subscribe} = usePatches({path})
   const [ignoreValidationError, setIgnoreValidationError] = useState(false)
@@ -139,31 +155,41 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
     }
   }, [hasFocusWithin])
 
-  // Report focus on spans with `.text` appended to the reported focusPath.
-  // This is done to support the Presentation tool which uses this kind of paths to refer to texts.
-  // The PT-input already supports these paths the other way around.
-  // It's a bit ugly right here, but it's a rather simple way to support the Presentation tool without
-  // having to change the PTE's internals.
-  const setFocusPathFromEditorSelection = useCallback(
-    (focusPath: Path) => {
-      // Test if the focusPath is pointing directly to a span
-      const isSpanPath =
-        focusPath.length === 3 && // A span path is always 3 segments long
-        focusPath[1] === 'children' && // Is a child of a block
-        isKeySegment(focusPath[2]) && // Contains the key of the child
-        !portableTextMemberItems.some(
-          (item) => isKeySegment(focusPath[2]) && item.member.key === focusPath[2]._key,
-        ) // Not an inline object (it would be a member in this list, where spans are not). By doing this check we avoid depending on the value.
-      if (isSpanPath) {
-        // Append `.text` to the focusPath
-        onPathFocus(focusPath.concat('text'))
-      } else {
-        // Call normally
-        onPathFocus(focusPath)
-      }
-    },
-    [onPathFocus, portableTextMemberItems],
-  )
+  const setFocusPathFromEditorSelection = useCallback(() => {
+    const selection = nextSelectionRef.current
+    const focusPath = selection?.focus.path
+    if (!focusPath) return
+
+    // Report focus on spans with `.text` appended to the reported focusPath.
+    // This is done to support the Presentation tool which uses this kind of paths to refer to texts.
+    // The PT-input already supports these paths the other way around.
+    // It's a bit ugly right here, but it's a rather simple way to support the Presentation tool without
+    // having to change the PTE's internals.
+    const isSpanPath =
+      focusPath.length === 3 && // A span path is always 3 segments long
+      focusPath[1] === 'children' && // Is a child of a block
+      isKeySegment(focusPath[2]) && // Contains the key of the child
+      !portableTextMemberItems.some(
+        (item) => isKeySegment(focusPath[2]) && item.member.key === focusPath[2]._key,
+      )
+    const nextFocusPath = isSpanPath ? focusPath.concat(['text']) : focusPath
+
+    // Must called in a transition useTrackFocusPath hook
+    // will try to effectuate a focusPath that is different from what currently is the editor focusPath
+    startTransition(() => {
+      onPathFocus(nextFocusPath, {
+        selection,
+      })
+    })
+  }, [onPathFocus, portableTextMemberItems])
+
+  const resetSelectionPresence = useCallback(() => {
+    onPathFocus(props.path, {
+      selection: null,
+    })
+  }, [onPathFocus, props.path])
+
+  const nextSelectionRef = useRef<EditorSelection | null>(null)
 
   // Handle editor changes
   const handleEditorChange = useCallback(
@@ -180,13 +206,8 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
           }
           break
         case 'selection':
-          // This doesn't need to be immediate,
-          // call through startTransition
-          startTransition(() => {
-            if (change.selection) {
-              setFocusPathFromEditorSelection(change.selection.focus.path)
-            }
-          })
+          nextSelectionRef.current = change.selection
+          setFocusPathFromEditorSelection()
           break
         case 'focus':
           setIsActive(true)
@@ -195,6 +216,11 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
         case 'blur':
           onBlur(change.event)
           setHasFocusWithin(false)
+
+          // When the editor blurs, we reset the presence selection
+          // in order to remove the presence cursor for the current user
+          // since they no longer have an active selection in the editor.
+          resetSelectionPresence()
           break
         case 'undo':
         case 'redo':
@@ -215,7 +241,15 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
         onEditorChange(change, editorRef.current)
       }
     },
-    [editorRef, onBlur, onChange, onEditorChange, setFocusPathFromEditorSelection, toast],
+    [
+      editorRef,
+      onEditorChange,
+      onChange,
+      setFocusPathFromEditorSelection,
+      onBlur,
+      resetSelectionPresence,
+      toast,
+    ],
   )
 
   useEffect(() => {
@@ -251,8 +285,17 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
     }
   }, [editorRef, isActive])
 
+  const previousRangeDecorations = useRef<RangeDecoration[]>([])
+
+  const rangeDecorations = useMemo((): RangeDecoration[] => {
+    const result = [...(rangeDecorationsProp || []), ...presenceCursorDecorations]
+    const reconciled = immutableReconcile(previousRangeDecorations.current, result)
+    previousRangeDecorations.current = reconciled
+    return reconciled
+  }, [presenceCursorDecorations, rangeDecorationsProp])
+
   return (
-    <Box ref={elementProps.ref}>
+    <Box>
       {!ignoreValidationError && respondToInvalidContent}
       {(!invalidValue || ignoreValidationError) && (
         <PortableTextMarkersProvider markers={markers}>
@@ -274,9 +317,9 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
                 isActive={isActive}
                 isFullscreen={isFullscreen}
                 onActivate={handleActivate}
-                onItemRemove={onItemRemove}
                 onCopy={onCopy}
                 onInsert={onInsert}
+                onItemRemove={onItemRemove}
                 onPaste={onPaste}
                 onToggleFullscreen={handleToggleFullscreen}
                 rangeDecorations={rangeDecorations}
