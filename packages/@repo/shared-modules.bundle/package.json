@@ -10,8 +10,8 @@
     "check:types": "tsc --noEmit --skipLibCheck package.bundle.ts"
   },
   "dependencies": {
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
+    "react": "^18.3.0",
+    "react-dom": "^18.3.0",
     "styled-components": "^6.1.8"
   }
 }
