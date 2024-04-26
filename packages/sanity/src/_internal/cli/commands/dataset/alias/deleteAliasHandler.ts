@@ -28,7 +28,7 @@ export const deleteAliasHandler: CliCommandAction<DeleteAliasFlags> = async (arg
   if (dsError) {
     throw dsError
   }
-  aliasName = aliasName.startsWith(ALIAS_PREFIX) ? aliasName.substring(1) : aliasName
+  aliasName = aliasName.startsWith(ALIAS_PREFIX) ? aliasName.slice(1) : aliasName
 
   const [fetchedAliases] = await Promise.all([aliasClient.listAliases(client)])
   const linkedAlias = fetchedAliases.find((elem) => elem.name === aliasName)

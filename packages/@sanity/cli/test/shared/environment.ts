@@ -195,6 +195,7 @@ class ExecError extends Error {
   stderr: string
   constructor(message: string, code: number, stdout: string, stderr: string) {
     super(message)
+    this.name = 'ExecError'
     this.code = code
     this.stdout = stdout
     this.stderr = stderr

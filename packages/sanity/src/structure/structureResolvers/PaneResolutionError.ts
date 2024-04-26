@@ -19,6 +19,7 @@ export class PaneResolutionError extends Error {
 
   constructor({message, context, helpId, cause}: PaneResolutionErrorOptions) {
     super(message)
+    this.name = 'PaneResolutionError'
     this.context = context
     this.helpId = helpId
     this.cause = cause

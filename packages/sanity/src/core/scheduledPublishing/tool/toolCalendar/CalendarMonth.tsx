@@ -37,7 +37,7 @@ export function CalendarMonth(props: CalendarMonthProps) {
               // tone={isWeekend(date) ? 'transparent' : 'default'}
             >
               <Label size={1} style={{textAlign: 'center'}}>
-                {weekday.substring(0, 1)}
+                {weekday.slice(0, 1)}
               </Label>
             </Card>
           )

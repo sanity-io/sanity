@@ -345,11 +345,11 @@ function renderDecorators({
     .filter((text) => !!text)
     .join('')
   const ptDiffMatchString = ptDiffChildren
-  const controlString = ptDiffMatchString.substring(
+  const controlString = ptDiffMatchString.slice(
     0,
-    ptDiffMatchString.indexOf(seg.text) + seg.text.length,
+    Math.max(0, ptDiffMatchString.indexOf(seg.text) + seg.text.length),
   )
-  const toTest = controlString.substring(0, controlString.indexOf(seg.text))
+  const toTest = controlString.slice(0, Math.max(0, controlString.indexOf(seg.text)))
   const marks: string[] = []
   const matches = [...toTest.matchAll(markRegex)]
   matches.forEach((match) => {
