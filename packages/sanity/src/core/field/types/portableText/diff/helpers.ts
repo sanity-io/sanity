@@ -302,7 +302,7 @@ function buildSegments(fromInput: string, toInput: string): StringDiffSegment[] 
         segments.push({
           type: 'stringSegment',
           action: 'removed',
-          text: fromInput.substring(fromIdx, fromIdx + text.length),
+          text: fromInput.slice(fromIdx, fromIdx + text.length),
           annotation: null,
         })
         fromIdx += text.length
@@ -311,7 +311,7 @@ function buildSegments(fromInput: string, toInput: string): StringDiffSegment[] 
         segments.push({
           type: 'stringSegment',
           action: 'added',
-          text: toInput.substring(toIdx, toIdx + text.length),
+          text: toInput.slice(toIdx, toIdx + text.length),
           annotation: null,
         })
         toIdx += text.length
@@ -330,11 +330,11 @@ function buildSegments(fromInput: string, toInput: string): StringDiffSegment[] 
         markMatches.forEach((match) => {
           const index = match.index || 0
           if (index > lastIndex) {
-            newSegments.push({...seg, text: seg.text.substring(lastIndex + 1, index)})
+            newSegments.push({...seg, text: seg.text.slice(lastIndex + 1, index)})
             newSegments.push({...seg, text: match[0]})
           }
           if (match === markMatches[markMatches.length - 1]) {
-            newSegments.push({...seg, text: seg.text.substring(index + 1)})
+            newSegments.push({...seg, text: seg.text.slice(Math.max(0, index + 1))})
           }
           lastIndex = index
         })

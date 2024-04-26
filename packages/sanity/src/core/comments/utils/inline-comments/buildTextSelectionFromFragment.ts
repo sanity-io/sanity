@@ -55,7 +55,7 @@ export function buildTextSelectionFromFragment(
           if (child._key === fragmentStartSpan?._key) {
             originalTextBeforeSelection +=
               (isPortableTextSpan(child) &&
-                child.text.substring(0, normalizedSelection.anchor.offset)) ||
+                child.text.slice(0, Math.max(0, normalizedSelection.anchor.offset))) ||
               ''
             break
           }
@@ -68,7 +68,7 @@ export function buildTextSelectionFromFragment(
           if (child._key === fragmentEndSpan?._key) {
             originalTextAfterSelection =
               ((isPortableTextSpan(child) &&
-                child.text.substring(normalizedSelection.focus.offset, child.text.length)) ||
+                child.text.slice(normalizedSelection.focus.offset, child.text.length)) ||
                 '') + originalTextAfterSelection
             break
           }

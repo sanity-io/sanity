@@ -25,7 +25,7 @@ function formatPath(pathSegments: SchemaValidationProblemPath) {
     return `${mode === 'array' ? `[${name}]` : `.${name}`}${format(next)}`
   }
 
-  return format(pathSegments.slice(1)).substring(1) // removes the top-level type and leading `.`
+  return format(pathSegments.slice(1)).slice(1) // removes the top-level type and leading `.`
 }
 
 export function getAggregatedSeverity(

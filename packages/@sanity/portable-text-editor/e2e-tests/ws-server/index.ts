@@ -81,7 +81,7 @@ app.ws('/', (s, req) => {
       }
       if (mutatedValue !== null) {
         // Assign revId and store value
-        const revId = (Math.random() + 1).toString(36).substring(7)
+        const revId = (Math.random() + 1).toString(36).slice(7)
         valueMap[testId] = mutatedValue
         revisionMap[testId] = revId
         // Broadcast to all

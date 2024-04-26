@@ -28,7 +28,7 @@ export const linkAliasHandler: CliCommandAction = async (args, context) => {
   let aliasOutputName = aliasName
 
   if (aliasName.startsWith(ALIAS_PREFIX)) {
-    aliasName = aliasName.substring(1)
+    aliasName = aliasName.slice(1)
   } else {
     aliasOutputName = `${ALIAS_PREFIX}${aliasName}`
   }

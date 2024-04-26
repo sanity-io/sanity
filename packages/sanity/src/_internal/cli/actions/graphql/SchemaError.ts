@@ -12,6 +12,7 @@ export class SchemaError extends Error {
 
   constructor(problemGroups: SchemaValidationProblemGroup[]) {
     super('Schema errors encountered')
+    this.name = 'SchemaError'
     this.problemGroups = problemGroups
   }
 
