@@ -4,7 +4,6 @@ const configTemplate = `
 import {defineConfig} from 'sanity'
 import {structureTool} from 'sanity/structure'
 import {visionTool} from '@sanity/vision'
-//import {googleMapsInput} from '@sanity/google-maps-input'
 import {schemaTypes} from './schemaTypes'
 
 export default defineConfig({
@@ -17,7 +16,6 @@ export default defineConfig({
   plugins: [
     structureTool(),
     visionTool(),
-    //googleMapsInput(),
   ],
 
   schema: {
@@ -31,7 +29,6 @@ const movieTemplate: ProjectTemplate = {
   importPrompt: 'Add a sampling of sci-fi movies to your dataset on the hosted backend?',
   datasetUrl: 'https://public.sanity.io/moviesdb-2018-03-06.tar.gz',
   dependencies: {
-    //'@sanity/google-maps-input': '^2.27.0',
     'react-icons': '^3.11.0',
   },
 }
