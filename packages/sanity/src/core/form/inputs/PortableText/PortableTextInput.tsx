@@ -198,8 +198,6 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
         case 'mutation':
           onChange(toFormPatches(change.patches))
           break
-        case 'patch':
-          break
         case 'connection':
           if (change.value === 'offline') {
             setIsOffline(true)
