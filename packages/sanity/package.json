@@ -270,8 +270,8 @@
     "@types/rimraf": "^3.0.2",
     "@types/semver": "^6.2.3",
     "@types/tar-fs": "^2.0.1",
-    "react": "^18.3.0",
-    "react-dom": "^18.3.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "rimraf": "^3.0.2",
     "rxjs-etc": "^10.6.2",
     "styled-components": "^6.1.8"
