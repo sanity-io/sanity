@@ -115,6 +115,22 @@ export default defineType({
             spellCheck: true,
           },
         }),
+
+        defineArrayMember({
+          type: 'image',
+          name: 'Render Image Component Preview',
+          // Replace the preview of all block images
+          // with the edit form for that object, bypassing
+          // the modal step.
+          components: {
+            block: (props) => {
+              return props.renderDefault({
+                ...props,
+                renderPreview: () => props.children,
+              })
+            },
+          },
+        }),
         {
           type: 'image',
           name: 'image',
