@@ -35,6 +35,7 @@
     "dev:starter-studio": "pnpm --filter sanity-starter-studio dev",
     "dev:strict-studio": "pnpm --filter sanity-strict-studio dev",
     "dev:test-studio": "pnpm --filter sanity-test-studio dev",
+    "dev:test-next-studio": "pnpm --filter sanity-test-next-studio dev",
     "docs:report": "node -r dotenv-flow/config -r esbuild-register scripts/doc-report/docReport",
     "docs:report:cleanup": "node -r dotenv-flow/config -r esbuild-register scripts/doc-report/docReportCleanup",
     "docs:report:create": "node -r dotenv-flow/config -r esbuild-register scripts/doc-report/docReportCreate",
