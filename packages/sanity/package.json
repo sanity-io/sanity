@@ -150,7 +150,7 @@
     "@sanity/migrate": "3.39.1",
     "@sanity/mutator": "3.39.1",
     "@sanity/portable-text-editor": "3.39.1",
-    "@sanity/presentation": "1.12.8",
+    "@sanity/presentation": "1.12.10",
     "@sanity/schema": "3.39.1",
     "@sanity/telemetry": "^0.7.6",
     "@sanity/types": "3.39.1",
