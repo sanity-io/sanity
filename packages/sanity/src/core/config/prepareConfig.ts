@@ -588,7 +588,7 @@ function resolveSource({
         context,
         reducer: legacySearchEnabledReducer,
         propertyName: 'enableLegacySearch',
-        initialValue: false,
+        initialValue: true,
       }),
       // we will use this when we add search config to PluginOptions
       /*filters: resolveConfigProperty({
