@@ -184,7 +184,10 @@ async function fetchJourneySchema(schemaUrl: string): Promise<DocumentOrObject[]
 async function assembleJourneySchemaTypeFileContent(schemaType: DocumentOrObject): Promise<string> {
   const serialised = wrapSchemaTypeInHelpers(schemaType)
   const imports = getImports(serialised)
-  const prettifiedSchemaType = await format(serialised, {parser: 'typescript'})
+  const prettifiedSchemaType = await format(serialised, {
+    parser: 'typescript',
+    printWidth: 40,
+  })
   // Start file with import, then export the schema type as a named export
   return `${imports}\n\nexport const ${schemaType.name} = ${prettifiedSchemaType}\n`
 }
