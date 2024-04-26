@@ -54,21 +54,25 @@ const ruleConstraintTypes: RuleTypeConstraint[] = [
   'String',
 ]
 
-// Note: `RuleClass` and `Rule` are split to fit the current `@sanity/types`
-// setup. Classes are a bit weird in the `@sanity/types` package because classes
-// create an actual javascript class while simultaneously creating a type
-// definition.
-//
-// This implicitly creates two types:
-// 1. the instance type — `Rule` and
-// 2. the static/class type - `RuleClass`
-//
-// The `RuleClass` type contains the static methods and the `Rule` instance
-// contains the instance methods.
-//
-// This package exports the RuleClass as a value without implicitly exporting
-// an instance definition. This should help reminder downstream users to import
-// from the `@sanity/types` package.
+/**
+ * Note: `RuleClass` and `Rule` are split to fit the current `@sanity/types`
+ * setup. Classes are a bit weird in the `@sanity/types` package because classes
+ * create an actual javascript class while simultaneously creating a type
+ * definition.
+ *
+ * This implicitly creates two types:
+ * 1. the instance type — `Rule` and
+ * 2. the static/class type - `RuleClass`
+ *
+ * The `RuleClass` type contains the static methods and the `Rule` instance
+ * contains the instance methods.
+ *
+ * This package exports the RuleClass as a value without implicitly exporting
+ * an instance definition. This should help reminder downstream users to import
+ * from the `@sanity/types` package.
+ *
+ * @internal
+ */
 export const Rule: RuleClass = class Rule implements IRule {
   static readonly FIELD_REF = FIELD_REF
   static array = (def?: SchemaType): Rule => new Rule(def).type('Array')
