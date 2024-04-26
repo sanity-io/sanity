@@ -1527,7 +1527,7 @@ importers:
         version: 5.0.7
       '@types/react-is':
         specifier: ^18.2.0
-        version: 18.2.4
+        version: 18.3.0
       '@types/shallow-equals':
         specifier: ^1.0.0
         version: 1.0.3
@@ -7331,8 +7331,8 @@ packages:
       '@types/react': 18.3.0
     dev: true
 
-  /@types/react-is@18.2.4:
-    resolution: {integrity: sha512-wBc7HgmbCcrvw0fZjxbgz/xrrlZKzEqmABBMeSvpTvdm25u6KI6xdIi9pRE2G0C1Lw5ETFdcn4UbYZ4/rpqUYw==}
+  /@types/react-is@18.3.0:
+    resolution: {integrity: sha512-KZJpHUkAdzyKj/kUHJDc6N7KyidftICufJfOFpiG6haL/BDQNQt5i4n1XDUL/nDZAtGLHDSWRYpLzKTAKSvX6w==}
     dependencies:
       '@types/react': 18.3.0
     dev: false
