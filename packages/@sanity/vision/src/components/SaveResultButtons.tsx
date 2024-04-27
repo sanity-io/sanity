@@ -33,7 +33,7 @@ export function SaveCsvButton({blobUrl}: SaveButtonProps) {
   )
 
   return isDisabled ? (
-    <Tooltip content={t('action.save-result-as-csv.not-csv-encodable')} placement="top">
+    <Tooltip content={t('result.save-result-as-csv.not-csv-encodable')} placement="top">
       {button}
     </Tooltip>
   ) : (

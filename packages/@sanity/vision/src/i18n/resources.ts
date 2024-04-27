@@ -9,12 +9,6 @@ import {defineLocalesResources} from 'sanity'
 const visionLocaleStrings = defineLocalesResources('vision', {
   /** Label for action "Copy to clipboard", tied to the "Query URL" field. Also used for accessibility purposes on button */
   'action.copy-url-to-clipboard': 'Copy to clipboard',
-  /** Label for downloading the query result as CSV */
-  'action.download-result-as-csv': 'CSV',
-  /** Tooltip text shown when the query result is not encodable as CSV */
-  'action.download-result-as-csv.not-csv-encodable': 'Result cannot be encoded as CSV',
-  /** Label for downloading the query result as JSON */
-  'action.download-result-as-json': 'JSON',
   /** Label for stopping an ongoing listen operation */
   'action.listen-cancel': 'Stop',
   /** Label for setting up a listener */
@@ -50,6 +44,8 @@ const visionLocaleStrings = defineLocalesResources('vision', {
   'result.execution-time-label': 'Execution',
   /** Label for "Result" explorer/view */
   'result.label': 'Result',
+  /** Tooltip text shown when the query result is not encodable as CSV */
+  'result.save-result-as-csv.not-csv-encodable': 'Result cannot be encoded as CSV',
   /** Label for "Save result as" result action */
   'result.save-result-as-format': 'Save result as <SaveResultButtons/>',
   /**
