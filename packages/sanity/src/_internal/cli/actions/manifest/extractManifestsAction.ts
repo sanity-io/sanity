@@ -12,7 +12,7 @@ import {
 } from '../../threads/extractSchema'
 
 const MANIFEST_FILENAME = 'v1.studiomanifest.json'
-const SCHEMA_FILENAME_PREFIX = 'schema-'
+const SCHEMA_FILENAME_SUFFIX = '.studioschema.json'
 
 const extractManifests: CliCommandAction = async (_args, context) => {
   const {output, workDir, chalk} = context
@@ -119,7 +119,7 @@ async function externalizeSchema(
   const encoder = new TextEncoder()
   const schemaString = JSON.stringify(workspace.schema, null, 2)
   const hash = await crypto.subtle.digest('SHA-1', encoder.encode(schemaString))
-  const filename = `${SCHEMA_FILENAME_PREFIX}${hexFromBuffer(hash).slice(0, 8)}.json`
+  const filename = `${hexFromBuffer(hash).slice(0, 8)}${SCHEMA_FILENAME_SUFFIX}`
 
   await writeFile(join(staticPath, filename), schemaString)
 
