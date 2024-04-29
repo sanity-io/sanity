@@ -3,6 +3,7 @@ import {type ForwardedRef, forwardRef, type HTMLProps, type ReactNode, useMemo} 
 import {styled} from 'styled-components'
 
 import {Button, type ButtonProps} from '../../ui-components'
+import {useTranslation} from '../i18n'
 
 /** @hidden @beta */
 export type StatusButtonProps = ButtonProps & {
