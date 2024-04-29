@@ -314,6 +314,13 @@ export interface CliConfig {
   autoUpdates?: boolean
 
   studioHost?: string
+
+  /**
+   * Extracts a Studio manifest to the `dist/static` directory when building (or deploying) the project.
+   *
+   * Optional, defaults to `false`.
+   */
+  unstable_extractManifestOnBuild?: boolean
 }
 
 export type UserViteConfig =
