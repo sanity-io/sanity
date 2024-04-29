@@ -14,7 +14,7 @@ import {
 const MANIFEST_FILENAME = 'v1.studiomanifest.json'
 const SCHEMA_FILENAME_SUFFIX = '.studioschema.json'
 
-const extractManifests: CliCommandAction = async (_args, context) => {
+const extractManifest: CliCommandAction = async (_args, context) => {
   const {output, workDir, chalk} = context
 
   const defaultOutputDir = resolve(join(workDir, 'dist'))
@@ -99,7 +99,7 @@ const extractManifests: CliCommandAction = async (_args, context) => {
   output.print(`Extracted manifest to ${chalk.cyan(path)}`)
 }
 
-export default extractManifests
+export default extractManifest
 
 function externalizeSchemas(
   schemas: ExtractSchemaWorkerResult<'direct'>[],

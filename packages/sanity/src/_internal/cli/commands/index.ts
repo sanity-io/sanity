@@ -41,7 +41,7 @@ import hookGroup from './hook/hookGroup'
 import listHookLogsCommand from './hook/listHookLogsCommand'
 import listHooksCommand from './hook/listHooksCommand'
 import printHookAttemptCommand from './hook/printHookAttemptCommand'
-import extractManifestsCommand from './manifest/extractManifestsCommand'
+import extractManifestCommand from './manifest/extractManifestCommand'
 import listManifestsCommand from './manifest/listManifestsCommand'
 import manifestGroup from './manifest/manifestGroup'
 import createMigrationCommand from './migration/createMigrationCommand'
@@ -91,7 +91,7 @@ const commands: (CliCommandDefinition | CliCommandGroupDefinition)[] = [
   migrationGroup,
   createMigrationCommand,
   manifestGroup,
-  extractManifestsCommand,
+  extractManifestCommand,
   listManifestsCommand,
   runMigrationCommand,
   listMigrationsCommand,
