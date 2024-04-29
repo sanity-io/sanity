@@ -294,6 +294,48 @@ describe('resolveIntent', () => {
     ])
   })
 
+  it('resolves custom components that implement `canHandleIntent`', async () => {
+    const source = await getMockSource({config: {schema: mockSchema}})
+    const S = createStructureBuilder({source})
+
+    const customComponent = S.component(() => null)
+      .canHandleIntent(() => true)
+      .title('My Component')
+      .serialize()
+
+    const canHandleIntentSpy = jest.spyOn(customComponent, 'canHandleIntent')
+
+    const rootPaneNode = S.list()
+      .title('Content')
+      .items([
+        S.documentTypeListItem('book').title('Sick Books'),
+        S.documentTypeListItem('movie').title('Rad Movies'),
+        S.listItem().title('Some Item').child(customComponent),
+      ]) as unknown as UnresolvedPaneNode
+
+    const routerPanes = await resolveIntent({
+      intent: 'edit',
+      params: {id: 'author123', type: 'author'},
+      payload: undefined,
+      rootPaneNode,
+      structureContext: null as any,
+    })
+
+    expect(routerPanes).toEqual([
+      [{id: 'someItem'}],
+      [{id: 'author123', params: {}, payload: undefined}],
+    ])
+
+    expect(canHandleIntentSpy).toHaveBeenCalled()
+    expect(canHandleIntentSpy.mock.calls).toMatchObject([
+      [
+        'edit',
+        {id: 'author123', type: 'author'},
+        {index: 1, pane: {id: 'myComponent', title: 'My Component', type: 'component'}},
+      ],
+    ])
+  })
+
   it('bubbles (re-throws) structure errors wrapped in a PaneResolutionError', async () => {
     const source = await getMockSource({config: {schema: mockSchema}})
     const S = createStructureBuilder({source})
