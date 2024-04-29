@@ -6,7 +6,7 @@
  */
 
 import {type PortableTextSpan} from '@sanity/types'
-import {flatten, isEqual, uniq} from 'lodash'
+import {isEqual, uniq} from 'lodash'
 import {type Subject} from 'rxjs'
 import {
   type Descendant,
@@ -251,9 +251,8 @@ export function createWithPortableTextMarkModel(
           const splitTextNodes = [
             ...Editor.nodes(editor, {at: editor.selection, match: Text.isText}),
           ]
-          const shouldRemoveMark = flatten(
-            splitTextNodes.map((item) => item[0]).map((node) => node.marks),
-          ).includes(mark)
+          const shouldRemoveMark = splitTextNodes.every((node) => node[0].marks?.includes(mark))
+
           if (shouldRemoveMark) {
             editor.removeMark(mark)
             return editor
