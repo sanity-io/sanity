@@ -38,7 +38,7 @@ export interface EditableAPIDeleteOptions {
 
 /** @beta */
 export interface EditableAPI {
-  activeAnnotations: () => PortableTextObject[]
+  activeAnnotations: () => PortableTextObject['_type'][]
   addAnnotation: (
     type: ObjectSchemaType,
     value?: {[prop: string]: unknown},
