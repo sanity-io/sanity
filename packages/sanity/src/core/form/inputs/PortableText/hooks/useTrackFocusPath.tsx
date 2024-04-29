@@ -59,7 +59,7 @@ export function useTrackFocusPath(props: Props): void {
         scrollIntoView(relatedEditorItem.elementRef.current, {
           scrollMode: 'if-needed',
           boundary: boundaryElement,
-          block: 'start',
+          block: 'nearest',
           inline: 'start',
         })
       }
