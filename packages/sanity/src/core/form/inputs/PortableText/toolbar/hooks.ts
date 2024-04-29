@@ -77,12 +77,10 @@ export function useActiveActionKeys({
   return useUnique(
     useMemo(
       () => {
-        const activeAnnotationKeys = PortableTextEditor.activeAnnotations(editor)
-
         return actions
           .filter((a) => {
             if (a.type === 'annotation') {
-              return activeAnnotationKeys.includes(a.key)
+              return PortableTextEditor.isAnnotationActive(editor, a.key)
             }
 
             if (a.type === 'listStyle') {

@@ -262,9 +262,9 @@ export function createWithEditableAPI(
         }
         return node
       },
-      activeAnnotations: (): PortableTextObject['_type'][] => {
+      isAnnotationActive: (annotationType: PortableTextObject['_type']): boolean => {
         if (!editor.selection || editor.selection.focus.path.length < 2) {
-          return []
+          return false
         }
         try {
           const activeAnnotations: PortableTextObject['_type'][] = []
@@ -284,7 +284,7 @@ export function createWithEditableAPI(
                 !span.marks.length,
             )
           )
-            return []
+            return false
 
           const annotationCounts: Record<PortableTextObject['_type'], number> = spans.reduce(
             (acc, [, path]) => {
@@ -300,16 +300,16 @@ export function createWithEditableAPI(
           )
 
           Object.entries(annotationCounts).forEach((annotationCount) => {
-            const [annotationType, count] = annotationCount
+            const [annotationCountType, count] = annotationCount
 
             if (count >= spans.length) {
-              activeAnnotations.push(annotationType)
+              activeAnnotations.push(annotationCountType)
             }
           })
 
-          return activeAnnotations
+          return activeAnnotations.includes(annotationType)
         } catch (err) {
-          return []
+          return false
         }
       },
       addAnnotation: (
