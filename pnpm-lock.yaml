@@ -123,7 +123,7 @@ importers:
         version: 7.1.2(@typescript-eslint/eslint-plugin@7.7.0)(@typescript-eslint/parser@7.7.0)(eslint-plugin-import@2.29.1)(eslint-plugin-react-hooks@4.6.0)(eslint-plugin-react@7.34.1)(eslint@8.57.0)
       eslint-import-resolver-typescript:
         specifier: ^3.6.1
-        version: 3.6.1(@typescript-eslint/parser@7.6.0)(eslint-plugin-import@2.29.1)(eslint@8.57.0)
+        version: 3.6.1(@typescript-eslint/parser@7.7.0)(eslint-plugin-import@2.29.1)(eslint@8.57.0)
       eslint-plugin-boundaries:
         specifier: ^4.2.0
         version: 4.2.0(@typescript-eslint/parser@7.7.0)(eslint-import-resolver-typescript@3.6.1)(eslint@8.57.0)
@@ -701,6 +701,9 @@ importers:
       '@types/react':
         specifier: ^18.3.1
         version: 18.3.1
+      '@vercel/stega':
+        specifier: 0.1.0
+        version: 0.1.0
       jsdom:
         specifier: ^23.0.1
         version: 23.2.0
@@ -4501,28 +4504,28 @@ packages:
       react-dom: 18.3.1(react@18.3.1)
     dev: false
 
-  /@mux/mux-player@2.5.0:
-    resolution: {integrity: sha512-Tps+GsWlUuzJHwZpHHb/47OGKF7MXr6ca2RRL/S/7TRX5Y45qROoZiqZ859AxZW2UPcy7chFR6LROd4X7PSMQQ==}
+  /@mux/mux-player@2.4.1:
+    resolution: {integrity: sha512-Lm7KkG/lD1tqqqtL1nacZsCll9JY4gVNGxUw/MPYmgIevYACYtQ/76iaEtaN67DmHYYxep1QUpYEDZPXallkEg==}
     dependencies:
-      '@mux/mux-video': 0.18.0
-      '@mux/playback-core': 0.23.0
-      media-chrome: 3.2.1
+      '@mux/mux-video': 0.17.5
+      '@mux/playback-core': 0.22.4
+      media-chrome: 3.1.1
     dev: false
 
-  /@mux/mux-video@0.18.0:
-    resolution: {integrity: sha512-uRheOAEe47k4nadoH/q/5/sfgd1amr6OSesh1yTQPDtAICIy8zCOHyLLOCaJl7vVZxw9/JRQuwO6MwjzjHhdng==}
+  /@mux/mux-video@0.17.5:
+    resolution: {integrity: sha512-EMLflDnr/o7XQiWKfwnq9BJmj30kpSszzXwpXE4hmBIgc9JAuF3Hl94qv1kyWQAUhrO5hnnOxwGHgv0FvkJ1GQ==}
     dependencies:
-      '@mux/playback-core': 0.23.0
+      '@mux/playback-core': 0.22.4
       castable-video: 1.0.6
       custom-media-element: 1.2.3
       media-tracks: 0.3.0
     dev: false
 
-  /@mux/playback-core@0.23.0:
-    resolution: {integrity: sha512-7MX5xnJ+rFReVDAWKEwHqnfOyQkX+dzYysrTLAy0L1xJMsIhMhAD+wwvkDC/rRgtha5jHF863GCwrJAHmnxSCA==}
+  /@mux/playback-core@0.22.4:
+    resolution: {integrity: sha512-f/jWcYbFRjXjdFRNq3MK79D1YHTqvwcfchRLYukE384P3cb027dru+bSxMKESrfkhAhnWFy7fdq/llawl7SU9g==}
     dependencies:
-      hls.js: 1.5.8
-      mux-embed: 5.2.0
+      hls.js: 1.4.14
+      mux-embed: 4.30.0
     dev: false
 
   /@mux/upchunk@3.3.3:
@@ -5680,7 +5683,7 @@ packages:
       estree-walker: 2.0.2
       glob: 8.1.0
       is-reference: 1.2.1
-      magic-string: 0.30.9
+      magic-string: 0.30.10
       rollup: 4.16.4
 
   /@rollup/plugin-json@6.1.0(rollup@4.16.4):
@@ -5722,7 +5725,7 @@ packages:
         optional: true
     dependencies:
       '@rollup/pluginutils': 5.1.0(rollup@4.16.4)
-      magic-string: 0.30.9
+      magic-string: 0.30.10
       rollup: 4.16.4
 
   /@rollup/plugin-terser@0.4.4(rollup@4.16.4):
@@ -8700,7 +8703,7 @@ packages:
     hasBin: true
     dependencies:
       caniuse-lite: 1.0.30001612
-      electron-to-chromium: 1.4.736
+      electron-to-chromium: 1.4.745
       node-releases: 2.0.14
       update-browserslist-db: 1.0.13(browserslist@4.23.0)
 
@@ -10575,7 +10578,7 @@ packages:
       - supports-color
     dev: true
 
-  /eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.6.0)(eslint-plugin-import@2.29.1)(eslint@8.57.0):
+  /eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.7.0)(eslint-plugin-import@2.29.1)(eslint@8.57.0):
     resolution: {integrity: sha512-xgdptdoi5W3niYeuQxKmzVDTATvLYqhpwmykwsh7f6HIOStGWEIL9iqZgQDF9u9OEzrRwR8no5q2VT+bjAujTg==}
     engines: {node: ^14.18.0 || >=16.0.0}
     peerDependencies:
@@ -10623,7 +10626,7 @@ packages:
       debug: 3.2.7
       eslint: 8.57.0
       eslint-import-resolver-node: 0.3.9
-      eslint-import-resolver-typescript: 3.6.1(@typescript-eslint/parser@7.6.0)(eslint-plugin-import@2.29.1)(eslint@8.57.0)
+      eslint-import-resolver-typescript: 3.6.1(@typescript-eslint/parser@7.7.0)(eslint-plugin-import@2.29.1)(eslint@8.57.0)
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -10653,7 +10656,7 @@ packages:
       debug: 3.2.7
       eslint: 8.57.0
       eslint-import-resolver-node: 0.3.9
-      eslint-import-resolver-typescript: 3.6.1(@typescript-eslint/parser@7.6.0)(eslint-plugin-import@2.29.1)(eslint@8.57.0)
+      eslint-import-resolver-typescript: 3.6.1(@typescript-eslint/parser@7.7.0)(eslint-plugin-import@2.29.1)(eslint@8.57.0)
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -10828,7 +10831,7 @@ packages:
       '@eslint/eslintrc': 2.1.4
       ci-info: 4.0.0
       clean-regexp: 1.0.0
-      core-js-compat: 3.36.1
+      core-js-compat: 3.37.0
       eslint: 8.57.0
       esquery: 1.5.0
       indent-string: 4.0.0
@@ -10844,7 +10847,7 @@ packages:
       - supports-color
     dev: true
 
-  /eslint-plugin-unused-imports@3.1.0(@typescript-eslint/eslint-plugin@7.6.0)(eslint@8.57.0):
+  /eslint-plugin-unused-imports@3.1.0(@typescript-eslint/eslint-plugin@7.7.0)(eslint@8.57.0):
     resolution: {integrity: sha512-9l1YFCzXKkw1qtAru1RWUtG2EVDZY0a0eChKXcL+EZ5jitG7qxdctu4RnvhOJHv4xfmUf7h+JJPINlVpGhZMrw==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
     peerDependencies:
@@ -12333,8 +12336,8 @@ packages:
     resolution: {integrity: sha512-uybAvKS6uDe0MnWNEPnO0krWVr+8m2R0hJ/viql8H3MVK+itq8gGQuIYoFHL3rECkIpNH98Lw8YuuWMKZxp3Ew==}
     dev: false
 
-  /hls.js@1.5.8:
-    resolution: {integrity: sha512-hJYMPfLhWO7/7+n4f9pn6bOheCGx0WgvVz7k3ouq3Pp1bja48NN+HeCQu3XCGYzqWQF/wo7Sk6dJAyWVJD8ECA==}
+  /hls.js@1.4.14:
+    resolution: {integrity: sha512-UppQjyvPVclg+6t2KY/Rv03h0+bA5u6zwqVoz4LAC/L0fgYmIaCD7ZCrwe8WI1Gv01be1XL0QFsRbSdIHV/Wbw==}
     dev: false
 
   /homedir-polyfill@1.0.3:
@@ -14521,8 +14524,8 @@ packages:
   /mdn-data@2.0.30:
     resolution: {integrity: sha512-GaqWWShW4kv/G9IEucWScBx9G1/vsFZZJUO+tD26M8J8z3Kw5RDQjaoZe03YAClgeS/SWPOcb4nkFBTEi5DUEA==}
 
-  /media-chrome@3.2.1:
-    resolution: {integrity: sha512-WXWccoeu9bzMsPtTaEd340gzL/amE6LW0o13Dg0RSAwjNhFmuMmsBvRfO7m/GzMYjmOD4R/3Ckvte6jvHAK+mw==}
+  /media-chrome@3.1.1:
+    resolution: {integrity: sha512-EqofPNX7Eq1dv9ixuRo51Wv/Wo3P4PIPjY4iM1jGqu/Jyond8BqdigQKdhxPM2rH9SohdUXZvUWS1OJ1xMO6Ww==}
     dev: false
 
   /media-tracks@0.3.0:
@@ -14948,8 +14951,8 @@ packages:
     engines: {node: ^14.17.0 || ^16.13.0 || >=18.0.0}
     dev: true
 
-  /mux-embed@5.2.0:
-    resolution: {integrity: sha512-hF9WDXnUu+5cYA36DfrdEKEpcV26dZvGmx2MAqvCg0kJiH/HcjNCk6QRCGJW0Xoe0Jtp2vAF9RbY6eL0uvZTZA==}
+  /mux-embed@4.30.0:
+    resolution: {integrity: sha512-XAgAp4CEvsiZL26GbruzeG1g33OWyrzuskDMavXUxDufTxS0/AxAhwoTTRqEzEJS9vnZa/X9R2GV3xRX1XMp2w==}
     dev: false
 
   /nan@2.19.0:
@@ -17192,7 +17195,7 @@ packages:
       styled-components: ^6
     dependencies:
       '@mux/mux-player-react': 2.4.1(@types/react@18.3.1)(react-dom@18.3.1)(react@18.3.1)
-      '@mux/upchunk': 3.3.2
+      '@mux/upchunk': 3.3.3
       '@sanity/icons': 2.11.8(react@18.3.1)
       '@sanity/incompatible-plugin': 1.0.4(react-dom@18.3.1)(react@18.3.1)
       '@sanity/ui': 2.1.4(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.8)
@@ -17209,7 +17212,7 @@ packages:
       styled-components: 6.1.8(react-dom@18.3.1)(react@18.3.1)
       suspend-react: 0.1.3(react@18.3.1)
       swr: 2.2.5(react@18.3.1)
-      type-fest: 4.15.0
+      type-fest: 4.16.0
     transitivePeerDependencies:
       - '@types/react'
       - '@types/react-dom'
