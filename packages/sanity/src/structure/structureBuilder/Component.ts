@@ -1,5 +1,6 @@
 import {type I18nTextRecord} from 'sanity'
 
+import {type IntentChecker} from './Intent'
 import {maybeSerializeMenuItem, type MenuItem, type MenuItemBuilder} from './MenuItem'
 import {
   maybeSerializeMenuItemGroup,
@@ -34,7 +35,7 @@ export interface Component extends StructureNode {
   menuItemGroups: MenuItemGroup[]
   /** Component options */
   options: {[key: string]: unknown}
-  canHandleIntent: any
+  canHandleIntent?: IntentChecker
 }
 
 /**
@@ -71,7 +72,7 @@ export interface BuildableComponent extends Partial<StructureNode> {
   menuItems?: (MenuItem | MenuItemBuilder)[]
   /** Component menu item groups. See {@link MenuItemGroup} and {@link MenuItemGroupBuilder} */
   menuItemGroups?: (MenuItemGroup | MenuItemGroupBuilder)[]
-  canHandleIntent?: any
+  canHandleIntent?: IntentChecker
 }
 
 /**
