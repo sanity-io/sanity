@@ -31,6 +31,7 @@ export interface StaticBuildOptions {
   minify?: boolean
   profile?: boolean
   sourceMap?: boolean
+  importMap?: {imports?: Record<string, string>}
 
   vite?: UserViteConfig
 }
@@ -45,6 +46,7 @@ export async function buildStaticFiles(
     minify = true,
     basePath,
     vite: extendViteConfig,
+    importMap,
   } = options
 
   debug('Writing Sanity runtime files')
@@ -59,6 +61,7 @@ export async function buildStaticFiles(
     minify,
     sourceMap,
     mode,
+    importMap,
   })
 
   // Extend Vite configuration with user-provided config

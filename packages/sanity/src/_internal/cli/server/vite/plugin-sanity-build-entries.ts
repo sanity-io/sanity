@@ -27,8 +27,9 @@ export function sanityBuildEntries(options: {
   cwd: string
   monorepo: SanityMonorepo | undefined
   basePath: string
+  importMap?: {imports?: Record<string, string>}
 }): Plugin {
-  const {cwd, monorepo, basePath} = options
+  const {cwd, monorepo, basePath, importMap} = options
 
   return {
     name: 'sanity/server/build-entries',
@@ -86,6 +87,7 @@ export function sanityBuildEntries(options: {
         source: await renderDocument({
           monorepo,
           studioRootPath: cwd,
+          importMap,
           props: {
             basePath,
             entryPath,

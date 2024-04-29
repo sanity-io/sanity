@@ -2,6 +2,7 @@ import path from 'node:path'
 import {promisify} from 'node:util'
 
 import chalk from 'chalk'
+import {info} from 'log-symbols'
 import {noopLogger} from '@sanity/telemetry'
 import rimrafCallback from 'rimraf'
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -16,12 +17,38 @@ import {BuildTrace} from './build.telemetry'
 
 const rimraf = promisify(rimrafCallback)
 
+// TODO: replace this with a manifest somewhere
+const AUTO_UPDATES_IMPORTMAP = {
+  imports: {
+    'react': 'https://studio-bundles.sanity.io/modules/v1/react/18.3.0/bare/react.mjs',
+    'react-dom': 'https://studio-bundles.sanity.io/modules/v1/react-dom/18.3.0/bare/react-dom.mjs',
+    'react-dom/server':
+      'https://studio-bundles.sanity.io/modules/v1/react-dom/18.3.0/bare/react-dom_server.mjs',
+    'react-dom/client':
+      'https://studio-bundles.sanity.io/modules/v1/react-dom/18.3.0/bare/react-dom.mjs',
+    'react/jsx-runtime':
+      'https://studio-bundles.sanity.io/modules/v1/react/18.3.0/bare/react_jsx-runtime.mjs',
+    'sanity': 'https://studio-bundles.sanity.io/modules/v1/sanity/3.39.0/bare/sanity.mjs',
+    'sanity/presentation':
+      'https://studio-bundles.sanity.io/modules/v1/sanity/3.39.0/bare/presentation.mjs',
+    'sanity/desk': 'https://studio-bundles.sanity.io/modules/v1/sanity/3.39.0/bare/desk.mjs',
+    'sanity/router': 'https://studio-bundles.sanity.io/modules/v1/sanity/3.39.0/bare/router.mjs',
+    'sanity/_singletons':
+      'https://studio-bundles.sanity.io/modules/v1/sanity/3.39.0/bare/_singletons.mjs',
+    'sanity/structure':
+      'https://studio-bundles.sanity.io/modules/v1/sanity/3.39.0/bare/structure.mjs',
+    'styled-components':
+      'https://studio-bundles.sanity.io/modules/v1/styled-components/6.1.8/bare/styled-components.mjs',
+  },
+}
+
 export interface BuildSanityStudioCommandFlags {
   'yes'?: boolean
   'y'?: boolean
   'minify'?: boolean
   'stats'?: boolean
   'source-maps'?: boolean
+  'enable-auto-updates'?: boolean
 }
 
 export default async function buildSanityStudio(
@@ -48,6 +75,14 @@ export default async function buildSanityStudio(
   // thus we want to exit early
   if ((await checkRequiredDependencies(context)).didInstall) {
     return {didCompile: false}
+  }
+
+  const enableAutoUpdates =
+    flags['enable-auto-updates'] ||
+    (cliConfig && 'enableAutoUpdates' in cliConfig && cliConfig.enableAutoUpdates)
+
+  if (enableAutoUpdates) {
+    output.print(`${info} Building with auto-updates enabled`)
   }
 
   const envVarKeys = getSanityEnvVars()
@@ -115,6 +150,7 @@ export default async function buildSanityStudio(
       sourceMap: Boolean(flags['source-maps']),
       minify: Boolean(flags.minify),
       vite: cliConfig && 'vite' in cliConfig ? cliConfig.vite : undefined,
+      importMap: enableAutoUpdates ? AUTO_UPDATES_IMPORTMAP : undefined,
     })
     trace.log({
       outputSize: bundle.chunks
