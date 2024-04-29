@@ -109,7 +109,7 @@ export function getSelectionBoundingRect(): DOMRect | null {
   let range = null
 
   if (selection && selection.rangeCount > 0) {
-    range = selection?.getRangeAt(0)
+    range = selection.getRangeAt(0)
   }
   const rect = range?.getBoundingClientRect()
 
