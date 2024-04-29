@@ -16,7 +16,7 @@ export function useScrollSelectionIntoView(scrollElement: HTMLElement | null) {
           scrollIntoView(leafEl, {
             scrollMode: 'if-needed',
             boundary: scrollElement,
-            block: 'start',
+            block: 'nearest',
             inline: 'nearest',
           })
         }
