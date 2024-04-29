@@ -73,7 +73,7 @@ export function useActiveActionKeys({
 }): string[] {
   const editor = usePortableTextEditor()
   const selection = usePortableTextEditorSelection()
-  // console.log({selection})
+
   return useUnique(
     useMemo(
       () => {

@@ -355,9 +355,7 @@ export function createWithPortableTextMarkModel(
         Editor.nodes(editor, {match: Text.isText, at: editor.selection}),
       )
 
-      // console.log({isExpanded: Range.isExpanded(editor.selection)})
       if (Range.isExpanded(editor.selection)) {
-        // console.log({selectedNodes})
         return selectedNodes.every(isNodeWithMark)
       }
 

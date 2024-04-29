@@ -87,10 +87,6 @@ export const ActionMenu = memo(function ActionMenu(props: ActionMenuProps) {
             })
 
         const active = activeKeys.includes(action.key)
-
-        // if (action.title === 'Strong') {
-        //   console.log({active, activeKeys, action: action.title})
-        // }
         return (
           <CollapseMenuButton
             aria-label={t('toolbar.portable-text.action-button-aria-label', {
