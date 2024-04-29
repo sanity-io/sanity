@@ -1,7 +1,7 @@
 import {type CliCommandDefinition} from '@sanity/cli'
 
 // TODO: Switch to lazy import.
-import mod from '../../actions/manifest/extractManifestsAction'
+import mod from '../../actions/manifest/extractManifestAction'
 
 const description = 'Extracts a JSON representation of a Sanity schema within a Studio context.'
 
@@ -13,18 +13,18 @@ Examples
   sanity manifest extract
 `
 
-const extractManifestsCommand: CliCommandDefinition = {
+const extractManifestCommand: CliCommandDefinition = {
   name: 'extract',
   group: 'manifest',
   signature: '',
   description,
   helpText,
   action: async (args, context) => {
-    // const mod = await import('../../actions/manifest/extractManifestsAction')
+    // const mod = await import('../../actions/manifest/extractManifestAction')
     //
     // return mod.default(args, context)
     return mod(args, context)
   },
 }
 
-export default extractManifestsCommand
+export default extractManifestCommand

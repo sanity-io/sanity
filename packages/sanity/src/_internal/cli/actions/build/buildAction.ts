@@ -13,7 +13,7 @@ import {checkStudioDependencyVersions} from '../../util/checkStudioDependencyVer
 import {checkRequiredDependencies} from '../../util/checkRequiredDependencies'
 import {getTimer} from '../../util/timing'
 import {BuildTrace} from './build.telemetry'
-import extractManifest from '../manifest/extractManifestsAction'
+import extractManifest from '../manifest/extractManifestAction'
 import {pick} from 'lodash'
 
 const rimraf = promisify(rimrafCallback)
