@@ -316,7 +316,8 @@ export interface CliConfig {
   studioHost?: string
 
   /**
-   * Extracts a Studio manifest to the `dist/static` directory when building (or deploying) the project.
+   * Whether or not to extract a Studio Manifest to the static assets directory when building
+   * (or deploying) the project.
    *
    * Optional, defaults to `false`.
    */
