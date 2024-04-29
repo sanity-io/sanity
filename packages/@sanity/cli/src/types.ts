@@ -311,7 +311,7 @@ export interface CliConfig {
 
   vite?: UserViteConfig
 
-  enableAutoUpdates?: boolean
+  unstable_enableAutoUpdates?: boolean
 }
 
 export type UserViteConfig =

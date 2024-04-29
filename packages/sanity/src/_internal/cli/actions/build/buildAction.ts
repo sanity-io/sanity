@@ -79,7 +79,7 @@ export default async function buildSanityStudio(
 
   const enableAutoUpdates =
     flags['enable-auto-updates'] ||
-    (cliConfig && 'enableAutoUpdates' in cliConfig && cliConfig.enableAutoUpdates)
+    (cliConfig && 'unstable_enableAutoUpdates' in cliConfig && cliConfig.unstable_enableAutoUpdates)
 
   if (enableAutoUpdates) {
     output.print(`${info} Building with auto-updates enabled`)
