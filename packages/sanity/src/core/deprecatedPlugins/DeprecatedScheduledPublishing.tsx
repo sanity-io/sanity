@@ -13,6 +13,7 @@ function SchedulePublishingStudioLayout(props: LayoutProps) {
         `,
     )
     toast.push({
+      id: 'scheduled-publishing-deprecated',
       closable: true,
       duration: 60000,
       status: 'error',
