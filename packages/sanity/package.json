@@ -214,6 +214,7 @@
     "module-alias": "^2.2.2",
     "nano-pubsub": "^3.0.0",
     "nanoid": "^3.1.30",
+    "node-html-parser": "^6.1.13",
     "observable-callback": "^1.0.1",
     "oneline": "^1.0.3",
     "open": "^8.4.0",
