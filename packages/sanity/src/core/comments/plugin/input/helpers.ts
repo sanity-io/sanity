@@ -107,10 +107,9 @@ export function useAuthoringReferenceElement(
 export function getSelectionBoundingRect(): DOMRect | null {
   const selection = window.getSelection()
   let range = null
-  try {
-    range = selection?.getRangeAt(0)
-  } catch (error) {
-    console.error('Unable to get selection rect for portable text comment input', error)
+
+  if (selection && selection.rangeCount > 0) {
+    range = selection.getRangeAt(0)
   }
   const rect = range?.getBoundingClientRect()
 
