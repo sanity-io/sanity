@@ -178,6 +178,9 @@ export class PortableTextEditor extends Component<PortableTextEditorProps> {
   }
 
   // Static API methods
+  static activeAnnotations = (editor: PortableTextEditor): PortableTextObject[] => {
+    return editor && editor.editable ? editor.editable.activeAnnotations() : []
+  }
   static isAnnotationActive = (
     editor: PortableTextEditor,
     annotationType: PortableTextObject['_type'],

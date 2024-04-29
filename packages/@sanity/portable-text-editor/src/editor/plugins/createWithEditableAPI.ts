@@ -262,6 +262,40 @@ export function createWithEditableAPI(
         }
         return node
       },
+      activeAnnotations: (): PortableTextObject[] => {
+        if (!editor.selection || editor.selection.focus.path.length < 2) {
+          return []
+        }
+        try {
+          const activeAnnotations: PortableTextObject[] = []
+          const spans = Editor.nodes(editor, {
+            at: editor.selection,
+            match: (node) =>
+              Text.isText(node) &&
+              node.marks !== undefined &&
+              Array.isArray(node.marks) &&
+              node.marks.length > 0,
+          })
+          for (const [span, path] of spans) {
+            const [block] = Editor.node(editor, path, {depth: 1})
+            if (editor.isTextBlock(block)) {
+              block.markDefs?.forEach((def) => {
+                if (
+                  Text.isText(span) &&
+                  span.marks &&
+                  Array.isArray(span.marks) &&
+                  span.marks.includes(def._key)
+                ) {
+                  activeAnnotations.push(def)
+                }
+              })
+            }
+          }
+          return activeAnnotations
+        } catch (err) {
+          return []
+        }
+      },
       isAnnotationActive: (annotationType: PortableTextObject['_type']): boolean => {
         if (!editor.selection || editor.selection.focus.path.length < 2) {
           return false
