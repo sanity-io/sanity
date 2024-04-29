@@ -12,6 +12,7 @@ import {isMainThread, parentPort, Worker, workerData} from 'node:worker_threads'
 
 import chalk from 'chalk'
 import importFresh from 'import-fresh'
+import {parse as parseHtml} from 'node-html-parser'
 import {createElement} from 'react'
 import {renderToStaticMarkup} from 'react-dom/server'
 
@@ -41,14 +42,19 @@ interface DocumentProps {
   css?: string[]
 }
 
-export function renderDocument(options: {
+interface RenderDocumentOptions {
   monorepo?: SanityMonorepo
   studioRootPath: string
   props?: DocumentProps
-}): Promise<string> {
+  importMap?: {
+    imports?: Record<string, string>
+  }
+}
+
+export function renderDocument(options: RenderDocumentOptions): Promise<string> {
   return new Promise((resolve, reject) => {
     if (!useThreads) {
-      resolve(getDocumentHtml(options.studioRootPath, options.props))
+      resolve(getDocumentHtml(options.studioRootPath, options.props, options.importMap))
       return
     }
 
@@ -145,7 +151,7 @@ function renderDocumentFromWorkerData() {
     throw new Error('Must be used as a Worker with a valid options object in worker data')
   }
 
-  const {monorepo, studioRootPath, props} = workerData || {}
+  const {monorepo, studioRootPath, props, importMap}: RenderDocumentOptions = workerData || {}
 
   if (workerData?.dev) {
     // Define `__DEV__` in the worker thread as well
@@ -191,7 +197,7 @@ function renderDocumentFromWorkerData() {
         loader: 'jsx',
       })
 
-  const html = getDocumentHtml(studioRootPath, props)
+  const html = getDocumentHtml(studioRootPath, props, importMap)
 
   parentPort.postMessage({type: 'result', html})
 
@@ -200,7 +206,11 @@ function renderDocumentFromWorkerData() {
   unregisterJs()
 }
 
-function getDocumentHtml(studioRootPath: string, props?: DocumentProps): string {
+function getDocumentHtml(
+  studioRootPath: string,
+  props?: DocumentProps,
+  importMap?: {imports?: Record<string, string>},
+): string {
   const Document = getDocumentComponent(studioRootPath)
 
   // NOTE: Validate the list of CSS paths so implementers of `_document.tsx` don't have to
@@ -216,8 +226,41 @@ function getDocumentHtml(studioRootPath: string, props?: DocumentProps): string 
   })
 
   debug('Rendering document component using React')
-  const result = renderToStaticMarkup(createElement(Document, {...defaultProps, ...props, css}))
+  const result = addImportMapToHtml(
+    renderToStaticMarkup(createElement(Document, {...defaultProps, ...props, css})),
+    importMap,
+  )
+
   return `<!DOCTYPE html>${result}`
+}
+
+export function addImportMapToHtml(
+  html: string,
+  importMap?: {imports?: Record<string, string>},
+): string {
+  if (!importMap) return html
+
+  let root = parseHtml(html)
+  let htmlEl = root.querySelector('html')
+  if (!htmlEl) {
+    const oldRoot = root
+    root = parseHtml('<html></html>')
+    htmlEl = root.querySelector('html')!
+    htmlEl.appendChild(oldRoot)
+  }
+
+  let headEl = htmlEl.querySelector('head')
+
+  if (!headEl) {
+    htmlEl.insertAdjacentHTML('afterbegin', '<head></head>')
+    headEl = root.querySelector('head')!
+  }
+
+  headEl.insertAdjacentHTML(
+    'beforeend',
+    `<script type="importmap">${JSON.stringify(importMap)}</script>`,
+  )
+  return root.outerHTML
 }
 
 function getDocumentComponent(studioRootPath: string) {
