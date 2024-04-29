@@ -96,6 +96,7 @@ export default async function typegenGenerateAction(
     schemaTypesCount: 0,
     unknownTypeNodesGenerated: 0,
     typeNodesGenerated: 0,
+    emptyUnionTypeNodesGenerated: 0,
     size: 0,
   }
 
@@ -135,6 +136,7 @@ export default async function typegenGenerateAction(
         type,
         typeNodesGenerated,
         unknownTypeNodesGenerated,
+        emptyUnionTypeNodesGenerated,
       } of msg.types) {
         fileTypeString += `// Variable: ${queryName}\n`
         fileTypeString += `// Query: ${query.replace(/(\r\n|\n|\r)/gm, '')}\n`
@@ -142,6 +144,7 @@ export default async function typegenGenerateAction(
         stats.queriesCount++
         stats.typeNodesGenerated += typeNodesGenerated
         stats.unknownTypeNodesGenerated += unknownTypeNodesGenerated
+        stats.emptyUnionTypeNodesGenerated += emptyUnionTypeNodesGenerated
       }
       typeFile.write(`${fileTypeString}\n`)
       stats.size += Buffer.byteLength(fileTypeString)
@@ -161,6 +164,7 @@ export default async function typegenGenerateAction(
     unknownTypeNodesGenerated: stats.unknownTypeNodesGenerated,
     unknownTypeNodesRatio:
       stats.typeNodesGenerated > 0 ? stats.unknownTypeNodesGenerated / stats.typeNodesGenerated : 0,
+    emptyUnionTypeNodesGenerated: stats.emptyUnionTypeNodesGenerated,
   })
 
   trace.complete()
