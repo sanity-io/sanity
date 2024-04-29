@@ -310,6 +310,8 @@ export interface CliConfig {
   graphql?: GraphQLAPIConfig[]
 
   vite?: UserViteConfig
+
+  enableAutoUpdates?: boolean
 }
 
 export type UserViteConfig =
