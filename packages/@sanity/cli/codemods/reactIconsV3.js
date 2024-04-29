@@ -82,7 +82,7 @@ function replace(input, re, value) {
 
 function pascalCaseTransform(input) {
   const firstChar = input.charAt(0)
-  const lowerChars = input.substr(1).toLowerCase()
+  const lowerChars = input.slice(1).toLowerCase()
   return `${firstChar.toUpperCase()}${lowerChars}`
 }
 

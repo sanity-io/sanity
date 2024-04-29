@@ -16,6 +16,7 @@ import {type Router, type RouterState} from 'sanity/router'
 
 import {type FormBuilderCustomMarkersComponent, type FormBuilderMarkersComponent} from '../form'
 import {type LocalePluginOptions, type LocaleSource} from '../i18n/types'
+import {type ScheduledPublishingPluginOptions} from '../scheduledPublishing/types'
 import {type AuthStore} from '../store'
 import {type SearchFilterDefinition} from '../studio/components/navbar/search/definitions/filters'
 import {type SearchOperatorDefinition} from '../studio/components/navbar/search/definitions/operators'
@@ -435,9 +436,7 @@ export interface WorkspaceOptions extends SourceOptions {
    * @hidden
    * @beta
    */
-  unstable_tasks?: {
-    enabled: boolean
-  }
+  unstable_tasks?: DefaultPluginsWorkspaceOptions['tasks']
 
   /**
    * @hidden
@@ -446,6 +445,8 @@ export interface WorkspaceOptions extends SourceOptions {
   unstable_serverActions?: {
     enabled: boolean
   }
+
+  scheduledPublishing?: DefaultPluginsWorkspaceOptions['scheduledPublishing']
 }
 
 /**
@@ -761,7 +762,7 @@ export interface Source {
 }
 
 /** @internal */
-export interface WorkspaceSummary {
+export interface WorkspaceSummary extends DefaultPluginsWorkspaceOptions {
   type: 'workspace-summary'
   name: string
   title: string
@@ -796,7 +797,6 @@ export interface WorkspaceSummary {
       source: Observable<Source>
     }>
   }
-  tasks: WorkspaceOptions['unstable_tasks']
   serverActions: WorkspaceOptions['unstable_serverActions']
 }
 
@@ -824,6 +824,7 @@ export interface Workspace extends Omit<Source, 'type'> {
    * @beta
    */
   unstable_sources: Source[]
+  scheduledPublishing: ScheduledPublishingPluginOptions
 }
 
 /**
@@ -864,3 +865,9 @@ export type {
   CookielessCompatibleLoginMethod,
   LoginMethod,
 } from './auth/types'
+
+/** @beta */
+export type DefaultPluginsWorkspaceOptions = {
+  tasks: {enabled: boolean}
+  scheduledPublishing: ScheduledPublishingPluginOptions
+}

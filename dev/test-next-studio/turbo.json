@@ -1,0 +1,16 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "extends": ["//"],
+  "pipeline": {
+    "build": {
+      "env": ["NEXT_PUBLIC_SANITY_*", "NEXT_PUBLIC_VERCEL_ENV", "SANITY_*"],
+      "outputs": [".next/**", "!.next/cache/**", "out/**"],
+      "dependsOn": ["^build"]
+    },
+    "dev": {
+      "dependsOn": ["^build"],
+      "cache": false,
+      "persistent": true
+    }
+  }
+}

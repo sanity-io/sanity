@@ -724,6 +724,7 @@ class HelpfulError extends Error {
 
   constructor(message: string, helpUrl?: string) {
     super(message)
+    this.name = 'HelpfulError'
     this.helpUrl = helpUrl
   }
 }

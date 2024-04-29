@@ -31,6 +31,7 @@ const config = {
     'prettier',
     'react',
     'tsdoc',
+    'unicorn',
   ],
   ignorePatterns: [
     '**/etc/*',
@@ -112,6 +113,10 @@ const config = {
     'no-unused-vars': 'off',
     'no-useless-catch': 'warn',
     'no-async-promise-executor': 'warn',
+    'unicorn/prefer-string-slice': 'error',
+    'unicorn/prefer-node-protocol': 'error',
+    'unicorn/prefer-keyboard-event-key': 'error',
+    'unicorn/custom-error-definition': 'error',
   },
   settings: {
     'import/extensions': extensions,
@@ -137,6 +142,15 @@ const config = {
     {
       files: [`**/*/test/**/*`, '**/*/__tests__/**/*', '**/*.test.{js,ts,tsx}'],
       env: {jest: true},
+      rules: {
+        'i18next/no-literal-string': 'off',
+        '@sanity/i18n/no-attribute-string-literals': 'off',
+        '@sanity/i18n/no-attribute-template-literals': 'off',
+      },
+    },
+    // Ignore i18n in ScheduledPublishing files.
+    {
+      files: ['**/*/scheduledPublishing/**/*'],
       rules: {
         'i18next/no-literal-string': 'off',
         '@sanity/i18n/no-attribute-string-literals': 'off',

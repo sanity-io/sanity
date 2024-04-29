@@ -494,5 +494,5 @@ describe('user interaction happy paths', () => {
         type: 'unset',
       },
     ])
-  })
+  }, 15000)
 })

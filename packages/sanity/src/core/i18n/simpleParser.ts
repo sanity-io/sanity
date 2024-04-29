@@ -78,11 +78,11 @@ export function simpleParser(input: string): Token[] {
           tokens.push({type: 'tagOpen', name: tagName})
           openTag = tagName
         }
-        remainder = remainder.substring(match[0].length)
+        remainder = remainder.slice(match[0].length)
       } else {
         // move on to next char
         text += remainder[0]
-        remainder = remainder.substring(1)
+        remainder = remainder.slice(1)
       }
     } else if (openTag && remainder[0] === '<' && remainder[1] !== '<') {
       const match = matchCloseTag(remainder)
@@ -104,16 +104,16 @@ export function simpleParser(input: string): Token[] {
         }
         tokens.push({type: 'tagClose', name: tagName})
         openTag = ''
-        remainder = remainder.substring(match[0].length)
+        remainder = remainder.slice(match[0].length)
       } else {
         // move on to next char
         text += remainder[0]
-        remainder = remainder.substring(1)
+        remainder = remainder.slice(1)
       }
     } else {
       // move on to next char
       text += remainder[0]
-      remainder = remainder.substring(1)
+      remainder = remainder.slice(1)
     }
   }
   if (openTag) {

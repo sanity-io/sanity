@@ -3,7 +3,7 @@
   "extends": ["//"],
   "pipeline": {
     "build": {
-      "outputs": [".sanity/**", "dist/**"]
+      "outputs": [".sanity/**", "dist/**", "workshop/scopes.js"]
     }
   }
 }

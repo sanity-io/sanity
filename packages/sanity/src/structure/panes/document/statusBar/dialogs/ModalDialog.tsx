@@ -24,6 +24,7 @@ export function ModalDialog(props: {dialog: DocumentActionModalDialogProps}) {
   return (
     <LegacyLayerProvider zOffset="fullscreen">
       <Dialog
+        animate
         __unstable_hideCloseButton={dialog.showCloseButton === false}
         footer={footer}
         header={dialog.header}

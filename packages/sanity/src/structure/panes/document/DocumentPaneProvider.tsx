@@ -8,7 +8,7 @@ import {
 } from '@sanity/types'
 import {useToast} from '@sanity/ui'
 import {fromString as pathFromString, resolveKeyedPath} from '@sanity/util/paths'
-import {omit} from 'lodash'
+import {omit, throttle} from 'lodash'
 import {memo, useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import deepEquals from 'react-fast-compare'
 import {
@@ -19,6 +19,7 @@ import {
   getDraftId,
   getExpandOperations,
   getPublishedId,
+  type OnPathFocusPayload,
   type PatchEvent,
   setAtPath,
   type StateTree,
@@ -547,25 +548,37 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     [formStateRef],
   )
 
-  const handleFocus = useCallback(
-    (nextFocusPath: Path) => {
-      setFocusPath(nextFocusPath)
-      if (!deepEquals(focusPathRef.current, nextFocusPath)) {
-        setOpenPath(nextFocusPath.slice(0, -1))
-        focusPathRef.current = nextFocusPath
-        onFocusPath?.(nextFocusPath)
-      }
-
+  const updatePresence = useCallback(
+    (nextFocusPath: Path, payload?: OnPathFocusPayload) => {
       presenceStore.setLocation([
         {
           type: 'document',
           documentId,
           path: nextFocusPath,
           lastActiveAt: new Date().toISOString(),
+          selection: payload?.selection,
         },
       ])
     },
-    [documentId, onFocusPath, presenceStore, setOpenPath],
+    [documentId, presenceStore],
+  )
+
+  const updatePresenceThrottled = useMemo(
+    () => throttle(updatePresence, 1000, {leading: true, trailing: true}),
+    [updatePresence],
+  )
+
+  const handleFocus = useCallback(
+    (nextFocusPath: Path, payload?: OnPathFocusPayload) => {
+      setFocusPath(nextFocusPath)
+      if (!deepEquals(focusPathRef.current, nextFocusPath)) {
+        setOpenPath(nextFocusPath.slice(0, -1))
+        focusPathRef.current = nextFocusPath
+        onFocusPath?.(nextFocusPath)
+      }
+      updatePresenceThrottled(nextFocusPath, payload)
+    },
+    [onFocusPath, setOpenPath, updatePresenceThrottled],
   )
 
   const documentPane: DocumentPaneContextValue = useMemo(

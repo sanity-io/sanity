@@ -1,5 +1,6 @@
+import assert from 'node:assert'
+
 import {describe, it} from '@jest/globals'
-import * as assert from 'assert'
 
 import {normalizeBlock} from '../../../src/util/normalizeBlock'
 
