@@ -16,12 +16,20 @@ const MANIFEST_FILENAME = 'v1.studiomanifest.json'
 const SCHEMA_FILENAME_SUFFIX = '.studioschema.json'
 
 const extractManifest: CliCommandAction = async (_args, context) => {
-  const {output, workDir, chalk} = context
+  const {output, workDir, chalk, cliConfig} = context
 
   const defaultOutputDir = resolve(join(workDir, 'dist'))
   // const outputDir = resolve(args.argsWithoutOptions[0] || defaultOutputDir)
   const outputDir = resolve(defaultOutputDir)
-  const staticPath = join(outputDir, 'static')
+  const defaultStaticPath = join(outputDir, 'static')
+
+  const staticPath =
+    cliConfig &&
+    'unstable_staticAssetsPath' in cliConfig &&
+    typeof cliConfig.unstable_staticAssetsPath !== 'undefined'
+      ? resolve(join(workDir, cliConfig.unstable_staticAssetsPath))
+      : defaultStaticPath
+
   const path = join(staticPath, MANIFEST_FILENAME)
 
   const rootPkgPath = readPkgUp.sync({cwd: __dirname})?.path
