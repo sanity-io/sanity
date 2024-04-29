@@ -188,6 +188,7 @@ export default async function buildSanityStudio(
     const buildDuration = timer.end('bundleStudio')
 
     spin.text = `Build Sanity Studio (${buildDuration.toFixed()}ms)`
+    spin.succeed()
 
     await extractManifest(
       {
@@ -198,7 +199,6 @@ export default async function buildSanityStudio(
       context,
     )
 
-    spin.succeed()
     trace.complete()
     if (flags.stats) {
       output.print('\nLargest module files:')
