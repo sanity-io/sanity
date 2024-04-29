@@ -128,14 +128,16 @@ export default async function buildSanityStudio(
     spin.text = `Build Sanity Studio (${buildDuration.toFixed()}ms)`
     spin.succeed()
 
-    await extractManifest(
-      {
-        ...pick(args, ['argsWithoutOptions', 'argv', 'groupOrCommand']),
-        extOptions: {},
-        extraArguments: [],
-      },
-      context,
-    )
+    if (context.cliConfig && 'unstable_extractManifestOnBuild' in context.cliConfig && context.cliConfig.unstable_extractManifestOnBuild) {
+      await extractManifest(
+        {
+          ...pick(args, ['argsWithoutOptions', 'argv', 'groupOrCommand']),
+          extOptions: {},
+          extraArguments: [],
+        },
+        context,
+      )
+    }
 
     trace.complete()
     if (flags.stats) {

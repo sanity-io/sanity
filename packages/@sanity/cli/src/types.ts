@@ -310,6 +310,13 @@ export interface CliConfig {
   graphql?: GraphQLAPIConfig[]
 
   vite?: UserViteConfig
+
+  /**
+   * Extracts a Studio manifest to the `dist/static` directory when building (or deploying) the project.
+   *
+   * Optional, defaults to `false`.
+   */
+  unstable_extractManifestOnBuild?: boolean
 }
 
 export type UserViteConfig =
