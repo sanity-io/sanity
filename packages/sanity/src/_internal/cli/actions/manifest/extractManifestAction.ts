@@ -89,14 +89,12 @@ const extractManifest: CliCommandAction = async (_args, context) => {
 
     // trace.complete()
 
-    spinner.succeed('Extracted manifest')
+    spinner.succeed(`Extracted manifest to ${chalk.cyan(path)}`)
   } catch (err) {
     // trace.error(err)
     spinner.fail('Failed to extract manifest')
     throw err
   }
-
-  output.print(`Extracted manifest to ${chalk.cyan(path)}`)
 }
 
 export default extractManifest
