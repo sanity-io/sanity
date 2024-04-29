@@ -9,5 +9,13 @@ export default defineType({
       type: 'date',
       validation: (Rule) => Rule.min('2024-01-01').required(),
     }),
+    defineField({
+      name: 'initialValue',
+      type: 'date',
+      options: {
+        dateFormat: 'YYYY.MM.DD.',
+      },
+      initialValue: '2024.04.29.',
+    }),
   ],
 })

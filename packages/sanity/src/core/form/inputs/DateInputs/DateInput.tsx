@@ -13,9 +13,6 @@ import {getCalendarLabels} from './utils'
  * @beta */
 export type DateInputProps = StringInputProps
 
-const deserialize = (value: string) => parse(value, DEFAULT_DATE_FORMAT)
-const serialize = (date: Date) => format(date, DEFAULT_DATE_FORMAT)
-
 /**
  * @hidden
  * @beta */
@@ -39,6 +36,10 @@ export function DateInput(props: DateInputProps) {
   )
 
   const calendarLabels: CalendarLabels = useMemo(() => getCalendarLabels(t), [t])
+
+  const deserialize = useCallback((v: string) => parse(v, dateFormat), [dateFormat])
+  const serialize = useCallback((date: Date) => format(date, dateFormat), [dateFormat])
+
   return (
     <CommonDateTimeInput
       {...elementProps}

@@ -1,5 +1,5 @@
-import {test} from '@sanity/test'
 import {expect} from '@playwright/test'
+import {test} from '@sanity/test'
 
 test(`date input shows validation on selecting date from datepicker`, async ({
   page,
@@ -70,4 +70,21 @@ test(`date input shows validation on entering date in the textfield and onBlur`,
   ).toBeVisible()
 
   await expect(page.getByTestId('action-Publish')).toBeDisabled()
+})
+
+test('date input does not show an error when passing an initialValue with a custom format', async ({
+  page,
+  createDraftDocument,
+}) => {
+  await createDraftDocument('/test/content/input-debug;dateValidation')
+
+  await page.waitForSelector(`data-testid=field-initialValue`)
+
+  await expect(page.getByTestId('field-initialValue').getByTestId('date-input')).toHaveValue(
+    // Defined in dev/test-studio/schema/debug/dateValidation.ts
+    '2024.04.29.',
+  )
+
+  const invalidInput = page.locator(`[data-testid=date-input]:invalid`)
+  expect(await invalidInput.count()).toBe(0)
 })
