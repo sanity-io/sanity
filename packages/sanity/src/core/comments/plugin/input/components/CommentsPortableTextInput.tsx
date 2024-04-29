@@ -78,6 +78,11 @@ export const CommentsPortableTextInputInner = memo(function CommentsPortableText
   const editorRef = useRef<PortableTextEditor | null>(null)
   const mouseDownRef = useRef<boolean>(false)
 
+  // A reference to the authoring decoration element that highlights the selected text
+  // when starting to author a comment.
+  const [authoringDecorationElement, setAuthoringDecorationElement] =
+    useState<HTMLSpanElement | null>(null)
+
   const [nextCommentValue, setNextCommentValue] = useState<CommentMessage | null>(null)
   const [nextCommentSelection, setNextCommentSelection] = useState<EditorSelection | null>(null)
 
@@ -106,6 +111,7 @@ export const CommentsPortableTextInputInner = memo(function CommentsPortableText
     setNextCommentSelection(null)
     setNextCommentValue(null)
     setCanSubmit(false)
+    setAuthoringDecorationElement(null)
   }, [])
 
   // Set the next comment selection to the current selection so that we can
@@ -396,7 +402,9 @@ export const CommentsPortableTextInputInner = memo(function CommentsPortableText
 
     return {
       component: ({children}) => (
-        <CommentInlineHighlightSpan isAuthoring>{children}</CommentInlineHighlightSpan>
+        <CommentInlineHighlightSpan isAuthoring ref={setAuthoringDecorationElement}>
+          {children}
+        </CommentInlineHighlightSpan>
       ),
       selection: nextCommentSelection,
     }
@@ -450,7 +458,7 @@ export const CommentsPortableTextInputInner = memo(function CommentsPortableText
 
   const popoverAuthoringReferenceElement = useAuthoringReferenceElement({
     scrollElement,
-    disabled: !nextCommentSelection,
+    disabled: !nextCommentSelection || !authoringDecorationElement,
     selector: '[data-inline-comment-state="authoring"]',
   })
 
