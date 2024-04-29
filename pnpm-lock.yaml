@@ -8799,7 +8799,7 @@ packages:
       minipass-pipeline: 1.2.4
       p-map: 4.0.0
       ssri: 10.0.5
-      tar: 6.2.1
+      tar: 6.1.11
       unique-filename: 3.0.0
     dev: true
 
@@ -8817,7 +8817,7 @@ packages:
       minipass-pipeline: 1.2.4
       p-map: 4.0.0
       ssri: 10.0.5
-      tar: 6.2.1
+      tar: 6.1.11
       unique-filename: 3.0.0
     dev: true
 
@@ -11039,9 +11039,9 @@ packages:
     engines: {node: '>=10'}
     dependencies:
       cross-spawn: 7.0.3
-      get-stream: 6.0.1
+      get-stream: 6.0.0
       human-signals: 2.1.0
-      is-stream: 2.0.1
+      is-stream: 2.0.0
       merge-stream: 2.0.0
       npm-run-path: 4.0.1
       onetime: 5.1.2
@@ -15079,7 +15079,7 @@ packages:
       nopt: 7.2.0
       proc-log: 3.0.0
       semver: 7.6.0
-      tar: 6.2.1
+      tar: 6.1.11
       which: 4.0.0
     transitivePeerDependencies:
       - supports-color
@@ -15578,7 +15578,7 @@ packages:
       bl: 4.1.0
       chalk: 4.1.2
       cli-cursor: 3.1.0
-      cli-spinners: 2.9.2
+      cli-spinners: 2.6.1
       is-interactive: 1.0.0
       log-symbols: 4.1.0
       strip-ansi: 6.0.1
@@ -15790,7 +15790,7 @@ packages:
       read-package-json-fast: 3.0.2
       sigstore: 2.3.0
       ssri: 10.0.5
-      tar: 6.2.1
+      tar: 6.1.11
     transitivePeerDependencies:
       - bluebird
       - supports-color
