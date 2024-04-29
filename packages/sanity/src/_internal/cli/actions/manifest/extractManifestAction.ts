@@ -1,3 +1,4 @@
+import {createHash} from 'node:crypto'
 import {mkdir, writeFile} from 'node:fs/promises'
 import {dirname, join, resolve} from 'node:path'
 import {Worker} from 'node:worker_threads'
@@ -114,10 +115,9 @@ async function externalizeSchema(
   workspace: ExtractSchemaWorkerResult<'direct'>,
   staticPath: string,
 ): Promise<ManifestV1Workspace> {
-  const encoder = new TextEncoder()
   const schemaString = JSON.stringify(workspace.schema, null, 2)
-  const hash = await crypto.subtle.digest('SHA-1', encoder.encode(schemaString))
-  const filename = `${hexFromBuffer(hash).slice(0, 8)}${SCHEMA_FILENAME_SUFFIX}`
+  const hash = createHash('sha1').update(schemaString).digest('hex')
+  const filename = `${hash.slice(0, 8)}${SCHEMA_FILENAME_SUFFIX}`
 
   await writeFile(join(staticPath, filename), schemaString)
 
@@ -125,10 +125,4 @@ async function externalizeSchema(
     ...workspace,
     schema: filename,
   }
-}
-
-function hexFromBuffer(buffer: ArrayBuffer): string {
-  return Array.prototype.map
-    .call(new Uint8Array(buffer), (x) => `00${x.toString(16)}`.slice(-2))
-    .join('')
 }
