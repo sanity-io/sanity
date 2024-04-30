@@ -729,6 +729,9 @@ export class BaseImageInput extends PureComponent<BaseImageInputProps, BaseImage
   renderAsset() {
     const {value, readOnly, elementProps} = this.props
 
+    // removed onBlur as part of a solution to allow for FileInput to be removed within PTE
+    const {onBlur, ...rest} = elementProps
+
     const {hoveringFiles, isStale} = this.state
 
     const hasValueOrUpload = Boolean(value?._upload || value?.asset)
@@ -756,7 +759,7 @@ export class BaseImageInput extends PureComponent<BaseImageInputProps, BaseImage
             this.renderUploadState(value._upload)
           ) : (
             <FileTarget
-              {...elementProps}
+              {...rest}
               onFocus={this.handleFileTargetFocus}
               tabIndex={0}
               disabled={Boolean(readOnly)}
