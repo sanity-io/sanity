@@ -143,7 +143,7 @@ export function createWithPortableTextLists(types: PortableTextMemberSchemaTypes
       const selectedBlocks = [
         ...Editor.nodes(editor, {
           at: editor.selection,
-          match: (node) => node._type === 'block',
+          match: (node) => editor.isTextBlock(node),
         }),
       ]
 
