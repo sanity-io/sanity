@@ -180,12 +180,17 @@ export default defineType({
       of: [
         defineArrayMember({
           type: 'block',
-          of: [{type: 'image', name: 'image'}],
+          of: [
+            defineArrayMember({
+              type: 'image',
+              name: 'image',
+            }),
+          ],
         }),
 
         defineArrayMember({
           type: 'image',
-          name: 'Render Image Component Preview',
+          name: 'Image Component Preview',
           // Replace the preview of all block images
           // with the edit form for that object, bypassing
           // the modal step.
@@ -200,7 +205,7 @@ export default defineType({
         }),
         defineArrayMember({
           type: 'file',
-          name: 'Render File Component Preview',
+          name: 'File Component Preview',
           // Replace the preview of all block images
           // with the edit form for that object, bypassing
           // the modal step.
