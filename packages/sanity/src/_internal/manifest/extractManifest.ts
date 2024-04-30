@@ -6,7 +6,7 @@ export function extractWorkspace(workspace: Workspace): ManifestV1Workspace {
     name: workspace.name,
     dataset: workspace.dataset,
     schema: JSON.parse(
-      JSON.stringify(workspace.schema._original, (key, value) => {
+      JSON.stringify(workspace.schema._original?.types, (key, value) => {
         if (key === 'validation' && isSchemaValidationValue(value)) {
           return serializeValidation(value)
         }
