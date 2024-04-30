@@ -301,11 +301,10 @@ export function createWithEditableAPI(
           return false
         }
         try {
-          const activeAnnotations: PortableTextObject['_type'][] = []
           const spans = [
             ...Editor.nodes(editor, {
               at: editor.selection,
-              mode: 'lowest',
+              match: (node) => Text.isText(node),
             }),
           ]
 
@@ -320,28 +319,21 @@ export function createWithEditableAPI(
           )
             return false
 
-          const annotationCounts: Record<PortableTextObject['_type'], number> = spans.reduce(
-            (acc, [, path]) => {
-              const [block] = Editor.node(editor, path, {depth: 1})
-              if (editor.isTextBlock(block)) {
-                block.markDefs?.forEach((def) => {
-                  acc[def._type] = (acc[def._type] || 0) + 1 || 1
-                })
-              }
-              return acc
-            },
-            {} as Record<PortableTextObject['_type'], number>,
-          )
-
-          Object.entries(annotationCounts).forEach((annotationCount) => {
-            const [annotationCountType, count] = annotationCount
-
-            if (count >= spans.length) {
-              activeAnnotations.push(annotationCountType)
+          const selectionMarkDefs = spans.reduce((accMarkDefs, [, path]) => {
+            const [block] = Editor.node(editor, path, {depth: 1})
+            if (editor.isTextBlock(block) && block.markDefs) {
+              return [...accMarkDefs, ...block.markDefs]
             }
-          })
+            return accMarkDefs
+          }, [] as PortableTextObject[])
 
-          return activeAnnotations.includes(annotationType)
+          return spans.every(([span]) => {
+            const spanMarkDefs = span.marks?.map(
+              (markKey) => selectionMarkDefs.find((def) => def?._key === markKey)?._type,
+            )
+
+            return spanMarkDefs?.includes(annotationType)
+          })
         } catch (err) {
           return false
         }
