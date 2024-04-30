@@ -198,7 +198,13 @@ export default defineType({
             block: (props) => {
               return props.renderDefault({
                 ...props,
-                renderPreview: () => props.children,
+                renderPreview: (previewProps) => {
+                  return props.renderPreview({
+                    ...previewProps,
+                    children: props.children,
+                    layout: 'block',
+                  })
+                },
               })
             },
           },
