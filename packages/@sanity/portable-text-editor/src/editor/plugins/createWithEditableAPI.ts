@@ -300,6 +300,7 @@ export function createWithEditableAPI(
         if (!editor.selection || editor.selection.focus.path.length < 2) {
           return false
         }
+
         try {
           const spans = [
             ...Editor.nodes(editor, {
@@ -310,11 +311,7 @@ export function createWithEditableAPI(
 
           if (
             spans.some(
-              ([span]) =>
-                isPortableTextSpan(span) &&
-                span.marks &&
-                Array.isArray(span.marks) &&
-                !span.marks.length,
+              ([span]) => isPortableTextSpan(span) && (!span.marks || span.marks?.length === 0),
             )
           )
             return false
