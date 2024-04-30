@@ -1,6 +1,6 @@
 import {useContext} from 'react'
+import {MentionUserContext} from 'sanity/_singletons'
 
-import {MentionUserContext} from './MentionUserContext'
 import {type MentionUserContextValue} from './types'
 
 /**

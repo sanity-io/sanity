@@ -1,6 +1,6 @@
 import {type ReactNode, useCallback, useMemo, useState} from 'react'
+import {CommentsAuthoringPathContext} from 'sanity/_singletons'
 
-import {CommentsAuthoringPathContext} from './CommentsAuthoringPathContext'
 import {type CommentsAuthoringPathContextValue} from './types'
 
 interface CommentsAuthoringPathProviderProps {

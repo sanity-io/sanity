@@ -1,7 +1,7 @@
 import {UnknownIcon} from '@sanity/icons'
 import {Menu} from '@sanity/ui'
 import {type MouseEvent, useCallback, useId} from 'react'
-import {StatusButton, useI18nText} from 'sanity'
+import {StatusButton, useI18nText, useTranslation} from 'sanity'
 import {useIntentLink} from 'sanity/router'
 
 import {Button, MenuButton} from '../../../ui-components'
@@ -55,6 +55,7 @@ export interface PaneHeaderMenuItemActionButtonProps {
 export function PaneHeaderMenuItemActionButton(props: PaneHeaderMenuItemActionButtonProps) {
   const {node} = props
   const {title} = useI18nText(node)
+  const {t} = useTranslation()
 
   if (node.intent) {
     return <PaneHeaderActionIntentButton {...props} intent={node.intent} />
@@ -70,7 +71,7 @@ export function PaneHeaderMenuItemActionButton(props: PaneHeaderMenuItemActionBu
       onClick={node.onAction}
       selected={node.selected}
       tone={node.tone}
-      aria-label={ariaLabel}
+      aria-label={ariaLabel || title || t('status-button.aria-label')}
       tooltipProps={{
         hotkeys: !isDisabled && node.hotkey ? node.hotkey.split('+') : undefined,
         content: isDisabled ? disabledReason : title,
@@ -82,6 +83,7 @@ export function PaneHeaderMenuItemActionButton(props: PaneHeaderMenuItemActionBu
 function PaneHeaderActionIntentButton(props: {intent: Intent; node: _PaneMenuItem}) {
   const {intent, node} = props
   const intentLink = useIntentLink({intent: intent.type, params: intent.params})
+  const {t} = useTranslation()
 
   const handleClick = useCallback(
     (event: MouseEvent<HTMLButtonElement>) => {
@@ -102,7 +104,7 @@ function PaneHeaderActionIntentButton(props: {intent: Intent; node: _PaneMenuIte
       onClick={handleClick}
       selected={node.selected}
       tone={node.tone}
-      aria-label={ariaLabel}
+      aria-label={ariaLabel || node.title || t('status-button.aria-label')}
       tooltipProps={{
         hotkeys: !isDisabled && node.hotkey ? node.hotkey.split('+') : undefined,
         content: isDisabled ? disabledReason : node.title,

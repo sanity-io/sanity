@@ -1,6 +1,6 @@
 import {useContext} from 'react'
+import {CommentsIntentContext} from 'sanity/_singletons'
 
-import {CommentsIntentContext} from '../context'
 import {type CommentIntentGetter} from '../types'
 
 /**

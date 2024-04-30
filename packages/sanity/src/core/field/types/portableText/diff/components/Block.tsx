@@ -1,10 +1,10 @@
 import {type Path, type PortableTextTextBlock} from '@sanity/types'
 import {Box, Card, Stack, Text} from '@sanity/ui'
 import {type MouseEvent, useCallback, useContext} from 'react'
+import {ConnectorContext, DiffContext} from 'sanity/_singletons'
 
-import {ConnectorContext} from '../../../../../changeIndicators'
 import {useTranslation} from '../../../../../i18n'
-import {DiffContext, DiffTooltip, useDiffAnnotationColor} from '../../../../diff'
+import {DiffTooltip, useDiffAnnotationColor} from '../../../../diff'
 import {isHeader} from '../helpers'
 import {type PortableTextDiff} from '../types'
 import {Blockquote} from './Blockquote'

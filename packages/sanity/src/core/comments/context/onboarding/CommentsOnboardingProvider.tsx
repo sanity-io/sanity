@@ -1,6 +1,6 @@
 import {type ReactNode, useCallback, useMemo, useState} from 'react'
+import {CommentsOnboardingContext} from 'sanity/_singletons'
 
-import {CommentsOnboardingContext} from './CommentsOnboardingContext'
 import {type CommentsOnboardingContextValue} from './types'
 
 const VERSION = 1

@@ -1,7 +1,7 @@
 import {type ReactNode, useMemo} from 'react'
+import {WorkspacesContext} from 'sanity/_singletons'
 
 import {type Config, prepareConfig} from '../../config'
-import {WorkspacesContext} from './WorkspacesContext'
 
 /** @internal */
 export interface WorkspacesProviderProps {

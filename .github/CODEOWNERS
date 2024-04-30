@@ -23,6 +23,9 @@
 /packages/sanity/src/core/form/types/blockProps.ts @sanity-io/studio-ex
 /packages/@sanity/types/src/schema/definition/type/block.ts @sanity-io/studio-ex
 
+# -- Block tools --
+/packages/@sanity/block-tools/ @sanity-io/studio-ex
+
 # -- Playwright Component tests --
 /packages/sanity/playwright-ct @sanity-io/studio-ex
 

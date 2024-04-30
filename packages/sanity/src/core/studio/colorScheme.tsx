@@ -2,31 +2,16 @@ import {DesktopIcon, MoonIcon, SunIcon} from '@sanity/icons'
 import {studioTheme, type ThemeColorSchemeKey, ThemeProvider, usePrefersDark} from '@sanity/ui'
 import {
   type ComponentType,
-  createContext,
   type ReactNode,
   useContext,
   useEffect,
   useMemo,
   useSyncExternalStore,
 } from 'react'
+import {ColorSchemeSetValueContext, ColorSchemeValueContext} from 'sanity/_singletons'
 
 import {type TFunction} from '../i18n'
 import {type StudioThemeColorSchemeKey} from '../theme/types'
-
-/**
- * Used to keep track of the internal value, which can be "system" in addition to "light" and "dark"
- * @internal
- */
-export const ColorSchemeValueContext = createContext<StudioThemeColorSchemeKey | null>(null)
-
-/**
- * The setter for ColorSchemeValueContext, in a separate context to avoid unnecessary re-renders
- * If set to false then the UI should adjust to reflect that the Studio can't change the color scheme
- * @internal
- */
-export const ColorSchemeSetValueContext = createContext<
-  ((nextScheme: StudioThemeColorSchemeKey) => void) | false | null
->(null)
 
 /** @internal */
 function useSystemScheme(): ThemeColorSchemeKey {

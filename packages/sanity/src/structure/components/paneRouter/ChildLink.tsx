@@ -1,7 +1,7 @@
 import {type ForwardedRef, forwardRef, useContext} from 'react'
+import {PaneRouterContext} from 'sanity/_singletons'
 import {StateLink} from 'sanity/router'
 
-import {PaneRouterContext} from './PaneRouterContext'
 import {type ChildLinkProps} from './types'
 
 /**

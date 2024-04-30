@@ -1,4 +1,4 @@
-import {IsLastPaneContext} from './IsLastPaneContext'
+import {IsLastPaneContext} from 'sanity/_singletons'
 
 interface IsLastPaneProviderProps {
   isLastPane: boolean

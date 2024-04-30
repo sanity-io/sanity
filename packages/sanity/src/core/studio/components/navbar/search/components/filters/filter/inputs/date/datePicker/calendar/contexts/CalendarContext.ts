@@ -1,5 +1,3 @@
-import {createContext} from 'react'
-
 export interface CalendarContextValue {
   date?: Date
   endDate?: Date
@@ -13,5 +11,3 @@ export interface CalendarContextValue {
    */
   firstWeekDay: 1 | 7
 }
-
-export const CalendarContext = createContext<CalendarContextValue | undefined>(undefined)

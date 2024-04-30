@@ -1,14 +1,17 @@
+/* eslint-disable */
+// @ts-check
 const path = require('path')
 
 const ROOT_PATH = path.resolve(__dirname, '../..')
 
+/** @type {import('eslint').Linter.Config} */
 module.exports = {
   extends: ['plugin:boundaries/recommended'],
   plugins: ['boundaries'],
   rules: {
     'import/no-extraneous-dependencies': ['error', {packageDir: [ROOT_PATH, __dirname]}],
     'boundaries/element-types': [
-      'error',
+      2,
       {
         default: 'disallow',
         rules: [
@@ -37,7 +40,7 @@ module.exports = {
           },
           {
             from: 'sanity__contents',
-            allow: ['sanity__contents', 'sanity/router'],
+            allow: ['sanity__contents', 'sanity/router', 'sanity/_singletons'],
           },
           {
             // export (deprecated, aliases structure)
@@ -53,6 +56,7 @@ module.exports = {
               'sanity/_internal',
               'sanity/structure',
               'sanity/structure__contents',
+              'sanity/_singletons',
             ],
           },
           {
@@ -62,7 +66,7 @@ module.exports = {
           },
           {
             from: 'sanity/router__contents',
-            allow: ['sanity/router__contents'],
+            allow: ['sanity/router__contents', 'sanity/_singletons'],
           },
           {
             // export
@@ -71,7 +75,21 @@ module.exports = {
           },
           {
             from: 'sanity/structure__contents',
-            allow: ['sanity', 'sanity/structure__contents', 'sanity/router'],
+            allow: ['sanity', 'sanity/structure__contents', 'sanity/router', 'sanity/_singletons'],
+          },
+          {
+            from: 'sanity/_singletons__contents',
+            allow: ['sanity/_singletons__contents'],
+          },
+          {
+            from: 'sanity/_singletons__contents',
+            allow: ['sanity__contents', 'sanity/structure__contents', 'sanity/router__contents'],
+            importKind: 'type',
+          },
+          {
+            from: 'sanity/_singletons__contents',
+            disallow: ['sanity', 'sanity/structure', 'sanity/router'],
+            importKind: 'type',
           },
         ],
       },
@@ -140,6 +158,42 @@ module.exports = {
         pattern: ['src/structure/**/*.*'],
         mode: 'file',
       },
+      {
+        type: 'sanity/_singletons',
+        pattern: ['src/_exports/_singletons.ts'],
+        mode: 'file',
+      },
+      {
+        type: 'sanity/_singletons__contents',
+        pattern: ['src/_singletons/**/*.*'],
+        mode: 'full',
+      },
     ],
   },
+  overrides: [
+    {
+      files: ['./src/_singletons/**/*.*'],
+      rules: {
+        'no-restricted-imports': [
+          'error',
+          {
+            paths: [
+              {
+                name: 'sanity',
+                message: 'Use relative type imports instead',
+              },
+              {
+                name: 'sanity/structure',
+                message: 'Use relative type imports instead',
+              },
+              {
+                name: 'sanity/router',
+                message: 'Use relative type imports instead',
+              },
+            ],
+          },
+        ],
+      },
+    },
+  ],
 }

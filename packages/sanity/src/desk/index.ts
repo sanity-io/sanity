@@ -108,7 +108,6 @@ import {
   type PaneMenuItemGroup as _PaneMenuItemGroup,
   type PaneNode as _PaneNode,
   type PaneNodeResolver as _PaneNodeResolver,
-  PaneRouterContext as _PaneRouterContext,
   type PaneRouterContextValue as _PaneRouterContextValue,
   type ParameterizedLinkProps as _ParameterizedLinkProps,
   type PartialDocumentList as _PartialDocumentList,
@@ -915,12 +914,7 @@ export const MenuItemGroupBuilder = _MenuItemGroupBuilder
  * @beta
  */
 export const PaneLayout = _PaneLayout
-/**
- * @deprecated Import from `sanity/structure` instead!
- * @hidden
- * @beta
- */
-export const PaneRouterContext = _PaneRouterContext
+
 /**
  * @deprecated Import from `sanity/structure` instead!
  * @hidden

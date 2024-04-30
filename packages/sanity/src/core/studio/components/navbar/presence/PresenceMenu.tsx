@@ -50,6 +50,7 @@ export function PresenceMenu() {
     return (
       <StatusButton
         icon={UsersIcon}
+        aria-label={t('presence.aria-label')}
         mode="bleed"
         tone={hasPresence ? 'positive' : undefined}
         tooltipProps={{

@@ -1,7 +1,5 @@
 import {type ReactElement, type ReactNode} from 'react'
-
-import {defaults} from './defaults'
-import {ZIndexContext} from './ZIndexContext'
+import {ZIndexContext, zIndexContextDefaults} from 'sanity/_singletons'
 
 /**
  * TODO: Rename to `ZOffsetsProvider`
@@ -9,5 +7,5 @@ import {ZIndexContext} from './ZIndexContext'
  * @internal
  */
 export function ZIndexProvider({children}: {children?: ReactNode}): ReactElement {
-  return <ZIndexContext.Provider value={defaults}>{children}</ZIndexContext.Provider>
+  return <ZIndexContext.Provider value={zIndexContextDefaults}>{children}</ZIndexContext.Provider>
 }

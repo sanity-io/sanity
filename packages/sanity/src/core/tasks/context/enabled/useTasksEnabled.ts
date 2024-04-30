@@ -1,6 +1,6 @@
 import {useContext} from 'react'
+import {TasksEnabledContext} from 'sanity/_singletons'
 
-import {TasksEnabledContext} from './TasksEnabledContext'
 import {type TasksEnabledContextValue} from './types'
 
 /**

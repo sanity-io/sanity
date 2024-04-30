@@ -1,6 +1,6 @@
 import {useContext} from 'react'
+import {RouterContext} from 'sanity/_singletons'
 
-import {RouterContext} from './RouterContext'
 import {type RouterContextValue} from './types'
 
 /**

@@ -1,4 +1,5 @@
 # legacy package exports
+_singletons.js
 desk.js
 form.js
 presentation.js
