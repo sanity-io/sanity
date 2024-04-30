@@ -360,23 +360,25 @@ describe('plugin:withPortableTextMarksModel', () => {
           })
           PortableTextEditor.toggleMark(editor, 'bold')
           expect(PortableTextEditor.getValue(editor)).toMatchInlineSnapshot(`
-        Array [
-          Object {
-            "_key": "a",
-            "_type": "myTestBlockType",
-            "children": Array [
-              Object {
-                "_key": "a1",
-                "_type": "span",
-                "marks": Array [],
-                "text": "1234",
-              },
-            ],
-            "markDefs": Array [],
-            "style": "normal",
-          },
-        ]
-      `)
+Array [
+  Object {
+    "_key": "a",
+    "_type": "myTestBlockType",
+    "children": Array [
+      Object {
+        "_key": "a1",
+        "_type": "span",
+        "marks": Array [
+          "bold",
+        ],
+        "text": "1234",
+      },
+    ],
+    "markDefs": Array [],
+    "style": "normal",
+  },
+]
+`)
         }
       })
     })
