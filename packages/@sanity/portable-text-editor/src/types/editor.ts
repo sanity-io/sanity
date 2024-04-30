@@ -197,6 +197,11 @@ export interface PortableTextSlateEditor extends ReactEditor {
   pteWithHotKeys: (event: KeyboardEvent<HTMLDivElement>) => void
 
   /**
+   * Helper function that creates an empty text block
+   */
+  pteCreateEmptyBlock: () => Descendant
+
+  /**
    * Undo
    */
   undo: () => void

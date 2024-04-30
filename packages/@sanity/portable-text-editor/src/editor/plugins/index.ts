@@ -86,9 +86,9 @@ export const withPlugins = <T extends Editor>(
     schemaTypes,
   })
 
-  const withInsertBreak = createWithInsertBreak(schemaTypes, keyGenerator, portableTextEditor)
+  const withInsertBreak = createWithInsertBreak()
 
-  const withUtils = createWithUtils({keyGenerator, schemaTypes})
+  const withUtils = createWithUtils({keyGenerator, schemaTypes, portableTextEditor})
   const withPortableTextSelections = createWithPortableTextSelections(change$, schemaTypes)
 
   e.destroy = () => {
