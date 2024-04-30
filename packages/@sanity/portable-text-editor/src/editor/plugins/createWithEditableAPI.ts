@@ -311,7 +311,7 @@ export function createWithEditableAPI(
 
           if (
             spans.some(
-              ([span]) => isPortableTextSpan(span) && (!span.marks || span.marks?.length === 0),
+              ([span]) => !isPortableTextSpan(span) || !span.marks || span.marks?.length === 0,
             )
           )
             return false
@@ -325,6 +325,8 @@ export function createWithEditableAPI(
           }, [] as PortableTextObject[])
 
           return spans.every(([span]) => {
+            if (!isPortableTextSpan(span)) return false
+
             const spanMarkDefs = span.marks?.map(
               (markKey) => selectionMarkDefs.find((def) => def?._key === markKey)?._type,
             )
