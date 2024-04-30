@@ -33,6 +33,12 @@
       "require": "./lib/_internal.js",
       "default": "./lib/_internal.js"
     },
+    "./_singletons": {
+      "source": "./src/_exports/_singletons.ts",
+      "import": "./lib/_singletons.mjs",
+      "require": "./lib/_singletons.js",
+      "default": "./lib/_singletons.js"
+    },
     "./cli": {
       "source": "./src/_exports/cli.ts",
       "require": "./lib/cli.js",
@@ -77,6 +83,9 @@
       "_internal": [
         "./lib/_internal.d.ts"
       ],
+      "_singletons": [
+        "./lib/_singletons.d.ts"
+      ],
       "cli": [
         "./lib/cli.d.ts"
       ],
@@ -111,12 +120,13 @@
     "desk.js",
     "presentation.js",
     "router.js",
-    "structure.js"
+    "structure.js",
+    "_singletons.js"
   ],
   "scripts": {
     "build": "pkg-utils build --strict --check --clean",
     "check:types": "tsc --project tsconfig.lib.json",
-    "clean": "rimraf _internal.js cli.js desk.js migrate.js presentation.js router.js structure.js lib",
+    "clean": "rimraf _internal.js _singletons.js cli.js desk.js migrate.js presentation.js router.js structure.js lib",
     "coverage": "jest --coverage",
     "lint": "eslint .",
     "prepublishOnly": "turbo run build",
@@ -249,7 +259,7 @@
     "@sanity/codegen": "3.39.1",
     "@sanity/generate-help-url": "^3.0.0",
     "@sanity/pkg-utils": "6.8.8",
-    "@sanity/tsdoc": "1.0.40",
+    "@sanity/tsdoc": "1.0.41",
     "@sanity/ui-workshop": "^1.2.11",
     "@testing-library/jest-dom": "^6.2.0",
     "@testing-library/react": "^13.4.0",

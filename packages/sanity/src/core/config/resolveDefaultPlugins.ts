@@ -29,6 +29,7 @@ export function getDefaultPluginsOptions(
     tasks: {
       enabled: true,
       ...workspace.unstable_tasks,
+      ...workspace.tasks,
     },
     scheduledPublishing: {
       ...DEFAULT_SCHEDULED_PUBLISH_PLUGIN_OPTIONS,

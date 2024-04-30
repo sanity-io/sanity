@@ -1,6 +1,6 @@
 import {useContext} from 'react'
+import {CommentsUpsellContext} from 'sanity/_singletons'
 
-import {CommentsUpsellContext} from '../context'
 import {type CommentsUpsellContextValue} from '../context/upsell/types'
 
 /**

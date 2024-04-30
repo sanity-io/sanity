@@ -1,5 +1,4 @@
 import {type AssetSource, type ObjectSchemaType, type Path} from '@sanity/types'
-import {createContext} from 'react'
 
 import {type PatchChannel} from './patch'
 import {type FormFieldGroup, type StateTree} from './store'
@@ -60,8 +59,3 @@ export interface FormBuilderContextValue {
   renderPreview: RenderPreviewCallback
   schemaType: ObjectSchemaType
 }
-
-/**
- * @internal
- */
-export const FormBuilderContext = createContext<FormBuilderContextValue | null>(null)

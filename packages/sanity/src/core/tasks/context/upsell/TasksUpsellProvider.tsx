@@ -1,6 +1,7 @@
 import {useTelemetry} from '@sanity/telemetry/react'
 import {template} from 'lodash'
 import {useCallback, useEffect, useMemo, useState} from 'react'
+import {TasksUpsellContext} from 'sanity/_singletons'
 
 import {useClient, useProjectId} from '../../../hooks'
 import {
@@ -12,7 +13,6 @@ import {
 } from '../../../studio'
 import {type UpsellData} from '../../../studio/upsell/types'
 import {UpsellDialog} from '../../../studio/upsell/UpsellDialog'
-import {TasksUpsellContext} from './TasksUpsellContext'
 import {type TasksUpsellContextValue} from './types'
 
 const FEATURE = 'tasks'

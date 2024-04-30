@@ -291,8 +291,13 @@ export interface DocumentPluginOptions {
    */
   newDocumentOptions?: NewDocumentOptionsResolver
 
-  /** @internal */
+  /** @deprecated Use `comments` instead */
   unstable_comments?: {
+    enabled: boolean | ((context: DocumentCommentsEnabledContext) => boolean)
+  }
+
+  /** @internal */
+  comments?: {
     enabled: boolean | ((context: DocumentCommentsEnabledContext) => boolean)
   }
 }
@@ -433,10 +438,13 @@ export interface WorkspaceOptions extends SourceOptions {
    */
   unstable_sources?: SourceOptions[]
   /**
-   * @hidden
-   * @beta
+   * @deprecated Use `tasks` instead
    */
   unstable_tasks?: DefaultPluginsWorkspaceOptions['tasks']
+  /**
+   * @internal
+   */
+  tasks?: DefaultPluginsWorkspaceOptions['tasks']
 
   /**
    * @hidden
@@ -654,8 +662,13 @@ export interface Source {
      */
     inspectors: (props: PartialContext<DocumentInspectorContext>) => DocumentInspector[]
 
-    /** @internal */
+    /** @deprecated  Use `comments` instead */
     unstable_comments: {
+      enabled: (props: DocumentCommentsEnabledContext) => boolean
+    }
+
+    /** @internal */
+    comments: {
       enabled: (props: DocumentCommentsEnabledContext) => boolean
     }
   }
@@ -756,7 +769,7 @@ export interface Source {
     i18next: i18n
   }
   /** @beta */
-  tasks?: WorkspaceOptions['unstable_tasks']
+  tasks?: WorkspaceOptions['tasks']
   /** @beta */
   serverActions?: WorkspaceOptions['unstable_serverActions']
 }

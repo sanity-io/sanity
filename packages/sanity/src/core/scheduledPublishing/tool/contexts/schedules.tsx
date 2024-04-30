@@ -1,12 +1,16 @@
 import {isSameDay} from 'date-fns'
-import {createContext, type ReactNode, useCallback, useContext, useMemo, useState} from 'react'
+import {type ReactNode, useCallback, useContext, useMemo, useState} from 'react'
+import {SchedulesContext} from 'sanity/_singletons'
 
 import useTimeZone from '../../hooks/useTimeZone'
 import {type Schedule, type ScheduleSort, type ScheduleState} from '../../types'
 import {getLastExecuteDate} from '../../utils/scheduleUtils'
 import {sortByExecuteDate} from '../../utils/sortByExecuteDate'
 
-type State = {
+/**
+ * @internal
+ */
+export interface SchedulesContextValue {
   activeSchedules: Schedule[]
   schedules: Schedule[]
   schedulesByDate: (date: Date) => Schedule[]
@@ -15,8 +19,6 @@ type State = {
   setSortBy: (sortBy: ScheduleSort) => void
   sortBy?: ScheduleSort
 }
-
-const SchedulesContext = createContext<State | undefined>(undefined)
 
 const EMPTY_SCHEDULE: Schedule[] = []
 

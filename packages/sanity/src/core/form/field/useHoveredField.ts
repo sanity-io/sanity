@@ -1,6 +1,5 @@
 import {useContext} from 'react'
-
-import {HoveredFieldContext, type HoveredFieldContextValue} from './HoveredFieldContext'
+import {HoveredFieldContext, type HoveredFieldContextValue} from 'sanity/_singletons'
 
 /** @internal */
 export function useHoveredField(): HoveredFieldContextValue {

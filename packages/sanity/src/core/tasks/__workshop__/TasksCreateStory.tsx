@@ -1,6 +1,8 @@
+import {TasksNavigationContext} from 'sanity/_singletons'
+
 import {AddonDatasetProvider} from '../../studio'
 import {TasksFormBuilder} from '../components'
-import {TasksNavigationContext, TasksProvider} from '../context'
+import {TasksProvider} from '../context'
 
 export default function TasksCreateStory() {
   return (

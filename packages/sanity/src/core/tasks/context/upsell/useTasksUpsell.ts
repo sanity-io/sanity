@@ -1,6 +1,6 @@
 import {useContext} from 'react'
+import {TasksUpsellContext} from 'sanity/_singletons'
 
-import {TasksUpsellContext} from './TasksUpsellContext'
 import {type TasksUpsellContextValue} from './types'
 
 /**

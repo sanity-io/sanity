@@ -1,4 +1,4 @@
-import {createContext, type Dispatch, type SetStateAction} from 'react'
+import {type Dispatch, type SetStateAction} from 'react'
 
 import {type CommandListHandle} from '../../../../../../components/commandList/types'
 import {type SearchAction, type SearchReducerState} from './reducer'
@@ -14,8 +14,3 @@ export interface SearchContextValue {
   setOnClose: (onClose: () => void) => void
   state: SearchReducerState
 }
-
-/**
- * @internal
- */
-export const SearchContext = createContext<SearchContextValue | undefined>(undefined)

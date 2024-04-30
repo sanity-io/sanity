@@ -10,8 +10,7 @@ import {
   useEffect,
   useMemo,
 } from 'react'
-
-import {ScrollContext} from './scrollContext'
+import {ScrollContext} from 'sanity/_singletons'
 
 /** @internal */
 export interface ScrollContainerProps<T extends ElementType>

@@ -27,7 +27,7 @@ export function useResolveCommentsEnabled(
   // Check if the projects plan has the feature enabled
   const {enabled: featureEnabled, isLoading, error} = useFeatureEnabled('studioComments')
 
-  const {enabled} = useSource().document.unstable_comments
+  const {enabled} = useSource().document.comments
   // Check if the feature is enabled for the current document in the config
   const enabledFromConfig = useMemo(
     () => enabled({documentType, documentId: getPublishedId(documentId)}),

@@ -10,7 +10,6 @@ import {
 import {useCallback} from 'react'
 
 import {Button} from '../../../../ui-components'
-import {BetaBadge} from '../../../components'
 import {useTranslation} from '../../../i18n'
 import {useTasksEnabled, useTasksNavigation} from '../../context'
 import {tasksLocaleNamespace} from '../../i18n'
@@ -65,7 +64,6 @@ export function TasksSidebarHeader(props: TasksSidebarHeaderProps) {
             </Box>
           </>
         )}
-        <BetaBadge marginLeft={2} />
       </Flex>
       {(viewMode === 'create' || viewMode === 'draft') && <TasksHeaderDraftsMenu />}
       {viewMode === 'edit' && <TasksActiveTabNavigation items={allItems} />}

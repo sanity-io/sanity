@@ -1,4 +1,5 @@
-import {createContext, type ReactNode, useContext} from 'react'
+import {type ReactNode, useContext} from 'react'
+import {SourceContext} from 'sanity/_singletons'
 
 import {type Source} from '../config'
 import {useWorkspace} from './workspace'
@@ -7,8 +8,6 @@ import {useWorkspace} from './workspace'
 export type SourceProviderProps =
   | {source: Source; children?: ReactNode}
   | {name: string; children?: ReactNode}
-
-const SourceContext = createContext<Source | null>(null)
 
 /** @internal */
 export function SourceProvider({children, ...props}: SourceProviderProps) {
