@@ -90,8 +90,7 @@ const sharedSettings = definePlugin({
       return prev
     },
     newDocumentOptions,
-
-    unstable_comments: {
+    comments: {
       enabled: true,
     },
     badges: (prev, context) => (context.schemaType === 'author' ? [CustomBadge, ...prev] : prev),
@@ -157,7 +156,7 @@ export default defineConfig([
       enabled: true,
       inputDateTimeFormat: 'MM/dd/yy h:mm a',
     },
-    unstable_tasks: {
+    tasks: {
       enabled: true,
     },
   },

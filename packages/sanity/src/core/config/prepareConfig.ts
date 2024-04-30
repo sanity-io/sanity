@@ -533,8 +533,17 @@ function resolveSource({
           propertyName: 'document.unstable_languageFilter',
           reducer: documentLanguageFilterReducer,
         }),
-
+      /** @todo this is deprecated so it will eventually be removed */
       unstable_comments: {
+        enabled: (partialContext) => {
+          return documentCommentsEnabledReducer({
+            context: partialContext,
+            config,
+            initialValue: true,
+          })
+        },
+      },
+      comments: {
         enabled: (partialContext) => {
           return documentCommentsEnabledReducer({
             context: partialContext,

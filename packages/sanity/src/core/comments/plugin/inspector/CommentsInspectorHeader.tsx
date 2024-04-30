@@ -4,7 +4,6 @@ import {forwardRef, useCallback} from 'react'
 import {styled} from 'styled-components'
 
 import {Button, MenuButton, MenuItem} from '../../../../ui-components'
-import {BetaBadge} from '../../../components'
 import {useTranslation} from '../../../i18n'
 import {commentsLocaleNamespace} from '../../i18n'
 import {type CommentStatus, type CommentsUIMode} from '../../types'
@@ -39,8 +38,6 @@ export const CommentsInspectorHeader = forwardRef(function CommentsInspectorHead
           <Text as="h1" size={1} weight="medium">
             {t('feature-name')}
           </Text>
-
-          <BetaBadge />
         </Flex>
 
         <Flex flex="none" padding={1} gap={2}>
