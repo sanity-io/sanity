@@ -258,7 +258,7 @@
     "@repo/package.config": "workspace:*",
     "@sanity/codegen": "3.39.1",
     "@sanity/generate-help-url": "^3.0.0",
-    "@sanity/pkg-utils": "6.8.8",
+    "@sanity/pkg-utils": "6.8.9",
     "@sanity/tsdoc": "1.0.41",
     "@sanity/ui-workshop": "^1.2.11",
     "@testing-library/jest-dom": "^6.2.0",
