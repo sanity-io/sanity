@@ -585,8 +585,10 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
         ]
       }
       const result = rangeDecorationState.filter((item) => {
-        // Only children are supported for now
-        if (path.length !== 2) {
+        // Only text children and inline objects are supported for now
+        // The editor node will have a path like [], a block node [0], a span node [0, 0] and a inline object node [0, 0, 0]
+        // Return false if the path is less than 2, as it's not a text node or inline object text node
+        if (path.length < 2) {
           return false
         }
         if (
