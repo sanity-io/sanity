@@ -584,21 +584,20 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
           },
         ]
       }
+      // Editor node has a path length of 0 (should never be decorated)
+      if (path.length === 0) {
+        return EMPTY_DECORATIONS_STATE
+      }
       const result = rangeDecorationState.filter((item) => {
-        // Only text children and inline objects are supported for now
-        // The editor node will have a path like [], a block node [0], a span node [0, 0] and a inline object node [0, 0, 0]
-        // Return false if the path is less than 2, as it's not a text node or inline object text node
-        if (path.length < 2) {
-          return false
+        // Special case in order to only return one decoration for collapsed ranges
+        if (SlateRange.isCollapsed(item)) {
+          return Path.equals(item.focus.path, path) && Path.equals(item.anchor.path, path)
         }
-        if (
-          SlateRange.isCollapsed(item) &&
-          Path.equals(item.focus.path, path) &&
-          Path.equals(item.anchor.path, path)
-        ) {
-          return true
-        }
-        return SlateRange.includes(item, path)
+        // Include decorations that either include or intersects with this path
+        return (
+          SlateRange.intersection(item, {anchor: {path, offset: 0}, focus: {path, offset: 0}}) ||
+          SlateRange.includes(item, path)
+        )
       })
       if (result.length > 0) {
         return result
