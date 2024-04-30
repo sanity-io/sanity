@@ -5,6 +5,7 @@ import {type PortableTextSlateEditor} from '../../types/editor'
 import {type createEditorOptions} from '../../types/options'
 import {createOperationToPatches} from '../../utils/operationToPatches'
 import {createWithEditableAPI} from './createWithEditableAPI'
+import {createWithInsertBreak} from './createWithInsertBreak'
 import {createWithMaxBlocks} from './createWithMaxBlocks'
 import {createWithObjectKeys} from './createWithObjectKeys'
 import {createWithPatches} from './createWithPatches'
@@ -85,6 +86,8 @@ export const withPlugins = <T extends Editor>(
     schemaTypes,
   })
 
+  const withInsertBreak = createWithInsertBreak(schemaTypes, keyGenerator, portableTextEditor)
+
   const withUtils = createWithUtils({keyGenerator, schemaTypes})
   const withPortableTextSelections = createWithPortableTextSelections(change$, schemaTypes)
 
@@ -106,7 +109,9 @@ export const withPlugins = <T extends Editor>(
             withPortableTextBlockStyle(
               withUtils(
                 withPlaceholderBlock(
-                  withPortableTextLists(withPortableTextSelections(withEditableAPI(e))),
+                  withPortableTextLists(
+                    withPortableTextSelections(withEditableAPI(withInsertBreak(e))),
+                  ),
                 ),
               ),
             ),
@@ -127,7 +132,9 @@ export const withPlugins = <T extends Editor>(
               withPlaceholderBlock(
                 withUtils(
                   withMaxBlocks(
-                    withUndoRedo(withPatches(withPortableTextSelections(withEditableAPI(e)))),
+                    withUndoRedo(
+                      withPatches(withPortableTextSelections(withEditableAPI(withInsertBreak(e)))),
+                    ),
                   ),
                 ),
               ),

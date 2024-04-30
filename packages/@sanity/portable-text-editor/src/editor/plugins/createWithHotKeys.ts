@@ -219,31 +219,18 @@ export function createWithHotkeys(
           return
         }
 
-        if (editor.isTextBlock(focusBlock)) {
-          // Enter from another style than the first (default one)
+        // Enter from another style than the first (default one)
+        if (
+          editor.isTextBlock(focusBlock) &&
+          focusBlock.style &&
+          focusBlock.style !== types.styles[0].value
+        ) {
           const [, end] = Range.edges(editor.selection)
-          if (focusBlock.style && focusBlock.style !== types.styles[0].value) {
-            const endAtEndOfNode = Editor.isEnd(editor, end, end.path)
-            if (endAtEndOfNode) {
-              Editor.insertNode(editor, createEmptyBlock())
-              event.preventDefault()
-              editor.onChange()
-              return
-            }
-          }
-          // If it's at the start of block, we want to preserve the current block key and insert a new one in the current position instead of splitting the node.
-          const isEndAtStartOfNode = Editor.isStart(editor, end, end.path)
-          if (isEndAtStartOfNode) {
+          const endAtEndOfNode = Editor.isEnd(editor, end, end.path)
+          if (endAtEndOfNode) {
             Editor.insertNode(editor, createEmptyBlock())
-            const [nextBlockPath] = Path.next(focusBlockPath)
-            Transforms.select(editor, {
-              anchor: {path: [nextBlockPath, 0], offset: 0},
-              focus: {path: [nextBlockPath, 0], offset: 0},
-            })
-
             event.preventDefault()
             editor.onChange()
-
             return
           }
         }
