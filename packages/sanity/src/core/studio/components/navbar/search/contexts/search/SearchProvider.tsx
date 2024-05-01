@@ -120,9 +120,13 @@ export function SearchProvider({children, fullscreen}: SearchProviderProps) {
     const termsChanged = !isEqual(terms, previousTermsRef.current)
 
     if (orderingChanged || cursorChanged || termsChanged) {
-      // Use a custom label if provided, otherwise return field and direction, e.g. `_updatedAt desc`
-      const sortLabel =
-        ordering?.customMeasurementLabel || `${ordering.sort.field} ${ordering.sort.direction}`
+      let sortLabel = 'findability-sort:'
+
+      if (ordering?.customMeasurementLabel || ordering.sort) {
+        // Use a custom label if provided, otherwise return field and direction, e.g. `_updatedAt desc`
+        sortLabel +=
+          ordering?.customMeasurementLabel || `${ordering.sort?.field} ${ordering.sort?.direction}`
+      }
 
       handleSearch({
         options: {
@@ -132,7 +136,7 @@ export function SearchProvider({children, fullscreen}: SearchProviderProps) {
               ? [`findability-recent-search:${terms.__recent.index}`]
               : []),
             `findability-selected-types:${terms.types.length}`,
-            `findability-sort:${sortLabel}`,
+            sortLabel,
             `findability-source: global`,
             `findability-filter-count:${completeFilters.length}`,
           ],
