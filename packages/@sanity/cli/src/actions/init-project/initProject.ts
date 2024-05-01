@@ -610,6 +610,17 @@ export default async function initSanity(
     print(`sanity help - to explore the CLI manual`)
   }
 
+  try {
+    await apiClient({api: {projectId}}).request({
+      method: 'PATCH',
+      uri: `/projects/${projectId}`,
+      body: {metadata: {cliInitializedAt: new Date().toISOString()}},
+    })
+  } catch (err: unknown) {
+    // Non-critical update
+    debug('Failed to update cliInitializedAt metadata')
+  }
+
   const sendInvite =
     isFirstProject &&
     (await prompt.single({
