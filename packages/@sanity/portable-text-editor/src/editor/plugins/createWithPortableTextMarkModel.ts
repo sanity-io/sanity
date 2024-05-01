@@ -5,19 +5,9 @@
  *
  */
 
-import {type PortableTextSpan} from '@sanity/types'
 import {isEqual, uniq} from 'lodash'
 import {type Subject} from 'rxjs'
-import {
-  type Descendant,
-  Editor,
-  Element,
-  type NodeEntry,
-  Path,
-  Range,
-  Text,
-  Transforms,
-} from 'slate'
+import {type Descendant, Editor, Element, Path, Range, Text, Transforms} from 'slate'
 
 import {
   type EditorChange,
@@ -346,17 +336,16 @@ export function createWithPortableTextMarkModel(
         return false
       }
 
-      const isNodeWithMark = (n: NodeEntry<PortableTextSpan>) => {
-        const [node] = n as NodeEntry<Text>
-
-        return node.marks?.includes(mark)
-      }
       const selectedNodes = Array.from(
         Editor.nodes(editor, {match: Text.isText, at: editor.selection}),
       )
 
       if (Range.isExpanded(editor.selection)) {
-        return selectedNodes.every(isNodeWithMark)
+        return selectedNodes.every((n) => {
+          const [node] = n
+
+          return node.marks?.includes(mark)
+        })
       }
 
       return (
