@@ -6,6 +6,7 @@ import {useReducer} from 'react'
 import {type RecentSearch} from '../../datastores/recentSearches'
 import {type SearchOrdering} from '../../types'
 import {
+  type InitialSearchState,
   initialSearchState,
   type SearchAction,
   searchReducer,
@@ -39,12 +40,15 @@ const recentSearchTerms = {
   query: 'foo',
   types: [],
 } as RecentSearch
+
+const initialStateContext: InitialSearchState = {
+  currentUser: mockUser,
+  definitions: {fields: {}, filters: {}, operators: {}},
+  pagination: {cursor: null, nextCursor: null},
+}
+
 const initialState: SearchReducerState = {
-  ...initialSearchState({
-    currentUser: mockUser,
-    definitions: {fields: {}, filters: {}, operators: {}},
-    pagination: {cursor: null, nextCursor: null},
-  }),
+  ...initialSearchState(initialStateContext),
   terms: recentSearchTerms,
 }
 
@@ -117,6 +121,52 @@ describe('searchReducer', () => {
 
     const [state] = result.current
     expect((state.terms as RecentSearch).__recent).toBeUndefined()
+  })
+
+  it('should not include an order when using Text Search API strategy and ordering by relevance', () => {
+    const {result} = renderHook(() =>
+      useReducer(
+        searchReducer,
+        initialSearchState({
+          ...initialStateContext,
+          enableLegacySearch: false,
+        }),
+      ),
+    )
+
+    const [state] = result.current
+
+    expect(state.ordering).toMatchInlineSnapshot(`
+Object {
+  "customMeasurementLabel": "relevance",
+  "titleKey": "search.ordering.best-match-label",
+}
+`)
+  })
+
+  it('should order by `_updatedAt` when using GROQ Query API strategy and ordering by relevance', () => {
+    const {result} = renderHook(() =>
+      useReducer(
+        searchReducer,
+        initialSearchState({
+          ...initialStateContext,
+          enableLegacySearch: true,
+        }),
+      ),
+    )
+
+    const [state] = result.current
+
+    expect(state.ordering).toMatchInlineSnapshot(`
+Object {
+  "customMeasurementLabel": "relevance",
+  "sort": Object {
+    "direction": "desc",
+    "field": "_updatedAt",
+  },
+  "titleKey": "search.ordering.best-match-label",
+}
+`)
   })
 
   it('should merge results after fetching an additional page', () => {
