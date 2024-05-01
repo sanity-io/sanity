@@ -5,12 +5,12 @@ import {getPublishedId} from '../../../../../../util'
 import {type RecentSearch} from '../../datastores/recentSearches'
 import {type SearchFieldDefinitionDictionary} from '../../definitions/fields'
 import {type SearchFilterDefinitionDictionary} from '../../definitions/filters'
+import {getOrderings} from '../../definitions/getOrderings'
 import {
   getOperatorDefinition,
   getOperatorInitialValue,
   type SearchOperatorDefinitionDictionary,
 } from '../../definitions/operators'
-import {ORDERINGS} from '../../definitions/orderings'
 import {type SearchFilter, type SearchOrdering} from '../../types'
 import {debugWithName, isDebugMode} from '../../utils/debug'
 import {
@@ -40,6 +40,7 @@ export type SearchReducerState = PaginationState & {
   ordering: SearchOrdering
   result: SearchResult
   terms: RecentSearch | SearchTerms
+  enableLegacySearch?: boolean
 }
 
 export interface SearchDefinitions {
@@ -61,6 +62,7 @@ export interface InitialSearchState {
   fullscreen?: boolean
   definitions: SearchDefinitions
   pagination: PaginationState
+  enableLegacySearch?: boolean
 }
 
 export function initialSearchState({
@@ -68,6 +70,7 @@ export function initialSearchState({
   fullscreen,
   definitions,
   pagination,
+  enableLegacySearch,
 }: InitialSearchState): SearchReducerState {
   return {
     currentUser,
@@ -77,7 +80,7 @@ export function initialSearchState({
     filtersVisible: true,
     fullscreen,
     lastActiveIndex: -1,
-    ordering: ORDERINGS.relevance,
+    ordering: getOrderings({enableLegacySearch}).relevance,
     ...pagination,
     result: {
       error: null,
@@ -91,6 +94,7 @@ export function initialSearchState({
       types: [],
     },
     definitions,
+    enableLegacySearch,
   }
 }
 
@@ -173,7 +177,7 @@ export function searchReducer(state: SearchReducerState, action: SearchAction): 
     case 'ORDERING_RESET':
       return {
         ...state,
-        ordering: ORDERINGS.relevance,
+        ordering: getOrderings({enableLegacySearch: state.enableLegacySearch}).relevance,
         terms: stripRecent(state.terms),
         result: {
           ...state.result,

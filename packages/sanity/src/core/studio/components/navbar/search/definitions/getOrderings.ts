@@ -1,6 +1,8 @@
 import {type SearchOrdering} from '../types'
 
-export const ORDERINGS: Record<string, SearchOrdering> = {
+export const getOrderings: (context: {
+  enableLegacySearch?: boolean
+}) => Record<string, SearchOrdering> = ({enableLegacySearch}) => ({
   createdAsc: {
     ignoreScore: true,
     sort: {direction: 'asc', field: '_createdAt'},
@@ -13,7 +15,7 @@ export const ORDERINGS: Record<string, SearchOrdering> = {
   },
   relevance: {
     customMeasurementLabel: 'relevance',
-    sort: {direction: 'desc', field: '_updatedAt'},
+    ...(enableLegacySearch ? {sort: {direction: 'desc', field: '_updatedAt'}} : {}),
     titleKey: 'search.ordering.best-match-label',
   },
   updatedAsc: {
@@ -26,4 +28,4 @@ export const ORDERINGS: Record<string, SearchOrdering> = {
     sort: {direction: 'desc', field: '_updatedAt'},
     titleKey: 'search.ordering.updated-descending-label',
   },
-}
+})
