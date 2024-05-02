@@ -13,9 +13,6 @@ export const ptAllTheBellsAndWhistlesType = defineType({
     {
       name: 'whitespace',
       title: 'Whitespace',
-      options: {
-        collapsed: true,
-      },
     },
   ],
   fields: [
