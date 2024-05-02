@@ -145,7 +145,6 @@ export const CommentsPortableTextInputInner = memo(function CommentsPortableText
   }, [])
 
   const handleSubmit = useCallback(() => {
-    console.log('submit')
     if (!nextCommentSelection || !editorRef.current) return
 
     const fragment = getFragment() || EMPTY_ARRAY
@@ -266,7 +265,6 @@ export const CommentsPortableTextInputInner = memo(function CommentsPortableText
   }, [handleSetCurrentSelectionRect])
 
   const handleRangeDecorationMoved = useCallback((details: RangeDecorationOnMovedDetails) => {
-    console.log('moved')
     const {rangeDecoration, newSelection} = details
 
     const commentId = rangeDecoration.payload?.commentId as undefined | string
@@ -289,7 +287,6 @@ export const CommentsPortableTextInputInner = memo(function CommentsPortableText
   }, [])
 
   const updateCommentRange = useCallback(() => {
-    console.log('update range')
     const decoratorsToUpdate = addedCommentsDecorations.filter(
       (decorator) => decorator.payload?.dirty,
     )
@@ -338,7 +335,7 @@ export const CommentsPortableTextInputInner = memo(function CommentsPortableText
         },
       }
 
-      // operation.update(comment._id, nextComment)
+      operation.update(comment._id, nextComment)
     })
 
     // Mark the range decorations as not dirty

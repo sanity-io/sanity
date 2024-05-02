@@ -75,7 +75,6 @@ export function buildRangeDecorationSelectionsFromComments(
   const textSelections = comments.filter(isTextSelectionComment)
   const decorators: BuildCommentsRangeDecorationsResultItem[] = []
 
-  console.log({textSelections})
   textSelections.forEach((comment) => {
     comment.target.path?.selection?.value.forEach((selectionMember) => {
       const matchedBlock = value.find((block) => block._key === selectionMember._key)
@@ -83,9 +82,7 @@ export function buildRangeDecorationSelectionsFromComments(
         return
       }
       const selectionText = selectionMember.text.replaceAll(COMMENT_INDICATORS_REGEX, '')
-      console.log({selectionText, matchedBlock})
       const textWithChildSeparators = toPlainTextWithChildSeparators(matchedBlock)
-      console.log({textWithChildSeparators})
       const {patches} = diffText(selectionText, selectionMember.text)
       const diffedText = diffApply(textWithChildSeparators, patches)
       const startIndex = diffedText.indexOf(COMMENT_INDICATORS[0])

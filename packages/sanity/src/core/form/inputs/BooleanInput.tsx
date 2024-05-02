@@ -41,8 +41,7 @@ export function BooleanInput(props: BooleanInputProps) {
             label={schemaType.title}
             {...elementProps}
             checked={checked}
-            disabled={false}
-            readOnly={readOnly}
+            disabled={readOnly}
             indeterminate={indeterminate}
             style={{margin: -4}}
           />
