@@ -699,8 +699,8 @@ importers:
         specifier: ^18.3.1
         version: 18.3.1
       '@vercel/stega':
-        specifier: 0.1.0
-        version: 0.1.0
+        specifier: 0.1.1
+        version: 0.1.1
       jsdom:
         specifier: ^23.0.1
         version: 23.2.0
@@ -6588,8 +6588,8 @@ packages:
       - debug
     dev: false
 
-  /@sanity/types@3.39.1:
-    resolution: {integrity: sha512-kxq0uATgqt3I8OYZe90i0kMBjk9AmG6C8xgmQzsPFmjoxNP1OnkxRvWKdaCvztz6Rjf5047dAgFz0OVuOoE+ow==}
+  /@sanity/types@3.40.0:
+    resolution: {integrity: sha512-DS2QhzLFtb8Xc5Ur3pV5lE8Tk9CGwDmjOJUDMPDtgH9ESgiZgaC2TVsUHNX4e0s1kN2jzxH7q4gfFKFxKrX9yw==}
     dependencies:
       '@sanity/client': 6.15.20
       '@types/react': 18.3.1
@@ -6669,12 +6669,12 @@ packages:
       - debug
     dev: false
 
-  /@sanity/util@3.39.1:
-    resolution: {integrity: sha512-HQfEjcVV7DqXurkoJDlpJDdkLwJ8oB2jFZ8NB4mECZF8qYCOBgv3h5pEMz/5gKuuFoUHUZSC6I3tipvQEGOk2w==}
+  /@sanity/util@3.40.0:
+    resolution: {integrity: sha512-FfNxUfDfY2czVQnEDwDNMGaPgsxwZyh71De7KMQYs3GyZmPxlOdPipXkB18vlie2VycXnvm/i1gCSU3XxyxUAQ==}
     engines: {node: '>=18'}
     dependencies:
       '@sanity/client': 6.15.20
-      '@sanity/types': 3.39.1
+      '@sanity/types': 3.40.0
       get-random-values-esm: 1.0.2
       moment: 2.30.1
       rxjs: 7.8.1
@@ -7745,6 +7745,11 @@ packages:
 
   /@vercel/stega@0.1.0:
     resolution: {integrity: sha512-5b0PkOJsFBX5alChuIO3qpkt5vIZBevzLPhUQ1UP8UzVjL3F1VllnZxp/thfD8R5ol7D7WHkgZHIjdUBX4tDpQ==}
+    dev: false
+
+  /@vercel/stega@0.1.1:
+    resolution: {integrity: sha512-YdlhbgFdUAKYPlLaAhCUL10U/DdeNwp2fSJR0Wdi2c0DYdYQZbamdxizr4Lj9mxv2+/FxMWaMK7eW6BskKEZLw==}
+    dev: true
 
   /@vitejs/plugin-react@4.2.1(vite@4.5.3):
     resolution: {integrity: sha512-oojO9IDc4nCUUi8qIR11KoQm0XFFLIwsRBwHRR4d/88IWghn1y6ckz/bJ8GHDCsYEJee8mDzqtJxh15/cisJNQ==}
@@ -17061,7 +17066,7 @@ packages:
       '@sanity/image-url': 1.0.2
       '@sanity/incompatible-plugin': 1.0.4(react-dom@18.3.1)(react@18.3.1)
       '@sanity/ui': 2.1.4(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.8)
-      '@sanity/util': 3.39.1
+      '@sanity/util': 3.40.0
       '@types/lodash-es': 4.17.12
       framer-motion: 11.0.8(react-dom@18.3.1)(react@18.3.1)
       lodash-es: 4.17.21
