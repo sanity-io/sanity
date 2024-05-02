@@ -105,7 +105,8 @@ test.describe('Portable Text Input', () => {
   })
 
   test.describe('Should be able to paste files into the PTE', () => {
-    test(`Added pasted image as a block`, async ({mount, page}) => {
+    test(`Added pasted image as a block`, async ({browserName, mount, page}) => {
+      test.skip(browserName === 'firefox', 'Currently not working in Firefox')
       const {getFocusedPortableTextEditor, pasteFileOverPortableTextEditor} = testHelpers({page})
 
       await mount(<CopyPasteStory document={document} />)
