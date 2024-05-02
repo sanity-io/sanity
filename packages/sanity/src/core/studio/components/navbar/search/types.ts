@@ -72,7 +72,7 @@ export type SearchFilterValues = {
 export interface SearchOrdering {
   customMeasurementLabel?: string
   ignoreScore?: boolean
-  sort: SearchSort
+  sort?: SearchSort
   /**
    * i18n key for title
    */

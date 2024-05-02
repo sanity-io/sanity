@@ -679,11 +679,11 @@ Array [
             "style": "normal",
           },
           Object {
-            "_key": "2f55670a03bb",
+            "_key": "3",
             "_type": "myTestBlockType",
             "children": Array [
               Object {
-                "_key": "9f5ed7dee7ab",
+                "_key": "2",
                 "_type": "span",
                 "marks": Array [],
                 "text": "",
@@ -693,11 +693,11 @@ Array [
             "style": "normal",
           },
           Object {
-            "_key": "2",
+            "_key": "2f55670a03bb",
             "_type": "myTestBlockType",
             "children": Array [
               Object {
-                "_key": "1",
+                "_key": "9f5ed7dee7ab",
                 "_type": "span",
                 "marks": Array [
                   "bab319ad3a9d",

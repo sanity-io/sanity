@@ -155,7 +155,7 @@ export const createTextSearch: SearchStrategyFactory<TextSearchResults> = (
         ...searchTerms.params,
       },
       types: getDocumentTypeConfiguration(searchOptions, searchTerms),
-      order: getOrder(searchOptions.sort),
+      ...(searchOptions.sort ? {order: getOrder(searchOptions.sort)} : {}),
       includeAttributes: ['_id', '_type'],
       fromCursor: searchOptions.cursor,
       limit: searchOptions.limit ?? DEFAULT_LIMIT,
