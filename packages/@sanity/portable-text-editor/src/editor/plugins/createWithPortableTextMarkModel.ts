@@ -23,6 +23,7 @@ import {
   type PortableTextMemberSchemaTypes,
   type PortableTextSlateEditor,
 } from '../../types/editor'
+import {type SlateTextBlock, type VoidElement} from '../../types/slate'
 import {debugWithName} from '../../utils/debug'
 import {toPortableTextRange} from '../../utils/ranges'
 
@@ -234,6 +235,17 @@ export function createWithPortableTextMarkModel(
             )
             debug('Inserting text at end of annotation')
             return
+          }
+        }
+      }
+      if (op.type === 'remove_node') {
+        const node = op.node as SlateTextBlock | VoidElement
+        if (op.path[0] === 0 && Editor.isVoid(editor, node)) {
+          // Check next path, if it exists, do nothing
+          const nextPath = Path.next(op.path)
+          // Is removing the first block which is a void (not a text block), add a new empty text block in it, if there is no other element in the next path
+          if (!editor.children[nextPath[0]]) {
+            Editor.insertNode(editor, editor.pteCreateEmptyBlock())
           }
         }
       }
