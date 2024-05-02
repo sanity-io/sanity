@@ -669,8 +669,8 @@ describe('collaborate editing', () => {
     `)
     const selectionA = await editorA.getSelection()
     expect(selectionA).toEqual({
-      anchor: {path: [{_key: 'A-8'}, 'children', {_key: 'A-7'}], offset: 0},
-      focus: {path: [{_key: 'A-8'}, 'children', {_key: 'A-7'}], offset: 0},
+      anchor: {path: [{_key: 'A-6'}, 'children', {_key: 'A-5'}], offset: 0},
+      focus: {path: [{_key: 'A-6'}, 'children', {_key: 'A-5'}], offset: 0},
       backward: false,
     })
     const selectionB = await editorB.getSelection()
