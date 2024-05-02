@@ -3,7 +3,7 @@ import {
   isPortableTextTextBlock,
   type PortableTextTextBlock,
 } from '@sanity/types'
-import {vercelStegaSplit} from '@vercel/stega'
+import {vercelStegaClean} from '@vercel/stega'
 import {isEqual} from 'lodash'
 
 import {DEFAULT_BLOCK} from '../constants'
@@ -352,12 +352,7 @@ export function removeAllWhitespace(rootNode: Node) {
  */
 export function cleanStegaUnicode(result: string): string {
   try {
-    return JSON.parse(
-      JSON.stringify(result, (key, value) => {
-        if (typeof value !== 'string') return value
-        return vercelStegaSplit(value).cleaned
-      }),
-    )
+    return vercelStegaClean(result)
   } catch {
     return result
   }

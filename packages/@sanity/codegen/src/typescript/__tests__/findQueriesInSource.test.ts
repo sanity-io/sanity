@@ -95,4 +95,15 @@ describe('findQueries', () => {
     expect(queries.length).toBe(1)
     expect(queries[0].result).toBe('*[_type == "foo"]')
   })
+
+  test('can import sequence of files', () => {
+    const source = `
+      import { groq } from "groq";
+      import {query}  from "../__tests__/fixtures/importSeq1";
+      const someQuery = groq\`$\{query}\`
+    `
+    const queries = findQueriesInSource(source, __filename, undefined)
+    expect(queries.length).toBe(1)
+    expect(queries[0].result).toBe('*[_type == "foo bar"]')
+  })
 })
