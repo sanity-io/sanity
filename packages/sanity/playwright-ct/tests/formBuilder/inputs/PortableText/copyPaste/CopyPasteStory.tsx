@@ -21,6 +21,36 @@ const SCHEMA_TYPES = [
               unstable_whitespaceOnPasteMode: 'remove',
             },
           }),
+          defineArrayMember({
+            type: 'image',
+            name: 'image',
+            title: 'Image block',
+            preview: {
+              select: {
+                fileName: 'asset.originalFilename',
+                image: 'asset',
+              },
+              prepare({fileName, image}) {
+                return {
+                  media: image,
+                  title: fileName,
+                }
+              },
+            },
+          }),
+          defineArrayMember({
+            type: 'file',
+            name: 'filePDF',
+            title: 'PDF file block',
+            options: {
+              accept: 'application/pdf',
+            },
+            preview: {
+              select: {
+                tile: 'asset.originalFilename',
+              },
+            },
+          }),
         ],
       }),
       defineField({
