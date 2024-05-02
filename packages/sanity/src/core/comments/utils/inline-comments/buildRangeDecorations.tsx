@@ -113,6 +113,7 @@ export function buildRangeDecorations(props: BuildRangeDecorationsProps) {
     value,
   } = props
   const rangeSelections = buildRangeDecorationSelectionsFromComments({comments, value})
+  console.log({rangeSelections})
 
   const decorations = rangeSelections.map(({selection, comment, range}) => {
     const decoration: RangeDecoration = {
