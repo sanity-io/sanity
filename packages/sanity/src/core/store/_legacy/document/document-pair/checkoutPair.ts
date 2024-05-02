@@ -11,7 +11,7 @@ import {
   type MutationPayload,
   type RemoteSnapshotEvent,
 } from '../buffered-doc'
-import {getPairListener, type ListenerEvent} from '../getPairListener'
+import {createPairListener, type ListenerEvent} from '../createPairListener'
 import {type IdPair, type PendingMutationsEvent, type ReconnectEvent} from '../types'
 import {type HttpAction} from './actionTypes'
 
@@ -201,7 +201,7 @@ export function checkoutPair(
   const {publishedId, draftId} = idPair
 
   const listenerEventsConnector = new Subject<ListenerEvent>()
-  const listenerEvents$ = getPairListener(client, idPair).pipe(
+  const listenerEvents$ = createPairListener(client, idPair).pipe(
     share({connector: () => listenerEventsConnector}),
   )
 
