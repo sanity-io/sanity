@@ -352,7 +352,7 @@ function resolveImportSpecifier({
       file: tree,
       scope: newScope,
       babelConfig,
-      filename: importFileName,
+      filename: resolvedFile,
       resolver,
     })
   }
