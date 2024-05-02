@@ -1,4 +1,5 @@
 import {
+  isPortableTextSpan,
   type ObjectSchemaType,
   type Path,
   type PortableTextBlock,
@@ -293,6 +294,47 @@ export function createWithEditableAPI(
           return activeAnnotations
         } catch (err) {
           return []
+        }
+      },
+      isAnnotationActive: (annotationType: PortableTextObject['_type']): boolean => {
+        if (!editor.selection || editor.selection.focus.path.length < 2) {
+          return false
+        }
+
+        try {
+          const spans = [
+            ...Editor.nodes(editor, {
+              at: editor.selection,
+              match: (node) => Text.isText(node),
+            }),
+          ]
+
+          if (
+            spans.some(
+              ([span]) => !isPortableTextSpan(span) || !span.marks || span.marks?.length === 0,
+            )
+          )
+            return false
+
+          const selectionMarkDefs = spans.reduce((accMarkDefs, [, path]) => {
+            const [block] = Editor.node(editor, path, {depth: 1})
+            if (editor.isTextBlock(block) && block.markDefs) {
+              return [...accMarkDefs, ...block.markDefs]
+            }
+            return accMarkDefs
+          }, [] as PortableTextObject[])
+
+          return spans.every(([span]) => {
+            if (!isPortableTextSpan(span)) return false
+
+            const spanMarkDefs = span.marks?.map(
+              (markKey) => selectionMarkDefs.find((def) => def?._key === markKey)?._type,
+            )
+
+            return spanMarkDefs?.includes(annotationType)
+          })
+        } catch (err) {
+          return false
         }
       },
       addAnnotation: (
