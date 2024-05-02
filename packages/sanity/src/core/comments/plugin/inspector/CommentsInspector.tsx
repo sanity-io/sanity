@@ -20,6 +20,7 @@ import {
   useCommentsOnboarding,
   useCommentsScroll,
   useCommentsSelectedPath,
+  useCommentsTelemetry,
   useCommentsUpsell,
 } from '../../hooks'
 import {commentsLocaleNamespace} from '../../i18n'
@@ -98,38 +99,22 @@ function CommentsInspectorInner(
   const {scrollToComment, scrollToField, scrollToInlineComment} = useCommentsScroll()
   const {selectedPath, setSelectedPath} = useCommentsSelectedPath()
   const {isDismissed, setDismissed} = useCommentsOnboarding()
+  const telemetry = useCommentsTelemetry()
 
-  const {upsellData, telemetryLogs} = useCommentsUpsell()
+  const {upsellData, telemetryLogs: upsellTelemetryLogs} = useCommentsUpsell()
 
   const currentComments = useMemo(() => comments.data[status], [comments, status])
 
   const {loading} = comments
 
-  useEffect(() => {
-    if (mode === 'upsell') {
-      if (selectedPath?.origin === 'form') {
-        telemetryLogs.panelViewed('field_action')
-      } else if (commentIdParamRef.current) {
-        telemetryLogs.panelViewed('link')
-      } else {
-        telemetryLogs.panelViewed('document_action')
-      }
-    }
-    return () => {
-      if (mode === 'upsell') {
-        telemetryLogs.panelDismissed()
-      }
-    }
-    // We want to run this effect only on mount and unmount
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
   const handleChangeView = useCallback(
     (nextView: CommentStatus) => {
       setStatus(nextView)
       setSelectedPath(null)
+
+      telemetry.commentListViewChanged(nextView)
     },
-    [setSelectedPath, setStatus],
+    [setSelectedPath, setStatus, telemetry],
   )
 
   const handleCloseInspector = useCallback(() => {
@@ -157,10 +142,12 @@ function CommentsInspectorInner(
             title: t('copy-link-error-message'),
           })
         })
+
+      telemetry.commentLinkCopied()
     }
 
     return copyLink
-  }, [getCommentLink, pushToast, t])
+  }, [getCommentLink, pushToast, t, telemetry])
 
   const handleCreateRetry = useCallback(
     (id: string) => {
@@ -340,6 +327,25 @@ function CommentsInspectorInner(
 
   useClickOutside(handleClickOutside, [rootRef.current])
 
+  useEffect(() => {
+    if (mode === 'upsell') {
+      if (selectedPath?.origin === 'form') {
+        upsellTelemetryLogs.panelViewed('field_action')
+      } else if (commentIdParamRef.current) {
+        upsellTelemetryLogs.panelViewed('link')
+      } else {
+        upsellTelemetryLogs.panelViewed('document_action')
+      }
+    }
+    return () => {
+      if (mode === 'upsell') {
+        upsellTelemetryLogs.panelDismissed()
+      }
+    }
+    // We want to run this effect only on mount and unmount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   // Handle scroll to comment from URL param
   useEffect(() => {
     // Make sure that the comment exists before we try to scroll to it.
@@ -362,8 +368,18 @@ function CommentsInspectorInner(
       commentIdParamRef.current = undefined
 
       onClearSelectedComment?.()
+
+      telemetry.commentViewedFromLink()
     }
-  }, [getComment, loading, onClearSelectedComment, scrollToComment, setSelectedPath, setStatus])
+  }, [
+    getComment,
+    loading,
+    onClearSelectedComment,
+    scrollToComment,
+    setSelectedPath,
+    setStatus,
+    telemetry,
+  ])
 
   const beforeListNode = useMemo(() => {
     if (mode === 'upsell' && upsellData) {
@@ -371,15 +387,20 @@ function CommentsInspectorInner(
         <CommentsUpsellPanel
           data={upsellData}
           // eslint-disable-next-line react/jsx-handler-names
-          onPrimaryClick={telemetryLogs.panelPrimaryClicked}
+          onPrimaryClick={upsellTelemetryLogs.panelPrimaryClicked}
           // eslint-disable-next-line react/jsx-handler-names
-          onSecondaryClick={telemetryLogs.panelSecondaryClicked}
+          onSecondaryClick={upsellTelemetryLogs.panelSecondaryClicked}
         />
       )
     }
 
     return null
-  }, [mode, telemetryLogs.panelPrimaryClicked, telemetryLogs.panelSecondaryClicked, upsellData])
+  }, [
+    mode,
+    upsellTelemetryLogs.panelPrimaryClicked,
+    upsellTelemetryLogs.panelSecondaryClicked,
+    upsellData,
+  ])
 
   return (
     <Fragment>
