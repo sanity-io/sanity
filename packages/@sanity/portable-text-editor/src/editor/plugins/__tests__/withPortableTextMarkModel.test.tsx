@@ -767,7 +767,167 @@ Array [
       expect(currentSelectionObject === nextSelectionObject).toBe(false)
       expect(onChange).toHaveBeenCalledWith({type: 'selection', selection: nextSelectionObject})
     })
+
+    it('should return active marks that cover the whole selection', async () => {
+      const editorRef: RefObject<PortableTextEditor> = createRef()
+      const initialValue = [
+        {
+          _key: 'a',
+          _type: 'myTestBlockType',
+          children: [
+            {
+              _key: 'a1',
+              _type: 'span',
+              marks: ['bold'],
+              text: '12',
+            },
+            {
+              _key: '2',
+              _type: 'span',
+              marks: [],
+              text: '34',
+            },
+          ],
+          markDefs: [{_key: 'bold', _type: 'strong'}],
+          style: 'normal',
+        },
+      ]
+      const onChange = jest.fn()
+      await waitFor(() => {
+        render(
+          <PortableTextEditorTester
+            onChange={onChange}
+            ref={editorRef}
+            schemaType={schemaType}
+            value={initialValue}
+          />,
+        )
+      })
+      const editor = editorRef.current!
+      expect(editor).toBeDefined()
+      await waitFor(() => {
+        PortableTextEditor.focus(editor)
+        PortableTextEditor.select(editor, {
+          focus: {path: [{_key: 'a'}, 'children', {_key: 'a1'}], offset: 0},
+          anchor: {path: [{_key: 'a'}, 'children', {_key: '2'}], offset: 2},
+        })
+        expect(PortableTextEditor.isMarkActive(editor, 'bold')).toBe(false)
+        PortableTextEditor.toggleMark(editor, 'bold')
+        expect(PortableTextEditor.isMarkActive(editor, 'bold')).toBe(true)
+      })
+    })
+
+    it('should return active annotation types that cover the whole selection', async () => {
+      const editorRef: RefObject<PortableTextEditor> = createRef()
+      const initialValue = [
+        {
+          _key: 'a',
+          _type: 'myTestBlockType',
+          children: [
+            {
+              _key: 'a1',
+              _type: 'span',
+              marks: ['bab319ad3a9d'],
+              text: '12',
+            },
+            {
+              _key: '2',
+              _type: 'span',
+              marks: [],
+              text: '34',
+            },
+          ],
+          markDefs: [
+            {
+              _key: 'bab319ad3a9d',
+              _type: 'link',
+              href: 'http://www.123.com',
+            },
+          ],
+          style: 'normal',
+        },
+      ]
+      const onChange = jest.fn()
+      await waitFor(() => {
+        render(
+          <PortableTextEditorTester
+            onChange={onChange}
+            ref={editorRef}
+            schemaType={schemaType}
+            value={initialValue}
+          />,
+        )
+      })
+      const editor = editorRef.current!
+      expect(editor).toBeDefined()
+      await waitFor(() => {
+        PortableTextEditor.focus(editor)
+        PortableTextEditor.select(editor, {
+          focus: {path: [{_key: 'a'}, 'children', {_key: 'a1'}], offset: 0},
+          anchor: {path: [{_key: 'a'}, 'children', {_key: '2'}], offset: 2},
+        })
+        expect(PortableTextEditor.isAnnotationActive(editor, 'link')).toBe(false)
+      })
+    })
+
+    it('should return active list styles that cover the whole selection', async () => {
+      const editorRef: RefObject<PortableTextEditor> = createRef()
+      const initialValue = [
+        {
+          _key: 'a',
+          _type: 'myTestBlockType',
+          children: [
+            {
+              _key: 'a1',
+              _type: 'span',
+              marks: [],
+              text: '12',
+            },
+          ],
+          markDefs: [],
+          style: 'normal',
+        },
+        {
+          _key: 'b',
+          _type: 'myTestBlockType',
+          children: [
+            {
+              _key: '2',
+              _type: 'span',
+              marks: [],
+              text: '34',
+              level: 1,
+              listItem: 'bullet',
+            },
+          ],
+          markDefs: [],
+          style: 'normal',
+        },
+      ]
+      const onChange = jest.fn()
+      await waitFor(() => {
+        render(
+          <PortableTextEditorTester
+            onChange={onChange}
+            ref={editorRef}
+            schemaType={schemaType}
+            value={initialValue}
+          />,
+        )
+      })
+      const editor = editorRef.current!
+      expect(editor).toBeDefined()
+      await waitFor(() => {
+        PortableTextEditor.focus(editor)
+        PortableTextEditor.select(editor, {
+          focus: {path: [{_key: 'a'}, 'children', {_key: 'a1'}], offset: 0},
+          anchor: {path: [{_key: '2'}, 'children', {_key: '2'}], offset: 2},
+        })
+        expect(PortableTextEditor.hasListStyle(editor, 'bullet')).toBe(false)
+      })
+    })
   })
+
   describe('removing annotations', () => {
     it('removes the markDefs if the annotation is no longer in use', async () => {
       const editorRef: RefObject<PortableTextEditor> = createRef()
