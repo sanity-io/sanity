@@ -2,7 +2,7 @@ import {existsSync, readFileSync} from 'node:fs'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 
-import {type DatasetAclMode} from '@sanity/client'
+import {type DatasetAclMode, type SanityProject} from '@sanity/client'
 import {type Framework} from '@vercel/frameworks'
 import dotenv from 'dotenv'
 import execa, {type CommonOptions} from 'execa'
@@ -611,11 +611,15 @@ export default async function initSanity(
   }
 
   try {
-    await apiClient({api: {projectId}}).request({
-      method: 'PATCH',
-      uri: `/projects/${projectId}`,
-      body: {metadata: {cliInitializedAt: new Date().toISOString()}},
-    })
+    const client = apiClient({api: {projectId: projectId}})
+    const project = await client.request<SanityProject>({uri: `/projects/${projectId}`})
+    if (!project?.metadata?.cliInitializedAt) {
+      await apiClient({api: {projectId}}).request({
+        method: 'PATCH',
+        uri: `/projects/${projectId}`,
+        body: {metadata: {cliInitializedAt: new Date().toISOString()}},
+      })
+    }
   } catch (err: unknown) {
     // Non-critical update
     debug('Failed to update cliInitializedAt metadata')
