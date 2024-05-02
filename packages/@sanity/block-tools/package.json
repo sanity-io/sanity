@@ -60,7 +60,7 @@
     "@types/jsdom": "^20.0.0",
     "@types/lodash": "^4.14.149",
     "@types/react": "^18.3.1",
-    "@vercel/stega": "0.1.0",
+    "@vercel/stega": "0.1.1",
     "jsdom": "^23.0.1"
   },
   "publishConfig": {
