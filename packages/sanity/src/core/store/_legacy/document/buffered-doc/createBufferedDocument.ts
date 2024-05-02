@@ -1,7 +1,7 @@
 import {type SanityDocument} from '@sanity/types'
 import {type Observable} from 'rxjs'
 
-import {type ListenerEvent} from '../getPairListener'
+import {type ListenerEvent} from '../createPairListener'
 import {
   type CommitRequest,
   createObservableBufferedDocument,

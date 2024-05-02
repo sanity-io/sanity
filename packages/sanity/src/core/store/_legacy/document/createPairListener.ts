@@ -59,7 +59,7 @@ function allPendingTransactionEventsReceived(listenerEvents: ListenerEvent[]) {
 }
 
 /** @internal */
-export function getPairListener(
+export function createPairListener(
   client: SanityClient,
   idPair: IdPair,
   options: PairListenerOptions = {},
