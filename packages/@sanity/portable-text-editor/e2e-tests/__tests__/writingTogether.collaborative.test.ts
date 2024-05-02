@@ -621,7 +621,8 @@ describe('collaborate editing', () => {
       }
     `)
     await editorA.pressKey('Enter')
-    expect(valA).toMatchInlineSnapshot(`
+    const valAAfterSecondEnter = await editorA.getValue()
+    expect(valAAfterSecondEnter).toMatchInlineSnapshot(`
       Array [
         Object {
           "_key": "randomKey0",
@@ -632,6 +633,20 @@ describe('collaborate editing', () => {
               "_type": "span",
               "marks": Array [],
               "text": "Hello world<- I left off here. And you wrote that ->",
+            },
+          ],
+          "markDefs": Array [],
+          "style": "normal",
+        },
+        Object {
+          "_key": "A-9",
+          "_type": "block",
+          "children": Array [
+            Object {
+              "_key": "A-8",
+              "_type": "span",
+              "marks": Array [],
+              "text": "",
             },
           ],
           "markDefs": Array [],
