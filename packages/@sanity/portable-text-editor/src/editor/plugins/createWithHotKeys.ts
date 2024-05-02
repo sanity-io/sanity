@@ -10,7 +10,6 @@ import {type PortableTextMemberSchemaTypes, type PortableTextSlateEditor} from '
 import {type HotkeyOptions} from '../../types/options'
 import {type SlateTextBlock, type VoidElement} from '../../types/slate'
 import {debugWithName} from '../../utils/debug'
-import {toSlateValue} from '../../utils/values'
 import {type PortableTextEditor} from '../PortableTextEditor'
 
 const debug = debugWithName('plugin:withHotKeys')
@@ -31,32 +30,11 @@ const DEFAULT_HOTKEYS: HotkeyOptions = {
  */
 export function createWithHotkeys(
   types: PortableTextMemberSchemaTypes,
-  keyGenerator: () => string,
   portableTextEditor: PortableTextEditor,
   hotkeysFromOptions?: HotkeyOptions,
 ): (editor: PortableTextSlateEditor & ReactEditor) => any {
   const reservedHotkeys = ['enter', 'tab', 'shift', 'delete', 'end']
   const activeHotkeys = hotkeysFromOptions || DEFAULT_HOTKEYS // TODO: Merge where possible? A union?
-  const createEmptyBlock = () =>
-    toSlateValue(
-      [
-        {
-          _type: types.block.name,
-          _key: keyGenerator(),
-          style: 'normal',
-          markDefs: [],
-          children: [
-            {
-              _type: 'span',
-              _key: keyGenerator(),
-              text: '',
-              marks: [],
-            },
-          ],
-        },
-      ],
-      portableTextEditor,
-    )[0]
   return function withHotKeys(editor: PortableTextSlateEditor & ReactEditor) {
     editor.pteWithHotKeys = (event: KeyboardEvent<HTMLDivElement>): void => {
       // Wire up custom marks hotkeys
@@ -228,7 +206,7 @@ export function createWithHotkeys(
           const [, end] = Range.edges(editor.selection)
           const endAtEndOfNode = Editor.isEnd(editor, end, end.path)
           if (endAtEndOfNode) {
-            Editor.insertNode(editor, createEmptyBlock())
+            Editor.insertNode(editor, editor.pteCreateEmptyBlock())
             event.preventDefault()
             editor.onChange()
             return
@@ -236,7 +214,7 @@ export function createWithHotkeys(
         }
         // Block object enter key
         if (focusBlock && Editor.isVoid(editor, focusBlock)) {
-          Editor.insertNode(editor, createEmptyBlock())
+          Editor.insertNode(editor, editor.pteCreateEmptyBlock())
           event.preventDefault()
           editor.onChange()
           return

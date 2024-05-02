@@ -28,11 +28,11 @@ describe('selection adjustment', () => {
       expect(await editorA.getValue()).toMatchInlineSnapshot(`
         Array [
           Object {
-            "_key": "someKey",
+            "_key": "B-7",
             "_type": "block",
             "children": Array [
               Object {
-                "_key": "anotherKey",
+                "_key": "B-6",
                 "_type": "span",
                 "marks": Array [],
                 "text": "",
@@ -42,11 +42,11 @@ describe('selection adjustment', () => {
             "style": "normal",
           },
           Object {
-            "_key": "B-6",
+            "_key": "someKey",
             "_type": "block",
             "children": Array [
               Object {
-                "_key": "B-5",
+                "_key": "anotherKey",
                 "_type": "span",
                 "marks": Array [],
                 "text": "Hello",
@@ -61,7 +61,7 @@ describe('selection adjustment', () => {
       expect(selectionA).toMatchInlineSnapshot(`
         Object {
           "anchor": Object {
-            "offset": 0,
+            "offset": 2,
             "path": Array [
               Object {
                 "_key": "someKey",
@@ -74,7 +74,7 @@ describe('selection adjustment', () => {
           },
           "backward": false,
           "focus": Object {
-            "offset": 0,
+            "offset": 2,
             "path": Array [
               Object {
                 "_key": "someKey",
@@ -298,13 +298,13 @@ describe('selection adjustment', () => {
           ],
         },
         {
-          _key: 'B-6',
+          _key: 'B-7',
           _type: 'block',
           markDefs: [],
           style: 'normal',
           children: [
             {
-              _key: 'B-5',
+              _key: 'B-6',
               _type: 'span',
               text: '',
               marks: [],
