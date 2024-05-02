@@ -1551,9 +1551,6 @@ importers:
       '@vitejs/plugin-react':
         specifier: ^4.2.1
         version: 4.2.1(vite@4.5.3)
-      '@vvo/tzdb':
-        specifier: ^6.131.0
-        version: 6.131.0
       archiver:
         specifier: ^7.0.0
         version: 7.0.1
@@ -1590,9 +1587,6 @@ importers:
       date-fns:
         specifier: ^2.26.1
         version: 2.30.0
-      date-fns-tz:
-        specifier: ^2.0.0
-        version: 2.0.1(date-fns@2.30.0)
       debug:
         specifier: ^4.3.4
         version: 4.3.4(supports-color@9.4.0)
@@ -1749,9 +1743,6 @@ importers:
       speakingurl:
         specifier: ^14.0.1
         version: 14.0.1
-      swr:
-        specifier: ^2.2.5
-        version: 2.2.5(react@18.3.1)
       tar-fs:
         specifier: ^2.1.1
         version: 2.1.1
@@ -1861,6 +1852,12 @@ importers:
       '@types/tar-fs':
         specifier: ^2.0.1
         version: 2.0.4
+      '@vvo/tzdb':
+        specifier: 6.137.0
+        version: 6.137.0
+      date-fns-tz:
+        specifier: 2.0.1
+        version: 2.0.1(date-fns@2.30.0)
       react:
         specifier: ^18.3.1
         version: 18.3.1
@@ -1873,6 +1870,9 @@ importers:
       styled-components:
         specifier: ^6.1.8
         version: 6.1.8(react-dom@18.3.1)(react@18.3.1)
+      swr:
+        specifier: 2.2.5
+        version: 2.2.5(react@18.3.1)
 
   perf/studio:
     dependencies:
@@ -7822,9 +7822,9 @@ packages:
     resolution: {integrity: sha512-PuJe7vDIi6VYSinuEbUIQgMIRZGgM8e4R+G+/dQTk0X1NEdvgvvgv7m+rfmDH1gZzyA1OjjoWskvHlfRNfQf3g==}
     dev: true
 
-  /@vvo/tzdb@6.131.0:
-    resolution: {integrity: sha512-yJ9K6iulmCQBRglKqCoV2OUkROA96twwnC+1VpjN0Ri/jP2u5bEP1TlKdn2Oi3QtBYkFyuwJi5TzDiZOKtD4fg==}
-    dev: false
+  /@vvo/tzdb@6.137.0:
+    resolution: {integrity: sha512-er8kaywRTjBTlaBgYynd3Fe/OPUfL3GuRMJOyWRlZ3V7EX4A6pryXTf42FL1ZXjOkDPz+/exAUe03kmb02MLOA==}
+    dev: true
 
   /@yarnpkg/lockfile@1.1.0:
     resolution: {integrity: sha512-GpSwvyXOcOOlV70vbnzjj4fW5xW/FdUF6nQEt1ENy7m4ZCczi1+/buVUPAqmGfqznsORNFzUMjctTIp8a9tuCQ==}
@@ -9004,7 +9004,6 @@ packages:
 
   /client-only@0.0.1:
     resolution: {integrity: sha512-IV3Ou0jSMzZrd3pZ48nLkT9DA7Ag1pnPzaiQhpW7c3RbcqqzvzzVu+L8gfqMp/8IM2MQtSiqaCxrrcfu8I8rMA==}
-    dev: false
 
   /cliui@7.0.4:
     resolution: {integrity: sha512-OcRE68cOsVMXp1Yvonl/fzkQOyjLSu/8bhPDfQt0e0/Eb283TKP20Fs2MqoPsr9SwA595rRCA+QMzYc9nBP+JQ==}
@@ -9132,6 +9131,7 @@ packages:
   /commander@9.5.0:
     resolution: {integrity: sha512-KRs7WVDKg86PWiuAqhDrAQnTXZKraVcCc6vFdL14qrZ/DcWwuRo7VoiYXalXO7S5GKpqYiVEwCbgFDfxNHKJBQ==}
     engines: {node: ^12.20.0 || >=14}
+    requiresBuild: true
 
   /commondir@1.0.1:
     resolution: {integrity: sha512-W9pAhw0ja1Edb5GVdIF1mjZw/ASI0AlShXM83UUGe2DVr5TdAPEA1OA8m/g8zWp9x6On7gqufY+FatDbC3MDQg==}
@@ -9594,14 +9594,13 @@ packages:
       date-fns: 2.x
     dependencies:
       date-fns: 2.30.0
-    dev: false
+    dev: true
 
   /date-fns@2.30.0:
     resolution: {integrity: sha512-fnULvOpxnC5/Vg3NCiWelDsLiUc9bRwAPs/+LfTLNvetFCtCTN+yQz15C/fs4AwX1R9K5GLtLfn8QW+dWisaAw==}
     engines: {node: '>=0.11'}
     dependencies:
       '@babel/runtime': 7.24.5
-    dev: false
 
   /date-fns@3.6.0:
     resolution: {integrity: sha512-fRHTG8g/Gif+kSh50gaGEdToemgfj74aRX3swtiouboip5JDLAyDE9F11nHMIcvOaXeOC6D7SpNhi7uFyB7Uww==}
@@ -17969,7 +17968,6 @@ packages:
       client-only: 0.0.1
       react: 18.3.1
       use-sync-external-store: 1.2.2(react@18.3.1)
-    dev: false
 
   /symbol-tree@3.2.4:
     resolution: {integrity: sha512-9QNk5KwDF+Bvz+PyObkmSYjI5ksVUYtjW7AU22r2NKcfLJcXp96hkDWU3+XndOsUb+AQ9QhfzfCT2O+CNWT5Tw==}
@@ -18810,7 +18808,6 @@ packages:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0
     dependencies:
       react: 18.3.1
-    dev: false
 
   /use@3.1.1:
     resolution: {integrity: sha512-cwESVXlO3url9YWlFW/TA9cshCEhtu7IKJ/p5soJ/gGpj7vbvFrAY/eIioQ6Dw23KjZhYgiIo8HOs1nQ2vr/oQ==}
