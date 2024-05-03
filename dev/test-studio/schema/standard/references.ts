@@ -251,6 +251,15 @@ export default defineType({
         },
       }),
     },
+    {
+      name: 'referenceWithSubqueryFilter',
+      title: 'Subquery filter',
+      type: 'reference',
+      to: [{type: 'book'}],
+      options: {
+        filter: 'author->name match "*e*"',
+      },
+    },
   ],
   preview: {
     select: {
