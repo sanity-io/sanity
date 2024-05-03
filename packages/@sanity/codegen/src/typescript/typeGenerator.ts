@@ -13,6 +13,10 @@ import {
 
 const REFERENCE_SYMBOL_NAME = 'internalGroqTypeReferenceTo'
 
+export type TypeGeneratorOpts = {
+  schemaTypeFormat: string
+}
+
 /**
  * A class used to generate TypeScript types from a given schema
  * @internal
@@ -24,8 +28,11 @@ export class TypeGenerator {
 
   private readonly schema: SchemaType
 
-  constructor(schema: SchemaType) {
+  private readonly opts: TypeGeneratorOpts
+
+  constructor(schema: SchemaType, opts?: Partial<TypeGeneratorOpts>) {
     this.schema = schema
+    this.opts = {schemaTypeFormat: opts?.schemaTypeFormat || '{name}'}
   }
 
   /**
@@ -91,7 +98,7 @@ export class TypeGenerator {
    * When we reference a type we also keep track of the original name so we can reference the correct type later.
    */
   private getTypeName(name: string): string {
-    const desiredName = uppercaseFirstLetter(sanitizeIdentifier(name))
+    const desiredName = uppercaseFirstLetter(sanitizeIdentifier(formatIdentifier(name, this.opts)))
 
     let generatedName = desiredName
     let i = 2
@@ -146,7 +153,9 @@ export class TypeGenerator {
       }
       case 'inline': {
         return t.tsTypeReference(
-          t.identifier(uppercaseFirstLetter(sanitizeIdentifier(typeNode.name))),
+          t.identifier(
+            uppercaseFirstLetter(sanitizeIdentifier(formatIdentifier(typeNode.name, this.opts))),
+          ),
         )
       }
       case 'null': {
@@ -205,7 +214,9 @@ export class TypeGenerator {
             t.tsTypeReference(
               t.identifier(
                 this.typeNameMap.get(typeNode.rest.name) ||
-                  uppercaseFirstLetter(sanitizeIdentifier(typeNode.rest.name)),
+                  uppercaseFirstLetter(
+                    sanitizeIdentifier(formatIdentifier(typeNode.rest.name, this.opts)),
+                  ),
               ),
             ),
           ])
@@ -251,10 +262,15 @@ export class TypeGenerator {
     return t.tsTypeLiteral(props)
   }
 }
+
 function uppercaseFirstLetter(input: string): string {
   return input.charAt(0).toUpperCase() + input.slice(1)
 }
 
 function sanitizeIdentifier(input: string): string {
   return `${input.replace(/^\d/, '_').replace(/[^$\w]+(.)/g, (_, char) => char.toUpperCase())}`
+}
+
+function formatIdentifier(input: string, opts: TypeGeneratorOpts) {
+  return opts.schemaTypeFormat.replace('{name}', input)
 }
