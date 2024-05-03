@@ -146,6 +146,7 @@ export function PaneItem(props: PaneItemProps) {
 
   return (
     <PreviewCard
+      data-testid={`pane-item-${title}`}
       __unstable_focusRing
       as={Link as FIXME}
       data-as="a"
