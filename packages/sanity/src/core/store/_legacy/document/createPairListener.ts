@@ -2,8 +2,20 @@
 import {type SanityClient} from '@sanity/client'
 import {type SanityDocument} from '@sanity/types'
 import {groupBy} from 'lodash'
-import {defer, type Observable, of as observableOf} from 'rxjs'
-import {concatMap, map, mergeMap, scan} from 'rxjs/operators'
+import LRU from 'quick-lru'
+import {defer, EMPTY, merge, type Observable, of as observableOf, timeout, timer} from 'rxjs'
+import {
+  concatMap,
+  delay,
+  filter,
+  map,
+  mergeMap,
+  scan,
+  share,
+  switchMap,
+  take,
+  takeUntil,
+} from 'rxjs/operators'
 
 import {
   type IdPair,
@@ -25,9 +37,19 @@ export interface InitialSnapshotEvent {
   document: SanityDocument | null
 }
 
+interface RelayOptions {
+  exchangeWaitMin: number
+  exchangeWaitMax: number
+  exchangeOverLapTime: number
+  exchangeTimeout: number
+}
+
+const RELAY_SECOND_LEG_TIMEOUT = 20 * 1000
+
 /** @internal */
 export interface PairListenerOptions {
   tag?: string
+  relay: RelayOptions
 }
 
 /** @internal */
@@ -58,29 +80,19 @@ function allPendingTransactionEventsReceived(listenerEvents: ListenerEvent[]) {
   )
 }
 
+/** Add some randomness to the exchange delay to avoid thundering herd */
+function getExchangeWait(min: number, max: number) {
+  return min + Math.floor(Math.random() * (max - min))
+}
+
 /** @internal */
 export function createPairListener(
   client: SanityClient,
   idPair: IdPair,
-  options: PairListenerOptions = {},
+  options?: PairListenerOptions,
 ): Observable<ListenerEvent> {
   const {publishedId, draftId} = idPair
-  return defer(
-    () =>
-      client.observable.listen(
-        `*[_id == $publishedId || _id == $draftId]`,
-        {
-          publishedId,
-          draftId,
-        },
-        {
-          includeResult: false,
-          events: ['welcome', 'mutation', 'reconnect'],
-          effectFormat: 'mendoza',
-          tag: options.tag || 'document.pair-listener',
-        },
-      ) as Observable<WelcomeEvent | MutationEvent | ReconnectEvent>,
-  ).pipe(
+  return createRelayPairListener(client, idPair, options).pipe(
     concatMap((event) =>
       event.type === 'welcome'
         ? fetchInitialDocumentSnapshots().pipe(
@@ -136,6 +148,99 @@ export function createPairListener(
         })),
       )
   }
+}
+
+type ClientListenerEvent = WelcomeEvent | MutationEvent | ReconnectEvent
+
+function createRelayPairListener(
+  client: SanityClient,
+  idPair: IdPair,
+  options?: PairListenerOptions,
+): Observable<ClientListenerEvent> {
+  const {publishedId, draftId} = idPair
+  const currentLeg = defer(
+    () =>
+      client.observable.listen(
+        `*[_id == $publishedId || _id == $draftId]`,
+        {publishedId, draftId},
+        {
+          includeResult: false,
+          events: ['welcome', 'mutation', 'reconnect'],
+          effectFormat: 'mendoza',
+          tag: options?.tag || 'document.pair-listener',
+        },
+      ) as Observable<ClientListenerEvent>,
+  ).pipe(share())
+
+  if (!options?.relay) {
+    return currentLeg
+  }
+
+  const {exchangeWaitMin, exchangeWaitMax, exchangeOverLapTime, exchangeTimeout} = options.relay
+
+  // This represents the next leg, and will be started after a certain delay
+  const nextLeg = currentLeg.pipe(
+    // make sure we are connected to the current leg before scheduling the next one. This prevents build-up in case it takes a while to connect
+    filter((ev) => ev.type === 'welcome'),
+    // current listener may still get disconnected and reconnect,
+    // so in case we receive a new welcome event we should cancel the previously scheduled next leg
+    switchMap(() => timer(getExchangeWait(exchangeWaitMin, exchangeWaitMax))),
+    take(1),
+    mergeMap(() =>
+      createRelayPairListener(client, idPair, options).pipe(
+        // this will make sure that if it takes too long to connect to the next, we will just ignore it and continue with the current leg
+        timeout({
+          first: exchangeTimeout,
+          with: () => EMPTY,
+        }),
+      ),
+    ),
+    share(),
+  )
+
+  // Merge messages from current leg with next leg into a single stream
+  return merge(
+    // take from currentLeg until we get the first 'welcome' from next leg, plus adding little overlap in time
+    currentLeg.pipe(
+      takeUntil(
+        nextLeg.pipe(
+          filter((e) => e.type === 'welcome'),
+          take(1),
+          delay(exchangeOverLapTime),
+        ),
+      ),
+    ),
+    // ignore the first welcome event from the next leg.
+    nextLeg.pipe(filter((e, index) => e.type !== 'welcome' || index > 0)),
+  ).pipe(distinctByEventId())
+}
+
+/**
+ * Operator function that takes a stream of listener events
+ * and returns a new stream that filters out events sharing the same eventId
+ */
+function distinctByEventId() {
+  return (input$: Observable<ClientListenerEvent>) =>
+    input$.pipe(
+      scan(
+        (
+          [seen]: [LRU<string, boolean>, ClientListenerEvent | null],
+          event,
+        ): [LRU<string, boolean>, ClientListenerEvent | null] => {
+          if (event.type !== 'mutation') {
+            return [seen, event]
+          }
+          if (seen.has(event.eventId)) {
+            return [seen, null]
+          }
+          seen.set(event.eventId, true)
+          return [seen, event]
+        },
+        [new LRU<string, boolean>({maxSize: 1000}), null],
+      ),
+      map(([_, event]) => event),
+      filter((event): event is ClientListenerEvent => event !== null),
+    )
 }
 
 function createSnapshotEvent(

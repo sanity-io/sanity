@@ -9,6 +9,7 @@ export interface WelcomeEvent {
 export interface MutationEvent {
   type: 'mutation'
   documentId: string
+  eventId: string
   transactionId: string
   mutations: MutationPayload[]
   effects: {apply: unknown; revert: unknown}
