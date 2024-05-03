@@ -234,6 +234,9 @@ function getDocumentHtml(
   return `<!DOCTYPE html>${result}`
 }
 
+/**
+ * @internal
+ */
 export function addImportMapToHtml(
   html: string,
   importMap?: {imports?: Record<string, string>},
