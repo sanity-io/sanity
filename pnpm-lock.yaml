@@ -491,8 +491,8 @@ importers:
         specifier: ^0.150.0
         version: 0.150.2
       '@vercel/stega':
-        specifier: 0.1.1
-        version: 0.1.1
+        specifier: 0.1.2
+        version: 0.1.2
       chokidar:
         specifier: ^3.5.3
         version: 3.6.0
@@ -722,8 +722,8 @@ importers:
         specifier: ^18.3.1
         version: 18.3.1
       '@vercel/stega':
-        specifier: 0.1.1
-        version: 0.1.1
+        specifier: 0.1.2
+        version: 0.1.2
       jsdom:
         specifier: ^23.0.1
         version: 23.2.0
@@ -7770,8 +7770,8 @@ packages:
     resolution: {integrity: sha512-5b0PkOJsFBX5alChuIO3qpkt5vIZBevzLPhUQ1UP8UzVjL3F1VllnZxp/thfD8R5ol7D7WHkgZHIjdUBX4tDpQ==}
     dev: false
 
-  /@vercel/stega@0.1.1:
-    resolution: {integrity: sha512-YdlhbgFdUAKYPlLaAhCUL10U/DdeNwp2fSJR0Wdi2c0DYdYQZbamdxizr4Lj9mxv2+/FxMWaMK7eW6BskKEZLw==}
+  /@vercel/stega@0.1.2:
+    resolution: {integrity: sha512-P7mafQXjkrsoyTRppnt0N21udKS9wUmLXHRyP9saLXLHw32j/FgUJ3FscSWgvSqRs4cj7wKZtwqJEvWJ2jbGmA==}
 
   /@vitejs/plugin-react@4.2.1(vite@4.5.3):
     resolution: {integrity: sha512-oojO9IDc4nCUUi8qIR11KoQm0XFFLIwsRBwHRR4d/88IWghn1y6ckz/bJ8GHDCsYEJee8mDzqtJxh15/cisJNQ==}
