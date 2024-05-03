@@ -12,7 +12,6 @@
     "@sanity/portable-text-editor",
     "@sanity/codegen",
     "@sanity/schema",
-    "@sanity/block-tools",
-    "vite"
+    "@sanity/block-tools"
   ]
 }

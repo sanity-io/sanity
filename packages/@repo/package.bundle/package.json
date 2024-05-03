@@ -2,10 +2,29 @@
   "name": "@repo/package.bundle",
   "version": "3.40.0",
   "private": true,
-  "description": "Shared package bundle configuration",
-  "main": "./src/package.bundle.ts",
-  "types": "./src/package.bundle.ts",
+  "description": "Rebuilds selected packages for distribution via ESM",
+  "type": "module",
   "scripts": {
-    "check:types": "tsc --noEmit --skipLibCheck src/package.bundle.ts"
+    "build": "tsx ./scripts/build.ts",
+    "check:types": "tsc --noEmit --skipLibCheck scripts/build.ts",
+    "clean": "rimraf dist"
+  },
+  "devDependencies": {
+    "@sanity/block-tools": "workspace:*",
+    "@sanity/diff": "workspace:*",
+    "@sanity/mutator": "workspace:*",
+    "@sanity/portable-text-editor": "workspace:*",
+    "@sanity/schema": "workspace:*",
+    "@sanity/types": "workspace:*",
+    "@sanity/util": "workspace:*",
+    "@sanity/vision": "workspace:*",
+    "enhanced-resolve": "^5.16.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "sanity": "workspace:*",
+    "styled-components": "^6.1.9",
+    "tsx": "^4.8.2",
+    "vite": "^4.5.1",
+    "vite-tsconfig-paths": "^4.3.2"
   }
 }

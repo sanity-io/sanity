@@ -5,7 +5,8 @@
   "scripts": {
     "bootstrap": "pnpm install && pnpm build:cli",
     "build": "turbo run build --filter='./packages/*' --filter='./packages/@sanity/*'",
-    "build:bundle": "turbo run build:bundle --filter='./packages/*' --filter='./packages/@sanity/*' --filter='./packages/@repo/shared-modules.bundle'",
+    "build:bundle": "run-s build build:bundle-only",
+    "build:bundle-only": "pnpm run build:bundle --filter=@repo/package.bundle",
     "build:clean": "lerna run clean",
     "build:cli": "turbo run build --filter=@sanity/cli --filter=sanity",
     "build:cli-only": "turbo run --filter=@sanity/cli build",
@@ -117,7 +118,6 @@
     "@types/yargs": "^17.0.7",
     "@typescript-eslint/eslint-plugin": "^7.5.0",
     "@typescript-eslint/parser": "^7.5.0",
-    "@vitejs/plugin-react": "^4.2.1",
     "cac": "^6.7.12",
     "chalk": "^4.1.2",
     "depcheck": "^1.4.7",
@@ -158,8 +158,6 @@
     "semver": "^7.3.5",
     "turbo": "^1.13.3",
     "typescript": "5.4.5",
-    "vite": "^4.5.1",
-    "vite-tsconfig-paths": "^4.3.2",
     "yargs": "^17.3.0"
   },
   "optionalDependencies": {

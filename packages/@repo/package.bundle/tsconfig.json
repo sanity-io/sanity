@@ -1,0 +1,6 @@
+{
+  "extends": "@repo/tsconfig/base.json",
+  "compilerOptions": {
+    "target": "esnext"
+  }
+}

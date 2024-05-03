@@ -63,7 +63,7 @@ importers:
         version: 0.0.1-alpha.1
       '@sanity/tsdoc':
         specifier: 1.0.42
-        version: 1.0.42(@types/node@18.19.31)(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.8)
+        version: 1.0.42(@types/node@18.19.31)(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.9)
       '@sanity/uuid':
         specifier: ^3.0.2
         version: 3.0.2
@@ -91,9 +91,6 @@ importers:
       '@typescript-eslint/parser':
         specifier: ^7.5.0
         version: 7.6.0(eslint@8.57.0)(typescript@5.4.5)
-      '@vitejs/plugin-react':
-        specifier: ^4.2.1
-        version: 4.2.1(vite@4.5.3)
       cac:
         specifier: ^6.7.12
         version: 6.7.14
@@ -214,12 +211,6 @@ importers:
       typescript:
         specifier: 5.4.5
         version: 5.4.5
-      vite:
-        specifier: ^4.5.1
-        version: 4.5.3(@types/node@18.19.31)
-      vite-tsconfig-paths:
-        specifier: ^4.3.2
-        version: 4.3.2(typescript@5.4.5)(vite@4.5.3)
       yargs:
         specifier: ^17.3.0
         version: 17.7.2
@@ -624,21 +615,58 @@ importers:
         specifier: ^6.1.0
         version: 6.1.8(react-dom@18.3.1)(react@18.3.1)
 
-  packages/@repo/package.bundle: {}
-
-  packages/@repo/package.config: {}
-
-  packages/@repo/shared-modules.bundle:
-    dependencies:
+  packages/@repo/package.bundle:
+    devDependencies:
+      '@sanity/block-tools':
+        specifier: workspace:*
+        version: link:../../@sanity/block-tools
+      '@sanity/diff':
+        specifier: workspace:*
+        version: link:../../@sanity/diff
+      '@sanity/mutator':
+        specifier: workspace:*
+        version: link:../../@sanity/mutator
+      '@sanity/portable-text-editor':
+        specifier: workspace:*
+        version: link:../../@sanity/portable-text-editor
+      '@sanity/schema':
+        specifier: workspace:*
+        version: link:../../@sanity/schema
+      '@sanity/types':
+        specifier: workspace:*
+        version: link:../../@sanity/types
+      '@sanity/util':
+        specifier: workspace:*
+        version: link:../../@sanity/util
+      '@sanity/vision':
+        specifier: workspace:*
+        version: link:../../@sanity/vision
+      enhanced-resolve:
+        specifier: ^5.16.0
+        version: 5.16.0
       react:
         specifier: ^18.3.1
         version: 18.3.1
       react-dom:
         specifier: ^18.3.1
         version: 18.3.1(react@18.3.1)
+      sanity:
+        specifier: workspace:*
+        version: link:../../sanity
       styled-components:
-        specifier: ^6.1.8
-        version: 6.1.8(react-dom@18.3.1)(react@18.3.1)
+        specifier: ^6.1.9
+        version: 6.1.9(react-dom@18.3.1)(react@18.3.1)
+      tsx:
+        specifier: ^4.8.2
+        version: 4.8.2
+      vite:
+        specifier: ^4.5.1
+        version: 4.5.3(@types/node@18.19.31)
+      vite-tsconfig-paths:
+        specifier: ^4.3.2
+        version: 4.3.2(typescript@5.4.5)(vite@4.5.3)
+
+  packages/@repo/package.config: {}
 
   packages/@repo/test-exports:
     dependencies:
@@ -3413,6 +3441,10 @@ packages:
 
   /@emotion/unitless@0.8.0:
     resolution: {integrity: sha512-VINS5vEYAscRl2ZUDiT3uMPlrFQupiKgHz5AA4bCH1miKBg4qtwkim1qPmJj/4WG6TreYMY111rEFsjupcOKHw==}
+
+  /@emotion/unitless@0.8.1:
+    resolution: {integrity: sha512-KOEGMu6dmJZtpadb476IsZBclKvILjopjUii3V+7MnXIQCYh8W3NgNcgwo21n9LXZX6EDIKvqfjYxXebDwxKmQ==}
+    dev: true
 
   /@esbuild/aix-ppc64@0.19.12:
     resolution: {integrity: sha512-bmoCYyWdEL3wDQIVbcyzRyeKLgk2WtWLTWz1ZIAZF/EGbNOwSA6ew3PftJ1PqMiOOGu0OyFMzG53L0zqIpPeNA==}
@@ -6601,6 +6633,68 @@ packages:
       - sugarss
       - supports-color
       - terser
+    dev: false
+
+  /@sanity/tsdoc@1.0.42(@types/node@18.19.31)(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.9):
+    resolution: {integrity: sha512-pWC4EShy3+JHUj2WfxGYtaZxeW/801zL6hOuHAIHM/V+N7WgfpH7EwZ69FdGZ1xVLqAIaQ3tZIcQoATQHFR/Fw==}
+    engines: {node: '>=14.0.0'}
+    hasBin: true
+    peerDependencies:
+      react: ^18
+      react-dom: ^18
+      sanity: ^3
+      styled-components: ^5.2 || ^6
+    dependencies:
+      '@microsoft/api-extractor': 7.43.1(@types/node@18.19.31)
+      '@microsoft/api-extractor-model': 7.28.14(@types/node@18.19.31)
+      '@microsoft/tsdoc': 0.14.2
+      '@microsoft/tsdoc-config': 0.16.2
+      '@portabletext/react': 3.0.18(react@18.3.1)
+      '@portabletext/toolkit': 2.0.15
+      '@sanity/client': 6.16.0
+      '@sanity/color': 3.0.6
+      '@sanity/icons': 2.11.8(react@18.3.1)
+      '@sanity/pkg-utils': 6.8.9(@types/node@18.19.31)(typescript@5.4.5)
+      '@sanity/ui': 2.1.4(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.9)
+      '@types/cpx': 1.5.5
+      '@vitejs/plugin-react': 4.2.1(vite@5.2.10)
+      cac: 6.7.14
+      chalk: 4.1.2
+      chokidar: 3.6.0
+      cors: 2.8.5
+      dotenv-flow: 3.3.0
+      esbuild: 0.20.2
+      esbuild-register: 3.5.0(esbuild@0.20.2)
+      express: 4.19.2
+      globby: 11.1.0
+      groq: 3.39.1
+      groq-js: 1.8.0
+      history: 5.3.0
+      jsonc-parser: 3.2.1
+      mkdirp: 1.0.4
+      pkg-up: 3.1.0
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+      react-refractor: 2.1.7(react@18.3.1)
+      sanity: link:packages/sanity
+      slugify: 1.6.6
+      styled-components: 6.1.9(react-dom@18.3.1)(react@18.3.1)
+      tmp: 0.2.3
+      typescript: 5.4.5
+      vite: 5.2.10(@types/node@18.19.31)
+    transitivePeerDependencies:
+      - '@types/babel__core'
+      - '@types/node'
+      - debug
+      - less
+      - lightningcss
+      - react-is
+      - sass
+      - stylus
+      - sugarss
+      - supports-color
+      - terser
+    dev: true
 
   /@sanity/types@3.37.2(debug@4.3.4):
     resolution: {integrity: sha512-1EfKkNlJ86wIDtc7oFHb79JI8lKDOxKDYrkmwhvuHgJY83GpSABc1kFdbwAtWZfrWVWyqVXUv/KlNwA3b99y/g==}
@@ -6678,6 +6772,27 @@ packages:
       react-is: 18.3.1
       react-refractor: 2.1.7(react@18.3.1)
       styled-components: 6.1.8(react-dom@18.3.1)(react@18.3.1)
+
+  /@sanity/ui@2.1.4(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.9):
+    resolution: {integrity: sha512-upOLalVCaDrW774mOwNo/f5rNsHcJASGElf/e1vLCViltdSmJ3rb7rdTRKIT26+LE4Jl0ACJIkli6J/qbGWpjQ==}
+    engines: {node: '>=14.0.0'}
+    peerDependencies:
+      react: ^18
+      react-dom: ^18
+      react-is: ^18
+      styled-components: ^5.2 || ^6
+    dependencies:
+      '@floating-ui/react-dom': 2.0.8(react-dom@18.3.1)(react@18.3.1)
+      '@sanity/color': 3.0.6
+      '@sanity/icons': 2.11.8(react@18.3.1)
+      csstype: 3.1.3
+      framer-motion: 11.0.8(react-dom@18.3.1)(react@18.3.1)
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+      react-is: 18.3.1
+      react-refractor: 2.1.7(react@18.3.1)
+      styled-components: 6.1.9(react-dom@18.3.1)(react@18.3.1)
+    dev: true
 
   /@sanity/util@3.37.2(debug@4.3.4):
     resolution: {integrity: sha512-hq0eLjyV2iaOm9ivtPw12YTQ4QsE3jnV/Ui0zhclEhu8Go5JiaEhFt2+WM2lLGRH6qcSA414QbsCNCcyhJL6rA==}
@@ -17923,6 +18038,26 @@ packages:
       stylis: 4.3.1
       tslib: 2.5.0
 
+  /styled-components@6.1.9(react-dom@18.3.1)(react@18.3.1):
+    resolution: {integrity: sha512-aBOqs0uMsYufFXSE4q6cA6Ty1fwZuMk4BJRHfiGSna59F1otnxiDelwhN4fEwmBtIymmF0ZqXHnpSigr2ps9Cg==}
+    engines: {node: '>= 16'}
+    peerDependencies:
+      react: '>= 16.8.0'
+      react-dom: '>= 16.8.0'
+    dependencies:
+      '@emotion/is-prop-valid': 1.2.1
+      '@emotion/unitless': 0.8.1
+      '@types/stylis': 4.2.0
+      css-to-react-native: 3.2.0
+      csstype: 3.1.2
+      postcss: 8.4.31
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+      shallowequal: 1.1.0
+      stylis: 4.3.1
+      tslib: 2.5.0
+    dev: true
+
   /styled-jsx@5.1.1(@babel/core@7.24.5)(react@18.3.1):
     resolution: {integrity: sha512-pW7uC1l4mBZ8ugbiZrcIsiIvVx1UmTfw7UkC3Um2tmfUq9Bhk8IiyEIPl6F8agHgjzku6j0xQEZbfA5uSgSaCw==}
     engines: {node: '>= 12.0.0'}
@@ -18405,6 +18540,17 @@ packages:
 
   /tslib@2.6.2:
     resolution: {integrity: sha512-AEYxH93jGFPn/a2iVAwW87VuUIkR1FVUKB77NwMF7nBTDkDrrT/Hpt/IrCJ0QXhW27jTBDcf5ZY7w6RiqTMw2Q==}
+
+  /tsx@4.8.2:
+    resolution: {integrity: sha512-hmmzS4U4mdy1Cnzpl/NQiPUC2k34EcNSTZYVJThYKhdqTwuBeF+4cG9KUK/PFQ7KHaAaYwqlb7QfmsE2nuj+WA==}
+    engines: {node: '>=18.0.0'}
+    hasBin: true
+    dependencies:
+      esbuild: 0.20.2
+      get-tsconfig: 4.7.3
+    optionalDependencies:
+      fsevents: 2.3.3
+    dev: true
 
   /tuf-js@1.1.7:
     resolution: {integrity: sha512-i3P9Kgw3ytjELUfpuKVDNBJvk4u5bXL6gskv572mcevPbSKCV3zt3djhmlEQ65yERjIbOSncy7U4cQJaB1CBCg==}

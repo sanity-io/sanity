@@ -14,7 +14,7 @@
       "dependsOn": ["^build"],
       "outputMode": "new-only"
     },
-    "build:bundle": {
+    "build:bundle-only": {
       "outputs": ["dist/**"],
       "dependsOn": ["build"],
       "outputMode": "new-only"
