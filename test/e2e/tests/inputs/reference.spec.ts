@@ -63,3 +63,51 @@ withDefaultClient((context) => {
     await expect(paneFooter).toContainText('Published just now')
   })
 })
+
+test.describe('search strategy', () => {
+  test('uses Text Search API search strategy if filter is supported', async ({
+    page,
+    createDraftDocument,
+  }) => {
+    const referenceInput = page
+      .locator('[data-comments-field-id="multiTypeRef"]')
+      .getByTestId('reference-input')
+
+    await createDraftDocument('/test/content/input-standard;referenceTest')
+
+    // Wait for Text Search API request.
+    const searchRequest = page.waitForRequest(
+      (request) =>
+        request.url().includes('sanity.studio.search.reference') &&
+        request.url().includes('data/textsearch') &&
+        request.postDataJSON().query.string == '*',
+    )
+
+    // Open the Author reference input.
+    await referenceInput.getByLabel('Open').click()
+    await searchRequest
+  })
+
+  test('falls back to GROQ Query API search strategy if filter is not supported by Text Search API', async ({
+    page,
+    createDraftDocument,
+  }) => {
+    const referenceInput = page
+      .locator('[data-comments-field-id="referenceWithSubqueryFilter"]')
+      .getByTestId('reference-input')
+
+    await createDraftDocument('/test/content/input-standard;referenceTest')
+
+    // Wait for GROQ Query API request.
+    const searchRequest = page.waitForRequest(
+      (request) =>
+        request.url().includes('sanity.studio.search.reference') &&
+        request.url().includes('data/query') &&
+        request.url().includes('author-%3Ename+match+%22*e*%22'),
+    )
+
+    // Open the Author reference input.
+    await referenceInput.getByLabel('Open').click()
+    await searchRequest
+  })
+})
