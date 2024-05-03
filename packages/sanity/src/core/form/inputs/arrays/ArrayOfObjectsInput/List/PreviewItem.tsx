@@ -184,6 +184,7 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
   )
 
   const itemTypeTitle = getSchemaTypeTitle(schemaType)
+
   return (
     <>
       <ChangeIndicator path={path} isChanged={changed} hasFocus={Boolean(focused)}>
@@ -202,6 +203,7 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
           onClose={onClose}
           autofocus={focused}
           legacy_referenceElement={previewCardRef.current}
+          path={path}
         >
           {children}
         </EditPortal>

@@ -1,5 +1,7 @@
 import {Box, type ResponsiveWidthProps} from '@sanity/ui'
+import {isEqual} from 'lodash'
 import {type DragEvent, type ReactElement, type ReactNode, useRef, useState} from 'react'
+import {type Path, useFormBuilder} from 'sanity'
 
 import {Dialog} from '../../../ui-components'
 import {PopoverDialog} from '../../components'
@@ -18,6 +20,7 @@ interface Props {
   // eslint-disable-next-line camelcase
   legacy_referenceElement: HTMLElement | null
   autofocus?: boolean
+  path: Path
 }
 
 function onDragEnter(event: DragEvent<HTMLDivElement>) {
@@ -38,9 +41,15 @@ export function EditPortal(props: Props): ReactElement {
     type,
     width,
     autofocus,
+    path,
   } = props
   const [documentScrollElement, setDocumentScrollElement] = useState<HTMLDivElement | null>(null)
   const containerElement = useRef<HTMLDivElement | null>(null)
+
+  const {focusPath} = useFormBuilder()
+
+  const isCurrent = isEqual(focusPath, path)
+  const isFirst = focusPath[0] === path[0]
 
   const contents = (
     <PresenceOverlay margins={PRESENCE_MARGINS}>
@@ -55,6 +64,31 @@ export function EditPortal(props: Props): ReactElement {
   //     </Card>
   //   </Box>
   // )
+
+  if (isFirst) {
+    return (
+      <VirtualizerScrollInstanceProvider
+        scrollElement={documentScrollElement}
+        containerElement={containerElement}
+      >
+        <Dialog
+          header={header}
+          id={id || ''}
+          onClickOutside={onClose}
+          onClose={onClose}
+          onDragEnter={onDragEnter}
+          onDrop={onDrop}
+          width={width}
+          contentRef={setDocumentScrollElement}
+          __unstable_autoFocus={autofocus}
+        >
+          {contents}
+        </Dialog>
+      </VirtualizerScrollInstanceProvider>
+    )
+  }
+
+  return <div style={{border: `4px solid ${isCurrent ? 'green' : 'red'}`}}>{contents}</div>
 
   if (type === 'dialog') {
     return (
