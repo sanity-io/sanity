@@ -21,7 +21,7 @@ export interface TypegenGenerateTypesWorkerData {
   schemaPath: string
   searchPath: string | string[]
   prettierConfig: PrettierOptions | null
-  format?: {
+  format: {
     schemaTypes: {
       literal: string
       nameCase: 'camel' | 'pascal' | 'snake'
@@ -135,11 +135,12 @@ async function main() {
         const queryTypes = typeEvaluate(ast, schema)
 
         const type = await maybeFormatCode(
-          typeGenerator.generateTypeNodeTypes(`${queryName}Result`, queryTypes),
+          typeGenerator.generateTypeNodeTypes(queryName, queryTypes, opts.format.queries),
           opts.prettierConfig,
         )
 
         const queryTypeStats = walkAndCountQueryTypeNodeStats(queryTypes)
+
         fileQueryTypes.push({
           queryName,
           query,
@@ -235,3 +236,40 @@ function walkAndCountQueryTypeNodeStats(typeNode: TypeNode): {
 }
 
 main()
+
+function formatQueryResultName(
+  name: string,
+  format: TypegenGenerateTypesWorkerData['format']['queries'],
+) {
+  return format.literal.replace('{name}', convertStringToCase(name, format.nameCase))
+}
+
+function convertStringToCase(string: string, newCase: 'camel' | 'pascal' | 'snake') {
+  const normalizedString = string
+    .replace(/([a-z])([A-Z])/g, '$1 $2')
+    .replace(/[_-]+/g, ' ')
+    .trim()
+    .toLowerCase()
+
+  switch (newCase) {
+    case 'pascal':
+      return normalizedString
+        .replace(/(^|\s)(\w)/g, (_, a, s) => {
+          return a + s.toUpperCase()
+        })
+        .replace(/\s/g, '')
+    case 'camel':
+      return normalizedString
+        .replace(/(\s)(\w)/g, (_, a, s) => {
+          return a + s.toUpperCase()
+        })
+        .replace(/\s/g, '')
+        .replace(/^(.)/, (_, a) => {
+          return a.toLowerCase()
+        })
+    case 'snake':
+      return normalizedString.replace(/[\s]+/g, '_')
+    default:
+      throw Error('Invalid case format specified: '.concat(newCase))
+  }
+}

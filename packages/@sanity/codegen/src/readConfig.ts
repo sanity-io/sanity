@@ -42,7 +42,7 @@ export const configDefintion = z.object({
           literal: z.string().default(defaultFormat.queries.literal),
           nameCase: caseString.default(defaultFormat.queries.nameCase),
         })
-        .default(defaultFormat.schemaTypes),
+        .default(defaultFormat.queries),
     })
     .default(defaultFormat),
 })

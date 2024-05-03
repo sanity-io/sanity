@@ -14,10 +14,12 @@ import {
 const REFERENCE_SYMBOL_NAME = 'internalGroqTypeReferenceTo'
 
 export type TypeGeneratorOpts = {
-  format: {
-    literal: string
-    nameCase: 'camel' | 'pascal' | 'snake'
-  }
+  format: FormatOpts
+}
+
+type FormatOpts = {
+  literal: string
+  nameCase: 'camel' | 'pascal' | 'snake'
 }
 
 const defaultTypeGeneratorFormat = {
@@ -78,11 +80,15 @@ export class TypeGenerator {
    * @internal
    * @beta
    */
-  generateTypeNodeTypes(identifierName: string, typeNode: TypeNode): string {
+  generateTypeNodeTypes(
+    identifierName: string,
+    typeNode: TypeNode,
+    formatOpts?: FormatOpts,
+  ): string {
     const type = this.getTypeNodeType(typeNode)
 
     const typeAlias = t.tsTypeAliasDeclaration(
-      t.identifier(this.getTypeName(identifierName)),
+      t.identifier(this.getTypeName(identifierName, formatOpts)),
       null,
       type,
     )
@@ -107,8 +113,8 @@ export class TypeGenerator {
    * types would be sanityized into MuxVideo. To avoid this we keep track of the generated type names and add a index to the name.
    * When we reference a type we also keep track of the original name so we can reference the correct type later.
    */
-  private getTypeName(name: string): string {
-    const desiredName = getTypeIdentifier(name, this.opts)
+  private getTypeName(name: string, formatOpts?: FormatOpts): string {
+    const desiredName = getTypeIdentifier(name, formatOpts || this.opts.format)
 
     let generatedName = desiredName
     let i = 2
@@ -162,7 +168,7 @@ export class TypeGenerator {
         return this.generateUnionTsType(typeNode)
       }
       case 'inline': {
-        return t.tsTypeReference(t.identifier(getTypeIdentifier(typeNode.name, this.opts)))
+        return t.tsTypeReference(t.identifier(getTypeIdentifier(typeNode.name, this.opts.format)))
       }
       case 'null': {
         return t.tsNullKeyword()
@@ -220,7 +226,7 @@ export class TypeGenerator {
             t.tsTypeReference(
               t.identifier(
                 this.typeNameMap.get(typeNode.rest.name) ||
-                  getTypeIdentifier(typeNode.rest.name, this.opts),
+                  getTypeIdentifier(typeNode.rest.name, this.opts.format),
               ),
             ),
           ])
@@ -271,10 +277,10 @@ function sanitizeIdentifier(input: string): string {
   return `${input.replace(/^\d/, '_').replace(/[^$\w]+(.)/g, (_, char) => char.toUpperCase())}`
 }
 
-function getTypeIdentifier(name: string, opts: TypeGeneratorOpts) {
-  return opts.format.literal.replace(
+function getTypeIdentifier(name: string, formatOpts: FormatOpts) {
+  return formatOpts.literal.replace(
     '{name}',
-    convertStringToCase(sanitizeIdentifier(name), opts.format.nameCase),
+    convertStringToCase(sanitizeIdentifier(name), formatOpts.nameCase),
   )
 }
 
