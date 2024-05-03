@@ -1,10 +1,10 @@
 import JSONInspector from '@rexxars/react-json-inspector'
 import {Code} from '@sanity/ui'
-import HLRU from 'hashlru'
+import LRU from 'quick-lru'
 
 import {ResultViewWrapper} from './ResultView.styled'
 
-const lru = HLRU(50000)
+const lru = new LRU({maxSize: 50000})
 
 export function ResultView(props: {data: unknown}) {
   const {data} = props

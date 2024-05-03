@@ -1378,9 +1378,6 @@ importers:
       '@uiw/react-codemirror':
         specifier: ^4.11.4
         version: 4.21.25(@babel/runtime@7.24.5)(@codemirror/autocomplete@6.16.0)(@codemirror/language@6.10.1)(@codemirror/lint@6.7.0)(@codemirror/search@6.5.6)(@codemirror/state@6.4.1)(@codemirror/theme-one-dark@6.1.2)(@codemirror/view@6.26.3)(codemirror@6.0.1)(react-dom@18.3.1)(react@18.3.1)
-      hashlru:
-        specifier: ^2.3.0
-        version: 2.3.0
       is-hotkey-esm:
         specifier: ^1.0.0
         version: 1.0.0
@@ -1390,6 +1387,9 @@ importers:
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
+      quick-lru:
+        specifier: ^5.1.1
+        version: 5.1.1
     devDependencies:
       '@repo/package.config':
         specifier: workspace:*
@@ -1637,9 +1637,6 @@ importers:
       groq-js:
         specifier: ^1.8.0
         version: 1.8.0
-      hashlru:
-        specifier: ^2.3.0
-        version: 2.3.0
       history:
         specifier: ^5.3.0
         version: 5.3.0
@@ -1709,6 +1706,9 @@ importers:
       pretty-ms:
         specifier: ^7.0.1
         version: 7.0.1
+      quick-lru:
+        specifier: ^5.1.1
+        version: 5.1.1
       raf:
         specifier: ^3.4.1
         version: 3.4.1
@@ -12222,10 +12222,6 @@ packages:
       kind-of: 4.0.0
     dev: true
 
-  /hashlru@2.3.0:
-    resolution: {integrity: sha512-0cMsjjIC8I+D3M44pOQdsy0OHXGLVz6Z0beRuufhKa0KfaD2wGwAev6jILzXsd3/vpnNQJmWyZtIILqM1N+n5A==}
-    dev: false
-
   /hasown@2.0.2:
     resolution: {integrity: sha512-0hJU9SCPvmMzIBdZFqNPXWa6dqh7WdH0cII9y+CyS8rG3nL48Bclra9HmKhVVUHyPWNH5Y7xDwAB7bfgSjkUMQ==}
     engines: {node: '>= 0.4'}
@@ -16275,6 +16271,11 @@ packages:
   /quick-lru@4.0.1:
     resolution: {integrity: sha512-ARhCpm70fzdcvNQfPoy49IaanKkTlRWF2JMzqhcJbhSFRZv7nPTvZJdcY7301IPmvW+/p0RgIWnQDLJxifsQ7g==}
     engines: {node: '>=8'}
+
+  /quick-lru@5.1.1:
+    resolution: {integrity: sha512-WuyALRjWPDGtt/wzJiadO5AXY+8hZ80hVpe6MyivgraREW751X3SbhRvG3eLKOYN+8VEvqLcf3wdnt44Z4S4SA==}
+    engines: {node: '>=10'}
+    dev: false
 
   /raf@3.4.1:
     resolution: {integrity: sha512-Sq4CW4QhwOHE8ucn6J34MqtZCeWFP2aQSmrlroYgqAV1PjStIhJXxYuTgUIfkEk7zTLjmIjLmU5q+fbD1NnOJA==}
