@@ -1,8 +1,8 @@
 import {type SanityDocumentLike} from '@sanity/types'
-import HLRU from 'hashlru'
+import LRU from 'quick-lru'
 import {isRecord, isString} from 'sanity'
 
-const lru = HLRU(1000)
+const lru = new LRU({maxSize: 1000})
 
 export function isExpanded(keyPath: any, value: any): any {
   const cached = lru.get(keyPath)
