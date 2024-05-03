@@ -315,7 +315,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
       // debug('Unsubscribing to changes$')
       sub.unsubscribe()
     }
-  }, [change$, restoreSelectionFromProps, syncRangeDecorations])
+  }, [change$, restoreSelectionFromProps])
 
   // Restore selection from props when it changes
   useEffect(() => {
