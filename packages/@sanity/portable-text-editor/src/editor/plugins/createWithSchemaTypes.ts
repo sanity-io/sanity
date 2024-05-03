@@ -59,6 +59,12 @@ export function createWithSchemaTypes({
         const key = span._key || keyGenerator()
         Transforms.setNodes(editor, {...span, _type: schemaTypes.span.name, _key: key}, {at: path})
       }
+
+      if (node._key === undefined) {
+        debug('Setting missing key on child node without a key')
+        const key = keyGenerator()
+        Transforms.setNodes(editor, {_key: key}, {at: path})
+      }
       normalizeNode(entry)
     }
     return editor
