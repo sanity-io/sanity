@@ -591,6 +591,9 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
       const result = rangeDecorationState.filter((item) => {
         // Special case in order to only return one decoration for collapsed ranges
         if (SlateRange.isCollapsed(item)) {
+          if (path.length !== 2) {
+            return false
+          }
           return Path.equals(item.focus.path, path) && Path.equals(item.anchor.path, path)
         }
         // Include decorations that either include or intersects with this path
