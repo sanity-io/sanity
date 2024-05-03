@@ -79,7 +79,63 @@ export function createWithHotkeys(
       const isShiftTab = isHotkey('shift+tab', event.nativeEvent)
       const isBackspace = isHotkey('backspace', event.nativeEvent)
       const isDelete = isHotkey('delete', event.nativeEvent)
+      const isArrowDown = isHotkey('down', event.nativeEvent)
+      const isArrowUp = isHotkey('up', event.nativeEvent)
 
+      // Check if the user is in a void block, in that case, add an empty text block below if there is no next block
+      if (isArrowDown && editor.selection) {
+        const focusBlock = Node.descendant(editor, editor.selection.focus.path.slice(0, 1)) as
+          | SlateTextBlock
+          | VoidElement
+
+        if (focusBlock && Editor.isVoid(editor, focusBlock)) {
+          const nextPath = Path.next(editor.selection.focus.path.slice(0, 1))
+          const nextBlock = Node.has(editor, nextPath)
+          if (!nextBlock) {
+            Transforms.insertNodes(editor, editor.pteCreateEmptyBlock(), {at: nextPath})
+            editor.onChange()
+            return
+          }
+        }
+      }
+      if (isArrowUp && editor.selection) {
+        const isFirstBlock = editor.selection.focus.path[0] === 0
+        const focusBlock = Node.descendant(editor, editor.selection.focus.path.slice(0, 1)) as
+          | SlateTextBlock
+          | VoidElement
+
+        if (isFirstBlock && focusBlock && Editor.isVoid(editor, focusBlock)) {
+          Transforms.insertNodes(editor, editor.pteCreateEmptyBlock(), {at: [0]})
+          Transforms.select(editor, {path: [0, 0], offset: 0})
+          editor.onChange()
+          return
+        }
+      }
+      if (
+        isBackspace &&
+        editor.selection &&
+        editor.selection.focus.path[0] === 0 &&
+        Range.isCollapsed(editor.selection)
+      ) {
+        // If the block is text and we have a next block below, remove the current block
+        const focusBlock = Node.descendant(editor, editor.selection.focus.path.slice(0, 1)) as
+          | SlateTextBlock
+          | VoidElement
+        const nextPath = Path.next(editor.selection.focus.path.slice(0, 1))
+        const nextBlock = Node.has(editor, nextPath)
+        const isTextBlock = isPortableTextTextBlock(focusBlock)
+        const isEmptyFocusBlock =
+          isTextBlock && focusBlock.children.length === 1 && focusBlock.children?.[0]?.text === ''
+
+        if (nextBlock && isTextBlock && isEmptyFocusBlock) {
+          // Remove current block
+          event.preventDefault()
+          event.stopPropagation()
+          Transforms.removeNodes(editor, {match: (n) => n === focusBlock})
+          editor.onChange()
+          return
+        }
+      }
       // Disallow deleting void blocks by backspace from another line.
       // Otherwise it's so easy to delete the void block above when trying to delete text on
       // the line below or above
