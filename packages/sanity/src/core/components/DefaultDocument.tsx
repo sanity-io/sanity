@@ -120,7 +120,7 @@ const EMPTY_ARRAY: never[] = []
  * @beta */
 export function DefaultDocument(props: DefaultDocumentProps): ReactElement {
   const {entryPath, css = EMPTY_ARRAY, basePath = '/'} = props
-  const addImportMap = true
+  const addImportMap = false
   return (
     <html lang="en">
       <head>

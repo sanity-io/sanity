@@ -119,6 +119,8 @@ export async function getViteConfig(options: ViteOptions): Promise<InlineConfig>
     },
   }
 
+  const addImportMap = false
+
   if (mode === 'production') {
     viteConfig.build = {
       ...viteConfig.build,
@@ -128,7 +130,9 @@ export async function getViteConfig(options: ViteOptions): Promise<InlineConfig>
       emptyOutDir: false, // Rely on CLI to do this
 
       rollupOptions: {
-        external: [/^sanity(\/.*)?$/, 'react', 'react/jsx-runtime', 'styled-components'],
+        external: addImportMap
+          ? [/^sanity(\/.*)?$/, 'react', 'react/jsx-runtime', 'styled-components']
+          : [],
         input: {
           sanity: path.join(cwd, '.sanity', 'runtime', 'app.js'),
         },
