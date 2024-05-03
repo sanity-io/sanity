@@ -76,6 +76,7 @@ export default async function typegenGenerateAction(
       schemaPath: codegenConfig.schema,
       searchPath: codegenConfig.path,
       prettierConfig,
+      format: codegenConfig.format,
     } satisfies TypegenGenerateTypesWorkerData,
     // eslint-disable-next-line no-process-env
     env: process.env,

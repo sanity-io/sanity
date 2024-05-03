@@ -21,6 +21,16 @@ export interface TypegenGenerateTypesWorkerData {
   schemaPath: string
   searchPath: string | string[]
   prettierConfig: PrettierOptions | null
+  format?: {
+    schemaTypes: {
+      literal: string
+      nameCase: 'camel' | 'pascal' | 'snake'
+    }
+    queries: {
+      literal: string
+      nameCase: 'camel' | 'pascal' | 'snake'
+    }
+  }
 }
 
 export type TypegenGenerateTypesWorkerMessage =
@@ -80,7 +90,7 @@ function maybeFormatCode(code: string, prettierConfig: PrettierOptions | null): 
 async function main() {
   const schema = await readSchema(opts.schemaPath)
 
-  const typeGenerator = new TypeGenerator(schema)
+  const typeGenerator = new TypeGenerator(schema, {format: opts.format?.schemaTypes})
   const schemaTypes = await maybeFormatCode(
     [typeGenerator.generateSchemaTypes(), TypeGenerator.generateKnownTypes()].join('\n'),
     opts.prettierConfig,

@@ -14,8 +14,16 @@ import {
 const REFERENCE_SYMBOL_NAME = 'internalGroqTypeReferenceTo'
 
 export type TypeGeneratorOpts = {
-  schemaTypeFormat: string
+  format: {
+    literal: string
+    nameCase: 'camel' | 'pascal' | 'snake'
+  }
 }
+
+const defaultTypeGeneratorFormat = {
+  literal: '{name}',
+  nameCase: 'pascal',
+} as const
 
 /**
  * A class used to generate TypeScript types from a given schema
@@ -32,7 +40,9 @@ export class TypeGenerator {
 
   constructor(schema: SchemaType, opts?: Partial<TypeGeneratorOpts>) {
     this.schema = schema
-    this.opts = {schemaTypeFormat: opts?.schemaTypeFormat || '{name}'}
+    this.opts = {
+      format: opts?.format || defaultTypeGeneratorFormat,
+    }
   }
 
   /**
@@ -98,7 +108,7 @@ export class TypeGenerator {
    * When we reference a type we also keep track of the original name so we can reference the correct type later.
    */
   private getTypeName(name: string): string {
-    const desiredName = uppercaseFirstLetter(sanitizeIdentifier(formatIdentifier(name, this.opts)))
+    const desiredName = getTypeIdentifier(name, this.opts)
 
     let generatedName = desiredName
     let i = 2
@@ -152,11 +162,7 @@ export class TypeGenerator {
         return this.generateUnionTsType(typeNode)
       }
       case 'inline': {
-        return t.tsTypeReference(
-          t.identifier(
-            uppercaseFirstLetter(sanitizeIdentifier(formatIdentifier(typeNode.name, this.opts))),
-          ),
-        )
+        return t.tsTypeReference(t.identifier(getTypeIdentifier(typeNode.name, this.opts)))
       }
       case 'null': {
         return t.tsNullKeyword()
@@ -214,9 +220,7 @@ export class TypeGenerator {
             t.tsTypeReference(
               t.identifier(
                 this.typeNameMap.get(typeNode.rest.name) ||
-                  uppercaseFirstLetter(
-                    sanitizeIdentifier(formatIdentifier(typeNode.rest.name, this.opts)),
-                  ),
+                  getTypeIdentifier(typeNode.rest.name, this.opts),
               ),
             ),
           ])
@@ -263,14 +267,43 @@ export class TypeGenerator {
   }
 }
 
-function uppercaseFirstLetter(input: string): string {
-  return input.charAt(0).toUpperCase() + input.slice(1)
-}
-
 function sanitizeIdentifier(input: string): string {
   return `${input.replace(/^\d/, '_').replace(/[^$\w]+(.)/g, (_, char) => char.toUpperCase())}`
 }
 
-function formatIdentifier(input: string, opts: TypeGeneratorOpts) {
-  return opts.schemaTypeFormat.replace('{name}', input)
+function getTypeIdentifier(name: string, opts: TypeGeneratorOpts) {
+  return opts.format.literal.replace(
+    '{name}',
+    convertStringToCase(sanitizeIdentifier(name), opts.format.nameCase),
+  )
+}
+
+function convertStringToCase(string: string, newCase: 'camel' | 'pascal' | 'snake') {
+  const normalizedString = string
+    .replace(/([a-z])([A-Z])/g, '$1 $2')
+    .replace(/[_-]+/g, ' ')
+    .trim()
+    .toLowerCase()
+
+  switch (newCase) {
+    case 'pascal':
+      return normalizedString
+        .replace(/(^|\s)(\w)/g, (_, a, s) => {
+          return a + s.toUpperCase()
+        })
+        .replace(/\s/g, '')
+    case 'camel':
+      return normalizedString
+        .replace(/(\s)(\w)/g, (_, a, s) => {
+          return a + s.toUpperCase()
+        })
+        .replace(/\s/g, '')
+        .replace(/^(.)/, (_, a) => {
+          return a.toLowerCase()
+        })
+    case 'snake':
+      return normalizedString.replace(/[\s]+/g, '_')
+    default:
+      throw Error('Invalid case format specified: '.concat(newCase))
+  }
 }

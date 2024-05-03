@@ -3,6 +3,21 @@ import {readFile} from 'node:fs/promises'
 import * as json5 from 'json5'
 import * as z from 'zod'
 
+export type Case = 'camel' | 'pascal' | 'snake'
+
+const defaultFormat = {
+  schemaTypes: {
+    literal: '{name}',
+    nameCase: 'pascal',
+  },
+  queries: {
+    literal: '{name}Result',
+    nameCase: 'pascal',
+  },
+} as const
+
+const caseString = z.union([z.literal('camel'), z.literal('pascal'), z.literal('snake')])
+
 export const configDefintion = z.object({
   path: z
     .string()
@@ -14,7 +29,22 @@ export const configDefintion = z.object({
     ]),
   schema: z.string().default('./schema.json'),
   generates: z.string().default('./sanity.types.ts'),
-  schemaTypeFormat: z.string().includes('{name}').default('{name}'),
+  format: z
+    .object({
+      schemaTypes: z
+        .object({
+          literal: z.string().default(defaultFormat.schemaTypes.literal),
+          nameCase: caseString.default(defaultFormat.schemaTypes.nameCase),
+        })
+        .default(defaultFormat.schemaTypes),
+      queries: z
+        .object({
+          literal: z.string().default(defaultFormat.queries.literal),
+          nameCase: caseString.default(defaultFormat.queries.nameCase),
+        })
+        .default(defaultFormat.schemaTypes),
+    })
+    .default(defaultFormat),
 })
 
 export type CodegenConfig = z.infer<typeof configDefintion>
