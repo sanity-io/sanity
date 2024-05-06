@@ -90,4 +90,17 @@ describe('ScheduledPublishingEnabledProvider', () => {
 
     expect(value.result.current).toEqual({enabled: false, mode: null})
   })
+
+  it('should call "useFeatureEnabled" with "scheduledPublishing"', () => {
+    require('../../../studio').useWorkspace.mockReturnValue({scheduledPublishing: {enabled: false}})
+
+    const useFeatureEnabled = require('../../../hooks').useFeatureEnabled
+    useFeatureEnabled.mockReturnValue({enabled: false, isLoading: false})
+
+    renderHook(useScheduledPublishingEnabled, {
+      wrapper: ScheduledPublishingEnabledProvider,
+    })
+
+    expect(useFeatureEnabled).toHaveBeenCalledWith('scheduledPublishing')
+  })
 })

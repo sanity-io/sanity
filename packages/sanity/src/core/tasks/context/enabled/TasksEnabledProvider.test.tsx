@@ -78,4 +78,14 @@ describe('TasksEnabledProvider', () => {
 
     expect(value.result.current).toEqual({enabled: false, mode: null})
   })
+
+  it('should call "useFeatureEnabled" with "sanityTasks"', () => {
+    require('../../../studio').useWorkspace.mockReturnValue({tasks: {enabled: false}})
+
+    const useFeatureEnabled = require('../../../hooks').useFeatureEnabled
+    useFeatureEnabled.mockReturnValue({enabled: false, isLoading: false})
+    renderHook(useTasksEnabled, {wrapper: TasksEnabledProvider})
+
+    expect(useFeatureEnabled).toHaveBeenCalledWith('sanityTasks')
+  })
 })
