@@ -186,7 +186,7 @@ export function createSearchQuery(
       __limit: limit,
       ...(params || {}),
     },
-    options: {tag},
+    options: {tag, perspective: searchOpts.perspective},
     searchSpec: specs,
     terms,
   }
