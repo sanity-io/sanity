@@ -25,6 +25,7 @@ const INITIAL_STATE: QueryResult = {
 interface UseDocumentListOpts {
   apiVersion?: string
   filter: string
+  perspective?: string
   params: Record<string, unknown>
   searchQuery: string | null
   sortOrder?: SortOrder
@@ -50,7 +51,7 @@ const INITIAL_QUERY_RESULTS: QueryResult = {
  * @internal
  */
 export function useDocumentList(opts: UseDocumentListOpts): DocumentListState {
-  const {filter, params: paramsProp, sortOrder, searchQuery, apiVersion} = opts
+  const {filter, params: paramsProp, sortOrder, searchQuery, perspective, apiVersion} = opts
   const client = useClient({
     ...DEFAULT_STUDIO_CLIENT_OPTIONS,
     apiVersion: apiVersion || DEFAULT_STUDIO_CLIENT_OPTIONS.apiVersion,
@@ -156,6 +157,7 @@ export function useDocumentList(opts: UseDocumentListOpts): DocumentListState {
       limit,
       params: paramsProp,
       schema,
+      perspective,
       searchQuery: searchQuery || '',
       sort,
       staticTypeNames: typeNameFromFilter,
@@ -192,6 +194,7 @@ export function useDocumentList(opts: UseDocumentListOpts): DocumentListState {
     filter,
     paramsProp,
     schema,
+    perspective,
     searchQuery,
     typeNameFromFilter,
     maxFieldDepth,

@@ -10,6 +10,7 @@ import {
   useTranslation,
   useUnique,
 } from 'sanity'
+import {useRouter} from 'sanity/router'
 import {keyframes, styled} from 'styled-components'
 
 import {structureLocaleNamespace} from '../../i18n'
@@ -49,6 +50,8 @@ const AnimatedSpinnerIcon = styled(SpinnerIcon)`
 export const DocumentListPane = memo(function DocumentListPane(props: DocumentListPaneProps) {
   const {childItemId, isActive, pane, paneKey, sortOrder: sortOrderRaw, layout} = props
   const schema = useSchema()
+
+  const perspective = useRouter().stickyParams.perspective
 
   const {displayOptions, options} = pane
   const {apiVersion, filter} = options
@@ -92,6 +95,7 @@ export const DocumentListPane = memo(function DocumentListPane(props: DocumentLi
   } = useDocumentList({
     apiVersion,
     filter,
+    perspective,
     params,
     searchQuery: searchQuery?.trim(),
     sortOrder,
