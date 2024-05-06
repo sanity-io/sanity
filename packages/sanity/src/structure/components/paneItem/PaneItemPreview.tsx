@@ -75,23 +75,13 @@ export function PaneItemPreview(props: PaneItemPreviewProps) {
 
   // TODO: Remove debug `_id` output.
   return (
-    <>
-      <Text size={1} muted>
-        {
-          // This is temporary, will be removed.
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          //@ts-expect-error
-          (version ?? draft ?? published)?._id
-        }
-      </Text>
-      <SanityDefaultPreview
-        {...getPreviewValueWithFallback({value, draft, published, version, perspective})}
-        isPlaceholder={isLoading}
-        icon={icon}
-        layout={layout}
-        status={status}
-        tooltip={tooltip}
-      />
-    </>
+    <SanityDefaultPreview
+      {...getPreviewValueWithFallback({value, draft, published, perspective})}
+      isPlaceholder={isLoading}
+      icon={icon}
+      layout={layout}
+      status={status}
+      tooltip={tooltip}
+    />
   )
 }

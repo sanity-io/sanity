@@ -8,9 +8,18 @@ import {
   Layer,
   LayerProvider,
   PortalProvider,
+  Select,
   useMediaIndex,
 } from '@sanity/ui'
-import {useCallback, useContext, useEffect, useMemo, useRef, useState} from 'react'
+import {
+  type ChangeEvent,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import {NavbarContext} from 'sanity/_singletons'
 import {type RouterState, useRouter, useRouterState} from 'sanity/router'
 import {styled} from 'styled-components'
@@ -160,7 +169,14 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
     setDrawerOpen(true)
   }, [])
 
-  const perspective = useMemo(() => router.stickyParams.perspective, [router.stickyParams])
+  const release = useMemo(() => router.stickyParams.release, [router.stickyParams])
+
+  const handleReleaseChange = useCallback(
+    (element: ChangeEvent<HTMLSelectElement>) => {
+      router.navigateStickyParam('perspective', element.currentTarget.value || '')
+    },
+    [router],
+  )
 
   const actionNodes = useMemo(() => {
     if (!shouldRender.tools) return null
@@ -213,18 +229,25 @@ export function StudioNavbar(props: Omit<NavbarProps, 'renderDefault'>) {
                     <WorkspaceMenuButton />
                   </Flex>
                 </Flex>
-                {/* Versions button */}
-                <Flex gap={2}>
-                  <GlobalPerspectiveMenu />
-                  {/* New document button */}
-                  <NewDocumentButton
-                    {...newDocumentOptions}
-                    modal={shouldRender.newDocumentFullscreen ? 'dialog' : 'popover'}
-                  />
-                  {/* Search button (desktop) */}
-                  {!shouldRender.searchFullscreen && (
-                    <SearchButton onClick={handleOpenSearch} ref={setSearchOpenButtonEl} />
-                  )}
+                {/* New document button */}
+                <NewDocumentButton
+                  {...newDocumentOptions}
+                  modal={shouldRender.newDocumentFullscreen ? 'dialog' : 'popover'}
+                />
+                {/* Search button (desktop) */}
+                {!shouldRender.searchFullscreen && (
+                  <SearchButton onClick={handleOpenSearch} ref={setSearchOpenButtonEl} />
+                )}
+                <Flex>
+                  {/* TODO: Fix */}
+                  <Select value={release} onChange={handleReleaseChange}>
+                    {/* eslint-disable-next-line i18next/no-literal-string */}
+                    <option value="">Published + Drafts</option>
+                    {/* eslint-disable-next-line i18next/no-literal-string */}
+                    <option value="previewDrafts">Preview drafts</option>
+                    {/* eslint-disable-next-line i18next/no-literal-string */}
+                    <option value="published">Published</option>
+                  </Select>
                 </Flex>
               </Flex>
             </TooltipDelayGroupProvider>
