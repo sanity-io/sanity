@@ -140,41 +140,18 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     templateParams,
   })
 
-  const [liveEdit, setLiveEdit] = useState<boolean>(false)
   const initialValue = useUnique(initialValueRaw)
   const {patch} = useDocumentOperation(documentId, documentType)
   const schemaType = schema.get(documentType) as ObjectSchemaType | undefined
   const editState = useEditState(documentId, documentType, 'default')
   const {validation: validationRaw} = useValidationStatus(documentId, documentType)
   const connectionState = useConnectionState(documentId, documentType)
+  const schemaType = schema.get(documentType) as ObjectSchemaType | undefined
 
-  // When a bundle is checked out and the document being viewed either comes into existence or is
-  // removed from the bundle, switch to the version or the default document accordingly.
-  useEffect(() => {
-    setDocumentId(
-      bundle && versionExists
-        ? [bundle, getPublishedId(documentIdRaw)].join('.')
-        : getPublishedId(documentIdRaw),
-    )
-  }, [bundle, versionExists, documentIdRaw])
-
-  // When a bundle is checked out and the document being viewed exists in that bundle, enable
-  // live editing.
-  useEffect(() => {
-    const isEnabled = Boolean(schemaType?.liveEdit || versionExists)
-
-    setLiveEdit(isEnabled)
-    ;(globalThis as any).__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED_LIVE_EDIT_OVERRIDE =
-      isEnabled
-
-    return () => {
-      ;(globalThis as any).__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED_LIVE_EDIT_OVERRIDE =
-        undefined
-    }
-  }, [schemaType?.liveEdit, versionExists])
+  const perspective = stickyParams.perspective
 
   const value: SanityDocumentLike =
-    (perspective === 'published' && !bundle
+    (perspective === 'published'
       ? editState.published || editState.draft
       : editState?.draft || editState?.published) || initialValue.value
   const [isDeleting, setIsDeleting] = useState(false)
@@ -569,7 +546,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     const isLocked = editState.transactionSyncLock?.enabled
 
     return (
-      (!!perspective && !bundle) ||
+      !!perspective ||
       !ready ||
       revTime !== null ||
       hasNoPermission ||
@@ -592,7 +569,6 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     revTime,
     isDeleting,
     isDeleted,
-    bundle,
   ])
 
   const formState = useFormState(schemaType!, {
