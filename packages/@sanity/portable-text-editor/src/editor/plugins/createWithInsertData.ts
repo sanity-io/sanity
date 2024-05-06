@@ -169,7 +169,16 @@ export function createWithInsertData(
       change$.next({type: 'loading', isLoading: true}) // This could potentially take some time
       const html = data.getData('text/html')
       const text = data.getData('text/plain')
-      if (html || text) {
+
+      const {files} = data
+      const hasFiles = files && files.length > 0
+
+      if (hasFiles) {
+        const plural = files.length === 1 ? 'file' : 'files'
+        debug(`Inserting ${plural}`, data)
+      }
+
+      if (!hasFiles && (html || text)) {
         debug('Inserting data', data)
         let portableText: PortableTextBlock[]
         let fragment: Node[]

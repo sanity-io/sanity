@@ -1,4 +1,6 @@
 /* eslint-disable max-nested-callbacks */
+import path from 'node:path'
+
 import {expect, test} from '@playwright/experimental-ct-react'
 import {type Path, type SanityDocument} from '@sanity/types'
 
@@ -99,6 +101,56 @@ test.describe('Portable Text Input', () => {
       // Ideally we would compare the snapshot with the document, but the keys will be different each time
       // We therefore compare the length of the body to the snapshot length here instead.
       await expect(bodyLength).toEqual(snapshotLength)
+    })
+  })
+
+  test.describe('Should be able to paste files into the PTE', () => {
+    test(`Added pasted image as a block`, async ({browserName, mount, page}) => {
+      test.skip(browserName === 'firefox', 'Currently not working in Firefox')
+      const {getFocusedPortableTextEditor, pasteFileOverPortableTextEditor} = testHelpers({page})
+
+      await mount(<CopyPasteStory document={document} />)
+
+      const imagePath = path.resolve(__dirname, 'static', 'dummy-image-1.jpg')
+      const $pte = await getFocusedPortableTextEditor('field-body')
+
+      await pasteFileOverPortableTextEditor(imagePath, 'image/jpeg', $pte)
+
+      await expect($pte.getByTestId('block-preview')).toBeVisible()
+    })
+    test(`Added dropped image as a block`, async ({mount, page}) => {
+      const {
+        getFocusedPortableTextEditor,
+        dropFileOverPortableTextEditor,
+        hoverFileOverPortableTextEditor,
+      } = testHelpers({page})
+
+      await mount(<CopyPasteStory document={document} />)
+
+      const imagePath = path.resolve(__dirname, 'static', 'dummy-image-1.jpg')
+      const $pte = await getFocusedPortableTextEditor('field-body')
+
+      await hoverFileOverPortableTextEditor(imagePath, 'image/jpeg', $pte)
+
+      await expect(page.getByText('Drop to upload 1 file')).toBeVisible()
+
+      await dropFileOverPortableTextEditor(imagePath, 'image/jpeg', $pte)
+
+      await expect(page.getByText('Drop to upload 1 file')).not.toBeVisible()
+
+      await expect($pte.getByTestId('block-preview')).toBeVisible()
+    })
+    test(`Display error message on drag over if file is not accepted`, async ({mount, page}) => {
+      const {getFocusedPortableTextEditor, hoverFileOverPortableTextEditor} = testHelpers({page})
+
+      await mount(<CopyPasteStory document={document} />)
+
+      const zipPath = path.resolve(__dirname, 'static', 'dummy.zip')
+      const $pte = await getFocusedPortableTextEditor('field-body')
+
+      await hoverFileOverPortableTextEditor(zipPath, 'application/zip', $pte)
+
+      await expect(page.getByText(`upload this file here`)).toBeVisible()
     })
   })
 })

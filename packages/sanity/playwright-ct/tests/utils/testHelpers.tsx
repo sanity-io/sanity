@@ -1,3 +1,6 @@
+import {readFileSync} from 'node:fs'
+import path from 'node:path'
+
 import {type Locator, type PlaywrightTestArgs} from '@playwright/test'
 
 export const DEFAULT_TYPE_DELAY = 20
@@ -117,6 +120,120 @@ export function testHelpers({page}: {page: PlaywrightTestArgs['page']}) {
       }, htmlOrText)
 
       await locator.getByText(firstTextContent).waitFor()
+    },
+    /**
+     * Emulate dragging a file over an focused Portable Text Editor's editable element
+     * @param text - The string to be pasted.
+     * @param locator - editable element of a Portable Text Editor (as returned by getFocusedPortableTextEditorElement)
+     */
+    hoverFileOverPortableTextEditor: async (
+      filePath: string,
+      fileType: string,
+      locator: Locator,
+    ) => {
+      const fileName = path.basename(filePath)
+      const buffer = readFileSync(filePath).toString('base64')
+
+      await locator.focus()
+      await locator.evaluate(
+        async (el, {bufferData, localFileName, localFileType}) => {
+          const response = await fetch(bufferData)
+          const blob = await response.blob()
+
+          const image = new File([blob], localFileName, {type: localFileType})
+
+          const dataTransfer = new DataTransfer()
+          dataTransfer.items.add(image)
+
+          el.dispatchEvent(
+            new DragEvent('dragenter', {
+              dataTransfer,
+              bubbles: true,
+            }),
+          )
+        },
+        {
+          bufferData: `data:application/octet-stream;base64,${buffer}`,
+          localFileName: fileName,
+          localFileType: fileType,
+        },
+      )
+    },
+    /**
+     * Emulate dropping a file over an focused Portable Text Editor's editable element
+     * @param filePath - Absolute path to the file to be dropped.
+     * @param fileType - Mime type of the file to be dropped.
+     * @param locator - editable element of a Portable Text Editor (as returned by getFocusedPortableTextEditorElement)
+     */
+    dropFileOverPortableTextEditor: async (
+      imagePath: string,
+      fileType: string,
+      locator: Locator,
+    ) => {
+      const fileName = path.basename(imagePath)
+      const buffer = readFileSync(imagePath).toString('base64')
+
+      await locator.focus()
+      await locator.evaluate(
+        async (el, {bufferData, localFileName, localFileType}) => {
+          const response = await fetch(bufferData)
+          const blob = await response.blob()
+          const image = new File([blob], localFileName, {type: localFileType})
+
+          const dataTransfer = new DataTransfer()
+          dataTransfer.items.add(image)
+
+          el.dispatchEvent(
+            new DragEvent('drop', {
+              dataTransfer,
+              bubbles: true,
+            }),
+          )
+        },
+        {
+          bufferData: `data:application/octet-stream;base64,${buffer}`,
+          localFileName: fileName,
+          localFileType: fileType,
+        },
+      )
+    },
+    /**
+     * Emulate pasting a file over an focused Portable Text Editor's editable element
+     * @param filePath - Absolute path to the file to be pasted.
+     * @param fileType - Mime type of the file to be pasted.
+     * @param locator - editable element of a Portable Text Editor (as returned by getFocusedPortableTextEditorElement)
+     */
+    pasteFileOverPortableTextEditor: async (
+      filePath: string,
+      fileType: string,
+      locator: Locator,
+    ) => {
+      const fileName = path.basename(filePath)
+      const buffer = readFileSync(filePath).toString('base64')
+
+      await locator.focus()
+      await locator.evaluate(
+        async (el, {bufferData, localFileName, localFileType}) => {
+          const response = await fetch(bufferData)
+          const blob = await response.blob()
+          const image = new File([blob], localFileName, {type: localFileType})
+
+          const dataTransfer = new DataTransfer()
+          dataTransfer.items.add(image)
+
+          el.dispatchEvent(
+            new ClipboardEvent('paste', {
+              clipboardData: dataTransfer,
+              bubbles: true,
+            }),
+          )
+        },
+        {
+          bufferData: `data:application/octet-stream;base64,${buffer}`,
+          localFileName: fileName,
+          localFileType: fileType,
+        },
+      )
     },
     /**
      * Will create a keyboard event of a given hotkey combination that can be activated with a modifier key
