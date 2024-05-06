@@ -6,7 +6,6 @@ import {
   type PortableTextSpan,
   type PortableTextTextBlock,
 } from '@sanity/types'
-import _ from 'lodash'
 import {type Element, Transforms} from 'slate'
 
 import {type PortableTextMemberSchemaTypes, type PortableTextSlateEditor} from '../../types/editor'
@@ -62,7 +61,7 @@ export function createWithSchemaTypes({
       }
 
       // catches cases when the children are missing keys but excludes it when the normalize is running the node as the editor object
-      if (node._key === undefined && !_.isEqual(node, editor)) {
+      if (node._key === undefined && (node.path?.length === 1 || node.path?.length === 2)) {
         debug('Setting missing key on child node without a key')
         const key = keyGenerator()
         Transforms.setNodes(editor, {_key: key}, {at: path})
