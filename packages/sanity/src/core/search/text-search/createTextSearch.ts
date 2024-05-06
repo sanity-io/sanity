@@ -145,6 +145,7 @@ export const createTextSearch: SearchStrategyFactory<TextSearchResults> = (
     ].filter((baseFilter): baseFilter is string => Boolean(baseFilter))
 
     const textSearchParams: TextSearchParams = {
+      perspective: searchOptions.perspective,
       query: {
         string: getQueryString(searchTerms.query, searchOptions),
       },
