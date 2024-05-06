@@ -106,4 +106,41 @@ describe('findQueries', () => {
     expect(queries.length).toBe(1)
     expect(queries[0].result).toBe('*[_type == "foo bar"]')
   })
+
+  test('will ignore declarations with ignore tag', () => {
+    const source = `
+      import { groq } from "groq";
+
+      // @sanity-typegen-ignore
+      const postQuery = groq\`*[_type == "foo"]\`
+    `
+
+    const queries = findQueriesInSource(source, __filename, undefined)
+    expect(queries.length).toBe(0)
+  })
+
+  test('will ignore export named declarations with ignore tag', () => {
+    const source = `
+      import { groq } from "groq";
+
+      // @sanity-typegen-ignore
+      export const postQuery = groq\`*[_type == "foo"]\`
+    `
+
+    const queries = findQueriesInSource(source, __filename, undefined)
+    expect(queries.length).toBe(0)
+  })
+
+  test('will ignore declarations with ignore tag, even with multiple comments above declaration', () => {
+    const source = `
+      import { groq } from "groq";
+
+      // This is a query that queries posts
+      // @sanity-typegen-ignore
+      export const postQuery = groq\`*[_type == "foo"]\`
+    `
+
+    const queries = findQueriesInSource(source, __filename, undefined)
+    expect(queries.length).toBe(0)
+  })
 })
