@@ -453,7 +453,7 @@ importers:
         version: 1.11.4(@sanity/client@6.17.2)(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.8)
       '@sanity/preview-url-secret':
         specifier: ^1.6.1
-        version: 1.6.11(@sanity/client@6.17.2)
+        version: 1.6.12(@sanity/client@6.17.2)
       '@sanity/react-loader':
         specifier: ^1.8.3
         version: 1.9.16(@sanity/client@6.17.2)(react@18.3.1)
@@ -479,8 +479,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/@sanity/vision
       '@sanity/visual-editing':
-        specifier: 1.8.17
-        version: 1.8.17(@sanity/client@6.17.2)
+        specifier: 1.8.18
+        version: 1.8.18(@sanity/client@6.17.2)
       '@turf/helpers':
         specifier: ^6.0.1
         version: 6.5.0
@@ -6383,7 +6383,7 @@ packages:
     dependencies:
       '@sanity/client': 6.17.2
       '@sanity/icons': 2.11.8(react@18.3.1)
-      '@sanity/preview-url-secret': 1.6.11(@sanity/client@6.17.2)
+      '@sanity/preview-url-secret': 1.6.12(@sanity/client@6.17.2)
       '@sanity/ui': 2.1.6(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.8)
       '@sanity/uuid': 3.0.2
       '@types/lodash.isequal': 4.5.8
@@ -6409,7 +6409,7 @@ packages:
     dependencies:
       '@sanity/client': 6.17.2(debug@4.3.4)
       '@sanity/icons': 2.11.8(react@18.3.1)
-      '@sanity/preview-url-secret': 1.6.11(@sanity/client@6.17.2)
+      '@sanity/preview-url-secret': 1.6.12(@sanity/client@6.17.2)
       '@sanity/ui': 2.1.6(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.8)
       '@sanity/uuid': 3.0.2
       '@types/lodash.isequal': 4.5.8
@@ -6436,11 +6436,11 @@ packages:
       prettier-plugin-packagejson: 2.5.0(prettier@3.2.5)
     dev: true
 
-  /@sanity/preview-url-secret@1.6.11(@sanity/client@6.17.2):
-    resolution: {integrity: sha512-MNgDxznespH8I+gkG46IJk+KsTJFNb3BzstWsbJwKURywpcv11vzr8CR2g4B8HNkYcy3EhLN3TRFHTjQNKo2Xw==}
+  /@sanity/preview-url-secret@1.6.12(@sanity/client@6.17.2):
+    resolution: {integrity: sha512-DoXtOVSlT7YjCpRfwhT2B7tpxS+xtxlh0piSCK0ur5NbPy3TvcGtZxuc3I5VCXcWO8O+BEv7BxEjXsctLngPYw==}
     engines: {node: '>=18'}
     peerDependencies:
-      '@sanity/client': ^6.15.20
+      '@sanity/client': ^6.17.2
     dependencies:
       '@sanity/client': 6.17.2
       '@sanity/uuid': 3.0.2
@@ -6711,12 +6711,12 @@ packages:
       '@types/uuid': 8.3.4
       uuid: 8.3.2
 
-  /@sanity/visual-editing@1.8.17(@sanity/client@6.17.2):
-    resolution: {integrity: sha512-OMMo6Sy4zbxY2XlnRsbOZfnG05NWzw9czELwQx9YC2WMLMCNQeBfERzHDJkLptbxyapW6wBC3klG85srcjLPTw==}
+  /@sanity/visual-editing@1.8.18(@sanity/client@6.17.2):
+    resolution: {integrity: sha512-6IJ2KZHrnWKAtbxTmxW+mFR3HAnnEdnjtKkAs8wK9pJy8tuh58Q788yxXk0gJBxHwfLACx3zS7z5ATn0av7z2g==}
     engines: {node: '>=18'}
     peerDependencies:
       '@remix-run/react': '>= 2'
-      '@sanity/client': ^6.15.20
+      '@sanity/client': ^6.17.2
       '@sveltejs/kit': '>= 2'
       next: '>= 13 || >=14.3.0-canary.0 <14.3.0'
       svelte: '>= 4'
@@ -6733,8 +6733,8 @@ packages:
         optional: true
     dependencies:
       '@sanity/client': 6.17.2
-      '@sanity/preview-url-secret': 1.6.11(@sanity/client@6.17.2)
-      '@vercel/stega': 0.1.0
+      '@sanity/preview-url-secret': 1.6.12(@sanity/client@6.17.2)
+      '@vercel/stega': 0.1.2
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
       react-is: 18.3.1
@@ -7765,10 +7765,6 @@ packages:
     optionalDependencies:
       ajv: 6.12.6
     dev: true
-
-  /@vercel/stega@0.1.0:
-    resolution: {integrity: sha512-5b0PkOJsFBX5alChuIO3qpkt5vIZBevzLPhUQ1UP8UzVjL3F1VllnZxp/thfD8R5ol7D7WHkgZHIjdUBX4tDpQ==}
-    dev: false
 
   /@vercel/stega@0.1.2:
     resolution: {integrity: sha512-P7mafQXjkrsoyTRppnt0N21udKS9wUmLXHRyP9saLXLHw32j/FgUJ3FscSWgvSqRs4cj7wKZtwqJEvWJ2jbGmA==}
