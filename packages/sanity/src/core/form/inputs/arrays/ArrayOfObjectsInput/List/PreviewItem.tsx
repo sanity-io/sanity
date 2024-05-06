@@ -11,7 +11,7 @@ import {useTranslation} from '../../../../../i18n'
 import {FieldPresence} from '../../../../../presence'
 import {getSchemaTypeTitle} from '../../../../../schema'
 import {FormFieldValidationStatus} from '../../../../components'
-import {EditPortal} from '../../../../components/EditPortal'
+// import {EditPortal} from '../../../../components/EditPortal'
 import {useDidUpdate} from '../../../../hooks/useDidUpdate'
 import {useScrollIntoViewOnFocusWithin} from '../../../../hooks/useScrollIntoViewOnFocusWithin'
 import {useChildPresence} from '../../../../studio/contexts/Presence'
@@ -57,10 +57,10 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
     onInsert,
     onFocus,
     onOpen,
-    onClose,
+    // onClose,
     changed,
     focused,
-    children,
+    // children,
     inputProps: {renderPreview},
   } = props
   const {t} = useTranslation()
@@ -190,7 +190,9 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
       <ChangeIndicator path={path} isChanged={changed} hasFocus={Boolean(focused)}>
         <Box paddingX={1}>{item}</Box>
       </ChangeIndicator>
-      {open && (
+
+      {/* TODO: add schema config to enable/disable edit portal */}
+      {/* {open && (
         <EditPortal
           header={
             readOnly
@@ -203,11 +205,10 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
           onClose={onClose}
           autofocus={focused}
           legacy_referenceElement={previewCardRef.current}
-          path={path}
         >
           {children}
         </EditPortal>
-      )}
+      )} */}
     </>
   )
 }
