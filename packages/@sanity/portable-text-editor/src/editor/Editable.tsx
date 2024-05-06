@@ -591,6 +591,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
       const result = rangeDecorationState.filter((item) => {
         // Special case in order to only return one decoration for collapsed ranges
         if (SlateRange.isCollapsed(item)) {
+          // Collapsed ranges should only be decorated if they are on a block child level (length 2)
           if (path.length !== 2) {
             return false
           }
