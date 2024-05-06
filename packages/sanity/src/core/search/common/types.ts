@@ -106,6 +106,7 @@ export type SearchOptions = {
   sort?: SearchSort[]
   cursor?: string
   limit?: number
+  perspective?: string
   isCrossDataset?: boolean
   queryType?: 'prefixLast' | 'prefixNone'
 }
@@ -188,6 +189,7 @@ export type TextSearchParams = {
    * Result ordering.
    */
   order?: TextSearchOrder[]
+  perspective?: string
 }
 
 export type TextSearchResponse<Attributes = Record<string, unknown>> = {

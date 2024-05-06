@@ -33,16 +33,22 @@ export function createPreviewObserver(context: {
 }): (
   value: Previewable,
   type: PreviewableType,
-  viewOptions?: PrepareViewOptions,
-  apiConfig?: ApiConfig,
+  options?: {
+    perspective?: string
+    viewOptions?: PrepareViewOptions
+    apiConfig?: ApiConfig
+  },
 ) => Observable<PreparedSnapshot> {
   const {observeDocumentTypeFromId, observePaths} = context
 
   return function observeForPreview(
     value: Previewable,
     type: PreviewableType,
-    viewOptions?: PrepareViewOptions,
-    apiConfig?: ApiConfig,
+    options?: {
+      perspective?: string
+      viewOptions?: PrepareViewOptions
+      apiConfig?: ApiConfig
+    },
   ): Observable<PreparedSnapshot> {
     if (isCrossDatasetReferenceSchemaType(type)) {
       // if the value is of type crossDatasetReference, but has no _ref property, we cannot prepare any value for the preview
@@ -57,7 +63,7 @@ export function createPreviewObserver(context: {
         switchMap((typeName) => {
           if (typeName) {
             const refType = type.to.find((toType) => toType.type === typeName)
-            return observeForPreview(value, refType as any, {}, refApiConfig)
+            return observeForPreview(value, refType as any, {apiConfig: refApiConfig})
           }
           return observableOf({snapshot: undefined})
         }),
@@ -88,10 +94,10 @@ export function createPreviewObserver(context: {
     }
     const paths = getPreviewPaths(type.preview)
     if (paths) {
-      return observePaths(value, paths, apiConfig).pipe(
+      return observePaths(value, paths, options?.apiConfig).pipe(
         map((snapshot) => ({
           type: type,
-          snapshot: snapshot && prepareForPreview(snapshot, type as any, viewOptions),
+          snapshot: snapshot && prepareForPreview(snapshot, type as any, options?.viewOptions),
         })),
       )
     }
@@ -103,7 +109,9 @@ export function createPreviewObserver(context: {
     return observableOf({
       type,
       snapshot:
-        value && isRecord(value) ? invokePrepare(type, value, viewOptions).returnValue : null,
+        value && isRecord(value)
+          ? invokePrepare(type, value, options?.viewOptions).returnValue
+          : null,
     })
   }
 }
