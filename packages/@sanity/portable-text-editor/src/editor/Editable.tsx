@@ -315,7 +315,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
       // debug('Unsubscribing to changes$')
       sub.unsubscribe()
     }
-  }, [change$, restoreSelectionFromProps, syncRangeDecorations])
+  }, [change$, restoreSelectionFromProps])
 
   // Restore selection from props when it changes
   useEffect(() => {
@@ -591,6 +591,10 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
       const result = rangeDecorationState.filter((item) => {
         // Special case in order to only return one decoration for collapsed ranges
         if (SlateRange.isCollapsed(item)) {
+          // Collapsed ranges should only be decorated if they are on a block child level (length 2)
+          if (path.length !== 2) {
+            return false
+          }
           return Path.equals(item.focus.path, path) && Path.equals(item.anchor.path, path)
         }
         // Include decorations that either include or intersects with this path

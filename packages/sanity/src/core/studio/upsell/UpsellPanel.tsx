@@ -10,13 +10,12 @@ import {type UpsellData} from './types'
 
 type Layout = 'vertical' | 'horizontal'
 const Image = styled.img<{$direction: FlexDirection[]}>((props) => {
-  const {media, radius} = getTheme_v2(props.theme)
+  const {media} = getTheme_v2(props.theme)
 
   const responsiveStyles = _responsive(media, props.$direction, (val) => {
     return {
       width: val === 'row' ? '50%' : '100%',
       height: val === 'row' ? 'auto' : '180px',
-      borderRadius: val === 'row' ? `${radius[3]}px` : '0',
     }
   })
 
@@ -37,6 +36,11 @@ interface CommentsUpsellPanelProps {
   layout?: Layout
 }
 
+/**
+ * First 2 viewport sizes are always vertical, 3rd is horizontal
+ */
+const HORIZONTAL_PADDING_Y = [3, 3, 5]
+
 export function UpsellPanel(props: CommentsUpsellPanelProps) {
   const {data, onPrimaryClick, onSecondaryClick, layout = 'vertical'} = props
   const direction: FlexDirection[] = [
@@ -55,7 +59,7 @@ export function UpsellPanel(props: CommentsUpsellPanelProps) {
             $direction={direction}
           />
         )}
-        <DescriptionRoot padding={3}>
+        <DescriptionRoot paddingX={3} paddingY={layout === 'horizontal' ? HORIZONTAL_PADDING_Y : 3}>
           <Stack space={4}>
             <UpsellDescriptionSerializer blocks={data.descriptionText} />
           </Stack>
