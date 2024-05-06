@@ -10,6 +10,7 @@ import {
   EMPTY_ARRAY,
   FormBuilder,
   type FormBuilderProps,
+  type FormNodePresence,
   getExpandOperations,
   type PatchEvent,
   setAtPath,
@@ -21,6 +22,7 @@ import {
 } from 'sanity'
 
 import {applyAll} from '../../../../src/core/form/patch/applyPatch'
+import {PresenceProvider} from '../../../../src/core/form/studio/contexts/Presence'
 import {type FormDocumentValue} from '../../../../src/core/form/types'
 import {createMockSanityClient} from '../../mocks/createMockSanityClient'
 
@@ -32,17 +34,23 @@ declare global {
   }
 }
 
-export function TestForm({
-  focusPath: focusPathFromProps,
-  onPathFocus: onPathFocusFromProps,
-  document: documentFromProps,
-  id: idFromProps = 'root',
-}: {
+interface TestFormProps {
   focusPath?: Path
   onPathFocus?: (path: Path) => void
   document?: SanityDocument
   id?: string
-}) {
+  presence?: FormNodePresence[]
+}
+
+export function TestForm(props: TestFormProps) {
+  const {
+    document: documentFromProps,
+    focusPath: focusPathFromProps,
+    id: idFromProps = 'root',
+    onPathFocus: onPathFocusFromProps,
+    presence: presenceFromProps = EMPTY_ARRAY,
+  } = props
+
   const [validation, setValidation] = useState<ValidationMarker[]>([])
   const [openPath, onSetOpenPath] = useState<Path>([])
   const [fieldGroupState, onSetFieldGroupState] = useState<StateTree<string>>()
@@ -106,7 +114,7 @@ export function TestForm({
     comparisonValue: null,
     fieldGroupState,
     openPath,
-    presence: EMPTY_ARRAY,
+    presence: presenceFromProps,
     validation,
     value: document,
   })
@@ -199,7 +207,7 @@ export function TestForm({
       onSetFieldSetCollapsed: handleOnSetCollapsedFieldSet,
       onSetPathCollapsed: handleOnSetCollapsedPath,
       path: EMPTY_ARRAY,
-      presence: EMPTY_ARRAY,
+      presence: presenceFromProps,
       schemaType: formState?.schemaType || schemaType,
       validation,
       value: formState?.value as FormDocumentValue,
@@ -220,13 +228,17 @@ export function TestForm({
       handleSetActiveFieldGroup,
       idFromProps,
       patchChannel,
+      presenceFromProps,
       schemaType,
       setOpenPath,
       validation,
     ],
   )
-
-  return <FormBuilder {...formBuilderProps} />
+  return (
+    <PresenceProvider presence={presenceFromProps}>
+      <FormBuilder {...formBuilderProps} />
+    </PresenceProvider>
+  )
 }
 
 async function validateStaticDocument(

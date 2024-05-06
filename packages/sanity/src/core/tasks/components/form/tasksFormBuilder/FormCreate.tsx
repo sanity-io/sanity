@@ -1,13 +1,13 @@
 import {TrashIcon} from '@sanity/icons'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {Box, Flex, Switch, Text, useToast} from '@sanity/ui'
-import {useCallback, useState} from 'react'
+import {useCallback, useEffect, useState} from 'react'
 
 import {Button} from '../../../../../ui-components'
 import {type ObjectInputProps, set} from '../../../../form'
 import {useTranslation} from '../../../../i18n'
 import {TaskCreated} from '../../../__telemetry__/tasks.telemetry'
-import {useTasksNavigation} from '../../../context'
+import {useTasks, useTasksNavigation} from '../../../context'
 import {useRemoveTask} from '../../../hooks'
 import {tasksLocaleNamespace} from '../../../i18n'
 import {type TaskDocument} from '../../../types'
@@ -29,12 +29,9 @@ const getTaskSubscribers = (task: TaskDocument): string[] => {
   return subscribers
 }
 export function FormCreate(props: ObjectInputProps) {
+  const [creating, setCreating] = useState(false)
   const {onChange} = props
-  const {
-    setViewMode,
-    setActiveTab,
-    state: {viewMode},
-  } = useTasksNavigation()
+  const {setViewMode, setActiveTab} = useTasksNavigation()
   const toast = useToast()
   const telemetry = useTelemetry()
 
@@ -47,7 +44,52 @@ export function FormCreate(props: ObjectInputProps) {
   }, [setViewMode])
   const {handleRemove, removeStatus} = useRemoveTask({id: value._id, onRemoved: onRemove})
   const {t} = useTranslation(tasksLocaleNamespace)
-  const handleCreate = useCallback(() => {
+  const {data} = useTasks()
+  const savedTask = data.find((task) => task._id === value._id)
+
+  useEffect(() => {
+    // This useEffect takes care of closing the form when a task entered the "creation" state.
+    // That action is async and we don't have access to the promise, once the value is updated in the form we will close the form.
+    if (creating && savedTask?.createdByUser) {
+      telemetry.log(TaskCreated)
+      toast.push({
+        closable: true,
+        status: 'success',
+        title: t('form.status.success'),
+      })
+
+      setCreating(false)
+      if (createMore) {
+        setViewMode({type: 'create'})
+      } else {
+        setActiveTab('subscribed')
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [creating, savedTask?.createdByUser])
+
+  useEffect(() => {
+    // If after 10 seconds the task is still in the "creating" state, show an error and reset the creating state.
+    let timeoutId: ReturnType<typeof setTimeout> | null = null
+    if (creating) {
+      timeoutId = setTimeout(() => {
+        setCreating(false)
+        toast.push({
+          closable: true,
+          status: 'error',
+          title: t('form.status.error.creation-failed'),
+        })
+      }, 10000)
+    }
+    // Cleanup function to clear the timeout
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [creating])
+
+  const handleCreate = useCallback(async () => {
+    setCreating(true)
     if (!value?.title) {
       toast.push({
         closable: true,
@@ -60,21 +102,7 @@ export function FormCreate(props: ObjectInputProps) {
       set(getTaskSubscribers(value), ['subscribers']),
       set(new Date().toISOString(), ['createdByUser']),
     ])
-
-    if (createMore) {
-      setViewMode({type: 'create'})
-    } else {
-      setActiveTab('subscribed')
-    }
-
-    telemetry.log(TaskCreated)
-
-    toast.push({
-      closable: true,
-      status: 'success',
-      title: t('form.status.success'),
-    })
-  }, [value, onChange, createMore, telemetry, toast, t, setViewMode, setActiveTab])
+  }, [value, onChange, t, toast])
 
   return (
     <>
@@ -102,7 +130,12 @@ export function FormCreate(props: ObjectInputProps) {
             </Text>
           </Flex>
 
-          <Button text={t('buttons.create.text')} onClick={handleCreate} />
+          <Button
+            text={t('buttons.create.text')}
+            onClick={handleCreate}
+            disabled={creating}
+            loading={creating}
+          />
         </Flex>
       </Box>
     </>

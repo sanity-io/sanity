@@ -2,9 +2,11 @@ import {type SanityClient} from '@sanity/client'
 import {Card, LayerProvider, studioTheme, ThemeProvider, ToastProvider} from '@sanity/ui'
 import {type ReactNode, Suspense, useEffect, useState} from 'react'
 import {
+  ColorSchemeProvider,
   ResourceCacheProvider,
   type SchemaTypeDefinition,
   SourceProvider,
+  UserColorManagerProvider,
   type Workspace,
   WorkspaceProvider,
 } from 'sanity'
@@ -57,13 +59,17 @@ export const TestWrapper = ({
             <WorkspaceProvider workspace={mockWorkspace}>
               <ResourceCacheProvider>
                 <SourceProvider source={mockWorkspace.unstable_sources[0]}>
-                  <PaneLayout height="fill">
-                    <Pane id="test-pane">
-                      <PaneContent>
-                        <Card padding={3}>{children}</Card>
-                      </PaneContent>
-                    </Pane>
-                  </PaneLayout>
+                  <ColorSchemeProvider>
+                    <UserColorManagerProvider>
+                      <PaneLayout height="fill">
+                        <Pane id="test-pane">
+                          <PaneContent>
+                            <Card padding={3}>{children}</Card>
+                          </PaneContent>
+                        </Pane>
+                      </PaneLayout>
+                    </UserColorManagerProvider>
+                  </ColorSchemeProvider>
                 </SourceProvider>
               </ResourceCacheProvider>
             </WorkspaceProvider>

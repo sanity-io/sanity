@@ -1,4 +1,4 @@
-import {BellIcon, ColorWheelIcon, ImageIcon, InfoOutlineIcon} from '@sanity/icons'
+import {BellIcon, ColorWheelIcon, DocumentPdfIcon, ImageIcon, InfoOutlineIcon} from '@sanity/icons'
 import {type Rule} from '@sanity/types'
 import {defineArrayMember, defineField, defineType} from 'sanity'
 
@@ -36,7 +36,7 @@ export const ptAllTheBellsAndWhistlesType = defineType({
           marks: {
             // decorators: [{title: 'Strong', value: 'strong'}],
             annotations: [
-              {
+              defineField({
                 type: 'object',
                 name: 'link',
                 title: 'Link',
@@ -44,13 +44,13 @@ export const ptAllTheBellsAndWhistlesType = defineType({
                 //   modal: {type: 'dialog'},
                 // },
                 fields: [
-                  {
+                  defineField({
                     type: 'url',
                     name: 'href',
                     title: 'URL',
-                    validation: (rule: Rule) =>
+                    validation: (rule) =>
                       rule
-                        .custom((url: string, context: any) => {
+                        .custom((url: string | undefined, context: any) => {
                           if (!url && !context.parent.reference) {
                             return 'Inline Link: Requires a reference or URL'
                           }
@@ -61,7 +61,7 @@ export const ptAllTheBellsAndWhistlesType = defineType({
                           scheme: ['http', 'https', 'mailto', 'tel'],
                           allowRelative: true,
                         }),
-                  },
+                  }),
                   defineField({
                     title: 'Linked Book',
                     name: 'reference',
@@ -77,8 +77,8 @@ export const ptAllTheBellsAndWhistlesType = defineType({
                     initialValue: false,
                   },
                 ],
-              },
-              {
+              }),
+              defineField({
                 type: 'object',
                 name: 'color',
                 title: 'Color',
@@ -91,7 +91,7 @@ export const ptAllTheBellsAndWhistlesType = defineType({
                     validation: (rule: Rule) => rule.required(),
                   },
                 ],
-              },
+              }),
             ],
           },
           of: [
@@ -118,6 +118,21 @@ export const ptAllTheBellsAndWhistlesType = defineType({
               ],
             }),
           ],
+        }),
+
+        defineField({
+          type: 'file',
+          icon: DocumentPdfIcon,
+          name: 'pdfFile',
+          title: 'PDF file',
+          options: {
+            accept: 'application/pdf',
+          },
+          preview: {
+            select: {
+              title: 'asset.originalFilename',
+            },
+          },
         }),
 
         defineField({
@@ -169,6 +184,29 @@ export const ptAllTheBellsAndWhistlesType = defineType({
               description: 'Not implemented in most surfaces.',
               name: 'isLarge',
               type: 'boolean',
+            }),
+          ],
+        }),
+
+        defineField({
+          name: 'imageObject',
+          title: 'Image object',
+          type: 'object',
+          icon: ImageIcon,
+          fields: [
+            defineField({
+              type: 'image',
+              icon: ImageIcon,
+              name: 'image',
+              title: 'Image',
+              options: {
+                hotspot: true,
+              },
+              preview: {
+                select: {
+                  media: 'asset',
+                },
+              },
             }),
           ],
         }),

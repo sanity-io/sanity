@@ -26,7 +26,7 @@ interface TaksEnabledProviderProps {
  */
 
 export function ScheduledPublishingEnabledProvider({children}: TaksEnabledProviderProps) {
-  const {enabled, isLoading} = useFeatureEnabled('sanityTasks')
+  const {enabled, isLoading} = useFeatureEnabled('scheduledPublishing')
   const {scheduledPublishing} = useWorkspace()
 
   const isWorkspaceEnabled = scheduledPublishing.enabled
