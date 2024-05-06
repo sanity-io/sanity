@@ -77,6 +77,7 @@ function TasksStudioActiveToolLayoutInner(props: ActiveToolLayoutProps) {
         {isOpen && (
           <SidebarMotionLayer
             animate="visible"
+            zOffset={1000}
             height="fill"
             initial="hidden"
             transition={TRANSITION}
