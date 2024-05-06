@@ -18,12 +18,14 @@ export const getPreviewValueWithFallback = ({
   value,
   draft,
   published,
+  perspective,
 }: {
   value: SanityDocument
   draft?: Partial<SanityDocument> | PreviewValue | null
   published?: Partial<SanityDocument> | PreviewValue | null
+  perspective?: string
 }) => {
-  const snapshot = draft || published
+  const snapshot = perspective === 'published' ? published || draft : draft || published
 
   if (!snapshot) {
     return getMissingDocumentFallback(value)
