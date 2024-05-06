@@ -426,7 +426,7 @@ export function createWithEditableAPI(
             // that would insert the placeholder into the actual value
             // which should remain empty)
             if (editor.children.length === 0) {
-              editor.children = [editor.createPlaceholderBlock()]
+              editor.children = [editor.pteCreateEmptyBlock()]
             }
             editor.onChange()
           }
