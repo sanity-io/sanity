@@ -34,6 +34,7 @@ interface ListenQueryOptions {
   schema: Schema
   searchQuery: string
   sort: SortOrder
+  perspective?: string
   staticTypeNames?: string[] | null
   maxFieldDepth?: number
   enableLegacySearch?: boolean
@@ -51,6 +52,7 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Searc
     client,
     schema,
     sort,
+    perspective,
     limit,
     params,
     filter,
@@ -137,6 +139,7 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Searc
               __unstable_extendedProjection: extendedProjection,
               comments: [`findability-source: ${searchQuery ? 'list-query' : 'list'}`],
               limit,
+              perspective,
               skipSortByScore: true,
               sort: sortBy,
             }
