@@ -59,6 +59,9 @@
 # -- Scheduled Publishing --
 /packages/sanity/src/core/scheduledPublishing/ @sanity-io/studio-ex
 
+# -- Upsell UI  -- 
+packages/sanity/src/core/studio/upsell/ @sanity-io/studio-ex
+
 
 # Code and typegeneration
 /packages/@sanity/codegen/ @sanity-io/content-lake-dx
