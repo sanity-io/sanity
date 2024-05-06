@@ -128,9 +128,7 @@ export const EditableWrapper = styled(Card)<{$isFullscreen: boolean; $readOnly?:
       padding-top: ${({$isFullscreen, theme}) => theme.sanity.space[$isFullscreen ? 5 : 3]}px;
     }
 
-    & > :last-child {
-      padding-bottom: ${({$isFullscreen, theme}) => theme.sanity.space[$isFullscreen ? 9 : 5]}px;
-    }
+    padding-bottom: ${({$isFullscreen, theme}) => theme.sanity.space[$isFullscreen ? 9 : 5]}px;
 
     /* & > .pt-block {
       & .pt-inline-object {

@@ -19,6 +19,7 @@ import {
 import {
   type BaseRange,
   Editor,
+  Node,
   type NodeEntry,
   type Operation,
   Path,
@@ -50,6 +51,7 @@ import {
   type ScrollSelectionIntoViewFunction,
 } from '../types/editor'
 import {type HotkeyOptions} from '../types/options'
+import {type SlateTextBlock, type VoidElement} from '../types/slate'
 import {debugWithName} from '../utils/debug'
 import {moveRangeByOperation, toPortableTextRange, toSlateRange} from '../utils/ranges'
 import {normalizeSelection} from '../utils/selection'
@@ -118,6 +120,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
     onBeforeInput,
     onPaste,
     onCopy,
+    onClick,
     rangeDecorations,
     renderAnnotation,
     renderBlock,
@@ -444,6 +447,30 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
     [onFocus, portableTextEditor, change$, slateEditor],
   )
 
+  const handleClick = useCallback(
+    (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+      if (onClick) {
+        onClick(event)
+      }
+      // Inserts a new block if it's clicking on the editor, focused on the last block and it's a void element
+      if (slateEditor.selection && event.target === event.currentTarget) {
+        const [lastBlock, path] = Node.last(slateEditor, [])
+        const focusPath = slateEditor.selection.focus.path.slice(0, 1)
+        const lastPath = path.slice(0, 1)
+        if (Path.equals(focusPath, lastPath)) {
+          const node = Node.descendant(slateEditor, path.slice(0, 1)) as
+            | SlateTextBlock
+            | VoidElement
+          if (lastBlock && Editor.isVoid(slateEditor, node)) {
+            Transforms.insertNodes(slateEditor, slateEditor.pteCreateEmptyBlock())
+            slateEditor.onChange()
+          }
+        }
+      }
+    },
+    [onClick, slateEditor],
+  )
+
   const handleOnBlur: FocusEventHandler<HTMLDivElement> = useCallback(
     (event) => {
       if (onBlur) {
@@ -630,6 +657,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
       decorate={decorate}
       onBlur={handleOnBlur}
       onCopy={handleCopy}
+      onClick={handleClick}
       onDOMBeforeInput={handleOnBeforeInput}
       onFocus={handleOnFocus}
       onKeyDown={handleKeyDown}
