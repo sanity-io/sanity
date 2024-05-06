@@ -35,7 +35,7 @@ import {
 export type ObserveForPreviewFn = (
   value: Previewable,
   type: PreviewableType,
-  options?: {viewOptions?: PrepareViewOptions; apiConfig?: ApiConfig},
+  options?: {viewOptions?: PrepareViewOptions; apiConfig?: ApiConfig; perspective?: string},
 ) => Observable<PreparedSnapshot>
 
 /**
