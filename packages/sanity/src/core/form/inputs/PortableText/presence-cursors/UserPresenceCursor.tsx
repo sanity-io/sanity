@@ -6,7 +6,7 @@ import {
   getTheme_v2,
 } from '@sanity/ui/theme'
 import {AnimatePresence, motion, type Transition, type Variants} from 'framer-motion'
-import {useCallback, useState} from 'react'
+import {useCallback, useMemo, useState} from 'react'
 import {css, styled} from 'styled-components'
 
 import {useUserColor} from '../../../../user-color/hooks'
@@ -119,10 +119,16 @@ export function UserPresenceCursor(props: UserPresenceCursorProps): JSX.Element 
   const handleMouseEnter = useCallback(() => setHovered(true), [])
   const handleMouseLeave = useCallback(() => setHovered(false), [])
 
+  const testId = useMemo(
+    () => `presence-cursor-${user.displayName?.split(' ').join('-')}`,
+    [user.displayName],
+  )
+
   return (
     <CursorLine
       $tints={tints}
       contentEditable={false}
+      data-testid={testId}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
