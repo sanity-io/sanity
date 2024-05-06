@@ -41,6 +41,7 @@ import {
   useValidationStatus,
 } from 'sanity'
 import {DocumentPaneContext} from 'sanity/_singletons'
+import {useRouter} from 'sanity/router'
 
 import {usePaneRouter} from '../../components'
 import {structureLocaleNamespace} from '../../i18n'
@@ -75,6 +76,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       inspectors: inspectorsResolver,
     },
   } = useSource()
+  const {stickyParams} = useRouter()
   const presenceStore = usePresenceStore()
   const paneRouter = usePaneRouter()
   const setPaneParams = paneRouter.setParams
@@ -109,13 +111,20 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     templateName,
     templateParams,
   })
+
   const initialValue = useUnique(initialValueRaw)
   const {patch} = useDocumentOperation(documentId, documentType)
   const editState = useEditState(documentId, documentType)
   const {validation: validationRaw} = useValidationStatus(documentId, documentType)
   const connectionState = useConnectionState(documentId, documentType)
   const schemaType = schema.get(documentType) as ObjectSchemaType | undefined
-  const value: SanityDocumentLike = editState?.draft || editState?.published || initialValue.value
+
+  const perspective = stickyParams.perspective
+
+  const value: SanityDocumentLike =
+    (perspective === 'published'
+      ? editState.published || editState.draft
+      : editState?.draft || editState?.published) || initialValue.value
   const [isDeleting, setIsDeleting] = useState(false)
 
   // Resolve document actions
@@ -506,6 +515,7 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
     const isLocked = editState.transactionSyncLock?.enabled
 
     return (
+      !!perspective ||
       !ready ||
       revTime !== null ||
       hasNoPermission ||
@@ -517,16 +527,17 @@ export const DocumentPaneProvider = memo((props: DocumentPaneProviderProps) => {
       isDeleted
     )
   }, [
-    connectionState,
-    editState.transactionSyncLock,
-    isNonExistent,
-    isDeleted,
-    isDeleting,
     isPermissionsLoading,
     permissions?.granted,
+    schemaType,
+    isNonExistent,
+    connectionState,
+    editState.transactionSyncLock?.enabled,
+    perspective,
     ready,
     revTime,
-    schemaType,
+    isDeleting,
+    isDeleted,
   ])
 
   const formState = useFormState(schemaType!, {
