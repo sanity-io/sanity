@@ -307,22 +307,6 @@ export function validateValue(
               return true
             }
 
-            if (!child._key || typeof child._key !== 'string') {
-              const newChild = {...child, _key: keyGenerator()}
-              resolution = {
-                patches: [set(newChild, [{_key: blk._key}, 'children', cIndex])],
-                description: `Child at index ${cIndex} is missing required _key in block with _key ${blk._key}.`,
-                action: 'Set a new random _key on the object',
-                item: blk,
-
-                i18n: {
-                  description: 'inputs.portable-text.invalid-value.missing-child-key.description',
-                  action: 'inputs.portable-text.invalid-value.missing-child-key.action',
-                  values: {key: blk._key, index: cIndex},
-                },
-              }
-              return true
-            }
             // Verify that children have valid types
             if (!child._type) {
               resolution = {

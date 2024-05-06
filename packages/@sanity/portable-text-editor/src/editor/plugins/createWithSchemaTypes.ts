@@ -59,6 +59,13 @@ export function createWithSchemaTypes({
         const key = span._key || keyGenerator()
         Transforms.setNodes(editor, {...span, _type: schemaTypes.span.name, _key: key}, {at: path})
       }
+
+      // catches cases when the children are missing keys but excludes it when the normalize is running the node as the editor object
+      if (node._key === undefined && (path.length === 1 || path.length === 2)) {
+        debug('Setting missing key on child node without a key')
+        const key = keyGenerator()
+        Transforms.setNodes(editor, {_key: key}, {at: path})
+      }
       normalizeNode(entry)
     }
     return editor
