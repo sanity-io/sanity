@@ -25,12 +25,13 @@ interface TreeEditingLayoutProps {
   items: TreeEditingMenuItem[]
   children: ReactNode
   onPathSelect: (path: Path) => void
+  selectedPath: Path
 }
 
 export function TreeEditingLayout(props: TreeEditingLayoutProps) {
-  const {children, items, onPathSelect} = props
+  const {children, items, selectedPath, onPathSelect} = props
 
-  const [open, setOpen] = useState<boolean>(false)
+  const [open, setOpen] = useState<boolean>(true)
 
   const toggleOpen = useCallback(() => setOpen((v) => !v), [])
 
@@ -55,7 +56,11 @@ export function TreeEditingLayout(props: TreeEditingLayoutProps) {
 
         {open && (
           <SidebarStack flex={1} overflow="auto" padding={3} sizing="border">
-            <TreeEditingMenu items={items} onPathSelect={onPathSelect} selectedPath={[]} />
+            <TreeEditingMenu
+              items={items}
+              onPathSelect={onPathSelect}
+              selectedPath={selectedPath}
+            />
           </SidebarStack>
         )}
       </SidebarCard>
