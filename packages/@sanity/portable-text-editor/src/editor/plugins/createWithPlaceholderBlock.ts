@@ -1,39 +1,35 @@
-import {type Descendant} from 'slate'
+import {Editor, Path} from 'slate'
 
-import {type PortableTextMemberSchemaTypes, type PortableTextSlateEditor} from '../../types/editor'
+import {type PortableTextSlateEditor} from '../../types/editor'
+import {type SlateTextBlock, type VoidElement} from '../../types/slate'
 import {debugWithName} from '../../utils/debug'
 
 const debug = debugWithName('plugin:withPlaceholderBlock')
 
-interface Options {
-  schemaTypes: PortableTextMemberSchemaTypes
-  keyGenerator: () => string
-}
 /**
  * Keep a "placeholder" block present when the editor is empty
  *
  */
-export function createWithPlaceholderBlock({
-  schemaTypes,
-  keyGenerator,
-}: Options): (editor: PortableTextSlateEditor) => PortableTextSlateEditor {
+export function createWithPlaceholderBlock(): (
+  editor: PortableTextSlateEditor,
+) => PortableTextSlateEditor {
   return function withPlaceholderBlock(editor: PortableTextSlateEditor): PortableTextSlateEditor {
-    editor.createPlaceholderBlock = (): Descendant => {
-      debug('Creating placeholder block')
-      return {
-        _type: schemaTypes.block.name,
-        _key: keyGenerator(),
-        style: schemaTypes.styles[0].value || 'normal',
-        markDefs: [],
-        children: [
-          {
-            _type: 'span',
-            _key: keyGenerator(),
-            text: '',
-            marks: [],
-          },
-        ],
+    const {apply} = editor
+
+    editor.apply = (op) => {
+      if (op.type === 'remove_node') {
+        const node = op.node as SlateTextBlock | VoidElement
+        if (op.path[0] === 0 && Editor.isVoid(editor, node)) {
+          // Check next path, if it exists, do nothing
+          const nextPath = Path.next(op.path)
+          // Is removing the first block which is a void (not a text block), add a new empty text block in it, if there is no other element in the next path
+          if (!editor.children[nextPath[0]]) {
+            debug('Adding placeholder block')
+            Editor.insertNode(editor, editor.pteCreateEmptyBlock())
+          }
+        }
       }
+      apply(op)
     }
     return editor
   }

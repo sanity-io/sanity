@@ -60,7 +60,7 @@ export function createWithUtils({schemaTypes, keyGenerator, portableTextEditor}:
           {
             _type: schemaTypes.block.name,
             _key: keyGenerator(),
-            style: 'normal',
+            style: schemaTypes.styles[0].value || 'normal',
             markDefs: [],
             children: [
               {
