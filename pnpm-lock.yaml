@@ -1530,8 +1530,8 @@ importers:
         specifier: 3.40.0
         version: link:../@sanity/portable-text-editor
       '@sanity/presentation':
-        specifier: 1.14.0
-        version: 1.14.0(@sanity/client@6.17.2)(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.8)
+        specifier: 1.15.0
+        version: 1.15.0(@sanity/client@6.17.2)(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.8)
       '@sanity/schema':
         specifier: 3.40.0
         version: link:../@sanity/schema
@@ -6401,8 +6401,8 @@ packages:
       - styled-components
     dev: false
 
-  /@sanity/presentation@1.14.0(@sanity/client@6.17.2)(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.8):
-    resolution: {integrity: sha512-Xc5YkLuT6b/w0iJC6VHuQG/ykHZA3Oh+ekQ2t4mDpQUCwud/ESy497qDId45JeKjrik8AFFzFY7b/qWo5i0Zfw==}
+  /@sanity/presentation@1.15.0(@sanity/client@6.17.2)(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.8):
+    resolution: {integrity: sha512-iu75zesZ++jjSdc5Z7uD0l332rKd9lvp9G5lhiSDogBIz11hU7lLOnAqsa4RjjznemNnEkefqSUHy3rkfZpP4g==}
     engines: {node: '>=16.14'}
     peerDependencies:
       '@sanity/client': ^6.17.2
