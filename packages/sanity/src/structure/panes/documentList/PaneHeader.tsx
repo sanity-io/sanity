@@ -3,7 +3,12 @@ import {memo, type ReactNode, useMemo} from 'react'
 import {type GeneralPreviewLayoutKey, type InitialValueTemplateItem} from 'sanity'
 
 import {Button, TooltipDelayGroupProvider} from '../../../ui-components'
-import {BackLink, PaneHeader, PaneHeaderActions, usePane} from '../../components'
+import {
+  BackLink,
+  PaneHeader as StructurePaneHeader,
+  PaneHeaderActions,
+  usePane,
+} from '../../components'
 import {
   type PaneMenuItem,
   type PaneMenuItemGroup,
@@ -12,7 +17,7 @@ import {
 import {useStructureTool} from '../../useStructureTool'
 import {type SortOrder} from './types'
 
-interface DocumentListPaneHeaderProps {
+interface PaneHeaderProps {
   contentAfter?: ReactNode
   index: number
   initialValueTemplates?: InitialValueTemplateItem[]
@@ -23,7 +28,7 @@ interface DocumentListPaneHeaderProps {
   title: string
 }
 
-export const DocumentListPaneHeader = memo(
+export const PaneHeader = memo(
   ({
     contentAfter,
     index,
@@ -33,7 +38,7 @@ export const DocumentListPaneHeader = memo(
     setLayout,
     setSortOrder,
     title,
-  }: DocumentListPaneHeaderProps) => {
+  }: PaneHeaderProps) => {
     const {features} = useStructureTool()
     const {collapsed, isLast} = usePane()
     // Prevent focus if this is the last (non-collapsed) pane.
@@ -52,7 +57,7 @@ export const DocumentListPaneHeader = memo(
 
     return (
       <TooltipDelayGroupProvider>
-        <PaneHeader
+        <StructurePaneHeader
           actions={
             <PaneHeaderActions
               initialValueTemplateItems={initialValueTemplates}
@@ -82,4 +87,4 @@ export const DocumentListPaneHeader = memo(
   },
 )
 
-DocumentListPaneHeader.displayName = 'DocumentListPaneHeader'
+PaneHeader.displayName = 'PaneHeader'

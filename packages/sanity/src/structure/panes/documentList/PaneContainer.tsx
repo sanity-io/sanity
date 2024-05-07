@@ -17,9 +17,9 @@ import {useStructureToolSetting} from '../../useStructureToolSetting'
 import {type BaseStructureToolPaneProps} from '../types'
 import {DEFAULT_ORDERING, EMPTY_RECORD} from './constants'
 import {DocumentListPane} from './DocumentListPane'
-import {DocumentListPaneHeader} from './DocumentListPaneHeader'
 import DocumentSheetListPane from './DocumentSheetListPane'
 import {findStaticTypesInFilter} from './helpers'
+import {PaneHeader} from './PaneHeader'
 import {type SortOrder} from './types'
 
 const addSelectedStateToMenuItems = (options: {
@@ -56,10 +56,8 @@ export function useShallowUnique<ValueType>(value: ValueType): ValueType {
   return valueRef.current
 }
 
-export type DocumentListPaneProps = BaseStructureToolPaneProps<'documentList'>
-
-export const DocumentListPaneContainer = memo(function DocumentListPaneContainer(
-  props: DocumentListPaneProps,
+export const PaneContainer = memo(function PaneContainer(
+  props: BaseStructureToolPaneProps<'documentList'>,
 ) {
   const {index, isSelected, pane, paneKey} = props
   const {name: parentSourceName} = useSource()
@@ -131,7 +129,7 @@ export const DocumentListPaneContainer = memo(function DocumentListPaneContainer
           </Card>
         )}
 
-        <DocumentListPaneHeader
+        <PaneHeader
           index={index}
           initialValueTemplates={initialValueTemplates}
           menuItemGroups={menuItemGroups}

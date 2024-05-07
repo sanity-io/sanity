@@ -15,16 +15,19 @@ import {keyframes, styled} from 'styled-components'
 import {structureLocaleNamespace} from '../../i18n'
 import {type BaseStructureToolPaneProps} from '../types'
 import {EMPTY_RECORD} from './constants'
-import {useShallowUnique} from './DocumentListPaneContainer'
 import {DocumentListPaneContent} from './DocumentListPaneContent'
 import {applyOrderingFunctions, findStaticTypesInFilter} from './helpers'
+import {useShallowUnique} from './PaneContainer'
 import {type LoadingVariant, type SortOrder} from './types'
 import {useDocumentList} from './useDocumentList'
 
 /**
  * @internal
  */
-export type DocumentListPaneProps = BaseStructureToolPaneProps<'documentList'>
+export type DocumentListPaneProps = BaseStructureToolPaneProps<'documentList'> & {
+  sortOrder?: SortOrder
+  layout?: Exclude<GeneralPreviewLayoutKey, 'sheetList'>
+}
 
 const rotate = keyframes`
   from {
@@ -43,12 +46,7 @@ const AnimatedSpinnerIcon = styled(SpinnerIcon)`
  * @internal
  */
 
-export const DocumentListPane = memo(function DocumentListPane(
-  props: DocumentListPaneProps & {
-    sortOrder?: SortOrder
-    layout?: Exclude<GeneralPreviewLayoutKey, 'sheetList'>
-  },
-) {
+export const DocumentListPane = memo(function DocumentListPane(props: DocumentListPaneProps) {
   const {childItemId, isActive, pane, paneKey, sortOrder: sortOrderRaw, layout} = props
   const schema = useSchema()
 
