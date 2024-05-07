@@ -34,6 +34,7 @@ import {
 } from '../types'
 import {DocumentFieldActionsProvider} from './contexts/DocumentFieldActions'
 import {FormProvider} from './FormProvider'
+import {TreeEditingDialog} from './tree-editing'
 
 /**
  * @alpha
@@ -244,6 +245,13 @@ export function FormBuilder(props: FormBuilderProps) {
         <FormValueProvider value={value}>
           <DocumentFieldActionsProvider actions={fieldActions}>
             {renderInput(rootInputProps)}
+
+            <TreeEditingDialog
+              focusPath={focusPath}
+              rootInputProps={rootInputProps}
+              schemaType={schemaType}
+              setFocusPath={onPathFocus}
+            />
           </DocumentFieldActionsProvider>
         </FormValueProvider>
       </GetFormValueProvider>
