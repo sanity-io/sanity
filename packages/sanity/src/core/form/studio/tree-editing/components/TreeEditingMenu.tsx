@@ -1,5 +1,6 @@
 import {ChevronDownIcon, ChevronUpIcon} from '@sanity/icons'
 import {Button, Stack} from '@sanity/ui'
+import {isEqual} from 'lodash'
 import {useCallback, useMemo, useState} from 'react'
 import {type Path} from 'sanity'
 
@@ -41,6 +42,8 @@ function MenuItem(props: TreeEditingMenuItemProps) {
     return open ? <ChevronUpIcon /> : <ChevronDownIcon />
   }, [children, open])
 
+  const selected = isEqual(item.path, selectedPath)
+
   return (
     <Stack key={title} space={1}>
       <Button
@@ -50,7 +53,7 @@ function MenuItem(props: TreeEditingMenuItemProps) {
         mode="bleed"
         onClick={handleClick}
         padding={2}
-        selected={selectedPath?.toString() === item.path.toString() && !children}
+        selected={selected}
         text={title}
         width="fill"
       />
