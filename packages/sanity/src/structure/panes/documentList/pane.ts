@@ -1,1 +1,1 @@
-export {DocumentListPane as default} from './DocumentListPane'
+export {DocumentListPaneContainer as default} from './DocumentListPaneContainer'
