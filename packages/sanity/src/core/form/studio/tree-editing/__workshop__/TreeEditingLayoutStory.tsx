@@ -50,7 +50,12 @@ const ITEMS: TreeEditingMenuItem[] = [
 
 export default function TreeEditingLayoutStory() {
   return (
-    <TreeEditingLayout items={ITEMS}>
+    <TreeEditingLayout
+      items={ITEMS}
+      onPathSelect={() => {
+        // ...
+      }}
+    >
       <Text>{`(form view)`}</Text>
     </TreeEditingLayout>
   )
