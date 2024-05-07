@@ -78,20 +78,48 @@ test.describe('inputs: text', () => {
     await createDraftDocument('/test/content/book')
 
     const titleInput = page.getByTestId('field-title').getByTestId('string-input')
-    const paneFooter = page.getByTestId('pane-footer')
+    const paneFooter = page.getByTestId('pane-footer-document-status')
     const publishButton = page.getByTestId('action-Publish')
 
+    const commitRequest1 = page.waitForResponse(async (response) => {
+      return (
+        response.url().includes('?tag=sanity.studio.document.commit') &&
+        response.request().method() === 'POST'
+      )
+    })
     await titleInput.fill('Title A')
+    await commitRequest1
 
+    const mutateRequest1 = page.waitForResponse(async (response) => {
+      return (
+        response.url().includes('?tag=sanity.studio.document.publish') &&
+        response.request().method() === 'POST'
+      )
+    })
     // Wait for the document to be published.
     publishButton.click()
-    await expect(paneFooter).toContainText('Published just now')
+    await mutateRequest1
+    expect(await paneFooter.textContent()).toMatch(/published/i)
 
+    const commitRequest2 = page.waitForResponse(async (response) => {
+      return (
+        response.url().includes('?tag=sanity.studio.document.commit') &&
+        response.request().method() === 'POST'
+      )
+    })
     // Change the title.
     await titleInput.fill('Title B')
+    await commitRequest2
 
+    const mutateRequest2 = page.waitForResponse(async (response) => {
+      return (
+        response.url().includes('?tag=sanity.studio.document.publish') &&
+        response.request().method() === 'POST'
+      )
+    })
     // Wait for the document to be published.
     publishButton.click()
-    await expect(paneFooter).toContainText('Published just now')
+    await mutateRequest2
+    await expect(await paneFooter.textContent()).toMatch(/published/i)
   })
 })
