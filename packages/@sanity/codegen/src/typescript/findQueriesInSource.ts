@@ -47,7 +47,9 @@ export function findQueriesInSource(
         babelTypes.isIdentifier(node.id) &&
         init.tag.name === groqTagName
       ) {
-        if (getDeclarationLeadingComment(path)?.trim() === ignoreValue) {
+        // If we find a comment leading the decleration which macthes with ignoreValue we don't add
+        // the query
+        if (declarationLeadingCommentContains(path, ignoreValue)) {
           return
         }
 
@@ -69,9 +71,7 @@ export function findQueriesInSource(
   return queries
 }
 
-function getDeclarationLeadingComment(
-  path: NodePath<babelTypes.VariableDeclarator>,
-): string | null {
+function declarationLeadingCommentContains(path: NodePath, comment: string): boolean {
   /*
    * We have to consider these cases:
    *
@@ -120,20 +120,24 @@ function getDeclarationLeadingComment(
    */
 
   const variableDeclaration = path.find((node) => node.isVariableDeclaration())
-  if (!variableDeclaration) return null
+  if (!variableDeclaration) return false
 
-  if (variableDeclaration.node.leadingComments) {
-    return getLastInArray(variableDeclaration.node.leadingComments)?.value || null
+  if (
+    variableDeclaration.node.leadingComments?.find(
+      (commentItem) => commentItem.value.trim() === comment,
+    )
+  ) {
+    return true
   }
 
   // If the declaration is exported, the comment lies on the parent of the export declaration
-  if (variableDeclaration.parent.leadingComments) {
-    return getLastInArray(variableDeclaration.parent.leadingComments)?.value || null
+  if (
+    variableDeclaration.parent.leadingComments?.find(
+      (commentItem) => commentItem.value.trim() === comment,
+    )
+  ) {
+    return true
   }
 
-  return null
-}
-
-function getLastInArray<T>(arr: T[]) {
-  return arr[arr.length - 1]
+  return false
 }

@@ -143,4 +143,17 @@ describe('findQueries', () => {
     const queries = findQueriesInSource(source, __filename, undefined)
     expect(queries.length).toBe(0)
   })
+
+  test('will ignore declerations if any of the leading comments are ignore tags', () => {
+    const source = `
+      import { groq } from "groq";
+
+      // @sanity-typegen-ignore
+      // This should be ignored because of the comment above
+      export const postQuery = groq\`*[_type == "foo"]\`
+    `
+
+    const queries = findQueriesInSource(source, __filename, undefined)
+    expect(queries.length).toBe(0)
+  })
 })
