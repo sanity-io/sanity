@@ -81,10 +81,7 @@ export const withPlugins = <T extends Editor>(
   const withPortableTextMarkModel = createWithPortableTextMarkModel(schemaTypes, change$)
   const withPortableTextBlockStyle = createWithPortableTextBlockStyle(schemaTypes)
 
-  const withPlaceholderBlock = createWithPlaceholderBlock({
-    keyGenerator,
-    schemaTypes,
-  })
+  const withPlaceholderBlock = createWithPlaceholderBlock()
 
   const withInsertBreak = createWithInsertBreak()
 

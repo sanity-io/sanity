@@ -64,7 +64,7 @@ export function SlateContainer(props: SlateContainerProps) {
   }, [keyGenerator, portableTextEditor, maxBlocks, readOnly, patches$, slateEditor])
 
   const initialValue = useMemo(() => {
-    return [slateEditor.createPlaceholderBlock()]
+    return [slateEditor.pteCreateEmptyBlock()]
   }, [slateEditor])
 
   useEffect(() => {
