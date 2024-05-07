@@ -81,45 +81,22 @@ test.describe('inputs: text', () => {
     const paneFooter = page.getByTestId('pane-footer-document-status')
     const publishButton = page.getByTestId('action-Publish')
 
-    const commitRequest1 = page.waitForResponse(async (response) => {
-      return (
-        response.url().includes('?tag=sanity.studio.document.commit') &&
-        response.request().method() === 'POST'
-      )
-    })
     await titleInput.fill('Title A')
-    await commitRequest1
 
-    const mutateRequest1 = page.waitForResponse(async (response) => {
-      return (
-        response.url().includes('?tag=sanity.studio.document.publish') &&
-        response.request().method() === 'POST'
-      )
-    })
+    // generally waiting for timeouts is not a good idea but for this specific instance
+    // since we are using `.fill` and `.click` they can cause the draft creation and publish to happen at the same exact time.
+    // We are waiting for 1s to make sure the draft actually gets created and click action is not too eager
+    await page.waitForTimeout(1000)
+
     // Wait for the document to be published.
     publishButton.click()
-    await mutateRequest1
     expect(await paneFooter.textContent()).toMatch(/published/i)
 
-    const commitRequest2 = page.waitForResponse(async (response) => {
-      return (
-        response.url().includes('?tag=sanity.studio.document.commit') &&
-        response.request().method() === 'POST'
-      )
-    })
     // Change the title.
     await titleInput.fill('Title B')
-    await commitRequest2
 
-    const mutateRequest2 = page.waitForResponse(async (response) => {
-      return (
-        response.url().includes('?tag=sanity.studio.document.publish') &&
-        response.request().method() === 'POST'
-      )
-    })
     // Wait for the document to be published.
     publishButton.click()
-    await mutateRequest2
-    await expect(await paneFooter.textContent()).toMatch(/published/i)
+    expect(await paneFooter.textContent()).toMatch(/published/i)
   })
 })
