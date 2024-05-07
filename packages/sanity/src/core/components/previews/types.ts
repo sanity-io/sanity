@@ -13,7 +13,15 @@ export type PortableTextPreviewLayoutKey = 'block' | 'blockImage' | 'inline'
  *
  * @public
  */
-export type GeneralPreviewLayoutKey = 'compact' | 'default' | 'media' | 'detail' | 'sheetList'
+export type GeneralPreviewLayoutKey = 'compact' | 'default' | 'media' | 'detail'
+
+/**
+ * General Document list layout key
+ *
+ * @hidden
+ * @beta
+ */
+export type GeneralDocumentListLayoutKey = GeneralPreviewLayoutKey | 'sheetList'
 
 /**
  * Preview layout key. See also {@link GeneralPreviewLayoutKey} and {@link PortableTextPreviewLayoutKey}

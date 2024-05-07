@@ -3,7 +3,7 @@ import {isEqual} from 'lodash'
 import {memo, useMemo, useRef} from 'react'
 import {
   EMPTY_ARRAY,
-  type GeneralPreviewLayoutKey,
+  type GeneralDocumentListLayoutKey,
   SourceProvider,
   useI18nText,
   useSource,
@@ -25,7 +25,7 @@ import {type SortOrder} from './types'
 const addSelectedStateToMenuItems = (options: {
   menuItems?: PaneMenuItem[]
   sortOrderRaw?: SortOrder
-  layout?: GeneralPreviewLayoutKey
+  layout?: GeneralDocumentListLayoutKey
 }) => {
   const {menuItems, sortOrderRaw, layout} = options
 
@@ -78,7 +78,7 @@ export const PaneContainer = memo(function PaneContainer(
     return null
   }, [filter, params])
 
-  const [layout, setLayout] = useStructureToolSetting<GeneralPreviewLayoutKey>(
+  const [layout, setLayout] = useStructureToolSetting<GeneralDocumentListLayoutKey>(
     'layout',
     typeName ?? pane.id, //pane.id for anything that is not documentTypeList
     defaultLayout,
