@@ -11,12 +11,8 @@ import {
   type Path,
 } from 'sanity'
 
-import {getSchemaField, isOpen} from '../utils'
+import {buildTreeMenuItems, getSchemaField, isOpen} from '../utils'
 import {TreeEditingLayout} from './TreeEditingLayout'
-
-function NOOP() {
-  return null
-}
 
 function renderDefault(props: InputProps) {
   return props.renderDefault(props)
@@ -30,7 +26,7 @@ interface TreeEditingDialogProps {
   // ...
   focusPath: Path
   schemaType: ObjectSchemaType
-  setFocusPath: (path: Path) => void
+  setFocusPath: (path: Path | null) => void
   rootInputProps: Omit<ObjectInputProps, 'renderDefault'>
 }
 
@@ -39,6 +35,7 @@ const EMPTY_ARRAY: [] = []
 export function TreeEditingDialog(props: TreeEditingDialogProps): ReactElement | null {
   const {focusPath, rootInputProps, schemaType, setFocusPath} = props
   const [relativePath, setRelativePath] = useState<Path>(EMPTY_ARRAY)
+  const {value} = rootInputProps
 
   const onClose = useCallback(() => {
     setFocusPath(EMPTY_ARRAY)
@@ -46,6 +43,7 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): ReactElement |
   }, [setFocusPath])
 
   const open = useMemo(() => isOpen(schemaType, focusPath), [schemaType, focusPath])
+  const menuItems = useMemo(() => buildTreeMenuItems(schemaType, value), [schemaType, value])
 
   useEffect(() => {
     if (focusPath.length === 0) return
@@ -76,24 +74,8 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): ReactElement |
       padding={0}
       width={2}
     >
-      <TreeEditingLayout items={[]}>
-        <FormInput
-          {...rootInputProps}
-          relativePath={relativePath}
-          renderDefault={renderDefault}
-          resolveInitialValue={NOOP as any}
-          resolveUploader={NOOP}
-          onInsert={NOOP}
-          onItemAppend={NOOP}
-          onItemClose={NOOP}
-          onItemCollapse={NOOP}
-          onItemExpand={NOOP}
-          onItemMove={NOOP}
-          onItemOpen={NOOP}
-          onItemPrepend={NOOP}
-          onItemRemove={NOOP}
-          onUpload={NOOP}
-        />
+      <TreeEditingLayout items={menuItems} onPathSelect={setFocusPath}>
+        <FormInput {...rootInputProps} relativePath={relativePath} renderDefault={renderDefault} />
       </TreeEditingLayout>
     </Dialog>
   )

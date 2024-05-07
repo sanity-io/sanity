@@ -2,6 +2,7 @@
 import {PanelLeftIcon} from '@sanity/icons'
 import {Card, Container, Flex, Stack, Text} from '@sanity/ui'
 import {type ReactNode, useCallback, useState} from 'react'
+import {type Path} from 'sanity'
 import styled from 'styled-components'
 
 import {Button} from '../../../../../ui-components'
@@ -23,10 +24,11 @@ const SidebarStack = styled(Stack)`
 interface TreeEditingLayoutProps {
   items: TreeEditingMenuItem[]
   children: ReactNode
+  onPathSelect: (path: Path | null) => void
 }
 
 export function TreeEditingLayout(props: TreeEditingLayoutProps) {
-  const {children, items} = props
+  const {children, items, onPathSelect} = props
 
   const [open, setOpen] = useState<boolean>(false)
 
@@ -53,13 +55,7 @@ export function TreeEditingLayout(props: TreeEditingLayoutProps) {
 
         {open && (
           <SidebarStack flex={1} overflow="auto" padding={3} sizing="border">
-            <TreeEditingMenu
-              items={items}
-              onPathSelect={() => {
-                // ...
-              }}
-              selectedPath={[]}
-            />
+            <TreeEditingMenu items={items} onPathSelect={onPathSelect} selectedPath={[]} />
           </SidebarStack>
         )}
       </SidebarCard>
