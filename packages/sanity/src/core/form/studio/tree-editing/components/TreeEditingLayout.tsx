@@ -24,7 +24,7 @@ const SidebarStack = styled(Stack)`
 interface TreeEditingLayoutProps {
   items: TreeEditingMenuItem[]
   children: ReactNode
-  onPathSelect: (path: Path | null) => void
+  onPathSelect: (path: Path) => void
 }
 
 export function TreeEditingLayout(props: TreeEditingLayoutProps) {
