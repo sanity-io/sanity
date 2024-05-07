@@ -55,6 +55,7 @@ export function DocumentStatus({absoluteDate, draft, published, singleLine}: Doc
   return (
     <Flex
       align={singleLine ? 'center' : 'flex-start'}
+      data-testid="pane-footer-document-status"
       direction={singleLine ? 'row' : 'column'}
       gap={2}
       wrap="nowrap"
