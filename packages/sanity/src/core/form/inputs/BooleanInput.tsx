@@ -1,5 +1,4 @@
 import {Box, Card, type CardTone, Checkbox, Flex, Switch} from '@sanity/ui'
-import {useMemo} from 'react'
 import {styled} from 'styled-components'
 
 import {Tooltip} from '../../../ui-components'
@@ -37,20 +36,17 @@ export function BooleanInput(props: BooleanInputProps) {
 
   const tone: CardTone | undefined = readOnly ? 'transparent' : undefined
 
-  const input = useMemo(
-    () => (
-      <ZeroLineHeightBox padding={3}>
-        <LayoutSpecificInput
-          label={schemaType.title}
-          {...elementProps}
-          checked={checked}
-          readOnly={readOnly}
-          indeterminate={indeterminate}
-          style={{margin: -4}}
-        />
-      </ZeroLineHeightBox>
-    ),
-    [LayoutSpecificInput, checked, elementProps, indeterminate, readOnly, schemaType.title],
+  const input = (
+    <ZeroLineHeightBox padding={3}>
+      <LayoutSpecificInput
+        label={schemaType.title}
+        {...elementProps}
+        checked={checked}
+        readOnly={readOnly}
+        indeterminate={indeterminate}
+        style={{margin: -4}}
+      />
+    </ZeroLineHeightBox>
   )
 
   return (
