@@ -2,8 +2,10 @@ import {EarthAmericasIcon} from '@sanity/icons'
 import {Box} from '@sanity/ui'
 
 import {Button, Tooltip} from '../../../../ui-components'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import useDialogTimeZone from '../../hooks/useDialogTimeZone'
 import useTimeZone from '../../hooks/useTimeZone'
+import {scheduledPublishingNamespace} from '../../i18n'
 
 export interface ButtonTimeZoneProps {
   useElementQueries?: boolean
@@ -11,7 +13,7 @@ export interface ButtonTimeZoneProps {
 
 const ButtonTimeZone = (props: ButtonTimeZoneProps) => {
   const {useElementQueries} = props
-
+  const {t} = useTranslation(scheduledPublishingNamespace)
   const {timeZone} = useTimeZone()
   const {DialogTimeZone, dialogProps, dialogTimeZoneShow} = useDialogTimeZone()
 
@@ -21,7 +23,10 @@ const ButtonTimeZone = (props: ButtonTimeZoneProps) => {
       {DialogTimeZone && <DialogTimeZone {...dialogProps} />}
 
       <Tooltip
-        content={`Displaying schedules in ${timeZone.alternativeName} (GMT${timeZone.offset})`}
+        content={t('time-zone-button.tooltip', {
+          alternativeName: timeZone.alternativeName,
+          offset: timeZone.offset,
+        })}
         portal
       >
         <div>

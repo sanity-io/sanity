@@ -4,8 +4,10 @@ import {format, isWeekend} from 'date-fns'
 import {useCallback, useMemo} from 'react'
 
 import {Tooltip} from '../../../../ui-components'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {SCHEDULE_ACTION_DICTIONARY, SCHEDULE_STATE_DICTIONARY} from '../../constants'
 import useTimeZone from '../../hooks/useTimeZone'
+import {scheduledPublishingNamespace} from '../../i18n'
 import {type Schedule, type ScheduleState} from '../../types'
 import {getLastExecuteDate} from '../../utils/scheduleUtils'
 import {useSchedules} from '../contexts/schedules'
@@ -121,6 +123,7 @@ type SchedulesByState = Record<ScheduleState, Schedule[]>
 function TooltipContent(props: TooltipContentProps) {
   const {date, schedules = []} = props
   const {formatDateTz} = useTimeZone()
+  const {t} = useTranslation(scheduledPublishingNamespace)
 
   const schedulesByState = schedules.reduce<SchedulesByState>(
     (acc, val) => {
@@ -150,7 +153,7 @@ function TooltipContent(props: TooltipContentProps) {
           return (
             <Stack key={key} space={2}>
               <Label muted size={0}>
-                {SCHEDULE_STATE_DICTIONARY[key].title}
+                {t(SCHEDULE_STATE_DICTIONARY[key].title)}
               </Label>
               <Stack space={1}>
                 {stateSchedules

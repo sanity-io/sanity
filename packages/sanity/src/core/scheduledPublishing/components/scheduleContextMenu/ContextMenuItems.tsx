@@ -1,8 +1,10 @@
 import {CalendarIcon, CheckmarkCircleIcon, PublishIcon, TrashIcon} from '@sanity/icons'
 import {type SchemaType} from '@sanity/types'
 
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {useCurrentUser, useDocumentPairPermissions} from '../../../store'
 import useScheduleOperation from '../../hooks/useScheduleOperation'
+import {scheduledPublishingNamespace} from '../../i18n'
 import {useScheduledPublishingEnabled} from '../../tool/contexts/ScheduledPublishingEnabledProvider'
 import {type Schedule} from '../../types'
 import {getScheduledDocument} from '../../utils/paneItemHelpers'
@@ -23,6 +25,7 @@ interface Props {
 
 const ContextMenuItems = (props: Props) => {
   const {actions, onDelete, onEdit, schedule, schemaType} = props
+  const {t} = useTranslation(scheduledPublishingNamespace)
   const {mode} = useScheduledPublishingEnabled()
   const firstDocument = getScheduledDocument(schedule)
 
@@ -61,8 +64,8 @@ const ContextMenuItems = (props: Props) => {
           hasPermission={!insufficientPermissions}
           icon={CalendarIcon}
           onClick={handleEdit}
-          permissionsOperationLabel="edit-schedules"
-          title="Edit schedule"
+          context="edit-schedules"
+          title={t('schedule-preview.menu-item.edit-schedule')}
           disabled={mode === 'upsell'}
         />
       )}
@@ -72,8 +75,8 @@ const ContextMenuItems = (props: Props) => {
           hasPermission={!insufficientPermissions}
           icon={PublishIcon}
           onClick={handleExecute}
-          permissionsOperationLabel="execute-schedules"
-          title="Publish now"
+          context="execute-schedules"
+          title={t('schedule-preview.menu-item.publish-now')}
           disabled={mode === 'upsell'}
         />
       )}
@@ -83,8 +86,8 @@ const ContextMenuItems = (props: Props) => {
           hasPermission={!insufficientPermissions}
           icon={TrashIcon}
           onClick={handleDelete}
-          permissionsOperationLabel="delete-schedules"
-          title="Delete schedule"
+          context="delete-schedules"
+          title={t('schedule-preview.menu-item.delete-schedule')}
           tone="critical"
           disabled={mode === 'upsell'}
         />
@@ -95,8 +98,8 @@ const ContextMenuItems = (props: Props) => {
           hasPermission={!insufficientPermissions}
           icon={CheckmarkCircleIcon}
           onClick={handleDelete}
-          permissionsOperationLabel="delete-schedules"
-          title="Clear completed schedule"
+          context="delete-schedules"
+          title={t('schedule-preview.menu-item.clear-schedule')}
           disabled={mode === 'upsell'}
         />
       )}

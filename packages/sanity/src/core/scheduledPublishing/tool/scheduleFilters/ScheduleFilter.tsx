@@ -6,8 +6,10 @@ import {
 } from '@sanity/ui'
 import {useStateLink} from 'sanity/router'
 
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
 import {SCHEDULE_STATE_DICTIONARY} from '../../constants'
 import {useFilteredSchedules} from '../../hooks/useFilteredSchedules'
+import {scheduledPublishingNamespace} from '../../i18n'
 import {type Schedule, type ScheduleState} from '../../types'
 
 interface Props {
@@ -18,7 +20,7 @@ interface Props {
 
 const ScheduleFilter = (props: Props) => {
   const {selected, schedules, state} = props
-
+  const {t} = useTranslation(scheduledPublishingNamespace)
   const count = useFilteredSchedules(schedules, state).length
 
   const hasItems = count > 0
@@ -41,7 +43,7 @@ const ScheduleFilter = (props: Props) => {
     >
       <Flex gap={2} align={'center'}>
         <Text size={1} weight="medium">
-          {SCHEDULE_STATE_DICTIONARY[state].title}
+          {t(SCHEDULE_STATE_DICTIONARY[state].title)}
         </Text>
         {hasItems && <Text size={0}>{count}</Text>}
       </Flex>

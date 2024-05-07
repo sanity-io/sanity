@@ -3,7 +3,8 @@ import {ErrorOutlineIcon} from '@sanity/icons'
 import {type CardTone, Container, Flex, Menu, Text} from '@sanity/ui'
 
 import {Button, MenuButton} from '../../../../ui-components'
-import {SCHEDULE_FAILED_TEXT} from '../../constants'
+import {useTranslation} from '../../../i18n/hooks/useTranslation'
+import {scheduledPublishingNamespace} from '../../i18n'
 
 interface Props {
   stateReason: string
@@ -18,6 +19,7 @@ const POPOVER_PROPS = {
 }
 
 const StateReasonFailedInfo = (props: Props) => {
+  const {t} = useTranslation(scheduledPublishingNamespace)
   const {stateReason} = props
 
   return (
@@ -25,7 +27,7 @@ const StateReasonFailedInfo = (props: Props) => {
       id="stateReason"
       button={
         <Button
-          tooltipProps={{content: 'Schedule failed'}}
+          tooltipProps={{content: t('schedule-preview.failed.tooltip')}}
           mode="bleed"
           data-testid="schedule-validation-list-button"
           icon={ErrorOutlineIcon}
@@ -35,7 +37,7 @@ const StateReasonFailedInfo = (props: Props) => {
       menu={
         <Menu padding={1}>
           <Container padding={2} width={0}>
-            <Text size={1}>{SCHEDULE_FAILED_TEXT}</Text>
+            <Text size={1}>{t('schedule-preview.failed.title')}</Text>
             <Flex gap={3} marginTop={4} padding={1}>
               <Text size={1} style={{color: red[700].hex}}>
                 <ErrorOutlineIcon />
