@@ -42,8 +42,17 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): ReactElement |
     setRelativePath(EMPTY_ARRAY)
   }, [setFocusPath])
 
-  const open = useMemo(() => isOpen(schemaType, focusPath), [schemaType, focusPath])
-  const menuItems = useMemo(() => buildTreeMenuItems(schemaType, value), [schemaType, value])
+  const open = useMemo(() => isOpen(schemaType, relativePath), [schemaType, relativePath])
+
+  const menuItems = useMemo(() => {
+    if (relativePath.length === 0) return EMPTY_ARRAY
+
+    return buildTreeMenuItems({
+      schemaType,
+      documentValue: value,
+      path: relativePath || EMPTY_ARRAY,
+    })
+  }, [relativePath, schemaType, value])
 
   useEffect(() => {
     if (focusPath.length === 0) return
@@ -74,7 +83,7 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): ReactElement |
       padding={0}
       width={2}
     >
-      <TreeEditingLayout items={menuItems} onPathSelect={setFocusPath}>
+      <TreeEditingLayout items={menuItems} onPathSelect={setFocusPath} selectedPath={relativePath}>
         <FormInput {...rootInputProps} relativePath={relativePath} renderDefault={renderDefault} />
       </TreeEditingLayout>
     </Dialog>
