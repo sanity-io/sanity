@@ -1,77 +1,143 @@
+import {expect} from '@playwright/test'
 import {test} from '@sanity/test'
 
 const SORT_KEY = 'studio.structure-tool.sort-order.author'
+const CUSTOM_SORT_KEY = 'studio.structure-tool.sort-order.book'
 const LAYOUT_KEY = 'studio.structure-tool.layout.author'
 
 //we should also check for custom sort orders
-test('clicking sort order and direction sets value in storage', async ({page, sanityClient}) => {
+test('clicking default sort order and direction sets value in storage', async ({
+  page,
+  sanityClient,
+}) => {
   await page.goto('/test/content/author')
+
+  const existingKeys = await sanityClient.withConfig({apiVersion: '2024-03-12'}).request({
+    uri: `/users/me/keyvalue/${SORT_KEY}`,
+    withCredentials: true,
+  })
+
+  // If the value is not null there are existingKeys, delete them in that case
+  if (existingKeys[0].value !== null) {
+    // Clear the sort order
+    await sanityClient.withConfig({apiVersion: '2024-03-12'}).request({
+      uri: `/users/me/keyvalue/${SORT_KEY}`,
+      withCredentials: true,
+      method: 'DELETE',
+    })
+  }
+
+  const keyValueRequest = page.waitForResponse(async (response) => {
+    return response.url().includes('/users/me/keyvalue') && response.request().method() === 'PUT'
+  })
   await page.getByTestId('pane').getByTestId('pane-context-menu-button').click()
   await page.getByRole('menuitem', {name: 'Sort by Name'}).click()
+  const responseBody = await (await keyValueRequest).json()
 
-  /*
-   * The network proves to be a bit flaky for this in our CI environment. We will revisit this after release.
-   */
-  // await page.waitForTimeout(10000)
-  // const nameResult = await sanityClient.withConfig({apiVersion: '2024-03-12'}).request({
-  //   uri: `/users/me/keyvalue/${SORT_KEY}`,
-  //   withCredentials: true,
-  // })
+  expect(responseBody[0]).toMatchObject({
+    key: SORT_KEY,
+    value: {
+      by: [{field: 'name', direction: 'asc'}],
+      extendedProjection: 'name',
+    },
+  })
 
-  // expect(nameResult[0]).toMatchObject({
-  //   key: SORT_KEY,
-  //   value: {
-  //     by: [{field: 'name', direction: 'asc'}],
-  //     extendedProjection: 'name',
-  //   },
-  // })
+  const keyValueRequest2 = page.waitForResponse(async (response) => {
+    return response.url().includes('/users/me/keyvalue') && response.request().method() === 'PUT'
+  })
+  await page.getByTestId('pane').getByTestId('pane-context-menu-button').click()
+  await page.getByRole('menuitem', {name: 'Sort by Last Edited'}).click()
+  const responseBody2 = await (await keyValueRequest2).json()
 
-  // await page.getByTestId('pane').getByTestId('pane-context-menu-button').click()
-  // await page.getByRole('menuitem', {name: 'Sort by Last Edited'}).click()
+  expect(responseBody2[0]).toMatchObject({
+    key: SORT_KEY,
+    value: {
+      by: [{field: '_updatedAt', direction: 'desc'}],
+      extendedProjection: '',
+    },
+  })
+})
 
-  // await page.waitForTimeout(10000)
-  // const lastEditedResult = await sanityClient.withConfig({apiVersion: '2024-03-12'}).request({
-  //   uri: `/users/me/keyvalue/${SORT_KEY}`,
-  //   withCredentials: true,
-  // })
+test('clicking custom sort order and direction sets value in storage', async ({
+  page,
+  sanityClient,
+}) => {
+  await page.goto('/test/content/book')
 
-  // expect(lastEditedResult[0]).toMatchObject({
-  //   key: SORT_KEY,
-  //   value: {
-  //     by: [{field: '_updatedAt', direction: 'desc'}],
-  //     extendedProjection: '',
-  //   },
-  // })
+  const existingKeys = await sanityClient.withConfig({apiVersion: '2024-03-12'}).request({
+    uri: `/users/me/keyvalue/${CUSTOM_SORT_KEY}`,
+    withCredentials: true,
+  })
+
+  // If the value is not null there are existingKeys, delete them in that case
+  if (existingKeys[0].value !== null) {
+    // Clear the sort order
+    await sanityClient.withConfig({apiVersion: '2024-03-12'}).request({
+      uri: `/users/me/keyvalue/${CUSTOM_SORT_KEY}`,
+      withCredentials: true,
+      method: 'DELETE',
+    })
+  }
+
+  const keyValueRequest = page.waitForResponse(async (response) => {
+    return response.url().includes('/users/me/keyvalue') && response.request().method() === 'PUT'
+  })
+  await page.getByTestId('pane').getByTestId('pane-context-menu-button').click()
+  await page.getByRole('menuitem', {name: 'Sort by Title'}).click()
+  const responseBody = await (await keyValueRequest).json()
+
+  expect(responseBody[0]).toMatchObject({
+    key: CUSTOM_SORT_KEY,
+    value: {
+      // located in dev/test-studio/schema/book.ts
+      by: [
+        {field: 'title', direction: 'asc'},
+        {field: 'publicationYear', direction: 'asc'},
+      ],
+      extendedProjection: 'title, publicationYear',
+    },
+  })
 })
 
 test('clicking list view sets value in storage', async ({page, sanityClient}) => {
   await page.goto('/test/content/author')
+
+  const existingKeys = await sanityClient.withConfig({apiVersion: '2024-03-12'}).request({
+    uri: `/users/me/keyvalue/${LAYOUT_KEY}`,
+    withCredentials: true,
+  })
+
+  // If the value is not null there are existingKeys, delete them in that case
+  if (existingKeys[0].value !== null) {
+    // Clear the sort order
+    await sanityClient.withConfig({apiVersion: '2024-03-12'}).request({
+      uri: `/users/me/keyvalue/${LAYOUT_KEY}`,
+      withCredentials: true,
+      method: 'DELETE',
+    })
+  }
+
+  const keyValueRequest = page.waitForResponse(async (response) => {
+    return response.url().includes('/users/me/keyvalue') && response.request().method() === 'PUT'
+  })
   await page.getByTestId('pane').getByTestId('pane-context-menu-button').click()
   await page.getByRole('menuitem', {name: 'Detailed view'}).click()
+  const responseBody = await (await keyValueRequest).json()
 
-  /*
-   * The network proves to be a bit flaky for this in our CI environment. We will revisit this after release.
-   */
-  // await page.waitForTimeout(10000)
-  // const detailResult = await sanityClient.withConfig({apiVersion: '2024-03-12'}).request({
-  //   uri: `/users/me/keyvalue/${LAYOUT_KEY}`,
-  //   withCredentials: true,
-  // })
-  // expect(detailResult[0]).toMatchObject({
-  //   key: LAYOUT_KEY,
-  //   value: 'detail',
-  // })
+  expect(responseBody[0]).toMatchObject({
+    key: LAYOUT_KEY,
+    value: 'detail',
+  })
 
-  // await page.getByTestId('pane').getByTestId('pane-context-menu-button').click()
-  // await page.getByRole('menuitem', {name: 'Compact view'}).click()
+  const keyValueRequest2 = page.waitForResponse(async (response) => {
+    return response.url().includes('/users/me/keyvalue') && response.request().method() === 'PUT'
+  })
+  await page.getByTestId('pane').getByTestId('pane-context-menu-button').click()
+  await page.getByRole('menuitem', {name: 'Compact view'}).click()
+  const responseBody2 = await (await keyValueRequest2).json()
 
-  // await page.waitForTimeout(10000)
-  // const compactResult = await sanityClient.withConfig({apiVersion: '2024-03-12'}).request({
-  //   uri: `/users/me/keyvalue/${LAYOUT_KEY}`,
-  //   withCredentials: true,
-  // })
-  // expect(compactResult[0]).toMatchObject({
-  //   key: LAYOUT_KEY,
-  //   value: 'default',
-  // })
+  expect(responseBody2[0]).toMatchObject({
+    key: LAYOUT_KEY,
+    value: 'default',
+  })
 })
