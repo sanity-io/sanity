@@ -208,7 +208,7 @@ export class ComponentBuilder implements Serializable<Component> {
     return this.spec.menuItemGroups
   }
 
-  canHandleIntent(canHandleIntent: any): ComponentBuilder {
+  canHandleIntent(canHandleIntent: IntentChecker): ComponentBuilder {
     return this.clone({canHandleIntent})
   }
 
