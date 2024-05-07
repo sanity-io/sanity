@@ -26,7 +26,7 @@ interface TreeEditingDialogProps {
   // ...
   focusPath: Path
   schemaType: ObjectSchemaType
-  setFocusPath: (path: Path | null) => void
+  setFocusPath: (path: Path) => void
   rootInputProps: Omit<ObjectInputProps, 'renderDefault'>
 }
 
