@@ -14,6 +14,7 @@ export const _previewComponents = {
   compact: CompactPreview,
   default: DefaultPreview,
   detail: DetailPreview,
+  sheetList: DefaultPreview,
   inline: InlinePreview,
   media: MediaPreview,
 } as const
