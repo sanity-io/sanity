@@ -17,7 +17,7 @@ function hasOpenChild(item: TreeEditingMenuItem, selectedPath: Path | null): boo
 interface TreeEditingMenuItemProps {
   // ...
   item: TreeEditingMenuItem
-  onPathSelect: (path: Path | null) => void
+  onPathSelect: (path: Path) => void
   selectedPath: Path | null
 }
 
@@ -73,7 +73,7 @@ function MenuItem(props: TreeEditingMenuItemProps) {
 
 interface TreeEditingMenuProps {
   items: TreeEditingMenuItem[]
-  onPathSelect: (path: Path | null) => void
+  onPathSelect: (path: Path) => void
   selectedPath: Path | null
 }
 
