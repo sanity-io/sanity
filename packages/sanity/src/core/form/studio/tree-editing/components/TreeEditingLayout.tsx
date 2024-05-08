@@ -18,7 +18,7 @@ const SidebarCard = styled(Card)`
 `
 
 const SidebarStack = styled(Stack)`
-  width: 250px;
+  width: 350px; // todo
 `
 
 interface TreeEditingLayoutProps {
@@ -28,7 +28,7 @@ interface TreeEditingLayoutProps {
   selectedPath: Path
 }
 
-export function TreeEditingLayout(props: TreeEditingLayoutProps) {
+export function TreeEditingLayout(props: TreeEditingLayoutProps): JSX.Element {
   const {children, items, selectedPath, onPathSelect} = props
 
   const [open, setOpen] = useState<boolean>(true)
@@ -37,7 +37,7 @@ export function TreeEditingLayout(props: TreeEditingLayoutProps) {
 
   return (
     <Flex height="fill" overflow="hidden">
-      <SidebarCard borderRight display="flex" tone="transparent">
+      <SidebarCard borderRight data-ui="SidebarCard" display="flex" tone="transparent">
         <FixedHeightFlex align="center" gap={2}>
           <Button
             icon={PanelLeftIcon}
