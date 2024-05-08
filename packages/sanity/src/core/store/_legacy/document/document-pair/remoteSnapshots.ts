@@ -14,7 +14,7 @@ export const remoteSnapshots = memoize(
     client: SanityClient,
     idPair: IdPair,
     typeName: string,
-    serverActionsEnabled: boolean,
+    serverActionsEnabled: Observable<boolean>,
   ): Observable<RemoteSnapshotVersionEvent> => {
     return memoizedPair(client, idPair, typeName, serverActionsEnabled).pipe(
       switchMap(({published, draft}) => merge(published.remoteSnapshot$, draft.remoteSnapshot$)),

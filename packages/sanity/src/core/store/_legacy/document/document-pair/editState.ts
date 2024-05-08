@@ -34,7 +34,7 @@ export const editState = memoize(
     ctx: {
       client: SanityClient
       schema: Schema
-      serverActionsEnabled: boolean
+      serverActionsEnabled: Observable<boolean>
     },
     idPair: IdPair,
     typeName: string,
@@ -73,5 +73,5 @@ export const editState = memoize(
       refCount(),
     )
   },
-  (ctx, idPair, typeName) => memoizeKeyGen(ctx.client, idPair, typeName, ctx.serverActionsEnabled),
+  (ctx, idPair, typeName) => memoizeKeyGen(ctx.client, idPair, typeName),
 )

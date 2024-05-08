@@ -65,7 +65,7 @@ export const snapshotPair = memoize(
     client: SanityClient,
     idPair: IdPair,
     typeName: string,
-    serverActionsEnabled: boolean,
+    serverActionsEnabled: Observable<boolean>,
   ): Observable<SnapshotPair> => {
     return memoizedPair(client, idPair, typeName, serverActionsEnabled).pipe(
       map(({published, draft, transactionsPendingEvents$}): SnapshotPair => {
