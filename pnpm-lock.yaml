@@ -1530,8 +1530,8 @@ importers:
         specifier: 3.41.0
         version: link:../@sanity/portable-text-editor
       '@sanity/presentation':
-        specifier: 1.15.0
-        version: 1.15.0(@sanity/client@6.18.0)(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.10)
+        specifier: 1.15.1
+        version: 1.15.1(@sanity/client@6.18.0)(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.10)
       '@sanity/schema':
         specifier: 3.41.0
         version: link:../@sanity/schema
@@ -6588,11 +6588,11 @@ packages:
       - styled-components
     dev: false
 
-  /@sanity/presentation@1.15.0(@sanity/client@6.18.0)(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.10):
-    resolution: {integrity: sha512-iu75zesZ++jjSdc5Z7uD0l332rKd9lvp9G5lhiSDogBIz11hU7lLOnAqsa4RjjznemNnEkefqSUHy3rkfZpP4g==}
+  /@sanity/presentation@1.15.1(@sanity/client@6.18.0)(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.10):
+    resolution: {integrity: sha512-bFghEY8rlUneLR5lWFXxdn52oMUwOrNucKrwinzykH9/m3NxrHA5ObvwoSu02lu+ebVLk0KY8ptczfoz6WDlWA==}
     engines: {node: '>=16.14'}
     peerDependencies:
-      '@sanity/client': ^6.17.2
+      '@sanity/client': ^6.18.0
     dependencies:
       '@sanity/client': 6.18.0(debug@4.3.4)
       '@sanity/icons': 2.11.8(react@18.3.1)
