@@ -506,6 +506,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'inputs.array.read-only-label': 'This field is read-only',
   /** Label for when the array input is resolving the initial value for the item */
   'inputs.array.resolving-initial-value': 'Resolving initial value…',
+  /** Tooltip content when boolean input is disabled */
+  'inputs.boolean.disabled': 'Disabled',
   /** Placeholder value for datetime input */
   'inputs.datetime.placeholder': 'e.g. {{example}}',
   /** Acessibility label for button to open file options menu */
