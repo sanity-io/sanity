@@ -1,5 +1,6 @@
 import {type I18nTextRecord} from 'sanity'
 
+import {type IntentChecker} from './Intent'
 import {maybeSerializeMenuItem, type MenuItem, type MenuItemBuilder} from './MenuItem'
 import {
   maybeSerializeMenuItemGroup,
@@ -34,6 +35,7 @@ export interface Component extends StructureNode {
   menuItemGroups: MenuItemGroup[]
   /** Component options */
   options: {[key: string]: unknown}
+  canHandleIntent?: IntentChecker
 }
 
 /**
@@ -70,6 +72,7 @@ export interface BuildableComponent extends Partial<StructureNode> {
   menuItems?: (MenuItem | MenuItemBuilder)[]
   /** Component menu item groups. See {@link MenuItemGroup} and {@link MenuItemGroupBuilder} */
   menuItemGroups?: (MenuItemGroup | MenuItemGroupBuilder)[]
+  canHandleIntent?: IntentChecker
 }
 
 /**
@@ -205,6 +208,10 @@ export class ComponentBuilder implements Serializable<Component> {
     return this.spec.menuItemGroups
   }
 
+  canHandleIntent(canHandleIntent: IntentChecker): ComponentBuilder {
+    return this.clone({canHandleIntent})
+  }
+
   /** Serialize component
    * @param options - serialization options
    * @returns component object based on path provided in options
@@ -234,6 +241,7 @@ export class ComponentBuilder implements Serializable<Component> {
       type: 'component',
       child,
       component,
+      canHandleIntent: this.spec.canHandleIntent,
       options: componentOptions || {},
       menuItems: (this.spec.menuItems || []).map((item, i) =>
         maybeSerializeMenuItem(item, i, options.path),
