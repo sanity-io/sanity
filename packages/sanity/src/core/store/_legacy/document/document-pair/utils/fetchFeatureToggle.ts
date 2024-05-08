@@ -4,12 +4,22 @@ import {type SanityClient} from '@sanity/client'
 import {map, type Observable, of, ReplaySubject, timer} from 'rxjs'
 import {catchError, share} from 'rxjs/operators'
 
+interface FeatureToggle {
+  actions: boolean
+}
+
 //in the "real" code, this would be observable.request, to a URI
-export const fetchFeatureToggle = (client: SanityClient): Observable<boolean> => {
+export const fetchFeatureToggle = (defaultClient: SanityClient): Observable<boolean> => {
+  const client = defaultClient.withConfig({apiVersion: 'X'})
+  const {dataset} = defaultClient.config()
+
   return client.observable
-    .fetch('*[_id == $id][0]', {id: '20449512-1e9c-44f0-a509-417c901fbbbd'})
+    .request({
+      uri: `/data/actions/${dataset}`,
+      withCredentials: true,
+    })
     .pipe(
-      map((doc) => doc.name.split('CONTROL FOR SERVER ACTIONS: ')[1] === 'enabled'),
+      map((res: FeatureToggle) => res.actions),
       catchError(() =>
         // If we fail to fetch the feature toggle, we'll just assume it's disabled and fallback to legacy mutations
         of(false),
