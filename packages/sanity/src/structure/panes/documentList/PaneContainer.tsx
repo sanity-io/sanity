@@ -17,7 +17,7 @@ import {useStructureToolSetting} from '../../useStructureToolSetting'
 import {type BaseStructureToolPaneProps} from '../types'
 import {DEFAULT_ORDERING, EMPTY_RECORD} from './constants'
 import {DocumentListPane} from './DocumentListPane'
-import DocumentSheetListPane from './DocumentSheetListPane'
+import {DocumentSheetListPane} from './DocumentSheetListPane'
 import {findStaticTypesInFilter} from './helpers'
 import {PaneHeader} from './PaneHeader'
 import {type SortOrder} from './types'
@@ -109,7 +109,7 @@ export const PaneContainer = memo(function PaneContainer(
 
   const isSheetListLayout = layout === 'sheetList'
   const paneLayout = isSheetListLayout ? (
-    <DocumentSheetListPane />
+    <DocumentSheetListPane {...props} />
   ) : (
     <DocumentListPane {...props} sortOrder={sortOrderRaw} layout={layout} />
   )

@@ -1550,6 +1550,9 @@ importers:
       '@sanity/uuid':
         specifier: ^3.0.1
         version: 3.0.2
+      '@tanstack/react-table':
+        specifier: ^8.16.0
+        version: 8.16.0(react-dom@18.3.1)(react@18.3.1)
       '@tanstack/react-virtual':
         specifier: 3.0.0-beta.54
         version: 3.0.0-beta.54(react@18.3.1)
@@ -6627,7 +6630,7 @@ packages:
     peerDependencies:
       '@sanity/client': ^6.17.2
     dependencies:
-      '@sanity/client': 6.17.2
+      '@sanity/client': 6.17.2(debug@4.3.4)
       '@sanity/uuid': 3.0.2
     dev: false
 
@@ -7057,6 +7060,18 @@ packages:
       tslib: 2.6.2
     dev: false
 
+  /@tanstack/react-table@8.16.0(react-dom@18.3.1)(react@18.3.1):
+    resolution: {integrity: sha512-rKRjnt8ostqN2fercRVOIH/dq7MAmOENCMvVlKx6P9Iokhh6woBGnIZEkqsY/vEJf1jN3TqLOb34xQGLVRuhAg==}
+    engines: {node: '>=12'}
+    peerDependencies:
+      react: '>=16.8'
+      react-dom: '>=16.8'
+    dependencies:
+      '@tanstack/table-core': 8.16.0
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+    dev: false
+
   /@tanstack/react-virtual@3.0.0-beta.54(react@18.3.1):
     resolution: {integrity: sha512-D1mDMf4UPbrtHRZZriCly5bXTBMhylslm4dhcHqTtDJ6brQcgGmk8YD9JdWBGWfGSWPKoh2x1H3e7eh+hgPXtQ==}
     peerDependencies:
@@ -7064,6 +7079,11 @@ packages:
     dependencies:
       '@tanstack/virtual-core': 3.0.0-beta.54
       react: 18.3.1
+    dev: false
+
+  /@tanstack/table-core@8.16.0:
+    resolution: {integrity: sha512-dCG8vQGk4js5v88/k83tTedWOwjGnIyONrKpHpfmSJB8jwFHl8GSu1sBBxbtACVAPtAQgwNxl0rw1d3RqRM1Tg==}
+    engines: {node: '>=12'}
     dev: false
 
   /@tanstack/virtual-core@3.0.0-beta.54:
@@ -7727,7 +7747,7 @@ packages:
     resolution: {integrity: sha512-gKmTNwZnblUdnTIJu3e9kmeRRzV2j1a/LUO27KNNAnIC5zjy1aSvXSRp4rVNlmAoHlQ7HzX42NbKpcSr4jF80A==}
     engines: {node: ^18.18.0 || >=20.0.0}
     peerDependencies:
-      '@typescript-eslint/parser': ^7.5.0
+      '@typescript-eslint/parser': ^7.0.0
       eslint: ^8.56.0
       typescript: '*'
     peerDependenciesMeta:
@@ -10675,8 +10695,8 @@ packages:
     resolution: {integrity: sha512-7Na1kh3OiteeFmeQkUqtIjThsKWIIiK/TLNUby0pOkGHhWV3AKYFsMEIhH7VuOIEOeTE53Ix/04Z6XWyvsHcuQ==}
     engines: {node: '>=14.0.0'}
     peerDependencies:
-      '@typescript-eslint/eslint-plugin': ^7.5.0
-      '@typescript-eslint/parser': ^7.5.0
+      '@typescript-eslint/eslint-plugin': ^6.7.5 || ^7.0.0
+      '@typescript-eslint/parser': ^6.7.5 || ^7.0.0
       eslint: ^8.51.0
       eslint-plugin-import: ^2.28.1
       eslint-plugin-react: ^7.33.2
@@ -10985,7 +11005,7 @@ packages:
     resolution: {integrity: sha512-9l1YFCzXKkw1qtAru1RWUtG2EVDZY0a0eChKXcL+EZ5jitG7qxdctu4RnvhOJHv4xfmUf7h+JJPINlVpGhZMrw==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
     peerDependencies:
-      '@typescript-eslint/eslint-plugin': ^7.5.0
+      '@typescript-eslint/eslint-plugin': 6 - 7
       eslint: '8'
     peerDependenciesMeta:
       '@typescript-eslint/eslint-plugin':
