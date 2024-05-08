@@ -91,11 +91,13 @@ const sharedSettings = definePlugin({
       return prev
     },
     unstable_fieldActions: (prev, ctx) => {
+      const defaultActions = [...prev, copyAction, pasteAction]
+
       if (['fieldActionsTest', 'stringsTest'].includes(ctx.documentType)) {
-        return [...prev, assistFieldActionGroup, copyAction, pasteAction]
+        return [...defaultActions, assistFieldActionGroup]
       }
 
-      return prev
+      return defaultActions
     },
     newDocumentOptions,
     comments: {
