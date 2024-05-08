@@ -25,22 +25,21 @@ interface TreeEditingMenuItemProps {
 function MenuItem(props: TreeEditingMenuItemProps) {
   const {item, onPathSelect, selectedPath} = props
   const {children, title} = item
+  const hasChildren = children && children.length > 0
 
   const [open, setOpen] = useState<boolean>(hasOpenChild(item, selectedPath))
 
   const handleClick = useCallback(() => {
-    if (!children) {
-      onPathSelect(item.path)
-    }
+    onPathSelect(item.path)
 
     setOpen((v) => !v)
-  }, [children, item.path, onPathSelect])
+  }, [item.path, onPathSelect])
 
   const icon = useMemo(() => {
-    if (!children) return null
+    if (!hasChildren) return null
 
     return open ? <ChevronUpIcon /> : <ChevronDownIcon />
-  }, [children, open])
+  }, [hasChildren, open])
 
   const selected = isEqual(item.path, selectedPath)
 
@@ -58,7 +57,7 @@ function MenuItem(props: TreeEditingMenuItemProps) {
         width="fill"
       />
 
-      {children && open && (
+      {hasChildren && open && (
         <Stack paddingLeft={3} marginTop={1} space={1}>
           {children.map((child) => (
             <MenuItem
@@ -80,7 +79,7 @@ interface TreeEditingMenuProps {
   selectedPath: Path | null
 }
 
-export function TreeEditingMenu(props: TreeEditingMenuProps) {
+export function TreeEditingMenu(props: TreeEditingMenuProps): JSX.Element {
   const {items, onPathSelect, selectedPath} = props
 
   return (
