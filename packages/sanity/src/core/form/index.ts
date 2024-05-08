@@ -4,6 +4,7 @@
 
 export * from './components'
 export * from './contexts/FormValue'
+export * from './contexts/GetFormValue'
 export * from './field'
 export * from './FormBuilderContext'
 export * from './hooks/useDidUpdate'
