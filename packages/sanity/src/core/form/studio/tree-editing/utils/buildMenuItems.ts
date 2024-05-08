@@ -3,10 +3,8 @@ import {
   type ArraySchemaType,
   getValueAtPath,
   isArraySchemaType,
-  type ObjectFieldType,
   type ObjectSchemaType,
   type Path,
-  type SchemaType,
 } from 'sanity'
 
 import {type TreeEditingMenuItem} from '../types'
@@ -26,47 +24,52 @@ export function buildTreeMenuItems(props: BuildTreeMenuItemsProps): TreeEditingM
 
   if (!path.length) return EMPTY_ARRAY
 
-  let previousSchema: ArraySchemaType<SchemaType> | ObjectFieldType<SchemaType> | null = null
+  const rootPath = [path[0]]
+  const rootField = getSchemaField(schemaType, toString(rootPath))?.type as ArraySchemaType
+  const isArrayField = isArraySchemaType(rootField)
+  const value = getValueAtPath(documentValue, rootPath) as Array<Record<string, unknown>>
 
-  path.forEach((seg, index) => {
-    const currentPath = path.slice(0, index + 1)
-    const previousPath = path.slice(0, index)
+  if (!isArrayField) return EMPTY_ARRAY
 
-    const field = getSchemaField(schemaType, toString(currentPath))
-    const isKeySegment = seg.hasOwnProperty('_key')
+  value.forEach((item) => {
+    const itemPath = [...rootPath, {_key: item._key}] as Path
+    const itemType = item?._type as string // _type: "animal"
 
-    if (field?.type) {
-      previousSchema = field?.type
-    }
+    const itemSchemaField = rootField?.of?.find(
+      (type) => type.name === itemType,
+    ) as ObjectSchemaType
 
-    if (isKeySegment && isArraySchemaType(previousSchema)) {
-      // Get the value of the array field in the document value
-      const arrayValue = getValueAtPath(documentValue, previousPath) as any[]
+    const previewTitleKey = itemSchemaField?.preview?.select?.title
 
-      for (const [_index, item] of arrayValue.entries()) {
-        // Get the type of the array item
-        const itemType = item?._type
+    const title = previewTitleKey ? item?.[previewTitleKey] : itemType
 
-        // Find the schema field for the array item
-        const itemSchemaField = previousSchema?.of?.find(
-          (type) => type.name === itemType,
-        ) as ObjectSchemaType
+    const childrenFields = itemSchemaField?.fields
 
-        // Get the preview title key for the array item
-        const previewTitleKey = itemSchemaField.preview?.select?.title
+    const children = childrenFields
+      // .filter((f) => isArraySchemaType(f.type) || isObjectSchemaType(f.type))
+      .map((childField) => {
+        const childPath = [...itemPath, childField.name] as Path
+        const childValue = getValueAtPath(item, childPath)
 
-        // Get the title preview title value for the array item
-        const title = previewTitleKey ? item[previewTitleKey] : itemType
-
-        // Construct the path for the array item using the previous path and the item key
-        const itemPath = [...previousPath, {_key: item._key}]
-
-        items.push({
-          title: title || 'Untitled',
-          path: itemPath,
+        const subChildren = buildTreeMenuItems({
+          schemaType: childField.type as ObjectSchemaType,
+          documentValue: childValue,
+          path: childPath,
         })
-      }
-    }
+
+        return {
+          title: childField.name as string,
+          path: childPath,
+          children: subChildren,
+        }
+      })
+      .filter(Boolean)
+
+    items.push({
+      title: (title || 'Untitled') as string,
+      path: itemPath as Path,
+      children,
+    })
   })
 
   return items
