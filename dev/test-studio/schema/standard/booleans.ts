@@ -20,10 +20,22 @@ export default defineType({
       title: 'Title',
     },
     {
-      name: 'switchTest',
+      name: 'switch_doesnt_exist',
       type: 'boolean',
       title: `I'm a switch`,
       description: 'Try toggling me! This is the new switch design',
+    },
+    {
+      name: 'switchTest',
+      type: 'boolean',
+      title: `true & Read only`,
+      readOnly: true,
+    },
+    {
+      name: 'switch',
+      type: 'boolean',
+      title: `false & Read only`,
+      readOnly: true,
     },
     {
       name: 'switchIndeterminate2',
@@ -41,12 +53,6 @@ export default defineType({
       options: {
         layout: 'checkbox',
       },
-    },
-    {
-      name: 'switch',
-      type: 'boolean',
-      description: 'Should be either true or false',
-      title: 'Check me?',
     },
     {
       name: 'checkbox',

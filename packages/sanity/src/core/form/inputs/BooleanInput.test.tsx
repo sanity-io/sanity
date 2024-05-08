@@ -1,5 +1,6 @@
 import {describe, expect, it} from '@jest/globals'
 import {defineField} from '@sanity/types'
+import {fireEvent, screen, waitFor} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
 import {renderBooleanInput} from '../../../../test/form/renderBooleanInput'
@@ -169,6 +170,18 @@ describe('readOnly property', () => {
     // Keyboard event
     userEvent.tab()
     expect(input).not.toHaveFocus()
+  })
+
+  it('renders a tooltip on the switch', async () => {
+    const {container} = await renderBooleanInput({
+      fieldDefinition: defs.booleanReadOnly,
+      render: (inputProps) => <BooleanInput {...inputProps} readOnly />,
+    })
+
+    const input = container.querySelector('input[id="booleanReadOnly"]')
+    fireEvent.mouseEnter(input!)
+
+    await waitFor(() => screen.getByText('Disabled'))
   })
 
   it('does not make field read-only with callback', async () => {
