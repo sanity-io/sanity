@@ -6799,8 +6799,8 @@ packages:
       - debug
     dev: false
 
-  /@sanity/types@3.41.0:
-    resolution: {integrity: sha512-sE7A8+76sBR6YsI8liiwkEdAy3GZh9JjY+dnCzJziSqK1Sl1Iobguh2G4FkSzit1oggLM2trJTkWOmaQl4witQ==}
+  /@sanity/types@3.41.1:
+    resolution: {integrity: sha512-29pRfXQ6a89ozbZFQaUI/ldHde4bl/DL634CBj0gxTMYuFY7x/wLgCsjjDnMcJsB9Eiq+8enV8LNKdChGhW0Hg==}
     dependencies:
       '@sanity/client': 6.18.0
       '@types/react': 18.3.1
@@ -6880,12 +6880,12 @@ packages:
       - debug
     dev: false
 
-  /@sanity/util@3.41.0:
-    resolution: {integrity: sha512-u3PxtlJPpZXUeVq1op49V1teV1dDkLVjL3iomyyJt/YA72WgxFIHzy9Ib/3YIET5YJsnQj2x+gFEJYxGnYbIzQ==}
+  /@sanity/util@3.41.1:
+    resolution: {integrity: sha512-rMOKJqXiJwLvGXx91SiAiBwV1pm4MelAfLOuld3wDWc4XANKSicfX2jcfLhgU3WprOM4aaOEumiA1JEnqdanaQ==}
     engines: {node: '>=18'}
     dependencies:
       '@sanity/client': 6.18.0
-      '@sanity/types': 3.41.0
+      '@sanity/types': 3.41.1
       get-random-values-esm: 1.0.2
       moment: 2.30.1
       rxjs: 7.8.1
@@ -17321,7 +17321,7 @@ packages:
       '@sanity/image-url': 1.0.2
       '@sanity/incompatible-plugin': 1.0.4(react-dom@18.3.1)(react@18.3.1)
       '@sanity/ui': 2.1.6(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.10)
-      '@sanity/util': 3.41.0
+      '@sanity/util': 3.41.1
       '@types/lodash-es': 4.17.12
       framer-motion: 11.0.8(react-dom@18.3.1)(react@18.3.1)
       lodash-es: 4.17.21
