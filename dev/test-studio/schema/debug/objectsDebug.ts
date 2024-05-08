@@ -34,6 +34,30 @@ const animal = defineField({
               type: 'string',
               title: 'Friend name',
             },
+            {
+              name: 'age',
+              type: 'number',
+              title: 'Friend age',
+            },
+            {
+              name: 'properties',
+              type: 'array',
+              title: 'Friend properties',
+              of: [
+                {
+                  type: 'object',
+                  name: 'property',
+                  title: 'Property',
+                  fields: [
+                    {
+                      type: 'string',
+                      name: 'title',
+                      title: 'Title',
+                    },
+                  ],
+                },
+              ],
+            },
           ],
         },
       ],
