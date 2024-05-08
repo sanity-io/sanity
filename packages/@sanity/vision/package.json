@@ -74,7 +74,7 @@
     "@repo/package.config": "workspace:*",
     "@sanity/block-tools": "workspace:*",
     "@sanity/cli": "workspace:*",
-    "@sanity/client": "^6.17.2",
+    "@sanity/client": "^6.18.0",
     "@sanity/codegen": "workspace:*",
     "@sanity/diff": "workspace:*",
     "@sanity/migrate": "workspace:*",
