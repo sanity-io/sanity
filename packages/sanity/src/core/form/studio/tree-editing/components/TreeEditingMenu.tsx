@@ -26,7 +26,7 @@ function MenuItem(props: TreeEditingMenuItemProps) {
   const {item, onPathSelect, selectedPath} = props
   const {children, title} = item
   const hasChildren = children && children.length > 0
-
+  const selected = isEqual(selectedPath, item.path)
   const [open, setOpen] = useState<boolean>(hasOpenChild(item, selectedPath))
 
   const handleClick = useCallback(() => {
@@ -41,8 +41,6 @@ function MenuItem(props: TreeEditingMenuItemProps) {
     return open ? <ChevronUpIcon /> : <ChevronDownIcon />
   }, [hasChildren, open])
 
-  const selected = isEqual(item.path, selectedPath)
-
   return (
     <Stack key={title} space={1}>
       <Button
@@ -53,11 +51,11 @@ function MenuItem(props: TreeEditingMenuItemProps) {
         onClick={handleClick}
         padding={2}
         selected={selected}
-        text={title}
+        text={item.title}
         width="fill"
       />
 
-      {hasChildren && open && (
+      {open && hasChildren && (
         <Stack paddingLeft={3} marginTop={1} space={1}>
           {children.map((child) => (
             <MenuItem
