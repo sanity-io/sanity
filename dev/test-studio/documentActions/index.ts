@@ -6,6 +6,8 @@ import {TestCustomComponentAction} from './actions/TestCustomComponentAction'
 import {TestCustomRestoreAction} from './actions/TestCustomRestoreAction'
 import {TestModalDialogAction} from './actions/TestModalDialogAction'
 import {TestPopoverDialogAction} from './actions/TestPopoverDialogAction'
+import {CopyDocumentAction} from './actions/CopyDocumentAction'
+import {PasteDocumentAction} from './actions/PasteDocumentAction'
 
 export const resolveDocumentActions: DocumentActionsResolver = (prev, {schemaType}) => {
   if (schemaType === 'documentActionsTest') {
@@ -14,6 +16,8 @@ export const resolveDocumentActions: DocumentActionsResolver = (prev, {schemaTyp
       TestModalDialogAction,
       TestPopoverDialogAction,
       TestCustomComponentAction,
+      CopyDocumentAction,
+      PasteDocumentAction,
       ...prev,
     ].map((action) => {
       if (action.action === 'restore') {
@@ -30,5 +34,5 @@ export const resolveDocumentActions: DocumentActionsResolver = (prev, {schemaTyp
     return prev.filter(({action}) => action !== 'restore')
   }
 
-  return prev
+  return [...prev, PasteDocumentAction, CopyDocumentAction]
 }

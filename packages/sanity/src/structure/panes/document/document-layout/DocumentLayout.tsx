@@ -15,6 +15,7 @@ import {
   FieldActionsProvider,
   FieldActionsResolver,
   useZIndex,
+  GetFormValueProvider,
 } from 'sanity'
 import {type Path} from 'sanity-diff-patch'
 import {styled} from 'styled-components'
@@ -160,7 +161,7 @@ export function DocumentLayout() {
   }
 
   return (
-    <>
+    <GetFormValueProvider value={value}>
       {inspectors.length > 0 && (
         <DocumentInspectorMenuItemsResolver
           documentId={documentId}
@@ -230,6 +231,6 @@ export function DocumentLayout() {
           <DocumentOperationResults />
         </DocumentActionShortcuts>
       </FieldActionsProvider>
-    </>
+    </GetFormValueProvider>
   )
 }
