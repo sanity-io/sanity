@@ -17,9 +17,15 @@ test(`unpublished documents can be deleted`, async ({page, createDraftDocument})
 test(`published documents can be deleted`, async ({page, createDraftDocument}) => {
   await createDraftDocument('/test/content/author')
   await page.getByTestId('field-name').getByTestId('string-input').fill(name)
+  const paneFooter = page.getByTestId('pane-footer-document-status')
 
+  // `.fill` and `.click` can cause the draft creation and publish to happen at the same exact time.
+  // We are waiting for 1s to make sure the draft actually gets created and click action is not too eager
+  await page.waitForTimeout(1000)
+
+  // Wait for the document to be published.
   await page.getByTestId('action-Publish').click()
-  await expect(page.getByText('was published')).toBeVisible()
+  expect(await paneFooter.textContent()).toMatch(/published/i)
 
   await page.getByTestId('action-menu-button').click()
   await page.getByTestId('action-Delete').click()
