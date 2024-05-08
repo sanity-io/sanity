@@ -106,6 +106,18 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | 
                 </Code>
               </Card>
             </Flex>
+
+            <Flex direction="column" gap={3} marginTop={4}>
+              <Text size={1} weight="medium">
+                Focus path:
+              </Text>
+
+              <Card padding={2} tone="transparent" shadow={1}>
+                <Code size={1} language="json">
+                  {JSON.stringify(focusPath)}
+                </Code>
+              </Card>
+            </Flex>
           </Card>
         )}
 
