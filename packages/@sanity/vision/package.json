@@ -66,6 +66,7 @@
     "@sanity/ui": "^2.1.6",
     "@uiw/react-codemirror": "^4.11.4",
     "is-hotkey-esm": "^1.0.0",
+    "json-2-csv": "^5.5.1",
     "json5": "^2.2.3",
     "lodash": "^4.17.21",
     "quick-lru": "^5.1.1"
