@@ -3,6 +3,7 @@ import {
   type ArraySchemaType,
   getValueAtPath,
   isArraySchemaType,
+  isPrimitiveSchemaType,
   type ObjectSchemaType,
   type Path,
 } from 'sanity'
@@ -11,8 +12,6 @@ import {type TreeEditingMenuItem} from '../types'
 import {getSchemaField} from './getSchemaField'
 
 const EMPTY_ARRAY: [] = []
-
-const PRIMITIVE_TYPES: string[] = ['string', 'number', 'text', 'boolean']
 
 export const EMPTY_TREE_STATE: TreeEditingState = {
   menuItems: EMPTY_ARRAY,
@@ -72,7 +71,7 @@ export function buildTreeMenuItems(props: BuildTreeMenuItemsProps): TreeEditingS
         const childValue = getValueAtPath(item, childPath)
 
         const isSelected = toString(childPath) === toString(focusPath)
-        const isPrimitive = PRIMITIVE_TYPES.includes(childField.type.jsonType)
+        const isPrimitive = isPrimitiveSchemaType(childField.type)
 
         if (isSelected) {
           const nextPath = isPrimitive ? childPath.slice(0, childPath.length - 1) : childPath
@@ -96,7 +95,7 @@ export function buildTreeMenuItems(props: BuildTreeMenuItemsProps): TreeEditingS
       })
 
       const isSelected = toString(itemPath) === toString(focusPath)
-      const isPrimitive = PRIMITIVE_TYPES.includes(itemSchemaField.type?.jsonType || '')
+      const isPrimitive = isPrimitiveSchemaType(itemSchemaField.type)
 
       if (isSelected) {
         const nextPath = isPrimitive ? itemPath.slice(0, itemPath.length - 1) : itemPath
