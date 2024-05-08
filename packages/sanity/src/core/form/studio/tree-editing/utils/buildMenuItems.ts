@@ -12,65 +12,117 @@ import {getSchemaField} from './getSchemaField'
 
 const EMPTY_ARRAY: [] = []
 
-interface BuildTreeMenuItemsProps {
-  schemaType: ObjectSchemaType
-  documentValue: unknown
-  path: Path
+const PRIMITIVE_TYPES: string[] = ['string', 'number', 'text', 'boolean']
+
+export const EMPTY_TREE_STATE: TreeEditingState = {
+  menuItems: EMPTY_ARRAY,
+  relativePath: EMPTY_ARRAY,
+  breadcrumbs: EMPTY_ARRAY,
 }
 
-export function buildTreeMenuItems(props: BuildTreeMenuItemsProps): TreeEditingMenuItem[] {
-  const {schemaType, documentValue, path} = props
-  const items: TreeEditingMenuItem[] = []
+export interface BuildTreeMenuItemsProps {
+  schemaType: ObjectSchemaType
+  documentValue: unknown
+  focusPath: Path
+}
 
-  if (!path.length) return EMPTY_ARRAY
+export interface TreeEditingState {
+  menuItems: TreeEditingMenuItem[]
+  relativePath: Path
+  breadcrumbs: string[]
+}
 
-  const rootPath = [path[0]]
-  const rootField = getSchemaField(schemaType, toString(rootPath))?.type as ArraySchemaType
-  const isArrayField = isArraySchemaType(rootField)
-  const value = getValueAtPath(documentValue, rootPath) as Array<Record<string, unknown>>
+let relativePath: Path = []
 
-  if (!isArrayField) return EMPTY_ARRAY
+export function buildTreeMenuItems(props: BuildTreeMenuItemsProps): TreeEditingState {
+  const menuItems: TreeEditingMenuItem[] = []
+  const rootPath = [props.focusPath[0]]
+  const value = getValueAtPath(props.documentValue, rootPath) as Array<Record<string, unknown>>
 
-  value.forEach((item) => {
-    const itemPath = [...rootPath, {_key: item._key}] as Path
-    const itemType = item?._type as string // _type: "animal"
+  if (props.focusPath.length === 0) {
+    return EMPTY_TREE_STATE
+  }
 
-    const itemSchemaField = rootField?.of?.find(
-      (type) => type.name === itemType,
-    ) as ObjectSchemaType
+  recursive(props)
 
-    const previewTitleKey = itemSchemaField?.preview?.select?.title
+  function recursive(recursiveProps: BuildTreeMenuItemsProps) {
+    const {schemaType, focusPath} = recursiveProps
 
-    const title = previewTitleKey ? item?.[previewTitleKey] : itemType
+    const rootField = getSchemaField(schemaType, toString(rootPath))?.type as ArraySchemaType
+    const isArrayField = isArraySchemaType(rootField)
 
-    const childrenFields = itemSchemaField?.fields
+    if (!isArrayField) return EMPTY_TREE_STATE
 
-    const children = childrenFields
-      // .filter((f) => isArraySchemaType(f.type) || isObjectSchemaType(f.type))
-      .map((childField) => {
+    value.forEach((item) => {
+      const itemPath = [...rootPath, {_key: item._key}] as Path
+      const itemType = item?._type as string
+
+      const itemSchemaField = rootField?.of?.find(
+        (type) => type.name === itemType,
+      ) as ObjectSchemaType
+
+      const previewTitleKey = itemSchemaField?.preview?.select?.title
+      const title = previewTitleKey ? item?.[previewTitleKey] : itemType
+
+      const childrenFields = itemSchemaField?.fields
+      const childrenMenuItems: TreeEditingMenuItem[] = []
+
+      childrenFields.forEach((childField) => {
         const childPath = [...itemPath, childField.name] as Path
         const childValue = getValueAtPath(item, childPath)
 
-        const subChildren = buildTreeMenuItems({
-          schemaType: childField.type as ObjectSchemaType,
+        const isSelected = toString(childPath) === toString(focusPath)
+        const isPrimitive = PRIMITIVE_TYPES.includes(childField.type.jsonType)
+
+        if (isSelected) {
+          const nextPath = isPrimitive ? childPath.slice(0, childPath.length - 1) : childPath
+
+          relativePath = nextPath
+        }
+
+        const childState = recursive({
+          schemaType: childField as ObjectSchemaType,
           documentValue: childValue,
-          path: childPath,
+          focusPath: childPath,
         })
 
-        return {
-          title: childField.name as string,
-          path: childPath,
-          children: subChildren,
+        if (!isPrimitive) {
+          childrenMenuItems.push({
+            title: childField.name as string,
+            path: childPath,
+            children: childState?.menuItems || EMPTY_ARRAY,
+          })
         }
       })
-      .filter(Boolean)
 
-    items.push({
-      title: (title || 'Untitled') as string,
-      path: itemPath as Path,
-      children,
+      const isSelected = toString(itemPath) === toString(focusPath)
+      const isPrimitive = PRIMITIVE_TYPES.includes(itemSchemaField.type?.jsonType || '')
+
+      if (isSelected) {
+        const nextPath = isPrimitive ? itemPath.slice(0, itemPath.length - 1) : itemPath
+
+        relativePath = nextPath
+      }
+
+      if (!isPrimitive) {
+        menuItems.push({
+          title: (title || 'Untitled') as string,
+          path: itemPath as Path,
+          children: childrenMenuItems,
+        })
+      }
     })
-  })
 
-  return items
+    return {
+      menuItems,
+      relativePath,
+      breadcrumbs: [],
+    }
+  }
+
+  return {
+    menuItems,
+    relativePath,
+    breadcrumbs: [],
+  }
 }
