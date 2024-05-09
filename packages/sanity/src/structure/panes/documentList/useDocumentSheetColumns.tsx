@@ -1,4 +1,4 @@
-import {Box, Flex, Text, TextInput} from '@sanity/ui'
+import {Flex, Text, TextInput} from '@sanity/ui'
 import {createColumnHelper} from '@tanstack/react-table'
 import {useMemo, useState} from 'react'
 import {useMemoObservable} from 'react-rx'
@@ -8,6 +8,7 @@ import {
   getPreviewStateObservable,
   type SanityDocument,
   type SchemaType,
+  type SchemaTypeDefinition,
   useDocumentPreviewStore,
 } from 'sanity'
 
@@ -20,7 +21,7 @@ const PreviewCell = (props: {
     original: SanityDocument
   }
 }) => {
-  console.log('props', props)
+  // console.log('props', props)
   const {documentPreviewStore, row, schemaType} = props
   const title = 'Document title'
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -57,9 +58,40 @@ const TableTextInput = (props: any) => {
     <TextInput value={value as string} onChange={(e) => setValue(e.target.value)} onBlur={onBlur} />
   )
 }
+
+const getColsFromSchemaType = (schemaType: SchemaType, isIterableOnObject: boolean) => {
+  return schemaType.fields.reduce((cols, field) => {
+    const {type, name} = field
+    console.log(type.name)
+    // if (type.name === 'boolean') {
+    //   console.log({type})
+    // }
+    if (SUPPORTED_FIELDS.includes(type.name)) {
+      const nextCol = columnHelper.accessor(field.name, {
+        header: field.type.title,
+        cell: (info) => {
+          console.log({info}, info.getValue())
+          return <TableTextInput {...info} />
+        },
+      })
+
+      return [...cols, nextCol]
+    }
+
+    if (type.name === 'object' && isIterableOnObject) {
+      console.log('go deeper', name)
+      return [
+        ...cols,
+        columnHelper.group({header: name, columns: getColsFromSchemaType(type, false)}),
+      ]
+    }
+
+    return cols
+  }, [])
+}
 const columnHelper = createColumnHelper<SanityDocument>()
-const SUPPORTED_FIELDS = ['string', 'number']
-export function useDocumentSheetColumns(schemaType?: SchemaType) {
+const SUPPORTED_FIELDS = ['string', 'number', 'boolean']
+export function useDocumentSheetColumns(schemaType?: SchemaTypeDefinition) {
   const documentPreviewStore = useDocumentPreviewStore()
   console.log('TYPE', schemaType)
 
@@ -67,7 +99,7 @@ export function useDocumentSheetColumns(schemaType?: SchemaType) {
     if (!schemaType) {
       return []
     }
-    const cols = [
+    return [
       {
         header: 'Preview',
         cell: (info) => {
@@ -86,27 +118,8 @@ export function useDocumentSheetColumns(schemaType?: SchemaType) {
           return <Text size={1}>{info.getValue()}</Text>
         },
       }),
+      ...getColsFromSchemaType(schemaType, true),
     ]
-    for (const field of schemaType.fields) {
-      if (!SUPPORTED_FIELDS.includes(field.type.name)) {
-        continue
-      }
-
-      cols.push(
-        columnHelper.accessor(field.name, {
-          header: field.type.title,
-          cell: (info) => {
-            const renderValue = info.getValue()
-            return <TableTextInput {...info} />
-            if (typeof renderValue === 'string' || typeof renderValue === 'number') {
-              return <Text size={0}>{renderValue}</Text>
-            }
-            return <Text size={0}>{JSON.stringify(info.getValue())}</Text>
-          },
-        }),
-      )
-    }
-    return cols
   }, [documentPreviewStore, schemaType])
 
   return columns

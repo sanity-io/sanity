@@ -8,7 +8,16 @@ import {
 } from '@tanstack/react-table'
 import {useVirtualizer} from '@tanstack/react-virtual'
 import {useMemo, useRef} from 'react'
-import {getPublishedId, LoadingBlock, useDocumentStore, useSchema, useUnique} from 'sanity'
+import {useMemoObservable} from 'react-rx'
+import {combineLatest} from 'rxjs'
+import {
+  type EditStateFor,
+  getPublishedId,
+  LoadingBlock,
+  useDocumentStore,
+  useSchema,
+  useUnique,
+} from 'sanity'
 import {styled} from 'styled-components'
 
 import {type BaseStructureToolPaneProps} from '../types'
@@ -19,8 +28,6 @@ import {type SortOrder} from './types'
 import {useDocumentList} from './useDocumentList'
 import {useDocumentSheetColumns} from './useDocumentSheetColumns'
 import {useDocumentSheetListStore} from './useDocumentSheetListStore'
-import {useMemoObservable} from 'react-rx'
-import {combineLatest} from 'rxjs'
 
 type DocumentSheetListPaneProps = BaseStructureToolPaneProps<'documentList'> & {
   sortOrder?: SortOrder
@@ -69,11 +76,12 @@ declare module '@tanstack/react-table' {
 }
 
 export function DocumentSheetListPane(props: DocumentSheetListPaneProps) {
-  console.log('props', props)
+  // console.log('props', props)
   const typeName = props.pane.schemaTypeName
   const sortOrderRaw = props.sortOrder
   const schema = useSchema()
   const schemaType = schema.get(typeName)
+  console.log({schemaType: schemaType.fields})
   const columns = useDocumentSheetColumns(schemaType)
   const sortWithOrderingFn =
     typeName && sortOrderRaw
@@ -89,6 +97,7 @@ export function DocumentSheetListPane(props: DocumentSheetListPaneProps) {
     params: props.pane.options.params,
     apiVersion: props.pane.options.apiVersion,
   })
+  console.log(data.length)
   const {
     error,
     hasMaxItems,
@@ -106,9 +115,10 @@ export function DocumentSheetListPane(props: DocumentSheetListPaneProps) {
     sortOrder,
   })
   const list = useMemo(() => items.map((i) => getPublishedId(i._id)), [])
-  console.log('DATA', data)
+  // console.log('DATA', data)
   const edits = useEditStateList(list, typeName)
   console.log('EDITS', edits)
+  console.log(data.slice(0, 1))
   const table = useReactTable({
     data,
     columns,
@@ -139,6 +149,7 @@ export function DocumentSheetListPane(props: DocumentSheetListPaneProps) {
     // eslint-disable-next-line i18next/no-literal-string
     return <div>No items</div>
   }
+
   return (
     <>
       ({rows.length} rows)
@@ -192,20 +203,27 @@ export function DocumentSheetListPane(props: DocumentSheetListPaneProps) {
                       style={{
                         display: 'flex',
                         width: header.getSize(),
+                        padding: 'unset',
+                        borderRight: 'unset',
+                        overflow: 'hidden',
                       }}
                     >
-                      <div
-                        {...{
-                          className: header.column.getCanSort() ? 'cursor-pointer select-none' : '',
-                          onClick: header.column.getToggleSortingHandler(),
-                        }}
-                      >
-                        {flexRender(header.column.columnDef.header, header.getContext())}
-                        {{
-                          asc: ' 🔼',
-                          desc: ' 🔽',
-                        }[header.column.getIsSorted() as string] ?? null}
-                      </div>
+                      {headerGroup.depth > 0 && !header.column.parent ? null : (
+                        <div
+                          {...{
+                            className: header.column.getCanSort()
+                              ? 'cursor-pointer select-none'
+                              : '',
+                            onClick: header.column.getToggleSortingHandler(),
+                          }}
+                        >
+                          {flexRender(header.column.columnDef.header, header.getContext())}
+                          {{
+                            asc: ' 🔼',
+                            desc: ' 🔽',
+                          }[header.column.getIsSorted() as string] ?? null}
+                        </div>
+                      )}
                     </th>
                   )
                 })}
@@ -229,8 +247,10 @@ export function DocumentSheetListPane(props: DocumentSheetListPaneProps) {
                   style={{
                     display: 'flex',
                     position: 'absolute',
+                    padding: 'unset',
+                    borderRight: 'unset',
                     transform: `translateY(${virtualRow.start}px)`, //this should always be a `style` as it changes on scroll
-                    width: '100%',
+                    // width: '100%',
                   }}
                 >
                   {row.getVisibleCells().map((cell) => {
@@ -240,6 +260,9 @@ export function DocumentSheetListPane(props: DocumentSheetListPaneProps) {
                         style={{
                           display: 'flex',
                           overflow: 'hidden',
+                          padding: 'unset',
+                          borderRight: 'unset',
+
                           width: cell.column.getSize(),
                         }}
                       >
