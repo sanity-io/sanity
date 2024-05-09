@@ -1,7 +1,7 @@
 import {describe, expect, it, jest} from '@jest/globals'
 import {render, screen} from '@testing-library/react'
 import {defineConfig} from 'sanity'
-import {type DocumentListPaneNode} from 'sanity/structure'
+import {type DocumentListPaneNode, type StructureToolContextValue} from 'sanity/structure'
 
 import {createTestProvider} from '../../../../../test/testUtils/TestProvider'
 import {structureUsEnglishLocaleBundle} from '../../../i18n'
@@ -12,9 +12,9 @@ jest.mock('../../../useStructureToolSetting', () => ({
   useStructureToolSetting: jest.fn(),
 }))
 
-// jest.mock('../DocumentListPane', () => ({
-//   DocumentListPane: () => <div data-testid="list" />,
-// }))
+jest.mock('../../../useStructureTool', () => ({
+  useStructureTool: jest.fn().mockReturnValue({features: {}} as StructureToolContextValue),
+}))
 jest.mock('../../../components/pane/usePaneLayout', () => ({
   usePaneLayout: jest.fn().mockReturnValue({panes: [], mount: jest.fn()}),
 }))

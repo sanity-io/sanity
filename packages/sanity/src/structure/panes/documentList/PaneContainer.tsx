@@ -10,7 +10,7 @@ import {
 } from 'sanity'
 import shallowEquals from 'shallow-equals'
 
-import {Pane, PaneHeader} from '../../components/pane'
+import {Pane} from '../../components/pane'
 import {_DEBUG} from '../../constants'
 import {type PaneMenuItem} from '../../types'
 import {useStructureToolSetting} from '../../useStructureToolSetting'
@@ -19,6 +19,7 @@ import {DEFAULT_ORDERING, EMPTY_RECORD} from './constants'
 import {DocumentListPane} from './DocumentListPane'
 import {DocumentSheetListPane} from './DocumentSheetListPane'
 import {findStaticTypesInFilter} from './helpers'
+import {PaneHeader} from './PaneHeader'
 import {type SortOrder} from './types'
 
 const addSelectedStateToMenuItems = (options: {
