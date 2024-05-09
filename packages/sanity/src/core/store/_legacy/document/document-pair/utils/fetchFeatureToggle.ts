@@ -4,7 +4,7 @@ import {type SanityClient} from '@sanity/client'
 import {map, type Observable, of, ReplaySubject, timer} from 'rxjs'
 import {catchError, share} from 'rxjs/operators'
 
-interface FeatureToggle {
+interface ActionsFeatureToggle {
   actions: boolean
 }
 
@@ -19,7 +19,7 @@ export const fetchFeatureToggle = (defaultClient: SanityClient): Observable<bool
       withCredentials: true,
     })
     .pipe(
-      map((res: FeatureToggle) => res.actions),
+      map((res: ActionsFeatureToggle) => res.actions),
       catchError(() =>
         // If we fail to fetch the feature toggle, we'll just assume it's disabled and fallback to legacy mutations
         of(false),

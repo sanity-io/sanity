@@ -37,7 +37,7 @@ beforeEach(() => {
 
 describe('checkoutPair -- local actions', () => {
   test('patch', async () => {
-    const {draft, published} = checkoutPair(client as any as SanityClient, idPair, false)
+    const {draft, published} = checkoutPair(client as any as SanityClient, idPair, of(false))
     const combined = merge(draft.events, published.events)
     const sub = combined.subscribe()
     await new Promise((resolve) => setTimeout(resolve, 0))
@@ -62,7 +62,7 @@ describe('checkoutPair -- local actions', () => {
   })
 
   test('createIfNotExists', async () => {
-    const {draft, published} = checkoutPair(client as any as SanityClient, idPair, false)
+    const {draft, published} = checkoutPair(client as any as SanityClient, idPair, of(false))
     const combined = merge(draft.events, published.events)
     const sub = combined.subscribe()
     await new Promise((resolve) => setTimeout(resolve, 0))
@@ -104,7 +104,7 @@ describe('checkoutPair -- local actions', () => {
   })
 
   test('create', async () => {
-    const {draft, published} = checkoutPair(client as any as SanityClient, idPair, false)
+    const {draft, published} = checkoutPair(client as any as SanityClient, idPair, of(false))
     const combined = merge(draft.events, published.events)
     const sub = combined.subscribe()
     await new Promise((resolve) => setTimeout(resolve, 0))
@@ -146,7 +146,7 @@ describe('checkoutPair -- local actions', () => {
   })
 
   test('createOrReplace', async () => {
-    const {draft, published} = checkoutPair(client as any as SanityClient, idPair, false)
+    const {draft, published} = checkoutPair(client as any as SanityClient, idPair, of(false))
     const combined = merge(draft.events, published.events)
     const sub = combined.subscribe()
     await new Promise((resolve) => setTimeout(resolve, 0))
@@ -189,7 +189,7 @@ describe('checkoutPair -- local actions', () => {
   })
 
   test('delete', async () => {
-    const {draft, published} = checkoutPair(client as any as SanityClient, idPair, false)
+    const {draft, published} = checkoutPair(client as any as SanityClient, idPair, of(false))
     const combined = merge(draft.events, published.events)
     const sub = combined.subscribe()
     await new Promise((resolve) => setTimeout(resolve, 0))
@@ -223,7 +223,11 @@ describe('checkoutPair -- local actions', () => {
 
 describe('checkoutPair -- server actions', () => {
   test('patch', async () => {
-    const {draft, published} = checkoutPair(clientWithConfig as any as SanityClient, idPair, true)
+    const {draft, published} = checkoutPair(
+      clientWithConfig as any as SanityClient,
+      idPair,
+      of(true),
+    )
     const combined = merge(draft.events, published.events)
     const sub = combined.subscribe()
     await new Promise((resolve) => setTimeout(resolve, 0))
@@ -257,7 +261,11 @@ describe('checkoutPair -- server actions', () => {
   })
 
   test('published patch uses mutation endpoint', async () => {
-    const {draft, published} = checkoutPair(clientWithConfig as any as SanityClient, idPair, true)
+    const {draft, published} = checkoutPair(
+      clientWithConfig as any as SanityClient,
+      idPair,
+      of(true),
+    )
     const combined = merge(draft.events, published.events)
     const sub = combined.subscribe()
     await new Promise((resolve) => setTimeout(resolve, 0))
@@ -286,7 +294,11 @@ describe('checkoutPair -- server actions', () => {
   })
 
   test('create', async () => {
-    const {draft, published} = checkoutPair(clientWithConfig as any as SanityClient, idPair, true)
+    const {draft, published} = checkoutPair(
+      clientWithConfig as any as SanityClient,
+      idPair,
+      of(true),
+    )
     const combined = merge(draft.events, published.events)
     const sub = combined.subscribe()
     await new Promise((resolve) => setTimeout(resolve, 0))
@@ -327,7 +339,11 @@ describe('checkoutPair -- server actions', () => {
   })
 
   test('createIfNotExists', async () => {
-    const {draft, published} = checkoutPair(clientWithConfig as any as SanityClient, idPair, true)
+    const {draft, published} = checkoutPair(
+      clientWithConfig as any as SanityClient,
+      idPair,
+      of(true),
+    )
     const combined = merge(draft.events, published.events)
     const sub = combined.subscribe()
     await new Promise((resolve) => setTimeout(resolve, 0))
