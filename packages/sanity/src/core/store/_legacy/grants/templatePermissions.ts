@@ -3,7 +3,7 @@ import {combineLatest, from, type Observable, of} from 'rxjs'
 import {map, switchMap} from 'rxjs/operators'
 
 import {useSchema, useTemplates} from '../../../hooks'
-import {type InitialValueTemplateItem, resolveInitialValue, type Template} from '../../../templates'
+import {type InitialValueTemplateItem, type Template} from '../../../templates'
 import {
   createHookFromObservableFactory,
   getDraftId,
@@ -16,12 +16,9 @@ import {getDocumentValuePermissions} from './documentValuePermissions'
 import {type GrantsStore, type PermissionCheckResult} from './types'
 
 /** @internal */
-export interface TemplatePermissionsResult<TInitialValue = Record<string, unknown>>
-  extends PermissionCheckResult,
-    InitialValueTemplateItem {
+export interface TemplatePermissionsResult extends PermissionCheckResult, InitialValueTemplateItem {
   granted: boolean
   reason: string
-  resolvedInitialValue: TInitialValue
   subtitle?: string
   template: Template
 }
@@ -55,10 +52,7 @@ export function getTemplatePermissions({
   templateItems,
   templates,
   schema,
-  context,
-}: TemplatePermissionsOptions): Observable<
-  Array<TemplatePermissionsResult<Record<string, unknown>>>
-> {
+}: TemplatePermissionsOptions): Observable<Array<TemplatePermissionsResult>> {
   if (!templateItems?.length) return of([])
 
   return combineLatest(
@@ -71,18 +65,14 @@ export function getTemplatePermissions({
           throw new Error(`template not found: "${item.templateId}"`)
         }
 
-        const resolvedInitialValue = await resolveInitialValue(
-          schema,
+        return {
           template,
-          item.parameters,
-          context,
-        )
-
-        return {template, item, resolvedInitialValue}
+          item,
+        }
       })
       .map((promise) =>
         from(promise).pipe(
-          switchMap(({item, resolvedInitialValue, template}) => {
+          switchMap(({item, template}) => {
             const schemaType = schema.get(template.schemaType)
 
             if (!schemaType) {
@@ -97,7 +87,6 @@ export function getTemplatePermissions({
               permission: 'create',
               document: {
                 _id: liveEdit ? getPublishedId(initialDocumentId) : getDraftId(initialDocumentId),
-                ...resolvedInitialValue,
               },
             }).pipe(
               map(({granted, reason}) => {
@@ -107,7 +96,6 @@ export function getTemplatePermissions({
                   i18n: item.i18n || template.i18n,
                   granted,
                   reason,
-                  resolvedInitialValue,
                   template,
                   title,
                   subtitle: schemaType.title === title ? undefined : schemaType.title,
