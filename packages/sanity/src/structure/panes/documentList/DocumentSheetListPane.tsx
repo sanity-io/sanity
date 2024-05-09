@@ -48,17 +48,11 @@ export function DocumentSheetListPane(props: DocumentSheetListPaneProps) {
     throw new Error(`Schema type "${typeName}" not found`)
   }
   const columns = useDocumentSheetColumns(schemaType)
-  const {
-    data: dataRaw,
-    isLoading,
-    onListChange,
-    isLazyLoading,
-  } = useDocumentSheetList({
+  const {data, isLoading, onListChange, isLazyLoading} = useDocumentSheetList({
     schemaType,
     sortOrder: sortOrderRaw,
     paneOptions: props.pane.options,
   })
-  const data = dataRaw.slice(0, 1)
   const table = useReactTable({
     data,
     columns,
