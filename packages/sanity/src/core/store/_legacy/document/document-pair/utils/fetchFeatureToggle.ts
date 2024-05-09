@@ -1,5 +1,3 @@
-//this is an example function -- we're just calling a document
-
 import {type SanityClient} from '@sanity/client'
 import {map, type Observable, of, ReplaySubject, timer} from 'rxjs'
 import {catchError, share} from 'rxjs/operators'
