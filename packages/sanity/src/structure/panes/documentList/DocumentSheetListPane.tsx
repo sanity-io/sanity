@@ -1,40 +1,17 @@
-import {type SanityDocument} from '@sanity/migrate'
-import {
-  flexRender,
-  getCoreRowModel,
-  type Row,
-  type RowData,
-  useReactTable,
-} from '@tanstack/react-table'
-import {useVirtualizer} from '@tanstack/react-virtual'
-import {useMemo, useRef} from 'react'
-import {useMemoObservable} from 'react-rx'
-import {combineLatest} from 'rxjs'
-import {getPublishedId, LoadingBlock, useDocumentStore, useSchema, useUnique} from 'sanity'
+import {Box, Skeleton, Text} from '@sanity/ui'
+import {flexRender, getCoreRowModel, type Row, useReactTable} from '@tanstack/react-table'
+import {useVirtualizer, type VirtualItem} from '@tanstack/react-virtual'
+import {useCallback, useRef} from 'react'
+import {LoadingBlock, type SanityDocument, useSchema} from 'sanity'
 import {styled} from 'styled-components'
 
 import {type BaseStructureToolPaneProps} from '../types'
-import {EMPTY_RECORD} from './constants'
-import {applyOrderingFunctions} from './helpers'
-import {useShallowUnique} from './PaneContainer'
 import {type SortOrder} from './types'
-import {useDocumentList} from './useDocumentList'
 import {useDocumentSheetColumns} from './useDocumentSheetColumns'
-import {useDocumentSheetListStore} from './useDocumentSheetListStore'
+import {useDocumentSheetList} from './useDocumentSheetList'
 
 type DocumentSheetListPaneProps = BaseStructureToolPaneProps<'documentList'> & {
   sortOrder?: SortOrder
-}
-
-function useEditStateList(publishedDocIds: string[], docTypeName: string): EditStateFor[] {
-  const documentStore = useDocumentStore()
-  return useMemoObservable(() => {
-    return combineLatest(
-      publishedDocIds.map((publishedDocId) =>
-        documentStore.pair.editState(publishedDocId, docTypeName),
-      ),
-    )
-  }, [documentStore.pair, publishedDocIds, docTypeName]) as EditStateFor[]
 }
 
 const Table = styled.table`
@@ -62,53 +39,21 @@ const Table = styled.table`
   }
 `
 
-declare module '@tanstack/react-table' {
-  interface TableMeta<TData extends RowData> {
-    updateData: (rowIndex: number, columnId: string, value: unknown) => void
-  }
-}
-
 export function DocumentSheetListPane(props: DocumentSheetListPaneProps) {
-  console.log('props', props)
   const typeName = props.pane.schemaTypeName
   const sortOrderRaw = props.sortOrder
   const schema = useSchema()
   const schemaType = schema.get(typeName)
+  if (!schemaType) {
+    throw new Error(`Schema type "${typeName}" not found`)
+  }
   const columns = useDocumentSheetColumns(schemaType)
-  const sortWithOrderingFn =
-    typeName && sortOrderRaw
-      ? applyOrderingFunctions(sortOrderRaw, schema.get(typeName) as any)
-      : sortOrderRaw
-
-  const sortOrder = useUnique(sortWithOrderingFn)
-
-  const params = useShallowUnique(props.pane.options.params || EMPTY_RECORD)
-
-  const {data, isLoading} = useDocumentSheetListStore({
-    filter: props.pane.options.filter,
-    params: props.pane.options.params,
-    apiVersion: props.pane.options.apiVersion,
+  const {data, isLoading, onListChange, isLazyLoading} = useDocumentSheetList({
+    schemaType,
+    sortOrder: sortOrderRaw,
+    paneOptions: props.pane.options,
   })
-  const {
-    error,
-    hasMaxItems,
-    isLazyLoading,
-    isLoading: documentListLoading,
-    isSearchReady,
-    items,
-    onListChange,
-    onRetry,
-  } = useDocumentList({
-    apiVersion: props.pane.options.apiVersion,
-    filter: props.pane.options.filter,
-    params,
-    searchQuery: '',
-    sortOrder,
-  })
-  const list = useMemo(() => items.map((i) => getPublishedId(i._id)), [])
-  console.log('DATA', data)
-  const edits = useEditStateList(list, typeName)
-  console.log('EDITS', edits)
+
   const table = useReactTable({
     data,
     columns,
@@ -119,6 +64,12 @@ export function DocumentSheetListPane(props: DocumentSheetListPaneProps) {
 
   //The virtualizer needs to know the scrollable container element
   const tableContainerRef = useRef<HTMLDivElement>(null)
+
+  const handleEndReached = useCallback(() => {
+    if (isLoading || isLazyLoading) return
+
+    onListChange()
+  }, [isLazyLoading, isLoading, onListChange])
 
   const rowVirtualizer = useVirtualizer({
     count: rows.length,
@@ -132,6 +83,53 @@ export function DocumentSheetListPane(props: DocumentSheetListPaneProps) {
     overscan: 5,
   })
 
+  const renderRow = useCallback(
+    (virtualRow: VirtualItem) => {
+      const row = rows[virtualRow.index] as Row<SanityDocument>
+      const isLast = virtualRow.index === rows.length - 1
+      // If is last row, trigger the next page call
+      if (isLast) {
+        handleEndReached()
+      }
+      const Component = row.original._options.ready ? Box : Skeleton
+      return (
+        <>
+          <Component
+            animated={!row.original._options.ready}
+            as="tr"
+            paddingY={1}
+            data-index={virtualRow.index} //needed for dynamic row height measurement
+            ref={(node) => rowVirtualizer.measureElement(node)} //measure dynamic row height
+            key={row.id}
+            style={{
+              display: 'flex',
+              position: 'absolute',
+              transform: `translateY(${virtualRow.start}px)`, //this should always be a `style` as it changes on scroll
+              width: '100%',
+            }}
+          >
+            {row.getVisibleCells().map((cell) => {
+              return (
+                <td
+                  key={cell.id}
+                  style={{
+                    display: 'flex',
+                    overflow: 'hidden',
+                    width: cell.column.getSize(),
+                  }}
+                >
+                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                </td>
+              )
+            })}
+          </Component>
+          {isLast && isLazyLoading && <LoadingBlock />}
+        </>
+      )
+    },
+    [rowVirtualizer, rows, handleEndReached, isLazyLoading],
+  )
+
   if (isLoading) {
     return <LoadingBlock />
   }
@@ -140,8 +138,13 @@ export function DocumentSheetListPane(props: DocumentSheetListPaneProps) {
     return <div>No items</div>
   }
   return (
-    <>
-      ({rows.length} rows)
+    <Box paddingX={3}>
+      <Box paddingBottom={3}>
+        <Text size={0} muted>
+          {/* eslint-disable-next-line i18next/no-literal-string */}
+          {rows.length} rows
+        </Text>
+      </Box>
       <div
         ref={tableContainerRef}
         style={{
@@ -151,30 +154,6 @@ export function DocumentSheetListPane(props: DocumentSheetListPaneProps) {
         }}
       >
         <Table>
-          {/* <thead>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <th key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(header.column.columnDef.header, header.getContext())}
-                  </th>
-                ))}
-              </tr>
-            ))}
-          </thead> */}
-          {/* <tbody>
-          {table.getRowModel().rows.map((row) => (
-            <tr key={row.id} style={{whiteSpace: 'nowrap'}}>
-              {row.getVisibleCells().map((cell) => (
-                <td key={cell.id}>
-                  <Box padding={1}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</Box>
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody> */}
           <thead
             style={{
               display: 'grid',
@@ -184,7 +163,12 @@ export function DocumentSheetListPane(props: DocumentSheetListPaneProps) {
             }}
           >
             {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id} style={{display: 'flex', width: '100%'}}>
+              <Box
+                as="tr"
+                key={headerGroup.id}
+                style={{display: 'flex', width: '100%'}}
+                paddingY={1}
+              >
                 {headerGroup.headers.map((header) => {
                   return (
                     <th
@@ -194,22 +178,11 @@ export function DocumentSheetListPane(props: DocumentSheetListPaneProps) {
                         width: header.getSize(),
                       }}
                     >
-                      <div
-                        {...{
-                          className: header.column.getCanSort() ? 'cursor-pointer select-none' : '',
-                          onClick: header.column.getToggleSortingHandler(),
-                        }}
-                      >
-                        {flexRender(header.column.columnDef.header, header.getContext())}
-                        {{
-                          asc: ' 🔼',
-                          desc: ' 🔽',
-                        }[header.column.getIsSorted() as string] ?? null}
-                      </div>
+                      <div>{flexRender(header.column.columnDef.header, header.getContext())}</div>
                     </th>
                   )
                 })}
-              </tr>
+              </Box>
             ))}
           </thead>
           <tbody
@@ -219,40 +192,10 @@ export function DocumentSheetListPane(props: DocumentSheetListPaneProps) {
               position: 'relative', //needed for absolute positioning of rows
             }}
           >
-            {rowVirtualizer.getVirtualItems().map((virtualRow) => {
-              const row = rows[virtualRow.index] as Row<SanityDocument>
-              return (
-                <tr
-                  data-index={virtualRow.index} //needed for dynamic row height measurement
-                  ref={(node) => rowVirtualizer.measureElement(node)} //measure dynamic row height
-                  key={row.id}
-                  style={{
-                    display: 'flex',
-                    position: 'absolute',
-                    transform: `translateY(${virtualRow.start}px)`, //this should always be a `style` as it changes on scroll
-                    width: '100%',
-                  }}
-                >
-                  {row.getVisibleCells().map((cell) => {
-                    return (
-                      <td
-                        key={cell.id}
-                        style={{
-                          display: 'flex',
-                          overflow: 'hidden',
-                          width: cell.column.getSize(),
-                        }}
-                      >
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                      </td>
-                    )
-                  })}
-                </tr>
-              )
-            })}
+            {rowVirtualizer.getVirtualItems().map(renderRow)}
           </tbody>
         </Table>
       </div>
-    </>
+    </Box>
   )
 }
