@@ -76,6 +76,9 @@ export function getTemplatePermissions({
           template,
           item.parameters,
           context,
+          {
+            useCache: true,
+          },
         )
 
         return {template, item, resolvedInitialValue}
