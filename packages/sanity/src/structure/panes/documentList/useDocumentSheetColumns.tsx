@@ -59,30 +59,28 @@ const TableTextInput = (props: any) => {
   )
 }
 
-const getColsFromSchemaType = (schemaType: SchemaType, isIterableOnObject: boolean) => {
+const getColsFromSchemaType = (schemaType: SchemaType, parentalField: string) => {
   return schemaType.fields.reduce((cols, field) => {
     const {type, name} = field
-    console.log(type.name)
-    // if (type.name === 'boolean') {
-    //   console.log({type})
-    // }
     if (SUPPORTED_FIELDS.includes(type.name)) {
-      const nextCol = columnHelper.accessor(field.name, {
-        header: field.type.title,
-        cell: (info) => {
-          console.log({info}, info.getValue())
-          return <TableTextInput {...info} />
+      const nextCol = columnHelper.accessor(
+        parentalField ? `${parentalField}.${field.name}` : field.name,
+        {
+          header: field.type.title,
+          cell: (info) => {
+            return <TableTextInput {...info} />
+          },
         },
-      })
+      )
 
       return [...cols, nextCol]
     }
 
-    if (type.name === 'object' && isIterableOnObject) {
-      console.log('go deeper', name)
+    // if first layer nested object
+    if (type.name === 'object' && !parentalField) {
       return [
         ...cols,
-        columnHelper.group({header: name, columns: getColsFromSchemaType(type, false)}),
+        columnHelper.group({header: name, columns: getColsFromSchemaType(type, field.name)}),
       ]
     }
 
@@ -93,7 +91,7 @@ const columnHelper = createColumnHelper<SanityDocument>()
 const SUPPORTED_FIELDS = ['string', 'number', 'boolean']
 export function useDocumentSheetColumns(schemaType?: SchemaTypeDefinition) {
   const documentPreviewStore = useDocumentPreviewStore()
-  console.log('TYPE', schemaType)
+  // console.log('TYPE', schemaType)
 
   const columns = useMemo(() => {
     if (!schemaType) {
@@ -118,7 +116,7 @@ export function useDocumentSheetColumns(schemaType?: SchemaTypeDefinition) {
           return <Text size={1}>{info.getValue()}</Text>
         },
       }),
-      ...getColsFromSchemaType(schemaType, true),
+      ...getColsFromSchemaType(schemaType),
     ]
   }, [documentPreviewStore, schemaType])
 
