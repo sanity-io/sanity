@@ -83,7 +83,7 @@ export const withPlugins = <T extends Editor>(
 
   const withPlaceholderBlock = createWithPlaceholderBlock()
 
-  const withInsertBreak = createWithInsertBreak()
+  const withInsertBreak = createWithInsertBreak(schemaTypes)
 
   const withUtils = createWithUtils({keyGenerator, schemaTypes, portableTextEditor})
   const withPortableTextSelections = createWithPortableTextSelections(change$, schemaTypes)
