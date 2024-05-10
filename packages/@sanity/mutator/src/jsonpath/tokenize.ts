@@ -113,6 +113,19 @@ class Tokenizer {
       return null
     }
     if (str === this.source.slice(this.i, this.i + str.length)) {
+      // When checking symbols that consist of valid attribute characters, we
+      // need to make sure we don't inadvertently treat an attribute as a
+      // symbol. For example, an attribute 'trueCustomerField' should not be
+      // scanned as the boolean symbol "true".
+      if (str[0].match(attributeCharMatcher)) {
+        // check that char following the symbol match is not also an attribute char
+        if (this.length > this.i + str.length) {
+          const nextChar = this.source[this.i + str.length]
+          if (nextChar && nextChar.match(attributeCharMatcher)) {
+            return null
+          }
+        }
+      }
       this.i += str.length
       return str
     }
