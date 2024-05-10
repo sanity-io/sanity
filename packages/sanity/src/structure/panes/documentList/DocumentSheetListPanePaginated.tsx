@@ -71,31 +71,6 @@ function DocumentSheetListPanePaginatedInner(
     columns,
     getCoreRowModel: getCoreRowModel(),
   })
-  const tableRef = useRef(table)
-
-  // set the initial visible columns state
-  useEffect(() => {
-    const newColumns: [Record<string, boolean>, number] = tableRef.current
-      .getAllLeafColumns()
-      .reduce(
-        ([accCols, countAllowedVisible], column) => {
-          // this column is always visible
-          if (!column.getCanHide()) {
-            return [{...accCols, [column.id]: true}, countAllowedVisible]
-          }
-
-          // have already reached column visibility limit, hide column by default
-          if (countAllowedVisible === 5) {
-            return [{...accCols, [column.id]: false}, countAllowedVisible]
-          }
-
-          return [{...accCols, [column.id]: true}, countAllowedVisible + 1]
-        },
-        [{}, 0],
-      )
-
-    tableRef.current.setColumnVisibility(newColumns[0])
-  }, [])
 
   const {rows} = table.getRowModel()
 

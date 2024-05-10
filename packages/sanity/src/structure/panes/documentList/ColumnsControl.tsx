@@ -1,14 +1,43 @@
 import {Box, Button, Card, Checkbox, Flex, Menu, MenuButton, Stack, Text} from '@sanity/ui'
 import {type Table} from '@tanstack/react-table'
+import {useEffect, useRef} from 'react'
 import {type SanityDocument} from 'sanity'
+
+const VISIBLE_COLUMN_LIMIT = 5
 
 type Props = {
   table: Table<SanityDocument>
 }
 
 export function ColumnsControl({table}: Props) {
+  const tableRef = useRef(table)
+
   const isVisibleLimitReached =
-    table.getVisibleLeafColumns().filter((col) => col.getCanHide()).length >= 5
+    table.getVisibleLeafColumns().filter((col) => col.getCanHide()).length >= VISIBLE_COLUMN_LIMIT
+
+  // set the initial visible columns state
+  useEffect(() => {
+    const newColumns: [Record<string, boolean>, number] = tableRef.current
+      .getAllLeafColumns()
+      .reduce(
+        ([accCols, countAllowedVisible], column) => {
+          // this column is always visible
+          if (!column.getCanHide()) {
+            return [{...accCols, [column.id]: true}, countAllowedVisible]
+          }
+
+          // have already reached column visibility limit, hide column by default
+          if (countAllowedVisible === VISIBLE_COLUMN_LIMIT) {
+            return [{...accCols, [column.id]: false}, countAllowedVisible]
+          }
+
+          return [{...accCols, [column.id]: true}, countAllowedVisible + 1]
+        },
+        [{}, 0],
+      )
+
+    tableRef.current.setColumnVisibility(newColumns[0])
+  }, [])
 
   return (
     <MenuButton
@@ -46,7 +75,7 @@ export function ColumnsControl({table}: Props) {
                 shadow={1}
                 tone="caution"
               >
-                <Text size={1}>You may only have 5 columns visible</Text>
+                <Text size={1}>You may only have {VISIBLE_COLUMN_LIMIT} columns visible</Text>
               </Card>
             )}
           </Stack>
