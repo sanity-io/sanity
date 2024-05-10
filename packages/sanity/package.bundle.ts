@@ -8,7 +8,8 @@ export default defineConfig(() => {
       lib: {
         entry: {
           _singletons: './src/_exports/_singletons.ts',
-          sanity: './src/_exports/index.ts',
+          // 'sanity' module
+          index: './src/_exports/index.ts',
           desk: './src/_exports/desk.ts',
           presentation: './src/_exports/presentation.ts',
           router: './src/_exports/router.ts',
