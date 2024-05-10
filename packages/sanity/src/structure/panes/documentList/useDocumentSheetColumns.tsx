@@ -21,7 +21,6 @@ const PreviewCell = (props: {
     original: SanityDocument
   }
 }) => {
-  // console.log('props', props)
   const {documentPreviewStore, row, schemaType} = props
   const title = 'Document title'
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -91,7 +90,6 @@ const columnHelper = createColumnHelper<SanityDocument>()
 const SUPPORTED_FIELDS = ['string', 'number', 'boolean']
 export function useDocumentSheetColumns(schemaType?: SchemaTypeDefinition) {
   const documentPreviewStore = useDocumentPreviewStore()
-  // console.log('TYPE', schemaType)
 
   const columns = useMemo(() => {
     if (!schemaType) {
