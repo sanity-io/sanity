@@ -181,7 +181,7 @@ export default {
       media: 'coverImage',
     },
     prepare(book: any, options: any = {}) {
-      console.log('book', {book})
+      // console.log('book', {book})
       return Object.assign({}, book, {
         title: book.title,
         subtitle: formatSubtitle(book),

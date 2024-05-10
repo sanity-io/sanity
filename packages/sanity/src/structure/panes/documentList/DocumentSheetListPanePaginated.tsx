@@ -10,6 +10,7 @@ import {type SanityDocument, SearchProvider, useSchema, useSearchState} from 'sa
 import {styled} from 'styled-components'
 
 import {type BaseStructureToolPaneProps} from '../types'
+import {ColumnsControl} from './ColumnsControl'
 import {DocumentSheetFilter} from './DocumentSheetFilter'
 import {DocumentSheetPaginator} from './DocumentSheetPaginator'
 import {useDocumentSheetColumns} from './useDocumentSheetColumns'
@@ -57,7 +58,7 @@ function DocumentSheetListPanePaginatedInner(
 
   const columns = useDocumentSheetColumns(schemaType)
   const [page, setPage] = useState(1)
-  const [pageSize] = useState(25)
+  const [pageSize] = useState(5)
   const {data} = useDocumentSheetListPaginated({
     typeName: schemaType.name,
     page,
@@ -70,6 +71,31 @@ function DocumentSheetListPanePaginatedInner(
     columns,
     getCoreRowModel: getCoreRowModel(),
   })
+  const tableRef = useRef(table)
+
+  // set the initial visible columns state
+  useEffect(() => {
+    const newColumns: [Record<string, boolean>, number] = tableRef.current
+      .getAllLeafColumns()
+      .reduce(
+        ([accCols, countAllowedVisible], column) => {
+          // this column is always visible
+          if (!column.getCanHide()) {
+            return [{...accCols, [column.id]: true}, countAllowedVisible]
+          }
+
+          // have already reached column visibility limit, hide column by default
+          if (countAllowedVisible === 5) {
+            return [{...accCols, [column.id]: false}, countAllowedVisible]
+          }
+
+          return [{...accCols, [column.id]: true}, countAllowedVisible + 1]
+        },
+        [{}, 0],
+      )
+
+    tableRef.current.setColumnVisibility(newColumns[0])
+  }, [])
 
   const {rows} = table.getRowModel()
 
@@ -144,6 +170,7 @@ function DocumentSheetListPanePaginatedInner(
           Total: {totalRows} rows, showing {rows.length} rows
         </Text>
       </Flex>
+      <ColumnsControl table={table} />
       <div
         ref={tableContainerRef}
         style={{
@@ -170,7 +197,9 @@ function DocumentSheetListPanePaginatedInner(
               >
                 {headerGroup.headers.map((header) => (
                   <th key={header.id} style={{display: 'flex', width: header.getSize()}}>
-                    <div>{flexRender(header.column.columnDef.header, header.getContext())}</div>
+                    {headerGroup.depth > 0 && !header.column.parent ? null : (
+                      <div>{flexRender(header.column.columnDef.header, header.getContext())}</div>
+                    )}
                   </th>
                 ))}
               </Box>

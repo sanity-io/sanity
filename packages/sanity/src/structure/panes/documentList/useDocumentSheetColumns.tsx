@@ -46,7 +46,7 @@ const PreviewCell = (props: {
 const TableTextInput = (props: any) => {
   const initialValue = props.getValue()
   // We need to keep and update the state of the cell normally
-  const [value, setValue] = useState(initialValue)
+  const [value, setValue] = useState(initialValue || '')
 
   // When the input is blurred, we'll call our table meta's updateData function
   const onBlur = () => {
@@ -66,7 +66,9 @@ const getColsFromSchemaType = (schemaType: SchemaType, parentalField: string) =>
         parentalField ? `${parentalField}.${field.name}` : field.name,
         {
           header: field.type.title,
+          enableHiding: true,
           cell: (info) => {
+            if (!info.getValue()) return null
             return <TableTextInput {...info} />
           },
         },
@@ -98,6 +100,8 @@ export function useDocumentSheetColumns(schemaType?: SchemaTypeDefinition) {
     return [
       {
         header: 'Preview',
+        enableHiding: false,
+        accessorKey: 'preview',
         cell: (info) => {
           return (
             <PreviewCell
@@ -109,6 +113,7 @@ export function useDocumentSheetColumns(schemaType?: SchemaTypeDefinition) {
         },
       },
       columnHelper.accessor('_id', {
+        enableHiding: true,
         header: 'Id',
         cell: (info) => {
           return <Text size={1}>{info.getValue()}</Text>
