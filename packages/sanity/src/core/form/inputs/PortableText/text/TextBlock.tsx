@@ -263,6 +263,9 @@ export function TextBlock(props: TextBlockProps) {
     [Markers, markers, renderCustomMarkers, tooltipEnabled, validation],
   )
 
+  const blockActionsVisible = renderBlockActions && focused && !readOnly
+  const changeIndicatorVisible = isFullscreen && memberItem
+
   return useMemo(
     () => (
       <Box
@@ -295,40 +298,47 @@ export function TextBlock(props: TextBlockProps) {
               </Tooltip>
             </Box>
 
-            <BlockExtrasContainer contentEditable={false}>
-              <BlockActionsOuter marginRight={1}>
-                <BlockActionsInner>
-                  {renderBlockActions && focused && !readOnly && (
-                    <BlockActions
-                      onChange={onChange}
-                      block={value}
-                      renderBlockActions={renderBlockActions}
+            {/*
+              Note that we only render this container if any children are present, as an
+              empty element will still occupy text space and display an invalid cursor on hover.
+            */}
+            {(blockActionsVisible || changeIndicatorVisible) && (
+              <BlockExtrasContainer contentEditable={false}>
+                {blockActionsVisible && (
+                  <BlockActionsOuter marginRight={1}>
+                    <BlockActionsInner>
+                      <BlockActions
+                        onChange={onChange}
+                        block={value}
+                        renderBlockActions={renderBlockActions}
+                      />
+                    </BlockActionsInner>
+                  </BlockActionsOuter>
+                )}
+                {changeIndicatorVisible && (
+                  <ChangeIndicatorWrapper
+                    $hasChanges={memberItem.member.item.changed}
+                    onMouseEnter={handleChangeIndicatorMouseEnter}
+                    onMouseLeave={handleChangeIndicatorMouseLeave}
+                  >
+                    <StyledChangeIndicatorWithProvidedFullPath
+                      hasFocus={focused}
+                      isChanged={memberItem.member.item.changed}
+                      path={memberItem.member.item.path}
+                      withHoverEffect={false}
                     />
-                  )}
-                </BlockActionsInner>
-              </BlockActionsOuter>
-
-              {isFullscreen && memberItem && (
-                <ChangeIndicatorWrapper
-                  $hasChanges={memberItem.member.item.changed}
-                  onMouseEnter={handleChangeIndicatorMouseEnter}
-                  onMouseLeave={handleChangeIndicatorMouseLeave}
-                >
-                  <StyledChangeIndicatorWithProvidedFullPath
-                    hasFocus={focused}
-                    isChanged={memberItem.member.item.changed}
-                    path={memberItem.member.item.path}
-                    withHoverEffect={false}
-                  />
-                </ChangeIndicatorWrapper>
-              )}
-            </BlockExtrasContainer>
+                  </ChangeIndicatorWrapper>
+                )}
+              </BlockExtrasContainer>
+            )}
             {reviewChangesHovered && <ReviewChangesHighlightBlock />}
           </Flex>
         </TextBlockFlexWrapper>
       </Box>
     ),
     [
+      blockActionsVisible,
+      changeIndicatorVisible,
       componentProps,
       focused,
       handleChangeIndicatorMouseEnter,
@@ -337,7 +347,6 @@ export function TextBlock(props: TextBlockProps) {
       hasMarkers,
       hasWarning,
       innerPaddingProps,
-      isFullscreen,
       memberItem,
       onChange,
       outerPaddingProps,
