@@ -8,6 +8,7 @@ import {
   RocketIcon,
   SyncIcon,
   TerminalIcon,
+  UlistIcon,
   UsersIcon,
 } from '@sanity/icons'
 import {uuid} from '@sanity/uuid'
@@ -415,23 +416,41 @@ export const structure: StructureResolver = (S, {schema, documentStore, i18n}) =
 
       S.divider(),
 
-      ...S.documentTypeListItems().filter((listItem) => {
-        const id = listItem.getId()
+      ...S.documentTypeListItems()
+        .filter((listItem) => {
+          const id = listItem.getId()
 
-        return (
-          id &&
-          !CI_INPUT_TYPES.includes(id) &&
-          !DEBUG_INPUT_TYPES.includes(id) &&
-          !STANDARD_INPUT_TYPES.includes(id) &&
-          !STANDARD_PORTABLE_TEXT_INPUT_TYPES.includes(id) &&
-          !PLUGIN_INPUT_TYPES.includes(id) &&
-          !EXTERNAL_PLUGIN_INPUT_TYPES.includes(id) &&
-          !DEBUG_FIELD_GROUP_TYPES.includes(id) &&
-          !typesInOptionGroup(S, schema, 'v3').includes(id) &&
-          !typesInOptionGroup(S, schema, '3d').includes(id) &&
-          !TS_DOC_TYPES.includes(id)
-        )
-      }),
+          return (
+            id &&
+            !CI_INPUT_TYPES.includes(id) &&
+            !DEBUG_INPUT_TYPES.includes(id) &&
+            !STANDARD_INPUT_TYPES.includes(id) &&
+            !STANDARD_PORTABLE_TEXT_INPUT_TYPES.includes(id) &&
+            !PLUGIN_INPUT_TYPES.includes(id) &&
+            !EXTERNAL_PLUGIN_INPUT_TYPES.includes(id) &&
+            !DEBUG_FIELD_GROUP_TYPES.includes(id) &&
+            !typesInOptionGroup(S, schema, 'v3').includes(id) &&
+            !typesInOptionGroup(S, schema, '3d').includes(id) &&
+            !TS_DOC_TYPES.includes(id)
+          )
+        })
+        .map((listItem) => {
+          // Create Sheet List menu option
+          const listItemId = listItem.getId()
+          if (!listItemId) return listItem
+
+          return listItem.child(
+            S.documentTypeList(listItemId).menuItems([
+              S.menuItem()
+                .title('Sheet view')
+                .group('layout')
+                .action('setLayout')
+                .params({layout: 'sheetList'})
+                .icon(UlistIcon),
+              ...(S.documentTypeList(listItemId).getMenuItems() || []),
+            ]),
+          )
+        }),
     ])
 }
 
