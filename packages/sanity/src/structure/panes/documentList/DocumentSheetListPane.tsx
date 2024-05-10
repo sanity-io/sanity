@@ -138,7 +138,7 @@ export function DocumentSheetListPane(props: DocumentSheetListPaneProps) {
   }
 
   return (
-    <Box paddingX={3}>
+    <Box data-testid="document-sheet-list-pane" paddingX={3}>
       <Box paddingBottom={3}>
         <Text size={0} muted>
           {/* eslint-disable-next-line i18next/no-literal-string */}
