@@ -23,6 +23,7 @@ export const STANDARD_PORTABLE_TEXT_INPUT_TYPES = [
   'simpleBlock',
   'manyEditors',
   'documentWithHoistedPt',
+  'pt_customBlockEditors',
 ]
 
 export const PLUGIN_INPUT_TYPES = [
