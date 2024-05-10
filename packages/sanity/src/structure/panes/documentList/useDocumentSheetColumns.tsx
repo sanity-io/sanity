@@ -1,4 +1,4 @@
-import {Box, Flex, Text, TextInput} from '@sanity/ui'
+import {Flex, Text, TextInput} from '@sanity/ui'
 import {createColumnHelper} from '@tanstack/react-table'
 import {useMemo, useState} from 'react'
 import {useMemoObservable} from 'react-rx'
@@ -20,7 +20,6 @@ const PreviewCell = (props: {
     original: SanityDocument
   }
 }) => {
-  console.log('props', props)
   const {documentPreviewStore, row, schemaType} = props
   const title = 'Document title'
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -61,7 +60,6 @@ const columnHelper = createColumnHelper<SanityDocument>()
 const SUPPORTED_FIELDS = ['string', 'number']
 export function useDocumentSheetColumns(schemaType?: SchemaType) {
   const documentPreviewStore = useDocumentPreviewStore()
-  console.log('TYPE', schemaType)
 
   const columns = useMemo(() => {
     if (!schemaType) {
@@ -80,12 +78,12 @@ export function useDocumentSheetColumns(schemaType?: SchemaType) {
           )
         },
       },
-      columnHelper.accessor('_id', {
-        header: 'Id',
-        cell: (info) => {
-          return <Text size={1}>{info.getValue()}</Text>
-        },
-      }),
+      // columnHelper.accessor('_id', {
+      //   header: 'Id',
+      //   cell: (info) => {
+      //     return <Text size={1}>{info.getValue()}</Text>
+      //   },
+      // }),
     ]
     for (const field of schemaType.fields) {
       if (!SUPPORTED_FIELDS.includes(field.type.name)) {
