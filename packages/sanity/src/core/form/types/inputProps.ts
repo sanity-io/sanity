@@ -508,10 +508,6 @@ export interface PortableTextInputProps
    */
   editorRef?: React.MutableRefObject<PortableTextEditor | null>
   /**
-   * Open the input in fullscreen mode
-   */
-  fullscreen?: boolean
-  /**
    * Option to hide the default toolbar
    */
   hideToolbar?: boolean
@@ -519,6 +515,10 @@ export interface PortableTextInputProps
    * Assign hotkeys that can be attached to custom editing functions
    */
   hotkeys?: HotkeyOptions
+  /**
+   * Whether the input is _initially_ open in fullscreen mode
+   */
+  initialFullscreen?: boolean
   /**
    * Array of {@link PortableTextMarker} with meta data connected to the content.
    * @deprecated will be removed in the next major version of Sanity Studio.

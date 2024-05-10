@@ -80,8 +80,8 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
   const {
     editorRef: editorRefProp,
     elementProps,
-    fullscreen: fullscreenProp,
     hotkeys,
+    initialFullscreen: initialFullscreenProp,
     markers = EMPTY_ARRAY,
     onChange,
     onCopy,
@@ -119,7 +119,7 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
   const {t} = useTranslation()
   const [ignoreValidationError, setIgnoreValidationError] = useState(false)
   const [invalidValue, setInvalidValue] = useState<InvalidValue | null>(null)
-  const [isFullscreen, setIsFullscreen] = useState(fullscreenProp ?? false)
+  const [isFullscreen, setIsFullscreen] = useState(initialFullscreenProp ?? false)
   const [isActive, setIsActive] = useState(false)
   const [isOffline, setIsOffline] = useState(false)
   const [hasFocusWithin, setHasFocusWithin] = useState(false)
