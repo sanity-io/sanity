@@ -51,7 +51,9 @@ export async function resolveValue<Params, InitialValue>(
 
     const key = JSON.stringify([
       params,
-      [context.projectId, context.dataset, context.currentUser?.id],
+      context.projectId,
+      context.dataset,
+      context.currentUser?.id,
     ])
 
     if (useCache && cached?.[key]) {
