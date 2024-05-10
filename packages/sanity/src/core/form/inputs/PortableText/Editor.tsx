@@ -52,6 +52,7 @@ const PlaceholderWrapper = styled.span((props) => {
 
 interface EditorProps {
   elementRef: React.RefObject<HTMLDivElement>
+  hideToolbar?: boolean
   hotkeys: HotkeyOptions
   initialSelection?: EditorSelection
   isActive: boolean
@@ -89,6 +90,7 @@ const renderListItem: RenderListItemFunction = (props) => {
 export function Editor(props: EditorProps): ReactNode {
   const {
     elementRef,
+    hideToolbar,
     hotkeys,
     initialSelection,
     isActive,
@@ -192,7 +194,7 @@ export function Editor(props: EditorProps): ReactNode {
 
   return (
     <Root data-fullscreen={isFullscreen} data-testid="pt-editor">
-      {isActive && (
+      {isActive && !hideToolbar && (
         <TooltipDelayGroupProvider>
           <ToolbarCard data-testid="pt-editor__toolbar-card" shadow={1}>
             <Toolbar
