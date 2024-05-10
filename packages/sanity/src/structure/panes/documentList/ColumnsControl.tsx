@@ -17,7 +17,7 @@ export function ColumnsControl({table}: Props) {
 
   // set the initial visible columns state
   useEffect(() => {
-    const newColumns: [Record<string, boolean>, number] = tableRef.current
+    const [newColumns]: [Record<string, boolean>, number] = tableRef.current
       .getAllLeafColumns()
       .reduce(
         ([accCols, countAllowedVisible], column) => {
@@ -36,7 +36,7 @@ export function ColumnsControl({table}: Props) {
         [{}, 0],
       )
 
-    tableRef.current.setColumnVisibility(newColumns[0])
+    tableRef.current.setColumnVisibility(newColumns)
   }, [])
 
   return (
