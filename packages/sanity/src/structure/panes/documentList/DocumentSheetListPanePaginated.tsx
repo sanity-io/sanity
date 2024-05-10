@@ -70,6 +70,7 @@ function DocumentSheetListPanePaginatedInner(
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    enableRowSelection: true,
   })
 
   const {rows} = table.getRowModel()
@@ -94,6 +95,10 @@ function DocumentSheetListPanePaginatedInner(
         ? (element) => element?.getBoundingClientRect().height
         : undefined,
     overscan: 5,
+  })
+
+  useEffect(() => {
+    console.log('selectedRows', table.getSelectedRowModel().rows)
   })
 
   const renderRow = useCallback(

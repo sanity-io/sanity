@@ -1,4 +1,4 @@
-import {Flex, Text, TextInput} from '@sanity/ui'
+import {Checkbox, Flex, Text, TextInput} from '@sanity/ui'
 import {createColumnHelper} from '@tanstack/react-table'
 import {useMemo, useState} from 'react'
 import {useMemoObservable} from 'react-rx'
@@ -98,6 +98,21 @@ export function useDocumentSheetColumns(schemaType?: SchemaTypeDefinition) {
       return []
     }
     return [
+      columnHelper.accessor('selected', {
+        header: (info) => (
+          <Checkbox
+            indeterminate={info.table.getIsSomeRowsSelected()}
+            onChange={info.table.getToggleAllRowsSelectedHandler()}
+          />
+        ),
+        cell: (info) => (
+          <Checkbox
+            checked={info.row.getIsSelected()}
+            disabled={!info.row.getCanSelect()}
+            onChange={() => info.row.toggleSelected()}
+          />
+        ),
+      }),
       {
         header: 'Preview',
         enableHiding: false,
