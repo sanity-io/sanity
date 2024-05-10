@@ -41,6 +41,7 @@ function textBlockStyle(props: TextBlockStyleProps & {theme: Theme}) {
       background-color: var(--marker-bg-color);
       // This is to make sure the marker is always behind the text
       z-index: -1;
+      pointer-events: none;
     }
 
     &[data-markers] {
