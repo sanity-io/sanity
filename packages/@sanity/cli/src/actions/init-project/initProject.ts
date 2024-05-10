@@ -451,11 +451,11 @@ export default async function initSanity(
     }
 
     if (chosen === 'npm') {
-      await execa('npm', ['install', 'next-sanity@7'], execOptions)
+      await execa('npm', ['install', 'next-sanity@9'], execOptions)
     } else if (chosen === 'yarn') {
-      await execa('npx', ['install-peerdeps', '--yarn', 'next-sanity@7'], execOptions)
+      await execa('npx', ['install-peerdeps', '--yarn', 'next-sanity@9'], execOptions)
     } else if (chosen === 'pnpm') {
-      await execa('pnpm', ['install', 'next-sanity@7'], execOptions)
+      await execa('pnpm', ['install', 'next-sanity@9'], execOptions)
     }
 
     print(
