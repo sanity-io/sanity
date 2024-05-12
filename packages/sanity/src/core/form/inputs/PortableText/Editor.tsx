@@ -34,7 +34,7 @@ import {
   ToolbarCard,
 } from './Editor.styles'
 import {useScrollSelectionIntoView} from './hooks/useScrollSelectionIntoView'
-import {useSpellcheck} from './hooks/useSpellCheck'
+import {useSpellCheck} from './hooks/useSpellCheck'
 import {Decorator} from './text'
 import {ListItem} from './text/ListItem'
 import {Style} from './text/Style'
@@ -144,7 +144,7 @@ export function Editor(props: EditorProps): ReactNode {
     ),
     [t],
   )
-  const spellcheck = useSpellcheck()
+  const spellCheck = useSpellCheck()
 
   const scrollSelectionIntoView = useScrollSelectionIntoView(scrollElement)
 
@@ -165,7 +165,7 @@ export function Editor(props: EditorProps): ReactNode {
       renderStyle,
       scrollSelectionIntoView,
       'selection': initialSelection,
-      'spellCheck': spellcheck,
+      spellCheck,
       'style': noOutlineStyle,
     } satisfies PortableTextEditableProps
     const defaultRender = (defaultRenderProps: PortableTextEditableProps) => (
@@ -189,7 +189,7 @@ export function Editor(props: EditorProps): ReactNode {
     renderEditable,
     renderPlaceholder,
     scrollSelectionIntoView,
-    spellcheck,
+    spellCheck,
   ])
 
   const handleToolBarOnMemberOpen = useCallback(
