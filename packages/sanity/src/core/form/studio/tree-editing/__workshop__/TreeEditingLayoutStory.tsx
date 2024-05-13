@@ -52,6 +52,9 @@ export default function TreeEditingLayoutStory() {
   return (
     <TreeEditingLayout
       items={ITEMS}
+      breadcrumbs={[]}
+      selectedPath={[]}
+      title="Tree editing layout"
       onPathSelect={() => {
         // ...
       }}
