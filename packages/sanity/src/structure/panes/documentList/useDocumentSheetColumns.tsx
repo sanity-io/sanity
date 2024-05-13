@@ -99,10 +99,11 @@ export function useDocumentSheetColumns(schemaType?: SchemaTypeDefinition) {
     }
     return [
       columnHelper.accessor('selected', {
+        enableHiding: false,
         header: (info) => (
           <Checkbox
             indeterminate={info.table.getIsSomeRowsSelected()}
-            onChange={info.table.getToggleAllRowsSelectedHandler()}
+            onChange={info.table.getToggleAllPageRowsSelectedHandler()}
           />
         ),
         cell: (info) => (

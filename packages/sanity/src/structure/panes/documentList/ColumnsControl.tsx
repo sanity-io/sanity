@@ -46,27 +46,28 @@ export function ColumnsControl({table}: Props) {
       menu={
         <Menu padding={3} paddingBottom={1} style={{maxHeight: 300, overflow: 'scroll'}}>
           <Stack>
-            {table.getAllLeafColumns().map((column) => (
-              <Flex key={column.id} marginY={2} align="center">
-                <Checkbox
-                  readOnly={
-                    !column.getCanHide() || (isVisibleLimitReached && !column.getIsVisible())
-                  }
-                  checked={column.getIsVisible()}
-                  onChange={(e) => {
-                    column.toggleVisibility()
-                    e.stopPropagation()
-                  }}
-                  id="checkbox"
-                  style={{display: 'block'}}
-                />
-                <Box flex={1} paddingLeft={3}>
-                  <Text size={1}>
-                    <label htmlFor="checkbox">{column.columnDef.header}</label>
-                  </Text>
-                </Box>
-              </Flex>
-            ))}
+            {table
+              .getAllLeafColumns()
+              .filter((column) => column.getCanHide())
+              .map((column) => (
+                <Flex key={column.id} marginY={2} align="center">
+                  <Checkbox
+                    readOnly={isVisibleLimitReached && !column.getIsVisible()}
+                    checked={column.getIsVisible()}
+                    onChange={(e) => {
+                      column.toggleVisibility()
+                      e.stopPropagation()
+                    }}
+                    id="checkbox"
+                    style={{display: 'block'}}
+                  />
+                  <Box flex={1} paddingLeft={3}>
+                    <Text size={1}>
+                      <label htmlFor="checkbox">{column.columnDef.header}</label>
+                    </Text>
+                  </Box>
+                </Flex>
+              ))}
             {isVisibleLimitReached && (
               <Card
                 padding={2}
