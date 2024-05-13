@@ -15,5 +15,10 @@ export default defineScope({
       title: 'TreeEditingLayout',
       component: lazy(() => import('./TreeEditingLayoutStory')),
     },
+    {
+      name: 'tree-menu-items-build-debug',
+      title: 'Tree menu items build debug',
+      component: lazy(() => import('./TreeMenuItemsBuildDebugStory')),
+    },
   ],
 })
