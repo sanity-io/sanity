@@ -1,6 +1,7 @@
 /* eslint-disable i18next/no-literal-string */
 /* eslint-disable @sanity/i18n/no-attribute-string-literals */
 /* eslint-disable react/jsx-no-bind */
+import {PublishIcon} from '@sanity/icons'
 import {type SanityDocument, type SchemaType} from '@sanity/types'
 import {Box, Flex, Text} from '@sanity/ui'
 import {
@@ -15,6 +16,7 @@ import {useCallback, useEffect, useRef} from 'react'
 import {SearchProvider, useSchema, useSearchState} from 'sanity'
 import {styled} from 'styled-components'
 
+import {Button} from '../../../ui-components'
 import {type BaseStructureToolPaneProps} from '../types'
 import {ColumnsControl} from './ColumnsControl'
 import {DocumentSheetFilter} from './DocumentSheetFilter'
@@ -167,8 +169,20 @@ function DocumentSheetListPanePaginatedInner(
           <tbody>{table.getRowModel().rows.map(renderRow)}</tbody>
         </Table>
       </div>
-      <Flex justify={'flex-end'} padding={3}>
+      <Flex justify={'flex-end'} padding={3} gap={4}>
         <DocumentSheetPaginator table={table} />
+
+        <Button
+          text="Publish"
+          tooltipProps={{
+            placement: 'top',
+            fallbackPlacements: ['top-start', 'top-end'],
+            content: `Publish selected documents (${table.getSelectedRowModel().rows.length})`,
+          }}
+          icon={PublishIcon}
+          size="large"
+          disabled={table.getSelectedRowModel().rows.length === 0}
+        />
       </Flex>
     </Box>
   )

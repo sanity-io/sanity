@@ -135,7 +135,7 @@ export function useDocumentSheetColumns(schemaType?: SchemaTypeDefinition) {
           <Checkbox
             style={{paddingLeft: 4}}
             indeterminate={info.table.getIsSomeRowsSelected()}
-            onChange={info.table.getToggleAllRowsSelectedHandler()}
+            onChange={info.table.getToggleAllPageRowsSelectedHandler()}
           />
         ),
         cell: (info) => (
