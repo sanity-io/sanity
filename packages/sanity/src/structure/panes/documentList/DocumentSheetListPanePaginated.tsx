@@ -137,7 +137,7 @@ function DocumentSheetListPanePaginatedInner(
         style={{
           overflow: 'auto', //our scrollable table container
           position: 'relative', //needed for sticky header
-          height: '950px', //should be a fixed height - TODO: Calculate this based on the available space
+          height: '550px', //should be a fixed height - TODO: Calculate this based on the available space
         }}
       >
         <Table>
