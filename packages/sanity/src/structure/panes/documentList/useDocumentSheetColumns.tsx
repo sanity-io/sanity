@@ -92,6 +92,7 @@ const columnHelper = createColumnHelper<SanityDocument>()
 const SUPPORTED_FIELDS = ['string', 'number', 'boolean']
 export function useDocumentSheetColumns(schemaType?: SchemaTypeDefinition) {
   const documentPreviewStore = useDocumentPreviewStore()
+  const [hasAnchorSelect, setHasAnchorSelect] = useState<null | number>(null)
 
   const columns = useMemo(() => {
     if (!schemaType) {
@@ -101,15 +102,55 @@ export function useDocumentSheetColumns(schemaType?: SchemaTypeDefinition) {
       columnHelper.accessor('selected', {
         header: (info) => (
           <Checkbox
+            style={{paddingLeft: 4}}
             indeterminate={info.table.getIsSomeRowsSelected()}
             onChange={info.table.getToggleAllRowsSelectedHandler()}
           />
         ),
         cell: (info) => (
           <Checkbox
+            style={{paddingLeft: 4}}
             checked={info.row.getIsSelected()}
             disabled={!info.row.getCanSelect()}
-            onChange={() => info.row.toggleSelected()}
+            defaultChecked={info.row.getIsSelected()}
+            onClick={(e) => {
+              const isShiftPressed = e.shiftKey
+
+              if (isShiftPressed && hasAnchorSelect !== null) {
+                const shiftClickIndex = info.row.index
+                const lowerIndex =
+                  shiftClickIndex < hasAnchorSelect ? shiftClickIndex : hasAnchorSelect
+                const upperIndex =
+                  shiftClickIndex < hasAnchorSelect ? hasAnchorSelect : shiftClickIndex
+
+                // Generate the range of numbers
+                const selectedRows: number[] = []
+                for (let i = lowerIndex; i <= upperIndex; i++) {
+                  selectedRows.push(i)
+                }
+
+                const selectedRowsAlready = info.table
+                  .getSelectedRowModel()
+                  .rows.map((r) => r.index)
+                info.table.setRowSelection(() => {
+                  return Object.fromEntries(
+                    [...selectedRows, ...selectedRowsAlready].map((i) => [i, true]),
+                  )
+                })
+              } else {
+                if (!info.row.getIsSelected()) {
+                  // only track it if it is BEING selected
+                  setHasAnchorSelect(info.row.index)
+                }
+
+                // if (info.row.getIsSelected()) {
+                //   // you are about to unselect so that means that the anchor is no longer valid
+                //   setHasAnchorSelect(null)
+                // }
+
+                info.row.toggleSelected()
+              }
+            }}
           />
         ),
       }),
@@ -136,7 +177,7 @@ export function useDocumentSheetColumns(schemaType?: SchemaTypeDefinition) {
       }),
       ...getColsFromSchemaType(schemaType),
     ]
-  }, [documentPreviewStore, schemaType])
+  }, [documentPreviewStore, hasAnchorSelect, schemaType])
 
   return columns
 }

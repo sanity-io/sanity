@@ -97,9 +97,9 @@ function DocumentSheetListPanePaginatedInner(
     overscan: 5,
   })
 
-  useEffect(() => {
-    console.log('selectedRows', table.getSelectedRowModel().rows)
-  })
+  // useEffect(() => {
+  //   console.log('selectedRows', table.getSelectedRowModel().rows)
+  // })
 
   const renderRow = useCallback(
     (virtualRow: VirtualItem) => {
