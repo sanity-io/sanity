@@ -1,5 +1,6 @@
 /* eslint-disable i18next/no-literal-string */
 import {Card, Code, Dialog, Flex, Text} from '@sanity/ui'
+import {type Theme} from '@sanity/ui/theme'
 import {isEqual} from 'lodash'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {
@@ -9,7 +10,7 @@ import {
   type ObjectSchemaType,
   type Path,
 } from 'sanity'
-import styled from 'styled-components'
+import styled, {css} from 'styled-components'
 
 import {buildTreeMenuItems, EMPTY_TREE_STATE, isOpen, type TreeEditingState} from '../utils'
 import {TreeEditingLayout} from './TreeEditingLayout'
@@ -20,16 +21,20 @@ function renderDefault(props: InputProps) {
   return props.renderDefault(props)
 }
 
-const StyledDialog = styled(Dialog)`
-  [data-ui='DialogCard'] {
-    padding: 2em; // todo: use theme values
-    box-sizing: border-box;
-  }
+const StyledDialog = styled(Dialog)(({theme}: {theme: Theme}) => {
+  const spacing = theme.sanity.v2?.space[4]
 
-  [data-ui='Card']:first-child {
-    flex: 1;
-  }
-`
+  return css`
+    [data-ui='DialogCard'] {
+      padding: ${spacing}px;
+      box-sizing: border-box;
+    }
+
+    [data-ui='Card']:first-child {
+      flex: 1;
+    }
+  `
+})
 
 interface TreeEditingDialogProps {
   // ...
@@ -53,9 +58,7 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | 
   }, [setFocusPath])
 
   useEffect(() => {
-    if (focusPath.length === 0) {
-      return
-    }
+    if (focusPath.length === 0) return
 
     const nextState = buildTreeMenuItems({
       schemaType,
@@ -68,7 +71,7 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | 
     setTreeState(nextState)
   }, [focusPath, schemaType, treeState, value])
 
-  const {menuItems, relativePath} = treeState
+  const {menuItems, relativePath, rootTitle, breadcrumbs} = treeState
 
   const open = useMemo(() => isOpen(schemaType, relativePath), [relativePath, schemaType])
 
@@ -82,7 +85,13 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | 
       padding={0}
       width={3}
     >
-      <TreeEditingLayout items={menuItems} onPathSelect={setFocusPath} selectedPath={relativePath}>
+      <TreeEditingLayout
+        breadcrumbs={breadcrumbs}
+        items={menuItems}
+        onPathSelect={setFocusPath}
+        selectedPath={relativePath}
+        title={rootTitle}
+      >
         {DEBUG_RELATIVE_PATH && (
           <Card
             padding={3}
