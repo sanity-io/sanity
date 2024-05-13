@@ -7,6 +7,7 @@ import {Resizer} from './Resizer'
 export interface ResizableProps {
   minWidth: number
   maxWidth: number
+  initialWidth: number
 }
 
 const Root = styled(Box)`
@@ -18,10 +19,10 @@ const Root = styled(Box)`
 export function Resizable(
   props: ResizableProps & BoxProps & Omit<HTMLProps<HTMLDivElement>, 'as'>,
 ) {
-  const {as: forwardedAs, children, minWidth, maxWidth, ...restProps} = props
+  const {as: forwardedAs, children, minWidth, maxWidth, initialWidth, ...restProps} = props
   const [element, setElement] = useState<HTMLDivElement | null>(null)
   const elementWidthRef = useRef<number>()
-  const [targetWidth, setTargetWidth] = useState<number>()
+  const [targetWidth, setTargetWidth] = useState<number>(initialWidth)
 
   const handleResizeStart = useCallback(() => {
     elementWidthRef.current = element?.offsetWidth
@@ -45,8 +46,8 @@ export function Resizable(
 
   return (
     <Root as={forwardedAs} {...restProps} ref={setElement} style={style}>
-      <Resizer onResize={handleResize} onResizeStart={handleResizeStart} />
       {children}
+      <Resizer onResize={handleResize} onResizeStart={handleResizeStart} />
     </Root>
   )
 }
