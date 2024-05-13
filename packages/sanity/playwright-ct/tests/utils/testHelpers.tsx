@@ -12,9 +12,7 @@ export function testHelpers({page}: {page: PlaywrightTestArgs['page']}) {
       await $overlay.focus()
       await page.keyboard.press('Space')
     }
-    await $pteField
-      .locator(`[data-testid='pt-editor__toolbar-card']`)
-      .waitFor({state: 'visible', timeout: 1000})
+    await $overlay.waitFor({state: 'detached', timeout: 1000})
   }
   return {
     /**
