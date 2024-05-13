@@ -58,7 +58,7 @@ function DocumentSheetListPanePaginatedInner(
 
   const columns = useDocumentSheetColumns(schemaType)
   const [page, setPage] = useState(1)
-  const [pageSize] = useState(5)
+  const [pageSize] = useState(25)
   const {data} = useDocumentSheetListPaginated({
     typeName: schemaType.name,
     page,

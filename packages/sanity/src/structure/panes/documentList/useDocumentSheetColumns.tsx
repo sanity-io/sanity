@@ -100,6 +100,7 @@ export function useDocumentSheetColumns(schemaType?: SchemaTypeDefinition) {
     }
     return [
       columnHelper.accessor('selected', {
+        enableHiding: false,
         header: (info) => (
           <Checkbox
             style={{paddingLeft: 4}}
