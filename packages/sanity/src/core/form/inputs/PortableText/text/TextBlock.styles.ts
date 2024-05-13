@@ -168,6 +168,7 @@ export const ChangeIndicatorWrapper = styled.div<{$hasChanges: boolean}>(
       top: 0;
       bottom: 0;
       padding-left: ${space[1]}px;
+      padding-right: ${space[3]}px;
       user-select: none;
 
       ${!$hasChanges &&

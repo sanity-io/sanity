@@ -14,13 +14,7 @@ import {
   type RenderStyleFunction,
 } from '@sanity/portable-text-editor'
 import {type Path} from '@sanity/types'
-import {
-  BoundaryElementProvider,
-  Box,
-  useBoundaryElement,
-  useGlobalKeyDown,
-  useLayer,
-} from '@sanity/ui'
+import {BoundaryElementProvider, useBoundaryElement, useGlobalKeyDown, useLayer} from '@sanity/ui'
 // eslint-disable-next-line camelcase
 import {getTheme_v2} from '@sanity/ui/theme'
 import {omit} from 'lodash'
@@ -220,16 +214,11 @@ export function Editor(props: EditorProps): ReactNode {
 
       <EditableCard flex={1} tone={readOnly ? 'transparent' : 'default'}>
         <Scroller ref={setScrollElement}>
-          <Box>
-            <EditableWrapper
-              $isFullscreen={isFullscreen}
-              tone={readOnly ? 'transparent' : 'default'}
-            >
-              <BoundaryElementProvider element={isFullscreen ? scrollElement : boundaryElement}>
-                {editable}
-              </BoundaryElementProvider>
-            </EditableWrapper>
-          </Box>
+          <EditableWrapper $isFullscreen={isFullscreen} tone={readOnly ? 'transparent' : 'default'}>
+            <BoundaryElementProvider element={isFullscreen ? scrollElement : boundaryElement}>
+              {editable}
+            </BoundaryElementProvider>
+          </EditableWrapper>
         </Scroller>
 
         <div data-portal="" ref={setPortalElement} />
