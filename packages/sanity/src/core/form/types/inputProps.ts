@@ -559,6 +559,8 @@ export interface PortableTextInputProps
   /**
    * Function to render the PortableTextInput's editable component.
    * This is the actual contentEditable element that users type into.
+   * @hidden
+   * @beta
    */
   renderEditable?: (props: RenderPortableTextInputEditableProps) => JSX.Element
   /**
