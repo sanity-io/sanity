@@ -1,6 +1,7 @@
+import {EditIcon} from '@sanity/icons'
 import {Checkbox, Flex, Text, TextInput} from '@sanity/ui'
 import {createColumnHelper} from '@tanstack/react-table'
-import {useEffect, useMemo, useState} from 'react'
+import {type ReactNode, useEffect, useMemo, useState} from 'react'
 import {useMemoObservable} from 'react-rx'
 import {
   type DocumentPreviewStore,
@@ -11,7 +12,9 @@ import {
   type SchemaTypeDefinition,
   useDocumentPreviewStore,
 } from 'sanity'
+import {usePaneRouter} from 'sanity/structure'
 
+import {Button} from '../../../ui-components'
 import {type PaneItemPreviewState} from '../../components/paneItem/types'
 
 const PreviewCell = (props: {
@@ -94,6 +97,29 @@ const getColsFromSchemaType = (schemaType: SchemaType, parentalField: string) =>
 }
 const columnHelper = createColumnHelper<SanityDocument>()
 const SUPPORTED_FIELDS = ['string', 'number', 'boolean']
+
+const LinkButton = ({id}: {id: string}) => {
+  const {ChildLink} = usePaneRouter()
+  // const id = '1f639026-68a1-46a8-89be-f60bd22006b1'
+  const Link = useMemo(
+    () =>
+      function LinkComponent(linkProps: {children: ReactNode}) {
+        return <ChildLink {...linkProps} childId={id} />
+      },
+    [ChildLink, id],
+  )
+  return (
+    <Button
+      icon={EditIcon}
+      mode="bleed"
+      as={Link}
+      tooltipProps={{
+        content: 'Edit document',
+      }}
+    />
+  )
+}
+
 export function useDocumentSheetColumns(schemaType?: SchemaTypeDefinition) {
   const documentPreviewStore = useDocumentPreviewStore()
   const [hasAnchorSelect, setHasAnchorSelect] = useState<null | number>(null)
@@ -113,50 +139,54 @@ export function useDocumentSheetColumns(schemaType?: SchemaTypeDefinition) {
           />
         ),
         cell: (info) => (
-          <Checkbox
-            style={{paddingLeft: 4}}
-            checked={info.row.getIsSelected()}
-            disabled={!info.row.getCanSelect()}
-            defaultChecked={info.row.getIsSelected()}
-            onClick={(e) => {
-              const isShiftPressed = e.shiftKey
+          <Flex align="center" gap={2}>
+            <Checkbox
+              style={{paddingLeft: 4}}
+              checked={info.row.getIsSelected()}
+              disabled={!info.row.getCanSelect()}
+              defaultChecked={info.row.getIsSelected()}
+              // eslint-disable-next-line react/jsx-no-bind
+              onClick={(e) => {
+                const isShiftPressed = e.shiftKey
 
-              if (isShiftPressed && hasAnchorSelect !== null) {
-                const shiftClickIndex = info.row.index
-                const lowerIndex =
-                  shiftClickIndex < hasAnchorSelect ? shiftClickIndex : hasAnchorSelect
-                const upperIndex =
-                  shiftClickIndex < hasAnchorSelect ? hasAnchorSelect : shiftClickIndex
+                if (isShiftPressed && hasAnchorSelect !== null) {
+                  const shiftClickIndex = info.row.index
+                  const lowerIndex =
+                    shiftClickIndex < hasAnchorSelect ? shiftClickIndex : hasAnchorSelect
+                  const upperIndex =
+                    shiftClickIndex < hasAnchorSelect ? hasAnchorSelect : shiftClickIndex
 
-                // Generate the range of numbers
-                const selectedRows: number[] = []
-                for (let i = lowerIndex; i <= upperIndex; i++) {
-                  selectedRows.push(i)
+                  // Generate the range of numbers
+                  const selectedRows: number[] = []
+                  for (let i = lowerIndex; i <= upperIndex; i++) {
+                    selectedRows.push(i)
+                  }
+
+                  const selectedRowsAlready = info.table
+                    .getSelectedRowModel()
+                    .rows.map((r) => r.index)
+                  info.table.setRowSelection(() => {
+                    return Object.fromEntries(
+                      [...selectedRows, ...selectedRowsAlready].map((i) => [i, true]),
+                    )
+                  })
+                } else {
+                  if (!info.row.getIsSelected()) {
+                    // only track it if it is BEING selected
+                    setHasAnchorSelect(info.row.index)
+                  }
+
+                  // if (info.row.getIsSelected()) {
+                  //   // you are about to unselect so that means that the anchor is no longer valid
+                  //   setHasAnchorSelect(null)
+                  // }
+
+                  info.row.toggleSelected()
                 }
-
-                const selectedRowsAlready = info.table
-                  .getSelectedRowModel()
-                  .rows.map((r) => r.index)
-                info.table.setRowSelection(() => {
-                  return Object.fromEntries(
-                    [...selectedRows, ...selectedRowsAlready].map((i) => [i, true]),
-                  )
-                })
-              } else {
-                if (!info.row.getIsSelected()) {
-                  // only track it if it is BEING selected
-                  setHasAnchorSelect(info.row.index)
-                }
-
-                // if (info.row.getIsSelected()) {
-                //   // you are about to unselect so that means that the anchor is no longer valid
-                //   setHasAnchorSelect(null)
-                // }
-
-                info.row.toggleSelected()
-              }
-            }}
-          />
+              }}
+            />
+            <LinkButton id={info.row.original._id} />
+          </Flex>
         ),
       }),
       {
