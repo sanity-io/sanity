@@ -113,6 +113,7 @@ export interface BlockStyleDefinition {
   title: string
   value: string
   i18nTitleKey?: string
+  icon?: ReactNode | ComponentType
 }
 
 /**
