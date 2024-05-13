@@ -8,6 +8,7 @@ import {
   forwardRef,
   type HTMLProps,
   type KeyboardEvent,
+  type MutableRefObject,
   type ReactNode,
   type TextareaHTMLAttributes,
   useCallback,
@@ -92,6 +93,7 @@ export type PortableTextEditableProps = Omit<
   onBeforeInput?: (event: InputEvent) => void
   onPaste?: OnPasteFn
   onCopy?: OnCopyFn
+  ref: MutableRefObject<HTMLDivElement | null>
   rangeDecorations?: RangeDecoration[]
   renderAnnotation?: RenderAnnotationFunction
   renderBlock?: RenderBlockFunction

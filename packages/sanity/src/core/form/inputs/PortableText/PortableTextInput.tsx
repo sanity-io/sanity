@@ -5,8 +5,10 @@ import {
   type OnPasteFn,
   type Patch as EditorPatch,
   type Patch,
+  type PortableTextEditableProps,
   PortableTextEditor,
   type RangeDecoration,
+  type RenderEditableFunction,
 } from '@sanity/portable-text-editor'
 import {useTelemetry} from '@sanity/telemetry/react'
 import {isKeySegment, type PortableTextBlock} from '@sanity/types'
@@ -63,6 +65,10 @@ export interface PortableTextMemberItem {
   elementRef?: MutableRefObject<PortableTextEditorElement | null>
   input?: ReactNode
 }
+/** @public */
+export interface RenderPortableTextInputEditableProps extends PortableTextEditableProps {
+  renderDefault: RenderEditableFunction
+}
 
 /**
  * Input component for editing block content
@@ -96,6 +102,7 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
     rangeDecorations: rangeDecorationsProp,
     renderBlockActions,
     renderCustomMarkers,
+    renderEditable,
     schemaType,
     value,
     resolveUploader,
@@ -397,6 +404,7 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
                   rangeDecorations={rangeDecorations}
                   renderBlockActions={renderBlockActions}
                   renderCustomMarkers={renderCustomMarkers}
+                  renderEditable={renderEditable}
                 />
               </PortableTextEditor>
             </PortableTextMemberItemsProvider>
