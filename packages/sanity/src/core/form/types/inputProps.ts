@@ -31,6 +31,7 @@ import {
   type ReactElement,
 } from 'react'
 
+import {type RenderPortableTextInputEditableProps} from '../inputs'
 import {type FormPatch, type PatchEvent} from '../patch'
 import {type FormFieldGroup} from '../store'
 import {
@@ -555,6 +556,13 @@ export interface PortableTextInputProps
    * Use the `renderBlock` interface instead.
    */
   renderCustomMarkers?: RenderCustomMarkers
+  /**
+   * Function to render the PortableTextInput's editable component.
+   * This is the actual contentEditable element that users type into.
+   * @hidden
+   * @beta
+   */
+  renderEditable?: (props: RenderPortableTextInputEditableProps) => JSX.Element
   /**
    * Array of {@link RangeDecoration} that can be used to decorate the content.
    */
