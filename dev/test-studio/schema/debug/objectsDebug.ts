@@ -11,6 +11,23 @@ const animal = defineField({
       title: 'Animal name',
     },
     {
+      name: 'size',
+      type: 'object',
+      title: 'Size',
+      fields: [
+        {
+          name: 'width',
+          type: 'number',
+          title: 'Width',
+        },
+        {
+          name: 'height',
+          type: 'number',
+          title: 'Height',
+        },
+      ],
+    },
+    {
       name: 'countries',
       type: 'array',
       title: 'Countries',
