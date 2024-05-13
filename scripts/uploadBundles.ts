@@ -21,6 +21,13 @@ const sharedPkgs = ['react', 'react-dom', 'styled-components'] as const
 const appVersion = 'v1'
 
 /**
+ * Replaces all slashes with double underscores
+ */
+function cleanDirName(dirName: string) {
+  return dirName.replace(/\//g, '__')
+}
+
+/**
  * Recursively iterate through a directory and yield all files
  * @param directory - The directory to iterate
  */
@@ -55,7 +62,7 @@ async function copyPackages() {
 
     // Convert slashes to double underscores
     // Needed for `@sanity/vision`
-    const cleanDir = pkg.replace(/\//g, '__')
+    const cleanDir = cleanDirName(pkg)
 
     for await (const filePath of getFiles(`packages/${pkg}/dist`)) {
       try {
@@ -133,12 +140,14 @@ async function updateManifest(newVersions: Map<string, string>) {
 
   // Add the new version to the manifest
   const newManifest = Array.from(newVersions).reduce((initial, [key, value]) => {
+    const dirName = cleanDirName(key)
+
     return {
       ...initial,
       packages: {
         ...initial.packages,
-        [key]: {
-          ...initial.packages[key],
+        [dirName]: {
+          ...initial.packages[dirName],
           default: value,
         },
       },

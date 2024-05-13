@@ -8,7 +8,7 @@ workflows:
           filters:
             branches:
               only:
-                - current
+                - sdx-1261
 
 jobs:
   build:
