@@ -44,8 +44,6 @@ interface RelayOptions {
   exchangeTimeout: number
 }
 
-const RELAY_SECOND_LEG_TIMEOUT = 20 * 1000
-
 /** @internal */
 export interface PairListenerOptions {
   tag?: string
