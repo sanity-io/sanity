@@ -2,8 +2,7 @@
 import {type SanityClient} from '@sanity/client'
 import {type SanityDocument} from '@sanity/types'
 import {groupBy} from 'lodash'
-import LRU from 'quick-lru'
-import {defer, EMPTY, merge, type Observable, of as observableOf, timeout, timer} from 'rxjs'
+import {defer, EMPTY, merge, type Observable, of as observableOf, of, timeout, timer} from 'rxjs'
 import {
   concatMap,
   delay,
@@ -12,9 +11,11 @@ import {
   mergeMap,
   scan,
   share,
+  startWith,
   switchMap,
   take,
   takeUntil,
+  withLatestFrom,
 } from 'rxjs/operators'
 
 import {
@@ -196,49 +197,55 @@ function createRelayPairListener(
     share(),
   )
 
+  // this will emit a single event after the first 'welcome' event is emitted from next leg, plus a delay adding a bit of overlap time
+  const nextLegReady = nextLeg.pipe(
+    filter((e) => e.type === 'welcome'),
+    take(1),
+    delay(exchangeOverLapTime),
+    map(() => true),
+    share(),
+  )
+
   // Merge messages from current leg with next leg into a single stream
   return merge(
-    // take from currentLeg until we get the first 'welcome' from next leg, plus adding little overlap in time
-    currentLeg.pipe(
-      takeUntil(
-        nextLeg.pipe(
-          filter((e) => e.type === 'welcome'),
-          take(1),
-          delay(exchangeOverLapTime),
-        ),
-      ),
-    ),
+    currentLeg.pipe(takeUntil(nextLegReady)),
     // ignore the first welcome event from the next leg.
     nextLeg.pipe(filter((e, index) => e.type !== 'welcome' || index > 0)),
-  ).pipe(distinctByEventId())
+  ).pipe(distinctByEventIdUntilChanged(nextLegReady))
 }
 
 /**
  * Operator function that takes a stream of listener events
  * and returns a new stream that filters out events sharing the same eventId
+ * The argument is a notifier that signals when to stop filtering out duplicate events
  */
-function distinctByEventId() {
-  return (input$: Observable<ClientListenerEvent>) =>
-    input$.pipe(
-      scan(
-        (
-          [seen]: [LRU<string, boolean>, ClientListenerEvent | null],
-          event,
-        ): [LRU<string, boolean>, ClientListenerEvent | null] => {
-          if (event.type !== 'mutation') {
-            return [seen, event]
-          }
-          if (seen.has(event.eventId)) {
-            return [seen, null]
-          }
-          seen.set(event.eventId, true)
-          return [seen, event]
-        },
-        [new LRU<string, boolean>({maxSize: 1000}), null],
+function distinctByEventIdUntilChanged(notifier: Observable<unknown>) {
+  return (input$: Observable<ClientListenerEvent>) => {
+    // This keeps track of the eventIds we have seen
+    const seen = new Set<string>()
+    return input$.pipe(
+      withLatestFrom(
+        notifier.pipe(
+          map(() => true),
+          startWith(false),
+        ),
       ),
-      map(([_, event]) => event),
-      filter((event): event is ClientListenerEvent => event !== null),
+      mergeMap(([event, untilPassed]): Observable<ClientListenerEvent> => {
+        if (event.type !== 'mutation') {
+          return of(event)
+        }
+        if (seen.has(event.eventId)) {
+          return EMPTY
+        }
+        if (untilPassed) {
+          seen.clear()
+          return of(event)
+        }
+        seen.add(event.eventId)
+        return of(event)
+      }),
     )
+  }
 }
 
 function createSnapshotEvent(
