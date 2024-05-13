@@ -1,6 +1,6 @@
 import {Checkbox, Flex, Text, TextInput} from '@sanity/ui'
 import {createColumnHelper} from '@tanstack/react-table'
-import {useMemo, useState} from 'react'
+import {useEffect, useMemo, useState} from 'react'
 import {useMemoObservable} from 'react-rx'
 import {
   type DocumentPreviewStore,
@@ -52,6 +52,10 @@ const TableTextInput = (props: any) => {
   const onBlur = () => {
     props.table.options.meta?.updateData(index, id, value)
   }
+
+  useEffect(() => {
+    setValue(initialValue)
+  }, [initialValue])
 
   return (
     <TextInput value={value as string} onChange={(e) => setValue(e.target.value)} onBlur={onBlur} />

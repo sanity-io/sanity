@@ -1,7 +1,7 @@
 import {type ListenEvent, type ListenOptions} from '@sanity/client'
 import {useCallback, useEffect, useMemo, useReducer, useState} from 'react'
 import {catchError, of} from 'rxjs'
-import {DEFAULT_STUDIO_CLIENT_OPTIONS, type SanityDocument, useClient} from 'sanity'
+import {DEFAULT_STUDIO_CLIENT_OPTIONS, getDraftId, type SanityDocument, useClient} from 'sanity'
 
 interface DocumentAddedAction {
   payload: SanityDocument
@@ -148,13 +148,20 @@ export function useDocumentSheetListStore({
   filter,
   params,
   apiVersion,
+  ids,
 }: {
   filter: string
   params?: Record<string, unknown>
   apiVersion?: string
+  ids?: string[]
 }) {
+  // Creates an array of live and drafts ids to filter the documents and listen to.
+  const idsFilter = ids
+    ? ` && _id in [${ids.map((id) => `"${id}", "${getDraftId(id)}" `).join(',')}]`
+    : ''
+
   // TODO: Make a projection of the query according to the schema. e.g. get only the primitive fields and the _id.
-  const QUERY = `*[${filter}][0...2000]`
+  const QUERY = `*[${filter} ${idsFilter}][0...2000]`
   const client = useClient({
     ...DEFAULT_STUDIO_CLIENT_OPTIONS,
     apiVersion: apiVersion || DEFAULT_STUDIO_CLIENT_OPTIONS.apiVersion,
@@ -251,7 +258,25 @@ export function useDocumentSheetListStore({
   }, [handleListenerEvent, listener$])
 
   // Contemplate that we could have drafts and live documents here, merge them.
-  const dataAsArray = useMemo(() => Object.values(state.documents), [state.documents])
+  const dataAsArray = useMemo(() => {
+    // Joins the drafts and the live documents
+    const uniques = Object.keys(state.documents).reduce(
+      (acc: {[key: string]: SanityDocument}, key) => {
+        const document = state.documents[key]
+        const isDraft = document._id === getDraftId(document._id)
+        const id = isDraft ? document._id : getDraftId(document._id)
+        // If we already have the document, and this document is not the draft one, it means
+        // the draft hast already been added to the list, so we skip it.
+        if (acc[id] && !isDraft) {
+          return acc
+        }
+        acc[id] = document
+        return acc
+      },
+      {},
+    )
+    return Object.values(uniques)
+  }, [state.documents])
 
   return {
     data: dataAsArray,
