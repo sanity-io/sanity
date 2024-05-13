@@ -1,4 +1,4 @@
-import {Checkbox, Flex, Text, TextInput} from '@sanity/ui'
+import {Checkbox, Flex, Select, Text, TextInput} from '@sanity/ui'
 import {createColumnHelper} from '@tanstack/react-table'
 import {useMemo, useState} from 'react'
 import {useMemoObservable} from 'react-rx'
@@ -69,6 +69,18 @@ const getColsFromSchemaType = (schemaType: SchemaType, parentalField: string) =>
           enableHiding: true,
           cell: (info) => {
             if (!info.getValue()) return null
+            if (type.name === 'boolean') {
+              return (
+                <Select
+                  onChange={() => info.table.options.meta?.updateData(index, id, value)}
+                  value={info.getValue()}
+                >
+                  <option value="true">True</option>
+                  <option value="false">False</option>
+                </Select>
+              )
+            }
+
             return <TableTextInput {...info} />
           },
         },
