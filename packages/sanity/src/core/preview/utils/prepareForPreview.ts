@@ -294,7 +294,7 @@ export function prepareForPreview(
     return withErrors(prepareResult, type, selectedValue)
   }
 
-  const returnValueResult = validateReturnedPreview(invokePrepare(type, selectedValue, viewOptions))
+  const returnValueResult = validateReturnedPreview(prepareResult)
   return returnValueResult.errors.length > 0
     ? withErrors(returnValueResult, type, selectedValue)
     : {...pick(rawValue, PRESERVE_KEYS), ...prepareResult.returnValue}
