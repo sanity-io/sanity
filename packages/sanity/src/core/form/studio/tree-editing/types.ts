@@ -5,3 +5,8 @@ export interface TreeEditingMenuItem {
   path: Path
   children?: TreeEditingMenuItem[]
 }
+
+export interface TreeEditingBreadcrumb {
+  title: string
+  path: Path
+}
