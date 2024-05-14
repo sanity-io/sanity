@@ -1,6 +1,6 @@
 import {Box, Card, Code, Container, Flex} from '@sanity/ui'
 import {useEffect, useState} from 'react'
-import {type Path, useSchema} from 'sanity'
+import {type ObjectSchemaType, type Path, useSchema} from 'sanity'
 
 import {TreeEditingMenu} from '../components'
 import {buildTreeMenuItems, EMPTY_TREE_STATE, type TreeEditingState} from '../utils'
@@ -103,7 +103,7 @@ const DOCUMENT_VALUE = {
   ],
 }
 
-export default function TreeMenuItemsBuildDebugStory() {
+export default function TreeMenuItemsBuildDebugStory(): JSX.Element {
   const schema = useSchema()
   const [items, setItems] = useState<TreeEditingState>(EMPTY_TREE_STATE)
   const [selectedPath, setSelectedPath] = useState<Path>([])
@@ -112,7 +112,7 @@ export default function TreeMenuItemsBuildDebugStory() {
     const menuItems = buildTreeMenuItems({
       documentValue: DOCUMENT_VALUE,
       focusPath: ['animals'],
-      schemaType: schema.get('objectsDebug') as any,
+      schemaType: schema.get('objectsDebug') as ObjectSchemaType,
     })
 
     setItems(menuItems)
