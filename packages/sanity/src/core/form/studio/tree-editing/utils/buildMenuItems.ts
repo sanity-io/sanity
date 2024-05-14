@@ -176,7 +176,7 @@ export function buildTreeMenuItems(props: BuildTreeMenuItemsProps): TreeEditingS
           relativePath = nextPath
         }
 
-        if (!isPrimitive) {
+        if (!isPrimitive && childField?.type?.jsonType !== 'object') {
           const childState = recursive({
             schemaType: childField as ObjectSchemaType,
             documentValue,
