@@ -99,7 +99,6 @@ function DocumentSheetListPaneInner({
     return (
       <Box
         as="tr"
-        data-index={row.index} //needed for dynamic row height measurement
         key={row.original._id + row.id}
         paddingY={2}
         style={{display: 'flex', width: '100%'}}
@@ -124,7 +123,7 @@ function DocumentSheetListPaneInner({
 
   const rowsCount = `Total: ${totalRows} rows, showing ${rows.length} rows`
   return (
-    <PaneContainer direction="column" paddingX={3}>
+    <PaneContainer direction="column" paddingX={3} data-testid="document-sheet-list-pane">
       <DocumentSheetFilter />
       <Flex paddingBottom={3} paddingLeft={3}>
         <Text size={0} muted>
