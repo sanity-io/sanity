@@ -2,7 +2,17 @@
 import {type SanityClient} from '@sanity/client'
 import {type SanityDocument} from '@sanity/types'
 import {groupBy} from 'lodash'
-import {defer, EMPTY, merge, type Observable, of as observableOf, of, timeout, timer} from 'rxjs'
+import {
+  defer,
+  EMPTY,
+  merge,
+  type Observable,
+  of as observableOf,
+  of,
+  partition,
+  timeout,
+  timer,
+} from 'rxjs'
 import {
   concatMap,
   delay,
@@ -11,6 +21,7 @@ import {
   mergeMap,
   scan,
   share,
+  shareReplay,
   startWith,
   switchMap,
   take,
@@ -88,10 +99,16 @@ function getExchangeWait(min: number, max: number) {
 export function createPairListener(
   client: SanityClient,
   idPair: IdPair,
-  options?: PairListenerOptions,
+  options: PairListenerOptions,
 ): Observable<ListenerEvent> {
   const {publishedId, draftId} = idPair
-  return createRelayPairListener(client, idPair, options).pipe(
+  return getOrCreateGlobalListener(client, options).pipe(
+    filter(
+      (event) =>
+        event.type === 'welcome' ||
+        (event.type === 'mutation' &&
+          (event.documentId === draftId || event.documentId === publishedId)),
+    ),
     concatMap((event) =>
       event.type === 'welcome'
         ? fetchInitialDocumentSnapshots().pipe(
@@ -151,32 +168,54 @@ export function createPairListener(
 
 type ClientListenerEvent = WelcomeEvent | MutationEvent | ReconnectEvent
 
-function createRelayPairListener(
+const listeners = new WeakMap()
+
+function getOrCreateGlobalListener(
   client: SanityClient,
-  idPair: IdPair,
-  options?: PairListenerOptions,
+  options: PairListenerOptions,
 ): Observable<ClientListenerEvent> {
-  const {publishedId, draftId} = idPair
-  const currentLeg = defer(
-    () =>
-      client.observable.listen(
-        `*[_id == $publishedId || _id == $draftId]`,
-        {publishedId, draftId},
-        {
-          includeResult: false,
-          events: ['welcome', 'mutation', 'reconnect'],
-          effectFormat: 'mendoza',
-          tag: options?.tag || 'document.pair-listener',
-        },
-      ) as Observable<ClientListenerEvent>,
-  ).pipe(share())
+  if (!listeners.has(client)) {
+    // eslint-disable-next-line no-inner-declarations
+    function connect() {
+      return defer(
+        () =>
+          client.observable.listen(
+            `*[!(_id in path("_.**"))]`,
+            {},
+            {
+              includeResult: false,
+              events: ['welcome', 'mutation', 'reconnect'],
+              effectFormat: 'mendoza',
+              tag: options?.tag || 'document.pair-listener',
+            },
+          ) as Observable<ClientListenerEvent>,
+      ).pipe(share())
+    }
 
-  if (!options?.relay) {
-    return currentLeg
+    const events$ = relay(connect, options).pipe(share())
+    const [welcome$, mutationAndReconnect$] = partition(
+      events$,
+      (event) => event.type === 'welcome',
+    )
+
+    listeners.set(
+      client,
+      merge(
+        welcome$.pipe(take(1), shareReplay({refCount: true, bufferSize: 1})),
+        mutationAndReconnect$.pipe(share()),
+      ),
+    )
   }
+  return listeners.get(client)
+}
 
+function relay(
+  connect: () => Observable<ClientListenerEvent>,
+  options: PairListenerOptions,
+): Observable<ClientListenerEvent> {
   const {exchangeWaitMin, exchangeWaitMax, exchangeOverLapTime, exchangeTimeout} = options.relay
 
+  const currentLeg = connect().pipe(share())
   // This represents the next leg, and will be started after a certain delay
   const nextLeg = currentLeg.pipe(
     // make sure we are connected to the current leg before scheduling the next one. This prevents build-up in case it takes a while to connect
@@ -186,7 +225,7 @@ function createRelayPairListener(
     switchMap(() => timer(getExchangeWait(exchangeWaitMin, exchangeWaitMax))),
     take(1),
     mergeMap(() =>
-      createRelayPairListener(client, idPair, options).pipe(
+      relay(connect, options).pipe(
         // this will make sure that if it takes too long to connect to the next, we will just ignore it and continue with the current leg
         timeout({
           first: exchangeTimeout,
