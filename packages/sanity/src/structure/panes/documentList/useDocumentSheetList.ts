@@ -1,3 +1,4 @@
+import {type SanityDocument} from '@sanity/types'
 import {useMemo} from 'react'
 import {useMemoObservable} from 'react-rx'
 import {combineLatest} from 'rxjs'
@@ -28,8 +29,8 @@ export function useDocumentSheetList({typeName}: DocumentSheetListOptions) {
   }, [state.result.hits])
 
   const docs = useEditStateList(items, typeName)
-  const tableData = useMemo(() => {
-    return (docs?.filter((d) => d.ready) || []).map((d) => {
+  const tableData: SanityDocument[] = useMemo(() => {
+    return (docs || []).map((d) => {
       if (d.draft) {
         return d.draft
       }
@@ -39,6 +40,10 @@ export function useDocumentSheetList({typeName}: DocumentSheetListOptions) {
       return {
         _type: d.type,
         _id: d.id,
+        _loading: !d.ready,
+        _rev: '', // fake a SanityDocument type
+        _createdAt: '',
+        _updatedAt: '',
       }
     })
   }, [docs])
