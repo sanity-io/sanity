@@ -53,7 +53,8 @@
     "@sanity/types": "3.56.0",
     "@sanity/uuid": "^3.0.1",
     "debug": "^4.3.4",
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.21",
+    "lodash-es": "^4.17.21"
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",
