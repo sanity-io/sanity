@@ -45,7 +45,7 @@ function MenuItem(props: TreeEditingMenuItemProps) {
       onPathSelect(item.path.slice(0, item.path.length - 1))
 
       const element = document.getElementById(elementPath)
-      element?.scrollIntoView()
+      element?.scrollIntoView({behavior: 'smooth'})
     }
 
     setOpen((v) => !v)
