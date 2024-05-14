@@ -15,7 +15,7 @@ import {
   withLatestFrom,
 } from 'rxjs/operators'
 
-import {type ListenerEvent} from '../getPairListener'
+import {type ListenerEvent} from '../createPairListener'
 import {type MutationEvent} from '../types'
 import {
   type DocumentMutationEvent,

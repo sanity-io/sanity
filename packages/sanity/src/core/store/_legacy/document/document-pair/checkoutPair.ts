@@ -11,7 +11,7 @@ import {
   type MutationPayload,
   type RemoteSnapshotEvent,
 } from '../buffered-doc'
-import {getPairListener, type ListenerEvent} from '../getPairListener'
+import {createPairListener, type ListenerEvent} from '../createPairListener'
 import {type IdPair, type PendingMutationsEvent, type ReconnectEvent} from '../types'
 import {type HttpAction} from './actionTypes'
 
@@ -192,6 +192,16 @@ function submitCommitRequest(
   )
 }
 
+const RELAY_CONFIG = {
+  /** How long to wait after the first connection is set up to start the exchange */
+  exchangeWaitMin: 1000 * 60 * 12,
+  exchangeWaitMax: 1000 * 60 * 19,
+  /** How long should the overlap between the two listeners be */
+  exchangeOverLapTime: 1000 * 20,
+  /** If we're unable to set up the next listener within this time, we'll just continue with the current one */
+  exchangeTimeout: 1000 * 20,
+}
+
 /** @internal */
 export function checkoutPair(
   client: SanityClient,
@@ -201,7 +211,7 @@ export function checkoutPair(
   const {publishedId, draftId} = idPair
 
   const listenerEventsConnector = new Subject<ListenerEvent>()
-  const listenerEvents$ = getPairListener(client, idPair).pipe(
+  const listenerEvents$ = createPairListener(client, idPair, {relay: RELAY_CONFIG}).pipe(
     share({connector: () => listenerEventsConnector}),
   )
 
