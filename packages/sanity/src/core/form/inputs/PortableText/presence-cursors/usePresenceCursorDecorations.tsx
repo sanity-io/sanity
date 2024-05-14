@@ -79,7 +79,9 @@ export function usePresenceCursorDecorations(
       const cursorPoint = {focus: presence.selection.focus, anchor: presence.selection.focus}
 
       return {
-        component: () => <UserPresenceCursor user={presence.user} />,
+        component: ({children}) => (
+          <UserPresenceCursor user={presence.user}>{children}</UserPresenceCursor>
+        ),
         selection: cursorPoint,
         onMoved: handleRangeDecorationMoved,
         payload: {sessionId: presence.sessionId},

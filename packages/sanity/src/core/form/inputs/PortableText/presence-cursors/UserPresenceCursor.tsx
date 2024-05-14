@@ -108,11 +108,12 @@ const UserText = styled(motion(Text))`
 `
 
 interface UserPresenceCursorProps {
+  children?: React.ReactNode
   user: User
 }
 
 export function UserPresenceCursor(props: UserPresenceCursorProps): JSX.Element {
-  const {user} = props
+  const {children, user} = props
   const {tints} = useUserColor(user.id)
   const [hovered, setHovered] = useState<boolean>(false)
 
@@ -125,39 +126,42 @@ export function UserPresenceCursor(props: UserPresenceCursorProps): JSX.Element 
   )
 
   return (
-    <CursorLine
-      $tints={tints}
-      contentEditable={false}
-      data-testid={testId}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-    >
-      <AnimatePresence>
-        {hovered && (
-          <UserBox
-            animate="animate"
-            exit="exit"
-            flex={1}
-            initial="initial"
-            transition={CONTENT_BOX_TRANSITION}
-            variants={CONTENT_BOX_VARIANTS}
-          >
-            <UserText
+    <>
+      <CursorLine
+        $tints={tints}
+        contentEditable={false}
+        data-testid={testId}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+      >
+        <AnimatePresence>
+          {hovered && (
+            <UserBox
               animate="animate"
               exit="exit"
+              flex={1}
               initial="initial"
-              size={0}
-              transition={CONTENT_TEXT_TRANSITION}
-              variants={CONTENT_TEXT_VARIANTS}
-              weight="medium"
+              transition={CONTENT_BOX_TRANSITION}
+              variants={CONTENT_BOX_VARIANTS}
             >
-              {user.displayName}
-            </UserText>
-          </UserBox>
-        )}
-      </AnimatePresence>
+              <UserText
+                animate="animate"
+                exit="exit"
+                initial="initial"
+                size={0}
+                transition={CONTENT_TEXT_TRANSITION}
+                variants={CONTENT_TEXT_VARIANTS}
+                weight="medium"
+              >
+                {user.displayName}
+              </UserText>
+            </UserBox>
+          )}
+        </AnimatePresence>
 
-      <CursorDot />
-    </CursorLine>
+        <CursorDot />
+      </CursorLine>
+      {children}
+    </>
   )
 }
