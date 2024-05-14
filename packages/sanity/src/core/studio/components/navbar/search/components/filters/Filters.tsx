@@ -12,6 +12,9 @@ import {DebugFilterQuery} from './debug/_DebugFilterQuery'
 import {DocumentTypesButton} from './documentTypes/DocumentTypesButton'
 import {FilterButton} from './filter/FilterButton'
 
+/**
+ * @internal
+ */
 export function Filters({showTypeFilter = true}: {showTypeFilter?: boolean}) {
   const {
     dispatch,
