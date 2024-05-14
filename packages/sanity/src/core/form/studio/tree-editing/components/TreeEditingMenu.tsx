@@ -30,7 +30,23 @@ function MenuItem(props: TreeEditingMenuItemProps) {
   const [open, setOpen] = useState<boolean>(hasOpenChild(item, selectedPath))
 
   const handleClick = useCallback(() => {
-    onPathSelect(item.path)
+    if (item.path[item.path.length - 1].hasOwnProperty('_key')) {
+      // move this logic out so it can be used in the breadcrumbs
+      onPathSelect(item.path)
+    } else {
+      let elementPath = ''
+      const a = item.path.forEach((element, index) => {
+        if (element.hasOwnProperty('_key')) {
+          elementPath += `[_key=="${element._key}"]${index === item.path.length - 1 ? `` : `.`}`
+        } else {
+          elementPath += `${element}`
+        }
+      })
+      onPathSelect(item.path.slice(0, item.path.length - 1))
+
+      const element = document.getElementById(elementPath)
+      element?.scrollIntoView()
+    }
 
     setOpen((v) => !v)
   }, [item.path, onPathSelect])
