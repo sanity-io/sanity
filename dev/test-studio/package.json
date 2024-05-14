@@ -22,7 +22,7 @@
     "@react-three/fiber": "^8.13.6",
     "@sanity/assist": "^3.0.2",
     "@sanity/block-tools": "3.42.1",
-    "@sanity/client": "^6.18.0",
+    "@sanity/client": "^6.18.1",
     "@sanity/color": "^3.0.0",
     "@sanity/google-maps-input": "^4.0.0",
     "@sanity/icons": "^2.11.0",
@@ -44,10 +44,10 @@
     "@sanity/util": "workspace:*",
     "@sanity/uuid": "^3.0.1",
     "@sanity/vision": "workspace:*",
-    "@sanity/visual-editing": "1.8.18",
+    "@sanity/visual-editing": "1.8.19",
     "@turf/helpers": "^6.0.1",
     "@turf/points-within-polygon": "^5.1.5",
-    "@types/three": "^0.150.0",
+    "@types/three": "^0.164.0",
     "@vercel/stega": "0.1.2",
     "chokidar": "^3.5.3",
     "globby": "^10.0.0",
@@ -65,11 +65,11 @@
     "sanity-plugin-hotspot-array": "^2.0.0",
     "sanity-plugin-mux-input": "^2.2.1",
     "styled-components": "^6.1.0",
-    "three": "^0.157.0",
+    "three": "^0.164.0",
     "three-stdlib": "^2.24.2"
   },
   "devDependencies": {
-    "chokidar": "^3.5.3",
+    "chokidar": "^3.6.0",
     "vite": "^4.5.3"
   }
 }
