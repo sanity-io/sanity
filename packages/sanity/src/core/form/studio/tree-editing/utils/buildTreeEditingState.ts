@@ -3,6 +3,7 @@ import {
   type ArraySchemaType,
   getSchemaTypeTitle,
   getValueAtPath,
+  isArrayOfPrimitivesSchemaType,
   isArraySchemaType,
   isPrimitiveSchemaType,
   type ObjectSchemaType,
@@ -21,7 +22,7 @@ export const EMPTY_TREE_STATE: TreeEditingState = {
   rootTitle: '',
 }
 
-export interface BuildTreeMenuItemsProps {
+export interface BuildTreeEditingStateProps {
   schemaType: ObjectSchemaType | ArraySchemaType
   documentValue: unknown
   focusPath: Path
@@ -34,7 +35,7 @@ export interface TreeEditingState {
   rootTitle: string
 }
 
-interface RecursiveProps extends Omit<BuildTreeMenuItemsProps, 'focusPath'> {
+interface RecursiveProps extends Omit<BuildTreeEditingStateProps, 'focusPath'> {
   path: Path
   initial: boolean
 }
@@ -48,14 +49,21 @@ function shouldNavigate(itemPath: Path): boolean {
   return itemPath[itemPath.length - 1].hasOwnProperty('_key')
 }
 
-// todo: this should not be a global variable
-let relativePath: Path = []
+function shouldBeInBreadcrumb(itemPath: Path, focusPath: Path): boolean {
+  return itemPath.every((segment, index) => {
+    return JSON.stringify(focusPath[index]) === JSON.stringify(segment)
+  })
+}
 
-export function buildTreeMenuItems(props: BuildTreeMenuItemsProps): TreeEditingState {
+export function buildTreeEditingState(props: BuildTreeEditingStateProps): TreeEditingState {
   const {focusPath} = props
   const menuItems: TreeEditingMenuItem[] = []
   const rootPath = [focusPath[0]]
   const rootField = getSchemaField(props.schemaType, toString(rootPath))?.type as ObjectSchemaType
+  const rootTitle = getSchemaTypeTitle(rootField)
+
+  const breadcrumbs: TreeEditingBreadcrumb[] = []
+  let relativePath: Path = []
 
   if (JSON.stringify(rootPath) === JSON.stringify(focusPath)) {
     return EMPTY_TREE_STATE
@@ -73,9 +81,19 @@ export function buildTreeMenuItems(props: BuildTreeMenuItemsProps): TreeEditingS
 
     if (schemaType.type?.jsonType === 'object') {
       const items = schemaType?.type?.fields?.map((field) => {
+        const nextPath = [...path, field.name]
+        const objectTitle = getSchemaTypeTitle(schemaType)
+
+        if (shouldBeInBreadcrumb(nextPath, focusPath)) {
+          breadcrumbs.push({
+            path: nextPath,
+            title: objectTitle,
+          })
+        }
+
         return {
-          title: getSchemaTypeTitle(field.type),
-          path: [...path, field.name],
+          title: objectTitle,
+          path: nextPath,
           children: EMPTY_ARRAY,
         }
       })
@@ -83,7 +101,7 @@ export function buildTreeMenuItems(props: BuildTreeMenuItemsProps): TreeEditingS
       return {
         menuItems: items,
         relativePath,
-        breadcrumbs: [],
+        breadcrumbs: EMPTY_ARRAY,
         rootTitle: '',
       }
     }
@@ -109,10 +127,18 @@ export function buildTreeMenuItems(props: BuildTreeMenuItemsProps): TreeEditingS
           relativePath = itemPath
         }
 
+        if (shouldBeInBreadcrumb(itemPath, focusPath)) {
+          breadcrumbs.push({
+            path: itemPath,
+            title: (title || 'Untitled') as string,
+          })
+        }
+
         childrenFields.forEach((childField) => {
           const childPath = [...itemPath, childField.name] as Path
 
           const isPrimitive = isPrimitiveSchemaType(childField?.type)
+          const childTitle = getSchemaTypeTitle(childField.type) as string
 
           if (isSelected(childPath, focusPath) && shouldNavigate(childPath)) {
             const nextPath = isPrimitive ? childPath.slice(0, childPath.length - 1) : childPath
@@ -121,6 +147,13 @@ export function buildTreeMenuItems(props: BuildTreeMenuItemsProps): TreeEditingS
           }
 
           if (!isPrimitive) {
+            if (shouldBeInBreadcrumb(childPath, focusPath)) {
+              breadcrumbs.push({
+                path: childPath,
+                title: childTitle,
+              })
+            }
+
             const childState = recursive({
               schemaType: childField as ObjectSchemaType,
               documentValue,
@@ -129,7 +162,7 @@ export function buildTreeMenuItems(props: BuildTreeMenuItemsProps): TreeEditingS
             })
 
             childrenMenuItems.push({
-              title: getSchemaTypeTitle(childField.type) as string,
+              title: childTitle,
               path: childPath,
               children: childState?.menuItems || EMPTY_ARRAY,
             })
@@ -146,7 +179,7 @@ export function buildTreeMenuItems(props: BuildTreeMenuItemsProps): TreeEditingS
       return {
         menuItems: nestedItems,
         relativePath,
-        breadcrumbs: [],
+        breadcrumbs: EMPTY_ARRAY,
         rootTitle: '',
       }
     }
@@ -170,10 +203,18 @@ export function buildTreeMenuItems(props: BuildTreeMenuItemsProps): TreeEditingS
       const childrenFields = itemSchemaField?.fields || []
       const childrenMenuItems: TreeEditingMenuItem[] = []
 
+      if (shouldBeInBreadcrumb(itemPath, focusPath)) {
+        breadcrumbs.push({
+          path: itemPath,
+          title: (title || 'Untitled') as string,
+        })
+      }
+
       childrenFields.forEach((childField) => {
         const childPath = [...itemPath, childField.name] as Path
 
         const isPrimitive = isPrimitiveSchemaType(childField?.type)
+        const childTitle = getSchemaTypeTitle(childField.type) as string
 
         if (isSelected(childPath, focusPath) && shouldNavigate(childPath)) {
           const nextPath = isPrimitive ? childPath.slice(0, childPath.length - 1) : childPath
@@ -181,7 +222,18 @@ export function buildTreeMenuItems(props: BuildTreeMenuItemsProps): TreeEditingS
           relativePath = nextPath
         }
 
-        if (!isPrimitive) {
+        if (
+          !isPrimitive &&
+          !isArrayOfPrimitivesSchemaType(childField.type) &&
+          isArraySchemaType(childField.type)
+        ) {
+          if (shouldBeInBreadcrumb(childPath, focusPath)) {
+            breadcrumbs.push({
+              path: childPath,
+              title: childTitle,
+            })
+          }
+
           const childState = recursive({
             schemaType: childField as ObjectSchemaType,
             documentValue,
@@ -215,27 +267,17 @@ export function buildTreeMenuItems(props: BuildTreeMenuItemsProps): TreeEditingS
     })
 
     return {
+      breadcrumbs: EMPTY_ARRAY,
       menuItems,
       relativePath,
-      breadcrumbs: [],
       rootTitle: '',
     }
   }
 
-  // todo: fix breadcrumbs
-  const breadcrumbs = relativePath.map((p, index) => {
-    const currentPath = relativePath.slice(0, index + 1)
-
-    return {
-      path: currentPath as Path,
-      title: JSON.stringify(p),
-    }
-  })
-
   return {
+    breadcrumbs,
     menuItems,
     relativePath,
-    breadcrumbs,
-    rootTitle: getSchemaTypeTitle(rootField),
+    rootTitle,
   }
 }
