@@ -123,7 +123,7 @@ function DocumentSheetListPaneInner({
 
   const rowsCount = `Total: ${totalRows} rows, showing ${rows.length} rows`
   return (
-    <PaneContainer direction="column" paddingX={3}>
+    <PaneContainer direction="column" paddingX={3} data-testid="document-sheet-list-pane">
       <DocumentSheetFilter />
       <Flex paddingBottom={3} paddingLeft={3}>
         <Text size={0} muted>
