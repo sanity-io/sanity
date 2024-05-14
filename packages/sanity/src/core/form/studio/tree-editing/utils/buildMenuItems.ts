@@ -40,10 +40,12 @@ interface RecursiveProps extends Omit<BuildTreeMenuItemsProps, 'focusPath'> {
 }
 
 function isSelected(itemPath: Path, focusPath: Path): boolean {
-  return (
-    JSON.stringify(itemPath) === JSON.stringify(focusPath) &&
-    itemPath[itemPath.length - 1].hasOwnProperty('_key') // if it's not a key property we don't want to update the relativePath
-  )
+  return JSON.stringify(itemPath) === JSON.stringify(focusPath)
+}
+
+function shouldNavigate(itemPath: Path): boolean {
+  // if it's not a key property we don't want to update the relativePath
+  return itemPath[itemPath.length - 1].hasOwnProperty('_key')
 }
 
 // todo: this should not be a global variable
@@ -103,7 +105,7 @@ export function buildTreeMenuItems(props: BuildTreeMenuItemsProps): TreeEditingS
         const childrenFields = itemSchemaField?.fields || []
         const childrenMenuItems: TreeEditingMenuItem[] = []
 
-        if (isSelected(itemPath, focusPath)) {
+        if (isSelected(itemPath, focusPath) && shouldNavigate(itemPath)) {
           relativePath = itemPath
         }
 
@@ -112,7 +114,7 @@ export function buildTreeMenuItems(props: BuildTreeMenuItemsProps): TreeEditingS
 
           const isPrimitive = isPrimitiveSchemaType(childField?.type)
 
-          if (isSelected(childPath, focusPath)) {
+          if (isSelected(childPath, focusPath) && shouldNavigate(childPath)) {
             const nextPath = isPrimitive ? childPath.slice(0, childPath.length - 1) : childPath
 
             relativePath = nextPath
@@ -173,7 +175,7 @@ export function buildTreeMenuItems(props: BuildTreeMenuItemsProps): TreeEditingS
 
         const isPrimitive = isPrimitiveSchemaType(childField?.type)
 
-        if (isSelected(childPath, focusPath)) {
+        if (isSelected(childPath, focusPath) && shouldNavigate(childPath)) {
           const nextPath = isPrimitive ? childPath.slice(0, childPath.length - 1) : childPath
 
           relativePath = nextPath
@@ -197,7 +199,7 @@ export function buildTreeMenuItems(props: BuildTreeMenuItemsProps): TreeEditingS
 
       const isPrimitive = isPrimitiveSchemaType(itemSchemaField?.type)
 
-      if (isSelected(itemPath, focusPath)) {
+      if (isSelected(itemPath, focusPath) && shouldNavigate(itemPath)) {
         const nextPath = isPrimitive ? itemPath.slice(0, itemPath.length - 1) : itemPath
 
         relativePath = nextPath
