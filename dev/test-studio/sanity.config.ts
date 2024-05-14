@@ -45,6 +45,7 @@ import {resolveInitialValueTemplates} from './initialValueTemplates'
 import {customInspector} from './inspectors/custom'
 import {testStudioLocaleBundles} from './locales'
 import {languageFilter} from './plugins/language-filter'
+import {listenerDebugTool} from './plugins/listener-debug'
 import {presenceTool} from './plugins/presence'
 import {routerDebugTool} from './plugins/router-debug'
 import {theme as tailwindTheme} from './sanity.theme.mjs'
@@ -136,6 +137,7 @@ const sharedSettings = definePlugin({
     imageHotspotArrayPlugin(),
     presenceTool(),
     routerDebugTool(),
+    listenerDebugTool(),
     tsdoc(),
   ],
 })
