@@ -160,6 +160,10 @@ async function updateManifest(newVersions: Map<string, string>) {
     const options = {
       destination: 'modules/v1/manifest-v1.json',
       contentType: 'application/json',
+      metadata: {
+        // 10 mins cache
+        cacheControl: 'public, max-age=600',
+      },
     }
 
     await bucket.upload('manifest-v1.json', options)
