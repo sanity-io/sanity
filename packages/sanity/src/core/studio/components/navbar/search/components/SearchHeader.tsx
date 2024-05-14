@@ -7,6 +7,7 @@ import {Button} from '../../../../../../ui-components'
 import {StatusButton} from '../../../../../components'
 import {useTranslation} from '../../../../../i18n'
 import {useSearchState} from '../contexts/search/useSearchState'
+import {hasSearchableTerms} from '../utils/hasSearchableTerms'
 import {CustomTextInput} from './common/CustomTextInput'
 
 const rotate = keyframes`
@@ -28,16 +29,20 @@ const FilterDiv = styled.div`
 `
 
 interface SearchHeaderProps {
-  ariaInputLabel: string
+  ariaInputLabel?: string
   onClose?: () => void
 }
 
+/**
+ * @internal
+ */
 export const SearchHeader = forwardRef<HTMLInputElement, SearchHeaderProps>(function SearchHeader(
   {ariaInputLabel, onClose},
   ref,
 ) {
   const isMountedRef = useRef(false)
 
+  const {t} = useTranslation()
   const {
     dispatch,
     state: {
@@ -45,10 +50,16 @@ export const SearchHeader = forwardRef<HTMLInputElement, SearchHeaderProps>(func
       filtersVisible,
       fullscreen,
       result: {loading},
-      terms: {types, query},
+      terms,
     },
   } = useSearchState()
-  const {t} = useTranslation()
+  const {types, query} = terms
+
+  const hasValidTerms = hasSearchableTerms({terms})
+  const ariaLabel =
+    ariaInputLabel || hasValidTerms
+      ? t('search.search-results-aria-label')
+      : t('search.recent-searches-aria-label')
 
   const handleFiltersToggle = useCallback(
     () => dispatch({type: 'FILTERS_VISIBLE_SET', visible: !filtersVisible}),
@@ -99,7 +110,7 @@ export const SearchHeader = forwardRef<HTMLInputElement, SearchHeaderProps>(func
             __unstable_disableFocusRing
             $background={fullscreen}
             $smallClearButton={fullscreen}
-            aria-label={ariaInputLabel}
+            aria-label={ariaLabel}
             autoComplete="off"
             border={false}
             clearButton={!!query}

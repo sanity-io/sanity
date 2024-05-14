@@ -16,7 +16,11 @@ import {type ReactNode, useCallback, useMemo, useState} from 'react'
 import {ChangeIndicator} from '../../../changeIndicators'
 import {EMPTY_ARRAY} from '../../../util'
 import {ActivateOnFocus} from '../../components/ActivateOnFocus/ActivateOnFocus'
-import {type ArrayOfObjectsInputProps, type RenderCustomMarkers} from '../../types'
+import {
+  type ArrayOfObjectsInputProps,
+  type PortableTextInputProps,
+  type RenderCustomMarkers,
+} from '../../types'
 import {type RenderBlockActionsCallback} from '../../types/_transitional'
 import {ExpandedLayer, Root} from './Compositor.styles'
 import {Editor} from './Editor'
@@ -30,6 +34,7 @@ import {TextBlock} from './text'
 interface InputProps extends ArrayOfObjectsInputProps<PortableTextBlock> {
   elementRef: React.RefObject<HTMLDivElement>
   hasFocusWithin: boolean
+  hideToolbar?: boolean
   hotkeys?: HotkeyOptions
   isActive: boolean
   isFullscreen: boolean
@@ -41,6 +46,7 @@ interface InputProps extends ArrayOfObjectsInputProps<PortableTextBlock> {
   rangeDecorations?: RangeDecoration[]
   renderBlockActions?: RenderBlockActionsCallback
   renderCustomMarkers?: RenderCustomMarkers
+  renderEditable?: PortableTextInputProps['renderEditable']
 }
 
 /** @internal */
@@ -54,6 +60,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
     focused,
     focusPath = EMPTY_ARRAY,
     hasFocusWithin,
+    hideToolbar,
     hotkeys,
     isActive,
     isFullscreen,
@@ -72,6 +79,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
     renderBlock,
     renderBlockActions,
     renderCustomMarkers,
+    renderEditable,
     renderField,
     renderInlineBlock,
     renderInput,
@@ -392,6 +400,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
         ariaDescribedBy={ariaDescribedBy}
         elementRef={elementRef}
         initialSelection={initialSelection}
+        hideToolbar={hideToolbar}
         hotkeys={editorHotkeys}
         isActive={isActive}
         isFullscreen={isFullscreen}
@@ -405,6 +414,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
         renderAnnotation={editorRenderAnnotation}
         renderBlock={editorRenderBlock}
         renderChild={editorRenderChild}
+        renderEditable={renderEditable}
         setPortalElement={setPortalElement}
         scrollElement={scrollElement}
         setScrollElement={setScrollElement}
@@ -420,6 +430,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       editorRenderChild,
       elementRef,
       handleToggleFullscreen,
+      hideToolbar,
       initialSelection,
       isActive,
       isFullscreen,
@@ -429,6 +440,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       path,
       rangeDecorations,
       readOnly,
+      renderEditable,
       scrollElement,
     ],
   )

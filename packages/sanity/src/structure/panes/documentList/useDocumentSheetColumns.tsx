@@ -1,3 +1,4 @@
+// This is a WIP file, to render a very basic table view.
 import {Checkbox, Flex, Select, Text, TextInput} from '@sanity/ui'
 import {createColumnHelper} from '@tanstack/react-table'
 import {useMemo, useState} from 'react'
@@ -35,15 +36,17 @@ const PreviewCell = (props: {
       </Text>
     )
   }
+  const displayValue = (draft?.title ?? published?.title ?? 'Untitled') as string
   return (
     <Flex align="center" gap={3}>
       <DocumentStatusIndicator draft={draft} published={published} />
-      <Text size={1}>{draft?.title || published?.title || 'Untitled'}</Text>
+      <Text size={1}>{displayValue}</Text>
     </Flex>
   )
 }
 
 const TableTextInput = (props: any) => {
+  const {index, id} = props
   const initialValue = props.getValue()
   // We need to keep and update the state of the cell normally
   const [value, setValue] = useState(initialValue || '')
@@ -68,12 +71,14 @@ const getColsFromSchemaType = (schemaType: SchemaType, parentalField: string) =>
           header: field.type.title,
           enableHiding: true,
           cell: (info) => {
-            if (!info.getValue()) return null
+            const renderValue = info.getValue()
+
+            if (!renderValue) return null
             if (type.name === 'boolean') {
               return (
                 <Select
                   onChange={() => info.table.options.meta?.updateData(index, id, value)}
-                  value={info.getValue()}
+                  value={renderValue}
                 >
                   <option value="true">True</option>
                   <option value="false">False</option>
@@ -81,6 +86,10 @@ const getColsFromSchemaType = (schemaType: SchemaType, parentalField: string) =>
               )
             }
 
+            if (typeof renderValue === 'string' || typeof renderValue === 'number') {
+              return <Text size={0}>{renderValue}</Text>
+            }
+            return <Text size={0}>{JSON.stringify(renderValue)}</Text>
             return <TableTextInput {...info} />
           },
         },
@@ -140,13 +149,6 @@ export function useDocumentSheetColumns(schemaType?: SchemaTypeDefinition) {
           )
         },
       },
-      columnHelper.accessor('_id', {
-        enableHiding: true,
-        header: 'Id',
-        cell: (info) => {
-          return <Text size={1}>{info.getValue()}</Text>
-        },
-      }),
       ...getColsFromSchemaType(schemaType),
     ]
   }, [documentPreviewStore, schemaType])

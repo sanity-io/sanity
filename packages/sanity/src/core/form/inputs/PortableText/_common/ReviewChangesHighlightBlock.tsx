@@ -13,5 +13,6 @@ export const ReviewChangesHighlightBlock = styled.div(({theme}) => {
     left: ${space[4] + space[1]}px;
     right: 0;
     background-color: ${bg};
+    pointer-events: none;
   `
 })

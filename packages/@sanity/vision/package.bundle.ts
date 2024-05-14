@@ -7,7 +7,7 @@ export default defineConfig(() => {
     build: {
       lib: {
         entry: {
-          '@sanity__vision': './src/index.ts',
+          index: './src/index.ts',
         },
       },
       rollupOptions: {
