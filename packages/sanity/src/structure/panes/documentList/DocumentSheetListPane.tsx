@@ -13,8 +13,8 @@ import {SearchProvider, useSchema, useSearchState} from 'sanity'
 import {styled} from 'styled-components'
 
 import {type BaseStructureToolPaneProps} from '../types'
-import {DocumentSheetFilter} from './DocumentSheetListFilter'
-import {DocumentSheetPaginator} from './DocumentSheetListPaginator'
+import {DocumentSheetListFilter} from './DocumentSheetListFilter'
+import {DocumentSheetListPaginator} from './DocumentSheetListPaginator'
 import {useDocumentSheetColumns} from './useDocumentSheetColumns'
 import {useDocumentSheetList} from './useDocumentSheetList'
 
@@ -123,7 +123,7 @@ function DocumentSheetListPaneInner({
   const rowsCount = `Total: ${totalRows} rows, showing ${rows.length} rows`
   return (
     <PaneContainer direction="column" paddingX={3} data-testid="document-sheet-list-pane">
-      <DocumentSheetFilter />
+      <DocumentSheetListFilter />
       <Flex paddingBottom={3} paddingLeft={3}>
         <Text size={0} muted>
           {rowsCount}
@@ -153,7 +153,7 @@ function DocumentSheetListPaneInner({
         </Table>
       </TableContainer>
       <Flex justify={'flex-end'} padding={3} gap={4} paddingY={5}>
-        <DocumentSheetPaginator table={table} />
+        <DocumentSheetListPaginator table={table} />
       </Flex>
     </PaneContainer>
   )

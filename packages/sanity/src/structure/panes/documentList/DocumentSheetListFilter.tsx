@@ -6,7 +6,7 @@ const SearchContainer = styled(Flex)`
   flex-shrink: 0;
 `
 
-export function DocumentSheetFilter() {
+export function DocumentSheetListFilter() {
   const {
     state: {filtersVisible},
   } = useSearchState()
