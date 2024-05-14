@@ -1,10 +1,12 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 import {type SanityClient} from '@sanity/client'
 import {type SanityDocument} from '@sanity/types'
+import DataLoader from 'dataloader'
 import {groupBy} from 'lodash'
 import {
   defer,
   EMPTY,
+  from,
   merge,
   type Observable,
   of as observableOf,
@@ -94,6 +96,31 @@ function allPendingTransactionEventsReceived(listenerEvents: ListenerEvent[]) {
 function getExchangeWait(min: number, max: number) {
   return min + Math.floor(Math.random() * (max - min))
 }
+const loaders = new WeakMap<
+  SanityClient,
+  DataLoader<[string, string], [SanityDocument | null, SanityDocument | null]>
+>()
+function getOrCreateDocumentSnapshotLoader(client: SanityClient) {
+  if (!loaders.has(client)) {
+    const loader = new DataLoader<[string, string], [SanityDocument | null, SanityDocument | null]>(
+      async (pairs) => {
+        const results = await client.getDocuments<SanityDocument>(pairs.flat(), {
+          tag: 'document.snapshots',
+        })
+
+        return pairs.map((pair) => {
+          const [draftId, publishedId] = pair
+          return [
+            results.find((doc) => doc?._id === draftId) || null,
+            results.find((doc) => doc?._id === publishedId) || null,
+          ]
+        })
+      },
+    )
+    loaders.set(client, loader)
+  }
+  return loaders.get(client)!
+}
 
 /** @internal */
 export function createPairListener(
@@ -155,14 +182,12 @@ export function createPairListener(
   )
 
   function fetchInitialDocumentSnapshots(): Observable<Snapshots> {
-    return client.observable
-      .getDocuments<SanityDocument>([draftId, publishedId], {tag: 'document.snapshots'})
-      .pipe(
-        map(([draft, published]) => ({
-          draft,
-          published,
-        })),
-      )
+    return from(getOrCreateDocumentSnapshotLoader(client).load([draftId, publishedId])).pipe(
+      map(([draft, published]) => ({
+        draft,
+        published,
+      })),
+    )
   }
 }
 
