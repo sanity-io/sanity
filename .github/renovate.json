@@ -25,7 +25,18 @@
     {
       "description": "Group minor and patch deps in dev to a single PR",
       "matchFileNames": ["dev/**/package.json"],
-      "extends": ["github>sanity-io/renovate-config:group-non-major"]
+      "groupName": "dev-non-major",
+      "matchUpdateTypes": [
+        "bump",
+        "digest",
+        "lockfileUpdate",
+        "minor",
+        "patch",
+        "pin",
+        "pinDigest",
+        "replacement",
+        "rollback"
+      ]
     },
     {
       "description": "Pin Presentation in Test Studio to the version that has the agressive focus path behavior that makes race conditions easier to debug",
