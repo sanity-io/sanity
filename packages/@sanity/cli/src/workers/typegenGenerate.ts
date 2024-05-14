@@ -63,7 +63,7 @@ registerBabel()
 
 function maybeFormatCode(code: string, prettierConfig: PrettierOptions | null): Promise<string> {
   if (!prettierConfig) {
-    return Promise.resolve(code)
+    return Promise.resolve(`${code}\n`) // add an extra new newline, poor mans formatting
   }
 
   try {
@@ -82,7 +82,7 @@ async function main() {
 
   const typeGenerator = new TypeGenerator(schema)
   const schemaTypes = await maybeFormatCode(
-    [typeGenerator.generateSchemaTypes(), TypeGenerator.generateKnownTypes()].join('\n'),
+    [typeGenerator.generateSchemaTypes(), TypeGenerator.generateKnownTypes()].join('\n').trim(),
     opts.prettierConfig,
   )
   const resolver = getResolver()
@@ -125,7 +125,7 @@ async function main() {
         const queryTypes = typeEvaluate(ast, schema)
 
         const type = await maybeFormatCode(
-          typeGenerator.generateTypeNodeTypes(`${queryName}Result`, queryTypes),
+          typeGenerator.generateTypeNodeTypes(`${queryName}Result`, queryTypes).trim(),
           opts.prettierConfig,
         )
 
