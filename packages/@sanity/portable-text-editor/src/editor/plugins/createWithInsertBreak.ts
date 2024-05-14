@@ -1,15 +1,16 @@
 import {Editor, Node, Path, Range, Transforms} from 'slate'
 
-import {type PortableTextSlateEditor} from '../../types/editor'
+import {type PortableTextMemberSchemaTypes, type PortableTextSlateEditor} from '../../types/editor'
 import {type SlateTextBlock, type VoidElement} from '../../types/slate'
+import {isEqualToEmptyEditor} from '../../utils/values'
 
 /**
  * Changes default behavior of insertBreak to insert a new block instead of splitting current when the cursor is at the
  * start of the block.
  */
-export function createWithInsertBreak(): (
-  editor: PortableTextSlateEditor,
-) => PortableTextSlateEditor {
+export function createWithInsertBreak(
+  types: PortableTextMemberSchemaTypes,
+): (editor: PortableTextSlateEditor) => PortableTextSlateEditor {
   return function withInsertBreak(editor: PortableTextSlateEditor): PortableTextSlateEditor {
     const {insertBreak} = editor
 
@@ -23,7 +24,8 @@ export function createWithInsertBreak(): (
           const [, end] = Range.edges(editor.selection)
           // If it's at the start of block, we want to preserve the current block key and insert a new one in the current position instead of splitting the node.
           const isEndAtStartOfNode = Editor.isStart(editor, end, end.path)
-          if (isEndAtStartOfNode) {
+          const isEmptyTextBlock = focusBlock && isEqualToEmptyEditor([focusBlock], types)
+          if (isEndAtStartOfNode && !isEmptyTextBlock) {
             Editor.insertNode(editor, editor.pteCreateEmptyBlock())
             const [nextBlockPath] = Path.next(focusBlockPath)
             Transforms.select(editor, {
