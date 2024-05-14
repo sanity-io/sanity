@@ -1,13 +1,13 @@
 /* eslint-disable max-nested-callbacks */
 import {describe, expect, it, jest} from '@jest/globals'
 import {type SanityClient} from '@sanity/client'
-import {EMPTY, from, lastValueFrom, NEVER, Observable, of, timer} from 'rxjs'
-import {concatMap, delay, map, takeUntil, tap, toArray} from 'rxjs/operators'
+import {EMPTY, finalize, from, lastValueFrom, NEVER, Observable, of, timer} from 'rxjs'
+import {concatMap, delay, map, takeUntil, toArray} from 'rxjs/operators'
 
 import {createPairListener} from '../createPairListener'
 
 describe('createPairListener', () => {
-  it('properly sets up and discards overlapping listeners', async () => {
+  it('shares the listener connection between all subscribers, and disconnects once the last subscriber unsubscribes', async () => {
     const unsubscribe = jest.fn()
     const listen = jest.fn(() => {
       return new Observable((subscriber) => {
@@ -40,12 +40,62 @@ describe('createPairListener', () => {
         },
       },
     )
+
+    const sub1 = listener.subscribe()
+    expect(listen).toHaveBeenCalledTimes(1)
+    const sub2 = listener.subscribe()
+    expect(listen).toHaveBeenCalledTimes(1)
+    const sub3 = listener.subscribe()
+    expect(listen).toHaveBeenCalledTimes(1)
+
+    expect(unsubscribe).toHaveBeenCalledTimes(0)
+    sub1.unsubscribe()
+    expect(unsubscribe).toHaveBeenCalledTimes(0)
+    sub2.unsubscribe()
+    expect(unsubscribe).toHaveBeenCalledTimes(0)
+    sub3.unsubscribe()
+    expect(unsubscribe).toHaveBeenCalledTimes(1)
+  })
+
+  it('properly sets up and discards overlapping listeners', async () => {
+    const unsubscribe = jest.fn()
+    const listen = jest.fn(() => {
+      return new Observable((subscriber) => {
+        subscriber.next({type: 'welcome'})
+        return unsubscribe
+      }).pipe(
+        // todo: figure out why a delay is needed here
+        delay(1),
+      )
+    })
+
+    const getDocuments = jest.fn((ids: string[]) => of(ids.map((id) => ({_id: id}))))
+
+    const mockedClient = {
+      observable: {
+        listen,
+        getDocuments,
+      },
+    } as unknown as SanityClient
+
+    const listener = createPairListener(
+      mockedClient,
+      {publishedId: 'foo', draftId: 'drafts.bar'},
+      {
+        relay: {
+          exchangeWaitMin: 50,
+          exchangeWaitMax: 50,
+          exchangeOverLapTime: 10,
+          exchangeTimeout: 20,
+        },
+      },
+    )
     const events = await lastValueFrom(
       listener.pipe(
         takeUntil(
           // We'll subscribe for a little more than 20ms, which means the first leg should be done and the second leg should be started
           timer(80).pipe(
-            tap(() => {
+            finalize(() => {
               // at this moment unsubscribe should have been called on the first listener leg
               expect(unsubscribe).toHaveBeenCalledTimes(1)
             }),
@@ -81,8 +131,8 @@ describe('createPairListener', () => {
       listenerNo++
       return from([
         {type: 'welcome'},
-        {type: 'mutation', eventId: `event-${listenerNo}`},
-        {type: 'mutation', eventId: 'dupe'},
+        {type: 'mutation', eventId: `event-${listenerNo}`, documentId: 'foo'},
+        {type: 'mutation', eventId: 'dupe', documentId: 'foo'},
       ]).pipe(concatMap((ev) => timer(1).pipe(map(() => ev))))
     })
 
@@ -95,7 +145,7 @@ describe('createPairListener', () => {
 
     const listener = createPairListener(
       mockedClient,
-      {publishedId: 'foo', draftId: 'drafts.bar'},
+      {publishedId: 'foo', draftId: 'drafts.foo'},
       {
         relay: {
           exchangeWaitMin: 30,
@@ -112,8 +162,8 @@ describe('createPairListener', () => {
 
     expect(events).toEqual([
       {
-        document: {_id: 'drafts.bar'},
-        documentId: 'drafts.bar',
+        document: {_id: 'drafts.foo'},
+        documentId: 'drafts.foo',
         type: 'snapshot',
       },
       {
@@ -121,9 +171,9 @@ describe('createPairListener', () => {
         documentId: 'foo',
         type: 'snapshot',
       },
-      {eventId: 'event-1', type: 'mutation'},
-      {eventId: 'dupe', type: 'mutation'},
-      {eventId: 'event-2', type: 'mutation'},
+      {eventId: 'event-1', type: 'mutation', documentId: 'foo'},
+      {eventId: 'dupe', type: 'mutation', documentId: 'foo'},
+      {eventId: 'event-2', type: 'mutation', documentId: 'foo'},
     ])
   })
 
