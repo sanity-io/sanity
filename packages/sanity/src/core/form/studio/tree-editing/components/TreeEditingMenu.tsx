@@ -1,6 +1,5 @@
 import {ChevronDownIcon, ChevronUpIcon} from '@sanity/icons'
 import {Button, Stack} from '@sanity/ui'
-import {toString} from '@sanity/util/paths'
 import {isEqual} from 'lodash'
 import {memo, useCallback, useMemo, useState} from 'react'
 import {type Path} from 'sanity'
@@ -35,9 +34,11 @@ function MenuItem(props: TreeEditingMenuItemProps) {
       // move this logic out so it can be used in the breadcrumbs
       onPathSelect(item.path)
     } else {
-      const elementPath = toString(item.path)
-      const element = document.getElementById(elementPath)
-      element?.scrollIntoView({behavior: 'smooth'})
+      requestAnimationFrame(() => {
+        const elementPath = toString(item.path)
+        const element = document.getElementById(elementPath)
+        element?.scrollIntoView({behavior: 'smooth'})
+      })
 
       onPathSelect(item.path.slice(0, item.path.length - 1))
     }
