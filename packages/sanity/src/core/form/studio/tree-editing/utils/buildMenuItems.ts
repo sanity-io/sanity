@@ -176,19 +176,28 @@ export function buildTreeMenuItems(props: BuildTreeMenuItemsProps): TreeEditingS
           relativePath = nextPath
         }
 
+        // if it's a simple object then we don't need to drill further down
         if (!isPrimitive && childField?.type?.jsonType !== 'object') {
-          const childState = recursive({
-            schemaType: childField as ObjectSchemaType,
-            documentValue,
-            path: childPath,
-            initial: false,
-          })
+          // check if the types of the arrays are primitive
+          // if they are only primitives it means that we don't want to show it in the sidebar
+          const areThereOnlyPrimitiveTypes =
+            childField.type.of.filter((t: unknown) => isPrimitiveSchemaType(t)).length ===
+            childField.type.of.length
 
-          childrenMenuItems.push({
-            title: getSchemaTypeTitle(childField.type) as string,
-            path: childPath,
-            children: childState?.menuItems || EMPTY_ARRAY,
-          })
+          if (!areThereOnlyPrimitiveTypes) {
+            const childState = recursive({
+              schemaType: childField as ObjectSchemaType,
+              documentValue,
+              path: childPath,
+              initial: false,
+            })
+
+            childrenMenuItems.push({
+              title: getSchemaTypeTitle(childField.type) as string,
+              path: childPath,
+              children: childState?.menuItems || EMPTY_ARRAY,
+            })
+          }
         }
       })
 
