@@ -78,7 +78,7 @@ const ITEMS: TreeEditingMenuItem[] = [
   },
 ]
 
-export default function TreeEditingMenuStory() {
+export default function TreeEditingMenuStory(): JSX.Element {
   const [selectedPath, setSelectedPath] = useState<Path | null>(null)
 
   return (
