@@ -1,7 +1,6 @@
 /* eslint-disable i18next/no-literal-string */
 import {PanelLeftIcon} from '@sanity/icons'
 import {Card, Container, Flex, Stack, Text} from '@sanity/ui'
-import {AnimatePresence, motion} from 'framer-motion'
 import {Fragment, memo, type ReactNode, useCallback, useState} from 'react'
 import {type Path} from 'sanity'
 import styled from 'styled-components'
@@ -20,7 +19,6 @@ const SidebarCard = styled(Card)`
 `
 
 const SidebarStack = styled(Stack)``
-const MotionContainer = motion(Container)
 
 interface SidebarProps {
   items: TreeEditingMenuItem[]
@@ -56,14 +54,16 @@ const Sidebar = memo(function Sidebar(props: SidebarProps) {
           />
 
           {open && (
-            <Text size={1} muted weight="medium">
-              {title}
-            </Text>
+            <Flex>
+              <Text size={1} muted weight="medium" textOverflow="ellipsis">
+                {title}
+              </Text>
+            </Flex>
           )}
         </FixedHeightFlex>
 
         {open && (
-          <SidebarStack flex={1} overflow="auto" padding={3} sizing="border">
+          <SidebarStack overflow="auto" padding={3} sizing="border">
             <TreeEditingMenu
               items={items}
               onPathSelect={onPathSelect}
@@ -85,7 +85,9 @@ interface TreeEditingLayoutProps {
   title: string
 }
 
-export function TreeEditingLayout(props: TreeEditingLayoutProps): JSX.Element {
+export const TreeEditingLayout = memo(function TreeEditingLayout(
+  props: TreeEditingLayoutProps,
+): JSX.Element {
   const {breadcrumbs, children, items, selectedPath, onPathSelect, title} = props
 
   const [open, setOpen] = useState<boolean>(true)
@@ -126,22 +128,9 @@ export function TreeEditingLayout(props: TreeEditingLayoutProps): JSX.Element {
         </FixedHeightFlex>
 
         <Card flex={1} paddingX={3} paddingY={5} sizing="border" overflow="auto">
-          {/* todo: discuss if we want to animate the content */}
-          <AnimatePresence mode="wait">
-            {children && (
-              <MotionContainer
-                width={1}
-                initial={{opacity: 0}}
-                animate={{opacity: 1}}
-                exit={{opacity: 0}}
-                key={JSON.stringify(selectedPath)}
-              >
-                {children}
-              </MotionContainer>
-            )}
-          </AnimatePresence>
+          {children && <Container width={1}>{children}</Container>}
         </Card>
       </Flex>
     </Flex>
   )
-}
+})
