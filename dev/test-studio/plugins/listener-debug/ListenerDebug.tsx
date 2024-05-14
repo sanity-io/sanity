@@ -30,11 +30,9 @@ export function ListenerDebug() {
             </Flex>
             <Stack space={2}>
               {ids.map((id) => (
-                <>
-                  <Card padding={3} margin={2} border radius={3}>
-                    <Document key={id} id={id} />
-                  </Card>
-                </>
+                <Card key={id} padding={3} margin={2} border radius={3}>
+                  <Document id={id} />
+                </Card>
               ))}
             </Stack>
           </>
