@@ -13,7 +13,7 @@ import {type SanityDocument} from 'sanity'
 
 import {Button, TooltipDelayGroupProvider} from '../../../ui-components'
 
-export function DocumentSheetPaginator({table}: {table: Table<SanityDocument>}) {
+export function DocumentSheetListPaginator({table}: {table: Table<SanityDocument>}) {
   return (
     <TooltipDelayGroupProvider>
       <Flex gap={3} align={'center'}>
