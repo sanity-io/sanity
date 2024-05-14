@@ -3,7 +3,7 @@ import {useEffect, useState} from 'react'
 import {type ObjectSchemaType, type Path, useSchema} from 'sanity'
 
 import {TreeEditingMenu} from '../components'
-import {buildTreeMenuItems, EMPTY_TREE_STATE, type TreeEditingState} from '../utils'
+import {buildTreeEditingState, EMPTY_TREE_STATE, type TreeEditingState} from '../utils'
 
 const DOCUMENT_VALUE = {
   _createdAt: '2024-05-07T11:53:22Z',
@@ -109,7 +109,7 @@ export default function TreeMenuItemsBuildDebugStory(): JSX.Element {
   const [selectedPath, setSelectedPath] = useState<Path>([])
 
   useEffect(() => {
-    const menuItems = buildTreeMenuItems({
+    const menuItems = buildTreeEditingState({
       documentValue: DOCUMENT_VALUE,
       focusPath: ['animals'],
       schemaType: schema.get('objectsDebug') as ObjectSchemaType,
