@@ -1,6 +1,5 @@
-// This is a WIP file, to render a very basic table view.
-import {Checkbox, Flex, Select, Text, TextInput} from '@sanity/ui'
-import {createColumnHelper} from '@tanstack/react-table'
+import {Checkbox, Flex, Text, TextInput} from '@sanity/ui'
+import {type AccessorKeyColumnDef, createColumnHelper} from '@tanstack/react-table'
 import {useMemo, useState} from 'react'
 import {useMemoObservable} from 'react-rx'
 import {
@@ -14,6 +13,7 @@ import {
 } from 'sanity'
 
 import {type PaneItemPreviewState} from '../../components/paneItem/types'
+import {SheetListCell} from './SheetListCell'
 
 const PreviewCell = (props: {
   documentPreviewStore: DocumentPreviewStore
@@ -57,64 +57,51 @@ const TableTextInput = (props: any) => {
   }
 
   return (
-    <TextInput value={value as string} onChange={(e) => setValue(e.target.value)} onBlur={onBlur} />
+    <TextInput
+      value={value as string}
+      onChange={(e) => setValue(e.currentTarget.value)}
+      onBlur={onBlur}
+    />
   )
 }
 
-const getColsFromSchemaType = (schemaType: SchemaType, parentalField: string) => {
-  return schemaType.fields.reduce((cols, field) => {
-    const {type, name} = field
-    if (SUPPORTED_FIELDS.includes(type.name)) {
-      const nextCol = columnHelper.accessor(
-        parentalField ? `${parentalField}.${field.name}` : field.name,
-        {
-          header: field.type.title,
-          enableHiding: true,
-          cell: (info) => {
-            const renderValue = info.getValue()
-
-            if (!renderValue) return null
-            if (type.name === 'boolean') {
-              return (
-                <Select
-                  onChange={() => info.table.options.meta?.updateData(index, id, value)}
-                  value={renderValue}
-                >
-                  <option value="true">True</option>
-                  <option value="false">False</option>
-                </Select>
-              )
-            }
-
-            if (typeof renderValue === 'string' || typeof renderValue === 'number') {
-              return <Text size={0}>{renderValue}</Text>
-            }
-            return <Text size={0}>{JSON.stringify(renderValue)}</Text>
-            return <TableTextInput {...info} />
+const getColsFromSchemaType = (schemaType: SchemaTypeDefinition, parentalField?: string) => {
+  //@ts-expect-error - wip.
+  return schemaType.fields.reduce(
+    (cols: AccessorKeyColumnDef<SanityDocument, unknown>[], field: any) => {
+      const {type, name} = field
+      if (SUPPORTED_FIELDS.includes(type.name)) {
+        const nextCol = columnHelper.accessor(
+          parentalField ? `${parentalField}.${field.name}` : field.name,
+          {
+            header: field.type.title,
+            enableHiding: true,
+            cell: (info) => <SheetListCell {...info} type={type} />,
           },
-        },
-      )
+        )
 
-      return [...cols, nextCol]
-    }
+        return [...cols, nextCol]
+      }
 
-    // if first layer nested object
-    if (type.name === 'object' && !parentalField) {
-      return [
-        ...cols,
-        columnHelper.group({header: name, columns: getColsFromSchemaType(type, field.name)}),
-      ]
-    }
+      // if first layer nested object
+      if (type.name === 'object' && !parentalField) {
+        return [
+          ...cols,
+          columnHelper.group({header: name, columns: getColsFromSchemaType(type, field.name)}),
+        ]
+      }
 
-    return cols
-  }, [])
+      return cols
+    },
+    [],
+  )
 }
 const columnHelper = createColumnHelper<SanityDocument>()
 const SUPPORTED_FIELDS = ['string', 'number', 'boolean']
 export function useDocumentSheetColumns(schemaType?: SchemaTypeDefinition) {
   const documentPreviewStore = useDocumentPreviewStore()
 
-  const columns = useMemo(() => {
+  const columns: AccessorKeyColumnDef<SanityDocument, unknown>[] = useMemo(() => {
     if (!schemaType) {
       return []
     }
@@ -135,20 +122,19 @@ export function useDocumentSheetColumns(schemaType?: SchemaTypeDefinition) {
           />
         ),
       }),
-      {
-        header: 'Preview',
+      columnHelper.accessor('Preview', {
         enableHiding: false,
-        accessorKey: 'preview',
         cell: (info) => {
           return (
             <PreviewCell
               {...info}
               documentPreviewStore={documentPreviewStore}
+              //@ts-expect-error - wip.
               schemaType={schemaType}
             />
           )
         },
-      },
+      }),
       ...getColsFromSchemaType(schemaType),
     ]
   }, [documentPreviewStore, schemaType])

@@ -48,6 +48,14 @@ export function ColumnsControl({table}: Props) {
 
   const handleResetColumns = () => setReset((prev) => prev + 1)
 
+  const getColumnVisibilityDisabled = (column: Column<SanityDocument, unknown>) => {
+    const isColumnVisible = column.getIsVisible()
+    const isSingleColumnVisible =
+      table.getVisibleLeafColumns().filter((col) => col.getCanHide()).length === 1
+
+    return (isVisibleLimitReached && !isColumnVisible) || (isSingleColumnVisible && isColumnVisible)
+  }
+
   return (
     <MenuButton
       button={<Button text="Columns" />}
@@ -62,7 +70,7 @@ export function ColumnsControl({table}: Props) {
               .map((column) => (
                 <Flex key={column.id} marginY={2} align="center">
                   <Checkbox
-                    readOnly={isVisibleLimitReached && !column.getIsVisible()}
+                    readOnly={getColumnVisibilityDisabled(column)}
                     checked={column.getIsVisible()}
                     onChange={handleColumnOnChange(column)}
                     id={`col-visibility-${column.id}`}
