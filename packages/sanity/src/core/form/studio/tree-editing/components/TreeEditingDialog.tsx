@@ -15,8 +15,8 @@ import {
 import styled, {css} from 'styled-components'
 
 import {
-  buildTreeMenuItems,
-  type BuildTreeMenuItemsProps,
+  buildTreeEditingState,
+  type BuildTreeEditingStateProps,
   EMPTY_TREE_STATE,
   isOpen,
   type TreeEditingState,
@@ -69,9 +69,9 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | 
 
   const [treeState, setTreeState] = useState<TreeEditingState>(EMPTY_TREE_STATE)
 
-  const handleBuildTreeMenuItems = useCallback(
-    (opts: BuildTreeMenuItemsProps) => {
-      const nextState = buildTreeMenuItems(opts)
+  const handleBuildTreeEditingState = useCallback(
+    (opts: BuildTreeEditingStateProps) => {
+      const nextState = buildTreeEditingState(opts)
 
       if (isEqual(nextState, treeState)) return
 
@@ -80,28 +80,26 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | 
     [treeState],
   )
 
-  const debouncedBuildTreeMenuItems = useMemo(
-    () => debounce(handleBuildTreeMenuItems, 1000, DEBOUNCE_SETTINGS),
-    [handleBuildTreeMenuItems],
+  const debouncedBuildTreeEditingState = useMemo(
+    () => debounce(handleBuildTreeEditingState, 1000, DEBOUNCE_SETTINGS),
+    [handleBuildTreeEditingState],
   )
 
   const onClose = useCallback(() => {
     setFocusPath(EMPTY_ARRAY)
     setTreeState(EMPTY_TREE_STATE)
-    debouncedBuildTreeMenuItems.cancel()
-  }, [debouncedBuildTreeMenuItems, setFocusPath])
+    debouncedBuildTreeEditingState.cancel()
+  }, [debouncedBuildTreeEditingState, setFocusPath])
 
   useEffect(() => {
-    if (focusPath.length === 0) {
-      return
-    }
+    if (focusPath.length === 0) return
 
-    debouncedBuildTreeMenuItems({
+    debouncedBuildTreeEditingState({
       schemaType,
-      documentValue: value, // todo: consider not passing the whole value but only the relevant part
+      documentValue: value,
       focusPath,
     })
-  }, [focusPath, schemaType, value, debouncedBuildTreeMenuItems])
+  }, [focusPath, schemaType, value, debouncedBuildTreeEditingState])
 
   const {menuItems, relativePath, rootTitle, breadcrumbs} = treeState
 
