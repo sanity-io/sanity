@@ -13,6 +13,7 @@ import {TreeEditingMenu} from './TreeEditingMenu'
 
 const FixedHeightFlex = styled(Flex).attrs({padding: 2, align: 'center', sizing: 'border'})`
   height: 40px;
+  min-height: 40px;
 `
 
 const SidebarCard = styled(Card)`
