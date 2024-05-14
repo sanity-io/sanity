@@ -139,6 +139,7 @@ export function buildTreeEditingState(props: BuildTreeEditingStateProps): TreeEd
 
           const isPrimitive = isPrimitiveSchemaType(childField?.type)
           const childTitle = getSchemaTypeTitle(childField.type) as string
+          const childValue = getValueAtPath(documentValue, childPath)
 
           if (isSelected(childPath, focusPath) && shouldNavigate(childPath)) {
             const nextPath = isPrimitive ? childPath.slice(0, childPath.length - 1) : childPath
@@ -146,7 +147,7 @@ export function buildTreeEditingState(props: BuildTreeEditingStateProps): TreeEd
             relativePath = nextPath
           }
 
-          if (!isPrimitive) {
+          if (!isPrimitive && childValue) {
             if (shouldBeInBreadcrumb(childPath, focusPath)) {
               breadcrumbs.push({
                 path: childPath,
@@ -215,6 +216,7 @@ export function buildTreeEditingState(props: BuildTreeEditingStateProps): TreeEd
 
         const isPrimitive = isPrimitiveSchemaType(childField?.type)
         const childTitle = getSchemaTypeTitle(childField.type) as string
+        const childValue = getValueAtPath(documentValue, childPath)
 
         if (isSelected(childPath, focusPath) && shouldNavigate(childPath)) {
           const nextPath = isPrimitive ? childPath.slice(0, childPath.length - 1) : childPath
@@ -225,7 +227,8 @@ export function buildTreeEditingState(props: BuildTreeEditingStateProps): TreeEd
         if (
           !isPrimitive &&
           !isArrayOfPrimitivesSchemaType(childField.type) &&
-          isArraySchemaType(childField.type)
+          isArraySchemaType(childField.type) &&
+          childValue
         ) {
           if (shouldBeInBreadcrumb(childPath, focusPath)) {
             breadcrumbs.push({
