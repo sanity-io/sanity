@@ -4,7 +4,6 @@ import {memo, useMemo, useRef} from 'react'
 import {
   EMPTY_ARRAY,
   type GeneralDocumentListLayoutKey,
-  SearchProvider,
   SourceProvider,
   useI18nText,
   useSource,
@@ -18,7 +17,7 @@ import {useStructureToolSetting} from '../../useStructureToolSetting'
 import {type BaseStructureToolPaneProps} from '../types'
 import {DEFAULT_ORDERING, EMPTY_RECORD} from './constants'
 import {DocumentListPane} from './DocumentListPane'
-import {DocumentSheetListPanePaginated} from './DocumentSheetListPanePaginated'
+import {DocumentSheetListPane} from './DocumentSheetListPane'
 import {findStaticTypesInFilter} from './helpers'
 import {PaneHeader} from './PaneHeader'
 import {type SortOrder} from './types'
@@ -113,9 +112,7 @@ export const PaneContainer = memo(function PaneContainer(
 
   const isSheetListLayout = layout === 'sheetList'
   const paneLayout = isSheetListLayout ? (
-    <SearchProvider>
-      <DocumentSheetListPanePaginated {...props} key={props.pane.id} />
-    </SearchProvider>
+    <DocumentSheetListPane {...props} key={props.pane.id} />
   ) : (
     <DocumentListPane {...props} sortOrder={sortOrderRaw} layout={layout} />
   )
