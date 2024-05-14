@@ -124,7 +124,7 @@ export default async function typegenGenerateAction(
 
       if (msg.type === 'schema') {
         stats.schemaTypesCount += msg.length
-        fileTypeString += `${msg.schema}\n\n`
+        fileTypeString += msg.schema
         typeFile.write(fileTypeString)
         return
       }
@@ -140,7 +140,7 @@ export default async function typegenGenerateAction(
       } of msg.types) {
         fileTypeString += `// Variable: ${queryName}\n`
         fileTypeString += `// Query: ${query.replace(/(\r\n|\n|\r)/gm, '')}\n`
-        fileTypeString += `${type}\n`
+        fileTypeString += type
         stats.queriesCount++
         stats.typeNodesGenerated += typeNodesGenerated
         stats.unknownTypeNodesGenerated += unknownTypeNodesGenerated
