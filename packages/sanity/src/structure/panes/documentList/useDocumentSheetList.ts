@@ -1,83 +1,31 @@
-import {type SanityDocument} from '@sanity/migrate'
 import {useMemo} from 'react'
-import {getPublishedId, type SchemaType, useEditStateList, useUnique} from 'sanity'
-import {type DocumentListPaneNode} from 'sanity/structure'
+import {getPublishedId, useSearchState} from 'sanity'
 
-import {EMPTY_RECORD} from './constants'
-import {applyOrderingFunctions} from './helpers'
-import {useShallowUnique} from './PaneContainer'
-import {type SortOrder} from './types'
-import {useDocumentList} from './useDocumentList'
+import {useDocumentSheetListStore} from './useDocumentSheetListStore'
 
 interface DocumentSheetListOptions {
-  schemaType: SchemaType
-  paneOptions: DocumentListPaneNode['options']
-  sortOrder?: SortOrder
+  /**The schemaType.name  */
+  typeName: string
 }
-export function useDocumentSheetList({
-  schemaType,
-  sortOrder: sortOrderRaw,
-  paneOptions,
-}: DocumentSheetListOptions) {
-  const typeName = schemaType.name
 
-  const sortWithOrderingFn =
-    typeName && sortOrderRaw
-      ? applyOrderingFunctions(sortOrderRaw, schemaType as any)
-      : sortOrderRaw
+export function useDocumentSheetList({typeName}: DocumentSheetListOptions) {
+  const {state} = useSearchState()
 
-  const sortOrder = useUnique(sortWithOrderingFn)
+  const items = useMemo(() => {
+    const map = new Map()
+    state.result.hits.forEach((h) => map.set(getPublishedId(h.hit._id), h.hit))
+    return map
+  }, [state.result.hits])
 
-  const params = useShallowUnique(paneOptions.params || EMPTY_RECORD)
-
-  const {
-    error,
-    hasMaxItems,
-    isLazyLoading,
-    isSearchReady,
-    onListChange,
-    onRetry,
-    isLoading,
-    items,
-  } = useDocumentList({
-    apiVersion: paneOptions.apiVersion,
-    filter: paneOptions.filter,
-    params,
-    searchQuery: '',
-    sortOrder,
+  // The store is listening to all the documents that match with the _type filter.
+  const {data, isLoading} = useDocumentSheetListStore({
+    filter: `_type == "${typeName}"`,
   })
-  const list = useMemo(() => items.map((i) => getPublishedId(i._id)), [items])
 
-  const editStateList = useEditStateList(list, typeName)
+  // Only return the documents that match with the serverSide filter items.
+  const documents = useMemo(() => {
+    return data.filter((doc) => items.has(getPublishedId(doc._id)))
+  }, [data, items])
 
-  const data: SanityDocument[] = useMemo(() => {
-    if (!editStateList) return []
-    return editStateList?.map((editState) => {
-      if (editState.draft) {
-        return {
-          ...editState.draft,
-          _options: {
-            ready: editState.ready,
-          },
-        }
-      }
-      if (editState.published) {
-        return {
-          ...editState.published,
-          _options: {
-            ready: editState.ready,
-          },
-        }
-      }
-      return {
-        _id: editState.id,
-        _type: editState.type,
-        _options: {
-          ready: editState.ready,
-        },
-      }
-    })
-  }, [editStateList])
-
-  return {data, isLoading, onListChange, isLazyLoading, error, hasMaxItems, onRetry, isSearchReady}
+  return {data: documents, isLoading}
 }
