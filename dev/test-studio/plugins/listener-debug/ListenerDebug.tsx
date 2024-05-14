@@ -3,7 +3,7 @@ import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {checkoutPair, type DocumentVersionEvent, useClient} from 'sanity'
 
 export function ListenerDebug() {
-  const [visible, setVisible] = useState(false)
+  const [visible, setVisible] = useState(true)
   const [ids, setIds] = useState<string[]>(['foo', 'bar', 'baz'])
   const textInputRef = useRef<HTMLInputElement | null>(null)
   const handleAdd = useCallback(() => {
