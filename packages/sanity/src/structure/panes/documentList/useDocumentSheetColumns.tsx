@@ -1,6 +1,7 @@
+// This is a WIP file, to render a very basic table view.
 import {Flex, Text, TextInput} from '@sanity/ui'
 import {createColumnHelper} from '@tanstack/react-table'
-import {useMemo, useState} from 'react'
+import {type FormEvent, useCallback, useEffect, useMemo, useState} from 'react'
 import {useMemoObservable} from 'react-rx'
 import {
   type DocumentPreviewStore,
@@ -34,30 +35,41 @@ const PreviewCell = (props: {
       </Text>
     )
   }
+  const displayValue = (draft?.title ?? published?.title ?? 'Untitled') as string
   return (
     <Flex align="center" gap={3}>
       <DocumentStatusIndicator draft={draft} published={published} />
-      <Text size={1}>{draft?.title || published?.title || 'Untitled'}</Text>
+      <Text size={1}>{displayValue}</Text>
     </Flex>
   )
 }
 
 const TableTextInput = (props: any) => {
+  const {index, id} = props
   const initialValue = props.getValue()
   // We need to keep and update the state of the cell normally
-  const [value, setValue] = useState(initialValue)
+  const [value, setValue] = useState(initialValue || '')
 
   // When the input is blurred, we'll call our table meta's updateData function
   const onBlur = () => {
     props.table.options.meta?.updateData(index, id, value)
   }
 
-  return (
-    <TextInput value={value as string} onChange={(e) => setValue(e.target.value)} onBlur={onBlur} />
+  const handleChange = useCallback(
+    (e: FormEvent<HTMLInputElement>) => setValue(e.currentTarget.value),
+    [],
   )
+
+  useEffect(() => {
+    setValue(initialValue)
+  }, [initialValue])
+
+  return <TextInput value={value as string} onChange={handleChange} onBlur={onBlur} />
 }
+
 const columnHelper = createColumnHelper<SanityDocument>()
 const SUPPORTED_FIELDS = ['string', 'number']
+
 export function useDocumentSheetColumns(schemaType?: SchemaType) {
   const documentPreviewStore = useDocumentPreviewStore()
 
@@ -68,6 +80,7 @@ export function useDocumentSheetColumns(schemaType?: SchemaType) {
     const cols = [
       {
         header: 'Preview',
+        //@ts-expect-error - wip.
         cell: (info) => {
           return (
             <PreviewCell
@@ -85,6 +98,7 @@ export function useDocumentSheetColumns(schemaType?: SchemaType) {
       //   },
       // }),
     ]
+    //@ts-expect-error - wip.
     for (const field of schemaType.fields) {
       if (!SUPPORTED_FIELDS.includes(field.type.name)) {
         continue
@@ -93,9 +107,10 @@ export function useDocumentSheetColumns(schemaType?: SchemaType) {
       cols.push(
         columnHelper.accessor(field.name, {
           header: field.type.title,
+          //@ts-expect-error dynamic field name access, types not generated correctly.
           cell: (info) => {
             const renderValue = info.getValue()
-            return <TableTextInput {...info} />
+            // return <TableTextInput {...info} />
             if (typeof renderValue === 'string' || typeof renderValue === 'number') {
               return <Text size={0}>{renderValue}</Text>
             }

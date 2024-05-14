@@ -1,10 +1,14 @@
 import {Flex} from '@sanity/ui'
 import {useSearchState, useTranslation} from 'sanity'
+import {styled} from 'styled-components'
 
 import {Filters} from '../../../core/studio/components/navbar/search/components/filters/Filters'
 import {SearchHeader} from '../../../core/studio/components/navbar/search/components/SearchHeader'
 import {hasSearchableTerms} from '../../../core/studio/components/navbar/search/utils/hasSearchableTerms'
 
+const SearchContainer = styled(Flex)`
+  flex-shrink: 0;
+`
 export function DocumentSheetFilter() {
   const {t} = useTranslation()
   const {
@@ -13,7 +17,7 @@ export function DocumentSheetFilter() {
 
   const hasValidTerms = hasSearchableTerms({terms})
   return (
-    <Flex>
+    <SearchContainer>
       <SearchHeader
         ariaInputLabel={
           hasValidTerms
@@ -22,6 +26,6 @@ export function DocumentSheetFilter() {
         }
       />
       {filtersVisible && <Filters showTypeFilter={false} />}
-    </Flex>
+    </SearchContainer>
   )
 }
