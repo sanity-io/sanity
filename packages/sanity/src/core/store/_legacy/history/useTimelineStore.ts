@@ -195,15 +195,19 @@ export function useTimelineStore({
       subscribe: (callback: () => void) => {
         const subscription = timelineController$
           .pipe(
-            // Manually stop loading transactions in TimelineController, otherwise transaction history
-            // will continue to be fetched – even if unwanted.
-            tap((innerController) => innerController.setLoadMore(false)),
             map((innerController) => {
               const chunks = innerController.timeline.mapChunks((c) => c)
               const lastNonDeletedChunk = chunks.filter(
                 (chunk) => !['delete', 'initial'].includes(chunk.type),
               )
               const hasMoreChunks = !innerController.timeline.reachedEarliestEntry
+
+              // 'Switch the faucet off' once we know we have enough chunks to reasonably display overflow.
+              // Here, 16 is just an arbitrary number which will probably cover most regular screen sizes.
+              if (hasMoreChunks && chunks.length > 16) {
+                innerController.setLoadMore(false)
+              }
+
               const timelineReady = !['invalid', 'loading'].includes(innerController.selectionState)
               return {
                 chunks,
