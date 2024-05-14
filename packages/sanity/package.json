@@ -285,7 +285,7 @@
     "react-dom": "^18.3.1",
     "rimraf": "^3.0.2",
     "rxjs-etc": "^10.6.2",
-    "styled-components": "^6.1.10",
+    "styled-components": "^6.1.11",
     "swr": "2.2.5"
   },
   "peerDependencies": {
