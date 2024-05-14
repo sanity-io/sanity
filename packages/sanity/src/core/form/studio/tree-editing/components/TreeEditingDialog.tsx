@@ -75,6 +75,7 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | 
       const nextState = buildTreeEditingState(opts)
 
       if (isEqual(nextState, treeState)) return
+      if (nextState.relativePath.length === 0) return
 
       setTreeState(nextState)
     },
