@@ -47,6 +47,7 @@ const Table = styled.table`
   tr {
     border-bottom: 1px solid lightgray;
     display: flex;
+    padding: 0;
   }
   tr:last-child {
     border-bottom: none;
@@ -59,7 +60,7 @@ const Table = styled.table`
   }
 
   td {
-    padding: 0 3px;
+    padding: 0;
   }
 `
 
