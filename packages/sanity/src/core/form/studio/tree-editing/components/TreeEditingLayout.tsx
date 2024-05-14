@@ -113,7 +113,14 @@ export const TreeEditingLayout = memo(function TreeEditingLayout(
           <TreeEditingBreadCrumbs items={breadcrumbs} onPathSelect={onPathSelect} />
         </FixedHeightFlex>
 
-        <Card flex={1} paddingX={3} paddingY={5} sizing="border" overflow="auto">
+        <Card
+          flex={1}
+          paddingX={3}
+          paddingY={5}
+          sizing="border"
+          overflow="auto"
+          id="tree-editing-form"
+        >
           {children && <Container width={1}>{children}</Container>}
         </Card>
       </Flex>
