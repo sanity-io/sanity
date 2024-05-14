@@ -13,6 +13,7 @@ import {SearchProvider, useSchema, useSearchState} from 'sanity'
 import {styled} from 'styled-components'
 
 import {type BaseStructureToolPaneProps} from '../types'
+import {ColumnsControl} from './ColumnsControl'
 import {DocumentSheetFilter} from './DocumentSheetListFilter'
 import {DocumentSheetPaginator} from './DocumentSheetListPaginator'
 import {useDocumentSheetColumns} from './useDocumentSheetColumns'
@@ -131,6 +132,7 @@ function DocumentSheetListPaneInner({
         </Text>
       </Flex>
       <TableContainer>
+        <ColumnsControl table={table} />
         <Table>
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
