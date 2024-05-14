@@ -98,7 +98,6 @@ function DocumentSheetListPaneInner({
     return (
       <Box
         as="tr"
-        data-index={row.index} //needed for dynamic row height measurement
         key={row.original._id + row.id}
         paddingY={2}
         style={{display: 'flex', width: '100%'}}
