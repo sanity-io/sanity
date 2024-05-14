@@ -146,7 +146,7 @@ export default async function typegenGenerateAction(
         stats.unknownTypeNodesGenerated += unknownTypeNodesGenerated
         stats.emptyUnionTypeNodesGenerated += emptyUnionTypeNodesGenerated
       }
-      typeFile.write(`${fileTypeString}\n`)
+      typeFile.write(fileTypeString)
       stats.size += Buffer.byteLength(fileTypeString)
     })
     worker.addListener('error', reject)
