@@ -1,7 +1,7 @@
 import {ChevronDownIcon, ChevronUpIcon} from '@sanity/icons'
 import {Button, Stack} from '@sanity/ui'
 import {isEqual} from 'lodash'
-import {useCallback, useMemo, useState} from 'react'
+import {memo, useCallback, useMemo, useState} from 'react'
 import {type Path} from 'sanity'
 
 import {type TreeEditingMenuItem} from '../types'
@@ -93,7 +93,9 @@ interface TreeEditingMenuProps {
   selectedPath: Path | null
 }
 
-export function TreeEditingMenu(props: TreeEditingMenuProps): JSX.Element {
+export const TreeEditingMenu = memo(function TreeEditingMenu(
+  props: TreeEditingMenuProps,
+): JSX.Element {
   const {items, onPathSelect, selectedPath} = props
 
   return (
@@ -108,4 +110,4 @@ export function TreeEditingMenu(props: TreeEditingMenuProps): JSX.Element {
       ))}
     </Stack>
   )
-}
+})
