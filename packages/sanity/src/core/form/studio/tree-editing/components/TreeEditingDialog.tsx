@@ -1,7 +1,9 @@
 /* eslint-disable i18next/no-literal-string */
 import {Card, Code, Dialog, Flex, Text} from '@sanity/ui'
 import {type Theme} from '@sanity/ui/theme'
-import {isEqual} from 'lodash'
+import {toString} from '@sanity/util/paths'
+import {AnimatePresence, motion, type Variants} from 'framer-motion'
+import {debounce, type DebounceSettings, isEqual} from 'lodash'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {
   FormInput,
@@ -12,10 +14,26 @@ import {
 } from 'sanity'
 import styled, {css} from 'styled-components'
 
-import {buildTreeMenuItems, EMPTY_TREE_STATE, isOpen, type TreeEditingState} from '../utils'
+import {
+  buildTreeMenuItems,
+  type BuildTreeMenuItemsProps,
+  EMPTY_TREE_STATE,
+  isOpen,
+  type TreeEditingState,
+} from '../utils'
 import {TreeEditingLayout} from './TreeEditingLayout'
 
 const DEBUG_RELATIVE_PATH = true
+
+const EMPTY_ARRAY: [] = []
+
+const ANIMATION_VARIANTS: Variants = {
+  initial: {opacity: 0},
+  animate: {opacity: 1},
+  exit: {opacity: 0},
+}
+
+const DEBOUNCE_SETTINGS: DebounceSettings = {leading: true, trailing: true}
 
 function renderDefault(props: InputProps) {
   return props.renderDefault(props)
@@ -36,15 +54,14 @@ const StyledDialog = styled(Dialog)(({theme}: {theme: Theme}) => {
   `
 })
 
+const MotionFlex = motion(Flex)
+
 interface TreeEditingDialogProps {
-  // ...
   focusPath: Path
   schemaType: ObjectSchemaType
   setFocusPath: (path: Path) => void
   rootInputProps: Omit<ObjectInputProps, 'renderDefault'>
 }
-
-const EMPTY_ARRAY: [] = []
 
 export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | null {
   const {focusPath, rootInputProps, schemaType, setFocusPath} = props
@@ -52,24 +69,39 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | 
 
   const [treeState, setTreeState] = useState<TreeEditingState>(EMPTY_TREE_STATE)
 
+  const handleBuildTreeMenuItems = useCallback(
+    (opts: BuildTreeMenuItemsProps) => {
+      const nextState = buildTreeMenuItems(opts)
+
+      if (isEqual(nextState, treeState)) return
+
+      setTreeState(nextState)
+    },
+    [treeState],
+  )
+
+  const debouncedBuildTreeMenuItems = useMemo(
+    () => debounce(handleBuildTreeMenuItems, 1000, DEBOUNCE_SETTINGS),
+    [handleBuildTreeMenuItems],
+  )
+
   const onClose = useCallback(() => {
     setFocusPath(EMPTY_ARRAY)
     setTreeState(EMPTY_TREE_STATE)
-  }, [setFocusPath])
+    debouncedBuildTreeMenuItems.cancel()
+  }, [debouncedBuildTreeMenuItems, setFocusPath])
 
   useEffect(() => {
-    if (focusPath.length === 0) return
+    if (focusPath.length === 0) {
+      return
+    }
 
-    const nextState = buildTreeMenuItems({
+    debouncedBuildTreeMenuItems({
       schemaType,
       documentValue: value, // todo: consider not passing the whole value but only the relevant part
       focusPath,
     })
-
-    if (isEqual(nextState, treeState)) return
-
-    setTreeState(nextState)
-  }, [focusPath, schemaType, treeState, value])
+  }, [focusPath, schemaType, value, debouncedBuildTreeMenuItems])
 
   const {menuItems, relativePath, rootTitle, breadcrumbs} = treeState
 
@@ -130,7 +162,24 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | 
           </Card>
         )}
 
-        <FormInput {...rootInputProps} relativePath={relativePath} renderDefault={renderDefault} />
+        <AnimatePresence mode="wait">
+          <MotionFlex
+            animate="animate"
+            direction="column"
+            exit="exit"
+            height="fill"
+            initial="initial"
+            key={toString(relativePath)}
+            overflow="hidden"
+            variants={ANIMATION_VARIANTS}
+          >
+            <FormInput
+              {...rootInputProps}
+              relativePath={relativePath}
+              renderDefault={renderDefault}
+            />
+          </MotionFlex>
+        </AnimatePresence>
       </TreeEditingLayout>
     </StyledDialog>
   )
