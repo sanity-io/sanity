@@ -1,7 +1,9 @@
 import {Text} from '@sanity/ui'
+import {useCallback, useState} from 'react'
+import {type Path} from 'sanity'
 
 import {TreeEditingLayout} from '../components'
-import {type TreeEditingMenuItem} from '../types'
+import {type TreeEditingBreadcrumb, type TreeEditingMenuItem} from '../types'
 
 const ITEMS: TreeEditingMenuItem[] = [
   {
@@ -48,20 +50,28 @@ const ITEMS: TreeEditingMenuItem[] = [
   },
 ]
 
-function noop() {
-  return null
-}
-
 const EMPTY_ARRAY: [] = []
 
+// todo: update this story so that it is fully functional and interactive using
+// a mock schema and a mock document value with the `buildTreeEditingState` function.
 export default function TreeEditingLayoutStory(): JSX.Element {
+  const [breadcrumbs, setBreadcrumbs] = useState<TreeEditingBreadcrumb[]>(EMPTY_ARRAY)
+  const [selectedPath, setSelectedPath] = useState<Path>(EMPTY_ARRAY)
+
+  const handlePathSelect = useCallback((path: Path) => {
+    const next = path?.map((segment) => ({title: segment.toString(), path: [] as Path})) || []
+
+    setBreadcrumbs(next)
+    setSelectedPath(path)
+  }, [])
+
   return (
     <TreeEditingLayout
-      breadcrumbs={EMPTY_ARRAY}
+      breadcrumbs={breadcrumbs}
       items={ITEMS}
-      onPathSelect={noop}
-      selectedPath={EMPTY_ARRAY}
-      title="Tree editing layout some very long text"
+      onPathSelect={handlePathSelect}
+      selectedPath={selectedPath}
+      title="Title"
     >
       <Text>{`(form view)`}</Text>
     </TreeEditingLayout>

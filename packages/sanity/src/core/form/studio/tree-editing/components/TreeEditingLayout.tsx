@@ -8,6 +8,7 @@ import styled from 'styled-components'
 import {Button} from '../../../../../ui-components'
 import {type TreeEditingBreadcrumb, type TreeEditingMenuItem} from '../types'
 import {Resizable} from './resizer'
+import {TreeEditingBreadCrumbs} from './TreeEditingBreadCrumbs'
 import {TreeEditingMenu} from './TreeEditingMenu'
 
 const FixedHeightFlex = styled(Flex).attrs({padding: 2, align: 'center', sizing: 'border'})`
@@ -18,7 +19,9 @@ const SidebarCard = styled(Card)`
   flex-direction: column;
 `
 
-const SidebarStack = styled(Stack)``
+const SidebarStack = styled(Stack)`
+  overflow-x: hidden;
+`
 
 interface SidebarProps {
   items: TreeEditingMenuItem[]
@@ -98,33 +101,16 @@ export const TreeEditingLayout = memo(function TreeEditingLayout(
     <Flex height="fill" overflow="hidden">
       <Sidebar
         items={items}
-        onPathSelect={onPathSelect}
-        selectedPath={selectedPath}
         onOpenToggle={toggleOpen}
+        onPathSelect={onPathSelect}
         open={open}
+        selectedPath={selectedPath}
         title={title}
       />
 
       <Flex direction="column" flex={1} overflow="hidden">
         <FixedHeightFlex align="center" sizing="border" gap={2} paddingX={4}>
-          {/* todo: implemenet breadcrumbs */}
-          {breadcrumbs.map((breadcrumb, index) => {
-            const showSeparator = index < breadcrumbs.length - 1
-
-            return (
-              <>
-                <Text key={index} size={1} weight="medium">
-                  {String(breadcrumb.title)}
-                </Text>
-
-                {showSeparator && (
-                  <Text muted size={1}>
-                    {' / '}
-                  </Text>
-                )}
-              </>
-            )
-          })}
+          <TreeEditingBreadCrumbs items={breadcrumbs} onPathSelect={onPathSelect} />
         </FixedHeightFlex>
 
         <Card flex={1} paddingX={3} paddingY={5} sizing="border" overflow="auto">
