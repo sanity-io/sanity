@@ -48,16 +48,20 @@ const ITEMS: TreeEditingMenuItem[] = [
   },
 ]
 
-export default function TreeEditingLayoutStory() {
+function noop() {
+  return null
+}
+
+const EMPTY_ARRAY: [] = []
+
+export default function TreeEditingLayoutStory(): JSX.Element {
   return (
     <TreeEditingLayout
+      breadcrumbs={EMPTY_ARRAY}
       items={ITEMS}
-      breadcrumbs={[]}
-      selectedPath={[]}
-      title="Tree editing layout"
-      onPathSelect={() => {
-        // ...
-      }}
+      onPathSelect={noop}
+      selectedPath={EMPTY_ARRAY}
+      title="Tree editing layout some very long text"
     >
       <Text>{`(form view)`}</Text>
     </TreeEditingLayout>
