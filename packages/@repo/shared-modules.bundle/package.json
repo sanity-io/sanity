@@ -1,6 +1,6 @@
 {
   "name": "@repo/shared-modules.bundle",
-  "version": "3.41.1",
+  "version": "3.41.2",
   "private": true,
   "description": "Bundle for shared deps",
   "main": "./package.bundle.ts",
