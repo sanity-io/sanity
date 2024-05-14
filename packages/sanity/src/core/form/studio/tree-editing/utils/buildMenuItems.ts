@@ -40,7 +40,10 @@ interface RecursiveProps extends Omit<BuildTreeMenuItemsProps, 'focusPath'> {
 }
 
 function isSelected(itemPath: Path, focusPath: Path): boolean {
-  return JSON.stringify(itemPath) === JSON.stringify(focusPath)
+  return (
+    JSON.stringify(itemPath) === JSON.stringify(focusPath) &&
+    itemPath[itemPath.length - 1].hasOwnProperty('_key') // if it's not a key property we don't want to update the relativePath
+  )
 }
 
 // todo: this should not be a global variable
