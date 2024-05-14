@@ -116,6 +116,7 @@ function getOrCreateDocumentSnapshotLoader(client: SanityClient) {
           ]
         })
       },
+      {maxBatchSize: 100},
     )
     loaders.set(client, loader)
   }
