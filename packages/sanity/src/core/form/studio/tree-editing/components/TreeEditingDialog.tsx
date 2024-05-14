@@ -21,6 +21,7 @@ import {
   isOpen,
   type TreeEditingState,
 } from '../utils'
+import {handleNavigate} from '../utils/handleNavigate'
 import {TreeEditingLayout} from './TreeEditingLayout'
 
 const DEBUG_RELATIVE_PATH = true
@@ -105,6 +106,13 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | 
 
   const open = useMemo(() => isOpen(schemaType, relativePath), [relativePath, schemaType])
 
+  const onHandlePathSelect = useCallback(
+    (path: Path) => {
+      handleNavigate(path, setFocusPath)
+    },
+    [setFocusPath],
+  )
+
   if (!open || relativePath.length === 0) return null
 
   return (
@@ -118,7 +126,7 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | 
       <TreeEditingLayout
         breadcrumbs={breadcrumbs}
         items={menuItems}
-        onPathSelect={setFocusPath}
+        onPathSelect={onHandlePathSelect}
         selectedPath={relativePath}
         title={rootTitle}
       >
