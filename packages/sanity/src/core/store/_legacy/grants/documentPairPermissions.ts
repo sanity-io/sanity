@@ -299,10 +299,9 @@ export function useDocumentPairPermissions({
   )
 
   const serverActionsEnabled = useMemo(() => {
-    // If it's explicitly disabled, we'll just return a stream that emits `false`
-    return workspace.__internal_serverDocumentActions?.enabled === false
-      ? of(false)
-      : fetchFeatureToggle(client)
+    const configFlag = workspace.__internal_serverDocumentActions?.enabled
+    // If it's explicitly set, let it override the feature toggle
+    return typeof configFlag === 'boolean' ? of(configFlag as boolean) : fetchFeatureToggle(client)
   }, [client, workspace.__internal_serverDocumentActions?.enabled])
 
   return useDocumentPairPermissionsFromHookFactory(

@@ -136,7 +136,7 @@ export function useDocumentStore(): DocumentStore {
   const serverActionsEnabled = useMemo(() => {
     const configFlag = workspace.__internal_serverDocumentActions?.enabled
     // If it's explicitly set, let it override the feature toggle
-    return typeof workspace.__internal_serverDocumentActions?.enabled === 'boolean'
+    return typeof configFlag === 'boolean'
       ? of(configFlag as boolean)
       : fetchFeatureToggle(getClient(DEFAULT_STUDIO_CLIENT_OPTIONS))
   }, [getClient, workspace.__internal_serverDocumentActions?.enabled])
