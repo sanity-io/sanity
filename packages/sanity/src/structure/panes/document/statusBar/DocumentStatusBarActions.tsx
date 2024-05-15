@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 import {Flex, Hotkeys, LayerProvider, Stack, Text} from '@sanity/ui'
-import {memo, useMemo, useState} from 'react'
-import {type DocumentActionDescription, useTimelineSelector} from 'sanity'
+import {memo, useContext, useMemo, useState} from 'react'
+import {type DocumentActionDescription, FormDialogContext, useTimelineSelector} from 'sanity'
 
 import {Button, Tooltip} from '../../../../ui-components'
 import {RenderActionCollectionState} from '../../../components'
@@ -21,6 +21,7 @@ function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsInnerProps
   const {__internal_tasks} = useDocumentPane()
   const [firstActionState, ...menuActionStates] = states
   const [buttonElement, setButtonElement] = useState<HTMLButtonElement | null>(null)
+  const {isFormDialogOpen} = useContext(FormDialogContext)
 
   // TODO: This could be refactored to use the tooltip from the button if the firstAction.title was updated to a string.
   const tooltipContent = useMemo(() => {
@@ -51,7 +52,7 @@ function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsInnerProps
             <Stack>
               <Button
                 data-testid={`action-${firstActionState.label}`}
-                disabled={disabled || Boolean(firstActionState.disabled)}
+                disabled={disabled || Boolean(firstActionState.disabled) || isFormDialogOpen}
                 icon={firstActionState.icon}
                 // eslint-disable-next-line react/jsx-handler-names
                 onClick={firstActionState.onHandle}

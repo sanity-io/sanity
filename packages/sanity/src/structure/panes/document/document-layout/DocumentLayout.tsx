@@ -14,6 +14,7 @@ import {
   type DocumentInspectorMenuItem,
   FieldActionsProvider,
   FieldActionsResolver,
+  FormDialogProvider,
   useZIndex,
 } from 'sanity'
 import {type Path} from 'sanity-diff-patch'
@@ -195,38 +196,40 @@ export function DocumentLayout() {
         >
           <DocumentPanelHeader ref={setHeaderElement} menuItems={menuItems} />
 
-          <DialogProvider position={DIALOG_PROVIDER_POSITION} zOffset={zOffsets.paneDialog}>
-            <Flex direction="column" flex={1} height={layoutCollapsed ? undefined : 'fill'}>
-              <StyledChangeConnectorRoot
-                data-testid="change-connector-root"
-                isReviewChangesOpen={changesOpen}
-                onOpenReviewChanges={onHistoryOpen}
-                onSetFocus={onConnectorSetFocus}
-              >
-                <DocumentPanel
-                  footerHeight={footerHeight || null}
-                  headerHeight={headerHeight || null}
-                  isInspectOpen={inspectOpen}
-                  rootElement={rootElement}
-                  setDocumentPanelPortalElement={setDocumentPanelPortalElement}
-                />
-              </StyledChangeConnectorRoot>
-            </Flex>
-          </DialogProvider>
-
-          {/* These providers are added because we want the dialogs in `DocumentStatusBar` to be scoped to the document pane. */}
-          {/* The portal element comes from `DocumentPanel`. */}
-          <PortalProvider
-            __unstable_elements={{[DOCUMENT_PANEL_PORTAL_ELEMENT]: documentPanelPortalElement}}
-          >
-            <DialogProvider position={DIALOG_PROVIDER_POSITION} zOffset={zOffsets.portal}>
-              <PaneFooter ref={setFooterElement}>
-                <TooltipDelayGroupProvider>
-                  <DocumentStatusBar actionsBoxRef={setActionsBoxElement} />
-                </TooltipDelayGroupProvider>
-              </PaneFooter>
+          {/* This is the provider that wraps the form and footer to allow for changes from form to impact footer. */}
+          <FormDialogProvider>
+            <DialogProvider position={DIALOG_PROVIDER_POSITION} zOffset={zOffsets.paneDialog}>
+              <Flex direction="column" flex={1} height={layoutCollapsed ? undefined : 'fill'}>
+                <StyledChangeConnectorRoot
+                  data-testid="change-connector-root"
+                  isReviewChangesOpen={changesOpen}
+                  onOpenReviewChanges={onHistoryOpen}
+                  onSetFocus={onConnectorSetFocus}
+                >
+                  <DocumentPanel
+                    footerHeight={footerHeight || null}
+                    headerHeight={headerHeight || null}
+                    isInspectOpen={inspectOpen}
+                    rootElement={rootElement}
+                    setDocumentPanelPortalElement={setDocumentPanelPortalElement}
+                  />
+                </StyledChangeConnectorRoot>
+              </Flex>
             </DialogProvider>
-          </PortalProvider>
+            {/* These providers are added because we want the dialogs in `DocumentStatusBar` to be scoped to the document pane. */}
+            {/* The portal element comes from `DocumentPanel`. */}
+            <PortalProvider
+              __unstable_elements={{[DOCUMENT_PANEL_PORTAL_ELEMENT]: documentPanelPortalElement}}
+            >
+              <DialogProvider position={DIALOG_PROVIDER_POSITION} zOffset={zOffsets.portal}>
+                <PaneFooter ref={setFooterElement}>
+                  <TooltipDelayGroupProvider>
+                    <DocumentStatusBar actionsBoxRef={setActionsBoxElement} />
+                  </TooltipDelayGroupProvider>
+                </PaneFooter>
+              </DialogProvider>
+            </PortalProvider>
+          </FormDialogProvider>
           <DocumentOperationResults />
         </DocumentActionShortcuts>
       </FieldActionsProvider>
