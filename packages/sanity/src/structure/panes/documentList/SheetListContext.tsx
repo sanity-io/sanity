@@ -1,4 +1,4 @@
-import {type ReactNode, useCallback, useContext, useState} from 'react'
+import {type ReactNode, useCallback, useContext, useMemo, useState} from 'react'
 
 import {SheetListContext} from '../../../_singletons/structure/panes/document/DocumentSheetListContext'
 
@@ -17,6 +17,7 @@ export interface SheetListContextValue {
     colId: string
     rowIndex: number
   } | null
+  resetSelection: () => void
 }
 
 export const useSheetListContext = () => {
@@ -82,17 +83,28 @@ export function SheetListProvider({children}: SheetListProviderProps) {
     setSelectedCellIndexes([])
   }, [])
 
-  return (
-    <SheetListContext.Provider
-      value={{
-        focusedCellDetails,
-        setFocusedCellId: handleSetFocusedCellId,
-        onSelectedCellChange,
-        selectedCellIndexes,
-        resetFocusSelection,
-      }}
-    >
-      {children}
-    </SheetListContext.Provider>
+  const resetSelection = useCallback(() => {
+    setSelectedCellIndexes([])
+  }, [])
+
+  const value = useMemo(
+    () => ({
+      focusedCellDetails,
+      setFocusedCellId: handleSetFocusedCellId,
+      onSelectedCellChange,
+      selectedCellIndexes,
+      resetFocusSelection,
+      resetSelection,
+    }),
+    [
+      focusedCellDetails,
+      handleSetFocusedCellId,
+      onSelectedCellChange,
+      resetFocusSelection,
+      resetSelection,
+      selectedCellIndexes,
+    ],
   )
+
+  return <SheetListContext.Provider value={value}>{children}</SheetListContext.Provider>
 }
