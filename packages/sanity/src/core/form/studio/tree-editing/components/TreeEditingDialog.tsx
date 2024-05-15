@@ -16,6 +16,7 @@ import {
 import styled, {css} from 'styled-components'
 
 import {FormDialogContext} from '../../providers/FormDialogProvider'
+        
 import {
   buildTreeEditingState,
   type BuildTreeEditingStateProps,
@@ -118,7 +119,6 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | 
     },
     [setFocusPath],
   )
-
   const handleOnClose = useCallback(() => {
     setIsFormDialogOpen(false)
     onClose()
