@@ -30,6 +30,7 @@ export const SheetListCell = (
   useEffect(() => {
     const handleKeydown = (event: KeyboardEvent) => {
       if (document.activeElement?.id === `cell-${column.id}-${row.index}`) {
+        console.log('first')
         if (event.shiftKey) {
           if (event.key === 'ArrowDown') {
             event.preventDefault()
@@ -44,6 +45,8 @@ export const SheetListCell = (
         } else if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
           resetFocusSelection()
           setFocusedCellId(column.id, row.index + (event.key === 'ArrowDown' ? 1 : -1))
+        } else {
+          resetSelection()
         }
       }
     }
@@ -100,7 +103,12 @@ export const SheetListCell = (
   ])
 
   const handleOnBlur = () => {
+    // TODO: persist value for focus and selection fields
     resetFocusSelection()
+  }
+
+  const handleOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setRenderValue(event.target.value)
   }
 
   if (props.type.name === 'boolean') {
@@ -142,7 +150,7 @@ export const SheetListCell = (
           ? renderValue
           : JSON.stringify(renderValue)
       }
-      onChange={() => null}
+      onChange={handleOnChange}
       onFocus={handleOnFocus}
       onBlur={handleOnBlur}
     />
