@@ -14,7 +14,6 @@ export const SheetListCell = (
   const {column, row} = props
   const [renderValue, setRenderValue] = useState(props.getValue())
   const {
-    focusedCellId,
     setFocusedCellId,
     focusedCellDetails,
     selectedCellIndexes,
@@ -23,7 +22,7 @@ export const SheetListCell = (
   } = useSheetListContext()
 
   useEffect(() => {
-    const cb = (event) => {
+    const handleKeydown = (event) => {
       if (document.activeElement?.id === `cell-${column.id}-${row.index}`) {
         if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
           resetFocusSelection()
@@ -32,17 +31,17 @@ export const SheetListCell = (
         if (event.shiftKey) {
           if (event.key === 'ArrowDown') {
             event.preventDefault()
-
             onSelectedCellChange('down')
           }
-
           if (event.key === 'ArrowUp') {
+            event.preventDefault()
             onSelectedCellChange('up')
           }
         }
       }
     }
-    document.addEventListener('keydown', cb)
+
+    document.addEventListener('keydown', handleKeydown)
 
     const handlePaste = (event) => {
       if (focusedCellDetails?.colId === column.id && selectedCellIndexes.includes(row.index)) {
@@ -58,7 +57,7 @@ export const SheetListCell = (
     document.addEventListener('paste', handlePaste)
 
     return () => {
-      document.removeEventListener('keydown', cb)
+      document.removeEventListener('keydown', handleKeydown)
       document.removeEventListener('paste', handlePaste)
     }
   }, [
@@ -72,18 +71,12 @@ export const SheetListCell = (
   ])
 
   const handleOnFocus = () => {
-    setFocusedCellId(`cell-${column.id}-${row.index}`, column.id, row.index)
+    setFocusedCellId(column.id, row.index)
   }
 
   const handleOnBlur = () => {
     resetFocusSelection()
   }
-
-  useEffect(() => {
-    if (focusedCellId === `cell-${column.id}-${row.index}`) {
-      document.getElementById(`cell-${column.id}-${row.index}`)?.focus()
-    }
-  }, [column.id, focusedCellId, row.index])
 
   if (props.type.name === 'boolean') {
     return (

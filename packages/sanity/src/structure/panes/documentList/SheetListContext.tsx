@@ -9,8 +9,7 @@ interface SheetListProviderProps {
 type SelectionDirection = 'down' | 'up'
 
 export interface SheetListContextValue {
-  focusedCellId: string | null
-  setFocusedCellId: (id: string | null, colId: string, rowIndex: number) => void
+  setFocusedCellId: (colId: string, rowIndex: number) => void
   onSelectedCellChange: (direction: SelectionDirection) => void
   selectedCellIndexes: number[]
   resetFocusSelection: () => void
@@ -30,7 +29,6 @@ export const useSheetListContext = () => {
 }
 
 export function SheetListProvider({children}: SheetListProviderProps) {
-  const [focusedCellId, setFocusedCellId] = useState<string | null>(null)
   const [focusedCellDetails, setFocusedCellDetails] = useState<{
     colId: string
     rowIndex: number
@@ -45,10 +43,15 @@ export function SheetListProvider({children}: SheetListProviderProps) {
         const selectionDirectionalChange = direction === 'down' ? 1 : -1
         // if no cells are selected, select the cell in the direction
         if (!previousSelection.length) {
-          return [focusedCellDetails?.rowIndex + selectionDirectionalChange]
+          const firstSelectedIndex = focusedCellDetails.rowIndex + selectionDirectionalChange
+          if (firstSelectedIndex < 0) return []
+          return [firstSelectedIndex]
         }
         const lastIndexSelected = previousSelection[previousSelection.length - 1]
         const indexInDirectionFromLast = lastIndexSelected + selectionDirectionalChange
+
+        // if the cell in the direction is out of bounds, return the previous selection
+        if (indexInDirectionFromLast < 0) return previousSelection
 
         // if the cell in the direction is the same as the focused cell, deselect all cells
         if (indexInDirectionFromLast === focusedCellDetails?.rowIndex) {
@@ -70,16 +73,11 @@ export function SheetListProvider({children}: SheetListProviderProps) {
     [focusedCellDetails],
   )
 
-  const handleSetFocusedCellId = useCallback(
-    (id: string | null, colId: string, rowIndex: number) => {
-      setFocusedCellId(id)
-      setFocusedCellDetails({colId, rowIndex})
-    },
-    [],
-  )
+  const handleSetFocusedCellId = useCallback((colId: string, rowIndex: number) => {
+    setFocusedCellDetails({colId, rowIndex})
+  }, [])
 
   const resetFocusSelection = useCallback(() => {
-    setFocusedCellId(null)
     setFocusedCellDetails(null)
     setSelectedCellIndexes([])
   }, [])
@@ -87,7 +85,6 @@ export function SheetListProvider({children}: SheetListProviderProps) {
   return (
     <SheetListContext.Provider
       value={{
-        focusedCellId,
         focusedCellDetails,
         setFocusedCellId: handleSetFocusedCellId,
         onSelectedCellChange,
