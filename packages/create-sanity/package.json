@@ -1,6 +1,6 @@
 {
   "name": "create-sanity",
-  "version": "3.41.3-before-pane-break.8+516ada5d23",
+  "version": "3.41.2",
   "description": "Initialize a new Sanity project",
   "keywords": [
     "sanity",
@@ -26,11 +26,10 @@
     "index.js"
   ],
   "dependencies": {
-    "@sanity/cli": "3.41.3-before-pane-break.8+516ada5d23",
+    "@sanity/cli": "3.41.2",
     "resolve-pkg": "^2.0.0"
   },
   "engines": {
     "node": ">=18"
-  },
-  "gitHead": "516ada5d2362ba57a200e359d0d19c610cb3fa6a"
+  }
 }

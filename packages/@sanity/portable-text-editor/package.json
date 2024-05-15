@@ -1,6 +1,6 @@
 {
   "name": "@sanity/portable-text-editor",
-  "version": "3.41.3-before-pane-break.8+516ada5d23",
+  "version": "3.41.2",
   "description": "Portable Text Editor made in React",
   "keywords": [
     "sanity",
@@ -59,10 +59,10 @@
     "watch": "pkg-utils watch"
   },
   "dependencies": {
-    "@sanity/block-tools": "3.41.3-before-pane-break.8+516ada5d23",
-    "@sanity/schema": "3.41.3-before-pane-break.8+516ada5d23",
-    "@sanity/types": "3.41.3-before-pane-break.8+516ada5d23",
-    "@sanity/util": "3.41.3-before-pane-break.8+516ada5d23",
+    "@sanity/block-tools": "3.41.2",
+    "@sanity/schema": "3.41.2",
+    "@sanity/types": "3.41.2",
+    "@sanity/util": "3.41.2",
     "debug": "^3.2.7",
     "is-hotkey-esm": "^1.0.0",
     "lodash": "^4.17.21",
@@ -73,7 +73,7 @@
     "@jest/globals": "^29.7.0",
     "@playwright/test": "1.41.2",
     "@portabletext/toolkit": "^2.0.15",
-    "@repo/package.config": "3.41.2",
+    "@repo/package.config": "workspace:*",
     "@sanity/diff-match-patch": "^3.1.1",
     "@sanity/ui": "^2.1.6",
     "@testing-library/react": "^13.4.0",
@@ -110,6 +110,5 @@
   },
   "publishConfig": {
     "access": "public"
-  },
-  "gitHead": "516ada5d2362ba57a200e359d0d19c610cb3fa6a"
+  }
 }

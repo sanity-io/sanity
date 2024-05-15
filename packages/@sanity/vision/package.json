@@ -1,6 +1,6 @@
 {
   "name": "@sanity/vision",
-  "version": "3.41.3-before-pane-break.8+516ada5d23",
+  "version": "3.41.2",
   "description": "Sanity plugin for running/debugging GROQ-queries against Sanity datasets",
   "keywords": [
     "sanity",
@@ -72,26 +72,25 @@
     "quick-lru": "^5.1.1"
   },
   "devDependencies": {
-    "@repo/package.config": "3.41.2",
-    "@sanity/block-tools": "3.41.3-before-pane-break.8+516ada5d23",
-    "@sanity/cli": "3.41.3-before-pane-break.8+516ada5d23",
+    "@repo/package.config": "workspace:*",
+    "@sanity/block-tools": "workspace:*",
+    "@sanity/cli": "workspace:*",
     "@sanity/client": "^6.18.0",
-    "@sanity/codegen": "3.41.3-before-pane-break.8+516ada5d23",
-    "@sanity/diff": "3.41.3-before-pane-break.8+516ada5d23",
-    "@sanity/migrate": "3.41.3-before-pane-break.8+516ada5d23",
-    "@sanity/mutator": "3.41.3-before-pane-break.8+516ada5d23",
-    "@sanity/portable-text-editor": "3.41.3-before-pane-break.8+516ada5d23",
-    "@sanity/schema": "3.41.3-before-pane-break.8+516ada5d23",
-    "@sanity/types": "3.41.3-before-pane-break.8+516ada5d23",
-    "@sanity/util": "3.41.3-before-pane-break.8+516ada5d23",
+    "@sanity/codegen": "workspace:*",
+    "@sanity/diff": "workspace:*",
+    "@sanity/migrate": "workspace:*",
+    "@sanity/mutator": "workspace:*",
+    "@sanity/portable-text-editor": "workspace:*",
+    "@sanity/schema": "workspace:*",
+    "@sanity/types": "workspace:*",
+    "@sanity/util": "workspace:*",
     "@types/lodash": "^4.14.149",
     "react": "^18.3.1",
-    "sanity": "3.41.3-before-pane-break.8+516ada5d23",
+    "sanity": "workspace:*",
     "styled-components": "^6.1.10"
   },
   "peerDependencies": {
     "react": "^18",
     "styled-components": "^6.1"
-  },
-  "gitHead": "516ada5d2362ba57a200e359d0d19c610cb3fa6a"
+  }
 }

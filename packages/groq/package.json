@@ -1,6 +1,6 @@
 {
   "name": "groq",
-  "version": "3.41.3-before-pane-break.8+516ada5d23",
+  "version": "3.41.2",
   "description": "Tagged template literal for Sanity.io GROQ-queries",
   "keywords": [
     "sanity",
@@ -53,10 +53,9 @@
     "watch": "pkg-utils watch"
   },
   "devDependencies": {
-    "@repo/package.config": "3.41.2"
+    "@repo/package.config": "workspace:*"
   },
   "engines": {
     "node": ">=18"
-  },
-  "gitHead": "516ada5d2362ba57a200e359d0d19c610cb3fa6a"
+  }
 }

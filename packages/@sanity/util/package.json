@@ -1,6 +1,6 @@
 {
   "name": "@sanity/util",
-  "version": "3.41.3-before-pane-break.8+516ada5d23",
+  "version": "3.41.2",
   "description": "Utilities shared across projects of Sanity",
   "keywords": [
     "sanity",
@@ -123,19 +123,18 @@
   },
   "dependencies": {
     "@sanity/client": "^6.18.0",
-    "@sanity/types": "3.41.3-before-pane-break.8+516ada5d23",
+    "@sanity/types": "3.41.2",
     "get-random-values-esm": "1.0.2",
     "moment": "^2.29.4",
     "rxjs": "^7.8.1"
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",
-    "@repo/package.config": "3.41.2",
+    "@repo/package.config": "workspace:*",
     "@types/moment": "^2.13.0",
     "rimraf": "^3.0.2"
   },
   "engines": {
     "node": ">=18"
-  },
-  "gitHead": "516ada5d2362ba57a200e359d0d19c610cb3fa6a"
+  }
 }

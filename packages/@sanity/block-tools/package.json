@@ -1,6 +1,6 @@
 {
   "name": "@sanity/block-tools",
-  "version": "3.41.3-before-pane-break.8+516ada5d23",
+  "version": "3.41.2",
   "description": "Can format HTML, Slate JSON or Sanity block array into any other format.",
   "keywords": [
     "sanity",
@@ -55,9 +55,9 @@
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",
-    "@repo/package.config": "3.41.2",
-    "@sanity/schema": "3.41.3-before-pane-break.8+516ada5d23",
-    "@sanity/types": "3.41.3-before-pane-break.8+516ada5d23",
+    "@repo/package.config": "workspace:*",
+    "@sanity/schema": "3.41.2",
+    "@sanity/types": "3.41.2",
     "@types/jsdom": "^20.0.0",
     "@types/lodash": "^4.14.149",
     "@types/react": "^18.3.1",
@@ -66,6 +66,5 @@
   },
   "publishConfig": {
     "access": "public"
-  },
-  "gitHead": "516ada5d2362ba57a200e359d0d19c610cb3fa6a"
+  }
 }

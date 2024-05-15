@@ -1,6 +1,6 @@
 {
   "name": "@sanity/codegen",
-  "version": "3.41.3-before-pane-break.8+516ada5d23",
+  "version": "3.41.2",
   "description": "Codegen toolkit for Sanity.io",
   "keywords": [
     "sanity",
@@ -60,7 +60,7 @@
     "@babel/types": "^7.23.9",
     "debug": "^4.3.4",
     "globby": "^10.0.0",
-    "groq": "3.41.3-before-pane-break.8+516ada5d23",
+    "groq": "workspace:*",
     "groq-js": "^1.8.0",
     "json5": "^2.2.3",
     "tsconfig-paths": "^4.2.0",
@@ -68,7 +68,7 @@
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",
-    "@repo/package.config": "3.41.2",
+    "@repo/package.config": "workspace:*",
     "@types/babel__core": "^7.20.5",
     "@types/babel__generator": "^7.6.8",
     "@types/babel__register": "^7.17.3",
@@ -81,6 +81,5 @@
   },
   "publishConfig": {
     "access": "public"
-  },
-  "gitHead": "516ada5d2362ba57a200e359d0d19c610cb3fa6a"
+  }
 }

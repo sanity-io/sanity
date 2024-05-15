@@ -1,6 +1,6 @@
 {
   "name": "@sanity/cli",
-  "version": "3.41.3-before-pane-break.8+516ada5d23",
+  "version": "3.41.2",
   "description": "Sanity CLI tool for managing Sanity installations, managing plugins, schemas and datasets",
   "keywords": [
     "sanity",
@@ -58,9 +58,9 @@
   "dependencies": {
     "@babel/traverse": "^7.23.5",
     "@sanity/client": "^6.18.0",
-    "@sanity/codegen": "3.41.3-before-pane-break.8+516ada5d23",
+    "@sanity/codegen": "3.41.2",
     "@sanity/telemetry": "^0.7.6",
-    "@sanity/util": "3.41.3-before-pane-break.8+516ada5d23",
+    "@sanity/util": "3.41.2",
     "chalk": "^4.1.2",
     "debug": "^4.3.4",
     "decompress": "^4.2.0",
@@ -77,12 +77,12 @@
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",
-    "@repo/package.config": "3.41.2",
+    "@repo/package.config": "workspace:*",
     "@rexxars/gitconfiglocal": "^3.0.1",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@sanity/eslint-config-studio": "^4.0.0",
     "@sanity/generate-help-url": "^3.0.0",
-    "@sanity/types": "3.41.3-before-pane-break.8+516ada5d23",
+    "@sanity/types": "workspace:*",
     "@types/babel__traverse": "^7.20.5",
     "@types/configstore": "^5.0.1",
     "@types/cpx": "^1.5.2",
@@ -134,6 +134,5 @@
   },
   "engines": {
     "node": ">=18"
-  },
-  "gitHead": "516ada5d2362ba57a200e359d0d19c610cb3fa6a"
+  }
 }
