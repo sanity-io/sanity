@@ -29,6 +29,9 @@ export default defineConfig({
   legacyExports: true,
   rollup: {
     optimizeLodash: true,
+    output: {
+      minifyInternalExports: false,
+    },
   },
   tsconfig: 'tsconfig.lib.json',
   strictOptions: {
