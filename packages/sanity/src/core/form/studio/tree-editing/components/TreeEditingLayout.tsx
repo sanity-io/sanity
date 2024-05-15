@@ -1,3 +1,4 @@
+/* eslint-disable @sanity/i18n/no-attribute-string-literals */
 /* eslint-disable i18next/no-literal-string */
 import {PanelLeftIcon} from '@sanity/icons'
 import {Card, Container, Flex, Stack, Text} from '@sanity/ui'
@@ -7,8 +8,8 @@ import styled from 'styled-components'
 
 import {Button} from '../../../../../ui-components'
 import {type TreeEditingBreadcrumb, type TreeEditingMenuItem} from '../types'
+import {TreeEditingBreadcrumbs} from './breadcrumbs'
 import {Resizable} from './resizer'
-import {TreeEditingBreadCrumbs} from './TreeEditingBreadCrumbs'
 import {TreeEditingMenu} from './TreeEditingMenu'
 
 const FixedHeightFlex = styled(Flex).attrs({padding: 2, align: 'center', sizing: 'border'})`
@@ -83,6 +84,7 @@ const Sidebar = memo(function Sidebar(props: SidebarProps) {
 interface TreeEditingLayoutProps {
   breadcrumbs: TreeEditingBreadcrumb[]
   children: ReactNode
+  footer?: ReactNode
   items: TreeEditingMenuItem[]
   onPathSelect: (path: Path) => void
   selectedPath: Path
@@ -92,11 +94,11 @@ interface TreeEditingLayoutProps {
 export const TreeEditingLayout = memo(function TreeEditingLayout(
   props: TreeEditingLayoutProps,
 ): JSX.Element {
-  const {breadcrumbs, children, items, selectedPath, onPathSelect, title} = props
+  const {breadcrumbs, children, items, selectedPath, onPathSelect, title, footer} = props
   const scrollElementRef = useRef<HTMLDivElement | null>(null)
   const containerElementRef = useRef<HTMLDivElement | null>(null)
 
-  const [open, setOpen] = useState<boolean>(true)
+  const [open, setOpen] = useState<boolean>(false)
 
   const toggleOpen = useCallback(() => setOpen((v) => !v), [])
 
@@ -113,20 +115,22 @@ export const TreeEditingLayout = memo(function TreeEditingLayout(
 
       <Flex direction="column" flex={1} overflow="hidden">
         <FixedHeightFlex align="center" sizing="border" gap={2} paddingX={4}>
-          <TreeEditingBreadCrumbs items={breadcrumbs} onPathSelect={onPathSelect} />
+          <TreeEditingBreadcrumbs
+            items={breadcrumbs}
+            onPathSelect={onPathSelect}
+            selectedPath={selectedPath}
+          />
         </FixedHeightFlex>
 
-        <Card
-          flex={1}
-          id="tree-editing-form"
-          overflow="auto"
-          paddingX={3}
-          paddingY={5}
-          ref={scrollElementRef}
-          sizing="border"
-        >
+        <Card flex={1} id="tree-editing-form" overflow="auto" ref={scrollElementRef}>
           {children && (
-            <Container width={1} ref={containerElementRef}>
+            <Container
+              width={1}
+              ref={containerElementRef}
+              paddingX={5}
+              paddingY={5}
+              sizing="border"
+            >
               <VirtualizerScrollInstanceProvider
                 containerElement={containerElementRef}
                 scrollElement={scrollElementRef.current}
@@ -136,6 +140,8 @@ export const TreeEditingLayout = memo(function TreeEditingLayout(
             </Container>
           )}
         </Card>
+
+        {footer}
       </Flex>
     </Flex>
   )
