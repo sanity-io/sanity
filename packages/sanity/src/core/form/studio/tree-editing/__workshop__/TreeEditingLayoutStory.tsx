@@ -59,7 +59,8 @@ export default function TreeEditingLayoutStory(): JSX.Element {
   const [selectedPath, setSelectedPath] = useState<Path>(EMPTY_ARRAY)
 
   const handlePathSelect = useCallback((path: Path) => {
-    const next = path?.map((segment) => ({title: segment.toString(), path: [] as Path})) || []
+    const next: TreeEditingBreadcrumb[] =
+      path?.map((segment) => ({title: segment.toString(), path: [] as Path, children: []})) || []
 
     setBreadcrumbs(next)
     setSelectedPath(path)
