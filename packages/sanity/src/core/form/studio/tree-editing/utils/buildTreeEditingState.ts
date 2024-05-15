@@ -88,6 +88,7 @@ export function buildTreeEditingState(props: BuildTreeEditingStateProps): TreeEd
           breadcrumbs.push({
             path: nextPath,
             title: objectTitle,
+            children: EMPTY_ARRAY,
           })
         }
 
@@ -131,6 +132,26 @@ export function buildTreeEditingState(props: BuildTreeEditingStateProps): TreeEd
           breadcrumbs.push({
             path: itemPath,
             title: (title || 'Untitled') as string,
+
+            children: arrayValue.map((arrayItem) => {
+              const nestedItemPath = [...path, {_key: arrayItem._key}] as Path
+              const nestedItemType = arrayItem?._type as string
+
+              const nestedItemSchemaField = (schemaType.type as ArraySchemaType)?.of?.find(
+                (type) => type.name === nestedItemType,
+              ) as ObjectSchemaType
+
+              const nestedPreviewTitleKey = nestedItemSchemaField?.preview?.select?.title
+              const nestedTitle = nestedPreviewTitleKey
+                ? arrayItem?.[nestedPreviewTitleKey]
+                : nestedItemType
+
+              return {
+                path: nestedItemPath,
+                title: nestedTitle as string,
+                children: EMPTY_ARRAY,
+              }
+            }),
           })
         }
 
@@ -152,6 +173,7 @@ export function buildTreeEditingState(props: BuildTreeEditingStateProps): TreeEd
               breadcrumbs.push({
                 path: childPath,
                 title: childTitle,
+                children: EMPTY_ARRAY,
               })
             }
 
@@ -208,6 +230,25 @@ export function buildTreeEditingState(props: BuildTreeEditingStateProps): TreeEd
         breadcrumbs.push({
           path: itemPath,
           title: (title || 'Untitled') as string,
+          children: arrayValue.map((arrayItem) => {
+            const nestedItemPath = [...rootPath, {_key: arrayItem._key}] as Path
+            const nestedItemType = arrayItem?._type as string
+
+            const nestedItemSchemaField = arraySchemaType?.of?.find(
+              (type) => type.name === nestedItemType,
+            ) as ObjectSchemaType
+
+            const nestedPreviewTitleKey = nestedItemSchemaField?.preview?.select?.title
+            const nestedTitle = nestedPreviewTitleKey
+              ? arrayItem?.[nestedPreviewTitleKey]
+              : getSchemaTypeTitle(nestedItemSchemaField)
+
+            return {
+              path: nestedItemPath,
+              title: nestedTitle as string,
+              children: EMPTY_ARRAY,
+            }
+          }),
         })
       }
 
@@ -234,6 +275,7 @@ export function buildTreeEditingState(props: BuildTreeEditingStateProps): TreeEd
             breadcrumbs.push({
               path: childPath,
               title: childTitle,
+              children: EMPTY_ARRAY,
             })
           }
 

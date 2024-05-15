@@ -18,8 +18,18 @@ export default defineScope({
 
     {
       name: 'tree-editing-breadcrumbs',
-      title: 'TreeEditingBreadCrumbs',
-      component: lazy(() => import('./TreeEditingBreadCrumbsStory')),
+      title: 'TreeEditingBreadcrumbs',
+      component: lazy(() => import('./TreeEditingBreadcrumbsStory')),
+    },
+    {
+      name: 'tree-editing-breadcrumbs-menu',
+      title: 'TreeEditingBreadcrumbsMenu',
+      component: lazy(() => import('./TreeEditingBreadcrumbsMenuStory')),
+    },
+    {
+      name: 'tree-editing-breadcrumbs-menu-button',
+      title: 'TreeEditingBreadcrumbsMenuButtonStory',
+      component: lazy(() => import('./TreeEditingBreadcrumbsMenuButtonStory')),
     },
     {
       name: 'tree-menu-items-build-debug',
