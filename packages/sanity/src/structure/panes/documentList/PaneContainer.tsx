@@ -56,6 +56,9 @@ export function useShallowUnique<ValueType>(value: ValueType): ValueType {
   return valueRef.current
 }
 
+/**
+ * @internal
+ */
 export const PaneContainer = memo(function PaneContainer(
   props: BaseStructureToolPaneProps<'documentList'>,
 ) {
