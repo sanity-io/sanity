@@ -1,6 +1,6 @@
-import {Checkbox, Flex, Text, TextInput} from '@sanity/ui'
+import {Checkbox, Flex, Text} from '@sanity/ui'
 import {type AccessorKeyColumnDef, createColumnHelper} from '@tanstack/react-table'
-import {useMemo, useState} from 'react'
+import {useMemo} from 'react'
 import {useMemoObservable} from 'react-rx'
 import {
   type DocumentPreviewStore,
@@ -42,26 +42,6 @@ const PreviewCell = (props: {
       <DocumentStatusIndicator draft={draft} published={published} />
       <Text size={1}>{displayValue}</Text>
     </Flex>
-  )
-}
-
-const TableTextInput = (props: any) => {
-  const {index, id} = props
-  const initialValue = props.getValue()
-  // We need to keep and update the state of the cell normally
-  const [value, setValue] = useState(initialValue || '')
-
-  // When the input is blurred, we'll call our table meta's updateData function
-  const onBlur = () => {
-    props.table.options.meta?.updateData(index, id, value)
-  }
-
-  return (
-    <TextInput
-      value={value as string}
-      onChange={(e) => setValue(e.currentTarget.value)}
-      onBlur={onBlur}
-    />
   )
 }
 

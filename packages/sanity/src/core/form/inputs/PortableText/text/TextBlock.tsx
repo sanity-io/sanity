@@ -269,13 +269,18 @@ export function TextBlock(props: TextBlockProps) {
   return useMemo(
     () => (
       <Box
-        data-testid="text-block"
         {...outerPaddingProps}
-        style={debugRender()}
+        data-testid="text-block"
+        data-text-block="" // used by create
         ref={memberItem?.elementRef as RefObject<HTMLDivElement>}
+        style={debugRender()}
       >
         <TextBlockFlexWrapper data-testid="text-block__wrapper">
-          <Flex flex={1} {...innerPaddingProps}>
+          <Flex
+            data-text-block-inner="" // used by create
+            flex={1}
+            {...innerPaddingProps}
+          >
             <Box flex={1}>
               <Tooltip
                 content={toolTipContent}

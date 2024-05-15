@@ -4,16 +4,21 @@ import {SCHEDULED_PUBLISHING_NAME, scheduledPublishing} from '../scheduledPublis
 import {tasks, TASKS_NAME} from '../tasks/plugin'
 import {
   type DefaultPluginsWorkspaceOptions,
+  type PluginOptions,
   type SingleWorkspace,
   type WorkspaceOptions,
 } from './types'
 
 const defaultPlugins = [comments(), tasks(), scheduledPublishing()]
 
-export function getDefaultPlugins(options: DefaultPluginsWorkspaceOptions) {
+export function getDefaultPlugins(
+  options: DefaultPluginsWorkspaceOptions,
+  plugins?: PluginOptions[],
+) {
   return defaultPlugins.filter((plugin) => {
     if (plugin.name === SCHEDULED_PUBLISHING_NAME) {
-      return options.scheduledPublishing.enabled
+      // The scheduled publishing plugin is only included if other plugin is included by the user.
+      return options.scheduledPublishing.enabled && !!plugins?.length
     }
     if (plugin.name === TASKS_NAME) {
       return options.tasks.enabled
