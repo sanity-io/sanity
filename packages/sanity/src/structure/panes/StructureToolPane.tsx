@@ -25,9 +25,7 @@ interface StructureToolPaneProps {
 const paneMap = {
   component: lazy(() => import('./userComponent')),
   document: lazy(() => import('./document/pane')),
-  documentList: lazy(() =>
-    import('./documentList/pane').then(({PaneContainer}) => ({default: PaneContainer})),
-  ),
+  documentList: lazy(() => import('./documentList/pane')),
   list: lazy(() => import('./list')),
 }
 
