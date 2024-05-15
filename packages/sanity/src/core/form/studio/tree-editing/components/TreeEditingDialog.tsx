@@ -5,7 +5,7 @@ import {type Theme} from '@sanity/ui/theme'
 import {toString} from '@sanity/util/paths'
 import {AnimatePresence, motion, type Transition, type Variants} from 'framer-motion'
 import {debounce, type DebounceSettings, isEqual} from 'lodash'
-import {useCallback, useEffect, useMemo, useState} from 'react'
+import {useCallback, useContext, useEffect, useMemo, useState} from 'react'
 import {
   FormInput,
   type InputProps,
@@ -15,11 +15,11 @@ import {
 } from 'sanity'
 import styled, {css} from 'styled-components'
 
+import {FormDialogContext} from '../../providers/FormDialogProvider'
 import {
   buildTreeEditingState,
   type BuildTreeEditingStateProps,
   EMPTY_TREE_STATE,
-  isOpen,
   type TreeEditingState,
 } from '../utils'
 import {handleNavigate} from '../utils/handleNavigate'
@@ -110,8 +110,7 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | 
   }, [focusPath, schemaType, value, debouncedBuildTreeEditingState])
 
   const {menuItems, relativePath, rootTitle, breadcrumbs} = treeState
-
-  const open = useMemo(() => isOpen(schemaType, relativePath), [relativePath, schemaType])
+  const {isFormDialogOpen, setIsFormDialogOpen} = useContext(FormDialogContext)
 
   const onHandlePathSelect = useCallback(
     (path: Path) => {
@@ -120,13 +119,18 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | 
     [setFocusPath],
   )
 
-  if (!open || relativePath.length === 0) return null
+  const handleOnClose = useCallback(() => {
+    setIsFormDialogOpen(false)
+    onClose()
+  }, [onClose, setIsFormDialogOpen])
+
+  if (!isFormDialogOpen || relativePath.length === 0) return null
 
   return (
     <StyledDialog
       autoFocus={false}
       id="tree-editing-dialog"
-      onClickOutside={onClose}
+      onClickOutside={handleOnClose}
       padding={0}
       width={3}
     >

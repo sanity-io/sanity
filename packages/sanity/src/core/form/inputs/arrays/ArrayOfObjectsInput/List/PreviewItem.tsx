@@ -1,7 +1,7 @@
 import {CopyIcon as DuplicateIcon, TrashIcon} from '@sanity/icons'
 import {type SchemaType} from '@sanity/types'
 import {Box, Card, type CardTone, Menu} from '@sanity/ui'
-import {useCallback, useMemo, useRef} from 'react'
+import {useCallback, useContext, useMemo, useRef} from 'react'
 
 import {MenuButton, MenuItem} from '../../../../../../ui-components'
 import {ChangeIndicator} from '../../../../../changeIndicators'
@@ -16,6 +16,7 @@ import {useDidUpdate} from '../../../../hooks/useDidUpdate'
 import {useScrollIntoViewOnFocusWithin} from '../../../../hooks/useScrollIntoViewOnFocusWithin'
 import {useChildPresence} from '../../../../studio/contexts/Presence'
 import {useChildValidation} from '../../../../studio/contexts/Validation'
+import {FormDialogContext} from '../../../../studio/providers/FormDialogProvider'
 import {type ObjectItem, type ObjectItemProps} from '../../../../types'
 import {randomKey} from '../../../../utils/randomKey'
 import {RowLayout} from '../../layouts/RowLayout'
@@ -146,6 +147,13 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
     [handleDuplicate, handleInsert, onRemove, insertableTypes, props.inputId, readOnly, t],
   )
 
+  const {setIsFormDialogOpen} = useContext(FormDialogContext)
+
+  const handleOnOpen = () => {
+    setIsFormDialogOpen(true)
+    onOpen()
+  }
+
   const tone = getTone({readOnly, hasErrors, hasWarnings})
   const item = (
     <RowLayout
@@ -164,7 +172,7 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
         tone="inherit"
         radius={1}
         disabled={resolvingInitialValue}
-        onClick={onOpen}
+        onClick={handleOnOpen}
         ref={previewCardRef}
         onFocus={onFocus}
         __unstable_focusRing
