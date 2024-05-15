@@ -1,4 +1,7 @@
+import {ChevronDownIcon} from '@sanity/icons'
 import {Box, Button, Flex, Stack, Text, Tooltip, useElementSize} from '@sanity/ui'
+import {type Theme} from '@sanity/ui/theme'
+import {isEqual} from 'lodash'
 import {
   type ForwardedRef,
   forwardRef,
@@ -8,9 +11,10 @@ import {
   useState,
 } from 'react'
 import {type Path} from 'sanity'
-import styled from 'styled-components'
+import styled, {css} from 'styled-components'
 
-import {type TreeEditingBreadcrumb} from '../types'
+import {type TreeEditingBreadcrumb} from '../../types'
+import {TreeEditingBreadcrumbsMenuButton} from './TreeEditingBreadcrumbsMenuButton'
 
 const EMPTY_ARRAY: [] = []
 const MAX_LENGTH = 5
@@ -23,6 +27,18 @@ const RootFlex = styled(Flex)`
 const SeparatorBox = styled(Box)`
   min-width: max-content;
 `
+
+const StyledButton = styled(Button)(({theme}: {theme: Theme}) => {
+  const {bold} = theme.sanity.v2?.font.text?.weights || {}
+
+  return css`
+    &[data-active='true'] {
+      [data-ui='Text']:first-child {
+        font-weight: ${bold};
+      }
+    }
+  `
+})
 
 type Item = TreeEditingBreadcrumb[] | TreeEditingBreadcrumb
 
@@ -39,25 +55,14 @@ const SeparatorItem = forwardRef(function SeparatorItem(
   )
 })
 
-const renderItem = (item: TreeEditingBreadcrumb, index: number, isSelected?: boolean) => {
-  const weight = isSelected ? 'bold' : 'medium'
-
-  return (
-    <Box as="li" key={`${item.title}-${index}`}>
-      <Text textOverflow="ellipsis" size={1} weight={weight}>
-        {item.title}
-      </Text>
-    </Box>
-  )
-}
-
-interface TreeEditingBreadCrumbsProps {
+interface TreeEditingBreadcrumbsProps {
   items: TreeEditingBreadcrumb[]
   onPathSelect: (path: Path) => void
+  selectedPath: Path
 }
 
-export function TreeEditingBreadCrumbs(props: TreeEditingBreadCrumbsProps): JSX.Element | null {
-  const {items: itemsProp = EMPTY_ARRAY, onPathSelect} = props
+export function TreeEditingBreadcrumbs(props: TreeEditingBreadcrumbsProps): JSX.Element | null {
+  const {items: itemsProp = EMPTY_ARRAY, onPathSelect, selectedPath} = props
 
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null)
   const size = useElementSize(rootElement)
@@ -95,7 +100,6 @@ export function TreeEditingBreadCrumbs(props: TreeEditingBreadCrumbsProps): JSX.
     return items.map((item, index) => {
       const key = `${item}-${index}`
       const showSeparator = index < items.length - 1
-      const isLast = index === items.length - 1
 
       if (Array.isArray(item)) {
         return (
@@ -103,7 +107,13 @@ export function TreeEditingBreadCrumbs(props: TreeEditingBreadCrumbsProps): JSX.
             <Tooltip
               content={
                 <Stack space={2} padding={2}>
-                  {item.map((i) => renderItem(i, index, false))}
+                  {item.map((subItem) => (
+                    <Box as="li" key={`${subItem.title}-${index}`}>
+                      <Text textOverflow="ellipsis" size={1}>
+                        {subItem.title}
+                      </Text>
+                    </Box>
+                  ))}
                 </Stack>
               }
             >
@@ -117,22 +127,41 @@ export function TreeEditingBreadCrumbs(props: TreeEditingBreadCrumbsProps): JSX.
         )
       }
 
+      // We check if the length is greater than 1 as the root item
+      // is also included in the children array.
+      const hasChildren = item.children.length > 1
+
+      const button = (
+        <StyledButton
+          data-active={isEqual(item.path, selectedPath) ? 'true' : 'false'}
+          iconRight={hasChildren ? ChevronDownIcon : undefined}
+          mode="bleed"
+          // eslint-disable-next-line react/jsx-no-bind
+          onClick={() => onPathSelect(item.path)}
+          padding={1}
+          space={2}
+          text={item.title}
+        />
+      )
+
       return (
         <Fragment key={key}>
-          <Button
-            mode="bleed"
-            // eslint-disable-next-line react/jsx-no-bind
-            onClick={() => onPathSelect(item.path)}
-            padding={1}
-          >
-            {renderItem(item, index, isLast)}
-          </Button>
+          {!hasChildren && button}
+
+          {hasChildren && (
+            <TreeEditingBreadcrumbsMenuButton
+              button={button}
+              items={item.children}
+              onPathSelect={onPathSelect}
+              selectedPath={item.path}
+            />
+          )}
 
           {showSeparator && <SeparatorItem>{SEPARATOR}</SeparatorItem>}
         </Fragment>
       )
     })
-  }, [items, onPathSelect])
+  }, [items, onPathSelect, selectedPath])
 
   return (
     <RootFlex align="center" forwardedAs="ol" gap={2} ref={setRootElement}>

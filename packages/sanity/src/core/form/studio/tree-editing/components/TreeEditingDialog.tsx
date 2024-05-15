@@ -1,13 +1,15 @@
+/* eslint-disable @sanity/i18n/no-attribute-string-literals */
 /* eslint-disable i18next/no-literal-string */
-import {Card, Code, Dialog, Flex, Text} from '@sanity/ui'
+import {Button, Card, Code, Dialog, Flex, Text} from '@sanity/ui'
 import {type Theme} from '@sanity/ui/theme'
 import {toString} from '@sanity/util/paths'
-import {AnimatePresence, motion, type Variants} from 'framer-motion'
+import {AnimatePresence, motion, type Transition, type Variants} from 'framer-motion'
 import {debounce, type DebounceSettings, isEqual} from 'lodash'
 import {useCallback, useEffect, useMemo, useState} from 'react'
 import {
   FormInput,
   type InputProps,
+  isDev,
   type ObjectInputProps,
   type ObjectSchemaType,
   type Path,
@@ -24,7 +26,7 @@ import {
 import {handleNavigate} from '../utils/handleNavigate'
 import {TreeEditingLayout} from './TreeEditingLayout'
 
-const DEBUG_RELATIVE_PATH = true
+const DEBUG_RELATIVE_PATH = isDev
 
 const EMPTY_ARRAY: [] = []
 
@@ -33,6 +35,8 @@ const ANIMATION_VARIANTS: Variants = {
   animate: {opacity: 1},
   exit: {opacity: 0},
 }
+
+const ANIMATION_TRANSITION: Transition = {duration: 0.15, ease: 'easeInOut'}
 
 const DEBOUNCE_SETTINGS: DebounceSettings = {leading: true, trailing: true}
 
@@ -133,6 +137,13 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | 
         onPathSelect={onHandlePathSelect}
         selectedPath={relativePath}
         title={rootTitle}
+        footer={
+          <Card borderTop>
+            <Flex align="center" justify="flex-end" paddingX={3} paddingY={2} sizing="border">
+              <Button text="Done" onClick={onClose} />
+            </Flex>
+          </Card>
+        }
       >
         {DEBUG_RELATIVE_PATH && (
           <Card
@@ -181,6 +192,7 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | 
             initial="initial"
             key={toString(relativePath)}
             overflow="hidden"
+            transition={ANIMATION_TRANSITION}
             variants={ANIMATION_VARIANTS}
           >
             <FormInput
