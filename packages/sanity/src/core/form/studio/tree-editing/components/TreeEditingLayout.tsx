@@ -1,8 +1,8 @@
 /* eslint-disable i18next/no-literal-string */
 import {PanelLeftIcon} from '@sanity/icons'
 import {Card, Container, Flex, Stack, Text} from '@sanity/ui'
-import {Fragment, memo, type ReactNode, useCallback, useState} from 'react'
-import {type Path} from 'sanity'
+import {Fragment, memo, type ReactNode, useCallback, useRef, useState} from 'react'
+import {type Path, VirtualizerScrollInstanceProvider} from 'sanity'
 import styled from 'styled-components'
 
 import {Button} from '../../../../../ui-components'
@@ -93,6 +93,8 @@ export const TreeEditingLayout = memo(function TreeEditingLayout(
   props: TreeEditingLayoutProps,
 ): JSX.Element {
   const {breadcrumbs, children, items, selectedPath, onPathSelect, title} = props
+  const scrollElementRef = useRef<HTMLDivElement | null>(null)
+  const containerElementRef = useRef<HTMLDivElement | null>(null)
 
   const [open, setOpen] = useState<boolean>(true)
 
@@ -116,13 +118,23 @@ export const TreeEditingLayout = memo(function TreeEditingLayout(
 
         <Card
           flex={1}
+          id="tree-editing-form"
+          overflow="auto"
           paddingX={3}
           paddingY={5}
+          ref={scrollElementRef}
           sizing="border"
-          overflow="auto"
-          id="tree-editing-form"
         >
-          {children && <Container width={1}>{children}</Container>}
+          {children && (
+            <Container width={1} ref={containerElementRef}>
+              <VirtualizerScrollInstanceProvider
+                containerElement={containerElementRef}
+                scrollElement={scrollElementRef.current}
+              >
+                {children}
+              </VirtualizerScrollInstanceProvider>
+            </Container>
+          )}
         </Card>
       </Flex>
     </Flex>
