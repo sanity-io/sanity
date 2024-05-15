@@ -5,7 +5,7 @@
  * @param next - the next/current value
  */
 export function immutableReconcile<T>(previous: unknown, next: T): T {
-  return _immutableReconcile(previous, next, new WeakSet())
+  return _immutableReconcile(previous, next, new WeakMap())
 }
 
 function _immutableReconcile<T>(
@@ -14,12 +14,12 @@ function _immutableReconcile<T>(
   /**
    * Keep track of visited nodes to prevent infinite recursion in case of circular structures
    */
-  parents: WeakSet<any>,
+  parents: WeakMap<any, any>,
 ): T {
   if (previous === next) return previous as T
 
   if (parents.has(next)) {
-    return next
+    return parents.get(next)
   }
 
   // eslint-disable-next-line no-eq-null
@@ -32,13 +32,12 @@ function _immutableReconcile<T>(
   if (prevType !== nextType) return next
 
   if (Array.isArray(next)) {
-    parents.add(next)
-
     assertType<unknown[]>(previous)
     assertType<unknown[]>(next)
 
     let allEqual = previous.length === next.length
-    const result = []
+    const result: unknown[] = []
+    parents.set(next, result)
     for (let index = 0; index < next.length; index++) {
       const nextItem = _immutableReconcile(previous[index], next[index], parents)
 
@@ -47,18 +46,18 @@ function _immutableReconcile<T>(
       }
       result[index] = nextItem
     }
-    parents.delete(next)
+    parents.set(next, allEqual ? previous : result)
     return (allEqual ? previous : result) as any
   }
 
   if (typeof next === 'object') {
-    parents.add(next)
     assertType<Record<string, unknown>>(previous)
     assertType<Record<string, unknown>>(next)
 
     const nextKeys = Object.keys(next)
     let allEqual = Object.keys(previous).length === nextKeys.length
     const result: Record<string, unknown> = {}
+    parents.set(next, result)
     for (const key of nextKeys) {
       const nextValue = _immutableReconcile(previous[key], next[key]!, parents)
       if (nextValue !== previous[key]) {
@@ -66,7 +65,7 @@ function _immutableReconcile<T>(
       }
       result[key] = nextValue
     }
-    parents.delete(next)
+    parents.set(next, allEqual ? previous : result)
     return (allEqual ? previous : result) as T
   }
   return next
