@@ -19,19 +19,26 @@ export const SheetListCell = (
     focusedCellDetails,
     selectedCellIndexes,
     onSelectedCellChange,
+    resetFocusSelection,
   } = useSheetListContext()
 
   useEffect(() => {
     const cb = (event) => {
-      if (document.activeElement?.id === `cell-${column.id}-${row.index}` && event.shiftKey) {
-        if (event.key === 'ArrowDown') {
-          event.preventDefault()
-
-          onSelectedCellChange('down')
+      if (document.activeElement?.id === `cell-${column.id}-${row.index}`) {
+        if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+          resetFocusSelection()
         }
 
-        if (event.key === 'ArrowUp') {
-          onSelectedCellChange('up')
+        if (event.shiftKey) {
+          if (event.key === 'ArrowDown') {
+            event.preventDefault()
+
+            onSelectedCellChange('down')
+          }
+
+          if (event.key === 'ArrowUp') {
+            onSelectedCellChange('up')
+          }
         }
       }
     }
@@ -55,6 +62,7 @@ export const SheetListCell = (
       document.removeEventListener('paste', handlePaste)
     }
   }, [
+    resetFocusSelection,
     column.id,
     focusedCellDetails?.colId,
     onSelectedCellChange,
@@ -68,7 +76,7 @@ export const SheetListCell = (
   }
 
   const handleOnBlur = () => {
-    setFocusedCellId(null, '', -1)
+    resetFocusSelection()
   }
 
   useEffect(() => {

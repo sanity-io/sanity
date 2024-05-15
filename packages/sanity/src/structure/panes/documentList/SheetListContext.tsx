@@ -1,4 +1,4 @@
-import {type ReactNode, useContext, useState} from 'react'
+import {type ReactNode, useCallback, useContext, useState} from 'react'
 
 import {SheetListContext} from '../../../_singletons/structure/panes/document/DocumentSheetListContext'
 
@@ -6,11 +6,14 @@ interface SheetListProviderProps {
   children?: ReactNode
 }
 
+type SelectionDirection = 'down' | 'up'
+
 export interface SheetListContextValue {
   focusedCellId: string | null
   setFocusedCellId: (id: string | null, colId: string, rowIndex: number) => void
-  onSelectedCellChange: (direction: string) => void
+  onSelectedCellChange: (direction: SelectionDirection) => void
   selectedCellIndexes: number[]
+  resetFocusSelection: () => void
   focusedCellDetails: {
     colId: string
     rowIndex: number
@@ -34,31 +37,48 @@ export function SheetListProvider({children}: SheetListProviderProps) {
   } | null>(null)
   const [selectedCellIndexes, setSelectedCellIndexes] = useState<number[]>([])
 
-  const onSelectedCellChange = (direction: string) => {
-    if (!focusedCellDetails) return
+  const onSelectedCellChange = useCallback(
+    (direction: SelectionDirection) => {
+      if (!focusedCellDetails) return
 
-    if (direction === 'down') {
-      setSelectedCellIndexes((prev) => [
-        ...prev,
-        ([...prev].reverse()[0] || focusedCellDetails?.rowIndex) + 1,
-      ])
-    }
+      setSelectedCellIndexes((previousSelection) => {
+        const selectionDirectionalChange = direction === 'down' ? 1 : -1
+        // if no cells are selected, select the cell in the direction
+        if (!previousSelection.length) {
+          return [focusedCellDetails?.rowIndex + selectionDirectionalChange]
+        }
+        const lastIndexSelected = previousSelection[previousSelection.length - 1]
+        const indexInDirectionFromLast = lastIndexSelected + selectionDirectionalChange
 
-    if (direction === 'up') {
-      setSelectedCellIndexes((prev) => [...prev].slice(0, -1))
-    }
-  }
+        // if the cell in the direction is the same as the focused cell, deselect all cells
+        if (indexInDirectionFromLast === focusedCellDetails?.rowIndex) {
+          return []
+        }
 
-  const handleSetFocusedCellId = (id: string | null, colId: string, rowIndex: number) => {
-    if (id === null) {
-      setFocusedCellId(null)
-      setFocusedCellDetails(null)
-      setSelectedCellIndexes([])
-      return
-    }
-    setFocusedCellId(id)
-    setFocusedCellDetails({colId, rowIndex})
-  }
+        // if the cell in the direction is already selected, deselect the last selected cell
+        if (previousSelection.includes(indexInDirectionFromLast)) {
+          return [...previousSelection.filter((index) => index !== lastIndexSelected)]
+        }
+
+        return [...previousSelection, indexInDirectionFromLast]
+      })
+    },
+    [focusedCellDetails],
+  )
+
+  const handleSetFocusedCellId = useCallback(
+    (id: string | null, colId: string, rowIndex: number) => {
+      setFocusedCellId(id)
+      setFocusedCellDetails({colId, rowIndex})
+    },
+    [],
+  )
+
+  const resetFocusSelection = useCallback(() => {
+    setFocusedCellId(null)
+    setFocusedCellDetails(null)
+    setSelectedCellIndexes([])
+  }, [])
 
   return (
     <SheetListContext.Provider
@@ -68,6 +88,7 @@ export function SheetListProvider({children}: SheetListProviderProps) {
         setFocusedCellId: handleSetFocusedCellId,
         onSelectedCellChange,
         selectedCellIndexes,
+        resetFocusSelection,
       }}
     >
       {children}
