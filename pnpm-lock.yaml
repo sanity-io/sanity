@@ -451,9 +451,6 @@ importers:
       '@sanity/portable-text-editor':
         specifier: workspace:*
         version: link:../../packages/@sanity/portable-text-editor
-      '@sanity/presentation':
-        specifier: 1.11.4
-        version: 1.11.4(@sanity/client@6.18.1)(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.11)
       '@sanity/preview-url-secret':
         specifier: ^1.6.1
         version: 1.6.12(@sanity/client@6.18.1)
@@ -6607,32 +6604,6 @@ packages:
       - debug
       - supports-color
 
-  /@sanity/presentation@1.11.4(@sanity/client@6.18.1)(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.11):
-    resolution: {integrity: sha512-vd4gOceLB02TzMahkBL5ViGU1AwKZvl4Y4sdY5MXIeGoUW2CJ9ys6iPQXaaylrKGMyK4WreGHCy51eZU0GLYuw==}
-    engines: {node: '>=16.14'}
-    peerDependencies:
-      '@sanity/client': ^6.15.2
-    dependencies:
-      '@sanity/client': 6.18.1
-      '@sanity/icons': 2.11.8(react@18.3.1)
-      '@sanity/preview-url-secret': 1.6.12(@sanity/client@6.18.1)
-      '@sanity/ui': 2.1.7(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.11)
-      '@sanity/uuid': 3.0.2
-      '@types/lodash.isequal': 4.5.8
-      fast-deep-equal: 3.1.3
-      framer-motion: 11.0.8(react-dom@18.3.1)(react@18.3.1)
-      lodash.isequal: 4.5.0
-      mendoza: 3.0.5
-      mnemonist: 0.39.8
-      rxjs: 7.8.1
-      suspend-react: 0.1.3(react@18.3.1)
-    transitivePeerDependencies:
-      - react
-      - react-dom
-      - react-is
-      - styled-components
-    dev: false
-
   /@sanity/presentation@1.15.2(@sanity/client@6.18.1)(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.11):
     resolution: {integrity: sha512-2fOvi1wt9Zlrc4F/ZKWonHkRIIuHT5OKAZmEaZgyTcaJ11HVasn1ddkT/4aomyjHjTy7D70S9A74G0QPpHSGVw==}
     engines: {node: '>=16.14'}
@@ -6844,8 +6815,8 @@ packages:
       - debug
     dev: false
 
-  /@sanity/types@3.41.2:
-    resolution: {integrity: sha512-DyMmI6sZa4MY5HK4ypb1fRhw3bMKBza+QtMzexbnn/3IglixrQsfWpmimTxbN3KgQRxgDsFehblrGEtSpryiOw==}
+  /@sanity/types@3.42.0:
+    resolution: {integrity: sha512-X6YpC1lZJXxNatqcp6OUCBQanfwFGcmso7/Ffmw1vJ/k50BEhaVezu84ZVrkEot+bDAoIHbhOKBKjSJy1aNwZQ==}
     dependencies:
       '@sanity/client': 6.18.1
       '@types/react': 18.3.1
@@ -6925,12 +6896,12 @@ packages:
       - debug
     dev: false
 
-  /@sanity/util@3.41.2:
-    resolution: {integrity: sha512-rkMO+G6YYgq2QB5sO8MgJ66q+gD2sPhHgq3eZoMJKTQvg+Fv9DUBeSZWrb/FPEh5eauK2fXG5WAt/ZP5o5CMHQ==}
+  /@sanity/util@3.42.0:
+    resolution: {integrity: sha512-tOUHCEL9JyOaXL/2WFyEz3J5R9DJJwRNrg6yhUbPrrT0ouzNawt00prXyVmNIxG2pytXPNAptlAZaBEqI4GxBw==}
     engines: {node: '>=18'}
     dependencies:
       '@sanity/client': 6.18.1
-      '@sanity/types': 3.41.2
+      '@sanity/types': 3.42.0
       get-random-values-esm: 1.0.2
       moment: 2.30.1
       rxjs: 7.8.1
@@ -14844,11 +14815,6 @@ packages:
     engines: {node: '>= 0.10.0'}
     dev: true
 
-  /mendoza@3.0.5:
-    resolution: {integrity: sha512-kLFy+/zIZXcVZUV0YfsB9RyI/TUuk+ZjOFT6WWVW7Di4XvAOzaYE16seRY5nFV64JTcvcJAsAQSnLcErPRQgXw==}
-    engines: {node: '>=14.18'}
-    dev: false
-
   /mendoza@3.0.7:
     resolution: {integrity: sha512-KtLgsCl5dFjRPUVSVV9KxpUr2BfZgLv8uqxg/hCsI7JIWsesHABSbl0MQwxNHAg24KtzSQ6vrPsgeNnoq4UImg==}
     engines: {node: '>=14.18'}
@@ -17513,7 +17479,7 @@ packages:
       '@sanity/image-url': 1.0.2
       '@sanity/incompatible-plugin': 1.0.4(react-dom@18.3.1)(react@18.3.1)
       '@sanity/ui': 2.1.7(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.11)
-      '@sanity/util': 3.41.2
+      '@sanity/util': 3.42.0
       '@types/lodash-es': 4.17.12
       framer-motion: 11.0.8(react-dom@18.3.1)(react@18.3.1)
       lodash-es: 4.17.21
