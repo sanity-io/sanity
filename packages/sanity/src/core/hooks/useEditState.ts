@@ -13,7 +13,6 @@ export function useEditState(
 
   return useMemoObservable(() => {
     if (priority === 'low') {
-      // Get this to workg with collection
       const base = documentStore.pair.editState(publishedDocId, docTypeName).pipe(share())
 
       return merge(
