@@ -47,7 +47,7 @@ importers:
         specifier: workspace:*
         version: link:packages/@repo/tsconfig
       '@sanity/client':
-        specifier: ^6.18.1
+        specifier: ^6.18.2
         version: 6.18.2
       '@sanity/eslint-config-i18n':
         specifier: 1.0.0
@@ -734,7 +734,7 @@ importers:
         specifier: ^7.23.5
         version: 7.24.5
       '@sanity/client':
-        specifier: ^6.18.1
+        specifier: ^6.18.2
         version: 6.18.2(debug@4.3.4)
       '@sanity/codegen':
         specifier: 3.42.1
@@ -1040,7 +1040,7 @@ importers:
         specifier: ^0.5.1
         version: 0.5.3
       '@sanity/client':
-        specifier: ^6.18.1
+        specifier: ^6.18.2
         version: 6.18.2(debug@4.3.4)
       '@sanity/types':
         specifier: 3.42.1
@@ -1284,7 +1284,7 @@ importers:
   packages/@sanity/types:
     dependencies:
       '@sanity/client':
-        specifier: ^6.18.1
+        specifier: ^6.18.2
         version: 6.18.2
       '@types/react':
         specifier: ^18.0.25
@@ -1303,7 +1303,7 @@ importers:
   packages/@sanity/util:
     dependencies:
       '@sanity/client':
-        specifier: ^6.18.1
+        specifier: ^6.18.2
         version: 6.18.2
       '@sanity/types':
         specifier: 3.42.1
@@ -1404,7 +1404,7 @@ importers:
         specifier: workspace:*
         version: link:../cli
       '@sanity/client':
-        specifier: ^6.18.1
+        specifier: ^6.18.2
         version: 6.18.2
       '@sanity/codegen':
         specifier: workspace:*
@@ -1494,7 +1494,7 @@ importers:
         specifier: 3.42.1
         version: link:../@sanity/cli
       '@sanity/client':
-        specifier: ^6.18.1
+        specifier: ^6.18.2
         version: 6.18.2(debug@4.3.4)
       '@sanity/color':
         specifier: ^3.0.0
@@ -1921,7 +1921,7 @@ importers:
         specifier: 1.41.2
         version: 1.41.2
       '@sanity/client':
-        specifier: ^6.18.1
+        specifier: ^6.18.2
         version: 6.18.2
       '@sanity/uuid':
         specifier: ^3.0.1
