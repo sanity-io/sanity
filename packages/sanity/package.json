@@ -194,7 +194,7 @@
     "esbuild-register": "^3.4.1",
     "execa": "^2.0.0",
     "exif-component": "^1.0.1",
-    "framer-motion": "11.0.8",
+    "framer-motion": "11.2.0",
     "get-it": "^8.4.29",
     "get-random-values-esm": "1.0.2",
     "groq-js": "^1.9.0",
