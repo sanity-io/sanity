@@ -448,10 +448,10 @@ export interface WorkspaceOptions extends SourceOptions {
 
   /**
    * @hidden
-   * @beta
+   * @internal
    */
-  unstable_serverActions?: {
-    enabled: boolean
+  __internal_serverDocumentActions?: {
+    enabled?: boolean
   }
 
   scheduledPublishing?: DefaultPluginsWorkspaceOptions['scheduledPublishing']
@@ -770,8 +770,9 @@ export interface Source {
   }
   /** @beta */
   tasks?: WorkspaceOptions['tasks']
-  /** @beta */
-  serverActions?: WorkspaceOptions['unstable_serverActions']
+
+  /** @internal */
+  __internal_serverDocumentActions?: WorkspaceOptions['__internal_serverDocumentActions']
 }
 
 /** @internal */
@@ -810,7 +811,7 @@ export interface WorkspaceSummary extends DefaultPluginsWorkspaceOptions {
       source: Observable<Source>
     }>
   }
-  serverActions: WorkspaceOptions['unstable_serverActions']
+  __internal_serverDocumentActions: WorkspaceOptions['__internal_serverDocumentActions']
 }
 
 /**

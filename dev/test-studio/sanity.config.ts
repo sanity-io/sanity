@@ -148,9 +148,8 @@ export default defineConfig([
     plugins: [sharedSettings()],
     basePath: '/test',
     icon: SanityMonogram,
-    unstable_serverActions: {
-      enabled: true,
-    },
+    // eslint-disable-next-line camelcase
+    __internal_serverDocumentActions: {},
     scheduledPublishing: {
       enabled: true,
       inputDateTimeFormat: 'MM/dd/yy h:mm a',
