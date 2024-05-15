@@ -1,6 +1,6 @@
 {
   "name": "@sanity/diff",
-  "version": "3.41.2",
+  "version": "3.41.3-before-pane-break.8+516ada5d23",
   "description": "Generates diffs between documents and primitive types",
   "keywords": [
     "sanity",
@@ -51,7 +51,7 @@
     "@sanity/diff-match-patch": "^3.1.1"
   },
   "devDependencies": {
-    "@repo/package.config": "workspace:*",
+    "@repo/package.config": "3.41.2",
     "rimraf": "^3.0.2"
   },
   "engines": {
@@ -59,5 +59,6 @@
   },
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "gitHead": "516ada5d2362ba57a200e359d0d19c610cb3fa6a"
 }

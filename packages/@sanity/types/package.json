@@ -1,6 +1,6 @@
 {
   "name": "@sanity/types",
-  "version": "3.41.2",
+  "version": "3.41.3-before-pane-break.8+516ada5d23",
   "description": "Type definitions for common Sanity data structures",
   "keywords": [
     "sanity",
@@ -54,7 +54,8 @@
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",
-    "@repo/package.config": "workspace:*",
+    "@repo/package.config": "3.41.2",
     "rimraf": "^3.0.2"
-  }
+  },
+  "gitHead": "516ada5d2362ba57a200e359d0d19c610cb3fa6a"
 }

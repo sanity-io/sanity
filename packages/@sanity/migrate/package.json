@@ -1,6 +1,6 @@
 {
   "name": "@sanity/migrate",
-  "version": "3.41.2",
+  "version": "3.41.3-before-pane-break.8+516ada5d23",
   "description": "Tooling for running data migrations on Sanity.io projects",
   "keywords": [
     "sanity",
@@ -52,8 +52,8 @@
   "dependencies": {
     "@bjoerge/mutiny": "^0.5.1",
     "@sanity/client": "^6.18.0",
-    "@sanity/types": "3.41.2",
-    "@sanity/util": "3.41.2",
+    "@sanity/types": "3.41.3-before-pane-break.8+516ada5d23",
+    "@sanity/util": "3.41.3-before-pane-break.8+516ada5d23",
     "arrify": "^2.0.1",
     "debug": "^4.3.4",
     "fast-fifo": "^1.3.2",
@@ -62,12 +62,13 @@
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",
-    "@repo/package.config": "workspace:*",
+    "@repo/package.config": "3.41.2",
     "@types/arrify": "^2.0.1",
     "@types/debug": "^4.1.12",
     "rimraf": "^3.0.2"
   },
   "engines": {
     "node": ">=18"
-  }
+  },
+  "gitHead": "516ada5d2362ba57a200e359d0d19c610cb3fa6a"
 }
