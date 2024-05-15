@@ -118,7 +118,10 @@ export function prepareConfig(
 
     const {unstable_sources: nestedSources = [], ...rootSource} = rawWorkspace
     const sources = [rootSource as SourceOptions, ...nestedSources].map(({plugins, ...source}) => {
-      return {...source, plugins: [...(plugins ?? []), ...getDefaultPlugins(defaultPluginsOptions)]}
+      return {
+        ...source,
+        plugins: [...(plugins ?? []), ...getDefaultPlugins(defaultPluginsOptions, plugins)],
+      }
     })
 
     const resolvedSources = sources.map((source): InternalSource => {
