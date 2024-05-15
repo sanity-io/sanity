@@ -76,7 +76,9 @@ const getColsFromSchemaType = (schemaType: SchemaTypeDefinition, parentalField?:
           {
             header: field.type.title,
             enableHiding: true,
-            cell: (info) => <SheetListCell {...info} type={type} />,
+            cell: (info) => (
+              <SheetListCell {...info} key={`${info.column.id}-${info.row.index}`} type={type} />
+            ),
           },
         )
 

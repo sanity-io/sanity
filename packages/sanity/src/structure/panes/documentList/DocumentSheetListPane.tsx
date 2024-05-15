@@ -16,6 +16,7 @@ import {type BaseStructureToolPaneProps} from '../types'
 import {ColumnsControl} from './ColumnsControl'
 import {DocumentSheetFilter} from './DocumentSheetListFilter'
 import {DocumentSheetPaginator} from './DocumentSheetListPaginator'
+import {SheetListProvider} from './SheetListContext'
 import {useDocumentSheetColumns} from './useDocumentSheetColumns'
 import {useDocumentSheetList} from './useDocumentSheetList'
 
@@ -68,7 +69,7 @@ function DocumentSheetListPaneInner({
   schemaType,
 }: DocumentSheetListPaneProps & {schemaType: SchemaType}) {
   const {dispatch, state} = useSearchState()
-  const columns = useDocumentSheetColumns(schemaType)
+  const columns = useDocumentSheetColumns(schemaType as any)
   const {data} = useDocumentSheetList({
     typeName: schemaType.name,
   })
@@ -133,27 +134,29 @@ function DocumentSheetListPaneInner({
       </Flex>
       <TableContainer>
         <ColumnsControl table={table} />
-        <Table>
-          <thead>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <Box
-                as="tr"
-                key={headerGroup.id}
-                style={{display: 'flex', width: '100%'}}
-                paddingY={1}
-              >
-                {headerGroup.headers.map((header) => (
-                  <th key={header.id} style={{display: 'flex', width: header.getSize()}}>
-                    {headerGroup.depth > 0 && !header.column.parent ? null : (
-                      <div>{flexRender(header.column.columnDef.header, header.getContext())}</div>
-                    )}
-                  </th>
-                ))}
-              </Box>
-            ))}
-          </thead>
-          <tbody>{table.getRowModel().rows.map(renderRow)}</tbody>
-        </Table>
+        <SheetListProvider>
+          <Table>
+            <thead>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <Box
+                  as="tr"
+                  key={headerGroup.id}
+                  style={{display: 'flex', width: '100%'}}
+                  paddingY={1}
+                >
+                  {headerGroup.headers.map((header) => (
+                    <th key={header.id} style={{display: 'flex', width: header.getSize()}}>
+                      {headerGroup.depth > 0 && !header.column.parent ? null : (
+                        <div>{flexRender(header.column.columnDef.header, header.getContext())}</div>
+                      )}
+                    </th>
+                  ))}
+                </Box>
+              ))}
+            </thead>
+            <tbody>{table.getRowModel().rows.map(renderRow)}</tbody>
+          </Table>
+        </SheetListProvider>
       </TableContainer>
       <Flex justify={'flex-end'} padding={3} gap={4} paddingY={5}>
         <DocumentSheetPaginator table={table} />
