@@ -20,7 +20,7 @@ export interface SheetListContextValue {
   resetSelection: () => void
 }
 
-export const useSheetListContext = () => {
+export const useSheetListContext = (): SheetListContextValue => {
   const context = useContext(SheetListContext)
 
   if (context === undefined) {
@@ -29,7 +29,7 @@ export const useSheetListContext = () => {
   return context
 }
 
-export function SheetListProvider({children}: SheetListProviderProps) {
+export function SheetListProvider({children}: SheetListProviderProps): ReactNode {
   const [focusedCellDetails, setFocusedCellDetails] = useState<{
     colId: string
     rowIndex: number
