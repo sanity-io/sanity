@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import path from 'node:path'
 
 import {type UserViteConfig} from '@sanity/cli'
@@ -53,6 +54,8 @@ export interface ViteOptions {
   mode: 'development' | 'production'
 }
 
+const USE_REACT_COMPILER = process.env.USE_REACT_COMPILER !== '0'
+
 /**
  * Get a configuration object for Vite based on the passed options
  *
@@ -82,6 +85,14 @@ export async function getViteConfig(options: ViteOptions): Promise<InlineConfig>
   const defaultFaviconsPath = path.join(path.dirname(sanityPkgPath), 'static', 'favicons')
   const staticPath = `${basePath}static`
 
+  /* eslint-disable no-console */
+  if (USE_REACT_COMPILER) {
+    console.log('--------------------------')
+    console.log('-- Using React Compiler --')
+    console.log('--------------------------')
+  }
+  /* eslint-enable no-console */
+
   const viteConfig: InlineConfig = {
     // Define a custom cache directory so that sanity's vite cache
     // does not conflict with any potential local vite projects
@@ -100,7 +111,7 @@ export async function getViteConfig(options: ViteOptions): Promise<InlineConfig>
     configFile: false,
     mode,
     plugins: [
-      viteReact(),
+      viteReact(USE_REACT_COMPILER ? {babel: {plugins: ['babel-plugin-react-compiler', {}]}} : {}),
       sanityFaviconsPlugin({defaultFaviconsPath, customFaviconsPath, staticUrlPath: staticPath}),
       sanityDotWorkaroundPlugin(),
       sanityRuntimeRewritePlugin(),
