@@ -1,1 +1,1 @@
-export {PaneContainer as default} from './PaneContainer'
+export {PaneContainer} from './PaneContainer'
