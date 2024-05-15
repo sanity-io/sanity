@@ -20,25 +20,17 @@ const rimraf = promisify(rimrafCallback)
 // TODO: replace this with a manifest somewhere
 const AUTO_UPDATES_IMPORTMAP = {
   imports: {
-    'react': 'https://studio-bundles.sanity.io/modules/v1/react/18.3.0/bare/react.mjs',
-    'react-dom': 'https://studio-bundles.sanity.io/modules/v1/react-dom/18.3.0/bare/react-dom.mjs',
-    'react-dom/server':
-      'https://studio-bundles.sanity.io/modules/v1/react-dom/18.3.0/bare/react-dom_server.mjs',
-    'react-dom/client':
-      'https://studio-bundles.sanity.io/modules/v1/react-dom/18.3.0/bare/react-dom.mjs',
-    'react/jsx-runtime':
-      'https://studio-bundles.sanity.io/modules/v1/react/18.3.0/bare/react_jsx-runtime.mjs',
-    'sanity': 'https://studio-bundles.sanity.io/modules/v1/sanity/3.39.0/bare/sanity.mjs',
-    'sanity/presentation':
-      'https://studio-bundles.sanity.io/modules/v1/sanity/3.39.0/bare/presentation.mjs',
-    'sanity/desk': 'https://studio-bundles.sanity.io/modules/v1/sanity/3.39.0/bare/desk.mjs',
-    'sanity/router': 'https://studio-bundles.sanity.io/modules/v1/sanity/3.39.0/bare/router.mjs',
-    'sanity/_singletons':
-      'https://studio-bundles.sanity.io/modules/v1/sanity/3.39.0/bare/_singletons.mjs',
-    'sanity/structure':
-      'https://studio-bundles.sanity.io/modules/v1/sanity/3.39.0/bare/structure.mjs',
-    'styled-components':
-      'https://studio-bundles.sanity.io/modules/v1/styled-components/6.1.8/bare/styled-components.mjs',
+    // Shared modules
+    'react': 'https://api.sanity.work/v1/modules/react/^18',
+    'react/': 'https://api.sanity.work/v1/modules/react/^18/',
+    'react-dom': 'https://api.sanity.work/v1/modules/react-dom/^18',
+    'react-dom/': 'https://api.sanity.work/v1/modules/react-dom/^18/',
+    'styled-components': 'https://api.sanity.work/v1/modules/styled-components/^6',
+
+    // Sanity Modules
+    'sanity': 'https://api.sanity.work/v1/modules/sanity/^3',
+    'sanity/': 'https://api.sanity.work/v1/modules/sanity/^3/',
+    '@sanity/vision': 'https://api.sanity.work/v1/modules/@sanity__vision/^3 ',
   },
 }
 
