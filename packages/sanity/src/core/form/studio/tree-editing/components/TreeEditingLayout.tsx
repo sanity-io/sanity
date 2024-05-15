@@ -2,6 +2,7 @@
 /* eslint-disable i18next/no-literal-string */
 import {PanelLeftIcon} from '@sanity/icons'
 import {Card, Container, Flex, Stack, Text} from '@sanity/ui'
+import {AnimatePresence, motion, type Variants} from 'framer-motion'
 import {Fragment, memo, type ReactNode, useCallback, useRef, useState} from 'react'
 import {type Path, VirtualizerScrollInstanceProvider} from 'sanity'
 import styled from 'styled-components'
@@ -12,6 +13,12 @@ import {TreeEditingBreadcrumbs} from './breadcrumbs'
 import {Resizable} from './resizer'
 import {TreeEditingMenu} from './TreeEditingMenu'
 
+const ANIMATION_VARIANTS: Variants = {
+  initial: {opacity: 0},
+  animate: {opacity: 1},
+  exit: {opacity: 0},
+}
+
 const FixedHeightFlex = styled(Flex).attrs({padding: 2, align: 'center', sizing: 'border'})`
   height: 40px;
   min-height: 40px;
@@ -21,7 +28,7 @@ const SidebarCard = styled(Card)`
   flex-direction: column;
 `
 
-const SidebarStack = styled(Stack)`
+const SidebarStack = styled(motion(Stack))`
   overflow-x: hidden;
 `
 
@@ -59,7 +66,7 @@ const Sidebar = memo(function Sidebar(props: SidebarProps) {
           />
 
           {open && (
-            <Flex>
+            <Flex flex={1}>
               <Text size={1} muted weight="medium" textOverflow="ellipsis">
                 {title}
               </Text>
@@ -67,15 +74,25 @@ const Sidebar = memo(function Sidebar(props: SidebarProps) {
           )}
         </FixedHeightFlex>
 
-        {open && (
-          <SidebarStack overflow="auto" padding={3} sizing="border">
-            <TreeEditingMenu
-              items={items}
-              onPathSelect={onPathSelect}
-              selectedPath={selectedPath}
-            />
-          </SidebarStack>
-        )}
+        <AnimatePresence mode="wait">
+          {open && (
+            <SidebarStack
+              animate="animate"
+              exit="exit"
+              initial="initial"
+              overflow="auto"
+              padding={3}
+              sizing="border"
+              variants={ANIMATION_VARIANTS}
+            >
+              <TreeEditingMenu
+                items={items}
+                onPathSelect={onPathSelect}
+                selectedPath={selectedPath}
+              />
+            </SidebarStack>
+          )}
+        </AnimatePresence>
       </SidebarCard>
     </ConditionalResizer>
   )
