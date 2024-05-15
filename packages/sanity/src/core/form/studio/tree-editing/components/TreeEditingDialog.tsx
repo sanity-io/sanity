@@ -115,9 +115,15 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | 
 
   const onHandlePathSelect = useCallback(
     (path: Path) => {
+      // Cancel any debounced state building when navigating.
+      // This is done to allow for immediate navigation to the selected path
+      // and not wait for the debounced state to be built.
+      // The debounced state is primarily used to avoid building the state
+      // on every document value or focus path change.
+      debouncedBuildTreeEditingState.cancel()
       handleNavigate(path, setFocusPath)
     },
-    [setFocusPath],
+    [debouncedBuildTreeEditingState, setFocusPath],
   )
 
   if (!open || relativePath.length === 0) return null
