@@ -27,34 +27,8 @@ export const SheetListCell = (
     setFocusedCellId(column.id, row.index)
   }, [column.id, row.index, setFocusedCellId])
 
-  useEffect(() => {
-    const handleKeydown = (event: KeyboardEvent) => {
-      if (document.activeElement?.id === `cell-${column.id}-${row.index}`) {
-        console.log('first')
-        if (event.shiftKey) {
-          if (event.key === 'ArrowDown') {
-            event.preventDefault()
-            onSelectedCellChange('down')
-          }
-          if (event.key === 'ArrowUp') {
-            event.preventDefault()
-            onSelectedCellChange('up')
-          }
-        } else if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
-          resetSelection()
-        } else if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
-          resetFocusSelection()
-          setFocusedCellId(column.id, row.index + (event.key === 'ArrowDown' ? 1 : -1))
-        } else {
-          resetSelection()
-        }
-      }
-    }
-
-    document.addEventListener('keydown', handleKeydown)
-    document.addEventListener('mousedown', resetSelection)
-
-    const handlePaste = (event: ClipboardEvent) => {
+  const handlePaste = useCallback(
+    (event: ClipboardEvent) => {
       if (
         focusedCellDetails?.colId === column.id &&
         (selectedCellIndexes.includes(row.index) || focusedCellDetails?.rowIndex === row.index)
@@ -66,28 +40,57 @@ export const SheetListCell = (
           setRenderValue(clipboardData)
         }
       }
-    }
+    },
+    [
+      column.id,
+      focusedCellDetails?.colId,
+      focusedCellDetails?.rowIndex,
+      row.index,
+      selectedCellIndexes,
+    ],
+  )
 
+  const handleKeydown = useCallback(
+    (event: KeyboardEvent) => {
+      const {key, shiftKey} = event
+      if (document.activeElement?.id === `cell-${column.id}-${row.index}`) {
+        // shift alone has no handler
+        if (key === 'Shift') return
+
+        if (key === 'ArrowDown' || key === 'ArrowUp') {
+          if (shiftKey) {
+            event.preventDefault()
+            onSelectedCellChange(key === 'ArrowDown' ? 'down' : 'up')
+          } else {
+            resetFocusSelection()
+            setFocusedCellId(column.id, row.index + (key === 'ArrowDown' ? 1 : -1))
+          }
+        } else {
+          resetSelection()
+        }
+      }
+    },
+    [
+      column.id,
+      onSelectedCellChange,
+      resetFocusSelection,
+      resetSelection,
+      row.index,
+      setFocusedCellId,
+    ],
+  )
+
+  useEffect(() => {
+    document.addEventListener('keydown', handleKeydown)
     document.addEventListener('paste', handlePaste)
+    document.addEventListener('mousedown', resetSelection)
 
     return () => {
       document.removeEventListener('keydown', handleKeydown)
       document.removeEventListener('paste', handlePaste)
       document.removeEventListener('mousedown', resetSelection)
     }
-  }, [
-    resetFocusSelection,
-    column.id,
-    focusedCellDetails?.colId,
-    onSelectedCellChange,
-    props.table.options.meta,
-    row.index,
-    selectedCellIndexes,
-    handleOnFocus,
-    resetSelection,
-    focusedCellDetails?.rowIndex,
-    setFocusedCellId,
-  ])
+  }, [handleKeydown, handlePaste, resetSelection])
 
   useEffect(() => {
     const focusedCellId = `cell-${focusedCellDetails?.colId}-${focusedCellDetails?.rowIndex}`
@@ -117,7 +120,6 @@ export const SheetListCell = (
         onChange={() => null}
         onFocus={handleOnFocus}
         onBlur={handleOnBlur}
-        key={cellId}
         id={cellId}
         radius={0}
         style={{
@@ -134,7 +136,6 @@ export const SheetListCell = (
   return (
     <TextInput
       size={0}
-      key={cellId}
       id={cellId}
       radius={0}
       border={false}

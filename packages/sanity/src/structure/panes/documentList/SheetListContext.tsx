@@ -61,11 +61,10 @@ export function SheetListProvider({children}: SheetListProviderProps) {
 
         // if the cell in the direction is already selected, deselect the last selected cell
         if (previousSelection.includes(indexInDirectionFromLast)) {
-          return [
-            ...previousSelection.filter(
-              (previousSelectionIndex) => previousSelectionIndex !== lastIndexSelected,
-            ),
-          ]
+          const nextSelection = [...previousSelection]
+          nextSelection.pop()
+
+          return nextSelection
         }
 
         return [...previousSelection, indexInDirectionFromLast]
