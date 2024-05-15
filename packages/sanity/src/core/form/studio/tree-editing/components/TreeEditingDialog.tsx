@@ -9,7 +9,6 @@ import {useCallback, useEffect, useMemo, useState} from 'react'
 import {
   FormInput,
   type InputProps,
-  isDev,
   type ObjectInputProps,
   type ObjectSchemaType,
   type Path,
@@ -26,7 +25,7 @@ import {
 import {handleNavigate} from '../utils/handleNavigate'
 import {TreeEditingLayout} from './TreeEditingLayout'
 
-const DEBUG_RELATIVE_PATH = isDev
+const DEBUG_RELATIVE_PATH = false
 
 const EMPTY_ARRAY: [] = []
 
@@ -36,7 +35,7 @@ const ANIMATION_VARIANTS: Variants = {
   exit: {opacity: 0},
 }
 
-const ANIMATION_TRANSITION: Transition = {duration: 0.15, ease: 'easeInOut'}
+const ANIMATION_TRANSITION: Transition = {duration: 0.2, ease: 'easeInOut'}
 
 const DEBOUNCE_SETTINGS: DebounceSettings = {leading: true, trailing: true}
 
