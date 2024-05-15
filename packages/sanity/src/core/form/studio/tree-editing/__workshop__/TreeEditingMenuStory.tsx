@@ -5,25 +5,38 @@ import {type Path} from 'sanity'
 import {TreeEditingMenu} from '../components'
 import {type TreeEditingMenuItem} from '../types'
 
+function buildStructure(depth: number): TreeEditingMenuItem[] {
+  function createItem(level: number): TreeEditingMenuItem {
+    return {
+      title: `Level ${level}`,
+      path: Array.from({length: level}, (_, i) => `level-${i + 1}`),
+      children: level < depth ? [createItem(level + 1)] : [],
+    }
+  }
+
+  return [createItem(1)]
+}
+
 const ITEMS: TreeEditingMenuItem[] = [
-  {
-    title: 'Level 1',
-    path: ['level-1'],
-    children: [
-      {
-        title: 'Level 1.1',
-        path: ['level-1', 'level-1.1'],
-      },
-      {
-        title: 'Level 1.2',
-        path: ['level-1', 'level-1.2'],
-      },
-      {
-        title: 'Level 1.3',
-        path: ['level-1', 'level-1.3'],
-      },
-    ],
-  },
+  buildStructure(100)[0],
+  // {
+  //   title: 'Level 1',
+  //   path: ['level-1'],
+  //   children: [
+  //     {
+  //       title: 'Level 1.1',
+  //       path: ['level-1', 'level-1.1'],
+  //     },
+  //     {
+  //       title: 'Level 1.2',
+  //       path: ['level-1', 'level-1.2'],
+  //     },
+  //     {
+  //       title: 'Level 1.3',
+  //       path: ['level-1', 'level-1.3'],
+  //     },
+  //   ],
+  // },
   {
     title: 'Level 2',
     path: ['level-2'],
