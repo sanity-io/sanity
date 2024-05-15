@@ -42,7 +42,7 @@ function MenuItem(props: TreeEditingMenuItemProps) {
   }, [hasChildren, open])
 
   return (
-    <Stack key={title} space={1}>
+    <Stack as="li" key={title} space={1}>
       <Button
         fontSize={1}
         iconRight={icon}
@@ -56,7 +56,7 @@ function MenuItem(props: TreeEditingMenuItemProps) {
       />
 
       {open && hasChildren && (
-        <Stack paddingLeft={3} marginTop={1} space={1}>
+        <Stack as="ul" paddingLeft={3} marginTop={1} space={1}>
           {children.map((child) => (
             <MenuItem
               item={child}
@@ -83,7 +83,7 @@ export const TreeEditingMenu = memo(function TreeEditingMenu(
   const {items, onPathSelect, selectedPath} = props
 
   return (
-    <Stack space={3}>
+    <Stack as="ul" space={3}>
       {items.map((item, index) => (
         <MenuItem
           item={item}

@@ -9,4 +9,5 @@ export interface TreeEditingMenuItem {
 export interface TreeEditingBreadcrumb {
   title: string
   path: Path
+  children: TreeEditingBreadcrumb[]
 }
