@@ -133,7 +133,6 @@ export function buildTreeEditingState(props: BuildTreeEditingStateProps): TreeEd
             path: itemPath,
             title: (title || 'Untitled') as string,
 
-            // This is the new stuff that I added
             children: arrayValue.map((arrayItem) => {
               const nestedItemPath = [...path, {_key: arrayItem._key}] as Path
               const nestedItemType = arrayItem?._type as string
