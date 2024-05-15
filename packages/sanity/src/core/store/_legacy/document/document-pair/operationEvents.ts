@@ -139,7 +139,7 @@ export const operationEvents = memoize(
     client: SanityClient
     historyStore: HistoryStore
     schema: Schema
-    serverActionsEnabled: boolean
+    serverActionsEnabled: Observable<boolean>
   }) => {
     const result$: Observable<IntermediarySuccess | IntermediaryError> = operationCalls$.pipe(
       groupBy((op) => op.idPair.publishedId),
@@ -170,7 +170,7 @@ export const operationEvents = memoize(
                       args.operationName,
                       operationArguments,
                       args.extraArgs,
-                      ctx.serverActionsEnabled,
+                      operationArguments.serverActionsEnabled,
                     ),
                   ),
                 )
