@@ -111,7 +111,7 @@ export default function TreeMenuItemsBuildDebugStory(): JSX.Element {
   useEffect(() => {
     const menuItems = buildTreeEditingState({
       documentValue: DOCUMENT_VALUE,
-      focusPath: ['animals'],
+      focusPath: ['animals', {_key: 'baec12778efa'}, 'name'],
       schemaType: schema.get('objectsDebug') as ObjectSchemaType,
     })
 
