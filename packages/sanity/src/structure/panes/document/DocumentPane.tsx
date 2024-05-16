@@ -13,6 +13,7 @@ import {
   useTranslation,
 } from 'sanity'
 
+import {CopyPasteProvider} from '../../../core/studio/copyPaste/CopyPasteProvider'
 import {usePaneRouter} from '../../components'
 import {structureLocaleNamespace} from '../../i18n'
 import {type DocumentPaneNode} from '../../types'
@@ -139,9 +140,11 @@ function DocumentPaneInner(props: DocumentPaneProviderProps) {
         initialValueTemplateItems={templatePermissions}
         activePath={activePath}
       >
-        <CommentsWrapper documentId={options.id} documentType={options.type}>
-          <DocumentLayout documentId={options.id} documentType={options.type} />
-        </CommentsWrapper>
+        <CopyPasteProvider>
+          <CommentsWrapper documentId={options.id} documentType={options.type}>
+            <DocumentLayout documentId={options.id} documentType={options.type} />
+          </CommentsWrapper>
+        </CopyPasteProvider>
       </ReferenceInputOptionsProvider>
     </DocumentPaneProvider>
   )
