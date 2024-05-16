@@ -8,6 +8,10 @@ import {useCopyPaste} from './CopyPasteProvider'
 import {type CopyActionResult, type UseCopyPasteActionProps} from './types'
 import {getLocalStorageItem, getLocalStorageKey, setLocalStorageItem} from './utils'
 
+/**
+ * @internal
+ * @hidden
+ */
 export const useCopyPasteAction = ({
   documentId,
   documentType,
