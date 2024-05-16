@@ -66,6 +66,11 @@ export function createWithSchemaTypes({
         const key = keyGenerator()
         Transforms.setNodes(editor, {_key: key}, {at: path})
       }
+      // If a text block node is missing markDefs, add an empty array
+      if (node._type === schemaTypes.block.name && !('markDefs' in node) && path.length === 1) {
+        debug('Setting missing markDefs on block node without markDefs')
+        Transforms.setNodes(editor, {markDefs: []}, {at: path})
+      }
       normalizeNode(entry)
     }
     return editor
