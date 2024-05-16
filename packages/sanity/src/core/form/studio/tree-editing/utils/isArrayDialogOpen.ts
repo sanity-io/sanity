@@ -3,6 +3,14 @@ import {isObjectSchemaType, type ObjectSchemaType, type Path} from 'sanity'
 
 import {getSchemaField} from './getSchemaField'
 
+/**
+ * A utility function to check if the global array editing dialog is open.
+ * @param schemaType - The schema object that we are opening
+ * @param focusPath - The path that we are focusing on
+ * @returns Returns true if the dialog is open
+
+ * @internal
+ */
 export function isArrayDialogOpen(schemaType: ObjectSchemaType, focusPath: Path): boolean {
   const [startSegment, secondSegment] = focusPath
   /* 
