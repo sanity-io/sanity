@@ -95,7 +95,7 @@ export const validation = memoize(
       observeDocumentPairAvailability: ObserveDocumentPairAvailability
       schema: Schema
       i18n: LocaleSource
-      serverActionsEnabled: boolean
+      serverActionsEnabled: Observable<boolean>
     },
     {draftId, publishedId}: IdPair,
     typeName: string,
@@ -191,6 +191,6 @@ export const validation = memoize(
     )
   },
   (ctx, idPair, typeName) => {
-    return memoizeKeyGen(ctx.client, idPair, typeName, ctx.serverActionsEnabled)
+    return memoizeKeyGen(ctx.client, idPair, typeName)
   },
 )

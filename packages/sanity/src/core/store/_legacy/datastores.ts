@@ -1,6 +1,7 @@
 /* eslint-disable camelcase */
 
 import {useMemo} from 'react'
+import {of} from 'rxjs'
 
 import {useClient, useSchema, useTemplates} from '../../hooks'
 import {createDocumentPreviewStore, type DocumentPreviewStore} from '../../preview'
@@ -13,6 +14,7 @@ import {
   createConnectionStatusStore,
 } from './connection-status/connection-status-store'
 import {createDocumentStore, type DocumentStore} from './document'
+import {fetchFeatureToggle} from './document/document-pair/utils/fetchFeatureToggle'
 import {createGrantsStore, type GrantsStore} from './grants'
 import {createHistoryStore, type HistoryStore} from './history'
 import {__tmp_wrap_presenceStore, type PresenceStore} from './presence/presence-store'
@@ -131,6 +133,14 @@ export function useDocumentStore(): DocumentStore {
   const documentPreviewStore = useDocumentPreviewStore()
   const workspace = useWorkspace()
 
+  const serverActionsEnabled = useMemo(() => {
+    const configFlag = workspace.__internal_serverDocumentActions?.enabled
+    // If it's explicitly set, let it override the feature toggle
+    return typeof configFlag === 'boolean'
+      ? of(configFlag as boolean)
+      : fetchFeatureToggle(getClient(DEFAULT_STUDIO_CLIENT_OPTIONS))
+  }, [getClient, workspace.__internal_serverDocumentActions?.enabled])
+
   return useMemo(() => {
     const documentStore =
       resourceCache.get<DocumentStore>({
@@ -144,7 +154,7 @@ export function useDocumentStore(): DocumentStore {
         initialValueTemplates: templates,
         schema,
         i18n,
-        serverActionsEnabled: !!workspace.serverActions?.enabled,
+        serverActionsEnabled,
       })
 
     resourceCache.set({
@@ -155,14 +165,15 @@ export function useDocumentStore(): DocumentStore {
 
     return documentStore
   }, [
+    resourceCache,
     getClient,
     documentPreviewStore,
     historyStore,
-    resourceCache,
     schema,
-    templates,
     i18n,
     workspace,
+    templates,
+    serverActionsEnabled,
   ])
 }
 

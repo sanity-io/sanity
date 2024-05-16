@@ -8,7 +8,6 @@ import {
   getPreviewStateObservable,
   type SanityDocument,
   type SchemaType,
-  type SchemaTypeDefinition,
   useDocumentPreviewStore,
 } from 'sanity'
 
@@ -45,7 +44,10 @@ const PreviewCell = (props: {
   )
 }
 
-const getColsFromSchemaType = (schemaType: SchemaTypeDefinition, parentalField?: string) => {
+const columnHelper = createColumnHelper<SanityDocument>()
+const SUPPORTED_FIELDS = ['string', 'number', 'boolean']
+
+const getColsFromSchemaType = (schemaType: SchemaType, parentalField?: string) => {
   //@ts-expect-error - wip.
   return schemaType.fields.reduce(
     (cols: AccessorKeyColumnDef<SanityDocument, unknown>[], field: any) => {
@@ -76,9 +78,8 @@ const getColsFromSchemaType = (schemaType: SchemaTypeDefinition, parentalField?:
     [],
   )
 }
-const columnHelper = createColumnHelper<SanityDocument>()
-const SUPPORTED_FIELDS = ['string', 'number', 'boolean']
-export function useDocumentSheetColumns(schemaType?: SchemaTypeDefinition) {
+
+export function useDocumentSheetColumns(schemaType?: SchemaType) {
   const documentPreviewStore = useDocumentPreviewStore()
 
   const columns: AccessorKeyColumnDef<SanityDocument, unknown>[] = useMemo(() => {
@@ -109,7 +110,6 @@ export function useDocumentSheetColumns(schemaType?: SchemaTypeDefinition) {
             <PreviewCell
               {...info}
               documentPreviewStore={documentPreviewStore}
-              //@ts-expect-error - wip.
               schemaType={schemaType}
             />
           )

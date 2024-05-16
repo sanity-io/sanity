@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
+/* eslint-disable max-nested-callbacks */
 
 import {type SanityClient} from '@sanity/client'
 import {type Schema} from '@sanity/types'
@@ -18,19 +19,24 @@ export const operationArgs = memoize(
       client: SanityClient
       historyStore: HistoryStore
       schema: Schema
-      serverActionsEnabled: boolean
+      serverActionsEnabled: Observable<boolean>
     },
     idPair: IdPair,
     typeName: string,
   ): Observable<OperationArgs> => {
     return snapshotPair(ctx.client, idPair, typeName, ctx.serverActionsEnabled).pipe(
       switchMap((versions) =>
-        combineLatest([versions.draft.snapshots$, versions.published.snapshots$]).pipe(
+        combineLatest([
+          versions.draft.snapshots$,
+          versions.published.snapshots$,
+          ctx.serverActionsEnabled,
+        ]).pipe(
           map(
-            ([draft, published]): OperationArgs => ({
+            ([draft, published, canUseServerActions]): OperationArgs => ({
               ...ctx,
+              serverActionsEnabled: canUseServerActions,
               idPair,
-              typeName: typeName,
+              typeName,
               snapshots: {draft, published},
               draft: versions.draft,
               published: versions.published,
@@ -43,6 +49,6 @@ export const operationArgs = memoize(
     )
   },
   (ctx, idPair, typeName) => {
-    return memoizeKeyGen(ctx.client, idPair, typeName, ctx.serverActionsEnabled)
+    return memoizeKeyGen(ctx.client, idPair, typeName)
   },
 )

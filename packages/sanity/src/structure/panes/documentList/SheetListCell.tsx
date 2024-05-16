@@ -1,22 +1,31 @@
 /* eslint-disable i18next/no-literal-string */
 import {Select, TextInput} from '@sanity/ui'
 import {type CellContext} from '@tanstack/react-table'
-import {type FormEvent, useCallback, useState} from 'react'
+import {type FormEvent, useCallback, useEffect, useState} from 'react'
 import {type SanityDocument} from 'sanity'
 
-export const SheetListCell = (props: CellContext<SanityDocument, unknown> & {type: any}) => {
-  const {index, id} = props as any
+interface SheetListCellProps extends CellContext<SanityDocument, unknown> {
+  type: any
+}
+
+export function SheetListCell(props: SheetListCellProps) {
+  const initialValue = props.getValue() || ''
   // We need to keep and update the state of the cell normally
-  const [value, setValue] = useState(props.getValue() || '')
+  const [value, setValue] = useState(initialValue)
 
   // When the input is blurred, we'll call our table meta's updateData function
   const handleOnBlur = () => {
-    props.table.options.meta?.updateData(index, id, value)
+    //@ts-expect-error - wip.
+    props.table.options.meta?.updateData()
   }
 
   const handleOnChange = useCallback((e: FormEvent<HTMLInputElement>) => {
     setValue(e.currentTarget.value)
   }, [])
+
+  useEffect(() => {
+    setValue(initialValue || '')
+  }, [initialValue])
 
   if (props.type.name === 'boolean') {
     return (

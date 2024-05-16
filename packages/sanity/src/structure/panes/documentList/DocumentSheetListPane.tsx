@@ -85,6 +85,12 @@ function DocumentSheetListPaneInner({
     initialState: {
       pagination: {pageSize: 25},
     },
+    meta: {
+      updateData: () => {
+        // eslint-disable-next-line no-console
+        console.log('updateData')
+      },
+    },
   })
 
   const {rows} = table.getRowModel()

@@ -204,7 +204,8 @@ export function prepareConfig(
       __internal: {
         sources: resolvedSources,
       },
-      serverActions: rawWorkspace.unstable_serverActions ?? {enabled: false},
+      // eslint-disable-next-line camelcase
+      __internal_serverDocumentActions: rawWorkspace.__internal_serverDocumentActions,
       ...defaultPluginsOptions,
     }
     preparedWorkspaces.set(rawWorkspace, workspaceSummary)
