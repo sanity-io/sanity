@@ -11,8 +11,8 @@ import {type Descendant, Element, type Node, Text} from 'slate'
 import {defaultKeyGenerator as keyGenerator} from '../editor/hooks/usePortableTextEditorKeyGenerator'
 import {type PortableTextMemberSchemaTypes} from '../types/editor'
 
-const EMPTY_MARKDEFS: PortableTextObject[] = []
-const EMPTY_MARKS: string[] = []
+export const EMPTY_MARKDEFS: PortableTextObject[] = []
+export const EMPTY_MARKS: string[] = []
 
 export const VOID_CHILD_KEY = 'void-child'
 
@@ -92,11 +92,9 @@ export function toSlateValue(
           // Original object
           return block
         }
+        // TODO: remove this when we have a better way to handle missing style
         if (hasMissingStyle) {
           rest.style = schemaTypes.styles[0].value
-        }
-        if (hasMissingMarkDefs) {
-          rest.markDefs = EMPTY_MARKDEFS
         }
         return keepObjectEquality({_type, _key, ...rest, children}, keyMap)
       }

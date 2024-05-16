@@ -72,7 +72,6 @@ Array [
         "text": "123",
       },
     ],
-    "markDefs": Array [],
     "style": "normal",
   },
 ]
@@ -134,7 +133,6 @@ Array [
         },
       },
     ],
-    "markDefs": Array [],
     "style": "normal",
   },
 ]
