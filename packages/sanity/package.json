@@ -166,7 +166,7 @@
     "@sanity/schema": "3.42.1",
     "@sanity/telemetry": "^0.7.6",
     "@sanity/types": "3.42.1",
-    "@sanity/ui": "^2.1.9",
+    "@sanity/ui": "^2.1.10",
     "@sanity/util": "3.42.1",
     "@sanity/uuid": "^3.0.1",
     "@tanstack/react-virtual": "3.0.0-beta.54",
