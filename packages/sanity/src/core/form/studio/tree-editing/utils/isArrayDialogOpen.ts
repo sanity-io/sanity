@@ -3,7 +3,7 @@ import {isObjectSchemaType, type ObjectSchemaType, type Path} from 'sanity'
 
 import {getSchemaField} from './getSchemaField'
 
-export function isOpen(schemaType: ObjectSchemaType, focusPath: Path): boolean {
+export function isArrayDialogOpen(schemaType: ObjectSchemaType, focusPath: Path): boolean {
   const [startSegment, secondSegment] = focusPath
   /* 
   If the first path is empty or
