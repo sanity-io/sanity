@@ -924,7 +924,7 @@ importers:
         specifier: ^2.0.2
         version: 2.0.2
       recast:
-        specifier: ^0.23.6
+        specifier: ^0.23.7
         version: 0.23.7
       resolve-from:
         specifier: ^5.0.0
