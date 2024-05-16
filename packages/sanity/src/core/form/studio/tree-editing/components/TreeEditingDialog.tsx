@@ -1,6 +1,5 @@
 /* eslint-disable @sanity/i18n/no-attribute-string-literals */
-/* eslint-disable i18next/no-literal-string */
-import {Button, Card, Code, Dialog, Flex, Text} from '@sanity/ui'
+import {Button, Card, Dialog, Flex} from '@sanity/ui'
 import {type Theme} from '@sanity/ui/theme'
 import {toString} from '@sanity/util/paths'
 import {AnimatePresence, motion, type Transition, type Variants} from 'framer-motion'
@@ -24,8 +23,6 @@ import {
 } from '../utils'
 import {handleNavigate} from '../utils/handleNavigate'
 import {TreeEditingLayout} from './TreeEditingLayout'
-
-const DEBUG_RELATIVE_PATH = false
 
 const EMPTY_ARRAY: [] = []
 
@@ -104,15 +101,14 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | 
   }, [debouncedBuildTreeEditingState, setFocusPath])
 
   useEffect(() => {
-    if (focusPath.length === 0) return
-
-    /** it should only proceed if the focus path presented makes sense for the editing dialog */
+    // Don't proceed with building the tree editing state if the dialog
+    // should not be open.
     if (!shouldArrayDialogOpen(schemaType, focusPath)) return
+
+    // Don't proceed with building the tree editing state if the focus path
+    // or value has not changed.
     const focusPathChanged = !isEqual(focusPath, focusPathRef.current)
     const valueChanged = !isEqual(value, valueRef.current)
-
-    // Only proceed with building the tree editing state if the
-    // focusPath or the value has changed.
     if (!focusPathChanged && !valueChanged) return
 
     // Store the focusPath and value to be able to compare them
@@ -171,44 +167,6 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | 
           </Card>
         }
       >
-        {DEBUG_RELATIVE_PATH && (
-          <Card
-            padding={3}
-            radius={2}
-            margin={2}
-            marginBottom={5}
-            sizing="border"
-            tone="transparent"
-            flex={1}
-            shadow={1}
-            scheme="dark"
-          >
-            <Flex direction="column" gap={3}>
-              <Text size={1} weight="medium">
-                Relative path:
-              </Text>
-
-              <Card padding={2} tone="transparent" shadow={1}>
-                <Code size={1} language="json">
-                  {JSON.stringify(relativePath)}
-                </Code>
-              </Card>
-            </Flex>
-
-            <Flex direction="column" gap={3} marginTop={4}>
-              <Text size={1} weight="medium">
-                Focus path:
-              </Text>
-
-              <Card padding={2} tone="transparent" shadow={1}>
-                <Code size={1} language="json">
-                  {JSON.stringify(focusPath)}
-                </Code>
-              </Card>
-            </Flex>
-          </Card>
-        )}
-
         <AnimatePresence mode="wait">
           <MotionFlex
             animate="animate"
