@@ -2,7 +2,7 @@ import {type SanityClient} from '@sanity/client'
 import {type Mutation} from '@sanity/mutator'
 import {type SanityDocument} from '@sanity/types'
 import {EMPTY, from, merge, type Observable, Subject} from 'rxjs'
-import {filter, map, mergeMap, share, tap} from 'rxjs/operators'
+import {filter, map, mergeMap, share, take, tap} from 'rxjs/operators'
 
 import {
   type BufferedDocumentEvent,
@@ -196,7 +196,7 @@ function submitCommitRequest(
 export function checkoutPair(
   client: SanityClient,
   idPair: IdPair,
-  serverActionsEnabled: boolean,
+  serverActionsEnabled: Observable<boolean>,
 ): Pair {
   const {publishedId, draftId} = idPair
 
@@ -226,7 +226,12 @@ export function checkoutPair(
 
   const commits$ = merge(draft.commitRequest$, published.commitRequest$).pipe(
     mergeMap((commitRequest) =>
-      submitCommitRequest(client, idPair, commitRequest, serverActionsEnabled),
+      serverActionsEnabled.pipe(
+        take(1),
+        mergeMap((canUseServerActions) =>
+          submitCommitRequest(client, idPair, commitRequest, canUseServerActions),
+        ),
+      ),
     ),
     mergeMap(() => EMPTY),
     share(),

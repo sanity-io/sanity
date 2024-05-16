@@ -70,7 +70,7 @@ export class TypeGenerator {
       type,
     )
 
-    return new CodeGenerator(t.exportNamedDeclaration(typeAlias)).generate().code
+    return new CodeGenerator(t.exportNamedDeclaration(typeAlias)).generate().code.trim()
   }
 
   static generateKnownTypes(): string {
@@ -82,7 +82,7 @@ export class TypeGenerator {
 
     const decleration = t.variableDeclaration('const', [t.variableDeclarator(identifier)])
     decleration.declare = true
-    return new CodeGenerator(t.exportNamedDeclaration(decleration)).generate().code
+    return new CodeGenerator(t.exportNamedDeclaration(decleration)).generate().code.trim()
   }
 
   /**

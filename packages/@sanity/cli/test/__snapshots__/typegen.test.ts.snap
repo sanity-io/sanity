@@ -32,13 +32,9 @@ export type Slug = {
   source?: string;
 };
 export declare const internalGroqTypeReferenceTo: unique symbol;
-
-
 // Source: ./src/queries.ts
 // Variable: PAGE_QUERY
 // Query: *[_type == \\"page\\" && slug.current == $slug][0]
 export type PAGE_QUERYResult = null;
-
-
 "
 `;

@@ -1,6 +1,6 @@
 {
   "name": "@sanity/diff",
-  "version": "3.41.1",
+  "version": "3.42.1",
   "description": "Generates diffs between documents and primitive types",
   "keywords": [
     "sanity",
@@ -40,7 +40,6 @@
   ],
   "scripts": {
     "build": "pkg-utils build --strict --check --clean",
-    "build:bundle": "vite build --config package.bundle.ts",
     "check:types": "tsc --project tsconfig.lib.json",
     "clean": "rimraf lib coverage",
     "lint": "eslint .",

@@ -1,6 +1,6 @@
 {
   "name": "@sanity/util",
-  "version": "3.41.1",
+  "version": "3.42.1",
   "description": "Utilities shared across projects of Sanity",
   "keywords": [
     "sanity",
@@ -114,7 +114,6 @@
   ],
   "scripts": {
     "build": "pkg-utils build --strict --check --clean",
-    "build:bundle": "vite build --config package.bundle.ts",
     "check:types": "tsc --project tsconfig.lib.json",
     "clean": "rimraf client.js concurrency-limiter.js content.js createSafeJsonParser.js fs.js legacyDateFormat.js lib paths.js",
     "prepublishOnly": "turbo run build",
@@ -122,8 +121,8 @@
     "watch": "pkg-utils watch"
   },
   "dependencies": {
-    "@sanity/client": "^6.18.0",
-    "@sanity/types": "3.41.1",
+    "@sanity/client": "^6.18.2",
+    "@sanity/types": "3.42.1",
     "get-random-values-esm": "1.0.2",
     "moment": "^2.29.4",
     "rxjs": "^7.8.1"

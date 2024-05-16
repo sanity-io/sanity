@@ -65,8 +65,8 @@ async function getSiblingTextContent(page: Page) {
     const cursorB = document.querySelector('[data-testid="presence-cursor-User-B"]')
 
     return {
-      cursorA: cursorA?.nextElementSibling?.textContent,
-      cursorB: cursorB?.nextElementSibling?.textContent,
+      cursorA: cursorA?.nextElementSibling?.nextElementSibling?.textContent,
+      cursorB: cursorB?.nextElementSibling?.nextElementSibling?.textContent,
     }
   })
 }

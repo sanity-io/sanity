@@ -118,7 +118,10 @@ export function prepareConfig(
 
     const {unstable_sources: nestedSources = [], ...rootSource} = rawWorkspace
     const sources = [rootSource as SourceOptions, ...nestedSources].map(({plugins, ...source}) => {
-      return {...source, plugins: [...(plugins ?? []), ...getDefaultPlugins(defaultPluginsOptions)]}
+      return {
+        ...source,
+        plugins: [...(plugins ?? []), ...getDefaultPlugins(defaultPluginsOptions, plugins)],
+      }
     })
 
     const resolvedSources = sources.map((source): InternalSource => {
@@ -201,7 +204,8 @@ export function prepareConfig(
       __internal: {
         sources: resolvedSources,
       },
-      serverActions: rawWorkspace.unstable_serverActions ?? {enabled: false},
+      // eslint-disable-next-line camelcase
+      __internal_serverDocumentActions: rawWorkspace.__internal_serverDocumentActions,
       ...defaultPluginsOptions,
     }
     preparedWorkspaces.set(rawWorkspace, workspaceSummary)

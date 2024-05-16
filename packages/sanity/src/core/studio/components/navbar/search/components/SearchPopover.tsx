@@ -138,15 +138,7 @@ export function SearchPopover({
                 transition={ANIMATION_TRANSITION}
                 variants={CARD_VARIANTS}
               >
-                <SearchHeader
-                  ariaInputLabel={
-                    hasValidTerms
-                      ? t('search.search-results-aria-label')
-                      : t('search.recent-searches-aria-label')
-                  }
-                  onClose={onClose}
-                  ref={setInputElement}
-                />
+                <SearchHeader onClose={onClose} ref={setInputElement} />
                 {filtersVisible && (
                   <Card borderTop flex="none">
                     <Filters />

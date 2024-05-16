@@ -92,5 +92,17 @@ test.describe('Portable Text Input', () => {
         })
       })
     })
+
+    test.describe('Hidden toolbar', () => {
+      test('Toolbar should be hidden after activation', async ({mount, page}) => {
+        const {getFocusedPortableTextInput} = testHelpers({page})
+        await mount(<ToolbarStory ptInputProps={{hideToolbar: true}} />)
+        const $portableTextInput = await getFocusedPortableTextInput('field-body')
+
+        const $toolbarCard = $portableTextInput.getByTestId('pt-editor__toolbar-card')
+        // Assertion: the toolbar should not be rendered in the DOM
+        await expect($toolbarCard).not.toBeAttached()
+      })
+    })
   })
 })

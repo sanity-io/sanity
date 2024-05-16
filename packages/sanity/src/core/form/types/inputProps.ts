@@ -31,6 +31,7 @@ import {
   type ReactElement,
 } from 'react'
 
+import {type RenderPortableTextInputEditableProps} from '../inputs'
 import {type FormPatch, type PatchEvent} from '../patch'
 import {type FormFieldGroup} from '../store'
 import {
@@ -508,9 +509,22 @@ export interface PortableTextInputProps
    */
   editorRef?: React.MutableRefObject<PortableTextEditor | null>
   /**
+   * Option to hide the default toolbar
+   */
+  hideToolbar?: boolean
+  /**
    * Assign hotkeys that can be attached to custom editing functions
    */
   hotkeys?: HotkeyOptions
+  /**
+   * Whether the input is activated and should receive events on mount.
+   * By default, PTE inputs need to be manually activated by focusing them.
+   */
+  initialActive?: boolean
+  /**
+   * Whether the input is _initially_ open in fullscreen mode
+   */
+  initialFullscreen?: boolean
   /**
    * Array of {@link PortableTextMarker} with meta data connected to the content.
    * @deprecated will be removed in the next major version of Sanity Studio.
@@ -547,6 +561,13 @@ export interface PortableTextInputProps
    * Use the `renderBlock` interface instead.
    */
   renderCustomMarkers?: RenderCustomMarkers
+  /**
+   * Function to render the PortableTextInput's editable component.
+   * This is the actual contentEditable element that users type into.
+   * @hidden
+   * @beta
+   */
+  renderEditable?: (props: RenderPortableTextInputEditableProps) => JSX.Element
   /**
    * Array of {@link RangeDecoration} that can be used to decorate the content.
    */

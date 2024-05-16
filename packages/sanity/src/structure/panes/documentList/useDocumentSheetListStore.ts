@@ -1,12 +1,7 @@
 import {type ListenEvent, type ListenOptions} from '@sanity/client'
 import {useCallback, useEffect, useMemo, useReducer, useState} from 'react'
 import {catchError, of} from 'rxjs'
-import {DEFAULT_STUDIO_CLIENT_OPTIONS, type SanityDocument, useClient} from 'sanity'
-
-interface DocumentAddedAction {
-  payload: SanityDocument
-  type: 'DOCUMENT_ADDED'
-}
+import {DEFAULT_STUDIO_CLIENT_OPTIONS, getDraftId, type SanityDocument, useClient} from 'sanity'
 
 interface DocumentDeletedAction {
   id: string
@@ -19,7 +14,7 @@ interface DocumentUpdatedAction {
 }
 
 interface DocumentsSetAction {
-  tasks: SanityDocument[]
+  documents: SanityDocument[]
   type: 'DOCUMENTS_SET'
 }
 
@@ -29,7 +24,6 @@ interface DocumentReceivedAction {
 }
 
 export type DocumentsReducerAction =
-  | DocumentAddedAction
   | DocumentDeletedAction
   | DocumentUpdatedAction
   | DocumentsSetAction
@@ -39,49 +33,23 @@ export interface DocumentsReducerState {
   documents: Record<string, SanityDocument>
 }
 
-function createDocumentsSet(tasks: SanityDocument[]) {
-  const tasksById = tasks.reduce((acc, task) => ({...acc, [task._id]: task}), {})
-  return tasksById
+function createDocumentsSet(documents: SanityDocument[]) {
+  const documentsById = documents.reduce((acc, doc) => ({...acc, [doc._id]: doc}), {})
+  return documentsById
 }
 
-function tasksReducer(
+function documentsReducer(
   state: DocumentsReducerState,
   action: DocumentsReducerAction,
 ): DocumentsReducerState {
   switch (action.type) {
     case 'DOCUMENTS_SET': {
-      // Create an object with the task id as key
-      const tasksById = createDocumentsSet(action.tasks)
+      // Create an object with the documents id as key
+      const documents = createDocumentsSet(action.documents)
 
       return {
         ...state,
-        documents: tasksById,
-      }
-    }
-
-    case 'DOCUMENT_ADDED': {
-      const nextDocumentResult = action.payload as SanityDocument
-      const nextDocumentValue = nextDocumentResult satisfies SanityDocument
-
-      const nextDocument = {
-        [nextDocumentResult._id]: {
-          ...state.documents[nextDocumentResult._id],
-          ...nextDocumentValue,
-          _state: nextDocumentResult._state || undefined,
-          // If the task is created optimistically, it won't have a createdAt date as this is set on the server.
-          // However, we need to set a createdAt date to be able to sort the tasks correctly.
-          // Therefore, we set the createdAt date to the current date here if it's missing while creating the task.
-          // Once the task is created and received from the server, the createdAt date will be updated to the correct value.
-          _createdAt: nextDocumentResult._createdAt || new Date().toISOString(),
-        } satisfies SanityDocument,
-      }
-
-      return {
-        ...state,
-        documents: {
-          ...state.documents,
-          ...nextDocument,
-        },
+        documents: documents,
       }
     }
 
@@ -110,12 +78,12 @@ function tasksReducer(
     case 'DOCUMENT_UPDATED': {
       const updatedDocument = action.payload
       const id = updatedDocument._id as string
-      const task = state.documents[id]
+      const document = state.documents[id]
 
       const nextDocument = {
-        // Add existing task data
-        ...task,
-        // Add incoming task data
+        // Add existing document data
+        ...document,
+        // Add incoming document data
         ...updatedDocument,
       } satisfies SanityDocument
 
@@ -143,6 +111,7 @@ const LISTEN_OPTIONS: ListenOptions = {
  * TODO:
  * [] Lazy load more documents, reduce initial fetch.
  * [] Add support for sorting and filtering.
+ * []  Make a projection of the query according to the schema. e.g. get only the primitive fields and the _id to reduce the data payload.
  */
 export function useDocumentSheetListStore({
   filter,
@@ -153,13 +122,12 @@ export function useDocumentSheetListStore({
   params?: Record<string, unknown>
   apiVersion?: string
 }) {
-  // TODO: Make a projection of the query according to the schema. e.g. get only the primitive fields and the _id.
   const QUERY = `*[${filter}][0...2000]`
   const client = useClient({
     ...DEFAULT_STUDIO_CLIENT_OPTIONS,
     apiVersion: apiVersion || DEFAULT_STUDIO_CLIENT_OPTIONS.apiVersion,
   })
-  const [state, dispatch] = useReducer(tasksReducer, {
+  const [state, dispatch] = useReducer(documentsReducer, {
     documents: {},
   })
   const [isLoading, setIsLoading] = useState<boolean>(client !== null)
@@ -172,7 +140,7 @@ export function useDocumentSheetListStore({
     }
     try {
       const res = await client.fetch(QUERY, params)
-      dispatch({type: 'DOCUMENTS_SET', tasks: res})
+      dispatch({type: 'DOCUMENTS_SET', documents: res})
       setIsLoading(false)
     } catch (err) {
       setError(err)
@@ -181,7 +149,7 @@ export function useDocumentSheetListStore({
 
   const handleListenerEvent = useCallback(
     async (event: ListenEvent<Record<string, SanityDocument>>) => {
-      // Fetch all tasks on initial connection
+      // Fetch all documents on initial connection
       if (event.type === 'welcome') {
         setIsLoading(true)
         await initialFetch()
@@ -191,13 +159,13 @@ export function useDocumentSheetListStore({
       // The reconnect event means that we are trying to reconnect to the realtime listener.
       // In this case we set loading to true to indicate that we're trying to
       // reconnect. Once a connection has been established, the welcome event
-      // will be received and we'll fetch all tasks again (above).
+      // will be received and we'll fetch all documents again (above).
       if (event.type === 'reconnect') {
         setIsLoading(true)
       }
 
       // Handle mutations (create, update, delete) from the realtime listener
-      // and update the tasks store accordingly
+      // and update the documents store accordingly
       if (event.type === 'mutation') {
         if (event.transition === 'appear') {
           const nextDocument = event.result as SanityDocument | undefined
@@ -251,7 +219,25 @@ export function useDocumentSheetListStore({
   }, [handleListenerEvent, listener$])
 
   // Contemplate that we could have drafts and live documents here, merge them.
-  const dataAsArray = useMemo(() => Object.values(state.documents), [state.documents])
+  const dataAsArray = useMemo(() => {
+    // Joins the drafts and the live documents
+    const uniques = Object.keys(state.documents).reduce(
+      (acc: {[key: string]: SanityDocument}, key) => {
+        const document = state.documents[key]
+        const isDraft = document._id === getDraftId(document._id)
+        const id = isDraft ? document._id : getDraftId(document._id)
+        // If we already have the document, and this document is not the draft one, it means
+        // the draft hast already been added to the list, so we skip it.
+        if (acc[id] && !isDraft) {
+          return acc
+        }
+        acc[id] = document
+        return acc
+      },
+      {},
+    )
+    return Object.values(uniques)
+  }, [state.documents])
 
   return {
     data: dataAsArray,

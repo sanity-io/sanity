@@ -8,55 +8,63 @@ import {
   DoubleChevronRightIcon,
 } from '@sanity/icons'
 import {Flex, Text} from '@sanity/ui'
+import {type Table} from '@tanstack/react-table'
+import {type SanityDocument} from 'sanity'
 
 import {Button, TooltipDelayGroupProvider} from '../../../ui-components'
 
-export function DocumentSheetPaginator({
-  page,
-  setPage,
-  totalPages,
-}: {
-  page: number
-  setPage: (page: number) => void
-  totalPages: number
-}) {
+export function DocumentSheetListPaginator({table}: {table: Table<SanityDocument>}) {
   return (
     <TooltipDelayGroupProvider>
       <Flex gap={3} align={'center'}>
         <Button
-          onClick={() => setPage(1)}
-          disabled={page === 1}
+          onClick={() => table.setPageIndex(0)}
+          disabled={!table.getCanPreviousPage()}
           icon={DoubleChevronLeftIcon}
           tooltipProps={{
             content: 'Go to first page',
           }}
         />
         <Button
-          onClick={() => setPage(page - 1)}
-          disabled={page === 1}
+          onClick={() => table.previousPage()}
+          disabled={!table.getCanPreviousPage()}
           icon={ChevronLeftIcon}
           tooltipProps={{
             content: 'Go to previous page',
           }}
         />
-        <Text style={{whiteSpace: 'nowrap'}}>{`Page ${page} of ${totalPages}`}</Text>
+        <Text style={{whiteSpace: 'nowrap'}}>
+          {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
+        </Text>
 
         <Button
-          onClick={() => setPage(page + 1)}
+          onClick={() => table.nextPage()}
+          disabled={!table.getCanNextPage()}
           icon={ChevronRightIcon}
-          disabled={page === totalPages}
           tooltipProps={{
             content: 'Go to next page',
           }}
         />
         <Button
-          onClick={() => setPage(totalPages)}
+          onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+          disabled={!table.getCanNextPage()}
           icon={DoubleChevronRightIcon}
-          disabled={page === totalPages}
           tooltipProps={{
             content: 'Go to last page',
           }}
         />
+        <select
+          value={table.getState().pagination.pageSize}
+          onChange={(e) => {
+            table.setPageSize(Number(e.target.value))
+          }}
+        >
+          {[25, 50, 100].map((pageSize) => (
+            <option key={pageSize} value={pageSize}>
+              {pageSize}
+            </option>
+          ))}
+        </select>
       </Flex>
     </TooltipDelayGroupProvider>
   )

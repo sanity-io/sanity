@@ -1,6 +1,8 @@
+/* eslint-disable @sanity/i18n/no-attribute-string-literals */
+/* eslint-disable i18next/no-literal-string */
 import {Box, Button, Card, Checkbox, Flex, Menu, MenuButton, Stack, Text} from '@sanity/ui'
-import {type Table} from '@tanstack/react-table'
-import {useEffect, useRef} from 'react'
+import {type Column, type Table} from '@tanstack/react-table'
+import {useEffect, useRef, useState} from 'react'
 import {type SanityDocument} from 'sanity'
 
 const VISIBLE_COLUMN_LIMIT = 5
@@ -11,6 +13,7 @@ type Props = {
 
 export function ColumnsControl({table}: Props) {
   const tableRef = useRef(table)
+  const [reset, setReset] = useState(0)
 
   const isVisibleLimitReached =
     table.getVisibleLeafColumns().filter((col) => col.getCanHide()).length >= VISIBLE_COLUMN_LIMIT
@@ -37,7 +40,21 @@ export function ColumnsControl({table}: Props) {
       )
 
     tableRef.current.setColumnVisibility(newColumns)
-  }, [])
+  }, [reset])
+
+  const handleColumnOnChange = (column: Column<SanityDocument, unknown>) => () => {
+    column.toggleVisibility()
+  }
+
+  const handleResetColumns = () => setReset((prev) => prev + 1)
+
+  const getColumnVisibilityDisabled = (column: Column<SanityDocument, unknown>) => {
+    const isColumnVisible = column.getIsVisible()
+    const isSingleColumnVisible =
+      table.getVisibleLeafColumns().filter((col) => col.getCanHide()).length === 1
+
+    return (isVisibleLimitReached && !isColumnVisible) || (isSingleColumnVisible && isColumnVisible)
+  }
 
   return (
     <MenuButton
@@ -45,28 +62,29 @@ export function ColumnsControl({table}: Props) {
       id="columns-control"
       menu={
         <Menu padding={3} paddingBottom={1} style={{maxHeight: 300, overflow: 'scroll'}}>
+          <Button size={0} text="Reset" onClick={handleResetColumns} />
           <Stack>
-            {table.getAllLeafColumns().map((column) => (
-              <Flex key={column.id} marginY={2} align="center">
-                <Checkbox
-                  readOnly={
-                    !column.getCanHide() || (isVisibleLimitReached && !column.getIsVisible())
-                  }
-                  checked={column.getIsVisible()}
-                  onChange={(e) => {
-                    column.toggleVisibility()
-                    e.stopPropagation()
-                  }}
-                  id="checkbox"
-                  style={{display: 'block'}}
-                />
-                <Box flex={1} paddingLeft={3}>
-                  <Text size={1}>
-                    <label htmlFor="checkbox">{column.columnDef.header}</label>
-                  </Text>
-                </Box>
-              </Flex>
-            ))}
+            {table
+              .getAllLeafColumns()
+              .filter((column) => column.getCanHide())
+              .map((column) => (
+                <Flex key={column.id} marginY={2} align="center">
+                  <Checkbox
+                    readOnly={getColumnVisibilityDisabled(column)}
+                    checked={column.getIsVisible()}
+                    onChange={handleColumnOnChange(column)}
+                    id={`col-visibility-${column.id}`}
+                    style={{display: 'block'}}
+                  />
+                  <Box flex={1} paddingLeft={3}>
+                    <Text size={1}>
+                      <label htmlFor={`col-visibility-${column.id}`}>
+                        {column.columnDef.header?.toString()}
+                      </label>
+                    </Text>
+                  </Box>
+                </Flex>
+              ))}
             {isVisibleLimitReached && (
               <Card
                 padding={2}
