@@ -98,6 +98,8 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | 
   const onClose = useCallback(() => {
     setFocusPath(EMPTY_ARRAY)
     setTreeState(EMPTY_TREE_STATE)
+    focusPathRef.current = null
+    valueRef.current = undefined
     debouncedBuildTreeEditingState.cancel()
   }, [debouncedBuildTreeEditingState, setFocusPath])
 
