@@ -9,7 +9,7 @@ import {type CopyActionResult} from './types'
 import {getLocalStorageItem, getLocalStorageKey} from './utils'
 
 /**
- * @internal
+ * @beta
  * @hidden
  */
 export const CopyPasteProvider: React.FC<{
@@ -75,6 +75,10 @@ export const CopyPasteProvider: React.FC<{
   return <CopyPasteContext.Provider value={contextValue}>{children}</CopyPasteContext.Provider>
 }
 
+/**
+ * @beta
+ * @hidden
+ */
 export const useCopyPaste = () => {
   const context = useContext(CopyPasteContext)
   if (!context) {
