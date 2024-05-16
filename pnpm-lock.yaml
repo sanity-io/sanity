@@ -1533,8 +1533,8 @@ importers:
         specifier: 3.42.1
         version: link:../@sanity/portable-text-editor
       '@sanity/presentation':
-        specifier: 1.15.4
-        version: 1.15.4(@sanity/client@6.18.2)(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.11)
+        specifier: 1.15.5
+        version: 1.15.5(@sanity/client@6.18.2)(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.11)
       '@sanity/schema':
         specifier: 3.42.1
         version: link:../@sanity/schema
@@ -6604,8 +6604,8 @@ packages:
       - debug
       - supports-color
 
-  /@sanity/presentation@1.15.4(@sanity/client@6.18.2)(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.11):
-    resolution: {integrity: sha512-tiLXWOccigZ6uZenRuudEw56/w+gQy6MvDZh56WDJP5lNIarSBD3px+6GYmuzMf8/jJvdQMxp0tMZjETjmOc5A==}
+  /@sanity/presentation@1.15.5(@sanity/client@6.18.2)(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.11):
+    resolution: {integrity: sha512-Xsd4NCMc0Ft9iVs8L8qlPuzu1NVgCh4AXQ4UiF7iUQ8jIIP8/31NmVc2ynl3FV7IGbON5lF8Kki5z1XetvzJQw==}
     engines: {node: '>=16.14'}
     peerDependencies:
       '@sanity/client': ^6.18.2
@@ -6617,7 +6617,7 @@ packages:
       '@sanity/uuid': 3.0.2
       '@types/lodash.isequal': 4.5.8
       fast-deep-equal: 3.1.3
-      framer-motion: 11.2.0(react-dom@18.3.1)(react@18.3.1)
+      framer-motion: 11.2.2(react-dom@18.3.1)(react@18.3.1)
       lodash.isequal: 4.5.0
       mendoza: 3.0.7
       mnemonist: 0.39.8
@@ -11786,6 +11786,25 @@ packages:
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
       tslib: 2.6.2
+
+  /framer-motion@11.2.2(react-dom@18.3.1)(react@18.3.1):
+    resolution: {integrity: sha512-Jq65YXsRUUDPJ1VQ30pblGeE5g+a/oOKGiP3zlZT9whL652guO6KJjFhNXtcmatoVkyyNjZ2NDVPUlydpCprzA==}
+    peerDependencies:
+      '@emotion/is-prop-valid': '*'
+      react: ^18.0.0
+      react-dom: ^18.0.0
+    peerDependenciesMeta:
+      '@emotion/is-prop-valid':
+        optional: true
+      react:
+        optional: true
+      react-dom:
+        optional: true
+    dependencies:
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+      tslib: 2.6.2
+    dev: false
 
   /fresh@0.5.2:
     resolution: {integrity: sha512-zJ2mQYM18rEFOudeV4GShTGIQ7RbzA7ozbU9I/XBpm7kqgMywgmylMwXHxZJmkVoYkna9d2pVXVXPdYTP9ej8Q==}
