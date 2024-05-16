@@ -44,15 +44,22 @@ function isSelected(itemPath: Path, focusPath: Path): boolean {
   return JSON.stringify(itemPath) === JSON.stringify(focusPath)
 }
 
-function shouldNavigate(itemPath: Path): boolean {
-  // if it's not a key property we don't want to update the relativePath
-  return itemPath[itemPath.length - 1].hasOwnProperty('_key')
+/**
+ * Check if the path is an array item path
+ */
+function isArrayItemPath(path: Path): boolean {
+  return path[path.length - 1].hasOwnProperty('_key')
 }
 
+/**
+ * Check if the item should be in the breadcrumb
+ */
 function shouldBeInBreadcrumb(itemPath: Path, focusPath: Path): boolean {
-  return itemPath.every((segment, index) => {
-    return JSON.stringify(focusPath[index]) === JSON.stringify(segment)
-  })
+  return (
+    itemPath.every((segment, index) => {
+      return JSON.stringify(focusPath[index]) === JSON.stringify(segment)
+    }) && isArrayItemPath(itemPath)
+  )
 }
 
 export function buildTreeEditingState(props: BuildTreeEditingStateProps): TreeEditingState {
@@ -124,8 +131,11 @@ export function buildTreeEditingState(props: BuildTreeEditingStateProps): TreeEd
         const childrenFields = itemSchemaField?.fields || []
         const childrenMenuItems: TreeEditingMenuItem[] = []
 
-        if (isSelected(itemPath, focusPath) && shouldNavigate(itemPath)) {
-          relativePath = itemPath
+        const isArrayPath = isArrayItemPath(itemPath)
+
+        if (isSelected(itemPath, focusPath)) {
+          const nextPath = isArrayPath ? itemPath : itemPath.slice(0, itemPath.length - 1)
+          relativePath = nextPath
         }
 
         if (shouldBeInBreadcrumb(itemPath, focusPath)) {
@@ -158,17 +168,18 @@ export function buildTreeEditingState(props: BuildTreeEditingStateProps): TreeEd
         childrenFields.forEach((childField) => {
           const childPath = [...itemPath, childField.name] as Path
 
-          const isPrimitive = isPrimitiveSchemaType(childField?.type)
+          const isPrimitiveChild = isPrimitiveSchemaType(childField?.type)
           const childTitle = getSchemaTypeTitle(childField.type) as string
           const childValue = getValueAtPath(documentValue, childPath)
+          const isChildArrayPath = isArrayItemPath(childPath)
 
-          if (isSelected(childPath, focusPath) && shouldNavigate(childPath)) {
-            const nextPath = isPrimitive ? childPath.slice(0, childPath.length - 1) : childPath
+          if (isSelected(childPath, focusPath)) {
+            const nextPath = isChildArrayPath ? childPath : childPath.slice(0, childPath.length - 1)
 
             relativePath = nextPath
           }
 
-          if (!isPrimitive && childValue) {
+          if (!isPrimitiveChild && childValue) {
             if (shouldBeInBreadcrumb(childPath, focusPath)) {
               breadcrumbs.push({
                 path: childPath,
@@ -258,9 +269,10 @@ export function buildTreeEditingState(props: BuildTreeEditingStateProps): TreeEd
         const isPrimitive = isPrimitiveSchemaType(childField?.type)
         const childTitle = getSchemaTypeTitle(childField.type) as string
         const childValue = getValueAtPath(documentValue, childPath)
+        const isArrayPath = isArrayItemPath(childPath)
 
-        if (isSelected(childPath, focusPath) && shouldNavigate(childPath)) {
-          const nextPath = isPrimitive ? childPath.slice(0, childPath.length - 1) : childPath
+        if (isSelected(childPath, focusPath)) {
+          const nextPath = isArrayPath ? childPath : childPath.slice(0, childPath.length - 1)
 
           relativePath = nextPath
         }
@@ -295,9 +307,10 @@ export function buildTreeEditingState(props: BuildTreeEditingStateProps): TreeEd
       })
 
       const isPrimitive = isPrimitiveSchemaType(itemSchemaField?.type)
+      const isArrayPath = isArrayItemPath(itemPath)
 
-      if (isSelected(itemPath, focusPath) && shouldNavigate(itemPath)) {
-        const nextPath = isPrimitive ? itemPath.slice(0, itemPath.length - 1) : itemPath
+      if (isSelected(itemPath, focusPath)) {
+        const nextPath = isArrayPath ? itemPath : itemPath.slice(0, itemPath.length - 1)
 
         relativePath = nextPath
       }
