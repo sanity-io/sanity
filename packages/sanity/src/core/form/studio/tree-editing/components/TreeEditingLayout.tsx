@@ -1,10 +1,8 @@
-/* eslint-disable @sanity/i18n/no-attribute-string-literals */
-/* eslint-disable i18next/no-literal-string */
 import {PanelLeftIcon} from '@sanity/icons'
 import {Card, Container, Flex, Stack, Text} from '@sanity/ui'
 import {AnimatePresence, motion, type Variants} from 'framer-motion'
 import {Fragment, memo, type ReactNode, useCallback, useRef, useState} from 'react'
-import {type Path, VirtualizerScrollInstanceProvider} from 'sanity'
+import {type Path, PresenceOverlay, VirtualizerScrollInstanceProvider} from 'sanity'
 import styled from 'styled-components'
 
 import {Button} from '../../../../../ui-components'
@@ -12,6 +10,8 @@ import {type TreeEditingBreadcrumb, type TreeEditingMenuItem} from '../types'
 import {TreeEditingBreadcrumbs} from './breadcrumbs'
 import {Resizable} from './resizer'
 import {TreeEditingMenu} from './TreeEditingMenu'
+
+const PRESENCE_MARGINS: [number, number, number, number] = [0, 0, 1, 0]
 
 const ANIMATION_VARIANTS: Variants = {
   initial: {opacity: 0},
@@ -141,20 +141,20 @@ export const TreeEditingLayout = memo(function TreeEditingLayout(
 
         <Card flex={1} id="tree-editing-form" overflow="auto" ref={scrollElementRef}>
           {children && (
-            <Container
-              width={1}
-              ref={containerElementRef}
-              paddingX={5}
-              paddingY={5}
-              sizing="border"
+            <VirtualizerScrollInstanceProvider
+              containerElement={containerElementRef}
+              scrollElement={scrollElementRef.current}
             >
-              <VirtualizerScrollInstanceProvider
-                containerElement={containerElementRef}
-                scrollElement={scrollElementRef.current}
+              <Container
+                width={1}
+                ref={containerElementRef}
+                paddingX={5}
+                paddingY={5}
+                sizing="border"
               >
-                {children}
-              </VirtualizerScrollInstanceProvider>
-            </Container>
+                <PresenceOverlay margins={PRESENCE_MARGINS}>{children}</PresenceOverlay>
+              </Container>
+            </VirtualizerScrollInstanceProvider>
           )}
         </Card>
 
