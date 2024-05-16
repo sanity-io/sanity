@@ -19,7 +19,7 @@ import {
   buildTreeEditingState,
   type BuildTreeEditingStateProps,
   EMPTY_TREE_STATE,
-  isOpen,
+  shouldArrayDialogOpen,
   type TreeEditingState,
 } from '../utils'
 import {handleNavigate} from '../utils/handleNavigate'
@@ -102,6 +102,9 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | 
   useEffect(() => {
     if (focusPath.length === 0) return
 
+    /** it should only proceed if the focus path presented makes sense for the editing dialog */
+    if (!shouldArrayDialogOpen(schemaType, focusPath)) return
+
     debouncedBuildTreeEditingState({
       schemaType,
       documentValue: value,
@@ -111,7 +114,10 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | 
 
   const {menuItems, relativePath, rootTitle, breadcrumbs} = treeState
 
-  const open = useMemo(() => isOpen(schemaType, relativePath), [relativePath, schemaType])
+  const open = useMemo(
+    () => shouldArrayDialogOpen(schemaType, relativePath),
+    [relativePath, schemaType],
+  )
 
   const onHandlePathSelect = useCallback(
     (path: Path) => {
