@@ -3,6 +3,13 @@ import {isArrayOfObjectsSchemaType, type ObjectSchemaType, type Path} from 'sani
 
 import {getSchemaField} from './getSchemaField'
 
+/**
+ * A utility function to check if the global array editing dialog should be open.
+ * @param schemaType - The schema object that we are opening
+ * @param focusPath - The path that we are focusing on
+ * @returns Returns true if the dialog shoulb be open
+ * @internal
+ */
 export function shouldArrayDialogOpen(schemaType: ObjectSchemaType, focusPath: Path): boolean {
   // If the focusPath is empty, we can't determine if the array dialog is open
   if (focusPath.length === 0) return false
