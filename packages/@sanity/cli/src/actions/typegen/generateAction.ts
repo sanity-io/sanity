@@ -62,10 +62,12 @@ export default async function typegenGenerateAction(
   const outputDir = dirname(outputPath)
   await mkdir(outputDir, {recursive: true})
 
-  const prettierConfig = await prettier.resolveConfig(outputPath).catch((err) => {
-    output.warn(`Failed to load prettier config: ${err.message}`)
-    return null
-  })
+  const prettierConfig = codegenConfig.formatGeneratedCode
+    ? await prettier.resolveConfig(outputPath).catch((err) => {
+        output.warn(`Failed to load prettier config: ${err.message}`)
+        return null
+      })
+    : null
   const workerPath = await getCliWorkerPath('typegenGenerate')
 
   const spinner = output.spinner({}).start('Generating types')
