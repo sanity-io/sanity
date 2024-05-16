@@ -70,6 +70,7 @@ packages/sanity/src/core/studio/upsell/ @sanity-io/studio-ex
 /packages/@sanity/cli/src/workers/typegenGenerate.ts @sanity-io/content-lake-dx
 
 # Internals used by @sanity/presentation
+# See https://github.com/sanity-io/visual-editing/blob/main/packages/presentation/src/internals.ts for exactly which exports
 /packages/sanity/src/_singletons/structure/components/paneRouter/PaneRouterContext.tsx @sanity-io/ecosystem
 /packages/sanity/src/core/comments/context/intent/CommentsIntentProvider.tsx @sanity-io/ecosystem
 /packages/sanity/src/core/comments/types.ts @sanity-io/ecosystem
