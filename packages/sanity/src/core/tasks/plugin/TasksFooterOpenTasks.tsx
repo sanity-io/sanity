@@ -5,7 +5,7 @@ import {styled} from 'styled-components'
 
 import {Button} from '../../../ui-components'
 import {useTranslation} from '../../i18n'
-import {useTasks, useTasksEnabled, useTasksNavigation} from '../context'
+import {useTasks, useTasksNavigation} from '../context'
 import {tasksLocaleNamespace} from '../i18n'
 
 const ButtonContainer = styled.div`
@@ -25,22 +25,20 @@ const ButtonContainer = styled.div`
 export function TasksFooterOpenTasks() {
   const {data, activeDocument} = useTasks()
   const {handleOpenTasks, setActiveTab} = useTasksNavigation()
-  const {enabled} = useTasksEnabled()
-
   const mediaIndex = useMediaIndex()
-
   const pendingTasks = useMemo(
     () =>
-      data.filter((item) => {
-        return (
-          item.target?.document._ref === activeDocument?.documentId &&
-          item.status === 'open' &&
-          item.createdByUser
-        )
-      }),
+      activeDocument?.documentId
+        ? data.filter((item) => {
+            return (
+              item.target?.document._ref === activeDocument?.documentId &&
+              item.status === 'open' &&
+              item.createdByUser
+            )
+          })
+        : [],
     [activeDocument, data],
   )
-
   const handleOnClick = useCallback(() => {
     handleOpenTasks()
     setActiveTab('document')
@@ -48,7 +46,7 @@ export function TasksFooterOpenTasks() {
 
   const {t} = useTranslation(tasksLocaleNamespace)
 
-  if (pendingTasks.length === 0 || !enabled) return null
+  if (pendingTasks.length === 0) return null
 
   if (mediaIndex < 3) {
     return (
