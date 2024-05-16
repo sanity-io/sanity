@@ -5,6 +5,8 @@ export function getSchemaField(
   schemaType: SchemaType,
   fieldPath: string,
 ): ObjectField<SchemaType> | undefined {
+  if (!fieldPath) return undefined
+
   const paths = fromString(fieldPath)
   const firstPath = paths[0]
 
