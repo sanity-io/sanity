@@ -35,276 +35,276 @@ import {
 } from './inputProps'
 import {type ObjectItem, type ObjectItemProps, type PrimitiveItemProps} from './itemProps'
 
-/**
- *
- * @hidden
- * @beta
- */
-export interface ArrayOfObjectsComponents {
-  annotation?: ComponentType<BlockAnnotationProps>
-  block?: ComponentType<BlockProps>
-  diff?: ComponentType<any>
-  field?: ComponentType<ArrayFieldProps>
-  inlineBlock?: ComponentType<BlockProps>
-  input?: ComponentType<ArrayOfObjectsInputProps>
-  item?: ComponentType<ObjectItemProps>
-  preview?: ComponentType<PreviewProps>
-}
-
-/**
- *
- * @hidden
- * @beta
- */
-export interface ArrayOfPrimitivesComponents {
-  diff?: ComponentType<any>
-  field?: ComponentType<ArrayOfPrimitivesFieldProps>
-  input?: ComponentType<ArrayOfPrimitivesInputProps>
-  item?: ComponentType<PrimitiveItemProps>
-  preview?: ComponentType<PreviewProps>
-}
-
-/**
- *
- * @hidden
- * @beta
- */
-export interface BooleanComponents {
-  diff?: ComponentType<any>
-  field?: ComponentType<BooleanFieldProps>
-  input?: ComponentType<BooleanInputProps>
-  item?: ComponentType<PrimitiveItemProps>
-  preview?: ComponentType<PreviewProps>
-}
-
-/**
- *
- * @hidden
- * @beta
- */
-export interface DateComponents {
-  diff?: ComponentType<any>
-  field?: ComponentType<StringFieldProps>
-  input?: ComponentType<StringInputProps>
-  item?: ComponentType<PrimitiveItemProps>
-  preview?: ComponentType<PreviewProps>
-}
-
-/**
- *
- * @hidden
- * @beta
- */
-export interface DatetimeComponents {
-  diff?: ComponentType<any>
-  field?: ComponentType<StringFieldProps>
-  input?: ComponentType<StringInputProps>
-  item?: ComponentType<PrimitiveItemProps>
-  preview?: ComponentType<PreviewProps>
-}
-
-/**
- *
- * @hidden
- * @beta
- */
-export interface DocumentComponents {
-  diff?: ComponentType<any>
-  field?: ComponentType<ObjectFieldProps>
-  input?: ComponentType<ObjectInputProps>
-  item?: ComponentType<ObjectItemProps>
-  preview?: ComponentType<PreviewProps>
-}
-
-/**
- *
- * @hidden
- * @beta
- */
-export interface FileComponents {
-  annotation?: ComponentType<BlockAnnotationProps>
-  block?: ComponentType<BlockProps>
-  diff?: ComponentType<any>
-  field?: ComponentType<ObjectFieldProps<FileValue>>
-  inlineBlock?: ComponentType<BlockProps>
-  input?: ComponentType<ObjectInputProps<FileValue>>
-  item?: ComponentType<ObjectItemProps<FileValue & ObjectItem>>
-  preview?: ComponentType<PreviewProps>
-}
-
-/**
- *
- * @hidden
- * @beta
- */
-export interface GeopointComponents {
-  annotation?: ComponentType<BlockAnnotationProps>
-  block?: ComponentType<BlockProps>
-  diff?: ComponentType<any>
-  field?: ComponentType<ObjectFieldProps<GeopointValue>>
-  inlineBlock?: ComponentType<BlockProps>
-  input?: ComponentType<ObjectInputProps<GeopointValue>>
-  item?: ComponentType<ObjectItemProps<GeopointValue & ObjectItem>>
-  preview?: ComponentType<PreviewProps>
-}
-
-/**
- *
- * @hidden
- * @beta
- */
-export interface ImageComponents {
-  annotation?: ComponentType<BlockAnnotationProps>
-  block?: ComponentType<BlockProps>
-  diff?: ComponentType<any>
-  field?: ComponentType<ObjectFieldProps<ImageValue>>
-  inlineBlock?: ComponentType<BlockProps>
-  input?: ComponentType<ObjectInputProps<ImageValue>>
-  item?: ComponentType<ObjectItemProps<ImageValue & ObjectItem>>
-  preview?: ComponentType<PreviewProps>
-}
-
-/**
- *
- * @hidden
- * @beta
- */
-export interface NumberComponents {
-  diff?: ComponentType<any>
-  field?: ComponentType<NumberFieldProps>
-  input?: ComponentType<NumberInputProps>
-  item?: ComponentType<PrimitiveItemProps>
-  preview?: ComponentType<PreviewProps>
-}
-
-/**
- *
- * @hidden
- * @beta
- */
-export interface ObjectComponents {
-  annotation?: ComponentType<BlockAnnotationProps>
-  block?: ComponentType<BlockProps>
-  diff?: ComponentType<any>
-  field?: ComponentType<ObjectFieldProps>
-  inlineBlock?: ComponentType<BlockProps>
-  input?: ComponentType<ObjectInputProps>
-  item?: ComponentType<ObjectItemProps>
-  preview?: ComponentType<PreviewProps>
-}
-
-/**
- *
- * @hidden
- * @beta
- */
-export interface ReferenceComponents {
-  annotation?: ComponentType<BlockAnnotationProps>
-  block?: ComponentType<BlockProps>
-  diff?: ComponentType<any>
-  field?: ComponentType<ObjectFieldProps<ReferenceValue>>
-  inlineBlock?: ComponentType<BlockProps>
-  input?: ComponentType<ReferenceInputProps>
-  item?: ComponentType<ObjectItemProps<ReferenceValue & ObjectItem>>
-  preview?: ComponentType<PreviewProps>
-}
-
-/**
- *
- * @hidden
- * @beta
- */
-export interface CrossDatasetReferenceComponents {
-  annotation?: ComponentType<BlockAnnotationProps>
-  block?: ComponentType<BlockProps>
-  diff?: ComponentType<any>
-  field?: ComponentType<ObjectFieldProps<CrossDatasetReferenceValue>>
-  inlineBlock?: ComponentType<BlockProps>
-  input?: ComponentType<CrossDatasetReferenceInputProps>
-  item?: ComponentType<ObjectItemProps<CrossDatasetReferenceValue & ObjectItem>>
-  preview?: ComponentType<PreviewProps>
-}
-
-/**
- *
- * @hidden
- * @beta
- */
-export interface SlugComponents {
-  diff?: ComponentType<any>
-  field?: ComponentType<ObjectFieldProps<SlugValue>>
-  input?: ComponentType<ObjectInputProps<SlugValue>>
-  item?: ComponentType<ObjectItemProps<SlugValue & ObjectItem>>
-  preview?: ComponentType<PreviewProps>
-}
-
-/**
- *
- * @hidden
- * @beta
- */
-export interface SpanComponents {
-  diff?: ComponentType<any>
-  field?: ComponentType<ObjectFieldProps>
-  input?: ComponentType<ObjectInputProps>
-  item?: ComponentType<ObjectItemProps>
-  preview?: ComponentType<PreviewProps>
-}
-
-/**
- *
- * @hidden
- * @beta
- */
-export interface StringComponents {
-  diff?: ComponentType<any>
-  field?: ComponentType<StringFieldProps>
-  input?: ComponentType<StringInputProps>
-  item?: ComponentType<PrimitiveItemProps>
-  preview?: ComponentType<PreviewProps>
-}
-
-/**
- *
- * @hidden
- * @beta
- */
-export interface TextComponents {
-  diff?: ComponentType<any>
-  field?: ComponentType<StringFieldProps>
-  input?: ComponentType<StringInputProps>
-  item?: ComponentType<PrimitiveItemProps>
-  preview?: ComponentType<PreviewProps>
-}
-
-/**
- *
- * @hidden
- * @beta
- */
-export interface UrlComponents {
-  diff?: ComponentType<any>
-  field?: ComponentType<StringFieldProps>
-  input?: ComponentType<StringInputProps>
-  item?: ComponentType<PrimitiveItemProps>
-  preview?: ComponentType<PreviewProps>
-}
-
-/**
- *
- * @hidden
- * @beta
- */
-export interface EmailComponents {
-  diff?: ComponentType<any>
-  field?: ComponentType<StringFieldProps>
-  input?: ComponentType<StringInputProps>
-  item?: ComponentType<PrimitiveItemProps>
-  preview?: ComponentType<PreviewProps>
-}
-
 /* To avoid cyclic dependencies on Props, we extend all type definitions here, to add the correct component props */
 declare module '@sanity/types' {
+  /**
+   *
+   * @hidden
+   * @beta
+   */
+  export interface ArrayOfObjectsComponents {
+    annotation?: ComponentType<BlockAnnotationProps>
+    block?: ComponentType<BlockProps>
+    diff?: ComponentType<any>
+    field?: ComponentType<ArrayFieldProps>
+    inlineBlock?: ComponentType<BlockProps>
+    input?: ComponentType<ArrayOfObjectsInputProps>
+    item?: ComponentType<ObjectItemProps>
+    preview?: ComponentType<PreviewProps>
+  }
+
+  /**
+   *
+   * @hidden
+   * @beta
+   */
+  export interface ArrayOfPrimitivesComponents {
+    diff?: ComponentType<any>
+    field?: ComponentType<ArrayOfPrimitivesFieldProps>
+    input?: ComponentType<ArrayOfPrimitivesInputProps>
+    item?: ComponentType<PrimitiveItemProps>
+    preview?: ComponentType<PreviewProps>
+  }
+
+  /**
+   *
+   * @hidden
+   * @beta
+   */
+  export interface BooleanComponents {
+    diff?: ComponentType<any>
+    field?: ComponentType<BooleanFieldProps>
+    input?: ComponentType<BooleanInputProps>
+    item?: ComponentType<PrimitiveItemProps>
+    preview?: ComponentType<PreviewProps>
+  }
+
+  /**
+   *
+   * @hidden
+   * @beta
+   */
+  export interface DateComponents {
+    diff?: ComponentType<any>
+    field?: ComponentType<StringFieldProps>
+    input?: ComponentType<StringInputProps>
+    item?: ComponentType<PrimitiveItemProps>
+    preview?: ComponentType<PreviewProps>
+  }
+
+  /**
+   *
+   * @hidden
+   * @beta
+   */
+  export interface DatetimeComponents {
+    diff?: ComponentType<any>
+    field?: ComponentType<StringFieldProps>
+    input?: ComponentType<StringInputProps>
+    item?: ComponentType<PrimitiveItemProps>
+    preview?: ComponentType<PreviewProps>
+  }
+
+  /**
+   *
+   * @hidden
+   * @beta
+   */
+  export interface DocumentComponents {
+    diff?: ComponentType<any>
+    field?: ComponentType<ObjectFieldProps>
+    input?: ComponentType<ObjectInputProps>
+    item?: ComponentType<ObjectItemProps>
+    preview?: ComponentType<PreviewProps>
+  }
+
+  /**
+   *
+   * @hidden
+   * @beta
+   */
+  export interface FileComponents {
+    annotation?: ComponentType<BlockAnnotationProps>
+    block?: ComponentType<BlockProps>
+    diff?: ComponentType<any>
+    field?: ComponentType<ObjectFieldProps<FileValue>>
+    inlineBlock?: ComponentType<BlockProps>
+    input?: ComponentType<ObjectInputProps<FileValue>>
+    item?: ComponentType<ObjectItemProps<FileValue & ObjectItem>>
+    preview?: ComponentType<PreviewProps>
+  }
+
+  /**
+   *
+   * @hidden
+   * @beta
+   */
+  export interface GeopointComponents {
+    annotation?: ComponentType<BlockAnnotationProps>
+    block?: ComponentType<BlockProps>
+    diff?: ComponentType<any>
+    field?: ComponentType<ObjectFieldProps<GeopointValue>>
+    inlineBlock?: ComponentType<BlockProps>
+    input?: ComponentType<ObjectInputProps<GeopointValue>>
+    item?: ComponentType<ObjectItemProps<GeopointValue & ObjectItem>>
+    preview?: ComponentType<PreviewProps>
+  }
+
+  /**
+   *
+   * @hidden
+   * @beta
+   */
+  export interface ImageComponents {
+    annotation?: ComponentType<BlockAnnotationProps>
+    block?: ComponentType<BlockProps>
+    diff?: ComponentType<any>
+    field?: ComponentType<ObjectFieldProps<ImageValue>>
+    inlineBlock?: ComponentType<BlockProps>
+    input?: ComponentType<ObjectInputProps<ImageValue>>
+    item?: ComponentType<ObjectItemProps<ImageValue & ObjectItem>>
+    preview?: ComponentType<PreviewProps>
+  }
+
+  /**
+   *
+   * @hidden
+   * @beta
+   */
+  export interface NumberComponents {
+    diff?: ComponentType<any>
+    field?: ComponentType<NumberFieldProps>
+    input?: ComponentType<NumberInputProps>
+    item?: ComponentType<PrimitiveItemProps>
+    preview?: ComponentType<PreviewProps>
+  }
+
+  /**
+   *
+   * @hidden
+   * @beta
+   */
+  export interface ObjectComponents {
+    annotation?: ComponentType<BlockAnnotationProps>
+    block?: ComponentType<BlockProps>
+    diff?: ComponentType<any>
+    field?: ComponentType<ObjectFieldProps>
+    inlineBlock?: ComponentType<BlockProps>
+    input?: ComponentType<ObjectInputProps>
+    item?: ComponentType<ObjectItemProps>
+    preview?: ComponentType<PreviewProps>
+  }
+
+  /**
+   *
+   * @hidden
+   * @beta
+   */
+  export interface ReferenceComponents {
+    annotation?: ComponentType<BlockAnnotationProps>
+    block?: ComponentType<BlockProps>
+    diff?: ComponentType<any>
+    field?: ComponentType<ObjectFieldProps<ReferenceValue>>
+    inlineBlock?: ComponentType<BlockProps>
+    input?: ComponentType<ReferenceInputProps>
+    item?: ComponentType<ObjectItemProps<ReferenceValue & ObjectItem>>
+    preview?: ComponentType<PreviewProps>
+  }
+
+  /**
+   *
+   * @hidden
+   * @beta
+   */
+  export interface CrossDatasetReferenceComponents {
+    annotation?: ComponentType<BlockAnnotationProps>
+    block?: ComponentType<BlockProps>
+    diff?: ComponentType<any>
+    field?: ComponentType<ObjectFieldProps<CrossDatasetReferenceValue>>
+    inlineBlock?: ComponentType<BlockProps>
+    input?: ComponentType<CrossDatasetReferenceInputProps>
+    item?: ComponentType<ObjectItemProps<CrossDatasetReferenceValue & ObjectItem>>
+    preview?: ComponentType<PreviewProps>
+  }
+
+  /**
+   *
+   * @hidden
+   * @beta
+   */
+  export interface SlugComponents {
+    diff?: ComponentType<any>
+    field?: ComponentType<ObjectFieldProps<SlugValue>>
+    input?: ComponentType<ObjectInputProps<SlugValue>>
+    item?: ComponentType<ObjectItemProps<SlugValue & ObjectItem>>
+    preview?: ComponentType<PreviewProps>
+  }
+
+  /**
+   *
+   * @hidden
+   * @beta
+   */
+  export interface SpanComponents {
+    diff?: ComponentType<any>
+    field?: ComponentType<ObjectFieldProps>
+    input?: ComponentType<ObjectInputProps>
+    item?: ComponentType<ObjectItemProps>
+    preview?: ComponentType<PreviewProps>
+  }
+
+  /**
+   *
+   * @hidden
+   * @beta
+   */
+  export interface StringComponents {
+    diff?: ComponentType<any>
+    field?: ComponentType<StringFieldProps>
+    input?: ComponentType<StringInputProps>
+    item?: ComponentType<PrimitiveItemProps>
+    preview?: ComponentType<PreviewProps>
+  }
+
+  /**
+   *
+   * @hidden
+   * @beta
+   */
+  export interface TextComponents {
+    diff?: ComponentType<any>
+    field?: ComponentType<StringFieldProps>
+    input?: ComponentType<StringInputProps>
+    item?: ComponentType<PrimitiveItemProps>
+    preview?: ComponentType<PreviewProps>
+  }
+
+  /**
+   *
+   * @hidden
+   * @beta
+   */
+  export interface UrlComponents {
+    diff?: ComponentType<any>
+    field?: ComponentType<StringFieldProps>
+    input?: ComponentType<StringInputProps>
+    item?: ComponentType<PrimitiveItemProps>
+    preview?: ComponentType<PreviewProps>
+  }
+
+  /**
+   *
+   * @hidden
+   * @beta
+   */
+  export interface EmailComponents {
+    diff?: ComponentType<any>
+    field?: ComponentType<StringFieldProps>
+    input?: ComponentType<StringInputProps>
+    item?: ComponentType<PrimitiveItemProps>
+    preview?: ComponentType<PreviewProps>
+  }
+
   export interface ArrayDefinition {
     /**
      *
