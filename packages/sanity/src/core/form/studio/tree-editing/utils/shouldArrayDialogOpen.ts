@@ -1,24 +1,24 @@
 import {toString} from '@sanity/util/paths'
 import {isArrayOfObjectsSchemaType, type ObjectSchemaType, type Path} from 'sanity'
 
+import {getRootPath} from './getRootPath'
 import {getSchemaField} from './getSchemaField'
 
 /**
  * A utility function to check if the global array editing dialog should be open.
  * @param schemaType - The schema object that we are opening
  * @param focusPath - The path that we are focusing on
- * @returns Returns true if the dialog shoulb be open
+ * @returns Returns true if the dialog should be open
  * @internal
  */
 export function shouldArrayDialogOpen(schemaType: ObjectSchemaType, focusPath: Path): boolean {
   // If the focusPath is empty, we can't determine if the array dialog is open
   if (focusPath.length === 0) return false
 
-  // Get the first segment of the focusPath
-  const [startSegment] = focusPath
+  const rootPath = getRootPath(focusPath)
 
-  // Get the field for the first segment of the focusPath
-  const field = getSchemaField(schemaType, toString([startSegment]))
+  // Get the field for the first segments
+  const field = getSchemaField(schemaType, toString(rootPath))
 
   // Check if the field is an array of objects
   if (isArrayOfObjectsSchemaType(field?.type)) {
