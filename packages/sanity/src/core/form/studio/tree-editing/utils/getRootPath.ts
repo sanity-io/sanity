@@ -11,7 +11,9 @@ import {type Path} from 'sanity'
  * ```
  */
 export function getRootPath(path: Path): Path {
-  const keyedSegmentIndex = path.findIndex((seg) => seg.hasOwnProperty('_key'))
+  const keyedSegmentIndex = path.findIndex((seg) => seg?.hasOwnProperty('_key'))
+
+  if (!keyedSegmentIndex) return path
 
   return path.slice(0, keyedSegmentIndex)
 }
