@@ -15,6 +15,7 @@ import {getSessionId} from './sessionId'
 import * as storage from './storage'
 import {type AuthState, type AuthStore} from './types'
 import {isCookielessCompatibleLoginMethod} from './utils/asserters'
+import {type Grant} from '../grants/types'
 
 /** @internal */
 export interface AuthStoreOptions extends AuthConfig {
@@ -61,6 +62,31 @@ const saveToken = ({token, projectId}: {token: string; projectId: string}): void
     )
   } catch (err) {
     console.error(err)
+  }
+}
+
+const hasDatasetGrants = async (projectId: string, dataset: string, client: SanityClient) => {
+  try {
+    const userGrants: Grant[] = await client.request({
+      uri: `/projects/${projectId}/datasets/${dataset}/acl`,
+      tag: 'acl.get',
+      withCredentials: true,
+    })
+
+    return Array.isArray(userGrants) && userGrants.length > 0
+  } catch (err) {
+    if (err.statusCode === 401) {
+      return false
+    }
+
+    // Some non-CORS error - is it one of those undefinable network errors?
+    if (err.isNetworkError && !err.message && err.request && err.request.url) {
+      const host = new URL(err.request.url).host
+      throw new Error(`Unknown network error attempting to reach ${host}`)
+    }
+
+    // Some other error, just throw it
+    throw err
   }
 }
 
@@ -174,7 +200,7 @@ export function _createAuthStore({
         return {
           currentUser,
           client,
-          authenticated: !!currentUser,
+          authenticated: !!currentUser && (await hasDatasetGrants(projectId, dataset, client)),
         }
       }),
     ),
