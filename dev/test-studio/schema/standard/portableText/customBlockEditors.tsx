@@ -28,6 +28,15 @@ export const ptCustomBlockEditors = defineType({
       of: [{type: 'block'}],
     },
     {
+      name: 'initialActive',
+      title: 'Activated on mount (no click required)',
+      type: 'array',
+      components: {
+        input: (props: PortableTextInputProps) => <BlockEditor {...props} initialActive />,
+      },
+      of: [{type: 'block'}],
+    },
+    {
       name: 'readOnly',
       title: 'Read only',
       type: 'array',
