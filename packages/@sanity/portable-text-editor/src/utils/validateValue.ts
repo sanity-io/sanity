@@ -8,6 +8,7 @@ import {flatten, isPlainObject, uniq} from 'lodash'
 
 import {insert, set, unset} from '../patch/PatchEvent'
 import {type InvalidValueResolution, type PortableTextMemberSchemaTypes} from '../types/editor'
+import {EMPTY_MARKDEFS} from './values'
 
 export interface Validation {
   valid: boolean
@@ -171,7 +172,8 @@ export function validateValue(
         // Test that markDefs exists and is valid
         if (!blk.markDefs || !Array.isArray(blk.markDefs)) {
           resolution = {
-            patches: [set({...textBlock, markDefs: []}, [{_key: textBlock._key}])],
+            autoResolve: true,
+            patches: [set({...textBlock, markDefs: EMPTY_MARKDEFS}, [{_key: textBlock._key}])],
             description: `Block has a missing or invalid required property 'markDefs'.`,
             action: 'Add empty markDefs array',
             item: textBlock,
@@ -185,23 +187,6 @@ export function validateValue(
           }
           return true
         }
-        // NOTE: this is commented out as we want to allow the saved data to have optional .marks for spans (as specified by the schema)
-        // const spansWithUndefinedMarks = blk.children
-        //   .filter(cld => cld._type === types.span.name)
-        //   .filter(cld => typeof cld.marks === 'undefined')
-
-        // if (spansWithUndefinedMarks.length > 0) {
-        //   const first = spansWithUndefinedMarks[0]
-        //   resolution = {
-        //     patches: [
-        //       set({...first, marks: []}, [{_key: blk._key}, 'children', {_key: first._key}])
-        //     ],
-        //     description: `Span has no .marks array`,
-        //     action: 'Add empty marks array',
-        //     item: first
-        //   }
-        //   return true
-        // }
         const allUsedMarks = uniq(
           flatten(
             textBlock.children
@@ -234,8 +219,10 @@ export function validateValue(
         const annotationMarks = allUsedMarks.filter(
           (mark) => !types.decorators.map((dec) => dec.value).includes(mark),
         )
-        const orphanedMarks = annotationMarks.filter((mark) =>
-          textBlock.markDefs ? !textBlock.markDefs.find((def) => def._key === mark) : false,
+        const orphanedMarks = annotationMarks.filter(
+          (mark) =>
+            textBlock.markDefs === undefined ||
+            !textBlock.markDefs.find((def) => def._key === mark),
         )
         if (orphanedMarks.length > 0) {
           const spanChildren = textBlock.children.filter(
@@ -275,6 +262,7 @@ export function validateValue(
             text: '',
           }
           resolution = {
+            autoResolve: true,
             patches: [insert([newSpan], 'after', [{_key: blk._key}, 'children', 0])],
             description: `Children for text block with _key '${blk._key}' is empty.`,
             action: 'Insert an empty text',
@@ -301,6 +289,24 @@ export function validateValue(
                 i18n: {
                   description: 'inputs.portable-text.invalid-value.non-object-child.description',
                   action: 'inputs.portable-text.invalid-value.non-object-child.action',
+                  values: {key: blk._key, index: cIndex},
+                },
+              }
+              return true
+            }
+
+            if (!child._key || typeof child._key !== 'string') {
+              const newChild = {...child, _key: keyGenerator()}
+              resolution = {
+                autoResolve: true,
+                patches: [set(newChild, [{_key: blk._key}, 'children', cIndex])],
+                description: `Child at index ${cIndex} is missing required _key in block with _key ${blk._key}.`,
+                action: 'Set a new random _key on the object',
+                item: blk,
+
+                i18n: {
+                  description: 'inputs.portable-text.invalid-value.missing-child-key.description',
+                  action: 'inputs.portable-text.invalid-value.missing-child-key.action',
                   values: {key: blk._key, index: cIndex},
                 },
               }
