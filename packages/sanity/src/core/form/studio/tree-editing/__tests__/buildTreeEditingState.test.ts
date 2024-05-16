@@ -18,6 +18,32 @@ const schema = Schema.compile({
           title: 'Title',
         },
         {
+          type: 'object',
+          name: 'objectWithArray',
+          title: 'Object with array',
+          fields: [
+            {
+              type: 'array',
+              name: 'myArray',
+              title: 'Array',
+              of: [
+                {
+                  type: 'object',
+                  name: 'myObject',
+                  title: 'Object',
+                  fields: [
+                    {
+                      type: 'string',
+                      name: 'myString',
+                      title: 'String',
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+        {
           type: 'array',
           name: 'array1',
           title: 'Array 1',
@@ -67,7 +93,7 @@ const schema = Schema.compile({
 })
 
 describe('tree-editing: buildTreeEditingState', () => {
-  test('should build tree editing state for a document with an array of objects', () => {
+  test('should build tree editing state for an array of objects', () => {
     const documentValue: SanityDocumentLike = {
       _id: 'testDocument',
       _type: 'testDocument',
@@ -236,6 +262,65 @@ describe('tree-editing: buildTreeEditingState', () => {
     const result2 = buildTreeEditingState({
       documentValue,
       focusPath: ['array1', {_key: 'key1'}, 'array1Object1String'],
+      schemaType,
+    })
+
+    expect(result1).toEqual(expectedResult)
+    expect(result2).toEqual(expectedResult)
+  })
+
+  test('should build tree editing state for an object with an array', () => {
+    const documentValue: SanityDocumentLike = {
+      _id: 'testDocument',
+      _type: 'testDocument',
+      title: 'Test document',
+      objectWithArray: {
+        myArray: [
+          {
+            _key: 'key1',
+            _type: 'myObject',
+            myString: 'My string 1',
+          },
+        ],
+      },
+    }
+
+    const schemaType = schema.get('testDocument')
+
+    const expectedResult: TreeEditingState = {
+      breadcrumbs: [
+        {
+          path: ['objectWithArray', 'myArray', {_key: 'key1'}],
+          title: 'My string 1',
+          children: [
+            {
+              path: ['objectWithArray', 'myArray', {_key: 'key1'}],
+              title: 'My string 1',
+              children: [],
+            },
+          ],
+        },
+      ],
+      menuItems: [
+        {
+          title: 'My string 1',
+          path: ['objectWithArray', 'myArray', {_key: 'key1'}],
+          children: [],
+        },
+      ],
+      relativePath: ['objectWithArray', 'myArray', {_key: 'key1'}],
+      rootTitle: 'Array',
+    }
+
+    const result1 = buildTreeEditingState({
+      documentValue,
+      focusPath: ['objectWithArray', 'myArray', {_key: 'key1'}],
+      schemaType,
+    })
+
+    const result2 = buildTreeEditingState({
+      documentValue,
+      focusPath: ['objectWithArray', 'myArray', {_key: 'key1'}, 'myString'],
       schemaType,
     })
 

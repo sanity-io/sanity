@@ -97,6 +97,32 @@ export const objectsDebug = defineType({
       name: 'title',
       type: 'string',
     },
+    {
+      type: 'object',
+      name: 'objectWithArray',
+      title: 'Object with array',
+      fields: [
+        {
+          type: 'array',
+          name: 'myArray',
+          title: 'Array',
+          of: [
+            {
+              type: 'object',
+              name: 'myObject',
+              title: 'Object',
+              fields: [
+                {
+                  type: 'string',
+                  name: 'myString',
+                  title: 'String',
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
     animals,
   ],
 })
