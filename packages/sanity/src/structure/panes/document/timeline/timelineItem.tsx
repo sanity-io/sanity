@@ -70,6 +70,7 @@ export function TimelineItem({
     <Root
       $selected={isSelected}
       $disabled={!isSelectable}
+      data-testid="timeline-item-button"
       data-chunk-id={chunk.id}
       data-first={isFirst ? true : undefined}
       data-last={isLast ? true : undefined}

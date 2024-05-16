@@ -158,6 +158,7 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
 
   return (
     <Root
+      data-testid="timeline-menu"
       constrainSize
       content={open && content}
       data-ui="versionMenu"
@@ -167,6 +168,7 @@ export function TimelineMenu({chunk, mode, placement}: TimelineMenuProps) {
       ref={setPopover}
     >
       <Button
+        data-testid={open ? 'timeline-menu-close-button' : 'timeline-menu-open-button'}
         disabled={!ready}
         mode="bleed"
         iconRight={ChevronDownIcon}
