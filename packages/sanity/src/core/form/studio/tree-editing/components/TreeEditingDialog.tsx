@@ -5,7 +5,7 @@ import {type Theme} from '@sanity/ui/theme'
 import {toString} from '@sanity/util/paths'
 import {AnimatePresence, motion, type Transition, type Variants} from 'framer-motion'
 import {debounce, type DebounceSettings, isEqual} from 'lodash'
-import {useCallback, useEffect, useMemo, useState} from 'react'
+import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {
   FormInput,
   type InputProps,
@@ -72,6 +72,8 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | 
   const {value} = rootInputProps
 
   const [treeState, setTreeState] = useState<TreeEditingState>(EMPTY_TREE_STATE)
+  const focusPathRef = useRef<Path | null>(null)
+  const valueRef = useRef<Record<string, unknown> | undefined>(undefined)
 
   const handleBuildTreeEditingState = useCallback(
     (opts: BuildTreeEditingStateProps) => {
@@ -104,6 +106,17 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | 
 
     /** it should only proceed if the focus path presented makes sense for the editing dialog */
     if (!shouldArrayDialogOpen(schemaType, focusPath)) return
+    const focusPathChanged = !isEqual(focusPath, focusPathRef.current)
+    const valueChanged = !isEqual(value, valueRef.current)
+
+    // Only proceed with building the tree editing state if the
+    // focusPath or the value has changed.
+    if (!focusPathChanged && !valueChanged) return
+
+    // Store the focusPath and value to be able to compare them
+    // with the next focusPath and value.
+    focusPathRef.current = focusPath
+    valueRef.current = value
 
     debouncedBuildTreeEditingState({
       schemaType,
