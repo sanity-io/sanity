@@ -8,6 +8,10 @@ import {BROADCAST_CHANNEL_NAME} from './constants'
 import {type CopyActionResult} from './types'
 import {getLocalStorageItem, getLocalStorageKey} from './utils'
 
+/**
+ * @internal
+ * @hidden
+ */
 export const CopyPasteProvider: React.FC<{
   children: ReactNode
 }> = ({children}) => {
