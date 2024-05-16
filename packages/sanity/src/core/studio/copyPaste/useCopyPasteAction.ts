@@ -2,7 +2,7 @@ import {normalizeBlock} from '@sanity/block-tools'
 import {useToast} from '@sanity/ui'
 import {pickBy} from 'lodash'
 import {useCallback, useMemo} from 'react'
-import {PatchEvent, set, useGetFormValue, useProjectId, useSchema} from 'sanity'
+import {getPublishedId, PatchEvent, set, useGetFormValue, useProjectId, useSchema} from 'sanity'
 
 import {useCopyPaste} from './CopyPasteProvider'
 import {type CopyActionResult, type UseCopyPasteActionProps} from './types'
@@ -26,7 +26,7 @@ export const useCopyPasteAction = ({
     isValidTargetType: _isValidTargetType,
   } = useCopyPaste()
   const toast = useToast()
-  const getter = useGetFormValue()
+  const getFormValue = useGetFormValue()
   const schema = useSchema()
   const schemaType = useMemo(() => {
     if (typeof maybeSchemaType === 'string') {
@@ -41,13 +41,13 @@ export const useCopyPasteAction = ({
   }, [_isValidTargetType, schemaType])
 
   const onCopy = useCallback(() => {
-    const docValue = getter(path) // Assuming useGetFormValue hook exists
+    const docValue = getFormValue(path)
     const isDocument = schemaType?.type?.name === 'document'
     const isArray = schemaType?.type?.name === 'array'
     const isObject = schemaType?.type?.name === 'document'
 
     const payloadValue: CopyActionResult = {
-      documentId,
+      documentId: documentId ? getPublishedId(documentId) : undefined,
       documentType,
       schemaTypeName: schemaType.name,
       path,
@@ -73,7 +73,7 @@ export const useCopyPasteAction = ({
     setCopyResult,
     sendMessage,
     toast,
-    getter,
+    getFormValue,
     projectId,
   ])
 
