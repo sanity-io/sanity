@@ -11,6 +11,7 @@ import {
 } from 'sanity'
 
 import {type TreeEditingBreadcrumb, type TreeEditingMenuItem} from '../types'
+import {getRootPath} from './getRootPath'
 import {getSchemaField} from './getSchemaField'
 
 const EMPTY_ARRAY: [] = []
@@ -65,9 +66,10 @@ function shouldBeInBreadcrumb(itemPath: Path, focusPath: Path): boolean {
 export function buildTreeEditingState(props: BuildTreeEditingStateProps): TreeEditingState {
   const {focusPath} = props
   const menuItems: TreeEditingMenuItem[] = []
-  const rootPath = [focusPath[0]]
-  const rootField = getSchemaField(props.schemaType, toString(rootPath))?.type as ObjectSchemaType
-  const rootTitle = getSchemaTypeTitle(rootField)
+
+  const rootPath = getRootPath(focusPath)
+  const rootField = getSchemaField(props.schemaType, toString(rootPath)) as ObjectSchemaType
+  const rootTitle = getSchemaTypeTitle(rootField?.type as ObjectSchemaType)
 
   const breadcrumbs: TreeEditingBreadcrumb[] = []
   let relativePath: Path = []
@@ -221,7 +223,7 @@ export function buildTreeEditingState(props: BuildTreeEditingStateProps): TreeEd
     const value = getValueAtPath(documentValue, path) as Array<Record<string, unknown>>
 
     const arrayValue = Array.isArray(value) ? value : EMPTY_ARRAY
-    const arraySchemaType = schemaType as ArraySchemaType
+    const arraySchemaType = schemaType?.type as ArraySchemaType
 
     arrayValue.forEach((item) => {
       const itemPath = [...rootPath, {_key: item._key}] as Path
