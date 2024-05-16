@@ -12,7 +12,10 @@ import {DebugFilterQuery} from './debug/_DebugFilterQuery'
 import {DocumentTypesButton} from './documentTypes/DocumentTypesButton'
 import {FilterButton} from './filter/FilterButton'
 
-export function Filters() {
+/**
+ * @internal
+ */
+export function Filters({showTypeFilter = true}: {showTypeFilter?: boolean}) {
   const {
     dispatch,
     state: {
@@ -27,11 +30,11 @@ export function Filters() {
   const isMounted = useRef(false)
 
   const handleClear = useCallback(() => {
+    if (showTypeFilter) dispatch({type: 'TERMS_TYPES_CLEAR'})
     dispatch({type: 'TERMS_FILTERS_CLEAR'})
-    dispatch({type: 'TERMS_TYPES_CLEAR'})
-  }, [dispatch])
+  }, [dispatch, showTypeFilter])
 
-  const clearFiltersButtonVisible = filters.length > 0 || types.length > 0
+  const clearFiltersButtonVisible = filters.length > 0 || (showTypeFilter && types.length > 0)
 
   useEffect(() => {
     isMounted.current = true
@@ -53,7 +56,7 @@ export function Filters() {
     <>
       <Flex align="flex-start" gap={3} justify="space-between" padding={2}>
         <Flex flex={1} gap={2} wrap="wrap">
-          <DocumentTypesButton />
+          {showTypeFilter && <DocumentTypesButton />}
           {filters?.map((filter) => {
             const key = getFilterKey(filter)
             return (
