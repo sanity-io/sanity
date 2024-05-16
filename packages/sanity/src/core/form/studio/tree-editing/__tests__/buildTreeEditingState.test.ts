@@ -1,6 +1,6 @@
 import {describe, expect, test} from '@jest/globals'
 import {Schema} from '@sanity/schema'
-import {type Path, type SanityDocumentLike} from 'sanity'
+import {type SanityDocumentLike} from 'sanity'
 
 import {buildTreeEditingState, type TreeEditingState} from '../utils'
 
@@ -126,15 +126,7 @@ describe('tree-editing: buildTreeEditingState', () => {
       ],
     }
 
-    const focusPath: Path = ['array1', {_key: 'key1'}]
-
     const schemaType = schema.get('testDocument')
-
-    const result = buildTreeEditingState({
-      documentValue,
-      focusPath,
-      schemaType,
-    })
 
     const expectedResult: TreeEditingState = {
       breadcrumbs: [
@@ -235,6 +227,19 @@ describe('tree-editing: buildTreeEditingState', () => {
       rootTitle: 'Array 1',
     }
 
-    expect(result).toStrictEqual(expectedResult)
+    const result1 = buildTreeEditingState({
+      documentValue,
+      focusPath: ['array1', {_key: 'key1'}],
+      schemaType,
+    })
+
+    const result2 = buildTreeEditingState({
+      documentValue,
+      focusPath: ['array1', {_key: 'key1'}, 'array1Object1String'],
+      schemaType,
+    })
+
+    expect(result1).toEqual(expectedResult)
+    expect(result2).toEqual(expectedResult)
   })
 })
