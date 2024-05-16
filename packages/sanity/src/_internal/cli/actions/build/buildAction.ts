@@ -15,6 +15,7 @@ import {checkRequiredDependencies} from '../../util/checkRequiredDependencies'
 import {getTimer} from '../../util/timing'
 import {BuildTrace} from './build.telemetry'
 import {buildVendorDependencies} from '../../server/buildVendorDependencies'
+import {compareStudioDependencyVersions} from '../../util/compareStudioDependencyVersions'
 
 const rimraf = promisify(rimrafCallback)
 
@@ -60,6 +61,29 @@ export default async function buildSanityStudio(
 
   if (autoUpdatesEnabled) {
     output.print(`${info} Building with auto-updates enabled`)
+
+    // Check the versions
+    try {
+      const result = await compareStudioDependencyVersions(workDir)
+
+      if (result?.error) {
+        const {pkg, installed, remote} = result.error
+        const shouldContinue = await prompt.single({
+          type: 'confirm',
+          message: chalk.yellow(
+            `The version of ${chalk.underline(pkg)} installed (${chalk.underline(installed)}) does not match the version on the remote (${chalk.underline(remote)}).\n` +
+              `Do you want to continue anyway?`,
+          ),
+          default: false,
+        })
+
+        if (!shouldContinue) {
+          process.exit(0)
+        }
+      }
+    } catch (err) {
+      throw err
+    }
   }
 
   const envVarKeys = getSanityEnvVars()
