@@ -5,8 +5,8 @@ import {type PatchEvent, type Path, type SchemaType} from 'sanity'
  * @hidden
  */
 export interface UseCopyPasteActionProps {
-  documentId: string
-  documentType: string
+  documentId?: string
+  documentType?: string
   path: Path
   schemaType: SchemaType | string
 }
@@ -16,8 +16,8 @@ export interface UseCopyPasteActionProps {
  * @hidden
  */
 export interface CopyActionResult {
-  documentId: string
-  documentType: string
+  documentId?: string
+  documentType?: string
   schemaTypeName: string
   path: any[]
   docValue: any // Adjust the type based on your actual data structure
