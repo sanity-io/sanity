@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 import {Flex, Hotkeys, LayerProvider, Stack, Text} from '@sanity/ui'
 import {memo, useMemo, useState} from 'react'
-import {type DocumentActionDescription, isArrayDialogOpen, useTimelineSelector} from 'sanity'
+import {type DocumentActionDescription, shouldArrayDialogOpen, useTimelineSelector} from 'sanity'
 
 import {Button, Tooltip} from '../../../../ui-components'
 import {RenderActionCollectionState} from '../../../components'
@@ -22,7 +22,7 @@ function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsInnerProps
   const [firstActionState, ...menuActionStates] = states
   const [buttonElement, setButtonElement] = useState<HTMLButtonElement | null>(null)
   const isDialogOpen = useMemo(
-    () => isArrayDialogOpen(schemaType, focusPath),
+    () => shouldArrayDialogOpen(schemaType, focusPath),
     [focusPath, schemaType],
   )
 

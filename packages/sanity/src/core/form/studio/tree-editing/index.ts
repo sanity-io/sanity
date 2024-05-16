@@ -1,2 +1,2 @@
 export * from './components'
-export {isArrayDialogOpen} from './utils'
+export {shouldArrayDialogOpen} from './utils'

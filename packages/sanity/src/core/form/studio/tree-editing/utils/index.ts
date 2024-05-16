@@ -1,3 +1,3 @@
 export * from './buildTreeEditingState'
 export * from './getSchemaField'
-export * from './isArrayDialogOpen'
+export * from './shouldArrayDialogOpen'
