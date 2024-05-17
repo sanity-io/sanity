@@ -3,13 +3,8 @@ import {Checkbox} from '@sanity/ui'
 import {type CellContext} from '@tanstack/react-table'
 import {type MouseEvent, useCallback} from 'react'
 
-interface DocumentSheetListSelectProps extends CellContext<SanityDocument, unknown> {
-  hasAnchorSelected: number | null
-  setHasAnchorSelected: (value: number | null) => void
-}
-
-export function DocumentSheetListSelect(props: DocumentSheetListSelectProps) {
-  const {hasAnchorSelected, setHasAnchorSelected} = props
+export function DocumentSheetListSelect(props: CellContext<SanityDocument, unknown>) {
+  const {hasAnchorSelected, setHasAnchorSelected} = props.table.options.meta || {}
 
   const handleOnClick = useCallback(
     (e: MouseEvent<HTMLInputElement>) => {

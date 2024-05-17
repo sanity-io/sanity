@@ -8,7 +8,7 @@ import {
   type Row,
   useReactTable,
 } from '@tanstack/react-table'
-import {useCallback, useEffect} from 'react'
+import {useCallback, useEffect, useState} from 'react'
 import {SearchProvider, useSchema, useSearchState} from 'sanity'
 import {styled} from 'styled-components'
 
@@ -72,6 +72,7 @@ function DocumentSheetListPaneInner({
   const {data} = useDocumentSheetList({
     typeName: schemaType.name,
   })
+  const [hasAnchorSelected, setHasAnchorSelected] = useState<number | null>(null)
 
   const totalRows = state.result.hits.length
   const table = useReactTable({
@@ -90,6 +91,8 @@ function DocumentSheetListPaneInner({
         // eslint-disable-next-line no-console
         console.log('updateData')
       },
+      hasAnchorSelected,
+      setHasAnchorSelected,
     },
   })
 

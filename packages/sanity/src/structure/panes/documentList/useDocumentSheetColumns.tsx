@@ -1,6 +1,6 @@
 import {Box, Checkbox, Flex, Text} from '@sanity/ui'
 import {type AccessorKeyColumnDef, createColumnHelper} from '@tanstack/react-table'
-import {useMemo, useState} from 'react'
+import {useMemo} from 'react'
 import {useMemoObservable} from 'react-rx'
 import {
   type DocumentPreviewStore,
@@ -83,7 +83,6 @@ const getColsFromSchemaType = (schemaType: SchemaType, parentalField?: string) =
 export function useDocumentSheetColumns(schemaType?: SchemaType) {
   const documentPreviewStore = useDocumentPreviewStore()
   // TODO: move hasAnchorSelected to the table context once added
-  const [hasAnchorSelected, setHasAnchorSelected] = useState<number | null>(null)
 
   const columns: AccessorKeyColumnDef<SanityDocument, unknown>[] = useMemo(() => {
     if (!schemaType) {
@@ -103,13 +102,7 @@ export function useDocumentSheetColumns(schemaType?: SchemaType) {
             {info.table.getSelectedRowModel().rows.length} selected
           </Box>
         ),
-        cell: (info) => (
-          <DocumentSheetListSelect
-            {...info}
-            hasAnchorSelected={hasAnchorSelected}
-            setHasAnchorSelected={setHasAnchorSelected}
-          />
-        ),
+        cell: (info) => <DocumentSheetListSelect {...info} />,
       }),
       columnHelper.accessor('Preview', {
         enableHiding: false,
@@ -125,7 +118,7 @@ export function useDocumentSheetColumns(schemaType?: SchemaType) {
       }),
       ...getColsFromSchemaType(schemaType),
     ]
-  }, [documentPreviewStore, hasAnchorSelected, schemaType])
+  }, [documentPreviewStore, schemaType])
 
   return columns
 }
