@@ -1,4 +1,5 @@
 /.vscode
+/.github/CODEOWNERS
 
 /dev/*/.next
 /dev/*/.sanity
