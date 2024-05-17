@@ -66,19 +66,19 @@ export default async function buildSanityStudio(
     try {
       const result = await compareStudioDependencyVersions(workDir)
 
-      if (result?.error) {
-        const {pkg, installed, remote} = result.error
+      if (result?.length) {
         const shouldContinue = await prompt.single({
           type: 'confirm',
           message: chalk.yellow(
-            `The version of ${chalk.underline(pkg)} installed (${chalk.underline(installed)}) does not match the version on the remote (${chalk.underline(remote)}).\n` +
-              `Do you want to continue anyway?`,
+            `The following versions are different from the versions available with auto updates enabled. \n` +
+              `This may lead to issues in the studio. \n\n` +
+              `${result.map((mod) => ` - ${mod.pkg} (installed: ${mod.installed}, want: ${mod.remote})`).join('\n')}`,
           ),
           default: false,
         })
 
         if (!shouldContinue) {
-          process.exit(0)
+          return process.exit(0)
         }
       }
     } catch (err) {
