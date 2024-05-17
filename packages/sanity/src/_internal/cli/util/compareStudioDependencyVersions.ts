@@ -47,18 +47,19 @@ async function getRemoteResolvedVersion(url: string) {
   }
 }
 
-export async function compareStudioDependencyVersions(workDir: string): Promise<
-  | {
-      error?: {
-        pkg: string
-        installed: string
-        remote: string
-      }
-    }
-  | undefined
-> {
+interface CompareStudioDependencyVersions {
+  pkg: string
+  installed: string
+  remote: string
+}
+
+export async function compareStudioDependencyVersions(
+  workDir: string,
+): Promise<Array<CompareStudioDependencyVersions>> {
   const manifest = readPackageJson(path.join(workDir, 'package.json'))
   const dependencies = {...manifest.dependencies, ...manifest.devDependencies}
+
+  const failedDependencies: Array<CompareStudioDependencyVersions> = []
 
   for (const [pkg, value] of Object.entries(AUTO_UPDATE_PACKAGES)) {
     const resolvedVersion = await getRemoteResolvedVersion(value.url)
@@ -79,15 +80,9 @@ export async function compareStudioDependencyVersions(workDir: string): Promise<
     }
 
     if (!semver.eq(resolvedVersion, installed.version)) {
-      return {
-        error: {
-          pkg,
-          installed: installed.version,
-          remote: resolvedVersion,
-        },
-      }
+      failedDependencies.push({pkg, installed: installed.version, remote: resolvedVersion})
     }
   }
 
-  return undefined
+  return failedDependencies
 }
