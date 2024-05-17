@@ -183,7 +183,7 @@ const cases = {
       },
     ],
   },
-  trueOrFalseField: {
+  'trueOrFalseField': {
     type: 'attribute',
     name: 'trueOrFalseField',
   },

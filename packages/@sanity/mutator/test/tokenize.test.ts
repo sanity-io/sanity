@@ -128,7 +128,7 @@ const cases = {
       type: 'paren',
     },
   ],
-  trueish: [
+  'trueish': [
     {
       type: 'identifier',
       name: 'trueish',
