@@ -1,7 +1,7 @@
 import {type ProgressEvent, type SanityAssetDocument, type SanityClient} from '@sanity/client'
 import {type FileAsset, type ImageAsset} from '@sanity/types'
-import {Observable, of as observableOf} from 'rxjs'
-import {catchError, map, mergeMap} from 'rxjs/operators'
+import {Observable, of as observableOf, of} from 'rxjs'
+import {catchError, map, mergeMap, retry, switchMap} from 'rxjs/operators'
 
 import {type DocumentPreviewStore} from '../../../../preview'
 import {type UploadOptions} from '../../uploads/types'
@@ -80,17 +80,36 @@ export const uploadFileAsset = (client: SanityClient, file: File | Blob, options
 
 // note: there's currently 100% overlap between the ImageAsset document and the FileAsset documents as per interface required by the image and file input
 function observeAssetDoc(documentPreviewStore: DocumentPreviewStore, id: string) {
-  return documentPreviewStore.observePaths({_type: 'reference', _ref: id}, [
-    'originalFilename',
-    'url',
-    'metadata',
-    'label',
-    'title',
-    'description',
-    'creditLine',
-    'source',
-    'size',
-  ])
+  return documentPreviewStore
+    .observePaths({_type: 'reference', _ref: id}, [
+      'originalFilename',
+      'url',
+      'metadata',
+      'label',
+      'title',
+      'description',
+      'creditLine',
+      'source',
+      'size',
+    ])
+    .pipe(
+      switchMap((result) => {
+        // If the result is null, throw an error to trigger retry
+        if (result === null) {
+          throw new Error(`No asset found in documentPreviewStore with id: ${id}`)
+        }
+        // If the result is not null, return the result
+        return of(result)
+      }),
+      retry({
+        count: 5,
+        delay: 1000,
+      }),
+      catchError((err) => {
+        console.error('Final error after retries, asset not found in documentPreviewStore:', err)
+        return of(null) // Return null if the asset is not found
+      }),
+    )
 }
 
 export function observeImageAsset(documentPreviewStore: DocumentPreviewStore, id: string) {
