@@ -65,19 +65,10 @@ export const SheetListCell = (
             resetFocusSelection()
             setFocusedCellId(column.id, row.index + (key === 'ArrowDown' ? 1 : -1))
           }
-        } else {
-          resetSelection()
         }
       }
     },
-    [
-      column.id,
-      onSelectedCellChange,
-      resetFocusSelection,
-      resetSelection,
-      row.index,
-      setFocusedCellId,
-    ],
+    [column.id, onSelectedCellChange, resetFocusSelection, row.index, setFocusedCellId],
   )
 
   useEffect(() => {
