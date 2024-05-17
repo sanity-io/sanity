@@ -13,9 +13,14 @@ export const publish: OperationImpl<[], DisabledReason> = {
     }
     return false
   },
-  execute: ({client: globalClient, idPair}) => {
+  execute: ({client: globalClient, idPair, snapshots}) => {
     const vXClient = globalClient.withConfig({apiVersion: 'X'})
     const {dataset} = globalClient.config()
+
+    // The editor must be able to see the draft they are choosing to publish.
+    if (!snapshots.draft) {
+      throw new Error('cannot execute "publish" when draft is missing')
+    }
 
     return vXClient.observable.request({
       url: `/data/actions/${dataset}`,

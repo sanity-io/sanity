@@ -177,5 +177,31 @@ describe('publish', () => {
 
       expect(client.$log).toMatchSnapshot()
     })
+
+    it('throws an error if the client has no draft snaphot', () => {
+      const client = createMockSanityClient()
+
+      // eslint-disable-next-line max-nested-callbacks
+      expect(() => {
+        publish.execute({
+          client,
+          idPair: {
+            draftId: 'drafts.my-id',
+            publishedId: 'my-id',
+          },
+          snapshots: {
+            published: {
+              _createdAt: '2021-09-14T22:48:02.303Z',
+              _rev: 'exampleRev',
+              _id: 'drafts.my-id',
+              _type: 'example',
+              _updatedAt: '2021-09-14T22:48:02.303Z',
+            },
+          },
+        } as unknown as OperationArgs)
+      }).toThrow('cannot execute "publish" when draft is missing')
+
+      expect(client.$log).toMatchSnapshot()
+    })
   })
 })

@@ -92,3 +92,17 @@ Object {
   "transaction": Array [],
 }
 `;
+
+exports[`publish execute throws an error if the client has no draft snaphot 1`] = `
+Object {
+  "listen": Array [],
+  "observable": Object {
+    "fetch": Array [],
+    "getDocuments": Array [],
+    "listen": Array [],
+    "request": Array [],
+  },
+  "request": Array [],
+  "transaction": Array [],
+}
+`;
