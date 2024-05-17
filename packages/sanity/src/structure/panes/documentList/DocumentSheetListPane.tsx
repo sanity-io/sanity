@@ -139,7 +139,7 @@ function DocumentSheetListPaneInner({
         </Text>
       </Flex>
       <TableContainer>
-        <ColumnsControl table={table} initialState={initialColumnsVisibility} />
+        <ColumnsControl table={table} />
         <Table>
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (

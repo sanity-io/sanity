@@ -29,7 +29,7 @@ const TableHarness = ({columns}) => {
     },
   })
 
-  return <ColumnsControl table={table} initialState={initialVisibilityState} />
+  return <ColumnsControl table={table} />
 }
 
 describe('ColumnsControl', () => {

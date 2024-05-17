@@ -1,7 +1,7 @@
 /* eslint-disable @sanity/i18n/no-attribute-string-literals */
 /* eslint-disable i18next/no-literal-string */
 import {Box, Button, Card, Checkbox, Flex, Menu, MenuButton, Stack, Text} from '@sanity/ui'
-import {type Column, type Table, type VisibilityState} from '@tanstack/react-table'
+import {type Column, type Table} from '@tanstack/react-table'
 import {useCallback} from 'react'
 import {type SanityDocument} from 'sanity'
 
@@ -9,16 +9,15 @@ import {VISIBLE_COLUMN_LIMIT} from './useDocumentSheetColumns'
 
 type Props = {
   table: Table<SanityDocument>
-  initialState: VisibilityState
 }
 
-export function ColumnsControl({table, initialState}: Props) {
+export function ColumnsControl({table}: Props) {
   const isVisibleLimitReached =
     table.getVisibleLeafColumns().filter((col) => col.getCanHide()).length >= VISIBLE_COLUMN_LIMIT
 
   const setInitialColumns = useCallback(() => {
-    table.setColumnVisibility(initialState)
-  }, [table, initialState])
+    table.resetColumnVisibility()
+  }, [table])
 
   const handleColumnOnChange = (column: Column<SanityDocument, unknown>) => () => {
     column.toggleVisibility()
