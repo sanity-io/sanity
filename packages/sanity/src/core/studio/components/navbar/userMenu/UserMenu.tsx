@@ -11,7 +11,7 @@ import {
   Text,
 } from '@sanity/ui'
 import {useMemo} from 'react'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {MenuButton, type MenuButtonProps, MenuItem, Tooltip} from '../../../../../ui-components'
 import {UserAvatar} from '../../../../components'

@@ -12,7 +12,6 @@ const config = {
     browser: true,
   },
   extends: [
-    'plugin:boundaries/recommended',
     'sanity',
     'sanity/react',
     'sanity/import',
@@ -25,7 +24,6 @@ const config = {
   ],
   parser: '@typescript-eslint/parser',
   plugins: [
-    'boundaries',
     'import',
     'simple-import-sort',
     'unused-imports',
@@ -33,6 +31,7 @@ const config = {
     'prettier',
     'react',
     'tsdoc',
+    'unicorn',
   ],
   ignorePatterns: [
     '**/etc/*',
@@ -49,6 +48,8 @@ const config = {
     '*.css',
     '*.snap',
     '*.md',
+    'dev/test-studio/sanity.theme.mjs',
+    'dev/test-studio/workshop/scopes.js',
   ],
   rules: {
     '@typescript-eslint/no-var-requires': 'off', // prefer import/no-dynamic-require
@@ -57,6 +58,7 @@ const config = {
     'import/no-named-as-default': 'off',
     'import/no-named-as-default-member': 'off',
     'import/no-unresolved': 'off',
+    'import/default': 'off',
     'prettier/prettier': 'error',
     'tsdoc/syntax': 'error',
     'react-hooks/rules-of-hooks': 'error',
@@ -104,81 +106,16 @@ const config = {
     'sort-imports': 'off', // handled by simple-import-sort
     'simple-import-sort/imports': 'error',
     'simple-import-sort/exports': 'error',
-    'boundaries/element-types': [
-      'error',
-      {
-        default: 'disallow',
-        rules: [
-          {
-            // export
-            from: 'sanity/_internal',
-            allow: ['sanity/_internal__contents'],
-          },
-          {
-            from: 'sanity/_internal__contents',
-            allow: ['sanity', 'sanity/_internal__contents'],
-          },
-          {
-            // export
-            from: 'sanity/cli',
-            allow: ['sanity/cli__contents'],
-          },
-          {
-            from: 'sanity/cli__contents',
-            allow: ['sanity/cli__contents'],
-          },
-          {
-            // export
-            from: 'sanity',
-            allow: ['sanity__contents'],
-          },
-          {
-            from: 'sanity__contents',
-            allow: ['sanity__contents', 'sanity/router'],
-          },
-          {
-            // export (deprecated, aliases structure)
-            from: 'sanity/desk',
-            allow: ['sanity/desk__contents', 'sanity/structure', 'sanity/structure__contents'],
-          },
-          {
-            from: 'sanity/desk__contents',
-            allow: [
-              'sanity',
-              'sanity/desk__contents',
-              'sanity/router',
-              'sanity/_internal',
-              'sanity/structure',
-              'sanity/structure__contents',
-            ],
-          },
-          {
-            // export
-            from: 'sanity/router',
-            allow: ['sanity/router__contents'],
-          },
-          {
-            from: 'sanity/router__contents',
-            allow: ['sanity/router__contents'],
-          },
-          {
-            // export
-            from: 'sanity/structure',
-            allow: ['sanity/structure__contents'],
-          },
-          {
-            from: 'sanity/structure__contents',
-            allow: ['sanity', 'sanity/structure__contents', 'sanity/router'],
-          },
-        ],
-      },
-    ],
     'no-undef': 'off',
     'no-dupe-class-members': 'off', // doesn't work with TS overrides
     'no-shadow': 'off',
     'no-unused-vars': 'off',
     'no-useless-catch': 'warn',
     'no-async-promise-executor': 'warn',
+    'unicorn/prefer-string-slice': 'error',
+    'unicorn/prefer-node-protocol': 'error',
+    'unicorn/prefer-keyboard-event-key': 'error',
+    'unicorn/custom-error-definition': 'error',
   },
   settings: {
     'import/extensions': extensions,
@@ -191,81 +128,28 @@ const config = {
         project: [
           'dev/*/tsconfig.json',
           'examples/*/tsconfig.json',
+          'packages/@repo/*/tsconfig.json',
           'packages/@sanity/*/tsconfig.json',
           'packages/*/tsconfig.json',
         ],
       },
     },
-    'boundaries/include': ['packages/sanity/exports/*.*', 'packages/sanity/src/**/*.*'],
-    'boundaries/elements': [
-      {
-        type: 'sanity',
-        pattern: ['packages/sanity/exports/index.ts'],
-        mode: 'full',
-      },
-      {
-        type: 'sanity__contents',
-        pattern: ['packages/sanity/src/core/**/*.*'],
-        mode: 'full',
-      },
-      {
-        type: 'sanity/_internal',
-        pattern: ['packages/sanity/exports/_internal.ts'],
-        mode: 'full',
-      },
-      {
-        type: 'sanity/_internal__contents',
-        pattern: ['packages/sanity/src/_internal/**/*.*'],
-        mode: 'full',
-      },
-      {
-        type: 'sanity/cli',
-        pattern: ['packages/sanity/exports/cli.ts'],
-        mode: 'full',
-      },
-      {
-        type: 'sanity/cli__contents',
-        pattern: ['packages/sanity/src/cli/**/*.*'],
-        mode: 'full',
-      },
-      {
-        type: 'sanity/desk',
-        pattern: ['packages/sanity/exports/desk.ts'],
-        mode: 'file',
-      },
-      {
-        type: 'sanity/desk__contents',
-        pattern: ['packages/sanity/src/desk/**/*.*'],
-        mode: 'file',
-      },
-      {
-        type: 'sanity/router',
-        pattern: ['packages/sanity/exports/router.ts'],
-        mode: 'full',
-      },
-      {
-        type: 'sanity/router__contents',
-        pattern: ['packages/sanity/src/router/**/*.*'],
-        mode: 'full',
-      },
-      {
-        type: 'sanity/structure',
-        pattern: ['packages/sanity/exports/structure.ts'],
-        mode: 'file',
-      },
-      {
-        type: 'sanity/structure__contents',
-        pattern: ['packages/sanity/src/structure/**/*.*'],
-        mode: 'file',
-      },
-    ],
-    react: {version: '18.0.0'},
+    'react': {version: '18.0.0'},
   },
   overrides: [
     // Test files
     {
       files: [`**/*/test/**/*`, '**/*/__tests__/**/*', '**/*.test.{js,ts,tsx}'],
       env: {jest: true},
+      rules: {
+        'i18next/no-literal-string': 'off',
+        '@sanity/i18n/no-attribute-string-literals': 'off',
+        '@sanity/i18n/no-attribute-template-literals': 'off',
+      },
+    },
+    // Ignore i18n in ScheduledPublishing files.
+    {
+      files: ['**/*/scheduledPublishing/**/*'],
       rules: {
         'i18next/no-literal-string': 'off',
         '@sanity/i18n/no-attribute-string-literals': 'off',
@@ -316,9 +200,48 @@ const config = {
                 message:
                   'Please use the (more opinionated) exported components in sanity/src/ui-components instead.',
               },
+              {
+                name: 'styled-components',
+                importNames: ['default'],
+                message: 'Please use `import {styled} from "styled-components"` instead.',
+              },
+              {
+                name: 'react',
+                importNames: ['default'],
+                message:
+                  'Please use named imports, e.g. `import {useEffect, useMemo, type ComponentType} from "react"` instead.',
+              },
             ],
           },
         ],
+      },
+    },
+
+    // Prefer createContext in _singletons
+    {
+      files: ['packages/sanity/src/**'],
+      excludedFiles: ['**/__workshop__/**', 'packages/sanity/src/_singletons/**'],
+      rules: {
+        'no-restricted-imports': [
+          'error',
+          {
+            paths: [
+              {
+                name: 'react',
+                importNames: ['createContext'],
+                message: 'Please place context in _singletons',
+              },
+            ],
+          },
+        ],
+      },
+    },
+
+    // Prefer top-level type imports in singletons because boundaries plugin doesn't support named typed imports
+    {
+      files: ['packages/sanity/src/_singletons/**'],
+      rules: {
+        'import/consistent-type-specifier-style': ['error', 'prefer-top-level'],
       },
     },
   ],

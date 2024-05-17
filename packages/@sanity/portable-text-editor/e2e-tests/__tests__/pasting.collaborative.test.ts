@@ -1,9 +1,10 @@
 /** @jest-environment ./setup/collaborative.jest.env.ts */
 import '../setup/globals.jest'
 
+import os from 'node:os'
+
 import {describe, expect, it} from '@jest/globals'
 import {noop} from 'lodash'
-import os from 'os'
 
 function isMacOs() {
   return os.platform() === 'darwin'

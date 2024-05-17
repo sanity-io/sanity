@@ -1,5 +1,6 @@
 /* eslint-disable no-process-env */
-import path from 'path'
+import path from 'node:path'
+
 import preferredPM from 'preferred-pm'
 import which from 'which'
 

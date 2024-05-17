@@ -1,7 +1,6 @@
 {
-  "extends": "../../tsconfig.settings.json",
+  "extends": "@repo/tsconfig/base.json",
   "compilerOptions": {
-    "jsx": "react-jsx",
-    "esModuleInterop": true
+    "rootDir": "."
   }
 }

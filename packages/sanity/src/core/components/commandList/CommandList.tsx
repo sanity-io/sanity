@@ -1,6 +1,6 @@
 import {Box, rem, Stack} from '@sanity/ui'
 import {type ScrollToOptions, useVirtualizer, type Virtualizer} from '@tanstack/react-virtual'
-import throttle from 'lodash/throttle'
+import {throttle} from 'lodash'
 import {
   cloneElement,
   forwardRef,
@@ -13,7 +13,7 @@ import {
   useRef,
   useState,
 } from 'react'
-import styled, {css} from 'styled-components'
+import {css, styled} from 'styled-components'
 
 import {focusRingStyle} from '../../form/components/formField/styles'
 import {type CommandListElementType, type CommandListHandle, type CommandListProps} from './types'
@@ -626,9 +626,9 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
                     'aria-posinset': activeIndex + 1,
                     ...(ariaMultiselectable ? {'aria-selected': selected.toString()} : {}),
                     'aria-setsize': activeItemCount,
-                    id: getChildDescendantId(activeIndex),
-                    role: 'option',
-                    onMouseEnter: handleChildMouseEnter(activeIndex),
+                    'id': getChildDescendantId(activeIndex),
+                    'role': 'option',
+                    'onMouseEnter': handleChildMouseEnter(activeIndex),
                   }
                 : {}
 

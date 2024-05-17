@@ -1,9 +1,11 @@
+import path from 'node:path'
+
+import baseConfig from '@repo/package.config'
 import {createClient} from '@sanity/client'
 import {_loadConfig, extract, load, type SanityTSDocConfigOptions, transform} from '@sanity/tsdoc'
 import cac from 'cac'
 import chalk from 'chalk'
 import ora from 'ora'
-import path from 'path'
 
 const cli = cac('pnpm etl')
 
@@ -75,8 +77,13 @@ async function etl(options: {
 
   let timer = startTimer(`Extracting API documents from \`${packageName}\``)
   const {pkg, results} = await extract({
+    customTags: tsdocConfig?.extract?.customTags,
     packagePath,
-    bundledPackages: tsdocConfig.input?.bundledPackages,
+    rules: tsdocConfig?.extract?.rules,
+    strict: true,
+    tsconfig: tsdocConfig?.input?.tsconfig ?? (baseConfig.tsconfig || 'tsconfig.json'),
+    bundledPackages: tsdocConfig?.input?.bundledPackages,
+    legacyExports: tsdocConfig?.legacyExports ?? baseConfig.legacyExports ?? true,
   })
   timer.end()
 

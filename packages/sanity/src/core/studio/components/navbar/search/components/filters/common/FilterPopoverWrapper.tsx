@@ -1,8 +1,8 @@
 import {Card, Flex, useGlobalKeyDown, useLayer} from '@sanity/ui'
-import isHotkey from 'is-hotkey'
+import {isHotkey} from 'is-hotkey-esm'
 import {type ReactNode, useCallback, useEffect, useState} from 'react'
 import FocusLock from 'react-focus-lock'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {POPOVER_INPUT_PADDING, POPOVER_RADIUS, POPOVER_VERTICAL_MARGIN} from '../../../constants'
 

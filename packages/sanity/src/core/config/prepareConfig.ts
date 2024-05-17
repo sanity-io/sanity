@@ -30,8 +30,8 @@ import {
   initialDocumentBadges,
   initialLanguageFilter,
   internalTasksReducer,
+  legacySearchEnabledReducer,
   newDocumentOptionsResolver,
-  newSearchEnabledReducer,
   partialIndexingEnabledReducer,
   resolveProductionUrlReducer,
   schemaTemplatesReducer,
@@ -41,6 +41,7 @@ import {ConfigResolutionError} from './ConfigResolutionError'
 import {createDefaultIcon} from './createDefaultIcon'
 import {documentFieldActionsReducer, initialDocumentFieldActions} from './document'
 import {resolveConfigProperty} from './resolveConfigProperty'
+import {getDefaultPlugins, getDefaultPluginsOptions} from './resolveDefaultPlugins'
 import {resolveSchemaTypes} from './resolveSchemaTypes'
 import {SchemaError} from './SchemaError'
 import {
@@ -113,8 +114,15 @@ export function prepareConfig(
     if (preparedWorkspaces.has(rawWorkspace)) {
       return preparedWorkspaces.get(rawWorkspace)!
     }
+    const defaultPluginsOptions = getDefaultPluginsOptions(rawWorkspace)
+
     const {unstable_sources: nestedSources = [], ...rootSource} = rawWorkspace
-    const sources = [rootSource as SourceOptions, ...nestedSources]
+    const sources = [rootSource as SourceOptions, ...nestedSources].map(({plugins, ...source}) => {
+      return {
+        ...source,
+        plugins: [...(plugins ?? []), ...getDefaultPlugins(defaultPluginsOptions, plugins)],
+      }
+    })
 
     const resolvedSources = sources.map((source): InternalSource => {
       const {projectId, dataset} = source
@@ -196,7 +204,9 @@ export function prepareConfig(
       __internal: {
         sources: resolvedSources,
       },
-      tasks: rawWorkspace.unstable_tasks ?? {enabled: true},
+      // eslint-disable-next-line camelcase
+      __internal_serverDocumentActions: rawWorkspace.__internal_serverDocumentActions,
+      ...defaultPluginsOptions,
     }
     preparedWorkspaces.set(rawWorkspace, workspaceSummary)
     return workspaceSummary
@@ -527,8 +537,17 @@ function resolveSource({
           propertyName: 'document.unstable_languageFilter',
           reducer: documentLanguageFilterReducer,
         }),
-
+      /** @todo this is deprecated so it will eventually be removed */
       unstable_comments: {
+        enabled: (partialContext) => {
+          return documentCommentsEnabledReducer({
+            context: partialContext,
+            config,
+            initialValue: true,
+          })
+        },
+      },
+      comments: {
         enabled: (partialContext) => {
           return documentCommentsEnabledReducer({
             context: partialContext,
@@ -577,12 +596,12 @@ function resolveSource({
           initialValue: config.search?.unstable_partialIndexing?.enabled ?? false,
         }),
       },
-      unstable_enableNewSearch: resolveConfigProperty({
+      enableLegacySearch: resolveConfigProperty({
         config,
         context,
-        reducer: newSearchEnabledReducer,
-        propertyName: 'search.unstable_enableNewSearch',
-        initialValue: false,
+        reducer: legacySearchEnabledReducer,
+        propertyName: 'enableLegacySearch',
+        initialValue: true,
       }),
       // we will use this when we add search config to PluginOptions
       /*filters: resolveConfigProperty({

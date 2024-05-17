@@ -10,7 +10,7 @@ import {
   useMemo,
   useState,
 } from 'react'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {type MenuButtonProps} from '../../../ui-components'
 import {CollapseOverflowMenu} from '../collapseMenu/CollapseOverflowMenu'
@@ -138,7 +138,7 @@ export const CollapseTabList = forwardRef(function CollapseTabList(
       {/* Element that always render all the children to keep track of their position and if the available space to render them */}
       <HiddenRow justify="flex-start" gap={gap} ref={setRootEl} data-hidden aria-hidden="true">
         {cloneElement(menuButton, {
-          disabled: true,
+          'disabled': true,
           'aria-hidden': true,
         })}
         {children?.map((child) => (
@@ -149,9 +149,9 @@ export const CollapseTabList = forwardRef(function CollapseTabList(
             onIntersectionChange={(e) => handleIntersection(e[0], child)}
           >
             {cloneElement(child, {
-              disabled: true,
+              'disabled': true,
               'aria-hidden': true,
-              tabIndex: -1,
+              'tabIndex': -1,
             })}
           </OptionObserveElement>
         ))}

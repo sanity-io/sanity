@@ -1,6 +1,6 @@
 import {Box, Card, type CardTone, Flex} from '@sanity/ui'
 import {type ComponentProps, type ReactNode} from 'react'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {DragHandle} from '../common/DragHandle'
 import {MOVING_ITEM_CLASS_NAME} from '../common/list'
@@ -66,7 +66,18 @@ const Root = styled(Card)`
  * Use this to get the layout for grid items
  */
 export function CellLayout(props: RowLayoutProps & ComponentProps<typeof Root>) {
-  const {validation, selected, tone, presence, children, dragHandle, menu, footer, ...rest} = props
+  const {
+    validation,
+    selected,
+    tone,
+    presence,
+    children,
+    dragHandle,
+    menu,
+    footer,
+    readOnly,
+    ...rest
+  } = props
 
   return (
     <Root
@@ -89,7 +100,7 @@ export function CellLayout(props: RowLayoutProps & ComponentProps<typeof Root>) 
           tone="inherit"
           data-ui="DragHandleCard"
         >
-          <DragHandle $grid mode="ghost" />
+          <DragHandle $grid mode="ghost" readOnly={!!readOnly} />
         </DragHandleCard>
       )}
 

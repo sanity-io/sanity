@@ -16,7 +16,7 @@ export const NumberType = {
   get() {
     return NUMBER_CORE
   },
-  extend(subTypeDef) {
+  extend(subTypeDef: any) {
     const parsed = Object.assign(pick(NUMBER_CORE, OVERRIDABLE_FIELDS), subTypeDef, {
       type: NUMBER_CORE,
       preview: primitivePreview,
@@ -24,12 +24,12 @@ export const NumberType = {
 
     return subtype(parsed)
 
-    function subtype(parent) {
+    function subtype(parent: any) {
       return {
         get() {
           return parent
         },
-        extend: (extensionDef) => {
+        extend: (extensionDef: any) => {
           const current = Object.assign({}, parent, pick(extensionDef, OVERRIDABLE_FIELDS), {
             type: parent,
           })

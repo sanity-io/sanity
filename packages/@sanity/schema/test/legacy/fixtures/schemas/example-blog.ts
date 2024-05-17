@@ -7,7 +7,7 @@ export default {
       options: {
         preview: {
           fields: ['title', 'image', 'imageUrl'],
-          prepare(document) {
+          prepare(document: any) {
             return {
               title: document.title || '',
             }

@@ -1,4 +1,4 @@
-import {type EditorChange, type PortableTextEditor} from '@sanity/portable-text-editor'
+import {type PortableTextEditor} from '@sanity/portable-text-editor'
 import {defineArrayMember, defineField, defineType} from '@sanity/types'
 import {createRef, type RefObject, useMemo, useState} from 'react'
 import {type InputProps, type PortableTextInputProps} from 'sanity'
@@ -6,15 +6,19 @@ import {type InputProps, type PortableTextInputProps} from 'sanity'
 import {TestForm} from '../../utils/TestForm'
 import {TestWrapper} from '../../utils/TestWrapper'
 
-export function InputStory(props: {
+interface InputStoryProps {
   getRef?: (editorRef: RefObject<PortableTextEditor | null>) => void
-  onEditorChange?: (change: EditorChange) => void
-}) {
+  ptInputProps?: Partial<PortableTextInputProps>
+}
+
+export function InputStory(props: InputStoryProps) {
+  const {getRef, ptInputProps} = props
+
   // Use a state as ref here to be make sure we are able to call the ref callback when
   // the ref is ready
   const [editorRef, setEditorRef] = useState<RefObject<PortableTextEditor | null>>({current: null})
-  if (props.getRef && editorRef.current) {
-    props.getRef(editorRef)
+  if (getRef && editorRef.current) {
+    getRef(editorRef)
   }
 
   const schemaTypes = useMemo(
@@ -36,7 +40,7 @@ export function InputStory(props: {
               input: (inputProps: InputProps) => {
                 const editorProps = {
                   ...inputProps,
-                  onEditorChange: props.onEditorChange,
+                  ...ptInputProps,
                   editorRef: createRef(),
                 } as PortableTextInputProps
                 if (editorProps.editorRef) {
@@ -53,7 +57,7 @@ export function InputStory(props: {
         ],
       }),
     ],
-    [props.onEditorChange],
+    [ptInputProps],
   )
 
   return (

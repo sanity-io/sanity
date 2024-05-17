@@ -98,7 +98,7 @@ export interface TelemetryUserProperties {
   runtime: string
   runtimeVersion: string
   cliVersion: string
-  platform: string
+  machinePlatform: string
   cpuArchitecture: string
   projectId?: string
   dataset?: string

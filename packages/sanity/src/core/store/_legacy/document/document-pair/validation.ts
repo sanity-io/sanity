@@ -35,6 +35,7 @@ import {validateDocumentObservable, type ValidationContext} from '../../../../va
 import {type IdPair} from '../types'
 import {memoize} from '../utils/createMemoizer'
 import {editState} from './editState'
+import {memoizeKeyGen} from './memoizeKeyGen'
 
 /**
  * @hidden
@@ -94,6 +95,7 @@ export const validation = memoize(
       observeDocumentPairAvailability: ObserveDocumentPairAvailability
       schema: Schema
       i18n: LocaleSource
+      serverActionsEnabled: Observable<boolean>
     },
     {draftId, publishedId}: IdPair,
     typeName: string,
@@ -189,8 +191,6 @@ export const validation = memoize(
     )
   },
   (ctx, idPair, typeName) => {
-    const config = ctx.client.config()
-
-    return `${config.dataset ?? ''}-${config.projectId ?? ''}-${idPair.publishedId}-${typeName}`
+    return memoizeKeyGen(ctx.client, idPair, typeName)
   },
 )

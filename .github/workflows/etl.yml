@@ -54,7 +54,7 @@ jobs:
         run: pnpm install
 
       - name: Build packages
-        run: pnpm build
+        run: pnpm build --output-logs=full --log-order=grouped
         env:
           NODE_OPTIONS: --max_old_space_size=8192
 

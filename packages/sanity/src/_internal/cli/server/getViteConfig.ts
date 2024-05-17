@@ -1,7 +1,8 @@
+import path from 'node:path'
+
 import {type UserViteConfig} from '@sanity/cli'
 import viteReact from '@vitejs/plugin-react'
 import debug from 'debug'
-import path from 'path'
 import readPkgUp from 'read-pkg-up'
 import {type ConfigEnv, type InlineConfig, mergeConfig} from 'vite'
 
@@ -112,11 +113,13 @@ export async function getViteConfig(options: ViteOptions): Promise<InlineConfig>
     },
     define: {
       // eslint-disable-next-line no-process-env
-      __SANITY_STAGING__: process.env.SANITY_INTERNAL_ENV === 'staging',
+      '__SANITY_STAGING__': process.env.SANITY_INTERNAL_ENV === 'staging',
       'process.env.MODE': JSON.stringify(mode),
       ...getStudioEnvironmentVariables({prefix: 'process.env.', jsonEncode: true}),
     },
   }
+
+  const addImportMap = false
 
   if (mode === 'production') {
     viteConfig.build = {
@@ -127,6 +130,9 @@ export async function getViteConfig(options: ViteOptions): Promise<InlineConfig>
       emptyOutDir: false, // Rely on CLI to do this
 
       rollupOptions: {
+        external: addImportMap
+          ? [/^sanity(\/.*)?$/, 'react', 'react/jsx-runtime', 'styled-components']
+          : [],
         input: {
           sanity: path.join(cwd, '.sanity', 'runtime', 'app.js'),
         },

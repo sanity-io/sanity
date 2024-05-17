@@ -1,15 +1,15 @@
-import {pathFor} from '@sanity/util/paths'
+import {isEqual, pathFor} from '@sanity/util/paths'
 import {createRef, type MutableRefObject, type ReactNode, useContext, useRef} from 'react'
+import {PortableTextMemberItemsContext} from 'sanity/_singletons'
 
 import {pathToString} from '../../../../field'
 import {type FIXME} from '../../../../FIXME'
 import {FormInput} from '../../../components'
 import {isMemberArrayOfObjects} from '../../../members/object/fields/asserters'
 import {type ArrayOfObjectsItemMember, type ObjectFormNode} from '../../../store'
-import {type PortableTextInputProps} from '../../../types'
+import {type ObjectInputProps, type PortableTextInputProps} from '../../../types'
 import {isArrayOfObjectsFieldMember, isBlockType} from '../_helpers'
 import {type PortableTextEditorElement} from '../Compositor'
-import {PortableTextMemberItemsContext} from '../contexts/PortableTextMembers'
 import {type PortableTextMemberItem} from '../PortableTextInput'
 
 export function usePortableTextMemberItem(key: string): PortableTextMemberItem | undefined {
@@ -80,7 +80,8 @@ const reconcilePortableTextMembers = ({
           member.item.changed ||
           member.item.presence?.length ||
           member.open ||
-          member.item.focusPath.length
+          member.item.focusPath.length ||
+          member.item.focused
         ) {
           result.push({kind: 'textBlock', member, node: member.item})
         }
@@ -129,6 +130,23 @@ const reconcilePortableTextMembers = ({
     let input: ReactNode = null
 
     if ((isObject && item.member !== existingItem?.member) || item.node !== existingItem?.node) {
+      // Render input with onFocus noop for calling elementProps.onFocus directly on the editor nodes themselves
+      // This is to avoid closing the editing modal for them in the PT-input setting.
+      const _renderInput = (renderInputProps: ObjectInputProps) => {
+        const isObjectInputPath = isEqual(renderInputProps.path, item.member.item.path)
+        if (isObjectInputPath) {
+          return renderInput({
+            ...renderInputProps,
+            elementProps: {
+              ...renderInputProps.elementProps,
+              onFocus: () => {
+                // no-op
+              },
+            },
+          })
+        }
+        return renderInput(renderInputProps)
+      }
       const inputProps = {
         absolutePath: pathFor(item.node.path),
         includeField: false,
@@ -138,7 +156,7 @@ const reconcilePortableTextMembers = ({
         renderBlock,
         renderField,
         renderInlineBlock,
-        renderInput,
+        renderInput: _renderInput,
         renderItem,
         renderPreview,
         schemaType,

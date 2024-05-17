@@ -5,6 +5,7 @@ import {combineLatest, type Observable, of} from 'rxjs'
 import {map, switchMap} from 'rxjs/operators'
 
 import {useClient, useSchema} from '../../../hooks'
+import {useWorkspace} from '../../../studio'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
 import {
   createHookFromObservableFactory,
@@ -14,6 +15,7 @@ import {
 } from '../../../util'
 import {useGrantsStore} from '../datastores'
 import {snapshotPair} from '../document'
+import {fetchFeatureToggle} from '../document/document-pair/utils/fetchFeatureToggle'
 import {type GrantsStore, type PermissionCheckResult} from './types'
 
 function getSchemaType(schema: Schema, typeName: string): SchemaType {
@@ -167,6 +169,7 @@ export interface DocumentPairPermissionsOptions {
   id: string
   type: string
   permission: DocumentPermission
+  serverActionsEnabled: Observable<boolean>
 }
 
 /**
@@ -183,6 +186,7 @@ export function getDocumentPairPermissions({
   id,
   permission,
   type,
+  serverActionsEnabled,
 }: DocumentPairPermissionsOptions): Observable<PermissionCheckResult> {
   // this case was added to fix a crash that would occur if the `schemaType` was
   // omitted from `S.documentList()`
@@ -199,6 +203,7 @@ export function getDocumentPairPermissions({
     client,
     {draftId: getDraftId(id), publishedId: getPublishedId(id)},
     type,
+    serverActionsEnabled,
   ).pipe(
     switchMap((pair) =>
       combineLatest([pair.draft.snapshots$, pair.published.snapshots$]).pipe(
@@ -284,6 +289,7 @@ export function useDocumentPairPermissions({
   const defaultClient = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const defaultSchema = useSchema()
   const defaultGrantsStore = useGrantsStore()
+  const workspace = useWorkspace()
 
   const client = useMemo(() => overrideClient || defaultClient, [defaultClient, overrideClient])
   const schema = useMemo(() => overrideSchema || defaultSchema, [defaultSchema, overrideSchema])
@@ -292,10 +298,16 @@ export function useDocumentPairPermissions({
     [defaultGrantsStore, overrideGrantsStore],
   )
 
+  const serverActionsEnabled = useMemo(() => {
+    const configFlag = workspace.__internal_serverDocumentActions?.enabled
+    // If it's explicitly set, let it override the feature toggle
+    return typeof configFlag === 'boolean' ? of(configFlag as boolean) : fetchFeatureToggle(client)
+  }, [client, workspace.__internal_serverDocumentActions?.enabled])
+
   return useDocumentPairPermissionsFromHookFactory(
     useMemo(
-      () => ({client, schema, grantsStore, id, permission, type}),
-      [client, grantsStore, id, permission, schema, type],
+      () => ({client, schema, grantsStore, id, permission, type, serverActionsEnabled}),
+      [client, grantsStore, id, permission, schema, type, serverActionsEnabled],
     ),
   )
 }

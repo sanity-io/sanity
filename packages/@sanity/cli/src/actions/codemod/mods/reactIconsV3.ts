@@ -1,4 +1,5 @@
-import path from 'path'
+import path from 'node:path'
+
 import resolveFrom from 'resolve-from'
 import semverCompare from 'semver-compare'
 

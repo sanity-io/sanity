@@ -4,7 +4,7 @@ import {type PortableTextBlock} from '@sanity/types'
 import {words} from './words'
 
 export const valueOptions: Record<string, 'empty' | 'withCustomContent' | 'withLargeContent'> = {
-  Empty: 'empty',
+  'Empty': 'empty',
   'Custom content': 'withCustomContent',
   'Large content': 'withLargeContent',
 }

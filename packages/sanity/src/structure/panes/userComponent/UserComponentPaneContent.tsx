@@ -1,11 +1,11 @@
 import {Box} from '@sanity/ui'
-import type * as React from 'react'
-import styled from 'styled-components'
+import {type ReactNode} from 'react'
+import {styled} from 'styled-components'
 
 import {usePane} from '../../components'
 
 interface UserComponentPaneContentProps {
-  children: React.ReactNode
+  children: ReactNode
 }
 
 const Root = styled(Box)`

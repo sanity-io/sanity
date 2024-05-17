@@ -3,7 +3,7 @@
 import {AvatarStack} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {useMemo} from 'react'
-import styled, {css} from 'styled-components'
+import {css, styled} from 'styled-components'
 
 import {Tooltip, type TooltipProps} from '../../ui-components'
 import {UserAvatar} from '../components'

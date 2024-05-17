@@ -29,10 +29,10 @@ import {
   useCallback,
   useMemo,
 } from 'react'
-import styled, {css} from 'styled-components'
+import {SortableItemIdContext} from 'sanity/_singletons'
+import {css, styled} from 'styled-components'
 
 import {restrictToParentElementWithMargins} from './dndkit-modifier/restrictToParentElementWithMargins'
-import {SortableItemIdContext} from './DragHandle'
 
 export const MOVING_ITEM_CLASS_NAME = 'moving'
 
@@ -192,13 +192,13 @@ export function List(props: ListProps) {
 }
 
 interface ItemProps {
-  id: string
+  'id': string
 
   // false positive:
   // eslint-disable-next-line react/no-unused-prop-types
-  sortable?: boolean
-  disableTransition?: boolean
-  children?: ReactNode
+  'sortable'?: boolean
+  'disableTransition'?: boolean
+  'children'?: ReactNode
   'data-index'?: number
 }
 

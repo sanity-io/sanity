@@ -67,7 +67,7 @@ export const ItemRow = forwardRef(function ItemRow(
 
   const menu = (
     <MenuButton
-      button={<ContextMenuButton paddingY={3} />}
+      button={<ContextMenuButton />}
       id={`${inputId}-menuButton`}
       popover={MENU_BUTTON_POPOVER_PROPS}
       menu={
@@ -92,8 +92,9 @@ export const ItemRow = forwardRef(function ItemRow(
   return (
     <RowLayout
       tone={tone}
+      readOnly={!!readOnly}
       menu={!readOnly && menu}
-      dragHandle={!readOnly && sortable}
+      dragHandle={sortable}
       presence={presence.length === 0 ? null : <FieldPresence presence={presence} maxAvatars={1} />}
       validation={
         validation.length > 0 ? (

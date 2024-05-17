@@ -16,19 +16,19 @@ export const EmailType = {
   get() {
     return EMAIL_CORE
   },
-  extend(subTypeDef) {
+  extend(subTypeDef: any) {
     const parsed = Object.assign(pick(EMAIL_CORE, OVERRIDABLE_FIELDS), subTypeDef, {
       type: EMAIL_CORE,
       preview: primitivePreview,
     })
     return subtype(parsed)
 
-    function subtype(parent) {
+    function subtype(parent: any) {
       return {
         get() {
           return parent
         },
-        extend: (extensionDef) => {
+        extend: (extensionDef: any) => {
           const current = Object.assign({}, parent, pick(extensionDef, OVERRIDABLE_FIELDS), {
             type: parent,
           })

@@ -5,7 +5,7 @@ import {
   PortalProvider,
   useElementRect,
 } from '@sanity/ui'
-import isHotkey from 'is-hotkey'
+import {isHotkey} from 'is-hotkey-esm'
 import {useCallback, useMemo, useState} from 'react'
 import {useTranslation} from 'react-i18next'
 import {
@@ -17,7 +17,7 @@ import {
   useZIndex,
 } from 'sanity'
 import {type Path} from 'sanity-diff-patch'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {TooltipDelayGroupProvider} from '../../../../ui-components'
 import {Pane, PaneFooter, usePaneLayout} from '../../../components'

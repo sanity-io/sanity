@@ -8,7 +8,7 @@ import {
   type RefObject,
   useCallback,
 } from 'react'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {Popover} from '../../../../ui-components'
 import {Translate, useTranslation} from '../../../i18n'

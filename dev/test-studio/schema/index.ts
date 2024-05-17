@@ -82,6 +82,7 @@ import playlistTrack from './playlistTrack'
 import code from './plugins/code'
 import color from './plugins/color'
 import geopoint from './plugins/geopoint'
+import {hotspot, hotspotArrayTest} from './plugins/hotspotArray'
 import species from './species'
 import arrays, {topLevelArrayType, topLevelPrimitiveArrayType} from './standard/arrays'
 import booleans from './standard/booleans'
@@ -95,6 +96,7 @@ import numbers from './standard/numbers'
 import objects, {myObject} from './standard/objects'
 import {ptAllTheBellsAndWhistlesType} from './standard/portableText/allTheBellsAndWhistles'
 import blocks from './standard/portableText/blocks'
+import {ptCustomBlockEditors} from './standard/portableText/customBlockEditors'
 import {ptCustomMarkersTestType} from './standard/portableText/customMarkers'
 import manyEditors from './standard/portableText/manyEditors'
 import richTextObject from './standard/portableText/richTextObject'
@@ -158,6 +160,7 @@ export const schemaTypes = [
   objects,
   ptAllTheBellsAndWhistlesType,
   blocks,
+  ptCustomBlockEditors,
   ptCustomMarkersTestType,
   richTextObject,
   ...Object.values(scrollBugTypes),
@@ -253,6 +256,8 @@ export const schemaTypes = [
   codeInputType,
   color,
   geopoint,
+  hotspot,
+  hotspotArrayTest,
 
   // Test documents with 3rd party plugin inputs
   markdown,

@@ -1,7 +1,6 @@
 import {ArrowLeftIcon, CloseIcon, SplitVerticalIcon} from '@sanity/icons'
 import {Flex} from '@sanity/ui'
-import type * as React from 'react'
-import {createElement, forwardRef, memo, useMemo, useState} from 'react'
+import {createElement, type ForwardedRef, forwardRef, memo, useMemo, useState} from 'react'
 import {useFieldActions, useTimelineSelector, useTranslation} from 'sanity'
 
 import {Button, TooltipDelayGroupProvider} from '../../../../../ui-components'
@@ -31,7 +30,7 @@ export interface DocumentPanelHeaderProps {
 export const DocumentPanelHeader = memo(
   forwardRef(function DocumentPanelHeader(
     _props: DocumentPanelHeaderProps,
-    ref: React.ForwardedRef<HTMLDivElement>,
+    ref: ForwardedRef<HTMLDivElement>,
   ) {
     const {menuItems} = _props
     const {

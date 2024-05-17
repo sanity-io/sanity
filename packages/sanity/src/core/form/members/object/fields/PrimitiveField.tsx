@@ -97,14 +97,18 @@ export function PrimitiveField(props: {
 
   const elementProps = useMemo(
     (): PrimitiveInputProps['elementProps'] => ({
-      onBlur: handleBlur,
-      onFocus: handleFocus,
-      id: member.field.id,
-      ref: focusRef,
-      onChange: handleNativeChange,
-      value: resolveNativeNumberInputValue(member.field.schemaType, member.field.value, localValue),
-      readOnly: Boolean(member.field.readOnly),
-      placeholder: member.field.schemaType.placeholder,
+      'onBlur': handleBlur,
+      'onFocus': handleFocus,
+      'id': member.field.id,
+      'ref': focusRef,
+      'onChange': handleNativeChange,
+      'value': resolveNativeNumberInputValue(
+        member.field.schemaType,
+        member.field.value,
+        localValue,
+      ),
+      'readOnly': Boolean(member.field.readOnly),
+      'placeholder': member.field.schemaType.placeholder,
       'aria-describedby': createDescriptionId(member.field.id, member.field.schemaType.description),
     }),
     [

@@ -10,7 +10,7 @@ import {
   useCallback,
   useMemo,
 } from 'react'
-import styled, {css} from 'styled-components'
+import {css, styled} from 'styled-components'
 
 import {TextWithTone} from '../../../components'
 import {type DocumentFieldActionNode} from '../../../config'

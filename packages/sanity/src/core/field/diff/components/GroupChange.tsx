@@ -7,6 +7,7 @@ import {
   useMemo,
   useState,
 } from 'react'
+import {DiffContext} from 'sanity/_singletons'
 
 import {Button, Popover} from '../../../../ui-components'
 import {useDocumentOperation} from '../../../hooks'
@@ -17,7 +18,6 @@ import {type FieldOperationsAPI, type GroupChangeNode} from '../../types'
 import {isPTSchemaType} from '../../types/portableText/diff'
 import {useHover} from '../../utils/useHover'
 import {undoChange} from '../changes/undoChange'
-import {DiffContext} from '../contexts/DiffContext'
 import {isFieldChange} from '../helpers'
 import {useDocumentChange} from '../hooks'
 import {ChangeBreadcrumb} from './ChangeBreadcrumb'

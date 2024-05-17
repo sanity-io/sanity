@@ -7,7 +7,7 @@ import {
   useClickOutside,
 } from '@sanity/ui'
 import {type KeyboardEvent, useCallback, useState} from 'react'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {Popover} from '../../../../../../../../ui-components'
 import {useTranslation} from '../../../../../../../i18n'

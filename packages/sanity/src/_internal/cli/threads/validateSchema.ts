@@ -1,17 +1,20 @@
+import {isMainThread, parentPort, workerData as _workerData} from 'node:worker_threads'
+
 import {groupProblems, validateSchema} from '@sanity/schema/_internal'
 import {type SchemaValidationProblem, type SchemaValidationProblemGroup} from '@sanity/types'
 import {resolveSchemaTypes} from 'sanity'
-import {isMainThread, parentPort, workerData as _workerData} from 'worker_threads'
 
 import {getStudioConfig} from '../util/getStudioWorkspaces'
 import {mockBrowserEnvironment} from '../util/mockBrowserEnvironment'
 
+/** @internal */
 export interface ValidateSchemaWorkerData {
   workDir: string
   workspace?: string
   level?: SchemaValidationProblem['severity']
 }
 
+/** @internal */
 export interface ValidateSchemaWorkerResult {
   validation: SchemaValidationProblemGroup[]
 }

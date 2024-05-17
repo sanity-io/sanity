@@ -16,6 +16,7 @@ import {type Router, type RouterState} from 'sanity/router'
 
 import {type FormBuilderCustomMarkersComponent, type FormBuilderMarkersComponent} from '../form'
 import {type LocalePluginOptions, type LocaleSource} from '../i18n/types'
+import {type ScheduledPublishingPluginOptions} from '../scheduledPublishing/types'
 import {type AuthStore} from '../store'
 import {type SearchFilterDefinition} from '../studio/components/navbar/search/definitions/filters'
 import {type SearchOperatorDefinition} from '../studio/components/navbar/search/definitions/operators'
@@ -290,8 +291,13 @@ export interface DocumentPluginOptions {
    */
   newDocumentOptions?: NewDocumentOptionsResolver
 
-  /** @internal */
+  /** @deprecated Use `comments` instead */
   unstable_comments?: {
+    enabled: boolean | ((context: DocumentCommentsEnabledContext) => boolean)
+  }
+
+  /** @internal */
+  comments?: {
     enabled: boolean | ((context: DocumentCommentsEnabledContext) => boolean)
   }
 }
@@ -378,15 +384,9 @@ export interface PluginOptions {
       enabled: boolean
     }
     /**
-     * Enables the experimental new search API as an opt-in feature. This flag
-     * allows you to test and provide feedback on the new search capabilities
-     * before they become the default search mechanism. It is part of an
-     * experimental set of features that are subject to change. Users should be
-     * aware that while this feature is in use, they may encounter
-     * inconsistencies or unexpected behavior compared to the stable search
-     * functionality.
+     * Enables the legacy Query API search strategy.
      */
-    unstable_enableNewSearch?: boolean
+    enableLegacySearch?: boolean
   }
 }
 
@@ -438,12 +438,23 @@ export interface WorkspaceOptions extends SourceOptions {
    */
   unstable_sources?: SourceOptions[]
   /**
-   * @hidden
-   * @beta
+   * @deprecated Use `tasks` instead
    */
-  unstable_tasks?: {
-    enabled: boolean
+  unstable_tasks?: DefaultPluginsWorkspaceOptions['tasks']
+  /**
+   * @internal
+   */
+  tasks?: DefaultPluginsWorkspaceOptions['tasks']
+
+  /**
+   * @hidden
+   * @internal
+   */
+  __internal_serverDocumentActions?: {
+    enabled?: boolean
   }
+
+  scheduledPublishing?: DefaultPluginsWorkspaceOptions['scheduledPublishing']
 }
 
 /**
@@ -651,8 +662,13 @@ export interface Source {
      */
     inspectors: (props: PartialContext<DocumentInspectorContext>) => DocumentInspector[]
 
-    /** @internal */
+    /** @deprecated  Use `comments` instead */
     unstable_comments: {
+      enabled: (props: DocumentCommentsEnabledContext) => boolean
+    }
+
+    /** @internal */
+    comments: {
       enabled: (props: DocumentCommentsEnabledContext) => boolean
     }
   }
@@ -732,7 +748,7 @@ export interface Source {
       enabled: boolean
     }
 
-    unstable_enableNewSearch?: boolean
+    enableLegacySearch?: boolean
   }
 
   /** @internal */
@@ -753,11 +769,14 @@ export interface Source {
     i18next: i18n
   }
   /** @beta */
-  tasks?: WorkspaceOptions['unstable_tasks']
+  tasks?: WorkspaceOptions['tasks']
+
+  /** @internal */
+  __internal_serverDocumentActions?: WorkspaceOptions['__internal_serverDocumentActions']
 }
 
 /** @internal */
-export interface WorkspaceSummary {
+export interface WorkspaceSummary extends DefaultPluginsWorkspaceOptions {
   type: 'workspace-summary'
   name: string
   title: string
@@ -792,7 +811,7 @@ export interface WorkspaceSummary {
       source: Observable<Source>
     }>
   }
-  tasks: WorkspaceOptions['unstable_tasks']
+  __internal_serverDocumentActions: WorkspaceOptions['__internal_serverDocumentActions']
 }
 
 /**
@@ -819,6 +838,7 @@ export interface Workspace extends Omit<Source, 'type'> {
    * @beta
    */
   unstable_sources: Source[]
+  scheduledPublishing: ScheduledPublishingPluginOptions
 }
 
 /**
@@ -859,3 +879,9 @@ export type {
   CookielessCompatibleLoginMethod,
   LoginMethod,
 } from './auth/types'
+
+/** @beta */
+export type DefaultPluginsWorkspaceOptions = {
+  tasks: {enabled: boolean}
+  scheduledPublishing: ScheduledPublishingPluginOptions
+}

@@ -13,9 +13,9 @@
  * approach b could be considered "safer" since any side-effects of running the config
  * file will not bleed into the current CLI process directly.
  */
-import fs from 'fs'
-import path from 'path'
-import {Worker} from 'worker_threads'
+import fs from 'node:fs'
+import path from 'node:path'
+import {Worker} from 'node:worker_threads'
 
 import {type CliConfig, type SanityJson} from '../types'
 import {getCliWorkerPath} from './cliWorker'

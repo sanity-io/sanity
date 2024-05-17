@@ -1,8 +1,9 @@
+import http, {type Server} from 'node:http'
+import os from 'node:os'
+
 import {type SanityClient} from '@sanity/client'
 import chalk from 'chalk'
-import http, {type Server} from 'http'
 import open from 'open'
-import os from 'os'
 
 import {debug as debugIt} from '../../debug'
 import {

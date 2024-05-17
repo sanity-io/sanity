@@ -1,11 +1,12 @@
 /* eslint-disable no-process-exit */
+import {execFileSync, spawnSync} from 'node:child_process'
+import {copyFile, mkdir, readFile, rename, stat, writeFile} from 'node:fs/promises'
+import {hostname} from 'node:os'
+import path from 'node:path'
+
 import {createClient} from '@sanity/client'
-import {execFileSync, spawnSync} from 'child_process'
 import Configstore from 'configstore'
 import {copy as copyCb} from 'cpx'
-import {copyFile, mkdir, readFile, rename, stat, writeFile} from 'fs/promises'
-import {hostname} from 'os'
-import path from 'path'
 
 import {
   baseTestPath,

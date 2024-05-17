@@ -28,6 +28,7 @@ import {type Descendant, type Node as SlateNode, type Operation as SlateOperatio
 import {type ReactEditor} from 'slate-react'
 import {type DOMNode} from 'slate-react/dist/utils/dom'
 
+import {type PortableTextEditableProps} from '../editor/Editable'
 import {type PortableTextEditor} from '../editor/PortableTextEditor'
 import {type Patch} from '../types/patch'
 
@@ -39,6 +40,7 @@ export interface EditableAPIDeleteOptions {
 /** @beta */
 export interface EditableAPI {
   activeAnnotations: () => PortableTextObject[]
+  isAnnotationActive: (annotationType: PortableTextObject['_type']) => boolean
   addAnnotation: (
     type: ObjectSchemaType,
     value?: {[prop: string]: unknown},
@@ -195,6 +197,11 @@ export interface PortableTextSlateEditor extends ReactEditor {
    * Use hotkeys
    */
   pteWithHotKeys: (event: KeyboardEvent<HTMLDivElement>) => void
+
+  /**
+   * Helper function that creates an empty text block
+   */
+  pteCreateEmptyBlock: () => Descendant
 
   /**
    * Undo
@@ -477,6 +484,9 @@ export type RenderBlockFunction = (props: BlockRenderProps) => JSX.Element
 
 /** @beta */
 export type RenderChildFunction = (props: BlockChildRenderProps) => JSX.Element
+
+/** @beta */
+export type RenderEditableFunction = (props: PortableTextEditableProps) => JSX.Element
 
 /** @beta */
 export type RenderAnnotationFunction = (props: BlockAnnotationRenderProps) => JSX.Element

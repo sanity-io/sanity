@@ -1,5 +1,5 @@
 import {useCallback, useRef} from 'react'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {CommandList} from '../CommandList'
 import {type CommandListHandle, type CommandListRenderItemCallback} from '../types'

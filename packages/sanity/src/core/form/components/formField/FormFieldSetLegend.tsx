@@ -1,7 +1,7 @@
 import {ToggleArrowRightIcon} from '@sanity/icons'
 import {Box, Flex, rem, Text, type Theme} from '@sanity/ui'
 import {memo, type ReactNode} from 'react'
-import styled, {css} from 'styled-components'
+import {css, styled} from 'styled-components'
 
 import {useTranslation} from '../../../i18n'
 import {focusRingStyle} from './styles'

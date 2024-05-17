@@ -1,6 +1,6 @@
 import {Card, rem, Text} from '@sanity/ui'
 import {type ReactElement} from 'react'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {useTranslation} from '../../../i18n'
 import {type StringDiff, type StringDiffSegment} from '../../types'

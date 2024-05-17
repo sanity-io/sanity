@@ -1,3 +1,6 @@
+import fs from 'node:fs'
+import path from 'node:path'
+
 import {
   at,
   createIfNotExists,
@@ -8,8 +11,6 @@ import {
   setIfMissing,
   upsert,
 } from '@bjoerge/mutiny'
-import fs from 'fs'
-import path from 'path'
 import {filter, map, mergeMap, of, tap} from 'rxjs'
 import ts, {type JSDoc, type JSDocComment, SyntaxKind} from 'typescript'
 

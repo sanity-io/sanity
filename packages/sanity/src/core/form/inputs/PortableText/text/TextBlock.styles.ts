@@ -3,7 +3,7 @@
 import {hues} from '@sanity/color'
 import {Box, Flex, type Theme} from '@sanity/ui'
 import {getTheme_v2, rgba} from '@sanity/ui/theme'
-import styled, {css} from 'styled-components'
+import {css, styled} from 'styled-components'
 
 import {TEXT_BULLET_MARKERS, TEXT_NUMBER_FORMATS} from './constants'
 import {createListName} from './helpers'
@@ -41,6 +41,7 @@ function textBlockStyle(props: TextBlockStyleProps & {theme: Theme}) {
       background-color: var(--marker-bg-color);
       // This is to make sure the marker is always behind the text
       z-index: -1;
+      pointer-events: none;
     }
 
     &[data-markers] {

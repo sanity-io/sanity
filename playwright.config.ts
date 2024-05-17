@@ -7,6 +7,7 @@ import {readBoolEnv, readEnv} from './test/e2e/helpers/envVars'
 loadEnvFiles()
 
 const CI = readBoolEnv('CI', false)
+const HEADLESS = readBoolEnv('HEADLESS', true)
 
 /**
  * Excludes the GitHub reporter until https://github.com/microsoft/playwright/issues/19817 is resolved, since it creates a lot of noise in our PRs.
@@ -22,13 +23,14 @@ function excludeGithub(reporters: PlaywrightTestConfig['reporter']) {
 const playwrightConfig = createPlaywrightConfig({
   projectId: readEnv('SANITY_E2E_PROJECT_ID'),
   token: readEnv('SANITY_E2E_SESSION_TOKEN'),
-  playwrightOptions(config) {
+  playwrightOptions(config): PlaywrightTestConfig {
     return {
       ...config,
       reporter: excludeGithub(config.reporter),
       use: {
         ...config.use,
         baseURL: 'http://localhost:3339',
+        headless: HEADLESS,
       },
       webServer: {
         ...config.webServer,

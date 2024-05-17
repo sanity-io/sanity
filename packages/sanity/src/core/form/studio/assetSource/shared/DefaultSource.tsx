@@ -15,7 +15,7 @@ import {
   useState,
 } from 'react'
 import {type Subscription} from 'rxjs'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {Button, Dialog} from '../../../../../ui-components'
 import {useClient, useListFormat} from '../../../../hooks'

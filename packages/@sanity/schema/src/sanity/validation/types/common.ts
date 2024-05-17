@@ -2,7 +2,7 @@ import {validateNonObjectFieldsProp} from '../utils/validateNonObjectFieldsProp'
 import {validateTypeName} from '../utils/validateTypeName'
 import {validateDeprecatedProperties} from './deprecated'
 
-export default (typeDef, visitorContext) => {
+export default (typeDef: any, visitorContext: any) => {
   return {
     ...typeDef,
     _problems: [

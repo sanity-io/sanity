@@ -1,3 +1,5 @@
+import {type Rule} from '@sanity/types'
+
 export default {
   title: 'Slug',
   name: 'slug',
@@ -7,6 +9,7 @@ export default {
       name: 'current',
       title: 'Current slug',
       type: 'string',
+      validation: (Rule: Rule): Rule => Rule.required(),
     },
     {
       // The source field is deprecated/unused, but leaving it included and hidden

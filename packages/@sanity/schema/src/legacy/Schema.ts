@@ -1,9 +1,9 @@
 import * as types from './types'
 
-function compileRegistry(schemaDef) {
+function compileRegistry(schemaDef: any) {
   const registry = Object.assign(Object.create(null), types)
 
-  const defsByName = schemaDef.types.reduce((acc, def) => {
+  const defsByName = schemaDef.types.reduce((acc: any, def: any) => {
     if (acc[def.name]) {
       throw new Error(`Duplicate type name added to schema: ${def.name}`)
     }
@@ -15,7 +15,7 @@ function compileRegistry(schemaDef) {
 
   return registry
 
-  function ensure(typeName) {
+  function ensure(typeName: any) {
     if (!registry[typeName]) {
       if (!defsByName[typeName]) {
         throw new Error(`Unknown type: ${typeName}`)
@@ -24,12 +24,12 @@ function compileRegistry(schemaDef) {
     }
   }
 
-  function extendMember(memberDef) {
+  function extendMember(memberDef: any) {
     ensure(memberDef.type)
     return registry[memberDef.type].extend(memberDef, extendMember).get()
   }
 
-  function add(typeDef) {
+  function add(typeDef: any) {
     ensure(typeDef.type)
     if (registry[typeDef.name]) {
       return
@@ -84,7 +84,7 @@ export class DeprecatedDefaultSchema extends Schema {
 
     const stack = new Error(
       'The default export of `@sanity/schema` is deprecated. Use `import {Schema} from "@sanity/schema"` instead.',
-    ).stack.replace(/^Error/, 'Warning')
+    ).stack!.replace(/^Error/, 'Warning')
 
     // eslint-disable-next-line no-console
     console.warn(stack)

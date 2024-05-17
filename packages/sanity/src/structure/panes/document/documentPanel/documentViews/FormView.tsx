@@ -1,7 +1,6 @@
 /* eslint-disable no-nested-ternary */
 import {Box, Container, Flex, focusFirstDescendant, Spinner, Text} from '@sanity/ui'
-import type * as React from 'react'
-import {forwardRef, useCallback, useEffect, useMemo, useState} from 'react'
+import {type FormEvent, forwardRef, useCallback, useEffect, useMemo, useState} from 'react'
 import {tap} from 'rxjs/operators'
 import {
   createPatchChannel,
@@ -29,7 +28,7 @@ interface FormViewProps {
   margins: [number, number, number, number]
 }
 
-const preventDefault = (ev: React.FormEvent) => ev.preventDefault()
+const preventDefault = (ev: FormEvent) => ev.preventDefault()
 
 export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormView(props, ref) {
   const {hidden, margins} = props
@@ -141,7 +140,7 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
   //   () =>
   //     Array.isArray(afterEditorComponents) &&
   //     afterEditorComponents.map(
-  //       (AfterEditorComponent: React.ComponentType<{documentId: string}>, idx: number) => (
+  //       (AfterEditorComponent: ComponentType<{documentId: string}>, idx: number) => (
   //         <AfterEditorComponent key={String(idx)} documentId={documentId} />
   //       )
   //     ),

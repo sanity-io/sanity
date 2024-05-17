@@ -11,12 +11,16 @@ import {
 } from '@sanity/portable-text-editor'
 import {type Path, type PortableTextBlock, type PortableTextTextBlock} from '@sanity/types'
 import {Box, Portal, PortalProvider, useBoundaryElement, usePortal} from '@sanity/ui'
-import {useCallback, useMemo, useState} from 'react'
+import {type ReactNode, useCallback, useMemo, useState} from 'react'
 
 import {ChangeIndicator} from '../../../changeIndicators'
 import {EMPTY_ARRAY} from '../../../util'
 import {ActivateOnFocus} from '../../components/ActivateOnFocus/ActivateOnFocus'
-import {type ArrayOfObjectsInputProps, type RenderCustomMarkers} from '../../types'
+import {
+  type ArrayOfObjectsInputProps,
+  type PortableTextInputProps,
+  type RenderCustomMarkers,
+} from '../../types'
 import {type RenderBlockActionsCallback} from '../../types/_transitional'
 import {ExpandedLayer, Root} from './Compositor.styles'
 import {Editor} from './Editor'
@@ -28,7 +32,9 @@ import {InlineObject} from './object/InlineObject'
 import {TextBlock} from './text'
 
 interface InputProps extends ArrayOfObjectsInputProps<PortableTextBlock> {
+  elementRef: React.RefObject<HTMLDivElement>
   hasFocusWithin: boolean
+  hideToolbar?: boolean
   hotkeys?: HotkeyOptions
   isActive: boolean
   isFullscreen: boolean
@@ -40,18 +46,21 @@ interface InputProps extends ArrayOfObjectsInputProps<PortableTextBlock> {
   rangeDecorations?: RangeDecoration[]
   renderBlockActions?: RenderBlockActionsCallback
   renderCustomMarkers?: RenderCustomMarkers
+  renderEditable?: PortableTextInputProps['renderEditable']
 }
 
 /** @internal */
 export type PortableTextEditorElement = HTMLDivElement | HTMLSpanElement
 
 /** @internal */
-export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunctions'>) {
+export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunctions'>): ReactNode {
   const {
     changed,
+    elementRef,
     focused,
     focusPath = EMPTY_ARRAY,
     hasFocusWithin,
+    hideToolbar,
     hotkeys,
     isActive,
     isFullscreen,
@@ -64,12 +73,13 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
     onPathFocus,
     onToggleFullscreen,
     path,
-    readOnly,
     rangeDecorations,
+    readOnly,
     renderAnnotation,
     renderBlock,
     renderBlockActions,
     renderCustomMarkers,
+    renderEditable,
     renderField,
     renderInlineBlock,
     renderInput,
@@ -388,7 +398,9 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
     () => (
       <Editor
         ariaDescribedBy={ariaDescribedBy}
+        elementRef={elementRef}
         initialSelection={initialSelection}
+        hideToolbar={hideToolbar}
         hotkeys={editorHotkeys}
         isActive={isActive}
         isFullscreen={isFullscreen}
@@ -402,6 +414,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
         renderAnnotation={editorRenderAnnotation}
         renderBlock={editorRenderBlock}
         renderChild={editorRenderChild}
+        renderEditable={renderEditable}
         setPortalElement={setPortalElement}
         scrollElement={scrollElement}
         setScrollElement={setScrollElement}
@@ -412,19 +425,22 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
     [
       ariaDescribedBy,
       editorHotkeys,
-      isActive,
-      isFullscreen,
-      onItemOpen,
-      onCopy,
-      onPaste,
-      handleToggleFullscreen,
-      path,
-      rangeDecorations,
-      readOnly,
       editorRenderAnnotation,
       editorRenderBlock,
       editorRenderChild,
+      elementRef,
+      handleToggleFullscreen,
+      hideToolbar,
       initialSelection,
+      isActive,
+      isFullscreen,
+      onCopy,
+      onItemOpen,
+      onPaste,
+      path,
+      rangeDecorations,
+      readOnly,
+      renderEditable,
       scrollElement,
     ],
   )

@@ -1,6 +1,6 @@
 /* eslint-disable no-restricted-imports */
 import {MenuGroup as UIMenuGroup, type MenuGroupProps as UIMenuGroupProps} from '@sanity/ui'
-import type * as React from 'react'
+import {type HTMLProps} from 'react'
 
 /** @internal */
 export type MenuGroupProps = Pick<UIMenuGroupProps, 'icon' | 'popover' | 'text' | 'tone'>
@@ -11,8 +11,7 @@ export type MenuGroupProps = Pick<UIMenuGroupProps, 'icon' | 'popover' | 'text' 
  * @internal
  */
 export const MenuGroup = (
-  props: MenuGroupProps &
-    Omit<React.HTMLProps<HTMLDivElement>, 'as' | 'height' | 'ref' | 'tabIndex'>,
+  props: MenuGroupProps & Omit<HTMLProps<HTMLDivElement>, 'as' | 'height' | 'ref' | 'tabIndex'>,
 ) => {
   return <UIMenuGroup {...props} fontSize={1} padding={3} />
 }

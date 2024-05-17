@@ -9,22 +9,24 @@ import {
   type ExtractSchemaWorkerData,
   type ExtractSchemaWorkerResult,
 } from '../../threads/extractSchema'
+import {SchemaExtractedTrace} from './extractSchema.telemetry'
 
 interface ExtractFlags {
-  workspace?: string
-  path?: string
+  'workspace'?: string
+  'path'?: string
   'enforce-required-fields'?: boolean
-  format?: 'groq-type-nodes' | string
+  'format'?: 'groq-type-nodes' | string
 }
 
 export type SchemaValidationFormatter = (result: ExtractSchemaWorkerResult) => string
 
 export default async function extractAction(
   args: CliCommandArguments<ExtractFlags>,
-  {workDir, output}: CliCommandContext,
+  {workDir, output, telemetry}: CliCommandContext,
 ): Promise<void> {
   const flags = args.extOptions
-  const formatFlat = flags.format || 'groq-type-nodes'
+  const formatFlag = flags.format || 'groq-type-nodes'
+  const enforceRequiredFields = flags['enforce-required-fields'] || false
 
   const rootPkgPath = readPkgUp.sync({cwd: __dirname})?.path
   if (!rootPkgPath) {
@@ -43,32 +45,59 @@ export default async function extractAction(
   const spinner = output
     .spinner({})
     .start(
-      flags['enforce-required-fields']
+      enforceRequiredFields
         ? 'Extracting schema, with enforced required fields'
         : 'Extracting schema',
     )
+
+  const trace = telemetry.trace(SchemaExtractedTrace)
+  trace.start()
 
   const worker = new Worker(workerPath, {
     workerData: {
       workDir,
       workspaceName: flags.workspace,
-      enforceRequiredFields: flags['enforce-required-fields'],
-      format: formatFlat,
+      enforceRequiredFields,
+      format: formatFlag,
     } satisfies ExtractSchemaWorkerData,
     // eslint-disable-next-line no-process-env
     env: process.env,
   })
 
-  const {schema} = await new Promise<ExtractSchemaWorkerResult>((resolve, reject) => {
-    worker.addListener('message', resolve)
-    worker.addListener('error', reject)
-  })
+  try {
+    const {schema} = await new Promise<ExtractSchemaWorkerResult>((resolve, reject) => {
+      worker.addListener('message', resolve)
+      worker.addListener('error', reject)
+    })
 
-  const path = flags.path || join(process.cwd(), 'schema.json')
+    trace.log({
+      schemaAllTypesCount: schema.length,
+      schemaDocumentTypesCount: schema.filter((type) => type.type === 'document').length,
+      schemaTypesCount: schema.filter((type) => type.type === 'type').length,
+      enforceRequiredFields,
+      schemaFormat: formatFlag,
+    })
 
-  spinner.text = `Writing schema to ${path}`
+    const path = flags.path || join(process.cwd(), 'schema.json')
 
-  await writeFile(path, JSON.stringify(schema, null, 2))
+    spinner.text = `Writing schema to ${path}`
 
-  spinner.succeed('Extracted schema')
+    await writeFile(path, `${JSON.stringify(schema, null, 2)}\n`)
+
+    trace.complete()
+
+    spinner.succeed(
+      enforceRequiredFields
+        ? 'Extracted schema, with enforced required fields'
+        : 'Extracted schema',
+    )
+  } catch (err) {
+    trace.error(err)
+    spinner.fail(
+      enforceRequiredFields
+        ? 'Failed to extract schema, with enforced required fields'
+        : 'Failed to extract schema',
+    )
+    throw err
+  }
 }

@@ -2,7 +2,7 @@ interface Config {
   enumerable?: boolean
   writable?: boolean
 }
-export function lazyGetter(target, key, getter, config: Config = {}) {
+export function lazyGetter(target: any, key: any, getter: any, config: Config = {}) {
   Object.defineProperty(target, key, {
     configurable: true,
     enumerable: config.enumerable !== false,

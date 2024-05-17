@@ -63,6 +63,13 @@ const getFakeGlobals = (basePath: string) => ({
   InputEvent: global.window?.InputEvent,
   customElements: global.window?.customElements,
   ResizeObserver: global.window?.ResizeObserver || ResizeObserver,
+  matchMedia:
+    global.window?.matchMedia ||
+    (() => ({
+      matches: false,
+      media: '',
+      onchange: null,
+    })),
 })
 
 function provideFakeGlobals(basePath: string): () => void {
@@ -120,17 +127,19 @@ function tryGetAceGlobal(basePath: string) {
 
 function getFileExtensions() {
   return [
+    '.css',
+    '.eot',
+    '.gif',
     '.jpeg',
     '.jpg',
+    '.otf',
     '.png',
-    '.gif',
+    '.sass',
+    '.scss',
     '.svg',
+    '.ttf',
     '.webp',
     '.woff',
     '.woff2',
-    '.ttf',
-    '.eot',
-    '.otf',
-    '.css',
   ]
 }

@@ -89,7 +89,7 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
     inputProps: {onChange, focusPath, onPathFocus, renderPreview, elementProps},
   } = props
 
-  const sortable = !readOnly && parentSchemaType.options?.sortable !== false
+  const sortable = parentSchemaType.options?.sortable !== false
   const insertableTypes = parentSchemaType.of
 
   const elementRef = useRef<HTMLDivElement | null>(null)
@@ -190,7 +190,7 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
     () =>
       readOnly ? null : (
         <MenuButton
-          button={<ContextMenuButton paddingY={3} />}
+          button={<ContextMenuButton />}
           id={`${inputId}-menuButton`}
           menu={
             <Menu ref={menuRef}>
@@ -296,6 +296,7 @@ export function ReferenceItem<Item extends ReferenceItemValue = ReferenceItemVal
     <ReferenceItemRefProvider menuRef={menuRef} containerRef={containerRef}>
       <RowLayout
         dragHandle={sortable}
+        readOnly={!!readOnly}
         presence={
           !isEditing && presence.length > 0 && <FieldPresence presence={presence} maxAvatars={1} />
         }

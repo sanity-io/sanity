@@ -1,7 +1,8 @@
+import {spawn} from 'node:child_process'
+import fs from 'node:fs/promises'
+import path from 'node:path'
+
 import {type CliCommandAction, type CliCommandArguments} from '@sanity/cli'
-import {spawn} from 'child_process'
-import fs from 'fs/promises'
-import path from 'path'
 import readPkgUp from 'read-pkg-up'
 import {hideBin} from 'yargs/helpers'
 import yargs from 'yargs/yargs'

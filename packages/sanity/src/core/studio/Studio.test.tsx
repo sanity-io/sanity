@@ -18,9 +18,7 @@ import {describe, expect, it, jest} from '@jest/globals'
  * c) https://styled-components.com/docs/advanced#server-side-rendering
  */
 import {type SanityClient} from '@sanity/client'
-import {hydrateRoot} from 'react-dom/client'
 import {renderToStaticMarkup, renderToString} from 'react-dom/server'
-import {act} from 'react-dom/test-utils'
 import {ServerStyleSheet} from 'styled-components'
 
 import {createMockSanityClient} from '../../../test/mocks/mockSanityClient'
@@ -45,7 +43,7 @@ describe('Studio', () => {
       const html = renderToStaticMarkup(sheet.collectStyles(<Studio config={config} />))
 
       expect(html).toMatchInlineSnapshot(
-        `"<div class=\\"sc-kxJlZZ gaLSDf\\"><div data-ui=\\"Spinner\\" class=\\"sc-irLvIq kqiGuJ sc-ktwOfi bQiRGJ sc-gFCCrQ dmATKI\\"><span><svg data-sanity-icon=\\"spinner\\" width=\\"1em\\" height=\\"1em\\" viewBox=\\"0 0 25 25\\" fill=\\"none\\" xmlns=\\"http://www.w3.org/2000/svg\\"><path d=\\"M4.5 12.5C4.5 16.9183 8.08172 20.5 12.5 20.5C16.9183 20.5 20.5 16.9183 20.5 12.5C20.5 8.08172 16.9183 4.5 12.5 4.5\\" stroke=\\"currentColor\\" stroke-width=\\"1.2\\" stroke-linejoin=\\"round\\"></path></svg></span></div></div>"`,
+        `"<div class=\\"sc-cbekWb bumVOU\\"><div data-ui=\\"Spinner\\" class=\\"sc-dAlxHm iMZvQo sc-cPiJYC ifYoiP sc-ifjxUM sIQhr\\"><span><svg data-sanity-icon=\\"spinner\\" width=\\"1em\\" height=\\"1em\\" viewBox=\\"0 0 25 25\\" fill=\\"none\\" xmlns=\\"http://www.w3.org/2000/svg\\"><path d=\\"M4.5 12.5C4.5 16.9183 8.08172 20.5 12.5 20.5C16.9183 20.5 20.5 16.9183 20.5 12.5C20.5 8.08172 16.9183 4.5 12.5 4.5\\" stroke=\\"currentColor\\" stroke-width=\\"1.2\\" stroke-linejoin=\\"round\\"></path></svg></span></div></div>"`,
       )
     } finally {
       sheet.seal()
@@ -62,31 +60,8 @@ describe('Studio', () => {
     try {
       const html = renderToString(sheet.collectStyles(<Studio config={config} />))
       expect(html).toMatchInlineSnapshot(
-        `"<div class=\\"sc-kxJlZZ gaLSDf\\"><div data-ui=\\"Spinner\\" class=\\"sc-irLvIq kqiGuJ sc-ktwOfi bQiRGJ sc-gFCCrQ dmATKI\\"><span><svg data-sanity-icon=\\"spinner\\" width=\\"1em\\" height=\\"1em\\" viewBox=\\"0 0 25 25\\" fill=\\"none\\" xmlns=\\"http://www.w3.org/2000/svg\\"><path d=\\"M4.5 12.5C4.5 16.9183 8.08172 20.5 12.5 20.5C16.9183 20.5 20.5 16.9183 20.5 12.5C20.5 8.08172 16.9183 4.5 12.5 4.5\\" stroke=\\"currentColor\\" stroke-width=\\"1.2\\" stroke-linejoin=\\"round\\"></path></svg></span></div></div>"`,
+        `"<div class=\\"sc-cbekWb bumVOU\\"><div data-ui=\\"Spinner\\" class=\\"sc-dAlxHm iMZvQo sc-cPiJYC ifYoiP sc-ifjxUM sIQhr\\"><span><svg data-sanity-icon=\\"spinner\\" width=\\"1em\\" height=\\"1em\\" viewBox=\\"0 0 25 25\\" fill=\\"none\\" xmlns=\\"http://www.w3.org/2000/svg\\"><path d=\\"M4.5 12.5C4.5 16.9183 8.08172 20.5 12.5 20.5C16.9183 20.5 20.5 16.9183 20.5 12.5C20.5 8.08172 16.9183 4.5 12.5 4.5\\" stroke=\\"currentColor\\" stroke-width=\\"1.2\\" stroke-linejoin=\\"round\\"></path></svg></span></div></div>"`,
       )
-    } finally {
-      sheet.seal()
-    }
-
-    expect(console.error).not.toHaveBeenCalled()
-
-    spy.mockReset()
-    spy.mockRestore()
-  })
-  it('SSR hydrateRoot finishes without warnings', () => {
-    const spy = jest.spyOn(console, 'error')
-    const node = document.createElement('div')
-    document.body.appendChild(node)
-    const sheet = new ServerStyleSheet()
-    try {
-      const html = renderToString(sheet.collectStyles(<Studio config={config} />))
-      node.innerHTML = html
-      expect(html).toMatchInlineSnapshot(
-        `"<div class=\\"sc-kxJlZZ gaLSDf\\"><div data-ui=\\"Spinner\\" class=\\"sc-irLvIq kqiGuJ sc-ktwOfi bQiRGJ sc-gFCCrQ dmATKI\\"><span><svg data-sanity-icon=\\"spinner\\" width=\\"1em\\" height=\\"1em\\" viewBox=\\"0 0 25 25\\" fill=\\"none\\" xmlns=\\"http://www.w3.org/2000/svg\\"><path d=\\"M4.5 12.5C4.5 16.9183 8.08172 20.5 12.5 20.5C16.9183 20.5 20.5 16.9183 20.5 12.5C20.5 8.08172 16.9183 4.5 12.5 4.5\\" stroke=\\"currentColor\\" stroke-width=\\"1.2\\" stroke-linejoin=\\"round\\"></path></svg></span></div></div>"`,
-      )
-      document.head.innerHTML += sheet.getStyleTags()
-
-      act(() => hydrateRoot(node, <Studio config={config} />))
     } finally {
       sheet.seal()
     }

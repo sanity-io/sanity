@@ -1,19 +1,19 @@
 import {type ButtonTone, Card, type CardTone, Flex, Text} from '@sanity/ui'
-import type * as React from 'react'
+import {type ComponentType, type ElementType, type JSX, type ReactNode} from 'react'
 
 import {Button} from '../../../../../ui-components'
 import {SpacerButton} from '../../../../components/spacerButton'
 
 interface BannerProps {
   action?: {
-    as?: React.ElementType | keyof JSX.IntrinsicElements
-    icon?: React.ComponentType
+    as?: ElementType | keyof JSX.IntrinsicElements
+    icon?: ComponentType
     onClick?: () => void
     text: string
     tone?: ButtonTone
   }
-  content: React.ReactNode
-  icon?: React.ComponentType
+  content: ReactNode
+  icon?: ComponentType
   tone?: CardTone
 }
 

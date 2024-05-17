@@ -1,7 +1,7 @@
 import {Box, Card, Portal} from '@sanity/ui'
 import {useState} from 'react'
 import FocusLock from 'react-focus-lock'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {useTranslation} from '../../../../i18n'
 import {supportsTouch} from '../../../../util'
@@ -61,15 +61,7 @@ export function SearchDialog({onClose, onOpen, open}: SearchDialogProps) {
           <FocusLock autoFocus={!supportsTouch} returnFocus>
             <SearchDialogBox>
               <InnerCard display="flex" height="fill" scheme={scheme} tone="default">
-                <SearchHeader
-                  ariaInputLabel={
-                    hasValidTerms
-                      ? t('search.search-results-aria-label')
-                      : t('search.recent-searches-aria-label')
-                  }
-                  onClose={onClose}
-                  ref={setInputElement}
-                />
+                <SearchHeader onClose={onClose} ref={setInputElement} />
                 {filtersVisible && (
                   <Card borderTop flex="none">
                     <Filters />

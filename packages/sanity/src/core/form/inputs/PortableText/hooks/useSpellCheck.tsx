@@ -1,7 +1,7 @@
 import {usePortableTextEditor} from '@sanity/portable-text-editor'
 import {useMemo} from 'react'
 
-export function useSpellcheck(): boolean {
+export function useSpellCheck(): boolean {
   const editor = usePortableTextEditor()
   return useMemo(() => {
     // Chrome 96. has serious perf. issues with spellchecking

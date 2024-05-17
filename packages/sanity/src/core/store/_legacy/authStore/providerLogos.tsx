@@ -1,6 +1,6 @@
 import {type Theme} from '@sanity/ui'
 import {type ComponentType} from 'react'
-import styled, {css} from 'styled-components'
+import {css, styled} from 'styled-components'
 
 import {type AuthProvider} from '../../../config'
 

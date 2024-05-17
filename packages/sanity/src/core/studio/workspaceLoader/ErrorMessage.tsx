@@ -2,7 +2,7 @@
 import {Box, Card, Code, Flex, Text} from '@sanity/ui'
 import {startCase} from 'lodash'
 import {useEffect} from 'react'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 const ListItem = styled(Flex)``
 

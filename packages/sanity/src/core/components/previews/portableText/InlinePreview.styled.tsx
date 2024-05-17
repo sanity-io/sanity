@@ -1,5 +1,5 @@
 import {rem, Text, type Theme} from '@sanity/ui'
-import styled, {css} from 'styled-components'
+import {css, styled} from 'styled-components'
 
 export const RootSpan = styled.span`
   display: inline-flex;

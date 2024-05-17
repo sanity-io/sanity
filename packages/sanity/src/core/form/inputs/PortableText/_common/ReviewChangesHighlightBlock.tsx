@@ -1,5 +1,5 @@
 import {rgba} from '@sanity/ui'
-import styled, {css} from 'styled-components'
+import {css, styled} from 'styled-components'
 
 export const ReviewChangesHighlightBlock = styled.div(({theme}) => {
   const {radius, space, color} = theme.sanity
@@ -13,5 +13,6 @@ export const ReviewChangesHighlightBlock = styled.div(({theme}) => {
     left: ${space[4] + space[1]}px;
     right: 0;
     background-color: ${bg};
+    pointer-events: none;
   `
 })

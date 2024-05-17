@@ -41,7 +41,7 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** Tooltip when publish button is disabled because the document is already published, and published time is unavailable.*/
   'action.publish.already-published.no-time-ago.tooltip': 'Already published',
   /** Tooltip when publish button is disabled because the document is already published.*/
-  'action.publish.already-published.tooltip': 'Published {{timeSincePublished}} ago',
+  'action.publish.already-published.tooltip': 'Published {{timeSincePublished}}',
 
   /** Tooltip when action is disabled because the studio is not ready.*/
   'action.publish.disabled.not-ready': 'Operation not ready',
@@ -355,6 +355,9 @@ const structureLocaleStrings = defineLocalesResources('structure', {
   /** The text when a discard changes operation succeeded  */
   'panes.document-operation-results.operation-success_discardChanges':
     'All changes since last publish has now been discarded. The discarded draft can still be recovered from history',
+  /** The text when a duplicate operation succeeded  */
+  'panes.document-operation-results.operation-success_duplicate':
+    'The document was successfully duplicated',
   /** The text when a publish operation succeeded  */
   'panes.document-operation-results.operation-success_publish':
     '<Strong>{{title}}</Strong> was published',

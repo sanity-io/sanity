@@ -1,6 +1,7 @@
+import fs from 'node:fs/promises'
+import path from 'node:path'
+
 import chokidar from 'chokidar'
-import fs from 'fs/promises'
-import path from 'path'
 
 import {debug as serverDebug} from './debug'
 import {getEntryModule} from './getEntryModule'

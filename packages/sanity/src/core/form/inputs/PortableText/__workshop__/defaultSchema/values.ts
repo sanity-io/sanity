@@ -1,7 +1,7 @@
 import {type PortableTextBlock} from '@sanity/types'
 
 export const valueOptions = {
-  Empty: 'empty',
+  'Empty': 'empty',
   'With Text': 'withText',
 }
 

@@ -64,7 +64,7 @@ export interface SearchFactoryOptions {
   tag?: string
   /* only return unique documents (e.g. not both draft and published) */
   unique?: boolean
-  unstable_enableNewSearch?: boolean
+  enableLegacySearch?: boolean
 }
 
 /**
@@ -107,6 +107,7 @@ export type SearchOptions = {
   cursor?: string
   limit?: number
   isCrossDataset?: boolean
+  queryType?: 'prefixLast' | 'prefixNone'
 }
 
 /**

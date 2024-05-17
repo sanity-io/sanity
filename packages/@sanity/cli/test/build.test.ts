@@ -1,6 +1,7 @@
+import {readdir, readFile, stat} from 'node:fs/promises'
+import path from 'node:path'
+
 import {describe, expect, jest, test} from '@jest/globals'
-import {readdir, readFile, stat} from 'fs/promises'
-import path from 'path'
 
 import {describeCliTest, testConcurrent} from './shared/describe'
 import {runSanityCmdCommand, studiosPath, studioVersions} from './shared/environment'

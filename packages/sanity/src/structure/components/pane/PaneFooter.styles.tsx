@@ -1,5 +1,5 @@
 import {Card, Layer} from '@sanity/ui'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 export const Root = styled(Layer)`
   position: sticky;

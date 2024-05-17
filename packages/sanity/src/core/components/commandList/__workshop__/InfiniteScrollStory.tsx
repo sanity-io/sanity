@@ -1,7 +1,7 @@
 import {Box, Card, Flex, Stack, Text, TextInput} from '@sanity/ui'
 import {useBoolean} from '@sanity/ui-workshop'
 import {type KeyboardEvent, useCallback, useMemo, useRef, useState} from 'react'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {CommandList} from '../CommandList'
 import {type CommandListHandle, type CommandListRenderItemCallback} from '../types'

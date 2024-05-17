@@ -3,7 +3,7 @@ import {type AssetFromSource, type AssetSource, type ReferenceValue} from '@sani
 import {Box, Flex, Menu, Portal, Stack} from '@sanity/ui'
 import {get, startCase} from 'lodash'
 import {useCallback, useEffect, useId, useMemo, useState} from 'react'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {Button, MenuButton, MenuItem} from '../../../../../../../../../../ui-components'
 import {type Source} from '../../../../../../../../../config'

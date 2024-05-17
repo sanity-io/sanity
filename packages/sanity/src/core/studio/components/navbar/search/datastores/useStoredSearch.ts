@@ -36,6 +36,9 @@ export function useStoredSearch(): [StoredSearch, (_value: StoredSearch) => void
       .pipe(
         startWith(defaultValue as any),
         map((data: StoredSearch) => {
+          if (!data) {
+            return defaultValue
+          }
           // Check if the version matches RECENT_SEARCH_VERSION
           if (data?.version !== RECENT_SEARCH_VERSION) {
             // If not, return the default object and mutate the store (per original verifySearchVersionNumber logic)

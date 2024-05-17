@@ -1,6 +1,7 @@
+import path from 'node:path'
+
 import {type DatasetAclMode} from '@sanity/client'
-import noop from 'lodash/noop'
-import path from 'path'
+import {noop} from 'lodash'
 
 import {type InitFlags} from '../../commands/init/initCommand'
 import {debug} from '../../debug'

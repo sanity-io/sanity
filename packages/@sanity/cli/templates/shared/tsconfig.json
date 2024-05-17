@@ -6,11 +6,8 @@
     "skipLibCheck": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
-    "noEmit": true,
-    "esModuleInterop": true,
-    "module": "esnext",
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
+    "module": "Preserve",
+    "moduleDetection": "force",
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true

@@ -1,6 +1,5 @@
-import type * as React from 'react'
-import {useCallback, useRef} from 'react'
-import styled from 'styled-components'
+import {type MouseEvent, useCallback, useRef} from 'react'
+import {styled} from 'styled-components'
 
 const Root = styled.div`
   position: absolute;
@@ -48,14 +47,14 @@ export function Resizer(props: {onResize: (delta: number) => void; onResizeStart
   const mouseXRef = useRef(0)
 
   const handleMouseDown = useCallback(
-    (event: React.MouseEvent) => {
+    (event: MouseEvent) => {
       event.preventDefault()
 
       mouseXRef.current = event.pageX
 
       onResizeStart()
 
-      const handleMouseMove = (e: MouseEvent) => {
+      const handleMouseMove = (e: globalThis.MouseEvent) => {
         e.preventDefault()
         onResize(e.pageX - mouseXRef.current)
       }

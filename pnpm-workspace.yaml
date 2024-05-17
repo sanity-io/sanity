@@ -1,8 +1,9 @@
 packages:
   - 'dev/*'
-  - 'perf'
   - 'perf/studio'
+  - 'perf/tests'
   - 'examples/*'
+  - 'packages/@repo/*'
   - 'packages/@sanity/*'
   - 'packages/create-sanity'
   - 'packages/groq'

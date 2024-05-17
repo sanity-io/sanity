@@ -1,7 +1,7 @@
 import {type ObjectSchemaType} from '@sanity/types'
 import {Heading, Stack, Text} from '@sanity/ui'
 import {useTranslation} from 'react-i18next'
-import styled, {css} from 'styled-components'
+import {css, styled} from 'styled-components'
 
 import {structureLocaleNamespace} from '../../../../i18n'
 
@@ -75,7 +75,7 @@ export const FormHeader = ({documentId, schemaType, title}: DocumentHeaderProps)
         </Text>
       )}
 
-      <Heading as="h2" data-heading muted={!title}>
+      <Heading as="h2" data-heading muted={!title} data-testid="document-panel-document-title">
         {title ?? t('document-view.form-view.form-title-fallback')}
       </Heading>
     </TitleContainer>

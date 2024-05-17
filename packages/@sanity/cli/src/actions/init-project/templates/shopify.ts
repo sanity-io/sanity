@@ -12,6 +12,7 @@ import {colorInput} from '@sanity/color-input'
 import {imageHotspotArrayPlugin} from 'sanity-plugin-hotspot-array'
 import {media, mediaAssetSource} from 'sanity-plugin-media'
 import {customDocumentActions} from './plugins/customDocumentActions'
+import Navbar from './components/studio/Navbar'
 
 const devOnlyPlugins = [visionTool()]
 
@@ -47,6 +48,12 @@ export default defineConfig({
       },
     },
   },
+
+  studio: {
+    components: {
+      navbar: Navbar,
+    },
+  },
 })`
 
 const shopifyTemplate: ProjectTemplate = {
@@ -60,7 +67,7 @@ const shopifyTemplate: ProjectTemplate = {
     'pluralize-esm': '^9.0.2',
     'sanity-plugin-hotspot-array': '^1.0.1',
     'sanity-plugin-media': '^2.0.5',
-    slug: '^8.2.2',
+    'slug': '^8.2.2',
   },
   devDependencies: {
     '@portabletext/types': '^2.0.2',

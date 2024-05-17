@@ -1,9 +1,17 @@
-import {readFile} from 'fs/promises'
+import {readFile} from 'node:fs/promises'
+
 import * as json5 from 'json5'
 import * as z from 'zod'
 
 export const configDefintion = z.object({
-  path: z.string().or(z.array(z.string())).default('./src/**/*.{ts,tsx,js,jsx}'),
+  path: z
+    .string()
+    .or(z.array(z.string()))
+    .default([
+      './src/**/*.{ts,tsx,js,jsx,mjs,cjs}',
+      './app/**/*.{ts,tsx,js,jsx,mjs,cjs}',
+      './sanity/**/*.{ts,tsx,js,jsx,mjs,cjs}',
+    ]),
   schema: z.string().default('./schema.json'),
   generates: z.string().default('./sanity.types.ts'),
 })

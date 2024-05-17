@@ -1,3 +1,9 @@
 {
-  "ignores": ["@sanity/eslint-config-studio", "dotenv-flow", "esbuild", "esbuild-register"]
+  "ignores": [
+    "@repo/tsconfig",
+    "@sanity/eslint-config-studio",
+    "dotenv-flow",
+    "esbuild",
+    "esbuild-register"
+  ]
 }

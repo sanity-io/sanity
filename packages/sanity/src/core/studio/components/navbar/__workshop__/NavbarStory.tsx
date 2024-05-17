@@ -9,7 +9,7 @@ import {
 import {Card} from '@sanity/ui'
 import {useBoolean, useString} from '@sanity/ui-workshop'
 import {createContext, useMemo, useState} from 'react'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {defineConfig, type Tool} from '../../../../config'
 import {isNonNullable} from '../../../../util/isNonNullable'

@@ -1,7 +1,7 @@
 import {error, HELP_IDS, warning} from '../createValidationResult'
 import {validateComponent} from '../utils/validateComponent'
 
-export default (typeDef, visitorContext) => {
+export default (typeDef: any, visitorContext: any) => {
   const hasName = Boolean(typeDef.name)
   if (!hasName && Object.keys(typeDef).length === 1) {
     // Short-circuit on obviously invalid types (only key is _problems)
@@ -54,6 +54,6 @@ export default (typeDef, visitorContext) => {
   }
 }
 
-function looksLikeEsmModule(typeDef) {
+function looksLikeEsmModule(typeDef: any) {
   return !typeDef.name && typeDef.default && (typeDef.default.name || typeDef.default.title)
 }

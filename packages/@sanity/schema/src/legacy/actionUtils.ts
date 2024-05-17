@@ -17,7 +17,7 @@ const readActions = (schemaType: SchemaType): string[] => {
       'experimental-actions-replaced-by-document-actions',
     )}".
 `)
-    hasWarned[schemaType.name] = true
+    ;(hasWarned as any)[schemaType.name] = true
   }
 
   return ACTIONS_FLAG in schemaType ? (schemaType[ACTIONS_FLAG] as string[]) : DEFAULT_ACTIONS

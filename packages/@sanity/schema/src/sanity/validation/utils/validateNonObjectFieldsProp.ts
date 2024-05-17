@@ -5,7 +5,7 @@ import {error} from '../createValidationResult'
 
 export function validateNonObjectFieldsProp(
   typeDef: SchemaType,
-  visitorContext,
+  visitorContext: any,
 ): SchemaValidationResult[] {
   if (!('fields' in typeDef)) {
     return []

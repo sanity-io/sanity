@@ -1,8 +1,9 @@
+import fs from 'node:fs/promises'
+import path from 'node:path'
+
 import {type CliCommandDefinition, type CliPrompter} from '@sanity/cli'
 import exportDataset from '@sanity/export'
 import {absolutify} from '@sanity/util/fs'
-import fs from 'fs/promises'
-import path from 'path'
 import prettyMs from 'pretty-ms'
 
 import {chooseDatasetPrompt} from '../../actions/dataset/chooseDatasetPrompt'
@@ -28,12 +29,12 @@ Examples
 `
 
 interface ExportFlags {
-  raw?: boolean
-  assets?: boolean
-  drafts?: boolean
-  compress?: boolean
-  overwrite?: boolean
-  types?: string
+  'raw'?: boolean
+  'assets'?: boolean
+  'drafts'?: boolean
+  'compress'?: boolean
+  'overwrite'?: boolean
+  'types'?: string
   'asset-concurrency'?: string
 }
 

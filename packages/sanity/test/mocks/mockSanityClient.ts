@@ -10,6 +10,8 @@ export interface MockClientTransactionLog {
   patch: any[][]
 }
 
+export type UploadBody = File | Blob | Buffer | NodeJS.ReadableStream
+
 export interface MockClientLog {
   listen: {query: string; params?: any}[]
   observable: {
@@ -153,6 +155,24 @@ export function createMockSanityClient(
         }
 
         return of(requests[opts.uri] || requests['*'] || null)
+      },
+
+      assets: {
+        upload: (_assetType: 'file' | 'image', _body: UploadBody, _options?: any) => {
+          return of({
+            type: 'response',
+            body: {
+              document: {
+                _id: 'mock-asset-id',
+              },
+            },
+            url: '/uploads',
+            method: 'post',
+            statusCode: 200,
+            statusMessage: 'ok',
+            headers: {},
+          })
+        },
       },
 
       transaction: () => {

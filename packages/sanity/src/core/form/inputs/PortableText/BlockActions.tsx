@@ -1,7 +1,7 @@
 import {PortableTextEditor, usePortableTextEditor} from '@sanity/portable-text-editor'
 import {type PortableTextBlock} from '@sanity/types'
 import {useMemo} from 'react'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {type PatchEvent} from '../../patch'
 import {

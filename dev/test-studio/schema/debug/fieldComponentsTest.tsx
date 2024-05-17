@@ -1,4 +1,4 @@
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 const CustomBox = styled.div`
   animation: 3s linear 0s infinite normal none spin;

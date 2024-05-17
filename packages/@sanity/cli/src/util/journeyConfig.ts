@@ -1,13 +1,14 @@
-import fs from 'fs/promises'
-import path from 'path'
-import {format} from 'prettier'
-import {Worker} from 'worker_threads'
+import fs from 'node:fs/promises'
+import path from 'node:path'
+import {Worker} from 'node:worker_threads'
 
 import {
   type BaseSchemaDefinition,
   type DocumentDefinition,
   type ObjectDefinition,
-} from '../../../types'
+} from '@sanity/types'
+import {format} from 'prettier'
+
 import {type CliApiClient} from '../types'
 import {getCliWorkerPath} from './cliWorker'
 
@@ -183,7 +184,10 @@ async function fetchJourneySchema(schemaUrl: string): Promise<DocumentOrObject[]
 async function assembleJourneySchemaTypeFileContent(schemaType: DocumentOrObject): Promise<string> {
   const serialised = wrapSchemaTypeInHelpers(schemaType)
   const imports = getImports(serialised)
-  const prettifiedSchemaType = await format(serialised, {parser: 'typescript'})
+  const prettifiedSchemaType = await format(serialised, {
+    parser: 'typescript',
+    printWidth: 40,
+  })
   // Start file with import, then export the schema type as a named export
   return `${imports}\n\nexport const ${schemaType.name} = ${prettifiedSchemaType}\n`
 }

@@ -1,6 +1,7 @@
 /* eslint sort-keys: "error" */
-import {defineLocaleResourceBundle, defineLocalesResources} from '../helpers'
+import {defineLocalesResources} from '../helpers'
 import {validationLocaleNamespace} from '../localeNamespaces'
+import {type LocaleResourceBundle} from '../types'
 
 /**
  * The string resources for validation.
@@ -113,8 +114,8 @@ export type ValidationLocaleResourceKeys = keyof typeof validationLocaleStrings
  * @beta
  * @hidden
  */
-export const validationLocaleResources = defineLocaleResourceBundle({
+export const validationLocaleResources: LocaleResourceBundle = {
   locale: 'en-US',
   namespace: validationLocaleNamespace,
   resources: validationLocaleStrings,
-})
+}

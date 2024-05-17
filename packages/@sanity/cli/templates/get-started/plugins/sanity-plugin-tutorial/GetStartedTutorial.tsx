@@ -12,7 +12,7 @@ import {
   useTheme,
 } from '@sanity/ui'
 import {CloseIcon} from '@sanity/icons'
-import styled, {css} from 'styled-components'
+import {css, styled} from 'styled-components'
 
 const BlueColor = css`
   color: ${({theme}) => theme.sanity.color.muted.primary.enabled.fg};

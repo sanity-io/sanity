@@ -1,9 +1,10 @@
+import fs from 'node:fs'
+import path from 'node:path'
+
 import {type CliCommandArguments, type CliCommandContext, type CliOutputter} from '@sanity/cli'
 import {type ClientConfig} from '@sanity/client'
 import chalk from 'chalk'
-import fs from 'fs'
 import logSymbols from 'log-symbols'
-import path from 'path'
 
 import {type ValidationWorkerChannel} from '../../threads/validateDocuments'
 import {type WorkerChannelReceiver} from '../../util/workerChannels'
@@ -11,14 +12,14 @@ import {reporters} from './reporters'
 import {validateDocuments} from './validateDocuments'
 
 interface ValidateFlags {
-  workspace?: string
-  format?: string
-  dataset?: string
-  file?: string
-  level?: 'error' | 'warning' | 'info'
+  'workspace'?: string
+  'format'?: string
+  'dataset'?: string
+  'file'?: string
+  'level'?: 'error' | 'warning' | 'info'
   'max-custom-validation-concurrency'?: number
-  yes?: boolean
-  y?: boolean
+  'yes'?: boolean
+  'y'?: boolean
 }
 
 export type BuiltInValidationReporter = (options: {

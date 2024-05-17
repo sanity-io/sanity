@@ -1,6 +1,6 @@
 {
   "name": "@sanity/codegen",
-  "version": "3.35.1",
+  "version": "3.42.1",
   "description": "Codegen toolkit for Sanity.io",
   "keywords": [
     "sanity",
@@ -14,9 +14,6 @@
   "bugs": {
     "url": "https://github.com/sanity-io/sanity/issues"
   },
-  "publishConfig": {
-    "access": "public"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sanity-io/sanity.git",
@@ -24,24 +21,19 @@
   },
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
+  "sideEffects": false,
   "exports": {
     ".": {
-      "types": "./lib/dts/src/_exports/index.d.ts",
       "source": "./src/_exports/index.ts",
-      "require": "./lib/_exports/index.js",
-      "node": {
-        "module": "./lib/_exports/index.esm.js",
-        "import": "./lib/_exports/index.cjs.mjs"
-      },
-      "import": "./lib/_exports/index.esm.js",
-      "default": "./lib/_exports/index.esm.js"
+      "import": "./lib/index.mjs",
+      "require": "./lib/index.js",
+      "default": "./lib/index.js"
     },
     "./package.json": "./package.json"
   },
-  "main": "./lib/_exports/index.js",
-  "module": "./lib/_exports/index.esm.js",
-  "source": "./src/_exports/index.ts",
-  "types": "./lib/dts/src/_exports/index.d.ts",
+  "main": "./lib/index.js",
+  "module": "./lib/index.esm.js",
+  "types": "./lib/index.d.ts",
   "files": [
     "lib",
     "src",
@@ -49,14 +41,13 @@
     "babel.config.json"
   ],
   "scripts": {
-    "prebuild": "run-s clean",
-    "build": "pkg-utils build --tsconfig tsconfig.lib.json",
-    "postbuild": "run-s check:package",
-    "check:package": "pkg-utils --strict --tsconfig tsconfig.lib.json",
+    "build": "pkg-utils build --strict --check --clean",
+    "check:types": "tsc --project tsconfig.lib.json",
     "clean": "rimraf lib coverage",
     "lint": "eslint .",
-    "watch": "pkg-utils watch --tsconfig tsconfig.lib.json",
-    "test": "jest"
+    "prepublishOnly": "turbo run build",
+    "test": "jest",
+    "watch": "pkg-utils watch"
   },
   "dependencies": {
     "@babel/core": "^7.23.9",
@@ -69,22 +60,26 @@
     "@babel/types": "^7.23.9",
     "debug": "^4.3.4",
     "globby": "^10.0.0",
-    "groq-js": "^1.5.0",
+    "groq": "workspace:*",
+    "groq-js": "^1.9.0",
     "json5": "^2.2.3",
     "tsconfig-paths": "^4.2.0",
     "zod": "^3.22.4"
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",
+    "@repo/package.config": "workspace:*",
     "@types/babel__core": "^7.20.5",
     "@types/babel__generator": "^7.6.8",
     "@types/babel__register": "^7.17.3",
-    "@types/babel__traverse": "^7.18.1",
+    "@types/babel__traverse": "^7.20.5",
     "@types/debug": "^4.1.12",
-    "groq": "workspace:*",
     "rimraf": "^3.0.2"
   },
   "engines": {
     "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

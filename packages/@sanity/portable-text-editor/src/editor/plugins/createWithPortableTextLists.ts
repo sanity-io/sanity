@@ -143,11 +143,14 @@ export function createWithPortableTextLists(types: PortableTextMemberSchemaTypes
       const selectedBlocks = [
         ...Editor.nodes(editor, {
           at: editor.selection,
-          match: (node) => editor.isListBlock(node) && node.listItem === listStyle,
+          match: (node) => editor.isTextBlock(node),
         }),
       ]
+
       if (selectedBlocks.length > 0) {
-        return true
+        return selectedBlocks.every(
+          ([node]) => editor.isListBlock(node) && node.listItem === listStyle,
+        )
       }
       return false
     }

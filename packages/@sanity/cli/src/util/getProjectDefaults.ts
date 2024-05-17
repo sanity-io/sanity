@@ -1,7 +1,8 @@
+import fs from 'node:fs/promises'
+import path from 'node:path'
+
 import getGitConfig from '@rexxars/gitconfiglocal'
-import fs from 'fs/promises'
 import {getGitUserInfo} from 'git-user-info'
-import path from 'path'
 import promiseProps from 'promise-props-recursive'
 
 import {type CliCommandContext} from '../types'

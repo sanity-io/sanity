@@ -9,10 +9,19 @@ import {
   Stack,
   Text,
 } from '@sanity/ui'
-import type * as React from 'react'
-import {createElement, forwardRef, isValidElement, useCallback, useMemo} from 'react'
+import {
+  createElement,
+  forwardRef,
+  type HTMLProps,
+  isValidElement,
+  type JSX,
+  type ReactNode,
+  type Ref,
+  useCallback,
+  useMemo,
+} from 'react'
 import {isValidElementType} from 'react-is'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {Tooltip, type TooltipProps} from '..'
 import {
@@ -41,11 +50,11 @@ export type MenuItemProps = Pick<
   /**
    * Previews should be 25x25.
    */
-  preview?: React.ReactNode
+  preview?: ReactNode
   /**
    * Optional render callback which receives menu item content.
    */
-  renderMenuItem?: (menuItemContent: React.JSX.Element) => React.ReactNode
+  renderMenuItem?: (menuItemContent: JSX.Element) => ReactNode
   text?: string
   tooltipProps?: TooltipProps | null
   /**
@@ -93,11 +102,8 @@ export const MenuItem = forwardRef(function MenuItem(
     __unstable_space,
     ...rest
   }: MenuItemProps &
-    Omit<
-      React.HTMLProps<HTMLDivElement>,
-      'as' | 'height' | 'ref' | 'selected' | 'tabIndex' | 'size'
-    >,
-  ref: React.Ref<HTMLDivElement>,
+    Omit<HTMLProps<HTMLDivElement>, 'as' | 'height' | 'ref' | 'selected' | 'tabIndex' | 'size'>,
+  ref: Ref<HTMLDivElement>,
 ) {
   const menuItemContent = useMemo(() => {
     return (

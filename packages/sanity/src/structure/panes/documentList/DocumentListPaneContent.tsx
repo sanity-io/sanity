@@ -13,7 +13,7 @@ import {
   useSchema,
   useTranslation,
 } from 'sanity'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {Button} from '../../../ui-components'
 import {Delay, PaneContent, PaneItem, usePane, usePaneLayout} from '../../components'
@@ -277,7 +277,10 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
   ])
 
   return (
-    <PaneContent overflow={layoutCollapsed || loadingVariant === 'initial' ? 'hidden' : 'auto'}>
+    <PaneContent
+      data-testid="document-list-pane"
+      overflow={layoutCollapsed || loadingVariant === 'initial' ? 'hidden' : 'auto'}
+    >
       {mainContent}
     </PaneContent>
   )

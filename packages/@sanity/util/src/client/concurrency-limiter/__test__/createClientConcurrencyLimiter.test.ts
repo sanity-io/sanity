@@ -1,7 +1,8 @@
+import {types} from 'node:util'
+
 import {describe, expect, it, jest} from '@jest/globals'
 import {createClient, type SanityClient} from '@sanity/client'
 import {firstValueFrom, from} from 'rxjs'
-import {types} from 'util'
 
 import {createClientConcurrencyLimiter} from '../createClientConcurrencyLimiter'
 

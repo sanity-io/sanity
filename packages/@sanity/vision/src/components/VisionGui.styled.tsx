@@ -1,5 +1,5 @@
-import {Box, Card, Flex, Label, rem} from '@sanity/ui'
-import styled, {css} from 'styled-components'
+import {Box, Card, Flex, Label, rem, Text} from '@sanity/ui'
+import {css, styled} from 'styled-components'
 
 export const Root = styled(Flex)`
   .sidebarPanes .Pane {
@@ -127,7 +127,7 @@ export const Result = styled(Box)`
   z-index: 20;
 `
 
-export const TimingsFooter = styled(Box)`
+export const ResultFooter = styled(Flex)`
   border-top: 1px solid var(--card-border-color);
 `
 
@@ -149,6 +149,23 @@ export const TimingsTextContainer = styled(Flex)`
         theme.sanity.fonts.text.sizes[2].ascenderHeight -
         theme.sanity.fonts.text.sizes[2].descenderHeight,
     )};
+`
+
+export const DownloadsCard = styled(Card)`
+  position: relative;
+`
+
+export const SaveResultLabel = styled(Text)`
+  transform: initial;
+  &:before,
+  &:after {
+    content: none;
+  }
+  > span {
+    display: flex !important;
+    gap: ${({theme}) => rem(theme.sanity.space[3])};
+    align-items: center;
+  }
 `
 
 export const ControlsContainer = styled(Box)`

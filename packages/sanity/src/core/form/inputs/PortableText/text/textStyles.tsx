@@ -1,6 +1,6 @@
 import {Heading, Text} from '@sanity/ui'
 import {type ComponentType, type HTMLProps} from 'react'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 type TextStyleProps = Omit<HTMLProps<HTMLDivElement>, 'as' | 'ref'>
 type BlockQuoteStyleProps = Omit<HTMLProps<HTMLQuoteElement>, 'as' | 'ref'>

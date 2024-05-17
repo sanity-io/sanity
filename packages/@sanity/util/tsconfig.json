@@ -1,10 +1,10 @@
 {
-  "extends": "../../../tsconfig.settings",
-  "include": ["./exports", "./src", "./test", "./typings"],
+  "extends": "@repo/tsconfig/base.json",
+  "include": ["./src", "./test", "./node_modules/@sanity/types/src"],
   "compilerOptions": {
-    "composite": true,
     "rootDir": ".",
-    "outDir": "./lib"
-  },
-  "references": [{"path": "../types/tsconfig.lib.json"}]
+    "paths": {
+      "@sanity/types": ["./node_modules/@sanity/types/src"]
+    }
+  }
 }

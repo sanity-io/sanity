@@ -18,6 +18,7 @@ import {structureLocaleNamespace} from '../../i18n'
 import {type DocumentPaneNode} from '../../types'
 import {ErrorPane} from '../error'
 import {LoadingPane} from '../loading'
+import {CommentsWrapper} from './comments'
 import {useDocumentLayoutComponent} from './document-layout'
 import {DocumentPaneProvider} from './DocumentPaneProvider'
 import {type DocumentPaneProviderProps} from './types'
@@ -137,7 +138,9 @@ function DocumentPaneInner(props: DocumentPaneProviderProps) {
         initialValueTemplateItems={templatePermissions}
         activePath={activePath}
       >
-        <DocumentLayout documentId={options.id} documentType={options.type} />
+        <CommentsWrapper documentId={options.id} documentType={options.type}>
+          <DocumentLayout documentId={options.id} documentType={options.type} />
+        </CommentsWrapper>
       </ReferenceInputOptionsProvider>
     </DocumentPaneProvider>
   )

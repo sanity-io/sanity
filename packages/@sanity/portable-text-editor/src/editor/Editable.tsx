@@ -1,5 +1,5 @@
 import {type PortableTextBlock} from '@sanity/types'
-import {noop} from 'lodash'
+import {isEqual, noop} from 'lodash'
 import {
   type ClipboardEvent,
   type CSSProperties,
@@ -8,18 +8,22 @@ import {
   forwardRef,
   type HTMLProps,
   type KeyboardEvent,
+  type MutableRefObject,
   type ReactNode,
   type TextareaHTMLAttributes,
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react'
 import {
   type BaseRange,
   Editor,
+  Node,
   type NodeEntry,
   type Operation,
+  Path,
   Range as SlateRange,
   type Text,
   Transforms,
@@ -48,6 +52,7 @@ import {
   type ScrollSelectionIntoViewFunction,
 } from '../types/editor'
 import {type HotkeyOptions} from '../types/options'
+import {type SlateTextBlock, type VoidElement} from '../types/slate'
 import {debugWithName} from '../utils/debug'
 import {moveRangeByOperation, toPortableTextRange, toSlateRange} from '../utils/ranges'
 import {normalizeSelection} from '../utils/selection'
@@ -75,7 +80,7 @@ interface BaseRangeWithDecoration extends BaseRange {
   rangeDecoration: RangeDecoration
 }
 
-const EMPTY_DECORATORS: BaseRangeWithDecoration[] = []
+const EMPTY_DECORATIONS_STATE: BaseRangeWithDecoration[] = []
 
 /**
  * @public
@@ -88,6 +93,7 @@ export type PortableTextEditableProps = Omit<
   onBeforeInput?: (event: InputEvent) => void
   onPaste?: OnPasteFn
   onCopy?: OnCopyFn
+  ref: MutableRefObject<HTMLDivElement | null>
   rangeDecorations?: RangeDecoration[]
   renderAnnotation?: RenderAnnotationFunction
   renderBlock?: RenderBlockFunction
@@ -116,6 +122,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
     onBeforeInput,
     onPaste,
     onCopy,
+    onClick,
     rangeDecorations,
     renderAnnotation,
     renderBlock,
@@ -137,7 +144,9 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
   const [editableElement, setEditableElement] = useState<HTMLDivElement | null>(null)
   const [hasInvalidValue, setHasInvalidValue] = useState(false)
   const [rangeDecorationState, setRangeDecorationsState] =
-    useState<BaseRangeWithDecoration[]>(EMPTY_DECORATORS)
+    useState<BaseRangeWithDecoration[]>(EMPTY_DECORATIONS_STATE)
+
+  const rangeDecorationsRef = useRef(rangeDecorations)
 
   const {change$, schemaTypes} = portableTextEditor
   const slateEditor = useSlate()
@@ -150,8 +159,8 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
     [change$, keyGenerator, schemaTypes],
   )
   const withHotKeys = useMemo(
-    () => createWithHotkeys(schemaTypes, keyGenerator, portableTextEditor, hotkeys),
-    [hotkeys, keyGenerator, portableTextEditor, schemaTypes],
+    () => createWithHotkeys(schemaTypes, portableTextEditor, hotkeys),
+    [hotkeys, portableTextEditor, schemaTypes],
   )
 
   // Output a minimal React editor inside Editable when in readOnly mode.
@@ -272,8 +281,6 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
                   origin: 'local',
                 })
               }
-              // Temporarily set the range decoration to the new range (it will however be overwritten by props at any moment)
-              rangeDecorationItem.selection = newRangeSelection
             }
           }
           // If the newRange is null, it means that the range is not valid anymore and should be removed
@@ -287,7 +294,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
           return
         }
       }
-      setRangeDecorationsState(EMPTY_DECORATORS)
+      setRangeDecorationsState(EMPTY_DECORATIONS_STATE)
     },
     [portableTextEditor, rangeDecorations, schemaTypes, slateEditor],
   )
@@ -313,7 +320,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
       // debug('Unsubscribing to changes$')
       sub.unsubscribe()
     }
-  }, [change$, restoreSelectionFromProps, syncRangeDecorations])
+  }, [change$, restoreSelectionFromProps])
 
   // Restore selection from props when it changes
   useEffect(() => {
@@ -327,9 +334,17 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
 
   useEffect(() => {
     syncRangeDecorations()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []) // Empty here! We only want to run this once at mount
+
+  useEffect(() => {
+    if (!isEqual(rangeDecorations, rangeDecorationsRef.current)) {
+      syncRangeDecorations()
+    }
+    rangeDecorationsRef.current = rangeDecorations
   }, [rangeDecorations, syncRangeDecorations])
 
-  // Sync range decorations before an operation is applied
+  // Sync range decorations after an operation is applied
   useEffect(() => {
     slateEditor.apply = (op: Operation) => {
       originalApply(op)
@@ -432,6 +447,30 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
       }
     },
     [onFocus, portableTextEditor, change$, slateEditor],
+  )
+
+  const handleClick = useCallback(
+    (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+      if (onClick) {
+        onClick(event)
+      }
+      // Inserts a new block if it's clicking on the editor, focused on the last block and it's a void element
+      if (slateEditor.selection && event.target === event.currentTarget) {
+        const [lastBlock, path] = Node.last(slateEditor, [])
+        const focusPath = slateEditor.selection.focus.path.slice(0, 1)
+        const lastPath = path.slice(0, 1)
+        if (Path.equals(focusPath, lastPath)) {
+          const node = Node.descendant(slateEditor, path.slice(0, 1)) as
+            | SlateTextBlock
+            | VoidElement
+          if (lastBlock && Editor.isVoid(slateEditor, node)) {
+            Transforms.insertNodes(slateEditor, slateEditor.pteCreateEmptyBlock())
+            slateEditor.onChange()
+          }
+        }
+      }
+    },
+    [onClick, slateEditor],
   )
 
   const handleOnBlur: FocusEventHandler<HTMLDivElement> = useCallback(
@@ -574,11 +613,29 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
           },
         ]
       }
-      const result = rangeDecorationState.filter((item) => SlateRange.includes(item, path))
+      // Editor node has a path length of 0 (should never be decorated)
+      if (path.length === 0) {
+        return EMPTY_DECORATIONS_STATE
+      }
+      const result = rangeDecorationState.filter((item) => {
+        // Special case in order to only return one decoration for collapsed ranges
+        if (SlateRange.isCollapsed(item)) {
+          // Collapsed ranges should only be decorated if they are on a block child level (length 2)
+          if (path.length !== 2) {
+            return false
+          }
+          return Path.equals(item.focus.path, path) && Path.equals(item.anchor.path, path)
+        }
+        // Include decorations that either include or intersects with this path
+        return (
+          SlateRange.intersection(item, {anchor: {path, offset: 0}, focus: {path, offset: 0}}) ||
+          SlateRange.includes(item, path)
+        )
+      })
       if (result.length > 0) {
         return result
       }
-      return EMPTY_DECORATORS
+      return EMPTY_DECORATIONS_STATE
     },
     [slateEditor, schemaTypes, rangeDecorationState],
   )
@@ -602,6 +659,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
       decorate={decorate}
       onBlur={handleOnBlur}
       onCopy={handleCopy}
+      onClick={handleClick}
       onDOMBeforeInput={handleOnBeforeInput}
       onFocus={handleOnFocus}
       onKeyDown={handleKeyDown}

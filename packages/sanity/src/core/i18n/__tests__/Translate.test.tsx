@@ -4,7 +4,6 @@ import {render} from '@testing-library/react'
 import {type ComponentProps, type ReactNode} from 'react'
 
 import {LocaleProviderBase} from '../components/LocaleProvider'
-import {defineLocaleResourceBundle} from '../helpers'
 import {useTranslation} from '../hooks/useTranslation'
 import {prepareI18n} from '../i18nConfig'
 import {Translate} from '../Translate'
@@ -13,11 +12,12 @@ import {type LocaleResourceBundle, type LocaleResourceRecord} from '../types'
 type TestComponentProps = Omit<ComponentProps<typeof Translate>, 't'>
 
 function createBundle(resources: LocaleResourceRecord) {
-  return defineLocaleResourceBundle({
+  const resourceBundle: LocaleResourceBundle = {
     locale: 'en-US',
     namespace: 'testNs',
     resources,
-  })
+  }
+  return resourceBundle
 }
 
 async function getWrapper(bundles: LocaleResourceBundle[]) {
@@ -135,6 +135,20 @@ describe('Translate component', () => {
     )
     expect(await findByTestId('output')).toHaveTextContent(
       'An escaped, <strong>interpolated</strong> thing',
+    )
+  })
+
+  it('it allows using list formatter for interpolated values', async () => {
+    const wrapper = await getWrapper([
+      createBundle({peopleSignedUp: '{{count}} people signed up: {{people, list}}'}),
+    ])
+    const people = ['Bjørge', 'Rita', 'Espen']
+    const {findByTestId} = render(
+      <TestComponent i18nKey="peopleSignedUp" values={{count: people.length, people}} />,
+      {wrapper},
+    )
+    expect(await findByTestId('output')).toHaveTextContent(
+      '3 people signed up: Bjørge, Rita, and Espen',
     )
   })
 })

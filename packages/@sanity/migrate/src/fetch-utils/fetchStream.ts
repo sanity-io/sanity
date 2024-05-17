@@ -4,23 +4,25 @@ export interface FetchOptions {
   url: string | URL
   init: RequestInit
 }
-export interface HTTPError extends Error {
+export class HTTPError extends Error {
   statusCode: number
+
+  constructor(statusCode: number, message: string) {
+    super(message)
+    this.name = 'HTTPError'
+    this.statusCode = statusCode
+  }
 }
 
 export async function assert2xx(res: Response): Promise<void> {
   if (res.status < 200 || res.status > 299) {
-    const response = await res.json().catch(() => {
-      throw new Error(`Error parsing JSON ${res.status}: ${res.statusText}`)
-    })
+    const jsonResponse = await res.json().catch(() => null)
 
-    const message = response.error
-      ? response.error.description
+    const message = jsonResponse?.error
+      ? `${jsonResponse.error}: ${jsonResponse.message}`
       : `HTTP Error ${res.status}: ${res.statusText}`
 
-    const err = new Error(message) as HTTPError
-    err.statusCode = res.status
-    throw err
+    throw new HTTPError(res.status, message)
   }
 }
 

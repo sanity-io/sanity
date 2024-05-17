@@ -8,6 +8,7 @@ import {type IdPair, type PendingMutationsEvent, type ReconnectEvent} from '../t
 import {memoize} from '../utils/createMemoizer'
 import {type DocumentVersion} from './checkoutPair'
 import {memoizedPair} from './memoizedPair'
+import {memoizeKeyGen} from './memoizeKeyGen'
 
 // return true if the event comes with a document snapshot
 function isSnapshotEvent(event: BufferedDocumentEvent | ReconnectEvent): event is SnapshotEvent & {
@@ -60,8 +61,13 @@ interface SnapshotPair {
 
 /** @internal */
 export const snapshotPair = memoize(
-  (client: SanityClient, idPair: IdPair, typeName: string) => {
-    return memoizedPair(client, idPair, typeName).pipe(
+  (
+    client: SanityClient,
+    idPair: IdPair,
+    typeName: string,
+    serverActionsEnabled: Observable<boolean>,
+  ): Observable<SnapshotPair> => {
+    return memoizedPair(client, idPair, typeName, serverActionsEnabled).pipe(
       map(({published, draft, transactionsPendingEvents$}): SnapshotPair => {
         return {
           transactionsPendingEvents$,
@@ -73,9 +79,5 @@ export const snapshotPair = memoize(
       refCount(),
     )
   },
-  (client, idPair, typeName) => {
-    const config = client.config()
-
-    return `${config.dataset ?? ''}-${config.projectId ?? ''}-${idPair.publishedId}-${typeName}`
-  },
+  memoizeKeyGen,
 )

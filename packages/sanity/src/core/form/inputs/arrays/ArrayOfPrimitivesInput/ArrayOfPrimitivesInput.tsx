@@ -212,6 +212,7 @@ export class ArrayOfPrimitivesInput extends PureComponent<ArrayOfPrimitivesInput
                         )}
                         {member.kind === 'error' && (
                           <ErrorItem
+                            readOnly={readOnly}
                             sortable={isSortable}
                             member={member}
                             onRemove={() => onItemRemove(index)}

@@ -1,9 +1,10 @@
+import path from 'node:path'
+import readline from 'node:readline'
+import {Readable, type Writable} from 'node:stream'
+import zlib from 'node:zlib'
+
 import {type SanityDocument} from '@sanity/types'
-import path from 'path'
-import readline from 'readline'
-import {Readable, type Writable} from 'stream'
 import tar from 'tar-stream'
-import zlib from 'zlib'
 
 const HEADER_SIZE = 300
 

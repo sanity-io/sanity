@@ -7,7 +7,7 @@ import {
   Text,
 } from '@sanity/ui'
 import {memo, type MouseEvent, type ReactNode, useCallback, useMemo} from 'react'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {Button, MenuButton, type MenuButtonProps} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
@@ -57,8 +57,6 @@ const TEXT_STYLE_OPTIONS: Record<string, (title: ReactNode) => ReactNode> = {
   normal: (title) => <Normal>{title}</Normal>,
   blockquote: (title) => <BlockQuote data-option="blockquote">{title}</BlockQuote>,
 }
-
-const TEXT_STYLE_KEYS = Object.keys(TEXT_STYLE_OPTIONS)
 
 const preventDefault = (event: MouseEvent<HTMLButtonElement>) => event.preventDefault()
 
@@ -118,16 +116,29 @@ export const BlockStyleSelect = memo(function BlockStyleSelect(
     [editor, focusBlock],
   )
 
-  const renderOption = useCallback((style: string, title: string) => {
-    const hasTextStyle = TEXT_STYLE_KEYS.includes(style)
-    const renderStyle = TEXT_STYLE_OPTIONS[style]
+  const renderOption = useCallback(
+    (item: BlockStyleItem) => {
+      const {style, styleComponent} = item
+      const renderStyle = TEXT_STYLE_OPTIONS[style]
+      const title = item.i18nTitleKey ? t(item.i18nTitleKey) : item?.title || item.style
 
-    if (hasTextStyle) {
-      return renderStyle(title)
-    }
+      const CustomComponent = typeof styleComponent === 'function' ? styleComponent : undefined
 
-    return <Text>{title}</Text>
-  }, [])
+      // If we have default support for the style and there is no custom component
+      // defined, we render the default style.
+      if (renderStyle && !CustomComponent) {
+        return renderStyle(title)
+      }
+
+      // If we have a custom component, we render that
+      if (CustomComponent) {
+        return <CustomComponent>{title}</CustomComponent>
+      }
+
+      return <Text>{title}</Text>
+    },
+    [t],
+  )
 
   const button = useMemo(
     () => (
@@ -155,16 +166,13 @@ export const BlockStyleSelect = memo(function BlockStyleSelect(
               // eslint-disable-next-line react/jsx-no-bind
               onClick={_disabled ? undefined : () => handleChange(item)}
             >
-              {renderOption(
-                item.style,
-                item.i18nTitleKey ? t(item.i18nTitleKey) : item?.title || item.style,
-              )}
+              {renderOption(item)}
             </StyledMenuItem>
           )
         })}
       </Menu>
     ),
-    [_disabled, activeItems, handleChange, items, renderOption, t],
+    [_disabled, activeItems, handleChange, items, renderOption],
   )
 
   return (

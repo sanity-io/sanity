@@ -22,6 +22,7 @@ import {
   type ArrayInputMoveItemEvent,
   type ArrayOfObjectsInputProps,
   type ObjectItem,
+  type OnPathFocusPayload,
   type RenderAnnotationCallback,
   type RenderArrayOfObjectsItemCallback,
   type RenderBlockCallback,
@@ -285,18 +286,18 @@ export function ArrayOfObjectsField(props: {
   )
 
   const handleFocusChildPath = useCallback(
-    (path: Path) => {
-      onPathFocus(member.field.path.concat(path))
+    (path: Path, payload?: OnPathFocusPayload) => {
+      onPathFocus(member.field.path.concat(path), payload)
     },
     [member.field.path, onPathFocus],
   )
 
   const elementProps = useMemo(
     (): ArrayOfObjectsInputProps['elementProps'] => ({
-      onBlur: handleBlur,
-      onFocus: handleFocus,
-      id: member.field.id,
-      ref: focusRef,
+      'onBlur': handleBlur,
+      'onFocus': handleFocus,
+      'id': member.field.id,
+      'ref': focusRef,
       'aria-describedby': createDescriptionId(member.field.id, member.field.schemaType.description),
     }),
     [handleBlur, handleFocus, member.field.id, member.field.schemaType.description],

@@ -2,13 +2,22 @@
 
 import {Card, Container, rem} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
-import styled, {css} from 'styled-components'
+import {css, styled} from 'styled-components'
 
 import {ScrollContainer} from '../../../components/scroll'
 import {createListName, TEXT_LEVELS} from './text'
 
-export const Root = styled(Card)<{$fullscreen: boolean}>`
-  height: ${({$fullscreen}) => ($fullscreen ? '100%' : '15em')};
+export const Root = styled(Card)`
+  &[data-fullscreen='true'] {
+    height: 100%;
+  }
+
+  &[data-fullscreen='false'] {
+    min-height: 5em;
+    resize: vertical;
+    overflow: auto;
+    height: 19em;
+  }
 
   &:not([hidden]) {
     display: flex;
@@ -119,9 +128,7 @@ export const EditableWrapper = styled(Card)<{$isFullscreen: boolean; $readOnly?:
       padding-top: ${({$isFullscreen, theme}) => theme.sanity.space[$isFullscreen ? 5 : 3]}px;
     }
 
-    & > :last-child {
-      padding-bottom: ${({$isFullscreen, theme}) => theme.sanity.space[$isFullscreen ? 9 : 5]}px;
-    }
+    padding-bottom: ${({$isFullscreen, theme}) => theme.sanity.space[$isFullscreen ? 9 : 5]}px;
 
     /* & > .pt-block {
       & .pt-inline-object {

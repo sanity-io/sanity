@@ -1,5 +1,5 @@
-export function getDupes(array, selector = (v) => v) {
-  const dupes = array.reduce((acc, item) => {
+export function getDupes(array: any, selector = (v: any) => v) {
+  const dupes = array.reduce((acc: any, item: any) => {
     const key = selector(item)
     if (!acc[key]) {
       acc[key] = []

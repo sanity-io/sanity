@@ -106,7 +106,7 @@ export function useSyncValue(
                   at: [childrenLength - 1 - index],
                 })
               })
-              Transforms.insertNodes(slateEditor, slateEditor.createPlaceholderBlock(), {at: [0]})
+              Transforms.insertNodes(slateEditor, slateEditor.pteCreateEmptyBlock(), {at: [0]})
               // Add a new selection in the top of the document
               if (hadSelection) {
                 Transforms.select(slateEditor, [0, 0])

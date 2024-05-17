@@ -120,6 +120,7 @@ const EMPTY_ARRAY: never[] = []
  * @beta */
 export function DefaultDocument(props: DefaultDocumentProps): ReactElement {
   const {entryPath, css = EMPTY_ARRAY, basePath = '/'} = props
+  const addImportMap = false
   return (
     <html lang="en">
       <head>
@@ -142,6 +143,28 @@ export function DefaultDocument(props: DefaultDocumentProps): ReactElement {
         ))}
         {/* eslint-disable-next-line react/no-danger */}
         <style dangerouslySetInnerHTML={{__html: globalStyles}} />
+
+        {addImportMap && (
+          <script
+            type="importmap"
+            // eslint-disable-next-line react/no-danger
+            dangerouslySetInnerHTML={{
+              __html: `{
+              "imports": {
+                "react": "https://unpkg.com/sanity@3.38.1-canary.107/dist/react.mjs",
+                "react/jsx-runtime": "https://unpkg.com/sanity@3.38.1-canary.107/dist/react_jsx-runtime.mjs",
+                "sanity": "https://unpkg.com/sanity@3.38.1-canary.107/dist/index.mjs",
+                "sanity/presentation": "https://unpkg.com/sanity@3.38.1-canary.107/dist/presentation.mjs",
+                "sanity/desk": "https://unpkg.com/sanity@3.38.1-canary.107/dist/desk.mjs",
+                "sanity/router": "https://unpkg.com/sanity@3.38.1-canary.107/dist/router.mjs",
+                "sanity/_singletons": "https://unpkg.com/sanity@3.38.1-canary.107/dist/_singletons.mjs",
+                "sanity/structure": "https://unpkg.com/sanity@3.38.1-canary.107/dist/structure.mjs",
+                "styled-components": "https://unpkg.com/sanity@3.38.1-canary.107/dist/styled-components.mjs"
+              }
+            }`,
+            }}
+          />
+        )}
       </head>
       <body>
         <div id="sanity" />

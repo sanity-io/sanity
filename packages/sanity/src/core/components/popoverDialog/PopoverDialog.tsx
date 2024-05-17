@@ -2,7 +2,7 @@ import {CloseIcon} from '@sanity/icons'
 import {Box, Flex, Layer, type ResponsiveWidthProps, Stack, Text, type Theme} from '@sanity/ui'
 import {type Dispatch, type ReactNode, type SetStateAction, useCallback} from 'react'
 import TrapFocus from 'react-focus-lock'
-import styled, {css} from 'styled-components'
+import {css, styled} from 'styled-components'
 
 import {Button, Popover, type PopoverProps} from '../../../ui-components'
 import {PopoverContainer} from './PopoverContainer'

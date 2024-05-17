@@ -1,9 +1,10 @@
 /* eslint-disable i18next/no-literal-string, @sanity/i18n/no-attribute-template-literals */
 import {Card, Flex} from '@sanity/ui'
 import {startCase} from 'lodash'
-import {createContext, Suspense, useCallback, useEffect, useMemo, useState} from 'react'
+import {Suspense, useCallback, useEffect, useMemo, useState} from 'react'
+import {NavbarContext} from 'sanity/_singletons'
 import {RouteScope, useRouter, useRouterState} from 'sanity/router'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {LoadingBlock} from '../components/loadingBlock'
 import {NoToolsScreen} from './screens/NoToolsScreen'
@@ -36,15 +37,6 @@ export interface NavbarContextValue {
   searchFullscreenPortalEl: HTMLElement | null
   searchOpen: boolean
 }
-
-/** @internal */
-export const NavbarContext = createContext<NavbarContextValue>({
-  onSearchFullscreenOpenChange: () => '',
-  onSearchOpenChange: () => '',
-  searchFullscreenOpen: false,
-  searchFullscreenPortalEl: null,
-  searchOpen: false,
-})
 
 /**
  * The Studio Layout component is the root component of the Sanity Studio UI.

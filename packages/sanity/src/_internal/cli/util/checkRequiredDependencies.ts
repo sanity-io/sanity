@@ -1,8 +1,9 @@
+import {readFile} from 'node:fs/promises'
+import path from 'node:path'
+
 import {type CliCommandContext, type PackageJson} from '@sanity/cli'
 import execa from 'execa'
-import {readFile} from 'fs/promises'
 import oneline from 'oneline'
-import path from 'path'
 import resolveFrom from 'resolve-from'
 import semver, {type SemVer} from 'semver'
 

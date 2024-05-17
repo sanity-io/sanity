@@ -1,11 +1,12 @@
+import {promises as fs} from 'node:fs'
+import path from 'node:path'
+import util from 'node:util'
+
 import boxen from 'boxen'
-import {promises as fs} from 'fs'
 import {noop, padStart} from 'lodash'
-import path from 'path'
 import resolveFrom from 'resolve-from'
 import rimrafCb from 'rimraf'
 import semver from 'semver'
-import util from 'util'
 
 import {type CliCommandContext} from '../..'
 import {
@@ -24,9 +25,9 @@ Use npm-check-updates or similar (https://www.npmjs.com/package/npm-check-update
 `.trim()
 
 export interface UpgradeCommandFlags {
-  range?: string
-  tag?: string
-  offline?: boolean
+  'range'?: string
+  'tag'?: string
+  'offline'?: boolean
   'save-exact'?: boolean
 }
 

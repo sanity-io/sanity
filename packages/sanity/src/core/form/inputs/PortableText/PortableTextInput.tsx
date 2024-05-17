@@ -1,26 +1,32 @@
 import {
   type EditorChange,
+  type EditorSelection,
   type InvalidValue,
+  type OnPasteFn,
   type Patch as EditorPatch,
   type Patch,
+  type PortableTextEditableProps,
   PortableTextEditor,
+  type RangeDecoration,
+  type RenderEditableFunction,
 } from '@sanity/portable-text-editor'
 import {useTelemetry} from '@sanity/telemetry/react'
-import {isKeySegment, type Path, type PortableTextBlock} from '@sanity/types'
-import {Box, useToast} from '@sanity/ui'
+import {isKeySegment, type PortableTextBlock} from '@sanity/types'
+import {Box, Flex, Text, useToast} from '@sanity/ui'
+import {sortBy} from 'lodash'
 import {
   type MutableRefObject,
   type ReactNode,
   startTransition,
   useCallback,
   useEffect,
-  useImperativeHandle,
   useMemo,
   useRef,
   useState,
 } from 'react'
 import {Subject} from 'rxjs'
 
+import {useTranslation} from '../../../i18n'
 import {EMPTY_ARRAY} from '../../../util'
 import {
   PortableTextInputCollapsed,
@@ -28,13 +34,27 @@ import {
 } from '../../__telemetry__/form.telemetry'
 import {SANITY_PATCH_TYPE} from '../../patch'
 import {type ArrayOfObjectsItemMember, type ObjectFormNode} from '../../store'
+import {immutableReconcile} from '../../store/utils/immutableReconcile'
+import {type ResolvedUploader} from '../../studio/uploads/types'
 import {type PortableTextInputProps} from '../../types'
+import {UploadTargetCard} from '../arrays/common/UploadTargetCard'
+import {extractPastedFiles} from '../common/fileTarget/utils/extractFiles'
 import {Compositor, type PortableTextEditorElement} from './Compositor'
 import {PortableTextMarkersProvider} from './contexts/PortableTextMarkers'
 import {PortableTextMemberItemsProvider} from './contexts/PortableTextMembers'
 import {usePortableTextMemberItemsFromProps} from './hooks/usePortableTextMembers'
 import {InvalidValue as RespondToInvalidContent} from './InvalidValue'
+import {
+  type PresenceCursorDecorationsHookProps,
+  usePresenceCursorDecorations,
+} from './presence-cursors'
+import {getUploadCandidates} from './upload/helpers'
 import {usePatches} from './usePatches'
+
+interface UploadTask {
+  file: File
+  uploaderCandidates: ResolvedUploader[]
+}
 
 /** @internal */
 export interface PortableTextMemberItem {
@@ -44,6 +64,10 @@ export interface PortableTextMemberItem {
   node: ObjectFormNode
   elementRef?: MutableRefObject<PortableTextEditorElement | null>
   input?: ReactNode
+}
+/** @public */
+export interface RenderPortableTextInputEditableProps extends PortableTextEditableProps {
+  renderDefault: RenderEditableFunction
 }
 
 /**
@@ -58,11 +82,13 @@ export interface PortableTextMemberItem {
  * @public
  * @param props - {@link PortableTextInputProps} component props.
  */
-export function PortableTextInput(props: PortableTextInputProps) {
+export function PortableTextInput(props: PortableTextInputProps): ReactNode {
   const {
     editorRef: editorRefProp,
     elementProps,
     hotkeys,
+    initialActive,
+    initialFullscreen,
     markers = EMPTY_ARRAY,
     onChange,
     onCopy,
@@ -74,33 +100,35 @@ export function PortableTextInput(props: PortableTextInputProps) {
     onPathFocus,
     path,
     readOnly,
-    rangeDecorations,
+    rangeDecorations: rangeDecorationsProp,
     renderBlockActions,
     renderCustomMarkers,
+    renderEditable,
     schemaType,
     value,
+    resolveUploader,
+    onUpload,
   } = props
 
-  const {onBlur} = elementProps
+  const {onBlur, ref: elementRef} = elementProps
   const defaultEditorRef = useRef<PortableTextEditor | null>(null)
   const editorRef = editorRefProp || defaultEditorRef
 
-  // This handle will allow for natively calling .focus
-  // on the returned component and have the PortableTextEditor focused,
-  // simulating a native input element (like with an string input)
-  useImperativeHandle(elementProps.ref, () => ({
-    focus() {
-      if (editorRef.current) {
-        PortableTextEditor.focus(editorRef.current)
-      }
-    },
-  }))
+  const presenceCursorDecorations = usePresenceCursorDecorations(
+    useMemo(
+      (): PresenceCursorDecorationsHookProps => ({
+        path: props.path,
+      }),
+      [props.path],
+    ),
+  )
 
   const {subscribe} = usePatches({path})
+  const {t} = useTranslation()
   const [ignoreValidationError, setIgnoreValidationError] = useState(false)
   const [invalidValue, setInvalidValue] = useState<InvalidValue | null>(null)
-  const [isFullscreen, setIsFullscreen] = useState(false)
-  const [isActive, setIsActive] = useState(false)
+  const [isFullscreen, setIsFullscreen] = useState(initialFullscreen ?? false)
+  const [isActive, setIsActive] = useState(initialActive ?? false)
   const [isOffline, setIsOffline] = useState(false)
   const [hasFocusWithin, setHasFocusWithin] = useState(false)
   const telemetry = useTelemetry()
@@ -113,8 +141,6 @@ export function PortableTextInput(props: PortableTextInputProps) {
     snapshot: PortableTextBlock[] | undefined
   }> = useMemo(() => new Subject(), [])
   const patches$ = useMemo(() => patchSubject.asObservable(), [patchSubject])
-
-  const innerElementRef = useRef<HTMLDivElement | null>(null)
 
   const handleToggleFullscreen = useCallback(() => {
     setIsFullscreen((v) => {
@@ -153,31 +179,35 @@ export function PortableTextInput(props: PortableTextInputProps) {
     }
   }, [hasFocusWithin])
 
-  // Report focus on spans with `.text` appended to the reported focusPath.
-  // This is done to support the Presentation tool which uses this kind of paths to refer to texts.
-  // The PT-input already supports these paths the other way around.
-  // It's a bit ugly right here, but it's a rather simple way to support the Presentation tool without
-  // having to change the PTE's internals.
-  const setFocusPathFromEditorSelection = useCallback(
-    (focusPath: Path) => {
-      // Test if the focusPath is pointing directly to a span
-      const isSpanPath =
-        focusPath.length === 3 && // A span path is always 3 segments long
-        focusPath[1] === 'children' && // Is a child of a block
-        isKeySegment(focusPath[2]) && // Contains the key of the child
-        !portableTextMemberItems.some(
-          (item) => isKeySegment(focusPath[2]) && item.member.key === focusPath[2]._key,
-        ) // Not an inline object (it would be a member in this list, where spans are not). By doing this check we avoid depending on the value.
-      if (isSpanPath) {
-        // Append `.text` to the focusPath
-        onPathFocus(focusPath.concat('text'))
-      } else {
-        // Call normally
-        onPathFocus(focusPath)
-      }
-    },
-    [onPathFocus, portableTextMemberItems],
-  )
+  const setFocusPathFromEditorSelection = useCallback(() => {
+    const selection = nextSelectionRef.current
+    const focusPath = selection?.focus.path
+    if (!focusPath) return
+
+    // Report focus on spans with `.text` appended to the reported focusPath.
+    // This is done to support the Presentation tool which uses this kind of paths to refer to texts.
+    // The PT-input already supports these paths the other way around.
+    // It's a bit ugly right here, but it's a rather simple way to support the Presentation tool without
+    // having to change the PTE's internals.
+    const isSpanPath =
+      focusPath.length === 3 && // A span path is always 3 segments long
+      focusPath[1] === 'children' && // Is a child of a block
+      isKeySegment(focusPath[2]) && // Contains the key of the child
+      !portableTextMemberItems.some(
+        (item) => isKeySegment(focusPath[2]) && item.member.key === focusPath[2]._key,
+      )
+    const nextFocusPath = isSpanPath ? focusPath.concat(['text']) : focusPath
+
+    // Must called in a transition useTrackFocusPath hook
+    // will try to effectuate a focusPath that is different from what currently is the editor focusPath
+    startTransition(() => {
+      onPathFocus(nextFocusPath, {
+        selection,
+      })
+    })
+  }, [onPathFocus, portableTextMemberItems])
+
+  const nextSelectionRef = useRef<EditorSelection | null>(null)
 
   // Handle editor changes
   const handleEditorChange = useCallback(
@@ -194,13 +224,8 @@ export function PortableTextInput(props: PortableTextInputProps) {
           }
           break
         case 'selection':
-          // This doesn't need to be immediate,
-          // call through startTransition
-          startTransition(() => {
-            if (change.selection) {
-              setFocusPathFromEditorSelection(change.selection.focus.path)
-            }
-          })
+          nextSelectionRef.current = change.selection
+          setFocusPathFromEditorSelection()
           break
         case 'focus':
           setIsActive(true)
@@ -229,7 +254,7 @@ export function PortableTextInput(props: PortableTextInputProps) {
         onEditorChange(change, editorRef.current)
       }
     },
-    [editorRef, onBlur, onChange, onEditorChange, setFocusPathFromEditorSelection, toast],
+    [editorRef, onEditorChange, onChange, setFocusPathFromEditorSelection, onBlur, toast],
   )
 
   useEffect(() => {
@@ -265,41 +290,128 @@ export function PortableTextInput(props: PortableTextInputProps) {
     }
   }, [editorRef, isActive])
 
+  const previousRangeDecorations = useRef<RangeDecoration[]>([])
+
+  const rangeDecorations = useMemo((): RangeDecoration[] => {
+    const result = [...(rangeDecorationsProp || []), ...presenceCursorDecorations]
+    const reconciled = immutableReconcile(previousRangeDecorations.current, result)
+    previousRangeDecorations.current = reconciled
+    return reconciled
+  }, [presenceCursorDecorations, rangeDecorationsProp])
+
+  const uploadFile = useCallback(
+    (file: File, resolvedUploader: ResolvedUploader) => {
+      const {type, uploader} = resolvedUploader
+      onUpload?.({file, schemaType: type, uploader})
+    },
+    [onUpload],
+  )
+
+  const handleFiles = useCallback(
+    (files: File[]) => {
+      if (!resolveUploader) {
+        return
+      }
+      const tasks: UploadTask[] = files.map((file) => ({
+        file,
+        uploaderCandidates: getUploadCandidates(schemaType.of, resolveUploader, file),
+      }))
+      const ready = tasks.filter((task) => task.uploaderCandidates.length > 0)
+      const rejected: UploadTask[] = tasks.filter((task) => task.uploaderCandidates.length === 0)
+
+      if (rejected.length > 0) {
+        toast.push({
+          closable: true,
+          status: 'warning',
+          title: t('inputs.array.error.cannot-upload-unable-to-convert', {
+            count: rejected.length,
+          }),
+          description: rejected.map((task, i) => (
+            <Flex key={i} gap={2} padding={2}>
+              <Box>
+                <Text weight="medium">{task.file.name}</Text>
+              </Box>
+              <Box>
+                <Text size={1}>({task.file.type})</Text>
+              </Box>
+            </Flex>
+          )),
+        })
+      }
+
+      // todo: consider if we should to ask the user here
+      // the list of candidates is sorted by their priority and the first one is selected
+      ready.forEach((task) => {
+        uploadFile(
+          task.file,
+          // eslint-disable-next-line max-nested-callbacks
+          sortBy(task.uploaderCandidates, (candidate) => candidate.uploader.priority)[0],
+        )
+      })
+    },
+    [toast, resolveUploader, schemaType, uploadFile, t],
+  )
+
+  const handlePaste: OnPasteFn = useCallback(
+    (input) => {
+      const {event} = input
+      extractPastedFiles(event.clipboardData)
+        .then((files) => {
+          return files.length > 0 ? files : []
+        })
+        .then((files) => {
+          handleFiles(files)
+        })
+      return onPaste?.(input)
+    },
+    [handleFiles, onPaste],
+  )
+
   return (
-    <Box ref={innerElementRef}>
-      {!ignoreValidationError && respondToInvalidContent}
-      {(!invalidValue || ignoreValidationError) && (
-        <PortableTextMarkersProvider markers={markers}>
-          <PortableTextMemberItemsProvider memberItems={portableTextMemberItems}>
-            <PortableTextEditor
-              patches$={patches$}
-              onChange={handleEditorChange}
-              maxBlocks={undefined} // TODO: from schema?
-              ref={editorRef}
-              readOnly={isOffline || readOnly}
-              schemaType={schemaType}
-              value={value}
-            >
-              <Compositor
-                {...props}
-                hasFocusWithin={hasFocusWithin}
-                hotkeys={hotkeys}
-                isActive={isActive}
-                isFullscreen={isFullscreen}
-                onActivate={handleActivate}
-                onItemRemove={onItemRemove}
-                onCopy={onCopy}
-                onInsert={onInsert}
-                onPaste={onPaste}
-                onToggleFullscreen={handleToggleFullscreen}
-                rangeDecorations={rangeDecorations}
-                renderBlockActions={renderBlockActions}
-                renderCustomMarkers={renderCustomMarkers}
-              />
-            </PortableTextEditor>
-          </PortableTextMemberItemsProvider>
-        </PortableTextMarkersProvider>
-      )}
+    <Box>
+      <UploadTargetCard
+        types={schemaType.of}
+        resolveUploader={props.resolveUploader}
+        onUpload={props.onUpload}
+        {...elementProps}
+        tabIndex={-1}
+      >
+        {!ignoreValidationError && respondToInvalidContent}
+        {(!invalidValue || ignoreValidationError) && (
+          <PortableTextMarkersProvider markers={markers}>
+            <PortableTextMemberItemsProvider memberItems={portableTextMemberItems}>
+              <PortableTextEditor
+                patches$={patches$}
+                onChange={handleEditorChange}
+                maxBlocks={undefined} // TODO: from schema?
+                ref={editorRef}
+                readOnly={isOffline || readOnly}
+                schemaType={schemaType}
+                value={value}
+              >
+                <Compositor
+                  {...props}
+                  elementRef={elementRef}
+                  hasFocusWithin={hasFocusWithin}
+                  hotkeys={hotkeys}
+                  isActive={isActive}
+                  isFullscreen={isFullscreen}
+                  onActivate={handleActivate}
+                  onItemRemove={onItemRemove}
+                  onCopy={onCopy}
+                  onInsert={onInsert}
+                  onPaste={handlePaste}
+                  onToggleFullscreen={handleToggleFullscreen}
+                  rangeDecorations={rangeDecorations}
+                  renderBlockActions={renderBlockActions}
+                  renderCustomMarkers={renderCustomMarkers}
+                  renderEditable={renderEditable}
+                />
+              </PortableTextEditor>
+            </PortableTextMemberItemsProvider>
+          </PortableTextMarkersProvider>
+        )}
+      </UploadTargetCard>
     </Box>
   )
 }

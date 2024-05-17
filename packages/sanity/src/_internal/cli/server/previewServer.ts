@@ -1,7 +1,8 @@
+import fs from 'node:fs/promises'
+import path from 'node:path'
+
 import {type UserViteConfig} from '@sanity/cli'
 import chalk from 'chalk'
-import fs from 'fs/promises'
-import path from 'path'
 import {type InlineConfig, preview} from 'vite'
 
 import {debug as serverDebug} from './debug'

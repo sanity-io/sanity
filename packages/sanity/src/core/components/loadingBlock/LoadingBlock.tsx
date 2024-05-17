@@ -1,5 +1,5 @@
 import {Card, Layer, Spinner, Text} from '@sanity/ui'
-import styled, {css} from 'styled-components'
+import {css, styled} from 'styled-components'
 
 import {useTranslation} from '../..'
 

@@ -2,7 +2,7 @@ import {type SanityClient} from '@sanity/client'
 import {type Mutation} from '@sanity/mutator'
 import {type SanityDocument} from '@sanity/types'
 import {EMPTY, from, merge, type Observable, Subject} from 'rxjs'
-import {filter, map, mergeMap, mergeMapTo, share, tap} from 'rxjs/operators'
+import {filter, map, mergeMap, share, take, tap} from 'rxjs/operators'
 
 import {
   type BufferedDocumentEvent,
@@ -13,6 +13,7 @@ import {
 } from '../buffered-doc'
 import {getPairListener, type ListenerEvent} from '../getPairListener'
 import {type IdPair, type PendingMutationsEvent, type ReconnectEvent} from '../types'
+import {type HttpAction} from './actionTypes'
 
 const isMutationEventForDocId =
   (id: string) =>
@@ -70,6 +71,86 @@ function setVersion<T>(version: 'draft' | 'published') {
   return (ev: T): T & {version: 'draft' | 'published'} => ({...ev, version})
 }
 
+function requireId<T extends {_id?: string; _type: string}>(
+  value: T,
+): asserts value is T & {_id: string} {
+  if (!value._id) {
+    throw new Error('Expected document to have an _id')
+  }
+}
+
+//if we're patching a published document directly
+//then we're live editing and we should use raw mutations
+//rather than actions
+function isLiveEditMutation(mutationParams: Mutation['params'], publishedId: string) {
+  const {resultRev, ...mutation} = mutationParams
+  const patchTargets: string[] = mutation.mutations.flatMap((mut) => {
+    const mutationPayloads = Object.values(mut)
+    if (mutationPayloads.length > 1) {
+      throw new Error('Did not expect multiple mutations in the same payload')
+    }
+    return mutationPayloads[0].id || mutationPayloads[0]._id
+  })
+  return patchTargets.every((target) => target === publishedId)
+}
+
+function toActions(idPair: IdPair, mutationParams: Mutation['params']) {
+  return mutationParams.mutations.flatMap<HttpAction>((mutations) => {
+    if (Object.keys(mutations).length > 1) {
+      // todo: this might be a bit too strict, but I'm (lazily) trying to check if we ever get more than one mutation in a payload
+      throw new Error('Did not expect multiple mutations in the same payload')
+    }
+    // This action is not always interoperable with the equivalent mutation. It will fail if the
+    // published version of the document already exists.
+    if (mutations.createIfNotExists) {
+      // ignore all createIfNotExists, as these should be covered by the actions api and only be done locally
+      return []
+    }
+    if (mutations.create) {
+      // the actions API requires attributes._id to be set, while it's optional in the mutation API
+      requireId(mutations.create)
+      return {
+        actionType: 'sanity.action.document.create',
+        publishedId: idPair.publishedId,
+        attributes: mutations.create,
+        ifExists: 'fail',
+      }
+    }
+    if (mutations.patch) {
+      return {
+        actionType: 'sanity.action.document.edit',
+        draftId: idPair.draftId,
+        publishedId: idPair.publishedId,
+        patch: mutations.patch,
+      }
+    }
+    throw new Error('Todo: implement')
+  })
+}
+
+function commitActions(
+  defaultClient: SanityClient,
+  idPair: IdPair,
+  mutationParams: Mutation['params'],
+) {
+  if (isLiveEditMutation(mutationParams, idPair.publishedId)) {
+    return commitMutations(defaultClient, mutationParams)
+  }
+
+  const vXClient = defaultClient.withConfig({apiVersion: 'X'})
+  const {dataset} = defaultClient.config()
+
+  return vXClient.observable.request({
+    url: `/data/actions/${dataset}`,
+    method: 'post',
+    tag: 'document.commit',
+    body: {
+      transactionId: mutationParams.transactionId,
+      actions: toActions(idPair, mutationParams),
+    },
+  })
+}
+
 function commitMutations(client: SanityClient, mutationParams: Mutation['params']) {
   const {resultRev, ...mutation} = mutationParams
   return client.dataRequest('mutate', mutation, {
@@ -82,8 +163,17 @@ function commitMutations(client: SanityClient, mutationParams: Mutation['params'
   })
 }
 
-function submitCommitRequest(client: SanityClient, request: CommitRequest) {
-  return from(commitMutations(client, request.mutation.params)).pipe(
+function submitCommitRequest(
+  client: SanityClient,
+  idPair: IdPair,
+  request: CommitRequest,
+  serverActionsEnabled: boolean,
+) {
+  return from(
+    serverActionsEnabled
+      ? commitActions(client, idPair, request.mutation.params)
+      : commitMutations(client, request.mutation.params),
+  ).pipe(
     tap({
       error: (error) => {
         const isBadRequest =
@@ -103,7 +193,11 @@ function submitCommitRequest(client: SanityClient, request: CommitRequest) {
 }
 
 /** @internal */
-export function checkoutPair(client: SanityClient, idPair: IdPair): Pair {
+export function checkoutPair(
+  client: SanityClient,
+  idPair: IdPair,
+  serverActionsEnabled: Observable<boolean>,
+): Pair {
   const {publishedId, draftId} = idPair
 
   const listenerEventsConnector = new Subject<ListenerEvent>()
@@ -131,8 +225,15 @@ export function checkoutPair(client: SanityClient, idPair: IdPair): Pair {
   )
 
   const commits$ = merge(draft.commitRequest$, published.commitRequest$).pipe(
-    mergeMap((commitRequest) => submitCommitRequest(client, commitRequest)),
-    mergeMapTo(EMPTY),
+    mergeMap((commitRequest) =>
+      serverActionsEnabled.pipe(
+        take(1),
+        mergeMap((canUseServerActions) =>
+          submitCommitRequest(client, idPair, commitRequest, canUseServerActions),
+        ),
+      ),
+    ),
+    mergeMap(() => EMPTY),
     share(),
   )
 

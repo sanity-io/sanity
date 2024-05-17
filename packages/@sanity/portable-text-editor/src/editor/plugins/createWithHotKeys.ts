@@ -1,7 +1,7 @@
 /* eslint-disable max-statements */
 /* eslint-disable complexity */
 import {isPortableTextSpan, isPortableTextTextBlock} from '@sanity/types'
-import isHotkey from 'is-hotkey'
+import {isHotkey} from 'is-hotkey-esm'
 import {type KeyboardEvent} from 'react'
 import {Editor, Node, Path, Range, Transforms} from 'slate'
 import {type ReactEditor} from 'slate-react'
@@ -10,7 +10,6 @@ import {type PortableTextMemberSchemaTypes, type PortableTextSlateEditor} from '
 import {type HotkeyOptions} from '../../types/options'
 import {type SlateTextBlock, type VoidElement} from '../../types/slate'
 import {debugWithName} from '../../utils/debug'
-import {toSlateValue} from '../../utils/values'
 import {type PortableTextEditor} from '../PortableTextEditor'
 
 const debug = debugWithName('plugin:withHotKeys')
@@ -31,32 +30,11 @@ const DEFAULT_HOTKEYS: HotkeyOptions = {
  */
 export function createWithHotkeys(
   types: PortableTextMemberSchemaTypes,
-  keyGenerator: () => string,
   portableTextEditor: PortableTextEditor,
   hotkeysFromOptions?: HotkeyOptions,
 ): (editor: PortableTextSlateEditor & ReactEditor) => any {
   const reservedHotkeys = ['enter', 'tab', 'shift', 'delete', 'end']
   const activeHotkeys = hotkeysFromOptions || DEFAULT_HOTKEYS // TODO: Merge where possible? A union?
-  const createEmptyBlock = () =>
-    toSlateValue(
-      [
-        {
-          _type: types.block.name,
-          _key: keyGenerator(),
-          style: 'normal',
-          markDefs: [],
-          children: [
-            {
-              _type: 'span',
-              _key: keyGenerator(),
-              text: '',
-              marks: [],
-            },
-          ],
-        },
-      ],
-      portableTextEditor,
-    )[0]
   return function withHotKeys(editor: PortableTextSlateEditor & ReactEditor) {
     editor.pteWithHotKeys = (event: KeyboardEvent<HTMLDivElement>): void => {
       // Wire up custom marks hotkeys
@@ -101,7 +79,63 @@ export function createWithHotkeys(
       const isShiftTab = isHotkey('shift+tab', event.nativeEvent)
       const isBackspace = isHotkey('backspace', event.nativeEvent)
       const isDelete = isHotkey('delete', event.nativeEvent)
+      const isArrowDown = isHotkey('down', event.nativeEvent)
+      const isArrowUp = isHotkey('up', event.nativeEvent)
 
+      // Check if the user is in a void block, in that case, add an empty text block below if there is no next block
+      if (isArrowDown && editor.selection) {
+        const focusBlock = Node.descendant(editor, editor.selection.focus.path.slice(0, 1)) as
+          | SlateTextBlock
+          | VoidElement
+
+        if (focusBlock && Editor.isVoid(editor, focusBlock)) {
+          const nextPath = Path.next(editor.selection.focus.path.slice(0, 1))
+          const nextBlock = Node.has(editor, nextPath)
+          if (!nextBlock) {
+            Transforms.insertNodes(editor, editor.pteCreateEmptyBlock(), {at: nextPath})
+            editor.onChange()
+            return
+          }
+        }
+      }
+      if (isArrowUp && editor.selection) {
+        const isFirstBlock = editor.selection.focus.path[0] === 0
+        const focusBlock = Node.descendant(editor, editor.selection.focus.path.slice(0, 1)) as
+          | SlateTextBlock
+          | VoidElement
+
+        if (isFirstBlock && focusBlock && Editor.isVoid(editor, focusBlock)) {
+          Transforms.insertNodes(editor, editor.pteCreateEmptyBlock(), {at: [0]})
+          Transforms.select(editor, {path: [0, 0], offset: 0})
+          editor.onChange()
+          return
+        }
+      }
+      if (
+        isBackspace &&
+        editor.selection &&
+        editor.selection.focus.path[0] === 0 &&
+        Range.isCollapsed(editor.selection)
+      ) {
+        // If the block is text and we have a next block below, remove the current block
+        const focusBlock = Node.descendant(editor, editor.selection.focus.path.slice(0, 1)) as
+          | SlateTextBlock
+          | VoidElement
+        const nextPath = Path.next(editor.selection.focus.path.slice(0, 1))
+        const nextBlock = Node.has(editor, nextPath)
+        const isTextBlock = isPortableTextTextBlock(focusBlock)
+        const isEmptyFocusBlock =
+          isTextBlock && focusBlock.children.length === 1 && focusBlock.children?.[0]?.text === ''
+
+        if (nextBlock && isTextBlock && isEmptyFocusBlock) {
+          // Remove current block
+          event.preventDefault()
+          event.stopPropagation()
+          Transforms.removeNodes(editor, {match: (n) => n === focusBlock})
+          editor.onChange()
+          return
+        }
+      }
       // Disallow deleting void blocks by backspace from another line.
       // Otherwise it's so easy to delete the void block above when trying to delete text on
       // the line below or above
@@ -228,7 +262,7 @@ export function createWithHotkeys(
           const [, end] = Range.edges(editor.selection)
           const endAtEndOfNode = Editor.isEnd(editor, end, end.path)
           if (endAtEndOfNode) {
-            Editor.insertNode(editor, createEmptyBlock())
+            Editor.insertNode(editor, editor.pteCreateEmptyBlock())
             event.preventDefault()
             editor.onChange()
             return
@@ -236,7 +270,7 @@ export function createWithHotkeys(
         }
         // Block object enter key
         if (focusBlock && Editor.isVoid(editor, focusBlock)) {
-          Editor.insertNode(editor, createEmptyBlock())
+          Editor.insertNode(editor, editor.pteCreateEmptyBlock())
           event.preventDefault()
           editor.onChange()
           return

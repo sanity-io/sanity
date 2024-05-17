@@ -60,6 +60,24 @@ test.describe('Portable Text Input', () => {
       await expect($pte).toHaveText("123 Hello there worldIt's a beautiful day on planet earth")
       // Assert that the same word is decorated after the edit
       await expect(page.getByTestId('range-decoration')).toHaveText('there')
+      expect(await page.getByTestId('range-decoration').count()).toBe(1)
+    })
+    test(`Let's us render single point decorations correctly`, async ({mount, page}) => {
+      const {getFocusedPortableTextEditor} = testHelpers({page})
+      const singlePointDecorationData: DecorationData[] = [
+        {
+          selection: {
+            anchor: {path: [{_key: 'a'}, 'children', {_key: 'a1'}], offset: 6},
+            focus: {path: [{_key: 'a'}, 'children', {_key: 'a1'}], offset: 6},
+          },
+          word: '',
+        },
+      ]
+      await mount(
+        <RangeDecorationStory document={document} decorationData={singlePointDecorationData} />,
+      )
+      await getFocusedPortableTextEditor('field-body')
+      expect(await page.getByTestId('range-decoration').count()).toBe(1)
     })
   })
 })

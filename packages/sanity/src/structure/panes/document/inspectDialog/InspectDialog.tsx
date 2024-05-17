@@ -111,6 +111,7 @@ export function InspectDialog(props: InspectDialogProps) {
                 isExpanded={isExpanded}
                 onClick={toggleExpanded}
                 search={Search}
+                filterOptions={{ignoreCase: true}}
               />
             </JSONInspectorWrapper>
           )}

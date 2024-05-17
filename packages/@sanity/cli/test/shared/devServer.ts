@@ -1,5 +1,5 @@
-import {spawn} from 'child_process'
-import {createHash} from 'crypto'
+import {spawn} from 'node:child_process'
+import {createHash} from 'node:crypto'
 
 import {cliBinPath, sanityEnv} from './environment'
 import {request, type ResponseData} from './request'

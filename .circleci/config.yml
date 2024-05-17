@@ -1,0 +1,43 @@
+version: 2.1
+
+workflows:
+  version: 2
+  build-and-deploy:
+    jobs:
+      - build:
+          filters:
+            branches:
+              only:
+                - current
+
+jobs:
+  build:
+    docker:
+      - image: cimg/node:20.12
+    steps:
+      - checkout
+      - restore_cache:
+          name: Restore pnpm Package Cache
+          keys:
+            - pnpm-packages-{{ checksum "pnpm-lock.yaml" }}
+      - run:
+          name: Install pnpm package manager
+          command: |
+            corepack enable --install-directory ~/bin
+            corepack prepare pnpm@latest-8 --activate
+            pnpm config set store-dir .pnpm-store
+      - run:
+          name: Install Dependencies
+          command: |
+            pnpm install
+      - save_cache:
+          name: Save pnpm Package Cache
+          key: pnpm-packages-{{ checksum "pnpm-lock.yaml" }}
+          paths:
+            - .pnpm-store
+      - run:
+          name: Build bundle
+          command: pnpm run build:bundle
+      - run:
+          name: Copy to bucket
+          command: npm run bundle:upload

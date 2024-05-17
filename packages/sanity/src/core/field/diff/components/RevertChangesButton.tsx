@@ -1,6 +1,6 @@
 import {RevertIcon} from '@sanity/icons'
 import {type ForwardedRef, forwardRef, type HTMLProps, type ReactElement} from 'react'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {Button, type ButtonProps} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'

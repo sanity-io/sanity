@@ -16,23 +16,38 @@ interface Props {
   onItemClose: () => void
 }
 
-// This hook will track the focusPath and make sure editor content is visible and focused accordingly.
+// This hook will track the form focusPath and make sure editor content is visible (opened), scrolled to, and (potentially) focused accordingly.
 export function useTrackFocusPath(props: Props): void {
   const {focusPath, boundaryElement, onItemClose} = props
+
   const portableTextMemberItems = usePortableTextMemberItems()
   const editor = usePortableTextEditor()
   const selection = usePortableTextEditorSelection()
 
   useLayoutEffect(() => {
-    // Don't do anything if no focusPath
+    // Don't do anything if no focusPath to track
     if (focusPath.length === 0) {
       return
     }
 
-    // Find the opened member item
+    // Don't do anything if the editor selection focus path is already equal to the focusPath
+    if (
+      selection?.focus.path &&
+      isEqual(selection.focus.path, focusPath.slice(0, selection.focus.path.length))
+    ) {
+      return
+    }
+
+    // Find the focused editor member item (if any)
+    const focusedItem = portableTextMemberItems.find((m) => m.member.item.focused)
+
+    // Find the opened member item (if any)
     const openItem = portableTextMemberItems.find((m) => m.member.open)
 
-    if (openItem && openItem.elementRef?.current) {
+    // The related editor member to scroll to, or focus, according to the given focusPath
+    const relatedEditorItem = focusedItem || openItem
+
+    if (relatedEditorItem && relatedEditorItem.elementRef?.current) {
       if (boundaryElement) {
         // Scroll the boundary element into view (the scrollable element itself)
         scrollIntoView(boundaryElement, {
@@ -41,23 +56,15 @@ export function useTrackFocusPath(props: Props): void {
           inline: 'start',
         })
         // Scroll the member into view (the member within the scroll-boundary)
-        scrollIntoView(openItem.elementRef.current, {
+        scrollIntoView(relatedEditorItem.elementRef.current, {
           scrollMode: 'if-needed',
           boundary: boundaryElement,
-          block: 'start',
+          block: 'nearest',
           inline: 'start',
         })
       }
 
-      // Don't do anything if the selection focus path is already equal to the focusPath
-      if (
-        selection?.focus.path &&
-        isEqual(selection.focus.path, focusPath.slice(0, selection.focus.path.length))
-      ) {
-        return
-      }
-
-      const isTextBlock = openItem.kind === 'textBlock'
+      const isTextBlock = relatedEditorItem.kind === 'textBlock'
       const isBlockFocusPath = focusPath.length === 1
 
       // Track focus and selection for focusPaths that are either inside text blocks,
@@ -66,8 +73,8 @@ export function useTrackFocusPath(props: Props): void {
         const textBlockChildKey =
           isTextBlock && isKeyedObject(focusPath[2]) ? focusPath[2]._key : undefined
         const child =
-          textBlockChildKey && Array.isArray(openItem.node.value?.children)
-            ? (openItem.node.value?.children.find((c) => c._key === textBlockChildKey) as
+          textBlockChildKey && Array.isArray(relatedEditorItem.node.value?.children)
+            ? (relatedEditorItem.node.value?.children.find((c) => c._key === textBlockChildKey) as
                 | KeyedObject
                 | undefined)
             : undefined
@@ -94,12 +101,12 @@ export function useTrackFocusPath(props: Props): void {
           // Known text block, but unknown child. Select first child in that block.
           isTextBlock &&
           isBlockFocusPath &&
-          Array.isArray(openItem.node.value?.children)
+          Array.isArray(relatedEditorItem.node.value?.children)
         ) {
-          path = [focusPath[0], 'children', {_key: openItem.node.value?.children[0]._key}]
+          path = [focusPath[0], 'children', {_key: relatedEditorItem.node.value?.children[0]._key}]
           // Directly pointing to a non-text block
         } else if (isBlockFocusPath) {
-          path = [{_key: openItem.key}]
+          path = [{_key: relatedEditorItem.key}]
         }
 
         // Select and focus the editor if we produced a path

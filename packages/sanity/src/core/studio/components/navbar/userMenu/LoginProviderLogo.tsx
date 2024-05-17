@@ -1,5 +1,5 @@
 import {SanityMonogram} from '@sanity/logos'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 const Root = styled.div`
   position: absolute;

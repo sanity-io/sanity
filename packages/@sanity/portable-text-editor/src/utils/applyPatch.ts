@@ -297,7 +297,7 @@ function unsetPatch(editor: PortableTextSlateEditor, patch: UnsetPatch, previous
     editor.children.forEach((c, i) => {
       Transforms.removeNodes(editor, {at: [i]})
     })
-    Transforms.insertNodes(editor, editor.createPlaceholderBlock())
+    Transforms.insertNodes(editor, editor.pteCreateEmptyBlock())
     if (previousSelection) {
       Transforms.select(editor, {
         anchor: {path: [0, 0], offset: 0},

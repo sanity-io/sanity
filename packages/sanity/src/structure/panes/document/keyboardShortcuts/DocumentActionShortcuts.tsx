@@ -1,6 +1,14 @@
-import isHotkey from 'is-hotkey'
-import * as React from 'react'
-import {createElement, type ElementType, useCallback, useMemo, useState} from 'react'
+import {isHotkey} from 'is-hotkey-esm'
+import {
+  createElement,
+  type ElementType,
+  type HTMLProps,
+  memo,
+  type Ref,
+  useCallback,
+  useMemo,
+  useState,
+} from 'react'
 import {type DocumentActionDescription, type DocumentActionProps, LegacyLayerProvider} from 'sanity'
 
 import {RenderActionCollectionState} from '../../../components'
@@ -16,12 +24,12 @@ export interface KeyboardShortcutResponderProps {
   id: string
   minWidth?: number
   onActionStart: (index: number) => void
-  rootRef: React.Ref<HTMLDivElement>
+  rootRef: Ref<HTMLDivElement>
   states: DocumentActionDescription[]
 }
 
 function KeyboardShortcutResponder(
-  props: KeyboardShortcutResponderProps & Omit<React.HTMLProps<HTMLDivElement>, 'as' | 'height'>,
+  props: KeyboardShortcutResponderProps & Omit<HTMLProps<HTMLDivElement>, 'as' | 'height'>,
 ) {
   const {
     actionsBoxElement,
@@ -95,11 +103,11 @@ export interface DocumentActionShortcutsProps {
   flex: number
   id: string
   minWidth: number
-  rootRef: React.Ref<HTMLDivElement>
+  rootRef: Ref<HTMLDivElement>
 }
 
-export const DocumentActionShortcuts = React.memo(
-  (props: DocumentActionShortcutsProps & Omit<React.HTMLProps<HTMLDivElement>, 'as'>) => {
+export const DocumentActionShortcuts = memo(
+  (props: DocumentActionShortcutsProps & Omit<HTMLProps<HTMLDivElement>, 'as'>) => {
     const {actionsBoxElement, as = 'div', children, ...rest} = props
     const {actions, editState} = useDocumentPane()
     const [activeIndex, setActiveIndex] = useState(-1)

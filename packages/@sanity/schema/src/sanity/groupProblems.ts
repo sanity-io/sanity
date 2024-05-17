@@ -21,7 +21,7 @@ function createTypeWithMembersProblemsAccessor(
   memberPropertyName: string,
   getMembers = (type: SchemaType) => get(type, memberPropertyName),
 ) {
-  return function getProblems(type, parentPath: ProblemPath): TypeWithProblems[] {
+  return function getProblems(type: any, parentPath: ProblemPath): TypeWithProblems[] {
     const currentPath: ProblemPath = [
       ...parentPath,
       {kind: 'type', type: type.type, name: type.name},
@@ -36,7 +36,7 @@ function createTypeWithMembersProblemsAccessor(
             name: memberPropertyName,
           }
           const memberPath: ProblemPath = [...currentPath, propertySegment]
-          return getTypeProblems(memberType, memberPath)
+          return getTypeProblems(memberType, memberPath as any)
         })
       : [
           [
@@ -57,7 +57,8 @@ function createTypeWithMembersProblemsAccessor(
   }
 }
 
-const arrify = (val) => (Array.isArray(val) ? val : (typeof val === 'undefined' && []) || [val])
+const arrify = (val: any) =>
+  Array.isArray(val) ? val : (typeof val === 'undefined' && []) || [val]
 
 const getObjectProblems = createTypeWithMembersProblemsAccessor('fields')
 const getImageProblems = createTypeWithMembersProblemsAccessor('fields')
@@ -68,12 +69,12 @@ const getReferenceProblems = createTypeWithMembersProblemsAccessor('to', (type) 
 )
 const getBlockAnnotationProblems = createTypeWithMembersProblemsAccessor('marks.annotations')
 const getBlockMemberProblems = createTypeWithMembersProblemsAccessor('of')
-const getBlockProblems = (type, problems) => [
+const getBlockProblems = (type: any, problems: any) => [
   ...getBlockAnnotationProblems(type, problems),
   ...getBlockMemberProblems(type, problems),
 ]
 
-function getDefaultProblems(type, path = []): TypeWithProblems[] {
+function getDefaultProblems(type: any, path = []): TypeWithProblems[] {
   return [
     {
       path: [...path, {kind: 'type', type: type.type, name: type.name}],

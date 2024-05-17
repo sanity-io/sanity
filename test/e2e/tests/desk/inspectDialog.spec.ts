@@ -1,37 +1,32 @@
+import {expect} from '@playwright/test'
 import {test} from '@sanity/test'
 
 const INSPECT_KEY = 'studio.structure-tool.inspect-view-mode'
 
-test('clicking inspect mode sets value in storage', async ({
-  page,
-  sanityClient,
-  createDraftDocument,
-}) => {
+test('clicking inspect mode sets value in storage', async ({page, createDraftDocument}) => {
   await createDraftDocument('/test/content/book')
   await page.getByTestId('document-pane').getByTestId('pane-context-menu-button').click()
-  await page.getByRole('menuitem', {name: 'Inspect Ctrl Alt I'}).click()
+  await page.getByRole('menuitem', {name: /Inspect/i}).click()
 
+  const keyValueRequest = page.waitForResponse(async (response) => {
+    return response.url().includes('/users/me/keyvalue') && response.request().method() === 'PUT'
+  })
   await page.getByRole('tab', {name: 'Raw JSON'}).click()
-  /*
-   * The network proves to be a bit flaky for this in our CI environment. We will revisit this after release.
-   */
-  // const rawResult = await sanityClient.withConfig({apiVersion: '2024-03-12'}).request({
-  //   uri: `/users/me/keyvalue/${INSPECT_KEY}`,
-  //   withCredentials: true,
-  // })
-  // expect(rawResult[0]).toMatchObject({
-  //   key: INSPECT_KEY,
-  //   value: 'raw',
-  // })
+  const responseBody = await (await keyValueRequest).json()
 
-  // await page.getByRole('tab', {name: 'Parsed'}).click()
-  // const parsedResult = await sanityClient.withConfig({apiVersion: '2024-03-12'}).request({
-  //   uri: `/users/me/keyvalue/${INSPECT_KEY}`,
-  //   withCredentials: true,
-  // })
+  expect(responseBody[0]).toMatchObject({
+    key: INSPECT_KEY,
+    value: 'raw',
+  })
 
-  // expect(parsedResult[0]).toMatchObject({
-  //   key: INSPECT_KEY,
-  //   value: 'parsed',
-  // })
+  const keyValueRequest2 = page.waitForResponse(async (response) => {
+    return response.url().includes('/users/me/keyvalue') && response.request().method() === 'PUT'
+  })
+  await page.getByRole('tab', {name: 'Parsed'}).click()
+  const responseBody2 = await (await keyValueRequest2).json()
+
+  expect(responseBody2[0]).toMatchObject({
+    key: INSPECT_KEY,
+    value: 'parsed',
+  })
 })

@@ -3,7 +3,7 @@ import {type SchemaType} from '@sanity/types'
 import {Badge, Box, Flex} from '@sanity/ui'
 import {useMemo} from 'react'
 import {useMemoObservable} from 'react-rx'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {type GeneralPreviewLayoutKey} from '../../../../../../../components'
 import {DocumentStatus} from '../../../../../../../components/documentStatus'

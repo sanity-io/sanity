@@ -70,4 +70,33 @@ test.describe('inputs: text', () => {
     expect(await field.inputValue()).toBe(currentExpectedValue)
     expect(await getRemoteValue()).toBe(currentExpectedValue)
   })
+
+  test(`value can be changed after the document has been published`, async ({
+    page,
+    createDraftDocument,
+  }) => {
+    await createDraftDocument('/test/content/book')
+
+    const titleInput = page.getByTestId('field-title').getByTestId('string-input')
+    const paneFooter = page.getByTestId('pane-footer-document-status')
+    const publishButton = page.getByTestId('action-Publish')
+
+    await titleInput.fill('Title A')
+
+    // generally waiting for timeouts is not a good idea but for this specific instance
+    // since we are using `.fill` and `.click` they can cause the draft creation and publish to happen at the same exact time.
+    // We are waiting for 1s to make sure the draft actually gets created and click action is not too eager
+    await page.waitForTimeout(1000)
+
+    // Wait for the document to be published.
+    publishButton.click()
+    expect(await paneFooter.textContent()).toMatch(/published/i)
+
+    // Change the title.
+    await titleInput.fill('Title B')
+
+    // Wait for the document to be published.
+    publishButton.click()
+    expect(await paneFooter.textContent()).toMatch(/published/i)
+  })
 })

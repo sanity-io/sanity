@@ -8,7 +8,7 @@ import {
   Text,
 } from '@sanity/ui'
 import {useRouter} from 'sanity/router'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {MenuButton, type MenuButtonProps, MenuItem, Tooltip} from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'

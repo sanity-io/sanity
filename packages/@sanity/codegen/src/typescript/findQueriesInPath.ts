@@ -1,19 +1,15 @@
 import fs from 'node:fs/promises'
-import {join} from 'node:path'
 
 import {type TransformOptions} from '@babel/core'
 import createDebug from 'debug'
 import glob from 'globby'
 
+import {getBabelConfig} from '../getBabelConfig'
 import {type NamedQueryResult} from './expressionResolvers'
 import {findQueriesInSource} from './findQueriesInSource'
 import {getResolver} from './moduleResolver'
 
 const debug = createDebug('sanity:codegen:findQueries:debug')
-
-const defaultBabelOptions = {
-  extends: join(__dirname, '..', '..', 'babel.config.json'),
-}
 
 type ResultQueries = {
   type: 'queries'
@@ -37,7 +33,7 @@ type ResultError = {
  */
 export async function* findQueriesInPath({
   path,
-  babelOptions = defaultBabelOptions,
+  babelOptions = getBabelConfig(),
   resolver = getResolver(),
 }: {
   path: string | string[]

@@ -10,7 +10,7 @@ import {
   useRef,
   useState,
 } from 'react'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {Popover} from '../../../../../../../../../../ui-components'
 import {useSchema} from '../../../../../../../../../hooks'

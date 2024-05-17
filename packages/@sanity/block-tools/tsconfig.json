@@ -1,13 +1,21 @@
 {
-  "extends": "../../../tsconfig.settings",
-  "include": ["./src", "./test"],
+  "extends": "@repo/tsconfig/base.json",
+  "include": [
+    "./src",
+    "./test",
+    "./node_modules/@sanity/types/src",
+    "./node_modules/@sanity/schema/src",
+    "./node_modules/@sanity/schema/typings",
+    "./node_modules/@sanity/util/src"
+  ],
   "compilerOptions": {
-    "composite": true,
-    "declarationDir": "./lib/dts",
     "rootDir": ".",
-    "outDir": "./lib/dts",
-
-    "jsx": "react-jsx"
-  },
-  "references": [{"path": "../schema/tsconfig.lib.json"}, {"path": "../types/tsconfig.lib.json"}]
+    "paths": {
+      "@sanity/schema/*": ["./node_modules/@sanity/schema/src/_exports/*"],
+      "@sanity/schema": ["./node_modules/@sanity/schema/src/_exports/index.ts"],
+      "@sanity/types": ["./node_modules/@sanity/types/src"],
+      "@sanity/util/*": ["./node_modules/@sanity/util/src/_exports/*"],
+      "@sanity/util": ["./node_modules/@sanity/util/src/_exports/index.ts"]
+    }
+  }
 }

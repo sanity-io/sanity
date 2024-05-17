@@ -13,7 +13,7 @@ import {
   useRef,
   useState,
 } from 'react'
-import styled, {css, type CSSObject} from 'styled-components'
+import {css, type CSSObject, styled} from 'styled-components'
 
 import {Button} from '../../../../ui-components'
 import {useTranslation} from '../../../i18n'
@@ -27,10 +27,10 @@ const Root = styled(Card)((props: {theme: Theme}): CSSObject => {
   const space = rem(theme.sanity.space[1])
 
   return {
-    position: 'relative',
-    borderRadius: `${radius[1]}px`,
-    color: color.default.enabled.fg,
-    boxShadow: focusRingBorderStyle({
+    'position': 'relative',
+    'borderRadius': `${radius[1]}px`,
+    'color': color.default.enabled.fg,
+    'boxShadow': focusRingBorderStyle({
       color: color.default.enabled.border,
       width: input.border.width,
     }),
@@ -88,24 +88,24 @@ const Input = styled.input((props: {theme: Theme}): CSSObject => {
   const size = theme.sanity.fonts.text.sizes[2]
 
   return {
-    appearance: 'none',
-    background: 'none',
-    border: 0,
-    borderRadius: 0,
-    outline: 'none',
-    fontSize: rem(size.fontSize),
-    lineHeight: size.lineHeight / size.fontSize,
-    fontFamily: font.family,
-    fontWeight: font.weights.regular,
-    margin: 0,
-    display: 'block',
-    minWidth: '1px',
-    maxWidth: '100%',
-    boxSizing: 'border-box',
-    paddingTop: rem(p - size.ascenderHeight),
-    paddingRight: rem(p),
-    paddingBottom: rem(p - size.descenderHeight),
-    paddingLeft: rem(p),
+    'appearance': 'none',
+    'background': 'none',
+    'border': 0,
+    'borderRadius': 0,
+    'outline': 'none',
+    'fontSize': rem(size.fontSize),
+    'lineHeight': size.lineHeight / size.fontSize,
+    'fontFamily': font.family,
+    'fontWeight': font.weights.regular,
+    'margin': 0,
+    'display': 'block',
+    'minWidth': '1px',
+    'maxWidth': '100%',
+    'boxSizing': 'border-box',
+    'paddingTop': rem(p - size.ascenderHeight),
+    'paddingRight': rem(p),
+    'paddingBottom': rem(p - size.descenderHeight),
+    'paddingLeft': rem(p),
 
     // enabled
     '&:not(:invalid):not(:disabled)': {

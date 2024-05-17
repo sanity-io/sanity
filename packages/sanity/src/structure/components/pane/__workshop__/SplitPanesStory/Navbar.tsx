@@ -1,7 +1,7 @@
 import {Box, Card, Flex, Layer, Text, useTheme} from '@sanity/ui'
 import {type Dispatch, type SetStateAction, useCallback} from 'react'
 import {LegacyLayerProvider} from 'sanity'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 const RootCard = styled(Card)`
   padding-left: env(safe-area-inset-left);

@@ -1,4 +1,4 @@
-import {BellIcon, ColorWheelIcon, ImageIcon, InfoOutlineIcon} from '@sanity/icons'
+import {BellIcon, ColorWheelIcon, DocumentPdfIcon, ImageIcon, InfoOutlineIcon} from '@sanity/icons'
 import {type Rule} from '@sanity/types'
 import {defineArrayMember, defineField, defineType} from 'sanity'
 
@@ -36,7 +36,7 @@ export const ptAllTheBellsAndWhistlesType = defineType({
           marks: {
             // decorators: [{title: 'Strong', value: 'strong'}],
             annotations: [
-              {
+              defineField({
                 type: 'object',
                 name: 'link',
                 title: 'Link',
@@ -44,13 +44,13 @@ export const ptAllTheBellsAndWhistlesType = defineType({
                 //   modal: {type: 'dialog'},
                 // },
                 fields: [
-                  {
+                  defineField({
                     type: 'url',
                     name: 'href',
                     title: 'URL',
-                    validation: (rule: Rule) =>
+                    validation: (rule) =>
                       rule
-                        .custom((url: string, context: any) => {
+                        .custom((url: string | undefined, context: any) => {
                           if (!url && !context.parent.reference) {
                             return 'Inline Link: Requires a reference or URL'
                           }
@@ -61,7 +61,7 @@ export const ptAllTheBellsAndWhistlesType = defineType({
                           scheme: ['http', 'https', 'mailto', 'tel'],
                           allowRelative: true,
                         }),
-                  },
+                  }),
                   defineField({
                     title: 'Linked Book',
                     name: 'reference',
@@ -77,8 +77,8 @@ export const ptAllTheBellsAndWhistlesType = defineType({
                     initialValue: false,
                   },
                 ],
-              },
-              {
+              }),
+              defineField({
                 type: 'object',
                 name: 'color',
                 title: 'Color',
@@ -88,10 +88,50 @@ export const ptAllTheBellsAndWhistlesType = defineType({
                     type: 'string',
                     name: 'color',
                     title: 'Color',
+                    validation: (rule: Rule) => rule.required(),
                   },
                 ],
-              },
+              }),
             ],
+          },
+          of: [
+            defineField({
+              type: 'object',
+              name: 'inlineImage',
+              preview: {
+                select: {
+                  media: 'asset',
+                },
+              },
+              fields: [
+                defineField({
+                  name: 'inlineImage',
+                  type: 'image',
+                  title: 'Inline image',
+                }),
+                defineField({
+                  name: 'caption',
+                  type: 'string',
+                  title: 'Caption',
+                  validation: (rule) => rule.required(),
+                }),
+              ],
+            }),
+          ],
+        }),
+
+        defineField({
+          type: 'file',
+          icon: DocumentPdfIcon,
+          name: 'pdfFile',
+          title: 'PDF file',
+          options: {
+            accept: 'application/pdf',
+          },
+          preview: {
+            select: {
+              title: 'asset.originalFilename',
+            },
           },
         }),
 
@@ -106,7 +146,6 @@ export const ptAllTheBellsAndWhistlesType = defineType({
           preview: {
             select: {
               media: 'asset',
-              title: 'caption',
             },
           },
           fields: [
@@ -114,6 +153,7 @@ export const ptAllTheBellsAndWhistlesType = defineType({
               title: 'Caption',
               name: 'caption',
               type: 'string',
+              validation: (rule) => rule.required(),
             }),
             {
               name: 'alt',
@@ -144,6 +184,29 @@ export const ptAllTheBellsAndWhistlesType = defineType({
               description: 'Not implemented in most surfaces.',
               name: 'isLarge',
               type: 'boolean',
+            }),
+          ],
+        }),
+
+        defineField({
+          name: 'imageObject',
+          title: 'Image object',
+          type: 'object',
+          icon: ImageIcon,
+          fields: [
+            defineField({
+              type: 'image',
+              icon: ImageIcon,
+              name: 'image',
+              title: 'Image',
+              options: {
+                hotspot: true,
+              },
+              preview: {
+                select: {
+                  media: 'asset',
+                },
+              },
             }),
           ],
         }),
@@ -227,6 +290,48 @@ export const ptAllTheBellsAndWhistlesType = defineType({
           options: {
             unstable_whitespaceOnPasteMode: 'normalize',
           },
+        }),
+      ],
+    }),
+    defineField({
+      name: 'body',
+      title: 'Body',
+      type: 'array',
+      of: [
+        defineArrayMember({
+          type: 'block',
+        }),
+        defineArrayMember({
+          type: 'object',
+          name: 'imagesWithCaption',
+          title: 'Image slideshow',
+          fields: [
+            {
+              type: 'array',
+              name: 'images',
+              of: [
+                {
+                  type: 'object',
+                  name: 'imageWithCaption',
+                  fields: [
+                    {
+                      type: 'image',
+                      name: 'image',
+                      options: {
+                        hotspot: true,
+                      },
+                      fields: [{type: 'string', name: 'alt'}],
+                    },
+                    {
+                      type: 'array',
+                      name: 'caption',
+                      of: [{type: 'block'}],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
         }),
       ],
     }),

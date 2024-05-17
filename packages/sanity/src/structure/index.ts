@@ -1,4 +1,3 @@
-export {type CommentIntentGetter, CommentsIntentProvider} from './comments'
 export type {
   BackLinkProps,
   ChildLinkProps,
@@ -8,7 +7,7 @@ export type {
   ParameterizedLinkProps,
   ReferenceChildLinkProps,
 } from './components'
-export {ConfirmDeleteDialog, PaneLayout, PaneRouterContext, usePaneRouter} from './components'
+export {ConfirmDeleteDialog, Pane, PaneContent, PaneLayout, usePaneRouter} from './components'
 export {structureLocaleNamespace, type StructureLocaleResourceKeys} from './i18n'
 export * from './panes/document'
 export {DocumentInspectorHeader} from './panes/document/documentInspector'
@@ -20,3 +19,4 @@ export * from './structureTool'
 export * from './StructureToolProvider'
 export * from './types'
 export * from './useStructureTool'
+export {PaneRouterContext} from 'sanity/_singletons'

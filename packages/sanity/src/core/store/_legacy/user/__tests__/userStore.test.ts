@@ -4,6 +4,11 @@ import {type SanityClient} from '@sanity/client'
 import {createUserStore} from '../userStore'
 
 export class HttpError extends Error {
+  constructor() {
+    super()
+    this.name = 'HttpError'
+  }
+
   statusCode?: number
 }
 

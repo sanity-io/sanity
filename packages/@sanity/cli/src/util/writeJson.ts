@@ -1,4 +1,4 @@
-import {writeFile} from 'fs/promises'
+import {writeFile} from 'node:fs/promises'
 
 export function writeJson(filePath: string, content: unknown): Promise<void> {
   const serialized = JSON.stringify(content, null, 2)

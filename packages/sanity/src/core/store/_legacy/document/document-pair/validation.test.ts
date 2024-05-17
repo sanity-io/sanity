@@ -52,7 +52,14 @@ function createSubscription(
   const getClient = () => client
 
   const stream = validation(
-    {client, getClient, schema, observeDocumentPairAvailability, i18n: getFallbackLocaleSource()},
+    {
+      client,
+      getClient,
+      schema,
+      observeDocumentPairAvailability,
+      i18n: getFallbackLocaleSource(),
+      serverActionsEnabled: false,
+    },
     {publishedId: 'example-id', draftId: 'drafts.example-id'},
     'movie',
   ).pipe(publish())
@@ -292,6 +299,7 @@ describe('validation', () => {
           getClient: () => client,
           observeDocumentPairAvailability: jest.fn(() => EMPTY),
           i18n: getFallbackLocaleSource(),
+          serverActionsEnabled: false,
         },
         {publishedId: 'example-id', draftId: 'drafts.example-id'},
         'movie',

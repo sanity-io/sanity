@@ -1,5 +1,5 @@
 import {type Theme} from '@sanity/ui'
-import styled, {css} from 'styled-components'
+import {css, styled} from 'styled-components'
 
 import {Button} from '../../../../../../ui-components'
 import {focusRingStyle} from '../../../../components/withFocusRing/helpers'

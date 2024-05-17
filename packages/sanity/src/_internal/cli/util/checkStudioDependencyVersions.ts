@@ -1,7 +1,8 @@
+import fs from 'node:fs'
+import path from 'node:path'
+
 import {type PackageJson} from '@sanity/cli'
 import {generateHelpUrl} from '@sanity/generate-help-url'
-import fs from 'fs'
-import path from 'path'
 import resolveFrom from 'resolve-from'
 import semver, {type SemVer} from 'semver'
 
@@ -20,6 +21,8 @@ interface PackageInfo {
 const PACKAGES = [
   {name: 'react', supported: ['^18'], deprecatedBelow: null},
   {name: 'react-dom', supported: ['^18'], deprecatedBelow: null},
+  {name: 'styled-components', supported: ['^6'], deprecatedBelow: null},
+  {name: '@sanity/ui', supported: ['^2'], deprecatedBelow: null},
 ]
 
 export function checkStudioDependencyVersions(workDir: string): void {

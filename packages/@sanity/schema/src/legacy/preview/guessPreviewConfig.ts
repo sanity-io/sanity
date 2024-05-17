@@ -7,51 +7,51 @@ import {isBlockField} from './portableText'
 const TITLE_CANDIDATES = ['title', 'name', 'label', 'heading', 'header', 'caption']
 const DESCRIPTION_CANDIDATES = ['description', ...TITLE_CANDIDATES]
 
-function fieldHasReferenceTo(fieldDef, refType) {
-  return arrify(fieldDef.to || []).some((memberTypeDef) => memberTypeDef.type === refType)
+function fieldHasReferenceTo(fieldDef: any, refType: any) {
+  return arrify(fieldDef.to || []).some((memberTypeDef: any) => memberTypeDef.type === refType)
 }
 
-function isImageAssetField(fieldDef) {
+function isImageAssetField(fieldDef: any) {
   return fieldHasReferenceTo(fieldDef, 'sanity.imageAsset')
 }
 
-function resolveImageAssetPath(typeDef) {
+function resolveImageAssetPath(typeDef: any) {
   const fields = typeDef.fields || []
   const imageAssetField = fields.find(isImageAssetField)
   if (imageAssetField) {
     return imageAssetField.name
   }
-  const fieldWithImageAsset = fields.find((fieldDef) =>
+  const fieldWithImageAsset = fields.find((fieldDef: any) =>
     (fieldDef.fields || []).some(isImageAssetField),
   )
 
   return fieldWithImageAsset ? `${fieldWithImageAsset.name}.asset` : undefined
 }
 
-function isFileAssetField(fieldDef) {
+function isFileAssetField(fieldDef: any) {
   return fieldHasReferenceTo(fieldDef, 'sanity.fileAsset')
 }
 
-function resolveFileAssetPath(typeDef) {
+function resolveFileAssetPath(typeDef: any) {
   const fields = typeDef.fields || []
   const assetField = fields.find(isFileAssetField)
   if (assetField) {
     return assetField.name
   }
-  const fieldWithFileAsset = fields.find((fieldDef) =>
+  const fieldWithFileAsset = fields.find((fieldDef: any) =>
     (fieldDef.fields || []).some(isFileAssetField),
   )
   return fieldWithFileAsset ? `${fieldWithFileAsset.name}.asset` : undefined
 }
 
-export default function guessPreviewFields(rawObjectTypeDef) {
+export default function guessPreviewFields(rawObjectTypeDef: any) {
   const objectTypeDef = {fields: [], ...rawObjectTypeDef}
 
   const stringFieldNames = objectTypeDef.fields
-    .filter((field) => field.type === 'string')
-    .map((field) => field.name)
+    .filter((field: any) => field.type === 'string')
+    .map((field: any) => field.name)
 
-  const blockFieldNames = objectTypeDef.fields.filter(isBlockField).map((field) => field.name)
+  const blockFieldNames = objectTypeDef.fields.filter(isBlockField).map((field: any) => field.name)
 
   // Check if we have fields with names that is listed in candidate fields
   let titleField = TITLE_CANDIDATES.find(
@@ -71,7 +71,7 @@ export default function guessPreviewFields(rawObjectTypeDef) {
     descField = stringFieldNames[1] || blockFieldNames[1]
   }
 
-  const mediaField = objectTypeDef.fields.find((field) => field.type === 'image')
+  const mediaField = objectTypeDef.fields.find((field: any) => field.type === 'image')
 
   const imageAssetPath = resolveImageAssetPath(objectTypeDef)
 
@@ -87,8 +87,8 @@ export default function guessPreviewFields(rawObjectTypeDef) {
 
   if (!titleField && !imageAssetPath) {
     // last resort, pick all fields and concat them
-    const fieldNames = objectTypeDef.fields.map((field) => field.name)
-    const fieldMapping = fieldNames.reduce((acc, fieldName) => {
+    const fieldNames = objectTypeDef.fields.map((field: any) => field.name)
+    const fieldMapping = fieldNames.reduce((acc: any, fieldName: any) => {
       acc[fieldName] = fieldName
       return acc
     }, {})

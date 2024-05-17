@@ -1,7 +1,7 @@
 import {Box, Flex, rem, Stack, Text, TextSkeleton} from '@sanity/ui'
 import {createElement, type ElementType, isValidElement, type ReactNode} from 'react'
 import {isValidElementType} from 'react-is'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 import {getDevicePixelRatio} from 'use-device-pixel-ratio'
 
 import {Media, type MediaProps} from '../_common/Media'

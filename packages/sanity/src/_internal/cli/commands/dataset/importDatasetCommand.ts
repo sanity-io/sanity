@@ -1,11 +1,13 @@
+import {createReadStream} from 'node:fs'
+import fs from 'node:fs/promises'
+import path from 'node:path'
+
 import {type CliCommandContext, type CliCommandDefinition, type CliOutputter} from '@sanity/cli'
 import sanityImport from '@sanity/import'
-import {createReadStream} from 'fs'
-import fs from 'fs/promises'
 import {getIt} from 'get-it'
+// eslint-disable-next-line import/extensions
 import {promise} from 'get-it/middleware'
-import padStart from 'lodash/padStart'
-import path from 'path'
+import {padStart} from 'lodash'
 import prettyMs from 'pretty-ms'
 
 import {chooseDatasetPrompt} from '../../actions/dataset/chooseDatasetPrompt'
@@ -50,8 +52,8 @@ interface ImportFlags {
   'replace-assets'?: boolean
   'skip-cross-dataset-references'?: boolean
   'allow-system-documents'?: boolean
-  replace?: boolean
-  missing?: boolean
+  'replace'?: boolean
+  'missing'?: boolean
 }
 
 interface ParsedImportFlags {

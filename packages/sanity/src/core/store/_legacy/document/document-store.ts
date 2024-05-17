@@ -80,6 +80,7 @@ export interface DocumentStoreOptions {
   schema: Schema
   initialValueTemplates: Template[]
   i18n: LocaleSource
+  serverActionsEnabled: Observable<boolean>
 }
 
 /** @internal */
@@ -90,6 +91,7 @@ export function createDocumentStore({
   initialValueTemplates,
   schema,
   i18n,
+  serverActionsEnabled,
 }: DocumentStoreOptions): DocumentStore {
   const observeDocumentPairAvailability =
     documentPreviewStore.unstable_observeDocumentPairAvailability
@@ -98,12 +100,21 @@ export function createDocumentStore({
   // internal operations, and a `getClient` method that we expose to user-land
   // for things like validations
   const client = getClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
-  const ctx = {client, getClient, observeDocumentPairAvailability, historyStore, schema, i18n}
+
+  const ctx = {
+    client,
+    getClient,
+    observeDocumentPairAvailability,
+    historyStore,
+    schema,
+    i18n,
+    serverActionsEnabled,
+  }
 
   return {
     // Public API
     checkoutPair(idPair) {
-      return checkoutPair(client, idPair)
+      return checkoutPair(client, idPair, serverActionsEnabled)
     },
     initialValue(opts, context) {
       return getInitialValueStream(
@@ -122,10 +133,20 @@ export function createDocumentStore({
     },
     pair: {
       consistencyStatus(publishedId, type) {
-        return consistencyStatus(ctx.client, getIdPairFromPublished(publishedId), type)
+        return consistencyStatus(
+          ctx.client,
+          getIdPairFromPublished(publishedId),
+          type,
+          serverActionsEnabled,
+        )
       },
       documentEvents(publishedId, type) {
-        return documentEvents(ctx.client, getIdPairFromPublished(publishedId), type)
+        return documentEvents(
+          ctx.client,
+          getIdPairFromPublished(publishedId),
+          type,
+          serverActionsEnabled,
+        )
       },
       editOperations(publishedId, type) {
         return editOperations(ctx, getIdPairFromPublished(publishedId), type)
@@ -134,7 +155,12 @@ export function createDocumentStore({
         return editState(ctx, getIdPairFromPublished(publishedId), type)
       },
       operationEvents(publishedId, type) {
-        return operationEvents({client, historyStore, schema}).pipe(
+        return operationEvents({
+          client,
+          historyStore,
+          schema,
+          serverActionsEnabled,
+        }).pipe(
           filter(
             (result) =>
               result.args.idPair.publishedId === publishedId && result.args.typeName === type,

@@ -3,7 +3,7 @@ import {writeFile} from 'node:fs/promises'
 import path from 'node:path'
 
 import {type CliCommandDefinition} from '@sanity/cli'
-import deburr from 'lodash/deburr'
+import {deburr} from 'lodash'
 
 import {MIGRATIONS_DIRECTORY} from './constants'
 import {minimalAdvanced} from './templates/minimalAdvanced'

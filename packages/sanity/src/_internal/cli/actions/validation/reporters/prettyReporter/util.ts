@@ -1,6 +1,7 @@
+import {isatty} from 'node:tty'
+
 import {type ValidationMarker} from '@sanity/types'
 import logSymbols from 'log-symbols'
-import {isatty} from 'tty'
 
 export type Level = ValidationMarker['level']
 
@@ -22,7 +23,7 @@ export const levelValues = {error: 0, warning: 1, info: 2} as const
  */
 export const count = (amount: number, subject: string): string =>
   `${amount.toLocaleString('en-US')} ${
-    amount === 1 ? subject.substring(0, subject.length - 1) : subject
+    amount === 1 ? subject.slice(0, Math.max(0, subject.length - 1)) : subject
   }`
 
 const percentageFormatter = new Intl.NumberFormat('en-US', {

@@ -1,4 +1,10 @@
+import {deprecatedScheduledPublishingPlugin} from '../deprecatedPlugins/DeprecatedScheduledPublishing'
 import {type PluginOptions} from './types'
+
+const DEPRECATED_PLUGINS = [
+  // Scheduled publishing is added by default, we are filtering to avoid duplicates
+  'scheduled-publishing',
+]
 
 /**
  * @internal
@@ -17,7 +23,21 @@ export const flattenConfig = (
     flattenConfig(plugin, [...path, currentConfig.name]),
   )
 
-  const resolved = [...allPlugins, rootConfig]
+  const deprecatedScheduledPublishing = allPlugins.find(
+    (p) => p.config.name === 'scheduled-publishing',
+  )
+  if (deprecatedScheduledPublishing) {
+    // Add the deprecated plugin error to the plugins list, to show the error to users.
+    allPlugins.push({
+      path: deprecatedScheduledPublishing.path,
+      config: deprecatedScheduledPublishingPlugin(),
+    })
+  }
+
+  const resolved = [
+    ...allPlugins.filter((plugin) => !DEPRECATED_PLUGINS.includes(plugin.config.name)),
+    rootConfig,
+  ]
 
   return resolved
 }

@@ -1,12 +1,10 @@
 {
-  "extends": "../../../tsconfig.settings",
-  "include": ["./src/**/*"],
+  "extends": "@repo/tsconfig/base.json",
+  "include": ["./src", "./node_modules/groq/src"],
   "compilerOptions": {
-    "composite": true,
-    "lib": ["ES2022.Error"],
     "rootDir": ".",
-    "outDir": "./lib/dts",
-    "declarationDir": "./lib/dts"
-  },
-  "references": [{"path": "../types/tsconfig.lib.json"}, {"path": "../../groq/tsconfig.lib.json"}]
+    "paths": {
+      "groq": ["./node_modules/groq/src/groq.ts"]
+    }
+  }
 }

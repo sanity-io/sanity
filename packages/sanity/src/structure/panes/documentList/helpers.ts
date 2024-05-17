@@ -9,6 +9,7 @@ import {
   type SchemaType,
 } from '@sanity/types'
 import * as PathUtils from '@sanity/util/paths'
+import {type ExprNode, parse} from 'groq-js'
 import {collate, getPublishedId} from 'sanity'
 
 import {type DocumentListPaneItem, type SortOrder} from './types'
@@ -26,34 +27,6 @@ export function removePublishedWithDrafts(documents: SanityDocumentLike[]): Docu
       hasDraft: !!entry.draft,
     }
   }) as any
-}
-
-const RE_TYPE_NAME_IN_FILTER =
-  /\b_type\s*==\s*(['"].*?['"]|\$.*?(?:\s|$))|\B(['"].*?['"]|\$.*?(?:\s|$))\s*==\s*_type\b/
-export function getTypeNameFromSingleTypeFilter(
-  filter: string,
-  params: Record<string, unknown> = {},
-): string | null {
-  const matches = filter.match(RE_TYPE_NAME_IN_FILTER)
-
-  if (!matches) {
-    return null
-  }
-
-  const match = (matches[1] || matches[2]).trim().replace(/^["']|["']$/g, '')
-
-  if (match[0] === '$') {
-    const k = match.slice(1)
-    const v = params[k]
-
-    return typeof v === 'string' ? v : null
-  }
-
-  return match
-}
-
-export function isSimpleTypeFilter(filter: string): boolean {
-  return /^_type\s*==\s*['"$]\w+['"]?\s*$/.test(filter.trim())
 }
 
 export function applyOrderingFunctions(order: SortOrder, schemaType: ObjectSchemaType): SortOrder {
@@ -150,4 +123,117 @@ export function fieldExtendsType(field: ObjectField | ObjectFieldType, ofType: s
   }
 
   return false
+}
+
+/**
+ * Recursively extract static `_type`s from GROQ filter expressions. If the
+ * types can't be statically determined then it will return `null`.
+ */
+// eslint-disable-next-line complexity
+function findTypes(node: ExprNode): Set<string> | null {
+  switch (node.type) {
+    case 'OpCall': {
+      const {left, right} = node
+
+      switch (node.op) {
+        // e.g. `a == b`
+        case '==': {
+          // e.g. `_type == 'value'`
+          if (left.type === 'AccessAttribute' && left.name === '_type' && !left.base) {
+            if (right.type !== 'Value' || typeof right.value !== 'string') return null
+            return new Set([right.value])
+          }
+
+          // e.g. `'value' == _type`
+          if (right.type === 'AccessAttribute' && right.name === '_type' && !right.base) {
+            if (left.type !== 'Value' || typeof left.value !== 'string') return null
+            return new Set([left.value])
+          }
+
+          // otherwise, we can't determine the types statically
+          return null
+        }
+
+        // e.g. `a in b`
+        case 'in': {
+          // if `_type` is not on the left hand side of `in` then it can't be determined
+          if (left.type !== 'AccessAttribute' || left.name !== '_type' || left.base) return null
+          // if the right hand side is not an array then the types can't be determined
+          if (right.type !== 'Array') return null
+
+          const types = new Set<string>()
+          // iterate through all the types
+          for (const element of right.elements) {
+            // if we find a splat, then early return, we can't determine the types
+            if (element.isSplat) return null
+            // if the array element is not just a simple value, then early return
+            if (element.value.type !== 'Value') return null
+            // if the array element value is not a string, then early return
+            if (typeof element.value.value !== 'string') return null
+            // otherwise add the element value to the set of types
+            types.add(element.value.value)
+          }
+
+          // if there were any elements in the types set, return it
+          if (types.size) return types
+          // otherwise, the set of types cannot be determined
+          return null
+        }
+
+        default: {
+          return null
+        }
+      }
+    }
+
+    // groups can just be unwrapped, the AST preserves the order
+    case 'Group': {
+      return findTypes(node.base)
+    }
+
+    // e.g. `_type == 'a' || _type == 'b'`
+    // with Or nodes, if we can't determine the types for either the left or
+    // right hand side then we can't determine the types for any
+    // e.g. `_type == 'a' || isActive`
+    // — can't determine types because `isActive` could be true on another types
+    case 'Or': {
+      const left = findTypes(node.left)
+      if (!left) return null
+
+      const right = findTypes(node.right)
+      if (!right) return null
+
+      return new Set([...left, ...right])
+    }
+
+    // e.g. `_type == 'a' && isActive`
+    // with And nodes, we can determine the types as long as we can determine
+    // the types for one side. We can't determine the types if both are `null`.
+    case 'And': {
+      const left = findTypes(node.left)
+      const right = findTypes(node.right)
+
+      if (!left && !right) return null
+      return new Set([...(left || []), ...(right || [])])
+    }
+
+    default: {
+      return null
+    }
+  }
+}
+
+export function findStaticTypesInFilter(
+  filter: string,
+  params: Record<string, unknown> = {},
+): string[] | null {
+  try {
+    const types = findTypes(parse(filter, {params}))
+    if (!types) return null
+
+    return Array.from(types).sort()
+  } catch {
+    // if we couldn't parse the filter, just return `null`
+    return null
+  }
 }

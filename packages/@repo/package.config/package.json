@@ -1,0 +1,11 @@
+{
+  "name": "@repo/package.config",
+  "version": "3.42.1",
+  "private": true,
+  "description": "Shared @sanity/pkg-utils configuration",
+  "main": "./src/package.config.ts",
+  "types": "./src/package.config.ts",
+  "scripts": {
+    "check:types": "tsc --noEmit --skipLibCheck src/package.config.ts"
+  }
+}

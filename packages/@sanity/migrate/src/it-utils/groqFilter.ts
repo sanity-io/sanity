@@ -1,10 +1,10 @@
-import groq, {type ExprNode} from 'groq-js'
+import {evaluate, type ExprNode, parse} from 'groq-js'
 
 import {filter as filterIt} from './filter'
 
 function parseGroqFilter(filter: string) {
   try {
-    return groq.parse(`*[${filter}]`)
+    return parse(`*[${filter}]`)
   } catch (err) {
     err.message = `Failed to parse GROQ filter "${filter}": ${err.message}`
     throw err
@@ -12,7 +12,7 @@ function parseGroqFilter(filter: string) {
 }
 
 export async function matchesFilter(parsedFilter: ExprNode, document: unknown) {
-  const result = await (await groq.evaluate(parsedFilter, {dataset: [document]})).get()
+  const result = await (await evaluate(parsedFilter, {dataset: [document]})).get()
   return result.length === 1
 }
 

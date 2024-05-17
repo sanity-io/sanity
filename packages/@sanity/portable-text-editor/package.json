@@ -1,6 +1,6 @@
 {
   "name": "@sanity/portable-text-editor",
-  "version": "3.35.1",
+  "version": "3.42.1",
   "description": "Portable Text Editor made in React",
   "keywords": [
     "sanity",
@@ -27,69 +27,63 @@
   },
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
+  "sideEffects": false,
   "exports": {
     ".": {
-      "types": "./lib/dts/src/index.d.ts",
       "source": "./src/index.ts",
+      "import": "./lib/index.mjs",
       "require": "./lib/index.js",
-      "node": {
-        "module": "./lib/index.esm.js",
-        "import": "./lib/index.cjs.mjs"
-      },
-      "import": "./lib/index.esm.js",
-      "default": "./lib/index.esm.js"
+      "default": "./lib/index.js"
     },
     "./package.json": "./package.json"
   },
   "main": "./lib/index.js",
   "module": "./lib/index.esm.js",
-  "source": "./src/index.ts",
-  "types": "./lib/dts/src/index.d.ts",
+  "types": "./lib/index.d.ts",
   "files": [
     "lib",
     "src"
   ],
   "scripts": {
-    "prebuild": "run-s clean",
-    "build": "pkg-utils build --tsconfig tsconfig.lib.json",
-    "postbuild": "run-s check:package",
-    "check:package": "pkg-utils --strict --tsconfig tsconfig.lib.json",
+    "build": "pkg-utils build --strict --check --clean",
+    "check:types": "tsc --project tsconfig.lib.json",
     "clean": "rimraf lib",
-    "lint": "eslint .",
-    "prettier": "prettier --write './**/*.{ts,tsx,js,css,html}'",
     "dev": "cd ./e2e-tests/ && ts-node serve",
+    "lint": "eslint .",
+    "prepublishOnly": "turbo run build",
+    "prettier": "prettier --write './**/*.{ts,tsx,js,css,html}'",
     "test": "jest",
     "test:e2e": "jest --config=e2e-tests/e2e.config.cjs",
     "test:watch": "jest --watch",
-    "watch": "pkg-utils watch --tsconfig tsconfig.lib.json"
+    "watch": "pkg-utils watch"
   },
   "dependencies": {
-    "@sanity/block-tools": "3.35.1",
-    "@sanity/schema": "3.35.1",
-    "@sanity/types": "3.35.1",
-    "@sanity/util": "3.35.1",
+    "@sanity/block-tools": "3.42.1",
+    "@sanity/schema": "3.42.1",
+    "@sanity/types": "3.42.1",
+    "@sanity/util": "3.42.1",
     "debug": "^3.2.7",
-    "is-hotkey": "^0.2.0",
+    "is-hotkey-esm": "^1.0.0",
     "lodash": "^4.17.21",
     "slate": "0.100.0",
     "slate-react": "0.101.0"
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",
-    "@playwright/test": "^1.41.2",
-    "@portabletext/toolkit": "^2.0.12",
+    "@playwright/test": "1.41.2",
+    "@portabletext/toolkit": "^2.0.15",
+    "@repo/package.config": "workspace:*",
     "@sanity/diff-match-patch": "^3.1.1",
-    "@sanity/ui": "^2.0.10",
+    "@sanity/ui": "^2.1.10",
     "@testing-library/react": "^13.4.0",
     "@types/debug": "^4.1.5",
     "@types/express": "^4.17.21",
     "@types/express-ws": "^3.0.1",
-    "@types/is-hotkey": "^0.1.10",
     "@types/lodash": "^4.14.149",
     "@types/node": "^18.19.8",
     "@types/node-ipc": "^9.2.0",
-    "@types/react": "^18.2.37",
-    "@types/react-dom": "^18.2.15",
+    "@types/react": "^18.3.1",
+    "@types/react-dom": "^18.3.0",
     "@types/ws": "~8.5.3",
     "@vitejs/plugin-react": "^4.2.1",
     "express": "^4.18.3",
@@ -98,17 +92,17 @@
     "jest-dev-server": "^9.0.1",
     "jest-environment-node": "^29.7.0",
     "node-ipc": "npm:@node-ipc/compat@9.2.5",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "rimraf": "^3.0.2",
     "rxjs": "^7.8.1",
-    "styled-components": "^6.1.8",
-    "vite": "^4.5.2"
+    "styled-components": "^6.1.11",
+    "vite": "^4.5.3"
   },
   "peerDependencies": {
     "react": "^16.9 || ^17 || ^18",
     "rxjs": "^7",
-    "styled-components": "^5.2 || ^6"
+    "styled-components": "^6.1"
   },
   "engines": {
     "node": ">=18"

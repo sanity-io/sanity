@@ -17,9 +17,9 @@ const MEDIA_OPTIONS: Record<string, string> = {
 }
 
 const LAYOUT_OPTIONS: Record<string, PortableTextPreviewLayoutKey> = {
-  Block: 'block',
+  'Block': 'block',
   'Block image': 'blockImage',
-  Inline: 'inline',
+  'Inline': 'inline',
 }
 
 // const mediaValues: Record<string, ReactNode> = {

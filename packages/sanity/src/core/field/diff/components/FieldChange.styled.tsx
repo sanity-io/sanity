@@ -1,5 +1,5 @@
 import {rem} from '@sanity/ui'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 export const FieldChangeContainer = styled.div`
   --field-change-error: ${({theme}) => theme.sanity.color.solid.critical.enabled.bg};

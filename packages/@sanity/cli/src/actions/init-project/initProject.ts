@@ -1,15 +1,15 @@
-import {type DatasetAclMode} from '@sanity/client'
+import {existsSync, readFileSync} from 'node:fs'
+import fs from 'node:fs/promises'
+import path from 'node:path'
+
+import {type DatasetAclMode, type SanityProject} from '@sanity/client'
 import {type Framework} from '@vercel/frameworks'
 import dotenv from 'dotenv'
 import execa, {type CommonOptions} from 'execa'
-import {existsSync, readFileSync} from 'fs'
-import fs from 'fs/promises'
-import {evaluate, patch} from 'golden-fleece'
-import deburr from 'lodash/deburr'
-import noop from 'lodash/noop'
+import {deburr, noop} from 'lodash'
 import pFilter from 'p-filter'
-import path from 'path'
 import resolveFrom from 'resolve-from'
+import {evaluate, patch} from 'silver-fleece'
 import which from 'which'
 
 import {CLIInitStepCompleted} from '../../__telemetry__/init.telemetry'
@@ -610,6 +610,21 @@ export default async function initSanity(
     print(`sanity help - to explore the CLI manual`)
   }
 
+  try {
+    const client = apiClient({api: {projectId: projectId}})
+    const project = await client.request<SanityProject>({uri: `/projects/${projectId}`})
+    if (!project?.metadata?.cliInitializedAt) {
+      await apiClient({api: {projectId}}).request({
+        method: 'PATCH',
+        uri: `/projects/${projectId}`,
+        body: {metadata: {cliInitializedAt: new Date().toISOString()}},
+      })
+    }
+  } catch (err: unknown) {
+    // Non-critical update
+    debug('Failed to update cliInitializedAt metadata')
+  }
+
   const sendInvite =
     isFirstProject &&
     (await prompt.single({
@@ -964,9 +979,8 @@ export default async function initSanity(
 
   function selectProjectTemplate() {
     // Make sure the --quickstart and --template are not used together
-    // Force template to clean if --quickstart is used
     if (flags.quickstart) {
-      return 'clean'
+      return 'quickstart'
     }
 
     const defaultTemplate = unattended || flags.template ? flags.template || 'clean' : null

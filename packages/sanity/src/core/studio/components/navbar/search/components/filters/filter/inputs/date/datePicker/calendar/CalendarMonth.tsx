@@ -1,5 +1,5 @@
 import {Box, Grid, Text} from '@sanity/ui'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {useTranslation} from '../../../../../../../../../../../i18n'
 import {CalendarDay} from './CalendarDay'

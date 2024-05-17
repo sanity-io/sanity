@@ -1,6 +1,7 @@
+import fs from 'node:fs'
+import path from 'node:path'
+
 import {type CliCommandDefinition} from '@sanity/cli'
-import fs from 'fs'
-import path from 'path'
 
 import {addCorsOrigin} from '../../actions/cors/addCorsOrigin'
 

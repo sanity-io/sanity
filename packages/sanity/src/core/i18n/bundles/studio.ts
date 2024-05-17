@@ -1,6 +1,7 @@
 /* eslint sort-keys: "error" */
-import {defineLocaleResourceBundle, defineLocalesResources} from '../helpers'
+import {defineLocalesResources} from '../helpers'
 import {studioLocaleNamespace} from '../localeNamespaces'
+import {type LocaleResourceBundle} from '../types'
 
 /**
  * The string resources for the studio core.
@@ -315,6 +316,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
 
   /** --- Configuration issues --- */
 
+  /** Default label text on configuration issues button */
+  'configuration-issues.button.label': 'Configuration issues',
   /** Tooltip displayed on configuration issues button */
   'configuration-issues.button.tooltip': 'Found configuration issues',
 
@@ -503,6 +506,8 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'inputs.array.read-only-label': 'This field is read-only',
   /** Label for when the array input is resolving the initial value for the item */
   'inputs.array.resolving-initial-value': 'Resolving initial value…',
+  /** Tooltip content when boolean input is disabled */
+  'inputs.boolean.disabled': 'Disabled',
   /** Placeholder value for datetime input */
   'inputs.datetime.placeholder': 'e.g. {{example}}',
   /** Acessibility label for button to open file options menu */
@@ -1003,15 +1008,27 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   /** The explanation when unable to create a new reference in a document */
   'insufficient-permissions-message.not-authorized-explanation_create-new-reference':
     'You do not have permission to create a new reference.',
+
   /** The explanation when unable to delete a particular document */
   'insufficient-permissions-message.not-authorized-explanation_delete-document':
     'You do not have permission to delete this document.',
+  /** The explanation when unable to delete a schedule on scheduled publishing */
+  'insufficient-permissions-message.not-authorized-explanation_delete-schedules':
+    'You do not have permission to delete schedules.',
+
   /** The explanation when unable to discard changes in a particular document */
   'insufficient-permissions-message.not-authorized-explanation_discard-changes':
     'You do not have permission to discard changes in this document.',
   /** The explanation when unable to duplicate a particular document */
   'insufficient-permissions-message.not-authorized-explanation_duplicate-document':
     'You do not have permission to duplicate this document.',
+  /** The explanation when unable to edit a schedule on scheduled publishing */
+  'insufficient-permissions-message.not-authorized-explanation_edit-schedules':
+    'You do not have permission to edit schedules.',
+
+  /** The explanation when unable to execute a schedule on scheduled publishing */
+  'insufficient-permissions-message.not-authorized-explanation_execute-schedules':
+    'You do not have permission to execute schedules.',
   /** The explanation when unable to publish a particular document */
   'insufficient-permissions-message.not-authorized-explanation_publish-document':
     'You do not have permission to publish this document.',
@@ -1672,8 +1689,8 @@ export type StudioLocaleResourceKeys = keyof typeof studioLocaleStrings
  * @beta
  * @hidden
  */
-export const studioDefaultLocaleResources = defineLocaleResourceBundle({
+export const studioDefaultLocaleResources: LocaleResourceBundle = {
   locale: 'en-US',
   namespace: studioLocaleNamespace,
   resources: studioLocaleStrings,
-})
+}

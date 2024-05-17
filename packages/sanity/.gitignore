@@ -10,18 +10,23 @@
 
 # Compiled code
 /lib
+/dist
 
 # Legacy exports
 /_internal.js
-/_internalBrowser.js
 /cli.js
 /desk.js
 /presentation.js
 /router.js
 /structure.js
-/migrate.js
+/_singletons.js
 
 # Playwright-ct artifacts
 /playwright-ct/report
 /playwright-ct/results
 /playwright-ct/template/.cache/
+
+# Deleted legacy exports
+/migrate.js
+/_internal.js
+/cli.js

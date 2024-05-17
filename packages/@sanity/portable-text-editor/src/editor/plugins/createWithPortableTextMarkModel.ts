@@ -5,18 +5,9 @@
  *
  */
 
-import {flatten, isEqual, uniq} from 'lodash'
+import {isEqual, uniq} from 'lodash'
 import {type Subject} from 'rxjs'
-import {
-  type Descendant,
-  Editor,
-  Element,
-  type NodeEntry,
-  Path,
-  Range,
-  Text,
-  Transforms,
-} from 'slate'
+import {type Descendant, Editor, Element, Path, Range, Text, Transforms} from 'slate'
 
 import {
   type EditorChange,
@@ -250,9 +241,8 @@ export function createWithPortableTextMarkModel(
           const splitTextNodes = [
             ...Editor.nodes(editor, {at: editor.selection, match: Text.isText}),
           ]
-          const shouldRemoveMark = flatten(
-            splitTextNodes.map((item) => item[0]).map((node) => node.marks),
-          ).includes(mark)
+          const shouldRemoveMark = splitTextNodes.every((node) => node[0].marks?.includes(mark))
+
           if (shouldRemoveMark) {
             editor.removeMark(mark)
             return editor
@@ -345,19 +335,24 @@ export function createWithPortableTextMarkModel(
       if (!editor.selection) {
         return false
       }
-      let existingMarks =
+
+      const selectedNodes = Array.from(
+        Editor.nodes(editor, {match: Text.isText, at: editor.selection}),
+      )
+
+      if (Range.isExpanded(editor.selection)) {
+        return selectedNodes.every((n) => {
+          const [node] = n
+
+          return node.marks?.includes(mark)
+        })
+      }
+
+      return (
         {
           ...(Editor.marks(editor) || {}),
         }.marks || []
-      if (Range.isExpanded(editor.selection)) {
-        Array.from(Editor.nodes(editor, {match: Text.isText, at: editor.selection})).forEach(
-          (n) => {
-            const [node] = n as NodeEntry<Text>
-            existingMarks = uniq([...existingMarks, ...((node.marks as string[]) || [])])
-          },
-        )
-      }
-      return existingMarks.includes(mark)
+      ).includes(mark)
     }
 
     // Custom editor function to toggle a mark

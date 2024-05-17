@@ -1,4 +1,4 @@
-import isValidDate from 'date-fns/isValid'
+import {isValid as isValidDate} from 'date-fns'
 
 const TRUTHY_STRINGS = ['yes', 'true', '1']
 const FALSEY_STRINGS = ['false', 'no', 'false', '0', 'null']

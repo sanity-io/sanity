@@ -1,8 +1,8 @@
 import {type Path} from '@sanity/types'
 import {type ReactNode, useMemo, useState} from 'react'
+import {ConnectorContext} from 'sanity/_singletons'
 
 import {ScrollContainer} from '../../components/scroll'
-import {ConnectorContext} from '../ConnectorContext'
 import {ENABLED} from '../constants'
 import {Tracker} from '../tracker'
 import {ConnectorsOverlay} from './ConnectorsOverlay'

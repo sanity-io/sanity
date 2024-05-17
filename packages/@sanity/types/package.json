@@ -1,6 +1,6 @@
 {
   "name": "@sanity/types",
-  "version": "3.35.1",
+  "version": "3.42.1",
   "description": "Type definitions for common Sanity data structures",
   "keywords": [
     "sanity",
@@ -25,42 +25,36 @@
   "sideEffects": false,
   "exports": {
     ".": {
-      "types": "./lib/dts/src/index.d.ts",
       "source": "./src/index.ts",
+      "import": "./lib/index.mjs",
       "require": "./lib/index.js",
-      "node": {
-        "module": "./lib/index.esm.js",
-        "import": "./lib/index.cjs.mjs"
-      },
-      "import": "./lib/index.esm.js",
-      "default": "./lib/index.esm.js"
+      "default": "./lib/index.js"
     },
     "./package.json": "./package.json"
   },
   "main": "./lib/index.js",
   "module": "./lib/index.esm.js",
-  "source": "./src/index.ts",
-  "types": "./lib/dts/src/index.d.ts",
+  "types": "./lib/index.d.ts",
   "files": [
     "lib",
     "src"
   ],
   "scripts": {
-    "prebuild": "run-s clean",
-    "build": "pkg-utils build --tsconfig tsconfig.lib.json",
-    "postbuild": "run-s check:package",
-    "check:package": "pkg-utils --strict --tsconfig tsconfig.lib.json",
+    "build": "pkg-utils build --strict --check --clean",
+    "check:types": "tsc --project tsconfig.lib.json",
     "clean": "rimraf lib",
+    "prepublishOnly": "turbo run build",
     "test": "jest",
     "test:watch": "jest --watchAll",
-    "watch": "pkg-utils watch --tsconfig tsconfig.lib.json"
+    "watch": "pkg-utils watch"
   },
   "dependencies": {
-    "@sanity/client": "^6.15.6",
+    "@sanity/client": "^6.18.2",
     "@types/react": "^18.0.25"
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",
+    "@repo/package.config": "workspace:*",
     "rimraf": "^3.0.2"
   }
 }

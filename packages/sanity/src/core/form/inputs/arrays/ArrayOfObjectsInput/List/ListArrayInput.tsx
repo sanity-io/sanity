@@ -261,6 +261,7 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
                       )}
                       {member.kind === 'error' && (
                         <ErrorItem
+                          readOnly={readOnly}
                           sortable={sortable}
                           member={member}
                           onRemove={() => props.onItemRemove(member.key)}

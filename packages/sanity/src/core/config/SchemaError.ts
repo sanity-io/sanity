@@ -5,5 +5,6 @@ import {type Schema} from '@sanity/types'
 export class SchemaError extends Error {
   constructor(public schema: Schema) {
     super('SchemaError')
+    this.name = 'SchemaError'
   }
 }

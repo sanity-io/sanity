@@ -13,7 +13,7 @@ import {
 } from '@sanity/ui'
 import {type KeyboardEvent, type MouseEvent, useCallback, useMemo, useRef, useState} from 'react'
 import {type Subscription} from 'rxjs'
-import styled, {css} from 'styled-components'
+import {css, styled} from 'styled-components'
 
 import {Tooltip} from '../../../../../ui-components'
 import {getHumanFriendlyBytes} from '../../../../field/types/file/diff/helpers'

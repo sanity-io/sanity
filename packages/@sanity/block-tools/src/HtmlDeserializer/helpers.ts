@@ -3,6 +3,7 @@ import {
   isPortableTextTextBlock,
   type PortableTextTextBlock,
 } from '@sanity/types'
+import {vercelStegaClean} from '@vercel/stega'
 import {isEqual} from 'lodash'
 
 import {DEFAULT_BLOCK} from '../constants'
@@ -61,9 +62,10 @@ export function preprocess(
   parseHtml: HtmlParser,
   options: HtmlPreprocessorOptions,
 ): Document {
-  const doc = parseHtml(normalizeHtmlBeforePreprocess(html))
+  const cleanHTML = vercelStegaClean(html)
+  const doc = parseHtml(normalizeHtmlBeforePreprocess(cleanHTML))
   preprocessors.forEach((processor) => {
-    processor(html, doc, options)
+    processor(cleanHTML, doc, options)
   })
   return doc
 }
@@ -161,18 +163,18 @@ export function trimWhitespace(blocks: TypedObject[]): TypedObject[] {
         child.text = child.text.replace(/[^\S\n]+$/g, '')
       }
       if (
-        /\s/.test(child.text.substring(child.text.length - 1)) &&
+        /\s/.test(child.text.slice(Math.max(0, child.text.length - 1))) &&
         nextChild &&
         isMinimalSpan(nextChild) &&
-        /\s/.test(nextChild.text.substring(0, 1))
+        /\s/.test(nextChild.text.slice(0, 1))
       ) {
         child.text = child.text.replace(/[^\S\n]+$/g, '')
       }
       if (
-        /\s/.test(child.text.substring(0, 1)) &&
+        /\s/.test(child.text.slice(0, 1)) &&
         prevChild &&
         isMinimalSpan(prevChild) &&
-        /\s/.test(prevChild.text.substring(prevChild.text.length - 1))
+        /\s/.test(prevChild.text.slice(Math.max(0, prevChild.text.length - 1)))
       ) {
         child.text = child.text.replace(/^[^\S\n]+/g, '')
       }

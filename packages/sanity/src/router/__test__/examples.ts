@@ -45,8 +45,8 @@ export const examples: Array<[string, Record<string, string | Record<string, str
   [
     '/some-dataset/tools/another-tool/omg/foo',
     {
-      dataset: 'some-dataset',
-      tool: 'another-tool',
+      'dataset': 'some-dataset',
+      'tool': 'another-tool',
       'another-tool': {
         nope: 'foo',
       },
@@ -55,8 +55,8 @@ export const examples: Array<[string, Record<string, string | Record<string, str
   [
     '/some-dataset/tools/another-tool/omg/foo',
     {
-      dataset: 'some-dataset',
-      tool: 'another-tool',
+      'dataset': 'some-dataset',
+      'tool': 'another-tool',
       'another-tool': {
         nope: 'foo',
       },

@@ -73,7 +73,7 @@ Read more about [document actions][docs-document-actions].
 
 `/plugins/customDocumentActions/shopifyDelete.tsx`
 
-Delete a product document including all its associated variants in your Sanity Content Lake. Without this document action, one would have to delete all variant document one-by-one.
+Delete a product document including all its associated variants in your Sanity Content Lake. Without this document action, one would have to delete all variant documents one-by-one.
 
 ### Edit in Shopify shortcut
 
@@ -96,12 +96,11 @@ A simple wrapper around a regular [string input](string-input) that uses the val
 **Usage:**
 
 ```javascript
-{
+defineField({
   name: 'title',
-  title: 'Title',
   type: 'placeholderString',
   options: { field: 'store.title' }
-},
+}),
 ```
 
 ### Shopify document status (for collections, products and product variants)
@@ -129,12 +128,12 @@ Since we are using certain product fields from Shopify as the source of truth (s
 **Usage**
 
 ```javascript
-{
+defineField({
   title: 'Slug',
   name: 'slugProxy',
   type: 'proxyString',
-  options: { field: 'store.slug.current' }
-}
+  options: {field: 'store.slug.current'},
+})
 ```
 
 ### Shopify document status (preview component)

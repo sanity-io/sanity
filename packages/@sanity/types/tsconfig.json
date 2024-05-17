@@ -1,14 +1,10 @@
 {
-  "extends": "../../../tsconfig.settings",
-  "include": ["./src"],
+  "extends": "@repo/tsconfig/base.json",
+  "include": ["./src", "test"],
   "compilerOptions": {
-    "composite": true,
     "rootDir": ".",
-    "outDir": "./lib/dts",
-
-    "jsx": "react-jsx",
     "paths": {
-      "_self_": ["./src"]
+      "@sanity/types": ["./src/index.ts"]
     }
   }
 }

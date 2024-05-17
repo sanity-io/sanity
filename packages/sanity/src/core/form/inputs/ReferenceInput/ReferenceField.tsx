@@ -184,7 +184,7 @@ export function ReferenceField(props: ReferenceFieldProps) {
       readOnly ? null : (
         <Box flex="none">
           <MenuButton
-            button={<ContextMenuButton paddingY={3} />}
+            button={<ContextMenuButton />}
             id={`${inputId}-menuButton`}
             menu={
               <Menu>

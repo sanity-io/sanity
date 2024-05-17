@@ -2,7 +2,7 @@ import {Stack, Text} from '@sanity/ui'
 import {transparentize} from 'polished'
 import {type ChangeEventHandler, useCallback} from 'react'
 import {set, type StringInputProps} from 'sanity'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 const StyledColorInput = styled.input.attrs({type: 'color'})`
   cursor: pointer;

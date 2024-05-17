@@ -1,0 +1,4 @@
+{
+  "schema": "./working-schema.json",
+  "generates": "./out/types.ts"
+}

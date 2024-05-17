@@ -2,18 +2,21 @@ import {Editor, Range, Text, Transforms} from 'slate'
 
 import {type PortableTextMemberSchemaTypes, type PortableTextSlateEditor} from '../../types/editor'
 import {debugWithName} from '../../utils/debug'
+import {toSlateValue} from '../../utils/values'
+import {type PortableTextEditor} from '../PortableTextEditor'
 
 const debug = debugWithName('plugin:withUtils')
 
 interface Options {
   schemaTypes: PortableTextMemberSchemaTypes
   keyGenerator: () => string
+  portableTextEditor: PortableTextEditor
 }
 /**
  * This plugin makes various util commands available in the editor
  *
  */
-export function createWithUtils({schemaTypes, keyGenerator}: Options) {
+export function createWithUtils({schemaTypes, keyGenerator, portableTextEditor}: Options) {
   return function withUtils(editor: PortableTextSlateEditor): PortableTextSlateEditor {
     // Expands the the selection to wrap around the word the focus is at
     editor.pteExpandToWord = () => {
@@ -49,6 +52,29 @@ export function createWithUtils({schemaTypes, keyGenerator}: Options) {
         }
         debug(`pteExpandToWord: Can't expand to word here`)
       }
+    }
+
+    editor.pteCreateEmptyBlock = () => {
+      const block = toSlateValue(
+        [
+          {
+            _type: schemaTypes.block.name,
+            _key: keyGenerator(),
+            style: schemaTypes.styles[0].value || 'normal',
+            markDefs: [],
+            children: [
+              {
+                _type: 'span',
+                _key: keyGenerator(),
+                text: '',
+                marks: [],
+              },
+            ],
+          },
+        ],
+        portableTextEditor,
+      )[0]
+      return block
     }
     return editor
   }

@@ -36,7 +36,7 @@ function createValidationResult(
   message: string,
   helpId: string | null,
 ): SchemaValidationResult {
-  if (helpId && !Object.keys(HELP_IDS).some((id) => HELP_IDS[id] === helpId)) {
+  if (helpId && !Object.keys(HELP_IDS).some((id) => (HELP_IDS as any)[id] === helpId)) {
     throw new Error(
       `Used the unknown helpId "${helpId}", please add it to the array in createValidationResult.js`,
     )
@@ -44,12 +44,12 @@ function createValidationResult(
   return {
     severity,
     message,
-    helpId,
+    helpId: helpId!,
   }
 }
 
 export const error = (message: string, helpId?: string | null): SchemaValidationResult =>
-  createValidationResult('error', message, helpId)
+  createValidationResult('error', message, helpId!)
 
 export const warning = (message: string, helpId?: string | null): SchemaValidationResult =>
-  createValidationResult('warning', message, helpId)
+  createValidationResult('warning', message, helpId!)

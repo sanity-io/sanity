@@ -1,5 +1,5 @@
 import {rem} from '@sanity/ui'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 export const EditorRoot = styled.div`
   width: 100%;

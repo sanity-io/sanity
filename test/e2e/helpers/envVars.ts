@@ -3,6 +3,7 @@ type KnownEnvVar =
   | 'SANITY_E2E_PROJECT_ID'
   | 'SANITY_E2E_DATASET'
   | 'CI'
+  | 'HEADLESS'
 
 /**
  * Read an environment variable, parsing the response as a boolean, using loose

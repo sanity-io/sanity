@@ -1,5 +1,5 @@
 import {Grid} from '@sanity/ui'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 function focusRingBorderStyle(border: {color: string; width: number}): string {
   return `inset 0 0 0 ${border.width}px ${border.color}`

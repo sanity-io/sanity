@@ -1,5 +1,5 @@
 import {Flex} from '@sanity/ui'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 export const StyledPreviewFlex = styled(Flex)`
   /* this is a hack to avoid layout jumps while previews are loading

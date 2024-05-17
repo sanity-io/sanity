@@ -1,9 +1,10 @@
 /* eslint-disable max-nested-callbacks */
 import {type SanityClient} from '@sanity/client'
 import {type Schema} from '@sanity/types'
-import {asyncScheduler, defer, EMPTY, merge, type Observable, of, Subject} from 'rxjs'
+import {asyncScheduler, defer, EMPTY, merge, type Observable, of, Subject, timer} from 'rxjs'
 import {
   catchError,
+  concatMap,
   filter,
   groupBy,
   last,
@@ -31,6 +32,11 @@ import {patch} from './operations/patch'
 import {publish} from './operations/publish'
 import {restore} from './operations/restore'
 import {unpublish} from './operations/unpublish'
+import {del as serverDel} from './serverOperations/delete'
+import {discardChanges as serverDiscardChanges} from './serverOperations/discardChanges'
+import {patch as serverPatch} from './serverOperations/patch'
+import {publish as serverPublish} from './serverOperations/publish'
+import {unpublish as serverUnpublish} from './serverOperations/unpublish'
 
 interface ExecuteArgs {
   operationName: keyof OperationsAPI
@@ -55,12 +61,26 @@ const operationImpls = {
   restore,
 } as const
 
+//as we add server operations one by one, we can add them here
+const serverOperationImpls = {
+  ...operationImpls,
+  del: serverDel,
+  delete: serverDel,
+  discardChanges: serverDiscardChanges,
+  patch: serverPatch,
+  publish: serverPublish,
+  unpublish: serverUnpublish,
+}
+
 const execute = (
   operationName: keyof typeof operationImpls,
   operationArguments: OperationArgs,
   extraArgs: any[],
+  serverActionsEnabled: boolean,
 ): Observable<any> => {
-  const operation = operationImpls[operationName]
+  const operation = serverActionsEnabled
+    ? serverOperationImpls[operationName]
+    : operationImpls[operationName]
   return defer(() =>
     merge(of(null), maybeObservable(operation.execute(operationArguments, ...extraArgs))),
   ).pipe(last())
@@ -115,7 +135,12 @@ interface IntermediaryError {
 
 /** @internal */
 export const operationEvents = memoize(
-  (ctx: {client: SanityClient; historyStore: HistoryStore; schema: Schema}) => {
+  (ctx: {
+    client: SanityClient
+    historyStore: HistoryStore
+    schema: Schema
+    serverActionsEnabled: Observable<boolean>
+  }) => {
     const result$: Observable<IntermediarySuccess | IntermediaryError> = operationCalls$.pipe(
       groupBy((op) => op.idPair.publishedId),
       mergeMap((groups$) =>
@@ -136,10 +161,18 @@ export const operationEvents = memoize(
                   ctx.client,
                   args.idPair,
                   args.typeName,
+                  ctx.serverActionsEnabled,
                 ).pipe(filter(Boolean))
                 const ready$ = requiresConsistency ? isConsistent$.pipe(take(1)) : of(true)
                 return ready$.pipe(
-                  switchMap(() => execute(args.operationName, operationArguments, args.extraArgs)),
+                  switchMap(() =>
+                    execute(
+                      args.operationName,
+                      operationArguments,
+                      args.extraArgs,
+                      operationArguments.serverActionsEnabled,
+                    ),
+                  ),
                 )
               }),
               map((): IntermediarySuccess => ({type: 'success', args})),
@@ -158,6 +191,9 @@ export const operationEvents = memoize(
     const autoCommit$ = result$.pipe(
       filter((result) => result.type === 'success' && result.args.operationName === 'patch'),
       throttleTime(AUTOCOMMIT_INTERVAL, asyncScheduler, {leading: true, trailing: true}),
+      concatMap((result) =>
+        (window as any).SLOW ? timer(10000).pipe(map(() => result)) : of(result),
+      ),
       tap((result) => {
         emitOperation('commit', result.args.idPair, result.args.typeName, [])
       }),
@@ -168,6 +204,6 @@ export const operationEvents = memoize(
   (ctx) => {
     const config = ctx.client.config()
     // we only want one of these per dataset+projectid
-    return `${config.dataset ?? ''}-${config.projectId ?? ''}`
+    return `${config.dataset ?? ''}-${config.projectId ?? ''}${ctx.serverActionsEnabled ? '-serverActionsEnabled' : ''}`
   },
 )

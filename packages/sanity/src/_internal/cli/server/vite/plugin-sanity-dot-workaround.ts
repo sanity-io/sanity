@@ -1,6 +1,7 @@
+import fs from 'node:fs'
+import path from 'node:path'
+
 import history from 'connect-history-api-fallback'
-import fs from 'fs'
-import path from 'path'
 import {type Plugin} from 'vite'
 
 /**

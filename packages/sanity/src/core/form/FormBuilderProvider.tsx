@@ -2,13 +2,14 @@
 
 import {type ObjectSchemaType, type Path, type ValidationMarker} from '@sanity/types'
 import {type ReactNode, useMemo} from 'react'
+import {FormBuilderContext} from 'sanity/_singletons'
 
 import {type DocumentFieldAction, type Source} from '../config'
 import {type FormNodePresence} from '../presence'
 import {EMPTY_ARRAY} from '../util'
 import {DocumentIdProvider} from './contexts/DocumentIdProvider'
 import {HoveredFieldProvider} from './field'
-import {FormBuilderContext, type FormBuilderContextValue} from './FormBuilderContext'
+import {type FormBuilderContextValue} from './FormBuilderContext'
 import {ArrayOfObjectsFunctions} from './inputs/arrays/ArrayOfObjectsInput/ArrayOfObjectsFunctions'
 import {DefaultCustomMarkers} from './inputs/PortableText/_legacyDefaultParts/CustomMarkers'
 import {DefaultMarkers} from './inputs/PortableText/_legacyDefaultParts/Markers'

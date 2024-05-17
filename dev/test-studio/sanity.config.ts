@@ -7,13 +7,13 @@ import {nnNOLocale} from '@sanity/locale-nn-no'
 import {ptPTLocale} from '@sanity/locale-pt-pt'
 import {svSELocale} from '@sanity/locale-sv-se'
 import {SanityMonogram} from '@sanity/logos'
-import {presentationTool as pinnedPresentationTool} from '@sanity/presentation'
 import {debugSecrets} from '@sanity/preview-url-secret/sanity-plugin-debug-secrets'
 import {tsdoc} from '@sanity/tsdoc/studio'
 import {visionTool} from '@sanity/vision'
-import {defineConfig, definePlugin} from 'sanity'
+import {defineConfig, definePlugin, type WorkspaceOptions} from 'sanity'
 import {presentationTool} from 'sanity/presentation'
 import {structureTool} from 'sanity/structure'
+import {imageHotspotArrayPlugin} from 'sanity-plugin-hotspot-array'
 import {muxInput} from 'sanity-plugin-mux-input'
 
 import {imageAssetSource} from './assetSources'
@@ -67,9 +67,6 @@ const sharedSettings = definePlugin({
       assetSources: [imageAssetSource],
     },
   },
-  search: {
-    unstable_enableNewSearch: true,
-  },
 
   i18n: {
     bundles: testStudioLocaleBundles,
@@ -92,8 +89,7 @@ const sharedSettings = definePlugin({
       return prev
     },
     newDocumentOptions,
-
-    unstable_comments: {
+    comments: {
       enabled: true,
     },
     badges: (prev, context) => (context.schemaType === 'author' ? [CustomBadge, ...prev] : prev),
@@ -136,6 +132,7 @@ const sharedSettings = definePlugin({
     }),
     // eslint-disable-next-line camelcase
     muxInput({mp4_support: 'standard'}),
+    imageHotspotArrayPlugin(),
     presenceTool(),
     routerDebugTool(),
     tsdoc(),
@@ -151,6 +148,15 @@ export default defineConfig([
     plugins: [sharedSettings()],
     basePath: '/test',
     icon: SanityMonogram,
+    // eslint-disable-next-line camelcase
+    __internal_serverDocumentActions: {},
+    scheduledPublishing: {
+      enabled: true,
+      inputDateTimeFormat: 'MM/dd/yy h:mm a',
+    },
+    tasks: {
+      enabled: true,
+    },
   },
   {
     name: 'partialIndexing',
@@ -163,6 +169,12 @@ export default defineConfig([
       unstable_partialIndexing: {
         enabled: true,
       },
+    },
+    scheduledPublishing: {
+      enabled: false,
+    },
+    unstable_tasks: {
+      enabled: false,
     },
   },
   {
@@ -295,17 +307,14 @@ export default defineConfig([
       debugSecrets(),
       presentationTool({
         name: 'presentation',
-        title: 'Presentation (stable)',
-        previewUrl: '/preview/index.html',
-      }),
-      pinnedPresentationTool({
-        name: 'reproduction-presentation',
-        title: 'Presentation (reproduction)',
-        previewUrl: '/preview/index.html',
+        title: 'Presentation',
+        previewUrl: {
+          preview: '/preview/index.html',
+        },
       }),
       assist(),
       sharedSettings(),
     ],
     basePath: '/presentation',
   },
-])
+]) as WorkspaceOptions[]

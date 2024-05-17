@@ -1,7 +1,7 @@
 import {ToggleArrowRightIcon} from '@sanity/icons'
 import {Box, Flex, Inline, Text} from '@sanity/ui'
 import {type ReactNode, useCallback, useEffect, useState} from 'react'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 interface DetailsProps {
   children?: ReactNode

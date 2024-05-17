@@ -1,9 +1,9 @@
 import {PortalProvider, useTheme, useToast} from '@sanity/ui'
-import isHotkey from 'is-hotkey'
+import {isHotkey} from 'is-hotkey-esm'
 import {Fragment, memo, useCallback, useEffect, useState} from 'react'
 import {_isCustomDocumentTypeDefinition, useSchema} from 'sanity'
 import {useRouterState} from 'sanity/router'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {LOADING_PANE} from '../../constants'
 import {LoadingPane, StructureToolPane} from '../../panes'

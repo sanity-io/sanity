@@ -1,9 +1,7 @@
 /* eslint-disable camelcase */
+import {type ReactElement, type ReactNode, useCallback, useMemo, useRef} from 'react'
+import {RouterContext} from 'sanity/_singletons'
 
-import type * as React from 'react'
-import {useCallback, useMemo, useRef} from 'react'
-
-import {RouterContext} from './RouterContext'
 import {type RouterContextValue, type RouterState} from './types'
 import {useRouter} from './useRouter'
 
@@ -41,7 +39,7 @@ export interface RouteScopeProps {
   /**
    * The content to display inside the route scope.
    */
-  children: React.ReactNode
+  children: ReactNode
 }
 
 /**
@@ -65,7 +63,7 @@ export interface RouteScopeProps {
  * }
  * ```
  */
-export function RouteScope(props: RouteScopeProps): React.ReactElement {
+export function RouteScope(props: RouteScopeProps): ReactElement {
   const {children, scope, __unsafe_disableScopedSearchParams} = props
   const parentRouter = useRouter()
   const {resolvePathFromState: parent_resolvePathFromState, navigate: parent_navigate} =

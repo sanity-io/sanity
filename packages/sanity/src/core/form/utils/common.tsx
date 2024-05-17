@@ -78,7 +78,7 @@ export function mappedChildren({children, childProps}: ChildrenWithPropsProps) {
   if (!Array.isArray(children)) {
     children = [children]
   }
-  return Children.map(children, function (child) {
+  return Children.map(children, (child) => {
     if (isValidElement(child)) {
       return cloneElement(child, childProps)
     }

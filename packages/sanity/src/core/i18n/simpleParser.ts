@@ -33,6 +33,7 @@ export type TextToken = {
 export type InterpolationToken = {
   type: 'interpolation'
   variable: string
+  formatters?: string[]
 }
 
 /**
@@ -77,11 +78,11 @@ export function simpleParser(input: string): Token[] {
           tokens.push({type: 'tagOpen', name: tagName})
           openTag = tagName
         }
-        remainder = remainder.substring(match[0].length)
+        remainder = remainder.slice(match[0].length)
       } else {
         // move on to next char
         text += remainder[0]
-        remainder = remainder.substring(1)
+        remainder = remainder.slice(1)
       }
     } else if (openTag && remainder[0] === '<' && remainder[1] !== '<') {
       const match = matchCloseTag(remainder)
@@ -103,16 +104,16 @@ export function simpleParser(input: string): Token[] {
         }
         tokens.push({type: 'tagClose', name: tagName})
         openTag = ''
-        remainder = remainder.substring(match[0].length)
+        remainder = remainder.slice(match[0].length)
       } else {
         // move on to next char
         text += remainder[0]
-        remainder = remainder.substring(1)
+        remainder = remainder.slice(1)
       }
     } else {
       // move on to next char
       text += remainder[0]
-      remainder = remainder.substring(1)
+      remainder = remainder.slice(1)
     }
   }
   if (openTag) {
@@ -154,14 +155,21 @@ function textTokenWithInterpolation(text: string): Token[] {
 }
 
 function parseInterpolation(interpolation: string): InterpolationToken {
-  const variable = interpolation.replace(/^\{\{|\}\}$/g, '').trim()
-  // Disallow formatters for interpolations when using the `Translate` function:
-  // Since we do not have a _key_ to format (only a substring), we do not want i18next to look up
-  // a matching string value for the "stub" value. We could potentially change this in the future,
-  // if we feel it is a useful feature.
-  if (variable.includes(',')) {
+  const [variable, ...formatters] = interpolation
+    .replace(/^\{\{|\}\}$/g, '')
+    .trim()
+    .split(/\s*,\s*/)
+
+  // To save us from reimplementing all of i18next's formatter logic, we only curently support the
+  // `list` formatter, and only without any arguments. This may change in the future, but deeming
+  // this good enough for now.
+  if (formatters.length === 1 && formatters[0] === 'list') {
+    return {type: 'interpolation', variable, formatters}
+  }
+
+  if (formatters.length > 0) {
     throw new Error(
-      `Interpolations with formatters are not supported when using <Translate>. Found "${variable}". Utilize "useTranslation" instead, or format the values passed to <Translate> ahead of time.`,
+      `Interpolations with formatters are not supported when using <Translate>. Found "${interpolation}". Utilize "useTranslation" instead, or format the values passed to <Translate> ahead of time.`,
     )
   }
 

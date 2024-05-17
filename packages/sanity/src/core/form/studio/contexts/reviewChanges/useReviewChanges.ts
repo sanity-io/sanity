@@ -1,6 +1,6 @@
 import {useContext} from 'react'
+import {ReviewChangesContext} from 'sanity/_singletons'
 
-import {ReviewChangesContext} from './ReviewChangesContext'
 import {type ReviewChangesContextValue} from './types'
 
 /**

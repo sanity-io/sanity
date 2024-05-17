@@ -1,6 +1,6 @@
 {
   "name": "@sanity/vision",
-  "version": "3.35.1",
+  "version": "3.42.1",
   "description": "Sanity plugin for running/debugging GROQ-queries against Sanity datasets",
   "keywords": [
     "sanity",
@@ -24,35 +24,30 @@
   },
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
+  "sideEffects": false,
   "exports": {
     ".": {
-      "types": "./lib/dts/src/index.d.ts",
       "source": "./src/index.ts",
+      "import": "./lib/index.mjs",
       "require": "./lib/index.js",
-      "node": {
-        "module": "./lib/index.esm.js",
-        "import": "./lib/index.cjs.mjs"
-      },
-      "import": "./lib/index.esm.js",
-      "default": "./lib/index.esm.js"
+      "default": "./lib/index.js"
     },
     "./package.json": "./package.json"
   },
   "main": "./lib/index.js",
   "module": "./lib/index.esm.js",
-  "source": "./src/index.ts",
-  "types": "./lib/dts/src/index.d.ts",
+  "types": "./lib/index.d.ts",
   "files": [
     "lib",
     "src"
   ],
   "scripts": {
-    "prebuild": "npm run clean",
-    "build": "pkg-utils build --tsconfig tsconfig.lib.json",
-    "postbuild": "run-s check:package",
-    "check:package": "pkg-utils --strict --tsconfig tsconfig.lib.json",
+    "build": "pkg-utils build --strict --check --clean",
+    "build:bundle": "vite build --config package.bundle.ts",
+    "check:types": "tsc --project tsconfig.lib.json",
     "clean": "rimraf lib",
-    "watch": "pkg-utils watch --tsconfig tsconfig.lib.json"
+    "prepublishOnly": "turbo run build",
+    "watch": "pkg-utils watch"
   },
   "dependencies": {
     "@codemirror/autocomplete": "^6.1.0",
@@ -68,23 +63,34 @@
     "@rexxars/react-split-pane": "^0.1.93",
     "@sanity/color": "^3.0.0",
     "@sanity/icons": "^2.11.0",
-    "@sanity/ui": "^2.0.10",
+    "@sanity/ui": "^2.1.10",
     "@uiw/react-codemirror": "^4.11.4",
-    "hashlru": "^2.3.0",
-    "is-hotkey": "^0.2.0",
+    "is-hotkey-esm": "^1.0.0",
+    "json-2-csv": "^5.5.1",
     "json5": "^2.2.3",
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.21",
+    "quick-lru": "^5.1.1"
   },
   "devDependencies": {
-    "@sanity/client": "^6.15.6",
-    "@types/is-hotkey": "^0.1.10",
+    "@repo/package.config": "workspace:*",
+    "@sanity/block-tools": "workspace:*",
+    "@sanity/cli": "workspace:*",
+    "@sanity/client": "^6.18.2",
+    "@sanity/codegen": "workspace:*",
+    "@sanity/diff": "workspace:*",
+    "@sanity/migrate": "workspace:*",
+    "@sanity/mutator": "workspace:*",
+    "@sanity/portable-text-editor": "workspace:*",
+    "@sanity/schema": "workspace:*",
+    "@sanity/types": "workspace:*",
+    "@sanity/util": "workspace:*",
     "@types/lodash": "^4.14.149",
-    "react": "^18.2.0",
+    "react": "^18.3.1",
     "sanity": "workspace:*",
-    "styled-components": "^6.1.8"
+    "styled-components": "^6.1.11"
   },
   "peerDependencies": {
     "react": "^18",
-    "styled-components": "^5.2 || ^6"
+    "styled-components": "^6.1"
   }
 }

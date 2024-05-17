@@ -4,7 +4,7 @@ import {Box, Text} from '@sanity/ui'
 import {useState} from 'react'
 import Barcode from 'react-barcode'
 import {type FieldMember, MemberField, type ObjectInputProps} from 'sanity'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 const BarcodeRoot = styled(Box)`
   svg {

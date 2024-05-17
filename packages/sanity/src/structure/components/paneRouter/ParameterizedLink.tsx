@@ -1,14 +1,12 @@
-import type * as React from 'react'
-import {forwardRef, useContext, useMemo} from 'react'
+import {type ForwardedRef, forwardRef, type ReactNode, useContext, useMemo} from 'react'
 import {useUnique} from 'sanity'
+import {PaneRouterContext} from 'sanity/_singletons'
 import {StateLink} from 'sanity/router'
-
-import {PaneRouterContext} from './PaneRouterContext'
 
 interface ParameterizedLinkProps {
   params?: Record<string, string>
   payload?: unknown
-  children?: React.ReactNode
+  children?: ReactNode
 }
 
 /**
@@ -16,7 +14,7 @@ interface ParameterizedLinkProps {
  */
 export const ParameterizedLink = forwardRef(function ParameterizedLink(
   props: ParameterizedLinkProps,
-  ref: React.ForwardedRef<HTMLAnchorElement>,
+  ref: ForwardedRef<HTMLAnchorElement>,
 ) {
   const {routerPanesState: currentPanes, groupIndex, siblingIndex} = useContext(PaneRouterContext)
   const {params, payload, ...rest} = props

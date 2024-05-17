@@ -10,8 +10,7 @@ import {
   useEffect,
   useMemo,
 } from 'react'
-
-import {ScrollContext} from './scrollContext'
+import {ScrollContext} from 'sanity/_singletons'
 
 /** @internal */
 export interface ScrollContainerProps<T extends ElementType>
@@ -81,7 +80,7 @@ export const ScrollContainer = forwardRef(function ScrollContainer<T extends Ele
 
   return (
     <ScrollContext.Provider value={childContext}>
-      {createElement(as, {ref: forwardedRef, 'data-testid': 'scroll-container', ...rest})}
+      {createElement(as, {'ref': forwardedRef, 'data-testid': 'scroll-container', ...rest})}
     </ScrollContext.Provider>
   )
 })

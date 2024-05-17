@@ -1,5 +1,5 @@
 import {Layer} from '@sanity/ui'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 export const Overlay = styled(Layer)`
   position: absolute;

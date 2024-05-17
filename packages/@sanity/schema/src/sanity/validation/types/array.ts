@@ -5,15 +5,15 @@ import {coreTypeNames} from '../../coreTypes'
 import {error, HELP_IDS, warning} from '../createValidationResult'
 import {getDupes} from '../utils/getDupes'
 
-function isPrimitiveTypeName(typeName) {
+function isPrimitiveTypeName(typeName: any) {
   return typeName === 'string' || typeName === 'number' || typeName === 'boolean'
 }
 
-function isAssignable(typeName, type) {
+function isAssignable(typeName: any, type: any) {
   return (typeof type.name === 'string' ? type.name : type.type) === typeName
 }
 
-function quote(n) {
+function quote(n: any) {
   return `"${n}"`
 }
 
@@ -31,12 +31,12 @@ function format(value: unknown) {
   return quote(value)
 }
 
-export default (typeDef, visitorContext) => {
+export default (typeDef: any, visitorContext: any) => {
   // name should already have been marked
   const ofIsArray = Array.isArray(typeDef.of)
 
   if (ofIsArray) {
-    const invalid = typeDef.of.reduce((errs, def, idx) => {
+    const invalid = typeDef.of.reduce((errs: any, def: any, idx: any) => {
       if (typeof def.name === 'string') {
         // If an array member has been given a "local" type name, we want to trigger an error if the given member type name
         // is one of the builtin types
@@ -122,9 +122,9 @@ export default (typeDef, visitorContext) => {
 
   // Don't allow object types without a name in block arrays
   const hasObjectTypesWithoutName = of.some(
-    (type) => type.type === 'object' && typeof type.name === 'undefined',
+    (type: any) => type.type === 'object' && typeof type.name === 'undefined',
   )
-  const hasBlockType = of.some((ofType) => ofType.type === 'block')
+  const hasBlockType = of.some((ofType: any) => ofType.type === 'block')
   if (hasBlockType && hasObjectTypesWithoutName) {
     problems.push(
       error(

@@ -1,7 +1,7 @@
 import {CropIcon} from '@sanity/icons'
 import {Inline, Menu, useClickOutside, useGlobalKeyDown} from '@sanity/ui'
 import {type MouseEventHandler, type ReactNode, useCallback, useEffect, useState} from 'react'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {Button, Popover, TooltipDelayGroupProvider} from '../../../../../ui-components'
 import {ContextMenuButton} from '../../../../components/contextMenuButton'

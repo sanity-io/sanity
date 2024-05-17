@@ -1,3 +1,5 @@
+import {appendFile} from 'node:fs/promises'
+
 import {type SanityClient} from '@sanity/client'
 import {
   type ConsentStatus,
@@ -5,7 +7,6 @@ import {
   createSessionId,
   type TelemetryEvent,
 } from '@sanity/telemetry'
-import {appendFile} from 'fs/promises'
 
 import {debug as baseDebug} from '../debug'
 import {getClientWrapper, getCliToken} from './clientWrapper'

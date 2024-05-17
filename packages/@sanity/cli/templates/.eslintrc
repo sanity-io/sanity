@@ -2,6 +2,7 @@
   "root": true,
   "extends": "@sanity/eslint-config-studio",
   "rules": {
-    "import/no-unresolved": "off"
+    "import/no-unresolved": "off",
+    "no-restricted-imports": "off"
   }
 }

@@ -12,7 +12,7 @@ export const DEFAULT_LINK_ANNOTATION = {
       type: 'url',
       title: 'Link',
       description: 'A valid web, email, phone, or relative link.',
-      validation: (Rule) =>
+      validation: (Rule: any) =>
         Rule.uri({
           scheme: ['http', 'https', 'tel', 'mailto'],
           allowRelative: true,

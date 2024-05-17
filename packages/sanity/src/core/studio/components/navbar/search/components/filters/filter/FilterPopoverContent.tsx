@@ -1,5 +1,5 @@
 import {Flex} from '@sanity/ui'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {DEBUG_MODE} from '../../../constants'
 import {type SearchFilter} from '../../../types'

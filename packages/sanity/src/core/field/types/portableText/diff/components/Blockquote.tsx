@@ -1,5 +1,5 @@
 import {type ReactNode} from 'react'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 const Quote = styled.blockquote`
   margin: 0;

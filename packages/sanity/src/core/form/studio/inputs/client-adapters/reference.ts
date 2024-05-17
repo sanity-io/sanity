@@ -192,11 +192,11 @@ export function referenceSearch(
   textTerm: string,
   type: ReferenceSchemaType,
   options: ReferenceFilterSearchOptions,
-  unstable_enableNewSearch: boolean,
+  enableLegacySearch: boolean,
 ): Observable<ReferenceSearchHit[]> {
   const search = createSearch(type.to, client, {
     ...options,
-    unstable_enableNewSearch,
+    enableLegacySearch,
     maxDepth: options.maxFieldDepth || DEFAULT_MAX_FIELD_DEPTH,
   })
   return search(textTerm, {includeDrafts: true}).pipe(

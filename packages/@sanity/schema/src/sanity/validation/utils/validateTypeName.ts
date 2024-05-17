@@ -3,9 +3,9 @@ import leven from 'leven'
 
 import {error, HELP_IDS} from '../createValidationResult'
 
-const quote = (str) => `"${str}"`
+const quote = (str: any) => `"${str}"`
 
-export function validateTypeName(typeName: string, visitorContext) {
+export function validateTypeName(typeName: string, visitorContext: any) {
   const possibleTypeNames = visitorContext.getTypeNames()
 
   if (!typeName) {
@@ -25,11 +25,11 @@ export function validateTypeName(typeName: string, visitorContext) {
 
   if (!isValid) {
     const suggestions = possibleTypeNames
-      .map((possibleTypeName) => {
+      .map((possibleTypeName: any) => {
         return [leven(typeName, possibleTypeName), possibleTypeName]
       })
-      .filter(([distance]) => distance < 3)
-      .map(([_, name]) => name)
+      .filter(([distance]: any) => distance < 3)
+      .map(([_, name]: any) => name)
 
     const suggestion =
       suggestions.length > 0

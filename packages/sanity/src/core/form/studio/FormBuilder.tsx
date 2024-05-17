@@ -180,10 +180,10 @@ export function FormBuilder(props: FormBuilderProps) {
   const rootInputProps: Omit<ObjectInputProps, 'renderDefault'> = {
     focusPath,
     elementProps: {
-      ref: focusRef,
+      'ref': focusRef,
       id,
-      onBlur: handleBlur,
-      onFocus: handleFocus,
+      'onBlur': handleBlur,
+      'onFocus': handleFocus,
       'aria-describedby': undefined, // Root input should not have any aria-describedby
     },
     changed: members.some((m) => m.kind === 'field' && m.field.changed),

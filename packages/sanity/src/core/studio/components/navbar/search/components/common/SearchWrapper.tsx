@@ -7,7 +7,7 @@ interface SearchWrapperProps {
   children: ReactNode
   hasValidTerms: boolean
   onClose: () => void
-  onOpen: () => void
+  onOpen?: () => void
   open: boolean
 }
 

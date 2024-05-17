@@ -15,8 +15,7 @@ import {
   timer,
 } from 'rxjs'
 import {exhaustMapWithTrailing} from 'rxjs-exhaustmap-with-trailing'
-import {type SanityDocumentLike, type Schema} from 'sanity'
-import {createSearch, getSearchableTypes} from 'sanity/_internalBrowser'
+import {createSearch, getSearchableTypes, type SanityDocumentLike, type Schema} from 'sanity'
 
 import {getExtendedProjection} from '../../structureBuilder/util/getExtendedProjection'
 // FIXME
@@ -31,9 +30,9 @@ interface ListenQueryOptions {
   schema: Schema
   searchQuery: string
   sort: SortOrder
-  staticTypeNames?: string[]
+  staticTypeNames?: string[] | null
   maxFieldDepth?: number
-  unstable_enableNewSearch?: boolean
+  enableLegacySearch?: boolean
 }
 
 export function listenSearchQuery(options: ListenQueryOptions): Observable<SanityDocumentLike[]> {
@@ -47,7 +46,7 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Sanit
     searchQuery,
     staticTypeNames,
     maxFieldDepth,
-    unstable_enableNewSearch,
+    enableLegacySearch,
   } = options
   const sortBy = sort.by
   const extendedProjection = sort?.extendedProjection
@@ -111,13 +110,12 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Sanit
           const search = createSearch(types, client, {
             filter,
             params,
-            unstable_enableNewSearch,
+            enableLegacySearch,
             maxDepth: maxFieldDepth,
           })
 
           const doFetch = () => {
             const searchTerms = {
-              filter,
               query: searchQuery || '',
               types,
             }

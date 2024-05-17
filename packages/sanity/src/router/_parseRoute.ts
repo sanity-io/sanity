@@ -8,7 +8,7 @@ function createSegment(segment: string): RouteSegment | null {
   }
 
   if (segment.startsWith(':')) {
-    const paramName = segment.substring(1)
+    const paramName = segment.slice(1)
 
     if (!VALID_PARAM_SEGMENT.test(paramName)) {
       const addendum = segment.includes('*')

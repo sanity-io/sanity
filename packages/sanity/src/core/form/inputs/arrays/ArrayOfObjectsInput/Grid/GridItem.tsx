@@ -2,7 +2,7 @@ import {CopyIcon as DuplicateIcon, TrashIcon} from '@sanity/icons'
 import {type SchemaType} from '@sanity/types'
 import {Box, Card, type CardTone, Menu} from '@sanity/ui'
 import {useCallback, useMemo, useRef} from 'react'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {MenuButton, MenuItem} from '../../../../../../ui-components'
 import {ChangeIndicator} from '../../../../../changeIndicators'
@@ -82,7 +82,7 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
   } = props
   const {t} = useTranslation()
 
-  const sortable = !readOnly && parentSchemaType.options?.sortable !== false
+  const sortable = parentSchemaType.options?.sortable !== false
   const insertableTypes = parentSchemaType.of
 
   const previewCardRef = useRef<FIXME | null>(null)
@@ -139,7 +139,7 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
     () =>
       readOnly ? null : (
         <MenuButton
-          button={<ContextMenuButton paddingY={3} />}
+          button={<ContextMenuButton />}
           id={`${props.inputId}-menuButton`}
           menu={
             <Menu>
@@ -175,6 +175,7 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
       border
       dragHandle={sortable}
       selected={open}
+      readOnly={readOnly}
     >
       <PreviewCard
         tone="inherit"

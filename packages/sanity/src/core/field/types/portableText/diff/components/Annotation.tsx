@@ -11,12 +11,13 @@ import {
   useMemo,
   useState,
 } from 'react'
-import styled from 'styled-components'
+import {ConnectorContext, DiffContext} from 'sanity/_singletons'
+import {styled} from 'styled-components'
 
 import {Popover} from '../../../../../../ui-components'
-import {ConnectorContext, useReportedValues} from '../../../../../changeIndicators'
+import {useReportedValues} from '../../../../../changeIndicators'
 import {useTranslation} from '../../../../../i18n'
-import {ChangeList, DiffContext, DiffTooltip, useDiffAnnotationColor} from '../../../../diff'
+import {ChangeList, DiffTooltip, useDiffAnnotationColor} from '../../../../diff'
 import {type ObjectDiff} from '../../../../types'
 import {isEmptyObject} from '../helpers'
 import {InlineBox, InlineText, PopoverContainer, PreviewContainer} from './styledComponents'

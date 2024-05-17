@@ -16,7 +16,7 @@ import {
 import {useAction} from '@sanity/ui-workshop'
 import {type ReactNode, useCallback, useState} from 'react'
 import {ChangeConnectorRoot, ChangeFieldWrapper, ChangeIndicator, ScrollContainer} from 'sanity'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {Button, Dialog} from '../../../../ui-components'
 import {Pane} from '../Pane'

@@ -1,5 +1,6 @@
 import {
   type EditorChange,
+  type EditorSelection,
   type HotkeyOptions,
   type OnCopyFn,
   type OnPasteFn,
@@ -30,6 +31,7 @@ import {
   type ReactElement,
 } from 'react'
 
+import {type RenderPortableTextInputEditableProps} from '../inputs'
 import {type FormPatch, type PatchEvent} from '../patch'
 import {type FormFieldGroup} from '../store'
 import {
@@ -57,6 +59,13 @@ import {
   type RenderInputCallback,
   type RenderPreviewCallback,
 } from './renderCallback'
+
+/**
+ * @hidden
+ * @beta */
+export interface OnPathFocusPayload {
+  selection?: EditorSelection
+}
 
 /**
  * @hidden
@@ -226,7 +235,7 @@ export interface ArrayOfObjectsInputProps<
   /**
    * @hidden
    * @beta */
-  onPathFocus: (path: Path) => void
+  onPathFocus: (path: Path, payload?: OnPathFocusPayload) => void
 
   /**
    * for array inputs using expand/collapse semantics for items
@@ -401,14 +410,14 @@ export interface ArrayOfPrimitivesInputProps<
  * @hidden
  * @public */
 export interface PrimitiveInputElementProps {
-  value?: string
-  id: string
-  readOnly: boolean
-  placeholder?: string
-  onChange: FormEventHandler
-  onFocus: FocusEventHandler
-  onBlur: FocusEventHandler
-  ref: MutableRefObject<any>
+  'value'?: string
+  'id': string
+  'readOnly': boolean
+  'placeholder'?: string
+  'onChange': FormEventHandler
+  'onFocus': FocusEventHandler
+  'onBlur': FocusEventHandler
+  'ref': MutableRefObject<any>
   'aria-describedby': string | undefined
 }
 
@@ -416,10 +425,10 @@ export interface PrimitiveInputElementProps {
  * @hidden
  * @beta */
 export interface ComplexElementProps {
-  id: string
-  onFocus: FocusEventHandler
-  onBlur: FocusEventHandler
-  ref: MutableRefObject<any>
+  'id': string
+  'onFocus': FocusEventHandler
+  'onBlur': FocusEventHandler
+  'ref': MutableRefObject<any>
   'aria-describedby': string | undefined
 }
 
@@ -500,9 +509,22 @@ export interface PortableTextInputProps
    */
   editorRef?: React.MutableRefObject<PortableTextEditor | null>
   /**
+   * Option to hide the default toolbar
+   */
+  hideToolbar?: boolean
+  /**
    * Assign hotkeys that can be attached to custom editing functions
    */
   hotkeys?: HotkeyOptions
+  /**
+   * Whether the input is activated and should receive events on mount.
+   * By default, PTE inputs need to be manually activated by focusing them.
+   */
+  initialActive?: boolean
+  /**
+   * Whether the input is _initially_ open in fullscreen mode
+   */
+  initialFullscreen?: boolean
   /**
    * Array of {@link PortableTextMarker} with meta data connected to the content.
    * @deprecated will be removed in the next major version of Sanity Studio.
@@ -539,6 +561,13 @@ export interface PortableTextInputProps
    * Use the `renderBlock` interface instead.
    */
   renderCustomMarkers?: RenderCustomMarkers
+  /**
+   * Function to render the PortableTextInput's editable component.
+   * This is the actual contentEditable element that users type into.
+   * @hidden
+   * @beta
+   */
+  renderEditable?: (props: RenderPortableTextInputEditableProps) => JSX.Element
   /**
    * Array of {@link RangeDecoration} that can be used to decorate the content.
    */

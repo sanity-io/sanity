@@ -2,7 +2,7 @@ import {ChevronDownIcon} from '@sanity/icons'
 import {type Placement, useClickOutside, useGlobalKeyDown, useToast} from '@sanity/ui'
 import {useCallback, useState} from 'react'
 import {type Chunk, useTimelineSelector, useTranslation} from 'sanity'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {Button, Popover} from '../../../../ui-components'
 import {useDocumentPane} from '../useDocumentPane'

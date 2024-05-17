@@ -2,7 +2,7 @@ import {Card, Portal, useClickOutside, useLayer} from '@sanity/ui'
 import {AnimatePresence, motion, type Transition, type Variants} from 'framer-motion'
 import {useCallback, useRef, useState} from 'react'
 import FocusLock from 'react-focus-lock'
-import styled from 'styled-components'
+import {styled} from 'styled-components'
 
 import {useTranslation} from '../../../../../i18n'
 import {supportsTouch} from '../../../../../util'
@@ -29,7 +29,10 @@ export interface SearchPopoverProps {
   disableIntentLink?: boolean
   onClose: () => void
   onItemSelect?: ItemSelectHandler
-  onOpen: () => void
+  /**
+   * If provided, will trigger to open the search popover when user types hotkey + k
+   */
+  onOpen?: () => void
   open: boolean
 }
 
@@ -135,15 +138,7 @@ export function SearchPopover({
                 transition={ANIMATION_TRANSITION}
                 variants={CARD_VARIANTS}
               >
-                <SearchHeader
-                  ariaInputLabel={
-                    hasValidTerms
-                      ? t('search.search-results-aria-label')
-                      : t('search.recent-searches-aria-label')
-                  }
-                  onClose={onClose}
-                  ref={setInputElement}
-                />
+                <SearchHeader onClose={onClose} ref={setInputElement} />
                 {filtersVisible && (
                   <Card borderTop flex="none">
                     <Filters />

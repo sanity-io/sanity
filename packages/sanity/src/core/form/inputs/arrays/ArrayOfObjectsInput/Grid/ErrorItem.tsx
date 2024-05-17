@@ -13,8 +13,8 @@ import {IncompatibleItemType} from './IncompatibleItemType'
 
 const MENU_POPOVER_PROPS = {portal: true, tone: 'default'} as const
 
-export function ErrorItem(props: {member: ArrayItemError; sortable?: boolean}) {
-  const {member, sortable} = props
+export function ErrorItem(props: {member: ArrayItemError; sortable?: boolean; readOnly?: boolean}) {
+  const {member, sortable, readOnly} = props
   const id = useId()
   const {onChange} = useFormCallbacks()
   const {t} = useTranslation()
@@ -26,11 +26,12 @@ export function ErrorItem(props: {member: ArrayItemError; sortable?: boolean}) {
   return (
     <CellLayout
       dragHandle={sortable}
+      readOnly={readOnly}
       tone="caution"
       style={{height: '100%'}}
       menu={
         <MenuButton
-          button={<ContextMenuButton paddingY={3} />}
+          button={<ContextMenuButton />}
           id={`${id}-menuButton`}
           menu={
             <Menu>

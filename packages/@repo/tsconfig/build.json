@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "description": "The shared configuration used by @sanity/pkg-utils to build workspaces and generate dts files",
+  "extends": "./base.json",
+  "compilerOptions": {
+    "noEmitOnError": true,
+    // every package must declare this, by setting this here we ensure that accidents will write to ./node_modules/.sanity-monorepo/dts instead of generating .d.ts files that are colocated if `outDir` is accidentally missing
+    "outDir": "./node_modules/.sanity-monorepo/dts"
+  }
+}

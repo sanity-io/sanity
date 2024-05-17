@@ -3,7 +3,7 @@ import {expect, test} from '@jest/globals'
 import {parseJsonPath} from '../src/jsonpath/parse'
 
 const cases = {
-  a: {
+  'a': {
     type: 'attribute',
     name: 'a',
   },

@@ -1,3 +1,10 @@
+import fs from 'node:fs'
+import os from 'node:os'
+import path from 'node:path'
+import readline from 'node:readline'
+import {Readable} from 'node:stream'
+import {isMainThread, parentPort, workerData as _workerData} from 'node:worker_threads'
+
 import {
   type ClientConfig,
   createClient,
@@ -5,13 +12,7 @@ import {
   type SanityDocument,
 } from '@sanity/client'
 import {isReference, type ValidationContext, type ValidationMarker} from '@sanity/types'
-import fs from 'fs'
-import os from 'os'
-import path from 'path'
-import readline from 'readline'
 import {isRecord, validateDocument} from 'sanity'
-import {Readable} from 'stream'
-import {isMainThread, parentPort, workerData as _workerData} from 'worker_threads'
 
 import {extractDocumentsFromNdjsonOrTarball} from '../util/extractDocumentsFromNdjsonOrTarball'
 import {getStudioWorkspaces} from '../util/getStudioWorkspaces'
@@ -31,6 +32,7 @@ interface AvailabilityResponse {
   omitted: {id: string; reason: 'existence' | 'permission'}[]
 }
 
+/** @internal */
 export interface ValidateDocumentsWorkerData {
   workDir: string
   configPath?: string
@@ -43,6 +45,7 @@ export interface ValidateDocumentsWorkerData {
   maxCustomValidationConcurrency?: number
 }
 
+/** @internal */
 export type ValidationWorkerChannel = WorkerChannel<{
   loadedWorkspace: WorkerChannelEvent<{
     name: string
