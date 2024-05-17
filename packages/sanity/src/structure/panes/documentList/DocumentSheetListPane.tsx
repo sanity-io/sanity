@@ -68,7 +68,7 @@ function DocumentSheetListPaneInner({
   schemaType,
 }: DocumentSheetListPaneProps & {schemaType: SchemaType}) {
   const {dispatch, state} = useSearchState()
-  const columns = useDocumentSheetColumns(schemaType)
+  const {columns, initialColumnsVisibility} = useDocumentSheetColumns(schemaType)
   const {data} = useDocumentSheetList({
     typeName: schemaType.name,
   })
@@ -84,6 +84,7 @@ function DocumentSheetListPaneInner({
     autoResetPageIndex: false,
     initialState: {
       pagination: {pageSize: 25},
+      columnVisibility: initialColumnsVisibility,
     },
     meta: {
       updateData: () => {
@@ -138,7 +139,7 @@ function DocumentSheetListPaneInner({
         </Text>
       </Flex>
       <TableContainer>
-        <ColumnsControl table={table} />
+        <ColumnsControl table={table} initialState={initialColumnsVisibility} />
         <Table>
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (

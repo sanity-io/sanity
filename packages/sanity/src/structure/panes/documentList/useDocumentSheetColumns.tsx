@@ -1,5 +1,10 @@
 import {Checkbox, Flex, Text} from '@sanity/ui'
-import {type AccessorKeyColumnDef, createColumnHelper} from '@tanstack/react-table'
+import {
+  type AccessorKeyColumnDef,
+  createColumnHelper,
+  type GroupColumnDef,
+  type VisibilityState,
+} from '@tanstack/react-table'
 import {useMemo} from 'react'
 import {useMemoObservable} from 'react-rx'
 import {
@@ -13,6 +18,8 @@ import {
 
 import {type PaneItemPreviewState} from '../../components/paneItem/types'
 import {SheetListCell} from './SheetListCell'
+
+export const VISIBLE_COLUMN_LIMIT = 5
 
 const PreviewCell = (props: {
   documentPreviewStore: DocumentPreviewStore
@@ -47,42 +54,68 @@ const PreviewCell = (props: {
 const columnHelper = createColumnHelper<SanityDocument>()
 const SUPPORTED_FIELDS = ['string', 'number', 'boolean']
 
-const getColsFromSchemaType = (schemaType: SchemaType, parentalField?: string) => {
+type Columns = (
+  | AccessorKeyColumnDef<SanityDocument, unknown>
+  | GroupColumnDef<SanityDocument, unknown>
+)[]
+
+const getColsFromSchemaType = (schemaType: SchemaType, parentalField?: string): Columns => {
   //@ts-expect-error - wip.
-  return schemaType.fields.reduce(
-    (cols: AccessorKeyColumnDef<SanityDocument, unknown>[], field: any) => {
-      const {type, name} = field
-      if (SUPPORTED_FIELDS.includes(type.name)) {
-        const nextCol = columnHelper.accessor(
-          parentalField ? `${parentalField}.${field.name}` : field.name,
-          {
-            header: field.type.title,
-            enableHiding: true,
-            cell: (info) => <SheetListCell {...info} type={type} />,
-          },
-        )
+  return schemaType.fields.reduce((cols: Columns[], field: any) => {
+    const {type, name} = field
+    if (SUPPORTED_FIELDS.includes(type.name)) {
+      const nextCol = columnHelper.accessor(
+        parentalField ? `${parentalField}.${field.name}` : field.name,
+        {
+          header: field.type.title,
+          enableHiding: true,
+          cell: (info) => <SheetListCell {...info} type={type} />,
+        },
+      )
 
-        return [...cols, nextCol]
-      }
+      return [...cols, nextCol]
+    }
 
-      // if first layer nested object
-      if (type.name === 'object' && !parentalField) {
-        return [
-          ...cols,
-          columnHelper.group({header: name, columns: getColsFromSchemaType(type, field.name)}),
-        ]
-      }
+    // if first layer nested object
+    if (type.name === 'object' && !parentalField) {
+      return [
+        ...cols,
+        columnHelper.group({header: name, columns: getColsFromSchemaType(type, field.name)}),
+      ]
+    }
 
-      return cols
-    },
-    [],
-  )
+    return cols
+  }, [])
+}
+
+// Type guard function to check if a column is of type GroupColumnDef
+function isAccessorKeyColumnDef(
+  col: Columns[number],
+): col is AccessorKeyColumnDef<SanityDocument, unknown> {
+  return (col as AccessorKeyColumnDef<SanityDocument, unknown>).accessorKey !== undefined
+}
+function isGroupColumnDef(
+  column: AccessorKeyColumnDef<SanityDocument, unknown> | GroupColumnDef<SanityDocument, unknown>,
+): column is GroupColumnDef<SanityDocument, unknown> {
+  return (column as GroupColumnDef<SanityDocument, unknown>).columns !== undefined
+}
+
+const flatColumns = (cols: Columns): AccessorKeyColumnDef<SanityDocument, unknown>[] => {
+  return cols.flatMap((col) => {
+    if (isAccessorKeyColumnDef(col)) {
+      return col
+    }
+    if (isGroupColumnDef(col)) {
+      return col.columns ? flatColumns(col.columns) : []
+    }
+    return []
+  })
 }
 
 export function useDocumentSheetColumns(schemaType?: SchemaType) {
   const documentPreviewStore = useDocumentPreviewStore()
 
-  const columns: AccessorKeyColumnDef<SanityDocument, unknown>[] = useMemo(() => {
+  const columns: Columns = useMemo(() => {
     if (!schemaType) {
       return []
     }
@@ -119,5 +152,26 @@ export function useDocumentSheetColumns(schemaType?: SchemaType) {
     ]
   }, [documentPreviewStore, schemaType])
 
-  return columns
+  const [newColumns]: [VisibilityState, number] = useMemo(
+    () =>
+      flatColumns(columns).reduce(
+        ([accCols, countAllowedVisible], column) => {
+          // this column is always visible
+          if (!column.enableHiding) {
+            return [{...accCols, [column.accessorKey]: true}, countAllowedVisible]
+          }
+
+          // have already reached column visibility limit, hide column by default
+          if (countAllowedVisible === VISIBLE_COLUMN_LIMIT) {
+            return [{...accCols, [column.accessorKey]: false}, countAllowedVisible]
+          }
+
+          return [{...accCols, [column.accessorKey]: true}, countAllowedVisible + 1]
+        },
+        [{}, 0],
+      ),
+    [columns],
+  )
+
+  return {columns, initialColumnsVisibility: newColumns}
 }
