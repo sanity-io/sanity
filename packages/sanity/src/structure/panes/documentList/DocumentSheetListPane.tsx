@@ -134,7 +134,7 @@ function DocumentSheetListPaneInner({
       </Flex>
       <TableContainer>
         <ColumnsControl table={table} />
-        <SheetListProvider>
+        <SheetListProvider table={table}>
           <Table>
             <thead>
               {table.getHeaderGroups().map((headerGroup) => (
