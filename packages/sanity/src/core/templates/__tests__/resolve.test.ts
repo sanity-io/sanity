@@ -3,11 +3,16 @@ import {Schema as SchemaBuilder} from '@sanity/schema'
 import {type InitialValueResolverContext} from '@sanity/types'
 import {omit} from 'lodash'
 
-import {resolveInitialValue, type Template} from '../'
+import {type resolveInitialValue as resolveInitialValueType, type Template} from '../'
 import {schema} from './schema'
+
+let resolveInitialValue: typeof resolveInitialValueType
 
 beforeEach(() => {
   jest.resetModules()
+  jest.clearAllMocks()
+
+  resolveInitialValue = require('../').resolveInitialValue
 })
 
 const example: Template = {
@@ -331,6 +336,90 @@ describe('resolveInitialValue', () => {
       expect(result).toMatchObject({
         _type: 'author',
       })
+    })
+  })
+
+  describe('memoizes function calls', () => {
+    const initialValue = jest.fn().mockReturnValue('Name')
+
+    const testSchema = SchemaBuilder.compile({
+      name: 'default',
+      types: [
+        {
+          name: 'author',
+          title: 'Author',
+          type: 'document',
+          fields: [
+            {
+              name: 'name',
+              type: 'string',
+              initialValue,
+            },
+          ],
+        },
+      ],
+    })
+
+    test('memoizes function calls', async () => {
+      for (let index = 0; index < 2; index++) {
+        await resolveInitialValue(testSchema, example, {}, mockConfigContext, {useCache: true})
+      }
+
+      expect(initialValue).toHaveBeenCalledTimes(1)
+    })
+
+    test('calls function again if params change', async () => {
+      for (let index = 0; index < 2; index++) {
+        await resolveInitialValue(testSchema, example, {index}, mockConfigContext, {useCache: true})
+      }
+
+      expect(initialValue).toHaveBeenCalledTimes(2)
+    })
+
+    test('calls function again if context.projectId changes', async () => {
+      for (let index = 0; index < 2; index++) {
+        await resolveInitialValue(
+          testSchema,
+          example,
+          {},
+          {projectId: index.toString()} as InitialValueResolverContext,
+          {useCache: true},
+        )
+      }
+
+      expect(initialValue).toHaveBeenCalledTimes(2)
+    })
+
+    test('calls function again if context.dataset changes', async () => {
+      for (let index = 0; index < 2; index++) {
+        await resolveInitialValue(
+          testSchema,
+          example,
+          {},
+          {dataset: index.toString()} as InitialValueResolverContext,
+          {useCache: true},
+        )
+      }
+
+      expect(initialValue).toHaveBeenCalledTimes(2)
+    })
+
+    test('calls function again if context.currentUser.id changes', async () => {
+      for (let index = 0; index < 2; index++) {
+        await resolveInitialValue(
+          testSchema,
+          example,
+          {},
+          {
+            currentUser: {
+              id: index.toString(),
+            },
+          } as InitialValueResolverContext,
+          {useCache: true},
+        )
+      }
+
+      expect(initialValue).toHaveBeenCalledTimes(2)
     })
   })
 })

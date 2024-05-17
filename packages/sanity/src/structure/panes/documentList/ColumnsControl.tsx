@@ -2,51 +2,26 @@
 /* eslint-disable i18next/no-literal-string */
 import {Box, Button, Card, Checkbox, Flex, Menu, MenuButton, Stack, Text} from '@sanity/ui'
 import {type Column, type Table} from '@tanstack/react-table'
-import {useEffect, useRef, useState} from 'react'
+import {useCallback} from 'react'
 import {type SanityDocument} from 'sanity'
 
-const VISIBLE_COLUMN_LIMIT = 5
+import {VISIBLE_COLUMN_LIMIT} from './useDocumentSheetColumns'
 
 type Props = {
   table: Table<SanityDocument>
 }
 
 export function ColumnsControl({table}: Props) {
-  const tableRef = useRef(table)
-  const [reset, setReset] = useState(0)
-
   const isVisibleLimitReached =
     table.getVisibleLeafColumns().filter((col) => col.getCanHide()).length >= VISIBLE_COLUMN_LIMIT
 
-  // set the initial visible columns state
-  useEffect(() => {
-    const [newColumns]: [Record<string, boolean>, number] = tableRef.current
-      .getAllLeafColumns()
-      .reduce(
-        ([accCols, countAllowedVisible], column) => {
-          // this column is always visible
-          if (!column.getCanHide()) {
-            return [{...accCols, [column.id]: true}, countAllowedVisible]
-          }
-
-          // have already reached column visibility limit, hide column by default
-          if (countAllowedVisible === VISIBLE_COLUMN_LIMIT) {
-            return [{...accCols, [column.id]: false}, countAllowedVisible]
-          }
-
-          return [{...accCols, [column.id]: true}, countAllowedVisible + 1]
-        },
-        [{}, 0],
-      )
-
-    tableRef.current.setColumnVisibility(newColumns)
-  }, [reset])
+  const setInitialColumns = useCallback(() => {
+    table.resetColumnVisibility()
+  }, [table])
 
   const handleColumnOnChange = (column: Column<SanityDocument, unknown>) => () => {
     column.toggleVisibility()
   }
-
-  const handleResetColumns = () => setReset((prev) => prev + 1)
 
   const getColumnVisibilityDisabled = (column: Column<SanityDocument, unknown>) => {
     const isColumnVisible = column.getIsVisible()
@@ -62,7 +37,7 @@ export function ColumnsControl({table}: Props) {
       id="columns-control"
       menu={
         <Menu padding={3} paddingBottom={1} style={{maxHeight: 300, overflow: 'scroll'}}>
-          <Button size={0} text="Reset" onClick={handleResetColumns} />
+          <Button size={0} text="Reset" onClick={setInitialColumns} />
           <Stack>
             {table
               .getAllLeafColumns()

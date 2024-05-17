@@ -8,7 +8,7 @@ export function DocumentSheetListSelect(props: CellContext<SanityDocument, unkno
 
   const handleOnClick = useCallback(
     (e: MouseEvent<HTMLInputElement>) => {
-      if (e.shiftKey && hasAnchorSelected !== null) {
+      if (e.shiftKey && hasAnchorSelected !== null && hasAnchorSelected !== undefined) {
         const shiftClickIndex = props.row.index
         const lowerIndex = shiftClickIndex < hasAnchorSelected ? shiftClickIndex : hasAnchorSelected
         const upperIndex = shiftClickIndex < hasAnchorSelected ? hasAnchorSelected : shiftClickIndex
@@ -30,15 +30,17 @@ export function DocumentSheetListSelect(props: CellContext<SanityDocument, unkno
           ),
         )
       } else {
-        const isRowCurrentlySelected = props.row.getIsSelected()
-        if (!isRowCurrentlySelected) {
-          // only track it if it is BEING selected
-          setHasAnchorSelected(props.row.index)
-        }
+        if (setHasAnchorSelected) {
+          const isRowCurrentlySelected = props.row.getIsSelected()
+          if (!isRowCurrentlySelected) {
+            // only track it if it is BEING selected
+            setHasAnchorSelected(props.row.index)
+          }
 
-        if (isRowCurrentlySelected) {
-          // you are about to unselect so that means that the anchor is no longer valid
-          setHasAnchorSelected(null)
+          if (isRowCurrentlySelected) {
+            // you are about to unselect so that means that the anchor is no longer valid
+            setHasAnchorSelected(null)
+          }
         }
 
         props.row.toggleSelected()
