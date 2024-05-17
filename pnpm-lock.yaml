@@ -1533,8 +1533,8 @@ importers:
         specifier: 3.42.1
         version: link:../@sanity/portable-text-editor
       '@sanity/presentation':
-        specifier: 1.15.5
-        version: 1.15.5(@sanity/client@6.18.2)(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.11)
+        specifier: 1.15.6
+        version: 1.15.6(@sanity/client@6.18.2)(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.11)
       '@sanity/schema':
         specifier: 3.42.1
         version: link:../@sanity/schema
@@ -6888,8 +6888,8 @@ packages:
       - debug
       - supports-color
 
-  /@sanity/presentation@1.15.5(@sanity/client@6.18.2)(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.11):
-    resolution: {integrity: sha512-Xsd4NCMc0Ft9iVs8L8qlPuzu1NVgCh4AXQ4UiF7iUQ8jIIP8/31NmVc2ynl3FV7IGbON5lF8Kki5z1XetvzJQw==}
+  /@sanity/presentation@1.15.6(@sanity/client@6.18.2)(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.11):
+    resolution: {integrity: sha512-Ktl8OWOf3dvFY+dsIndifBMGuLGzXckYJCtMBqigNTmPAWqFMk5jivgZSbPObxbrQ1LJ6HKEjsVdkIaIeWryxg==}
     engines: {node: '>=16.14'}
     peerDependencies:
       '@sanity/client': ^6.18.2
