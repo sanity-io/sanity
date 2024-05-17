@@ -63,6 +63,10 @@ function shouldBeInBreadcrumb(itemPath: Path, focusPath: Path): boolean {
   )
 }
 
+function getRelativePath(path: Path) {
+  return isArrayItemPath(path) ? path : path.slice(0, path.length - 1)
+}
+
 export function buildTreeEditingState(props: BuildTreeEditingStateProps): TreeEditingState {
   const {focusPath} = props
   const menuItems: TreeEditingMenuItem[] = []
@@ -116,6 +120,8 @@ export function buildTreeEditingState(props: BuildTreeEditingStateProps): TreeEd
       }
     }
 
+    // THIS SHOULD BE REPLACED WITH USING THE `processArray` FUNCTION BELOW
+    // BUT IT'S NOT WORKING AS EXPECTED
     if (isArraySchemaType(schemaType.type) && !initial) {
       const arrayValue = getValueAtPath(documentValue, path) as Array<Record<string, unknown>>
 
@@ -133,38 +139,20 @@ export function buildTreeEditingState(props: BuildTreeEditingStateProps): TreeEd
         const childrenFields = itemSchemaField?.fields || []
         const childrenMenuItems: TreeEditingMenuItem[] = []
 
-        const isArrayPath = isArrayItemPath(itemPath)
-
         if (isSelected(itemPath, focusPath)) {
-          const nextPath = isArrayPath ? itemPath : itemPath.slice(0, itemPath.length - 1)
-          relativePath = nextPath
+          relativePath = getRelativePath(itemPath)
         }
 
         if (shouldBeInBreadcrumb(itemPath, focusPath)) {
-          breadcrumbs.push({
-            path: itemPath,
-            title: (title || 'Untitled') as string,
-
-            children: arrayValue.map((arrayItem) => {
-              const nestedItemPath = [...path, {_key: arrayItem._key}] as Path
-              const nestedItemType = arrayItem?._type as string
-
-              const nestedItemSchemaField = (schemaType.type as ArraySchemaType)?.of?.find(
-                (type) => type.name === nestedItemType,
-              ) as ObjectSchemaType
-
-              const nestedPreviewTitleKey = nestedItemSchemaField?.preview?.select?.title
-              const nestedTitle = nestedPreviewTitleKey
-                ? arrayItem?.[nestedPreviewTitleKey]
-                : nestedItemType
-
-              return {
-                path: nestedItemPath,
-                title: nestedTitle as string,
-                children: EMPTY_ARRAY,
-              }
-            }),
+          const breadcrumbsResult = buildBreadcrumbs({
+            arraySchemaType: schemaType.type as ArraySchemaType,
+            arrayValue: arrayValue,
+            itemPath,
+            parentPath: path,
+            title: title as string,
           })
+
+          breadcrumbs.push(breadcrumbsResult)
         }
 
         childrenFields.forEach((childField) => {
@@ -173,21 +161,22 @@ export function buildTreeEditingState(props: BuildTreeEditingStateProps): TreeEd
           const isPrimitiveChild = isPrimitiveSchemaType(childField?.type)
           const childTitle = getSchemaTypeTitle(childField.type) as string
           const childValue = getValueAtPath(documentValue, childPath)
-          const isChildArrayPath = isArrayItemPath(childPath)
 
           if (isSelected(childPath, focusPath)) {
-            const nextPath = isChildArrayPath ? childPath : childPath.slice(0, childPath.length - 1)
-
-            relativePath = nextPath
+            relativePath = getRelativePath(childPath)
           }
 
           if (!isPrimitiveChild && childValue) {
             if (shouldBeInBreadcrumb(childPath, focusPath)) {
-              breadcrumbs.push({
-                path: childPath,
+              const breadcrumbsResult = buildBreadcrumbs({
+                arraySchemaType: childField.type as ArraySchemaType,
+                arrayValue: childValue as Record<string, unknown>[],
+                itemPath: childPath,
+                parentPath: itemPath,
                 title: childTitle,
-                children: EMPTY_ARRAY,
               })
+
+              breadcrumbs.push(breadcrumbsResult)
             }
 
             const childState = recursive({
@@ -221,117 +210,23 @@ export function buildTreeEditingState(props: BuildTreeEditingStateProps): TreeEd
     }
 
     const value = getValueAtPath(documentValue, path) as Array<Record<string, unknown>>
-
     const arrayValue = Array.isArray(value) ? value : EMPTY_ARRAY
     const arraySchemaType = schemaType?.type as ArraySchemaType
 
-    arrayValue.forEach((item) => {
-      const itemPath = [...rootPath, {_key: item._key}] as Path
-      const itemType = item?._type as string
-
-      const itemSchemaField = arraySchemaType?.of?.find(
-        (type) => type.name === itemType,
-      ) as ObjectSchemaType
-
-      const previewTitleKey = itemSchemaField?.preview?.select?.title
-      const title = previewTitleKey ? item?.[previewTitleKey] : getSchemaTypeTitle(itemSchemaField)
-
-      const childrenFields = itemSchemaField?.fields || []
-      const childrenMenuItems: TreeEditingMenuItem[] = []
-
-      if (shouldBeInBreadcrumb(itemPath, focusPath)) {
-        breadcrumbs.push({
-          path: itemPath,
-          title: (title || 'Untitled') as string,
-          children: arrayValue.map((arrayItem) => {
-            const nestedItemPath = [...rootPath, {_key: arrayItem._key}] as Path
-            const nestedItemType = arrayItem?._type as string
-
-            const nestedItemSchemaField = arraySchemaType?.of?.find(
-              (type) => type.name === nestedItemType,
-            ) as ObjectSchemaType
-
-            const nestedPreviewTitleKey = nestedItemSchemaField?.preview?.select?.title
-            const nestedTitle = nestedPreviewTitleKey
-              ? arrayItem?.[nestedPreviewTitleKey]
-              : getSchemaTypeTitle(nestedItemSchemaField)
-
-            return {
-              path: nestedItemPath,
-              title: nestedTitle as string,
-              children: EMPTY_ARRAY,
-            }
-          }),
-        })
-      }
-
-      childrenFields.forEach((childField) => {
-        const childPath = [...itemPath, childField.name] as Path
-
-        const isPrimitive = isPrimitiveSchemaType(childField?.type)
-        const childTitle = getSchemaTypeTitle(childField.type) as string
-        const childValue = getValueAtPath(documentValue, childPath)
-        const isArrayPath = isArrayItemPath(childPath)
-
-        if (isSelected(childPath, focusPath)) {
-          const nextPath = isArrayPath ? childPath : childPath.slice(0, childPath.length - 1)
-
-          relativePath = nextPath
-        }
-
-        if (
-          !isPrimitive &&
-          !isArrayOfPrimitivesSchemaType(childField.type) &&
-          isArraySchemaType(childField.type) &&
-          childValue
-        ) {
-          if (shouldBeInBreadcrumb(childPath, focusPath)) {
-            breadcrumbs.push({
-              path: childPath,
-              title: childTitle,
-              children: EMPTY_ARRAY,
-            })
-          }
-
-          const childState = recursive({
-            schemaType: childField as ObjectSchemaType,
-            documentValue,
-            path: childPath,
-            initial: false,
-          })
-
-          childrenMenuItems.push({
-            title: getSchemaTypeTitle(childField.type) as string,
-            path: childPath,
-            children: childState?.menuItems || EMPTY_ARRAY,
-          })
-        }
-      })
-
-      const isPrimitive = isPrimitiveSchemaType(itemSchemaField?.type)
-      const isArrayPath = isArrayItemPath(itemPath)
-
-      if (isSelected(itemPath, focusPath)) {
-        const nextPath = isArrayPath ? itemPath : itemPath.slice(0, itemPath.length - 1)
-
-        relativePath = nextPath
-      }
-
-      if (!isPrimitive) {
-        menuItems.push({
-          title: (title || 'Untitled') as string,
-          path: itemPath as Path,
-          children: childrenMenuItems,
-        })
-      }
+    const arrayState = processArray({
+      arraySchemaType,
+      arrayValue,
+      documentValue,
+      focusPath,
+      rootPath,
+      recursive,
     })
 
-    return {
-      breadcrumbs: EMPTY_ARRAY,
-      menuItems,
-      relativePath,
-      rootTitle: '',
-    }
+    breadcrumbs.push(...arrayState.breadcrumbs)
+    menuItems.push(...arrayState.menuItems)
+    relativePath = arrayState.relativePath
+
+    return arrayState
   }
 
   return {
@@ -339,5 +234,167 @@ export function buildTreeEditingState(props: BuildTreeEditingStateProps): TreeEd
     menuItems,
     relativePath,
     rootTitle,
+  }
+}
+
+interface ProcessArrayProps {
+  arrayValue: Record<string, unknown>[]
+  arraySchemaType: ArraySchemaType
+  documentValue: unknown
+  focusPath: Path
+  rootPath: Path
+  recursive: (props: RecursiveProps) => TreeEditingState
+}
+
+function processArray(props: ProcessArrayProps): TreeEditingState {
+  const {arraySchemaType, arrayValue, documentValue, focusPath, rootPath, recursive} = props
+
+  let relativePath: Path = []
+  const menuItems: TreeEditingMenuItem[] = []
+  const breadcrumbs: TreeEditingBreadcrumb[] = []
+
+  arrayValue.forEach((item) => {
+    const itemPath = [...rootPath, {_key: item._key}] as Path
+    const itemType = item?._type as string
+
+    const itemSchemaField = arraySchemaType?.of?.find(
+      (type) => type.name === itemType,
+    ) as ObjectSchemaType
+
+    const isAnonymous = !itemType
+    let title: string = 'Unknown'
+
+    const previewTitleKey = itemSchemaField?.preview?.select?.title
+    const previewTitle = item?.[previewTitleKey as string] as string
+
+    // Is anonymous object (no _type field)
+    if (!isAnonymous) {
+      title = previewTitleKey ? previewTitle : getSchemaTypeTitle(itemSchemaField)
+    }
+
+    const childrenFields = itemSchemaField?.fields || []
+    const childrenMenuItems: TreeEditingMenuItem[] = []
+
+    if (shouldBeInBreadcrumb(itemPath, focusPath)) {
+      const breadcrumbsResult = buildBreadcrumbs({
+        arraySchemaType,
+        arrayValue,
+        itemPath,
+        parentPath: rootPath,
+        title,
+      })
+
+      breadcrumbs.push(breadcrumbsResult)
+    }
+
+    childrenFields.forEach((childField) => {
+      const childPath = [...itemPath, childField.name] as Path
+
+      const isPrimitive = isPrimitiveSchemaType(childField?.type)
+      const childTitle = getSchemaTypeTitle(childField.type) as string
+      const childValue = getValueAtPath(documentValue, childPath)
+
+      if (isSelected(childPath, focusPath)) {
+        relativePath = getRelativePath(childPath)
+      }
+
+      if (
+        !isPrimitive &&
+        !isArrayOfPrimitivesSchemaType(childField.type) &&
+        isArraySchemaType(childField.type) &&
+        childValue
+      ) {
+        if (shouldBeInBreadcrumb(childPath, focusPath)) {
+          const breadcrumbsResult = buildBreadcrumbs({
+            arraySchemaType: childField.type as ArraySchemaType,
+            arrayValue: childValue as Record<string, unknown>[],
+            itemPath: childPath,
+            parentPath: itemPath,
+            title: childTitle,
+          })
+
+          breadcrumbs.push(breadcrumbsResult)
+        }
+
+        const childState = recursive({
+          schemaType: childField as ObjectSchemaType,
+          documentValue,
+          path: childPath,
+          initial: false,
+        })
+
+        childrenMenuItems.push({
+          title: getSchemaTypeTitle(childField.type) as string,
+          path: childPath,
+          children: childState?.menuItems || EMPTY_ARRAY,
+        })
+      }
+    })
+
+    const isPrimitive = isPrimitiveSchemaType(itemSchemaField?.type)
+
+    if (isSelected(itemPath, focusPath)) {
+      relativePath = getRelativePath(itemPath)
+    }
+
+    if (!isPrimitive) {
+      menuItems.push({
+        title: (title || 'Untitled') as string,
+        path: itemPath as Path,
+        children: childrenMenuItems,
+      })
+    }
+  })
+
+  return {
+    breadcrumbs,
+    menuItems,
+    relativePath,
+    rootTitle: '',
+  }
+}
+
+interface BuildBreadcrumbsProps {
+  arraySchemaType: ArraySchemaType
+  arrayValue: Record<string, unknown>[]
+  itemPath: Path
+  parentPath: Path
+  title: string
+}
+
+function buildBreadcrumbs(props: BuildBreadcrumbsProps): TreeEditingBreadcrumb {
+  const {arraySchemaType, arrayValue, itemPath, parentPath, title} = props
+
+  return {
+    path: itemPath,
+    title: (title || 'Untitled') as string,
+    children: arrayValue.map((arrayItem) => {
+      const nestedItemPath = [...parentPath, {_key: arrayItem._key}] as Path
+      const nestedItemType = arrayItem?._type as string
+
+      const nestedItemSchemaField = arraySchemaType?.of?.find(
+        (type) => type.name === nestedItemType,
+      ) as ObjectSchemaType
+
+      // Is anonymous object (no _type field)
+      if (!nestedItemType) {
+        return {
+          path: nestedItemPath,
+          title: 'Unknown',
+          children: EMPTY_ARRAY,
+        }
+      }
+
+      const nestedPreviewTitleKey = nestedItemSchemaField?.preview?.select?.title
+      const nestedTitle = nestedPreviewTitleKey
+        ? arrayItem?.[nestedPreviewTitleKey]
+        : getSchemaTypeTitle(nestedItemSchemaField)
+
+      return {
+        path: nestedItemPath,
+        title: nestedTitle as string,
+        children: EMPTY_ARRAY,
+      }
+    }),
   }
 }
