@@ -35,7 +35,6 @@ import {TEXT_STYLE_PADDING} from './constants'
 import {
   BlockActionsInner,
   BlockActionsOuter,
-  BlockExtrasContainer,
   ChangeIndicatorWrapper,
   ListPrefixWrapper,
   TextBlockFlexWrapper,
@@ -263,7 +262,7 @@ export function TextBlock(props: TextBlockProps) {
     [Markers, markers, renderCustomMarkers, tooltipEnabled, validation],
   )
 
-  const blockActionsVisible = renderBlockActions && focused && !readOnly
+  const blockActionsEnabled = renderBlockActions && !readOnly
   const changeIndicatorVisible = isFullscreen && memberItem
 
   return useMemo(
@@ -303,38 +302,34 @@ export function TextBlock(props: TextBlockProps) {
               </Tooltip>
             </Box>
 
-            {/*
-              Note that we only render this container if any children are present, as an
-              empty element will still occupy text space and display an invalid cursor on hover.
-            */}
-            {(blockActionsVisible || changeIndicatorVisible) && (
-              <BlockExtrasContainer contentEditable={false}>
-                {blockActionsVisible && (
-                  <BlockActionsOuter marginRight={1}>
-                    <BlockActionsInner>
-                      <BlockActions
-                        onChange={onChange}
-                        block={value}
-                        renderBlockActions={renderBlockActions}
-                      />
-                    </BlockActionsInner>
-                  </BlockActionsOuter>
-                )}
-                {changeIndicatorVisible && (
-                  <ChangeIndicatorWrapper
-                    $hasChanges={memberItem.member.item.changed}
-                    onMouseEnter={handleChangeIndicatorMouseEnter}
-                    onMouseLeave={handleChangeIndicatorMouseLeave}
-                  >
-                    <StyledChangeIndicatorWithProvidedFullPath
-                      hasFocus={focused}
-                      isChanged={memberItem.member.item.changed}
-                      path={memberItem.member.item.path}
-                      withHoverEffect={false}
+            {blockActionsEnabled && (
+              <BlockActionsOuter contentEditable={false} marginRight={3}>
+                <BlockActionsInner>
+                  {focused && (
+                    <BlockActions
+                      block={value}
+                      onChange={onChange}
+                      renderBlockActions={renderBlockActions}
                     />
-                  </ChangeIndicatorWrapper>
-                )}
-              </BlockExtrasContainer>
+                  )}
+                </BlockActionsInner>
+              </BlockActionsOuter>
+            )}
+
+            {changeIndicatorVisible && (
+              <ChangeIndicatorWrapper
+                $hasChanges={memberItem.member.item.changed}
+                contentEditable={false}
+                onMouseEnter={handleChangeIndicatorMouseEnter}
+                onMouseLeave={handleChangeIndicatorMouseLeave}
+              >
+                <StyledChangeIndicatorWithProvidedFullPath
+                  hasFocus={focused}
+                  isChanged={memberItem.member.item.changed}
+                  path={memberItem.member.item.path}
+                  withHoverEffect={false}
+                />
+              </ChangeIndicatorWrapper>
             )}
             {reviewChangesHovered && <ReviewChangesHighlightBlock />}
           </Flex>
@@ -342,7 +337,7 @@ export function TextBlock(props: TextBlockProps) {
       </Box>
     ),
     [
-      blockActionsVisible,
+      blockActionsEnabled,
       changeIndicatorVisible,
       componentProps,
       focused,
