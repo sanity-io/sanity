@@ -43,14 +43,15 @@ export interface RecursiveProps extends Omit<BuildTreeEditingStateProps, 'focusP
 
 export function buildTreeEditingState(props: BuildTreeEditingStateProps): TreeEditingState {
   const {focusPath} = props
+
   const menuItems: TreeEditingMenuItem[] = []
+  const breadcrumbs: TreeEditingBreadcrumb[] = []
+
+  let relativePath: Path = []
 
   const rootPath = getRootPath(focusPath)
   const rootField = getSchemaField(props.schemaType, toString(rootPath)) as ObjectSchemaType
   const rootTitle = getSchemaTypeTitle(rootField?.type as ObjectSchemaType)
-
-  const breadcrumbs: TreeEditingBreadcrumb[] = []
-  let relativePath: Path = []
 
   if (JSON.stringify(rootPath) === JSON.stringify(focusPath)) {
     return EMPTY_TREE_STATE
@@ -109,31 +110,14 @@ export function buildTreeEditingState(props: BuildTreeEditingStateProps): TreeEd
       rootPath: path,
     })
 
-    // If it is not the initial call, we don't want to push the menu items
-    // to the menuItems array, as the initial call recursively calls the
-    if (!initial) {
-      breadcrumbs.unshift(...arrayState.breadcrumbs)
-      relativePath = arrayState.relativePath
-
-      return {
-        menuItems: arrayState.menuItems,
-        relativePath,
-        breadcrumbs,
-        rootTitle: '',
-      }
-    }
-
-    breadcrumbs.unshift(...arrayState.breadcrumbs)
-    menuItems.push(...arrayState.menuItems)
-
     relativePath = arrayState.relativePath
+    breadcrumbs.unshift(...arrayState.breadcrumbs)
 
-    return {
-      menuItems: arrayState.menuItems,
-      relativePath,
-      breadcrumbs,
-      rootTitle: '',
+    if (initial) {
+      menuItems.unshift(...arrayState.menuItems)
     }
+
+    return arrayState
   }
 
   return {
