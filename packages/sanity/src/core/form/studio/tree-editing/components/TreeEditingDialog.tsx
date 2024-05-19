@@ -78,9 +78,21 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | 
 
       if (isEqual(nextState, treeState)) return
 
-      // If the next state has no relative path, we want to keep the current relative path
-      const hasNoRelativePath = nextState.relativePath.length === 0
-      const nextRelativePath = hasNoRelativePath ? treeState.relativePath : nextState.relativePath
+      const buildRelativePath = nextState.relativePath
+      const len = buildRelativePath.length
+
+      const hasNoRelativePath = len === 0
+
+      // If the last segment has a `_key` property, it is an array item path.
+      // In that case, we want to use the built relative path as the relative path.
+      // Otherwise, the built relative path is pointing to an non-array item path.
+      // In that case, we do not want to use the built relative path as that would
+      // lead to filtering out only those fields in the form.
+      // We only want to change the fields being displayed when the path is
+      // pointing to an array item.
+      const isArrayItemPath = buildRelativePath[len - 1]?.hasOwnProperty('_key')
+      const useBuiltRelativePath = hasNoRelativePath || !isArrayItemPath
+      const nextRelativePath = useBuiltRelativePath ? treeState.relativePath : buildRelativePath
 
       setTreeState({...nextState, relativePath: nextRelativePath})
     },
@@ -109,6 +121,7 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | 
     // or value has not changed.
     const focusPathChanged = !isEqual(focusPath, focusPathRef.current)
     const valueChanged = !isEqual(value, valueRef.current)
+
     if (!focusPathChanged && !valueChanged) return
 
     // Store the focusPath and value to be able to compare them
