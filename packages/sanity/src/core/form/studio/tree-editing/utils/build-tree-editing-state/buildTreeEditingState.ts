@@ -3,7 +3,7 @@ import {
   type ArraySchemaType,
   getSchemaTypeTitle,
   getValueAtPath,
-  isObjectSchemaType,
+  isArrayOfObjectsSchemaType,
   type ObjectSchemaType,
   type Path,
 } from 'sanity'
@@ -12,7 +12,6 @@ import {type TreeEditingBreadcrumb, type TreeEditingMenuItem} from '../../types'
 import {getRootPath} from '../getRootPath'
 import {getSchemaField} from '../getSchemaField'
 import {buildArrayState} from './buildArrayState'
-import {shouldBeInBreadcrumb} from './utils'
 
 const EMPTY_ARRAY: [] = []
 
@@ -53,7 +52,7 @@ export function buildTreeEditingState(props: BuildTreeEditingStateProps): TreeEd
   const rootField = getSchemaField(props.schemaType, toString(rootPath)) as ObjectSchemaType
   const rootTitle = getSchemaTypeTitle(rootField?.type as ObjectSchemaType)
 
-  if (JSON.stringify(rootPath) === JSON.stringify(focusPath)) {
+  if (!isArrayOfObjectsSchemaType(rootField?.type)) {
     return EMPTY_TREE_STATE
   }
 
@@ -66,34 +65,6 @@ export function buildTreeEditingState(props: BuildTreeEditingStateProps): TreeEd
 
   function recursive(recursiveProps: RecursiveProps): TreeEditingState {
     const {schemaType, path, initial, documentValue} = recursiveProps
-
-    if (isObjectSchemaType(schemaType?.type)) {
-      const items = schemaType?.type?.fields?.map((field) => {
-        const nextPath = [...path, field.name]
-        const objectTitle = getSchemaTypeTitle(schemaType)
-
-        if (shouldBeInBreadcrumb(nextPath, focusPath)) {
-          breadcrumbs.push({
-            path: nextPath,
-            title: objectTitle,
-            children: EMPTY_ARRAY,
-          })
-        }
-
-        return {
-          title: objectTitle,
-          path: nextPath,
-          children: EMPTY_ARRAY,
-        }
-      })
-
-      return {
-        menuItems: items,
-        relativePath,
-        breadcrumbs: EMPTY_ARRAY,
-        rootTitle: '',
-      }
-    }
 
     const value = getValueAtPath(documentValue, path) as Array<Record<string, unknown>>
     const arrayValue = Array.isArray(value) ? value : EMPTY_ARRAY
