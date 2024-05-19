@@ -2,6 +2,7 @@ import {useCallback, useEffect, useMemo} from 'react'
 import useSWR from 'swr'
 
 import {useClient} from '../../hooks/useClient'
+import {useScheduledPublishingEnabled} from '../tool/contexts/ScheduledPublishingEnabledProvider'
 import {type Schedule, type ScheduleState} from '../types'
 import {sortByExecuteDate} from '../utils/sortByExecuteDate'
 import {
@@ -39,15 +40,6 @@ function useFetcher(queryKey: QueryKey) {
   )
 }
 
-const SWR_OPTIONS = {
-  refreshInterval: 10000, // 10s
-  refreshWhenHidden: false,
-  refreshWhenOffline: false,
-  revalidateOnFocus: false,
-  revalidateOnReconnect: true,
-  shouldRetryOnError: false,
-}
-
 const NO_SCHEDULES: Schedule[] = []
 
 /**
@@ -58,6 +50,21 @@ function usePollSchedules({documentId, state}: {documentId?: string; state?: Sch
   isInitialLoading: boolean
   schedules: Schedule[]
 } {
+  const {mode} = useScheduledPublishingEnabled()
+
+  const swrOptions = useMemo(() => {
+    const SWR_OPTIONS = {
+      refreshWhenHidden: false,
+      refreshWhenOffline: false,
+      revalidateOnFocus: false,
+      shouldRetryOnError: false,
+      // Revalidate data only on default mode, upsell mode should not poll given the data won't change.
+      refreshInterval: mode === 'default' ? 10000 : undefined, // 10s
+      revalidateIfStale: mode === 'default',
+      revalidateOnReconnect: mode === 'default',
+    }
+    return SWR_OPTIONS
+  }, [mode])
   const url = useScheduleBaseUrl()
   const queryKey: QueryKey = useMemo(
     () => ({params: {documentIds: documentId, state}, url}),
@@ -66,7 +73,7 @@ function usePollSchedules({documentId, state}: {documentId?: string; state?: Sch
 
   const fetcher = useFetcher(queryKey)
 
-  const {data, error, mutate} = useSWR(queryKey, fetcher, SWR_OPTIONS)
+  const {data, error, mutate} = useSWR(queryKey, fetcher, swrOptions)
 
   // Immediately remove schedule from SWR cache and revalidate
   const handleDelete = useCallback(

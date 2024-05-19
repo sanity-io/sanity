@@ -39,7 +39,7 @@
     "@sanity/react-loader": "^1.8.3",
     "@sanity/tsdoc": "1.0.59",
     "@sanity/types": "workspace:*",
-    "@sanity/ui": "^2.1.9",
+    "@sanity/ui": "^2.1.10",
     "@sanity/ui-workshop": "^1.0.0",
     "@sanity/util": "workspace:*",
     "@sanity/uuid": "^3.0.1",
