@@ -214,11 +214,16 @@ export function Editor(props: EditorProps): ReactNode {
 
       <EditableCard flex={1} tone={readOnly ? 'transparent' : 'default'}>
         <Scroller ref={setScrollElement}>
-          <EditableWrapper $isFullscreen={isFullscreen} tone={readOnly ? 'transparent' : 'default'}>
-            <BoundaryElementProvider element={isFullscreen ? scrollElement : boundaryElement}>
-              {editable}
-            </BoundaryElementProvider>
-          </EditableWrapper>
+          <div>
+            <EditableWrapper
+              $isFullscreen={isFullscreen}
+              tone={readOnly ? 'transparent' : 'default'}
+            >
+              <BoundaryElementProvider element={isFullscreen ? scrollElement : boundaryElement}>
+                {editable}
+              </BoundaryElementProvider>
+            </EditableWrapper>
+          </div>
         </Scroller>
 
         <div data-portal="" ref={setPortalElement} />
