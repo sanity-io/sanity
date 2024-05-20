@@ -1,7 +1,12 @@
-// This is a WIP file, to render a very basic table view.
-import {Flex, Text, TextInput} from '@sanity/ui'
-import {createColumnHelper} from '@tanstack/react-table'
-import {type FormEvent, useCallback, useEffect, useMemo, useState} from 'react'
+import {isObjectSchemaType, type ObjectSchemaType} from '@sanity/types'
+import {Checkbox, Flex, Text} from '@sanity/ui'
+import {
+  type AccessorKeyColumnDef,
+  createColumnHelper,
+  type GroupColumnDef,
+  type VisibilityState,
+} from '@tanstack/react-table'
+import {useMemo} from 'react'
 import {useMemoObservable} from 'react-rx'
 import {
   type DocumentPreviewStore,
@@ -13,6 +18,9 @@ import {
 } from 'sanity'
 
 import {type PaneItemPreviewState} from '../../components/paneItem/types'
+import {SheetListCell} from './SheetListCell'
+
+export const VISIBLE_COLUMN_LIMIT = 5
 
 const PreviewCell = (props: {
   documentPreviewStore: DocumentPreviewStore
@@ -44,83 +52,126 @@ const PreviewCell = (props: {
   )
 }
 
-const TableTextInput = (props: any) => {
-  const {index, id} = props
-  const initialValue = props.getValue()
-  // We need to keep and update the state of the cell normally
-  const [value, setValue] = useState(initialValue || '')
+const columnHelper = createColumnHelper<SanityDocument>()
+const SUPPORTED_FIELDS = ['string', 'number', 'boolean']
 
-  // When the input is blurred, we'll call our table meta's updateData function
-  const onBlur = () => {
-    props.table.options.meta?.updateData(index, id, value)
-  }
+type Columns = (
+  | AccessorKeyColumnDef<SanityDocument, unknown>
+  | GroupColumnDef<SanityDocument, unknown>
+)[]
 
-  const handleChange = useCallback(
-    (e: FormEvent<HTMLInputElement>) => setValue(e.currentTarget.value),
-    [],
-  )
+const getColsFromSchemaType = (schemaType: ObjectSchemaType, parentalField?: string): Columns => {
+  return schemaType.fields.reduce<Columns>((tableColumns: Columns, field) => {
+    const {type, name} = field
+    if (SUPPORTED_FIELDS.includes(type.name)) {
+      const nextCol = columnHelper.accessor(
+        parentalField ? `${parentalField}.${field.name}` : field.name,
+        {
+          header: field.type.title,
+          enableHiding: true,
+          cell: (info) => <SheetListCell {...info} fieldType={type} />,
+        },
+      )
 
-  useEffect(() => {
-    setValue(initialValue)
-  }, [initialValue])
+      return [...tableColumns, nextCol]
+    }
 
-  return <TextInput value={value as string} onChange={handleChange} onBlur={onBlur} />
+    // if first layer nested object
+    if (type.name === 'object' && isObjectSchemaType(type) && !parentalField) {
+      return [
+        ...tableColumns,
+        columnHelper.group({header: name, columns: getColsFromSchemaType(type, field.name)}),
+      ]
+    }
+
+    return tableColumns
+  }, [])
 }
 
-const columnHelper = createColumnHelper<SanityDocument>()
-const SUPPORTED_FIELDS = ['string', 'number']
+// Type guard function to check if a column is of type GroupColumnDef
+function isAccessorKeyColumnDef(
+  column: Columns[number],
+): column is AccessorKeyColumnDef<SanityDocument, unknown> {
+  return 'accessorKey' in column
+}
+function isGroupColumnDef(
+  column: AccessorKeyColumnDef<SanityDocument, unknown> | GroupColumnDef<SanityDocument, unknown>,
+): column is GroupColumnDef<SanityDocument, unknown> {
+  return 'columns' in column
+}
 
-export function useDocumentSheetColumns(schemaType?: SchemaType) {
+const flatColumns = (cols: Columns): AccessorKeyColumnDef<SanityDocument, unknown>[] => {
+  return cols.flatMap((col) => {
+    if (isAccessorKeyColumnDef(col)) {
+      return col
+    }
+    if (isGroupColumnDef(col)) {
+      return col.columns ? flatColumns(col.columns) : []
+    }
+    return []
+  })
+}
+
+export function useDocumentSheetColumns(documentSchemaType?: ObjectSchemaType) {
   const documentPreviewStore = useDocumentPreviewStore()
 
-  const columns = useMemo(() => {
-    if (!schemaType) {
+  const columns: Columns = useMemo(() => {
+    if (!documentSchemaType) {
       return []
     }
-    const cols = [
-      {
-        header: 'Preview',
-        //@ts-expect-error - wip.
+    return [
+      columnHelper.accessor('selected', {
+        enableHiding: false,
+        header: (info) => (
+          <Checkbox
+            indeterminate={info.table.getIsSomeRowsSelected()}
+            onChange={info.table.getToggleAllPageRowsSelectedHandler()}
+          />
+        ),
+        cell: (info) => (
+          <Checkbox
+            checked={info.row.getIsSelected()}
+            disabled={!info.row.getCanSelect()}
+            onChange={() => info.row.toggleSelected()}
+          />
+        ),
+      }),
+      columnHelper.accessor('Preview', {
+        enableHiding: false,
         cell: (info) => {
           return (
             <PreviewCell
               {...info}
               documentPreviewStore={documentPreviewStore}
-              schemaType={schemaType}
+              schemaType={documentSchemaType}
             />
           )
         },
-      },
-      // columnHelper.accessor('_id', {
-      //   header: 'Id',
-      //   cell: (info) => {
-      //     return <Text size={1}>{info.getValue()}</Text>
-      //   },
-      // }),
+      }),
+      ...getColsFromSchemaType(documentSchemaType),
     ]
-    //@ts-expect-error - wip.
-    for (const field of schemaType.fields) {
-      if (!SUPPORTED_FIELDS.includes(field.type.name)) {
-        continue
-      }
+  }, [documentPreviewStore, documentSchemaType])
 
-      cols.push(
-        columnHelper.accessor(field.name, {
-          header: field.type.title,
-          //@ts-expect-error dynamic field name access, types not generated correctly.
-          cell: (info) => {
-            const renderValue = info.getValue()
-            // return <TableTextInput {...info} />
-            if (typeof renderValue === 'string' || typeof renderValue === 'number') {
-              return <Text size={0}>{renderValue}</Text>
-            }
-            return <Text size={0}>{JSON.stringify(info.getValue())}</Text>
-          },
-        }),
-      )
-    }
-    return cols
-  }, [documentPreviewStore, schemaType])
+  const [initialColumnsVisibility]: [VisibilityState, number] = useMemo(
+    () =>
+      flatColumns(columns).reduce<[VisibilityState, number]>(
+        ([accCols, countAllowedVisible], column) => {
+          // this column is always visible
+          if (!column.enableHiding) {
+            return [{...accCols, [column.accessorKey]: true}, countAllowedVisible]
+          }
 
-  return columns
+          // have already reached column visibility limit, hide column by default
+          if (countAllowedVisible === VISIBLE_COLUMN_LIMIT) {
+            return [{...accCols, [column.accessorKey]: false}, countAllowedVisible]
+          }
+
+          return [{...accCols, [column.accessorKey]: true}, countAllowedVisible + 1]
+        },
+        [{}, 0],
+      ),
+    [columns],
+  )
+
+  return {columns, initialColumnsVisibility}
 }
