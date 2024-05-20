@@ -189,6 +189,8 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | 
             initial="initial"
             key={toString(relativePath)}
             overflow="hidden"
+            padding={1}
+            sizing="border"
             transition={ANIMATION_TRANSITION}
             variants={ANIMATION_VARIANTS}
           >
