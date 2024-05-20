@@ -9,13 +9,14 @@ import {ContextMenuButton} from '../../../../../components/contextMenuButton'
 import {LoadingBlock} from '../../../../../components/loadingBlock'
 import {useTranslation} from '../../../../../i18n'
 import {FieldPresence} from '../../../../../presence'
-// import {getSchemaTypeTitle} from '../../../../../schema'
+import {getSchemaTypeTitle} from '../../../../../schema'
 import {FormFieldValidationStatus} from '../../../../components'
-// import {EditPortal} from '../../../../components/EditPortal'
+import {EditPortal} from '../../../../components/EditPortal'
 import {useDidUpdate} from '../../../../hooks/useDidUpdate'
 import {useScrollIntoViewOnFocusWithin} from '../../../../hooks/useScrollIntoViewOnFocusWithin'
 import {useChildPresence} from '../../../../studio/contexts/Presence'
 import {useChildValidation} from '../../../../studio/contexts/Validation'
+import {DEBUG_TREE_EDITING_ENABLED} from '../../../../studio/tree-editing/constants'
 import {type ObjectItem, type ObjectItemProps} from '../../../../types'
 import {randomKey} from '../../../../utils/randomKey'
 import {RowLayout} from '../../layouts/RowLayout'
@@ -47,7 +48,7 @@ const BUTTON_CARD_STYLE = {position: 'relative'} as const
 
 export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: PreviewItemProps<Item>) {
   const {
-    // schemaType,
+    schemaType,
     parentSchemaType,
     path,
     readOnly,
@@ -57,10 +58,10 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
     onInsert,
     onFocus,
     onOpen,
-    // onClose,
+    onClose,
     changed,
     focused,
-    // children,
+    children,
     inputProps: {renderPreview},
   } = props
   const {t} = useTranslation()
@@ -183,7 +184,10 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
     </RowLayout>
   )
 
-  // const itemTypeTitle = getSchemaTypeTitle(schemaType)
+  const itemTypeTitle = getSchemaTypeTitle(schemaType)
+
+  const isOpen = open && !DEBUG_TREE_EDITING_ENABLED
+
   return (
     <>
       <ChangeIndicator path={path} isChanged={changed} hasFocus={Boolean(focused)}>
@@ -191,7 +195,7 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
       </ChangeIndicator>
 
       {/* TODO: add schema config to enable/disable edit portal */}
-      {/* {open && (
+      {isOpen && (
         <EditPortal
           header={
             readOnly
@@ -207,7 +211,7 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
         >
           {children}
         </EditPortal>
-      )} */}
+      )}
     </>
   )
 }
