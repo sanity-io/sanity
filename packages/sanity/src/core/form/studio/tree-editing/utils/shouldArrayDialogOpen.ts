@@ -7,15 +7,15 @@ import {getSchemaField} from './getSchemaField'
 /**
  * A utility function to check if the global array editing dialog should be open.
  * @param schemaType - The schema object that we are opening
- * @param focusPath - The path that we are focusing on
+ * @param path - The path that we are focusing on
  * @returns Returns true if the dialog should be open
  * @internal
  */
-export function shouldArrayDialogOpen(schemaType: ObjectSchemaType, focusPath: Path): boolean {
-  // If the focusPath is empty, we can't determine if the array dialog is open
-  if (focusPath.length === 0) return false
+export function shouldArrayDialogOpen(schemaType: ObjectSchemaType, path: Path): boolean {
+  // If the path is empty, we can't determine if the array dialog is open
+  if (path.length === 0) return false
 
-  const rootPath = getRootPath(focusPath)
+  const rootPath = getRootPath(path)
 
   // Get the field for the first segments
   const field = getSchemaField(schemaType, toString(rootPath))
