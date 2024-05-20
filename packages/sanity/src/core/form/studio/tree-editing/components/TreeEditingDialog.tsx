@@ -21,7 +21,6 @@ import {
   shouldArrayDialogOpen,
   type TreeEditingState,
 } from '../utils'
-import {handleNavigate} from '../utils/handleNavigate'
 import {TreeEditingLayout} from './TreeEditingLayout'
 
 const EMPTY_ARRAY: [] = []
@@ -58,18 +57,18 @@ const StyledDialog = styled(Dialog)(({theme}: {theme: Theme}) => {
 const MotionFlex = motion(Flex)
 
 interface TreeEditingDialogProps {
-  focusPath: Path
-  schemaType: ObjectSchemaType
-  setFocusPath: (path: Path) => void
+  onPathOpen: (path: Path) => void
+  openPath: Path
   rootInputProps: Omit<ObjectInputProps, 'renderDefault'>
+  schemaType: ObjectSchemaType
 }
 
 export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | null {
-  const {focusPath, rootInputProps, schemaType, setFocusPath} = props
+  const {rootInputProps, schemaType, openPath, onPathOpen} = props
   const {value} = rootInputProps
 
   const [treeState, setTreeState] = useState<TreeEditingState>(EMPTY_TREE_STATE)
-  const focusPathRef = useRef<Path | null>(null)
+  const openPathRef = useRef<Path | null>(null)
   const valueRef = useRef<Record<string, unknown> | undefined>(undefined)
 
   const handleBuildTreeEditingState = useCallback(
@@ -105,36 +104,36 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | 
   )
 
   const onClose = useCallback(() => {
-    setFocusPath(EMPTY_ARRAY)
+    onPathOpen(EMPTY_ARRAY)
     setTreeState(EMPTY_TREE_STATE)
-    focusPathRef.current = null
     valueRef.current = undefined
+    openPathRef.current = null
     debouncedBuildTreeEditingState.cancel()
-  }, [debouncedBuildTreeEditingState, setFocusPath])
+  }, [debouncedBuildTreeEditingState, onPathOpen])
 
   useEffect(() => {
     // Don't proceed with building the tree editing state if the dialog
     // should not be open.
-    if (!shouldArrayDialogOpen(schemaType, focusPath)) return
+    if (!shouldArrayDialogOpen(schemaType, openPath)) return
 
-    // Don't proceed with building the tree editing state if the focus path
-    // or value has not changed.
-    const focusPathChanged = !isEqual(focusPath, focusPathRef.current)
     const valueChanged = !isEqual(value, valueRef.current)
+    const openPathChanged = !isEqual(openPath, openPathRef.current)
 
-    if (!focusPathChanged && !valueChanged) return
+    // Don't proceed with building the tree editing state if the
+    // openPath and value has not changed.
+    if (!valueChanged && !openPathChanged) return
 
-    // Store the focusPath and value to be able to compare them
-    // with the next focusPath and value.
-    focusPathRef.current = focusPath
+    // Store the openPath and value to be able to compare them
+    // with the next openPath and value.
     valueRef.current = value
+    openPathRef.current = openPath
 
     debouncedBuildTreeEditingState({
       schemaType,
       documentValue: value,
-      focusPath,
+      openPath,
     })
-  }, [focusPath, schemaType, value, debouncedBuildTreeEditingState])
+  }, [schemaType, value, debouncedBuildTreeEditingState, openPath])
 
   const {menuItems, relativePath, rootTitle, breadcrumbs} = treeState
 
@@ -151,9 +150,10 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | 
       // The debounced state is primarily used to avoid building the state
       // on every document value or focus path change.
       debouncedBuildTreeEditingState.cancel()
-      handleNavigate(path, setFocusPath)
+      // handleNavigate(path, setFocusPath) // todo: implement handleNavigate
+      onPathOpen(path)
     },
-    [debouncedBuildTreeEditingState, setFocusPath],
+    [debouncedBuildTreeEditingState, onPathOpen],
   )
 
   if (!open || relativePath.length === 0) return null
