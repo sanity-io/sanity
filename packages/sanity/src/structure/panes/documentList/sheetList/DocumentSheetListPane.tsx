@@ -12,7 +12,7 @@ import {useCallback, useEffect, useState} from 'react'
 import {SearchProvider, useSchema, useSearchState} from 'sanity'
 import {styled} from 'styled-components'
 
-import {type BaseStructureToolPaneProps} from '../types'
+import {type BaseStructureToolPaneProps} from '../../types'
 import {ColumnsControl} from './ColumnsControl'
 import {DocumentSheetListFilter} from './DocumentSheetListFilter'
 import {DocumentSheetListPaginator} from './DocumentSheetListPaginator'

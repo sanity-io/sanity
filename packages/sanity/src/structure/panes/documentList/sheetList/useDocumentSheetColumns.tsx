@@ -1,5 +1,5 @@
-import {Box, Checkbox, Flex, Text} from '@sanity/ui'
 import {isObjectSchemaType, type ObjectSchemaType} from '@sanity/types'
+import {Box, Checkbox, Flex, Text} from '@sanity/ui'
 import {
   type AccessorKeyColumnDef,
   createColumnHelper,
@@ -17,7 +17,7 @@ import {
   useDocumentPreviewStore,
 } from 'sanity'
 
-import {type PaneItemPreviewState} from '../../components/paneItem/types'
+import {type PaneItemPreviewState} from '../../../components/paneItem/types'
 import {DocumentSheetListSelect} from './DocumentSheetListSelect'
 import {SheetListCell} from './SheetListCell'
 
@@ -134,7 +134,7 @@ export function useDocumentSheetColumns(documentSchemaType?: ObjectSchemaType) {
             {info.table.getSelectedRowModel().rows.length} selected
           </Box>
         ),
-        cell: (info) => <DocumentSheetListSelect {...info} />,
+        cell: DocumentSheetListSelect,
       }),
       columnHelper.accessor('Preview', {
         enableHiding: false,
