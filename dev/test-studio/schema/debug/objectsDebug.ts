@@ -50,6 +50,7 @@ const animal = defineField({
               name: 'name',
               type: 'string',
               title: 'Friend name',
+              validation: (Rule) => Rule.required(),
             },
             {
               name: 'age',
@@ -134,6 +135,30 @@ const objectWithArray = defineField({
   ],
 })
 
+const arrayOfMixedTypes = defineField({
+  type: 'array',
+  name: 'arrayOfMixedTypes',
+  title: 'Array of mixed types',
+  of: [
+    {
+      type: 'object',
+      name: 'myObject',
+      fields: [
+        {
+          name: 'string',
+          type: 'string',
+          title: 'String',
+        },
+      ],
+    },
+    {
+      type: 'image',
+      name: 'image',
+      title: 'Image',
+    },
+  ],
+})
+
 export const objectsDebug = defineType({
   type: 'document',
   name: 'objectsDebug',
@@ -146,5 +171,6 @@ export const objectsDebug = defineType({
     objectWithArray,
     arrayOfAnonymousObjects,
     arrayOfImages,
+    arrayOfMixedTypes,
   ],
 })
