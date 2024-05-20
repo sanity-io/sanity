@@ -1,12 +1,12 @@
 import {afterEach, beforeEach, describe, expect, it, jest} from '@jest/globals'
 import {studioTheme, ThemeProvider} from '@sanity/ui'
-import {useReactTable} from '@tanstack/react-table'
+import {type ColumnDef, useReactTable} from '@tanstack/react-table'
 import {fireEvent, render, screen} from '@testing-library/react'
 import {type SanityDocument} from 'sanity'
 
 import {ColumnsControl} from '../ColumnsControl'
 
-const TableHarness = ({columns}) => {
+const TableHarness = ({columns}: {columns: ColumnDef<SanityDocument>[]}) => {
   const initialVisibilityState = {
     'First Column': true,
     'Second Column': true,
