@@ -66,7 +66,7 @@ const getColsFromSchemaType = (schemaType: ObjectSchemaType, parentalField?: str
     const {type, name} = field
     if (SUPPORTED_FIELDS.includes(type.name)) {
       const nextCol = columnHelper.accessor(
-        parentalField ? `${parentalField}.${field.name}` : field.name,
+        parentalField ? `${parentalField}_${field.name}` : field.name,
         {
           header: field.type.title,
           enableHiding: true,
@@ -121,7 +121,8 @@ export function useDocumentSheetColumns(documentSchemaType?: ObjectSchemaType) {
       return []
     }
     return [
-      columnHelper.accessor('selected', {
+      columnHelper.display({
+        id: 'selected',
         enableHiding: false,
         header: (info) => (
           <Box>
@@ -156,17 +157,19 @@ export function useDocumentSheetColumns(documentSchemaType?: ObjectSchemaType) {
     () =>
       flatColumns(columns).reduce<[VisibilityState, number]>(
         ([accCols, countAllowedVisible], column) => {
+          const visibilityKey = String(column.accessorKey)
+
           // this column is always visible
           if (!column.enableHiding) {
-            return [{...accCols, [column.accessorKey]: true}, countAllowedVisible]
+            return [{...accCols, [visibilityKey]: true}, countAllowedVisible]
           }
 
           // have already reached column visibility limit, hide column by default
           if (countAllowedVisible === VISIBLE_COLUMN_LIMIT) {
-            return [{...accCols, [column.accessorKey]: false}, countAllowedVisible]
+            return [{...accCols, [visibilityKey]: false}, countAllowedVisible]
           }
 
-          return [{...accCols, [column.accessorKey]: true}, countAllowedVisible + 1]
+          return [{...accCols, [visibilityKey]: true}, countAllowedVisible + 1]
         },
         [{}, 0],
       ),
