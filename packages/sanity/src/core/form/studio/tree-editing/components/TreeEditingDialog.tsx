@@ -68,6 +68,7 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | 
   const {value} = rootInputProps
 
   const [treeState, setTreeState] = useState<TreeEditingState>(EMPTY_TREE_STATE)
+
   const openPathRef = useRef<Path | null>(null)
   const valueRef = useRef<Record<string, unknown> | undefined>(undefined)
 
@@ -104,12 +105,45 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | 
   )
 
   const onClose = useCallback(() => {
-    onPathOpen(EMPTY_ARRAY)
+    // Cancel any debounced state building when closing the dialog.
+    debouncedBuildTreeEditingState.cancel()
+
+    // Reset the tree state when closing the dialog.
     setTreeState(EMPTY_TREE_STATE)
+
+    // Reset the `openPath`
+    onPathOpen(EMPTY_ARRAY)
+
+    // Reset the stored value and openPath to undefined and null.
+    // This is important since the next time the dialog is opened,
+    // we want to build the tree editing state from scratch and
+    // don't prevent the state from being built by comparing the
+    // previous stored values.
     valueRef.current = undefined
     openPathRef.current = null
-    debouncedBuildTreeEditingState.cancel()
   }, [debouncedBuildTreeEditingState, onPathOpen])
+
+  const {menuItems, relativePath, rootTitle, breadcrumbs} = treeState
+
+  const open = useMemo(
+    () => shouldArrayDialogOpen(schemaType, relativePath),
+    [relativePath, schemaType],
+  )
+
+  const onHandlePathSelect = useCallback(
+    (path: Path) => {
+      // Cancel any debounced state building when navigating.
+      // This is done to allow for immediate navigation to the selected path
+      // and not wait for the debounced state to be built.
+      // The debounced state is primarily used to avoid building the state
+      // on every document value or focus path change.
+      debouncedBuildTreeEditingState.cancel()
+      onPathOpen(path)
+
+      // handleNavigate(path, setFocusPath) // todo: implement handleNavigate
+    },
+    [debouncedBuildTreeEditingState, onPathOpen],
+  )
 
   useEffect(() => {
     // Don't proceed with building the tree editing state if the dialog
@@ -135,34 +169,15 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | 
     })
   }, [schemaType, value, debouncedBuildTreeEditingState, openPath])
 
-  const {menuItems, relativePath, rootTitle, breadcrumbs} = treeState
-
-  const open = useMemo(
-    () => shouldArrayDialogOpen(schemaType, relativePath),
-    [relativePath, schemaType],
-  )
-
-  const onHandlePathSelect = useCallback(
-    (path: Path) => {
-      // Cancel any debounced state building when navigating.
-      // This is done to allow for immediate navigation to the selected path
-      // and not wait for the debounced state to be built.
-      // The debounced state is primarily used to avoid building the state
-      // on every document value or focus path change.
-      debouncedBuildTreeEditingState.cancel()
-      // handleNavigate(path, setFocusPath) // todo: implement handleNavigate
-      onPathOpen(path)
-    },
-    [debouncedBuildTreeEditingState, onPathOpen],
-  )
-
   if (!open || relativePath.length === 0) return null
 
   return (
     <StyledDialog
+      __unstable_hideCloseButton
       autoFocus={false}
       id="tree-editing-dialog"
       onClickOutside={onClose}
+      onClose={onClose}
       padding={0}
       width={3}
     >
