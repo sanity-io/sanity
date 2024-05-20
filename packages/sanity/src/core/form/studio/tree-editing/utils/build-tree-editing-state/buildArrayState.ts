@@ -19,15 +19,15 @@ interface BuildArrayState {
   arrayValue: Record<string, unknown>[]
   arraySchemaType: ArraySchemaType
   documentValue: unknown
-  focusPath: Path
+  openPath: Path
   rootPath: Path
   recursive: (props: RecursiveProps) => TreeEditingState
 }
 
 export function buildArrayState(props: BuildArrayState): TreeEditingState {
-  const {arraySchemaType, arrayValue, documentValue, focusPath, rootPath, recursive} = props
+  const {arraySchemaType, arrayValue, documentValue, openPath, rootPath, recursive} = props
 
-  let relativePath: Path = getRelativePath(focusPath)
+  let relativePath: Path = getRelativePath(openPath)
   const menuItems: TreeEditingMenuItem[] = []
   const breadcrumbs: TreeEditingBreadcrumb[] = []
 
@@ -53,7 +53,7 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
     const childrenFields = itemSchemaField?.fields || []
     const childrenMenuItems: TreeEditingMenuItem[] = []
 
-    if (shouldBeInBreadcrumb(itemPath, focusPath)) {
+    if (shouldBeInBreadcrumb(itemPath, openPath)) {
       const breadcrumbsResult = buildBreadcrumbsState({
         arraySchemaType,
         arrayValue,
@@ -70,7 +70,7 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
       const isPrimitive = isPrimitiveSchemaType(childField?.type)
       const childValue = getValueAtPath(documentValue, childPath)
 
-      if (isSelected(childPath, focusPath) && !isPrimitive) {
+      if (isSelected(childPath, openPath) && !isPrimitive) {
         relativePath = getRelativePath(childPath)
       }
 
@@ -81,7 +81,7 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
         childValue
 
       if (isValid) {
-        if (shouldBeInBreadcrumb(childPath, focusPath)) {
+        if (shouldBeInBreadcrumb(childPath, openPath)) {
           const breadcrumbsResult = buildBreadcrumbsState({
             arraySchemaType: childField.type as ArraySchemaType,
             arrayValue: childValue as Record<string, unknown>[],
@@ -109,7 +109,7 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
 
     const isPrimitive = isPrimitiveSchemaType(itemSchemaField?.type)
 
-    if (isSelected(itemPath, focusPath) && !isPrimitive) {
+    if (isSelected(itemPath, openPath) && !isPrimitive) {
       relativePath = getRelativePath(itemPath)
     }
 
