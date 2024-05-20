@@ -25,7 +25,7 @@ export const EMPTY_TREE_STATE: TreeEditingState = {
 export interface BuildTreeEditingStateProps {
   schemaType: ObjectSchemaType | ArraySchemaType
   documentValue: unknown
-  focusPath: Path
+  openPath: Path
 }
 
 export interface TreeEditingState {
@@ -35,20 +35,20 @@ export interface TreeEditingState {
   rootTitle: string
 }
 
-export interface RecursiveProps extends Omit<BuildTreeEditingStateProps, 'focusPath'> {
+export interface RecursiveProps extends Omit<BuildTreeEditingStateProps, 'openPath'> {
   path: Path
   initial: boolean
 }
 
 export function buildTreeEditingState(props: BuildTreeEditingStateProps): TreeEditingState {
-  const {focusPath} = props
+  const {openPath} = props
 
   const menuItems: TreeEditingMenuItem[] = []
   const breadcrumbs: TreeEditingBreadcrumb[] = []
 
   let relativePath: Path = []
 
-  const rootPath = getRootPath(focusPath)
+  const rootPath = getRootPath(openPath)
   const rootField = getSchemaField(props.schemaType, toString(rootPath)) as ObjectSchemaType
   const rootTitle = getSchemaTypeTitle(rootField?.type as ObjectSchemaType)
 
@@ -74,7 +74,7 @@ export function buildTreeEditingState(props: BuildTreeEditingStateProps): TreeEd
       arraySchemaType,
       arrayValue,
       documentValue,
-      focusPath,
+      openPath,
       // Pass the recursive function to the buildArrayState function
       // to allow for recursive calls in the array items.
       recursive,
