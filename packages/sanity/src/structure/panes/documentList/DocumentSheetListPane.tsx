@@ -1,4 +1,4 @@
-import {type SanityDocument, type SchemaType} from '@sanity/types'
+import {isDocumentSchemaType, type ObjectSchemaType, type SanityDocument} from '@sanity/types'
 import {Box, Flex, Text} from '@sanity/ui'
 import {
   flexRender,
@@ -65,12 +65,12 @@ const Table = styled.table`
 `
 
 function DocumentSheetListPaneInner({
-  schemaType,
-}: DocumentSheetListPaneProps & {schemaType: SchemaType}) {
+  documentSchemaType,
+}: DocumentSheetListPaneProps & {documentSchemaType: ObjectSchemaType}) {
   const {dispatch, state} = useSearchState()
-  const {columns, initialColumnsVisibility} = useDocumentSheetColumns(schemaType)
+  const {columns, initialColumnsVisibility} = useDocumentSheetColumns(documentSchemaType)
   const {data} = useDocumentSheetList({
-    typeName: schemaType.name,
+    typeName: documentSchemaType.name,
   })
   const [hasAnchorSelected, setHasAnchorSelected] = useState<number | null>(null)
 
@@ -88,10 +88,6 @@ function DocumentSheetListPaneInner({
       columnVisibility: initialColumnsVisibility,
     },
     meta: {
-      updateData: () => {
-        // eslint-disable-next-line no-console
-        console.log('updateData')
-      },
       hasAnchorSelected,
       setHasAnchorSelected,
     },
@@ -100,11 +96,11 @@ function DocumentSheetListPaneInner({
   const {rows} = table.getRowModel()
 
   useEffect(() => {
-    dispatch({type: 'TERMS_TYPE_ADD', schemaType: schemaType})
+    dispatch({type: 'TERMS_TYPE_ADD', schemaType: documentSchemaType})
     return () => {
-      dispatch({type: 'TERMS_TYPE_REMOVE', schemaType: schemaType})
+      dispatch({type: 'TERMS_TYPE_REMOVE', schemaType: documentSchemaType})
     }
-  }, [schemaType, dispatch])
+  }, [documentSchemaType, dispatch])
 
   const renderRow = useCallback((row: Row<SanityDocument>) => {
     return (
@@ -177,12 +173,12 @@ export function DocumentSheetListPane(props: DocumentSheetListPaneProps) {
   const typeName = props.pane.schemaTypeName
 
   const schemaType = schema.get(typeName)
-  if (!schemaType) {
-    throw new Error(`Schema type "${typeName}" not found`)
+  if (!schemaType || !isDocumentSchemaType(schemaType)) {
+    throw new Error(`Schema type "${typeName}" not found or not a document schema`)
   }
   return (
     <SearchProvider>
-      <DocumentSheetListPaneInner {...props} schemaType={schemaType} />
+      <DocumentSheetListPaneInner {...props} documentSchemaType={schemaType} />
     </SearchProvider>
   )
 }

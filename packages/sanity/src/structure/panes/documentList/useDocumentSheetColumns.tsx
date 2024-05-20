@@ -1,4 +1,5 @@
 import {Box, Checkbox, Flex, Text} from '@sanity/ui'
+import {isObjectSchemaType, type ObjectSchemaType} from '@sanity/types'
 import {
   type AccessorKeyColumnDef,
   createColumnHelper,
@@ -60,9 +61,8 @@ type Columns = (
   | GroupColumnDef<SanityDocument, unknown>
 )[]
 
-const getColsFromSchemaType = (schemaType: SchemaType, parentalField?: string): Columns => {
-  //@ts-expect-error - wip.
-  return schemaType.fields.reduce((cols: Columns[], field: any) => {
+const getColsFromSchemaType = (schemaType: ObjectSchemaType, parentalField?: string): Columns => {
+  return schemaType.fields.reduce<Columns>((tableColumns: Columns, field) => {
     const {type, name} = field
     if (SUPPORTED_FIELDS.includes(type.name)) {
       const nextCol = columnHelper.accessor(
@@ -70,35 +70,35 @@ const getColsFromSchemaType = (schemaType: SchemaType, parentalField?: string): 
         {
           header: field.type.title,
           enableHiding: true,
-          cell: (info) => <SheetListCell {...info} type={type} />,
+          cell: (info) => <SheetListCell {...info} fieldType={type} />,
         },
       )
 
-      return [...cols, nextCol]
+      return [...tableColumns, nextCol]
     }
 
     // if first layer nested object
-    if (type.name === 'object' && !parentalField) {
+    if (type.name === 'object' && isObjectSchemaType(type) && !parentalField) {
       return [
-        ...cols,
+        ...tableColumns,
         columnHelper.group({header: name, columns: getColsFromSchemaType(type, field.name)}),
       ]
     }
 
-    return cols
+    return tableColumns
   }, [])
 }
 
 // Type guard function to check if a column is of type GroupColumnDef
 function isAccessorKeyColumnDef(
-  col: Columns[number],
-): col is AccessorKeyColumnDef<SanityDocument, unknown> {
-  return (col as AccessorKeyColumnDef<SanityDocument, unknown>).accessorKey !== undefined
+  column: Columns[number],
+): column is AccessorKeyColumnDef<SanityDocument, unknown> {
+  return 'accessorKey' in column
 }
 function isGroupColumnDef(
   column: AccessorKeyColumnDef<SanityDocument, unknown> | GroupColumnDef<SanityDocument, unknown>,
 ): column is GroupColumnDef<SanityDocument, unknown> {
-  return (column as GroupColumnDef<SanityDocument, unknown>).columns !== undefined
+  return 'columns' in column
 }
 
 const flatColumns = (cols: Columns): AccessorKeyColumnDef<SanityDocument, unknown>[] => {
@@ -113,11 +113,11 @@ const flatColumns = (cols: Columns): AccessorKeyColumnDef<SanityDocument, unknow
   })
 }
 
-export function useDocumentSheetColumns(schemaType?: SchemaType) {
+export function useDocumentSheetColumns(documentSchemaType?: ObjectSchemaType) {
   const documentPreviewStore = useDocumentPreviewStore()
 
   const columns: Columns = useMemo(() => {
-    if (!schemaType) {
+    if (!documentSchemaType) {
       return []
     }
     return [
@@ -143,18 +143,18 @@ export function useDocumentSheetColumns(schemaType?: SchemaType) {
             <PreviewCell
               {...info}
               documentPreviewStore={documentPreviewStore}
-              schemaType={schemaType}
+              schemaType={documentSchemaType}
             />
           )
         },
       }),
-      ...getColsFromSchemaType(schemaType),
+      ...getColsFromSchemaType(documentSchemaType),
     ]
-  }, [documentPreviewStore, schemaType])
+  }, [documentPreviewStore, documentSchemaType])
 
-  const [newColumns]: [VisibilityState, number] = useMemo(
+  const [initialColumnsVisibility]: [VisibilityState, number] = useMemo(
     () =>
-      flatColumns(columns).reduce(
+      flatColumns(columns).reduce<[VisibilityState, number]>(
         ([accCols, countAllowedVisible], column) => {
           // this column is always visible
           if (!column.enableHiding) {
@@ -173,5 +173,5 @@ export function useDocumentSheetColumns(schemaType?: SchemaType) {
     [columns],
   )
 
-  return {columns, initialColumnsVisibility: newColumns}
+  return {columns, initialColumnsVisibility}
 }

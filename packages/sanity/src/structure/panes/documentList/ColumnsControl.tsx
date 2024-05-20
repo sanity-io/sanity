@@ -7,11 +7,11 @@ import {type SanityDocument} from 'sanity'
 
 import {VISIBLE_COLUMN_LIMIT} from './useDocumentSheetColumns'
 
-type Props = {
+type ColumnsControlProps = {
   table: Table<SanityDocument>
 }
 
-export function ColumnsControl({table}: Props) {
+export function ColumnsControl({table}: ColumnsControlProps) {
   const isVisibleLimitReached =
     table.getVisibleLeafColumns().filter((col) => col.getCanHide()).length >= VISIBLE_COLUMN_LIMIT
 

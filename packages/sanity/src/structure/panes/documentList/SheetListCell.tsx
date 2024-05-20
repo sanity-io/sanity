@@ -1,23 +1,19 @@
 /* eslint-disable i18next/no-literal-string */
+import {type ObjectFieldType} from '@sanity/types'
 import {Select, TextInput} from '@sanity/ui'
 import {type CellContext} from '@tanstack/react-table'
 import {type FormEvent, useCallback, useEffect, useState} from 'react'
 import {type SanityDocument} from 'sanity'
 
 interface SheetListCellProps extends CellContext<SanityDocument, unknown> {
-  type: any
+  fieldType: ObjectFieldType
 }
 
 export function SheetListCell(props: SheetListCellProps) {
-  const initialValue = props.getValue() || ''
+  const {getValue, column, row, fieldType} = props
+  const initialValue = getValue() || ''
   // We need to keep and update the state of the cell normally
   const [value, setValue] = useState(initialValue)
-
-  // When the input is blurred, we'll call our table meta's updateData function
-  const handleOnBlur = () => {
-    //@ts-expect-error - wip.
-    props.table.options.meta?.updateData()
-  }
 
   const handleOnChange = useCallback((e: FormEvent<HTMLInputElement>) => {
     setValue(e.currentTarget.value)
@@ -27,7 +23,7 @@ export function SheetListCell(props: SheetListCellProps) {
     setValue(initialValue || '')
   }, [initialValue])
 
-  if (props.type.name === 'boolean') {
+  if (fieldType.name === 'boolean') {
     return (
       <Select
         radius={0}
@@ -35,7 +31,6 @@ export function SheetListCell(props: SheetListCellProps) {
           boxShadow: 'none',
         }}
         value={JSON.stringify(value)}
-        onBlur={handleOnBlur}
         onChange={() => null}
       >
         <option value="True">True</option>
@@ -47,11 +42,10 @@ export function SheetListCell(props: SheetListCellProps) {
   return (
     <TextInput
       size={0}
-      id={`cell-${props.column.id}-${props.row.id}`}
+      id={`cell-${column.id}-${row.id}`}
       radius={0}
       border={false}
       onChange={handleOnChange}
-      onBlur={handleOnBlur}
       value={typeof value === 'string' || typeof value === 'number' ? value : JSON.stringify(value)}
     />
   )
