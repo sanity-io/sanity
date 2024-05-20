@@ -52,6 +52,7 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
     onPathOpen,
     onSetCollapsedFieldSet,
     onSetActiveFieldGroup,
+    openPath,
   } = useDocumentPane()
   const documentStore = useDocumentStore()
   const presence = useDocumentPresence(documentId)
@@ -180,11 +181,11 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
               <FormBuilder
                 __internal_fieldActions={fieldActions}
                 __internal_patchChannel={patchChannel}
+                changed={formState.changed}
                 collapsedFieldSets={collapsedFieldSets}
                 collapsedPaths={collapsedPaths}
-                focusPath={formState.focusPath}
-                changed={formState.changed}
                 focused={formState.focused}
+                focusPath={formState.focusPath}
                 groups={formState.groups}
                 id="root"
                 members={formState.members}
@@ -195,6 +196,7 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
                 onPathOpen={onPathOpen}
                 onSetFieldSetCollapsed={onSetCollapsedFieldSet}
                 onSetPathCollapsed={onSetCollapsedPath}
+                openPath={openPath}
                 presence={presence}
                 readOnly={connectionState === 'reconnecting' || formState.readOnly}
                 schemaType={formState.schemaType}
