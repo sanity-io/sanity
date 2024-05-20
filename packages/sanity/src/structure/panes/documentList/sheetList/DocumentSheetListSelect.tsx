@@ -13,14 +13,10 @@ export function DocumentSheetListSelect(props: CellContext<SanityDocument, unkno
         const lowerIndex = shiftClickIndex < hasAnchorSelected ? shiftClickIndex : hasAnchorSelected
         const upperIndex = shiftClickIndex < hasAnchorSelected ? hasAnchorSelected : shiftClickIndex
 
-        const additionalSelectedRows: number[] = []
-        for (
-          let selectedRowIndex = lowerIndex;
-          selectedRowIndex <= upperIndex;
-          selectedRowIndex++
-        ) {
-          additionalSelectedRows.push(selectedRowIndex)
-        }
+        const additionalSelectedRows = Array.from(
+          {length: upperIndex - lowerIndex + 1},
+          (_, index) => lowerIndex + index,
+        )
 
         const currentSelectedRows = props.table.getSelectedRowModel().rows.map(({index}) => index)
         props.table.setRowSelection(() =>
@@ -33,12 +29,12 @@ export function DocumentSheetListSelect(props: CellContext<SanityDocument, unkno
         if (setHasAnchorSelected) {
           const isRowCurrentlySelected = props.row.getIsSelected()
           if (!isRowCurrentlySelected) {
-            // only track it if it is BEING selected
+            // override anchor with new selection index
             setHasAnchorSelected(props.row.index)
           }
 
           if (isRowCurrentlySelected) {
-            // you are about to unselect so that means that the anchor is no longer valid
+            // about to unselect so invalidate current anchor
             setHasAnchorSelected(null)
           }
         }
