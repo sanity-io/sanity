@@ -23,6 +23,7 @@ describe('useDocumentSheetColumns', () => {
           name: 'address',
           type: {
             name: 'object',
+            jsonType: 'object',
             fields: [
               {name: 'street', type: {name: 'string'}},
               {name: 'country', type: {name: 'string'}},
