@@ -66,8 +66,10 @@ const getColsFromSchemaType = (schemaType: ObjectSchemaType, parentalField?: str
     const {type, name} = field
     if (SUPPORTED_FIELDS.includes(type.name)) {
       const nextCol = columnHelper.accessor(
-        parentalField ? `${parentalField}_${field.name}` : field.name,
+        // accessor must use dot notation for internal tanstack method of reading cell data
+        parentalField ? `${parentalField}.${field.name}` : field.name,
         {
+          id: parentalField ? `${parentalField}_${field.name}` : field.name,
           header: field.type.title,
           enableHiding: true,
           cell: (info) => <SheetListCell {...info} fieldType={type} />,
@@ -138,6 +140,7 @@ export function useDocumentSheetColumns(documentSchemaType?: ObjectSchemaType) {
         cell: DocumentSheetListSelect,
       }),
       columnHelper.accessor('Preview', {
+        id: 'Preview',
         enableHiding: false,
         cell: (info) => {
           return (
@@ -157,7 +160,7 @@ export function useDocumentSheetColumns(documentSchemaType?: ObjectSchemaType) {
     () =>
       flatColumns(columns).reduce<[VisibilityState, number]>(
         ([accCols, countAllowedVisible], column) => {
-          const visibilityKey = String(column.accessorKey)
+          const visibilityKey = String(column.id)
 
           // this column is always visible
           if (!column.enableHiding) {
