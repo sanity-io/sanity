@@ -159,6 +159,20 @@ const arrayOfMixedTypes = defineField({
   ],
 })
 
+const body = defineField({
+  type: 'array',
+  name: 'body',
+  title: 'Body',
+  of: [
+    {
+      type: 'block',
+      name: 'block',
+      title: 'Block',
+    },
+    animal,
+  ],
+})
+
 export const objectsDebug = defineType({
   type: 'document',
   name: 'objectsDebug',
@@ -168,6 +182,7 @@ export const objectsDebug = defineType({
       type: 'string',
     },
     animals,
+    body,
     objectWithArray,
     arrayOfAnonymousObjects,
     arrayOfImages,
