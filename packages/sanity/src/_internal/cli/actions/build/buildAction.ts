@@ -8,12 +8,14 @@ import rimrafCallback from 'rimraf'
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore This may not yet be built.
 import type {CliCommandArguments, CliCommandContext} from '@sanity/cli'
+import resolveFrom from 'resolve-from'
 
 import {buildStaticFiles, ChunkModule, ChunkStats} from '../../server'
 import {checkStudioDependencyVersions} from '../../util/checkStudioDependencyVersions'
 import {checkRequiredDependencies} from '../../util/checkRequiredDependencies'
 import {getTimer} from '../../util/timing'
 import {BuildTrace} from './build.telemetry'
+import {build} from 'vite'
 
 const rimraf = promisify(rimrafCallback)
 
@@ -21,11 +23,12 @@ const rimraf = promisify(rimrafCallback)
 const AUTO_UPDATES_IMPORTMAP = {
   imports: {
     // Shared modules
-    'react': 'https://api.sanity.work/v1/modules/react/^18',
-    'react/': 'https://api.sanity.work/v1/modules/react/^18/',
-    'react-dom': 'https://api.sanity.work/v1/modules/react-dom/^18',
-    'react-dom/': 'https://api.sanity.work/v1/modules/react-dom/^18/',
-    'styled-components': 'https://api.sanity.work/v1/modules/styled-components/^6',
+    'react': '/deps/react/index.mjs',
+    'react/jsx-runtime': '/deps/react/jsx-runtime.mjs',
+    'react-dom': '/deps/react-dom/index.mjs',
+    'react-dom/server': '/deps/react-dom/server.mjs',
+    'react-dom/client': '/deps/react-dom/client.mjs',
+    'styled-components': '/deps/styled-components/index.mjs',
 
     // Sanity Modules
     'sanity': 'https://api.sanity.work/v1/modules/sanity/^3',
@@ -144,6 +147,56 @@ export default async function buildSanityStudio(
       vite: cliConfig && 'vite' in cliConfig ? cliConfig.vite : undefined,
       importMap: enableAutoUpdates ? AUTO_UPDATES_IMPORTMAP : undefined,
     })
+
+    // TODO: add error handling if the paths aren't found
+    const entry = {
+      'react/index': resolveFrom.silent(
+        workDir,
+        './node_modules/react/cjs/react.production.min.js',
+      )!,
+      'react/jsx-runtime': resolveFrom.silent(
+        workDir,
+        './node_modules/react/cjs/react-jsx-runtime.production.min.js',
+      )!,
+      'styled-components/index': resolveFrom.silent(
+        workDir,
+        './node_modules/styled-components/dist/styled-components.esm.js',
+      )!,
+      'react-dom/index': resolveFrom.silent(
+        workDir,
+        './node_modules/react-dom/cjs/react-dom.production.min.js',
+      )!,
+      'react-dom/client': resolveFrom.silent(
+        workDir,
+        './node_modules/react-dom/cjs/react-dom.production.min.js',
+      )!,
+      'react-dom/server': resolveFrom.silent(
+        workDir,
+        './node_modules/react-dom/cjs/react-dom-server-legacy.browser.production.min.js',
+      )!,
+    }
+
+    // TODO: lift out of here
+    await build({
+      appType: 'custom',
+      define: {
+        'process.env.NODE_ENV': '"production"',
+      },
+
+      build: {
+        outDir: path.resolve(outputDir, './deps'),
+        lib: {
+          entry,
+          formats: ['es'],
+        },
+        rollupOptions: {
+          external: ['react', /^react\//, 'react-dom', /^react-dom\//, 'styled-components'],
+          output: {exports: 'named', format: 'es'},
+          treeshake: {preset: 'recommended'},
+        },
+      },
+    })
+
     trace.log({
       outputSize: bundle.chunks
         .flatMap((chunk) => chunk.modules.flatMap((mod) => mod.renderedLength))
