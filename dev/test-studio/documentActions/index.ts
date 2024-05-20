@@ -23,5 +23,9 @@ export const resolveDocumentActions: DocumentActionsResolver = (prev, {schemaTyp
     })
   }
 
+  if (schemaType === 'removeRestoreActionTest') {
+    return prev.filter(({action}) => action !== 'restore')
+  }
+
   return prev
 }
