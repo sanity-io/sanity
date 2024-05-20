@@ -59,7 +59,6 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
         arrayValue,
         itemPath,
         parentPath: rootPath,
-        title,
       })
 
       breadcrumbs.push(breadcrumbsResult)
@@ -69,7 +68,6 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
       const childPath = [...itemPath, childField.name] as Path
 
       const isPrimitive = isPrimitiveSchemaType(childField?.type)
-      const childTitle = getSchemaTypeTitle(childField.type) as string
       const childValue = getValueAtPath(documentValue, childPath)
 
       if (isSelected(childPath, focusPath) && !isPrimitive) {
@@ -89,7 +87,6 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
             arrayValue: childValue as Record<string, unknown>[],
             itemPath: childPath,
             parentPath: itemPath,
-            title: childTitle,
           })
 
           breadcrumbs.push(breadcrumbsResult)
