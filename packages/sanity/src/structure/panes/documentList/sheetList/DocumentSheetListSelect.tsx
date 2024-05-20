@@ -4,12 +4,14 @@ import {type CellContext} from '@tanstack/react-table'
 import {type MouseEvent, useCallback} from 'react'
 
 export function DocumentSheetListSelect(props: CellContext<SanityDocument, unknown>) {
-  const {hasAnchorSelected, setHasAnchorSelected} = props.table.options.meta || {}
+  const {row, table} = props
+
+  const {hasAnchorSelected, setHasAnchorSelected} = table.options.meta || {}
 
   const handleOnClick = useCallback(
     (e: MouseEvent<HTMLInputElement>) => {
       if (e.shiftKey && hasAnchorSelected !== null && hasAnchorSelected !== undefined) {
-        const shiftClickIndex = props.row.index
+        const shiftClickIndex = row.index
         const lowerIndex = shiftClickIndex < hasAnchorSelected ? shiftClickIndex : hasAnchorSelected
         const upperIndex = shiftClickIndex < hasAnchorSelected ? hasAnchorSelected : shiftClickIndex
 
@@ -18,31 +20,27 @@ export function DocumentSheetListSelect(props: CellContext<SanityDocument, unkno
           (_, index) => lowerIndex + index,
         )
 
-        const currentSelectedRows = props.table.getSelectedRowModel().rows.map(({index}) => index)
-        props.table.setRowSelection(() =>
+        const currentSelectedRows = table.getSelectedRowModel().rows.map(({index}) => index)
+        table.setRowSelection(() =>
           [...additionalSelectedRows, ...currentSelectedRows].reduce(
             (nextSelectedRows, rowIndex) => ({...nextSelectedRows, [rowIndex]: true}),
             {},
           ),
         )
-      } else {
-        if (setHasAnchorSelected) {
-          const isRowCurrentlySelected = props.row.getIsSelected()
-          if (!isRowCurrentlySelected) {
-            // override anchor with new selection index
-            setHasAnchorSelected(props.row.index)
-          }
-
-          if (isRowCurrentlySelected) {
-            // about to unselect so invalidate current anchor
-            setHasAnchorSelected(null)
-          }
+      } else if (setHasAnchorSelected) {
+        const isRowCurrentlySelected = row.getIsSelected()
+        if (isRowCurrentlySelected) {
+          // about to unselect so invalidate current anchor
+          setHasAnchorSelected(null)
+        } else {
+          // override anchor with new selection index
+          setHasAnchorSelected(row.index)
         }
 
-        props.row.toggleSelected()
+        row.toggleSelected()
       }
     },
-    [hasAnchorSelected, props.row, props.table, setHasAnchorSelected],
+    [hasAnchorSelected, row, setHasAnchorSelected, table],
   )
 
   return (
