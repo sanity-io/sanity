@@ -255,13 +255,13 @@ describe('tree-editing: buildTreeEditingState', () => {
 
     const result1 = buildTreeEditingState({
       documentValue,
-      focusPath: ['array1', {_key: 'key1'}],
+      openPath: ['array1', {_key: 'key1'}],
       schemaType,
     })
 
     const result2 = buildTreeEditingState({
       documentValue,
-      focusPath: ['array1', {_key: 'key1'}, 'array1Object1String'],
+      openPath: ['array1', {_key: 'key1'}, 'array1Object1String'],
       schemaType,
     })
 
@@ -314,13 +314,13 @@ describe('tree-editing: buildTreeEditingState', () => {
 
     const result1 = buildTreeEditingState({
       documentValue,
-      focusPath: ['objectWithArray', 'myArray', {_key: 'key1'}],
+      openPath: ['objectWithArray', 'myArray', {_key: 'key1'}],
       schemaType,
     })
 
     const result2 = buildTreeEditingState({
       documentValue,
-      focusPath: ['objectWithArray', 'myArray', {_key: 'key1'}, 'myString'],
+      openPath: ['objectWithArray', 'myArray', {_key: 'key1'}, 'myString'],
       schemaType,
     })
 
