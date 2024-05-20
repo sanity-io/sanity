@@ -36,6 +36,7 @@ import {DocumentFieldActionsProvider} from './contexts/DocumentFieldActions'
 import {FormBuilderInputErrorBoundary} from './FormBuilderInputErrorBoundary'
 import {FormProvider} from './FormProvider'
 import {TreeEditingDialog} from './tree-editing'
+import {DEBUG_TREE_EDITING_ENABLED} from './tree-editing/constants'
 
 /**
  * @alpha
@@ -51,16 +52,17 @@ export interface FormBuilderProps
   changesOpen?: boolean
   collapsedFieldSets: StateTree<boolean> | undefined
   collapsedPaths: StateTree<boolean> | undefined
-  focusPath: Path
   focused: boolean | undefined
+  focusPath: Path
   id: string
   onChange: (changeEvent: PatchEvent) => void
+  onFieldGroupSelect: (path: Path, groupName: string) => void
   onPathBlur: (path: Path) => void
   onPathFocus: (path: Path) => void
   onPathOpen: (path: Path) => void
-  onFieldGroupSelect: (path: Path, groupName: string) => void
   onSetFieldSetCollapsed: (path: Path, collapsed: boolean) => void
   onSetPathCollapsed: (path: Path, collapsed: boolean) => void
+  openPath?: Path
   presence: FormNodePresence[]
   readOnly?: boolean
   schemaType: ObjectSchemaType
@@ -79,18 +81,19 @@ export function FormBuilder(props: FormBuilderProps) {
     changesOpen,
     collapsedFieldSets,
     collapsedPaths,
-    focusPath,
     focused,
+    focusPath,
     groups,
     id,
     members,
     onChange,
+    onFieldGroupSelect,
     onPathBlur,
     onPathFocus,
     onPathOpen,
-    onFieldGroupSelect,
     onSetFieldSetCollapsed,
     onSetPathCollapsed,
+    openPath = EMPTY_ARRAY,
     presence,
     readOnly,
     schemaType,
@@ -251,12 +254,14 @@ export function FormBuilder(props: FormBuilderProps) {
           <DocumentFieldActionsProvider actions={fieldActions}>
             {renderInput(rootInputProps)}
 
-            <TreeEditingDialog
-              focusPath={focusPath}
-              rootInputProps={rootInputProps}
-              schemaType={schemaType}
-              setFocusPath={onPathFocus}
-            />
+            {DEBUG_TREE_EDITING_ENABLED && (
+              <TreeEditingDialog
+                onPathOpen={onPathOpen}
+                openPath={openPath}
+                rootInputProps={rootInputProps}
+                schemaType={schemaType}
+              />
+            )}
           </DocumentFieldActionsProvider>
         </FormValueProvider>
       </GetFormValueProvider>
