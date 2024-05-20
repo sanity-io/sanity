@@ -3,8 +3,8 @@ import {type Path} from 'sanity'
 /**
  * Check if the item is selected
  */
-export function isSelected(itemPath: Path, focusPath: Path): boolean {
-  return JSON.stringify(itemPath) === JSON.stringify(focusPath)
+export function isSelected(itemPath: Path, path: Path): boolean {
+  return JSON.stringify(itemPath) === JSON.stringify(path)
 }
 
 /**
@@ -17,10 +17,10 @@ export function isArrayItemPath(path: Path): boolean {
 /**
  * Check if the item should be in the breadcrumb
  */
-export function shouldBeInBreadcrumb(itemPath: Path, focusPath: Path): boolean {
+export function shouldBeInBreadcrumb(itemPath: Path, path: Path): boolean {
   return (
     itemPath.every((segment, index) => {
-      return JSON.stringify(focusPath[index]) === JSON.stringify(segment)
+      return JSON.stringify(path[index]) === JSON.stringify(segment)
     }) && isArrayItemPath(itemPath)
   )
 }
