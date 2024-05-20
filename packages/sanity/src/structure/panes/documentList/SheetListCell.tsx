@@ -71,17 +71,14 @@ export const SheetListCell = (
     [column.id, onSelectedCellChange, resetFocusSelection, row.index, setFocusedCellId],
   )
 
-  useEffect(() => {
-    document.addEventListener('keydown', handleKeydown)
-    document.addEventListener('paste', handlePaste)
-    document.addEventListener('mousedown', resetSelection)
-
-    return () => {
-      document.removeEventListener('keydown', handleKeydown)
-      document.removeEventListener('paste', handlePaste)
-      document.removeEventListener('mousedown', resetSelection)
+  const handleOnMouseDown = (e) => {
+    if (e.detail === 2) {
+      document.getElementById(cellId)?.focus()
+    } else {
+      e.preventDefault()
+      resetFocusSelection()
     }
-  }, [handleKeydown, handlePaste, resetSelection])
+  }
 
   useEffect(() => {
     const focusedCellId = `cell-${focusedCellDetails?.colId}-${focusedCellDetails?.rowIndex}`
@@ -145,6 +142,9 @@ export const SheetListCell = (
       onChange={handleOnChange}
       onFocus={handleOnFocus}
       onBlur={handleOnBlur}
+      onKeyDown={handleKeydown}
+      onPaste={handlePaste}
+      onMouseDown={handleOnMouseDown}
     />
   )
 }
