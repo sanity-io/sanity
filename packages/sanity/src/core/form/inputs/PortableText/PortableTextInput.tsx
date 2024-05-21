@@ -338,6 +338,8 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
     return reconciled
   }, [diffRangeDecorations, displayInlineChanges, presenceCursorDecorations, rangeDecorationsProp])
 
+  const isEditorReadOnly = readOnly || !ready || !isActive
+
   return (
     <Box>
       {!ignoreValidationError && respondToInvalidContent}
@@ -347,7 +349,7 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
             <EditorProvider
               initialConfig={{
                 initialValue: value,
-                readOnly: readOnly || !ready,
+                readOnly: isEditorReadOnly,
                 keyGenerator,
                 schema: schemaType,
               }}
@@ -358,7 +360,7 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
               />
               <EditorRefPlugin ref={editorRef} />
               <PatchesPlugin path={path} />
-              <UpdateReadOnlyPlugin readOnly={readOnly || !ready} />
+              <UpdateReadOnlyPlugin readOnly={isEditorReadOnly} />
               <UpdateValuePlugin value={value} />
               <PortableTextEditorPlugins schemaType={schemaType} />
               <Compositor
@@ -375,7 +377,7 @@ export function PortableTextInput(props: PortableTextInputProps): ReactNode {
                 onPaste={onPaste}
                 onToggleFullscreen={handleToggleFullscreen}
                 rangeDecorations={rangeDecorations}
-                readOnly={readOnly || !ready}
+                readOnly={isEditorReadOnly}
                 renderBlockActions={renderBlockActions}
                 renderCustomMarkers={renderCustomMarkers}
               />
