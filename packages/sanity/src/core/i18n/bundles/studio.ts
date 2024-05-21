@@ -32,7 +32,7 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'asset-source.delete-dialog.loading': 'Loading…',
   /** Message confirming to delete *named* file */
   'asset-source.delete-dialog.usage-list.confirm-delete-file_named':
-    'You are about to delete the file <strong>{{filename}}}</strong> and its metadata. Are you sure?',
+    'You are about to delete the file <strong>{{filename}}</strong> and its metadata. Are you sure?',
   /** Message confirming to delete *unnamed* file */
   'asset-source.delete-dialog.usage-list.confirm-delete-file_unnamed':
     'You are about to delete the file and its metadata. Are you sure?',
