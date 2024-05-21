@@ -96,8 +96,9 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
   }, [documentId, documentStore, documentType, patchChannel])
 
   const hasRev = Boolean(value?._rev)
+  const [hasWorkedaroundInitialValue, setHasWorkedaroundInitialValue] = useState(false)
   useEffect(() => {
-    if (hasRev) {
+    if (hasRev && !hasWorkedaroundInitialValue) {
       // this is a workaround for an issue that caused the document pushed to withDocument to get
       // stuck at the first initial value.
       // This effect is triggered only when the document goes from not having a revision, to getting one
@@ -107,22 +108,21 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
         patches: [],
         snapshot: value,
       })
+      setHasWorkedaroundInitialValue(true)
     }
-    // React to changes in hasRev only
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hasRev])
+  }, [hasRev, hasWorkedaroundInitialValue, patchChannel, value])
 
   const [formRef, setFormRef] = useState<null | HTMLDivElement>(null)
 
+  const [focusedFirstDescendant, setFocusedOnFirstDecendant] = useState(false)
   useEffect(() => {
     // Only focus on the first descendant if there is not already a focus path
     // This is to avoid stealing focus from intent links
-    if (ready && !formState?.focusPath.length && formRef) {
+    if (ready && !focusedFirstDescendant && !formState?.focusPath.length && formRef) {
       focusFirstDescendant(formRef)
+      setFocusedOnFirstDecendant(true)
     }
-    // We only want to run it on first mount
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ready])
+  }, [focusedFirstDescendant, formRef, formState?.focusPath.length, ready])
 
   const setRef = useCallback(
     (node: HTMLDivElement | null) => {

@@ -50,8 +50,6 @@ export function CommentReactionsMenuButton(props: CommentReactionsMenuButtonProp
     buttonElement?.focus()
   }, [buttonElement, onMenuClose, open])
 
-  const handleClickOutside = useCallback(handleClose, [handleClose])
-
   const handleKeyDown = useCallback(
     (event: React.KeyboardEvent<HTMLDivElement>) => {
       const {key, shiftKey} = event
@@ -63,7 +61,7 @@ export function CommentReactionsMenuButton(props: CommentReactionsMenuButtonProp
     [handleClose],
   )
 
-  useClickOutside(handleClickOutside, [popoverElement, buttonElement])
+  useClickOutside(handleClose, [popoverElement, buttonElement])
 
   const handleSelect = useCallback(
     (option: CommentReactionOption) => {

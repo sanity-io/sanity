@@ -69,8 +69,7 @@ const config = {
         additionalHooks: '(useMemoObservable|useObservableCallback|useAsync)',
       },
     ],
-    // Set react-compiler to `error` once existing issues are fixed
-    'react-compiler/react-compiler': 'warn',
+    'react-compiler/react-compiler': 'error',
     'react/no-unescaped-entities': 'off',
     'i18next/no-literal-string': ['error'],
     '@sanity/i18n/no-attribute-string-literals': [

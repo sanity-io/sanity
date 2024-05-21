@@ -327,8 +327,9 @@ function CommentsInspectorInner(
 
   useClickOutside(handleClickOutside, [rootRef.current])
 
+  const [handledUpsell, setHandledUpsell] = useState(false)
   useEffect(() => {
-    if (mode === 'upsell') {
+    if (mode === 'upsell' && !handledUpsell) {
       if (selectedPath?.origin === 'form') {
         upsellTelemetryLogs.panelViewed('field_action')
       } else if (commentIdParamRef.current) {
@@ -336,15 +337,13 @@ function CommentsInspectorInner(
       } else {
         upsellTelemetryLogs.panelViewed('document_action')
       }
-    }
-    return () => {
-      if (mode === 'upsell') {
+      setHandledUpsell(true)
+      return () => {
         upsellTelemetryLogs.panelDismissed()
       }
     }
-    // We want to run this effect only on mount and unmount
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+    return undefined
+  }, [handledUpsell, mode, selectedPath?.origin, upsellTelemetryLogs])
 
   // Handle scroll to comment from URL param
   useEffect(() => {

@@ -12,12 +12,11 @@ interface InspectorMenuItemProps {
 const InspectorMenuItem = memo(function InspectorMenuItem(props: InspectorMenuItemProps) {
   const {documentId, documentType, index, setMenuItem, useMenuItem} = props
 
-  const node = useUnique(
-    useMenuItem({
-      documentId,
-      documentType,
-    }),
-  )
+  const menuItem = useMenuItem({
+    documentId,
+    documentType,
+  })
+  const node = useUnique(menuItem)
 
   useEffect(() => {
     setMenuItem(index, node)
