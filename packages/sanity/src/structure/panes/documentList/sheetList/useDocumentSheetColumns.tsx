@@ -140,7 +140,6 @@ export function useDocumentSheetColumns(documentSchemaType?: ObjectSchemaType) {
         cell: DocumentSheetListSelect,
       }),
       columnHelper.accessor('Preview', {
-        id: 'Preview',
         enableHiding: false,
         id: 'Preview',
         cell: (info) => {
