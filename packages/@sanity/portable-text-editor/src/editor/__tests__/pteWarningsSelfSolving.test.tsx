@@ -111,4 +111,72 @@ describe('when PTE would display warnings, instead it self solves', () => {
       }
     })
   })
+
+  it('adds missing .children', async () => {
+    const editorRef: RefObject<PortableTextEditor> = createRef()
+    const initialValue = [
+      {
+        _key: 'abc',
+        _type: 'myTestBlockType',
+        style: 'normal',
+        markDefs: [],
+      },
+      {
+        _key: 'def',
+        _type: 'myTestBlockType',
+        style: 'normal',
+        children: [],
+        markDefs: [],
+      },
+    ]
+
+    const onChange = jest.fn()
+    render(
+      <PortableTextEditorTester
+        onChange={onChange}
+        ref={editorRef}
+        schemaType={schemaType}
+        value={initialValue}
+      />,
+    )
+    await waitFor(() => {
+      expect(onChange).toHaveBeenCalledWith({type: 'value', value: initialValue})
+      expect(onChange).toHaveBeenCalledWith({type: 'ready'})
+    })
+    await waitFor(() => {
+      if (editorRef.current) {
+        PortableTextEditor.focus(editorRef.current)
+        expect(PortableTextEditor.getValue(editorRef.current)).toEqual([
+          {
+            _key: 'abc',
+            _type: 'myTestBlockType',
+            children: [
+              {
+                _key: '5',
+                _type: 'span',
+                text: '',
+                marks: [],
+              },
+            ],
+            markDefs: [],
+            style: 'normal',
+          },
+          {
+            _key: 'def',
+            _type: 'myTestBlockType',
+            children: [
+              {
+                _key: '6',
+                _type: 'span',
+                text: '',
+                marks: [],
+              },
+            ],
+            markDefs: [],
+            style: 'normal',
+          },
+        ])
+      }
+    })
+  })
 })
