@@ -69,6 +69,11 @@ test.describe('navigation - tree sidebar', () => {
     await modal.getByRole('button', {name: 'Lucy, the cat'}).click()
     await page.waitForTimeout(500) // Hack, need to wait for animation to finish
 
+    // make sure that item is selected on nav tree
+    expect(
+      await page.getByTestId('tree-editing-sidebar').getByRole('button', {name: 'Lucy, the cat'}),
+    ).toHaveAttribute('data-selected')
+
     // make sure first input has the right data
     expect(await modal.getByTestId('string-input').inputValue()).toBe('Lucy, the cat')
 
