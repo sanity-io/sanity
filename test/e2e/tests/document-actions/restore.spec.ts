@@ -138,3 +138,19 @@ test(`respects removed restore action`, async ({page, createDraftDocument}) => {
   // Ensure the restore button is not displayed.
   await expect(restoreButton).not.toBeVisible()
 })
+
+test(`user defined restore actions should not appear in any other document action group UI`, async ({
+  page,
+  createDraftDocument,
+}) => {
+  const actionMenuButton = page.getByTestId('action-menu-button')
+  const customRestoreButton = page.getByTestId('action-Customrestore')
+  const paneContextMenu = page.locator('[data-ui="MenuButton__popover"]')
+
+  await createDraftDocument('/test/content/input-debug;documentActionsTest')
+
+  await actionMenuButton.click()
+
+  await expect(paneContextMenu).toBeVisible()
+  await expect(customRestoreButton).not.toBeVisible()
+})
