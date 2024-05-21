@@ -5,8 +5,8 @@ import {
   CommentsProvider,
   useCommentsEnabled,
 } from 'sanity'
-import {usePaneRouter} from 'sanity/structure'
 
+import {usePaneRouter} from '../../../components'
 import {useDocumentPane} from '../useDocumentPane'
 
 interface CommentsWrapperProps {

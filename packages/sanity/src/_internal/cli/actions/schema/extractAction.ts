@@ -82,7 +82,7 @@ export default async function extractAction(
 
     spinner.text = `Writing schema to ${path}`
 
-    await writeFile(path, JSON.stringify(schema, null, 2))
+    await writeFile(path, `${JSON.stringify(schema, null, 2)}\n`)
 
     trace.complete()
 

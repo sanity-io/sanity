@@ -22,6 +22,7 @@ import {
 import {useClient} from '../../../hooks'
 import {DEFAULT_STUDIO_CLIENT_OPTIONS} from '../../../studioClient'
 import {remoteSnapshots, type RemoteSnapshotVersionEvent} from '../document'
+import {fetchFeatureToggle} from '../document/document-pair/utils/fetchFeatureToggle'
 
 interface UseTimelineControllerOpts {
   documentId: string
@@ -103,8 +104,6 @@ export function useTimelineStore({
   const client = useClient(DEFAULT_STUDIO_CLIENT_OPTIONS)
   const workspace = useWorkspace()
 
-  const serverActionsEnabled = useMemo(() => !!workspace.serverActions?.enabled, [workspace])
-
   /**
    * The mutable TimelineController, used internally
    */
@@ -160,6 +159,12 @@ export function useTimelineStore({
     return () => controller.suspend()
   }, [rev, since, controller, timelineController$])
 
+  const serverActionsEnabled = useMemo(() => {
+    const configFlag = workspace.__internal_serverDocumentActions?.enabled
+    // If it's explicitly set, let it override the feature toggle
+    return typeof configFlag === 'boolean' ? of(configFlag as boolean) : fetchFeatureToggle(client)
+  }, [client, workspace.__internal_serverDocumentActions?.enabled])
+
   /**
    * Fetch document snapshots and update the mutable controller.
    * Unsubscribes on clean up, preventing double fetches in strict mode.
@@ -195,15 +200,19 @@ export function useTimelineStore({
       subscribe: (callback: () => void) => {
         const subscription = timelineController$
           .pipe(
-            // Manually stop loading transactions in TimelineController, otherwise transaction history
-            // will continue to be fetched – even if unwanted.
-            tap((innerController) => innerController.setLoadMore(false)),
             map((innerController) => {
               const chunks = innerController.timeline.mapChunks((c) => c)
               const lastNonDeletedChunk = chunks.filter(
                 (chunk) => !['delete', 'initial'].includes(chunk.type),
               )
               const hasMoreChunks = !innerController.timeline.reachedEarliestEntry
+
+              // 'Switch the faucet off' once we know we have enough chunks to reasonably display overflow.
+              // Here, 16 is just an arbitrary number which will probably cover most regular screen sizes.
+              if (hasMoreChunks && chunks.length > 16) {
+                innerController.setLoadMore(false)
+              }
+
               const timelineReady = !['invalid', 'loading'].includes(innerController.selectionState)
               return {
                 chunks,

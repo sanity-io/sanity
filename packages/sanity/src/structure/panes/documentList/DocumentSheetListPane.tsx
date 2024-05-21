@@ -1,4 +1,4 @@
-import {type SanityDocument, type SchemaType} from '@sanity/types'
+import {isDocumentSchemaType, type ObjectSchemaType, type SanityDocument} from '@sanity/types'
 import {Box, Flex, Text} from '@sanity/ui'
 import {
   flexRender,
@@ -14,8 +14,8 @@ import {styled} from 'styled-components'
 
 import {type BaseStructureToolPaneProps} from '../types'
 import {ColumnsControl} from './ColumnsControl'
-import {DocumentSheetFilter} from './DocumentSheetListFilter'
-import {DocumentSheetPaginator} from './DocumentSheetListPaginator'
+import {DocumentSheetListFilter} from './DocumentSheetListFilter'
+import {DocumentSheetListPaginator} from './DocumentSheetListPaginator'
 import {SheetListProvider} from './SheetListContext'
 import {useDocumentSheetColumns} from './useDocumentSheetColumns'
 import {useDocumentSheetList} from './useDocumentSheetList'
@@ -66,12 +66,12 @@ const Table = styled.table`
 `
 
 function DocumentSheetListPaneInner({
-  schemaType,
-}: DocumentSheetListPaneProps & {schemaType: SchemaType}) {
+  documentSchemaType,
+}: DocumentSheetListPaneProps & {documentSchemaType: ObjectSchemaType}) {
   const {dispatch, state} = useSearchState()
-  const columns = useDocumentSheetColumns(schemaType as any)
+  const {columns, initialColumnsVisibility} = useDocumentSheetColumns(documentSchemaType)
   const {data} = useDocumentSheetList({
-    typeName: schemaType.name,
+    typeName: documentSchemaType.name,
   })
 
   const totalRows = state.result.hits.length
@@ -85,17 +85,18 @@ function DocumentSheetListPaneInner({
     autoResetPageIndex: false,
     initialState: {
       pagination: {pageSize: 25},
+      columnVisibility: initialColumnsVisibility,
     },
   })
 
   const {rows} = table.getRowModel()
 
   useEffect(() => {
-    dispatch({type: 'TERMS_TYPE_ADD', schemaType: schemaType})
+    dispatch({type: 'TERMS_TYPE_ADD', schemaType: documentSchemaType})
     return () => {
-      dispatch({type: 'TERMS_TYPE_REMOVE', schemaType: schemaType})
+      dispatch({type: 'TERMS_TYPE_REMOVE', schemaType: documentSchemaType})
     }
-  }, [schemaType, dispatch])
+  }, [documentSchemaType, dispatch])
 
   const renderRow = useCallback((row: Row<SanityDocument>) => {
     return (
@@ -126,7 +127,7 @@ function DocumentSheetListPaneInner({
   const rowsCount = `Total: ${totalRows} rows, showing ${rows.length} rows`
   return (
     <PaneContainer direction="column" paddingX={3} data-testid="document-sheet-list-pane">
-      <DocumentSheetFilter />
+      <DocumentSheetListFilter />
       <Flex paddingBottom={3} paddingLeft={3}>
         <Text size={0} muted>
           {rowsCount}
@@ -159,7 +160,7 @@ function DocumentSheetListPaneInner({
         </SheetListProvider>
       </TableContainer>
       <Flex justify={'flex-end'} padding={3} gap={4} paddingY={5}>
-        <DocumentSheetPaginator table={table} />
+        <DocumentSheetListPaginator table={table} />
       </Flex>
     </PaneContainer>
   )
@@ -170,12 +171,12 @@ export function DocumentSheetListPane(props: DocumentSheetListPaneProps) {
   const typeName = props.pane.schemaTypeName
 
   const schemaType = schema.get(typeName)
-  if (!schemaType) {
-    throw new Error(`Schema type "${typeName}" not found`)
+  if (!schemaType || !isDocumentSchemaType(schemaType)) {
+    throw new Error(`Schema type "${typeName}" not found or not a document schema`)
   }
   return (
     <SearchProvider>
-      <DocumentSheetListPaneInner {...props} schemaType={schemaType} />
+      <DocumentSheetListPaneInner {...props} documentSchemaType={schemaType} />
     </SearchProvider>
   )
 }

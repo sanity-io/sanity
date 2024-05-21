@@ -1,4 +1,5 @@
 /* eslint-disable i18next/no-literal-string */
+import {type ObjectFieldType} from '@sanity/types'
 import {Select, TextInput} from '@sanity/ui'
 import {type CellContext} from '@tanstack/react-table'
 import {useCallback, useEffect, useState} from 'react'
@@ -6,14 +7,14 @@ import {type SanityDocument} from 'sanity'
 
 import {useSheetListContext} from './SheetListContext'
 
-export const SheetListCell = (
-  props: CellContext<SanityDocument, unknown> & {
-    type: any
-  },
-) => {
-  const {column, row} = props
-  const cellId = `cell-${props.column.id}-${props.row.index}`
-  const [renderValue, setRenderValue] = useState(props.getValue())
+interface SheetListCellProps extends CellContext<SanityDocument, unknown> {
+  fieldType: ObjectFieldType
+}
+
+export function SheetListCell(props: SheetListCellProps) {
+  const {getValue, column, row, fieldType} = props
+  const cellId = `cell-${column.id}-${row.index}`
+  const [renderValue, setRenderValue] = useState(getValue())
   const {
     setFocusedCellId,
     focusedCellDetails,
@@ -105,7 +106,7 @@ export const SheetListCell = (
     setRenderValue(event.target.value)
   }
 
-  if (props.type.name === 'boolean') {
+  if (fieldType.name === 'boolean') {
     return (
       <Select
         onChange={() => null}

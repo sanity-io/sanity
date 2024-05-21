@@ -1,17 +1,29 @@
-import {beforeEach, describe, expect, it} from '@jest/globals'
+import {afterEach, beforeEach, describe, expect, it, jest} from '@jest/globals'
 import {studioTheme, ThemeProvider} from '@sanity/ui'
-import {useReactTable} from '@tanstack/react-table'
+import {type ColumnDef, useReactTable} from '@tanstack/react-table'
 import {fireEvent, render, screen} from '@testing-library/react'
 import {type SanityDocument} from 'sanity'
 
 import {ColumnsControl} from '../ColumnsControl'
 
-const TableHarness = ({columns}) => {
+const TableHarness = ({columns}: {columns: ColumnDef<SanityDocument>[]}) => {
+  const initialVisibilityState = {
+    'First Column': true,
+    'Second Column': true,
+    'Third Column': true,
+    'Nested First Column': true,
+    'Nested Second Column': true,
+    'Fifth Column': true,
+    'Sixth Column': false,
+  }
   const table = useReactTable<SanityDocument>({
     columns,
     data: [],
     getCoreRowModel: () => {
       throw new Error('getCoreRowModel not implemented.')
+    },
+    initialState: {
+      columnVisibility: initialVisibilityState,
     },
   })
 
@@ -41,6 +53,10 @@ describe('ColumnsControl', () => {
         />
       </ThemeProvider>,
     )
+  })
+
+  afterEach(() => {
+    jest.clearAllMocks()
   })
 
   it('should set default column visibilities', () => {

@@ -7,7 +7,6 @@ import {nnNOLocale} from '@sanity/locale-nn-no'
 import {ptPTLocale} from '@sanity/locale-pt-pt'
 import {svSELocale} from '@sanity/locale-sv-se'
 import {SanityMonogram} from '@sanity/logos'
-import {presentationTool as pinnedPresentationTool} from '@sanity/presentation'
 import {debugSecrets} from '@sanity/preview-url-secret/sanity-plugin-debug-secrets'
 import {tsdoc} from '@sanity/tsdoc/studio'
 import {visionTool} from '@sanity/vision'
@@ -149,9 +148,8 @@ export default defineConfig([
     plugins: [sharedSettings()],
     basePath: '/test',
     icon: SanityMonogram,
-    unstable_serverActions: {
-      enabled: true,
-    },
+    // eslint-disable-next-line camelcase
+    __internal_serverDocumentActions: {},
     scheduledPublishing: {
       enabled: true,
       inputDateTimeFormat: 'MM/dd/yy h:mm a',
@@ -309,13 +307,10 @@ export default defineConfig([
       debugSecrets(),
       presentationTool({
         name: 'presentation',
-        title: 'Presentation (stable)',
-        previewUrl: '/preview/index.html',
-      }),
-      pinnedPresentationTool({
-        name: 'reproduction-presentation',
-        title: 'Presentation (reproduction)',
-        previewUrl: '/preview/index.html',
+        title: 'Presentation',
+        previewUrl: {
+          preview: '/preview/index.html',
+        },
       }),
       assist(),
       sharedSettings(),

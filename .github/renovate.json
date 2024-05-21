@@ -8,6 +8,11 @@
   "ignorePresets": ["github>sanity-io/renovate-config:group-non-major"],
   "packageRules": [
     {
+      "description": "Enable automerge with GitHub merge queues (note that this doesn't bypass required checks and code reviews)",
+      "matchUpdateTypes": ["minor", "patch"],
+      "automerge": true
+    },
+    {
       "description": "Slate upgrades are handled manually as they require extensive manual testing to verify it's safe to upgrade",
       "matchPackageNames": ["slate", "slate-react"],
       "enabled": false
@@ -18,10 +23,20 @@
       "extends": [":semanticCommitTypeAll(chore)"]
     },
     {
-      "description": "Pin Presentation in Test Studio to the version that has the agressive focus path behavior that makes race conditions easier to debug",
-      "matchFileNames": ["dev/test-studio/package.json"],
-      "matchDepNames": ["@sanity/presentation"],
-      "allowedVersions": "<=1.11.4"
+      "description": "Group minor and patch deps in dev to a single PR",
+      "matchFileNames": ["dev/**/package.json"],
+      "groupName": "dev-non-major",
+      "matchUpdateTypes": [
+        "bump",
+        "digest",
+        "lockfileUpdate",
+        "minor",
+        "patch",
+        "pin",
+        "pinDigest",
+        "replacement",
+        "rollback"
+      ]
     },
     {
       "matchDepTypes": ["dependencies"],
@@ -36,6 +51,5 @@
       "semanticCommitType": "fix"
     }
   ],
-  "ignorePaths": ["packages/@sanity/cli/test/__fixtures__/v2/package.json"],
-  "rebaseWhen": "behind-base-branch"
+  "ignorePaths": ["packages/@sanity/cli/test/__fixtures__/v2/package.json"]
 }
