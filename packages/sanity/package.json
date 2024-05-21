@@ -164,7 +164,7 @@
     "@sanity/portable-text-editor": "3.42.1",
     "@sanity/presentation": "1.15.8",
     "@sanity/schema": "3.42.1",
-    "@sanity/telemetry": "^0.7.6",
+    "@sanity/telemetry": "^0.7.7",
     "@sanity/types": "3.42.1",
     "@sanity/ui": "^2.1.11",
     "@sanity/util": "3.42.1",

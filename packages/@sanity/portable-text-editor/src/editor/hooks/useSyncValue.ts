@@ -1,7 +1,7 @@
 /* eslint-disable max-nested-callbacks */
 import {type PortableTextBlock} from '@sanity/types'
 import {debounce, isEqual} from 'lodash'
-import {useCallback, useMemo, useRef} from 'react'
+import {useMemo, useRef} from 'react'
 import {type Descendant, Editor, type Node, Text, Transforms} from 'slate'
 import {useSlate} from 'slate-react'
 
@@ -50,23 +50,20 @@ export function useSyncValue(
   const slateEditor = useSlate()
   const updateValueFunctionRef = useRef<(value: PortableTextBlock[] | undefined) => void>()
 
-  const updateFromCurrentValue = useCallback(() => {
-    const currentValue = CURRENT_VALUE.get(portableTextEditor)
-    if (previousValue.current === currentValue) {
-      debug('Value is the same object as previous, not need to sync')
-      return
+  const updateValueDebounced = useMemo(() => {
+    const updateFromCurrentValue = () => {
+      const currentValue = CURRENT_VALUE.get(portableTextEditor)
+      if (previousValue.current === currentValue) {
+        debug('Value is the same object as previous, not need to sync')
+        return
+      }
+      if (updateValueFunctionRef.current && currentValue) {
+        debug('Updating the value debounced')
+        updateValueFunctionRef.current(currentValue)
+      }
     }
-    if (updateValueFunctionRef.current && currentValue) {
-      debug('Updating the value debounced')
-      updateValueFunctionRef.current(currentValue)
-    }
+    return debounce(updateFromCurrentValue, 1000, {trailing: true, leading: false})
   }, [portableTextEditor])
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const updateValueDebounced = useCallback(
-    debounce(updateFromCurrentValue, 1000, {trailing: true, leading: false}),
-    [updateFromCurrentValue],
-  )
 
   return useMemo(() => {
     const updateFunction = (value: PortableTextBlock[] | undefined) => {
