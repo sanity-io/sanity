@@ -99,6 +99,8 @@ export const SanityDefaultPreview = memo(function SanityDefaultPreview(
     (options: {dimensions: PreviewMediaDimensions}) => {
       let imageSource = mediaProp
 
+      // If this is a string and a valid Sanity Image URL, parse it so that we can
+      // pass it as a valid asset ID to the image builder
       if (isString(imageSource) && isSanityImageUrl(imageSource)) {
         const {assetId} = parseImageAssetUrl(imageSource)
 
@@ -135,16 +137,16 @@ export const SanityDefaultPreview = memo(function SanityDefaultPreview(
       return renderMedia
     }
 
+    if (isImageSource(mediaProp)) {
+      return renderMedia
+    }
+
     if (isValidElementType(mediaProp)) {
       return mediaProp
     }
 
     if (isValidElement(mediaProp)) {
       return mediaProp
-    }
-
-    if (isImageSource(mediaProp)) {
-      return renderMedia
     }
 
     // Handle image urls
