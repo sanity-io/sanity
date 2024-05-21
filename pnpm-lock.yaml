@@ -1632,8 +1632,8 @@ importers:
         specifier: ^1.0.1
         version: 1.0.1
       framer-motion:
-        specifier: 11.2.3
-        version: 11.2.3(react-dom@18.3.1)(react@18.3.1)
+        specifier: 11.0.8
+        version: 11.0.8(react-dom@18.3.1)(react@18.3.1)
       get-it:
         specifier: ^8.4.30
         version: 8.4.30(debug@4.3.4)
@@ -3405,10 +3405,24 @@ packages:
     dev: false
     optional: true
 
+  /@emotion/is-prop-valid@0.8.8:
+    resolution: {integrity: sha512-u5WtneEAr5IDG2Wv65yhunPSMLIpuKsbuOktRojfrEiEvRyC85LgPMZI63cr7NUqT8ZIGdSVg8ZKGxIug4lXcA==}
+    requiresBuild: true
+    dependencies:
+      '@emotion/memoize': 0.7.4
+    dev: false
+    optional: true
+
   /@emotion/is-prop-valid@1.2.2:
     resolution: {integrity: sha512-uNsoYd37AFmaCdXlg6EYD1KaPOaRWRByMCYzbKUX4+hhMfrxdVSelShywL4JVaAeM/eHUOSprYBQls+/neX3pw==}
     dependencies:
       '@emotion/memoize': 0.8.1
+
+  /@emotion/memoize@0.7.4:
+    resolution: {integrity: sha512-Ja/Vfqe3HpuzRsG1oBtWTHk2PGZ7GR+2Vz5iYGelAw8dx32K0y7PjVuxK6z1nMpZOqAFsRUPCkK1YjJ56qJlgw==}
+    requiresBuild: true
+    dev: false
+    optional: true
 
   /@emotion/memoize@0.8.1:
     resolution: {integrity: sha512-W2P2c/VRW1/1tLox0mVUalvnWXxavmv/Oum2aPsRcoDJuob75FC3Y8FbpfLwUegRcxINtGUMPq0tFCvYNTBXNA==}
@@ -12101,6 +12115,24 @@ packages:
     dependencies:
       map-cache: 0.2.2
     dev: true
+
+  /framer-motion@11.0.8(react-dom@18.3.1)(react@18.3.1):
+    resolution: {integrity: sha512-1KSGNuqe1qZkS/SWQlDnqK2VCVzRVEoval379j0FiUBJAZoqgwyvqFkfvJbgW2IPFo4wX16K+M0k5jO23lCIjA==}
+    peerDependencies:
+      react: ^18.0.0
+      react-dom: ^18.0.0
+    peerDependenciesMeta:
+      react:
+        optional: true
+      react-dom:
+        optional: true
+    dependencies:
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+      tslib: 2.6.2
+    optionalDependencies:
+      '@emotion/is-prop-valid': 0.8.8
+    dev: false
 
   /framer-motion@11.2.2(react-dom@18.3.1)(react@18.3.1):
     resolution: {integrity: sha512-Jq65YXsRUUDPJ1VQ30pblGeE5g+a/oOKGiP3zlZT9whL652guO6KJjFhNXtcmatoVkyyNjZ2NDVPUlydpCprzA==}
