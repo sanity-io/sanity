@@ -160,7 +160,8 @@ export function useDocumentSheetColumns(documentSchemaType?: ObjectSchemaType) {
     () =>
       flatColumns(columns).reduce<[VisibilityState, number]>(
         ([accCols, countAllowedVisible], column) => {
-          const visibilityKey = String(column.id)
+          if (!column.id) throw new Error('Column must have an id')
+          const visibilityKey = column.id
 
           // this column is always visible
           if (!column.enableHiding) {

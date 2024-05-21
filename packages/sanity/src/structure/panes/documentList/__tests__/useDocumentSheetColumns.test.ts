@@ -21,7 +21,7 @@ describe('useDocumentSheetColumns', () => {
         {name: 'email', type: {name: 'string'}},
         {name: 'age', type: {name: 'number'}},
         {
-          name: 'address.place',
+          name: 'address',
           type: {
             name: 'object',
             jsonType: 'object',
@@ -43,8 +43,8 @@ describe('useDocumentSheetColumns', () => {
       'nickname': true,
       'email': true,
       'age': true,
-      'address.place_street': true,
-      'address.place_country': false,
+      'address_street': true,
+      'address_country': false,
       'phone number': false,
       'has pet': false,
     })
