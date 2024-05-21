@@ -1,6 +1,8 @@
 import {blogSchemaFolder, blogSchemaJS, blogSchemaTS} from './schemaTypes/blog'
 
-export const sanityConfigTemplate = `/**
+export const sanityConfigTemplate = `'use client'
+
+/**
  * This configuration is used to for the Sanity Studio that’s mounted on the \`:route:\` route
  */
 
@@ -39,27 +41,7 @@ const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET
 export default defineCliConfig({ api: { projectId, dataset } })
 `
 
-export const sanityStudioPagesTemplate = `import Head from 'next/head'
-import { NextStudio } from 'next-sanity/studio'
-import { metadata } from 'next-sanity/studio/metadata'
-import config from ':configPath:'
-
-export default function StudioPage() {
-  return (
-    <>
-      <Head>
-        {Object.entries(metadata).map(([key, value]) => (
-          <meta key={key} name={key} content={value} />
-        ))}
-      </Head>
-      <NextStudio config={config} />
-    </>
-  )
-}`
-
-export const sanityStudioAppTemplate = `'use client'
-
-/**
+export const sanityStudioTemplate = `/**
  * This route is responsible for the built-in authoring environment using Sanity Studio.
  * All routes under your studio path is handled by this file using Next.js' catch-all routes:
  * https://nextjs.org/docs/routing/dynamic-routes#catch-all-routes
@@ -71,11 +53,13 @@ export const sanityStudioAppTemplate = `'use client'
 import { NextStudio } from 'next-sanity/studio'
 import config from ':configPath:'
 
+export const dynamic = 'force-static'
+
+export { metadata, viewport } from 'next-sanity/studio'
+
 export default function StudioPage() {
   return <NextStudio config={config} />
 }`
-
-export const sanityStudioAppLayoutTemplate = `export {metadata} from 'next-sanity/studio'`
 
 // Format today's date like YYYY-MM-DD
 const envTS = `export const apiVersion =
@@ -127,10 +111,11 @@ const client = `import { createClient } from 'next-sanity'
 import { apiVersion, dataset, projectId, useCdn } from '../env'
 
 export const client = createClient({
-  apiVersion,
-  dataset,
   projectId,
+  dataset,
+  apiVersion,
   useCdn,
+  perspective: 'published',
 })
 `
 
