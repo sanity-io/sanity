@@ -1,7 +1,7 @@
 import {expect} from '@playwright/test'
 import {test} from '@sanity/test'
 
-test.describe('navigation on side bar / tree', () => {
+test.describe('basic - open and close', () => {
   test.beforeEach(async ({page, createDraftDocument}) => {
     await createDraftDocument('/test/content/input-debug;objectsDebug')
 
@@ -32,4 +32,12 @@ test.describe('navigation on side bar / tree', () => {
     await page.getByRole('button', {name: 'Done'}).click()
     await expect(modal).not.toBeVisible()
   })
+})
+
+test(`blocked main document action when modal is open`, async ({page, createDraftDocument}) => {
+  await createDraftDocument('/test/content/input-debug;objectsDebug')
+
+  await page.getByTestId('field-animals').getByRole('button', {name: 'Add item'}).click()
+
+  await page.getByTestId('action-Publish').isDisabled()
 })
