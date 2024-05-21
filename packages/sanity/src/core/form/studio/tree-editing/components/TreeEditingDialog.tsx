@@ -11,6 +11,7 @@ import {
   type ObjectInputProps,
   type ObjectSchemaType,
   type Path,
+  useSource,
 } from 'sanity'
 import styled, {css} from 'styled-components'
 
@@ -145,7 +146,13 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | 
     [debouncedBuildTreeEditingState, onPathOpen],
   )
 
+  const {document} = useSource()
+  const shouldUseLegacyArrayDialog = document.unstable_legacyArrayEditing.enabled
+
   useEffect(() => {
+    // Check if the config has the legacy flag
+    if (shouldUseLegacyArrayDialog) return
+
     // Don't proceed with building the tree editing state if the dialog
     // should not be open.
     if (!shouldArrayDialogOpen(schemaType, openPath)) return
@@ -167,7 +174,7 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | 
       documentValue: value,
       openPath,
     })
-  }, [schemaType, value, debouncedBuildTreeEditingState, openPath])
+  }, [schemaType, value, debouncedBuildTreeEditingState, openPath, shouldUseLegacyArrayDialog])
 
   if (!open || relativePath.length === 0) return null
 

@@ -20,6 +20,7 @@ import {type InitialValueTemplateItem, type Template, type TemplateItem} from '.
 import {EMPTY_ARRAY, isNonNullable} from '../util'
 import {
   documentActionsReducer,
+  documentArrayEditingLegacyReducer,
   documentBadgesReducer,
   documentCommentsEnabledReducer,
   documentInspectorsReducer,
@@ -546,6 +547,12 @@ function resolveSource({
             initialValue: true,
           })
         },
+      },
+      unstable_legacyArrayEditing: {
+        enabled: documentArrayEditingLegacyReducer({
+          config,
+          initialValue: true,
+        }),
       },
       comments: {
         enabled: (partialContext) => {

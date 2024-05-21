@@ -300,6 +300,16 @@ export interface DocumentPluginOptions {
   comments?: {
     enabled: boolean | ((context: DocumentCommentsEnabledContext) => boolean)
   }
+
+  /**
+   * We don't want to extend this to a function since the point is to eventually replace fully the
+   * array editing approach with the new
+   * @hidden
+   * @internal
+   */
+  unstable_legacyArrayEditing: {
+    enabled: boolean
+  }
 }
 
 /**
@@ -670,6 +680,14 @@ export interface Source {
     /** @internal */
     comments: {
       enabled: (props: DocumentCommentsEnabledContext) => boolean
+    }
+
+    /**
+     * @internal
+     * @hidden
+     */
+    unstable_legacyArrayEditing: {
+      enabled: boolean
     }
   }
 

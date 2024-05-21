@@ -92,6 +92,9 @@ const sharedSettings = definePlugin({
     comments: {
       enabled: true,
     },
+    unstable_legacyArrayEditing: {
+      enabled: false,
+    },
     badges: (prev, context) => (context.schemaType === 'author' ? [CustomBadge, ...prev] : prev),
   },
   plugins: [
