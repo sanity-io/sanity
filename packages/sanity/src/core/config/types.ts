@@ -307,7 +307,7 @@ export interface DocumentPluginOptions {
    * @hidden
    * @internal
    */
-  unstable_legacyArrayEditing: {
+  unstable_legacyArrayEditing?: {
     enabled: boolean
   }
 }
@@ -686,7 +686,7 @@ export interface Source {
      * @internal
      * @hidden
      */
-    unstable_legacyArrayEditing: {
+    unstable_legacyArrayEditing?: {
       enabled: boolean
     }
   }
