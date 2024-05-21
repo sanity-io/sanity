@@ -1,5 +1,5 @@
 import {Text} from '@sanity/ui'
-import {isValidElement, type ReactNode} from 'react'
+import {createElement, isValidElement, type ReactNode} from 'react'
 import {isValidElementType} from 'react-is'
 
 import {type PreviewLayoutKey, type PreviewMediaDimensions, type PreviewProps} from '../types'
@@ -47,17 +47,16 @@ function renderMedia(props: {
 }): ReactNode {
   const {dimensions, layout, media, styles} = props
 
-  if (isValidElementType(media)) {
-    const MediaComponent = media
-    return <MediaComponent dimensions={dimensions} layout={layout} />
-  }
-
   if (typeof media === 'string') {
     return (
       <Text as="span" className={styles?.mediaString} size={1}>
         {media}
       </Text>
     )
+  }
+
+  if (isValidElementType(media)) {
+    return createElement(media, {dimensions, layout})
   }
 
   if (isValidElement(media)) {
