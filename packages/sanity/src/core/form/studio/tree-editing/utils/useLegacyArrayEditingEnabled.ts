@@ -5,7 +5,7 @@ import {useSource} from 'sanity'
  * @returns Returns true if the dialog should be open
  * @internal
  */
-export function useLegacyArrayEditingConfig(): boolean {
+export function useLegacyArrayEditingEnabled(): boolean {
   const {document} = useSource()
 
   // it either has the value of the `enabled` property or defaults to `true`

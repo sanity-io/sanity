@@ -2,7 +2,7 @@ import {CopyIcon as DuplicateIcon, TrashIcon} from '@sanity/icons'
 import {type SchemaType} from '@sanity/types'
 import {Box, Card, type CardTone, Menu} from '@sanity/ui'
 import {useCallback, useMemo, useRef} from 'react'
-import {useLegacyArrayEditingConfig} from 'sanity'
+import {useLegacyArrayEditingEnabled} from 'sanity'
 import {styled} from 'styled-components'
 
 import {MenuButton, MenuItem} from '../../../../../../ui-components'
@@ -82,7 +82,7 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
     inputProps: {renderPreview},
   } = props
   const {t} = useTranslation()
-  const shouldUseLegacyArrayDialog = useLegacyArrayEditingConfig()
+  const shouldUseLegacyArrayDialog = useLegacyArrayEditingEnabled()
 
   const sortable = parentSchemaType.options?.sortable !== false
   const insertableTypes = parentSchemaType.of
