@@ -55,6 +55,7 @@ const Sidebar = memo(function Sidebar(props: SidebarProps) {
         height="fill"
         overflow="hidden"
         tone="transparent"
+        data-testid="tree-editing-sidebar"
       >
         <FixedHeightFlex align="center" gap={2}>
           <Button
