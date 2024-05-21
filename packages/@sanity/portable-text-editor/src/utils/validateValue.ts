@@ -6,7 +6,7 @@ import {
 } from '@sanity/types'
 import {flatten, isPlainObject, uniq} from 'lodash'
 
-import {insert, set, unset} from '../patch/PatchEvent'
+import {insert, set, setIfMissing, unset} from '../patch/PatchEvent'
 import {type InvalidValueResolution, type PortableTextMemberSchemaTypes} from '../types/editor'
 import {EMPTY_MARKDEFS} from './values'
 
@@ -149,15 +149,16 @@ export function validateValue(
         }
         return true
       }
-      // Test that every child in text block is valid
+
+      // Test regular text blocks
       if (blk._type === types.block.name) {
         const textBlock = blk as PortableTextTextBlock
-        // Test that it has (valid) children property
-        if (!textBlock.children || !Array.isArray(textBlock.children)) {
+        // Test that it has a valid children property (array)
+        if (textBlock.children && !Array.isArray(textBlock.children)) {
           resolution = {
-            patches: [unset([{_key: textBlock._key}])],
-            description: `Text block with _key '${textBlock._key}' has a missing or invalid required property 'children'.`,
-            action: 'Remove the block',
+            patches: [set({children: []}, [{_key: textBlock._key}])],
+            description: `Text block with _key '${textBlock._key}' has a invalid required property 'children'.`,
+            action: 'Reset the children property',
             item: textBlock,
 
             i18n: {
@@ -165,6 +166,35 @@ export function validateValue(
                 'inputs.portable-text.invalid-value.missing-or-invalid-children.description',
               action: 'inputs.portable-text.invalid-value.missing-or-invalid-children.action',
               values: {key: textBlock._key},
+            },
+          }
+          return true
+        }
+        // Test that children is set and lengthy
+        if (
+          textBlock.children === undefined ||
+          (Array.isArray(textBlock.children) && textBlock.children.length === 0)
+        ) {
+          const newSpan = {
+            _type: types.span.name,
+            _key: keyGenerator(),
+            text: '',
+            marks: [],
+          }
+          resolution = {
+            autoResolve: true,
+            patches: [
+              setIfMissing([], [{_key: blk._key}, 'children']),
+              insert([newSpan], 'after', [{_key: blk._key}, 'children', 0]),
+            ],
+            description: `Children for text block with _key '${blk._key}' is empty.`,
+            action: 'Insert an empty text',
+            item: blk,
+
+            i18n: {
+              description: 'inputs.portable-text.invalid-value.empty-children.description',
+              action: 'inputs.portable-text.invalid-value.empty-children.action',
+              values: {key: blk._key},
             },
           }
           return true
@@ -254,28 +284,6 @@ export function validateValue(
           }
         }
 
-        // Test that children is lengthy
-        if (textBlock.children && textBlock.children.length === 0) {
-          const newSpan = {
-            _type: types.span.name,
-            _key: keyGenerator(),
-            text: '',
-          }
-          resolution = {
-            autoResolve: true,
-            patches: [insert([newSpan], 'after', [{_key: blk._key}, 'children', 0])],
-            description: `Children for text block with _key '${blk._key}' is empty.`,
-            action: 'Insert an empty text',
-            item: blk,
-
-            i18n: {
-              description: 'inputs.portable-text.invalid-value.empty-children.description',
-              action: 'inputs.portable-text.invalid-value.empty-children.action',
-              values: {key: blk._key},
-            },
-          }
-          return true
-        }
         // Test every child
         if (
           textBlock.children.some((child, cIndex: number) => {
