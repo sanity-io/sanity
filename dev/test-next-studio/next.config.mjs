@@ -72,7 +72,11 @@ const config = {
     }
     return config
   },
+  // Makes it much easier to see which component got memoized by the react compiler
+  // when testing on https://test-next-studio.sanity.build
+  productionBrowserSourceMaps: true,
   experimental: {
+    reactCompiler: true,
     turbo: {
       resolveAlias: {
         '@sanity/block-tools': '@sanity/block-tools/src/index.ts',
@@ -94,6 +98,7 @@ const config = {
         '@sanity/util': '@sanity/util/src/_exports/index.ts',
         '@sanity/vision': '@sanity/vision/src/index.ts',
         'sanity/_internal': 'sanity/src/_exports/_internal.ts',
+        'sanity/_singletons': 'sanity/src/_exports/_singletons.ts',
         'sanity/cli': 'sanity/src/_exports/cli.ts',
         'sanity/desk': 'sanity/src/_exports/desk.ts',
         'sanity/presentation': 'sanity/src/_exports/presentation.ts',
