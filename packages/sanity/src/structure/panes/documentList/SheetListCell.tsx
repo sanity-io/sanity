@@ -2,7 +2,14 @@
 import {type ObjectFieldType} from '@sanity/types'
 import {Select, TextInput} from '@sanity/ui'
 import {type CellContext} from '@tanstack/react-table'
-import {useCallback, useEffect, useState} from 'react'
+import {
+  type ClipboardEventHandler,
+  type KeyboardEventHandler,
+  type MouseEventHandler,
+  useCallback,
+  useEffect,
+  useState,
+} from 'react'
 import {type SanityDocument} from 'sanity'
 
 import {useSheetListContext} from './SheetListContext'
@@ -28,8 +35,8 @@ export function SheetListCell(props: SheetListCellProps) {
     setFocusedCellId(column.id, row.index)
   }, [column.id, row.index, setFocusedCellId])
 
-  const handlePaste = useCallback(
-    (event: ClipboardEvent) => {
+  const handlePaste = useCallback<ClipboardEventHandler<HTMLInputElement>>(
+    (event) => {
       if (
         focusedCellDetails?.colId === column.id &&
         (selectedCellIndexes.includes(row.index) || focusedCellDetails?.rowIndex === row.index)
@@ -51,8 +58,8 @@ export function SheetListCell(props: SheetListCellProps) {
     ],
   )
 
-  const handleKeydown = useCallback(
-    (event: KeyboardEvent) => {
+  const handleKeydown = useCallback<KeyboardEventHandler<HTMLInputElement>>(
+    (event) => {
       const {key, shiftKey} = event
       if (document.activeElement?.id === `cell-${column.id}-${row.index}`) {
         // shift alone has no handler
@@ -72,17 +79,14 @@ export function SheetListCell(props: SheetListCellProps) {
     [column.id, onSelectedCellChange, resetFocusSelection, row.index, setFocusedCellId],
   )
 
-  useEffect(() => {
-    document.addEventListener('keydown', handleKeydown)
-    document.addEventListener('paste', handlePaste)
-    document.addEventListener('mousedown', resetSelection)
-
-    return () => {
-      document.removeEventListener('keydown', handleKeydown)
-      document.removeEventListener('paste', handlePaste)
-      document.removeEventListener('mousedown', resetSelection)
+  const handleOnMouseDown: MouseEventHandler<HTMLInputElement> = (event) => {
+    if (event.detail === 2) {
+      document.getElementById(cellId)?.focus()
+    } else {
+      event.preventDefault()
+      resetFocusSelection()
     }
-  }, [handleKeydown, handlePaste, resetSelection])
+  }
 
   useEffect(() => {
     const focusedCellId = `cell-${focusedCellDetails?.colId}-${focusedCellDetails?.rowIndex}`
@@ -146,6 +150,9 @@ export function SheetListCell(props: SheetListCellProps) {
       onChange={handleOnChange}
       onFocus={handleOnFocus}
       onBlur={handleOnBlur}
+      onKeyDown={handleKeydown}
+      onPaste={handlePaste}
+      onMouseDown={handleOnMouseDown}
     />
   )
 }
