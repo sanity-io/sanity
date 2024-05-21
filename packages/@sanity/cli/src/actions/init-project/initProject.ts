@@ -48,7 +48,6 @@ import {tryGitInit} from './git'
 import {promptForDatasetName} from './promptForDatasetName'
 import {promptForAclMode, promptForDefaultConfig, promptForTypeScript} from './prompts'
 import {
-  promptForAppDir,
   promptForAppendEnv,
   promptForEmbeddedStudio,
   promptForNextTemplate,
@@ -60,8 +59,7 @@ import {
   sanityCliTemplate,
   sanityConfigTemplate,
   sanityFolder,
-  sanityStudioAppTemplate,
-  sanityStudioPagesTemplate,
+  sanityStudioTemplate,
 } from './templates/nextjs'
 
 // eslint-disable-next-line no-process-env
@@ -330,12 +328,8 @@ export default async function initSanity(
     const embeddedStudio = unattended ? true : await promptForEmbeddedStudio(prompt)
 
     if (embeddedStudio) {
-      // this one is trickier on unattended, as we should probably scan for which one
-      // they're using, but they can also use both
-      const useAppDir = unattended ? false : await promptForAppDir(prompt)
-
-      // find source path (app or pages dir)
-      const srcDir = useAppDir ? 'app' : 'pages'
+      // find source path (app or src/app)
+      const srcDir = 'app'
       let srcPath = path.join(workDir, srcDir)
 
       if (!existsSync(srcPath)) {
@@ -352,7 +346,7 @@ export default async function initSanity(
       const embeddedStudioRouteFilePath = path.join(
         srcPath,
         `${studioPath}/`,
-        useAppDir ? `[[...index]]/page.${fileExtension}x` : `[[...index]].${fileExtension}x`,
+        `[[...tool]]/page.${fileExtension}x`,
       )
 
       // this selects the correct template string based on whether the user is using the app or pages directory and
@@ -361,7 +355,7 @@ export default async function initSanity(
       // relative paths to reach the root level of the project
       await writeOrOverwrite(
         embeddedStudioRouteFilePath,
-        (useAppDir ? sanityStudioAppTemplate : sanityStudioPagesTemplate).replace(
+        sanityStudioTemplate.replace(
           ':configPath:',
           new Array(countNestedFolders(embeddedStudioRouteFilePath.slice(workDir.length)))
             .join('../')
@@ -451,11 +445,11 @@ export default async function initSanity(
     }
 
     if (chosen === 'npm') {
-      await execa('npm', ['install', 'next-sanity@7'], execOptions)
+      await execa('npm', ['install', 'next-sanity@9'], execOptions)
     } else if (chosen === 'yarn') {
-      await execa('npx', ['install-peerdeps', '--yarn', 'next-sanity@7'], execOptions)
+      await execa('npx', ['install-peerdeps', '--yarn', 'next-sanity@9'], execOptions)
     } else if (chosen === 'pnpm') {
-      await execa('pnpm', ['install', 'next-sanity@7'], execOptions)
+      await execa('pnpm', ['install', 'next-sanity@9'], execOptions)
     }
 
     print(
