@@ -259,7 +259,7 @@
     "@sanity/codegen": "3.42.1",
     "@sanity/generate-help-url": "^3.0.0",
     "@sanity/pkg-utils": "6.8.17",
-    "@sanity/tsdoc": "1.0.59",
+    "@sanity/tsdoc": "1.0.62",
     "@sanity/ui-workshop": "^1.2.11",
     "@testing-library/jest-dom": "^6.2.0",
     "@testing-library/react": "^13.4.0",
