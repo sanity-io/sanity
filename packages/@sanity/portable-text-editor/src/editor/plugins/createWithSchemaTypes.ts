@@ -49,10 +49,12 @@ export function createWithSchemaTypes({
       )
     }
 
-    // Extend Slate's default normalization to add `_type: 'span'` to texts if they are inserted without
+    // Extend Slate's default normalization
     const {normalizeNode} = editor
     editor.normalizeNode = (entry) => {
       const [node, path] = entry
+
+      // If text block children node is missing _type, set it to the span type
       if (node._type === undefined && path.length === 2) {
         debug('Setting span type on text node without a type')
         const span = node as PortableTextSpan
@@ -66,11 +68,13 @@ export function createWithSchemaTypes({
         const key = keyGenerator()
         Transforms.setNodes(editor, {_key: key}, {at: path})
       }
+
       // If a text block node is missing markDefs, add an empty array
       if (node._type === schemaTypes.block.name && !('markDefs' in node) && path.length === 1) {
         debug('Setting missing markDefs on block node without markDefs')
         Transforms.setNodes(editor, {markDefs: []}, {at: path})
       }
+
       normalizeNode(entry)
     }
     return editor
