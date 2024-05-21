@@ -78,6 +78,10 @@ export const uploadImageAsset = (
 export const uploadFileAsset = (client: SanityClient, file: File | Blob, options?: UploadOptions) =>
   uploadAsset(client, 'file', file, options)
 
+/**
+ *
+ *
+ */
 // note: there's currently 100% overlap between the ImageAsset document and the FileAsset documents as per interface required by the image and file input
 function observeAssetDoc(documentPreviewStore: DocumentPreviewStore, id: string) {
   return documentPreviewStore
@@ -93,6 +97,13 @@ function observeAssetDoc(documentPreviewStore: DocumentPreviewStore, id: string)
       'size',
     ])
     .pipe(
+      /**
+       * In some cases when uploading large media file we are getting an stale `null` response from content lake when fetching the reference that was just uploaded,
+       * making the UI not to react as it should.
+       * This retry logic is added to handle the case where the asset is not found in the initial fetch to the documentPreviewStore but it will eventually be found,
+       * because the asset has been just added.
+       * It has the downside that if this is being used to check if an asset exists, it will retry 5 times before returning null.
+       */
       switchMap((result) => {
         // If the result is null, throw an error to trigger retry
         if (result === null) {
