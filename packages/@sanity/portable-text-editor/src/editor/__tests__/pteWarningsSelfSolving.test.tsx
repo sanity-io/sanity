@@ -58,7 +58,8 @@ describe('when PTE would display warnings, instead it self solves', () => {
       }
     })
   })
-  it('adds missing .markDefs', async () => {
+
+  it('allows missing .markDefs', async () => {
     const editorRef: RefObject<PortableTextEditor> = createRef()
     const initialValue = [
       {
@@ -69,7 +70,7 @@ describe('when PTE would display warnings, instead it self solves', () => {
             _key: 'def',
             _type: 'span',
             marks: [],
-            text: 'Hello with markDefs',
+            text: 'No markDefs',
           },
         ],
         style: 'normal',
@@ -100,11 +101,10 @@ describe('when PTE would display warnings, instead it self solves', () => {
               {
                 _key: 'def',
                 _type: 'span',
-                text: 'Hello with markDefs',
+                text: 'No markDefs',
                 marks: [],
               },
             ],
-            markDefs: [],
             style: 'normal',
           },
         ])

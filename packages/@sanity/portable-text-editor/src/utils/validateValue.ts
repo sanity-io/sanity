@@ -199,12 +199,11 @@ export function validateValue(
           }
           return true
         }
-        // Test that markDefs exists and is valid
-        if (!blk.markDefs || !Array.isArray(blk.markDefs)) {
+        // Test that markDefs are valid if they exists
+        if (blk.markDefs && !Array.isArray(blk.markDefs)) {
           resolution = {
-            autoResolve: true,
             patches: [set({...textBlock, markDefs: EMPTY_MARKDEFS}, [{_key: textBlock._key}])],
-            description: `Block has a missing or invalid required property 'markDefs'.`,
+            description: `Block has invalid required property 'markDefs'.`,
             action: 'Add empty markDefs array',
             item: textBlock,
 
