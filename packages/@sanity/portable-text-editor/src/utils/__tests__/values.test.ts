@@ -68,7 +68,6 @@ Array [
       Object {
         "_key": "1231",
         "_type": "span",
-        "marks": Array [],
         "text": "123",
       },
     ],
@@ -111,7 +110,6 @@ Array [
       Object {
         "_key": "1231",
         "_type": "span",
-        "marks": Array [],
         "text": "123",
       },
       Object {
