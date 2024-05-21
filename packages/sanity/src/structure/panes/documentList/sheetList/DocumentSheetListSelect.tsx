@@ -6,14 +6,14 @@ import {type MouseEvent, useCallback} from 'react'
 export function DocumentSheetListSelect(props: CellContext<SanityDocument, unknown>) {
   const {row, table} = props
 
-  const {hasAnchorSelected, setHasAnchorSelected} = table.options.meta || {}
+  const {selectedAnchor, setSelectedAnchor} = table.options.meta || {}
 
   const handleOnClick = useCallback(
     (e: MouseEvent<HTMLInputElement>) => {
-      if (e.shiftKey && hasAnchorSelected !== null && hasAnchorSelected !== undefined) {
+      if (e.shiftKey && selectedAnchor !== null && selectedAnchor !== undefined) {
         const shiftClickIndex = row.index
-        const lowerIndex = shiftClickIndex < hasAnchorSelected ? shiftClickIndex : hasAnchorSelected
-        const upperIndex = shiftClickIndex < hasAnchorSelected ? hasAnchorSelected : shiftClickIndex
+        const lowerIndex = shiftClickIndex < selectedAnchor ? shiftClickIndex : selectedAnchor
+        const upperIndex = shiftClickIndex < selectedAnchor ? selectedAnchor : shiftClickIndex
 
         const additionalSelectedRows = Array.from(
           {length: upperIndex - lowerIndex + 1},
@@ -27,20 +27,20 @@ export function DocumentSheetListSelect(props: CellContext<SanityDocument, unkno
             {},
           ),
         )
-      } else if (setHasAnchorSelected) {
+      } else if (setSelectedAnchor) {
         const isRowCurrentlySelected = row.getIsSelected()
         if (isRowCurrentlySelected) {
           // about to unselect so invalidate current anchor
-          setHasAnchorSelected(null)
+          setSelectedAnchor(null)
         } else {
           // override anchor with new selection index
-          setHasAnchorSelected(row.index)
+          setSelectedAnchor(row.index)
         }
 
         row.toggleSelected()
       }
     },
-    [hasAnchorSelected, row, setHasAnchorSelected, table],
+    [selectedAnchor, row, setSelectedAnchor, table],
   )
 
   return (

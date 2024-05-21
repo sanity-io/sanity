@@ -2,7 +2,7 @@ import {type RowData} from '@tanstack/react-table'
 
 declare module '@tanstack/react-table' {
   interface TableMeta<TData extends RowData> {
-    hasAnchorSelected: number | null
-    setHasAnchorSelected: (anchorRowIndex: number | null) => void
+    selectedAnchor: number | null
+    setSelectedAnchor: (anchorRowIndex: number | null) => void
   }
 }

@@ -7,7 +7,7 @@ import {fireEvent, render, screen} from '@testing-library/react'
 import {DocumentSheetListSelect} from '../DocumentSheetListSelect'
 
 const mockToggleSelected = jest.fn()
-const mockSetHasAnchorSelected = jest.fn()
+const mockSetSelectedAnchor = jest.fn()
 const mockSetRowSelection = jest.fn()
 
 const props = {
@@ -17,8 +17,8 @@ const props = {
 
     options: {
       meta: {
-        hasAnchorSelected: null,
-        setHasAnchorSelected: mockSetHasAnchorSelected,
+        selectedAnchor: null,
+        setSelectedAnchor: mockSetSelectedAnchor,
       },
     },
   },
@@ -51,7 +51,7 @@ describe('DocumentSheetListSelect', () => {
 
     fireEvent.click(checkbox)
     expect(mockToggleSelected).toHaveBeenCalledTimes(1)
-    expect(mockSetHasAnchorSelected).toHaveBeenCalledWith(123)
+    expect(mockSetSelectedAnchor).toHaveBeenCalledWith(123)
   })
 
   it('unselected current checkbox', async () => {
@@ -67,7 +67,7 @@ describe('DocumentSheetListSelect', () => {
 
     fireEvent.click(checkbox)
     expect(mockToggleSelected).toHaveBeenCalledTimes(1)
-    expect(selectProps.table.options.meta?.setHasAnchorSelected).toHaveBeenCalledWith(null)
+    expect(selectProps.table.options.meta?.setSelectedAnchor).toHaveBeenCalledWith(null)
   })
 
   it('disables the checkbox when row is not selectable', () => {
@@ -84,18 +84,18 @@ describe('DocumentSheetListSelect', () => {
 
   it('resets the select anchor if shift not pressed on check', () => {
     const selectProps = {...props}
-    selectProps.table.options.meta!.hasAnchorSelected = 321
+    selectProps.table.options.meta!.selectedAnchor = 321
     renderTest(selectProps)
 
     const checkbox = screen.getByRole('checkbox')
 
     fireEvent.click(checkbox)
-    expect(mockSetHasAnchorSelected).toHaveBeenCalledWith(123)
+    expect(mockSetSelectedAnchor).toHaveBeenCalledWith(123)
   })
 
   it('selects multiple rows when shift key is pressed and anchor exists', () => {
     const selectProps = {...props}
-    selectProps.table.options.meta!.hasAnchorSelected = 120
+    selectProps.table.options.meta!.selectedAnchor = 120
     renderTest(selectProps)
 
     const checkbox = screen.getByRole('checkbox')

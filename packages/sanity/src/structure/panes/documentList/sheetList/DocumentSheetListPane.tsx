@@ -72,7 +72,7 @@ function DocumentSheetListPaneInner({
   const {data} = useDocumentSheetList({
     typeName: documentSchemaType.name,
   })
-  const [hasAnchorSelected, setHasAnchorSelected] = useState<number | null>(null)
+  const [selectedAnchor, setSelectedAnchor] = useState<number | null>(null)
 
   const totalRows = state.result.hits.length
   const table = useReactTable({
@@ -88,8 +88,8 @@ function DocumentSheetListPaneInner({
       columnVisibility: initialColumnsVisibility,
     },
     meta: {
-      hasAnchorSelected,
-      setHasAnchorSelected,
+      selectedAnchor,
+      setSelectedAnchor,
     },
   })
 

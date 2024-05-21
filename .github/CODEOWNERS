@@ -33,7 +33,7 @@
 /packages/sanity/src/core/search/ @sanity-io/studio-ex
 
 # -- DocumentList --
-packages/sanity/src/structure/panes/documentList/ @sanity-io/studio-ex
+packages/sanity/src/structure/panes/documentList/sheetList @sanity-io/studio-ex
 
 # -- Theming (legacy) --
 /packages/sanity/src/core/theme/ @sanity-io/studio-ex
