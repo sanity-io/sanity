@@ -176,6 +176,7 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | 
       __unstable_hideCloseButton
       autoFocus={false}
       id="tree-editing-dialog"
+      data-testid="tree-editing-dialog"
       onClickOutside={onClose}
       onClose={onClose}
       padding={0}
