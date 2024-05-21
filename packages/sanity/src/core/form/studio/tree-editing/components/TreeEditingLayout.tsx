@@ -63,6 +63,7 @@ const Sidebar = memo(function Sidebar(props: SidebarProps) {
             onClick={onOpenToggle}
             selected={open}
             tooltipProps={{content: open ? 'Close sidebar' : 'Open sidebar'}}
+            data-testid="tree-editing-sidebar-toggle"
           />
 
           {open && (
