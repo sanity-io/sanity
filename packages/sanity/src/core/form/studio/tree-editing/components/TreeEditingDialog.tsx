@@ -20,7 +20,6 @@ import {
   EMPTY_TREE_STATE,
   shouldArrayDialogOpen,
   type TreeEditingState,
-  useLegacyArrayEditingEnabled,
 } from '../utils'
 import {TreeEditingLayout} from './TreeEditingLayout'
 
@@ -146,12 +145,7 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | 
     [debouncedBuildTreeEditingState, onPathOpen],
   )
 
-  const shouldUseLegacyArrayDialog = useLegacyArrayEditingEnabled()
-
   useEffect(() => {
-    // Check if the config has the legacy flag
-    if (shouldUseLegacyArrayDialog) return
-
     // Don't proceed with building the tree editing state if the dialog
     // should not be open.
     if (!shouldArrayDialogOpen(schemaType, openPath)) return
@@ -173,7 +167,7 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | 
       documentValue: value,
       openPath,
     })
-  }, [schemaType, value, debouncedBuildTreeEditingState, openPath, shouldUseLegacyArrayDialog])
+  }, [schemaType, value, debouncedBuildTreeEditingState, openPath])
 
   if (!open || relativePath.length === 0) return null
 
