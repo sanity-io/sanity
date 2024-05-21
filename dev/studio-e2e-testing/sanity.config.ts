@@ -46,6 +46,9 @@ const sharedSettings = definePlugin({
 
       return prev
     },
+    unstable_legacyArrayEditing: {
+      enabled: false,
+    },
     newDocumentOptions,
   },
   plugins: [
