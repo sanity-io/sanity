@@ -31,7 +31,7 @@ export function TasksFooterOpenTasks() {
       activeDocument?.documentId
         ? data.filter((item) => {
             return (
-              item.target?.document._ref === activeDocument?.documentId &&
+              item.target?.document._ref === activeDocument.documentId &&
               item.status === 'open' &&
               item.createdByUser
             )
