@@ -92,9 +92,7 @@ function DocumentSheetListPaneInner({
     meta: {
       selectedAnchor,
       setSelectedAnchor,
-      onUpdate: (documentId, fieldId, value) => {
-        console.log('update id', documentId, 'field', fieldId, 'value', value)
-      },
+      patchDocument: (documentId, fieldId, value) => null,
     },
   })
 

@@ -19,9 +19,7 @@ type SelectedCellDetails = {
 /** @internal */
 export interface SheetListContextValue {
   focusAnchorCell: () => void
-  selectedRangeCellIndexes: number[]
   resetFocusSelection: () => void
-  selectedAnchorCellDetails: SelectedCellDetails
   setSelectedAnchorCell: (colId: string, rowIndex: number) => void
   getStateByCellId: (
     colId: string,
@@ -253,23 +251,13 @@ export function SheetListProvider({children, table}: SheetListProviderProps): Re
 
   const value = useMemo<SheetListContextValue>(
     () => ({
-      selectedAnchorCellDetails,
       focusAnchorCell,
-      selectedRangeCellIndexes,
       resetFocusSelection,
       setSelectedAnchorCell,
       getStateByCellId,
       submitChanges,
     }),
-    [
-      focusAnchorCell,
-      resetFocusSelection,
-      selectedAnchorCellDetails,
-      selectedRangeCellIndexes,
-      setSelectedAnchorCell,
-      getStateByCellId,
-      submitChanges,
-    ],
+    [focusAnchorCell, resetFocusSelection, setSelectedAnchorCell, getStateByCellId, submitChanges],
   )
 
   return <SheetListContext.Provider value={value}>{children}</SheetListContext.Provider>
