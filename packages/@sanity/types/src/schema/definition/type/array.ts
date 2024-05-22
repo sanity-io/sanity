@@ -11,13 +11,10 @@ import {type BaseSchemaDefinition, type SearchConfiguration, type TitledListValu
 /** @public */
 export interface ArrayOptions<V = unknown> extends SearchConfiguration {
   list?: TitledListValue<V>[] | V[]
-  /**
-   * layout: 'tags' only works for string array
-   * layout: 'grid' only works for arrays with objects
-   */
   // inferring the array.of value for ArrayDefinition cause too much code-noise and was removed.
   // Since we don't have the type-info needed here, we allow values
-  layout?: 'tags' | 'grid'
+  layout?: 'list' | 'tags' | 'grid'
+  /** @deprecated This option does not have any effect anymore */
   direction?: 'horizontal' | 'vertical'
   sortable?: boolean
   modal?: {type?: 'dialog' | 'popover'; width?: number | 'auto'}
