@@ -25,46 +25,11 @@ export default {
       type: 'string',
       validation: (rule: Rule) => rule.min(5).max(100),
     },
-    {
-      name: 'switchTest',
-      type: 'boolean',
-      title: `I'm a switch`,
-      description: 'Try toggling me! This is the new switch design',
-    },
     // {
     //   type: 'markdown',
     //   name: 'descriptionMd',
     //   title: 'Description (markdown)',
     // },
-    {
-      name: 'withNestedObject',
-      title: 'With nested object',
-      type: 'object',
-      fields: [
-        {
-          name: 'nestedString',
-          title: 'Nested string',
-          type: 'string',
-        },
-        {
-          name: 'nestedNumber',
-          title: 'Nested number',
-          type: 'number',
-        },
-        {
-          name: 'evenMoreNested',
-          title: 'Even more nested',
-          type: 'object',
-          fields: [
-            {
-              name: 'moreNestedString',
-              title: 'More nested string',
-              type: 'string',
-            },
-          ],
-        },
-      ],
-    },
     {
       name: 'translations',
       title: 'Translations',
@@ -181,9 +146,10 @@ export default {
       media: 'coverImage',
     },
     prepare(book: any, options: any = {}) {
-      // console.log('book', {book})
       return Object.assign({}, book, {
-        title: book.title,
+        title:
+          ((options.ordering || {}).name === 'swedishTitle' && (book.translations || {}).se) ||
+          book.title,
         subtitle: formatSubtitle(book),
       })
     },
