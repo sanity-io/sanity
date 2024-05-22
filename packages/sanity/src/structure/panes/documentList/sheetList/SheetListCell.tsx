@@ -42,7 +42,7 @@ export function SheetListCell(props: SheetListCellProps) {
     }
   }
 
-  const handleOnKeyDown = useCallback(
+  const handleOnEnterDown = useCallback(
     (event: KeyboardEvent) => {
       const {key} = event
       if (key === 'Enter') {
@@ -68,7 +68,6 @@ export function SheetListCell(props: SheetListCellProps) {
 
   const handlePaste = useCallback(
     (event: ClipboardEvent) => {
-      event.preventDefault()
       const clipboardData = event.clipboardData?.getData('Text')
 
       if (typeof clipboardData === 'string' || typeof clipboardData === 'number') {
@@ -81,30 +80,29 @@ export function SheetListCell(props: SheetListCellProps) {
   )
 
   const handleCopy = useCallback(() => {
-    if (cellState === 'selectedAnchor') {
-      navigator.clipboard.writeText(renderValue.toString())
-    }
-  }, [cellState, renderValue])
+    navigator.clipboard.writeText(renderValue.toString())
+  }, [renderValue])
 
   useEffect(() => {
     if (cellState === 'selectedAnchor' || cellState === 'focused') {
-      document.addEventListener('keydown', handleOnKeyDown)
+      // only listen for enter key when cell is focused or anchor
+      document.addEventListener('keydown', handleOnEnterDown)
     }
-
-    if (cellState) {
+    if (cellState === 'selectedAnchor' || cellState === 'selectedRange')
+      // if cell is selected, paste events should be handled
       document.addEventListener('paste', handlePaste)
+
+    if (cellState === 'selectedAnchor')
+      // only allow copying when cell is selected anchor
       document.addEventListener('copy', handleCopy)
-    }
 
     return () => {
       if (cellState === 'selectedAnchor' || cellState === 'focused') {
-        document.removeEventListener('keydown', handleOnKeyDown)
+        document.removeEventListener('keydown', handleOnEnterDown)
       }
-
-      if (cellState) {
+      if (cellState === 'selectedAnchor' || cellState === 'selectedRange')
         document.removeEventListener('paste', handlePaste)
-        document.removeEventListener('copy', handleCopy)
-      }
+      if (cellState === 'selectedAnchor') document.removeEventListener('copy', handleCopy)
     }
   }, [
     cellId,
@@ -112,7 +110,7 @@ export function SheetListCell(props: SheetListCellProps) {
     column.id,
     getStateByCellId,
     handleCopy,
-    handleOnKeyDown,
+    handleOnEnterDown,
     handlePaste,
     row.index,
   ])

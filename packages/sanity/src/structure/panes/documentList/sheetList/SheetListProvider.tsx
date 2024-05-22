@@ -148,7 +148,7 @@ export function SheetListProvider({children, table}: SheetListProviderProps): Re
       if (!selectedAnchorCellDetails) return
       if (isShiftKey) {
         changeSelectionRange(key === 'ArrowDown' ? 'down' : 'up')
-      } else if (selectedAnchorCellDetails?.state === 'selected') {
+      } else {
         const newSelectedCellRowIndex =
           selectedAnchorCellDetails.rowIndex + (key === 'ArrowDown' ? 1 : -1)
         if (newSelectedCellRowIndex < 0) return
