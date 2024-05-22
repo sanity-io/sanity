@@ -19,6 +19,7 @@ import {operatorDefinitions} from '../studio/components/navbar/search/definition
 import {type InitialValueTemplateItem, type Template, type TemplateItem} from '../templates'
 import {EMPTY_ARRAY, isNonNullable} from '../util'
 import {
+  arrayEditingReducer,
   documentActionsReducer,
   documentBadgesReducer,
   documentCommentsEnabledReducer,
@@ -625,6 +626,13 @@ function resolveSource({
       i18next: i18n.i18next,
       staticInitialValueTemplateItems,
       options: config,
+    },
+    features: {
+      beta: {
+        treeArrayEditing: {
+          enabled: arrayEditingReducer({config, initialValue: false}),
+        },
+      },
     },
   }
 
