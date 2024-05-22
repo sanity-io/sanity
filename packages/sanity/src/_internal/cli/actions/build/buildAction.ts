@@ -70,9 +70,10 @@ export default async function buildSanityStudio(
         const shouldContinue = await prompt.single({
           type: 'confirm',
           message: chalk.yellow(
-            `The following versions are different from the versions available with auto updates enabled. \n` +
-              `This may lead to issues in the studio. \n\n` +
-              `${result.map((mod) => ` - ${mod.pkg} (installed: ${mod.installed}, want: ${mod.remote})`).join('\n')}`,
+            `The following local package versions are different from the versions currently served at runtime.\n` +
+              `When using auto updates, we recommend that you test locally with the most recent versions before deploying. \n\n` +
+              `${result.map((mod) => ` - ${mod.pkg} (local version: ${mod.installed}, runtime version: ${mod.remote})`).join('\n')} \n\n` +
+              `Deploy anyway?`,
           ),
           default: false,
         })
