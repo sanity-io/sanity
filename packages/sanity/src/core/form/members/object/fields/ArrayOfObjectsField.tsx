@@ -311,7 +311,6 @@ export function ArrayOfObjectsField(props: {
   const supportsFileUploads = formBuilder.__internal.file.directUploads
 
   const resolveUploader = useCallback(
-    //
     (type: SchemaType, file: FileLike) => {
       if (is.type('image', type) && !supportsImageUploads) {
         return null
