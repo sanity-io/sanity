@@ -17,7 +17,9 @@ export const remoteSnapshots = memoize(
     serverActionsEnabled: Observable<boolean>,
   ): Observable<RemoteSnapshotVersionEvent> => {
     return memoizedPair(client, idPair, typeName, serverActionsEnabled).pipe(
-      switchMap(({published, draft}) => merge(published.remoteSnapshot$, draft.remoteSnapshot$)),
+      switchMap(({published, drafts}) =>
+        merge(published.remoteSnapshot$, ...drafts.map((draft) => draft.remoteSnapshot$)),
+      ),
     )
   },
   memoizeKeyGen,

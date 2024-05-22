@@ -21,6 +21,7 @@ export interface EditStateFor {
   type: string
   transactionSyncLock: TransactionSyncLockState | null
   draft: SanityDocument | null
+  // TODO: Rename -> `public`
   published: SanityDocument | null
   liveEdit: boolean
   ready: boolean
@@ -40,10 +41,12 @@ export const editState = memoize(
     typeName: string,
   ): Observable<EditStateFor> => {
     const liveEdit = isLiveEditEnabled(ctx.schema, typeName)
+    // TODO: Should be dynamic
+    const draftIndex = 0
     return snapshotPair(ctx.client, idPair, typeName, ctx.serverActionsEnabled).pipe(
       switchMap((versions) =>
         combineLatest([
-          versions.draft.snapshots$,
+          versions.drafts[draftIndex].snapshots$,
           versions.published.snapshots$,
           versions.transactionsPendingEvents$.pipe(
             map((ev: PendingMutationsEvent) => (ev.phase === 'begin' ? LOCKED : NOT_LOCKED)),
