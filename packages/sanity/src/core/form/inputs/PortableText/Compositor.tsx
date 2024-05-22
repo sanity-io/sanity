@@ -391,7 +391,6 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       }
     }
     return undefined
-    // eslint-disable-next-line react-compiler/react-compiler
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []) // Only at mount time!
 

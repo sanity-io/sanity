@@ -11,7 +11,6 @@ export function useForwardedRef<T>(ref: ForwardedRef<T>): MutableRefObject<T | n
     if (typeof ref === 'function') {
       ref(innerRef.current)
     } else {
-      // eslint-disable-next-line react-compiler/react-compiler
       ref.current = innerRef.current
     }
   })

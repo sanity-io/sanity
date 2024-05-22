@@ -343,7 +343,6 @@ function CommentsInspectorInner(
       }
     }
     // We want to run this effect only on mount and unmount
-    // eslint-disable-next-line react-compiler/react-compiler
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 

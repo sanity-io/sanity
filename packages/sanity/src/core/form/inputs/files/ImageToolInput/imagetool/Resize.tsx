@@ -33,7 +33,6 @@ export function Resize(props: ResizeProps): any {
       const targetWidth = landscape ? width : height * ratio
       const targetHeight = landscape ? width / ratio : height
 
-      // eslint-disable-next-line react-compiler/react-compiler
       canvas.width = targetWidth
       canvas.height = targetHeight
 

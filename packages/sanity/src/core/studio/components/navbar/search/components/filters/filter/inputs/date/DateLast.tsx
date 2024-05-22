@@ -39,7 +39,6 @@ export function SearchFilterDateLastInput({
 
   const handleUnitChange = useCallback(
     (event: ChangeEvent<HTMLSelectElement>) => {
-      // eslint-disable-next-line react-compiler/react-compiler
       dateUnit.current = event.currentTarget.value as OperatorDateLastValue['unit']
       handleChange()
     },

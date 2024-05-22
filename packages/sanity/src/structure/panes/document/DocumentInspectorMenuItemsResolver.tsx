@@ -13,7 +13,6 @@ const InspectorMenuItem = memo(function InspectorMenuItem(props: InspectorMenuIt
   const {documentId, documentType, index, setMenuItem, useMenuItem} = props
 
   const node = useUnique(
-    // eslint-disable-next-line react-compiler/react-compiler
     useMenuItem({
       documentId,
       documentType,

@@ -50,7 +50,6 @@ export function CommentReactionsMenuButton(props: CommentReactionsMenuButtonProp
     buttonElement?.focus()
   }, [buttonElement, onMenuClose, open])
 
-  // eslint-disable-next-line react-compiler/react-compiler
   const handleClickOutside = useCallback(handleClose, [handleClose])
 
   const handleKeyDown = useCallback(
