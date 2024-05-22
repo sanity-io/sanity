@@ -122,7 +122,6 @@ export const ResultContainer = styled(Card)<{$isInvalid: boolean}>`
 
 export const Result = styled(Box)`
   position: relative;
-  width: 100%;
   height: 100%;
   z-index: 20;
 `
