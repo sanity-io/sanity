@@ -165,7 +165,7 @@ export const BlockStyleSelect = memo(function BlockStyleSelect(
 
   const menu = useMemo(
     () => (
-      <Menu disabled={_disabled} style={{zIndex: 10000}}>
+      <Menu disabled={_disabled}>
         {items.map((item) => {
           return (
             <StyledMenuItem
