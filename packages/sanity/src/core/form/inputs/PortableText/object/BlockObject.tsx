@@ -46,7 +46,6 @@ import {
   BlockActionsInner,
   BlockActionsOuter,
   ChangeIndicatorWrapper,
-  InnerFlex,
   PreviewContainer,
   Root,
   TooltipBox,
@@ -122,8 +121,8 @@ export function BlockObject(props: BlockObjectProps) {
     [relativePath],
   )
 
-  const handleMouseOver = useCallback(() => setReviewChangesHovered(true), [])
-  const handleMouseOut = useCallback(() => setReviewChangesHovered(false), [])
+  const handleChangeIndicatorMouseEnter = useCallback(() => setReviewChangesHovered(true), [])
+  const handleChangeIndicatorMouseLeave = useCallback(() => setReviewChangesHovered(false), [])
 
   const onOpen = useCallback(() => {
     if (memberItem) {
@@ -276,6 +275,9 @@ export function BlockObject(props: BlockObjectProps) {
     ],
   )
 
+  const blockActionsEnabled = renderBlockActions && value && !readOnly
+  const changeIndicatorVisible = isFullscreen && memberItem
+
   return useMemo(
     () => (
       <Box
@@ -288,38 +290,42 @@ export function BlockObject(props: BlockObjectProps) {
           marginY={3}
           style={debugRender()}
         >
-          <InnerFlex flex={1}>
-            <Tooltip
-              placement="top"
-              portal="editor"
-              // If the object modal is open, disable the tooltip to avoid it rerendering the inner items when the validation changes.
-              disabled={isOpen ? true : !tooltipEnabled}
-              content={toolTipContent}
-            >
-              <PreviewContainer
-                data-object-block-inner="" // used by create
-                {...innerPaddingProps}
+          <PreviewContainer
+            data-object-block-inner="" // used by create
+            {...innerPaddingProps}
+          >
+            <Box flex={1}>
+              <Tooltip
+                placement="top"
+                portal="editor"
+                // If the object modal is open, disable the tooltip to avoid it rerendering the inner items when the validation changes.
+                disabled={isOpen ? true : !tooltipEnabled}
+                content={toolTipContent}
               >
-                {renderBlock && renderBlock(componentProps)}
-              </PreviewContainer>
-            </Tooltip>
-            <BlockActionsOuter marginRight={1}>
-              <BlockActionsInner>
-                {renderBlockActions && value && focused && !readOnly && (
-                  <BlockActions
-                    block={value}
-                    onChange={onChange}
-                    renderBlockActions={renderBlockActions}
-                  />
-                )}
-              </BlockActionsInner>
-            </BlockActionsOuter>
+                <div>{renderBlock && renderBlock(componentProps)}</div>
+              </Tooltip>
+            </Box>
 
-            {isFullscreen && memberItem && (
+            {blockActionsEnabled && (
+              <BlockActionsOuter contentEditable={false} marginRight={3}>
+                <BlockActionsInner>
+                  {focused && (
+                    <BlockActions
+                      block={value}
+                      onChange={onChange}
+                      renderBlockActions={renderBlockActions}
+                    />
+                  )}
+                </BlockActionsInner>
+              </BlockActionsOuter>
+            )}
+
+            {changeIndicatorVisible && (
               <ChangeIndicatorWrapper
                 $hasChanges={memberItem.member.item.changed}
-                onMouseOut={handleMouseOut}
-                onMouseOver={handleMouseOver}
+                contentEditable={false}
+                onMouseEnter={handleChangeIndicatorMouseEnter}
+                onMouseLeave={handleChangeIndicatorMouseLeave}
               >
                 <StyledChangeIndicatorWithProvidedFullPath
                   hasFocus={focused}
@@ -329,22 +335,21 @@ export function BlockObject(props: BlockObjectProps) {
                 />
               </ChangeIndicatorWrapper>
             )}
-
             {reviewChangesHovered && <ReviewChangesHighlightBlock />}
-          </InnerFlex>
+          </PreviewContainer>
         </Flex>
       </Box>
     ),
     [
+      blockActionsEnabled,
+      changeIndicatorVisible,
       componentProps,
       focused,
-      handleMouseOut,
-      handleMouseOver,
+      handleChangeIndicatorMouseLeave,
+      handleChangeIndicatorMouseEnter,
       innerPaddingProps,
-      isFullscreen,
       memberItem,
       onChange,
-      readOnly,
       renderBlock,
       renderBlockActions,
       reviewChangesHovered,

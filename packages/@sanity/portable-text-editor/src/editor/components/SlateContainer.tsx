@@ -1,4 +1,4 @@
-import {type PropsWithChildren, useEffect, useMemo} from 'react'
+import {type PropsWithChildren, useEffect, useMemo, useState} from 'react'
 import {createEditor} from 'slate'
 import {Slate, withReact} from 'slate-react'
 
@@ -28,8 +28,8 @@ export interface SlateContainerProps extends PropsWithChildren {
 export function SlateContainer(props: SlateContainerProps) {
   const {patches$, portableTextEditor, readOnly, maxBlocks, keyGenerator} = props
 
-  // Create the slate instance
-  const [slateEditor, subscribe] = useMemo(() => {
+  // Create the slate instance, using `useState` ensures setup is only run once, initially
+  const [[slateEditor, subscribe]] = useState(() => {
     debug('Creating new Slate editor instance')
     const {editor, subscribe: _sub} = withPlugins(withReact(createEditor()), {
       keyGenerator,
@@ -40,9 +40,8 @@ export function SlateContainer(props: SlateContainerProps) {
     })
     KEY_TO_VALUE_ELEMENT.set(editor, {})
     KEY_TO_SLATE_ELEMENT.set(editor, {})
-    return [editor, _sub]
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []) // Only initial - empty deps here
+    return [editor, _sub] as const
+  })
 
   useEffect(() => {
     const unsubscribe = subscribe()

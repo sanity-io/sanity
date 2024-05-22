@@ -332,10 +332,14 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
   // Store reference to original apply function (see below for usage in useEffect)
   const originalApply = useMemo(() => slateEditor.apply, [slateEditor])
 
+  const [syncedRangeDecorations, setSyncedRangeDecorations] = useState(false)
   useEffect(() => {
-    syncRangeDecorations()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []) // Empty here! We only want to run this once at mount
+    if (!syncedRangeDecorations) {
+      // We only want this to run once, on mount
+      setSyncedRangeDecorations(true)
+      syncRangeDecorations()
+    }
+  }, [syncRangeDecorations, syncedRangeDecorations])
 
   useEffect(() => {
     if (!isEqual(rangeDecorations, rangeDecorationsRef.current)) {

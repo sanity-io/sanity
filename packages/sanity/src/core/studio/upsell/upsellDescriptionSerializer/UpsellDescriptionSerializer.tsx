@@ -81,10 +81,8 @@ const DynamicIconContainer = styled.span`
 const accentSpanWrapper = (children: ReactNode) => <AccentSpan>{children}</AccentSpan>
 
 const DynamicIcon = (props: {icon: {url: string}}) => {
-  const [ref, setRef] = useState<HTMLSpanElement | null>(null)
+  const [__html, setHtml] = useState('')
   useEffect(() => {
-    if (!ref) return
-
     const controller = new AbortController()
     const signal = controller.signal
 
@@ -95,23 +93,19 @@ const DynamicIcon = (props: {icon: {url: string}}) => {
         }
         return response.text()
       })
-      .then((data) => {
-        if (!ref) return
-        ref.innerHTML = data
-      })
+      .then((data) => setHtml(data))
       .catch((error) => {
         if (error.name !== 'AbortError') {
           console.error(error)
         }
       })
 
-    // eslint-disable-next-line consistent-return
     return () => {
       controller.abort()
     }
-  }, [ref, props.icon.url])
+  }, [props.icon.url])
 
-  return <DynamicIconContainer ref={setRef} />
+  return <DynamicIconContainer dangerouslySetInnerHTML={{__html}} />
 }
 
 function NormalBlock(props: {children: ReactNode}) {

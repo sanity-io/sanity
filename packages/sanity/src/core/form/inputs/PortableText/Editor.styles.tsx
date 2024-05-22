@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 
-import {Card, Container, rem} from '@sanity/ui'
+import {Card, rem} from '@sanity/ui'
 import {getTheme_v2} from '@sanity/ui/theme'
 import {css, styled} from 'styled-components'
 
@@ -68,11 +68,6 @@ export const Scroller = styled(ScrollContainer)`
   }
 `
 
-export const EditableContainer = styled(Container)`
-  /* @todo: calculate from theme */
-  /* max-width: 728px; */
-`
-
 export const EditableWrapper = styled(Card)<{$isFullscreen: boolean; $readOnly?: boolean}>`
   height: 100%;
   width: 100%;
@@ -129,6 +124,11 @@ export const EditableWrapper = styled(Card)<{$isFullscreen: boolean; $readOnly?:
     }
 
     padding-bottom: ${({$isFullscreen, theme}) => theme.sanity.space[$isFullscreen ? 9 : 5]}px;
+
+    & > .pt-block {
+      margin: 0 auto;
+      max-width: ${(props) => getTheme_v2(props.theme).container[1]}px;
+    }
 
     /* & > .pt-block {
       & .pt-inline-object {

@@ -1,5 +1,6 @@
 import {type Path, type SchemaType} from '@sanity/types'
 import {useToast} from '@sanity/ui'
+import {get} from 'lodash'
 import {type FocusEvent, useCallback, useEffect, useMemo, useRef} from 'react'
 import {type Subscription} from 'rxjs'
 import {map, tap} from 'rxjs/operators'
@@ -335,7 +336,12 @@ export function ArrayOfObjectsField(props: {
         open: false,
       })
 
-      const events$ = uploader.upload(client, file, schemaType).pipe(
+      const options = {
+        metadata: get(schemaType, 'options.metadata'),
+        storeOriginalFilename: get(schemaType, 'options.storeOriginalFilename'),
+      }
+
+      const events$ = uploader.upload(client, file, schemaType, options).pipe(
         map((uploadProgressEvent: UploadProgressEvent) =>
           PatchEvent.from(uploadProgressEvent.patches || []).prefixAll({_key: key}),
         ),
