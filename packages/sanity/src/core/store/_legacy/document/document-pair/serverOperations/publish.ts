@@ -20,10 +20,13 @@ export const publish: OperationImpl<[], DisabledReason> = {
       throw new Error('cannot execute "publish" when draft is missing')
     }
 
+    // TODO: Should be dynamic
+    const draftIndex = 0
+
     return actionsApiClient(client).observable.action(
       {
         actionType: 'sanity.action.document.publish',
-        draftId: idPair.draftId,
+        draftId: idPair.draftIds[draftIndex],
         publishedId: idPair.publishedId,
         // Optimistic locking using `ifPublishedRevisionId` ensures that concurrent publish action
         // invocations do not override each other.
