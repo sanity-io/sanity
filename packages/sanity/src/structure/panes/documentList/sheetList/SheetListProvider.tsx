@@ -45,9 +45,11 @@ export function SheetListProvider({children, table}: SheetListProviderProps): Re
 
   const clearAndSetFocusSelection = useCallback(
     (nextAnchorDetails: SelectedCellDetails = null) => {
-      if (selectedAnchorCellDetails?.state === 'focused') {
-        const {colId, rowIndex} = selectedAnchorCellDetails
-        document.getElementById(`cell-${colId}-${rowIndex}`)?.blur()
+      if (
+        selectedAnchorCellDetails?.state === 'focused' &&
+        document.activeElement instanceof HTMLElement
+      ) {
+        document.activeElement.blur()
       }
 
       setSelectedAnchorCellDetails(nextAnchorDetails)

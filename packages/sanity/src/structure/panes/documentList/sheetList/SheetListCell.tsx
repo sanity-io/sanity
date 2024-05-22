@@ -14,7 +14,7 @@ interface SheetListCellProps extends CellContext<SanityDocument, unknown> {
 export function SheetListCell(props: SheetListCellProps) {
   const {getValue, column, row, fieldType} = props
   const cellId = `cell-${column.id}-${row.index}`
-  const [renderValue, setRenderValue] = useState(getValue())
+  const [renderValue, setRenderValue] = useState<string>(getValue() as string)
   const [isDirty, setIsDirty] = useState(false)
   const inputRef = useRef<HTMLInputElement | HTMLSelectElement | null>(null)
   const {
@@ -80,6 +80,12 @@ export function SheetListCell(props: SheetListCellProps) {
     [column.id, patchDocument, row.id],
   )
 
+  const handleCopy = useCallback(() => {
+    if (cellState === 'selectedAnchor') {
+      navigator.clipboard.writeText(renderValue.toString())
+    }
+  }, [cellState, renderValue])
+
   useEffect(() => {
     if (cellState === 'selectedAnchor' || cellState === 'focused') {
       document.addEventListener('keydown', handleOnKeyDown)
@@ -87,6 +93,7 @@ export function SheetListCell(props: SheetListCellProps) {
 
     if (cellState) {
       document.addEventListener('paste', handlePaste)
+      document.addEventListener('copy', handleCopy)
     }
 
     return () => {
@@ -96,9 +103,19 @@ export function SheetListCell(props: SheetListCellProps) {
 
       if (cellState) {
         document.removeEventListener('paste', handlePaste)
+        document.removeEventListener('copy', handleCopy)
       }
     }
-  }, [cellId, cellState, column.id, getStateByCellId, handleOnKeyDown, handlePaste, row.index])
+  }, [
+    cellId,
+    cellState,
+    column.id,
+    getStateByCellId,
+    handleCopy,
+    handleOnKeyDown,
+    handlePaste,
+    row.index,
+  ])
 
   if (fieldType.name === 'boolean') {
     return (
@@ -114,8 +131,8 @@ export function SheetListCell(props: SheetListCellProps) {
         }}
         value={JSON.stringify(renderValue)}
       >
-        <option value="true">True</option>
-        <option value="false">False</option>
+        <option value="True">True</option>
+        <option value="False">False</option>
       </Select>
     )
   }
