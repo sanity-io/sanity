@@ -1,6 +1,6 @@
 import {type SanityDocument} from '@sanity/types'
 import {type Table} from '@tanstack/react-table'
-import {type ReactNode, useCallback, useContext, useMemo, useState} from 'react'
+import {type ReactNode, useCallback, useContext, useEffect, useMemo, useState} from 'react'
 
 import {SheetListContext} from '../../../_singletons/structure/panes/document/DocumentSheetListContext'
 
@@ -11,16 +11,22 @@ interface SheetListProviderProps {
 
 type SelectionDirection = 'down' | 'up' | 'left' | 'right'
 
+type SelectedCellDetails = {
+  colId: string
+  rowIndex: number
+  state: 'focused' | 'selected'
+} | null
+
 export interface SheetListContextValue {
-  setFocusedCellId: (colId: string, rowIndex: number) => void
-  onSelectedCellChange: (direction: SelectionDirection) => void
-  selectedCellIndexes: number[]
+  focusAnchorCell: () => void
+  selectedRangeCellIndexes: number[]
   resetFocusSelection: () => void
-  focusedCellDetails: {
-    colId: string
-    rowIndex: number
-  } | null
-  resetSelection: () => void
+  selectedAnchorCellDetails: SelectedCellDetails
+  setSelectedAnchorCell: (colId: string, rowIndex: number) => void
+  getStateByCellId: (
+    colId: string,
+    rowIndex: number,
+  ) => 'focused' | 'selectedAnchor' | 'selectedRange' | null
 }
 
 export const useSheetListContext = (): SheetListContextValue => {
@@ -33,56 +39,56 @@ export const useSheetListContext = (): SheetListContextValue => {
 }
 
 export function SheetListProvider({children, table}: SheetListProviderProps): ReactNode {
-  const [focusedCellDetails, setFocusedCellDetails] = useState<{
-    colId: string
-    rowIndex: number
-  } | null>(null)
-  const [selectedCellIndexes, setSelectedCellIndexes] = useState<number[]>([])
+  const [selectedAnchorCellDetails, setSelectedAnchorCellDetails] =
+    useState<SelectedCellDetails>(null)
+  const [selectedRangeCellIndexes, setSelectedRangeCellIndexes] = useState<number[]>([])
 
-  const handleSetFocusedCellId = useCallback((colId: string, rowIndex: number) => {
-    setFocusedCellDetails({colId, rowIndex})
-  }, [])
+  const clearAndSetFocusSelection = useCallback(
+    (nextAnchorDetails: SelectedCellDetails = null) => {
+      if (selectedAnchorCellDetails?.state === 'focused') {
+        const {colId, rowIndex} = selectedAnchorCellDetails
+        document.getElementById(`cell-${colId}-${rowIndex}`)?.blur()
+      }
 
-  const resetFocusSelection = useCallback(() => {
-    setFocusedCellDetails(null)
-    setSelectedCellIndexes([])
-  }, [])
-
-  const resetSelection = useCallback(() => {
-    setSelectedCellIndexes([])
-  }, [])
-
-  const moveHorizontal = useCallback(
-    (direction: 'left' | 'right') => {
-      const visibleColumns = table.getVisibleLeafColumns()
-      const horizontallyMovedNextIndex =
-        visibleColumns.findIndex((col) => col.id === focusedCellDetails?.colId) +
-        (direction === 'left' ? -1 : 1)
-
-      if (horizontallyMovedNextIndex < 0 || horizontallyMovedNextIndex >= visibleColumns.length)
-        return
-
-      handleSetFocusedCellId(
-        visibleColumns[horizontallyMovedNextIndex].id,
-        focusedCellDetails!.rowIndex,
-      )
-      resetSelection()
+      setSelectedAnchorCellDetails(nextAnchorDetails)
+      setSelectedRangeCellIndexes([])
     },
-    [focusedCellDetails, handleSetFocusedCellId, resetSelection, table],
+    [selectedAnchorCellDetails],
   )
 
-  const onSelectedCellChange = useCallback(
+  const resetFocusSelection = useCallback(clearAndSetFocusSelection, [clearAndSetFocusSelection])
+
+  const changeSelectionColumn = useCallback(
+    (direction: 'left' | 'right') => {
+      const visibleColumns = table.getVisibleLeafColumns()
+      const columnIndexAfterMove =
+        visibleColumns.findIndex((col) => col.id === selectedAnchorCellDetails?.colId) +
+        (direction === 'left' ? -1 : 1)
+
+      if (columnIndexAfterMove < 0 || columnIndexAfterMove >= visibleColumns.length) return
+
+      clearAndSetFocusSelection({
+        colId: visibleColumns[columnIndexAfterMove].id,
+        rowIndex: selectedAnchorCellDetails!.rowIndex,
+        state: 'selected',
+      })
+    },
+    [clearAndSetFocusSelection, selectedAnchorCellDetails, table],
+  )
+
+  const changeSelectionRange = useCallback(
     (direction: SelectionDirection) => {
-      if (!focusedCellDetails) return
+      if (!selectedAnchorCellDetails) return
 
       if (direction === 'left' || direction === 'right') {
-        moveHorizontal(direction)
+        changeSelectionColumn(direction)
       } else {
-        setSelectedCellIndexes((previousSelection) => {
+        setSelectedRangeCellIndexes((previousSelection) => {
           const selectionDirectionalChange = direction === 'down' ? 1 : -1
           // if no cells are selected, select the cell in the direction
           if (!previousSelection.length) {
-            const firstSelectedIndex = focusedCellDetails.rowIndex + selectionDirectionalChange
+            const firstSelectedIndex =
+              selectedAnchorCellDetails.rowIndex + selectionDirectionalChange
             if (firstSelectedIndex < 0) return []
             return [firstSelectedIndex]
           }
@@ -93,7 +99,7 @@ export function SheetListProvider({children, table}: SheetListProviderProps): Re
           if (indexInDirectionFromLast < 0) return previousSelection
 
           // if the cell in the direction is the same as the focused cell, deselect all cells
-          if (indexInDirectionFromLast === focusedCellDetails?.rowIndex) {
+          if (indexInDirectionFromLast === selectedAnchorCellDetails?.rowIndex) {
             return []
           }
 
@@ -109,25 +115,137 @@ export function SheetListProvider({children, table}: SheetListProviderProps): Re
         })
       }
     },
-    [focusedCellDetails, moveHorizontal],
+    [changeSelectionColumn, selectedAnchorCellDetails],
   )
 
-  const value = useMemo(
+  const setSelectedAnchorCell = useCallback(
+    (colId: string, rowIndex: number) => {
+      clearAndSetFocusSelection({colId, rowIndex, state: 'selected'})
+    },
+    [clearAndSetFocusSelection],
+  )
+
+  const handleEscapePress = useCallback(() => {
+    if (selectedRangeCellIndexes.length) {
+      // only clear selected range if it exists
+      setSelectedRangeCellIndexes([])
+    } else {
+      const nextAnchorCellDetails: SelectedCellDetails =
+        selectedAnchorCellDetails?.state === 'selected'
+          ? null
+          : {
+              ...selectedAnchorCellDetails!,
+              state: 'selected',
+            }
+      clearAndSetFocusSelection(nextAnchorCellDetails)
+    }
+  }, [clearAndSetFocusSelection, selectedAnchorCellDetails, selectedRangeCellIndexes.length])
+
+  const handleAnchorKeydown = useCallback(
+    (event: KeyboardEvent) => {
+      if (selectedAnchorCellDetails) {
+        const {key, shiftKey} = event
+
+        if (key === 'Escape') handleEscapePress()
+
+        // if only shift key is pressed, do nothing
+        if (key === 'Shift') return
+
+        if (key === 'ArrowDown' || key === 'ArrowUp') {
+          event.preventDefault()
+
+          if (shiftKey) {
+            changeSelectionRange(key === 'ArrowDown' ? 'down' : 'up')
+          } else {
+            const newSelectedCellRowIndex =
+              selectedAnchorCellDetails.rowIndex + (key === 'ArrowDown' ? 1 : -1)
+            if (newSelectedCellRowIndex < 0) return
+
+            setSelectedAnchorCell(selectedAnchorCellDetails.colId, newSelectedCellRowIndex)
+          }
+        } else if (key === 'ArrowLeft' || key === 'ArrowRight') {
+          event.preventDefault()
+          changeSelectionColumn(key === 'ArrowLeft' ? 'left' : 'right')
+        }
+      }
+    },
+    [
+      changeSelectionColumn,
+      handleEscapePress,
+      changeSelectionRange,
+      selectedAnchorCellDetails,
+      setSelectedAnchorCell,
+    ],
+  )
+
+  const handleAnchorClick = useCallback(
+    (event: MouseEvent) => {
+      if (!selectedAnchorCellDetails) return
+      const isClickInAnchorCell = document
+        .getElementById(
+          `cell-${selectedAnchorCellDetails.colId}-${selectedAnchorCellDetails.rowIndex}`,
+        )
+        ?.contains(event.target as Node)
+
+      if (!isClickInAnchorCell) resetFocusSelection()
+    },
+    [resetFocusSelection, selectedAnchorCellDetails],
+  )
+
+  useEffect(() => {
+    if (selectedAnchorCellDetails) {
+      document.addEventListener('keydown', handleAnchorKeydown)
+      document.addEventListener('click', handleAnchorClick)
+    }
+
+    return () => {
+      if (selectedAnchorCellDetails) {
+        document.removeEventListener('keydown', handleAnchorKeydown)
+        document.removeEventListener('click', handleAnchorClick)
+      }
+    }
+  }, [handleAnchorClick, handleAnchorKeydown, selectedAnchorCellDetails])
+
+  const focusAnchorCell = useCallback(
+    () =>
+      setSelectedAnchorCellDetails((anchorCellDetails) => {
+        if (!anchorCellDetails) return null
+
+        return {...anchorCellDetails, state: 'focused'}
+      }),
+    [],
+  )
+
+  const getStateByCellId = useCallback(
+    (colId: string, rowIndex: number) => {
+      if (selectedAnchorCellDetails?.colId !== colId) return null
+
+      if (selectedAnchorCellDetails.rowIndex === rowIndex)
+        return selectedAnchorCellDetails.state === 'focused' ? 'focused' : 'selectedAnchor'
+
+      if (selectedRangeCellIndexes.includes(rowIndex)) return 'selectedRange'
+
+      return null
+    },
+    [selectedAnchorCellDetails, selectedRangeCellIndexes],
+  )
+
+  const value = useMemo<SheetListContextValue>(
     () => ({
-      focusedCellDetails,
-      setFocusedCellId: handleSetFocusedCellId,
-      onSelectedCellChange,
-      selectedCellIndexes,
+      selectedAnchorCellDetails,
+      focusAnchorCell,
+      selectedRangeCellIndexes,
       resetFocusSelection,
-      resetSelection,
+      setSelectedAnchorCell,
+      getStateByCellId,
     }),
     [
-      focusedCellDetails,
-      handleSetFocusedCellId,
-      onSelectedCellChange,
+      focusAnchorCell,
       resetFocusSelection,
-      resetSelection,
-      selectedCellIndexes,
+      selectedAnchorCellDetails,
+      selectedRangeCellIndexes,
+      setSelectedAnchorCell,
+      getStateByCellId,
     ],
   )
 
