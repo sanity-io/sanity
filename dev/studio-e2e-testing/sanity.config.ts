@@ -46,9 +46,6 @@ const sharedSettings = definePlugin({
 
       return prev
     },
-    unstable_legacyArrayEditing: {
-      enabled: false,
-    },
     newDocumentOptions,
   },
   plugins: [
@@ -100,5 +97,12 @@ export default defineConfig({
   basePath: '/test',
   unstable_serverActions: {
     enabled: true,
+  },
+  features: {
+    beta: {
+      treeArrayEditing: {
+        enabled: true,
+      },
+    },
   },
 })

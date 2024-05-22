@@ -2,7 +2,7 @@ import {CopyIcon as DuplicateIcon, TrashIcon} from '@sanity/icons'
 import {type SchemaType} from '@sanity/types'
 import {Box, Card, type CardTone, Menu} from '@sanity/ui'
 import {useCallback, useMemo, useRef} from 'react'
-import {useLegacyArrayEditingEnabled} from 'sanity'
+import {useTreeArrayEditingEnabled} from 'sanity'
 
 import {MenuButton, MenuItem} from '../../../../../../ui-components'
 import {ChangeIndicator} from '../../../../../changeIndicators'
@@ -65,9 +65,9 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
     inputProps: {renderPreview},
   } = props
   const {t} = useTranslation()
-  const shouldUseLegacyArrayDialog = useLegacyArrayEditingEnabled()
+  const useNewTreeDialog = useTreeArrayEditingEnabled()
 
-  const openPortal = open && shouldUseLegacyArrayDialog
+  const openPortal = open && !useNewTreeDialog
 
   const sortable = parentSchemaType.options?.sortable !== false
   const insertableTypes = parentSchemaType.of

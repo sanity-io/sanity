@@ -300,16 +300,6 @@ export interface DocumentPluginOptions {
   comments?: {
     enabled: boolean | ((context: DocumentCommentsEnabledContext) => boolean)
   }
-
-  /**
-   * We don't want to extend this to a function since the point is to eventually replace fully the
-   * array editing approach with the new
-   * @hidden
-   * @internal
-   */
-  unstable_legacyArrayEditing?: {
-    enabled: boolean
-  }
 }
 
 /**
@@ -397,6 +387,18 @@ export interface PluginOptions {
      * Enables the legacy Query API search strategy.
      */
     enableLegacySearch?: boolean
+  }
+  /** allows for in studio feature toggles */
+  features?: {
+    /** allows for shorter-lived feature toggles */
+    beta?: {
+      /**
+       * @hidden
+       * @beta */
+      treeArrayEditing?: {
+        enabled: boolean
+      }
+    }
   }
 }
 
@@ -681,14 +683,6 @@ export interface Source {
     comments: {
       enabled: (props: DocumentCommentsEnabledContext) => boolean
     }
-
-    /**
-     * @internal
-     * @hidden
-     */
-    unstable_legacyArrayEditing?: {
-      enabled: boolean
-    }
   }
 
   /** @internal */
@@ -791,6 +785,18 @@ export interface Source {
 
   /** @internal */
   __internal_serverDocumentActions?: WorkspaceOptions['__internal_serverDocumentActions']
+  /** allows for in studio feature toggles */
+  features?: {
+    /** allows for shorter-lived feature toggles */
+    beta?: {
+      /**
+       * @hidden
+       * @beta */
+      treeArrayEditing?: {
+        enabled: boolean
+      }
+    }
+  }
 }
 
 /** @internal */

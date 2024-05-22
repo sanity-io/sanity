@@ -92,9 +92,6 @@ const sharedSettings = definePlugin({
     comments: {
       enabled: true,
     },
-    unstable_legacyArrayEditing: {
-      enabled: false,
-    },
     badges: (prev, context) => (context.schemaType === 'author' ? [CustomBadge, ...prev] : prev),
   },
   plugins: [
@@ -159,6 +156,13 @@ export default defineConfig([
     },
     tasks: {
       enabled: true,
+    },
+    features: {
+      beta: {
+        treeArrayEditing: {
+          enabled: false,
+        },
+      },
     },
   },
   {

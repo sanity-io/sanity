@@ -1,2 +1,2 @@
 export * from './components'
-export {shouldArrayDialogOpen, useLegacyArrayEditingEnabled} from './utils'
+export {shouldArrayDialogOpen, useTreeArrayEditingEnabled} from './utils'

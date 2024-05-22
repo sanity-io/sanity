@@ -19,8 +19,8 @@ import {operatorDefinitions} from '../studio/components/navbar/search/definition
 import {type InitialValueTemplateItem, type Template, type TemplateItem} from '../templates'
 import {EMPTY_ARRAY, isNonNullable} from '../util'
 import {
+  arrayEditingReducer,
   documentActionsReducer,
-  documentArrayEditingLegacyReducer,
   documentBadgesReducer,
   documentCommentsEnabledReducer,
   documentInspectorsReducer,
@@ -548,12 +548,6 @@ function resolveSource({
           })
         },
       },
-      unstable_legacyArrayEditing: {
-        enabled: documentArrayEditingLegacyReducer({
-          config,
-          initialValue: true,
-        }),
-      },
       comments: {
         enabled: (partialContext) => {
           return documentCommentsEnabledReducer({
@@ -632,6 +626,13 @@ function resolveSource({
       i18next: i18n.i18next,
       staticInitialValueTemplateItems,
       options: config,
+    },
+    features: {
+      beta: {
+        treeArrayEditing: {
+          enabled: arrayEditingReducer({config, initialValue: false}),
+        },
+      },
     },
   }
 
