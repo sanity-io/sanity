@@ -2,6 +2,7 @@ import {CopyIcon as DuplicateIcon, TrashIcon} from '@sanity/icons'
 import {type SchemaType} from '@sanity/types'
 import {Box, Card, type CardTone, Menu} from '@sanity/ui'
 import {useCallback, useMemo, useRef} from 'react'
+import {useTreeArrayEditingEnabled} from 'sanity'
 
 import {MenuButton, MenuItem} from '../../../../../../ui-components'
 import {ChangeIndicator} from '../../../../../changeIndicators'
@@ -16,7 +17,6 @@ import {useDidUpdate} from '../../../../hooks/useDidUpdate'
 import {useScrollIntoViewOnFocusWithin} from '../../../../hooks/useScrollIntoViewOnFocusWithin'
 import {useChildPresence} from '../../../../studio/contexts/Presence'
 import {useChildValidation} from '../../../../studio/contexts/Validation'
-import {DEBUG_TREE_EDITING_ENABLED} from '../../../../studio/tree-editing/constants'
 import {type ObjectItem, type ObjectItemProps} from '../../../../types'
 import {randomKey} from '../../../../utils/randomKey'
 import {RowLayout} from '../../layouts/RowLayout'
@@ -65,6 +65,9 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
     inputProps: {renderPreview},
   } = props
   const {t} = useTranslation()
+  const useNewTreeDialog = useTreeArrayEditingEnabled()
+
+  const openPortal = open && !useNewTreeDialog
 
   const sortable = parentSchemaType.options?.sortable !== false
   const insertableTypes = parentSchemaType.of
@@ -186,8 +189,6 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
 
   const itemTypeTitle = getSchemaTypeTitle(schemaType)
 
-  const isOpen = open && !DEBUG_TREE_EDITING_ENABLED
-
   return (
     <>
       <ChangeIndicator path={path} isChanged={changed} hasFocus={Boolean(focused)}>
@@ -195,7 +196,7 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
       </ChangeIndicator>
 
       {/* TODO: add schema config to enable/disable edit portal */}
-      {isOpen && (
+      {openPortal && (
         <EditPortal
           header={
             readOnly
