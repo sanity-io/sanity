@@ -160,7 +160,7 @@ export default defineConfig([
     features: {
       beta: {
         treeArrayEditing: {
-          enabled: false,
+          enabled: true,
         },
       },
     },
