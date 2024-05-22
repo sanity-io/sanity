@@ -199,14 +199,17 @@ export function getDocumentPairPermissions({
 
   const liveEdit = Boolean(getSchemaType(schema, type).liveEdit)
 
+  // TODO: Should be dynamic
+  const draftIndex = 0
+
   return snapshotPair(
     client,
-    {draftId: getDraftId(id), publishedId: getPublishedId(id)},
+    {draftIds: [getDraftId(id)], publishedId: getPublishedId(id)},
     type,
     serverActionsEnabled,
   ).pipe(
     switchMap((pair) =>
-      combineLatest([pair.draft.snapshots$, pair.published.snapshots$]).pipe(
+      combineLatest([pair.drafts[draftIndex].snapshots$, pair.published.snapshots$]).pipe(
         map(([draft, published]) => ({draft, published})),
       ),
     ),

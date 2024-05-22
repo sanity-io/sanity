@@ -34,7 +34,9 @@ export interface PendingMutationsEvent {
 }
 
 /** @internal */
+// TODO: Rename -> `IdBundle`
 export interface IdPair {
-  draftId: string
+  draftIds: string[]
+  // TODO: Rename -> `publicId`
   publishedId: string
 }

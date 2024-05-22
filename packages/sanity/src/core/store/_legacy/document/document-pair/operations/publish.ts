@@ -67,7 +67,9 @@ export const publish: OperationImpl<[], DisabledReason> = {
       })
     }
 
-    tx.delete(idPair.draftId)
+    // TODO: Should be dynamic
+    const draftIndex = 0
+    tx.delete(idPair.draftIds[draftIndex])
 
     return tx.commit({tag: 'document.publish', visibility: 'async'})
   },

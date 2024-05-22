@@ -37,7 +37,7 @@ function getIdPairFromPublished(publishedId: string): IdPair {
     throw new Error('editOpsOf does not expect a draft id.')
   }
 
-  return {publishedId, draftId: getDraftId(publishedId)}
+  return {publishedId, draftIds: [getDraftId(publishedId)]}
 }
 
 /**
