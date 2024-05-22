@@ -26,3 +26,4 @@ examples/*
 perf/*
 scripts/*
 test/*
+**/__workshop__/*
