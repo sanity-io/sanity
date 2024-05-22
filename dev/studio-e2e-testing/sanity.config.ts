@@ -84,6 +84,13 @@ const sharedSettings = definePlugin({
     muxInput({mp4_support: 'standard'}),
     presenceTool(),
   ],
+  features: {
+    beta: {
+      treeArrayEditing: {
+        enabled: true,
+      },
+    },
+  },
 })
 
 export default defineConfig({
