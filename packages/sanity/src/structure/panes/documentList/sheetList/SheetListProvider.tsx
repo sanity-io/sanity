@@ -143,41 +143,47 @@ export function SheetListProvider({children, table}: SheetListProviderProps): Re
     }
   }, [clearAndSetFocusSelection, selectedAnchorCellDetails, selectedRangeCellIndexes.length])
 
-  const handleAnchorKeydown = useCallback(
-    (event: KeyboardEvent) => {
-      if (selectedAnchorCellDetails) {
-        const {key, shiftKey} = event
+  const handleUpDownKey = useCallback(
+    (isShiftKey: boolean, key: string) => {
+      if (!selectedAnchorCellDetails) return
+      if (isShiftKey) {
+        changeSelectionRange(key === 'ArrowDown' ? 'down' : 'up')
+      } else if (selectedAnchorCellDetails?.state === 'selected') {
+        const newSelectedCellRowIndex =
+          selectedAnchorCellDetails.rowIndex + (key === 'ArrowDown' ? 1 : -1)
+        if (newSelectedCellRowIndex < 0) return
 
-        if (key === 'Escape') handleEscapePress()
-
-        // if only shift key is pressed, do nothing
-        if (key === 'Shift') return
-
-        if (key === 'ArrowDown' || key === 'ArrowUp') {
-          event.preventDefault()
-
-          if (shiftKey) {
-            changeSelectionRange(key === 'ArrowDown' ? 'down' : 'up')
-          } else {
-            const newSelectedCellRowIndex =
-              selectedAnchorCellDetails.rowIndex + (key === 'ArrowDown' ? 1 : -1)
-            if (newSelectedCellRowIndex < 0) return
-
-            setSelectedAnchorCell(selectedAnchorCellDetails.colId, newSelectedCellRowIndex)
-          }
-        } else if (key === 'ArrowLeft' || key === 'ArrowRight') {
-          event.preventDefault()
-          changeSelectionColumn(key === 'ArrowLeft' ? 'left' : 'right')
-        }
+        setSelectedAnchorCell(selectedAnchorCellDetails.colId, newSelectedCellRowIndex)
       }
     },
-    [
-      changeSelectionColumn,
-      handleEscapePress,
-      changeSelectionRange,
-      selectedAnchorCellDetails,
-      setSelectedAnchorCell,
-    ],
+    [changeSelectionRange, selectedAnchorCellDetails, setSelectedAnchorCell],
+  )
+
+  const handleAnchorKeydown = useCallback(
+    (event: KeyboardEvent) => {
+      if (!selectedAnchorCellDetails) return
+
+      const {key, shiftKey} = event
+
+      // if only shift key is pressed, do nothing
+      if (key === 'Shift') return
+
+      if (key === 'Escape') handleEscapePress()
+
+      if (key === 'ArrowDown' || key === 'ArrowUp') {
+        event.preventDefault()
+        handleUpDownKey(shiftKey, key)
+      }
+      if (
+        // when cell is focused, arrows should have default behavior
+        selectedAnchorCellDetails?.state === 'selected' &&
+        (key === 'ArrowLeft' || key === 'ArrowRight')
+      ) {
+        event.preventDefault()
+        changeSelectionColumn(key === 'ArrowLeft' ? 'left' : 'right')
+      }
+    },
+    [selectedAnchorCellDetails, handleEscapePress, handleUpDownKey, changeSelectionColumn],
   )
 
   const handleAnchorClick = useCallback(

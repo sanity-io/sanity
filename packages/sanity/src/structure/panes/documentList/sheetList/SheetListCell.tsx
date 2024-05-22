@@ -92,11 +92,7 @@ export function SheetListCell(props: SheetListCellProps) {
     }
 
     return () => {
-      if (getStateByCellId(column.id, row.index) === 'selectedAnchor') {
-        document.removeEventListener('keydown', handleOnKeyDown)
-      }
-
-      if (getStateByCellId(column.id, row.index) === 'focused') {
+      if (cellState === 'selectedAnchor' || cellState === 'focused') {
         document.removeEventListener('keydown', handleOnKeyDown)
       }
     }
