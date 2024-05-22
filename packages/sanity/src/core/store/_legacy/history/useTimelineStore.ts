@@ -173,7 +173,7 @@ export function useTimelineStore({
     if (!snapshotsSubscriptionRef.current) {
       snapshotsSubscriptionRef.current = remoteSnapshots(
         client,
-        {draftId: `drafts.${documentId}`, publishedId: documentId},
+        {draftIds: [`drafts.${documentId}`], publishedId: documentId},
         documentType,
         serverActionsEnabled,
       ).subscribe((ev: RemoteSnapshotVersionEvent) => {
