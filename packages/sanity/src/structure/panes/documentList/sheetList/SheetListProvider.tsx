@@ -1,8 +1,7 @@
 import {type SanityDocument} from '@sanity/types'
 import {type Table} from '@tanstack/react-table'
 import {type ReactNode, useCallback, useContext, useEffect, useMemo, useState} from 'react'
-
-import {SheetListContext} from '../../../_singletons/structure/panes/document/DocumentSheetListContext'
+import {SheetListContext} from 'sanity/_singletons'
 
 interface SheetListProviderProps {
   children?: ReactNode
@@ -17,6 +16,7 @@ type SelectedCellDetails = {
   state: 'focused' | 'selected'
 } | null
 
+/** @internal */
 export interface SheetListContextValue {
   focusAnchorCell: () => void
   selectedRangeCellIndexes: number[]
@@ -29,6 +29,7 @@ export interface SheetListContextValue {
   ) => 'focused' | 'selectedAnchor' | 'selectedRange' | null
 }
 
+/** @internal */
 export const useSheetListContext = (): SheetListContextValue => {
   const context = useContext(SheetListContext)
 

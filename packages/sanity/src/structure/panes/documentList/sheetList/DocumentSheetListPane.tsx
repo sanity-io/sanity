@@ -16,7 +16,7 @@ import {type BaseStructureToolPaneProps} from '../../types'
 import {ColumnsControl} from './ColumnsControl'
 import {DocumentSheetListFilter} from './DocumentSheetListFilter'
 import {DocumentSheetListPaginator} from './DocumentSheetListPaginator'
-import {SheetListProvider} from './SheetListContext'
+import {SheetListProvider} from './SheetListProvider'
 import {useDocumentSheetColumns} from './useDocumentSheetColumns'
 import {useDocumentSheetList} from './useDocumentSheetList'
 

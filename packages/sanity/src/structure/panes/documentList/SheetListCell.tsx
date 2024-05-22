@@ -5,7 +5,7 @@ import {type CellContext} from '@tanstack/react-table'
 import {type ClipboardEventHandler, type MouseEventHandler, useCallback, useState} from 'react'
 import {type SanityDocument} from 'sanity'
 
-import {useSheetListContext} from './SheetListProvider'
+import {useSheetListContext} from './sheetList/SheetListProvider'
 
 interface SheetListCellProps extends CellContext<SanityDocument, unknown> {
   fieldType: ObjectFieldType
