@@ -27,6 +27,7 @@ export interface SheetListContextValue {
     colId: string,
     rowIndex: number,
   ) => 'focused' | 'selectedAnchor' | 'selectedRange' | null
+  submitChanges: () => void
 }
 
 /** @internal */
@@ -231,6 +232,16 @@ export function SheetListProvider({children, table}: SheetListProviderProps): Re
     [selectedAnchorCellDetails, selectedRangeCellIndexes],
   )
 
+  const submitChanges = useCallback(() => {
+    if (!selectedAnchorCellDetails) return
+
+    clearAndSetFocusSelection({
+      colId: selectedAnchorCellDetails.colId,
+      rowIndex: selectedAnchorCellDetails.rowIndex + 1,
+      state: 'selected',
+    })
+  }, [clearAndSetFocusSelection, selectedAnchorCellDetails])
+
   const value = useMemo<SheetListContextValue>(
     () => ({
       selectedAnchorCellDetails,
@@ -239,6 +250,7 @@ export function SheetListProvider({children, table}: SheetListProviderProps): Re
       resetFocusSelection,
       setSelectedAnchorCell,
       getStateByCellId,
+      submitChanges,
     }),
     [
       focusAnchorCell,
@@ -247,6 +259,7 @@ export function SheetListProvider({children, table}: SheetListProviderProps): Re
       selectedRangeCellIndexes,
       setSelectedAnchorCell,
       getStateByCellId,
+      submitChanges,
     ],
   )
 

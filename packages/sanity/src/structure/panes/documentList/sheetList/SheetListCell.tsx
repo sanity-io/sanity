@@ -2,7 +2,13 @@
 import {type ObjectFieldType} from '@sanity/types'
 import {Select, TextInput} from '@sanity/ui'
 import {type CellContext} from '@tanstack/react-table'
-import {type ClipboardEventHandler, type MouseEventHandler, useCallback, useState} from 'react'
+import {
+  type ClipboardEventHandler,
+  type MouseEventHandler,
+  useCallback,
+  useEffect,
+  useState,
+} from 'react'
 import {type SanityDocument} from 'sanity'
 
 import {useSheetListContext} from './SheetListProvider'
@@ -22,7 +28,9 @@ export function SheetListCell(props: SheetListCellProps) {
     setSelectedAnchorCell,
     selectedAnchorCellDetails,
     getStateByCellId,
+    submitChanges,
   } = useSheetListContext()
+  const cellState = getStateByCellId(column.id, row.index)
 
   const handleOnFocus = useCallback(() => {
     // reselect in cases where focus achieved without initial mousedown
@@ -63,9 +71,36 @@ export function SheetListCell(props: SheetListCellProps) {
     }
   }
 
+  const handleOnKeyDown = useCallback(
+    (event: KeyboardEvent) => {
+      const {key} = event
+      if (key === 'Enter') {
+        if (cellState === 'selectedAnchor') document.getElementById(cellId)?.focus()
+        if (cellState === 'focused') submitChanges()
+      }
+    },
+    [cellId, cellState, submitChanges],
+  )
+
   const handleOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setRenderValue(event.target.value)
   }
+
+  useEffect(() => {
+    if (cellState === 'selectedAnchor' || cellState === 'focused') {
+      document.addEventListener('keydown', handleOnKeyDown)
+    }
+
+    return () => {
+      if (getStateByCellId(column.id, row.index) === 'selectedAnchor') {
+        document.removeEventListener('keydown', handleOnKeyDown)
+      }
+
+      if (getStateByCellId(column.id, row.index) === 'focused') {
+        document.removeEventListener('keydown', handleOnKeyDown)
+      }
+    }
+  }, [cellId, cellState, column.id, getStateByCellId, handleOnKeyDown, row.index])
 
   if (fieldType.name === 'boolean') {
     return (
@@ -87,8 +122,6 @@ export function SheetListCell(props: SheetListCellProps) {
   }
 
   const getBorderStyle = () => {
-    const cellState = getStateByCellId(column.id, row.index)
-
     if (cellState === 'focused') {
       return '2px solid blue'
     }
