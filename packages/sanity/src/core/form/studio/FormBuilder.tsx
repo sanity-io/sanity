@@ -3,6 +3,7 @@
 
 import {type ObjectSchemaType, type Path, type ValidationMarker} from '@sanity/types'
 import {useCallback, useRef} from 'react'
+import {useTreeArrayEditingEnabled} from 'sanity'
 
 import {type DocumentFieldAction} from '../../config'
 import {type FormNodePresence} from '../../presence'
@@ -36,7 +37,6 @@ import {DocumentFieldActionsProvider} from './contexts/DocumentFieldActions'
 import {FormBuilderInputErrorBoundary} from './FormBuilderInputErrorBoundary'
 import {FormProvider} from './FormProvider'
 import {TreeEditingDialog} from './tree-editing'
-import {DEBUG_TREE_EDITING_ENABLED} from './tree-editing/constants'
 
 /**
  * @alpha
@@ -225,6 +225,8 @@ export function FormBuilder(props: FormBuilderProps) {
     value,
   }
 
+  const useNewTreeDialog = useTreeArrayEditingEnabled()
+
   return (
     <FormProvider
       __internal_fieldActions={fieldActions}
@@ -254,7 +256,7 @@ export function FormBuilder(props: FormBuilderProps) {
           <DocumentFieldActionsProvider actions={fieldActions}>
             {renderInput(rootInputProps)}
 
-            {DEBUG_TREE_EDITING_ENABLED && (
+            {useNewTreeDialog && (
               <TreeEditingDialog
                 onPathOpen={onPathOpen}
                 openPath={openPath}
