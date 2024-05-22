@@ -11,6 +11,7 @@ interface SheetListCellProps extends CellContext<SanityDocument, unknown> {
   fieldType: ObjectFieldType
 }
 
+/** @internal */
 export function SheetListCell(props: SheetListCellProps) {
   const {getValue, column, row, fieldType} = props
   const cellId = `cell-${column.id}-${row.index}`
@@ -22,7 +23,7 @@ export function SheetListCell(props: SheetListCellProps) {
     resetFocusSelection,
     setSelectedAnchorCell,
     getStateByCellId,
-    submitChanges,
+    submitFocusedCell,
   } = useSheetListContext()
   const cellState = getStateByCellId(column.id, row.index)
 
@@ -47,10 +48,10 @@ export function SheetListCell(props: SheetListCellProps) {
       const {key} = event
       if (key === 'Enter') {
         if (cellState === 'selectedAnchor') inputRef.current?.focus()
-        if (cellState === 'focused') submitChanges()
+        if (cellState === 'focused') submitFocusedCell()
       }
     },
-    [cellState, submitChanges],
+    [cellState, submitFocusedCell],
   )
 
   const handleOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -84,10 +85,9 @@ export function SheetListCell(props: SheetListCellProps) {
   }, [renderValue])
 
   useEffect(() => {
-    if (cellState === 'selectedAnchor' || cellState === 'focused') {
+    if (cellState === 'selectedAnchor' || cellState === 'focused')
       // only listen for enter key when cell is focused or anchor
       document.addEventListener('keydown', handleOnEnterDown)
-    }
     if (cellState === 'selectedAnchor' || cellState === 'selectedRange')
       // if cell is selected, paste events should be handled
       document.addEventListener('paste', handlePaste)
@@ -97,9 +97,8 @@ export function SheetListCell(props: SheetListCellProps) {
       document.addEventListener('copy', handleCopy)
 
     return () => {
-      if (cellState === 'selectedAnchor' || cellState === 'focused') {
+      if (cellState === 'selectedAnchor' || cellState === 'focused')
         document.removeEventListener('keydown', handleOnEnterDown)
-      }
       if (cellState === 'selectedAnchor' || cellState === 'selectedRange')
         document.removeEventListener('paste', handlePaste)
       if (cellState === 'selectedAnchor') document.removeEventListener('copy', handleCopy)
@@ -161,7 +160,6 @@ export function SheetListCell(props: SheetListCellProps) {
       onChange={handleOnChange}
       onFocus={handleOnFocus}
       onBlur={handleOnBlur}
-      // onPaste={handlePaste}
       onMouseDown={handleOnMouseDown}
     />
   )

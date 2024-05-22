@@ -25,7 +25,7 @@ export interface SheetListContextValue {
     colId: string,
     rowIndex: number,
   ) => 'focused' | 'selectedAnchor' | 'selectedRange' | null
-  submitChanges: () => void
+  submitFocusedCell: () => void
 }
 
 /** @internal */
@@ -62,16 +62,18 @@ export function SheetListProvider({children, table}: SheetListProviderProps): Re
 
   const changeSelectionColumn = useCallback(
     (direction: 'left' | 'right') => {
+      if (!selectedAnchorCellDetails) return
+
       const visibleColumns = table.getVisibleLeafColumns()
       const columnIndexAfterMove =
-        visibleColumns.findIndex((col) => col.id === selectedAnchorCellDetails?.colId) +
+        visibleColumns.findIndex((col) => col.id === selectedAnchorCellDetails.colId) +
         (direction === 'left' ? -1 : 1)
 
       if (columnIndexAfterMove < 0 || columnIndexAfterMove >= visibleColumns.length) return
 
       clearAndSetFocusSelection({
         colId: visibleColumns[columnIndexAfterMove].id,
-        rowIndex: selectedAnchorCellDetails!.rowIndex,
+        rowIndex: selectedAnchorCellDetails.rowIndex,
         state: 'selected',
       })
     },
@@ -101,7 +103,7 @@ export function SheetListProvider({children, table}: SheetListProviderProps): Re
           if (indexInDirectionFromLast < 0) return previousSelection
 
           // if the cell in the direction is the same as the focused cell, deselect all cells
-          if (indexInDirectionFromLast === selectedAnchorCellDetails?.rowIndex) {
+          if (indexInDirectionFromLast === selectedAnchorCellDetails.rowIndex) {
             return []
           }
 
@@ -128,15 +130,16 @@ export function SheetListProvider({children, table}: SheetListProviderProps): Re
   )
 
   const handleEscapePress = useCallback(() => {
+    if (!selectedAnchorCellDetails) return
     if (selectedRangeCellIndexes.length) {
       // only clear selected range if it exists
       setSelectedRangeCellIndexes([])
     } else {
       const nextAnchorCellDetails: SelectedCellDetails =
-        selectedAnchorCellDetails?.state === 'selected'
+        selectedAnchorCellDetails.state === 'selected'
           ? null
           : {
-              ...selectedAnchorCellDetails!,
+              ...selectedAnchorCellDetails,
               state: 'selected',
             }
       clearAndSetFocusSelection(nextAnchorCellDetails)
@@ -176,7 +179,7 @@ export function SheetListProvider({children, table}: SheetListProviderProps): Re
       }
       if (
         // when cell is focused, arrows should have default behavior
-        selectedAnchorCellDetails?.state === 'selected' &&
+        selectedAnchorCellDetails.state === 'selected' &&
         (key === 'ArrowLeft' || key === 'ArrowRight')
       ) {
         event.preventDefault()
@@ -213,6 +216,7 @@ export function SheetListProvider({children, table}: SheetListProviderProps): Re
       if (selectedAnchorCellDetails) {
         document.removeEventListener('keydown', handleAnchorKeydown)
         document.removeEventListener('click', handleAnchorClick)
+        document.addEventListener('paste', handlePaste)
       }
     }
   }, [handleAnchorClick, handleAnchorKeydown, handlePaste, selectedAnchorCellDetails])
@@ -241,7 +245,7 @@ export function SheetListProvider({children, table}: SheetListProviderProps): Re
     [selectedAnchorCellDetails, selectedRangeCellIndexes],
   )
 
-  const submitChanges = useCallback(() => {
+  const submitFocusedCell = useCallback(() => {
     if (!selectedAnchorCellDetails) return
 
     clearAndSetFocusSelection({
@@ -257,9 +261,15 @@ export function SheetListProvider({children, table}: SheetListProviderProps): Re
       resetFocusSelection,
       setSelectedAnchorCell,
       getStateByCellId,
-      submitChanges,
+      submitFocusedCell,
     }),
-    [focusAnchorCell, resetFocusSelection, setSelectedAnchorCell, getStateByCellId, submitChanges],
+    [
+      focusAnchorCell,
+      resetFocusSelection,
+      setSelectedAnchorCell,
+      getStateByCellId,
+      submitFocusedCell,
+    ],
   )
 
   return <SheetListContext.Provider value={value}>{children}</SheetListContext.Provider>
