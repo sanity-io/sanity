@@ -48,7 +48,7 @@
     "build": "pkg-utils build --strict --check --clean",
     "check:types": "tsc --project tsconfig.lib.json",
     "clean": "rimraf lib",
-    "dev": "cd ./e2e-tests/ && ts-node serve",
+    "dev": "cd ./e2e-tests/ && tsx serve",
     "lint": "eslint .",
     "prepublishOnly": "turbo run build",
     "prettier": "prettier --write './**/*.{ts,tsx,js,css,html}'",
@@ -97,6 +97,7 @@
     "rimraf": "^3.0.2",
     "rxjs": "^7.8.1",
     "styled-components": "^6.1.11",
+    "tsx": "^4.10.3",
     "vite": "^4.5.3"
   },
   "peerDependencies": {

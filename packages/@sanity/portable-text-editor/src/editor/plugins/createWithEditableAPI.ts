@@ -341,12 +341,24 @@ export function createWithEditableAPI(
         type: ObjectSchemaType,
         value?: {[prop: string]: unknown},
       ): {spanPath: Path; markDefPath: Path} | undefined => {
-        const {selection} = editor
-        if (selection) {
-          const [block] = Editor.node(editor, selection.focus, {depth: 1})
-          if (SlateElement.isElement(block) && block._type === types.block.name) {
-            const annotationKey = keyGenerator()
-            if (editor.isTextBlock(block)) {
+        const {selection: originalSelection} = editor
+        let returnValue: {spanPath: Path; markDefPath: Path} | undefined = undefined
+        if (originalSelection) {
+          const [block] = Editor.node(editor, originalSelection.focus, {depth: 1})
+          if (!editor.isTextBlock(block)) {
+            return undefined
+          }
+          if (Range.isCollapsed(originalSelection)) {
+            editor.pteExpandToWord()
+            editor.onChange()
+          }
+          const [textNode] = Editor.node(editor, originalSelection.focus, {depth: 2})
+
+          // If we still have a selection, add the annotation to the selected text
+          if (editor.selection) {
+            Editor.withoutNormalizing(editor, () => {
+              // Add markDefs to the block
+              const annotationKey = keyGenerator()
               Transforms.setNodes(
                 editor,
                 {
@@ -355,68 +367,55 @@ export function createWithEditableAPI(
                     {_type: type.name, _key: annotationKey, ...value} as PortableTextObject,
                   ],
                 },
-                {at: selection.focus},
+                {at: originalSelection.focus},
               )
               editor.onChange()
-              if (Range.isCollapsed(selection)) {
-                editor.pteExpandToWord()
-                editor.onChange()
-              }
-              const [textNode] = Editor.node(editor, selection.focus, {depth: 2})
-              if (editor.selection) {
-                Editor.withoutNormalizing(editor, () => {
-                  // Split if needed
-                  Transforms.setNodes(editor, {}, {match: Text.isText, split: true})
-                  if (editor.selection && Text.isText(textNode)) {
-                    Transforms.setNodes(
-                      editor,
-                      {
-                        marks: [...((textNode.marks || []) as string[]), annotationKey],
-                      },
-                      {
-                        at: editor.selection,
-                        match: (n) => n._type === types.span.name,
-                      },
-                    )
-                    editor.onChange()
-                  }
-                })
-                Editor.normalize(editor)
-                editor.onChange()
-                const newSelection = toPortableTextRange(
-                  fromSlateValue(
-                    editor.children,
-                    types.block.name,
-                    KEY_TO_VALUE_ELEMENT.get(editor),
-                  ),
-                  editor.selection,
-                  types,
+
+              // Split if needed
+              Transforms.setNodes(editor, {}, {match: Text.isText, split: true})
+              editor.onChange()
+
+              // Add marks to the span node
+              if (editor.selection && Text.isText(textNode)) {
+                Transforms.setNodes(
+                  editor,
+                  {
+                    marks: [...((textNode.marks || []) as string[]), annotationKey],
+                  },
+                  {
+                    at: editor.selection,
+                    match: (n) => n._type === types.span.name,
+                  },
                 )
-                // eslint-disable-next-line max-depth
-                if (newSelection && typeof block._key === 'string') {
-                  // Insert an empty string to continue writing non-annotated text
-                  Editor.withoutNormalizing(editor, () => {
-                    if (editor.selection) {
-                      Transforms.insertNodes(
-                        editor,
-                        [{_type: 'span', text: '', marks: [], _key: keyGenerator()}],
-                        {
-                          at: Range.end(editor.selection),
-                        },
-                      )
-                      editor.onChange()
-                    }
-                  })
-                  return {
-                    spanPath: newSelection.focus.path,
-                    markDefPath: [{_key: block._key}, 'markDefs', {_key: annotationKey}],
-                  }
+              }
+              editor.onChange()
+              if (editor.selection) {
+                // Insert an empty string to continue writing non-annotated text
+                Transforms.insertNodes(
+                  editor,
+                  [{_type: 'span', text: '', marks: [], _key: keyGenerator()}],
+                  {
+                    at: Range.end(editor.selection),
+                  },
+                )
+              }
+              const newPortableTextEditorSelection = toPortableTextRange(
+                fromSlateValue(editor.children, types.block.name, KEY_TO_VALUE_ELEMENT.get(editor)),
+                editor.selection,
+                types,
+              )
+              if (newPortableTextEditorSelection) {
+                returnValue = {
+                  spanPath: newPortableTextEditorSelection.focus.path,
+                  markDefPath: [{_key: block._key}, 'markDefs', {_key: annotationKey}],
                 }
               }
-            }
+            })
+            Editor.normalize(editor)
+            editor.onChange()
           }
         }
-        return undefined
+        return returnValue
       },
       delete: (selection: EditorSelection, options?: EditableAPIDeleteOptions): void => {
         if (selection) {

@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 /* eslint-disable complexity */
 /**
  *
@@ -16,6 +17,7 @@ import {
 } from '../../types/editor'
 import {debugWithName} from '../../utils/debug'
 import {toPortableTextRange} from '../../utils/ranges'
+import {EMPTY_MARKS} from '../../utils/values'
 
 const debug = debugWithName('plugin:withPortableTextMarkModel')
 
@@ -71,6 +73,32 @@ export function createWithPortableTextMarkModel(
           debug('Adding .marks to span node')
           Transforms.setNodes(editor, {marks: []}, {at: path})
           editor.onChange()
+        }
+        const hasSpanMarks = isSpan && (node.marks || []).length > 0
+        if (hasSpanMarks) {
+          const spanMarks = node.marks || EMPTY_MARKS
+          // Test that every annotation mark used has a definition in markDefs
+          const annotationMarks = spanMarks.filter(
+            (mark) => !types.decorators.map((dec) => dec.value).includes(mark),
+          )
+          if (annotationMarks.length > 0) {
+            const [block] = Editor.node(editor, Path.parent(path))
+            const orphanedMarks =
+              (editor.isTextBlock(block) &&
+                annotationMarks.filter(
+                  (mark) => !block.markDefs?.find((def) => def._key === mark),
+                )) ||
+              []
+            if (orphanedMarks.length > 0) {
+              debug('Removing orphaned .marks from span node')
+              Transforms.setNodes(
+                editor,
+                {marks: spanMarks.filter((mark) => !orphanedMarks.includes(mark))},
+                {at: path},
+              )
+              editor.onChange()
+            }
+          }
         }
         for (const op of editor.operations) {
           // Make sure markDefs are copied over when merging two blocks.
