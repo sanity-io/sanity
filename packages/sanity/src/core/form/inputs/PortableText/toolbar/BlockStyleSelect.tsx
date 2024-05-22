@@ -29,6 +29,7 @@ const MenuButtonMemo = memo(MenuButton)
 interface BlockStyleSelectProps {
   disabled: boolean
   items: BlockStyleItem[]
+  boundaryElement: HTMLDivElement | null
 }
 
 const StyledMenuItem = styled(MenuItem)`
@@ -70,10 +71,17 @@ const emptyStyle: BlockStyleItem = {
 export const BlockStyleSelect = memo(function BlockStyleSelect(
   props: BlockStyleSelectProps,
 ): JSX.Element {
-  const {disabled, items: itemsProp} = props
+  const {disabled, items: itemsProp, boundaryElement} = props
   const editor = usePortableTextEditor()
   const focusBlock = useFocusBlock()
   const {t} = useTranslation()
+
+  const popoverProperties: MenuButtonProps['popover'] = {
+    constrainSize: true,
+    placement: 'bottom-start',
+    portal: 'default',
+    referenceBoundary: boundaryElement,
+  }
 
   const _disabled =
     disabled || (focusBlock ? editor.schemaTypes.block.name !== focusBlock._type : false)
@@ -157,7 +165,7 @@ export const BlockStyleSelect = memo(function BlockStyleSelect(
 
   const menu = useMemo(
     () => (
-      <Menu disabled={_disabled}>
+      <Menu disabled={_disabled} style={{zIndex: 10000}}>
         {items.map((item) => {
           return (
             <StyledMenuItem
@@ -177,7 +185,7 @@ export const BlockStyleSelect = memo(function BlockStyleSelect(
 
   return (
     <MenuButtonMemo
-      popover={MENU_POPOVER_PROPS}
+      popover={popoverProperties}
       id="block-style-select"
       button={button}
       menu={menu}
