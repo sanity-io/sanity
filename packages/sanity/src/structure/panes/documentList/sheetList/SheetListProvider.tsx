@@ -200,10 +200,13 @@ export function SheetListProvider({children, table}: SheetListProviderProps): Re
     [resetFocusSelection, selectedAnchorCellDetails],
   )
 
+  const handlePaste = useCallback(() => {}, [])
+
   useEffect(() => {
     if (selectedAnchorCellDetails) {
       document.addEventListener('keydown', handleAnchorKeydown)
       document.addEventListener('click', handleAnchorClick)
+      document.addEventListener('paste', handlePaste)
     }
 
     return () => {
@@ -212,7 +215,7 @@ export function SheetListProvider({children, table}: SheetListProviderProps): Re
         document.removeEventListener('click', handleAnchorClick)
       }
     }
-  }, [handleAnchorClick, handleAnchorKeydown, selectedAnchorCellDetails])
+  }, [handleAnchorClick, handleAnchorKeydown, handlePaste, selectedAnchorCellDetails])
 
   const focusAnchorCell = useCallback(
     () =>

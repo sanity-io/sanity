@@ -88,9 +88,13 @@ function DocumentSheetListPaneInner({
       pagination: {pageSize: 25},
       columnVisibility: initialColumnsVisibility,
     },
+    getRowId: (row) => row._id,
     meta: {
       selectedAnchor,
       setSelectedAnchor,
+      onUpdate: (documentId, fieldId, value) => {
+        console.log('update id', documentId, 'field', fieldId, 'value', value)
+      },
     },
   })
 

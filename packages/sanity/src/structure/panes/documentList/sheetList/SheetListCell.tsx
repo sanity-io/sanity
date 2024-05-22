@@ -2,13 +2,7 @@
 import {type ObjectFieldType} from '@sanity/types'
 import {Select, TextInput} from '@sanity/ui'
 import {type CellContext} from '@tanstack/react-table'
-import {
-  type ClipboardEventHandler,
-  type MouseEventHandler,
-  useCallback,
-  useEffect,
-  useState,
-} from 'react'
+import {type MouseEventHandler, useCallback, useEffect, useState} from 'react'
 import {type SanityDocument} from 'sanity'
 
 import {useSheetListContext} from './SheetListProvider'
@@ -21,6 +15,7 @@ export function SheetListCell(props: SheetListCellProps) {
   const {getValue, column, row, fieldType} = props
   const cellId = `cell-${column.id}-${row.index}`
   const [renderValue, setRenderValue] = useState(getValue())
+  const [isDirty, setIsDirty] = useState(false)
   const {
     focusAnchorCell,
     selectedRangeCellIndexes,
@@ -38,29 +33,29 @@ export function SheetListCell(props: SheetListCellProps) {
     focusAnchorCell()
   }, [column.id, focusAnchorCell, row.index, setSelectedAnchorCell])
 
-  const handlePaste = useCallback<ClipboardEventHandler<HTMLInputElement>>(
-    (event) => {
-      if (
-        selectedAnchorCellDetails?.colId === column.id &&
-        (selectedRangeCellIndexes.includes(row.index) ||
-          selectedAnchorCellDetails?.rowIndex === row.index)
-      ) {
-        event.preventDefault()
-        const clipboardData = event.clipboardData?.getData('Text')
+  // const handlePaste = useCallback<ClipboardEventHandler<HTMLInputElement>>(
+  //   (event) => {
+  //     if (
+  //       selectedAnchorCellDetails?.colId === column.id &&
+  //       (selectedRangeCellIndexes.includes(row.index) ||
+  //         selectedAnchorCellDetails?.rowIndex === row.index)
+  //     ) {
+  //       event.preventDefault()
+  //       const clipboardData = event.clipboardData?.getData('Text')
 
-        if (typeof clipboardData === 'string' || typeof clipboardData === 'number') {
-          setRenderValue(clipboardData)
-        }
-      }
-    },
-    [
-      column.id,
-      row.index,
-      selectedAnchorCellDetails?.colId,
-      selectedAnchorCellDetails?.rowIndex,
-      selectedRangeCellIndexes,
-    ],
-  )
+  //       if (typeof clipboardData === 'string' || typeof clipboardData === 'number') {
+  //         setRenderValue(clipboardData)
+  //       }
+  //     }
+  //   },
+  //   [
+  //     column.id,
+  //     row.index,
+  //     selectedAnchorCellDetails?.colId,
+  //     selectedAnchorCellDetails?.rowIndex,
+  //     selectedRangeCellIndexes,
+  //   ],
+  // )
 
   const handleOnMouseDown: MouseEventHandler<HTMLInputElement> = (event) => {
     if (event.detail === 2) {
@@ -83,7 +78,16 @@ export function SheetListCell(props: SheetListCellProps) {
   )
 
   const handleOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setIsDirty(true)
     setRenderValue(event.target.value)
+  }
+
+  const handleOnBlur = () => {
+    if (isDirty) {
+      props.table.options.meta.onUpdate(row.id, column.id, renderValue)
+      setIsDirty(false)
+    }
+    resetFocusSelection()
   }
 
   useEffect(() => {
@@ -118,9 +122,7 @@ export function SheetListCell(props: SheetListCellProps) {
   }
 
   const getBorderStyle = () => {
-    if (cellState === 'focused') {
-      return '2px solid blue'
-    }
+    if (cellState === 'focused') return '2px solid blue'
     if (cellState === 'selectedRange') return '1px solid green'
     if (cellState === 'selectedAnchor') return '1px solid blue'
 
@@ -143,8 +145,8 @@ export function SheetListCell(props: SheetListCellProps) {
       }
       onChange={handleOnChange}
       onFocus={handleOnFocus}
-      onBlur={resetFocusSelection}
-      onPaste={handlePaste}
+      onBlur={handleOnBlur}
+      // onPaste={handlePaste}
       onMouseDown={handleOnMouseDown}
     />
   )
