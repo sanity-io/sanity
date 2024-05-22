@@ -307,16 +307,18 @@ export const ObjectField = function ObjectField(props: {
   ])
 
   return (
-    <FormCallbacksProvider
-      onFieldGroupSelect={onFieldGroupSelect}
-      onChange={handleChange}
-      onSetFieldSetCollapsed={onSetFieldSetCollapsed}
-      onPathOpen={onPathOpen}
-      onSetPathCollapsed={onSetPathCollapsed}
-      onPathBlur={onPathBlur}
-      onPathFocus={onPathFocus}
-    >
-      {useMemo(() => renderField(fieldProps), [fieldProps, renderField])}
-    </FormCallbacksProvider>
+    <div style={{outline: '2px solid green'}}>
+      <FormCallbacksProvider
+        onFieldGroupSelect={onFieldGroupSelect}
+        onChange={handleChange}
+        onSetFieldSetCollapsed={onSetFieldSetCollapsed}
+        onPathOpen={onPathOpen}
+        onSetPathCollapsed={onSetPathCollapsed}
+        onPathBlur={onPathBlur}
+        onPathFocus={onPathFocus}
+      >
+        {useMemo(() => renderField(fieldProps), [fieldProps, renderField])}
+      </FormCallbacksProvider>
+    </div>
   )
 }

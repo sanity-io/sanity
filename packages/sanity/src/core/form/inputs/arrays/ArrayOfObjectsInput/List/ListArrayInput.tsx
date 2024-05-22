@@ -186,17 +186,9 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
   const listGridGap = 1
   const paddingY = 1
   const radius = 2
-
   return (
     <Stack space={2} ref={parentRef}>
-      <UploadTargetCard
-        $radius={radius}
-        types={schemaType.of}
-        resolveUploader={resolveUploader}
-        onUpload={onUpload}
-        {...elementProps}
-        tabIndex={0}
-      >
+      <div {...elementProps} tabIndex={0} style={{outline: '1px solid blue'}}>
         <Stack data-ui="ArrayInput__content" space={2}>
           {members.length === 0 ? (
             <Card padding={3} border radius={2}>
@@ -274,7 +266,7 @@ export function ListArrayInput<Item extends ObjectItem>(props: ArrayOfObjectsInp
             </Card>
           )}
         </Stack>
-      </UploadTargetCard>
+      </div>
       <ArrayFunctions
         onChange={onChange}
         onItemAppend={handleAppend}

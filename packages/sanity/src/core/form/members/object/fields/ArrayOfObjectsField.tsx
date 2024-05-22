@@ -36,6 +36,7 @@ import {ensureKey} from '../../../utils/ensureKey'
 import * as is from '../../../utils/is'
 import {createDescriptionId} from '../../common/createDescriptionId'
 import {resolveInitialArrayValues} from '../../common/resolveInitialArrayValues'
+import path from 'node:path'
 
 /**
  * Responsible for creating inputProps and fieldProps to pass to ´renderInput´ and ´renderField´ for an array input
@@ -297,6 +298,16 @@ export function ArrayOfObjectsField(props: {
       'onBlur': handleBlur,
       'onFocus': handleFocus,
       'id': member.field.id,
+      'onClick': () => {
+        console.log('Clicked me!', path)
+      },
+      'onCopy': (event) => {
+        console.log('Copy me!', path)
+      },
+      'onPaste': (event) => {
+        console.log('Copy me!', path)
+      },
+
       'ref': focusRef,
       'aria-describedby': createDescriptionId(member.field.id, member.field.schemaType.description),
     }),

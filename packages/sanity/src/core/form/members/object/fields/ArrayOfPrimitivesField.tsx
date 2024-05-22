@@ -440,16 +440,18 @@ export function ArrayOfPrimitivesField(props: {
   ])
 
   return (
-    <FormCallbacksProvider
-      onFieldGroupSelect={onFieldGroupSelect}
-      onChange={handleChange}
-      onPathOpen={onPathOpen}
-      onSetFieldSetCollapsed={onSetFieldSetCollapsed}
-      onSetPathCollapsed={onSetPathCollapsed}
-      onPathBlur={onPathBlur}
-      onPathFocus={onPathFocus}
-    >
-      {useMemo(() => renderField(fieldProps as FIXME), [fieldProps, renderField])}
-    </FormCallbacksProvider>
+    <div style={{outline: '2px solid white'}}>
+      <FormCallbacksProvider
+        onFieldGroupSelect={onFieldGroupSelect}
+        onChange={handleChange}
+        onPathOpen={onPathOpen}
+        onSetFieldSetCollapsed={onSetFieldSetCollapsed}
+        onSetPathCollapsed={onSetPathCollapsed}
+        onPathBlur={onPathBlur}
+        onPathFocus={onPathFocus}
+      >
+        {useMemo(() => renderField(fieldProps as FIXME), [fieldProps, renderField])}
+      </FormCallbacksProvider>
+    </div>
   )
 }
