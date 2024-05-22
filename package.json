@@ -34,6 +34,7 @@
     "dev:embedded-studio": "pnpm --filter embedded-studio dev",
     "dev:i18n": "SANITY_STUDIO_DEBUG_I18N=triangles pnpm start",
     "dev:i18n:reverse": "SANITY_STUDIO_DEBUG_I18N=reverse pnpm start",
+    "dev:page-building-studio": "pnpm --filter sanity-page-building-studio dev",
     "dev:starter-studio": "pnpm --filter sanity-starter-studio dev",
     "dev:strict-studio": "pnpm --filter sanity-strict-studio dev",
     "dev:test-studio": "pnpm --filter sanity-test-studio dev",
