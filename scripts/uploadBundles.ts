@@ -71,6 +71,10 @@ async function copyPackages() {
           destination: `modules/${appVersion}/${cleanDir}/${version}/bare/${fileName}`,
           gzip: true,
           contentType: 'application/javascript',
+          metadata: {
+            // 1 year cache
+            cacheControl: 'public, max-age=31536000, immutable',
+          },
         }
 
         // Upload files to the proper bucket destination
@@ -161,8 +165,8 @@ async function updateManifest(newVersions: Map<string, string>) {
       destination: 'modules/v1/manifest-v1.json',
       contentType: 'application/json',
       metadata: {
-        // 10 mins cache
-        cacheControl: 'public, max-age=600',
+        // 10 seconds
+        cacheControl: 'public, max-age=10',
       },
     }
 
