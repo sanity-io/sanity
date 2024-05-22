@@ -24,10 +24,12 @@ export const operationArgs = memoize(
     idPair: IdPair,
     typeName: string,
   ): Observable<OperationArgs> => {
+    // TODO: Should be dynamic
+    const draftIndex = 0
     return snapshotPair(ctx.client, idPair, typeName, ctx.serverActionsEnabled).pipe(
       switchMap((versions) =>
         combineLatest([
-          versions.draft.snapshots$,
+          versions.drafts[draftIndex].snapshots$,
           versions.published.snapshots$,
           ctx.serverActionsEnabled,
         ]).pipe(
@@ -38,7 +40,7 @@ export const operationArgs = memoize(
               idPair,
               typeName,
               snapshots: {draft, published},
-              draft: versions.draft,
+              draft: versions.drafts[draftIndex],
               published: versions.published,
             }),
           ),
