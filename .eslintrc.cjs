@@ -70,6 +70,12 @@ const config = {
       },
     ],
     // Set react-compiler to `error` once existing issues are fixed
+    /**
+     * Once all react-compiler warnings are fixed then this rule should be changed to 'error' and:
+     * - the `.eslintignore.react-compiler` file should be deleted
+     * - the `.github/workflows/are-we-compiled-yet.yml` action can be deleted
+     * - the `pnpm check:react-compiler` command removed
+     */
     'react-compiler/react-compiler': 'warn',
     'react/no-unescaped-entities': 'off',
     'i18next/no-literal-string': ['error'],
