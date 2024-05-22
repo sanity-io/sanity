@@ -32,10 +32,10 @@ export const validation = memoize(
       i18n: LocaleSource
       serverActionsEnabled: Observable<boolean>
     },
-    {draftId, publishedId}: IdPair,
+    {draftIds, publishedId}: IdPair,
     typeName: string,
   ): Observable<ValidationStatus> => {
-    const document$ = editState(ctx, {draftId, publishedId}, typeName).pipe(
+    const document$ = editState(ctx, {draftIds, publishedId}, typeName).pipe(
       map(({draft, published}) => draft || published),
       throttleTime(DOC_UPDATE_DELAY, asyncScheduler, {trailing: true}),
       distinctUntilChanged((prev, next) => {

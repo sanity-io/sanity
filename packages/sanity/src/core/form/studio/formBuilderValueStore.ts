@@ -81,6 +81,7 @@ function wrap(document: DocumentVersion) {
 }
 
 let hasWarned = false
+// TODO: Rename -> `checkoutBundle`
 export function checkoutPair(documentStore: DocumentStore, idPair: IdPair) {
   if (!hasWarned) {
     // eslint-disable-next-line no-console
@@ -90,10 +91,11 @@ export function checkoutPair(documentStore: DocumentStore, idPair: IdPair) {
 
     hasWarned = true
   }
-  const {draft, published} = documentStore.checkoutPair(idPair)
+  const {drafts, published} = documentStore.checkoutPair(idPair)
 
   return {
-    draft: wrap(draft),
+    drafts: drafts.map(wrap),
+    // TODO: Rename -> `public`
     published: wrap(published),
   }
 }
