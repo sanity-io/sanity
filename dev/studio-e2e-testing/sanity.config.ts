@@ -84,6 +84,13 @@ const sharedSettings = definePlugin({
     muxInput({mp4_support: 'standard'}),
     presenceTool(),
   ],
+  features: {
+    beta: {
+      treeArrayEditing: {
+        enabled: true,
+      },
+    },
+  },
 })
 
 export default defineConfig({
@@ -98,5 +105,12 @@ export default defineConfig({
   // eslint-disable-next-line camelcase
   __internal_serverDocumentActions: {
     enabled: true,
+  },
+  features: {
+    beta: {
+      treeArrayEditing: {
+        enabled: true,
+      },
+    },
   },
 })
