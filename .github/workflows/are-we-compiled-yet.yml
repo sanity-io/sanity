@@ -51,4 +51,4 @@ jobs:
         run: echo "::add-matcher::.github/eslint-compact.json"
 
       - name: Lint with the React Compiler ESLint plugin
-        run: pnpm check:react-compiler
+        run: pnpm check:react-compiler -f compact

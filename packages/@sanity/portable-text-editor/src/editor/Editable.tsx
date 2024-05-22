@@ -334,6 +334,7 @@ export const PortableTextEditable = forwardRef(function PortableTextEditable(
 
   useEffect(() => {
     syncRangeDecorations()
+    // eslint-disable-next-line react-compiler/react-compiler
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []) // Empty here! We only want to run this once at mount
 
