@@ -21,9 +21,12 @@ export const consistencyStatus: (
     typeName: string,
     serverActionsEnabled: Observable<boolean>,
   ) => {
+    // TODO: Should be dynamic
+    const draftIndex = 0
+    // TODO: Rename -> `memoizedBundle`
     return memoizedPair(client, idPair, typeName, serverActionsEnabled).pipe(
-      switchMap(({draft, published}) =>
-        combineLatest([draft.consistency$, published.consistency$]),
+      switchMap(({drafts, published}) =>
+        combineLatest([drafts[draftIndex].consistency$, published.consistency$]),
       ),
       map(
         ([draftIsConsistent, publishedIsConsistent]) => draftIsConsistent && publishedIsConsistent,
