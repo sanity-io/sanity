@@ -16,9 +16,11 @@ export const unpublish: OperationImpl<[], DisabledReason> = {
     let tx = client.observable.transaction().delete(idPair.publishedId)
 
     if (snapshots.published) {
+      // TODO: Should be dynamic
+      const draftIndex = 0
       tx = tx.createIfNotExists({
         ...omit(snapshots.published, '_updatedAt'),
-        _id: idPair.draftId,
+        _id: idPair.draftIds[draftIndex],
         _type: snapshots.published._type,
       })
     }

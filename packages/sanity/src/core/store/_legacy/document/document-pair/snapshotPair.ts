@@ -53,9 +53,10 @@ export interface DocumentVersionSnapshots {
 }
 
 /** @internal */
+// TODO: Rename
 interface SnapshotPair {
   transactionsPendingEvents$: Observable<PendingMutationsEvent>
-  draft: DocumentVersionSnapshots
+  drafts: DocumentVersionSnapshots[]
   published: DocumentVersionSnapshots
 }
 
@@ -68,11 +69,11 @@ export const snapshotPair = memoize(
     serverActionsEnabled: Observable<boolean>,
   ): Observable<SnapshotPair> => {
     return memoizedPair(client, idPair, typeName, serverActionsEnabled).pipe(
-      map(({published, draft, transactionsPendingEvents$}): SnapshotPair => {
+      map(({published, drafts, transactionsPendingEvents$}): SnapshotPair => {
         return {
           transactionsPendingEvents$,
           published: withSnapshots(published),
-          draft: withSnapshots(draft),
+          drafts: drafts.map(withSnapshots),
         }
       }),
       publishReplay(1),
