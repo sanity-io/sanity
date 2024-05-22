@@ -64,14 +64,16 @@ export function getPairListener(
   idPair: IdPair,
   options: PairListenerOptions = {},
 ): Observable<ListenerEvent> {
-  const {publishedId, draftId} = idPair
+  const {publishedId, draftIds} = idPair
+  // TODO: Should be dynamic
+  const draftIndex = 0
   return defer(
     () =>
       client.observable.listen(
-        `*[_id == $publishedId || _id == $draftId]`,
+        `*[_id == $publishedId || _id in($draftIds)]`,
         {
           publishedId,
-          draftId,
+          draftIds,
         },
         {
           includeResult: false,
@@ -85,7 +87,7 @@ export function getPairListener(
       event.type === 'welcome'
         ? fetchInitialDocumentSnapshots().pipe(
             concatMap((snapshots) => [
-              createSnapshotEvent(draftId, snapshots.draft),
+              createSnapshotEvent(draftIds[draftIndex], snapshots.draft),
               createSnapshotEvent(publishedId, snapshots.published),
             ]),
           )
@@ -131,7 +133,7 @@ export function getPairListener(
 
   function fetchInitialDocumentSnapshots(): Observable<Snapshots> {
     return client.observable
-      .getDocuments<SanityDocument>([draftId, publishedId], {tag: 'document.snapshots'})
+      .getDocuments<SanityDocument>([...draftIds, publishedId], {tag: 'document.snapshots'})
       .pipe(
         map(([draft, published]) => ({
           draft,

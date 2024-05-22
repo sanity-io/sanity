@@ -10,12 +10,15 @@ export const unpublish: OperationImpl<[], DisabledReason> = {
     }
     return snapshots.published ? false : 'NOT_PUBLISHED'
   },
-  execute: ({client, idPair}) =>
-    client.observable.action(
+  execute: ({client, idPair}) => {
+    // TODO: Should be dynamic
+    const draftIndex = 0
+
+    return client.observable.action(
       {
         // This operation is run when "unpublish anyway" is clicked
         actionType: 'sanity.action.document.unpublish',
-        draftId: idPair.draftId,
+        draftId: idPair.draftIds[draftIndex],
         publishedId: idPair.publishedId,
       },
       {
@@ -25,5 +28,6 @@ export const unpublish: OperationImpl<[], DisabledReason> = {
         // UI.
         skipCrossDatasetReferenceValidation: true,
       },
-    ),
+    )
+  },
 }
