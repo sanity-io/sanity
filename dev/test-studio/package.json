@@ -64,7 +64,7 @@
     "sanity": "workspace:*",
     "sanity-plugin-hotspot-array": "^2.0.0",
     "sanity-plugin-mux-input": "^2.2.1",
-    "styled-components": "^6.1.0",
+    "styled-components": "^6.1.11",
     "three": "^0.164.0",
     "three-stdlib": "^2.24.2"
   },

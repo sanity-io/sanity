@@ -30,6 +30,7 @@ const config = {
     '@typescript-eslint',
     'prettier',
     'react',
+    'react-compiler',
     'tsdoc',
     'unicorn',
   ],
@@ -68,6 +69,8 @@ const config = {
         additionalHooks: '(useMemoObservable|useObservableCallback|useAsync)',
       },
     ],
+    // Set react-compiler to `error` once existing issues are fixed
+    'react-compiler/react-compiler': 'warn',
     'react/no-unescaped-entities': 'off',
     'i18next/no-literal-string': ['error'],
     '@sanity/i18n/no-attribute-string-literals': [
