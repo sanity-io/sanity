@@ -232,6 +232,7 @@ export const TagInput = forwardRef(
       const inputElement = forwardedRef.current
 
       if (inputElement) {
+        // eslint-disable-next-line react-compiler/react-compiler
         inputElement.style.width = '0'
         inputElement.style.width = `${inputElement.scrollWidth}px`
       }

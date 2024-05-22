@@ -65,6 +65,7 @@ export function FormCreate(props: ObjectInputProps) {
         setActiveTab('subscribed')
       }
     }
+    // eslint-disable-next-line react-compiler/react-compiler
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [creating, savedTask?.createdByUser])
 
@@ -85,6 +86,7 @@ export function FormCreate(props: ObjectInputProps) {
     return () => {
       if (timeoutId) clearTimeout(timeoutId)
     }
+    // eslint-disable-next-line react-compiler/react-compiler
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [creating])
 

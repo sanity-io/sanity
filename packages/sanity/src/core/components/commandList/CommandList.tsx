@@ -306,6 +306,7 @@ export const CommandList = forwardRef<CommandListHandle, CommandListProps>(funct
       scrollAlign?: ScrollToOptions['align']
       scrollIntoView?: boolean
     }) => {
+      // eslint-disable-next-line react-compiler/react-compiler
       activeIndexRef.current = index
       handleUpdateActiveDescendant()
       showChildrenActiveState()

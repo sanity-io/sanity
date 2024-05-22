@@ -109,6 +109,7 @@ const FieldAction = memo(function FieldAction(props: FieldActionProps) {
   const {action, documentId, documentType, index, path, schemaType, setFieldAction} = props
 
   const node = useUnique(
+    // eslint-disable-next-line react-compiler/react-compiler
     action.useAction({
       documentId,
       documentType,

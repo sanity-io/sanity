@@ -109,6 +109,7 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
       })
     }
     // React to changes in hasRev only
+    // eslint-disable-next-line react-compiler/react-compiler
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hasRev])
 
@@ -121,6 +122,7 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
       focusFirstDescendant(formRef)
     }
     // We only want to run it on first mount
+    // eslint-disable-next-line react-compiler/react-compiler
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ready])
 

@@ -80,6 +80,7 @@ export function GetHookCollectionState<T, K>(props: GetHookCollectionStateProps<
   const hookIds = useMemo(() => hooks.map((hook) => getHookId(hook)), [hooks])
   const states = useMemo(
     () => hookIds.map((id) => statesRef.current[id]?.value).filter(isNonNullable),
+    // eslint-disable-next-line react-compiler/react-compiler
     // eslint-disable-next-line react-hooks/exhaustive-deps -- tickId is used to refresh the memo, before it can be removed it needs to be investigated what impact it has
     [hookIds, tickId],
   )

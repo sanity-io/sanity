@@ -259,6 +259,7 @@ export function DocumentListPaneContent(props: DocumentListPaneContentProps) {
     // Explicitly don't include `noDocumentsContent` in the deps array, as it's
     // causing a visual bug where the "No documents" message is shown for a split second
     // when clearing a search query with no results
+    // eslint-disable-next-line react-compiler/react-compiler
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     collapsed,

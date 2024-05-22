@@ -41,6 +41,7 @@ export function SlateContainer(props: SlateContainerProps) {
     KEY_TO_VALUE_ELEMENT.set(editor, {})
     KEY_TO_SLATE_ELEMENT.set(editor, {})
     return [editor, _sub]
+    // eslint-disable-next-line react-compiler/react-compiler
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []) // Only initial - empty deps here
 

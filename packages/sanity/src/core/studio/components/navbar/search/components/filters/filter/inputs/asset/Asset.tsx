@@ -1,3 +1,4 @@
+/* eslint-disable react-compiler/react-compiler */
 import {ChevronDownIcon, ImageIcon, SearchIcon, UndoIcon} from '@sanity/icons'
 import {type AssetFromSource, type AssetSource, type ReferenceValue} from '@sanity/types'
 import {Box, Flex, Menu, Portal, Stack} from '@sanity/ui'
