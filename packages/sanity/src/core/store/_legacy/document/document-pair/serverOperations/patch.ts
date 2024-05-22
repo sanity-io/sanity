@@ -30,25 +30,30 @@ export const patch: OperationImpl<[patches: any[], initialDocument?: Record<stri
     const patchMutation = draft.patch(patches)
 
     if (snapshots.published) {
+      // TODO: Should be dynamic
+      const draftIndex = 0
       draft.mutate([
         // If there's no draft, the user's edits will be based on the published document in the form in front of them
         // so before patching it we need to make sure it's created based on the current published version first.
         draft.createIfNotExists({
           ...initialDocument,
           ...snapshots.published,
-          _id: idPair.draftId,
+          _id: idPair.draftIds[draftIndex],
           _type: typeName,
         }),
         ...patchMutation,
       ])
       return
     }
+
+    // TODO: Should be dynamic
+    const draftIndex = 0
     const ensureDraft = snapshots.draft
       ? []
       : [
           draft.create({
             ...initialDocument,
-            _id: idPair.draftId,
+            _id: idPair.draftIds[draftIndex],
             _type: typeName,
           }),
         ]
