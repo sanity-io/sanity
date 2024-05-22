@@ -20,7 +20,7 @@ jest.mock('../../../components/pane/usePaneLayout', () => ({
   usePaneLayout: jest.fn().mockReturnValue({panes: [], mount: jest.fn()}),
 }))
 
-jest.mock('../useDocumentSheetList', () => ({
+jest.mock('../sheetList/useDocumentSheetList', () => ({
   useDocumentSheetList: jest.fn().mockReturnValue({data: [], isLoading: false}),
 }))
 
