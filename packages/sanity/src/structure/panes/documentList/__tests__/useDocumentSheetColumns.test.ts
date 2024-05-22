@@ -1,4 +1,5 @@
 import {describe, expect, it, jest} from '@jest/globals'
+import {type ObjectSchemaType} from '@sanity/types'
 import {renderHook} from '@testing-library/react'
 
 import {useDocumentSheetColumns} from '../useDocumentSheetColumns'
@@ -33,18 +34,17 @@ describe('useDocumentSheetColumns', () => {
         {name: 'phone number', type: {name: 'number'}},
         {name: 'has pet', type: {name: 'boolean'}},
       ],
-    }
+    } as unknown as ObjectSchemaType
 
     const {result} = renderHook(() => useDocumentSheetColumns(mockSchemaType))
     expect(result.current.initialColumnsVisibility).toEqual({
       'Preview': true,
-      'selected': true,
       'name': true,
       'nickname': true,
       'email': true,
       'age': true,
-      'address.street': true,
-      'address.country': false,
+      'address_street': true,
+      'address_country': false,
       'phone number': false,
       'has pet': false,
     })

@@ -176,6 +176,9 @@ async function installAndVerifyPackedCli({
     await readFile(path.join(__dirname, '..', '..', 'package.json'), 'utf8'),
     await exec(npmPath, ['install', packedFilePath], {cwd: cliInstallPath}),
   ])
+  await exec(nodePath, [SYMLINK_SCRIPT, cliInstallPath], {
+    cwd: cliInstallPath,
+  })
 
   // Ensure the referenced binary exists
   const version = execFileSync(cliBinPath, ['--version'], {encoding: 'utf8'}).trim()

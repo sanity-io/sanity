@@ -1,5 +1,5 @@
 import {CropIcon} from '@sanity/icons'
-import {Inline, Menu, useClickOutside, useGlobalKeyDown} from '@sanity/ui'
+import {Inline, Menu, Skeleton, useClickOutside, useGlobalKeyDown} from '@sanity/ui'
 import {type MouseEventHandler, type ReactNode, useCallback, useEffect, useState} from 'react'
 import {styled} from 'styled-components'
 
@@ -12,6 +12,12 @@ export const MenuActionsWrapper = styled(Inline)`
   top: 0;
   right: 0;
 `
+
+export const ImageActionsMenuWaitPlaceholder = () => (
+  <MenuActionsWrapper padding={2}>
+    <Skeleton style={{width: '25px', height: '25px'}} animated />
+  </MenuActionsWrapper>
+)
 
 interface ImageActionsMenuProps {
   children: ReactNode

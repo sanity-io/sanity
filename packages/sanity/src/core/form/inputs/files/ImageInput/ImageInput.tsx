@@ -49,7 +49,7 @@ import {UploadProgress} from '../common/UploadProgress'
 import {UploadWarning} from '../common/UploadWarning'
 import {ImageToolInput} from '../ImageToolInput'
 import {type ImageUrlBuilder} from '../types'
-import {ImageActionsMenu} from './ImageActionsMenu'
+import {ImageActionsMenu, ImageActionsMenuWaitPlaceholder} from './ImageActionsMenu'
 import {ImagePreview} from './ImagePreview'
 import {InvalidImageWarning} from './InvalidImageWarning'
 
@@ -510,7 +510,11 @@ export class BaseImageInput extends PureComponent<BaseImageInputProps, BaseImage
     }
 
     return (
-      <WithReferencedAsset observeAsset={observeAsset} reference={asset}>
+      <WithReferencedAsset
+        observeAsset={observeAsset}
+        reference={asset}
+        waitPlaceholder={<ImageActionsMenuWaitPlaceholder />}
+      >
         {({_id, originalFilename, extension}) => {
           let copyUrl: string | undefined
           let downloadUrl: string | undefined
