@@ -1,5 +1,6 @@
 import {isEqual, pathFor} from '@sanity/util/paths'
 import {createRef, type MutableRefObject, type ReactNode, useContext, useRef} from 'react'
+import {type FormPatch, type Path, set} from 'sanity'
 import {PortableTextMemberItemsContext} from 'sanity/_singletons'
 
 import {pathToString} from '../../../../field'
@@ -130,20 +131,50 @@ const reconcilePortableTextMembers = ({
     let input: ReactNode = null
 
     if ((isObject && item.member !== existingItem?.member) || item.node !== existingItem?.node) {
-      // Render input with onFocus noop for calling elementProps.onFocus directly on the editor nodes themselves
-      // This is to avoid closing the editing modal for them in the PT-input setting.
+      // No-op when calling elementProps.onFocus or calling onPathFocus with an empty focusPath
+      // This is to avoid closing the editing modal as it will focus the editor element itself.
+      const _elementProps = (renderInputProps: ObjectInputProps) => ({
+        ...renderInputProps.elementProps,
+        onFocus: () => {
+          // no-op
+        },
+      })
+      const _onPathFocus = (focusPath: Path) => {
+        const fullPath = item.member.item.path.concat(focusPath)
+        if (focusPath.length === 0) {
+          // no-op
+          return
+        }
+        props.onPathFocus(fullPath.slice(path.length, fullPath.length))
+      }
+
+      // When an Input is trying to remove itself (unset([])), we want instead to clear the values from the object,
+      // but keep the object itself. This is to avoid the array input to remove the array entirely when unsetting the last item (for instance with markDefs)
+      // We also want the (empty) object there in order to be able to control the closing of the object modal properly, cleaning up, normalizing through the editor etc.
+      const _onChangeDisableRemoveSelf = (objectFormRenderInputProps: ObjectInputProps) => {
+        return (patch: FormPatch) => {
+          // Special handling for unset([]) change
+          if (patch.type === 'unset' && patch.path.length === 0) {
+            objectFormRenderInputProps.onChange(
+              set({_type: item.member.item.schemaType.name, _key: item.member.key}, patch.path),
+            )
+            return
+          }
+          // Original onChange
+          objectFormRenderInputProps.onChange(patch)
+        }
+      }
+
+      // Render object Input with no-ops for setting root focus, and unsetting the object.
       const _renderInput = (renderInputProps: ObjectInputProps) => {
         const isObjectInputPath = isEqual(renderInputProps.path, item.member.item.path)
         if (isObjectInputPath) {
           return renderInput({
             ...renderInputProps,
-            elementProps: {
-              ...renderInputProps.elementProps,
-              onFocus: () => {
-                // no-op
-              },
-            },
-          })
+            onChange: _onChangeDisableRemoveSelf(renderInputProps),
+            onPathFocus: _onPathFocus,
+            elementProps: _elementProps(renderInputProps),
+          } as ObjectInputProps)
         }
         return renderInput(renderInputProps)
       }
