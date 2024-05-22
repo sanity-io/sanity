@@ -895,12 +895,10 @@ export type DefaultPluginsWorkspaceOptions = {
 }
 
 /** allows for in studio feature toggles
- * @internal
  */
 interface Features {
   /**
    * Configuration for beta features.
-   * @internal
    */
   beta?: {
     /**
