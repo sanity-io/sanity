@@ -8,11 +8,11 @@ import {
   type Row,
   useReactTable,
 } from '@tanstack/react-table'
-import {useCallback, useEffect} from 'react'
+import {useCallback, useEffect, useState} from 'react'
 import {SearchProvider, useSchema, useSearchState} from 'sanity'
 import {styled} from 'styled-components'
 
-import {type BaseStructureToolPaneProps} from '../types'
+import {type BaseStructureToolPaneProps} from '../../types'
 import {ColumnsControl} from './ColumnsControl'
 import {DocumentSheetListFilter} from './DocumentSheetListFilter'
 import {DocumentSheetListPaginator} from './DocumentSheetListPaginator'
@@ -73,6 +73,7 @@ function DocumentSheetListPaneInner({
   const {data} = useDocumentSheetList({
     typeName: documentSchemaType.name,
   })
+  const [selectedAnchor, setSelectedAnchor] = useState<number | null>(null)
 
   const totalRows = state.result.hits.length
   const table = useReactTable({
@@ -86,6 +87,10 @@ function DocumentSheetListPaneInner({
     initialState: {
       pagination: {pageSize: 25},
       columnVisibility: initialColumnsVisibility,
+    },
+    meta: {
+      selectedAnchor,
+      setSelectedAnchor,
     },
   })
 

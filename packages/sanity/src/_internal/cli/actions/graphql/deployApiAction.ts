@@ -69,7 +69,12 @@ export default async function deployGraphQLApiAction(
   }).config({apiVersion: '2023-08-01'})
 
   const apiDefs = await getGraphQLAPIs(context)
-  const hasMultipleApis = apiDefs.length > 1 || (flags.api && flags.api.length > 1)
+
+  let hasMultipleApis = apiDefs.length > 1
+  if (flags.api) {
+    hasMultipleApis = flags.api.length > 1
+  }
+
   const usedFlags = [
     datasetFlag && '--dataset',
     tagFlag && '--tag',
@@ -97,9 +102,19 @@ export default async function deployGraphQLApiAction(
 
   const deployTasks: DeployTask[] = []
 
+  for (const apiId of onlyApis || []) {
+    if (!apiDefs.some((apiDef) => apiDef.id === apiId)) {
+      throw new Error(`GraphQL API with id "${apiId}" not found`)
+    }
+  }
+
   const apiNames = new Set<string>()
   const apiIds = new Set<string>()
   for (const apiDef of apiDefs) {
+    if (onlyApis && (!apiDef.id || !onlyApis.includes(apiDef.id))) {
+      continue
+    }
+
     const dataset = datasetFlag || apiDef.dataset
     const tag = tagFlag || apiDef.tag || 'default'
     const apiName = [dataset, tag].join('/')
@@ -122,12 +137,6 @@ export default async function deployGraphQLApiAction(
     }
 
     apiNames.add(apiName)
-  }
-
-  for (const apiId of onlyApis || []) {
-    if (!apiDefs.some((apiDef) => apiDef.id === apiId)) {
-      throw new Error(`GraphQL API with id "${apiId}" not found`)
-    }
   }
 
   if (onlyApis) {

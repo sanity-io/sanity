@@ -17,9 +17,9 @@ import {useStructureToolSetting} from '../../useStructureToolSetting'
 import {type BaseStructureToolPaneProps} from '../types'
 import {DEFAULT_ORDERING, EMPTY_RECORD} from './constants'
 import {DocumentListPane} from './DocumentListPane'
-import {DocumentSheetListPane} from './DocumentSheetListPane'
 import {findStaticTypesInFilter} from './helpers'
 import {PaneHeader} from './PaneHeader'
+import {DocumentSheetListPane} from './sheetList/DocumentSheetListPane'
 import {type SortOrder} from './types'
 
 const addSelectedStateToMenuItems = (options: {

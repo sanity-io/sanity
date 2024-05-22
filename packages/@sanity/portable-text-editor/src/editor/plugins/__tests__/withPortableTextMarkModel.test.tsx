@@ -203,7 +203,7 @@ describe('plugin:withPortableTextMarksModel', () => {
             focus: {path: [{_key: 'a'}, 'children', {_key: 'a1'}], offset: 0},
             anchor: {path: [{_key: 'b'}, 'children', {_key: 'b1'}], offset: 1},
           })
-          PortableTextEditor.toggleMark(editor, 'bold')
+          PortableTextEditor.toggleMark(editor, 'strong')
           const value = PortableTextEditor.getValue(editor)
           expect(value).toMatchInlineSnapshot(`
         Array [
@@ -215,7 +215,7 @@ describe('plugin:withPortableTextMarksModel', () => {
                 "_key": "a1",
                 "_type": "span",
                 "marks": Array [
-                  "bold",
+                  "strong",
                 ],
                 "text": "123",
               },
@@ -231,7 +231,7 @@ describe('plugin:withPortableTextMarksModel', () => {
                 "_key": "b1",
                 "_type": "span",
                 "marks": Array [
-                  "bold",
+                  "strong",
                 ],
                 "text": "1",
               },
@@ -287,7 +287,7 @@ describe('plugin:withPortableTextMarksModel', () => {
           focus: {path: [{_key: 'a'}, 'children', {_key: 'a1'}], offset: 0},
           anchor: {path: [{_key: 'a'}, 'children', {_key: 'a1'}], offset: 4},
         })
-        PortableTextEditor.toggleMark(editor, 'bold')
+        PortableTextEditor.toggleMark(editor, 'strong')
         expect(PortableTextEditor.getValue(editor)).toMatchInlineSnapshot(`
         Array [
           Object {
@@ -298,7 +298,7 @@ describe('plugin:withPortableTextMarksModel', () => {
                 "_key": "a1",
                 "_type": "span",
                 "marks": Array [
-                  "bold",
+                  "strong",
                 ],
                 "text": "1234",
               },
@@ -315,7 +315,7 @@ describe('plugin:withPortableTextMarksModel', () => {
             focus: {path: [{_key: 'a'}, 'children', {_key: 'a1'}], offset: 1},
             anchor: {path: [{_key: 'a'}, 'children', {_key: 'a1'}], offset: 3},
           })
-          PortableTextEditor.toggleMark(editorRef.current, 'bold')
+          PortableTextEditor.toggleMark(editorRef.current, 'strong')
           expect(PortableTextEditor.getValue(editorRef.current)).toMatchInlineSnapshot(`
         Array [
           Object {
@@ -326,7 +326,7 @@ describe('plugin:withPortableTextMarksModel', () => {
                 "_key": "a1",
                 "_type": "span",
                 "marks": Array [
-                  "bold",
+                  "strong",
                 ],
                 "text": "1",
               },
@@ -340,7 +340,7 @@ describe('plugin:withPortableTextMarksModel', () => {
                 "_key": "1",
                 "_type": "span",
                 "marks": Array [
-                  "bold",
+                  "strong",
                 ],
                 "text": "4",
               },
@@ -358,7 +358,7 @@ describe('plugin:withPortableTextMarksModel', () => {
             focus: {path: [{_key: 'a'}, 'children', {_key: 'a1'}], offset: 0},
             anchor: {path: [{_key: 'a'}, 'children', {_key: '1'}], offset: 1},
           })
-          PortableTextEditor.toggleMark(editor, 'bold')
+          PortableTextEditor.toggleMark(editor, 'strong')
           expect(PortableTextEditor.getValue(editor)).toMatchInlineSnapshot(`
 Array [
   Object {
@@ -369,7 +369,7 @@ Array [
         "_key": "a1",
         "_type": "span",
         "marks": Array [
-          "bold",
+          "strong",
         ],
         "text": "1234",
       },
@@ -432,7 +432,7 @@ Array [
           focus: {path: [{_key: 'a'}, 'children', {_key: 'a1'}], offset: 0},
           anchor: {path: [{_key: 'a'}, 'children', {_key: 'b1'}], offset: 12},
         })
-        PortableTextEditor.toggleMark(editor, 'bold')
+        PortableTextEditor.toggleMark(editor, 'strong')
         expect(PortableTextEditor.getValue(editor)).toMatchInlineSnapshot(`
         Array [
           Object {
@@ -444,7 +444,7 @@ Array [
                 "_type": "span",
                 "marks": Array [
                   "abc",
-                  "bold",
+                  "strong",
                 ],
                 "text": "A link",
               },
@@ -452,7 +452,7 @@ Array [
                 "_key": "a2",
                 "_type": "span",
                 "marks": Array [
-                  "bold",
+                  "strong",
                 ],
                 "text": ", not a link",
               },
@@ -778,7 +778,7 @@ Array [
             {
               _key: 'a1',
               _type: 'span',
-              marks: ['bold'],
+              marks: ['strong'],
               text: '12',
             },
             {
@@ -788,7 +788,7 @@ Array [
               text: '34',
             },
           ],
-          markDefs: [{_key: 'bold', _type: 'strong'}],
+          markDefs: [{_key: 'strong', _type: 'strong'}],
           style: 'normal',
         },
       ]
@@ -811,9 +811,9 @@ Array [
           focus: {path: [{_key: 'a'}, 'children', {_key: 'a1'}], offset: 0},
           anchor: {path: [{_key: 'a'}, 'children', {_key: '2'}], offset: 2},
         })
-        expect(PortableTextEditor.isMarkActive(editor, 'bold')).toBe(false)
-        PortableTextEditor.toggleMark(editor, 'bold')
-        expect(PortableTextEditor.isMarkActive(editor, 'bold')).toBe(true)
+        expect(PortableTextEditor.isMarkActive(editor, 'strong')).toBe(false)
+        PortableTextEditor.toggleMark(editor, 'strong')
+        expect(PortableTextEditor.isMarkActive(editor, 'strong')).toBe(true)
       })
     })
 
