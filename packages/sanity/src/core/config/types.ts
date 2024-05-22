@@ -388,18 +388,10 @@ export interface PluginOptions {
      */
     enableLegacySearch?: boolean
   }
-  /** allows for in studio feature toggles */
-  features?: {
-    /** allows for shorter-lived feature toggles */
-    beta?: {
-      /**
-       * @hidden
-       * @beta */
-      treeArrayEditing?: {
-        enabled: boolean
-      }
-    }
-  }
+  /** allows for in studio feature toggles
+   * @internal
+   */
+  features?: Features
 }
 
 /** @internal */
@@ -785,18 +777,10 @@ export interface Source {
 
   /** @internal */
   __internal_serverDocumentActions?: WorkspaceOptions['__internal_serverDocumentActions']
-  /** allows for in studio feature toggles */
-  features?: {
-    /** allows for shorter-lived feature toggles */
-    beta?: {
-      /**
-       * @hidden
-       * @beta */
-      treeArrayEditing?: {
-        enabled: boolean
-      }
-    }
-  }
+  /** allows for in studio feature toggles
+   * @internal
+   */
+  features?: Features
 }
 
 /** @internal */
@@ -908,4 +892,26 @@ export type {
 export type DefaultPluginsWorkspaceOptions = {
   tasks: {enabled: boolean}
   scheduledPublishing: ScheduledPublishingPluginOptions
+}
+
+/** allows for in studio feature toggles
+ * @internal
+ */
+interface Features {
+  /**
+   * Configuration for beta features.
+   * @internal
+   */
+  beta?: {
+    /**
+     * @beta
+     * @hidden
+     * */
+    treeArrayEditing?: {
+      /**
+       * Enables the tree array editing feature.
+       */
+      enabled: boolean
+    }
+  }
 }
