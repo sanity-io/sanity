@@ -79,7 +79,6 @@ import {virtualizationDebug} from './debug/virtualizationDebug'
 import {virtualizationInObject} from './debug/virtualizationInObject'
 import {v3docs} from './docs/v3'
 import markdown from './externalPlugins/markdown'
-import mux from './externalPlugins/mux'
 import playlist from './playlist'
 import playlistTrack from './playlistTrack'
 import code from './plugins/code'
@@ -268,7 +267,6 @@ export const schemaTypes = [
 
   // Test documents with 3rd party plugin inputs
   markdown,
-  mux,
 
   // Other documents
   author,
