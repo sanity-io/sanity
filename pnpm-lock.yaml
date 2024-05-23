@@ -65,8 +65,8 @@ importers:
         specifier: 0.0.1-alpha.1
         version: 0.0.1-alpha.1
       '@sanity/tsdoc':
-        specifier: 1.0.62
-        version: 1.0.62(@types/node@18.19.31)(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.11)
+        specifier: 1.0.65
+        version: 1.0.65(@types/node@18.19.31)(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.11)
       '@sanity/uuid':
         specifier: ^3.0.2
         version: 3.0.2
@@ -1828,8 +1828,8 @@ importers:
         specifier: 6.8.18
         version: 6.8.18(@types/node@18.19.31)(debug@4.3.4)(typescript@5.4.5)
       '@sanity/tsdoc':
-        specifier: 1.0.62
-        version: 1.0.62(@types/node@18.19.31)(debug@4.3.4)(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.11)
+        specifier: 1.0.65
+        version: 1.0.65(@types/node@18.19.31)(debug@4.3.4)(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.11)
       '@sanity/ui-workshop':
         specifier: ^1.2.11
         version: 1.2.11(@sanity/icons@2.11.8)(@sanity/ui@2.1.11)(@types/node@18.19.31)(react-dom@18.3.1)(react@18.3.1)(styled-components@6.1.11)
@@ -4937,6 +4937,7 @@ packages:
       '@rushstack/node-core-library': 4.3.0(@types/node@18.19.31)
     transitivePeerDependencies:
       - '@types/node'
+    dev: false
 
   /@microsoft/api-extractor-model@7.28.18(@types/node@18.19.31):
     resolution: {integrity: sha512-5j8Vp4IiXD68Auccf9wP/VQ0GYfI5x3bW447SLwJOqinvnnXfNZlaYp7sj3u/LyzhrJFsynJ+tBJlN/koDGfZg==}
@@ -4966,6 +4967,7 @@ packages:
       typescript: 5.4.2
     transitivePeerDependencies:
       - '@types/node'
+    dev: false
 
   /@microsoft/api-extractor@7.43.8(@types/node@18.19.31):
     resolution: {integrity: sha512-rGEFjr9xnjP/5YwDpPL10BBPQnWEz7X7sSF8twHevZVJTlBFKRetMLE7v8tIw6CX1iIJeYO6NWQcUz23cGthdA==}
@@ -6510,6 +6512,7 @@ packages:
       resolve: 1.22.8
       semver: 7.5.4
       z-schema: 5.0.5
+    dev: false
 
   /@rushstack/node-core-library@5.0.0(@types/node@18.19.31):
     resolution: {integrity: sha512-5VpOqJ48ADNTl3AOQlFbck6ig0fFGxT22eXAFtW0zOfCtrqJi50lyzEWjhJ8o+xyfEh+mD6ay0cJImkWJYoshg==}
@@ -6546,6 +6549,7 @@ packages:
       '@rushstack/node-core-library': 4.3.0(@types/node@18.19.31)
       '@types/node': 18.19.31
       supports-color: 8.1.1
+    dev: false
 
   /@rushstack/terminal@0.11.1(@types/node@18.19.31):
     resolution: {integrity: sha512-DtTYA8ujZFJZUYD+dJkH3soAeOJ710Bu/5sLO5T0QBoMFR1PkCUUBYsGo9r8f2vLKSATbAJCeWH9ijoP7hhN9w==}
@@ -6568,6 +6572,7 @@ packages:
       string-argv: 0.3.2
     transitivePeerDependencies:
       - '@types/node'
+    dev: false
 
   /@rushstack/ts-command-line@4.21.1(@types/node@18.19.31):
     resolution: {integrity: sha512-D4sNIzGqgPRPSJ3UirnpMmxlVzs+x7vL+hwC0b73CE0aflFoU87P/93Fm2QJFGYM099ErM4Usxa1JR4eICIiKw==}
@@ -6871,61 +6876,6 @@ packages:
       - supports-color
     dev: false
 
-  /@sanity/pkg-utils@6.8.17(@types/node@18.19.31)(debug@4.3.4)(typescript@5.4.5):
-    resolution: {integrity: sha512-RH+8EFdI2HM2JvlpjLB8mZVQKfnwBAPK7Fs6VtRTTWvlDu870QgY1PcvwfAXBT6pGEpa5SmRI56+8flXodFujQ==}
-    engines: {node: '>=18.17.0'}
-    hasBin: true
-    peerDependencies:
-      typescript: 5.4.x
-    dependencies:
-      '@babel/core': 7.24.5
-      '@babel/types': 7.24.5
-      '@microsoft/api-extractor': 7.43.7(@types/node@18.19.31)
-      '@microsoft/tsdoc-config': 0.16.2
-      '@optimize-lodash/rollup-plugin': 4.0.4(rollup@4.18.0)
-      '@rollup/plugin-alias': 5.1.0(rollup@4.18.0)
-      '@rollup/plugin-babel': 6.0.4(@babel/core@7.24.5)(rollup@4.18.0)
-      '@rollup/plugin-commonjs': 25.0.8(rollup@4.18.0)
-      '@rollup/plugin-json': 6.1.0(rollup@4.18.0)
-      '@rollup/plugin-node-resolve': 15.2.3(rollup@4.18.0)
-      '@rollup/plugin-replace': 5.0.5(rollup@4.18.0)
-      '@rollup/plugin-terser': 0.4.4(rollup@4.18.0)
-      '@sanity/browserslist-config': 1.0.3
-      browserslist: 4.23.0
-      cac: 6.7.14
-      chalk: 4.1.2
-      chokidar: 3.6.0
-      esbuild: 0.21.3
-      esbuild-register: 3.5.0(esbuild@0.21.3)
-      find-config: 1.0.0
-      get-latest-version: 5.1.0(debug@4.3.4)
-      git-url-parse: 14.0.0
-      globby: 11.1.0
-      jsonc-parser: 3.2.1
-      mkdirp: 3.0.1
-      outdent: 0.8.0
-      parse-git-config: 3.0.0
-      pkg-up: 3.1.0
-      prettier: 3.2.5
-      pretty-bytes: 5.6.0
-      prompts: 2.4.2
-      recast: 0.23.7
-      rimraf: 4.4.1
-      rollup: 4.18.0
-      rollup-plugin-esbuild: 6.1.1(esbuild@0.21.3)(rollup@4.18.0)
-      rxjs: 7.8.1
-      treeify: 1.1.0
-      typescript: 5.4.5
-      uuid: 9.0.1
-      zod: 3.23.8
-      zod-validation-error: 3.3.0(zod@3.23.8)
-    transitivePeerDependencies:
-      - '@types/babel__core'
-      - '@types/node'
-      - debug
-      - supports-color
-    dev: true
-
   /@sanity/pkg-utils@6.8.17(@types/node@18.19.31)(typescript@5.4.5):
     resolution: {integrity: sha512-RH+8EFdI2HM2JvlpjLB8mZVQKfnwBAPK7Fs6VtRTTWvlDu870QgY1PcvwfAXBT6pGEpa5SmRI56+8flXodFujQ==}
     engines: {node: '>=18.17.0'}
@@ -6979,6 +6929,7 @@ packages:
       - '@types/node'
       - debug
       - supports-color
+    dev: false
 
   /@sanity/pkg-utils@6.8.18(@types/node@18.19.31)(debug@4.3.4)(typescript@5.4.5):
     resolution: {integrity: sha512-DOrZT5e6917FqJLQiJGRC9+M6VmIbo86dFKjKjG361mI53JHv9rE53qRT9DBk8GwnisbAEN7BJ6NCLzItfBDzA==}
@@ -7172,128 +7123,6 @@ packages:
       - debug
     dev: true
 
-  /@sanity/tsdoc@1.0.62(@types/node@18.19.31)(debug@4.3.4)(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.11):
-    resolution: {integrity: sha512-L7AHGsGAw5Lm/YybVa58ugjuqQk7AnSF3EsaAU1mTus/eS7FNqElrbsWoMDzpIrtAmERPKIpHRzs/BYSVH6quQ==}
-    engines: {node: '>=14.0.0'}
-    hasBin: true
-    peerDependencies:
-      react: '*'
-      react-dom: '*'
-      sanity: ^3
-      styled-components: ^5.2 || ^6
-    dependencies:
-      '@microsoft/api-extractor': 7.43.7(@types/node@18.19.31)
-      '@microsoft/api-extractor-model': 7.28.17(@types/node@18.19.31)
-      '@microsoft/tsdoc': 0.14.2
-      '@microsoft/tsdoc-config': 0.16.2
-      '@portabletext/react': 3.0.18(react@18.3.1)
-      '@portabletext/toolkit': 2.0.15
-      '@sanity/client': 6.18.2(debug@4.3.4)
-      '@sanity/color': 3.0.6
-      '@sanity/icons': 2.11.8(react@18.3.1)
-      '@sanity/pkg-utils': 6.8.17(@types/node@18.19.31)(debug@4.3.4)(typescript@5.4.5)
-      '@sanity/ui': 2.1.11(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.11)
-      '@types/cpx': 1.5.5
-      '@vitejs/plugin-react': 4.3.0(vite@5.2.11)
-      cac: 6.7.14
-      chalk: 4.1.2
-      chokidar: 3.6.0
-      cors: 2.8.5
-      dotenv-flow: 3.3.0
-      esbuild: 0.21.3
-      esbuild-register: 3.5.0(esbuild@0.21.3)
-      express: 4.19.2
-      globby: 11.1.0
-      groq: 3.43.0
-      groq-js: 1.9.0
-      history: 5.3.0
-      jsonc-parser: 3.2.1
-      mkdirp: 1.0.4
-      pkg-up: 3.1.0
-      react: 18.3.1
-      react-dom: 18.3.1(react@18.3.1)
-      react-refractor: 2.1.7(react@18.3.1)
-      sanity: link:packages/sanity
-      slugify: 1.6.6
-      styled-components: 6.1.11(react-dom@18.3.1)(react@18.3.1)
-      tmp: 0.2.3
-      typescript: 5.4.5
-      vite: 5.2.11(@types/node@18.19.31)
-    transitivePeerDependencies:
-      - '@types/babel__core'
-      - '@types/node'
-      - debug
-      - less
-      - lightningcss
-      - react-is
-      - sass
-      - stylus
-      - sugarss
-      - supports-color
-      - terser
-    dev: true
-
-  /@sanity/tsdoc@1.0.62(@types/node@18.19.31)(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.11):
-    resolution: {integrity: sha512-L7AHGsGAw5Lm/YybVa58ugjuqQk7AnSF3EsaAU1mTus/eS7FNqElrbsWoMDzpIrtAmERPKIpHRzs/BYSVH6quQ==}
-    engines: {node: '>=14.0.0'}
-    hasBin: true
-    peerDependencies:
-      react: '*'
-      react-dom: '*'
-      sanity: ^3
-      styled-components: ^5.2 || ^6
-    dependencies:
-      '@microsoft/api-extractor': 7.43.7(@types/node@18.19.31)
-      '@microsoft/api-extractor-model': 7.28.17(@types/node@18.19.31)
-      '@microsoft/tsdoc': 0.14.2
-      '@microsoft/tsdoc-config': 0.16.2
-      '@portabletext/react': 3.0.18(react@18.3.1)
-      '@portabletext/toolkit': 2.0.15
-      '@sanity/client': 6.18.2
-      '@sanity/color': 3.0.6
-      '@sanity/icons': 2.11.8(react@18.3.1)
-      '@sanity/pkg-utils': 6.8.17(@types/node@18.19.31)(typescript@5.4.5)
-      '@sanity/ui': 2.1.11(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.11)
-      '@types/cpx': 1.5.5
-      '@vitejs/plugin-react': 4.3.0(vite@5.2.11)
-      cac: 6.7.14
-      chalk: 4.1.2
-      chokidar: 3.6.0
-      cors: 2.8.5
-      dotenv-flow: 3.3.0
-      esbuild: 0.21.3
-      esbuild-register: 3.5.0(esbuild@0.21.3)
-      express: 4.19.2
-      globby: 11.1.0
-      groq: 3.43.0
-      groq-js: 1.9.0
-      history: 5.3.0
-      jsonc-parser: 3.2.1
-      mkdirp: 1.0.4
-      pkg-up: 3.1.0
-      react: 18.3.1
-      react-dom: 18.3.1(react@18.3.1)
-      react-refractor: 2.1.7(react@18.3.1)
-      sanity: link:packages/sanity
-      slugify: 1.6.6
-      styled-components: 6.1.11(react-dom@18.3.1)(react@18.3.1)
-      tmp: 0.2.3
-      typescript: 5.4.5
-      vite: 5.2.11(@types/node@18.19.31)
-    transitivePeerDependencies:
-      - '@types/babel__core'
-      - '@types/node'
-      - debug
-      - less
-      - lightningcss
-      - react-is
-      - sass
-      - stylus
-      - sugarss
-      - supports-color
-      - terser
-    dev: true
-
   /@sanity/tsdoc@1.0.64(@types/node@18.19.31)(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.11):
     resolution: {integrity: sha512-eWmRuhkzqNZMPo7Z8AE5uRPQwVMAt/+cuE6f91ENeltt4RQjM0p5CuoiVWhLeNF/T1ix9yclAvajisqrGM1r/A==}
     engines: {node: '>=14.0.0'}
@@ -7354,6 +7183,128 @@ packages:
       - supports-color
       - terser
     dev: false
+
+  /@sanity/tsdoc@1.0.65(@types/node@18.19.31)(debug@4.3.4)(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.11):
+    resolution: {integrity: sha512-JMlL612nGqOu+m9WDVuKdczEEgEWJv+LYHSaRJWnPaV/A+b2pELixIzpSGvAkw03WNqbFJAwf/LK+qzVT/Kf1Q==}
+    engines: {node: '>=14.0.0'}
+    hasBin: true
+    peerDependencies:
+      react: '*'
+      react-dom: '*'
+      sanity: ^3
+      styled-components: ^5.2 || ^6
+    dependencies:
+      '@microsoft/api-extractor': 7.43.8(@types/node@18.19.31)
+      '@microsoft/api-extractor-model': 7.28.18(@types/node@18.19.31)
+      '@microsoft/tsdoc': 0.14.2
+      '@microsoft/tsdoc-config': 0.16.2
+      '@portabletext/react': 3.0.18(react@18.3.1)
+      '@portabletext/toolkit': 2.0.15
+      '@sanity/client': 6.18.2(debug@4.3.4)
+      '@sanity/color': 3.0.6
+      '@sanity/icons': 2.11.8(react@18.3.1)
+      '@sanity/pkg-utils': 6.8.18(@types/node@18.19.31)(debug@4.3.4)(typescript@5.4.5)
+      '@sanity/ui': 2.1.11(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.11)
+      '@types/cpx': 1.5.5
+      '@vitejs/plugin-react': 4.3.0(vite@5.2.11)
+      cac: 6.7.14
+      chalk: 4.1.2
+      chokidar: 3.6.0
+      cors: 2.8.5
+      dotenv-flow: 3.3.0
+      esbuild: 0.21.3
+      esbuild-register: 3.5.0(esbuild@0.21.3)
+      express: 4.19.2
+      globby: 11.1.0
+      groq: 3.43.0
+      groq-js: 1.9.0
+      history: 5.3.0
+      jsonc-parser: 3.2.1
+      mkdirp: 1.0.4
+      pkg-up: 3.1.0
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+      react-refractor: 2.1.7(react@18.3.1)
+      sanity: link:packages/sanity
+      slugify: 1.6.6
+      styled-components: 6.1.11(react-dom@18.3.1)(react@18.3.1)
+      tmp: 0.2.3
+      typescript: 5.4.5
+      vite: 5.2.11(@types/node@18.19.31)
+    transitivePeerDependencies:
+      - '@types/babel__core'
+      - '@types/node'
+      - debug
+      - less
+      - lightningcss
+      - react-is
+      - sass
+      - stylus
+      - sugarss
+      - supports-color
+      - terser
+    dev: true
+
+  /@sanity/tsdoc@1.0.65(@types/node@18.19.31)(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(sanity@packages+sanity)(styled-components@6.1.11):
+    resolution: {integrity: sha512-JMlL612nGqOu+m9WDVuKdczEEgEWJv+LYHSaRJWnPaV/A+b2pELixIzpSGvAkw03WNqbFJAwf/LK+qzVT/Kf1Q==}
+    engines: {node: '>=14.0.0'}
+    hasBin: true
+    peerDependencies:
+      react: '*'
+      react-dom: '*'
+      sanity: ^3
+      styled-components: ^5.2 || ^6
+    dependencies:
+      '@microsoft/api-extractor': 7.43.8(@types/node@18.19.31)
+      '@microsoft/api-extractor-model': 7.28.18(@types/node@18.19.31)
+      '@microsoft/tsdoc': 0.14.2
+      '@microsoft/tsdoc-config': 0.16.2
+      '@portabletext/react': 3.0.18(react@18.3.1)
+      '@portabletext/toolkit': 2.0.15
+      '@sanity/client': 6.18.2
+      '@sanity/color': 3.0.6
+      '@sanity/icons': 2.11.8(react@18.3.1)
+      '@sanity/pkg-utils': 6.8.18(@types/node@18.19.31)(typescript@5.4.5)
+      '@sanity/ui': 2.1.11(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(styled-components@6.1.11)
+      '@types/cpx': 1.5.5
+      '@vitejs/plugin-react': 4.3.0(vite@5.2.11)
+      cac: 6.7.14
+      chalk: 4.1.2
+      chokidar: 3.6.0
+      cors: 2.8.5
+      dotenv-flow: 3.3.0
+      esbuild: 0.21.3
+      esbuild-register: 3.5.0(esbuild@0.21.3)
+      express: 4.19.2
+      globby: 11.1.0
+      groq: 3.43.0
+      groq-js: 1.9.0
+      history: 5.3.0
+      jsonc-parser: 3.2.1
+      mkdirp: 1.0.4
+      pkg-up: 3.1.0
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+      react-refractor: 2.1.7(react@18.3.1)
+      sanity: link:packages/sanity
+      slugify: 1.6.6
+      styled-components: 6.1.11(react-dom@18.3.1)(react@18.3.1)
+      tmp: 0.2.3
+      typescript: 5.4.5
+      vite: 5.2.11(@types/node@18.19.31)
+    transitivePeerDependencies:
+      - '@types/babel__core'
+      - '@types/node'
+      - debug
+      - less
+      - lightningcss
+      - react-is
+      - sass
+      - stylus
+      - sugarss
+      - supports-color
+      - terser
+    dev: true
 
   /@sanity/types@3.37.2(debug@4.3.4):
     resolution: {integrity: sha512-1EfKkNlJ86wIDtc7oFHb79JI8lKDOxKDYrkmwhvuHgJY83GpSABc1kFdbwAtWZfrWVWyqVXUv/KlNwA3b99y/g==}
@@ -15281,9 +15232,11 @@ packages:
 
   /lodash.get@4.4.2:
     resolution: {integrity: sha512-z+Uw/vLuy6gQe8cfaFWD7p0wVv8fJl3mbzXh33RS+0oW2wvUqiRXiQ69gLWSLpgB5/6sU+r6BlQR0MBILadqTQ==}
+    dev: false
 
   /lodash.isequal@4.5.0:
     resolution: {integrity: sha512-pDo3lu8Jhfjqls6GkMgpahsF9kCyayhgykjyLMNFTKWrpVdAQtYyB4muAMWozBB4ig/dtWAmsMxLEI8wuz+DYQ==}
+    dev: false
 
   /lodash.ismatch@4.4.0:
     resolution: {integrity: sha512-fPMfXjGQEV9Xsq/8MTSgUf255gawYRbjwMyDbcvDhXgV7enSZA0hynz6vMPnpAb5iONEzBHBPsT+0zes5Z301g==}
@@ -20219,6 +20172,7 @@ packages:
   /validator@13.11.0:
     resolution: {integrity: sha512-Ii+sehpSfZy+At5nPdnyMhx78fEoPDkR2XW/zimHEL3MyGJQOCQ7WeP20jPYRz7ZCpcKLB21NxuXHF3bxjStBQ==}
     engines: {node: '>= 0.10'}
+    dev: false
 
   /vary@1.1.2:
     resolution: {integrity: sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg==}
@@ -20738,6 +20692,7 @@ packages:
       validator: 13.11.0
     optionalDependencies:
       commander: 9.5.0
+    dev: false
 
   /zip-stream@6.0.1:
     resolution: {integrity: sha512-zK7YHHz4ZXpW89AHXUPbQVGKI7uvkd3hzusTdotCg1UxyaVtg0zFJSTfW/Dq5f7OBBVnq6cZIaC8Ti4hb6dtCA==}
