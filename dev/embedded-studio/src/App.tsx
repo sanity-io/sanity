@@ -1,46 +1,8 @@
 import {Button, Card, Flex, studioTheme, ThemeProvider, usePrefersDark} from '@sanity/ui'
 import {useCallback, useMemo, useState} from 'react'
-import {
-  defineConfig,
-  defineType,
-  Studio,
-  StudioLayout,
-  StudioProvider,
-  type StudioThemeColorSchemeKey,
-} from 'sanity'
-import {structureTool} from 'sanity/structure'
+import {Studio, StudioLayout, StudioProvider, type StudioThemeColorSchemeKey} from 'sanity'
 
-const BLOG_POST_SCHEMA = defineType({
-  type: 'document',
-  name: 'blogPost',
-  title: 'Blog post',
-  fields: [
-    {
-      type: 'string',
-      name: 'title',
-      title: 'Title',
-    },
-  ],
-})
-
-const SCHEMA_TYPES = [BLOG_POST_SCHEMA]
-
-const config = defineConfig({
-  projectId: 'ppsg7ml5',
-  dataset: 'test',
-
-  document: {
-    unstable_comments: {
-      enabled: true,
-    },
-  },
-
-  schema: {
-    types: SCHEMA_TYPES,
-  },
-
-  plugins: [structureTool()],
-})
+import config from '../sanity.config'
 
 export function App() {
   const prefersDark = usePrefersDark()
