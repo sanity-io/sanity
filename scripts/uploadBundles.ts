@@ -16,7 +16,6 @@ const storage = new Storage({
 const bucket = storage.bucket(readEnv<KnownEnvVar>('GCLOUD_BUCKET'))
 
 const corePkgs = ['sanity', '@sanity/vision'] as const
-const sharedPkgs = ['react', 'react-dom', 'styled-components'] as const
 
 const appVersion = 'v1'
 
@@ -74,41 +73,6 @@ async function copyPackages() {
         }
 
         // Upload files to the proper bucket destination
-        await bucket.upload(filePath, options)
-      } catch (error) {
-        throw new Error(`Failed to copy files from ${pkg}`, {cause: error})
-      }
-    }
-
-    console.log(`Completed copy for directory ${pkg}`)
-  }
-
-  console.log('**Copying shared dependencies**')
-
-  // Shared dependencies are in `packages/@repo/shared-modules.bundle`
-  // with built files in `packages/@repo/shared-modules.bundle/dist/<package>`
-  for (const pkg of sharedPkgs) {
-    console.log(`Copying files from ${pkg}`)
-
-    const packageJson = JSON.parse(
-      await readFile(
-        `packages/@repo/shared-modules.bundle/node_modules/${pkg}/package.json`,
-        'utf8',
-      ),
-    )
-    const {version} = packageJson
-
-    packageVersions.set(pkg, version)
-
-    for await (const filePath of getFiles(`packages/@repo/shared-modules.bundle/dist/${pkg}`)) {
-      try {
-        const fileName = path.basename(filePath)
-        const options: UploadOptions = {
-          destination: `modules/${appVersion}/${pkg}/${version}/bare/${fileName}`,
-          gzip: true,
-          contentType: 'application/javascript',
-        }
-
         await bucket.upload(filePath, options)
       } catch (error) {
         throw new Error(`Failed to copy files from ${pkg}`, {cause: error})
