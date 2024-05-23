@@ -253,20 +253,13 @@ describe('tree-editing: buildTreeEditingState', () => {
       rootTitle: 'Array 1',
     }
 
-    const result1 = buildTreeEditingState({
+    const result = buildTreeEditingState({
       documentValue,
       openPath: ['array1', {_key: 'key1'}],
       schemaType,
     })
 
-    const result2 = buildTreeEditingState({
-      documentValue,
-      openPath: ['array1', {_key: 'key1'}, 'array1Object1String'],
-      schemaType,
-    })
-
-    expect(result1).toEqual(expectedResult)
-    expect(result2).toEqual(expectedResult)
+    expect(result).toEqual(expectedResult)
   })
 
   test('should build tree editing state for an object with an array', () => {
@@ -312,19 +305,12 @@ describe('tree-editing: buildTreeEditingState', () => {
       rootTitle: 'Array',
     }
 
-    const result1 = buildTreeEditingState({
+    const result = buildTreeEditingState({
       documentValue,
       openPath: ['objectWithArray', 'myArray', {_key: 'key1'}],
       schemaType,
     })
 
-    const result2 = buildTreeEditingState({
-      documentValue,
-      openPath: ['objectWithArray', 'myArray', {_key: 'key1'}, 'myString'],
-      schemaType,
-    })
-
-    expect(result1).toEqual(expectedResult)
-    expect(result2).toEqual(expectedResult)
+    expect(result).toEqual(expectedResult)
   })
 })

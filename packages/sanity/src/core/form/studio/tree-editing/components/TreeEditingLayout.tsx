@@ -120,7 +120,7 @@ export const TreeEditingLayout = memo(function TreeEditingLayout(
   const scrollElementRef = useRef<HTMLDivElement | null>(null)
   const containerElementRef = useRef<HTMLDivElement | null>(null)
 
-  const [open, setOpen] = useState<boolean>(false)
+  const [open, setOpen] = useState<boolean>(true)
 
   const toggleOpen = useCallback(() => setOpen((v) => !v), [])
 
