@@ -327,24 +327,21 @@ function CommentsInspectorInner(
 
   useClickOutside(handleClickOutside, [rootRef.current])
 
+  const [loggedTelemetry, setLoggedTelemetry] = useState(false)
   useEffect(() => {
-    if (mode === 'upsell') {
-      if (selectedPath?.origin === 'form') {
-        upsellTelemetryLogs.panelViewed('field_action')
-      } else if (commentIdParamRef.current) {
-        upsellTelemetryLogs.panelViewed('link')
-      } else {
-        upsellTelemetryLogs.panelViewed('document_action')
-      }
+    if (loggedTelemetry || mode !== 'upsell') return undefined
+    setLoggedTelemetry(true)
+    if (selectedPath?.origin === 'form') {
+      upsellTelemetryLogs.panelViewed('field_action')
+    } else if (commentIdParamRef.current) {
+      upsellTelemetryLogs.panelViewed('link')
+    } else {
+      upsellTelemetryLogs.panelViewed('document_action')
     }
     return () => {
-      if (mode === 'upsell') {
-        upsellTelemetryLogs.panelDismissed()
-      }
+      upsellTelemetryLogs.panelDismissed()
     }
-    // We want to run this effect only on mount and unmount
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [loggedTelemetry, mode, selectedPath?.origin, upsellTelemetryLogs])
 
   // Handle scroll to comment from URL param
   useEffect(() => {
