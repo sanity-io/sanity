@@ -1,5 +1,5 @@
 import {isObjectSchemaType, type ObjectSchemaType} from '@sanity/types'
-import {Checkbox, Flex, Text} from '@sanity/ui'
+import {Box, Checkbox, Flex, Text} from '@sanity/ui'
 import {
   type AccessorKeyColumnDef,
   createColumnHelper,
@@ -17,7 +17,8 @@ import {
   useDocumentPreviewStore,
 } from 'sanity'
 
-import {type PaneItemPreviewState} from '../../components/paneItem/types'
+import {type PaneItemPreviewState} from '../../../components/paneItem/types'
+import {DocumentSheetListSelect} from './DocumentSheetListSelect'
 import {SheetListCell} from './SheetListCell'
 
 export const VISIBLE_COLUMN_LIMIT = 5
@@ -126,18 +127,17 @@ export function useDocumentSheetColumns(documentSchemaType?: ObjectSchemaType) {
         id: 'selected',
         enableHiding: false,
         header: (info) => (
-          <Checkbox
-            indeterminate={info.table.getIsSomeRowsSelected()}
-            onChange={info.table.getToggleAllPageRowsSelectedHandler()}
-          />
+          <Box>
+            <Checkbox
+              style={{paddingLeft: 4}}
+              indeterminate={info.table.getIsSomeRowsSelected()}
+              onChange={info.table.getToggleAllPageRowsSelectedHandler()}
+            />
+            {/* eslint-disable-next-line i18next/no-literal-string */}
+            {info.table.getSelectedRowModel().rows.length} selected
+          </Box>
         ),
-        cell: (info) => (
-          <Checkbox
-            checked={info.row.getIsSelected()}
-            disabled={!info.row.getCanSelect()}
-            onChange={() => info.row.toggleSelected()}
-          />
-        ),
+        cell: DocumentSheetListSelect,
       }),
       columnHelper.accessor('Preview', {
         enableHiding: false,

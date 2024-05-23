@@ -116,10 +116,6 @@ export const ListPrefixWrapper = styled.div`
   white-space: nowrap;
 `
 
-export const BlockExtrasContainer = styled(Box)`
-  user-select: none;
-`
-
 export const BlockActionsOuter = styled(Box)`
   line-height: 0;
   width: 25px;
@@ -168,6 +164,7 @@ export const ChangeIndicatorWrapper = styled.div<{$hasChanges: boolean}>(
       top: 0;
       bottom: 0;
       padding-left: ${space[1]}px;
+      padding-right: ${space[2]}px;
       user-select: none;
 
       ${!$hasChanges &&

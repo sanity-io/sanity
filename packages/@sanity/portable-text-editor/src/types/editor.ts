@@ -300,6 +300,7 @@ export type ErrorChange = {
  * The editor has invalid data in the value that can be resolved by the user
  * @beta */
 export type InvalidValueResolution = {
+  autoResolve?: boolean
   patches: Patch[]
   description: string
   action: string

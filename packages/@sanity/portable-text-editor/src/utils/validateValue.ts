@@ -6,8 +6,9 @@ import {
 } from '@sanity/types'
 import {flatten, isPlainObject, uniq} from 'lodash'
 
-import {insert, set, unset} from '../patch/PatchEvent'
+import {insert, set, setIfMissing, unset} from '../patch/PatchEvent'
 import {type InvalidValueResolution, type PortableTextMemberSchemaTypes} from '../types/editor'
+import {EMPTY_MARKDEFS} from './values'
 
 export interface Validation {
   valid: boolean
@@ -148,15 +149,16 @@ export function validateValue(
         }
         return true
       }
-      // Test that every child in text block is valid
+
+      // Test regular text blocks
       if (blk._type === types.block.name) {
         const textBlock = blk as PortableTextTextBlock
-        // Test that it has (valid) children property
-        if (!textBlock.children || !Array.isArray(textBlock.children)) {
+        // Test that it has a valid children property (array)
+        if (textBlock.children && !Array.isArray(textBlock.children)) {
           resolution = {
-            patches: [unset([{_key: textBlock._key}])],
-            description: `Text block with _key '${textBlock._key}' has a missing or invalid required property 'children'.`,
-            action: 'Remove the block',
+            patches: [set({children: []}, [{_key: textBlock._key}])],
+            description: `Text block with _key '${textBlock._key}' has a invalid required property 'children'.`,
+            action: 'Reset the children property',
             item: textBlock,
 
             i18n: {
@@ -168,11 +170,40 @@ export function validateValue(
           }
           return true
         }
-        // Test that markDefs exists and is valid
-        if (!blk.markDefs || !Array.isArray(blk.markDefs)) {
+        // Test that children is set and lengthy
+        if (
+          textBlock.children === undefined ||
+          (Array.isArray(textBlock.children) && textBlock.children.length === 0)
+        ) {
+          const newSpan = {
+            _type: types.span.name,
+            _key: keyGenerator(),
+            text: '',
+            marks: [],
+          }
           resolution = {
-            patches: [set({...textBlock, markDefs: []}, [{_key: textBlock._key}])],
-            description: `Block has a missing or invalid required property 'markDefs'.`,
+            autoResolve: true,
+            patches: [
+              setIfMissing([], [{_key: blk._key}, 'children']),
+              insert([newSpan], 'after', [{_key: blk._key}, 'children', 0]),
+            ],
+            description: `Children for text block with _key '${blk._key}' is empty.`,
+            action: 'Insert an empty text',
+            item: blk,
+
+            i18n: {
+              description: 'inputs.portable-text.invalid-value.empty-children.description',
+              action: 'inputs.portable-text.invalid-value.empty-children.action',
+              values: {key: blk._key},
+            },
+          }
+          return true
+        }
+        // Test that markDefs are valid if they exists
+        if (blk.markDefs && !Array.isArray(blk.markDefs)) {
+          resolution = {
+            patches: [set({...textBlock, markDefs: EMPTY_MARKDEFS}, [{_key: textBlock._key}])],
+            description: `Block has invalid required property 'markDefs'.`,
             action: 'Add empty markDefs array',
             item: textBlock,
 
@@ -185,23 +216,6 @@ export function validateValue(
           }
           return true
         }
-        // NOTE: this is commented out as we want to allow the saved data to have optional .marks for spans (as specified by the schema)
-        // const spansWithUndefinedMarks = blk.children
-        //   .filter(cld => cld._type === types.span.name)
-        //   .filter(cld => typeof cld.marks === 'undefined')
-
-        // if (spansWithUndefinedMarks.length > 0) {
-        //   const first = spansWithUndefinedMarks[0]
-        //   resolution = {
-        //     patches: [
-        //       set({...first, marks: []}, [{_key: blk._key}, 'children', {_key: first._key}])
-        //     ],
-        //     description: `Span has no .marks array`,
-        //     action: 'Add empty marks array',
-        //     item: first
-        //   }
-        //   return true
-        // }
         const allUsedMarks = uniq(
           flatten(
             textBlock.children
@@ -234,8 +248,10 @@ export function validateValue(
         const annotationMarks = allUsedMarks.filter(
           (mark) => !types.decorators.map((dec) => dec.value).includes(mark),
         )
-        const orphanedMarks = annotationMarks.filter((mark) =>
-          textBlock.markDefs ? !textBlock.markDefs.find((def) => def._key === mark) : false,
+        const orphanedMarks = annotationMarks.filter(
+          (mark) =>
+            textBlock.markDefs === undefined ||
+            !textBlock.markDefs.find((def) => def._key === mark),
         )
         if (orphanedMarks.length > 0) {
           const spanChildren = textBlock.children.filter(
@@ -267,27 +283,6 @@ export function validateValue(
           }
         }
 
-        // Test that children is lengthy
-        if (textBlock.children && textBlock.children.length === 0) {
-          const newSpan = {
-            _type: types.span.name,
-            _key: keyGenerator(),
-            text: '',
-          }
-          resolution = {
-            patches: [insert([newSpan], 'after', [{_key: blk._key}, 'children', 0])],
-            description: `Children for text block with _key '${blk._key}' is empty.`,
-            action: 'Insert an empty text',
-            item: blk,
-
-            i18n: {
-              description: 'inputs.portable-text.invalid-value.empty-children.description',
-              action: 'inputs.portable-text.invalid-value.empty-children.action',
-              values: {key: blk._key},
-            },
-          }
-          return true
-        }
         // Test every child
         if (
           textBlock.children.some((child, cIndex: number) => {
@@ -301,6 +296,24 @@ export function validateValue(
                 i18n: {
                   description: 'inputs.portable-text.invalid-value.non-object-child.description',
                   action: 'inputs.portable-text.invalid-value.non-object-child.action',
+                  values: {key: blk._key, index: cIndex},
+                },
+              }
+              return true
+            }
+
+            if (!child._key || typeof child._key !== 'string') {
+              const newChild = {...child, _key: keyGenerator()}
+              resolution = {
+                autoResolve: true,
+                patches: [set(newChild, [{_key: blk._key}, 'children', cIndex])],
+                description: `Child at index ${cIndex} is missing required _key in block with _key ${blk._key}.`,
+                action: 'Set a new random _key on the object',
+                item: blk,
+
+                i18n: {
+                  description: 'inputs.portable-text.invalid-value.missing-child-key.description',
+                  action: 'inputs.portable-text.invalid-value.missing-child-key.action',
                   values: {key: blk._key, index: cIndex},
                 },
               }

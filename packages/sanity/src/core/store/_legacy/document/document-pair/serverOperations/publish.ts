@@ -13,9 +13,14 @@ export const publish: OperationImpl<[], DisabledReason> = {
     }
     return false
   },
-  execute: ({client: globalClient, idPair}) => {
+  execute: ({client: globalClient, idPair, snapshots}) => {
     const vXClient = globalClient.withConfig({apiVersion: 'X'})
     const {dataset} = globalClient.config()
+
+    // The editor must be able to see the draft they are choosing to publish.
+    if (!snapshots.draft) {
+      throw new Error('cannot execute "publish" when draft is missing')
+    }
 
     return vXClient.observable.request({
       url: `/data/actions/${dataset}`,
@@ -27,6 +32,12 @@ export const publish: OperationImpl<[], DisabledReason> = {
             actionType: 'sanity.action.document.publish',
             draftId: idPair.draftId,
             publishedId: idPair.publishedId,
+            // The editor must be able to see the latest state of both the draft document they are
+            // publishing, and the published document they are choosing to replace. Optimistic
+            // locking using `ifDraftRevisionId` and `ifPublishedRevisionId` ensures the client and
+            // server are synchronised.
+            ifDraftRevisionId: snapshots.draft._rev,
+            ifPublishedRevisionId: snapshots.published?._rev,
           },
         ],
       },

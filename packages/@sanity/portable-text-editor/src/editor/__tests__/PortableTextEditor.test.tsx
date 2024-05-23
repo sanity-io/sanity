@@ -330,19 +330,12 @@ describe('initialization', () => {
     await waitFor(() => {
       if (editorRef.current) {
         expect(onChange).toHaveBeenCalledWith({
+          type: 'invalidValue',
+          value: initialValue,
           resolution: {
             action: 'Remove invalid marks',
             description:
               "Block with _key 'abc' contains marks (invalid) not supported by the current content model.",
-            item: {
-              _key: 'abc',
-              _type: 'myTestBlockType',
-              children: [{_key: 'def', _type: 'span', marks: ['invalid'], text: 'Test'}],
-              markDefs: [],
-            },
-            patches: [
-              {path: [{_key: 'abc'}, 'children', {_key: 'def'}, 'marks'], type: 'set', value: []},
-            ],
             i18n: {
               action: 'inputs.portable-text.invalid-value.orphaned-marks.action',
               description: 'inputs.portable-text.invalid-value.orphaned-marks.description',
@@ -351,26 +344,40 @@ describe('initialization', () => {
                 orphanedMarks: ['invalid'],
               },
             },
-          },
-          type: 'invalidValue',
-          value: [
-            {
-              _key: '123',
-              _type: 'myTestBlockType',
-              children: [{_key: '567', _type: 'span', marks: [], text: 'Hello'}],
-              markDefs: [],
-            },
-            {
+            item: {
               _key: 'abc',
               _type: 'myTestBlockType',
-              children: [{_key: 'def', _type: 'span', marks: ['invalid'], text: 'Test'}],
+              children: [
+                {
+                  _key: 'def',
+                  _type: 'span',
+                  marks: ['invalid'],
+                  text: 'Test',
+                },
+              ],
               markDefs: [],
             },
-          ],
+            patches: [
+              {
+                path: [
+                  {
+                    _key: 'abc',
+                  },
+                  'children',
+                  {
+                    _key: 'def',
+                  },
+                  'marks',
+                ],
+                type: 'set',
+                value: [],
+              },
+            ],
+          },
         })
-        expect(onChange).not.toHaveBeenCalledWith({type: 'value', value: initialValue})
-        expect(onChange).toHaveBeenCalledWith({type: 'ready'})
       }
     })
+    expect(onChange).not.toHaveBeenCalledWith({type: 'value', value: initialValue})
+    expect(onChange).toHaveBeenCalledWith({type: 'ready'})
   })
 })

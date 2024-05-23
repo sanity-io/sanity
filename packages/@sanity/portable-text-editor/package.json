@@ -1,6 +1,6 @@
 {
   "name": "@sanity/portable-text-editor",
-  "version": "3.42.1",
+  "version": "3.43.0",
   "description": "Portable Text Editor made in React",
   "keywords": [
     "sanity",
@@ -48,7 +48,7 @@
     "build": "pkg-utils build --strict --check --clean",
     "check:types": "tsc --project tsconfig.lib.json",
     "clean": "rimraf lib",
-    "dev": "cd ./e2e-tests/ && ts-node serve",
+    "dev": "cd ./e2e-tests/ && tsx serve",
     "lint": "eslint .",
     "prepublishOnly": "turbo run build",
     "prettier": "prettier --write './**/*.{ts,tsx,js,css,html}'",
@@ -58,10 +58,10 @@
     "watch": "pkg-utils watch"
   },
   "dependencies": {
-    "@sanity/block-tools": "3.42.1",
-    "@sanity/schema": "3.42.1",
-    "@sanity/types": "3.42.1",
-    "@sanity/util": "3.42.1",
+    "@sanity/block-tools": "3.43.0",
+    "@sanity/schema": "3.43.0",
+    "@sanity/types": "3.43.0",
+    "@sanity/util": "3.43.0",
     "debug": "^3.2.7",
     "is-hotkey-esm": "^1.0.0",
     "lodash": "^4.17.21",
@@ -97,6 +97,7 @@
     "rimraf": "^3.0.2",
     "rxjs": "^7.8.1",
     "styled-components": "^6.1.11",
+    "tsx": "^4.10.3",
     "vite": "^4.5.3"
   },
   "peerDependencies": {

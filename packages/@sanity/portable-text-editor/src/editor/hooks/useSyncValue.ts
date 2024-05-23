@@ -1,7 +1,7 @@
 /* eslint-disable max-nested-callbacks */
 import {type PortableTextBlock} from '@sanity/types'
 import {debounce, isEqual} from 'lodash'
-import {useCallback, useMemo, useRef} from 'react'
+import {useMemo, useRef} from 'react'
 import {type Descendant, Editor, type Node, Text, Transforms} from 'slate'
 import {useSlate} from 'slate-react'
 
@@ -50,23 +50,20 @@ export function useSyncValue(
   const slateEditor = useSlate()
   const updateValueFunctionRef = useRef<(value: PortableTextBlock[] | undefined) => void>()
 
-  const updateFromCurrentValue = useCallback(() => {
-    const currentValue = CURRENT_VALUE.get(portableTextEditor)
-    if (previousValue.current === currentValue) {
-      debug('Value is the same object as previous, not need to sync')
-      return
+  const updateValueDebounced = useMemo(() => {
+    const updateFromCurrentValue = () => {
+      const currentValue = CURRENT_VALUE.get(portableTextEditor)
+      if (previousValue.current === currentValue) {
+        debug('Value is the same object as previous, not need to sync')
+        return
+      }
+      if (updateValueFunctionRef.current && currentValue) {
+        debug('Updating the value debounced')
+        updateValueFunctionRef.current(currentValue)
+      }
     }
-    if (updateValueFunctionRef.current && currentValue) {
-      debug('Updating the value debounced')
-      updateValueFunctionRef.current(currentValue)
-    }
+    return debounce(updateFromCurrentValue, 1000, {trailing: true, leading: false})
   }, [portableTextEditor])
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const updateValueDebounced = useCallback(
-    debounce(updateFromCurrentValue, 1000, {trailing: true, leading: false}),
-    [updateFromCurrentValue],
-  )
 
   return useMemo(() => {
     const updateFunction = (value: PortableTextBlock[] | undefined) => {
@@ -142,7 +139,24 @@ export function useSyncValue(
                   if (hasChanges && isValid) {
                     const validationValue = [value[currentBlockIndex]]
                     const validation = validateValue(validationValue, schemaTypes, keyGenerator)
-                    if (validation.valid) {
+                    // Resolve validations that can be resolved automatically, without involving the user (but only if the value was changed)
+                    if (
+                      !validation.valid &&
+                      validation.resolution?.autoResolve &&
+                      validation.resolution?.patches.length > 0
+                    ) {
+                      // Only apply auto resolution if the value has been populated before and is different from the last one.
+                      if (!readOnly && previousValue.current && previousValue.current !== value) {
+                        // Give a console warning about the fact that it did an auto resolution
+                        console.warn(
+                          `${validation.resolution.action} for block with _key '${validationValue[0]._key}'. ${validation.resolution?.description}`,
+                        )
+                        validation.resolution.patches.forEach((patch) => {
+                          change$.next({type: 'patch', patch})
+                        })
+                      }
+                    }
+                    if (validation.valid || validation.resolution?.autoResolve) {
                       if (oldBlock._key === currentBlock._key) {
                         if (debug.enabled) debug('Updating block', oldBlock, currentBlock)
                         _updateBlock(slateEditor, currentBlock, oldBlock, currentBlockIndex)
@@ -168,7 +182,7 @@ export function useSyncValue(
                         'Validating and inserting new block in the end of the value',
                         currentBlock,
                       )
-                    if (validation.valid) {
+                    if (validation.valid || validation.resolution?.autoResolve) {
                       withPreserveKeys(slateEditor, () => {
                         Transforms.insertNodes(slateEditor, currentBlock, {
                           at: [currentBlockIndex],
@@ -255,6 +269,7 @@ function _replaceBlock(
   withPreserveKeys(slateEditor, () => {
     Transforms.insertNodes(slateEditor, currentBlock, {at: [currentBlockIndex]})
   })
+  slateEditor.onChange()
   if (selectionFocusOnBlock) {
     Transforms.select(slateEditor, currentSelection)
   }
