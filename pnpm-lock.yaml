@@ -747,7 +747,7 @@ importers:
         version: link:../codegen
       '@sanity/telemetry':
         specifier: ^0.7.7
-        version: 0.7.7
+        version: 0.7.8(react@18.3.1)
       '@sanity/util':
         specifier: 3.43.0
         version: link:../util
@@ -1549,7 +1549,7 @@ importers:
         version: link:../@sanity/schema
       '@sanity/telemetry':
         specifier: ^0.7.7
-        version: 0.7.7
+        version: 0.7.8(react@18.3.1)
       '@sanity/types':
         specifier: 3.43.0
         version: link:../@sanity/types
@@ -6996,13 +6996,14 @@ packages:
       react: 18.3.1
     dev: false
 
-  /@sanity/telemetry@0.7.7:
-    resolution: {integrity: sha512-YUoAMrl0XEf5C4Jt0n+wmJAR7gDrraic3u7yxog0U2QukgeOn9BDhXF5rF9jMuDllGZmUbBaFq+mh5sW/tACWw==}
+  /@sanity/telemetry@0.7.8(react@18.3.1):
+    resolution: {integrity: sha512-9TWC61EKsFpTOBC2dqmPgy+ZvO1eV/rxuYR1ZIj/1AhtBSI2FQXqO8CtXPKJ3u0zoIxngoBqtaoP1ZKS9nZyTA==}
     engines: {node: '>=16.0.0'}
+    peerDependencies:
+      react: '*'
     dependencies:
       lodash: 4.17.21
       react: 18.3.1
-      react-dom: 18.3.1(react@18.3.1)
       rxjs: 7.8.1
       typeid-js: 0.3.0
     dev: false
@@ -13233,6 +13234,7 @@ packages:
 
   /inflight@1.0.6:
     resolution: {integrity: sha512-k92I/b08q4wvFscXCLvqfsHCrjrF7yiXsQuIVvVE7N82W3+aqpzuUdBbfhWcy/FZR3/4IgflMgKLOsvPDrGCJA==}
+    deprecated: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
     dependencies:
       once: 1.4.0
       wrappy: 1.0.2
