@@ -51,7 +51,7 @@ function MenuItem(props: TreeEditingMenuItemProps) {
   }, [item, selectedPath])
 
   return (
-    <Stack as="li" key={title} space={STACK_SPACE}>
+    <Stack as="li" aria-expanded={open} key={title} role="treeitem" space={STACK_SPACE}>
       <Button mode="bleed" onClick={handleClick} padding={2} selected={selected}>
         <Flex align="center" justify="space-between" gap={3}>
           <Box flex={1}>
@@ -69,7 +69,7 @@ function MenuItem(props: TreeEditingMenuItemProps) {
       </Button>
 
       {open && hasChildren && (
-        <Stack as="ul" paddingLeft={2} space={STACK_SPACE}>
+        <Stack as="ul" paddingLeft={2} role="group" space={STACK_SPACE}>
           {children.map((child) => (
             <MenuItem
               item={child}
@@ -96,7 +96,7 @@ export const TreeEditingMenu = memo(function TreeEditingMenu(
   const {items, onPathSelect, selectedPath} = props
 
   return (
-    <Stack as="ul" space={STACK_SPACE}>
+    <Stack as="ul" role="tree" space={STACK_SPACE}>
       {items.map((item) => (
         <MenuItem
           item={item}
