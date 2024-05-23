@@ -1,4 +1,3 @@
-/* eslint-disable @sanity/i18n/no-attribute-string-literals */
 import {Card, Flex, Popover, type PopoverProps, useClickOutside} from '@sanity/ui'
 import {cloneElement, type ReactElement, useCallback, useState} from 'react'
 import ReactFocusLock from 'react-focus-lock'
@@ -61,7 +60,6 @@ export function TreeEditingBreadcrumbsMenuButton(
   const {button, items, selectedPath, onPathSelect} = props
   const [open, setOpen] = useState<boolean>(false)
   const [rootElement, setRootElement] = useState<HTMLElement | null>(null)
-  // const [textInputElement, setTextInputElement] = useState<HTMLInputElement | null>(null)
   const [buttonElement, setButtonElement] = useState<HTMLButtonElement | null>(null)
 
   const closeAndFocus = useCallback(() => {
@@ -100,14 +98,6 @@ export function TreeEditingBreadcrumbsMenuButton(
 
   const content = (
     <RootFlex direction="column" flex={1} forwardedAs={ReactFocusLock} height="fill">
-      {/* <PopoverHeaderCard sizing="border">
-        <Stack>
-          <Card borderBottom padding={1}>
-            <TextInput fontSize={1} radius={2} ref={setTextInputElement} disabled={!open} />
-          </Card>
-        </Stack>
-      </PopoverHeaderCard> */}
-
       <PopoverListFlex
         $itemHeight={ITEM_HEIGHT}
         $maxDisplayedItems={MAX_DISPLAYED_ITEMS}
@@ -118,7 +108,6 @@ export function TreeEditingBreadcrumbsMenuButton(
           items={items}
           onPathSelect={handlePathSelect}
           selectedPath={selectedPath}
-          // textInputElement={textInputElement}
           textInputElement={null}
         />
       </PopoverListFlex>
