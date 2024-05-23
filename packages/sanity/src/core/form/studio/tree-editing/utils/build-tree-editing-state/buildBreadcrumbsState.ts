@@ -1,5 +1,11 @@
 import {isEqual} from 'lodash'
-import {type ArraySchemaType, EMPTY_ARRAY, type ObjectSchemaType, type Path} from 'sanity'
+import {
+  type ArraySchemaType,
+  EMPTY_ARRAY,
+  getSchemaTypeTitle,
+  type ObjectSchemaType,
+  type Path,
+} from 'sanity'
 
 import {type TreeEditingBreadcrumb} from '../../types'
 
@@ -33,9 +39,12 @@ export function buildBreadcrumbsState(props: BuildBreadcrumbsStateProps): TreeEd
     const nestedPreviewTitleKey = nestedItemSchemaField?.preview?.select?.title || ''
     const nestedTitle = arrayItem?.[nestedPreviewTitleKey]
 
+    const title =
+      typeof nestedTitle === 'string' ? nestedTitle : getSchemaTypeTitle(nestedItemSchemaField)
+
     return {
       path: nestedItemPath,
-      title: String(nestedTitle || 'Untitled'),
+      title: String(title || 'Untitled'),
       children: EMPTY_ARRAY,
     }
   })
@@ -44,7 +53,7 @@ export function buildBreadcrumbsState(props: BuildBreadcrumbsStateProps): TreeEd
 
   return {
     path: itemPath,
-    title: (selectedItemTitle || 'Untitled') as string,
+    title: selectedItemTitle as string,
     children: items,
   }
 }
