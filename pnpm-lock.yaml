@@ -287,6 +287,27 @@ importers:
         specifier: ^4.5.3
         version: 4.5.3(@types/node@18.19.31)
 
+  dev/page-building-studio:
+    dependencies:
+      '@sanity/vision':
+        specifier: workspace:*
+        version: link:../../packages/@sanity/vision
+      react:
+        specifier: ^18.2.0
+        version: 18.3.1
+      react-dom:
+        specifier: ^18.2.0
+        version: 18.3.1(react@18.3.1)
+      react-icons:
+        specifier: ^5.2.1
+        version: 5.2.1(react@18.3.1)
+      sanity:
+        specifier: workspace:*
+        version: link:../../packages/sanity
+      styled-components:
+        specifier: ^6.1.8
+        version: 6.1.11(react-dom@18.3.1)(react@18.3.1)
+
   dev/starter-next-studio:
     dependencies:
       next:
@@ -17527,6 +17548,14 @@ packages:
       i18next: 23.11.2
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
+    dev: false
+
+  /react-icons@5.2.1(react@18.3.1):
+    resolution: {integrity: sha512-zdbW5GstTzXaVKvGSyTaBalt7HSfuK5ovrzlpyiWHAFXndXTdd/1hdDHI4xBM1Mn7YriT6aqESucFl9kEXzrdw==}
+    peerDependencies:
+      react: '*'
+    dependencies:
+      react: 18.3.1
     dev: false
 
   /react-is@16.13.1:
