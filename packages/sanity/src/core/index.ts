@@ -33,5 +33,9 @@ export * from './templates'
 export * from './theme'
 export * from './user-color'
 export * from './util'
-export {validateDocument, type ValidateDocumentOptions} from './validation'
+export {
+  Rule as ConcreteRuleClass,
+  validateDocument,
+  type ValidateDocumentOptions,
+} from './validation'
 export * from './version'

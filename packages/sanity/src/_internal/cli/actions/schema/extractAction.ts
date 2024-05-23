@@ -33,6 +33,12 @@ export default async function extractAction(
     throw new Error('Could not find root directory for `sanity` package')
   }
 
+  if (flags.workspace === undefined) {
+    throw new Error(
+      `Multiple workspaces found. Please specify which workspace to use with '--workspace'.`,
+    )
+  }
+
   const workerPath = join(
     dirname(rootPkgPath),
     'lib',

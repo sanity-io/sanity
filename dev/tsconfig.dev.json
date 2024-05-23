@@ -10,6 +10,8 @@
       "@sanity/cli": ["./packages/@sanity/cli/src/index.ts"],
       "@sanity/codegen": ["./packages/@sanity/codegen/src/_exports/index.ts"],
       "@sanity/mutator": ["./packages/@sanity/mutator/src/index.ts"],
+      "@sanity/manifest/*": ["./packages/@sanity/manifest/src/_exports/*"],
+      "@sanity/manifest": ["./packages/@sanity/manifest/src/_exports/index.ts"],
       "@sanity/portable-text-editor": ["./packages/@sanity/portable-text-editor/src/index.ts"],
       "@sanity/schema/*": ["./packages/@sanity/schema/src/_exports/*"],
       "@sanity/schema": ["./packages/@sanity/schema/src/_exports/index.ts"],

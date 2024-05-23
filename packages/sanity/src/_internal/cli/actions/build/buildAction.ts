@@ -13,6 +13,8 @@ import {checkStudioDependencyVersions} from '../../util/checkStudioDependencyVer
 import {checkRequiredDependencies} from '../../util/checkRequiredDependencies'
 import {getTimer} from '../../util/timing'
 import {BuildTrace} from './build.telemetry'
+import extractManifest from '../manifest/extractManifestAction'
+import {pick} from 'lodash'
 
 const rimraf = promisify(rimrafCallback)
 
@@ -125,6 +127,18 @@ export default async function buildSanityStudio(
 
     spin.text = `Build Sanity Studio (${buildDuration.toFixed()}ms)`
     spin.succeed()
+
+    if (context.cliConfig && 'unstable_extractManifestOnBuild' in context.cliConfig && context.cliConfig.unstable_extractManifestOnBuild) {
+      await extractManifest(
+        {
+          ...pick(args, ['argsWithoutOptions', 'argv', 'groupOrCommand']),
+          extOptions: {},
+          extraArguments: [],
+        },
+        context,
+      )
+    }
+
     trace.complete()
     if (flags.stats) {
       output.print('\nLargest module files:')
