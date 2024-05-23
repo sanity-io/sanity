@@ -5,7 +5,7 @@
   "license": "MIT",
   "author": "Sanity.io <hello@sanity.io>",
   "scripts": {
-    "build": "next build",
+    "build": "sanity manifest extract && next build",
     "dev": "next dev",
     "start": "next start"
   },
