@@ -100,9 +100,10 @@ const extractManifest: CliCommandAction = async (_args, context) => {
 
     spinner.succeed(`Extracted manifest to ${chalk.cyan(path)}`)
   } catch (err) {
+    console.error('[ERR]', err)
     // trace.error(err)
     spinner.fail('Failed to extract manifest')
-    throw err
+    // throw err
   }
 }
 
@@ -125,7 +126,8 @@ async function externalizeSchema(
 ): Promise<ManifestV1Workspace> {
   const schemaString = JSON.stringify(workspace.schema, null, 2)
   const hash = createHash('sha1').update(schemaString).digest('hex')
-  const filename = `${hash.slice(0, 8)}${SCHEMA_FILENAME_SUFFIX}`
+  // const filename = `${hash.slice(0, 8)}${SCHEMA_FILENAME_SUFFIX}`
+  const filename = `${workspace.name}${SCHEMA_FILENAME_SUFFIX}`
 
   await writeFile(join(staticPath, filename), schemaString)
 
