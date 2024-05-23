@@ -149,7 +149,9 @@ export default defineConfig([
     basePath: '/test',
     icon: SanityMonogram,
     // eslint-disable-next-line camelcase
-    __internal_serverDocumentActions: {},
+    __internal_serverDocumentActions: {
+      enabled: true,
+    },
     scheduledPublishing: {
       enabled: true,
       inputDateTimeFormat: 'MM/dd/yy h:mm a',

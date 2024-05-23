@@ -247,7 +247,6 @@ describe('checkoutPair -- server actions', () => {
             draftId: 'draftId',
             publishedId: 'publishedId',
             patch: {
-              id: 'draftId',
               set: {
                 title: 'new title',
               },
