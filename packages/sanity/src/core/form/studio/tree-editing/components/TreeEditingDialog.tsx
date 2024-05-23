@@ -44,10 +44,10 @@ const StyledDialog = styled(Dialog)(({theme}: {theme: Theme}) => {
     [data-ui='DialogCard'] {
       padding: ${spacing}px;
       box-sizing: border-box;
-    }
 
-    [data-ui='Card']:first-child {
-      flex: 1;
+      & > [data-ui='Card']:first-child {
+        flex: 1;
+      }
     }
   `
 })
@@ -159,13 +159,11 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | 
     // We only want to debounce the state building when the value changes
     // as that might happen frequently when the user is editing the document.
     if (isInitialRender || (openPathChanged && !valueChanged)) {
-      const nextState = buildTreeEditingState({
+      handleBuildTreeEditingState({
         schemaType,
         documentValue: value,
         openPath,
       })
-
-      setTreeState(nextState)
 
       openPathRef.current = openPath
 
@@ -186,7 +184,7 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | 
       documentValue: value,
       openPath,
     })
-  }, [schemaType, value, debouncedBuildTreeEditingState, openPath])
+  }, [schemaType, value, debouncedBuildTreeEditingState, openPath, handleBuildTreeEditingState])
 
   if (!open || relativePath.length === 0) return null
 
