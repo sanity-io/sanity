@@ -48,10 +48,10 @@ test.describe('Portable Text Input - Open Block Style Select', () => {
     await nestedPTE.click()
 
     // nested block full screen
-    nestedPTE.getByLabel('Expand editor').click()
+    await nestedPTE.getByLabel('Expand editor').click()
 
     // click the block style select
-    await nestedPTE.locator('[data-testid="block-style-select"]').click()
+    await page.locator('[data-testid="block-style-select"]').nth(1).click()
 
     await expect(await page.locator('[data-ui="MenuButton__popover"]')).toBeVisible()
   })
