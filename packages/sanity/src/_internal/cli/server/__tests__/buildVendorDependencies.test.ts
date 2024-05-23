@@ -22,7 +22,7 @@ describe('buildVendorDependencies', () => {
     vite.build.mockResolvedValue({})
   })
 
-  it('should pass the expected options to vite.build', () => {
+  it('should throw if there is no matching entry in VENDOR_IMPORTS', () => {
     const cwd = path.join(examplesRoot, 'prj-with-styled-components-5')
 
     return expect(buildVendorDependencies({cwd, outputDir})).rejects.toThrow(

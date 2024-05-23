@@ -110,7 +110,7 @@ interface VendorBuildOptions {
 
 /**
  * Builds the ESM browser compatible versions of the vendor packages
- * specified in VENDOR_IMPORTS.
+ * specified in VENDOR_IMPORTS. Returns the `imports` object of an import map.
  */
 export async function buildVendorDependencies({
   cwd,
