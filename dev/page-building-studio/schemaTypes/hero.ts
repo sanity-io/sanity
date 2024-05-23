@@ -4,6 +4,7 @@ import {defineField, defineType} from 'sanity'
 
 export const hero = defineType({
   type: 'object',
+  icon: MdMonitor,
   name: 'hero',
   title: 'Hero',
   fields: [
@@ -26,7 +27,6 @@ export const hero = defineType({
       return {
         title,
         subtitle: 'Hero',
-        media: MdMonitor,
       }
     },
   },

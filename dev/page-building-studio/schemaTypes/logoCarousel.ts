@@ -7,6 +7,7 @@ export const logoCarousel = defineType({
   name: 'logo-carousel',
   title: 'Logos',
   description: 'Logo carousel',
+  icon: FaArrowsRotate,
   fields: [
     defineField({
       type: 'array',
@@ -21,7 +22,6 @@ export const logoCarousel = defineType({
       return {
         title: 'Logos',
         subtitle: 'Logo carousel',
-        media: FaArrowsRotate,
       }
     },
   },
