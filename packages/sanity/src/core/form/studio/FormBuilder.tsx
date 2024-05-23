@@ -100,6 +100,8 @@ export function FormBuilder(props: FormBuilderProps) {
     value,
   } = props
 
+  const useNewTreeDialog = useTreeArrayEditingEnabled()
+
   const handleCollapseField = useCallback(
     (fieldName: string) => onSetPathCollapsed([fieldName], true),
     [onSetPathCollapsed],
@@ -219,8 +221,6 @@ export function FormBuilder(props: FormBuilderProps) {
     validation: EMPTY_ARRAY,
     value,
   }
-
-  const useNewTreeDialog = useTreeArrayEditingEnabled()
 
   return (
     <FormProvider

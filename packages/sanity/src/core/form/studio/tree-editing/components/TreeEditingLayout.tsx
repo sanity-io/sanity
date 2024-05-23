@@ -1,7 +1,7 @@
 import {PanelLeftIcon} from '@sanity/icons'
 import {Card, Container, Flex, Stack, Text} from '@sanity/ui'
 import {AnimatePresence, motion, type Variants} from 'framer-motion'
-import {Fragment, memo, type ReactNode, useCallback, useRef, useState} from 'react'
+import {Fragment, memo, type ReactNode, useCallback, useMemo, useRef, useState} from 'react'
 import {type Path, PresenceOverlay, VirtualizerScrollInstanceProvider} from 'sanity'
 import styled from 'styled-components'
 
@@ -46,6 +46,9 @@ const Sidebar = memo(function Sidebar(props: SidebarProps) {
 
   const ConditionalResizer = open ? Resizable : Fragment
 
+  // todo: localize
+  const tooltipProps = useMemo(() => ({content: open ? 'Close sidebar' : 'Open sidebar'}), [open])
+
   return (
     <ConditionalResizer maxWidth={450} minWidth={150} initialWidth={250}>
       <SidebarCard
@@ -59,12 +62,12 @@ const Sidebar = memo(function Sidebar(props: SidebarProps) {
       >
         <FixedHeightFlex align="center" gap={2}>
           <Button
+            data-testid="tree-editing-sidebar-toggle"
             icon={PanelLeftIcon}
             mode="bleed"
             onClick={onOpenToggle}
             selected={open}
-            tooltipProps={{content: open ? 'Close sidebar' : 'Open sidebar'}}
-            data-testid="tree-editing-sidebar-toggle"
+            tooltipProps={tooltipProps}
           />
 
           {open && (
@@ -134,11 +137,13 @@ export const TreeEditingLayout = memo(function TreeEditingLayout(
 
       <Flex direction="column" flex={1} overflow="hidden">
         <FixedHeightFlex align="center" sizing="border" gap={2} paddingX={4}>
-          <TreeEditingBreadcrumbs
-            items={breadcrumbs}
-            onPathSelect={onPathSelect}
-            selectedPath={selectedPath}
-          />
+          <Flex flex={1}>
+            <TreeEditingBreadcrumbs
+              items={breadcrumbs}
+              onPathSelect={onPathSelect}
+              selectedPath={selectedPath}
+            />
+          </Flex>
         </FixedHeightFlex>
 
         <Card flex={1} id="tree-editing-form" overflow="auto" ref={scrollElementRef}>
