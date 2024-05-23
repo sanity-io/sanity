@@ -81,7 +81,10 @@ export function buildTreeEditingState(props: BuildTreeEditingStateProps): TreeEd
       rootPath: path,
     })
 
-    relativePath = arrayState.relativePath
+    if (arrayState.relativePath.length > 0) {
+      relativePath = arrayState.relativePath
+    }
+
     breadcrumbs.unshift(...arrayState.breadcrumbs)
 
     if (initial) {
