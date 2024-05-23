@@ -1,15 +1,11 @@
 import {CheckmarkIcon} from '@sanity/icons'
-import {Button, Stack} from '@sanity/ui'
+import {Box, Button, Flex, Stack, Text} from '@sanity/ui'
 import {isEqual} from 'lodash'
 import {useCallback} from 'react'
 import {CommandList, type Path, supportsTouch} from 'sanity'
 
 import {type TreeEditingBreadcrumb, type TreeEditingMenuItem} from '../../types'
 import {ITEM_HEIGHT} from './constants'
-
-// const ContentFlex = styled(Flex)`
-//   min-height: 100px;
-// `
 
 interface TreeEditingBreadcrumbsMenuProps {
   items: TreeEditingBreadcrumb[]
@@ -20,7 +16,6 @@ interface TreeEditingBreadcrumbsMenuProps {
 
 export function TreeEditingBreadcrumbsMenu(props: TreeEditingBreadcrumbsMenuProps): JSX.Element {
   const {items, onPathSelect, selectedPath, textInputElement} = props
-  // const hasOptions = items.length > 0
 
   const getItemDisabled = useCallback((index: number) => false, [])
 
@@ -29,48 +24,40 @@ export function TreeEditingBreadcrumbsMenu(props: TreeEditingBreadcrumbsMenuProp
       const selected = isEqual(item.path, selectedPath)
       const isFirst = isEqual(item.path, items[0].path)
 
-      const iconRight = selected ? CheckmarkIcon : undefined
-      const justify = selected ? 'space-between' : 'flex-start'
-
       return (
         <Stack marginTop={isFirst ? undefined : 1}>
           <Button
-            iconRight={iconRight}
-            justify={justify}
             mode="bleed"
             // eslint-disable-next-line react/jsx-no-bind
             onClick={() => onPathSelect(item.path)}
             selected={selected}
-            text={item.title}
-          />
+          >
+            <Flex align="center" gap={2}>
+              <Box flex={1}>
+                <Text size={1} textOverflow="ellipsis">
+                  {item.title}
+                </Text>
+              </Box>
+
+              {selected && (
+                <Text size={1}>
+                  <CheckmarkIcon />
+                </Text>
+              )}
+            </Flex>
+          </Button>
         </Stack>
       )
     },
     [items, onPathSelect, selectedPath],
   )
 
-  // Render no options state
-  // if (!hasOptions) {
-  //   return (
-  //     <ContentFlex
-  //       align="center"
-  //       flex={1}
-  //       height="fill"
-  //       justify="center"
-  //       padding={4}
-  //       sizing="border"
-  //     >
-  //       <Text align="center" muted size={1}>
-  //         No options
-  //       </Text>
-  //     </ContentFlex>
-  //   )
-  // }
-
   return (
     <CommandList
       activeItemDataAttr="data-hovered"
-      ariaLabel="test" // todo: replace with actual value
+      // todo: localize
+      /* eslint-disable @sanity/i18n/no-attribute-string-literals */
+      ariaLabel="Breadcrumb menu"
       autoFocus={supportsTouch ? undefined : 'input'}
       getItemDisabled={getItemDisabled}
       inputElement={textInputElement}
