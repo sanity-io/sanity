@@ -14,24 +14,14 @@ import {checkStudioDependencyVersions} from '../../util/checkStudioDependencyVer
 import {checkRequiredDependencies} from '../../util/checkRequiredDependencies'
 import {getTimer} from '../../util/timing'
 import {BuildTrace} from './build.telemetry'
+import {buildVendorDependencies} from '../../server/buildVendorDependencies'
 
 const rimraf = promisify(rimrafCallback)
 
-// TODO: replace this with a manifest somewhere
-const AUTO_UPDATES_IMPORTMAP = {
-  imports: {
-    // Shared modules
-    'react': 'https://api.sanity.work/v1/modules/react/^18',
-    'react/': 'https://api.sanity.work/v1/modules/react/^18/',
-    'react-dom': 'https://api.sanity.work/v1/modules/react-dom/^18',
-    'react-dom/': 'https://api.sanity.work/v1/modules/react-dom/^18/',
-    'styled-components': 'https://api.sanity.work/v1/modules/styled-components/^6',
-
-    // Sanity Modules
-    'sanity': 'https://api.sanity.work/v1/modules/sanity/^3',
-    'sanity/': 'https://api.sanity.work/v1/modules/sanity/^3/',
-    '@sanity/vision': 'https://api.sanity.work/v1/modules/@sanity__vision/^3 ',
-  },
+const AUTO_UPDATES_IMPORTS = {
+  'sanity': 'https://api.sanity.work/v1/modules/sanity/^3',
+  'sanity/': 'https://api.sanity.work/v1/modules/sanity/^3/',
+  '@sanity/vision': 'https://api.sanity.work/v1/modules/@sanity__vision/^3 ',
 }
 
 export interface BuildSanityStudioCommandFlags {
@@ -135,6 +125,17 @@ export default async function buildSanityStudio(
   try {
     timer.start('bundleStudio')
 
+    const vendorImports = enableAutoUpdates
+      ? await buildVendorDependencies({cwd: workDir, outputDir})
+      : {}
+
+    const importMap = {
+      imports: {
+        ...(enableAutoUpdates && AUTO_UPDATES_IMPORTS),
+        ...vendorImports,
+      },
+    }
+
     const bundle = await buildStaticFiles({
       cwd: workDir,
       outputDir,
@@ -142,8 +143,9 @@ export default async function buildSanityStudio(
       sourceMap: Boolean(flags['source-maps']),
       minify: Boolean(flags.minify),
       vite: cliConfig && 'vite' in cliConfig ? cliConfig.vite : undefined,
-      importMap: enableAutoUpdates ? AUTO_UPDATES_IMPORTMAP : undefined,
+      importMap,
     })
+
     trace.log({
       outputSize: bundle.chunks
         .flatMap((chunk) => chunk.modules.flatMap((mod) => mod.renderedLength))
