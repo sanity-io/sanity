@@ -150,31 +150,31 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | 
 
     const valueChanged = !isEqual(value, valueRef.current)
     const openPathChanged = !isEqual(openPath, openPathRef.current)
+    const isInitialRender = valueRef.current === undefined && openPathRef.current === undefined
 
-    // Don't proceed with building the tree editing state if the
-    // openPath and value has not changed.
-    if (!valueChanged && !openPathChanged) return
-
-    // If the value has not changed but the openPath has changed,
-    // we do not want to debounce since we want to immediately
-    // update the UI.
-    if (!valueChanged && openPathChanged) {
+    // If the value has not changed but the openPath has changed or
+    // if it is the initial render, build the tree editing state
+    // without debouncing. We do this to make sure that the UI is
+    // updated immediately when the openPath changes.
+    // We only want to debounce the state building when the value changes
+    // as that might happen frequently when the user is editing the document.
+    if (isInitialRender || (openPathChanged && !valueChanged)) {
       const nextState = buildTreeEditingState({
         schemaType,
         documentValue: value,
         openPath,
       })
 
-      setTreeState((prevState) => ({
-        ...prevState,
-        relativePath: nextState.relativePath,
-        breadcrumbs: nextState.breadcrumbs,
-      }))
+      setTreeState(nextState)
 
       openPathRef.current = openPath
 
       return
     }
+
+    // Don't proceed with building the tree editing state if the
+    // openPath and value has not changed.
+    if (!valueChanged && !openPathChanged) return
 
     // Store the openPath and value to be able to compare them
     // with the next openPath and value.
