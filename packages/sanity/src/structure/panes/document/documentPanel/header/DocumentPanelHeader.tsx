@@ -17,6 +17,7 @@ import {isMenuNodeButton, isNotMenuNodeButton, resolveMenuNodes} from '../../../
 import {type PaneMenuItem} from '../../../../types'
 import {useStructureTool} from '../../../../useStructureTool'
 import {ActionDialogWrapper, ActionMenuListItem} from '../../statusBar/ActionMenuButton'
+import {isRestoreAction} from '../../statusBar/DocumentStatusBarActions'
 import {TimelineMenu} from '../../timeline'
 import {useDocumentPane} from '../../useDocumentPane'
 import {DocumentHeaderTabs} from './DocumentHeaderTabs'
@@ -34,7 +35,7 @@ export const DocumentPanelHeader = memo(
   ) {
     const {menuItems} = _props
     const {
-      actions,
+      actions: allActions,
       editState,
       onMenuAction,
       onPaneClose,
@@ -50,6 +51,13 @@ export const DocumentPanelHeader = memo(
     const {index, BackLink, hasGroupSiblings} = usePaneRouter()
     const {actions: fieldActions} = useFieldActions()
     const [referenceElement, setReferenceElement] = useState<HTMLElement | null>(null)
+
+    // The restore action has a dedicated place in the UI; it's only visible when the user is
+    // viewing a different document revision. It must be omitted from this collection.
+    const actions = useMemo(
+      () => (allActions ?? []).filter((action) => !isRestoreAction(action)),
+      [allActions],
+    )
 
     const menuNodes = useMemo(
       () =>
@@ -135,7 +143,7 @@ export const DocumentPanelHeader = memo(
               ))}
               {editState && (
                 <RenderActionCollectionState
-                  actions={actions || []}
+                  actions={actions}
                   actionProps={editState}
                   group="paneActions"
                 >

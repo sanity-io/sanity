@@ -74,6 +74,7 @@ export const DEBUG_INPUT_TYPES = [
   'recursiveDocument',
   'recursiveObjectTest',
   'recursivePopoverTest',
+  'removeRestoreActionTest',
   'reservedKeywordsTest',
   'scrollBug',
   'select',
