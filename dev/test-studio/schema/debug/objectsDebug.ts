@@ -11,6 +11,44 @@ const animal = defineField({
       title: 'Animal name',
     },
     {
+      type: 'array',
+      name: 'description',
+      title: 'Description',
+      of: [
+        {type: 'block'},
+        {
+          type: 'object',
+          name: 'info',
+          fields: [
+            {
+              type: 'array',
+              name: 'item',
+              title: 'Item',
+              of: [
+                {
+                  type: 'object',
+                  name: 'property',
+                  title: 'Property',
+                  fields: [
+                    {
+                      type: 'string',
+                      name: 'title',
+                      title: 'Title',
+                    },
+                    {
+                      type: 'string',
+                      name: 'value',
+                      title: 'Value',
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+    {
       name: 'size',
       type: 'object',
       title: 'Size',
@@ -83,6 +121,33 @@ const animal = defineField({
   ],
 })
 
+const body = defineField({
+  type: 'array',
+  name: 'body',
+  title: 'Body',
+  of: [
+    {
+      type: 'block',
+      name: 'block',
+      title: 'Block',
+    },
+    animal,
+  ],
+})
+
+const pte = defineField({
+  name: 'pte',
+  type: 'object',
+  title: 'PTE',
+  fields: [
+    {
+      type: 'array',
+      name: 'body',
+      of: [{type: 'block'}, animal],
+    },
+  ],
+})
+
 const animals = defineField({
   type: 'array',
   name: 'animals',
@@ -140,6 +205,7 @@ const arrayOfMixedTypes = defineField({
   name: 'arrayOfMixedTypes',
   title: 'Array of mixed types',
   of: [
+    pte,
     {
       type: 'object',
       name: 'myObject',
@@ -159,20 +225,6 @@ const arrayOfMixedTypes = defineField({
   ],
 })
 
-const body = defineField({
-  type: 'array',
-  name: 'body',
-  title: 'Body',
-  of: [
-    {
-      type: 'block',
-      name: 'block',
-      title: 'Block',
-    },
-    animal,
-  ],
-})
-
 export const objectsDebug = defineType({
   type: 'document',
   name: 'objectsDebug',
@@ -182,10 +234,10 @@ export const objectsDebug = defineType({
       type: 'string',
     },
     animals,
+    arrayOfMixedTypes,
     body,
     objectWithArray,
     arrayOfAnonymousObjects,
     arrayOfImages,
-    arrayOfMixedTypes,
   ],
 })

@@ -27,7 +27,7 @@ interface BuildArrayState {
 export function buildArrayState(props: BuildArrayState): TreeEditingState {
   const {arraySchemaType, arrayValue, documentValue, openPath, rootPath, recursive} = props
 
-  let relativePath: Path = getRelativePath(openPath)
+  let relativePath: Path = []
   const menuItems: TreeEditingMenuItem[] = []
   const breadcrumbs: TreeEditingBreadcrumb[] = []
 
@@ -40,15 +40,6 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
     ) as ObjectSchemaType
 
     const isAnonymous = !itemType
-    let title: string = 'Unknown'
-
-    const previewTitleKey = itemSchemaField?.preview?.select?.title
-    const previewTitle = item?.[previewTitleKey as string] as string
-
-    // Is anonymous object (no _type field)
-    if (!isAnonymous) {
-      title = previewTitleKey ? previewTitle : getSchemaTypeTitle(itemSchemaField)
-    }
 
     const childrenFields = itemSchemaField?.fields || []
     const childrenMenuItems: TreeEditingMenuItem[] = []
@@ -66,19 +57,28 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
 
     childrenFields.forEach((childField) => {
       const childPath = [...itemPath, childField.name] as Path
+      const childValue = getValueAtPath(documentValue, childPath)
 
       const isPrimitive = isPrimitiveSchemaType(childField?.type)
-      const childValue = getValueAtPath(documentValue, childPath)
+      const isPortableText =
+        isArraySchemaType(childField.type) && childField.type.of.some((t) => t.name === 'block')
 
       if (isSelected(childPath, openPath) && !isPrimitive) {
         relativePath = getRelativePath(childPath)
       }
 
+      // Proceed with adding the child item to the menu item and breadcrumbs if:
+      // - The child is not a primitive
+      // - The child is not an array of primitives
+      // - The child is an array
+      // - The child has a value
+      // - The child is not a portable text
       const isValid =
         !isPrimitive &&
         !isArrayOfPrimitivesSchemaType(childField.type) &&
         isArraySchemaType(childField.type) &&
-        childValue
+        childValue &&
+        !isPortableText
 
       if (isValid) {
         if (shouldBeInBreadcrumb(childPath, openPath)) {
@@ -109,13 +109,26 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
 
     const isPrimitive = isPrimitiveSchemaType(itemSchemaField?.type)
 
+    let title: string = 'Untitled'
+    const previewTitleKey = itemSchemaField?.preview?.select?.title
+    const previewTitle = item?.[previewTitleKey as string] as string
+
+    // Is anonymous object (no _type field)
+    if (!isAnonymous) {
+      title = previewTitleKey ? previewTitle : itemSchemaField?.title || itemSchemaField.name
+    }
+
+    if (!previewTitle || typeof previewTitle !== 'string') {
+      title = getSchemaTypeTitle(itemSchemaField)
+    }
+
     if (isSelected(itemPath, openPath) && !isPrimitive) {
       relativePath = getRelativePath(itemPath)
     }
 
     if (!isPrimitive) {
       menuItems.push({
-        title: (title || 'Untitled') as string,
+        title,
         path: itemPath as Path,
         children: childrenMenuItems,
       })
