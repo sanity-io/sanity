@@ -375,7 +375,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
   // prop to the Editable PTE component (initialSelection) so that
   // selections can be set initially even though the editor value
   // might not be fully propagated or rendered yet.
-  const initialSelection: EditorSelection | undefined = useMemo(() => {
+  const [initialSelection] = useState<EditorSelection | undefined>(() => {
     // We can be sure that the focusPath is pointing directly to
     // editor content when hasFocusWithin is true.
     if (hasFocusWithin) {
@@ -391,8 +391,7 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
       }
     }
     return undefined
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []) // Only at mount time!
+  })
 
   const editorNode = useMemo(
     () => (
