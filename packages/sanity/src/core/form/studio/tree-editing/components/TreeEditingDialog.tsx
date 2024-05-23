@@ -3,7 +3,7 @@ import {Button, Card, Dialog, Flex} from '@sanity/ui'
 import {type Theme} from '@sanity/ui/theme'
 import {toString} from '@sanity/util/paths'
 import {AnimatePresence, motion, type Transition, type Variants} from 'framer-motion'
-import {debounce, type DebounceSettings, isEqual} from 'lodash'
+import {debounce, isEqual} from 'lodash'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {
   FormInput,
@@ -32,8 +32,6 @@ const ANIMATION_VARIANTS: Variants = {
 }
 
 const ANIMATION_TRANSITION: Transition = {duration: 0.2, ease: 'easeInOut'}
-
-const DEBOUNCE_SETTINGS: DebounceSettings = {leading: true, trailing: true}
 
 function renderDefault(props: InputProps) {
   return props.renderDefault(props)
@@ -69,7 +67,7 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | 
 
   const [treeState, setTreeState] = useState<TreeEditingState>(EMPTY_TREE_STATE)
 
-  const openPathRef = useRef<Path | null>(null)
+  const openPathRef = useRef<Path | undefined>(undefined)
   const valueRef = useRef<Record<string, unknown> | undefined>(undefined)
 
   const handleBuildTreeEditingState = useCallback(
@@ -100,7 +98,7 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | 
   )
 
   const debouncedBuildTreeEditingState = useMemo(
-    () => debounce(handleBuildTreeEditingState, 1000, DEBOUNCE_SETTINGS),
+    () => debounce(handleBuildTreeEditingState, 1000),
     [handleBuildTreeEditingState],
   )
 
@@ -114,13 +112,13 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | 
     // Reset the `openPath`
     onPathOpen(EMPTY_ARRAY)
 
-    // Reset the stored value and openPath to undefined and null.
+    // Reset the stored value and openPath to undefined.
     // This is important since the next time the dialog is opened,
     // we want to build the tree editing state from scratch and
     // don't prevent the state from being built by comparing the
     // previous stored values.
     valueRef.current = undefined
-    openPathRef.current = null
+    openPathRef.current = undefined
   }, [debouncedBuildTreeEditingState, onPathOpen])
 
   const {menuItems, relativePath, rootTitle, breadcrumbs} = treeState
@@ -157,6 +155,27 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | 
     // openPath and value has not changed.
     if (!valueChanged && !openPathChanged) return
 
+    // If the value has not changed but the openPath has changed,
+    // we do not want to debounce since we want to immediately
+    // update the UI.
+    if (!valueChanged && openPathChanged) {
+      const nextState = buildTreeEditingState({
+        schemaType,
+        documentValue: value,
+        openPath,
+      })
+
+      setTreeState((prevState) => ({
+        ...prevState,
+        relativePath: nextState.relativePath,
+        breadcrumbs: nextState.breadcrumbs,
+      }))
+
+      openPathRef.current = openPath
+
+      return
+    }
+
     // Store the openPath and value to be able to compare them
     // with the next openPath and value.
     valueRef.current = value
@@ -175,8 +194,8 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | 
     <StyledDialog
       __unstable_hideCloseButton
       autoFocus={false}
-      id="tree-editing-dialog"
       data-testid="tree-editing-dialog"
+      id="tree-editing-dialog"
       onClickOutside={onClose}
       onClose={onClose}
       padding={0}
