@@ -1,12 +1,13 @@
 import {Box, Button, Checkbox, Flex, Menu, MenuButton, Stack, Text} from '@sanity/ui'
 import {type Column, type Table} from '@tanstack/react-table'
 import {useCallback} from 'react'
-import {type SanityDocument, useTranslation} from 'sanity'
+import {useTranslation} from 'sanity'
 
+import {type DocumentSheetListTable, type DocumentSheetTableRow} from './types'
 import {VISIBLE_COLUMN_LIMIT} from './useDocumentSheetColumns'
 
 type ColumnsControlProps = {
-  table: Table<SanityDocument>
+  table: DocumentSheetListTable
 }
 
 export function ColumnsControl({table}: ColumnsControlProps) {
@@ -18,11 +19,11 @@ export function ColumnsControl({table}: ColumnsControlProps) {
     table.resetColumnVisibility()
   }, [table])
 
-  const handleColumnOnChange = (column: Column<SanityDocument, unknown>) => () => {
+  const handleColumnOnChange = (column: Column<DocumentSheetTableRow, unknown>) => () => {
     column.toggleVisibility()
   }
 
-  const getColumnVisibilityDisabled = (column: Column<SanityDocument, unknown>) => {
+  const getColumnVisibilityDisabled = (column: Column<DocumentSheetTableRow, unknown>) => {
     const isColumnVisible = column.getIsVisible()
     const isSingleColumnVisible =
       table.getVisibleLeafColumns().filter((col) => col.getCanHide()).length === 1

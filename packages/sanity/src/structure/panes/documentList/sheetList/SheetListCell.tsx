@@ -3,9 +3,8 @@ import {type ObjectFieldType} from '@sanity/types'
 import {Select, TextInput} from '@sanity/ui'
 import {type Cell, type CellContext, flexRender} from '@tanstack/react-table'
 import {type MouseEventHandler, useCallback, useEffect, useRef, useState} from 'react'
-import {type SanityDocument} from 'sanity'
 import {styled} from 'styled-components'
-
+import {type DocumentSheetTableRow} from './types'
 import {useDocumentSheetListContext} from './DocumentSheetListProvider'
 
 const DataCell = styled.td<{width: number}>`
@@ -22,7 +21,7 @@ const PinnedDataCell = styled(DataCell)`
   z-index: 2;
 `
 
-interface SheetListCellInnerProps extends CellContext<SanityDocument, unknown> {
+interface SheetListCellInnerProps extends CellContext<DocumentSheetTableRow, unknown> {
   fieldType: ObjectFieldType
 }
 
@@ -197,7 +196,7 @@ export function SheetListCellInner(props: SheetListCellInnerProps) {
 }
 
 /** @internal */
-export function SheetListCell(cell: Cell<SanityDocument, unknown>) {
+export function SheetListCell(cell: Cell<DocumentSheetTableRow, unknown>) {
   const isPinned = cell.column.getIsPinned()
   const Cell = isPinned ? PinnedDataCell : DataCell
   const borderWidth = isPinned && cell.column.getIsLastColumn('left') ? 2 : 1
