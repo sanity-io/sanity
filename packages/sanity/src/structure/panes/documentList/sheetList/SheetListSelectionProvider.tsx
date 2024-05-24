@@ -3,7 +3,7 @@ import {type Table} from '@tanstack/react-table'
 import {type ReactNode, useCallback, useContext, useEffect, useMemo, useState} from 'react'
 import {SheetListContext} from 'sanity/_singletons'
 
-interface SheetListProviderProps {
+interface SheetListSelectionProviderProps {
   children?: ReactNode
   table: Table<SanityDocument>
 }
@@ -27,16 +27,20 @@ export interface SheetListContextValue {
 }
 
 /** @internal */
-export const useSheetListContext = (): SheetListContextValue => {
+export const useSheetListSelectionContext = (): SheetListContextValue => {
   const context = useContext(SheetListContext)
 
   if (context === undefined) {
-    throw new Error('useSheetListContext must be used within an SheetListProvider')
+    throw new Error('useSheetListContext must be used within an SheetListSelectionProvider')
   }
   return context
 }
 
-export function SheetListProvider({children, table}: SheetListProviderProps): ReactNode {
+/** @internal */
+export function SheetListSelectionProvider({
+  children,
+  table,
+}: SheetListSelectionProviderProps): ReactNode {
   const [selectedAnchorCellDetails, setSelectedAnchorCellDetails] =
     useState<SelectedCellDetails>(null)
   const [selectedRangeCellIndexes, setSelectedRangeCellIndexes] = useState<number[]>([])

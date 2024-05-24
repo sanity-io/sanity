@@ -5,7 +5,7 @@ import {type CellContext} from '@tanstack/react-table'
 import {type MouseEventHandler, useCallback, useEffect, useRef, useState} from 'react'
 import {type SanityDocument} from 'sanity'
 
-import {useSheetListContext} from './SheetListProvider'
+import {useSheetListSelectionContext} from './SheetListSelectionProvider'
 
 interface SheetListCellProps extends CellContext<SanityDocument, unknown> {
   fieldType: ObjectFieldType
@@ -24,7 +24,7 @@ export function SheetListCell(props: SheetListCellProps) {
     setSelectedAnchorCell,
     getStateByCellId,
     submitFocusedCell,
-  } = useSheetListContext()
+  } = useSheetListSelectionContext()
   const cellState = getStateByCellId(column.id, row.index)
 
   const handleOnFocus = useCallback(() => {
