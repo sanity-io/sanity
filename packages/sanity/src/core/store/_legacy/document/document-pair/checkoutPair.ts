@@ -1,6 +1,7 @@
 import {type SanityClient} from '@sanity/client'
 import {type Mutation} from '@sanity/mutator'
 import {type SanityDocument} from '@sanity/types'
+import {omit} from 'lodash'
 import {EMPTY, from, merge, type Observable, Subject} from 'rxjs'
 import {filter, map, mergeMap, share, take, tap} from 'rxjs/operators'
 
@@ -121,7 +122,7 @@ function toActions(idPair: IdPair, mutationParams: Mutation['params']) {
         actionType: 'sanity.action.document.edit',
         draftId: idPair.draftId,
         publishedId: idPair.publishedId,
-        patch: mutations.patch,
+        patch: omit(mutations.patch, 'id'),
       }
     }
     throw new Error('Todo: implement')
