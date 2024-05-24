@@ -17,7 +17,7 @@ export function SheetListCell(props: SheetListCellProps) {
   const cellId = `cell-${column.id}-${row.index}`
   const [renderValue, setRenderValue] = useState<string>(getValue() as string)
   const [isDirty, setIsDirty] = useState(false)
-  const inputRef = useRef<HTMLInputElement | HTMLSelectElement | null>(null)
+  const inputRef = useRef<HTMLInputElement | null>(null)
   const {
     focusAnchorCell,
     resetFocusSelection,
@@ -121,7 +121,6 @@ export function SheetListCell(props: SheetListCellProps) {
         onFocus={handleOnFocus}
         onBlur={resetFocusSelection}
         id={cellId}
-        ref={inputRef}
         radius={0}
         style={{
           boxShadow: 'none',
