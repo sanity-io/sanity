@@ -223,26 +223,32 @@ export function validateValue(
               .map((cld) => cld.marks || []),
           ) as string[],
         )
-        // Note: this is commented out as it may be a bit too strict:
-        // // Test that all markDefs are in use
-        // if (Array.isArray(blk.markDefs) && blk.markDefs.length > 0) {
-        //   const unusedMarkDefs: string[] = uniq(
-        //     blk.markDefs.map((def) => def._key).filter((key) => !allUsedMarks.includes(key))
-        //   )
-        //   if (unusedMarkDefs.length > 0) {
-        //     resolution = {
-        //       patches: unusedMarkDefs.map((key) =>
-        //         unset([{_key: blk._key}, 'markDefs', {_key: key}])
-        //       ),
-        //       description: `Block contains orphaned data (unused mark definitions): ${unusedMarkDefs.join(
-        //         ', '
-        //       )}.`,
-        //       action: 'Remove unused mark definition item',
-        //       item: blk,
-        //     }
-        //     return true
-        //   }
-        // }
+
+        // Test that all markDefs are in use (remove orphaned markDefs)
+        if (Array.isArray(blk.markDefs) && blk.markDefs.length > 0) {
+          const unusedMarkDefs: string[] = uniq(
+            blk.markDefs.map((def) => def._key).filter((key) => !allUsedMarks.includes(key)),
+          )
+          if (unusedMarkDefs.length > 0) {
+            resolution = {
+              autoResolve: true,
+              patches: unusedMarkDefs.map((markDefKey) =>
+                unset([{_key: blk._key}, 'markDefs', {_key: markDefKey}]),
+              ),
+              description: `Block contains orphaned data (unused mark definitions): ${unusedMarkDefs.join(
+                ', ',
+              )}.`,
+              action: 'Remove unused mark definition item',
+              item: blk,
+              i18n: {
+                description: 'inputs.portable-text.invalid-value.orphaned-mark-defs.description',
+                action: 'inputs.portable-text.invalid-value.orphaned-mark-defs.action',
+                values: {key: blk._key, unusedMarkDefs: unusedMarkDefs.map((m) => m.toString())},
+              },
+            }
+            return true
+          }
+        }
 
         // Test that every annotation mark used has a definition
         const annotationMarks = allUsedMarks.filter(
@@ -263,6 +269,7 @@ export function validateValue(
           if (spanChildren) {
             const orphaned = orphanedMarks.join(', ')
             resolution = {
+              autoResolve: true,
               patches: spanChildren.map((child) => {
                 return set(
                   (child.marks || []).filter((cMrk) => !orphanedMarks.includes(cMrk)),
@@ -276,7 +283,7 @@ export function validateValue(
               i18n: {
                 description: 'inputs.portable-text.invalid-value.orphaned-marks.description',
                 action: 'inputs.portable-text.invalid-value.orphaned-marks.action',
-                values: {key: blk._key, orphanedMarks},
+                values: {key: blk._key, orphanedMarks: orphanedMarks.map((m) => m.toString())},
               },
             }
             return true

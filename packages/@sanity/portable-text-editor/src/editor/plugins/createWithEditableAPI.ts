@@ -23,7 +23,6 @@ import {toPortableTextRange, toSlateRange} from '../../utils/ranges'
 import {fromSlateValue, isEqualToEmptyEditor, toSlateValue} from '../../utils/values'
 import {KEY_TO_VALUE_ELEMENT, SLATE_TO_PORTABLE_TEXT_RANGE} from '../../utils/weakMaps'
 import {type PortableTextEditor} from '../PortableTextEditor'
-import {normalizeMarkDefs} from './createWithPortableTextMarkModel'
 
 const debug = debugWithName('API:editable')
 
@@ -517,7 +516,6 @@ export function createWithEditableAPI(
                   })
                 }
               })
-              normalizeMarkDefs(editor, types)
             }
           })
           Editor.normalize(editor)
