@@ -12,6 +12,7 @@ import {
 } from '../../../../../ui-components'
 import {useTranslation} from '../../../../i18n'
 import {type ArrayInputFunctionsProps, type ObjectItem} from '../../../types'
+import {FullInsertMenuButton} from './FullInsertMenu'
 import {getSchemaTypeIcon} from './getSchemaTypeIcon'
 
 const POPOVER_PROPS: MenuButtonProps['popover'] = {
@@ -51,65 +52,80 @@ export function ArrayOfObjectsFunctions<
       ? 'inputs.array.action.add-item-select-type'
       : 'inputs.array.action.add-item'
 
+  const insertButtonProps: React.ComponentProps<typeof Button> = {
+    icon: AddIcon,
+    mode: 'ghost',
+    size: 'large',
+    text: t(addItemI18nKey),
+  }
+
   if (readOnly) {
     return (
       <Tooltip portal content={t('inputs.array.read-only-label')}>
         <Grid>
-          <Button
-            icon={AddIcon}
-            mode="ghost"
-            disabled
-            size="large"
-            data-testid="add-read-object-button"
-            text={t(addItemI18nKey)}
-          />
+          <Button {...insertButtonProps} data-testid="add-read-object-button" disabled />
         </Grid>
       </Tooltip>
     )
   }
 
+  if (schemaType.of.length === 1) {
+    return (
+      <Container>
+        <Button
+          {...insertButtonProps}
+          onClick={handleAddBtnClick}
+          data-testid="add-single-object-button"
+        />
+        {children}
+      </Container>
+    )
+  }
+
+  if (schemaType.options?.insertMenu?.layout === 'full') {
+    return (
+      <Container>
+        <FullInsertMenuButton
+          groups={schemaType.options.insertMenu.groups}
+          insertButtonProps={insertButtonProps}
+          schemaTypes={schemaType.of}
+          onSelect={insertItem}
+        />
+        {children}
+      </Container>
+    )
+  }
+
+  return (
+    <Container>
+      <MenuButton
+        button={<Button {...insertButtonProps} data-testid="add-multiple-object-button" />}
+        id={menuButtonId || ''}
+        menu={
+          <Menu>
+            {schemaType.of.map((memberDef, i) => {
+              return (
+                <MenuItem
+                  key={i}
+                  text={memberDef.title || memberDef.type?.name}
+                  onClick={() => insertItem(memberDef)}
+                  icon={getSchemaTypeIcon(memberDef)}
+                />
+              )
+            })}
+          </Menu>
+        }
+        popover={POPOVER_PROPS}
+      />
+      {children}
+    </Container>
+  )
+}
+
+function Container(props: React.PropsWithChildren<unknown>) {
   return (
     <Grid gap={1} style={{gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 1fr))'}}>
-      {schemaType.of.length === 1 ? (
-        <Button
-          icon={AddIcon}
-          mode="ghost"
-          onClick={handleAddBtnClick}
-          size="large"
-          data-testid="add-single-object-button"
-          text={t(addItemI18nKey)}
-        />
-      ) : (
-        <MenuButton
-          button={
-            <Button
-              icon={AddIcon}
-              mode="ghost"
-              size="large"
-              data-testid="add-multiple-object-button"
-              text={t(addItemI18nKey)}
-            />
-          }
-          id={menuButtonId || ''}
-          menu={
-            <Menu>
-              {schemaType.of.map((memberDef, i) => {
-                return (
-                  <MenuItem
-                    key={i}
-                    text={memberDef.title || memberDef.type?.name}
-                    onClick={() => insertItem(memberDef)}
-                    icon={getSchemaTypeIcon(memberDef)}
-                  />
-                )
-              })}
-            </Menu>
-          }
-          popover={POPOVER_PROPS}
-        />
-      )}
-
-      {children}
+      {props.children}
     </Grid>
   )
 }
