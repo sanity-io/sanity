@@ -159,6 +159,33 @@ export default defineType({
       ],
     },
     {
+      title:
+        'Cross dataset reference with custom filter, only returning books with a norwegian title',
+      description: 'Repro case for https://linear.app/sanity/issue/SDX-1367',
+      name: 'bookWithTitle',
+      type: 'crossDatasetReference',
+      dataset: 'playground',
+      studioUrl: ({id, type}) => {
+        return type
+          ? `${document.location.protocol}//${document.location.host}/playground/structure/${type};${id}`
+          : null
+      },
+      options: {
+        filter: `defined(translations.no)`,
+      },
+      to: [
+        {
+          type: 'book',
+          icon: BookIcon,
+          preview: {
+            select: {
+              title: 'translations.no',
+            },
+          },
+        },
+      ],
+    },
+    {
       title: 'Cross Dataset reference in PTE',
       name: 'portableText',
       type: 'array',
