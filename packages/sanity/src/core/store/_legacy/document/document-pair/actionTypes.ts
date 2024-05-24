@@ -20,7 +20,7 @@ export interface HttpEditAction {
   actionType: 'sanity.action.document.edit'
   draftId: string
   publishedId: string
-  patch: PatchMutation['patch']
+  patch: Omit<PatchMutation['patch'], 'id'>
 }
 
 export type HttpAction = HttpCreateAction | HttpDeleteAction | HttpEditAction

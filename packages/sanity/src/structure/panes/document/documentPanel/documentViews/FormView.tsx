@@ -114,15 +114,16 @@ export const FormView = forwardRef<HTMLDivElement, FormViewProps>(function FormV
 
   const [formRef, setFormRef] = useState<null | HTMLDivElement>(null)
 
+  // We only want to run it on first mount
+  const [focusedFirstDescendant, setFocusedFirstDescendant] = useState(false)
   useEffect(() => {
     // Only focus on the first descendant if there is not already a focus path
     // This is to avoid stealing focus from intent links
-    if (ready && !formState?.focusPath.length && formRef) {
+    if (!focusedFirstDescendant && ready && !formState?.focusPath.length && formRef) {
+      setFocusedFirstDescendant(true)
       focusFirstDescendant(formRef)
     }
-    // We only want to run it on first mount
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ready])
+  }, [focusedFirstDescendant, formRef, formState?.focusPath.length, ready])
 
   const setRef = useCallback(
     (node: HTMLDivElement | null) => {

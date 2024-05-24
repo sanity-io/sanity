@@ -62,6 +62,7 @@ import recursive from './debug/recursive'
 import recursiveArray from './debug/recursiveArray'
 import recursiveObjectTest, {recursiveObject} from './debug/recursiveObject'
 import recursivePopover from './debug/recursivePopover'
+import removeRestoreAction from './debug/removeRestoreAction'
 import reservedFieldNames from './debug/reservedFieldNames'
 import review from './debug/review'
 import * as scrollBugTypes from './debug/scrollBug'
@@ -197,6 +198,7 @@ export const schemaTypes = [
   fieldActionsTest,
   fieldComponentsTest,
   fieldsets,
+  removeRestoreAction,
 
   fieldValidationInferReproSharedObject,
   fieldValidationInferReproDoc,
