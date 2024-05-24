@@ -100,8 +100,13 @@ const InnerToolbar = memo(function InnerToolbar({
     <RootFlex align="center" ref={setRootElement} onMouseDown={preventEditorBlurOnToolbarMouseDown}>
       {showBlockStyleSelect && (
         <StyleSelectFlex flex={collapsed ? 1 : undefined}>
-          <StyleSelectBox padding={isFullscreen ? 2 : 1}>
-            <BlockStyleSelect disabled={disabled} items={blockStyles} />
+          <StyleSelectBox padding={isFullscreen ? 2 : 1} data-testid="block-style-select">
+            <BlockStyleSelect
+              disabled={disabled}
+              items={blockStyles}
+              // send the boundary in cases of PTEs within PTEs
+              boundaryElement={rootElement}
+            />
           </StyleSelectBox>
         </StyleSelectFlex>
       )}

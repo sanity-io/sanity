@@ -108,6 +108,7 @@ export const Element: FunctionComponent<ElementProps> = ({
           <span
             draggable={!readOnly}
             className="pt-inline-object"
+            data-testid="pt-inline-object"
             ref={inlineBlockObjectRef}
             key={element._key}
             style={inlineBlockStyle}
