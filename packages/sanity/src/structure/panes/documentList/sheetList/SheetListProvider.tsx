@@ -56,7 +56,10 @@ export function SheetListProvider({children, table}: SheetListProviderProps): Re
     [selectedAnchorCellDetails],
   )
 
-  const resetFocusSelection = useCallback(clearAndSetFocusSelection, [clearAndSetFocusSelection])
+  const resetFocusSelection = useCallback(
+    () => clearAndSetFocusSelection(),
+    [clearAndSetFocusSelection],
+  )
 
   const changeSelectionColumn = useCallback(
     (direction: 'left' | 'right') => {
