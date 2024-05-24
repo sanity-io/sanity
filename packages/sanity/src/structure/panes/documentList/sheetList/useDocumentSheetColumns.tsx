@@ -12,7 +12,6 @@ import {
   type DocumentPreviewStore,
   DocumentStatusIndicator,
   getPreviewStateObservable,
-  type SanityDocument,
   type SchemaType,
   useDocumentPreviewStore,
 } from 'sanity'
@@ -20,6 +19,7 @@ import {
 import {type PaneItemPreviewState} from '../../../components/paneItem/types'
 import {DocumentSheetListSelect} from './DocumentSheetListSelect'
 import {SheetListCellInner} from './SheetListCell'
+import {type DocumentSheetTableRow} from './types'
 
 export const VISIBLE_COLUMN_LIMIT = 5
 
@@ -27,7 +27,7 @@ const PreviewCell = (props: {
   documentPreviewStore: DocumentPreviewStore
   schemaType: SchemaType
   row: {
-    original: SanityDocument
+    original: DocumentSheetTableRow
   }
 }) => {
   const {documentPreviewStore, row, schemaType} = props
@@ -53,12 +53,12 @@ const PreviewCell = (props: {
   )
 }
 
-const columnHelper = createColumnHelper<SanityDocument>()
+const columnHelper = createColumnHelper<DocumentSheetTableRow>()
 const SUPPORTED_FIELDS = ['string', 'number', 'boolean']
 
 type Columns = (
-  | AccessorKeyColumnDef<SanityDocument, unknown>
-  | GroupColumnDef<SanityDocument, unknown>
+  | AccessorKeyColumnDef<DocumentSheetTableRow, unknown>
+  | GroupColumnDef<DocumentSheetTableRow, unknown>
 )[]
 
 const getColsFromSchemaType = (schemaType: ObjectSchemaType, parentalField?: string): Columns => {
@@ -94,16 +94,18 @@ const getColsFromSchemaType = (schemaType: ObjectSchemaType, parentalField?: str
 // Type guard function to check if a column is of type GroupColumnDef
 function isAccessorKeyColumnDef(
   column: Columns[number],
-): column is AccessorKeyColumnDef<SanityDocument, unknown> {
+): column is AccessorKeyColumnDef<DocumentSheetTableRow, unknown> {
   return 'accessorKey' in column
 }
 function isGroupColumnDef(
-  column: AccessorKeyColumnDef<SanityDocument, unknown> | GroupColumnDef<SanityDocument, unknown>,
-): column is GroupColumnDef<SanityDocument, unknown> {
+  column:
+    | AccessorKeyColumnDef<DocumentSheetTableRow, unknown>
+    | GroupColumnDef<DocumentSheetTableRow, unknown>,
+): column is GroupColumnDef<DocumentSheetTableRow, unknown> {
   return 'columns' in column
 }
 
-const flatColumns = (cols: Columns): AccessorKeyColumnDef<SanityDocument, unknown>[] => {
+const flatColumns = (cols: Columns): AccessorKeyColumnDef<DocumentSheetTableRow, unknown>[] => {
   return cols.flatMap((col) => {
     if (isAccessorKeyColumnDef(col)) {
       return col

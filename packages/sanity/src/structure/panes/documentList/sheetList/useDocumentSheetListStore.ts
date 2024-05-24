@@ -240,6 +240,7 @@ export function useDocumentSheetListStore({
   }, [state.documents])
 
   return {
+    documents: state.documents,
     data: dataAsArray,
     isLoading,
     error,
