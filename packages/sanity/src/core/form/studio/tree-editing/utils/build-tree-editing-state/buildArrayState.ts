@@ -11,6 +11,7 @@ import {
 } from 'sanity'
 
 import {type TreeEditingBreadcrumb, type TreeEditingMenuItem} from '../../types'
+import {getArrayItemTitle} from '../getArrayItemTitle'
 import {buildBreadcrumbsState} from './buildBreadcrumbsState'
 import {type RecursiveProps, type TreeEditingState} from './buildTreeEditingState'
 import {getRelativePath, isSelected, shouldBeInBreadcrumb} from './utils'
@@ -38,8 +39,6 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
     const itemSchemaField = arraySchemaType?.of?.find(
       (type) => type.name === itemType,
     ) as ObjectSchemaType
-
-    const isAnonymous = !itemType
 
     const childrenFields = itemSchemaField?.fields || []
     const childrenMenuItems: TreeEditingMenuItem[] = []
@@ -109,18 +108,7 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
 
     const isPrimitive = isPrimitiveSchemaType(itemSchemaField?.type)
 
-    let title: string = 'Untitled'
-    const previewTitleKey = itemSchemaField?.preview?.select?.title
-    const previewTitle = item?.[previewTitleKey as string] as string
-
-    // Is anonymous object (no _type field)
-    if (!isAnonymous) {
-      title = previewTitleKey ? previewTitle : itemSchemaField?.title || itemSchemaField.name
-    }
-
-    if (!previewTitle || typeof previewTitle !== 'string') {
-      title = getSchemaTypeTitle(itemSchemaField)
-    }
+    const title = getArrayItemTitle({arrayItem: item, arraySchemaType})
 
     if (isSelected(itemPath, openPath)) {
       relativePath = getRelativePath(itemPath)
