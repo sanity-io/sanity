@@ -6,8 +6,17 @@ export const manifestV1Deprecation = z.object({
 
 export const manifestV1TypeValidationRule = z.object({
   flag: z.literal('type'),
-  constraint: z.string(), // xxx make me precise
+  constraint: z.union([
+    z.literal('array'),
+    z.literal('boolean'),
+    z.literal('date'),
+    z.literal('number'),
+    z.literal('object'),
+    z.literal('string'),
+  ]),
 })
+
+export type ManifestV1TypeValidationRule = z.infer<typeof manifestV1TypeValidationRule>
 
 // TOOD: Constraints
 export const manifestV1UriValidationRule = z.object({
@@ -22,6 +31,8 @@ export const manifestV1ValidationRule = z.union([
   // TODO: Remove
   z.any(),
 ])
+
+export type ManifestV1ValidationRule = z.infer<typeof manifestV1ValidationRule>
 
 export const manifestV1ValidationGroup = z.object({
   rules: z.array(manifestV1ValidationRule),

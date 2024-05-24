@@ -2,7 +2,9 @@ import {
   type ManifestV1Field,
   manifestV1Schema,
   type ManifestV1Type,
+  type ManifestV1TypeValidationRule,
   type ManifestV1ValidationGroup,
+  type ManifestV1ValidationRule,
   type ManifestV1Workspace,
 } from '@sanity/manifest'
 import {
@@ -11,6 +13,7 @@ import {
   type ObjectField,
   type ReferenceSchemaType,
   type Rule,
+  type RuleSpec,
   type SchemaType,
   type SchemaValidationValue,
   type Workspace,
@@ -191,6 +194,23 @@ function transformReference(reference: ReferenceSchemaType): Pick<ManifestV1Type
   }
 }
 
+type ValidationRuleTransformer<
+  Flag extends ManifestV1ValidationRule['flag'] = ManifestV1ValidationRule['flag'],
+> = (rule: RuleSpec & {flag: Flag}) => ManifestV1ValidationRule & {flag: Flag}
+
+const transformTypeValidationRule: ValidationRuleTransformer<'type'> = (rule) => {
+  return {
+    ...rule,
+    constraint: rule.constraint.toLowerCase() as ManifestV1TypeValidationRule['constraint'], // xxx
+  }
+}
+
+const validationRuleTransformers: Partial<
+  Record<ManifestV1ValidationRule['flag'], ValidationRuleTransformer>
+> = {
+  type: transformTypeValidationRule,
+}
+
 function transformValidation(validation: SchemaValidationValue): ManifestV1ValidationGroup[] {
   const validationArray = (Array.isArray(validation) ? validation : [validation]).filter(
     (value): value is Rule => typeof value === 'object' && '_type' in value,
@@ -209,27 +229,33 @@ function transformValidation(validation: SchemaValidationValue): ManifestV1Valid
       typeof _message === 'string' ? {message: _message} : {}
 
     return {
-      rules: _rules.filter((rule) => {
-        if (!('constraint' in rule)) {
-          return false
-        }
+      rules: _rules
+        .filter((rule) => {
+          if (!('constraint' in rule)) {
+            return false
+          }
 
-        const {flag, constraint} = rule
+          const {flag, constraint} = rule
 
-        if (disallowedFlags.includes(flag)) {
-          return false
-        }
+          if (disallowedFlags.includes(flag)) {
+            return false
+          }
 
-        if (
-          typeof constraint === 'object' &&
-          'type' in constraint &&
-          disallowedConstraintTypes.includes(constraint.type)
-        ) {
-          return false
-        }
+          if (
+            typeof constraint === 'object' &&
+            'type' in constraint &&
+            disallowedConstraintTypes.includes(constraint.type)
+          ) {
+            return false
+          }
 
-        return true
-      }),
+          return true
+        })
+        .reduce<ManifestV1ValidationRule[]>((rules, rule) => {
+          const transformer: ValidationRuleTransformer =
+            validationRuleTransformers[rule.flag] ?? ((_) => _)
+          return [...rules, transformer(rule)]
+        }, []),
       level: _level,
       ...message,
     }
