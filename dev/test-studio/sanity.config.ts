@@ -137,13 +137,6 @@ const sharedSettings = definePlugin({
     routerDebugTool(),
     tsdoc(),
   ],
-  features: {
-    beta: {
-      treeArrayEditing: {
-        enabled: true,
-      },
-    },
-  },
 })
 
 export default defineConfig([
