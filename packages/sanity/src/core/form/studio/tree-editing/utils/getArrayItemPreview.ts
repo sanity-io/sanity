@@ -23,6 +23,16 @@ export function getArrayItemPreview(props: GetArrayItemPreviewProps): ReturnValu
     (type) => type.name === itemType,
   ) as ObjectSchemaType
 
+  if (!itemType) {
+    return {
+      title: 'Untitled',
+      description: undefined,
+      imageUrl: undefined,
+      media: undefined,
+      subtitle: undefined,
+    }
+  }
+
   const preview = prepareForPreview(arrayItem, itemSchemaField)
 
   return {
