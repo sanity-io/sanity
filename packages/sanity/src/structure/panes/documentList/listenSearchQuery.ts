@@ -96,7 +96,7 @@ export function listenSearchQuery(options: ListenQueryOptions): Observable<Sanit
       // Use the type names to create a search query and fetch the documents that match the query.
       return typeNames$.pipe(
         mergeMap((typeNames: string[]) => {
-          const types = getSearchableTypes(schema).filter((type) => {
+          const types = getSearchableTypes(schema, staticTypeNames || []).filter((type) => {
             if (typeNames.includes(type.name)) {
               // make a call to getExtendedProjection in strict mode to verify that all fields are
               // known. This method will throw an exception if there are any unknown fields specified
