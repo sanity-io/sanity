@@ -16,16 +16,6 @@ export function buildBreadcrumbsState(props: BuildBreadcrumbsStateProps): TreeEd
 
   const items = arrayValue.map((arrayItem) => {
     const nestedItemPath = [...parentPath, {_key: arrayItem._key}] as Path
-    const nestedItemType = arrayItem?._type as string
-
-    // Is anonymous object (no _type field)
-    if (!nestedItemType) {
-      return {
-        path: nestedItemPath,
-        title: 'Unknown', // todo: what should we do here?
-        children: EMPTY_ARRAY,
-      }
-    }
 
     const {title} = getArrayItemPreview({arrayItem, arraySchemaType})
 
