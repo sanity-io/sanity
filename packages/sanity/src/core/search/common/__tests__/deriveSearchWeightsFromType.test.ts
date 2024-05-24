@@ -1,5 +1,5 @@
 import {describe, expect, it} from '@jest/globals'
-import {defineField, defineType} from '@sanity/types'
+import {type CrossDatasetReferenceSchemaType, defineField, defineType} from '@sanity/types'
 
 import {createSchema} from '../../../schema'
 import {deriveSearchWeightsFromType} from '../deriveSearchWeightsFromType'
@@ -261,6 +261,98 @@ describe('deriveSearchWeightsFromType', () => {
         {path: 'simpleObject.titleField', weight: 10},
         {path: 'arrayOfObjects[].subtitleField', weight: 5},
         {path: 'descriptionField', weight: 1.5, mapWith: 'pt::text'},
+      ],
+    })
+  })
+
+  it('returns special weights for fields that are selected in the preview config for cross dataset reference types', () => {
+    const schema = createSchema({
+      name: 'default',
+      types: [
+        {
+          name: 'testType',
+          type: 'crossDatasetReference',
+          dataset: 'foo',
+          to: [
+            {
+              type: 'book',
+              preview: {
+                select: {
+                  title: 'title',
+                  subtitle: 'some.derived',
+                },
+              },
+            },
+          ],
+        },
+      ],
+    })
+    expect(
+      deriveSearchWeightsFromType({
+        schemaType: (schema.get('testType') as CrossDatasetReferenceSchemaType).to[0]!,
+        maxDepth: 5,
+        isCrossDataset: true,
+      }),
+    ).toEqual({
+      typeName: 'book',
+      paths: [
+        {path: '_id', weight: 1},
+        {path: '_type', weight: 1},
+        {path: 'title', weight: 10},
+        {path: 'some.derived', weight: 5},
+      ],
+    })
+  })
+
+  it('always returns the user set weights, ignoring all other derived fields', () => {
+    const schema = createSchema({
+      name: 'default',
+      types: [
+        defineType({
+          name: 'testType',
+          type: 'document',
+          preview: {
+            select: {
+              title: 'titleField',
+              subtitle: 'subtitleField',
+              description: 'descriptionField',
+            },
+          },
+          fields: [
+            defineField({name: 'titleField', type: 'string', options: {search: {weight: 7}}}),
+            defineField({name: 'subtitleField', type: 'string', options: {search: {weight: 7}}}),
+            defineField({name: 'descriptionField', type: 'string', options: {search: {weight: 7}}}),
+            defineField({
+              name: 'hiddenField',
+              type: 'string',
+              hidden: true,
+              options: {search: {weight: 7}},
+            }),
+            defineField({
+              name: 'normalStringField',
+              type: 'string',
+              options: {search: {weight: 7}},
+            }),
+          ],
+        }),
+      ],
+    })
+
+    expect(
+      deriveSearchWeightsFromType({
+        schemaType: schema.get('testType')!,
+        maxDepth: 5,
+      }),
+    ).toEqual({
+      typeName: 'testType',
+      paths: [
+        {path: '_id', weight: 1},
+        {path: '_type', weight: 1},
+        {path: 'hiddenField', weight: 7},
+        {path: 'titleField', weight: 7},
+        {path: 'subtitleField', weight: 7},
+        {path: 'descriptionField', weight: 7},
+        {path: 'normalStringField', weight: 7},
       ],
     })
   })
