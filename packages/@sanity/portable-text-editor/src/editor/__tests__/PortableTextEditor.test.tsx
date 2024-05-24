@@ -310,7 +310,7 @@ describe('initialization', () => {
         _key: 'abc',
         _type: 'myTestBlockType',
         markDefs: [],
-        children: [{_key: 'def', _type: 'span', text: 'Test', marks: ['invalid']}],
+        children: [{_key: 'def', _type: 'span', marks: []}],
       },
     ]
     const initialSelection: EditorSelection = {
@@ -333,15 +333,15 @@ describe('initialization', () => {
           type: 'invalidValue',
           value: initialValue,
           resolution: {
-            action: 'Remove invalid marks',
+            action: 'Write an empty text property to the object',
             description:
-              "Block with _key 'abc' contains marks (invalid) not supported by the current content model.",
+              "Child with _key 'def' in block with key 'abc' has missing or invalid text property!",
             i18n: {
-              action: 'inputs.portable-text.invalid-value.orphaned-marks.action',
-              description: 'inputs.portable-text.invalid-value.orphaned-marks.description',
+              action: 'inputs.portable-text.invalid-value.invalid-span-text.action',
+              description: 'inputs.portable-text.invalid-value.invalid-span-text.description',
               values: {
                 key: 'abc',
-                orphanedMarks: ['invalid'],
+                childKey: 'def',
               },
             },
             item: {
@@ -351,8 +351,7 @@ describe('initialization', () => {
                 {
                   _key: 'def',
                   _type: 'span',
-                  marks: ['invalid'],
-                  text: 'Test',
+                  marks: [],
                 },
               ],
               markDefs: [],
@@ -367,10 +366,14 @@ describe('initialization', () => {
                   {
                     _key: 'def',
                   },
-                  'marks',
                 ],
                 type: 'set',
-                value: [],
+                value: {
+                  _key: 'def',
+                  _type: 'span',
+                  marks: [],
+                  text: '',
+                },
               },
             ],
           },
