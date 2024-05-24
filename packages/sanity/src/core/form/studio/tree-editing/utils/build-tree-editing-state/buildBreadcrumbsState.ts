@@ -2,7 +2,7 @@ import {isEqual} from 'lodash'
 import {type ArraySchemaType, EMPTY_ARRAY, type Path} from 'sanity'
 
 import {type TreeEditingBreadcrumb} from '../../types'
-import {getArrayItemTitle} from '../getArrayItemTitle'
+import {getArrayItemPreview} from '../getArrayItemPreview'
 
 interface BuildBreadcrumbsStateProps {
   arraySchemaType: ArraySchemaType
@@ -27,11 +27,11 @@ export function buildBreadcrumbsState(props: BuildBreadcrumbsStateProps): TreeEd
       }
     }
 
-    const title = getArrayItemTitle({arrayItem, arraySchemaType})
+    const {title} = getArrayItemPreview({arrayItem, arraySchemaType})
 
     return {
       path: nestedItemPath,
-      title: String(title || 'Untitled'),
+      title,
       children: EMPTY_ARRAY,
     }
   })
