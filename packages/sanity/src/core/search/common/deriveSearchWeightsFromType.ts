@@ -157,13 +157,14 @@ const getPreviewWeights = (
 
   if (isCrossDataset) {
     return Object.fromEntries(
-      Object.values(selectionKeysBySelectionPath).map((path) => {
+      Object.entries(selectionKeysBySelectionPath).map(([path, previewFieldName]) => {
         return [
           path,
           {
             path,
             type: 'string',
-            weight: PREVIEW_FIELD_WEIGHT_MAP[path as keyof typeof PREVIEW_FIELD_WEIGHT_MAP],
+            weight:
+              PREVIEW_FIELD_WEIGHT_MAP[previewFieldName as keyof typeof PREVIEW_FIELD_WEIGHT_MAP],
           },
         ]
       }),
