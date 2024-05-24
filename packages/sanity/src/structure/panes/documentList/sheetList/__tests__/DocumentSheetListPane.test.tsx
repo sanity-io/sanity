@@ -29,11 +29,19 @@ jest.mock('../useDocumentSheetList', () => ({
   }),
 }))
 
+jest.mock('sanity', () => ({
+  ...(jest.requireActual('sanity') || {}),
+  useDocumentPreviewStore: jest.fn().mockReturnValue({
+    observeForPreview: jest.fn().mockReturnValue([]),
+  }),
+}))
+
 const renderTest = async () => {
   const config = defineConfig({
     projectId: 'test',
     dataset: 'test',
     schema: {
+      preview: {},
       types: [
         {
           type: 'document',
@@ -228,7 +236,7 @@ describe('DocumentSheetListPane', () => {
           userEvent.click(screen.getByTestId('cell-name-0'))
         })
 
-        await act(() => {
+        act(() => {
           userEvent.keyboard('{Shift}{ArrowRight}')
         })
 
