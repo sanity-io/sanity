@@ -61,7 +61,7 @@ const handleIncomingMessage = (event: IncomingBifurEvent<Location[]>): Transport
 
 export const createBifurTransport = (bifur: BifurClient, sessionId: string): Transport => {
   const incomingEvents$: Observable<TransportEvent> = bifur
-    .request<IncomingBifurEvent<Location[]>>('presence')
+    .listen<IncomingBifurEvent<Location[]>>('presence')
     .pipe(map(handleIncomingMessage))
 
   const dispatchMessage = (message: TransportMessage): Observable<undefined> => {
