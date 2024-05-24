@@ -253,13 +253,23 @@ describe('tree-editing: buildTreeEditingState', () => {
       rootTitle: 'Array 1',
     }
 
-    const result = buildTreeEditingState({
+    // Path to the array item
+    const result1 = buildTreeEditingState({
       documentValue,
       openPath: ['array1', {_key: 'key1'}],
       schemaType,
     })
 
-    expect(result).toEqual(expectedResult)
+    // Path to a primitive field in the array item object should
+    // result in the same state as the array item itself
+    const result2 = buildTreeEditingState({
+      documentValue,
+      openPath: ['array1', {_key: 'key1'}, 'array1Object1String'],
+      schemaType,
+    })
+
+    expect(result1).toEqual(expectedResult)
+    expect(result2).toEqual(expectedResult)
   })
 
   test('should build tree editing state for an object with an array', () => {
@@ -305,12 +315,22 @@ describe('tree-editing: buildTreeEditingState', () => {
       rootTitle: 'Array',
     }
 
-    const result = buildTreeEditingState({
+    // Path to the array item
+    const result1 = buildTreeEditingState({
       documentValue,
       openPath: ['objectWithArray', 'myArray', {_key: 'key1'}],
       schemaType,
     })
 
-    expect(result).toEqual(expectedResult)
+    // Path to a primitive field in the array item object should
+    // result in the same state as the array item itself
+    const result2 = buildTreeEditingState({
+      documentValue,
+      openPath: ['objectWithArray', 'myArray', {_key: 'key1'}, 'myString'],
+      schemaType,
+    })
+
+    expect(result1).toEqual(expectedResult)
+    expect(result2).toEqual(expectedResult)
   })
 })

@@ -63,7 +63,7 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
       const isPortableText =
         isArraySchemaType(childField.type) && childField.type.of.some((t) => t.name === 'block')
 
-      if (isSelected(childPath, openPath) && !isPrimitive) {
+      if (isSelected(childPath, openPath)) {
         relativePath = getRelativePath(childPath)
       }
 
@@ -122,7 +122,7 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
       title = getSchemaTypeTitle(itemSchemaField)
     }
 
-    if (isSelected(itemPath, openPath) && !isPrimitive) {
+    if (isSelected(itemPath, openPath)) {
       relativePath = getRelativePath(itemPath)
     }
 
