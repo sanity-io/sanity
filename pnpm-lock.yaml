@@ -622,7 +622,7 @@ importers:
         version: 18.3.1
       react-barcode:
         specifier: ^1.4.1
-        version: 1.5.1(react@18.3.1)
+        version: 1.5.3(react@18.3.1)
       react-dom:
         specifier: ^18.3.1
         version: 18.3.1(react@18.3.1)
@@ -17429,8 +17429,8 @@ packages:
       minimist: 1.2.8
       strip-json-comments: 2.0.1
 
-  /react-barcode@1.5.1(react@18.3.1):
-    resolution: {integrity: sha512-Au/L6XFp9Tc12dTFbRgTfv0vpxn/UE2xJ4nDbMBWFzwIu2sB3GMapTu9Rs4ETq3wj0AthBCpP7nB8MoaFl5V8Q==}
+  /react-barcode@1.5.3(react@18.3.1):
+    resolution: {integrity: sha512-EJPUwuERKpApcQ9qXzdVZzddFYRT7+3R/jJ3OrTfW6m2iq+WT+CBaVB7DsQazhPRXDfMcx9+dmMmzjsmveOViQ==}
     peerDependencies:
       react: '*'
     dependencies:
