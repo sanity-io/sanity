@@ -3,8 +3,9 @@ import {type ObjectFieldType} from '@sanity/types'
 import {Select, TextInput} from '@sanity/ui'
 import {type CellContext} from '@tanstack/react-table'
 import {type MouseEventHandler, useCallback, useEffect, useRef, useState} from 'react'
-import {type SanityDocument} from 'sanity'
+import {PatchEvent, type SanityDocument, toMutationPatches, useDocumentOperation} from 'sanity'
 
+import {set} from '../../../../core/form/patch/patch'
 import {useSheetListSelectionContext} from './SheetListSelectionProvider'
 
 interface SheetListCellProps extends CellContext<SanityDocument, unknown> {
@@ -26,6 +27,16 @@ export function SheetListCell(props: SheetListCellProps) {
     submitFocusedCell,
   } = useSheetListSelectionContext()
   const cellState = getStateByCellId(column.id, row.index)
+  const {patch} = useDocumentOperation(row.id.split('.')[1] || row.id, row.original._type)
+  const patchRef = useRef<(event: PatchEvent) => void>(() => {
+    throw new Error('Nope')
+  })
+
+  patchRef.current = (event: PatchEvent) => {
+    patch.execute(toMutationPatches(event.patches), {[column.id]: renderValue})
+  }
+
+  const handleChange = useCallback((event: PatchEvent) => patchRef.current(event), [])
 
   const handleOnFocus = useCallback(() => {
     // reselect in cases where focus achieved without initial mousedown
@@ -61,7 +72,9 @@ export function SheetListCell(props: SheetListCellProps) {
 
   const handleOnBlur = () => {
     if (isDirty) {
-      patchDocument?.(row.id, column.id, renderValue)
+      console.log('GO')
+      // patchDocument?.(row.id, column.id, renderValue)
+      handleChange(PatchEvent.from(set(renderValue, [column.id])))
       setIsDirty(false)
     }
     resetFocusSelection()
