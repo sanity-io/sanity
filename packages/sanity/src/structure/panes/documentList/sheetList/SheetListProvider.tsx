@@ -8,8 +8,6 @@ interface SheetListProviderProps {
   table: Table<SanityDocument>
 }
 
-type SelectionDirection = 'down' | 'up' | 'left' | 'right'
-
 type SelectedCellDetails = {
   colId: string
   rowIndex: number
@@ -81,45 +79,37 @@ export function SheetListProvider({children, table}: SheetListProviderProps): Re
   )
 
   const changeSelectionRange = useCallback(
-    (direction: SelectionDirection) => {
+    (direction: 'up' | 'down') => {
       if (!selectedAnchorCellDetails) return
 
-      if (direction === 'left' || direction === 'right') {
-        changeSelectionColumn(direction)
-      } else {
-        setSelectedRangeCellIndexes((previousSelection) => {
-          const selectionDirectionalChange = direction === 'down' ? 1 : -1
-          // if no cells are selected, select the cell in the direction
-          if (!previousSelection.length) {
-            const firstSelectedIndex =
-              selectedAnchorCellDetails.rowIndex + selectionDirectionalChange
-            if (firstSelectedIndex < 0) return []
-            return [firstSelectedIndex]
-          }
-          const lastIndexSelected = previousSelection[previousSelection.length - 1]
-          const indexInDirectionFromLast = lastIndexSelected + selectionDirectionalChange
+      setSelectedRangeCellIndexes((previousSelection) => {
+        const {rowIndex: anchorIndex} = selectedAnchorCellDetails
+        const getNextIndex = (startingIndex: number) =>
+          startingIndex + (direction === 'down' ? 1 : -1)
+        // if no cells are selected, select the cell in the direction
+        if (!previousSelection.length) {
+          const firstSelectedIndex = getNextIndex(anchorIndex)
+          if (firstSelectedIndex < 0) return []
+          return [firstSelectedIndex]
+        }
+        const lastIndexSelected = previousSelection[previousSelection.length - 1]
+        const nextIndex = getNextIndex(lastIndexSelected)
 
-          // if the cell in the direction is out of bounds, return the previous selection
-          if (indexInDirectionFromLast < 0) return previousSelection
+        // if the cell in the direction is out of bounds, return the previous selection
+        if (nextIndex < 0) return previousSelection
 
-          // if the cell in the direction is the same as the focused cell, deselect all cells
-          if (indexInDirectionFromLast === selectedAnchorCellDetails.rowIndex) {
-            return []
-          }
+        // if the cell in the direction is the same as the focused cell, deselect all cells
+        if (nextIndex === anchorIndex) return []
 
-          // if the cell in the direction is already selected, deselect the last selected cell
-          if (previousSelection.includes(indexInDirectionFromLast)) {
-            const nextSelection = [...previousSelection]
-            nextSelection.pop()
+        // if the cell in the direction is already selected, deselect the last selected cell
+        if (previousSelection.includes(nextIndex)) {
+          return previousSelection.slice(0, -1)
+        }
 
-            return nextSelection
-          }
-
-          return [...previousSelection, indexInDirectionFromLast]
-        })
-      }
+        return [...previousSelection, nextIndex]
+      })
     },
-    [changeSelectionColumn, selectedAnchorCellDetails],
+    [selectedAnchorCellDetails],
   )
 
   const setSelectedAnchorCell = useCallback(
@@ -149,11 +139,14 @@ export function SheetListProvider({children, table}: SheetListProviderProps): Re
   const handleUpDownKey = useCallback(
     (isShiftKey: boolean, key: string) => {
       if (!selectedAnchorCellDetails) return
+
+      const direction = key === 'ArrowDown' ? 'down' : 'up'
+      const offset = direction === 'down' ? 1 : -1
+
       if (isShiftKey) {
-        changeSelectionRange(key === 'ArrowDown' ? 'down' : 'up')
+        changeSelectionRange(direction)
       } else {
-        const newSelectedCellRowIndex =
-          selectedAnchorCellDetails.rowIndex + (key === 'ArrowDown' ? 1 : -1)
+        const newSelectedCellRowIndex = selectedAnchorCellDetails.rowIndex + offset
         if (newSelectedCellRowIndex < 0) return
 
         setSelectedAnchorCell(selectedAnchorCellDetails.colId, newSelectedCellRowIndex)
@@ -168,22 +161,32 @@ export function SheetListProvider({children, table}: SheetListProviderProps): Re
 
       const {key, shiftKey} = event
 
-      // if only shift key is pressed, do nothing
-      if (key === 'Shift') return
+      switch (key) {
+        case 'Shift':
+          break // shift allow should do nothing
 
-      if (key === 'Escape') handleEscapePress()
+        case 'Escape':
+          handleEscapePress()
+          break
 
-      if (key === 'ArrowDown' || key === 'ArrowUp') {
-        event.preventDefault()
-        handleUpDownKey(shiftKey, key)
-      }
-      if (
-        // when cell is focused, arrows should have default behavior
-        selectedAnchorCellDetails.state === 'selected' &&
-        (key === 'ArrowLeft' || key === 'ArrowRight')
-      ) {
-        event.preventDefault()
-        changeSelectionColumn(key === 'ArrowLeft' ? 'left' : 'right')
+        case 'ArrowDown':
+        case 'ArrowUp':
+          event.preventDefault()
+          handleUpDownKey(shiftKey, key)
+          break
+
+        case 'ArrowLeft':
+        case 'ArrowRight':
+          // when cell is focused, arrows should have default behavior
+          // only prevent default when cell is selected
+          if (selectedAnchorCellDetails.state === 'selected') {
+            event.preventDefault()
+            changeSelectionColumn(key === 'ArrowLeft' ? 'left' : 'right')
+          }
+          break
+
+        default:
+          break
       }
     },
     [selectedAnchorCellDetails, handleEscapePress, handleUpDownKey, changeSelectionColumn],
@@ -203,23 +206,19 @@ export function SheetListProvider({children, table}: SheetListProviderProps): Re
     [resetFocusSelection, selectedAnchorCellDetails],
   )
 
-  const handlePaste = useCallback(() => {}, [])
-
   useEffect(() => {
     if (selectedAnchorCellDetails) {
       document.addEventListener('keydown', handleAnchorKeydown)
       document.addEventListener('click', handleAnchorClick)
-      document.addEventListener('paste', handlePaste)
     }
 
     return () => {
       if (selectedAnchorCellDetails) {
         document.removeEventListener('keydown', handleAnchorKeydown)
         document.removeEventListener('click', handleAnchorClick)
-        document.addEventListener('paste', handlePaste)
       }
     }
-  }, [handleAnchorClick, handleAnchorKeydown, handlePaste, selectedAnchorCellDetails])
+  }, [handleAnchorClick, handleAnchorKeydown, selectedAnchorCellDetails])
 
   const focusAnchorCell = useCallback(
     () =>

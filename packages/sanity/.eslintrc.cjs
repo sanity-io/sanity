@@ -195,5 +195,11 @@ module.exports = {
         ],
       },
     },
+    {
+      files: ['**/*.test.*'],
+      rules: {
+        'max-nested-callbacks': 'off',
+      },
+    },
   ],
 }

@@ -148,6 +148,8 @@ export function SheetListCell(props: SheetListCellProps) {
       id={cellId}
       radius={0}
       border={false}
+      data-testid={cellId}
+      aria-selected={!!cellState}
       ref={inputRef}
       style={{
         border: getBorderStyle(),
