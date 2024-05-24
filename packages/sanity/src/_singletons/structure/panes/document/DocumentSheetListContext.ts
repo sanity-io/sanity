@@ -1,6 +1,8 @@
 import {createContext} from 'react'
 
-import type {SheetListContextValue} from '../../../../structure/panes/documentList/sheetList/SheetListSelectionProvider'
+import type {DocumentSheetListContextValue} from '../../../../structure/panes/documentList/sheetList/DocumentSheetListProvider'
 
 /** @internal */
-export const SheetListContext = createContext<SheetListContextValue | undefined>(undefined)
+export const DocumentSheetListContext = createContext<DocumentSheetListContextValue | undefined>(
+  undefined,
+)

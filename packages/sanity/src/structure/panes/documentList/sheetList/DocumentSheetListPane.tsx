@@ -16,7 +16,7 @@ import {type BaseStructureToolPaneProps} from '../../types'
 import {ColumnsControl} from './ColumnsControl'
 import {DocumentSheetListFilter} from './DocumentSheetListFilter'
 import {DocumentSheetListPaginator} from './DocumentSheetListPaginator'
-import {SheetListSelectionProvider} from './SheetListSelectionProvider'
+import {DocumentSheetListProvider} from './DocumentSheetListProvider'
 import {useDocumentSheetColumns} from './useDocumentSheetColumns'
 import {useDocumentSheetList} from './useDocumentSheetList'
 
@@ -142,7 +142,7 @@ function DocumentSheetListPaneInner({
       </Flex>
       <TableContainer>
         <ColumnsControl table={table} />
-        <SheetListSelectionProvider table={table}>
+        <DocumentSheetListProvider table={table}>
           <Table>
             <thead>
               {table.getHeaderGroups().map((headerGroup) => (
@@ -164,7 +164,7 @@ function DocumentSheetListPaneInner({
             </thead>
             <tbody>{table.getRowModel().rows.map(renderRow)}</tbody>
           </Table>
-        </SheetListSelectionProvider>
+        </DocumentSheetListProvider>
       </TableContainer>
       <Flex justify={'flex-end'} padding={3} gap={4} paddingY={5}>
         <DocumentSheetListPaginator table={table} />

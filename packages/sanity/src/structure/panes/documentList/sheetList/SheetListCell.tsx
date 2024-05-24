@@ -5,11 +5,13 @@ import {type CellContext} from '@tanstack/react-table'
 import {type MouseEventHandler, useCallback, useEffect, useRef, useState} from 'react'
 import {type SanityDocument} from 'sanity'
 
-import {useSheetListSelectionContext} from './SheetListSelectionProvider'
+import {useDocumentSheetListContext} from './DocumentSheetListProvider'
 
 interface SheetListCellProps extends CellContext<SanityDocument, unknown> {
   fieldType: ObjectFieldType
 }
+
+type InputRef = HTMLInputElement | HTMLSelectElement | null
 
 /** @internal */
 export function SheetListCell(props: SheetListCellProps) {
@@ -17,14 +19,14 @@ export function SheetListCell(props: SheetListCellProps) {
   const cellId = `cell-${column.id}-${row.index}`
   const [renderValue, setRenderValue] = useState<string>(getValue() as string)
   const [isDirty, setIsDirty] = useState(false)
-  const inputRef = useRef<HTMLInputElement | null>(null)
+  const inputRef = useRef<InputRef>(null)
   const {
     focusAnchorCell,
     resetFocusSelection,
     setSelectedAnchorCell,
     getStateByCellId,
     submitFocusedCell,
-  } = useSheetListSelectionContext()
+  } = useDocumentSheetListContext()
   const cellState = getStateByCellId(column.id, row.index)
 
   const handleOnFocus = useCallback(() => {
@@ -34,7 +36,7 @@ export function SheetListCell(props: SheetListCellProps) {
   }, [column.id, focusAnchorCell, row.index, setSelectedAnchorCell])
   const {patchDocument} = props.table.options.meta || {}
 
-  const handleOnMouseDown: MouseEventHandler<HTMLInputElement> = (event) => {
+  const handleOnMouseDown: MouseEventHandler<HTMLInputElement | HTMLSelectElement> = (event) => {
     if (event.detail === 2) {
       inputRef.current?.focus()
     } else {
@@ -114,16 +116,33 @@ export function SheetListCell(props: SheetListCellProps) {
     row.index,
   ])
 
+  const getBorderStyle = () => {
+    if (cellState === 'focused') return '2px solid blue'
+    if (cellState === 'selectedRange') return '1px solid green'
+    if (cellState === 'selectedAnchor') return '1px solid blue'
+
+    return '1px solid transparent'
+  }
+
+  const inputProps = {
+    'onFocus': handleOnFocus,
+    'onBlur': handleOnBlur,
+    'onMouseDown': handleOnMouseDown,
+    'aria-selected': !!cellState,
+    'data-testid': cellId,
+    'id': cellId,
+    'ref': (ref: InputRef) => (inputRef.current = ref),
+  }
+
   if (fieldType.name === 'boolean') {
     return (
       <Select
+        {...inputProps}
         onChange={() => null}
-        onFocus={handleOnFocus}
-        onBlur={resetFocusSelection}
-        id={cellId}
         radius={0}
         style={{
           boxShadow: 'none',
+          border: getBorderStyle(),
         }}
         value={JSON.stringify(renderValue)}
       >
@@ -133,23 +152,12 @@ export function SheetListCell(props: SheetListCellProps) {
     )
   }
 
-  const getBorderStyle = () => {
-    if (cellState === 'focused') return '2px solid blue'
-    if (cellState === 'selectedRange') return '1px solid green'
-    if (cellState === 'selectedAnchor') return '1px solid blue'
-
-    return '1px solid transparent'
-  }
-
   return (
     <TextInput
+      {...inputProps}
       size={0}
-      id={cellId}
       radius={0}
       border={false}
-      data-testid={cellId}
-      aria-selected={!!cellState}
-      ref={inputRef}
       style={{
         border: getBorderStyle(),
       }}
@@ -159,9 +167,6 @@ export function SheetListCell(props: SheetListCellProps) {
           : JSON.stringify(renderValue)
       }
       onChange={handleOnChange}
-      onFocus={handleOnFocus}
-      onBlur={handleOnBlur}
-      onMouseDown={handleOnMouseDown}
     />
   )
 }

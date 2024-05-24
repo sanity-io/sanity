@@ -1,9 +1,9 @@
 import {type SanityDocument} from '@sanity/types'
 import {type Table} from '@tanstack/react-table'
 import {type ReactNode, useCallback, useContext, useEffect, useMemo, useState} from 'react'
-import {SheetListContext} from 'sanity/_singletons'
+import {DocumentSheetListContext} from 'sanity/_singletons'
 
-interface SheetListSelectionProviderProps {
+interface DocumentSheetListProviderProps {
   children?: ReactNode
   table: Table<SanityDocument>
 }
@@ -15,7 +15,7 @@ type SelectedCellDetails = {
 } | null
 
 /** @internal */
-export interface SheetListContextValue {
+export interface DocumentSheetListContextValue {
   focusAnchorCell: () => void
   resetFocusSelection: () => void
   setSelectedAnchorCell: (colId: string, rowIndex: number) => void
@@ -27,20 +27,20 @@ export interface SheetListContextValue {
 }
 
 /** @internal */
-export const useSheetListSelectionContext = (): SheetListContextValue => {
-  const context = useContext(SheetListContext)
+export const useDocumentSheetListContext = (): DocumentSheetListContextValue => {
+  const context = useContext(DocumentSheetListContext)
 
   if (context === undefined) {
-    throw new Error('useSheetListContext must be used within an SheetListSelectionProvider')
+    throw new Error('useDocumentSheetListContext must be used within an DocumentSheetListProvider')
   }
   return context
 }
 
 /** @internal */
-export function SheetListSelectionProvider({
+export function DocumentSheetListProvider({
   children,
   table,
-}: SheetListSelectionProviderProps): ReactNode {
+}: DocumentSheetListProviderProps): ReactNode {
   const [selectedAnchorCellDetails, setSelectedAnchorCellDetails] =
     useState<SelectedCellDetails>(null)
   const [selectedRangeCellIndexes, setSelectedRangeCellIndexes] = useState<number[]>([])
@@ -261,7 +261,7 @@ export function SheetListSelectionProvider({
     })
   }, [clearAndSetFocusSelection, selectedAnchorCellDetails])
 
-  const value = useMemo<SheetListContextValue>(
+  const value = useMemo<DocumentSheetListContextValue>(
     () => ({
       focusAnchorCell,
       resetFocusSelection,
@@ -278,5 +278,7 @@ export function SheetListSelectionProvider({
     ],
   )
 
-  return <SheetListContext.Provider value={value}>{children}</SheetListContext.Provider>
+  return (
+    <DocumentSheetListContext.Provider value={value}>{children}</DocumentSheetListContext.Provider>
+  )
 }
