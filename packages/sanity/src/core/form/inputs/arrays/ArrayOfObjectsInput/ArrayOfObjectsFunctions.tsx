@@ -54,7 +54,14 @@ export function ArrayOfObjectsFunctions<
     return (
       <Tooltip portal content={t('inputs.array.read-only-label')}>
         <Grid>
-          <Button icon={AddIcon} mode="ghost" disabled size="large" text={t(addItemI18nKey)} />
+          <Button
+            icon={AddIcon}
+            mode="ghost"
+            disabled
+            size="large"
+            data-testid="add-read-object-button"
+            text={t(addItemI18nKey)}
+          />
         </Grid>
       </Tooltip>
     )
@@ -68,11 +75,20 @@ export function ArrayOfObjectsFunctions<
           mode="ghost"
           onClick={handleAddBtnClick}
           size="large"
+          data-testid="add-single-object-button"
           text={t(addItemI18nKey)}
         />
       ) : (
         <MenuButton
-          button={<Button icon={AddIcon} mode="ghost" size="large" text={t(addItemI18nKey)} />}
+          button={
+            <Button
+              icon={AddIcon}
+              mode="ghost"
+              size="large"
+              data-testid="add-multiple-object-button"
+              text={t(addItemI18nKey)}
+            />
+          }
           id={menuButtonId || ''}
           menu={
             <Menu>
