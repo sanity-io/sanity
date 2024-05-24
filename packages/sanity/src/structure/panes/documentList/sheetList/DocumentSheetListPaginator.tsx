@@ -8,12 +8,11 @@ import {
   DoubleChevronRightIcon,
 } from '@sanity/icons'
 import {Flex, Text} from '@sanity/ui'
-import {type Table} from '@tanstack/react-table'
-import {type SanityDocument} from 'sanity'
 
 import {Button, TooltipDelayGroupProvider} from '../../../../ui-components'
+import {type DocumentSheetListTable} from './types'
 
-export function DocumentSheetListPaginator({table}: {table: Table<SanityDocument>}) {
+export function DocumentSheetListPaginator({table}: {table: DocumentSheetListTable}) {
   return (
     <TooltipDelayGroupProvider>
       <Flex gap={3} align={'center'}>

@@ -1,4 +1,4 @@
-import {isDocumentSchemaType, type ObjectSchemaType, type SanityDocument} from '@sanity/types'
+import {isDocumentSchemaType, type ObjectSchemaType} from '@sanity/types'
 import {Box, Flex, Text} from '@sanity/ui'
 import {
   getCoreRowModel,
@@ -13,11 +13,13 @@ import {styled} from 'styled-components'
 
 import {type BaseStructureToolPaneProps} from '../../types'
 import {ColumnsControl} from './ColumnsControl'
+import {DocumentSheetActions} from './DocumentSheetActions'
 import {DocumentSheetListFilter} from './DocumentSheetListFilter'
 import {DocumentSheetListHeader} from './DocumentSheetListHeader'
 import {DocumentSheetListPaginator} from './DocumentSheetListPaginator'
 import {DocumentSheetListProvider} from './DocumentSheetListProvider'
 import {SheetListCell} from './SheetListCell'
+import {type DocumentSheetTableRow} from './types'
 import {useDocumentSheetColumns} from './useDocumentSheetColumns'
 import {useDocumentSheetList} from './useDocumentSheetList'
 
@@ -93,7 +95,7 @@ function DocumentSheetListPaneInner({
     }
   }, [documentSchemaType, dispatch])
 
-  const renderRow = useCallback((row: Row<SanityDocument>) => {
+  const renderRow = useCallback((row: Row<DocumentSheetTableRow>) => {
     return (
       <Box
         as="tr"
@@ -119,6 +121,7 @@ function DocumentSheetListPaneInner({
           </Text>
         </Flex>
         <ColumnsControl table={table} />
+        <DocumentSheetActions table={table} schemaType={documentSchemaType} />
       </Flex>
       <TableContainer>
         <DocumentSheetListProvider table={table}>
