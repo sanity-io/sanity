@@ -6,7 +6,12 @@ import {
   type IntrinsicTypeName,
   type TypeAliasDefinition,
 } from '../schemaDefinition'
-import {type BaseSchemaDefinition, type SearchConfiguration, type TitledListValue} from './common'
+import {
+  type BaseSchemaDefinition,
+  type FieldGroupDefinition,
+  type SearchConfiguration,
+  type TitledListValue,
+} from './common'
 
 /** @public */
 export interface ArrayOptions<V = unknown> extends SearchConfiguration {
@@ -18,6 +23,14 @@ export interface ArrayOptions<V = unknown> extends SearchConfiguration {
   direction?: 'horizontal' | 'vertical'
   sortable?: boolean
   modal?: {type?: 'dialog' | 'popover'; width?: number | 'auto'}
+  insertMenu?:
+    | {
+        layout?: 'simple'
+      }
+    | {
+        layout: 'full'
+        groups?: Array<Pick<FieldGroupDefinition, 'name' | 'title'> & {of?: Array<string>}>
+      }
 }
 
 /** @public */
