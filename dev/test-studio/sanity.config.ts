@@ -139,13 +139,6 @@ const sharedSettings = definePlugin({
     errorReportingTestPlugin(),
     tsdoc(),
   ],
-  features: {
-    beta: {
-      treeArrayEditing: {
-        enabled: true,
-      },
-    },
-  },
 })
 
 export default defineConfig([
