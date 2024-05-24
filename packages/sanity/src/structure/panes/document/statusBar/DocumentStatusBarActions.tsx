@@ -4,8 +4,8 @@ import {memo, useMemo, useState} from 'react'
 import {
   type DocumentActionComponent,
   type DocumentActionDescription,
-  useTimelineSelector,
   shouldArrayDialogOpen,
+  useTimelineSelector,
 } from 'sanity'
 
 import {Button, Tooltip} from '../../../../ui-components'
