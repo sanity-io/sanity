@@ -11,7 +11,7 @@ import {
 } from 'sanity'
 
 import {type TreeEditingBreadcrumb, type TreeEditingMenuItem} from '../../types'
-import {getArrayItemTitle} from '../getArrayItemTitle'
+import {getArrayItemPreview} from '../getArrayItemPreview'
 import {buildBreadcrumbsState} from './buildBreadcrumbsState'
 import {type RecursiveProps, type TreeEditingState} from './buildTreeEditingState'
 import {getRelativePath, isSelected, shouldBeInBreadcrumb} from './utils'
@@ -108,7 +108,7 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
 
     const isPrimitive = isPrimitiveSchemaType(itemSchemaField?.type)
 
-    const title = getArrayItemTitle({arrayItem: item, arraySchemaType})
+    const {title} = getArrayItemPreview({arrayItem: item, arraySchemaType})
 
     if (isSelected(itemPath, openPath)) {
       relativePath = getRelativePath(itemPath)
