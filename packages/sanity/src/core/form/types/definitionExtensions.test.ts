@@ -12,29 +12,55 @@ import {
   type ReferenceValue,
   type SlugValue,
 } from '@sanity/types'
+// NOTE:
+// Fix: Addressed type error caused by missing 'preview' property in
+// 'DocumentComponents'. The error "Object literal may only specify known
+// properties, and 'preview' does not exist in type 'DocumentComponents'"
+// was resolved by extending the 'DocumentComponents' type within a module
+// augmentation.
+//
+// See: https://github.com/sanity-io/sanity/issues/6542
+//
+// This involves moving the component type definitions from
+// './definitionExtensions' into the '@sanity/types' module,
+// ensuring TypeScript properly recognizes the 'preview' property as part of
+// 'DocumentComponents'.
+//
+// This fix helps avoid cyclical dependencies by extending all type definitions
+// in one place, maintaining consistency across the codebase.
+//
+// Additionally, this issue also relates to how the build process creates the
+// `.d.ts` files. We had a naming collision with 'DocumentComponents' which
+// caused the type error. By inlining the type definitions within the module
+// augmentation, we ensure the build prefers the correct type instead of the type it collided with.
+//
+// We use a type import to ensure this change does not affect the runtime.
+// The 'sanity' package re-exports the '@sanity/types' module, which is why this
+// approach works.
+// eslint-disable-next-line import/consistent-type-specifier-style
+import type {
+  ArrayOfObjectsComponents,
+  ArrayOfPrimitivesComponents,
+  BooleanComponents,
+  CrossDatasetReferenceComponents,
+  DateComponents,
+  DatetimeComponents,
+  DocumentComponents,
+  EmailComponents,
+  FileComponents,
+  GeopointComponents,
+  ImageComponents,
+  NumberComponents,
+  ObjectComponents,
+  ReferenceComponents,
+  SlugComponents,
+  StringComponents,
+  TextComponents,
+  UrlComponents,
+} from 'sanity'
 
 import {type PreviewProps} from '../../components'
 import {type CrossDatasetReferenceInputProps, type ReferenceInputProps} from '../studio'
-import {
-  type ArrayOfObjectsComponents,
-  type ArrayOfPrimitivesComponents,
-  type BooleanComponents,
-  type CrossDatasetReferenceComponents,
-  type DateComponents,
-  type DatetimeComponents,
-  type DocumentComponents,
-  type EmailComponents,
-  type FileComponents,
-  type GeopointComponents,
-  type ImageComponents,
-  type NumberComponents,
-  type ObjectComponents,
-  type ReferenceComponents,
-  type SlugComponents,
-  type StringComponents,
-  type TextComponents,
-  type UrlComponents,
-} from './definitionExtensions'
 import {
   type ArrayFieldProps,
   type ArrayOfPrimitivesFieldProps,
