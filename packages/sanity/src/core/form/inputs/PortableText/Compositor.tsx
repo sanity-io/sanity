@@ -12,6 +12,7 @@ import {
 import {type Path, type PortableTextBlock, type PortableTextTextBlock} from '@sanity/types'
 import {Box, Portal, PortalProvider, useBoundaryElement, usePortal} from '@sanity/ui'
 import {type ReactNode, useCallback, useMemo, useState} from 'react'
+import {PortableTextAwareContext, type PortableTextAwareContextValue} from 'sanity/_singletons'
 
 import {ChangeIndicator} from '../../../changeIndicators'
 import {EMPTY_ARRAY} from '../../../util'
@@ -31,6 +32,8 @@ import {Annotation} from './object/Annotation'
 import {BlockObject} from './object/BlockObject'
 import {InlineObject} from './object/InlineObject'
 import {TextBlock} from './text'
+
+const PORTABLE_TEXT_AWARE_CONTEXT_VALUE: PortableTextAwareContextValue = {hasEditorParent: true}
 
 interface InputProps extends ArrayOfObjectsInputProps<PortableTextBlock> {
   elementRef: React.RefObject<HTMLDivElement>
@@ -483,27 +486,29 @@ export function Compositor(props: Omit<InputProps, 'schemaType' | 'arrayFunction
   const editorFocused = focused || hasFocusWithin
 
   return (
-    <PortalProvider __unstable_elements={portalElements} element={portal.element}>
-      <ActivateOnFocus onActivate={onActivate} isOverlayActive={!isActive}>
-        <ChangeIndicator
-          disabled={isFullscreen}
-          hasFocus={Boolean(focused)}
-          isChanged={changed}
-          path={path}
-        >
-          <Root
-            data-focused={editorFocused ? '' : undefined}
-            data-read-only={readOnly ? '' : undefined}
+    <PortableTextAwareContext.Provider value={PORTABLE_TEXT_AWARE_CONTEXT_VALUE}>
+      <PortalProvider __unstable_elements={portalElements} element={portal.element}>
+        <ActivateOnFocus onActivate={onActivate} isOverlayActive={!isActive}>
+          <ChangeIndicator
+            disabled={isFullscreen}
+            hasFocus={Boolean(focused)}
+            isChanged={changed}
+            path={path}
           >
-            <Box data-wrapper="" ref={setWrapperElement}>
-              <Portal __unstable_name={isFullscreen ? 'expanded' : 'collapsed'}>
-                {isFullscreen ? <ExpandedLayer>{editorNode}</ExpandedLayer> : editorNode}
-              </Portal>
-            </Box>
-            <div data-border="" />
-          </Root>
-        </ChangeIndicator>
-      </ActivateOnFocus>
-    </PortalProvider>
+            <Root
+              data-focused={editorFocused ? '' : undefined}
+              data-read-only={readOnly ? '' : undefined}
+            >
+              <Box data-wrapper="" ref={setWrapperElement}>
+                <Portal __unstable_name={isFullscreen ? 'expanded' : 'collapsed'}>
+                  {isFullscreen ? <ExpandedLayer>{editorNode}</ExpandedLayer> : editorNode}
+                </Portal>
+              </Box>
+              <div data-border="" />
+            </Root>
+          </ChangeIndicator>
+        </ActivateOnFocus>
+      </PortalProvider>
+    </PortableTextAwareContext.Provider>
   )
 }
