@@ -47,21 +47,27 @@ export function CommentReactionsMenuButton(props: CommentReactionsMenuButtonProp
 
     setOpen(false)
     onMenuClose?.()
+  }, [open, onMenuClose])
+
+  const handleCloseAndFocus = useCallback(() => {
+    if (!open) return
+
+    handleClose()
     buttonElement?.focus()
-  }, [buttonElement, onMenuClose, open])
+  }, [buttonElement, handleClose, open])
 
   const handleKeyDown = useCallback(
     (event: React.KeyboardEvent<HTMLDivElement>) => {
       const {key, shiftKey} = event
 
       if ((shiftKey && key === 'Tab') || key === 'Escape' || key === 'Tab') {
-        handleClose()
+        handleCloseAndFocus()
       }
     },
-    [handleClose],
+    [handleCloseAndFocus],
   )
 
-  useClickOutside(handleClick, [popoverElement, buttonElement])
+  useClickOutside(handleClose, [popoverElement, buttonElement])
 
   const handleSelect = useCallback(
     (option: CommentReactionOption) => {
