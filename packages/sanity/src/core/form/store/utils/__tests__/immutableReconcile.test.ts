@@ -29,21 +29,49 @@ test('it keeps equal objects in arrays', () => {
 })
 
 test('it handles changing cyclic structures', () => {
-  const cyclicPrev: Record<string, unknown> = {test: 'foo'}
-  cyclicPrev.self = cyclicPrev
+  const createObject = (differentiator: string) => {
+    // will be different if differentiator is different
+    const root: Record<string, any> = {id: 'root'}
 
-  const cyclicNext: Record<string, unknown> = {test: 'foo'}
-  cyclicNext.self = cyclicNext
+    // will be different if differentiator is different
+    root.a = {id: 'a'}
 
-  const prev = {arr: [{foo: 'bar'}], cyclic: cyclicPrev}
-  const next = {arr: [{foo: 'bar'}], cyclic: cyclicNext}
-  expect(immutableReconcile(prev, next).arr).toBe(prev.arr)
+    // will be different if differentiator is different
+    root.a.b = {id: 'b', diff: differentiator}
 
-  // it picks from ´next´, so in this case even though the cyclicPrev and cyclicNext values are structurally equal it
-  // returns a different object identity for the `cyclic` key, since strictly speaking it has changed to *another* cyclic structure (which only incidentally is the same).
+    // cycle
+    root.a.b.a = root.a
+    // will never be different
+    root.a.b.c = {id: 'c'}
+
+    return root
+  }
+
+  const prev = createObject('previous')
+  const next = createObject('next')
+
   const reconciled = immutableReconcile(prev, next)
-  expect(reconciled.cyclic).not.toBe(prev.cyclic)
-  expect(reconciled.cyclic.self).toBe(cyclicNext)
+
+  expect(prev).not.toBe(reconciled)
+  expect(next).not.toBe(reconciled)
+
+  // A sub object of root has changed, creating new object
+  expect(next.a).not.toBe(reconciled.a)
+
+  // A sub-object of root.a has changed, creating new object
+  expect(next.a.b).not.toBe(reconciled.a.b)
+
+  // root.a.b.c is has not changed, therefore reuse.
+  expect(next.a.b.c).not.toBe(reconciled.a.b.c)
+
+  expect(prev.a.b.c).toBe(reconciled.a.b.c)
+
+  // The new reconcile will retain reconcilable objects also within loops.
+  expect(prev.a.b.a.b.c).toBe(reconciled.a.b.a.b.c)
+
+  // This is because it retains the loop.
+  expect(reconciled.a).toBe(reconciled.a.b.a)
+  expect(prev.a.b.c).toBe(reconciled.a.b.a.b.c)
 })
 
 test('it handles non-changing cyclic structures', () => {
