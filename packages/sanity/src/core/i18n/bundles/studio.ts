@@ -401,8 +401,6 @@ export const studioLocaleStrings = defineLocalesResources('studio', {
   'form.field.deprecated-label': 'deprecated',
   /** Fallback title shown above field if it has no defined title */
   'form.field.untitled-field-label': 'Untitled',
-  /** Fallback title shown above fieldset if it has no defined title */
-  'form.field.untitled-fieldset-label': 'Untitled',
   /** Accessibility label for the icon that indicates the field has a validation error */
   'form.validation.has-error-aria-label': 'Has error',
   /** Accessibility label for the icon that indicates the field has validation information */
