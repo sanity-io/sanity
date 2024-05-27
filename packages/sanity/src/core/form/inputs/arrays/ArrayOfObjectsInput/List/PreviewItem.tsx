@@ -65,9 +65,13 @@ export function PreviewItem<Item extends ObjectItem = ObjectItem>(props: Preview
     inputProps: {renderPreview},
   } = props
   const {t} = useTranslation()
-  const useNewTreeDialog = useTreeArrayEditingEnabled()
 
-  const openPortal = open && !useNewTreeDialog
+  const treeEditing = useTreeArrayEditingEnabled()
+
+  // The modal should open if the item is open and:
+  // - tree array editing is disabled
+  // - legacy array editing is enabled (e.g. in a Portable Text editor)
+  const openPortal = open && (!treeEditing.enabled || treeEditing.legacyEditing)
 
   const sortable = parentSchemaType.options?.sortable !== false
   const insertableTypes = parentSchemaType.of
