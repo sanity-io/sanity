@@ -82,12 +82,16 @@ export function GridItem<Item extends ObjectItem = ObjectItem>(props: GridItemPr
     inputProps: {renderPreview},
   } = props
   const {t} = useTranslation()
-  const useNewTreeDialog = useTreeArrayEditingEnabled()
+
+  const treeEditing = useTreeArrayEditingEnabled()
+
+  // The modal should open if the item is open and:
+  // - tree array editing is disabled
+  // - legacy array editing is enabled (e.g. in a Portable Text editor)
+  const openPortal = open && (!treeEditing.enabled || treeEditing.legacyEditing)
 
   const sortable = parentSchemaType.options?.sortable !== false
   const insertableTypes = parentSchemaType.of
-
-  const openPortal = open && !useNewTreeDialog
 
   const previewCardRef = useRef<FIXME | null>(null)
 
