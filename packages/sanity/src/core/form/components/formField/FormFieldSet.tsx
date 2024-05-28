@@ -182,12 +182,14 @@ export const FormFieldSet = forwardRef(function FormFieldSet(
         content={
           <Stack space={3}>
             <Flex align="center">
-              <FormFieldSetLegend
-                collapsed={Boolean(collapsed)}
-                collapsible={collapsible}
-                onClick={collapsible ? handleToggle : undefined}
-                title={title}
-              />
+              {title && (
+                <FormFieldSetLegend
+                  collapsed={Boolean(collapsed)}
+                  collapsible={collapsible}
+                  onClick={collapsible ? handleToggle : undefined}
+                  title={title}
+                />
+              )}
               {deprecated && (
                 <Box marginLeft={2}>
                   <Badge data-testid={`deprecated-badge-${title}`} tone="caution">
