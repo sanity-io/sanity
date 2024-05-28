@@ -151,7 +151,7 @@ export function TreeEditingBreadcrumbs(props: TreeEditingBreadcrumbsProps): JSX.
           {hasChildren && (
             <TreeEditingBreadcrumbsMenuButton
               button={button}
-              breadcrumbTitle={item.breadcrumbTitle}
+              parentArrayTitle={item.parentArrayTitle}
               items={item.children}
               onPathSelect={onPathSelect}
               selectedPath={item.path}

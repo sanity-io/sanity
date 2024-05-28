@@ -25,7 +25,7 @@ export function buildBreadcrumbsState(props: BuildBreadcrumbsStateProps): TreeEd
       path: nestedItemPath,
       title,
       children: EMPTY_ARRAY,
-      breadcrumbTitle: parentTitle,
+      parentArrayTitle: parentTitle,
     }
   })
 
@@ -35,6 +35,6 @@ export function buildBreadcrumbsState(props: BuildBreadcrumbsStateProps): TreeEd
     path: itemPath,
     title: selectedItemTitle as string,
     children: items,
-    breadcrumbTitle: parentTitle,
+    parentArrayTitle: parentTitle,
   }
 }

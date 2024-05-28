@@ -53,13 +53,13 @@ interface TreeEditingBreadcrumbsMenuButtonProps {
   items: TreeEditingBreadcrumb[]
   onPathSelect: (path: Path) => void
   selectedPath: Path
-  breadcrumbTitle: string
+  parentArrayTitle: string
 }
 
 export function TreeEditingBreadcrumbsMenuButton(
   props: TreeEditingBreadcrumbsMenuButtonProps,
 ): JSX.Element {
-  const {button, items, selectedPath, onPathSelect, breadcrumbTitle} = props
+  const {button, items, selectedPath, onPathSelect, parentArrayTitle} = props
   const [open, setOpen] = useState<boolean>(false)
   const [rootElement, setRootElement] = useState<HTMLElement | null>(null)
   const [buttonElement, setButtonElement] = useState<HTMLButtonElement | null>(null)
@@ -106,7 +106,7 @@ export function TreeEditingBreadcrumbsMenuButton(
         direction="column"
         overflow="hidden"
       >
-        <TreeEditingBreadcrumbsTitle title={breadcrumbTitle} />
+        <TreeEditingBreadcrumbsTitle title={parentArrayTitle} />
         <TreeEditingBreadcrumbsMenu
           items={items}
           onPathSelect={handlePathSelect}
