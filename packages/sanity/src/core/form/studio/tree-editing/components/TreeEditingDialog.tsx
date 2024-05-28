@@ -98,8 +98,7 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | 
       // lead to filtering out only those fields in the form.
       // We only want to change the fields being displayed when the path is
       // pointing to an array item.
-      const isItemPath = builtRelativePath[len - 1]?.hasOwnProperty('_key')
-      const useCurrentRelativePath = hasNoRelativePath || !isItemPath
+      const useCurrentRelativePath = hasNoRelativePath || !isArrayItemPath(builtRelativePath)
       const nextRelativePath = useCurrentRelativePath ? treeState.relativePath : builtRelativePath
 
       setTreeState({...nextState, relativePath: nextRelativePath})
