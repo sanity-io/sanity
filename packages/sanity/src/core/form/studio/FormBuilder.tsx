@@ -253,6 +253,7 @@ export function FormBuilder(props: FormBuilderProps) {
 
             {useNewTreeDialog && (
               <TreeEditingDialog
+                onPathFocus={onPathFocus}
                 onPathOpen={onPathOpen}
                 openPath={openPath}
                 rootInputProps={rootInputProps}
