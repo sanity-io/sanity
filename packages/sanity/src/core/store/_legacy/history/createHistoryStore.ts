@@ -214,12 +214,20 @@ function restore(
     }),
     mergeMap((restoredDraft) => {
       if (options?.useServerDocumentActions) {
-        // @ts-expect-error FIXME
-        return client.observable.action({
-          actionType: 'sanity.action.document.replaceDraft',
-          publishedId: documentId,
-          attributes: restoredDraft,
-        })
+        return client.observable.action([
+          {
+            actionType: 'sanity.action.document.create',
+            publishedId: documentId,
+            attributes: restoredDraft,
+            ifExists: 'fail',
+          },
+          // @ts-expect-error FIXME
+          {
+            actionType: 'sanity.action.document.replaceDraft',
+            publishedId: documentId,
+            attributes: restoredDraft,
+          },
+        ])
       }
 
       return client.observable.createOrReplace(restoredDraft, {visibility: 'async'})
