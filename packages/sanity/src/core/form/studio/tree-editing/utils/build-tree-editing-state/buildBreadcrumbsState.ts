@@ -9,12 +9,13 @@ interface BuildBreadcrumbsStateProps {
   arrayValue: Record<string, unknown>[]
   itemPath: Path
   parentPath: Path
+  arrayTitle: string
 }
 
 export function buildBreadcrumbsState(props: BuildBreadcrumbsStateProps): TreeEditingBreadcrumb {
-  const {arraySchemaType, arrayValue, itemPath, parentPath} = props
+  const {arraySchemaType, arrayValue, itemPath, parentPath, arrayTitle} = props
 
-  const items = arrayValue.map((arrayItem) => {
+  const items: TreeEditingBreadcrumb[] = arrayValue.map((arrayItem) => {
     const nestedItemPath = [...parentPath, {_key: arrayItem._key}] as Path
 
     const {title} = getArrayItemPreview({arrayItem, arraySchemaType})
@@ -23,6 +24,7 @@ export function buildBreadcrumbsState(props: BuildBreadcrumbsStateProps): TreeEd
       path: nestedItemPath,
       title,
       children: EMPTY_ARRAY,
+      breadcrumbTitle: arrayTitle,
     }
   })
 
@@ -32,5 +34,6 @@ export function buildBreadcrumbsState(props: BuildBreadcrumbsStateProps): TreeEd
     path: itemPath,
     title: selectedItemTitle as string,
     children: items,
+    breadcrumbTitle: arrayTitle,
   }
 }
