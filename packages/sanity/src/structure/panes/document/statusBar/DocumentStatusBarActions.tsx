@@ -6,6 +6,7 @@ import {
   type DocumentActionDescription,
   shouldArrayDialogOpen,
   useTimelineSelector,
+  useTreeArrayEditingEnabled,
 } from 'sanity'
 
 import {Button, Tooltip} from '../../../../ui-components'
@@ -23,12 +24,20 @@ interface DocumentStatusBarActionsInnerProps {
 
 function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsInnerProps) {
   const {disabled, showMenu, states} = props
-  const {__internal_tasks, schemaType, focusPath} = useDocumentPane()
+  const {__internal_tasks, schemaType, openPath} = useDocumentPane()
   const [firstActionState, ...menuActionStates] = states
   const [buttonElement, setButtonElement] = useState<HTMLButtonElement | null>(null)
+  const {enabled: isTreeArrayEditingEnabled} = useTreeArrayEditingEnabled()
+
   const isDialogOpen = useMemo(
-    () => shouldArrayDialogOpen(schemaType, focusPath),
-    [focusPath, schemaType],
+    () => shouldArrayDialogOpen(schemaType, openPath),
+    [openPath, schemaType],
+  )
+
+  // should only disable the main action if the new dialog is open and the feature enabled
+  const isTreeArrayEditingEnabledOpen = useMemo(
+    () => isTreeArrayEditingEnabled && isDialogOpen,
+    [isDialogOpen, isTreeArrayEditingEnabled],
   )
 
   // TODO: This could be refactored to use the tooltip from the button if the firstAction.title was updated to a string.
@@ -60,7 +69,9 @@ function DocumentStatusBarActionsInner(props: DocumentStatusBarActionsInnerProps
             <Stack>
               <Button
                 data-testid={`action-${firstActionState.label}`}
-                disabled={disabled || Boolean(firstActionState.disabled) || isDialogOpen}
+                disabled={
+                  disabled || Boolean(firstActionState.disabled) || isTreeArrayEditingEnabledOpen
+                }
                 icon={firstActionState.icon}
                 // eslint-disable-next-line react/jsx-handler-names
                 onClick={firstActionState.onHandle}
