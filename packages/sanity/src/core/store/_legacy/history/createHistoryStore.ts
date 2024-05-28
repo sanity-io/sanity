@@ -29,12 +29,7 @@ export interface HistoryStore {
 
   getTransactions: (documentIds: string[]) => Promise<TransactionLogEventWithMutations[]>
 
-  restore: (
-    id: string,
-    targetId: string,
-    rev: string,
-    options?: RestoreOptions,
-  ) => Observable<SanityDocument>
+  restore: (id: string, targetId: string, rev: string, options?: RestoreOptions) => Observable<void>
 
   /** @internal */
   getTimelineController: (options: {
@@ -192,7 +187,7 @@ function restore(
   targetDocumentId: string,
   rev: string,
   options?: RestoreOptions,
-) {
+): Observable<void> {
   return from(getDocumentAtRevision(client, documentId, rev)).pipe(
     mergeMap((documentAtRevision) => {
       if (!documentAtRevision) {
@@ -232,6 +227,7 @@ function restore(
 
       return client.observable.createOrReplace(restoredDraft, {visibility: 'async'})
     }),
+    map(() => undefined),
   )
 }
 
