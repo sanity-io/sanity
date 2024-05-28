@@ -16,6 +16,7 @@ import {getTimer} from '../../util/timing'
 import {BuildTrace} from './build.telemetry'
 import {buildVendorDependencies} from '../../server/buildVendorDependencies'
 import {compareStudioDependencyVersions} from '../../util/compareStudioDependencyVersions'
+import {getAutoUpdateImportMap} from '../../util/getAutoUpdatesImportMap'
 
 const rimraf = promisify(rimrafCallback)
 
@@ -58,13 +59,24 @@ export default async function buildSanityStudio(
   const autoUpdatesEnabled =
     flags['auto-updates'] ||
     (cliConfig && 'autoUpdates' in cliConfig && cliConfig.autoUpdates === true)
+  let importMap
 
   if (autoUpdatesEnabled) {
     output.print(`${info} Building with auto-updates enabled`)
 
+    const version = encodeURIComponent(`^${installedSanityVersion}`)
+    const autoUpdatesImports = getAutoUpdateImportMap(version)
+
+    importMap = {
+      imports: {
+        ...(await buildVendorDependencies({cwd: workDir, outputDir})),
+        ...autoUpdatesImports,
+      },
+    }
+
     // Check the versions
     try {
-      const result = await compareStudioDependencyVersions(workDir)
+      const result = await compareStudioDependencyVersions(autoUpdatesImports, workDir)
 
       if (result?.length) {
         const shouldContinue = await prompt.single({
@@ -142,25 +154,6 @@ export default async function buildSanityStudio(
 
   const trace = telemetry.trace(BuildTrace)
   trace.start()
-
-  let importMap
-
-  if (autoUpdatesEnabled) {
-    const version = encodeURIComponent(`^${installedSanityVersion}`)
-    const autoUpdatesImports = {
-      'sanity': `https://api.sanity.work/v1/modules/sanity/default/${version}`,
-      'sanity/': `https://api.sanity.work/v1/modules/sanity/default/${version}/`,
-      '@sanity/vision': `https://api.sanity.work/v1/modules/@sanity__vision/default/${version}`,
-      '@sanity/vision/': `https://api.sanity.work/v1/modules/@sanity__vision/default/${version}/`,
-    }
-
-    importMap = {
-      imports: {
-        ...(await buildVendorDependencies({cwd: workDir, outputDir})),
-        ...autoUpdatesImports,
-      },
-    }
-  }
 
   try {
     timer.start('bundleStudio')
