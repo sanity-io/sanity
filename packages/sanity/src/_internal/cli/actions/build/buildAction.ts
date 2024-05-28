@@ -18,12 +18,6 @@ import {buildVendorDependencies} from '../../server/buildVendorDependencies'
 
 const rimraf = promisify(rimrafCallback)
 
-const AUTO_UPDATES_IMPORTS = {
-  'sanity': 'https://api.sanity.work/v1/modules/sanity/^3',
-  'sanity/': 'https://api.sanity.work/v1/modules/sanity/^3/',
-  '@sanity/vision': 'https://api.sanity.work/v1/modules/@sanity__vision/^3 ',
-}
-
 export interface BuildSanityStudioCommandFlags {
   'yes'?: boolean
   'y'?: boolean
@@ -55,7 +49,8 @@ export default async function buildSanityStudio(
 
   // If the check resulted in a dependency install, the CLI command will be re-run,
   // thus we want to exit early
-  if ((await checkRequiredDependencies(context)).didInstall) {
+  const {didInstall, installedSanityVersion} = await checkRequiredDependencies(context)
+  if (didInstall) {
     return {didCompile: false}
   }
 
@@ -122,19 +117,29 @@ export default async function buildSanityStudio(
 
   const trace = telemetry.trace(BuildTrace)
   trace.start()
-  try {
-    timer.start('bundleStudio')
 
-    const vendorImports = enableAutoUpdates
-      ? await buildVendorDependencies({cwd: workDir, outputDir})
-      : {}
+  let importMap
 
-    const importMap = {
+  if (enableAutoUpdates) {
+    const version = encodeURIComponent(`^${installedSanityVersion}`)
+    const autoUpdatesImports = {
+      // /:packageName/:channel/:minVersion/:file?
+      'sanity': `https://api.sanity.work/v1/sanity/default/${version}`,
+      'sanity/': `https://api.sanity.work/v1/sanity/default/${version}/`,
+      '@sanity/vision': `https://api.sanity.work/v1/@sanity__vision/default/${version}`,
+      '@sanity/vision/': `https://api.sanity.work/v1/@sanity__vision/default/${version}/`,
+    }
+
+    importMap = {
       imports: {
-        ...(enableAutoUpdates && AUTO_UPDATES_IMPORTS),
-        ...vendorImports,
+        ...(await buildVendorDependencies({cwd: workDir, outputDir})),
+        ...autoUpdatesImports,
       },
     }
+  }
+
+  try {
+    timer.start('bundleStudio')
 
     const bundle = await buildStaticFiles({
       cwd: workDir,
