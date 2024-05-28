@@ -162,26 +162,31 @@ describe('tree-editing: buildTreeEditingState', () => {
           breadcrumbTitle: 'Array 1',
           children: [
             {
+              breadcrumbTitle: 'Array 1',
               path: ['array1', {_key: 'key1'}],
               title: 'My string 1',
               children: [],
             },
             {
+              breadcrumbTitle: 'Array 1',
               path: ['array1', {_key: 'key2'}],
               title: 'My string 2',
               children: [],
             },
             {
+              breadcrumbTitle: 'Array 1',
               path: ['array1', {_key: 'key3'}],
               title: 'My string 3',
               children: [],
             },
             {
+              breadcrumbTitle: 'Array 1',
               path: ['array1', {_key: 'key6'}],
               title: 'My string 6',
               children: [],
             },
             {
+              breadcrumbTitle: 'Array 1',
               path: ['array1', {_key: 'key7'}],
               title: 'My string 7',
               children: [],
@@ -299,6 +304,7 @@ describe('tree-editing: buildTreeEditingState', () => {
           breadcrumbTitle: 'Array',
           children: [
             {
+              breadcrumbTitle: 'Array',
               path: ['objectWithArray', 'myArray', {_key: 'key1'}],
               title: 'My string 1',
               children: [],
