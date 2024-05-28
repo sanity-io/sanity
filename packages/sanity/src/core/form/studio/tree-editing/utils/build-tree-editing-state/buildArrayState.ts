@@ -50,8 +50,9 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
         itemPath,
         parentPath: rootPath,
       })
+      const breadcrumbsTitle = arraySchemaType.title || arraySchemaType.name
 
-      breadcrumbs.push(breadcrumbsResult)
+      breadcrumbs.push({...breadcrumbsResult, breadcrumbTitle: breadcrumbsTitle})
     }
 
     childrenFields.forEach((childField) => {
@@ -87,8 +88,9 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
             itemPath: childPath,
             parentPath: itemPath,
           })
+          const breadcrumbsTitle = childField.type.title || childField.type.name
 
-          breadcrumbs.push(breadcrumbsResult)
+          breadcrumbs.push({...breadcrumbsResult, breadcrumbTitle: breadcrumbsTitle})
         }
 
         const childState = recursive({

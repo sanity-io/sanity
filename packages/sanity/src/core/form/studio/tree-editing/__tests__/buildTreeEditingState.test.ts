@@ -159,6 +159,7 @@ describe('tree-editing: buildTreeEditingState', () => {
         {
           path: ['array1', {_key: 'key1'}],
           title: 'My string 1',
+          breadcrumbTitle: 'Array 1',
           children: [
             {
               path: ['array1', {_key: 'key1'}],
@@ -295,6 +296,7 @@ describe('tree-editing: buildTreeEditingState', () => {
         {
           path: ['objectWithArray', 'myArray', {_key: 'key1'}],
           title: 'My string 1',
+          breadcrumbTitle: 'Array',
           children: [
             {
               path: ['objectWithArray', 'myArray', {_key: 'key1'}],
