@@ -125,8 +125,13 @@ async function copyPackages() {
   return packageVersions
 }
 
+interface ManifestPackage {
+  default: string
+  versions: string[]
+}
+
 interface Manifest {
-  packages: Record<string, Record<string, string>>
+  packages: Record<string, ManifestPackage>
 }
 
 async function updateManifest(newVersions: Map<string, string>) {
@@ -153,6 +158,7 @@ async function updateManifest(newVersions: Map<string, string>) {
         [dirName]: {
           ...initial.packages[dirName],
           default: value,
+          versions: [...(initial.packages[dirName]?.versions || []), value],
         },
       },
     }
