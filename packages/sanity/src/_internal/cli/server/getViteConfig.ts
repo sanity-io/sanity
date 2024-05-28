@@ -3,11 +3,11 @@ import path from 'node:path'
 import {type UserViteConfig} from '@sanity/cli'
 import viteReact from '@vitejs/plugin-react'
 import debug from 'debug'
-import {escapeRegExp} from 'lodash'
 import readPkgUp from 'read-pkg-up'
 import {type ConfigEnv, type InlineConfig, mergeConfig} from 'vite'
 
 import {getAliases} from './aliases'
+import {createExternalFromImportMap} from './createExternalFromImportMap'
 import {getStudioEnvironmentVariables} from './getStudioEnvironmentVariables'
 import {normalizeBasePath} from './helpers'
 import {loadSanityMonorepo} from './sanityMonorepo'
@@ -141,21 +141,6 @@ export async function getViteConfig(options: ViteOptions): Promise<InlineConfig>
   }
 
   return viteConfig
-}
-
-/**
- * Generates a Rollup `external` configuration array based on the provided
- * import map. We derive externals from the import map because this ensures that
- * modules listed in the import map are not bundled into the Rollup output so
- * the browser can load these bare specifiers according to the import map.
- */
-function createExternalFromImportMap(importMap?: {imports?: Record<string, string>}) {
-  if (!importMap) return []
-  const {imports = {}} = importMap
-
-  return Object.keys(imports).map((specifier) =>
-    specifier.endsWith('/') ? new RegExp(`^${escapeRegExp(specifier)}.+`) : specifier,
-  )
 }
 
 /**

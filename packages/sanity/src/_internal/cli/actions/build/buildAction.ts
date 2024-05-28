@@ -14,25 +14,9 @@ import {checkStudioDependencyVersions} from '../../util/checkStudioDependencyVer
 import {checkRequiredDependencies} from '../../util/checkRequiredDependencies'
 import {getTimer} from '../../util/timing'
 import {BuildTrace} from './build.telemetry'
+import {buildVendorDependencies} from '../../server/buildVendorDependencies'
 
 const rimraf = promisify(rimrafCallback)
-
-// TODO: replace this with a manifest somewhere
-const AUTO_UPDATES_IMPORTMAP = {
-  imports: {
-    // Shared modules
-    'react': 'https://api.sanity.work/v1/modules/react/^18',
-    'react/': 'https://api.sanity.work/v1/modules/react/^18/',
-    'react-dom': 'https://api.sanity.work/v1/modules/react-dom/^18',
-    'react-dom/': 'https://api.sanity.work/v1/modules/react-dom/^18/',
-    'styled-components': 'https://api.sanity.work/v1/modules/styled-components/^6',
-
-    // Sanity Modules
-    'sanity': 'https://api.sanity.work/v1/modules/sanity/^3',
-    'sanity/': 'https://api.sanity.work/v1/modules/sanity/^3/',
-    '@sanity/vision': 'https://api.sanity.work/v1/modules/@sanity__vision/^3 ',
-  },
-}
 
 export interface BuildSanityStudioCommandFlags {
   'yes'?: boolean
@@ -65,7 +49,8 @@ export default async function buildSanityStudio(
 
   // If the check resulted in a dependency install, the CLI command will be re-run,
   // thus we want to exit early
-  if ((await checkRequiredDependencies(context)).didInstall) {
+  const {didInstall, installedSanityVersion} = await checkRequiredDependencies(context)
+  if (didInstall) {
     return {didCompile: false}
   }
 
@@ -132,6 +117,26 @@ export default async function buildSanityStudio(
 
   const trace = telemetry.trace(BuildTrace)
   trace.start()
+
+  let importMap
+
+  if (enableAutoUpdates) {
+    const version = encodeURIComponent(`^${installedSanityVersion}`)
+    const autoUpdatesImports = {
+      'sanity': `https://api.sanity.work/v1/modules/sanity/default/${version}`,
+      'sanity/': `https://api.sanity.work/v1/modules/sanity/default/${version}/`,
+      '@sanity/vision': `https://api.sanity.work/v1/modules/@sanity__vision/default/${version}`,
+      '@sanity/vision/': `https://api.sanity.work/v1/modules/@sanity__vision/default/${version}/`,
+    }
+
+    importMap = {
+      imports: {
+        ...(await buildVendorDependencies({cwd: workDir, outputDir})),
+        ...autoUpdatesImports,
+      },
+    }
+  }
+
   try {
     timer.start('bundleStudio')
 
@@ -142,8 +147,9 @@ export default async function buildSanityStudio(
       sourceMap: Boolean(flags['source-maps']),
       minify: Boolean(flags.minify),
       vite: cliConfig && 'vite' in cliConfig ? cliConfig.vite : undefined,
-      importMap: enableAutoUpdates ? AUTO_UPDATES_IMPORTMAP : undefined,
+      importMap,
     })
+
     trace.log({
       outputSize: bundle.chunks
         .flatMap((chunk) => chunk.modules.flatMap((mod) => mod.renderedLength))
