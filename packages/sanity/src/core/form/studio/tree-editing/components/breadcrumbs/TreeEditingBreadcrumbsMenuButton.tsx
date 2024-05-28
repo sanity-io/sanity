@@ -53,7 +53,7 @@ interface TreeEditingBreadcrumbsMenuButtonProps {
   items: TreeEditingBreadcrumb[]
   onPathSelect: (path: Path) => void
   selectedPath: Path
-  breadcrumbTitle?: string
+  breadcrumbTitle: string
 }
 
 export function TreeEditingBreadcrumbsMenuButton(
@@ -106,7 +106,7 @@ export function TreeEditingBreadcrumbsMenuButton(
         direction="column"
         overflow="hidden"
       >
-        {breadcrumbTitle && <TreeEditingBreadcrumbsTitle title={breadcrumbTitle} />}
+        <TreeEditingBreadcrumbsTitle title={breadcrumbTitle} />
         <TreeEditingBreadcrumbsMenu
           items={items}
           onPathSelect={handlePathSelect}
