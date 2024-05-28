@@ -123,11 +123,10 @@ export default async function buildSanityStudio(
   if (enableAutoUpdates) {
     const version = encodeURIComponent(`^${installedSanityVersion}`)
     const autoUpdatesImports = {
-      // /:packageName/:channel/:minVersion/:file?
-      'sanity': `https://api.sanity.work/v1/sanity/default/${version}`,
-      'sanity/': `https://api.sanity.work/v1/sanity/default/${version}/`,
-      '@sanity/vision': `https://api.sanity.work/v1/@sanity__vision/default/${version}`,
-      '@sanity/vision/': `https://api.sanity.work/v1/@sanity__vision/default/${version}/`,
+      'sanity': `https://api.sanity.work/v1/modules/sanity/default/${version}`,
+      'sanity/': `https://api.sanity.work/v1/modules/sanity/default/${version}/`,
+      '@sanity/vision': `https://api.sanity.work/v1/modules/@sanity__vision/default/${version}`,
+      '@sanity/vision/': `https://api.sanity.work/v1/modules/@sanity__vision/default/${version}/`,
     }
 
     importMap = {
