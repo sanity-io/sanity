@@ -50,6 +50,7 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
         itemPath,
         parentPath: rootPath,
       })
+
       breadcrumbs.push(breadcrumbsResult)
     }
 
@@ -86,6 +87,7 @@ export function buildArrayState(props: BuildArrayState): TreeEditingState {
             itemPath: childPath,
             parentPath: itemPath,
           })
+
           breadcrumbs.push(breadcrumbsResult)
         }
 
