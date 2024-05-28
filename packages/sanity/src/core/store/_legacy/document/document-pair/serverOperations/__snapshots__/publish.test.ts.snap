@@ -4,27 +4,24 @@ exports[`publish execute calls createOrReplace with _revision_lock_pseudo_field_
 Object {
   "listen": Array [],
   "observable": Object {
+    "action": Array [
+      Object {
+        "actions": Object {
+          "actionType": "sanity.action.document.publish",
+          "draftId": "drafts.my-id",
+          "ifDraftRevisionId": "exampleRev",
+          "ifPublishedRevisionId": "exampleRev",
+          "publishedId": "my-id",
+        },
+        "options": Object {
+          "tag": "document.publish",
+        },
+      },
+    ],
     "fetch": Array [],
     "getDocuments": Array [],
     "listen": Array [],
-    "request": Array [
-      Object {
-        "body": Object {
-          "actions": Array [
-            Object {
-              "actionType": "sanity.action.document.publish",
-              "draftId": "drafts.my-id",
-              "ifDraftRevisionId": "exampleRev",
-              "ifPublishedRevisionId": "exampleRev",
-              "publishedId": "my-id",
-            },
-          ],
-        },
-        "method": "post",
-        "tag": "document.publish",
-        "url": "/data/actions/mock-data-set",
-      },
-    ],
+    "request": Array [],
   },
   "request": Array [],
   "transaction": Array [],
@@ -35,27 +32,24 @@ exports[`publish execute removes the \`_updatedAt\` field 1`] = `
 Object {
   "listen": Array [],
   "observable": Object {
+    "action": Array [
+      Object {
+        "actions": Object {
+          "actionType": "sanity.action.document.publish",
+          "draftId": "drafts.my-id",
+          "ifDraftRevisionId": "exampleRev",
+          "ifPublishedRevisionId": undefined,
+          "publishedId": "my-id",
+        },
+        "options": Object {
+          "tag": "document.publish",
+        },
+      },
+    ],
     "fetch": Array [],
     "getDocuments": Array [],
     "listen": Array [],
-    "request": Array [
-      Object {
-        "body": Object {
-          "actions": Array [
-            Object {
-              "actionType": "sanity.action.document.publish",
-              "draftId": "drafts.my-id",
-              "ifDraftRevisionId": "exampleRev",
-              "ifPublishedRevisionId": undefined,
-              "publishedId": "my-id",
-            },
-          ],
-        },
-        "method": "post",
-        "tag": "document.publish",
-        "url": "/data/actions/mock-data-set",
-      },
-    ],
+    "request": Array [],
   },
   "request": Array [],
   "transaction": Array [],
@@ -66,27 +60,24 @@ exports[`publish execute takes in any and strengthens references where _strength
 Object {
   "listen": Array [],
   "observable": Object {
+    "action": Array [
+      Object {
+        "actions": Object {
+          "actionType": "sanity.action.document.publish",
+          "draftId": "drafts.my-id",
+          "ifDraftRevisionId": "exampleRev",
+          "ifPublishedRevisionId": undefined,
+          "publishedId": "my-id",
+        },
+        "options": Object {
+          "tag": "document.publish",
+        },
+      },
+    ],
     "fetch": Array [],
     "getDocuments": Array [],
     "listen": Array [],
-    "request": Array [
-      Object {
-        "body": Object {
-          "actions": Array [
-            Object {
-              "actionType": "sanity.action.document.publish",
-              "draftId": "drafts.my-id",
-              "ifDraftRevisionId": "exampleRev",
-              "ifPublishedRevisionId": undefined,
-              "publishedId": "my-id",
-            },
-          ],
-        },
-        "method": "post",
-        "tag": "document.publish",
-        "url": "/data/actions/mock-data-set",
-      },
-    ],
+    "request": Array [],
   },
   "request": Array [],
   "transaction": Array [],
@@ -97,6 +88,7 @@ exports[`publish execute throws an error if the client has no draft snaphot 1`] 
 Object {
   "listen": Array [],
   "observable": Object {
+    "action": Array [],
     "fetch": Array [],
     "getDocuments": Array [],
     "listen": Array [],

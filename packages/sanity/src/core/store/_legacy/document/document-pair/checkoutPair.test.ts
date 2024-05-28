@@ -6,7 +6,7 @@ import {delay} from 'rxjs/operators'
 import {checkoutPair} from './checkoutPair'
 
 const mockedDataRequest = jest.fn(() => of({}))
-const mockedObservableRequest = jest.fn(() => of({}))
+const mockedActionRequest = jest.fn(() => of({}))
 
 const client = {
   observable: {
@@ -16,17 +16,9 @@ const client = {
         {_id: ids[0], _type: 'any', _rev: 'any'},
         {_id: ids[1], _type: 'any', _rev: 'any'},
       ]),
+    action: mockedActionRequest,
   },
   dataRequest: mockedDataRequest,
-}
-
-const clientWithConfig = {
-  ...client,
-  withConfig: () => ({
-    ...client,
-    observable: {...client.observable, request: mockedObservableRequest},
-  }),
-  config: () => ({dataset: 'production'}),
 }
 
 const idPair = {publishedId: 'publishedId', draftId: 'draftId'}
@@ -223,11 +215,7 @@ describe('checkoutPair -- local actions', () => {
 
 describe('checkoutPair -- server actions', () => {
   test('patch', async () => {
-    const {draft, published} = checkoutPair(
-      clientWithConfig as any as SanityClient,
-      idPair,
-      of(true),
-    )
+    const {draft, published} = checkoutPair(client as any as SanityClient, idPair, of(true))
     const combined = merge(draft.events, published.events)
     const sub = combined.subscribe()
     await new Promise((resolve) => setTimeout(resolve, 0))
@@ -235,36 +223,30 @@ describe('checkoutPair -- server actions', () => {
     draft.mutate(draft.patch([{set: {title: 'new title'}}]))
     draft.commit()
 
-    expect(mockedObservableRequest).toHaveBeenCalledWith({
-      url: '/data/actions/production',
-      method: 'post',
-      tag: 'document.commit',
-      body: {
-        transactionId: expect.any(String),
-        actions: [
-          {
-            actionType: 'sanity.action.document.edit',
-            draftId: 'draftId',
-            publishedId: 'publishedId',
-            patch: {
-              set: {
-                title: 'new title',
-              },
+    expect(mockedActionRequest).toHaveBeenCalledWith(
+      [
+        {
+          actionType: 'sanity.action.document.edit',
+          draftId: 'draftId',
+          publishedId: 'publishedId',
+          patch: {
+            set: {
+              title: 'new title',
             },
           },
-        ],
+        },
+      ],
+      {
+        tag: 'document.commit',
+        transactionId: expect.any(String),
       },
-    })
+    )
 
     sub.unsubscribe()
   })
 
   test('published patch uses mutation endpoint', async () => {
-    const {draft, published} = checkoutPair(
-      clientWithConfig as any as SanityClient,
-      idPair,
-      of(true),
-    )
+    const {draft, published} = checkoutPair(client as any as SanityClient, idPair, of(true))
     const combined = merge(draft.events, published.events)
     const sub = combined.subscribe()
     await new Promise((resolve) => setTimeout(resolve, 0))
@@ -273,7 +255,7 @@ describe('checkoutPair -- server actions', () => {
     published.mutate(published.patch([{set: {title: 'new title'}}]))
     published.commit()
 
-    expect(mockedObservableRequest).not.toHaveBeenCalled()
+    expect(mockedActionRequest).not.toHaveBeenCalled()
 
     expect(mockedDataRequest).toHaveBeenCalledWith(
       'mutate',
@@ -293,11 +275,7 @@ describe('checkoutPair -- server actions', () => {
   })
 
   test('create', async () => {
-    const {draft, published} = checkoutPair(
-      clientWithConfig as any as SanityClient,
-      idPair,
-      of(true),
-    )
+    const {draft, published} = checkoutPair(client as any as SanityClient, idPair, of(true))
     const combined = merge(draft.events, published.events)
     const sub = combined.subscribe()
     await new Promise((resolve) => setTimeout(resolve, 0))
@@ -313,36 +291,30 @@ describe('checkoutPair -- server actions', () => {
     ])
     draft.commit()
 
-    expect(mockedObservableRequest).toHaveBeenCalledWith({
-      url: '/data/actions/production',
-      method: 'post',
-      tag: 'document.commit',
-      body: {
-        transactionId: expect.any(String),
-        actions: [
-          {
-            actionType: 'sanity.action.document.create',
-            publishedId: 'publishedId',
-            attributes: {
-              _id: 'draftId',
-              _type: 'any',
-              _createdAt: 'now',
-            },
-            ifExists: 'fail',
+    expect(mockedActionRequest).toHaveBeenCalledWith(
+      [
+        {
+          actionType: 'sanity.action.document.create',
+          publishedId: 'publishedId',
+          attributes: {
+            _id: 'draftId',
+            _type: 'any',
+            _createdAt: 'now',
           },
-        ],
+          ifExists: 'fail',
+        },
+      ],
+      {
+        tag: 'document.commit',
+        transactionId: expect.any(String),
       },
-    })
+    )
 
     sub.unsubscribe()
   })
 
   test('createIfNotExists', async () => {
-    const {draft, published} = checkoutPair(
-      clientWithConfig as any as SanityClient,
-      idPair,
-      of(true),
-    )
+    const {draft, published} = checkoutPair(client as any as SanityClient, idPair, of(true))
     const combined = merge(draft.events, published.events)
     const sub = combined.subscribe()
     await new Promise((resolve) => setTimeout(resolve, 0))
@@ -358,14 +330,9 @@ describe('checkoutPair -- server actions', () => {
     ])
     draft.commit()
 
-    expect(mockedObservableRequest).toHaveBeenCalledWith({
-      url: '/data/actions/production',
-      method: 'post',
+    expect(mockedActionRequest).toHaveBeenCalledWith([], {
       tag: 'document.commit',
-      body: {
-        transactionId: expect.any(String),
-        actions: [],
-      },
+      transactionId: expect.any(String),
     })
 
     sub.unsubscribe()

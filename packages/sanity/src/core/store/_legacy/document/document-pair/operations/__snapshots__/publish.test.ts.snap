@@ -4,6 +4,7 @@ exports[`publish execute calls createOrReplace with _revision_lock_pseudo_field_
 Object {
   "listen": Array [],
   "observable": Object {
+    "action": Array [],
     "fetch": Array [],
     "getDocuments": Array [],
     "listen": Array [],
@@ -59,6 +60,7 @@ exports[`publish execute removes the \`_updatedAt\` field 1`] = `
 Object {
   "listen": Array [],
   "observable": Object {
+    "action": Array [],
     "fetch": Array [],
     "getDocuments": Array [],
     "listen": Array [],
@@ -104,6 +106,7 @@ exports[`publish execute takes in any and strengthens references where _strength
 Object {
   "listen": Array [],
   "observable": Object {
+    "action": Array [],
     "fetch": Array [],
     "getDocuments": Array [],
     "listen": Array [],

@@ -19,6 +19,7 @@ export interface MockClientLog {
     getDocuments: {ids: string[]}[]
     listen: {query: string; params?: any}[]
     request: any[]
+    action: {actions: any[]; options: {transctionId: string; tag: string}}[]
   }
   request: any[]
   transaction: MockClientTransactionLog[]
@@ -85,6 +86,7 @@ export function createMockSanityClient(
       getDocuments: [],
       listen: [],
       request: [],
+      action: [],
     },
     request: [],
     transaction: [],
@@ -122,6 +124,10 @@ export function createMockSanityClient(
     },
 
     observable: {
+      action: (actions: any[], opts: {transctionId: string; tag: string}) => {
+        $log.observable.action.push({actions, options: opts})
+        return of({})
+      },
       fetch: (query: string, params?: any): Observable<any> => {
         $log.observable.fetch.push({query, params})
         // $log('observable.fetch', {query, params})
