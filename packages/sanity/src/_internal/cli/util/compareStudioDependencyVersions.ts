@@ -46,7 +46,7 @@ export async function compareStudioDependencyVersions(
     const manifestPath = resolveFrom.silent(workDir, path.join(pkg, 'package.json'))
 
     const installed = semver.coerce(
-      manifestPath ? readPackageJson(manifestPath).version : dependency.replace(/[\D.]/g, ''),
+      manifestPath ? readPackageJson(manifestPath).version : dependency,
     )
 
     if (!installed) {
