@@ -1,4 +1,4 @@
-import {Box, Card, Flex, MenuDivider, Text} from '@sanity/ui'
+import {Box, Card, Text} from '@sanity/ui'
 
 interface TreeEditingBreadcrumbsTitleProps {
   title: string
@@ -8,17 +8,12 @@ export function TreeEditingBreadcrumbsTitle(props: TreeEditingBreadcrumbsTitlePr
   const {title} = props
 
   return (
-    <>
-      <Box paddingX={1}>
-        <Card padding={3}>
-          <Flex align="center" justify="space-between" gap={2}>
-            <Text size={1} muted textOverflow="ellipsis">
-              {title}
-            </Text>
-          </Flex>
-        </Card>
+    <Card borderBottom padding={3} sizing="border">
+      <Box paddingX={1} sizing="border">
+        <Text size={1} muted textOverflow="ellipsis">
+          {title}
+        </Text>
       </Box>
-      <MenuDivider />
-    </>
+    </Card>
   )
 }
