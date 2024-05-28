@@ -21,6 +21,7 @@ import {
   shouldArrayDialogOpen,
   type TreeEditingState,
 } from '../utils'
+import {isArrayItemPath} from '../utils/build-tree-editing-state/utils'
 import {TreeEditingLayout} from './TreeEditingLayout'
 
 const EMPTY_ARRAY: [] = []
@@ -55,6 +56,7 @@ const StyledDialog = styled(Dialog)(({theme}: {theme: Theme}) => {
 const MotionFlex = motion(Flex)
 
 interface TreeEditingDialogProps {
+  onPathFocus: (path: Path) => void
   onPathOpen: (path: Path) => void
   openPath: Path
   rootInputProps: Omit<ObjectInputProps, 'renderDefault'>
@@ -62,13 +64,21 @@ interface TreeEditingDialogProps {
 }
 
 export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | null {
-  const {rootInputProps, schemaType, openPath, onPathOpen} = props
+  const {onPathFocus, onPathOpen, openPath, rootInputProps, schemaType} = props
   const {value} = rootInputProps
 
   const [treeState, setTreeState] = useState<TreeEditingState>(EMPTY_TREE_STATE)
+  const [layoutScrollElement, setLayoutScrollElement] = useState<HTMLDivElement | null>(null)
 
   const openPathRef = useRef<Path | undefined>(undefined)
   const valueRef = useRef<Record<string, unknown> | undefined>(undefined)
+
+  const handleAnimationExitComplete = useCallback(() => {
+    // Scroll to the top of the layout when the animation has completed
+    // to avoid the layout being scrolled while the content is being
+    // animated out and then back in.
+    layoutScrollElement?.scrollTo(0, 0)
+  }, [layoutScrollElement])
 
   const handleBuildTreeEditingState = useCallback(
     (opts: BuildTreeEditingStateProps) => {
@@ -88,8 +98,7 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | 
       // lead to filtering out only those fields in the form.
       // We only want to change the fields being displayed when the path is
       // pointing to an array item.
-      const isArrayItemPath = builtRelativePath[len - 1]?.hasOwnProperty('_key')
-      const useCurrentRelativePath = hasNoRelativePath || !isArrayItemPath
+      const useCurrentRelativePath = hasNoRelativePath || !isArrayItemPath(builtRelativePath)
       const nextRelativePath = useCurrentRelativePath ? treeState.relativePath : builtRelativePath
 
       setTreeState({...nextState, relativePath: nextRelativePath})
@@ -136,11 +145,17 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | 
       // The debounced state is primarily used to avoid building the state
       // on every document value or focus path change.
       debouncedBuildTreeEditingState.cancel()
+
       onPathOpen(path)
 
-      // handleNavigate(path, setFocusPath) // todo: implement handleNavigate
+      // If the path is not an array item path, it means that the field is
+      // present in the form. In that case, we want to focus the field
+      // in the form when it is selected in order to scroll it into view.
+      if (!isArrayItemPath(path)) {
+        onPathFocus(path)
+      }
     },
-    [debouncedBuildTreeEditingState, onPathOpen],
+    [debouncedBuildTreeEditingState, onPathFocus, onPathOpen],
   )
 
   useEffect(() => {
@@ -205,6 +220,7 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | 
         onPathSelect={onHandlePathSelect}
         selectedPath={relativePath}
         title={rootTitle}
+        setScrollElement={setLayoutScrollElement}
         footer={
           <Card borderTop>
             <Flex align="center" justify="flex-end" paddingX={3} paddingY={2} sizing="border">
@@ -213,7 +229,7 @@ export function TreeEditingDialog(props: TreeEditingDialogProps): JSX.Element | 
           </Card>
         }
       >
-        <AnimatePresence mode="wait">
+        <AnimatePresence initial={false} mode="wait" onExitComplete={handleAnimationExitComplete}>
           <MotionFlex
             animate="animate"
             direction="column"
