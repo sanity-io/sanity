@@ -1,4 +1,4 @@
-import {type SanityClient} from '@sanity/client'
+import {type Action, type SanityClient} from '@sanity/client'
 import {type Mutation} from '@sanity/mutator'
 import {type SanityDocument} from '@sanity/types'
 import {omit} from 'lodash'
@@ -14,7 +14,6 @@ import {
 } from '../buffered-doc'
 import {getPairListener, type ListenerEvent} from '../getPairListener'
 import {type IdPair, type PendingMutationsEvent, type ReconnectEvent} from '../types'
-import {type HttpAction} from './actionTypes'
 
 const isMutationEventForDocId =
   (id: string) =>
@@ -95,12 +94,8 @@ function isLiveEditMutation(mutationParams: Mutation['params'], publishedId: str
   return patchTargets.every((target) => target === publishedId)
 }
 
-function toActions(idPair: IdPair, mutationParams: Mutation['params']) {
-  return mutationParams.mutations.flatMap<HttpAction>((mutations) => {
-    if (Object.keys(mutations).length > 1) {
-      // todo: this might be a bit too strict, but I'm (lazily) trying to check if we ever get more than one mutation in a payload
-      throw new Error('Did not expect multiple mutations in the same payload')
-    }
+function toActions(idPair: IdPair, mutationParams: Mutation['params']): Action[] {
+  return mutationParams.mutations.flatMap((mutations) => {
     // This action is not always interoperable with the equivalent mutation. It will fail if the
     // published version of the document already exists.
     if (mutations.createIfNotExists) {
@@ -125,30 +120,18 @@ function toActions(idPair: IdPair, mutationParams: Mutation['params']) {
         patch: omit(mutations.patch, 'id'),
       }
     }
-    throw new Error('Todo: implement')
+    throw new Error('Cannot map mutation to action')
   })
 }
 
-function commitActions(
-  defaultClient: SanityClient,
-  idPair: IdPair,
-  mutationParams: Mutation['params'],
-) {
+function commitActions(client: SanityClient, idPair: IdPair, mutationParams: Mutation['params']) {
   if (isLiveEditMutation(mutationParams, idPair.publishedId)) {
-    return commitMutations(defaultClient, mutationParams)
+    return commitMutations(client, mutationParams)
   }
 
-  const vXClient = defaultClient.withConfig({apiVersion: 'X'})
-  const {dataset} = defaultClient.config()
-
-  return vXClient.observable.request({
-    url: `/data/actions/${dataset}`,
-    method: 'post',
+  return client.observable.action(toActions(idPair, mutationParams), {
     tag: 'document.commit',
-    body: {
-      transactionId: mutationParams.transactionId,
-      actions: toActions(idPair, mutationParams),
-    },
+    transactionId: mutationParams.transactionId,
   })
 }
 

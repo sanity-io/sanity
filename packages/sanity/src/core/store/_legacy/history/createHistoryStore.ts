@@ -193,9 +193,6 @@ function restore(
   rev: string,
   options?: RestoreOptions,
 ) {
-  const vXClient = client.withConfig({apiVersion: 'X'})
-  const {dataset} = client.config()
-
   return from(getDocumentAtRevision(client, documentId, rev)).pipe(
     mergeMap((documentAtRevision) => {
       if (!documentAtRevision) {
@@ -217,18 +214,11 @@ function restore(
     }),
     mergeMap((restoredDraft) => {
       if (options?.useServerDocumentActions) {
-        return vXClient.observable.request({
-          url: `/data/actions/${dataset}`,
-          method: 'post',
-          body: {
-            actions: [
-              {
-                actionType: 'sanity.action.document.replaceDraft',
-                publishedId: documentId,
-                attributes: restoredDraft,
-              },
-            ],
-          },
+        // @ts-expect-error FIXME
+        return client.observable.action({
+          actionType: 'sanity.action.document.replaceDraft',
+          publishedId: documentId,
+          attributes: restoredDraft,
         })
       }
 
