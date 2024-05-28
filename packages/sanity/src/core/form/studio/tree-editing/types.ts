@@ -10,5 +10,5 @@ export interface TreeEditingBreadcrumb {
   title: string
   path: Path
   children: TreeEditingBreadcrumb[]
-  breadcrumbTitle?: string
+  breadcrumbTitle: string
 }
