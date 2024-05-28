@@ -53,12 +53,12 @@ const Sidebar = memo(function Sidebar(props: SidebarProps) {
     <ConditionalResizer maxWidth={450} minWidth={150} initialWidth={250}>
       <SidebarCard
         borderRight={!open}
+        data-testid="tree-editing-sidebar"
         data-ui="SidebarCard"
         display="flex"
         height="fill"
         overflow="hidden"
         tone="transparent"
-        data-testid="tree-editing-sidebar"
       >
         <FixedHeightFlex align="center" gap={2}>
           <Button
@@ -110,19 +110,38 @@ interface TreeEditingLayoutProps {
   items: TreeEditingMenuItem[]
   onPathSelect: (path: Path) => void
   selectedPath: Path
+  setScrollElement?: (ref: HTMLDivElement | null) => void
   title: string
 }
 
 export const TreeEditingLayout = memo(function TreeEditingLayout(
   props: TreeEditingLayoutProps,
 ): JSX.Element {
-  const {breadcrumbs, children, items, selectedPath, onPathSelect, title, footer} = props
+  const {
+    breadcrumbs,
+    children,
+    footer,
+    items,
+    onPathSelect,
+    selectedPath,
+    setScrollElement,
+    title,
+  } = props
   const scrollElementRef = useRef<HTMLDivElement | null>(null)
   const containerElementRef = useRef<HTMLDivElement | null>(null)
 
-  const [open, setOpen] = useState<boolean>(true)
+  const [open, setOpen] = useState<boolean>(false)
 
   const toggleOpen = useCallback(() => setOpen((v) => !v), [])
+
+  const handleSetScrollElementRef = useCallback(
+    (el: HTMLDivElement | null) => {
+      scrollElementRef.current = el
+
+      setScrollElement?.(el)
+    },
+    [setScrollElement],
+  )
 
   return (
     <Flex height="fill" overflow="hidden">
@@ -146,7 +165,7 @@ export const TreeEditingLayout = memo(function TreeEditingLayout(
           </Flex>
         </FixedHeightFlex>
 
-        <Card flex={1} id="tree-editing-form" overflow="auto" ref={scrollElementRef}>
+        <Card flex={1} id="tree-editing-form" overflow="auto" ref={handleSetScrollElementRef}>
           {children && (
             <VirtualizerScrollInstanceProvider
               containerElement={containerElementRef}
