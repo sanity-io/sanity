@@ -159,28 +159,34 @@ describe('tree-editing: buildTreeEditingState', () => {
         {
           path: ['array1', {_key: 'key1'}],
           title: 'My string 1',
+          parentArrayTitle: 'Array 1',
           children: [
             {
+              parentArrayTitle: 'Array 1',
               path: ['array1', {_key: 'key1'}],
               title: 'My string 1',
               children: [],
             },
             {
+              parentArrayTitle: 'Array 1',
               path: ['array1', {_key: 'key2'}],
               title: 'My string 2',
               children: [],
             },
             {
+              parentArrayTitle: 'Array 1',
               path: ['array1', {_key: 'key3'}],
               title: 'My string 3',
               children: [],
             },
             {
+              parentArrayTitle: 'Array 1',
               path: ['array1', {_key: 'key6'}],
               title: 'My string 6',
               children: [],
             },
             {
+              parentArrayTitle: 'Array 1',
               path: ['array1', {_key: 'key7'}],
               title: 'My string 7',
               children: [],
@@ -295,8 +301,10 @@ describe('tree-editing: buildTreeEditingState', () => {
         {
           path: ['objectWithArray', 'myArray', {_key: 'key1'}],
           title: 'My string 1',
+          parentArrayTitle: 'Array',
           children: [
             {
+              parentArrayTitle: 'Array',
               path: ['objectWithArray', 'myArray', {_key: 'key1'}],
               title: 'My string 1',
               children: [],

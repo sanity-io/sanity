@@ -7,6 +7,7 @@ import styled, {css} from 'styled-components'
 import {type TreeEditingBreadcrumb} from '../../types'
 import {ITEM_HEIGHT, MAX_DISPLAYED_ITEMS} from './constants'
 import {TreeEditingBreadcrumbsMenu} from './TreeEditingBreadcrumbsMenu'
+import {TreeEditingBreadcrumbsTitle} from './TreeEditingBreadcrumbsTitle'
 
 const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['bottom-start']
 
@@ -52,12 +53,13 @@ interface TreeEditingBreadcrumbsMenuButtonProps {
   items: TreeEditingBreadcrumb[]
   onPathSelect: (path: Path) => void
   selectedPath: Path
+  parentArrayTitle: string
 }
 
 export function TreeEditingBreadcrumbsMenuButton(
   props: TreeEditingBreadcrumbsMenuButtonProps,
 ): JSX.Element {
-  const {button, items, selectedPath, onPathSelect} = props
+  const {button, items, selectedPath, onPathSelect, parentArrayTitle} = props
   const [open, setOpen] = useState<boolean>(false)
   const [rootElement, setRootElement] = useState<HTMLElement | null>(null)
   const [buttonElement, setButtonElement] = useState<HTMLButtonElement | null>(null)
@@ -104,6 +106,7 @@ export function TreeEditingBreadcrumbsMenuButton(
         direction="column"
         overflow="hidden"
       >
+        <TreeEditingBreadcrumbsTitle title={parentArrayTitle} />
         <TreeEditingBreadcrumbsMenu
           items={items}
           onPathSelect={handlePathSelect}
