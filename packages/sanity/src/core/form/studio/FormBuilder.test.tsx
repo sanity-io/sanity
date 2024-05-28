@@ -4,6 +4,7 @@ import {type SanityClient} from '@sanity/client'
 import {defineType, type Path} from '@sanity/types'
 import {render} from '@testing-library/react'
 import {useMemo} from 'react'
+import {useTreeArrayEditingEnabled} from 'sanity'
 
 import {createMockSanityClient} from '../../../../test/mocks/mockSanityClient'
 import {createTestProvider} from '../../../../test/testUtils/TestProvider'
@@ -58,6 +59,7 @@ describe('FormBuilder', () => {
     function TestForm() {
       const {schema} = useWorkspace()
       const schemaType = schema.get('test')
+      const useNewTreeDialog = useTreeArrayEditingEnabled()
 
       if (!schemaType) {
         throw new Error('missing schema type')
@@ -107,8 +109,9 @@ describe('FormBuilder', () => {
           schemaType: formState?.schemaType || schemaType,
           validation: EMPTY_ARRAY,
           value: formState?.value as FormDocumentValue,
+          useNewTreeDialog,
         }),
-        [formState, patchChannel, schemaType],
+        [formState, patchChannel, schemaType, useNewTreeDialog],
       )
 
       return <FormBuilder {...formBuilderProps} />
