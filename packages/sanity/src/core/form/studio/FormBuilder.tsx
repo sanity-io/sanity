@@ -153,7 +153,7 @@ export function FormBuilder(props: FormBuilderProps) {
     [Field],
   )
   const renderItem = useCallback(
-    (itemProps: Omit<ItemProps, 'renderDefault'>) => <Item {...itemProps} />,
+    ({key, ...itemProps}: Omit<ItemProps, 'renderDefault'>) => <Item key={key} {...itemProps} />,
     [Item],
   )
   const renderPreview = useCallback(
