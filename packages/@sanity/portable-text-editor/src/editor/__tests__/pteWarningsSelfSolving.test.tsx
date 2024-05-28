@@ -180,6 +180,123 @@ describe('when PTE would display warnings, instead it self solves', () => {
       }
     })
   })
+
+  it('removes orphaned marks', async () => {
+    const editorRef: RefObject<PortableTextEditor> = createRef()
+    const initialValue = [
+      {
+        _key: 'abc',
+        _type: 'myTestBlockType',
+        style: 'normal',
+        markDefs: [],
+        children: [
+          {
+            _key: 'def',
+            _type: 'span',
+            marks: ['ghi'],
+            text: 'Hello',
+          },
+        ],
+      },
+    ]
+
+    const onChange = jest.fn()
+    render(
+      <PortableTextEditorTester
+        onChange={onChange}
+        ref={editorRef}
+        schemaType={schemaType}
+        value={initialValue}
+      />,
+    )
+    await waitFor(() => {
+      expect(onChange).toHaveBeenCalledWith({type: 'value', value: initialValue})
+      expect(onChange).toHaveBeenCalledWith({type: 'ready'})
+    })
+    await waitFor(() => {
+      if (editorRef.current) {
+        PortableTextEditor.focus(editorRef.current)
+        expect(PortableTextEditor.getValue(editorRef.current)).toEqual([
+          {
+            _key: 'abc',
+            _type: 'myTestBlockType',
+            children: [
+              {
+                _key: 'def',
+                _type: 'span',
+                text: 'Hello',
+                marks: [],
+              },
+            ],
+            markDefs: [],
+            style: 'normal',
+          },
+        ])
+      }
+    })
+  })
+
+  it('removes orphaned marksDefs', async () => {
+    const editorRef: RefObject<PortableTextEditor> = createRef()
+    const initialValue = [
+      {
+        _key: 'abc',
+        _type: 'myTestBlockType',
+        style: 'normal',
+        markDefs: [
+          {
+            _key: 'ghi',
+            _type: 'link',
+            href: 'https://sanity.io',
+          },
+        ],
+        children: [
+          {
+            _key: 'def',
+            _type: 'span',
+            marks: [],
+            text: 'Hello',
+          },
+        ],
+      },
+    ]
+
+    const onChange = jest.fn()
+    render(
+      <PortableTextEditorTester
+        onChange={onChange}
+        ref={editorRef}
+        schemaType={schemaType}
+        value={initialValue}
+      />,
+    )
+    await waitFor(() => {
+      expect(onChange).toHaveBeenCalledWith({type: 'value', value: initialValue})
+      expect(onChange).toHaveBeenCalledWith({type: 'ready'})
+    })
+    await waitFor(() => {
+      if (editorRef.current) {
+        PortableTextEditor.focus(editorRef.current)
+        expect(PortableTextEditor.getValue(editorRef.current)).toEqual([
+          {
+            _key: 'abc',
+            _type: 'myTestBlockType',
+            children: [
+              {
+                _key: 'def',
+                _type: 'span',
+                text: 'Hello',
+                marks: [],
+              },
+            ],
+            markDefs: [],
+            style: 'normal',
+          },
+        ])
+      }
+    })
+  })
+
   it('allows missing .markDefs', async () => {
     const editorRef: RefObject<PortableTextEditor> = createRef()
     const initialValue = [
