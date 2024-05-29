@@ -1,0 +1,149 @@
+import {SearchIcon} from '@sanity/icons'
+import {Card, Flex, Popover, type PopoverProps, Stack, Text, TextInput} from '@sanity/ui'
+import {useCallback, useMemo, useState} from 'react'
+import {type Path} from 'sanity'
+import styled, {css} from 'styled-components'
+
+import {type TreeEditingMenuItem} from '../../types'
+import {ITEM_HEIGHT, MAX_DISPLAYED_ITEMS} from './constants'
+import {TreeEditingSearchMenu} from './TreeEditingSearchMenu'
+import {treeEditingSearch} from './utils'
+
+const POPOVER_FALLBACK_PLACEMENTS: PopoverProps['fallbackPlacements'] = ['bottom-start']
+
+const RootFlex = styled(Flex)``
+
+const PopoverListFlex = styled(Flex)<{
+  $maxDisplayedItems: number
+  $itemHeight: number
+}>((props) => {
+  const {$maxDisplayedItems, $itemHeight} = props
+
+  return css`
+    --item-height: ${$itemHeight}px;
+    --max-items: ${$maxDisplayedItems};
+    --list-padding: 0.5rem;
+
+    position: relative;
+    max-height: calc(var(--item-height) * var(--max-items) + var(--list-padding));
+    min-height: calc((var(--item-height) * 1));
+    width: 100%;
+  `
+})
+
+const StyledPopover = styled(Popover)(() => {
+  return css`
+    [data-ui='Popover__wrapper'] {
+      min-width: 250px;
+      display: flex;
+      flex-direction: column;
+      border-radius: ${({theme}) => theme.sanity.radius[3]}px;
+      position: relative;
+      overflow: hidden;
+      overflow: clip;
+    }
+  `
+})
+
+interface TreeEditingSearchProps {
+  items: TreeEditingMenuItem[]
+  onPathSelect: (path: Path) => void
+}
+
+export function TreeEditingSearch(props: TreeEditingSearchProps): JSX.Element {
+  const {items, onPathSelect} = props
+
+  const [textInputElement, setTextInputElement] = useState<HTMLInputElement | null>(null)
+  const [query, setQuery] = useState<string>('')
+
+  const hasSearchQuery = query.length > 0
+
+  const filteredList = useMemo(() => treeEditingSearch(items, query), [query, items])
+
+  const resetSearch = useCallback(() => setQuery(''), [])
+
+  const handleSearchChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    setQuery(event.target.value)
+  }, [])
+
+  const handlePathSelect = useCallback(
+    (path: Path) => {
+      onPathSelect(path)
+      resetSearch()
+    },
+    [onPathSelect, resetSearch],
+  )
+
+  const handleSearchKeyDown = useCallback(
+    (event: React.KeyboardEvent<HTMLInputElement>) => {
+      if (event.key === 'Escape') {
+        resetSearch()
+        textInputElement?.focus()
+      }
+    },
+    [resetSearch, textInputElement],
+  )
+
+  const content = useMemo(() => {
+    if (filteredList.length === 0) {
+      return (
+        <Card>
+          <Stack padding={4} sizing="border" space={3}>
+            <Text align="center" muted size={1} weight="medium">
+              {/* eslint-disable-next-line i18next/no-literal-string */}
+              {/* todo: localize */}
+              No results found
+            </Text>
+          </Stack>
+        </Card>
+      )
+    }
+
+    return (
+      <RootFlex direction="column" flex={1} height="fill">
+        <Card>
+          <PopoverListFlex
+            $itemHeight={ITEM_HEIGHT}
+            $maxDisplayedItems={MAX_DISPLAYED_ITEMS}
+            direction="column"
+            overflow="hidden"
+          >
+            <TreeEditingSearchMenu
+              items={filteredList}
+              onPathSelect={handlePathSelect}
+              textInputElement={textInputElement}
+            />
+          </PopoverListFlex>
+        </Card>
+      </RootFlex>
+    )
+  }, [filteredList, handlePathSelect, textInputElement])
+
+  return (
+    <StyledPopover
+      animate
+      constrainSize
+      content={content}
+      fallbackPlacements={POPOVER_FALLBACK_PLACEMENTS}
+      matchReferenceWidth
+      open={hasSearchQuery}
+      placement="bottom-start"
+      portal
+    >
+      <Card radius={2}>
+        <TextInput
+          clearButton={hasSearchQuery}
+          fontSize={1}
+          icon={SearchIcon}
+          onChange={handleSearchChange}
+          onClear={resetSearch}
+          onKeyDown={handleSearchKeyDown}
+          placeholder="Search"
+          ref={setTextInputElement}
+          style={{borderRadius: 'inherit'}}
+          value={query}
+        />
+      </Card>
+    </StyledPopover>
+  )
+}
