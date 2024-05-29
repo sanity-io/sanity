@@ -9,6 +9,7 @@ import {Button} from '../../../../../ui-components'
 import {type TreeEditingBreadcrumb, type TreeEditingMenuItem} from '../types'
 import {TreeEditingBreadcrumbs} from './breadcrumbs'
 import {Resizable} from './resizer'
+import {TreeEditingSearch} from './search'
 import {TreeEditingMenu} from './TreeEditingMenu'
 
 const PRESENCE_MARGINS: [number, number, number, number] = [0, 0, 1, 0]
@@ -78,6 +79,12 @@ const Sidebar = memo(function Sidebar(props: SidebarProps) {
             </Flex>
           )}
         </FixedHeightFlex>
+
+        {open && (
+          <Stack padding={2} sizing="border" style={{minHeight: 'max-content'}}>
+            <TreeEditingSearch items={items} onPathSelect={onPathSelect} />
+          </Stack>
+        )}
 
         <AnimatePresence mode="wait">
           {open && (
