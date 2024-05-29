@@ -1,6 +1,7 @@
 import {type Path} from '@sanity/types'
 import {Stack, Text} from '@sanity/ui'
 import {fromString as pathFromString} from '@sanity/util/paths'
+import {pick} from 'lodash'
 import {memo, useMemo} from 'react'
 import {
   ReferenceInputOptionsProvider,
@@ -68,6 +69,10 @@ function DocumentPaneInner(props: DocumentPaneProviderProps) {
       ? mergeDocumentType(props, options, documentType)
       : props
   }, [props, documentType, isLoaded, options])
+
+  const copyPasteProviderProps = useMemo(() => {
+    return pick(providerProps, ['documentId', 'documentType'])
+  }, [providerProps])
 
   const {ReferenceChildLink, handleEditReference, groupIndex, routerPanesState} = paneRouter
   const childParams = routerPanesState[groupIndex + 1]?.[0].params || {}
@@ -140,7 +145,7 @@ function DocumentPaneInner(props: DocumentPaneProviderProps) {
         initialValueTemplateItems={templatePermissions}
         activePath={activePath}
       >
-        <CopyPasteProvider>
+        <CopyPasteProvider {...copyPasteProviderProps}>
           <CommentsWrapper documentId={options.id} documentType={options.type}>
             <DocumentLayout documentId={options.id} documentType={options.type} />
           </CommentsWrapper>
