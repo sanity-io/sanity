@@ -16,9 +16,11 @@ export interface UseCopyPasteActionProps {
  * @hidden
  */
 export interface CopyActionResult {
+  _type: 'copyResult'
   documentId?: string
   documentType?: string
   schemaTypeName: string
+  schemaTypeTitle?: string
   path: any[]
   docValue: any // Adjust the type based on your actual data structure
   isDocument: boolean
@@ -31,9 +33,13 @@ export interface CopyActionResult {
  * @hidden
  */
 export interface CopyPasteContextType {
+  documentId?: string
+  documentType?: string
   copyResult: CopyActionResult | null
   setCopyResult: (result: CopyActionResult) => void
   sendMessage: (message: CopyActionResult) => void
   onChange: (event: PatchEvent) => void
+  refreshCopyResult: () => Promise<void>
   isValidTargetType: (targetType: string) => boolean
+  isCopyResultInClipboard: boolean | null
 }
